@@ -49,7 +49,7 @@ def main():
                     for i,v in enumerate(values):ax.text(v+.13,i,f'{v:.3f} Wh [I]',va='center',weight='bold')
                     ax.set_xlim(0,9.5);ax.legend(loc='center left',bbox_to_anchor=(.45,.12),fontsize=14,frameon=False)
                     title='Tenerife energy · 24-hour N=4 sweep';xlabel='Wh per case-forecast-hour · lower is less energy'
-                    foot=f'Board {board:.3f} Wh [M], E158 actual timestamps; no idle subtraction in headline.\nCPU: owner-reported 200 W; GPU host share: 4/12 × 200 W [I]. No whole-node energy claim.'
+                    foot=f'Board {board:.3f} Wh [M], timestamped power samples, idle not subtracted.\nCPU: owner-reported 200 W; GPU host share: 4/12 × 200 W [I]. No whole-node energy claim.'
                 ax.set_yticks(range(len(labels)),labels);ax.invert_yaxis();ax.set_xlabel(xlabel,labelpad=14)
                 fig.suptitle(title,x=.025,y=.975,ha='left',fontsize=20,weight='bold')
                 fig.subplots_adjust(left=.34 if kind=='energy' else .29,right=.98,top=.86,bottom=.25)

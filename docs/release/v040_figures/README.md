@@ -34,3 +34,16 @@ Run in this directory or pass the path to render.py. The renderer reads its
 adjacent CSV files, generates the six PNG/SVG artifacts and updates their
 hashes. It does not read scientific archives. Matplotlib/NumPy versions are
 recorded; image bytes can vary with plotting-library/font versions.
+
+## Public README variant
+
+[readme_validation.png](readme_validation.png) and its
+[dark-mode twin](readme_validation_dark.png) show the same WN3-0227 data as
+the band figure in a compact 2 × 5 layout with plain-language titles for the
+project README. [render_readme.py](render_readme.py) draws them from the same
+`wn3_bands.csv` (SHA-256 `51ce71fb9499d4fc47beb829817251b8098f12454dc2f3b4ff89e94d9ac5e1f3`); only layout, labels and colours differ.
+Rendered with Matplotlib 3.10.8: light `8b9359465a31f3370f2d349d44aeaeb6b4684dde1edcdfbb3b9be517d73a96aa`, dark `e9f2477f8ce1a8b9632cdc3bfa6987155eb768e0646e2ec0edb23bd62aa00bfe`.
+
+```bash
+MPLCONFIGDIR=/your/scratch python render_readme.py
+```

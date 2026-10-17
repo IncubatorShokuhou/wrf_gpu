@@ -8,9 +8,11 @@ import json
 import os
 import pickle
 import shutil
+import signal
 import subprocess
 import sys
 import tarfile
+import time
 from pathlib import Path
 
 import pytest
@@ -34,6 +36,7 @@ def _load(name):
 
 curate = _load("curate")
 verify = _load("verify")
+readme_lint = _load("readme_lint")
 
 
 def _git(cwd, *args):
@@ -217,6 +220,8 @@ def _toy_cache(root, flags=""):
     (d01 / "last_cheap_key").write_text("a")
     (cache / "jit_f-00-cache").write_bytes(b"entry")
     (cache / "jit_f-00-atime").write_bytes(b"1")
+    (cache / "cli_memory_plans").mkdir()
+    (cache / "cli_memory_plans/k.json").write_text('{"live_peak_bytes": 1}')
     (cache / "xla_gpu_per_fusion_autotune_cache_dir").mkdir()
     (cache / "xla_gpu_per_fusion_autotune_cache_dir/t.textproto").write_text("tune")
     return cache, blob, meta
@@ -238,14 +243,17 @@ def test_compile_bundle_seal_is_deterministic_and_check_detects_compiles_outside
     assert (tmp_path / "b1/gpuwrf-bundle.tar.gz").read_bytes() == (tmp_path / "b2/gpuwrf-bundle.tar.gz").read_bytes()
     manifest = json.loads((tmp_path / "b1/BUNDLE_MANIFEST.json").read_text())
     assert manifest["aot_meta"]["aot/0.4.0-cuda_sm120/d01/k_a.meta"]["hlo_sha256"] == "h1"
-    assert manifest["counts"] == dict(aot_blob=1, aot_meta=1, jax_entry=1, mutable=2, tune=1)
+    assert manifest["counts"] == dict(aot_blob=1, aot_meta=1, jax_entry=1, mutable=3, tune=1)
     with tarfile.open(tmp_path / "b1/gpuwrf-bundle.tar.gz") as tar:
         names = tar.getnames()
     assert "gpuwrf-bundle/cache/jit_f-00-cache" in names and not [n for n in names if n.endswith("-atime")]
+    assert "gpuwrf-bundle/cache/cli_memory_plans/k.json" in names  # the C-auto plan ships as a sizing hint
     check = ["check", "--cache", str(cache), "--manifest", str(tmp_path / "b1/BUNDLE_MANIFEST.json")]
     assert cb.main(check) == 0
     (cache / "jit_f-00-atime").write_bytes(b"2")  # access stamps and the prefetch hint may change
     (cache / "aot/0.4.0-cuda_sm120/d01/last_cheap_key").write_text("b")
+    # every successful GPU run rewrites its C-auto plan with the measured peak (gpu_allocator.finish_cli_pool)
+    (cache / "cli_memory_plans/k.json").write_text('{"live_peak_bytes": 2}')
     alias = cache / "aot/0.4.0-cuda_sm120/d01/k_b.xlaexec"
     alias.write_bytes(blob)  # cheap-key alias of the sealed executable
     (alias.with_suffix(".meta")).write_bytes(pickle.dumps(dataclasses.replace(meta, cheap_key="b")))
@@ -310,6 +318,262 @@ def test_compile_bundle_seal_refuses(toy_repo, tmp_path, capsys, defect):
         (outside / "t.textproto").write_text("tune escaped the seal")
     assert cb.main(seal + ["--source", str(source)]) == 1
     assert "SEAL_REFUSED" in capsys.readouterr().out
+
+
+def _tree_bytes(root):
+    return {str(p.relative_to(root)): p.read_bytes() for p in sorted(root.rglob("*")) if p.is_file()}
+
+
+def _bwrap_overlay_ok(tmp_path):
+    probe = tmp_path / "probe"
+    for d in ("lo", "up", "wk"):
+        (probe / d).mkdir(parents=True)
+    return shutil.which("bwrap") is not None and subprocess.run(
+        ["bwrap", "--dev-bind", "/", "/", "--overlay-src", str(probe / "lo"), "--overlay", str(probe / "up"),
+         str(probe / "wk"), str(probe / "lo"), "true"], capture_output=True).returncode == 0
+
+
+@pytest.fixture
+def sealed_bundle(tmp_path):
+    """A toy bundle with the manifest fields the real checker reads (files + decoded AOT metadata), built with the
+    checker's own scan/decode_meta; sealing itself is tested above. No jax import, so the fixture stays cheap under
+    host load."""
+    if not _bwrap_overlay_ok(tmp_path):
+        pytest.skip("no unprivileged bubblewrap overlay on this host")
+    cb = _load("compile_bundle")
+    bundle = tmp_path / "P"
+    cache, blob, meta = _toy_cache(bundle)
+    (bundle / "autotune").mkdir()
+    (bundle / "sub").mkdir()
+    (bundle / "sub/target").write_bytes(b"sealed target")
+    (bundle / "sealed").mkdir()
+    metas = {rel: cb.decode_meta(cache / rel) for rel, rec in cb.scan(cache).items() if rec["kind"] == "aot_meta"}
+    (bundle / "sealed/BUNDLE_MANIFEST.json").write_text(json.dumps(dict(
+        schema=cb.SCHEMA, cache=str(cache), files=cb.scan(cache), aot_meta=metas)))
+    (bundle / "tools").mkdir()
+    shutil.copy(TOOLS / "compile_bundle.py", bundle / "tools/compile_bundle.py")
+    alias_meta = tmp_path / "alias.meta"  # a cheap-key alias pair of the sealed executable, written by the payload
+    alias_meta.write_bytes(pickle.dumps(dataclasses.replace(meta, cheap_key="b")))
+    yield bundle, alias_meta
+    for d, _dirs, _files in os.walk(tmp_path):  # overlayfs leaves work/work at mode 000; let tmp cleanup remove it
+        for sub in _dirs:
+            path = Path(d) / sub
+            if not path.is_symlink():
+                path.chmod(0o755)
+
+
+def _consume(bundle, layer, *cmd, extra=(), **kw):
+    return subprocess.run(["bash", str(TOOLS / "bundle_consumer.sh"), *extra, "--bundle", str(bundle), "--layer",
+                           str(layer), "--", *cmd], capture_output=True, text=True, timeout=900, **kw)
+
+
+def _counts(stdout):
+    last = stdout.strip().splitlines()[-1]
+    assert last.startswith("BUNDLE_CONSUMER rc="), stdout
+    return {k: v for k, v in (f.split("=", 1) for f in last.split()[1:])}
+
+
+def test_bundle_consumer_counts_programs_by_content_with_the_checker_alias_rule(sealed_bundle, tmp_path):
+    bundle, alias_meta = sealed_bundle
+    cb, layer, j = _load("compile_bundle"), tmp_path / "layer", bundle / "jax"
+    d01 = j / "aot/0.4.0-cuda_sm120/d01"
+    sealed = _tree_bytes(bundle)
+    payload = (f"cat {j}/jit_f-00-cache >/dev/null && echo new > {j}/jit_g-11-cache && echo 2 > {j}/jit_f-00-atime && "
+               f"cp {d01}/k_a.xlaexec {d01}/k_b.xlaexec && cp {alias_meta} {d01}/k_b.meta && "
+               f"mkdir {bundle}/meta && echo o > {bundle}/meta/o && echo \"env=${{JAX_PLATFORMS-unset}}\"")
+    env = {k: v for k, v in os.environ.items() if k != "JAX_PLATFORMS"}
+    first = _consume(bundle, layer, "bash", "-c", payload, env=env)
+    assert first.returncode == 0, first.stderr
+    assert "env=unset" in first.stdout  # the supervisor's checker import never leaks into the consumer's env
+    c = _counts(first.stdout)
+    assert (c["compiled_new"], c["aliases_new"], c["runtime_new"], c["other_new"], c["layer_compiled"]) == \
+        ("1", "2", "1", "1", "1")
+    assert "P check after: BUNDLE_OK missing=0 changed=0 new=0" in first.stdout
+    assert _tree_bytes(bundle) == sealed
+    merged = tmp_path / "merged"  # the real checker on the consumer's view gives the same verdicts
+    shutil.copytree(j, merged / "jax")
+    shutil.copytree(layer / "upper/jax", merged / "jax", dirs_exist_ok=True)
+    rep = tmp_path / "rep.json"
+    cb.main(["check", "--cache", str(merged / "jax"), "--manifest", str(bundle / "sealed/BUNDLE_MANIFEST.json"),
+             "--out", str(rep)])
+    rep = json.loads(rep.read_text())
+    assert rep["new"] == ["jit_g-11-cache"] and len(rep["aliases"]) == 2 and not rep["changed"]
+    # a rewrite that keeps size and mtime (new -> NEW, 4 bytes each) is still new content: counted
+    rewrite = (f"python3 -c \"import os; p='{j}/jit_g-11-cache'; s=os.stat(p); open(p,'w').write('NEW\\n'); "
+               f"os.utime(p, ns=(s.st_atime_ns, s.st_mtime_ns))\"")
+    again = _consume(bundle, layer, "bash", "-c", rewrite)
+    c = _counts(again.stdout)
+    assert again.returncode == 0 and c["compiled_new"] == "1" and c["layer_compiled"] == "1", again.stdout
+    retune = f"echo retuned > {j}/xla_gpu_per_fusion_autotune_cache_dir/t.textproto; echo t > {bundle}/autotune/x"
+    c = _counts(_consume(bundle, layer, "bash", "-c", retune).stdout)
+    assert c["compiled_new"] == "2" and c["layer_compiled"] == "3"  # a rewritten sealed tune + a toolchain cache file
+    c = _counts(_consume(bundle, layer, "true").stdout)
+    assert c["compiled_new"] == "0" and c["aliases_new"] == "0" and c["layer_compiled"] == "3"
+    assert _tree_bytes(bundle) == sealed
+
+
+@pytest.mark.parametrize("escape", ["upper", "work", "runs", "lock", "layer", "inside", "contains", "hardlink",
+                                    "work_after_upper"])
+def test_bundle_consumer_refuses_layers_that_reach_the_bundle(sealed_bundle, tmp_path, escape):
+    bundle, _ = sealed_bundle
+    layer = tmp_path / "layer"
+    sealed = _tree_bytes(bundle)
+    if escape in ("upper", "work", "runs"):
+        layer.mkdir()
+        (layer / escape).symlink_to(bundle / "sub", target_is_directory=True)
+    elif escape == "lock":
+        layer.mkdir()
+        (layer / ".consumer.lock").symlink_to(bundle / "sub/target")
+    elif escape == "work_after_upper":  # a later component is bad, an earlier one would be created first
+        layer.mkdir()
+        (layer / "work").symlink_to(bundle / "sub", target_is_directory=True)
+    elif escape == "layer":
+        layer.symlink_to(bundle / "sub", target_is_directory=True)
+    elif escape == "inside":
+        layer = bundle / "sub/layer"
+    elif escape == "contains":
+        layer = tmp_path
+    else:
+        (layer / "upper/jax").mkdir(parents=True)
+        os.link(bundle / "jax/jit_f-00-cache", layer / "upper/jax/jit_f-00-cache")
+    entries = sorted(os.listdir(layer)) if layer.is_dir() and not layer.is_symlink() else None
+    r = _consume(bundle, layer, "bash", "-c", f"echo escaped > {bundle}/sub/x; echo e > {bundle}/jax/jit_x-cache")
+    assert r.returncode == 125 and "BUNDLE_CONSUMER_REFUSED" in r.stderr, (r.stdout, r.stderr)
+    assert _tree_bytes(bundle) == sealed and not (bundle / "sub/layer").exists()
+    if entries is not None:  # refused before creating anything in an existing layer
+        assert sorted(os.listdir(layer)) == entries
+
+
+@pytest.mark.parametrize("part", ["meta", "blob"])
+def test_bundle_consumer_counts_a_warm_alias_with_its_unchanged_partner(sealed_bundle, tmp_path, part):
+    """A reused layer: the run rewrites one half of an existing alias pair; the real checker still sees aliases=2."""
+    bundle, alias_meta = sealed_bundle
+    layer, d01 = tmp_path / "layer", bundle / "jax/aot/0.4.0-cuda_sm120/d01"
+    first = _consume(bundle, layer, "bash", "-c", f"cp {d01}/k_a.xlaexec {d01}/k_b.xlaexec && cp {alias_meta} {d01}/k_b.meta")
+    c = _counts(first.stdout)
+    assert (c["compiled_new"], c["aliases_new"], c["layer_compiled"]) == ("0", "2", "0"), first.stdout
+    if part == "meta":  # other retained metadata, same sealed blob and program
+        meta = pickle.loads(alias_meta.read_bytes())
+        edited = tmp_path / "edited.meta"
+        edited.write_bytes(pickle.dumps(dataclasses.replace(meta, in_tree="different retained metadata")))
+        step = f"cp {edited} {d01}/k_b.meta"
+    else:  # foreign bytes first (a compile), then the sealed blob restored under the unchanged metadata
+        c = _counts(_consume(bundle, layer, "bash", "-c", f"echo foreign > {d01}/k_b.xlaexec").stdout)
+        assert (c["compiled_new"], c["layer_compiled"]) == ("1", "2")  # the blob, and its now-orphaned metadata
+        step = f"cp {d01}/k_a.xlaexec {d01}/k_b.xlaexec"
+    r = _consume(bundle, layer, "bash", "-c", step)
+    assert "view check (P + layer): BUNDLE_OK missing=0 changed=0 new=0 aliases=2" in r.stdout, r.stdout
+    c = _counts(r.stdout)
+    assert (c["compiled_new"], c["aliases_new"], c["layer_compiled"]) == ("0", "1", "0"), r.stdout
+
+
+@pytest.mark.parametrize("case", ["missing_layer_under_alias", "existing_layer_under_alias", "bound_child"])
+def test_bundle_consumer_refuses_a_bind_mount_alias_of_the_bundle(sealed_bundle, tmp_path, case):
+    """Real bind mounts (inside one bwrap): an alias of P above the layer is found by location, not by path."""
+    bundle, _ = sealed_bundle
+    (bundle / "sub/d").mkdir()
+    alias = tmp_path / "alias"
+    alias.mkdir()
+    if case == "bound_child":
+        layer = tmp_path / "layer"
+        (layer / "upper").mkdir(parents=True)
+        bind = [str(bundle / "sub"), str(layer / "upper")]
+        expect = "inside the layer"  # the mount-point rule
+    else:
+        layer = alias / ("layer" if case == "missing_layer_under_alias" else "d")
+        bind = [str(bundle / "sub"), str(alias)]
+        expect = "lies inside or aliases the bundle"
+    probe = (f"import sys; sys.path.insert(0, {str(TOOLS)!r}); import bundle_consumer as b\n"
+             f"try:\n    b.open_layer({str(bundle)!r}, {str(layer)!r})\nexcept b.Refused as e:\n    print('REFUSED', e)")
+    r = subprocess.run(["bwrap", "--dev-bind", "/", "/", "--bind", *bind, sys.executable, "-I", "-c", probe],
+                       capture_output=True, text=True, timeout=60)
+    assert "REFUSED" in r.stdout and expect in r.stdout, (r.stdout, r.stderr)
+    assert sorted(os.listdir(bundle / "sub")) == ["d", "target"] and not os.listdir(bundle / "sub/d")  # nothing created
+    b = _load("bundle_consumer")
+    assert b.within(("8:1", "/a/b"), ("8:1", "/a")) and not b.within(("8:1", "/ab"), ("8:1", "/a"))
+    assert not b.within(("8:2", "/a/b"), ("8:1", "/a"))
+
+
+def _locked(path):
+    import fcntl
+    with open(path, "a") as fh:
+        try:
+            fcntl.flock(fh, fcntl.LOCK_EX | fcntl.LOCK_NB)
+            return False
+        except BlockingIOError:
+            return True
+
+
+@pytest.mark.parametrize("sig", [signal.SIGTERM, signal.SIGINT])
+def test_bundle_consumer_signal_tears_down_the_tree_before_releasing_locks(sealed_bundle, tmp_path, sig):
+    bundle, _ = sealed_bundle
+    layer, gpu_lock, ready, sup = tmp_path / "layer", tmp_path / "gpu.lock", tmp_path / "ready", tmp_path / "sup"
+    # The payload and a background child ignore TERM/INT (only the KILL after --grace ends them). The payload writes
+    # a cache file the moment the wrapper process is gone: a tree that outlives the wrapper writes it at any load.
+    payload = (f"trap '' TERM INT; (trap '' TERM INT; sleep 300) & echo $! > {ready}.bg; echo $$ > {ready}; "
+               f"while [ ! -s {sup} ]; do sleep 0.05; done; s=$(cat {sup}); while [ -e /proc/$s ]; do sleep 0.05; done; "
+               f"echo late > {bundle}/jax/jit_late-cache; sleep 300")
+    proc = subprocess.Popen(["bash", "-c", 'exec 9>"$1"; flock -n 9; shift; exec "$@"', "outer", str(gpu_lock),
+                             "bash", str(TOOLS / "bundle_consumer.sh"), "--grace", "0.5", "--bundle", str(bundle),
+                             "--layer", str(layer), "--", "bash", "-c", payload],
+                            stdout=open(tmp_path / "out", "w"), stderr=open(tmp_path / "err", "w"),
+                            start_new_session=True)  # files, not pipes: a survivor must not stall the test
+    sup.write_text(str(proc.pid))  # the wrapper (exec chain: bash -> bash -> python keeps this pid)
+    try:
+        end = time.monotonic() + 600  # generous: under host load every process start is slow
+        complete = lambda p: p.exists() and p.read_text().endswith("\n")  # noqa: E731 - echo has finished writing
+        while not (complete(ready) and complete(Path(f"{ready}.bg"))) and time.monotonic() < end:
+            time.sleep(0.02)
+        pids = [int(ready.read_text()), int(Path(f"{ready}.bg").read_text())]
+        time.sleep(0.2)
+        proc.send_signal(sig)
+        try:
+            proc.wait(timeout=600)  # the wrapper returns as soon as its whole tree is gone (no fixed teardown bound)
+        except subprocess.TimeoutExpired:
+            pass
+        assert proc.returncode == 128 + sig, ((tmp_path / "out").read_text(), (tmp_path / "err").read_text())
+        assert not [p for p in pids if Path(f"/proc/{p}").exists()]  # the whole tree is gone when the wrapper ends
+        assert not _locked(gpu_lock) and not _locked(layer / ".consumer.lock")  # and only then are the locks free
+        time.sleep(1.0)  # a surviving payload would write within 0.05 s of the wrapper's exit
+        assert not (layer / "upper/jax/jit_late-cache").exists() and not (bundle / "jax/jit_late-cache").exists()
+        receipt = json.loads(next((layer / "runs").glob("*.json")).read_text())
+        assert receipt["signal"] == sig and receipt["teardown"]["survivors"] == [] and receipt["teardown"]["killed"]
+    finally:
+        if proc.poll() is None:
+            os.killpg(proc.pid, signal.SIGKILL)
+            proc.wait()
+
+
+def test_bundle_consumer_teardown_waits_until_the_tree_is_gone(monkeypatch, capsys):
+    """A descendant that needs seconds to die (uninterruptible I/O under load) must not outlive teardown."""
+    b = _load("bundle_consumer")
+    ghost = (1 << 22) + 4242  # above the kernel pid_max: never a real process, kill() raises ProcessLookupError
+    gone_at = time.monotonic() + 3.0
+    monkeypatch.setattr(b, "descendants", lambda root: [ghost] if time.monotonic() < gone_at else [])
+    monkeypatch.setattr(b, "reap", lambda: None)
+    calls = []
+    monkeypatch.setattr(b.os, "kill", lambda pid, sig: calls.append((pid, sig)))
+    rec = b.teardown(grace=0.1, report_every=1.0)
+    assert time.monotonic() >= gone_at and rec["survivors"] == [] and rec["seconds"] >= 2.9
+    assert (ghost, signal.SIGTERM) in calls and (ghost, signal.SIGKILL) in calls and rec["killed"] > 1
+    assert "teardown still waiting for 1 descendant(s)" in capsys.readouterr().err
+
+
+def test_bundle_consumer_exit_paths_release_everything(sealed_bundle, tmp_path):
+    bundle, _ = sealed_bundle
+    layer = tmp_path / "layer"
+    leftover = _consume(bundle, layer, "bash", "-c", f"sleep 30 >/dev/null 2>&1 & echo $! > {tmp_path}/bg; exit 42")
+    assert leftover.returncode == 42 and _counts(leftover.stdout)["rc"] == "42"
+    assert not Path(f"/proc/{(tmp_path / 'bg').read_text().strip()}").exists()  # an orphan is reaped at normal exit
+    missing = _consume(bundle, layer, "/nonexistent/command")
+    assert missing.returncode not in (0, 125) and _counts(missing.stdout)["rc"] == str(missing.returncode)
+    assert not _locked(layer / ".consumer.lock")
+    with open(layer / ".consumer.lock", "a") as held:
+        import fcntl
+        fcntl.flock(held, fcntl.LOCK_EX)
+        busy = _consume(bundle, layer, "true")
+    assert busy.returncode == 125 and "in use" in busy.stderr
+    assert _consume(bundle, layer, "true").returncode == 0
 
 
 def test_wheel_smoke_run_refuses_without_wrf_tables_before_any_work(tmp_path):
@@ -479,3 +743,44 @@ def test_verify_binds_the_published_readme_bytes(toy_repo, tmp_path, monkeypatch
     (pub / "README.md").write_bytes(readme + b"Also ships an unapproved claim.\n")  # public-only tamper, source unchanged
     bad = verify.readme_check(pub, "HEAD", "HEAD~1", "0.4.0", None, approved)
     assert bad["source_sha256"] == approved and bad["approved_match"] is False and not bad["published_is_source"]
+
+
+# --- public README plain-language gate (lane w41-readme, Owner 2026-10-17) ---------------------------------------
+_LINT_BODY = ("# wrf_gpu\n\n## Speed\n![s](docs/release/img/v032_speed.png)\n## What's new\n## How we check it\n"
+              "## Install\n## Quickstart\n## Limitations\n## Citing\n## License\n")
+
+
+def test_readme_lint_flags_internal_identifiers_but_not_hardware_or_schemes():
+    clean = readme_lint.lint(_LINT_BODY + "Runs on H100, B200 and B300; P3 microphysics works.\n")
+    assert clean["gate"] == "PASS", clean
+    for leak, kind in [("E41 FAIL disclosed", "finding_or_gate_id"), ("C5\u2032 gate", "finding_or_gate_id"),
+                       ("c06 rain", "composite_code"), ("frozen as 3356e249", "git_hash"), ("at 00:26Z", "utc_log_stamp"),
+                       ("see the receipt", "process_word"), ("WN3 cases", "internal_name")]:
+        rep = readme_lint.lint(_LINT_BODY + leak + "\n")
+        assert rep["gate"] == "FAIL" and kind in rep["internal_identifiers"], (leak, rep["internal_identifiers"])
+    assert readme_lint.lint(_LINT_BODY + "[ledger](docs/release/c06_E41_3356e249.md)\n")["gate"] == "PASS"  # targets
+    assert "no_benchmark_image" in readme_lint.lint(_LINT_BODY.replace("docs/release/img/v032_speed.png", "x.png"))["fails"]
+    assert readme_lint.lint(_LINT_BODY.replace("## Speed\n", "## Numbers\n"))["missing_core_sections"] == ["speed"]
+    assert "word_budget" in readme_lint.lint(_LINT_BODY + "word " * 2600)["fails"]
+    verify_src = (TOOLS / "verify.py").read_text()
+    assert 'rep["readme_plain"] = readme_lint.lint(' in verify_src and 'fails.append("readme_plain")' in verify_src
+
+
+def test_public_readme_passes_lint_and_matches_the_approved_sha():
+    rep = readme_lint.lint((ROOT / "README.md").read_text(encoding="utf-8"))
+    assert rep["gate"] == "PASS", rep
+    approved = (TOOLS / "README_APPROVED.sha256").read_text().split()[0]
+    assert hashlib.sha256((ROOT / "README.md").read_bytes()).hexdigest() == approved, (
+        "README.md changed after approval: re-review it and update scripts/release/README_APPROVED.sha256")
+
+
+def test_final_reads_the_approved_readme_sha_from_the_release_commit(toy_repo, tmp_path):
+    assert 'show "$PRIV:scripts/release/README_APPROVED.sha256"' in (TOOLS / "final.sh").read_text()
+    (toy_repo / "scripts/release").mkdir()
+    (toy_repo / "scripts/release/README_APPROVED.sha256").write_text("not-a-sha  README.md\n")
+    _git(toy_repo, "add", "-A")
+    _git(toy_repo, "-c", "user.name=t", "-c", "user.email=t@t", "commit", "-q", "-m", "malformed approval")
+    rc = subprocess.run(["bash", str(TOOLS / "final.sh"), "--version", "9.9.9", "--private", "HEAD", "--label", "final",
+                         "--repo", str(toy_repo), "--base", "HEAD", "--lane", str(tmp_path / "lane")],
+                        cwd=toy_repo, capture_output=True, text=True)
+    assert rc.returncode == 2 and "--readme-sha256" in rc.stderr and not (tmp_path / "lane").exists()
