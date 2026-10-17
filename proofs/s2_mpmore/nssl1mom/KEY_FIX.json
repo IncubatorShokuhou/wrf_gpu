@@ -1,0 +1,92 @@
+{
+  "utc": "2026-10-14T07:03:31.325543+00:00",
+  "lane": "s2-mpmore",
+  "status": "FIXED NSSL19/21 keyed providers; scientific packets unchanged",
+  "tested_source_commit": "a0aa555689f9301ea148471ce4ff843044434ee5",
+  "rebased_source_commit": "b3dbce4715c4085206c590c597ad452c28ff279f",
+  "parent_main": "474aef3c45f3109be5c47c18301138c0d8424827",
+  "rebase_src_and_tests_BYTE": true,
+  "physics_and_assets_BYTE_to_parent": true,
+  "keyed_inputs": [
+    "get_one_moment_constants(fp32/fp64,19/21) actual resolved cached namespace",
+    "nssl2mom.gs_a bound _CWR/_GRAD active globals"
+  ],
+  "coverage": "14 regressions:8 actual bound scalar/array warm-blob collisions,2 actualJSON reloads,4 bound table replacements;distinct selected values change cheap/AOT key and HLO/output",
+  "tests": {
+    "MPMK01-red.xml": {
+      "tests": 10,
+      "failures": 10,
+      "errors": 0,
+      "skipped": 0,
+      "time_s": 4.9
+    },
+    "MPMK02-green.xml": {
+      "tests": 251,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "time_s": 316.729
+    }
+  },
+  "host_cost": [
+    {
+      "mp": 18,
+      "baseline_key": "6769091f149b336febe14a96e86b90967a1988430f21986048a4a4dd32fcbaf2",
+      "candidate_key": "6769091f149b336febe14a96e86b90967a1988430f21986048a4a4dd32fcbaf2",
+      "baseline_host_hash_median_ms": 5.4774209856987,
+      "candidate_host_hash_median_ms": 5.512821022421122,
+      "extra_cached_host_array_bytes": 0,
+      "scope": "7 interleaved warm host snapshot pairs; excludes Python-object/transient parsing memory;not forecast timing"
+    },
+    {
+      "mp": 19,
+      "baseline_key": "6769091f149b336febe14a96e86b90967a1988430f21986048a4a4dd32fcbaf2",
+      "candidate_key": "e0dd0537f94ab2caf5e11371702b46bd7b8d19d27930ebc9e69d48b464c8b029",
+      "baseline_host_hash_median_ms": 5.540661048144102,
+      "candidate_host_hash_median_ms": 10.133745148777962,
+      "extra_cached_host_array_bytes": 98484,
+      "scope": "7 interleaved warm host snapshot pairs; excludes Python-object/transient parsing memory;not forecast timing"
+    },
+    {
+      "mp": 21,
+      "baseline_key": "6769091f149b336febe14a96e86b90967a1988430f21986048a4a4dd32fcbaf2",
+      "candidate_key": "08f6b707ce0672b1d8318bd6ca11dc385473345fdbf5bb60e6d64af6b208df2b",
+      "baseline_host_hash_median_ms": 5.496961064636707,
+      "candidate_host_hash_median_ms": 10.043903952464461,
+      "extra_cached_host_array_bytes": 98484,
+      "scope": "7 interleaved warm host snapshot pairs; excludes Python-object/transient parsing memory;not forecast timing"
+    }
+  ],
+  "identities": {
+    "swiss": "f672a5739cb96e388b6b7a40ef80337bf81bdc14ef15268f3476e09d79fe055d",
+    "prod_d01": "6fc715a2bd630934c4cf0f94427df19a527cbf429011c9ba5efe4d712744d27b",
+    "evidence": "Reuse measured parent t-aotkey COMPOSITION via exact physics/assets source bytes;not repeated own trace",
+    "parent_packet_sha256": "fd81703e4f7c294ff4bb2025ba86d06e6e5859ace90f40f9c5e2bae5ac1dfb95"
+  },
+  "timestepping_change": false,
+  "gpu_executed": false,
+  "GPU_E1_readiness_peak_memory": "unmeasured;not a global native-cache diagnosis",
+  "temporary_payloads_cleaned": true,
+  "artifacts": [
+    {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/s2-mpmore/MPMK01-red.xml",
+      "sha256": "816ca4efb45ef2a7bdb0210c7eff38459fcb3449d0dd63a21cd550cfd199fa11"
+    },
+    {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/s2-mpmore/MPMK01-red.log",
+      "sha256": "cd82ba42684da5bd0d882440fc458842def1c423d03b65b859be2ce24c94095a"
+    },
+    {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/s2-mpmore/MPMK02-green.xml",
+      "sha256": "ae6909ae9c4f7f2a7d4bf0521cfd7887924e730c77cfffbc91708e59c2265659"
+    },
+    {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/s2-mpmore/MPMK02-green.log",
+      "sha256": "4c5c846bf905ba5adecaa68a5547f9511c3ccf3040b6f3aa0c753db57bedbe18"
+    },
+    {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/s2-mpmore/MPMK03-source-and-cost.json",
+      "sha256": "f14a25de3a1facb82bcafbbf75a818b218a1ad2b34e5b85ce8ee256b23b0efa0"
+    }
+  ]
+}

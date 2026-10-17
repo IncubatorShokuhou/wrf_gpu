@@ -21,6 +21,14 @@ from gpuwrf.io.wrf_history_metadata import wrf_history_global_attributes
 
 
 CASE = Path('<USER_HOME>/wrf_gpu2_lanes/wn3/cases/20260227_18z_a1')
+# The wn3 validation case is read-only external data, not a test fixture, and is not always present.
+# The two tests below check null namelist slots against a real Gen2 case (wrfinput files); skip them
+# with an explicit reason when the external case is absent rather than erroring the module.
+_CASE_SKIP = f'wn3 validation case not present (external data): {CASE}'
+# The wn3 validation case is read-only external data, not a test fixture, and is not always present.
+# The two tests below check null namelist slots against a real Gen2 case (wrfinput files); skip them
+# with an explicit reason when the external case is absent rather than erroring the module.
+_CASE_SKIP = f'wn3 validation case not present (external data): {CASE}'
 
 
 def case(tmp_path, body):
@@ -139,6 +147,8 @@ def test_cli_null_duration_and_scheme_use_omitted_defaults(tmp_path):
     assert cli._namelist_scheme_codes(run.namelist['physics'], 'mp_physics') == {8}
 
 
+@pytest.mark.skipif(not (CASE / 'wrfinput_d01').exists(), reason=_CASE_SKIP)
+@pytest.mark.skipif(not (CASE / 'wrfinput_d01').exists(), reason=_CASE_SKIP)
 def test_gen2_real_input_top_pressure_scalar_null_default(tmp_path):
     parsed = case(tmp_path, '&domains p_top_requested=1*, /\n').namelist
     run = Gen2Run(CASE)
@@ -147,6 +157,14 @@ def test_gen2_real_input_top_pressure_scalar_null_default(tmp_path):
     assert grid.top_pressure_pa == 5000.0
 
 
+@pytest.mark.skipif(
+    not ((CASE / 'wrfinput_d01').exists() and (CASE / 'wrfinput_d02').exists()),
+    reason=_CASE_SKIP,
+)
+@pytest.mark.skipif(
+    not ((CASE / 'wrfinput_d01').exists() and (CASE / 'wrfinput_d02').exists()),
+    reason=_CASE_SKIP,
+)
 def test_history_metadata_null_integer_real_and_scalar_defaults(tmp_path):
     run = case(tmp_path, '&physics aer_aod550_opt=,2, radt=1*,10, bucket_mm=1*, /\n')
     attrs = wrf_history_global_attributes(CASE / 'wrfinput_d01', run.namelist, 'd01', 54.)

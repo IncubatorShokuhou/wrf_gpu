@@ -7,7 +7,9 @@ from functools import partial
 
 import jax
 import jax.numpy as jnp
-from jax.experimental import pallas as pl
+
+from gpuwrf.dynamics.time_direction import upwind_sign
+from gpuwrf.backends import pallas as pl
 from jax.experimental.pallas import triton as pt
 
 
@@ -23,7 +25,7 @@ def _face_kernel(q, velocity, out, *, nz, ny, nx, axis, upstream, block):
         return pt.load(q.at[indices],mask=valid&(coord>=0)&(coord<extent),other=0.)
     qm3,qm2,qm1,qi,qp1,qp2 = (load(i) for i in (-3,-2,-1,0,1,2))
     v = pt.load(velocity.at[k,y,x],mask=valid,other=0.)
-    sign = jnp.where(v>=0.,jnp.float32(1.),jnp.float32(-1.))
+    sign = upwind_sign(jnp.where(v>=0.,jnp.float32(1.),jnp.float32(-1.)))
     f6 = (37.*(qi+qm1)-8.*(qp1+qm2)+(qp2+qm3))/60.
     f5 = f6-sign*((qp2-qm3)-5.*(qp1-qm2)+10.*(qi-qm1))/60.
     f4 = (7.*(qi+qm1)-(qp1+qm2))/12.
@@ -79,7 +81,7 @@ def _scalar_kernel(q, ru, rv, rom, map_factor, rdzw, fzm, fzp, out,
             xx, yy = (x + shift, y) if axis == 2 else (x, y + shift)
             v = pt.load(velocity.at[k, yy, xx], mask=valid & (m < extent), other=zero)
             qm3, qm2, qm1, qc, qp1, qp2 = values[shift:shift + 6]
-            sign = jnp.where(v >= zero, one, minus_one)
+            sign = upwind_sign(jnp.where(v >= zero, one, minus_one))
             f6 = (jnp.float32(37) * (qc + qm1) - jnp.float32(8) * (qp1 + qm2) + (qp2 + qm3)) / jnp.float32(60)
             f5 = f6 - sign * ((qp2 - qm3) - jnp.float32(5) * (qp1 - qm2) + jnp.float32(10) * (qc - qm1)) / jnp.float32(60)
             f4 = (jnp.float32(7) * (qc + qm1) - (qp1 + qm2)) / jnp.float32(12)
@@ -99,7 +101,7 @@ def _scalar_kernel(q, ru, rv, rom, map_factor, rdzw, fzm, fzp, out,
         face = k + shift
         v = pt.load(rom.at[face, y, x], mask=valid, other=zero)
         qm2, qm1, qc, qp1 = zvalues[shift:shift + 4]
-        sign = jnp.where(v <= zero, one, minus_one)  # WRF flux3(..., -rom)
+        sign = upwind_sign(jnp.where(v <= zero, one, minus_one))  # WRF flux3(..., -rom)
         f4 = (jnp.float32(7) * (qc + qm1) - (qp1 + qm2)) / jnp.float32(12)
         f3 = f4 + sign * ((qp1 - qm2) - jnp.float32(3) * (qc - qm1)) / jnp.float32(12)
         inside = valid & (face > 0) & (face < nz)
@@ -183,7 +185,7 @@ def _scalar_kernel_stacked(q, ru, rv, rom, map_factor, rdzw, fzm, fzp, out,
                 m = pos + shift
                 v = vels[shift]
                 qm3, qm2, qm1, qc, qp1, qp2 = values[shift:shift + 6]
-                sign = jnp.where(v >= zero, one, minus_one)
+                sign = upwind_sign(jnp.where(v >= zero, one, minus_one))
                 f6 = (jnp.float32(37) * (qc + qm1) - jnp.float32(8) * (qp1 + qm2) + (qp2 + qm3)) / jnp.float32(60)
                 f5 = f6 - sign * ((qp2 - qm3) - jnp.float32(5) * (qp1 - qm2) + jnp.float32(10) * (qc - qm1)) / jnp.float32(60)
                 f4 = (jnp.float32(7) * (qc + qm1) - (qp1 + qm2)) / jnp.float32(12)
@@ -203,7 +205,7 @@ def _scalar_kernel_stacked(q, ru, rv, rom, map_factor, rdzw, fzm, fzp, out,
             face = k + shift
             v = vz[shift]
             qm2, qm1, qc, qp1 = zvalues[shift:shift + 4]
-            sign = jnp.where(v <= zero, one, minus_one)  # WRF flux3(..., -rom)
+            sign = upwind_sign(jnp.where(v <= zero, one, minus_one))  # WRF flux3(..., -rom)
             f4 = (jnp.float32(7) * (qc + qm1) - (qp1 + qm2)) / jnp.float32(12)
             f3 = f4 + sign * ((qp1 - qm2) - jnp.float32(3) * (qc - qm1)) / jnp.float32(12)
             wm, wp = wz[shift]

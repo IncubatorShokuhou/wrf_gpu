@@ -16,11 +16,9 @@ from pathlib import Path
 import re
 import sqlite3
 import struct
-import subprocess
-import sys
 
-DEFAULT_JIT_GLOB = "jit__advance_chunk_fori*"
-TOOLS = Path("<USER_HOME>/wrf_gpu2_lanes/opus-a19/tools")
+DEFAULT_JIT_GLOB = "jit__advance_chunk*,jit_fused_jit*"
+TOOLS = Path(__file__).resolve().parent / "e41"
 STEP_PROGRAM = re.compile(r"(?:fused_)?d\d+\Z")
 
 
@@ -93,12 +91,28 @@ def assert_coverage(expected: list[Executable], records: list[dict], required: s
 def _elfs(blob: bytes):
     pos = 0
     while (offset := blob.find(b"\x7fELF", pos)) >= 0:
+        # Only native CUDA ELF64/LE images. Incidental ELF magic in metadata is
+        # not a cubin (E188). A recognized but damaged CUDA image is a refusal.
+        if blob[offset:offset + 7] != b"\x7fELF\x02\x01\x01" or blob[offset + 18:offset + 20] != b"\xbe\x00":
+            pos = offset + 4
+            continue
         try:
+            if struct.unpack_from("<H", blob, offset + 0x34)[0] != 64:
+                raise ValueError("invalid ELF header size")
             phoff = struct.unpack_from("<Q", blob, offset + 0x20)[0]
             phe, phn = struct.unpack_from("<HH", blob, offset + 0x36)
             shoff = struct.unpack_from("<Q", blob, offset + 0x28)[0]
             she, shn = struct.unpack_from("<HH", blob, offset + 0x3A)
+            if (phn and phe != 56) or not shn or she != 64:
+                raise ValueError("unsupported ELF table layout")
             end = max(phoff + phe * phn, shoff + she * shn)
+            if offset + end > len(blob):
+                raise ValueError("truncated ELF tables")
+            for k in range(phn):
+                header = offset + phoff + k * phe
+                off = struct.unpack_from("<Q", blob, header + 8)[0]
+                size = struct.unpack_from("<Q", blob, header + 32)[0]
+                end = max(end, off + size)
             for k in range(shn):
                 section = offset + shoff + k * she
                 off, size = struct.unpack_from("<QQ", blob, section + 0x18)
@@ -106,32 +120,48 @@ def _elfs(blob: bytes):
                     end = max(end, off + size)
             if end <= 0 or offset + end > len(blob):
                 raise ValueError("truncated ELF")
-        except (struct.error, ValueError):
-            pos = offset + 4
-            continue
+        except (struct.error, ValueError) as exc:
+            raise ValueError(f"invalid CUDA ELF at {offset}: {exc}") from exc
         yield blob[offset:offset + end]
         pos = offset + end
 
 
-def _record(blob, index, ax, asm):
+def _gpu_payload(blob, ax, asm):
     size, pos = asm._read_varint(blob, 0)
-    rf = next(v for f, w, v in ax._proto_fields(blob[pos + size:]) if f == 1)
+    if pos + size > len(blob):
+        raise ValueError("truncated IFRT header")
+    values = [v for f, w, v in ax._proto_fields(blob[pos + size:]) if f == 1 and w == 2]
+    if len(values) != 1:
+        raise ValueError("missing/duplicate GPU backend payload")
+    return values[0]
+
+
+def _record(blob, index, ax, asm):
+    rf = _gpu_payload(blob, ax, asm)
     count = 0
     for begin, info, data_pos in asm._chunks(rf):
         if count <= index < count + info["num_records"]:
+            if info["type"] != ord("r"):
+                raise ValueError("unsupported Riegeli record chunk")
             data, _ = asm._read_logical(rf, data_pos, info["data_size"])
-            return asm._decode_simple_chunk(data, info["num_records"])[index - count]
+            if len(data) != info["data_size"]:
+                raise ValueError("truncated Riegeli data")
+            records = asm._decode_simple_chunk(data, info["num_records"])
+            if sum(map(len, records)) != info["decoded_size"]:
+                raise ValueError("Riegeli decoded size mismatch")
+            return records[index - count]
         count += info["num_records"]
     raise ValueError(f"missing Riegeli record {index}")
 
 
 def _optimized_hlo(blob, ax, asm):
     import jaxlib._jax as J
-    size, pos = asm._read_varint(blob, 0)
-    gpu = next(v for f, w, v in ax._proto_fields(blob[pos + size:]) if f == 1)
+    gpu = _gpu_payload(blob, ax, asm)
     if ax._gpu_blob_format(blob) == ax.GPU_THUNK_FORMAT:
         begin, info, data_pos = asm._chunks(gpu)[-1]
         data, _ = asm._read_logical(gpu, data_pos, info["data_size"])
+        if info["type"] != ord("r") or info["num_records"] != 1:
+            raise ValueError("missing single optimized-HLO rest record")
         (gpu,) = asm._decode_simple_chunk(data, info["num_records"])
     hwc = next(v for f, w, v in ax._proto_fields(gpu) if f == 1)
     proto = next(v for f, w, v in ax._proto_fields(hwc) if f == 1)
@@ -145,6 +175,13 @@ def checked_resource_rows(rows):
         if any(type(row[k]) is not int or row[k] < 0 for k in ["stack", "sass", "calls", "callees"]):
             raise ValueError("invalid cubin resource count")
     return rows
+
+
+def _scanner(name):
+    spec = importlib.util.spec_from_file_location(f"e41_{name}", TOOLS / f"{name}.py")
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
 
 
 def scan_executable(entry: Executable, out: Path, db: Path) -> dict:
@@ -164,41 +201,39 @@ def scan_executable(entry: Executable, out: Path, db: Path) -> dict:
         cp = out / f"{label}_e{i}.cubin"
         cp.write_bytes(cubin)
         try:
-            subprocess.run([sys.executable, str(TOOLS / "cubin_scan.py"), str(cp), str(db), f"{label}_e{i}"],
-                           cwd=out, check=True, capture_output=True, text=True, timeout=180)
-            rows = checked_resource_rows(json.loads((out / f"cubin_scan_{label}_e{i}.json").read_text()))
-            rec["elfs"].append({"elf": i, "sha256": hashlib.sha256(cubin).hexdigest()[:16], "kernels": len(rows),
+            rows = checked_resource_rows(_scanner("cubin_scan").scan(cp))
+            (out / f"cubin_scan_{label}_e{i}.json").write_text(json.dumps(rows, indent=1, allow_nan=False) + "\n")
+            rec["elfs"].append({"elf": i, "sha256": hashlib.sha256(cubin).hexdigest(), "kernels": len(rows),
                 "max_stack_B": max(row["stack"] for row in rows),
                 "stack_over256": [(row["kernel"][:100], row["stack"]) for row in rows if row["stack"] > 256],
-                "nonleaf_over1k": [(row["kernel"][:100], row["sass"], row["calls"], row["callees"])
-                                   for row in rows if row["sass"] > 1000 and row["calls"]]})
+                "root_callers_over1k": [(row["kernel"], row["sass"], row["calls"])
+                                       for row in rows if row["sass"] > 1000 and row["calls"]],
+                "nonleaf_over1k": [dict(callee, kernel=row["kernel"]) for row in rows for callee in row["nonleaf_over1k"]],
+                "callgraph_unknown": [dict(item, kernel=row["kernel"]) for row in rows for item in row["callgraph_unknown"]]})
         finally:
             cp.unlink(missing_ok=True)
-    if entry.kind == "aot":
-        # Compact AOT HLO may erase transpose/fusion-body detail. Zero flags is
-        # not a measured zero. Rich JIT HLO stays a separate authoritative record.
-        rec["kinput_transpose_status"] = "UNKNOWN_AOT_METADATA"
-        rec["kinput_transpose_over500"] = None
-    else:
-        hp = out / f"{label}.optimized.hlo"
-        try:
-            hp.write_text(_optimized_hlo(blob, ax, asm))
-            spec = importlib.util.spec_from_file_location("wave_hlo_scan", TOOLS / "hlo_scan.py")
-            scanner = importlib.util.module_from_spec(spec)
-            spec.loader.exec_module(scanner)
-            hlo = scanner.main(str(hp), label)
+    if not rec["elfs"]:
+        raise ValueError(f"no native CUDA ELF in executable: {entry.path}")
+    try:
+        text = _optimized_hlo(blob, ax, asm)
+        if re.search(r"%?slim\.(?:zero|convert|out|root)[.\s=]", text):
+            rec.update(kinput_transpose_status="UNKNOWN_AOT_METADATA", kinput_transpose_over500=None)
+        else:
+            hlo = _scanner("hlo_scan").scan_text(text)
+            (out / f"hlo_scan_{label}.json").write_text(json.dumps(hlo, indent=1, allow_nan=False) + "\n")
             rec["kinput_transpose_over500"] = [(t.get("name") or t.get("fusion"), t["n_instr"])
                 for t in hlo["transpose_hero_fusions"] if t["kind"] == "kInput" and t["n_instr"] > 500]
-            rec["kinput_transpose_status"] = "MEASURED_RICH_JIT_HLO"
-        except Exception as exc:
-            rec["hlo_error"] = f"{type(exc).__name__}: {exc}"
-            rec["kinput_transpose_status"] = "UNKNOWN_HLO_ERROR"
-        finally:
-            hp.unlink(missing_ok=True)
+            rec["kinput_transpose_status"] = "MEASURED_RICH_JIT_HLO" if entry.kind == "jax_cache" else "MEASURED_RICH_AOT_HLO"
+    except Exception as exc:
+        rec["hlo_error"] = f"{type(exc).__name__}: {exc}"
+        rec["kinput_transpose_over500"] = None
+        rec["kinput_transpose_status"] = "UNKNOWN_HLO_ERROR"
     return rec
 
 
 def run_gate(cache: Path, out: Path, pattern=DEFAULT_JIT_GLOB, run_proof=None, scanner=scan_executable):
+    # A refusal must not leave a previous passing verdict at the requested path.
+    (out / "wave_gate.json").unlink(missing_ok=True)
     entries = discover(cache, pattern)
     required = {entry.program for entry in entries if entry.kind == "aot"}
     # Standard wave layout: WAVE/cache/jax and WAVE/runs/CASE/wrfout/proofs.
@@ -217,9 +252,14 @@ def run_gate(cache: Path, out: Path, pattern=DEFAULT_JIT_GLOB, run_proof=None, s
         assert_coverage(entries, records, required)
     finally:
         db.unlink(missing_ok=True)
+    # Identical native code is not proof of identical optimized-HLO counts.
+    # Compact AOT metadata remains UNKNOWN even if another JIT has the same ELF.
     hard = any(elf["stack_over256"] for rec in records for elf in rec["elfs"])
     conservative = any(elf["nonleaf_over1k"] for rec in records for elf in rec["elfs"]) or any(rec.get("kinput_transpose_over500") for rec in records)
-    gate = {"cache": str(cache), "entries": records, "n_entries": len(records),
+    unknown_native = any(elf.get("callgraph_unknown") for rec in records for elf in rec["elfs"])
+    unknown_hlo = any(rec.get("kinput_transpose_status", "").startswith("UNKNOWN") for rec in records)
+    verdict = "FAIL" if hard or conservative else ("INCOMPLETE" if unknown_native or unknown_hlo else "PASS")
+    gate = {"cache": str(cache), "entries": records, "n_entries": len(records), "e41_gate": verdict,
             "hard_stack_gate": "FAIL" if hard else "PASS", "conservative_flags": bool(conservative),
             "coverage": {"status": "PASS", "aot_programs": sorted({entry.program for entry in entries if entry.kind == "aot"}),
                          "required_run_programs": sorted(required), "run_proofs": [str(p) for p in proofs],
@@ -240,9 +280,9 @@ def main(argv=None):
     if os.environ.get("JAX_PLATFORMS") != "cpu":
         raise SystemExit("wave_cubin_gate is CPU-only: set JAX_PLATFORMS=cpu")
     gate = run_gate(args.cache, args.out, args.module_glob, args.run_proof)
-    print("HARD (STACK>256)", gate["hard_stack_gate"], "| conservative flags", gate["conservative_flags"],
+    print("E41", gate.get("e41_gate", gate["hard_stack_gate"]), "| STACK>256", gate["hard_stack_gate"], "| callee/HLO flags", gate["conservative_flags"],
           "| entries", gate["n_entries"], "| AOT programs", gate["coverage"]["aot_programs"], flush=True)
-    return 2 if gate["hard_stack_gate"] == "FAIL" else 0
+    return 0 if gate.get("e41_gate", gate["hard_stack_gate"]) == "PASS" else 2
 
 
 if __name__ == "__main__":

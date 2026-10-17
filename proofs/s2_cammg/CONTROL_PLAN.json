@@ -1,0 +1,11 @@
+{
+  "boundary": "original nonchem CAMMGMP public REAL4 interface",
+  "reference": "48 frozen original calls, each independently restored before invocation",
+  "arithmetic_controls": ["original -ffp-contract=off", "original -ffp-contract=fast -mfma"],
+  "input_controls": "For each selected actual REAL4 array argument, perturb one component at a time by exactly one nextafter ULP in each direction; include each scalar argument and DT. Other arrays, configuration, timestep and initialized module tables are byte-identical.",
+  "array_arguments": ["p8w", "p_hyd", "t_phy", "pi_phy", "z_sea_level", "th", "alt", "qv_curr", "qc_curr", "qi_curr", "nc3d", "ni3d", "rh_old_mp", "cldfra_old_mp", "cldfra_mp_all", "kvh3d", "tke_pbl", "turbtype3d", "smaw3d", "icwmrdp3d", "icwmrsh3d", "shfrc3d", "cmfmc3d", "cmfmc2_3d"],
+  "scalar_arguments": ["qfx", "ht", "xland", "snowh", "dt"],
+  "bound": "Per original case/step/output component, minimum and maximum over independently generated original-WRF controls, both contraction modes. No additive tolerance. Reject nonfinite candidate, reference or bound before comparing.",
+  "admission": "No-FMA unperturbed outputs must be BYTE to all 48 frozen public references; contraction controls must consume identical raw inputs/tables and record FMA opcode evidence. Native CPU interpretation is a compiled-artifact check, not GPU execution or forecast D6.",
+  "deviations": "Preserve and disclose any result outside this enclosure under the standing small-deviation policy; never silently enlarge the enclosure or claim a full compiled PASS. GPU/coupled-forecast qualification stays pending."
+}

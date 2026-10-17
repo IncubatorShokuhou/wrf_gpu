@@ -1,0 +1,63 @@
+{
+  "candidate": "abac2ce26f",
+  "approved": "bf2e8c36ae",
+  "verdict": "MERGE delta only for batch56",
+  "healthy": 54,
+  "counts": {
+    "CD02.xml": {
+      "tests": 42,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "CD03.xml": {
+      "tests": 1,
+      "failures": 1,
+      "errors": 0,
+      "skipped": 0
+    },
+    "CD01.xml": {
+      "tests": 12,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    }
+  },
+  "genuine_mutants": 1,
+  "reuse": {
+    "approvedCU": "1cf5f9c7ba",
+    "approvedSFC": "723b45b71e",
+    "checks": {
+      "src/gpuwrf/coupling/cu_forcing.py": {
+        "BYTE": true,
+        "prior": "bf2e8c36ae",
+        "sha256": "ac64acfb4f4bdf2b13186e6063c9eedd379d6547b234ec8a26e175181f2a26d7"
+      },
+      "src/gpuwrf/physics/myj_adapters.py": {
+        "BYTE": true,
+        "prior": "19947cf16b",
+        "sha256": "de42038269b7f58ee4ccc571a1bbf78d06eee208eafa467280609bd44dbca72e"
+      },
+      "src/gpuwrf/physics/bl_gfs.py": {
+        "BYTE": true,
+        "prior": "19947cf16b",
+        "sha256": "b2befd2a287fb536190ad789002a1f98aeaf08a07d9dd8ef7bdeef2ab76ec1ab"
+      },
+      "_rk_scan_step": {
+        "AST_same": true,
+        "prior": "bf2e8c36ae"
+      },
+      "_physics_boundary_step_with_limiter_diagnostics": {
+        "AST_same": true,
+        "prior": "bf2e8c36ae"
+      }
+    },
+    "producer_identities": {
+      "rb_swiss": "7379c7d77e94517f07e7bf37763cc1409d1287a13e50684ed9d624caafaec55e",
+      "rb_prod": "6487f5b039a074f02f63d140f1e9212b7ede832d04bf5450e44ad2b3f2c34e73",
+      "c05_rb": "481eb074d699b3866a690aad9ceae284abcee8ac2cfefc34a8b42a1a52b0957d"
+    },
+    "scope": "Delta-only source proof+producer identity receipts; no fresh critic trace/oracle/GPU. MYJ/GFS option branches inactive for BL5 defaults and BL7/cu5 c05; prior scientific gates retained."
+  },
+  "scope": "Four non-mechanical items only; earlier CUF1/SFC3 approvals retained. No repeated GPU/oracle/default identity runs."
+}

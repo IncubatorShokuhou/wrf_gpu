@@ -1,0 +1,620 @@
+{
+  "verdict": "READY-FOR-MERGE",
+  "scope": "Paired test-only RRTMG compiler guard +source-scoped historical quartetGPUproof; entiremodel/input/script/packagingBYTEpreviousmain",
+  "UTC": "2026-10-15T07:00:18.268738+00:00",
+  "lane": "s2-integrate",
+  "base_main": "7aa77000a64bd8edde5687c5e9333bd3a0a68170",
+  "candidate_before_seal": "1495385c33c007083f5ad8db32d313bf60c71b87",
+  "source_audit": {
+    "status": "PASS",
+    "initial": "7aa77000a64bd8edde5687c5e9333bd3a0a68170",
+    "main": "7aa77000a64bd8edde5687c5e9333bd3a0a68170",
+    "candidate": "1495385c33c007083f5ad8db32d313bf60c71b87",
+    "picks": [
+      {
+        "original": "60675e705f03d3091485339cba9fda7d3fcbcb7a",
+        "before": "7aa77000a64bd8edde5687c5e9333bd3a0a68170",
+        "after": "c4bd0cde2db459d646d042f0cd15cd1107784598",
+        "AST_files": [
+          "tests/conftest.py",
+          "tests/test_m5_rrtmg_harness.py",
+          "tests/test_m5_rrtmg_intermediate_oracles.py"
+        ],
+        "conflicts": [
+          ".agent/kernel/lanes/t-redsuite.notes.md"
+        ],
+        "resolution": "Main-first approvednote additions only; no product/testconflicts",
+        "src_EMPTY": true,
+        "UTC": "2026-10-15T07:00:17.654369+00:00",
+        "cache": "NONE",
+        "GPU_runs": 0
+      },
+      {
+        "original": "33d0bf38dc55ed4a18e4651eaa0a897352b4164d",
+        "before": "c4bd0cde2db459d646d042f0cd15cd1107784598",
+        "after": "e9e0e13ce024020ef421a1c7904ad5568c9fd9e1",
+        "AST_files": [
+          "tests/test_m5_rrtmg_harness.py"
+        ],
+        "conflicts": [],
+        "resolution": "Main-first approvednote additions only; no product/testconflicts",
+        "src_EMPTY": true,
+        "UTC": "2026-10-15T07:00:17.807854+00:00",
+        "cache": "NONE",
+        "GPU_runs": 0
+      },
+      {
+        "original": "6d94a8448ec4bb171a4e5fd48067a8cf266a9adb",
+        "before": "e9e0e13ce024020ef421a1c7904ad5568c9fd9e1",
+        "after": "04594b1644c1fe065497a020e0ff0a2927fcd97e",
+        "AST_files": [],
+        "conflicts": [
+          ".agent/kernel/lanes/t-redsuite.notes.md"
+        ],
+        "resolution": "Main-first approvednote additions only; no product/testconflicts",
+        "src_EMPTY": true,
+        "UTC": "2026-10-15T07:00:17.992376+00:00",
+        "cache": "NONE",
+        "GPU_runs": 0
+      }
+    ],
+    "quartet_head": "fb70f2d8d8086f8c9625712f7fe44486f741d0dc",
+    "model_src_inputs_scripts_packaging_BYTE_main": {
+      "src": "ee4a1bafb35066b5e9c70a620751866e33080b42",
+      "data": "a91a7fbcc850486e65e257c0d0f185a18c6e58c2",
+      "scripts": "b531b6dd46f40527b34c67a2ecb0ba8849629aae",
+      "pyproject.toml": "6c5fdcd3ddc730c8c75c556379abb8d1162ed8c3"
+    },
+    "paired_three_test_files_BYTE_6d94": true,
+    "builder_blob_BYTE_critic": true,
+    "producer_compiler_receipt_SHA_fresh": 18,
+    "quartet_committed_receipt_SHA_sizes_fresh": 100,
+    "remaining_previous_approved_red25": 0,
+    "original26plus33and6d_all_represented": true,
+    "no_numerical_GPU_native_default_repeats": true
+  },
+  "fresh_numerical_executions": 0,
+  "integrator_numerical_edits": false,
+  "compiler_guard_accepted_reuse": {
+    "verdict": "MERGE",
+    "scope": "33d0bf38d only; closes compiler guard FIX for60675e705 when applied",
+    "commit": "33d0bf38dc55ed4a18e4651eaa0a897352b4164d",
+    "created_utc": "2026-10-15T06:39:16.906153+00:00",
+    "healthy": {
+      "arm": "R08",
+      "returncode": 0,
+      "counts": {
+        "passed": 10
+      },
+      "failures": [],
+      "skips": [],
+      "assertion_failures": 0,
+      "max_rss_kib": 183396,
+      "source": "33d0bf38dc55ed4a18e4651eaa0a897352b4164d"
+    },
+    "old_guard_mutant": {
+      "arm": "R09",
+      "returncode": 1,
+      "counts": {
+        "failed": 3
+      },
+      "failures": [
+        {
+          "node": "test_compiler_fix::test_real_original_wrf_build_with_configured_compiler[WRF_PRISTINE_FC]",
+          "message": "AssertionError: available WRF_PRISTINE_FC compiler incorrectly skipped: Original WRF RRTMG harness requires an available Fortran compiler\nassert False",
+          "assertion": true
+        },
+        {
+          "node": "test_compiler_fix::test_real_original_wrf_build_with_configured_compiler[WRF_ENV]",
+          "message": "AssertionError: available WRF_ENV compiler incorrectly skipped: Original WRF RRTMG harness requires an available Fortran compiler\nassert False",
+          "assertion": true
+        },
+        {
+          "node": "test_compiler_fix::test_real_original_wrf_build_with_configured_compiler[GPUWRF_WRF_ENV]",
+          "message": "AssertionError: available GPUWRF_WRF_ENV compiler incorrectly skipped: Original WRF RRTMG harness requires an available Fortran compiler\nassert False",
+          "assertion": true
+        }
+      ],
+      "skips": [],
+      "assertion_failures": 3,
+      "max_rss_kib": 181240,
+      "source": "33d0bf38dc55ed4a18e4651eaa0a897352b4164d"
+    },
+    "static": {
+      "commit": "33d0bf38dc55ed4a18e4651eaa0a897352b4164d",
+      "paths": [
+        "tests/test_m5_rrtmg_harness.py"
+      ],
+      "production_diff": [],
+      "assert_count": 8,
+      "assert_AST_exact": true,
+      "skip_calls_exact": true,
+      "entire_build_and_assertion_tail_AST_exact": true,
+      "builder_blob_before": "740426aad3e46370d846781e7c3b85a5ed6febaf",
+      "builder_blob_after": "740426aad3e46370d846781e7c3b85a5ed6febaf"
+    },
+    "previous_verdict": "proofs/rv4_t_redsuite/VERDICT.md remains immutable; all other reviewed batch evidence carried forward",
+    "performance": "Only test compiler availability lookup changed; production source and builder bytes unchanged. No model launches/temps/compile change. Own CPU review RSS peak183396KiB/noSwap, no GPU/performance qualification.",
+    "limitations": "Full CPU suite/release status remains incomplete; only this changed guard was re-reviewed."
+  },
+  "previous_source_numeric_native_default_gates_reused": "Complete src/data/scripts/packaging trees BYTEacceptedbatch24; no freshmodel/native/GPU/default work needed. Changed3testfilesBYTEqualified6d/33pair, original8asserts/buildtail/builder/skipreasonspreserved.",
+  "quartet_original_qualification": {
+    "schema": "v-run-qhmass-final-gpu24h-v1",
+    "utc": "2026-10-15T06:39:06.470174+00:00",
+    "source_rev": "627a033284dc457a9949c2a32f2c111d0227e6df",
+    "frozen_D6_manifest_sha256": "9df4fab8514523286f07b127eb8bf57a7545459c4448fef721ac44c0ecc351dc",
+    "scientific_scope": "Original CPU-WRF Swiss 24h; exact matched inputs/namelists, four affected hail configs on immutable627 only.",
+    "configs": [
+      {
+        "config": "mp18",
+        "source_rev": "627a033284dc457a9949c2a32f2c111d0227e6df",
+        "GPU_rc": 0,
+        "frames": 25,
+        "CPU_fields": 372,
+        "bounded_fields": 62,
+        "D6": "PASS",
+        "coverage_complete": true,
+        "verdict": "PASS",
+        "first_failure": null,
+        "missing_CPU_fields": [],
+        "raw_output_nonfinite": [],
+        "E41": "FAIL",
+        "E41_coverage": {
+          "status": "PASS",
+          "aot_programs": [
+            "d01"
+          ],
+          "required_run_programs": [
+            "d01"
+          ],
+          "run_proofs": [
+            "<USER_HOME>/wrf_gpu2_lanes/v-run/round4_qhmass/mp18/gpu/proofs/nested_pipeline_run.json"
+          ],
+          "n_discovered": 2,
+          "n_scanned": 2
+        },
+        "max_stack_B": 1336,
+        "kinput_flags": [
+          [
+            "input_add_and_compare_divide_minimum_select_transpose_fusion",
+            835
+          ],
+          [
+            "input_add_and_divide_maximum_minimum_multiply_select_subtract_transpose_fusion",
+            1172
+          ],
+          [
+            "input_add_compare_convert_maximum_minimum_select_subtract_transpose_fusion",
+            1128
+          ],
+          [
+            "input_add_or_select_subtract_transpose_fusion",
+            1041
+          ],
+          [
+            "input_add_select_transpose_fusion",
+            724
+          ],
+          [
+            "input_add_select_transpose_fusion.1",
+            562
+          ],
+          [
+            "input_compare_divide_minimum_multiply_select_transpose_fusion",
+            662
+          ]
+        ],
+        "nonleaf_over1k": [],
+        "variable_metadata_mismatches": 0,
+        "different_globals": [
+          "NTASKS_X",
+          "NTASKS_Y",
+          "TITLE"
+        ],
+        "F2": {
+          "status": "OPEN",
+          "records": 60,
+          "fields": [
+            "Nc",
+            "Ng",
+            "Nh",
+            "Ni",
+            "Nn",
+            "Nr",
+            "Ns",
+            "nifa",
+            "nwfa",
+            "qc",
+            "qg",
+            "qi",
+            "qr",
+            "qs",
+            "qv"
+          ],
+          "phases": [
+            "post_rk",
+            "pre_boundary_guard",
+            "pre_dynamics_guard",
+            "step_entry"
+          ],
+          "qh_counter_record_present": false,
+          "negative_phase_field_visits": 25781416,
+          "interior_phase_field_visits": 22669925,
+          "raw_counter_nonfinite": 0,
+          "interpretation": "Repeated phase-field visits, not unique events. No every-event source/magnitude justification; no transfer of another-case disposition."
+        },
+        "wall_s": 901.5076558420005,
+        "host_peak_rss_kib": 5983484,
+        "sampled_peak_vram_mib": 2714,
+        "report_only_fields": {
+          "REFD_MAX": {
+            "verdict": "REPORT_ONLY",
+            "rmse": 0.0,
+            "max_abs": 0.0,
+            "frame_count": 25
+          },
+          "REFL_10CM": {
+            "verdict": "REPORT_ONLY",
+            "rmse": 0.17895788593446552,
+            "max_abs": 24.256986618041992,
+            "frame_count": 25
+          }
+        }
+      },
+      {
+        "config": "mp18_cu5",
+        "source_rev": "627a033284dc457a9949c2a32f2c111d0227e6df",
+        "GPU_rc": 0,
+        "frames": 25,
+        "CPU_fields": 372,
+        "bounded_fields": 62,
+        "D6": "PASS",
+        "coverage_complete": true,
+        "verdict": "PASS",
+        "first_failure": null,
+        "missing_CPU_fields": [],
+        "raw_output_nonfinite": [],
+        "E41": "FAIL",
+        "E41_coverage": {
+          "status": "PASS",
+          "aot_programs": [
+            "d01"
+          ],
+          "required_run_programs": [
+            "d01"
+          ],
+          "run_proofs": [
+            "<USER_HOME>/wrf_gpu2_lanes/v-run/round4_qhmass/mp18_cu5/gpu/proofs/nested_pipeline_run.json"
+          ],
+          "n_discovered": 2,
+          "n_scanned": 2
+        },
+        "max_stack_B": 1336,
+        "kinput_flags": [
+          [
+            "input_add_and_compare_divide_minimum_select_transpose_fusion",
+            835
+          ],
+          [
+            "input_add_and_divide_maximum_minimum_multiply_select_subtract_transpose_fusion",
+            1172
+          ],
+          [
+            "input_add_compare_convert_maximum_minimum_select_subtract_transpose_fusion",
+            1134
+          ],
+          [
+            "input_add_or_select_subtract_transpose_fusion",
+            1041
+          ],
+          [
+            "input_add_select_transpose_fusion",
+            724
+          ],
+          [
+            "input_add_select_transpose_fusion.1",
+            562
+          ],
+          [
+            "input_and_convert_minimum_multiply_select_transpose_fusion",
+            1064
+          ],
+          [
+            "input_compare_divide_minimum_multiply_select_transpose_fusion",
+            660
+          ]
+        ],
+        "nonleaf_over1k": [],
+        "variable_metadata_mismatches": 0,
+        "different_globals": [
+          "NTASKS_X",
+          "NTASKS_Y",
+          "TITLE"
+        ],
+        "F2": {
+          "status": "OPEN",
+          "records": 60,
+          "fields": [
+            "Nc",
+            "Ng",
+            "Nh",
+            "Ni",
+            "Nn",
+            "Nr",
+            "Ns",
+            "nifa",
+            "nwfa",
+            "qc",
+            "qg",
+            "qi",
+            "qr",
+            "qs",
+            "qv"
+          ],
+          "phases": [
+            "post_rk",
+            "pre_boundary_guard",
+            "pre_dynamics_guard",
+            "step_entry"
+          ],
+          "qh_counter_record_present": false,
+          "negative_phase_field_visits": 25819153,
+          "interior_phase_field_visits": 22711669,
+          "raw_counter_nonfinite": 0,
+          "interpretation": "Repeated phase-field visits, not unique events. No every-event source/magnitude justification; no transfer of another-case disposition."
+        },
+        "wall_s": 963.845385714998,
+        "host_peak_rss_kib": 6195112,
+        "sampled_peak_vram_mib": 2720,
+        "report_only_fields": {
+          "REFD_MAX": {
+            "verdict": "REPORT_ONLY",
+            "rmse": 0.0,
+            "max_abs": 0.0,
+            "frame_count": 25
+          },
+          "REFL_10CM": {
+            "verdict": "REPORT_ONLY",
+            "rmse": 0.1867453284952621,
+            "max_abs": 21.747968673706055,
+            "frame_count": 25
+          }
+        }
+      },
+      {
+        "config": "mp24",
+        "source_rev": "627a033284dc457a9949c2a32f2c111d0227e6df",
+        "GPU_rc": 0,
+        "frames": 25,
+        "CPU_fields": 361,
+        "bounded_fields": 62,
+        "D6": "PASS",
+        "coverage_complete": true,
+        "verdict": "PASS",
+        "first_failure": null,
+        "missing_CPU_fields": [],
+        "raw_output_nonfinite": [],
+        "E41": "FAIL",
+        "E41_coverage": {
+          "status": "PASS",
+          "aot_programs": [
+            "d01"
+          ],
+          "required_run_programs": [
+            "d01"
+          ],
+          "run_proofs": [
+            "<USER_HOME>/wrf_gpu2_lanes/v-run/round4_qhmass/mp24/gpu/proofs/nested_pipeline_run.json"
+          ],
+          "n_discovered": 2,
+          "n_scanned": 2
+        },
+        "max_stack_B": 48,
+        "kinput_flags": [
+          [
+            "input_compare_reduce_select_fusion",
+            844
+          ]
+        ],
+        "nonleaf_over1k": [],
+        "variable_metadata_mismatches": 0,
+        "different_globals": [
+          "NTASKS_X",
+          "NTASKS_Y",
+          "TITLE"
+        ],
+        "F2": {
+          "status": "OPEN",
+          "records": 60,
+          "fields": [
+            "Nc",
+            "Ng",
+            "Nh",
+            "Ni",
+            "Nn",
+            "Nr",
+            "Ns",
+            "nifa",
+            "nwfa",
+            "qc",
+            "qg",
+            "qi",
+            "qr",
+            "qs",
+            "qv"
+          ],
+          "phases": [
+            "post_rk",
+            "pre_boundary_guard",
+            "pre_dynamics_guard",
+            "step_entry"
+          ],
+          "qh_counter_record_present": false,
+          "negative_phase_field_visits": 18384152,
+          "interior_phase_field_visits": 17145058,
+          "raw_counter_nonfinite": 0,
+          "interpretation": "Repeated phase-field visits, not unique events. No every-event source/magnitude justification; no transfer of another-case disposition."
+        },
+        "wall_s": 676.2866340010005,
+        "host_peak_rss_kib": 4918716,
+        "sampled_peak_vram_mib": 1600,
+        "report_only_fields": {}
+      },
+      {
+        "config": "mp26",
+        "source_rev": "627a033284dc457a9949c2a32f2c111d0227e6df",
+        "GPU_rc": 0,
+        "frames": 25,
+        "CPU_fields": 364,
+        "bounded_fields": 62,
+        "D6": "PASS",
+        "coverage_complete": true,
+        "verdict": "PASS",
+        "first_failure": null,
+        "missing_CPU_fields": [],
+        "raw_output_nonfinite": [],
+        "E41": "FAIL",
+        "E41_coverage": {
+          "status": "PASS",
+          "aot_programs": [
+            "d01"
+          ],
+          "required_run_programs": [
+            "d01"
+          ],
+          "run_proofs": [
+            "<USER_HOME>/wrf_gpu2_lanes/v-run/round4_qhmass/mp26/gpu/proofs/nested_pipeline_run.json"
+          ],
+          "n_discovered": 2,
+          "n_scanned": 2
+        },
+        "max_stack_B": 304,
+        "kinput_flags": [
+          [
+            "input_and_compare_multiply_select_transpose_fusion",
+            945
+          ],
+          [
+            "input_maximum_minimum_select_transpose_fusion",
+            874
+          ]
+        ],
+        "nonleaf_over1k": [],
+        "variable_metadata_mismatches": 0,
+        "different_globals": [
+          "NTASKS_X",
+          "NTASKS_Y",
+          "TITLE"
+        ],
+        "F2": {
+          "status": "OPEN",
+          "records": 60,
+          "fields": [
+            "Nc",
+            "Ng",
+            "Nh",
+            "Ni",
+            "Nn",
+            "Nr",
+            "Ns",
+            "nifa",
+            "nwfa",
+            "qc",
+            "qg",
+            "qi",
+            "qr",
+            "qs",
+            "qv"
+          ],
+          "phases": [
+            "post_rk",
+            "pre_boundary_guard",
+            "pre_dynamics_guard",
+            "step_entry"
+          ],
+          "qh_counter_record_present": false,
+          "negative_phase_field_visits": 18241343,
+          "interior_phase_field_visits": 16350871,
+          "raw_counter_nonfinite": 0,
+          "interpretation": "Repeated phase-field visits, not unique events. No every-event source/magnitude justification; no transfer of another-case disposition."
+        },
+        "wall_s": 920.5070774619962,
+        "host_peak_rss_kib": 4889076,
+        "sampled_peak_vram_mib": 1598,
+        "report_only_fields": {}
+      }
+    ],
+    "GPU_pair_RAM_scopes": [
+      {
+        "scope": "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice/run-p1847521-i1658481.scope",
+        "observed_memory_peak_B": 11503984640,
+        "memory_max_B": [
+          12884901888
+        ],
+        "max_observed_swap_B": 0,
+        "last_observed_memory_events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0\nsock_throttled 0"
+      },
+      {
+        "scope": "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice/run-p1978129-i1935173.scope",
+        "observed_memory_peak_B": 9320574976,
+        "memory_max_B": [
+          12884901888
+        ],
+        "max_observed_swap_B": 0,
+        "last_observed_memory_events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0\nsock_throttled 0"
+      }
+    ],
+    "timing_scope": "Cold concurrent qualification, shared CPU/IO; NOT S1 or isolated speed benchmark",
+    "release_clearance": "NOT_CLAIMED",
+    "model_code_changes_by_lane": 0,
+    "open_limits": "Opt-in E41 failures and F2 negative visits remain disclosed; direct-writer followup and unrelated configurations are not qualified by this packet."
+  },
+  "quartet_reuse_scope": "Four627-only configs/mp18+mp18cu5+mp24+mp26,100GPUframes62boundedD6PASS/fullinventories372/372/361/364; allE41FAIL andF2OPEN/noqhrecord retained; no later-mainblanketqualification.100GPUwholeframe+8executablePIN hashes are retainedoriginalsource evidence, not newly rehashed here.",
+  "performance_memory": "No production cost: sourceBYTE. Quartet coldwalls/VRAM sampled/sharedresources are original627qualification, not S1/R1/warmperformance or currentcomposedrun. Testguard filesystemchecks only; real compilerbuild probes alreadyqualified.",
+  "open_risks": [
+    "FullCPU suite incomplete/mixed-source; narrowcompilerfollowup does not qualify whole release.",
+    "c17ownCU93 differs peerMP24CU0; no c17GPUreuse basedonlympnumber; requireexactwork/ICBC/source/inputproof+ownCPUscore.",
+    "RawE41FAILallquartet/F2negativevisits andmissingqhpre-mask coverage unchanged; observedcounterNF0 notfullhailclearance.",
+    "PriorQNSEstack7232/2952/F2, P3radar27GPU, c89rain, CLATselectedfallback/forecastD6, globalstation/24-72h/experimentalUB/strictFMA limits remainOPEN."
+  ],
+  "cleanup": {
+    "new_snapshots": 0,
+    "new_cache_dirs": 0,
+    "new_pytest_temp_dirs": 0,
+    "own_model_jobs": 0,
+    "cache": "NONE",
+    "GPU_requested": false
+  },
+  "proof_files": {
+    "SI255-33d0bf38d.json": "0aedfd0f928bcb4e50e524378dbcf101d2b12eedaabf7c94f34dfb5ca8de6988",
+    "SI255-60675e705.json": "c2cb8f99adeb9b422469e993838e3c81d2202372bc022cb618dca08d22581105",
+    "SI255-6d94a8448.json": "3eb1953289d36a2989ad166732d1fc3e808c8045d6364431db0bc70efb8d45b6",
+    "SI256-vrun-quartet.json": "b94f36ba23c0807bc522cf1f9492ff0ac3f3b2454bf3f6e60cb2480c5178bf34",
+    "rv4-t-redsuite-FOLLOWUP_VERDICT.md": "60f75e1ef5c97aaada079eca06a665540b656bb537b3add47b8867eed99daabc",
+    "rv4-t-redsuite-FOLLOWUP_REVIEW.json": "c328408b7701ae589b74278a880ceef0a166786af7aa3e72c667bfd91d6d4b38",
+    "rv4-t-redsuite-FOLLOWUP_STATIC.json": "b96a5c93ffb4ae2f6018d74e910541fd2a1a5ce4b526bec410c8bf2ca897c014",
+    "rv4-t-redsuite-FOLLOWUP_ARCHIVE_SEAL.json": "cb5330bf12c428d58f334f6ce28f82c910b557aac084bd11bee71054e68384b2",
+    "rv4-t-redsuite-R08.json": "6cf1802c94236061b1c9bb649c3c09e3d5bb3903659c4e591c66ced4a73b2e50",
+    "rv4-t-redsuite-R08.xml.gz": "4ab9736f99e69c31fd594b229ae7c05faa2158f2ac0bc2d51194dcb97e3147eb",
+    "rv4-t-redsuite-R09.json": "dd6932fc955e2fea39a5b6bc9cb56db50a5e44a12c21679214e74e9e0abe3d00",
+    "rv4-t-redsuite-R09.xml.gz": "bec9e84ee373f3d01c86f5cb8dcbd4e2eb136d5ba4e3b8e8fd11ec9454343e60",
+    "integrate_batch25.py": "cf2e9c5ae512498e145cf807363a7dbae93a0cfd374d0469076b89ba8e8c8aad",
+    "SOURCE_AUDIT.json": "ed19016e459cc1a6821e1a023a3f7a65137703e5383fa68e00368bf396284683"
+  },
+  "uncompressed_sha256": {
+    "SI255-33d0bf38d.json": "0aedfd0f928bcb4e50e524378dbcf101d2b12eedaabf7c94f34dfb5ca8de6988",
+    "SI255-60675e705.json": "c2cb8f99adeb9b422469e993838e3c81d2202372bc022cb618dca08d22581105",
+    "SI255-6d94a8448.json": "3eb1953289d36a2989ad166732d1fc3e808c8045d6364431db0bc70efb8d45b6",
+    "SI256-vrun-quartet.json": "b94f36ba23c0807bc522cf1f9492ff0ac3f3b2454bf3f6e60cb2480c5178bf34",
+    "rv4-t-redsuite-FOLLOWUP_VERDICT.md": "60f75e1ef5c97aaada079eca06a665540b656bb537b3add47b8867eed99daabc",
+    "rv4-t-redsuite-FOLLOWUP_REVIEW.json": "c328408b7701ae589b74278a880ceef0a166786af7aa3e72c667bfd91d6d4b38",
+    "rv4-t-redsuite-FOLLOWUP_STATIC.json": "b96a5c93ffb4ae2f6018d74e910541fd2a1a5ce4b526bec410c8bf2ca897c014",
+    "rv4-t-redsuite-FOLLOWUP_ARCHIVE_SEAL.json": "cb5330bf12c428d58f334f6ce28f82c910b557aac084bd11bee71054e68384b2",
+    "rv4-t-redsuite-R08.json": "6cf1802c94236061b1c9bb649c3c09e3d5bb3903659c4e591c66ced4a73b2e50",
+    "rv4-t-redsuite-R08.xml": "93b8e08f519f3b62cf4e7dd151c2e698b1310241007c76cba11754a20913e187",
+    "rv4-t-redsuite-R09.json": "dd6932fc955e2fea39a5b6bc9cb56db50a5e44a12c21679214e74e9e0abe3d00",
+    "rv4-t-redsuite-R09.xml": "8cbe7cc92e3974977acdab21a66dda53bc3a0f2199d1eaf533132c197e7a2c86",
+    "integrate_batch25.py": "cf2e9c5ae512498e145cf807363a7dbae93a0cfd374d0469076b89ba8e8c8aad",
+    "SOURCE_AUDIT.json": "ed19016e459cc1a6821e1a023a3f7a65137703e5383fa68e00368bf396284683"
+  }
+}

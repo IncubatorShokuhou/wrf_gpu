@@ -1,0 +1,143 @@
+[
+  {
+    "case": "v-run/mp40",
+    "domain": "d01",
+    "status": "FAIL_CPU_SCHEMA_COVERAGE",
+    "bounded_D6": "PASS (62 frozen bounded fields over 25 paired frames); overall grid gate INCOMPLETE",
+    "reference": "<USER_HOME>/wrf_gpu2_lanes/v-run/mp40/grid_gate.json",
+    "reference_sha256": "9fae9e9b8de7323fbcfb5c5c899e8aa113f50fade5507ecb01a7de1b7fa6daae",
+    "missing_vs_cpu": [
+      "CCN1_GS",
+      "CCN2_GS",
+      "CCN3_GS",
+      "CCN4_GS",
+      "CCN5_GS",
+      "CCN6_GS",
+      "CCN7_GS",
+      "EFCG",
+      "EFIG",
+      "EFSG",
+      "MSKF_REFL_10CM",
+      "WACT"
+    ],
+    "producer_disposition": {
+      "CCN1_GS": "No retained operational value at aercu_opt=0. Explicitly omitted; never zero-filled.",
+      "CCN2_GS": "No retained operational value at aercu_opt=0. Explicitly omitted; never zero-filled.",
+      "CCN3_GS": "No retained operational value at aercu_opt=0. Explicitly omitted; never zero-filled.",
+      "CCN4_GS": "No retained operational value at aercu_opt=0. Explicitly omitted; never zero-filled.",
+      "CCN5_GS": "No retained operational value at aercu_opt=0. Explicitly omitted; never zero-filled.",
+      "CCN6_GS": "No retained operational value at aercu_opt=0. Explicitly omitted; never zero-filled.",
+      "CCN7_GS": "No retained operational value at aercu_opt=0. Explicitly omitted; never zero-filled.",
+      "EFCG": "No retained operational value at aercu_opt=0. Explicitly omitted; never zero-filled.",
+      "EFIG": "No retained operational value at aercu_opt=0. Explicitly omitted; never zero-filled.",
+      "EFSG": "No retained operational value at aercu_opt=0. Explicitly omitted; never zero-filled.",
+      "MSKF_REFL_10CM": "No retained operational value at aercu_opt=0. Explicitly omitted; never zero-filled.",
+      "WACT": "No retained operational value at aercu_opt=0. Explicitly omitted; never zero-filled."
+    },
+    "source_evidence": [
+      "src/gpuwrf/physics/microphysics_morrison_aero.py:morrison_aero_run aercu_opt=0 returns _morrison_aero_micro without aerosol diagnostics",
+      "src/gpuwrf/physics/microphysics_morrison_aero.py:morrison_aero_tendency retains only re_cloud/re_ice/re_snow diagnostic aliases",
+      "src/gpuwrf/io/microphysics_history.py:UNPROVIDED_FIELDS[40]"
+    ],
+    "note": "effc/effi/effs are not the WRF EFCG/EFIG/EFSG history ABI; do not alias or synthesize them as replacements. MSKF_REFL_10CM has no operational retained source either."
+  },
+  {
+    "case": "v-prep/c12",
+    "mp_physics": 17,
+    "domain": "d01",
+    "status": "FAIL_CPU_SCHEMA_COVERAGE",
+    "reference": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c12/D6_d01.json",
+    "reference_sha256": "a71040df694901df9112c9e70b63780c6a880e156ed6f75ee254ba005174d646",
+    "paired_frames": 25,
+    "missing_vs_cpu": [
+      "REFD_MAX",
+      "REFL_10CM"
+    ],
+    "source_verdict": "INCOMPLETE",
+    "bounded_D6": "Bounded numerical verdict not restated; source overall INCOMPLETE",
+    "producer_disposition": {
+      "REFL_10CM": "Original receipt predates retained radardd02 first-step/history wiring; source fix under test. No new GPU numerical claim.",
+      "REFD_MAX": "ARW NWP0 does not compute this field; vertical-maximum module_diag_refl is NMM-only. Explicitly omitted instead of writer zero-fill."
+    }
+  },
+  {
+    "case": "v-prep/c16",
+    "mp_physics": 22,
+    "domain": "d01",
+    "status": "FAIL_CPU_SCHEMA_COVERAGE",
+    "reference": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c16/D6_d01.json",
+    "reference_sha256": "1ea214f4dbba6a1f1e5672eaf4c8d57fb8bbbda6ebed98486b90233bed5fad29",
+    "paired_frames": 25,
+    "missing_vs_cpu": [
+      "REFD_MAX",
+      "REFL_10CM"
+    ],
+    "source_verdict": "INCOMPLETE",
+    "bounded_D6": "Bounded numerical verdict not restated; source overall INCOMPLETE",
+    "producer_disposition": {
+      "REFL_10CM": "Original receipt predates retained radardd02 first-step/history wiring; source fix under test. No new GPU numerical claim.",
+      "REFD_MAX": "ARW NWP0 does not compute this field; vertical-maximum module_diag_refl is NMM-only. Explicitly omitted instead of writer zero-fill."
+    }
+  },
+  {
+    "case": "v-run/mp18",
+    "mp_physics": 18,
+    "domain": "d01",
+    "status": "FAIL_CPU_SCHEMA_COVERAGE",
+    "reference": "<USER_HOME>/wrf_gpu2_lanes/v-run/mp18/grid_gate.json",
+    "reference_sha256": "90bc5c4041ccb897c8241ad24025a7c86042cf10c5d0242150cccbe437d0c129",
+    "paired_frames": 25,
+    "missing_vs_cpu": [
+      "REFD_MAX",
+      "REFL_10CM"
+    ],
+    "source_verdict": "INCOMPLETE",
+    "bounded_D6": "PASS (frozen bounded fields over25pairedframes); overall INCOMPLETE",
+    "producer_disposition": {
+      "REFL_10CM": "Original receipt predates retained radardd02 first-step/history wiring; source fix under test. No new GPU numerical claim.",
+      "REFD_MAX": "ARW NWP0 does not compute this field; vertical-maximum module_diag_refl is NMM-only. Explicitly omitted instead of writer zero-fill."
+    }
+  },
+  {
+    "case": "v-run/mp18_cu5",
+    "mp_physics": 18,
+    "domain": "d01",
+    "status": "FAIL_CPU_SCHEMA_COVERAGE",
+    "reference": "<USER_HOME>/wrf_gpu2_lanes/v-run/mp18_cu5/grid_gate.json",
+    "reference_sha256": "f77b20956c7f80bab7c631ed32d9a2c69bb56077e42f02dbd80abc04a470611e",
+    "paired_frames": 25,
+    "missing_vs_cpu": [
+      "REFD_MAX",
+      "REFL_10CM"
+    ],
+    "source_verdict": "INCOMPLETE",
+    "bounded_D6": "PASS (frozen bounded fields over25pairedframes); overall INCOMPLETE",
+    "producer_disposition": {
+      "REFL_10CM": "Original receipt predates retained radardd02 first-step/history wiring; source fix under test. No new GPU numerical claim.",
+      "REFD_MAX": "ARW NWP0 does not compute this field; vertical-maximum module_diag_refl is NMM-only. Explicitly omitted instead of writer zero-fill."
+    }
+  },
+  {
+    "case": "v-run/mp28",
+    "mp_physics": 28,
+    "domain": "d01",
+    "status": "FAIL_CPU_SCHEMA_COVERAGE",
+    "reference": "<USER_HOME>/wrf_gpu2_lanes/v-run/mp28/grid_gate.json",
+    "reference_sha256": "40f5f11b7e0198c403e6c70fba014dea03fc1d28dd5644912e8141e3848fc75d",
+    "paired_frames": 25,
+    "missing_vs_cpu": [
+      "QNBCA",
+      "QNIFA2D",
+      "QNWFA2D",
+      "TAOD5502D"
+    ],
+    "source_verdict": "INCOMPLETE",
+    "bounded_D6": "PASS (frozen bounded fields over25pairedframes); overall INCOMPLETE",
+    "producer_disposition": {
+      "QNBCA": "Black-carbon number requires relevant aerosol option; no retained value in this configuration. Explicitly omitted.",
+      "QNIFA2D": "Surface ice-nucleating aerosol emission from wrfinput/aux; adapter does not retain it to history. Explicitly omitted.",
+      "QNWFA2D": "Surface water-friendly aerosol emission from wrfinput/aux; adapter does not retain it to history. Explicitly omitted.",
+      "TAOD5502D": "550 nm AOD diagnostic is not computed/retained by the operational producer. Explicitly omitted."
+    }
+  }
+]

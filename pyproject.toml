@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "gpuwrf"
-version = "0.3.4"
+version = "0.4.0"
 description = "A GPU-native WRF-compatible regional NWP model (JAX dynamical core + physics)"
 readme = "README.md"
 requires-python = ">=3.10"
@@ -25,10 +25,23 @@ dependencies = [
   "h5py>=3.7",
   "zarr>=3.0,<4",
   "PyYAML>=6",
+  # Cross-process lock of the shared compile cache (runtime/compile_cache.py); jax does not
+  # install it, and without it parallel cases sharing one cache fall back to unlocked reads.
+  "filelock>=3",
 ]
 
 [project.optional-dependencies]
 dev = ["pytest>=7"]
+# Optional observation ingestion; never required by gpuwrf run.
+verify = ["meteostat>=2,<3"]
+apps = ["pvlib>=0.11,<0.17"]
+post = ["metpy>=1.7,<1.8"]
+onboard = ["eccodes>=2.46,<3"]
+# Offline multi-band radar scattering; never needed by gpuwrf run.
+radar = ["miepython>=3,<4"]
+# Offline ensemble figures only; never imported by gpuwrf run.
+ens = ["matplotlib>=3.6"]
+export = ["pyproj>=3.6", "eccodes>=2.38", "scipy>=1.11"]
 # GPU execution: install the CUDA jaxlib for your platform. This is documented
 # separately because the right wheel depends on the local CUDA/driver; pinning
 # it here would break CPU-only / non-CUDA installs. The reference stack is CUDA 13
@@ -47,14 +60,27 @@ license-files = ["LICENSE", "THIRD_PARTY_NOTICES.md"]
 [tool.setuptools.packages.find]
 where = ["src"]
 
+# Runtime files only; nothing larger than 10 MiB (setup.py refuses it). Larger tables and the
+# out-of-package data/fixtures + scripts files are pinned in src/gpuwrf/assets_manifest.json:
+# setup.py bundles the small ones, the big ones are release assets fetched on first use.
 [tool.setuptools.package-data]
-"gpuwrf.physics" = ["surface_most_tables_v1.npz"]
-"gpuwrf.physics.nssl2mom" = ["data/init_constants.json"]
+"gpuwrf" = ["assets_manifest.json"]
+"gpuwrf.physics" = ["surface_most_tables_v1.npz", "surface_most_tables_wrf_real.npz", "data/kfcup_real_tables.npz", "goddard_tables.npz", "goddard_tables.json", "qnse_surface_tables_v1.npz", "gfs_sas_tables_*.npz", "flg_tables_v1.npz", "gfdleta_tables_v1.npz", "gfdleta_co2_assets/*"]
+"gpuwrf.diagnostics" = ["census_schema.json"]
+"gpuwrf.validation" = ["tolerance_ladder.json"]
+"gpuwrf.physics.nssl2mom" = ["data/init_constants.json", "data/one_moment_constants.json"]
+"gpuwrf.physics.ntu" = ["data/*.npz", "data/*.json"]
+"gpuwrf.physics.p3" = ["data/*.npz", "data/manifest.json"]
+"gpuwrf.physics.cammg" = ["data/*.npz", "data/manifest.json"]
+"gpuwrf.physics.ferrier" = ["tables.npz", "tables.json"]
+"gpuwrf.physics.thompson_hail" = ["cloud_coefficients.npz"]
+"gpuwrf.physics.jensen_ishmael" = ["data/manifest.json"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests", "evals/agentos"]
 pythonpath = ["src"]
 markers = [
+    "heavy: CPU tests exceeding the default 6 GiB RAM slot; opt in with --run-heavy (fresh 24G singletons).",
     "close_gate: dycore close-gate tests that MUST assert verdict==PASS (require a JAX GPU backend); a regression to FAIL fails CI rather than being false-green.",
     "gpu: tests that require a CUDA/NVIDIA GPU and must run through scripts/with_gpu_lock.sh when they execute model work.",
     "steep_terrain_gate: v0.21 steep-terrain nested stability gate over the Mont Blanc fixture.",

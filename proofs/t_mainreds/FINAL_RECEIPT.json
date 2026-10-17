@@ -1,0 +1,152 @@
+{
+  "lane": "t-mainreds",
+  "status": "GREEN READY-FOR-CRITIC",
+  "utc": "2026-10-14T14:40:12.933036+00:00",
+  "gated_source_commit": "3dd89c9ce5f43f2dabea487b4b258415d7134fe8",
+  "gate": "15 assigned product reds pass; release identities unchanged",
+  "assigned_baseline_failures": [
+    "tests/test_dfi_admission.py::test_cli_refuses_dfi_before_backend_or_model_import",
+    "tests/test_dfi_admission.py::test_cli_refuses_non_native_tdfi_before_backend[shape0-nested]",
+    "tests/test_dfi_admission.py::test_cli_refuses_non_native_tdfi_before_backend[shape1-replay]",
+    "tests/test_doctor.py::test_cli_prejax[budget]",
+    "tests/test_doctor.py::test_cli_prejax[doctor]",
+    "tests/test_doctor.py::test_cli_prejax[manifest]",
+    "tests/test_doctor.py::test_cli_prejax[reproduce]",
+    "tests/test_ensemble.py::test_offline_cli_never_imports_jax[prepare]",
+    "tests/test_ensemble.py::test_prepare_is_backend_dark_and_cli_wired",
+    "tests/test_m7_1km_memory_audit.py::test_static_model_tracks_state_contract_field_count",
+    "tests/test_m7_1km_memory_audit.py::test_static_model_uses_precision_registry_for_known_fields",
+    "tests/test_portability.py::test_all_product_pallas_imports_use_backend_layer",
+    "tests/test_s1_nestspec.py::test_cli_refuses_unqualified_nest_before_model_import[km2]",
+    "tests/test_s1_nestspec.py::test_cli_refuses_unqualified_nest_before_model_import[ruc]",
+    "tests/test_s1_nestspec.py::test_cli_refuses_unqualified_nest_before_model_import[urban]"
+  ],
+  "assigned_fixed": 15,
+  "broader_checks": {
+    "MR02_passed": 241,
+    "MR02_failed": 1,
+    "MR02_failure": "new guard test used normal bootstrap; corrected to offline argv and passed in MR05",
+    "MR05_status": "INCOMPLETE timeout600 after401 PASS progress dots",
+    "MR05_completed_count": 401,
+    "MR05_node_ids": "reconstructed from identical ordered collection; no per-node JUnit before timeout",
+    "MR06_passed": 229,
+    "MR07_passed": 48,
+    "distinct_final_passing_checks": 850,
+    "failure_control_assertions": 19,
+    "failure_control_setup_errors": 0
+  },
+  "source_identity": "SOURCE_IDENTITY_FINAL.json",
+  "identity_swiss": "f672a5739cb96e388b6b7a40ef80337bf81bdc14ef15268f3476e09d79fe055d",
+  "identity_prod_d01": "6fc715a2bd630934c4cf0f94427df19a527cbf429011c9ba5efe4d712744d27b",
+  "memory_audit": "172/172 slots; explicit one tracer, static1.558455247GiB at44x198x477; not live GPU memory",
+  "performance": "[I] unchanged CUDA kernel bodies/linecounts and original factory callable; no hot-loop work or carry changes. Lazy exports resolve original objects once. Benchmark validation is after measured command. No measured GPU performance/memory claim.",
+  "jensen": "Immutable receipt and observations retained including335 existing bound excesses; exact one-import undo source guard rejects any additional edit (MR10).",
+  "gpu_used": false,
+  "cold_gpu_compile": false,
+  "cache": "NONE GPUWRF_JAX_CACHE=0",
+  "small_artifacts_home": "<USER_HOME>/wrf_gpu2_lanes/t-mainreds",
+  "temporary_snapshot": "<DATA_ROOT>/wrf_gpu2/scratch/t-mainreds/candidate REMOVED after last consumer",
+  "artifacts": [
+    {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-mainreds/MR01.log",
+      "sha256": "f633ff278c70c14738ff300b38e4cd512b0b46c44a2f63d18f14ba0c28609b77"
+    },
+    {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-mainreds/MR01.xml",
+      "sha256": "579f4d3a472b837861f62edf6a4b075842bedd513822e42b8fd0479c459dc0c4"
+    },
+    {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-mainreds/MR02.log",
+      "sha256": "c676e7d8e348c9f04d6a5c13d051b90a72312bf86065e882e682bbee9b91cd32"
+    },
+    {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-mainreds/MR02.xml",
+      "sha256": "36c7e08648d72929f31a4f8349a12a236a1206be2eba7cdebdc5740a592b5145"
+    },
+    {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-mainreds/MR03-mutants.log",
+      "sha256": "3b7ac4af964c05be62554cd67f28d25ae7c9618a0fbeb445800b2eaa140171ba"
+    },
+    {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-mainreds/MR03-mutants.xml",
+      "sha256": "b0e6300f6153e8ada4df9aa6ac0f4711b2b4f769826ab37028479d02fc74dc1b"
+    },
+    {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-mainreds/MR04-mutants.log",
+      "sha256": "c275fdd0d352cb98433029c08a9608cb78c05fd0f98461dd9dfaab2070b24753"
+    },
+    {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-mainreds/MR04-mutants.xml",
+      "sha256": "5c90b9bc32f1a7d8d29cd3e1f4041b6ca1396b19fea0e5ac4c7bd659a846cb5a"
+    },
+    {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-mainreds/MR05.log",
+      "sha256": "9a79d6416de796916bf9d5fbb935b0b65539afec1907c114359c98cc6b45ae8c"
+    },
+    {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-mainreds/MR05-partial.json",
+      "sha256": "220f570ee8adb41ce19209179260c494678edee0bf0a89093f133ea43c4daef5"
+    },
+    {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-mainreds/MR05-collection.log",
+      "sha256": "89215ccaf767dbc7a3d52994e918182f18357cd00fa4183bf758571059eaa561"
+    },
+    {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-mainreds/MR06.log",
+      "sha256": "1eb4f8dcb069f552cc473edbd15ae13f574c422bb77103d0406692cd075ab08f"
+    },
+    {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-mainreds/MR06.xml",
+      "sha256": "f3cae9c9b464a01226580f8334e96bfa88dfe3b616bb679d7d2e87b293924060"
+    },
+    {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-mainreds/MR07.log",
+      "sha256": "7f6a69ee35368eef8810c2b8bdac9777a11a1817e5ad5a42a9f5b6378a68cb9f"
+    },
+    {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-mainreds/MR07.xml",
+      "sha256": "2133b2222b493bac7e887ed71ec7d74fd30cb57dc6e4557e3606fb3682d05734"
+    },
+    {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-mainreds/MR08-swiss.log",
+      "sha256": "aa27cbb1e920fc02a8a18bb81df664ca1fcfb91d380c96a56a16501b3f8e2f5e"
+    },
+    {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-mainreds/MR08-swiss.json",
+      "sha256": "1338546440ff4b8b8d479488a67e8f83c935a735408bcf8cfed4bf1e0bdc275d"
+    },
+    {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-mainreds/MR09-prod.log",
+      "sha256": "e34a65b1f0c808907455e7d161860b4dd615e3c978f30211ef299fb486220772"
+    },
+    {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-mainreds/MR09-prod.json",
+      "sha256": "829178e88b70b9f77ea45cb4b4ec25b4bead335ec7a12d0c05c6c62838cdd04d"
+    },
+    {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-mainreds/MR10-pin-mutant.log",
+      "sha256": "047648022ce4a3f97450b05e710b9022ed8a41c1a3f919ca07692bacf22e5fed"
+    },
+    {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-mainreds/MR10-pin-mutant.xml",
+      "sha256": "f0127b7df753df9ee5f2eaf7dacd5284ade7e05515dc096bf76e6b6c9f755955"
+    },
+    {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-mainreds/MR11-audit.json",
+      "sha256": "c2959ca455956636d57d897a235a9531a3ee9be150815d7076b4f9a0ca4bedcd"
+    },
+    {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-mainreds/SOURCE_IDENTITY_FINAL.json",
+      "sha256": "32d0a4bd3aca40edaa9e5e087541f54a14ba23f05b8f61a64864c1daef2a5379"
+    },
+    {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-mainreds/identity_probe.py",
+      "sha256": "5c18d7431971e3619634beae7118dd65788409108228c657077ed61d5ddbd7aa"
+    },
+    {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-mainreds/jensen_pin_mutant.py",
+      "sha256": "839f3e70d83d32e89a7ef2217a4fe0abe56d52f0a1a53811a7c4382df445bd5c"
+    }
+  ],
+  "cleanup": "ROOT baseline/negative/candidate snapshots removed; DATA final snapshot removed; pytest/stubs removed; no persistent JAX/XLA caches created"
+}

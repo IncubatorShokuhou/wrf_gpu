@@ -102,9 +102,9 @@ def test_cu4_is_api_wired_but_refused_pre_jax_like_wrf_arw():
     with pytest.raises(UnsupportedSchemeError) as exc:
         validate_operational_namelist({"physics": {"cu_physics": [4]}})
     assert "check_a_mundo" in str(exc.value)
-    for code in (94, 95, 96):  # separate WRF codebases: still reference-only, not scan-wired
-        assert code not in _SCAN_WIRED_OPTIONS["cu_physics"]
-        assert classify_scheme("cu_physics", code).status is SupportStatus.REFERENCE_ONLY
+    for code in (14, 94, 95, 96, 99):  # distinct SAS/old-KF paths admitted by the reviewed family
+        assert code in _SCAN_WIRED_OPTIONS["cu_physics"]
+        assert classify_scheme("cu_physics", code).status is SupportStatus.IMPLEMENTED
 
 
 def test_carry_seeds_held_real_rates_in_kf_layout():

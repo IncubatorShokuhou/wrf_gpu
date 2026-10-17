@@ -1,0 +1,11 @@
+fixture_id: v040-nssl-cumulus
+source: pristine WRF phys/module_mp_nssl_2mom.F
+source_commit: source SHA256 in fixtures/manifest.json (staged pristine tree has no git metadata)
+scenario: 40-level active cumulus rain/snow, mixed negative/subthreshold rates, cloud/ice-only caller, mass-without-number cold start
+variables:
+  - QRCUTEN/QSCUTEN/QCCUTEN/QICUTEN: REAL mass-grid kg/kg/s
+  - PRECU/POSTCU: REAL density-scaled NSSL driver stack, numbers in per cubic metre
+  - TH/QV/QC/QR/QI/QS/QH/QHL/numbers/volumes: full driver input/output at native REAL precision
+  - precipitation: mm liquid equivalent per call
+files: fixtures/manifest.json (14 JSON files, SHA256, original-source identity, generation command, precision, frozen tolerances)
+license_notes: generated savepoints from unmodified WRF with bundled standalone caller; WRF source is referenced, not redistributed

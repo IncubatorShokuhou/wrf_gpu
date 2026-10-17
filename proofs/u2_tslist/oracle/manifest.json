@@ -1,0 +1,93 @@
+{
+  "reference": "<USER_HOME>/wrf_gpu2_lanes/release-docs/RD11/cpu",
+  "executable_source": "<DATA_ROOT>/canairy_meteo/artifacts/wrf_src/WRF/install_gen2_dmpar/bin/wrf",
+  "executable_sha256": "1d0f5779fff143361e470e37f89c734497ed5a7bb55d0c53b7e3fccc569dd49b",
+  "namelist": "&time_control\n history_interval_s = 18,\n run_days                            = 0,\n run_hours                           = 0,\n run_minutes                         = 0,\n run_seconds                         = 72,\n start_year                          = 2023,\n start_month                         = 1,\n start_day                           = 15,\n start_hour                          = 0,\n end_year                            = 2023,\n end_month                           = 1,\n end_day                             = 15,\n end_hour                            = 0,\n end_minute                          = 1,\n end_second                          = 12,\n interval_seconds                    = 10800,\n input_from_file                     = .true.,\n history_interval                    = 0,\n frames_per_outfile                  = 1,\n restart                             = .false.,\n restart_interval                    = 100000,\n io_form_history                     = 2,\n io_form_restart                     = 2,\n io_form_input                       = 2,\n io_form_boundary                    = 2,\n/\n\n&domains\n ts_buf_size = 3,\n max_ts_locs = 5,\n max_ts_level = 5,\n time_step                           = 18,\n time_step_fract_num                 = 0,\n time_step_fract_den                 = 1,\n max_dom                             = 1,\n e_we                                = 43,\n e_sn                                = 43,\n e_vert                              = 45,\n p_top_requested                     = 5000,\n num_metgrid_levels                  = 34,\n num_metgrid_soil_levels             = 4,\n dx                                  = 3000,\n dy                                  = 3000,\n grid_id                             = 1,\n parent_id                           = 1,\n i_parent_start                      = 1,\n j_parent_start                      = 1,\n parent_grid_ratio                   = 1,\n parent_time_step_ratio              = 1,\n feedback                            = 0,\n smooth_option                       = 0,\n/\n\n&physics\n mp_physics                          = 8,\n ra_lw_physics                       = 4,\n ra_sw_physics                       = 4,\n radt                                = 10,\n sf_sfclay_physics                   = 5,\n sf_surface_physics                  = 4,\n bl_pbl_physics                      = 5,\n bldt                                = 0,\n cu_physics                          = 0,\n cudt                                = 0,\n isfflx                              = 1,\n ifsnow                              = 1,\n icloud                              = 1,\n surface_input_source                = 1,\n num_soil_layers                     = 4,\n num_land_cat                        = 21,\n sf_urban_physics                    = 0,\n/\n\n&dynamics\n w_damping                           = 1,\n diff_opt                            = 1,\n km_opt                              = 4,\n diff_6th_opt                        = 2,\n diff_6th_factor                     = 0.12,\n base_temp                           = 290.,\n damp_opt                            = 3,\n zdamp                               = 5000.,\n dampcoef                            = 0.2,\n khdif                               = 0,\n kvdif                               = 0,\n non_hydrostatic                     = .true.,\n moist_adv_opt                       = 1,\n scalar_adv_opt                      = 1,\n epssm                               = 0.5,\n gwd_opt                             = 0,\n/\n\n&bdy_control\n spec_bdy_width                      = 5,\n spec_zone                           = 1,\n relax_zone                          = 4,\n specified                           = .true.,\n nested                              = .false.,\n/\n\n&grib2\n/\n\n&namelist_quilt\n nio_tasks_per_group                 = 0,\n nio_groups                          = 1,\n/\n",
+  "tslist": "#-----------------------------------------------#\n# 24 characters for name | pfx |  LAT  |   LON  |\n#-----------------------------------------------#\nSwiss centre              ctr    46.608    8.489\nSwiss west                west   46.383    8.044\nOutside                   out     0.000    0.000\n",
+  "shared_instrumented_dump_paths": false,
+  "work": "Swiss42x42x44 dt18 4steps ts_buf_size3 level5",
+  "projection": {
+    "MAP_PROJ": 1,
+    "TRUELAT1": 30.0,
+    "TRUELAT2": 60.0,
+    "STAND_LON": 8.550000190734863,
+    "DX": 3000.0
+  },
+  "raw_history_files": [
+    "<USER_HOME>/wrf_gpu2_lanes/u2-tslist/TS04_cpu/wrfout_d01_2023-01-15_00:00:00",
+    "<USER_HOME>/wrf_gpu2_lanes/u2-tslist/TS04_cpu/wrfout_d01_2023-01-15_00:00:18",
+    "<USER_HOME>/wrf_gpu2_lanes/u2-tslist/TS04_cpu/wrfout_d01_2023-01-15_00:00:36",
+    "<USER_HOME>/wrf_gpu2_lanes/u2-tslist/TS04_cpu/wrfout_d01_2023-01-15_00:00:54",
+    "<USER_HOME>/wrf_gpu2_lanes/u2-tslist/TS04_cpu/wrfout_d01_2023-01-15_00:01:12"
+  ],
+  "raw_history_sha256": {
+    "wrfout_d01_2023-01-15_00:00:00": "3e8b96fae1c1c775895f72d1a5286584b268267f02f78a4b149be6fbc5e86f9d",
+    "wrfout_d01_2023-01-15_00:00:18": "202fa8c3f8100acb85870bbccd108b5d7d45df36c7d2daa13d139aee25ee9973",
+    "wrfout_d01_2023-01-15_00:00:36": "1a61505719b26e50fd3c22297fdc7bc624bffbb9b64fd5fc6df8b7a6cae699bd",
+    "wrfout_d01_2023-01-15_00:00:54": "0287bb6d3b59f2a13fefcf2f77159f7b5b6284a3472aeda22f868aabcde84eab",
+    "wrfout_d01_2023-01-15_00:01:12": "1352b4aad5d22e47ee80e339a88489c8e08a13bdfaf688998e1b7d36ddf0cf6e"
+  },
+  "fields": [
+    "U",
+    "V",
+    "W",
+    "PH",
+    "PHB",
+    "P",
+    "PB",
+    "THM",
+    "QVAPOR",
+    "QCLOUD",
+    "QRAIN",
+    "QICE",
+    "QSNOW",
+    "QGRAUP",
+    "T2",
+    "Q2",
+    "U10",
+    "V10",
+    "PSFC",
+    "GLW",
+    "SWDOWN",
+    "SWUPB",
+    "HFX",
+    "LH",
+    "TSK",
+    "TSLB",
+    "RAINC",
+    "RAINNC",
+    "COSALPHA",
+    "SINALPHA"
+  ],
+  "points_zero_based": [
+    [
+      19,
+      19
+    ],
+    [
+      8,
+      11
+    ]
+  ],
+  "fixture_files": {
+    "west.d01.QV": "ab0849bac0c7a042b69a033fec3f8baa926b2532253652efa5e2b82a3ccd4603",
+    "west.d01.WW": "91e80f4c4e7bcde93c95ff2396171922486dbdf5918b7888796b8d6088d507d8",
+    "ctr.d01.TH": "39dc2d714126851357fb261644e7753b3b80045e06a085a0c277b7cce7c5a461",
+    "columns.npz": "01b4d173fab33ecb5630a7edc7988ab29e2a2418d479438ced5aadf5d658a933",
+    "ctr.d01.WW": "659c5eb27a5bb93e0fb279f3ad793c57a6a238c87b69fde11874eac66dfcf440",
+    "west.d01.UU": "1274f344bf80bde01113df5a9649de1d2a812e7740b918105aeaa67327e3023a",
+    "west.d01.PR": "7a3a137d8218b309692e12f7f15f545d67dc40b0c3cbc79b54a9239b56a51bf7",
+    "ctr.d01.UU": "20fd07eebc2a8b11a07f8f973e5f65972ab52b8c73ee221a335780796a01b639",
+    "west.d01.VV": "4e11ddecec05e24037f84e08f6e4e5a6bfddb67489c7627e84cb0c076e93ca3c",
+    "ctr.d01.QV": "cb37fbb0863a70cc001a708537afadf68623a55e5e28674d2b4e0c58071cab9d",
+    "west.d01.TH": "1e0acf378142a053771529370e53ed65abaa4df481bf7ade7a64e1ee29373794",
+    "ctr.d01.VV": "9a7e46e5a17694a4891a84da322a86db4e3fac2a98b937307335787b6d5761fb",
+    "west.d01.TS": "e6df1649e08ba1fdab8acf168d7f2501326ab24ca2128053d074fa46837c69c2",
+    "ctr.d01.TS": "3599ec0fc2e848560cdef4d211ba577ccc2adffd1e371fc0b8cf5be14cc3c776",
+    "ctr.d01.PH": "61da05e8aeb2502824190e51c3cd096f6f036417b57b29ca386cdf7fd39f79bb",
+    "ctr.d01.PR": "9a22aa5bc2a2e22e717d708e5ec31cdddc622d139326e50a51beb39db01c7288",
+    "tslist": "f2fe1d3cb472b7ea4453ff1684ea05f9fa8532dac4e96bafe127137b8c4ada99",
+    "west.d01.PH": "4bfe333f32bd041ecad54d7d7d88db39aa8e7ff58e6e17e638424c0341fbbd8b"
+  },
+  "oracle": "Original CPU-WRF, no GPU code; 4 completed own steps at t18/36/54/72 seconds"
+}

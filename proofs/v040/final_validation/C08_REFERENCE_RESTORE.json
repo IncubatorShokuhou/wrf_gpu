@@ -1,0 +1,28 @@
+{
+  "utc": "2026-10-15T17:30:00.846740+00:00",
+  "case": "c08",
+  "incident": "Foreign radar probe stage symlink pointed at sealed v-prep input; one do_radar_ref=1 line was inserted.",
+  "authoritative_namelist_sha256": "93238842ee599a49f0ba69168c63e77c33192bd05f765884052449506195a99e",
+  "authority": "Original cpu_run.json actual_input_sha256 agrees with inputs.json and paid GPU launch receipt.",
+  "observed_moved_intact": {
+    "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c08/provenance_incidents/20261015T1730Z_radar_symlink/namelist.input.observed",
+    "sha256": "782aa4c7e14b2c3204e8815a194514b7f1a68015ca4bc148dc8511c38a69ac5a"
+  },
+  "restored_path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c08/input/namelist.input",
+  "restored_sha256": "93238842ee599a49f0ba69168c63e77c33192bd05f765884052449506195a99e",
+  "reconstruction": "Remove exactly one literal do_radar_ref = 1 line from observed bytes; require exact sealed original SHA before restoration.",
+  "unchanged_receipt_sha256": {
+    "inputs.json": "2f5b0867e52a29f9805a836e748c2cdef4f232a074207b59a1b47d857c64ed66",
+    "cpu_run.json": "5cb409768022f27d2380def717514162f75f25d885c5982c797c73f311e15cfd",
+    "CPU_OUTPUTS.json": "f9096bdfdfeb1c3e3d5c62da314cb1072927908942437a37d92a5bb5edb7467f",
+    "gpu_run.json": "098f77c42138de2e2a8649b77fe2bbeb5ef0db542042842e344b842b5ab6e994",
+    "gpu_launch.json": "41ff649682f2aafb638a0d19e95d8003dc91fedeceee35ae65da8e1a2379b4ef"
+  },
+  "cpu_output_operation": "NONE; no CPU output/input array modifications or reruns",
+  "foreign_stage": "<USER_HOME>/wrf_gpu2_lanes/t-classd/c08r/run/namelist.input",
+  "foreign_action": "NONE. Owner must replace own stage symlink with private radar-enabled file from preserved incident bytes; amend false original hash claim.",
+  "retained_restore_receipt": {
+    "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c08/provenance_incidents/20261015T1730Z_radar_symlink/RESTORE_RECEIPT.json",
+    "sha256": "613114fbeccf5e37968e355b4183b8962200b7a635c105b2679228dffb0e77a0"
+  }
+}

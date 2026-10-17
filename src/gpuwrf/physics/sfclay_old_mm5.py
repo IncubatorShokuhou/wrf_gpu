@@ -80,6 +80,33 @@ PSIMTB = jnp.asarray(_psimtb_np, dtype=jnp.float64)
 PSIHTB = jnp.asarray(_psihtb_np, dtype=jnp.float64)
 
 
+def _sfclayinit_real_tables():
+    """sfclayinit (module_sf_sfclay.F:954-969) evaluated in REAL, one rounding per op.
+
+    Host NumPy only (E46); double libm results rounded to binary32 reproduce the
+    gfortran/glibc REAL build for all 1001 PSIMTB and 999/1001 PSIHTB entries
+    (two PSIHTB entries, N=1 and N=922, differ by 1 ULP: glibc logf rounding).
+    """
+    import math
+    f = np.float32
+    psim, psih = [], []
+    for n in range(_TABLE_N + 1):
+        zoln = f(-f(n) * f(0.01))
+        arg = f(f(1.) - f(16.) * zoln)
+        x = f(math.pow(arg, f(0.25)))
+        y = f(math.pow(arg, f(0.5)))
+        a = f(f(2.) * f(math.log(f(f(.5) * f(f(1.) + x)))))
+        b = f(math.log(f(f(.5) * f(f(1.) + f(x * x)))))
+        c = f(f(2.) * f(math.atan(x)))
+        d = f(f(2.) * f(math.atan(f(1.))))
+        psim.append(f(f(f(a + b) - c) + d))
+        psih.append(f(f(2.) * f(math.log(f(f(.5) * f(f(1.) + y))))))
+    return np.asarray(psim, np.float32), np.asarray(psih, np.float32)
+
+
+_PSIMTB_REAL, _PSIHTB_REAL = _sfclayinit_real_tables()
+
+
 def _psitb_interp(table, zol_neg):
     """WRF tabulated psi lookup: NZOL=INT(-ZOL*100), RZOL=-ZOL*100-NZOL, linear.
 
@@ -119,6 +146,8 @@ def sfclay_old_mm5_column(
     zol_in: jax.Array | None = None,  # ZOL on entry (regime-1 keeps it; default 0)
     *,
     isfflx: int = 1,
+    isftcflx: int = 0,
+    wrf_constants: bool = False,
 ):
     """Faithful per-column port of WRF ``SFCLAY1D`` (default ARW path).
 
@@ -126,6 +155,19 @@ def sfclay_old_mm5_column(
     inputs are fp64; nothing allocates outside the trace.
     """
 
+    # E83: the legacy zero path retains its old oracle constants. Hurricane
+    # options and the operational sf=91 caller (``wrf_constants``) use the actual
+    # WRF surface_driver constants (cp=7*r_d/2, ep_1, ep_2) in REAL arithmetic.
+    legacy = not (isftcflx or wrf_constants)
+    CP = globals()['CP'] if legacy else jnp.asarray(1004.5, ux.dtype)
+    ROVCP = globals()['ROVCP'] if legacy else jnp.asarray(287.,ux.dtype)/CP
+    EP1 = globals()['EP1'] if legacy else jnp.asarray(461.6,ux.dtype)/jnp.asarray(287.,ux.dtype)-1.
+    EP2 = globals()['EP2'] if legacy else jnp.asarray(287.,ux.dtype)/jnp.asarray(461.6,ux.dtype)
+    PSIMTB = globals()['PSIMTB'] if legacy else jnp.asarray(globals()['PSIMTB'],ux.dtype)
+    PSIHTB = globals()['PSIHTB'] if legacy else jnp.asarray(globals()['PSIHTB'],ux.dtype)
+    if wrf_constants and not isftcflx:
+        PSIMTB = jnp.asarray(_PSIMTB_REAL, ux.dtype)
+        PSIHTB = jnp.asarray(_PSIHTB_REAL, ux.dtype)
     psfc = psfcpa / 1000.0                       # PSFC cb (line 396)
 
     # Ground potential temperature (line 405).
@@ -135,7 +177,9 @@ def sfclay_old_mm5_column(
     # Lowest-level theta / virtual theta (lines 430-452).
     pl = p1d / 1000.0
     scr3 = t1d
-    thcon = (P0_PA * 0.001 / pl) ** ROVCP
+    # WRF forms P1000mb*0.001 at run time in REAL (dummy argument times REAL literal).
+    p0k = (jnp.asarray(P0_PA, ux.dtype) * jnp.asarray(0.001, ux.dtype)) if wrf_constants else P0_PA * 0.001
+    thcon = (p0k / pl) ** ROVCP
     thx = scr3 * thcon
     qx = qv1d
     tvcon = 1.0 + EP1 * qx
@@ -268,6 +312,8 @@ def sfclay_old_mm5_column(
     zol_in0 = jnp.zeros_like(br) if zol_in is None else zol_in
     zol = sel(zol_in0, zol_2, zol_3, zol_4c)
 
+    if isftcflx:
+        regime=regime.astype(ux.dtype)
     # --- frictional velocity / similarity (lines 700-826) ---
     dtg = thx - thgb
     psix = gz1oz0 - psim
@@ -291,6 +337,19 @@ def sfclay_old_mm5_column(
     psit = jnp.where(is_water, psit_w, psit)
     psiq2 = jnp.where(is_water, psiq2_w, psiq2)
     psit2 = jnp.where(is_water, psit2_w, psit2)
+    if isftcflx == 1:
+        # module_sf_sfclay.F:744–749: ZA (not ZA+Z0Q), no resistance floor.
+        psiq = jnp.where(is_water,jnp.log(za/1.e-4)-psih,psiq)
+        psit = jnp.where(is_water,psiq,psit)
+        psiq2 = jnp.where(is_water,jnp.log(2./1.e-4)-psih2,psiq2)
+        psit2 = jnp.where(is_water,psiq2,psit2)
+    elif isftcflx == 2:
+        gz0ozt = .40*(7.3*jnp.sqrt(jnp.sqrt(restar))*jnp.sqrt(.71)-5.)
+        gz0ozq = .40*(7.3*jnp.sqrt(jnp.sqrt(restar))*jnp.sqrt(.60)-5.)
+        psit = jnp.where(is_water,gz1oz0-psih+gz0ozt,psit)
+        psiq = jnp.where(is_water,gz1oz0-psih+gz0ozq,psiq)
+        psit2 = jnp.where(is_water,gz2oz0-psih2+gz0ozt,psit2)
+        psiq2 = jnp.where(is_water,gz2oz0-psih2+gz0ozq,psiq2)
 
     # UST update (0.5-averaging; line 799).
     ust = 0.5 * ust + 0.5 * KARMAN * wspd / psix
@@ -312,6 +371,9 @@ def sfclay_old_mm5_column(
     # Over water, alter ZNT (lines 844-876).
     znt_water = CZO * ust * ust / G + 0.11 * 1.5e-5 / ust
     znt_water = jnp.minimum(znt_water, 2.85e-3)
+    if isftcflx:
+        from gpuwrf.physics.hurricane_flux import davis
+        znt_water = davis(ust)
     znt = jnp.where(is_water, znt_water, znt)
     zl = jnp.where(is_water, znt, 0.01)
 
@@ -348,7 +410,8 @@ def sfclay_old_mm5_column(
 
 def sfclay_old_mm5_columns(
     ux, vx, t1d, qv1d, p1d, dz8w1d, psfcpa, tsk, xland, znt, ust, mol, qsfc,
-    pblh, mavail, lakemask, dx, hfx_in, qfx_in, zol_in=None, *, isfflx: int = 1,
+    pblh, mavail, lakemask, dx, hfx_in, qfx_in, zol_in=None, *, isfflx: int = 1, isftcflx: int = 0,
+    wrf_constants: bool = False,
 ):
     """Batched (vmap) entry over the grid columns (all inputs shape ``(ncol,)``)."""
 
@@ -356,7 +419,7 @@ def sfclay_old_mm5_columns(
         zol_in = jnp.zeros_like(jnp.asarray(ux))
 
     def one(*a):
-        return sfclay_old_mm5_column(*a, isfflx=isfflx)
+        return sfclay_old_mm5_column(*a, isfflx=isfflx, isftcflx=isftcflx, wrf_constants=wrf_constants)
 
     return jax.vmap(one, in_axes=(0,) * 20)(
         ux, vx, t1d, qv1d, p1d, dz8w1d, psfcpa, tsk, xland, znt, ust, mol, qsfc,

@@ -1,0 +1,137 @@
+{
+  "reference": "original WRF output arrays, not JAX branch counts",
+  "arms": {
+    "14": {
+      "native14_r4.npz": {
+        "columns": 455,
+        "rain_active": 31,
+        "rain_inactive": 424,
+        "source_nonzero_cells": {
+          "RTHCUTEN": 1066,
+          "RQVCUTEN": 1074,
+          "RQCCUTEN": 251,
+          "RQICUTEN": 623
+        }
+      },
+      "native14_r8.npz": {
+        "columns": 455,
+        "rain_active": 31,
+        "rain_inactive": 424,
+        "source_nonzero_cells": {
+          "RTHCUTEN": 1085,
+          "RQVCUTEN": 1085,
+          "RQCCUTEN": 251,
+          "RQICUTEN": 623
+        }
+      }
+    },
+    "94": {
+      "dt18_stepcu1_r4.npz": {
+        "columns": 455,
+        "rain_active": 214,
+        "rain_inactive": 241,
+        "source_nonzero_cells": {
+          "RTHCUTEN": 6720,
+          "RQVCUTEN": 20020,
+          "RQCCUTEN": 2205,
+          "RQICUTEN": 2825
+        }
+      },
+      "dt54_stepcu5_r4.npz": {
+        "columns": 455,
+        "rain_active": 214,
+        "rain_inactive": 241,
+        "source_nonzero_cells": {
+          "RTHCUTEN": 6725,
+          "RQVCUTEN": 20020,
+          "RQCCUTEN": 2216,
+          "RQICUTEN": 2823
+        }
+      }
+    },
+    "95": {
+      "osas95_dt18_stepcu1_shallow1_r4.npz": {
+        "columns": 455,
+        "rain_active": 196,
+        "rain_inactive": 259,
+        "source_nonzero_cells": {
+          "RTHCUTEN": 5502,
+          "RQVCUTEN": 20020,
+          "RQCCUTEN": 370,
+          "RQICUTEN": 256
+        }
+      },
+      "osas95_dt54_stepcu5_shallow1_r4.npz": {
+        "columns": 455,
+        "rain_active": 198,
+        "rain_inactive": 257,
+        "source_nonzero_cells": {
+          "RTHCUTEN": 5533,
+          "RQVCUTEN": 20020,
+          "RQCCUTEN": 368,
+          "RQICUTEN": 249
+        }
+      }
+    },
+    "96": {
+      "native96_r4.npz": {
+        "columns": 455,
+        "rain_active": 259,
+        "rain_inactive": 196,
+        "source_nonzero_cells": {
+          "RTHCUTEN": 5579,
+          "RQVCUTEN": 5648,
+          "RQCCUTEN": 2211,
+          "RQICUTEN": 2696
+        }
+      },
+      "native96_r8.npz": {
+        "columns": 455,
+        "rain_active": 259,
+        "rain_inactive": 196,
+        "source_nonzero_cells": {
+          "RTHCUTEN": 5767,
+          "RQVCUTEN": 5778,
+          "RQCCUTEN": 2212,
+          "RQICUTEN": 2700
+        }
+      }
+    },
+    "99": {
+      "kf99_r4.npz": {
+        "columns": 5,
+        "rain_active": 2,
+        "rain_inactive": 3,
+        "source_nonzero_cells": {
+          "RTHCUTEN": 60,
+          "RQVCUTEN": 60,
+          "RQCCUTEN": 34,
+          "RQICUTEN": 55,
+          "RQRCUTEN": 36,
+          "RQSCUTEN": 49
+        }
+      },
+      "kf99_r8.npz": {
+        "columns": 5,
+        "rain_active": 2,
+        "rain_inactive": 3,
+        "source_nonzero_cells": {
+          "RTHCUTEN": 60,
+          "RQVCUTEN": 60,
+          "RQCCUTEN": 34,
+          "RQICUTEN": 55,
+          "RQRCUTEN": 36,
+          "RQSCUTEN": 55
+        }
+      }
+    }
+  },
+  "internal_branch_witnesses": {
+    "14": "SS26 original WRITE-only trigger census; all10 complete stdout BYTE",
+    "94": "tracked fixtures/census.json and search_census.json: 6000 original soundings;12 work-rejection witnesses",
+    "95": "1820 recorded original random draws; two native455-column mixed-phase/default-shallow corpora, source-equivalent ARW shallow reused from94",
+    "96": "SS38 original deep-phase WRITE-only census, all5 stdout BYTE; 455-column surface-flux sign/land-sea corpus with own shallow",
+    "99": "SS78/82/84/88 original WRITE-only observers:6 buoyant triggers,2 accepted plumes,2 downdrafts,17 gradual-freezing calls and5 closure iterations; all10 stdout BYTE; SS99 seven phase/NCA variants each precision"
+  },
+  "coverage_limit": "These are observed regimes, not a claim of exhaustive coverage of every possible atmospheric state; GPU/full-forecast D6 pending."
+}

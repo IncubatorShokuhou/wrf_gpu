@@ -1,0 +1,76 @@
+{
+  "source": "<USER_HOME>/wrf_gpu2_lanes/release-docs/RD11/cpu/wrfout_d01_2023-01-15_01:00:00",
+  "source_sha256": "cd7df5a44d3164aadad8bb4483ce989c969256047cbe6df369299aeb3d15df21",
+  "oracle": {
+    "sources": {
+      "phys/module_fddaobs_rtfdda.F": "1ca4065b3aba0f926a7ded65f9eb92e1c6a7da678401271c9441bc93dda946c0",
+      "share/module_model_constants.F": "5b80377fecdc18a5f0ad38d3b6c15cfc86ad5d76701adbbbb08a08698d0f7062"
+    },
+    "extract_sha256": "6a4104313cc98f9c2859aa74ba055c091afe35c2d14aff0262a0f3f97b526bcc",
+    "flags": [
+      "-O2",
+      "-ftree-vectorize",
+      "-funroll-loops",
+      "-ffree-form",
+      "-ffree-line-length-none",
+      "-cpp",
+      "-DEM_CORE=1",
+      "-DDM_PARALLEL",
+      "-fcheck=bounds"
+    ],
+    "compiler": "GNU Fortran (conda-forge gcc 14.3.0-18) 14.3.0",
+    "driver_sha256": "47ffade64c9b8e2f22d4ecaf115661da7eaecb2df3bfe7673f49c92342ac967a",
+    "one_rank": "full domain; masks must all be true; identity gather/reduce"
+  },
+  "cases": {
+    "errors_111_r4.npz": {
+      "wind": true,
+      "temperature": true,
+      "moisture": true,
+      "sha256": "86ffb445f556d429d40c3211615af056acde9c114a7815be8a229d5281004ba9"
+    },
+    "errors_100_r4.npz": {
+      "wind": true,
+      "temperature": false,
+      "moisture": false,
+      "sha256": "fc11e3afceb211f2efdff34560cce49a8a41d2e7ad010cc2665fc0c8833a522c"
+    },
+    "errors_010_r4.npz": {
+      "wind": false,
+      "temperature": true,
+      "moisture": false,
+      "sha256": "09e00393183a8d7854bba6600d7d3252f70b938768f03e10a86993433906547e"
+    },
+    "errors_001_r4.npz": {
+      "wind": false,
+      "temperature": false,
+      "moisture": true,
+      "sha256": "09e00393183a8d7854bba6600d7d3252f70b938768f03e10a86993433906547e"
+    },
+    "errors_111_r8.npz": {
+      "wind": true,
+      "temperature": true,
+      "moisture": true,
+      "sha256": "ecac2d436b856099e1c6b17afe7b1d2eb01a4d5bc57aaedb2d6c3db0aa79d2ee"
+    },
+    "errors_100_r8.npz": {
+      "wind": true,
+      "temperature": false,
+      "moisture": false,
+      "sha256": "505cb404ab6bdf224ba4041a8b4dcb68218516478809d979b103714695dfe2ab"
+    },
+    "errors_010_r8.npz": {
+      "wind": false,
+      "temperature": true,
+      "moisture": false,
+      "sha256": "9b1f39476e56e2297c04963bc7dcf401f70d41bae5d9005a1225edea7dce57d5"
+    },
+    "errors_001_r8.npz": {
+      "wind": false,
+      "temperature": false,
+      "moisture": true,
+      "sha256": "9b1f39476e56e2297c04963bc7dcf401f70d41bae5d9005a1225edea7dce57d5"
+    }
+  },
+  "tolerance": "32*eps*operand-scale; theta600K,press100cb,wind40m/s,moisture.05,RKO2*nz; finite mandatory"
+}

@@ -1,0 +1,188 @@
+{
+  "scope": "COMPLETE subset: WRF4.7.1 legacy NSSL mp17 alias; other lane schemes pending/refused",
+  "status": "READY-FOR-CRITIC",
+  "source_commit": "c711ed1a7c3877184f0785ab84bc29100b2810df",
+  "source_tree": "40d448b6c652a4e08254c7bbb7557b82a16723d9",
+  "normalization": "Original caller17/default18/conflictingflags17 =>18,2moment1,hail1,CCN1,density2,3moment0",
+  "physical_qualification_reuse": "Exact existing nssl2mom source; original WRF default18 column/cumulus/radius qualification applies after original caller normalization. Alias program identity is regression evidence, not a fidelity reference.",
+  "alias_regression": {
+    "canonical_jaxpr_sha256": "e560962f3b18625765b9ac6ae7819a75d9452edb24f5f55b8c61c3505ef1a395",
+    "chars": 16264923,
+    "native_and_daily_bound_mp": 18
+  },
+  "smoke": {
+    "input": "real Swiss42x42x44 dt18",
+    "steps": 2,
+    "nonfinite_values": 0,
+    "guard_total": 0,
+    "CPU_only": true,
+    "FAST_DEFAULTS": 0,
+    "CENSUS": 1,
+    "harness": "Existing CPU Thomas shim; real native loader and production step"
+  },
+  "release_identity": "2bf12cb8374d3a84a440e47dea4b77b0c7436108fc2ee2616bba6ec79b17962a",
+  "tests": [
+    {
+      "receipt": "MPM03-shared.xml",
+      "tests": "50",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0",
+      "named_nodes": 50,
+      "omitted_empty_placeholders": 1
+    },
+    {
+      "receipt": "MPM04-final-interfaces.xml",
+      "tests": "63",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0",
+      "named_nodes": 63,
+      "omitted_empty_placeholders": 0
+    },
+    {
+      "receipt": "MPM10-remaining-shared.xml",
+      "tests": "139",
+      "failures": "1",
+      "errors": "0",
+      "skipped": "0",
+      "named_nodes": 139,
+      "omitted_empty_placeholders": 0
+    },
+    {
+      "receipt": "MPM12-final-delta.xml",
+      "tests": "142",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0",
+      "named_nodes": 142,
+      "omitted_empty_placeholders": 0
+    }
+  ],
+  "unique_passed_nodes": 254,
+  "shared_validation_scope": "Eight required pure/interface files completed; v01350 numerical cases passed, unchanged radiation/land tail reused under exact source/AST seal. One stale accept-list pin corrected and rerun green. No tolerance changes.",
+  "mutant": {
+    "killed": true,
+    "assertion": "assert17==18; zero setup errors"
+  },
+  "restart": "Existing pickle+NetCDF schema;9NSSL extras BYTE;canonical selector18 persists",
+  "final_source_reuse": {
+    "same_model_program_proof": "MPM15 full real Swiss mp17 canonical jaxpr e560 exact vs successful old smoke source; MPM14 full release2bf12cb8 exact; NSSL numerical sources BYTE; urban options OFF",
+    "scope": "Previous caller/oracle/binding/coupled smoke evidence reused. Final composed interfaces/restart/catalog checks rerun210PASS. No unchanged numerical rerun."
+  },
+  "performance_memory": {
+    "new_float_arithmetic": 0,
+    "new_prognostic_leaves": 0,
+    "new_restart_fields": 0,
+    "CPU_program_identity": "17/18EXACT",
+    "GPU_launch_VRAM_compile_cost": "UNMEASURED; unchanged executable work inferred from canonical config/program identity. Source-version cache invalidation not measured."
+  },
+  "GPU_and_coupled_forecast": "PENDING; no GPU use or forecast-fidelity claim",
+  "admission": "Single domains; same scalar/diffusion/radiation limits as18; custom nssl_mp_params refused; legacy17 forces original WRF modifiers",
+  "artifact_root": "<USER_HOME>/wrf_gpu2_lanes/s2-mpmore",
+  "artifact_sha256": {
+    "MPM01-normalization.log": "50e040399fe799fad47ed585d859f8e94bdea098b4b835ab3f3d868aae907d05",
+    "MPM02-own.log": "57af1d1604c4bbf7c2cd0bc3c934938d84fd8641019e65c275b11e7f69f8c370",
+    "MPM03-shared.xml": "5b1fcbec7d57d801b124a513acd6070b3d48b685ef57c90a6ed0095ad325e010",
+    "MPM03-validation-reuse.json": "312d36a2c08de2d2a85488dcb96662a87e34271866f56a1662366675fcbd5f75",
+    "MPM04-final-interfaces.xml": "a85f2c147350aeab57a4d74f7022d331d049278a3c6130c138f85e4bf3a40dfc",
+    "MPM05-mutant.json": "05e0642d1f4c0cc9df015b4eb34f7f4281a9a5ac12f06535e3c0724f5848c15a",
+    "MPM06-alias-identity.json": "a7c3105e54aab373acc4c8160dcb853a20af25f1ffe34890843f80bc7c2ae4f2",
+    "MPM06-08-affinity.json": "12cb4874ab3b724445cea5d54e72cdf747cd0ad777de9dc4e0849b64855610f3",
+    "MPM07-real-smoke.json": "a35b51043103987a85df9d21ab68eba3e6eb807f8c58cd56751052ed2b44d0db",
+    "MPM08-release-identity.json": "8241d33553483cb96a7d60c3d715f3dda5ac622e596ff2f4a503a6047e7aa07d",
+    "MPM09-archive.json": "8c8c2b12ff7cf59d578cd91de4577b9dab8124d22507b25ccfb62a60611bba6a",
+    "MPM10-remaining-shared.xml": "66ced645c41ddde0ea446311ef8ab3908a1f51c961916980821a420cab87e166",
+    "MPM11B-internal-params.json": "7df33b3f298e159f280faa891d1cf8955a9cf728b2fc565b922c45cd868941f3",
+    "MPM12-final-delta.xml": "2d5ff880c16f1860c6d9c6a8d9a088ff317a81462fc36bb9d5731eae850cb388",
+    "MPM13-composed.xml": "111e9766a29a680227a7efbb2593619312f163d445aa09a7545eb1d3c6a0f6ef",
+    "MPM14-composed-release.json": "66ff52a01712fa369f95c25c07f5ca9ddd156329ff3d415deb6c5949dd395b81",
+    "MPM15-composed-alias.json": "46da0330b1ec3d28ad5372075e9d0ab8819e56000a91709630d273c1e5c91fb2",
+    "MPM13-15-composition.json": "e55e0eb415501358d6f092aed3136bedb1be4447cbe941bc5007534b3de0a515"
+  },
+  "remaining": [
+    "mp19",
+    "mp21",
+    "mp22",
+    "Jensen55",
+    "NTU56",
+    "CAM-MG11"
+  ],
+  "time": "2026-10-14T00:20:06.818313+00:00",
+  "final_composition": {
+    "snapshot_commit": "c711ed1a7c3877184f0785ab84bc29100b2810df",
+    "composed_on_main": "575bcb2d8ea64764cb11ca134cbbc5a1381e3e35",
+    "shared_final": {
+      "tests": "210",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0",
+      "time": "11.482"
+    },
+    "all_nssl_operator_sources_BYTE": [
+      {
+        "path": "src/gpuwrf/physics/nssl2mom/__init__.py",
+        "sha256": "d8cebf9ced473e6bc528a171a100d2ab52587040ba4455b8ec4694b6da9d4937"
+      },
+      {
+        "path": "src/gpuwrf/physics/nssl2mom/adapter.py",
+        "sha256": "81583d6c8dcbb42f512a8745f543322de756110b43930ade2c10c8acae746b24"
+      },
+      {
+        "path": "src/gpuwrf/physics/nssl2mom/cleanup.py",
+        "sha256": "eda0f1c3c3c78d8804b8805469f414bed5bf313b1185e21b5cf53bfc54d330d4"
+      },
+      {
+        "path": "src/gpuwrf/physics/nssl2mom/constants.py",
+        "sha256": "41e72e2ca985a6576a72a2916833627103e7b4eb9b1c2409543d12d8b936d3cf"
+      },
+      {
+        "path": "src/gpuwrf/physics/nssl2mom/diagnostics.py",
+        "sha256": "066908e8a1c6131aeb5c94b344f6da495b33daa04169cc38ef8d86171d7e5eda"
+      },
+      {
+        "path": "src/gpuwrf/physics/nssl2mom/driver.py",
+        "sha256": "30e7082750b1986bd46ba37b9bd799b4771259246f69c69d4488b40255feed17"
+      },
+      {
+        "path": "src/gpuwrf/physics/nssl2mom/fallspeed.py",
+        "sha256": "708a1440f73432988010face8b325ade4b7ac423f3d00dcb52f8f8fdf8fe8035"
+      },
+      {
+        "path": "src/gpuwrf/physics/nssl2mom/gs_a.py",
+        "sha256": "746a9bd874a30ca5b808c01417348c6da174829e6fdaabc85251b7d8cf7e58e1"
+      },
+      {
+        "path": "src/gpuwrf/physics/nssl2mom/gs_b.py",
+        "sha256": "16dbdd133c38b8f1bef9f6d4d5f0723c1a98dd8d26d1bb1a91488c01b8424c4c"
+      },
+      {
+        "path": "src/gpuwrf/physics/nssl2mom/gs_c.py",
+        "sha256": "23114019e610d9d44fecce7ddcf670a7170cc2db5d39d2ad62f1b64f6d6416ce"
+      },
+      {
+        "path": "src/gpuwrf/physics/nssl2mom/indices.py",
+        "sha256": "0bc51d1d1e76956d545c5f25fa2694ebd9f333021670810922dbf7aaba98cf83"
+      },
+      {
+        "path": "src/gpuwrf/physics/nssl2mom/mathfun.py",
+        "sha256": "45a90ca57388592844b9bf9aae9a64337a8f6398fcf49f72339c5cb761060218"
+      },
+      {
+        "path": "src/gpuwrf/physics/nssl2mom/nucond.py",
+        "sha256": "f98621abdda432456f37148e49e0bf47a6f36af2cf54a5bc922ad5bc11c8f0f8"
+      },
+      {
+        "path": "src/gpuwrf/physics/nssl2mom/satfun.py",
+        "sha256": "f897621dc33813431c82ae2d1ccf23e8aabaaa3939b37e8598485f83f59522f3"
+      },
+      {
+        "path": "src/gpuwrf/physics/nssl2mom/sediment.py",
+        "sha256": "f2aa3de2f5c953839cf9ae3bdaf42d08327115f7122677b3493f618db5cb3515"
+      }
+    ],
+    "final_default_jaxpr_sha256": "2bf12cb8374d3a84a440e47dea4b77b0c7436108fc2ee2616bba6ec79b17962a",
+    "final_mp17_jaxpr_sha256": "e560962f3b18625765b9ac6ae7819a75d9452edb24f5f55b8c61c3505ef1a395",
+    "reuse": "Both full released program and full NSSL17 program canonically unchanged after new urban main composition. Carry prior two-step real-case numerical smoke; no repeated physical run."
+  }
+}

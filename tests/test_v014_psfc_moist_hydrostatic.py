@@ -62,6 +62,7 @@ def test_psfc_from_state_is_wrf_moist_hydrostatic_integral():
         qc=jnp.asarray(qc),
         qr=jnp.asarray(zeros),
         qi=jnp.asarray(zeros),
+        qi2=None, qi3=None,  # inactive second/third ice categories
         qs=jnp.asarray(qs),
         qg=jnp.asarray(zeros),
         mu_total=jnp.asarray(mut),

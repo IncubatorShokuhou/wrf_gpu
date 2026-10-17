@@ -79,14 +79,17 @@ def test_both_writer_paths_route_thm_through_the_option_and_keep_t_dry():
         assert "theta_dry - P0_THETA_OFFSET_K" in src, name                                           # T stays dry
 
 
-def test_wrfout_writes_use_theta_m_attribute_and_restart_caller_is_untouched():
+def test_wrfout_and_restart_write_the_resolved_theta_convention():
     tree = _writer_ast()
     attrs = ast.unparse(_fn(tree, "_write_global_attrs"))
     assert "attrs['USE_THETA_M'] = np.int32(parse_use_theta_m(use_theta_m))" in attrs
     calls = [ast.unparse(n) for n in ast.walk(tree) if isinstance(n, ast.Call) and ast.unparse(n.func) == "_write_global_attrs"]
     assert len(calls) == 1 and "use_theta_m=parse_use_theta_m(_lookup(prepared.namelist, 'use_theta_m', 1))" in calls[0]
-    rst = (IO / "wrfrst_netcdf.py").read_text()                   # M3R owns restart: no partial THM/attr patch here
-    assert "use_theta_m" not in rst and "USE_THETA_M" not in rst
+    # Restart interchange now honours this same convention (v0.4 restart work).
+    rst = ast.unparse(ast.parse((IO / "wrfrst_netcdf.py").read_text()))
+    assert "use_theta_m = parse_use_theta_m(_lookup(namelist, 'use_theta_m', 1))" in rst
+    assert "dataset.USE_THETA_M = np.int32(use_theta_m)" in rst
+    assert "thm_source(np.asarray(state.theta), _dry_theta(state), use_theta_m)" in rst
 
 
 if __name__ == "__main__":

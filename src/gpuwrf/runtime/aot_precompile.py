@@ -574,7 +574,15 @@ def quarantine_cheap_key(
             "detail": detail or {},
             "quarantined_utc": _time.strftime("%Y-%m-%dT%H:%M:%SZ", _time.gmtime()),
         }
-        _atomic_write_bytes(qp, _json.dumps(payload, sort_keys=True).encode("utf-8"))
+        qp.parent.mkdir(parents=True, exist_ok=True)
+        # Keep the FIRST witness, including both HLO hashes. Repeated captures
+        # of a poisoned key used to erase it with "previously-quarantined".
+        # O_EXCL also makes concurrent first writers choose exactly one witness.
+        try:
+            with qp.open("xb") as marker:
+                marker.write(_json.dumps(payload, sort_keys=True).encode("utf-8"))
+        except FileExistsError:
+            pass
         # Remove the now-ambiguous cheap-key blob + meta so it is never served.
         paths = _aot_blob_paths(name, cache_dir, cheap_key=cheap_key)
         if paths is not None:

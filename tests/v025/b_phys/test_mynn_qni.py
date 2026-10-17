@@ -205,12 +205,13 @@ def test_actual_coupler_number_supplier_and_writeback(monkeypatch):
         qc=field(column.qc),qi=field(column.qi),qs=field(column.qs),qsq=field(column.qsq),
         qke=field(2*column.tke),Ni=field(column.ni),u=field(column.u),v=field(column.v),
         el_pbl=field(column.el),maxmf=jnp.zeros((B,1),jnp.float32),
-        maxwidth=jnp.zeros((B,1),jnp.float32),ztop_plume=jnp.zeros((B,1),jnp.float32))
+        maxwidth=jnp.zeros((B,1),jnp.float32),ztop_plume=jnp.zeros((B,1),jnp.float32),
+        cam_kvh3d=None)
     monkeypatch.setenv('GPUWRF_MYNN_FP32_COLUMNS','1');monkeypatch.setenv('GPUWRF_MYNN_PHY_EXNER','0')
     monkeypatch.setattr(C,'_mynn_column_uses_wrf_phy_prep',lambda grid:False)
     monkeypatch.setattr(C,'_rho_from_state',lambda *args,**kw:field(column.rho))
     monkeypatch.setattr(C,'_column_dz_from_state',lambda *args,**kw:column.dz)
-    for method,name in [('_u_mass','u'),('_v_mass','v'),('_w_mass','w')]:
+    for method,name in [('_u_mass','u'),('_v_mass','v'),('_w_bottom_faces','w')]:  # F20: MYNN w1 = bottom faces
         monkeypatch.setattr(C,method,lambda *args,field_name=name,**kw:field(getattr(column,field_name)))
     monkeypatch.setenv('GPUWRF_MYNN_QNI_MIXING','0');off=C._mynn_column_from_state(state,None)
     assert off.ni is None

@@ -7,7 +7,7 @@ Absorptivities (``radabs``) live in :mod:`gpuwrf.physics.ra_cam_lw_abs`.
 WRF specifics reproduced: radtpl/radems/radabs use the MODULE ``co2vmr`` (355 ppm, never updated by ``camrad``)
 while trcpth uses the CLWRF ``co2mmr``; strat_volcanic = .false. so every ``aer_trn_ttl`` factor is exactly 1.0
 (dropped); REAL constant sub-expressions (``1.15*3.42217e3``, ``1./250.``, ``1./.3205``, ``1.0/296.0``) are folded in
-single precision by gfortran.  Cumulative vertical paths are sequential Python sums over levels (exact order).
+single precision by gfortran. Cumulative vertical paths retain the sequential Fortran addition order.
 """
 
 from __future__ import annotations
@@ -80,10 +80,14 @@ def _pow3(x):
 def _cumsum_levels(first, increments):
     """Sequential Fortran recurrence v(1) = first; v(k+1) = v(k) + inc(k) -> (ncol, n+1)."""
 
-    out = [first]
-    for k in range(increments.shape[1]):
-        out.append(out[-1] + increments[:, k])
-    return jnp.stack(out, axis=1)
+    def level(previous, increment):
+        current = previous + increment
+        return current, current
+
+    # Same serial addition order. The unrolled 44-level sums otherwise join
+    # an input-transpose producer with 28 outputs / 1846 HLO instructions.
+    _, accumulated = jax.lax.scan(level, first, jnp.moveaxis(increments, 1, 0))
+    return jnp.concatenate((first[:, None], jnp.moveaxis(accumulated, 0, 1)), axis=1)
 
 
 # --------------------------------------------------------------------------------------------------------------------- #
@@ -278,28 +282,30 @@ def interp5(flat, ip, itp, iu, ite, irh, wp, wtp, wu, wte, wrh):
     """
 
     wp1, wtp1, wu1, wte1, wrh1 = 1.0 - wp, 1.0 - wtp, 1.0 - wu, 1.0 - wte, 1.0 - wrh
-    pick = lambda lo, w, w1: w1 if lo else w
-    acc = None
-    for p_lo in (True, False):
-        for t_lo in (True, False):
-            for u_lo in (True, False):
-                for e_lo in (True, False):
-                    for r_lo in (True, False):
-                        w_te = pick(t_lo, wtp, wtp1) * pick(e_lo, wte, wte1)
-                        w_ter = w_te * pick(r_lo, wrh, wrh1)
-                        weight = pick(p_lo, wp, wp1) * w_ter
-                        idx = table_index(ip + (0 if p_lo else 1), itp + (0 if t_lo else 1), iu + (0 if u_lo else 1),
-                                          ite + (0 if e_lo else 1), irh + (0 if r_lo else 1))
-                        term = jnp.take(flat, idx, mode="clip") * weight * pick(u_lo, wu, wu1)
-                        acc = term if acc is None else acc + term
-    return acc
+    pick = lambda lo, w, w1: jnp.where(lo == 1, w1, w)
+
+    def term(n):
+        p, t, u = 1 - n // 16, 1 - (n // 8) % 2, 1 - (n // 4) % 2
+        e, r = 1 - (n // 2) % 2, 1 - n % 2
+        w_te = pick(t, wtp, wtp1) * pick(e, wte, wte1)
+        w_ter = w_te * pick(r, wrh, wrh1)
+        weight = pick(p, wp, wp1) * w_ter
+        idx = table_index(ip + (1 - p), itp + (1 - t), iu + (1 - u), ite + (1 - e), irh + (1 - r))
+        return jnp.take(flat, idx, mode="clip") * weight * pick(u, wu, wu1)
+
+    # Same 32 terms and left-to-right additions. Three unrolled calls produce
+    # the measured 96-gather / 1165-HLO transpose fusion on the real GPU.
+    acc = jax.lax.fori_loop(jnp.int32(1), jnp.int32(32), lambda n, acc: acc + term(n), term(jnp.int32(0)))
+    return jax.lax.optimization_barrier(acc)
 
 
 def lookup_index(dvar, n):
     """``min(max(int(aint(dvar)) + 1, 1), n - 1)`` and the upper weight ``dvar - floor(dvar)``."""
 
     i = jnp.clip(jnp.trunc(dvar).astype(jnp.int32) + 1, 1, n - 1)
-    return i, dvar - jnp.floor(dvar)
+    # Keep completed cell indices/weights out of the unrelated emissivity
+    # producer (measured 610-HLO mixed transpose fusion, eight cell lookups).
+    return jax.lax.optimization_barrier((i, dvar - jnp.floor(dvar)))
 
 
 def _dbvt(t):
@@ -331,13 +337,21 @@ def trcems(co2t, pnm, tr: TrcpthOut, w, s2c, up2, emplnk, th2o, tco2, to3):
     sslp = CONST.sslp
     sqti = jnp.sqrt(co2t)
     tt = jnp.abs(co2t - 250.0)
-    tw = []
-    for l in range(6):
-        psi1 = jnp.exp(_ABP[l] * tt + _BBP[l] * tt * tt)
-        phi1 = jnp.exp(_AB[l] * tt + _BB[l] * tt * tt)
+    coefficients = jnp.asarray(np.stack((_ABP, _BBP, _AB, _BB, _G1, _G2, _G3, _G4), axis=1), jnp.float64)
+
+    def transmission(_, values):
+        abp, bbp, ab, bb, g1, g2, g3, g4 = values
+        psi1 = jnp.exp(abp * tt + bbp * tt * tt)
+        phi1 = jnp.exp(ab * tt + bb * tt * tt)
         p1 = pnm * (psi1 / phi1) / sslp
         w1 = w * phi1
-        tw.append(jnp.exp(-(_G1[l] * p1 * (jnp.sqrt(1.0 + _G2[l] * (w1 / p1)) - 1.0)) - _G3[l] * s2c - _G4[l] * tr.uptype))
+        band = jnp.exp(-(g1 * p1 * (jnp.sqrt(1.0 + g2 * (w1 / p1)) - 1.0)) - g3 * s2c - g4 * tr.uptype)
+        return None, band
+
+    # Same independent bands/REAL-rounded r8 coefficients and expressions;
+    # avoid the measured 18-exponential / 733-HLO mixed transpose producer.
+    _, bands = jax.lax.scan(transmission, None, coefficients)
+    tw = [bands[l] for l in range(6)]
     em = lambda n: emplnk[:, n - 1][:, None]
     tcfc3 = jnp.exp(-(lit(175.005) * tr.ucfc11))
     tcfc4 = jnp.exp(-(lit(1202.18) * tr.ucfc11))
@@ -373,8 +387,11 @@ def trcems(co2t, pnm, tr: TrcpthOut, w, s2c, up2, emplnk, th2o, tco2, to3):
                                          + _func(tr.uco213, betac2)) * to3 * tw[4] * tcfc4 * tcfc7 * em(2))
     eco22 = (lit(3.8443) * sqti * jnp.log(1.0 + _func(tr.uco221, betac1) + _func(tr.uco222, betac1)
                                          + _func(tr.uco223, betac2)) * tw[3] * tcfc3 * tcfc6 * em(1))
-    return (ecfc1 + ecfc2 + ecfc3 + ecfc4 + ecfc5 + ecfc6 + ecfc7 + ecfc8 + en2o1 + en2o2 + en2o3 + ech4
-            + eco21 + eco22)
+    # Completed trace-gas emissivity, separate from the mixed-layout total
+    # emissivity/temperature outputs (measured 513-HLO input-transpose fusion).
+    return jax.lax.optimization_barrier(
+        ecfc1 + ecfc2 + ecfc3 + ecfc4 + ecfc5 + ecfc6 + ecfc7 + ecfc8 + en2o1 + en2o2 + en2o3 + ech4
+        + eco21 + eco22)
 
 
 def radems(tp: RadtplOut, pnm, plol, plos, tr: TrcpthOut, tables) -> RademsOut:
@@ -395,13 +412,13 @@ def radems(tp: RadtplOut, pnm, plol, plos, tr: TrcpthOut, tables) -> RademsOut:
 
     ex = jnp.exp(lit(960.0) / tplnke)
     co2plk = lit(5.e8) / (_pow4(tplnke) * (ex - 1.0))
-    s = tplnke * pnm[:, 0]
-    co2t_cols = [tplnke]
+    # Same weighted serial recurrence; keep the original top temperature
+    # directly rather than recomputing it as (tplnke * pnm_top) / pnm_top.
+    # The unrolled 44-level recurrence contributes 88 slices to a700-HLO
+    # mixed transpose producer in the real-sized step.
+    co2s = _cumsum_levels(tplnke * pnm[:, 0], tlayr[:, 1:] * (pnm[:, 1:] - pnm[:, :-1]))
+    co2t = jnp.concatenate((tplnke[:, None], co2s[:, 1:] / pnm[:, 1:]), axis=1)
     co2eml_cols = [None] * (pverp - 1)
-    for k in range(1, pverp):  # Fortran k = 2..pverp, k1 = pverp+1-k... (k1 = pverp..2 while k = 2..pverp)
-        s = s + tlayr[:, k] * (pnm[:, k] - pnm[:, k - 1])
-        co2t_cols.append(s / pnm[:, k])
-    co2t = jnp.stack(co2t_cols, axis=1)
     exl = jnp.exp(lit(960.0) / tlayr[:, 1:])
     tlayr5 = tlayr[:, 1:] * tlayr4[:, 1:]
     co2eml = lit(1.2e11) * exl / (tlayr5 * ((exl - 1.0) * (exl - 1.0)))
@@ -464,7 +481,9 @@ def radems(tp: RadtplOut, pnm, plol, plos, tr: TrcpthOut, tables) -> RademsOut:
     c_star = interp5(cn_eh2ow, ip2, itp, iuc, ite, irh, wp2, wtp, wuc, wte, wrh)
     emis2 = jnp.minimum(jnp.maximum(fe_band(1) * (1.0 - l_star * c_star), 0.0), 1.0)
     emis2 = jnp.where(uvar2 < MIN_U_H2O, emis2 * (uvar2 / MIN_U_H2O), emis2)
-    h2oems = emis1 + emis2
+    # Completed H2O emissivity: keep its 96 table gathers out of the later
+    # trace-gas sum (measured 64-input fusion, STACK 288 B).
+    h2oems = jax.lax.optimization_barrier(emis1 + emis2)
 
     term7_1 = COEFJ[0, 0] + COEFJ[1, 0] * dty * (1.0 + c.c16 * dty)
     term8_1 = COEFK[0, 0] + COEFK[1, 0] * dty * (1.0 + c.c17 * dty)
@@ -695,16 +714,18 @@ def radclwmx_fluxes(abstot, absnxt, emstot, tp: RadtplOut, lwupcgs, pmid_cgs, pi
     nreg_max = pverp
     lev = jnp.arange(1, pver + 1, dtype=jnp.int32)
     npm = jnp.sum(pmid_cgs[:, None, :] <= pmxrgn[:, :, None], axis=-1)            # (ncol, pverp): count pmid<=bound
-    kx1_l, kx2_l = [], []
-    kx2_prev = jnp.zeros((ncol,), jnp.int32)
-    for r in range(nreg_max):
+    def region_bounds(kx2_prev, item):
+        r, npm_r = item
         k1 = kx2_prev + 1
-        kx2 = jnp.where(npm[:, r] >= k1, npm[:, r], 0).astype(jnp.int32)
-        kx1_l.append(k1)
-        kx2_l.append(kx2)
-        kx2_prev = jnp.where(r < nmxrgn, kx2, kx2_prev)
-    kx1_a = jnp.stack(kx1_l, axis=1)
-    kx2_a = jnp.stack(kx2_l, axis=1)
+        kx2 = jnp.where(npm_r >= k1, npm_r, 0).astype(jnp.int32)
+        return jnp.where(r < nmxrgn, kx2, kx2_prev), (k1, kx2)
+
+    # Same integer recurrence and region order, without a 45-way unrolled
+    # fusion (STACK 280/288 B in the whole-step CAM program).
+    _, (kx1_a, kx2_a) = jax.lax.scan(
+        region_bounds, jnp.zeros((ncol,), jnp.int32),
+        (jnp.arange(nreg_max, dtype=jnp.int32), jnp.moveaxis(npm, 1, 0)))
+    kx1_a, kx2_a = jnp.moveaxis(kx1_a, 0, 1), jnp.moveaxis(kx2_a, 0, 1)
     # a region is processed when its predecessor did not reach the surface (kx2(irgn-1) < pver)
     prev_kx2 = jnp.concatenate([jnp.zeros((ncol, 1), jnp.int32), kx2_a[:, :-1]], axis=1)
     reg_active = (jnp.arange(nreg_max)[None, :] < nmxrgn[:, None]) & (prev_kx2 < pver) & cloudy[:, None]

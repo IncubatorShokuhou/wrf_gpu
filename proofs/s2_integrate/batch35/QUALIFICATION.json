@@ -1,0 +1,182 @@
+{
+  "status": "READY-FOR-MERGE",
+  "base_main": "b70e8dec8eb1aa5395c519148d6dc8c3e1ae3c59",
+  "incoming_exact_reviewed_head": "c846bfe3c756fe769bd05705679bb129c51e8d09",
+  "product": "061d53020",
+  "candidate_before_seal": "e273727eac04697f8128d74b19ac3e1459fb14f1",
+  "SRC": "aec43981bfc7da42909a791eff97ba14210031ff",
+  "approved_product_delta": [
+    "src/gpuwrf/coupling/physics_couplers.py",
+    "src/gpuwrf/io/namelist_check.py",
+    "src/gpuwrf/physics/rrtmg_mp_re.py"
+  ],
+  "approved_test_delta": [
+    "tests/test_t_wsmdz_wsm_callers.py",
+    "tests/v025/b_column/test_t_wsmdz_radius_restart.py"
+  ],
+  "AST_pass": [
+    "proofs/t_wsmdz/build_wsm3_phase_oracle.py",
+    "proofs/t_wsmdz/mutants.py",
+    "proofs/t_wsmdz/w05_radiation_offline.py",
+    "src/gpuwrf/coupling/physics_couplers.py",
+    "src/gpuwrf/io/namelist_check.py",
+    "src/gpuwrf/physics/rrtmg_mp_re.py",
+    "tests/test_t_wsmdz_wsm_callers.py",
+    "tests/v025/b_column/test_t_wsmdz_radius_restart.py"
+  ],
+  "wholeSRC_BYTE_reviewed_product_and_head": true,
+  "newer_main_heavy_tests_pyproject_GPUlock_BYTE_preserved": [
+    "tests/conftest.py",
+    "tests/dynamics/test_sms3dtke_full.py",
+    "tests/test_heavy_cpu_tier.py",
+    "tests/test_v0234_b2_bounded_terminal_gate.py",
+    "tests/v025/b_column/test_kf_rk.py",
+    "tests/v025/b_core/prod_inputs.py",
+    "tests/v025/b_core/test_prod_inputs_selection.py",
+    "pyproject.toml",
+    "scripts/with_gpu_lock.sh"
+  ],
+  "data_scripts_packaging_BYTE_main": true,
+  "independent_paid_CPU": {
+    "PASS": 70,
+    "caller_selection_restart": 59,
+    "originalWSM3_carry_REALedge": 11,
+    "genuine_mutant_assertions": {
+      "M1_drop_wsm_wdm_radius_selection": 12,
+      "M5_drop_wsm3_rrtmg_phase_view": 2,
+      "M6_phase_view_for_wsm5_too": 2,
+      "M7_non_strict_273K_threshold": 1,
+      "M8_skip_T1D_REAL_conversion": 1
+    },
+    "mutant_setup_errors": 0,
+    "pristineREAL_phase_fixture_checks": 10
+  },
+  "fresh_critic_receipt_SHA": 9,
+  "default_program_source_reuse": {
+    "old": "54b08269f",
+    "new": "c846bfe3c",
+    "coupler_only_static_mp3_guard_added": true,
+    "selector_only_mp3_added": true,
+    "cases": 25856,
+    "selector_deltas": [
+      [
+        true,
+        3,
+        1,
+        4,
+        4,
+        false,
+        true
+      ]
+    ],
+    "byte_identical": {
+      "src/gpuwrf/coupling/scan_adapters.py": true,
+      "src/gpuwrf/runtime/operational_mode.py": true,
+      "src/gpuwrf/contracts/state.py": true,
+      "proofs/t_wsmdz/radius_flags.json": true
+    },
+    "final_src_trees": {
+      "061d53020": "aec43981bfc7da42909a791eff97ba14210031ff",
+      "c846bfe3c": "aec43981bfc7da42909a791eff97ba14210031ff"
+    },
+    "default_identity_reuse": "Independent previous Swissf672a573/PROD6fc715a2; exact same normalized executable AST after removing static-unreachable mp3 guard and new literal3. No repeated default numerical validation needed."
+  },
+  "FULL_ids_reused_fresh_batch34_plus_exact_static_mp3_scope": {
+    "Swiss": "f672a5739cb96e388b6b7a40ef80337bf81bdc14ef15268f3476e09d79fe055d",
+    "PROD": "6fc715a2bd630934c4cf0f94427df19a527cbf429011c9ba5efe4d712744d27b"
+  },
+  "performance_memory": {
+    "platform": "cpu",
+    "source": "<USER_HOME>/wrf_gpu2_lanes/rv-t-wsmdz/series2/snapshot",
+    "shape": [
+      44,
+      117,
+      267
+    ],
+    "baseline": "same compiled caller with mp4 skips only the new static mp3 block; use_mp_re0 and cloud_mp_physics3 fixed in both arms",
+    "scope": "caller-only CPU timing/memory, not GPU or full radiation timing",
+    "before": {
+      "compile_s": 0.35403363699879264,
+      "median_ms": 38.41318249760661,
+      "temp_bytes": 5498064,
+      "output_bytes": 110961176,
+      "argument_bytes": 66601548,
+      "fusions": 34
+    },
+    "after": {
+      "compile_s": 0.4261868940011482,
+      "median_ms": 37.19029750209302,
+      "temp_bytes": 10996176,
+      "output_bytes": 110961176,
+      "argument_bytes": 61103484,
+      "fusions": 36
+    }
+  },
+  "efficiency_scope": "CPU38.413->37.190ms no speedup claim;temps+5498112B offsetargument-5498064B/outputsame/fusions34->36/compile.354->.426s. Onecompare+3selects/nohosttransfer/loop. GPUlaunch/VRAM/readinessU; newmp3RRTMG4+4 radii12*nz*ny*nx=16.49MBPROD, c04RRTMG4+Dudhia1 radii absent.",
+  "scientific_limits": [
+    "c04requiresfull24hGPU/D6/E41/F2 confirmationon061; earlierde374run cannot qualify thisphaseview.",
+    "OfflineOLR/GLWreplay andoriginalcaller fixture do notclosecoupledtrajectory; residualradiationbias remains.",
+    "FullWDM7kernel/savepoints missing;previousF2/strictFMA/ZERORMOL/globalrelease constraints remain.",
+    "No laterlaneWIP/MP11fallback merge/no newreference/tolerance change."
+  ],
+  "fresh_numerical_native_GPU_default_runs": 0,
+  "cleanup": "No newcache/snapshot/pytest/scratch/JAX/GPU/jobs",
+  "proof_files": {
+    "rv-FINAL_PACKET.json": {
+      "sha256": "cf04c0739b66cde1f7794b4e7d88453cb062f05dd06afe0cd48526ad7f5704e2",
+      "raw_sha256": "cf04c0739b66cde1f7794b4e7d88453cb062f05dd06afe0cd48526ad7f5704e2"
+    },
+    "rv-VERDICT.md": {
+      "sha256": "6a1f977cc4ec2f43639bc8d96f3a74d0f228b72506dea71f28540d20d6b7f662",
+      "raw_sha256": "6a1f977cc4ec2f43639bc8d96f3a74d0f228b72506dea71f28540d20d6b7f662"
+    },
+    "rv-control.xml.gz": {
+      "sha256": "bdb7d054c631f1a6569e747a724544191be94fd7cc20c5773844207c33020f10",
+      "raw_sha256": "eb917ba9d6416fe1c59e9a959396f6f1169de7cc6b2a61a046bc11decbbe3b63"
+    },
+    "rv-carry.xml.gz": {
+      "sha256": "f5f9b7f1125628dad930eb5cd79d5d1b7cbfaadcd623e23e6ba4414275e9a2ac",
+      "raw_sha256": "cce620b73ab6dd2d4097890a2b267ac22a05e5a68e708b2e764f4d4db4b4d0f4"
+    },
+    "rv-oracle-check.json": {
+      "sha256": "33fe3276e5e61b864307328055b00027978e0e1a08ff0080905a0924a8c25ea3",
+      "raw_sha256": "33fe3276e5e61b864307328055b00027978e0e1a08ff0080905a0924a8c25ea3"
+    },
+    "rv-phase-rebuilt.json": {
+      "sha256": "1f0ca82de7bd20d4f59ed04420e247ec2ec8aa2ab652ac7a3f3c39800ee08228",
+      "raw_sha256": "1f0ca82de7bd20d4f59ed04420e247ec2ec8aa2ab652ac7a3f3c39800ee08228"
+    },
+    "rv-mutants.json": {
+      "sha256": "e821bd9d0c5dcdc643a1008fa836f72bf90f66337bb299c04a6f68f4c29247f6",
+      "raw_sha256": "e821bd9d0c5dcdc643a1008fa836f72bf90f66337bb299c04a6f68f4c29247f6"
+    },
+    "rv-threshold-mutants.json": {
+      "sha256": "d6c9d00702262c83d012fc828be632d1db6bd355d10e427653e3b4b01d9b4d02",
+      "raw_sha256": "d6c9d00702262c83d012fc828be632d1db6bd355d10e427653e3b4b01d9b4d02"
+    },
+    "rv-source-reuse.json": {
+      "sha256": "db33a983f0e1900feba47f4a923d7c1cee4a0c00d8080e8c45b1c8908e591a0a",
+      "raw_sha256": "db33a983f0e1900feba47f4a923d7c1cee4a0c00d8080e8c45b1c8908e591a0a"
+    },
+    "rv-prep_cost.json": {
+      "sha256": "fa7e71ca1c7ae794443f2aaa1de7960933fcf876933dadc35a3a828603fb15ab",
+      "raw_sha256": "fa7e71ca1c7ae794443f2aaa1de7960933fcf876933dadc35a3a828603fb15ab"
+    },
+    "rv-test_real_threshold.py": {
+      "sha256": "7f6735bcadb68ef2a30e728f271e78f81fe392c3ccf2b2afec2d7a384b7018d0",
+      "raw_sha256": "7f6735bcadb68ef2a30e728f271e78f81fe392c3ccf2b2afec2d7a384b7018d0"
+    },
+    "rv-test_wsm3_step_carry.py": {
+      "sha256": "838f06fd934bdb2423eedbeb449227f884dc2c62b753651c78c70efe032252c1",
+      "raw_sha256": "838f06fd934bdb2423eedbeb449227f884dc2c62b753651c78c70efe032252c1"
+    },
+    "rv-threshold_mutants.py": {
+      "sha256": "788e4813d60cef03e1c6071729586cb2cc62473735008cc8154675770e6b478b",
+      "raw_sha256": "788e4813d60cef03e1c6071729586cb2cc62473735008cc8154675770e6b478b"
+    },
+    "integrate_batch35.py": {
+      "sha256": "065cf1ca6ab1123a7531d5c8d7207d900dd7be954562cf1e0d8c4b6c36b82001",
+      "raw_sha256": "065cf1ca6ab1123a7531d5c8d7207d900dd7be954562cf1e0d8c4b6c36b82001"
+    }
+  }
+}

@@ -1,0 +1,109 @@
+Traceback (most recent call last):
+  File "<USER_HOME>/src/wrf_gpu2_wt/t-calleraudit/src/gpuwrf/cli.py", line 1249, in _cmd_run
+    payload = execute_nested_pipeline(nested_config)
+  File "<USER_HOME>/src/wrf_gpu2_wt/t-calleraudit/src/gpuwrf/integration/nested_pipeline.py", line 3658, in execute_nested_pipeline
+    payload = _execute_nested_pipeline(config, _prefetch_handles=prefetch_handles)
+  File "<USER_HOME>/src/wrf_gpu2_wt/t-calleraudit/src/gpuwrf/integration/nested_pipeline.py", line 4150, in _execute_nested_pipeline
+    result = run_tree(
+        tree,
+    ...<9 lines>...
+        **run_kwargs,
+    )
+  File "<USER_HOME>/src/wrf_gpu2_wt/t-calleraudit/src/gpuwrf/runtime/domain_tree.py", line 2905, in run_operational_domain_tree
+    return run_domain_tree_callbacks(
+        tree.hierarchy,
+    ...<18 lines>...
+        event_aware_fusion_k=event_aware_fusion_k,
+    )
+  File "<USER_HOME>/src/wrf_gpu2_wt/t-calleraudit/src/gpuwrf/runtime/domain_tree.py", line 911, in run_domain_tree_callbacks
+    integrate(root_name, int(root_steps), reset_clock=False)
+    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<USER_HOME>/src/wrf_gpu2_wt/t-calleraudit/src/gpuwrf/runtime/domain_tree.py", line 713, in integrate
+    out[name] = advance(name, out[name], int(start_step), int(chunk))
+                ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<USER_HOME>/src/wrf_gpu2_wt/t-calleraudit/src/gpuwrf/runtime/domain_tree.py", line 1833, in advance
+    return _advance_chunk(
+        carry,
+    ...<4 lines>...
+        cadence=cadence,
+    )
+  File "<USER_HOME>/src/wrf_gpu2_wt/t-calleraudit/src/gpuwrf/runtime/operational_mode.py", line 11648, in _advance_chunk
+    return _advance_chunk_fori(
+        carry, namelist, start_step, clock_base, n_steps=n_steps, cadence=cadence
+    )
+  File "<USER_HOME>/src/wrf_gpu2_wt/t-calleraudit/src/gpuwrf/runtime/operational_mode.py", line 11536, in _advance_chunk_fori
+    return jax.lax.fori_loop(
+           ~~~~~~~~~~~~~~~~~^
+        jnp.asarray(0, dtype=jnp.int32),
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<2 lines>...
+        carry,
+        ^^^^^^
+    )
+    ^
+  File "<USER_HOME>/src/wrf_gpu2_wt/t-calleraudit/src/gpuwrf/runtime/operational_mode.py", line 11528, in body
+    return _layout_pin("carry", _physics_boundary_step(
+                                ~~~~~~~~~~~~~~~~~~~~~~^
+        _layout_pin("carry", scan_carry), namelist, step_index, run_radiation=run_radiation,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        debug=False, clock_base=clock_base,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ))
+    ^
+  File "<USER_HOME>/src/wrf_gpu2_wt/t-calleraudit/src/gpuwrf/runtime/operational_mode.py", line 11023, in _physics_boundary_step
+    next_carry, _diagnostics = _physics_boundary_step_with_limiter_diagnostics(
+                               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        carry,
+        ^^^^^^
+    ...<4 lines>...
+        clock_base=clock_base,
+        ^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "<USER_HOME>/src/wrf_gpu2_wt/t-calleraudit/src/gpuwrf/runtime/operational_mode.py", line 10668, in _physics_boundary_step_with_limiter_diagnostics
+    physics_forcing = _physics_step_forcing(
+        carry,
+    ...<5 lines>...
+        lower_fields=lower_fields,
+    )
+  File "<USER_HOME>/src/wrf_gpu2_wt/t-calleraudit/src/gpuwrf/runtime/operational_mode.py", line 9987, in _physics_step_forcing
+    mynn = mynn_adapter_with_source_leaves(
+        next_state,
+    ...<5 lines>...
+        **({"passive_scalars": _pbl_mynn_number_scalars(mp_opt)} if _pbl_mynn_number_scalars(mp_opt) else {}),
+    )
+  File "<USER_HOME>/src/wrf_gpu2_wt/t-calleraudit/src/gpuwrf/coupling/physics_couplers.py", line 2750, in mynn_adapter_with_source_leaves
+    out_b, pblh_b = step_mynn_pbl_column_with_pblh(
+                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        column_b, dt, debug=False, surface=surface_b, edmf=_MYNN_EDMF, dx=_mynn_dx(grid)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "<USER_HOME>/src/wrf_gpu2_wt/t-calleraudit/src/gpuwrf/physics/mynn_pbl.py", line 2130, in step_mynn_pbl_column_with_pblh
+    return step_mynn_columns_native(state, dt, debug=debug, surface=surface,
+                                    edmf=edmf, dx=dx)
+  File "<USER_HOME>/src/wrf_gpu2_wt/t-calleraudit/src/gpuwrf/kernels/phys_mynn_columns.py", line 172, in step_mynn_columns_native
+    return _advance_native(state, dt, debug, surface, edmf, dx)
+  File "<USER_HOME>/src/wrf_gpu2_wt/t-calleraudit/src/gpuwrf/kernels/phys_mynn_columns.py", line 104, in _advance_native
+    mf = _native_edmf_arrays(state, flux, fltv, pblh0, dt, dx,
+        **P._edmf_fresh_cloud_kwargs(qc_bl, cldfra_bl))
+  File "<USER_HOME>/src/wrf_gpu2_wt/t-calleraudit/src/gpuwrf/kernels/phys_mynn_columns.py", line 52, in _native_edmf_arrays
+    return dmp_mf_columns_native(
+        sqw, sqv, sqc, state.u, state.v, state.w, theta, thl, thv, state.theta * 0.0,
+    ...<7 lines>...
+        interpret=jax.default_backend() == "cpu",
+    )
+  File "<USER_HOME>/src/wrf_gpu2_wt/t-calleraudit/src/gpuwrf/kernels/phys_mynn_plume.py", line 705, in dmp_mf_columns_native
+    kwargs = {k: (None if v is None else jnp.asarray(v, dtype=jnp.float32))
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+              for k,v in kwargs.items()}
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<USER_HOME>/miniconda3/lib/python3.13/site-packages/jax/_src/numpy/array_constructors.py", line 427, in asarray
+    return array(a, dtype=dtype, copy=bool(copy), order=order, device=device,
+                 out_sharding=out_sharding)
+  File "<USER_HOME>/miniconda3/lib/python3.13/site-packages/jax/_src/numpy/array_constructors.py", line 288, in array
+    out = np.asarray(object, dtype=dtype)
+TypeError: float() argument must be a string or a real number, not 'dict'
+--------------------
+For simplicity, JAX has removed its internal frames from the traceback of the following exception. Set JAX_TRACEBACK_FILTERING=off to include these.
+gpuwrf: error: nested forecast failed (TypeError: float() argument must be a string or a real number, not 'dict')

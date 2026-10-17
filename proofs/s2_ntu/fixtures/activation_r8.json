@@ -1,0 +1,42 @@
+{
+  "kind": "r8",
+  "calls": 128,
+  "compile": [
+    "<DATA_ROOT>/canairy_meteo/artifacts/envs/wrf-build/bin/x86_64-conda-linux-gnu-gfortran",
+    "-fdefault-real-8",
+    "-fdefault-double-8",
+    "-cpp",
+    "-ffree-form",
+    "-ffree-line-length-none",
+    "-O0",
+    "-ffp-contract=off",
+    "-fno-range-check",
+    "-finit-real=zero",
+    "-finit-integer=0",
+    "-finit-logical=false",
+    "error.F90",
+    "original.F",
+    "driver.F90",
+    "-o",
+    "oracle"
+  ],
+  "fields": [
+    "tk1d",
+    "w1d",
+    "nc1d",
+    "nr1d",
+    "qacac",
+    "qacar",
+    "rx0",
+    "ssw"
+  ],
+  "width": 16,
+  "source_sha256": "c864483fa572d42ab1dc51cc538f8062dc2f582369f597261e8c850c49ce34dd",
+  "npz_sha256": "ec262f317648ed2a90d6ca8ed627e19315127ff32613a69729e4f10e41876fe8",
+  "active": {
+    "cloud": 74,
+    "rain": 22,
+    "held_cutoff_calls": 64
+  },
+  "nonfinite": 0
+}

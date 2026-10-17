@@ -1,5 +1,13 @@
 # Release notes
 
+**v0.4.0 candidate — DRAFT.** Final totals and approval are TBD-VALIDATION
+after all caller-audit class-A/F20 fixes and GPU validation (new freeze TBD).
+
+- [v0.4.0 release draft](RELEASE_NOTES_v0.4.0.md)
+- [v0.4.0 per-option matrix](../docs/release/SUPPORT_MATRIX_v0.4.0.md)
+- [v0.4.0 upgrade](../docs/release/UPGRADE_v0.4.0.md)
+
+
 **v0.3.4** (2026-10-10) is a fix release: the CLI binds or refuses every namelist physics option. The default program and its v0.3.3 validation are unchanged.
 
 - [v0.3.4: namelist binding fix, experimental schemes](RELEASE_NOTES_v0.3.4.md)

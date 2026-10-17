@@ -1,0 +1,274 @@
+{
+  "utc": "2026-10-14T05:52:14.125723+00:00",
+  "lane": "t-aotkey",
+  "status": "FIXED CPU critic requirements; native E1/direct trajectory OPEN",
+  "parent_main": "d84b3699d041840f658f09d857bd18cac4b14e0d",
+  "tested_source_commit": "ca3f2db8d3860b0cf58ad0e3b37932e78352d31d",
+  "source_tree": "3b3689997d2bca4f5b5b3cc8d2720a9af6d33725",
+  "changed_source_files": [
+    "src/gpuwrf/runtime/aot_baked_tables.py",
+    "src/gpuwrf/runtime/aot_cheap_key.py",
+    "src/gpuwrf/runtime/aot_precompile.py"
+  ],
+  "model_and_hot_memo_byte_identical_to_parent": true,
+  "prior_qnse_gfs_source_reuse": "Only active cu10/11 module selection added after ee269; other cache files and prior regression bodies identical",
+  "external_reader_count": 23,
+  "tests": {
+    "AK21_glacier_metadata.xml": {
+      "tests": 84,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "AK22_provider_hlo.xml": {
+      "tests": 4,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "AK26_cuplus_composition.xml": {
+      "tests": 45,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    }
+  },
+  "negative_controls": {
+    "AK24_provider_mutant.json": {
+      "genuine_assertion_failures": 4,
+      "setup_errors": 0
+    },
+    "AK27_cuplus_mutant.json": {
+      "genuine_assertion_failures": 2,
+      "setup_errors": 0
+    }
+  },
+  "original_critic_validation": "175PASS on79b20dddd; retained with original scope, not added to overlapping totals",
+  "identities": {
+    "swiss": {
+      "sha256": "f672a5739cb96e388b6b7a40ef80337bf81bdc14ef15268f3476e09d79fe055d",
+      "wall_s": 36.3,
+      "actual_key": {
+        "schema": "GPUWRF-AOTKEY-v5",
+        "key": "2a11468a4160bc3f23611d1c4fefb7bd43d7fcb0caf2022976c1c1747990f6df",
+        "x64_before": true,
+        "x64_after": true
+      },
+      "receipt": "AK29_final_swiss.json"
+    },
+    "prod_d01": {
+      "sha256": "6fc715a2bd630934c4cf0f94427df19a527cbf429011c9ba5efe4d712744d27b",
+      "wall_s": 66.3,
+      "actual_key": {
+        "schema": "GPUWRF-AOTKEY-v5",
+        "key": "e34c484c35e0edb7a9c267cc71023f70271409fed2cd7191f6966244565f25d2",
+        "x64_before": true,
+        "x64_after": true
+      },
+      "receipt": "AK30_final_prod.json"
+    }
+  },
+  "cpu_component_costs": [
+    {
+      "platform": "cpu",
+      "source_commit": "ee2693c215b790fdf045db4cd461d82d4619f126",
+      "baseline_source": "6c4bff69c02cfab7c252118fbf666671729134e6",
+      "component": "baked_table_hash only, 20 warmed repetitions; no production memo/timestep timing",
+      "records": [
+        {
+          "selection": "inactive",
+          "before": {
+            "first_s": 0.0005315840244293213,
+            "warm_median_ms": 0.002569984644651413,
+            "peak_first_increment_mib": 0.25,
+            "peak_warm_increment_mib": 0.0
+          },
+          "after": {
+            "first_s": 3.847014158964157e-05,
+            "warm_median_ms": 0.0035051489248871803,
+            "peak_first_increment_mib": 0.0,
+            "peak_warm_increment_mib": 0.0
+          }
+        },
+        {
+          "selection": "qnse",
+          "before": {
+            "first_s": 4.268018528819084e-05,
+            "warm_median_ms": 0.0023050233721733093,
+            "peak_first_increment_mib": 0.0,
+            "peak_warm_increment_mib": 0.0
+          },
+          "after": {
+            "first_s": 0.00510698719881475,
+            "warm_median_ms": 1.4333155704662204,
+            "peak_first_increment_mib": 0.5,
+            "peak_warm_increment_mib": 0.75
+          }
+        },
+        {
+          "selection": "gfs94",
+          "before": {
+            "first_s": 4.560011439025402e-05,
+            "warm_median_ms": 0.0025399494916200638,
+            "peak_first_increment_mib": 0.0,
+            "peak_warm_increment_mib": 0.0
+          },
+          "after": {
+            "first_s": 0.0059415739960968494,
+            "warm_median_ms": 0.7241809507831931,
+            "peak_first_increment_mib": 1.75,
+            "peak_warm_increment_mib": 0.0
+          }
+        },
+        {
+          "selection": "gfs95",
+          "before": {
+            "first_s": 4.1930004954338074e-05,
+            "warm_median_ms": 0.0022849999368190765,
+            "peak_first_increment_mib": 0.0,
+            "peak_warm_increment_mib": 0.0
+          },
+          "after": {
+            "first_s": 0.0010082670487463474,
+            "warm_median_ms": 0.7247499888762832,
+            "peak_first_increment_mib": 0.0,
+            "peak_warm_increment_mib": 0.0
+          }
+        }
+      ],
+      "gpu_executed": false
+    },
+    {
+      "platform": "cpu",
+      "source_commit": "ca3f2db8d3860b0cf58ad0e3b37932e78352d31d",
+      "baseline_source": "6c4bff69c02cfab7c252118fbf666671729134e6",
+      "component": "baked_table_hash only, 20 warmed repetitions; no production memo/timestep timing",
+      "records": [
+        {
+          "selection": "cup10",
+          "before": {
+            "first_s": 0.0006163350772112608,
+            "warm_median_ms": 0.002674991264939308,
+            "peak_first_increment_mib": 0.25,
+            "peak_warm_increment_mib": 0.0
+          },
+          "after": {
+            "first_s": 0.0028476810548454523,
+            "warm_median_ms": 0.24106702767312527,
+            "peak_first_increment_mib": 1.0,
+            "peak_warm_increment_mib": 0.0
+          }
+        },
+        {
+          "selection": "mskf11",
+          "before": {
+            "first_s": 3.9040111005306244e-05,
+            "warm_median_ms": 0.0023349421098828316,
+            "peak_first_increment_mib": 0.0,
+            "peak_warm_increment_mib": 0.0
+          },
+          "after": {
+            "first_s": 0.00038453307934105396,
+            "warm_median_ms": 0.24276692420244217,
+            "peak_first_increment_mib": 0.0,
+            "peak_warm_increment_mib": 0.0
+          }
+        }
+      ],
+      "gpu_executed": false
+    }
+  ],
+  "gpu_executed": false,
+  "native_e1_diagnosis": "OPEN; no global E1 fix or WRF fidelity/release claim",
+  "lease_exists": false,
+  "own_temporary_payloads_cleaned": true,
+  "foreign_data_modified": false,
+  "interrupted_arm": "AK20 rc124 at180s; partial output only, no complete pass total",
+  "artifacts": [
+    {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-aotkey/FINAL_SOURCE_RECEIPT.json",
+      "sha256": "71517366dce24d0fc658d3202e71cae02c7d2845e2b78c3f314deafa55d0105b"
+    },
+    {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-aotkey/AK20_rebase_metadata.log",
+      "sha256": "9799895100b6958b605e070b35da5adcbfeba2f82e8ae90c73e393050da1cb12"
+    },
+    {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-aotkey/AK21_glacier_metadata.xml",
+      "sha256": "3ff0b98151deefe08756b818149fe71f5cb3b5ec1bab02444f3cf94f74fb171b"
+    },
+    {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-aotkey/AK22_provider_hlo.xml",
+      "sha256": "e1eeb849967e57938cab60f82fc8ddf41b610fb43b8ca67135324c33e5dae38e"
+    },
+    {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-aotkey/AK23_glacier_swiss.json",
+      "sha256": "9c39357c4fb507175360d7b4eee9a99175dc1e263313f8637cd3bae514bb08c0"
+    },
+    {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-aotkey/AK24_provider_mutant.json",
+      "sha256": "42b8be277ba2a8ebfa3553d1b95627cb682eb97dc8f583c4ee675d6dceeffc3e"
+    },
+    {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-aotkey/AK25_provider_cost.json",
+      "sha256": "e8c02838cca48c5a8229b4cd5cdce153a288ee8193f82e5f764e3a4fa3b1ce9e"
+    },
+    {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-aotkey/AK26_cuplus_composition.xml",
+      "sha256": "4b988f9b886ff25c7c845a17e0744915781024238787ac5a01649c4c12f1cb54"
+    },
+    {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-aotkey/AK27_cuplus_mutant.json",
+      "sha256": "48b1a3a570e024a9673697ce70304f68e0d62b37d8629c62a9d8614629164243"
+    },
+    {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-aotkey/AK28_cuplus_cost.json",
+      "sha256": "49b22548d6cc1bb55b6fd99651bc9cef415286c8ab0c757dfb3971aa9b997c0f"
+    },
+    {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-aotkey/AK29_final_swiss.json",
+      "sha256": "789a17563d7fbebfecd85fd6afc869ceb4af724dd923408d0624c22817260135"
+    },
+    {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-aotkey/AK29_final_swiss.json.key.json",
+      "sha256": "cf4321c1ed084cf09742ce8f34dfab4fe3c115de6e28a3e5d3cb27d26d54cc21"
+    },
+    {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-aotkey/AK30_final_prod.json",
+      "sha256": "904a0d803abd28e1a964e02363d50c8ec4491d7c1698ebd69e5e9dc77ed4abe8"
+    },
+    {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-aotkey/AK30_final_prod.json.key.json",
+      "sha256": "91fd4bc9d356df870b7f79cf6b4c5acb69358675471e39b6ec967b5bf861bd4a"
+    },
+    {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-aotkey/AK12_keyed_identity.py",
+      "sha256": "9eecb4b8fc965dbfa16c69c8cea5ffc6ffa63af8a8e24f6a0233654b86adfdc2"
+    },
+    {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-aotkey/AK12_identity.py",
+      "sha256": "9f8104e0aceb5c5d3f0b73b7f3bfcf61979665512189e3a323a61d8a65f0407f"
+    },
+    {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-aotkey/AK24_provider_mutant.py",
+      "sha256": "0e469732eadca58227549e5da5306011ef394693ed7dc2eb750c58a7482b67a7"
+    },
+    {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-aotkey/AK25_provider_cost.py",
+      "sha256": "62004f7a18875f2a7826dd9f89274bfdc6ffc2c4aebf30b9fdf22aa3e716a5a0"
+    },
+    {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-aotkey/AK27_cuplus_mutant.py",
+      "sha256": "09a73f0de683b1e8bbbb2641f56dea8699892088b950567649705d424326ce74"
+    },
+    {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-aotkey/AK28_cuplus_cost.py",
+      "sha256": "a93595071992f0921247c634476e7925cf2574efdba4127d496d2825d4d2337f"
+    }
+  ],
+  "runtime_blobs": {
+    "src/gpuwrf/runtime/aot_baked_tables.py": "f12678bd28bfeb18d8ac664ce6778decb4c01598",
+    "src/gpuwrf/runtime/aot_cheap_key.py": "e7486a2e31d0fa1ec60337f5e712a160cde7f336",
+    "src/gpuwrf/runtime/aot_precompile.py": "ea2fd59671896b7938939d0f1c0c11c2951c0617"
+  }
+}

@@ -38,7 +38,7 @@ with np.load(path) as data:
 if args.mode in ('fp32', 'native'):
     arrays = {name: value.astype(jnp.float32) for name, value in arrays.items()}
 state = P.MynnPBLColumnState(**{
-    name: None if name in ('exner', 'ni') and f'state_{name}' not in arrays else arrays[f'state_{name}']
+    name: None if name in ('exner', 'ni', 'spp_pattern') and f'state_{name}' not in arrays else arrays[f'state_{name}']
     for name in P.MynnPBLColumnState.__slots__})
 flux = SurfaceFluxes(**{name: arrays[f'flux_{name}'] for name in SurfaceFluxes._fields if f'flux_{name}' in arrays})
 

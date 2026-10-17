@@ -1,0 +1,97 @@
+{
+  "schema": "t-writer-P3-radar-retention-v1",
+  "decision": "Class A existing producer retention; not class B, no fill/new scattering equations",
+  "started_UTC": "2026-10-15T03:12:51Z",
+  "measured_source": "a1dae0290bd346aa3124778d8944159b101b3deb",
+  "consumer_extra_source": "357c9f581",
+  "WRF_path": [
+    "module_mp_p3.F:4887 diag_ze=10*log10((ze_rain+ze_ice)*1e18) already dBZ",
+    "module_mp_p3.F:1098 P3_MAIN writes wrapper diag_zdbz_3d",
+    "module_microphysics_driver.F:1983 diag_zdbz_3d aliases REFL_10CM"
+  ],
+  "implementation": "Retain ze at P3 exit with actual step_index; full per-step updates/interior mask; initial allocator0 proven CPUframe0; existing carry/restarts/pipelines; no second logarithm/recompute; no P3 REFD_MAX fabrication",
+  "gates": {
+    "focused": 157,
+    "extra_restart": 14,
+    "mutant": "1 genuine ASSERT/0 ERROR",
+    "c23_reference_frames": {
+      "raw": 25,
+      "ZERO": 25
+    },
+    "c23_scope": "Actual original CPU fields ->held radar/writer BYTE; this is transcription, NOT GPU trajectory fidelity",
+    "original_WRF_ze": "3-step8x12 active originalP3fixture PASS at existing P348/P360 compiled policy",
+    "strict_ze": {
+      "1": {
+        "finite": true,
+        "max_abs": 0.04854774475097656,
+        "bad": 0,
+        "strict_bad": 10,
+        "n": 96,
+        "rtol": 0.0,
+        "atol": 0.0003
+      },
+      "2": {
+        "finite": true,
+        "max_abs": 0.009449005126953125,
+        "bad": 0,
+        "strict_bad": 13,
+        "n": 96,
+        "rtol": 0.0,
+        "atol": 0.0003
+      },
+      "3": {
+        "finite": true,
+        "max_abs": 0.013309478759765625,
+        "bad": 0,
+        "strict_bad": 13,
+        "n": 96,
+        "rtol": 0.0,
+        "atol": 0.0003
+      }
+    },
+    "default_IDs": {
+      "Swiss": "f672a5739cb96e388b6b7a40ef80337bf81bdc14ef15268f3476e09d79fe055d",
+      "PROD": "6fc715a2bd630934c4cf0f94427df19a527cbf429011c9ba5efe4d712744d27b"
+    }
+  },
+  "resources": {
+    "cpu_cap": "one6G/noSwap official RAM slot",
+    "focused_RSS_KiB": 4617812,
+    "default_PROD_RSS_KiB": 3729324,
+    "added_resident_radar_bytes_c23": 310464,
+    "kernel_launches": "No new scattering kernel; possible extra mask/fusion/device operations UNKNOWN",
+    "native_cost": "Existing ze arithmetic may be newly live after DCE; one extra output plane. Actual registers/stack/compile/VRAM/runtime/E41 pending."
+  },
+  "limits": [
+    "No GPU/full c23 fidelity/E41/performance PASS claim; old c23 inventory remainsINCOMPLETE until new actual output",
+    "P360 strict36/288 ze excesses preserved, max0.0485477; not strict3e-4PASS; existing WRF-contraction bound unchanged",
+    "Standalone daily P3 uses existing full-carry stepper to preserve diagnostic lifetime; full affected forecast requalification needed",
+    "P3 native compiler fix t-p3fix is separate; output ABI27 needs composed native qualification"
+  ],
+  "failed_first_arm": "151PASS6FAIL: strict-noFMA policy mismatch alreadyknownP360 +testgeometry/mask/Namespace assumptions; preserved rawreceipt; no physicsmath changed",
+  "raw_receipts": {
+    "<USER_HOME>/wrf_gpu2_lanes/t-writer/TWRAD/focused.log": "c39d8214d43260a1d530fa8f8fd58616ad8e42465b7d358f3ce0a21c9f4f1e45",
+    "<USER_HOME>/wrf_gpu2_lanes/t-writer/TWRAD/focused.xml": "2c3b6f0f2906574ad830311a2acc67e2b96b4023106c8d117568d1263b22c9e2",
+    "<USER_HOME>/wrf_gpu2_lanes/t-writer/TWRAD/focused.json": "7c9b3236cb341ee0b94ebd5ec7d3fd9e9ba770163d4664e3f168c542ed6b9d6b",
+    "<USER_HOME>/wrf_gpu2_lanes/t-writer/TWRAD2/focused.log": "05b1a7bad8946bec9e02663a685d8028a8d5450997bb88c4693d824d66707384",
+    "<USER_HOME>/wrf_gpu2_lanes/t-writer/TWRAD2/focused.xml": "2386637a89bc18452602d276cdfde93bf27864b9bdae1adf8c57d3962f7ce819",
+    "<USER_HOME>/wrf_gpu2_lanes/t-writer/TWRAD2/mutant.log": "822d6ddb020e2010980e324c9d0e8b8063674a0241f9ca1b851c65ae14bc945e",
+    "<USER_HOME>/wrf_gpu2_lanes/t-writer/TWRAD2/mutant.xml": "ee3e575b24634961b273af1a58b5552619059d23b862a8fef46defd0ae6f14cf",
+    "<USER_HOME>/wrf_gpu2_lanes/t-writer/TWRAD2/swiss.log": "aba640ae63780809a190d57b8e97c4e9386848c2992fdf63fa2114ed847a3455",
+    "<USER_HOME>/wrf_gpu2_lanes/t-writer/TWRAD2/prod.log": "49893a50a22c254e70b8e9f289190604003eb1d741ea70afdcf87bff53e08ea7",
+    "<USER_HOME>/wrf_gpu2_lanes/t-writer/TWRAD3.log": "bd5f6241b1b43b567821d6f56c6776d683b97d507b4e88e7404b6f61e218ec1e",
+    "<USER_HOME>/wrf_gpu2_lanes/t-writer/TWRAD3.xml": "a44eb07d452a00b0895e67051c7989d09a0ee936f1dbe4f63d1d05e5b15350d5"
+  },
+  "packet_files": {
+    "SWISS_IDENTITY.JSON": "62ed104aeb176eab903250422fc5947510299a4ee7a570db5c971f7631cdb833",
+    "C23_CPU_REFERENCES.json": "58413e8e60384399dbd7fd03298417d3fe300b2f90bdf5e7208651f0fd09c723",
+    "PROD_IDENTITY.JSON": "d8e34d9d9371dd55e7857b3d0f9bab1f6c992a729350d20c886eed3a19471f91",
+    "SOURCE_REUSE.json": "3414a9ca8cd7032928de351dd03279cbce2daa7fc6a9d28f4dc7bbc65c0d1af8",
+    "delete_retention.py": "463a18aef8f66ffcdf17e0eb5b007a3e938af411937cc760cd67fadc4a6e7bca",
+    "MUTANT.JSON": "d37e416e0978e216a5deb03df7f4204d612580a50c04eb39282a5a7a2e9deb49",
+    "MUTANT_SOURCE.JSON": "d12e383cbfe6657ee7fe306011f72aaee7aaee34f7ecb302021b12e7754b75a6",
+    "FOCUSED.JSON": "871ef83a67c5f0b9a58e0f0d79d3ce82d9ee3a642bd70a3b07f9b92978383c4d",
+    "EXISTING_P3_ZE_POLICY.json": "8028b46f4cf6d9bcec7fc67be90f02f72f6b3e85d9304742e8e0418c0b99f3c5",
+    "E199_EXTRA.json": "c1e1d786e8ec912da3f9adfd51b26f793f6ea2e76fa165dec8737250652de079"
+  }
+}

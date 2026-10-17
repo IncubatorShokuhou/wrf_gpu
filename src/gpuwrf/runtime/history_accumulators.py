@@ -78,6 +78,8 @@ def as_packed(fields, names):
     Instantaneous land history added after the checkpoint (QSNOWXY/QRAINXY) is seeded zero like
     seed_history: every Noah step rewrites it before the next history frame. Accumulators are never invented.
     """
+    if fields is not None and tuple(names)==LAND_FLUX_FIELDS:
+        names=(*names,*(name for name in ("BGAP","WGAP","GPP","NPP","NEE","ZWT","QIN") if name in fields))
     if fields is None or (isinstance(fields, PackedFields) and fields.names == tuple(names)):
         return fields
     like = jnp.asarray(fields[next(iter(fields))])
@@ -91,9 +93,13 @@ def full_history_enabled():
     return full_wrfout_variables_enabled()
 
 
-def seed_history(state):
+def seed_history(state, *, canopy_gaps=False, carbon=False, groundwater=False, prognostic_groundwater=False):
     shape = jnp.shape(state.t_skin)
-    return (PackedFields(LAND_FLUX_FIELDS, jnp.zeros((len(LAND_FLUX_FIELDS), *shape), dtype=jnp.float32)),
+    names=LAND_FLUX_FIELDS+(("BGAP","WGAP") if canopy_gaps else ())
+    if carbon:names=(*names,"GPP","NPP","NEE")
+    if groundwater:names=(*names,"ZWT")
+    if prognostic_groundwater:names=(*names,"QIN")
+    return (PackedFields(names, jnp.zeros((len(names), *shape), dtype=jnp.float32)),
             PackedFields(ENERGY_ACCUMULATORS, jnp.zeros((len(ENERGY_ACCUMULATORS), *shape), dtype=jnp.float32)))
 
 
@@ -110,7 +116,8 @@ def accumulate_energy(old, radiation, surface, dt):
         if value is not None:
             result[name] = old[name] + jnp.asarray(value, old[name].dtype) * jnp.asarray(dt, old[name].dtype)
     for name, attr in SURFACE_SOURCES.items():
-        result[name] = old[name] + jnp.asarray(surface[attr], old[name].dtype) * jnp.asarray(dt, old[name].dtype)
+        value = surface.get("accumulator_hfx",surface[attr]) if name == "ACHFX" else surface[attr]
+        result[name] = old[name] + jnp.asarray(value, old[name].dtype) * jnp.asarray(dt, old[name].dtype)
     # Noah-MP driver:1242 — melt rate*DT plus the three already-integrated
     # phase-change/snow-collapse ponding terms. This sum is mm, not J/m2.
     if "ACSNOM" in old:

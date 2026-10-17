@@ -1,0 +1,231 @@
+[
+ {
+  "fix": "NTU mp56 / Jensen mp55 native column typed global memory (Triton compile enabler)",
+  "batch": 42,
+  "lane": "t-ntucompile (s2-integrate c2e549f66c)",
+  "commits": "c2e549f66c (batch42 head 46868408b4)",
+  "changed": [
+   "src/gpuwrf/kernels/_column_memory.py (new)",
+   "src/gpuwrf/kernels/phys_ntu.py",
+   "src/gpuwrf/kernels/phys_jensen.py",
+   "src/gpuwrf/io/scheme_catalog.py (notes)"
+  ],
+  "reach": "mp_physics in {55,56} on a CUDA backend (Pallas-Triton lowering only; CPU interpret path stock)",
+  "caller_sites": [
+   "src/gpuwrf/runtime/operational_mode.py:8617 elif mp_opt == 56 -> ntu_adapter -> kernels/phys_ntu.py:16 _column_memory",
+   "src/gpuwrf/runtime/operational_mode.py:8621 elif mp_opt == 55 -> jensen_adapter -> kernels/phys_jensen.py:14 _column_memory"
+  ],
+  "numeric_change": "BYTE by construction (arithmetic/buffers/launch geometry unchanged; memory ops lowered as typed PTX). GPU-only compile enabler: before batch42 these kernels hit the E157 Coalesce hang, so any earlier c87/c88 GPU artifact is a different program",
+  "notes": "Actual GPU E41 FAIL disclosed (STACK 3496 B mp56 / 5472 B mp55, opt-in resource disclosure). c87/c88 already in the manager's FINAL list.",
+  "class": "perf-BYTE",
+  "affected": [
+   "c87",
+   "c88"
+  ]
+ },
+ {
+  "fix": "t-classd-mprho: Ferrier/Goddard-4ice/NSSL microphysics receive WRF moist_physics_prep_em DRY rho=1/(al+alb) and dz8w from (ph+phb)/g",
+  "batch": 43,
+  "lane": "t-classd-mprho ab5545b28",
+  "commits": "ab5545b28fc0209229f3aca9d3230f972408da14",
+  "changed": [
+   "src/gpuwrf/physics/ferrier/adapter.py",
+   "src/gpuwrf/coupling/goddard4ice_adapter.py",
+   "src/gpuwrf/physics/nssl2mom/adapter.py",
+   "src/gpuwrf/physics/nssl2mom/driver.py (doc)"
+  ],
+  "reach": "mp_physics in {5,15} (Ferrier), 7 (Goddard-4ice), {17,18,19,21,22} (NSSL); any LSM/PBL",
+  "caller_sites": [
+   "src/gpuwrf/runtime/operational_mode.py:8631 elif mp_opt in (18,19,21,22) -> nssl2mom_adapter (adapter.py:64 _wrf_moist_prep_den_delz)",
+   "src/gpuwrf/coupling/scan_adapters.py:2484 MP_SCAN_ADAPTERS[17]=nssl2mom_scan_adapter (mp17 via src/gpuwrf/runtime/operational_mode.py:8685 generic branch)",
+   "src/gpuwrf/runtime/operational_mode.py:8653 elif mp_opt in (5,15) -> ferrier_adapter (adapter.py:22)",
+   "src/gpuwrf/runtime/operational_mode.py:8657 elif mp_opt == 7 -> goddard4ice_adapter (goddard4ice_adapter.py:24)"
+  ],
+  "numeric_change": "YES: microphysics density/dz inputs change (prev. phy_prep (1+qv)/alt or EOS rho and surface dz)",
+  "notes": "Origin class-D (t-classd) caller-input fix, class-B effect on numerics. NSSL REFL_10CM vs original CPU-WRF c14/c15 reproduced to 7.6e-6 dBZ only with the dry density.",
+  "class": "B",
+  "affected": [
+   "c12",
+   "c13",
+   "c14",
+   "c15",
+   "c16",
+   "c62",
+   "c63",
+   "c64"
+  ]
+ },
+ {
+  "fix": "F2: convective RAINCV of stateless cu 2/3/5/6/16/93 reaches the land surface (PRCPCONV)",
+  "batch": 44,
+  "lane": "t-calleraudit 74995985f",
+  "commits": "412e0eeff (F2) within exact 74995985f",
+  "changed": [
+   "src/gpuwrf/coupling/scan_adapters.py (tiedtke/ntiedtke/gf/grell/bmj return_raincv)",
+   "src/gpuwrf/runtime/operational_mode.py (_PhysicsStepForcing.convective_amount, post-RK PRCPCONV)"
+  ],
+  "reach": "land precipitation carry present (sf_surface 3 RUC / 4 Noah-MP / 8 SSiB; API 2/7) AND cu_physics in {2,3,5,6,16,93}",
+  "caller_sites": [
+   "src/gpuwrf/runtime/operational_mode.py:10114 want_raincv = carry.noahmp_precipitation is not None",
+   "src/gpuwrf/runtime/operational_mode.py:10192 cu6 tiedtke, :10216 cu16 ntiedtke, :10238 cu5/93 grell, :10257 cu3 gf, :10390-10401 cu2 bmj -> convective_amount",
+   "src/gpuwrf/runtime/operational_mode.py:10839 elif physics_forcing.convective_amount is not None -> PRCPCONV=f32(RAINCV)/f32(dt) -> precipitation_from_step",
+   "src/gpuwrf/runtime/operational_mode.py:7876 seed _land_precipitation_seed"
+  ],
+  "numeric_change": "YES: Noah-MP PRCPCONV was 0 for these cumulus schemes",
+  "notes": "Same 7 composites as listed in F2_QUALIFICATION. batch56 (t-cfix-cu) later wrapped these calls in _stateless_cu; the RAINCV hand-off is preserved there.",
+  "class": "A",
+  "affected": [
+   "c03",
+   "c04",
+   "c05",
+   "c06",
+   "c07",
+   "c13",
+   "c17"
+  ]
+ },
+ {
+  "fix": "F2-FIX: land precipitation carry seeded for every LSM consumer independent of mp; mp=0 returns zero RAINNCV/SNOWNCV/GRAUPELNCV/SR",
+  "batch": 44,
+  "lane": "t-calleraudit 74995985f",
+  "commits": "76860e2d1 within exact 74995985f",
+  "changed": [
+   "src/gpuwrf/runtime/operational_mode.py (_land_precipitation_seed, mp0 zero-precip branch)"
+  ],
+  "reach": "mp_physics == 0 AND land precipitation consumer (sf 3/4/8, API 2/7); seed predicate also newly true for sf 2/7 (F24)",
+  "caller_sites": [
+   "src/gpuwrf/runtime/operational_mode.py:7284 _land_precipitation_seed",
+   "src/gpuwrf/runtime/operational_mode.py:7876 seed_mode -> seed_precipitation",
+   "src/gpuwrf/runtime/operational_mode.py:8692 else-branch (mp0) returns zero precipitation dict"
+  ],
+  "numeric_change": "YES for mp0+LSM (+stateless cu: PRCPCONV); none in the matrix (c01/c39 are mp0 with sf_surface 0)",
+  "notes": "No composite reaches it; CPU evidence only (actual _physics_boundary_step cu2/3/5/6/16/93 x mp{6,0}).",
+  "class": "A",
+  "affected": []
+ },
+ {
+  "fix": "F24: Noah-classic PRCP=RAINBL/DT + FFROZP=SR, Pleim-Xiu PRECIP=1e-3*RAINBL/DTBL; optional SR channel in the held precipitation carry; restart FORMAT_VERSION 6 + E78 refusal",
+  "batch": 44,
+  "lane": "t-calleraudit 74995985f",
+  "commits": "76860e2d1/8ca93b81f/8438460a2 within exact 74995985f",
+  "changed": [
+   "src/gpuwrf/coupling/noahclassic_surface_hook.py",
+   "src/gpuwrf/coupling/pleim_xiu_surface_hook.py",
+   "src/gpuwrf/runtime/noahmp_precipitation.py",
+   "src/gpuwrf/io/restart.py",
+   "src/gpuwrf/io/restart_schema.py",
+   "src/gpuwrf/validation/wrf_restart_hydration.py",
+   "producer 'sr' entries: scan_adapters._mp_public_precipitation, morrison(_aero) diagnostics, ferrier, goddard4ice, thompson_hail, nssl, ntu, cammg, jensen, p3(return_sr)"
+  ],
+  "reach": "numeric: sf_surface_physics in {2,7} (API-only, CLI refuses). Producer 'sr' extraction executes for every MP with a land carry but is consumed only when with_sr (Noah-classic): precipitation_from_step returns sr=None and noahmp_surface_hook drops it",
+  "caller_sites": [
+   "src/gpuwrf/coupling/noahclassic_surface_hook.py:191 noahclassic_precipitation",
+   "src/gpuwrf/coupling/pleim_xiu_surface_hook.py:150 pleim_xiu_precipitation",
+   "src/gpuwrf/runtime/operational_mode.py:10824/:10832 return_sr only if _explicit_noahclassic",
+   "src/gpuwrf/coupling/scan_adapters.py:248 generic sr (unused unless with_sr)",
+   "src/gpuwrf/runtime/noahmp_precipitation.py:31-38 sr=None unless with_sr"
+  ],
+  "numeric_change": "YES only for sf 2/7 (none in the matrix). All LSM composites: BYTE (unused sr DCE'd; treedef +1 None field may change AOT/cheap keys, not values; Swiss/PROD identity EXACT)",
+  "notes": "Restart v6 bump affects resume of any run (pre-v6 Noah-classic checkpoints refused); WRF-restart hydration SR edit not exercised by a runnable test (P0227 savepoints absent). No GPU composite needed.",
+  "class": "A",
+  "affected": []
+ },
+ {
+  "fix": "CAM-MG mp11 GPU admission: native column compiled by stock Triton 3.6 via jaxlib triton_kernel_call (XLA bundled Triton miscompiled -> zero RAINNCV/SNOWNCV)",
+  "batch": 45,
+  "lane": "t-cammgws 3ec98090e1",
+  "commits": "3ec98090e1 (reviewed SRC 67102aecc1)",
+  "changed": [
+   "src/gpuwrf/kernels/_triton_kernel_call.py (new)",
+   "src/gpuwrf/kernels/phys_cammg.py",
+   "src/gpuwrf/io/cammg_config.py",
+   "src/gpuwrf/runtime/aot_baked_tables.py",
+   "src/gpuwrf/io/scheme_catalog.py"
+  ],
+  "reach": "mp_physics == 11 on CUDA (admission + kernel route); CPU path unchanged",
+  "caller_sites": [
+   "src/gpuwrf/io/cammg_config.py:15/28 GPU_REFUSED_MP_PHYSICS empty -> GPU admitted",
+   "src/gpuwrf/kernels/phys_cammg.py:85 KernelCallCompilerParams",
+   "src/gpuwrf/runtime/operational_mode.py:8598 elif mp_opt == 11 -> cammg_adapter"
+  ],
+  "numeric_change": "YES on GPU (was refused; old bundled-Triton kernel gave zero precipitation). km_opt=3 refusal retained",
+  "notes": "c89 whole-old-source carry-over FORBIDDEN (s2-integrate batch45); native E41 STACK 1240 B/255 regs disclosed; requires pip triton==3.6.*. c89 already in manager's FINAL list.",
+  "class": "A",
+  "affected": [
+   "c89"
+  ]
+ },
+ {
+  "fix": "wz1080: CUDA architecture preflight (refuse < sm_80 before model work)",
+  "batch": 46,
+  "lane": "wz1080 341a3064f + bd9e37998",
+  "commits": "341a3064f, bd9e37998",
+  "changed": [
+   "src/gpuwrf/cli.py",
+   "src/gpuwrf/contracts/state.py (_gpu_device guard)",
+   "src/gpuwrf/runtime/gpu_preflight.py",
+   "src/gpuwrf/runtime/aot_cheap_key.py (PROCESS_INFRA_ENV)"
+  ],
+  "reach": "every CLI run (control path) and every GPU state allocation; pure Python, no traced program change",
+  "caller_sites": [
+   "src/gpuwrf/cli.py:1152 run_gpu_architecture_preflight()",
+   "src/gpuwrf/contracts/state.py:45 _require_supported_gpu_architecture"
+  ],
+  "numeric_change": "NONE (no traced change; on sm_120 passes; GPUWRF_ALLOW_UNSUPPORTED_GPU in PROCESS_INFRA_ENV, not in cheap key)",
+  "notes": "Executes in every composite run but cannot change numerics; no rerun needed for it.",
+  "class": "tooling",
+  "affected": []
+ },
+ {
+  "fix": "r-pkg040: packaged table assets (asset_path/ensure_asset, LazyTable) for RRTMG/Thompson/Thompson-aero/Thompson-hail/Jensen/CAM ozone; AOT cheap key content-keyed",
+  "batch": 47,
+  "lane": "r-pkg040 1b8f0fce6a",
+  "commits": "1b8f0fce6a0a12a6ed4ca170e7351a9763a773fe (+batch55 85fb2ee05 Jensen pin)",
+  "changed": [
+   "src/gpuwrf/assets.py",
+   "src/gpuwrf/assets_manifest.json",
+   "src/gpuwrf/physics/{rrtmg_lw,rrtmg_tables,thompson_tables,thompson_aero_tables,wrf_cam_ozone}.py",
+   "src/gpuwrf/physics/thompson_hail/{context,native}.py",
+   "src/gpuwrf/physics/jensen_ishmael/tables.py",
+   "src/gpuwrf/runtime/{aot_baked_tables,aot_cheap_key}.py",
+   "src/gpuwrf/cli.py"
+  ],
+  "reach": "every run loading these tables (ra 4 RRTMG, mp 8/28/38, mp55, CAM ozone): path resolution only; in a repo checkout asset_path() = the same repo file",
+  "caller_sites": [
+   "src/gpuwrf/physics/rrtmg_tables.py:23 TABLE_ASSET=asset_path(...)",
+   "src/gpuwrf/physics/thompson_tables.py:23 TABLE_ASSET=asset_path(...)"
+  ],
+  "numeric_change": "NONE in a checkout (identical bytes; s2-integrate fresh FULL Swiss/PROD IDs match). Installed-wheel path = fetched/bundled copies, SHA-manifest fail-closed",
+  "notes": "Release packaging smoke (wheel install) is a separate gate, not a composite rerun.",
+  "class": "tooling",
+  "affected": []
+ },
+ {
+  "fix": "t-classd-jensen: Jensen mp55 REFL_10CM from DIAG_DBZ3D every call; REFD_MAX only under do_radar_ref=1; NTU QHAIL history",
+  "batch": 48,
+  "lane": "t-classd-jensen 8b844b8bb",
+  "commits": "8b844b8bbd451b2b0add84c022c58d29494bc992",
+  "changed": [
+   "src/gpuwrf/physics/jensen_ishmael/adapter.py",
+   "src/gpuwrf/diagnostics/online.py",
+   "src/gpuwrf/runtime/operational_mode.py",
+   "src/gpuwrf/io/microphysics_history.py",
+   "src/gpuwrf/io/producer_history.py",
+   "src/gpuwrf/integration/nested_pipeline.py"
+  ],
+  "reach": "mp_physics == 55 (radar carry seeded + kernel dbz output); history inventory also for mp 56 (QHAIL listed as prognostic history)",
+  "caller_sites": [
+   "src/gpuwrf/runtime/operational_mode.py:7924 radar_reflectivity seed for mp in (...,55)",
+   "src/gpuwrf/diagnostics/online.py:134 radar_from_context mp 55",
+   "src/gpuwrf/physics/jensen_ishmael/adapter.py:28 dbz kernel output",
+   "src/gpuwrf/runtime/operational_mode.py:8621 elif mp_opt == 55"
+  ],
+  "numeric_change": "History-only: REFL_10CM (mp55) now written; prognostics unchanged by intent (extra kernel output). mp56: QHAIL history inventory only",
+  "notes": "Inventory gate of c87/c88 must expect REFL_10CM (c87) and QHAIL (c88).",
+  "class": "diagnostic-only",
+  "affected": [
+   "c87",
+   "c88"
+  ]
+ }
+]

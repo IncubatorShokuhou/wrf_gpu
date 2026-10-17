@@ -6,7 +6,7 @@ from pathlib import Path
 import sys
 
 
-def test_f1_cpu_b2_contamination_free_tolerance_gate():
+def test_f1_cpu_b2_contamination_free_tolerance_gate(tmp_path):
     repo_root = Path(__file__).resolve().parents[1]
     script = repo_root / "proofs/v023/batched_minigrid/f1_cpu_b2_gate.py"
     spec = importlib.util.spec_from_file_location("f1_cpu_b2_gate", script)
@@ -14,6 +14,9 @@ def test_f1_cpu_b2_contamination_free_tolerance_gate():
     f1_cpu_b2_gate = importlib.util.module_from_spec(spec)
     sys.modules[spec.name] = f1_cpu_b2_gate
     spec.loader.exec_module(f1_cpu_b2_gate)
+
+    # A test run must not replace the retained historical proof in the tree.
+    f1_cpu_b2_gate.JSON_OUT = tmp_path / "F1_CPU_B2_BIT_IDENTITY.json"
 
     assert f1_cpu_b2_gate.main() == 0
     proof_path = Path(f1_cpu_b2_gate.JSON_OUT)

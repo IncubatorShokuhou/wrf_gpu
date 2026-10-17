@@ -1,0 +1,223 @@
+{
+ "experiment": "K5-78",
+ "source_commit": "7eeb80748",
+ "status": "ACCEPTED_WITH_DISCLOSURE_CPU_COUPLED_GATE",
+ "standing_policy_main": "192b35d4f",
+ "qualified_control_provenance": "main a8da6cdeb KM2 GPU-qualified24h vs originalCPUWRF; control remains port-vs-port attribution, not independent SMS fidelity",
+ "same_inputs_steps_precision_policy": true,
+ "only_resolved_option_change": "km_opt2->5; diff_opt2/PBL0/SF5 andallotheroptionsidentical",
+ "candidate_receipt": "COUPLED_F2.json",
+ "raw_control_artifact": "<USER_HOME>/wrf_gpu2_lanes/s1-km5/K5-78-km2-control.json",
+ "raw_control_sha256": "1b5412346f18000fcf0c765bb5d23ae2ac95ad13283b6312d2491b5326c0fe08",
+ "control_wall_s": 233.8,
+ "control_nonfinite": 0,
+ "control_leaves": 183,
+ "control_steps": [
+  {
+   "step": 1,
+   "tke_max": 0.003305455669760704,
+   "pblh_max": 0.0,
+   "qc_min": 0.0,
+   "qc_max": 0.0,
+   "qc_negative_cells": 0,
+   "qc_over_cap_cells": 0,
+   "guard_candidates": 0
+  },
+  {
+   "step": 2,
+   "tke_max": 0.035697437822818756,
+   "pblh_max": 0.0,
+   "qc_min": 0.0,
+   "qc_max": 1.6425160538346972e-06,
+   "qc_negative_cells": 0,
+   "qc_over_cap_cells": 0,
+   "guard_candidates": 0
+  },
+  {
+   "step": 3,
+   "tke_max": 0.11324019730091095,
+   "pblh_max": 0.0,
+   "qc_min": -2.625401151091101e-14,
+   "qc_max": 7.785915840941016e-06,
+   "qc_negative_cells": 3,
+   "qc_over_cap_cells": 0,
+   "guard_candidates": 6
+  }
+ ],
+ "terminal_guard_classes_equal": true,
+ "terminal_guards": {
+  "dynamics.qc": {
+   "nonfinite": 0,
+   "out_of_range": 3,
+   "repaired": 3
+  }
+ },
+ "terminal_negative_count": 3,
+ "terminal_location_class": "ring0; minimum at same(k11,j41,i4)",
+ "control_nonzero_negative_records": [
+  {
+   "phase": "post_rk",
+   "field": "qc",
+   "coverage": "OBSERVED",
+   "present_observations": 3,
+   "absent_observations": 0,
+   "non_real32_observations": 0,
+   "exact_real32_extremum": true,
+   "negative_count": 14,
+   "minimum_negative": {
+    "value": -2.830937307490844e-12,
+    "step": 3,
+    "flat_index": 24534,
+    "index_kji": [
+     13,
+     38,
+     6
+    ]
+   },
+   "ring0_count": 3,
+   "interior_count": 11,
+   "nonfinite_count": 0,
+   "moisture_cap_applicability": "APPLICABLE"
+  },
+  {
+   "phase": "pre_dynamics_guard",
+   "field": "qc",
+   "coverage": "OBSERVED",
+   "present_observations": 3,
+   "absent_observations": 0,
+   "non_real32_observations": 0,
+   "exact_real32_extremum": true,
+   "negative_count": 3,
+   "minimum_negative": {
+    "value": -2.625401151091101e-14,
+    "step": 3,
+    "flat_index": 21130,
+    "index_kji": [
+     11,
+     41,
+     4
+    ]
+   },
+   "ring0_count": 3,
+   "interior_count": 0,
+   "nonfinite_count": 0,
+   "moisture_cap_applicability": "APPLICABLE"
+  },
+  {
+   "phase": "pre_boundary_guard",
+   "field": "qc",
+   "coverage": "OBSERVED",
+   "present_observations": 3,
+   "absent_observations": 0,
+   "non_real32_observations": 0,
+   "exact_real32_extremum": true,
+   "negative_count": 3,
+   "minimum_negative": {
+    "value": -2.625401151091101e-14,
+    "step": 3,
+    "flat_index": 21130,
+    "index_kji": [
+     11,
+     41,
+     4
+    ]
+   },
+   "ring0_count": 3,
+   "interior_count": 0,
+   "nonfinite_count": 0,
+   "moisture_cap_applicability": "APPLICABLE"
+  }
+ ],
+ "raw_phase_class_differences": [
+  {
+   "phase_field": [
+    "post_rk",
+    "qc"
+   ],
+   "SMS": {
+    "negative_count": 15,
+    "ring0_count": 3,
+    "interior_count": 12,
+    "nonfinite_count": 0
+   },
+   "KM2": {
+    "negative_count": 14,
+    "ring0_count": 3,
+    "interior_count": 11,
+    "nonfinite_count": 0
+   }
+  }
+ ],
+ "control_guard_water": {
+  "dynamics": {
+   "qv": {
+    "added_kg": 0.0,
+    "removed_kg": 0.0,
+    "undefined_cells": 0
+   },
+   "qc": {
+    "added_kg": 0.0,
+    "removed_kg": 0.0,
+    "undefined_cells": 0
+   },
+   "qr": {
+    "added_kg": 0.0,
+    "removed_kg": 0.0,
+    "undefined_cells": 0
+   },
+   "qi": {
+    "added_kg": 0.0,
+    "removed_kg": 0.0,
+    "undefined_cells": 0
+   },
+   "qs": {
+    "added_kg": 0.0,
+    "removed_kg": 0.0,
+    "undefined_cells": 0
+   },
+   "qg": {
+    "added_kg": 0.0,
+    "removed_kg": 0.0,
+    "undefined_cells": 0
+   }
+  },
+  "boundary": {
+   "qv": {
+    "added_kg": 0.0,
+    "removed_kg": 0.0,
+    "undefined_cells": 0
+   },
+   "qc": {
+    "added_kg": 0.0,
+    "removed_kg": 0.0,
+    "undefined_cells": 0
+   },
+   "qr": {
+    "added_kg": 0.0,
+    "removed_kg": 0.0,
+    "undefined_cells": 0
+   },
+   "qi": {
+    "added_kg": 0.0,
+    "removed_kg": 0.0,
+    "undefined_cells": 0
+   },
+   "qs": {
+    "added_kg": 0.0,
+    "removed_kg": 0.0,
+    "undefined_cells": 0
+   },
+   "qg": {
+    "added_kg": 0.0,
+    "removed_kg": 0.0,
+    "undefined_cells": 0
+   }
+  }
+ },
+ "original_report_status": "TERMINAL_GUARD_POLICY_MATCH; RAW_POST_RK_COUNT_DIFFERENCE_OPEN",
+ "manager_disposition": "F2_DISPOSITION.json",
+ "full_F2_waiver": false,
+ "current_classification": "Terminal guard policyPASS3/3; raw postRK15vs14 trajectories differ byclosure, manageraccepts same F2roundoffclass with minima disclosed; not a km5defect.",
+ "original_residual_assessment": "PostRK QC negativecount15SMS vs14KM2 (interior12vs11); minima-1.0379391e-11 vs-2.8309373e-12. Standing guardpolicy applies to terminal3/3; rawpostRKpopulation/amplitude remains withoutsame-input pristine justification. No zero-guard or fullF2waiver claimed.",
+ "disclosed_difference": "Post-RK visits15SMS vs14KM2, minima-1.0379390923132004e-11 vs-2.830937307490844e-12kg/kg; manager accepted different-closure trajectory/same F2roundoff class. No full F2 waiver."
+}

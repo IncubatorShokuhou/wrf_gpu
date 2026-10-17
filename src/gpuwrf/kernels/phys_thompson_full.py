@@ -16,7 +16,7 @@ from types import FunctionType
 
 import jax
 import jax.numpy as jnp
-from jax.experimental import pallas as pl
+from gpuwrf.backends import pallas as pl
 from jax.experimental.pallas import triton as plt
 
 from gpuwrf.kernels.phys_thompson_prep import _fill_registers, _sed_registers
@@ -297,7 +297,7 @@ def _inactive_source_branches(env, tc, valid):
     env["_wrf_mixed_phase_sources"] = mixed_phase
 
 
-def full_column(state, dt, *, interpret=False, return_events=False):
+def full_column(state, dt, *, interpret=False, return_events=False, return_radar_context=False):
     """Retained return contract, or optional device counters for validation.
 
     Diagnostic counters count physical cells before the retained fallback
@@ -348,8 +348,12 @@ def full_column(state, dt, *, interpret=False, return_events=False):
                 input_finite = input_finite & jnp.isfinite(getattr(source, key))
             events["input_nonfinite"] = jnp.sum(valid & ~input_finite, dtype=jnp.int32)
         raw_vapor = tc._mixed_phase_wrf_enabled() and tc._native_real_enabled()
-        out, ppt = env["_thompson_source_sink_body"](source, dt, False, sediment=True,
-                                                   raw_vapor=raw_vapor)
+        if return_radar_context:
+            out, ppt, radar = env["_thompson_source_sink_body"](source, dt, False, sediment=True,
+                                                               raw_vapor=raw_vapor, return_radar_context=True)
+        else:
+            out, ppt = env["_thompson_source_sink_body"](source, dt, False, sediment=True,
+                                                       raw_vapor=raw_vapor)
         if raw_vapor:
             out = out.replace(qv=_driver_vapor_copyback(source.qv, out.qv, nz))
         for key, ref in zip(keys, refs[offset:offset+len(keys)]):
@@ -357,12 +361,18 @@ def full_column(state, dt, *, interpret=False, return_events=False):
         offset += len(keys)
         for key, ref in zip(precip_keys, refs[offset:offset+len(precip_keys)]):
             _store(ref, (col,), ppt[key])
+        offset += len(precip_keys)
+        if return_radar_context:
+            for value, ref in zip(radar, refs[offset:offset+2]):
+                _store(ref, (col, k), value, mask=valid)
         if return_events:
             for index, key in enumerate(("input_nonfinite", "inadmissible", "pre_mask_nonfinite")):
                 _store(refs[-1], (col, jnp.asarray(index, jnp.int32)), events[key])
 
     output_shapes = [jax.ShapeDtypeStruct((ncol, nz), array.dtype) for array in arrays]
     output_shapes += [jax.ShapeDtypeStruct((ncol,), jnp.float64) for _ in precip_keys]
+    if return_radar_context:
+        output_shapes += [jax.ShapeDtypeStruct((ncol, nz), jnp.float32) for _ in range(2)]
     if return_events:
         output_shapes += [jax.ShapeDtypeStruct((ncol, 3), jnp.int32)]
     outputs = pl.pallas_call(kernel, grid=(ncol,), out_shape=output_shapes,
@@ -370,6 +380,12 @@ def full_column(state, dt, *, interpret=False, return_events=False):
                             name="thompson_full_column")(*arrays, *table_arrays, *cold_arrays)
     out = state.replace(**{key: value.reshape(shape) for key, value in zip(keys, outputs[:len(keys)])})
     ppt = {key: value.reshape(shape[:-1]) for key, value in zip(precip_keys, outputs[len(keys):len(keys)+len(precip_keys)])}
+    if return_radar_context:
+        start = len(keys) + len(precip_keys)
+        radar = tuple(value.reshape(shape) for value in outputs[start:start+2])
+        if return_events:
+            return out, ppt, radar, outputs[-1]
+        return out, ppt, radar
     if return_events:
         return out, ppt, outputs[-1]
     return out, ppt

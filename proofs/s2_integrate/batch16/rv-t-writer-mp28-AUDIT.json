@@ -1,0 +1,93 @@
+{
+  "candidate": "cc5a953eacd10e50ccb1c639c0615c8232924916",
+  "base": "2af43322bec3e2d722884048a2ad7d92d483500f",
+  "product_changed_files": [
+    "src/gpuwrf/coupling/physics_couplers.py"
+  ],
+  "only_changed_function": "_aerosol_surface_emission_columns",
+  "all_other_module_AST_exact": true,
+  "packet_files_sha_verified": [
+    "NATIVE_FRAME0.json",
+    "SOURCE_SCOPE.json",
+    "MUTANT_SOURCE.json",
+    "MUTANT_RESULT.json",
+    "trace_input.py",
+    "delete_interface_fix.py",
+    "TRACE.json",
+    "original_frame0.npz",
+    "TESTS.json",
+    "qualify_native.py"
+  ],
+  "clean_archive_files_verified": [
+    "proofs/t_writer_mp28_emission/ARCHIVE.json",
+    "proofs/t_writer_mp28_emission/MUTANT_RESULT.json",
+    "proofs/t_writer_mp28_emission/MUTANT_SOURCE.json",
+    "proofs/t_writer_mp28_emission/NATIVE_FRAME0.json",
+    "proofs/t_writer_mp28_emission/QUALIFICATION.json",
+    "proofs/t_writer_mp28_emission/README.md",
+    "proofs/t_writer_mp28_emission/SOURCE_SCOPE.json",
+    "proofs/t_writer_mp28_emission/TESTS.json",
+    "proofs/t_writer_mp28_emission/TRACE.json",
+    "proofs/t_writer_mp28_emission/delete_interface_fix.py",
+    "proofs/t_writer_mp28_emission/original_frame0.npz",
+    "proofs/t_writer_mp28_emission/qualify_native.py",
+    "proofs/t_writer_mp28_emission/trace_input.py",
+    "tests/test_mp28_emission_frame0.py"
+  ],
+  "pristine_chain": {
+    "dyn_em/start_em.F": {
+      "sha256": "4b6c98a06fb2b2c4472af73415099e311502747dc5543d9e9b1323497d83ddb4",
+      "first_line": 869,
+      "snippet": "\n   DO j=jts,min(jte,jde-1)\n      DO k = kts,kte\n         DO i = its, min(ite,ide-1)\n            z_at_q(i,k,j)=(grid%ph_2(i,k,j)+grid%phb(i,k,j))/g\n         ENDDO\n      ENDDO\n   ENDDO"
+    },
+    "phys/module_physics_init.F": {
+      "sha256": "f48cf9793f782a72c3969e986eef24746252f030cd33cfba71cc82b81d128d90",
+      "first_line": 4525,
+      "snippet": "\n     CASE (THOMPSONAERO)\n! Cycling the WRF forecast with moving nests will cause this initialization to be\n! called for each nest move. This is potentially very computationally expensive.\n         IF(start_of_simulation.or.restart.or.config_flags%cycling)     &\n            CALL thompson_init(HGT=z_at_q,                              &\n                          ORHO=inv_dens,                                &\n                          NWFA2D=qnwfa2d, NBCA2D=qnbca2d,               &\n                          NWFA=scalar(ims,kms,jms,P_QNWFA),             &\n                          NIFA=scalar(ims,kms,jms,P_QNIFA),             &\n                          NBCA=scalar(ims,kms,jms,P_QNBCA),             &\n                          wif_input_opt=config_flags%wif_input_opt,     &\n                          FRC_URB2D=frc_urb2d,                          &\n                          DX=DX, DY=DY,                                 &\n                          is_start=start_of_simulation,                 &\n                          IDS=ids, IDE=ide, JDS=jds, JDE=jde, KDS=kds, KDE=kde,   &\n                          IMS=ims, IME=ime, JMS=jms, JME=jme, KMS=kms, KME=kme,   &\n                          ITS=its, ITE=ite, JTS=jts, JTE=jte, KTS=kts, KTE=kte)\n"
+    },
+    "phys/module_mp_thompson.F": {
+      "sha256": "fabf19e2a9073cff886e882b187080bfdf089d3fd40c0fce1d19bc93b1e5e802",
+      "first_line": 493,
+      "snippet": "      if (max_test .lt. eps) then\n         write(mp_debug,*) ' Apparently there are no initial CCN aerosols.'\n         CALL wrf_debug(100, mp_debug)\n         write(mp_debug,*) '   checked column at point (i,j) = ', its,jts\n         CALL wrf_debug(100, mp_debug)\n         do j = jts, min(jde-1,jte)\n         do i = its, min(ide-1,ite)\n            if (hgt(i,1,j).le.1000.0) then\n               h_01 = 0.8\n            elseif (hgt(i,1,j).ge.2500.0) then\n               h_01 = 0.01\n            else\n               h_01 = 0.8*cos(hgt(i,1,j)*0.001 - 1.0)\n            endif\n            niCCN3 = -1.0*ALOG(naCCN1/naCCN0)/h_01\n            nwfa(i,1,j) = naCCN1+naCCN0*exp(-((hgt(i,2,j)-hgt(i,1,j))/1000.)*niCCN3)\n            z1=hgt(i,2,j)-hgt(i,1,j)\n            nwfa2d(i,j) = nwfa(i,1,j) * 0.000196 * (50./z1)\n            do k = 2, kte"
+    }
+  },
+  "reference_files": [
+    {
+      "label": "input",
+      "file": "<USER_HOME>/wrf_gpu2_lanes/s1-gpuqual/source_inputs/Swiss/wrfinput_d01",
+      "sha256": "a5d696550d1dc6713e2e340b8c2fba83811d43f4a94a65ca95266035860e2781",
+      "array_fields": 3
+    },
+    {
+      "label": "mp28_cpu",
+      "file": "<USER_HOME>/wrf_gpu2_lanes/s1-gpuqual/mp28/cpu/wrfout_d01_2023-01-15_00:00:00",
+      "sha256": "e4e2112645b398b60c0ddd47c26c6cde132ef53043d2ac099ad5d2783e054189",
+      "array_fields": 7
+    },
+    {
+      "label": "c19_cpu",
+      "file": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c19/cpu/wrfout_d01_2023-01-15_00:00:00",
+      "sha256": "e4e2112645b398b60c0ddd47c26c6cde132ef53043d2ac099ad5d2783e054189",
+      "array_fields": 7
+    },
+    {
+      "label": "old_gpu",
+      "file": "<USER_HOME>/wrf_gpu2_lanes/v-run/round3/mp28_followup/mp28/gpu/wrfout_d01_2023-01-15_00:00:00",
+      "sha256": "40e4cc6811bbea00b8eac54f48e4443a5af11ba64236c3d3721814b1d9111f2c",
+      "array_fields": 7
+    }
+  ],
+  "geometry": {
+    "interface_height_cell": [
+      2479.177734375,
+      2524.638427734375
+    ],
+    "branch_counts": {
+      "low": 390,
+      "middle": 1296,
+      "high": 78
+    },
+    "native_case_input_sha256": "a5d696550d1dc6713e2e340b8c2fba83811d43f4a94a65ca95266035860e2781"
+  },
+  "scope": "source and original CPU frame0 proof; no GPU/forecast/performance claim"
+}

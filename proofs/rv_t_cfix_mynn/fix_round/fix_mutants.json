@@ -1,0 +1,27 @@
+{
+ "M5_producer_limits_leak": {
+  "file": "physics/noahmp_coupler.py",
+  "failed": [
+   "test_extreme_fluxes_reach_cumulus_unlimited[3]",
+   "test_extreme_fluxes_reach_cumulus_unlimited[6]",
+   "test_extreme_fluxes_reach_cumulus_unlimited[16]",
+   "test_shared_handle_producers_stay_unlimited[physics/noahmp_coupler.py]"
+  ],
+  "summary": "4 failed, 3 passed, 22 deselected",
+  "setup_errors": 0,
+  "assertion": true,
+  "killed": true,
+  "tail": "step_part1.F:1416); only MYNN's copy is limited.\"\"\"\n        shipped, calls = _extreme_noahmp_step(monkeypatch)\n>       assert \"pbl_limits\" not in calls[0]\nE       AssertionError: assert 'pbl_limits' not in {'pbl_limits': True}\n\ntests/v025/t_cfix_mynn/test_f20_mynn_caller.py:398: AssertionError\n____ test_shared_handle_producers_stay_unlimited[physics/noahmp_coupler.py] ____\n\npath = 'physics/noahmp_coupler.py'\n\n    @pytest.mark.parametrize(\"path\", _PRODUCERS)\n    def test_shared_handle_producers_stay_unlimited(path):\n        calls = _driver_calls(path)\n        assert len(calls) == 1, path\n>       assert all(k.arg != \"pbl_limits\" for k in calls[0][1].keywords), path\nE       AssertionError: physics/noahmp_coupler.py\nE       assert False\nE        +  where False = all(<generator object test_shared_handle_producers_stay_unlimited.<locals>.<genexpr> at 0x71604f0eca00>)\n\ntests/v025/t_cfix_mynn/test_f20_mynn_caller.py:465: AssertionError\n=========================== short test summary info ============================\nFAILED tests/v025/t_cfix_mynn/test_f20_mynn_caller.py::test_extreme_fluxes_reach_cumulus_unlimited[3]\nFAILED tests/v025/t_cfix_mynn/test_f20_mynn_caller.py::test_extreme_fluxes_reach_cumulus_unlimited[6]\nFAILED tests/v025/t_cfix_mynn/test_f20_mynn_caller.py::test_extreme_fluxes_reach_cumulus_unlimited[16]\nFAILED tests/v025/t_cfix_mynn/test_f20_mynn_caller.py::test_shared_handle_producers_stay_unlimited[physics/noahmp_coupler.py]\n4 failed, 3 passed, 22 deselected in 27.47s\n"
+ },
+ "M6_view_unlimited": {
+  "file": "coupling/physics_couplers.py",
+  "failed": [
+   "test_mynn_view_alone_applies_the_driver_limits"
+  ],
+  "summary": "1 failed, 28 deselected",
+  "setup_errors": 0,
+  "assertion": true,
+  "killed": true,
+  "tail": "sics_couplers as C\n    \n        monkeypatch.setenv(\"GPUWRF_MYNN_FP32_COLUMNS\", \"1\")  # release flags for producer AND consumer\n        monkeypatch.setenv(\"GPUWRF_MYNN_PHY_EXNER\", \"1\")\n        state, _ = _extreme_noahmp_step(monkeypatch)\n        grid = smoke._land_grid()\n        view = C._surface_fluxes_from_state(state, grid)\n        f32 = lambda a: np.asarray(jnp.asarray(a, jnp.float32))  # noqa: E731\n        shared = [f32(state.theta_flux), f32(state.qv_flux), f32(state.fltv)]\n        got = [np.asarray(view.theta_flux), np.asarray(view.qv_flux), np.asarray(view.fltv)]\n        for a in shared + got:  # E200: a degenerate operand (rho 0 -> inf == inf) must not pass vacuously\n            assert np.isfinite(a).all()\n        for g, h in zip(got, shared):\n            assert g.dtype == np.float32 and np.array_equal(_bits(g[~BEYOND]), _bits(h[~BEYOND]))\n>           assert not np.any(_bits(g[BEYOND]) == _bits(h[BEYOND]))\nE           assert not np.True_\nE            +  where np.True_ = <function any at 0x78193a7750b0>(array([105774... dtype=uint32) == array([105774... dtype=uint32)\nE            +    where <function any at 0x78193a7750b0> = np.any\nE               \nE               Use -v to get more diff)\n\ntests/v025/t_cfix_mynn/test_f20_mynn_caller.py:429: AssertionError\n=========================== short test summary info ============================\nFAILED tests/v025/t_cfix_mynn/test_f20_mynn_caller.py::test_mynn_view_alone_applies_the_driver_limits\n1 failed, 28 deselected in 26.40s\n"
+ }
+}

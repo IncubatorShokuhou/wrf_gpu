@@ -36,6 +36,7 @@ from gpuwrf.dynamics.vertical_implicit_solver import (
     solve_tridiagonal_xla,
 )
 from gpuwrf.physics.tridiagonal_solver import solve_tridiagonal
+from gpuwrf.backends import platform as backend_platform
 
 
 @contextmanager
@@ -73,7 +74,7 @@ def _cpu_text(fn, specs) -> str:
 
 
 def _cuda_text(fn, specs) -> str:
-    with mock.patch.object(jax, "default_backend", lambda *a, **k: "cuda"):
+    with mock.patch.object(backend_platform, "runtime_backend", lambda: "cuda"):
         jax.clear_caches()
         return _stripped_mlir(
             jax.jit(_fresh(fn)).trace(*specs).lower(lowering_platforms=("cuda",))
@@ -120,7 +121,7 @@ def test_gpu_backend_keeps_xla_primitive_in_jaxpr():
     dtype = jnp.float32
     specs = _specs((6, 9), dtype)
     jax.clear_caches()
-    with mock.patch.object(jax, "default_backend", lambda *a, **k: "cuda"):
+    with mock.patch.object(backend_platform, "runtime_backend", lambda: "cuda"):
         jaxpr = str(jax.make_jaxpr(lambda a, b, c, d: solve_tridiagonal(a, b, c, d))(*specs))
     assert "tridiagonal_solve" in jaxpr
     # ... and the CPU backend does not lower it to the primitive

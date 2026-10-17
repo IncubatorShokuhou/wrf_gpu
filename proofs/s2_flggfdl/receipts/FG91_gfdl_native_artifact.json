@@ -1,0 +1,135 @@
+{
+  "platform": "cpu",
+  "GPU_executed": false,
+  "scheme": 99,
+  "compile_only": true,
+  "compile_s": 42.056241860147566,
+  "hlo_lines": 247628,
+  "hlo_sha256": "c524832c4aac6287036bc3c90b4e37b8951e6760712a2c0c7148dcdeadfd658a",
+  "temporary_bytes": 3515632,
+  "argument_bytes": 3542112,
+  "output_bytes": 1489128,
+  "f64_rows": 75,
+  "computational_f64": 9,
+  "computational_f64_outside_native_DOUBLE": 0,
+  "computational_f64_rows": [
+    "  ROOT %convert_element_type.5351 = f64[] convert(%param_0.13776), metadata={op_name=\"jit(<lambda>)/while/body/closed_call/while/body/while/body/while/body/while/body/convert_element_type\" stack_frame_id=34930}",
+    "  %abs.19 = f64[] abs(%param_1.1379), metadata={op_name=\"jit(<lambda>)/while/body/closed_call/while/body/while/body/while/body/while/body/abs\" stack_frame_id=34936}",
+    "  %sub.10253 = f64[] subtract(%constant.128881, %param_2.1559), metadata={op_name=\"jit(<lambda>)/while/body/closed_call/while/body/while/body/while/body/while/body/sub\" stack_frame_id=34933}",
+    "  ROOT %select_n.82221 = f64[] select(%param_0.1020, %sub.10253, %param_1.1381), metadata={op_name=\"jit(<lambda>)/while/body/closed_call/while/body/while/body/while/body/while/body/jit(_where)/select_n\" stack_frame_id=35013}",
+    "  %add.134580 = f64[] add(%param_3.1064, %param_4.952), metadata={op_name=\"jit(<lambda>)/while/body/closed_call/while/body/while/body/while/body/while/body/add\" stack_frame_id=34929}",
+    "  %div.2299 = f64[] divide(%param_2.1561, %add.134580), metadata={op_name=\"jit(<lambda>)/while/body/closed_call/while/body/while/body/while/body/while/body/div\" stack_frame_id=34930}",
+    "  ROOT %select_n.82222 = f64[] select(%param_0.1021, %div.2299, %param_1.1383), metadata={op_name=\"jit(<lambda>)/while/body/closed_call/while/body/while/body/while/body/while/body/jit(_where)/select_n\" stack_frame_id=35012}",
+    "  %convert_element_type.5283 = f64[] convert(%mul.8743), metadata={op_name=\"jit(<lambda>)/while/body/closed_call/while/body/while/body/while/body/while/body/convert_element_type\" stack_frame_id=34926}",
+    "  ROOT %select_n.82223 = f64[] select(%param_0.1022, %convert_element_type.5283, %param_1.1385), metadata={op_name=\"jit(<lambda>)/while/body/closed_call/while/body/while/body/while/body/while/body/jit(_where)/select_n\" stack_frame_id=35011}"
+  ],
+  "outside_rows": [],
+  "native_DOUBLE_source_lines": [
+    9417,
+    9421,
+    9500,
+    10578,
+    10580,
+    10582,
+    10584,
+    10585,
+    10587,
+    10589
+  ],
+  "computational_f64_origins": [
+    {
+      "hlo": "  ROOT %convert_element_type.5351 = f64[] convert(%param_0.13776), metadata={op_name=\"jit(<lambda>)/while/body/closed_call/while/body/while/body/while/body/while/body/convert_element_type\" stack_frame_id=34930}",
+      "origin": {
+        "stack_frame_id": 34930,
+        "file": "/gpuwrf/physics/_gfdleta_radtn.py",
+        "line": 10580,
+        "source": "                        v['ddx'] = jnp.where(((_p237) & (v['_go']==0)), jnp.float64((v['tauc'] / (v['tauc'] + v['prod']))), v['ddx'])",
+        "native_DOUBLE_use": true
+      }
+    },
+    {
+      "hlo": "  %abs.19 = f64[] abs(%param_1.1379), metadata={op_name=\"jit(<lambda>)/while/body/closed_call/while/body/while/body/while/body/while/body/abs\" stack_frame_id=34936}",
+      "origin": {
+        "stack_frame_id": 34936,
+        "file": "/gpuwrf/physics/_gfdleta_radtn.py",
+        "line": 10584,
+        "source": "                        _p239 = ((_p237) & (v['_go']==0)) & ((jnp.abs(v['eex']) >= _r(1.e-8)))",
+        "native_DOUBLE_use": true
+      }
+    },
+    {
+      "hlo": "  %sub.10253 = f64[] subtract(%constant.128881, %param_2.1559), metadata={op_name=\"jit(<lambda>)/while/body/closed_call/while/body/while/body/while/body/while/body/sub\" stack_frame_id=34933}",
+      "origin": {
+        "stack_frame_id": 34933,
+        "file": "/gpuwrf/physics/_gfdleta_radtn.py",
+        "line": 10582,
+        "source": "                        v['eex'] = jnp.where(((_p237) & (v['_go']==0)), jnp.float64((_r(1.0) - v['ddx'])), v['eex'])",
+        "native_DOUBLE_use": true
+      }
+    },
+    {
+      "hlo": "  ROOT %select_n.82221 = f64[] select(%param_0.1020, %sub.10253, %param_1.1381), metadata={op_name=\"jit(<lambda>)/while/body/closed_call/while/body/while/body/while/body/while/body/jit(_where)/select_n\" stack_frame_id=35013}",
+      "origin": {
+        "stack_frame_id": 35013,
+        "file": "/gpuwrf/physics/_gfdleta_radtn.py",
+        "line": 10582,
+        "source": "                        v['eex'] = jnp.where(((_p237) & (v['_go']==0)), jnp.float64((_r(1.0) - v['ddx'])), v['eex'])",
+        "native_DOUBLE_use": true
+      }
+    },
+    {
+      "hlo": "  %add.134580 = f64[] add(%param_3.1064, %param_4.952), metadata={op_name=\"jit(<lambda>)/while/body/closed_call/while/body/while/body/while/body/while/body/add\" stack_frame_id=34929}",
+      "origin": {
+        "stack_frame_id": 34929,
+        "file": "/gpuwrf/physics/_gfdleta_radtn.py",
+        "line": 10580,
+        "source": "                        v['ddx'] = jnp.where(((_p237) & (v['_go']==0)), jnp.float64((v['tauc'] / (v['tauc'] + v['prod']))), v['ddx'])",
+        "native_DOUBLE_use": true
+      }
+    },
+    {
+      "hlo": "  %div.2299 = f64[] divide(%param_2.1561, %add.134580), metadata={op_name=\"jit(<lambda>)/while/body/closed_call/while/body/while/body/while/body/while/body/div\" stack_frame_id=34930}",
+      "origin": {
+        "stack_frame_id": 34930,
+        "file": "/gpuwrf/physics/_gfdleta_radtn.py",
+        "line": 10580,
+        "source": "                        v['ddx'] = jnp.where(((_p237) & (v['_go']==0)), jnp.float64((v['tauc'] / (v['tauc'] + v['prod']))), v['ddx'])",
+        "native_DOUBLE_use": true
+      }
+    },
+    {
+      "hlo": "  ROOT %select_n.82222 = f64[] select(%param_0.1021, %div.2299, %param_1.1383), metadata={op_name=\"jit(<lambda>)/while/body/closed_call/while/body/while/body/while/body/while/body/jit(_where)/select_n\" stack_frame_id=35012}",
+      "origin": {
+        "stack_frame_id": 35012,
+        "file": "/gpuwrf/physics/_gfdleta_radtn.py",
+        "line": 10580,
+        "source": "                        v['ddx'] = jnp.where(((_p237) & (v['_go']==0)), jnp.float64((v['tauc'] / (v['tauc'] + v['prod']))), v['ddx'])",
+        "native_DOUBLE_use": true
+      }
+    },
+    {
+      "hlo": "  %convert_element_type.5283 = f64[] convert(%mul.8743), metadata={op_name=\"jit(<lambda>)/while/body/closed_call/while/body/while/body/while/body/while/body/convert_element_type\" stack_frame_id=34926}",
+      "origin": {
+        "stack_frame_id": 34926,
+        "file": "/gpuwrf/physics/_gfdleta_radtn.py",
+        "line": 10578,
+        "source": "                        v['prod'] = jnp.where(((_p237) & (v['_go']==0)), jnp.float64((v['abcff'][(v['nband'])-1] * v['qsum'])), v['prod'])",
+        "native_DOUBLE_use": true
+      }
+    },
+    {
+      "hlo": "  ROOT %select_n.82223 = f64[] select(%param_0.1022, %convert_element_type.5283, %param_1.1385), metadata={op_name=\"jit(<lambda>)/while/body/closed_call/while/body/while/body/while/body/while/body/jit(_where)/select_n\" stack_frame_id=35011}",
+      "origin": {
+        "stack_frame_id": 35011,
+        "file": "/gpuwrf/physics/_gfdleta_radtn.py",
+        "line": 10578,
+        "source": "                        v['prod'] = jnp.where(((_p237) & (v['_go']==0)), jnp.float64((v['abcff'][(v['nband'])-1] * v['qsum'])), v['prod'])",
+        "native_DOUBLE_use": true
+      }
+    }
+  ],
+  "scope": "final composed CPU radiation on retained real Swiss shapes; no execution/numerical repeat; no GPU/readiness/forecast-speed claim",
+  "previous_FG72_temporary_bytes": 3515632,
+  "temporary_delta_bytes": 0,
+  "new_live_SGS_input_bytes": 310464
+}

@@ -1,0 +1,75 @@
+{
+  "scope": "Promoted REAL8 pristine whole sixth_order_diffusion vs unchanged product AST evaluated with NumPy on actualfullgrid capturedRK1 operands; kindpromotion diagnostic, not productionR4 oracle",
+  "rows": [
+    {
+      "field": "qi",
+      "source_port_BYTE": false,
+      "different": 5109,
+      "max_abs": 1.6940658945086007e-21,
+      "original_sixth_only_min": -1.341928032970192e-10,
+      "without_original_sixth_min": -1.2898235337017557e-15,
+      "original_sc_sha256": "912d160e3fee84974692547caa5fe060a280c866c03ea0c796d6e079b3157728",
+      "product_sc_sha256": "ed31b2a644737f16b4197047844c77842e34ab18ceb3431b23a7c1058f1819ac"
+    },
+    {
+      "field": "Ni",
+      "source_port_BYTE": false,
+      "different": 4823,
+      "max_abs": 1.4901161193847656e-08,
+      "original_sixth_only_min": -946.7988680335272,
+      "without_original_sixth_min": -0.008552197775861867,
+      "original_sc_sha256": "52c4c4edb53af1a809c18b7c9db6e7c3022d288370c9f813ced8d87c26782d10",
+      "product_sc_sha256": "e9ccc0489b4dafa9689b41cd409ca82a81aa6d9315556375020db12ddd0aea2a"
+    }
+  ],
+  "compile": [
+    "<USER_HOME>/miniconda3/envs/wrfbuild/bin/gfortran",
+    "-O2",
+    "-fdefault-real-8",
+    "-fdefault-double-8",
+    "-fPIC",
+    "-shared",
+    "-ffree-line-length-none",
+    "-ffp-contract=off",
+    "-fcheck=bounds",
+    "-J",
+    "<DATA_ROOT>/wrf_gpu2/scratch/s2-ntu/NTU68-sixth",
+    "<DATA_ROOT>/wrf_gpu2/scratch/s2-ntu/NTU68-sixth/oracle_r8.f90",
+    "-o",
+    "<DATA_ROOT>/wrf_gpu2/scratch/s2-ntu/NTU68-sixth/oracle_r8.so"
+  ],
+  "product_source_sha256": "9c8f01066a01232e31d41399e8c6137e247b4da7630e1faf5945483a71dd280d",
+  "original_manifest": {
+    "source": "<USER_HOME>/src/wrf_pristine/WRF/dyn_em/module_big_step_utilities_em.F",
+    "source_sha256": "bd177b6b5ba7949cf9e694d7ad654fd9ae2f07d39d85802f0716c5318889a815",
+    "routine_sha256": {
+      "sixth_order_diffusion": "2300302940f398fc7768e38b1c5fa8db110fca566b875026df8bc3585c613e1a",
+      "horizontal_diffusion": "d05fbb06cb8846ca196b4a4a22b1e8322d408cdb3f7170102884f24283461d17",
+      "horizontal_diffusion_3dmp": "31ca9e57bc3e08acd5dfa6e5384df4b55eeb53f59b5cd7bf28f2f602b7f72c45"
+    },
+    "caller": "<USER_HOME>/src/wrf_pristine/WRF/dyn_em/module_em.F",
+    "caller_sha256": "11105cbf8255f30ca6a44cd7429a92cedce1fb91db6ce90fd7217002a72fb7fa",
+    "caller_calls": [
+      "CALL sixth_order_diffusion( 'u', u, ru_tendf, mut, dt,          &\n                                       config_flags, c1h, c2h,        &\n                                       diff_6th_opt, diff_6th_factor, &\n                                       phb, ph,                       &\n                                       rdx, rdy,                      &\n                                       msftx, msfty,                  &\n                                       msfux, msfuy,                  &\n                                       msfvx, msfvy,                  &\n                                       ids, ide, jds, jde, kds, kde,  &\n                                       ims, ime, jms, jme, kms, kme,  &\n                                       its, ite, jts, jte, kts, kte )",
+      "CALL sixth_order_diffusion( 'v', v, rv_tendf, mut, dt,          &\n                                       config_flags, c1h, c2h,        &\n                                       diff_6th_opt, diff_6th_factor, &\n                                       phb, ph,                       &\n                                       rdx, rdy,                      &\n                                       msftx, msfty,                  &\n                                       msfux, msfuy,                  &\n                                       msfvx, msfvy,                  &\n                                       ids, ide, jds, jde, kds, kde,  &\n                                       ims, ime, jms, jme, kms, kme,  &\n                                       its, ite, jts, jte, kts, kte )",
+      "CALL sixth_order_diffusion( 'w', w, rw_tendf, mut, dt,          &\n                                       config_flags, c1f, c2f,        &\n                                       diff_6th_opt, diff_6th_factor, &\n                                       phb, ph,                       &\n                                       rdx, rdy,                      &\n                                       msftx, msfty,                  &\n                                       msfux, msfuy,                  &\n                                       msfvx, msfvy,                  &\n                                       ids, ide, jds, jde, kds, kde,  &\n                                       ims, ime, jms, jme, kms, kme,  &\n                                       its, ite, jts, jte, kts, kte )",
+      "CALL sixth_order_diffusion( 'm', t,  t_tendf, mut, dt,          &\n                                       config_flags, c1h, c2h,        &\n                                       diff_6th_opt, diff_6th_factor, &\n                                       phb, ph,                       &\n                                       rdx, rdy,                      &\n                                       msftx, msfty,                  &\n                                       msfux, msfuy,                  &\n                                       msfvx, msfvy,                  &\n                                       ids, ide, jds, jde, kds, kde,  &\n                                       ims, ime, jms, jme, kms, kme,  &\n                                       its, ite, jts, jte, kts, kte )"
+    ],
+    "command": [
+      "<USER_HOME>/miniconda3/envs/wrfbuild/bin/gfortran",
+      "-O2",
+      "-fPIC",
+      "-shared",
+      "-ffree-line-length-none",
+      "-ffp-contract=off",
+      "-fcheck=bounds",
+      "-J",
+      "<DATA_ROOT>/wrf_gpu2/scratch/s2-ntu/NTU68-sixth",
+      "<DATA_ROOT>/wrf_gpu2/scratch/s2-ntu/NTU68-sixth/oracle.f90",
+      "-o",
+      "<DATA_ROOT>/wrf_gpu2/scratch/s2-ntu/NTU68-sixth/oracle.so"
+    ],
+    "real_kind_bytes": 4,
+    "limitations": "Real-derived b-core stage fields, not internal WRF step savepoints; slopeopt=0, specified/nested."
+  }
+}

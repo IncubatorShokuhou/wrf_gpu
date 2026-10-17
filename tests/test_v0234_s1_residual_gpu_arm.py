@@ -20,6 +20,7 @@ from scripts import v0234_s1_residual_gpu_arm_closeout as closeout
 from scripts import v0234_s1_residual_gpu_arm_profile as arm
 
 REPO = Path(__file__).resolve().parents[1]
+PRIVATE_FINAL_HEAD = "dead7d0042a3398eba2a0dac8d809938fa16df05"
 ENTRY = REPO / "scripts/v0234_nested_frozen_wrf_boundary_window.py"
 LADDER_PROFILE = REPO / "scripts/v0234_dycore_suboperator_kimi_gpu_ladder.py"
 
@@ -64,7 +65,9 @@ def test_profile_top_level_has_no_runtime_import() -> None:
 
 def test_exact_source_candidate_and_hashes() -> None:
     assert subprocess.run(
-        ("git", "-C", str(REPO), "merge-base", "--is-ancestor", arm.CANDIDATE_HEAD, "HEAD"),
+        # Curated release history is separate; this is the original arm's
+        # provenance in private FINAL-b, with every model hash still frozen.
+        ("git", "-C", str(REPO), "merge-base", "--is-ancestor", arm.CANDIDATE_HEAD, PRIVATE_FINAL_HEAD),
         check=False,
     ).returncode == 0
     actual = subprocess.run(

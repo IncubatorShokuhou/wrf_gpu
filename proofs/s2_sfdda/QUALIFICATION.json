@@ -1,0 +1,175 @@
+{
+  "lane": "s2-sfdda",
+  "model": "GPT Sol",
+  "measured_final_source": "ca9e3a78e9b3a65b88414224430bb2f21a0cdaa4",
+  "main_composed": "3716340b6",
+  "scope": {
+    "grid_sfdda": [
+      1,
+      2
+    ],
+    "grid_fdda": 1,
+    "bl_pbl_physics": 5,
+    "sf_sfclay_physics": 5,
+    "sf_surface_physics": 4,
+    "surface_spectral": "refused WRF fatal",
+    "classic_noah_fasdas": "refused: indirect soil/skin nudging unported"
+  },
+  "cpu_feature_gate": "PASS critic fix closure; independent recheck pending",
+  "gpu_qualified": false,
+  "tests": {
+    "SF28-final": {
+      "cases": 299,
+      "passed": 294,
+      "failures": [
+        "test_v018_mp_operational_set_is_preserved",
+        "test_v018_open_mp_family_fails_closed_with_named_reason[17-expected_tokens3]",
+        "test_v018_open_mp_family_is_rejected_at_namelist_layer",
+        "test_v018_endpoint_manifest_matches_catalog_status",
+        "test_v018_fail_closed_mp_reasons_are_source_backed"
+      ],
+      "artifact": "<USER_HOME>/wrf_gpu2_lanes/s2-sfdda/SF28-final.xml"
+    },
+    "SF29-final": {
+      "cases": 62,
+      "passed": 62,
+      "failures": [],
+      "artifact": "<USER_HOME>/wrf_gpu2_lanes/s2-sfdda/SF29-final.xml"
+    },
+    "SF33-rebase": {
+      "cases": 271,
+      "passed": 271,
+      "failures": [],
+      "artifact": "<USER_HOME>/wrf_gpu2_lanes/s2-sfdda/SF33-rebase.xml",
+      "seconds": 24.76
+    },
+    "SF35-host": {
+      "cases": 99,
+      "passed": 99,
+      "failures": [],
+      "seconds": 7.51,
+      "artifact": "<USER_HOME>/wrf_gpu2_lanes/s2-sfdda/SF35-host.xml",
+      "new_regressions": "20 signed DOUBLE overflow probes across all10fields; 3 mixed-mode admission+loading cases with allmode2negative controls"
+    }
+  },
+  "final_suite_inventory": {
+    "retained_affected_baseline": 299,
+    "critic_full_required_baseline": 374,
+    "fix_tests_passed": 99,
+    "coupled_arms_passed": 2,
+    "rule": "Host-only fixes; retain unchanged operator/default/shared evidence; repeat changed host tests and final composed coupled modes1/2",
+    "all_failures_closed": true
+  },
+  "required_shared_baseline": {
+    "arm": "SF07+SF07b",
+    "passed": 275,
+    "reused_with_final_affected_gates": true
+  },
+  "oracle": {
+    "cases": 24,
+    "calls_per_case": 9,
+    "tracked_arrays": 7392,
+    "hfx_case_call_fields": 216,
+    "hfx_replay_prior_output_arrays_byte_identical": 5616,
+    "literal_real4_byte_values": 23056,
+    "bounds": "unchanged pre-registered operand-ULP envelope; original optimized Fortran vector EXP spread diagnosed, not hidden"
+  },
+  "original_cpu_process_caveat": "mode1 wrote all3frames and SUCCESS but cold-table launcher expired and orphan MPI finalization errored; numerical outputs complete, no clean-process pass claimed. Modes0/2 exited cleanly.",
+  "negative_control": "source_mutant_verdict.json: real production SFDDAGD rates deleted, killed by1 numerical AssertionError,0 errors",
+  "asset_archive": {
+    "cases": 24,
+    "arrays": 7392,
+    "jax_imported": false
+  },
+  "release_identity": {
+    "full_sha": "2bf12cb8374d3a84a440e47dea4b77b0c7436108fc2ee2616bba6ec79b17962a",
+    "chars": 13405317,
+    "wall_s": 40.5,
+    "probe": "official native-facade CPU trace, no GPU execution",
+    "reuse": "Independent critic RV03 on546623868; 8 complete source modules and default surface-off return guards BYTE; changed host paths unreachable when grid_sfdda=0, no repeated trace."
+  },
+  "performance_memory": "component_cost.json: CPU 20warm samples,5x6x44; baseline includes shared HFX history. Surface adds1532carryB+2576residentB,temps6456/11912B; no f64fieldops; GPU launches/VRAM/roofline UNKNOWN. No extra host timestep transfer.",
+  "pending": [
+    "independent critic and manager merge",
+    "GPU timing/E41 and complete D6 forecast qualification"
+  ],
+  "experiments": "MAIN EXPERIMENTS.tsv SF01-SF38",
+  "created_utc": "2026-10-14T03:48:26.390208+00:00",
+  "coupled_smoke_prior_source": {
+    "source": "7733af79d",
+    "production_steps": 2,
+    "modes": [
+      0,
+      1,
+      2
+    ],
+    "reference": "independent original CPU-WRF, not an older port",
+    "bounded_fields": [
+      "T",
+      "U",
+      "V",
+      "W",
+      "QVAPOR"
+    ],
+    "hard_failures": 0,
+    "guard_counters_per_step": 66,
+    "guard_events_all_modes_both_steps": 0,
+    "restart_exact_leaves": {
+      "control0": 194,
+      "mode1": 207,
+      "mode2": 207
+    },
+    "new_history_restart": "SF29 nonzero HFX byte exact via pickle, checkpoint, NetCDF and native RestartStore",
+    "report_only_fields": [
+      "P",
+      "PH"
+    ],
+    "scope": "SF22 prior source only; corrected66counters/5boundedfields; superseded for final coupled gate by SF36/SF37"
+  },
+  "coupled_smoke": {
+    "source": "ca9e3a78e9b3a65b88414224430bb2f21a0cdaa4",
+    "arms": [
+      "SF37 mode1",
+      "SF36 mode2"
+    ],
+    "production_steps_per_mode": 2,
+    "modes": [
+      1,
+      2
+    ],
+    "reference": "preserved independent original CPU-WRF SF17mode1/SF18mode2; no original rerun",
+    "bounded_fields": [
+      "T",
+      "U",
+      "V",
+      "W",
+      "QVAPOR"
+    ],
+    "report_only_fields": [
+      "P",
+      "PH"
+    ],
+    "hard_failures": 0,
+    "full_carry_nonfinite": 0,
+    "guard_counters_per_step": 66,
+    "guard_shape": [
+      22,
+      3
+    ],
+    "guard_events_all_modes_both_steps": 0,
+    "restart_exact_leaves_per_mode": 208,
+    "compiled_carry_and_resumed_sha_equal": true,
+    "receipts": [
+      "coupled_mode1_final.json",
+      "coupled_mode2_final.json"
+    ],
+    "wall_s_including_cold_CPU_compile": {
+      "1": 331.28277530008927,
+      "2": 288.0909874748904
+    },
+    "runtime_caveat": "CPU cold compile/restart validation costs, not GPU or warm forecast performance",
+    "process_peak_RSS_KiB": 12954148,
+    "combined_process_exit": 0
+  },
+  "critic_closure": "CRITIC_FIXES.json"
+}

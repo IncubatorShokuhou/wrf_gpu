@@ -23,6 +23,11 @@ if [[ -n "${GPUWRF_BENCH_FLAGS_ENV:-}" ]]; then
   source "$ARM_FLAGS_ENV" || exit 2
 fi
 s0_guard bench
+MIN_FREE="${GPUWRF_LOCK_MIN_FREE_MIB:-24000}"
+if [[ ! "$MIN_FREE" =~ ^[0-9]+$ ]]; then
+  echo "run_arm: GPUWRF_LOCK_MIN_FREE_MIB must be a nonnegative integer" >&2
+  exit 2
+fi
 QUIET_FILE="${BENCH_QUIET_FILE:-/tmp/wrf_gpu2_quiet}"
 GUARD="${BENCH_COMPILE_GUARD:-<USER_HOME>/wrf_gpu2_lanes/compile/phase2/compile_only_guard.py}"
 GUARD_PY="${BENCH_COMPILE_GUARD_PY:-<USER_HOME>/miniconda3/bin/python}"
@@ -99,11 +104,17 @@ wait "$CMD_PID"; rc=$?
 [[ -n "$SAMP_PID" ]] && kill "$SAMP_PID" 2>/dev/null; SAMP_PID=""
 wait 2>/dev/null || true
 # bounded drain: do not release the lock while our CUDA context / children linger
-MIN_FREE="${GPUWRF_LOCK_MIN_FREE_MIB:-24000}"
 if command -v nvidia-smi >/dev/null 2>&1; then
   for _i in $(seq 1 60); do
-    _free=$(nvidia-smi --query-gpu=memory.free --format=csv,noheader,nounits 2>/dev/null | head -1 | tr -d ' ')
-    [[ -z "$_free" || "$_free" -ge "$MIN_FREE" ]] && break
+    if ! _free=$(nvidia-smi --query-gpu=memory.free --format=csv,noheader,nounits 2>/dev/null | head -1 | tr -d ' '); then
+      echo "[bench] warning: GPU memory drain UNKNOWN: nvidia-smi query failed; measured rc=$rc; continuing child reap" >&2
+      break
+    fi
+    if [[ ! "$_free" =~ ^[0-9]+$ ]]; then
+      echo "[bench] warning: GPU memory drain UNKNOWN: invalid free-memory telemetry '${_free:0:160}'; measured rc=$rc; continuing child reap" >&2
+      break
+    fi
+    (( 10#$_free >= 10#$MIN_FREE )) && break
     (( _i == 1 )) && echo "[bench] arm draining: free ${_free} MiB < ${MIN_FREE}; apps: $(nvidia-smi --query-compute-apps=pid,used_memory --format=csv,noheader 2>/dev/null | tr '\n' ';')" >&2
     sleep 2
   done

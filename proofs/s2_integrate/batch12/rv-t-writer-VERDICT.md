@@ -1,0 +1,27 @@
+# MERGE — t-writer035652316
+
+Reviewed `0356523161d989fed9e457c017cf2e89f272b2a5` against common ancestor `8c9b004f4606246434dfd728237e659deca38b1f`. No required source fixes. Notes-only successor `39793e14525a710772db7a5739a62c6ac4b0a5cd` has the same production source. This is acceptance of the writer corrections and CPU-qualified NSSL radar handoff, not complete composite or GPU qualification.
+
+Independent measured evidence:
+
+- RW01: 74/74 schema, original metadata, actual serialization, all-frame comparator and original NSSL radar/cadence tests pass (37.94 s).
+- RW06: 150/150 online/native restart, stochastic and NetCDF process-lock checks pass (17.72 s), including three additional public RestartStore NSSL17/18/22 controls. The held radar round-trips byte-exactly; missing radar is refused on save and authenticated host/device restore under the active selection.
+- RW07: 21/21 affected TEMF history, NetCDF restart, checkpoint and initial-history checks pass (9.37 s). Total 245 PASS, 0 unexpected failures/errors/skips.
+- RW02b: deleting SCHEME_FIELDS[9] causes one genuine QHAIL assertion failure, zero setup errors. RW02's operational-stream control survives because its existing general species path already supplies these fields; it is explicitly not counted as a kill.
+- RW03/RW04: official FULL release program identities independently EXACT: Swiss `f672a5739cb96e388b6b7a40ef80337bf81bdc14ef15268f3476e09d79fe055d`; PROD d01 `6fc715a2bd630934c4cf0f94427df19a527cbf429011c9ba5efe4d712744d27b`. CPU tracing only, zero model steps/GPU execution.
+- RW05: independently read every original CPU frame in c01/c10/c12/c20/c45 (125 total), checking dimensions, variable inventories, dtypes, metadata and global attributes against the actual serialized inventories. All five table classifications and exact issue sets reproduce: PASS/PASS/missing REFD_MAX/12 missing aerosol diagnostics/6 missing Goddard radii. Original c01 disabled-LSM soil arrays and geometry are five layers of allocator zero; this is not a substitution for an active soil producer.
+- RW08: final production tree `64d7566b5b05ccf7f0fcdef03acf8de9a06d2b5c`, comparator/disclosure/MATRIX hashes, all 83 initialization-receipt hashes and all 20 explicit missing-producer dispositions verified. Producer's completed final shared tail independently inspected: 272 PASS, zero failures/errors/skips over 15 capped processes. This evidence is attributed to the producer, not our independent test count.
+
+Source assessment:
+
+New species fields use their actual State values; no effective-radius/aerosol aliases or zero fillers are added for missing active diagnostics. Goddard native flux aliases match original radiation_driver.F erbe_out(1:8), and SPP spectral fields use retained S/Q/O coefficient patterns4/5/6. The single existing device_get batch includes all six spectra (tested). TEMF uppercase names affect history only; the restart metadata snapshot retains lowercase compatibility names and legacy dimensions. Disabled/slab history uses five soil layers; no new restart carry is introduced by that change.
+
+NSSL original module_check_a_mundo.F forces radar allocation for normalized18, including17/22. Original module_microphysics_driver.F passes dbz=REFL_10CM and not compdbz. The new handoff retains the existing radardd02 result from S5 before unpack rounding, updates first-step bottom/full-history levels, preserves specified-boundary values, and reuses the authenticated existing radar slot. REFDMAX is not computed for ARW NWP0: module_diag_refl.F is NMM-only, while module_diag_nwp requires NWP. Omission is therefore explicit and remains a schema FAIL, not an invented maximum or zero.
+
+Scope and open gates:
+
+The full table has 50 coverage PASS, 20 missing-producer FAIL, and 13 incomplete rows across 83 domains/1752 readable original frames. Those outcomes remain binding. c49 records raw initialization before the DFL prepass; the production driver already resolves diffusion0/1 before writer construction. The row remains INCOMPLETE_PREPASS_SCHEMA until post-prepass output is measured. Reused inventories retain their original source and reuse declarations; no older initialization is relabelled as a final forecast. Existing P3/Goddard numerical failures and all other composite defects remain open.
+
+Default hot programs are unchanged by measured identity. Header/metadata/spec corrections execute at host output boundaries. NSSL newly retains one fp32 mass-grid radar field: 310464 bytes on42x42x44 [I, shape arithmetic], plus compiler-dependent scratch/dispatch and output/restart traffic [U]. The outer radar condition avoids radardd02 work on ordinary NWP0 steps [I, source]; exact GPU launches, peak memory, compile/readiness and wall costs remain unmeasured. No speed, roofline or GPU claim is made. Per manager's18:11 decision, NSSL17/18/22 configurations require fresh full GPU/D6/E41 qualification; mp28/mp40 may reuse prior numerical forecasts only after exact per-config program identity. No scientific thresholds or resource gates are waived.
+
+All independent jobs used CPU, cache disabled, nice19, cores16-19, QUIET guards, timeouts and6GiB/no-swap scopes. Reviewed source remained clean; no producer files were edited and no GPU was used. Experiments RW01–RW08 (including RW02b) are appended in MAIN. Own snapshot, pytest scratch and temporary identity directories are retired after the final dependent check.

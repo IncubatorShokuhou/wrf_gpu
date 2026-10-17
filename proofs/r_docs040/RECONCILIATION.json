@@ -1,0 +1,814 @@
+{
+  "experiment": "RD040-05",
+  "utc": "2026-10-16T04:34:55.389471+00:00",
+  "base_main": "f0df0156aecc3ab8afc14b1b1eb862c2e5579f60",
+  "scope": "Post-merge documentation reconciliation; historical snapshot remains source-specific, no final release totals or GPU science clearance",
+  "ledger": {
+    "locator": "producer:v-prep/GPU_PROGRESS.json",
+    "sha256": "e620e88b3ae12ae7fc4b6397afb157906da2fb1b83ab80108bbd9fd6bdbcc223",
+    "utc": "2026-10-16T04:28:05.727253+00:00"
+  },
+  "selected_source_bound_rows": [
+    {
+      "case": "c03",
+      "options": {
+        "mp_physics": 2,
+        "cu_physics": 2,
+        "bl_pbl_physics": 2,
+        "sf_sfclay_physics": 2,
+        "sf_surface_physics": 4,
+        "ra_lw_physics": 4,
+        "ra_sw_physics": 2
+      },
+      "domains": {
+        "d01": {
+          "receipt": {
+            "path": "producer:v-prep/c03/D6_d01.json",
+            "sha256": "329cf44259421ffe33b9cacee76a2253a65f0cf72f47f4d61bdee0fe18f17599"
+          },
+          "verdict": "PASS",
+          "paired_frames": 25,
+          "coverage_complete": true,
+          "bounded_misses": 0,
+          "raw_output_nonfinite": 0,
+          "missing_cpu_fields": []
+        }
+      },
+      "raw_measured_domains_before_writer_recheck": null,
+      "host_writer_recheck": null,
+      "host_writer_recheck_receipt": null,
+      "original_cpu_receipt": {
+        "path": "producer:v-prep/c03/cpu_run.json",
+        "sha256": "695dd6c9185b46deb4cf34be2704bbc645dea0a9fa04354f35cb4384e82157a1"
+      },
+      "reference_of_record": null,
+      "reference_of_record_receipt": null,
+      "matched_inputs": {
+        "path": "producer:v-prep/c03/inputs.json",
+        "sha256": "07391fc32bebbab92911462caf516339fdc4dd4dce8826740048a175de377a35"
+      },
+      "launch": {
+        "path": "producer:v-prep/c03/gpu_launch.json",
+        "sha256": "6fcf248d7593c1ad5f2d0d5572785ab643bc932d58eabcde5bcffdec24ac4170"
+      },
+      "actual_gpu_receipt": {
+        "path": "producer:v-prep/c03/gpu_run.json",
+        "sha256": "1383791e8070f1e921a30a841013bd67e84665a525065c7a72962020a92be033"
+      },
+      "reuse_receipt": null,
+      "reused": false,
+      "current_main_identity": null,
+      "source_commit": "04cb09f816d1284e72c515eca64a94909f40e071",
+      "platform": "gpu",
+      "process_rc": 0,
+      "forecast_complete": true,
+      "full_d6_pass": true,
+      "qh_mass_provisional": false,
+      "qh_mass_science_verified": false,
+      "accepted_scope_gate": null,
+      "accepted_scope_receipt": null,
+      "execution_errors": [],
+      "resident_nonfinite_failure": false,
+      "e41": "FAIL",
+      "external_e41": null,
+      "local_pin_map": {
+        "path": "producer:v-prep/c03/e41/PIN_MAP.json",
+        "sha256": "de6e0c0cf4f1fe5ce3e840287952111963bd25b8bc5538829e2964e9eab65a7f"
+      },
+      "device_accounting": {
+        "census": {
+          "path": "producer:v-prep/c03/gpu/census.json",
+          "sha256": "190b5dcb406bea012a8363fa677b827192ea9e0df8a295dbc67021f7731a1bbc"
+        },
+        "extrema": {
+          "path": "producer:v-prep/c03/gpu/f2_negative_summary.json",
+          "sha256": "321f658855bed9d85ed2edda1335a76f54005b7abe5182a1c69613fad442f6d1"
+        },
+        "domains": {
+          "d01": {
+            "actual_work": {
+              "acoustic_trips": 33600,
+              "kf_calls": 0,
+              "native_mass_guard_events": 0,
+              "output_writes": 25,
+              "radiation_init_calls": 1,
+              "radiation_output_calls": 24,
+              "radiation_surface_calls": 146,
+              "radiation_tendency_calls": 146,
+              "steps": 4800
+            },
+            "negative_phase_visits": 19895331,
+            "interior_negative_phase_visits": 19235382,
+            "raw_nonfinite_phase_visits": 0,
+            "event_counts": {
+              "negative": 19895331
+            },
+            "nonzero_guards": {
+              "dynamics.qc": {
+                "nonfinite": 0,
+                "out_of_range": 59006,
+                "repaired": 59006
+              },
+              "dynamics.qg": {
+                "nonfinite": 0,
+                "out_of_range": 3787,
+                "repaired": 3787
+              },
+              "dynamics.qi": {
+                "nonfinite": 0,
+                "out_of_range": 95676,
+                "repaired": 95676
+              },
+              "dynamics.qr": {
+                "nonfinite": 0,
+                "out_of_range": 2256,
+                "repaired": 2256
+              },
+              "dynamics.qs": {
+                "nonfinite": 0,
+                "out_of_range": 4268,
+                "repaired": 4268
+              }
+            },
+            "worst_moisture_negative": {
+              "phase": "post_rk",
+              "field": "qc",
+              "minimum_negative": {
+                "flat_index": 18622,
+                "index_kji": [
+                  10,
+                  23,
+                  16
+                ],
+                "step": 2292,
+                "value": -4.360166258265963e-06
+              }
+            },
+            "worst_number_negative": null,
+            "full_output_set": true
+          }
+        },
+        "disposition": "OPEN: observed counts/extrema only; phase visits are not unique cells. Producer full_output_set is not proof of a complete forecast clock. A matched-control justification and F2 decision are separate."
+      },
+      "cache_remaining": false,
+      "cold_shared_wall_s": 1190.6000579050014,
+      "sampled_vram_peak_mib": 5860,
+      "progress_category": "PASS_with_disclosure",
+      "progress_disclosures_or_pending_reason": [
+        "Actual E41 FAIL: opt-in disclosure; hard gate unchanged"
+      ]
+    },
+    {
+      "case": "c05",
+      "options": {
+        "mp_physics": 4,
+        "cu_physics": 5,
+        "bl_pbl_physics": 7,
+        "sf_sfclay_physics": 1,
+        "sf_surface_physics": 4,
+        "ra_lw_physics": 4,
+        "ra_sw_physics": 4
+      },
+      "domains": {
+        "d01": {
+          "receipt": {
+            "path": "producer:v-prep/c05/D6_d01.json",
+            "sha256": "4665224a8966e2b7103dbc18ca46d50068491d0fdecf04ef6e444227478ea370"
+          },
+          "verdict": "PASS",
+          "paired_frames": 25,
+          "coverage_complete": true,
+          "bounded_misses": 0,
+          "raw_output_nonfinite": 0,
+          "missing_cpu_fields": []
+        }
+      },
+      "raw_measured_domains_before_writer_recheck": null,
+      "host_writer_recheck": null,
+      "host_writer_recheck_receipt": null,
+      "original_cpu_receipt": {
+        "path": "producer:v-prep/c05/cpu_run.json",
+        "sha256": "96d1e8a5f76a0ce69366573040d48e2b64b1d7fad5e849e5f234d6c32c4350a1"
+      },
+      "reference_of_record": null,
+      "reference_of_record_receipt": null,
+      "matched_inputs": {
+        "path": "producer:v-prep/c05/inputs.json",
+        "sha256": "056d23c02d01478bec33ba99a796328d91c551b876f535c23fc366a3524fd909"
+      },
+      "launch": {
+        "path": "producer:v-prep/c05/gpu_launch.json",
+        "sha256": "6fee0ec12837190ecbdadb693b397ffb6b88ad98fdbc814259290960f595fe46"
+      },
+      "actual_gpu_receipt": {
+        "path": "producer:v-prep/c05/gpu_run.json",
+        "sha256": "aa779412b7748e4cd033700c16cdb0458f597669faa2400b2603429d23bc60d8"
+      },
+      "reuse_receipt": null,
+      "reused": false,
+      "current_main_identity": null,
+      "source_commit": "04cb09f816d1284e72c515eca64a94909f40e071",
+      "platform": "gpu",
+      "process_rc": 0,
+      "forecast_complete": true,
+      "full_d6_pass": true,
+      "qh_mass_provisional": false,
+      "qh_mass_science_verified": false,
+      "accepted_scope_gate": null,
+      "accepted_scope_receipt": null,
+      "execution_errors": [],
+      "resident_nonfinite_failure": false,
+      "e41": "FAIL",
+      "external_e41": null,
+      "local_pin_map": {
+        "path": "producer:v-prep/c05/e41/PIN_MAP.json",
+        "sha256": "83cb5111430f70b9aea9bbd7bb8c00252dc752e20535f3de6a265554867ae7ce"
+      },
+      "device_accounting": {
+        "census": {
+          "path": "producer:v-prep/c05/gpu/census.json",
+          "sha256": "9deb3d83cd3c6ec4d651cd452310b7fe68018132fc53d3a7010cbd56b6574ec7"
+        },
+        "extrema": {
+          "path": "producer:v-prep/c05/gpu/f2_negative_summary.json",
+          "sha256": "d718bc15538ffe0e178161e821612001147ce89cfd372ef2ce6e78dae73d9409"
+        },
+        "domains": {
+          "d01": {
+            "actual_work": {
+              "acoustic_trips": 33600,
+              "kf_calls": 0,
+              "native_mass_guard_events": 0,
+              "output_writes": 25,
+              "radiation_init_calls": 1,
+              "radiation_output_calls": 0,
+              "radiation_surface_calls": 0,
+              "radiation_tendency_calls": 146,
+              "steps": 4800
+            },
+            "negative_phase_visits": 13011646,
+            "interior_negative_phase_visits": 12114645,
+            "raw_nonfinite_phase_visits": 0,
+            "event_counts": {
+              "negative": 13011646
+            },
+            "nonzero_guards": {
+              "dynamics.qc": {
+                "nonfinite": 0,
+                "out_of_range": 44856,
+                "repaired": 44856
+              },
+              "dynamics.qi": {
+                "nonfinite": 0,
+                "out_of_range": 90127,
+                "repaired": 90127
+              },
+              "dynamics.qr": {
+                "nonfinite": 0,
+                "out_of_range": 32094,
+                "repaired": 32094
+              },
+              "dynamics.qs": {
+                "nonfinite": 0,
+                "out_of_range": 57190,
+                "repaired": 57190
+              }
+            },
+            "worst_moisture_negative": {
+              "phase": "post_rk",
+              "field": "qs",
+              "minimum_negative": {
+                "flat_index": 1046,
+                "index_kji": [
+                  0,
+                  24,
+                  38
+                ],
+                "step": 3733,
+                "value": -1.0114314136444591e-05
+              }
+            },
+            "worst_number_negative": null,
+            "full_output_set": true
+          }
+        },
+        "disposition": "OPEN: observed counts/extrema only; phase visits are not unique cells. Producer full_output_set is not proof of a complete forecast clock. A matched-control justification and F2 decision are separate."
+      },
+      "cache_remaining": false,
+      "cold_shared_wall_s": 1015.7685723879986,
+      "sampled_vram_peak_mib": 5382,
+      "progress_category": "PASS_with_disclosure",
+      "progress_disclosures_or_pending_reason": [
+        "Actual E41 FAIL: opt-in disclosure; hard gate unchanged"
+      ]
+    },
+    {
+      "case": "c87",
+      "options": {
+        "mp_physics": 55,
+        "cu_physics": 0,
+        "bl_pbl_physics": 5,
+        "sf_sfclay_physics": 5,
+        "sf_surface_physics": 4,
+        "ra_lw_physics": 4,
+        "ra_sw_physics": 4
+      },
+      "domains": {
+        "d01": {
+          "receipt": {
+            "path": "producer:v-prep/c87/D6_d01.json",
+            "sha256": "5e8c9f611cabc38ebfa2d778498c510aa4cd9ca6aa3b86d4195ebb11f9fec355"
+          },
+          "verdict": "INCOMPLETE",
+          "paired_frames": 25,
+          "coverage_complete": false,
+          "bounded_misses": 0,
+          "raw_output_nonfinite": 0,
+          "missing_cpu_fields": [
+            "REFL_10CM"
+          ]
+        }
+      },
+      "raw_measured_domains_before_writer_recheck": null,
+      "host_writer_recheck": null,
+      "host_writer_recheck_receipt": null,
+      "original_cpu_receipt": {
+        "path": "producer:v-prep/c87/cpu_run.json",
+        "sha256": "bfb92ba261257dea3e2ae3cd1c6a5615202748839befda0d1f61ea3d5ad7f7c5"
+      },
+      "reference_of_record": null,
+      "reference_of_record_receipt": null,
+      "matched_inputs": {
+        "path": "producer:v-prep/c87/inputs.json",
+        "sha256": "70330ace4423a3ebbfc64c3922c06bacf1fa71b63d3ca225f0dfbfa4430043b5"
+      },
+      "launch": {
+        "path": "producer:v-prep/c87/gpu_launch.json",
+        "sha256": "056f2c8961cc78ce33770b771c539183fc2fb15787ca84dab133609a51e0b285"
+      },
+      "actual_gpu_receipt": {
+        "path": "producer:v-prep/c87/gpu_run.json",
+        "sha256": "fb70e7f759a0c9871960573a60280fcf76ce9232635bd09c996dd6ef0fd03469"
+      },
+      "reuse_receipt": null,
+      "reused": false,
+      "current_main_identity": null,
+      "source_commit": "c2e549f66cc29870b3c2cf3ef22e2d18576360ae",
+      "platform": "gpu",
+      "process_rc": 0,
+      "forecast_complete": true,
+      "full_d6_pass": false,
+      "qh_mass_provisional": false,
+      "qh_mass_science_verified": false,
+      "accepted_scope_gate": null,
+      "accepted_scope_receipt": null,
+      "execution_errors": [],
+      "resident_nonfinite_failure": false,
+      "e41": "FAIL",
+      "external_e41": null,
+      "local_pin_map": {
+        "path": "producer:v-prep/c87/e41/PIN_MAP.json",
+        "sha256": "4cc47d39e6ba7936829058ca1fd40f3e266435455c62de48bbbf977fd2c7194e"
+      },
+      "device_accounting": {
+        "census": {
+          "path": "producer:v-prep/c87/gpu/census.json",
+          "sha256": "1d57d1ab56156ec3953da4170b4467f92ed8a1250ae1e297313cfcb182322355"
+        },
+        "extrema": {
+          "path": "producer:v-prep/c87/gpu/f2_negative_summary.json",
+          "sha256": "2191c75c7edf4f835a89af2298150f3288d192a0114eb4b2207732ec90f6989c"
+        },
+        "domains": {
+          "d01": {
+            "actual_work": {
+              "acoustic_trips": 33600,
+              "kf_calls": 0,
+              "native_mass_guard_events": 0,
+              "output_writes": 25,
+              "radiation_init_calls": 1,
+              "radiation_output_calls": 0,
+              "radiation_surface_calls": 0,
+              "radiation_tendency_calls": 146,
+              "steps": 4800
+            },
+            "negative_phase_visits": 8342568,
+            "interior_negative_phase_visits": 7021749,
+            "raw_nonfinite_phase_visits": 0,
+            "event_counts": {
+              "negative": 8342568
+            },
+            "nonzero_guards": {
+              "dynamics.qc": {
+                "nonfinite": 0,
+                "out_of_range": 91244,
+                "repaired": 91244
+              },
+              "dynamics.qi": {
+                "nonfinite": 0,
+                "out_of_range": 15268,
+                "repaired": 15268
+              },
+              "dynamics.qr": {
+                "nonfinite": 0,
+                "out_of_range": 19779,
+                "repaired": 19779
+              }
+            },
+            "worst_moisture_negative": {
+              "phase": "post_rk",
+              "field": "qc",
+              "minimum_negative": {
+                "flat_index": 7227,
+                "index_kji": [
+                  4,
+                  4,
+                  3
+                ],
+                "step": 2859,
+                "value": -2.1601970274787163e-06
+              }
+            },
+            "worst_number_negative": {
+              "phase": "post_rk",
+              "field": "Ni",
+              "minimum_negative": {
+                "flat_index": 32960,
+                "index_kji": [
+                  18,
+                  28,
+                  32
+                ],
+                "step": 3574,
+                "value": -26421.1875
+              }
+            },
+            "full_output_set": true
+          }
+        },
+        "disposition": "OPEN: observed counts/extrema only; phase visits are not unique cells. Producer full_output_set is not proof of a complete forecast clock. A matched-control justification and F2 decision are separate."
+      },
+      "cache_remaining": false,
+      "cold_shared_wall_s": 777.317478144003,
+      "sampled_vram_peak_mib": 6534,
+      "progress_category": "still_to_close",
+      "progress_disclosures_or_pending_reason": [
+        "Remaining forecast, inventory, or provenance/writer closure",
+        "Unclosed inventory: REFL_10CM"
+      ]
+    },
+    {
+      "case": "c88",
+      "options": {
+        "mp_physics": 56,
+        "cu_physics": 0,
+        "bl_pbl_physics": 5,
+        "sf_sfclay_physics": 5,
+        "sf_surface_physics": 4,
+        "ra_lw_physics": 4,
+        "ra_sw_physics": 4
+      },
+      "domains": {
+        "d01": {
+          "receipt": {
+            "path": "producer:v-prep/c88/D6_d01.json",
+            "sha256": "b27746ac09cd9dcca4e2af24ac436dd6197dbbe52866910ae4858468e78554ed"
+          },
+          "verdict": "INCOMPLETE",
+          "paired_frames": 25,
+          "coverage_complete": false,
+          "bounded_misses": 0,
+          "raw_output_nonfinite": 0,
+          "missing_cpu_fields": [
+            "QHAIL"
+          ]
+        }
+      },
+      "raw_measured_domains_before_writer_recheck": null,
+      "host_writer_recheck": null,
+      "host_writer_recheck_receipt": null,
+      "original_cpu_receipt": {
+        "path": "producer:v-prep/c88/cpu_run.json",
+        "sha256": "8ea5cd6fb60a363a7bdec6060fb95077c8f66d857bcd08fe8f7133e6a7c79961"
+      },
+      "reference_of_record": null,
+      "reference_of_record_receipt": null,
+      "matched_inputs": {
+        "path": "producer:v-prep/c88/inputs.json",
+        "sha256": "861aadb9d33792b2bec4a2c31a8ee552e8f28f3af8f39d7e79d006ad3d21ca0e"
+      },
+      "launch": {
+        "path": "producer:v-prep/c88/gpu_launch.json",
+        "sha256": "a3a7a0d12650404dd3e8d9625d049162450e88e863a94a007a98807a47019380"
+      },
+      "actual_gpu_receipt": {
+        "path": "producer:v-prep/c88/gpu_run.json",
+        "sha256": "fde7fe36cfad1e9b50c62e27fbfd13249aa33e9894486533edfa9b869c4ada01"
+      },
+      "reuse_receipt": null,
+      "reused": false,
+      "current_main_identity": null,
+      "source_commit": "c2e549f66cc29870b3c2cf3ef22e2d18576360ae",
+      "platform": "gpu",
+      "process_rc": 0,
+      "forecast_complete": true,
+      "full_d6_pass": false,
+      "qh_mass_provisional": true,
+      "qh_mass_science_verified": false,
+      "accepted_scope_gate": null,
+      "accepted_scope_receipt": null,
+      "execution_errors": [],
+      "resident_nonfinite_failure": false,
+      "e41": "FAIL",
+      "external_e41": null,
+      "local_pin_map": {
+        "path": "producer:v-prep/c88/e41/PIN_MAP.json",
+        "sha256": "a9c70420011a1cb52779a33647db128dceca74b87f4067d13cea9737c6d24de9"
+      },
+      "device_accounting": {
+        "census": {
+          "path": "producer:v-prep/c88/gpu/census.json",
+          "sha256": "5a24572ca98aae2f9ead2c8c56689ccd88c5fef7770fa0385d89b497242333b8"
+        },
+        "extrema": {
+          "path": "producer:v-prep/c88/gpu/f2_negative_summary.json",
+          "sha256": "37e724e609c6fe6e5143605b51828771aa78970431d12bbfaa8a9a0376850f20"
+        },
+        "domains": {
+          "d01": {
+            "actual_work": {
+              "acoustic_trips": 33600,
+              "kf_calls": 0,
+              "native_mass_guard_events": 0,
+              "output_writes": 25,
+              "radiation_init_calls": 1,
+              "radiation_output_calls": 0,
+              "radiation_surface_calls": 0,
+              "radiation_tendency_calls": 146,
+              "steps": 4800
+            },
+            "negative_phase_visits": 23516646,
+            "interior_negative_phase_visits": 19668093,
+            "raw_nonfinite_phase_visits": 0,
+            "event_counts": {
+              "negative": 23516646
+            },
+            "nonzero_guards": {
+              "dynamics.qc": {
+                "nonfinite": 0,
+                "out_of_range": 59957,
+                "repaired": 59957
+              },
+              "dynamics.qg": {
+                "nonfinite": 0,
+                "out_of_range": 48579,
+                "repaired": 48579
+              },
+              "dynamics.qi": {
+                "nonfinite": 0,
+                "out_of_range": 46012,
+                "repaired": 46012
+              },
+              "dynamics.qr": {
+                "nonfinite": 0,
+                "out_of_range": 50080,
+                "repaired": 50080
+              },
+              "dynamics.qs": {
+                "nonfinite": 0,
+                "out_of_range": 51289,
+                "repaired": 51289
+              }
+            },
+            "worst_moisture_negative": {
+              "phase": "post_rk",
+              "field": "qc",
+              "minimum_negative": {
+                "flat_index": 13115,
+                "index_kji": [
+                  7,
+                  18,
+                  11
+                ],
+                "step": 3016,
+                "value": -7.504751920350827e-06
+              }
+            },
+            "worst_number_negative": {
+              "phase": "post_rk",
+              "field": "Nc",
+              "minimum_negative": {
+                "flat_index": 23715,
+                "index_kji": [
+                  13,
+                  18,
+                  27
+                ],
+                "step": 4066,
+                "value": -9193179.0
+              }
+            },
+            "full_output_set": true
+          }
+        },
+        "disposition": "OPEN: observed counts/extrema only; phase visits are not unique cells. Producer full_output_set is not proof of a complete forecast clock. A matched-control justification and F2 decision are separate."
+      },
+      "cache_remaining": false,
+      "cold_shared_wall_s": 13286.817455665005,
+      "sampled_vram_peak_mib": 6000,
+      "manager_disposition_receipt": {
+        "path": "producer:v-prep-tree/proofs/v040/final_validation/C88_MANAGER_DISPOSITION.json",
+        "sha256": "b6589134cff33ce4a98dfb736fca403a652041cba281405a2c38e0a021ece8ff"
+      },
+      "progress_category": "PASS_with_disclosure",
+      "progress_disclosures_or_pending_reason": [
+        "Manager02:44 bounded D6 PASS; raw inventory remains INCOMPLETE: QHAIL",
+        "Actual E41 FAIL STACK3496B; opt-in experimental",
+        "Measured output interval542s/fc-h performance debt; notS1",
+        "Final-main QHAIL/performance rerun pending; no extra arm tonight"
+      ]
+    },
+    {
+      "case": "c89",
+      "options": {
+        "mp_physics": 11,
+        "cu_physics": 0,
+        "bl_pbl_physics": 9,
+        "sf_sfclay_physics": 5,
+        "sf_surface_physics": 4,
+        "ra_lw_physics": 4,
+        "ra_sw_physics": 4
+      },
+      "domains": {
+        "d01": {
+          "receipt": {
+            "path": "producer:v-prep/c89/D6_d01.json",
+            "sha256": "6cf4e2d65e6b1dfeb92427290762d47cab1d564601f6646cd707505db4150acc"
+          },
+          "verdict": "INCOMPLETE",
+          "paired_frames": 25,
+          "coverage_complete": false,
+          "bounded_misses": 0,
+          "raw_output_nonfinite": 0,
+          "missing_cpu_fields": [
+            "DLF2"
+          ]
+        }
+      },
+      "raw_measured_domains_before_writer_recheck": null,
+      "host_writer_recheck": null,
+      "host_writer_recheck_receipt": null,
+      "original_cpu_receipt": {
+        "path": "producer:v-prep/c89/cpu_run.json",
+        "sha256": "b8d45e0ad2e33d5dde1af9f58f3f50d4158357f7e69f850a2712be9f6a3ba005"
+      },
+      "reference_of_record": null,
+      "reference_of_record_receipt": null,
+      "matched_inputs": {
+        "path": "producer:v-prep/c89/inputs.json",
+        "sha256": "1393ce0330389b6de867dab7e8a0aa94104551808678c398c2b5065d98ea3c19"
+      },
+      "launch": {
+        "path": "producer:v-prep/c89/gpu_launch.json",
+        "sha256": "9a340f1271738da342a5f690905c2e6eb31d7d598f4373c797ddcdca2d53a4ad"
+      },
+      "actual_gpu_receipt": {
+        "path": "producer:v-prep/c89/gpu_run.json",
+        "sha256": "fadc53f813f8ebbe7f04c888e8849b4c58a47a58a06d8f4181007af79b33f036"
+      },
+      "reuse_receipt": null,
+      "reused": false,
+      "current_main_identity": null,
+      "source_commit": "9a40424b0dfcd82f39ca4d14919007738523ba72",
+      "platform": "gpu",
+      "process_rc": 0,
+      "forecast_complete": true,
+      "full_d6_pass": false,
+      "qh_mass_provisional": false,
+      "qh_mass_science_verified": false,
+      "accepted_scope_gate": null,
+      "accepted_scope_receipt": null,
+      "execution_errors": [],
+      "resident_nonfinite_failure": false,
+      "e41": "UNKNOWN",
+      "external_e41": null,
+      "local_pin_map": {
+        "path": "producer:v-prep/c89/e41/PIN_MAP.json",
+        "sha256": "5d198e2db6da9c0391bd9d54c47d3ec6412476e9fa2c268e2049475e586803dc"
+      },
+      "device_accounting": {
+        "census": {
+          "path": "producer:v-prep/c89/gpu/census.json",
+          "sha256": "55cc5f5c9c88eff860b7f65e7d4c800318fcaac1628a88b715e9bef318d883c0"
+        },
+        "extrema": {
+          "path": "producer:v-prep/c89/gpu/f2_negative_summary.json",
+          "sha256": "d55dfd90d767601fca677aeea31f2a7b99692af5a8e41b2e3f519668d7b4d668"
+        },
+        "domains": {
+          "d01": {
+            "actual_work": {
+              "acoustic_trips": 33600,
+              "kf_calls": 0,
+              "native_mass_guard_events": 0,
+              "output_writes": 25,
+              "radiation_init_calls": 1,
+              "radiation_output_calls": 0,
+              "radiation_surface_calls": 0,
+              "radiation_tendency_calls": 146,
+              "steps": 4800
+            },
+            "negative_phase_visits": 71270709,
+            "interior_negative_phase_visits": 70110512,
+            "raw_nonfinite_phase_visits": 0,
+            "event_counts": {
+              "negative": 71270709
+            },
+            "nonzero_guards": {
+              "dynamics.qc": {
+                "nonfinite": 0,
+                "out_of_range": 17969,
+                "repaired": 17969
+              },
+              "dynamics.qi": {
+                "nonfinite": 0,
+                "out_of_range": 17351,
+                "repaired": 17351
+              },
+              "dynamics.qr": {
+                "nonfinite": 0,
+                "out_of_range": 30575,
+                "repaired": 30575
+              },
+              "dynamics.qs": {
+                "nonfinite": 0,
+                "out_of_range": 23969,
+                "repaired": 23969
+              }
+            },
+            "worst_moisture_negative": {
+              "phase": "post_rk",
+              "field": "qr",
+              "minimum_negative": {
+                "flat_index": 8420,
+                "index_kji": [
+                  4,
+                  32,
+                  20
+                ],
+                "step": 2080,
+                "value": -0.0001520415098639205
+              }
+            },
+            "worst_number_negative": {
+              "phase": "post_rk",
+              "field": "Nc",
+              "minimum_negative": {
+                "flat_index": 2890,
+                "index_kji": [
+                  1,
+                  26,
+                  34
+                ],
+                "step": 3151,
+                "value": -24282194.0
+              }
+            },
+            "full_output_set": true
+          }
+        },
+        "disposition": "OPEN: observed counts/extrema only; phase visits are not unique cells. Producer full_output_set is not proof of a complete forecast clock. A matched-control justification and F2 decision are separate."
+      },
+      "cache_remaining": false,
+      "cold_shared_wall_s": 2567.437828027003,
+      "sampled_vram_peak_mib": 6204,
+      "progress_category": "still_to_close",
+      "progress_disclosures_or_pending_reason": [
+        "Remaining forecast, inventory, or provenance/writer closure",
+        "Unclosed inventory: DLF2"
+      ]
+    }
+  ],
+  "integration_and_review_sha256": {
+    "proofs/s2_integrate/batch40/QUALIFICATION.json": "11fb26efe5fe4b4b659f30aa04c80a6a30dfb057c6034209d5dae2a3c3feb1bc",
+    "proofs/s2_integrate/batch45/QUALIFICATION.json": "21c88a64842d9e3cef5c967197ddaadc241a99a4e71f62f7fa76fd578eaccc57",
+    "proofs/s2_integrate/batch48/QUALIFICATION.json": "4acda5464f9679215b863e08d1898d6aed352359c4acc98d9f4a975944f6f0f1",
+    "proofs/s2_integrate/batch49/QUALIFICATION.json": "a24c8983cdf0bacf6d01a4d43aecc49abaf07bdf650a374f46e40a4878cd8764",
+    "proofs/s2_integrate/batch57/QUALIFICATION.json": "3590dffe186cf19c585f511fd2ac54b8486ff8e55721f97f004d06dc1a87ee1a",
+    "proofs/rv_t_classd/composition_review/VERDICT_COMPOSITION.md": "c3ada082860a62b7543d44c9b0c0340fa7b798d9d1e30daf553038ef32dd3eb7",
+    "proofs/rv_t_classd/jensen_review/VERDICT_JENSEN.md": "10b347beed41a0697c136c687d40158803ee94310641518291360c76336ced20",
+    "proofs/t_cammgws/README.md": "d25bb68d59b196de5dbab72668dfa730d590284caf06a14ddc18d0ceb5fd6b4e",
+    "proofs/t_classd/README.md": "db99acb047445d252fe247ea922a0d43ddd2e008dcd8b0315d0a2eaf58efcc2b"
+  },
+  "final_counts": null,
+  "final_freeze_utc": null,
+  "final_release_program_identities": null,
+  "manager_E41_decision": "2026-10-16T04:36Z: default WN3/PROD/Swiss F20 E41 hard; opt-in strictD6+complete inventory+NF0 with raw E41 FAIL disclosed; F2 remains separate",
+  "E41_disclosure_projection": "proofs/r_docs040/E41_OPTIN_DISCLOSURE.json",
+  "E41_disclosure_raw_sha256": "170eb86672e84a89702cd35ed429279b15eff455450cec52c1672abb9f0159fe",
+  "default_F20_raw_receipt_sha256": "787f73716f8ff77813a024871a7d0c07de6b5f7967774f68a4aa3c7ac4732430",
+  "critic_status": "READY-FOR-CRITIC: all66 accepted-scope scientific D6 gates closed; owner README/features/guide/rigour/plots complete. Sole rv-r-pkg040 critic is manager-routed; publication remains manager-owned.",
+  "current_release_checkpoint": "proofs/r_docs040/RELEASE_CHECKPOINT.json",
+  "FINAL_E41_raw_sha256": "27ab017d6d8553cf940d30c8792a849d65bc9ab489d96161609a26e7e14952f7",
+  "FINAL_RELEASE_LEDGER_raw_sha256": "8a5aaf76518d866176cad1b543b96250c81f28468ad40915e31e8fb3cb424edf"
+}

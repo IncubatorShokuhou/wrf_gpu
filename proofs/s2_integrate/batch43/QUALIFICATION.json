@@ -1,0 +1,66 @@
+{
+  "UTC": "2026-10-15T22:43:01.530514+00:00",
+  "status": "GREEN integration scope",
+  "approved": "t-classd-mprho ab5545b28fc0209229f3aca9d3230f972408da14",
+  "source_tree": "91267a537a87d506af744e5ede6a0c9f85c62acb",
+  "fresh_CPU": {
+    "status": "PASS",
+    "returncode": 0,
+    "immutable_candidate": "d236cc830f10ad967257a637e83c66b4fd284a98",
+    "source": "91267a537a87d506af744e5ede6a0c9f85c62acb",
+    "command": [
+      "<USER_HOME>/miniconda3/bin/python",
+      "-m",
+      "pytest",
+      "-q",
+      "-rs",
+      "-p",
+      "no:cacheprovider",
+      "--basetemp",
+      "<USER_HOME>/wrf_gpu2_lanes/s2-integrate/pytest",
+      "--junitxml",
+      "<USER_HOME>/wrf_gpu2_lanes/s2-integrate/batch43/sanity.xml",
+      "tests/v034/nssl2mom/test_radar_handoff.py::test_adapter_returns_original_radar_and_post_rk_preserves_controls"
+    ],
+    "elapsed_s": 17.741526631012675,
+    "cap": "6G/noSwap",
+    "GPU_runs": 0,
+    "numerical_reuse": "Exact approved kernels/fixtures: YSU218caseREAL+20928WRF-envelope, F6ninepristinepublicdumps, ClassDoriginalnumeric gates source-reused. MP-RHO 38criticPASS/3REALonlySKIP/13compiledprefix+2helperdtypes/7REAL4statements reused on exactadapters+unchangedhelper;17numericmutants; no fullforecast/GPU repeat. CLIhypsometric2 qualified only;3REALonlySKIP explicit.",
+    "counts": {
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "RSS_KiB": 2373312,
+    "cleanup": true,
+    "UTC": "2026-10-15T22:42:42.801118+00:00"
+  },
+  "explicit_skips": [],
+  "source_audit": {
+    "UTC": "2026-10-15T22:37:09.528841+00:00",
+    "base": "46868408b48bd6cff5c37ead964c2d35f0405743",
+    "incoming": "ab5545b28fc0209229f3aca9d3230f972408da14",
+    "candidate": "99e6612f6e380578a1a58ebe4945baa89aae1f6d",
+    "src": "91267a537a87d506af744e5ede6a0c9f85c62acb",
+    "changes": [
+      "src/gpuwrf/coupling/goddard4ice_adapter.py",
+      "src/gpuwrf/physics/ferrier/adapter.py",
+      "src/gpuwrf/physics/nssl2mom/adapter.py",
+      "src/gpuwrf/physics/nssl2mom/driver.py",
+      "tests/test_t_classd_mp_rho_callers.py",
+      "tests/v034/nssl2mom/test_radar_handoff.py",
+      "tests/v034/nssl2mom/test_wiring.py"
+    ],
+    "exact_incoming_all_except_driver": true,
+    "driver_executable_AST_exact_main_docstring_exact_review": true,
+    "shared_SCAN_helper_and_other_core_BYTE_main": true,
+    "metadata_assertion_correction": "Whole incoming driver differs by newer main Class-D; three-way preserved executable AST. No product correction."
+  },
+  "reused_review": "3adapters/tests BYTEreview; NSSLdriver executableASTmain/docstringreview; unchangedSCANhelper/allothercore preserved. Critic38PASS3REALonlySKIP/13compiledprefix+2helperdtypes/7REAL4statements6bitpatternsBYTE/17numericASSERT0setup reused, not freshcount. SI356290PASS+3explicitREALonlySKIP reused unchangedsource; single missingmockkey failure fixedTESTONLYd236cc830f10ad967257a637e83c66b4fd284a98 (onlyrainncv/srzeros;wholeASTotherwiseexact); SI359reruns only affectedtest, not all294.",
+  "limits": "CLIhypsometric2 only; frozeninputULP retained; NSSLpacking injectedDN regression not productionrho proof. CoupledGPU/D6/F2 pending finalcomposition.",
+  "performance_memory": "No extraMPsolve/State/hostcallback; NSSL pressureprofiles/LOG replaceEOS, Ferrier/Goddard remove moistfactor; GPUlaunch/temp/memory/readiness/runtime unknown.",
+  "default_identity": "Swiss f672a5739cb96e388b6b7a40ef80337bf81bdc14ef15268f3476e09d79fe055d / PROD6fc715a2bd630934c4cf0f94427df19a527cbf429011c9ba5efe4d712744d27b independently reviewed/source-bound unchanged default route",
+  "GPU_runs": 0,
+  "cleanup": true
+}

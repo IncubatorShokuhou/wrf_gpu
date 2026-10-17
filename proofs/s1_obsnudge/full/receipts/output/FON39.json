@@ -1,0 +1,32 @@
+{
+  "candidate": "ff5c7cb3e6d5252d6f6dfd999066e9a6758f3a8b",
+  "measured_output_source": "45e3ec82b2d16324a65a354a3f78cfeb0304d93c",
+  "integrated_main": "489a914837303cf0c76644cff919f49363f39e5c",
+  "changed_src_paths": [
+    "src/gpuwrf/__init__.py",
+    "src/gpuwrf/cli.py",
+    "src/gpuwrf/optimize/__init__.py",
+    "src/gpuwrf/optimize/calibration.py",
+    "src/gpuwrf/optimize/cli.py",
+    "src/gpuwrf/optimize/data.py",
+    "src/gpuwrf/optimize/study.py",
+    "src/gpuwrf/runtime/operational_mode.py"
+  ],
+  "unchanged_existing_src_blobs": 526,
+  "daily_output_source_byte_exact": true,
+  "daily_sha256": "9d3fcbec2f2c55ca6f710d8fe4184b81fb574862b6926a11637339db069a9e1d",
+  "numerical_model_AST_exact_after_removing_reviewed_host_seed_guard": true,
+  "ownership_guard_AST_exact_main": true,
+  "upstream_host_blobs_exact_main": [
+    "src/gpuwrf/__init__.py",
+    "src/gpuwrf/cli.py",
+    "src/gpuwrf/optimize/__init__.py",
+    "src/gpuwrf/optimize/calibration.py",
+    "src/gpuwrf/optimize/cli.py",
+    "src/gpuwrf/optimize/data.py",
+    "src/gpuwrf/optimize/study.py"
+  ],
+  "reused_release_sha256": "2bf12cb8374d3a84a440e47dea4b77b0c7436108fc2ee2616bba6ec79b17962a",
+  "scope": "Only upstream host initialization guard and optimizer/version/CLI code differ from measured output fix. Observation seed precedes ownership guard; no timestep, physics, restart or output arithmetic change.",
+  "performance": "No added timestep kernels/temps/transfers. None-safe dispatcher uses existing output work; present history avoids bulk recomputation. Main ownership guard copies shared seeds once at init."
+}

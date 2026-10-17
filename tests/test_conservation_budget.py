@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import json
 from dataclasses import replace
-from pathlib import Path
 
 import jax
 import jax.numpy as jnp
@@ -20,10 +19,6 @@ from gpuwrf.diagnostics.conservation_budget import (
     layer_dry_mass_kg,
     mass_cell_area_m2,
 )
-
-
-ROOT = Path(__file__).resolve().parents[1]
-PROOF_PATH = ROOT / "proofs" / "p0_7" / "conservation_budget_cpu_controlled.json"
 
 
 def _grid(nx: int = 4, ny: int = 3, nz: int = 4) -> GridSpec:
@@ -175,7 +170,7 @@ def test_budget_terms_use_wrf_mass_area_units_and_precip_evap():
     assert int(np.asarray(budget.guard_limiter_terms["moisture_floor_qv"].count)) == 3
 
 
-def test_budget_closure_closed_water_and_lbc_dry_mass_proof():
+def test_budget_closure_closed_water_and_lbc_dry_mass_proof(tmp_path):
     grid = _grid()
     initial = _state(grid, qv=0.012, precip=False)
     dq = 0.001
@@ -250,5 +245,5 @@ def test_budget_closure_closed_water_and_lbc_dry_mass_proof():
             "moist_static_energy_j": _scalar(initial_budget.moist_static_energy_j),
         },
     }
-    PROOF_PATH.parent.mkdir(parents=True, exist_ok=True)
-    PROOF_PATH.write_text(json.dumps(proof, indent=2, sort_keys=True) + "\n")
+    proof_path = tmp_path / "conservation_budget_cpu_controlled.json"
+    proof_path.write_text(json.dumps(proof, indent=2, sort_keys=True) + "\n")

@@ -1,0 +1,256 @@
+{
+  "lane": "t-writer",
+  "branch": "lane/t-writer-psfc-hail",
+  "objective": "all active moist masses in direct full and PSFC-only history fallbacks",
+  "qualification": "CPU writer seam only, not a new forecast/GPU fidelity result",
+  "base": "9d1cad3515fa28b9ebae9bf7b16e2600dc20b3c8",
+  "product_commit": "e39edfcf5",
+  "healthy": {
+    "pass": 92,
+    "skip": 3,
+    "failure": 0,
+    "error": 0,
+    "seconds": 20.43,
+    "peak_rss_KiB": 1739740
+  },
+  "new_tests": 26,
+  "original_WRF": "unchanged pristine REAL4 phy_prep, independent hard-coded reference mass tuple; binary-exact nonuniform columns BYTE",
+  "baseline": {
+    "genuine_assertions": 16,
+    "healthy_controls": 8,
+    "setup_errors": 0
+  },
+  "hail_deletion_mutant": {
+    "genuine_assertions": 4,
+    "healthy_controls": 4,
+    "setup_errors": 0,
+    "seconds": 2.8,
+    "peak_rss_KiB": 827784
+  },
+  "performance": {
+    "kind": "host-only controlled writer timing; not forecast/GPU fidelity",
+    "parent": "b9852764fbca3d3c9cb22d3bfc5d703432bcbdbe",
+    "shape": [
+      44,
+      117,
+      267
+    ],
+    "repeats": 7,
+    "cache": "NONE",
+    "arms": {
+      "parent_full_no_hail": {
+        "seconds": [
+          0.012842504002037458,
+          0.013394898000115063,
+          0.013169556001230376,
+          0.01345253900217358,
+          0.013922232003096724,
+          0.013924273000156973,
+          0.013490040000760928
+        ],
+        "median_seconds": 0.01345253900217358,
+        "python_numpy_peak_bytes": 80738366
+      },
+      "candidate_full_no_hail": {
+        "seconds": [
+          0.012136598001234233,
+          0.012168599001597613,
+          0.011970087001827778,
+          0.011449243000242859,
+          0.011383822002244415,
+          0.01141160300176125,
+          0.011290742000710452
+        ],
+        "median_seconds": 0.011449243000242859,
+        "python_numpy_peak_bytes": 61179790
+      },
+      "parent_subset_no_hail": {
+        "seconds": [
+          0.002219078000052832,
+          0.0019084559971815906,
+          0.001911334999022074,
+          0.001893724998808466,
+          0.001846055001806235,
+          0.0018375150029896758,
+          0.0018188449976150878
+        ],
+        "median_seconds": 0.001893724998808466,
+        "python_numpy_peak_bytes": 34370630
+      },
+      "candidate_subset_no_hail": {
+        "seconds": [
+          0.005805087999760872,
+          0.005783376996987499,
+          0.005898577001062222,
+          0.005938088001130382,
+          0.0058810179980355315,
+          0.005873117999726674,
+          0.006484122000983916
+        ],
+        "median_seconds": 0.0058810179980355315,
+        "python_numpy_peak_bytes": 55681342
+      },
+      "parent_full_hail": {
+        "seconds": [
+          0.013443318999634357,
+          0.013821281998389168,
+          0.013589510002930183,
+          0.013893133000237867,
+          0.013279588001751108,
+          0.013059395998425316,
+          0.012394960001984145
+        ],
+        "median_seconds": 0.013443318999634357,
+        "python_numpy_peak_bytes": 80738113
+      },
+      "candidate_full_hail": {
+        "seconds": [
+          0.011848066002130508,
+          0.011355451999406796,
+          0.011327002001053188,
+          0.011235111000132747,
+          0.011309290999633959,
+          0.011358571999153355,
+          0.0114984829997411
+        ],
+        "median_seconds": 0.011355451999406796,
+        "python_numpy_peak_bytes": 61179654
+      },
+      "parent_subset_hail": {
+        "seconds": [
+          0.002092066999466624,
+          0.0018472649971954525,
+          0.0018435849997331388,
+          0.00183442500201636,
+          0.0018462750012986362,
+          0.0018266449988004752,
+          0.0018388349999440834
+        ],
+        "median_seconds": 0.0018435849997331388,
+        "python_numpy_peak_bytes": 34370542
+      },
+      "candidate_subset_hail": {
+        "seconds": [
+          0.006049768999218941,
+          0.006222750002052635,
+          0.006172679997689556,
+          0.006094590000429889,
+          0.006198859999130946,
+          0.006772585002181586,
+          0.006240660000912612
+        ],
+        "median_seconds": 0.006198859999130946,
+        "python_numpy_peak_bytes": 55681286
+      }
+    },
+    "no_hail_full_fields_byte_equal": 55
+  },
+  "resource": "one official RAM slot per arm, MemoryMax6G MemorySwapMax0; CPU12,13,28,29 nice19 JAX_PLATFORMS=cpu; QUIET/timeout; GPU unused",
+  "cleanup": {
+    "snapshots_absent": [
+      true,
+      true,
+      true,
+      true
+    ],
+    "pytest_scratch_absent": [
+      true,
+      true,
+      true,
+      true
+    ],
+    "cache": "NONE; GPUWRF_JAX_CACHE=0"
+  },
+  "limitations": [
+    "Controlled column oracle qualifies output seam, not coupled trajectory.",
+    "Three retained-reference writer tests skip because their original files are unavailable; exact reasons in TWH02.json.",
+    "Upstream hail fix requires its separately scheduled affected GPU/D6/E41 qualification; no transfer of that gate here.",
+    "Selected PSFC now integrates moisture and therefore adds required host temporary work and active-mass output-time transfer; no timestep/device/kernel change.",
+    "Benchmark setup import error and initial mutant CPU-guard refusal retained; neither counted as numerical result."
+  ],
+  "files": [
+    {
+      "path": "proofs/t_writer_psfc/README.md",
+      "sha256": "a57e851d7b990a55045b3091d184b4f85e42e42f0c403233860688b0e852a334"
+    },
+    {
+      "path": "proofs/t_writer_psfc/SOURCE_REUSE.json",
+      "sha256": "430f28eef50181f0772d163c95ea1703eac9152a36cfdd980db32fbe9c2e5148"
+    },
+    {
+      "path": "proofs/t_writer_psfc/bench.py",
+      "sha256": "22933fbcb322f6a8841abbf2f0116ba03735cfc8fe6710079d700469f32d0c66"
+    },
+    {
+      "path": "proofs/t_writer_psfc/mutant.py",
+      "sha256": "1cc3454109bc4c3786c3e364eb1d4a485555f8a3ba53e0d2326292dd8f78aa12"
+    },
+    {
+      "path": "proofs/t_writer_psfc/receipts/BASELINE.json",
+      "sha256": "1456ac11eb3b8c8a5ef07d25382801ad130dd49cdbe4e3f0c588c24da93f8d5f"
+    },
+    {
+      "path": "proofs/t_writer_psfc/receipts/TWH02.json",
+      "sha256": "4ded2c8560eaf54556ab47b5025a995597348e76cc5bee0c4e1301cbaf25fbea"
+    },
+    {
+      "path": "proofs/t_writer_psfc/receipts/TWH02.xml",
+      "sha256": "08ac459c38415c9584879cd63738f30bca2497fee3d608ec766f6ae04698532a"
+    },
+    {
+      "path": "proofs/t_writer_psfc/receipts/TWH03-bench.json",
+      "sha256": "b175099fa400dbae17e0d5d585c32187345bc03196353846b987994f0e71d072"
+    },
+    {
+      "path": "proofs/t_writer_psfc/receipts/TWH04-mutant.xml.gz",
+      "sha256": "cadc32e24dadcf39d638e66d18d2ee807fd5d9ddfaf516de0218fa50bdc06264"
+    }
+  ],
+  "raw": [
+    {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-writer/TWH01.xml",
+      "sha256": "84c33939de62e1181e0920eacbc651dee4e05e4b173cd7c78a17959d402343a4"
+    },
+    {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-writer/TWH01.log",
+      "sha256": "8cc59fe5a57ba6c1dbb1d8478fb38270b1634a3fd2fe241fd27d73f568331104"
+    },
+    {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-writer/TWH02.xml",
+      "sha256": "08ac459c38415c9584879cd63738f30bca2497fee3d608ec766f6ae04698532a"
+    },
+    {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-writer/TWH02.log",
+      "sha256": "4a1a7b771c361d74fffff0e19996187bd6735fb98ab3fc5d43e112b604876dfd"
+    },
+    {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-writer/TWH02.json",
+      "sha256": "4ded2c8560eaf54556ab47b5025a995597348e76cc5bee0c4e1301cbaf25fbea"
+    },
+    {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-writer/TWH02-bench.log",
+      "sha256": "a967b33e5aaca89179a89fe2f660cdba08fa17e8ceb86c6fd4ce9be881e0c3a1"
+    },
+    {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-writer/TWH03-bench.json",
+      "sha256": "b175099fa400dbae17e0d5d585c32187345bc03196353846b987994f0e71d072"
+    },
+    {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-writer/TWH03-bench.log",
+      "sha256": "dd2f4659cfa9f0f655362ba7eacb2e2115427dec2620650e2e9c6daea8ad87dd"
+    },
+    {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-writer/TWH03-mutant.log",
+      "sha256": "65708099c3743be8c0602caef36cf26b309ba3d0b0f66875a986747fa6ee1b3a"
+    },
+    {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-writer/TWH04-mutant.xml",
+      "sha256": "2947bee318fcf9f0aeb3fa0efe538ef7ff90c065889ca1dc1546564ea7f5542c"
+    },
+    {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-writer/TWH04-mutant.log",
+      "sha256": "acee8cb1236ad7b41a991d4abef903e65c35df291104c3a8fa149305e2cbae7b"
+    }
+  ],
+  "mutant_xml_transport": "receipts/TWH04-mutant.xml.gz decompresses BYTE to the raw sealed XML; gzip preserves original assertion whitespace without diff-check violations"
+}

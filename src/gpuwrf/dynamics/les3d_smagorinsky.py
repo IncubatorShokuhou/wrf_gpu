@@ -94,11 +94,12 @@ class Les3dConfig:
     km_opt: int = 3
     c_k: float = 0.15
     tke_mix2_off: bool = False
+    sms_precip_scalar_indices: tuple[int, ...] = ()
 
     def __post_init__(self) -> None:
         if self.boundary not in ("specified", "periodic"):
             raise ValueError(f"unsupported les3d boundary {self.boundary!r}")
-        if self.km_opt not in (2, 3):
+        if self.km_opt not in (2, 3, 5):
             raise ValueError("les3d supports km_opt=3 (smag_km) and km_opt=2 (tke_km/tke_rhs)")
         if self.isfflx not in (0, 1, 2):
             raise ValueError("isfflx value invalid for diff_opt=2")
@@ -154,6 +155,15 @@ class Les3dInputs(NamedTuple):
     mut: jax.Array | None = None   # km_opt=2: grid%mut (ny, nx)
     c1h: jax.Array | None = None   # km_opt=2: grid%c1h
     c2h: jax.Array | None = None   # km_opt=2: grid%c2h
+    c1f: jax.Array | None = None
+    c2f: jax.Array | None = None
+    sms_br: jax.Array | None = None
+    sms_rmol: jax.Array | None = None
+    sms_wspd: jax.Array | None = None
+    sms_gamu: jax.Array | None = None
+    sms_gamv: jax.Array | None = None
+    sms_pblh: jax.Array | None = None
+    sms_ustm: jax.Array | None = None
 
 
 class Les3dResult(NamedTuple):
@@ -182,6 +192,7 @@ class Les3dResult(NamedTuple):
     t_tendf: jax.Array
     moist_tendf: tuple[jax.Array, ...]
     tke_tendf: jax.Array | None = None
+    sms_updates: dict | None = None
 
 
 class Les3dTendencies(NamedTuple):
@@ -197,6 +208,7 @@ class Les3dTendencies(NamedTuple):
     xkhh: jax.Array
     xkhv: jax.Array
     tke_tendf: jax.Array | None = None
+    sms_updates: dict | None = None
 
 
 # --------------------------------------------------------------------------- #
@@ -247,6 +259,12 @@ class _Mem:
     def r2(self, a, j, i, dj=0, di=0):
         """2-D memory array ``a(i+di, j+dj)`` broadcast against a 3-D region."""
         return a[None, self._js(j, dj), self._is(i, di)]
+
+    def s2(self,a,j,i,value):
+        return a.at[self._js(j),self._is(i)].set(value[0] if value.ndim==3 else value)
+
+    def interior2(self,a):
+        return self.r2(a,(1,self.ny),(1,self.nx))[0]
 
     def put(self, interior, *, istag: int = 0, jstag: int = 0, kfull: bool = False):
         """Place an interior ``(k, j, i)`` field at Fortran ``(1.., jds.., ids..)``."""
@@ -991,7 +1009,7 @@ def _tke_km(m, periodic, cfg, tke, theta, p8w, t8w, bn2, rdz, rdzw, msftx, msfty
 
 
 def _tke_rhs(m, periodic, cfg, d11, d22, d33, d12, d13, d23, u, v, tke, mut, c1, c2, theta, bn2, msftx, msfty,
-             xkmh, xkmv, xkhv, dx, dy, dt, rdzw, ust, hfx, qv, rho, c_k):
+             xkmh, xkmv, xkhv, dx, dy, dt, rdzw, ust, hfx, qv, rho, c_k, *,nlflux=None):
     kts, ktf = m.kts, m.ktf
     jr, ir = _mass_ranges(m, periodic)
     kr, ka, k1 = (kts, ktf), (kts + 1, ktf), (kts, kts)
@@ -1030,7 +1048,10 @@ def _tke_rhs(m, periodic, cfg, d11, d22, d33, d12, d13, d23, u, v, tke, mut, c1,
     tend = m.s(tend, k1, jr, ir, r(tend, k1) + mass(k1) * (
         vv * 0.5 * cd * absu * (r(d23, k1, dk=1) + r(d23, k1, dk=1, dj=1)) * 0.5))
     # ---- tke_buoyancy ----
-    tend = m.s(tend, ka, jr, ir, r(tend, ka) - mass(ka) * r(xkhv, ka) * r(bn2, ka))
+    if int(cfg.km_opt)==5:
+        tend=m.s(tend,ka,jr,ir,r(tend,ka)-mass(ka)*(r(xkhv,ka)*r(bn2,ka)-.5*(r(nlflux,ka,dk=1)+r(nlflux,ka))*_G/r(theta,ka)))
+    else:
+        tend = m.s(tend, ka, jr, ir, r(tend, ka) - mass(ka) * r(xkhv, ka) * r(bn2, ka))
     if int(cfg.isfflx) in (0, 2):
         heat_flux = np.float32(cfg.tke_heat_flux)
     else:
@@ -1039,13 +1060,14 @@ def _tke_rhs(m, periodic, cfg, d11, d22, d33, d12, d13, d23, u, v, tke, mut, c1,
     tend = m.s(tend, k1, jr, ir, r(tend, k1) - mass(k1) * (
         (r(xkhv, k1) * r(bn2, k1)) - (_G / r(theta, k1)) * heat_flux) / 2.0)
     # ---- tke_dissip ----  (c_k is a namelist REAL: gfortran evaluates ce1/ce2 in REAL4 at runtime)
-    ce1 = np.float32(np.float32(np.float32(cfg.c_k) / np.float32(0.10)) * np.float32(0.19))
-    ce2 = np.float32(max(np.float32(0.0), np.float32(np.float32(0.93) - ce1)))
-    l_scale, deltas = _calc_l_scale(m, periodic, tke, bn2, rdzw, msftx, msfty, dx, dy)
-    tketmp = jnp.maximum(r(tke), 1.0e-6)
-    kidx = jnp.arange(kr[0], kr[1] + 1)[:, None, None]
-    coefc = jnp.where((kidx == kts) | (kidx == ktf), np.float32(3.9), ce1 + ce2 * l_scale / deltas)
-    tend = m.s(tend, kr, jr, ir, r(tend) - mass(kr) * coefc * jnp.power(tketmp, np.float32(1.5)) / l_scale)
+    if int(cfg.km_opt)!=5:
+        ce1 = np.float32(np.float32(np.float32(cfg.c_k) / np.float32(0.10)) * np.float32(0.19))
+        ce2 = np.float32(max(np.float32(0.0), np.float32(np.float32(0.93) - ce1)))
+        l_scale, deltas = _calc_l_scale(m, periodic, tke, bn2, rdzw, msftx, msfty, dx, dy)
+        tketmp = jnp.maximum(r(tke), 1.0e-6)
+        kidx = jnp.arange(kr[0], kr[1] + 1)[:, None, None]
+        coefc = jnp.where((kidx == kts) | (kidx == ktf), np.float32(3.9), ce1 + ce2 * l_scale / deltas)
+        tend = m.s(tend, kr, jr, ir, r(tend) - mass(kr) * coefc * jnp.power(tketmp, np.float32(1.5)) / l_scale)
     # ---- lower limit ----
     tend = m.s(tend, kr, jr, ir, jnp.maximum(r(tend), -mass(kr) * jnp.maximum(0.0, r(tke)) / _k(dt, tke)))
     return tend
@@ -1094,10 +1116,41 @@ def les3d_smagorinsky_memory(inp: Les3dInputs, cfg: Les3dConfig) -> Les3dResult:
     div, d11, d22, d33, d12, d13, d23 = _cal_deform_and_div(
         m, periodic, u, v, w, rdz, rdzw, zx, zy, msfux, msfuy, msfvx, msfvy, msftx, msfty,
         fnm, fnp, dn, dnw, cf1, cf2, cf3, rdx, rdy, u_base, v_base, cfg.mix_full_fields)
+    sms_updates=None
+    if int(cfg.km_opt)==5:
+        if not cfg.vertical:
+            raise ValueError('SMS-3DTKE requires bl_pbl_physics=0')
+        if any(x is None for x in (inp.tke,inp.sms_br,inp.sms_rmol,inp.sms_wspd,inp.sms_gamu,inp.sms_gamv,inp.sms_ustm,inp.c1f,inp.c2f)):
+            raise ValueError('SMS-3DTKE requires prognostic TKE and seeded surface/nonlocal carry')
+        from gpuwrf.kernels.phys_sms3dtke import upstream
+        jr,ir=_mass_ranges(m,periodic);kr=(m.kts,m.ktf);kf=(m.kts,m.kde)
+        take=lambda x,kk=kr:m.r(x,kk,jr,ir)
+        ts=bc(m.put(inp.tke),'t')
+        surf=lambda x:m.r2(m.put2(x),jr,ir)
+        um=.5*(take(u)+m.r(u,kr,jr,ir,di=1))
+        vm=.5*(take(v)+m.r(v,kr,jr,ir,dj=1))
+        nlf,gu,gv,hp,dl,el,hout=upstream(take(rdzw),take(rdz,kf),take(th_phy),take(p8w,kf),take(t8w,kf),
+            take(ts),take(moist[cfg.iqv]),take(rho),um,vm,surf(inp.ust),surf(inp.hfx),surf(inp.sms_br),
+            surf(inp.sms_rmol),surf(inp.sms_wspd),m.r2(msftx,jr,ir),m.r2(msfty,jr,ir),surf(inp.sms_gamu),surf(inp.sms_gamv),
+            dx=inp.dx,dy=inp.dy,isfflx=cfg.isfflx,heat=cfg.tke_heat_flux)
+        nlflux=m.s(m.zeros(),kf,jr,ir,nlf);dlk=m.s(m.zeros(),kf,jr,ir,dl)
+        gamu=bc2(m.s2(m.put2(inp.sms_gamu),jr,ir,gu),'t')
+        gamv=bc2(m.s2(m.put2(inp.sms_gamv),jr,ir,gv),'t')
+        hpbl=m.s2(m.put2(inp.sms_pblh),jr,ir,hp)
+        hfx_sms=m.s2(m.put2(inp.hfx),jr,ir,hout)
+        sms_updates=dict(sms_gamu=m.interior2(gamu),sms_gamv=m.interior2(gamv),
+                         pblh=m.interior2(hpbl),hfx=m.interior2(hfx_sms))
     bn2 = _calculate_n2(m, periodic, moist, cfg.iqv, cfg.iqc, cfg.iqi, th_phy, t_phy, p_phy, p8w, t8w,
                         dnw, dn, rdz, rdzw, cf1, cf2, cf3)
     tke = None
-    if int(cfg.km_opt) == 2:
+    if int(cfg.km_opt) == 5:
+        from gpuwrf.dynamics.sms3dtke import _sms_km,_sms_l_diss,common_gradient
+        tke=ts
+        dth=common_gradient(m,cfg,th_phy,p8w,t8w,rdz,rdzw)
+        xkmh,xkmv,xkhh,xkhv,xkmv_meso=_sms_km(m,cfg,tke,th_phy,dth,rdzw,msftx,msfty,hpbl,dlk,d11,d22,d12,zx,zy,dx,dy)
+        l_diss=_sms_l_diss(m,cfg,tke,bn2,rdzw,msftx,msfty,hpbl,dlk,dx,dy)
+        xkmv_meso=bc(xkmv_meso,'t')
+    elif int(cfg.km_opt) == 2:
         tke = bc(m.put(inp.tke), "t")
         xkmh, xkmv, xkhh, xkhv = _tke_km(m, periodic, cfg, tke, th_phy, p8w, t8w, bn2, rdz, rdzw, msftx, msfty,
                                          dx, dy, dt, f32(cfg.c_k), mub)
@@ -1115,12 +1168,22 @@ def les3d_smagorinsky_memory(inp: Les3dInputs, cfg: Les3dConfig) -> Les3dResult:
     tke_t = None
     if tke is not None:  # first_rk_step_part2: tke_rhs before vertical/horizontal diffusion
         zeros2 = jnp.zeros(m.shape[1:], dtype=dtype)
-        ust2 = bc2(m.put2(inp.ust), "t") if inp.ust is not None else zeros2
-        hfx2 = m.put2(inp.hfx) if inp.hfx is not None else zeros2
+        ust2 = bc2(m.put2(inp.sms_ustm if int(cfg.km_opt)==5 else inp.ust), "t") if inp.ust is not None else zeros2
+        hfx2 = hfx_sms if int(cfg.km_opt)==5 else (m.put2(inp.hfx) if inp.hfx is not None else zeros2)
         tke_t = _tke_rhs(m, periodic, cfg, d11, d22, d33, d12, d13, d23, u, v, tke, bc2(m.put2(inp.mut), "t"),
                          m.col(inp.c1h), m.col(inp.c2h), th_phy, bn2, msftx, msfty, xkmh, xkmv, xkhv, dx, dy, dt,
-                         rdzw, ust2, hfx2, moist[cfg.iqv], rho, f32(cfg.c_k))
-    if cfg.vertical:
+                         rdzw, ust2, hfx2, moist[cfg.iqv], rho, f32(cfg.c_k),
+                         **({'nlflux':nlflux} if int(cfg.km_opt)==5 else {}))
+    if cfg.vertical and int(cfg.km_opt)==5:
+        from gpuwrf.dynamics.sms_vertical import vertical_sms
+        _sms_rhs_saved=tke_t
+        ru,rv,rw,rt,mt,tke_t=vertical_sms(m,cfg,inp,u=u,v=v,w=w,thp=thp,theta=th_phy,moist=moist,
+            tke=tke,mut=bc2(m.put2(inp.mut),'t'),c1h=m.col(inp.c1h),c2h=m.col(inp.c2h),c1f=m.col(inp.c1f),c2f=m.col(inp.c2f),
+            xkmh=xkmh,xkmv=xkmv,xkhv=xkhv,xkmv_meso=xkmv_meso,l_diss=l_diss,nlflux=nlflux,gamu=gamu,gamv=gamv,
+            rho=rho,rdz=rdz,rdzw=rdzw,fnm=fnm,fnp=fnp,dn=dn,dnw=dnw,ust=ust2,hfx=hfx_sms,
+            qfx=m.put2(inp.qfx),t_base=t_base,qv_base=qv_base)
+        tke_t=_sms_rhs_saved+tke_t
+    elif cfg.vertical:
         ru, rv = _vertical_diffusion_uv(m, periodic, ru, rv, d13, d23, xkmv, rho, fnm, fnp, dnw)
         rw = _vertical_diffusion_w_2(m, periodic, rw, d33, xkmh, rho, dn)
         ru, rv, rt, mt = _vertical_surface_and_scalars(m, cfg, periodic, ru, rv, rt, mt, u, v, thp, th_phy, moist,
@@ -1133,14 +1196,14 @@ def les3d_smagorinsky_memory(inp: Les3dInputs, cfg: Les3dConfig) -> Les3dResult:
     rw = _horizontal_diffusion_w_2(m, periodic, rw, d13, d23, xkmv, rho, msftx, msfty, rdx, rdy, fnm, fnp, dn, zx, zy, rdz)
     rt = _horizontal_diffusion_s(m, periodic, rt, thp, xkhh, rho, msftx, msfty, msfux, msfvy, rdx, rdy, fnm, fnp,
                                  cf1, cf2, cf3, zx, zy, rdzw, dnw, dn)
-    if tke_t is not None and not cfg.tke_mix2_off:
+    if tke_t is not None and (int(cfg.km_opt)==5 or not cfg.tke_mix2_off):
         tke_t = _horizontal_diffusion_s(m, periodic, tke_t, tke, xkmh, rho, msftx, msfty, msfux, msfvy, rdx, rdy,
                                         fnm, fnp, cf1, cf2, cf3, zx, zy, rdzw, dnw, dn, doing_tke=True)
     if not cfg.moist_mix2_off:
         mt = [_horizontal_diffusion_s(m, periodic, mt[n], q, xkhh, rho, msftx, msfty, msfux, msfvy, rdx, rdy, fnm,
                                       fnp, cf1, cf2, cf3, zx, zy, rdzw, dnw, dn) for n, q in enumerate(moist)]
     return Les3dResult(z, rdz, rdzw, zx, zy, div, d11, d22, d33, d12, d13, d23, bn2, xkmh, xkmv, xkhh, xkhv,
-                       ru, rv, rw, rt, tuple(mt), tke_t)
+                       ru, rv, rw, rt, tuple(mt), tke_t, sms_updates)
 
 
 def _vertical_surface_and_scalars(m, cfg, periodic, ru, rv, rt, mt, u, v, thp, th_phy, moist, iqv, xkhv, rho,
@@ -1237,6 +1300,7 @@ def les3d_smagorinsky_tendencies(inp: Les3dInputs, cfg: Les3dConfig) -> Les3dTen
         xkhh=m.interior(res.xkhh),
         xkhv=m.interior(res.xkhv),
         tke_tendf=None if res.tke_tendf is None else m.interior(res.tke_tendf),
+        sms_updates=res.sms_updates,
     )
 
 

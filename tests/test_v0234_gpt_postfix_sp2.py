@@ -14,6 +14,7 @@ import pytest
 
 REPO = Path(__file__).resolve().parents[1]
 ACCEPTED_COMPONENT_SRC_TREE = "ede4f8a706f9140973746412c107cbadf3240f83"
+PRIVATE_FINAL_HEAD = "dead7d0042a3398eba2a0dac8d809938fa16df05"
 
 
 def _load(name: str, relative: str):
@@ -166,7 +167,9 @@ def test_accepted_component_source_tree_is_authenticated_and_ancestral() -> None
     ancestry = subprocess.run(
         [
             "git", "-C", str(REPO), "merge-base", "--is-ancestor",
-            gpu.ACCEPTED_COMPONENT_HEAD, "HEAD",
+            # The public release was curated onto a new history. Authenticate
+            # ancestry against the original private FINAL-b, not today's HEAD.
+            gpu.ACCEPTED_COMPONENT_HEAD, PRIVATE_FINAL_HEAD,
         ],
         check=False,
     )

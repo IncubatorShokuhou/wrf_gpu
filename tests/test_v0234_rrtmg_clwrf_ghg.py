@@ -244,8 +244,15 @@ def test_gas_metadata_is_dynamic_pytree_state_and_must_be_complete() -> None:
     top_a = lw_gases.replace(top_pressure_pa=5000.0)
     top_b = lw_gases.replace(top_pressure_pa=4000.0)
     assert jax.tree_util.tree_structure(top_a) != jax.tree_util.tree_structure(top_b)
-    assert top_a.tree_flatten()[1] == (5000.0,)
-    assert sw_gases.tree_flatten()[1] == ()
+    # CAMMG radii selection is also static (dd787cec99); its default is OFF.
+    # Gas values must remain dynamic while either static choice specializes.
+    assert top_a.tree_flatten()[1] == (5000.0, False)
+    assert sw_gases.tree_flatten()[1] == (False,)
+    for state in (lw_gases, sw_gases):
+        cammg = state.replace(cammg_radii=True)
+        assert jax.tree_util.tree_structure(state) != jax.tree_util.tree_structure(cammg)
+        leaves, treedef = jax.tree_util.tree_flatten(cammg)
+        assert jax.tree_util.tree_unflatten(treedef, leaves).cammg_radii is True
 
     for first, second in ((lw_gases, lw_other), (sw_gases, sw_other)):
         consume = jax.jit(lambda state: state.co2_vmr + state.ch4_vmr)

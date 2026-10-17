@@ -1,0 +1,131 @@
+{
+  "id": "SI77",
+  "UTC": "2026-10-14T14:25:58.981620+00:00",
+  "status": "PRESTAGED_HOLD_E51",
+  "base_main": "95bf2d90cea1ae75fed6b83008f29a24a44392ae",
+  "candidate": "7c1d87146a81a72a920ca0de7d07a87dad339b13",
+  "Lin_prerequisite": "1612acc495b890832147622557f70edff2bf47ae",
+  "required_critic": "rv-t-c03rain-lin",
+  "required_verdict": "MERGE",
+  "verdict_at_time": "PENDING",
+  "inherited_commits": [
+    {
+      "commit": "fc37e012639219c22fb95060bdb07bdfd6c6956a",
+      "subject": "fix: preserve Lin terrain and MYJSFC special winds (12/12 oracle columns)"
+    },
+    {
+      "commit": "33af853d9f173102cfb4c8a4c24c6f5bc0918c14",
+      "subject": "fix: isolate Eta surface outputs and verify special-wind restart"
+    },
+    {
+      "commit": "3276e1d1d82b404710c025ca31123b58f4d8f375",
+      "subject": "test: retain c03 GPU launcher and frozen D6 scorer"
+    },
+    {
+      "commit": "8575b3d9446949913e79f066132fef0d89a20b2d",
+      "subject": "test: record 343 shared passes and removed-terrain mutant kill"
+    },
+    {
+      "commit": "501e61d52b9932fee9c2310aac7cbba80c940715",
+      "subject": "fix: retain MYJSFC history fields through Noah-MP loader reseed"
+    },
+    {
+      "commit": "eced813d7cf89454c683ee31cf4e8fe3502117fd",
+      "subject": "test: admit absent MYJSFC-only leaves in history seed checks"
+    },
+    {
+      "commit": "6c2f7c9e4caeecb144a5f22a7443ecf10db70e92",
+      "subject": "fix: emit initialized MYJSFC special winds in lead-zero history"
+    },
+    {
+      "commit": "955b523ccdfe636f011efb81ffaefd663fcdac39",
+      "subject": "fix: mirror pristine MYJSFC initial winds from U10 and V10"
+    },
+    {
+      "commit": "1612acc495b890832147622557f70edff2bf47ae",
+      "subject": "fix: supply Lin dry theta and restore WRF moist theta after microphysics"
+    }
+  ],
+  "trial_tree": "60a2c804b3df5e8aa968ce504bf8fb5f44dc0774",
+  "merge_tree_exit": 0,
+  "conflict_messages": [
+    "",
+    "Auto-merging src/gpuwrf/coupling/scan_adapters.py",
+    "Auto-merging src/gpuwrf/runtime/operational_mode.py"
+  ],
+  "changed_paths": [
+    ".agent/kernel/lanes/t-c03rain.notes.md",
+    ".agent/kernel/lanes/t-thetafix.notes.md",
+    "proofs/t_c03rain/build_lin_terrain_oracle.py",
+    "proofs/t_c03rain/check_lin_terrain.py",
+    "proofs/t_c03rain/gpu_case.py",
+    "proofs/t_c03rain/lin_terrain_manifest.json",
+    "proofs/t_c03rain/lin_terrain_original.npz",
+    "proofs/t_c03rain/rain_attribution.py",
+    "proofs/t_c03rain/replay_initial_history.py",
+    "proofs/t_c03rain/score.py",
+    "proofs/t_c03rain/stack_attribution.py",
+    "proofs/t_thetafix/FINAL_RECEIPT.json",
+    "proofs/t_thetafix/README.md",
+    "proofs/t_thetafix/build_oracle.py",
+    "proofs/t_thetafix/caller.f90.in",
+    "proofs/t_thetafix/generate.py",
+    "proofs/t_thetafix/manifest.json",
+    "proofs/t_thetafix/manifest_fp64.json",
+    "proofs/t_thetafix/source_audit.json",
+    "proofs/t_thetafix/swiss_two_step.npz",
+    "proofs/t_thetafix/swiss_two_step_fp64.npz",
+    "src/gpuwrf/coupling/scan_adapters.py",
+    "src/gpuwrf/integration/nested_pipeline.py",
+    "src/gpuwrf/io/wrfout_writer.py",
+    "src/gpuwrf/physics/microphysics_lin.py",
+    "src/gpuwrf/physics/myj_adapters.py",
+    "src/gpuwrf/runtime/operational_mode.py",
+    "src/gpuwrf/runtime/operational_state.py",
+    "tests/test_c03_lin_terrain_history.py",
+    "tests/test_history_instep_diag.py",
+    "tests/test_thetafix_microphysics_callers.py"
+  ],
+  "Python_compile_PASS": [
+    "proofs/t_c03rain/build_lin_terrain_oracle.py",
+    "proofs/t_c03rain/check_lin_terrain.py",
+    "proofs/t_c03rain/gpu_case.py",
+    "proofs/t_c03rain/rain_attribution.py",
+    "proofs/t_c03rain/replay_initial_history.py",
+    "proofs/t_c03rain/score.py",
+    "proofs/t_c03rain/stack_attribution.py",
+    "proofs/t_thetafix/build_oracle.py",
+    "proofs/t_thetafix/generate.py",
+    "src/gpuwrf/coupling/scan_adapters.py",
+    "src/gpuwrf/integration/nested_pipeline.py",
+    "src/gpuwrf/io/wrfout_writer.py",
+    "src/gpuwrf/physics/microphysics_lin.py",
+    "src/gpuwrf/physics/myj_adapters.py",
+    "src/gpuwrf/runtime/operational_mode.py",
+    "src/gpuwrf/runtime/operational_state.py",
+    "tests/test_c03_lin_terrain_history.py",
+    "tests/test_history_instep_diag.py",
+    "tests/test_thetafix_microphysics_callers.py"
+  ],
+  "syntax_errors": [],
+  "theta_function_bodies": {
+    "kessler_adapter": "AST_EXACT_REVIEWED",
+    "wsm3_adapter": "AST_EXACT_REVIEWED",
+    "wsm5_adapter": "AST_EXACT_REVIEWED",
+    "wsm6_adapter": "AST_EXACT_REVIEWED",
+    "morrison_adapter": "AST_EXACT_REVIEWED",
+    "sbu_ylin_adapter": "AST_EXACT_REVIEWED",
+    "wdm5_adapter": "AST_EXACT_REVIEWED",
+    "goddard_adapter": "AST_EXACT_REVIEWED"
+  },
+  "existing_Jensen_functions_BYTE_AST": [
+    "jensen_scan_adapter"
+  ],
+  "branch_model_unchanged": true,
+  "candidate_ancestry_introduced": false,
+  "GPU_runs": 0,
+  "model_execution": false,
+  "cache": "NONE",
+  "snapshot_created": false,
+  "method": "git merge-tree creates an immutable trial tree only; no merge commit, no branch update for candidate and no numerical execution"
+}

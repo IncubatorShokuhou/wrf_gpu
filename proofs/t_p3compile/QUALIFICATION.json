@@ -1,0 +1,219 @@
+{
+  "schema": "t-p3compile-qualification-v1",
+  "created_utc": "2026-10-15T03:13:08.273941+00:00",
+  "disposition": "READY_FOR_CRITIC: MP52 compiler fix; P3 remains experimental with stated scientific limitations",
+  "measured_gpu_source": "b297eef1ffb824553cdadfd2dedc4c0da243fb3b",
+  "final_source_byte": {
+    "measured_gpu_source": "b297eef1ffb824553cdadfd2dedc4c0da243fb3b",
+    "final_composition": "4eac8732f70bfc4c0895fbc8b859002e4c043260",
+    "trees_BYTE": {
+      "src": "689f430459c01c91e9234a8dbf1d4c3c0728e778",
+      "data": "a91a7fbcc850486e65e257c0d0f185a18c6e58c2",
+      "pyproject.toml": "6c5fdcd3ddc730c8c75c556379abb8d1162ed8c3"
+    },
+    "product_files_sha256": {
+      "src/gpuwrf/kernels/_p3_memory.py": "b90125f564022cd913d02ff3bdb71339863f84fa51c2ea2557ef815404bf7130",
+      "src/gpuwrf/kernels/phys_p3.py": "dafc09bc0b75e56e9b73062f512b2b9cf65f01f58ae816197162dc9f976dd8ab"
+    },
+    "status": "EXACT product/source/data/packaging; carried forward paidGPU+CPUByte+bothFULLdefaultIDs"
+  },
+  "objective": "remove MP52 two-category TritonGPUCoalesce compile hang without changing WRF arithmetic",
+  "mechanism": "scoped typed global load lowering and race-free atomic vector output writes; stock uniform scalar loads/stores; four warps; no global compiler/vendor patch",
+  "CPU_regression": {
+    "steps": 3,
+    "columns": 8,
+    "levels": 44,
+    "field_frames": 84,
+    "values": 26472,
+    "BYTE": true,
+    "scope": "CPU interpret regression only; independent fidelity comes from original-WRF D6"
+  },
+  "native_compile": {
+    "component_grid": [
+      1
+    ],
+    "component_levels": 44,
+    "component_outputs": 26,
+    "target_sha256": "f46c185780fdbd4aab62ef20293385bb8de31a71bd260e9ce62cbfc21f196a23",
+    "lower_s": 4.090135211001325,
+    "compile_s": 63.99047886500193,
+    "stack_B": 112,
+    "regs": 255,
+    "shared_B": 1024,
+    "scope": "isolated single-column CPU prescreen, not coupled readiness"
+  },
+  "actual_GPU": {
+    "grid_columns": 1764,
+    "levels": 44,
+    "hours": 24,
+    "frames": 25,
+    "cold_whole_wall_s": 480.1666661140007,
+    "sampled_process_vram_mib_peak": 5374,
+    "native_P3": {
+      "kernel": "p3_mp52_column",
+      "regs": 255,
+      "stack": 168,
+      "shared": 1024,
+      "local": 0,
+      "sass": 20736,
+      "calls": 11,
+      "callees": 1,
+      "stl": 42,
+      "callee_rows": [
+        {
+          "function": "p3_mp52_column",
+          "target_pc": 329968,
+          "instructions": 102,
+          "nested_calls": 0
+        }
+      ],
+      "nonleaf_over1k": [],
+      "callgraph_unknown": [],
+      "callgraph_status": "PASS"
+    },
+    "E41": "PASS actual JIT+AOT, full d01 coverage",
+    "timing_scope": "cold qualification under shared CPU/IO; not S1 or a GPU-vs-CPU speed claim"
+  },
+  "fidelity": {
+    "reference": "qualified compiler-ZERO original WRF9a67; original sensitivity disclosure retained",
+    "reference_packet_sha256": "f77bc9dd7d638f7cc3a00daf296420f31725d52b9ab20e1fba2555b61faf9ba4",
+    "manifest_sha256": "9df4fab8514523286f07b127eb8bf57a7545459c4448fef721ac44c0ecc351dc",
+    "score_source_sha256": "4c025af8382c9626e7f7e0de1e888a91bd0270376f5c837431d1000c70c2c21d",
+    "paired_frames": 25,
+    "bounded_fields": 62,
+    "bounded_misses": 0,
+    "nonfinite": 0,
+    "inventory_fields_including_Times": 373,
+    "overall": "INCOMPLETE only REFL_10CM missing",
+    "unbounded_fields": "REPORT_ONLY, not numerical PASS"
+  },
+  "default_ids": {
+    "swiss": "f672a5739cb96e388b6b7a40ef80337bf81bdc14ef15268f3476e09d79fe055d",
+    "prod": "6fc715a2bd630934c4cf0f94427df19a527cbf429011c9ba5efe4d712744d27b"
+  },
+  "tests": {
+    "focused_passed": 34,
+    "real_native_cast_deletion_assertions": 1,
+    "setup_errors": 0
+  },
+  "performance_and_memory": {
+    "additional_cost": "atomic exchange for final vector outputs, layout-replicated lanes, four-warps geometry; REG255/STACK168/STL42 disclosed",
+    "unchanged": "P3 arithmetic, buffers/ABI relative to composed main, one kernel per column grid; no added launch/global intermediate/in-step host transfer",
+    "not_claimed": [
+      "warm speedup",
+      "roofline closure",
+      "cached readiness",
+      "global R1/R2",
+      "global F2 closure"
+    ]
+  },
+  "open_risks": [
+    "REFL_10CM uncomputed/missing; full D6 inventory incomplete",
+    "F2 tracked nonfinite visits0 but17896142 negative phase visits/15552569 interior; amplitude and extra-P3-species pre-mask coverage not attributed to original WRF",
+    "original MYNN uninitialized RMOL sensitivity: P3 experimental, zero convention and raw-vs-zero spread preserved",
+    "prior MP50 8 small FMA residuals remain disclosed under manager decision",
+    "private JAX/Pallas lowering APIs and PTX route qualified on current CUDA SM120 stack"
+  ],
+  "cleanup": {
+    "cache": "all native/GPU compile caches, temp/pytest paths and last snapshot removed; protected scientific outputs/PINs kept",
+    "retained": "25 actual GPU frames, 2 exact paid executable PINs (32002304B), actual ELF, raw receipts; shared ZERO reference data/executable untouched",
+    "status": "VERIFIED all disposable cache/snapshot/pytest paths absent"
+  },
+  "sealed_receipts": {
+    "proofs/t_p3compile/receipts/CPU_BYTE.json": "8a7dc57d7a965da564972110e4555673a82131dcac5048380aef91adb1691da8",
+    "proofs/t_p3compile/receipts/CPU_FINAL_REUSE.json": "6a7cbed2d743f74a9549d97b20665a2f403f8f0d4335b42470ff03652c3069f2",
+    "proofs/t_p3compile/receipts/NATIVE_COMPONENT.json": "530ee409af8dcd79ac9782990bfb84cb79d53ae598be6c382b333c08eaf3fe78",
+    "proofs/t_p3compile/receipts/DEFAULT_IDS.json": "f20c35ff863b20557c21ea7989ce68af757e0b4862d0a37d11c407c9fee948a8",
+    "proofs/t_p3compile/receipts/GPU_RUN.json": "7ff86f288c9d4194f67327ee3091a92d768cd6453389196161ae1c1b294ec9c2",
+    "proofs/t_p3compile/receipts/ACTUAL_E41.json": "b42b6557b5bbf5d35b5a14119702c9dc1f2be1f17731e2f45ad0038e87627c8d",
+    "proofs/t_p3compile/receipts/PINS.json": "3a2153d8e17c5aefe3969b3a30ddf01270e22643fc4dfb0f3918ab92ac3b3344",
+    "proofs/t_p3compile/receipts/ACTUAL_P3_ELF.json": "67989bb193c0602897acc1bf495095f965362c1336d1e683e3a6eb62ef819eff",
+    "proofs/t_p3compile/receipts/D6_ZERO.json": "ec8350a6f85d9c56bb7d84eee5afb15ea5cc2acd60d7a4855cefb915f4696507",
+    "proofs/t_p3compile/receipts/F2_DISCLOSURE.json": "95de0e0c6cbd458a25a082db6dd612d70b3076461b70299ced91df37c4482432",
+    "proofs/t_p3compile/receipts/NATIVE_CAST_DELETION.json": "5625ef25007c19b77bdb5cb01e0f587d286675dd53c8a1211dbb046cdc597d05",
+    "proofs/t_p3compile/receipts/SOURCE_BYTE.json": "fabc4d0f214417624bab0b2ff72a242d884bcd4e084ba416be1a5cd14b6e866a",
+    "proofs/t_p3compile/receipts/CONTROL_TESTS.xml": "bf3a66778de579d0f061e496ff5b819017cb4dda077047e014a6799569ae2026",
+    "proofs/t_p3compile/receipts/PASS_TRACE.txt": "f0355659b6c03045c22a051cf23a51853defec3c111db94ed3fa80f7717e136a",
+    "proofs/t_p3compile/receipts/ORIGINAL_INPUTS.json": "ccccb4dd2e710f6c11131d19316b4290204420b163227430cdd73077663ebcbd",
+    "proofs/t_p3compile/receipts/STAGING.json": "a06ad5a02ffa780ed7aafeb1ce19ebecec4fbb3b45e0b8216438832af8d0fad5",
+    "proofs/t_p3compile/receipts/ACTUAL_P3_RESOURCES.json": "0a69751c6e4be4366b694b538c20e1abb59059a33406d7044b01cb3a9ec16814",
+    "proofs/t_p3compile/receipts/GPU_FRAMES.json": "69daf446516b28177cf46036b7328de46b581d62844f14f9bbe9b8f10c2b8e50",
+    "proofs/t_p3compile/receipts/CLEANUP.json": "262afbbf37851d07b4c59042e42be35e08675312f671c8cbde03f4e46b118f9a"
+  },
+  "raw_artifacts": {
+    "<USER_HOME>/wrf_gpu2_lanes/t-p3fix/TP54/baseline.npz": {
+      "sha256": "def1360d31432100c1a1b8d56cecfa5ef5b42ae79b09a2a37a7b3d4d10da8ce7",
+      "bytes": 40919
+    },
+    "<USER_HOME>/wrf_gpu2_lanes/t-p3fix/TP54/candidate.npz": {
+      "sha256": "def1360d31432100c1a1b8d56cecfa5ef5b42ae79b09a2a37a7b3d4d10da8ce7",
+      "bytes": 40919
+    },
+    "<USER_HOME>/wrf_gpu2_lanes/t-p3fix/TP61/D6_d01.json": {
+      "sha256": "17d935a618ccb088ad59fc74a216e592496cc2697858bb0c49e2f30cb7092816",
+      "bytes": 6011744
+    },
+    "<USER_HOME>/wrf_gpu2_lanes/t-p3fix/TP61/compare_d01.json": {
+      "sha256": "c4fd2b3d614c299b9f650f2caf3adcd2663b353e6b623619d42f03894d6c15d4",
+      "bytes": 6567760
+    },
+    "<USER_HOME>/wrf_gpu2_lanes/t-p3fix/TP56b.log": {
+      "sha256": "9fe9200f638ec7606de5d8e028bc4c250bee7adb9ee68f27681feda1049c52cb",
+      "bytes": 24296
+    },
+    "<USER_HOME>/wrf_gpu2_lanes/t-p3fix/TP60_61.log": {
+      "sha256": "8cf29a9d4d20c3a710a0a628c2dbd98574873f43d56e7a1cc539091c941fd012",
+      "bytes": 1716
+    },
+    "<USER_HOME>/wrf_gpu2_lanes/t-p3fix/TP62_63.log": {
+      "sha256": "bd01d16025ca2a61516615dbe2ae5f9f9a7c039aabc9017935a0e011b4966b76",
+      "bytes": 545
+    },
+    "<USER_HOME>/wrf_gpu2_lanes/t-p3fix/TP51_DISCARDED.patch": {
+      "sha256": "55bd19b2e4ad9db1f7d04080bf858594eb0a911b8f6658b6935eda3119c8ae85",
+      "bytes": 6567
+    },
+    "<USER_HOME>/wrf_gpu2_lanes/t-p3fix/TP59/native/native.cubin": {
+      "sha256": "a684cd4793cfa2285918da468b5bb89d98f490715849356c33f61b27b5177728",
+      "bytes": 1596032
+    },
+    "<USER_HOME>/wrf_gpu2_lanes/t-p3fix/TP56/c23/gpu_proof/nested_pipeline_run.json": {
+      "sha256": "3ee8de2cbbbc79225856684ab7d88872f44f66d7d7e2309954ed7b84d84fcbb3",
+      "bytes": 19485
+    },
+    "<USER_HOME>/wrf_gpu2_lanes/t-p3fix/TP56/c23/gpu/census.json": {
+      "sha256": "6dd1846a78baf008200f44ed2b5bf47035e3d3546876a3ccd82ba38b9e2fe4a4",
+      "bytes": 14603
+    },
+    "<USER_HOME>/wrf_gpu2_lanes/t-p3fix/TP56/c23/gpu/f2_negative_summary.json": {
+      "sha256": "6e6dff7bc327f79db720855ca71b2bfebb59ec3adef6bbd324e373416569f19e",
+      "bytes": 34245
+    },
+    "<USER_HOME>/wrf_gpu2_lanes/t-p3fix/TP56/c23/target_config.pbtxt": {
+      "sha256": "b753abdddbace1e913de3767a1afbdfeba2b272e77f2be93658c766968e4960f",
+      "bytes": 1381
+    },
+    "<USER_HOME>/wrf_gpu2_lanes/t-p3fix/TP60/PIN/00_jax_cache_jit__advance_chunk_fori-48185daabf8bd9b7c829df0b369c674ae3dd1a63f6b161cfc06d8ca27dbed67e-cache": {
+      "sha256": "94be12e230f5f27ba9096ee2e40ad229e7f2f9af22d63b355b04ad202dff5aee",
+      "bytes": 11334286
+    },
+    "<USER_HOME>/wrf_gpu2_lanes/t-p3fix/TP60/PIN/01_aot_89e066caf71f3e70eda9cc0c0e2a4fcbd950bab852502d6179238105c2308805.xlaexec": {
+      "sha256": "7db47a02bcb019e8f7f98270e102c2864d98340f48a56df0d1e870c98335e4d0",
+      "bytes": 20668018
+    },
+    "<USER_HOME>/wrf_gpu2_lanes/t-p3fix/TP60/p3_mp52_65b2bc1443f0b9a7.cubin": {
+      "sha256": "65b2bc1443f0b9a762f464d723cc5b61db12aaeda28421b4d02eac8ace7f09c7",
+      "bytes": 14522072
+    },
+    "<USER_HOME>/wrf_gpu2_lanes/t-p3fix/TP60/e41/cubin_scan_4aeecae35803_e0.json": {
+      "sha256": "4b15e7a18369e6d221f907ebf94fb991e6b5c21f21402bf6c9d80d65392b6c7b",
+      "bytes": 666117
+    },
+    "<USER_HOME>/wrf_gpu2_lanes/t-p3fix/TP60/e41/cubin_scan_a573434b8451_e0.json": {
+      "sha256": "4b15e7a18369e6d221f907ebf94fb991e6b5c21f21402bf6c9d80d65392b6c7b",
+      "bytes": 666117
+    }
+  },
+  "experiments": "TP49/49b/50/51a-d/52a-c/53/54/55/56q/57/58/59/56b/60/61/62/63/64/65 MAIN logged including failures",
+  "no_foreign_case_writes": true
+}

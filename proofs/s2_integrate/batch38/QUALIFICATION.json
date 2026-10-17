@@ -1,0 +1,888 @@
+{
+  "status": "READY-FOR-MERGE batch38;MP11+KM3GPUrefusals INCLUDED per latestmanagerdecision",
+  "base_main": "8ce83ef629ded740fcc4bea01f5a6dbc3f4e512b",
+  "original_shinhong_main": "779ee959524daf4af4336a73376201df7bf43ede",
+  "mp11_source": "e0e54811b1d9b3c41e3071b6f7b16c78c0c7443f",
+  "held_ref_merged": "cc20bab68f265cad5b577ee9f47e749a5d6a8c68",
+  "km3_scoped": "e0952523d50c57c04c6288b8a8d53d529e5bffd4",
+  "ACM2_exact": "5131ddffb1fdd0d15a0285cfc15b38e61f470daa",
+  "vprep_scoped": "48b1207f8512f16e917b448683cf3aeaba2021b9",
+  "vprep_exact_paths": [
+    ".agent/kernel/lanes/v-prep.notes.md",
+    "proofs/v040/final_validation/C05_ACM2_FULL24.json",
+    "proofs/v040/final_validation/C05_ACM2_RERUN_PLAN.json",
+    "proofs/v040/final_validation/C08_REFERENCE_RESTORE.json",
+    "proofs/v040/final_validation/GPU23_WSM01.json",
+    "proofs/v040/final_validation/GPU_PROGRESS.json",
+    "proofs/v040/final_validation/GPU_STATUS.json",
+    "proofs/v040/final_validation/NEXT_GPU_QUEUE.json",
+    "proofs/v040/final_validation/SUPPORT_MATRIX_PROPOSAL.md"
+  ],
+  "vprep_proof_SHA": {
+    "proofs/v040/final_validation/C05_ACM2_FULL24.json": "205af71eb796d5af8e070ec05ba331c94f68984e581c6668a1479201808ede89",
+    "proofs/v040/final_validation/C05_ACM2_RERUN_PLAN.json": "4347119889dc9e623b0771a6e26dc0e5c7baa9fc45a753b0855920630590f351",
+    "proofs/v040/final_validation/C08_REFERENCE_RESTORE.json": "102231cf6074d20405cd5739f372f5337218edbbadc56153659f65b6b898b0b4",
+    "proofs/v040/final_validation/GPU23_WSM01.json": "890c2ef278eaf23c5e20f09047c1172d4ae8086e295e17c187188edf6cd212d7",
+    "proofs/v040/final_validation/GPU_PROGRESS.json": "aa88ce2db0a4c02710a2aa8955ec026001cf8dfa0fadebab64fce4927ce7609b",
+    "proofs/v040/final_validation/GPU_STATUS.json": "fa1125fa9bda172ca3cd0fc172ba2315c7bfabd6e2c6a98457fcdf412a9665dd",
+    "proofs/v040/final_validation/NEXT_GPU_QUEUE.json": "c45a4b1c1d98e494217255f9f85483e71d38aa80bdd855ba179c3b01f0b954b2",
+    "proofs/v040/final_validation/SUPPORT_MATRIX_PROPOSAL.md": "1a990ff9ee379a5e0ece72055a39f476c101de08b2685b63d5baa9fa2bd9d4b0"
+  },
+  "ACM2_function_only_SCAN_AST": true,
+  "ShinHong_registry_math_gate_BYTE_preserved": true,
+  "data_scripts_pyproject_BYTE_main": true,
+  "inclusion_authority": "Latest directmanagerdecision batch38: mergeBOTHMP11fallback+KM3now; supersedespreviousfreezehold/separationblocker. Futurecritic+c89passedCAMfixmayremoveonlyMP11predicate; retainsharedhooks+KM3.",
+  "UTC": "2026-10-15T18:05:41.583599+00:00",
+  "snapshot_commit": "1d513bed3dfbd0160f802a5df2f5088f23861490",
+  "SRC": "52ace93b7e51831d6054f7d5ee1a9b0ee8247d56",
+  "capped_sanity": {
+    "status": "PASS",
+    "returncode": 0,
+    "immutable_source": "1d513bed3dfbd0160f802a5df2f5088f23861490",
+    "command": [
+      "<USER_HOME>/miniconda3/bin/python",
+      "-m",
+      "pytest",
+      "-q",
+      "-rs",
+      "-p",
+      "no:cacheprovider",
+      "--basetemp",
+      "<USER_HOME>/wrf_gpu2_lanes/s2-integrate/pytest",
+      "--junitxml",
+      "<USER_HOME>/wrf_gpu2_lanes/s2-integrate/batch38/sanity.xml",
+      "tests/contracts/",
+      "tests/test_v018_mp_family_fail_closed.py",
+      "tests/test_v034_implemented_notes.py",
+      "tests/test_scheme_catalog_fail_closed.py",
+      "tests/test_namelist_check.py",
+      "tests/test_namelist_binding.py",
+      "tests/test_m7_restart_checkpoint_roundtrip.py",
+      "tests/test_netcdf_process_lock.py",
+      "tests/test_v0110_wrfrst_netcdf.py",
+      "tests/test_cli.py",
+      "tests/test_v060_physics_dispatch.py",
+      "tests/test_cammg_entry_order.py",
+      "tests/test_cammg_gpu_admission.py",
+      "tests/test_km3_gpu_admission.py",
+      "tests/test_t_wsmdz_acm2_moist.py::test_acm2_adapter_passes_state_condensate_and_applies_its_rates",
+      "tests/test_t_rainnc_callers.py::test_acm2_actual_runtime_passes_wrf_own_step",
+      "tests/test_ysu_surface_contract.py",
+      "tests/v040/test_shinhong_tke_caller.py",
+      "tests/v040/test_cammg.py::test_scan_pbl_retains_shared_outputs_once"
+    ],
+    "elapsed_s": 68.466341293999,
+    "cap": "6G/noSwap",
+    "GPU_runs": 0,
+    "cache": "<DATA_ROOT>/wrf_gpu2/scratch/s2-integrate/batch38-cache",
+    "tmp": "<DATA_ROOT>/wrf_gpu2/scratch/s2-integrate/batch38-tmp",
+    "snapshot": "<DATA_ROOT>/wrf_gpu2/scratch/s2-integrate/batch38-snapshot",
+    "counts": {
+      "tests": 371,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "RSS_KiB": 2907824,
+    "cache_tmp_pytest_snapshot_deleted": true,
+    "UTC": "2026-10-15T18:05:41.568642+00:00"
+  },
+  "ACM2_independent_review": {
+    "verdict": "MERGE",
+    "head": "5131ddffb",
+    "source_tree": "bd2306ddadfdc7d806d97860fcb38652c98d1eae",
+    "current_targeted_checks": 12,
+    "failing_or_skipped_targeted_checks": 0,
+    "mutants": {
+      "M1_drop_QC_QI_inputs": 1,
+      "M2_drop_QC_QI_adapter_updates": 1,
+      "M3_zero_QC_QI_kernel_rates": 1
+    },
+    "receipts": {
+      "VERDICT.md": "fa186b7266c86a03437e1b9e3b5751ea93f9d4a27659c6b9263999cef4cf2711",
+      "targeted.xml": "6ec891dcff26c6fa596b117390bb54f88444094ce84477d5872c70913ccb5437",
+      "mutants.json": "e134b8f00b86fc54d4245b1dc3e7e49f3b7171c84c6f93ec2400fb7c7431b210",
+      "source-reuse.json": "884aa0a4af35816b4a3a5f0f3544a1ff27a41a1eb3b430e317e148c57aec66c0",
+      "prefix-reuse.json": "165f769db7cf875201b389e97201abb52f440b8e71c9d40a592e8bd8af654ca9",
+      "oracle-rebuild.json": "6ab03909853fe4c9c8a3230e7db5fc7cf6996a1e432e5bd8e75f8af0e143e212",
+      "oracle_case_7.json": "2f98fc0c5bfd25fb162100585634dc74794f75632591dbdbbb3b7d6d94b7d5e0",
+      "oracle_case_8.json": "7f6216059568e0c2b7434eb151ab087476db38ea6d2393118c0d10671bfcea34",
+      "cost_only.json": "95f169b92f39aa5a7cd96831a0b002a3d27670397d84d3e1e05cf5ad4d2929fa",
+      "qualified.log": "30311b09a71ae865e7a06a9b87b803bcfd9d45eb3e5433e71b84816950cd5342",
+      "compiled_moist_probe.log": "6b9a0a3533ff2d7a384da628fd4ad67897eb1d9db7d1ffded3ab6d11d9ee9bc6"
+    }
+  },
+  "c05": {
+    "schema": "v040-c05-acm2-full24-v1",
+    "utc": "2026-10-15T17:45:14.035054+00:00",
+    "case": "c05",
+    "source": "5131ddffb1fdd0d15a0285cfc15b38e61f470daa",
+    "platform": "gpu",
+    "model_rc": 0,
+    "launch_rc": 0,
+    "started_utc": "2026-10-15T17:24:31.688708+00:00",
+    "finished_utc": "2026-10-15T17:35:43.602011+00:00",
+    "GPU_ARM_CPUS": "3,19,13,29",
+    "frames": 25,
+    "CPU_inventory_fields": 353,
+    "D6": "PASS",
+    "coverage_complete": true,
+    "bounded_misses": 0,
+    "nonfinite": 0,
+    "RAINNC_h24_rmse_mm": 0.12903688502244157,
+    "RAINNC_max_lead_rmse_mm": 0.12903688502244157,
+    "RAINNC_frozen_rmse_limit_mm": 1.0,
+    "old_FAIL": {
+      "source": "de374a3c00e8bf0480f8ab91b873898916074264",
+      "archive": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c05/attempts/before_ACM2_5131ddffb",
+      "archive_receipt": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c05/attempts/before_ACM2_5131ddffb/ARCHIVE_RECEIPT.json",
+        "sha256": "1de983981e9b01cf1921c24e09eb97ae17f5a1b1237150febb4514db96aa4466"
+      },
+      "bounded_misses": 9,
+      "RAINNC_h24_rmse_mm": 1.108272363221965
+    },
+    "E41": "FAIL",
+    "E41_max_stack_B": 400,
+    "E41_kinput_transpose_over500": [
+      [
+        "input_transpose_fusion.391",
+        1666
+      ],
+      [
+        "input_transpose_fusion.391",
+        1666
+      ]
+    ],
+    "cache_remaining": false,
+    "retained_PIN_count": 2,
+    "retained_PIN_bytes": 33058191,
+    "cold_whole_process_wall_s": 671.9133110179973,
+    "sampled_peak_vram_MiB": 5380,
+    "receipts": {
+      "QUALIFICATION.json": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c05/QUALIFICATION.json",
+        "sha256": "3bb61abf7d8768d39682600d9aced6d8f1af5dc9ea127219d6fc5b113afb34a8"
+      },
+      "gpu_run.json": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c05/gpu_run.json",
+        "sha256": "28039b88079f670532f9d2b8fb56181a073020b797c3354efd1b5a087b387d77"
+      },
+      "gpu_launch.json": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c05/gpu_launch.json",
+        "sha256": "50c884a9694090515817f1346ed1df8b350f5e31cf1cd931edba470a02a7917c"
+      },
+      "D6_d01.json": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c05/D6_d01.json",
+        "sha256": "e5834e581b75565916e00284ebfe8a7717b291deec31b258a6f68d9aa8897ec7"
+      },
+      "e41/wave_gate.json": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c05/e41/wave_gate.json",
+        "sha256": "1bb28abb27d65fd89d186adeda551096b5f32fb3623cde02769cc108d0bfb564"
+      },
+      "e41/PIN_MAP.json": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c05/e41/PIN_MAP.json",
+        "sha256": "ea73bd4b5f82acc55c3990a23910450d3144a0441e95f1b76501830be5275428"
+      },
+      "cpu_run.json": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c05/cpu_run.json",
+        "sha256": "96d1e8a5f76a0ce69366573040d48e2b64b1d7fad5e849e5f234d6c32c4350a1"
+      },
+      "inputs.json": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c05/inputs.json",
+        "sha256": "056d23c02d01478bec33ba99a796328d91c551b876f535c23fc366a3524fd909"
+      }
+    },
+    "scope": "Original CPU-WRF reference and input hash identity; frozen full-clock/full-inventory D6. Actual E41 FAIL remains an opt-in disclosure; F2 OPEN. Singleton cold elapsed time is not S1 or an apples-to-apples speedup against the earlier three-process cohort. Old FAIL retained; source-bound, not blanket current-main qualification.",
+    "final_cleanup_receipt": {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/GPU26_FINAL_CLEANUP.json",
+      "sha256": "ed297833748b9c3986a9a6319ad8c75fd795b591de41c7f081eafad97e8eb10a"
+    },
+    "shared_storage_risk": "ROOT free34.010GiB below45GiB floor at17:46Z; alerted manager. Own disposable cache/tmp/snapshot removed, scratch45.625GiB<=50; original CPU refs/input/science kept."
+  },
+  "c05_metadata_SHA_fresh": [
+    {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c05/QUALIFICATION.json",
+      "sha256": "3bb61abf7d8768d39682600d9aced6d8f1af5dc9ea127219d6fc5b113afb34a8"
+    },
+    {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c05/gpu_run.json",
+      "sha256": "28039b88079f670532f9d2b8fb56181a073020b797c3354efd1b5a087b387d77"
+    },
+    {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c05/gpu_launch.json",
+      "sha256": "50c884a9694090515817f1346ed1df8b350f5e31cf1cd931edba470a02a7917c"
+    },
+    {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c05/D6_d01.json",
+      "sha256": "e5834e581b75565916e00284ebfe8a7717b291deec31b258a6f68d9aa8897ec7"
+    },
+    {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c05/e41/wave_gate.json",
+      "sha256": "1bb28abb27d65fd89d186adeda551096b5f32fb3623cde02769cc108d0bfb564"
+    },
+    {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c05/e41/PIN_MAP.json",
+      "sha256": "ea73bd4b5f82acc55c3990a23910450d3144a0441e95f1b76501830be5275428"
+    },
+    {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c05/cpu_run.json",
+      "sha256": "96d1e8a5f76a0ce69366573040d48e2b64b1d7fad5e849e5f234d6c32c4350a1"
+    },
+    {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c05/inputs.json",
+      "sha256": "056d23c02d01478bec33ba99a796328d91c551b876f535c23fc366a3524fd909"
+    },
+    {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/GPU26_FINAL_CLEANUP.json",
+      "sha256": "ed297833748b9c3986a9a6319ad8c75fd795b591de41c7f081eafad97e8eb10a"
+    },
+    {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c05/attempts/before_ACM2_5131ddffb/ARCHIVE_RECEIPT.json",
+      "sha256": "1de983981e9b01cf1921c24e09eb97ae17f5a1b1237150febb4514db96aa4466"
+    }
+  ],
+  "ACM2_source_reuse": {
+    "old": "c846bfe3c756fe769bd05705679bb129c51e8d09",
+    "new": "5131ddffb",
+    "only_changed_functions": {
+      "src/gpuwrf/coupling/scan_adapters.py": [
+        "acm2_pbl_adapter"
+      ],
+      "src/gpuwrf/physics/pbl_acm2.py": [
+        "_acm2_column_traceable",
+        "acm2_columns",
+        "step_acm2_column"
+      ]
+    },
+    "module_statements_outside_changed_bodies_exact": true,
+    "unchanged_shared_sources": {
+      "src/gpuwrf/runtime/operational_mode.py": true,
+      "src/gpuwrf/contracts/state.py": true,
+      "src/gpuwrf/coupling/physics_couplers.py": true
+    },
+    "default_identity_reuse": "Default BL5 has no calls to any changed ACM2 functions; prior independently reproduced Swissf672a573/PROD6fc715a2 remain valid. ProducerID4 gives both exact hashes."
+  },
+  "ACM2_prefix_reuse": {
+    "old": "c846bfe3c",
+    "new": "5131ddffb",
+    "whole_pbl_module_AST_equal_after_removing_appended_qc_qi_rates_and_tuple_unpacks": true,
+    "legacy_step_ACM2_4rate_API_exact": true,
+    "existing_13output_traceable_prefix_exact": true,
+    "reuse": "Earlier completed six-column pristine ACM2 legacy-prefix validation may be carried; timed-out eager legacy suite is not a physics failure or pass."
+  },
+  "ACM2_CPUcost": {
+    "platform": "cpu",
+    "cases": "numerical checks reused from targeted.xml, not repeated",
+    "cost": {
+      "before": {
+        "cpu_median_ms": 4.525539996393491,
+        "compile_s": 90.19914755299396,
+        "temp_bytes": 117232,
+        "output_bytes": 900,
+        "argument_bytes": 916,
+        "fusions": 1778
+      },
+      "after": {
+        "cpu_median_ms": 2.1936365010333247,
+        "compile_s": 79.14855000798707,
+        "temp_bytes": 116976,
+        "output_bytes": 1172,
+        "argument_bytes": 1172,
+        "fusions": 1782
+      }
+    },
+    "old_caller_exchange_misses": {
+      "count": 4,
+      "max_abs": 91.21553302556276
+    },
+    "shape": [
+      1,
+      32
+    ],
+    "dtype": "float32",
+    "scope": "original REAL operator small-column gate; CPU cost only, no GPU forecast/performance claim"
+  },
+  "cleanup": true,
+  "candidate_before_seal": "6bae9bbc8603a5b61d5b936072635b14e4307ee6",
+  "orphan_scoped_commits": {
+    "UTC": "2026-10-15T18:11:30.100333+00:00",
+    "status": "PASS exact3scopedtest/proof commits/no numeric changes",
+    "before": "1d513bed3dfbd0160f802a5df2f5088f23861490",
+    "after": "6bae9bbc8603a5b61d5b936072635b14e4307ee6",
+    "commits": [
+      {
+        "incoming": "82626487b87309d3f5eee51b7e71d3fbd094ef58",
+        "applied": "3838ca01834b1468210248eb87066095d9c9480e",
+        "AST": [
+          "proofs/noahmp/canwater_elai/make_oracle.py",
+          "proofs/noahmp/urban_soil/build_urban_cols.py",
+          "proofs/noahmp/urban_soil/make_fixture.py",
+          "tests/test_history_swdown_horizontal.py",
+          "tests/test_noahmp_radiation_native_layout.py",
+          "tests/test_writer_rvovrd_real.py",
+          "tests/v025/b_column/test_joint_kf_pbl_rk.py",
+          "tests/v025/b_column/test_kf_real_constants.py",
+          "tests/v025/b_diff/test_theta_sum_fence.py",
+          "tests/v025/b_noahmp/test_noah_canwater_elai.py",
+          "tests/v025/b_noahmp/test_noah_qsfc_wrf.py",
+          "tests/v025/b_noahmp/test_noah_urban_soil_params.py",
+          "tests/v025/b_phys/test_land_q2_postlsm.py",
+          "tests/v025/b_phys/test_mynn_closure_carries.py",
+          "tests/v025/b_phys/test_mynn_condensation_wrf.py",
+          "tests/v025/b_phys/test_mynn_plume_real_coverage.py",
+          "tests/v025/b_phys/test_mynn_predict_saw_floor.py",
+          "tests/v025/b_phys/test_mynn_real_constants.py",
+          "tests/v025/b_phys/test_mynn_sfc_psi_real.py",
+          "tests/v025/b_phys/test_mynn_source_parity2.py",
+          "tests/v025/b_phys/test_phy_prep_real_const.py",
+          "tests/v025/b_phys/test_rrtmg_sw_reftra_wrf.py",
+          "tests/v025/b_phys/test_sfclay_pblh_wrf.py",
+          "tests/v025/b_thompson/test_raw_qv_wrf_oracle.py",
+          "tests/v025/b_thompson/test_thompson_wrf_constants.py",
+          "tests/v025/census/test_f2_negative_summary.py"
+        ],
+        "conflicts": []
+      },
+      {
+        "incoming": "4302862e49bc4aa8df0ef917fb13154b01e5e163",
+        "applied": "7d96a4206b759d271f048519a09bb30d65a3d4d2",
+        "AST": [],
+        "conflicts": []
+      },
+      {
+        "incoming": "ef1b44b627c3c90629f2417e0e5a2e0e5e784d32",
+        "applied": "6bae9bbc8603a5b61d5b936072635b14e4307ee6",
+        "AST": [
+          "proofs/t_orphantests/mutation_plugin.py"
+        ],
+        "conflicts": []
+      }
+    ],
+    "all_imported_paths": [
+      "proofs/noahmp/canwater_elai/build.sh",
+      "proofs/noahmp/canwater_elai/canwater_oracle.F90",
+      "proofs/noahmp/canwater_elai/make_oracle.py",
+      "proofs/noahmp/urban_soil/URBAN_AUDIT.md",
+      "proofs/noahmp/urban_soil/build_urban_cols.py",
+      "proofs/noahmp/urban_soil/gate_score_1800.json",
+      "proofs/noahmp/urban_soil/make_fixture.py",
+      "proofs/t_orphantests/REPLAY.md",
+      "proofs/t_orphantests/RESULT.json",
+      "proofs/t_orphantests/bounds.json",
+      "proofs/t_orphantests/mutants_verified.json",
+      "proofs/t_orphantests/mutation_plugin.py",
+      "proofs/t_orphantests/source_scope.json",
+      "proofs/thompson/wrf_constants/wgamma_table.F90",
+      "proofs/thompson/wrf_constants/wgamma_table.txt",
+      "proofs/thompson/wrf_constants/wrf_constants.F90",
+      "proofs/thompson/wrf_constants/wrf_constants.txt",
+      "tests/fixtures/history_swdown_horizontal_0227.json",
+      "tests/fixtures/writer_rvovrd_real.json",
+      "tests/fixtures/writer_rvovrd_real.npz",
+      "tests/test_history_swdown_horizontal.py",
+      "tests/test_noahmp_radiation_native_layout.py",
+      "tests/test_writer_rvovrd_real.py",
+      "tests/v025/b_column/test_joint_kf_pbl_rk.py",
+      "tests/v025/b_column/test_kf_real_constants.py",
+      "tests/v025/b_diff/test_theta_sum_fence.py",
+      "tests/v025/b_noahmp/fixtures/canwater_elai_oracle.npz",
+      "tests/v025/b_noahmp/fixtures/qsfc_wrf_day.json",
+      "tests/v025/b_noahmp/fixtures/qsfc_wrf_day_steps.npz",
+      "tests/v025/b_noahmp/fixtures/urban_soil_wired.json",
+      "tests/v025/b_noahmp/fixtures/urban_soil_wired_steps.npz",
+      "tests/v025/b_noahmp/test_noah_canwater_elai.py",
+      "tests/v025/b_noahmp/test_noah_qsfc_wrf.py",
+      "tests/v025/b_noahmp/test_noah_urban_soil_params.py",
+      "tests/v025/b_phys/fixtures/land_q2_cap_wrf.json",
+      "tests/v025/b_phys/fixtures/mynn_closure_carries_wrf.json",
+      "tests/v025/b_phys/fixtures/mynn_condensation_wrf.json",
+      "tests/v025/b_phys/fixtures/mynn_parity2_land_night00.npz",
+      "tests/v025/b_phys/fixtures/mynn_parity2_sea_sc12.npz",
+      "tests/v025/b_phys/fixtures/mynn_predict_saw_wrf.json",
+      "tests/v025/b_phys/fixtures/mynn_real_constants_wrf.json",
+      "tests/v025/b_phys/fixtures/phy_prep_real_const_wrf.json",
+      "tests/v025/b_phys/fixtures/rrtmg_sw_reftra_n36.npz",
+      "tests/v025/b_phys/fixtures/rrtmg_sw_reftra_n36.provenance.json",
+      "tests/v025/b_phys/fixtures/sfclay_pblh_wrf.json",
+      "tests/v025/b_phys/test_land_q2_postlsm.py",
+      "tests/v025/b_phys/test_mynn_closure_carries.py",
+      "tests/v025/b_phys/test_mynn_condensation_wrf.py",
+      "tests/v025/b_phys/test_mynn_plume_real_coverage.py",
+      "tests/v025/b_phys/test_mynn_predict_saw_floor.py",
+      "tests/v025/b_phys/test_mynn_real_constants.py",
+      "tests/v025/b_phys/test_mynn_sfc_psi_real.py",
+      "tests/v025/b_phys/test_mynn_source_parity2.py",
+      "tests/v025/b_phys/test_phy_prep_real_const.py",
+      "tests/v025/b_phys/test_rrtmg_sw_reftra_wrf.py",
+      "tests/v025/b_phys/test_sfclay_pblh_wrf.py",
+      "tests/v025/b_thompson/fixtures/raw_qv_columns.json",
+      "tests/v025/b_thompson/fixtures/raw_qv_columns.npz",
+      "tests/v025/b_thompson/test_raw_qv_wrf_oracle.py",
+      "tests/v025/b_thompson/test_thompson_wrf_constants.py",
+      "tests/v025/census/test_f2_negative_summary.py"
+    ],
+    "test_files": [
+      "tests/test_history_swdown_horizontal.py",
+      "tests/test_noahmp_radiation_native_layout.py",
+      "tests/test_writer_rvovrd_real.py",
+      "tests/v025/b_column/test_joint_kf_pbl_rk.py",
+      "tests/v025/b_column/test_kf_real_constants.py",
+      "tests/v025/b_diff/test_theta_sum_fence.py",
+      "tests/v025/b_noahmp/test_noah_canwater_elai.py",
+      "tests/v025/b_noahmp/test_noah_qsfc_wrf.py",
+      "tests/v025/b_noahmp/test_noah_urban_soil_params.py",
+      "tests/v025/b_phys/test_land_q2_postlsm.py",
+      "tests/v025/b_phys/test_mynn_closure_carries.py",
+      "tests/v025/b_phys/test_mynn_condensation_wrf.py",
+      "tests/v025/b_phys/test_mynn_plume_real_coverage.py",
+      "tests/v025/b_phys/test_mynn_predict_saw_floor.py",
+      "tests/v025/b_phys/test_mynn_real_constants.py",
+      "tests/v025/b_phys/test_mynn_sfc_psi_real.py",
+      "tests/v025/b_phys/test_mynn_source_parity2.py",
+      "tests/v025/b_phys/test_phy_prep_real_const.py",
+      "tests/v025/b_phys/test_rrtmg_sw_reftra_wrf.py",
+      "tests/v025/b_phys/test_sfclay_pblh_wrf.py",
+      "tests/v025/b_thompson/test_raw_qv_wrf_oracle.py",
+      "tests/v025/b_thompson/test_thompson_wrf_constants.py",
+      "tests/v025/census/test_f2_negative_summary.py"
+    ],
+    "imported_path_SHA": {
+      "tests/v025/b_phys/test_mynn_sfc_psi_real.py": "27e1ee5956fa589d49e7ef036196b0bbba28e0fc7dba53de642f9b01ad405ad4",
+      "tests/v025/b_phys/fixtures/rrtmg_sw_reftra_n36.npz": "d5c586ea3971baef66d7d043515cd41029bbf44526edb37120ed27883aee81a8",
+      "tests/v025/b_thompson/fixtures/raw_qv_columns.json": "7f5cfd28c9e78cd01ae8c5ac305eefed78b46ce7fdf6fb4525e74d95c3ddd740",
+      "tests/v025/b_phys/fixtures/phy_prep_real_const_wrf.json": "d76c6f88fe87eac1124a732f7f611f404b68a295ab1e6454205745e8d152f349",
+      "tests/v025/b_thompson/fixtures/raw_qv_columns.npz": "8da11edbbe038944a94a23600c967c0e0e839118cc17671d31b7fd6b11144328",
+      "tests/v025/b_noahmp/test_noah_qsfc_wrf.py": "e4b67f555dc933aeb3e27a9f977083b4830a46b8bc1ef830e60db368789775ab",
+      "tests/v025/b_phys/test_sfclay_pblh_wrf.py": "cfd4216f7fa5409af89a907b65b341e4f70e747eca7e021375958dc605994906",
+      "tests/v025/b_thompson/test_thompson_wrf_constants.py": "6997155da403b94814312be3a6272f7f7d68b87fccb7755625442ce88dabee6b",
+      "tests/v025/b_phys/test_mynn_real_constants.py": "6b868c19fe084234c2b5d1847389bf2f69cf6645360df2e041523bd74185e9ef",
+      "proofs/noahmp/canwater_elai/build.sh": "1321e31bb7bf27be6a9024b1efcec75fc2d3e3a3b0204bd73623b44e6b0a7154",
+      "proofs/t_orphantests/mutants_verified.json": "d02519095f1856a953aafbc5b3eb21a55ec3150039335d6241f2233d8bfcb76e",
+      "tests/v025/b_column/test_joint_kf_pbl_rk.py": "78d78f2309ad46d2608d66da7d2bfb41834bb6675f624788703aa71e2c5de318",
+      "tests/v025/b_phys/fixtures/mynn_parity2_sea_sc12.npz": "9dcc56d25a2f1db79dfa29fe8aa34707ac63c30607c6449d284d7322a2f2d7c1",
+      "proofs/noahmp/urban_soil/make_fixture.py": "fd1fd05fe54ec6f78093174c9678183a058a641e8fabf5c7529d39e4b1fa10f2",
+      "tests/v025/b_diff/test_theta_sum_fence.py": "866618e0dd750e6164c3f475e634af5ce53452b0e8d7e9e9d7f258713f19caea",
+      "proofs/t_orphantests/source_scope.json": "9375d3c7e3876a09f9a1a3074fa23b3f65d9358ae0e3d1e8b5669e5d7cd97e60",
+      "proofs/noahmp/urban_soil/URBAN_AUDIT.md": "86adea18ee111beced7d567673c771327dcd57c626b59d6cc147685ff01d6290",
+      "proofs/thompson/wrf_constants/wgamma_table.F90": "bc0b4c6d6486a78fc43f05ee9bb43e2b5bf31999b91970830d463d09b17086f1",
+      "tests/v025/b_noahmp/fixtures/urban_soil_wired_steps.npz": "a73fa4b92a484e0f6cd98a03aa99eae8c3699f7e2ea0d471f38b3dd789e0119a",
+      "proofs/thompson/wrf_constants/wrf_constants.txt": "67219bf3f91838475bd6c790aee55253a83aac43dd1030a4d6303685a9d16bf5",
+      "tests/fixtures/writer_rvovrd_real.json": "a8907627eabe02f7cc1379cfb4849b177009af7b2c7d5f3a0ff14ac2ef368f4e",
+      "tests/v025/b_noahmp/test_noah_urban_soil_params.py": "7aad91000176806d902e35235bd299bb75a13acd3cef6b370ef90370cabbb95c",
+      "tests/v025/b_phys/fixtures/land_q2_cap_wrf.json": "ee2e79a35bcfa1521f6c324bdca95c0c175446a16d91da40f7797231f4a5e394",
+      "tests/v025/b_phys/fixtures/mynn_parity2_land_night00.npz": "d7cd1e0c3fd311e5e3c0857662e0135dcc6debb773400033e29834166ec87ba4",
+      "tests/v025/b_phys/test_mynn_condensation_wrf.py": "717ac75639a3c1b6c00ac938a8002662c04921f31933986676b8159111c15121",
+      "tests/v025/b_phys/test_mynn_predict_saw_floor.py": "974c2f887398dc02e8114436bb473a88a8433a2fbba485baec352f63b2106e73",
+      "proofs/noahmp/canwater_elai/make_oracle.py": "f4c0eb189d6797705308f33d3964068fb973e904d229f81a40c0e749bd42d314",
+      "proofs/t_orphantests/mutation_plugin.py": "ce6b5017829efb881def45e9346d04831679451ca0a60951eee952b6e472221a",
+      "tests/v025/b_phys/fixtures/mynn_real_constants_wrf.json": "396f3224d45d78bc989904bfae4c6f5d9f111e2a6515a6f0ec2936920a15f623",
+      "tests/fixtures/history_swdown_horizontal_0227.json": "a74fe645a373459ef46fb664ae29b6ab045d26fc6bdefbe0e47e60235f6c3187",
+      "tests/v025/census/test_f2_negative_summary.py": "c6e5013cf733435043d778210fee5e0703c2615132041e9f3f0e70a26fa2b6ce",
+      "proofs/noahmp/canwater_elai/canwater_oracle.F90": "a11376da450c9a84edf3b5ea3030c0911b840788e6621af4918c2a98b2801203",
+      "tests/v025/b_phys/fixtures/mynn_closure_carries_wrf.json": "93ec6b15956a6a2e6d3f60cc787f8209a313677821ffc1c0fe229dfb5b5e32d1",
+      "tests/test_noahmp_radiation_native_layout.py": "164771203eb8668f04094cacc299fd67d26a1b2acb522c8b412d66d0bce574cb",
+      "tests/v025/b_phys/test_mynn_closure_carries.py": "03e77f253f3c85eb6e64acdaa85be21f402267dd31c9d1308d130987cfb580b0",
+      "proofs/t_orphantests/RESULT.json": "fd5558b269a41ea8d2ec85cdc2eed68ecf712a64b046c958e3d43012c71f8fbc",
+      "tests/v025/b_noahmp/fixtures/qsfc_wrf_day_steps.npz": "647bb0fde1004cbb4d0568cd6534e1f53ab750a17e9cd556db510abac0c8e630",
+      "tests/v025/b_phys/fixtures/sfclay_pblh_wrf.json": "5379304a3b0b2707a46072445757f76e2b7105ebfd9304bd9357cc6b0514681b",
+      "tests/v025/b_phys/fixtures/mynn_condensation_wrf.json": "967b4fa92d078360ac7ad63e13a17f3e0bc3942d5eaff5249168d8b761d25532",
+      "tests/v025/b_noahmp/fixtures/canwater_elai_oracle.npz": "9acf441c2a93d2c3dbaed372d035c802c3ae6f708c41bb9aa51fd16bbff592da",
+      "proofs/thompson/wrf_constants/wgamma_table.txt": "8edd199818642553c75aa078d2ae38265641ae510eaf93123bb484eb8ac41b53",
+      "tests/v025/b_phys/test_land_q2_postlsm.py": "a85d10379d4d6b29c9ecb144807cd488b6ee1bc0bb2523830a662de4c793d5d6",
+      "proofs/noahmp/urban_soil/gate_score_1800.json": "0eb5786ee3199ee8ff939bb16ebaad4b24cd557c89e10fc7b2cb038df8e7b9f4",
+      "tests/fixtures/writer_rvovrd_real.npz": "bb3a1470545aa85d1cd10fdd20b647db04c6db91d4791b91ae74eb22e4814fe1",
+      "tests/v025/b_column/test_kf_real_constants.py": "dd77ffc09e028f068d9095fd997a4300659f22db89665c959852d9b396d0f9d9",
+      "tests/v025/b_phys/fixtures/rrtmg_sw_reftra_n36.provenance.json": "02cf83bebc357613ed651f01250ce4a05c08c3acfe4bc14b0ecf4064ec909022",
+      "tests/v025/b_phys/fixtures/mynn_predict_saw_wrf.json": "aac3305132e60403a59b97b583baacd186b4dbe81276571ad7bc5e356264d970",
+      "tests/v025/b_phys/test_mynn_plume_real_coverage.py": "82e9fff4b2d5f555ae2630cee1cc90a4a773f130834dde27b2808ff492bf215d",
+      "tests/v025/b_phys/test_mynn_source_parity2.py": "24ee38acf448ab55de6858599adc7c2a494a6450e499ee0e8fc12559a1c285c8",
+      "proofs/t_orphantests/REPLAY.md": "bd15f68e94291f6ad60e2c1a7d60b617d0aff337c789b4358084f24bba76eed0",
+      "tests/v025/b_phys/test_rrtmg_sw_reftra_wrf.py": "2d9e158ecf8bcfc25d94a655bce90867bf2580d2f233b9add8a072b77e1c9a2d",
+      "tests/test_writer_rvovrd_real.py": "b3d4579f55f4bdbbd01ec9caa9907d610d76795b2a593de02b17f0fae0be8f41",
+      "tests/v025/b_noahmp/test_noah_canwater_elai.py": "42d74193b70587301e9b364adc9d3cf72dc6973149b6223e97d3c94826a9647d",
+      "tests/v025/b_thompson/test_raw_qv_wrf_oracle.py": "7fea3d2ead94c720a34577da0313576c62fba57eb153e296900cca0b9fed59fd",
+      "proofs/t_orphantests/bounds.json": "ec661bf1bc9d251d94d9bec02e56e6898a453310dad55e21621c688b2e750fd8",
+      "proofs/noahmp/urban_soil/build_urban_cols.py": "3e104372fdf37ce14c486265fd7f877e84f63179978956e90bda51c42bc560d4",
+      "tests/v025/b_phys/test_phy_prep_real_const.py": "a4d5b4595fecdff7e8587eff193e00585683e952b4de3a0b338b005776130efc",
+      "tests/test_history_swdown_horizontal.py": "0cde31a59bb1c036bbad9306769a13705b09371a156576d4fc06d42675ffc40e",
+      "proofs/thompson/wrf_constants/wrf_constants.F90": "8859c2f4c027ac8515bedad61f4b83aac32e07ed662459add3e294b317aea1b4",
+      "tests/v025/b_noahmp/fixtures/urban_soil_wired.json": "911d28be48c91f2a248a7799d69acb18c404eafaf40367f65185330cf37d1664",
+      "tests/v025/b_noahmp/fixtures/qsfc_wrf_day.json": "817d9a549841a1cc1513be74e6832299efc0676542e0b506709a041d76b2292f"
+    },
+    "critic_artifact_SHA_fresh": 106,
+    "paid_orphan_reuse": {
+      "PASS": 698,
+      "original_missing_P0227_SKIP": 4,
+      "FAIL": 0,
+      "ERROR": 0,
+      "feature_mutants_killed": 20,
+      "genuine_ASSERT": 30
+    },
+    "source_scripts_data_package_BYTE_371sanity_candidate": true
+  },
+  "orphan_collection": {
+    "UTC": "2026-10-15T18:13:08.413073+00:00",
+    "source": "6bae9bbc8603a5b61d5b936072635b14e4307ee6",
+    "status": "PASS",
+    "returncode": 0,
+    "collected_nodes": 702,
+    "test_files": 23,
+    "elapsed_s": 8.440256267989753,
+    "scope": "Collection only/no fresh numerical tests; exact23reviewedfiles/assets +source-bound698PASS4missingrefSKIP/20mutantreuse",
+    "cache_tmp_pytest_snapshot_deleted": true
+  },
+  "orphan_source_closure": {
+    "runtime_operational_mode_BYTE_originbase": true,
+    "no_restored_test_mentions_changed_ACM2_or_ShinHong_families": true,
+    "all61imported_test_fixture_proof_blobs_BYTE_reviewed": true,
+    "fresh_collection_only_nodes": 702,
+    "numerical_replay_reused": {
+      "PASS": 698,
+      "missing_original_P0227_SKIP": 4,
+      "FAIL": 0,
+      "ERROR": 0,
+      "mutants_killed": 20,
+      "genuine_ASSERT": 30
+    }
+  },
+  "MP11_critic_sha_fresh": 14,
+  "KM3_critic_sha_fresh": 13,
+  "KM3_review": {
+    "utc": "2026-10-15T17:53:42Z",
+    "candidate": "c4af1a242b687058640f711d5a00569ea23fce6a",
+    "separate_source": "e0952523d50c57c04c6288b8a8d53d529e5bffd4",
+    "verdict": "MERGE",
+    "hashes": {
+      "KM3_VERDICT.md": "f8e313365d3ba535e95a05c3c9bb51ef706c687ef9fd2df4d4859e9442ba257e",
+      "KR01.xml": "151c5defead43570e47e87681bdb8f0934449f6e80c28f85c2033685a15d7d50",
+      "KR01.log": "93b3e36b22a2170667c8a176046062c78173972f8660efa340ba147e83dab54e",
+      "KR02.xml": "bb1402e08fd58a3a05a4c0c939f9ea74244785df19a88203a28b3ca10b91e5d8",
+      "KR02.log": "0fcdc99241ecbb7150c4ca402d5dde82fa1640e32058d034b9e11b72b5fa5e10",
+      "KR03-source.json": "2caee6d873c87f9ed52fca13a9d8176defcb3b6bed569ef3087eda9f9c0cb9ea",
+      "KR04-swiss.json": "3049163c8cee8bbe5fd6fa9e61125988b79751e0c3ea8511f195b330ef3b957a",
+      "KR04.log": "1a64ddb9295170f1274dcd0be8e405b392ffe732e3f3751d2ed498d4825df64c",
+      "KR05-prod.json": "03dfdd719eef6665e3dabc6a2bfd60f8c228176df5e0d197be4680aea65e2821",
+      "KR05.log": "8eade114329f8ed05a4622905d113d5b11c068499dccbe849941d6baa2eed415",
+      "test_km3_scope.py": "fd759f67358b3df5ab748b24ea92e70aef39346982b01a43a639384f40a33cd3",
+      "km3_review_mutant.py": "db9405e084000eb03bd812190a6128cd560da13b87db311ead67e18dad1c68b2",
+      "km3_source_audit.py": "757ded57bc7af3c5e957d2de8d332b3369998021d9e186fa4215f26165e7a602"
+    },
+    "independent_default_ids": {
+      "KR04-swiss.json": {
+        "sha": "f672a5739cb96e388b6b7a40ef80337bf81bdc14ef15268f3476e09d79fe055d",
+        "wall_s": 55.1
+      },
+      "KR05-prod.json": {
+        "sha": "6fc715a2bd630934c4cf0f94427df19a527cbf429011c9ba5efe4d712744d27b",
+        "wall_s": 94.2
+      }
+    },
+    "cache": "OFF",
+    "gpu_executed": false
+  },
+  "default_FULL_ids_reused": {
+    "Swiss": "f672a5739cb96e388b6b7a40ef80337bf81bdc14ef15268f3476e09d79fe055d",
+    "PROD": "6fc715a2bd630934c4cf0f94427df19a527cbf429011c9ba5efe4d712744d27b"
+  },
+  "limits": [
+    "C05paidsource5131 full24h25frames353CPUfields D6PASS0boundedNF0/RAINNC.129036885mm;sharedACM2function+kernel exact. OtherchangesonlyapprovedBL11/hostadmission, unusedbyBL7/mp4/km4case. No newGPUrun/latestwholeSRCbyteclaim.",
+    "ActualC05E41FAIL STACK400B/kInputHLO1666;F2OPEN;671.913scold/sampled5380MiBnotS1/R1/readiness.",
+    "OtheraffectedBL7composites require their source-bound releasegates; c05 alone notall-schemefidelity.",
+    "ACM2legacy13outputprefix/four-rateAPI preserved;cancelled6G/600s12Geagertimeout andJSONcostserializationfailure retained/notPASS.",
+    "Orphan698/4SKIP numericalchecks reusedon unchangedtargetfamilies;fresh702COLLECTION notnewnumericalPASS;4missingoriginalrestart testsremainSKIP.",
+    "MP11GPUrefusal mayonly be removedbylatercritic+fullc89qualification;retainsharedCLI/APIadmissionhooks andmandatoryKM3refusal.",
+    "AllpriorstrictFMA/ZERORMOL/YSUsibling/E41/F2/globalrelease constraints remain."
+  ],
+  "performance_memory": {
+    "ACM2_CPU_component": {
+      "platform": "cpu",
+      "cases": "numerical checks reused from targeted.xml, not repeated",
+      "cost": {
+        "before": {
+          "cpu_median_ms": 4.525539996393491,
+          "compile_s": 90.19914755299396,
+          "temp_bytes": 117232,
+          "output_bytes": 900,
+          "argument_bytes": 916,
+          "fusions": 1778
+        },
+        "after": {
+          "cpu_median_ms": 2.1936365010333247,
+          "compile_s": 79.14855000798707,
+          "temp_bytes": 116976,
+          "output_bytes": 1172,
+          "argument_bytes": 1172,
+          "fusions": 1782
+        }
+      },
+      "old_caller_exchange_misses": {
+        "count": 4,
+        "max_abs": 91.21553302556276
+      },
+      "shape": [
+        1,
+        32
+      ],
+      "dtype": "float32",
+      "scope": "original REAL operator small-column gate; CPU cost only, no GPU forecast/performance claim"
+    },
+    "scope": "4.526->2.194ms notspeedclaim/physicalworkdiffers;1x32 CPUtemps117232->116976B,args916->1172B,out900->1172B,fusions1778->1782. Tworesidentinputs/tworates/no persistentStateleaves/hosttransfer;GPUlaunch/layout/VRAM/readinessU.",
+    "MP11_KM3": "Hostnamelistadmission only/CPUno-op;no modelstepkernels/arrays/transfers. AdmittedGPUstartup parsingcost unmeasured.",
+    "orphan": "Tests/fixtures/proofsonly/no productcost"
+  },
+  "proof_files": {
+    "SI322.json": {
+      "sha256": "10e93d16443564dd479980c6099471422adbac52a300fee2486e183498d9216e",
+      "raw_sha256": "10e93d16443564dd479980c6099471422adbac52a300fee2486e183498d9216e"
+    },
+    "SI323-KM3-scoped.json": {
+      "sha256": "ead68dac4e882366cbc082cbb27063e155bb595d7ba268d1dcd8850e453df908",
+      "raw_sha256": "ead68dac4e882366cbc082cbb27063e155bb595d7ba268d1dcd8850e453df908"
+    },
+    "SI324.json": {
+      "sha256": "eaa7fb1e5651590be115a412e1116a4c79c13d77f41f890358ec1becd1cdcee3",
+      "raw_sha256": "eaa7fb1e5651590be115a412e1116a4c79c13d77f41f890358ec1becd1cdcee3"
+    },
+    "SI325-batch38-composed.json": {
+      "sha256": "50cae7a897e9e3b67abc70f0222031979ca5b2ecd8a6f1e530910ac7b1ca6089",
+      "raw_sha256": "50cae7a897e9e3b67abc70f0222031979ca5b2ecd8a6f1e530910ac7b1ca6089"
+    },
+    "SI326-batch38-capped.json": {
+      "sha256": "cdaba6832cc7d9a24a0da5a3a3f613382d21e041868cdbdd4cce7a7bc187b0e0",
+      "raw_sha256": "cdaba6832cc7d9a24a0da5a3a3f613382d21e041868cdbdd4cce7a7bc187b0e0"
+    },
+    "SI327-batch38-qualified.json": {
+      "sha256": "dbe57bf452b5aa1ca017e1258dae2a5679f85ddc1786ad964dc36bf8f258f1ed",
+      "raw_sha256": "dbe57bf452b5aa1ca017e1258dae2a5679f85ddc1786ad964dc36bf8f258f1ed"
+    },
+    "SI328-orphan-import.json": {
+      "sha256": "8d622ae245b6662dab187ffc4c61e2dbd2cafb5feb3e1f879d7e5968663107c3",
+      "raw_sha256": "8d622ae245b6662dab187ffc4c61e2dbd2cafb5feb3e1f879d7e5968663107c3"
+    },
+    "SI329-orphan-collection.json": {
+      "sha256": "18d572aebefeead56e7190d42ab1cdc84cf59c88fef4d748156e8fdb88ab7eb8",
+      "raw_sha256": "18d572aebefeead56e7190d42ab1cdc84cf59c88fef4d748156e8fdb88ab7eb8"
+    },
+    "orphan-collection.log.gz": {
+      "sha256": "6f58901c33b66116d4827db4b9fee97ac1a420dabfac16e52a36dca76bb79fc5",
+      "raw_sha256": "3a56e04d4e9850156b34e8031c5159d382d65b79c93f6e046eaedb251bad2986"
+    },
+    "sanity.log.gz": {
+      "sha256": "dafc443e9e76cbf50c20ab595b4afe2f6d2ec9945c218ba3bd64c371ee85d69b",
+      "raw_sha256": "19786db291cf93063468e4e05ffaec3afdd6df15b91f0027dc70e1a378a3ab29"
+    },
+    "sanity.time": {
+      "sha256": "a27c4fd584a6dacc2500ebe7a25c50f29d8e140059569a761115a90f598e9740",
+      "raw_sha256": "a27c4fd584a6dacc2500ebe7a25c50f29d8e140059569a761115a90f598e9740"
+    },
+    "sanity.xml.gz": {
+      "sha256": "ea8b11ef5f49b3918976f09716f602ab943b864982ea708a72cfe42e9c6c8758",
+      "raw_sha256": "4c4aed9001fa424f823ef149e0a39936faa1c73966ba3a36d10092f2cb197972"
+    },
+    "batch38.py": {
+      "sha256": "da387e354008e5c42363c4e6f9f32b406e6942664351260790556dcc94558d90",
+      "raw_sha256": "da387e354008e5c42363c4e6f9f32b406e6942664351260790556dcc94558d90"
+    },
+    "ACM2-rv-FINAL_PACKET.json": {
+      "sha256": "7dee3c5388e8afe5afbcd67c8b9166f6285af5c367c48714fb5d963ce813f66e",
+      "raw_sha256": "7dee3c5388e8afe5afbcd67c8b9166f6285af5c367c48714fb5d963ce813f66e"
+    },
+    "ACM2-rv-VERDICT.md": {
+      "sha256": "fa186b7266c86a03437e1b9e3b5751ea93f9d4a27659c6b9263999cef4cf2711",
+      "raw_sha256": "fa186b7266c86a03437e1b9e3b5751ea93f9d4a27659c6b9263999cef4cf2711"
+    },
+    "ACM2-rv-targeted.xml.gz": {
+      "sha256": "446fd4f6b290561c24e0510b3f27511864240fa718923185076a5aa5f09a7390",
+      "raw_sha256": "6ec891dcff26c6fa596b117390bb54f88444094ce84477d5872c70913ccb5437"
+    },
+    "ACM2-rv-mutants.json": {
+      "sha256": "e134b8f00b86fc54d4245b1dc3e7e49f3b7171c84c6f93ec2400fb7c7431b210",
+      "raw_sha256": "e134b8f00b86fc54d4245b1dc3e7e49f3b7171c84c6f93ec2400fb7c7431b210"
+    },
+    "ACM2-rv-source-reuse.json": {
+      "sha256": "884aa0a4af35816b4a3a5f0f3544a1ff27a41a1eb3b430e317e148c57aec66c0",
+      "raw_sha256": "884aa0a4af35816b4a3a5f0f3544a1ff27a41a1eb3b430e317e148c57aec66c0"
+    },
+    "ACM2-rv-prefix-reuse.json": {
+      "sha256": "165f769db7cf875201b389e97201abb52f440b8e71c9d40a592e8bd8af654ca9",
+      "raw_sha256": "165f769db7cf875201b389e97201abb52f440b8e71c9d40a592e8bd8af654ca9"
+    },
+    "ACM2-rv-oracle-rebuild.json": {
+      "sha256": "6ab03909853fe4c9c8a3230e7db5fc7cf6996a1e432e5bd8e75f8af0e143e212",
+      "raw_sha256": "6ab03909853fe4c9c8a3230e7db5fc7cf6996a1e432e5bd8e75f8af0e143e212"
+    },
+    "ACM2-rv-oracle_case_7.json": {
+      "sha256": "2f98fc0c5bfd25fb162100585634dc74794f75632591dbdbbb3b7d6d94b7d5e0",
+      "raw_sha256": "2f98fc0c5bfd25fb162100585634dc74794f75632591dbdbbb3b7d6d94b7d5e0"
+    },
+    "ACM2-rv-oracle_case_8.json": {
+      "sha256": "7f6216059568e0c2b7434eb151ab087476db38ea6d2393118c0d10671bfcea34",
+      "raw_sha256": "7f6216059568e0c2b7434eb151ab087476db38ea6d2393118c0d10671bfcea34"
+    },
+    "ACM2-rv-cost_only.json": {
+      "sha256": "95f169b92f39aa5a7cd96831a0b002a3d27670397d84d3e1e05cf5ad4d2929fa",
+      "raw_sha256": "95f169b92f39aa5a7cd96831a0b002a3d27670397d84d3e1e05cf5ad4d2929fa"
+    },
+    "ACM2-rv-qualified.log.gz": {
+      "sha256": "3433b32bf06435de1d564250ee08749d40308585174a0c2fee8f56557ec95015",
+      "raw_sha256": "30311b09a71ae865e7a06a9b87b803bcfd9d45eb3e5433e71b84816950cd5342"
+    },
+    "ACM2-rv-compiled_moist_probe.log.gz": {
+      "sha256": "359aa9c5c838cb709f2f58e62413473f97c621470061aaaa2c559fa3b0a1b10f",
+      "raw_sha256": "6b9a0a3533ff2d7a384da628fd4ad67897eb1d9db7d1ffded3ab6d11d9ee9bc6"
+    },
+    "MP11-rv-REREVIEW_VERDICT.md": {
+      "sha256": "5d0c359a0d5f2dd1291e423b779461b527d8c1eb901c454741f6bfdfbd877ddb",
+      "raw_sha256": "5d0c359a0d5f2dd1291e423b779461b527d8c1eb901c454741f6bfdfbd877ddb"
+    },
+    "MP11-rv-RV07.xml.gz": {
+      "sha256": "076209dcbdbb217e94d716767e48f67b3395eccd805cb633fe4570c7f33c81f6",
+      "raw_sha256": "cf228f7997a091b92b6e4afca1f5ef9b35de509c02cf7fa47394a85c7cfca54f"
+    },
+    "MP11-rv-RV07.log.gz": {
+      "sha256": "6a8a0ad724a659fd95521307013090dbca470bf51d21f66b797770ea3ac74fc2",
+      "raw_sha256": "6687b30231c9046430e9a3d2abcc9f6d52e2d0d469cf03719718c4c53f0be2fb"
+    },
+    "MP11-rv-RV08.xml.gz": {
+      "sha256": "3b3e38a074ce7a50f70e86bb3a3f3a96f02c2e8b4632f3c899c7f60f97242bb1",
+      "raw_sha256": "e87ec0dbaaa0c15c6d4f8cc4164a3d60e16b5e5b214c285497c4eb7b3dbc0473"
+    },
+    "MP11-rv-RV08.log.gz": {
+      "sha256": "c4ee60e5e5a3e66e22c20b11e7c1e153a567cc7f5f0361ab4de84039dcd83a63",
+      "raw_sha256": "dd0c826380d74125dc49f2c47725ce66fcb04ad8189de1671066a7163b29bc35"
+    },
+    "MP11-rv-RV09-source.json": {
+      "sha256": "dfd7c6ced7f503da479736150d1111ef175f732581000f57c29623503998b3d3",
+      "raw_sha256": "dfd7c6ced7f503da479736150d1111ef175f732581000f57c29623503998b3d3"
+    },
+    "MP11-rv-RV10.xml.gz": {
+      "sha256": "96e55b2baff6054a42b73767ff490d82bdff84ee749a75d247adba10a6ca4ed5",
+      "raw_sha256": "b5711e3e79c93322043578f25227582822e61a974e3f97dc6a6d0eedf6cc534f"
+    },
+    "MP11-rv-RV10.log.gz": {
+      "sha256": "3076491f6e75c2b1202ec4d81bb8329ad4ff97d12a6e912e71496bd1d1106e83",
+      "raw_sha256": "b64f38e97a6403b2f564bddde2e697d61a80fb990a6bae7db9466b4716205fd8"
+    },
+    "MP11-rv-RV11-source.json": {
+      "sha256": "1bc9dcd02f96eb162abbe0802440cc9382b661652f31eecfc82e5ef5848a438b",
+      "raw_sha256": "1bc9dcd02f96eb162abbe0802440cc9382b661652f31eecfc82e5ef5848a438b"
+    },
+    "MP11-rv-RV12.xml.gz": {
+      "sha256": "4e04d23f826386b8f088f481a01aa1f07c5445a6e05ab358fa1c5efc723bf4c6",
+      "raw_sha256": "237c88fdad707769c620267e2a470c093fcc16eb219ae23a51ea0264bcc62557"
+    },
+    "MP11-rv-RV12.log.gz": {
+      "sha256": "5c3f15dbefaf789b57168f8e828cdd7eb66aeff60273efacb1ea8b06fb6ca55d",
+      "raw_sha256": "15e4c325680fcb195b3883b1c36532e58af9b9f297270a95fa9ca1edf29eb74d"
+    },
+    "MP11-rv-test_revised_scope.py": {
+      "sha256": "be91773111e47dc0c30ef39462d2303c028426efab9819d799438d072b45460b",
+      "raw_sha256": "be91773111e47dc0c30ef39462d2303c028426efab9819d799438d072b45460b"
+    },
+    "MP11-rv-revised_mutant.py": {
+      "sha256": "99a06668a200c4b77f6005d1b1f1b0573b345c9093800d1b0b6ccb659d58d99e",
+      "raw_sha256": "99a06668a200c4b77f6005d1b1f1b0573b345c9093800d1b0b6ccb659d58d99e"
+    },
+    "MP11-rv-revised_source_audit.py": {
+      "sha256": "233ec8da15859f1f0f1e27e7e23397072d12f2a382ada5af2ba5feeec653e742",
+      "raw_sha256": "233ec8da15859f1f0f1e27e7e23397072d12f2a382ada5af2ba5feeec653e742"
+    },
+    "MP11-REREVIEW_SEAL.json": {
+      "sha256": "0c2fdde19c413f989cbe7d47194dbce75eda1217c77c7b8e0207d0e368467e82",
+      "raw_sha256": "0c2fdde19c413f989cbe7d47194dbce75eda1217c77c7b8e0207d0e368467e82"
+    },
+    "KM3-rv-KM3_VERDICT.md": {
+      "sha256": "f8e313365d3ba535e95a05c3c9bb51ef706c687ef9fd2df4d4859e9442ba257e",
+      "raw_sha256": "f8e313365d3ba535e95a05c3c9bb51ef706c687ef9fd2df4d4859e9442ba257e"
+    },
+    "KM3-rv-KR01.xml.gz": {
+      "sha256": "7ea2b379b434092037def92364c14498042ae4b3a2a76e2e464320cfdeb1ac43",
+      "raw_sha256": "151c5defead43570e47e87681bdb8f0934449f6e80c28f85c2033685a15d7d50"
+    },
+    "KM3-rv-KR01.log.gz": {
+      "sha256": "05de8720d4010fefa3e523091cfbd014c78a15240c360c2ece9c321f991e72a3",
+      "raw_sha256": "93b3e36b22a2170667c8a176046062c78173972f8660efa340ba147e83dab54e"
+    },
+    "KM3-rv-KR02.xml.gz": {
+      "sha256": "ce21a2ad714687b447a8ecddee48581cfda99d88e1d59ab5e346549b7cd0829d",
+      "raw_sha256": "bb1402e08fd58a3a05a4c0c939f9ea74244785df19a88203a28b3ca10b91e5d8"
+    },
+    "KM3-rv-KR02.log.gz": {
+      "sha256": "cf37d7b6002aa64ceb7073d2e79af988d6bcf6c39eadb7629342ac4339c63039",
+      "raw_sha256": "0fcdc99241ecbb7150c4ca402d5dde82fa1640e32058d034b9e11b72b5fa5e10"
+    },
+    "KM3-rv-KR03-source.json": {
+      "sha256": "2caee6d873c87f9ed52fca13a9d8176defcb3b6bed569ef3087eda9f9c0cb9ea",
+      "raw_sha256": "2caee6d873c87f9ed52fca13a9d8176defcb3b6bed569ef3087eda9f9c0cb9ea"
+    },
+    "KM3-rv-KR04-swiss.json": {
+      "sha256": "3049163c8cee8bbe5fd6fa9e61125988b79751e0c3ea8511f195b330ef3b957a",
+      "raw_sha256": "3049163c8cee8bbe5fd6fa9e61125988b79751e0c3ea8511f195b330ef3b957a"
+    },
+    "KM3-rv-KR04.log.gz": {
+      "sha256": "f5ce21074eb2af85d121f549f0f238ee51ca971529d50686f63773fca8f91484",
+      "raw_sha256": "1a64ddb9295170f1274dcd0be8e405b392ffe732e3f3751d2ed498d4825df64c"
+    },
+    "KM3-rv-KR05-prod.json": {
+      "sha256": "03dfdd719eef6665e3dabc6a2bfd60f8c228176df5e0d197be4680aea65e2821",
+      "raw_sha256": "03dfdd719eef6665e3dabc6a2bfd60f8c228176df5e0d197be4680aea65e2821"
+    },
+    "KM3-rv-KR05.log.gz": {
+      "sha256": "21408d471a1855d9cc881ae4ef2fc1af9dd6874afcb78498676e519165a9868f",
+      "raw_sha256": "8eade114329f8ed05a4622905d113d5b11c068499dccbe849941d6baa2eed415"
+    },
+    "KM3-rv-test_km3_scope.py": {
+      "sha256": "fd759f67358b3df5ab748b24ea92e70aef39346982b01a43a639384f40a33cd3",
+      "raw_sha256": "fd759f67358b3df5ab748b24ea92e70aef39346982b01a43a639384f40a33cd3"
+    },
+    "KM3-rv-km3_review_mutant.py": {
+      "sha256": "db9405e084000eb03bd812190a6128cd560da13b87db311ead67e18dad1c68b2",
+      "raw_sha256": "db9405e084000eb03bd812190a6128cd560da13b87db311ead67e18dad1c68b2"
+    },
+    "KM3-rv-km3_source_audit.py": {
+      "sha256": "757ded57bc7af3c5e957d2de8d332b3369998021d9e186fa4215f26165e7a602",
+      "raw_sha256": "757ded57bc7af3c5e957d2de8d332b3369998021d9e186fa4215f26165e7a602"
+    },
+    "KM3-SEAL.json": {
+      "sha256": "fbebad358ced705bee046b2fb449700625823e364a8431c431e4e1d6d68dee6c",
+      "raw_sha256": "fbebad358ced705bee046b2fb449700625823e364a8431c431e4e1d6d68dee6c"
+    },
+    "orphan-rv-VERDICT.md": {
+      "sha256": "bd0ddc80db6e394f4ed32601af595e76922baa37a56c6183176a884ab4dd1b36",
+      "raw_sha256": "bd0ddc80db6e394f4ed32601af595e76922baa37a56c6183176a884ab4dd1b36"
+    },
+    "orphan-rv-counts.json": {
+      "sha256": "53a274421d2b3641d115bb79dd49f418b4391ac36e0d5f433795594bf94eb886",
+      "raw_sha256": "53a274421d2b3641d115bb79dd49f418b4391ac36e0d5f433795594bf94eb886"
+    },
+    "orphan-rv-scope.json": {
+      "sha256": "b51a1a7b7302d77f8779bac70d8314bb85df23fbf7df9d236c553ba603bd14a7",
+      "raw_sha256": "b51a1a7b7302d77f8779bac70d8314bb85df23fbf7df9d236c553ba603bd14a7"
+    },
+    "orphan-rv-origin_audit.json": {
+      "sha256": "1402a7674383a85245700463711b962226b240f635fab5de571ae4cc4cebe68c",
+      "raw_sha256": "1402a7674383a85245700463711b962226b240f635fab5de571ae4cc4cebe68c"
+    },
+    "orphan-rv-assertions.json": {
+      "sha256": "518f8af49bc578757a2efaf607b6fa6ef088b127a118e252040043b0efcc4e1b",
+      "raw_sha256": "518f8af49bc578757a2efaf607b6fa6ef088b127a118e252040043b0efcc4e1b"
+    },
+    "orphan-rv-provenance_hash_checks.json": {
+      "sha256": "6968bd267fe27e40549b847ffb6908d67a89c3838405a66969708888ef81e228",
+      "raw_sha256": "6968bd267fe27e40549b847ffb6908d67a89c3838405a66969708888ef81e228"
+    },
+    "orphan-rv-artifact_hashes.json": {
+      "sha256": "f9cd859540e54a4e055631b4dbd6f64f55edf7549aef71ccac40a0aea210f36b",
+      "raw_sha256": "f9cd859540e54a4e055631b4dbd6f64f55edf7549aef71ccac40a0aea210f36b"
+    },
+    "orphan-rv-resources.json": {
+      "sha256": "0cd8e6e3f8a608ff3af0b662b00b37834e08b28b94c5379056f22b7f5be58dbb",
+      "raw_sha256": "0cd8e6e3f8a608ff3af0b662b00b37834e08b28b94c5379056f22b7f5be58dbb"
+    },
+    "orphan-rv-mutants.json": {
+      "sha256": "a3880d3e24db9da7d685a3752f64ba2c2ebfcf79da8db9ba8ce000c4d0377ece",
+      "raw_sha256": "a3880d3e24db9da7d685a3752f64ba2c2ebfcf79da8db9ba8ce000c4d0377ece"
+    }
+  }
+}

@@ -1,0 +1,77 @@
+{
+ "fixture_sha256": "53b571b208249568eeb96e88338e872657c3128bcd8adc13048a4bcff4a18c40",
+ "source": "WRF 4.7.1 phys/module_bl_gfs.F (+gfs machine/physcons, share/module_model_constants.F), unmodified",
+ "builds": {
+  "pbl3/zero": {
+   "flags": [
+    "-O0",
+    "-ffp-contract=off",
+    "-finit-real=zero"
+   ],
+   "sha256": "189c1c3873d2c042b905c0568340c6452c660739245ba38ebe12e04db7d6875f"
+  },
+  "pbl3/inf": {
+   "flags": [
+    "-O0",
+    "-ffp-contract=off",
+    "-finit-real=inf"
+   ],
+   "sha256": "7545da4d9cefe94ed5f39340842611996d524c536ee1fa2d9bbdbed9473d652c"
+  },
+  "pbl3/fma": {
+   "flags": [
+    "-O2",
+    "-mfma",
+    "-ffp-contract=fast",
+    "-finit-real=zero"
+   ],
+   "sha256": "5913a922e1da674d8efba310111880cbe0d70fb309d8e72eea0420a3cc651210"
+  }
+ },
+ "wrapper_sha256": "d487955a6783e3bf0c65813c03ad9e89c55ac69459be2ffcb116d2d4cf9386fa",
+ "real_oracle_npz_sha256": "27cf4323a1e143bdf79208db21d6938b48d30118bb0a4342d8d227c44f52292e",
+ "prof": [
+  "u",
+  "v",
+  "th",
+  "t",
+  "qv",
+  "qc",
+  "qi",
+  "p",
+  "pi",
+  "dz",
+  "z"
+ ],
+ "sfc": [
+  "psfc",
+  "ust",
+  "pbl",
+  "psim",
+  "psih",
+  "hfx",
+  "qfx",
+  "tsk",
+  "gz1oz0",
+  "wspd",
+  "br"
+ ],
+ "tend": [
+  "rublten",
+  "rvblten",
+  "rthblten",
+  "rqvblten",
+  "rqcblten",
+  "rqiblten"
+ ],
+ "diag": [
+  "ust",
+  "pbl",
+  "wspd",
+  "kpbl"
+ ],
+ "caller_has_qi": 0,
+ "caller_dt": 20.0,
+ "rule": "compiled REAL wrapper + DOUBLE solver inside [lower, upper] (+-1 ULP input draws + FMA build) +8 REAL4 output ULPs; subnormal results flushed (E117)",
+ "caller": "tests/v040/test_t_cfix_sfc_selected_surface._case(3, noahmp=False, bl=3), first step"
+}

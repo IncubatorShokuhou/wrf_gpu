@@ -1,0 +1,83 @@
+{
+  "status": "FIXED rv-s1-obsnudge MERGE-WITH-FIXES",
+  "scope": "Full daily host-loop carry/clock/checkpoint/diagnostics correction; no reduced scope",
+  "reviewed_commit": "a8dd517f08db56d5f6942f1f87a5c09b57f4f034",
+  "critic_verdict": "<USER_HOME>/wrf_gpu2_lanes/rv-s1-obsnudge/VERDICT.md",
+  "critic_verdict_sha256": "244cc6118a8d1302fe8210f1d1162957567426e27e02366fad276b689454f63d",
+  "measured_source_commit": "4d33ab590dd7d541f5a34c337a7866fc3816d6fe",
+  "receipts": {
+    "FON28.xml": {
+      "sha256": "a7b2dc0a57246e53b843845328c4ded860cad01703b33d3ac554beab8425c051",
+      "tests": 6,
+      "failures": 0,
+      "errors": 0,
+      "seconds": 36.046
+    },
+    "FON29.xml": {
+      "sha256": "a569c98be93ce865bc7ba5eed8b8068b2afaa5ae2c7bf52893ae74fb824020e7",
+      "tests": 77,
+      "failures": 1,
+      "errors": 0,
+      "seconds": 46.724
+    },
+    "FON30.xml": {
+      "sha256": "79dc74fad59af403ad9df48bcfcb40b5238c091c98f2c346f19ddc690e1cdf32",
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "seconds": 4.547
+    },
+    "FON31.xml": {
+      "sha256": "d997f01b3acc498993593544b8af2c9ad8a53b69810e68ee33804872cb81b833",
+      "tests": 1,
+      "failures": 1,
+      "errors": 0,
+      "seconds": 3.303
+    },
+    "FON32.json": {
+      "sha256": "e827b831bf6cb6b3cac99b89a920044fee9bd0d5ffc897ef1844b104b07f97ff"
+    }
+  },
+  "gates": {
+    "new_daily_regressions": 6,
+    "affected_existing_consumers": 77,
+    "additional_current_binding_check": 1,
+    "global_step_after_first_hour": 201,
+    "held_obs_read_step": 137,
+    "checkpoint_step": 200,
+    "checkpoint_carry_and_inputs": "BYTE exact",
+    "initializations_per_daily_run": 1,
+    "expired_source_nonzero_counts": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "production_clock_reset_mutant": "one numerical assertion failure, zero setup errors"
+  },
+  "disclosure": "FON29 included one stale preexisting WRF advection-default assertion (0/0 vs Registry1/1); test corrected only, FON30 closes it. Healthy76 passes reused. New host tests stub model arithmetic and output writes; checkpoint serialization is real. One actual obs-driver regression evaluates 400 steps on held pristine Swiss operands, not a full 2h numerical forecast. Existing accepted native scientific runs are source-bound reuse.",
+  "source_reuse": {
+    "accepted": "a8dd517f08db56d5f6942f1f87a5c09b57f4f034",
+    "candidate": "4d33ab590dd7d541f5a34c337a7866fc3816d6fe",
+    "changed_src_paths": [
+      "src/gpuwrf/integration/daily_pipeline.py"
+    ],
+    "unchanged_src_blobs": 528,
+    "unchanged_daily_functions": [
+      "_build_real_case",
+      "_default_forecast_fn",
+      "_segmented_forecast_fn",
+      "_capture_boundary_leaves",
+      "_rewindow_boundary_leaves"
+    ],
+    "unchanged_existing_stepper_methods": [
+      "__init__",
+      "__call__"
+    ],
+    "daily_sha256": "3fde93fba5863d22ec7ad8631b2b0e0f17d4b619798b66601303cd721bc7ebde",
+    "reused_release_jaxpr_sha256": "2bf12cb8374d3a84a440e47dea4b77b0c7436108fc2ee2616bba6ec79b17962a",
+    "reuse": "Critic accepted operators, native coupled smokes, full restart and release trace. All model/compiler/restart source bytes unchanged; only daily host orchestration changed.",
+    "performance": "No new timestep kernels, allocations or transfers. Existing bounded chunk runner; one initialization per daily run, held Noah-MP diagnostics and full carry retained. Checkpoint host copies occur only at the requested output boundary. GPU timing/memory and long-forecast qualification remain unmeasured."
+  },
+  "limits": "GPU launches/traffic/VRAM/readiness and long coupled forecast qualification pending; no GPU used."
+}

@@ -1,0 +1,57 @@
+{
+  "source": "b297eef1ffb824553cdadfd2dedc4c0da243fb3b",
+  "CPU_BYTE_reused": {
+    "scope": "CPU Pallas interpret regression ONLY; not WRF fidelity",
+    "baseline": "abb8b5f30505feddbc3636dac767f708351357e1",
+    "candidate": "f8513d40ba62ee7fbb469fb33301491ae3583435",
+    "levels": 44,
+    "steps": 3,
+    "field_frames": 84,
+    "values": 26472,
+    "BYTE": true,
+    "nonfinite": 0,
+    "sha": {
+      "baseline.json": "ad4fe0963d73bae315f3fa9cff8fe9ee66cddabd12a9b5587a470b684f88d636",
+      "baseline.npz": "def1360d31432100c1a1b8d56cecfa5ef5b42ae79b09a2a37a7b3d4d10da8ce7",
+      "candidate.json": "204cecbec13913c737fb618c5f2399f9d6c25933e5071839dbd3b007c1c66778",
+      "candidate.npz": "def1360d31432100c1a1b8d56cecfa5ef5b42ae79b09a2a37a7b3d4d10da8ce7"
+    }
+  },
+  "P3_arithmetic_BYTE": {
+    "src/gpuwrf/physics/p3/column.py": "39158e96901be58174cb9b9b673a4a84ee34933f99632b10c6c1ad6e34ad231f",
+    "src/gpuwrf/physics/p3/processes_generated.py": "eef5e46e68cf98df6c8047c0a6b246b3d1c121559ccca854754533ebb562e74b",
+    "src/gpuwrf/physics/p3/process_support.py": "319633b63e26535d1e9bf69e295478c9fb9f739f3fd3706450745ac6c4bbe0f7",
+    "src/gpuwrf/physics/p3/lookup.py": "eb78f3db57e56ccdb48b17759935294cfc2cd138756284b9edffad6f7ad7ce03"
+  },
+  "phys_p3_full_file_BYTE_to_measured_f851": "dafc09bc0b75e56e9b73062f512b2b9cf65f01f58ae816197162dc9f976dd8ab",
+  "final_native_output_names": [
+    "qv",
+    "qc",
+    "qr",
+    "qi",
+    "ni",
+    "nr",
+    "qir",
+    "bir",
+    "th_old",
+    "qv_old",
+    "re_cloud",
+    "re_ice",
+    "nc",
+    "qi2",
+    "ni2",
+    "qir2",
+    "bir2",
+    "di",
+    "rhoi",
+    "vm",
+    "di2",
+    "rhoi2",
+    "vm2",
+    "th",
+    "rainncv",
+    "snowncv"
+  ],
+  "all_final_outputs_covered_by_measured_CPU_BYTE": true,
+  "scope": "new main only adds already-computed P3 diagnostics to operational output mapping; full_column CPU default-all output inventory and all arithmetic unchanged. Corrected typed native fill cast affects Triton lowering only; CPU discharge/binding AST exact in TP58/VALIDATION_REUSE."
+}

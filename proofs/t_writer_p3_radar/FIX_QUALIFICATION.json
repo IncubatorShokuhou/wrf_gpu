@@ -1,0 +1,82 @@
+{
+  "schema": "t-writer-P3-radar-same-critic-FIX-v1",
+  "reviewed_base": "6e911aa42c6f9559a0a720526d3e7fb915bfdd07",
+  "same_critic": "rv-t-writer-p3radar",
+  "review_sha256": "f5c45a4b029d1b6ff324109b39d56c4f52754546e9519b4637348b0c0d5e17a7",
+  "measured_source": "310ccf685cee57da9824d052c49fdc3c84179d9b",
+  "fixes": [
+    "Generic held_diagnostics overlay for selected Operational/RUC carry, all producers, no new calculation",
+    "BYTE tracked P348 literal/FMA/report with SHA checks and fixed accepted contraction bound; real clean-archive oracle"
+  ],
+  "results": {
+    "healthy_routes_and_daily_consumers": 25,
+    "actual_daily_route_combinations": 13,
+    "families": [
+      18,
+      52
+    ],
+    "route_selection": "actual _run_forecast_sequence; ordinary operational/RUC3/SSiB8/lake/TEMF/ruc+TEMF/lake+TEMF",
+    "single_old_helper_mutant": "1ASSERT0ERROR",
+    "all_old_helper_routes": {
+      "tests": 13,
+      "failures": 10,
+      "errors": 0,
+      "skipped": 0,
+      "passed_controls": 3,
+      "all_failures_genuine_assertions": true
+    },
+    "clean_git_archive_oracle": "1PASS0ERROR, 3 original WRF steps, tracked inputs/hash checks"
+  },
+  "reference_files": {
+    "provenance": "Original pristine WRF P348: same frozen P305 operands, REAL4 GNU Fortran14.3, contraction off versus fast. Copies BYTE original accepted and independently reviewed source; no regenerated data/bound.",
+    "accepted_qualification": "proofs/s2_p3/qualification.json:gates.WRF_contraction_init_control",
+    "files": {
+      "literal_mp52.npz": "f80ade544d275c60c80f39c2a06f6d36201565c3d3839619fcb01b4435ec7587",
+      "fma_mp52.npz": "11dded515566d9c55f499af25b7176aff28f930e6850f4c93574c251e599d2ff",
+      "report.json": "95c531fceb9c6a808a1c887791fa76f1158e67e25f91128d9bed9627e32557b3"
+    },
+    "strict_atol_dBZ": 0.0003,
+    "registered_WRF_contraction_max_dBZ": 4.766279220581055
+  },
+  "source_scope": {
+    "reviewed_base": "6e911aa42c6f9559a0a720526d3e7fb915bfdd07",
+    "measured_source": "310ccf685cee57da9824d052c49fdc3c84179d9b",
+    "only_product_file_changed": "src/gpuwrf/integration/daily_pipeline.py",
+    "only_changed_function": "_surface_diagnostics_for_output",
+    "real_daily_route_selector_AST_unchanged": "6d54947e91ed7500a4fe85b3f0f6638c337104d1e1bd1ba6a06cc8045a3b96bf",
+    "product_physics_kernels_runtime_contracts_IO_BYTE": true,
+    "all_prior_numerical_defaults_native_CPU_evidence_reused": true,
+    "host_cost": "The helper forwards the same existing radar object with a dictionary update: no array copy/recompute/device operation inside the helper or timestep graph. Previously omitted routes now incur normal output-plane transfer/IO at publication; no new performance claim.",
+    "all_other_module_AST_exact": true
+  },
+  "prior_evidence": "Reuse independently reviewed461uniquePASS/4inheritedcounts; freshdefaultSwissf672/PROD6fc,27outputCPUcompile47.023sSTACK104,50CPUframeBYTErelay; no numericalforecast/GPU/default reruns for host-only FIX.",
+  "limits": [
+    "Actual27-outputGPU/E41/fullc23D6/VRAM/runtime pending; old26-output result not transferred",
+    "Strict originalze0.0003dBZ residuals36/288 remain failures/disclosed; original P348 bound4.766279220581055 unchanged",
+    "Inherited allocation-count tests and prior broadsmoke6G OOMs remain separate/unwaived"
+  ],
+  "raw_receipts": {
+    "<USER_HOME>/wrf_gpu2_lanes/t-writer/TWRADFIX/routes.log": "d553492e94a8948f7cd7b14a1830991d97d4572da60afa01bd4bce68cf1d61f9",
+    "<USER_HOME>/wrf_gpu2_lanes/t-writer/TWRADFIX/routes.xml": "e49c39c9badf4d7c599167dd3478d81cbd2b5ddc900c22997d7676298264146a",
+    "<USER_HOME>/wrf_gpu2_lanes/t-writer/TWRADFIX/old_overlay.log": "97fdc939d2ae133baa76051db7ac4fa9154ee775cb4346957074fcf011b3321b",
+    "<USER_HOME>/wrf_gpu2_lanes/t-writer/TWRADFIX/old_overlay.xml": "484646e18e420930e1d80b605deca68492bb25609a7e18707f14d8512336b2bd",
+    "<USER_HOME>/wrf_gpu2_lanes/t-writer/TWRADFIX/old_all.log": "6dbe06db7ce1487df665db5994383e2af2a057827906298c5f4a483ce4373f2d",
+    "<USER_HOME>/wrf_gpu2_lanes/t-writer/TWRADFIX/old_all.xml": "ddbb0a652ebc66b2edb59e124948112f11bda6d513e85d2b0f8e490e92023275",
+    "<USER_HOME>/wrf_gpu2_lanes/t-writer/TWRADFIX/archive_oracle.log": "cb2ec87f5e75715de47b42b4564add71341638a1d8f62f2e54f70f47f128dd5a",
+    "<USER_HOME>/wrf_gpu2_lanes/t-writer/TWRADFIX/archive_oracle.xml": "e6e44fe5b7b8143607b521b8b53bf27e70fc4afdaa44aaa23d9fccc49f2deb89"
+  },
+  "packet_files": {
+    "FIX_ROUTES.json": "27623b243321ac201b2ecac4f88961d8c1e68a140e0abd6b3422babdf636fc67",
+    "FIX_SINGLE_MUTANT.json": "be396539ac35a867019ea3a422791a185bcb6c9ee893bdd98fe430621aa3d493",
+    "FIX_ALL_MUTANT.json": "36eabd8aa677ebef8d42e1426038d59252af6a932af4d7bdd317f0c873010506",
+    "FIX_ARCHIVE_ORACLE.json": "0d27dd09a3fec34ea9dd9a846ed875b067631c19344aa2386ea2a888bdd45ddb",
+    "FIX_MUTANT_SOURCE.json": "fc87edd5c4659ac113b3c09846a2e4a66443242104366b242dbb4010af966812",
+    "FIX_SOURCE_REUSE.json": "5d4fe389d863d392a594a0ae2d9586fb52fb0c6c133b82b532f33a4f94c35ca9",
+    "P348_reference/manifest.json": "3f399c5304160743f9321efd660d400c6a9abce96871bf5980aa7521b257608f",
+    "P348_reference/literal_mp52.npz": "f80ade544d275c60c80f39c2a06f6d36201565c3d3839619fcb01b4435ec7587",
+    "P348_reference/fma_mp52.npz": "11dded515566d9c55f499af25b7176aff28f930e6850f4c93574c251e599d2ff",
+    "P348_reference/report.json": "95c531fceb9c6a808a1c887791fa76f1158e67e25f91128d9bed9627e32557b3",
+    "revert_daily_overlay.py": "0fa7c51fc3cfeb3a4724a133037447fa5eabb788cefdeeff88273af7e1e371f4",
+    "FIX_README.md": "31b38228fe2450cd7daee2e21488e8dd1d32a33a7a8610eaefea44531bd51ec1"
+  }
+}

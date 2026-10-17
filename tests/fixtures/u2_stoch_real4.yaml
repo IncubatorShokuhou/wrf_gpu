@@ -1,0 +1,16 @@
+fixture_id: u2-stoch-pristine-real4-v1
+source: pristine WRF dyn_em/module_stoch.F + original FFTPACK5
+source_commit: source SHA256 per file (staged source tree)
+scenario: fixed compiler RNG seeds; four AR steps; scalar/U/V FFT; vertical0/1; nonzero
+  tendencies; signed cutoff tails
+created_utc: '2026-10-13'
+license_notes: Numerical output from original WRF/FFTPACK5; original source not redistributed
+  in fixture
+variables:
+  details: u2_stoch_real4.json
+  layout: WRF(i,k,j) transposed to (k,j,i), includes top/staggered edge slots
+  units: dimensionless spectra and patterns; physical tendency/mass units per JSON
+    variable
+files:
+- path: u2_stoch_real4.npz
+  sha256: ee5f1aa2a70d129b64bce276e3a463176dc78194f463efc14dabaa4b641c5aaa

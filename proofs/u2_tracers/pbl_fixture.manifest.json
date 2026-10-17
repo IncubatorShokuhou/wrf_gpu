@@ -1,0 +1,204 @@
+{
+  "source": "<USER_HOME>/src/wrf_pristine/WRF/phys/module_pbl_driver.F",
+  "source_sha256": "c1c083365a4e780381fce09b97231cd322913590f089ac91aa9bfc1f6be54424",
+  "extracted_routines_sha256": "02e78b5181047611bcc87eae949a9c8fa2ce1359bca5e6fa03667d5181c47fe5",
+  "generated_fortran_sha256": "2982189477bfe5059da6b39ea48808ff0502f67f8514bf8652a45650fba7acec",
+  "fixture_sha256": "6501902034c3ae51e90c408f6946a7cac09288bb47006ba9f93d18e8cfb561ab",
+  "routines": "diff4d 2690:2818, diff 2822:2896, invert 2899:2931",
+  "precision": "Fortran default REAL32; gfortran -O0 -ffp-contract=off -fcheck=all -ffree-line-length-none -finit-real=zero -finit-integer=0 -finit-logical=false",
+  "mode": "literal",
+  "initialization": "zero",
+  "fp_traps": false,
+  "compiler": "<DATA_ROOT>/canairy_meteo/artifacts/envs/wrf-build/bin/x86_64-conda-linux-gnu-gfortran",
+  "compiler_version": "GNU Fortran (conda-forge gcc 14.3.0-18) 14.3.0",
+  "compiler_flags": [
+    "-O0",
+    "-ffp-contract=off",
+    "-fcheck=all",
+    "-ffree-line-length-none",
+    "-finit-real=zero",
+    "-finit-integer=0",
+    "-finit-logical=false"
+  ],
+  "generator": "proofs/u2_tracers/pbl_generate.py",
+  "variables": {
+    "q": "[N,z,y,x], dimensionless mixing ratio",
+    "rho": "[z,y,x], kg/m3",
+    "dz": "[z,y,x], m",
+    "exch_h/m": "[z+1,y,x], m2/s",
+    "dt": "scalar, PBL DTBL seconds",
+    "tendency": "[N,z,y,x], mixing ratio/s"
+  },
+  "boundary": "bottom exchange zero, top mass-level concentration held fixed",
+  "tolerance": "predeclared: abs(error) <= 16*eps32*(abs(q)/dt + abs(reference tendency)); no value-dependent recalibration",
+  "cases": [
+    "heterogeneous",
+    "strong_exchange",
+    "zero_exchange",
+    "constant_profile",
+    "one_level",
+    "two_levels"
+  ],
+  "seed": 20261013,
+  "comparison": {
+    "reference": "proofs/u2_tracers/pbl_fixture.json",
+    "reference_sha256": "6501902034c3ae51e90c408f6946a7cac09288bb47006ba9f93d18e8cfb561ab",
+    "all_inputs_byte_equal": true,
+    "all_outputs_byte_equal": true,
+    "all_outputs_finite": true,
+    "records": [
+      {
+        "case": "heterogeneous",
+        "input_byte_equal": true,
+        "output_values": 768,
+        "output_nonbyte": 0,
+        "finite": true,
+        "max_abs_spread": 0.0,
+        "fixed_literal_bound_excess_count": 0,
+        "max_spread_over_fixed_literal_bound": 0.0
+      },
+      {
+        "case": "strong_exchange",
+        "input_byte_equal": true,
+        "output_values": 768,
+        "output_nonbyte": 0,
+        "finite": true,
+        "max_abs_spread": 0.0,
+        "fixed_literal_bound_excess_count": 0,
+        "max_spread_over_fixed_literal_bound": 0.0
+      },
+      {
+        "case": "zero_exchange",
+        "input_byte_equal": true,
+        "output_values": 768,
+        "output_nonbyte": 0,
+        "finite": true,
+        "max_abs_spread": 0.0,
+        "fixed_literal_bound_excess_count": 0,
+        "max_spread_over_fixed_literal_bound": 0.0
+      },
+      {
+        "case": "constant_profile",
+        "input_byte_equal": true,
+        "output_values": 768,
+        "output_nonbyte": 0,
+        "finite": true,
+        "max_abs_spread": 0.0,
+        "fixed_literal_bound_excess_count": 0,
+        "max_spread_over_fixed_literal_bound": 0.0
+      },
+      {
+        "case": "one_level",
+        "input_byte_equal": true,
+        "output_values": 96,
+        "output_nonbyte": 0,
+        "finite": true,
+        "max_abs_spread": 0.0,
+        "fixed_literal_bound_excess_count": 0,
+        "max_spread_over_fixed_literal_bound": 0.0
+      },
+      {
+        "case": "two_levels",
+        "input_byte_equal": true,
+        "output_values": 192,
+        "output_nonbyte": 0,
+        "finite": true,
+        "max_abs_spread": 0.0,
+        "fixed_literal_bound_excess_count": 0,
+        "max_spread_over_fixed_literal_bound": 0.0
+      }
+    ]
+  },
+  "generation_command": [
+    "python",
+    "proofs/u2_tracers/pbl_generate.py",
+    "--mode",
+    "literal",
+    "--init",
+    "zero",
+    "--build-dir",
+    "<USER_HOME>/wrf_gpu2_lanes/u2-tracers/pbl_literal_zero_build",
+    "--output",
+    "<USER_HOME>/wrf_gpu2_lanes/u2-tracers/pbl_literal_zero.json",
+    "--compare",
+    "proofs/u2_tracers/pbl_fixture.json"
+  ],
+  "initialization_sensitivity": {
+    "reference": "<USER_HOME>/wrf_gpu2_lanes/u2-tracers/pbl_literal_zero.json",
+    "reference_sha256": "6501902034c3ae51e90c408f6946a7cac09288bb47006ba9f93d18e8cfb561ab",
+    "all_inputs_byte_equal": true,
+    "all_outputs_byte_equal": true,
+    "all_outputs_finite": true,
+    "records": [
+      {
+        "case": "heterogeneous",
+        "input_byte_equal": true,
+        "output_values": 768,
+        "output_nonbyte": 0,
+        "finite": true,
+        "max_abs_spread": 0.0,
+        "fixed_literal_bound_excess_count": 0,
+        "max_spread_over_fixed_literal_bound": 0.0
+      },
+      {
+        "case": "strong_exchange",
+        "input_byte_equal": true,
+        "output_values": 768,
+        "output_nonbyte": 0,
+        "finite": true,
+        "max_abs_spread": 0.0,
+        "fixed_literal_bound_excess_count": 0,
+        "max_spread_over_fixed_literal_bound": 0.0
+      },
+      {
+        "case": "zero_exchange",
+        "input_byte_equal": true,
+        "output_values": 768,
+        "output_nonbyte": 0,
+        "finite": true,
+        "max_abs_spread": 0.0,
+        "fixed_literal_bound_excess_count": 0,
+        "max_spread_over_fixed_literal_bound": 0.0
+      },
+      {
+        "case": "constant_profile",
+        "input_byte_equal": true,
+        "output_values": 768,
+        "output_nonbyte": 0,
+        "finite": true,
+        "max_abs_spread": 0.0,
+        "fixed_literal_bound_excess_count": 0,
+        "max_spread_over_fixed_literal_bound": 0.0
+      },
+      {
+        "case": "one_level",
+        "input_byte_equal": true,
+        "output_values": 96,
+        "output_nonbyte": 0,
+        "finite": true,
+        "max_abs_spread": 0.0,
+        "fixed_literal_bound_excess_count": 0,
+        "max_spread_over_fixed_literal_bound": 0.0
+      },
+      {
+        "case": "two_levels",
+        "input_byte_equal": true,
+        "output_values": 192,
+        "output_nonbyte": 0,
+        "finite": true,
+        "max_abs_spread": 0.0,
+        "fixed_literal_bound_excess_count": 0,
+        "max_spread_over_fixed_literal_bound": 0.0
+      }
+    ]
+  },
+  "input_sha256": "b7ffb47cc817c11267d6b1eaf796208bbc91b2247c8cdcb9e5230e4fa37d0183",
+  "case_input_sha256": {
+    "heterogeneous": "ebe60376b5b6ae355447d8c89fdc9eb86e4d627dd29038e1f5bbdc7f4f53d27b",
+    "strong_exchange": "f38aaf12a48b661bb1f8c8942c9b1b0f4447b8009220763fa33df78328f6138d",
+    "zero_exchange": "5c14ce9c272777680f3b7793a1d1b5320bbb576cab344e137b847395c66a8979",
+    "constant_profile": "02398d1a555a2eee6fc151279d91728aa061b92f622cc88964a4583479003c4b",
+    "one_level": "d22ab868448bf4e2cb55404c62974bc823ff8b0e2fb8af84e259c4716b964492",
+    "two_levels": "11f24ed8b8d20826e64230439f29269d13291b123a600a23de9a44562dfc5876"
+  }
+}

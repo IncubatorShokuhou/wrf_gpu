@@ -124,6 +124,7 @@ def test_daily_pipeline_keeps_wrf_defaults_when_scalar_options_are_omitted(
         " h_sca_adv_order = 5,\n",
     )
 
-    assert (case.namelist.moist_adv_opt, case.namelist.scalar_adv_opt) == (0, 0)
-    assert case.metadata["namelist"]["moist_adv_opt"] == 0
-    assert case.metadata["namelist"]["scalar_adv_opt"] == 0
+    # WRF Registry defaults (also covered by test_namelist_binding).
+    assert (case.namelist.moist_adv_opt, case.namelist.scalar_adv_opt) == (1, 1)
+    assert case.metadata["namelist"]["moist_adv_opt"] == 1
+    assert case.metadata["namelist"]["scalar_adv_opt"] == 1

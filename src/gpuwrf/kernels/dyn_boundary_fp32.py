@@ -7,7 +7,7 @@ production always uses explicit PTX RN32, with no fp64 arithmetic.
 from functools import partial
 import jax
 import jax.numpy as jnp
-from jax.experimental import pallas as pl
+from gpuwrf.backends import pallas as pl
 from jax.experimental.pallas import triton as pt
 from gpuwrf.kernels.dyn_rk_fp32 import _rn as _literal_rn
 

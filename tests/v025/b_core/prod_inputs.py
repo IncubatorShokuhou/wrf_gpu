@@ -11,7 +11,7 @@ PROD = Path("<DATA_ROOT>/wrf_gpu2/v025/s0_case_20260725")
 
 
 @functools.lru_cache(maxsize=1)
-def _load():
+def _load(names=("d01", "d02")):
     import jax
 
     import gpuwrf.contracts.state as state_module
@@ -23,13 +23,26 @@ def _load():
     try:
         # _load_domains reads only input_dir/feedback from the config; the output paths are never touched.
         config = NestedPipelineConfig(PROD, PROD / "unused_out", PROD / "unused_proof", hours=1, max_dom=2)
-        return _load_domains(config, ("d01", "d02"))
+        loaded = _load_domains(config, names)
+        if names == ("d01",):
+            # _load_domains seeds this optional leaf only for len(names)>1.
+            # Preserve the nested PROD root's carry ABI while omitting d02 work.
+            from gpuwrf.nesting.nest_o3 import nest_o3_from_parent_enabled
+            import jax.numpy as jnp
+
+            carry = loaded[5]["d01"]
+            if carry.radiation_diagnostics is not None and nest_o3_from_parent_enabled():
+                loaded[5]["d01"] = carry.replace(
+                    o3rad=jnp.zeros(carry.state.theta.shape, jnp.float32)
+                )
+        return loaded
     finally:
         state_module._gpu_device = guard
 
 
-def prod_domains():
-    """(hierarchy, bundles, meta, run_start, dt_by_domain, initial_carries), the old pickle's tuple."""
-    if not (PROD / "wrfinput_d02").exists():
+def prod_domains(*, root_only=False):
+    """The old pickle tuple; root-only structural gates can omit unused child init."""
+    names = ("d01",) if root_only else ("d01", "d02")
+    if not (PROD / f"wrfinput_{names[-1]}").exists():
         pytest.skip(f"PROD inputs unavailable: {PROD}")
-    return _load()
+    return _load(names)

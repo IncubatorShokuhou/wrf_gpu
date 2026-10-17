@@ -62,6 +62,7 @@ WRF_MP_PHYSICS: Mapping[int, WrfSchemeName] = {
     11: WrfSchemeName(11, "CAM 5.1 microphysics", "485"),
     13: WrfSchemeName(13, "SBU-YLin", "486"),
     14: WrfSchemeName(14, "WDM5", "487"),
+    15: WrfSchemeName(15, "Ferrier-Aligo advected rime", "Registry.EM_COMMON:3024"),
     16: WrfSchemeName(16, "WDM6", "488"),
     17: WrfSchemeName(17, "NSSL (legacy)", "497"),
     18: WrfSchemeName(18, "NSSL 2-moment 4-ice w/ predicted CCN", "489"),

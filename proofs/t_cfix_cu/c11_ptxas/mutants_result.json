@@ -1,0 +1,42 @@
+[
+ {
+  "mutant": "firewall removed",
+  "file": "src/gpuwrf/coupling/scan_adapters.py",
+  "test": "tests/test_t_cfix_cu_wdm6_small_grid_firewall.py::test_small_grid_fences_exactly_the_nn_column_view",
+  "rc": 1,
+  "killed": true,
+  "tail": "1 failed in 2.21s"
+ },
+ {
+  "mutant": "firewall on the wrong operand (Nc)",
+  "file": "src/gpuwrf/coupling/scan_adapters.py",
+  "test": "tests/test_t_cfix_cu_wdm6_small_grid_firewall.py::test_small_grid_fences_exactly_the_nn_column_view",
+  "rc": 1,
+  "killed": true,
+  "tail": "1 failed in 2.25s"
+ },
+ {
+  "mutant": "unconditional barrier (large grids change too)",
+  "file": "src/gpuwrf/coupling/scan_adapters.py",
+  "test": "tests/test_t_cfix_cu_wdm6_small_grid_firewall.py::test_large_grid_traces_no_barrier",
+  "rc": 1,
+  "killed": true,
+  "tail": "1 failed in 2.40s"
+ },
+ {
+  "mutant": "Nn operand perturbed at the call site",
+  "file": "src/gpuwrf/coupling/scan_adapters.py",
+  "test": "tests/test_t_cfix_cu_wdm6_small_grid_firewall.py::test_nn_argument_values_unchanged",
+  "rc": 1,
+  "killed": true,
+  "tail": "1 failed in 2.79s"
+ },
+ {
+  "mutant": "firewall itself not an identity (layout_pin)",
+  "file": "src/gpuwrf/kernels/layout_pin.py",
+  "test": "tests/test_t_cfix_cu_wdm6_small_grid_firewall.py::test_firewall_is_value_identity_on_cpu",
+  "rc": 1,
+  "killed": true,
+  "tail": "1 failed, 1 warning in 8.99s"
+ }
+]

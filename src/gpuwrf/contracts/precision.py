@@ -12,6 +12,10 @@ from enum import Enum
 
 import jax.numpy as jnp
 
+from .ice_diagnostics import ICE_DIAGNOSTIC_LEAVES
+
+
+from gpuwrf.contracts.cammg_fields import STATE_FIELDS as CAMMG_STATE_FIELDS
 
 FP64 = jnp.float64
 FP32_GATED = jnp.float32
@@ -24,9 +28,58 @@ FP32_REAL = jnp.float32
 SURFACE_LAYER_CARRY_LEAVES: tuple[str, ...] = ("mol", "hfx", "qfx", "qsfc", "pblh", "sfc_wspd")
 MYNN_DIAGNOSTIC_LEAVES: tuple[str, ...] = ("el_pbl", "maxmf", "maxwidth", "ztop_plume")
 MP_RE_DIAGNOSTIC_LEAVES: tuple[str, ...] = ("re_cloud", "re_ice", "re_snow")
+WRITER_PROFILE_LEAVES: tuple[str, ...] = ("rimi", "exch_tke")
 GWDO_VOLUME_DIAGNOSTIC_LEAVES: tuple[str, ...] = ("dtaux3d", "dtauy3d")
 GWDO_SURFACE_DIAGNOSTIC_LEAVES: tuple[str, ...] = ("dusfcg", "dvsfcg")
 GWDO_DIAGNOSTIC_LEAVES = GWDO_VOLUME_DIAGNOSTIC_LEAVES + GWDO_SURFACE_DIAGNOSTIC_LEAVES
+# WRF diff_opt=2/km_opt=2 prognostic 3-D LES TKE (Registry ``state real tke ikj dyn_em 2 - r``: REAL,
+# restart-only, no history/nest interpolation/lateral data). Distinct from MYNN ``qke``; absent unless
+# km_opt=2 is selected (o1-smag3d).
+LES_TKE_LEAVES: tuple[str, ...] = ("tke",)
+P3_STATE_LEAVES: tuple[str, ...] = (
+    "qir", "qib", "qi2", "Ni2", "qir2", "qib2", "qzi", "mp_th_old", "mp_qv_old",
+)
+NTU_SCALAR_LEAVES: tuple[str, ...] = ('ntu_qdcn', 'ntu_qtcn', 'ntu_qccn', 'ntu_qrcn', 'ntu_qnin', 'ntu_fi', 'ntu_fs', 'ntu_vi', 'ntu_vs', 'ntu_vg', 'ntu_ai', 'ntu_as', 'ntu_ag', 'ntu_ah', 'ntu_i3m')
+NTU_SURFACE_LEAVES: tuple[str, ...] = ('ntu_rainnc', 'ntu_snownc', 'ntu_sr')
+NTU_STATE_LEAVES = NTU_SCALAR_LEAVES + NTU_SURFACE_LEAVES
+JENSEN_STATE_LEAVES: tuple[str, ...] = (
+    "qvoli", "qaoli", "qvoli2", "qaoli2", "qi3", "Ni3", "qvoli3", "qaoli3",
+)
+EPSILON_PBL_SCALARS: tuple[str, ...] = ("pek_adv", "pep_adv", "tke_adv", "diss_adv", "tpe_adv")
+EPSILON_PBL_DIAGNOSTICS: tuple[str,...] = ("epsilon_exch_h","epsilon_exch_m","epsilon_wu","epsilon_wv","epsilon_wt","epsilon_wq")
+EPSILON_PBL_LEAVES: tuple[str, ...] = ("epsilon_pbl", "tpe_pbl", "pr_pbl", *EPSILON_PBL_SCALARS,*EPSILON_PBL_DIAGNOSTICS,"epsilon_pbl_step")
+FERRIER_CARRY_LEAVES: tuple[str, ...] = ("qt", "f_ice_phy", "f_rain_phy", "f_rimef_phy", "qrimef", "ferrier_sr")
+GODDARD4ICE_CARRY_LEAVES: tuple[str, ...] = (
+    "acphysc", "acphyse", "acphysd", "acphyss", "acphysm", "acphysf",
+    "re_cloud_gsfc", "re_rain_gsfc", "re_ice_gsfc", "re_snow_gsfc", "re_graupel_gsfc", "re_hail_gsfc",
+    "goddard_sr",
+)
+# WRF Registry history-only PHYS_TOT; overwritten on every mp7 call, not a restart requirement.
+GODDARD4ICE_HISTORY_LEAVES: tuple[str, ...] = ("phys_tot",)
+THOMPSON_HAIL_EMISSION_LEAVES: tuple[str, ...] = ("nwfa2d", "nifa2d")
+# Original overlapping totals retain mp_gt_driver's REAL accumulation order;
+# generic rain/snow/ice buckets remain disjoint for existing consumers.
+THOMPSON_HAIL_SURFACE_LEAVES: tuple[str, ...] = (*THOMPSON_HAIL_EMISSION_LEAVES, "thompson_sr", "thompson_rainnc", "thompson_snownc")
+EXTRA_SCALAR_BOUNDARY_LEAVES: tuple[str, ...] = (
+    "qh_bdy", "Nc_bdy", "Nn_bdy", "Ns_bdy", "Ng_bdy", "Nh_bdy",
+    "qvolg_bdy", "qvolh_bdy", "nwfa_bdy", "nifa_bdy",
+    *(f"{name}_bdy" for name in EPSILON_PBL_SCALARS),
+    "qt_bdy", "qrimef_bdy",
+    *(f"{name}_bdy" for name in NTU_SCALAR_LEAVES),
+)
+SMS_CARRY_LEAVES: tuple[str, ...] = ("sms_br", "sms_rmol", "sms_wspd", "sms_gamu", "sms_gamv", "sms_ustm")
+
+
+def les_tke_active(namelist) -> bool:
+    """True when WRF's prognostic LES TKE (diff_opt=2, km_opt=2/5) is selected (object or dict namelist)."""
+
+    if namelist is None:
+        return False
+    get = namelist.get if isinstance(namelist, dict) else (lambda key, default=None: getattr(namelist, key, default))
+    try:
+        return int(get("diff_opt", 0) or 0) == 2 and int(get("km_opt", 0) or 0) in (2, 5)
+    except (TypeError, ValueError):
+        return False
 
 
 def force_fp64_island(*arrays):
@@ -227,10 +280,30 @@ STATE_FIELD_ORDER = (
     *GWDO_DIAGNOSTIC_LEAVES,
     "sfc_wspd",
     *MP_RE_DIAGNOSTIC_LEAVES,
+    *LES_TKE_LEAVES,
+    *EXTRA_SCALAR_BOUNDARY_LEAVES[:10],
+    *SMS_CARRY_LEAVES,
+    *P3_STATE_LEAVES,
+    *(f"{name}_bdy" for name in EPSILON_PBL_SCALARS),
+    *EPSILON_PBL_LEAVES,
+    "tracers", "tracer_bdy", "tracer_budget",
+    "qt_bdy", "qrimef_bdy",
+    *FERRIER_CARRY_LEAVES,
+    *GODDARD4ICE_CARRY_LEAVES,
+    *GODDARD4ICE_HISTORY_LEAVES,
+    *THOMPSON_HAIL_SURFACE_LEAVES,
+    *JENSEN_STATE_LEAVES,
+    *WRITER_PROFILE_LEAVES,
+    *NTU_STATE_LEAVES,
+    *(f"{name}_bdy" for name in NTU_SCALAR_LEAVES),
+    *CAMMG_STATE_FIELDS,
+    *ICE_DIAGNOSTIC_LEAVES,
 )
 
 
 PRECISION_MATRIX = {
+    **{name: (FP32_REAL, False) for name in WRITER_PROFILE_LEAVES},
+    **{name: (INT32 if name == "cam_fatal" else FP32_REAL, False) for name in CAMMG_STATE_FIELDS},
     # Dynamics / mass and acoustic boundary.
     "mu": (FP64, False),
     "p": (FP64, False),
@@ -321,6 +394,8 @@ PRECISION_MATRIX = {
     "qg_bdy": (FP32_GATED, True),
     "Ni_bdy": (FP32_GATED, True),
     "Nr_bdy": (FP32_GATED, True),
+    # New force-down records are WRF REAL even in the legacy fp64 state.
+    **{name: (FP32_REAL, False) for name in EXTRA_SCALAR_BOUNDARY_LEAVES},
     # --- v0.6.0 S0 additive physics leaves ---
     # WDM6 number concentrations follow the existing Thompson/Morrison number
     # species precision (FP32 gated). The cumulus precipitation accumulator is
@@ -371,11 +446,22 @@ PRECISION_MATRIX = {
     # Held WRF MYNN outputs, never prognostic inputs or output-time solves.
     **{name: (FP32_REAL, False) for name in MYNN_DIAGNOSTIC_LEAVES},
     **{name: (FP32_REAL, False) for name in MP_RE_DIAGNOSTIC_LEAVES},
+    **{name: (FP32_REAL, False) for name in LES_TKE_LEAVES + SMS_CARRY_LEAVES},
+    **{name: (FP32_REAL, False) for name in P3_STATE_LEAVES},
+    **{name: (FP32_REAL, False) for name in JENSEN_STATE_LEAVES},
+    **{name: (FP32_REAL, False) for name in NTU_STATE_LEAVES},
+    **{name: (FP32_REAL, False) for name in ICE_DIAGNOSTIC_LEAVES},
+    **{name: (INT32 if name=="epsilon_pbl_step" else FP32_REAL, False) for name in EPSILON_PBL_LEAVES},
+    **{name: (FP32_REAL, False) for name in FERRIER_CARRY_LEAVES},
+    **{name: (FP32_REAL, False) for name in GODDARD4ICE_CARRY_LEAVES + GODDARD4ICE_HISTORY_LEAVES + THOMPSON_HAIL_SURFACE_LEAVES},
     # Held WRF REAL GWDO stress tendencies on mass points.
     "dtaux3d": (FP32_REAL, False),
     "dtauy3d": (FP32_REAL, False),
     "dusfcg": (FP32_REAL, False),
     "dvsfcg": (FP32_REAL, False),
+    "tracers": (FP32_GATED, True),
+    "tracer_bdy": (FP32_GATED, True),
+    "tracer_budget": (FP32_GATED, True),
 }
 
 

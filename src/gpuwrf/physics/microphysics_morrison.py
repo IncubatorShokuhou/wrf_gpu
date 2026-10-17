@@ -78,18 +78,20 @@ def polysvp(t, itype):
     dt = t - 273.15
     if itype == 1:
         flat = _flatau(dt, _A_ICE)
+        log_constant = 6.1071 if t.dtype == jnp.float64 else jnp.asarray(6.1071, dtype=t.dtype)
         gg = 10.0 ** (-9.09718 * (273.16 / t - 1.0)
                       - 3.56654 * jnp.log10(273.16 / t)
                       + 0.876793 * (1.0 - t / 273.16)
-                      + jnp.log10(6.1071)) * 100.0
+                      + jnp.log10(log_constant)) * 100.0
         return jnp.where(t >= 195.8, flat, gg)
     else:
         flat = _flatau(dt, _A_LIQ)
+        log_constant = 1013.246 if t.dtype == jnp.float64 else jnp.asarray(1013.246, dtype=t.dtype)
         gg = 10.0 ** (-7.90298 * (373.16 / t - 1.0)
                       + 5.02808 * jnp.log10(373.16 / t)
                       - 1.3816e-7 * (10.0 ** (11.344 * (1.0 - t / 373.16)) - 1.0)
                       + 8.1328e-3 * (10.0 ** (-3.49149 * (373.16 / t - 1.0)) - 1.0)
-                      + jnp.log10(1013.246)) * 100.0
+                      + jnp.log10(log_constant)) * 100.0
         return jnp.where(t >= 202.0, flat, gg)
 
 
@@ -647,6 +649,7 @@ def morrison_run(th, qv, qc, qr, qi, qs, qg, ni, ns, nr, ng, pii, p, dz, w, dt):
         "ni": ni, "ns": ns, "nr": nr, "ng": ng,
         "effc": effc, "effi": effi, "effs": effs, "effr": effr, "effg": effg,
         "rainncv": rainncv, "snowncv": snowncv, "graupelncv": graupelncv, "sr": sr,
+        "t": t,  # MP-exit T1D, the refl10cm_hm argument (radar diagnostics only)
     }
 
 
@@ -659,8 +662,12 @@ from gpuwrf.physics._morrison_sed import _sedimentation, _finalize  # noqa: E402
 # Adapter: frozen PhysicsTendency per the S0 interface.
 # ===========================================================================
 def morrison_tendency(th, qv, qc, qr, qi, qs, qg, ni, ns, nr, ng,
-                      pii, p, dz, w, dt):
-    """Run Morrison and return a frozen PhysicsTendency (state_replacements)."""
+                      pii, p, dz, w, dt, *, radar=False):
+    """Run Morrison and return a frozen PhysicsTendency (state_replacements).
+
+    ``radar=True`` adds the MP-exit temperature ``t_exit`` (WRF ``T1D``) to the
+    diagnostics for ``refl10cm_hm``; the physics is unchanged.
+    """
     out = morrison_run(th, qv, qc, qr, qi, qs, qg, ni, ns, nr, ng, pii, p, dz, w, dt)
     return PhysicsTendency(
         state_replacements={
@@ -674,5 +681,7 @@ def morrison_tendency(th, qv, qc, qr, qi, qs, qg, ni, ns, nr, ng,
         },
         diagnostics={
             "re_cloud": out["effc"], "re_ice": out["effi"], "re_snow": out["effs"],
+            **({"t_exit": out["t"]} if radar else {}),
+            "sr": out["sr"],  # WRF SR = SNOWRT1D/(PRECPRT1D+1.E-12)
         },
     )

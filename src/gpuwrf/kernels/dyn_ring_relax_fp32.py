@@ -8,7 +8,7 @@ CPU interpreter is a test-only path.
 from functools import partial
 import jax
 import jax.numpy as jnp
-from jax.experimental import pallas as pl
+from gpuwrf.backends import pallas as pl
 from jax.experimental.pallas import triton as pt
 from gpuwrf.kernels.dyn_rk_fp32 import _rn as _literal_rn
 
@@ -17,7 +17,7 @@ _INTERPRET = False
 
 def _rn(op, a, b, *, interpret):
     a, b = jnp.broadcast_arrays(a, b)
-    if interpret:
+    if interpret or not pl.cuda_native():
         # Exact RN32 on the CPU interpreter: binary64 then one rounding is the
         # correctly rounded binary32 result for + - * / (53 >= 2*24 + 2). The
         # explicit reduce_precision keeps XLA's excess-precision rewrite from

@@ -1,0 +1,37 @@
+{
+  "wrf_commit": "f52c197ed39d12e087d02c50f412d90d418f6186",
+  "source_sha256": {
+    "share/module_model_constants.F": "5b80377fecdc18a5f0ad38d3b6c15cfc86ad5d76701adbbbb08a08698d0f7062",
+    "frame/module_wrf_error.F": "2ed7dc6e90e0fe442ffee84512b4998d31c8ec3400d3a7ab6078404065f784a6",
+    "phys/module_sf_urban.F": "623868c74c4b9d579e9c3811e9c334d731394c2afbfea7d693221626fbf0b0ea",
+    "phys/module_bep_bem_helper.F": "79403e10104e23fc2a44eb7cf9c0a33c10fabed3b963c9ccb0ea0bfd29072b6d",
+    "phys/module_sf_bem.F": "7bc761ee592feadbaeb974b4271b956044eb02c5a4f3bf0e77af4fbabf0de8eb",
+    "phys/module_sf_bep.F": "c51ddd86871f81d5f132e63ddab2240e23886891356a7964debd4eafda9e500f",
+    "phys/module_sf_bep_bem.F": "42fe129dde0ccba24b84a64c1393e582204a7ced938568527beeb0c4f2a20b36"
+  },
+  "caller_sha256": "7240621a2744736b3eb97fa568631e55599141d6f23cefb42ff7f4d9939a4c91",
+  "driver_sha256": "5808ee9cb0a01f205c6dba3d302501941ec2c182c1b593d057fde07645f32af3",
+  "flags": [
+    "-O2",
+    "-ffree-form",
+    "-ffree-line-length-none",
+    "-cpp",
+    "-DEM_CORE=1",
+    "-ffpe-summary=none",
+    "-fallow-argument-mismatch",
+    "-finit-integer=0",
+    "-finit-real=zero",
+    "-finit-logical=false"
+  ],
+  "fp64_flags": [
+    "-fdefault-real-8",
+    "-fdefault-double-8"
+  ],
+  "gate": "fp64:1e-10*ref_absmax;fp32:3*REAL4-REAL8 spread+4ulp;finite input and poststep outputs",
+  "files": {
+    "slucm_fp64_default.npz": "ffd2d785052e5de11ad56d3e440927c6b097e5017e6e6843cf42f15fb6df98b4",
+    "slucm_fp64_heat.npz": "c293eb5d6741cbb24d3924f1bfb3cb115c4d3c58b94b81269280469875d21995",
+    "slucm_fp32_heat.npz": "030195106960da61b2ec101f76ab9534f8dd14683151655dde4018c2dcea2d1a",
+    "slucm_fp32_default.npz": "db5793c0e14bc9ed8c5b27db12a0d782caf2c31c6d7238ce5624260b8222729e"
+  }
+}

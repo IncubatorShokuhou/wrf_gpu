@@ -1,0 +1,76 @@
+{
+  "verdict": "rv-s2-oml REJECT 4P1",
+  "candidate_commit": "76028c7397d7dbbcd39c5f7ffc3b71b443bf2a9f",
+  "main_base": "0b3d3996f3b02601d68bd5fd47caff643844cdb7",
+  "fixes": {
+    "P1_RUC": "Host-only refusal at namelist honour and direct operational API for both hurricane options; avoids second unqualified MYNN solve.",
+    "P1_BEP_BEM": "Host-only refusal at both entry points for isftcflx1/2 with urban2/3; diagnostics cannot be discarded.",
+    "P1_SLUCM": "Host-only refusal at both entry points for isftcflx1/2 with urban1 on SF1/5/91; missing CHS cannot reach conversion.",
+    "P1_NetCDF": "Raw NumPy ocean/USTM and required LH validated for exactfloat32 and State-grid shape before JAX conversion; saved+requested configs both checked.",
+    "rebase_composition": "Additional epsilon-PBL16/17 plus hurricane refusal: both call paths supply surface_diagnostics; preserve main epsilon code and avoid duplicate ownership."
+  },
+  "changed_gate_results": {
+    "passed": 149,
+    "seconds": 10.31,
+    "new_review_regressions": 29,
+    "new_cases": "16 pairing/dual-entry cases;12 real malformed disk-boundary cases (3groups x2mutations x2requested-config modes),1 healthy x64-OFF BYTE restart control",
+    "additional_shared_passed": 128,
+    "additional_shared_seconds": 6.45,
+    "total_distinct_pytest_checks": 277,
+    "native_default_sha": "2bf12cb8374d3a84a440e47dea4b77b0c7436108fc2ee2616bba6ec79b17962a",
+    "native_default_wall_s": 49.1,
+    "pure_python_honour_refusals_without_jax_import": 12,
+    "prejax_probe_scope": "Existing offline doctor bootstrap isolates honour module; no CLI forecast execution claim."
+  },
+  "scientific_reuse": {
+    "src/gpuwrf/physics/ocean_mixed_layer.py": {
+      "sha256": "a3f7918cc758bc052685ef17bb39b38952536002ab4c485a15258db4b158e62b",
+      "reviewed_27be13e8c_byte_equal": true
+    },
+    "src/gpuwrf/physics/hurricane_flux.py": {
+      "sha256": "285f0faf44bdb614a35b05b49d8933df901825d7bf1f8616217f330d2caa0ab9",
+      "reviewed_27be13e8c_byte_equal": true
+    },
+    "src/gpuwrf/physics/surface_layer.py": {
+      "sha256": "33962bdcfe05e1a960aeac149732fe3ed02977a7b32172c043a889057d6381fe",
+      "reviewed_27be13e8c_byte_equal": true
+    },
+    "src/gpuwrf/physics/sfclay_revised_mm5.py": {
+      "sha256": "6c9876907365b86cdb349d8f191a59a24a6121e1c7254a3d57b5f057b3940d3b",
+      "reviewed_27be13e8c_byte_equal": true
+    },
+    "src/gpuwrf/physics/sfclay_old_mm5.py": {
+      "sha256": "a728e095e00fa9a5af1303cb3399fe045e94739200c76b912eed6c488bcc6e2d",
+      "reviewed_27be13e8c_byte_equal": true
+    },
+    "src/gpuwrf/coupling/ocean_surface_hook.py": {
+      "sha256": "0d8be1c09942f488b067143cadf8aa1a315b493105e457a3009469b989fcb178",
+      "reviewed_27be13e8c_byte_equal": true
+    },
+    "src/gpuwrf/coupling/hurricane_surface_hook.py": {
+      "sha256": "58dac882c1a7c6113cd8d5c7244bf96c0794613eb8e82b36c2751157b50e9fbc",
+      "reviewed_27be13e8c_byte_equal": true
+    }
+  },
+  "resource_effect": "No changed physical kernel/extra timestep launches/allocations; refusals prevent duplicate solves. Active restart validates existing raw NumPy leaves and transfers each once afterward; no extra retained arrays; default restoration remains unchanged.",
+  "gpu_or_coupled_forecast_claim": false,
+  "status": "FIXED: all four P1 closed; host refusals and raw restart checks only",
+  "artifacts": {
+    "review_fixes_complete.xml": {
+      "sha256": "0284aa12a42c640b958f4af38be51619c1b9e198dabc4386992e7f68f7944962",
+      "original_artifact": "<USER_HOME>/wrf_gpu2_lanes/s2-oml/review_fixes_complete.xml"
+    },
+    "review_shared.xml": {
+      "sha256": "ac875c3c1eed9c4bf845ebe3ead3245f203bdf2028898145d2f683d086ec766c",
+      "original_artifact": "<USER_HOME>/wrf_gpu2_lanes/s2-oml/review_shared.xml"
+    },
+    "review_identity.json": {
+      "sha256": "4574af88c33c61b7178c55b307b827367df7a6660b110e957bb34dea13274905",
+      "original_artifact": "<USER_HOME>/wrf_gpu2_lanes/s2-oml/review_identity.json"
+    },
+    "review_prejax.json": {
+      "sha256": "50d32fc03e5df8d8de97c0ffe32039c1cf7a1b57c7cbbbc28db1a2e2ffcb497e",
+      "original_artifact": "<USER_HOME>/wrf_gpu2_lanes/s2-oml/review_prejax.json"
+    }
+  }
+}

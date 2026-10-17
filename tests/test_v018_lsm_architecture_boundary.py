@@ -91,11 +91,10 @@ def test_clm_ctsm_not_in_accept_matrix() -> None:
     assert 6 not in ACCEPTED_SF_SURFACE_PHYSICS
 
 
-def test_boundary_distinct_from_reference_only() -> None:
-    """CLM4/CTSM (no oracle) must be a DIFFERENT class from the reference-only
-    RUC/SSiB (real fp64 oracle staged) — never conflated."""
+def test_boundary_distinct_from_qualified_land_schemes() -> None:
+    """CLM4/CTSM remain refused; RUC/experimental SSiB have graduated."""
     for ref in (3, 8):
-        assert classify_scheme("sf_surface_physics", ref).status is SupportStatus.REFERENCE_ONLY
+        assert classify_scheme("sf_surface_physics", ref).status is SupportStatus.IMPLEMENTED
     for boundary in (5, 6):
         assert classify_scheme("sf_surface_physics", boundary).status is SupportStatus.RECOGNIZED_FAIL_CLOSED
 

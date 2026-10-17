@@ -1,10 +1,14 @@
-"""v0.18 RADIATION (RA) tail ship-gate: reference-only real-WRF oracles + class-(c).
+"""Historical v0.18 radiation oracles and current admission contracts.
+
+CAM, Goddard and experimental CPU-only FLG/GFDL have since graduated. Their
+historical oracle receipts remain unchanged; current metadata and pairing gates
+below check the live catalog and preserve compiled-out refusals.
 
 Scope (the radiation long-tail beyond the operational RRTMG SW/LW + Dudhia/GSFC SW
 + classic-RRTM LW + Held-Suarez 31):
 
   * ra_lw/sw_physics = 3 (CAM), 5 (new Goddard NUWRF), 7 (FLG/UCLA), 99 (GFDL-Eta)
-    are REFERENCE_ONLY. Each is a large (8k-15k LOC) WRF radiation module that is
+    were REFERENCE_ONLY. Each is a large (8k-15k LOC) WRF radiation module that was
     not faithfully portable to a traceable JAX kernel in-scope without becoming a
     self-compare/happy-path, so it is namelist-accepted (for a reference
     comparison) and FAIL-CLOSES in the operational GPU scan -- backed by a REAL
@@ -46,7 +50,6 @@ import pytest
 from _historical_artifacts import require_historical
 
 from gpuwrf.io.namelist_check import (
-    NotOperationallyWiredError,
     UnsupportedSchemeError,
     validate_namelist,
     validate_operational_namelist,
@@ -58,7 +61,7 @@ _SAVE_DIR = _REPO_ROOT / "proofs" / "v018" / "savepoints" / "ra_tail_wrf"
 _RA_KEYS = ("ra_lw_physics", "ra_sw_physics")
 _ORACLE_CODES = (3, 5, 7, 99)
 # CAM (3) graduated in v0.3.4 (lane o1-camrad): IMPLEMENTED, see test_cam_radiation_is_operational below.
-_REF_ONLY_CODES = (5, 7, 99)
+_EXPERIMENTAL_CPU_CODES = (7, 99)
 _COMPILED_OUT_CODES = (14, 24)
 _CORE_FIELDS = ("RTHRATLW", "RTHRATSW", "GLW", "OLR", "SWDOWN")
 _EXACT_MODULE = {
@@ -185,7 +188,11 @@ def test_operational_scan_reasons_cite_existing_oracle_paths() -> None:
 
     from gpuwrf.runtime import operational_mode
 
-    reasons = operational_mode._SCAN_UNWIRED_REASON
+    reasons = dict(operational_mode._SCAN_UNWIRED_REASON)
+    # Graduated schemes cite their qualification in the catalog, rather than an
+    # obsolete scan refusal. Keep checking those live evidence references.
+    reasons.update({f"{key}={code}": classify_scheme(key, code).reason
+                    for key in _RA_KEYS for code in _ORACLE_CODES})
     cited: set[str] = set()
     for tag, reason in reasons.items():
         if not tag.startswith(("ra_lw_physics=", "ra_sw_physics=")):
@@ -200,17 +207,21 @@ def test_operational_scan_reasons_cite_existing_oracle_paths() -> None:
         )
 
 
-@pytest.mark.parametrize("code", _REF_ONLY_CODES)
+@pytest.mark.parametrize("code", _EXPERIMENTAL_CPU_CODES)
 @pytest.mark.parametrize("key", _RA_KEYS)
-def test_ra_tail_reference_only_and_fails_closed_operationally(key: str, code: int) -> None:
-    """3/5/7/99 are REFERENCE_ONLY: namelist-accepted, operationally fail-closed."""
+def test_flg_gfdl_experimental_cpu_pairing_is_enforced(key: str, code: int) -> None:
+    """FLG/GFDL graduated only for the paired, experimental CPU caller."""
 
-    assert classify_scheme(key, code).status is SupportStatus.REFERENCE_ONLY
-    # Accepted at the namelist layer (selectable for a reference comparison).
+    support = classify_scheme(key, code)
+    assert support.status is SupportStatus.IMPLEMENTED
+    assert "EXPERIMENTAL CPU" in support.reason
     validate_namelist({"physics": {key: [code]}})
-    # But the operational forecast scan refuses it (never a silent wrong scheme).
-    with pytest.raises(NotOperationallyWiredError):
+    with pytest.raises(UnsupportedSchemeError, match="requires paired"):
         validate_operational_namelist({"physics": {key: [code]}})
+    paired = {"physics": {"ra_lw_physics": [code], "ra_sw_physics": [code]}}
+    validate_operational_namelist(paired)
+    from gpuwrf.io.flg_gfdl_config import selection_errors
+    assert any("CPU-ONLY" in error for error in selection_errors(paired, backend="cuda"))
 
 
 @pytest.mark.parametrize("key", _RA_KEYS)
@@ -219,7 +230,9 @@ def test_cam_radiation_is_operational(key: str) -> None:
 
     support = classify_scheme(key, 3)
     assert support.status is SupportStatus.IMPLEMENTED
-    assert "CPU-oracle-qualified" in support.reason and "GPU/coupled-forecast qualification pending" in support.reason
+    assert "CPU-oracle-qualified" in support.reason
+    assert ("GPU/coupled-forecast qualification pending" in support.reason
+            or "GPU-qualified vs CPU-WRF Swiss 24 h" in support.reason)
     validate_namelist({"physics": {key: [3]}})
     validate_operational_namelist({"physics": {key: [3]}})
 

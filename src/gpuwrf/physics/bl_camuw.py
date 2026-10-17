@@ -1133,7 +1133,7 @@ def _lu_solve(pver, q, ca, ze, dnom):
 
 
 def _compute_vdiff(pver, pmid, pint, rpdel, t, ztodt, taux, tauy, shflx, cflx0, kvh, kvm, kvq,
-                   u, v, qs, dse, tauresx, tauresy, itaures):
+                   u, v, qs, dse, tauresx, tauresy, itaures, *, cammg=False):
     """compute_vdiff, do_iss, no molecular diffusion, ksrftms=0, cgs=cgh=0 (exact no-ops)."""
 
     n = pver
@@ -1186,6 +1186,10 @@ def _compute_vdiff(pver, pmid, pint, rpdel, t, ztodt, taux, tauy, shflx, cflx0, 
     ca, ze, dnom = _lu_decomp(n, 0.0, kvq, tmpi2, rpdel, ztodt)
     out = []
     for m, q in enumerate(qs):
+        # camuwpblinit:1025 does not diffuse NUMLIQ when CAM-MG owns activation.
+        if cammg and m == 3:
+            out.append(q)
+            continue
         if m == 0:
             q = q.at[n].set(q[n] + tmp1 * cflx0)
         out.append(_lu_solve(n, q, ca, ze, dnom))
@@ -1263,7 +1267,7 @@ def _compute_eddy_diff(n, t, qv, ztodt, ql, qi, s, rpdel, cldn, qrl, z, zi, pmid
 
 def camuw_column(dt, u_phy, v_phy, th_phy, rho, qv, qc, qi, qnc, qni, p_phy, p8w, z, z_at_w, t_phy,
                  cldfra, rthratenlw, exner, wsedl, hfx, qfx, ustar, ht, kvm3d, kvh3d, tauresx2d,
-                 tauresy2d, first_step):
+                 tauresy2d, first_step, *, cammg=False):
     """One WRF column (index 0 = lowest level, float32 WRF REAL in/out).
 
     Mid-level inputs have shape (kx,), interface inputs (kx+1,). Returns a dict of WRF REAL
@@ -1329,7 +1333,7 @@ def camuw_column(dt, u_phy, v_phy, th_phy, rho, qv, qc, qi, qnc, qni, p_phy, p8w
                             tresx, tresy)
     u_new, v_new, q_new, s_new, tresx, tresy = _compute_vdiff(
         n, pmid, pint, rpdel, t8, ztodt, taux, tauy, shflx, cflx0, ed["kvh"], ed["kvm"], ed["kvq"],
-        u8, v8, cloud, s8, tresx, tresy, 1)
+        u8, v8, cloud, s8, tresx, tresy, 1, **({"cammg": True} if cammg else {}))
     stnd = (s_new - s8) * rztodt
     ut = (u_new - u8) * rztodt
     vt = (v_new - v8) * rztodt

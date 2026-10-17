@@ -33,6 +33,7 @@ from gpuwrf.io.scheme_catalog import (
     SupportStatus,
     assert_catalog_consistent,
     classify_control,
+    classify_feature_switch,
 )
 
 
@@ -83,7 +84,7 @@ REAL_WRF_NAMELIST = """\
  v_mom_adv_order = 3,
 /
 &fdda
- grid_fdda = 1,
+ grid_fdda = 2,
 /
 &bdy_control
  spec_bdy_width = 5,
@@ -152,11 +153,12 @@ def test_real_wrf_namelist_yields_honest_per_key_verdicts() -> None:
     assert "NOT silently ignored" in message
 
     # --- (b) OUT_OF_SCOPE feature switches -> named scope decision. ---------- #
-    assert "windfarm_opt" in by_key
-    assert by_key["windfarm_opt"][0].outcome == "out_of_scope"
-    assert "Wind-farm" in message
-    assert "grid_fdda" in by_key
-    assert by_key["grid_fdda"][0].outcome == "out_of_scope"
+    # Fitch windfarm_opt=1 is now implemented; its turbine-file/PBL pairing is
+    # admitted separately by the runtime binder.
+    assert "windfarm_opt" not in by_key
+    assert classify_feature_switch("windfarm_opt", 1) is None  # implemented feature values admit
+    assert classify_feature_switch("windfarm_opt", 2).status is SupportStatus.OUT_OF_SCOPE
+    assert "grid_fdda" not in by_key  # spectral nudging now has its own honoured operational path
 
     # --- (c) IMPLEMENTED / wired controls are NOT flagged. ------------------- #
     # slope_rad=1 and topo_shading=1 ARE implemented (RRTMG SW slope/shadow) and
@@ -389,12 +391,19 @@ def test_cadence_keys_are_approximation_warnings_not_rejections() -> None:
     for value in (5, 10.5):
         assert classify_control("cudt", value).status is SupportStatus.IMPLEMENTED
         validate_operational_namelist({"physics": {"cudt": [value]}})
-        assert not collect_namelist_warnings({"physics": {"cudt": [value]}})
+        # KF cudt is implemented and silent (matches the canary sibling below). Assert cudt-silence,
+        # not "zero warnings": under CPU pytest legacy mode (conftest sets GPUWRF_FAST_DEFAULTS=0 ->
+        # McICA MAXRAND unresolved) the orthogonal RRTMG cldovrlp note correctly fires and is not a
+        # cadence-key warning.
+        assert not any("cudt" in w for w in collect_namelist_warnings({"physics": {"cudt": [value]}}))
 
-    # cudt=0 / bldt=0 (the exactly-wired every-step request) pass with NO warning.
+    # cudt=0 / bldt=0 (the exactly-wired every-step request) are implemented and silent on the
+    # cadence keys. Assert cadence-key silence, not "no warnings at all" -- the orthogonal McICA
+    # cldovrlp note (RRTMG default + cldovrlp=2 + MAXRAND off) is expected and is not about cudt/bldt.
     assert classify_control("cudt", 0).status is SupportStatus.IMPLEMENTED
     assert classify_control("bldt", 0).status is SupportStatus.IMPLEMENTED
-    assert collect_namelist_warnings({"physics": {"cudt": [0], "bldt": [0]}}) == []
+    zero_warnings = collect_namelist_warnings({"physics": {"cudt": [0], "bldt": [0]}})
+    assert not any("cudt" in w or "bldt" in w for w in zero_warnings), "cudt=0/bldt=0 are silent"
 
 
 def test_genuine_wrong_substitutions_still_fail_closed() -> None:
@@ -404,10 +413,9 @@ def test_genuine_wrong_substitutions_still_fail_closed() -> None:
     * (b) moist_adv_opt=3 (WENO -- a still-unimplemented advection scheme) RAISES
       (the positive-definite=1 / monotonic=2 limiters ARE now wired, so the
       genuine-wrong-substitution example must use an UNWIRED value, WENO);
-    * (c) cu_physics=94 (2015 GFS SAS, reference-only -> would silently become
-      a different cumulus scheme on the operational scan) RAISES on the
-      operational path (cu=16 New-Tiedtke graduated in v0.23 F2, cu=4 in v0.3.4);
-    * (d) grid_fdda=1 (out-of-scope feature) RAISES.
+    * (c) cu_physics=4 (scale-aware SAS, Python API only because original WRF
+      ARW refuses it) RAISES on the operational CLI path; cu=94 is now ported;
+    * (d) unknown grid_fdda=3 RAISES (grid/spectral 1/2 graduated in v0.4.0).
     """
 
     # (b) UNWIRED advection scheme (WENO) -> still fail closed.  (PD=1 / mono=2
@@ -419,14 +427,14 @@ def test_genuine_wrong_substitutions_still_fail_closed() -> None:
     # And the now-wired limiters must NOT raise.
     validate_namelist({"dynamics": {"moist_adv_opt": [1], "scalar_adv_opt": [2]}})
 
-    # (c) reference-only scheme -> operational run still fail closed.
+    # (c) Original WRF ARW rejects cu=4; cu=94 has graduated.
     with pytest.raises(UnsupportedSchemeError) as exc_c:
-        validate_operational_namelist({"physics": {"cu_physics": [94]}})
+        validate_operational_namelist({"physics": {"cu_physics": [4]}})
     assert any(s.key == "cu_physics" for s in exc_c.value.selections)
 
     # (d) out-of-scope feature -> still fail closed.
     with pytest.raises(UnsupportedSchemeError) as exc_d:
-        validate_namelist({"fdda": {"grid_fdda": 1}})
+        validate_namelist({"fdda": {"grid_fdda": 3}})
     assert any(s.key == "grid_fdda" for s in exc_d.value.selections)
 
 

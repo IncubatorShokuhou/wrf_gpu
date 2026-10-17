@@ -1,0 +1,177 @@
+{
+  "verdict": "READY-FOR-MERGE",
+  "scope": "Script-only capacity accounting fix; exact-source paid validation reused, no new numerical or GPU run",
+  "UTC": "2026-10-15T02:42:16.316475+00:00",
+  "lane": "s2-integrate",
+  "base_main": "373a040e0a7c248a15516462270a8fa149776112",
+  "merged": "96b14d14e448d8a416b89830f9db225dfc219e87",
+  "approved_head": "30a2acfd1bf94ff28fc292d4d2a5cb5f5663d35a",
+  "code_commit": "bc8892abd28a67450a92bcba1b8e64319073c928",
+  "source_audit": {
+    "UTC": "2026-10-15T02:42:16.316475+00:00",
+    "status": "PASS",
+    "incoming": "30a2acfd1bf94ff28fc292d4d2a5cb5f5663d35a",
+    "before": "373a040e0a7c248a15516462270a8fa149776112",
+    "merged": "96b14d14e448d8a416b89830f9db225dfc219e87",
+    "measured_source": "b00980215095ef4be6d0771dd7f1cfe1273e06a5",
+    "conflicts": 0,
+    "AST_files": [
+      "scripts/m7_1km_memory_audit.py"
+    ],
+    "whole_src_tests_data_scripts_pyproject_BYTE_paid_source": {
+      "src": "f9d19f32024eb7da328bf6b7f2945b8bf0ef92b9",
+      "tests": "d8465c56cea14d92548f3198a64f27cac4bfbb38",
+      "data": "a91a7fbcc850486e65e257c0d0f185a18c6e58c2",
+      "scripts": "b531b6dd46f40527b34c67a2ecb0ba8849629aae",
+      "pyproject.toml": "6c5fdcd3ddc730c8c75c556379abb8d1162ed8c3"
+    },
+    "whole_src_tests_data_and_identity_probe_BYTE_batch16": true,
+    "approved_script_BYTE_bc8892abd": true,
+    "manager_personal_review": "30a2acfd1 OK; code bc8892abd imports/includes WRITER_PROFILE_LEAVES. No critic required.",
+    "capacity_addition_bytes": 33244992,
+    "capacity_formula": "8*nz*ny*nx",
+    "runtime_change": false,
+    "GPU_runs": 0,
+    "cache": "NONE"
+  },
+  "changed_artifact_checks_reused": {
+    "tests": 5,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "pytest_s": 1.802,
+    "peak_rss_kib": 827784,
+    "source": "b00980215095ef4be6d0771dd7f1cfe1273e06a5",
+    "code_commit": "bc8892abd",
+    "base": "373a040e0",
+    "cache": "NONE; GPUWRF_JAX_CACHE=0",
+    "geometry": {
+      "rimi": [
+        "nz",
+        "ny",
+        "nx"
+      ],
+      "exch_tke": [
+        "nz",
+        "ny",
+        "nx"
+      ],
+      "dtype": "float32",
+      "added_bytes": "8*nz*ny*nx",
+      "44x198x477_added_bytes": 33244992
+    },
+    "reason_repeat": "Main batch16 added12ICE_DIAGNOSTIC_LEAVES; final full-State audit contract must be rechecked"
+  },
+  "changed_artifact_test_nodes": [
+    "tests.test_t_mainreds::test_audit_optional_geometry_and_tracer_scaling",
+    "tests.test_m7_1km_memory_audit::test_full_1km_shape_derivation_matches_sprint_objective",
+    "tests.test_m7_1km_memory_audit::test_static_model_tracks_state_contract_field_count",
+    "tests.test_m7_1km_memory_audit::test_static_model_uses_precision_registry_for_known_fields",
+    "tests.test_m7_1km_memory_audit::test_optional_fields_are_counted_with_their_real_geometry"
+  ],
+  "batch16_shared_and_identity_reuse": {
+    "packet": "../batch16/QUALIFICATION.json",
+    "SHA256": "df2a1c8b51cab62bcb5898998d18b6610fb3b5bcf3cc280d18c4eec29f89cdb0",
+    "source_tests_inputs_BYTE": true,
+    "PASS": 699,
+    "XFAIL": 3,
+    "FULL_default_identities": {
+      "Swiss": {
+        "edits": {},
+        "bound": {
+          "mp_physics": 8,
+          "bl_pbl_physics": 5,
+          "sf_sfclay_physics": 5,
+          "ra_lw_physics": 4,
+          "ra_sw_physics": 4,
+          "cu_physics": 0,
+          "sf_surface_physics": 4,
+          "use_noahmp": true,
+          "sf_urban_physics": 0,
+          "diff_opt": 1,
+          "km_opt": 4,
+          "epssm": 0.5,
+          "damp_opt": 3,
+          "zdamp": 5000.0,
+          "dampcoef": 0.2,
+          "w_damping": 1,
+          "diff_6th_opt": 2,
+          "diff_6th_factor": 0.12,
+          "moist_adv_opt": 1,
+          "scalar_adv_opt": 1,
+          "topo_shadow_length_m": 25000.0,
+          "cumulus_cadence_steps": 1,
+          "radiation_cadence_steps": 33
+        },
+        "load_s": 25.5,
+        "sha": "f672a5739cb96e388b6b7a40ef80337bf81bdc14ef15268f3476e09d79fe055d",
+        "chars": 14504210,
+        "trace_s": 13.1,
+        "wall_s": 39.0
+      },
+      "PROD": {
+        "edits": {},
+        "bound": {
+          "mp_physics": 8,
+          "bl_pbl_physics": 5,
+          "sf_sfclay_physics": 5,
+          "ra_lw_physics": 4,
+          "ra_sw_physics": 4,
+          "cu_physics": 1,
+          "sf_surface_physics": 4,
+          "use_noahmp": true,
+          "sf_urban_physics": 0,
+          "diff_opt": 1,
+          "km_opt": 4,
+          "epssm": 0.5,
+          "damp_opt": 3,
+          "zdamp": 5000.0,
+          "dampcoef": 0.2,
+          "w_damping": 1,
+          "diff_6th_opt": 2,
+          "diff_6th_factor": 0.12,
+          "moist_adv_opt": 1,
+          "scalar_adv_opt": 1,
+          "topo_shadow_length_m": 25000.0,
+          "cumulus_cadence_steps": 6,
+          "radiation_cadence_steps": 33
+        },
+        "load_s": 26.9,
+        "sha": "6fc715a2bd630934c4cf0f94427df19a527cbf429011c9ba5efe4d712744d27b",
+        "chars": 14708888,
+        "trace_s": 12.6,
+        "wall_s": 69.2
+      }
+    },
+    "reason": "Entire model/test/input trees and official identity probe BYTE previous accepted373; only audit script changes. All five audit test bodies on final expanded-State source already paid and exact whole script/source/test/data trees match b009."
+  },
+  "fresh_numerical_executions": 0,
+  "performance_memory": {
+    "corrected_static_capacity_bytes_44x198x477": 33244992,
+    "MiB": 31.70489501953125,
+    "forecast_launches_allocations_traffic_compile_readiness_delta": 0,
+    "scope": "Static all-slot capacity estimate only, no runtime VRAM measurement or forecast speed claim."
+  },
+  "scientific_risks": "All batch16 disclosures remain unchanged; this accounting-only fix closes neither GPU/D6/E41 nor F2.",
+  "cleanup": {
+    "new_snapshots": 0,
+    "new_cache_dirs": 0,
+    "new_pytest_temp_dirs": 0,
+    "owned_jobs": 0,
+    "cache": "NONE"
+  },
+  "proof_files": {
+    "TWM02.json": "0da4bea606ae7cecb5061cab9816ffd90ad5747db7c347044332b4241a7535df",
+    "TWM02.xml.gz": "9ad9cec7be9c1ca09df87b544525f0a33ac2e9fc47a340ffdcd96428562215fe",
+    "TWM02.log.gz": "7012016200e3d9de938ae2f2915d6e6e8d994486df89b0bbaab6462d7ba583ff",
+    "integrate_batch17.py": "fe899d1eb49e69870d16af56fafe9fcd18594e18e51a6c872f325bc8a39fbcf6",
+    "SOURCE_AUDIT.json": "d159a711a4cb6385e0e599939db6a7432b948742750407997549e407053a4f97"
+  },
+  "uncompressed_sha256": {
+    "TWM02.json": "0da4bea606ae7cecb5061cab9816ffd90ad5747db7c347044332b4241a7535df",
+    "TWM02.xml": "c015e5db8de156e207fbf9f1a97116e673c458c38c419d5e8a3ad8314835407a",
+    "TWM02.log": "7390e256b33c3e347f01d36dbd8ebd22141fbe3054ade701b0ebc424995ca3d7",
+    "integrate_batch17.py": "fe899d1eb49e69870d16af56fafe9fcd18594e18e51a6c872f325bc8a39fbcf6",
+    "SOURCE_AUDIT.json": "d159a711a4cb6385e0e599939db6a7432b948742750407997549e407053a4f97"
+  }
+}

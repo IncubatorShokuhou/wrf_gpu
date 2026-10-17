@@ -1,0 +1,74 @@
+[
+ {
+  "label": "R1 nested loader skips the QNSE sea-ice admission",
+  "file": "src/gpuwrf/integration/nested_pipeline.py",
+  "test": "tests/test_t_cfix_pblmix_qnse_sice.py::test_real_loaders_refuse_qnse_sea_ice_before_model_work[sea_ice-nested]",
+  "rc": 1,
+  "killed": true,
+  "tail": "1 failed in 1.53s"
+ },
+ {
+  "label": "R2 daily loader skips the QNSE sea-ice admission",
+  "file": "src/gpuwrf/integration/daily_pipeline.py",
+  "test": "tests/test_t_cfix_pblmix_qnse_sice.py::test_real_loaders_refuse_qnse_sea_ice_before_model_work[sea_ice-daily]",
+  "rc": 1,
+  "killed": true,
+  "tail": "1 failed in 1.52s"
+ },
+ {
+  "label": "R3 fractional sea ice admitted (threshold 0.5)",
+  "file": "src/gpuwrf/io/qnse_admission.py",
+  "test": "tests/test_t_cfix_pblmix_qnse_sice.py::test_qnse_sea_ice_admission_predicate",
+  "rc": 1,
+  "killed": true,
+  "tail": "1 failed, 1 passed in 0.64s"
+ },
+ {
+  "label": "R4 non-finite SEAICE admitted",
+  "file": "src/gpuwrf/io/qnse_admission.py",
+  "test": "tests/test_t_cfix_pblmix_qnse_sice.py::test_qnse_sea_ice_admission_predicate",
+  "rc": 1,
+  "killed": true,
+  "tail": "1 failed, 3 passed in 0.64s"
+ },
+ {
+  "label": "R5 public Noah loader skips the admission",
+  "file": "src/gpuwrf/io/noahmp_land_init.py",
+  "test": "tests/test_t_cfix_pblmix_qnse_sice.py::test_public_noah_loader_refuses_qnse_sea_ice[sea_ice]",
+  "rc": 1,
+  "killed": true,
+  "tail": "1 failed in 2.23s"
+ },
+ {
+  "label": "R6 public replay builder skips the admission",
+  "file": "src/gpuwrf/integration/d02_replay.py",
+  "test": "tests/test_t_cfix_pblmix_qnse_sice.py::test_public_replay_builder_refuses_before_model_init[sea_ice]",
+  "rc": 1,
+  "killed": true,
+  "tail": "1 failed in 0.86s"
+ },
+ {
+  "label": "R7 only the first present alias is read",
+  "file": "src/gpuwrf/io/qnse_admission.py",
+  "test": "tests/test_t_cfix_pblmix_qnse_sice.py::test_every_present_alias_is_checked",
+  "rc": 1,
+  "killed": true,
+  "tail": "1 failed in 0.64s"
+ },
+ {
+  "label": "R8 inconsistent aliases admitted",
+  "file": "src/gpuwrf/io/qnse_admission.py",
+  "test": "tests/test_t_cfix_pblmix_qnse_sice.py::test_every_present_alias_is_checked",
+  "rc": 1,
+  "killed": true,
+  "tail": "1 failed, 3 passed in 0.64s"
+ },
+ {
+  "label": "R9 replay initial-state source not checked",
+  "file": "src/gpuwrf/integration/d02_replay.py",
+  "test": "tests/test_t_cfix_pblmix_qnse_sice.py::test_public_replay_builder_checks_the_replay_initial_state_source",
+  "rc": 1,
+  "killed": true,
+  "tail": "1 failed in 0.84s"
+ }
+]

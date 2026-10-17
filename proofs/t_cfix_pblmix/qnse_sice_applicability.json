@@ -1,0 +1,51 @@
+{
+ "finding": "F23 / audit B5: QNSE (bl_pbl_physics=4) SICE hard-wired 0; WRF passes SICE=xice (module_pbl_driver.F:1547)",
+ "verdict": "ENFORCED: QNSE (bl=4) is refused on sea-ice input (initial SEAICE/XICE > 0 or non-finite) in both real loaders before any model work; inside that admitted domain XICE == 0 everywhere for the whole run (aux4 nonzero SEAICE refused by io/lower_boundary.py), so the adapter's SICE=0 equals WRF's SICE=xice exactly. Kernel SICE branch WRF-exact (pristine REAL4 bytes) for when a sea-ice surface path exists",
+ "wrf_use": {
+  "where": "module_bl_qnsepbl.F:488-499: SEAMASK=XLAND-1; only IF(SEAMASK<0.5) [land] ... IF(SNOW>0 .OR. SICE>0.5) QFC1=QFC1*RLIVWV",
+  "effect": "QSFC/QZ0 diagnosis at LAND points with XICE>0.5 and no snow; nothing else reads SICE",
+  "where_such_points_exist": "only sea-ice domains: real.exe fractional_seaice=0 turns XICE>=0.5 points into land (XLAND=1, ISICE) with XICE=1",
+  "arw_sites": "QNSEPBL QFC1 only (module_bl_qnsepbl.F:488-499). qnsesfcinit's XICE/VZ0TBL Z0 block is inside #if (NMM_CORE == 1) (module_sf_qnsesfc.F:1073-1108) -> not compiled for ARW"
+ },
+ "port_sea_ice_status": [
+  "WRF Noah-MP skips XICE>=XICE_THRES points (module_sf_noahmpdrv.F:722-728) and surface_driver runs seaice_noah there (module_surface_driver.F:3364); the port has no seaice_noah and runs Noah-MP at those points (io/noahmp_land_init.py:182-183 reads SEAICE only for the glacier init predicate)",
+  "aux4 lower boundary refuses nonzero SEAICE (io/lower_boundary.py:85-86, 'needs the unimplemented prognostic ice tile')",
+  "RUC refuses sea-ice points (io/ruc_land_init.py:86-87; physics/lsm_ruc.py:116)",
+  "PX pins XICE=0 (physics/lsm_pleim_xiu.py:16,467); CAM radiation XICE=0 disclosed (coupling/cam_radiation.py:16)",
+  "namelist_binding warns fractional_seaice is exact only on ice-free domains (io/namelist_binding.py:178-183)"
+ ],
+ "composite_census": {
+  "files": 86,
+  "seaice_max_all": 0.0,
+  "qnse_composites": [
+   [
+    "c26",
+    "d01",
+    "4",
+    "SEAICE",
+    "0.0",
+    "None"
+   ]
+  ]
+ },
+ "recommendation": "other PBLs with sea ice remain non-WRF at the surface (no seaice_noah); a product-wide SEAICE refusal is an owner decision",
+ "kernel_proof": {
+  "fixture": "proofs/t_cfix_pblmix/qnse_sice_fixture.json (UNMODIFIED QNSESFC->QNSEPBL, driver reproduces committed proofs/s2_qnse cases 1-15 BYTE fp32+fp64)",
+  "result": "port qnsepbl_column REAL4 bytes == pristine for XICE=1 and XICE=0 at XLAND=1/SNOW=0; only SICE differs on input, QSFC/QZ0/RQVBLTEN on output; SICE dropped misses",
+  "tests": "tests/test_t_cfix_pblmix_qnse_sice.py (4 PASS)",
+  "mutant": "S1 (drop SICE term) ASSERT-killed, mutants_F23S.json"
+ },
+ "admission": {
+  "code": "src/gpuwrf/io/qnse_admission.py (refuse_qnse_sea_ice, check_qnse_sea_ice_fields: every present SEAICE/XICE alias, >0/non-finite, inconsistent aliases refused)",
+  "call_sites": [
+   "PUBLIC io/noahmp_land_init._build_noahmp_land_state (own reader, field_overrides included, before the land state is built)",
+   "PUBLIC integration/d02_replay.build_replay_case (inside its input read scope, before Gen2Run.grid; replay IC = first history file also checked)",
+   "integration/nested_pipeline._load_domains (per domain before root build_replay_case: early child refusal; covers CLI, batched, DFI, restart hydration, parallel harness)",
+   "integration/daily_pipeline._build_real_case (before build_replay_case)"
+  ],
+  "kept": "inland glaciers IVGTYP=ISICE with SEAICE=0 (22 real Swiss points admitted in the caller test)",
+  "tests": "tests/test_t_cfix_pblmix_qnse_sice.py 29 PASS (alias matrix, replay history source, public loaders both forms, pipelines); rv-t-cfix QSF1 test_entry_paths.py (copy) 17 PASS",
+  "mutants": "R1-R9 9/9 ASSERT-killed (mutants_F23R.json)",
+  "cost": "host startup only: <= 3 SEAICE/XICE reads per QNSE domain (pipeline pre-check, replay builder in its read scope, Noah loader); non-QNSE domains: namelist lookup only"
+ }
+}

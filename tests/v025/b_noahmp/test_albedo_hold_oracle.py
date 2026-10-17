@@ -228,9 +228,11 @@ def test_seed_deletion_mutant_fails():
     import jax
     from gpuwrf.io import noahmp_land_init as init
     src = textwrap.dedent(inspect.getsource(init._build_noahmp_land_state))
-    start = src.index("    from gpuwrf.io.land_history import wrf_initial_albedo\n")
-    end = src.index("    provenance[\"albedo\"]")
-    src = src[:start] + "    albedo = albold\n" + src[end:]
+    seed = "albedo = jnp.asarray(wrf_initial_albedo(ds, tdir, field_overrides=field_overrides), dtype=jnp.float64)"
+    assert src.count(seed) == 1
+    # Delete only the seed assignment. The same input scope now also reads the
+    # independent land-cycle marker; deleting that would cause a setup error.
+    src = src.replace(seed, "albedo = albold")
     ns = dict(vars(init))
     exec(compile(src, init.__file__, "exec"), ns)
     from gpuwrf.io.gen2_accessor import Gen2Run

@@ -1,0 +1,125 @@
+{
+  "schema": "TSListQualification",
+  "code_commit": "f339e99face27e05a519541c0fb57ea9f119de44",
+  "code_src_tree": "3311fb6721b6b3288afdf9892e0aa673052a5d36",
+  "qualification": "CPU-oracle-qualified format/sampler; real GPU short observer/executable/cost qualification PASS; long coupled-forecast fidelity pending",
+  "lane_checks_unique_pass": 36,
+  "original_CPU_WRF_files_byte_exact": 32,
+  "oracles": [
+    "Swiss4steps2stations LATLON/staggered",
+    "Swiss4steps2stations IJ/unstaggered",
+    "pristine calc_p8w+CLW 5active species44levels",
+    "pristine module_llxy 7projection cases NH/SH/dateline"
+  ],
+  "shared_checks": {
+    "compiled_pass": 274,
+    "eager_pass": 4,
+    "eager_scope": "legacy SW2/SW3/SW4/LW1 smoke properties only; normal compiled sweep timed out",
+    "known_preexisting_failure": "global NetCDF AST audit direct Dataset import in validation/wrf_restart_hydration.py, reproduced on immutable main a6849ebe2"
+  },
+  "final_composed_cli_pass": 23,
+  "final_root_level_cap_pass": 1,
+  "genuine_observer_deletion_mutant": "1 AssertionError,0 setup errors",
+  "clean_archive_assets": "40 file checksums+WRF byte roundtrip PASS",
+  "default_release_jaxpr_sha": "2bf12cb8374d3a84a440e47dea4b77b0c7436108fc2ee2616bba6ec79b17962a",
+  "numeric_core_byte_identity_from_final_trace": {
+    "src/gpuwrf/runtime/operational_mode.py": "c08a113cd77635060bf4d7f722dd0816d0eb88dc0cbb31db9efc56d6d0d2b0b6",
+    "src/gpuwrf/runtime/operational_state.py": "4a8ed134db19dd721ab04c2686b1af1de7c9fa6677ad5133aa4e7fe39809a875",
+    "src/gpuwrf/integration/nested_pipeline.py": "5340c7c9d510b70745350dbb67356c51b2173ea35629682d96873846b1bf1041",
+    "src/gpuwrf/integration/daily_pipeline.py": "b470552a794824ad3186c019dd50f1c7ace0a0c762c5de4151d89801a80266c6",
+    "src/gpuwrf/timeseries/files.py": "76f45bd553e442a650a5026683977931032ec0d9637f84e2444495495672731f",
+    "src/gpuwrf/timeseries/locations.py": "ac7f23ced564c170b67df29b59529efde29d0f9dce4f6cbf9ebd06f0cdc92d68",
+    "src/gpuwrf/timeseries/export.py": "13d87ea3a8a54c659a020a08ffb4045b129907b9b7b47722906cdcef9d3a1512"
+  },
+  "last_change": "critic emptyplan/solar host fixes; sequential WRF CLW sum barriers every96terms target actualGPU754HLO fusion; TS30 affected CPU oracle gate repeated once",
+  "performance": {
+    "backend": "cpu",
+    "compile_s": 0.8002889680210501,
+    "warm_sampler_median_us": 29.501039534807205,
+    "temp_bytes": 2376,
+    "buffer_default_bytes": 476849,
+    "scope": "historical constant-closed CPU component only,16argumentbytes; does not measure evolving forecast marginal cost; final GPU paired cost/memory pending",
+    "gpu_matched_component": {
+      "backend": "gpu",
+      "snapshot": "492468d4d32d5462cc29f22392a35216e8ef3c3b",
+      "work": {
+        "dt_s": 18.0,
+        "radiation_cadence_steps": 33,
+        "warm_start_step": 6,
+        "warm_steps": 16,
+        "warm_buffer_capacity": 16,
+        "mp": 8,
+        "land": 4
+      },
+      "timing_samples_per_arm": 9,
+      "warm16_median_ms": {
+        "off": 51.39391194097698,
+        "on": 52.03234707005322
+      },
+      "on_over_off": 1.0124223882744994,
+      "warm16_range_ms": {
+        "off": [
+          50.8218880277127,
+          54.301803931593895
+        ],
+        "on": [
+          51.47477309219539,
+          62.27933499030769
+        ]
+      },
+      "compiled_memory": {
+        "off": {
+          "argument_size_in_bytes": 39547220,
+          "output_size_in_bytes": 37123740,
+          "temp_size_in_bytes": 224357968,
+          "alias_size_in_bytes": 37122388
+        },
+        "on": {
+          "argument_size_in_bytes": 39553578,
+          "output_size_in_bytes": 37130154,
+          "temp_size_in_bytes": 224358008,
+          "alias_size_in_bytes": 37128746
+        }
+      },
+      "compiled_live_footprint_bytes": {
+        "off": 263906540,
+        "on": 263912994
+      },
+      "compiled_live_footprint_delta_bytes": 6454,
+      "temporary_delta_bytes": 40,
+      "peak_allocator_bytes_cumulative_all_variants_and_timing_copies": 714494720,
+      "peak_pool_bytes_cumulative_all_variants_and_timing_copies": 1071644672,
+      "limits": "single ordinary16step component; overlapping ranges, no statistical slowdown/S1/roofline/R1 claim; input copies excluded, full evolving forecast dynamic arguments; allocator peak is cumulative and not isolated ON-minus-OFF VRAM"
+    }
+  },
+  "GPU": {
+    "status": "PASS scoped short realGPU arm TS31; no long coupledforecast/stationRMSE claim",
+    "proof_snapshot": "492468d4d32d5462cc29f22392a35216e8ef3c3b",
+    "source_tree_exact_current_branch": "3311fb6721b6b3288afdf9892e0aa673052a5d36",
+    "backend": "gpu/cuda0",
+    "four_step_station_files": 16,
+    "rows_per_station": 4,
+    "checked_state_fields_byte_identical": 7,
+    "flush_compiled_variants": "2->2",
+    "E41": "PASS4/4entries including3current variants+1seededOFF;STACK16B/nonleaf0/unknown0/kInputmax352",
+    "trace": "22677kernel rows16ordinary ownsteps/0DtoH/3HtoD24B beforefirstkernel;notcadenceweightedS3",
+    "receipts": [
+      "gpu_TS31_bench.json",
+      "gpu_TS31_E41.json",
+      "gpu_TS31_cost_memory.json",
+      "gpu_TS31_trace_audit.json",
+      "gpu_TS31_artifact_manifest.json"
+    ]
+  },
+  "GPU_recipe": "proofs/u2_tslist/gpu_arm.sh in clean detached snapshot, official u2-tslist lock/lease, driver bridge, timeout1100, nsight+E41",
+  "experiment_log": "<USER_HOME>/src/wrf_gpu2/.agent/kernel/EXPERIMENTS.tsv TS01-TS31",
+  "final_affected_checks": "TS30 36lane+2exactcriticrepros=38PASS54.83s",
+  "changed_sampler_sha256": "20755c1490e4b894520d0d6ff90b6534a96ed13d8d3387c586c1db475e9eb5e7",
+  "default_identity_reuse": "Operational mode/state/integration are byte-identical to accepted 2bf12cb8 trace; sampling import/call guarded by carry.timeseries is not None, so changed optional sampler is absent from OFF program",
+  "critic_conditions": {
+    "empty_plan": "PASS originalcritic repro+TS30;originalcarries/None runtime",
+    "solar_format": "PASS scalar/list refusal before output;docs updated",
+    "E41": "PASS complete preserved-input scan4/4;prior754HLO baseline retained;96term REAL sum barriers reduce maxkInput to352",
+    "cost_memory": "9matchedunprofiled pairs OFF51.394ms ON52.032ms/16steps ratio1.01242 overlappingranges;fullcompiledtemp+40B/livefootprint+6454B;allocatorpeak cumulative714494720B"
+  }
+}

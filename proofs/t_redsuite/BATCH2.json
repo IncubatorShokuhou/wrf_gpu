@@ -1,0 +1,178 @@
+{
+  "status": "FOUR VERIFIED TEST COMMITS; separate algorithmic M7 file remains unverified",
+  "distinct_selected_outcomes": {
+    "passed": 9,
+    "inherited_xfailed": 1
+  },
+  "resolved_historical_reds": 4,
+  "production_source_tree": "97b49b49c7f1a158807f16a41d84857c1a0e83c8",
+  "files": [
+    {
+      "file": "tests/test_m6_state_extension.py",
+      "commit": "0b92840d1e09ae004aba5429c72e86e332fd2467",
+      "sha256": "d1c92213212308790fdc9fb067df91201bd6661cfabb2b3bcdc5738f4459563d"
+    },
+    {
+      "file": "tests/test_m6x_pressure_diagnose_wiring.py",
+      "commit": "cd0b99737a94d37d3d59bdf720efaa824026c614",
+      "sha256": "88ad9ffa565a9804d6a1a9a6cd2a34487cb5c4e512c1a34ab544e78f00c18ee6"
+    },
+    {
+      "file": "tests/test_m6_precision_matrix.py",
+      "commit": "4db3b5a443261664fa20e4217fb2380339f552d7",
+      "sha256": "c1dae7ac5b3ceedd0cf31c042dbdcd42faac4e86bec07bfc550aa25c82fa3ab0"
+    },
+    {
+      "file": "tests/test_m7_skill_fix_iter2.py",
+      "commit": "34c2f04230f6cbe5630efdf151afbfb3b265cec3",
+      "sha256": "23e689be487c2afdc801c4fd2d8ccae238dd385fce1e8b7944055dd6c057a88c"
+    }
+  ],
+  "receipts": [
+    {
+      "arm": "C004c2-M6-FIFO",
+      "original_xml": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C004c2-M6-FIFO/pytest.xml",
+      "xml_sha256": "18a023ce1830b723ae89123ffd4fad495f1e195cc138ba5cad051dba5e647012",
+      "command": {
+        "command": [
+          "<USER_HOME>/src/wrf_gpu2/scripts/with_ram_slot.sh",
+          "--label",
+          "t-redsuite",
+          "--timeout",
+          "1800",
+          "--",
+          "taskset",
+          "-c",
+          "8,9,24,25",
+          "nice",
+          "-n",
+          "19",
+          "timeout",
+          "--signal=INT",
+          "--kill-after=30s",
+          "900s",
+          "<USER_HOME>/miniconda3/bin/python",
+          "-u",
+          "-m",
+          "pytest",
+          "-p",
+          "redsuite_memory",
+          "-p",
+          "no:cacheprovider",
+          "--basetemp",
+          "<DATA_ROOT>/wrf_gpu2/scratch/t-redsuite/pytest",
+          "--junitxml=<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C004c2-M6-FIFO/pytest.xml",
+          "-ra",
+          "tests/test_m6_precision_matrix.py",
+          "tests/test_m6_state_extension.py",
+          "tests/test_m6x_pressure_diagnose_wiring.py"
+        ],
+        "source": "2d4cea9cec1ac0e1ce56bbd25cea0a3b14a23e39",
+        "cache": "<DATA_ROOT>/wrf_gpu2/scratch/t-redsuite/rs03-cache",
+        "tmp": "<DATA_ROOT>/wrf_gpu2/scratch/t-redsuite/rs03-tmp",
+        "backend": "cpu",
+        "lock_environment": "ABSENT",
+        "resource_cap": "6GiB/noSwap",
+        "basetemp": "<DATA_ROOT>/wrf_gpu2/scratch/t-redsuite/pytest"
+      }
+    },
+    {
+      "arm": "C004c3-Jensen-precision",
+      "original_xml": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C004c3-Jensen-precision/pytest.xml",
+      "xml_sha256": "2411ddf86c541565b10d4f5643737bea4aab93e3162ee9775e73a01e924d5e85",
+      "command": {
+        "command": [
+          "<USER_HOME>/src/wrf_gpu2/scripts/with_ram_slot.sh",
+          "--label",
+          "t-redsuite",
+          "--timeout",
+          "1800",
+          "--",
+          "taskset",
+          "-c",
+          "8,9,24,25",
+          "nice",
+          "-n",
+          "19",
+          "timeout",
+          "--signal=INT",
+          "--kill-after=30s",
+          "900s",
+          "<USER_HOME>/miniconda3/bin/python",
+          "-u",
+          "-m",
+          "pytest",
+          "-p",
+          "redsuite_memory",
+          "-p",
+          "no:cacheprovider",
+          "--basetemp",
+          "<DATA_ROOT>/wrf_gpu2/scratch/t-redsuite/pytest",
+          "--junitxml=<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C004c3-Jensen-precision/pytest.xml",
+          "-ra",
+          "tests/test_m6_precision_matrix.py::test_precision_matrix_gate_flags_match_adr007_boundary_classes"
+        ],
+        "source": "c24d7a2e073fc1533031289b55cd97d8d7628cd5",
+        "cache": "<DATA_ROOT>/wrf_gpu2/scratch/t-redsuite/rs03-cache",
+        "tmp": "<DATA_ROOT>/wrf_gpu2/scratch/t-redsuite/rs03-tmp",
+        "backend": "cpu",
+        "lock_environment": "ABSENT",
+        "resource_cap": "6GiB/noSwap",
+        "basetemp": "<DATA_ROOT>/wrf_gpu2/scratch/t-redsuite/pytest"
+      }
+    },
+    {
+      "arm": "C004d-M7",
+      "original_xml": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C004d-M7/pytest.xml",
+      "xml_sha256": "ca4b62e81770271fa6363b0149adc16562f78dcf62d7bea2dc8dfed192bd3fdf",
+      "command": {
+        "command": [
+          "<USER_HOME>/src/wrf_gpu2/scripts/with_ram_slot.sh",
+          "--label",
+          "t-redsuite",
+          "--timeout",
+          "1800",
+          "--",
+          "taskset",
+          "-c",
+          "8,9,24,25",
+          "nice",
+          "-n",
+          "19",
+          "timeout",
+          "--signal=INT",
+          "--kill-after=30s",
+          "900s",
+          "<USER_HOME>/miniconda3/bin/python",
+          "-u",
+          "-m",
+          "pytest",
+          "-p",
+          "redsuite_memory",
+          "-p",
+          "no:cacheprovider",
+          "--basetemp",
+          "<DATA_ROOT>/wrf_gpu2/scratch/t-redsuite/pytest",
+          "--junitxml=<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C004d-M7/pytest.xml",
+          "-ra",
+          "tests/test_m7_skill_fix_algorithmic.py",
+          "tests/test_m7_skill_fix_iter2.py"
+        ],
+        "source": "c24d7a2e073fc1533031289b55cd97d8d7628cd5",
+        "cache": "<DATA_ROOT>/wrf_gpu2/scratch/t-redsuite/rs03-cache",
+        "tmp": "<DATA_ROOT>/wrf_gpu2/scratch/t-redsuite/rs03-tmp",
+        "backend": "cpu",
+        "lock_environment": "ABSENT",
+        "resource_cap": "6GiB/noSwap",
+        "basetemp": "<DATA_ROOT>/wrf_gpu2/scratch/t-redsuite/pytest"
+      }
+    }
+  ],
+  "precision_pass_reuse_unchanged_function_ast": [
+    "test_precision_matrix_covers_every_state_leaf_dtype"
+  ],
+  "precision_authority": "Pristine WRF Registry.EM_COMMON463/527/565-575 REAL Jensen leaves; existing other WRF REAL groups",
+  "pressure_authority": "Pristine module_big_step_utilities_em.F1082-1087; independent NumPy EOS target, original1e-6 and1e-9 bounds",
+  "boundary_authority": "Pristine share/module_bc.F1371-1388 original-field fls stencil; original1e-6 bound",
+  "scope": "CPU regression/contract/caller evidence, no new forecast-fidelity or speed claim"
+}

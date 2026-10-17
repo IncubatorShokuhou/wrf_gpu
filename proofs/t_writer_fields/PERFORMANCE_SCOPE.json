@@ -1,0 +1,32 @@
+{
+  "schema": "t-writer-fields-cost-scope-v1",
+  "model_source_commit": "d26ac4015fff7f22b129c946a291f4d7b96bba9c",
+  "source_only": true,
+  "default": {
+    "resident_arrays_added": 0,
+    "reason": "New State leaves None outside mp13/bl12; Goddard tensor onlyra5/5; mp28 surfacesonlymp28. ClassB constants host-only. Official full program hashes pending final measurement."
+  },
+  "swiss_42x42x44": {
+    "rimi_or_exch_tke_extra_bytes_I": 310464,
+    "goddard_radius_tensor_extra_bytes_I": 1862784,
+    "mp28_surface_emission_extra_bytes_I": 14112
+  },
+  "output": {
+    "goddard_radius_DtoH_calls_I": 1,
+    "split_and_transpose": "NumPy views on host; no six device slice/transpose launches",
+    "rimi_exch": "Existing writer materialization batch and REAL4 history arrays",
+    "B_constants": "NumPy allocation at output only; no device carry or launches"
+  },
+  "hot_loop": {
+    "mp28": "Fixed/init or input emission values reused; old ph/height/exp/cos emission recomputation removed from each step",
+    "RIMI_EXCH": "Existing solver outputs retained; no second physical solve",
+    "Goddard": "Existing radius input tensor retained at radiation cadence; not current-MP reconstruction"
+  },
+  "unknown": [
+    "Actual affected GPU extra kernels/traffic/layout/peak VRAM",
+    "Cold GPU compile/readiness cost",
+    "E41 on changed selected GPU executables",
+    "Full affected 24h original-CPU fidelity"
+  ],
+  "GPU_status": "No GPU arm during ALISIOS nightly; source estimate is not a speed, peak-memory or fidelity claim"
+}

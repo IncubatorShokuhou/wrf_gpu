@@ -1,0 +1,13 @@
+{
+  "source": "f7de5b32e",
+  "time": "2026-10-15T05:19:05.292057+00:00",
+  "measured_source": {
+    "native_cli": "cli.py:1188 -> nested_pipeline._load_domains:1245 -> _initial_carry_for_run:7470 selected-only; inactive CAMMG absent",
+    "daily_public": "_committed_initial_carry_for_run:8040 and run_forecast_operational:11674 -> _operational_scan_state(include_all_conditional=True)",
+    "consumers": "physics_couplers:1420 cloud fraction and :1511 radii branch on presence; PBL retains CAM diagnostics on presence",
+    "wrf": "radiation_driver.F:1433 explicit is_CAMMGMP_used; SW:11156/LW:12607 equivalent selector"
+  },
+  "inference": "nonmp11 public/daily entries change radiation numerics after CAMMG merge: held zeros erase clouds after first step, radius override replaces producer radii; native CLI composites bypass that allocation so this bug does not invalidate their existing runs",
+  "unknown": "fresh release IDs queued behind RAM slots; no measured trajectory delta yet",
+  "prior_receipts": "CM92/93 exact Swiss f672a573 / PROD6fc715a2, source module consumer audit shows native CLI selected-only"
+}

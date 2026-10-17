@@ -1,0 +1,1120 @@
+{
+  "schema": "v040-gpuqual-matrix-v1",
+  "generated_utc": "2026-10-13T22:40:21.102966+00:00",
+  "qualification_policy": "D6 vs original CPU-WRF, complete 25-frame/all-CPU-field coverage. Experimental E41 flags disclosed, not blocking.",
+  "timing_scope": "Cold shared CPU/IO validation wall; no PROD warm S1 or 4-rank CPU speedup claim.",
+  "rows": [
+    {
+      "config": "bl9",
+      "artifact_config": "bl9_final",
+      "qualification": "FAIL",
+      "case": "Swiss 20230115 42x42x44",
+      "D6_frames": 25,
+      "CPU_fields": 357,
+      "coverage_complete": true,
+      "first_D6_failure": {
+        "field": "T2",
+        "lead_h": 4,
+        "checks": [
+          {
+            "metric": "rmse",
+            "value": 1.700203835684867,
+            "limit": 1.5
+          }
+        ],
+        "rmse": 1.700203835684867,
+        "max_abs": 5.04010009765625
+      },
+      "runtime_failure": null,
+      "history_header_differences": [
+        {
+          "name": "TITLE",
+          "cpu": " OUTPUT FROM WRF V4.7.1 MODEL",
+          "gpu": " OUTPUT FROM GPUWRF WRF-COMPATIBLE NETCDF WRITER"
+        },
+        {
+          "name": "BL_PBL_PHYSICS",
+          "cpu": "9",
+          "gpu": "5"
+        },
+        {
+          "name": "NTASKS_X",
+          "cpu": "-1",
+          "gpu": "1"
+        },
+        {
+          "name": "NTASKS_Y",
+          "cpu": "-1",
+          "gpu": "1"
+        }
+      ],
+      "history_header_missing_attrs": [],
+      "GPU_rc": 0,
+      "CPU_rc": 0,
+      "cold_wall_s": 911.1110735121183,
+      "cold_s_per_fc_h": 37.962961396338265,
+      "sampled_VRAM_MiB": 1726,
+      "source_rev": "5efa103595ce14e1f54d202547a09a6e66cb50b4",
+      "measurement_flags": {
+        "JAX_PLATFORMS": "cuda",
+        "GPUWRF_FAST_DEFAULTS": null,
+        "GPUWRF_CENSUS": "1",
+        "GPUWRF_STRICT_GUARDS": null,
+        "GPUWRF_AOT_SLIM_MODULE": "0"
+      },
+      "E41_raw_gate": "PASS",
+      "E41_stack_max_B": 40,
+      "E41_robustness_flags": [],
+      "F2_raw": {
+        "negative_visits": 3565321,
+        "nonfinite_visits": 0,
+        "note": "Raw pre-mask diagnostic counts; negative visits are not silently classified as justified."
+      },
+      "receipt_dir": "<USER_HOME>/wrf_gpu2_lanes/s1-gpuqual/bl9_final"
+    },
+    {
+      "config": "cu5",
+      "artifact_config": "cu5",
+      "qualification": "PASS",
+      "case": "Swiss 20230115 42x42x44",
+      "D6_frames": 25,
+      "CPU_fields": 362,
+      "coverage_complete": true,
+      "first_D6_failure": null,
+      "runtime_failure": null,
+      "history_header_differences": [
+        {
+          "name": "TITLE",
+          "cpu": " OUTPUT FROM WRF V4.7.1 MODEL",
+          "gpu": " OUTPUT FROM GPUWRF WRF-COMPATIBLE NETCDF WRITER"
+        },
+        {
+          "name": "CU_PHYSICS",
+          "cpu": "5",
+          "gpu": "0"
+        },
+        {
+          "name": "NTASKS_X",
+          "cpu": "-1",
+          "gpu": "1"
+        },
+        {
+          "name": "NTASKS_Y",
+          "cpu": "-1",
+          "gpu": "1"
+        }
+      ],
+      "history_header_missing_attrs": [],
+      "GPU_rc": 0,
+      "CPU_rc": 0,
+      "cold_wall_s": 495.6148393400945,
+      "cold_s_per_fc_h": 20.65061830583727,
+      "sampled_VRAM_MiB": 1716,
+      "source_rev": "5efa103595ce14e1f54d202547a09a6e66cb50b4",
+      "measurement_flags": {
+        "JAX_PLATFORMS": "cuda",
+        "GPUWRF_FAST_DEFAULTS": null,
+        "GPUWRF_CENSUS": "1",
+        "GPUWRF_STRICT_GUARDS": null,
+        "GPUWRF_AOT_SLIM_MODULE": "0"
+      },
+      "E41_raw_gate": "FAIL",
+      "E41_stack_max_B": 16,
+      "E41_robustness_flags": [
+        "loop_add_fusion.79: 1713 HLO > 500"
+      ],
+      "F2_raw": {
+        "negative_visits": 9038770,
+        "nonfinite_visits": 0,
+        "note": "Raw pre-mask diagnostic counts; negative visits are not silently classified as justified."
+      },
+      "receipt_dir": "<USER_HOME>/wrf_gpu2_lanes/s1-gpuqual/cu5"
+    },
+    {
+      "config": "cu93",
+      "artifact_config": "cu93",
+      "qualification": "PASS",
+      "case": "Swiss 20230115 42x42x44",
+      "D6_frames": 25,
+      "CPU_fields": 362,
+      "coverage_complete": true,
+      "first_D6_failure": null,
+      "runtime_failure": null,
+      "history_header_differences": [
+        {
+          "name": "TITLE",
+          "cpu": " OUTPUT FROM WRF V4.7.1 MODEL",
+          "gpu": " OUTPUT FROM GPUWRF WRF-COMPATIBLE NETCDF WRITER"
+        },
+        {
+          "name": "CU_PHYSICS",
+          "cpu": "93",
+          "gpu": "0"
+        },
+        {
+          "name": "NTASKS_X",
+          "cpu": "-1",
+          "gpu": "1"
+        },
+        {
+          "name": "NTASKS_Y",
+          "cpu": "-1",
+          "gpu": "1"
+        }
+      ],
+      "history_header_missing_attrs": [],
+      "GPU_rc": 0,
+      "CPU_rc": 0,
+      "cold_wall_s": 442.6640180537943,
+      "cold_s_per_fc_h": 18.444334085574763,
+      "sampled_VRAM_MiB": 1716,
+      "source_rev": "5efa103595ce14e1f54d202547a09a6e66cb50b4",
+      "measurement_flags": {
+        "JAX_PLATFORMS": "cuda",
+        "GPUWRF_FAST_DEFAULTS": null,
+        "GPUWRF_CENSUS": "1",
+        "GPUWRF_STRICT_GUARDS": null,
+        "GPUWRF_AOT_SLIM_MODULE": "0"
+      },
+      "E41_raw_gate": "PASS",
+      "E41_stack_max_B": 16,
+      "E41_robustness_flags": [],
+      "F2_raw": {
+        "negative_visits": 9055982,
+        "nonfinite_visits": 0,
+        "note": "Raw pre-mask diagnostic counts; negative visits are not silently classified as justified."
+      },
+      "receipt_dir": "<USER_HOME>/wrf_gpu2_lanes/s1-gpuqual/cu93"
+    },
+    {
+      "config": "km3",
+      "artifact_config": "km3",
+      "qualification": "BOTH_RUNS_FAILED",
+      "case": "Swiss 20230115 42x42x44",
+      "D6_frames": null,
+      "CPU_fields": null,
+      "coverage_complete": null,
+      "first_D6_failure": null,
+      "runtime_failure": "gpuwrf: error: nested forecast failed (NonFiniteStateError: non-finite prognostic state detected: domain=d01 field=u level=0 step=200 sim_time_s=3600 first_index=(0, 1, 1))",
+      "history_header_differences": null,
+      "history_header_missing_attrs": null,
+      "GPU_rc": 1,
+      "CPU_rc": -11,
+      "cold_wall_s": 399.97478757891804,
+      "cold_s_per_fc_h": null,
+      "sampled_VRAM_MiB": 1714,
+      "source_rev": "5efa103595ce14e1f54d202547a09a6e66cb50b4",
+      "measurement_flags": {
+        "JAX_PLATFORMS": "cuda",
+        "GPUWRF_FAST_DEFAULTS": null,
+        "GPUWRF_CENSUS": "1",
+        "GPUWRF_STRICT_GUARDS": null,
+        "GPUWRF_AOT_SLIM_MODULE": "0"
+      },
+      "E41_raw_gate": "FAIL",
+      "E41_stack_max_B": 64,
+      "E41_robustness_flags": [
+        "input_pad_transpose_fusion: 751 HLO > 500",
+        "input_multiply_transpose_fusion.7: 853 HLO > 500",
+        "input_transpose_fusion.129: 592 HLO > 500"
+      ],
+      "F2_raw": null,
+      "receipt_dir": "<USER_HOME>/wrf_gpu2_lanes/s1-gpuqual/km3"
+    },
+    {
+      "config": "km2",
+      "artifact_config": "km2",
+      "qualification": "PASS",
+      "case": "Swiss 20230115 42x42x44",
+      "D6_frames": 25,
+      "CPU_fields": 362,
+      "coverage_complete": true,
+      "first_D6_failure": null,
+      "runtime_failure": null,
+      "history_header_differences": [
+        {
+          "name": "TITLE",
+          "cpu": " OUTPUT FROM WRF V4.7.1 MODEL",
+          "gpu": " OUTPUT FROM GPUWRF WRF-COMPATIBLE NETCDF WRITER"
+        },
+        {
+          "name": "DIFF_OPT",
+          "cpu": "2",
+          "gpu": "1"
+        },
+        {
+          "name": "KM_OPT",
+          "cpu": "2",
+          "gpu": "4"
+        },
+        {
+          "name": "NTASKS_X",
+          "cpu": "-1",
+          "gpu": "1"
+        },
+        {
+          "name": "NTASKS_Y",
+          "cpu": "-1",
+          "gpu": "1"
+        }
+      ],
+      "history_header_missing_attrs": [],
+      "GPU_rc": 0,
+      "CPU_rc": 0,
+      "cold_wall_s": 443.2458318420686,
+      "cold_s_per_fc_h": 18.468576326752856,
+      "sampled_VRAM_MiB": 1714,
+      "source_rev": "5efa103595ce14e1f54d202547a09a6e66cb50b4",
+      "measurement_flags": {
+        "JAX_PLATFORMS": "cuda",
+        "GPUWRF_FAST_DEFAULTS": null,
+        "GPUWRF_CENSUS": "1",
+        "GPUWRF_STRICT_GUARDS": null,
+        "GPUWRF_AOT_SLIM_MODULE": "0"
+      },
+      "E41_raw_gate": "FAIL",
+      "E41_stack_max_B": 216,
+      "E41_robustness_flags": [
+        "input_multiply_transpose_fusion.5: 1287 HLO > 500",
+        "input_transpose_fusion.197: 891 HLO > 500"
+      ],
+      "F2_raw": {
+        "negative_visits": 37669944,
+        "nonfinite_visits": 0,
+        "note": "Raw pre-mask diagnostic counts; negative visits are not silently classified as justified."
+      },
+      "receipt_dir": "<USER_HOME>/wrf_gpu2_lanes/s1-gpuqual/km2"
+    },
+    {
+      "config": "sf3",
+      "artifact_config": "sf3_madrid_main",
+      "qualification": "PASS",
+      "case": "Madrid GFS 20261013_00z; original WPS/real.exe",
+      "D6_frames": 25,
+      "CPU_fields": 209,
+      "coverage_complete": true,
+      "first_D6_failure": null,
+      "runtime_failure": null,
+      "history_header_differences": [
+        {
+          "name": "TITLE",
+          "cpu": " OUTPUT FROM WRF V4.7.1 MODEL",
+          "gpu": " OUTPUT FROM GPUWRF WRF-COMPATIBLE NETCDF WRITER"
+        },
+        {
+          "name": "NTASKS_X",
+          "cpu": "-1",
+          "gpu": "1"
+        },
+        {
+          "name": "NTASKS_Y",
+          "cpu": "-1",
+          "gpu": "1"
+        }
+      ],
+      "history_header_missing_attrs": [],
+      "GPU_rc": 0,
+      "CPU_rc": 0,
+      "cold_wall_s": 305.2335594550241,
+      "cold_s_per_fc_h": 12.71806497729267,
+      "sampled_VRAM_MiB": 1712,
+      "source_rev": "489a914837303cf0c76644cff919f49363f39e5c",
+      "measurement_flags": {
+        "JAX_PLATFORMS": "cuda",
+        "GPUWRF_FAST_DEFAULTS": null,
+        "GPUWRF_CENSUS": "1",
+        "GPUWRF_STRICT_GUARDS": null,
+        "GPUWRF_AOT_SLIM_MODULE": "0",
+        "GPUWRF_RRTMG_MP_RE": "0"
+      },
+      "E41_raw_gate": "PASS",
+      "E41_stack_max_B": 16,
+      "E41_robustness_flags": [],
+      "F2_raw": {
+        "negative_visits": 11763,
+        "nonfinite_visits": 0,
+        "note": "Raw pre-mask diagnostic counts; negative visits are not silently classified as justified."
+      },
+      "receipt_dir": "<USER_HOME>/wrf_gpu2_lanes/s1-gpuqual/sf3_madrid_main"
+    },
+    {
+      "config": "ra3",
+      "artifact_config": "ra3",
+      "qualification": "PASS",
+      "case": "Swiss 20230115 42x42x44",
+      "D6_frames": 25,
+      "CPU_fields": 362,
+      "coverage_complete": true,
+      "first_D6_failure": null,
+      "runtime_failure": null,
+      "history_header_differences": [
+        {
+          "name": "TITLE",
+          "cpu": " OUTPUT FROM WRF V4.7.1 MODEL",
+          "gpu": " OUTPUT FROM GPUWRF WRF-COMPATIBLE NETCDF WRITER"
+        },
+        {
+          "name": "RA_LW_PHYSICS",
+          "cpu": "3",
+          "gpu": "4"
+        },
+        {
+          "name": "RA_SW_PHYSICS",
+          "cpu": "3",
+          "gpu": "4"
+        },
+        {
+          "name": "NTASKS_X",
+          "cpu": "-1",
+          "gpu": "1"
+        },
+        {
+          "name": "NTASKS_Y",
+          "cpu": "-1",
+          "gpu": "1"
+        }
+      ],
+      "history_header_missing_attrs": [],
+      "GPU_rc": 0,
+      "CPU_rc": 0,
+      "cold_wall_s": 598.2336742992047,
+      "cold_s_per_fc_h": 24.926403095800197,
+      "sampled_VRAM_MiB": 6174,
+      "source_rev": "c40cf0000aeee543194cc94063fa31577a15caa5",
+      "measurement_flags": {
+        "JAX_PLATFORMS": "cuda",
+        "GPUWRF_FAST_DEFAULTS": null,
+        "GPUWRF_CENSUS": "1",
+        "GPUWRF_STRICT_GUARDS": null,
+        "GPUWRF_AOT_SLIM_MODULE": "0"
+      },
+      "E41_raw_gate": "FAIL",
+      "E41_stack_max_B": 2144,
+      "E41_robustness_flags": [
+        "input_concatenate_exponential_transpose_fusion: 2141 HLO > 500",
+        "loop_add_concatenate_divide_log_multiply_power_sqrt_transpose_fusion: 1144 HLO > 500",
+        "loop_add_broadcast_clamp_concatenate_divide_exponential_maximum_multiply_sqrt_transpose_fusion: 1149 HLO > 500",
+        "loop_add_concatenate_transpose_fusion: 1274 HLO > 500",
+        "loop_add_concatenate_convert_exponential_multiply_transpose_fusion: 1426 HLO > 500",
+        "input_divide_select_transpose_fusion: 641 HLO > 500",
+        "STACK 2144 B > 256"
+      ],
+      "F2_raw": {
+        "negative_visits": 8961484,
+        "nonfinite_visits": 0,
+        "note": "Raw pre-mask diagnostic counts; negative visits are not silently classified as justified."
+      },
+      "receipt_dir": "<USER_HOME>/wrf_gpu2_lanes/s1-gpuqual/ra3"
+    },
+    {
+      "config": "mp40",
+      "artifact_config": "mp40",
+      "qualification": "FAIL",
+      "case": "Swiss 20230115 42x42x44",
+      "D6_frames": 25,
+      "CPU_fields": 377,
+      "coverage_complete": false,
+      "first_D6_failure": {
+        "field": "RAINNC",
+        "lead_h": 13,
+        "checks": [
+          {
+            "metric": "rmse",
+            "value": 1.9030315053463862,
+            "limit": 1.0
+          }
+        ],
+        "rmse": 1.9030315053463862,
+        "max_abs": 12.914145469665527
+      },
+      "runtime_failure": null,
+      "history_header_differences": [
+        {
+          "name": "TITLE",
+          "cpu": " OUTPUT FROM WRF V4.7.1 MODEL",
+          "gpu": " OUTPUT FROM GPUWRF WRF-COMPATIBLE NETCDF WRITER"
+        },
+        {
+          "name": "MP_PHYSICS",
+          "cpu": "40",
+          "gpu": "8"
+        },
+        {
+          "name": "NTASKS_X",
+          "cpu": "-1",
+          "gpu": "1"
+        },
+        {
+          "name": "NTASKS_Y",
+          "cpu": "-1",
+          "gpu": "1"
+        }
+      ],
+      "history_header_missing_attrs": [],
+      "GPU_rc": 0,
+      "CPU_rc": 0,
+      "cold_wall_s": 501.86245529400185,
+      "cold_s_per_fc_h": 20.910935637250077,
+      "sampled_VRAM_MiB": 2618,
+      "source_rev": "3e70f3b4bc3f5c3eec53c5e4910e0f1d482a8ee3",
+      "measurement_flags": {
+        "JAX_PLATFORMS": "cuda",
+        "GPUWRF_FAST_DEFAULTS": null,
+        "GPUWRF_CENSUS": "1",
+        "GPUWRF_STRICT_GUARDS": null,
+        "GPUWRF_AOT_SLIM_MODULE": "0",
+        "GPUWRF_RRTMG_MP_RE": "0"
+      },
+      "E41_raw_gate": "FAIL",
+      "E41_stack_max_B": 16,
+      "E41_robustness_flags": [
+        "loop_add_and_compare_divide_power_select_subtract_fusion: 819 HLO > 500",
+        "loop_and_divide_minimum_multiply_or_select_fusion: 2226 HLO > 500",
+        "input_select_transpose_fusion.1: 595 HLO > 500"
+      ],
+      "F2_raw": {
+        "negative_visits": 20523631,
+        "nonfinite_visits": 0,
+        "note": "Raw pre-mask diagnostic counts; negative visits are not silently classified as justified."
+      },
+      "receipt_dir": "<USER_HOME>/wrf_gpu2_lanes/s1-gpuqual/mp40"
+    },
+    {
+      "config": "mp24",
+      "artifact_config": "mp24",
+      "qualification": "FAIL",
+      "case": "Swiss 20230115 42x42x44",
+      "D6_frames": 25,
+      "CPU_fields": 361,
+      "coverage_complete": false,
+      "first_D6_failure": {
+        "field": "RAINNC",
+        "lead_h": 12,
+        "checks": [
+          {
+            "metric": "rmse",
+            "value": 1.3609149273119476,
+            "limit": 1.0
+          }
+        ],
+        "rmse": 1.3609149273119476,
+        "max_abs": 11.003435134887695
+      },
+      "runtime_failure": null,
+      "history_header_differences": [
+        {
+          "name": "TITLE",
+          "cpu": " OUTPUT FROM WRF V4.7.1 MODEL",
+          "gpu": " OUTPUT FROM GPUWRF WRF-COMPATIBLE NETCDF WRITER"
+        },
+        {
+          "name": "MP_PHYSICS",
+          "cpu": "24",
+          "gpu": "8"
+        },
+        {
+          "name": "NTASKS_X",
+          "cpu": "-1",
+          "gpu": "1"
+        },
+        {
+          "name": "NTASKS_Y",
+          "cpu": "-1",
+          "gpu": "1"
+        }
+      ],
+      "history_header_missing_attrs": [],
+      "GPU_rc": 0,
+      "CPU_rc": 0,
+      "cold_wall_s": 548.1339096010197,
+      "cold_s_per_fc_h": 22.838912900042487,
+      "sampled_VRAM_MiB": 3334,
+      "source_rev": "3e70f3b4bc3f5c3eec53c5e4910e0f1d482a8ee3",
+      "measurement_flags": {
+        "JAX_PLATFORMS": "cuda",
+        "GPUWRF_FAST_DEFAULTS": null,
+        "GPUWRF_CENSUS": "1",
+        "GPUWRF_STRICT_GUARDS": null,
+        "GPUWRF_AOT_SLIM_MODULE": "0",
+        "GPUWRF_RRTMG_MP_RE": "1"
+      },
+      "E41_raw_gate": "FAIL",
+      "E41_stack_max_B": 3864,
+      "E41_robustness_flags": [
+        "STACK 3864 B > 256"
+      ],
+      "F2_raw": {
+        "negative_visits": 31022379,
+        "nonfinite_visits": 0,
+        "note": "Raw pre-mask diagnostic counts; negative visits are not silently classified as justified."
+      },
+      "receipt_dir": "<USER_HOME>/wrf_gpu2_lanes/s1-gpuqual/mp24"
+    },
+    {
+      "config": "mp28",
+      "artifact_config": "mp28",
+      "qualification": "INCOMPLETE",
+      "case": "Swiss 20230115 42x42x44",
+      "D6_frames": 25,
+      "CPU_fields": 369,
+      "coverage_complete": false,
+      "first_D6_failure": null,
+      "runtime_failure": null,
+      "history_header_differences": [
+        {
+          "name": "TITLE",
+          "cpu": " OUTPUT FROM WRF V4.7.1 MODEL",
+          "gpu": " OUTPUT FROM GPUWRF WRF-COMPATIBLE NETCDF WRITER"
+        },
+        {
+          "name": "MP_PHYSICS",
+          "cpu": "28",
+          "gpu": "8"
+        },
+        {
+          "name": "NTASKS_X",
+          "cpu": "-1",
+          "gpu": "1"
+        },
+        {
+          "name": "NTASKS_Y",
+          "cpu": "-1",
+          "gpu": "1"
+        }
+      ],
+      "history_header_missing_attrs": [],
+      "GPU_rc": 0,
+      "CPU_rc": 0,
+      "cold_wall_s": 449.6399777869228,
+      "cold_s_per_fc_h": 18.734999074455118,
+      "sampled_VRAM_MiB": 2868,
+      "source_rev": "3e70f3b4bc3f5c3eec53c5e4910e0f1d482a8ee3",
+      "measurement_flags": {
+        "JAX_PLATFORMS": "cuda",
+        "GPUWRF_FAST_DEFAULTS": null,
+        "GPUWRF_CENSUS": "1",
+        "GPUWRF_STRICT_GUARDS": null,
+        "GPUWRF_AOT_SLIM_MODULE": "0",
+        "GPUWRF_RRTMG_MP_RE": "1"
+      },
+      "E41_raw_gate": "FAIL",
+      "E41_stack_max_B": 928,
+      "E41_robustness_flags": [
+        "input_add_maximum_select_transpose_fusion: 833 HLO > 500",
+        "input_add_divide_maximum_minimum_multiply_reduce_select_sqrt_subtract_fusion: 1026 HLO > 500",
+        "input_add_and_compare_convert_divide_maximum_minimum_select_sqrt_subtract_transpose_fusion: 1510 HLO > 500",
+        "STACK 928 B > 256"
+      ],
+      "F2_raw": {
+        "negative_visits": 14446170,
+        "nonfinite_visits": 0,
+        "note": "Raw pre-mask diagnostic counts; negative visits are not silently classified as justified."
+      },
+      "receipt_dir": "<USER_HOME>/wrf_gpu2_lanes/s1-gpuqual/mp28"
+    },
+    {
+      "config": "mp16",
+      "artifact_config": "mp16",
+      "qualification": "FAIL",
+      "case": "Swiss 20230115 42x42x44",
+      "D6_frames": 25,
+      "CPU_fields": 363,
+      "coverage_complete": false,
+      "first_D6_failure": {
+        "field": "RAINNC",
+        "lead_h": 11,
+        "checks": [
+          {
+            "metric": "rmse",
+            "value": 1.1883828415650082,
+            "limit": 1.0
+          }
+        ],
+        "rmse": 1.1883828415650082,
+        "max_abs": 9.213430903851986
+      },
+      "runtime_failure": null,
+      "history_header_differences": [
+        {
+          "name": "TITLE",
+          "cpu": " OUTPUT FROM WRF V4.7.1 MODEL",
+          "gpu": " OUTPUT FROM GPUWRF WRF-COMPATIBLE NETCDF WRITER"
+        },
+        {
+          "name": "MP_PHYSICS",
+          "cpu": "16",
+          "gpu": "8"
+        },
+        {
+          "name": "NTASKS_X",
+          "cpu": "-1",
+          "gpu": "1"
+        },
+        {
+          "name": "NTASKS_Y",
+          "cpu": "-1",
+          "gpu": "1"
+        }
+      ],
+      "history_header_missing_attrs": [],
+      "GPU_rc": 0,
+      "CPU_rc": 0,
+      "cold_wall_s": 726.2049234090373,
+      "cold_s_per_fc_h": 30.258538475376554,
+      "sampled_VRAM_MiB": 1596,
+      "source_rev": "5efa103595ce14e1f54d202547a09a6e66cb50b4",
+      "measurement_flags": {
+        "JAX_PLATFORMS": "cuda",
+        "GPUWRF_FAST_DEFAULTS": null,
+        "GPUWRF_CENSUS": "1",
+        "GPUWRF_STRICT_GUARDS": null,
+        "GPUWRF_AOT_SLIM_MODULE": "0"
+      },
+      "E41_raw_gate": "PASS",
+      "E41_stack_max_B": 16,
+      "E41_robustness_flags": [],
+      "F2_raw": {
+        "negative_visits": 14551118,
+        "nonfinite_visits": 0,
+        "note": "Raw pre-mask diagnostic counts; negative visits are not silently classified as justified."
+      },
+      "receipt_dir": "<USER_HOME>/wrf_gpu2_lanes/s1-gpuqual/mp16"
+    },
+    {
+      "config": "mp26",
+      "artifact_config": "mp26",
+      "qualification": "FAIL",
+      "case": "Swiss 20230115 42x42x44",
+      "D6_frames": 25,
+      "CPU_fields": 364,
+      "coverage_complete": false,
+      "first_D6_failure": {
+        "field": "RAINNC",
+        "lead_h": 11,
+        "checks": [
+          {
+            "metric": "rmse",
+            "value": 1.2828361602821965,
+            "limit": 1.0
+          }
+        ],
+        "rmse": 1.2828361602821965,
+        "max_abs": 9.421513564884663
+      },
+      "runtime_failure": null,
+      "history_header_differences": [
+        {
+          "name": "TITLE",
+          "cpu": " OUTPUT FROM WRF V4.7.1 MODEL",
+          "gpu": " OUTPUT FROM GPUWRF WRF-COMPATIBLE NETCDF WRITER"
+        },
+        {
+          "name": "MP_PHYSICS",
+          "cpu": "26",
+          "gpu": "8"
+        },
+        {
+          "name": "NTASKS_X",
+          "cpu": "-1",
+          "gpu": "1"
+        },
+        {
+          "name": "NTASKS_Y",
+          "cpu": "-1",
+          "gpu": "1"
+        }
+      ],
+      "history_header_missing_attrs": [],
+      "GPU_rc": 0,
+      "CPU_rc": 0,
+      "cold_wall_s": 731.8862629779615,
+      "cold_s_per_fc_h": 30.49526095741506,
+      "sampled_VRAM_MiB": 2620,
+      "source_rev": "5efa103595ce14e1f54d202547a09a6e66cb50b4",
+      "measurement_flags": {
+        "JAX_PLATFORMS": "cuda",
+        "GPUWRF_FAST_DEFAULTS": null,
+        "GPUWRF_CENSUS": "1",
+        "GPUWRF_STRICT_GUARDS": null,
+        "GPUWRF_AOT_SLIM_MODULE": "0"
+      },
+      "E41_raw_gate": "FAIL",
+      "E41_stack_max_B": 832,
+      "E41_robustness_flags": [
+        "input_and_compare_multiply_select_transpose_fusion: 1220 HLO > 500",
+        "input_maximum_minimum_select_transpose_fusion: 772 HLO > 500",
+        "STACK 832 B > 256"
+      ],
+      "F2_raw": {
+        "negative_visits": 14619619,
+        "nonfinite_visits": 0,
+        "note": "Raw pre-mask diagnostic counts; negative visits are not silently classified as justified."
+      },
+      "receipt_dir": "<USER_HOME>/wrf_gpu2_lanes/s1-gpuqual/mp26"
+    },
+    {
+      "config": "mp18",
+      "artifact_config": "mp18",
+      "qualification": "INCOMPLETE",
+      "case": "Swiss 20230115 42x42x44",
+      "D6_frames": 25,
+      "CPU_fields": 372,
+      "coverage_complete": false,
+      "first_D6_failure": null,
+      "runtime_failure": null,
+      "history_header_differences": [
+        {
+          "name": "TITLE",
+          "cpu": " OUTPUT FROM WRF V4.7.1 MODEL",
+          "gpu": " OUTPUT FROM GPUWRF WRF-COMPATIBLE NETCDF WRITER"
+        },
+        {
+          "name": "MP_PHYSICS",
+          "cpu": "18",
+          "gpu": "8"
+        },
+        {
+          "name": "NTASKS_X",
+          "cpu": "-1",
+          "gpu": "1"
+        },
+        {
+          "name": "NTASKS_Y",
+          "cpu": "-1",
+          "gpu": "1"
+        }
+      ],
+      "history_header_missing_attrs": [],
+      "GPU_rc": 0,
+      "CPU_rc": 0,
+      "cold_wall_s": 621.2244295359123,
+      "cold_s_per_fc_h": 25.884351230663015,
+      "sampled_VRAM_MiB": 2632,
+      "source_rev": "3e70f3b4bc3f5c3eec53c5e4910e0f1d482a8ee3",
+      "measurement_flags": {
+        "JAX_PLATFORMS": "cuda",
+        "GPUWRF_FAST_DEFAULTS": null,
+        "GPUWRF_CENSUS": "1",
+        "GPUWRF_STRICT_GUARDS": null,
+        "GPUWRF_AOT_SLIM_MODULE": "0",
+        "GPUWRF_RRTMG_MP_RE": "1"
+      },
+      "E41_raw_gate": "FAIL",
+      "E41_stack_max_B": 16,
+      "E41_robustness_flags": [
+        "input_add_convert_select_transpose_fusion: 665 HLO > 500",
+        "input_add_and_transpose_fusion: 728 HLO > 500"
+      ],
+      "F2_raw": {
+        "negative_visits": 25789039,
+        "nonfinite_visits": 0,
+        "note": "Raw pre-mask diagnostic counts; negative visits are not silently classified as justified."
+      },
+      "receipt_dir": "<USER_HOME>/wrf_gpu2_lanes/s1-gpuqual/mp18"
+    },
+    {
+      "config": "mp18_cu5",
+      "artifact_config": "mp18_cu5",
+      "qualification": "INCOMPLETE",
+      "case": "Swiss 20230115 42x42x44",
+      "D6_frames": 25,
+      "CPU_fields": 372,
+      "coverage_complete": false,
+      "first_D6_failure": null,
+      "runtime_failure": null,
+      "history_header_differences": [
+        {
+          "name": "TITLE",
+          "cpu": " OUTPUT FROM WRF V4.7.1 MODEL",
+          "gpu": " OUTPUT FROM GPUWRF WRF-COMPATIBLE NETCDF WRITER"
+        },
+        {
+          "name": "MP_PHYSICS",
+          "cpu": "18",
+          "gpu": "8"
+        },
+        {
+          "name": "CU_PHYSICS",
+          "cpu": "5",
+          "gpu": "0"
+        },
+        {
+          "name": "NTASKS_X",
+          "cpu": "-1",
+          "gpu": "1"
+        },
+        {
+          "name": "NTASKS_Y",
+          "cpu": "-1",
+          "gpu": "1"
+        }
+      ],
+      "history_header_missing_attrs": [],
+      "GPU_rc": 0,
+      "CPU_rc": 0,
+      "cold_wall_s": 670.8133151389193,
+      "cold_s_per_fc_h": 27.95055479745497,
+      "sampled_VRAM_MiB": 2640,
+      "source_rev": "3e70f3b4bc3f5c3eec53c5e4910e0f1d482a8ee3",
+      "measurement_flags": {
+        "JAX_PLATFORMS": "cuda",
+        "GPUWRF_FAST_DEFAULTS": null,
+        "GPUWRF_CENSUS": "1",
+        "GPUWRF_STRICT_GUARDS": null,
+        "GPUWRF_AOT_SLIM_MODULE": "0",
+        "GPUWRF_RRTMG_MP_RE": "1"
+      },
+      "E41_raw_gate": "FAIL",
+      "E41_stack_max_B": 8,
+      "E41_robustness_flags": [
+        "input_add_convert_select_transpose_fusion: 665 HLO > 500",
+        "input_add_and_transpose_fusion: 728 HLO > 500",
+        "input_and_or_reduce_select_fusion: 701 HLO > 500"
+      ],
+      "F2_raw": {
+        "negative_visits": 25814033,
+        "nonfinite_visits": 0,
+        "note": "Raw pre-mask diagnostic counts; negative visits are not silently classified as justified."
+      },
+      "receipt_dir": "<USER_HOME>/wrf_gpu2_lanes/s1-gpuqual/mp18_cu5"
+    },
+    {
+      "config": "urban1",
+      "artifact_config": "urban_madrid",
+      "qualification": "PASS",
+      "case": "Madrid GFS 20261013_00z; original WPS/real.exe",
+      "D6_frames": 25,
+      "CPU_fields": 362,
+      "coverage_complete": true,
+      "first_D6_failure": null,
+      "runtime_failure": null,
+      "history_header_differences": [
+        {
+          "name": "TITLE",
+          "cpu": " OUTPUT FROM WRF V4.7.1 MODEL",
+          "gpu": " OUTPUT FROM GPUWRF WRF-COMPATIBLE NETCDF WRITER"
+        },
+        {
+          "name": "NTASKS_X",
+          "cpu": "-1",
+          "gpu": "1"
+        },
+        {
+          "name": "NTASKS_Y",
+          "cpu": "-1",
+          "gpu": "1"
+        }
+      ],
+      "history_header_missing_attrs": [],
+      "GPU_rc": 0,
+      "CPU_rc": 0,
+      "cold_wall_s": 441.59986465401016,
+      "cold_s_per_fc_h": 18.399994360583758,
+      "sampled_VRAM_MiB": 1714,
+      "source_rev": "c40cf0000aeee543194cc94063fa31577a15caa5",
+      "measurement_flags": {
+        "JAX_PLATFORMS": "cuda",
+        "GPUWRF_FAST_DEFAULTS": null,
+        "GPUWRF_CENSUS": "1",
+        "GPUWRF_STRICT_GUARDS": null,
+        "GPUWRF_AOT_SLIM_MODULE": "0"
+      },
+      "E41_raw_gate": "PASS",
+      "E41_stack_max_B": 8,
+      "E41_robustness_flags": [],
+      "F2_raw": {
+        "negative_visits": 5894,
+        "nonfinite_visits": 0,
+        "note": "Raw pre-mask diagnostic counts; negative visits are not silently classified as justified."
+      },
+      "receipt_dir": "<USER_HOME>/wrf_gpu2_lanes/s1-gpuqual/urban_madrid"
+    },
+    {
+      "config": "fdda1",
+      "artifact_config": "fdda1_fixed",
+      "qualification": "FAIL",
+      "case": "Swiss 20230115 42x42x44",
+      "D6_frames": 25,
+      "CPU_fields": 363,
+      "coverage_complete": false,
+      "first_D6_failure": {
+        "field": "PSFC",
+        "lead_h": 1,
+        "checks": [
+          {
+            "metric": "rmse",
+            "value": 203.5056944098334,
+            "limit": 120.0
+          }
+        ],
+        "rmse": 203.5056944098334,
+        "max_abs": 415.015625
+      },
+      "runtime_failure": null,
+      "history_header_differences": [
+        {
+          "name": "TITLE",
+          "cpu": " OUTPUT FROM WRF V4.7.1 MODEL",
+          "gpu": " OUTPUT FROM GPUWRF WRF-COMPATIBLE NETCDF WRITER"
+        },
+        {
+          "name": "GRID_FDDA",
+          "cpu": "1",
+          "gpu": "0"
+        },
+        {
+          "name": "GFDDA_INTERVAL_M",
+          "cpu": "60",
+          "gpu": "0"
+        },
+        {
+          "name": "GFDDA_END_H",
+          "cpu": "24",
+          "gpu": "0"
+        },
+        {
+          "name": "NTASKS_X",
+          "cpu": "-1",
+          "gpu": "1"
+        },
+        {
+          "name": "NTASKS_Y",
+          "cpu": "-1",
+          "gpu": "1"
+        }
+      ],
+      "history_header_missing_attrs": [
+        "DTRAMP_MIN",
+        "FGDT",
+        "GQ",
+        "GT",
+        "GUV",
+        "IF_RAMPING"
+      ],
+      "GPU_rc": 0,
+      "CPU_rc": 0,
+      "cold_wall_s": 409.84405006398447,
+      "cold_s_per_fc_h": 17.076835419332685,
+      "sampled_VRAM_MiB": 1712,
+      "source_rev": "c40cf0000aeee543194cc94063fa31577a15caa5",
+      "measurement_flags": {
+        "JAX_PLATFORMS": "cuda",
+        "GPUWRF_FAST_DEFAULTS": null,
+        "GPUWRF_CENSUS": "1",
+        "GPUWRF_STRICT_GUARDS": null,
+        "GPUWRF_AOT_SLIM_MODULE": "0"
+      },
+      "E41_raw_gate": "PASS",
+      "E41_stack_max_B": 8,
+      "E41_robustness_flags": [],
+      "F2_raw": {
+        "negative_visits": 8723874,
+        "nonfinite_visits": 0,
+        "note": "Raw pre-mask diagnostic counts; negative visits are not silently classified as justified."
+      },
+      "receipt_dir": "<USER_HOME>/wrf_gpu2_lanes/s1-gpuqual/fdda1_fixed"
+    },
+    {
+      "config": "dfi3",
+      "artifact_config": "dfi3",
+      "qualification": "PASS",
+      "case": "Swiss 20230115 42x42x44",
+      "D6_frames": 25,
+      "CPU_fields": 362,
+      "coverage_complete": true,
+      "first_D6_failure": null,
+      "runtime_failure": null,
+      "history_header_differences": [
+        {
+          "name": "TITLE",
+          "cpu": " OUTPUT FROM WRF V4.7.1 MODEL",
+          "gpu": " OUTPUT FROM GPUWRF WRF-COMPATIBLE NETCDF WRITER"
+        },
+        {
+          "name": "NTASKS_X",
+          "cpu": "-1",
+          "gpu": "1"
+        },
+        {
+          "name": "NTASKS_Y",
+          "cpu": "-1",
+          "gpu": "1"
+        }
+      ],
+      "history_header_missing_attrs": [],
+      "GPU_rc": 0,
+      "CPU_rc": 0,
+      "cold_wall_s": 716.7970783619676,
+      "cold_s_per_fc_h": 29.86654493174865,
+      "sampled_VRAM_MiB": 1856,
+      "source_rev": "c40cf0000aeee543194cc94063fa31577a15caa5",
+      "measurement_flags": {
+        "JAX_PLATFORMS": "cuda",
+        "GPUWRF_FAST_DEFAULTS": null,
+        "GPUWRF_CENSUS": "1",
+        "GPUWRF_STRICT_GUARDS": null,
+        "GPUWRF_AOT_SLIM_MODULE": "0"
+      },
+      "E41_raw_gate": "PASS",
+      "E41_stack_max_B": 16,
+      "E41_robustness_flags": [],
+      "F2_raw": {
+        "negative_visits": 8942472,
+        "nonfinite_visits": 0,
+        "note": "Raw pre-mask diagnostic counts; negative visits are not silently classified as justified."
+      },
+      "receipt_dir": "<USER_HOME>/wrf_gpu2_lanes/s1-gpuqual/dfi3"
+    },
+    {
+      "config": "moist0",
+      "artifact_config": "moist0",
+      "qualification": "PASS",
+      "case": "Swiss 20230115 42x42x44",
+      "D6_frames": 25,
+      "CPU_fields": 362,
+      "coverage_complete": true,
+      "first_D6_failure": null,
+      "runtime_failure": null,
+      "history_header_differences": [
+        {
+          "name": "TITLE",
+          "cpu": " OUTPUT FROM WRF V4.7.1 MODEL",
+          "gpu": " OUTPUT FROM GPUWRF WRF-COMPATIBLE NETCDF WRITER"
+        },
+        {
+          "name": "NTASKS_X",
+          "cpu": "-1",
+          "gpu": "1"
+        },
+        {
+          "name": "NTASKS_Y",
+          "cpu": "-1",
+          "gpu": "1"
+        }
+      ],
+      "history_header_missing_attrs": [],
+      "GPU_rc": 0,
+      "CPU_rc": 0,
+      "cold_wall_s": 446.3246110510081,
+      "cold_s_per_fc_h": 18.596858793792006,
+      "sampled_VRAM_MiB": 1714,
+      "source_rev": "5efa103595ce14e1f54d202547a09a6e66cb50b4",
+      "measurement_flags": {
+        "JAX_PLATFORMS": "cuda",
+        "GPUWRF_FAST_DEFAULTS": null,
+        "GPUWRF_CENSUS": "1",
+        "GPUWRF_STRICT_GUARDS": null,
+        "GPUWRF_AOT_SLIM_MODULE": "0"
+      },
+      "E41_raw_gate": "PASS",
+      "E41_stack_max_B": 8,
+      "E41_robustness_flags": [],
+      "F2_raw": {
+        "negative_visits": 275800357,
+        "nonfinite_visits": 0,
+        "note": "Raw pre-mask diagnostic counts; negative visits are not silently classified as justified."
+      },
+      "receipt_dir": "<USER_HOME>/wrf_gpu2_lanes/s1-gpuqual/moist0"
+    }
+  ]
+}

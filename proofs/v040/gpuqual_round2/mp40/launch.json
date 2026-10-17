@@ -1,0 +1,34 @@
+{
+  "argv": [
+    "timeout",
+    "--signal=TERM",
+    "--kill-after=15",
+    "1800",
+    "<USER_HOME>/miniconda3/bin/python",
+    "<USER_HOME>/wrf_gpu2_lanes/v-run/tools/gpu_cli.py",
+    "run",
+    "--input-dir",
+    "<USER_HOME>/wrf_gpu2_lanes/v-run/mp40/input",
+    "--output-dir",
+    "<USER_HOME>/wrf_gpu2_lanes/v-run/mp40/gpu",
+    "--hours",
+    "24"
+  ],
+  "official_lock_label": "v-run",
+  "concurrent_group": [
+    "release_default_re1",
+    "mp40"
+  ],
+  "source_rev": "8afb83d7ddef7ef8e59f7f9635d3b5841b39d23c",
+  "started_utc": "2026-10-14T13:35:44.384649+00:00",
+  "environment": {
+    "JAX_PLATFORMS": "cuda",
+    "GPUWRF_CENSUS": "1",
+    "GPUWRF_AOT_SLIM_MODULE": "0",
+    "GPUWRF_RRTMG_MP_RE": "0",
+    "JAX_COMPILATION_CACHE_DIR": "<USER_HOME>/wrf_gpu2_lanes/v-run/mp40/cache/jax",
+    "GPUWRF_CACHE": "<USER_HOME>/wrf_gpu2_lanes/v-run/mp40/cache",
+    "GPUWRF_XLA_AUTOTUNE_CACHE_DIR": "<USER_HOME>/wrf_gpu2_lanes/v-run/mp40/cache/autotune",
+    "XLA_PYTHON_CLIENT_PREALLOCATE": "false"
+  }
+}

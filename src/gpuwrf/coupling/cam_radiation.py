@@ -84,12 +84,15 @@ def _cam_gases(grid, time_utc, lead_seconds, clock_base) -> cam.CamGases:
 
 
 def cam_operands(state, grid, *, time_utc=None, lead_seconds=0.0, clock_base=None, radiation_static=None,
-                 land_state=None) -> CamOperands:
+                 land_state=None, use_mynn_sgs_cloud=True, cloud_mp_physics=8) -> CamOperands:
     """Flat ``(ncol, nz)`` WRF-order REAL operands of WRF's camrad call."""
 
+    # check_a_mundo.F:1802-1820 disables icloud_bl outside MYNN. The caller
+    # must pass its PBL policy, as for RRTMG, or unused CLDFRA_BL erases clouds.
     _sw, lw, albedo, emiss, geometry, _topo = pc._rrtmg_column_inputs(
         state, grid, time_utc=time_utc, lead_seconds=lead_seconds, clock_base=clock_base,
-        radiation_static=radiation_static, land_state=land_state, use_mp_re=0)
+        radiation_static=radiation_static, land_state=land_state, use_mp_re=0,
+        use_mynn_sgs_cloud=use_mynn_sgs_cloud, cloud_mp_physics=cloud_mp_physics)
     nz, ny, nx = state.theta.shape
     ncol = ny * nx
     flat = lambda a: jnp.reshape(jnp.asarray(a, jnp.float32), (ncol, -1))
@@ -211,44 +214,50 @@ def _to_grid(field_cols, state):
 
 
 def cam_lw_theta_tendency(state, grid=None, *, time_utc=None, lead_seconds=0.0, clock_base=None,
-                          radiation_static=None, land_state=None, held=None, doabsems=True):
+                          radiation_static=None, land_state=None, held=None, doabsems=True,
+                          use_mynn_sgs_cloud=True, cloud_mp_physics=8):
     """CAM longwave RTHRATEN (K/s, theta tendency) on the ``(nz, ny, nx)`` mass grid.
 
     With ``held`` (the carry's :class:`~gpuwrf.physics.ra_cam.CamHeld`) returns ``(rthraten, new_held)`` and switches
     between fresh and held absorptivities on the traced ``doabsems`` (see :func:`cam_doabsems`)."""
 
     op = cam_operands(state, grid, time_utc=time_utc, lead_seconds=lead_seconds, clock_base=clock_base,
-                      radiation_static=radiation_static, land_state=land_state)
+                      radiation_static=radiation_static, land_state=land_state,
+                      use_mynn_sgs_cloud=use_mynn_sgs_cloud, cloud_mp_physics=cloud_mp_physics)
     out = _lw_held_call(op, held, doabsems)
     rth = _to_grid(out.rthratenlw, state).astype(pc._output_dtype(state, "theta"))
     return rth if held is None else (rth, out.held)
 
 
 def cam_sw_theta_tendency(state, grid=None, *, time_utc=None, lead_seconds=0.0, clock_base=None,
-                          radiation_static=None, land_state=None):
+                          radiation_static=None, land_state=None, use_mynn_sgs_cloud=True, cloud_mp_physics=8):
     """CAM shortwave RTHRATEN (K/s, theta tendency) on the ``(nz, ny, nx)`` mass grid."""
 
     op = cam_operands(state, grid, time_utc=time_utc, lead_seconds=lead_seconds, clock_base=clock_base,
-                      radiation_static=radiation_static, land_state=land_state)
+                      radiation_static=radiation_static, land_state=land_state,
+                      use_mynn_sgs_cloud=use_mynn_sgs_cloud, cloud_mp_physics=cloud_mp_physics)
     out = _sw_call(op, grid)
     return _to_grid(out.rthratensw, state).astype(pc._output_dtype(state, "theta"))
 
 
 def cam_surface_lw(state, grid=None, *, time_utc=None, lead_seconds=0.0, clock_base=None, radiation_static=None,
-                   land_state=None):
+                   land_state=None, use_mynn_sgs_cloud=True, cloud_mp_physics=8):
     """CAM GLW (W/m2, ``(ny, nx)``) for the land surface forcing."""
 
     op = cam_operands(state, grid, time_utc=time_utc, lead_seconds=lead_seconds, clock_base=clock_base,
-                      radiation_static=radiation_static, land_state=land_state)
+                      radiation_static=radiation_static, land_state=land_state,
+                      use_mynn_sgs_cloud=use_mynn_sgs_cloud, cloud_mp_physics=cloud_mp_physics)
     return jnp.reshape(_lw_call(op).glw, state.t_skin.shape)
 
 
 def cam_surface_forcing(state, grid, soldn, lwdn, *, ra_lw_physics, ra_sw_physics, time_utc=None, lead_seconds=0.0,
-                        clock_base=None, radiation_static=None, land_state=None, held=None, doabsems=True):
+                        clock_base=None, radiation_static=None, land_state=None, held=None, doabsems=True,
+                        use_mynn_sgs_cloud=True, cloud_mp_physics=8):
     """Replace the surface forcing pair by CAM's GLW (ra_lw = 3) / SWDOWN = GSW/(1-ALBEDO) (ra_sw = 3)."""
 
     op = cam_operands(state, grid, time_utc=time_utc, lead_seconds=lead_seconds, clock_base=clock_base,
-                      radiation_static=radiation_static, land_state=land_state)
+                      radiation_static=radiation_static, land_state=land_state,
+                      use_mynn_sgs_cloud=use_mynn_sgs_cloud, cloud_mp_physics=cloud_mp_physics)
     if ra_lw_physics == 3:
         glw = _lw_held_call(op, held, doabsems).glw
         lwdn = jnp.reshape(glw, state.t_skin.shape).astype(jnp.asarray(lwdn).dtype)

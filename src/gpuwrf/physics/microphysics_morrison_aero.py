@@ -292,7 +292,7 @@ def _morrison_aero_micro(th, qv, qc, qr, qi, qs, qg, ni, ns, nr, ng, nc,
     if iinum == 1:
         # aercu_opt=0: constant droplet number NDCNST cm-3 -> kg-1
         # (aero.F l.1797 warm / l.2711 cold branch entry; same as base port)
-        nc = C.NDCNST * 1.0e6 / rho
+        nc = jnp.where(do_cell, C.NDCNST * 1.0e6 / rho, nc)
     # iinum=0: NC stays prognostic — the base port's constant-droplet
     # assignment (NDCNST*1e6/rho) is skipped.
 
@@ -610,6 +610,7 @@ def _morrison_aero_micro(th, qv, qc, qr, qi, qs, qg, ni, ns, nr, ng, nc,
         "ni": ni, "ns": ns, "nr": nr, "ng": ng, "nc": nc,
         "effc": effc, "effi": effi, "effs": effs, "effr": effr, "effg": effg,
         "rainncv": rainncv, "snowncv": snowncv, "graupelncv": graupelncv, "sr": sr,
+        "t": t,  # MP-exit T1D, the refl10cm_hm argument (radar diagnostics only)
     }
 
 
@@ -617,7 +618,7 @@ def _morrison_aero_micro(th, qv, qc, qr, qi, qs, qg, ni, ns, nr, ng, nc,
 # Adapter: frozen PhysicsTendency per the S0 interface (mp_physics=40).
 # ===========================================================================
 def morrison_aero_tendency(th, qv, qc, qr, qi, qs, qg, ni, ns, nr, ng, nc,
-                           pii, p, dz, w, dt, *, aercu_opt=0):
+                           pii, p, dz, w, dt, *, aercu_opt=0, radar=False):
     """Run mp=40 and return a frozen PhysicsTendency (state_replacements).
 
     Operational entry for the WRF-reachable stand-alone point ``aercu_opt=0``
@@ -625,7 +626,8 @@ def morrison_aero_tendency(th, qv, qc, qr, qi, qs, qg, ni, ns, nr, ng, nc,
     which is not ported).  The KZH / AEROCU inputs are dead at aercu_opt=0
     and are passed as scalar zeros (XLA drops them).  ``Nc`` (WRF qnc) is
     replaced by the scheme's output exactly as WRF's wrapper writes
-    ``NC(i,k,j) = nc1d(k)`` (aero.F l.1142): NDCNST*1e6/rho everywhere.
+    ``NC(i,k,j) = nc1d(k)`` (aero.F l.1142): zero for wholly dry
+    columns (GOTO 400), NDCNST*1e6/rho after the active-column final reset.
     """
     if aercu_opt != 0:
         raise ValueError("morrison_aero_tendency: only aercu_opt=0 is operational "
@@ -647,5 +649,7 @@ def morrison_aero_tendency(th, qv, qc, qr, qi, qs, qg, ni, ns, nr, ng, nc,
         },
         diagnostics={
             "re_cloud": out["effc"], "re_ice": out["effi"], "re_snow": out["effs"],
+            **({"t_exit": out["t"]} if radar else {}),
+            "sr": out["sr"],  # WRF SR = SNOWRT1D/(PRECPRT1D+1.E-12)
         },
     )

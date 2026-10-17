@@ -1,0 +1,143 @@
+{
+  "model_commit": "7c71fcbaa",
+  "oracle_pristine_sha256": "79b782f6832ce45c0a13f463841d1820cabc4de0049ac60b5c2a23d24389cb8b",
+  "literal_byte_columns": 18,
+  "public_field_groups_per_column": 36,
+  "public_real32_values": 22410,
+  "compiled_prognostic_values_within_independent_input_ulp_and_fma_envelope": 5760,
+  "independent_ulp_variants": 504,
+  "physics_only_fma_columns": 18,
+  "nominal_fortran_columns": 18,
+  "compiler_definedness_sensitivity": [
+    {
+      "case": 1,
+      "changed": {},
+      "snan_nonfinite": []
+    },
+    {
+      "case": 2,
+      "changed": {},
+      "snan_nonfinite": []
+    },
+    {
+      "case": 3,
+      "changed": {},
+      "snan_nonfinite": []
+    },
+    {
+      "case": 4,
+      "changed": {},
+      "snan_nonfinite": []
+    },
+    {
+      "case": 5,
+      "changed": {},
+      "snan_nonfinite": []
+    },
+    {
+      "case": 6,
+      "changed": {},
+      "snan_nonfinite": []
+    }
+  ],
+  "compiled_excess": {
+    "total_violating_cells": 27,
+    "fields": {
+      "re_snow_gsfc": {
+        "cells": 6,
+        "maxabs": 7.62939453125e-05,
+        "maxexcess": 3.0517578125e-05
+      },
+      "re_hail_gsfc": {
+        "cells": 3,
+        "maxabs": 0.0001220703125,
+        "maxexcess": 3.0517578125e-05
+      },
+      "precs3d": {
+        "cells": 5,
+        "maxabs": 1.1641532182693481e-10,
+        "maxexcess": 3.637978807091713e-12
+      },
+      "prech3d": {
+        "cells": 1,
+        "maxabs": 2.3283064365386963e-10,
+        "maxexcess": 2.3283064365386963e-10
+      },
+      "re_graupel_gsfc": {
+        "cells": 9,
+        "maxabs": 0.00018310546875,
+        "maxexcess": 3.0517578125e-05
+      },
+      "re_rain_gsfc": {
+        "cells": 2,
+        "maxabs": 0.0001220703125,
+        "maxexcess": 0.0001220703125
+      },
+      "acphysf": {
+        "cells": 1,
+        "maxabs": 2.9802322387695312e-08,
+        "maxexcess": 1.862645149230957e-09
+      }
+    }
+  },
+  "tests": {
+    "passed": 9,
+    "seconds": 81.65,
+    "genuine_mutant_killed": true,
+    "native_CPU_interpret_active_hail": true
+  },
+  "CUDA_IR_lowering": {
+    "backend": "cpu",
+    "GPU_execution": false,
+    "cuda_lower": {
+      "status": "PASS",
+      "seconds": 0.7551601121667773,
+      "IR_characters": 1540278
+    }
+  },
+  "GPU_execution": false,
+  "D6": "pending",
+  "source_sha256": {
+    "src/gpuwrf/physics/goddard4ice/equations.py": "a5e03b03e50b7dac34cdef0affdfb2b7c9d1a625a4b8f82e850812a123ba7d7a",
+    "src/gpuwrf/physics/goddard4ice/native.py": "56ece9428572a068195b9b7f34251cd184fb020c750cda7cdef0b2027e852b9d",
+    "src/gpuwrf/physics/goddard4ice/column.py": "5d7099c4a096f2367c21f54344ffe3d1e973d679f1c8627f6f3d0de86c5ebb39",
+    "src/gpuwrf/physics/goddard4ice/constants.py": "b9fbd77f61a06295d6e6b25b7753b33aaa2e778d0306ced381a0b5e73e63e312",
+    "src/gpuwrf/physics/goddard4ice/support.py": "9582bfec75d4a5439add31bcc3a1389caceea287d004cb6f25990f1e1f874872"
+  },
+  "rain_other_enabler": {
+    "commit": "01626b100",
+    "source_identity_proof": "RAIN_OTHER_SOURCE_PROOF.json",
+    "extra_output_bytes_per_column": 4,
+    "extra_domain_scratch_bytes": 0,
+    "old36output_numerical_validation_reused": true,
+    "changed_ABI_CUDA_IR_lowering": {
+      "backend": "cpu",
+      "GPU_execution": false,
+      "cuda_lower": {
+        "status": "PASS",
+        "seconds": 0.8419938869774342,
+        "IR_characters": 1541232
+      }
+    }
+  },
+  "GPU_performance_limitation": "Masked register reductions for serial point access add approximately four reductions per level/substep and quadratic arithmetic in levels; no measured GPU efficiency claim.",
+  "phys_tot_history_enabler": {
+    "commit": "ddc43c72c",
+    "source_proof": "PHYS_TOT_SOURCE_PROOF.json",
+    "original_Registry_flag": "h",
+    "new_held_and_output_bytes_per_mass_point": 4,
+    "extra_domain_scratch_bytes": 0,
+    "independent_literal_values_BYTE": 720,
+    "original_operand_values_BYTE": 4320,
+    "changed_ABI_CUDA_IR_lowering": {
+      "backend": "cpu",
+      "GPU_execution": false,
+      "cuda_lower": {
+        "status": "PASS",
+        "seconds": 0.35082578705623746,
+        "IR_characters": 1543470
+      }
+    },
+    "full_microphysics_rerun": false
+  }
+}

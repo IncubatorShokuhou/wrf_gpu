@@ -1,0 +1,139 @@
+{
+ "cache": "<USER_HOME>/wrf_gpu2_lanes/v-run/mp40/cache/jax",
+ "entries": [
+  {
+   "entry": "jit__advance_chunk_fori-78d46ba6debe36a837c79d52726587ad1db1316fe3410d696ac1f353c292472e-cache",
+   "path": "<USER_HOME>/wrf_gpu2_lanes/v-run/mp40/cache/jax/jit__advance_chunk_fori-78d46ba6debe36a837c79d52726587ad1db1316fe3410d696ac1f353c292472e-cache",
+   "source_kind": "jax_cache",
+   "program": null,
+   "aliases": [],
+   "format": "xla-gpu-legacy-v1",
+   "blob_sha256": "0c8e225f2f78343607f44e51924f611daa80b4b2dbb2e7b44f226511c3a7f3a7",
+   "elfs": [
+    {
+     "elf": 0,
+     "sha256": "158604a1011e4bdc7c536104515c682066983b445af067ac40bafc22e8c832b3",
+     "kernels": 2416,
+     "max_stack_B": 16,
+     "stack_over256": [],
+     "root_callers_over1k": [
+      [
+       "mynn_tridiag2_real",
+       2224,
+       87
+      ],
+      [
+       "input_add_multiply_reduce_fusion",
+       1328,
+       4
+      ],
+      [
+       "loop_select_fusion_39",
+       3832,
+       10
+      ],
+      [
+       "loop_or_select_fusion",
+       2224,
+       6
+      ]
+     ],
+     "nonleaf_over1k": [],
+     "callgraph_unknown": []
+    }
+   ],
+   "kinput_transpose_over500": [
+    [
+     "loop_add_and_compare_divide_power_select_subtract_fusion",
+     820
+    ],
+    [
+     "loop_and_divide_minimum_multiply_or_select_fusion",
+     2227
+    ],
+    [
+     "input_add_and_clamp_compare_is_finite_select_transpose_fusion",
+     832
+    ]
+   ],
+   "kinput_transpose_status": "MEASURED_RICH_JIT_HLO"
+  },
+  {
+   "entry": "c4130fe7380682a7876f0e461e81d58cfe545a551dac43241e28e9db63e0c657.xlaexec",
+   "path": "<USER_HOME>/wrf_gpu2_lanes/v-run/mp40/cache/jax/aot/0.3.4-jax0.10.0-jaxlib0.10.0-cuda_sm120/d01/c4130fe7380682a7876f0e461e81d58cfe545a551dac43241e28e9db63e0c657.xlaexec",
+   "source_kind": "aot",
+   "program": "d01",
+   "aliases": [
+    "<USER_HOME>/wrf_gpu2_lanes/v-run/mp40/cache/jax/aot/0.3.4-jax0.10.0-jaxlib0.10.0-cuda_sm120/d01/k_93475e3cd16ecbed4af1a93daacafef7c48d53ae0f562c12991837b759466229.xlaexec"
+   ],
+   "format": "xla-gpu-thunks-riegeli-v1",
+   "blob_sha256": "0f13447c28871c67376639f94ed392ca0006c6556d47e936fd7429a857c3bf31",
+   "elfs": [
+    {
+     "elf": 0,
+     "sha256": "158604a1011e4bdc7c536104515c682066983b445af067ac40bafc22e8c832b3",
+     "kernels": 2416,
+     "max_stack_B": 16,
+     "stack_over256": [],
+     "root_callers_over1k": [
+      [
+       "mynn_tridiag2_real",
+       2224,
+       87
+      ],
+      [
+       "input_add_multiply_reduce_fusion",
+       1328,
+       4
+      ],
+      [
+       "loop_select_fusion_39",
+       3832,
+       10
+      ],
+      [
+       "loop_or_select_fusion",
+       2224,
+       6
+      ]
+     ],
+     "nonleaf_over1k": [],
+     "callgraph_unknown": []
+    }
+   ],
+   "kinput_transpose_over500": [
+    [
+     "loop_add_and_compare_divide_power_select_subtract_fusion",
+     820
+    ],
+    [
+     "loop_and_divide_minimum_multiply_or_select_fusion",
+     2227
+    ],
+    [
+     "input_add_and_clamp_compare_is_finite_select_transpose_fusion",
+     832
+    ]
+   ],
+   "kinput_transpose_status": "MEASURED_RICH_AOT_HLO"
+  }
+ ],
+ "n_entries": 2,
+ "e41_gate": "FAIL",
+ "hard_stack_gate": "PASS",
+ "conservative_flags": true,
+ "coverage": {
+  "status": "PASS",
+  "aot_programs": [
+   "d01"
+  ],
+  "required_run_programs": [
+   "d01"
+  ],
+  "run_proofs": [
+   "<USER_HOME>/wrf_gpu2_lanes/v-run/mp40/gpu/proofs/nested_pipeline_run.json"
+  ],
+  "n_discovered": 2,
+  "n_scanned": 2
+ }
+}

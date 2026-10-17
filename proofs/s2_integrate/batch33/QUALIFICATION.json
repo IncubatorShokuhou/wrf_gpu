@@ -1,0 +1,127 @@
+{
+  "status": "READY-FOR-MERGE",
+  "scope": "Priority CPU-qualified CAM cloud-policy caller fix; c28actualGPU/finalforecastconfirmationPENDING",
+  "base_main": "04c47101bed777432903ef29fb6a530c0b5609c4",
+  "incoming": "99408e7973719c47aa7b2f2251dc343a77b866e0",
+  "candidate_before_seal": "6aa1eca0ac36cdbf79716f16c3ab3995a26247b4",
+  "two_dot_content": [
+    "src/gpuwrf/coupling/cam_radiation.py",
+    "src/gpuwrf/runtime/operational_mode.py",
+    "tests/test_cam_radiation_cloud_caller.py"
+  ],
+  "whole_SRC_tests_data_scripts_packaging_BYTE_reviewed_head": true,
+  "whole_SRC_and_tests_BYTE_measured_source": "c3d4327bcd1f593895a164da6c06f6efb02d04f1",
+  "SRC": "769fa9155e25cbd687d54fb511c9090a40473870",
+  "tests": "e22cca79913c429dcf025f7283e0bbf8fe43533d",
+  "AST": {
+    "src/gpuwrf/coupling/cam_radiation.py": {
+      "changed_definitions": [
+        "cam_lw_theta_tendency",
+        "cam_operands",
+        "cam_surface_forcing",
+        "cam_surface_lw",
+        "cam_sw_theta_tendency"
+      ],
+      "unchanged_other_definitions": 10,
+      "sha256": "f612c8e9fdd73556bb0911ed3c34a39fb1896451fe594e02b7271165ca04d075"
+    },
+    "src/gpuwrf/runtime/operational_mode.py": {
+      "changed_definitions": [
+        "_physics_step_forcing",
+        "_refresh_noahmp_rad"
+      ],
+      "unchanged_other_definitions": 206,
+      "sha256": "679e74f8ebf1097d44cade0f67e785d40f74cfccf9b871c0b2cfbab428504b74"
+    }
+  },
+  "entire_physics_tree_unchanged_main": true,
+  "producer_receipts_compressed_raw_SHA_and_bytes_fresh": 25,
+  "independent_paid_CPU": {
+    "PASS": 262,
+    "caller_and_cloud_tests": 15,
+    "shared_dispatch_contract_IO": 243,
+    "extra_activeSGS_and_CAM_smoke": 4,
+    "actual_dispatch_mutant_numeric_ASSERT": 1,
+    "setup_errors": 0,
+    "default_FULL_ids": {
+      "Swiss": "f672a5739cb96e388b6b7a40ef80337bf81bdc14ef15268f3476e09d79fe055d",
+      "PROD_d01": "6fc715a2bd630934c4cf0f94427df19a527cbf429011c9ba5efe4d712744d27b"
+    },
+    "real_cloud_pristine": {
+      "rows": 484,
+      "native_calls": 6292,
+      "branches": [
+        1.0,
+        2.0,
+        3.0
+      ],
+      "outside_input_ulp_envelope": 0,
+      "max_abs": 3.5762786865234375e-07,
+      "full_old_cloud_nonzero": 0,
+      "full_new_cloud_nonzero": 6737
+    }
+  },
+  "resources": {
+    "cpu_operand_median_ms": [
+      0.443398505,
+      0.898901999
+    ],
+    "cpu_operand_temp_bytes": [
+      1251024,
+      1871952
+    ],
+    "cpu_compile_s": [
+      0.6190471,
+      0.634624065
+    ],
+    "output_bytes_unchanged": 2857920,
+    "new_spectral_solves": 0,
+    "new_carry_fields": 0,
+    "new_baked_assets": 0,
+    "actual_gpu_cost": "UNKNOWN"
+  },
+  "limits": [
+    "No final forecast or actual GPU speed/VRAM/E41 claim before the manager c28 rerun",
+    "Other history fluxes can be RRTMG fallback diagnostics; GLW/SWDOWN use held CAM land fluxes",
+    "Initial CPU resource probe is clear-sky, all active cloud correctness is separately covered by CR12",
+    "ExistingXICE/SNOW/experimentalCAMdisclosures remain.",
+    "GPU/E41/resource/full24hD6 confirmation remainsmanagerc28gate; no coupledtrajectory/historyphaseclaim.",
+    "Existing unchangedCAMsolarclock risk retained: surface lead-297s vs pristinelead+300s/heatingrawlead; quantitative effectU, no change in this batch.",
+    "Allolderwholeproductbindings scoped to recordedsource; do not relabel older P3/c24 sourceb2a as wholecurrentSRC769. Unchangedgates carriedforward source-bound."
+  ],
+  "unchanged_solar_clock_source_audit": {
+    "source": "99408e7973719c47aa7b2f2251dc343a77b866e0",
+    "scope": "Read-only source attribution of an unchanged CAM solar clock; no numerical/forecast claim",
+    "evidence": {
+      "WRF": "module_radiation_driver.F:1208 calc_coszen(julian,xtime+radt*.5,gmt)",
+      "surface_CAM": "_refresh_noahmp_rad passes max(lead-.5*dt*STEPRA,0) to cam_surface_forcing; default solar_lead_seconds=None",
+      "heating_CAM": "_physics_step_forcing passes raw step-entry lead to CAM SW; cam_operands has no midpoint parameter",
+      "shared_geometry": "_compute_solar_geometry None=>same current lead; native RRTMG driver separately passes +radiation_interval_s/2",
+      "c28_namelist": "dt18/radt600s/STEPRA33=>surface clock minus297s; pristine solar midpoint plus300s"
+    },
+    "measured": "SOURCE dataflow only; unchanged by cloud fix",
+    "inferred": "daylight CAM coszen may be behind WRF; cannot explain first-night cold failure",
+    "unknown": "quantitative solar/trajectory residual after cloud fix",
+    "source_sha256": {
+      "src/gpuwrf/runtime/operational_mode.py": "679e74f8ebf1097d44cade0f67e785d40f74cfccf9b871c0b2cfbab428504b74",
+      "src/gpuwrf/coupling/cam_radiation.py": "f612c8e9fdd73556bb0911ed3c34a39fb1896451fe594e02b7271165ca04d075",
+      "src/gpuwrf/coupling/physics_couplers.py": "eba9481aba243b48e2360e1a183f914d9b8077f57f2d5da193dc5b09467d4f80"
+    }
+  },
+  "fresh_numerical_native_default_GPU_runs": 0,
+  "cleanup": "No newcache/snapshot/pytest/scratch/JAX/GPU/jobs",
+  "proof_files": {
+    "rv-VERDICT.md": "6a05b982b39990bcf9ca9850a53557f8a341d40f734a4b72e766ff2446bd57b7",
+    "rv-RC05_source.json": "4c9d647478a59e1909b94f911548a40c66ef9a57502791601ecb889563133e80",
+    "rv-RC07_final_source.json": "2abaf6471285b04156d4cba4322abc4ea064801c7ffe51f43b5b42274c75c968",
+    "rv-RC01.xml.gz": "763eee84836c83431502aedb82ec0d67c4080b7cc495aebcd7216eb2010669a9",
+    "rv-RC02_mutant.xml.gz": "9a29c4b55e7573a4de6e4be6def6d6e22a8a54b37814520675864a740dd469a8",
+    "rv-RC06_extra.xml.gz": "ca84813c5b9458f7536d3da4dfedefb4648c3bdb8a4db4ad17305a5cdbf3b39e",
+    "rv-RC03_swiss.json": "9ea58f1bcdd5885ef04cb4af3648460180be55eae7de76d633e85171ebbc5376",
+    "rv-RC04_prod.json": "79ec01c6da04d32de5e42a955150f50762c478ce19f2db10a4f114c980fad9dd",
+    "rv-runtime_mutant.py": "b4a0264197457ddccdbe7960015effc318f9de8456f807a42ad87314ccd948b6",
+    "rv-test_reviewer_cam.py": "d96b5621c7632c984ee5d7b87f8a17ef16648376fb8384e830c13fb3cf5e10e7",
+    "CR14_source_phase_risk.json": "d527dbc8f7457e74214cab94735cb3923a2e20609fc07a906d5466b69e748b7e",
+    "integrate_batch33.py": "37a47b4ee482c45414c71d87f436047081ab10d56cc2568d17d53cbf062b80c6"
+  }
+}

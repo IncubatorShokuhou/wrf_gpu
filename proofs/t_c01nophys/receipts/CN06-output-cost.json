@@ -1,0 +1,40 @@
+{
+  "scope": "CPU host output merge microbenchmark only, not GPU or whole forecast speed",
+  "reps": 10,
+  "merges_per_rep": 10000,
+  "ns_per_merge": {
+    "normal": [
+      204.1566,
+      200.6125,
+      202.2255,
+      201.9805,
+      202.0265,
+      205.3835,
+      201.9525,
+      213.0205,
+      203.9455,
+      231.6687
+    ],
+    "disabled": [
+      486.8846,
+      492.7327,
+      490.9176,
+      490.2997,
+      491.9987,
+      485.3326,
+      488.8417,
+      486.3587,
+      489.3806,
+      519.2559
+    ]
+  },
+  "median_ns_per_merge": {
+    "normal": 203.08550000000002,
+    "disabled": 489.84015
+  },
+  "held_host_bytes": 42336,
+  "host_array_count": 6,
+  "array_copy_in_merge": false,
+  "extra_device_arrays": 0,
+  "device_claim_basis": "new code is host NumPy/NetCDF and dictionary reference overlay, no JAX calls; unchanged step functions checked separately"
+}

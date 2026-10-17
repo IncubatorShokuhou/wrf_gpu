@@ -1,0 +1,117 @@
+{
+  "reference": "Untouched pristine WRF post-RK microphysics-caller REAL statements (calc_p_rho_phi hypso=2 al; moist_physics_prep_em z_at_w/dz8w/rho); REAL-structured CPU-WRF c05 column operands, not forecast truth",
+  "source": "<USER_HOME>/src/wrf_pristine/WRF/dyn_em/module_big_step_utilities_em.F",
+  "source_sha256": "bd177b6b5ba7949cf9e694d7ad654fd9ae2f07d39d85802f0716c5318889a815",
+  "statements": [
+    [
+      1045,
+      "pfu = c3f(k+1)*MUTS(i,j) + c4f(k+1) + ptop"
+    ],
+    [
+      1046,
+      "pfd = c3f(k  )*MUTS(i,j) + c4f(k  ) + ptop"
+    ],
+    [
+      1047,
+      "phm = c3h(k  )*MUTS(i,j) + c4h(k  ) + ptop"
+    ],
+    [
+      1048,
+      "al(i,k,j) = (ph(i,k+1,j)-ph(i,k,j)+phb(i,k+1,j)-phb(i,k,j))/phm/LOG(pfd/pfu)-alb(i,k,j)"
+    ],
+    [
+      5480,
+      "z_at_w(i,k,j) = (ph(i,k,j)+phb(i,k,j))/g"
+    ],
+    [
+      5488,
+      "dz8w(i,k,j) = z_at_w(i,k+1,j)-z_at_w(i,k,j)"
+    ],
+    [
+      5542,
+      "rho(i,k,j)  = 1./(al(i,k,j)+alb(i,k,j))"
+    ]
+  ],
+  "gravity": [
+    17,
+    "REAL    , PARAMETER :: g = 9.81  ! acceleration due to gravity (m {s}^-2)"
+  ],
+  "constants_sha256": "5b80377fecdc18a5f0ad38d3b6c15cfc86ad5d76701adbbbb08a08698d0f7062",
+  "operand_file": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c05/cpu/wrfout_d01_2023-01-15_01:00:00",
+  "operand_column": {
+    "j": 35,
+    "i": 37,
+    "faces": 4
+  },
+  "inputs": {
+    "ph": [
+      0.0,
+      -5.439294338226318,
+      -11.460868835449219,
+      -16.989744186401367
+    ],
+    "phb": [
+      17098.435546875,
+      17563.626953125,
+      18153.84375,
+      18897.73828125
+    ],
+    "muts": [
+      76709.421875
+    ],
+    "c3f": [
+      1.0,
+      0.9937313795089722,
+      0.9855250120162964,
+      0.974787712097168
+    ],
+    "c4f": [
+      0.0,
+      7.916092872619629,
+      40.43549346923828,
+      116.52171325683594
+    ],
+    "c3h": [
+      0.9968656897544861,
+      0.9896281957626343,
+      0.9801563620567322
+    ],
+    "c4h": [
+      3.9580464363098145,
+      24.17862319946289,
+      78.47577667236328
+    ],
+    "ptop": [
+      5000.0
+    ],
+    "alb": [
+      0.831250011920929,
+      0.84375,
+      0.859375
+    ]
+  },
+  "rho": [
+    1.0286978483200073,
+    1.0218976736068726,
+    1.0124679803848267
+  ],
+  "dz8w": [
+    46.8656005859375,
+    59.551025390625,
+    75.2666015625
+  ],
+  "output_hex": "3F83AC5F 3F82CD8B 3F81988D 423B7660 426E3440 42968880",
+  "program_sha256": "732fe18e02ee916979a5fa47480ccd87d395bc6f946cccd9628b9aae24ab8109",
+  "executable_sha256": "455a64057f62e0e93755c4406c666fe6bf451bb99af8825b61da8c44903882d5",
+  "compile_command": [
+    "<USER_HOME>/miniconda3/envs/wrfbuild/bin/gfortran",
+    "-O0",
+    "-ffp-contract=off",
+    "-ffree-line-length-none",
+    "<USER_HOME>/wrf_gpu2_lanes/rv-t-classd/mprho_review/oracle_build/oracle.f90",
+    "-o",
+    "<USER_HOME>/wrf_gpu2_lanes/rv-t-classd/mprho_review/oracle_build/oracle"
+  ],
+  "elapsed_s": 0.22573298199858982,
+  "compiler": "GNU Fortran (conda-forge gcc 14.3.0-19) 14.3.0"
+}

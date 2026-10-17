@@ -1,0 +1,2326 @@
+{
+  "status": "MEASURED heavy-test list for release notes and CI tiering; cutoff below",
+  "created_utc": "2026-10-15T08:18:31.043398+00:00",
+  "rows": [
+    {
+      "node": "tests/dynamics/test_sms3dtke_full.py::test_sms_complete_compiled_pristine_operator",
+      "attempts": [
+        {
+          "arm": "C030",
+          "source": "69e1a529807c24590a227961cd9916eb477d291a",
+          "cap": "6G/noSwap",
+          "outcome": "OOM",
+          "peak_rss_gib": null,
+          "peak_kind": "RSS peak unknown; no sampler before killed compile",
+          "receipt": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C030"
+        },
+        {
+          "arm": "C030b-SMS-compiled-12G",
+          "source": "69e1a529807c24590a227961cd9916eb477d291a",
+          "cap": "12G/noSwap",
+          "outcome": "OOM",
+          "peak_rss_gib": null,
+          "peak_kind": "RSS peak unknown; no sampler before killed compile",
+          "receipt": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C030b-SMS-compiled-12G"
+        },
+        {
+          "arm": "C030d-SMS-compiled-24G",
+          "source": "69e1a529807c24590a227961cd9916eb477d291a",
+          "cap": "24G/noSwap",
+          "outcome": "PASS",
+          "peak_rss_gib": 12.52468490600586,
+          "peak_kind": "kernel HWM observed in sampler",
+          "receipt": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C030d-SMS-compiled-24G",
+          "cgroup_peak_gib": 12.257701873779297,
+          "max_swap_kib": 0
+        }
+      ],
+      "measured": {
+        "arm": "C030d-SMS-compiled-24G",
+        "source": "69e1a529807c24590a227961cd9916eb477d291a",
+        "cap": "24G/noSwap",
+        "outcome": "PASS",
+        "peak_rss_gib": 12.52468490600586,
+        "peak_kind": "kernel HWM observed in sampler",
+        "receipt": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C030d-SMS-compiled-24G",
+        "cgroup_peak_gib": 12.257701873779297,
+        "max_swap_kib": 0
+      },
+      "status": "PASS",
+      "cause": "See original failed and fresh-arm receipts; retained RSS is not proof of a live-object leak",
+      "CI_tier": "24G fresh singleton (measured cap, not a proven minimum)"
+    },
+    {
+      "node": "tests/dynamics/test_sms3dtke_full.py::test_sms_three_own_steps_nine_rk_stages_pristine",
+      "attempts": [
+        {
+          "arm": "C030c-SMS-three-step-12G",
+          "source": "69e1a529807c24590a227961cd9916eb477d291a",
+          "cap": "12G/noSwap",
+          "outcome": "PASS",
+          "peak_rss_gib": 3.9465789794921875,
+          "peak_kind": "kernel HWM observed in sampler",
+          "receipt": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C030c-SMS-three-step-12G",
+          "cgroup_peak_gib": 3.7697715759277344,
+          "max_swap_kib": 0
+        }
+      ],
+      "measured": {
+        "arm": "C030c-SMS-three-step-12G",
+        "source": "69e1a529807c24590a227961cd9916eb477d291a",
+        "cap": "12G/noSwap",
+        "outcome": "PASS",
+        "peak_rss_gib": 3.9465789794921875,
+        "peak_kind": "kernel HWM observed in sampler",
+        "receipt": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C030c-SMS-three-step-12G",
+        "cgroup_peak_gib": 3.7697715759277344,
+        "max_swap_kib": 0
+      },
+      "status": "PASS",
+      "cause": "See original failed and fresh-arm receipts; retained RSS is not proof of a live-object leak",
+      "CI_tier": "12G fresh singleton (measured cap, not a proven minimum)"
+    },
+    {
+      "node": "tests/test_m6_tier2_coupled.py::test_forecast_segment_pre_sanitize_tap_returns_one_state_per_step",
+      "attempts": [
+        {
+          "arm": "C048",
+          "source": "86eeee9df2c6e6994822a1e2a4f595f9ce1ad169",
+          "cap": "6G/noSwap",
+          "outcome": "OOM",
+          "peak_rss_gib": null,
+          "peak_kind": "RSS peak unknown; no sampler before killed compile",
+          "receipt": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C048"
+        },
+        {
+          "arm": "C048b-coupled-tap-12G",
+          "source": "9ca91c01b221aeaca6f1b9159f10439c1012d633",
+          "cap": "12G/noSwap",
+          "outcome": "OOM",
+          "peak_rss_gib": 12.036819458007812,
+          "peak_kind": "sampled lower bound; OOM/running",
+          "receipt": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C048b-coupled-tap-12G",
+          "cgroup_peak_gib": 12.0,
+          "max_swap_kib": 0
+        }
+      ],
+      "measured": {
+        "arm": "C048b-coupled-tap-12G",
+        "source": "9ca91c01b221aeaca6f1b9159f10439c1012d633",
+        "cap": "12G/noSwap",
+        "outcome": "OOM",
+        "peak_rss_gib": 12.036819458007812,
+        "peak_kind": "sampled lower bound; OOM/running",
+        "receipt": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C048b-coupled-tap-12G",
+        "cgroup_peak_gib": 12.0,
+        "max_swap_kib": 0
+      },
+      "status": "RETIRED executed harness; current TRACE gate PASS under6G",
+      "current_trace_peak_rss_gib": 1.011749267578125,
+      "limit": "TRACE/shape coverage only; no coupled-runtime or fidelity credit",
+      "cause": "See original failed and fresh-arm receipts; retained RSS is not proof of a live-object leak",
+      "CI_tier": "6G current TRACE gate; former executed harness failed12G"
+    },
+    {
+      "node": "tests/test_v013_operational_smoke.py::test_microphysics_operational_runs_and_mutates[11]",
+      "attempts": [
+        {
+          "arm": "C087r13",
+          "source": "028047e967c3d52113d43b87d115ef2d247005a8",
+          "cap": "12G/noSwap",
+          "outcome": "PASS",
+          "peak_rss_gib": 2.7836380004882812,
+          "peak_kind": "kernel HWM recorded at completed test",
+          "receipt": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C087r13"
+        }
+      ],
+      "measured": {
+        "arm": "C087r13",
+        "source": "028047e967c3d52113d43b87d115ef2d247005a8",
+        "cap": "12G/noSwap",
+        "outcome": "PASS",
+        "peak_rss_gib": 2.7836380004882812,
+        "peak_kind": "kernel HWM recorded at completed test",
+        "receipt": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C087r13"
+      },
+      "status": "PASS",
+      "cause": "See original failed and fresh-arm receipts; retained RSS is not proof of a live-object leak",
+      "CI_tier": "12G fresh singleton (measured cap, not a proven minimum)"
+    },
+    {
+      "node": "tests/test_v013_operational_smoke.py::test_microphysics_operational_runs_and_mutates[38]",
+      "attempts": [
+        {
+          "arm": "C087",
+          "source": "028047e967c3d52113d43b87d115ef2d247005a8",
+          "cap": "6G/noSwap",
+          "outcome": "OOM",
+          "peak_rss_gib": null,
+          "peak_kind": "RSS peak unknown; no sampler before killed compile",
+          "receipt": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C087"
+        },
+        {
+          "arm": "C087b-mp38-12G",
+          "source": "028047e967c3d52113d43b87d115ef2d247005a8",
+          "cap": "12G/noSwap",
+          "outcome": "PASS",
+          "peak_rss_gib": 8.857906341552734,
+          "peak_kind": "kernel HWM observed in sampler",
+          "receipt": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C087b-mp38-12G",
+          "cgroup_peak_gib": 8.607841491699219,
+          "max_swap_kib": 0
+        }
+      ],
+      "measured": {
+        "arm": "C087b-mp38-12G",
+        "source": "028047e967c3d52113d43b87d115ef2d247005a8",
+        "cap": "12G/noSwap",
+        "outcome": "PASS",
+        "peak_rss_gib": 8.857906341552734,
+        "peak_kind": "kernel HWM observed in sampler",
+        "receipt": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C087b-mp38-12G",
+        "cgroup_peak_gib": 8.607841491699219,
+        "max_swap_kib": 0
+      },
+      "status": "PASS",
+      "cause": "See original failed and fresh-arm receipts; retained RSS is not proof of a live-object leak",
+      "CI_tier": "12G fresh singleton (measured cap, not a proven minimum)"
+    },
+    {
+      "node": "tests/test_v013_operational_smoke.py::test_microphysics_operational_runs_and_mutates[40]",
+      "attempts": [
+        {
+          "arm": "C087r05",
+          "source": "028047e967c3d52113d43b87d115ef2d247005a8",
+          "cap": "12G/noSwap",
+          "outcome": "PASS",
+          "peak_rss_gib": 1.3984413146972656,
+          "peak_kind": "kernel HWM recorded at completed test",
+          "receipt": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C087r05"
+        }
+      ],
+      "measured": {
+        "arm": "C087r05",
+        "source": "028047e967c3d52113d43b87d115ef2d247005a8",
+        "cap": "12G/noSwap",
+        "outcome": "PASS",
+        "peak_rss_gib": 1.3984413146972656,
+        "peak_kind": "kernel HWM recorded at completed test",
+        "receipt": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C087r05"
+      },
+      "status": "PASS",
+      "cause": "See original failed and fresh-arm receipts; retained RSS is not proof of a live-object leak",
+      "CI_tier": "12G fresh singleton (measured cap, not a proven minimum)"
+    },
+    {
+      "node": "tests/test_v013_operational_smoke.py::test_microphysics_operational_runs_and_mutates[50]",
+      "attempts": [
+        {
+          "arm": "C087r06",
+          "source": "028047e967c3d52113d43b87d115ef2d247005a8",
+          "cap": "12G/noSwap",
+          "outcome": "PASS",
+          "peak_rss_gib": 1.7982864379882812,
+          "peak_kind": "kernel HWM recorded at completed test",
+          "receipt": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C087r06"
+        }
+      ],
+      "measured": {
+        "arm": "C087r06",
+        "source": "028047e967c3d52113d43b87d115ef2d247005a8",
+        "cap": "12G/noSwap",
+        "outcome": "PASS",
+        "peak_rss_gib": 1.7982864379882812,
+        "peak_kind": "kernel HWM recorded at completed test",
+        "receipt": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C087r06"
+      },
+      "status": "PASS",
+      "cause": "See original failed and fresh-arm receipts; retained RSS is not proof of a live-object leak",
+      "CI_tier": "12G fresh singleton (measured cap, not a proven minimum)"
+    },
+    {
+      "node": "tests/test_v013_operational_smoke.py::test_microphysics_operational_runs_and_mutates[51]",
+      "attempts": [
+        {
+          "arm": "C087r07",
+          "source": "028047e967c3d52113d43b87d115ef2d247005a8",
+          "cap": "12G/noSwap",
+          "outcome": "PASS",
+          "peak_rss_gib": 1.9390106201171875,
+          "peak_kind": "kernel HWM recorded at completed test",
+          "receipt": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C087r07"
+        }
+      ],
+      "measured": {
+        "arm": "C087r07",
+        "source": "028047e967c3d52113d43b87d115ef2d247005a8",
+        "cap": "12G/noSwap",
+        "outcome": "PASS",
+        "peak_rss_gib": 1.9390106201171875,
+        "peak_kind": "kernel HWM recorded at completed test",
+        "receipt": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C087r07"
+      },
+      "status": "PASS",
+      "cause": "See original failed and fresh-arm receipts; retained RSS is not proof of a live-object leak",
+      "CI_tier": "12G fresh singleton (measured cap, not a proven minimum)"
+    },
+    {
+      "node": "tests/test_v013_operational_smoke.py::test_microphysics_operational_runs_and_mutates[52]",
+      "attempts": [
+        {
+          "arm": "C087r08",
+          "source": "028047e967c3d52113d43b87d115ef2d247005a8",
+          "cap": "12G/noSwap",
+          "outcome": "PASS",
+          "peak_rss_gib": 5.24359130859375,
+          "peak_kind": "kernel HWM recorded at completed test",
+          "receipt": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C087r08"
+        }
+      ],
+      "measured": {
+        "arm": "C087r08",
+        "source": "028047e967c3d52113d43b87d115ef2d247005a8",
+        "cap": "12G/noSwap",
+        "outcome": "PASS",
+        "peak_rss_gib": 5.24359130859375,
+        "peak_kind": "kernel HWM recorded at completed test",
+        "receipt": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C087r08"
+      },
+      "status": "PASS",
+      "cause": "See original failed and fresh-arm receipts; retained RSS is not proof of a live-object leak",
+      "CI_tier": "12G fresh singleton (measured cap, not a proven minimum)"
+    },
+    {
+      "node": "tests/test_v013_operational_smoke.py::test_microphysics_operational_runs_and_mutates[53]",
+      "attempts": [
+        {
+          "arm": "C087r09",
+          "source": "028047e967c3d52113d43b87d115ef2d247005a8",
+          "cap": "12G/noSwap",
+          "outcome": "PASS",
+          "peak_rss_gib": 3.452312469482422,
+          "peak_kind": "kernel HWM recorded at completed test",
+          "receipt": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C087r09"
+        }
+      ],
+      "measured": {
+        "arm": "C087r09",
+        "source": "028047e967c3d52113d43b87d115ef2d247005a8",
+        "cap": "12G/noSwap",
+        "outcome": "PASS",
+        "peak_rss_gib": 3.452312469482422,
+        "peak_kind": "kernel HWM recorded at completed test",
+        "receipt": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C087r09"
+      },
+      "status": "PASS",
+      "cause": "See original failed and fresh-arm receipts; retained RSS is not proof of a live-object leak",
+      "CI_tier": "12G fresh singleton (measured cap, not a proven minimum)"
+    },
+    {
+      "node": "tests/test_v013_operational_smoke.py::test_microphysics_operational_runs_and_mutates[55]",
+      "attempts": [
+        {
+          "arm": "C087r10",
+          "source": "028047e967c3d52113d43b87d115ef2d247005a8",
+          "cap": "12G/noSwap",
+          "outcome": "PASS",
+          "peak_rss_gib": 1.566650390625,
+          "peak_kind": "kernel HWM recorded at completed test",
+          "receipt": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C087r10"
+        }
+      ],
+      "measured": {
+        "arm": "C087r10",
+        "source": "028047e967c3d52113d43b87d115ef2d247005a8",
+        "cap": "12G/noSwap",
+        "outcome": "PASS",
+        "peak_rss_gib": 1.566650390625,
+        "peak_kind": "kernel HWM recorded at completed test",
+        "receipt": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C087r10"
+      },
+      "status": "PASS",
+      "cause": "See original failed and fresh-arm receipts; retained RSS is not proof of a live-object leak",
+      "CI_tier": "12G fresh singleton (measured cap, not a proven minimum)"
+    },
+    {
+      "node": "tests/test_v013_operational_smoke.py::test_microphysics_operational_runs_and_mutates[56]",
+      "attempts": [
+        {
+          "arm": "C087r11",
+          "source": "028047e967c3d52113d43b87d115ef2d247005a8",
+          "cap": "12G/noSwap",
+          "outcome": "PASS",
+          "peak_rss_gib": 7.6855316162109375,
+          "peak_kind": "kernel HWM recorded at completed test",
+          "receipt": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C087r11"
+        }
+      ],
+      "measured": {
+        "arm": "C087r11",
+        "source": "028047e967c3d52113d43b87d115ef2d247005a8",
+        "cap": "12G/noSwap",
+        "outcome": "PASS",
+        "peak_rss_gib": 7.6855316162109375,
+        "peak_kind": "kernel HWM recorded at completed test",
+        "receipt": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C087r11"
+      },
+      "status": "PASS",
+      "cause": "See original failed and fresh-arm receipts; retained RSS is not proof of a live-object leak",
+      "CI_tier": "12G fresh singleton (measured cap, not a proven minimum)"
+    },
+    {
+      "node": "tests/test_v013_operational_smoke.py::test_microphysics_operational_runs_and_mutates[97]",
+      "attempts": [
+        {
+          "arm": "C087r12",
+          "source": "028047e967c3d52113d43b87d115ef2d247005a8",
+          "cap": "12G/noSwap",
+          "outcome": "PASS",
+          "peak_rss_gib": 1.1524581909179688,
+          "peak_kind": "kernel HWM recorded at completed test",
+          "receipt": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C087r12"
+        }
+      ],
+      "measured": {
+        "arm": "C087r12",
+        "source": "028047e967c3d52113d43b87d115ef2d247005a8",
+        "cap": "12G/noSwap",
+        "outcome": "PASS",
+        "peak_rss_gib": 1.1524581909179688,
+        "peak_kind": "kernel HWM recorded at completed test",
+        "receipt": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C087r12"
+      },
+      "status": "PASS",
+      "cause": "See original failed and fresh-arm receipts; retained RSS is not proof of a live-object leak",
+      "CI_tier": "12G fresh singleton (measured cap, not a proven minimum)"
+    },
+    {
+      "node": "tests/test_v013_ra_sw_gsfc.py::test_gsfc_sw_fp64_precision_audit[5]",
+      "attempts": [
+        {
+          "arm": "C088",
+          "source": "e0a611d5e0d045d4c33af0c1db15f3da4475a62b",
+          "cap": "6G/noSwap",
+          "outcome": "OOM",
+          "peak_rss_gib": null,
+          "peak_kind": "RSS peak unknown; no sampler before killed compile",
+          "receipt": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C088"
+        },
+        {
+          "arm": "C088b-fp64-case5-12G",
+          "source": "e0a611d5e0d045d4c33af0c1db15f3da4475a62b",
+          "cap": "12G/noSwap",
+          "outcome": "PASS",
+          "peak_rss_gib": 2.679962158203125,
+          "peak_kind": "kernel HWM observed in sampler",
+          "receipt": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C088b-fp64-case5-12G",
+          "cgroup_peak_gib": 2.4645462036132812,
+          "max_swap_kib": 0
+        }
+      ],
+      "measured": {
+        "arm": "C088b-fp64-case5-12G",
+        "source": "e0a611d5e0d045d4c33af0c1db15f3da4475a62b",
+        "cap": "12G/noSwap",
+        "outcome": "PASS",
+        "peak_rss_gib": 2.679962158203125,
+        "peak_kind": "kernel HWM observed in sampler",
+        "receipt": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C088b-fp64-case5-12G",
+        "cgroup_peak_gib": 2.4645462036132812,
+        "max_swap_kib": 0
+      },
+      "status": "PASS",
+      "cause": "See original failed and fresh-arm receipts; retained RSS is not proof of a live-object leak",
+      "CI_tier": "12G fresh singleton (measured cap, not a proven minimum)"
+    },
+    {
+      "node": "tests/test_v0234_b2_bounded_terminal_gate.py::test_real_fixture_fused_vs_eager_is_within_recompile_floor",
+      "attempts": [
+        {
+          "arm": "C093",
+          "source": "84d4e695863f663fbaab3301b18da45eaa019a66",
+          "cap": "6G/noSwap",
+          "outcome": "OOM",
+          "peak_rss_gib": null,
+          "peak_kind": "RSS peak unknown; no sampler before killed compile",
+          "receipt": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C093"
+        },
+        {
+          "arm": "C093b-sevennest-12G",
+          "source": "84d4e695863f663fbaab3301b18da45eaa019a66",
+          "cap": "12G/noSwap",
+          "outcome": "OOM",
+          "peak_rss_gib": 12.288414001464844,
+          "peak_kind": "sampled lower bound; OOM/running",
+          "receipt": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C093b-sevennest-12G",
+          "cgroup_peak_gib": 12.0,
+          "max_swap_kib": 0
+        },
+        {
+          "arm": "C093c-sevennest-24G",
+          "source": "84d4e695863f663fbaab3301b18da45eaa019a66",
+          "cap": "24G/noSwap",
+          "outcome": "PASS",
+          "peak_rss_gib": 17.042964935302734,
+          "peak_kind": "kernel HWM observed in sampler",
+          "receipt": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C093c-sevennest-24G",
+          "cgroup_peak_gib": 16.790767669677734,
+          "max_swap_kib": 0
+        }
+      ],
+      "measured": {
+        "arm": "C093c-sevennest-24G",
+        "source": "84d4e695863f663fbaab3301b18da45eaa019a66",
+        "cap": "24G/noSwap",
+        "outcome": "PASS",
+        "peak_rss_gib": 17.042964935302734,
+        "peak_kind": "kernel HWM observed in sampler",
+        "receipt": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C093c-sevennest-24G",
+        "cgroup_peak_gib": 16.790767669677734,
+        "max_swap_kib": 0
+      },
+      "status": "PASS",
+      "cause": "See original failed and fresh-arm receipts; retained RSS is not proof of a live-object leak",
+      "CI_tier": "24G fresh singleton (measured cap, not a proven minimum)"
+    },
+    {
+      "node": "tests/test_v060_pbl_acm2.py::test_v060_acm2_adapter_contract_keys",
+      "attempts": [
+        {
+          "arm": "C115r01",
+          "source": "a8dce009eaf9659d04a7efefd043d8574e181352",
+          "cap": "12G/noSwap",
+          "outcome": "PASS",
+          "peak_rss_gib": 3.306243896484375,
+          "peak_kind": "kernel HWM observed in sampler",
+          "receipt": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C115r01",
+          "cgroup_peak_gib": 3.021709442138672,
+          "max_swap_kib": 0
+        }
+      ],
+      "measured": {
+        "arm": "C115r01",
+        "source": "a8dce009eaf9659d04a7efefd043d8574e181352",
+        "cap": "12G/noSwap",
+        "outcome": "PASS",
+        "peak_rss_gib": 3.306243896484375,
+        "peak_kind": "kernel HWM observed in sampler",
+        "receipt": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C115r01",
+        "cgroup_peak_gib": 3.021709442138672,
+        "max_swap_kib": 0
+      },
+      "status": "PASS",
+      "cause": "See original failed and fresh-arm receipts; retained RSS is not proof of a live-object leak",
+      "CI_tier": "12G fresh singleton (measured cap, not a proven minimum)"
+    },
+    {
+      "node": "tests/test_v060_pbl_acm2.py::test_v060_acm2_savepoint_parity_report",
+      "attempts": [
+        {
+          "arm": "C115",
+          "source": "2224d2fdb7e37c3f4c2eb4022f2744c1859c0541",
+          "cap": "6G/noSwap",
+          "outcome": "OOM",
+          "peak_rss_gib": 5.939186096191406,
+          "peak_kind": "sampled lower bound; OOM/running",
+          "receipt": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C115",
+          "cgroup_peak_gib": 6.0,
+          "max_swap_kib": 0
+        },
+        {
+          "arm": "C115b-ACM2-oracle-12G",
+          "source": "a8dce009eaf9659d04a7efefd043d8574e181352",
+          "cap": "12G/noSwap",
+          "outcome": "PASS",
+          "peak_rss_gib": 8.5645751953125,
+          "peak_kind": "kernel HWM observed in sampler",
+          "receipt": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C115b-ACM2-oracle-12G",
+          "cgroup_peak_gib": 8.294513702392578,
+          "max_swap_kib": 0
+        }
+      ],
+      "measured": {
+        "arm": "C115b-ACM2-oracle-12G",
+        "source": "a8dce009eaf9659d04a7efefd043d8574e181352",
+        "cap": "12G/noSwap",
+        "outcome": "PASS",
+        "peak_rss_gib": 8.5645751953125,
+        "peak_kind": "kernel HWM observed in sampler",
+        "receipt": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C115b-ACM2-oracle-12G",
+        "cgroup_peak_gib": 8.294513702392578,
+        "max_swap_kib": 0
+      },
+      "status": "PASS",
+      "cause": "Six 32-level WRF cases in one test; extra-case compilation/retention contribution inferred",
+      "CI_tier": "12G fresh singleton (measured cap, not a proven minimum)"
+    },
+    {
+      "node": "tests/v025/b_column/test_kf_rk.py::test_actual_prod_rk_dispatch_d1_and_composed_keys[False]",
+      "attempts": [
+        {
+          "arm": "C122",
+          "source": "a8dce009eaf9659d04a7efefd043d8574e181352",
+          "cap": "6G/noSwap",
+          "outcome": "OOM",
+          "peak_rss_gib": 5.778209686279297,
+          "peak_kind": "sampled lower bound; OOM/running",
+          "receipt": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C122",
+          "cgroup_peak_gib": 6.0,
+          "max_swap_kib": 0
+        },
+        {
+          "arm": "C122b-KF-prod-False-12G",
+          "source": "a8dce009eaf9659d04a7efefd043d8574e181352",
+          "cap": "12G/noSwap",
+          "outcome": "OOM",
+          "peak_rss_gib": 12.167064666748047,
+          "peak_kind": "sampled lower bound; OOM/running",
+          "receipt": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C122b-KF-prod-False-12G",
+          "cgroup_peak_gib": 11.904327392578125,
+          "max_swap_kib": 0
+        },
+        {
+          "arm": "C122c-KF-prod-False-24G",
+          "source": "a8dce009eaf9659d04a7efefd043d8574e181352",
+          "cap": "24G/noSwap",
+          "outcome": "PASS",
+          "peak_rss_gib": 13.232498168945312,
+          "peak_kind": "kernel HWM observed in sampler",
+          "receipt": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C122c-KF-prod-False-24G",
+          "cgroup_peak_gib": 12.970966339111328,
+          "max_swap_kib": 0
+        }
+      ],
+      "measured": {
+        "arm": "C122c-KF-prod-False-24G",
+        "source": "a8dce009eaf9659d04a7efefd043d8574e181352",
+        "cap": "24G/noSwap",
+        "outcome": "PASS",
+        "peak_rss_gib": 13.232498168945312,
+        "peak_kind": "kernel HWM observed in sampler",
+        "receipt": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C122c-KF-prod-False-24G",
+        "cgroup_peak_gib": 12.970966339111328,
+        "max_swap_kib": 0
+      },
+      "status": "PASS",
+      "cause": "Full PROD input loader peak before eval_shape; not a failed model JIT compile",
+      "phase_attribution": {
+        "receipt": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C122c-KF-prod-False-24G/kf_phase.jsonl",
+        "sha256": "9c1725698498af3c7fdb585794d5dea222ae65ed20f90a1935bba8cca2cad0f9",
+        "loader_finish_hwm_gib": [
+          13.231712341308594
+        ],
+        "eval_shape_finish_hwm_gib": [
+          13.231712341308594
+        ]
+      },
+      "CI_tier": "24G fresh singleton (measured cap, not a proven minimum)"
+    },
+    {
+      "node": "tests/v025/b_column/test_kf_rk.py::test_actual_prod_rk_dispatch_d1_and_composed_keys[True]",
+      "attempts": [
+        {
+          "arm": "C122d-KF-prod-True-12G",
+          "source": "a8dce009eaf9659d04a7efefd043d8574e181352",
+          "cap": "12G/noSwap",
+          "outcome": "OOM",
+          "peak_rss_gib": 7.158786773681641,
+          "peak_kind": "sampled lower bound; OOM/running",
+          "receipt": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C122d-KF-prod-True-12G",
+          "cgroup_peak_gib": 12.0,
+          "max_swap_kib": 0
+        },
+        {
+          "arm": "C122e-KF-prod-True-24G",
+          "source": "a8dce009eaf9659d04a7efefd043d8574e181352",
+          "cap": "24G/noSwap",
+          "outcome": "PASS",
+          "peak_rss_gib": 13.278919219970703,
+          "peak_kind": "kernel HWM observed in sampler",
+          "receipt": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C122e-KF-prod-True-24G",
+          "cgroup_peak_gib": 13.207210540771484,
+          "max_swap_kib": 0
+        }
+      ],
+      "measured": {
+        "arm": "C122e-KF-prod-True-24G",
+        "source": "a8dce009eaf9659d04a7efefd043d8574e181352",
+        "cap": "24G/noSwap",
+        "outcome": "PASS",
+        "peak_rss_gib": 13.278919219970703,
+        "peak_kind": "kernel HWM observed in sampler",
+        "receipt": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C122e-KF-prod-True-24G",
+        "cgroup_peak_gib": 13.207210540771484,
+        "max_swap_kib": 0
+      },
+      "status": "PASS",
+      "cause": "Full PROD input loader peak before eval_shape; not a failed model JIT compile",
+      "phase_attribution": {
+        "receipt": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C122e-KF-prod-True-24G/kf_phase.jsonl",
+        "sha256": "7c9de9b16c2d5e05b27c725a19e18531c75f2f677ed6c81e71a8a365f616eef7",
+        "loader_finish_hwm_gib": [
+          13.278278350830078
+        ],
+        "eval_shape_finish_hwm_gib": [
+          13.278278350830078
+        ]
+      },
+      "CI_tier": "24G fresh singleton (measured cap, not a proven minimum)"
+    },
+    {
+      "node": "tests/v025/b_core/test_h_diabatic_pair.py::test_pair_dispatch_follows_wrf_order",
+      "attempts": [
+        {
+          "arm": "C124",
+          "source": "a8dce009eaf9659d04a7efefd043d8574e181352",
+          "cap": "6G/noSwap",
+          "outcome": "OOM",
+          "peak_rss_gib": 6.094608306884766,
+          "peak_kind": "sampled lower bound; OOM/running",
+          "receipt": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C124",
+          "cgroup_peak_gib": 5.944545745849609,
+          "max_swap_kib": 0
+        },
+        {
+          "arm": "C124b-hdiabatic-12G",
+          "source": "3328611bd85541a1af926de4bfef8a74634f7d18",
+          "cap": "12G/noSwap",
+          "outcome": "OOM",
+          "peak_rss_gib": 7.719295501708984,
+          "peak_kind": "sampled lower bound; OOM/running",
+          "receipt": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C124b-hdiabatic-12G",
+          "cgroup_peak_gib": 12.0,
+          "max_swap_kib": 0
+        },
+        {
+          "arm": "C124c-hdiabatic-24G",
+          "source": "3328611bd85541a1af926de4bfef8a74634f7d18",
+          "cap": "24G/noSwap",
+          "outcome": "PASS",
+          "peak_rss_gib": 13.304367065429688,
+          "peak_kind": "kernel HWM observed in sampler",
+          "receipt": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C124c-hdiabatic-24G",
+          "cgroup_peak_gib": 13.219127655029297,
+          "max_swap_kib": 0
+        }
+      ],
+      "measured": {
+        "arm": "C124c-hdiabatic-24G",
+        "source": "3328611bd85541a1af926de4bfef8a74634f7d18",
+        "cap": "24G/noSwap",
+        "outcome": "PASS",
+        "peak_rss_gib": 13.304367065429688,
+        "peak_kind": "kernel HWM observed in sampler",
+        "receipt": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C124c-hdiabatic-24G",
+        "cgroup_peak_gib": 13.219127655029297,
+        "max_swap_kib": 0
+      },
+      "status": "PASS",
+      "cause": "See original failed and fresh-arm receipts; retained RSS is not proof of a live-object leak",
+      "phase_attribution": {
+        "receipt": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C124c-hdiabatic-24G/kf_phase.jsonl",
+        "sha256": "a0aee02e7df47b97e8dff0fabdf43efcec2e3ec69dda7d88897b794c24e4e571",
+        "loader_finish_hwm_gib": [
+          13.303306579589844
+        ],
+        "eval_shape_finish_hwm_gib": [
+          13.303306579589844,
+          13.303306579589844
+        ]
+      },
+      "CI_tier": "24G fresh singleton (measured cap, not a proven minimum)"
+    },
+    {
+      "node": "tests/v025/b_core/test_root_normal_relax_blend.py::test_nested_children_keep_their_boundary_config",
+      "attempts": [
+        {
+          "arm": "C126h-child-config-12G",
+          "source": "907732be204c6753c4095633d95d211a10ab4d8d",
+          "cap": "12G/noSwap",
+          "outcome": "OOM",
+          "peak_rss_gib": 11.941165924072266,
+          "peak_kind": "sampled lower bound; OOM/running",
+          "receipt": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C126h-child-config-12G",
+          "cgroup_peak_gib": 12.0,
+          "max_swap_kib": 0
+        },
+        {
+          "arm": "C126i-child-config-24G",
+          "source": "907732be204c6753c4095633d95d211a10ab4d8d",
+          "cap": "24G/noSwap",
+          "outcome": "PASS",
+          "peak_rss_gib": 13.209518432617188,
+          "peak_kind": "kernel HWM observed in sampler",
+          "receipt": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C126i-child-config-24G",
+          "cgroup_peak_gib": 13.006057739257812,
+          "max_swap_kib": 0
+        }
+      ],
+      "measured": {
+        "arm": "C126i-child-config-24G",
+        "source": "907732be204c6753c4095633d95d211a10ab4d8d",
+        "cap": "24G/noSwap",
+        "outcome": "PASS",
+        "peak_rss_gib": 13.209518432617188,
+        "peak_kind": "kernel HWM observed in sampler",
+        "receipt": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C126i-child-config-24G",
+        "cgroup_peak_gib": 13.006057739257812,
+        "max_swap_kib": 0
+      },
+      "status": "PASS",
+      "cause": "See original failed and fresh-arm receipts; retained RSS is not proof of a live-object leak",
+      "phase_attribution": {
+        "receipt": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C126i-child-config-24G/kf_phase.jsonl",
+        "sha256": "3a62713c9bc8b412e2123fdb96ca85483465f905e1ce0e0b21f743d25daea63f",
+        "loader_finish_hwm_gib": [
+          13.208213806152344
+        ],
+        "eval_shape_finish_hwm_gib": []
+      },
+      "CI_tier": "24G fresh singleton (measured cap, not a proven minimum)"
+    },
+    {
+      "node": "tests/v025/b_core/test_root_normal_relax_blend.py::test_pre_fix_stage_config_is_rejected",
+      "attempts": [
+        {
+          "arm": "C126f-root-mutant-12G",
+          "source": "907732be204c6753c4095633d95d211a10ab4d8d",
+          "cap": "12G/noSwap",
+          "outcome": "OOM",
+          "peak_rss_gib": 12.069282531738281,
+          "peak_kind": "sampled lower bound; OOM/running",
+          "receipt": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C126f-root-mutant-12G",
+          "cgroup_peak_gib": 12.0,
+          "max_swap_kib": 0
+        },
+        {
+          "arm": "C126g-root-mutant-24G",
+          "source": "907732be204c6753c4095633d95d211a10ab4d8d",
+          "cap": "24G/noSwap",
+          "outcome": "PASS",
+          "peak_rss_gib": 13.367721557617188,
+          "peak_kind": "kernel HWM observed in sampler",
+          "receipt": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C126g-root-mutant-24G",
+          "cgroup_peak_gib": 13.115219116210938,
+          "max_swap_kib": 0
+        }
+      ],
+      "measured": {
+        "arm": "C126g-root-mutant-24G",
+        "source": "907732be204c6753c4095633d95d211a10ab4d8d",
+        "cap": "24G/noSwap",
+        "outcome": "PASS",
+        "peak_rss_gib": 13.367721557617188,
+        "peak_kind": "kernel HWM observed in sampler",
+        "receipt": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C126g-root-mutant-24G",
+        "cgroup_peak_gib": 13.115219116210938,
+        "max_swap_kib": 0
+      },
+      "status": "PASS",
+      "cause": "See original failed and fresh-arm receipts; retained RSS is not proof of a live-object leak",
+      "phase_attribution": {
+        "receipt": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C126g-root-mutant-24G/kf_phase.jsonl",
+        "sha256": "68b3913d629670c6eaeca5ebeffffaa197b596e56eadae6663cadb3acff7be28",
+        "loader_finish_hwm_gib": [
+          13.366462707519531
+        ],
+        "eval_shape_finish_hwm_gib": [
+          13.366462707519531
+        ]
+      },
+      "CI_tier": "24G fresh singleton (measured cap, not a proven minimum)"
+    },
+    {
+      "node": "tests/v025/b_core/test_root_normal_relax_blend.py::test_root_own_step_pins_spec_face_without_relax_row_blend[0]",
+      "attempts": [
+        {
+          "arm": "C126",
+          "source": "3328611bd85541a1af926de4bfef8a74634f7d18",
+          "cap": "6G/noSwap",
+          "outcome": "OOM",
+          "peak_rss_gib": 5.5639801025390625,
+          "peak_kind": "sampled lower bound; OOM/running",
+          "receipt": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C126",
+          "cgroup_peak_gib": 6.0,
+          "max_swap_kib": 0
+        },
+        {
+          "arm": "C126b-root-relax-0-12G",
+          "source": "3328611bd85541a1af926de4bfef8a74634f7d18",
+          "cap": "12G/noSwap",
+          "outcome": "OOM",
+          "peak_rss_gib": 11.423095703125,
+          "peak_kind": "sampled lower bound; OOM/running",
+          "receipt": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C126b-root-relax-0-12G",
+          "cgroup_peak_gib": 11.14581298828125,
+          "max_swap_kib": 0
+        },
+        {
+          "arm": "C126c-root-relax-0-24G",
+          "source": "3328611bd85541a1af926de4bfef8a74634f7d18",
+          "cap": "24G/noSwap",
+          "outcome": "PASS",
+          "peak_rss_gib": 13.181034088134766,
+          "peak_kind": "kernel HWM observed in sampler",
+          "receipt": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C126c-root-relax-0-24G",
+          "cgroup_peak_gib": 12.906768798828125,
+          "max_swap_kib": 0
+        }
+      ],
+      "measured": {
+        "arm": "C126c-root-relax-0-24G",
+        "source": "3328611bd85541a1af926de4bfef8a74634f7d18",
+        "cap": "24G/noSwap",
+        "outcome": "PASS",
+        "peak_rss_gib": 13.181034088134766,
+        "peak_kind": "kernel HWM observed in sampler",
+        "receipt": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C126c-root-relax-0-24G",
+        "cgroup_peak_gib": 12.906768798828125,
+        "max_swap_kib": 0
+      },
+      "status": "PASS",
+      "cause": "See original failed and fresh-arm receipts; retained RSS is not proof of a live-object leak",
+      "phase_attribution": {
+        "receipt": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C126c-root-relax-0-24G/kf_phase.jsonl",
+        "sha256": "b119d7e57cb13e2149eb8dfe43fef5338587a2075168c186fb33e86e639cb04b",
+        "loader_finish_hwm_gib": [
+          13.17990493774414
+        ],
+        "eval_shape_finish_hwm_gib": [
+          13.17990493774414
+        ]
+      },
+      "CI_tier": "24G fresh singleton (measured cap, not a proven minimum)"
+    },
+    {
+      "node": "tests/v025/b_core/test_root_normal_relax_blend.py::test_root_own_step_pins_spec_face_without_relax_row_blend[1]",
+      "attempts": [
+        {
+          "arm": "C126d-root-relax-1-12G",
+          "source": "907732be204c6753c4095633d95d211a10ab4d8d",
+          "cap": "12G/noSwap",
+          "outcome": "OOM",
+          "peak_rss_gib": 12.165885925292969,
+          "peak_kind": "sampled lower bound; OOM/running",
+          "receipt": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C126d-root-relax-1-12G",
+          "cgroup_peak_gib": 11.909404754638672,
+          "max_swap_kib": 0
+        },
+        {
+          "arm": "C126e-root-relax-1-24G",
+          "source": "907732be204c6753c4095633d95d211a10ab4d8d",
+          "cap": "24G/noSwap",
+          "outcome": "PASS",
+          "peak_rss_gib": 13.254337310791016,
+          "peak_kind": "kernel HWM observed in sampler",
+          "receipt": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C126e-root-relax-1-24G",
+          "cgroup_peak_gib": 13.154365539550781,
+          "max_swap_kib": 0
+        }
+      ],
+      "measured": {
+        "arm": "C126e-root-relax-1-24G",
+        "source": "907732be204c6753c4095633d95d211a10ab4d8d",
+        "cap": "24G/noSwap",
+        "outcome": "PASS",
+        "peak_rss_gib": 13.254337310791016,
+        "peak_kind": "kernel HWM observed in sampler",
+        "receipt": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C126e-root-relax-1-24G",
+        "cgroup_peak_gib": 13.154365539550781,
+        "max_swap_kib": 0
+      },
+      "status": "PASS",
+      "cause": "See original failed and fresh-arm receipts; retained RSS is not proof of a live-object leak",
+      "phase_attribution": {
+        "receipt": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C126e-root-relax-1-24G/kf_phase.jsonl",
+        "sha256": "52a48d93bd6a9629418cccb2910cc153ccbb8604e3f9b0773fa73fd1f5834aa9",
+        "loader_finish_hwm_gib": [
+          13.253154754638672
+        ],
+        "eval_shape_finish_hwm_gib": [
+          13.253154754638672
+        ]
+      },
+      "CI_tier": "24G fresh singleton (measured cap, not a proven minimum)"
+    },
+    {
+      "node": "tests/v025/b_core/test_root_number_transport.py::test_root_own_step_transports_ni_nr",
+      "attempts": [
+        {
+          "arm": "C126j-root-number-12G",
+          "source": "907732be204c6753c4095633d95d211a10ab4d8d",
+          "cap": "12G/noSwap",
+          "outcome": "OOM",
+          "peak_rss_gib": 11.870353698730469,
+          "peak_kind": "sampled lower bound; OOM/running",
+          "receipt": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C126j-root-number-12G",
+          "cgroup_peak_gib": 12.0,
+          "max_swap_kib": 0
+        },
+        {
+          "arm": "C126k-root-number-24G",
+          "source": "907732be204c6753c4095633d95d211a10ab4d8d",
+          "cap": "24G/noSwap",
+          "outcome": "PASS",
+          "peak_rss_gib": 13.50274658203125,
+          "peak_kind": "kernel HWM observed in sampler",
+          "receipt": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C126k-root-number-24G",
+          "cgroup_peak_gib": 13.357425689697266,
+          "max_swap_kib": 0
+        }
+      ],
+      "measured": {
+        "arm": "C126k-root-number-24G",
+        "source": "907732be204c6753c4095633d95d211a10ab4d8d",
+        "cap": "24G/noSwap",
+        "outcome": "PASS",
+        "peak_rss_gib": 13.50274658203125,
+        "peak_kind": "kernel HWM observed in sampler",
+        "receipt": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C126k-root-number-24G",
+        "cgroup_peak_gib": 13.357425689697266,
+        "max_swap_kib": 0
+      },
+      "status": "PASS",
+      "cause": "See original failed and fresh-arm receipts; retained RSS is not proof of a live-object leak",
+      "phase_attribution": {
+        "receipt": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C126k-root-number-24G/kf_phase.jsonl",
+        "sha256": "9e2ef847e7c5b2ef509f524f2021c8913c55cfd337671e6aebcb01d68bfe6ff5",
+        "loader_finish_hwm_gib": [
+          13.501964569091797
+        ],
+        "eval_shape_finish_hwm_gib": [
+          13.501964569091797,
+          13.501964569091797
+        ]
+      },
+      "CI_tier": "24G fresh singleton (measured cap, not a proven minimum)"
+    },
+    {
+      "node": "tests/v025/b_core/test_root_sixth_order.py::test_periodic_programs_keep_released_sixth_order",
+      "attempts": [
+        {
+          "arm": "C127h02-12G",
+          "source": "d159fdf7e8eaa064e86d59c13ddd9b4a3a057fb0",
+          "cap": "12G/noSwap",
+          "outcome": "OOM",
+          "peak_rss_gib": 12.178535461425781,
+          "peak_kind": "sampled lower bound; OOM/running",
+          "receipt": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C127h02-12G",
+          "cgroup_peak_gib": 12.0,
+          "max_swap_kib": 0
+        },
+        {
+          "arm": "C127h02-24G",
+          "source": "d159fdf7e8eaa064e86d59c13ddd9b4a3a057fb0",
+          "cap": "24G/noSwap",
+          "outcome": "PASS",
+          "peak_rss_gib": 13.246124267578125,
+          "peak_kind": "kernel HWM observed in sampler",
+          "receipt": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C127h02-24G",
+          "cgroup_peak_gib": 13.081748962402344,
+          "max_swap_kib": 0
+        }
+      ],
+      "measured": {
+        "arm": "C127h02-24G",
+        "source": "d159fdf7e8eaa064e86d59c13ddd9b4a3a057fb0",
+        "cap": "24G/noSwap",
+        "outcome": "PASS",
+        "peak_rss_gib": 13.246124267578125,
+        "peak_kind": "kernel HWM observed in sampler",
+        "receipt": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C127h02-24G",
+        "cgroup_peak_gib": 13.081748962402344,
+        "max_swap_kib": 0
+      },
+      "status": "PASS",
+      "cause": "See original failed and fresh-arm receipts; retained RSS is not proof of a live-object leak",
+      "phase_attribution": {
+        "receipt": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C127h02-24G/kf_phase.jsonl",
+        "sha256": "479593d5ce3f7332449563f0f4e9ab1f0989df934235c4a65a5523dcfbc9c393",
+        "loader_finish_hwm_gib": [
+          13.244964599609375
+        ],
+        "eval_shape_finish_hwm_gib": [
+          13.244964599609375
+        ]
+      },
+      "CI_tier": "24G fresh singleton (measured cap, not a proven minimum)"
+    },
+    {
+      "node": "tests/v025/b_core/test_root_sixth_order.py::test_scalar_sixth_order_uses_rk1_post_acoustic_muts[d01]",
+      "attempts": [
+        {
+          "arm": "C127h03-12G",
+          "source": "d159fdf7e8eaa064e86d59c13ddd9b4a3a057fb0",
+          "cap": "12G/noSwap",
+          "outcome": "OOM",
+          "peak_rss_gib": 11.589038848876953,
+          "peak_kind": "sampled lower bound; OOM/running",
+          "receipt": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C127h03-12G",
+          "cgroup_peak_gib": 12.0,
+          "max_swap_kib": 0
+        },
+        {
+          "arm": "C127h03-24G",
+          "source": "d159fdf7e8eaa064e86d59c13ddd9b4a3a057fb0",
+          "cap": "24G/noSwap",
+          "outcome": "PASS",
+          "peak_rss_gib": 13.23904800415039,
+          "peak_kind": "kernel HWM observed in sampler",
+          "receipt": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C127h03-24G",
+          "cgroup_peak_gib": 13.067825317382812,
+          "max_swap_kib": 0
+        }
+      ],
+      "measured": {
+        "arm": "C127h03-24G",
+        "source": "d159fdf7e8eaa064e86d59c13ddd9b4a3a057fb0",
+        "cap": "24G/noSwap",
+        "outcome": "PASS",
+        "peak_rss_gib": 13.23904800415039,
+        "peak_kind": "kernel HWM observed in sampler",
+        "receipt": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C127h03-24G",
+        "cgroup_peak_gib": 13.067825317382812,
+        "max_swap_kib": 0
+      },
+      "status": "PASS",
+      "cause": "See original failed and fresh-arm receipts; retained RSS is not proof of a live-object leak",
+      "phase_attribution": {
+        "receipt": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C127h03-24G/kf_phase.jsonl",
+        "sha256": "02c3077c9be6826171ac9e955f4c5d2c9e35f236156fe436067a44f3ef9b7c8e",
+        "loader_finish_hwm_gib": [
+          13.238155364990234
+        ],
+        "eval_shape_finish_hwm_gib": [
+          13.238155364990234
+        ]
+      },
+      "CI_tier": "24G fresh singleton (measured cap, not a proven minimum)"
+    },
+    {
+      "node": "tests/v025/b_core/test_root_sixth_order.py::test_scalar_sixth_order_uses_rk1_post_acoustic_muts[d02]",
+      "attempts": [
+        {
+          "arm": "C127h04-12G",
+          "source": "d159fdf7e8eaa064e86d59c13ddd9b4a3a057fb0",
+          "cap": "12G/noSwap",
+          "outcome": "OOM",
+          "peak_rss_gib": 11.96820068359375,
+          "peak_kind": "sampled lower bound; OOM/running",
+          "receipt": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C127h04-12G",
+          "cgroup_peak_gib": 12.0,
+          "max_swap_kib": 0
+        },
+        {
+          "arm": "C127h04-24G",
+          "source": "d159fdf7e8eaa064e86d59c13ddd9b4a3a057fb0",
+          "cap": "24G/noSwap",
+          "outcome": "PASS",
+          "peak_rss_gib": 13.26040267944336,
+          "peak_kind": "kernel HWM observed in sampler",
+          "receipt": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C127h04-24G",
+          "cgroup_peak_gib": 12.984394073486328,
+          "max_swap_kib": 0
+        }
+      ],
+      "measured": {
+        "arm": "C127h04-24G",
+        "source": "d159fdf7e8eaa064e86d59c13ddd9b4a3a057fb0",
+        "cap": "24G/noSwap",
+        "outcome": "PASS",
+        "peak_rss_gib": 13.26040267944336,
+        "peak_kind": "kernel HWM observed in sampler",
+        "receipt": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C127h04-24G",
+        "cgroup_peak_gib": 12.984394073486328,
+        "max_swap_kib": 0
+      },
+      "status": "PASS",
+      "cause": "Whole-test kernel HWM already reached inside full PROD input loader; subsequent trace/assertions did not exceed it",
+      "phase_attribution": {
+        "receipt": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C127h04-24G/kf_phase.jsonl",
+        "sha256": "742bb02aaceec04f269f5b186703e0610ffdef51fd74b188e8ffe1a32e04ed15",
+        "loader_finish_hwm_gib": [
+          13.26040267944336
+        ],
+        "eval_shape_finish_hwm_gib": [
+          13.26040267944336
+        ]
+      },
+      "CI_tier": "24G fresh singleton (measured cap, not a proven minimum)"
+    },
+    {
+      "node": "tests/v025/b_core/test_root_sixth_order.py::test_specified_root_uses_frozen_wrf_sixth_order",
+      "attempts": [
+        {
+          "arm": "C127",
+          "source": "d159fdf7e8eaa064e86d59c13ddd9b4a3a057fb0",
+          "cap": "6G/noSwap",
+          "outcome": "OOM",
+          "peak_rss_gib": 5.506710052490234,
+          "peak_kind": "sampled lower bound; OOM/running",
+          "receipt": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C127",
+          "cgroup_peak_gib": 5.219581604003906,
+          "max_swap_kib": 0
+        },
+        {
+          "arm": "C127h01-12G",
+          "source": "d159fdf7e8eaa064e86d59c13ddd9b4a3a057fb0",
+          "cap": "12G/noSwap",
+          "outcome": "OOM",
+          "peak_rss_gib": 12.054985046386719,
+          "peak_kind": "sampled lower bound; OOM/running",
+          "receipt": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C127h01-12G",
+          "cgroup_peak_gib": 12.0,
+          "max_swap_kib": 0
+        },
+        {
+          "arm": "C127h01-24G",
+          "source": "d159fdf7e8eaa064e86d59c13ddd9b4a3a057fb0",
+          "cap": "24G/noSwap",
+          "outcome": "PASS",
+          "peak_rss_gib": 13.184093475341797,
+          "peak_kind": "kernel HWM observed in sampler",
+          "receipt": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C127h01-24G",
+          "cgroup_peak_gib": 13.044296264648438,
+          "max_swap_kib": 0
+        }
+      ],
+      "measured": {
+        "arm": "C127h01-24G",
+        "source": "d159fdf7e8eaa064e86d59c13ddd9b4a3a057fb0",
+        "cap": "24G/noSwap",
+        "outcome": "PASS",
+        "peak_rss_gib": 13.184093475341797,
+        "peak_kind": "kernel HWM observed in sampler",
+        "receipt": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C127h01-24G",
+        "cgroup_peak_gib": 13.044296264648438,
+        "max_swap_kib": 0
+      },
+      "status": "PASS",
+      "cause": "See original failed and fresh-arm receipts; retained RSS is not proof of a live-object leak",
+      "phase_attribution": {
+        "receipt": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C127h01-24G/kf_phase.jsonl",
+        "sha256": "c283973eda3bfd2d03020eb0b28a402e6afd68aeb750b0bcea68833bca96b997",
+        "loader_finish_hwm_gib": [
+          13.183406829833984
+        ],
+        "eval_shape_finish_hwm_gib": [
+          13.183406829833984
+        ]
+      },
+      "CI_tier": "24G fresh singleton (measured cap, not a proven minimum)"
+    },
+    {
+      "node": "tests/v025/b_diff/test_nest_scalar_spec_final.py::test_nest_own_step_dispatch_on_and_off",
+      "attempts": [
+        {
+          "arm": "C127h05-12G",
+          "source": "d159fdf7e8eaa064e86d59c13ddd9b4a3a057fb0",
+          "cap": "12G/noSwap",
+          "outcome": "OOM",
+          "peak_rss_gib": 12.27865982055664,
+          "peak_kind": "sampled lower bound; OOM/running",
+          "receipt": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C127h05-12G",
+          "cgroup_peak_gib": 12.0,
+          "max_swap_kib": 0
+        },
+        {
+          "arm": "C127h05-24G",
+          "source": "d159fdf7e8eaa064e86d59c13ddd9b4a3a057fb0",
+          "cap": "24G/noSwap",
+          "outcome": "PASS",
+          "peak_rss_gib": 13.235420227050781,
+          "peak_kind": "kernel HWM observed in sampler",
+          "receipt": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C127h05-24G",
+          "cgroup_peak_gib": 13.174362182617188,
+          "max_swap_kib": 0
+        }
+      ],
+      "measured": {
+        "arm": "C127h05-24G",
+        "source": "d159fdf7e8eaa064e86d59c13ddd9b4a3a057fb0",
+        "cap": "24G/noSwap",
+        "outcome": "PASS",
+        "peak_rss_gib": 13.235420227050781,
+        "peak_kind": "kernel HWM observed in sampler",
+        "receipt": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C127h05-24G",
+        "cgroup_peak_gib": 13.174362182617188,
+        "max_swap_kib": 0
+      },
+      "status": "PASS",
+      "cause": "See original failed and fresh-arm receipts; retained RSS is not proof of a live-object leak",
+      "phase_attribution": {
+        "receipt": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C127h05-24G/kf_phase.jsonl",
+        "sha256": "2d84b28308b55dfeda63cc49f0fdb57f65d908d683b1dff9e8f84613a5d03c1a",
+        "loader_finish_hwm_gib": [
+          13.23492431640625,
+          13.23492431640625
+        ],
+        "eval_shape_finish_hwm_gib": [
+          13.23492431640625,
+          13.23492431640625
+        ]
+      },
+      "CI_tier": "24G fresh singleton (measured cap, not a proven minimum)"
+    },
+    {
+      "node": "tests/v025/b_diff/test_root_scalar_bdy_rk1.py::test_end_of_step_seam_pins_qv_like_spec_bdy_final",
+      "attempts": [
+        {
+          "arm": "C128h02-12G",
+          "source": "d159fdf7e8eaa064e86d59c13ddd9b4a3a057fb0",
+          "cap": "12G/noSwap",
+          "outcome": "OOM",
+          "peak_rss_gib": 12.020008087158203,
+          "peak_kind": "sampled lower bound; OOM/running",
+          "receipt": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C128h02-12G",
+          "cgroup_peak_gib": 12.0,
+          "max_swap_kib": 0
+        },
+        {
+          "arm": "C128h02-24G",
+          "source": "d159fdf7e8eaa064e86d59c13ddd9b4a3a057fb0",
+          "cap": "24G/noSwap",
+          "outcome": "PASS",
+          "peak_rss_gib": 13.237895965576172,
+          "peak_kind": "kernel HWM observed in sampler",
+          "receipt": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C128h02-24G",
+          "cgroup_peak_gib": 13.19417953491211,
+          "max_swap_kib": 0
+        }
+      ],
+      "measured": {
+        "arm": "C128h02-24G",
+        "source": "d159fdf7e8eaa064e86d59c13ddd9b4a3a057fb0",
+        "cap": "24G/noSwap",
+        "outcome": "PASS",
+        "peak_rss_gib": 13.237895965576172,
+        "peak_kind": "kernel HWM observed in sampler",
+        "receipt": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C128h02-24G",
+        "cgroup_peak_gib": 13.19417953491211,
+        "max_swap_kib": 0
+      },
+      "status": "PASS",
+      "cause": "See original failed and fresh-arm receipts; retained RSS is not proof of a live-object leak",
+      "phase_attribution": {
+        "receipt": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C128h02-24G/kf_phase.jsonl",
+        "sha256": "5eaee99dbe7419826b65affeacceac175a11a6fb5b629a4cb333dc2c6d523482",
+        "loader_finish_hwm_gib": [
+          13.237319946289062
+        ],
+        "eval_shape_finish_hwm_gib": []
+      },
+      "CI_tier": "24G fresh singleton (measured cap, not a proven minimum)"
+    },
+    {
+      "node": "tests/v025/b_diff/test_root_scalar_bdy_rk1.py::test_root_own_step_dispatch_on_and_off",
+      "attempts": [
+        {
+          "arm": "C128h01-12G",
+          "source": "d159fdf7e8eaa064e86d59c13ddd9b4a3a057fb0",
+          "cap": "12G/noSwap",
+          "outcome": "OOM",
+          "peak_rss_gib": 11.948795318603516,
+          "peak_kind": "sampled lower bound; OOM/running",
+          "receipt": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C128h01-12G",
+          "cgroup_peak_gib": 12.0,
+          "max_swap_kib": 0
+        },
+        {
+          "arm": "C128h01-24G",
+          "source": "d159fdf7e8eaa064e86d59c13ddd9b4a3a057fb0",
+          "cap": "24G/noSwap",
+          "outcome": "PASS",
+          "peak_rss_gib": 13.327770233154297,
+          "peak_kind": "kernel HWM observed in sampler",
+          "receipt": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C128h01-24G",
+          "cgroup_peak_gib": 13.219867706298828,
+          "max_swap_kib": 0
+        }
+      ],
+      "measured": {
+        "arm": "C128h01-24G",
+        "source": "d159fdf7e8eaa064e86d59c13ddd9b4a3a057fb0",
+        "cap": "24G/noSwap",
+        "outcome": "PASS",
+        "peak_rss_gib": 13.327770233154297,
+        "peak_kind": "kernel HWM observed in sampler",
+        "receipt": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C128h01-24G",
+        "cgroup_peak_gib": 13.219867706298828,
+        "max_swap_kib": 0
+      },
+      "status": "PASS",
+      "cause": "See original failed and fresh-arm receipts; retained RSS is not proof of a live-object leak",
+      "phase_attribution": {
+        "receipt": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C128h01-24G/kf_phase.jsonl",
+        "sha256": "5983effbbdc90739842ed58024b5802a968f0b3e38371610e3082f6f0ad49e58",
+        "loader_finish_hwm_gib": [
+          13.326732635498047,
+          13.326732635498047
+        ],
+        "eval_shape_finish_hwm_gib": [
+          13.326732635498047,
+          13.326732635498047
+        ]
+      },
+      "CI_tier": "24G fresh singleton (measured cap, not a proven minimum)"
+    },
+    {
+      "node": "tests/v025/fid_q2/test_fidq2_moist_hdiff.py::test_mixing_matches_literal_wrf_on_real_prod_operands",
+      "attempts": [
+        {
+          "arm": "C147h05-12G",
+          "source": "60944e5c73ac9cce01f7616e88c143e6d4f8499d",
+          "cap": "12G/noSwap",
+          "outcome": "OOM",
+          "peak_rss_gib": 12.175670623779297,
+          "peak_kind": "sampled lower bound; OOM/running",
+          "receipt": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C147h05-12G",
+          "cgroup_peak_gib": 12.0,
+          "max_swap_kib": 0
+        },
+        {
+          "arm": "C147h05-24G",
+          "source": "60944e5c73ac9cce01f7616e88c143e6d4f8499d",
+          "cap": "24G/noSwap",
+          "outcome": "PASS",
+          "peak_rss_gib": 13.187416076660156,
+          "peak_kind": "kernel HWM observed in sampler",
+          "receipt": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C147h05-24G",
+          "cgroup_peak_gib": 12.930187225341797,
+          "max_swap_kib": 0
+        }
+      ],
+      "measured": {
+        "arm": "C147h05-24G",
+        "source": "60944e5c73ac9cce01f7616e88c143e6d4f8499d",
+        "cap": "24G/noSwap",
+        "outcome": "PASS",
+        "peak_rss_gib": 13.187416076660156,
+        "peak_kind": "kernel HWM observed in sampler",
+        "receipt": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C147h05-24G",
+        "cgroup_peak_gib": 12.930187225341797,
+        "max_swap_kib": 0
+      },
+      "status": "PASS",
+      "cause": "See original failed and fresh-arm receipts; retained RSS is not proof of a live-object leak",
+      "phase_attribution": {
+        "receipt": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C147h05-24G/loader_phase.jsonl",
+        "sha256": "56352f558bc9f9941c0dc5f751e6c226bfa7cc33b5076e89d0b892763e7c5c5e",
+        "loader_finish_hwm_gib": [
+          13.186752319335938
+        ],
+        "eval_shape_finish_hwm_gib": []
+      },
+      "CI_tier": "24G fresh singleton (measured cap, not a proven minimum)"
+    },
+    {
+      "node": "tests/v025/fid_q2/test_fidq2_moist_hdiff.py::test_nested_sc_tend_carries_mixing_without_sixth_order",
+      "attempts": [
+        {
+          "arm": "C147h04-12G",
+          "source": "60944e5c73ac9cce01f7616e88c143e6d4f8499d",
+          "cap": "12G/noSwap",
+          "outcome": "OOM",
+          "peak_rss_gib": 11.991626739501953,
+          "peak_kind": "sampled lower bound; OOM/running",
+          "receipt": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C147h04-12G",
+          "cgroup_peak_gib": 12.0,
+          "max_swap_kib": 0
+        },
+        {
+          "arm": "C147h04-24G",
+          "source": "60944e5c73ac9cce01f7616e88c143e6d4f8499d",
+          "cap": "24G/noSwap",
+          "outcome": "PASS",
+          "peak_rss_gib": 13.24393081665039,
+          "peak_kind": "kernel HWM observed in sampler",
+          "receipt": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C147h04-24G",
+          "cgroup_peak_gib": 13.175178527832031,
+          "max_swap_kib": 0
+        }
+      ],
+      "measured": {
+        "arm": "C147h04-24G",
+        "source": "60944e5c73ac9cce01f7616e88c143e6d4f8499d",
+        "cap": "24G/noSwap",
+        "outcome": "PASS",
+        "peak_rss_gib": 13.24393081665039,
+        "peak_kind": "kernel HWM observed in sampler",
+        "receipt": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C147h04-24G",
+        "cgroup_peak_gib": 13.175178527832031,
+        "max_swap_kib": 0
+      },
+      "status": "PASS",
+      "cause": "See original failed and fresh-arm receipts; retained RSS is not proof of a live-object leak",
+      "phase_attribution": {
+        "receipt": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C147h04-24G/loader_phase.jsonl",
+        "sha256": "adbd33b05d75cd0f3c74a2ad568bcba73eae063c9127c37874ac982fb5a73a6e",
+        "loader_finish_hwm_gib": [
+          13.243003845214844
+        ],
+        "eval_shape_finish_hwm_gib": [
+          13.243003845214844
+        ]
+      },
+      "CI_tier": "24G fresh singleton (measured cap, not a proven minimum)"
+    },
+    {
+      "node": "tests/v025/fid_q2/test_fidq2_moist_hdiff.py::test_root_sc_tend_carries_mixing_without_sixth_order",
+      "attempts": [
+        {
+          "arm": "C147h03-12G",
+          "source": "60944e5c73ac9cce01f7616e88c143e6d4f8499d",
+          "cap": "12G/noSwap",
+          "outcome": "OOM",
+          "peak_rss_gib": 12.276199340820312,
+          "peak_kind": "sampled lower bound; OOM/running",
+          "receipt": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C147h03-12G",
+          "cgroup_peak_gib": 12.0,
+          "max_swap_kib": 0
+        },
+        {
+          "arm": "C147h03-24G",
+          "source": "60944e5c73ac9cce01f7616e88c143e6d4f8499d",
+          "cap": "24G/noSwap",
+          "outcome": "PASS",
+          "peak_rss_gib": 13.243106842041016,
+          "peak_kind": "kernel HWM observed in sampler",
+          "receipt": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C147h03-24G",
+          "cgroup_peak_gib": 13.011524200439453,
+          "max_swap_kib": 0
+        }
+      ],
+      "measured": {
+        "arm": "C147h03-24G",
+        "source": "60944e5c73ac9cce01f7616e88c143e6d4f8499d",
+        "cap": "24G/noSwap",
+        "outcome": "PASS",
+        "peak_rss_gib": 13.243106842041016,
+        "peak_kind": "kernel HWM observed in sampler",
+        "receipt": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C147h03-24G",
+        "cgroup_peak_gib": 13.011524200439453,
+        "max_swap_kib": 0
+      },
+      "status": "PASS",
+      "cause": "See original failed and fresh-arm receipts; retained RSS is not proof of a live-object leak",
+      "phase_attribution": {
+        "receipt": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C147h03-24G/loader_phase.jsonl",
+        "sha256": "df1b373168c9103b8baf455a8005052158173154e514c98c1cb3dbf1f1a795a6",
+        "loader_finish_hwm_gib": [
+          13.243003845214844
+        ],
+        "eval_shape_finish_hwm_gib": [
+          13.243003845214844
+        ]
+      },
+      "CI_tier": "24G fresh singleton (measured cap, not a proven minimum)"
+    },
+    {
+      "node": "tests/v025/fid_q2/test_fidq2_moist_hdiff.py::test_shipping_fp32_kernel_mixing_matches_literal_wrf_on_real_prod_operands",
+      "attempts": [
+        {
+          "arm": "C147h06-12G",
+          "source": "60944e5c73ac9cce01f7616e88c143e6d4f8499d",
+          "cap": "12G/noSwap",
+          "outcome": "OOM",
+          "peak_rss_gib": 11.893791198730469,
+          "peak_kind": "sampled lower bound; OOM/running",
+          "receipt": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C147h06-12G",
+          "cgroup_peak_gib": 12.0,
+          "max_swap_kib": 0
+        },
+        {
+          "arm": "C147h06-24G",
+          "source": "60944e5c73ac9cce01f7616e88c143e6d4f8499d",
+          "cap": "24G/noSwap",
+          "outcome": "PASS",
+          "peak_rss_gib": 13.299446105957031,
+          "peak_kind": "kernel HWM observed in sampler",
+          "receipt": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C147h06-24G",
+          "cgroup_peak_gib": 13.135066986083984,
+          "max_swap_kib": 0
+        }
+      ],
+      "measured": {
+        "arm": "C147h06-24G",
+        "source": "60944e5c73ac9cce01f7616e88c143e6d4f8499d",
+        "cap": "24G/noSwap",
+        "outcome": "PASS",
+        "peak_rss_gib": 13.299446105957031,
+        "peak_kind": "kernel HWM observed in sampler",
+        "receipt": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C147h06-24G",
+        "cgroup_peak_gib": 13.135066986083984,
+        "max_swap_kib": 0
+      },
+      "status": "PASS",
+      "cause": "See original failed and fresh-arm receipts; retained RSS is not proof of a live-object leak",
+      "phase_attribution": {
+        "receipt": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C147h06-24G/loader_phase.jsonl",
+        "sha256": "e5142cea2d3b3a0d4cc9b95c580dce459868a7dfe75e5e7ec7dc6fa40a3f62ad",
+        "loader_finish_hwm_gib": [
+          13.298603057861328
+        ],
+        "eval_shape_finish_hwm_gib": []
+      },
+      "CI_tier": "24G fresh singleton (measured cap, not a proven minimum)"
+    },
+    {
+      "node": "tests/v025/fid_q2/test_fidq2_moist_hdiff.py::test_step_mixes_every_scalar_once_with_rk1_muts_and_theta_xkhh[d01]",
+      "attempts": [
+        {
+          "arm": "C147",
+          "source": "60944e5c73ac9cce01f7616e88c143e6d4f8499d",
+          "cap": "6G/noSwap",
+          "outcome": "OOM",
+          "peak_rss_gib": 5.5538787841796875,
+          "peak_kind": "sampled lower bound; OOM/running",
+          "receipt": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C147",
+          "cgroup_peak_gib": 5.313987731933594,
+          "max_swap_kib": 0
+        },
+        {
+          "arm": "C147h01-12G",
+          "source": "60944e5c73ac9cce01f7616e88c143e6d4f8499d",
+          "cap": "12G/noSwap",
+          "outcome": "OOM",
+          "peak_rss_gib": 12.040508270263672,
+          "peak_kind": "sampled lower bound; OOM/running",
+          "receipt": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C147h01-12G",
+          "cgroup_peak_gib": 12.0,
+          "max_swap_kib": 0
+        },
+        {
+          "arm": "C147h01-24G",
+          "source": "60944e5c73ac9cce01f7616e88c143e6d4f8499d",
+          "cap": "24G/noSwap",
+          "outcome": "PASS",
+          "peak_rss_gib": 13.290130615234375,
+          "peak_kind": "kernel HWM observed in sampler",
+          "receipt": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C147h01-24G",
+          "cgroup_peak_gib": 13.079879760742188,
+          "max_swap_kib": 0
+        }
+      ],
+      "measured": {
+        "arm": "C147h01-24G",
+        "source": "60944e5c73ac9cce01f7616e88c143e6d4f8499d",
+        "cap": "24G/noSwap",
+        "outcome": "PASS",
+        "peak_rss_gib": 13.290130615234375,
+        "peak_kind": "kernel HWM observed in sampler",
+        "receipt": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C147h01-24G",
+        "cgroup_peak_gib": 13.079879760742188,
+        "max_swap_kib": 0
+      },
+      "status": "PASS",
+      "cause": "See original failed and fresh-arm receipts; retained RSS is not proof of a live-object leak",
+      "phase_attribution": {
+        "receipt": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C147h01-24G/loader_phase.jsonl",
+        "sha256": "a8b30e6a00b28c95c30e56b154681002fbfdb22d95fb5ffa339963ae0c400af2",
+        "loader_finish_hwm_gib": [
+          13.289127349853516
+        ],
+        "eval_shape_finish_hwm_gib": [
+          13.289127349853516
+        ]
+      },
+      "CI_tier": "24G fresh singleton (measured cap, not a proven minimum)"
+    },
+    {
+      "node": "tests/v025/fid_q2/test_fidq2_moist_hdiff.py::test_step_mixes_every_scalar_once_with_rk1_muts_and_theta_xkhh[d02]",
+      "attempts": [
+        {
+          "arm": "C147h02-12G",
+          "source": "60944e5c73ac9cce01f7616e88c143e6d4f8499d",
+          "cap": "12G/noSwap",
+          "outcome": "OOM",
+          "peak_rss_gib": 11.975143432617188,
+          "peak_kind": "sampled lower bound; OOM/running",
+          "receipt": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C147h02-12G",
+          "cgroup_peak_gib": 12.0,
+          "max_swap_kib": 0
+        },
+        {
+          "arm": "C147h02-24G",
+          "source": "60944e5c73ac9cce01f7616e88c143e6d4f8499d",
+          "cap": "24G/noSwap",
+          "outcome": "PASS",
+          "peak_rss_gib": 13.260078430175781,
+          "peak_kind": "kernel HWM observed in sampler",
+          "receipt": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C147h02-24G",
+          "cgroup_peak_gib": 13.027923583984375,
+          "max_swap_kib": 0
+        }
+      ],
+      "measured": {
+        "arm": "C147h02-24G",
+        "source": "60944e5c73ac9cce01f7616e88c143e6d4f8499d",
+        "cap": "24G/noSwap",
+        "outcome": "PASS",
+        "peak_rss_gib": 13.260078430175781,
+        "peak_kind": "kernel HWM observed in sampler",
+        "receipt": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C147h02-24G",
+        "cgroup_peak_gib": 13.027923583984375,
+        "max_swap_kib": 0
+      },
+      "status": "PASS",
+      "cause": "See original failed and fresh-arm receipts; retained RSS is not proof of a live-object leak",
+      "phase_attribution": {
+        "receipt": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C147h02-24G/loader_phase.jsonl",
+        "sha256": "1f3292597d3952ff3c67a9071cfa029c16dc2ce2c025368db091642910910a8f",
+        "loader_finish_hwm_gib": [
+          13.259166717529297
+        ],
+        "eval_shape_finish_hwm_gib": [
+          13.259166717529297
+        ]
+      },
+      "CI_tier": "24G fresh singleton (measured cap, not a proven minimum)"
+    },
+    {
+      "node": "tests/v040/rootbdy/test_root_flow_extras.py::test_swiss_production_step_dispatches_extra_flow_dep[24]",
+      "attempts": [
+        {
+          "arm": "N023",
+          "source": "55c4e486170d7bedd1db35726a4491c7112040cc",
+          "cap": "12G/noSwap",
+          "outcome": "PASS",
+          "peak_rss_gib": 5.128772735595703,
+          "peak_kind": "kernel HWM recorded at completed test",
+          "receipt": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/N023"
+        }
+      ],
+      "measured": {
+        "arm": "N023",
+        "source": "55c4e486170d7bedd1db35726a4491c7112040cc",
+        "cap": "12G/noSwap",
+        "outcome": "PASS",
+        "peak_rss_gib": 5.128772735595703,
+        "peak_kind": "kernel HWM recorded at completed test",
+        "receipt": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/N023"
+      },
+      "status": "PASS",
+      "cause": "See original failed and fresh-arm receipts; retained RSS is not proof of a live-object leak",
+      "CI_tier": "12G fresh singleton (measured cap, not a proven minimum)"
+    },
+    {
+      "node": "tests/v040/rootbdy/test_root_flow_extras.py::test_swiss_production_step_dispatches_extra_flow_dep[28]",
+      "attempts": [
+        {
+          "arm": "C002h-MP28-12G",
+          "source": "69e1a529807c24590a227961cd9916eb477d291a",
+          "cap": "12G/noSwap",
+          "outcome": "PASS",
+          "peak_rss_gib": 5.29656982421875,
+          "peak_kind": "kernel HWM recorded at completed test",
+          "receipt": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C002h-MP28-12G"
+        },
+        {
+          "arm": "D04-original-root28-memory",
+          "source": "c9bb4a76cf42f51302084c100fe034a03cc9a716",
+          "cap": "12G/noSwap",
+          "outcome": "PASS",
+          "peak_rss_gib": 5.4098052978515625,
+          "peak_kind": "kernel HWM recorded at completed test",
+          "receipt": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/D04-original-root28-memory"
+        }
+      ],
+      "measured": {
+        "arm": "C002h-MP28-12G",
+        "source": "69e1a529807c24590a227961cd9916eb477d291a",
+        "cap": "12G/noSwap",
+        "outcome": "PASS",
+        "peak_rss_gib": 5.29656982421875,
+        "peak_kind": "kernel HWM recorded at completed test",
+        "receipt": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C002h-MP28-12G"
+      },
+      "status": "PASS",
+      "cause": "See original failed and fresh-arm receipts; retained RSS is not proof of a live-object leak",
+      "CI_tier": "12G fresh singleton (measured cap, not a proven minimum)"
+    },
+    {
+      "node": "tests/v040/rootbdy/test_root_flow_extras.py::test_swiss_production_step_dispatches_extra_flow_dep[40]",
+      "attempts": [
+        {
+          "arm": "C002i-MP40-12G",
+          "source": "69e1a529807c24590a227961cd9916eb477d291a",
+          "cap": "12G/noSwap",
+          "outcome": "PASS",
+          "peak_rss_gib": 4.9748687744140625,
+          "peak_kind": "kernel HWM recorded at completed test",
+          "receipt": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C002i-MP40-12G"
+        }
+      ],
+      "measured": {
+        "arm": "C002i-MP40-12G",
+        "source": "69e1a529807c24590a227961cd9916eb477d291a",
+        "cap": "12G/noSwap",
+        "outcome": "PASS",
+        "peak_rss_gib": 4.9748687744140625,
+        "peak_kind": "kernel HWM recorded at completed test",
+        "receipt": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C002i-MP40-12G"
+      },
+      "status": "PASS",
+      "cause": "See original failed and fresh-arm receipts; retained RSS is not proof of a live-object leak",
+      "CI_tier": "12G fresh singleton (measured cap, not a proven minimum)"
+    }
+  ],
+  "receipts": [
+    {
+      "arm": "C002h-MP28-12G",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C002h-MP28-12G",
+      "source": "69e1a529807c24590a227961cd9916eb477d291a",
+      "command_sha256": "e1d4a6ccb48da9784a22dfa33e0a7136b9bb2ad36c9ee5ad4b7eb549e2b2db5f",
+      "xml_sha256": "c1b1408cc15e3e361f2e66b66e5c7c39e9ea2d93dbc38fd17f6cf6988d2844e0"
+    },
+    {
+      "arm": "C002i-MP40-12G",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C002i-MP40-12G",
+      "source": "69e1a529807c24590a227961cd9916eb477d291a",
+      "command_sha256": "c5fccd27e3339721900352266242e01b75b349bac8022e7cbe67ff3c27a2d9cb",
+      "xml_sha256": "bdc9ef5663fa4a391412fd19979d6cb5acaedbcc95a018cbb1682f18c0115fb0"
+    },
+    {
+      "arm": "C030",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C030",
+      "source": "69e1a529807c24590a227961cd9916eb477d291a",
+      "command_sha256": "78d31e496e5b165422dd6c0130a99b8ffd74423db087ecb6ff3a83e3e9928ff4"
+    },
+    {
+      "arm": "C030b-SMS-compiled-12G",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C030b-SMS-compiled-12G",
+      "source": "69e1a529807c24590a227961cd9916eb477d291a",
+      "command_sha256": "169fc419476c2b465eda5536166e4e74ad5633bb1a9fa5be5b68555718e9eee5"
+    },
+    {
+      "arm": "C030c-SMS-three-step-12G",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C030c-SMS-three-step-12G",
+      "source": "69e1a529807c24590a227961cd9916eb477d291a",
+      "command_sha256": "63caf57e73cebbe211381d1c30ec88f8ee0ec0ad272771fca8a201fb6368f503",
+      "xml_sha256": "8f54d3fee6d5590822f32f9202fbc269958991b74452277c7b830b9f431ea3de"
+    },
+    {
+      "arm": "C030d-SMS-compiled-24G",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C030d-SMS-compiled-24G",
+      "source": "69e1a529807c24590a227961cd9916eb477d291a",
+      "command_sha256": "05a9f794d4b50a463484ecc7d2238ad55bb51bc140cec552ecbc8aa1a8b0f20d",
+      "xml_sha256": "634f02b3fdfa9c75d81e4f1c668d662d3770c709c512d636ce8f1d4998ea5ec8"
+    },
+    {
+      "arm": "C048",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C048",
+      "source": "86eeee9df2c6e6994822a1e2a4f595f9ce1ad169",
+      "command_sha256": "76811fde405fabebbbec4a89f391d37756bc9d09ca550342d92441aebd03bf10"
+    },
+    {
+      "arm": "C048b-coupled-tap-12G",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C048b-coupled-tap-12G",
+      "source": "9ca91c01b221aeaca6f1b9159f10439c1012d633",
+      "command_sha256": "51198a394aabe1d744d978a64044beac51ebda99a3f82781911a39c4446632b8"
+    },
+    {
+      "arm": "C087",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C087",
+      "source": "028047e967c3d52113d43b87d115ef2d247005a8",
+      "command_sha256": "6b0b869e56de32ebcf5a8fa3535a019a6ed6056c00041b22663f29adbd2f6e6e"
+    },
+    {
+      "arm": "C087b-mp38-12G",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C087b-mp38-12G",
+      "source": "028047e967c3d52113d43b87d115ef2d247005a8",
+      "command_sha256": "77d43b86dfa42b34dc5a93bd9dcb20ec456b6497079e25403be2bf1aab50bdce",
+      "xml_sha256": "4caab1da1e401d0c5765d32089e811fc62eb36df648adfa7fb30b4b6cfce84a4"
+    },
+    {
+      "arm": "C087r05",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C087r05",
+      "source": "028047e967c3d52113d43b87d115ef2d247005a8",
+      "command_sha256": "80b8a94818de978b53b2285c051bfc54b270a23a2f6b44bdd827e9ae80e9c797",
+      "xml_sha256": "baaedd2e200acff1bd2ea0d3cbd56495108a73d814520739b9db3b388bbdbfff"
+    },
+    {
+      "arm": "C087r06",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C087r06",
+      "source": "028047e967c3d52113d43b87d115ef2d247005a8",
+      "command_sha256": "c712a365ff076d7c2f72cd8bf4ea22b8ead945f34a64511dc36d27924563967b",
+      "xml_sha256": "f1bc3cf8e5ac1b680c38d1ac481719cf1567247b4134ba1e8e4798bc69c743e8"
+    },
+    {
+      "arm": "C087r07",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C087r07",
+      "source": "028047e967c3d52113d43b87d115ef2d247005a8",
+      "command_sha256": "3b7d9af2c3de85b1df47ea3bd9152dae6537112fe234611ee05ea1f950ead7bd",
+      "xml_sha256": "06b3b1d7ef4a761d2601a83127e1c331399471a946b63246299420ba438e6aa5"
+    },
+    {
+      "arm": "C087r08",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C087r08",
+      "source": "028047e967c3d52113d43b87d115ef2d247005a8",
+      "command_sha256": "e962b1b27742ecb0f7bc3c48f467080666c6f128fcfdb4f2a9e83bf07588abc2",
+      "xml_sha256": "9889f66b1aad04f79ca944b4664b3c24991bc51431372fb851726e2a35b2191c"
+    },
+    {
+      "arm": "C087r09",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C087r09",
+      "source": "028047e967c3d52113d43b87d115ef2d247005a8",
+      "command_sha256": "7624777fba2e22cbc4eb54a296065e751b7fffaf9e8989ef209fa4fb738d652c",
+      "xml_sha256": "f048b8868afc5e160647e2f8c3d04c4083eb344b682e986213a67383116425c2"
+    },
+    {
+      "arm": "C087r10",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C087r10",
+      "source": "028047e967c3d52113d43b87d115ef2d247005a8",
+      "command_sha256": "0c3fd283a27b70fddc6cb76929c621b1b41abba9131102c9b196d9f6fbea3293",
+      "xml_sha256": "baa9484e4b507d8a687e637ef1c56d08b311376f980103e982c5497e046b50b6"
+    },
+    {
+      "arm": "C087r11",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C087r11",
+      "source": "028047e967c3d52113d43b87d115ef2d247005a8",
+      "command_sha256": "6197f4c6e8a7ef4624a3886a41f7a81ef9749585142b921c08d0e5130c8a87ba",
+      "xml_sha256": "bcde5f52bef0ac525adb99638975a7202009ec5df80d9b3d4dc736d7e3ab0feb"
+    },
+    {
+      "arm": "C087r12",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C087r12",
+      "source": "028047e967c3d52113d43b87d115ef2d247005a8",
+      "command_sha256": "8362dce9be173e00b3f2c084f7c780e7e16138b037235dc9209e82e21fe733bf",
+      "xml_sha256": "20cfe7a74fb8adc7332a5809e9ea465b8545db83c80251bc4bdabe4fe99f9a94"
+    },
+    {
+      "arm": "C087r13",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C087r13",
+      "source": "028047e967c3d52113d43b87d115ef2d247005a8",
+      "command_sha256": "cc88df5398abdcdaadc1affd53d7b90064081dffc8d1bfd741abb2288a97702b",
+      "xml_sha256": "206208c169b22337800678f667d330ae23a3903ad1f4ef7f768708df39c90196"
+    },
+    {
+      "arm": "C088",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C088",
+      "source": "e0a611d5e0d045d4c33af0c1db15f3da4475a62b",
+      "command_sha256": "3344e5f75eab71d24b52d272983285aeef971e24db5397eb9f89aa4813f5c856"
+    },
+    {
+      "arm": "C088b-fp64-case5-12G",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C088b-fp64-case5-12G",
+      "source": "e0a611d5e0d045d4c33af0c1db15f3da4475a62b",
+      "command_sha256": "741c545533dc7cfca39bd63e0337c3f22d97f4d8a67dd78d8d6e8f0d13dfe94b",
+      "xml_sha256": "e43b99a89c2f2edebcd330b33f7dcdc902554a1b0b4c1b02898eb7e9282cd04c"
+    },
+    {
+      "arm": "C093",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C093",
+      "source": "84d4e695863f663fbaab3301b18da45eaa019a66",
+      "command_sha256": "3e7f981917cfb9b0d7da640efb3b7a653f5e5eb71c567a746433570620cdd2fd"
+    },
+    {
+      "arm": "C093b-sevennest-12G",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C093b-sevennest-12G",
+      "source": "84d4e695863f663fbaab3301b18da45eaa019a66",
+      "command_sha256": "401c4d963a7262c33d279fa3c84658a9fa71fe7147e516231978a72552db5fae"
+    },
+    {
+      "arm": "C093c-sevennest-24G",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C093c-sevennest-24G",
+      "source": "84d4e695863f663fbaab3301b18da45eaa019a66",
+      "command_sha256": "6291fbf834dea21d8b499c36912d838b7602c99bb914f3a993cc2373bb55b3c7",
+      "xml_sha256": "a724d8aaebfca44a3eb644d452c9cbd30f8fd69e45f10acb81c0fbe92bb51f02"
+    },
+    {
+      "arm": "C115",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C115",
+      "source": "2224d2fdb7e37c3f4c2eb4022f2744c1859c0541",
+      "command_sha256": "a17d451b2a01c8c91a346f5d34ad32cd6d97cda30398d5639a36bbcf1a7108ac"
+    },
+    {
+      "arm": "C115b-ACM2-oracle-12G",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C115b-ACM2-oracle-12G",
+      "source": "a8dce009eaf9659d04a7efefd043d8574e181352",
+      "command_sha256": "d34f4aae27656c49869b2d2328cf63d16ef78a826dddaa13996eedbaa2779737",
+      "xml_sha256": "63dede57e90034d7582bb562c2beb85d32725802d64b51742a778d5b68f26b5d"
+    },
+    {
+      "arm": "C115r01",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C115r01",
+      "source": "a8dce009eaf9659d04a7efefd043d8574e181352",
+      "command_sha256": "493419b59140cc890a14dcb0f83790d87954017822b863080ef685ebad324254",
+      "xml_sha256": "cae83604a73923e86af27035f2bd6bc12dc6af2b3ab1aab16a892fef424d06f4"
+    },
+    {
+      "arm": "C122",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C122",
+      "source": "a8dce009eaf9659d04a7efefd043d8574e181352",
+      "command_sha256": "f3fb56e05aad2986a1901f1328bafee5b4edb99fc70434913257ceb43591a44f"
+    },
+    {
+      "arm": "C122b-KF-prod-False-12G",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C122b-KF-prod-False-12G",
+      "source": "a8dce009eaf9659d04a7efefd043d8574e181352",
+      "command_sha256": "784f8d0fa75d1130639dbdf58ab1056df5f3e5f4280dbe093828d5fed6d14b4f"
+    },
+    {
+      "arm": "C122c-KF-prod-False-24G",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C122c-KF-prod-False-24G",
+      "source": "a8dce009eaf9659d04a7efefd043d8574e181352",
+      "command_sha256": "3f5142c02c83e259050ae62ced565e4f88337aa1eca61fefece1a219297ed70f",
+      "xml_sha256": "9a43212e36280f5ec923a03cc241e88aaf9347e25ee0acb2df984221a929bd23"
+    },
+    {
+      "arm": "C122d-KF-prod-True-12G",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C122d-KF-prod-True-12G",
+      "source": "a8dce009eaf9659d04a7efefd043d8574e181352",
+      "command_sha256": "36d77a8bd738ed8d8c19b435c1c7528986400ddcb28d46b865881c425d2a4d61"
+    },
+    {
+      "arm": "C122e-KF-prod-True-24G",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C122e-KF-prod-True-24G",
+      "source": "a8dce009eaf9659d04a7efefd043d8574e181352",
+      "command_sha256": "5d1359ba346ba2fa21cd693e371ce0ed7930c3f1bdcc63344b49c63f11304d91",
+      "xml_sha256": "7f827ddff388f03e5b3b5844ae1a16d3a5ff6de46ecc6f452193518eb1d0f3a3"
+    },
+    {
+      "arm": "C124",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C124",
+      "source": "a8dce009eaf9659d04a7efefd043d8574e181352",
+      "command_sha256": "781f5ccfb416b8c8a74a49928be11427892cf4e5dd204d38560914b6df2149bc"
+    },
+    {
+      "arm": "C124b-hdiabatic-12G",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C124b-hdiabatic-12G",
+      "source": "3328611bd85541a1af926de4bfef8a74634f7d18",
+      "command_sha256": "5778d52c44deab09492cdc176b6937cbec632fecbca5d93f7832e33e4272b6a2"
+    },
+    {
+      "arm": "C124c-hdiabatic-24G",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C124c-hdiabatic-24G",
+      "source": "3328611bd85541a1af926de4bfef8a74634f7d18",
+      "command_sha256": "5a4b10d4c0312a2e6e9e482f9f3909f0a9aec66d6fb9f2ad13f13eba565ee5a0",
+      "xml_sha256": "16d0a34f34a290fa9a15fcb13708d5394cc0db3d377ad78ddc7fc488c2d71abc"
+    },
+    {
+      "arm": "C126",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C126",
+      "source": "3328611bd85541a1af926de4bfef8a74634f7d18",
+      "command_sha256": "f93593dd18b9f9e4566121ea5977b966cd33a8a201a37a59df805f71ec3ca38d"
+    },
+    {
+      "arm": "C126b-root-relax-0-12G",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C126b-root-relax-0-12G",
+      "source": "3328611bd85541a1af926de4bfef8a74634f7d18",
+      "command_sha256": "1618598aa04e0c79ac799f0a2cbb1524dcd841b528b5648e536e8aa39de6f82d"
+    },
+    {
+      "arm": "C126c-root-relax-0-24G",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C126c-root-relax-0-24G",
+      "source": "3328611bd85541a1af926de4bfef8a74634f7d18",
+      "command_sha256": "bbecd5bb60d2840a85926eb169d4546bf95bc15d9eb00474bf7082fea471f597",
+      "xml_sha256": "91fb243ccee72607469d23d727424739727eda5598eb579a94d8d3b1b5253470"
+    },
+    {
+      "arm": "C126d-root-relax-1-12G",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C126d-root-relax-1-12G",
+      "source": "907732be204c6753c4095633d95d211a10ab4d8d",
+      "command_sha256": "d329cb70fd0cf045362f96a0976f3827f1d916fe30386d5825862a1a06fa4fdc"
+    },
+    {
+      "arm": "C126e-root-relax-1-24G",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C126e-root-relax-1-24G",
+      "source": "907732be204c6753c4095633d95d211a10ab4d8d",
+      "command_sha256": "96d8b2fb7cb2a6f71ee1a786f6be9dc24e66592bbbaad1fa48598f9757c639dd",
+      "xml_sha256": "3ced27264bc307b84dc4cd45013c50fd7fd215e06d81dd503e23ed25443eca64"
+    },
+    {
+      "arm": "C126f-root-mutant-12G",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C126f-root-mutant-12G",
+      "source": "907732be204c6753c4095633d95d211a10ab4d8d",
+      "command_sha256": "0f7b34e41bf0e098929e338a90d42c439035413f9a4a382f7d7987f70d8c711c"
+    },
+    {
+      "arm": "C126g-root-mutant-24G",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C126g-root-mutant-24G",
+      "source": "907732be204c6753c4095633d95d211a10ab4d8d",
+      "command_sha256": "46dccf3176e60150f01b49c34bf27e5931aa0fe4f848176d39abce0988a96a7a",
+      "xml_sha256": "0fd0698d401ff27d29527d568e4c43025c2a5484bc388c930295fc94f4a42008"
+    },
+    {
+      "arm": "C126h-child-config-12G",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C126h-child-config-12G",
+      "source": "907732be204c6753c4095633d95d211a10ab4d8d",
+      "command_sha256": "eaccba7a7c35737fee74a937c9ef86ee66053c7163a0f507969b6698fb72e124"
+    },
+    {
+      "arm": "C126i-child-config-24G",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C126i-child-config-24G",
+      "source": "907732be204c6753c4095633d95d211a10ab4d8d",
+      "command_sha256": "85c60eed8419929fb9bc7947d89a1907833d6278b0e90582cd423c45934d1219",
+      "xml_sha256": "71f3b60b981bf47f020bb549e9f94e808274d89670dbb58843c663b0ad7ea67d"
+    },
+    {
+      "arm": "C126j-root-number-12G",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C126j-root-number-12G",
+      "source": "907732be204c6753c4095633d95d211a10ab4d8d",
+      "command_sha256": "399ce2ebab7fa9b68bfed57ce116f97c3e4476bf0c99cf5b631900739f56fff1"
+    },
+    {
+      "arm": "C126k-root-number-24G",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C126k-root-number-24G",
+      "source": "907732be204c6753c4095633d95d211a10ab4d8d",
+      "command_sha256": "f46b7d01cbe3374861badca36a4ce9640a5277db9dd7fb22413e8e376385ea0f",
+      "xml_sha256": "4a203bb528b54509851461db766ffbfde15636447c553502b0a1267ab4363383"
+    },
+    {
+      "arm": "C127",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C127",
+      "source": "d159fdf7e8eaa064e86d59c13ddd9b4a3a057fb0",
+      "command_sha256": "833d67e56f1e8db806342d3cd50c39380f1b16de3187b786693b5dbcac424756"
+    },
+    {
+      "arm": "C127h01-12G",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C127h01-12G",
+      "source": "d159fdf7e8eaa064e86d59c13ddd9b4a3a057fb0",
+      "command_sha256": "053818cd6c6e0b44128905a9e2390b1866b6eebe24dfb8ded210d05498189a81"
+    },
+    {
+      "arm": "C127h01-24G",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C127h01-24G",
+      "source": "d159fdf7e8eaa064e86d59c13ddd9b4a3a057fb0",
+      "command_sha256": "358c0652f99e45d0a74739afe8367365f710c560d018f815ec53de34c747af4b",
+      "xml_sha256": "17dcb7242ec7cf2d1a87bd0ca1f8d42ec4157b13383926817b076ff967ce2828"
+    },
+    {
+      "arm": "C127h02-12G",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C127h02-12G",
+      "source": "d159fdf7e8eaa064e86d59c13ddd9b4a3a057fb0",
+      "command_sha256": "bb45e71db52f1f5e0122214c9234d696be585888be039cd3132f1c12dab2728c"
+    },
+    {
+      "arm": "C127h02-24G",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C127h02-24G",
+      "source": "d159fdf7e8eaa064e86d59c13ddd9b4a3a057fb0",
+      "command_sha256": "87a39c5424d8c7b38b0e0027fee76f5603417f16cb497895ff657474a2dd37dd",
+      "xml_sha256": "4be7af7934e9758abaf1d5583d92d845e8fc03a8bf2ef0add3dee0259479adec"
+    },
+    {
+      "arm": "C127h03-12G",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C127h03-12G",
+      "source": "d159fdf7e8eaa064e86d59c13ddd9b4a3a057fb0",
+      "command_sha256": "62c4a9b23e906f62db4872d33baf0a06b3ffb8f620803af906d0046f5fa9163f"
+    },
+    {
+      "arm": "C127h03-24G",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C127h03-24G",
+      "source": "d159fdf7e8eaa064e86d59c13ddd9b4a3a057fb0",
+      "command_sha256": "26fcb9f4f71ecd5be23750bc085b191e50c0c5fc430431c72561649cbe00cc61",
+      "xml_sha256": "9f3b0d4a367e38f8c7cc81a160599dede8e39eabf94b4d815bb8b6ce2e5c5453"
+    },
+    {
+      "arm": "C127h04-12G",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C127h04-12G",
+      "source": "d159fdf7e8eaa064e86d59c13ddd9b4a3a057fb0",
+      "command_sha256": "08e042bd06881167757d83a1fd03fa0e97e306fbf18fe060d68962b4b47bb3cd"
+    },
+    {
+      "arm": "C127h04-24G",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C127h04-24G",
+      "source": "d159fdf7e8eaa064e86d59c13ddd9b4a3a057fb0",
+      "command_sha256": "3d96f903d1a75b1bc8b737af5eed84c433a51ab046b99444148bca5b43170e61",
+      "xml_sha256": "09f5b2d27dcba892c5e3d4d0f167fa4e238492d8023ff39b065ca604b58b17fa"
+    },
+    {
+      "arm": "C127h05-12G",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C127h05-12G",
+      "source": "d159fdf7e8eaa064e86d59c13ddd9b4a3a057fb0",
+      "command_sha256": "16f7e8d76f7271382e3a278d6449bf3ec859c1de489b83d5ec0aa531b8857a57"
+    },
+    {
+      "arm": "C127h05-24G",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C127h05-24G",
+      "source": "d159fdf7e8eaa064e86d59c13ddd9b4a3a057fb0",
+      "command_sha256": "be94df7077e4f3303fc5ecd80136857d28f90bcf6237a7c7bcaa18cc1ddda0f8",
+      "xml_sha256": "d62237753506387190f3d7cd2fb65f1c2ad9579aa4859b953cbbc9e576271318"
+    },
+    {
+      "arm": "C128h01-12G",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C128h01-12G",
+      "source": "d159fdf7e8eaa064e86d59c13ddd9b4a3a057fb0",
+      "command_sha256": "169e13f3eb55cad7779939fbac7b579264dd3a80299090e2a507afcb80022e37"
+    },
+    {
+      "arm": "C128h01-24G",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C128h01-24G",
+      "source": "d159fdf7e8eaa064e86d59c13ddd9b4a3a057fb0",
+      "command_sha256": "027533bc21a8559654773de5549192c70ad1b6cb44fc94cc48335a0bd938111b",
+      "xml_sha256": "b82e9c3948a9d2113cdb65cad42a07a0c2a9460444c5d6ad9ed618237b64d03c"
+    },
+    {
+      "arm": "C128h02-12G",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C128h02-12G",
+      "source": "d159fdf7e8eaa064e86d59c13ddd9b4a3a057fb0",
+      "command_sha256": "bee036de986e7162c36b96a56ae3b1b9e56dd6b46f9be584fdbd610278b07117"
+    },
+    {
+      "arm": "C128h02-24G",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C128h02-24G",
+      "source": "d159fdf7e8eaa064e86d59c13ddd9b4a3a057fb0",
+      "command_sha256": "d1f7b04b1bbe043ec7893bb1665b69a4e68f3bd9be9e2fabebe1fb23b08d319c",
+      "xml_sha256": "437fb22e1c918ea52f8ae5a5cfbc037ea8faaf7872aed7dbeaaf53de69608ff6"
+    },
+    {
+      "arm": "C147",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C147",
+      "source": "60944e5c73ac9cce01f7616e88c143e6d4f8499d",
+      "command_sha256": "9aadc63228eb3ccb900ee5c7d2da2120076b33575410ee494df11043249daf6c"
+    },
+    {
+      "arm": "C147h01-12G",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C147h01-12G",
+      "source": "60944e5c73ac9cce01f7616e88c143e6d4f8499d",
+      "command_sha256": "a1becfeb454edc41db71605753be584e37629fc7f19d2599f990150cb38b7387"
+    },
+    {
+      "arm": "C147h01-24G",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C147h01-24G",
+      "source": "60944e5c73ac9cce01f7616e88c143e6d4f8499d",
+      "command_sha256": "1304833b855bc52b046f4cfd427866492d80dddbe3855b7747da7725b09a3d49",
+      "xml_sha256": "1d3aab1d18e4b49664c5fe7ebfa36bf553e0c1aece8abbc86715176004bfe1f3"
+    },
+    {
+      "arm": "C147h02-12G",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C147h02-12G",
+      "source": "60944e5c73ac9cce01f7616e88c143e6d4f8499d",
+      "command_sha256": "a874c0a4670da68b1a759c0e5334baf1ac2abc353d04d789abe4530ddd45c3ca"
+    },
+    {
+      "arm": "C147h02-24G",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C147h02-24G",
+      "source": "60944e5c73ac9cce01f7616e88c143e6d4f8499d",
+      "command_sha256": "2abd6fc9e36e3385100f1b30bdf82204d4a5c7bb3b4a4a18dae95a41afff4fea",
+      "xml_sha256": "e1c42ecea3f3cf28bbf02e175a9b6a928076bc71a17bad9c9b8f701bd89dfc42"
+    },
+    {
+      "arm": "C147h03-12G",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C147h03-12G",
+      "source": "60944e5c73ac9cce01f7616e88c143e6d4f8499d",
+      "command_sha256": "e84449a6edebbf1c549c365eafd87b6cd7b56dea1224006cadbee853a42f9607"
+    },
+    {
+      "arm": "C147h03-24G",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C147h03-24G",
+      "source": "60944e5c73ac9cce01f7616e88c143e6d4f8499d",
+      "command_sha256": "7b7f6f961c2f43accf04da913eb3d91157d4f86ffba7cf6403a781d62ac56c5a",
+      "xml_sha256": "8460434c0f13cf325d1b280f98ba494f75503abf12c2a7ecc91aaa7690ba2c9e"
+    },
+    {
+      "arm": "C147h04-12G",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C147h04-12G",
+      "source": "60944e5c73ac9cce01f7616e88c143e6d4f8499d",
+      "command_sha256": "dd5652a557fa1892af9214cea4e96a032c4021324a5ee6c883f3465c7c366a30"
+    },
+    {
+      "arm": "C147h04-24G",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C147h04-24G",
+      "source": "60944e5c73ac9cce01f7616e88c143e6d4f8499d",
+      "command_sha256": "a1cd014927124264de3264bfd2ef20c842306f0a07386aea0352e6c24f263c91",
+      "xml_sha256": "537457350f5fc1cc272690f2edb06b79d2b3416e2a2eb2a599c1b4dc14156d7d"
+    },
+    {
+      "arm": "C147h05-12G",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C147h05-12G",
+      "source": "60944e5c73ac9cce01f7616e88c143e6d4f8499d",
+      "command_sha256": "5541b9d3a9c12f9e72f1a0d337f4cdd259dd626036819e44b7f1eebddb122e20"
+    },
+    {
+      "arm": "C147h05-24G",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C147h05-24G",
+      "source": "60944e5c73ac9cce01f7616e88c143e6d4f8499d",
+      "command_sha256": "4404e4fd0ddc4f8f2c23dbaf1dec49e59900f8f82ffef24a59a986588dff5043",
+      "xml_sha256": "450ff413a09f1b4e2d3d33d3bb84466be7a16a1863c5106c57cb4f39b2900dc7"
+    },
+    {
+      "arm": "C147h06-12G",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C147h06-12G",
+      "source": "60944e5c73ac9cce01f7616e88c143e6d4f8499d",
+      "command_sha256": "ebfefb4cdb467c8c431e91fd492fbb1c22ef9681daa9ec34aec80e07e92ba1f8"
+    },
+    {
+      "arm": "C147h06-24G",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C147h06-24G",
+      "source": "60944e5c73ac9cce01f7616e88c143e6d4f8499d",
+      "command_sha256": "6d433e572e9ebb51200abadfd559579a169ce50a0b5636826325c186a52646c1",
+      "xml_sha256": "6047fea7518e2ddd1230b41ecca9879d7dc10ebbcf76a1ef4d7d5dfb4e147082"
+    },
+    {
+      "arm": "D04-original-root28-memory",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/D04-original-root28-memory",
+      "source": "c9bb4a76cf42f51302084c100fe034a03cc9a716",
+      "command_sha256": "a14a622c88c71393206e65b2b112e81b45a130741e572235a420b1aa29edf8a5",
+      "xml_sha256": "704b6946a27c523dcd4b9a3d7d56e96caf17011cca3b162f784397b086196a59"
+    },
+    {
+      "arm": "N023",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/N023",
+      "source": "55c4e486170d7bedd1db35726a4491c7112040cc",
+      "command_sha256": "595d5f24028e45107673d308d65788d896851e19c7ec87e1856fb6f01fa84451",
+      "xml_sha256": "b76d8a67b2ac4e8ce82911b2e11156752ff9138f3ab3c3445de5af6d0f3626cd"
+    }
+  ],
+  "note": "Only paid executions; RSS is parent process HWM. Cgroup peak is separate. Unknown/lower-bound peaks are labelled. Measured cap is not a minimum. Active arms remain incomplete.",
+  "additional_group_growers": {
+    "C088-memory-growth.json": {
+      "rows": [
+        {
+          "node": "tests/test_v013_ra_sw_gsfc.py::test_gsfc_sw_fp64_precision_audit[1]",
+          "rss_change_gib": 1.9892196655273438,
+          "end_rss_gib": 2.6799697875976562
+        },
+        {
+          "node": "tests/test_v013_ra_sw_gsfc.py::test_gsfc_sw_fp64_precision_audit[2]",
+          "rss_change_gib": 1.6006393432617188,
+          "end_rss_gib": 4.280609130859375
+        },
+        {
+          "node": "tests/test_v013_ra_sw_gsfc.py::test_gsfc_sw_fp64_precision_audit[3]",
+          "rss_change_gib": 1.2846145629882812,
+          "end_rss_gib": 5.565223693847656
+        },
+        {
+          "node": "tests/test_v013_ra_sw_gsfc.py::test_gsfc_sw_fp64_precision_audit[4]",
+          "rss_change_gib": 0.6738433837890625,
+          "end_rss_gib": 6.239067077636719
+        }
+      ],
+      "classification": "c cumulative-sessionretention; freshcase5HWM2.680GiB, pairs2HWM4.282GiB;6Gfreshpairs suffice; live-objectleakunknown"
+    },
+    "C081-memory-growth.json": {
+      "scope": "CPU6GSwap0 realSwisscold-loader/firstPHENOLOGY notforecastfidelity",
+      "rows": [
+        {
+          "node": "tests/test_u2_input_lai_init.py::test_real_loader_cold_lai_threshold_and_nonvegetated_cells[7]",
+          "start_rss_gib": 0.17397689819335938,
+          "end_rss_gib": 4.162769317626953,
+          "retained_rss_change_gib": 3.9887924194335938,
+          "rss_hwm_gib": 5.0478973388671875,
+          "outcome": "passed"
+        },
+        {
+          "node": "tests/test_u2_input_lai_init.py::test_real_loader_cold_lai_threshold_and_nonvegetated_cells[8]",
+          "start_rss_gib": 4.162769317626953,
+          "end_rss_gib": 4.948448181152344,
+          "retained_rss_change_gib": 0.7856788635253906,
+          "rss_hwm_gib": 5.723899841308594,
+          "outcome": "passed"
+        },
+        {
+          "node": "tests/test_u2_input_lai_init.py::test_real_loader_cold_lai_threshold_and_nonvegetated_cells[9]",
+          "start_rss_gib": 4.948448181152344,
+          "end_rss_gib": 4.942096710205078,
+          "retained_rss_change_gib": -0.006351470947265625,
+          "rss_hwm_gib": 5.723899841308594,
+          "outcome": "passed"
+        }
+      ],
+      "live_object_leak": "UNKNOWN; retained RSS alone cannot distinguish JAX/compiler/allocator caches"
+    }
+  }
+}

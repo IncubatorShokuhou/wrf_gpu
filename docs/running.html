@@ -22,7 +22,7 @@
         <img src="_assets/logo.svg" alt="wrf_gpu logo">
         <span class="brand-text">
           <span class="brand-name">wrf_gpu</span>
-          <span class="brand-sub">User's Guide · v0.3.4</span>
+          <span class="brand-sub">User's Guide · v0.4.0</span>
         </span>
       </a>
       <div class="search-box">
@@ -41,15 +41,15 @@
 <a class="" href="ai-quickstart.html">Quickstart with an AI Agent</a>
 <a class="active" href="running.html">Running the Model</a>
 <div class="subnav">
-<a href="running.html#cli-reference">The gpuwrf run command</a>
-<a href="running.html#namelist-support">Check scheme support offline — gpuwrf namelist-support</a>
-<a href="running.html#init-modes">Replay vs. standalone native-init (auto-detected)</a>
-<a href="running.html#single-vs-nested">Single-domain vs. nested</a>
-<a href="running.html#restart">Restart</a>
-<a href="running.html#two-way-nesting">Two-way nesting (--feedback)</a>
-<a href="running.html#scoring">Station scoring (--score)</a>
-<a href="running.html#vram-preflight">Memory admission and C-auto precedence</a>
-<a href="running.html#examples">Example invocations</a>
+<a href="running.html#install-and-check-the-case">Install and check the case</a>
+<a href="running.html#run-the-bundled-forecast">Run the bundled forecast</a>
+<a href="running.html#run-your-own-prepared-case">Run your own prepared case</a>
+<a href="running.html#restart-and-extend-a-forecast">Restart and extend a forecast</a>
+<a href="running.html#prepare-ensembles-and-independent-cases">Prepare ensembles and independent cases</a>
+<a href="running.html#weather-products-verification-and-export">Weather products, verification and export</a>
+<a href="running.html#regional-optimisation-and-landsnow-cycling">Regional optimisation and land/snow cycling</a>
+<a href="running.html#onboard-a-region-with-wpsreal">Onboard a region with WPS/real</a>
+<a href="running.html#interpret-the-qualification-record">Interpret the qualification record</a>
 </div>
 <a class="" href="input-data.html">Input Data &amp; Initialization</a>
 <div class="group-title">Configuration</div>
@@ -73,210 +73,188 @@
     <div class="content-wrap">
       <main>
         <div class="breadcrumb"><a href="index.html">User's Guide</a> › Getting started › Running the Model</div>
-        <h1>Running the Model</h1>
+        <!-- Generated from docs/release/USER_GUIDE_v0.4.0.md; legacy anchor aliases retained. -->
+<a id="cli-reference"></a>
+<a id="namelist-support"></a>
+<a id="init-modes"></a>
+<a id="single-vs-nested"></a>
+<a id="restart"></a>
+<a id="two-way-nesting"></a>
+<a id="scoring"></a>
+<a id="vram-preflight"></a>
+<a id="examples"></a>
+<a id="v040-tools"></a>
+<p>Use the guide matching your installed release. This is the v0.4.0 release
+candidate guide: frozen defaults are qualified, and all 66 registered configurations now pass their accepted scientific
+scope (65 full 24-hour + c45 accepted six-hour). See the <a href="release/SUPPORT_MATRIX_v0.4.0.md">support matrix</a>,
+<a href="release/FINAL_COMPOSITES_v0.4.0.md">66-case ledger</a> and
+<a href="release/UPGRADE_v0.4.0.md">upgrade note</a> before changing an existing operational setup.</p>
+<h2 id="install-and-check-the-case">Install and check the case<a class="headerlink" href="#install-and-check-the-case" aria-label="Permalink">¶</a></h2>
+<p>The GPU fast path requires NVIDIA Ampere or newer, compute capability &gt;=8.0.
+Pascal and Turing are unsupported. Capacity depends on grid, selected physics
+and cold compilation; it is separate from architecture admission.</p>
+<p>For the tested CUDA 13/JAX 0.10 setup, use Python 3.11+ and a compatible NVIDIA
+driver. Install into an isolated environment:</p>
+<pre><code class="language-bash">python -m venv .venv
+. .venv/bin/activate
+python -m pip install --upgrade pip
+python -m pip install &quot;jax[cuda13]==0.10.*&quot;
+python -m pip install -e .
+export GPUWRF_WRF_ROOT=/path/to/WRF
 
-<p class="lead">Everything a forecast needs goes through one command:
-<code>python -m gpuwrf.cli run</code>. It validates your namelist fail-closed,
-auto-detects whether to run standalone native-init or CPU-WRF replay, advances the
-forecast on the GPU, and writes WRF-compatible <code>wrfout</code> history plus a
-run-payload JSON. This page is the complete flag reference and the mode map.</p>
-
-<h2 id="cli-reference">The <code>gpuwrf run</code> command<a class="headerlink" href="#cli-reference" aria-label="Permalink">¶</a></h2>
-
-<p>Run <code>python -m gpuwrf.cli run --help</code> for the authoritative list on
-your build. Every flag:</p>
-
-<div class="table-scroll">
-<table>
-<thead><tr><th>Flag</th><th>Default</th><th>Meaning</th></tr></thead>
-<tbody>
-<tr><td><code>--input-dir</code></td><td><em>required</em></td><td>Run directory holding the case inputs. <strong>Standalone native-init</strong> when it has <code>wrfinput_&lt;domain&gt;</code> + <code>wrfbdy_d01</code> but no CPU-WRF <code>wrfout</code>; <strong>CPU-WRF replay</strong> when it has ≥&nbsp;2 <code>wrfout_&lt;domain&gt;</code> history files (auto-detected).</td></tr>
-<tr><td><code>--output-dir</code></td><td><em>required</em></td><td>Directory for the generated <code>wrfout</code> files and the run payload.</td></tr>
-<tr><td><code>--namelist</code></td><td><code>&lt;input-dir&gt;/namelist.input</code></td><td>WRF <code>namelist.input</code> to validate fail-closed before the run. Defaults to the case's own namelist.</td></tr>
-<tr><td><code>--domain</code></td><td>namelist → <code>d01</code></td><td>Domain id for a <strong>single-domain</strong> run. <strong>New in v0.23.1:</strong> when omitted it resolves to the root domain <code>d01</code> (WRF's default) instead of the old <code>d02</code>; an explicit value always wins. Ignored when the run is nested (<code>max_dom&nbsp;&gt;&nbsp;1</code>): all domains d01..dN run together.</td></tr>
-<tr><td><code>--max-dom</code></td><td><code>1</code></td><td>Number of nested domains to run (d01..dN). <code>1</code> = single-domain on <code>--domain</code>. Set <code>&gt;&nbsp;1</code> to run the standalone <strong>live-nested</strong> driver (parent feeds each child's lateral boundary live; no CPU-WRF <code>wrfout</code>).</td></tr>
-<tr><td><code>--domains-from-namelist</code></td><td>off</td><td><strong>New in v0.23.1.</strong> Run all domains the namelist declares (its <code>max_dom</code>) — the explicit WRF-parity nested path. Conflicts with <code>--max-dom</code>.</td></tr>
-<tr><td><code>--hours</code></td><td>namelist → <code>1</code></td><td>Forecast hours to advance. <strong>New in v0.23.1:</strong> when omitted it is read from the namelist <code>&amp;time_control</code> (<code>run_days</code>/<code>run_hours</code>/<code>run_minutes</code>/<code>run_seconds</code>), falling back to 1 if absent; an explicit value always wins and is announced.</td></tr>
-<tr><td><code>--dry-run</code></td><td>off</td><td><strong>New in v0.23.1.</strong> Validate the namelist, detect the input mode, resolve hours/domain/max_dom/scratch, print the effective plan, and exit <strong>without</strong> compiling or running.</td></tr>
-<tr><td><code>--scratch-dir</code></td><td><code>&lt;output-dir&gt;/.scratch</code></td><td>Disk-backed scratch for transient NetCDF/diagnostics — <strong>never</strong> <code>/tmp</code> tmpfs. <code>$GPUWRF_SCRATCH</code> overrides. Cleaned up on exit.</td></tr>
-<tr><td><code>--proof-dir</code></td><td><code>&lt;output-dir&gt;/proofs</code></td><td>Directory for the proof JSON.</td></tr>
-<tr><td><code>--compare-cpu-dir</code></td><td>none</td><td>CPU-WRF reference directory for a <em>dimension</em> compare. If omitted, no dimension compare runs. Writes <code>&lt;proof-dir&gt;/dimension_compare.json</code>.</td></tr>
-<tr><td><code>--score</code></td><td>off</td><td>Also score against AEMET station observations (needs <code>GPUWRF_AEMET_ROOT</code>; not part of the README runnability gate).</td></tr>
-<tr><td><code>--feedback</code></td><td>off</td><td>Nested runs only: enable <strong>two-way</strong> nesting. Default off (one-way).</td></tr>
-<tr><td><code>--force-gpu-run</code></td><td>off</td><td>Nested runs only: bypass the GPU lock / free-VRAM preflight. Also available as <code>GPUWRF_FORCE_GPU_RUN=1</code>.</td></tr>
-<tr><td><code>--emit-initial-history</code></td><td>off, nested</td><td>Emit initialized lead zero before stepping; native single-root emits it automatically.</td></tr>
-<tr><td><code>--[no-]aot-prefetch</code></td><td>ON</td><td>Nested cached-executable loading at initialization; OFF loads on first dispatch.</td></tr>
-<tr><td><code>--checkpoint-dir / --checkpoint-interval-steps</code></td><td>unset / 0</td><td>Verified restart (native single-domain d01 or nested); positive cadence in root steps.</td></tr>
-<tr><td><code>--checkpoint-max-bytes / --checkpoint-max-generations</code></td><td>8 GiB / 2</td><td>Retained checkpoint limit; at least two generations.</td></tr>
-<tr><td><code>--checkpoint-reserve-bytes / --resume-checkpoint</code></td><td>10 GiB / unset</td><td>Filesystem reserve / authenticated generation; resume the same output stream.</td></tr>
-<tr><td><code>--extend-run</code></td><td>off</td><td>With <code>--resume-checkpoint</code>: continue to a later <code>--hours</code> end than the checkpointed run.</td></tr>
-</tbody>
-</table>
-</div>
-
-<p>The command prints one JSON payload to stdout and exits non-zero on any
-blocked/partial/dimension-fail result (and exit&nbsp;75 when the nested VRAM
-preflight fails closed).</p>
-
-<div class="admon note">
-  <div class="admon-title">WRF-parity defaults (v0.23.1)</div>
-  <p>Like WRF's <code>wrf.exe</code>, omitted runtime choices are read from
-  <code>namelist.input</code>: forecast length from <code>&amp;time_control</code> and the
-  single-domain <code>--domain</code> from the root domain <code>d01</code>. The resolved
-  values (and whether each came from a flag, the namelist, or a default) are printed and
-  recorded in the run payload (<code>effective_hours</code>, <code>effective_domain</code>,
-  <code>effective_max_dom</code>, <code>override_sources</code>). An explicit flag always
-  overrides. Use <code>--dry-run</code> to preview the effective plan before compiling.
-  See <a href="https://github.com/wrf-gpu/wrf_gpu/blob/main/docs/WRF_PARITY_ROADMAP.md">the
-  WRF-parity roadmap</a>.</p>
-</div>
-
-<h2 id="namelist-support">Check scheme support offline — <code>gpuwrf namelist-support</code><a class="headerlink" href="#namelist-support" aria-label="Permalink">¶</a></h2>
-<p><strong>New in v0.23.1.</strong> Print which namelist scheme values are operational,
-reference-only, fail-closed, or disabled — <strong>without</strong> importing JAX or touching
-the GPU, so it is instant:</p>
-<pre><code>python -m gpuwrf.cli namelist-support          # human-readable table
-python -m gpuwrf.cli namelist-support --json    # machine-readable</code></pre>
-<p>Use it to check whether your <code>namelist.input</code> physics selections will run before
-you start a forecast. See <a href="namelist.html">Namelist Compatibility</a> and
-<a href="physics.html">Physics Options</a>.</p>
-
-<h2 id="init-modes">Replay vs. standalone native-init (auto-detected)<a class="headerlink" href="#init-modes" aria-label="Permalink">¶</a></h2>
-
-<p>You never pick the init mode by hand — <code>run</code> detects it from the
-<code>--input-dir</code> contents and announces which path ran:</p>
-
-<div class="table-scroll">
-<table>
-<thead><tr><th>Detected when the input dir has…</th><th>Mode</th><th>What it does</th></tr></thead>
-<tbody>
-<tr><td>WRF real-data artifacts — <code>wrfinput_&lt;domain&gt;</code> + <code>wrfbdy_d01</code>, <strong>no</strong> CPU <code>wrfout</code></td><td><span class="pill op">standalone native-init</span></td><td>Loads the initial state from <code>wrfinput</code>, lateral boundaries from <code>wrfbdy</code>, and integrates on the GPU — <strong>no CPU-WRF <code>wrfout</code> dependency</strong>. The primary path.</td></tr>
-<tr><td>≥&nbsp;2 CPU-WRF <code>wrfout_&lt;domain&gt;</code> history files</td><td><span class="pill ref">CPU-WRF replay</span></td><td>Takes the initial state and boundaries from the existing CPU-WRF history — the legacy skill-comparison path.</td></tr>
-</tbody>
-</table>
-</div>
-
-<p>See <a href="input-data.html">Input Data &amp; Initialization</a> for how each
-mode reads its inputs.</p>
-
-<h2 id="single-vs-nested">Single-domain vs. nested<a class="headerlink" href="#single-vs-nested" aria-label="Permalink">¶</a></h2>
-
-<p>Nesting is <strong>explicit opt-in</strong> via <code>--max-dom&nbsp;N</code>. A
-multi-domain namelist (<code>max_dom&nbsp;&gt;&nbsp;1</code>) does <em>not</em>
-silently become a nested run: without <code>--max-dom</code>, <code>run</code>
-executes a single domain (<code>--domain</code>) and prints a note reminding you to
-pass <code>--max-dom&nbsp;N</code> for the live-nested forecast. With
-<code>--max-dom&nbsp;&gt;&nbsp;1</code>, the standalone live-nested driver runs
-d01..dN together, the parent building each child's lateral boundary live (no
-pre-supplied <code>wrfbdy_d02</code>). Mechanics: <a href="nesting.html">Nesting</a>.</p>
-
-<h2 id="restart">Restart<a class="headerlink" href="#restart" aria-label="Permalink">¶</a></h2>
-
-<div class="admon note">
-  <div class="admon-title">Restart: native single-domain and nested runs</div>
-  <p>Native runs — a single-domain d01 forecast initialized from <code>wrfinput</code>/<code>wrfbdy</code>, or a
-nested run (<code>max_dom &gt; 1</code>) — write verified, rotating checkpoint generations with
-<code>--checkpoint-dir DIR --checkpoint-interval-steps N</code> (cadence in root-domain steps; a generation is also
-written at the forecast end) and resume in the same output stream with <code>--resume-checkpoint GEN</code>. Resume
-restores the full model carry (held radiation/cumulus tendencies with their step clocks, land state, accumulators)
-and the history ledger: committed frames stay untouched, later frames of the interrupted run are verified and
-rewritten, and lead zero is not written twice. CPU-WRF replay and non-d01 single-domain runs refuse these flags
-with a named reason; the namelist <code>restart</code>/<code>restart_interval</code> settings do not provide crash
-recovery.</p>
-</div>
-
-<p>Like a WRF restart with a longer run length, a resumed run can continue past its original end: resume with a
-larger <code>--hours</code> and <code>--extend-run</code>. History alarms keep the original start time, so the
-extended stream matches one uninterrupted run of the longer length. Without <code>--extend-run</code> a changed end
-time is refused, and shortening is always refused.</p>
-
-<p>Any native run (single-domain or nested, including a resumed <code>--extend-run</code>) whose end lies past the
-lateral boundary data is refused before it starts: the coverage is the shorter of <code>wrfbdy_d01</code> records
-&times; <code>interval_seconds</code> and WRF's last boundary time in the file. The model never holds the last
-boundary record past the end of the data.</p>
-
-<pre><code>gpuwrf run --input-dir CASE --output-dir runs/case --hours 24 \
-  --checkpoint-dir runs/ck --checkpoint-interval-steps 200
-gpuwrf run --input-dir CASE --output-dir runs/case --hours 24 \
-  --checkpoint-dir runs/ck --checkpoint-interval-steps 200 --resume-checkpoint runs/ck/generation-…
-gpuwrf run --input-dir CASE --output-dir runs/case --hours 48 \
-  --checkpoint-dir runs/ck --checkpoint-interval-steps 200 --resume-checkpoint runs/ck/generation-… --extend-run</code></pre>
-
-<p>Each checkpoint copies the carry to the host and writes it synchronously (with pending history drained first).
-Checkpoint continuation is validated byte-exact on CPU for the single-domain path; its GPU overhead has not been
-measured yet (the nested path carries a separate GPU byte-identity regression gate).</p>
-
-<h2 id="two-way-nesting">Two-way nesting (<code>--feedback</code>)<a class="headerlink" href="#two-way-nesting" aria-label="Permalink">¶</a></h2>
-
-<p><span class="pill optin">Opt-in</span> For nested runs, <code>--feedback</code>
-enables two-way nesting: after each child finishes its subcycle, its interior is fed
-back onto the overlapping parent cells (WRF <code>copy_fcn</code> area-average plus
-the <code>sm121</code> feedback-zone smoother). The default is <strong>one-way</strong>
-nesting — the validated wiring. Two-way feedback is finite and stable but its 24&nbsp;h
-skill equivalence is untested, so it is off by default.</p>
-
-<h2 id="scoring">Station scoring (<code>--score</code>)<a class="headerlink" href="#scoring" aria-label="Permalink">¶</a></h2>
-
-<p><code>--score</code> additionally scores the forecast against AEMET station
-observations. It requires <code>GPUWRF_AEMET_ROOT</code> and is not part of the
-README runnability gate — leave it off for a plain forecast.</p>
-
-<h2 id="vram-preflight">Memory admission and C-auto precedence<a class="headerlink" href="#vram-preflight" aria-label="Permalink">¶</a></h2>
-<p>Nested preflight checks explicit <code>GPUWRF_MIN_FREE_VRAM_GIB</code> first, a verified
-geometry/settings C-auto plan second, and the conservative cold fallback
-<code>max(24 GiB, 0.50 × total VRAM)</code> last. A reserved pool needs outside-pool
-headroom; an unreserved pool also needs its budget. Explicit allocator settings win.
-Inspect measured host RSS and GPU allocation. Public runs use the CLI directly; the
-development lock proof is enforced where its infrastructure exists. Do not default to
-<code>--force-gpu-run</code> or guess a universal memory requirement.</p>
-
-<h2 id="examples">Example invocations<a class="headerlink" href="#examples" aria-label="Permalink">¶</a></h2>
-
-<p><strong>1. Bundled single-domain Switzerland case</strong> (see the
-<a href="quickstart.html">Quickstart</a>):</p>
-<pre><code>export GPUWRF_WRF_ROOT=/path/to/WRF
-python -m gpuwrf.cli run \
-    --input-dir   examples/switzerland_d01 \
-    --output-dir  runs/switzerland_d01 \
-    --domain      d01 \
-    --hours       1 \
-    --scratch-dir /fast/nvme/scratch</code></pre>
-
-<p><strong>2. Your own single-domain case, explicit namelist and domain:</strong></p>
-<pre><code>python -m gpuwrf.cli run \
-    --namelist    /path/to/case/namelist.input \
-    --input-dir   /path/to/case \
-    --output-dir  runs/my_forecast \
-    --domain      d02 \
-    --hours       24 \
-    --scratch-dir /fast/nvme/scratch</code></pre>
-
-<p><strong>3. Live-nested d01→d02→d03, 24&nbsp;h:</strong></p>
-<pre><code>python -m gpuwrf.cli run \
-    --input-dir   /path/to/case \
-    --output-dir  runs/nested \
-    --max-dom     3 \
-    --hours       24 \
-    --scratch-dir /fast/nvme/scratch</code></pre>
-
-<p><strong>4. Replay + dimension-compare against a CPU-WRF reference:</strong></p>
-<pre><code>python -m gpuwrf.cli run \
-    --namelist        /path/to/case/namelist.input \
-    --input-dir       /path/to/case \
-    --output-dir      runs/cmp \
-    --domain          d02 \
-    --hours           1 \
-    --compare-cpu-dir /path/to/case</code></pre>
-<p>This writes <code>runs/cmp/proofs/dimension_compare.json</code> and exits&nbsp;0
-only on a clean pipeline <em>and</em> a dimension PASS.</p>
-
-<div class="admon note">
-  <div class="admon-title">Related</div>
-  <p><a href="namelist.html">Namelist Compatibility</a> — which options run and which
-  fail closed. <a href="nesting.html">Nesting</a> — the live-nested driver and
-  feedback. <a href="output.html">Output</a> — the <code>wrfout</code> the run
-  writes.</p>
-</div>
+gpuwrf --help
+gpuwrf namelist-support --json
+</code></pre>
+<p>Run these commands from the cloned repository. <code>GPUWRF_WRF_ROOT</code> supplies the
+original WRF runtime/source tables needed by selected options. Large packaged
+physics tables use pinned, content-verified assets fetched on first selected
+use. Their cache root is <code>GPUWRF_TABLES_DIR</code> or the default user cache. For an
+offline installation, prefill the matching pinned assets and set
+<code>GPUWRF_TABLES_OFFLINE=1</code>; a missing or mismatched asset stops the run. CAM-MG
+<code>mp_physics=11</code> additionally requires <code>triton==3.6.*</code>. Optional product tools
+have their own extras, documented in their linked guides.</p>
+<p><code>namelist-support</code> reports backend admission, not coupled D6 qualification.
+The versioned support matrix attaches scientific and resource evidence to
+exact combinations. Do not infer all-combination support from a catalog entry.</p>
+<h2 id="run-the-bundled-forecast">Run the bundled forecast<a class="headerlink" href="#run-the-bundled-forecast" aria-label="Permalink">¶</a></h2>
+<p>The small Swiss example includes a prepared <code>namelist.input</code>, <code>wrfinput_d01</code>
+and <code>wrfbdy_d01</code>. Inspect it and write output to a new directory:</p>
+<pre><code class="language-bash">gpuwrf doctor examples/switzerland_d01
+gpuwrf run --input-dir examples/switzerland_d01 \
+  --output-dir runs/switzerland --domain d01 --hours 24 \
+  --scratch-dir runs/switzerland_scratch
+</code></pre>
+<p>The first invocation compiles before advancing. Later runs reuse compatible
+executables, but a new grid, physics selection or version can require a new
+compile. Cold compiler host RAM and warm forecast memory are different
+budgets. The <a href="../KNOWN_ISSUES.md#c11-resolved-compiler-stall-and-residual-resources">c11 resource record</a>
+retains the old compile cap and the successful changed-source qualification.</p>
+<p>Read the <a href="../examples/switzerland_d01/README.md">example notes</a> for dates,
+selected schemes and expected output. History uses familiar WRF variable
+names and dimensions. Headers alone do not establish physical agreement.</p>
+<h2 id="run-your-own-prepared-case">Run your own prepared case<a class="headerlink" href="#run-your-own-prepared-case" aria-label="Permalink">¶</a></h2>
+<p>Prepare a real WRF case with WPS/real first, or use the <code>quickstart</code> onboarding
+workflow below. Supply <code>namelist.input</code>, <code>wrfinput_d0*</code>, <code>wrfbdy_d01</code> and any
+selected forcing/static bundles. For fixed nests:</p>
+<pre><code class="language-bash">gpuwrf doctor /path/to/case
+gpuwrf manifest /path/to/case --output runs/case_manifest.json
+gpuwrf reproduce runs/case_manifest.json --case-dir /path/to/case
+gpuwrf run --input-dir /path/to/case --output-dir runs/my_case \
+  --domains-from-namelist --hours 24
+</code></pre>
+<p><code>doctor</code> reports input, support, CFL and memory checks. <code>manifest</code> creates
+input/source/environment provenance; <code>reproduce</code> verifies it without starting
+a forecast. These commands do not qualify a new configuration scientifically.
+Use fresh output paths and keep the case namelist with the run receipt.</p>
+<p>A case with at least two CPU <code>wrfout</code> histories can select compatibility replay.
+Keep reference outputs outside the standalone input directory and check the
+reported mode. For a single domain use <code>--domain</code>; for the full namelist nest
+set use <code>--domains-from-namelist</code>.</p>
+<h2 id="restart-and-extend-a-forecast">Restart and extend a forecast<a class="headerlink" href="#restart-and-extend-a-forecast" aria-label="Permalink">¶</a></h2>
+<p>Native checkpoints retain selected active state and held diagnostics. Schema,
+source/configuration binding, domain shape and data checks are enforced.
+Do not edit a checkpoint to bypass a refusal.</p>
+<pre><code class="language-bash">gpuwrf run --input-dir /path/to/case --output-dir runs/my_case \
+  --domains-from-namelist --hours 24 \
+  --checkpoint-dir runs/checkpoints --checkpoint-interval-steps 120
+</code></pre>
+<p>Resume with the verified generation path written by that run:</p>
+<pre><code class="language-bash">gpuwrf run --input-dir /path/to/case --output-dir runs/my_case \
+  --domains-from-namelist --hours 24 \
+  --resume-checkpoint runs/checkpoints/VERIFIED_GENERATION
+</code></pre>
+<p><code>VERIFIED_GENERATION</code> denotes the actual authenticated generation directory,
+not a literal directory created by this guide. <code>--extend-run</code> permits a later
+forecast end with a matching resume; it does not extend available boundary or
+forcing data. Old active checkpoints may be incompatible after the new carry
+fields described in the <a href="release/UPGRADE_v0.4.0.md">upgrade guide</a>. Corrected historic
+precipitation totals require a fresh forecast.</p>
+<h2 id="prepare-ensembles-and-independent-cases">Prepare ensembles and independent cases<a class="headerlink" href="#prepare-ensembles-and-independent-cases" aria-label="Permalink">¶</a></h2>
+<p>For already prepared cases, create a reproducible member plan and launch it:</p>
+<pre><code class="language-bash">gpuwrf ens prepare --mode batch --cases CASE_A CASE_B \
+  --output-dir runs/member_plan --hours 24
+gpuwrf ens launch --plan runs/member_plan/plan.json
+</code></pre>
+<p><code>--mode physics</code> uses a common case and selected namelists; <code>--mode lagged</code>
+uses the declared case times. Inspect <code>ens prepare --help</code> and the
+<a href="ensemble.md">ensemble guide</a> for inventory formats and member semantics.
+The scheduler checks GPU/host budgets and queues work. It supports independent
+cases; real multi-GPU scaling remains separately unqualified.</p>
+<p>After forecasting, compute products from an explicit member inventory:</p>
+<pre><code class="language-bash">gpuwrf ens products --members members.json --variable T2 \
+  --output runs/ensemble_T2.nc
+</code></pre>
+<p>The member inventory defines IDs and output paths. Exact alignment is the
+default; intersection alignment deliberately changes the compared support.
+<code>ens verify</code> reports probabilities, scores and reliability against declared
+observations. Statistical tools are not a claim of improved forecast skill.</p>
+<h2 id="weather-products-verification-and-export">Weather products, verification and export<a class="headerlink" href="#weather-products-verification-and-export" aria-label="Permalink">¶</a></h2>
+<p>List supported derived products, then select the products appropriate to your
+fields and assumptions:</p>
+<pre><code class="language-bash">gpuwrf post --list-products
+</code></pre>
+<p><a href="post.md">Forecast products</a> and <a href="post_apps.md">application products</a>
+explain inputs, units, optional dependencies and interpretation. <code>verify</code>
+compares forecast data with canonical station observations:</p>
+<pre><code class="language-bash">gpuwrf verify --stations stations.csv --obs observations.csv \
+  --model runs/my_case/wrfout_d01* --output-dir runs/verification
+</code></pre>
+<p>See <a href="station_verification.md">station verification</a> for wind frame,
+precipitation interval, station-height and land-aware sampling conventions.
+A download is requested only with <code>--fetch-observations</code>; plain <code>--obs</code> is
+an offline observation file.</p>
+<p>For a surface subset in CF NetCDF:</p>
+<pre><code class="language-bash">gpuwrf export --input runs/my_case/wrfout_d01* \
+  --output runs/surface.nc --format netcdf --variables T2 PSFC U10 V10
+</code></pre>
+<p><code>export --help</code> covers pressure levels, regions, Zarr and explicit GRIB grids.
+<code>--raw</code> preserves native WRF dimensions/attributes and makes no CF claim.
+<code>tslist-export</code> converts existing station text output; <code>stream-check</code> validates
+regional stream definitions without starting a forecast.</p>
+<h2 id="regional-optimisation-and-landsnow-cycling">Regional optimisation and land/snow cycling<a class="headerlink" href="#regional-optimisation-and-landsnow-cycling" aria-label="Permalink">¶</a></h2>
+<p>The executable commands are <strong><code>optimize</code></strong> and <strong><code>cycle</code></strong>. Onboarding is
+<strong><code>quickstart</code></strong>, not a separate <code>onboard</code> command.</p>
+<p>Plan an admitted, date-held-out regional physics study from its JSON definition:</p>
+<pre><code class="language-bash">gpuwrf optimize plan --study study.json --output runs/study_plan.json
+</code></pre>
+<p><code>optimize run</code> schedules the prepared forecasts; <code>optimize score</code> consumes
+forecasts rather than manufacturing them. <code>calibrate fit/apply</code> provides
+chronological station bias/MOS workflows. Read the
+<a href="regional_optimization.md">regional optimisation guide</a> for study schemas,
+training/validation separation and explicit admission rules. A prepared study
+or successful tool invocation is not a new held-out skill result.</p>
+<p>Cycle compatible land/snow state into a <strong>new</strong> input file:</p>
+<pre><code class="language-bash">gpuwrf cycle --source previous_cycle/wrfout_at_new_init \
+  --wrfinput new_case/wrfinput_d01 --output new_case/wrfinput_cycled_d01
+</code></pre>
+<p>The source must match the new initialization time and grid. The output does
+not overwrite the template or automatically replace the next case input.
+Stage it as the new case's selected <code>wrfinput_d01</code> only after checking the
+<a href="cycling.md">cycling guide</a>. Cycling is distinct from crash restart and
+from atmospheric data assimilation.</p>
+<h2 id="onboard-a-region-with-wpsreal">Onboard a region with WPS/real<a class="headerlink" href="#onboard-a-region-with-wpsreal" aria-label="Permalink">¶</a></h2>
+<p>Inspect memory profiles and the preparation interface first:</p>
+<pre><code class="language-bash">gpuwrf quickstart --profiles
+gpuwrf quickstart --help
+</code></pre>
+<p><code>quickstart</code> plans by default. <code>--prepare</code> explicitly requests download and
+WPS/real execution; <code>--run</code> additionally requests the GPU forecast. Provide
+the requested region, UTC cycle, WPS/WRF/geography roots and source. Check
+source availability and download limits before execution. The
+<a href="onboarding.md">onboarding guide</a> explains GFS/IFS/AIFS fields, external
+preprocessors and prepared-case outputs.</p>
+<h2 id="interpret-the-qualification-record">Interpret the qualification record<a class="headerlink" href="#interpret-the-qualification-record" aria-label="Permalink">¶</a></h2>
+<p>The <a href="release/SUPPORT_MATRIX_v0.4.0.md">support matrix</a> is the authoritative feature
+list. Default qualification, per-composite D6, E41-disclosed resources,
+CPU-only/API-only and refused options are distinct. The
+<a href="release/FINAL_COMPOSITES_v0.4.0.md">validation ledger</a> retains actual clocks and
+sources; the <a href="release/FIXES_v0.4.0.md">fix list</a> links original-WRF evidence and failures.</p>
+<p>In the final registered suite,65 configurations pass full 24-hour scientific
+scope and c45 passes its accepted six-hour scope.
+Bounded D6 does not cover every inventoried field: unbounded fields remain
+REPORT_ONLY, missing fields remain incomplete, and output finiteness does not
+justify intermediate negative-event repairs. E41 and F2 disclosures remain in
+<a href="../KNOWN_ISSUES.md">known issues</a>.</p>
 
         <nav class="page-nav">
 <a class="prev" href="ai-quickstart.html"><span class="pn-dir">← Previous</span><span class="pn-title">Quickstart with an AI Agent</span></a>

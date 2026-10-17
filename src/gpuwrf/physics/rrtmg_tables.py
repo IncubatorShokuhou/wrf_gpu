@@ -13,11 +13,14 @@ from jax import config
 import jax.numpy as jnp
 import numpy as np
 
+from gpuwrf.assets import asset_path, ensure_asset
+
 
 configure_jax_x64()
 
 ROOT = Path(__file__).resolve().parents[3]
-TABLE_ASSET = ROOT / "data" / "fixtures" / "rrtmg-tables-v1.npz"
+# Repo copy in a checkout, wheel bundle otherwise (gpuwrf.assets; content-keyed for AOT).
+TABLE_ASSET = asset_path("data/fixtures/rrtmg-tables-v1.npz")
 
 ASSET_TABLE_NAMES = (
     "sw_band_weights",
@@ -142,7 +145,7 @@ def asset_sha256(path: Path = TABLE_ASSET) -> str:
 def _load_npz(path: str) -> dict[str, np.ndarray]:
     """Loads the extracted RRTMG table asset once per interpreter."""
 
-    asset = Path(path)
+    asset = ensure_asset(Path(path))
     if not asset.exists():
         raise FileNotFoundError(f"missing RRTMG table asset: {asset}")
     with np.load(asset, allow_pickle=False) as loaded:

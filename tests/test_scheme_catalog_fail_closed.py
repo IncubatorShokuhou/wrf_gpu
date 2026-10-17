@@ -7,7 +7,7 @@ These assert the v0.12.0 "no silent gaps" honesty contract:
 * every recognized-but-unimplemented WRF scheme fails closed by name;
 * every out-of-scope feature (WRF-Chem, WRF-Fire, FDDA, stochastic physics,
   moving nests) fails closed as a named scope decision;
-* urban BEP/BEM and lake are recognized future-port targets that fail closed;
+* urban BEP/BEM and lake have qualified opt-in paths with explicit pairing limits;
 * the catalog's ``implemented`` set never over-claims a reference-only scheme
   and never drifts from the frozen accept-matrix.
 """
@@ -26,6 +26,7 @@ from gpuwrf.io.scheme_catalog import (
     OUT_OF_SCOPE_FEATURES,
     SupportStatus,
     assert_catalog_consistent,
+    classify_control,
     classify_feature_switch,
     classify_scheme,
     iter_full_catalog,
@@ -38,6 +39,19 @@ from gpuwrf.io.scheme_catalog import (
 # --------------------------------------------------------------------------- #
 def test_catalog_is_internally_consistent() -> None:
     assert_catalog_consistent()
+
+
+def test_implemented_tracer_reason_retains_qualification_disclosure() -> None:
+    """The public supported result must retain the pending scientific gates."""
+    support = classify_control("tracer_opt", 2)
+    assert support is not None
+    assert support.status is SupportStatus.IMPLEMENTED
+    assert "operators are CPU-oracle-qualified" in support.reason
+    assert "GPU/coupled-forecast qualification pending" in support.reason
+    assert "feedback=0" in support.reason
+    assert "FAIL-explained: 1.3697e-4 > 1e-4" in support.reason
+    assert "final composite D6 decides coupled qualification" in support.reason
+    assert "GPU launches, memory and timing remain unmeasured" in support.reason
 
 
 def test_implemented_set_matches_frozen_accept_matrix() -> None:
@@ -99,14 +113,11 @@ def test_smagorinsky_and_constant_k_classification_is_honest() -> None:
     assert classify_scheme("km_opt", 4).status is SupportStatus.IMPLEMENTED
     assert classify_scheme("km_opt", 1).status is SupportStatus.IMPLEMENTED
     assert classify_scheme("km_opt", 3).status is SupportStatus.IMPLEMENTED
-    # v0.3.4 (manager on rel034 18:08Z): km_opt=2/5 unqualified scaffolds, NaN under the
-    # release REAL carry -> refused with that reason.
-    for refused in (2, 5):
-        support = classify_scheme("km_opt", refused)
-        assert support.status is SupportStatus.RECOGNIZED_FAIL_CLOSED
-        assert "NaN" in support.reason
-        with pytest.raises(UnsupportedSchemeError):
-            validate_namelist({"dynamics": {"diff_opt": 2, "km_opt": refused}})
+    assert classify_scheme("km_opt", 2).status is SupportStatus.IMPLEMENTED
+    support=classify_scheme("km_opt",5)
+    assert support.status is SupportStatus.IMPLEMENTED
+    assert "CPU-oracle-qualified" in support.reason and "qualification pending" in support.reason
+    validate_namelist({"dynamics": {"diff_opt": 2, "km_opt": 5}})
     validate_namelist({"dynamics": {"diff_opt": 1, "km_opt": 4}})
     validate_namelist({"dynamics": {"diff_opt": 2, "km_opt": 1}})
     validate_namelist({"dynamics": {"diff_opt": 2, "km_opt": 3}})
@@ -133,12 +144,12 @@ def test_wrf_chem_option_fails_closed_out_of_scope() -> None:
     [
         ("ifire", 2, "WRF-Fire"),
         ("wrf_hydro", 1, "WRF-Hydro"),
-        ("grid_fdda", 1, "FDDA"),
-        ("sppt", 1, "SPPT"),
-        ("skebs", 1, "SKEBS"),
-        ("spp", 1, "SPP"),
+        ("grid_fdda", 3, "FDDA"),
+        ("sppt", 2, "SPPT"),
+        ("skebs", 2, "SKEBS"),
+        ("spp", 2, "SPP"),
         ("num_moves", 3, "Moving"),
-        ("sf_ocean_physics", 1, "ocean"),
+        ("sf_ocean_physics", 2, "ocean"),
     ],
 )
 def test_out_of_scope_feature_switches_fail_closed(
@@ -165,19 +176,19 @@ def test_out_of_scope_switch_off_passes() -> None:
     )
 
 
-def test_urban_bep_bem_and_lake_are_reference_only_fail_closed_operationally() -> None:
-    """G3 BEP/BEM and lake are accepted for reference work, not operational runs."""
+def test_urban_bep_bem_and_lake_are_implemented() -> None:
+    """Full canopy and urban PBL consumers graduated from the G3 scaffolds."""
 
-    assert classify_scheme("sf_urban_physics", 2).status is SupportStatus.REFERENCE_ONLY
-    assert classify_scheme("sf_urban_physics", 3).status is SupportStatus.REFERENCE_ONLY
-    assert classify_scheme("sf_lake_physics", 1).status is SupportStatus.REFERENCE_ONLY
+    assert classify_scheme("sf_urban_physics", 2).status is SupportStatus.IMPLEMENTED
+    assert classify_scheme("sf_urban_physics", 3).status is SupportStatus.IMPLEMENTED
+    assert classify_scheme("sf_lake_physics", 1).status is SupportStatus.IMPLEMENTED
     assert classify_scheme("sf_urban_physics", 0).status is SupportStatus.IMPLEMENTED
 
     validate_namelist({"physics": {"sf_urban_physics": [2, 3], "sf_lake_physics": [1]}})
 
-    with pytest.raises(UnsupportedSchemeError) as excinfo:
-        validate_namelist({"physics": {"sf_urban_physics": 1}})
-    assert "UCM" in str(excinfo.value)
+    # v0.4.0 (o2-urban): the single-layer UCM is implemented (with Noah-MP), no longer refused.
+    validate_namelist({"physics": {"sf_urban_physics": 1}})
+    assert classify_scheme("sf_urban_physics", 1).status is SupportStatus.IMPLEMENTED
 
 
 # --------------------------------------------------------------------------- #
@@ -203,13 +214,15 @@ def test_reference_only_scheme_passes_namelist_layer() -> None:
 
     # v0.23 F2: cu=16 graduated to IMPLEMENTED (machine-precision kernel +
     # ntiedtke_adapter scan wiring); v0.3.4: cu=4 scale-aware SAS too (bitwise vs the
-    # pristine WRF REAL build); SAS 94/95/96 remain reference-only.
+    # pristine WRF REAL build); SAS95/96 remain reference-only; SAS94 graduated in v0.4.0.
     assert classify_scheme("cu_physics", 16).status is SupportStatus.IMPLEMENTED
     # v0.3.4 o1-grell: Grell-3D (5) and Grell-Devenyi (93) graduated. cu=4 stays
     # reference-only (Python API): WRF ARW refuses it (check_a_mundo.F:671).
     assert classify_scheme("cu_physics", 5).status is SupportStatus.IMPLEMENTED
     assert classify_scheme("cu_physics", 93).status is SupportStatus.IMPLEMENTED
-    for cu in (4, 94, 95, 96, 99):
+    for cu in (14,94,95,96,99):
+        assert classify_scheme("cu_physics", cu).status is SupportStatus.IMPLEMENTED
+    for cu in (4,):
         assert classify_scheme("cu_physics", cu).status is SupportStatus.REFERENCE_ONLY
     assert classify_scheme("ra_lw_physics", 1).status is SupportStatus.IMPLEMENTED
     assert classify_scheme("ra_sw_physics", 1).status is SupportStatus.IMPLEMENTED
@@ -219,33 +232,40 @@ def test_reference_only_scheme_passes_namelist_layer() -> None:
     # PBL reference endpoints: real WRF oracle evidence staged, operational scan
     # still fail-closes until traceable JAX kernels land. CAM-UW(9) graduated in
     # v0.3.4 (faithful r8 port vs the fixed pristine oracle proofs/v034/camuw_oracle).
-    for pbl in (4, 10, 16, 17):
-        assert classify_scheme("bl_pbl_physics", pbl).status is SupportStatus.REFERENCE_ONLY
+    for pbl in (16,17):
+        support=classify_scheme('bl_pbl_physics',pbl)
+        assert support.status is SupportStatus.IMPLEMENTED
+        assert 'EXPERIMENTAL' in support.reason and 'materially' in support.reason
+    assert classify_scheme('bl_pbl_physics',4).status is SupportStatus.IMPLEMENTED
+    assert classify_scheme('sf_sfclay_physics',4).status is SupportStatus.IMPLEMENTED
     assert classify_scheme("bl_pbl_physics", 9).status is SupportStatus.IMPLEMENTED
     # v0.13 Tier-3 batch2: GSFC/Goddard NUWRF longwave (ra_lw=5) is REFERENCE_ONLY
     # (fp64 pristine-WRF oracle staged; faithful JAX kernel = carry-over). It is
     # namelist-accepted (for a single-column reference comparison) and fail-closes
     # in the operational scan.
-    assert classify_scheme("ra_lw_physics", 5).status is SupportStatus.REFERENCE_ONLY
+    assert classify_scheme("ra_lw_physics", 5).status is SupportStatus.IMPLEMENTED
     # v0.17 Tier-3: SSiB (sf_surface=8) is REFERENCE_ONLY (fp64 pristine-WRF
     # single-column oracle staged in proofs/v017/oracle/ssib; faithful JAX column
     # kernel = carry-over). RUC (sf_surface=3) graduated to IMPLEMENTED in v0.3.4
     # (physics.ruclsm + coupling.ruc_surface_hook, CPU-oracle-qualified).
     assert classify_scheme("sf_surface_physics", 3).status is SupportStatus.IMPLEMENTED
-    assert classify_scheme("sf_surface_physics", 8).status is SupportStatus.REFERENCE_ONLY
+    assert classify_scheme("sf_surface_physics", 8).status is SupportStatus.IMPLEMENTED
     # v0.17/v0.18 radiation-longtail: CAM (3), new Goddard (5), FLG/UCLA (7) and
     # GFDL-Eta (99) LW+SW are accepted only for reference/oracle development. Each
     # has a real-WRF exact-driver oracle staged in proofs/v018/savepoints/ra_tail_wrf
     # (see tests/test_v018_ra_tail_oracle.py); none is operationally wired.
-    for code in (5, 7, 99):
-        assert classify_scheme("ra_sw_physics", code).status is SupportStatus.REFERENCE_ONLY
-        assert classify_scheme("ra_lw_physics", code).status is SupportStatus.REFERENCE_ONLY
+    for code in (7, 99):
+        for key in ("ra_sw_physics","ra_lw_physics"):
+            support=classify_scheme(key,code)
+            assert support.status is SupportStatus.IMPLEMENTED
+            assert "EXPERIMENTAL CPU-ONLY" in support.reason
+            assert "native GPU column kernel pending" in support.reason
     # v0.3.4 (lane o1-camrad): CAM (3) LW+SW graduated to IMPLEMENTED (CPU-oracle-qualified).
     assert classify_scheme("ra_sw_physics", 3).status is SupportStatus.IMPLEMENTED
     assert classify_scheme("ra_lw_physics", 3).status is SupportStatus.IMPLEMENTED
     validate_namelist({"physics": {"cu_physics": [16, 4, 93, 94, 95, 96, 99]}})
     validate_namelist({"physics": {"bl_pbl_physics": [2], "sf_sfclay_physics": [2]}})
-    validate_namelist({"physics": {"bl_pbl_physics": [4, 9, 10, 16, 17]}})
+    validate_namelist({"physics": {"bl_pbl_physics": [4, 9, 10, 16, 17],"sf_sfclay_physics":[4,5,10,5,5]}})
     validate_namelist({"physics": {"ra_lw_physics": [5]}})
     validate_namelist({"physics": {"sf_surface_physics": [3]}})
     validate_namelist({"physics": {"sf_surface_physics": [8]}})
@@ -266,7 +286,7 @@ def test_combined_scheme_and_out_of_scope_failures_are_reported_together() -> No
 
     with pytest.raises(UnsupportedSchemeError) as excinfo:
         validate_namelist(
-            {"physics": {"mp_physics": [9]}, "chem": {"chem_opt": 401}}
+            {"physics": {"mp_physics": [95]}, "chem": {"chem_opt": 401}}
         )
     keys = {s.key for s in excinfo.value.selections}
     assert "mp_physics" in keys
@@ -279,3 +299,19 @@ def test_out_of_scope_features_have_alternatives() -> None:
     for feature in OUT_OF_SCOPE_FEATURES:
         assert feature.alternative.strip(), f"{feature.key} missing alternative"
         assert feature.reason.strip(), f"{feature.key} missing reason"
+
+
+@pytest.mark.parametrize("raw", [2, [2], [0, 2]])
+def test_gecros_refusal_names_upstream_defects(raw) -> None:
+    entry = classify_control("opt_crop", 2)
+    assert entry is not None
+    assert entry.status is SupportStatus.RECOGNIZED_FAIL_CLOSED
+    assert not entry.status.passes_namelist_check
+    assert "EMERG" in entry.reason and "CFO/YGO" in entry.reason
+    assert "8/8" in entry.reason and "NaN/Inf" in entry.reason
+    assert "proofs/s2_gecros/UPSTREAM_WRF_BUGS.md" in entry.reason
+    assert "opt_crop=0" in entry.alternative
+    with pytest.raises(UnsupportedSchemeError) as excinfo:
+        validate_namelist({"noah_mp": {"opt_crop": raw}})
+    assert entry.reason in str(excinfo.value)
+    validate_namelist({"noah_mp": {"opt_crop": 0}})

@@ -24,9 +24,14 @@ from typing import Any, Callable, Mapping
 import jax.numpy as jnp
 import numpy as np
 from gpuwrf.io.netcdf_lock import Dataset
+from gpuwrf.io.pbl_epsilon_schema import (EPSILON_PBL_SCHEMA_VERSION,epsilon_pbl_active,epsilon_pbl_config,validate_epsilon_state,validate_epsilon_history)
 
+from gpuwrf.contracts.ice_diagnostics import ICE_DIAGNOSTIC_LEAVES, ice_diagnostic_leaves
 from gpuwrf.contracts.state import CONDITIONAL_STATE_LEAVES, State, mynn_sfc_wspd_enabled
-from gpuwrf.contracts.precision import GWDO_DIAGNOSTIC_LEAVES, MP_RE_DIAGNOSTIC_LEAVES
+from gpuwrf.contracts.precision import (
+    EXTRA_SCALAR_BOUNDARY_LEAVES, GWDO_DIAGNOSTIC_LEAVES, LES_TKE_LEAVES,
+    MP_RE_DIAGNOSTIC_LEAVES, SMS_CARRY_LEAVES, EPSILON_PBL_LEAVES, les_tke_active,
+)
 from gpuwrf.io.wrfout_writer import (
     DATE_STR_LEN,
     RVOVRD,
@@ -42,7 +47,7 @@ from gpuwrf.io.wrfout_writer import (
     U_XYZ,
     V_XY,
     V_XYZ,
-    WRFOUT_VARIABLE_SPECS,
+    RESTART_WRFOUT_VARIABLE_SPECS as WRFOUT_VARIABLE_SPECS,
     WrfoutVariableSpec,
     W_XYZ,
     XY,
@@ -67,6 +72,7 @@ from gpuwrf.io.wrfout_writer import (
     _wrf_time_string,
 )
 from gpuwrf.io.wrfout_theta_convention import parse_use_theta_m, thm_source
+from gpuwrf.io.restart_schema import ssib_active
 from gpuwrf.runtime.operational_state import OperationalCarry
 
 try:
@@ -80,6 +86,9 @@ except Exception:  # pragma: no cover - optional package surface
     NoahClassicLandState = None  # type: ignore
     NoahClassicRadiation = None  # type: ignore
 
+
+from gpuwrf.contracts.cammg_fields import STATE_FIELDS as CAMMG_STATE_FIELDS, MASS_FIELDS as CAMMG_MASS_FIELDS, INTERFACE_FIELDS as CAMMG_INTERFACE_FIELDS, SURFACE_FIELDS as CAMMG_SURFACE_FIELDS
+from gpuwrf.physics.cammg.restart import validate as validate_cammg
 
 SCHEMA_VERSION = "v0.25-wrfrst-netcdf-5"
 LEGACY_SCHEMA_VERSION = "v0.11.0-wrfrst-netcdf-2"
@@ -101,6 +110,14 @@ SOIL_TRAILING = ("Time", "south_north", "west_east", "soil_layers_stag")
 
 STATE_FIELD_ORDER: tuple[str, ...] = tuple(State.__slots__)
 
+from gpuwrf.io.restart_schema import (
+    CAMUW_SCHEMA_VERSION, effective_radii_required, effective_radius_fields, physics_option, validate_camuw, validate_held_state,
+    LAKE_SCHEMA_VERSION,validate_lake,
+    TEMF_SCHEMA_VERSION,validate_temf,
+    QNSE_SCHEMA_VERSION,validate_qnse,
+    GODDARD_RADIATION_SCHEMA_VERSION,
+)
+
 
 def _validate_state_field_order(field_order: tuple[str, ...], *, namelist=None) -> None:
     if any(field not in STATE_FIELD_ORDER for field in field_order):
@@ -108,21 +125,37 @@ def _validate_state_field_order(field_order: tuple[str, ...], *, namelist=None) 
     if field_order != tuple(field for field in STATE_FIELD_ORDER if field in field_order):
         raise ValueError("wrfrst State field order does not match current State.__slots__")
     missing = tuple(field for field in STATE_FIELD_ORDER if field not in field_order)
+    if physics_option(namelist, "mp_physics", 8) == 13 and "rimi" in missing:
+        raise ValueError("wrfrst lacks held SBU RIMI (E78)")
+    if physics_option(namelist, "bl_pbl_physics", 5) == 12 and "exch_tke" in missing:
+        raise ValueError("wrfrst lacks held GBM EXCH_TKE (E78)")
     if mynn_sfc_wspd_enabled() and "sfc_wspd" in missing:
         raise ValueError("wrfrst State schema lacks held MYNN sfc_wspd (E78)")
-    from gpuwrf.physics.rrtmg_mp_re import mp_re_active
-    if mp_re_active(namelist) and any(field in MP_RE_DIAGNOSTIC_LEAVES for field in missing):
+    if effective_radii_required(namelist) and any(field in effective_radius_fields(namelist) for field in missing):
         raise ValueError("MP_RE wrfrst is missing held Thompson effective radii (E78)")
-    if any(field not in (*CONDITIONAL_STATE_LEAVES, *GWDO_DIAGNOSTIC_LEAVES, *MP_RE_DIAGNOSTIC_LEAVES) for field in missing):
+    if les_tke_active(namelist) and any(field in LES_TKE_LEAVES for field in missing):
+        raise ValueError("km_opt=2 wrfrst is missing the prognostic LES TKE (WRF tke_2) (E78)")
+    if physics_option(namelist, "km_opt") == 5 and any(f in SMS_CARRY_LEAVES for f in missing):
+        raise ValueError("km_opt=5 wrfrst is missing held SMS carry (E78)")
+    if any(name in missing for name in ice_diagnostic_leaves(physics_option(namelist, "mp_physics", 8))):
+        raise ValueError("wrfrst is missing held ice diagnostics (E78)")
+    optional = (*CONDITIONAL_STATE_LEAVES, *GWDO_DIAGNOSTIC_LEAVES, *MP_RE_DIAGNOSTIC_LEAVES, *LES_TKE_LEAVES, *SMS_CARRY_LEAVES, *EPSILON_PBL_LEAVES)
+    if any(field not in optional for field in missing):
         raise ValueError(
             "wrfrst State field order is missing non-conditional leaves: "
-            f"{[field for field in missing if field not in (*CONDITIONAL_STATE_LEAVES, *GWDO_DIAGNOSTIC_LEAVES, *MP_RE_DIAGNOSTIC_LEAVES)]}"
+            f"{[field for field in missing if field not in optional]}"
         )
 
 
 def _state_field_order_from_dataset(dataset: Dataset) -> tuple[str, ...]:
     field_order = tuple(json.loads(str(getattr(dataset, "GPUWRF_STATE_FIELD_ORDER", "[]"))))
+    required = tuple(json.loads(str(getattr(dataset, "GPUWRF_EXTRA_SCALAR_BOUNDARY_FIELDS", "[]"))))
+    if any(name not in field_order for name in required):
+        raise ValueError("wrfrst is missing live-child extra scalar boundary records (E78)")
     config = json.loads(str(getattr(dataset, "GPUWRF_MP_RE_CONFIG", "{}")))
+    config.update(json.loads(str(getattr(dataset, "GPUWRF_CAMUW_PBL_CONFIG", "{}"))))
+    config.update(json.loads(str(getattr(dataset, "GPUWRF_LES_TKE_CONFIG", "{}"))))
+    config.update(json.loads(str(getattr(dataset,"GPUWRF_EPSILON_PBL_CONFIG","{}"))))
     _validate_state_field_order(field_order, namelist=config)
     return field_order
 
@@ -233,7 +266,7 @@ NOAHMP_WRF_RESTART_VARIABLES: tuple[str, ...] = (
     "EMISS",
 )
 
-STOCHASTIC_SEED_RESTART_VARIABLES: tuple[str, ...] = tuple(STOCHASTIC_SEED_VARIABLES)
+STOCHASTIC_SEED_RESTART_VARIABLES: tuple[str, ...] = (*STOCHASTIC_SEED_VARIABLES, "ISEEDARR_RAND_PERTURB")
 OPTIONAL_WRF_RESTART_VARIABLES: tuple[str, ...] = (
     *NOAHMP_WRF_RESTART_VARIABLES,
     *STOCHASTIC_SEED_RESTART_VARIABLES,
@@ -277,11 +310,41 @@ OPTIONAL_CARRY_FIELDS: tuple[str, ...] = (
     "o3rad",
     "ruc_land", "ruc_rad",
     "cam_abs",  # ra_lw_physics=3 held REAL absorptivities (WRF abstot/absnxt/emstot)
+    "camuw_pbl",  # bl_pbl_physics=9 held REAL diffusion/stress/TKE
+    "fdda",  # grid_fdda=1 auxinput10 pair + held R*NDGDTEN (WRF restart fdda3d / RUNDGDTEN..)
+    "urban_slucm",  # sf_urban_physics=1 SLUCM state (WRF *_URB2D/3D + C*_SFCDIF restart 'r' fields)
+    'lake',
+    "obs",  # obs_nudge_opt=1 rolling VAROBS/RKO + saved weighted innovations
+    'regional_streams',
+    "precipitation_buckets",  # prec_acc_dt: exact REAL interval accumulations
+    "nwp_diagnostics", "radar_reflectivity",
+    "solar_interpolation",  # swint_opt=1 exact REAL parameters and last surface fluxes
+    'temf',
+    "urban_bep",  # compact BEP/BEM material/indoor/water state and multilayer PBL sources
+    "stochastic",
+    'feedback_history',
+    "windfarm_power",
+    "tracer_tendencies",  # held passive-scalar PBL tendencies
+    'ocean', 'hurricane_ustm',
+    "ssib_land", "ssib_rad",
+    "qnse",  # sf/bl=4 INOUT exchange/surface memory and MF cloud condensate
+    'osas_rng_key',
+    'cuplus',
+    'noahmp_mmf',
+    'gfdl_radiation',
+    "sst_skin",  # sst_skin=1 exact bulk SST / SSTSK / DTW
+    "noahmp_irrigation",  # exact WRF event amounts, counters and cumulative water/evaporation
+    "noahmp_carbon",  # exact six evolving carbon pools for DVEG 2/5/6
+    'noahmp_tile_drain',  # exact accumulated QTDRAIN for opt_tdrn=1/2
+    "noahmp_groundwater",  # opt_run1 positive-depth ZWT/WA/WT (distinct from MMF)
+    "cu_forcing",  # cu 3/5/6/16/93 held WRF RTHFTEN/RQVFTEN pair
 )
 PYTREE_CARRY_FIELDS = OPTIONAL_CARRY_FIELDS[5:]
 # Pytree groups appended after the current schema: files written before them
 # carry no manifest entry and resume with the group absent.
-_LATE_PYTREE_CARRY_FIELDS: tuple[str, ...] = ("h_diabatic", "history_diagnostics", "ruc_land", "ruc_rad", "cam_abs")
+_LATE_PYTREE_CARRY_FIELDS: tuple[str, ...] = ("h_diabatic", "history_diagnostics", "ruc_land", "ruc_rad", "cam_abs", "camuw_pbl",
+                                               "fdda", "urban_slucm", "lake", "obs", "regional_streams", "precipitation_buckets", "nwp_diagnostics", "radar_reflectivity", "solar_interpolation", "temf", "urban_bep", "stochastic", "feedback_history", "windfarm_power", "tracer_tendencies", "ocean", "hurricane_ustm", "ssib_land", "ssib_rad", "qnse", "osas_rng_key", "cuplus", "noahmp_mmf", "gfdl_radiation", "sst_skin", "noahmp_irrigation", "noahmp_carbon", "noahmp_groundwater", "noahmp_tile_drain",
+                                               "cu_forcing")
 
 # ``OperationalCarry`` fields this schema has no variables for.  A populated
 # (non-``None``) unsupported field is REFUSED at write time instead of being
@@ -503,6 +566,9 @@ STATE_EXACT_DIMENSIONS: dict[str, tuple[str, ...]] = {
     "graupel_acc": XY,
     "ice_acc": XY,
     "lu_index": XY,
+    **{name: XYZ for name in CAMMG_MASS_FIELDS},
+    **{name: ("Time", "bottom_top_stag", "south_north", "west_east") for name in CAMMG_INTERFACE_FIELDS},
+    **{name: XY for name in CAMMG_SURFACE_FIELDS},
     "Nc": XYZ,
     "Nn": XYZ,
     "rainc_acc": XY,
@@ -518,6 +584,16 @@ STATE_EXACT_DIMENSIONS: dict[str, tuple[str, ...]] = {
     "qvolh": XYZ,
     # v0.16 aerosol-aware Thompson (mp=28) QNWFA/QNIFA prognostics.
     "nwfa": XYZ,
+    "qir": XYZ,
+    "qib": XYZ,
+    "qi2": XYZ,
+    "Ni2": XYZ,
+    **{name: XYZ for name in ("qvoli", "qaoli", "qvoli2", "qaoli2", "qi3", "Ni3", "qvoli3", "qaoli3")},
+    "qir2": XYZ,
+    "qib2": XYZ,
+    "qzi": XYZ,
+    "mp_th_old": XYZ,
+    "mp_qv_old": XYZ,
     "nifa": XYZ,
     # v0.17 hail surface-precip accumulator (HAILNC).
     "hail_acc": XY,
@@ -539,6 +615,8 @@ STATE_EXACT_DIMENSIONS: dict[str, tuple[str, ...]] = {
     "qg_bdy": ("Time", "gpuwrf_qg_bdy_time", BDY_SIDE, BDY_WIDTH, "bottom_top", BDY_SIDE_INDEX),
     "Ni_bdy": ("Time", "gpuwrf_Ni_bdy_time", BDY_SIDE, BDY_WIDTH, "bottom_top", BDY_SIDE_INDEX),
     "Nr_bdy": ("Time", "gpuwrf_Nr_bdy_time", BDY_SIDE, BDY_WIDTH, "bottom_top", BDY_SIDE_INDEX),
+    **{name: ("Time", f"gpuwrf_{name}_time", BDY_SIDE, BDY_WIDTH, "bottom_top", BDY_SIDE_INDEX)
+       for name in EXTRA_SCALAR_BOUNDARY_LEAVES},
     # B39 MYNN surface-layer carry (WRF restart MOL/HFX/QFX/QSFC/PBLH).
     "mol": XY,
     "hfx": XY,
@@ -553,10 +631,55 @@ STATE_EXACT_DIMENSIONS: dict[str, tuple[str, ...]] = {
     "re_cloud": XYZ,
     "re_ice": XYZ,
     "re_snow": XYZ,
+    "tke": XYZ,
+    **{name: XY for name in SMS_CARRY_LEAVES},
     "dtaux3d": XYZ,
     "dtauy3d": XYZ,
     "dusfcg": XY,
     "dvsfcg": XY,
+    **{name:(('Time',) if name=='epsilon_pbl_step' else XYZ) for name in EPSILON_PBL_LEAVES},
+    "tracers": ("Time", "gpuwrf_tracer_count", "bottom_top", "south_north", "west_east"),
+    "tracer_budget": ("Time", "gpuwrf_tracer_count", "gpuwrf_tracer_budget_columns"),
+    "tracer_bdy": ("Time", "gpuwrf_tracer_count", "gpuwrf_tracer_bdy_time", BDY_SIDE,
+                   "gpuwrf_tracer_bdy_width", "bottom_top", "gpuwrf_tracer_bdy_side_index"),
+    "qt": XYZ,
+    "qrimef": XYZ,
+    "f_ice_phy": XYZ,
+    "f_rain_phy": XYZ,
+    "f_rimef_phy": XYZ,
+    "ferrier_sr": XY,
+    **{name: XYZ for name in ("acphysc", "acphyse", "acphysd", "acphyss", "acphysm", "acphysf",
+                              "re_cloud_gsfc", "re_rain_gsfc", "re_ice_gsfc", "re_snow_gsfc",
+                              "re_graupel_gsfc", "re_hail_gsfc")},
+    "goddard_sr": XY,
+    "phys_tot": XYZ,
+    "nwfa2d": XY,
+    "nifa2d": XY,
+    "rimi": XYZ,
+    "exch_tke": XYZ,
+    "thompson_sr": XY,
+    "thompson_rainnc": XY,
+    "thompson_snownc": XY,
+    "ntu_qdcn": XYZ,
+    "ntu_qtcn": XYZ,
+    "ntu_qccn": XYZ,
+    "ntu_qrcn": XYZ,
+    "ntu_qnin": XYZ,
+    "ntu_fi": XYZ,
+    "ntu_fs": XYZ,
+    "ntu_vi": XYZ,
+    "ntu_vs": XYZ,
+    "ntu_vg": XYZ,
+    "ntu_ai": XYZ,
+    "ntu_as": XYZ,
+    "ntu_ag": XYZ,
+    "ntu_ah": XYZ,
+    "ntu_i3m": XYZ,
+    "ntu_rainnc": XY,
+    "ntu_snownc": XY,
+    "ntu_sr": XY,
+
+    **{name: XYZ for name in ICE_DIAGNOSTIC_LEAVES},
 }
 
 CARRY_EXACT_DIMENSIONS: dict[str, tuple[str, ...]] = {
@@ -609,6 +732,7 @@ NOAHMP_LAND_EXACT_DIMENSIONS: dict[str, tuple[str, ...]] = {
     "albedo": XY,
     "sfcrunoff": XY,
     "udrunoff": XY,
+    "glacier_qsnow": XY,
 }
 
 NOAHCLASSIC_LAND_EXACT_DIMENSIONS: dict[str, tuple[str, ...]] = {
@@ -676,6 +800,7 @@ def write_wrfrst_carry(
     step_index: int,
     lead_hours: float | None = None,
     stochastic_seed_arrays: Mapping[str, Any] | None = None,
+    feedback_schema: dict[str, Any] | None = None,
 ) -> Path:
     """Write a restart with exact State plus promoted operational scan carry."""
 
@@ -690,6 +815,7 @@ def write_wrfrst_carry(
         step_index=int(step_index),
         lead_hours=lead_hours,
         stochastic_seed_arrays=stochastic_seed_arrays,
+        feedback_schema=feedback_schema,
     )
 
 
@@ -706,28 +832,64 @@ def read_wrfrst_state(path: str | Path) -> tuple[State, dict[str, Any]]:
             var_name = state_extension_name(leaf)
             fields[leaf] = jnp.asarray(_read_exact_variable(dataset, var_name, expected_shapes[leaf]))
         metadata = _read_metadata(dataset)
+        saved_physics=json.loads(str(getattr(dataset, "GPUWRF_MP_RE_CONFIG", "{}")))
+        saved_physics.update(json.loads(str(getattr(dataset, "GPUWRF_CAMUW_PBL_CONFIG", "{}"))))
+        validate_held_state(fields, saved_physics)
+        validate_cammg(fields,json.loads(str(getattr(dataset,"GPUWRF_MP_RE_CONFIG","{}"))),
+                       getattr(dataset,"GPUWRF_CAMMG_SCHEMA_VERSION",None))
+        validate_epsilon_state(fields,json.loads(str(getattr(dataset,'GPUWRF_EPSILON_PBL_CONFIG','{}'))),
+                               getattr(dataset,'GPUWRF_EPSILON_PBL_SCHEMA_VERSION',None))
+        _validate_tracer_dataset(dataset, fields, None)
     return _state_from_exact_fields(fields), metadata
 
 
-def read_wrfrst_carry(path: str | Path) -> tuple[OperationalCarry, dict[str, Any]]:
-    """Read an exact gpuwrf OperationalCarry from a gpuwrf-authored wrfrst."""
+def read_wrfrst_carry(path: str | Path, *, namelist=None, feedback_schema=None) -> tuple[OperationalCarry, dict[str, Any]]:
+    """Read exact carry; legacy files without PBL selection need a namelist."""
 
     target = Path(path)
     with Dataset(target, "r") as dataset:
         _validate_common_schema(dataset, require_carry=True)
+        # Read/validate active feedback on the host before State or optional
+        # leaves reach jnp.asarray. Reuse these buffers during restoration.
+        feedback_groups=_read_feedback_restart_groups(dataset,expected=feedback_schema)
+        _validate_epsilon_history_dataset(dataset)
         field_order = _state_field_order_from_dataset(dataset)
         expected_shapes = _expected_state_shapes_from_dataset(dataset)
         fields: dict[str, Any] = {}
         for leaf in field_order:
             fields[leaf] = jnp.asarray(_read_exact_variable(dataset, state_extension_name(leaf), expected_shapes[leaf]))
         state = _state_from_exact_fields(fields)
+        saved_physics=json.loads(str(getattr(dataset, "GPUWRF_MP_RE_CONFIG", "{}")))
+        saved_physics.update(json.loads(str(getattr(dataset, "GPUWRF_CAMUW_PBL_CONFIG", "{}"))))
+        validate_held_state(fields, saved_physics)
+        validate_cammg(fields,json.loads(str(getattr(dataset,"GPUWRF_MP_RE_CONFIG","{}"))),
+                       getattr(dataset,"GPUWRF_CAMMG_SCHEMA_VERSION",None))
+        validate_epsilon_state(fields,json.loads(str(getattr(dataset,'GPUWRF_EPSILON_PBL_CONFIG','{}'))),
+                               getattr(dataset,'GPUWRF_EPSILON_PBL_SCHEMA_VERSION',None))
+        if namelist is not None:
+            validate_held_state(fields, namelist)
+            validate_cammg(fields,namelist,getattr(dataset,"GPUWRF_CAMMG_SCHEMA_VERSION",None))
+            validate_epsilon_state(fields,namelist,getattr(dataset,'GPUWRF_EPSILON_PBL_SCHEMA_VERSION',None))
         carry_fields: dict[str, Any] = {"state": state}
         for name in CARRY_ARRAY_FIELDS:
             shape = _shape_for_dimensions(CARRY_EXACT_DIMENSIONS[name], _dataset_dimension_sizes(dataset))
             carry_fields[name] = jnp.asarray(_read_exact_variable(dataset, carry_extension_name(name), shape))
-        carry_fields.update(_read_optional_carry_groups(dataset))
+        carry_fields.update(_read_optional_carry_groups(dataset, namelist=namelist,
+                                                       feedback_groups=feedback_groups,ssib_state_fields=fields))
+        _validate_tracer_dataset(dataset, fields, carry_fields.get("tracer_tendencies"), namelist=namelist)
         metadata = _read_metadata(dataset)
     return OperationalCarry(**carry_fields), metadata
+
+
+def _validate_tracer_dataset(dataset, fields, tendencies, *, namelist=None):
+    from gpuwrf.tracers.restart import validate_restart
+    raw = getattr(dataset, "GPUWRF_TRACER_CONFIG", None)
+    try:
+        config = None if raw is None else json.loads(str(raw))
+    except (TypeError, ValueError) as exc:
+        raise ValueError("tracer restart configuration is malformed") from exc
+    validate_restart(fields, tendencies, config, getattr(dataset, "GPUWRF_TRACER_SCHEMA_VERSION", None),
+                     fields["qv"].shape, requested=namelist)
 
 
 def _state_from_exact_fields(fields: Mapping[str, Any]) -> State:
@@ -819,10 +981,91 @@ def _write_wrfrst(
     step_index: int,
     lead_hours: float | None,
     stochastic_seed_arrays: Mapping[str, Any] | None,
+    feedback_schema: dict[str, Any] | None = None,
 ) -> Path:
     target = Path(path)
+    from gpuwrf.io.cuplus_schema import validate as validate_cuplus,SCHEMA_VERSION as CUPLUS_SCHEMA_VERSION
+    validate_cuplus(None if carry is None else carry.cuplus,namelist,state.theta.shape,
+                   CUPLUS_SCHEMA_VERSION if carry is not None and carry.cuplus is not None else None)
+    from gpuwrf.io.cu_forcing_schema import validate as validate_cu_forcing,SCHEMA_VERSION as CU_FORCING_SCHEMA_VERSION
+    validate_cu_forcing(None if carry is None else carry.cu_forcing,namelist,state.theta.shape,
+                        CU_FORCING_SCHEMA_VERSION if carry is not None and carry.cu_forcing is not None else None)
     target.parent.mkdir(parents=True, exist_ok=True)
     run_start_dt = _coerce_datetime(run_start)
+    from gpuwrf.io.feedback_restart import configuration,validate
+    feedback_config=configuration(None if carry is None else carry.base_state,
+        None if carry is None else carry.feedback_history,state.qv.shape,state.t_skin.shape)
+    validate(None if carry is None else carry.base_state,None if carry is None else carry.feedback_history,
+             state.qv.shape,state.t_skin.shape,feedback_config,expected=feedback_schema)
+    from gpuwrf.io.windfarm_schema import configuration as wind_config, validate_restart as validate_wind
+    windfarm_config = wind_config(namelist)
+    validate_wind(None if carry is None else carry.windfarm_power,windfarm_config,state.t_skin.shape,requested=namelist)
+    validate_held_state({name: getattr(state, name) for name in state.active_field_names()}, namelist)
+    validate_cammg(state,namelist,1 if physics_option(namelist,"mp_physics",8)==11 else None)
+    from gpuwrf.io.glacier_schema import validate as validate_glacier,field_order as glacier_field_order,marker as glacier_marker
+    glacier_land=None if carry is None else carry.noahmp_land
+    glacier_order=() if glacier_land is None else glacier_field_order(glacier_land)
+    validate_glacier(None if glacier_land is None else {k:getattr(glacier_land,k) for k in glacier_order},
+        glacier_order,glacier_marker(glacier_land),namelist=namelist)
+    from gpuwrf.io.restart_schema import validate_urban_bep,validate_urban_radiation
+    validate_urban_bep(None if carry is None else carry.urban_bep,namelist)
+    validate_urban_radiation(None if carry is None else carry.radiation_diagnostics,namelist)
+    validate_epsilon_state(state,namelist,EPSILON_PBL_SCHEMA_VERSION)
+    if carry is not None:
+        validate_epsilon_history(carry.history_diagnostics,namelist,state.t_skin.shape)
+        validate_camuw(carry.camuw_pbl, namelist, CAMUW_SCHEMA_VERSION)
+        from gpuwrf.io.restart_schema import validate_goddard_radiation
+        validate_goddard_radiation(carry.radiation_diagnostics,namelist,
+            GODDARD_RADIATION_SCHEMA_VERSION if type(carry.radiation_diagnostics).__name__=='GoddardRadiationDiagnostics' else None)
+        from gpuwrf.io.flg_gfdl_schema import validate as validate_legacy,marker
+        validate_legacy(carry.radiation_diagnostics,carry.gfdl_radiation,namelist,
+            marker(carry.radiation_diagnostics,carry.gfdl_radiation),state_shape=state.qv.shape)
+        validate_temf(carry.temf,namelist,TEMF_SCHEMA_VERSION)
+        from gpuwrf.io.restart_schema import validate_sas_held
+        validate_sas_held(carry.cumulus_tendencies, namelist, carry.osas_rng_key, carry.cumulus_carry)
+        validate_lake(carry.lake,namelist,LAKE_SCHEMA_VERSION)
+        from gpuwrf.io.ocean_schema import validate as validate_ocean
+        validate_ocean(carry.ocean,carry.hurricane_ustm,namelist,1,shape=state.t_skin.shape,history=carry.history_diagnostics,require_history=True)
+        from gpuwrf.io.restart_schema import validate_ssib
+        validate_ssib(carry.ssib_land,carry.ssib_rad,namelist,1,carry.state.t_skin.shape,
+        driver_fields=dict(wspd=carry.state.sfc_wspd,history=carry.history_diagnostics,precipitation=carry.noahmp_precipitation))
+        validate_qnse(carry.qnse,namelist,QNSE_SCHEMA_VERSION,history=carry.history_diagnostics,expected_shape=state.theta.shape)
+        from gpuwrf.io.restart_schema import validate_observations
+        validate_observations(carry.obs,namelist)
+        from gpuwrf.diagnostics.precipitation import configured_interval, validate_restart_buckets
+        validate_restart_buckets(carry.precipitation_buckets, configured_interval(namelist), 1, carry.state.t_skin.shape)
+        from gpuwrf.diagnostics.online import configuration, validate_restart
+        validate_restart(carry.nwp_diagnostics,carry.radar_reflectivity,configuration(namelist),1,carry.state.qv.shape)
+    from gpuwrf.io.restart_schema import validate_spectral_fdda
+    validate_spectral_fdda(None if carry is None else carry.fdda, namelist)
+    from gpuwrf.diagnostics.solar_config import validate_options as solar_options, validate_restart as validate_solar_restart
+    solar_config = solar_options(namelist)
+    validate_solar_restart(None if carry is None else carry.solar_interpolation, solar_config, 1,
+                           state.t_skin.shape, requested=namelist)
+    from gpuwrf.io.stochastic_schema import validate_stochastic, seed_arrays as stochastic_seeds
+    validate_stochastic(None if carry is None else carry.stochastic, namelist)
+    from gpuwrf.tracers.restart import configuration as tracer_configuration, validate_restart as validate_tracer_restart
+    tracer_config = tracer_configuration(namelist)
+    validate_tracer_restart({name: getattr(state, name) for name in state.active_field_names()},
+                           None if carry is None else carry.tracer_tendencies, tracer_config, 1, state.qv.shape)
+    from gpuwrf.io.noahmp_mmf import validate_restart as validate_mmf
+    mmf = None if carry is None else carry.noahmp_mmf
+    validate_mmf(mmf, namelist, 1 if mmf is not None else None, state.t_skin.shape)
+    from gpuwrf.io.noahmp_mmf import validate_land as validate_mmf_land
+    validate_mmf_land(mmf,None if carry is None else carry.noahmp_land,state.t_skin.shape)
+    from gpuwrf.coupling.sst_skin_hook import validate_restart as validate_skin
+    skin_config = int(_lookup(namelist, "sst_skin", 0))
+    validate_skin(None if carry is None else carry.sst_skin, skin_config, 1, state.t_skin.shape)
+    from gpuwrf.io.noahmp_options import irrigation_configuration
+    from gpuwrf.io.noahmp_irrigation import validate_restart as validate_irrigation
+    irrigation_config=irrigation_configuration(namelist)
+    validate_irrigation(None if carry is None else carry.noahmp_irrigation,irrigation_config,1,state.t_skin.shape)
+    from gpuwrf.io.noahmp_carbon import validate_restart as validate_carbon
+    validate_carbon(None if carry is None else carry.noahmp_carbon,namelist,1,state.t_skin.shape)
+    from gpuwrf.io.noahmp_groundwater import validate_restart as validate_groundwater
+    validate_groundwater(None if carry is None else carry.noahmp_groundwater,namelist,1,state.t_skin.shape)
+    from gpuwrf.io.noahmp_hydrology import validate_tile_restart
+    validate_tile_restart(None if carry is None else carry.noahmp_tile_drain,namelist,1,state.t_skin.shape)
     valid_dt = _coerce_datetime(valid_time)
     if lead_hours is None:
         lead_hours = (valid_dt - run_start_dt).total_seconds() / 3600.0
@@ -843,6 +1086,13 @@ def _write_wrfrst(
             dimensions,
         )
     coordinate_fields = _grid_coordinate_payload(state, grid, namelist, dimensions)
+    if carry is not None and carry.stochastic is not None:
+        native_seeds = stochastic_seeds(carry.stochastic)
+        if stochastic_seed_arrays is not None and any(
+                name not in native_seeds or not np.array_equal(value,native_seeds[name])
+                for name,value in stochastic_seed_arrays.items()):
+            raise ValueError("explicit restart seeds differ from the live stochastic carry")
+        stochastic_seed_arrays = native_seeds
     seed_arrays = _normalize_stochastic_seed_arrays(stochastic_seed_arrays)
 
     with tempfile.NamedTemporaryFile(dir=target.parent, prefix=target.name + ".", suffix=".tmp", delete=False) as handle:
@@ -850,11 +1100,73 @@ def _write_wrfrst(
     with Dataset(temporary, "w", format="NETCDF4") as dataset:
         _create_restart_dimensions(dataset, dimensions)
         _write_global_attrs(dataset, grid, namelist, dimensions, run_start_dt, valid_dt)
-        _write_restart_global_attrs(dataset, state, carry, step_index, seed_arrays)
+        _write_restart_global_attrs(dataset, state, carry, step_index, seed_arrays,namelist=namelist)
+        if feedback_config is not None:
+            dataset.GPUWRF_FEEDBACK_SCHEMA=json.dumps(feedback_config,sort_keys=True)
         from gpuwrf.physics.rrtmg_mp_re import mp_re_config
         dataset.GPUWRF_MP_RE_CONFIG = json.dumps(mp_re_config(namelist), sort_keys=True)
+        dataset.GPUWRF_EXTRA_SCALAR_BOUNDARY_FIELDS = json.dumps(
+            [name for name in EXTRA_SCALAR_BOUNDARY_LEAVES if getattr(state, name) is not None])
+        dataset.GPUWRF_LES_TKE_CONFIG = json.dumps({"diff_opt": int(_lookup(namelist, "diff_opt", 0) or 0),
+                                                     "km_opt": int(_lookup(namelist, "km_opt", 0) or 0)},
+                                                    sort_keys=True)
+        dataset.GPUWRF_SAS_CU_PHYSICS = physics_option(namelist, "cu_physics")
+        dataset.GPUWRF_OSAS_DOMAIN_ID = physics_option(namelist, "osas_domain_id", 1)
+        dataset.GPUWRF_CAMUW_PBL_CONFIG = json.dumps({"bl_pbl_physics": physics_option(namelist, "bl_pbl_physics")})
+        if carry is not None and (carry.ocean is not None or carry.hurricane_ustm is not None):
+            from gpuwrf.io.ocean_schema import configuration
+            dataset.GPUWRF_OCEAN_SCHEMA_VERSION=1
+            dataset.GPUWRF_OCEAN_CONFIG=json.dumps(configuration(namelist))
+        dataset.GPUWRF_CAMUW_PBL_SCHEMA_VERSION = CAMUW_SCHEMA_VERSION
+        dataset.GPUWRF_TEMF_SCHEMA_VERSION = TEMF_SCHEMA_VERSION
+        dataset.GPUWRF_WINDFARM_CONFIG = json.dumps(windfarm_config)
+        dataset.GPUWRF_SSIB_ACTIVE = int(ssib_active(namelist))
+        if carry is not None and carry.ssib_land is not None:
+            dataset.GPUWRF_SSIB_SCHEMA_VERSION = 1
+        dataset.GPUWRF_QNSE_CONFIG = json.dumps({key:physics_option(namelist,key) for key in
+                                                ('bl_pbl_physics','sf_sfclay_physics','mfshconv')})
+        dataset.GPUWRF_QNSE_SCHEMA_VERSION = QNSE_SCHEMA_VERSION
+        from gpuwrf.io.glacier_schema import marker,required
+        dataset.GPUWRF_GLACIER_REQUIRED = int(required(namelist))
+        if carry is not None and marker(carry.noahmp_land) is not None:
+            dataset.GPUWRF_GLACIER_SCHEMA_VERSION = marker(carry.noahmp_land)
+        if carry is not None and carry.lake is not None:
+            dataset.GPUWRF_LAKE_SCHEMA_VERSION = LAKE_SCHEMA_VERSION
+            dataset.GPUWRF_LAKE_CONFIG = json.dumps({'sf_lake_physics':physics_option(namelist,'sf_lake_physics')})
+        from gpuwrf.assimilation.fdda_spectral import SpectralFddaCarry
+        if carry is not None and isinstance(carry.fdda, SpectralFddaCarry):
+            dataset.GPUWRF_SPECTRAL_FDDA_SCHEMA_VERSION = 1
+        from gpuwrf.assimilation.fdda_surface import SurfaceGridFddaCarry
+        if carry is not None and isinstance(carry.fdda,SurfaceGridFddaCarry):
+            dataset.GPUWRF_SURFACE_FDDA_SCHEMA_VERSION = 1
+        dataset.GPUWRF_OBS_NUDGE_OPT = int(carry is not None and carry.obs is not None)
+        from gpuwrf.diagnostics.precipitation import configured_interval
+        dataset.GPUWRF_PRECIPITATION_BUCKETS_CONFIG = configured_interval(namelist)
+        dataset.GPUWRF_PRECIPITATION_BUCKETS_SCHEMA_VERSION = 1
+        from gpuwrf.diagnostics.online import configuration
+        dataset.GPUWRF_ONLINE_DIAGNOSTICS_CONFIG=json.dumps(configuration(namelist),sort_keys=True)
+        dataset.GPUWRF_ONLINE_DIAGNOSTICS_SCHEMA_VERSION=1
+        dataset.GPUWRF_SOLAR_INTERPOLATION_CONFIG=json.dumps(solar_config,sort_keys=True)
+        dataset.GPUWRF_SOLAR_INTERPOLATION_SCHEMA_VERSION=1
+        if carry is not None and carry.stochastic is not None:
+            dataset.GPUWRF_STOCHASTIC_SCHEMA_VERSION = 1
+        dataset.GPUWRF_TRACER_CONFIG=json.dumps(tracer_config,sort_keys=True)
+        dataset.GPUWRF_TRACER_SCHEMA_VERSION=1
+        if carry is not None and carry.cuplus is not None:
+            dataset.GPUWRF_CUPLUS_SCHEMA_VERSION = CUPLUS_SCHEMA_VERSION
+            dataset.GPUWRF_CUPLUS_CONFIG = json.dumps({'cu_physics':physics_option(namelist,'cu_physics')})
+        if carry is not None and carry.cu_forcing is not None:
+            dataset.GPUWRF_CU_FORCING_SCHEMA_VERSION = CU_FORCING_SCHEMA_VERSION
+            dataset.GPUWRF_CU_FORCING_CONFIG = json.dumps({'cu_physics':physics_option(namelist,'cu_physics')})
         use_theta_m = parse_use_theta_m(_lookup(namelist, "use_theta_m", 1))
         dataset.USE_THETA_M = np.int32(use_theta_m)
+        if carry is not None and type(carry.radiation_diagnostics).__name__=='GoddardRadiationDiagnostics':
+            dataset.GPUWRF_GODDARD_RADIATION_SCHEMA_VERSION=np.int32(GODDARD_RADIATION_SCHEMA_VERSION)
+            dataset.GPUWRF_GODDARD_RADIATION_CONFIG=json.dumps({'ra_lw_physics':5,'ra_sw_physics':5})
+        if carry is not None:
+            from gpuwrf.io.flg_gfdl_schema import marker
+            legacy=marker(carry.radiation_diagnostics,carry.gfdl_radiation)
+            if legacy is not None:dataset.GPUWRF_FLG_GFDL_SCHEMA=json.dumps(legacy)
         _write_times(dataset, valid_dt)
         _write_xtime_restart(dataset, run_start_dt, lead_hours)
         _write_itimestep(dataset, step_index)
@@ -880,7 +1192,68 @@ def _write_wrfrst(
 
         if carry is not None and carry.noahmp_land is not None:
             _write_noahmp_wrf_restart_variables(dataset, carry.noahmp_land, dimensions)
+        if carry is not None and carry.ocean is not None:
+            for key,value in carry.ocean._asdict().items():
+                variable=dataset.createVariable(key.upper(),'f4',('Time','south_north','west_east'))
+                variable[0]=np.asarray(value,dtype=np.float32)
+        if carry is not None and carry.hurricane_ustm is not None:
+            variable=dataset.createVariable('USTM','f4',('Time','south_north','west_east'))
+            variable[0]=np.asarray(carry.hurricane_ustm,dtype=np.float32)
+        if carry is not None and carry.sst_skin is not None:
+            for field, value, description, units in (
+                ("SST", carry.sst_skin.bulk_sst, "SEA SURFACE TEMPERATURE", "K"),
+                ("SSTSK", carry.sst_skin.sstsk, "SKIN SEA SURFACE TEMPERATURE", "K"),
+                ("DTW", carry.sst_skin.dtw, "WARM LAYER TEMP DIFF", "C"),
+            ):
+                _write_restart_variable(dataset, _spec(field, XY, "XY", description, units), value, dimensions)
+        if carry is not None and carry.noahmp_irrigation is not None:
+            from gpuwrf.io.wrfout_writer import RESTART_WRFOUT_VARIABLE_SPECS as WRFOUT_VARIABLE_SPECS
+            for field,value in carry.noahmp_irrigation._asdict().items():
+                if field=="loss_fallback":
+                    continue
+                key=field.upper()
+                if key in WRFOUT_VARIABLE_SPECS:
+                    spec=_from_wrfout(key)
+                else:
+                    spec=_spec(key,XY,"XY","Irrigation water amount for the event","m")
+                _write_restart_variable(dataset,spec,value,dimensions)
+        if carry is not None and carry.noahmp_carbon is not None:
+            from gpuwrf.io.wrfout_writer import RESTART_WRFOUT_VARIABLE_SPECS as WRFOUT_VARIABLE_SPECS
+            for field,value in carry.noahmp_carbon._asdict().items():
+                _write_restart_variable(dataset,WRFOUT_VARIABLE_SPECS[field.upper()],value,dimensions)
+            dataset.GPUWRF_NOAHMP_CARBON_SCHEMA_VERSION=1
+        if carry is not None and carry.noahmp_groundwater is not None:
+            from gpuwrf.io.wrfout_writer import RESTART_WRFOUT_VARIABLE_SPECS as WRFOUT_VARIABLE_SPECS
+            for field,value in carry.noahmp_groundwater._asdict().items():
+                _write_restart_variable(dataset,WRFOUT_VARIABLE_SPECS[field.upper()],value,dimensions)
+            dataset.GPUWRF_NOAHMP_GROUNDWATER_SCHEMA_VERSION=1
+        if carry is not None and carry.noahmp_tile_drain is not None:
+            from gpuwrf.io.wrfout_writer import RESTART_WRFOUT_VARIABLE_SPECS as WRFOUT_VARIABLE_SPECS
+            _write_restart_variable(dataset,WRFOUT_VARIABLE_SPECS['QTDRAIN'],carry.noahmp_tile_drain,dimensions)
+            dataset.GPUWRF_NOAHMP_TILE_DRAIN_SCHEMA_VERSION=1
+        if carry is not None and carry.lake is not None:
+            from gpuwrf.coupling.lake_surface_hook import lake_history_fields
+            from gpuwrf.io.lake_schema import LAKE_HISTORY_FIELDS
+            bundle = _lookup(namelist,'lake_bundle')
+            if bundle is None:
+                raise ValueError('lake restart requires lake_bundle for WRF fields')
+            fields = lake_history_fields(carry.lake,bundle)
+            from gpuwrf.io.wrfout_writer import RESTART_WRFOUT_VARIABLE_SPECS as WRFOUT_VARIABLE_SPECS
+            for name in LAKE_HISTORY_FIELDS:
+                _write_restart_variable(dataset,WRFOUT_VARIABLE_SPECS[name],np.asarray(fields[name]),dimensions)
         _write_stochastic_seed_variables(dataset, seed_arrays, dimensions)
+        if skin_config:
+            dataset.GPUWRF_SST_SKIN_CONFIG = skin_config
+            dataset.GPUWRF_SST_SKIN_SCHEMA_VERSION = 1
+        if irrigation_config[0]:
+            dataset.GPUWRF_NOAHMP_IRRIGATION_CONFIG=json.dumps(irrigation_config)
+            dataset.GPUWRF_NOAHMP_IRRIGATION_SCHEMA_VERSION=1
+        from gpuwrf.io.noahmp_options import restart_configuration
+        noahmp_config=restart_configuration(namelist)
+        if noahmp_config is not None:
+            dataset.GPUWRF_NOAHMP_OPTIONS=json.dumps(noahmp_config)
+            from gpuwrf.io.noahmp_restart_identity import bound_table_identity
+            dataset.GPUWRF_NOAHMP_BOUND_TABLES=bound_table_identity(namelist)
 
         for leaf in state.active_field_names():
             _write_exact_state_variable(dataset, leaf, getattr(state, leaf), dimensions)
@@ -888,7 +1261,8 @@ def _write_wrfrst(
         if carry is not None:
             for name in CARRY_ARRAY_FIELDS:
                 _write_exact_carry_variable(dataset, name, getattr(carry, name), dimensions)
-            _write_optional_carry_variables(dataset, carry, dimensions)
+            _write_optional_carry_variables(dataset, carry, dimensions,
+                **({'namelist': namelist} if carry.noahmp_mmf is not None else {}))
     with temporary.open("rb") as handle:
         os.fsync(handle.fileno())
     temporary.replace(target)
@@ -905,7 +1279,7 @@ def _restart_dimension_sizes(
     nz: int,
     namelist: Mapping[str, Any] | Any | None,
 ) -> dict[str, int | None]:
-    dimensions = _dimension_sizes(nx=nx, ny=ny, nz=nz, namelist=namelist)
+    dimensions = _dimension_sizes(nx=nx, ny=ny, nz=nz, namelist=namelist, history_schema=False)
     bdy_shape = np.asarray(state.u_bdy).shape
     if len(bdy_shape) != 5:
         raise ValueError(f"u_bdy must be 5-D, got {bdy_shape}")
@@ -923,6 +1297,14 @@ def _restart_dimension_sizes(
         if len(shape) != 5:
             raise ValueError(f"{leaf} must be 5-D (time, side, bdy_width, z, side_index), got {shape}")
         dimensions[_bdy_time_dimension(leaf)] = int(shape[0])
+    if getattr(state, "tracers", None) is not None:
+        dimensions["gpuwrf_tracer_count"] = int(state.tracers.shape[0])
+    if getattr(state, "tracer_budget", None) is not None:
+        dimensions["gpuwrf_tracer_budget_columns"] = 4
+    if getattr(state, "tracer_bdy", None) is not None:
+        dimensions.update(gpuwrf_tracer_bdy_time=int(state.tracer_bdy.shape[1]),
+                          gpuwrf_tracer_bdy_width=int(state.tracer_bdy.shape[3]),
+                          gpuwrf_tracer_bdy_side_index=int(state.tracer_bdy.shape[5]))
     return dimensions
 
 
@@ -934,7 +1316,7 @@ def _active_boundary_leaves(state: State) -> tuple[str, ...]:
     restart variable, exactly like the other conditional leaves.
     """
 
-    return tuple(leaf for leaf in state.active_field_names() if leaf.endswith("_bdy"))
+    return tuple(leaf for leaf in state.active_field_names() if leaf.endswith("_bdy") and leaf != "tracer_bdy")
 
 
 def _validate_exact_shapes(
@@ -968,6 +1350,9 @@ def _create_restart_dimensions(dataset: Dataset, dimensions: Mapping[str, int | 
     _create_dimensions(dataset, dimensions)
     for name in (BDY_TIME, BDY_SIDE, BDY_WIDTH, BDY_SIDE_INDEX, BDY_SURFACE):
         dataset.createDimension(name, dimensions[name])
+    for name in dimensions:
+        if name.startswith("gpuwrf_tracer_") and name not in dataset.dimensions:
+            dataset.createDimension(name, dimensions[name])
     for leaf in STATE_FIELD_ORDER:
         name = _bdy_time_dimension(leaf)
         if leaf.endswith("_bdy") and name in dimensions and name not in dataset.dimensions:
@@ -984,6 +1369,7 @@ def _write_restart_global_attrs(
     carry: OperationalCarry | None,
     step_index: int,
     stochastic_seed_arrays: Mapping[str, np.ndarray],
+    namelist=None,
 ) -> None:
     active_state_order = state.active_field_names()
     active_standard_variables = [
@@ -996,11 +1382,26 @@ def _write_restart_global_attrs(
         if field.value(state) is not None
     )
     active_standard_variables.extend(WRF_CURRENT_SLOT_ALIASES.values())
+    if carry is not None and carry.sst_skin is not None:
+        active_standard_variables.extend(("SST","SSTSK","DTW"))
+    if carry is not None and carry.noahmp_irrigation is not None:
+        active_standard_variables.extend(name.upper() for name in carry.noahmp_irrigation._fields
+                                         if name!="loss_fallback")
+    if carry is not None and carry.noahmp_carbon is not None:
+        active_standard_variables.extend(name.upper() for name in carry.noahmp_carbon._fields)
+    if carry is not None and carry.noahmp_groundwater is not None:
+        active_standard_variables.extend(name.upper() for name in carry.noahmp_groundwater._fields)
+    if carry is not None and carry.noahmp_tile_drain is not None:active_standard_variables.append('QTDRAIN')
     active_standard_variables.append("THM_2")
     dataset.TITLE = "OUTPUT FROM GPUWRF NETCDF CHECKPOINT WITH WRF-CONVENTION FIELDS"
     dataset.GPUWRF_RESTART_SCOPE = "GPUWRF_ONLY: incomplete native CPU-WRF restart inventory"
     dataset.RESTART_STATUS = "RESTART"
     dataset.GPUWRF_WRFRST_SCHEMA_VERSION = SCHEMA_VERSION
+    if physics_option(namelist,"mp_physics",8)==11:
+        dataset.GPUWRF_CAMMG_SCHEMA_VERSION=1
+    if epsilon_pbl_active(namelist):
+        dataset.GPUWRF_EPSILON_PBL_SCHEMA_VERSION=EPSILON_PBL_SCHEMA_VERSION
+        dataset.GPUWRF_EPSILON_PBL_CONFIG=json.dumps(epsilon_pbl_config(namelist),separators=(',',':'))
     from gpuwrf.io.restart import RADIATION_DIAGNOSTICS_SCHEMA_VERSION, GWDO_DIAGNOSTICS_SCHEMA_VERSION
     dataset.GPUWRF_RADIATION_DIAGNOSTICS_SCHEMA_VERSION = RADIATION_DIAGNOSTICS_SCHEMA_VERSION
     dataset.GPUWRF_GWDO_DIAGNOSTICS_SCHEMA_VERSION = GWDO_DIAGNOSTICS_SCHEMA_VERSION
@@ -1219,14 +1620,39 @@ def _write_optional_carry_variables(
     dataset: Dataset,
     carry: OperationalCarry,
     dimensions: Mapping[str, int | None],
+    *, namelist=None,
 ) -> None:
     import base64
     import pickle
     import jax
+    from gpuwrf.io.restart_schema import validate_urban_bep
+    if carry.noahmp_mmf is not None:
+        from gpuwrf.io.noahmp_mmf import configuration
+        dataset.GPUWRF_NOAHMP_MMF_SCHEMA_VERSION = np.int32(1)
+        config = configuration(namelist)
+        if not config['noahmp_mmf_enabled'] or 'dt_s' not in config:
+            raise ValueError('MMF wrfrst needs its domain namelist and DT (E78)')
+        dataset.GPUWRF_NOAHMP_MMF_CONFIG = json.dumps(config)
+    if carry.urban_bep is not None:
+        option=3 if hasattr(carry.urban_bep.state,'temperature') else 2
+        validate_urban_bep(carry.urban_bep,{'sf_urban_physics':option},
+            grid_shape=(dimensions['south_north'],dimensions['west_east']),nz=dimensions['bottom_top'])
+        dataset.GPUWRF_URBAN_BEP_OPTION=np.int32(option)
     for group in PYTREE_CARRY_FIELDS:
         value = getattr(carry, group)
         if value is None:
             continue
+        if group == "regional_streams":
+            from gpuwrf.streams.device import SCHEMA_VERSION, validate_schema
+            validate_schema(value, SCHEMA_VERSION)
+            dataset.GPUWRF_REGIONAL_STREAMS_SCHEMA_VERSION = SCHEMA_VERSION
+        if group == "urban_slucm" and getattr(value,"inputs",None) is not None:
+            dataset.GPUWRF_URBAN_INPUTS_SCHEMA_VERSION = 1
+            inputs = value.inputs
+            dataset.GPUWRF_URBAN_INPUTS_CONFIG = json.dumps({"required":True,
+                "ahe":inputs.ahe is not None or inputs.hourly is not None,
+                "diurnal":inputs.longitude is not None,"morphology":inputs.morphology is not None,
+                "clock":inputs.clock is not None})
         leaves, structure = jax.tree.flatten(value)
         dataset.setncattr("GPUWRF_TREE_" + group.upper(), base64.b64encode(pickle.dumps(structure, protocol=5)).decode("ascii"))
         for index, leaf in enumerate(leaves):
@@ -1237,7 +1663,11 @@ def _write_optional_carry_variables(
                 dimension = f"gpuwrf_{group}_{index}_{axis}"
                 dataset.createDimension(dimension, extent)
                 dims.append(dimension)
-            variable = dataset.createVariable(_optional_variable_name(group, field), data.dtype, tuple(dims))
+            boolean = group == 'noahmp_mmf' and data.dtype == np.bool_
+            variable = dataset.createVariable(_optional_variable_name(group, field),
+                                               'i1' if boolean else data.dtype, tuple(dims))
+            if boolean:
+                variable.GPUWRF_BOOLEAN = np.int32(1)
             variable[...] = data
     if carry.noahmp_land is not None:
         for field in _object_field_order(carry.noahmp_land):
@@ -1350,6 +1780,9 @@ def _optional_carry_kind(carry: OperationalCarry | None) -> dict[str, str]:
 
 
 def _object_field_order(obj: Any) -> tuple[str, ...]:
+    if NoahMPLandState is not None and isinstance(obj,NoahMPLandState):
+        from gpuwrf.io.glacier_schema import field_order
+        return field_order(obj)
     if obj is None:
         return ()
     slots = getattr(obj, "__slots__", ())
@@ -1382,7 +1815,60 @@ def _dimensions_for_array(data: Any, dimensions: Mapping[str, int | None]) -> tu
     raise ValueError(f"optional carry array shape {shape} does not match supported wrfrst dimensions")
 
 
-def _read_optional_carry_groups(dataset: Dataset) -> dict[str, Any]:
+def _validate_epsilon_history_dataset(dataset):
+    """Host-only EPS admission before State/device reconstruction."""
+    config=json.loads(str(getattr(dataset,'GPUWRF_EPSILON_PBL_CONFIG','{}')))
+    if not epsilon_pbl_active(config): return
+    import base64
+    import pickle
+    import jax
+    kind=_optional_carry_kind_manifest(dataset)
+    if kind['history_diagnostics']!='pytree':
+        raise ValueError('EEPS/KEPS full restart missing surface history carry (E78)')
+    fields=_optional_carry_manifest(dataset)['history_diagnostics']
+    structure=pickle.loads(base64.b64decode(dataset.getncattr('GPUWRF_TREE_HISTORY_DIAGNOSTICS')))
+    leaves=[np.asarray(dataset.variables[_optional_variable_name('history_diagnostics',field)][...]) for field in fields]
+    history=jax.tree.unflatten(structure,leaves)
+    validate_epsilon_history(history,config,_expected_state_shapes_from_dataset(dataset)['t_skin'])
+
+
+def _read_feedback_restart_groups(dataset, *, expected=None):
+    """Preflight active ALB/history with NumPy leaves, before any device put."""
+    import base64
+    import pickle
+    import jax
+    kinds=_optional_carry_kind_manifest(dataset)
+    orders=_optional_carry_manifest(dataset)
+    structures={}
+    for group in ('base_state','feedback_history'):
+        if kinds[group]=='pytree':
+            structures[group]=pickle.loads(base64.b64decode(dataset.getncattr('GPUWRF_TREE_'+group.upper())))
+    raw=getattr(dataset,'GPUWRF_FEEDBACK_SCHEMA',None)
+    prototype=(jax.tree.unflatten(structures['base_state'],[object()]*structures['base_state'].num_leaves)
+               if 'base_state' in structures else None)
+    if (raw is None and expected is None and kinds['feedback_history']=='none'
+            and getattr(prototype,'alb',None) is None):
+        return {}  # Keep inactive/default restoration unchanged.
+    groups={}
+    for group in ('base_state','feedback_history'):
+        if kinds[group]=='none':
+            groups[group]=None
+            continue
+        fields=orders[group]
+        structure=structures.get(group)
+        if (structure is None or structure.num_leaves!=len(fields)
+                or fields!=[f'leaf_{i:03d}' for i in range(len(fields))]):
+            raise ValueError('two-way wrfrst pytree schema differs (E78)')
+        arrays=[np.asarray(dataset.variables[_optional_variable_name(group,field)][...]) for field in fields]
+        groups[group]=jax.tree.unflatten(structure,arrays)
+    from gpuwrf.io.feedback_restart import validate
+    shape=tuple(len(dataset.dimensions[n]) for n in ('bottom_top','south_north','west_east'))
+    validate(groups['base_state'],groups['feedback_history'],shape,shape[1:],
+             None if raw is None else json.loads(str(raw)),expected=expected)
+    return groups
+
+
+def _read_optional_carry_groups(dataset: Dataset, *, namelist=None, feedback_groups=None, ssib_state_fields=None) -> dict[str, Any]:
     """Read optional exact carry groups declared in the restart manifest."""
 
     field_order = _optional_carry_manifest(dataset)
@@ -1396,6 +1882,9 @@ def _read_optional_carry_groups(dataset: Dataset) -> dict[str, Any]:
     import pickle
     import jax
     for group in PYTREE_CARRY_FIELDS:
+        if feedback_groups is not None and group in feedback_groups:
+            carry_fields[group]=jax.tree.map(jnp.asarray,feedback_groups[group])
+            continue
         if kind[group] == "none":
             continue
         if kind[group] != "pytree":
@@ -1406,8 +1895,249 @@ def _read_optional_carry_groups(dataset: Dataset) -> dict[str, Any]:
         structure = pickle.loads(base64.b64decode(dataset.getncattr("GPUWRF_TREE_" + group.upper())))
         if structure.num_leaves != len(fields):
             raise ValueError(f"wrfrst {group} tree/leaf counts differ")
-        leaves = [jnp.asarray(np.asarray(dataset.variables[_optional_variable_name(group, field)][...])) for field in fields]
-        carry_fields[group] = jax.tree.unflatten(structure, leaves)
+        leaves = []
+        for field in fields:
+            variable = dataset.variables[_optional_variable_name(group, field)]
+            value = np.asarray(variable[...])
+            if group == 'noahmp_mmf' and int(getattr(variable, 'GPUWRF_BOOLEAN', 0)):
+                if value.dtype != np.int8 or np.any((value != 0) & (value != 1)):
+                    raise ValueError('MMF restart eligibility encoding differs (E78)')
+                value = value.astype(np.bool_)
+            leaves.append(value)
+        value = jax.tree.unflatten(structure, leaves)
+        if group == 'noahmp_mmf':
+            from gpuwrf.io.noahmp_mmf import validate_restart as validate_mmf
+            raw_config = getattr(dataset, 'GPUWRF_NOAHMP_MMF_CONFIG', None)
+            validate_mmf(value, None if raw_config is None else json.loads(str(raw_config)),
+                         getattr(dataset, 'GPUWRF_NOAHMP_MMF_SCHEMA_VERSION', None))
+        # Validate Goddard's stored precision before JAX can silently narrow a
+        # malformed float64 leaf when the process has x64 disabled (E78).
+        # Preserve exact stored ocean/USTM and required LH until their dtype
+        # and grid shape have been checked; x64-OFF must not hide malformed f64.
+        raw_ocean_group = group in ('ocean','hurricane_ustm','history_diagnostics')
+        carry_fields[group] = (value if raw_ocean_group or group == 'cu_forcing'
+                               or type(value).__name__ in ('GoddardRadiationDiagnostics','CuPlusCarry')
+                               else jax.tree.map(jnp.asarray,value))
+    urban_bundle = getattr(namelist,"urban_bundle",None)
+    urban_inputs_version = getattr(dataset,"GPUWRF_URBAN_INPUTS_SCHEMA_VERSION",None)
+    if urban_inputs_version is not None or getattr(urban_bundle,"requires_inputs",False):
+        from gpuwrf.io.urban_schema import validate_urban_inputs
+        saved = getattr(dataset,"GPUWRF_URBAN_INPUTS_CONFIG",None)
+        if saved is None:
+            raise ValueError("wrfrst urban inputs configuration missing (E78)")
+        shape = tuple(len(dataset.dimensions[name]) for name in ("south_north","west_east"))
+        validate_urban_inputs(carry_fields["urban_slucm"],json.loads(str(saved)),urban_inputs_version,shape)
+        if namelist is not None:
+            validate_urban_inputs(carry_fields["urban_slucm"],namelist,urban_inputs_version,shape)
+    from gpuwrf.io.cuplus_schema import validate as validate_cuplus
+    saved_cuplus=getattr(dataset,'GPUWRF_CUPLUS_CONFIG',None)
+    cuplus_shape=tuple(len(dataset.dimensions[key]) for key in ('bottom_top','south_north','west_east'))
+    saved_cuplus_config=json.loads(str(saved_cuplus)) if saved_cuplus is not None else (namelist or {})
+    validate_cuplus(carry_fields['cuplus'],saved_cuplus_config,cuplus_shape,
+                   getattr(dataset,'GPUWRF_CUPLUS_SCHEMA_VERSION',None))
+    if namelist is not None:
+        validate_cuplus(carry_fields['cuplus'],namelist,cuplus_shape,
+                       getattr(dataset,'GPUWRF_CUPLUS_SCHEMA_VERSION',None))
+    if carry_fields['cuplus'] is not None:
+        carry_fields['cuplus']=jax.tree.map(jnp.asarray,carry_fields['cuplus'])
+    from gpuwrf.io.cu_forcing_schema import validate as validate_cu_forcing
+    saved_cu_forcing=getattr(dataset,'GPUWRF_CU_FORCING_CONFIG',None)
+    # Without the group, the always-written cumulus selector still binds the file (E78).
+    saved_cu_forcing_config=(json.loads(str(saved_cu_forcing)) if saved_cu_forcing is not None
+                             else {'cu_physics':int(getattr(dataset,'GPUWRF_SAS_CU_PHYSICS',0))})
+    validate_cu_forcing(carry_fields['cu_forcing'],saved_cu_forcing_config,cuplus_shape,
+                        getattr(dataset,'GPUWRF_CU_FORCING_SCHEMA_VERSION',None))
+    if namelist is not None:
+        validate_cu_forcing(carry_fields['cu_forcing'],namelist,cuplus_shape,
+                            getattr(dataset,'GPUWRF_CU_FORCING_SCHEMA_VERSION',None))
+    if carry_fields['cu_forcing'] is not None:
+        carry_fields['cu_forcing']=jax.tree.map(jnp.asarray,carry_fields['cu_forcing'])
+    if carry_fields["regional_streams"] is not None or hasattr(dataset, "GPUWRF_REGIONAL_STREAMS_SCHEMA_VERSION"):
+        from gpuwrf.streams.restart import validate_restart
+        validate_restart(carry_fields["regional_streams"], getattr(dataset, "GPUWRF_REGIONAL_STREAMS_SCHEMA_VERSION", None))
+    from gpuwrf.io.noahmp_mmf import validate_restart as validate_mmf
+    raw_config = getattr(dataset, 'GPUWRF_NOAHMP_MMF_CONFIG', None)
+    mmf_version = getattr(dataset, 'GPUWRF_NOAHMP_MMF_SCHEMA_VERSION', None)
+    validate_mmf(carry_fields['noahmp_mmf'],
+                 None if raw_config is None else json.loads(str(raw_config)), mmf_version,
+                 tuple(len(dataset.dimensions[n]) for n in ('south_north', 'west_east')))
+    if namelist is not None:
+        validate_mmf(carry_fields['noahmp_mmf'], namelist, mmf_version)
+    from gpuwrf.io.restart_schema import validate_spectral_fdda
+    validate_spectral_fdda(carry_fields["fdda"], namelist,
+                          required=hasattr(dataset, "GPUWRF_SPECTRAL_FDDA_SCHEMA_VERSION"))
+    from gpuwrf.io.stochastic_schema import validate_stochastic
+    validate_stochastic(carry_fields["stochastic"], namelist,
+                        required=hasattr(dataset,"GPUWRF_STOCHASTIC_SCHEMA_VERSION"))
+    if (hasattr(dataset,"GPUWRF_STOCHASTIC_SCHEMA_VERSION")
+            and dataset.GPUWRF_STOCHASTIC_SCHEMA_VERSION != 1):
+        raise ValueError("wrfrst stochastic schema mismatch (E78)")
+    from gpuwrf.assimilation.fdda_surface import validate_surface_restart,SurfaceGridFddaCarry
+    surface_version=getattr(dataset,'GPUWRF_SURFACE_FDDA_SCHEMA_VERSION',None)
+    if isinstance(carry_fields['fdda'],SurfaceGridFddaCarry) and surface_version!=1:
+        raise ValueError('wrfrst surface FDDA schema mismatch (E78)')
+    validate_surface_restart(carry_fields['fdda'],namelist,required=surface_version is not None)
+    if surface_version is not None and surface_version!=1:
+        raise ValueError('wrfrst surface FDDA schema mismatch (E78)')
+    if (hasattr(dataset, "GPUWRF_SPECTRAL_FDDA_SCHEMA_VERSION")
+            and dataset.GPUWRF_SPECTRAL_FDDA_SCHEMA_VERSION != 1):
+        raise ValueError("wrfrst spectral FDDA schema mismatch (E78)")
+    from gpuwrf.io.restart_schema import validate_urban_bep,validate_urban_radiation
+    urban_option=getattr(dataset,'GPUWRF_URBAN_BEP_OPTION',None)
+    urban_config=namelist if namelist is not None else {'sf_urban_physics':int(urban_option or 0)}
+    urban_grid=(len(dataset.dimensions['south_north']),len(dataset.dimensions['west_east']))
+    validate_urban_bep(carry_fields['urban_bep'],urban_config,grid_shape=urban_grid,
+                       nz=len(dataset.dimensions['bottom_top']))
+    validate_urban_radiation(carry_fields['radiation_diagnostics'],urban_config,grid_shape=urban_grid)
+    from gpuwrf.io.windfarm_schema import validate_restart as validate_wind
+    saved_wind = getattr(dataset,'GPUWRF_WINDFARM_CONFIG',None)
+    validate_wind(carry_fields['windfarm_power'],json.loads(str(saved_wind)) if saved_wind is not None else None,
+                  tuple(len(dataset.dimensions[a]) for a in ('south_north','west_east')),requested=namelist)
+    from gpuwrf.io.restart_schema import validate_ssib
+    ssib_shape=tuple(np.asarray(dataset.variables[state_extension_name('t_skin')][0]).shape)
+    validate_ssib(carry_fields['ssib_land'],carry_fields['ssib_rad'],namelist,
+        getattr(dataset,'GPUWRF_SSIB_SCHEMA_VERSION',None),ssib_shape,
+        active=bool(getattr(dataset,'GPUWRF_SSIB_ACTIVE',False)) or ssib_active(namelist),
+        driver_fields=dict(wspd=(ssib_state_fields or {}).get('sfc_wspd'),history=carry_fields.get('history_diagnostics'),precipitation=carry_fields.get('noahmp_precipitation')))
+    saved_config = getattr(dataset, "GPUWRF_CAMUW_PBL_CONFIG", None)
+    validate_temf(carry_fields['temf'],
+                  json.loads(str(saved_config)) if saved_config is not None else namelist,
+                  getattr(dataset,'GPUWRF_TEMF_SCHEMA_VERSION',None))
+    if namelist is not None:
+        validate_temf(carry_fields['temf'],namelist,getattr(dataset,'GPUWRF_TEMF_SCHEMA_VERSION',None))
+    from gpuwrf.io.ocean_schema import validate as validate_ocean
+    ocean_config=getattr(dataset,'GPUWRF_OCEAN_CONFIG',None)
+    ocean_saved=json.loads(str(ocean_config)) if ocean_config is not None else namelist
+    validate_ocean(carry_fields['ocean'],carry_fields['hurricane_ustm'],ocean_saved,getattr(dataset,'GPUWRF_OCEAN_SCHEMA_VERSION',None),shape=urban_grid,history=carry_fields.get('history_diagnostics'),require_history=True)
+    if namelist is not None:
+        validate_ocean(carry_fields['ocean'],carry_fields['hurricane_ustm'],namelist,getattr(dataset,'GPUWRF_OCEAN_SCHEMA_VERSION',None),shape=urban_grid,saved=ocean_saved,history=carry_fields.get('history_diagnostics'),require_history=True)
+    raw_ocean_groups = ('ocean','hurricane_ustm') if kind['ocean'] != 'none' else ('hurricane_ustm',)
+    for group in raw_ocean_groups:
+        carry_fields[group] = jax.tree.map(jnp.asarray,carry_fields[group])
+    qnse_config=getattr(dataset,'GPUWRF_QNSE_CONFIG',None)
+    qnse_namelist=json.loads(str(qnse_config)) if qnse_config is not None else (
+        json.loads(str(saved_config)) if saved_config is not None else namelist)
+    qnse_shape=(len(dataset.dimensions['bottom_top']),*urban_grid)
+    validate_qnse(carry_fields['qnse'],qnse_namelist,getattr(dataset,'GPUWRF_QNSE_SCHEMA_VERSION',None),
+                  history=carry_fields['history_diagnostics'],expected_shape=qnse_shape)
+    if namelist is not None:
+        validate_qnse(carry_fields['qnse'],namelist,getattr(dataset,'GPUWRF_QNSE_SCHEMA_VERSION',None),
+                      history=carry_fields['history_diagnostics'],expected_shape=qnse_shape)
+        if qnse_config is not None and physics_option(namelist,'bl_pbl_physics') in (2,4):
+            if any(physics_option(qnse_namelist,key)!=physics_option(namelist,key) for key in
+                   ('bl_pbl_physics','sf_sfclay_physics','mfshconv')):
+                raise ValueError('wrfrst QNSE configuration differs (E78)')
+    carry_fields['history_diagnostics'] = jax.tree.map(jnp.asarray,carry_fields['history_diagnostics'])
+    lake_config = getattr(dataset,'GPUWRF_LAKE_CONFIG',None)
+    validate_lake(carry_fields['lake'],json.loads(str(lake_config)) if lake_config is not None else namelist,
+                  getattr(dataset,'GPUWRF_LAKE_SCHEMA_VERSION',None))
+    if namelist is not None:
+        validate_lake(carry_fields['lake'],namelist,getattr(dataset,'GPUWRF_LAKE_SCHEMA_VERSION',None))
+    if saved_config is None and namelist is None:
+        # Older wrfrst files did not store PBL selection. Absence is not proof
+        # the scheme was inactive: require the caller's resolved configuration.
+        raise ValueError("wrfrst CAM-UW selection is unknown (E78); supply namelist for a legacy file")
+    validate_camuw(carry_fields["camuw_pbl"],
+                   json.loads(str(saved_config)) if saved_config is not None else namelist,
+                   getattr(dataset, "GPUWRF_CAMUW_PBL_SCHEMA_VERSION", None))
+    if namelist is not None:
+        validate_camuw(carry_fields["camuw_pbl"], namelist,
+                       getattr(dataset, "GPUWRF_CAMUW_PBL_SCHEMA_VERSION", None))
+    from gpuwrf.io.restart_schema import validate_goddard_radiation
+    goddard_config=getattr(dataset,'GPUWRF_GODDARD_RADIATION_CONFIG',None)
+    goddard_schema=getattr(dataset,'GPUWRF_GODDARD_RADIATION_SCHEMA_VERSION',None)
+    from gpuwrf.io.flg_gfdl_schema import validate as validate_legacy
+    legacy=getattr(dataset,'GPUWRF_FLG_GFDL_SCHEMA',None)
+    validate_legacy(carry_fields['radiation_diagnostics'],carry_fields['gfdl_radiation'],namelist,
+        json.loads(str(legacy)) if legacy is not None else None,
+        state_shape=tuple(len(dataset.dimensions[name]) for name in ('bottom_top','south_north','west_east')))
+    validate_goddard_radiation(carry_fields['radiation_diagnostics'],
+        json.loads(str(goddard_config)) if goddard_config is not None else
+        json.loads(str(getattr(dataset,'GPUWRF_MP_RE_CONFIG','{}'))),goddard_schema,
+        state_shape=tuple(len(dataset.dimensions[name]) for name in ('bottom_top','south_north','west_east')))
+    if namelist is not None:
+        validate_goddard_radiation(carry_fields['radiation_diagnostics'],namelist,goddard_schema)
+    validate_goddard_radiation(carry_fields['radiation_diagnostics'],
+        json.loads(str(getattr(dataset,'GPUWRF_MP_RE_CONFIG','{}'))),goddard_schema)
+    if type(carry_fields['radiation_diagnostics']).__name__=='GoddardRadiationDiagnostics':
+        carry_fields['radiation_diagnostics']=jax.tree.map(jnp.asarray,carry_fields['radiation_diagnostics'])
+    from gpuwrf.io.restart_schema import validate_observations
+    validate_observations(carry_fields["obs"],namelist)
+    if int(getattr(dataset,"GPUWRF_OBS_NUDGE_OPT",0)) and carry_fields["obs"] is None:
+        raise ValueError("wrfrst is missing held observation VAROBS/RKO/SAVWT (E78)")
+    from gpuwrf.diagnostics.precipitation import configured_interval, validate_restart_buckets
+    saved_interval = float(getattr(dataset, "GPUWRF_PRECIPITATION_BUCKETS_CONFIG", 0.0))
+    bucket_schema = getattr(dataset, "GPUWRF_PRECIPITATION_BUCKETS_SCHEMA_VERSION", None)
+    surface_shape = tuple(len(dataset.dimensions[name]) for name in ("south_north", "west_east"))
+    validate_restart_buckets(carry_fields["precipitation_buckets"], saved_interval, bucket_schema, surface_shape)
+    from gpuwrf.diagnostics.online import configuration, validate_restart
+    diagnostic_config=json.loads(str(getattr(dataset,"GPUWRF_ONLINE_DIAGNOSTICS_CONFIG",'{}')))
+    diagnostic_config=configuration(diagnostic_config)
+    diagnostic_version=getattr(dataset,"GPUWRF_ONLINE_DIAGNOSTICS_SCHEMA_VERSION",None)
+    mass_shape=(len(dataset.dimensions["bottom_top"]),*surface_shape)
+    validate_restart(carry_fields["nwp_diagnostics"],carry_fields["radar_reflectivity"],
+                     diagnostic_config,diagnostic_version,mass_shape)
+    if namelist is not None:
+        requested=configuration(namelist)
+        validate_restart(carry_fields["nwp_diagnostics"],carry_fields["radar_reflectivity"],requested,
+                         diagnostic_version,mass_shape)
+        if (requested["nwp_diagnostics"] or requested["do_radar_ref"]) and requested!=diagnostic_config:
+            raise ValueError("restart online diagnostic cadence/selection differs (E78)")
+    from gpuwrf.diagnostics.solar_config import validate_restart as validate_solar_restart
+    solar_raw = getattr(dataset, "GPUWRF_SOLAR_INTERPOLATION_CONFIG", None)
+    try:
+        solar_config = None if solar_raw is None else json.loads(str(solar_raw))
+    except (TypeError, ValueError) as error:
+        raise ValueError("restart Solar interpolation config is malformed (E78)") from error
+    validate_solar_restart(carry_fields["solar_interpolation"], solar_config,
+                           getattr(dataset, "GPUWRF_SOLAR_INTERPOLATION_SCHEMA_VERSION", None),
+                           surface_shape, requested=namelist)
+    from gpuwrf.coupling.sst_skin_hook import validate_restart as validate_skin
+    skin_config = int(getattr(dataset, "GPUWRF_SST_SKIN_CONFIG", 0))
+    skin_version = getattr(dataset, "GPUWRF_SST_SKIN_SCHEMA_VERSION", None)
+    validate_skin(carry_fields["sst_skin"], skin_config, skin_version, surface_shape)
+    if namelist is not None:
+        validate_skin(carry_fields["sst_skin"], int(_lookup(namelist, "sst_skin", 0)), skin_version, surface_shape)
+    from gpuwrf.io.noahmp_options import irrigation_configuration
+    from gpuwrf.io.noahmp_irrigation import validate_restart as validate_irrigation
+    irrigation_raw=getattr(dataset,"GPUWRF_NOAHMP_IRRIGATION_CONFIG","[0,0]")
+    try:
+        irrigation_config=json.loads(str(irrigation_raw))
+    except (TypeError,ValueError) as error:
+        raise ValueError("Noah-MP irrigation restart configuration is malformed (E78)") from error
+    validate_irrigation(carry_fields["noahmp_irrigation"],irrigation_config,
+        getattr(dataset,"GPUWRF_NOAHMP_IRRIGATION_SCHEMA_VERSION",None),surface_shape,
+        requested=irrigation_configuration(namelist) if namelist is not None else None)
+    from gpuwrf.io.noahmp_options import validate_option_restart
+    try:
+        noahmp_raw=getattr(dataset,"GPUWRF_NOAHMP_OPTIONS",None)
+        noahmp_config=None if noahmp_raw is None else json.loads(str(noahmp_raw))
+    except (TypeError,ValueError) as error:
+        raise ValueError("Noah-MP restart options are malformed (E78)") from error
+    validate_option_restart(noahmp_config,namelist)
+    from gpuwrf.io.noahmp_restart_identity import validate_bound_table_restart
+    validate_bound_table_restart(getattr(dataset,'GPUWRF_NOAHMP_BOUND_TABLES',None),namelist)
+    from gpuwrf.io.noahmp_carbon import validate_restart as validate_carbon
+    # Options are encoded even when a caller does not supply a requested namelist.
+    from types import SimpleNamespace
+    from gpuwrf.io.noahmp_options import NoahMPOptions
+    saved_namelist=SimpleNamespace(noahmp_options=None if noahmp_config is None else NoahMPOptions(**noahmp_config))
+    validate_carbon(carry_fields["noahmp_carbon"],saved_namelist,getattr(dataset,"GPUWRF_NOAHMP_CARBON_SCHEMA_VERSION",None),surface_shape)
+    from gpuwrf.io.noahmp_groundwater import validate_restart as validate_groundwater
+    validate_groundwater(carry_fields["noahmp_groundwater"],saved_namelist,
+                        getattr(dataset,"GPUWRF_NOAHMP_GROUNDWATER_SCHEMA_VERSION",None),surface_shape)
+    from gpuwrf.io.noahmp_hydrology import validate_tile_restart
+    validate_tile_restart(carry_fields['noahmp_tile_drain'],saved_namelist,getattr(dataset,'GPUWRF_NOAHMP_TILE_DRAIN_SCHEMA_VERSION',None),surface_shape)
+    if namelist is not None:
+        validate_carbon(carry_fields["noahmp_carbon"],namelist,getattr(dataset,"GPUWRF_NOAHMP_CARBON_SCHEMA_VERSION",None),surface_shape)
+        validate_groundwater(carry_fields["noahmp_groundwater"],namelist,
+                            getattr(dataset,"GPUWRF_NOAHMP_GROUNDWATER_SCHEMA_VERSION",None),surface_shape)
+        validate_tile_restart(carry_fields['noahmp_tile_drain'],namelist,getattr(dataset,'GPUWRF_NOAHMP_TILE_DRAIN_SCHEMA_VERSION',None),surface_shape)
+    if namelist is not None:
+        interval = configured_interval(namelist)
+        validate_restart_buckets(carry_fields["precipitation_buckets"], interval, bucket_schema)
+        if interval != saved_interval:
+            raise ValueError("restart prec_acc_dt differs from requested interval (E78)")
     if carry_fields["land_history"] is not None or carry_fields["energy_accumulators"] is not None:
         # Files written before the packed history families hold per-name dicts.
         from gpuwrf.runtime.history_accumulators import ENERGY_ACCUMULATORS, LAND_FLUX_FIELDS, as_packed
@@ -1419,7 +2149,7 @@ def _read_optional_carry_groups(dataset: Dataset) -> dict[str, Any]:
         if NoahMPLandState is None:
             raise ValueError("wrfrst contains Noah-MP land carry but NoahMPLandState is unavailable")
         expected = tuple(NoahMPLandState.__slots__)
-        if noahmp_land_fields != expected:
+        if noahmp_land_fields not in (expected,expected[:-1]):
             raise ValueError("wrfrst Noah-MP land field order does not match NoahMPLandState.__slots__")
         carry_fields["noahmp_land"] = NoahMPLandState(
             **{
@@ -1427,7 +2157,16 @@ def _read_optional_carry_groups(dataset: Dataset) -> dict[str, Any]:
                 for field in noahmp_land_fields
             }
         )
+        from gpuwrf.io.glacier_schema import validate,required
+        land=carry_fields['noahmp_land']
+        validate({k:getattr(land,k) for k in noahmp_land_fields},noahmp_land_fields,
+            getattr(dataset,'GPUWRF_GLACIER_SCHEMA_VERSION',None),
+            active=bool(getattr(dataset,'GPUWRF_GLACIER_REQUIRED',False)) or required(namelist))
 
+    if not noahmp_land_fields:
+        from gpuwrf.io.glacier_schema import validate,required
+        validate(None,(),getattr(dataset,'GPUWRF_GLACIER_SCHEMA_VERSION',None),
+            active=bool(getattr(dataset,'GPUWRF_GLACIER_REQUIRED',False)) or required(namelist))
     noahmp_rad_fields = tuple(field_order["noahmp_rad"])
     if noahmp_rad_fields:
         if noahmp_rad_fields != RAD_FIELD_NAMES:
@@ -1451,6 +2190,13 @@ def _read_optional_carry_groups(dataset: Dataset) -> dict[str, Any]:
             carry_fields["cumulus_carry"] = values
         else:
             raise ValueError(f"unsupported wrfrst cumulus carry kind {kind['cumulus_carry']!r}")
+
+    from gpuwrf.io.restart_schema import validate_sas_held
+    saved_cu = int(getattr(dataset, "GPUWRF_SAS_CU_PHYSICS", 0))
+    validate_sas_held(carry_fields['cumulus_tendencies'], {'cu_physics': saved_cu,
+        'osas_domain_id':int(getattr(dataset,'GPUWRF_OSAS_DOMAIN_ID',1))}, carry_fields['osas_rng_key'], carry_fields['cumulus_carry'])
+    if namelist is not None:
+        validate_sas_held(carry_fields['cumulus_tendencies'], namelist, carry_fields['osas_rng_key'], carry_fields['cumulus_carry'])
 
     noahclassic_land_fields = tuple(field_order["noahclassic_land"])
     if noahclassic_land_fields:
@@ -1476,6 +2222,9 @@ def _read_optional_carry_groups(dataset: Dataset) -> dict[str, Any]:
         )
         carry_fields["noahclassic_rad"] = NoahClassicRadiation(*values) if NoahClassicRadiation is not None else values
 
+    from gpuwrf.io.noahmp_mmf import validate_land as validate_mmf_land
+    validate_mmf_land(carry_fields['noahmp_mmf'],carry_fields['noahmp_land'],
+                      tuple(len(dataset.dimensions[n]) for n in ('south_north','west_east')))
     return carry_fields
 
 
@@ -1716,23 +2465,43 @@ def _coordinates_for_dimensions(dimensions: tuple[str, ...]) -> str | None:
 
 
 def _units_for_leaf(leaf: str) -> str:
+    if leaf.startswith("ntu_"):
+        if leaf in ("ntu_rainnc", "ntu_snownc"): return "mm"
+        if leaf == "ntu_sr": return "1"
+        from gpuwrf.io.microphysics_history import DIAGNOSTIC_METADATA
+        return DIAGNOSTIC_METADATA[leaf[4:].upper()][1]
     if leaf in {"u", "v", "w"}:
         return "m s-1"
-    if leaf in {"theta", "t_skin"}:
+    if leaf in {"theta", "t_skin", "mp_th_old"}:
         return "K"
-    if leaf in {"qv", "qc", "qr", "qi", "qs", "qg", "qh", "soil_moisture"}:
+    if leaf in {"qv", "qc", "qr", "qi", "qs", "qg", "qh", "soil_moisture", "qi2", "qi3", "qir", "qir2", "mp_qv_old"}:
         return "kg kg-1" if leaf != "soil_moisture" else "m3 m-3"
-    if leaf in {"qvolg", "qvolh"}:
+    if leaf in {"qvoli", "qaoli", "qvoli2", "qaoli2", "qvoli3", "qaoli3"}:
+        return "m(3) kg(-1)"
+    if leaf in {"qvolg", "qvolh", "qib", "qib2", "qzi"}:
         # v0.17 ADR-032 predicted-density particle volume.
         return "m3 kg-1"
     if leaf in {"p", "p_total", "p_perturbation", "mu", "mu_total", "mu_perturbation"}:
         return "Pa"
     if leaf in {"ph", "ph_total", "ph_perturbation"}:
         return "m2 s-2"
-    if leaf in {"Ni", "Nr", "Ns", "Ng", "Nc", "Nn", "Nh", "nwfa", "nifa"}:
+    if leaf in {"Ni", "Nr", "Ns", "Ng", "Nc", "Nn", "Nh", "nwfa", "nifa", "Ni2", "Ni3"}:
         return "kg-1"
+    if leaf in {"nwfa2d", "nifa2d"}:
+        return "kg-1 s-1"
+    if leaf in {"thompson_rainnc", "thompson_snownc"}:
+        return "mm"
+    if leaf == "phys_tot":
+        return "K s-1"
+    if leaf.startswith("acphys"):
+        return "K"
+    if leaf.endswith("_gsfc") and leaf.startswith("re_"):
+        return "micron"
     if leaf == "qke":
         return "m2 s-2"
+    if leaf in ('pek_adv','tke_adv'): return 'm2 s-2'
+    if leaf in ('epsilon_pbl','pep_adv','diss_adv'): return 'm2 s-3'
+    if leaf in ('tpe_pbl','tpe_adv'): return 'K2'
     if leaf == "qsq":
         return "kg2 kg-2"
     if leaf in {"qc_bl", "qi_bl"}:

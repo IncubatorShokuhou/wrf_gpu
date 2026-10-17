@@ -1,0 +1,36 @@
+fixture_id: t-qhmass-pristine-moist-loading
+source: WRF/dyn_em/module_big_step_utilities_em.F calc_cq 788-906 and phy_prep 4940-4973
+source_commit: f52c197ed39d12e087d02c50f412d90d418f6186
+scenario: all-moist REAL4 mass loading; nonuniform columns and real Swiss two-step caller operands
+created_utc: 2026-10-15
+variables:
+  - name: moist
+    units: kg/kg
+    shape: [nz, ny, nx, active_Registry_species]
+    dtype: float32
+    absolute_tolerance: 0
+    relative_tolerance: 0
+  - name: p_hyd_w_and_p_hyd
+    units: Pa
+    shape: [nz_plus_1_or_nz, ny, nx]
+    dtype: float32
+    absolute_tolerance: 0
+    relative_tolerance: 0
+    scope: literal REAL4 profile and explicit-RN native semantics
+  - name: cqw
+    units: kg/kg
+    shape: [nz_plus_1, ny, nx]
+    dtype: float32
+    absolute_tolerance: 0
+    relative_tolerance: 2*gamma_(2*n_species+1)
+    scope: existing aggregate-first versus pristine species-interleaved face sums
+  - name: history_PSFC
+    units: Pa
+    shape: [ny, nx]
+    dtype: float32_or_float64
+    absolute_tolerance: 1e-9_for_original_90Pa_counterexample
+    relative_tolerance: gamma_(nz+2)_for_REAL_column_sum_vs_downward_recurrence
+files:
+  - wrf_moist_oracle.py
+  - ../../tests/test_t_qhmass.py
+license_notes: WRF is a public scientific model; only the extraction/wiring harness is committed, pristine bodies remain in the local reference tree.

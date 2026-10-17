@@ -1,0 +1,123 @@
+{
+ "cache": "<USER_HOME>/wrf_gpu2_lanes/v-run/release_default/cache/jax",
+ "entries": [
+  {
+   "entry": "jit__advance_chunk_fori-394130376b287c60a4f9ca4b17f335e6ce895a718b3b3995ada27784fe126da4-cache",
+   "path": "<USER_HOME>/wrf_gpu2_lanes/v-run/release_default/cache/jax/jit__advance_chunk_fori-394130376b287c60a4f9ca4b17f335e6ce895a718b3b3995ada27784fe126da4-cache",
+   "source_kind": "jax_cache",
+   "program": null,
+   "aliases": [],
+   "format": "xla-gpu-legacy-v1",
+   "blob_sha256": "4991f9ae6c6e891924aa160659907243cc4d4b3ffe6845929c0e04b36caf41d3",
+   "elfs": [
+    {
+     "elf": 0,
+     "sha256": "c394346b6128516dd3c892748e784ac6938ce7d55b1bd0fee7c851e946d2bcbd",
+     "kernels": 2447,
+     "max_stack_B": 16,
+     "stack_over256": [],
+     "root_callers_over1k": [
+      [
+       "thompson_full_column",
+       19304,
+       67
+      ],
+      [
+       "mynn_tridiag2_real",
+       2224,
+       87
+      ],
+      [
+       "input_add_reduce_select_fusion",
+       1344,
+       4
+      ],
+      [
+       "loop_select_fusion_38",
+       3832,
+       10
+      ],
+      [
+       "loop_or_select_fusion",
+       2224,
+       6
+      ]
+     ],
+     "nonleaf_over1k": [],
+     "callgraph_unknown": []
+    }
+   ],
+   "kinput_transpose_over500": [],
+   "kinput_transpose_status": "MEASURED_RICH_JIT_HLO"
+  },
+  {
+   "entry": "b604acaec54d5918084112fa132e7db77d27d7aad13474cc92b2bced94fc9ac7.xlaexec",
+   "path": "<USER_HOME>/wrf_gpu2_lanes/v-run/release_default/cache/jax/aot/0.3.4-jax0.10.0-jaxlib0.10.0-cuda_sm120/d01/b604acaec54d5918084112fa132e7db77d27d7aad13474cc92b2bced94fc9ac7.xlaexec",
+   "source_kind": "aot",
+   "program": "d01",
+   "aliases": [
+    "<USER_HOME>/wrf_gpu2_lanes/v-run/release_default/cache/jax/aot/0.3.4-jax0.10.0-jaxlib0.10.0-cuda_sm120/d01/k_3ff2f46abcc1960fdd87358cd4432acaefb86d5ea22f772069ca803bb7958a23.xlaexec"
+   ],
+   "format": "xla-gpu-thunks-riegeli-v1",
+   "blob_sha256": "43756eb0c76e461f06d4bcc2ab02ea39dda43fcb469f62649a4fd8b2941adeaa",
+   "elfs": [
+    {
+     "elf": 0,
+     "sha256": "c394346b6128516dd3c892748e784ac6938ce7d55b1bd0fee7c851e946d2bcbd",
+     "kernels": 2447,
+     "max_stack_B": 16,
+     "stack_over256": [],
+     "root_callers_over1k": [
+      [
+       "thompson_full_column",
+       19304,
+       67
+      ],
+      [
+       "mynn_tridiag2_real",
+       2224,
+       87
+      ],
+      [
+       "input_add_reduce_select_fusion",
+       1344,
+       4
+      ],
+      [
+       "loop_select_fusion_38",
+       3832,
+       10
+      ],
+      [
+       "loop_or_select_fusion",
+       2224,
+       6
+      ]
+     ],
+     "nonleaf_over1k": [],
+     "callgraph_unknown": []
+    }
+   ],
+   "kinput_transpose_over500": [],
+   "kinput_transpose_status": "MEASURED_RICH_AOT_HLO"
+  }
+ ],
+ "n_entries": 2,
+ "e41_gate": "PASS",
+ "hard_stack_gate": "PASS",
+ "conservative_flags": false,
+ "coverage": {
+  "status": "PASS",
+  "aot_programs": [
+   "d01"
+  ],
+  "required_run_programs": [
+   "d01"
+  ],
+  "run_proofs": [
+   "<USER_HOME>/wrf_gpu2_lanes/v-run/release_default/gpu/proofs/nested_pipeline_run.json"
+  ],
+  "n_discovered": 2,
+  "n_scanned": 2
+ }
+}

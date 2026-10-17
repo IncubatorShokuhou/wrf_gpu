@@ -10,6 +10,8 @@ OperationalCarry.camuw_pbl (WRF KVM3D/KVH3D/TAURES) carry, and the PBLH hand-off
 from __future__ import annotations
 
 import dataclasses
+import json
+from pathlib import Path
 
 import jax
 import jax.numpy as jnp
@@ -127,3 +129,157 @@ def test_operational_step_routes_camuw_threads_carry_and_pblh() -> None:
     assert np.all(kvh[0] == 0.0) and np.all(kvh[-1] == 0.0)  # WRF: surface/top interfaces never set
     assert np.all(np.asarray(after.pblh) > 0.0)  # WRF PBLH2D hand-off (read by SFCLAY_mynn)
     assert np.any(np.asarray(camuw.tauresx2d) != 0.0)
+
+
+@pytest.mark.parametrize("real_glue", [False, True])
+@pytest.mark.parametrize("bounded", [False, True])
+def test_camuw_pristine_rates_reach_rk_without_post_rk_increment(monkeypatch, real_glue, bounded):
+    """Original CAM rates must follow update_phy_ten CAMUWPBLSCHEME, not Euler.
+
+    WRF module_physics_addtendc.F:903–969 folds heat, A-grid momentum,
+    QV/QC/QI/Ni into the RK sources. Feed actual pristine-driver outputs
+    through the production column/adapter/forcing seam (the column's own
+    equations have the separate 78-record original-WRF parity gate).
+    """
+    import gpuwrf.coupling.scan_adapters as adapters
+    import gpuwrf.runtime.operational_mode as om
+
+    oracle = Path(__file__).resolve().parents[1] / "proofs/v034/camuw_oracle/camuw_oracle_v034.json"
+    records = json.loads(oracle.read_text())["records"]
+    record = next(r for r in records if r["name"] == "ice_cloud_cold" and r["step"] == 1)
+    original = record["out"]
+    grid = _grid(nz=len(original["RUBLTEN"]))
+    if bounded:
+        grid = dataclasses.replace(grid, bc=dataclasses.replace(grid.bc, source="wrfbdy"))
+    state = _state(grid)
+    nml = _namelist(grid, mp_physics=8, bl_pbl_physics=9, sf_sfclay_physics=5,
+                    cu_physics=0, use_noahmp=False, rad_rk_tendf=1)
+    monkeypatch.setenv("GPUWRF_PHYS_TEND_RK_WRF", "1")
+    monkeypatch.setenv("GPUWRF_CARRY_REAL_ALL", str(int(real_glue)))
+    monkeypatch.setattr(om, "surface_adapter", lambda s, *a, **kw: s)
+    monkeypatch.setattr(adapters, "camuw_column", lambda *a, **kw: {
+        key: jnp.asarray(original[name], jnp.float32) for key, name in (
+            ("rublten", "RUBLTEN"), ("rvblten", "RVBLTEN"), ("rthblten", "RTHBLTEN"),
+            ("rqvblten", "RQVBLTEN"), ("rqcblten", "RQCBLTEN"), ("rqiblten", "RQIBLTEN"),
+            ("rqniblten", "RQNIBLTEN"), ("kvm3d", "KVM"), ("kvh3d", "KVH"),
+            ("tauresx2d", "TAURESX"), ("tauresy2d", "TAURESY"), ("tke_pbl", "TKE_PBL"),
+            ("pblh", "PBLH"))})
+    carry = _initial_carry_for_run(state, nml)
+    carry = carry.replace(radiation_diagnostics=None)
+    forcing = _physics_step_forcing(carry, nml, 0.0, run_radiation=False)
+    for name in ("theta", "u", "v", "qv", "qc", "qi", "Ni"):
+        np.testing.assert_array_equal(getattr(forcing.state, name), getattr(carry.state, name),
+                                      err_msg=f"{name}: CAM must not add a post-RK Euler increment")
+    dry = forcing.dry_tendencies
+    assert dry.ru_tendf is not None and dry.rv_tendf is not None
+    assert dry.moist_tendf is not None
+    assert set(dry.moist_tendf) == {"qv", "qc", "qi", "Ni"}
+    dtype = np.float32 if real_glue else np.float64
+    metrics = nml.metrics
+    mass = (np.asarray(metrics.c1h, dtype)[:, None, None]
+            * np.asarray(carry.state.mu_total, dtype)[None]
+            + np.asarray(metrics.c2h, dtype)[:, None, None])
+    for key, wrf in (("qv", "RQVBLTEN"), ("qc", "RQCBLTEN"), ("qi", "RQIBLTEN"), ("Ni", "RQNIBLTEN")):
+        expected = mass * np.asarray(original[wrf], np.float32).astype(dtype)[:, None, None]
+        # WRF add_a2a excludes the specified boundary ring.
+        np.testing.assert_allclose(np.asarray(dry.moist_tendf[key])[:, 1:-1, 1:-1],
+                                   expected[:, 1:-1, 1:-1], rtol=2e-7, atol=1e-20)
+    assert om._acoustic_lateral_bc_flags(nml) == ((False, True, False) if bounded else (True, False, False))
+    ni_source = np.asarray(dry.moist_tendf["Ni"])
+    if bounded:
+        # Pristine CAMUWPBLSCHEME -> add_a2a: the four outer edges receive
+        # no number source. MYNN's direct scalar assignment is a different caller.
+        np.testing.assert_array_equal(ni_source[:, (0, -1), :], 0)
+        np.testing.assert_array_equal(ni_source[:, :, (0, -1)], 0)
+    else:
+        assert np.any(ni_source[:, 0, :] != 0)
+    for key, wrf in (("ru_tendf", "RUBLTEN"), ("rv_tendf", "RVBLTEN")):
+        expected = mass * np.asarray(original[wrf], np.float32).astype(dtype)[:, None, None]
+        np.testing.assert_allclose(np.asarray(getattr(dry, key))[:, 1, 1], expected[:, 1, 1],
+                                   rtol=2e-7, atol=1e-20)
+    # Literal WRF conv_t_tendf_to_moist, independently evaluated with NumPy.
+    rvrd = dtype(dtype(461.6) / dtype(287.0))
+    qv = np.asarray(carry.state.qv, dtype)
+    theta = np.asarray(carry.state.theta, dtype)
+    factor = dtype(1) + rvrd * qv
+    rth = np.asarray(original["RTHBLTEN"], np.float32).astype(dtype)[:, None, None]
+    rqv = np.asarray(original["RQVBLTEN"], np.float32).astype(dtype)[:, None, None]
+    heat = factor * (mass * rth)
+    vapor_heat = rvrd * theta / factor * (mass * rqv)
+    # _source_leaf_dry_tendencies stores this in the prognostic theta dtype,
+    # which remains REAL32 even in the wide-glue arm.
+    expected_heat = (heat + vapor_heat).astype(np.asarray(dry.t_tendf).dtype)
+    # Eight rounded operations bound XLA contraction vs literal NumPy; use
+    # the two input term scales because this cold column has cancellation.
+    bound = 8 * np.finfo(dtype).eps * (np.abs(heat) + np.abs(vapor_heat)) + 1e-12
+    assert np.all(np.abs(np.asarray(dry.t_tendf) - expected_heat) <= bound)
+    assert all(np.any(np.asarray(original[k]) != 0) for k in
+               ("RTHBLTEN", "RUBLTEN", "RVBLTEN", "RQVBLTEN", "RQCBLTEN", "RQIBLTEN", "RQNIBLTEN"))
+    np.testing.assert_array_equal(forcing.state.pblh, np.full((grid.ny, grid.nx), original["PBLH"]))
+
+
+def test_camuw_caller_passes_hydrostatic_pressure_but_nonhydrostatic_exner(monkeypatch):
+    """E11: first_rk_step_part1.F:1130–1132, phy_prep:4940–4974."""
+    import gpuwrf.coupling.scan_adapters as adapters
+    grid = _grid(nz=4)
+    state = _state(grid)
+
+    def expose_inputs(*args, **kwargs):
+        p, pw, t, pi = args[10], args[11], args[14], args[17]
+        zero = jnp.zeros_like(p)
+        return dict(rublten=zero, rvblten=zero, rthblten=p, rqvblten=pw[:-1], rqcblten=t,
+            rqiblten=pi, rqniblten=zero, kvm3d=args[23], kvh3d=args[24],
+            tauresx2d=args[25], tauresy2d=args[26], tke_pbl=jnp.zeros_like(pw), pblh=jnp.sum(p))
+
+    monkeypatch.setattr(adapters, "camuw_column", expose_inputs)
+    _, _, rates = adapters.camuw_pbl_adapter(state, 18., grid, return_tendencies=True)
+    f = np.float32
+    qtot = sum(np.asarray(getattr(state, key), f) for key in ("qv", "qc", "qr", "qi", "qs", "qg"))
+    m = grid.metrics
+    face = np.full((grid.ny, grid.nx), np.asarray(m.p_top, f), f)
+    faces = [face]
+    for k in range(grid.nz - 1, -1, -1):
+        mass = np.asarray(m.c1h, f)[k] * np.asarray(state.mu_total, f) + np.asarray(m.c2h, f)[k]
+        face = face - (f(1) + qtot[k]) * mass * np.asarray(m.dnw, f)[k]
+        faces.append(face)
+    pw = np.stack(faces[::-1])
+    expected_p = f(.5) * (pw[:-1] + pw[1:])
+    np.testing.assert_array_equal(rates["rthblten"], expected_p)
+    np.testing.assert_array_equal(rates["rqvblten"], pw[:-1])
+    assert not np.allclose(expected_p, np.asarray(state.p))  # deletion distinguishes the two views
+    expected_pi = (np.asarray(state.p) / 1.e5) ** (287. / 1004.5)
+    np.testing.assert_allclose(rates["rqiblten"], expected_pi.astype(f), rtol=2e-7)
+
+
+@pytest.mark.parametrize("raw_rates", [False, True])
+def test_camuw_forwards_original_cumulus_inputs_without_carry_change(monkeypatch, raw_rates):
+    """Original CAM driver TP/KP feed cumulus, alongside either adapter mode."""
+    import gpuwrf.coupling.scan_adapters as adapters
+    from gpuwrf.physics.bl_camuw import CamUwCarry
+    oracle = Path(__file__).resolve().parents[1] / "proofs/v034/camuw_oracle/camuw_oracle_v034.json"
+    record = next(r for r in json.loads(oracle.read_text())["records"]
+                  if r["name"] == "convective_clear" and r["step"] == 1)
+    original = record["out"]
+    grid = _grid(nz=len(original["RTHBLTEN"]))
+    state = _state(grid)
+    mapping = {"rublten": "RUBLTEN", "rvblten": "RVBLTEN", "rthblten": "RTHBLTEN",
+        "rqvblten": "RQVBLTEN", "rqcblten": "RQCBLTEN", "rqiblten": "RQIBLTEN", "rqniblten": "RQNIBLTEN",
+        "kvm3d": "KVM", "kvh3d": "KVH", "tauresx2d": "TAURESX", "tauresy2d": "TAURESY",
+        "tke_pbl": "TKE_PBL", "pblh": "PBLH", "tpert": "TPERT", "kpbl": "KPBL"}
+    monkeypatch.setattr(adapters, "camuw_column", lambda *a, **kw: {
+        key: jnp.asarray(original[name], jnp.int32 if key == "kpbl" else jnp.float32)
+        for key, name in mapping.items()})
+    control = adapters.camuw_pbl_adapter(state, 10., grid, return_tendencies=raw_rates)
+    result = adapters.camuw_pbl_adapter(state, 10., grid, return_tendencies=raw_rates,
+                                        return_cumulus_inputs=True)
+    assert len(result) == len(control) + 1
+    for got, expected in zip(jax.tree.leaves(result[:-1]), jax.tree.leaves(control), strict=True):
+        np.testing.assert_array_equal(got, expected)
+    tp, kp = map(np.asarray, result[-1])
+    assert tp.shape == kp.shape == (grid.ny, grid.nx)
+    assert tp.dtype == np.float32 and kp.dtype == np.int32
+    np.testing.assert_array_equal(tp, np.full(tp.shape, original["TPERT"], np.float32))
+    np.testing.assert_array_equal(kp, np.full(kp.shape, original["KPBL"], np.int32))
+    assert np.all(tp > 0) and np.all(kp >= 1)  # active original regime, one-based index
+    assert result[1]._fields == CamUwCarry._fields
+    assert CamUwCarry._fields == ("kvm3d", "kvh3d", "tauresx2d", "tauresy2d", "tke_pbl")

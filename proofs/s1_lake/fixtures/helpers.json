@@ -1,0 +1,74 @@
+{
+  "source": "<USER_HOME>/src/wrf_pristine/WRF/phys/module_sf_lake.F",
+  "source_sha256": "b173ad8328ecc0aa6bb6e6306a9c6af4dc876b39dc5d304fe221122983214b98",
+  "driver_sha256": "b2af9ece482964bee86f68354d9735c93d0407b329054d4498de55b3d51487f8",
+  "stubs_sha256": "da9ee7ee600a783ff63c4db9fb72e95be9430e570ed9f26d1a0de01a2a3aa5c0",
+  "build_command": [
+    "<USER_HOME>/miniconda3/envs/wrfbuild/bin/gfortran",
+    "-O0",
+    "-ffree-form",
+    "-ffree-line-length-none",
+    "-cpp",
+    "-DEM_CORE=1",
+    "-fcheck=bounds",
+    "-ffp-contract=off",
+    "<USER_HOME>/wrf_gpu2_lanes/s1-lake/snapshot-lk02/proofs/s1_lake/wrf_stubs.F90",
+    "module_sf_lake.F",
+    "<USER_HOME>/wrf_gpu2_lanes/s1-lake/snapshot-lk02/proofs/s1_lake/helper_driver.F90",
+    "-o",
+    "helpers"
+  ],
+  "compiler": "GNU Fortran (conda-forge gcc 14.3.0-19) 14.3.0",
+  "fixture_sha256": "5fcafe6f09797a5b57417fa8b9c1a4ff98be4f46df2fcf5e2990c41cfe42e72b",
+  "created_utc": "2026-10-13T10:51:41.603613+00:00",
+  "wall_s": 1.0904024930205196,
+  "precision": "All helper inputs/outputs WRF r8 DOUBLE, no kind override",
+  "tolerance": {
+    "rtol": 2e-14,
+    "atol": 0.0
+  },
+  "shapes": {
+    "QSAT": [
+      14,
+      6
+    ],
+    "COMBO": [
+      4,
+      12
+    ],
+    "MONIN": [
+      7,
+      7
+    ],
+    "TRI_A": [
+      3,
+      25
+    ],
+    "TRI_B": [
+      3,
+      25
+    ],
+    "TRI_C": [
+      3,
+      25
+    ],
+    "TRI_R": [
+      3,
+      25
+    ],
+    "TRI_SEED": [
+      3,
+      25
+    ],
+    "TRI_U": [
+      3,
+      25
+    ],
+    "TRI_TOP": [
+      3
+    ],
+    "TRI_FILTER": [
+      3
+    ]
+  }
+}

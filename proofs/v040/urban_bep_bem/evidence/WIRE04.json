@@ -1,0 +1,23 @@
+{
+  "commit": "bc66f7f65",
+  "passed": 310,
+  "failed": 8,
+  "deselected": 2,
+  "wall_s": 465.02,
+  "failed_tests": [
+    "tests.test_v040_urban_multilayer::test_direct_runtime_refuses_unqualified_urban_pairings[damage0-2]",
+    "tests.test_v040_urban_multilayer::test_direct_runtime_refuses_unqualified_urban_pairings[damage0-3]",
+    "tests.test_v040_urban_slucm_wiring::test_catalog_and_validation_accept_slucm",
+    "tests.test_m7_restart_checkpoint_roundtrip::test_checkpoint_roundtrip_preserves_all_state_fields_bitwise",
+    "tests.test_m7_restart_checkpoint_roundtrip::test_checkpoint_can_preserve_optional_runtime_state",
+    "tests.test_m7_restart_checkpoint_roundtrip::test_checkpoint_roundtrip_preserves_hail_conditional_state",
+    "tests.test_s1_lake_wiring::test_lake_pickle_restart_exact_and_missing_refused",
+    "tests.test_s1_lake_wiring::test_lake_netcdf_restart_and_history"
+  ],
+  "causes": {
+    "2": "over-specific error regex; actual generic SF1 pairing rejection correct",
+    "1": "stale SLUCM catalog assertion for now-admitted BEP/BEM",
+    "5": "FAST1 forced contrary tests/conftest.py:47 FAST0 default; synthetic restart fixtures omit required radii/extra held leaf"
+  },
+  "fresh_original_PBL_gate": "PBL07 all4arms0includingdiagnostics; retained"
+}

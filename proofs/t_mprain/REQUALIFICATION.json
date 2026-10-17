@@ -1,0 +1,30 @@
+{
+  "configs": [
+    16,
+    24,
+    26,
+    40
+  ],
+  "scope": "Swiss single-domain matched originalCPU-WRF24h, then manager composite/release gates",
+  "reference_dirs": {
+    "16": "<USER_HOME>/wrf_gpu2_lanes/s1-gpuqual/mp16/cpu",
+    "24": "<USER_HOME>/wrf_gpu2_lanes/s1-gpuqual/mp24/cpu",
+    "26": "<USER_HOME>/wrf_gpu2_lanes/s1-gpuqual/mp26/cpu",
+    "40": "<USER_HOME>/wrf_gpu2_lanes/s1-gpuqual/mp40/cpu"
+  },
+  "input_dirs": {
+    "16": "<USER_HOME>/wrf_gpu2_lanes/s1-gpuqual/mp16/input",
+    "24": "<USER_HOME>/wrf_gpu2_lanes/s1-gpuqual/mp24/input",
+    "26": "<USER_HOME>/wrf_gpu2_lanes/s1-gpuqual/mp26/input",
+    "40": "<USER_HOME>/wrf_gpu2_lanes/s1-gpuqual/mp40/input"
+  },
+  "scientific_gates": [
+    "Frozen D6 all25frames (62 bounded fields)",
+    "All originalCPU-WRF field inventory with t-mpout composition",
+    "Finite carry/fields and explicit F2 event attribution",
+    "Actual GPU backend assertion and E41 disclosed/gated per experimental/default policy",
+    "Necessary changed-artifact timing and memory"
+  ],
+  "qualification_status": "PENDING; retained projections and CPU1h are not finalGPU24h qualification",
+  "preserve": "Existing catalog notes, nested refusals and frozen tolerances; no upgrades here"
+}

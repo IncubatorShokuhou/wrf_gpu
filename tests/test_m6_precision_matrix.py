@@ -72,14 +72,26 @@ def test_precision_matrix_gate_flags_match_adr007_boundary_classes():
         # (FP32_GATED, same class as Nc/Nn).
         "nwfa",
         "nifa",
+        "tracers",
+        "tracer_bdy",
+        "tracer_budget",
     }
-    integer_static = {"lu_index"}
+    integer_static = {"lu_index", "epsilon_pbl_step"}
     # B39: WRF-REAL surface-layer carry, float32 in every configuration (not gated).
     mynn_history = getattr(precision_contract, "MYNN_DIAGNOSTIC_LEAVES", ())
     assert mynn_history in ((), ("el_pbl", "maxmf", "maxwidth", "ztop_plume"))
     gwdo_history = getattr(precision_contract, "GWDO_DIAGNOSTIC_LEAVES", ())
     assert gwdo_history in ((), ("dtaux3d", "dtauy3d", "dusfcg", "dvsfcg"))
     real_locked = set(SURFACE_LAYER_CARRY_LEAVES) | set(mynn_history) | set(gwdo_history)
+    real_locked.update(precision_contract.MP_RE_DIAGNOSTIC_LEAVES)
+    real_locked.update(precision_contract.LES_TKE_LEAVES)
+    real_locked.update(precision_contract.EXTRA_SCALAR_BOUNDARY_LEAVES)
+    # The v0.4 schemes retain WRF REAL carries and an INTEGER call counter.
+    for group in ("SMS_CARRY_LEAVES", "P3_STATE_LEAVES", "JENSEN_STATE_LEAVES", "EPSILON_PBL_LEAVES",
+                  "FERRIER_CARRY_LEAVES", "GODDARD4ICE_CARRY_LEAVES",
+                  "GODDARD4ICE_HISTORY_LEAVES", "THOMPSON_HAIL_SURFACE_LEAVES"):
+        real_locked.update(getattr(precision_contract, group))
+    real_locked.difference_update(integer_static)
     # The matrix also covers derived/legacy p/ph/mu/pgeop aliases.
     assert set(State.__slots__) <= set(PRECISION_MATRIX)
     locked = set(State.__slots__) - gated - integer_static - real_locked
@@ -96,7 +108,7 @@ def test_precision_matrix_gate_flags_match_adr007_boundary_classes():
 
     for field in locked:
         dtype, gate_required = PRECISION_MATRIX[field]
-        assert dtype == FP64
+        assert dtype == FP64, field
         assert dtype == jnp.float64
         assert gate_required is False
 

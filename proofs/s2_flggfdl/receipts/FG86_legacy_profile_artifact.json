@@ -1,0 +1,82 @@
+{
+  "platform": "cpu",
+  "GPU_executed": false,
+  "scheme": 7,
+  "compile_only": true,
+  "compile_s": 17.571551504079252,
+  "hlo_lines": 108451,
+  "hlo_sha256": "af11e462ac4a5d25a2f7caca06ae7b20ce8d5008fb964f55fdbfcab92e6c3248",
+  "temporary_bytes": 4191240,
+  "argument_bytes": 7578144,
+  "output_bytes": 1093880,
+  "f64_rows": 284,
+  "computational_f64": 8,
+  "computational_f64_outside_native_DOUBLE": 8,
+  "computational_f64_rows": [
+    "  %convert_element_type.10424 = f64[1764,44]{1,0} convert(%param_0.8080), metadata={op_name=\"jit(<lambda>)/convert_element_type\" stack_frame_id=2095}",
+    "  ROOT %transpose.828 = f64[44,42,42]{0,2,1} transpose(%bitcast.9985), dimensions={2,0,1}, metadata={op_name=\"jit(<lambda>)/convert_element_type\" stack_frame_id=2095}",
+    "  %gather.8957 = f64[1764,1]{1,0} gather(%param_0.8422, %copy.37), offset_dims={1}, collapsed_slice_dims={}, start_index_map={0}, index_vector_dim=1, slice_sizes={1}, metadata={op_name=\"jit(<lambda>)/jit(_take)/gather\" stack_frame_id=1950}",
+    "  %broadcast_in_dim.26971 = f64[42,42]{1,0} broadcast(%constant.80374), dimensions={}, metadata={op_name=\"jit(<lambda>)/jit(_take)/broadcast_in_dim\" stack_frame_id=1948}",
+    "  %select_n.31241 = f64[42,42]{1,0} select(%and.3394, %bitcast.11034, %broadcast_in_dim.26971), metadata={op_name=\"jit(<lambda>)/jit(_take)/select_n\" stack_frame_id=1950}",
+    "  %gather.8958 = f64[1764,1]{1,0} gather(%param_0.8425, %copy.38), offset_dims={1}, collapsed_slice_dims={}, start_index_map={0}, index_vector_dim=1, slice_sizes={1}, metadata={op_name=\"jit(<lambda>)/jit(_take)/gather\" stack_frame_id=1948}",
+    "  %broadcast_in_dim.26972 = f64[42,42]{1,0} broadcast(%constant.80381), dimensions={}, metadata={op_name=\"jit(<lambda>)/jit(_take)/broadcast_in_dim\" stack_frame_id=1948}",
+    "  %select_n.31244 = f64[42,42]{1,0} select(%and.3395, %bitcast.11036, %broadcast_in_dim.26972), metadata={op_name=\"jit(<lambda>)/jit(_take)/select_n\" stack_frame_id=1948}"
+  ],
+  "outside_rows": [
+    "  %convert_element_type.10424 = f64[1764,44]{1,0} convert(%param_0.8080), metadata={op_name=\"jit(<lambda>)/convert_element_type\" stack_frame_id=2095}",
+    "  ROOT %transpose.828 = f64[44,42,42]{0,2,1} transpose(%bitcast.9985), dimensions={2,0,1}, metadata={op_name=\"jit(<lambda>)/convert_element_type\" stack_frame_id=2095}",
+    "  %gather.8957 = f64[1764,1]{1,0} gather(%param_0.8422, %copy.37), offset_dims={1}, collapsed_slice_dims={}, start_index_map={0}, index_vector_dim=1, slice_sizes={1}, metadata={op_name=\"jit(<lambda>)/jit(_take)/gather\" stack_frame_id=1950}",
+    "  %broadcast_in_dim.26971 = f64[42,42]{1,0} broadcast(%constant.80374), dimensions={}, metadata={op_name=\"jit(<lambda>)/jit(_take)/broadcast_in_dim\" stack_frame_id=1948}",
+    "  %select_n.31241 = f64[42,42]{1,0} select(%and.3394, %bitcast.11034, %broadcast_in_dim.26971), metadata={op_name=\"jit(<lambda>)/jit(_take)/select_n\" stack_frame_id=1950}",
+    "  %gather.8958 = f64[1764,1]{1,0} gather(%param_0.8425, %copy.38), offset_dims={1}, collapsed_slice_dims={}, start_index_map={0}, index_vector_dim=1, slice_sizes={1}, metadata={op_name=\"jit(<lambda>)/jit(_take)/gather\" stack_frame_id=1948}",
+    "  %broadcast_in_dim.26972 = f64[42,42]{1,0} broadcast(%constant.80381), dimensions={}, metadata={op_name=\"jit(<lambda>)/jit(_take)/broadcast_in_dim\" stack_frame_id=1948}",
+    "  %select_n.31244 = f64[42,42]{1,0} select(%and.3395, %bitcast.11036, %broadcast_in_dim.26972), metadata={op_name=\"jit(<lambda>)/jit(_take)/select_n\" stack_frame_id=1948}"
+  ],
+  "native_DOUBLE_source_lines": [
+    9417,
+    9421,
+    9500,
+    10578,
+    10580,
+    10582,
+    10584,
+    10585,
+    10587,
+    10589
+  ],
+  "computational_f64_origins": [
+    {
+      "hlo": "  %convert_element_type.10424 = f64[1764,44]{1,0} convert(%param_0.8080), metadata={op_name=\"jit(<lambda>)/convert_element_type\" stack_frame_id=2095}",
+      "origin": null
+    },
+    {
+      "hlo": "  ROOT %transpose.828 = f64[44,42,42]{0,2,1} transpose(%bitcast.9985), dimensions={2,0,1}, metadata={op_name=\"jit(<lambda>)/convert_element_type\" stack_frame_id=2095}",
+      "origin": null
+    },
+    {
+      "hlo": "  %gather.8957 = f64[1764,1]{1,0} gather(%param_0.8422, %copy.37), offset_dims={1}, collapsed_slice_dims={}, start_index_map={0}, index_vector_dim=1, slice_sizes={1}, metadata={op_name=\"jit(<lambda>)/jit(_take)/gather\" stack_frame_id=1950}",
+      "origin": null
+    },
+    {
+      "hlo": "  %broadcast_in_dim.26971 = f64[42,42]{1,0} broadcast(%constant.80374), dimensions={}, metadata={op_name=\"jit(<lambda>)/jit(_take)/broadcast_in_dim\" stack_frame_id=1948}",
+      "origin": null
+    },
+    {
+      "hlo": "  %select_n.31241 = f64[42,42]{1,0} select(%and.3394, %bitcast.11034, %broadcast_in_dim.26971), metadata={op_name=\"jit(<lambda>)/jit(_take)/select_n\" stack_frame_id=1950}",
+      "origin": null
+    },
+    {
+      "hlo": "  %gather.8958 = f64[1764,1]{1,0} gather(%param_0.8425, %copy.38), offset_dims={1}, collapsed_slice_dims={}, start_index_map={0}, index_vector_dim=1, slice_sizes={1}, metadata={op_name=\"jit(<lambda>)/jit(_take)/gather\" stack_frame_id=1948}",
+      "origin": null
+    },
+    {
+      "hlo": "  %broadcast_in_dim.26972 = f64[42,42]{1,0} broadcast(%constant.80381), dimensions={}, metadata={op_name=\"jit(<lambda>)/jit(_take)/broadcast_in_dim\" stack_frame_id=1948}",
+      "origin": null
+    },
+    {
+      "hlo": "  %select_n.31244 = f64[42,42]{1,0} select(%and.3395, %bitcast.11036, %broadcast_in_dim.26972), metadata={op_name=\"jit(<lambda>)/jit(_take)/select_n\" stack_frame_id=1948}",
+      "origin": null
+    }
+  ],
+  "scope": "final composed CPU radiation on retained real Swiss shapes; no execution/numerical repeat; no GPU/readiness/forecast-speed claim"
+}

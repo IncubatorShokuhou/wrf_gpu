@@ -1,0 +1,170 @@
+{
+  "status": "READY_FOR_CRITIC_CPU_GATE",
+  "baseline": "ae0b1c5745665c1b413183e3ce9b8b8215ae11a3",
+  "measured_model_source": "fa9126dcabf26b181e6c31ec57ea466320caa9cc",
+  "final_product_source": "6d15acc89effba0f1750e9b429042c24cefa8348",
+  "release_jaxpr_sha256": "2bf12cb8374d3a84a440e47dea4b77b0c7436108fc2ee2616bba6ec79b17962a",
+  "gates": {
+    "pristine_init_diag": {
+      "passed": 10,
+      "scope": "fp32/fp64;USGS/MODIS;6/9levels;12diagnostic regimes",
+      "solver_validation": "unchanged existing48regime LSMRUC evidence reused"
+    },
+    "ruc_cpu_tests": {
+      "passed": 33,
+      "basis": "10 unchanged oracle checks +22 final checks +1 corrected column seam"
+    },
+    "shared_consumers": {
+      "passed": 170
+    },
+    "final_writer_consumers": {
+      "passed": 82,
+      "skipped": 4,
+      "skip_reason": "unavailable retained/corpus references"
+    },
+    "mutant": {
+      "genuine_assertion_failures": 2,
+      "setup_errors": 0,
+      "change": "remove final Q2 saturation bound"
+    },
+    "source_reuse": {
+      "model_modules_ast_equal": 6,
+      "exception": "output-only written-field transfer filtering"
+    }
+  },
+  "cpu_smoke": {
+    "platform": "cpu",
+    "source_tree": "<USER_HOME>/wrf_gpu2_lanes/o2-ruccli/snapshot",
+    "input": "<USER_HOME>/wrf_gpu2_lanes/release-docs/RD11/cpu",
+    "levels": 9,
+    "steps": 2,
+    "load_s": 151.6741834480781,
+    "step_s": [
+      421.47089727490675,
+      7.488956172019243
+    ],
+    "nonfinite_leaves": [],
+    "guard_events": 0,
+    "history_ranges": {
+      "t2": [
+        261.876220703125,
+        282.49029541015625
+      ],
+      "q2": [
+        0.0016557289054617286,
+        0.005636931397020817
+      ],
+      "lh": [
+        -7.5911054611206055,
+        97.18281555175781
+      ],
+      "psfc": [
+        69335.015625,
+        96296.2265625
+      ]
+    },
+    "scope": "CLI/production CPU plumbing smoke; interpolated Swiss soil, not WRF forecast fidelity",
+    "resolved_work": {
+      "dt_s": 18,
+      "sf_surface_physics": 3,
+      "num_soil_layers": 9,
+      "mp_physics": 8,
+      "bl_pbl_physics": 5,
+      "sf_sfclay_physics": 5,
+      "ra_lw_physics": 4,
+      "ra_sw_physics": 4,
+      "cu_physics": 0,
+      "radt_minutes": 10,
+      "radiation_cadence_own_steps": 33,
+      "own_steps": 2,
+      "domain": "d01",
+      "grid": [
+        42,
+        42,
+        44
+      ]
+    }
+  },
+  "diagnostic_component_bench": {
+    "platform": "cpu",
+    "source_commit": "fa9126dcabf26b181e6c31ec57ea466320caa9cc",
+    "shape": [
+      42,
+      42
+    ],
+    "cold_compile_and_execute_s": 0.13872190401889384,
+    "warm_median_s": 2.9559945687651634e-05,
+    "warm_s": [
+      9.983102791011333e-05,
+      3.3619930036365986e-05,
+      2.9559945687651634e-05,
+      3.1490926630795e-05,
+      2.8609996661543846e-05,
+      2.8430018573999405e-05,
+      2.7909991331398487e-05,
+      2.8440961614251137e-05,
+      3.33200441673398e-05
+    ],
+    "fp64_hlo_present": false,
+    "output_bytes": 21168,
+    "added_ruc_history_bytes": 42336,
+    "release_default_added_history_bytes": 0,
+    "comparison": "unpaired changed component CPU cost; no GPU or whole-forecast performance claim",
+    "cache": "disabled"
+  },
+  "pending": [
+    "independent manager-appointed critic and merge",
+    "GPU native timing/launch/workspace/E41 qualification",
+    "real.exe RUC coupled-forecast qualification"
+  ],
+  "receipts": {
+    "rc01_tests.log": {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/o2-ruccli/rc01_tests.log",
+      "sha256": "3102b1d6a455584caeab1fee752ab6a182c1b307f8fb3fc2971ef8a90547a695"
+    },
+    "rc03_tests.log": {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/o2-ruccli/rc03_tests.log",
+      "sha256": "f905971263bad8fd678f96556244f715ed3189899266e263e443873343c35dfc"
+    },
+    "shared_consumers.log": {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/o2-ruccli/shared_consumers.log",
+      "sha256": "b5be94ee1a47fcb533ccb28105535fa4d3eae3eb1131cc5abbd6cf9ff8fe7bbe"
+    },
+    "final_focused.log": {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/o2-ruccli/final_focused.log",
+      "sha256": "8d70d1392a810b9cd30140cc454e5e07a779dd84cb84bcddf23e52bbc33935c0"
+    },
+    "coupling_fix.log": {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/o2-ruccli/coupling_fix.log",
+      "sha256": "b497e6d0d13136aface88e603b0b5b3b4d513595110023a0377fef8c960d8664"
+    },
+    "release_identity.json": {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/o2-ruccli/release_identity.json",
+      "sha256": "b1d423ab1b17e7008ee3ab44939c8b351aa5694bf029aec5a6a3ccc104905cdd"
+    },
+    "mutant_fixed.log": {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/o2-ruccli/mutant_fixed.log",
+      "sha256": "d5514a1ffc4540c6cb08f622d74985beee77726979d20508661cba7d5789c3bd"
+    },
+    "cpu_diag_bench.json": {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/o2-ruccli/cpu_diag_bench.json",
+      "sha256": "b146f1cb473f83f740c94fe3bc5d11ca74839ddd37918e57f40c27dc5c0f51ad"
+    },
+    "source_identity.json": {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/o2-ruccli/source_identity.json",
+      "sha256": "0bdeca703791840acca2f7452e010fadf32f2354cb546d85f1490106756adc0a"
+    },
+    "cpu_smoke/smoke.json": {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/o2-ruccli/cpu_smoke/smoke.json",
+      "sha256": "80e5451c93df4176cf741ea09d4546e3b809d79ba7c4b50a70d87aeb91dc74eb"
+    },
+    "final_writer_consumers.log": {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/o2-ruccli/final_writer_consumers.log",
+      "sha256": "b9cb788b75748ff48511e787c74535e83c6d3131b85d7e2861b3dec714a8f80a"
+    },
+    "cleanup.json": {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/o2-ruccli/cleanup.json",
+      "sha256": "d5560c782bb0c4862f29c0252eb4e4af077e59763ccd34ddbc073aeb99114558"
+    }
+  }
+}

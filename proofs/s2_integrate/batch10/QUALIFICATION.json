@@ -1,0 +1,223 @@
+{
+  "verdict": "READY-FOR-MERGE",
+  "lane": "s2-integrate",
+  "UTC": "2026-10-14T17:29:14.543504+00:00",
+  "base_main": "9c6e0d792f976aeb540e42f7a51cf6b8b0a9e542",
+  "approved": "16ac7c8c81fe13b9f027497ac562a300d9da72ea",
+  "merge_candidate": "6f1ca099e323599da4c10ff32fc719fce1c2a821",
+  "review": {
+    "verdict": "MERGE",
+    "critic": "rv-t-dfidiff",
+    "receipt": "rv-t-dfidiff-VERDICT.md",
+    "production_fixes_required": false
+  },
+  "source_audit": {
+    "id": "SI100",
+    "UTC": "2026-10-14T17:26:09.063561+00:00",
+    "base_main": "9c6e0d792f976aeb540e42f7a51cf6b8b0a9e542",
+    "incoming": "16ac7c8c81fe13b9f027497ac562a300d9da72ea",
+    "merge": "6f1ca099e323599da4c10ff32fc719fce1c2a821",
+    "conflicts": 0,
+    "compiled_Python": [
+      "proofs/t_dfidiff/oracle.py",
+      "tests/test_t_dfidiff.py"
+    ],
+    "changed_paths": [
+      ".agent/kernel/lanes/t-dfidiff.notes.md",
+      "proofs/t_dfidiff/README.md",
+      "proofs/t_dfidiff/RESULTS.json",
+      "proofs/t_dfidiff/UPSTREAM_WRF_BUGS.md",
+      "proofs/t_dfidiff/oracle.py",
+      "proofs/t_dfidiff/receipts/TD01.json",
+      "proofs/t_dfidiff/receipts/TD01_control.log",
+      "proofs/t_dfidiff/receipts/TD01_dump.log",
+      "proofs/t_dfidiff/receipts/TD02.log",
+      "proofs/t_dfidiff/receipts/TD02.xml",
+      "proofs/t_dfidiff/receipts/TD03.log",
+      "proofs/t_dfidiff/receipts/TD03.xml",
+      "proofs/t_dfidiff/receipts/TD04.log",
+      "proofs/t_dfidiff/receipts/TD05.log",
+      "proofs/t_dfidiff/receipts/TD06.log",
+      "proofs/t_dfidiff/receipts/TD06.xml",
+      "tests/fixtures/t_dfidiff_c49.namelist",
+      "tests/test_t_dfidiff.py"
+    ],
+    "src_data_scripts_and_prior_packets_BYTE": true,
+    "old_tests_conftest_BYTE": true,
+    "incoming_proof_tree_BYTE": true,
+    "packaged_receipt_hashes": [
+      "TD01.json",
+      "TD01_control.log",
+      "TD01_dump.log",
+      "TD02.log",
+      "TD02.xml",
+      "TD03.log",
+      "TD03.xml",
+      "TD04.log",
+      "TD05.log",
+      "TD06.log",
+      "TD06.xml"
+    ],
+    "matched_original_whole_file_hash_pairs": 5,
+    "original_evidence_gate": {
+      "solver_rows": 6,
+      "solver_pairs": "all0/1",
+      "original_CPU_headers": 24,
+      "paired_variables_BYTE_finite": 1810,
+      "targeted_pytest": {
+        "passed": 15,
+        "failed": 0,
+        "errors": 0,
+        "seconds": 4.98
+      },
+      "mutant": {
+        "genuine_AssertionError_kills": 1,
+        "control_passes": 1,
+        "setup_errors": 0,
+        "seconds": 1.91
+      }
+    },
+    "runtime_changes": false,
+    "GPU_runs": 0,
+    "cache": "NONE"
+  },
+  "sanity": {
+    "new_run": {
+      "rc": 0,
+      "duration_s": 5.5634398178663105,
+      "counts": {
+        "PASS": 15
+      },
+      "reports": {
+        "tests/test_t_dfidiff.py::test_dfl_prepass_forecast_uses_restored_diffusion[None]": {
+          "phase": "call",
+          "status": "PASS"
+        },
+        "tests/test_t_dfidiff.py::test_dfl_prepass_forecast_uses_restored_diffusion[dfi_diffusion1]": {
+          "phase": "call",
+          "status": "PASS"
+        },
+        "tests/test_s1_dfi12.py::test_dfl_restores_dfi_diffusion_defaults_not_forecast_options": {
+          "phase": "call",
+          "status": "PASS"
+        },
+        "tests/test_s1_dfi12.py::test_dfl_stage_writer_binds_diffusion_in_dynamics[True-forward-None]": {
+          "phase": "call",
+          "status": "PASS"
+        },
+        "tests/test_s1_dfi12.py::test_dfl_stage_writer_binds_diffusion_in_dynamics[True-forward-diffusion1]": {
+          "phase": "call",
+          "status": "PASS"
+        },
+        "tests/test_s1_dfi12.py::test_dfl_stage_writer_binds_diffusion_in_dynamics[True-forecast-None]": {
+          "phase": "call",
+          "status": "PASS"
+        },
+        "tests/test_s1_dfi12.py::test_dfl_stage_writer_binds_diffusion_in_dynamics[True-forecast-diffusion1]": {
+          "phase": "call",
+          "status": "PASS"
+        },
+        "tests/test_s1_dfi12.py::test_dfl_stage_writer_binds_diffusion_in_dynamics[False-forward-None]": {
+          "phase": "call",
+          "status": "PASS"
+        },
+        "tests/test_s1_dfi12.py::test_dfl_stage_writer_binds_diffusion_in_dynamics[False-forward-diffusion1]": {
+          "phase": "call",
+          "status": "PASS"
+        },
+        "tests/test_s1_dfi12.py::test_dfl_stage_writer_binds_diffusion_in_dynamics[False-forecast-None]": {
+          "phase": "call",
+          "status": "PASS"
+        },
+        "tests/test_s1_dfi12.py::test_dfl_stage_writer_binds_diffusion_in_dynamics[False-forecast-diffusion1]": {
+          "phase": "call",
+          "status": "PASS"
+        },
+        "tests/test_s1_dfi12.py::test_dfl_refuses_unqualified_dfi_diffusion[diff_opt_dfi-2]": {
+          "phase": "call",
+          "status": "PASS"
+        },
+        "tests/test_s1_dfi12.py::test_dfl_refuses_unqualified_dfi_diffusion[km_opt_dfi-2]": {
+          "phase": "call",
+          "status": "PASS"
+        },
+        "tests/test_s1_dfi12.py::test_prepass_dispatch_and_resume_use_the_filtered_clock[1]": {
+          "phase": "call",
+          "status": "PASS"
+        },
+        "tests/test_s1_dfi12.py::test_prepass_dispatch_and_resume_use_the_filtered_clock[2]": {
+          "phase": "call",
+          "status": "PASS"
+        }
+      },
+      "gpu_used": false,
+      "cache": "NONE",
+      "snapshot": "6f1ca099e323599da4c10ff32fc719fce1c2a821",
+      "cleanup": {
+        "UTC": "2026-10-14T17:27:31.286068+00:00",
+        "removed": [
+          "<DATA_ROOT>/wrf_gpu2/scratch/s2-integrate/batch10-tree",
+          "<DATA_ROOT>/wrf_gpu2/scratch/s2-integrate/pytest",
+          "<DATA_ROOT>/wrf_gpu2/scratch/s2-integrate/batch10-tmp",
+          "<DATA_ROOT>/wrf_gpu2/scratch/s2-integrate/batch10-jax-cache",
+          "<DATA_ROOT>/wrf_gpu2/scratch/s2-integrate/batch10-native-cache"
+        ],
+        "no_GPU_E41_consumers": true
+      }
+    },
+    "retained_shared_PASS": 571,
+    "retained_qualification": "proofs/s2_integrate/batch9/QUALIFICATION.json",
+    "retained_qualification_sha256": "0aaa3b92cffe119d947b499d3eeaf42ca62cdb8ea9426f1fa084e2478e135e4d",
+    "unique_composed_source_PASS": 586,
+    "overlap_new_and_retained_PASS": 0,
+    "reused_old_test_files_BYTE": true,
+    "scope": "Exact15 registeredDFLcontrols rerun on finalcomposedtree;571unchangedshared checks reused byproduction/data/scripts/oldtestsBYTE. Prior1declaredreferenceSKIP/3deselections remain outsidePASS."
+  },
+  "default_identities": {
+    "Swiss": "f672a5739cb96e388b6b7a40ef80337bf81bdc14ef15268f3476e09d79fe055d",
+    "PROD_d01": "6fc715a2bd630934c4cf0f94427df19a527cbf429011c9ba5efe4d712744d27b",
+    "method": "Source-bound reuse of immutable batch9 official native-facade CPU trace receipts; no repeated numeric trace for proof/test-only delta.",
+    "no_GPU_fidelity_claim": true
+  },
+  "independent_WRF_evidence": {
+    "scope": "Original CPU-WRF configuration proof retained, no new numerical forecast",
+    "solver_rows": 6,
+    "grid_and_solver_diffusion": "0/1 for forward stage2 and forecaststage3 at steps0/1/2",
+    "headers": 24,
+    "paired_finite_BYTE_arrays": 1810,
+    "paired_whole_file_SHAs": 5,
+    "packaged_receipt_SHAs": 11,
+    "registered_tests": 15,
+    "mutant": "One genuine raw1/4 restoration AssertionError kill plus explicit1/4controlPASS; no setup errors. All original harness failures remain explicit."
+  },
+  "writer_rule": "Use POST-prepass forecast namelist DIFF_OPT/KM_OPT; raw/staged wrfinput attributes1/4 do not establish forecast options. No unconditional DFI header override. Existing runtime already matches original WRF; writer repair belongs to t-writer.",
+  "open_risks": {
+    "c49": "Planned actualGPU/D6 qualification remains OPEN; proof itself requires no model fix/extra rerun.",
+    "baseline_test": "Critic wider suite has one inherited stale DFI3 catalog pending-qualification assertion; source/test/catalog identical base. This assertion is not a pass and no candidate source waiver is claimed.",
+    "previous_batches": "Every priorF2/D6/E41FAIL/incomplete scope retained, including53 opt-inE41flags and NOT_ADMITTEDfirewall."
+  },
+  "performance_memory": "src/data/scripts BYTE; no changed launches/transfers/carry/temporaries/bakedinputs/compile/readiness work;0GPU/no speed claim.",
+  "cleanup": {
+    "UTC": "2026-10-14T17:27:31.286068+00:00",
+    "removed": [
+      "<DATA_ROOT>/wrf_gpu2/scratch/s2-integrate/batch10-tree",
+      "<DATA_ROOT>/wrf_gpu2/scratch/s2-integrate/pytest",
+      "<DATA_ROOT>/wrf_gpu2/scratch/s2-integrate/batch10-tmp",
+      "<DATA_ROOT>/wrf_gpu2/scratch/s2-integrate/batch10-jax-cache",
+      "<DATA_ROOT>/wrf_gpu2/scratch/s2-integrate/batch10-native-cache"
+    ],
+    "no_GPU_E41_consumers": true
+  },
+  "proof_files": {
+    "SI100a-main-preflight.json": "21fb6b9afa87f7334178fa8d14abfda7f629128e69f0b2cdd493fbf1b82e6025",
+    "SI100-dfidiff-merge.json": "a4c31a5a2a832e89fe00bf2a83c107c8dbe566fb782c01f97b787e8a9e87a0ce",
+    "SI101-selection.json": "228ea75819d4564092da848f2ada29e664de528da325964b3f6f18dbaa784512",
+    "SI101-results.json": "79378a273c2666deb9a9c64c25cb1e5d266c645c22b573043641fad76cbcfc67",
+    "SI101-composed.log": "8b18cb584ad17b042a36a7a8abc6455afd603bee83c3d88e7bd371d8e489a4da",
+    "SI101-composed.xml": "6cf2767e2df1cc559eb6db391b6b6eb03ba5a21407da24cb02322f4e4c2f9f6e",
+    "run_batch10_suite.py": "8472fc1c27885ec3c3fe621242129b34376aac45465e83c4ff88ee14095dda34",
+    "rv-t-dfidiff-VERDICT.md": "a3e8dccf44c8260f125cec27aebefe5116f453a20551f24e54e1aecec8868a6b",
+    "rv-t-dfidiff-RD05_audit.json": "f1cbb7bd5cff3e92d43203a6c6e3c9cca06d66949a34d5d0e58d98d1ff60d882",
+    "rv-t-dfidiff-RD02_mutant.json": "82fbc5dc7f5a3d1a0dd1cc10a6bba277a7f25fb11799ebb6ca8a70e63876c79e"
+  }
+}

@@ -1,0 +1,132 @@
+{
+  "f64_computational_result_rows": 13,
+  "outside_native_DOUBLE_islands": 0,
+  "rows": [
+    {
+      "hlo": "ROOT %convert_element_type.4984 = f64[] convert(%param_0.14013), metadata={op_name=\"jit(physical)/while/body/while/body/while/body/while/body/convert_element_type\" stack_frame_id=2700}",
+      "origin": {
+        "line": 10580,
+        "source": "                        v['ddx'] = jnp.where(((_p237) & (v['_go']==0)), jnp.float64((v['tauc'] / (v['tauc'] + v['prod']))), v['ddx'])"
+      },
+      "native_DOUBLE_island": true
+    },
+    {
+      "hlo": "%abs.12 = f64[] abs(%param_1.1760), metadata={op_name=\"jit(physical)/while/body/while/body/while/body/while/body/abs\" stack_frame_id=2708}",
+      "origin": {
+        "line": 10584,
+        "source": "                        _p239 = ((_p237) & (v['_go']==0)) & ((jnp.abs(v['eex']) >= _r(1.e-8)))"
+      },
+      "native_DOUBLE_island": true
+    },
+    {
+      "hlo": "%sub.7980 = f64[] subtract(%constant.114051, %param_2.1930), metadata={op_name=\"jit(physical)/while/body/while/body/while/body/while/body/sub\" stack_frame_id=2704}",
+      "origin": {
+        "line": 10582,
+        "source": "                        v['eex'] = jnp.where(((_p237) & (v['_go']==0)), jnp.float64((_r(1.0) - v['ddx'])), v['eex'])"
+      },
+      "native_DOUBLE_island": true
+    },
+    {
+      "hlo": "ROOT %select_n.76648 = f64[] select(%param_0.1247, %sub.7980, %param_1.1762), metadata={op_name=\"jit(physical)/while/body/while/body/while/body/while/body/jit(_where)/select_n\" stack_frame_id=2705}",
+      "origin": {
+        "line": 10582,
+        "source": "                        v['eex'] = jnp.where(((_p237) & (v['_go']==0)), jnp.float64((_r(1.0) - v['ddx'])), v['eex'])"
+      },
+      "native_DOUBLE_island": true
+    },
+    {
+      "hlo": "%add.126459 = f64[] add(%param_3.1399, %param_4.1244), metadata={op_name=\"jit(physical)/while/body/while/body/while/body/while/body/add\" stack_frame_id=2699}",
+      "origin": {
+        "line": 10580,
+        "source": "                        v['ddx'] = jnp.where(((_p237) & (v['_go']==0)), jnp.float64((v['tauc'] / (v['tauc'] + v['prod']))), v['ddx'])"
+      },
+      "native_DOUBLE_island": true
+    },
+    {
+      "hlo": "%div.2011 = f64[] divide(%param_2.1932, %add.126459), metadata={op_name=\"jit(physical)/while/body/while/body/while/body/while/body/div\" stack_frame_id=2700}",
+      "origin": {
+        "line": 10580,
+        "source": "                        v['ddx'] = jnp.where(((_p237) & (v['_go']==0)), jnp.float64((v['tauc'] / (v['tauc'] + v['prod']))), v['ddx'])"
+      },
+      "native_DOUBLE_island": true
+    },
+    {
+      "hlo": "ROOT %select_n.76649 = f64[] select(%param_0.1248, %div.2011, %param_1.1764), metadata={op_name=\"jit(physical)/while/body/while/body/while/body/while/body/jit(_where)/select_n\" stack_frame_id=2701}",
+      "origin": {
+        "line": 10580,
+        "source": "                        v['ddx'] = jnp.where(((_p237) & (v['_go']==0)), jnp.float64((v['tauc'] / (v['tauc'] + v['prod']))), v['ddx'])"
+      },
+      "native_DOUBLE_island": true
+    },
+    {
+      "hlo": "%convert_element_type.4901 = f64[] convert(%mul.7888), metadata={op_name=\"jit(physical)/while/body/while/body/while/body/while/body/convert_element_type\" stack_frame_id=2695}",
+      "origin": {
+        "line": 10578,
+        "source": "                        v['prod'] = jnp.where(((_p237) & (v['_go']==0)), jnp.float64((v['abcff'][(v['nband'])-1] * v['qsum'])), v['prod'])"
+      },
+      "native_DOUBLE_island": true
+    },
+    {
+      "hlo": "ROOT %select_n.76650 = f64[] select(%param_0.1249, %convert_element_type.4901, %param_1.1766), metadata={op_name=\"jit(physical)/while/body/while/body/while/body/while/body/jit(_where)/select_n\" stack_frame_id=2696}",
+      "origin": {
+        "line": 10578,
+        "source": "                        v['prod'] = jnp.where(((_p237) & (v['_go']==0)), jnp.float64((v['abcff'][(v['nband'])-1] * v['qsum'])), v['prod'])"
+      },
+      "native_DOUBLE_island": true
+    },
+    {
+      "hlo": "%convert_select_fusion.2 = f64[] fusion(%and_and_fusion.44, %get-tuple-element.447802, %get-tuple-element.447833, %constant.82979, %add_select_fusion.108), kind=kLoop, calls=%fused_computation.526, metadata={op_name=\"jit(physical)/while/body/while/body/while/body/while/body/jit(_where)/select_n\" stack_frame_id=2696}",
+      "origin": {
+        "line": 10578,
+        "source": "                        v['prod'] = jnp.where(((_p237) & (v['_go']==0)), jnp.float64((v['abcff'][(v['nband'])-1] * v['qsum'])), v['prod'])"
+      },
+      "native_DOUBLE_island": true
+    },
+    {
+      "hlo": "%divide_select_fusion.2 = f64[] fusion(%and_and_fusion.44, %get-tuple-element.447796, %get-tuple-element.447835, %get-tuple-element.447836, %convert_select_fusion.2), kind=kLoop, calls=%fused_computation.525, metadata={op_name=\"jit(physical)/while/body/while/body/while/body/while/body/jit(_where)/select_n\" stack_frame_id=2701}",
+      "origin": {
+        "line": 10580,
+        "source": "                        v['ddx'] = jnp.where(((_p237) & (v['_go']==0)), jnp.float64((v['tauc'] / (v['tauc'] + v['prod']))), v['ddx'])"
+      },
+      "native_DOUBLE_island": true
+    },
+    {
+      "hlo": "%subtract_select_fusion.3 = f64[] fusion(%and_and_fusion.44, %get-tuple-element.447798, %divide_select_fusion.2), kind=kLoop, calls=%fused_computation.524, metadata={op_name=\"jit(physical)/while/body/while/body/while/body/while/body/jit(_where)/select_n\" stack_frame_id=2705}",
+      "origin": {
+        "line": 10582,
+        "source": "                        v['eex'] = jnp.where(((_p237) & (v['_go']==0)), jnp.float64((_r(1.0) - v['ddx'])), v['eex'])"
+      },
+      "native_DOUBLE_island": true
+    },
+    {
+      "hlo": "%wrapped_convert.1 = f64[] fusion(%get-tuple-element.448220), kind=kLoop, calls=%wrapped_convert_computation.1, metadata={op_name=\"jit(physical)/while/body/while/body/while/body/while/body/convert_element_type\" stack_frame_id=2700}",
+      "origin": {
+        "line": 10580,
+        "source": "                        v['ddx'] = jnp.where(((_p237) & (v['_go']==0)), jnp.float64((v['tauc'] / (v['tauc'] + v['prod']))), v['ddx'])"
+      },
+      "native_DOUBLE_island": true
+    }
+  ],
+  "entry_has_external_f64": false,
+  "scope": "actual optimizedCPUHLO audit: all13computational f64-result rows mapto ddx/eex/prod; threecopies traceonlyf64zero initializer; structural constants/params/tuplecarriers excluded; no externalf64args",
+  "structural_zero_copies": [
+    {
+      "hlo": "%copy.12662 = f64[] copy(%constant.8348)",
+      "origin": null,
+      "native_DOUBLE_island": false,
+      "classification": "structural nativeDOUBLE zero initializer copy"
+    },
+    {
+      "hlo": "%copy.12287 = f64[] copy(%copy.12662)",
+      "origin": null,
+      "native_DOUBLE_island": false,
+      "classification": "structural nativeDOUBLE zero initializer copy"
+    },
+    {
+      "hlo": "%copy.12210 = f64[] copy(%copy.12662)",
+      "origin": null,
+      "native_DOUBLE_island": false,
+      "classification": "structural nativeDOUBLE zero initializer copy"
+    }
+  ]
+}

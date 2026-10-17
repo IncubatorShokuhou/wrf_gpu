@@ -67,7 +67,11 @@ def test_moisture_and_other_scalar_limiter_wiring_remains_present():
     assert "int(advection_opt) in (1, 2)" in source
     assert "int(rk_step) == int(namelist.rk_order)" in source
     number_source = inspect.getsource(operational._nested_number_scalar_coupled_tendencies)
-    assert 'species=("Ni", "Nr")' in number_source
+    assert "species=_nested_number_scalar_species(namelist)" in number_source
+    from types import SimpleNamespace
+    assert operational._nested_number_scalar_species(
+        SimpleNamespace(mp_physics=8, bl_pbl_physics=5)
+    ) == ("Ni", "Nr")
     assert "advection_opt=int(namelist.scalar_adv_opt)" in number_source
 
 

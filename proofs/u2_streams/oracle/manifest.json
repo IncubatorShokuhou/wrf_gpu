@@ -1,0 +1,79 @@
+{
+  "reference": "original CPU-WRF auxhist7",
+  "source": "<USER_HOME>/wrf_gpu2_lanes/release-docs/RD11/cpu",
+  "executable_source": "<DATA_ROOT>/canairy_meteo/artifacts/wrf_src/WRF/install_gen2_dmpar/bin/wrf",
+  "executable_sha256": "1d0f5779fff143361e470e37f89c734497ed5a7bb55d0c53b7e3fccc569dd49b",
+  "namelist": "&time_control\n auxhist7_interval = 0,\n auxhist7_interval_s = 18,\n frames_per_auxhist7 = 1,\n io_form_auxhist7 = 2,\n auxhist7_outname = \"auxhist7_d<domain>_<date>\",\n iofields_filename = \"stream_fields.txt\",\n ignore_iofields_warning = .false.,\n history_interval_s = 18,\n run_days                            = 0,\n run_hours                           = 0,\n run_minutes                         = 0,\n run_seconds                         = 72,\n start_year                          = 2023,\n start_month                         = 1,\n start_day                           = 15,\n start_hour                          = 0,\n end_year                            = 2023,\n end_month                           = 1,\n end_day                             = 15,\n end_hour                            = 0,\n end_minute                          = 1,\n end_second                          = 12,\n interval_seconds                    = 10800,\n input_from_file                     = .true.,\n history_interval                    = 0,\n frames_per_outfile                  = 1,\n restart                             = .false.,\n restart_interval                    = 100000,\n io_form_history                     = 2,\n io_form_restart                     = 2,\n io_form_input                       = 2,\n io_form_boundary                    = 2,\n/\n\n&domains\n ts_buf_size = 3,\n max_ts_locs = 5,\n max_ts_level = 5,\n time_step                           = 18,\n time_step_fract_num                 = 0,\n time_step_fract_den                 = 1,\n max_dom                             = 1,\n e_we                                = 43,\n e_sn                                = 43,\n e_vert                              = 45,\n p_top_requested                     = 5000,\n num_metgrid_levels                  = 34,\n num_metgrid_soil_levels             = 4,\n dx                                  = 3000,\n dy                                  = 3000,\n grid_id                             = 1,\n parent_id                           = 1,\n i_parent_start                      = 1,\n j_parent_start                      = 1,\n parent_grid_ratio                   = 1,\n parent_time_step_ratio              = 1,\n feedback                            = 0,\n smooth_option                       = 0,\n/\n\n&physics\n mp_physics                          = 8,\n ra_lw_physics                       = 4,\n ra_sw_physics                       = 4,\n radt                                = 10,\n sf_sfclay_physics                   = 5,\n sf_surface_physics                  = 4,\n bl_pbl_physics                      = 5,\n bldt                                = 0,\n cu_physics                          = 0,\n cudt                                = 0,\n isfflx                              = 1,\n ifsnow                              = 1,\n icloud                              = 1,\n surface_input_source                = 1,\n num_soil_layers                     = 4,\n num_land_cat                        = 21,\n sf_urban_physics                    = 0,\n/\n\n&dynamics\n w_damping                           = 1,\n diff_opt                            = 1,\n km_opt                              = 4,\n diff_6th_opt                        = 2,\n diff_6th_factor                     = 0.12,\n base_temp                           = 290.,\n damp_opt                            = 3,\n zdamp                               = 5000.,\n dampcoef                            = 0.2,\n khdif                               = 0,\n kvdif                               = 0,\n non_hydrostatic                     = .true.,\n moist_adv_opt                       = 1,\n scalar_adv_opt                      = 1,\n epssm                               = 0.5,\n gwd_opt                             = 0,\n/\n\n&bdy_control\n spec_bdy_width                      = 5,\n spec_zone                           = 1,\n relax_zone                          = 4,\n specified                           = .true.,\n nested                              = .false.,\n/\n\n&grib2\n/\n\n&namelist_quilt\n nio_tasks_per_group                 = 0,\n nio_groups                          = 1,\n/\n",
+  "iofields": "+:h:7:T2,Q2,U10,V10,PSFC,LH,HFX,PBLH,TSK,RAINC,RAINNC,SWDOWN,GLW\n",
+  "fields": [
+    "T2",
+    "Q2",
+    "U10",
+    "V10",
+    "PSFC",
+    "LH",
+    "HFX",
+    "PBLH",
+    "TSK",
+    "RAINC",
+    "RAINNC",
+    "SWDOWN",
+    "GLW"
+  ],
+  "work": "Swiss42x42x44 dt18 4steps; auxhist7 every18s; stations exact i20j20/i9j12; noGPU",
+  "launch": "mpirun -np 1 --bind-to none ./wrf.exe",
+  "tolerances": {
+    "selection": "byte-exact same-input gather",
+    "window_mean_rtol": 2e-07,
+    "window_other": "byte-exact"
+  },
+  "raw_sha256": {
+    "auxhist7_d01_2023-01-15_00:00:00": "a0bd65017f272f36b99086d51454c61d95d3b34abae037584fbec71a2cdf3857",
+    "auxhist7_d01_2023-01-15_00:00:18": "d70f0d12f1f7e0db78f43fd086ee5b59c0a2c114449408f9d4e66562021ed27c",
+    "auxhist7_d01_2023-01-15_00:00:36": "fabe80fba1e08078b9b2e43a6dfd13ee55c00fc4545892fd15336d3fd43f8387",
+    "auxhist7_d01_2023-01-15_00:00:54": "aefda525d88fbe8e948ab5ad7f88b0def750069a71c002f33b31f03a74b6510d",
+    "auxhist7_d01_2023-01-15_00:01:12": "d4b0c83d1eecc8df326d9c0c692e69851269acfa1b594cb9bf5ccb909e653fe6"
+  },
+  "times": [
+    "2023-01-15_00:00:00",
+    "2023-01-15_00:00:18",
+    "2023-01-15_00:00:36",
+    "2023-01-15_00:00:54",
+    "2023-01-15_00:01:12"
+  ],
+  "grid_points_1based": [
+    [
+      20,
+      20
+    ],
+    [
+      9,
+      12
+    ]
+  ],
+  "values_sha256": "7c8089ddd5a0aa1350a71a86a80ff9e7ed9fbd882022d6428c3a42e37e2bbf40",
+  "shape_per_field": [
+    5,
+    2
+  ],
+  "units": {
+    "T2": "K",
+    "Q2": "kg kg-1",
+    "U10": "m s-1",
+    "V10": "m s-1",
+    "PSFC": "Pa",
+    "LH": "W m-2",
+    "HFX": "W m-2",
+    "PBLH": "m",
+    "TSK": "K",
+    "RAINC": "mm",
+    "RAINNC": "mm",
+    "SWDOWN": "W m-2",
+    "GLW": "W m-2"
+  },
+  "reference_input_sha256_at_final_seal": {
+    "wrfinput_d01": "a5d696550d1dc6713e2e340b8c2fba83811d43f4a94a65ca95266035860e2781",
+    "wrfbdy_d01": "f3e556670e4768326997bdfa1dd8b0f77eb6d5da07d9c4dbf900bf8ff9e30230"
+  },
+  "source_commit": "UNKNOWN: prebuilt original CPU-WRF executable; exact binary SHA is recorded instead"
+}

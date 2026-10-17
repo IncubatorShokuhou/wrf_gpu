@@ -1,0 +1,146 @@
+{
+  "LCZ37_rebased_tests": {
+    "groups": {
+      "urban": {
+        "PASS": 63
+      },
+      "contracts": {
+        "PASS": 11
+      },
+      "M7": {
+        "PASS": 68,
+        "FAIL": 5,
+        "SKIP": 11,
+        "XFAIL": 2
+      },
+      "doctor": {
+        "PASS": 54
+      },
+      "legacy_fail_closed": {
+        "PASS": 25
+      },
+      "shared": {
+        "PASS": 3
+      }
+    },
+    "failures": [
+      {
+        "class": "tests.test_m7_1km_memory_audit",
+        "test": "test_static_model_tracks_state_contract_field_count",
+        "message": "ValueError: State field contract mismatch: STATE_FIELD_ORDER=114 slots=114 shapes=93"
+      },
+      {
+        "class": "tests.test_m7_1km_memory_audit",
+        "test": "test_static_model_uses_precision_registry_for_known_fields",
+        "message": "ValueError: State field contract mismatch: STATE_FIELD_ORDER=114 slots=114 shapes=93"
+      },
+      {
+        "class": "tests.test_m7_skill_fix_algorithmic",
+        "test": "test_guarded_physics_boundary_step_keeps_rk3_theta_mu_update",
+        "message": "assert 0.0 > 0.0\n +  where 0.0 = float(Array(0., dtype=float32))\n +    where Array(0., dtype=float32) = <function max at 0x79106ede1d00>(Array([[[0., 0., 0., 0.],\\n        [0., 0., 0., 0.],\\n        [0., 0., 0., 0.],\\n        [0., 0., 0., 0.]],\\n\\n       [[0.,...      [[0., 0., 0., 0.],\\n        [0., 0., 0., 0.],\\n        [0., 0., 0., 0.],\\n        [0., 0., 0., 0.]]], dtype=float32))\n +      where <function max at 0x79106ede1d00> = jnp.max\n +      and   Array([[[0., 0., 0., 0.],\\n        [0., 0., 0., 0.],\\n        [0., 0., 0., 0.],\\n        [0., 0., 0., 0.]],\\n\\n       [[0.,...      [[0., 0., 0., 0.],\\n        [0., 0., 0., 0.],\\n        [0., 0., 0., 0.],\\n        [0., 0., 0., 0.]]], dtype=float32) = <PjitFunction of <function abs at 0x79106ec4cfe0>>((Array([[[300.  , 300.1 , 300.  , 299.9 ],\\n        [300.  , 300.1 , 300.  , 299.9 ],\\n        [300.  , 300.1 , 300.  , 2..., 300.28, 300.18],\\n        [300.28, 300.38, 300.28, 300.18],\\n        [300.28, 300.38, 300.28, 300.18]]], dtype=float32) - Array([[[300.  , 300.1 , 300.  , 299.9 ],\\n        [300.  , 300.1 , 300.  , 299.9 ],\\n        [300.  , 300.1 , 300.  , 2..., 300.28, 300.18],\\n        [300.28, 300.38, 300.28, 300.18],\\n        [300.28, 300.38, 300.28, 300.18]]], dtype=float32)))\n +        where <PjitFunction of <function abs at 0x79106ec4cfe0>> = jnp.abs\n +        and   Array([[[300.  , 300.1 , 300.  , 299.9 ],\\n        [300.  , 300.1 , 300.  , 299.9 ],\\n        [300.  , 300.1 , 300.  , 2..., 300.28, 300.18],\\n        [300.28, 300.38, 300.28, 300.18],\\n        [300.28, 300.38, 300.28, 300.18]]], dtype=float32) = <gpuwrf.contracts.state.State object at 0x63e2c51f1490>.theta\n +        and   Array([[[300.  , 300.1 , 300.  , 299.9 ],\\n        [300.  , 300.1 , 300.  , 299.9 ],\\n        [300.  , 300.1 , 300.  , 2..., 300.28, 300.18],\\n        [300.28, 300.38, 300.28, 300.18],\\n        [300.28, 300.38, 300.28, 300.18]]], dtype=float32) = <gpuwrf.contracts.state.State object at 0x63e2a3d3a620>.theta"
+      },
+      {
+        "class": "tests.test_m7_skill_fix_algorithmic",
+        "test": "test_mynn_adapter_consumes_nonzero_surface_flux_inputs",
+        "message": "assert nan > 0.0001\n +  where nan = float(Array(nan, dtype=float32))\n +    where Array(nan, dtype=float32) = <function max at 0x79106ede1d00>(Array([[nan, nan, nan, nan],\\n       [nan, nan, nan, nan],\\n       [nan, nan, nan, nan],\\n       [nan, nan, nan, nan]], dtype=float32))\n +      where <function max at 0x79106ede1d00> = jnp.max"
+      },
+      {
+        "class": "tests.test_m7_skill_fix_iter2",
+        "test": "test_lateral_boundary_apply_uses_strip_matching_relax_offset",
+        "message": "assert 0.20000000000000018 < 1e-06\n +  where 0.20000000000000018 = abs((2.0 - 2.2))\n +    where 2.0 = float(Array(2., dtype=float32))"
+      }
+    ],
+    "skips": [
+      {
+        "class": "tests.test_m7_default_gen2_run_dir",
+        "test": "test_default_m6_gen2_run_dir_has_d02_wrfouts",
+        "type": "SKIP",
+        "reason": "Gen2 corpus run directory unavailable (not vendored): <USER_HOME>/wrf_gpu2_lanes/u2-lcz/snapshot/data/canairy_meteo/runs/wrf_l3/20260521_18z_l3_24h_20260522T133443Z"
+      },
+      {
+        "class": "tests.test_m7_gen2_corpus_scout_inventory",
+        "test": "test_pinned_grid_complete_runs_match_scout_snapshot",
+        "type": "SKIP",
+        "reason": "Gen2 read-only tree <DATA_ROOT>/canairy_meteo not mounted"
+      },
+      {
+        "class": "tests.test_m7_gen2_corpus_scout_inventory",
+        "test": "test_pinned_d02_modal_mass_shape_is_66_by_159",
+        "type": "SKIP",
+        "reason": "Gen2 read-only tree <DATA_ROOT>/canairy_meteo not mounted"
+      },
+      {
+        "class": "tests.test_m7_gen2_corpus_scout_inventory",
+        "test": "test_tier4_default_window_has_zero_eligible_pinned_complete_members",
+        "type": "SKIP",
+        "reason": "Gen2 read-only tree <DATA_ROOT>/canairy_meteo not mounted"
+      },
+      {
+        "class": "tests.test_m7_gen2_corpus_scout_inventory",
+        "test": "test_default_m6_gen2_run_dir_is_now_wrfout_empty",
+        "type": "SKIP",
+        "reason": "Gen2 read-only tree <DATA_ROOT>/canairy_meteo not mounted"
+      },
+      {
+        "class": "tests.test_m7_lu_index_audit",
+        "test": "test_prescribed_land_state_lu_index_matches_gen2_reference_distribution",
+        "type": "SKIP",
+        "reason": "20260521 Gen2 d02 fixture unavailable"
+      },
+      {
+        "class": "tests.test_m7_netcdf_writer",
+        "test": "test_dim_and_attr_conformance_against_reference_schema",
+        "type": "SKIP",
+        "reason": "Gen2 reference wrfout unavailable"
+      },
+      {
+        "class": "tests.test_m7_netcdf_writer",
+        "test": "test_full_wrfout_mode_matches_reference_variable_list_and_schema",
+        "type": "SKIP",
+        "reason": "Gen2 full-reference wrfout unavailable"
+      },
+      {
+        "class": "tests.test_m7_netcdf_writer",
+        "test": "test_retained_retry3_frame_reproduces_frame_grid_then_temp_copy_passes",
+        "type": "SKIP",
+        "reason": "immutable retained retry3 frame is unavailable"
+      },
+      {
+        "class": "tests.test_m7_s0a_schemas",
+        "test": "test_aifs_ingest_manifest_validates_and_cites_existing_gen2_paths",
+        "type": "SKIP",
+        "reason": "AIFS-ingest manifest cites purged Gen2 WPS-case artifacts (namelist.wps / ungrib gribs)"
+      },
+      {
+        "class": "tests.test_m7_s0a_schemas",
+        "test": "test_station_source_manifest_validates_and_keeps_access_statuses_honest",
+        "type": "SKIP",
+        "reason": "Retained historical evidence unavailable: <USER_HOME>/src/canairy_meteo/Gen2/artifacts/datasets/station_benchmark_cube_v3_candidate.parquet, <USER_HOME>/src/canairy_meteo/Gen2/artifacts/datasets/wrf_case_bank_skill_0_24h_matched_v1.parquet, <USER_HOME>/src/canairy_meteo/Gen2/artifacts/datasets/wrf_case_bank_skill_25_72h_matched_v1.parquet"
+      },
+      {
+        "class": "tests.test_m7_skill_fix_algorithmic",
+        "test": "test_guard_limiter_clamps_theta_and_preserves_positive_mu_total",
+        "type": "XFAIL",
+        "reason": "STALE: theta-guard per-level ceiling changed (test pins 700 K where the limiter now yields 450 K). Pre-existing on v0.17."
+      },
+      {
+        "class": "tests.test_m7_skill_fix_iter2",
+        "test": "test_theta_guard_keeps_200_floor_and_widens_lower_column_ceiling_to_450k",
+        "type": "XFAIL",
+        "reason": "STALE: same theta-guard ceiling evolution (pins 700 K at level 31). Pre-existing on v0.17."
+      }
+    ]
+  },
+  "LCZ38_rebased_shared": {
+    "groups": {
+      "shared": {
+        "PASS": 169
+      },
+      "urban": {
+        "PASS": 77
+      }
+    },
+    "failures": [],
+    "skips": []
+  }
+}

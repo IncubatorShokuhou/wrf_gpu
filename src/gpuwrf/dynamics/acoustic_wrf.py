@@ -313,6 +313,10 @@ def moisture_coupling_factors(state: State) -> tuple[jax.Array, jax.Array]:
     """
 
     qtot = state.qv + state.qc + state.qr + state.qi + state.qs + state.qg
+    if state.qi2 is not None:  # Registry P3 mp52 second moist ice category
+        qtot = qtot + state.qi2
+    if state.qi3 is not None:  # Registry Jensen mp55 third moist ice category
+        qtot = qtot + state.qi3
     qx_left, qx_right = _x_face_pair_3d(qtot)
     qy_south, qy_north = _y_face_pair_3d(qtot)
     cqu = 1.0 / (1.0 + 0.5 * (qx_left + qx_right))
@@ -397,6 +401,8 @@ def diagnose_pressure_al_alt(
         jnp.abs(denom_alb) > 1.0e-12, denom_alb, jnp.asarray(1.0e-12, dtype=denom_alb.dtype)
     )
     alb = -dphb / safe_denom_alb
+    if base_state.alb is not None:
+        alb = base_state.alb.astype(alb.dtype)
     muts = base_state.mub + state.mu_perturbation
     mass_weight = metrics.c1h[:, None, None] * muts[None, :, :] + metrics.c2h[:, None, None]
     safe_mass = jnp.where(jnp.abs(mass_weight) > 1.0e-12, mass_weight, jnp.asarray(1.0e-12, dtype=mass_weight.dtype))
@@ -435,6 +441,8 @@ def diagnose_pressure_al_alt(
             base_state.phb[:-1, :, :] + ph_pert[:-1, :, :]
         )
         alb_used = _log_alpha(base_state.phb[1:, :, :] - base_state.phb[:-1, :, :], mub_col)
+        if base_state.alb is not None:
+            alb_used = base_state.alb.astype(alb_used.dtype)
         al = _log_alpha(dph_tot, muts_col) - alb_used
     else:
         mu_term = alb * metrics.c1h[:, None, None] * state.mu_perturbation[None, :, :]

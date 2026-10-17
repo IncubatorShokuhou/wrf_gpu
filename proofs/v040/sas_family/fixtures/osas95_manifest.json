@@ -1,0 +1,69 @@
+{
+  "source": {
+    "source": "original WRF4.7.1 CU_OSAS",
+    "random_policy": "actual original SYSTEM_CLOCK/RANDOM_NUMBER draws recorded after generation; NO REGTEST",
+    "write_only": true,
+    "arms": {
+      "dt54_stepcu5_shallow1_r4": {
+        "draws": 455,
+        "input_sha256": "c9aacd8ae0650f3b628dcdd725764150c711a1cad550704c5a841a4b774ada50",
+        "output_sha256": "cb707f52c38c9f11ee01f96411a96e9ab886902a107dacc5b68b621f0da96454"
+      },
+      "dt18_stepcu1_shallow1_r4": {
+        "draws": 455,
+        "input_sha256": "a125172d07d3c19f111e76bd7a99e3328bd9e08fbf823af9dac65762ede428cf",
+        "output_sha256": "7a43f3552f6b074a1718b082002ecfd370cf28c735279c771d4dd948f3bb8cfa"
+      },
+      "dt54_stepcu5_shallow1_r8": {
+        "draws": 455,
+        "input_sha256": "c9aacd8ae0650f3b628dcdd725764150c711a1cad550704c5a841a4b774ada50",
+        "output_sha256": "12116eaea1a0713fbe637ff8c506fbc726604f4aed39b143f329a58671b6cb02"
+      },
+      "dt18_stepcu1_shallow1_r8": {
+        "draws": 455,
+        "input_sha256": "a125172d07d3c19f111e76bd7a99e3328bd9e08fbf823af9dac65762ede428cf",
+        "output_sha256": "6553ce659b98e0e86c503250ef1229718a6c298585decdb74f95584a5477d9b1"
+      }
+    },
+    "r4": {
+      "flags": [
+        "-O2",
+        "-ftree-vectorize",
+        "-funroll-loops",
+        "-w",
+        "-ffree-form",
+        "-ffree-line-length-none",
+        "-cpp",
+        "-DEM_CORE=1",
+        "-DNMM_CORE=0"
+      ],
+      "original_source_sha256": "f8cc3fbd6277cf886bcdffa9e8df7623884dfb1886acdbfd0d2471329c3cfd50",
+      "write_only_sha256": "e781cdb8813a7b5c426528889c741abca528c6367122b409f8d2974dfcc5b877"
+    },
+    "r8": {
+      "flags": [
+        "-O2",
+        "-ftree-vectorize",
+        "-funroll-loops",
+        "-w",
+        "-ffree-form",
+        "-ffree-line-length-none",
+        "-cpp",
+        "-DEM_CORE=1",
+        "-DNMM_CORE=0",
+        "-fdefault-real-8",
+        "-fdefault-double-8"
+      ],
+      "original_source_sha256": "f8cc3fbd6277cf886bcdffa9e8df7623884dfb1886acdbfd0d2471329c3cfd50",
+      "write_only_sha256": "e781cdb8813a7b5c426528889c741abca528c6367122b409f8d2974dfcc5b877"
+    }
+  },
+  "primary": "original WRF REAL4 recorded random draws; all eight fields BYTE SS67",
+  "r8_diagnostic": "disclosed exact-zero conditioning branch; SS53/63 frozen relative bounds do not pass",
+  "fixtures": {
+    "osas95_dt54_stepcu5_shallow1_r8.npz": "6664aaedbb66b78a5de382ad5797728685c80c90174e42c30121797674e11e73",
+    "osas95_dt18_stepcu1_shallow1_r4.npz": "8098d5b9c92335be94d1f0ae3f2f6ba6d66f623b35c2730209440b58ed9d7073",
+    "osas95_dt54_stepcu5_shallow1_r4.npz": "686149e50c49e156dda78958a2acaaa4bb8a4aa4f0e8847a63e5c82601822fb5",
+    "osas95_dt18_stepcu1_shallow1_r8.npz": "ec306d87f0cd87e843a67f4ab07dc7e18b3629e2e3416302638f8dec4f8b0fd6"
+  }
+}

@@ -12,8 +12,15 @@ from gpuwrf.contracts.grid import GridSpec
 from gpuwrf.contracts.noahmp_state import NoahMPLandState
 from gpuwrf.contracts.precision import (
     DEFAULT_DTYPES, MYNN_DIAGNOSTIC_LEAVES, GWDO_DIAGNOSTIC_LEAVES, SURFACE_LAYER_CARRY_LEAVES,
-    STATE_FIELD_ORDER, MP_RE_DIAGNOSTIC_LEAVES,
+    STATE_FIELD_ORDER, MP_RE_DIAGNOSTIC_LEAVES, LES_TKE_LEAVES, EXTRA_SCALAR_BOUNDARY_LEAVES,
+    SMS_CARRY_LEAVES, P3_STATE_LEAVES, EPSILON_PBL_LEAVES,
+    FERRIER_CARRY_LEAVES, GODDARD4ICE_CARRY_LEAVES,
+    GODDARD4ICE_HISTORY_LEAVES, THOMPSON_HAIL_SURFACE_LEAVES, JENSEN_STATE_LEAVES,
+    WRITER_PROFILE_LEAVES,
+    NTU_STATE_LEAVES, NTU_SCALAR_LEAVES,
+    ICE_DIAGNOSTIC_LEAVES,
 )
+from gpuwrf.contracts.cammg_fields import STATE_FIELDS as CAMMG_STATE_FIELDS
 from gpuwrf.contracts.state import SCALAR_BOUNDARY_OPTIONAL_LEAVES, State, _state_field_shapes
 from gpuwrf.coupling.noahclassic_surface_hook import NoahClassicLandState, NoahClassicRadiation
 from gpuwrf.io.wrfout_writer import bind_wrfout_domain_authority, write_wrfout_netcdf
@@ -71,7 +78,16 @@ def _state(grid: GridSpec, *, mp_physics: int = 8) -> State:
     assert set(State.__slots__) == set(STATE_FIELD_ORDER)
     assert State.__slots__[71:] == (SURFACE_LAYER_CARRY_LEAVES[:5]
                                   + REQUIRED_MYNN_LEAVES + OPTIONAL_GWDO_LEAVES
-                                  + SURFACE_LAYER_CARRY_LEAVES[5:] + MP_RE_DIAGNOSTIC_LEAVES)
+                                  + SURFACE_LAYER_CARRY_LEAVES[5:] + MP_RE_DIAGNOSTIC_LEAVES + LES_TKE_LEAVES
+                                  + EXTRA_SCALAR_BOUNDARY_LEAVES[:10] + SMS_CARRY_LEAVES + P3_STATE_LEAVES
+                                  # The five existing epsilon boundary leaves stay in the frozen prefix.
+                                  + EXTRA_SCALAR_BOUNDARY_LEAVES[10:15] + EPSILON_PBL_LEAVES
+                                  + ("tracers", "tracer_bdy", "tracer_budget")
+                                  + ("qt_bdy", "qrimef_bdy") + FERRIER_CARRY_LEAVES
+                                  + GODDARD4ICE_CARRY_LEAVES + GODDARD4ICE_HISTORY_LEAVES
+                                  + THOMPSON_HAIL_SURFACE_LEAVES + JENSEN_STATE_LEAVES + WRITER_PROFILE_LEAVES
+                                  + NTU_STATE_LEAVES + tuple(f"{name}_bdy" for name in NTU_SCALAR_LEAVES)
+                                  + CAMMG_STATE_FIELDS + ICE_DIAGNOSTIC_LEAVES)
     for name in REQUIRED_MYNN_LEAVES:
         value = getattr(state, name)
         shape = (grid.nz, grid.ny, grid.nx) if name == "el_pbl" else (grid.ny, grid.nx)
@@ -547,14 +563,19 @@ def test_wrfrst_exact_read_keeps_force_fp64_leaf_dtypes(tmp_path: Path) -> None:
 
 
 def test_wrfrst_carry_inventory_is_complete_and_new_groups_roundtrip(tmp_path: Path) -> None:
-    """Every carry field has a declared v3 payload; optional land rad is exact."""
+    """Every carry is covered or explicitly refused; optional land rad is exact."""
     carry_fields = {field.name for field in dataclass_fields(OperationalCarry)}
     covered = {"state", *CARRY_ARRAY_FIELDS, *OPTIONAL_CARRY_FIELDS}
-    assert covered == carry_fields
-    assert UNSUPPORTED_CARRY_FIELDS == ()
+    assert covered | set(UNSUPPORTED_CARRY_FIELDS) == carry_fields
+    assert UNSUPPORTED_CARRY_FIELDS == ("timeseries",)
     grid = GridSpec.canary_3km_template()
     carry = initial_operational_carry(_state(grid)).replace(slab_rad=(jnp.zeros((grid.ny, grid.nx)),) * 2)
     path = tmp_path / "wrfrst_supported_carry"
+    with pytest.raises(ValueError, match="timeseries"):
+        write_wrfrst_carry(
+            carry.replace(timeseries=object()), grid, {}, path,
+            valid_time="2026-06-03_00:30:00", run_start="2026-06-03_00:00:00", step_index=1,
+        )
     write_wrfrst_carry(
         carry, grid, {}, path, valid_time="2026-06-03_00:30:00", run_start="2026-06-03_00:00:00", step_index=1
     )

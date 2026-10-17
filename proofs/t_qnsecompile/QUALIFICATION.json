@@ -1,0 +1,118 @@
+{
+  "lane": "t-qnsecompile",
+  "objective": "resolve actual c26 QNSE native compiler stall with unchanged WRF equations and CPU output bytes",
+  "lane_compile_gate": "PASS",
+  "status": "READY_FOR_INDEPENDENT_CRITIC",
+  "paid_source": "4dba72ce4c2998d02c67be1abc1d5e3a5a689be9",
+  "cpu_source": "3bf756cfe",
+  "baseline": "all3 isolated kernels timed out90s inCoalesce; previousactualc26 timeout1770s withonlylead0",
+  "change": "QNSE-only typed REAL4 global reads and REAL4/int32 final exchanges; stock Pallas reference effects/discharge; no shared compiler/vendor modifications",
+  "cpu": {
+    "native_compile_s": {
+      "sfc": 0.9381222310003068,
+      "pbl": 12.970100987000478,
+      "mf": 38.99103117499908
+    },
+    "regression_fields": 72,
+    "regression_values": 7380,
+    "regimes_per_driver": 15,
+    "tests_pass": 10,
+    "genuine_deletion_assertions": 1,
+    "setup_errors": 0,
+    "default_program_ids_exact": true
+  },
+  "actual_gpu": {
+    "arms": 1,
+    "timeout_s": 1770,
+    "exit_code": 0,
+    "platform": "gpu",
+    "frames": 25,
+    "steps": 4800,
+    "cold_whole_wall_s": 519.7761331620022,
+    "sampled_process_peak_vram_mib": 7054
+  },
+  "d6": {
+    "scope": "actual c26 QNSE GPU vs original CPU-WRF, frozen D6",
+    "source": "4dba72ce4c2998d02c67be1abc1d5e3a5a689be9",
+    "gpu_receipt_sha256": "be84cea6bc174d8042d76d5e82f76343bb9523c19c060ac3c3eef6825e8a8270",
+    "cpu_receipt_sha256": "c3d57e628c4ab823859edabcd752e8be48f86ecc901d0e2ef02e7a8a231c302a",
+    "tools": {
+      "scripts/compare_wrfout_grid.py": "5d87d80c8bc50372ce6699ee23163d1e1ba1a253c9fd91b43a2ecf40aa7f1dfd",
+      "proofs/v014/grid_delta_atlas/tolerance_manifest_candidate.json": "9df4fab8514523286f07b127eb8bf57a7545459c4448fef721ac44c0ecc351dc",
+      "proofs/v040/final_validation/score.py": "4c025af8382c9626e7f7e0de1e888a91bd0270376f5c837431d1000c70c2c21d"
+    },
+    "manifest_sha256": "9df4fab8514523286f07b127eb8bf57a7545459c4448fef721ac44c0ecc351dc",
+    "wall_s": 21.784132899003453,
+    "verdict": "PASS",
+    "paired_frames": 25,
+    "coverage_complete": true,
+    "bounded_misses": 0,
+    "nonfinite": 0,
+    "missing": []
+  },
+  "bounded_fields_pass": 62,
+  "report_only_numeric_fields": 297,
+  "full_inventory_cpu_fields": 360,
+  "e41": {
+    "raw_result": "FAIL",
+    "coverage": "PASS,2paidJIT/AOTentries,identicalELFfbe3bd102d50be6b",
+    "native_qnse_stack_bytes": {
+      "sfc": 0,
+      "pbl": 7232,
+      "mf": 2952
+    },
+    "qnse_nonleaf_callees": 0,
+    "kinput_transpose_over500": 0,
+    "disposition": "explicitoptinresourceflagsper_WAVE_S1_COMMON; default E41 hard gate unchanged"
+  },
+  "f2": {
+    "scope": "reported pre-mask phase visits, not unique cells; raw first samples retained in CENSUS.json",
+    "tracked_nonfinite_phase_visits": 0,
+    "negative_phase_visits": 7854866,
+    "guard_counts": {
+      "nonfinite": 0,
+      "out_of_range": 170344,
+      "repaired": 170344
+    },
+    "status": "OPEN: first samples/counts do not independently attribute every negative visit to pristine WRF; unchanged guard/physics source is not F2 closure",
+    "no_new_clamp": true,
+    "raw_sha256": "3db5ecfe995126c0db3543ccff2d3950fc222b9fd4ae2c06f3bc66c79ea4c2b3"
+  },
+  "limitations": [
+    "CPU interpreter equality is regression; pristine WRF oracle evidence carried by exact equations/adapter bytes; actual D6 uses original CPU-WRF.",
+    "Cold shared-resource Swiss wall is not a warm S1/PROD speed claim; no prior completed QNSE native runtime baseline.",
+    "Actual PBL/MF stack spills and pre-mask negative events remain disclosed; global release gates are not closed."
+  ],
+  "cleanup": {
+    "utc": "2026-10-15T06:00:28.691560+00:00",
+    "detached_snapshots_removed": [
+      "<USER_HOME>/wrf_gpu2_lanes/t-qnsecompile/base",
+      "<USER_HOME>/wrf_gpu2_lanes/t-qnsecompile/candidate"
+    ],
+    "all_disposable_cache_dirs_removed": true,
+    "private_prepared_scratch_removed": true,
+    "preserved": "original CPU references (read-only), GPU forecast25frames, raw D6 reports, exact paid JIT/AOT pins and actual ELF"
+  },
+  "receipts": {
+    "ACTUAL_E41.json": "c97762afd91ea29ccee2aefc8e750e249c365ea6f6ab200b363f498e396af67a",
+    "ACTUAL_RESOURCES.json": "6683f5375d963de879ea27b67ffb85ecdc16f5bf12df03ae9785b739bf6bb451",
+    "BASELINE_NATIVE.json": "79209cf6209d17ad145a2fbd73f1e4f3a934d521452d42b3d126fcc8adcc0ed8",
+    "CANDIDATE_NATIVE.json": "28f012979f67298603dca6fae20ffbac2d51f158c13b7ee0321b9d746096a9c9",
+    "CENSUS.json": "3db5ecfe995126c0db3543ccff2d3950fc222b9fd4ae2c06f3bc66c79ea4c2b3",
+    "CLEANUP.json": "1742c731a7ff07b75772348da8e2e4c7df5151fe91a7648c3f287ecaf9ef5908",
+    "CPU_BYTE.json": "fcf9b3a08b7947fa3d171e00867f32b0d5d43a59d21f05177f58cf114840f0dd",
+    "D6_SUMMARY.json": "8fa482fdc60ea1a3e279eb6135f44b2757fc5ef9229a3f04e87c77282b668453",
+    "DEFAULT_IDS.json": "85ae2ac7b87cdbaf3dd04fd676dc647af9f3f51e019e9a8e2bd092edee003039",
+    "DELETION.json": "fcdd47e3e9c923c2e9de20d5f330331a4176cfe6519233e8edca68a724ec90f0",
+    "F2_DISCLOSURE.json": "f68a8316c6e85a7fa413a5a8be531f52cd9f03f8d6f083cd25459f65a5fce36f",
+    "GPU_CACHE_CLEANUP.json": "be6652bdc885f05ccf45862348eae51fa50f2f31604f5855f732459c111c4879",
+    "GPU_PROOF.json": "f151d2b5adb2dc5866b723ff87905eb2c1b8fe58699c8169a30022acb51a93d0",
+    "GPU_RUN.json": "be84cea6bc174d8042d76d5e82f76343bb9523c19c060ac3c3eef6825e8a8270",
+    "PERFORMANCE_MEMORY.json": "7a3401d65bc152577ae749c7857195518b5dc5404e2c65b002442d2a09b897ff",
+    "PHYSICS_SOURCE_BYTE.json": "095f69238ccb084f096000cdc939da144be091fc8bbcdf0f5c5725da906c3eb5",
+    "PINS.json": "ed949dc83e9ff00a227e7613edf0a73a0ffe39ae8817af8a3d1b5f77e71ee446",
+    "RAW_EVIDENCE.json": "d2a4686b875b86ff718fe0993ea93cb16a0d731fca26e24dc58d3363ab8ed310",
+    "SOURCE_REUSE.json": "7971dde8a58b2f27ad6352f1e918e73dff8d9adbd4379b568a04a42494cc6bf7",
+    "TESTS.json": "4707102cfe827eac56903824c4b34fe1c9f1210ac060af40f49e43cbe01505b5"
+  }
+}

@@ -41,6 +41,12 @@ _V022_F3_CAMUW_PBL_SPECS = 1
 # v0.23 F2: mp=18 NSSL 2-moment + mp=40 Morrison-aerosol reference-only specs
 # (real single-column oracles at proofs/v022/f2_oracles/, scan fail-closed).
 _V023_F2_MP_REFERENCE_SPECS = 2
+# v0.4.0 main additions plus CAM-ZM7/KF-CuP10/MSKF11.
+_V040_ADDITIONAL_SPECS = 19
+_V040_MMF_VARIANT_SPECS = 1
+_V040_MPMISC_SPECS = 4  # Ferrier5/15, Goddard7, Thompson38 candidate.
+_V040_JENSEN_SPECS = 1  # Three-habit microphysics55.
+_V040_NOAHMP_CONTROL_VARIANTS = 50
 _V018_EXPECTED_SPEC_COUNT = (
     _V018_TRUNK_BASE_SPEC_COUNT
     + _V018_HARVESTED_SPECS
@@ -48,7 +54,23 @@ _V018_EXPECTED_SPEC_COUNT = (
     + _V018_RA_TAIL_SPECS
     + _V022_F3_CAMUW_PBL_SPECS
     + _V023_F2_MP_REFERENCE_SPECS
+    + _V040_ADDITIONAL_SPECS
+    + _V040_NOAHMP_CONTROL_VARIANTS
+    + 2  # v0.4 Noah-MP glacier opt_gla=1/2 variants of land_surface=4.
+    + _V040_MMF_VARIANT_SPECS
+    + _V040_MPMISC_SPECS
+    + _V040_JENSEN_SPECS
+    + 1  # v0.4 NTU56 complete prognostic interface.
+    + 1  # CAM Morrison-Gettelman mp11.
 )
+
+
+def test_mmf_option_has_its_own_surface_step_contract():
+    spec = scheme_step_spec('land_surface', 4, 'opt_run5')
+    assert spec.owner_module == 'src/gpuwrf/physics/noahmp/groundwater.py'
+    assert spec.wrf_slot == 'first_rk_surface_driver'
+    assert {'STEPWTD', 'DEEPRECH', 'RIVERCOND', 'SMOISEQ', 'ACRECH', 'ACQSPRING'} <= set(spec.diagnostics)
+    assert 'savepoint' in spec.oracle.lower()
 
 
 def test_registry_self_check_and_state_append_order() -> None:
@@ -111,27 +133,78 @@ def test_interfaces_self_check_and_scheme_specs_cover_v060_options() -> None:
     # stays in lockstep with SCHEME_STEP_SPECS as schemes are harvested.
     assert len(SCHEME_STEP_SPECS) == len(set(SCHEME_STEP_SPECS_BY_KEY))
     assert len(SCHEME_STEP_SPECS) == _V018_EXPECTED_SPEC_COUNT
+    nssl = scheme_step_spec("microphysics", 18)
+    alias = scheme_step_spec("microphysics", 17)
+    assert alias.owner_module == nssl.owner_module
+    assert alias.reads_state == nssl.reads_state
+    assert alias.writes_state == nssl.writes_state
+    assert alias.returns_accumulators == nssl.returns_accumulators
+    assert "proofs/s2_mpmore/normalization.json" in alias.oracle
+    no_hail = scheme_step_spec("microphysics", 22)
+    assert no_hail.owner_module.endswith("nssl2mom/adapter.py")
+    assert "proofs/s2_mpmore/nssl22/STATUS22.json" in no_hail.oracle
+    assert "CPU-oracle-qualified" in no_hail.oracle
+    assert set(no_hail.writes_state) == {"theta", "qv", "qc", "qr", "qi", "qs", "qg",
+                                        "Nc", "Nr", "Ni", "Ns", "Ng", "Nn", "qvolg"}
+    assert not {"qh", "Nh", "qvolh", "hail_acc"} & set(no_hail.writes_state + no_hail.returns_accumulators)
+    one_hail=scheme_step_spec("microphysics",19)
+    one_bulk=scheme_step_spec("microphysics",21)
+    assert set(one_hail.writes_state)=={"theta","qv","qc","qr","qi","qs","qg","qh","Nn","qvolg"}
+    assert set(one_bulk.writes_state)=={"theta","qv","qc","qr","qi","qs","qg"}
+    assert "hail_acc" in one_hail.returns_accumulators and "hail_acc" not in one_bulk.returns_accumulators
     assert scheme_step_spec("microphysics", 16).writes_state[-3:] == ("Nn", "Nc", "Nr")
-    assert scheme_step_spec("pbl", 2).writes_carry == ("tke_pbl", "el_pbl")
+    # t-cfix-sfc F12: MYJPBL also reads/writes this step's MYJSFC memory (Janjic-family qnse carry).
+    assert scheme_step_spec("pbl", 2).writes_carry == ("tke_pbl", "el_pbl", "qnse")
     # v0.17 GFS PBL + v0.18 Shin-Hong/GBM PBL operational specs present.
     assert scheme_step_spec("pbl", 3).owner_module.endswith("bl_gfs.py")
     assert "savepoint" in scheme_step_spec("pbl", 3).oracle.lower()
     assert scheme_step_spec("pbl", 11).owner_module.endswith("bl_shinhong.py")
     assert scheme_step_spec("pbl", 12).owner_module.endswith("bl_gbm.py")
     assert scheme_step_spec("pbl", 12).writes_state == ("u", "v", "theta", "qv", "qc", "qke")
-    # v0.18 PBL reference-only specs present, each tied to a real WRF savepoint
-    # oracle but not scan-wired into operational mode.
-    for opt in (4, 10, 16, 17):
-        spec = scheme_step_spec("pbl", opt)
-        assert spec.owner_module.endswith("pbl_reference_only.py")
-        assert "REFERENCE-ONLY" in spec.notes
-        assert "savepoint" in spec.oracle.lower()
+    for opt,module in ((16,'pbl_eeps.py'),(17,'pbl_keps.py')):
+        spec=scheme_step_spec('pbl',opt)
+        assert spec.owner_module.endswith(module)
+        assert 'EXPERIMENTAL' in spec.notes and 'CPU-oracle-qualified' in spec.notes
+        assert 'qualification pending' in spec.notes
+        assert 'proofs/s2_keps/full_zero.json' in spec.oracle
+    temf = scheme_step_spec("pbl", 10)
+    assert temf.owner_module.endswith("bl_temf.py")
+    assert "CPU-oracle-qualified" in temf.notes and "qualification pending" in temf.notes
+    assert "proofs/s2_temf/pbl_oracle.npz" in temf.oracle
+    assert scheme_step_spec("surface_layer", 10).owner_module.endswith("sf_temf.py")
     assert scheme_step_spec("surface_layer", 2).owner_module.endswith("sfclay_janjic.py")
+    ocean = scheme_step_spec("ocean", 1)
+    assert ocean.writes_state == ("t_skin",)
+    assert ocean.diagnostics == ("TML", "T0ML", "HML", "H0ML", "HUML", "HVML", "TMOML")
+    assert "history_diagnostics.lh" in ocean.reads_carry
+    for option in (1, 2):
+        hurricane = scheme_step_spec("hurricane_flux", option)
+        assert "hurricane_ustm" in hurricane.writes_carry
+        assert "roughness_m" in hurricane.writes_state
+        assert "1/5/91" in hurricane.notes
     assert scheme_step_spec("cumulus", 1).returns_accumulators == ("rainc_acc",)
     assert scheme_step_spec("cumulus", 2).writes_carry == ("cldefi",)
     assert scheme_step_spec("cumulus", 93).owner_module.endswith("cumulus_grell_devenyi.py")
     assert scheme_step_spec("cumulus", 99).writes_carry == ("w0avg", "nca")
     assert scheme_step_spec("land_surface", 2).writes_carry == ("flx4", "fvb", "fbur", "fgsn", "smcrel", "xlaidyn")
+
+
+def test_qnse_specs_describe_the_paired_operational_adapters() -> None:
+    pbl = scheme_step_spec("pbl", 4)
+    surface = scheme_step_spec("surface_layer", 4)
+    assert pbl.owner_module.endswith("pbl_qnse.py")
+    assert surface.owner_module.endswith("sfclay_qnse.py")
+    assert pbl.wrf_slot == "first_rk_pbl_driver"
+    assert surface.wrf_slot == "first_rk_surface_driver"
+    assert "qke" in pbl.writes_state
+    assert {"hfx", "qfx", "qsfc", "roughness_m"} <= set(surface.writes_state)
+    for spec in (pbl, surface):
+        assert spec.reads_carry == spec.writes_carry == ("qnse",)
+        assert "proofs/s2_qnse/oracle.json" in spec.oracle
+        assert "CPU-oracle-qualified" in spec.notes
+        assert "qualification pending" in spec.notes
+    assert "compiler_rounding.json" in pbl.oracle
+    assert "mfshconv=0/1" in pbl.notes
 
 
 def test_radiation_specs_are_held_rate_theta_tendencies() -> None:
@@ -163,51 +236,91 @@ def test_radiation_specs_are_held_rate_theta_tendencies() -> None:
         assert "STATUS: IMPLEMENTED" in spec.notes and "qualification pending" in spec.notes
         assert "proofs/cam_rad" in spec.oracle and "NOT a self-compare" in spec.oracle
 
-    for code in (5, 7, 99):
+    for variant in ("lw", "sw"):
+        goddard = scheme_step_spec("radiation", 5, variant)
+        assert goddard.writes_state == ("theta",)
+        assert goddard.wrf_slot == "first_rk_radiation_driver"
+        assert goddard.owner_module.endswith(f"ra_goddard_{variant}.py")
+        assert "CPU-oracle-qualified" in goddard.notes and "qualification pending" in goddard.notes
+        assert "Experimental" in goddard.notes and "uninitialized taux" in goddard.notes
+        assert "proofs/v018/savepoints/ra_tail_wrf/ra5_wrf_real.json" in goddard.oracle
+        assert "NOT a self-compare" in goddard.oracle
+
+    for code in (7, 99):
         lw_tail = scheme_step_spec("radiation", code, "lw")
         sw_tail = scheme_step_spec("radiation", code, "sw")
         for spec in (lw_tail, sw_tail):
             assert spec.writes_state == ("theta",)
             assert spec.wrf_slot == "first_rk_radiation_driver"
-            assert "REFERENCE-ONLY" in spec.notes
-            assert f"proofs/v018/savepoints/ra_tail_wrf/ra{code}_wrf_real.json" in spec.oracle
-            assert "v0.18 exact-driver real-WRF" in spec.oracle
-            assert "NOT a self-compare" in spec.oracle
+            assert "STATUS: IMPLEMENTED" in spec.notes
+            assert "EXPERIMENTAL CPU-ONLY" in spec.notes
+            assert "native GPU column kernel pending" in spec.notes
+            assert "proofs/s2_flggfdl/receipts" in spec.oracle
+            assert "pristine WRF REAL4" in spec.oracle
+            assert "independent native routine reference" in spec.oracle
             assert "REFERENCE-ONLY / RED" not in spec.notes
             assert "STATUS: REFERENCE-ONLY / RED" not in spec.notes
 
     for spec in (
-        scheme_step_spec("radiation", 5, "sw"),
-        scheme_step_spec("radiation", 5, "lw"),
         scheme_step_spec("radiation", 99, "sw"),
         scheme_step_spec("radiation", 99, "lw"),
     ):
         assert spec.writes_state == ("theta",)
         assert spec.wrf_slot == "first_rk_radiation_driver"
-        assert "REFERENCE-ONLY" in spec.notes
+        assert "EXPERIMENTAL CPU-ONLY" in spec.notes
 
 
 def test_physics_tendency_validates_unknown_keys() -> None:
     assert "rainc_acc" in ACCUMULATOR_UPDATE_KEYS
     PhysicsTendency(state_tendencies={"theta": object()}, accumulator_increments={"rainc_acc": object()}).validate_keys()
+    PhysicsTendency(state_replacements={key: object() for key in ("hfx", "qfx", "qsfc")}).validate_keys()
     with pytest.raises(ValueError, match="unknown state_tendency"):
         PhysicsTendency(state_tendencies={"bad_leaf": object()}).validate_keys()
+
+
+@pytest.mark.parametrize("mp", [50, 51, 52, 53])
+def test_p3_step_specs_include_conditional_history_particles_and_radii(mp) -> None:
+    from gpuwrf.contracts.ice_diagnostics import ice_diagnostic_leaves
+    from gpuwrf.physics.p3.adapter import output_mapping
+    spec = scheme_step_spec("microphysics", mp)
+    assert spec.wrf_slot == "solve_em_microphysics_driver"
+    assert spec.owner_module == "src/gpuwrf/physics/p3/adapter.py"
+    assert set(spec.writes_state) == {"theta", *output_mapping(mp).values()}
+    assert {"theta", "p", "ph", "Nc", "qir", "qib", "mp_th_old", "mp_qv_old"} <= set(spec.reads_state)
+    assert spec.reads_carry == spec.writes_carry == ()
+    assert spec.returns_accumulators == ("rain_acc", "snow_acc")
+    assert spec.diagnostics == ("re_cloud", "re_ice", *ice_diagnostic_leaves(mp))
+    assert "savepoints" in spec.oracle and "proofs/s2_p3/COMPILED_BOUND.md" in spec.oracle
+    assert "qualification pending" in spec.notes and "Experimental root" in spec.notes
+    PhysicsTendency(state_replacements={key: object() for key in spec.writes_state}).validate_keys()
 
 
 def test_v060_namelist_accept_matrix_and_wrfout_forward_names() -> None:
     validate_supported_namelist(
         {
             "physics": {
-                "mp_physics": [1, 2, 3, 4, 6, 8, 10, 16],
+                "mp_physics": [1, 2, 3, 4, 8, 6, 10, 16],
                 "cu_physics": [0, 1, 2, 3, 4, 5, 6, 14, 16, 93, 94, 95, 96, 99],
                 "bl_pbl_physics": [0, 1, 2, 3, 4, 5, 7, 9, 10, 11, 12, 16, 17],
-                "sf_sfclay_physics": [0, 1, 2, 5, 7],
-                "sf_surface_physics": [0, 2, 3, 4, 7, 8],
+                # QNSE/TEMF require their paired surface layers at domains 5/9.
+                "sf_sfclay_physics": [0, 1, 2, 5, 4, 7, 7, 7, 10, 7, 7, 7, 7],
+                "sf_surface_physics": [0, 2, 3, 7, 4, 8],
                 "ra_sw_physics": [0, 1, 2, 4, 5, 99],
-                "ra_lw_physics": [0, 1, 4, 5, 99],
+                # Goddard domain 5 uses paired 5/5, Thompson8 and Noah-MP4.
+                "ra_lw_physics": [0, 1, 4, 4, 5, 99],
             }
         }
     )
     for name in ("QNSNOW", "QNGRAUPEL", "QNCLOUD", "QNCCN"):
         assert name in MICROPHYSICS_EXTRA_VARIABLES
         assert name in WRFOUT_VARIABLE_SPECS
+
+
+@pytest.mark.parametrize("option", [1, 2])
+def test_surface_nudging_step_spec(option):
+    spec = scheme_step_spec("surface_nudging", option)
+    assert spec.wrf_slot == "first_rk_fdda_driver"
+    assert spec.writes_state == ("u", "v", "theta", "qv")
+    assert "fdda.surface_cursor" in spec.writes_carry
+    assert "fdda.hfx_fdda" in spec.writes_carry
+    assert "GPU pending" in spec.notes

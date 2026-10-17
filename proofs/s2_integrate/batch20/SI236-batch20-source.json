@@ -1,0 +1,70 @@
+{
+  "status": "PASS",
+  "initial": "c959e869a83bd10deea9d01a7ac3c6f20c42046d",
+  "main": "42e657f645e36f0de4a362c29cea83d1514af085",
+  "candidate": "dd4424ad351355bb2643a5907af3a508d0bee295",
+  "src_tree": "c3ac134dce6ca54c95a5a0aa8f701fe12a254b44",
+  "merges": [
+    {
+      "incoming": "9d1cad3515fa28b9ebae9bf7b16e2600dc20b3c8",
+      "before": "7f42dc2e1b51df2730a3c05a7439a042ea9c4d83",
+      "after": "15e3a6ed5f252f2daab8ae046074c28728632439",
+      "conflicts": 0,
+      "AST_files": [
+        "proofs/t_qhmass/coupled.py",
+        "proofs/t_qhmass/mutant.py",
+        "proofs/t_qhmass/native_identity.py",
+        "proofs/t_qhmass/program_identity.py",
+        "proofs/t_qhmass/wrf_moist_oracle.py",
+        "src/gpuwrf/contracts/moisture.py",
+        "src/gpuwrf/coupling/physics_couplers.py",
+        "src/gpuwrf/kernels/phys_hydrostatic_real.py",
+        "src/gpuwrf/runtime/operational_mode.py",
+        "tests/test_t_qhmass.py"
+      ],
+      "sealed_XML_attribute_only": "Exact deletion_mutant.xml whitespace metadata preserves SHA"
+    },
+    {
+      "incoming": "8741b8440277b19271f0247de76856a9ac23fc5a",
+      "before": "15e3a6ed5f252f2daab8ae046074c28728632439",
+      "after": "54961bd4ba0e4b0d85fb11fe371b2ea3d5782b79",
+      "conflicts": 0,
+      "AST_files": [
+        "proofs/t_godperf/capture_columns.py",
+        "proofs/t_godperf/inspect_paid.py",
+        "proofs/t_godperf/scan_components.py",
+        "proofs/t_godperf/tile_probe.py",
+        "src/gpuwrf/coupling/goddard_radiation.py"
+      ]
+    },
+    {
+      "incoming": "6f36edfb0fca9390fcb280921f6311e59eed9400",
+      "before": "54961bd4ba0e4b0d85fb11fe371b2ea3d5782b79",
+      "after": "1aa30e4c54661627d9bb916558cfb128a7c46ff6",
+      "conflicts": 0,
+      "AST_files": [
+        "proofs/t_godperf/default_identity.py"
+      ]
+    }
+  ],
+  "qhmass4files_BYTE_approved": [
+    "src/gpuwrf/contracts/moisture.py",
+    "src/gpuwrf/coupling/physics_couplers.py",
+    "src/gpuwrf/kernels/phys_hydrostatic_real.py",
+    "src/gpuwrf/runtime/operational_mode.py"
+  ],
+  "Goddard_single_file_BYTE_approved": "src/gpuwrf/coupling/goddard_radiation.py",
+  "all_other_model_files_inputs_scripts_packaging_BYTE_main": true,
+  "BL11_original": "a367c1a57acdf20a4c56ffa473d8970e9180a5fc",
+  "BL11_composed_commit": "dd4424ad351355bb2643a5907af3a508d0bee295",
+  "BL11_exact_changed_functions_AST": [
+    "test_pbl_operational_runs_and_mixes",
+    "test_shinhong_diag1_operational_updates_tke"
+  ],
+  "BL11_all_other_functions_AST_BYTE_main": true,
+  "unapproved_BL11_ancestor_commits_excluded": 10,
+  "qh_sealed_receipts": 24,
+  "god_sealed_receipts": 11,
+  "default_identity_reuse": "Both independent accepted changes have EXACT FULL defaults. qh optional hail absent in defaults/native6-8parentBYTE; tile constant reached only radiation5, defaults radiation4; BL11 test-only. No interaction in default graph.",
+  "native_artifact_reuse": "Goddard solver/math/tables/tiling entiremoduleBYTEreviewed; qh closures/contracts/nativehydrostat entirefilesBYTEreviewed. No composition edits or new compiled ABI from these two fixes."
+}

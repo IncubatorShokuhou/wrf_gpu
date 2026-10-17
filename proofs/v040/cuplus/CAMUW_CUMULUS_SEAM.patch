@@ -1,0 +1,22 @@
+--- a/src/gpuwrf/coupling/scan_adapters.py
++++ b/src/gpuwrf/coupling/scan_adapters.py
+@@ -1754,7 +1754,7 @@
+ 
+ 
+ def camuw_pbl_adapter(state: State, dt: float, grid=None, *, camuw: CamUwCarry | None = None,
+-                      rthraten=None, cldfra=None):
++                      rthraten=None, cldfra=None, return_cumulus_inputs=False):
+     """bl_pbl=9 CAM-UW (UW moist turbulence) ``(State, CamUwCarry) -> (State, CamUwCarry)``.
+ 
+     Inputs follow WRF ``phy_prep``/``module_pbl_driver.F:2033``: mass-point winds, dry physics
+@@ -1831,6 +1831,10 @@
+         kvm3d=back(out["kvm3d"], nz + 1), kvh3d=back(out["kvh3d"], nz + 1),
+         tauresx2d=out["tauresx2d"].reshape(ny, nx), tauresy2d=out["tauresy2d"].reshape(ny, nx),
+         tke_pbl=back(out["tke_pbl"], nz + 1))
++    if return_cumulus_inputs:
++        return state.replace(**updates), next_carry, (
++            out['tpert'].reshape(ny, nx).astype(f32),
++            out['kpbl'].reshape(ny, nx).astype(jnp.int32))
+     return state.replace(**updates), next_carry
+ 
+ 

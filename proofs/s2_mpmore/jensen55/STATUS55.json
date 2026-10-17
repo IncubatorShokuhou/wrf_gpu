@@ -1,0 +1,183 @@
+{
+  "lane": "s2-mpmore",
+  "option": 55,
+  "scheme": "Jensen-ISHMAEL",
+  "created_UTC": "2026-10-14T13:16:20.558385+00:00",
+  "status": "READY-FOR-CRITIC to s2-integrate; complete CPU-qualified experimental subset",
+  "source_commit": "7787264f39a9fad441212e8185798c017f695d82",
+  "rebase_main": "ce35f684c0d8be4a82bad3963f3412d24f4f9924",
+  "scope": "Jensen55 only. NSSL17/22/19/21 already merged and sealed packets unchanged. NTU56/CAM-MG11 delegated; not started here.",
+  "oracle": {
+    "reference": "Unchanged pristine WRF 4.7.1 module_mp_jensen_ishmael.F and public wrapper",
+    "source_sha256": "4cefa1a2f28c2bc36061100bd4bef10371643ccf1e80da43be96f8ba31843326",
+    "literal_REAL4_REAL8_columns_BYTE": 34,
+    "literal_public_values": 50456,
+    "original_evolved_two_step_columns_BYTE": 34,
+    "REAL4_evolved_active_aggregation_mass_calls": 245,
+    "original_init_inf_vs_zero_columns_BYTE": 34,
+    "independent_original_full_column_control_values": 4137392,
+    "compiled_deviation_receipt": "proofs/s2_mpmore/jensen55/NATIVE_COMPILED_DEVIATIONS.json",
+    "compiled_native_CPU_interpreter": {
+      "finite_columns": 17,
+      "nonfinite_values": 0,
+      "outside_independent_enclosure": 335,
+      "maximum_bound_excess_temperature_K": 6.103515625e-05,
+      "maximum_bound_excess_mass_kgkg": 6.868503987789154e-09,
+      "classification": "Disclosed small experimental deviations under standing policy; D6 decides, not strict enclosure passes"
+    },
+    "genuine_freezing_mutant": {
+      "mutant": "disable actual homogeneous cloud/rain freezing",
+      "killed": true,
+      "failures": 4,
+      "setup_errors": 0
+    }
+  },
+  "interfaces": {
+    "prognostic_fields": 16,
+    "extra_particle_State_volumes": 10,
+    "held_radii": [
+      "re_cloud",
+      "re_ice"
+    ],
+    "PhysicsStepSpec": true,
+    "WRF_moist_and_scalar_transport": true,
+    "third_ice_mass_loading": true,
+    "actual_native_and_daily_loaders": {
+      "requested_mp": 55,
+      "bound_mp": 55,
+      "grid": [
+        44,
+        42,
+        42
+      ]
+    },
+    "restart": "Pickle checkpoint and native wrfrst lossless; required habit/radius shape/dtype/missing/nonfinite refused",
+    "history": "14 represented extra/number/radius fields in full/operational/subset actual files; original metadata;42 nonfinite refusals",
+    "omitted_unheld_diagnostics": [
+      "fall speeds",
+      "diameters",
+      "densities",
+      "aspect ratios",
+      "ice type",
+      "radar"
+    ]
+  },
+  "coupled_smoke": {
+    "CPU": true,
+    "GPU": false,
+    "case": "<USER_HOME>/wrf_gpu2_lanes/release-docs/RD11/cpu",
+    "grid": [
+      44,
+      42,
+      42
+    ],
+    "dt_s": 18,
+    "steps": 2,
+    "CENSUS": 1,
+    "nonfinite_values": 0,
+    "guard_events": 0,
+    "canonical_jaxpr_sha256": "0966d0506394365ba69d913ed98c026acd2255e046f27edbf27081e8190ae096",
+    "characters": 22707703,
+    "load_s": 87.4,
+    "trace_s": 14.3,
+    "execution_including_CPU_compile_s": 458.5,
+    "wall_s": 562.8,
+    "artifact": "<USER_HOME>/wrf_gpu2_lanes/s2-mpmore/MPM55BY-real-two-step-census.json",
+    "scope": "Finite/census smoke, not forecast fidelity or global F2 closure"
+  },
+  "checks": {
+    "unique_shared_and_boundary_checks_covered": 398,
+    "initial_passes": 394,
+    "initial_legacy_pin_failures": 4,
+    "repaired_focused_run": {
+      "tests": 90,
+      "seconds": 21.334,
+      "failures": 0,
+      "errors": 0,
+      "artifact": "<USER_HOME>/wrf_gpu2_lanes/s2-mpmore/MPM55CB-final-legacy-fixes.xml"
+    },
+    "affected_original_aggregation_and_IGR_key_run": {
+      "tests": 4,
+      "seconds": 5.55,
+      "failures": 0,
+      "errors": 0,
+      "artifact": "<USER_HOME>/wrf_gpu2_lanes/s2-mpmore/MPM55CC-final-affected-helper.xml"
+    },
+    "reuse": "Final src/gpuwrf BYTE to measured bf6ca2dc1; main updates since6e8 are kernel/proof only; no duplicate numeric validation"
+  },
+  "assets_and_host_cost": {
+    "source_commit": "bf6ca2dc1d3dff084bdca715ea4fb5ab92062b85",
+    "CPU": true,
+    "GPU": false,
+    "clean_archive_actual_reader_BYTE": true,
+    "selected_modes": [
+      "REAL4",
+      "REAL8"
+    ],
+    "asset_sha256": "4cbe72b01c7f509a05309e89e9b8e82223ddf0c8cc833f5b16b0ed1237741b76",
+    "compressed_bytes": 44468557,
+    "raw_host_array_bytes": 51737636,
+    "first_archive_host_load_s": 0.13640984403900802,
+    "first_selected_host_key_s": 0.05314381513744593,
+    "warm_selected_host_key_median_ms": 48.4929708763957,
+    "peak_process_RSS_KiB": 1271824,
+    "scope": "Host-only identity work outside timesteps; CPU process RSS includes verification copies, not GPU VRAM"
+  },
+  "default_identities": {
+    "Swiss": {
+      "sha256": "f672a5739cb96e388b6b7a40ef80337bf81bdc14ef15268f3476e09d79fe055d",
+      "characters": 14504210,
+      "wall_s": 48.4,
+      "artifact": "<USER_HOME>/wrf_gpu2_lanes/s2-mpmore/MPM55BZ-default-swiss.json",
+      "scope": "CPU trace; default-program identity only"
+    },
+    "PROD_d01": {
+      "sha256": "6fc715a2bd630934c4cf0f94427df19a527cbf429011c9ba5efe4d712744d27b",
+      "characters": 14708888,
+      "wall_s": 66.8,
+      "artifact": "<USER_HOME>/wrf_gpu2_lanes/s2-mpmore/MPM55CA-default-prod.json",
+      "scope": "CPU trace; default-program identity only"
+    }
+  },
+  "native_preflight": {
+    "source_commit": "02a42169939e9c69bc01aa6f888d709f6f34558c",
+    "CPU": true,
+    "GPU": false,
+    "action": "lower",
+    "output_projection": "operational",
+    "fp64_equations": 0,
+    "fp64_equations_outside_original_gammln": 0,
+    "TTIR_characters": 9265477,
+    "target": "cuda/sm120",
+    "elapsed_s": 5.869868741137907,
+    "compressed_TTIR_artifact": "<USER_HOME>/wrf_gpu2_lanes/s2-mpmore/MPM55BR-native-operational-lower.ttir.gz",
+    "compressed_TTIR_sha256": "bd9e9af96e473faaddcdb620f85f05a0dd3197884fd4870360a8f775aecb2244"
+  },
+  "performance_and_memory": {
+    "native_programs": "One program per column; sedimentation and vertical density traversal remain local",
+    "selected_output_volumes": 19,
+    "complete_public_output_volumes": 37,
+    "precipitation_outputs": 4,
+    "nominal_stored_output_bytes_per_40_level_column": {
+      "complete": 5936,
+      "operational": 3056,
+      "classification": "source count, not measured GPU traffic"
+    },
+    "timestep_host_IO": "None added; host cache hashing/table load at trace/key construction",
+    "native_CPU_interpreter_compile_s": 120.53677330794744,
+    "native_CPU_interpreter_arguments_B": 3048,
+    "native_CPU_interpreter_outputs_B": 3240,
+    "native_CPU_interpreter_temps_B": 367192,
+    "native_CPU_interpreter_peak_RSS_KiB": 9039808,
+    "dormant_path": "New optional leaves None; both frozen default program identities exact",
+    "GPU_ops_VRAM_speed_readiness_E41": "Unmeasured; CPU interpreter/IR data are not GPU measurements"
+  },
+  "open_risks": [
+    "335 disclosed native CPU compiled enclosure excesses; actual GPU and D6 qualification pending",
+    "GPU resource/E41 flags and readiness unmeasured",
+    "Unheld diagnostic inventory explicitly omitted"
+  ],
+  "experiments": "Every MPM55 arm appended to MAIN EXPERIMENTS.tsv; per-arm artifacts/caches/work declared",
+  "cleanup": "Own detached snapshots, pytest/native-libm builds, archive temporary trees and disposable caches removed; final TTIR compressed",
+  "next": "Independent critic and s2-integrate merge; no NTU/CAM-MG work in this lane"
+}

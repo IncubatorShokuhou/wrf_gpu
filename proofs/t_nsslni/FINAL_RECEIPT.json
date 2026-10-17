@@ -1,0 +1,183 @@
+{
+  "schema": "t-nsslni-final-cpu-gate-v1",
+  "created_utc": "2026-10-14T14:55:57.797652+00:00",
+  "status": "READY-FOR-CRITIC",
+  "candidate_source_commit": "fb60572fd2c0e7ad840bb23e9c2f2ad03c607d2e",
+  "candidate_model_tree": "d87ad5662692c4a20156719be3ff8cdd0fce12d6",
+  "measured_model_commit": "a9c23758f",
+  "snapshot": "<DATA_ROOT>/wrf_gpu2/scratch/t-nsslni/NI05-snapshot",
+  "source_scope": "only operational_mode.py: Registry-derived static QNI predicate at MYNN and CAM source emission; scan_adapters unchanged",
+  "source_correction": "mp19/21 have no active QNI and original NSSL CCI input/output is conditional on ipconc>=5; no direct Ni update exists in one-moment mode. Active17/18/22 retained.",
+  "targeted": {
+    "passed": 73,
+    "xml": "<USER_HOME>/wrf_gpu2_lanes/t-nsslni/NI05_tests.xml",
+    "sha256": "95a2f0e6780ceeebc8b405ca1a3ce5413eeba8c53499ec0a5a3faa15de4b01da"
+  },
+  "shared": {
+    "passed": 257,
+    "xml": "<USER_HOME>/wrf_gpu2_lanes/t-nsslni/NI10_shared.xml",
+    "sha256": "339ea600d6832b957a09dbc2d882d5ae39b6a9181804e255004229da6b6cda7a",
+    "prior_completed_pass": 78,
+    "total_unique_pass": 335,
+    "resume_receipt": "<USER_HOME>/wrf_gpu2_lanes/t-nsslni/NI10_resume.json",
+    "resume_sha256": "da3a5435ed83d48927ce39fc9cc896b332bd2918d0d35130d8c681aa7ffe2116"
+  },
+  "positive_checks": 408,
+  "mutants": {
+    "old": {
+      "mode": "old",
+      "killed": true,
+      "assertion_failures": 4,
+      "setup_errors": 0,
+      "cases": [
+        "test_real_pbl_dispatch_respects_registry_qni[19-5]",
+        "test_real_pbl_dispatch_respects_registry_qni[19-9]",
+        "test_real_pbl_dispatch_respects_registry_qni[21-5]",
+        "test_real_pbl_dispatch_respects_registry_qni[21-9]"
+      ],
+      "receipt": "<USER_HOME>/wrf_gpu2_lanes/t-nsslni/NI09_old.json",
+      "sha256": "7f5d91d486342994241055cd75842a285e2556c35e4ff0c7ee83671580ff5b57"
+    },
+    "delete": {
+      "mode": "delete",
+      "killed": true,
+      "assertion_failures": 6,
+      "setup_errors": 0,
+      "cases": [
+        "test_real_pbl_dispatch_respects_registry_qni[8-5]",
+        "test_real_pbl_dispatch_respects_registry_qni[8-9]",
+        "test_real_pbl_dispatch_respects_registry_qni[18-5]",
+        "test_real_pbl_dispatch_respects_registry_qni[18-9]",
+        "test_real_pbl_dispatch_respects_registry_qni[22-5]",
+        "test_real_pbl_dispatch_respects_registry_qni[22-9]"
+      ],
+      "receipt": "<USER_HOME>/wrf_gpu2_lanes/t-nsslni/NI09_delete.json",
+      "sha256": "10b729bc483b746b2b334060e2741edf7a5edb355f99105ac6632d3ffe8af9cd"
+    }
+  },
+  "default_identity": {
+    "swiss": {
+      "jaxpr_sha256": "f672a5739cb96e388b6b7a40ef80337bf81bdc14ef15268f3476e09d79fe055d",
+      "receipt": "<USER_HOME>/wrf_gpu2_lanes/t-nsslni/NI02_swiss.json",
+      "receipt_sha256": "0df7c5520a63ac86f8eaccaa9a7ac92785c660c2964e70dd321840c699aa805c",
+      "reuse": "exact src/gpuwrf tree identity at measured4f138d58f, immutablea9c23758f and finalcandidate"
+    },
+    "prod": {
+      "jaxpr_sha256": "6fc715a2bd630934c4cf0f94427df19a527cbf429011c9ba5efe4d712744d27b",
+      "receipt": "<USER_HOME>/wrf_gpu2_lanes/t-nsslni/NI02_prod.json",
+      "receipt_sha256": "3d7b6c0bce989653b6f6696a440ef9bf2f3a35527ffe2484afaa2647749bc3fe",
+      "reuse": "exact src/gpuwrf tree identity at measured4f138d58f, immutablea9c23758f and finalcandidate"
+    }
+  },
+  "cuda_lowering": {
+    "receipt": "<USER_HOME>/wrf_gpu2_lanes/t-nsslni/NI11.json",
+    "sha256": "85a843f0482de8122036b1400d59f0cd3733a418a5b1dbed16972433d0c5b8d4",
+    "harness_sha256": "192667fe6cd384d175a99c6bc80cb23b248a26aa512a79729193836395c56e68",
+    "callable": "_advance_chunk_fori.trace(carry, namelist, int32_start, clock, n_steps=1, cadence=bound)",
+    "environment": {
+      "GPUWRF_FAST_DEFAULTS": "1",
+      "GPUWRF_CENSUS": "1",
+      "GPUWRF_CENSUS_SLIM": "0",
+      "GPUWRF_RRTMG_MP_RE": "1",
+      "JAX_PALLAS_USE_MOSAIC_GPU": "false"
+    },
+    "arms": {
+      "c14": {
+        "input_sha256": {
+          "namelist.input": "412923f8d33ccaf1d9a1c62ae17dbb716cf598558fb08cf8b6022b66530e53b7",
+          "wrfbdy_d01": "f3e556670e4768326997bdfa1dd8b0f77eb6d5da07d9c4dbf900bf8ff9e30230",
+          "wrfinput_d01": "a5d696550d1dc6713e2e340b8c2fba83811d43f4a94a65ca95266035860e2781"
+        },
+        "physics_raw_keys": [
+          [
+            "qc",
+            "qi",
+            "qv"
+          ]
+        ],
+        "status": "PASS",
+        "stablehlo_sha256": "2b9efdb9685e4a3c81748cc6916daf72d8c7466162531904515042276a0454fb",
+        "stablehlo_bytes": 49571334,
+        "mp_physics": 19,
+        "cu_physics": 99,
+        "phys_tend_rk_wrf": true,
+        "native_facade_at_trace": true,
+        "python_backend_at_trace": "gpu",
+        "pallas_interpret_at_trace": false,
+        "direct_product_signature": true,
+        "start_step_dtype": "int32",
+        "n_steps": 1,
+        "triton_custom_calls": 161,
+        "wall_s": 62.21729447087273
+      },
+      "c15": {
+        "input_sha256": {
+          "namelist.input": "61d740265e341e702ab43c927fcabffa2606800e1ce1758f31263b5e744a6909",
+          "wrfbdy_d01": "f3e556670e4768326997bdfa1dd8b0f77eb6d5da07d9c4dbf900bf8ff9e30230",
+          "wrfinput_d01": "a5d696550d1dc6713e2e340b8c2fba83811d43f4a94a65ca95266035860e2781"
+        },
+        "physics_raw_keys": [
+          [
+            "qc",
+            "qi",
+            "qv"
+          ]
+        ],
+        "status": "PASS",
+        "stablehlo_sha256": "2db08f2e917d3329fb3facd60a2f49dc4202b2e0adb2773dcfa02cb09a4fbf8d",
+        "stablehlo_bytes": 46652523,
+        "mp_physics": 21,
+        "cu_physics": 0,
+        "phys_tend_rk_wrf": true,
+        "native_facade_at_trace": true,
+        "python_backend_at_trace": "gpu",
+        "pallas_interpret_at_trace": false,
+        "direct_product_signature": true,
+        "start_step_dtype": "int32",
+        "n_steps": 1,
+        "triton_custom_calls": 154,
+        "wall_s": 51.266049436992034
+      }
+    },
+    "gpu_executed": false,
+    "native_executable_compiled": false
+  },
+  "original_reference": {
+    "manifest_sha256": "1cdb0c0bd42ecb7c39d819905a324e43a4df6382a776466d0bbf557c6020dd87",
+    "fixture_sha256": "f3dd0153d0d8e6dd36fbc08c0cd16be88223ee2b7e51e0f5692fe2d55467d839",
+    "steps": 2,
+    "columns": 6,
+    "levels": 44,
+    "dt_s": 18,
+    "nonzero_observed_cci": 27,
+    "result": "mp19/21 post-RK Ni BYTE vs pristine original REAL4, all sampled microphysics output leaves finite",
+    "scope": "MP caller preservation of touched Ni; no full forecast/parity claim for other species"
+  },
+  "performance_memory": {
+    "new_carry_leaves": 0,
+    "new_timestep_array_operations": 0,
+    "default_graph": "jaxpr EXACT",
+    "inactive_qni": "erroneous scalar-rate/coupling construction removed",
+    "gpu_timing_peak_memory_readiness": "UNKNOWN; v-prep reruns actual GPU/E41/D6. CPU lower wall is not forecast speed."
+  },
+  "remaining": [
+    "one independent critic and manager integration",
+    "v-prep GPU c14/c15 reruns including E41/D6; no GPU or forecast gate claimed"
+  ],
+  "experiments": [
+    "NI01",
+    "NI01-SCOPE",
+    "NI02",
+    "NI03-ORACLE",
+    "NI03-TEST",
+    "NI04",
+    "NI05",
+    "NI06",
+    "NI07",
+    "NI08",
+    "NI09",
+    "NI10",
+    "NI11"
+  ],
+  "cleanup": "original Fortran build and all ROOT snapshots already removed; final DATA snapshot/pytest removed after last consumer; persistent JAX cache disabled"
+}

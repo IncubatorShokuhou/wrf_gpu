@@ -211,7 +211,9 @@ def test_operational_step_routes_myj_pair_and_changes_state() -> None:
     state = _state(grid)
     # mp=0: the theta change must be attributable to the MYJ pair, not to (entry) microphysics.
     nml = _namelist(grid, bl_pbl_physics=2, sf_sfclay_physics=2, use_noahmp=False, mp_physics=0)
-    carry = initial_operational_carry(state)
+    from gpuwrf.coupling.myj_surface import initial_myj_memory
+    # MYJSFC's INOUT memory is resident carry (CALLER_AUDIT F12), seeded like _initial_carry_for_run.
+    carry = initial_operational_carry(state).replace(qnse=initial_myj_memory(state))
     forcing = _physics_step_forcing(carry, nml, 0.0, run_radiation=False)
     after = forcing.state
     assert np.all(np.isfinite(np.asarray(after.theta)))

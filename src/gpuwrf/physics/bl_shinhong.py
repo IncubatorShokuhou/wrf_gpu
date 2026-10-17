@@ -7,12 +7,10 @@ JAX.  Profile arrays are bottom-up mass-level columns.  The batched
 ``bl_pbl_physics=11``.
 
 Validation status: the forecast-driving path (U/V/theta/qv tendencies, EXCH_H,
-PBLH/KPBL/WSTAR/DELTA) is exact to the v090 host reference at roundoff.  TKE_PBL
-and EL_PBL are emitted and qke is updated, but exact diagnostic parity is not
-claimed yet: worst measured residuals are TKE rel ~=0.285 and EL rel ~=0.013
-against the v090 PARTIAL/fp32-sensitive reference.  TKE is non-driving for this
-operational dynamics path; refine it when a faithful pristine-WRF Shin-Hong TKE
-oracle is built.
+PBLH/KPBL/WSTAR/DELTA) retains its v090 host-reference gate. The adapter binds
+Registry default shinhong_tke_diag=0 (held TKE, cold REAL4 EPSQ2L/2=.005) and
+the nondefault diagnostic mode 1. Lane t-shinhong status: see
+proofs/t_shinhong/README.md (pristine-WRF REAL4 oracle of the public call).
 """
 
 from __future__ import annotations
@@ -22,6 +20,7 @@ from gpuwrf._x64_config import configure_jax_x64
 import jax
 from jax import config
 import jax.numpy as jnp
+import numpy as np
 
 configure_jax_x64()
 
@@ -30,9 +29,16 @@ R_D = 287.0
 CP = 7.0 * R_D / 2.0
 R_V = 461.6
 XLV = 2.5e6
-EP1 = R_V / R_D - 1.0
+# The driver passes module_model_constants REAL PARAMETERs (ep_1=r_v/r_d-1.);
+# gfortran folds them in single precision, so EP1 is that REAL4 value.
+EP1 = float(np.float32(R_V) / np.float32(R_D) - np.float32(1.0))
 EP2 = R_D / R_V
 KARMAN = 0.4
+# REAL runtime/PARAMETER products WRF forms in single precision; a Python double
+# product rounds differently (1 ULP): g*g (:1056), cp/g (:545), 1.-a7 (:2378).
+_GG = float(np.float32(G) * np.float32(G))
+_CONT = float(np.float32(CP) / np.float32(G))
+_ONE_MINUS_A7_PTHNL = float(np.float32(1.0) - np.float32(0.243))
 
 XKZMINM = 0.1
 XKZMINH = 0.01
@@ -101,19 +107,17 @@ def _pq(d, h):
 
 def _pthnl(d, h):
     doh = _safe_div(d, h, 0.0)
-    val = 0.243 * (
-        (doh**2.0 + 0.936 * doh**0.875 - 1.110)
-        / (doh**2.0 + 0.312 * doh**0.875 + 0.329)
-    ) + (1.0 - 0.243)
+    num = doh**2.0 + 0.936 * doh**0.875 - 1.110
+    den = doh**2.0 + 0.312 * doh**0.875 + 0.329
+    val = 0.243 * num / den + _ONE_MINUS_A7_PTHNL  # a7*num/den+(1.-a7) (:2378)
     return jnp.clip(jnp.where(h != 0.0, val, 1.0), 0.0, 1.0)
 
 
 def _pthl(d, h):
     doh = _safe_div(d, h, 0.0)
-    val = 0.280 * (
-        (doh**2.0 + 0.870 * jnp.sqrt(doh) - 0.913)
-        / (doh**2.0 + 0.153 * jnp.sqrt(doh) + 0.278)
-    ) + (1.0 - 0.280)
+    num = doh**2.0 + 0.870 * doh**0.5 - 0.913
+    den = doh**2.0 + 0.153 * doh**0.5 + 0.278
+    val = 0.280 * num / den + (1.0 - 0.280)  # a7*num/den+(1.-a7), REAL 1.-.28 == .72
     return jnp.clip(jnp.where(h != 0.0, val, 1.0), 0.0, 1.0)
 
 
@@ -122,28 +126,61 @@ def _ptke(d, h):
 
 
 def _thomas_scan(lower, diag, upper, rhs):
-    n = rhs.shape[0]
-    cp0 = upper[0] / diag[0]
-    dp0 = rhs[0] / diag[0]
+    """WRF ``tridin_ysu``/``tridi1n`` (module_bl_shinhong.F:1619-1772) in literal
+    REAL order: reciprocal pivot ``fk``, ``au=fk*cu``, ``f=fk*(r-cl*f(k-1))``,
+    back substitution ``f(k)-au(k)*f(k+1)``. ``lower[k]`` is row k's ``cl``
+    (the callee's kts+1-based view of the caller's ``al(k-1)``). ``rhs`` may
+    carry leading right-hand-side axes (``nt``); they share ``au`` as in WRF."""
+    n = rhs.shape[-1]
+    fk0 = 1.0 / diag[0]
+    au0 = fk0 * upper[0]
+    f0 = fk0 * rhs[..., 0]
 
     def fwd(carry, k):
-        cp_prev, dp_prev = carry
-        denom = diag[k] - lower[k] * cp_prev
-        cp_k = upper[k] / denom
-        dp_k = (rhs[k] - lower[k] * dp_prev) / denom
-        return (cp_k, dp_k), (cp_k, dp_k)
+        au_prev, f_prev = carry
+        fk = 1.0 / (diag[k] - lower[k] * au_prev)
+        f_k = fk * (rhs[..., k] - lower[k] * f_prev)
+        au_k = fk * upper[k]
+        return (au_k, f_k), (au_k, f_k)
 
-    _, (cp_rest, dp_rest) = jax.lax.scan(fwd, (cp0, dp0), jnp.arange(1, n))
-    cp = jnp.concatenate([cp0[None], cp_rest])
-    dp = jnp.concatenate([dp0[None], dp_rest])
+    _, (au_rest, f_rest) = jax.lax.scan(fwd, (au0, f0), jnp.arange(1, n))
+    au = jnp.concatenate([au0[None], au_rest])
+    f = jnp.concatenate([f0[None], f_rest])
 
     def bwd(x_next, k):
-        x_k = dp[k] - cp[k] * x_next
+        x_k = f[k] - au[k] * x_next
         return x_k, x_k
 
-    x_last = dp[n - 1]
+    x_last = f[n - 1]
     _, x_rest = jax.lax.scan(bwd, x_last, jnp.arange(n - 2, -1, -1))
-    return jnp.concatenate([x_rest[::-1], x_last[None]])
+    return jnp.moveaxis(jnp.concatenate([x_rest[::-1], x_last[None]]), 0, -1)
+
+
+def _seq_cumsum(x, reverse=False):
+    """Sequential REAL running sum in WRF loop order (:584-587 zq, :1204-1212 and
+    :1333-1338 fluxes, :1951-1955 szq/sq). Static unrolled adds (nz is static):
+    one fusible elementwise chain instead of a per-level scan."""
+    n = x.shape[-1]
+    order = range(n - 1, -1, -1) if reverse else range(n)
+    acc, out = None, [None] * n
+    for k in order:
+        acc = x[..., k] if acc is None else acc + x[..., k]
+        out[k] = acc
+    return jnp.stack(out, axis=-1)
+
+
+def _wrf_diag(first, upper, lower):
+    """WRF ``ad`` assembly order: ``ad(k+1)=1-al(k)`` then ``ad(k)=ad(k)-au(k)``."""
+    base = jnp.concatenate([jnp.reshape(first, (1,)), 1.0 - lower])
+    return base - jnp.concatenate([upper, jnp.zeros(1, upper.dtype)])
+
+
+def _wrf_rhs(x, first, flux, dtodsd, dtodsu, active):
+    """WRF rhs order: ``f(k+1)=x(k+1)-dtodsu*dsdz(k)`` then ``f(k)=f(k)+dtodsd*dsdz(k)``."""
+    lower_part = jnp.where(active, x[1:] - dtodsu * flux, x[1:])
+    base = jnp.concatenate([jnp.reshape(first, (1,)), lower_part])
+    upper_part = jnp.where(active, base[:-1] + dtodsd * flux, base[:-1])
+    return jnp.concatenate([upper_part, base[-1:]])
 
 
 def _first_pbl_guess(thv, thermal, za, br, brcr, u, v):
@@ -177,50 +214,63 @@ def _interp_pblh(kpbl, brdn, brup, brcr, za, zq):
     return hpbl, kpbl, kpbl > 1
 
 
+def _real4_mixlen_params():
+    """REAL PARAMETERs of ``mixlen`` (module_bl_shinhong.F:1786-1817) as gfortran
+    folds them: single precision, left to right. Bit-exact to the pristine build
+    (proofs/t_shinhong/README.md); a Python-double evaluation is 1 ULP off in 7."""
+    F = np.float32
+    g = F(9.81)
+    btg = F(1.0) / F(273.0) * g
+    a1, a2x = F(0.659888514560862645), F(0.6574209922667784586)
+    b1, b2 = F(11.87799326209552761), F(7.226971804046074028)
+    c1 = F(0.000830955950095854396)
+    adnh = F(9.0) * a1 * a2x * a2x * (F(12.0) * a1 + F(3.0) * b2) * btg * btg
+    adnm = F(18.0) * a1 * a1 * a2x * (b2 - F(3.0) * a2x) * btg
+    bdnh = F(3.0) * a2x * (F(7.0) * a1 + b2) * btg
+    bdnm = F(6.0) * a1 * a1
+    aeqh = (F(9.0) * a1 * a2x * a2x * b1 * btg * btg
+            + F(9.0) * a1 * a2x * a2x * (F(12.0) * a1 + F(3.0) * b2) * btg * btg)
+    aeqm = (F(3.0) * a1 * a2x * b1 * (F(3.0) * a2x + F(3.0) * b2 * c1 + F(18.0) * a1 * c1 - b2) * btg
+            + F(18.0) * a1 * a1 * a2x * (b2 - F(3.0) * a2x) * btg)
+    requ = -aeqh / aeqm
+    ubryl = ((F(18.0) * requ * a1 * a1 * a2x * b2 * c1 * btg + F(9.0) * a1 * a2x * a2x * b2 * btg * btg)
+             / (requ * adnm + adnh))
+    ubry3 = F(3.0) * ((F(1.0) + F(1.0e-7)) * ubryl)
+    cubr = F(1.0) - ubry3
+    cp = F(7.0) * F(R_D) / F(2.0)
+    values = dict(
+        elfc=F(0.23) * F(0.5), requ=requ, epsgm=requ * F(1.0e-9), adnh=adnh, adnm=adnm, bdnh=bdnh, bdnm=bdnm,
+        aubh=F(27.0) * a1 * a2x * a2x * b2 * btg * btg - adnh * ubry3,
+        aubm=F(54.0) * a1 * a1 * a2x * b2 * c1 * btg - adnm * ubry3,
+        bubh=(F(9.0) * a1 * a2x + F(3.0) * a2x * b2) * btg - bdnh * ubry3,
+        bubm=F(18.0) * a1 * a1 * c1 - bdnm * ubry3,
+        cubr=cubr, rcubr=F(1.0) / cubr,
+        elocp=F(2.72e6) / cp,  # runtime REAL 2.72e6/cp (:1878)
+        rc02=F(2.0) / (F(0.55) * F(0.55)),  # prodq2 runtime REAL (:2061)
+    )
+    return {k: float(v) for k, v in values.items()}
+
+
+_MIXLEN_REAL4 = _real4_mixlen_params()
+
+
 def _mixlen(u, v, t, the, q, cwm, q2, z, ustar, corf, epshol, hpbl, lpbl, pblflg,
-            mf, ufxpbl, vfxpbl, qfxpbl):
+            mf, ufxpbl, vfxpbl, qfxpbl, hgamu_h=0.0, hgamv_h=0.0):
     nz = u.shape[0]
     kidx = jnp.arange(nz)
     kge1 = kidx >= 1
     blckdr, cn = 0.0063, 0.75
     eps1, epsl, epsru = 1.0e-12, 0.32, 1.0e-7
-    el0max, el0min, elfc = 1000.0, 1.0, 0.23 * 0.5
-    alph, beta, g = 0.30, 1.0 / 273.0, 9.81
-    btg = beta * g
-    a1, a2x = 0.659888514560862645, 0.6574209922667784586
-    b1, b2 = 11.87799326209552761, 7.226971804046074028
-    c1 = 0.000830955950095854396
-    adnh = 9.0 * a1 * a2x * a2x * (12.0 * a1 + 3.0 * b2) * btg * btg
-    adnm = 18.0 * a1 * a1 * a2x * (b2 - 3.0 * a2x) * btg
-    bdnh = 3.0 * a2x * (7.0 * a1 + b2) * btg
-    bdnm = 6.0 * a1 * a1
-    aeqh = 9.0 * a1 * a2x * a2x * b1 * btg * btg + adnh
-    aeqm = (
-        3.0 * a1 * a2x * b1 * (3.0 * a2x + 3.0 * b2 * c1 + 18.0 * a1 * c1 - b2) * btg
-        + adnm
-    )
-    requ = -aeqh / aeqm
-    epsgh = 1.0e-9
-    epsgm = requ * epsgh
-    epsrs = 1.0e-7
-    ubryl = (
-        (18.0 * requ * a1 * a1 * a2x * b2 * c1 * btg + 9.0 * a1 * a2x * a2x * b2 * btg * btg)
-        / (requ * adnm + adnh)
-    )
-    ubry = (1.0 + epsrs) * ubryl
-    ubry3 = 3.0 * ubry
-    aubh = 27.0 * a1 * a2x * a2x * b2 * btg * btg - adnh * ubry3
-    aubm = 54.0 * a1 * a1 * a2x * b2 * c1 * btg - adnm * ubry3
-    bubh = (9.0 * a1 * a2x + 3.0 * a2x * b2) * btg - bdnh * ubry3
-    bubm = 18.0 * a1 * a1 * c1 - bdnm * ubry3
-    cubr = 1.0 - ubry3
-    rcubr = 1.0 / cubr
-    elcbl = 0.77
-    elocp = 2.72e6 / CP
+    el0max, el0min, alph, elcbl, epsgh, g = 1000.0, 1.0, 0.30, 0.77, 1.0e-9, 9.81
+    c = _MIXLEN_REAL4
+    elfc, requ, epsgm = c["elfc"], c["requ"], c["epsgm"]
+    adnh, adnm, bdnh, bdnm = c["adnh"], c["adnm"], c["bdnh"], c["bdnm"]
+    aubh, aubm, bubh, bubm, cubr, rcubr = c["aubh"], c["aubm"], c["bubh"], c["bubm"], c["cubr"], c["rcubr"]
+    elocp = c["elocp"]
 
     dth = jnp.concatenate([jnp.zeros(1, dtype=the.dtype), the[1:] - the[:-1]])
     zkm1 = jnp.concatenate([z[:1], z[:-2]])
-    zkp1 = jnp.concatenate([z[2:], z[-1:]])
+    zkp1 = z[1:]
     rdz = 2.0 / jnp.maximum(zkp1 - zkm1, 1.0e-12)
     du = u - jnp.concatenate([u[:1], u[:-1]])
     dv = v - jnp.concatenate([v[:1], v[:-1]])
@@ -228,7 +278,8 @@ def _mixlen(u, v, t, the, q, cwm, q2, z, ustar, corf, epshol, hpbl, lpbl, pblflg
     pbl_mask = jnp.logical_and(pblflg, (kidx + 1) <= lpbl)
     suk = du * rdz
     svk = dv * rdz
-    s2l_pbl = (suk - ufxpbl) * suk + (svk - vfxpbl) * svk
+    # WRF :1891 (suk-hgamu/hpbl-ufxpbl(k))*suk, left to right.
+    s2l_pbl = (suk - hgamu_h - ufxpbl) * suk + (svk - hgamv_h - vfxpbl) * svk
     s2 = jnp.where(kge1, jnp.maximum(jnp.where(pbl_mask, s2l_pbl, s2l_base), epsgm), 0.0)
 
     tm1 = jnp.concatenate([t[:1], t[:-1]])
@@ -253,19 +304,20 @@ def _mixlen(u, v, t, the, q, cwm, q2, z, ustar, corf, epshol, hpbl, lpbl, pblflg
     s2l = s2
     discr_st = jnp.maximum((bubm * s2l + bubh * gh) ** 2 * 0.25 - ((aubm * s2l + aubh * gh) * gh) * cubr, 0.0)
     qol2st = (-0.5 * (bubm * s2l + bubh * gh) + jnp.sqrt(discr_st)) * rcubr
-    elm_st = jnp.maximum(jnp.sqrt(_safe_div(q2, qol2st, 0.0)), epsl)
+    elm_st = jnp.maximum(jnp.sqrt(_safe_div(1.0, qol2st, 0.0) * q2), epsl)  # eloq2x=1./qol2st
     aden = (adnm * s2l + adnh * gh) * gh
     bden = bdnm * s2l + bdnh * gh
     qol2un = -0.5 * bden + jnp.sqrt(jnp.maximum(bden * bden * 0.25 - aden, 0.0))
-    elm_un = jnp.maximum(jnp.sqrt(_safe_div(q2, qol2un + epsru, 0.0)), epsl)
+    elm_un = jnp.maximum(jnp.sqrt(_safe_div(1.0, qol2un + epsru, 0.0) * q2), epsl)
     elm_pos_limit = s2l / jnp.where(gh != 0.0, gh, 1.0) <= requ
     elm_pos = jnp.where(elm_pos_limit, epsl, elm_st)
     elm = jnp.where(kge1, jnp.where(gh >= epsgh, elm_pos, elm_un), epsl)
 
     q1 = jnp.where(kidx <= (lpbl - 1), jnp.sqrt(jnp.maximum(q2, 0.0)), 0.0)
     qdzl = (q1[1:] + q1[:-1]) * (z[1:nz] - z[: nz - 1])
-    szq = jnp.sum((z[1:nz] + z[: nz - 1] - 2.0 * z[0]) * qdzl)
-    sq = jnp.sum(qdzl)
+    # WRF :1951-1955 sums from kte down to kts+1 in sequence.
+    szq = _seq_cumsum((z[1:nz] + z[: nz - 1] - z[0] - z[0]) * qdzl, reverse=True)[0]
+    sq = _seq_cumsum(qdzl, reverse=True)[0]
     el0 = jnp.minimum(alph * szq * 0.5 / jnp.maximum(sq, 1.0e-30), el0max)
     el0 = jnp.maximum(el0, el0min)
 
@@ -307,9 +359,9 @@ def _prodq2(dtturbl, ustar, s2, ri, q2, el, z, akm, akh, uxk, vxk, thxk, thvxk,
     kidx = jnp.arange(nz)
     kge1 = kidx >= 1
     epsq2l, c0, ceps, g = 0.01, 0.55, 16.6, 9.81
-    rc02 = 2.0 / (c0 * c0)
+    rc02 = _MIXLEN_REAL4["rc02"]  # REAL 2.0/(c0*c0)
     zkm1 = jnp.concatenate([z[:1], z[:-2]])
-    zkp1 = jnp.concatenate([z[2:], z[-1:]])
+    zkp1 = z[1:]
     deltaz = 0.5 * (zkp1 - zkm1)
     um1 = jnp.concatenate([uxk[:1], uxk[:-1]])
     vm1 = jnp.concatenate([vxk[:1], vxk[:-1]])
@@ -338,7 +390,7 @@ def _vdifq(dtdif, q2, el, z, akhk, ptke1, hgame, hpbl, pblflg, kpbl, efxpbl):
     kidx = jnp.arange(nz)
     c_k = 1.0
     zkm1 = jnp.concatenate([z[:1], z[:-2]])
-    zkp1 = jnp.concatenate([z[2:], z[-1:]])
+    zkp1 = z[1:]
     z_here = z[:nz]
     z_prev = jnp.concatenate([z[:1], z[: nz - 1]])
     zak = 0.5 * (z_here + z_prev)
@@ -347,7 +399,7 @@ def _vdifq(dtdif, q2, el, z, akhk, ptke1, hgame, hpbl, pblflg, kpbl, efxpbl):
     akhm1 = jnp.concatenate([akhk[:1], akhk[:-1]])
     akq = c_k * (
         akhk / jnp.maximum(zkp1 - zkm1, 1.0e-30)
-        + akhm1 / jnp.maximum(z[kidx] - zkm1, 1.0e-30)
+        + akhm1 / jnp.maximum(z[kidx] - z[jnp.maximum(kidx-2, 0)], 1.0e-30)
     ) * ptke1
     akq = jnp.where(kidx >= 2, akq, 0.0)
     cr = -dtoz * akq
@@ -408,14 +460,14 @@ def _shinhong_column(u, v, tx, qv, p, pdi, pi, dz, tke_in, qc, qi, *,
     thv = th * (1.0 + EP1 * qv)
     rhox = psfc / (R_D * tx[0] * (1.0 + EP1 * qv[0]))
     govrth = G / th[0]
-    zq = jnp.concatenate([jnp.zeros(1, dtype=dz.dtype), jnp.cumsum(dz)])
+    zq = jnp.concatenate([jnp.zeros(1, dtype=dz.dtype), _seq_cumsum(dz)])
     za = 0.5 * (zq[:-1] + zq[1:])
     delp = pdi[:-1] - pdi[1:]
     dza = jnp.concatenate([za[:1], za[1:] - za[:-1]])
     xkzom = jnp.where(kidx == nz - 1, 0.0, XKZMINM)
     xkzoh = jnp.where(kidx == nz - 1, 0.0, XKZMINH)
 
-    cont = CP / G
+    cont = _CONT
     conpr = BFAC * KARMAN * SFCFRAC
     dt2 = 2.0 * dt
     rdt = 1.0 / dt2
@@ -435,7 +487,9 @@ def _shinhong_column(u, v, tx, qv, p, pdi, pi, dz, tke_in, qc, qi, *,
     bfx0 = jnp.maximum(sflux, 0.0)
     wstar3 = jnp.where(sfcflg, govrth * bfx0 * hpbl, 0.0)
     wstar = jnp.where(sfcflg, wstar3 ** H1, 0.0)
-    ust3 = ust ** 3
+    # WRF writes REAL exponents (powf), not integer powers: ust**3., wscale**4.,
+    # **2., (1.-zfac)**3. (:511, :529, :706, :725-746).
+    ust3 = ust ** 3.0
     wscale = (ust3 + PHIFAC * KARMAN * wstar3 * 0.5) ** H1
     wscale = jnp.clip(wscale, ust / APHI5, ust * APHI16)
 
@@ -445,8 +499,8 @@ def _shinhong_column(u, v, tx, qv, p, pdi, pi, dz, tke_in, qc, qi, *,
     hgamq_c = jnp.minimum(gamfac * qfx, GAMCRQ)
     vpert = (hgamt_c + EP1 * th[0] * hgamq_c) / BFAC * AFAC
     thermal = thv[0] + jnp.where(conv, jnp.maximum(vpert, 0.0) * jnp.minimum(za[0] / (SFCFRAC * hpbl), 1.0), 0.0)
-    hgamu = jnp.where(conv, (-15.9 * ust * ust / wspd * wstar3 / (wscale ** 4)) * u[0], 0.0)
-    hgamv = jnp.where(conv, (-15.9 * ust * ust / wspd * wstar3 / (wscale ** 4)) * v[0], 0.0)
+    hgamu = jnp.where(conv, (-15.9 * ust * ust / wspd * wstar3 / (wscale ** 4.0)) * u[0], 0.0)
+    hgamv = jnp.where(conv, (-15.9 * ust * ust / wspd * wstar3 / (wscale ** 4.0)) * v[0], 0.0)
     hgamq = jnp.where(conv, jnp.maximum(hgamq_c, 0.0), 0.0)
     pblflg = jnp.where(conv, pblflg, False)
     kpbl_r, brdn_r, brup_r = _first_pbl_guess(thv, thermal, za, br, BRCR_UB, u, v)
@@ -514,7 +568,7 @@ def _shinhong_column(u, v, tx, qv, p, pdi, pi, dz, tke_in, qc, qi, *,
     deltaoh = D1 * hpbl + D2 * wm2 / (govrth * dthvx)
     deltaoh = jnp.maximum(EZFAC * deltaoh, hpbl - za[jnp.maximum(kpbl - 2, 0)] - 1.0)
     deltaoh = jnp.minimum(deltaoh, hpbl)
-    rigs = jnp.where((dux != 0.0) | (dvx != 0.0), govrth * dthvx * deltaoh / (dux * dux + dvx * dvx), RIGSMAX)
+    rigs = jnp.where((dux != 0.0) | (dvx != 0.0), govrth * dthvx * deltaoh / (dux ** 2.0 + dvx ** 2.0), RIGSMAX)
     rigs = jnp.clip(rigs, RIMIN, RIGSMAX)
     cenlfrac = jnp.where((rigs > 0.0) & (jnp.abs(rigs + CPENT) <= 1.0e-6), ENTFMAX, rigs / (rigs + CPENT))
     cenlfrac = jnp.minimum(cenlfrac, ENTFMAX)
@@ -528,15 +582,15 @@ def _shinhong_column(u, v, tx, qv, p, pdi, pi, dz, tke_in, qc, qi, *,
     deltaoh = jnp.where(pblflg, deltaoh, 1.0)
     enlfrac2 = jnp.where(pblflg, enlfrac2, 0.0)
 
-    entfacmf = jnp.where(pblflg, jnp.sqrt(((zq[1:] - hpbl) / deltaoh) ** 2), 0.0)
-    entfac = jnp.where(jnp.logical_and(pblflg, kp1 >= kpbl), ((zq[1:] - hpbl) / deltaoh) ** 2, 1.0e30)
+    entfacmf = jnp.where(pblflg, jnp.sqrt(((zq[1:] - hpbl) / deltaoh) ** 2.0), 0.0)
+    entfac = jnp.where(jnp.logical_and(pblflg, kp1 >= kpbl), ((zq[1:] - hpbl) / deltaoh) ** 2.0, 1.0e30)
     in_pbl = kp1 < kpbl
     zfac = jnp.clip(1.0 - (zq[1:] - zl1) / jnp.maximum(hpbl - zl1, 1.0e-30), ZFMIN, 1.0)
-    zfacent = (1.0 - zfac) ** 3
+    zfacent = (1.0 - zfac) ** 3.0
     wscalek = (ust3 + PHIFAC * KARMAN * wstar3 * (1.0 - zfac)) ** H1
     prfac = jnp.where(sfcflg, conpr, 0.0)
     prfac2 = jnp.where(sfcflg, 15.9 * wstar3 / ust3 / (1.0 + 4.0 * KARMAN * wstar3 / ust3), 0.0)
-    prnumfac = jnp.where(sfcflg, -3.0 * jnp.maximum(zq[1:] - SFCFRAC * hpbl, 0.0) ** 2 / hpbl ** 2, 0.0)
+    prnumfac = jnp.where(sfcflg, -3.0 * jnp.maximum(zq[1:] - SFCFRAC * hpbl, 0.0) ** 2.0 / hpbl ** 2.0, 0.0)
     wscalek = jnp.where(sfcflg, wscalek, jnp.maximum(ust / (1.0 + APHI5 * zol1 * zq[1:] / zl1), 0.001))
     prnum0 = jnp.clip(phih / phim + prfac, PRMIN, PRMAX)
     xkzm_pbl = wscalek * KARMAN * zq[1:] * zfac ** PFAC
@@ -565,7 +619,7 @@ def _shinhong_column(u, v, tx, qv, p, pdi, pi, dz, tke_in, qc, qi, *,
     tmean = 0.5 * (tx + tx_next)
     alpha = XLV * qmean / R_D / tmean
     chi = XLV * XLV * qmean / CP / R_V / tmean / tmean
-    ri_cloud = (1.0 + alpha) * (ri - G * G / ss / tmean / CP * ((chi - alpha) / (1.0 + chi)))
+    ri_cloud = (1.0 + alpha) * (ri - _GG / ss / tmean / CP * ((chi - alpha) / (1.0 + chi)))
     ri = jnp.where(qcloud, ri_cloud, ri)
     zk = KARMAN * zq[1:]
     rlamdz = jnp.minimum(jnp.minimum(jnp.maximum(0.1 * dza_kp1, RLAM), 300.0), dza_kp1)
@@ -588,7 +642,7 @@ def _shinhong_column(u, v, tx, qv, p, pdi, pi, dz, tke_in, qc, qi, *,
     mlfrac = MLTOP - deltaoh_n
     zfacmf0 = jnp.clip(zq[1] / jnp.maximum(hpbl, 1.0e-30), ZFMIN, 1.0)
     sfcfracn = jnp.maximum(SFCFRACN1, zfacmf0)
-    snlflux0 = NLFRAC * (A11 + A12 * sfcfracn) * sflux
+    snlflux0 = NLFRAC * ((A11 + A12 * sfcfracn) * sflux)  # sflux0 first (:1092-1093)
     amf1 = snlflux0 / sfcfracn
     amf2 = jnp.where(pblflg, -snlflux0 / jnp.maximum(mlfrac - sfcfracn, 1.0e-30), 0.0)
     bmf2 = -mlfrac * amf2
@@ -615,7 +669,9 @@ def _shinhong_column(u, v, tx, qv, p, pdi, pi, dz, tke_in, qc, qi, *,
     xkzh_ent = jnp.sqrt(jnp.maximum((-we * dza_kpblm1 * jnp.exp(-entfac[:-1])) * xkzhl[:-1], 0.0))
     xkzh_ent = jnp.minimum(jnp.maximum(xkzh_ent, xkzoh[:-1]), XKZMAX)
     xkzh_used = jnp.where(ent_face, xkzh_ent, xkzh[:-1])
-    in_pbl_face = kp1_face < kpbl
+    # WRF gates every local scale-dependency factor (pthl/pq/pu) and nonlocal
+    # flux term on pblflg .and. k<kpbl (:1179, :1285, :1429), not on k<kpbl.
+    in_pbl_face = jnp.logical_and(pblflg, kp1_face < kpbl)
     tem1_pre = dsig * xkzh[:-1] * rdz
     dsdzt = tem1_pre * (-mf[:-1] / jnp.maximum(xkzh[:-1], 1.0e-30))
     tem1 = dsig * xkzh_used * rdz
@@ -626,12 +682,12 @@ def _shinhong_column(u, v, tx, qv, p, pdi, pi, dz, tke_in, qc, qi, *,
     pth1 = _pthl(delxy * jnp.maximum(zfacdx, 1.0), hpbl)
     upper_h = jnp.where(in_pbl_face, upper_h * pth1, upper_h)
     lower_h = jnp.where(in_pbl_face, lower_h * pth1, lower_h)
-    diag_h = jnp.ones(nz).at[kk].add(-upper_h).at[kk + 1].add(-lower_h)
-    rhs_h = (th - 300.0).at[0].add(hfx / cont / delp[0] * dt2)
-    rhs_h = rhs_h.at[kk].add(jnp.where(in_pbl_face, dtodsd * dsdzt, 0.0))
-    rhs_h = rhs_h.at[kk + 1].add(jnp.where(in_pbl_face, -dtodsu * dsdzt, 0.0))
+    diag_h = _wrf_diag(1.0, upper_h, lower_h)
+    rhs_h = _wrf_rhs(th - 300.0, th[0] - 300.0 + hfx / cont / delp[0] * dt2, dsdzt, dtodsd, dtodsu, in_pbl_face)
     theta_sol = _thomas_scan(jnp.zeros(nz).at[kk + 1].set(lower_h), diag_h, jnp.zeros(nz).at[kk].set(upper_h), rhs_h)
-    theta_tend = (theta_sol - th + 300.0) * rdt
+    # WRF TTEND (:1202) is a temperature rate; RTHBLTEN = TTEND/PI (:252).
+    ttend = (theta_sol - th + 300.0) * rdt * pi
+    theta_tend = ttend / pi
     exch_h = jnp.concatenate([jnp.zeros(1, dtype=u.dtype), xkzh_used])
     xkzh_after = xkzh.at[:-1].set(xkzh_used)
 
@@ -642,21 +698,26 @@ def _shinhong_column(u, v, tx, qv, p, pdi, pi, dz, tke_in, qc, qi, *,
     tem1_q_pre = dsig * xkzq_face0 * rdz
     dsdzq = tem1_q_pre * (-qfxpbl * zfacent[:-1] / jnp.maximum(xkzq_face0, 1.0e-30))
     tem1_q = dsig * xkzq_used * rdz
-    upper_q = -dtodsd * tem1_q * rdz
-    lower_q = -dtodsu * tem1_q * rdz
+    dsdz2_q = tem1_q * rdz  # WRF dsdz2=tem1*rdz; au=-dtodsd*dsdz2
+    upper_q = -dtodsd * dsdz2_q
+    lower_q = -dtodsu * dsdz2_q
     pq1l = _pq(delxy * jnp.maximum(zfacdx, 1.0), hpbl)
     upper_q = jnp.where(in_pbl_face, upper_q * pq1l, upper_q)
     lower_q = jnp.where(in_pbl_face, lower_q * pq1l, lower_q)
-    diag_q = jnp.ones(nz).at[kk].add(-upper_q).at[kk + 1].add(-lower_q)
-    rhs_q = qv.at[0].add(qfx * G / delp[0] * dt2)
-    rhs_q = rhs_q.at[kk].add(jnp.where(in_pbl_face, dtodsd * dsdzq, 0.0))
-    rhs_q = rhs_q.at[kk + 1].add(jnp.where(in_pbl_face, -dtodsu * dsdzq, 0.0))
-    qv_sol = _thomas_scan(jnp.zeros(nz).at[kk + 1].set(lower_q), diag_q, jnp.zeros(nz).at[kk].set(upper_q), rhs_q)
-    qv_tend = (qv_sol - qv) * rdt
+    diag_q = _wrf_diag(1.0, upper_q, lower_q)
+    rhs_q = _wrf_rhs(qv, qv[0] + qfx * G / delp[0] * dt2, dsdzq, dtodsd, dtodsu, in_pbl_face)
+    # ndiff=3: QC3D/QI3D share the moisture matrix with no flux terms
+    # (:1243-1249, :1298-1305); RQCBLTEN/RQIBLTEN = (f3-qx)*rdt (:1358-1368).
+    q3_sol = _thomas_scan(jnp.zeros(nz).at[kk + 1].set(lower_q), diag_q, jnp.zeros(nz).at[kk].set(upper_q),
+                          jnp.stack([rhs_q, qc, qi]))
+    qv_tend = (q3_sol[0] - qv) * rdt
+    qc_tend = (q3_sol[1] - qc) * rdt
+    qi_tend = (q3_sol[2] - qi) * rdt
     xkzq_after = xkzq.at[:-1].set(xkzq_used)
 
-    tflux_e = jnp.flip(jnp.cumsum(jnp.flip(theta_tend * dz)))
-    qflux_e = jnp.flip(jnp.cumsum(jnp.flip(qv_tend * dz)))
+    # WRF :1204-1212/:1333-1338 accumulate TTEND/QTEND top-down in sequence.
+    tflux_e = _seq_cumsum(ttend * dz, reverse=True)
+    qflux_e = _seq_cumsum(qv_tend * dz, reverse=True)
     tvflux_e = tflux_e + qflux_e * EP1 * th
     q2_next = jnp.concatenate([q2x0[1:], q2x0[-1:]])
     tvflux_next = jnp.concatenate([tvflux_e[1:], tvflux_e[-1:]])
@@ -672,19 +733,19 @@ def _shinhong_column(u, v, tx, qv, p, pdi, pi, dz, tke_in, qc, qi, *,
     dsdzu = tem1_m_pre * (-hgamu / hpbl - ufxpbl * zfacent[:-1] / jnp.maximum(xkzm[:-1], 1.0e-30))
     dsdzv = tem1_m_pre * (-hgamv / hpbl - vfxpbl * zfacent[:-1] / jnp.maximum(xkzm[:-1], 1.0e-30))
     tem1_m = dsig * xkzm_used * rdz
-    upper_m = -dtodsd * tem1_m * rdz
-    lower_m = -dtodsu * tem1_m * rdz
+    dsdz2_m = tem1_m * rdz  # WRF dsdz2=tem1*rdz; au=-dtodsd*dsdz2
+    upper_m = -dtodsd * dsdz2_m
+    lower_m = -dtodsu * dsdz2_m
     pu1l = _pu(delxy * jnp.maximum(zfacdx, 1.0), hpbl)
     upper_m = jnp.where(in_pbl_face, upper_m * pu1l, upper_m)
     lower_m = jnp.where(in_pbl_face, lower_m * pu1l, lower_m)
     fric = ctopo * ust * ust / wspd1 * rhox * G / delp[0] * dt2 * (wspd1 / wspd) ** 2
-    diag_m = jnp.ones(nz).at[0].add(fric).at[kk].add(-upper_m).at[kk + 1].add(-lower_m)
-    rhs_u = u.at[kk].add(jnp.where(in_pbl_face, dtodsd * dsdzu, 0.0))
-    rhs_v = v.at[kk].add(jnp.where(in_pbl_face, dtodsd * dsdzv, 0.0))
-    rhs_u = rhs_u.at[kk + 1].add(jnp.where(in_pbl_face, -dtodsu * dsdzu, 0.0))
-    rhs_v = rhs_v.at[kk + 1].add(jnp.where(in_pbl_face, -dtodsu * dsdzv, 0.0))
-    u_sol = _thomas_scan(jnp.zeros(nz).at[kk + 1].set(lower_m), diag_m, jnp.zeros(nz).at[kk].set(upper_m), rhs_u)
-    v_sol = _thomas_scan(jnp.zeros(nz).at[kk + 1].set(lower_m), diag_m, jnp.zeros(nz).at[kk].set(upper_m), rhs_v)
+    diag_m = _wrf_diag(1.0 + fric, upper_m, lower_m)
+    rhs_u = _wrf_rhs(u, u[0], dsdzu, dtodsd, dtodsu, in_pbl_face)
+    rhs_v = _wrf_rhs(v, v[0], dsdzv, dtodsd, dtodsu, in_pbl_face)
+    uv_sol = _thomas_scan(jnp.zeros(nz).at[kk + 1].set(lower_m), diag_m, jnp.zeros(nz).at[kk].set(upper_m),
+                          jnp.stack([rhs_u, rhs_v]))
+    u_sol, v_sol = uv_sol[0], uv_sol[1]
     u_tend = (u_sol - u) * rdt
     v_tend = (v_sol - v) * rdt
     xkzm_after = xkzm.at[:-1].set(xkzm_used)
@@ -702,12 +763,11 @@ def _shinhong_column(u, v, tx, qv, p, pdi, pi, dz, tke_in, qc, qi, *,
     dex = 0.25 * (q2x0[jnp.minimum(k_ent + 2, nz - 1)] - q2x0[k_ent])
     efxpbl = jnp.where(pblflg, we * dex, 0.0)
     hpbl_safe = jnp.maximum(hpbl, 1.0e-30)
-    ufxpbl_fold = jnp.zeros(nz).at[1:].set(hgamu / hpbl_safe + ufxpblk[1:])
-    vfxpbl_fold = jnp.zeros(nz).at[1:].set(hgamv / hpbl_safe + vfxpblk[1:])
     qfxpbl_fold = jnp.zeros(nz).at[1:].set(hgamq / hpbl_safe + qfxpblk[1:])
     s2k, _ghk, rik, elk = _mixlen(
-        u, v, tx, th, qv, jnp.zeros_like(qv), q2x0, zq, ust, corf, hol1,
-        hpbl, kpbl, pblflg, mfk, ufxpbl_fold, vfxpbl_fold, qfxpbl_fold,
+        u, v, tx, th, qv, qc, q2x0, zq, ust, corf, hol1,  # cwm = qxk(kte+1) = QC3D (:1565)
+        hpbl, kpbl, pblflg, mfk, ufxpblk, vfxpblk, qfxpbl_fold,
+        hgamu_h=hgamu / hpbl_safe, hgamv_h=hgamv / hpbl_safe,
     )
     q2_work = _prodq2(
         dt, ust, s2k, rik, q2x0, elk, zq, akmk, akhk, u, v, th, thv,
@@ -720,7 +780,8 @@ def _shinhong_column(u, v, tx, qv, p, pdi, pi, dz, tke_in, qc, qi, *,
     tke_out = jnp.where(diag_on, tke_out, tke_in)
     el_pbl = jnp.where(diag_on, el_pbl, 0.0)
 
-    return u_tend, v_tend, theta_tend, qv_tend, exch_h, hpbl, kpbl.astype(jnp.int32), wstar, delta, tke_out, el_pbl
+    return (u_tend, v_tend, theta_tend, qv_tend, exch_h, hpbl, kpbl.astype(jnp.int32), wstar, delta, tke_out, el_pbl,
+            qc_tend, qi_tend)
 
 
 def shinhong_columns(
@@ -735,11 +796,13 @@ def shinhong_columns(
         qc = jnp.zeros_like(qv)
     if qi is None:
         qi = jnp.zeros_like(qv)
-    dt_b = jnp.broadcast_to(jnp.asarray(dt, jnp.float64), (ncol,))
-    dx_b = jnp.broadcast_to(jnp.asarray(dx, jnp.float64), (ncol,))
-    dy_b = jnp.broadcast_to(jnp.asarray(dy, jnp.float64), (ncol,))
-    corf_b = jnp.broadcast_to(jnp.asarray(corf, jnp.float64), (ncol,))
-    ctopo_b = jnp.broadcast_to(jnp.asarray(ctopo, jnp.float64), (ncol,))
+    # Scalars follow the profile dtype: WRF passes REAL dt/dx/dy/corf/ctopo.
+    real = u.dtype
+    dt_b = jnp.broadcast_to(jnp.asarray(dt, real), (ncol,))
+    dx_b = jnp.broadcast_to(jnp.asarray(dx, real), (ncol,))
+    dy_b = jnp.broadcast_to(jnp.asarray(dy, real), (ncol,))
+    corf_b = jnp.broadcast_to(jnp.asarray(corf, real), (ncol,))
+    ctopo_b = jnp.broadcast_to(jnp.asarray(ctopo, real), (ncol,))
     diag_b = jnp.broadcast_to(jnp.asarray(shinhong_tke_diag, jnp.int32), (ncol,))
     out = jax.vmap(
         lambda *a: _shinhong_column(
@@ -754,12 +817,14 @@ def shinhong_columns(
         psfc, znt, ust, hfx, qfx, wspd, br, psim, psih, dt_b, xland, u10, v10,
         dx_b, dy_b, corf_b, ctopo_b, diag_b,
     )
-    u_t, v_t, th_t, qv_t, exch_h, pblh, kpbl, wstar, delta, tke_out, el_pbl = out
+    u_t, v_t, th_t, qv_t, exch_h, pblh, kpbl, wstar, delta, tke_out, el_pbl, qc_t, qi_t = out
     return {
         "u": u_t,
         "v": v_t,
         "theta": th_t,
         "qv": qv_t,
+        "qc": qc_t,
+        "qi": qi_t,
         "exch_h": exch_h,
         "pblh": pblh,
         "kpbl": kpbl,

@@ -1,0 +1,86 @@
+{
+  "lane": "o2-rstschema",
+  "status": "READY_FOR_CRITIC",
+  "tested_snapshot": "7c2b792d331a8e7a1354a38d4600eb5d8d0501b0",
+  "src_tree": "fc7715877d039ace6946b9a3e5ac08c57e2104f6",
+  "baseline": "6a7590e4d",
+  "rebased_main": "85ed676a5",
+  "final_focused": {
+    "passed": 43,
+    "skipped": 0,
+    "failed": 0,
+    "seconds": 11.5,
+    "receipt": "<USER_HOME>/wrf_gpu2_lanes/o2-rstschema/RS05-final-tests.xml"
+  },
+  "shared_consumers": {
+    "source": "fcf037645",
+    "passed": 312,
+    "skipped": [
+      {
+        "test": {
+          "classname": "tests.v025.restart.test_cpu_wrfrst_ozone_hydration",
+          "name": "test_original_ozone_survives_restart_import[d01]",
+          "time": "0.000"
+        },
+        "reason": {
+          "type": "pytest.skip",
+          "message": "requires native release carries; set GPUWRF_FAST_DEFAULTS=1"
+        }
+      },
+      {
+        "test": {
+          "classname": "tests.v025.restart.test_cpu_wrfrst_ozone_hydration",
+          "name": "test_original_ozone_survives_restart_import[d02]",
+          "time": "0.000"
+        },
+        "reason": {
+          "type": "pytest.skip",
+          "message": "requires native release carries; set GPUWRF_FAST_DEFAULTS=1"
+        }
+      },
+      {
+        "test": {
+          "classname": "tests.v025.restart.test_cpu_wrfrst_ozone_hydration",
+          "name": "test_original_ozone_survives_restart_import[d03]",
+          "time": "0.000"
+        },
+        "reason": {
+          "type": "pytest.skip",
+          "message": "requires native release carries; set GPUWRF_FAST_DEFAULTS=1"
+        }
+      },
+      {
+        "test": {
+          "classname": "tests.v025.restart.test_cpu_wrfrst_ozone_hydration",
+          "name": "test_original_file_gate_rejects_old_ppmv_conversion",
+          "time": "0.000"
+        },
+        "reason": {
+          "type": "pytest.skip",
+          "message": "requires native release carries; set GPUWRF_FAST_DEFAULTS=1"
+        }
+      }
+    ],
+    "failed": 0,
+    "seconds": 858.82,
+    "reused_by_final_source": "Only NetCDF legacy selection admission changed after this run; required six shared consumers do not call that branch. Changed IO paths rerun RS05 on final source; model src byte-identical."
+  },
+  "deletion_controls": {
+    "killed": 4,
+    "total": 4,
+    "setup_errors": 0,
+    "first_three_receipt": "<USER_HOME>/wrf_gpu2_lanes/o2-rstschema/RS03-mutants.json",
+    "final_legacy_receipt": "<USER_HOME>/wrf_gpu2_lanes/o2-rstschema/RS06-legacy-mutant.log"
+  },
+  "release_jaxpr_sha": "2bf12cb8374d3a84a440e47dea4b77b0c7436108fc2ee2616bba6ec79b17962a",
+  "release_identity_scope": "Measured RS02 fcf037645; all model source byte-identical on final source (only wrfrst legacy-read admission differs). No new physics validation claim.",
+  "v034_failure_classification": "LOUD NetCDF populated CAM-UW write refusal and State-only missing-non-additive read refusal; CLI authenticated store already persists generic carry. KNOWN_ISSUES documented.",
+  "limitations": [
+    "CPU serialization/schema evidence; no new GPU/forecast qualification",
+    "Four inherited native-carry ozone tests skipped with FAST_DEFAULTS=0; not missing-reference skips",
+    "Active legacy CAM-UW lacking schema/group refused; inactive old NetCDF needs explicit resolved namelist when selection is unknown",
+    "No IO throughput or GPU peak-memory claim"
+  ],
+  "cache": "NONE(GPUWRF_JAX_CACHE=0)",
+  "artifacts": "<USER_HOME>/wrf_gpu2_lanes/o2-rstschema"
+}

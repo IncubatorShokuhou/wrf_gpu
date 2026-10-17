@@ -80,6 +80,24 @@ def test_surface_layer_first_timestep_uses_wrf_mynn_cold_start_boundary():
     assert float(np.asarray(first.fluxes.ustar)[0, 0]) > float(np.asarray(warm.fluxes.ustar)[0, 0])
 
 
+def test_sms_ustm_uses_raw_wind_over_water_and_land_ust():
+    # Independent literal module_sf_mynn.F:955/961; distinct old USTM and UST,
+    # nonzero convective gustiness. The ordinary surface oracle covers PSIM/ZNT.
+    rows = [[2., 1., 294., .010, 100800., 60., 300., 2., .0015, 1., .4, 0.],
+            [6., 2., 292., .008, 95500., 80., 296., 1., .08, .7, .4, 0.]]
+    state=_state_from_rows(rows)
+    state.sms_ustm=jnp.asarray([[.07],[.08]],jnp.float64)
+    state.sms_required=True
+    diag=surface_layer_with_diagnostics(state)
+    za=np.array([30.,40.])[:,None]
+    psix=np.log((za+np.asarray(diag.znt))/np.asarray(diag.znt))-np.asarray(diag.psim)
+    raw=np.sqrt(np.array([5.,40.]))[:,None]
+    expected=.5*np.asarray(state.sms_ustm)+.5*.4*np.maximum(raw,.1)/psix
+    expected[1]=np.asarray(diag.fluxes.ustar)[1]
+    np.testing.assert_allclose(np.asarray(diag.ustm),expected,rtol=32*np.finfo(np.float64).eps,atol=0)
+    assert abs(np.asarray(diag.ustm)[0,0]-np.asarray(diag.fluxes.ustar)[0,0])>.01
+
+
 def test_surface_layer_matches_wrf_sfclay_harness_when_available(tmp_path):
     """RETIRED (B2 rebuild): this asserted parity with WRF MM5 ``module_sf_sfclay.F``.
 

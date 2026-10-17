@@ -1,0 +1,42 @@
+{
+  "utc": "2026-10-15T00:46:53.096425+00:00",
+  "argv": [
+    "<USER_HOME>/src/wrf_gpu2/scripts/with_ram_slot.sh",
+    "--label",
+    "v-run",
+    "--max",
+    "12G",
+    "--timeout",
+    "1800",
+    "--",
+    "bash",
+    "-c",
+    "if [ -e /tmp/wrf_gpu2_quiet ]; then echo QUIET; exit 3; fi; exec \"$@\"",
+    "v-run-pair",
+    "timeout",
+    "--signal=TERM",
+    "--kill-after=30",
+    "4860",
+    "<USER_HOME>/src/wrf_gpu2/scripts/with_gpu_lock.sh",
+    "--label",
+    "v-run",
+    "--timeout",
+    "3600",
+    "--",
+    "timeout",
+    "--signal=TERM",
+    "--kill-after=15",
+    "1200",
+    "<USER_HOME>/miniconda3/bin/python",
+    "<USER_HOME>/wrf_gpu2_lanes/v-run/round3/mp28_followup/tools/batch.py",
+    "mp28"
+  ],
+  "source_rev": "195cd41948e43fd6d6676a2292e0395cefd5ae6e",
+  "order_release": {
+    "mode": "QUEUE_BEHIND_ACTIVE_PREDECESSOR",
+    "active_holder": "holder=v-prep pid=888368 since=2026-10-15T00:39:31Z token=gpuwrf-lock-888368-3561-1792024771241492439 cmd=timeout --signal=TERM --kill-after=15 3029 bash proofs/v040/final_validation/gpu_inside.sh c03 c04 c26 c39",
+    "checked_utc": "2026-10-15T00:46:53.048026+00:00",
+    "authority": "Manager direct approvedmp28<=20min next-marker v-run",
+    "note": "Actual currentv-prep holder command is c03/c04/c26/c39 cohort, not mislabeled WN3; queue behind actualholder, not completion asserted."
+  }
+}

@@ -1,0 +1,6 @@
+PRESCREEN <USER_HOME>/wrf_gpu2_lanes/t-p3fix/TP24b/actual.ttir 3a20a1a03d7dc03c717eb8bb61805e2f79442ebaffbed436b991876cf12c7051
+// -----// IR Dump Before ConvertTritonToTritonGPU (convert-triton-to-tritongpu) ('builtin.module' operation: @p3_mp52_column) //----- //
+// -----// IR Dump Before TritonGPUCoalesce (tritongpu-coalesce) ('builtin.module' operation: @p3_mp52_column) //----- //
+[tritongpu-coalesce]: Considering op: %121 = tt.load %119, %108, %120 : tensor<64x!tt.ptr<f32>, #ttg.blocked<{sizePerThread = [1], threadsPerWarp = [32], warpsPerCTA = [2], order = [0]}>>
+[tritongpu-coalesce]: axis info of pointer: contiguity = [64], divisibility = [16], constancy = [1], constant_value = <none>
+[tritongpu-coalesce]: order=[0]

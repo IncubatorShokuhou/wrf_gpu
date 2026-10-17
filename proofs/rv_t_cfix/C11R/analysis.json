@@ -1,0 +1,64 @@
+{
+  "ptx_sha256": "921072460fabba02b942cfb2a19766f29280395456baab8fcf8ce3b68464c09e",
+  "cubin_sha256": "1086aa41b2488dcd77a28b8853d74851bcb55f545513c9975b408fbc8ac04fa9",
+  "canonical": {
+    "base": 3314,
+    "new": 3315,
+    "same": 3309,
+    "changed_wdm6": {
+      "base": {
+        "fused_select_sqrt_transpose": "WDM6 stack frames",
+        "fused_clamp_reduce_select": "WDM6 stack frames",
+        "fused_convert_minimum_select_transpose": "WDM6 stack frames",
+        "fused_and_compare_convert_maximum_select_transpose": "WDM6 stack frames",
+        "fused_select_transpose.7": "WDM6 stack frames"
+      },
+      "new": {
+        "fused_transpose.11": "Nn first-step 1e8 select + column view transpose + f64 convert; initialization/reshape frames, not WDM6 module frames",
+        "fused_clamp_reduce_select": "WDM6 stack frames",
+        "fused_maximum_minimum_select_transpose": "WDM6 stack frames",
+        "fused_and_compare_convert_maximum_multiply_select": "WDM6 stack frames",
+        "fused_convert_select_sqrt_transpose": "WDM6 stack frames",
+        "fused_select_transpose.7": "WDM6 stack frames"
+      }
+    }
+  },
+  "hlo_failures": [
+    [
+      {
+        "fusion": "input_and_compare_convert_maximum_select_transpose_fusion",
+        "kind": "kInput",
+        "computation": "fused_and_compare_convert_maximum_select_transpose",
+        "outputs": 23,
+        "inputs": 17,
+        "n": 1613,
+        "hit": 1614,
+        "transposes": 1,
+        "f64": 1463
+      }
+    ],
+    []
+  ],
+  "native_kernels": 2662,
+  "native_same_producer": true,
+  "stack_failures": [
+    {
+      "kernel": "input_divide_multiply_reduce_subtract_fusion",
+      "stack": 512,
+      "canonical_hash": "c6c168f0e066131c"
+    },
+    {
+      "kernel": "input_divide_multiply_reduce_fusion",
+      "stack": 416,
+      "canonical_hash": "156c437dfa819bb8"
+    },
+    {
+      "kernel": "loop_maximum_minimum_select_subtract_fusion",
+      "stack": 400,
+      "canonical_hash": "9d925ae391cd9613"
+    }
+  ],
+  "nonleaf_failures": 0,
+  "callgraph_unknown": 0,
+  "scope": "CPU retained HLO/PTX offline assembly. No original-WRF fidelity or GPU speed result."
+}

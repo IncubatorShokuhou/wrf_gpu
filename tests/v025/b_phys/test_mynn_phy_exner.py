@@ -98,7 +98,7 @@ def test_real_coupler_keeps_hydro_p_and_supplies_dynamic_pi(monkeypatch,original
     monkeypatch.setattr(C,'_wrf_hydrostatic_pressure_from_state',lambda *args,**kw:(field('p_hyd'),jnp.zeros((B,1),jnp.float32)))
     monkeypatch.setattr(C,'_wrf_phy_prep_rho_from_state',lambda *args,**kw:jnp.ones_like(theta))
     monkeypatch.setattr(C,'_surface_dz_from_state',lambda *args,**kw:C._to_columns(jnp.ones_like(theta)*50))
-    for name in ['_u_mass','_v_mass','_w_mass']:
+    for name in ['_u_mass','_v_mass','_w_bottom_faces']:  # F20: MYNN w1 = bottom faces
         monkeypatch.setattr(C,name,lambda *args,**kw:jnp.zeros_like(theta))
     grid=SimpleNamespace(metrics=object())
     monkeypatch.setenv(FLAG,'1');out=C._mynn_column_from_state(state,grid)

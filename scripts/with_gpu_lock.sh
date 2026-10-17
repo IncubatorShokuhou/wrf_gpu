@@ -194,7 +194,7 @@ export GPUWRF_GPU_LOCK_TOKEN="$TOKEN"
 
 # Lock holder runs on the exclusive GPU-arm cores (manager 2026-10-02 13:17Z: +4 cores; one GPU arm at a time).
 # Override with GPUWRF_GPU_ARM_CPUS="" to keep the caller's affinity.
-GPU_ARM_CPUS="${GPUWRF_GPU_ARM_CPUS-10,11,26,27}"
+GPU_ARM_CPUS="${GPUWRF_GPU_ARM_CPUS-3,19,13,29}"   # 2026-10-15: 10,11,26,27 are ALISIOS cores now (core plan 10-13)
 set +e
 # The lock must outlive the GPU child (2026-10-03, dispatch D04): run the child in the background, forward
 # TERM/INT/HUP to it and only release the lock after it has really exited (a child that closed fd 9 or is

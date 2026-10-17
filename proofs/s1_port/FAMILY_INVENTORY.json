@@ -1,0 +1,765 @@
+{
+  "scope": "same native kernels through local facade/direct CPU interpretation; CUDA source/jaxpr identity only, no new GPU execution. Legacy full acoustic/PD diagnostics excluded by manager decision.",
+  "base": "ffaf5c39d",
+  "families": [
+    {
+      "module": "src/gpuwrf/coupling/boundary_apply.py",
+      "native_cuda_source_normalized_byte_equal": true,
+      "source_lines_equal": true,
+      "pallas_factory_calls": 1,
+      "cpu_test_nodes": [
+        "tests/test_portability_kernels.py::test_boundary_scalar_couple_numpy_and_non_cuda_rounding"
+      ],
+      "cpu_receipt_status": "PASS: native factory observed; named tests retain their numerical assertions",
+      "tolerance": "New REAL comparisons <=64eps*field_scale (8eps coupled/boundary,4eps hydrostatic); exact KISS. Existing component bounds unchanged and defined by listed tests/fixtures.",
+      "observed_factories_by_receipt": {
+        "PORT24": {
+          "nest_scalar_couple_real4": [
+            "tests/test_portability_kernels.py::test_boundary_scalar_couple_numpy_and_non_cuda_rounding[cpu]",
+            "tests/test_portability_kernels.py::test_boundary_scalar_couple_numpy_and_non_cuda_rounding[metal]",
+            "tests/test_portability_kernels.py::test_boundary_scalar_couple_numpy_and_non_cuda_rounding[rocm]",
+            "tests/test_portability_kernels.py::test_boundary_scalar_couple_numpy_and_non_cuda_rounding[tpu]"
+          ]
+        }
+      }
+    },
+    {
+      "module": "src/gpuwrf/kernels/dyn_acoustic_fp32.py",
+      "native_cuda_source_normalized_byte_equal": true,
+      "source_lines_equal": true,
+      "pallas_factory_calls": 1,
+      "cpu_test_nodes": [
+        "tests/test_portability_kernels.py::test_acoustic_facade_matches_native_interpreter"
+      ],
+      "cpu_receipt_status": "PASS: native factory observed; named tests retain their numerical assertions",
+      "tolerance": "New REAL comparisons <=64eps*field_scale (8eps coupled/boundary,4eps hydrostatic); exact KISS. Existing component bounds unchanged and defined by listed tests/fixtures.",
+      "observed_factories_by_receipt": {
+        "PORT29": {
+          "b_core_coef_fp32": [
+            "tests/test_portability_kernels.py::test_acoustic_facade_matches_native_interpreter"
+          ],
+          "b_core_mass_fp32": [
+            "tests/test_portability_kernels.py::test_acoustic_facade_matches_native_interpreter"
+          ],
+          "b_core_pressure_fp32": [
+            "tests/test_portability_kernels.py::test_acoustic_facade_matches_native_interpreter"
+          ],
+          "b_core_uv_fp32": [
+            "tests/test_portability_kernels.py::test_acoustic_facade_matches_native_interpreter"
+          ],
+          "b_core_w_fp32": [
+            "tests/test_portability_kernels.py::test_acoustic_facade_matches_native_interpreter"
+          ],
+          "b_core_w_p1_fp32": [
+            "tests/test_portability_kernels.py::test_acoustic_facade_matches_native_interpreter"
+          ],
+          "b_core_w_p2_fp32": [
+            "tests/test_portability_kernels.py::test_acoustic_facade_matches_native_interpreter"
+          ]
+        }
+      },
+      "compiler_context": "production CPU defaults; no local algsimp override"
+    },
+    {
+      "module": "src/gpuwrf/kernels/dyn_boundary_fp32.py",
+      "native_cuda_source_normalized_byte_equal": true,
+      "source_lines_equal": true,
+      "pallas_factory_calls": 4,
+      "cpu_test_nodes": [
+        "tests/test_portability_kernels.py::test_boundary_clock_literal_numpy",
+        "tests/test_portability_kernels.py::test_boundary_work_literal_numpy",
+        "tests/test_portability_kernels.py::test_boundary_stencils_facade_matches_native_interpreter"
+      ],
+      "cpu_receipt_status": "PASS: native factory observed; named tests retain their numerical assertions",
+      "tolerance": "New REAL comparisons <=64eps*field_scale (8eps coupled/boundary,4eps hydrostatic); exact KISS. Existing component bounds unchanged and defined by listed tests/fixtures.",
+      "observed_factories_by_receipt": {
+        "PORT21": {
+          "boundary_coupled_work_real": [
+            "tests/test_portability_kernels.py::test_boundary_work_literal_numpy[x]",
+            "tests/test_portability_kernels.py::test_boundary_work_literal_numpy[y]"
+          ],
+          "boundary_leaf_interp_real": [
+            "tests/test_portability_kernels.py::test_boundary_clock_literal_numpy[0.0]",
+            "tests/test_portability_kernels.py::test_boundary_clock_literal_numpy[18.0]",
+            "tests/test_portability_kernels.py::test_boundary_clock_literal_numpy[54.0]",
+            "tests/test_portability_kernels.py::test_boundary_clock_literal_numpy[90.0]"
+          ]
+        },
+        "PORT24": {
+          "boundary_dry_relax_real": [
+            "tests/test_portability_kernels.py::test_boundary_stencils_facade_matches_native_interpreter[dry]"
+          ],
+          "boundary_ring_update_real": [
+            "tests/test_portability_kernels.py::test_boundary_stencils_facade_matches_native_interpreter[ring]",
+            "tests/test_portability_kernels.py::test_boundary_stencils_facade_matches_native_interpreter[ring_total]"
+          ]
+        }
+      }
+    },
+    {
+      "module": "src/gpuwrf/kernels/dyn_diff_fp32.py",
+      "native_cuda_source_normalized_byte_equal": true,
+      "source_lines_equal": true,
+      "pallas_factory_calls": 2,
+      "cpu_test_nodes": [
+        "tests/test_portability_kernels.py::test_sixth_order_diffusion",
+        "tests/test_portability_kernels.py::test_horizontal_diffusion_jax_reference"
+      ],
+      "cpu_receipt_status": "PASS: native factory observed; named tests retain their numerical assertions",
+      "tolerance": "New REAL comparisons <=64eps*field_scale (8eps coupled/boundary,4eps hydrostatic); exact KISS. Existing component bounds unchanged and defined by listed tests/fixtures.",
+      "observed_factories_by_receipt": {
+        "PORT21": {
+          "b_diff_horizontal_m": [
+            "tests/test_portability_kernels.py::test_horizontal_diffusion_jax_reference"
+          ],
+          "b_diff_horizontal_u": [
+            "tests/test_portability_kernels.py::test_horizontal_diffusion_jax_reference"
+          ],
+          "b_diff_horizontal_v": [
+            "tests/test_portability_kernels.py::test_horizontal_diffusion_jax_reference"
+          ],
+          "b_diff_horizontal_w": [
+            "tests/test_portability_kernels.py::test_horizontal_diffusion_jax_reference"
+          ],
+          "b_diff_sixth_m": [
+            "tests/test_portability_kernels.py::test_sixth_order_diffusion[False]",
+            "tests/test_portability_kernels.py::test_sixth_order_diffusion[True]"
+          ]
+        }
+      }
+    },
+    {
+      "module": "src/gpuwrf/kernels/dyn_flux_fp32.py",
+      "native_cuda_source_normalized_byte_equal": true,
+      "source_lines_equal": true,
+      "pallas_factory_calls": 3,
+      "cpu_test_nodes": [
+        "tests/test_portability_kernels.py::test_scalar_flux",
+        "tests/test_portability_kernels.py::test_specified_flux_faces",
+        "tests/test_portability_kernels.py::test_species_stacked_flux_reference"
+      ],
+      "cpu_receipt_status": "PASS: native factory observed; named tests retain their numerical assertions",
+      "tolerance": "New REAL comparisons <=64eps*field_scale (8eps coupled/boundary,4eps hydrostatic); exact KISS. Existing component bounds unchanged and defined by listed tests/fixtures.",
+      "observed_factories_by_receipt": {
+        "PORT21": {
+          "b_core_flux_face_fp32": [
+            "tests/test_portability_kernels.py::test_specified_flux_faces[False-1]",
+            "tests/test_portability_kernels.py::test_specified_flux_faces[False-2]",
+            "tests/test_portability_kernels.py::test_specified_flux_faces[True-1]",
+            "tests/test_portability_kernels.py::test_specified_flux_faces[True-2]"
+          ],
+          "b_core_scalar_flux_fp32": [
+            "tests/test_portability_kernels.py::test_scalar_flux"
+          ],
+          "b_core_scalar_flux_fp32_stacked": [
+            "tests/test_portability_kernels.py::test_species_stacked_flux_reference"
+          ]
+        }
+      }
+    },
+    {
+      "module": "src/gpuwrf/kernels/dyn_momflux_fp32.py",
+      "native_cuda_source_normalized_byte_equal": true,
+      "source_lines_equal": true,
+      "pallas_factory_calls": 1,
+      "cpu_test_nodes": [
+        "tests/test_portability_kernels.py::test_momentum_flux"
+      ],
+      "cpu_receipt_status": "PASS: native factory observed; named tests retain their numerical assertions",
+      "tolerance": "New REAL comparisons <=64eps*field_scale (8eps coupled/boundary,4eps hydrostatic); exact KISS. Existing component bounds unchanged and defined by listed tests/fixtures.",
+      "observed_factories_by_receipt": {
+        "PORT21": {
+          "b_diff_advect_u_fp32": [
+            "tests/test_portability_kernels.py::test_momentum_flux[u]"
+          ],
+          "b_diff_advect_v_fp32": [
+            "tests/test_portability_kernels.py::test_momentum_flux[v]"
+          ],
+          "b_diff_advect_w_fp32": [
+            "tests/test_portability_kernels.py::test_momentum_flux[w]"
+          ]
+        }
+      }
+    },
+    {
+      "module": "src/gpuwrf/kernels/dyn_omega_fp32.py",
+      "native_cuda_source_normalized_byte_equal": true,
+      "source_lines_equal": true,
+      "pallas_factory_calls": 1,
+      "cpu_test_nodes": [
+        "tests/test_portability_kernels.py::test_stage_omega"
+      ],
+      "cpu_receipt_status": "PASS: native factory observed; named tests retain their numerical assertions",
+      "tolerance": "New REAL comparisons <=64eps*field_scale (8eps coupled/boundary,4eps hydrostatic); exact KISS. Existing component bounds unchanged and defined by listed tests/fixtures.",
+      "observed_factories_by_receipt": {
+        "PORT21": {
+          "b_diff_stage_omega_fp32": [
+            "tests/test_portability_kernels.py::test_stage_omega"
+          ]
+        }
+      }
+    },
+    {
+      "module": "src/gpuwrf/kernels/dyn_pd_fp32.py",
+      "native_cuda_source_normalized_byte_equal": true,
+      "source_lines_equal": true,
+      "pallas_factory_calls": 4,
+      "cpu_test_nodes": [
+        "tests/test_portability_kernels.py::test_pd_facade_matches_native_interpreter"
+      ],
+      "cpu_receipt_status": "PASS: native factory observed; named tests retain their numerical assertions",
+      "tolerance": "New REAL comparisons <=64eps*field_scale (8eps coupled/boundary,4eps hydrostatic); exact KISS. Existing component bounds unchanged and defined by listed tests/fixtures.",
+      "observed_factories_by_receipt": {
+        "PORT20": {
+          "b_carry_pd_scale_fp32": [
+            "tests/test_portability_kernels.py::test_pd_facade_matches_native_interpreter[0]"
+          ],
+          "b_carry_pd_tend_fp32": [
+            "tests/test_portability_kernels.py::test_pd_facade_matches_native_interpreter[0]"
+          ],
+          "b_core_pd_scale_sl_fp32": [
+            "tests/test_portability_kernels.py::test_pd_facade_matches_native_interpreter[1]"
+          ],
+          "b_core_pd_tend_sl_fp32": [
+            "tests/test_portability_kernels.py::test_pd_facade_matches_native_interpreter[1]"
+          ]
+        }
+      }
+    },
+    {
+      "module": "src/gpuwrf/kernels/dyn_rhsph_fp32.py",
+      "native_cuda_source_normalized_byte_equal": true,
+      "source_lines_equal": true,
+      "pallas_factory_calls": 1,
+      "cpu_test_nodes": [
+        "tests/test_portability_kernels.py::test_rhs_ph_real_reference"
+      ],
+      "cpu_receipt_status": "PASS: native factory observed; named tests retain their numerical assertions",
+      "tolerance": "New REAL comparisons <=64eps*field_scale (8eps coupled/boundary,4eps hydrostatic); exact KISS. Existing component bounds unchanged and defined by listed tests/fixtures.",
+      "observed_factories_by_receipt": {
+        "PORT21": {
+          "b_diff_rhs_ph_fp32": [
+            "tests/test_portability_kernels.py::test_rhs_ph_real_reference[False]",
+            "tests/test_portability_kernels.py::test_rhs_ph_real_reference[True]"
+          ]
+        }
+      }
+    },
+    {
+      "module": "src/gpuwrf/kernels/dyn_ring_relax_fp32.py",
+      "native_cuda_source_normalized_byte_equal": true,
+      "source_lines_equal": true,
+      "pallas_factory_calls": 2,
+      "cpu_test_nodes": [
+        "tests/test_b36_ring_dropin.py"
+      ],
+      "cpu_receipt_status": "PASS: native factory observed; named tests retain their numerical assertions",
+      "tolerance": "New REAL comparisons <=64eps*field_scale (8eps coupled/boundary,4eps hydrostatic); exact KISS. Existing component bounds unchanged and defined by listed tests/fixtures.",
+      "observed_factories_by_receipt": {
+        "PORT22": {
+          "boundary_ring_relax_real": [
+            "tests/test_b36_ring_dropin.py::test_ring_kernel_matches_released_real4_composition[0.0]",
+            "tests/test_b36_ring_dropin.py::test_ring_kernel_matches_released_real4_composition[18.0]",
+            "tests/test_b36_ring_dropin.py::test_ring_kernel_matches_released_real4_composition[27.0]"
+          ]
+        },
+        "PORT24": {
+          "boundary_ring_relax_real": [
+            "tests/test_b36_ring_dropin.py::test_ring_kernel_matches_released_real4_composition[0.0]",
+            "tests/test_b36_ring_dropin.py::test_ring_kernel_matches_released_real4_composition[18.0]",
+            "tests/test_b36_ring_dropin.py::test_ring_kernel_matches_released_real4_composition[27.0]"
+          ]
+        }
+      }
+    },
+    {
+      "module": "src/gpuwrf/kernels/dyn_rk_fp32.py",
+      "native_cuda_source_normalized_byte_equal": true,
+      "source_lines_equal": true,
+      "pallas_factory_calls": 3,
+      "cpu_test_nodes": [
+        "tests/test_portability_kernels.py::test_eos_real_reference",
+        "tests/test_portability_kernels.py::test_coupled_work_numpy_reference"
+      ],
+      "cpu_receipt_status": "PASS: native factory observed; named tests retain their numerical assertions",
+      "tolerance": "New REAL comparisons <=64eps*field_scale (8eps coupled/boundary,4eps hydrostatic); exact KISS. Existing component bounds unchanged and defined by listed tests/fixtures.",
+      "observed_factories_by_receipt": {
+        "PORT20": {
+          "b_diff_coupled_work_theta": [
+            "tests/test_portability_kernels.py::test_acoustic_facade_matches_native_interpreter"
+          ],
+          "b_diff_coupled_work_u": [
+            "tests/test_portability_kernels.py::test_acoustic_facade_matches_native_interpreter"
+          ],
+          "b_diff_coupled_work_v": [
+            "tests/test_portability_kernels.py::test_acoustic_facade_matches_native_interpreter"
+          ],
+          "b_diff_coupled_work_w": [
+            "tests/test_portability_kernels.py::test_acoustic_facade_matches_native_interpreter"
+          ],
+          "b_diff_eos_real": [
+            "tests/test_portability_kernels.py::test_acoustic_facade_matches_native_interpreter"
+          ],
+          "b_diff_stage_masses": [
+            "tests/test_portability_kernels.py::test_acoustic_facade_matches_native_interpreter"
+          ]
+        },
+        "PORT21": {
+          "b_diff_coupled_work_theta": [
+            "tests/test_portability_kernels.py::test_coupled_work_numpy_reference[theta]"
+          ],
+          "b_diff_coupled_work_u": [
+            "tests/test_portability_kernels.py::test_coupled_work_numpy_reference[u]"
+          ],
+          "b_diff_coupled_work_v": [
+            "tests/test_portability_kernels.py::test_coupled_work_numpy_reference[v]"
+          ],
+          "b_diff_coupled_work_w": [
+            "tests/test_portability_kernels.py::test_coupled_work_numpy_reference[w]"
+          ],
+          "b_diff_eos_real": [
+            "tests/test_portability_kernels.py::test_eos_real_reference[1]",
+            "tests/test_portability_kernels.py::test_eos_real_reference[2]",
+            "tests/test_portability_kernels.py::test_large_step_uv_real_reference[False]",
+            "tests/test_portability_kernels.py::test_large_step_uv_real_reference[True]"
+          ]
+        }
+      }
+    },
+    {
+      "module": "src/gpuwrf/kernels/dyn_uvtend_fp32.py",
+      "native_cuda_source_normalized_byte_equal": true,
+      "source_lines_equal": true,
+      "pallas_factory_calls": 1,
+      "cpu_test_nodes": [
+        "tests/test_portability_kernels.py::test_large_step_uv_real_reference"
+      ],
+      "cpu_receipt_status": "PASS: native factory observed; named tests retain their numerical assertions",
+      "tolerance": "New REAL comparisons <=64eps*field_scale (8eps coupled/boundary,4eps hydrostatic); exact KISS. Existing component bounds unchanged and defined by listed tests/fixtures.",
+      "observed_factories_by_receipt": {
+        "PORT21": {
+          "b_diff_large_step_u_fp32": [
+            "tests/test_portability_kernels.py::test_large_step_uv_real_reference[False]",
+            "tests/test_portability_kernels.py::test_large_step_uv_real_reference[True]"
+          ],
+          "b_diff_large_step_v_fp32": [
+            "tests/test_portability_kernels.py::test_large_step_uv_real_reference[False]",
+            "tests/test_portability_kernels.py::test_large_step_uv_real_reference[True]"
+          ]
+        }
+      }
+    },
+    {
+      "module": "src/gpuwrf/kernels/fused_edmf_plume.py",
+      "native_cuda_source_normalized_byte_equal": true,
+      "source_lines_equal": true,
+      "pallas_factory_calls": 1,
+      "cpu_test_nodes": [
+        "tests/v025/test_m2_pbl_batch_fused_edmf.py::test_envelope_gate_fused_vs_reference"
+      ],
+      "cpu_receipt_status": "PASS: native factory observed; named tests retain their numerical assertions",
+      "tolerance": "New REAL comparisons <=64eps*field_scale (8eps coupled/boundary,4eps hydrostatic); exact KISS. Existing component bounds unchanged and defined by listed tests/fixtures.",
+      "observed_factories_by_receipt": {
+        "PORT22": {
+          "unnamed": [
+            "tests/v025/test_m2_pbl_batch_fused_edmf.py::test_envelope_gate_fused_vs_reference[129-44-23-realistic]",
+            "tests/v025/test_m2_pbl_batch_fused_edmf.py::test_envelope_gate_fused_vs_reference[129-44-29-dry]",
+            "tests/v025/test_m2_pbl_batch_fused_edmf.py::test_envelope_gate_fused_vs_reference[15-8-19-realistic]",
+            "tests/v025/test_m2_pbl_batch_fused_edmf.py::test_envelope_gate_fused_vs_reference[6-12-11-dry]",
+            "tests/v025/test_m2_pbl_batch_fused_edmf.py::test_envelope_gate_fused_vs_reference[6-12-13-inactive]",
+            "tests/v025/test_m2_pbl_batch_fused_edmf.py::test_envelope_gate_fused_vs_reference[6-12-17-water]",
+            "tests/v025/test_m2_pbl_batch_fused_edmf.py::test_envelope_gate_fused_vs_reference[6-12-7-realistic]"
+          ]
+        }
+      }
+    },
+    {
+      "module": "src/gpuwrf/kernels/fused_vertical_implicit.py",
+      "native_cuda_source_normalized_byte_equal": true,
+      "source_lines_equal": true,
+      "pallas_factory_calls": 2,
+      "cpu_test_nodes": [
+        "tests/v025/test_m2_fused_vertical_implicit.py::test_calc_coef_w_envelope",
+        "tests/v025/test_m2_fused_vertical_implicit.py::test_advance_w_envelope_small"
+      ],
+      "cpu_receipt_status": "PASS: native factory observed; named tests retain their numerical assertions",
+      "tolerance": "New REAL comparisons <=64eps*field_scale (8eps coupled/boundary,4eps hydrostatic); exact KISS. Existing component bounds unchanged and defined by listed tests/fixtures.",
+      "observed_factories_by_receipt": {
+        "PORT22": {
+          "unnamed": [
+            "tests/v025/test_m2_fused_vertical_implicit.py::test_advance_w_envelope_small[cfg0]",
+            "tests/v025/test_m2_fused_vertical_implicit.py::test_advance_w_envelope_small[cfg1]",
+            "tests/v025/test_m2_fused_vertical_implicit.py::test_advance_w_envelope_small[cfg2]",
+            "tests/v025/test_m2_fused_vertical_implicit.py::test_advance_w_envelope_small[cfg3]",
+            "tests/v025/test_m2_fused_vertical_implicit.py::test_calc_coef_w_envelope[1-6-True]",
+            "tests/v025/test_m2_fused_vertical_implicit.py::test_calc_coef_w_envelope[2-7-False]",
+            "tests/v025/test_m2_fused_vertical_implicit.py::test_calc_coef_w_envelope[44-5-True]",
+            "tests/v025/test_m2_fused_vertical_implicit.py::test_calc_coef_w_envelope[8-3-True]",
+            "tests/v025/test_m2_fused_vertical_implicit.py::test_calc_coef_w_envelope[8-4-False]"
+          ]
+        }
+      }
+    },
+    {
+      "module": "src/gpuwrf/kernels/phys_gwdo_column.py",
+      "native_cuda_source_normalized_byte_equal": true,
+      "source_lines_equal": true,
+      "pallas_factory_calls": 1,
+      "cpu_test_nodes": [
+        "tests/v025/b_column/test_gwdo_native.py::test_native_kernel_matches_pristine_wrf[day]"
+      ],
+      "cpu_receipt_status": "PASS: native factory observed; named tests retain their numerical assertions",
+      "tolerance": "New REAL comparisons <=64eps*field_scale (8eps coupled/boundary,4eps hydrostatic); exact KISS. Existing component bounds unchanged and defined by listed tests/fixtures.",
+      "observed_factories_by_receipt": {
+        "PORT22": {
+          "gwdo_column_fp32": [
+            "tests/v025/b_column/test_gwdo_native.py::test_native_kernel_matches_pristine_wrf[day]"
+          ]
+        }
+      }
+    },
+    {
+      "module": "src/gpuwrf/kernels/phys_hydrostatic_real.py",
+      "native_cuda_source_normalized_byte_equal": true,
+      "source_lines_equal": true,
+      "pallas_factory_calls": 1,
+      "cpu_test_nodes": [
+        "tests/test_portability.py::test_hydrostatic_kernel_matches_independent_numpy_recurrence"
+      ],
+      "cpu_receipt_status": "PASS: native factory observed; named tests retain their numerical assertions",
+      "tolerance": "New REAL comparisons <=64eps*field_scale (8eps coupled/boundary,4eps hydrostatic); exact KISS. Existing component bounds unchanged and defined by listed tests/fixtures.",
+      "observed_factories_by_receipt": {
+        "PORT21": {
+          "phy_prep_hydrostatic_real": [
+            "tests/test_portability.py::test_hydrostatic_kernel_matches_independent_numpy_recurrence"
+          ]
+        }
+      }
+    },
+    {
+      "module": "src/gpuwrf/kernels/phys_kf_column.py",
+      "native_cuda_source_normalized_byte_equal": true,
+      "source_lines_equal": true,
+      "pallas_factory_calls": 1,
+      "cpu_test_nodes": [
+        "tests/v025/b_phys/test_kf_real_carry.py::test_native_step_kf_column_is_real_and_passes_frozen_wrf_oracle"
+      ],
+      "cpu_receipt_status": "PASS: native factory observed; named tests retain their numerical assertions",
+      "tolerance": "New REAL comparisons <=64eps*field_scale (8eps coupled/boundary,4eps hydrostatic); exact KISS. Existing component bounds unchanged and defined by listed tests/fixtures.",
+      "observed_factories_by_receipt": {
+        "PORT22": {
+          "kf_column_fp32": [
+            "tests/v025/b_phys/test_kf_real_carry.py::test_native_step_kf_column_is_real_and_passes_frozen_wrf_oracle"
+          ]
+        }
+      }
+    },
+    {
+      "module": "src/gpuwrf/kernels/phys_mynn_boulac.py",
+      "native_cuda_source_normalized_byte_equal": true,
+      "source_lines_equal": true,
+      "pallas_factory_calls": 1,
+      "cpu_test_nodes": [
+        "tests/test_portability_kernels.py::test_boulac_matches_jax_recurrence"
+      ],
+      "cpu_receipt_status": "PASS: native factory observed; named tests retain their numerical assertions",
+      "tolerance": "New REAL comparisons <=64eps*field_scale (8eps coupled/boundary,4eps hydrostatic); exact KISS. Existing component bounds unchanged and defined by listed tests/fixtures.",
+      "observed_factories_by_receipt": {
+        "PORT21": {
+          "unnamed": [
+            "tests/test_portability_kernels.py::test_boulac_matches_jax_recurrence[False]"
+          ]
+        }
+      }
+    },
+    {
+      "module": "src/gpuwrf/kernels/phys_mynn_cloudmix.py",
+      "native_cuda_source_normalized_byte_equal": true,
+      "source_lines_equal": true,
+      "pallas_factory_calls": 1,
+      "cpu_test_nodes": [
+        "tests/v025/b_phys/test_mynn_cloudmix.py::test_source_surface_mass_floor_activates_conservative_repair"
+      ],
+      "cpu_receipt_status": "PASS: native factory observed; named tests retain their numerical assertions",
+      "tolerance": "New REAL comparisons <=64eps*field_scale (8eps coupled/boundary,4eps hydrostatic); exact KISS. Existing component bounds unchanged and defined by listed tests/fixtures.",
+      "observed_factories_by_receipt": {
+        "PORT22": {
+          "unnamed": [
+            "tests/v025/b_phys/test_mynn_cloudmix.py::test_source_surface_mass_floor_activates_conservative_repair"
+          ]
+        }
+      }
+    },
+    {
+      "module": "src/gpuwrf/kernels/phys_mynn_plume.py",
+      "native_cuda_source_normalized_byte_equal": true,
+      "source_lines_equal": true,
+      "pallas_factory_calls": 2,
+      "cpu_test_nodes": [
+        "tests/v025/b_phys/test_mynn_native_plume.py",
+        "tests/v025/b_phys/test_mynn_plume_sums.py::test_plume_sums_match_plume_arrays"
+      ],
+      "cpu_receipt_status": "PASS: native factory observed; named tests retain their numerical assertions",
+      "tolerance": "New REAL comparisons <=64eps*field_scale (8eps coupled/boundary,4eps hydrostatic); exact KISS. Existing component bounds unchanged and defined by listed tests/fixtures.",
+      "observed_factories_by_receipt": {
+        "PORT22": {
+          "unnamed": [
+            "tests/v025/b_phys/test_mynn_native_plume.py::test_active_native_plume_matches_wrf",
+            "tests/v025/b_phys/test_mynn_native_plume.py::test_limiter_active_native_plume_matches_pristine_wrf",
+            "tests/v025/b_phys/test_mynn_native_plume.py::test_native_hook_uses_existing_coupler_seam",
+            "tests/v025/b_phys/test_mynn_plume_sums.py::test_plume_sums_match_plume_arrays[0]",
+            "tests/v025/b_phys/test_mynn_plume_sums.py::test_plume_sums_match_plume_arrays[1]"
+          ]
+        }
+      }
+    },
+    {
+      "module": "src/gpuwrf/kernels/phys_mynn_tridiag.py",
+      "native_cuda_source_normalized_byte_equal": true,
+      "source_lines_equal": true,
+      "pallas_factory_calls": 1,
+      "cpu_test_nodes": [
+        "tests/v025/b_phys/test_mynn_tridiag_real.py::test_kernel_matches_literal_wrf_tridiag2"
+      ],
+      "cpu_receipt_status": "PASS: native factory observed; named tests retain their numerical assertions",
+      "tolerance": "New REAL comparisons <=64eps*field_scale (8eps coupled/boundary,4eps hydrostatic); exact KISS. Existing component bounds unchanged and defined by listed tests/fixtures.",
+      "observed_factories_by_receipt": {
+        "PORT22": {
+          "mynn_tridiag2_real": [
+            "tests/v025/b_phys/test_mynn_tridiag_real.py::test_kernel_matches_literal_wrf_tridiag2[0]"
+          ]
+        }
+      }
+    },
+    {
+      "module": "src/gpuwrf/kernels/phys_noahmp_columns.py",
+      "native_cuda_source_normalized_byte_equal": true,
+      "source_lines_equal": true,
+      "pallas_factory_calls": 1,
+      "cpu_test_nodes": [
+        "tests/v025/b_core/test_noahmp_columns.py::test_soilwater_lists_and_kernel_bitwise[1]",
+        "tests/v025/b_core/test_noahmp_columns.py::test_snowwater_column_random_lists_bitwise[1]",
+        "tests/v025/b_core/test_noahmp_columns.py::test_canopy_kernel_matches_xla_on_energy_savepoints"
+      ],
+      "cpu_receipt_status": "PASS: native factory observed; named tests retain their numerical assertions",
+      "tolerance": "New REAL comparisons <=64eps*field_scale (8eps coupled/boundary,4eps hydrostatic); exact KISS. Existing component bounds unchanged and defined by listed tests/fixtures.",
+      "observed_factories_by_receipt": {
+        "PORT22": {
+          "b_core_noah_canopy_flux": [
+            "tests/v025/b_core/test_noahmp_columns.py::test_canopy_kernel_matches_xla_on_energy_savepoints"
+          ],
+          "b_core_noah_snowwater": [
+            "tests/v025/b_core/test_noahmp_columns.py::test_snowwater_column_random_lists_bitwise[1]"
+          ],
+          "b_core_noah_soilwater": [
+            "tests/v025/b_core/test_noahmp_columns.py::test_soilwater_lists_and_kernel_bitwise[1]"
+          ]
+        }
+      }
+    },
+    {
+      "module": "src/gpuwrf/kernels/phys_noahmp_radiation.py",
+      "native_cuda_source_normalized_byte_equal": true,
+      "source_lines_equal": true,
+      "pallas_factory_calls": 1,
+      "cpu_test_nodes": [
+        "tests/test_portability_kernels.py::test_noahmp_radiation_matches_separate_jax"
+      ],
+      "cpu_receipt_status": "PASS: native factory observed; named tests retain their numerical assertions",
+      "tolerance": "New REAL comparisons <=64eps*field_scale (8eps coupled/boundary,4eps hydrostatic); exact KISS. Existing component bounds unchanged and defined by listed tests/fixtures.",
+      "observed_factories_by_receipt": {
+        "PORT21": {
+          "b_noahmp_radiation_real": [
+            "tests/test_portability_kernels.py::test_noahmp_radiation_matches_separate_jax[0]",
+            "tests/test_portability_kernels.py::test_noahmp_radiation_matches_separate_jax[3]",
+            "tests/test_portability_kernels.py::test_noahmp_radiation_matches_separate_jax[7]"
+          ]
+        }
+      }
+    },
+    {
+      "module": "src/gpuwrf/kernels/phys_thompson_full.py",
+      "native_cuda_source_normalized_byte_equal": true,
+      "source_lines_equal": true,
+      "pallas_factory_calls": 1,
+      "cpu_test_nodes": [
+        "tests/v025/b_thompson/test_mixed_phase_wrf_oracle.py::test_mixed_phase_matches_pristine_wrf"
+      ],
+      "cpu_receipt_status": "PASS: native factory observed; named tests retain their numerical assertions",
+      "tolerance": "New REAL comparisons <=64eps*field_scale (8eps coupled/boundary,4eps hydrostatic); exact KISS. Existing component bounds unchanged and defined by listed tests/fixtures.",
+      "observed_factories_by_receipt": {
+        "PORT22": {
+          "thompson_full_column": [
+            "tests/v025/b_thompson/test_mixed_phase_wrf_oracle.py::test_mixed_phase_matches_pristine_wrf"
+          ]
+        }
+      }
+    },
+    {
+      "module": "src/gpuwrf/kernels/phys_thompson_prep.py",
+      "native_cuda_source_normalized_byte_equal": true,
+      "source_lines_equal": true,
+      "pallas_factory_calls": 1,
+      "cpu_test_nodes": [
+        "tests/test_portability_kernels.py::test_thompson_prep_facade_matches_native_interpreter"
+      ],
+      "cpu_receipt_status": "PASS: native factory observed; named tests retain their numerical assertions",
+      "tolerance": "New REAL comparisons <=64eps*field_scale (8eps coupled/boundary,4eps hydrostatic); exact KISS. Existing component bounds unchanged and defined by listed tests/fixtures.",
+      "observed_factories_by_receipt": {
+        "PORT20": {
+          "thompson_sediment_prep_finish": [
+            "tests/test_portability_kernels.py::test_thompson_prep_facade_matches_native_interpreter"
+          ]
+        }
+      }
+    },
+    {
+      "module": "src/gpuwrf/kernels/phys_thompson_sedimentation.py",
+      "native_cuda_source_normalized_byte_equal": true,
+      "source_lines_equal": true,
+      "pallas_factory_calls": 2,
+      "cpu_test_nodes": [
+        "tests/v025/b_thompson/test_column_sedimentation.py::test_column_layout_and_flux"
+      ],
+      "cpu_receipt_status": "PASS: native factory observed; named tests retain their numerical assertions",
+      "tolerance": "New REAL comparisons <=64eps*field_scale (8eps coupled/boundary,4eps hydrostatic); exact KISS. Existing component bounds unchanged and defined by listed tests/fixtures.",
+      "observed_factories_by_receipt": {
+        "PORT22": {
+          "thompson_fill_down": [
+            "tests/v025/b_thompson/test_column_sedimentation.py::test_column_layout_and_flux[1-float32]",
+            "tests/v025/b_thompson/test_column_sedimentation.py::test_column_layout_and_flux[1-float64]",
+            "tests/v025/b_thompson/test_column_sedimentation.py::test_column_layout_and_flux[44-float32]",
+            "tests/v025/b_thompson/test_column_sedimentation.py::test_column_layout_and_flux[44-float64]",
+            "tests/v025/b_thompson/test_column_sedimentation.py::test_column_layout_and_flux[64-float32]",
+            "tests/v025/b_thompson/test_column_sedimentation.py::test_column_layout_and_flux[64-float64]"
+          ],
+          "thompson_sediment_column": [
+            "tests/v025/b_thompson/test_column_sedimentation.py::test_column_layout_and_flux[1-float32]",
+            "tests/v025/b_thompson/test_column_sedimentation.py::test_column_layout_and_flux[1-float64]",
+            "tests/v025/b_thompson/test_column_sedimentation.py::test_column_layout_and_flux[44-float32]",
+            "tests/v025/b_thompson/test_column_sedimentation.py::test_column_layout_and_flux[44-float64]",
+            "tests/v025/b_thompson/test_column_sedimentation.py::test_column_layout_and_flux[64-float32]",
+            "tests/v025/b_thompson/test_column_sedimentation.py::test_column_layout_and_flux[64-float64]"
+          ]
+        }
+      }
+    },
+    {
+      "module": "src/gpuwrf/kernels/rad_lw_transfer.py",
+      "native_cuda_source_normalized_byte_equal": true,
+      "source_lines_equal": true,
+      "pallas_factory_calls": 3,
+      "cpu_test_nodes": [
+        "tests/v025/b_rad/test_lw_transfer.py::test_fused_lw_transfer_wrf_fluxes",
+        "tests/v025/b_phys/test_rrtmg_lw_band_sums.py::test_band_sums_match_per_gpoint_kernel"
+      ],
+      "cpu_receipt_status": "PASS: native factory observed; named tests retain their numerical assertions",
+      "tolerance": "New REAL comparisons <=64eps*field_scale (8eps coupled/boundary,4eps hydrostatic); exact KISS. Existing component bounds unchanged and defined by listed tests/fixtures.",
+      "observed_factories_by_receipt": {
+        "PORT22": {
+          "rrtmg_lw_band_sums": [
+            "tests/v025/b_phys/test_rrtmg_lw_band_sums.py::test_band_sums_match_per_gpoint_kernel"
+          ],
+          "unnamed": [
+            "tests/v025/b_phys/test_rrtmg_lw_band_sums.py::test_band_sums_match_per_gpoint_kernel",
+            "tests/v025/b_rad/test_lw_transfer.py::test_fused_lw_transfer_wrf_fluxes"
+          ]
+        }
+      }
+    },
+    {
+      "module": "src/gpuwrf/kernels/rad_mcica.py",
+      "native_cuda_source_normalized_byte_equal": true,
+      "source_lines_equal": true,
+      "pallas_factory_calls": 1,
+      "cpu_test_nodes": [
+        "tests/test_portability_kernels.py::test_mcica_lane_tail_matches_jump_stream"
+      ],
+      "cpu_receipt_status": "PASS: native factory observed; named tests retain their numerical assertions",
+      "tolerance": "New REAL comparisons <=64eps*field_scale (8eps coupled/boundary,4eps hydrostatic); exact KISS. Existing component bounds unchanged and defined by listed tests/fixtures.",
+      "observed_factories_by_receipt": {
+        "PORT21": {
+          "mcica_kiss_lanes": [
+            "tests/test_portability_kernels.py::test_mcica_lane_tail_matches_jump_stream"
+          ]
+        }
+      }
+    },
+    {
+      "module": "src/gpuwrf/kernels/rad_sw_band_sums.py",
+      "native_cuda_source_normalized_byte_equal": true,
+      "source_lines_equal": true,
+      "pallas_factory_calls": 1,
+      "cpu_test_nodes": [
+        "tests/v025/lever_phys/test_rrtmg_sw_band_sums.py::test_sw_band_sums_match_quadrature_path",
+        "tests/v025/lever_phys/test_rrtmg_sw_band_sums.py::test_sw_allband_launch_equals_band_scan"
+      ],
+      "cpu_receipt_status": "PASS: native factory observed; named tests retain their numerical assertions",
+      "tolerance": "New REAL comparisons <=64eps*field_scale (8eps coupled/boundary,4eps hydrostatic); exact KISS. Existing component bounds unchanged and defined by listed tests/fixtures.",
+      "observed_factories_by_receipt": {
+        "PORT22": {
+          "rrtmg_sw_allband_sums": [
+            "tests/v025/lever_phys/test_rrtmg_sw_band_sums.py::test_sw_allband_launch_equals_band_scan",
+            "tests/v025/lever_phys/test_rrtmg_sw_band_sums.py::test_sw_band_sums_match_quadrature_path[2]"
+          ],
+          "rrtmg_sw_band_sums": [
+            "tests/v025/lever_phys/test_rrtmg_sw_band_sums.py::test_sw_allband_launch_equals_band_scan",
+            "tests/v025/lever_phys/test_rrtmg_sw_band_sums.py::test_sw_band_sums_match_quadrature_path[1]",
+            "tests/v025/lever_phys/test_rrtmg_sw_band_sums.py::test_sw_band_sums_match_quadrature_path[3]"
+          ]
+        }
+      }
+    },
+    {
+      "module": "src/gpuwrf/kernels/rad_sw_quadrature.py",
+      "native_cuda_source_normalized_byte_equal": true,
+      "source_lines_equal": true,
+      "pallas_factory_calls": 1,
+      "cpu_test_nodes": [
+        "tests/v025/b_rad/test_sw_quadrature.py::test_fused_sw_full_wrf_oracle"
+      ],
+      "cpu_receipt_status": "PASS: native factory observed; named tests retain their numerical assertions",
+      "tolerance": "New REAL comparisons <=64eps*field_scale (8eps coupled/boundary,4eps hydrostatic); exact KISS. Existing component bounds unchanged and defined by listed tests/fixtures.",
+      "observed_factories_by_receipt": {
+        "PORT22": {
+          "unnamed": [
+            "tests/v025/b_rad/test_sw_quadrature.py::test_fused_sw_full_wrf_oracle",
+            "tests/v025/lever_phys/test_rrtmg_sw_band_sums.py::test_sw_band_sums_match_quadrature_path[1]",
+            "tests/v025/lever_phys/test_rrtmg_sw_band_sums.py::test_sw_band_sums_match_quadrature_path[2]",
+            "tests/v025/lever_phys/test_rrtmg_sw_band_sums.py::test_sw_band_sums_match_quadrature_path[3]"
+          ]
+        }
+      }
+    },
+    {
+      "module": "src/gpuwrf/nesting/sint_kernel.py",
+      "native_cuda_source_normalized_byte_equal": true,
+      "source_lines_equal": true,
+      "pallas_factory_calls": 1,
+      "cpu_test_nodes": [
+        "tests/test_host_sync_sint_kernel.py::test_sint_sides_matches_full_grid_then_sides",
+        "tests/test_host_sync_sint_kernel.py::test_sint_sides_2d_matches_field_sides_2d"
+      ],
+      "cpu_receipt_status": "PASS: native factory observed; named tests retain their numerical assertions",
+      "tolerance": "New REAL comparisons <=64eps*field_scale (8eps coupled/boundary,4eps hydrostatic); exact KISS. Existing component bounds unchanged and defined by listed tests/fixtures.",
+      "observed_factories_by_receipt": {
+        "PORT22": {
+          "nest_sint_sides": [
+            "tests/test_host_sync_sint_kernel.py::test_sint_sides_2d_matches_field_sides_2d",
+            "tests/test_host_sync_sint_kernel.py::test_sint_sides_matches_full_grid_then_sides[2-float32]",
+            "tests/test_host_sync_sint_kernel.py::test_sint_sides_matches_full_grid_then_sides[2-float64]",
+            "tests/test_host_sync_sint_kernel.py::test_sint_sides_matches_full_grid_then_sides[3-float32]",
+            "tests/test_host_sync_sint_kernel.py::test_sint_sides_matches_full_grid_then_sides[3-float64]"
+          ]
+        }
+      }
+    }
+  ],
+  "source_receipt": "receipts/PORT24_source_identity.json",
+  "unique_passed_tests": 120,
+  "qualified_modules": 31,
+  "final_base": "489a91483",
+  "composed_source": "0336d487e",
+  "final_base_and_candidate_kernel_bytes_verified": 31,
+  "composition_proof": "receipts/PORT31_ownership_composition.json"
+}

@@ -143,7 +143,7 @@ def _acm2_case(case_id: int) -> dict:
         g=jnp.asarray(G_DEFAULT), rd=jnp.asarray(R_D_DEFAULT),
         cpd=jnp.asarray(CP_DEFAULT), ep1=jnp.asarray(EP1_DEFAULT),
     )
-    (u_t, v_t, th_t, qv_t, exch_h, exch_m, pblh, kpbl, regime, noconv, rmol, fh, fm) = out_t
+    (u_t, v_t, th_t, qv_t, exch_h, exch_m, pblh, kpbl, regime, noconv, rmol, fh, fm, *_) = out_t
     fields = {
         "RUBLTEN": (tend_h["u"], u_t), "RVBLTEN": (tend_h["v"], v_t),
         "RTHBLTEN": (tend_h["theta"], th_t), "RQVBLTEN": (tend_h["qv"], qv_t),

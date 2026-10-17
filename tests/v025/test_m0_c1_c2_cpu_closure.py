@@ -11,6 +11,7 @@ import types
 from pathlib import Path
 
 import pytest
+from _historical_artifacts import require_historical
 
 
 REPO = Path(__file__).resolve().parents[2]
@@ -61,6 +62,8 @@ def test_terminal_status_is_reserved_for_combined_c1_c2_proof():
 
 
 def test_r8_residual_is_bound_without_becoming_a_c1_pass():
+    require_historical(residual_builder.R8_STDERR, residual_builder.R8_STDOUT,
+                       residual_builder.R8_TIME, residual_builder.R8_RSS)
     residual = residual_builder.collect_r8_residual()
     assert (
         residual["status"]
@@ -463,6 +466,7 @@ def test_nonzero_child_exit_sweeps_sigterm_trapping_descendant(
 ):
     import wrf_source_authority as wsa
 
+    require_historical("<DATA_ROOT>/wrf_gpu2/v025/m0/cpu_arms/fastbind_r1/namelist.input")
     authority = wsa.build_source_authority(
         namelist_path=Path(
             "<DATA_ROOT>/wrf_gpu2/v025/m0/cpu_arms/fastbind_r1/namelist.input"

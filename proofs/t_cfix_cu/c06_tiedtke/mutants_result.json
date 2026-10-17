@@ -1,0 +1,58 @@
+[
+ {
+  "mutant": "ROOT1 JAX: no ldcum reset before the ascent (cuasc_new 3.1)",
+  "file": "src/gpuwrf/physics/cumulus_tiedtke_jax.py",
+  "test": "tests/test_t_cfix_cu_tiedtke_c06_rows.py::test_tile_rows_match_wrf_row_calls_on_real_c06",
+  "rc": 1,
+  "killed": true,
+  "tail": "1 failed, 5 warnings in 8.24s"
+ },
+ {
+  "mutant": "ROOT1 numpy: no ldcum reset before the ascent",
+  "file": "src/gpuwrf/physics/cumulus_tiedtke.py",
+  "test": "tests/test_t_cfix_cu_tiedtke_c06_rows.py::test_numpy_reference_matches_wrf_single_column_calls",
+  "rc": 1,
+  "killed": true,
+  "tail": "1 failed in 1.03s"
+ },
+ {
+  "mutant": "ROOT2: icum early return per column instead of per tile row",
+  "file": "src/gpuwrf/coupling/scan_adapters.py",
+  "test": "tests/test_t_cfix_cu_tiedtke_c06_rows.py::test_tile_rows_match_wrf_row_calls_on_real_c06",
+  "rc": 1,
+  "killed": true,
+  "tail": "1 failed, 5 warnings in 8.08s"
+ },
+ {
+  "mutant": "ROOT2: tile-row reduction over the wrong axis",
+  "file": "src/gpuwrf/coupling/scan_adapters.py",
+  "test": "tests/test_t_cfix_cu_tiedtke_c06_rows.py::test_tile_rows_match_wrf_row_calls_on_real_c06",
+  "rc": 1,
+  "killed": true,
+  "tail": "1 failed, 5 warnings in 8.32s"
+ },
+ {
+  "mutant": "ROOT2: row mask dropped (no early return at all)",
+  "file": "src/gpuwrf/coupling/scan_adapters.py",
+  "test": "tests/test_t_cfix_cu_tiedtke_c06_rows.py::test_tile_rows_match_wrf_row_calls_on_real_c06",
+  "rc": 1,
+  "killed": true,
+  "tail": "1 failed, 5 warnings in 8.06s"
+ },
+ {
+  "mutant": "ROOT3 JAX: ihmin search keyed on the initial ihmin (never stops)",
+  "file": "src/gpuwrf/physics/cumulus_tiedtke_jax.py",
+  "test": "tests/test_t_cfix_cu_tiedtke_c06_rows.py::test_tile_rows_match_wrf_row_calls_on_real_c06",
+  "rc": 1,
+  "killed": true,
+  "tail": "1 failed, 5 warnings in 8.09s"
+ },
+ {
+  "mutant": "wiring: adapter calls the column kernel directly",
+  "file": "src/gpuwrf/coupling/scan_adapters.py",
+  "test": "tests/test_t_cfix_cu_tiedtke_c06_rows.py::test_adapter_runs_the_tile_row_kernel",
+  "rc": 1,
+  "killed": true,
+  "tail": "1 failed in 1.54s"
+ }
+]

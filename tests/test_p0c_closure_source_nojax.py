@@ -230,7 +230,7 @@ def test_l1r1_m11_fixture_materialises_the_mp28_leaves():
     builder = _fn_src(PC, "_thompson_aero_column_from_state")
     assert "_to_columns(state.nwfa)" in builder and "_to_columns(state.nifa)" in builder
     adapter = _fn_src(PC, "thompson_aero_adapter")
-    assert "state.ensure_conditional_leaves(mp_physics=28)" in adapter        # what production does before the builder
+    assert "state.ensure_conditional_leaves(mp_physics=28, use_mp_re=int(state.re_cloud is not None))" in adapter
     fix = _fn_src(TESTS / "test_p0c_closure_jax.py", "_state_with_faces")
     assert ".ensure_conditional_leaves(mp_physics=28)" in fix
     assert "nwfa=jnp.full_like(state.qc, 1000000000.0)" in fix and "nifa=jnp.full_like(state.qc, 1000000.0)" in fix

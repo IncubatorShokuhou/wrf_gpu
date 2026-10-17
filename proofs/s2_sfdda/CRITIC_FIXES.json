@@ -1,0 +1,60 @@
+{
+  "reviewer": "rv-s2-sfdda",
+  "rejected_commit": "546623868",
+  "fix_model_commit": "bc95506b9",
+  "final_coupled_commit": "ca9e3a78e9b3a65b88414224430bb2f21a0cdaa4",
+  "items": {
+    "1_REAL32_overflow": {
+      "status": "CLOSED",
+      "change": "Validate narrowed REAL32 array before jnp.asarray; preserve original mask/shape/finiteness validation",
+      "evidence": "SF35-host.xml:all10OLD/NEW fields x2finite overflow signs reject; no timestep change"
+    },
+    "2_mixed_rinblw": {
+      "status": "CLOSED",
+      "change": "Shared effective_surface_radius used by admission+loader; ANYmode1 normalizes -1 childradius from d01",
+      "reference": "pristine module_check_a_mundo.F:1679\u20131692",
+      "evidence": "SF35-host.xml:modes(1,2),(2,1),(2,1,2) load/admit100,-1; allmode2negative controls refused"
+    },
+    "3_final_coupled": {
+      "status": "CLOSED",
+      "change": "Ran final immutable source through production compiled CPU wrapper for modes1/2,2steps each +actualrestart",
+      "evidence": [
+        "coupled_mode1_final.json",
+        "coupled_mode2_final.json"
+      ],
+      "fullcarry_finite": true,
+      "all_five_frozen_bounded_fields_pass": true,
+      "P_PH": "finite report-only; no claimed numerical bounds",
+      "guard_counters": 66,
+      "guard_events": 0,
+      "byte_exact_restart_leaves_each": 208,
+      "compiled_restart_output_sha256": {
+        "1": "1c3ba1e5e331caee3cf6451aff17f6b9862af15720da18219e0a8d0f8098312d",
+        "2": "af5338b372cb39450a0a5d63b9d5f5043277c964c251600ef93b218964701422"
+      },
+      "old_source_AST_proof": "not used to carry forward coupled gate"
+    },
+    "4_receipt_scope": {
+      "status": "CLOSED",
+      "change": "Corrected prior3native receipts, qualification,README, notes and appendedMAIN ledger correction",
+      "evidence": "RECEIPT_CORRECTION.json",
+      "raw_prior_measurements": "all unchanged",
+      "actual_scope": "22x3=66 zero counters;5boundedT/U/V/W/QVAPOR;P/PHcritical_report_only"
+    }
+  },
+  "required_new_tests": {
+    "passed": 99,
+    "seconds": 7.51,
+    "source": "bc95506b9",
+    "artifact": "<USER_HOME>/wrf_gpu2_lanes/s2-sfdda/SF35-host.xml"
+  },
+  "efficiency": {
+    "model_delta": "Host loader validation only; no timestep arithmetic, launch, traffic or persistent carry change",
+    "host_work": "One extra np.isfinite pass/boolean temporary per field; radius scan only during namelist admission/loading",
+    "CPU_component_cost": "reuse source-identical accepted component_cost.json",
+    "final_cold_smoke_peak_RSS_KiB": 12954148,
+    "GPU_launch_VRAM_E41": "UNKNOWN/pending; no GPU run"
+  },
+  "original_cpu_reference_caveat": "mode1 wrote all3frames and SUCCESS but cold-table launcher expired and orphan MPI finalization errored; numerical outputs complete, no clean-process pass claimed. Modes0/2 exited cleanly.",
+  "created_utc": "2026-10-14T03:48:26.390208+00:00"
+}

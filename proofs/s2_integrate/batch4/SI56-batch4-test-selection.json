@@ -1,0 +1,467 @@
+{
+  "source_commit": "8171990c4268d6bb5aa63f80280321e0547fc429",
+  "command": [
+    "<USER_HOME>/miniconda3/bin/python",
+    "-m",
+    "pytest",
+    "tests/contracts/",
+    "tests/test_v018_mp_family_fail_closed.py",
+    "tests/test_v034_implemented_notes.py",
+    "tests/test_scheme_catalog_fail_closed.py",
+    "tests/test_namelist_check.py",
+    "tests/test_namelist_binding.py",
+    "tests/test_m7_restart_checkpoint_roundtrip.py",
+    "tests/test_netcdf_process_lock.py",
+    "tests/test_v0110_wrfrst_netcdf.py",
+    "tests/test_cli.py",
+    "tests/test_aot_baked_constants.py",
+    "tests/test_aot_cheap_key.py",
+    "tests/test_v060_physics_dispatch.py",
+    "tests/test_noahmp_mmf.py",
+    "tests/test_s2_glacier_wiring.py",
+    "tests/test_s2_glacier_restart.py",
+    "tests/v040/mpmisc/goddard4ice/test_oracle.py",
+    "tests/v040/mpmisc/goddard4ice/test_phys_tot.py",
+    "tests/v040/mpmisc/test_aot_tables.py",
+    "tests/v040/mpmisc/test_callers.py",
+    "tests/v040/mpmisc/test_ferrier.py",
+    "tests/v040/mpmisc/test_ferrier_carry.py",
+    "tests/v040/mpmisc/test_goddard_carry.py",
+    "tests/v040/mpmisc/test_restart_binding.py",
+    "tests/v040/mpmisc/test_thompson38_carry.py",
+    "tests/v040/mpmisc/test_thompson38_cloud_kind.py",
+    "tests/v040/mpmisc/test_thompson38_operators.py",
+    "tests/v040/mpmisc/test_thompson38_source_baselines.py",
+    "tests/v040/radiation/test_s2_flg_column.py",
+    "tests/v040/radiation/test_s2_flg_contraction_gate.py",
+    "tests/v040/radiation/test_s2_flg_gfdl_aot_keys.py",
+    "tests/v040/radiation/test_s2_flg_gfdl_operational.py",
+    "tests/v040/radiation/test_s2_flg_gfdl_sgs_caller.py",
+    "tests/v040/radiation/test_s2_flg_primitives.py",
+    "tests/v040/radiation/test_s2_gfdl_adapter.py",
+    "tests/v040/radiation/test_s2_gfdl_capture_state.py",
+    "tests/v040/radiation/test_s2_gfdl_cloud.py",
+    "tests/v040/radiation/test_s2_gfdl_loop_control.py",
+    "tests/v040/radiation/test_s2_literal_control.py",
+    "tests/test_u2_advanced_water.py",
+    "tests/test_u2_aot_keys.py",
+    "tests/test_u2_canopy_options.py",
+    "tests/test_u2_carbon_options.py",
+    "tests/test_u2_carbon_restart.py",
+    "tests/test_u2_checkpoint_readers.py",
+    "tests/test_u2_crop_options.py",
+    "tests/test_u2_crop_phenology.py",
+    "tests/test_u2_crop_wiring.py",
+    "tests/test_u2_equilibrium_options.py",
+    "tests/test_u2_fixture_archive.py",
+    "tests/test_u2_groundwater_options.py",
+    "tests/test_u2_groundwater_restart.py",
+    "tests/test_u2_hydrology_wiring.py",
+    "tests/test_u2_input_lai_init.py",
+    "tests/test_u2_irrigation.py",
+    "tests/test_u2_land_options.py",
+    "tests/test_u2_land_restart_options.py",
+    "tests/test_u2_native_profiles.py",
+    "tests/test_u2_option_tiles.py",
+    "tests/test_u2_phenology_options.py",
+    "tests/test_u2_prognostic_options.py",
+    "tests/test_u2_radiation_options.py",
+    "tests/test_u2_runoff_options.py",
+    "tests/test_u2_soil_options.py",
+    "tests/test_u2_sst_skin.py",
+    "tests/test_u2_surface_caps.py",
+    "tests/test_u2_surface_options.py",
+    "tests/test_u2_thermal_options.py",
+    "tests/test_u2_water_options.py",
+    "-q",
+    "--basetemp",
+    "<USER_HOME>/wrf_gpu2_lanes/s2-integrate/pytest",
+    "--junitxml",
+    "<USER_HOME>/wrf_gpu2_lanes/s2-integrate/SI56-batch4-composed.xml",
+    "--deselect=tests/v040/mpmisc/goddard4ice/test_oracle.py::test_literal_all_original_wrf_columns_byte",
+    "--deselect=tests/v040/mpmisc/goddard4ice/test_oracle.py::test_genuine_hail_sedimentation_mutant_is_rejected",
+    "--deselect=tests/v040/mpmisc/goddard4ice/test_oracle.py::test_native_complete_column_active_hail",
+    "--deselect=tests/v040/mpmisc/goddard4ice/test_oracle.py::test_default_compiled_all_original_wrf_columns",
+    "--deselect=tests/v040/mpmisc/goddard4ice/test_phys_tot.py::test_original_phys_tot_literal_association_byte",
+    "--deselect=tests/v040/mpmisc/test_ferrier.py::test_literal_real_original_wrf_byte",
+    "--deselect=tests/v040/mpmisc/test_ferrier.py::test_native_cpu_compiler_disclosed_deviations",
+    "--deselect=tests/v040/mpmisc/test_ferrier.py::test_original_wrf_byte_gate_rejects_latent_heat_mutant",
+    "--deselect=tests/v040/mpmisc/test_thompson38_cloud_kind.py::test_original_cloud_velocity_and_double_slope",
+    "--deselect=tests/v040/mpmisc/test_thompson38_operators.py::test_original_hail_operators_literal_bytes",
+    "--deselect=tests/v040/mpmisc/test_thompson38_operators.py::test_original_reference_detects_volume_flux_units_mutant",
+    "--deselect=tests/v040/mpmisc/test_thompson38_source_baselines.py::test_cloud_sedimentation_raw_submetre_dz_and_band",
+    "--deselect=tests/v040/mpmisc/test_thompson38_source_baselines.py::test_raw_vapor_every_cumulative_reconstruction",
+    "--deselect=tests/v040/radiation/test_s2_flg_column.py::test_preprocess_literal_byte",
+    "--deselect=tests/v040/radiation/test_s2_flg_column.py::test_preprocess_compiled",
+    "--deselect=tests/v040/radiation/test_s2_flg_column.py::test_cloud_literal_and_compiled",
+    "--deselect=tests/v040/radiation/test_s2_flg_column.py::test_planck_literal_and_compiled",
+    "--deselect=tests/v040/radiation/test_s2_flg_column.py::test_infrared_transport_literal",
+    "--deselect=tests/v040/radiation/test_s2_flg_column.py::test_infrared_transport_compiled",
+    "--deselect=tests/v040/radiation/test_s2_flg_column.py::test_solar_transport_literal",
+    "--deselect=tests/v040/radiation/test_s2_flg_column.py::test_solar_transport_compiled",
+    "--deselect=tests/v040/radiation/test_s2_flg_column.py::test_transport_compiled_regression_is_finite_and_unchanged",
+    "--deselect=tests/v040/radiation/test_s2_flg_column.py::test_compiled_regression_rejects_corrupted_outputs",
+    "--deselect=tests/v040/radiation/test_s2_flg_primitives.py::test_geometric_optics",
+    "--deselect=tests/v040/radiation/test_s2_flg_primitives.py::test_prescribed_ozone",
+    "--deselect=tests/v040/radiation/test_s2_flg_primitives.py::test_all_gas_quadratures",
+    "--deselect=tests/v040/radiation/test_s2_flg_primitives.py::test_scattering_and_active_graupel",
+    "--deselect=tests/v040/radiation/test_s2_gfdl_adapter.py::test_native_etara_lw_then_sw",
+    "--deselect=tests/v040/radiation/test_s2_gfdl_cloud.py::test_etara_preprocessing",
+    "--deselect=tests/v040/radiation/test_s2_gfdl_cloud.py::test_active_ferrier_grid_cloud",
+    "--deselect=tests/v040/radiation/test_s2_literal_control.py::test_scalar_statement_control",
+    "--deselect=tests/test_u2_advanced_water.py::test_whole_original_advanced_soilwater_literal_byte",
+    "--deselect=tests/test_u2_advanced_water.py::test_whole_original_advanced_soilwater_compiled_bounds",
+    "--deselect=tests/test_u2_canopy_options.py::test_pristine_canopy_runtime_operands",
+    "--deselect=tests/test_u2_carbon_options.py::test_original_dynamic_carbon_runtime_trajectories",
+    "--deselect=tests/test_u2_carbon_restart.py::test_dynamic_carbon_reaches_actual_noah_driver",
+    "--deselect=tests/test_u2_crop_options.py::test_original_liu_crop_runtime_trajectories",
+    "--deselect=tests/test_u2_crop_phenology.py::test_original_crop_phenology_and_fveg",
+    "--deselect=tests/test_u2_crop_wiring.py::test_crop_reaches_actual_noah_driver_and_old_pgs",
+    "--deselect=tests/test_u2_equilibrium_options.py::test_original_equilibrium_water_system",
+    "--deselect=tests/test_u2_groundwater_options.py::test_original_groundwater_runtime_trajectory",
+    "--deselect=tests/test_u2_irrigation.py::test_pristine_wrf_irrigation_all_regimes",
+    "--deselect=tests/test_u2_irrigation.py::test_real_column_reaches_soil_irrigation_through_full_noah_driver",
+    "--deselect=tests/test_u2_land_options.py::test_every_snow_partition_against_verbatim_wrf",
+    "--deselect=tests/test_u2_land_options.py::test_bats_albedo_and_age_against_verbatim_wrf",
+    "--deselect=tests/test_u2_phenology_options.py::test_pristine_phenology_and_caller_runtime_inputs",
+    "--deselect=tests/test_u2_prognostic_options.py::test_original_prognostic_water_system",
+    "--deselect=tests/test_u2_radiation_options.py::test_original_gap_geometry_runtime_inputs",
+    "--deselect=tests/test_u2_runoff_options.py::test_original_runtime_runoff_family",
+    "--deselect=tests/test_u2_soil_options.py::test_original_pedotransfer_runtime_inputs",
+    "--deselect=tests/test_u2_sst_skin.py::test_24step_pristine_wrf_real_trajectory",
+    "--deselect=tests/test_u2_surface_caps.py::test_original_active_fractional_snow_caps",
+    "--deselect=tests/test_u2_surface_options.py::test_pristine_energy_branches_runtime_inputs",
+    "--deselect=tests/test_u2_thermal_options.py::test_original_thermal_system_runtime_operands",
+    "--deselect=tests/test_u2_thermal_options.py::test_original_frh2o_runtime_operands",
+    "--deselect=tests/test_u2_water_options.py::test_complete_pristine_water_runtime_operands"
+  ],
+  "approved_own_test_files": [
+    {
+      "path": "tests/v040/mpmisc/goddard4ice/test_oracle.py",
+      "approved": "cea019a75",
+      "blob": "a8db464e683c98849da8879a16e8d54fe59346fb"
+    },
+    {
+      "path": "tests/v040/mpmisc/goddard4ice/test_phys_tot.py",
+      "approved": "cea019a75",
+      "blob": "98650a46f2865e893d44b0117235be4423caec8e"
+    },
+    {
+      "path": "tests/v040/mpmisc/test_aot_tables.py",
+      "approved": "cea019a75",
+      "blob": "dbedb465af9f2fd9e3337349ede8975ddb80ed04"
+    },
+    {
+      "path": "tests/v040/mpmisc/test_callers.py",
+      "approved": "cea019a75",
+      "blob": "7ff01359ee2e5f54a13b5dfdca7a73844f30fd86"
+    },
+    {
+      "path": "tests/v040/mpmisc/test_ferrier.py",
+      "approved": "cea019a75",
+      "blob": "d036df447c206a0e628c8bf92f4bad52808372be"
+    },
+    {
+      "path": "tests/v040/mpmisc/test_ferrier_carry.py",
+      "approved": "cea019a75",
+      "blob": "56b42132ac0b024afedb5194ec06178770ef6d25"
+    },
+    {
+      "path": "tests/v040/mpmisc/test_goddard_carry.py",
+      "approved": "cea019a75",
+      "blob": "9f912af61a6a086aea3c49fc435f6857a4e7aa4b"
+    },
+    {
+      "path": "tests/v040/mpmisc/test_restart_binding.py",
+      "approved": "cea019a75",
+      "blob": "d418560166074a492f425138a096e98f6f1e8322"
+    },
+    {
+      "path": "tests/v040/mpmisc/test_thompson38_carry.py",
+      "approved": "cea019a75",
+      "blob": "96c99b2d07227d0cd14ea817884eef38f40473a2"
+    },
+    {
+      "path": "tests/v040/mpmisc/test_thompson38_cloud_kind.py",
+      "approved": "cea019a75",
+      "blob": "3a0e18dd40d091c20bc786ef8635028e9b13712a"
+    },
+    {
+      "path": "tests/v040/mpmisc/test_thompson38_operators.py",
+      "approved": "cea019a75",
+      "blob": "8648c0e865c5ab48f1a66423eeadf1bae08f299f"
+    },
+    {
+      "path": "tests/v040/mpmisc/test_thompson38_source_baselines.py",
+      "approved": "cea019a75",
+      "blob": "6b632bf4137854b84dbda1601edaad877fe930ca"
+    },
+    {
+      "path": "tests/v040/radiation/test_s2_flg_column.py",
+      "approved": "cffc0c1b4",
+      "blob": "718f4d96482b311b2b4b022524927c5078f3661e"
+    },
+    {
+      "path": "tests/v040/radiation/test_s2_flg_contraction_gate.py",
+      "approved": "cffc0c1b4",
+      "blob": "68c5de030d15eee7b6881753e897c5fa1199a6dd"
+    },
+    {
+      "path": "tests/v040/radiation/test_s2_flg_gfdl_aot_keys.py",
+      "approved": "cffc0c1b4",
+      "blob": "2e909a96e90368d64867a55dde521fd0d7aac65e"
+    },
+    {
+      "path": "tests/v040/radiation/test_s2_flg_gfdl_operational.py",
+      "approved": "cffc0c1b4",
+      "blob": "d58f54800258e0a9d7646fc08b6c751a029343f7"
+    },
+    {
+      "path": "tests/v040/radiation/test_s2_flg_gfdl_sgs_caller.py",
+      "approved": "cffc0c1b4",
+      "blob": "13704828823f61eab644f762018540f6ca5c5ba0"
+    },
+    {
+      "path": "tests/v040/radiation/test_s2_flg_primitives.py",
+      "approved": "cffc0c1b4",
+      "blob": "7fcf320bbe9ef95dc9dc269ca16f42e140826e87"
+    },
+    {
+      "path": "tests/v040/radiation/test_s2_gfdl_adapter.py",
+      "approved": "cffc0c1b4",
+      "blob": "68082cdac7a68322a9c95b7357ea64731cb0dc96"
+    },
+    {
+      "path": "tests/v040/radiation/test_s2_gfdl_capture_state.py",
+      "approved": "cffc0c1b4",
+      "blob": "fae1b48308a49f84decc5203645c946464f9b614"
+    },
+    {
+      "path": "tests/v040/radiation/test_s2_gfdl_cloud.py",
+      "approved": "cffc0c1b4",
+      "blob": "538a0d9ecef5f1e8c550af690418ae1b970465ce"
+    },
+    {
+      "path": "tests/v040/radiation/test_s2_gfdl_loop_control.py",
+      "approved": "cffc0c1b4",
+      "blob": "3de4b6ee2e551b1e5e0592bf58053beb54ecdf84"
+    },
+    {
+      "path": "tests/v040/radiation/test_s2_literal_control.py",
+      "approved": "cffc0c1b4",
+      "blob": "f60003d80c5f47a93aef71e37f206312ef1052ff"
+    },
+    {
+      "path": "tests/test_u2_advanced_water.py",
+      "approved": "d94eb98ae",
+      "blob": "cad6ed872ac23d9a280dae716662a3137255c2ae"
+    },
+    {
+      "path": "tests/test_u2_aot_keys.py",
+      "approved": "d94eb98ae",
+      "blob": "47169cb1f35a266ad8214d9c5bf29b9e5e5b586e"
+    },
+    {
+      "path": "tests/test_u2_canopy_options.py",
+      "approved": "d94eb98ae",
+      "blob": "0561bb77d4d79aeb6c71185d688dbf47d6cf70ab"
+    },
+    {
+      "path": "tests/test_u2_carbon_options.py",
+      "approved": "d94eb98ae",
+      "blob": "c34c1730860b9977d6aad3e775d59ea7f8fc4b54"
+    },
+    {
+      "path": "tests/test_u2_carbon_restart.py",
+      "approved": "d94eb98ae",
+      "blob": "cb52713b27775a7faab2f8f1da68d94180c61372"
+    },
+    {
+      "path": "tests/test_u2_checkpoint_readers.py",
+      "approved": "d94eb98ae",
+      "blob": "79f3c173b9eb3b8723408aab76258200b1161dfa"
+    },
+    {
+      "path": "tests/test_u2_crop_options.py",
+      "approved": "d94eb98ae",
+      "blob": "586d7f55fad58af0e73084bbe2679409bc0ac5af"
+    },
+    {
+      "path": "tests/test_u2_crop_phenology.py",
+      "approved": "d94eb98ae",
+      "blob": "1e1de7c9a2f8cbc082097267617c05336bcd402b"
+    },
+    {
+      "path": "tests/test_u2_crop_wiring.py",
+      "approved": "d94eb98ae",
+      "blob": "52597b1ed71d3fb10a7735cd85d8d00d385384e5"
+    },
+    {
+      "path": "tests/test_u2_equilibrium_options.py",
+      "approved": "d94eb98ae",
+      "blob": "bb7117113cf9c4ac5c750643dcb77ab625a56437"
+    },
+    {
+      "path": "tests/test_u2_fixture_archive.py",
+      "approved": "d94eb98ae",
+      "blob": "d8a84d5c143a3245dd73a11e9d2dcbb9ab2c8fb4"
+    },
+    {
+      "path": "tests/test_u2_groundwater_options.py",
+      "approved": "d94eb98ae",
+      "blob": "31e1e9292de0a613f5749d541d9fac858d9c28f9"
+    },
+    {
+      "path": "tests/test_u2_groundwater_restart.py",
+      "approved": "d94eb98ae",
+      "blob": "00fc9ab17e56fd2ee05ff5a2f59af623ae9591c2"
+    },
+    {
+      "path": "tests/test_u2_hydrology_wiring.py",
+      "approved": "d94eb98ae",
+      "blob": "94701fb5e069de010f05e051b5499360d22192ad"
+    },
+    {
+      "path": "tests/test_u2_input_lai_init.py",
+      "approved": "d94eb98ae",
+      "blob": "9e437bb1f0394027c58944fb14b4f96720e5635e"
+    },
+    {
+      "path": "tests/test_u2_irrigation.py",
+      "approved": "d94eb98ae",
+      "blob": "a89cc53fa737f6da874fd5480e8542f159af2db6"
+    },
+    {
+      "path": "tests/test_u2_land_options.py",
+      "approved": "d94eb98ae",
+      "blob": "36986ede429be689def2c9a73c65d135239630b2"
+    },
+    {
+      "path": "tests/test_u2_land_restart_options.py",
+      "approved": "d94eb98ae",
+      "blob": "065d3cff445fa3af06c608ec7de82489fcbcc9fe"
+    },
+    {
+      "path": "tests/test_u2_native_profiles.py",
+      "approved": "d94eb98ae",
+      "blob": "16429c012c1cebf51d6d58358d313d2fad9607ee"
+    },
+    {
+      "path": "tests/test_u2_option_tiles.py",
+      "approved": "d94eb98ae",
+      "blob": "50401d6fa2204c588a395432b0d1ca07489457db"
+    },
+    {
+      "path": "tests/test_u2_phenology_options.py",
+      "approved": "d94eb98ae",
+      "blob": "2f58bd2b7ee43e3081eb4b3924ef6c23a039823d"
+    },
+    {
+      "path": "tests/test_u2_prognostic_options.py",
+      "approved": "d94eb98ae",
+      "blob": "149499be8a3a7143ab20113605a3db313e780b7e"
+    },
+    {
+      "path": "tests/test_u2_radiation_options.py",
+      "approved": "d94eb98ae",
+      "blob": "12609066e0bea704c0475fc6c882c03b7c618c81"
+    },
+    {
+      "path": "tests/test_u2_runoff_options.py",
+      "approved": "d94eb98ae",
+      "blob": "bc2f8694be502cf64c3eeac9ad777c64313f2536"
+    },
+    {
+      "path": "tests/test_u2_soil_options.py",
+      "approved": "d94eb98ae",
+      "blob": "9ba8e034972c75a1627b2a755d589e0c8bf9ab16"
+    },
+    {
+      "path": "tests/test_u2_sst_skin.py",
+      "approved": "d94eb98ae",
+      "blob": "26b5471440af1220e9c76d7cd850f241a31f0e0d"
+    },
+    {
+      "path": "tests/test_u2_surface_caps.py",
+      "approved": "d94eb98ae",
+      "blob": "ac1593ebf5aab4168d466a128105c36accef7cd1"
+    },
+    {
+      "path": "tests/test_u2_surface_options.py",
+      "approved": "d94eb98ae",
+      "blob": "beb8fe7ed3e9c4088981a3f91a5fd0f39b925d57"
+    },
+    {
+      "path": "tests/test_u2_thermal_options.py",
+      "approved": "d94eb98ae",
+      "blob": "771c87003a1a6303e3a794915ebcd565e490291a"
+    },
+    {
+      "path": "tests/test_u2_water_options.py",
+      "approved": "d94eb98ae",
+      "blob": "89d9fb1dceca7bce18cbdf406df441fab41544e0"
+    }
+  ],
+  "source_bound_reused_numerical_functions": [
+    "tests/v040/mpmisc/goddard4ice/test_oracle.py::test_literal_all_original_wrf_columns_byte",
+    "tests/v040/mpmisc/goddard4ice/test_oracle.py::test_genuine_hail_sedimentation_mutant_is_rejected",
+    "tests/v040/mpmisc/goddard4ice/test_oracle.py::test_native_complete_column_active_hail",
+    "tests/v040/mpmisc/goddard4ice/test_oracle.py::test_default_compiled_all_original_wrf_columns",
+    "tests/v040/mpmisc/goddard4ice/test_phys_tot.py::test_original_phys_tot_literal_association_byte",
+    "tests/v040/mpmisc/test_ferrier.py::test_literal_real_original_wrf_byte",
+    "tests/v040/mpmisc/test_ferrier.py::test_native_cpu_compiler_disclosed_deviations",
+    "tests/v040/mpmisc/test_ferrier.py::test_original_wrf_byte_gate_rejects_latent_heat_mutant",
+    "tests/v040/mpmisc/test_thompson38_cloud_kind.py::test_original_cloud_velocity_and_double_slope",
+    "tests/v040/mpmisc/test_thompson38_operators.py::test_original_hail_operators_literal_bytes",
+    "tests/v040/mpmisc/test_thompson38_operators.py::test_original_reference_detects_volume_flux_units_mutant",
+    "tests/v040/mpmisc/test_thompson38_source_baselines.py::test_cloud_sedimentation_raw_submetre_dz_and_band",
+    "tests/v040/mpmisc/test_thompson38_source_baselines.py::test_raw_vapor_every_cumulative_reconstruction",
+    "tests/v040/radiation/test_s2_flg_column.py::test_preprocess_literal_byte",
+    "tests/v040/radiation/test_s2_flg_column.py::test_preprocess_compiled",
+    "tests/v040/radiation/test_s2_flg_column.py::test_cloud_literal_and_compiled",
+    "tests/v040/radiation/test_s2_flg_column.py::test_planck_literal_and_compiled",
+    "tests/v040/radiation/test_s2_flg_column.py::test_infrared_transport_literal",
+    "tests/v040/radiation/test_s2_flg_column.py::test_infrared_transport_compiled",
+    "tests/v040/radiation/test_s2_flg_column.py::test_solar_transport_literal",
+    "tests/v040/radiation/test_s2_flg_column.py::test_solar_transport_compiled",
+    "tests/v040/radiation/test_s2_flg_column.py::test_transport_compiled_regression_is_finite_and_unchanged",
+    "tests/v040/radiation/test_s2_flg_column.py::test_compiled_regression_rejects_corrupted_outputs",
+    "tests/v040/radiation/test_s2_flg_primitives.py::test_geometric_optics",
+    "tests/v040/radiation/test_s2_flg_primitives.py::test_prescribed_ozone",
+    "tests/v040/radiation/test_s2_flg_primitives.py::test_all_gas_quadratures",
+    "tests/v040/radiation/test_s2_flg_primitives.py::test_scattering_and_active_graupel",
+    "tests/v040/radiation/test_s2_gfdl_adapter.py::test_native_etara_lw_then_sw",
+    "tests/v040/radiation/test_s2_gfdl_cloud.py::test_etara_preprocessing",
+    "tests/v040/radiation/test_s2_gfdl_cloud.py::test_active_ferrier_grid_cloud",
+    "tests/v040/radiation/test_s2_literal_control.py::test_scalar_statement_control",
+    "tests/test_u2_advanced_water.py::test_whole_original_advanced_soilwater_literal_byte",
+    "tests/test_u2_advanced_water.py::test_whole_original_advanced_soilwater_compiled_bounds",
+    "tests/test_u2_canopy_options.py::test_pristine_canopy_runtime_operands",
+    "tests/test_u2_carbon_options.py::test_original_dynamic_carbon_runtime_trajectories",
+    "tests/test_u2_carbon_restart.py::test_dynamic_carbon_reaches_actual_noah_driver",
+    "tests/test_u2_crop_options.py::test_original_liu_crop_runtime_trajectories",
+    "tests/test_u2_crop_phenology.py::test_original_crop_phenology_and_fveg",
+    "tests/test_u2_crop_wiring.py::test_crop_reaches_actual_noah_driver_and_old_pgs",
+    "tests/test_u2_equilibrium_options.py::test_original_equilibrium_water_system",
+    "tests/test_u2_groundwater_options.py::test_original_groundwater_runtime_trajectory",
+    "tests/test_u2_irrigation.py::test_pristine_wrf_irrigation_all_regimes",
+    "tests/test_u2_irrigation.py::test_real_column_reaches_soil_irrigation_through_full_noah_driver",
+    "tests/test_u2_land_options.py::test_every_snow_partition_against_verbatim_wrf",
+    "tests/test_u2_land_options.py::test_bats_albedo_and_age_against_verbatim_wrf",
+    "tests/test_u2_phenology_options.py::test_pristine_phenology_and_caller_runtime_inputs",
+    "tests/test_u2_prognostic_options.py::test_original_prognostic_water_system",
+    "tests/test_u2_radiation_options.py::test_original_gap_geometry_runtime_inputs",
+    "tests/test_u2_runoff_options.py::test_original_runtime_runoff_family",
+    "tests/test_u2_soil_options.py::test_original_pedotransfer_runtime_inputs",
+    "tests/test_u2_sst_skin.py::test_24step_pristine_wrf_real_trajectory",
+    "tests/test_u2_surface_caps.py::test_original_active_fractional_snow_caps",
+    "tests/test_u2_surface_options.py::test_pristine_energy_branches_runtime_inputs",
+    "tests/test_u2_thermal_options.py::test_original_thermal_system_runtime_operands",
+    "tests/test_u2_thermal_options.py::test_original_frh2o_runtime_operands",
+    "tests/test_u2_water_options.py::test_complete_pristine_water_runtime_operands"
+  ],
+  "reuse_evidence": "SI53-batch4-complete-source-audit.json; approved primary/fix-delta critic packets",
+  "scientific_limits": "mp38 115/6237 strict excesses; FLG17strict XFAIL/10residual bands285values;land8compiledXFAIL retained, not fidelity passes",
+  "cache": "JAX NONE; GFDL init exact private batch4-gfdl-init;TMPDIR batch4-worktmp",
+  "GPU_execution": false
+}

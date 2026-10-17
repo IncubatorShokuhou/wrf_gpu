@@ -12,6 +12,7 @@ import pytest
 
 from gpuwrf.contracts.precision import MP_RE_DIAGNOSTIC_LEAVES
 from gpuwrf.coupling import physics_couplers as C
+from gpuwrf.diagnostics.online import configuration as online_configuration
 from gpuwrf.io.restart import read_restart, write_restart
 from gpuwrf.io.wrfrst_netcdf import read_wrfrst_carry, write_wrfrst_carry
 from gpuwrf.physics import rrtmg_mp_re as R
@@ -32,7 +33,12 @@ def _case(monkeypatch, **selection):
     state = op._operational_scan_state(state, nml)
     if nml.mp_physics == 8:
         state = C._state_from_thompson_output(state, column)
-    return grid, nml, initial_operational_carry(state)
+    carry = initial_operational_carry(state)
+    # The low-level carry builder omits namelist-dependent initialization.
+    # Match _initial_carry_for_run's REAL zero seed for required held radar.
+    if online_configuration(nml)["do_radar_ref"]:
+        carry = carry.replace(radar_reflectivity=jnp.zeros_like(state.qv, dtype=jnp.float32))
+    return grid, nml, carry
 
 
 def _exact_finite(a, b):
@@ -45,8 +51,9 @@ def _exact_finite(a, b):
         assert x.shape == y.shape and x.dtype == y.dtype and x.tobytes() == y.tobytes()
 
 
-@pytest.mark.parametrize("selection", [{"use_mp_re": 0}, {"mp_physics": 6},
-    {"ra_sw_physics": 1}, {"ra_lw_physics": 1}, {"ra_sw_physics": 0}, {"mp_physics": 28}])
+# physics_init.F:1003-1021 activates WSM6 (mp6); Lin (mp2) is a genuinely inactive selection.
+@pytest.mark.parametrize("selection", [{"use_mp_re": 0}, {"mp_physics": 2},
+    {"ra_sw_physics": 1}, {"ra_lw_physics": 1}, {"ra_sw_physics": 0}, {"mp_physics": 40}])
 def test_flag_on_inactive_selection_roundtrips_all_restart_formats(monkeypatch, tmp_path, selection):
     grid, nml, carry = _case(monkeypatch, **selection)
     assert not R.mp_re_active(nml)

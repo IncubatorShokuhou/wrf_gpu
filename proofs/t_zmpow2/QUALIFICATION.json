@@ -1,0 +1,335 @@
+{
+  "status": "READY-FOR-CRITIC",
+  "lane": "t-zmpow2",
+  "branch": "lane/t-zmpow2",
+  "model_commit": "39aac3571a555ea30a44ba841f770f2cbe9030f5",
+  "src_tree": "5e05c4a6c315757a65999918d8845f3aa3e94d78",
+  "base_commit": "09f43ebf15dda995820feef872707c19c390a215",
+  "scope": "c29 cu7 CAM-ZM / c30 cu10 CuP / c31 cu11 MSKF native CUDA lowering compatibility; no GPU execution or forecast-fidelity/speed claim",
+  "coupled_cuda_lowering": {
+    "c29": {
+      "receipt": "proofs/t_zmpow2/receipts/ZP09_c29.json",
+      "wall_s": 59.9601090750657,
+      "peak_rss_KiB": 3322796,
+      "programs": [
+        {
+          "name": "d01",
+          "lower": "OK",
+          "lower_s": 26.460462688002735,
+          "static_kwargs": {
+            "n_steps": 200,
+            "cadence": 33
+          },
+          "stablehlo_bytes": 263394391,
+          "stablehlo_sha256": "ee47931db9fd3ff1a1019303501ef483e15bf66b3aa5aaa770ac70f447d22f67",
+          "triton_custom_calls": 139,
+          "compile": "NOT_ATTEMPTED",
+          "stack": "UNKNOWN"
+        }
+      ]
+    },
+    "c30": {
+      "receipt": "proofs/t_zmpow2/receipts/ZP17_c30.json",
+      "wall_s": 60.40098293800838,
+      "peak_rss_KiB": 3184604,
+      "programs": [
+        {
+          "name": "d01",
+          "lower": "OK",
+          "lower_s": 28.552228156942874,
+          "static_kwargs": {
+            "n_steps": 200,
+            "cadence": 33
+          },
+          "stablehlo_bytes": 264119959,
+          "stablehlo_sha256": "58fde7c9c43c34acbffbe11dfdfc353524af6a3bfc9039c19b6ebe6815e8742f",
+          "triton_custom_calls": 160,
+          "compile": "NOT_ATTEMPTED",
+          "stack": "UNKNOWN"
+        }
+      ]
+    },
+    "c31": {
+      "receipt": "proofs/t_zmpow2/receipts/ZP17_c31.json",
+      "wall_s": 60.313767509069294,
+      "peak_rss_KiB": 3214292,
+      "programs": [
+        {
+          "name": "d01",
+          "lower": "OK",
+          "lower_s": 27.38075002306141,
+          "static_kwargs": {
+            "n_steps": 200,
+            "cadence": 33
+          },
+          "stablehlo_bytes": 263934281,
+          "stablehlo_sha256": "adafa5ee428d27d385640ffbba3862e2c4bfeb61f7bc17cc527caad289005b2c",
+          "triton_custom_calls": 160,
+          "compile": "NOT_ATTEMPTED",
+          "stack": "UNKNOWN"
+        }
+      ]
+    }
+  },
+  "two_call_byte_regression": {
+    "7": {
+      "Swiss": {
+        "rows": 12,
+        "byte_values": 10176,
+        "cpu_compiled_memory": {
+          "baseline": {
+            "argument_size_in_bytes": 6284,
+            "output_size_in_bytes": 3632,
+            "temp_size_in_bytes": 44800,
+            "alias_size_in_bytes": 0,
+            "cached_lower_compile_s": 0.03244313411414623
+          },
+          "candidate": {
+            "argument_size_in_bytes": 6284,
+            "output_size_in_bytes": 3632,
+            "temp_size_in_bytes": 45128,
+            "alias_size_in_bytes": 0,
+            "cached_lower_compile_s": 0.046226682839915156
+          }
+        },
+        "peak_rss_KiB": 1340344
+      },
+      "active": {
+        "rows": 4,
+        "byte_values": 3088,
+        "cpu_compiled_memory": {
+          "baseline": {
+            "argument_size_in_bytes": 5724,
+            "output_size_in_bytes": 3328,
+            "temp_size_in_bytes": 44800,
+            "alias_size_in_bytes": 0,
+            "cached_lower_compile_s": 0.048206765204668045
+          },
+          "candidate": {
+            "argument_size_in_bytes": 5724,
+            "output_size_in_bytes": 3328,
+            "temp_size_in_bytes": 45128,
+            "alias_size_in_bytes": 0,
+            "cached_lower_compile_s": 0.05153264896944165
+          }
+        },
+        "peak_rss_KiB": 1344148
+      },
+      "deletion_mutant": "power of 2"
+    },
+    "10": {
+      "Swiss": {
+        "rows": 12,
+        "byte_values": 10224,
+        "cpu_compiled_memory": {
+          "baseline": {
+            "argument_size_in_bytes": 5732,
+            "output_size_in_bytes": 3688,
+            "temp_size_in_bytes": 72464,
+            "alias_size_in_bytes": 0,
+            "cached_lower_compile_s": 0.1301500319968909
+          },
+          "candidate": {
+            "argument_size_in_bytes": 5732,
+            "output_size_in_bytes": 3688,
+            "temp_size_in_bytes": 73872,
+            "alias_size_in_bytes": 0,
+            "cached_lower_compile_s": 0.1315126430708915
+          }
+        },
+        "peak_rss_KiB": 1909004
+      },
+      "active": {
+        "rows": 8,
+        "byte_values": 6208,
+        "cpu_compiled_memory": {
+          "baseline": {
+            "argument_size_in_bytes": 5220,
+            "output_size_in_bytes": 3384,
+            "temp_size_in_bytes": 72464,
+            "alias_size_in_bytes": 0,
+            "cached_lower_compile_s": 0.08878413401544094
+          },
+          "candidate": {
+            "argument_size_in_bytes": 5220,
+            "output_size_in_bytes": 3384,
+            "temp_size_in_bytes": 73872,
+            "alias_size_in_bytes": 0,
+            "cached_lower_compile_s": 0.09728301595896482
+          }
+        },
+        "peak_rss_KiB": 1985072
+      },
+      "deletion_mutant": "Unimplemented primitive in Pallas GPU lowering: slice"
+    },
+    "11": {
+      "Swiss": {
+        "rows": 12,
+        "byte_values": 6948,
+        "cpu_compiled_memory": {
+          "baseline": {
+            "argument_size_in_bytes": 4112,
+            "output_size_in_bytes": 2476,
+            "temp_size_in_bytes": 58088,
+            "alias_size_in_bytes": 0,
+            "cached_lower_compile_s": 0.07014800095930696
+          },
+          "candidate": {
+            "argument_size_in_bytes": 4112,
+            "output_size_in_bytes": 2476,
+            "temp_size_in_bytes": 58344,
+            "alias_size_in_bytes": 0,
+            "cached_lower_compile_s": 0.07236778805963695
+          }
+        },
+        "peak_rss_KiB": 1646780
+      },
+      "active": {
+        "rows": 4,
+        "byte_values": 2108,
+        "cpu_compiled_memory": {
+          "baseline": {
+            "argument_size_in_bytes": 3744,
+            "output_size_in_bytes": 2268,
+            "temp_size_in_bytes": 58088,
+            "alias_size_in_bytes": 0,
+            "cached_lower_compile_s": 0.09382310998626053
+          },
+          "candidate": {
+            "argument_size_in_bytes": 3744,
+            "output_size_in_bytes": 2268,
+            "temp_size_in_bytes": 58344,
+            "alias_size_in_bytes": 0,
+            "cached_lower_compile_s": 0.08455203310586512
+          }
+        },
+        "peak_rss_KiB": 1708608
+      },
+      "deletion_mutant": "Unimplemented primitive in Pallas GPU lowering: slice"
+    }
+  },
+  "byte_values_total": 38752,
+  "default_full_jaxpr_sha": {
+    "swiss": "f672a5739cb96e388b6b7a40ef80337bf81bdc14ef15268f3476e09d79fe055d",
+    "prod": "6fc715a2bd630934c4cf0f94427df19a527cbf429011c9ba5efe4d712744d27b"
+  },
+  "tests": {
+    "distinct_passed": 154,
+    "preexisting_failures": 2,
+    "errors": 0,
+    "skips": 0,
+    "initial_full_suite": {
+      "name": "pytest",
+      "errors": "0",
+      "failures": "16",
+      "skipped": "0",
+      "tests": "156",
+      "time": "36.421",
+      "timestamp": "2026-10-14T19:59:55.216383+01:00",
+      "hostname": "user-battlestation"
+    },
+    "corrected_fixture_subset": {
+      "name": "pytest",
+      "errors": "0",
+      "failures": "0",
+      "skipped": "0",
+      "tests": "14",
+      "time": "6.970",
+      "timestamp": "2026-10-14T20:02:33.804852+01:00",
+      "hostname": "user-battlestation"
+    },
+    "original_source_control": {
+      "name": "pytest",
+      "errors": "0",
+      "failures": "2",
+      "skipped": "0",
+      "tests": "2",
+      "time": "4.523",
+      "timestamp": "2026-10-14T20:02:42.181655+01:00",
+      "hostname": "user-battlestation"
+    },
+    "explanation": "Initial suite inherited GPUWRF_RRTMG_MP_RE=1, while 14 restart fixtures lack that optional held state. Exact affected14 pass with their ordinary flag0. Two MYJ RK mock tuple-contract failures reproduce on immutable original09f source. New literal-control-flow tests all12 pass.",
+    "provenance_correction": "ZP25 run metadata generic source_commit points at candidate; actual command/PYTHONPATH and failure trace bind immutable /baseline at09f43ebf. Actual baseline source recorded here; original raw metadata retained.",
+    "log_flag_correction": "General runner TSV used literal FAST1 in work text; ZP23/ZP24/ZP25 actual environment records FAST0; ZP24 also RRTMG_MP_RE0. Original rows retained, corrected here."
+  },
+  "validation_reuse": {
+    "all_src_BYTE_since_model_commit": true,
+    "c29_frontend_unaffected_by_subsequent_CuP_MSKF_only_changes": {
+      "src/gpuwrf/kernels/phys_cuplus_driver.py": "3dd043aeefa52f1462125af402587c0bc8df4deb79daf9fd68beb4308a591ae9",
+      "src/gpuwrf/kernels/phys_camzm_column.py": "85a3fd2ab38b33aff125fd2c4789d69ab2d74878269194b0460aa33f68405e4e",
+      "src/gpuwrf/kernels/phys_mskf_cmt.py": "94ada7d99436befc3184253534fb0d440fc068c18b314fe33c8337633c11e7e7",
+      "src/gpuwrf/kernels/phys_kf_column.py": "933fdf22b8a337def02b4b6fe8ef66c768a570f1edc35868f011e6a8577d8111",
+      "src/gpuwrf/coupling/cuplus.py": "9198b29aec050d117c093861709530c27c7df837a4dae286abd19d1a2df45238",
+      "src/gpuwrf/coupling/cuplus_config.py": "1a9079f62c3c74c093a9740a9f4ee677eef8b4cd016244fa1fb3819c29cb2d28",
+      "src/gpuwrf/physics/cumulus_kfcup_tables.py": "8c52b1baee756c060421c4d6273880633150ab0f066984041d20e90ad4d36aa1",
+      "src/gpuwrf/physics/bl_camuw.py": "423425a078c5ac9422abf852a3b8fd55436983d804cfb2129d756edf59f0c6db",
+      "src/gpuwrf/runtime/operational_mode.py": "942bf15fed911e14765def3356dd35ed2eebe827f74d2b9cae0bad54d39ead15"
+    },
+    "CuP_component_product_files_BYTE_since_56ccd67b4": true,
+    "scientific_scope": "Existing pristine-WRF qualification/disclosures carried forward by byte regression; real forecast/D6 not performed."
+  },
+  "performance_memory": {
+    "measured": "CPU component argument/output byte sizes unchanged; temporary bytes CAMZM44800->45128, CuP72464->73872, MSKF58088->58344. Whole CUDA frontend peak RSS max3322796KiB, all arms6GiB/0swap.",
+    "inferred": "Same resident Pallas call sites and no new timestep host transfers. Identity-select enabler is expected to fold; one unused four-byte CAM-ZM control lane may be materialized per column.",
+    "unknown": "GPU timing, device ops, VRAM, native compiler/E41 and full-forecast fidelity. No cubin generated by these frontend-only arms."
+  },
+  "audit": {
+    "product_pallas_call_sites": 71,
+    "import_closure_files": 365,
+    "conservative_reachable_functions": 530,
+    "reachable_slice_candidates": 126,
+    "all_static_literal_candidates": 138,
+    "direct_file_static_literal_candidates": 3
+  },
+  "known_artifact_correction": "ZP03_11_lower intermediate failure path was reused once; first concatenate error independently preserved at ZP14_concat11.log, second gather error at ZP03_11_lower.log, final PASS uniqueZP18_11_lower. MAIN correction row already appended before reboot.",
+  "artifacts_sha256": {
+    "proofs/t_zmpow2/receipts/ZP09_c29.json": "4ff899f187a03c16c0f9a01d3c8c6a655e68cf84c92fc1f81bb90d88690e678a",
+    "proofs/t_zmpow2/receipts/ZP17_c30.json": "6311c89ad5c5678f12d66a42d5b98abe2ea6b663fcf12e641eb025df65466d4f",
+    "proofs/t_zmpow2/receipts/ZP17_c31.json": "2feaf4e649ecc0ce9b935f9da1b04e86e11ea9705c7a73b6f94964718e483458",
+    "proofs/t_zmpow2/receipts/ZP18_7_byte.json": "9497bb8eaa4aa43ddcd73cecd9818164a3d46b2ce268c4dd8e37be681da87fab",
+    "proofs/t_zmpow2/receipts/ZP22_7_active.json": "395326bff08c35f22fa4a378dcb8096992b3ca9e8338543c05078b175fbe1f7e",
+    "proofs/t_zmpow2/receipts/ZP18_7_mutant.json": "c2c845aa8d9577facc7296cf82c41ce50689bea91c225933796d008febc56176",
+    "proofs/t_zmpow2/receipts/ZP18_10_byte.json": "8af0a468a6adf969f3f1be8c576881bccc814c61bc9f02f4ad0aad400d273578",
+    "proofs/t_zmpow2/receipts/ZP22_10_active.json": "8a2246899bdd3f1df81677e3edb74bb57c681a4ba0657c354fbfb7e94cbc39b2",
+    "proofs/t_zmpow2/receipts/ZP18_10_mutant.json": "cfa9fccef1c0f74f8b3e004f3d6caf6e54aa551bfb56bf233717c52f7b7d5b3c",
+    "proofs/t_zmpow2/receipts/ZP18_11_byte.json": "19bc1ad46c658fc95b76f1d4fd3202fdd03785fd14d2f5c44f24d9702a4383e7",
+    "proofs/t_zmpow2/receipts/ZP22_11_active.json": "58a6fc71721b3c37d84bb4d9063a489ef0b3a12a0f678d3fb81a3270c9a3c8e7",
+    "proofs/t_zmpow2/receipts/ZP18_11_mutant.json": "e377d7b225f4564ca3fcc1491152d29dbc901f4f5df72a37d810183765f47b80",
+    "proofs/t_zmpow2/receipts/ZP08_lower7.json": "f6c5c1a790c711be4cf4cee2c358c394081a2f767f02e7401831de04a6e32da0",
+    "proofs/t_zmpow2/receipts/ZP03_10_lower.json": "6580ed1ed7b0043c7f865940bf765a24a286624bd6a7e0743064ab5e5bf5dd80",
+    "proofs/t_zmpow2/receipts/ZP18_11_lower.json": "6ef3e6c32f8bbdc48e946678cbd9ce25229644b8c45418f3c82d473c5d152a1f",
+    "proofs/t_zmpow2/receipts/ZP04_swiss.json": "324227dfaf64e931ec2aeaf4ecc5175d47abe82f743f1a3d49883b929210a37e",
+    "proofs/t_zmpow2/receipts/ZP04_prod.json": "359ac0ae667ac97abb032a2f73a056f68fbeb14e266f8f3dc52b3eedf152b7cc",
+    "proofs/t_zmpow2/receipts/ZP23_pytest.xml": "a849744e06b92aeadea845eedc0e4158a518e4e51dd6f5b53a3591b0d785f571",
+    "proofs/t_zmpow2/receipts/ZP23_pytest_run.json": "6fe59484ec4f9bea54f2e5d71e7f6541a80b59819d3c860720eab86212ae6ad0",
+    "proofs/t_zmpow2/receipts/ZP24_fixture_env.xml": "ac5737c3a90543381ccd5cbe70a18044b22e4d823dfbe9ce91098eb1a29c890e",
+    "proofs/t_zmpow2/receipts/ZP24_fixture_env_run.json": "0b40da41545aad2be70f3f24f47816d1a307726995516ace187bcb5a5e3c550f",
+    "proofs/t_zmpow2/receipts/ZP25_baseline_MYJ.xml": "4751811b1ffdc7a3e519e2099946dad644cbc90c174d64387dddb1bc36681f76",
+    "proofs/t_zmpow2/receipts/ZP25_baseline_MYJ_run.json": "88ce10296cdfa5f0d8ebd7d8151348f415c9f5b36d7c95067db545827c92ead2",
+    "proofs/t_zmpow2/receipts/PALLAS_AUDIT.json": "64c7775b460db57f255dea3bdca166b0a4d05aa9f75950dc19563d8a93dd99ee"
+  },
+  "resume": "All numerical/frontend gates completed before19:09Z reboot and survived it. After20:50Z only light receipt/source sealing and official RAM-slot cleanup; no GPU or numerical reruns.",
+  "per_scheme_commits": {
+    "shared_10_11": [
+      "314b178acd0c9cafb3c04b872e515422aea0fc77",
+      "6c4f96ae88936009211090c7c55984db9eed67f0"
+    ],
+    "cu7": [
+      "7a34782be59005092d5a97c0cf95ab2c8927e862",
+      "ada53c4564fcf42591b0ab2cb17d8e92e255475c",
+      "c4f7a6b9d03419749fe5b383aeb713274a1b8301",
+      "6b6e7f1c40d000be6f195bf073d01edab67e48a7"
+    ],
+    "cu10": [
+      "fdddde0790e6cfa19a9375b43eda0e84fc94135c",
+      "56ccd67b43c4a3dc843fdb511b78bbc278ff95ca"
+    ],
+    "cu11": [
+      "a009e874aeaca16335223b363bffbcbcd90f4066",
+      "a65ba4cc829ee772a2174765c7ead5695c97cfa4",
+      "39aac3571a555ea30a44ba841f770f2cbe9030f5"
+    ]
+  },
+  "cleanup": "Disposable source/baseline snapshots and lane pytest directory removed after final source/receipt seals. Per-arm scratch caches were already deleted before reboot.",
+  "evidence_head": "5b577a904495f3bb6971057a16c8a4d9b965d5c3"
+}

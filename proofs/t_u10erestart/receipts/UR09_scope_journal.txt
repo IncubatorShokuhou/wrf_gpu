@@ -1,0 +1,4 @@
+Oct 14 22:29:26 user-battlestation systemd[5765]: Started run-p181955-i64281.scope - [systemd-run] /usr/bin/taskset -c 12,13,28,29 nice -n 19 timeout 480 python -c "from pathlib import Path; import sys; assert not Path(\"/tmp/wrf_gpu2_quiet\").exists(); import pytest; sys.exit(pytest.main([\"-q\",*Path(\"<USER_HOME>/wrf_gpu2_lanes/t-u10erestart/UR09_nodes.txt\").read_text().splitlines(),\"--basetemp\",\"<USER_HOME>/wrf_gpu2_lanes/t-u10erestart/pytest\",\"--junitxml\",\"<USER_HOME>/wrf_gpu2_lanes/t-u10erestart/UR09_physics_composed.xml\"]))".
+Oct 14 22:30:55 user-battlestation systemd[5765]: run-p181955-i64281.scope: The kernel OOM killer killed some processes in this unit.
+Oct 14 22:30:55 user-battlestation systemd[5765]: run-p181955-i64281.scope: Failed with result 'oom-kill'.
+Oct 14 22:30:55 user-battlestation systemd[5765]: run-p181955-i64281.scope: Consumed 2min 51.219s CPU time over 1min 29.457s wall clock time, 6G memory peak.

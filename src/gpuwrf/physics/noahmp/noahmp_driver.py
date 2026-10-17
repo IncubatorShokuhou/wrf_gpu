@@ -110,7 +110,9 @@ def build_energy_params(static: NoahMPStatic, scalar_shape) -> tuple[EnergyParam
         return _gather_vec(getattr(p, name), vt)
 
     def sg(name):
-        return _soil_layers(_gather_vec(getattr(p, name), st))
+        value=jnp.asarray(getattr(p,name))
+        if value.ndim==3:return value  # opt_soil=2/3: original layer fields
+        return _soil_layers(_gather_vec(value, st))
 
     cbiom = getattr(p, "cbiom", None)
     if cbiom is not None:
@@ -177,6 +179,12 @@ def noah_mp_step(
     return_diag: bool = False,
     output_only: bool = False,
     history: bool = False,
+    mmf=None,
+    options=None,
+    irrigation=None,
+    carbon=None,
+    groundwater=None,
+    tile_drain=None,
 ):
     """One Noah-MP physics-timestep over all land columns (vectorised, jit-friendly).
 
@@ -185,6 +193,11 @@ def noah_mp_step(
     history ``(HFX, LH, TSK, T2)`` after ENERGY. ``energy_params``/``rad_params`` may be supplied
     pre-gathered (parity harnesses do this); otherwise they come from ``static.parameters``.
     """
+    if options is not None and options.opt_run==5 and mmf is None:
+        raise ValueError('Noah-MP opt_run=5 requires its MMF runtime carry (E78)')
+    if mmf is not None and (any(value is not None for value in (irrigation,carbon,groundwater,tile_drain))
+                            or options is not None and options.opt_run!=5):
+        raise ValueError('MMF cannot share another Noah-MP option carry or runoff selection before qualification')
     land_state, forcing, static = real_tree((land_state, forcing, static))
     energy_params, rad_params = real_tree((energy_params, rad_params))
     fveg_shape = jnp.asarray(land_state.tv).shape
@@ -193,7 +206,16 @@ def noah_mp_step(
         energy_params, rad_params = build_energy_params(static, fveg_shape)
 
     # ----- 1. PHENOLOGY (S5): LAI/SAI/ELAI/ESAI/FVEG(=SHDMAX)/IGS -----
-    phen = noahmp_phenology_table(land_state, forcing, static)
+    crop_active=options is not None and options.opt_crop==1
+    carbon_active=options is not None and (options.dveg in (2,5,6) or crop_active)
+    if carbon_active!=(carbon is not None):raise ValueError("Dynamic Noah-MP vegetation needs its six carbon pools (E78)")
+    if (options is not None and options.opt_run==1)!=(groundwater is not None):
+        raise ValueError("Noah-MP opt_run=1 requires its ZWT/WA/WT groundwater state (E78)")
+    if (options is not None and options.opt_tdrn!=0)!=(tile_drain is not None):
+        raise ValueError('Noah-MP tile drainage requires its accumulated QTDRAIN state (E78)')
+    phen = noahmp_phenology_table(land_state, forcing, static,
+                                 **({"dveg":options.dveg} if options is not None else {}),
+                                 **({"crop":(carbon[0].croptype,carbon[1].pgs)} if crop_active else {}))
     land_state = land_state.replace(lai=phen.lai, sai=phen.sai)
 
     # FICEOLD = start-of-step snow-layer ice fraction (module_sf_noahmpdrv.F:1027-1028), taken
@@ -208,8 +230,20 @@ def noah_mp_step(
     is_lake = None
     if static.lakemask is not None:
         is_lake = jnp.asarray(static.lakemask) > 0.5
+    partition = None
+    if irrigation is not None:
+        from gpuwrf.physics.noahmp.precip_heat import _atm_partition
+        from gpuwrf.physics.noahmp.irrigation import prepare_irrigation
+        bundle, irrigation_out = irrigation
+        partition = _atm_partition(forcing, options.opt_snf)
+        irrigation_out, rain_add, firr, eirr = prepare_irrigation(
+            bundle,irrigation_out,land_state,forcing,phen,static.zsoil,partition[1],dt,
+            opt_irr=options.opt_irr,opt_irrm=options.opt_irrm)
+        partition = (partition[0],partition[1]+rain_add,*partition[2:])
     precip, canliq_new, canice_new = noahmp_precip_heat(
-        land_state, forcing, phen, ch2op, dt, is_lake=is_lake)
+        land_state, forcing, phen, ch2op, dt, is_lake=is_lake,
+        **({"opt_snf": options.opt_snf} if options is not None else {}),
+        **({"partition": partition} if partition is not None else {}))
     # FWET feeds ENERGY radiation; CANLIQ/CANICE feed WATER. Write them now.
     land_state = land_state.replace(
         fwet=precip.fwet, canliq=canliq_new, canice=canice_new)
@@ -220,7 +254,8 @@ def noah_mp_step(
 
     # ----- 3. RADIATION + ENERGY (S1) (ENERGY calls S2 TSNOSOI STC update) -----
     rad, rad_extras = radiation_twostream(
-        land_state, forcing_e, static, phen, rad_params, dt)
+        land_state, forcing_e, static, phen, rad_params, dt,
+        **({"opt_alb": options.opt_alb, "bats": options.bats,"opt_rad":options.opt_rad} if options is not None else {}))
     co2air = getattr(forcing, "co2air", None)
     o2air = getattr(forcing, "o2air", None)
     foln = getattr(forcing, "foln", None)
@@ -234,7 +269,8 @@ def noah_mp_step(
         o2air=o2, co2air=co2, foln=foln_v,
         pahv_kw=precip.pahv, pahg_kw=precip.pahg, pahb_kw=precip.pahb,
         isurban=isurban,
-        history=history,
+        history=history or carbon_active,
+        **({"options":options} if options is not None else {}),
     )
     if output_only: return ef.fsh, ef.fcev + ef.fgev + ef.fctr, ef.trad, ef.t2  # noqa: E701
     # ----- 4. PHASECHANGE (S2): melt/freeze -> IMELT/QMELT for SNOW bookkeeping --
@@ -248,7 +284,8 @@ def noah_mp_step(
         stc_full, land_state.snice, land_state.snliq, land_state.smois,
         land_state.sh2o, land_state.sneqv, land_state.snowh, hcpct_full,
         dzsnso, land_state.isnow, dt,
-        smcmax=energy_params.smcmax, psisat=energy_params.psisat, bexp=energy_params.bexp)
+        smcmax=energy_params.smcmax, psisat=energy_params.psisat, bexp=energy_params.bexp,
+        **({"opt_frz":options.opt_frz} if options is not None else {}))
     land_state = land_state.replace(
         tsno=stc_pc[:NSNOW], tslb=stc_pc[NSNOW:], snice=snice_pc, snliq=snliq_pc,
         smois=smc_pc, sh2o=sh2o_pc, sneqv=sneqv_pc, snowh=snowh_pc)
@@ -279,11 +316,50 @@ def noah_mp_step(
     water_result = noahmp_water_hydro(
         land_state, forcing_w, static, et_w, dt, sneqv_before_snow=sneqv_pre, qrain_ground=precip.qrain,
         frozen_canopy=frozen_canopy0, phen=phen,
+        **({'mmf': mmf} if mmf is not None else {}),
+        **({"fveg_override":phen.fveg} if options is not None and options.dveg!=4 else {}),
+        **({"options":options} if options is not None else {}),
+        **({"groundwater":groundwater} if groundwater is not None else {}),
+        **({"tile_drain":tile_drain} if tile_drain is not None else {}),
+        **({"irrigation": (bundle,irrigation_out,options.opt_irrm)} if irrigation is not None else {}),
         **({"history": True} if history else {}))
+    mmf_aux = ()
+    if mmf is not None:
+        *water_values, mmf_out = water_result
+        water_result = tuple(water_values) if history else water_values[0]
+        mmf_aux = (mmf_out,)
+    if tile_drain is not None:water_result,tile_out=water_result
+    if groundwater is not None:
+        water_result,groundwater_out=water_result
+    if irrigation is not None:
+        water_result, irrigation_out = water_result
     if history:
-        land_state, runoff = water_result
+        if options is not None and (options.opt_run in (1,2) or options.opt_tdrn):land_state,runoff,water_diagnostics=water_result
+        else:land_state, runoff = water_result
     else:
         land_state = water_result
+    carbon_diagnostics={}
+    if carbon_active:
+        from gpuwrf.physics.noahmp.carbon import carbon_column
+        from gpuwrf.physics.noahmp.water_hydro import _geometry
+        from gpuwrf.kernels.phys_noahmp_columns import column_call,columns_enabled
+        p_carbon,pools=carbon
+        zsoil,dzs=_geometry(static,land_state.smois)
+        nroot=energy_params.nroot_cell if energy_params.nroot_cell is not None else jnp.full_like(static.ivgtyp,energy_params.nroot)
+        arguments=(pools,p_carbon,land_state.lai,land_state.sai,ef.history["PSN"],ef.history["BTRAN"],foln_v,land_state.tv,
+                   land_state.tslb[0],land_state.smois,energy_params.smcmax,dzs,zsoil,nroot,static.ivgtyp,phen.igs,jnp.asarray(dt,jnp.float32))
+        fn=carbon_column
+        if crop_active:
+            from functools import partial
+            from gpuwrf.physics.noahmp.crop import crop_column
+            # CARBON_CROP consumes current ENERGY's T2M (SFLX:1036), not SFCTMP.
+            fn=partial(crop_column,dveg=options.dveg)
+            arguments=(*arguments,ef.t2,forcing.julian)
+        if columns_enabled():
+            from gpuwrf.physics.noahmp.land_columns import layered_column_call
+            carbon_out,lai,sai,carbon_diagnostics=layered_column_call(fn,arguments,grid_shape=jnp.shape(land_state.tv),name="b_core_noah_crop" if crop_active else "b_core_noah_carbon")
+        else:carbon_out,lai,sai,carbon_diagnostics=fn(*arguments)
+        land_state=land_state.replace(lai=lai,sai=sai)
     # End of NOAHMP_SFLX (module_sf_noahmplsm.F:1067-1070): a vanishing snow film is dropped
     # (e.g. canopy-ice unloading onto snow-free ground). SNOWH2O's own reset is SNOWH <= 1e-8.
     film = (land_state.snowh <= 1.0e-6) | (land_state.sneqv <= 1.0e-6)
@@ -294,8 +370,13 @@ def noah_mp_step(
     # QFX = ECAN+ESOIL+ETRAN (mass, :1205); LH = FCEV+FGEV+FCTR (:1206).
     qfx = et.ecan + et.edir + et.etran
     lh = ef.fcev + ef.fgev + ef.fctr
+    hfx = ef.fsh
+    if irrigation is not None:
+        hfx = hfx - firr
+        qfx = qfx + eirr
+        lh = lh + firr
     fluxes = NoahMPFluxes(
-        hfx=ef.fsh, lh=lh, qfx=qfx, grdflx=ef.ssoil, tsk=ef.trad,
+        hfx=hfx, lh=lh, qfx=qfx, grdflx=ef.ssoil, tsk=ef.trad,
         qsfc=land_state.qsfc, znt=ef.z0wrf, emiss=ef.emissi,
         albedo=land_state.albedo, chs=0.5 * (ef.chv + ef.chb),
         t2=ef.t2, t2mv=ef.t2mv, t2mb=ef.t2mb, q2=ef.q2,
@@ -303,6 +384,8 @@ def noah_mp_step(
         # the same carry accumulators as ef.history -> same firewall (A22/A23, BD74).
         history=(_history_firewall({
             **ef.history,
+            **carbon_diagnostics,
+            **(water_diagnostics if options is not None and (options.opt_run in (1,2) or options.opt_tdrn) else {}),
             "SAV": rad.sav, "SAG": rad.sag, "FSA": rad.fsa, "FIRA": ef.fira,
             "FVEG": phen.fveg, "ECAN": et.ecan, "ETRAN": et.etran, "EDIR": et.edir,
             "GRDFLX": ef.ssoil, "TRAD": ef.trad, "CANHS": ef.canhs,
@@ -329,7 +412,10 @@ def noah_mp_step(
     )
 
     if not return_diag:
-        return land_state, fluxes
+        result=(land_state,fluxes,irrigation_out) if irrigation is not None else (land_state,fluxes)
+        if carbon_active:result=result+(carbon_out,)
+        if groundwater is not None:result=result+(groundwater_out,)
+        return (result+(tile_out,) if tile_drain is not None else result)+mmf_aux
 
     # ----- 7. ERROR/closure checks (WRF ENERGY :1662 + WATER mass balance) -----
     sav = jnp.asarray(rad.sav); sag = jnp.asarray(rad.sag)
@@ -344,7 +430,11 @@ def noah_mp_step(
     # WATER closure is accumulated in the water module's runoff/storage; report 0
     # placeholder residual here (full budget closure is the S6b TOST-run gate).
     errwat = jnp.zeros_like(erreng)
-    return land_state, fluxes, ClosureResiduals(erreng=erreng, errwat=errwat)
+    result = land_state, fluxes, ClosureResiduals(erreng=erreng, errwat=errwat)
+    if irrigation is not None:result=result+(irrigation_out,)
+    if carbon_active:result=result+(carbon_out,)
+    if groundwater is not None:result=result+(groundwater_out,)
+    return (result+(tile_out,) if tile_drain is not None else result)+mmf_aux
 
 
 # ---------------------------------------------------------------------------

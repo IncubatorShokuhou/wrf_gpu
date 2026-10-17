@@ -1,0 +1,39 @@
+fixture_id: s2_keps_full_drivers_real32_zero_v1
+source: unchanged WRF 4.7.1 phys/module_bl_keps.F and phys/module_bl_eepsilon.F
+source_commit: v4.7.1
+created_utc: 2026-10-13T17:57:33Z
+scenario: 60 full-driver records; 12 stable/unstable/neutral/stratocumulus/mixed-ice/restart cases; 16/44 levels; five carried steps
+precision: WRF REAL32; gfortran -O0 -ffp-contract=off -finit-real=zero -finit-integer=0 -finit-logical=false; traps off
+staggering: bottom-up mass levels n; caller p8w interfaces n+1
+scope: full columns only; experimental zero-defined upstream behavior; GPU and coupled-forecast fidelity pending
+variables:
+  - {name: rublten, units: m s-2, shape: '[n]', dtype: float32}
+  - {name: rvblten, units: m s-2, shape: '[n]', dtype: float32}
+  - {name: rthblten, units: K s-1, shape: '[n]', dtype: float32}
+  - {name: rqvblten, units: kg kg-1 s-1, shape: '[n]', dtype: float32}
+  - {name: rqcblten, units: kg kg-1 s-1, shape: '[n]', dtype: float32}
+  - {name: rqiblten, units: kg kg-1 s-1, shape: '[n]', dtype: float32}
+  - {name: tke, units: m2 s-2, shape: '[n]', dtype: float32}
+  - {name: epsilon, units: m2 s-3, shape: '[n]', dtype: float32}
+  - {name: tpe, units: K2, shape: '[n]', dtype: float32}
+  - {name: prandtl, units: '1', shape: '[n]', dtype: float32}
+  - {name: tke_adv, units: m2 s-2, shape: '[n]', dtype: float32}
+  - {name: epsilon_adv, units: m2 s-3, shape: '[n]', dtype: float32}
+  - {name: tpe_adv, units: K2, shape: '[n]', dtype: float32}
+  - {name: exch_m, units: m2 s-1, shape: '[n]', dtype: float32}
+  - {name: exch_h, units: m2 s-1, shape: '[n]', dtype: float32}
+  - {name: wu, units: m2 s-2, shape: '[n]', dtype: float32}
+  - {name: wv, units: m2 s-2, shape: '[n]', dtype: float32}
+  - {name: wt, units: K m s-1, shape: '[n]', dtype: float32}
+  - {name: wq, units: kg kg-1 m s-1, shape: '[n]', dtype: float32}
+  - {name: pblh, units: m, shape: '[1]', dtype: float32}
+  - {name: kpbl, units: '1', shape: '[1]', dtype: int32}
+tolerances:
+  state_diagnostics: 16 float32 ulps at field scale
+  tendency_flux: propagated 16 input-state ulps; exact formula in full_compare.py declared before candidate
+  integer_fields: exact
+  nonfinite_values: reject both candidate and reference
+files:
+  - {path: full_zero.json, sha256: 546c428abf24624a959b4c86cbe83d1a3bd2ca1ef452f60dbcaa352571927fb1}
+  - {path: initialization_sensitivity.json, scope: material zero-vs-sNaN sensitivity; both arms finite}
+license_notes: Generated numeric fixtures only; no pristine WRF source or binaries redistributed.

@@ -1,0 +1,142 @@
+{
+  "status": "FIXED: complete CPU lane gate and critic native E78 fix; GPU/coupled-forecast qualification pending",
+  "measured_science_commit": "ec6263994114cc653632c958b44956f171c705e1",
+  "measured_main_base": "1a21233bc",
+  "latest_main_since_measurement": {
+    "commit": "8b60d0854f8f990d720c3f52c3d3a342319909ad",
+    "scope": "main u2-streams/portability/diagnostics merged; preserved exact main carry/restart prefix then TEMF. Original qualification and compiled model math reused for host-only fix per native_fix_source_reuse.json."
+  },
+  "implementation": {
+    "namelist_pair": {
+      "bl_pbl_physics": 10,
+      "sf_sfclay_physics": 10
+    },
+    "land_options": [
+      0,
+      4
+    ],
+    "pipelines": [
+      "daily",
+      "nested"
+    ],
+    "real_carry": "13 profiles plus 5 Registry surface fields and held surface diagnostics; floating leaves float32",
+    "restart": [
+      "pickle evolved nonzero continuation",
+      "NetCDF",
+      "active missing-marker refusal"
+    ],
+    "history": "18 exact Registry names plus held surface fields; initialized lead-zero input authority preserved"
+  },
+  "original_wrf_qualification": {
+    "version": "4.7.1",
+    "pbl_records": 72,
+    "pbl_scalar_outputs": 57744,
+    "pbl_byte_mismatches": 0,
+    "surface_records": 96,
+    "surface_scalar_outputs": 1920,
+    "surface_max_ulp": 6,
+    "frozen_gate_ulp": 8,
+    "cpu_flags": "--xla_cpu_max_isa=AVX --xla_disable_hlo_passes=algsimp",
+    "no_tolerance_change": true,
+    "active_regimes": {
+      "thermal_records": 36,
+      "convective_cloud_records": 18,
+      "cloud_top_above_dry_height_records": 12,
+      "parcel_liquid_records": 20
+    },
+    "fp64_ops_in_temf_kernel_hlo": 0
+  },
+  "tests": {
+    "shared": {
+      "tests": "253",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0",
+      "time": "555.551"
+    },
+    "owned": {
+      "tests": "16",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0",
+      "time": "33.119"
+    },
+    "archive": {
+      "tests": "1",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0",
+      "time": "3.749"
+    },
+    "composed": {
+      "tests": "85",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0",
+      "time": "75.741"
+    }
+  },
+  "mutant": {
+    "change": "remove WRF INTEGER taper",
+    "numeric_failed_field_records": 438,
+    "assertion_failures": 1,
+    "setup_errors": 0,
+    "verdict": "KILLED"
+  },
+  "real_cpu_smoke": {
+    "case": "<USER_HOME>/wrf_gpu2_lanes/release-docs/RD11/cpu",
+    "grid": [
+      42,
+      42,
+      44
+    ],
+    "dt_s": 18,
+    "steps": 3,
+    "nonfinite": 0,
+    "guard_total": 0,
+    "sha": "37a2c684944f823e3df2e92979868a6ea34ce8db3b7ebd775e2812668f3143ea",
+    "final_composed_trace_same": true,
+    "kernels_bridge_and_fixtures_byte_same": true,
+    "qualification_scope": "finite coupled CPU smoke; stable case; active thermals covered by independent column oracle"
+  },
+  "default_regression": {
+    "release_sha": "2bf12cb8374d3a84a440e47dea4b77b0c7436108fc2ee2616bba6ec79b17962a",
+    "exact_required_sha": true,
+    "scope": "CPU trace identity only; not original-WRF fidelity or GPU executable identity"
+  },
+  "memory_performance": {
+    "temf_logical_carry_bytes": 4177152,
+    "cpu_pbl_temp_bytes_72_records": 941696,
+    "cpu_pbl_compile_s_tf09": 3.1582410521805286,
+    "cpu_surface_temp_bytes_96_records": 1152,
+    "cpu_surface_compile_s_tf09": 0.3201753532048315,
+    "default_temf_leaves": 0,
+    "gpu_compile": "NOT RUN",
+    "gpu_launches_peak_vram_and_speed": "UNMEASURED; no claims",
+    "pending": "GPU contraction/fidelity, efficient GPU column execution, E41 and full forecast D6"
+  },
+  "baseline_failure": {
+    "test": "tests/contracts/test_v060_physics_interfaces.py::test_interfaces_self_check_and_scheme_specs_cover_v060_options",
+    "result": "microphysics:18 oracle must be a WRF savepoint gate; reproduced on immutable MAIN489a91483; unrelated to TEMF",
+    "artifact": "<USER_HOME>/wrf_gpu2_lanes/s2-temf/TF07_main_interfaces.log"
+  },
+  "artifacts": "<USER_HOME>/wrf_gpu2_lanes/s2-temf",
+  "cache": "NONE GPUWRF_JAX_CACHE0",
+  "gpu_used": false,
+  "experiments": "TF01-TF20 incl suffix/setup/discard arms, TF19 guard setup and TF19b genuine native deletion mutant; all logged MAIN EXPERIMENTS.tsv",
+  "retained_receipts": {
+    "coupled_smoke.json": "ac796d2824c7736dc6f332c2b523d4206b6a7576964b0f64ecbd904709df4f14",
+    "final_rebase_scope.json": "d1cdd7763f6e06668a37d0e506e4e2f12f679fcc7cac31eaf562dff53ed708c0",
+    "mutant.json": "8133d040bb77f62c0f4e7b064605661f0bedf63288082093e74aac50d4001f0a",
+    "native_fix_source_reuse.json": "5caf93e75215353dbd412ce185089acbc340a79141ffbddec62888a66e73d8a4",
+    "native_restart_fix.json": "ae82301d9b4c17b00b24e3bb14bec26874ee50123aceabf8c92a0e2e77a202e2",
+    "pbl_cpu.json": "9713f07c91000699fc5447a3121537b0c33b412c4ab6449e55ed4f6f31a7337d",
+    "release_identity.json": "882ddb968d4569312972cd4cac9e18a7c2e63a273ef01841c4bc17cfc6a3c4f5",
+    "source_reuse.json": "6c6f9493b24c4b0727860d49cd79c67fcccb00edef107e4ca4d0dec1adf65ffa",
+    "surface_cpu.json": "3c273b2b8dc0d0661e69b3ac6d4316ef19c7ad54db8befc9f30f32463036746e",
+    "temf_program_identity.json": "8f8c4e4b2fd0ac8d070bca5b879bca93eb1c3394ac9409378431bae17bbc1e81"
+  },
+  "final_rebased_implementation_commit": "f0bd892aa0592f82608f4904bebba37febe1e64c",
+  "critic_required_fix": "native_restart_fix.json",
+  "native_fix_source_reuse": "native_fix_source_reuse.json"
+}

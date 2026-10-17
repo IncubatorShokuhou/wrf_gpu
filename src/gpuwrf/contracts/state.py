@@ -13,12 +13,20 @@ import jax
 from jax import config
 import jax.numpy as jnp
 
+from .ice_diagnostics import ICE_DIAGNOSTIC_LEAVES, ice_diagnostic_leaves
 from .grid import GridSpec
 from .precision import (
     DEFAULT_DTYPES, GWDO_DIAGNOSTIC_LEAVES,
-    GWDO_VOLUME_DIAGNOSTIC_LEAVES, GWDO_SURFACE_DIAGNOSTIC_LEAVES,
+    GWDO_VOLUME_DIAGNOSTIC_LEAVES, GWDO_SURFACE_DIAGNOSTIC_LEAVES, P3_STATE_LEAVES,
+    EPSILON_PBL_SCALARS, EPSILON_PBL_LEAVES, JENSEN_STATE_LEAVES,
+    NTU_STATE_LEAVES, NTU_SCALAR_LEAVES, NTU_SURFACE_LEAVES,
+    FERRIER_CARRY_LEAVES,
+    GODDARD4ICE_CARRY_LEAVES, GODDARD4ICE_HISTORY_LEAVES, THOMPSON_HAIL_SURFACE_LEAVES,
+    WRITER_PROFILE_LEAVES,
 )
 
+
+from gpuwrf.contracts.cammg_fields import STATE_FIELDS as CAMMG_STATE_FIELDS, MASS_FIELDS as CAMMG_MASS_FIELDS, INTERFACE_FIELDS as CAMMG_INTERFACE_FIELDS, SURFACE_FIELDS as CAMMG_SURFACE_FIELDS
 
 configure_jax_x64()
 
@@ -29,23 +37,30 @@ def mynn_sfc_wspd_enabled() -> bool:
 
 
 def _gpu_device() -> jax.Device:
-    """Centralizes the mandatory GPU check used by constructors and self-test."""
+    """Selected JAX device; retain the helper name for existing callers."""
 
     devices = [device for device in jax.devices() if device.platform == "gpu"]
     if not devices:
-        raise RuntimeError("State.zeros requires a GPU device; no JAX GPU backend is visible")
-    return devices[0]
+        return jax.devices()[0]  # Portable JAX backend (CPU/TPU/Metal).
+    return _require_supported_gpu_architecture(devices[0])
 
 
 def _zeros(shape: tuple[int, ...], field: str, device: jax.Device) -> jax.Array:
-    """Allocates one frozen state/tendency field on the selected GPU during init only."""
+    """Allocate one state/tendency field on the selected device during init only."""
 
-    return jax.device_put(jnp.zeros(shape, dtype=DEFAULT_DTYPES.dtype_for(field)), device)
+    create = jnp.ones if field == "f_rimef_phy" else jnp.zeros
+    return jax.device_put(create(shape, dtype=DEFAULT_DTYPES.dtype_for(field)), device)
 
 
-HAIL_MP_PHYSICS_OPTIONS: frozenset[int] = frozenset({7, 17, 18, 19, 21, 22, 24, 26, 27, 38})
+HAIL_MP_PHYSICS_OPTIONS: frozenset[int] = frozenset({7, 17, 18, 19, 24, 26, 27, 38})
 HAIL_CONDITIONAL_LEAVES: tuple[str, ...] = ("qh", "Nh", "qvolg", "qvolh", "hail_acc")
 AEROSOL_CONDITIONAL_LEAVES: tuple[str, ...] = ("nwfa", "nifa")
+EXTRA_SCALAR_BOUNDARY_SPECIES: tuple[str, ...] = (
+    "qh", "Nc", "Nn", "Ns", "Ng", "Nh", "qvolg", "qvolh", "nwfa", "nifa",
+    *EPSILON_PBL_SCALARS,
+    "qt", "qrimef",
+    *NTU_SCALAR_LEAVES,
+)
 SCALAR_BOUNDARY_OPTIONAL_LEAVES: tuple[str, ...] = (
     "qc_bdy",
     "qr_bdy",
@@ -64,7 +79,17 @@ CONDITIONAL_STATE_LEAVES: tuple[str, ...] = (
     "nifa",
     "hail_acc",
     *SCALAR_BOUNDARY_OPTIONAL_LEAVES,
+    *(f"{name}_bdy" for name in EXTRA_SCALAR_BOUNDARY_SPECIES),
     "sfc_wspd",
+    *P3_STATE_LEAVES,
+    "tracers", "tracer_bdy", "tracer_budget",
+    *FERRIER_CARRY_LEAVES,
+    *GODDARD4ICE_CARRY_LEAVES, *GODDARD4ICE_HISTORY_LEAVES, *THOMPSON_HAIL_SURFACE_LEAVES,
+    *JENSEN_STATE_LEAVES,
+    *WRITER_PROFILE_LEAVES,
+    *NTU_STATE_LEAVES,
+    *CAMMG_STATE_FIELDS,
+    *ICE_DIAGNOSTIC_LEAVES,
 )
 
 
@@ -75,13 +100,40 @@ def conditional_state_leaves_for_mp(
 ) -> tuple[str, ...]:
     """Return State leaves that must exist for a static microphysics selection."""
 
-    if include_all_conditional:
-        return ("qh", "Nh", "qvolg", "qvolh", "nwfa", "nifa", "hail_acc")
     mp = 8 if mp_physics is None else int(mp_physics)
+    if include_all_conditional:
+        # Preserve the legacy scan tail, but CAM-MG histories/optics belong
+        # only to Registry's mp11 package (including its retained PBL work).
+        cammg = CAMMG_STATE_FIELDS if mp == 11 else ()
+        return ("qh", "Nh", "qvolg", "qvolh", "nwfa", "nifa", "hail_acc", *P3_STATE_LEAVES, *FERRIER_CARRY_LEAVES, *GODDARD4ICE_CARRY_LEAVES, *GODDARD4ICE_HISTORY_LEAVES, *THOMPSON_HAIL_SURFACE_LEAVES, *JENSEN_STATE_LEAVES, *NTU_STATE_LEAVES, *cammg, *ICE_DIAGNOSTIC_LEAVES)
+    if mp == 11:
+        return CAMMG_STATE_FIELDS
+    if mp == 9:
+        return ("qh", "Nh", "hail_acc")
+    if mp == 19:
+        return ("qh", "qvolg", "hail_acc")
+    if mp == 22:
+        # WRF nssl_hail_on=0, nssl_density_on=1: graupel volume only.
+        return ("qvolg",)
+    if mp == 5:
+        return ("qt", "f_ice_phy", "f_rain_phy", "f_rimef_phy", "ferrier_sr")
+    if mp == 15:
+        return ("qrimef", "ferrier_sr")
+    if mp == 7:
+        return ("qh", "hail_acc", *GODDARD4ICE_CARRY_LEAVES, *GODDARD4ICE_HISTORY_LEAVES)
+    if mp == 38:
+        return ("qvolg", "nwfa", "nifa", *THOMPSON_HAIL_SURFACE_LEAVES)
     if mp in HAIL_MP_PHYSICS_OPTIONS:
         return HAIL_CONDITIONAL_LEAVES
     if mp == 28:
         return AEROSOL_CONDITIONAL_LEAVES
+    if mp in (50, 51, 52, 53):
+        common = ("qir", "qib", "mp_th_old", "mp_qv_old", *ice_diagnostic_leaves(mp))
+        return common + (("qi2", "Ni2", "qir2", "qib2") if mp == 52 else ("qzi",) if mp == 53 else ())
+    if mp == 55:
+        return ("qi2", "Ni2", *JENSEN_STATE_LEAVES, *ice_diagnostic_leaves(mp))
+    if mp == 56:
+        return ("qh", "Nh", "hail_acc", *NTU_STATE_LEAVES)
     return ()
 
 
@@ -197,12 +249,7 @@ def _state_field_shapes(
     if active & set(HAIL_CONDITIONAL_LEAVES):
         # v0.17 ADR-032 graupel/hail substrate, allocated only for hail-family
         # static microphysics selections.
-        shapes.update({
-            "qh": mass_3d,
-            "Nh": mass_3d,
-            "qvolg": mass_3d,
-            "qvolh": mass_3d,
-        })
+        shapes.update({name: mass_3d for name in ("qh", "Nh", "qvolg", "qvolh") if name in active})
     if active & set(AEROSOL_CONDITIONAL_LEAVES):
         # v0.16 aerosol-aware Thompson (mp=28) prognostic aerosol numbers.
         shapes.update({
@@ -212,6 +259,21 @@ def _state_field_shapes(
     if "hail_acc" in active:
         # v0.17 hail microphysics surface-precip accumulator.
         shapes["hail_acc"] = surface_2d
+    shapes.update({name: mass_3d for name in P3_STATE_LEAVES if name in active})
+    shapes.update({name: mass_3d for name in JENSEN_STATE_LEAVES if name in active})
+    shapes.update({name: mass_3d for name in NTU_SCALAR_LEAVES if name in active})
+    shapes.update({name: surface_2d for name in NTU_SURFACE_LEAVES if name in active})
+    shapes.update({name: mass_3d for name in ICE_DIAGNOSTIC_LEAVES if name in active})
+    shapes.update({name: mass_3d for name in FERRIER_CARRY_LEAVES if name in active})
+    if "ferrier_sr" in active:
+        shapes["ferrier_sr"] = surface_2d
+    shapes.update({name: mass_3d for name in GODDARD4ICE_CARRY_LEAVES + GODDARD4ICE_HISTORY_LEAVES if name in active})
+    shapes.update({name: surface_2d for name in THOMPSON_HAIL_SURFACE_LEAVES if name in active})
+    if "goddard_sr" in active:
+        shapes["goddard_sr"] = surface_2d
+    shapes.update({name: mass_3d for name in CAMMG_MASS_FIELDS if name in active})
+    shapes.update({name: (grid.nz + 1, grid.ny, grid.nx) for name in CAMMG_INTERFACE_FIELDS if name in active})
+    shapes.update({name: surface_2d for name in CAMMG_SURFACE_FIELDS if name in active})
     return shapes
 
 
@@ -240,7 +302,7 @@ class BaseState:
     helpers do not infer static WRF quantities from reduced c1 state.
     """
 
-    __slots__ = ("pb", "phb", "mub", "t0", "theta_base")
+    __slots__ = ("pb", "phb", "mub", "t0", "theta_base", "alb")
 
     def __init__(
         self,
@@ -249,12 +311,16 @@ class BaseState:
         mub: jax.Array,
         t0: jax.Array,
         theta_base: jax.Array,
+        alb: jax.Array | None = None,
     ) -> None:
         self.pb = pb
         self.phb = phb
         self.mub = mub
         self.t0 = t0
         self.theta_base = theta_base
+        # Opt-in two-way feedback makes ALB independent of PHB/MUB.
+        # None preserves the released base leaves and reconstruction path.
+        self.alb = alb
 
     @classmethod
     def zeros(cls, grid: GridSpec) -> "BaseState":
@@ -279,7 +345,7 @@ class BaseState:
     def replace(self, **updates) -> "BaseState":
         """Returns an updated base-state pytree with explicit field names."""
 
-        values = {name: getattr(self, name) for name in self.__slots__}
+        values = {name: getattr(self, name, None) for name in self.__slots__}
         values.update(updates)
         return type(self)(**values)
 
@@ -292,7 +358,7 @@ class BaseState:
     def tree_flatten(self):
         """Presents base-state arrays as JAX leaves."""
 
-        return tuple(getattr(self, name) for name in self.__slots__), None
+        return tuple(getattr(self, name, None) for name in self.__slots__), None
 
     @classmethod
     def tree_unflatten(cls, aux, children):
@@ -642,6 +708,27 @@ class State:
         "re_cloud",
         "re_ice",
         "re_snow",
+        # WRF km_opt=2 LES TKE (grid%tke_2, REAL, restart-only). Absent unless
+        # diff_opt=2/km_opt=2; seeded (zeros, WRF Registry init) before the scan.
+        "tke",
+        # Extra Registry moist/scalar force-down records. None outside the
+        # selected live-child scheme; append-only to preserve old slot order.
+        *(f"{name}_bdy" for name in EXTRA_SCALAR_BOUNDARY_SPECIES[:10]),
+        "sms_br", "sms_rmol", "sms_wspd", "sms_gamu", "sms_gamv",
+        "sms_ustm",
+        *P3_STATE_LEAVES,
+        *(f"{name}_bdy" for name in EPSILON_PBL_SCALARS),
+        *EPSILON_PBL_LEAVES,
+        "tracers", "tracer_bdy", "tracer_budget",
+        "qt_bdy", "qrimef_bdy",
+        *FERRIER_CARRY_LEAVES,
+        *GODDARD4ICE_CARRY_LEAVES, *GODDARD4ICE_HISTORY_LEAVES, *THOMPSON_HAIL_SURFACE_LEAVES,
+        *JENSEN_STATE_LEAVES,
+        *WRITER_PROFILE_LEAVES,
+        *NTU_STATE_LEAVES,
+        *(f"{name}_bdy" for name in NTU_SCALAR_LEAVES),
+        *CAMMG_STATE_FIELDS,
+        *ICE_DIAGNOSTIC_LEAVES,
     )
 
     def __init__(
@@ -748,7 +835,163 @@ class State:
         re_cloud: jax.Array | None = None,
         re_ice: jax.Array | None = None,
         re_snow: jax.Array | None = None,
+        tke: jax.Array | None = None,
+        qh_bdy: jax.Array | None = None,
+        Nc_bdy: jax.Array | None = None,
+        Nn_bdy: jax.Array | None = None,
+        Ns_bdy: jax.Array | None = None,
+        Ng_bdy: jax.Array | None = None,
+        Nh_bdy: jax.Array | None = None,
+        qvolg_bdy: jax.Array | None = None,
+        qvolh_bdy: jax.Array | None = None,
+        nwfa_bdy: jax.Array | None = None,
+        nifa_bdy: jax.Array | None = None,
+        sms_br: jax.Array | None = None,
+        sms_rmol: jax.Array | None = None,
+        sms_wspd: jax.Array | None = None,
+        sms_gamu: jax.Array | None = None,
+        sms_gamv: jax.Array | None = None,
+        sms_ustm: jax.Array | None = None,
+        qir: jax.Array | None = None,
+        qib: jax.Array | None = None,
+        qi2: jax.Array | None = None,
+        Ni2: jax.Array | None = None,
+        qir2: jax.Array | None = None,
+        qib2: jax.Array | None = None,
+        qzi: jax.Array | None = None,
+        mp_th_old: jax.Array | None = None,
+        mp_qv_old: jax.Array | None = None,
+        pek_adv_bdy: jax.Array | None = None,
+        pep_adv_bdy: jax.Array | None = None,
+        tke_adv_bdy: jax.Array | None = None,
+        diss_adv_bdy: jax.Array | None = None,
+        tpe_adv_bdy: jax.Array | None = None,
+        epsilon_pbl: jax.Array | None = None,
+        tpe_pbl: jax.Array | None = None,
+        pr_pbl: jax.Array | None = None,
+        pek_adv: jax.Array | None = None,
+        pep_adv: jax.Array | None = None,
+        tke_adv: jax.Array | None = None,
+        diss_adv: jax.Array | None = None,
+        tpe_adv: jax.Array | None = None,
+        epsilon_exch_h: jax.Array | None = None,
+        epsilon_exch_m: jax.Array | None = None,
+        epsilon_wu: jax.Array | None = None,
+        epsilon_wv: jax.Array | None = None,
+        epsilon_wt: jax.Array | None = None,
+        epsilon_wq: jax.Array | None = None,
+        epsilon_pbl_step: jax.Array | None = None,
+        tracers: jax.Array | None = None,
+        tracer_bdy: jax.Array | None = None,
+        tracer_budget: jax.Array | None = None,
+        qt_bdy: jax.Array | None = None,
+        qrimef_bdy: jax.Array | None = None,
+        qt: jax.Array | None = None,
+        f_ice_phy: jax.Array | None = None,
+        f_rain_phy: jax.Array | None = None,
+        f_rimef_phy: jax.Array | None = None,
+        qrimef: jax.Array | None = None,
+        ferrier_sr: jax.Array | None = None,
+        acphysc: jax.Array | None = None,
+        acphyse: jax.Array | None = None,
+        acphysd: jax.Array | None = None,
+        acphyss: jax.Array | None = None,
+        acphysm: jax.Array | None = None,
+        acphysf: jax.Array | None = None,
+        re_cloud_gsfc: jax.Array | None = None,
+        re_rain_gsfc: jax.Array | None = None,
+        re_ice_gsfc: jax.Array | None = None,
+        re_snow_gsfc: jax.Array | None = None,
+        re_graupel_gsfc: jax.Array | None = None,
+        re_hail_gsfc: jax.Array | None = None,
+        goddard_sr: jax.Array | None = None,
+        phys_tot: jax.Array | None = None,
+        nwfa2d: jax.Array | None = None,
+        nifa2d: jax.Array | None = None,
+        thompson_sr: jax.Array | None = None,
+        thompson_rainnc: jax.Array | None = None,
+        thompson_snownc: jax.Array | None = None,
+        qvoli: jax.Array | None = None,
+        qaoli: jax.Array | None = None,
+        qvoli2: jax.Array | None = None,
+        qaoli2: jax.Array | None = None,
+        qi3: jax.Array | None = None,
+        Ni3: jax.Array | None = None,
+        qvoli3: jax.Array | None = None,
+        qaoli3: jax.Array | None = None,
+        rimi: jax.Array | None = None,
+        exch_tke: jax.Array | None = None,
+        ntu_qdcn: jax.Array | None = None,
+        ntu_qtcn: jax.Array | None = None,
+        ntu_qccn: jax.Array | None = None,
+        ntu_qrcn: jax.Array | None = None,
+        ntu_qnin: jax.Array | None = None,
+        ntu_fi: jax.Array | None = None,
+        ntu_fs: jax.Array | None = None,
+        ntu_vi: jax.Array | None = None,
+        ntu_vs: jax.Array | None = None,
+        ntu_vg: jax.Array | None = None,
+        ntu_ai: jax.Array | None = None,
+        ntu_as: jax.Array | None = None,
+        ntu_ag: jax.Array | None = None,
+        ntu_ah: jax.Array | None = None,
+        ntu_i3m: jax.Array | None = None,
+        ntu_rainnc: jax.Array | None = None,
+        ntu_snownc: jax.Array | None = None,
+        ntu_sr: jax.Array | None = None,
+        ntu_qdcn_bdy: jax.Array | None = None,
+        ntu_qtcn_bdy: jax.Array | None = None,
+        ntu_qccn_bdy: jax.Array | None = None,
+        ntu_qrcn_bdy: jax.Array | None = None,
+        ntu_qnin_bdy: jax.Array | None = None,
+        ntu_fi_bdy: jax.Array | None = None,
+        ntu_fs_bdy: jax.Array | None = None,
+        ntu_vi_bdy: jax.Array | None = None,
+        ntu_vs_bdy: jax.Array | None = None,
+        ntu_vg_bdy: jax.Array | None = None,
+        ntu_ai_bdy: jax.Array | None = None,
+        ntu_as_bdy: jax.Array | None = None,
+        ntu_ag_bdy: jax.Array | None = None,
+        ntu_ah_bdy: jax.Array | None = None,
+        ntu_i3m_bdy: jax.Array | None = None,
+        rh_old_mp: jax.Array | None = None,
+        lcd_old_mp: jax.Array | None = None,
+        cldfra_old_mp: jax.Array | None = None,
+        cldfra_mp: jax.Array | None = None,
+        cldfra_mp_all: jax.Array | None = None,
+        cldfra_conv: jax.Array | None = None,
+        cldfrai: jax.Array | None = None,
+        cldfral: jax.Array | None = None,
+        wsedl3d: jax.Array | None = None,
+        lradius: jax.Array | None = None,
+        iradius: jax.Array | None = None,
+        cam_kvh3d: jax.Array | None = None,
+        cam_tke_pbl: jax.Array | None = None,
+        cam_turbtype3d: jax.Array | None = None,
+        cam_smaw3d: jax.Array | None = None,
+        cam_rainnc: jax.Array | None = None,
+        cam_snownc: jax.Array | None = None,
+        cam_sr: jax.Array | None = None,
+        cam_fatal: jax.Array | None = None,
+        cam_snowh: jax.Array | None = None,
+        d_ice: jax.Array | None = None,
+        rho_ice: jax.Array | None = None,
+        v_ice: jax.Array | None = None,
+        phi_ice: jax.Array | None = None,
+        d_ice2: jax.Array | None = None,
+        rho_ice2: jax.Array | None = None,
+        v_ice2: jax.Array | None = None,
+        phi_ice2: jax.Array | None = None,
+        d_ice3: jax.Array | None = None,
+        rho_ice3: jax.Array | None = None,
+        v_ice3: jax.Array | None = None,
+        phi_ice3: jax.Array | None = None,
     ) -> None:
+        self.rimi = None if rimi is None else jnp.asarray(rimi, jnp.float32)
+        self.exch_tke = None if exch_tke is None else jnp.asarray(exch_tke, jnp.float32)
+        self.tracers = None if tracers is None else jnp.asarray(tracers, dtype=jnp.float32)
+        self.tracer_bdy = None if tracer_bdy is None else jnp.asarray(tracer_bdy, dtype=jnp.float32)
+        self.tracer_budget = None if tracer_budget is None else jnp.asarray(tracer_budget, dtype=jnp.float32)
         self.u = u
         self.v = v
         self.w = w
@@ -894,6 +1137,50 @@ class State:
                                if value is None else _as_dtype(value, dtype))
         for name, value in (("re_cloud", re_cloud), ("re_ice", re_ice), ("re_snow", re_snow)):
             object.__setattr__(self, name, None if value is None else _as_dtype(value, DEFAULT_DTYPES.dtype_for(name)))
+        object.__setattr__(self, "tke", None if tke is None else _as_dtype(tke, DEFAULT_DTYPES.dtype_for("tke")))
+        for name, value in (
+            ("qh", qh_bdy), ("Nc", Nc_bdy), ("Nn", Nn_bdy), ("Ns", Ns_bdy),
+            ("Ng", Ng_bdy), ("Nh", Nh_bdy), ("qvolg", qvolg_bdy),
+            ("qvolh", qvolh_bdy), ("nwfa", nwfa_bdy), ("nifa", nifa_bdy),
+            ("pek_adv", pek_adv_bdy), ("pep_adv", pep_adv_bdy), ("tke_adv", tke_adv_bdy),
+            ("diss_adv", diss_adv_bdy), ("tpe_adv", tpe_adv_bdy),
+            ("qt", qt_bdy), ("qrimef", qrimef_bdy),
+        ):
+            object.__setattr__(self, f"{name}_bdy", None if value is None else _as_dtype(value, jnp.float32))
+        for name, value in (("sms_br",sms_br),("sms_rmol",sms_rmol),("sms_wspd",sms_wspd),
+                            ("sms_gamu",sms_gamu),("sms_gamv",sms_gamv),("sms_ustm",sms_ustm)):
+            object.__setattr__(self,name,None if value is None else _as_dtype(value,jnp.float32))
+        for name, value in zip(P3_STATE_LEAVES, (qir, qib, qi2, Ni2, qir2, qib2, qzi, mp_th_old, mp_qv_old)):
+            object.__setattr__(self, name, None if value is None else _as_dtype(value, jnp.float32))
+        for name, value in zip(ICE_DIAGNOSTIC_LEAVES,
+                               (d_ice, rho_ice, v_ice, phi_ice, d_ice2, rho_ice2, v_ice2, phi_ice2,
+                                d_ice3, rho_ice3, v_ice3, phi_ice3), strict=True):
+            object.__setattr__(self, name, None if value is None else _as_dtype(value, jnp.float32))
+        for name, value in zip(JENSEN_STATE_LEAVES, (qvoli,qaoli,qvoli2,qaoli2,qi3,Ni3,qvoli3,qaoli3),strict=True):
+            object.__setattr__(self,name,None if value is None else _as_dtype(value,jnp.float32))
+        for name, value in zip(NTU_STATE_LEAVES, (ntu_qdcn, ntu_qtcn, ntu_qccn, ntu_qrcn, ntu_qnin, ntu_fi, ntu_fs, ntu_vi, ntu_vs, ntu_vg, ntu_ai, ntu_as, ntu_ag, ntu_ah, ntu_i3m, ntu_rainnc, ntu_snownc, ntu_sr), strict=True):
+            object.__setattr__(self, name, None if value is None else _as_dtype(value, jnp.float32))
+        for name, value in (('ntu_qdcn', ntu_qdcn_bdy),('ntu_qtcn', ntu_qtcn_bdy),('ntu_qccn', ntu_qccn_bdy),('ntu_qrcn', ntu_qrcn_bdy),('ntu_qnin', ntu_qnin_bdy),('ntu_fi', ntu_fi_bdy),('ntu_fs', ntu_fs_bdy),('ntu_vi', ntu_vi_bdy),('ntu_vs', ntu_vs_bdy),('ntu_vg', ntu_vg_bdy),('ntu_ai', ntu_ai_bdy),('ntu_as', ntu_as_bdy),('ntu_ag', ntu_ag_bdy),('ntu_ah', ntu_ah_bdy),('ntu_i3m', ntu_i3m_bdy)):
+            object.__setattr__(self, f"{name}_bdy", None if value is None else _as_dtype(value, jnp.float32))
+        for name, value in zip(EPSILON_PBL_LEAVES,
+                               (epsilon_pbl,tpe_pbl,pr_pbl,pek_adv,pep_adv,tke_adv,diss_adv,tpe_adv,
+                                epsilon_exch_h,epsilon_exch_m,epsilon_wu,epsilon_wv,epsilon_wt,epsilon_wq,
+                                epsilon_pbl_step),strict=True):
+            object.__setattr__(self,name,None if value is None else _as_dtype(value,DEFAULT_DTYPES.dtype_for(name)))
+        for name, value in (("qt", qt), ("f_ice_phy", f_ice_phy), ("f_rain_phy", f_rain_phy),
+                            ("f_rimef_phy", f_rimef_phy), ("qrimef", qrimef), ("ferrier_sr", ferrier_sr)):
+            object.__setattr__(self, name, None if value is None else _as_dtype(value, jnp.float32))
+        for name, value in (("acphysc", acphysc), ("acphyse", acphyse), ("acphysd", acphysd),
+                            ("acphyss", acphyss), ("acphysm", acphysm), ("acphysf", acphysf),
+                            ("re_cloud_gsfc", re_cloud_gsfc), ("re_rain_gsfc", re_rain_gsfc),
+                            ("re_ice_gsfc", re_ice_gsfc), ("re_snow_gsfc", re_snow_gsfc),
+                            ("re_graupel_gsfc", re_graupel_gsfc), ("re_hail_gsfc", re_hail_gsfc),
+                            ("goddard_sr", goddard_sr), ("phys_tot", phys_tot), ("nwfa2d", nwfa2d), ("nifa2d", nifa2d), ("thompson_sr", thompson_sr),
+                            ("thompson_rainnc", thompson_rainnc), ("thompson_snownc", thompson_snownc)):
+            object.__setattr__(self, name, None if value is None else _as_dtype(value, jnp.float32))
+
+        for name, value in zip(CAMMG_STATE_FIELDS, (rh_old_mp, lcd_old_mp, cldfra_old_mp, cldfra_mp, cldfra_mp_all, cldfra_conv, cldfrai, cldfral, wsedl3d, lradius, iradius, cam_kvh3d, cam_tke_pbl, cam_turbtype3d, cam_smaw3d, cam_rainnc, cam_snownc, cam_sr, cam_fatal, cam_snowh), strict=True):
+            object.__setattr__(self, name, None if value is None else _as_dtype(value, jnp.int32 if name == "cam_fatal" else jnp.float32))
 
     # --- v0.20 S1 legacy total aliases (read-only properties; not pytree leaves) ---
     # ``p``/``ph``/``mu`` were bitwise-identical duplicates of the totals carried
@@ -951,11 +1238,22 @@ class State:
         )
         updates: dict[str, jax.Array] = {}
         from gpuwrf.physics.rrtmg_mp_re import mp_re_active, RE_CLOUD_BG, RE_ICE_BG, RE_SNOW_BG
-        if mp_re_active(use_mp_re=int(use_mp_re), mp_physics=int(mp_physics or 0),
+        if int(mp_physics or 0) in (50,51,52,53,55):
+            # Registry P3 carries only cloud/ice radii; has_reqs=0 in WRF.
+            # physics_init.F:1268-1290 seeds RE_QC/QI_BG when flags are set;
+            # the later p3_main clear-column diagnostics (10/25um) differ.
+            radius_active = int(use_mp_re)==1 and int(ra_lw_physics)==4 and int(ra_sw_physics)==4
+            for name, background in (("re_cloud", RE_CLOUD_BG if radius_active else 0.),
+                                     ("re_ice", RE_ICE_BG if radius_active else 0.)):
+                if getattr(self, name) is None:
+                    updates[name] = jnp.full_like(self.qc, background, dtype=jnp.float32)
+            if self.re_snow is not None:
+                updates['re_snow'] = None
+        elif mp_re_active(use_mp_re=int(use_mp_re), mp_physics=int(mp_physics or 0),
                         ra_lw_physics=int(ra_lw_physics), ra_sw_physics=int(ra_sw_physics)):
             for name, background in (("re_cloud", RE_CLOUD_BG), ("re_ice", RE_ICE_BG), ("re_snow", RE_SNOW_BG)):
                 if getattr(self, name) is None:
-                    updates[name] = jnp.full_like(self.qc, background, dtype=jnp.float32)
+                    updates[name] = jnp.full_like(self.qc, 0 if int(mp_physics) == 7 else background, dtype=jnp.float32)
         else:
             for name in ("re_cloud", "re_ice", "re_snow"):
                 if getattr(self, name) is not None:
@@ -974,6 +1272,32 @@ class State:
             updates["nifa"] = jnp.zeros_like(self.qc, dtype=DEFAULT_DTYPES.dtype_for("nifa"))
         if "hail_acc" in active and self.hail_acc is None:
             updates["hail_acc"] = jnp.zeros_like(self.rain_acc, dtype=DEFAULT_DTYPES.dtype_for("hail_acc"))
+        for name in P3_STATE_LEAVES:
+            if name in active and getattr(self, name) is None:
+                updates[name] = jnp.zeros_like(self.qc, dtype=jnp.float32)
+        for name in ICE_DIAGNOSTIC_LEAVES:
+            if name in active and getattr(self, name) is None:
+                updates[name] = jnp.zeros_like(self.qc, dtype=jnp.float32)
+        for name in JENSEN_STATE_LEAVES:
+            if name in active and getattr(self,name) is None:
+                updates[name]=jnp.zeros_like(self.qc,dtype=jnp.float32)
+        for name in FERRIER_CARRY_LEAVES:
+            if name in active and getattr(self, name) is None:
+                create = jnp.ones_like if name == "f_rimef_phy" else jnp.zeros_like
+                updates[name] = create(self.rain_acc if name == "ferrier_sr" else self.qc, dtype=jnp.float32)
+        for name in GODDARD4ICE_CARRY_LEAVES + GODDARD4ICE_HISTORY_LEAVES:
+            if name in active and getattr(self, name) is None:
+                updates[name] = jnp.zeros_like(self.rain_acc if name == "goddard_sr" else self.qc, dtype=jnp.float32)
+        for name in NTU_STATE_LEAVES:
+            if name in active and getattr(self, name) is None:
+                updates[name] = jnp.zeros_like(self.rain_acc if name in NTU_SURFACE_LEAVES else self.qc, dtype=jnp.float32)
+        for name in THOMPSON_HAIL_SURFACE_LEAVES:
+            if name in active and getattr(self, name) is None:
+                updates[name] = jnp.zeros_like(self.rain_acc, dtype=jnp.float32)
+        for name in CAMMG_STATE_FIELDS:
+            if name in active and getattr(self, name) is None:
+                template = self.ph if name in CAMMG_INTERFACE_FIELDS else self.rain_acc if name in CAMMG_SURFACE_FIELDS else self.qc
+                updates[name] = jnp.zeros_like(template, dtype=jnp.int32 if name == "cam_fatal" else jnp.float32)
         return self if not updates else self.replace(**updates)
 
     def replace(self, *, _cast: bool = True, **updates) -> "State":
@@ -1053,7 +1377,10 @@ class State:
         for source in (dict_state, slot_state):
             for name, value in (source or {}).items():
                 object.__setattr__(self, name, value)
-        for name in (*GWDO_DIAGNOSTIC_LEAVES, "sfc_wspd", "re_cloud", "re_ice", "re_snow"):
+        for name in (*GWDO_DIAGNOSTIC_LEAVES, "sfc_wspd", "re_cloud", "re_ice", "re_snow", "tke",
+                     *WRITER_PROFILE_LEAVES,
+                     *(f"{n}_bdy" for n in EXTRA_SCALAR_BOUNDARY_SPECIES),
+                     "sms_br", "sms_rmol", "sms_wspd", "sms_gamu", "sms_gamv", "sms_ustm", *P3_STATE_LEAVES, *JENSEN_STATE_LEAVES, *NTU_STATE_LEAVES, *FERRIER_CARRY_LEAVES, *GODDARD4ICE_CARRY_LEAVES, *GODDARD4ICE_HISTORY_LEAVES, *THOMPSON_HAIL_SURFACE_LEAVES, *EPSILON_PBL_LEAVES, "tracers", "tracer_bdy", "tracer_budget", *CAMMG_STATE_FIELDS, *ICE_DIAGNOSTIC_LEAVES):
             if not hasattr(self, name):
                 object.__setattr__(self, name, None)
         for name in ("mol", "hfx", "qfx", "qsfc", "pblh"):
@@ -1130,6 +1457,25 @@ def main(argv: list[str] | None = None) -> int:
         return 0
     parser.print_help()
     return 0
+
+
+# Appended at the end of the module so no existing line moves (source locations in traced programs stay identical).
+_GPU_ARCHITECTURE_CHECKED: dict[tuple[object, ...], object] = {}
+
+
+def _require_supported_gpu_architecture(device: jax.Device) -> jax.Device:
+    """Refuse a CUDA GPU below sm_80 before any state lands on it (runtime/gpu_preflight.py).
+
+    Pure Python at allocation time, memoized per device and opt-in value: no traced program changes.
+    """
+
+    from gpuwrf.runtime.gpu_preflight import UNSUPPORTED_GPU_ENV, check_jax_device_architecture
+
+    key = (getattr(device, "id", None), str(getattr(device, "device_kind", "")),
+           os.environ.get(UNSUPPORTED_GPU_ENV, ""))
+    if key not in _GPU_ARCHITECTURE_CHECKED:
+        _GPU_ARCHITECTURE_CHECKED[key] = check_jax_device_architecture(device)
+    return device
 
 
 if __name__ == "__main__":

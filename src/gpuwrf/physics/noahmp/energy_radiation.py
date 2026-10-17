@@ -156,6 +156,18 @@ def snowalb_class(qsnow, dt, albold, p: "TwoStreamParams"):
     return alb, albsn, albsn
 
 
+def snowalb_bats(cosz, fage, bats):
+    """Verbatim SNOWALB_BATS equations; band constants from MPTABLE.TBL."""
+    sl, vis, nir, vis_age, nir_age, vis_dir, nir_dir = map(real_scalar, bats)
+    sl1 = 1.0 / sl
+    sl2 = 2.0 * sl
+    fzen = jnp.maximum((1.0 + sl1) / (1.0 + sl2 * cosz) - sl1, 0.0)
+    diffuse = (vis * (1.0 - vis_age * fage), nir * (1.0 - nir_age * fage))
+    direct = (diffuse[0] + vis_dir * fzen * (1.0 - diffuse[0]),
+              diffuse[1] + nir_dir * fzen * (1.0 - diffuse[1]))
+    return direct, diffuse
+
+
 def groundalb(smc1, fsno, albsnd, albsni, p: TwoStreamParams):
     """GROUNDALB (:3279-3332), IST=1 soil branch. Returns (albgrd, albgri)."""
     inc = jnp.maximum(0.11 - 0.40 * smc1, 0.0)  # (ny, nx)
@@ -166,7 +178,7 @@ def groundalb(smc1, fsno, albsnd, albsni, p: TwoStreamParams):
     return albgrd, albgri
 
 
-def twostream(ib, ic, cosz, vai, fwet, tveg, albgr_d, albgr_i, rho, tau, fveg, p: TwoStreamParams):
+def twostream(ib, ic, cosz, vai, fwet, tveg, albgr_d, albgr_i, rho, tau, fveg, p: TwoStreamParams, *, gaps=None):
     """TWOSTREAM (:3336-3574) for band ``ib`` and case ``ic`` (0=direct,
     1=diffuse), opt_rad=3. Vectorized over (ny, nx).
 
@@ -174,6 +186,7 @@ def twostream(ib, ic, cosz, vai, fwet, tveg, albgr_d, albgr_i, rho, tau, fveg, p
     """
     gap = jnp.where(vai == 0.0, 1.0, 1.0 - fveg)
     kopen = jnp.where(vai == 0.0, 1.0, 1.0 - fveg)
+    if gaps is not None:gap,kopen=gaps
 
     coszi = jnp.maximum(0.001, cosz)
     chil = jnp.minimum(jnp.maximum(p.xl, -0.4), 0.6)
@@ -273,6 +286,9 @@ def _radiation_twostream_impl(
     dt: float,
     *,
     _tile_bands=False,
+    opt_alb=2,
+    bats=None,
+    opt_rad=3, geometry=None,
 ):
     """RADIATION (:2684-2806). Returns (NoahMPRadInputs, extras dict).
 
@@ -302,6 +318,14 @@ def _radiation_twostream_impl(
         solai = jnp.stack([swdown * 0.3 * 0.5, swdown * 0.3 * 0.5], axis=0)
 
     vai = elai + esai
+    gap_kw={}
+    if opt_rad!=3:
+        from gpuwrf.physics.noahmp.radiation_options import canopy_gaps
+        if geometry is None:
+            if opt_rad==1:raise ValueError("opt_rad=1 requires table canopy geometry")
+            geometry=(jnp.ones_like(vai),jnp.ones_like(vai),jnp.zeros_like(vai))
+        gap,kopen,bgap,wgap=canopy_gaps(cosz,vai,fveg,*geometry,opt_rad=opt_rad)
+        gap_kw={"gaps":(gap,kopen)}
     fsno = jnp.where(snowh > 0.0, _fsno(snowh, sneqv, params), 0.0)
 
     # WRF ALBEDO (:2925-2988): SNOW_AGE runs ALWAYS (allows nighttime aging),
@@ -311,7 +335,14 @@ def _radiation_twostream_impl(
     day = cosz > 0.0
 
     tauss_new, _fage = snow_age(dt, tg, sneqvo, sneqv, land_state.tauss, params)
-    if _tile_bands:
+    if opt_alb == 1:
+        albsnd, albsni = snowalb_bats(cosz, _fage, bats)
+        if not _tile_bands:
+            albsnd, albsni = jnp.stack(albsnd), jnp.stack(albsni)
+        alb_new = land_state.albold  # only CLASS writes ALBOLD (WRF ALBEDO:2943-2945)
+    elif opt_alb != 2:
+        raise ValueError("Noah-MP opt_alb must be 1 (BATS) or 2 (CLASS)")
+    elif _tile_bands:
         alb_new = _snowalb_class_value(qsnow, dt, land_state.albold, params)
         albsnd = (alb_new, alb_new)
         albsni = (alb_new, alb_new)
@@ -340,10 +371,10 @@ def _radiation_twostream_impl(
     gdir_vis = None
     for ib in range(2):
         fab_d, fre_d, ftd_d, fti_d, gdir, _frv_d, _frg_d = twostream(
-            ib, 0, cosz, vai, fwet, tv, albgrd[ib], albgri[ib], rho[ib], tau[ib], fveg, params
+            ib, 0, cosz, vai, fwet, tv, albgrd[ib], albgri[ib], rho[ib], tau[ib], fveg, params,**gap_kw
         )
         fab_i, fre_i, ftd_i, fti_i, _gd, _frv_i, _frg_i = twostream(
-            ib, 1, cosz, vai, fwet, tv, albgrd[ib], albgri[ib], rho[ib], tau[ib], fveg, params
+            ib, 1, cosz, vai, fwet, tv, albgrd[ib], albgri[ib], rho[ib], tau[ib], fveg, params,**gap_kw
         )
         fabd.append(fab_d)
         albd.append(fre_d)
@@ -432,6 +463,7 @@ def _radiation_twostream_impl(
         "albold": albold_new,
         "vai": vai,
     }
+    if opt_rad==1:extras.update(bgap=bgap,wgap=wgap)
     return rad, extras
 
 
@@ -442,13 +474,26 @@ def radiation_twostream(
     phen: NoahMPPhenology,
     params: TwoStreamParams,
     dt: float,
+    *, opt_alb=2, bats=None, opt_rad=3,
 ):
     """Completed RADIATION phase, retaining the WRF REAL/legacy interfaces."""
+    rad_kw={}
+    if opt_rad!=3:
+        rad_kw["opt_rad"]=opt_rad
+        if opt_rad==1:
+            r=jnp.float32
+            category=jnp.asarray(static.ivgtyp,jnp.int32)
+            def gather(value):
+                value=jnp.asarray(value,r)
+                return value[category] if value.ndim==1 else value
+            rad_kw["geometry"]=tuple(gather(getattr(static.parameters,key)) for key in ("rc","hvt","hvb"))
     if native_real_enabled() and jax.default_backend() == "gpu":
         from gpuwrf.kernels.phys_noahmp_radiation import radiation_native
-        result = radiation_native(*real_tree((land_state, forcing, static, phen, params)), dt)
+        result = radiation_native(*real_tree((land_state, forcing, static, phen, params)), dt,
+                                  **({"opt_alb": opt_alb, "bats": bats} if opt_alb != 2 else {}),**rad_kw)
     else:
-        result = _radiation_twostream_impl(land_state, forcing, static, phen, params, dt)
+        result = _radiation_twostream_impl(land_state, forcing, static, phen, params, dt,
+                                          **({"opt_alb": opt_alb, "bats": bats} if opt_alb != 2 else {}),**rad_kw)
     # Export the completed radiation phase before the canopy and history consumers.
     return lax.optimization_barrier(result)
 

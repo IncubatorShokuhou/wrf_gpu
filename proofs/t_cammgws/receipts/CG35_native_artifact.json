@@ -1,0 +1,71 @@
+{
+ "kernel": "cammg_mp11_column",
+ "ptx_sha256": "9e34e7f47dc95d6d9a49b2eccc38a333c414adad489b1c78681e1d4f1b1aa1fe",
+ "ptx_bytes": 5158643,
+ "ptx_source": "exact PTX embedded in the CG35 executable (captured from stock_compile in the export process)",
+ "executable_sha256": "1b1d27e123f9b85adabe83961b4faf196fbe1cafce7c55d6d275b5715986696d",
+ "loaded_by": "jaxlib gpu_triton triton_kernel_call: in-process libnvptxcompiler (ptxas fallback) -> cuModuleLoadData; no driver JIT cache entry (CUDA_CACHE_PATH holds only a 5405-byte unrelated entry)",
+ "offline_assembler": "pip nvidia cu13 ptxas Build cuda_13.2.r13.2/compiler.37668154_0 (-arch=sm_120a -v), same CUDA 13.2 release as the in-process compiler; loaded image itself not extractable",
+ "cubin_sha256": "fc11e7442b39836567865961f070cba01dc1f943e0fbc2c35617bbea5d7b6a9f",
+ "cubin_bytes": 9302832,
+ "native_scan": [
+  {
+   "kernel": "cammg_mp11_column",
+   "regs": 255,
+   "stack": 1240,
+   "shared": 1024,
+   "local": 0,
+   "sass": 239848,
+   "calls": 1128,
+   "callees": 4,
+   "stl": 675,
+   "callee_rows": [
+    {
+     "function": "cammg_mp11_column",
+     "target_pc": 3823536,
+     "instructions": 138,
+     "nested_calls": 0
+    },
+    {
+     "function": "cammg_mp11_column",
+     "target_pc": 3825744,
+     "instructions": 85,
+     "nested_calls": 0
+    },
+    {
+     "function": "cammg_mp11_column",
+     "target_pc": 3827104,
+     "instructions": 466,
+     "nested_calls": 0
+    },
+    {
+     "function": "cammg_mp11_column",
+     "target_pc": 3834560,
+     "instructions": 176,
+     "nested_calls": 0
+    }
+   ],
+   "nonleaf_over1k": [],
+   "callgraph_unknown": [],
+   "callgraph_status": "PASS"
+  }
+ ],
+ "e41_disclosure": "STACK 1240 B > 256 B hard limit: disclosed for opt-in mp11 (v0.4.0 E41 policy); XLA-executable wave_cubin_gate scans only the 8 zero-stack glue fusions",
+ "first_launch_s": 26.065820611009258,
+ "first_launch_note": "in-process PTX assembly per fresh process and shape (~26 s), not cached across processes",
+ "call_sites": [
+  "src/gpuwrf/kernels/phys_cammg.py:36:def full_column(fields,dt,it,*,cu=0,shcu=0,accum_mode=1.e9,aitken_mode=3.e8,coarse_mode=2.e5,",
+  "src/gpuwrf/kernels/phys_jensen.py:23:def full_column(fields,dt,it,*,rain=0.,snow=0.,interpret=False,output_names=None):",
+  "src/gpuwrf/kernels/phys_ntu.py:37:def full_column(fields,dt,*,ccnty=2,interpret=False,output_names=None):",
+  "src/gpuwrf/kernels/phys_ntu.py:41:        return _full_column(fields,dt,ccnty=ccnty,interpret=interpret,output_names=output_names)",
+  "src/gpuwrf/kernels/phys_ntu.py:44:def _full_column(fields,dt,*,ccnty=2,interpret=False,output_names=None):",
+  "src/gpuwrf/kernels/phys_p3.py:29:def full_column(fields, dt, timestep, *, mp, interpret=False, output_names=None):",
+  "src/gpuwrf/kernels/phys_thompson_full.py:300:def full_column(state, dt, *, interpret=False, return_events=False, return_radar_context=False):",
+  "src/gpuwrf/physics/cammg/adapter.py:69:    result,fatal=full_column(fields,dt,timestep,cu=cu,shcu=shcu,accum_mode=accum_mode,",
+  "src/gpuwrf/physics/jensen_ishmael/adapter.py:25:        output,precip=full_column(fields,f(dt),timestep,output_names=(*mapping,'th'))",
+  "src/gpuwrf/physics/ntu/adapter.py:33:        out = full_column(fields, f(dt), ccnty=ccnty, output_names=names)",
+  "src/gpuwrf/physics/p3/adapter.py:56:        out = full_column(fields, f(dt), timestep, mp=mp,",
+  "src/gpuwrf/physics/thompson_column.py:2614:            return full_column(state, dt, return_radar_context=True)",
+  "src/gpuwrf/physics/thompson_column.py:2615:        return full_column(state, dt)"
+ ]
+}

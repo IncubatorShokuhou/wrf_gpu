@@ -13,7 +13,7 @@ configure_jax_x64()
 
 
 def _cpu_thomas_fallback() -> bool:
-    """True when the active JAX backend is CPU (resolved at trace time).
+    """True outside CUDA (resolved at trace time).
 
     jaxlib's CPU LAPACK tridiagonal FFI (``lapack_*gtsv_ffi`` ->
     ``jax::TridiagonalSolver`` -> ``jax::ParallelBatchMap`` ->
@@ -25,13 +25,14 @@ def _cpu_thomas_fallback() -> bool:
     the process CPU affinity, so pinning fewer cores makes it *more* likely.
 
     The GPU path (cuSPARSE FFI / Pallas REAL kernel) is unaffected and must stay
-    byte-identical, so the pure-JAX fallback is selected *only* on CPU. The
+    byte-identical, so the pure-JAX fallback is selected outside CUDA. The
     backend is resolved at trace time (a Python-level branch: a ``jax.jit`` is
     traced -- and therefore made backend-specific -- before lowering), never at
     import time.
     """
 
-    return jax.default_backend() == "cpu"
+    from gpuwrf.backends.platform import cuda_native
+    return not cuda_native()
 
 
 def solve_tridiagonal(a, b, c, d):

@@ -1,0 +1,27 @@
+{
+  "source": "pristine WRF v4.7.1 module_bl_temf.F, unmodified; TEMF2D direct pbl_driver operand map",
+  "caller": "pbl_driver.F:1172-1201; TSK=tskold; te/qf/updraft fields retained across calls; Euler isolated PBL replay, not forecast",
+  "source_sha256": {
+    "<USER_HOME>/src/wrf_pristine/WRF/phys/module_bl_temf.F": "0c4d731ca3124198342a3a2f90e0a43f34ddf5731b545460fb27bf794ed77475",
+    "<USER_HOME>/src/wrf_pristine/WRF/share/module_model_constants.F": "5b80377fecdc18a5f0ad38d3b6c15cfc86ad5d76701adbbbb08a08698d0f7062"
+  },
+  "compile_command": [
+    "<USER_HOME>/miniconda3/envs/wrfbuild/bin/gfortran",
+    "-O2",
+    "-ffp-contract=off",
+    "-ffree-form",
+    "-ffree-line-length-none",
+    "-cpp",
+    "-DEM_CORE=1",
+    "-fcheck=all",
+    "-finit-real=snan",
+    "module_model_constants.F",
+    "module_bl_temf.F",
+    "pbl_driver.f90",
+    "-o",
+    "oracle.exe"
+  ],
+  "fixture_sha256": "f1fbbd42883ae29cb9b729e5329356bcf136788ab647097f78787b1c0bb3c80a",
+  "record_count": 72,
+  "source_json_sha256": "17faaae17898e85c0a2f6c9450edaf94c8b04a3549a3b1464c87171c99833123"
+}

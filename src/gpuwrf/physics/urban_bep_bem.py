@@ -1,4 +1,4 @@
-"""G3 urban canopy scaffold: BEP/BEM recognized, fail-closed.
+"""BEP/BEM public column entrypoints and historical Registry inventory.
 
 WRF references:
 
@@ -7,9 +7,8 @@ WRF references:
 * ``Registry/Registry.EM_COMMON`` packages ``bepscheme`` and
   ``bep_bemscheme`` for the required urban carry fields
 
-No faithful JAX kernel or pristine-WRF single-column oracle is shipped here.
-Calling an entrypoint raises so an active urban selection cannot silently run the
-wrong surface path.
+Full column implementations are qualified in proofs/v040/urban_bep_bem.
+Operational Noah-MP/PBL coupling uses coupling.urban_multilayer_hook.
 """
 
 from __future__ import annotations
@@ -87,11 +86,9 @@ BEP_BEM_REGISTRY_STATE = BEP_REGISTRY_STATE + BEM_EXTRA_REGISTRY_STATE
 
 
 class UrbanCanopyState(NamedTuple):
-    """Minimal future-port handle for the urban carry/static payload.
+    """Historical inventory handle retained for source-audit tooling.
 
-    The concrete arrays are not defined in this one-pass scaffold. The tuple
-    freezes the required WRF Registry member names so a future implementation has
-    an auditable state contract before it can be marked operational.
+    Operational state uses UrbanMultilayerCarry with BepState or BemState.
     """
 
     registry_members: tuple[str, ...]
@@ -99,27 +96,16 @@ class UrbanCanopyState(NamedTuple):
     carry: object = None
 
 
-def bep_step(*args, **kwargs):
-    """BEP entrypoint -- fail-closed until a source-specific oracle/kernel lands."""
-
-    raise NotImplementedError(_message("BEP", BEP_REGISTRY_STATE))
-
-
-def bep_bem_step(*args, **kwargs):
-    """BEP+BEM entrypoint -- fail-closed until a source-specific oracle/kernel lands."""
-
-    raise NotImplementedError(_message("BEP+BEM", BEP_BEM_REGISTRY_STATE))
+def bep_step(state, forcing, geometry):
+    """Advance a BEP column with explicit material state, forcing and geometry."""
+    from gpuwrf.physics.urban_bep_model import bep_column_step
+    return bep_column_step(state, forcing, geometry)
 
 
-def _message(name: str, registry: tuple[str, ...]) -> str:
-    return (
-        f"G3 urban {name} is a fail-closed scaffold, not an operational physics "
-        f"kernel. Required Registry state members: {len(registry)}; WRF sources: "
-        f"{BEP_SOURCE}"
-        + (f" and {BEM_SOURCE}" if name == "BEP+BEM" else "")
-        + ". Add a pristine-WRF single-column oracle and faithful JAX kernel "
-        "before wiring sf_urban_physics into the operational scan."
-    )
+def bep_bem_step(state, forcing, geometry, **kwargs):
+    """Advance BEP+BEM, including indoor energy, moisture and HVAC."""
+    from gpuwrf.physics.urban_bem_model import bem_column_step
+    return bem_column_step(state, forcing, geometry, **kwargs)
 
 
 __all__ = [

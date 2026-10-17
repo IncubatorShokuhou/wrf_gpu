@@ -1,0 +1,92 @@
+{
+  "utc": "2026-10-15T02:07:05.619174+00:00",
+  "scope": "Exact new composite nativeCUDA lowering only; physicalCPU, no actualGPUcompile/fidelity claim",
+  "rows": [
+    {
+      "case": "c88",
+      "receipt": "<DATA_ROOT>/wrf_gpu2/scratch/v-prep/native15/c88/receipt.json",
+      "receipt_sha256": "03789178a2fedc5d9361726f619f51641960c67497a57bd947152deffa443381",
+      "source_commit": "746860560975d9f9dec756caa0b98683ef89abae",
+      "input_sha256": {
+        "namelist.input": "e6eb41913140cc79a3106b41d37feb93105c5b9513c5b4ac50e26b705fee08ec",
+        "wrfbdy_d01": "f3e556670e4768326997bdfa1dd8b0f77eb6d5da07d9c4dbf900bf8ff9e30230",
+        "wrfinput_d01": "a5d696550d1dc6713e2e340b8c2fba83811d43f4a94a65ca95266035860e2781"
+      },
+      "lower": "OK",
+      "compile": "NOT_ATTEMPTED",
+      "wall_s": 56.157683993998944,
+      "peak_rss_KiB": 2781848,
+      "x64_before_native_trace": true,
+      "native_trace": {
+        "facade": true,
+        "capability_resolver": "cuda",
+        "mcica_native": true,
+        "python_backend": "gpu",
+        "pallas_interpret": false,
+        "product_tridiagonal": true,
+        "virtual_target": "NVIDIA GeForce RTX 5090_0(process=0,(0))"
+      },
+      "target_sha256": "f46c185780fdbd4aab62ef20293385bb8de31a71bd260e9ce62cbfc21f196a23",
+      "programs": [
+        {
+          "name": "d01",
+          "lower": "OK",
+          "lower_s": 28.743764914001076,
+          "static_kwargs": {
+            "n_steps": 200,
+            "cadence": 33
+          },
+          "stablehlo_bytes": 50485421,
+          "stablehlo_sha256": "7bcbcbb50f1a9a785336637a3e0334711a30c872b0313b206a6899f132da5455",
+          "triton_custom_calls": 197,
+          "compile": "NOT_ATTEMPTED",
+          "stack": "UNKNOWN"
+        }
+      ],
+      "scratch_cleanup": "<DATA_ROOT>/wrf_gpu2/scratch/v-prep/native15/c88/CLEANUP.json"
+    },
+    {
+      "case": "c89",
+      "receipt": "<DATA_ROOT>/wrf_gpu2/scratch/v-prep/native15/c89/receipt.json",
+      "receipt_sha256": "37e7cb0dfed766ad729510b586a69298a01b8abe54193fcbdb883c09474353fd",
+      "source_commit": "746860560975d9f9dec756caa0b98683ef89abae",
+      "input_sha256": {
+        "namelist.input": "ae8e1824be0425302987f941cb9f801b3ab18d489c5cc3bf8645a1391a0afa57",
+        "wrfbdy_d01": "f3e556670e4768326997bdfa1dd8b0f77eb6d5da07d9c4dbf900bf8ff9e30230",
+        "wrfinput_d01": "a5d696550d1dc6713e2e340b8c2fba83811d43f4a94a65ca95266035860e2781"
+      },
+      "lower": "OK",
+      "compile": "NOT_ATTEMPTED",
+      "wall_s": 55.199643994001235,
+      "peak_rss_KiB": 2826660,
+      "x64_before_native_trace": true,
+      "native_trace": {
+        "facade": true,
+        "capability_resolver": "cuda",
+        "mcica_native": true,
+        "python_backend": "gpu",
+        "pallas_interpret": false,
+        "product_tridiagonal": true,
+        "virtual_target": "NVIDIA GeForce RTX 5090_0(process=0,(0))"
+      },
+      "target_sha256": "f46c185780fdbd4aab62ef20293385bb8de31a71bd260e9ce62cbfc21f196a23",
+      "programs": [
+        {
+          "name": "d01",
+          "lower": "OK",
+          "lower_s": 27.034664678998524,
+          "static_kwargs": {
+            "n_steps": 200,
+            "cadence": 33
+          },
+          "stablehlo_bytes": 46926855,
+          "stablehlo_sha256": "90a43117171df73d294ae3441b9414c92f425c9b41bae0b5ffc80b3ab88a0af4",
+          "triton_custom_calls": 140,
+          "compile": "NOT_ATTEMPTED",
+          "stack": "UNKNOWN"
+        }
+      ],
+      "scratch_cleanup": "<DATA_ROOT>/wrf_gpu2/scratch/v-prep/native15/c89/CLEANUP.json"
+    }
+  ]
+}

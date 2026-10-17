@@ -1,0 +1,76 @@
+{
+  "case": "c29",
+  "source_commit": "612fe5a5f8dcd540548fca00edc952fd7a673fdb",
+  "physical_backend": "cpu",
+  "lowering_platform": "cuda",
+  "gpu_executed": false,
+  "scope": "native CUDA lowering / optional AUTOTUNE0 deviceless prescreen, not fidelity or speed",
+  "lower": "OK",
+  "compile": "NOT_ATTEMPTED",
+  "programs": [
+    {
+      "name": "d01",
+      "lower": "OK",
+      "lower_s": 22.892001416999847,
+      "static_kwargs": {
+        "n_steps": 200,
+        "cadence": 33
+      },
+      "stablehlo_bytes": 263397022,
+      "stablehlo_sha256": "5fbb9862530829e908db0d0bb6311a060a89974abd34edf015730f041cd4b838",
+      "triton_custom_calls": 139,
+      "compile": "NOT_ATTEMPTED",
+      "stack": "UNKNOWN"
+    }
+  ],
+  "cache": "private per-arm scratch directories; managed GPUWRF cache off; cleaned by supervisor",
+  "target_sha256": "f46c185780fdbd4aab62ef20293385bb8de31a71bd260e9ce62cbfc21f196a23",
+  "harness_sha256": "b9465a8a7ca8bf18db08b25e2a6f2cb8a929620768c49e8ecea1af85f1ba5bce",
+  "environment": {
+    "GPUWRF_TMPDIR": "<DATA_ROOT>/wrf_gpu2/scratch/s2-integrate/batch15-tmp",
+    "TMPDIR": "<DATA_ROOT>/wrf_gpu2/scratch/s2-integrate/batch15-tmp",
+    "JAX_COMPILATION_CACHE_DIR": "<DATA_ROOT>/wrf_gpu2/scratch/s2-integrate/batch15-cache/jax",
+    "TRITON_CACHE_DIR": "<DATA_ROOT>/wrf_gpu2/scratch/s2-integrate/batch15-cache/triton",
+    "GPUWRF_JAX_CACHE": "0",
+    "CUDA_VISIBLE_DEVICES": "",
+    "GPUWRF_SCRATCH": "<DATA_ROOT>/wrf_gpu2/scratch/s2-integrate/batch15-tmp",
+    "JAX_PLATFORMS": "cpu",
+    "GPUWRF_FAST_DEFAULTS": "1",
+    "GPUWRF_CENSUS": "1",
+    "GPUWRF_CENSUS_SLIM": "0",
+    "GPUWRF_AOT_SLIM_MODULE": "0",
+    "GPUWRF_RRTMG_MP_RE": "1"
+  },
+  "pid": 982971,
+  "boot_id": "e04fa13e-ccf1-4b7a-90fd-973467d8ec61",
+  "cgroup": "0::/user.slice/user-1000.slice/user@1000.service/app.slice/run-p982967-i928322.scope",
+  "systemd_scope": "run-p982967-i928322.scope",
+  "wall_s": 42.12899771899902,
+  "peak_rss_KiB": 3155732,
+  "matrix_status": "ADMITTED",
+  "input_sha256": {
+    "namelist.input": "aca487132e50b8505ddcdd15529c2c2e16b441d579a8ba759e7f646eaca99995",
+    "wrfbdy_d01": "f3e556670e4768326997bdfa1dd8b0f77eb6d5da07d9c4dbf900bf8ff9e30230",
+    "wrfinput_d01": "a5d696550d1dc6713e2e340b8c2fba83811d43f4a94a65ca95266035860e2781"
+  },
+  "phase": "serialize_full_IR",
+  "jax_version": "0.10.0",
+  "jax_enable_x64_before_native_trace": true,
+  "jax_use_simplified_jaxpr_constants": false,
+  "dfi_prepass": "INACTIVE",
+  "init_s": 17.31683700100075,
+  "native_trace": {
+    "facade": true,
+    "capability_resolver": "cuda",
+    "mcica_native": true,
+    "python_backend": "gpu",
+    "pallas_interpret": false,
+    "product_tridiagonal": true,
+    "virtual_target": "NVIDIA GeForce RTX 5090_0(process=0,(0))"
+  },
+  "traced_pallas_calls": 141,
+  "traced_interpreted_pallas_calls": 0,
+  "physical_devices_at_exit": [
+    "cpu"
+  ]
+}

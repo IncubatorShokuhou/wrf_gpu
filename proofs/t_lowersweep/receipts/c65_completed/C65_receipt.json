@@ -1,0 +1,386 @@
+{
+  "case": "c65",
+  "source_commit": "f4fd9de7786e1276aef45a52c00526f25f19b0c3",
+  "physical_backend": "cpu",
+  "lowering_platform": "cuda",
+  "gpu_executed": false,
+  "scope": "native CUDA lowering / optional AUTOTUNE0 deviceless prescreen, not fidelity or speed",
+  "lower": "OK",
+  "compile": "NOT_ATTEMPTED",
+  "programs": [
+    {
+      "name": "d01",
+      "lower": "OK",
+      "lower_s": 29.305607512998904,
+      "static_kwargs": {
+        "n_steps": 200,
+        "cadence": 33
+      },
+      "triton_custom_calls": 169,
+      "compile": "NOT_ATTEMPTED",
+      "stack": "UNKNOWN",
+      "ir_representation": "compact assembly; large literals elided; not compilable/complete HLO hash",
+      "compact_ir_sha256": "1bc54fb2960798c91c095537a7bfc0638a09e3b182cc114595f8d2f126507415",
+      "compact_ir_bytes": 36452486,
+      "full_stablehlo_sha256": "UNKNOWN; intentionally avoid giant text allocation"
+    }
+  ],
+  "cache": "private per-arm scratch directories; managed GPUWRF cache off; cleaned by supervisor",
+  "target_sha256": "f46c185780fdbd4aab62ef20293385bb8de31a71bd260e9ce62cbfc21f196a23",
+  "harness_sha256": "79cd95bd874d7756c301d97cd334838b578f3cac7721a07ad723fb832ad6d698",
+  "environment": {
+    "GPUWRF_XLA_AUTOTUNE_CACHE_DIR": "<USER_HOME>/wrf_gpu2_lanes/t-lowersweep/c65_12G_2339/c65_scratch/autotune",
+    "CUDA_CACHE_PATH": "<USER_HOME>/wrf_gpu2_lanes/t-lowersweep/c65_12G_2339/c65_scratch/cuda",
+    "GPUWRF_CENSUS_SLIM": "0",
+    "TMPDIR": "<USER_HOME>/wrf_gpu2_lanes/t-lowersweep/c65_12G_2339/c65_scratch/tmp",
+    "GPUWRF_CENSUS": "1",
+    "JAX_COMPILATION_CACHE_DIR": "<USER_HOME>/wrf_gpu2_lanes/t-lowersweep/c65_12G_2339/c65_scratch/jax",
+    "TRITON_CACHE_DIR": "<USER_HOME>/wrf_gpu2_lanes/t-lowersweep/c65_12G_2339/c65_scratch/triton",
+    "GPUWRF_JAX_CACHE": "0",
+    "CUDA_VISIBLE_DEVICES": "",
+    "GPUWRF_AOT_SLIM_MODULE": "0",
+    "JAX_PLATFORMS": "cpu",
+    "GPUWRF_FAST_DEFAULTS": "1",
+    "GPUWRF_RRTMG_MP_RE": "1"
+  },
+  "pid": 651359,
+  "boot_id": "e04fa13e-ccf1-4b7a-90fd-973467d8ec61",
+  "cgroup": "0::/user.slice/user-1000.slice/user@1000.service/app.slice/run-p651357-i693785.scope",
+  "systemd_scope": "run-p651357-i693785.scope",
+  "wall_s": 51.519911269999284,
+  "peak_rss_KiB": 4637244,
+  "matrix_status": "ADMITTED",
+  "input_sha256": {
+    "namelist.input": "3ed81e8b49285f6b7f572dbf1812224be9ab0dc652a81d492aedeabaca9f2475",
+    "wrfbdy_d01": "f3e556670e4768326997bdfa1dd8b0f77eb6d5da07d9c4dbf900bf8ff9e30230",
+    "wrfinput_d01": "a5d696550d1dc6713e2e340b8c2fba83811d43f4a94a65ca95266035860e2781"
+  },
+  "phase": "serialize_compact_IR_literals_elided",
+  "jax_version": "0.10.0",
+  "jax_enable_x64_before_native_trace": true,
+  "jax_use_simplified_jaxpr_constants": false,
+  "dfi_prepass": "INACTIVE",
+  "init_s": 20.013943945999927,
+  "native_trace": {
+    "facade": true,
+    "capability_resolver": "cuda",
+    "mcica_native": true,
+    "python_backend": "gpu",
+    "pallas_interpret": false,
+    "product_tridiagonal": true,
+    "virtual_target": "NVIDIA GeForce RTX 5090_0(process=0,(0))"
+  },
+  "traced_pallas_calls": 171,
+  "traced_interpreted_pallas_calls": 0,
+  "hlo_constants": {
+    "stage": "unoptimized CUDA StableHLO, before serialization/compile",
+    "count": 22138,
+    "total_literal_tensor_bytes": 979756563,
+    "largest": [
+      {
+        "shape": [
+          9157500,
+          2
+        ],
+        "dtype": "f64",
+        "nbytes": 146520000
+      },
+      {
+        "shape": [
+          37,
+          37,
+          9,
+          37,
+          37
+        ],
+        "dtype": "f64",
+        "nbytes": 134939592
+      },
+      {
+        "shape": [
+          37,
+          37,
+          9,
+          37,
+          37
+        ],
+        "dtype": "f64",
+        "nbytes": 134939592
+      },
+      {
+        "shape": [
+          37,
+          37,
+          9,
+          37,
+          37
+        ],
+        "dtype": "f64",
+        "nbytes": 134939592
+      },
+      {
+        "shape": [
+          37,
+          37,
+          9,
+          37,
+          37
+        ],
+        "dtype": "f64",
+        "nbytes": 134939592
+      },
+      {
+        "shape": [
+          37,
+          37,
+          9,
+          37,
+          37
+        ],
+        "dtype": "f64",
+        "nbytes": 134939592
+      },
+      {
+        "shape": [
+          3388275,
+          4
+        ],
+        "dtype": "f64",
+        "nbytes": 108424800
+      },
+      {
+        "shape": [
+          37,
+          9,
+          37,
+          37
+        ],
+        "dtype": "f64",
+        "nbytes": 3647016
+      },
+      {
+        "shape": [
+          37,
+          9,
+          37,
+          37
+        ],
+        "dtype": "f64",
+        "nbytes": 3647016
+      },
+      {
+        "shape": [
+          37,
+          9,
+          37,
+          37
+        ],
+        "dtype": "f64",
+        "nbytes": 3647016
+      },
+      {
+        "shape": [
+          37,
+          9,
+          37,
+          37
+        ],
+        "dtype": "f64",
+        "nbytes": 3647016
+      },
+      {
+        "shape": [
+          37,
+          9,
+          37,
+          37
+        ],
+        "dtype": "f64",
+        "nbytes": 3647016
+      },
+      {
+        "shape": [
+          37,
+          9,
+          37,
+          37
+        ],
+        "dtype": "f64",
+        "nbytes": 3647016
+      },
+      {
+        "shape": [
+          37,
+          9,
+          37,
+          37
+        ],
+        "dtype": "f64",
+        "nbytes": 3647016
+      },
+      {
+        "shape": [
+          37,
+          9,
+          37,
+          37
+        ],
+        "dtype": "f64",
+        "nbytes": 3647016
+      },
+      {
+        "shape": [
+          37,
+          9,
+          37,
+          37
+        ],
+        "dtype": "f64",
+        "nbytes": 3647016
+      },
+      {
+        "shape": [
+          37,
+          9,
+          37,
+          37
+        ],
+        "dtype": "f64",
+        "nbytes": 3647016
+      },
+      {
+        "shape": [
+          370000
+        ],
+        "dtype": "f64",
+        "nbytes": 2960000
+      },
+      {
+        "shape": [
+          61605,
+          4
+        ],
+        "dtype": "f64",
+        "nbytes": 1971360
+      },
+      {
+        "shape": [
+          14,
+          1175,
+          12
+        ],
+        "dtype": "f64",
+        "nbytes": 1579200
+      },
+      {
+        "shape": [
+          14,
+          1175,
+          12
+        ],
+        "dtype": "f64",
+        "nbytes": 1579200
+      },
+      {
+        "shape": [
+          14,
+          585,
+          12
+        ],
+        "dtype": "f64",
+        "nbytes": 786240
+      },
+      {
+        "shape": [
+          14,
+          585,
+          12
+        ],
+        "dtype": "f64",
+        "nbytes": 786240
+      },
+      {
+        "shape": [
+          12,
+          64,
+          59
+        ],
+        "dtype": "f32",
+        "nbytes": 181248
+      },
+      {
+        "shape": [
+          16,
+          59,
+          16
+        ],
+        "dtype": "f64",
+        "nbytes": 120832
+      },
+      {
+        "shape": [
+          16,
+          59,
+          16
+        ],
+        "dtype": "f64",
+        "nbytes": 120832
+      },
+      {
+        "shape": [
+          64,
+          55,
+          3
+        ],
+        "dtype": "f64",
+        "nbytes": 84480
+      },
+      {
+        "shape": [
+          100,
+          100
+        ],
+        "dtype": "f64",
+        "nbytes": 80000
+      },
+      {
+        "shape": [
+          100,
+          100
+        ],
+        "dtype": "f64",
+        "nbytes": 80000
+      },
+      {
+        "shape": [
+          14,
+          59,
+          12
+        ],
+        "dtype": "f64",
+        "nbytes": 79296
+      },
+      {
+        "shape": [
+          14,
+          59,
+          12
+        ],
+        "dtype": "f64",
+        "nbytes": 79296
+      },
+      {
+        "shape": [
+          1175,
+          16
+        ],
+        "dtype": "f32",
+        "nbytes": 75200
+      }
+    ],
+    "scope": "tensor byte sizes, not process peak/unique buffer memory or optimized executable footprint"
+  },
+  "physical_devices_at_exit": [
+    "cpu"
+  ]
+}

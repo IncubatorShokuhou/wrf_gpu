@@ -9,7 +9,7 @@ from __future__ import annotations
 import jax
 from jax import lax
 import jax.numpy as jnp
-from jax.experimental import pallas as pl
+from gpuwrf.backends import pallas as pl
 
 __all__ = [
     "TX",
@@ -56,7 +56,7 @@ def _consts(s_ref):
     return {name: s_ref[i] for i, name in enumerate(_SLOTS)}
 
 
-def _plume_level(k, carry, l, pblh, col, env, c):
+def _plume_level(k, carry, l, pblh, col, env, c, spp_ref=None):
     """One level of ``_dmp_scan.step`` (mynn_edmf.py:364-418) for a lane vector.
 
     Returns ``(still, emits, new_carry)``; emits are the seven level-k scan
@@ -87,6 +87,8 @@ def _plume_level(k, carry, l, pblh, col, env, c):
     ent = jnp.maximum(ent, c["c0_0003"])
     ent_cap = jnp.minimum(pblh + c["c1500"], c["c4000"])
     ent = jnp.where(zw_k >= ent_cap, ent + (zw_k - ent_cap) * c["c5e_6"], ent)
+    if spp_ref is not None:
+        ent = ent * (c["c1"]-spp_ref[k,col])
     ent = jnp.minimum(ent, c["c0_9"] / (zw_k1 - zw_k))
     entexp = ent * (zw_k1 - zw_k)
 
@@ -154,7 +156,7 @@ def _plume_rise_kernel(
     s_ref,
     # emits: (nz-2, lanes_pad) each
     ea_out, ew_out, eqt_out, eqc_out, ethl_out, eu_out, ev_out,
-    *, nz: int, nup: int,
+    *, nz: int, nup: int, spp_ref=None,
 ):
     """``_dmp_scan``'s plume integration for one TX lane window.
 
@@ -193,7 +195,8 @@ def _plume_rise_kernel(
 
     def advance(state):
         k, carry = state
-        _still, emits, new_carry = _plume_level(k, carry, l, pblh, col, env, c)
+        _still, emits, new_carry = _plume_level(k, carry, l, pblh, col, env, c,
+            **({} if spp_ref is None else {"spp_ref":spp_ref}))
         for out, value in zip(outs, emits):
             out[k - 1, lanes] = value
         return k + 1, new_carry
@@ -209,7 +212,7 @@ def _plume_sums_kernel(
     l_ref, upa0_ref, upw0_ref, upthl0_ref, upqt0_ref, upqc0_ref, upu0_ref, upv0_ref,
     thl_ref, qt1_ref, thv_ref, p_ref, dz_ref, zw_ref, u_ref, v_ref,
     pblh_ref, active_ref, rhoz_ref, s_ref, *outs, nz: int, nup: int,
-    ni_init_ref=None, ni_env_ref=None,
+    ni_init_ref=None, ni_env_ref=None, spp_ref=None,
 ):
     """Same plume sweep as :func:`_plume_rise_kernel`, but each level emits the
     per-column NUP sums the DMP assembly needs (F90:6363-6491) instead of the
@@ -255,7 +258,8 @@ def _plume_sums_kernel(
 
     def advance(state):
         k, carry, first = state
-        still, emits, new_carry = _plume_level(k, carry, l, pblh, col, env, c)
+        still, emits, new_carry = _plume_level(k, carry, l, pblh, col, env, c,
+            **({} if spp_ref is None else {"spp_ref":spp_ref}))
         _ea, ew, eqt, eqc, ethl, eu, ev = emits[:7]
         upa = upa0 * still.astype(work_dtype)
         upa_w = upa * ew
@@ -286,7 +290,7 @@ def _edmf_condensation(qt, thl, p, zagl, **kwargs):
 def fused_plume_scan(
     l_per_plume, upa0, upw0, upthl0, upqt0, upqc0, upu0, upv0, *,
     thl, qt1, thv, p, dz, zw, u, v, pblh, active=None,
-    interpret: bool = True,
+    interpret: bool = True, spp_pattern=None,
 ):
     """Drop-in replacement for ``jax.vmap(plume_scan)(...)`` (mynn_edmf.py:436).
 
@@ -328,12 +332,17 @@ def fused_plume_scan(
     s = _scalar_stack()
 
     out_shape = jax.ShapeDtypeStruct((nz - 2, n_lanes_pad), jnp.float32)
+    inputs = (*lane_args,*env_args,s)
+    kernel = lambda *refs: _plume_rise_kernel(*refs,nz=nz,nup=nup)
+    if spp_pattern is not None:
+        inputs = (*inputs,t(spp_pattern))
+        kernel = lambda *refs: _plume_rise_kernel(*refs[:19],*refs[20:],nz=nz,nup=nup,spp_ref=refs[19])
     ea, ew, eqt, eqc, ethl, eu, ev = pl.pallas_call(
-        lambda *refs: _plume_rise_kernel(*refs, nz=nz, nup=nup),
+        kernel,
         grid=(n_lanes_pad // TX,),
         out_shape=[out_shape] * 7,
         interpret=interpret,
-    )(*lane_args, *env_args, s)
+    )(*inputs)
 
     cut = lambda a: a.T[:n_lanes].reshape(B, nup, nz - 2)
     return cut(ea), cut(ew), cut(eqt), cut(eqc), cut(ethl), cut(eu), cut(ev)
@@ -349,7 +358,7 @@ def plume_sums_enabled() -> bool:
 
 def fused_plume_sums(
     l_per_plume, upa0, upw0, upthl0, upqt0, upqc0, upu0, upv0, *,
-    thl, qt1, thv, p, dz, zw, u, v, pblh, rhoz_dmp, active=None, interpret: bool = True, qni=None,
+    thl, qt1, thv, p, dz, zw, u, v, pblh, rhoz_dmp, active=None, interpret: bool = True, qni=None, spp_pattern=None,
 ):
     """Plume sweep returning the per-level NUP sums instead of the plume arrays.
 
@@ -397,6 +406,13 @@ def fused_plume_sums(
         kernel = lambda *refs: _plume_sums_kernel(*refs[:19],refs[21],*refs[22:],
             nz=nz,nup=nup,ni_init_ref=refs[19],ni_env_ref=refs[20])
         names = names + ('awqni',)
+    if spp_pattern is not None:
+        inputs = (*inputs,t(spp_pattern))
+        if qni is None:
+            kernel = lambda *refs: _plume_sums_kernel(*refs[:20],*refs[21:],nz=nz,nup=nup,spp_ref=refs[20])
+        else:
+            kernel = lambda *refs: _plume_sums_kernel(*refs[:19],refs[21],*refs[23:],nz=nz,nup=nup,
+                ni_init_ref=refs[19],ni_env_ref=refs[20],spp_ref=refs[22])
     outs = pl.pallas_call(
         kernel,
         grid=(n_lanes_pad // TX,),
@@ -600,7 +616,7 @@ def _assemble_native(s, rho, thv, dz, fltv, active, UPA, UPW, UPQT, UPQC, UPTHL,
 
 def _dmp_mf_columns_impl(sqw, sqv, sqc, u, v, w, th, thl, thv, tk, qke,
                          p, exner, rho, dz, zw, ust, flt, fltv, flq, flqv,
-                         pblh, ts, dx, xland, dt, psig_shcu=None, cloud_base=None, *, interpret=True, qni=None):
+                         pblh, ts, dx, xland, dt, psig_shcu=None, cloud_base=None, *, interpret=True, qni=None, spp_pattern=None):
     """Batched ``mynn_edmf.dmp_mf_columns`` with the fused plume kernel.
 
     Identical signature and output dict.  Setup reuses the
@@ -639,6 +655,7 @@ def _dmp_mf_columns_impl(sqw, sqv, sqc, u, v, w, th, thl, thv, tk, qke,
             thl=thl, qt1=setup["qt1"], thv=thv, p=p, dz=dz, zw=zw, u=u, v=v,
             pblh=pblh, rhoz_dmp=rhoz_dmp, active=setup["active"], interpret=interpret,
             **({} if qni is None else {'qni':qni}),
+            **({} if spp_pattern is None else {'spp_pattern':spp_pattern}),
         )
         return _assemble_from_sums(setup, rho, thv, dz, fltv, setup["active"] & first_ok, sums,
             **({} if qni is None else {'qni':qni}))
@@ -648,6 +665,7 @@ def _dmp_mf_columns_impl(sqw, sqv, sqc, u, v, w, th, thl, thv, tk, qke,
         setup["upqt0"], setup["upqc0"], setup["upu0"], setup["upv0"],
         thl=thl, qt1=setup["qt1"], thv=thv, p=p, dz=dz, zw=zw, u=u, v=v,
         pblh=pblh, active=setup["active"], interpret=interpret,
+        **({} if spp_pattern is None else {'spp_pattern':spp_pattern}),
     )
 
     # WRF first-level veto + full_up, batched (verbatim mirror of the
@@ -676,14 +694,27 @@ def _dmp_mf_columns_impl(sqw, sqv, sqc, u, v, w, th, thl, thv, tk, qke,
         setup, rho, thv, dz, fltv, active, UPA, UPW, UPQT, UPQC, UPTHL, UPU, UPV)
 
 
-def dmp_mf_columns_native(*args, interpret=True, **kwargs):
+def dmp_mf_columns_native(*args, interpret=True, passive=None, **kwargs):
     """Same DMP interface, with a local fp32 tracing scope.
 
     Only this REAL-only MYNN subgraph uses this context; Thompson DOUBLE
     islands elsewhere in the model retain x64 support.
+
+    ``passive`` (dict of (B, nz) number leaves Nc/nwfa/nifa) adds WRF's
+    s_awqnc1/s_awqnwfa1/s_awqnifa1 exactly like the retained
+    ``mynn_edmf.dmp_mf_columns``: WRF DMP_mf runs the QNI passive recurrence
+    and limiter for each of them, so each species is the QNI lane of an
+    otherwise identical native plume evaluation (passive lanes do not feed back).
     """
     with jax.enable_x64(False):
         args = tuple(jnp.asarray(a, dtype=jnp.float32) for a in args)
         kwargs = {k: (None if v is None else jnp.asarray(v, dtype=jnp.float32))
                   for k,v in kwargs.items()}
-        return _dmp_mf_columns_impl(*args, interpret=interpret, **kwargs)
+        out = _dmp_mf_columns_impl(*args, interpret=interpret, **kwargs)
+        if passive:
+            from gpuwrf.kernels.phys_mynn_numbers import mf_flux_key
+            out = dict(out)
+            for name, values in passive.items():
+                lane = dict(kwargs, qni=jnp.asarray(values, dtype=jnp.float32))
+                out[mf_flux_key(name)] = _dmp_mf_columns_impl(*args, interpret=interpret, **lane)["s_awqni"]
+        return out

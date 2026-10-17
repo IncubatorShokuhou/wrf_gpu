@@ -1,0 +1,134 @@
+{
+  "UTC": "2026-10-15T18:45:13.357309+00:00",
+  "status": "GREEN/READY-FOR-MERGE F1 ONLY per latest manager scope",
+  "approved_F1": "052f16d2b69e9f0c1299e6ae0049c742e112a765",
+  "critic": "ade1c5360954057ffb8d2cf30f209f7bb59c0bd8",
+  "ClassD_product_included": false,
+  "ClassD_next": "batch40 only after author-composed Morrison precip+radar successor and same-critic delta; existing ClassD proofs are receipt-only",
+  "source_tree": "40195e3e37c383c173bbb2014589f120ed7ee718",
+  "fresh_capped_sanity": {
+    "status": "PASS",
+    "returncode": 0,
+    "immutable_candidate": "54f146eccd2b6647067162f2715f59fc5d57d580",
+    "source": "40195e3e37c383c173bbb2014589f120ed7ee718",
+    "command": [
+      "<USER_HOME>/miniconda3/bin/python",
+      "-m",
+      "pytest",
+      "-q",
+      "-rs",
+      "-p",
+      "no:cacheprovider",
+      "--basetemp",
+      "<USER_HOME>/wrf_gpu2_lanes/s2-integrate/pytest",
+      "--junitxml",
+      "<USER_HOME>/wrf_gpu2_lanes/s2-integrate/batch39/F1-sanity.xml",
+      "tests/contracts/",
+      "tests/test_v018_mp_family_fail_closed.py",
+      "tests/test_v034_implemented_notes.py",
+      "tests/test_scheme_catalog_fail_closed.py",
+      "tests/test_namelist_check.py",
+      "tests/test_namelist_binding.py",
+      "tests/test_m7_restart_checkpoint_roundtrip.py",
+      "tests/test_netcdf_process_lock.py",
+      "tests/test_v0110_wrfrst_netcdf.py",
+      "tests/test_cli.py",
+      "tests/test_v060_physics_dispatch.py",
+      "tests/v040/test_t_calleraudit_land_precip.py",
+      "tests/test_noahmp_precipitation.py",
+      "tests/v040/nssl_cumulus/test_caller.py",
+      "tests/test_t_wsmdz_acm2_moist.py::test_acm2_adapter_passes_state_condensate_and_applies_its_rates",
+      "tests/test_t_rainnc_callers.py::test_acm2_actual_runtime_passes_wrf_own_step",
+      "tests/test_km3_gpu_admission.py",
+      "tests/test_cammg_gpu_admission.py"
+    ],
+    "elapsed_s": 51.54485091200331,
+    "ram": "6G/Swap0",
+    "GPU_runs": 0,
+    "counts": {
+      "tests": 352,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "RSS_KiB": 2937820,
+    "cleanup": true,
+    "UTC": "2026-10-15T18:45:06.213328+00:00"
+  },
+  "source_content_proof": {
+    "status": "PASS F1 exact approved definitions; main ACM2 preserved; ClassD absent pending author",
+    "F1": "052f16d2b69e9f0c1299e6ae0049c742e112a765",
+    "critic": "ade1c5360954057ffb8d2cf30f209f7bb59c0bd8",
+    "base_main": "e1003896aaa9658b2b0b3ae295c0adea474727ec",
+    "changed": [
+      "src/gpuwrf/coupling/physics_couplers.py",
+      "src/gpuwrf/coupling/scan_adapters.py",
+      "src/gpuwrf/runtime/operational_mode.py",
+      "tests/v040/nssl_cumulus/test_caller.py",
+      "tests/v040/test_t_calleraudit_land_precip.py"
+    ],
+    "critic_files": {
+      "proofs/rv_t_calleraudit/RV01-tests.log": "a9648d5427a313b1c4eedae87c6ff9b89098aa84eee309561f8071b1429f3645",
+      "proofs/rv_t_calleraudit/RV01-tests.xml": "f010468232e9ce17f849b10ae8b8c419ca77461cc6b116ff0297a9cd5dededc5",
+      "proofs/rv_t_calleraudit/RV02-prod.json": "36caf11f053bb372eb98a4cfa82f000093061c3a0233f83a07c412104e7fe137",
+      "proofs/rv_t_calleraudit/RV02-prod.log": "d94c8143407f0dab583b6e5516f41597f58a8ec0a2ad868edb465b4f9029e2e6",
+      "proofs/rv_t_calleraudit/RV02-swiss.json": "15a947e889110a9ab6e030bc2bdb4c296ead2ed850fc130caf81dd0786e48bb9",
+      "proofs/rv_t_calleraudit/RV02-swiss.log": "d0b26bb4ed2ffb868fe630fe8a3064871390133306811ffa3b3e08daadb0ccf8",
+      "proofs/rv_t_calleraudit/RV03-two-step.log": "382f174f51bace8733ec2973120f64428c989ecdcfb440c88be7ebea556edf64",
+      "proofs/rv_t_calleraudit/RV03-two-step.xml": "915436b1955b55226ed4486c0526b4a48e70e0ea2635bd16997101165af2c081",
+      "proofs/rv_t_calleraudit/RV04-source.json": "1b549961f988d8d19c31623da2e67aeba3791e3484049a68acdd2fa618fb2e05",
+      "proofs/rv_t_calleraudit/RV05-mutant.json": "05ca19feddddd14d543a3fb5089b3ad6dc0d13c4d5b9331faa3f03bdec9a54bb",
+      "proofs/rv_t_calleraudit/RV05-mutant.log": "3c28b43bfa1cd9b3cea797fd80b4de1ee404817df2382a93b5db1e778d012b0c",
+      "proofs/rv_t_calleraudit/RV05-mutant.xml": "01e3790708fbed89607a62fe84bc4c120e74998fcff03f8a59e6a9163261dd66",
+      "proofs/rv_t_calleraudit/RV06-all-caller.log": "ec9a883148b4fecb1a55f97925fc634b0e052595be2aaa540bd268701393687d",
+      "proofs/rv_t_calleraudit/RV06-all-caller.xml": "d2f64ae306c44d6f5dd8a00493c6e3c9fa289d463d0a6a05c28e27161d5152b7",
+      "proofs/rv_t_calleraudit/RV07-mutant-final.json": "05ca19feddddd14d543a3fb5089b3ad6dc0d13c4d5b9331faa3f03bdec9a54bb",
+      "proofs/rv_t_calleraudit/RV07-mutant-final.log": "a56bf672ba643194bacad4e9b45eb4fa4eb8a8ca8e69f5226ef8840db6f3be11",
+      "proofs/rv_t_calleraudit/RV07-mutant-final.xml": "660f8d7ec85e091e071a506fec7c6a0b6bdd9701b4331d4bf51ecffe69f7728d",
+      "proofs/rv_t_calleraudit/VERDICT.md": "95bd6e5e15791449631b65bb13fde42952156d4623343c684a4e10e2e2c695c9",
+      "proofs/rv_t_calleraudit/run_rv05_mutant.py": "f94688a53696a60e0f1484d9a2eabb3381c24dabf1f2cf9ea9b0d20d1ba68a82",
+      "proofs/rv_t_calleraudit/source_audit.py": "b475e75a23cf9e35799d32c1a6c795639f381c5ac26165f3a064d01991eed429",
+      "proofs/rv_t_calleraudit/test_rv03_two_step.py": "4ff5f1c711ffc2653877ab26f37f880626807c749dfa13b77967a7a86ca50c3d"
+    },
+    "operational_physics_couplers_BYTE_F1": true,
+    "scan_AST_diff_F1_only_preserved_ACM2": true,
+    "all_kernels_data_scripts_pkg_BYTE_base": true,
+    "ClassD_status": "HELD semantic dual-channel conflict; no product accepted",
+    "source": "40195e3e37c383c173bbb2014589f120ed7ee718",
+    "UTC": "2026-10-15T18:38:01.677835+00:00"
+  },
+  "raw_receipts": {
+    "F1-sanity.xml.gz": {
+      "original_sha256": "2d10f6e1047da1e542c38f5dc51e8b0f2a747db7245e911f5a61565ee3ac40ae",
+      "gzip_sha256": "6b692aa051bb0f36c6921cde3c8a3ad0721a1543778bb929188564a5df7202ec"
+    },
+    "F1-sanity.log.gz": {
+      "original_sha256": "d936f69b912c80e40f2aa1c0856186c78867354a66a1bec32fdfa861e5b3d5ce",
+      "gzip_sha256": "92cb3c1a961f69d47accf425e5948d4bfbd249da03772d39f8ce8612fd2e8857"
+    },
+    "F1-sanity.time.gz": {
+      "original_sha256": "d815b74ae7d05a00d6ce8c39b38e7e7f24d30ce4e1a6f5de3aeaed30efbbb213",
+      "gzip_sha256": "3cd6c72470d94441ecd92020093ccad3b688c813d167abd123daa36fc3f8fca1"
+    }
+  },
+  "default_identities_reused": {
+    "swiss": {
+      "full_jaxpr_sha256": "f672a5739cb96e388b6b7a40ef80337bf81bdc14ef15268f3476e09d79fe055d",
+      "receipt": "proofs/rv_t_calleraudit/RV02-swiss.json",
+      "receipt_sha256": "15a947e889110a9ab6e030bc2bdb4c296ead2ed850fc130caf81dd0786e48bb9",
+      "scope": "Independent critic measured on approvedF1; source-bound reuse, not fresh WRF fidelity/GPU result"
+    },
+    "prod": {
+      "full_jaxpr_sha256": "6fc715a2bd630934c4cf0f94427df19a527cbf429011c9ba5efe4d712744d27b",
+      "receipt": "proofs/rv_t_calleraudit/RV02-prod.json",
+      "receipt_sha256": "36caf11f053bb372eb98a4cfa82f000093061c3a0233f83a07c412104e7fe137",
+      "scope": "Independent critic measured on approvedF1; source-bound reuse, not fresh WRF fidelity/GPU result"
+    }
+  },
+  "current_main_synced": "a0e061fd9d13afbf71b42b3f0b555d1e95b8b615",
+  "historical_queue_timeout": "SI334 wait expired124 before runner started/0checks; separate from successfulSI337",
+  "science_limits": "No GPU run or whole-release claim. Affected composites re-run once on final class-A composition per manager18:22Z; prior C05 paid result stays on source5131, not F1 trajectory; F20 re-pin remains future work. Convective F2 defect unchanged. RUC admission unchanged.",
+  "performance_memory": "F1 additional nondefault5fp32surfacecarry arrays=20B/column static payload; side outputs/elementwise conversion only; no new vertical solve/host transfer/sync/table; actual GPUlaunch/temp/peak/readiness/runtime unknown, defaults source unchanged",
+  "cleanup": "all own snapshots/cache/tmp/pytest removed; no own CPU/GPU jobs",
+  "next": "Manager FF exact READY head; batch40 after composed ClassD critic approval"
+}

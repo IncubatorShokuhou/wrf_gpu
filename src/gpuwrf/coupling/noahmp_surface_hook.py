@@ -102,6 +102,10 @@ class _NoahMPColumnView(NamedTuple):
     prcphail: Any = None
     # Transient physics input only; persistent State/restart layouts are unchanged.
     exner: Any = None
+    sms_br: Any = None
+    sms_rmol: Any = None
+    sms_wspd: Any = None
+    sms_ustm: Any = None
 
     def replace(self, **updates) -> "_NoahMPColumnView":
         d = self._asdict()
@@ -176,6 +180,10 @@ def _build_column_view(state: Any, grid: Any = None) -> _NoahMPColumnView:
         qfx=getattr(state, "qfx", None),
         qsfc=getattr(state, "qsfc", None),
         pblh=getattr(state, "pblh", None),
+        sms_br=getattr(state,"sms_br",None),
+        sms_rmol=getattr(state,"sms_rmol",None),
+        sms_wspd=getattr(state,"sms_wspd",None),
+        sms_ustm=getattr(state,"sms_ustm",None),
         dx_m=_grid_dx_m(grid),
         exner=(_to_columns(_mynn_exner_from_pressure(jnp.asarray(state.p, phy_dtype)))
                if _mynn_env_bool("GPUWRF_MYNN_PHY_EXNER", False)
@@ -218,6 +226,22 @@ def noahmp_surface_step(
     history: bool = False,
     land_history: bool = False,
     precipitation: Any = None,
+    urban: Any = None,
+    lake_bundle: Any = None,
+    observation_aux: bool = False,
+    return_cumulus_inputs: bool = False,
+    surface_diagnostics: Any = None,
+    spp_pattern: Any = None,
+    urban_lead_seconds: Any = None,
+    surface_is_mynn: bool = False,
+    surface_cpm_factor: float = 0.0,
+    mmf: Any = None,
+    itimestep: Any = None,
+    options: Any = None,
+    irrigation: Any = None,
+    carbon: Any = None,
+    groundwater: Any = None,
+    tile_drain: Any = None,
 ) -> tuple[Any, NoahMPLandState]:
     """Run the Noah-MP/sfclay blend and write the blended flux handles into State.
 
@@ -230,16 +254,68 @@ def noahmp_surface_step(
     ``energy_params``/``rad_params`` are the PRE-BUILT (concrete-``nroot``) parameter
     bundles; passing them avoids re-running the frozen ``build_energy_params``
     (which concretizes ``nroot``) inside the jitted scan.
+
+    ``urban=(UrbanBundle, UrbanCarry)`` (sf_urban_physics=1) applies WRF
+    ``noahmp_urban`` inside the adapter and appends the advanced UrbanCarry as the
+    LAST return element.
     """
     view = _build_column_view(state, grid)
     if precipitation is not None:
-        view = view.replace(**precipitation._asdict())
-    view_wb, land_out, blended, *fields = noahmp_surface_adapter(
+        # The optional SR channel is Noah-classic's (FFROZP); Noah-MP reads the five PRCP* slots.
+        view = view.replace(**{k: v for k, v in precipitation._asdict().items() if k != "sr"})
+    out = noahmp_surface_adapter(
         view, land_state, static, radiation=radiation, clock=clock, dt=float(dt),
         energy_params=energy_params, rad_params=rad_params,
         first_timestep=first_timestep, history=history,
         **({"land_history": True} if land_history else {}),
+        **({"urban": urban} if urban is not None else {}),
+        **({"lake_bundle": lake_bundle} if lake_bundle is not None else {}),
+        **({"observation_aux": True} if observation_aux else {}),
+        **({"return_cumulus_inputs": True} if return_cumulus_inputs else {}),
+        **({'surface_diagnostics':surface_diagnostics} if surface_diagnostics is not None else {}),
+        **({"spp_pattern": spp_pattern} if spp_pattern is not None else {}),
+        **({"urban_lead_seconds":urban_lead_seconds} if urban is not None
+           and getattr(urban[0],"requires_inputs",False) else {}),
+        **({'surface_is_mynn':surface_is_mynn,'surface_cpm_factor':surface_cpm_factor} if surface_is_mynn or surface_cpm_factor else {}),
+        **({'mmf': mmf, 'itimestep': itimestep} if mmf is not None else {}),
+        **({"options": options} if options is not None else {}),
+        **({"irrigation": irrigation} if irrigation is not None else {}),
+        **({"carbon":carbon} if carbon is not None else {}),
+        **({"groundwater":groundwater} if groundwater is not None else {}),
+        **({"tile_drain":tile_drain} if tile_drain is not None else {}),
     )
+    cumulus_aux = ()
+    if return_cumulus_inputs:
+        *out, zol = out
+        cumulus_aux = (zol,)
+    obs_aux = ()
+    if observation_aux:
+        *out, aux = out
+        obs_aux = (aux,)
+    mmf_aux = ()
+    if mmf is not None:
+        *out, mmf_out = out
+        mmf_aux = (mmf_out,)
+    irrigation_aux=()
+    tile_aux=()
+    if tile_drain is not None:
+        *out,tile_out=out
+        tile_aux=(tile_out,)
+    groundwater_aux=()
+    if groundwater is not None:
+        *out,groundwater_out=out
+        groundwater_aux=(groundwater_out,)
+    carbon_aux=()
+    if carbon is not None:
+        *out,carbon_out=out
+        carbon_aux=(carbon_out,)
+    if irrigation is not None:
+        *out, irrigation_out=out
+        irrigation_aux=(irrigation_out,)
+    urban_out = None
+    if urban is not None:
+        *out, urban_out = out
+    view_wb, land_out, blended, *fields = out
     # ``view_wb`` carries the blended 2-D t_skin/roughness_m/qsfc; the blended
     # kinematic flux handles come from ``blended``. Map both back onto the State.
     updates = {
@@ -254,15 +330,19 @@ def noahmp_surface_step(
         "roughness_m": _to_state_surface(state, "roughness_m", view_wb.roughness_m),
     }
     # B39: carry the WRF grid%MOL/HFX/QFX/QSFC the next SFCLAY_mynn call reads.
-    if blended.wspd is not None:
+    if blended.wspd is not None and getattr(state,"sfc_wspd",None) is not None:
         updates["sfc_wspd"] = _to_state_surface(state, "sfc_wspd", blended.wspd)
+    if getattr(state,"sms_br",None) is not None:
+        updates.update({n:_to_state_surface(state,n,getattr(view_wb,n)) for n in ('sms_br','sms_rmol','sms_wspd','sms_ustm')})
     for name in ("mol", "hfx", "qfx", "qsfc"):
         if getattr(state, name, None) is not None and getattr(view_wb, name) is not None:
             updates[name] = _to_state_surface(state, name, getattr(view_wb, name))
     state_out = state.replace(**updates)
     if history or land_history:
-        return state_out, land_out, dict(fields[0], psfc=view.psfc)
-    return state_out, land_out
+        result = (state_out, land_out, dict(fields[0], psfc=view.psfc))
+    else:
+        result = (state_out, land_out)
+    return (result if urban is None else result + (urban_out,)) + irrigation_aux + carbon_aux + groundwater_aux + tile_aux + mmf_aux + obs_aux + cumulus_aux
 
 
 def _surface_2d(field):

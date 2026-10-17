@@ -1,0 +1,280 @@
+{
+  "schema_version": 1,
+  "lane": "s1-nestspec",
+  "created_utc": "2026-10-13T11:47:32.790167+00:00",
+  "status": "PARTIAL_READY_FOR_CRITIC",
+  "full_lane_gate": "OPEN",
+  "scope": "Operator-qualified extra-species boundary/restart enabler plus nested-option admission audit. No new nested microphysics admission.",
+  "source": {
+    "upstream_main": "cda189c04e36a6855e7c7331a3822e186fb20f04",
+    "product_tree": "0979d67bc4544b2111f34c2333f16b39da8f5c5f",
+    "product_unchanged_since": "c462988f6",
+    "measured_snapshot_commits": [
+      "f7310abb2",
+      "c462988f6",
+      "10b4dd907",
+      "3df18ea65",
+      "e0a729ab2",
+      "e77b4933d"
+    ],
+    "numerical_sources_byte_identical_since": "f7310abb2",
+    "numerical_file_sha256": {
+      "src/gpuwrf/contracts/precision.py": "00ea0f26dc4128800772da2173307cad8214390cf998830e3e122276f83417be",
+      "src/gpuwrf/contracts/state.py": "88a4f55a526f7991dcfd45f8e9ef7cac961df2bb27374f98bdceb32812d34c8c",
+      "src/gpuwrf/nesting/boundary_construction.py": "8692f0148eccf321be7b9d5369ea6e8eeecc218bd526a7d73c93a6ef67022283",
+      "src/gpuwrf/coupling/boundary_apply.py": "57278ae2e98d1897fd04aa032bbbba8ecd8b7a300994cb2bad65af1ec96a0a3f",
+      "src/gpuwrf/runtime/operational_mode.py": "7e8d11d33ef7d42190c18cc144f3d0dfb8e85369b442f71181198999a6ffe6b5"
+    }
+  },
+  "gates": {
+    "own_tests": {
+      "unique_passed": 41,
+      "method": "Union of paid passing cases NS01/02/03/04; numerical files byte-identical. Intermediate harness failures retained in raw logs."
+    },
+    "shared_consumers": {
+      "unique_passed": 280,
+      "skipped": 1,
+      "method": "NS08/09/10 cover ten shared modules; NS11 adds57 operational smoke cases. Test-only schema/precision/admission expectation repairs."
+    },
+    "pristine_force_down": {
+      "species": 10,
+      "status": "PASS",
+      "old_record_gate_ulps_of_max": 1,
+      "rate_gate_ulps_of_max": 32,
+      "max_rate_error_printed": 0.0,
+      "producer_byte_identity": "UNKNOWN; .3f rounded metrics cannot prove exactness"
+    },
+    "pristine_rk1_tendencies": {
+      "comparisons": 40,
+      "status": "PASS",
+      "gate_ulps_of_max": 32,
+      "max_error_printed_ulps_of_max": 0.25
+    },
+    "pristine_spec_final": {
+      "comparisons": 30,
+      "status": "PASS",
+      "gate_ulps_of_max": 32,
+      "interior_preservation": "BYTE"
+    },
+    "compiled_record_regression": {
+      "records": 10,
+      "status": "BYTE",
+      "interpretation": "JAX-vs-JAX regression only"
+    },
+    "restart": {
+      "records": 10,
+      "pickle": "BYTE",
+      "netcdf": "BYTE",
+      "missing_required_records": "REFUSED"
+    },
+    "deletion_mutant": {
+      "assertion_failures": 1,
+      "setup_errors": 0,
+      "status": "KILLED",
+      "dropped": "extra-species force-down loop"
+    },
+    "release_identity": {
+      "expected_sha256": "2bf12cb8374d3a84a440e47dea4b77b0c7436108fc2ee2616bba6ec79b17962a",
+      "actual_sha256": "2bf12cb8374d3a84a440e47dea4b77b0c7436108fc2ee2616bba6ec79b17962a",
+      "status": "EXACT"
+    },
+    "oracle_provenance": {
+      "manifest": "proofs/s1_nestspec/ORACLE_MANIFEST.yaml",
+      "manifest_validator": "PASS",
+      "pristine_source_files_clean": 5
+    }
+  },
+  "nested_audit": {
+    "RUC": "REFUSED: missing two-domain land/diagnostic/child-subcycle qualification",
+    "SLUCM": "REFUSED: missing two-domain canopy/carry/surface-flux qualification",
+    "km_opt=2": "REFUSED: missing child-boundary/halo advection/diffusion qualification",
+    "grid_fdda=1": "Existing CPU-qualified path retained; independent per-domain file/coefficient/clock/default tests PASS; coupled forecast pending",
+    "DFI": "REFUSED in port; WRF supports simultaneous-start nests, but recursive filter/clock wiring is absent"
+  },
+  "open_work": [
+    "Extra-species interpolation at nest start and input-file precedence",
+    "NSSL/number-lane child transport and final composed candidate",
+    "Real pristine WRF two-domain child boundary/interior comparison after N steps",
+    "GPU launch/transfer/VRAM/E41/coupled qualification"
+  ],
+  "performance": {
+    "force_down": {
+      "platform": "cpu",
+      "source": "<USER_HOME>/wrf_gpu2_lanes/s1-nestspec/ns04_snapshot",
+      "cache": "disabled",
+      "work": "constructed signed operator stress, parent32x28 child22x19 nz3 ratio3 bdy_width5",
+      "qualification": "CPU operator cost only; GPU launches/time/peak VRAM UNKNOWN",
+      "arms": {
+        "baseline": {
+          "compile_s": 21.221222158055753,
+          "warm_median_s": 0.007979074027389288,
+          "state_bytes": 550488,
+          "record_bytes": 312800,
+          "memory": {
+            "argument_size_in_bytes": 542452,
+            "output_size_in_bytes": 312944,
+            "temp_size_in_bytes": 4728120,
+            "alias_size_in_bytes": 0
+          }
+        },
+        "extra10": {
+          "compile_s": 41.734665364958346,
+          "warm_median_s": 0.027487849118188024,
+          "state_bytes": 660888,
+          "record_bytes": 423200,
+          "memory": {
+            "argument_size_in_bytes": 731668,
+            "output_size_in_bytes": 423424,
+            "temp_size_in_bytes": 6069944,
+            "alias_size_in_bytes": 0
+          }
+        }
+      }
+    },
+    "consumers": {
+      "platform": "cpu",
+      "source": "<USER_HOME>/wrf_gpu2_lanes/s1-nestspec/ns04_snapshot",
+      "cache": "disabled",
+      "harness_sha256": "edd8a1261d4cfdf89f0c34e252f245003c20934b740898cd479d44a71f5e621b",
+      "work": "constructed signed operator stress, child22x19 nz3 bdy_width5 dt6 lead6 parentdt18",
+      "qualification": "CPU component cost only; GPU timing/peak VRAM UNKNOWN",
+      "families": {
+        "rk1_tendency": {
+          "baseline": {
+            "compile_s": 6.064152825856581,
+            "warm_median_s": 0.0009293879847973585,
+            "memory": {
+              "argument_size_in_bytes": 171920,
+              "output_size_in_bytes": 45208,
+              "temp_size_in_bytes": 94312,
+              "alias_size_in_bytes": 0
+            }
+          },
+          "extra10": {
+            "compile_s": 11.585950993001461,
+            "warm_median_s": 0.004596425918862224,
+            "memory": {
+              "argument_size_in_bytes": 342512,
+              "output_size_in_bytes": 95448,
+              "temp_size_in_bytes": 211432,
+              "alias_size_in_bytes": 0
+            }
+          }
+        },
+        "spec_final": {
+          "baseline": {
+            "compile_s": 1.5698367808945477,
+            "warm_median_s": 0.0007754159159958363,
+            "memory": {
+              "argument_size_in_bytes": 550488,
+              "output_size_in_bytes": 551128,
+              "temp_size_in_bytes": 41040,
+              "alias_size_in_bytes": 0
+            }
+          },
+          "extra10": {
+            "compile_s": 2.0902523789554834,
+            "warm_median_s": 0.0014375010505318642,
+            "memory": {
+              "argument_size_in_bytes": 660888,
+              "output_size_in_bytes": 661608,
+              "temp_size_in_bytes": 110480,
+              "alias_size_in_bytes": 0
+            }
+          }
+        }
+      }
+    },
+    "default": "No new array leaves or device work in the release program; SHA exact. Nested API adds one small host namelist parse before case building.",
+    "state_record_delta_bytes_small_fixture": 110400,
+    "transfer_audit": "SOURCE: no added explicit host conversion/callback inside step; actual GPU transfer trace NOT_RUN",
+    "gpu": "UNKNOWN; no GPU command executed",
+    "memory_scope": "CPU compiler temporary-byte reports, not peak process RSS or GPU VRAM"
+  },
+  "execution": {
+    "backend": "cpu",
+    "core": 24,
+    "nice": 19,
+    "cache": "DISABLED GPUWRF_JAX_CACHE=0",
+    "gpu_runs": 0
+  },
+  "cleanup": {
+    "detached_snapshots_remaining": 0,
+    "pytest_builds_remaining": 0,
+    "disposable_caches_remaining": 0,
+    "retained": "small receipts/logs/source-hash manifests only"
+  },
+  "reporting_correction": "Supersedes earlier NS01 producer-exact wording in logs/notes/commit prose. Only tolerance PASS is established; compiled/restart BYTE and release full-SHA equality are separately explicit checks.",
+  "artifacts": {
+    "ns01.log": {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/s1-nestspec/ns01.log",
+      "bytes": 7084,
+      "sha256": "90b1f2e149b365b19bd90845ef33a4c090a34f415445fc76a9577f1671cae1f7"
+    },
+    "ns02.log": {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/s1-nestspec/ns02.log",
+      "bytes": 8863,
+      "sha256": "c4d0a349d05c28b5c51303f730ebc70a8f9010da31176e914d9d7b84547cb016"
+    },
+    "ns03.log": {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/s1-nestspec/ns03.log",
+      "bytes": 8850,
+      "sha256": "0a56f046882e8f7cec8b3c4985d36f247c87aaf14934f774da9c5f8490411cb3"
+    },
+    "ns04_cli.log": {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/s1-nestspec/ns04_cli.log",
+      "bytes": 113,
+      "sha256": "994ffb435a77d602e3bb7cb571376979fdf06021bd023125ea450ccf3c2a5445"
+    },
+    "mutant.log": {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/s1-nestspec/mutant.log",
+      "bytes": 2891,
+      "sha256": "0bce30d17376d1b6368b0538b5df55cee8d5a5e917db7435519b003e1ad18f37"
+    },
+    "shared.log": {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/s1-nestspec/shared.log",
+      "bytes": 23297,
+      "sha256": "36d69bc0f5efcb20ccc039a6e133256746b339711485bc4c0682791cc6febc4d"
+    },
+    "shared_fixed.log": {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/s1-nestspec/shared_fixed.log",
+      "bytes": 3208,
+      "sha256": "d5fdff3065336f0c37f8423005b165bdeba688114175141fcad9d96dd52684f7"
+    },
+    "shared_last.log": {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/s1-nestspec/shared_last.log",
+      "bytes": 98,
+      "sha256": "8d0fc2ae780aef1fbd746826fc1566f484552cdc25736fe51e820e810ea5b4ab"
+    },
+    "operational_smoke.log": {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/s1-nestspec/operational_smoke.log",
+      "bytes": 1738,
+      "sha256": "e9415b3e4bbd635c5be4b04c9370e57e220c927b2e5e113a1e6e2fce15cec7d6"
+    },
+    "record_bench.json": {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/s1-nestspec/record_bench.json",
+      "bytes": 1002,
+      "sha256": "f7e46fa3880b8ccde7052ce048b595c2298ca9a110e86a93f3578c810ed82cd8"
+    },
+    "consumer_bench.json": {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/s1-nestspec/consumer_bench.json",
+      "bytes": 1677,
+      "sha256": "6b4be0da17381b496b0d983b3174138fc8f4b313fcb650fde40448ab4a0940d0"
+    },
+    "release_identity.json": {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/s1-nestspec/release_identity.json",
+      "bytes": 1095,
+      "sha256": "89ec110c1f8886d5f8f5bd96ca1711fd5574a3c561ea00a8409e537913aef507"
+    },
+    "ns01_oracles/forcedown_manifest.json": {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/s1-nestspec/ns01_oracles/forcedown_manifest.json",
+      "bytes": 997,
+      "sha256": "ca677361f3bddfdeef8d4af17b6faadab0f80348db6a73fe853ae6c3d93ef45d"
+    },
+    "ns01_oracles/manifest.json": {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/s1-nestspec/ns01_oracles/manifest.json",
+      "bytes": 2553,
+      "sha256": "e16334840fcbf514c7d5aad3334c12f95a3454ec41035f668615a9f85582c35a"
+    }
+  }
+}

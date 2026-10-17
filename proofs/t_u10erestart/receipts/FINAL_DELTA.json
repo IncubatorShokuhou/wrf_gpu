@@ -1,0 +1,145 @@
+{
+  "status": "WORKER_GATE_GREEN_REVIEW_DELTA_PENDING",
+  "utc": "2026-10-15T00:17:11.759353+00:00",
+  "measured_source_commit": "c2d131cd84bc699d31d400e2b83b633568344184",
+  "current_gpuwrf_tree": "276c2da5153997d6916057fbbed9e83c32a33a2a",
+  "all_product_bytes_identical_to_reviewed_c2": true,
+  "cpu_unique_passes": 500,
+  "additional_pass_node": "tests/test_v013_operational_smoke.py::test_microphysics_operational_runs_and_mutates[38]",
+  "prior_499_cpu_receipt_immutable_sha256": "e2969b5cef079bb42aa02b7d9e05963f87a3edd4f26f408c058bb8179181b1dd",
+  "mp38": {
+    "status": "PASS_MP38_CLI_PENDING",
+    "source_commit": "c2d131cd84bc699d31d400e2b83b633568344184",
+    "gpuwrf_tree": "276c2da5153997d6916057fbbed9e83c32a33a2a",
+    "mp38": "1 passed in 25.45s, call 23.389s",
+    "rss_kib": 7058652,
+    "memory_max": "12G",
+    "swap": 0,
+    "unique_cpu_passes": 500,
+    "sealed_receipts": {
+      "UR16_mp38.xml": "40e73759a7ec18eef2dba06a9ece0fea6d1ec2ab56a1669e73709f52d2f00485",
+      "UR16_mp38.log": "bb2554dcdda815c4786bbc1d75fb9af49c7033558d0e5c162f84ce3a0768e1ce",
+      "UR16_events.jsonl": "0a4927186d26ec48747e24d4600f4859a75e5689b86aa1a72e49dbb26fdaf52e"
+    },
+    "prior_receipt_unchanged": "FINAL_CPU_RECEIPT.json"
+  },
+  "cli_gates": {
+    "cli_swiss": {
+      "status": "PASS",
+      "platform": "cpu",
+      "gpu_executed": false,
+      "files": [
+        "wrfout_d01_2023-01-15_00:00:00",
+        "wrfout_d01_2023-01-15_01:00:00"
+      ],
+      "variables_byte_exact": 754,
+      "terminal_carry_leaves_byte_exact": 155,
+      "standalone_format_leaves_byte_exact": {
+        "pickle": 155,
+        "netcdf": 155,
+        "checkpoint": 155
+      },
+      "numerical_scope": "restart/determinism regression; not WRF fidelity",
+      "harness": "State device guard redirected to CPU; product stepping, solver and CLI",
+      "surface_scheme": 5,
+      "step_100_winds": {
+        "u10e": null,
+        "v10e": null
+      },
+      "control_steps": 200,
+      "sigkill_steps": 100,
+      "resumed_steps": 200
+    },
+    "cli_myj": {
+      "status": "PASS",
+      "platform": "cpu",
+      "gpu_executed": false,
+      "files": [
+        "wrfout_d01_2023-01-15_00:00:00",
+        "wrfout_d01_2023-01-15_01:00:00"
+      ],
+      "variables_byte_exact": 758,
+      "terminal_carry_leaves_byte_exact": 163,
+      "standalone_format_leaves_byte_exact": {
+        "pickle": 163,
+        "netcdf": 163,
+        "checkpoint": 163
+      },
+      "numerical_scope": "restart/determinism regression; not WRF fidelity",
+      "harness": "State device guard redirected to CPU; product stepping, solver and CLI",
+      "surface_scheme": 2,
+      "step_100_winds": {
+        "u10e": {
+          "shape": [
+            42,
+            42
+          ],
+          "dtype": "float32",
+          "nonzero": 1764,
+          "minimum": -6.412312984466553,
+          "maximum": 5.859230995178223,
+          "sha256": "413b09254336f5b0730b657595dbbf092330bfaa1fd5e8d13921ad4fb874a0fa"
+        },
+        "v10e": {
+          "shape": [
+            42,
+            42
+          ],
+          "dtype": "float32",
+          "nonzero": 1764,
+          "minimum": -4.122419834136963,
+          "maximum": 16.347158432006836,
+          "sha256": "9aa351721f8b6a1a2a11b611dda46182555c7b039f70c2efe7104cd58c5312d4"
+        }
+      },
+      "control_steps": 200,
+      "sigkill_steps": 100,
+      "resumed_steps": 200
+    }
+  },
+  "default_bypasses_validate_ssib": "src/gpuwrf/io/restart_schema.py:519-520",
+  "exact_introducing_commit": "fc37e012639219c22fb95060bdb07bdfd6c6956a",
+  "rebased_equivalent": "b8d09d96893fbdb0269c3a441d5cb4b0a98324b2",
+  "cpu_limits": {
+    "memory_max_bytes": 12884901888,
+    "swap_max_bytes": 0,
+    "jobs_per_lane": 1,
+    "affinity": "12,13,28,29",
+    "nice": 19,
+    "timeout_model_s": 1800,
+    "timeout_verify_s": 300,
+    "cache": "disabled"
+  },
+  "gpu_executed": false,
+  "fidelity_claim": false,
+  "scope": "CPU restart/determinism + host admission; original WRF fidelity is outside this delta",
+  "known_out_of_scope": "Native CLI separate --namelist is preflight-only; MYJ uses private input-dir namelist and effective-work assertions",
+  "cleanup": {
+    "snapshot_removed": "<USER_HOME>/wrf_gpu2_lanes/t-u10erestart/snapshot-c2",
+    "bulk_outputs_removed": [
+      "<USER_HOME>/wrf_gpu2_lanes/t-u10erestart/UR17_swiss/control",
+      "<USER_HOME>/wrf_gpu2_lanes/t-u10erestart/UR17_swiss/stream",
+      "<USER_HOME>/wrf_gpu2_lanes/t-u10erestart/UR17_swiss/checkpoints",
+      "<USER_HOME>/wrf_gpu2_lanes/t-u10erestart/UR17_swiss/formats",
+      "<USER_HOME>/wrf_gpu2_lanes/t-u10erestart/UR18_myj/control",
+      "<USER_HOME>/wrf_gpu2_lanes/t-u10erestart/UR18_myj/stream",
+      "<USER_HOME>/wrf_gpu2_lanes/t-u10erestart/UR18_myj/checkpoints",
+      "<USER_HOME>/wrf_gpu2_lanes/t-u10erestart/UR18_myj/formats"
+    ],
+    "reference_inputs_untouched": true,
+    "private_frozen_myj_input_retained_bytes": 14080090,
+    "persistent_cache": "none"
+  },
+  "prior_same_critic": "rv-t-u10erestart; source/CPU MERGE, CLI+MP38 hold now closed; delta review next",
+  "sealed_receipts": {
+    "DELTA_MP38.json": "f093a5c7868eb2483ee4b1b4c62718dbcf9b654f2022de16123b948f881c0b67",
+    "cli_swiss/SEAL.json": "635e20886e6b56f4b6a02f2641d46ce0a3f176d10545802744fea805bfd98b5a",
+    "cli_myj/SEAL.json": "e08c368cb45fca7dce67f24c7576fb419e6b70fcd3b9893bb37a43f5f49c2f66"
+  },
+  "harness_sha256": {
+    "proofs/t_u10erestart/cli_probe.py": "13c8288123a8e09a035de790da4f09818ea3e143cac009d4278c167cbecffc47",
+    "proofs/t_u10erestart/verify_cli.py": "592f827c82d0692795b351b9fc3a5011dd10f8e359800cdff3c599386b97b9ea",
+    "proofs/t_restartfix/cli_probe.py": "1371a6f2b62fc190c84f76f834f9d8d3e0a48bf2430fede4f7bb111a859093c0",
+    "proofs/t_restartfix/verify_cli.py": "58fe114d0979f3d9a74cb7c1c669f660fbc362692cd95395969c682bcd182af9"
+  }
+}

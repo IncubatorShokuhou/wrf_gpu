@@ -216,7 +216,7 @@ _SW_ARRAY_FIELDS: tuple[str, ...] = (
     "re_cloud", "re_ice", "re_snow", "xland",
 )
 _SW_GAS_FIELDS: tuple[str, ...] = ("co2_vmr", "n2o_vmr", "ch4_vmr")
-_SW_STATIC_FIELDS: tuple[str, ...] = ()
+_SW_STATIC_FIELDS: tuple[str, ...] = ("cammg_radii",)
 # Append new optional leaves after the existing gas leaves: OFF argument paths
 # and the original column ABI remain identical.
 _SW_MP_RE_FIELDS = ("re_cloud", "re_ice", "re_snow", "xland")
@@ -262,7 +262,7 @@ class RRTMGSWColumnState:
         "pressure_interfaces",
         "temperature_interfaces",
         "ozone_vmr",
-        "re_cloud", "re_ice", "re_snow", "xland",
+        "re_cloud", "re_ice", "re_snow", "xland", "cammg_radii",
         "co2_vmr",
         "n2o_vmr",
         "ch4_vmr",
@@ -289,8 +289,9 @@ class RRTMGSWColumnState:
         n2o_vmr: float | None = None,
         ch4_vmr: float | None = None,
         ozone_vmr=None,
-        re_cloud=None, re_ice=None, re_snow=None, xland=None,
+        re_cloud=None, re_ice=None, re_snow=None, xland=None, cammg_radii=False,
     ) -> None:
+        self.cammg_radii = bool(cammg_radii)
         self.T = T
         self.p = p
         self.qv = qv
@@ -3250,8 +3251,14 @@ def solve_rrtmg_sw_column_debug_stripped(
 
 def _sw_mp_radii(state, nlev):
     from gpuwrf.physics.rrtmg_mp_re import prepare_radiation_radii, RadiationRadii
-    r = prepare_radiation_radii(state.T, state.cloud_fraction, state.xland,
-                                state.re_cloud, state.re_ice, state.re_snow)
+    if state.cammg_radii:
+        # RRTMG_SW: original CAM-MG override is in microns, with
+        # combined qi+qs optics and no separate snow path.
+        from gpuwrf.physics.cammg.radiation import radius_view
+        r = radius_view(state.re_cloud,state.re_ice)
+    else:
+        r = prepare_radiation_radii(state.T, state.cloud_fraction, state.xland,
+                                    state.re_cloud, state.re_ice, state.re_snow)
     n = nlev - state.p.shape[-1]
     def extend(v, value):
         return jnp.concatenate((v, jnp.full(v.shape[:-1] + (n,), value, v.dtype)), axis=-1)

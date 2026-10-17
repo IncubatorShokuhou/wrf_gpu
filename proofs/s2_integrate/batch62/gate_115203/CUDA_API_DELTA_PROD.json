@@ -1,0 +1,50 @@
+{
+  "utc": "2026-10-16T10:50:49.275358+00:00",
+  "source_commit": "353a85f8a11abf4a12dcd78bad77ec7dc682a019",
+  "root_steps": 66,
+  "rows": [
+    {
+      "API": "cuLaunchKernelEx",
+      "F20": 495752,
+      "candidate": 495752,
+      "delta": 0
+    },
+    {
+      "API": "cuGraphLaunch",
+      "F20": 200,
+      "candidate": 200,
+      "delta": 0
+    },
+    {
+      "API": "cuGraphExecKernelNodeSetParams_v2",
+      "F20": 154904,
+      "candidate": 160992,
+      "delta": 6088
+    },
+    {
+      "API": "cuGraphExecMemcpyNodeSetParams",
+      "F20": 5808,
+      "candidate": 6402,
+      "delta": 594
+    },
+    {
+      "API": "cuTensorMapEncodeTiled",
+      "F20": 602,
+      "candidate": 5552,
+      "delta": 4950
+    },
+    {
+      "API": "cuStreamSynchronize",
+      "F20": 900,
+      "candidate": 900,
+      "delta": 0
+    },
+    {
+      "API": "cuLaunchHostFunc",
+      "F20": 2764,
+      "candidate": 2764,
+      "delta": 0
+    }
+  ],
+  "scope": "Actual CUDA API counts overmatched hour3 only. Not graph-node trace/S3, not causal latency attribution; countchanges forwardedtoowner. ColdGPUhour2warmratio1.05735 vsF20 needsreview/secondcandidatewarmhour2sample alreadybudgetedfull24run."
+}

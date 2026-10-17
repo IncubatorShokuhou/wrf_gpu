@@ -1,0 +1,335 @@
+{
+  "verdict": "READY-FOR-MERGE",
+  "scope": "PRIORITY composed CPU/source batch enabling assigned GPU reruns; no new GPU/fullforecast/E41 claim",
+  "UTC": "2026-10-15T05:07:16.945531+00:00",
+  "lane": "s2-integrate",
+  "base_main": "42e657f645e36f0de4a362c29cea83d1514af085",
+  "measured_candidate": "dd4424ad351355bb2643a5907af3a508d0bee295",
+  "source_audit": {
+    "status": "PASS",
+    "initial": "c959e869a83bd10deea9d01a7ac3c6f20c42046d",
+    "main": "42e657f645e36f0de4a362c29cea83d1514af085",
+    "candidate": "dd4424ad351355bb2643a5907af3a508d0bee295",
+    "src_tree": "c3ac134dce6ca54c95a5a0aa8f701fe12a254b44",
+    "merges": [
+      {
+        "incoming": "9d1cad3515fa28b9ebae9bf7b16e2600dc20b3c8",
+        "before": "7f42dc2e1b51df2730a3c05a7439a042ea9c4d83",
+        "after": "15e3a6ed5f252f2daab8ae046074c28728632439",
+        "conflicts": 0,
+        "AST_files": [
+          "proofs/t_qhmass/coupled.py",
+          "proofs/t_qhmass/mutant.py",
+          "proofs/t_qhmass/native_identity.py",
+          "proofs/t_qhmass/program_identity.py",
+          "proofs/t_qhmass/wrf_moist_oracle.py",
+          "src/gpuwrf/contracts/moisture.py",
+          "src/gpuwrf/coupling/physics_couplers.py",
+          "src/gpuwrf/kernels/phys_hydrostatic_real.py",
+          "src/gpuwrf/runtime/operational_mode.py",
+          "tests/test_t_qhmass.py"
+        ],
+        "sealed_XML_attribute_only": "Exact deletion_mutant.xml whitespace metadata preserves SHA"
+      },
+      {
+        "incoming": "8741b8440277b19271f0247de76856a9ac23fc5a",
+        "before": "15e3a6ed5f252f2daab8ae046074c28728632439",
+        "after": "54961bd4ba0e4b0d85fb11fe371b2ea3d5782b79",
+        "conflicts": 0,
+        "AST_files": [
+          "proofs/t_godperf/capture_columns.py",
+          "proofs/t_godperf/inspect_paid.py",
+          "proofs/t_godperf/scan_components.py",
+          "proofs/t_godperf/tile_probe.py",
+          "src/gpuwrf/coupling/goddard_radiation.py"
+        ]
+      },
+      {
+        "incoming": "6f36edfb0fca9390fcb280921f6311e59eed9400",
+        "before": "54961bd4ba0e4b0d85fb11fe371b2ea3d5782b79",
+        "after": "1aa30e4c54661627d9bb916558cfb128a7c46ff6",
+        "conflicts": 0,
+        "AST_files": [
+          "proofs/t_godperf/default_identity.py"
+        ]
+      }
+    ],
+    "qhmass4files_BYTE_approved": [
+      "src/gpuwrf/contracts/moisture.py",
+      "src/gpuwrf/coupling/physics_couplers.py",
+      "src/gpuwrf/kernels/phys_hydrostatic_real.py",
+      "src/gpuwrf/runtime/operational_mode.py"
+    ],
+    "Goddard_single_file_BYTE_approved": "src/gpuwrf/coupling/goddard_radiation.py",
+    "all_other_model_files_inputs_scripts_packaging_BYTE_main": true,
+    "BL11_original": "a367c1a57acdf20a4c56ffa473d8970e9180a5fc",
+    "BL11_composed_commit": "dd4424ad351355bb2643a5907af3a508d0bee295",
+    "BL11_exact_changed_functions_AST": [
+      "test_pbl_operational_runs_and_mixes",
+      "test_shinhong_diag1_operational_updates_tke"
+    ],
+    "BL11_all_other_functions_AST_BYTE_main": true,
+    "unapproved_BL11_ancestor_commits_excluded": 10,
+    "qh_sealed_receipts": 24,
+    "god_sealed_receipts": 11,
+    "default_identity_reuse": "Both independent accepted changes have EXACT FULL defaults. qh optional hail absent in defaults/native6-8parentBYTE; tile constant reached only radiation5, defaults radiation4; BL11 test-only. No interaction in default graph.",
+    "native_artifact_reuse": "Goddard solver/math/tables/tiling entiremoduleBYTEreviewed; qh closures/contracts/nativehydrostat entirefilesBYTEreviewed. No composition edits or new compiled ABI from these two fixes."
+  },
+  "fresh_composed_CPU": {
+    "PASS": 12,
+    "FAIL": 0,
+    "ERROR": 0,
+    "SKIP": 0,
+    "scope": "8pristinehail/operator+2acousticcaller+2realBL11diag0/1checks",
+    "artifact": "SI237-priority-tests.json"
+  },
+  "qh_prior_evidence_reused": {
+    "verdict": "MERGE",
+    "target": "9d1cad3515fa28b9ebae9bf7b16e2600dc20b3c8",
+    "src_tree": "b3e73a82625a54b5b4f60288d42237ac7137936d",
+    "independent_tests_passed": 10,
+    "numeric_mutant_assertions": 3,
+    "setup_errors": 0,
+    "sealed_producer_unique_pass": 344,
+    "sealed_producer_focused_pass": 8,
+    "sealed_producer_other_shared_pass": 336,
+    "inherited_BL11_fail": 1,
+    "pristine_loading_seams": 45,
+    "coupled_steps": 6,
+    "nonfinite": 0,
+    "guards": 0,
+    "fresh_Swiss_sha": "f672a5739cb96e388b6b7a40ef80337bf81bdc14ef15268f3476e09d79fe055d",
+    "fresh_PROD_sha": "6fc715a2bd630934c4cf0f94427df19a527cbf429011c9ba5efe4d712744d27b",
+    "fresh_no_hail_hashes": {
+      "mp_physics=22": "68191143d3b911935fef7b26b1ba9967f5761f5f48ae7766d4997481ac2e1dc3",
+      "mp_physics=38": "70e2dbcab2d8882e5219f795adbe0143dce2125d7db0ecb6066478bff79c8a70"
+    },
+    "GPU_reruns_pending": [
+      "c07",
+      "c12",
+      "c13",
+      "c14",
+      "c17",
+      "c18",
+      "c64",
+      "c88"
+    ],
+    "GPU_timing_peak_memory_E41_device_ops": "UNKNOWN",
+    "CPU_callers_scope": "same-input pristine operator/carry checks, controlled original hail input for17/18; not trajectory parity",
+    "receipt_sha256": {
+      "deletion_mutant.log.gz": "a7e4276801dea5ade06ac129e79b921047f3707e9396e745b12e86dd82359e87",
+      "deletion_mutant.xml.gz": "09a2aa416c75a5e95cdc0fd870aaaa412597882904b6157fb8a8b238829c5b80",
+      "gpu_rerun_scope.json": "08af9d406bb67b0c3d4c1086a975851fd3c54cb4cafe9767d5634fe7a67aaaff",
+      "independent_oracle_provenance.json": "70e00a1fcae6e0782632b51c49fc2f0379266e7978eb23d90483a290f9a11299",
+      "key_tests.log": "bb34ebf43559907fcbd84f90278dc314ecb9230c6443c7a6826acb02b88a52ce",
+      "key_tests.xml": "c44e02dcc561830ab351bc10712ac98bd938b8e2b1c3c4d5efa48e64579ca8b3",
+      "manifest_validation.json": "a1d1174d0221d14dddf0dc3ae3c280894dd3a384e3954f4cf2df8204d0f9a934",
+      "mutant_check.json": "f07cfc525c22a6bdad3ac9c8f5892a1f2f3e366027a856ae1cecffb8cdc12fc4",
+      "native_frontend.json": "1c34aea2c57ad2a34279262106db5bd1a679a2908bf766c08ed4fb6dbca2e6ec",
+      "native_frontend.log": "b4c6411e0e334ede6fa083225d5190e5a338e56e6acc0ee721ac5eeae347a7bf",
+      "no_hail_programs.json": "97da09b9d8cac413b5c0cbc66b83cfdd715c05d56ea66999cb0650ee31df0b30",
+      "no_hail_programs.log": "3a3ef985f14a53fef80fc5e7f309a6d83d9ff580054315f6120f1a85d5d3222d",
+      "prod_release.json": "270d7214e32e570f5f273116c8715d53d6f0e55fc855b2c9d1ed2fcfe8611528",
+      "prod_release.log": "478191d9d8c3501c5818053066f2f3819fedbf95a614002305c44cb6416733ca",
+      "source_key_scope.json": "eb08c12774f5add46eca6a760dbbb3fe380c0e937d0575b7d0186695e1d881eb",
+      "source_receipt_audit.json": "c3e55ae9aa29675c6ba24b6349a4c971730e660d2b867bcc4c2a2d53b4231661",
+      "swiss_release.json": "eda742d65cdcc5c726e0614c63da353d652303fd5c8c80808a6f4c08b79c0ad7",
+      "swiss_release.log": "010eabf5d53087297e21716faf89405769001b3fbd110d3280435542e52fb30b"
+    },
+    "compressed_raw_receipts": {
+      "deletion_mutant.xml.gz": {
+        "uncompressed_sha256": "6f033b40b02350bc585f6e73e1a28ec539104e305cab418128a1b3aef979586f",
+        "uncompressed_bytes": 11580
+      },
+      "deletion_mutant.log.gz": {
+        "uncompressed_sha256": "688679627b7d9be2027a9ef8e6c6e6cff07c2d95ac28f163962cbea4afce1ceb",
+        "uncompressed_bytes": 10479
+      }
+    }
+  },
+  "god_prior_evidence_reused": {
+    "lane": "t-godperf",
+    "utc": "2026-10-15T04:49:40.066716+00:00",
+    "status": "READY-FOR-CRITIC",
+    "candidate_commit": "8741b8440277b19271f0247de76856a9ac23fc5a",
+    "source_commit_scope": "Exactly two integer literals128->2048 in Goddard solver tiling; source_seal proves AST equivalence to measured specialization",
+    "gates": {
+      "gpu_byte_identity": "PASS all16outputs both realSwiss initnight/same-state-noon at128/1024/2048/4096",
+      "pristine_and_caller_checks": "114PASS17.20s",
+      "default_full_jaxpr": "Swissf672a573/PROD6fc715a2 EXACT",
+      "actual_component_e41": "4/4PASS maxSTACK8B;no nonleaf/kInput flags",
+      "real_c45_native_cuda_frontend": "PASS44.81s/155nativePallas/0interpret/200steps/cad33"
+    },
+    "trace": {
+      "status": "UNKNOWN: official6GscopeOOM,no report",
+      "manager_disposition": "2026-10-15: optional diagnostic, not a gate; hand off NOW, no additional GPU slot"
+    },
+    "metrics": {
+      "component_first_execution_speedup_night": 14.609462242642177,
+      "component_first_execution_speedup_noon": 14.885651515520467,
+      "temps_bytes_old": 13968816,
+      "temps_bytes_new": 83522552,
+      "not_warm_forecast_S1": true
+    },
+    "open": [
+      "Actual changed whole-modelGPU E41 and c45 D6/performance belong to v-prep final composed run",
+      "dynamicnode/transfer/device-host breakdown UNKNOWN",
+      "upstreamcompiler-zero reference and experimental disclosures unchanged"
+    ],
+    "receipts": [
+      {
+        "file": "proofs/t_godperf/receipts/paid_hlo_summary.json",
+        "sha256": "b9745deff85704bc4555eb5d9de90cd8d5deb6f59b2e2690468f5b7a6ec3456e",
+        "original": "<USER_HOME>/wrf_gpu2_lanes/t-godperf/GP02/summary.json"
+      },
+      {
+        "file": "proofs/t_godperf/receipts/static_launch_projection.json",
+        "sha256": "ccde562fe41c8cd768e0124710ff81bcba200542b44cddcbe1180930f66946f6",
+        "original": "<USER_HOME>/wrf_gpu2_lanes/t-godperf/GP02/static_launch_bound.json"
+      },
+      {
+        "file": "proofs/t_godperf/receipts/input_capture.json",
+        "sha256": "6d979e856b3e237dd1f67896c285bf2ddca283fc403bb955ca7ffe87b2920e11",
+        "original": "<USER_HOME>/wrf_gpu2_lanes/t-godperf/GP03/receipt.json"
+      },
+      {
+        "file": "proofs/t_godperf/receipts/gpu_tile_bench.json",
+        "sha256": "0aa4c2538f40b42e7b6b68db0e93c62f7f1ffec65dd1b736b449fdb03266ff58",
+        "original": "<USER_HOME>/wrf_gpu2_lanes/t-godperf/GP04/receipt.json"
+      },
+      {
+        "file": "proofs/t_godperf/receipts/component_e41.json",
+        "sha256": "afa52117d2cab1430d959edd6de8f0f74c5a78b410fbf0396c9c5cea12d3a5af",
+        "original": "<USER_HOME>/wrf_gpu2_lanes/t-godperf/GP04/e41/gate.json"
+      },
+      {
+        "file": "proofs/t_godperf/receipts/source_seal.json",
+        "sha256": "7d63472234c6bd014a184e0f03ec161c4234e6ab1631fe5c4b6b546d4a5bfea3",
+        "original": "<USER_HOME>/wrf_gpu2_lanes/t-godperf/source_seal.json"
+      },
+      {
+        "file": "proofs/t_godperf/receipts/swiss_identity.json",
+        "sha256": "ff1621229c3b5fd800f580c35c92df8deaeeb033b87a185e62a4248829b3e3c7",
+        "original": "<USER_HOME>/wrf_gpu2_lanes/t-godperf/GP07-swiss.json"
+      },
+      {
+        "file": "proofs/t_godperf/receipts/prod_identity.json",
+        "sha256": "23d8e07a3d3a2e4695c4b47dd9bcf5be53816dee4f73b1f06a649de62ec5d36d",
+        "original": "<USER_HOME>/wrf_gpu2_lanes/t-godperf/GP08-prod.json"
+      },
+      {
+        "file": "proofs/t_godperf/receipts/c45_lower.json",
+        "sha256": "b46c008cdb23fb65dd04f4e4eb30e31f39582a63d57f89c770fba176c6d2af9d",
+        "original": "<USER_HOME>/wrf_gpu2_lanes/t-godperf/GP09/receipt.json"
+      },
+      {
+        "file": "proofs/t_godperf/receipts/pristine_checks.xml",
+        "sha256": "af79f16609a70d9265ff3899998cc8aaad2143dde4a2699a411175f7983a1578",
+        "original": "<USER_HOME>/wrf_gpu2_lanes/t-godperf/GP06.xml"
+      },
+      {
+        "file": "proofs/t_godperf/receipts/trace_oom_scope.txt",
+        "sha256": "642a07db763bb91e32add43fe00adaa4b19928982122e0177f2ed6555e5d48de",
+        "original": "<USER_HOME>/wrf_gpu2_lanes/t-godperf/GP04/scope_journal.txt"
+      }
+    ]
+  },
+  "BL11_FIX": "Approved exact a367 test diff only; mainNTU changes retained; inheritedBL11fail nowPASS, no productchange",
+  "composition_reuse": "Affected qh numerical12count includes10pristine/caller tests rerun once on final source. Goddard114pristine/componentBYTE128leaves/4compiledE41/c45frontend source-bound reuse with independent qh paths; no repeat of paid3two-stepcallers or default traces. Shared336producer + prior699source-scoped unaffected required consumers retained; counts overlap, never summed.",
+  "default_FULL_ids_reused": {
+    "Swiss": "f672a5739cb96e388b6b7a40ef80337bf81bdc14ef15268f3476e09d79fe055d",
+    "PROD": "6fc715a2bd630934c4cf0f94427df19a527cbf429011c9ba5efe4d712744d27b",
+    "mp22": "68191143d3b911935fef7b26b1ba9967f5761f5f48ae7766d4997481ac2e1dc3",
+    "mp38": "70e2dbcab2d8882e5219f795adbe0143dce2125d7db0ecb6066478bff79c8a70"
+  },
+  "GPU_reruns_required": [
+    "c07",
+    "c12",
+    "c13",
+    "c14",
+    "c17",
+    "c18",
+    "c64",
+    "c88"
+  ],
+  "v_run_reruns_required": [
+    "mp18",
+    "mp18_cu5",
+    "mp24",
+    "mp26"
+  ],
+  "Goddard_final_GPU_required": "c45 frozenD6 6h per managerdecision +actualwholemodelE41/performance; componentfirstexec notS1",
+  "performance_memory": {
+    "qh": "Existing hail buffer read/add; no packedmoisturetemporary/newpersistentcarry; nativeonePallas/zero runtimef64; actualGPUtime/memory/E41unknown.",
+    "god": "Tile128\u21922048: measuredcomponentfirst-execaftercompile53.525/53.389\u21923.664/3.587s(14.609/14.886x), notwarmforecast/S1; temporaries13968816\u219283522552B(+69553736), args/outputunchanged; componentE41PASS4/4max8B; dynamiclaunch attributionU.",
+    "BL11": "Test-only; no productcost."
+  },
+  "open_risks": [
+    "All affected hail oldPASS provisional until composedGPU reruns; coordinatev-prep/v-run same-work reuse.",
+    "Directwriter no-diagnosticPSFC optionalmass/selectedgeometry followup remains separate.",
+    "Actual27-outputP3radarGPU/E41/fullD6 remains pending; no old26ABI gate transfer.",
+    "F2negativeevents/extraP3coverage/experimentalUB/strictFMA and unrelatedinherited4allocationreds/broadsmokeOOM remain unwaived."
+  ],
+  "cleanup": {
+    "candidate": "dd4424ad351355bb2643a5907af3a508d0bee295",
+    "rc": 0,
+    "wall_s": 21.83649879299992,
+    "command": [
+      "/usr/bin/time",
+      "-v",
+      "timeout",
+      "180",
+      "python",
+      "-m",
+      "pytest",
+      "-q",
+      "-p",
+      "no:cacheprovider",
+      "--basetemp",
+      "<DATA_ROOT>/wrf_gpu2/scratch/s2-integrate/batch20-pytest",
+      "--junitxml",
+      "<USER_HOME>/wrf_gpu2_lanes/s2-integrate/SI237-priority-tests.xml",
+      "tests/test_t_qhmass.py",
+      "tests/v025/b_diff/test_pg_buoy_mu2_wiring.py",
+      "tests/test_v013_operational_smoke.py::test_pbl_operational_runs_and_mixes[11]",
+      "tests/test_v013_operational_smoke.py::test_shinhong_diag1_operational_updates_tke"
+    ],
+    "all4_owned_paths_absent": true,
+    "cache": "NONE",
+    "GPU_runs": 0
+  },
+  "proof_files": {
+    "SI236-batch20-source.json": "9e155e6dce9c09ca4367d58fa4b3c0e7dd80f5dca406f7deb9430375e9c83cea",
+    "SI237-priority-tests.json": "78f1ece4a27a4d6f46dfa876718a75593444b56bda4916805a4d966123d2684d",
+    "SI237-priority-tests.xml.gz": "2bc7fa147c47092cb670cbe8506f5c7d23ad821577d10556f96e158506d19c98",
+    "SI237-priority-tests.log.gz": "3d69313308358257f784c4034c3ba3cc6129ab2c34cb753d3f208763b12988df",
+    "integrate_batch20.py": "c75f63a9f24682a8fa7cef9874526544ac8fdbab87b61b8a611983c81410a2c3",
+    "rv-t-qhmass-VERDICT.md": "8a76b7426f8a04324c0634be51b3e817129a7e45a5bbf1843b900679bd2d184f",
+    "rv-t-qhmass-REVIEW.json": "c54089e08d9e41177fcdfa2a145f76abe24191a469c785d8b3e55c3f04698b1f",
+    "rv-t-qhmass-gpu_rerun_scope.json": "08af9d406bb67b0c3d4c1086a975851fd3c54cb4cafe9767d5634fe7a67aaaff",
+    "rv-t-qhmass-source_receipt_audit.json": "c3e55ae9aa29675c6ba24b6349a4c971730e660d2b867bcc4c2a2d53b4231661",
+    "rv-t-qhmass-native_frontend.json": "1c34aea2c57ad2a34279262106db5bd1a679a2908bf766c08ed4fb6dbca2e6ec",
+    "rv-t-qhmass-no_hail_programs.json": "97da09b9d8cac413b5c0cbc66b83cfdd715c05d56ea66999cb0650ee31df0b30",
+    "rv-t-godperf-VERDICT.md": "4f0800861315f7353ec6886dad4f3ab0af23df3dc55ec4fd940ab7f556bf9acd",
+    "rv-t-godperf-RV00.json": "1071c58201e1ac7b3b563dc0d54271a7a3a58e454360af7b74f36f470a740ca2",
+    "rv-t-godperf-RV01.xml.gz": "bcd469e1013df4a94afdb2d39dfd430afed53583fcdeaf54e929de09076a1dc2",
+    "rv-t-godperf-RV05-e41.json": "52fdc7924b1fe150088cceaa051d884886ce939d2c73875aaa34b21bd3087f8c"
+  },
+  "uncompressed_sha256": {
+    "SI236-batch20-source.json": "9e155e6dce9c09ca4367d58fa4b3c0e7dd80f5dca406f7deb9430375e9c83cea",
+    "SI237-priority-tests.json": "78f1ece4a27a4d6f46dfa876718a75593444b56bda4916805a4d966123d2684d",
+    "SI237-priority-tests.xml": "d57b9715be7a483abb7b121a52f743292217df5e80f4b24df1d52b503989211f",
+    "SI237-priority-tests.log": "d727559466a94779db4e3204c56613d9ae763fca874d2abd4135cdb5a67ef565",
+    "integrate_batch20.py": "c75f63a9f24682a8fa7cef9874526544ac8fdbab87b61b8a611983c81410a2c3",
+    "rv-t-qhmass-VERDICT.md": "8a76b7426f8a04324c0634be51b3e817129a7e45a5bbf1843b900679bd2d184f",
+    "rv-t-qhmass-REVIEW.json": "c54089e08d9e41177fcdfa2a145f76abe24191a469c785d8b3e55c3f04698b1f",
+    "rv-t-qhmass-gpu_rerun_scope.json": "08af9d406bb67b0c3d4c1086a975851fd3c54cb4cafe9767d5634fe7a67aaaff",
+    "rv-t-qhmass-source_receipt_audit.json": "c3e55ae9aa29675c6ba24b6349a4c971730e660d2b867bcc4c2a2d53b4231661",
+    "rv-t-qhmass-native_frontend.json": "1c34aea2c57ad2a34279262106db5bd1a679a2908bf766c08ed4fb6dbca2e6ec",
+    "rv-t-qhmass-no_hail_programs.json": "97da09b9d8cac413b5c0cbc66b83cfdd715c05d56ea66999cb0650ee31df0b30",
+    "rv-t-godperf-VERDICT.md": "4f0800861315f7353ec6886dad4f3ab0af23df3dc55ec4fd940ab7f556bf9acd",
+    "rv-t-godperf-RV00.json": "1071c58201e1ac7b3b563dc0d54271a7a3a58e454360af7b74f36f470a740ca2",
+    "rv-t-godperf-RV01.xml": "ed1d66fb48097ee071a9559800a441361523043fa613eadbfd0fc41d3780473c",
+    "rv-t-godperf-RV05-e41.json": "52fdc7924b1fe150088cceaa051d884886ce939d2c73875aaa34b21bd3087f8c"
+  }
+}

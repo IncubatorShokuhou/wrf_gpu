@@ -1,0 +1,28 @@
+{
+  "utc": "2026-10-16T11:51:54.892821+00:00",
+  "verdict": "INCOMPLETE",
+  "reason": "ActualGPU CLI operand replay still requested hotstep compile; cache-only guard refused. No valid samples. Stop recipe, never claim timing PASS.",
+  "last_setup": {
+    "platform": "gpu",
+    "source_commit": "e7e37390cc62a0f69ee213e5f5484f80e039dffd",
+    "setup": true,
+    "compile_calls": [
+      "\"jit__advance_chunk_fori\"",
+      "\"jit__advance_chunk_fori\""
+    ],
+    "samples": [],
+    "scope": "Real PROD root1 warmup then roots3..12, d01x1/d02x3, fresh process. Cache-loaded root executables only; setup permits auxiliary compilation but never hot advance compilation. Regression timing only, not CPU-WRF fidelity/S1/S3.",
+    "verdict": "INCOMPLETE",
+    "error": "RuntimeError('CACHE_ONLY_TIMING refuses executable compile: \"jit__advance_chunk_fori\"')",
+    "process_wall_s": 26.36504207897815,
+    "affinity": [
+      3,
+      13,
+      19,
+      29
+    ]
+  },
+  "remaining_action": "Owner/manager working cached root-loader; actualGPU fixture andallPINs/typedlogs kept; WN3full24next",
+  "sourceA": "e7e37390cc62a0f69ee213e5f5484f80e039dffd",
+  "sourceB": "353a85f8a11abf4a12dcd78bad77ec7dc682a019"
+}

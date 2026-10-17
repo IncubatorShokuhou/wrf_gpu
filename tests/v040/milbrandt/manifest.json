@@ -1,0 +1,38 @@
+{
+  "fixture_sha256": "d044f0fd5c4ff9ea90c427afa5f4a1a3447d7f3b2807ec3ffaf828fa0eb032a2",
+  "source": "pristine WRF phys/module_mp_milbrandt2mom.F",
+  "source_sha256": "76d11c00976f3c7dac30ff6ebb3efac1698bf43c13131b3aae43e464f22d23e5",
+  "producer_commit": "93e5fe07d",
+  "oracle": "unmodified my2_mod from pristine, compiled -O2 -ftree-vectorize -funroll-loops -fcheck=bounds REAL4",
+  "generation": "proofs/s2_milbrandt/oracle/build.sh LANE/build; proofs/s2_milbrandt/oracle/compare.py LANE/build LANE/MY07",
+  "work": "12 deliberately adversarial columns x12 levels; dt18 CCN2 allflagsON bottom-to-top WRF caller",
+  "units": {
+    "t": "K",
+    "q*": "kg/kg",
+    "n*": "#/kg",
+    "rates": "m/s",
+    "diam": "m",
+    "zet": "dBZ",
+    "zec": "dBZ",
+    "pressure": "Pa",
+    "w": "m/s"
+  },
+  "tolerances": {
+    "rtol": 3e-05,
+    "temperature_atol": 3e-05,
+    "mass_atol": 3e-10,
+    "number_atol": 0.003,
+    "rate_atol": 3e-10,
+    "radar_atol": 0.0003,
+    "unused_Dm_atol": 3e-09
+  },
+  "Dm_diagnostic": "Original check retained FAIL at tiny residual ice; discarded locals outside WRF output contract. Manager explicitly approved actual-driver-output gate; no radius coupling as pristine has_req*=0.",
+  "literal_reference": {
+    "file": "literal_real4.npz",
+    "sha256": "ba0fc996c35f3f335205eebffc8812f90a4746a0bf9c8568654199cd63981546",
+    "compiler": "-O0 -ffp-contract=off -finit-real=zero -finit-integer=0 -finit-logical=false",
+    "result": "3168/3168 values BYTE including Dm",
+    "source_body": "unmodified pristine my2_mod"
+  },
+  "compiled_policy": "Unchanged primary bounds with independent original-WRF one-ULP envelope per wave standing policy; original optimized NY one-value failure retained and disclosed."
+}

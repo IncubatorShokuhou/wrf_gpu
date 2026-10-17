@@ -1,0 +1,66 @@
+{
+  "utc": "2026-10-15T07:42:47.130937+00:00",
+  "classification": "b: stale optional State mock attribute",
+  "before": {
+    "arm": "C138",
+    "passed": 148,
+    "failed": 1,
+    "error": "AttributeError SimpleNamespace.cam_kvh3d"
+  },
+  "after": {
+    "arm": "C138b-MYNN-optional-CAM-mock",
+    "passed": 1,
+    "failed": 0,
+    "skipped": 0,
+    "peak_rss_gib": 0.7750015258789062,
+    "swap_kib": 0
+  },
+  "change": "Set cam_kvh3d=None in Ni-only SimpleNamespace, matching real State default at state.py:968; coupler reads it at physics_couplers.py:2393",
+  "all_original_assert_check_ASTs_unchanged": 26,
+  "source": {
+    "parent": "6151a960d9c6927376696bcefb5a0f34f8158e59",
+    "main": "f0477e9d8ee14dc1cba665d42dec6f5c66ab92f0",
+    "candidate": "60944e5c73ac9cce01f7616e88c143e6d4f8499d",
+    "test_only_file": "tests/v025/b_phys/test_mynn_qni.py",
+    "all_original_assert_check_ASTs_unchanged": 26
+  },
+  "receipts": {
+    "C138": {
+      "command.json": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C138/command.json",
+        "sha256": "c5a7308a5fec3635ae61ef39631beba35919b8da14df674efecf09cbb3edb1d0"
+      },
+      "pytest.xml": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C138/pytest.xml",
+        "sha256": "b1c8e4fecdeea7a823f2ef05d32f5670a9f6dc4a2406aabb90e8a1aab7666fd8"
+      },
+      "result.json": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C138/result.json",
+        "sha256": "bf7cd4d882acdce967382e230cd51db338ef2908c7b2131e10a74d1da3487ab8"
+      },
+      "memory_summary.json": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C138/memory_summary.json",
+        "sha256": "77edabc002d980a2dba1f25cab912faeb83887290e1a6f202923170cbdc0238f"
+      }
+    },
+    "C138b-MYNN-optional-CAM-mock": {
+      "command.json": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C138b-MYNN-optional-CAM-mock/command.json",
+        "sha256": "14053a3c5d78e76255a984e47f2a81097c63a9b4df7f9159eb7f328f481f5183"
+      },
+      "pytest.xml": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C138b-MYNN-optional-CAM-mock/pytest.xml",
+        "sha256": "4a4ea3c4c2846638c37bb5e6afdbff4414ce83f8ad7759a315d997310810d357"
+      },
+      "result.json": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C138b-MYNN-optional-CAM-mock/result.json",
+        "sha256": "98de51e5b0155e6b0155fd25a015adebe4e411e03c39c55b59c6e8a3f630ab3f"
+      },
+      "memory_summary.json": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C138b-MYNN-optional-CAM-mock/memory_summary.json",
+        "sha256": "1764722773d04f1bdc05c52992f3638cbab2c2007563b485fdc4f10661c25e8e"
+      }
+    }
+  },
+  "performance": "test mock default only; no product/kernel/numerical arithmetic or allocation changes"
+}

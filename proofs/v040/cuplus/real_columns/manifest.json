@@ -1,0 +1,105 @@
+{
+  "scope": "Freeze actual Swiss CPU-WRF forecast profiles for cuplus caller oracles.\n\nThis is input assembly, not a captured physics savepoint or a forecast parity\nclaim. P_HYD and the independent total-pressure PI are retained. Density is\nreconstructed with the original hypsometric-2 phy_prep equation. Missing KPBL\nand ZOL history diagnostics are explicit caller controls in the manifest.\n",
+  "source_files_sha256": {
+    "<USER_HOME>/wrf_gpu2_lanes/release-docs/RD11/cpu/wrfout_d01_2023-01-15_13:00:00": "39a41825a93aa94f1e6a399e4bc7d07b360f970ba02dc66915ce794326bbf54b",
+    "<USER_HOME>/wrf_gpu2_lanes/release-docs/RD11/cpu/wrfout_d01_2023-01-15_19:00:00": "beccc14675f38f2e8b072b197985e61435c57af9f5a6e2fc1486e60cafcd57c7"
+  },
+  "rows": [
+    {
+      "index": 0,
+      "hour": 13,
+      "y": 2,
+      "x": 33,
+      "source": "<USER_HOME>/wrf_gpu2_lanes/release-docs/RD11/cpu/wrfout_d01_2023-01-15_13:00:00",
+      "variant": "actual forecast",
+      "hfx": 151.4418487548828,
+      "pblh": 649.3369750976562,
+      "kpbl": 7
+    },
+    {
+      "index": 1,
+      "hour": 13,
+      "y": 2,
+      "x": 16,
+      "source": "<USER_HOME>/wrf_gpu2_lanes/release-docs/RD11/cpu/wrfout_d01_2023-01-15_13:00:00",
+      "variant": "actual forecast",
+      "hfx": 147.0858612060547,
+      "pblh": 440.2284851074219,
+      "kpbl": 5
+    },
+    {
+      "index": 2,
+      "hour": 19,
+      "y": 25,
+      "x": 39,
+      "source": "<USER_HOME>/wrf_gpu2_lanes/release-docs/RD11/cpu/wrfout_d01_2023-01-15_19:00:00",
+      "variant": "actual forecast",
+      "hfx": 81.80267333984375,
+      "pblh": 543.5752563476562,
+      "kpbl": 6
+    },
+    {
+      "index": 3,
+      "hour": 19,
+      "y": 23,
+      "x": 13,
+      "source": "<USER_HOME>/wrf_gpu2_lanes/release-docs/RD11/cpu/wrfout_d01_2023-01-15_19:00:00",
+      "variant": "actual forecast",
+      "hfx": 63.00044631958008,
+      "pblh": 579.4081420898438,
+      "kpbl": 6
+    },
+    {
+      "index": 4,
+      "hour": 13,
+      "y": 2,
+      "x": 33,
+      "source": "<USER_HOME>/wrf_gpu2_lanes/release-docs/RD11/cpu/wrfout_d01_2023-01-15_13:00:00",
+      "variant": "weak-nonzero-wind",
+      "hfx": 151.4418487548828,
+      "pblh": 649.3369750976562,
+      "kpbl": 7,
+      "base": 0
+    },
+    {
+      "index": 5,
+      "hour": 13,
+      "y": 2,
+      "x": 33,
+      "source": "<USER_HOME>/wrf_gpu2_lanes/release-docs/RD11/cpu/wrfout_d01_2023-01-15_13:00:00",
+      "variant": "large-grid-spacing",
+      "hfx": 151.4418487548828,
+      "pblh": 649.3369750976562,
+      "kpbl": 7,
+      "base": 0
+    }
+  ],
+  "fixture_sha256": "58f0a27f2bee7bdc3ecdb1e6fddc81020dd839b16bb80bf0b50dd5df7a0c6c19",
+  "controls": [
+    "DX",
+    "DT",
+    "HFX",
+    "QFX",
+    "PBLH",
+    "KPBL",
+    "UST",
+    "ZOL",
+    "XLAND",
+    "HT",
+    "PSFC",
+    "TSK"
+  ],
+  "declared_assembly": {
+    "PI": "independent total pressure (P+PB)/1e5 to WRF REAL R/CP",
+    "P": "stored original P_HYD",
+    "RHO": "original hypsometric-2 ALT reconstruction from PH/PHB, C3/C4, MU/MUB",
+    "KPBL": "explicit caller control from mass heights below stored PBLH; not a captured PBL index",
+    "ZOL": "explicit controlled -0.1; unavailable in original history",
+    "W0AVG": "fresh-cloud zero running-mean carry; original CPS performs its W update",
+    "P8W": "original phy_prep hydrostatic top-down REAL recurrence, C1H/C2H/DNW and all six stored moisture species",
+    "QC/QI/CLDFRA": "stored original QCLOUD/QICE/CLDFRA profiles",
+    "TKE": "half stored QKE from original MYNN forecast; input-profile control, not a CAM-UW or MYJ savepoint",
+    "DT": "18s original Swiss namelist; DX from original global attribute",
+    "sampling": "two separated interior land columns with largest HFX per hour; no output parity claim"
+  }
+}

@@ -1,0 +1,16 @@
+fixture_id: rv-t-ysuqc-pristine-public-call
+source: WRF v4.7.1 public ysu call, unmodified module_bl_ysu.F + physics_mmm/bl_ysu.F90
+source_commit: f52c197ed39d12e087d02c50f412d90d418f6186
+scenario: 109 real CPU-WRF columns from c02/c07/c40/c85, both topdown modes; radiation profiles constructed and disclosed
+variables:
+  profiles: u/v m/s; absolute T K; qv/qc/qi kg/kg; p/p8w Pa; pi dimensionless; dz m; RTHRATEN K/s
+  rates: u/v m/s2; dry theta K/s; qv/qc/qi kg/kg/s
+  diagnostics: EXCH_H/EXCH_M m2/s; PBLH/DELTA m; KPBL integer; WSTAR/U10/V10 m/s
+  geometry: scalar columns, 44 mass levels, 45 interfaces, REAL4
+files:
+  tracked_fixture: snapshot/proofs/t_ysuqc/fixtures/ysu_wrf_oracle.npz
+  tracked_manifest: snapshot/proofs/t_ysuqc/fixtures/ysu_wrf_oracle.json
+  corpus_sha256: f455fed5c576aad6a7b8e9cfb0a4c40eb2cbeaa425108104a989b158dbb93792
+  independent_rebuild_and_checksums: oracle_audit.json
+license_notes: Derived numerical test data from WRF; no WRF full output added to git; original WRF bodies unchanged.
+tolerances: Literal REAL4 BYTE with proof-only glibc exp/tanh, E117 hydrometeor floor 1e-30; compiled independently regenerated WRF input-ULP envelope.

@@ -1,0 +1,48 @@
+{
+  "schema": "wrf-v040-nssl-cumulus",
+  "source": "<USER_HOME>/src/wrf_gpu2_wt/s1-nssl/data/wrf_pristine/WRF/phys/module_mp_nssl_2mom.F",
+  "source_sha256": "29f42e76fbeca027a3ffb2ac805b148aaa1425c7f99ed1d8f19a90ebc1d015f8",
+  "units": {
+    "QRCUTEN": "kg/kg/s",
+    "QSCUTEN": "kg/kg/s",
+    "number_stage": "#/m3"
+  },
+  "tolerances": {
+    "helper_fp32_rtol": 2e-06,
+    "helper_fp64_rtol": 1e-12,
+    "driver_fp64_rtol": 1e-10,
+    "driver_fp64_operand_atol_factor": 1e-13,
+    "driver_fp32_dual_rtol": 0.002,
+    "driver_fp32_column_atol_factor": 1e-06
+  },
+  "cases": [
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24
+  ],
+  "command": "JAX_PLATFORMS=cpu taskset -c 9 nice -n 19 timeout 600 python proofs/v040/nssl_cumulus/build.py <lane-artifact-dir>",
+  "flags": "-O2 -ffree-form -ffree-line-length-none -ffpe-summary=none -cpp",
+  "compiler": "<USER_HOME>/miniconda3/envs/wrfbuild/bin/gfortran",
+  "fixtures": {
+    "fp32_18.json": "27a0f8934f1319b3245d3a49a84d2309fb70753a68a6292d320a30766963ff20",
+    "fp32_19.json": "d02571975369aee599c98873a34058a2a6f320469b8197860e32656032c11867",
+    "fp32_20.json": "5d72ee27f1465bc476e733a55205598881ddba5b5591ab5a867bd237f3ca30eb",
+    "fp32_21.json": "78d7f02c9f89272c716bb074997807e06b36f200ea4ba52a0c47d8b9f2ef7fe9",
+    "fp32_22.json": "162fd1f8d50746fb5c190bcd5ec5de97026fea96abcd7149147d079b3cae1211",
+    "fp32_23.json": "023973e9fedccd4a76df38425034e00f66eace8bca83a8dc9ebc33f811f30702",
+    "fp32_24.json": "c2efb9a0748298692905d5a54c59af47dc0ed9a93b51a9cfe033a5a7df2fdb76",
+    "fp64_18.json": "87c6863947ad0f5c6ead9c45e228277b2d2c34fa61f0d0f1afebd6d8bafcaedd",
+    "fp64_19.json": "b9540328c4da42161eb8f246d161ab0c880eb0cb9aa51fdb5a1b3ead08f7f4b0",
+    "fp64_20.json": "09d568fe723c968a97680ee7f0d6482c0aed9eb630ebfa0e4a64ee52df40938b",
+    "fp64_21.json": "c20f4f39cd0fdccf503bd080755dd5ed083c68dbf282275c0a354ed9d81e79b2",
+    "fp64_22.json": "adcb72bd64dc999e59b4ce6335d052aac1af5ca741df3e8e55ca2626134b5cc3",
+    "fp64_23.json": "0cbe2c17b1369b35a42a8661039447b57ead978ab3ab4acf73ccb44d6033cfaa",
+    "fp64_24.json": "b694d70ad0b9200ef041fa5998407b974e291730d0b17afb7253d38ec77737b9"
+  },
+  "driver_sha256": "3700c587179c3ecc4e449a330c346947c92cb548cd4355f5f3b01266cdfe90b6",
+  "printonly_sha256": "614d8b57c907c255c2b4fe0a457111570929966afac0083abbdd8a716b586410"
+}

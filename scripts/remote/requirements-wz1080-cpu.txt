@@ -1,0 +1,33 @@
+# wz1080 test box, CPU layer. Pins = the local reference env (<USER_HOME>/miniconda3, Python 3.13) on 2026-10-15,
+# limited to what src/, tests/ and the scoring scripts import. GPU layer: requirements-wz1080-cuda.txt.
+jax==0.10.0
+jaxlib==0.10.0
+ml_dtypes==0.5.4
+opt_einsum==3.4.0
+numpy==2.4.4
+scipy==1.17.1
+netCDF4==1.7.4
+cftime==1.6.5
+xarray==2026.2.0
+pandas==2.3.3
+h5py==3.16.0
+h5netcdf==1.8.1
+zarr==3.1.6
+numcodecs==0.16.5
+PyYAML==6.0.3
+jsonschema==4.26.0
+zstandard==0.24.0
+filelock==3.20.0
+psutil==7.2.2
+packaging==25.0
+pytest==9.0.3
+matplotlib==3.10.8
+pyproj==3.7.2
+pvlib==0.15.1
+MetPy==1.7.1
+Pint==0.25.3
+meteostat==2.1.4
+eccodes==2.46.0
+eccodeslib==2.46.2.19
+# CPU-side Triton tooling (E18/E137 cubin probes); not used by the JAX GPU path.
+triton==3.6.0

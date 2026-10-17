@@ -1,0 +1,164 @@
+{
+  "lane": "u2-streams",
+  "status": "FEATURE_COMPLETE_READY_FOR_INDEPENDENT_CRITIC",
+  "model_source_commit": "33d3378973e87b0d4b097ab406483b728ce8f5c7",
+  "model_src_tree": "602f6f45719aa7fc71bcff0138f8537d67e62e2d",
+  "scope": {
+    "regions": [
+      "inclusive bbox",
+      "inclusive polygon",
+      "station list i/j or nearest lat/lon"
+    ],
+    "variables": 13,
+    "cadence": "independent exact-step-aligned seconds or own steps (minimum1)",
+    "statistics": [
+      "instant",
+      "min",
+      "max",
+      "mean",
+      "RAINNC/RAINC endpoint accumulation"
+    ],
+    "device": "compact gather/reducers/boundedframes in carry; no per-step host transfers",
+    "output": "bounded async compact NetCDF with process lock",
+    "restart": "native B1, both carry formats, pending windows, authenticated published chunks/replay/foreign protection",
+    "admission": "strict schema/cadence/fields; batching and history replay refused"
+  },
+  "independent_oracle": {
+    "reference": "original CPU-WRF auxhist7",
+    "frames": 5,
+    "fields": 13,
+    "points": 2,
+    "input_and_output_provenance": "oracle/manifest.json",
+    "checks": "same-input gather and NumPy window formulas; active nonzero/negative endpoint test"
+  },
+  "tests": {
+    "regional_unique_nodes": 29,
+    "tslist_nodes": 36,
+    "required_shared_pass": 277,
+    "required_shared_skip": 2,
+    "final_composition_pass": 181,
+    "final_composition_skip": 1,
+    "hook_deletion_genuine_assertions": 1,
+    "hook_deletion_setup_errors": 0,
+    "manifest_integrity": "PASS"
+  },
+  "CPU_coupled": {
+    "mode": "supported FAST0 +heldhistory1 CENSUS1SLIM0",
+    "real_case": "Swiss42x42x44 dt18",
+    "own_steps_per_arm": 3,
+    "shared_carry_leaves_BYTE": 173,
+    "all_finite": true,
+    "guard_visits": 0,
+    "partial_window_samples": 1,
+    "scope": "regression/smoke; independent oracle separate"
+  },
+  "GPU_short": {
+    "actual_native_source_commit": "5d3873c919b7d86c3246ddfed7c3b038694a2eb4",
+    "backend": "gpu",
+    "real_case": "real Swiss42x42x44 dt18 release defaults; 2masscenters 6channels interval2 cap16",
+    "State_BYTE_after4": true,
+    "JIT_variants_before_after_flush": [
+      2,
+      2
+    ],
+    "E41_entries": 2,
+    "E41": "PASS",
+    "max_stack_B": 8,
+    "max_transpose_hero_HLO": 346,
+    "nonleaf_over1k": 0,
+    "unknown": 0,
+    "DtoH_inside16steps": 0,
+    "HtoD_before_first_kernel_bytes": 24,
+    "matched_16step_medians_ms": {
+      "off": 95.57134914211929,
+      "on": 93.60684407874942
+    },
+    "on_over_off": 0.9794446235089916,
+    "timing_interpretation": "ranges overlap; no attributed speed change",
+    "compiled_resident_extra_B": 956,
+    "compiled_temp_extra_B": 2360,
+    "compiled_live_extra_B": 3388,
+    "scope": "actual short native measurement on5d, carried through source/IR/fullON-program+constant identity seals; no final-ELF byte-identity claim"
+  },
+  "default_OFF": {
+    "Swiss_sha": "2bf12cb8374d3a84a440e47dea4b77b0c7436108fc2ee2616bba6ec79b17962a",
+    "Swiss_scope": "US05 direct fulltrace; accepted incoming obs-nudging late-main fullOFF same hash plus dormant stream branch and exact fullON composition",
+    "PROD_sha": "6fc715a2bd630934c4cf0f94427df19a527cbf429011c9ba5efe4d712744d27b",
+    "PROD_scope": "fresh final composed source trace US24"
+  },
+  "composition": {
+    "program_sha256": "c1b0f36c6fa6f33ef2c42d29d0d1559f19a8bf4a679a7935a05179946e023ef4",
+    "captured_constants_sha256": "217ab143f2ba596d2b335ba678d9bf7b026f80d4b88c8732d138cc66e8ef1928",
+    "constant_arrays": 61,
+    "chars": 14734422,
+    "program_exact": true,
+    "constant_bytes_exact": true,
+    "old_source": "<DATA_ROOT>/wrf_gpu2/scratch/u2-streams/US18_snapshot",
+    "final_source": "<DATA_ROOT>/wrf_gpu2/scratch/u2-streams/US22_snapshot",
+    "scope": "Full stream-ON program and constant bytes EXACT through obs-nudging merge; reuse completed CPU/GPU numerics with prior source/IR seals; no forecast repeat."
+  },
+  "cache": {
+    "same_shape_rename_or_recoordinate_JIT_variants": 1,
+    "old_full_config_aux_vs_stable_contract_jaxpr_and_StableHLO": "EXACT",
+    "restart_configuration_binding": "exact stream-file SHA in native identity; coordinates/channels/shape/cadence checked; full configuration SHA written in NetCDF"
+  },
+  "performance_memory_compile": {
+    "OFF": "no new device leaves or ops by frozen release program identity",
+    "ON": "compact selected-point traffic; measured live+3388B for2points6channelscap16; no flush-induced recompile",
+    "cold_compile": "distinct opt-in variant paid once; isolated extra compile latency unmeasured; official entire GPU arm bounded900s",
+    "scaling": "O(points*channels*buffer_frames), no full-domain diagnostic recomputation",
+    "not_claimed": [
+      "S1",
+      "R1",
+      "cadence-weighted S3",
+      "roofline endpoint",
+      "long forecast/stationRMSE"
+    ]
+  },
+  "scientific_limits": {
+    "GPU_census_nonfinite_visits": 0,
+    "GPU_F2_negative_visits": 1288,
+    "GPU_QC_guard_first4_OFF_ON_each": {
+      "out_of_range": 2,
+      "repaired": 2
+    },
+    "GPU_QC_guard_ON21": {
+      "out_of_range": 192,
+      "repaired": 192
+    },
+    "global_F2_disposition": "OPEN existing model issue; no waiver or scientific gate clearance",
+    "GPU_temperature_sparse_original_WRF_max_abs_K": 0.00048828125,
+    "scope": "4values, not fullD6/F1"
+  },
+  "cleanup": "all disposable GPU caches/autotunes/tmp/rawtrace/sqlite and GPU worktree retired after dependent gates; CPU archives/tmp retired at handoff; compact receipts retained",
+  "artifact_sha256": {
+    "receipts/US04_tests.log": "30ecb6ef3b1630af423a0d8febb236fe4f581f4ce2b5ee6e424a3cbf6d09d514",
+    "receipts/US05_swiss_identity.json": "459b6036bd529d26e0c2fc1cde2c190bbd00060cd37ff49d6fbe621787a8577b",
+    "receipts/US06_prod_identity.json": "893487b5ed1ae21a70e664aab436195ab2f86c79323f0327ef9f26f4d149b04c",
+    "receipts/US07_artifact_manifest.json": "3216003390ef096a96fdb26001655cd1e1756c948fb85f97c5e73fbb8898a498",
+    "receipts/US07_bench.json": "929156ebe6f0ddcfcbbf5784b4a41811d178474acefc2fcaffff4a46c72f5446",
+    "receipts/US07_cost_memory.json": "4c19c24d230883f5598a815ddc13dd52243ab4bbcac31b72bc918c6c6ba32568",
+    "receipts/US07_sparse_original_WRF.json": "7c8f1f2a551d96a836fd88919fa3b7a8f68dc7d3fe9d0e15a8b4c9d5e1b22666",
+    "receipts/US07_trace_audit.json": "bc88c97e0b2887a0c3973a2b33c6b102edc10009b5314b0f2887be4412d265da",
+    "receipts/US09_host.log": "1575bcf4c2fd40af1f591169a671893206a9e56fef7f6d161c76c32d7ea76d10",
+    "receipts/US10_deletion.log": "3f3f3a5feca48abeee89870741f0f79a9028b26cd863434e2bdd5d09427b1ca2",
+    "receipts/US12_mutant.log": "7452503386110ae42e807f46a6ada741d0a34a9e8c6fd86d9b673c2b5d93f98b",
+    "receipts/US15_archive_asset_fixed.log": "57bfc241797c3c6785b044cceb49c8c5937ea0843be4ed756c663e85cdf26e3e",
+    "receipts/US17_cpu_coupled.json": "b41b64bd6a04b65da5b494b7432e08673cc63b17bca708da03584b078cfcc93a",
+    "receipts/US18_final.log": "1fef791e1cbd19ae916b849c7e304103119ba9f1eed1f797c2245a1d6198f4e6",
+    "receipts/US19_goddard.log": "d31f52e1f0b685516257329d2d5b0b909ea4e41266d9c6bc9f211f7d2ef0bbbc",
+    "receipts/US20_final_restart.log": "76dcb9ae35bcd4e21efca6add5cdeffd7a8e648a0033b2c81cd88fe5026fd65b",
+    "receipts/US21_final_source_reuse.json": "48d1c13e4e6fd81a4763c34583f69871436a67e56939c97d85cd336ff5a5d867",
+    "receipts/US22_composed_identity.json": "9cd6fbd4fdc27bc9d208ed4f211dc0e71d0a3f4ec54d3c17d5b09a91c472e4e8",
+    "receipts/US22_final_ON.json": "f757b92201dff897673ed0cb1b5545bd715da662e42aca80590ba3bbbd225900",
+    "receipts/US22_old_ON.json": "6a13c8e587f7b7241cbdd482db24b30b7a39d96fdf28b88bdb97f654f176b38d",
+    "receipts/US23_composed_host.log": "da0122dfbefbbe99cca15bd74976f09abd0b9d42cafb4a08e846f56961ce045d",
+    "receipts/US24_final_PROD_OFF.json": "38420756d08d89a118ca4d5c3b9650aa4a917de5492302a1b98c3c92887b398c",
+    "receipts/US25_manifest_integrity.json": "a1d1174d0221d14dddf0dc3ae3c280894dd3a384e3954f4cf2df8204d0f9a934",
+    "receipts/cubin_scan_7912d4c70adf_e0.json": "5a3a1e8cc239e682ba0a78256ab106591e56fd30e52446a14fd522745aeac1a4",
+    "receipts/cubin_scan_996ec18e21b1_e0.json": "adaba82ef19ab0ae95cca5ba94c3353af7a02ea4c54e66c9fb79ae6c33fc04a8",
+    "receipts/hlo_scan_7912d4c70adf.json": "eece0fc5657ecc4d1b100e4615551b7fb2c0310cf2948456665a0868017daf6c",
+    "receipts/hlo_scan_996ec18e21b1.json": "c11251d0e88a0cbda66a044a5ef87293e004d2627ffaf918488c5a5c9cc8e14b",
+    "receipts/wave_gate.json": "69b605b48285c35c6fcaebeabf32c9ccaa44930f2186cf88e70d6500240b9129"
+  }
+}

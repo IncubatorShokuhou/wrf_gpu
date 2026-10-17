@@ -24,7 +24,7 @@ def test_additive_capture_and_profile_share_one_probe(monkeypatch):
     calls = prepare(monkeypatch)
     result = xa.configure_command_buffers()
     assert result["enabled"]
-    assert calls == ["--xla_gpu_enable_command_buffer=+CONDITIONAL --xla_enable_command_buffers_during_profiling=true"]
+    assert calls == ["--xla_gpu_enable_command_buffer=+CONDITIONAL,+WHILE --xla_enable_command_buffers_during_profiling=true --xla_disable_hlo_passes=fusion-dynamic-memcpy-rewriter"]
     assert xa.os.environ["XLA_FLAGS"] == calls[0]
     again = xa.configure_command_buffers()
     assert again["enabled"] and again["injected_flags"] == []
@@ -35,7 +35,7 @@ def test_explicit_empty_capture_is_respected(monkeypatch):
     calls = prepare(monkeypatch, "--xla_gpu_enable_command_buffer=")
     result = xa.configure_command_buffers(default_on=True)
     assert not result["enabled"]
-    assert calls == ["--xla_enable_command_buffers_during_profiling=true"]
+    assert calls == ["--xla_enable_command_buffers_during_profiling=true --xla_disable_hlo_passes=fusion-dynamic-memcpy-rewriter"]
     assert xa.os.environ["XLA_FLAGS"].startswith("--xla_gpu_enable_command_buffer= ")
 
 
@@ -43,8 +43,9 @@ def test_operator_flag_values_are_preserved(monkeypatch):
     flags = "--xla_gpu_enable_command_buffer=FUSION,CONDITIONAL --xla_enable_command_buffers_during_profiling=false"
     calls = prepare(monkeypatch, flags)
     result = xa.configure_command_buffers()
-    assert result["enabled"] and not calls
-    assert xa.os.environ["XLA_FLAGS"] == flags
+    guard = "--xla_disable_hlo_passes=fusion-dynamic-memcpy-rewriter"
+    assert result["enabled"] and calls == [guard]
+    assert xa.os.environ["XLA_FLAGS"] == flags + " " + guard
 
 
 def test_build_rejection_leaves_environment_unchanged(monkeypatch):

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import importlib.util
+from dataclasses import replace
 from pathlib import Path
 
 import jax.numpy as jnp
@@ -28,9 +29,39 @@ make_dummy_grid = _MODULE.make_dummy_grid
 make_initial_state = _MODULE.make_initial_state
 
 
-def test_guarded_physics_boundary_step_keeps_rk3_theta_mu_update():
-    grid = make_dummy_grid(4, 4, 8)
+def _pure_eta_grid(grid):
+    # Pristine start_em.F:571-578 / module_initialize_ideal.F:838-876: dB/deta=1.
+    # The old generic flat fixture uses C1F=eta, giving a zero top-face mass
+    # and invalid denominators in the real vertical acoustic solve.
+    m = grid.metrics
+    return replace(grid, metrics=replace(m, c1h=jnp.ones_like(m.c1h),
+        c1f=jnp.ones_like(m.c1f), c2h=jnp.zeros_like(m.c2h), c2f=jnp.zeros_like(m.c2f)))
+
+
+def _hydrostatic_column_state(grid):
+    """Give these caller regressions a nondegenerate WRF base-state geometry.
+
+    The old M6 dummy has PH=0 and its totals duplicated into perturbations.
+    WRF phy_prep's interface extrapolation needs distinct interface heights.
+    Integrate PHB from ALB using module_initialize_real.F's linear hydrostatic
+    relation, with moist-theta EOS constants from module_model_constants.F.
+    """
     state = make_initial_state(grid)
+    m = grid.metrics
+    mu = state.mu_total
+    pressure = m.c3h[:, None, None] * mu[None] + m.c4h[:, None, None] + m.p_top
+    alpha = (287.0 / 100000.0) * state.theta.astype(jnp.float64) * (pressure / 100000.0) ** (-717.5 / 1004.5)
+    mass = m.c1h[:, None, None] * mu[None] + m.c2h[:, None, None]
+    dph = -m.dnw[:, None, None] * mass * alpha
+    ph = jnp.concatenate((jnp.zeros_like(dph[:1]), jnp.cumsum(dph, axis=0)), axis=0)
+    return state.replace(p_total=pressure, p_perturbation=jnp.zeros_like(pressure),
+                         ph_total=ph, ph_perturbation=jnp.zeros_like(ph),
+                         mu_perturbation=jnp.zeros_like(mu))
+
+
+def test_guarded_physics_boundary_step_keeps_rk3_theta_mu_update():
+    grid = _pure_eta_grid(make_dummy_grid(4, 4, 8))
+    state = _hydrostatic_column_state(grid)
     tendencies = Tendencies.zeros(grid).replace(
         theta=jnp.ones_like(state.theta) * 0.01,
         mu=jnp.ones_like(state.mu) * 2.0,
@@ -43,8 +74,10 @@ def test_guarded_physics_boundary_step_keeps_rk3_theta_mu_update():
         acoustic_substeps=1,
         run_physics=False,
         run_boundary=False,
-        use_vertical_solver=False,
+        # Theta/mu advance is owned by the acoustic loop; False is a no-op.
+        use_vertical_solver=True,
         disable_guards=False,
+        hypsometric_opt=1,  # This idealized column uses the linear PHB relation.
     )
 
     out = _physics_boundary_step(
@@ -60,8 +93,8 @@ def test_guarded_physics_boundary_step_keeps_rk3_theta_mu_update():
 
 
 def test_mynn_adapter_consumes_nonzero_surface_flux_inputs():
-    grid = make_dummy_grid(4, 4, 8)
-    state = make_initial_state(grid)
+    grid = _pure_eta_grid(make_dummy_grid(4, 4, 8))
+    state = _hydrostatic_column_state(grid)
     rho = jnp.ones_like(state.rhosfc) * 1.2
     theta_flux_w_m2 = 200.0
     theta_flux_kinematic = theta_flux_w_m2 / (rho * CP_D)

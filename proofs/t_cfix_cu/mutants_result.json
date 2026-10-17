@@ -1,0 +1,194 @@
+[
+ {
+  "mutant": "F7 no dry conversion",
+  "file": "src/gpuwrf/coupling/cu_forcing.py",
+  "test": "tests/test_t_cfix_cu_g3_forcing.py::test_finish_matches_wrf_phy_prep_part2_literal",
+  "rc": 1,
+  "killed": true,
+  "tail": "1 failed in 0.64s"
+ },
+ {
+  "mutant": "F7 capture without msfty",
+  "file": "src/gpuwrf/coupling/cu_forcing.py",
+  "test": "tests/test_t_cfix_cu_tiedtke_forcing.py::test_capture_multiplies_by_msfty",
+  "rc": 1,
+  "killed": true,
+  "tail": "1 failed in 0.39s"
+ },
+ {
+  "mutant": "F7 Tiedtke RK computes the unused RTHFTEN theta capture",
+  "file": "src/gpuwrf/runtime/operational_mode.py",
+  "test": "tests/test_t_cfix_cu_tiedtke_forcing.py::test_rthften_capture_only_for_schemes_that_read_it[6]",
+  "rc": 1,
+  "killed": true,
+  "tail": "1 failed, 5 warnings in 4.76s"
+ },
+ {
+  "mutant": "F7 Tiedtke phy_prep_part2 dry-converts RTHFTEN",
+  "file": "src/gpuwrf/runtime/operational_mode.py",
+  "test": "tests/test_t_cfix_cu_tiedtke_forcing.py::test_tiedtke_step_keeps_held_rthften_through_phy_prep_part2",
+  "rc": 1,
+  "killed": true,
+  "tail": "1 failed, 5 warnings in 19.49s"
+ },
+ {
+  "mutant": "F7 slot drops RTHRATEN",
+  "file": "src/gpuwrf/runtime/operational_mode.py",
+  "test": "tests/test_t_cfix_cu_g3_forcing.py::test_operational_slot_feeds_held_forcing_and_radiation",
+  "rc": 1,
+  "killed": true,
+  "tail": "1 failed in 3.49s"
+ },
+ {
+  "mutant": "F7 legacy RTHRATEN one radt stale (late radiation slot)",
+  "file": "src/gpuwrf/runtime/operational_mode.py",
+  "test": "tests/test_t_cfix_cu_g3_forcing.py::test_legacy_radiation_reaches_cumulus_this_step_from_entry_state[5]",
+  "rc": 1,
+  "killed": true,
+  "tail": "1 failed in 3.28s"
+ },
+ {
+  "mutant": "F7 CPU-WRF restart hydration drops the held forcing",
+  "file": "src/gpuwrf/validation/wrf_restart_hydration.py",
+  "test": "tests/test_cu_forcing_restart_schema.py::test_cpu_wrfrst_hydration_seeds_held_cumulus_forcing",
+  "rc": 1,
+  "killed": true,
+  "tail": "1 failed in 1.58s"
+ },
+ {
+  "mutant": "F7 captures the wrong species",
+  "file": "src/gpuwrf/runtime/operational_mode.py",
+  "test": "tests/test_t_cfix_cu_g3_forcing.py::test_capture_is_final_stage_theta_and_qv_advection_times_msfty",
+  "rc": 1,
+  "killed": true,
+  "tail": "1 failed in 3.75s"
+ },
+ {
+  "mutant": "F7 no phy_prep_part2 finish",
+  "file": "src/gpuwrf/runtime/operational_mode.py",
+  "test": "tests/test_t_cfix_cu_g3_forcing.py::test_step_finishes_captured_forcing_at_phy_prep_part2",
+  "rc": 1,
+  "killed": true,
+  "tail": "1 failed in 17.07s"
+ },
+ {
+  "mutant": "F7 Euler-PBL increment left in the G3 input",
+  "file": "src/gpuwrf/runtime/operational_mode.py",
+  "test": "tests/test_t_cfix_cu_g3_forcing.py::test_euler_pbl_increment_reaches_g3_as_rate_not_as_state",
+  "rc": 1,
+  "killed": true,
+  "tail": "1 failed in 3.39s"
+ },
+ {
+  "mutant": "F9 rates not mass-coupled",
+  "file": "src/gpuwrf/coupling/cu_rk.py",
+  "test": "tests/test_t_cfix_cu_cu_rk.py::test_stateless_cumulus_feeds_rk_sources_not_state[5]",
+  "rc": 1,
+  "killed": true,
+  "tail": "1 failed in 2.48s"
+ },
+ {
+  "mutant": "F9 Tiedtke back to Euler",
+  "file": "src/gpuwrf/runtime/operational_mode.py",
+  "test": "tests/test_t_cfix_cu_cu_rk.py::test_stateless_cumulus_feeds_rk_sources_not_state[6]",
+  "rc": 1,
+  "killed": true,
+  "tail": "1 failed in 2.31s"
+ },
+ {
+  "mutant": "F9 held rates not decoupled",
+  "file": "src/gpuwrf/coupling/cu_rk.py",
+  "test": "tests/test_t_cfix_cu_cu_rk.py::test_held_rates_decoupled_by_final_mass_after_the_rk_step",
+  "rc": 1,
+  "killed": true,
+  "tail": "1 failed in 9.29s"
+ },
+ {
+  "mutant": "F9 KF99 clear dropped",
+  "file": "src/gpuwrf/runtime/operational_mode.py",
+  "test": "tests/test_t_cfix_cu_cu_rk.py::test_kf99_rk_route_clears_expired_rates_after_consumption",
+  "rc": 1,
+  "killed": true,
+  "tail": "1 failed in 2.74s"
+ },
+ {
+  "mutant": "F9 MYJ back to Euler",
+  "file": "src/gpuwrf/runtime/operational_mode.py",
+  "test": "tests/test_t_cfix_cu_cu_rk.py::test_euler_pbls_publish_rk_sources_in_source_leaf_mode[2]",
+  "rc": 1,
+  "killed": true,
+  "tail": "1 failed in 2.21s"
+ },
+ {
+  "mutant": "F9 generic PBL back to Euler",
+  "file": "src/gpuwrf/runtime/operational_mode.py",
+  "test": "tests/test_t_cfix_cu_cu_rk.py::test_euler_pbls_publish_rk_sources_in_source_leaf_mode[3]",
+  "rc": 1,
+  "killed": true,
+  "tail": "1 failed in 2.20s"
+ },
+ {
+  "mutant": "F14 NTiedtke THFTEN without RTHRATEN",
+  "file": "src/gpuwrf/runtime/operational_mode.py",
+  "test": "tests/test_t_cfix_cu_tiedtke_forcing.py::test_ntiedtke_gets_wrf_thften_and_qvften[2]",
+  "rc": 1,
+  "killed": true,
+  "tail": "1 failed in 2.34s"
+ },
+ {
+  "mutant": "F14 no itimestep-1 zeroing",
+  "file": "src/gpuwrf/runtime/operational_mode.py",
+  "test": "tests/test_t_cfix_cu_tiedtke_forcing.py::test_tiedtke_gets_held_rqvften_and_step1_zero[1]",
+  "rc": 1,
+  "killed": true,
+  "tail": "1 failed in 2.28s"
+ },
+ {
+  "mutant": "F14 Tiedtke ZNU pressure proxy",
+  "file": "src/gpuwrf/coupling/scan_adapters.py",
+  "test": "tests/test_t_cfix_cu_tiedtke_forcing.py::test_tiedtke_gets_wrf_znu_half_levels",
+  "rc": 1,
+  "killed": true,
+  "tail": "1 failed, 5 warnings in 12.44s"
+ },
+ {
+  "mutant": "F18 GF lateral band dropped",
+  "file": "src/gpuwrf/coupling/scan_adapters.py",
+  "test": "tests/test_t_cfix_cu_gf_caller.py::test_gf_writes_only_wrf_interior_columns",
+  "rc": 1,
+  "killed": true,
+  "tail": "1 failed in 3.74s"
+ },
+ {
+  "mutant": "F18 GF PSUR from the lowest mass level",
+  "file": "src/gpuwrf/coupling/scan_adapters.py",
+  "test": "tests/test_t_cfix_cu_gf_caller.py::test_operational_gf_slot_hands_wrf_inputs_to_gfdrv",
+  "rc": 1,
+  "killed": true,
+  "tail": "1 failed in 7.53s"
+ },
+ {
+  "mutant": "F18 GF ignores the KPBL the GFS PBL published",
+  "file": "src/gpuwrf/runtime/operational_mode.py",
+  "test": "tests/test_t_cfix_cu_gf_caller.py::test_gf_reads_the_kpbl_published_by_the_gfs_pbl",
+  "rc": 1,
+  "killed": true,
+  "tail": "1 failed, 7 warnings in 13.11s"
+ },
+ {
+  "mutant": "F10 GF ishallow=0 still runs CUP_gf_sh (shallow diagnostics + outqcs leak)",
+  "file": "src/gpuwrf/physics/_gf_jax.py",
+  "test": "tests/test_t_cfix_cu_gf_ishallow.py::test_ishallow0_port_has_no_shallow_terms",
+  "rc": 1,
+  "killed": true,
+  "tail": "1 failed in 5.55s"
+ },
+ {
+  "mutant": "F18 GF kernel drops RTHRATEN",
+  "file": "src/gpuwrf/physics/_gf_jax.py",
+  "test": "tests/test_t_cfix_cu_gf_ishallow.py::test_port_wrf_caller_forcing_matches_pristine_gfdrv",
+  "rc": 1,
+  "killed": true,
+  "tail": "1 failed in 4.27s"
+ }
+]

@@ -3,6 +3,7 @@ import importlib.util
 import json
 from pathlib import Path
 from types import SimpleNamespace
+from dataclasses import MISSING, fields
 
 import jax
 import jax.numpy as jnp
@@ -12,6 +13,14 @@ import pytest
 from gpuwrf.diagnostics import census as cs
 from gpuwrf.runtime import operational_mode as om
 from gpuwrf.runtime.operational_state import initial_operational_carry
+
+
+def _mock_namelist(**overrides):
+    # Only explicit dataclass defaults: unknown/required inputs remain missing.
+    defaults = {field.name: field.default for field in fields(om.OperationalNamelist)
+                if field.default is not MISSING}
+    defaults.update(overrides)
+    return SimpleNamespace(**defaults)
 
 
 def fixture_state():
@@ -48,7 +57,8 @@ def test_injected_real_guard_path_is_bit_identical_and_counts_every_site(monkeyp
     monkeypatch.setattr(om, "_rk_scan_step", lambda carry, *a, **k: carry.replace(state=raw))
     monkeypatch.setattr(om, "apply_lateral_boundaries", lambda *a, **k: raw)
     monkeypatch.setattr(om, "_enforce_operational_precision", lambda state, **k: state)
-    namelist = SimpleNamespace(dt_s=54, disable_guards=False, run_boundary=True, run_physics=False,
+    namelist = _mock_namelist(dt_s=54, disable_guards=False, run_boundary=True, run_physics=False,
+        diff_opt=0, km_opt=0, bl_pbl_physics=5,
         boundary_config=SimpleNamespace(nested_frozen_wrf_boundary_bundle=False),
         metrics=grid.metrics, grid=grid, lower_boundary=None, force_fp64=True,
         acoustic_precision_mode="fp64_default")
@@ -167,6 +177,7 @@ def test_radiation_counts_are_inside_executed_branch(monkeypatch, predicate):
         SimpleNamespace(swnorm=jnp.ones((grid.ny, grid.nx)), glw=jnp.ones((grid.ny, grid.nx)),
                         coszen=jnp.ones((grid.ny, grid.nx))))
     namelist = SimpleNamespace(dt_s=54, radiation_cadence_steps=33, grid=grid,
+        mp_physics=8, sf_urban_physics=0, bl_pbl_physics=5,
         time_utc="2026-07-25T18:00:00Z", radiation_static=None, topo_shading=0,
         slope_rad=0, topo_shadow_length_m=0, ra_sw_physics=4, ra_lw_physics=4)
     held = tuple(jnp.zeros((grid.ny, grid.nx)) for _ in range(3))

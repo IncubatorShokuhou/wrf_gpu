@@ -159,9 +159,6 @@ _PREEXISTING_CPU_XFAILS: dict[str, str] = {
     "tests/test_m5_mynn_harness.py::test_mynn_fixture_generation_records_harness_binary":
         "ENV: requires building/linking the single-column WRF MYNN Fortran harness "
         "(scripts/wrf_mynn_harness_build.sh); not built on this box. Pre-existing on v0.17.",
-    "tests/test_m5_rrtmg_harness.py::test_rrtmg_fixture_generation_records_linked_harness_binary":
-        "ENV: requires the linked RRTMG Fortran harness binary (sha mismatch absent "
-        "the rebuilt binary). Pre-existing on v0.17.",
     "tests/test_m5_thompson_fortran_harness.py::test_fortran_harness_binary_matches_manifest_after_fixture_generation":
         "ENV: requires the Thompson Fortran harness binary build. Pre-existing on v0.17.",
     "tests/test_m6b_d2h_warmed_zero.py::test_warmed_capture_artifacts_present":
@@ -272,6 +269,13 @@ _PREEXISTING_CPU_XFAILS: dict[str, str] = {
 }
 
 
+def pytest_addoption(parser):
+    parser.addoption(
+        "--run-heavy", action="store_true", default=False,
+        help="Include CPU tests marked heavy; run these in fresh 24G RAM slots.",
+    )
+
+
 def pytest_collection_modifyitems(config, items):
     """Attach documented non-strict xfail to each pre-existing CPU-suite failure.
 
@@ -279,6 +283,13 @@ def pytest_collection_modifyitems(config, items):
     as xfail with the reason above; an unexpected pass surfaces as XPASS. No
     assertion is deleted or loosened.
     """
+
+    if not config.getoption("--run-heavy"):
+        for item in items:
+            if item.get_closest_marker("heavy"):
+                item.add_marker(pytest.mark.skip(
+                    reason="heavy CPU test needs ~17 GiB; run with --run-heavy in a 24G RAM slot",
+                ))
 
     for item in items:
         reason = _PREEXISTING_CPU_XFAILS.get(item.nodeid)

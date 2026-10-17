@@ -1,0 +1,73 @@
+{
+  "status": "FIXED: critic P1 native TEMF restart admission closed",
+  "candidate": "f0bd892aa0592f82608f4904bebba37febe1e64c",
+  "main_base": "8b60d0854f8f990d720c3f52c3d3a342319909ad",
+  "critic_verdict_sha256": "2148f0e7c0931b22b60646aceac204337bae83cc496bb4323a159cb8d0fa9b20",
+  "change": "nested_identity per-domain TEMF selectors and shape; existing validate_temf on host snapshot shared by actual public RestartStore save/read before publication/device restoration",
+  "tests": {
+    "tests": "294",
+    "failures": "0",
+    "errors": "0",
+    "skipped": "0",
+    "time": "87.074"
+  },
+  "test_counts_by_class": {
+    "tests.test_temf_native_restart": 31,
+    "tests.v025.restart.test_restart_store": 27,
+    "tests.test_restart_schema_held_physics": 30,
+    "tests.test_online_diagnostics_restart_store": 60,
+    "tests.test_solar_native_restart": 140,
+    "tests.test_m7_restart_checkpoint_roundtrip": 3,
+    "tests.test_netcdf_process_lock": 3
+  },
+  "temf_public_controls": {
+    "count": 31,
+    "positive": "evolved nonzero full-carry byte-exact roundtrip and continuation",
+    "negative": "10 malformed group/field/shape/dtype/finite/marker variants each on save and read; 4 binding/domain/pair variants each on save/read",
+    "inactive": "configured and unbound default missing-marker compatibility",
+    "host_materialization": "four save/readback/public-read admissions assert every TEMF leaf is NumPy; no duplicate transfer"
+  },
+  "deletion_mutant": {
+    "mutation": "replace actual restart_schema.validate_temf with no-op in immutable source process",
+    "test_failures": 2,
+    "setup_errors": 0,
+    "skipped": 0,
+    "failure_cases": [
+      "test_native_temf_rejects_invalid_carry[missing_profile-save]",
+      "test_native_temf_rejects_invalid_carry[missing_profile-read]"
+    ],
+    "time_s": "10.259",
+    "wrapper_setup_refusal": "TF19 imported cpu_guard too late; logged separately, no mutant claim; TF19b fixed guard-first"
+  },
+  "source_reuse": "native_fix_source_reuse.json; only restart_store.py changed under src vs composed pre-fix commit; qualified kernels/bridge/fixtures BYTE; API stable",
+  "carry_group_order": "main exact prefix including obs/regional_streams/precipitation_buckets/nwp_diagnostics/radar_reflectivity/solar_interpolation; TEMF appended last",
+  "performance_memory": "host-only admission on already materialized arrays; generic TEMF finite scan skipped after complete validation; no timestep/device/compiled-model-source change. Existing logical carry4177152B/component temporary941696B evidence retained; GPU/forecast qualification pending.",
+  "artifacts": {
+    "TF18_native_composed.log": {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/s2-temf/TF18_native_composed.log",
+      "sha256": "a044c65c8ac1b0ae899a1704b32c768a55aa076eb8046f1e57b1c6a76b8c8445"
+    },
+    "TF18_native_composed.xml": {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/s2-temf/TF18_native_composed.xml",
+      "sha256": "7c07a6e714331f9531455578ebc44017b91d98dc85c059d2b539824890452119"
+    },
+    "TF19_native_mutant.log": {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/s2-temf/TF19_native_mutant.log",
+      "sha256": "a316cb8bdf6184ee93d57a650e6f39aafe4c30895779100df1772d0a91cc1250"
+    },
+    "TF19b_native_mutant.log": {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/s2-temf/TF19b_native_mutant.log",
+      "sha256": "baf89ce39775dd0d2ab0967559bec57c6a6d1bff1d2c98a4c63bffa75b3579f4"
+    },
+    "TF19_native_mutant.xml": {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/s2-temf/TF19_native_mutant.xml",
+      "sha256": "87c479d63ba8dcb71648e8e5eaa4cdf02a6c1cc59b25365467c032dc9d1f4789"
+    },
+    "mutate_native_validator.py": {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/s2-temf/mutate_native_validator.py",
+      "sha256": "9fdbac79d4a0e4898c5da07631ef8ca6e9d189dfc6777b1a59e28f555ee710bf"
+    }
+  },
+  "cache": "NONE GPUWRF_JAX_CACHE0",
+  "gpu_used": false
+}

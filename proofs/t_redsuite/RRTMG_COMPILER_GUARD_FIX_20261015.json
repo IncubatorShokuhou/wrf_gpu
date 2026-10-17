@@ -1,0 +1,105 @@
+{
+  "status": "VERIFIED narrow rv4 critic FIX; samecritic followup to frozenFINAL7539dc3e3",
+  "commit": "33d0bf38dc55ed4a18e4651eaa0a897352b4164d",
+  "requested_file": "tests/test_m5_rrtmg_harness.py:34",
+  "before": "CriticR05 two genuine assertional counterexamples: valid WRF_PRISTINE_FC/WRF_ENV incorrectlySKIP",
+  "after": "3 real PASS executions ofONEtest withFCunset/PATHgfortranabsent, plus1 expected absentcompilerSKIP",
+  "lookup": "Exact builder precedence: pristineFC literal-x override only withpristineobjects; WRF_ENV/GPUalias bin/gfortran onlywhenFCempty; invalid/unsetFC fallsback PATHgfortran. Literal-x checks useprivate buildcwd.",
+  "original_asserts_unchanged": 8,
+  "builder_sha256": "6eb277cc548d32abb13f50f4149989ee2f6ff62ab45487f6bad24a5397d7a67e",
+  "production_changes": [],
+  "bounds_changes": [],
+  "receipts": [
+    {
+      "arm": "FIX01-RRTMG-pristine-compiler",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/FIX01-RRTMG-pristine-compiler",
+      "outcome": "PASS realbuilder/generator",
+      "test_seconds": 0.93,
+      "compiler_environment": {
+        "configured": {
+          "FC": null,
+          "WRF_PRISTINE_FC": "<USER_HOME>/miniconda3/envs/wrfbuild/bin/gfortran",
+          "WRF_ENV": null,
+          "GPUWRF_WRF_ENV": null
+        },
+        "PATH_gfortran": null
+      },
+      "source": "d19a85db41293f5ba953643af718345b94811d74",
+      "hashes": {
+        "command.json": "dba9e63b56f2755a6779a895a4116abf62887407f735b42c93481e163de40d79",
+        "pytest.xml": "2430cbccec7d989f08ccbd58ee9f392b760e7b2284639387dae6821f8870e991",
+        "compiler_environment.json": "a27f439454e17567486cd6d91ec8c0d5f4268b65f14e3e9a066752907b163c18",
+        "real_harness_build.log": "0715e5ac1f5ca1285028749fc2fa3c92764d973fe2c387b1dca986c34e76ebe7",
+        "real_harness_manifest.yaml": "f886c2078d44af936f9ad1cef9332e7cddda1d63834bfb399a680bb989bc5dc7"
+      }
+    },
+    {
+      "arm": "FIX02-RRTMG-env-compiler",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/FIX02-RRTMG-env-compiler",
+      "outcome": "PASS realbuilder/generator",
+      "test_seconds": 1.829,
+      "compiler_environment": {
+        "configured": {
+          "FC": null,
+          "WRF_PRISTINE_FC": null,
+          "WRF_ENV": "<USER_HOME>/miniconda3/envs/wrfbuild",
+          "GPUWRF_WRF_ENV": null
+        },
+        "PATH_gfortran": null
+      },
+      "source": "d19a85db41293f5ba953643af718345b94811d74",
+      "hashes": {
+        "command.json": "7ef60889715c00e359c54e0872a37ef162868de363b16473ceaf5d7c3b6699ce",
+        "pytest.xml": "a32ab8cd243388dc144ae969f43c56cfb0f0d1ad08b8a728f59f8ad4a468b798",
+        "compiler_environment.json": "cb7bd4786fd058802b17f59964bb873e2cc90a8f9b94dce269f4e6b1532d54be",
+        "real_harness_build.log": "0715e5ac1f5ca1285028749fc2fa3c92764d973fe2c387b1dca986c34e76ebe7",
+        "real_harness_manifest.yaml": "f886c2078d44af936f9ad1cef9332e7cddda1d63834bfb399a680bb989bc5dc7"
+      }
+    },
+    {
+      "arm": "FIX03-RRTMG-env-alias-compiler",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/FIX03-RRTMG-env-alias-compiler",
+      "outcome": "PASS realbuilder/generator",
+      "test_seconds": 0.877,
+      "compiler_environment": {
+        "configured": {
+          "FC": null,
+          "WRF_PRISTINE_FC": null,
+          "WRF_ENV": null,
+          "GPUWRF_WRF_ENV": "<USER_HOME>/miniconda3/envs/wrfbuild"
+        },
+        "PATH_gfortran": null
+      },
+      "source": "d19a85db41293f5ba953643af718345b94811d74",
+      "hashes": {
+        "command.json": "e9a9826bc6f05021844f530a0966e6b405e255ed645725057168b83a5ef5e053",
+        "pytest.xml": "bbeb59c434fc0454fbc5444b9358acca8c4b5e94eadbf0ed0877e0ae8acb841c",
+        "compiler_environment.json": "fe6c48c781d4f944ae75961da96d5edc1bf43c2ca382caaaf85b380dc69beb8b",
+        "real_harness_build.log": "0715e5ac1f5ca1285028749fc2fa3c92764d973fe2c387b1dca986c34e76ebe7",
+        "real_harness_manifest.yaml": "f886c2078d44af936f9ad1cef9332e7cddda1d63834bfb399a680bb989bc5dc7"
+      }
+    },
+    {
+      "arm": "FIX04-RRTMG-compiler-absent",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/FIX04-RRTMG-compiler-absent",
+      "outcome": "expected explicit unavailablecompiler SKIP",
+      "test_seconds": 0.001,
+      "compiler_environment": {
+        "configured": {
+          "FC": null,
+          "WRF_PRISTINE_FC": null,
+          "WRF_ENV": null,
+          "GPUWRF_WRF_ENV": null
+        },
+        "PATH_gfortran": null
+      },
+      "source": "d19a85db41293f5ba953643af718345b94811d74",
+      "hashes": {
+        "command.json": "9b4f8a1f93c1fd2f6b20622bfcbb844d94e96e922bdbe3a9c8acf2b57a030f48",
+        "pytest.xml": "812eed15a1287f5ba1499f7eaab8565d0cd47ceb7236ad592787d483923fa16c",
+        "compiler_environment.json": "1cad2cb3a23997b9d6f1a434c2beae1a2a53b31b2a1e487ffa54c0b4fc1bf1d8"
+      }
+    }
+  ],
+  "performance": "Filesystem checks only in test availability guard; no model launches/allocations or numerical changes. All3 real tests0.9s each, parentHWM~0.175GiB under6G/noSwap; private outputs cleaned."
+}

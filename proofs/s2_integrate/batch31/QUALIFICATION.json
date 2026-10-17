@@ -1,0 +1,271 @@
+{
+  "status": "READY-FOR-MERGE",
+  "base_main": "def2fb8525aad46e31f594c0634797674b62d154",
+  "candidate_before_seal": "61a157a7b4b7f640327c98a983e49e15a6d31994",
+  "merges": [
+    "f552e5fb2d1cca53ce513cbd2ef66b1c69eb3ac2",
+    "676579c731e08fe772911b02c3c4c8f81c1924fc"
+  ],
+  "two_dot_scope": [
+    "src/gpuwrf/kernels/_p3_memory.py",
+    "src/gpuwrf/kernels/phys_p3.py",
+    "src/gpuwrf/physics/p3/column.py",
+    "src/gpuwrf/physics/p3/process_support.py",
+    "tests/test_p3_mp53_compile.py"
+  ],
+  "vprep_two_dot_src_tests_data_scripts_empty": true,
+  "final_product_test_data_script_packaging_BYTE_reviewed_P3_head": true,
+  "SRC": "b2a6d99a91acbf943053763a9779fa6db39c85a9",
+  "measured_SRC_data_packaging_BYTE_GPU_source": "38d00155289902b9ff6a3b5a28c5c3872f27fdc8",
+  "approved_product_delta": [
+    "src/gpuwrf/kernels/_p3_memory.py",
+    "src/gpuwrf/kernels/phys_p3.py",
+    "src/gpuwrf/physics/p3/column.py",
+    "src/gpuwrf/physics/p3/process_support.py"
+  ],
+  "new_test": "tests/test_p3_mp53_compile.py",
+  "fresh_P3_sealed_receipt_SHA": 22,
+  "fresh_P3_raw_artifact_SHA": 17,
+  "paid_reused_independent_CPU": {
+    "tests": 108,
+    "genuine_parent_mutant_ASSERT": 1,
+    "BYTE_field_frames": 66,
+    "BYTE_REAL4_values": 20136,
+    "steps": 3,
+    "cols": 8,
+    "levels": 44,
+    "MP50_51_52_programs_BYTE": true,
+    "FULL_defaults": {
+      "swiss": "f672a5739cb96e388b6b7a40ef80337bf81bdc14ef15268f3476e09d79fe055d",
+      "prod": "6fc715a2bd630934c4cf0f94427df19a527cbf429011c9ba5efe4d712744d27b"
+    },
+    "native_cpu_prescreen_s": 9.003607826001826,
+    "isolated_STACK": 48,
+    "isolated_STL": 11
+  },
+  "paid_GPU": {
+    "cold_qualification_wall_s": 431.920179474997,
+    "sampled_process_peak_vram_mib": 5376,
+    "hours": 24,
+    "frames": 25,
+    "steps": 4800,
+    "platform": "gpu",
+    "native_P3": {
+      "kernel": "p3_mp53_column",
+      "regs": 241,
+      "stack": 0,
+      "shared": 1024,
+      "local": 0,
+      "sass": 13824,
+      "calls": 10,
+      "callees": 2,
+      "stl": 0,
+      "callee_rows": [
+        {
+          "function": "p3_mp53_column",
+          "target_pc": 218896,
+          "instructions": 23,
+          "nested_calls": 0
+        },
+        {
+          "function": "p3_mp53_column",
+          "target_pc": 219264,
+          "instructions": 104,
+          "nested_calls": 0
+        }
+      ],
+      "nonleaf_over1k": [],
+      "callgraph_unknown": [],
+      "callgraph_status": "PASS"
+    },
+    "E41": {
+      "gate": "PASS",
+      "entries": 2,
+      "coverage": {
+        "status": "PASS",
+        "aot_programs": [
+          "d01"
+        ],
+        "required_run_programs": [
+          "d01"
+        ],
+        "run_proofs": [
+          "<USER_HOME>/wrf_gpu2_lanes/t-p3mp53/MP5312/c24/gpu_proof/nested_pipeline_run.json"
+        ],
+        "n_discovered": 2,
+        "n_scanned": 2
+      }
+    }
+  },
+  "fidelity": {
+    "scope": "actual MP53 GPU vs original ZERO CPU-WRF, frozen D6",
+    "source": "38d00155289902b9ff6a3b5a28c5c3872f27fdc8",
+    "gpu_receipt_sha256": "c276391d026b65c71680e05da4802cb403b4d1b805a08cc95f257b60bf8ca174",
+    "zero_receipt_sha256": "a30f63b92f389f8ed2a6bdf983248b67a631c5b782255f76c073b548cb423761",
+    "zero_executable_sha256": "9a67a93dd891115c095f64a95ce8f50e7ff0942ef1abf4185faf20bd7065742a",
+    "manifest_sha256": "9df4fab8514523286f07b127eb8bf57a7545459c4448fef721ac44c0ecc351dc",
+    "score_source_sha256": "4c025af8382c9626e7f7e0de1e888a91bd0270376f5c837431d1000c70c2c21d",
+    "tool_sha256": {
+      "scripts/compare_wrfout_grid.py": "5d87d80c8bc50372ce6699ee23163d1e1ba1a253c9fd91b43a2ecf40aa7f1dfd",
+      "proofs/v014/grid_delta_atlas/tolerance_manifest_candidate.json": "9df4fab8514523286f07b127eb8bf57a7545459c4448fef721ac44c0ecc351dc",
+      "proofs/v040/final_validation/score.py": "4c025af8382c9626e7f7e0de1e888a91bd0270376f5c837431d1000c70c2c21d"
+    },
+    "wall_s": 23.08620348599652,
+    "verdict": "PASS",
+    "paired_frames": 25,
+    "bounded_misses": 0,
+    "nonfinite": 0,
+    "missing": []
+  },
+  "actual_GPU_25frame_SHA_checked_by_independent_critic_not_integrator": true,
+  "performance_memory": {
+    "extra_runtime_costs": "typed vector output atomic exchange and four-warps geometry; actual REG241 STACK0 STL0; native/shared1024 bytes",
+    "no_added_launches": true,
+    "no_added_global_buffers": true,
+    "no_in_step_host_transfers_added": true,
+    "timing_scope": "one cold shared-CPU/IO qualification; not S1 warm speedup or R1/R2 claim"
+  },
+  "F2": {
+    "d01": {
+      "negative_phase_visits": 17951617,
+      "interior_phase_visits": 15623747,
+      "nonfinite_phase_visits": 0,
+      "tracked_fields": [
+        "Nc",
+        "Ng",
+        "Nh",
+        "Ni",
+        "Nn",
+        "Nr",
+        "Ns",
+        "nifa",
+        "nwfa",
+        "qc",
+        "qg",
+        "qi",
+        "qr",
+        "qs",
+        "qv"
+      ],
+      "unattributed_to_original_WRF": true,
+      "extra_P3_species_coverage": "QZI/QIR/BIR pre-mask coverage not established by these core-species records",
+      "status": "OPEN; frozen-D6 qualification does not close global F2"
+    }
+  },
+  "open_risks": [
+    "F2 negative phase visits remain unattributed to original WRF; extra P3 species pre-mask coverage not established",
+    "Original-WRF MYNN uninitialized RMOL sensitivity and ZERO convention disclosure retained; no threshold/reference modification",
+    "Private Pallas/Triton/PTX APIs qualified on this CUDA SM120 stack only"
+  ],
+  "C01_binding": {
+    "utc": "2026-10-15T10:01:43.429521+00:00",
+    "case": "c01",
+    "current_snapshot": "49900e8841e80e626d9bc010439ef9b2c030b901",
+    "current_model_main": "dc960a049463c90482541d2c3081d52c062a561a",
+    "paid_source": "2e42e125417c3204fc1ec83f183b419b091e87a9",
+    "selected_canon_SHA": "202e2cbdcdac73b5dd6af97732c383752f500c482cc8718643148577d9155811",
+    "selected_canon_chars": 8214334,
+    "initial_carry_leaves_BYTE": 106,
+    "closed_jaxpr_constants_BYTE": 59,
+    "resolved_work_BYTE": {
+      "dt_s": 18.0,
+      "mp_physics": 0,
+      "bl_pbl_physics": 0,
+      "sf_sfclay_physics": 0,
+      "sf_surface_physics": null,
+      "cu_physics": 0,
+      "ra_lw_physics": 0,
+      "ra_sw_physics": 0,
+      "radiation_cadence_steps": 33,
+      "cumulus_cadence_steps": 1
+    },
+    "CPU_trace_walls_s": [
+      16.85162613599823,
+      16.78075225000066
+    ],
+    "equality": {
+      "selected_canon_sha256": true,
+      "canonical_chars": true,
+      "initial_carry": true,
+      "closed_constants": true,
+      "work": true
+    },
+    "receipts": {
+      "paid": {
+        "path": "<DATA_ROOT>/wrf_gpu2/scratch/v-prep/identity-c01/paid.json",
+        "sha256": "78efd0abc114a74c7b065788decd0100670c8a2dcc08255adef3ae9ea5a4b64b"
+      },
+      "current": {
+        "path": "<DATA_ROOT>/wrf_gpu2/scratch/v-prep/identity-c01/current.json",
+        "sha256": "a8f03a0e4c93fe7cae1d61344f56bd649b73d6cde7e7866e7459dc4badc97f10"
+      },
+      "comparison": {
+        "path": "<DATA_ROOT>/wrf_gpu2/scratch/v-prep/identity-c01/comparison.json",
+        "sha256": "7b82f210bf7b6225aad8143f6bb94cd6dcae91864aea417a5e26233ff4675773"
+      }
+    },
+    "helper": {
+      "path": "<USER_HOME>/src/wrf_gpu2_wt/v-prep/proofs/v040/final_validation/selected_program_identity.py",
+      "sha256": "e1b67239f388dbdcc70dd8fec93bbb80a8e6e8eaed25e414077be4962417874d"
+    },
+    "full24_D6": "Original CPU-WRF PASS25/full160fields/0bounded/NF0 after separately sealed current soil writer publication",
+    "actual_E41": "PASS2 actual paid PINs verified; no new CUDA executable realization claimed",
+    "scope": "Accepted O1 selected native-facade source+initial carry+closed constant+resolved work identity, identical CPU-safe tridiagonal substitution. No GPU self-fidelity, new numerical run, compiler cost, S1 or F2 closure inferred.",
+    "GPU_rerun_needed": false,
+    "disposable_old_snapshot_and_cache": "REMOVED after last identity consumer"
+  },
+  "C01_writer_recheck": {
+    "utc": "2026-10-15T09:52:12.510078+00:00",
+    "case": "c01",
+    "verdict": "PASS",
+    "authority": "Manager host-only writer recheck policy; merged/critic-approved inactive-LSM soil geometry",
+    "forecast_receipt_sha256": "210e01ff0e96601bd165718c14e93489cd9816679baee71a7f960b1d64b0047a",
+    "forecast_source": "2e42e125417c3204fc1ec83f183b419b091e87a9",
+    "writer_source": "49900e8841e80e626d9bc010439ef9b2c030b901",
+    "publication_receipt": {
+      "path": "<DATA_ROOT>/wrf_gpu2/scratch/v-prep/arms/c01/writer-recheck-current/PUBLICATION_RECHECK.json",
+      "sha256": "c91ab93fd341445e2db24c42e07b83c5a17ca07ee750750b1221a181b517301a"
+    },
+    "domains": {
+      "d01": {
+        "path": "<DATA_ROOT>/wrf_gpu2/scratch/v-prep/arms/c01/writer-recheck-current/D6_d01.json",
+        "sha256": "462d4a587068132412d3d44f3cb4b07c20e4a3ac6d2240ea7f308b6cd2b4ff4d",
+        "verdict": "PASS",
+        "paired_frames": 25,
+        "bounded_misses": 0,
+        "nonfinite": 0,
+        "coverage_complete": true
+      }
+    },
+    "raw_D6_preserved": {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c01/D6_d01.json",
+      "sha256": "bc7fb4212993eb4cea274cffb7a7f808ca0be4d33b84610bbaf244f63c8877ba"
+    },
+    "obsolete_95_misses_preserved": {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c01/attempts/before_paid_C01_writer_recheck/D6_d01.json",
+      "sha256": "e8d8ef168b451ac87eb85d632174d74e60c128dabe147d10fa445531ac0430bb"
+    },
+    "original_forecast_preserved": true,
+    "only_changed_fields": "Merged full writer inactive soil dimension5 and DZS/ZS/TSLB/SMOIS/SH2O;125/125 originalCPUfieldframesBYTE,allotherGPUvariablesBYTE",
+    "scope": "Full24 originalCPU-WRF D6+actualpaidE41 after host-only publication correction. ModelSOURCE2e42, writerSOURCE499. No new GPU/nativecompile/S1/F2 closure or current-model identity inferred."
+  },
+  "C01_metadata_receipt_SHA_fresh": 7,
+  "C01_scope": "Binding measured on modeldc960; MP53-only4sourcefiles added afterwards, inactive at c01mp0; stepping/State/writer BYTEdc960. No new compiled equality/forecast run claimed.",
+  "suite_closed_scope": "Batch30 closure remains16999 source-bound mixed-revision CPUcases; does not claim full rerun after newMP53. ChangedMP53 gates independentlyqualified108cases+actualpaidGPU.",
+  "fresh_numerical_GPU_native_default_runs": 0,
+  "cleanup": "No newcache/snapshot/pytest/scratch/JAX/GPU/jobs",
+  "proof_files": {
+    "rv-VERDICT.md": "2a2a2947e76fc42eb02716e8a445e9a3da5234293db2fb888b458b14e4c2f269",
+    "rv-AUDIT.json": "3fcffbefd377004de36e51a8419be9f010bfb8a4b725a0d2e4c6387a4b3cfe88",
+    "rv-D6_LIMITS.json": "c868add3fc482ba4e78262c81915d135cf103c27d69588b4661db4cb553dc93f",
+    "rv-tests.xml.gz": "8a814bf992bab273e16bd4e68e9183723c9d1809c35995810e78426a27c2ae3a",
+    "rv-mutant.xml.gz": "5f6212ce3992de7921ae0c807257e45750830438e5c74172ff6b5ff583513f94",
+    "rv-scope_baseline.json": "4a287fbddcfe43ad526d24906ac0b36b049f06a813f2d3c352020dc0e84b5e93",
+    "rv-scope_candidate.json": "4a287fbddcfe43ad526d24906ac0b36b049f06a813f2d3c352020dc0e84b5e93",
+    "rv-swiss.json": "10230d817c10dfe0723769d48ab360704828f9ef0c18405c76ac39ae81c1b806",
+    "rv-prod.json": "bf0c5b621ca1ca4846351b6f1f16f355d01f859744322b613758c56fef90b39f",
+    "rv-native-receipt.json": "d5a531f3621c15c01f530c9e716472c896d650307671e5801bd62a16c8199777",
+    "rv-e41-wave_gate.json": "5c946339c1c34c887d870c816274b408ff68b0aa9d18dfd7c5d0b12f78e57e51",
+    "integrate_batch31.py": "abe75e2575c2143babececa294bb01af364560b12b9cff629306ee672d386824"
+  }
+}

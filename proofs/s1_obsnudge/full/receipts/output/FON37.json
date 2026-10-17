@@ -1,0 +1,27 @@
+{
+  "accepted": "a8dd517f08db56d5f6942f1f87a5c09b57f4f034",
+  "candidate": "45e3ec82b2d16324a65a354a3f78cfeb0304d93c",
+  "changed_src_paths": [
+    "src/gpuwrf/integration/daily_pipeline.py"
+  ],
+  "unchanged_src_blobs": 528,
+  "unchanged_daily_functions": [
+    "_build_real_case",
+    "_default_forecast_fn",
+    "_segmented_forecast_fn",
+    "_capture_boundary_leaves",
+    "_rewindow_boundary_leaves"
+  ],
+  "unchanged_existing_stepper_methods": [
+    "__init__",
+    "__call__"
+  ],
+  "daily_sha256": "9d3fcbec2f2c55ca6f710d8fe4184b81fb574862b6926a11637339db069a9e1d",
+  "reused_release_jaxpr_sha256": "2bf12cb8374d3a84a440e47dea4b77b0c7436108fc2ee2616bba6ec79b17962a",
+  "reuse": "Critic accepted operators, native coupled smokes, full restart and release trace. All model/compiler/restart source bytes unchanged; only daily host orchestration changed.",
+  "performance": "No new timestep kernels, allocations or transfers. Existing bounded chunk runner; one initialization per daily run, held Noah-MP diagnostics and full carry retained. Checkpoint host copies occur only at the requested output boundary. GPU timing/memory and long-forecast qualification remain unmeasured.",
+  "previous_daily_fix": "6193a5bfb41d62a3a8dc7cbd143850a510ab104d",
+  "unchanged_daily_loop_AST": true,
+  "unchanged_default_output_AST": true,
+  "output_delta": "Only operational_carry branch changes dispatcher and history keyword; no numerical/operator/carry/schema change."
+}

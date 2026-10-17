@@ -1,0 +1,581 @@
+{
+  "schema": 1,
+  "status": "PASS CPU coupled smoke MF0 and MF1; experimental source qualification, GPU/coupled-forecast pending",
+  "scope": "three real Swiss coupled CPU steps, diagnostic only; no forecast fidelity or GPU claim",
+  "input": "<USER_HOME>/wrf_gpu2_lanes/release-docs/RD11/cpu",
+  "input_sha256": {
+    "wrfinput_d01": "a5d696550d1dc6713e2e340b8c2fba83811d43f4a94a65ca95266035860e2781",
+    "wrfbdy_d01": "f3e556670e4768326997bdfa1dd8b0f77eb6d5da07d9c4dbf900bf8ff9e30230",
+    "namelist.input": "98eb3e0457b53a510931401ad1575e980a716da4588f8cbca4be95fd92846039"
+  },
+  "receipts": {
+    "release": {
+      "source_commit": "e9d829abfe3ec253032b4b3552ce6a5943ae2deb",
+      "platform": "cpu",
+      "gpu_executed": false,
+      "cache": "NONE",
+      "input": "<USER_HOME>/wrf_gpu2_lanes/release-docs/RD11/cpu",
+      "namelist_sha256": "0a3073fafdbd4294552102ce2351b043359eb56698ef85b2e9ee0d241b48c49d",
+      "steps": [
+        {
+          "step": 1,
+          "wall_s": 535.8307596968953,
+          "nonfinite_leaves": [],
+          "guards": 0,
+          "guard_counts": {},
+          "f2_negative_minima": [],
+          "sw_negative_heating_count": null,
+          "swdown_max": 0.0,
+          "glw_min": 197.9010009765625,
+          "rthraten_max": 0.00028555060271173716
+        },
+        {
+          "step": 2,
+          "wall_s": 15.585693767061457,
+          "nonfinite_leaves": [],
+          "guards": 0,
+          "guard_counts": {},
+          "f2_negative_minima": [],
+          "sw_negative_heating_count": null,
+          "swdown_max": 0.0,
+          "glw_min": 197.9010009765625,
+          "rthraten_max": 0.0002855527272913605
+        },
+        {
+          "step": 3,
+          "wall_s": 15.24175527994521,
+          "nonfinite_leaves": [],
+          "guards": 2,
+          "guard_counts": {
+            "dynamics.qc": {
+              "nonfinite": 0,
+              "out_of_range": 1,
+              "repaired": 1
+            }
+          },
+          "f2_negative_minima": [
+            {
+              "phase": "post_rk",
+              "field": "qc",
+              "minimum": -6.286283142188617e-18,
+              "step": 3,
+              "flat_index": 24535,
+              "k": 13,
+              "y": 38,
+              "x": 7,
+              "ring": 3
+            },
+            {
+              "phase": "pre_dynamics_guard",
+              "field": "qc",
+              "minimum": -3.742363506556675e-37,
+              "step": 3,
+              "flat_index": 28190,
+              "k": 15,
+              "y": 41,
+              "x": 8,
+              "ring": 0
+            },
+            {
+              "phase": "pre_boundary_guard",
+              "field": "qc",
+              "minimum": -3.742363506556675e-37,
+              "step": 3,
+              "flat_index": 28190,
+              "k": 15,
+              "y": 41,
+              "x": 8,
+              "ring": 0
+            }
+          ],
+          "sw_negative_heating_count": null,
+          "swdown_max": 0.0,
+          "glw_min": 197.9010009765625,
+          "rthraten_max": 0.00028555485187098384
+        }
+      ],
+      "affinity": [
+        17
+      ],
+      "load_s": 79.33904293295927,
+      "resolved_work": {
+        "ra_lw": 4,
+        "ra_sw": 4,
+        "mp": 8,
+        "bl_pbl_physics": 5,
+        "sf_sfclay_physics": 5,
+        "mfshconv": 0,
+        "dt_s": 18.0,
+        "radiation_cadence_steps": 33,
+        "steps": 3
+      },
+      "guard_verdict": "FAIL"
+    },
+    "mf0_interpreter": {
+      "source_commit": "e9d829abfe3ec253032b4b3552ce6a5943ae2deb",
+      "platform": "cpu",
+      "gpu_executed": false,
+      "cache": "NONE",
+      "input": "<USER_HOME>/wrf_gpu2_lanes/release-docs/RD11/cpu",
+      "namelist_sha256": "b9bba9a792c725930351cc2fd52846e682b26ce6f027b2c2b609adb72ba4f32a",
+      "steps": [
+        {
+          "step": 1,
+          "wall_s": 826.0861418668646,
+          "nonfinite_leaves": [],
+          "guards": 0,
+          "guard_counts": {},
+          "f2_negative_minima": [],
+          "sw_negative_heating_count": null,
+          "swdown_max": 0.0,
+          "glw_min": 197.9010009765625,
+          "rthraten_max": 0.00028555060271173716,
+          "qnse_fp32_finite": true
+        },
+        {
+          "step": 2,
+          "wall_s": 16.59002545499243,
+          "nonfinite_leaves": [],
+          "guards": 0,
+          "guard_counts": {},
+          "f2_negative_minima": [],
+          "sw_negative_heating_count": null,
+          "swdown_max": 0.0,
+          "glw_min": 197.9010009765625,
+          "rthraten_max": 0.0002855527272913605,
+          "qnse_fp32_finite": true
+        },
+        {
+          "step": 3,
+          "wall_s": 15.643945202929899,
+          "nonfinite_leaves": [],
+          "guards": 2,
+          "guard_counts": {
+            "dynamics.qc": {
+              "nonfinite": 0,
+              "out_of_range": 1,
+              "repaired": 1
+            }
+          },
+          "f2_negative_minima": [
+            {
+              "phase": "post_rk",
+              "field": "qc",
+              "minimum": -1.0286113358360517e-32,
+              "step": 3,
+              "flat_index": 15757,
+              "k": 8,
+              "y": 39,
+              "x": 7,
+              "ring": 2
+            },
+            {
+              "phase": "pre_dynamics_guard",
+              "field": "qc",
+              "minimum": -6.427532580635219e-33,
+              "step": 3,
+              "flat_index": 28190,
+              "k": 15,
+              "y": 41,
+              "x": 8,
+              "ring": 0
+            },
+            {
+              "phase": "pre_boundary_guard",
+              "field": "qc",
+              "minimum": -6.427532580635219e-33,
+              "step": 3,
+              "flat_index": 28190,
+              "k": 15,
+              "y": 41,
+              "x": 8,
+              "ring": 0
+            }
+          ],
+          "sw_negative_heating_count": null,
+          "swdown_max": 0.0,
+          "glw_min": 197.9010009765625,
+          "rthraten_max": 0.00028555485187098384,
+          "qnse_fp32_finite": true
+        }
+      ],
+      "affinity": [
+        16
+      ],
+      "load_s": 66.12665160186589,
+      "resolved_work": {
+        "ra_lw": 4,
+        "ra_sw": 4,
+        "mp": 8,
+        "bl_pbl_physics": 4,
+        "sf_sfclay_physics": 4,
+        "mfshconv": 0,
+        "dt_s": 18.0,
+        "radiation_cadence_steps": 33,
+        "steps": 3
+      },
+      "guard_verdict": "FAIL"
+    },
+    "mf0_portable": {
+      "source_commit": "200cb38d50620e051211bde92362763d28884f74",
+      "platform": "cpu",
+      "gpu_executed": false,
+      "cache": "NONE",
+      "input": "<USER_HOME>/wrf_gpu2_lanes/release-docs/RD11/cpu",
+      "namelist_sha256": "b9bba9a792c725930351cc2fd52846e682b26ce6f027b2c2b609adb72ba4f32a",
+      "steps": [
+        {
+          "step": 1,
+          "wall_s": 1126.7166390710045,
+          "nonfinite_leaves": [],
+          "guards": 0,
+          "guard_counts": {},
+          "f2_negative_minima": [],
+          "sw_negative_heating_count": null,
+          "swdown_max": 0.0,
+          "glw_min": 197.9010009765625,
+          "rthraten_max": 0.00028555060271173716,
+          "qnse_fp32_finite": true
+        },
+        {
+          "step": 2,
+          "wall_s": 13.668331107124686,
+          "nonfinite_leaves": [],
+          "guards": 0,
+          "guard_counts": {},
+          "f2_negative_minima": [],
+          "sw_negative_heating_count": null,
+          "swdown_max": 0.0,
+          "glw_min": 197.9010009765625,
+          "rthraten_max": 0.0002855527272913605,
+          "qnse_fp32_finite": true
+        },
+        {
+          "step": 3,
+          "wall_s": 12.41156902606599,
+          "nonfinite_leaves": [],
+          "guards": 2,
+          "guard_counts": {
+            "dynamics.qc": {
+              "nonfinite": 0,
+              "out_of_range": 1,
+              "repaired": 1
+            }
+          },
+          "f2_negative_minima": [
+            {
+              "phase": "post_rk",
+              "field": "qc",
+              "minimum": -1.2108110160692996e-17,
+              "step": 3,
+              "flat_index": 24535,
+              "k": 13,
+              "y": 38,
+              "x": 7,
+              "ring": 3
+            },
+            {
+              "phase": "pre_dynamics_guard",
+              "field": "qc",
+              "minimum": -4.689578141939883e-33,
+              "step": 3,
+              "flat_index": 28190,
+              "k": 15,
+              "y": 41,
+              "x": 8,
+              "ring": 0
+            },
+            {
+              "phase": "pre_boundary_guard",
+              "field": "qc",
+              "minimum": -4.689578141939883e-33,
+              "step": 3,
+              "flat_index": 28190,
+              "k": 15,
+              "y": 41,
+              "x": 8,
+              "ring": 0
+            }
+          ],
+          "sw_negative_heating_count": null,
+          "swdown_max": 0.0,
+          "glw_min": 197.9010009765625,
+          "rthraten_max": 0.00028555485187098384,
+          "qnse_fp32_finite": true
+        }
+      ],
+      "affinity": [
+        16
+      ],
+      "load_s": 96.66531623201445,
+      "resolved_work": {
+        "ra_lw": 4,
+        "ra_sw": 4,
+        "mp": 8,
+        "bl_pbl_physics": 4,
+        "sf_sfclay_physics": 4,
+        "mfshconv": 0,
+        "dt_s": 18.0,
+        "radiation_cadence_steps": 33,
+        "steps": 3
+      },
+      "guard_verdict": "FAIL"
+    },
+    "mf1_legacy_cpu_emitter": {
+      "source_commit": "67502f97fc7ffcfd697836094a4abe8ff122b570",
+      "platform": "cpu",
+      "gpu_executed": false,
+      "cache": "NONE",
+      "input": "<USER_HOME>/wrf_gpu2_lanes/release-docs/RD11/cpu",
+      "namelist_sha256": "6ad2a2802655c0ea642ef0caf1a691b920beb38631cf88012176c3f8d5628522",
+      "steps": [
+        {
+          "step": 1,
+          "wall_s": 585.4588996120729,
+          "nonfinite_leaves": [],
+          "guards": 0,
+          "guard_counts": {},
+          "f2_negative_minima": [],
+          "sw_negative_heating_count": null,
+          "swdown_max": 0.0,
+          "glw_min": 197.9010009765625,
+          "rthraten_max": 0.00028555060271173716,
+          "qnse_fp32_finite": true
+        },
+        {
+          "step": 2,
+          "wall_s": 13.898295448161662,
+          "nonfinite_leaves": [],
+          "guards": 0,
+          "guard_counts": {},
+          "f2_negative_minima": [],
+          "sw_negative_heating_count": null,
+          "swdown_max": 0.0,
+          "glw_min": 197.9010009765625,
+          "rthraten_max": 0.0002855527272913605,
+          "qnse_fp32_finite": true
+        },
+        {
+          "step": 3,
+          "wall_s": 11.634236675919965,
+          "nonfinite_leaves": [],
+          "guards": 0,
+          "guard_counts": {},
+          "f2_negative_minima": [
+            {
+              "phase": "post_rk",
+              "field": "qc",
+              "minimum": -2.8362732802687736e-17,
+              "step": 3,
+              "flat_index": 22772,
+              "k": 12,
+              "y": 38,
+              "x": 8,
+              "ring": 3
+            }
+          ],
+          "sw_negative_heating_count": null,
+          "swdown_max": 0.0,
+          "glw_min": 197.9010009765625,
+          "rthraten_max": 0.00028555485187098384,
+          "qnse_fp32_finite": true
+        }
+      ],
+      "affinity": [
+        0,
+        1,
+        2,
+        3,
+        16,
+        17,
+        18,
+        19
+      ],
+      "load_s": 18.855706968111917,
+      "resolved_work": {
+        "ra_lw": 4,
+        "ra_sw": 4,
+        "mp": 8,
+        "bl_pbl_physics": 4,
+        "sf_sfclay_physics": 4,
+        "mfshconv": 1,
+        "dt_s": 18.0,
+        "radiation_cadence_steps": 33,
+        "steps": 3
+      },
+      "guard_verdict": "PASS"
+    }
+  },
+  "guard_disposition": {
+    "policy": "_WAVE_S1_COMMON.md matched release field/count/location class",
+    "mf0": "PASS matched pre-existing dynamics.qc step3 out_of_range1/repaired1/nonfinite0 at k15 y41 x8 ring0; raw FAIL receipts preserved",
+    "fidelity_limit": "No amplitude-based WRF justification, D6 relaxation or global F2 waiver",
+    "mf1": "PASS zero guards on all3steps; postRK qc minimum retained in receipt, no global F2 fidelity claim"
+  },
+  "incomplete_mf1_arms": [
+    {
+      "arm": "Q25",
+      "source": "df34a3773",
+      "result": "timeout2700 rc124, no completed steps; CPU Pallas interpretation"
+    },
+    {
+      "arm": "Q30",
+      "source": "200cb38d5",
+      "result": "timeout3600 rc124, no completed steps; portable CPU, initially1logicalcore then2"
+    },
+    {
+      "arm": "Q32",
+      "source": "3f6dffcbe",
+      "result": "compile completed 12m21.6356s; stopped~29min rc143 after >12min first-step execution without receipt; affinity0-3/16-19; no numerical verdict",
+      "vmhwm_bytes": 53354512384,
+      "sample_vm_swap_bytes": 19719995392
+    },
+    {
+      "arm": "Q36",
+      "source": "a10f469db",
+      "result": "compile15m56.3069s; stopped~28min143 after >5min first-step execution, no receipt",
+      "native_samples": "MLIR compiler cleanup swapping; runtime nestedscalar select_n fusions hot, not E105 LAPACK wait",
+      "artifacts": "<USER_HOME>/wrf_gpu2_lanes/s2-qnse/Q36"
+    }
+  ],
+  "final_host_contracts": {
+    "source": "90a605f3c",
+    "main_base": "0b3d3996f",
+    "result": "315PASS12.99s all required contracts/legacyv018/shared/69QNSE tests"
+  },
+  "release_identity": {
+    "src": "<DATA_ROOT>/wrf_gpu2/scratch/s2-qnse/Q39/snapshot",
+    "om": "<DATA_ROOT>/wrf_gpu2/scratch/s2-qnse/Q39/snapshot/src/gpuwrf/runtime/operational_mode.py",
+    "case": "<USER_HOME>/wrf_gpu2_lanes/release-docs/RD11/cpu",
+    "exec_steps": 0,
+    "interpret_exec": false,
+    "fast_defaults": "1",
+    "arms": {
+      "release": {
+        "edits": {},
+        "bound": {
+          "mp_physics": 8,
+          "bl_pbl_physics": 5,
+          "sf_sfclay_physics": 5,
+          "ra_lw_physics": 4,
+          "ra_sw_physics": 4,
+          "cu_physics": 0,
+          "sf_surface_physics": 4,
+          "use_noahmp": true,
+          "sf_urban_physics": 0,
+          "diff_opt": 1,
+          "km_opt": 4,
+          "epssm": 0.5,
+          "damp_opt": 3,
+          "zdamp": 5000.0,
+          "dampcoef": 0.2,
+          "w_damping": 1,
+          "diff_6th_opt": 2,
+          "diff_6th_factor": 0.12,
+          "moist_adv_opt": 1,
+          "scalar_adv_opt": 1,
+          "topo_shadow_length_m": 25000.0,
+          "cumulus_cadence_steps": 1,
+          "radiation_cadence_steps": 33
+        },
+        "load_s": 28.0,
+        "sha": "2bf12cb8374d3a84a440e47dea4b77b0c7436108fc2ee2616bba6ec79b17962a",
+        "chars": 13405317,
+        "trace_s": 17.6,
+        "wall_s": 46.0
+      }
+    },
+    "port_probe": {
+      "upstream_probe_sha256": "2ad93f4295db8b01e546071f8ce773d3aad2a279deb4aa09ce452826ca72041c",
+      "platform": "cpu",
+      "native_facade_at_trace": true,
+      "gpu_executed": false
+    }
+  },
+  "performance_memory": {
+    "carry_bytes_per_surface_cell": 36,
+    "carry_bytes_per_model_cell": 12,
+    "history_bytes_per_surface_cell": 24,
+    "table_real4_bytes": 80008,
+    "production_mf_export_profile_count": 3,
+    "diagnostic_mf_export_profile_count": 19,
+    "native_gpu": "unchanged3kerneljaxprs+constants, f64types0 perVALIDATION_REUSE; GPU launch/traffic/peak/SASS/compile/wall unknown",
+    "cpu_cost": "Compiled runtime and compile cost are CPU diagnostics, not GPU performance estimates",
+    "mf1_cpu_steps_s": [
+      585.4588996120729,
+      13.898295448161662,
+      11.634236675919965
+    ],
+    "mf1_load_s": 18.855706968111917,
+    "default_CPU_model_limit": "New CPU fusion emitter did not complete full MF1 smoke in recorded arms; native stacks show costly scalar select fusion execution. Qualification uses the declared legacy CPU emitter; native GPU unchanged and unmeasured."
+  },
+  "mf1_compiler_configuration": {
+    "XLA_FLAGS": "--xla_cpu_use_fusion_emitters=false",
+    "effect": "CPU compiler diagnostic configuration; same production model functions and inputs",
+    "source": "launcher command Q38 in EXPERIMENTS.tsv; no product compiler-default change",
+    "PBL_surface_bounds": "2PASS independent input-ULP enclosure with this compiler setting",
+    "MF_byte_regression": "FAIL vs default-emitter frozen artifact, expected different compiled result; no regression fixture overwritten",
+    "MF_pristine_compiler_spread": "raw FAIL136cells, compiler_rounding_legacy_cpu.json; standing disclosure policy, no fitted floor or D6 change"
+  },
+  "composition_identity": {
+    "old": {
+      "source_commit": "67502f97fc7ffcfd697836094a4abe8ff122b570",
+      "platform": "cpu",
+      "gpu_executed": false,
+      "cache": "NONE",
+      "input": "<USER_HOME>/wrf_gpu2_lanes/release-docs/RD11/cpu",
+      "namelist_sha256": "6ad2a2802655c0ea642ef0caf1a691b920beb38631cf88012176c3f8d5628522",
+      "steps": [],
+      "affinity": [
+        0
+      ],
+      "load_s": 24.626275687944144,
+      "resolved_work": {
+        "ra_lw": 4,
+        "ra_sw": 4,
+        "mp": 8,
+        "bl_pbl_physics": 4,
+        "sf_sfclay_physics": 4,
+        "mfshconv": 1,
+        "dt_s": 18.0,
+        "radiation_cadence_steps": 33,
+        "steps": 3
+      },
+      "initial_leaves_sha256": "27c07998e31fd48e0ebd3c5b1fc10a70eb3a684dcc36df00be33cf42a927df93",
+      "initial_leaf_count": 194,
+      "hlo_sha256": "f54dbd090b1ade06e841d3ed9f61fcb991f7c0e9918d0bef66be6953da8bb120",
+      "hlo_chars": 294298886,
+      "lower_s": 40.25606835400686
+    },
+    "final": {
+      "source_commit": "90a605f3cf6f9e6a98f123fcd2b5e62fdbc72049",
+      "platform": "cpu",
+      "gpu_executed": false,
+      "cache": "NONE",
+      "input": "<USER_HOME>/wrf_gpu2_lanes/release-docs/RD11/cpu",
+      "namelist_sha256": "6ad2a2802655c0ea642ef0caf1a691b920beb38631cf88012176c3f8d5628522",
+      "steps": [],
+      "affinity": [
+        1
+      ],
+      "load_s": 80.44053869717754,
+      "resolved_work": {
+        "ra_lw": 4,
+        "ra_sw": 4,
+        "mp": 8,
+        "bl_pbl_physics": 4,
+        "sf_sfclay_physics": 4,
+        "mfshconv": 1,
+        "dt_s": 18.0,
+        "radiation_cadence_steps": 33,
+        "steps": 3
+      },
+      "initial_leaves_sha256": "27c07998e31fd48e0ebd3c5b1fc10a70eb3a684dcc36df00be33cf42a927df93",
+      "initial_leaf_count": 194,
+      "hlo_sha256": "f54dbd090b1ade06e841d3ed9f61fcb991f7c0e9918d0bef66be6953da8bb120",
+      "hlo_chars": 294298886,
+      "lower_s": 111.54453233093955
+    },
+    "verdict": "EXACT fullCPUStableHLO and194initialleaves; reuse completed MF1 numerics on90a605f3c"
+  }
+}

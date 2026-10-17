@@ -1,0 +1,74 @@
+{
+  "status": "READY-FOR-CRITIC FALLBACK repair; SAME critic re-review",
+  "source_commit": "e0e54811b1d9b3c41e3071b6f7b16c78c0c7443f",
+  "supersedes_original_readiness": true,
+  "original_packet_sha256": "81514e09046d02cdca560a143001ef6fe35bfecd6f26ce39711d4d0fc019619d",
+  "critic_FIX_commit": "5e910baf73db42830a982494dd805d06499dab0b",
+  "manager_scope": "CLI strict pre-JAX; API/nested/resume refuses mp11 on any domain before device query/prefetch/allocation/compile; JAX import alone acceptable in API context.",
+  "fixes": [
+    "Public/private nested, daily and direct loaders admit every input/domain before initialization; batch config/environment dirs admitted before loading first model; CPU checks no-op.",
+    "CLI case options follow LAST occurrence including equals forms; abbreviations explicitly refused before JAX on GPU, CPU spelling semantics unchanged.",
+    "Explicit safe namelist cannot conceal mp11 in actual case or ensemble inputs."
+  ],
+  "fresh_shared": {
+    "passed": 345,
+    "failed": 0,
+    "errors": 0,
+    "skips": [
+      {
+        "node": "tests.test_v014_noahmp_nested_pipeline::test_real_canary_case_selects_noahmp_on_both_domains",
+        "message": "real wrf_l2 corpus not present on this box"
+      }
+    ]
+  },
+  "new_mutants": {
+    "FX03-api.xml": {
+      "genuine_assertion_failures": 14,
+      "healthy_passes": 2,
+      "errors": 0,
+      "initialization_sentinel_failures": 10,
+      "CAM_message_assertions": 4
+    },
+    "FX05-first-final.xml": {
+      "genuine_assertion_failures": 4,
+      "healthy_passes": 2,
+      "errors": 0,
+      "initialization_sentinel_failures": 0,
+      "CAM_message_assertions": 0
+    },
+    "FX03-abbreviation.xml": {
+      "genuine_assertion_failures": 4,
+      "healthy_passes": 2,
+      "errors": 0,
+      "initialization_sentinel_failures": 0,
+      "CAM_message_assertions": 0
+    }
+  },
+  "default_hashes": {
+    "FX06-swiss.json": "f672a5739cb96e388b6b7a40ef80337bf81bdc14ef15268f3476e09d79fe055d",
+    "FX07-prod.json": "6fc715a2bd630934c4cf0f94427df19a527cbf429011c9ba5efe4d712744d27b"
+  },
+  "reuse": "Original353 shared/physics passes and original12 selection mutant kills retained; selection_errors AST BYTE; model sources BYTE and pipeline AST exact after removing admission-only guards. API+abbreviation mutants from8b37 reused on finale0 by exact config/pipeline/harness/selectedtest AST proof FX08. First-option mutant rerun after strengthening comparator.",
+  "receipts_sha256": {
+    "FX01.log": "f240a34c13d55367e61e40c5ee66842ad83ee7b2962d2fafba4e1eba8b549480",
+    "FX01.xml": "e11d54015fecaf135efa5d529e16e76ca697c3956cc9cd7bed1987121f90709f",
+    "FX03-abbreviation.log": "9a03f28f753ffee2cbeaa688a2e6d02292183f80a52e5c605ba1f9a56e2792ae",
+    "FX03-abbreviation.xml": "24d55cd4c2b41c7edbeba3c8fa4bfda7096de8694343c194b91d109c1746f772",
+    "FX03-api.log": "4ccf5f8b50e065487e31700199801050c0a7343ef1cadc7ec25908e3d97908ec",
+    "FX03-api.xml": "d01caf82b0e51685b1f62bbc1402dd9e217c6c344d74629143e3ea535fd65054",
+    "FX03-first.log": "cb6aae674c9cf482964a7ce0626f48facba3d677d6802e8e5e13ae9ec544ce58",
+    "FX03-first.xml": "cc82edb7f25f35c6ce1b090e8086afd7bb7ebfbebbdb9ae2a9481b94711c21eb",
+    "FX04-shared.log": "f2d5777ee6b178500840716847507a2289131fbe3d71485740025cbe185294c6",
+    "FX04-shared.xml": "65fca9d40b7a576e4f4806ea7e7db35e2e03c5a34225be12d533dc6d5f9c9bdd",
+    "FX05-first-final.log": "6927b0af8a446442eba7f46abd9f32ca572f08f3b6fce458f9be26cdd78dbd66",
+    "FX05-first-final.xml": "c3e22b5d2eaad5f543eaddd8248847fa8e539d435a548dc6f378943fd057e141",
+    "FX06-swiss.json": "4f04cdd4c71efd00448a6d88ac7aeed712d30522fb584a340b97df9edf9d53ca",
+    "FX06-swiss.log": "9101484fb8ddbb8e506a845c2cbf28ac988f293164a5502db049a2fb914c88aa",
+    "FX07-prod.json": "65f7bdf5fd2ebc0e972cabe9b319cf28179a840192b46fad9697596404b04269",
+    "FX07-prod.log": "7cf14d3019dd560d97ecaa336ff52620248e503a390655a46eeaf2db3a9d6ece",
+    "FX08-source-reuse.json": "394e68d2ab9d76fe855b6aca5af06119dac37dd275fbb5fbf658d76389fcf53b"
+  },
+  "performance": "[I]0 added model-step ops/launches/temps/transfers or default compile graph changes; fresh exact jaxpr hashes. Only host startup namelist admission reads on GPU target; CPU returns before IO. Reject before unnecessary CUDA/prefetch allocation. No new baked input/key/asset. No GPU speed/VRAM/fidelity correction claim.",
+  "merge_condition": "Manager selects repaired FALLBACK versus t-rainnc/t-cammgws fix; same critic must re-review.",
+  "cleanup": "Snapshot/pytest cleanup after last dependent arm; persistent cache OFF throughout."
+}

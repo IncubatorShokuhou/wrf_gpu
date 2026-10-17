@@ -65,7 +65,7 @@ class PrecipHeat(NamedTuple):
     cmc: jnp.ndarray      # total canopy water (canliq + canice) [mm]
 
 
-def _atm_partition(forcing):
+def _atm_partition(forcing, opt_snf=1):
     """ATM (opt_snf=1) precip partition: returns (prcp, rain, snow, fp, fpice, bdfall).
 
     PRCP = PRCPCONV + PRCPNONC (PRCPSHCV = 0 in scope). All [mm/s].
@@ -78,6 +78,8 @@ def _atm_partition(forcing):
     # QPRECC/QPRECL (opt_snf != 4): 10%/90% convective/large-scale split (:1169-1170).
     qprecc = 0.10 * prcp
     qprecl = 0.90 * prcp
+    if opt_snf == 4:
+        qprecc, qprecl = prcpconv, prcpnonc
 
     # FP — fractional area receiving precip (Niu05, :1175-1177).
     denom = 10.0 * qprecc + qprecl
@@ -96,6 +98,37 @@ def _atm_partition(forcing):
 
     # Hedstrom-Pomeroy fresh-snow bulk density (:1216).
     bdfall = jnp.minimum(120.0, 67.92 + 51.25 * jnp.exp((sfctmp - TFRZ) / 2.59))
+    if opt_snf == 2:
+        # WRF adds REAL operands here; folding Python's sum rounds differently
+        # at the exact 275.36 K boundary.
+        threshold = jnp.asarray(TFRZ, real_dtype()) + jnp.asarray(2.2, real_dtype())
+        fpice = jnp.where(sfctmp >= threshold, jnp.asarray(0.0, real_dtype()), jnp.asarray(1.0, real_dtype()))
+    elif opt_snf == 3:
+        fpice = jnp.where(sfctmp >= TFRZ, jnp.asarray(0.0, real_dtype()), jnp.asarray(1.0, real_dtype()))
+    elif opt_snf == 4:
+        ps, pg, ph = (jnp.asarray(getattr(forcing, name), real_dtype())
+                      for name in ("prcpsnow", "prcpgrpl", "prcphail"))
+        frozen = ps + pg + ph
+        active = (prcpnonc > 0.0) & (frozen > 0.0)
+        denominator = jnp.where(frozen > 0.0, frozen, 1.0)
+        fpice = jnp.where(active, jnp.maximum(0.0, jnp.minimum(1.0,
+                          frozen / jnp.where(prcpnonc > 0.0, prcpnonc, 1.0))), 0.0)
+        density = bdfall * (ps / denominator) + 500.0 * (pg / denominator) + 917.0 * (ph / denominator)
+        bdfall = jnp.where(active, density, bdfall)
+    elif opt_snf == 5:
+        # WRF ATM consumes specific humidity (noahmpdrv converts QV beforehand).
+        prs = jnp.asarray(forcing.sfcprs, real_dtype())
+        qa = jnp.asarray(forcing.qair, real_dtype())
+        eair = qa * prs / (0.622 + 0.378 * qa)
+        latent = jnp.where(sfctmp > TFRZ, 2.5104e6, 2.8440e6)
+        gamma = 1004.64 * prs / (0.622 * latent)
+        twet = jnp.clip(sfctmp - TFRZ, -50.0, 50.0) - 5.0
+        for _ in range(10):
+            esat = 610.8 * jnp.exp((17.27 * twet) / (237.3 + twet))
+            twet = twet - (esat - eair) / gamma
+        fpice = 1.0 / (1.0 + 6.99e-5 * jnp.exp(2.0 * (twet + 3.97)))
+    elif opt_snf != 1:
+        raise ValueError("Noah-MP opt_snf must be 1, 2, 3, 4 or 5")
 
     rain = prcp * (1.0 - fpice)
     snow = prcp * fpice
@@ -109,6 +142,7 @@ def noahmp_precip_heat(
     ch2op: jnp.ndarray,
     dt: float,
     is_lake: jnp.ndarray | None = None,
+    *, opt_snf: int = 1, partition=None,
 ) -> tuple[PrecipHeat, jnp.ndarray, jnp.ndarray]:
     """ATM partition + PRECIP_HEAT (module_sf_noahmplsm.F:1362-1556), vectorised.
 
@@ -139,7 +173,7 @@ def noahmp_precip_heat(
     ch2op = jnp.broadcast_to(jnp.asarray(ch2op, dtype=real_dtype()), fveg.shape)
     dt_a = jnp.asarray(dt, dtype=real_dtype())
 
-    _prcp, rain, snow, fp, fpice, bdfall = _atm_partition(forcing)
+    _prcp, rain, snow, fp, fpice, bdfall = (_atm_partition(forcing, opt_snf) if partition is None else partition)
 
     has_canopy = (elai + esai) > 0.0
 

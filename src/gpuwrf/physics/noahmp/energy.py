@@ -505,7 +505,7 @@ def _full_dz(land_state):
 def _vege_flux(land_state, forcing, radd, phen, p, df_top, stc_top, dz_top,
                zlvl, zpd, z0m, z0mg, hcan, ur, emv, emg, gammav, gammag, rsurf,
                rhsur, latheav, dt, o2air, co2air, foln, btran, fsno,
-               pahv, pahg, *, history=False):
+               pahv, pahg, canopy=None, *, history=False, opt_stc=1, opt_sfc=1):
     """VEGE_FLUX (:3578-4170): TV / TAH-EAH / TG Newton-Raphson, vectorized.
 
     Newton loop1 uses WRF's finite-iteration semantics (:4075-4080): once
@@ -580,6 +580,7 @@ def _vege_flux(land_state, forcing, radd, phen, p, df_top, stc_top, dz_top,
              canhs, liter, active)
     hist = {}  # history only: PSNSUN/PSNSHA of the ITER==1 STOMATA call
     carry = (carry, (jnp.zeros_like(tah),) if history else ())  # + CHLEAF = the last sweep's CVH (not frozen)
+    if opt_sfc==2:carry=(carry[0],(*carry[1],jnp.zeros_like(tah)))
 
     def sweep(it, carry):
         # ``it``: Python int (unrolled XLA loop) or traced (column kernel sweeps 2..NITERC);
@@ -594,17 +595,27 @@ def _vege_flux(land_state, forcing, radd, phen, p, df_top, stc_top, dz_top,
                 rssun, rssha, cah, irc, shc, evc, tr, tah, eah, tv, h, hg, qsfc,
                 canhs)
 
-        cm, ch, fv, moz, mozsgn, fm, fh, fm2, fh2 = sfcdif1(
-            it_s, sfctmp, rhoair, h, qair, zlvl, zpd, z0m, z0h, ur,
-            moz, mozsgn, fm, fh, fm2, fh2, fv,
-        )
+        if opt_sfc==2:
+            from gpuwrf.physics.noahmp.canopy_options import sfcdif2
+            cm,ch,moz,wstar,fv=sfcdif2(it_s,z0m,tah,sfctmp,ur,zlvl,cm,ch,moz,carry[1][-1],fv,canopy[1])
+            cm,ch=cm/ur,ch/ur  # VEGE_FLUX:3902-3906
+        else:
+            cm, ch, fv, moz, mozsgn, fm, fh, fm2, fh2 = sfcdif1(
+                it_s, sfctmp, rhoair, h, qair, zlvl, zpd, z0m, z0h, ur,
+                moz, mozsgn, fm, fh, fm2, fh2, fv,
+            )
         rahc = jnp.maximum(1.0, 1.0 / (ch * ur))
         rahg, rawg, rb, fhg = ragrb(
             it_s, vaie, rhoair, hg, tah, zpd, z0mg, z0hg, hcan, uc, z0h, fv, p.cwpvt, fhg, p.dleaf
         )
         estv, destv = _es_dest(tv)
         if first:
-            if history:
+            if canopy is not None and canopy[0] is not None:
+                from gpuwrf.physics.noahmp.canopy_options import jarvis_resistance
+                rssun,psnsun0=jarvis_resistance(parsun,tv,btran,eah,sfcprs,fveg,*canopy[0])
+                rssha,psnsha0=jarvis_resistance(parsha,tv,btran,eah,sfcprs,fveg,*canopy[0])
+                if history:hist.update(psnsun=psnsun0,psnsha=psnsha0)
+            elif history:
                 rssun, hist["psnsun"] = stomata(parsun, foln, tv, estv, eah, sfctmp, sfcprs, fveg,
                                        o2air, co2air, igs, rb, btran, p, history=True)
                 rssha, hist["psnsha"] = stomata(parsha, foln, tv, estv, eah, sfctmp, sfcprs, fveg,
@@ -675,9 +686,11 @@ def _vege_flux(land_state, forcing, radd, phen, p, df_top, stc_top, dz_top,
         (cm, ch, fv, moz, mozsgn, fm, fh, fm2, fh2, fhg, rahg, rawg, rb,
          rssun, rssha, cah, irc, shc, evc, tr, tah, eah, tv, h, hg, qsfc,
          canhs) = frozen
+        aux=(cvh,) if history else ()
+        if opt_sfc==2:aux=(*aux,jnp.where(keep,wstar,carry[1][-1]))
         return ((cm, ch, fv, moz, mozsgn, fm, fh, fm2, fh2, fhg, rahg, rawg, rb,
                  rssun, rssha, cah, irc, shc, evc, tr, tah, eah, tv, h, hg, qsfc,
-                 canhs, liter, active), (cvh,) if history else ())
+                 canhs, liter, active), aux)
 
     if in_column_kernel():  # one sweep body inside the Triton kernel (#14)
         carry = lax.fori_loop(2, NITERC + 1, sweep, sweep(1, carry))
@@ -715,7 +728,9 @@ def _vege_flux(land_state, forcing, radd, phen, p, df_top, stc_top, dz_top,
     # snow on ground & TG>TFRZ: reset TG=TFRZ, re-evaluate ground fluxes (opt_stc=1,
     # :4125-4133). estg/destg held at the final loop2 ESTG (TG before clamp).
     snow_clamp = (snowh > 0.05) & (tg > TFRZ)
-    tg_c = jnp.where(snow_clamp, TFRZ, tg)
+    if opt_stc==2:snow_clamp=jnp.zeros_like(snow_clamp)
+    target=(1.-fsno)*tg+fsno*TFRZ if opt_stc==3 else TFRZ
+    tg_c = jnp.where(snow_clamp, target, tg)
     irg_c = cir_g * tg_c ** 4 - emg * (1.0 - emv) * lwdn - emg * emv * SB * tv ** 4
     shg_c = csh_g * (tg_c - tah)
     evg_c = cev_g * (estg * rhsur - eah)
@@ -765,7 +780,7 @@ def gammag_of(land_state, forcing):
 
 
 def _bare_flux(land_state, forcing, radd, p, df_top, stc_top, dz_top, zlvl,
-               zpdg, z0mg, ur, emg, gammag, rsurf, rhsur, pahb):
+               zpdg, z0mg, ur, emg, gammag, rsurf, rhsur, pahb, czil=None, *, opt_stc=1, fsno=None, opt_sfc=1):
     """BARE_FLUX (:4174-4479): bare-tile ground (TG) Newton-Raphson, vectorized.
 
     Recomputes and returns QSFC from the bare-ground saturation path
@@ -797,15 +812,25 @@ def _bare_flux(land_state, forcing, radd, p, df_top, stc_top, dz_top, zlvl,
     irb = shb = evb = ghb = jnp.zeros_like(tgb)
     ehb = jnp.zeros_like(tgb)
     cm = land_state.cm
+    if opt_sfc==2:
+        ch=land_state.ch
+        wstar=jnp.zeros_like(tgb)
     qsfc = land_state.qsfc
     estg = jnp.zeros_like(tgb)
     csh = cev = jnp.zeros_like(tgb)
 
     for it in range(1, NITERB + 1):
-        cm, ch, fv, moz, mozsgn, fm, fh, fm2, fh2 = sfcdif1(
-            it, sfctmp, rhoair, h, qair, zlvl, zpdg, z0m, z0h, ur,
-            moz, mozsgn, fm, fh, fm2, fh2, fv,
-        )
+        if opt_sfc==2:
+            from gpuwrf.physics.noahmp.canopy_options import sfcdif2
+            cm,ch,moz,wstar,fv=sfcdif2(it,z0m,tgb,sfctmp,ur,zlvl,cm,ch,moz,wstar,fv,czil)
+            cm,ch=cm/ur,ch/ur
+            cm=jnp.where(snowh>0.,jnp.minimum(.01,cm),cm)
+            ch=jnp.where(snowh>0.,jnp.minimum(.01,ch),ch)
+        else:
+            cm, ch, fv, moz, mozsgn, fm, fh, fm2, fh2 = sfcdif1(
+                it, sfctmp, rhoair, h, qair, zlvl, zpdg, z0m, z0h, ur,
+                moz, mozsgn, fm, fh, fm2, fh2, fv,
+            )
         rahb = jnp.maximum(1.0, 1.0 / (ch * ur))
         rawb = rahb
         ehb = 1.0 / rahb
@@ -833,7 +858,9 @@ def _bare_flux(land_state, forcing, radd, p, df_top, stc_top, dz_top, zlvl,
     # snow on ground & TGB>TFRZ: reset TGB=TFRZ, re-evaluate ground fluxes
     # (opt_stc=1, :4444-4451). ESTG held at the final loop3 saturation value.
     snow_clamp = (snowh > 0.05) & (tgb > TFRZ)
-    tgb_c = jnp.where(snow_clamp, TFRZ, tgb)
+    if opt_stc==2:snow_clamp=jnp.zeros_like(snow_clamp)
+    target=(1.-fsno)*tgb+fsno*TFRZ if opt_stc==3 else TFRZ
+    tgb_c = jnp.where(snow_clamp, target, tgb)
     # csh/cev held at the final loop3 values (RAHB/RAWB from the last sweep).
     irb_c = cir * tgb_c ** 4 - emg * lwdn
     shb_c = csh * (tgb_c - sfctmp)
@@ -889,6 +916,7 @@ def noahmp_energy_canopy(
     pahb_kw: jnp.ndarray | float = 0.0,
     isurban: int | None = None,
     history: bool = False,
+    options=None,
 ) -> tuple[NoahMPLandState, NoahMPEnergyFluxes, NoahMPEtFluxes]:
     """Canopy/ground surface-energy balance — THE HFX FIX.
 
@@ -975,8 +1003,12 @@ def noahmp_energy_canopy(
     btrani = jnp.zeros((NSOIL,) + fveg.shape, dtype=real_dtype())
     for iz in range(nroot):
         active_root = (iz + 1) <= nroot_cell
-        gx = (sh2o[iz] - p.smcwlt[iz]) / (p.smcref[iz] - p.smcwlt[iz])
-        gx = jnp.minimum(1.0, jnp.maximum(0.0, gx))
+        if options is None or options.opt_btr==1:
+            gx = (sh2o[iz] - p.smcwlt[iz]) / (p.smcref[iz] - p.smcwlt[iz])
+            gx = jnp.minimum(1.0, jnp.maximum(0.0, gx))
+        else:
+            from gpuwrf.physics.noahmp.surface_options import soil_moisture_stress
+            gx=soil_moisture_stress(sh2o[iz],p.smcwlt[iz],p.smcref[iz],p.smcmax[iz],p.psisat[iz],p.bexp[iz],opt_btr=options.opt_btr)
         bi = jnp.maximum(MPE, dz_soil[iz] / root_depth * gx)
         bi = jnp.where(active_root, bi, 0.0)
         btrani = btrani.at[iz].set(bi)
@@ -991,9 +1023,14 @@ def noahmp_energy_canopy(
     smcmax1 = p.smcmax[0]
     bexp1 = p.bexp[0]
     psisat1 = p.psisat[0]
-    l_rsurf = (-zsoil[0]) * (jnp.exp((1.0 - jnp.minimum(1.0, sh2o1 / smcmax1)) ** p.rsurf_exp) - 1.0) / (2.71828 - 1.0)
-    d_rsurf = 2.2e-5 * smcmax1 * smcmax1 * (1.0 - p.smcwlt[0] / smcmax1) ** (2.0 + 3.0 / bexp1)
-    rsurf = l_rsurf / d_rsurf
+    if options is None or options.opt_rsf==1:
+        l_rsurf = (-zsoil[0]) * (jnp.exp((1.0 - jnp.minimum(1.0, sh2o1 / smcmax1)) ** p.rsurf_exp) - 1.0) / (2.71828 - 1.0)
+        d_rsurf = 2.2e-5 * smcmax1 * smcmax1 * (1.0 - p.smcwlt[0] / smcmax1) ** (2.0 + 3.0 / bexp1)
+        rsurf = l_rsurf / d_rsurf
+    else:
+        from gpuwrf.physics.noahmp.surface_options import evaporation_resistance
+        rsurf=evaporation_resistance(sh2o1,smcmax1,p.smcwlt[0],bexp1,zsoil[0],p.rsurf_exp,fsno,
+                                     opt_rsf=options.opt_rsf,rsurf_snow=options.rsurf_snow)
     rsurf = jnp.where((sh2o1 < 0.01) & (land_state.snowh == 0.0), 1.0e6, rsurf)
     # urban impervious surface (:2204-2206): RSURF=1e6 when snow-free
     rsurf = jnp.where(urban & (land_state.snowh == 0.0), 1.0e6, rsurf)
@@ -1012,17 +1049,34 @@ def noahmp_energy_canopy(
                  pahv, pahg)
     bare_args = (land_state, forcing, radd, p, df_top, stc_top, dz_top, zlvl,
                  zpdg, z0mg, ur, emg, gammag, rsurf, rhsur, pahb)
+    if options is not None and (options.opt_crs!=1 or options.opt_sfc!=1):
+        category=jnp.asarray(static.ivgtyp,jnp.int32)
+        def gather(key):
+            value=jnp.asarray(getattr(static.parameters,key),real_dtype())
+            return value[category] if value.ndim==1 else value
+        jarvis=tuple(gather(key) for key in ("rsmin","rsmax","rgl","hs","topt")) if options.opt_crs==2 else None
+        czil=gather("czil") if options.opt_sfc==2 else None
+        vege_args=(*vege_args,(jarvis,czil))
+        if options.opt_sfc==2:bare_args=(*bare_args,czil)
+    stc_kw={"opt_stc":options.opt_stc} if options is not None and options.opt_stc!=1 else {}
+    bare_kw={**stc_kw,"fsno":fsno} if stc_kw else {}
+    if options is not None and options.opt_sfc!=1:
+        stc_kw["opt_sfc"]=options.opt_sfc
+        bare_kw["opt_sfc"]=options.opt_sfc
     if columns_enabled():  # GPUWRF_NOAHMP_COLUMN_KERNELS: each Newton loop = one column kernel (#14)
         def canopy(va, ba):
-            bare = _bare_flux(*ba)
+            # FSNO already rides the vegetated column operands (slot26).
+            # Closing over the full grid gives bare STC3 the wrong shape.
+            native_bare_kw={**bare_kw,'fsno':va[26]} if 'fsno' in bare_kw else bare_kw
+            bare = _bare_flux(*ba,**native_bare_kw)
             if not history:  # history-only outputs are not stored by the kernel
                 bare = {k: v for k, v in bare.items() if k != "chb2"}
-            return _vege_flux(*va, history=history), bare
+            return _vege_flux(*va, history=history,**stc_kw), bare
         vf, bf = column_call(canopy, (vege_args, bare_args), grid_shape=jnp.shape(land_state.tv),
                              name="b_core_noah_canopy_flux")
     else:
-        vf = _vege_flux(*vege_args, history=history)
-        bf = _bare_flux(*bare_args)
+        vf = _vege_flux(*vege_args, history=history,**stc_kw)
+        bf = _bare_flux(*bare_args,**bare_kw)
 
     # FVEG-weighted tile sum (ENERGY :2285-2325)
     use_veg = veg & (fveg > 0.0)
@@ -1104,6 +1158,7 @@ def noahmp_energy_canopy(
         stc_new = noahmp_soil_thermo(
             stc, df_full, hcpct_full, ssoil, static.tbot, land_state.zsnso,
             dzsnso, land_state.isnow, dt,
+            **({"opt_tbot":options.opt_tbot,"opt_stc":options.opt_stc} if options is not None else {}),
         )
         tslb_new = stc_new[NSNOW:]
         # TSNOSOI updates STC(ISNOW+1:NSOIL) incl. the active snow layers (:5258-5371);
@@ -1113,6 +1168,14 @@ def noahmp_energy_canopy(
         tsno_new = jnp.where(snow_active, stc_new[:NSNOW], land_state.tsno)
     except NotImplementedError:
         pass
+
+    if options is not None and options.opt_stc==2:
+        # ENERGY:2373-2387, AFTER TSNOSOI; fluxes and TRAD retain their solved values.
+        stc2_clamp=(land_state.snowh>.05)&(tg>TFRZ)
+        tg=jnp.where(stc2_clamp,TFRZ,tg)
+        if history:
+            vf=dict(vf,tg=jnp.where(stc2_clamp,TFRZ,vf["tg"]))
+            bf=dict(bf,tgb=jnp.where(stc2_clamp,TFRZ,bf["tgb"]))
 
     ls = land_state.replace(
         tv=tv, tg=tg, tah=tah, eah=eah, tslb=tslb_new, tsno=tsno_new,
@@ -1139,6 +1202,8 @@ def noahmp_energy_canopy(
             "RSSHA": jnp.where(use_veg, vf["rssha"], 0),
             "TGV": jnp.where(use_veg, vf["tg"], bf["tgb"]), "TGB": bf["tgb"],
             "PAH": pah, "PAHV": pahv, "PAHG": pahg, "PAHB": pahb,
+            **({"BGAP":rad_extras["bgap"],"WGAP":rad_extras["wgap"]} if "bgap" in rad_extras else {}),
+            **({"BTRAN":btran} if options is not None and (options.dveg in (2,5,6) or options.opt_crop==1) else {}),
         }) if history else None),
     )
     et = NoahMPEtFluxes(

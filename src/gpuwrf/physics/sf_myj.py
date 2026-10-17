@@ -35,6 +35,7 @@ def myjsfc_columns(
     u, v, temperature, theta, qv, qc, p_mid, dz, q2,
     *, tsk, xland, z0base, psfc, znt, ustar, mavail,
     qsfc, thz0, qz0, uz0=0.0, vz0=0.0, pblh=1000.0, dt=60.0,
+    itimestep=None, akhs=None, akms=None, wrf_real=False, ht=None,
 ) -> dict:
     """``jax.vmap``-batched Janjic Eta surface layer over ``(ncol, nz)`` columns.
 
@@ -42,30 +43,42 @@ def myjsfc_columns(
     Surface scalars are ``(ncol,)`` (or broadcastable scalars). ``q2`` is TKE
     (m^2/s^2); MYJSFC converts to ``2*q2`` internally. Returns the batched SFCDIF
     output dict (each leaf ``(ncol,)``), identical keys to ``myjsfc_column``.
+    ``itimestep``/``akhs``/``akms`` (WRF ITIMESTEP and INOUT AKHS/AKMS memory) are
+    optional; omitted they keep the legacy cold NTSD>1 call. ``wrf_real`` evaluates the
+    WRF REAL routine in REAL with the PSIM/PSIH tables and ZTMAX/DZETA exactly as the REAL
+    MYJSFCINIT builds them (operational sf=2 caller); default keeps the frozen fp64 path.
     """
 
     ncol = u.shape[0]
-    f1 = lambda a: jnp.broadcast_to(jnp.asarray(a, jnp.float64).reshape(-1), (ncol,))
+    dt = jnp.float32 if wrf_real else jnp.float64
+    f1 = lambda a: jnp.broadcast_to(jnp.asarray(a, dt).reshape(-1), (ncol,))
+
+    memory = {}
+    if itimestep is not None:
+        memory = dict(itimestep=f1(itimestep), akhs=f1(0.0 if akhs is None else akhs),
+                      akms=f1(0.0 if akms is None else akms))
+        if ht is not None:
+            memory['ht'] = f1(ht)
 
     def _one(u_c, v_c, t_c, th_c, qv_c, qc_c, pmid_c, dz_c, q2_c,
              tsk_c, xland_c, z0base_c, psfc_c, znt_c, ust_c, mav_c,
-             qsfc_c, thz0_c, qz0_c, uz0_c, vz0_c, pblh_c):
+             qsfc_c, thz0_c, qz0_c, uz0_c, vz0_c, pblh_c, mem):
         return myjsfc_column(
             u=u_c, v=v_c, temperature=t_c, theta=th_c, qv=qv_c, qc=qc_c,
             p_mid=pmid_c, dz=dz_c, q2=q2_c, tsk=tsk_c, xland=xland_c,
             z0base=z0base_c, psfc=psfc_c, znt=znt_c, ustar=ust_c, mavail=mav_c,
             dt=dt, qsfc=qsfc_c, thz0=thz0_c, qz0=qz0_c, uz0=uz0_c, vz0=vz0_c,
-            pblh=pblh_c,
+            pblh=pblh_c, wrf_real=wrf_real, **mem,
         )
 
     return jax.vmap(_one)(
-        jnp.asarray(u, jnp.float64), jnp.asarray(v, jnp.float64),
-        jnp.asarray(temperature, jnp.float64), jnp.asarray(theta, jnp.float64),
-        jnp.asarray(qv, jnp.float64), jnp.asarray(qc, jnp.float64),
-        jnp.asarray(p_mid, jnp.float64), jnp.asarray(dz, jnp.float64),
-        jnp.asarray(q2, jnp.float64),
+        jnp.asarray(u, dt), jnp.asarray(v, dt),
+        jnp.asarray(temperature, dt), jnp.asarray(theta, dt),
+        jnp.asarray(qv, dt), jnp.asarray(qc, dt),
+        jnp.asarray(p_mid, dt), jnp.asarray(dz, dt),
+        jnp.asarray(q2, dt),
         f1(tsk), f1(xland), f1(z0base), f1(psfc), f1(znt), f1(ustar), f1(mavail),
-        f1(qsfc), f1(thz0), f1(qz0), f1(uz0), f1(vz0), f1(pblh),
+        f1(qsfc), f1(thz0), f1(qz0), f1(uz0), f1(vz0), f1(pblh), memory,
     )
 
 

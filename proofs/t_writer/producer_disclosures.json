@@ -1,0 +1,84 @@
+[
+  {
+    "mp": [
+      19,
+      21
+    ],
+    "fields": [
+      "REFL_10CM"
+    ],
+    "disposition": "Not computed in v0.4.0: original one-moment NSSL radar/intercept branch is unported. KNOWN_ISSUES; v0.4.1 follow-up. REFD_MAX NWP0 is separately qualified as an inactive constant.",
+    "evidence": "physics/nssl2mom/driver.py:nssl2mom_column"
+  },
+  {
+    "mp": [
+      50,
+      51,
+      52,
+      53,
+      55
+    ],
+    "fields": [
+      "REFL_10CM"
+    ],
+    "disposition": "Existing P3/Jensen column radar output is not retained by this candidate. Outside t-icediag contract; manager disposition pending. No synthesized radar output.",
+    "evidence": "manager 19:05Z map gap; t-icediag scope ACK21:27Z"
+  },
+  {
+    "mp": [
+      50,
+      51,
+      52,
+      53,
+      55
+    ],
+    "fields": [
+      "V_ICE",
+      "D_ICE",
+      "RHO_ICE",
+      "PHI_ICE",
+      "V_ICE2",
+      "D_ICE2",
+      "RHO_ICE2",
+      "PHI_ICE2",
+      "V_ICE3",
+      "D_ICE3",
+      "RHO_ICE3",
+      "PHI_ICE3"
+    ],
+    "disposition": "Class C: t-icediag owns existing particle diagnostic retention; not part of this writer-fields candidate. Missing fields remain explicit until its qualified merge.",
+    "evidence": "physics/p3/adapter.py:p3_adapter; physics/jensen_ishmael/adapter.py:jensen_adapter"
+  },
+  {
+    "mp": [
+      28,
+      38
+    ],
+    "fields": [
+      "QNBCA",
+      "TAOD5502D"
+    ],
+    "disposition": "Not computed in v0.4.0; No retained black-carbon number / 550 nm AOD history source for this producer configuration. Black carbon requires the relevant aerosol option. Explicit omission. See KNOWN_ISSUES; v0.4.1 follow-up.",
+    "evidence": "io/microphysics_history.py:UNPROVIDED_FIELDS; coupling/thompson_hail_adapter.py"
+  },
+  {
+    "mp": [
+      40
+    ],
+    "fields": [
+      "MSKF_REFL_10CM"
+    ],
+    "disposition": "Not computed in v0.4.0; KNOWN_ISSUES/v0.4.1 follow-up. Inactive CCN/EFCG/EFIG/EFSG/WACT are separately all-frame-qualified constants.",
+    "evidence": "physics/microphysics_morrison_aero.py:morrison_aero_run; io/microphysics_history.py:UNPROVIDED_FIELDS[40]"
+  },
+  {
+    "fields": [
+      "EP_PV_URB3D",
+      "DRAINGR_URB3D",
+      "QGR_URB4D",
+      "TGR_URB4D"
+    ],
+    "disposition": "Not computed in v0.4.0; The configured operational BEM producer disables photovoltaic / green-roof branches and does not compute these values. Explicit omission. See KNOWN_ISSUES; v0.4.1 follow-up.",
+    "evidence": "physics/urban_bem_model.py"
+  }
+]

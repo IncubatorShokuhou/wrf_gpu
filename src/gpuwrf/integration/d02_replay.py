@@ -1647,6 +1647,7 @@ def _wrf_live_nest_start_domain_perturb_init(
     base_mub: Any | None = None,
     base_phb: Any | None = None,
     child_opens_at_start: bool = False,
+    press_adjust: bool = True,
 ) -> tuple[jax.Array, jax.Array, jax.Array, dict[str, Any]]:
     """WRF live-nest ``start_domain_em`` perturbation-state initialization.
 
@@ -1739,7 +1740,8 @@ def _wrf_live_nest_start_domain_perturb_init(
     # --- 2. press_adj column-mass correction (press_adj=T for the live nest) ---
     ht32 = np.asarray(jax.device_get(grid.terrain_height), dtype=np.float32)
     ht_fine32 = np.asarray(jax.device_get(ht_fine), dtype=np.float32)
-    mu_new = (mu32 + al[0] / (alt[0] * alb[0]) * _WRF32_G * (ht32 - ht_fine32)).astype(np.float32)
+    mu_new = ((mu32 + al[0] / (alt[0] * alb[0]) * _WRF32_G * (ht32 - ht_fine32)).astype(np.float32)
+              if press_adjust else mu32)
     if child_opens_at_start:
         # mediation_integrate.F med_nest_initial: parent%press_adj=.FALSE.; start_domain(parent).
         _al, _alt, p_new = al_alt_p(mu_new)
@@ -1846,6 +1848,10 @@ _WRFBDY_SCALAR_BOUNDARY_VARS: tuple[tuple[str, str], ...] = (
     ("qg", "QGRAUP"),
     ("Ni", "QNICE"),
     ("Nr", "QNRAIN"),
+    # Scalar dname_table preserves Registry spelling (gen_scalar_indices.c:184;
+    # inc/scalar_indices.inc), unlike the uppercased non-scalar writer names.
+    ("pek_adv","pek_adv"),("pep_adv","pep_adv"),
+    ("tke_adv","tke_adv"),("diss_adv","diss_adv"),("tpe_adv","tpe_adv"),
 )
 
 
@@ -2014,9 +2020,17 @@ def load_wrfbdy_boundary_leaves(
         out[:, :z_use] = coupled[:, :z_use] / safe
         return out
 
-    scalar_candidates = tuple(var for _field, var in _WRFBDY_SCALAR_BOUNDARY_VARS)
+    scalar_boundary_vars = _WRFBDY_SCALAR_BOUNDARY_VARS
+    from gpuwrf.io.namelist_binding import namelist_value
+    if int(namelist_value(run.namelist, "mp_physics", domain) or 8) == 56:
+        from gpuwrf.physics.ntu.registry import input_variables
+        scalar_boundary_vars += (("qh", "QHAIL"), ("Nc", "QNCLOUD"), ("Ns", "QNSNOW"),
+                                 ("Ng", "QNGRAUPEL"), ("Nh", "QNHAIL"))
+        # Scalar dnames preserve Registry spelling: NTU uses uppercase FI/AS/...
+        scalar_boundary_vars += tuple(input_variables().items())
+    scalar_candidates = tuple(var for _field, var in scalar_boundary_vars)
     scalar_vars = _available_wrfbdy_variables(bdy_path, scalar_candidates)
-    scalar_field_for_var = {var: field for field, var in _WRFBDY_SCALAR_BOUNDARY_VARS if var in scalar_vars}
+    scalar_field_for_var = {var: field for field, var in scalar_boundary_vars if var in scalar_vars}
 
     # Per-interval decode: read the boundary VALUE at each wrfbdy time level (the
     # _BX* base term IS the specified value at that interval start; WRF advances it
@@ -2167,6 +2181,7 @@ def build_replay_case(
     standalone: bool | None = None,
     load_lateral_boundaries: bool = True,
     live_nest_parent: ReplayCase | None = None,
+    live_nest_parent_scalar_state: State | None = None,
     live_nest_child_opens_at_start: bool = False,
 ) -> ReplayCase:
     """Load a replay case, sharing the native input handle during init only."""
@@ -2176,10 +2191,16 @@ def build_replay_case(
               if standalone is None else bool(standalone))
     scope = run.input_read_scope(domain) if native or not load_lateral_boundaries else nullcontext()
     with scope:
+        # Public source boundary (shares the input handle): QNSE on sea-ice input is
+        # refused before any model work; a replay IC comes from the first history file.
+        from gpuwrf.io.qnse_admission import refuse_qnse_sea_ice
+        refuse_qnse_sea_ice(run, domain, history_source=None if native or not load_lateral_boundaries
+                            else run.history_files(domain)[0])
         return _build_replay_case(
             run_dir, domain=domain, boundary_domain=boundary_domain,
             standalone=standalone, load_lateral_boundaries=load_lateral_boundaries,
             live_nest_parent=live_nest_parent,
+            live_nest_parent_scalar_state=live_nest_parent_scalar_state,
             live_nest_child_opens_at_start=live_nest_child_opens_at_start, _run=run,
         )
 
@@ -2192,6 +2213,7 @@ def _build_replay_case(
     standalone: bool | None = None,
     load_lateral_boundaries: bool = True,
     live_nest_parent: ReplayCase | None = None,
+    live_nest_parent_scalar_state: State | None = None,
     live_nest_child_opens_at_start: bool = False,
     _run: Gen2Run | None = None,
 ) -> ReplayCase:
@@ -2409,12 +2431,16 @@ def _build_replay_case(
         # start of a simulation whose input surface W is identically ~0
         # (real.exe wrfinput); a replay IC from wrfout already carries WRF's W
         # and closes the gate.  Previously only the live nest got it.
-        w_root, w_root_set, _w_root_input_max = _wrf_set_w_surface(
-            w_initial, u_initial, v_initial, grid=grid, metrics=metrics,
-        )
-        if w_root_set:
-            w_initial = jnp.asarray(w_root, dtype=jnp.asarray(w_initial).dtype)
-        _debug(f"root/standalone start_em set_w_surface applied={w_root_set}")
+        dfi_marker = run.path / "gpuwrf_dfi_applied.json"
+        dfi_launch = json.loads(dfi_marker.read_text()) if is_standalone and dfi_marker.is_file() else {}
+        dfl_launch = dfi_launch.get("dfi_opt") == 1 and dfi_launch.get("dfl_preserve_filtered_w", True)
+        if not dfl_launch:  # DFL launches after simulation start, retaining filtered W even on flat terrain.
+            w_root, w_root_set, _w_root_input_max = _wrf_set_w_surface(
+                w_initial, u_initial, v_initial, grid=grid, metrics=metrics,
+            )
+            if w_root_set:
+                w_initial = jnp.asarray(w_root, dtype=jnp.asarray(w_initial).dtype)
+            _debug(f"root/standalone start_em set_w_surface applied={w_root_set}")
     # WRF-faithful base potential temperature ``t0 + t_init``, recovered by
     # inverting the loaded discrete base state (PB/PHB/MUB) so the dycore's
     # recomputed base inverse density ``alb`` matches the discrete ``alb`` the
@@ -2437,6 +2463,33 @@ def _build_replay_case(
         )
         _debug("load_wrfbdy_boundary_leaves complete (standalone)")
 
+    # WDM7's hail mass is conditional in State.zeros; preserve supplied native
+    # input instead of letting later leaf materialization silently zero it.
+    from gpuwrf.io.namelist_binding import namelist_value
+    conditional_initial = {}
+    if namelist_value(run.namelist, "mp_physics", domain) == 26:
+        conditional_initial["qh"] = _optional_load_initial(
+            run, domain, "QHAIL", 0, jnp.zeros_like(state.qv), use_wrfinput=is_standalone,
+        )
+    selected_mp = int(namelist_value(run.namelist, "mp_physics", domain))
+    if selected_mp in (50, 51, 52, 53):
+        from gpuwrf.physics.p3.registry import input_variables
+        conditional_initial.update({name: _optional_load_initial(
+            run, domain, variable, 0, jnp.zeros_like(state.qv, dtype=jnp.float32),
+            use_wrfinput=is_standalone) for name, variable in input_variables(selected_mp).items()})
+    if selected_mp == 55:
+        from gpuwrf.physics.jensen_ishmael.registry import input_variables
+        conditional_initial.update({name:_optional_load_initial(
+            run,domain,variable,0,jnp.zeros_like(state.qv,dtype=jnp.float32),
+            use_wrfinput=is_standalone) for name,variable in input_variables().items()})
+
+    if selected_mp == 56:
+        from gpuwrf.physics.ntu.registry import input_variables
+        variables = {**input_variables(), "qh": "QHAIL", "Nh": "QNHAIL"}
+        conditional_initial.update({name: _optional_load_initial(
+            run, domain, variable, 0, jnp.zeros_like(state.qv, dtype=jnp.float32),
+            use_wrfinput=is_standalone) for name, variable in variables.items()})
+
     state = state.replace(
         u=u_initial,
         v=v_initial,
@@ -2452,12 +2505,14 @@ def _build_replay_case(
         qc=_optional_load_initial(run, domain, "QCLOUD", 0, jnp.zeros_like(state.qc), use_wrfinput=is_standalone),
         qr=_optional_load_initial(run, domain, "QRAIN", 0, jnp.zeros_like(state.qr), use_wrfinput=is_standalone),
         qi=_optional_load_initial(run, domain, "QICE", 0, jnp.zeros_like(state.qi), use_wrfinput=is_standalone),
-        qs=_optional_load_initial(run, domain, "QSNOW", 0, jnp.zeros_like(state.qs), use_wrfinput=is_standalone),
-        qg=_optional_load_initial(run, domain, "QGRAUP", 0, jnp.zeros_like(state.qg), use_wrfinput=is_standalone),
+        qs=(jnp.zeros_like(state.qs) if selected_mp in (50,51,52,53,55) else _optional_load_initial(run, domain, "QSNOW", 0, jnp.zeros_like(state.qs), use_wrfinput=is_standalone)),
+        qg=(jnp.zeros_like(state.qg) if selected_mp in (50,51,52,53,55) else _optional_load_initial(run, domain, "QGRAUP", 0, jnp.zeros_like(state.qg), use_wrfinput=is_standalone)),
         Ni=_optional_load_initial(run, domain, "QNICE", 0, jnp.zeros_like(state.Ni), use_wrfinput=is_standalone),
         Nr=_optional_load_initial(run, domain, "QNRAIN", 0, jnp.zeros_like(state.Nr), use_wrfinput=is_standalone),
-        Ns=jnp.zeros_like(state.Ns),
-        Ng=jnp.zeros_like(state.Ng),
+        Ns=_optional_load_initial(run, domain, "QNSNOW", 0, jnp.zeros_like(state.Ns), use_wrfinput=is_standalone),
+        Ng=_optional_load_initial(run, domain, "QNGRAUPEL", 0, jnp.zeros_like(state.Ng), use_wrfinput=is_standalone),
+        Nc=_optional_load_initial(run, domain, "QNCLOUD", 0, jnp.zeros_like(state.Nc), use_wrfinput=is_standalone),
+        Nn=_optional_load_initial(run, domain, "QNCCN", 0, jnp.zeros_like(state.Nn), use_wrfinput=is_standalone),
         qke=_optional_load_initial(run, domain, "QKE", 0, jnp.zeros_like(state.qke), use_wrfinput=is_standalone),
         t_skin=land.t_skin,
         soil_moisture=land.soil_moisture[0],
@@ -2466,18 +2521,36 @@ def _build_replay_case(
         mavail=land.mavail,
         roughness_m=land.roughness_m,
         lu_index=land.lu_index,
+        **conditional_initial,
         **boundary_leaves,
     )
     _debug("state.replace with initial fields complete")
+    # Registry 'd' extra species inherit the parent before input-stream
+    # overrides. Default mp=8 returns the same State without allocating leaves.
+    if is_standalone:
+        from gpuwrf.nesting.scalar_initialization import initialize_extra_scalar_fields
+        state = initialize_extra_scalar_fields(
+            run, domain, state, grid, parent_case=live_nest_parent,
+            parent_state=live_nest_parent_scalar_state,
+        )
     # WRF MYNN cold-start TKE init (module_bl_mynnedmf.F mym_initialize): the
     # parent wrfout carries no real QKE at the analysis time, so build the WRF
     # first-call turbulence state (taper pre-seed + level-2 equilibrium
     # iteration) rather than feeding the MYNN closure a degenerate qke=0 column
     # (which runs away; see proofs/v090/d02replay_qke_*).  No-op when the
     # parent already carries TKE (INITIALIZE_QKE=.FALSE.).
-    qke_seeded, did_seed_qke = _wrf_mynn_coldstart_qke(
-        state.qke, state=state, grid=grid
-    )
+    gbm_coldstart = is_standalone and namelist_value(run.namelist, "bl_pbl_physics", domain) == 12
+    if gbm_coldstart:
+        # GBM stores TKE_PBL directly in this shared turbulence leaf. Its
+        # GBMPBLINIT sets every active level to REAL 0.001, independently of
+        # the input field (module_bl_gbmpbl.F:1252). MYNN's equilibrium QKE
+        # seed is a different scheme's first-call initialization.
+        qke_seeded = jnp.full_like(state.qke, jnp.float32(0.001))
+        did_seed_qke = True
+    else:
+        qke_seeded, did_seed_qke = _wrf_mynn_coldstart_qke(
+            state.qke, state=state, grid=grid
+        )
     if did_seed_qke:
         state = state.replace(qke=qke_seeded.astype(state.qke.dtype))
         if _DEBUG:
@@ -2493,6 +2566,12 @@ def _build_replay_case(
         t0=jnp.full_like(theta_base, P0_THETA_OFFSET_K).astype(state.theta.dtype),
         theta_base=theta_base.astype(state.theta.dtype),
     )
+    if selected_mp == 56:
+        from gpuwrf.physics.ntu.initialize import cold_state
+        raw_ccnty = namelist_value(run.namelist, "ccnty", domain)
+        ccnty = 2 if raw_ccnty is None else int(raw_ccnty)
+        hypo = int(namelist_value(run.namelist, "hypsometric_opt", domain) or 2)
+        state = cold_state(state, base, metrics, ccnty=ccnty, hypsometric_opt=hypo)
     # Run-start label: replay reads it from the wrfout time axis; standalone has no
     # wrfout, so read the analysis time straight from the wrfinput ``Times`` record.
     start_label = run_start_label(run, domain)
@@ -2534,10 +2613,12 @@ def _build_replay_case(
         },
         "qke_coldstart": {
             "seeded": bool(did_seed_qke),
-            "wrf_ref": "phys/module_bl_mynnedmf.F:618-691 (mym_initialize INITIALIZE_QKE)",
+            "wrf_ref": ("phys/module_bl_gbmpbl.F:1252 (GBMPBLINIT TKE_PBL)" if gbm_coldstart
+                        else "phys/module_bl_mynnedmf.F:618-691 (mym_initialize INITIALIZE_QKE)"),
             "qke_max": qke_max,
             "qke_max_skipped": qke_max is None,
             "note": (
+                "GBMPBLINIT initializes native GBM TKE_PBL to REAL 0.001" if gbm_coldstart else
                 "parent wrfout carried no real QKE (MAXVAL<0.0002); seeded WRF "
                 "cold-start background TKE profile" if did_seed_qke
                 else "parent carried TKE; INITIALIZE_QKE=.FALSE., qke unchanged"

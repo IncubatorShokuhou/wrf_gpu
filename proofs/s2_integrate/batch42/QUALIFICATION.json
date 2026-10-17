@@ -1,0 +1,353 @@
+{
+  "UTC": "2026-10-15T22:24:46.655581+00:00",
+  "status": "GREEN READY-FOR-MERGE compiler-scope NTU42",
+  "approved_exact": "c2e549f66cc29870b3c2cf3ef22e2d18576360ae",
+  "source_code_commit": "f8894da6221262189230b71920c0b2915a6e605e",
+  "source_tree": "6e65b1dffc92f1f7d076a1003d2305fd088bf7e3",
+  "fresh_capped_sanity": {
+    "status": "PASS",
+    "returncode": 0,
+    "immutable_candidate": "cbe0b7d2ad78f91140b79b9b83c1253dfab0b204",
+    "source": "6e65b1dffc92f1f7d076a1003d2305fd088bf7e3",
+    "command": [
+      "<USER_HOME>/miniconda3/bin/python",
+      "-m",
+      "pytest",
+      "-q",
+      "-rs",
+      "-p",
+      "no:cacheprovider",
+      "--basetemp",
+      "<USER_HOME>/wrf_gpu2_lanes/s2-integrate/pytest",
+      "--junitxml",
+      "<USER_HOME>/wrf_gpu2_lanes/s2-integrate/batch42/sanity.xml",
+      "tests/contracts/",
+      "tests/test_v018_mp_family_fail_closed.py",
+      "tests/test_v034_implemented_notes.py",
+      "tests/test_scheme_catalog_fail_closed.py",
+      "tests/test_namelist_check.py",
+      "tests/test_namelist_binding.py",
+      "tests/test_m7_restart_checkpoint_roundtrip.py",
+      "tests/test_netcdf_process_lock.py",
+      "tests/test_v0110_wrfrst_netcdf.py",
+      "tests/test_cli.py",
+      "tests/test_v060_physics_dispatch.py",
+      "tests/v040/test_column_typed_memory.py::test_typed_memory_interprets_exactly_like_stock_pallas",
+      "tests/v040/test_jensen_ishmael_native_evidence.py",
+      "tests/v040/test_ntu_native_evidence.py"
+    ],
+    "elapsed_s": 21.560991726000793,
+    "cap": "6G/noSwap",
+    "GPU_runs": 0,
+    "numerical_reuse": "Exact approved kernels/fixtures: YSU218caseREAL+20928WRF-envelope, F6ninepristinepublicdumps, ClassDoriginalnumeric gates source-reused. NTU/Jensen kernel-helper-paid-launcher blobs exactcritic;4interpretationHLO identities/154CPU/2boundsASSERT reused; freshsmallCPUtypedroundtrip/nativeevidencereplay/shared only; no devicelessGPU or duplicateoriginaloracle.",
+    "counts": {
+      "tests": 257,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "RSS_KiB": 1337468,
+    "cleanup": true,
+    "UTC": "2026-10-15T22:19:06.727042+00:00"
+  },
+  "source_content_audit": {
+    "UTC": "2026-10-15T22:15:22.737689+00:00",
+    "status": "PASS exactcompiler-only composition/allPHY-batch41 content retained",
+    "incoming": "c2e549f66cc29870b3c2cf3ef22e2d18576360ae",
+    "source_code_commit": "f8894da6221262189230b71920c0b2915a6e605e",
+    "reviewed_SRC_tree": "a15b2f5fb59a9db9bb0fd5debffecb4527b09dfe",
+    "base_published41": "1b1e31e575c3ef93d021243b13ca6f3b4a705376",
+    "candidate": "853642e550c16facbfc3f04b2198fa4501dd7574",
+    "SRC": "6e65b1dffc92f1f7d076a1003d2305fd088bf7e3",
+    "changes": [
+      "src/gpuwrf/io/scheme_catalog.py",
+      "src/gpuwrf/kernels/_column_memory.py",
+      "src/gpuwrf/kernels/phys_jensen.py",
+      "src/gpuwrf/kernels/phys_ntu.py",
+      "tests/v040/test_column_typed_memory.py",
+      "tests/v040/test_jensen_ishmael_native_evidence.py",
+      "tests/v040/test_ntu_native_evidence.py"
+    ],
+    "catalog_revert_two_notes_restores_entire_base_module_AST": true,
+    "OTHER_core_trees_BYTE_base": true,
+    "review_commit": "8530d54aa6b7aae876b4161b954b05b906fa5eea",
+    "review": {
+      "verdict": "MERGE",
+      "scope": "mp55/mp56 native compiler fix only; not full forecast/release qualification",
+      "target": "c2e549f66cc29870b3c2cf3ef22e2d18576360ae",
+      "reviewer": "rv-t-ntucompile",
+      "utc": "2026-10-15T21:48:55Z",
+      "own_cpu_tests": {
+        "count": 154,
+        "sha256": "946beca4e450f88c36e86cbfa798873a143ff61df335061d7db90779578b63bc"
+      },
+      "interpretation": {
+        "ntu44": {
+          "scheme": "ntu",
+          "nz": 44,
+          "bytes": 8846803,
+          "sha256": "dc56b5e0282c3e329308e63e82af7f9bbd173c070a5dd2811a143a2ede8f6caa",
+          "custom_names": []
+        },
+        "ntu12": {
+          "scheme": "ntu",
+          "nz": 12,
+          "bytes": 8846803,
+          "sha256": "0bece37a5c58c47c508d04047e2e268362e7fe5ae90df78a9cd032b6a6c34d50",
+          "custom_names": []
+        },
+        "jensen44": {
+          "scheme": "jensen",
+          "nz": 44,
+          "bytes": 111067253,
+          "sha256": "485507c60fd580dfcc5705b8f4b243738310fec82c0aa7838da70f1bafa7afa3",
+          "custom_names": []
+        },
+        "jensen40": {
+          "scheme": "jensen",
+          "nz": 40,
+          "bytes": 111067253,
+          "sha256": "ceb6fbff0204485b5d3f661f00fdff7ac6ec60c04006e9fd9d07803f0f35df3e",
+          "custom_names": []
+        }
+      },
+      "mutant": {
+        "target": "c2e549f66c",
+        "mutation": "GPU wrap-then-clamp deleted in process",
+        "assertion_failures": 2,
+        "setup_errors": 0,
+        "verdict": "KILLED"
+      },
+      "default_ids": {
+        "swiss": {
+          "sha256": "f672a5739cb96e388b6b7a40ef80337bf81bdc14ef15268f3476e09d79fe055d",
+          "receipt_sha256": "1135dc48b5fb29b1df1eb721c12fece93393a919b7bf21a804a26ea4717d933f"
+        },
+        "prod": {
+          "sha256": "6fc715a2bd630934c4cf0f94427df19a527cbf429011c9ba5efe4d712744d27b",
+          "receipt_sha256": "4c317776a5ff6f62d5cc1eaf72b6bd5e289dd3ed8205bb698a62e87eab215cf2"
+        }
+      },
+      "producer_shared_receipts_reused": {
+        "<USER_HOME>/wrf_gpu2_lanes/t-ntucompile/FINAL-tests.xml": {
+          "count": 314,
+          "sha256": "0030aef584f4e2ecef05370de746b06ecbafd32a6fee4c0cb383afe8c599bcb7"
+        },
+        "<USER_HOME>/wrf_gpu2_lanes/t-ntucompile/HEAVY-chunk-00.xml": {
+          "count": 12,
+          "sha256": "aeb228014aca6bcdc2c393df4280cef83c4d929e3bebe46b20ba2a31befd36b4"
+        },
+        "<USER_HOME>/wrf_gpu2_lanes/t-ntucompile/HEAVY-chunk-01.xml": {
+          "count": 12,
+          "sha256": "b22d696d6375a7a5568403df99ba5fde14f0037d0d52584bf2bf6c31679f9ef6"
+        },
+        "<USER_HOME>/wrf_gpu2_lanes/t-ntucompile/HEAVY-chunk-02.xml": {
+          "count": 11,
+          "sha256": "2dc0f0e02e45dad4d36d5956fc226b17453202a21637fb6ffec3e2282e037d10"
+        },
+        "<USER_HOME>/wrf_gpu2_lanes/t-ntucompile/HEAVY-chunk-03.xml": {
+          "count": 12,
+          "sha256": "69e980a46c7a02fc4de9c288fe1addb923ecc0892ed4a7cbb91f8d16fb7e7883"
+        },
+        "<USER_HOME>/wrf_gpu2_lanes/t-ntucompile/HEAVY-chunk-04.xml": {
+          "count": 12,
+          "sha256": "233b9a1f77153864d79a38455153d18013a6a1c3070fcf07d4953a6d89986b84"
+        },
+        "<USER_HOME>/wrf_gpu2_lanes/t-ntucompile/HEAVY-chunk-05.xml": {
+          "count": 12,
+          "sha256": "2a08721d0e9aca0cf02dcf15ead4d4555f477c89382d48170ca55db06defb3ad"
+        },
+        "<USER_HOME>/wrf_gpu2_lanes/t-ntucompile/HEAVY-chunk-06.xml": {
+          "count": 12,
+          "sha256": "9ddb453a66db946d7d020833d91c666713312e9429902ada1383cde3781efa8c"
+        },
+        "<USER_HOME>/wrf_gpu2_lanes/t-ntucompile/HEAVY-chunk-07.xml": {
+          "count": 12,
+          "sha256": "92c590098c5972065bf3251df335980e394576c04c308a14687fbdeb1476779e"
+        },
+        "<USER_HOME>/wrf_gpu2_lanes/t-ntucompile/HEAVY-chunk-08.xml": {
+          "count": 12,
+          "sha256": "52df3993e84d208d387928bab9c48f5ea6377e4d53bb18f8a0b6a6c4116912be"
+        },
+        "<USER_HOME>/wrf_gpu2_lanes/t-ntucompile/HEAVY-chunk-09.xml": {
+          "count": 5,
+          "sha256": "bde1d203b39fd4731aa075cc09dabff50378224c7ef7b8660dc8c6b2d42dfee0"
+        },
+        "<USER_HOME>/wrf_gpu2_lanes/t-ntucompile/V56.xml": {
+          "count": 1,
+          "sha256": "b79c356102f061d5035eb23341bda2140e6880cba82e8e48136657949534937f"
+        }
+      },
+      "paid_source_blobs": {
+        "src/gpuwrf/kernels/_column_memory.py": "f1279ac530503a9b7bebb93750d6156da3b9346c",
+        "src/gpuwrf/kernels/phys_ntu.py": "0151ea20efcfefe8e2f61bdf16106d639309eb83",
+        "src/gpuwrf/kernels/phys_jensen.py": "5309ca18f77da1bfc73a9050de0d6d76f9f73b27",
+        "proofs/t_ntucompile/gpu_arm.py": "98c848dacd28d067e3bca1b8bafd085e997b87f3"
+      },
+      "paid_gpu": {
+        "c87": {
+          "platform": "gpu",
+          "rc": 0,
+          "wall_s": 579.145518209989,
+          "sampled_vram_mib": 6550,
+          "frames": [
+            "wrfout_d01_2023-01-15_00:00:00",
+            "wrfout_d01_2023-01-15_01:00:00"
+          ],
+          "inputs": {
+            "namelist.input": "b250a20c48f4163b6903ed8868868fa750121aa05a4c654306e995d9db749003",
+            "wrfbdy_d01": "f3e556670e4768326997bdfa1dd8b0f77eb6d5da07d9c4dbf900bf8ff9e30230",
+            "wrfinput_d01": "a5d696550d1dc6713e2e340b8c2fba83811d43f4a94a65ca95266035860e2781"
+          },
+          "launcher_sha256": "59088692d0ba3b16128140638c13fb9c4e9cfafa29c0dac20187137a3885643f",
+          "receipt_sha256": "655361883bfef7eaddcdca40ff5175513f7a865572413035a9ca08d8be0d5f1f",
+          "e41_sha256": "afde2a3df0788e3fc054033d5ddaea4501fa4182937f010934f4e369c9423034",
+          "cache_entries": [
+            {
+              "entry": "jit__advance_chunk_fori-73971b6d21bf19858c2ca107aaf9790398c635d00b19a3531a8b620d886c3666-cache",
+              "blob_sha256": "4fe8b4cb9bea0d3059fc6d5c4f22a1cddc209efc183655502df9ddff76698d2c",
+              "source_kind": "jax_cache"
+            },
+            {
+              "entry": "b90352c2d880078b03d4a237efa18cd76628e138e925b3d4869f80624dec0079.xlaexec",
+              "blob_sha256": "9a1a9e57fe2a48120dc914f6151e11acd120ea343d4e0aeb590debb3b14081ce",
+              "source_kind": "aot"
+            }
+          ],
+          "stack_B": 5472,
+          "scope": "compile readiness only; full24h D6 and F2 pending"
+        },
+        "c88": {
+          "platform": "gpu",
+          "rc": 0,
+          "wall_s": 924.2121307000052,
+          "sampled_vram_mib": 6016,
+          "frames": [
+            "wrfout_d01_2023-01-15_00:00:00",
+            "wrfout_d01_2023-01-15_01:00:00"
+          ],
+          "inputs": {
+            "namelist.input": "e6eb41913140cc79a3106b41d37feb93105c5b9513c5b4ac50e26b705fee08ec",
+            "wrfbdy_d01": "f3e556670e4768326997bdfa1dd8b0f77eb6d5da07d9c4dbf900bf8ff9e30230",
+            "wrfinput_d01": "a5d696550d1dc6713e2e340b8c2fba83811d43f4a94a65ca95266035860e2781"
+          },
+          "launcher_sha256": "59088692d0ba3b16128140638c13fb9c4e9cfafa29c0dac20187137a3885643f",
+          "receipt_sha256": "48d0e0d2ffc5c32f3a21a5f7801b5a755dbe6108a82f5a60867da3bd55a0fc90",
+          "e41_sha256": "75fe3abdafd60f7f5be5b1b87379ce77fd01c23ddd8f8b824d086a157fdac1bc",
+          "cache_entries": [
+            {
+              "entry": "jit__advance_chunk_fori-7ce1a3fe966b508f1902f447920f312b19dad460201b95989cf1b0e192d3df3c-cache",
+              "blob_sha256": "b3b168684da1a9cace81cf764f53f96327326fcded7146602892b15178bc633e",
+              "source_kind": "jax_cache"
+            },
+            {
+              "entry": "0527e2038a7d97b476da0e8ac9655faecfcac715cede72d14922029fafc11648.xlaexec",
+              "blob_sha256": "b74997262a5b292ccde3e359ce089e7f624dad82fcaa593f250a8f61c155594c",
+              "source_kind": "aot"
+            }
+          ],
+          "stack_B": 3496,
+          "scope": "compile readiness only; full24h D6 and F2 pending"
+        }
+      },
+      "d6_1h": {
+        "c87": {
+          "sha256": "782e03af02476ead2177709e1f4a4f6c7be324387c3019fa71378d62745afb84",
+          "common": 385,
+          "numeric": 384,
+          "bounded_failures": 0,
+          "nonfinite": 0,
+          "missing_cpu_fields": [
+            "REFL_10CM"
+          ],
+          "paired_leads_h": [
+            0,
+            1
+          ],
+          "strict_full_inventory": "INCOMPLETE",
+          "scope": "1h bounded-fields check only"
+        },
+        "c88": {
+          "sha256": "8b8f94b52e1028fa4568d15aeee1e738e1e0122925beb6d95c58b0099e4d53ac",
+          "common": 381,
+          "numeric": 380,
+          "bounded_failures": 0,
+          "nonfinite": 0,
+          "missing_cpu_fields": [
+            "QHAIL"
+          ],
+          "paired_leads_h": [
+            0,
+            1
+          ],
+          "strict_full_inventory": "INCOMPLETE",
+          "scope": "1h bounded-fields check only"
+        }
+      },
+      "manifest_sha256": "9df4fab8514523286f07b127eb8bf57a7545459c4448fef721ac44c0ecc351dc",
+      "aot_closure": {
+        "method": "Exact static source-key closure functions extracted without importing JAX",
+        "n_files": 498,
+        "new_memory_helper_keyed": true,
+        "runtime_speed_or_readiness_claim": false
+      },
+      "limits": [
+        "STACK5472/3496 fails E41; accepted only as disclosed opt-in resource failures",
+        "AOT optimized HLO size unknown; same-cubin rich JIT scan has no kInput flags",
+        "NTU real cloudy columns 1.35-1.85s/call; full24h D6/F2 still open",
+        "Producer c88 919.1s summary differs from actual receipt924.212s; compile311s unaffected",
+        "AOT source fingerprint changes; no fresh cached-readiness or default speed claim"
+      ],
+      "setup_refusals": [
+        "QUIET after RAM-slot before tests (zero executed)",
+        "First mutant rc4 CPU guard import-order refusal; not a killed mutant"
+      ],
+      "cleanup": "No persistent caches created; exact candidate snapshot and pytest scratch retired after final checks"
+    },
+    "producer_xml_SHA_fresh": [
+      "<USER_HOME>/wrf_gpu2_lanes/t-ntucompile/FINAL-tests.xml",
+      "<USER_HOME>/wrf_gpu2_lanes/t-ntucompile/HEAVY-chunk-00.xml",
+      "<USER_HOME>/wrf_gpu2_lanes/t-ntucompile/HEAVY-chunk-01.xml",
+      "<USER_HOME>/wrf_gpu2_lanes/t-ntucompile/HEAVY-chunk-02.xml",
+      "<USER_HOME>/wrf_gpu2_lanes/t-ntucompile/HEAVY-chunk-03.xml",
+      "<USER_HOME>/wrf_gpu2_lanes/t-ntucompile/HEAVY-chunk-04.xml",
+      "<USER_HOME>/wrf_gpu2_lanes/t-ntucompile/HEAVY-chunk-05.xml",
+      "<USER_HOME>/wrf_gpu2_lanes/t-ntucompile/HEAVY-chunk-06.xml",
+      "<USER_HOME>/wrf_gpu2_lanes/t-ntucompile/HEAVY-chunk-07.xml",
+      "<USER_HOME>/wrf_gpu2_lanes/t-ntucompile/HEAVY-chunk-08.xml",
+      "<USER_HOME>/wrf_gpu2_lanes/t-ntucompile/HEAVY-chunk-09.xml",
+      "<USER_HOME>/wrf_gpu2_lanes/t-ntucompile/V56.xml"
+    ],
+    "exactpaid_kernel_helper_launcher_blobids": {
+      "src/gpuwrf/kernels/_column_memory.py": "f1279ac530503a9b7bebb93750d6156da3b9346c",
+      "src/gpuwrf/kernels/phys_ntu.py": "0151ea20efcfefe8e2f61bdf16106d639309eb83",
+      "src/gpuwrf/kernels/phys_jensen.py": "5309ca18f77da1bfc73a9050de0d6d76f9f73b27",
+      "proofs/t_ntucompile/gpu_arm.py": "98c848dacd28d067e3bca1b8bafd085e997b87f3"
+    },
+    "limits": "E41FAIL5472/3496B/AOTHLOsizeU;1hstrictinventoryINCOMPLETE/REFL10CM-QHAIL missing;no24h/F2/releasePASS;NTU1.35-1.85s/call majorperfdebt;actualc88wall924.212not919.1",
+    "validation_reuse": "4StableHLOinterpretationidentities/paidGPUcompiler closure source-bound; freshsmallCPUtypedroundtrip+nativeevidencereplay+shared gates; no devicelessGPU/fulloraclereruns",
+    "metadata_helper_corrections": "f889 denotescodecommit, nottree; catalog includes **dict unpack Nonekeys, verified via wholemoduleAST instead of flattening"
+  },
+  "raw_receipts": {
+    "sanity.log": {
+      "raw_sha256": "f850f84a7dabcecec64cd09409f38567a963e41f3d321c74c00302b07471be41",
+      "gzip_sha256": "c60dd5c4bcfa75b9be87dc435f77665aa3c6c784944bd032ca3f597eb767f72b"
+    },
+    "sanity.xml": {
+      "raw_sha256": "8802f50bdd00d78f87214bb399902eca7290222430dc41d491802461a04d0cd9",
+      "gzip_sha256": "a2ef4e3e31b344a531c65f2d501853e82935094c6de8e7f8b6e23e340a4baed6"
+    },
+    "sanity.time": {
+      "raw_sha256": "6a60a7d76a6d5930073f11d0a3e134f93fbbc405976f67e5967fa531dfdce3da",
+      "gzip_sha256": "74268130fcfebec7b23753bc6592b67e2485232aaf62cfbd5b8dcc90929a5de5"
+    }
+  },
+  "reused_critic": "154CPU/noFAIL,4StableHLOidentities,2genuineboundsASSERT0setup; originalpristine/evidence +427producerCPU source-bound, not addedtofresh257",
+  "paid_GPU_reuse": "Exactkernel/helper/launcherblobs; ntu311s/jensen366s wholeSwissstepcompile;1hcommonbounded0missNF0, NOTstrictD6/full24h. Actualc88wall924.212 not919.1.",
+  "limits": "E41FAIL5472/3496B/AOTHLOsizeU;1hstrictinventoryINCOMPLETE/REFL10CM-QHAIL missing;no24h/F2/releasePASS;NTU1.35-1.85s/call majorperfdebt;actualc88wall924.212not919.1",
+  "cost": "No newkernel launches/globalbuffers/hosttransfers bylowering; integerbounds+atomicexchanges+localspills remainGPUcost. NTU1.35-1.85s/call majorperformanceopen;no newruntime/readiness/defaultspeed claim.",
+  "defaultIDs": "FULLSwissf672a573/PROD6fc715a2 independentlyreviewed/source-bound; defaultproducer/controlmodules unchanged except2inactive kernel routes/catalogdisclosure.",
+  "cleanup": "all own snapshot/cache/tmp/pytest deleted;0ownJAX/GPUjobs",
+  "currentmain": "1b1e31e575c3ef93d021243b13ca6f3b4a705376",
+  "next": "Manager FF exactREADY then exactMPRHOab5545b28 batch43. GPU/coupled/F2/missingfield/perf finalqualification separate."
+}

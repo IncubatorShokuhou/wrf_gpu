@@ -1,0 +1,34 @@
+{
+  "source": "<USER_HOME>/src/wrf_pristine/WRF/phys/module_wind_fitch.F",
+  "source_sha256": "83247add74780608e798bb62424533b18abf31f3da5aba6374de6fe2550060c3",
+  "routine_sha256": {
+    "dragforce": "7b2205881dfa158077a6ca90219ed54d50522ffc5c5ff1269bcbcb7d7de0736d",
+    "turbine_area": "c0ed21f3d9e1a1902b8e58016dccb80d7f55bd8f70bd69047a1c0c3147c9b6cb",
+    "dragcof": "987b65ced034c1b86b0cc30b6b72969625fa7abbbc449cae020d571a6ed923d3"
+  },
+  "compiler": "<USER_HOME>/miniconda3/envs/wrfbuild/bin/gfortran",
+  "command": [
+    "<USER_HOME>/miniconda3/envs/wrfbuild/bin/gfortran",
+    "-O0",
+    "-finit-real=zero",
+    "-finit-integer=0",
+    "-finit-logical=false",
+    "-ffree-line-length-none",
+    "-fcheck=all",
+    "fitch.f90",
+    "driver.f90",
+    "-o",
+    "oracle"
+  ],
+  "cases": 72,
+  "precision": "WRF REAL32; compiler flags listed verbatim; FP traps off (production default)",
+  "initialization": "zero",
+  "optimization": "literal",
+  "regimes": "cut-in/out, interior/equal knots, standing drag, shear, colocated turbines, no rotor found, TKE factors 0/.25/1",
+  "tolerances": {
+    "rtol": 3e-06,
+    "source_atol": 2e-07,
+    "power_atol_W": 0.25
+  },
+  "oracle_sha256": "d14c7716fc8d5ae9a170fa035ddf5c209e97bae4393e8300df2f44fe34966f92"
+}

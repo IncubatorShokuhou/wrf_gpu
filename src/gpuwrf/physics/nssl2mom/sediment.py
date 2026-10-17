@@ -116,7 +116,7 @@ def calcnfromz1d(an, t0z, z0, db, t1, il, C, prec):
 
 def sediment1d(an, t0, t7, dn, dz, dtp, C, prec, infdo=2):
     """Port of SUBROUTINE sediment1d (see module docstring)."""
-    del t7  # ipconc = 0 only
+    one_moment = C.ipconc == 0
     R = prec.R
     f = lambda v: jnp.asarray(v, R)  # noqa: E731
     an = jnp.asarray(an, R)
@@ -130,11 +130,14 @@ def sediment1d(an, t0, t7, dn, dz, dtp, C, prec, infdo=2):
     dtz0 = dzinv
     dtz1 = dzinv * db1inv
 
-    an, xvt = ziegfall1d(an, t0, db1, rhovtzx, C=C, prec=prec, infdo=infdo)
+    an, xvt = ziegfall1d(an, t0, db1, rhovtzx, C=C, prec=prec, infdo=infdo,
+                        **({'t7': t7} if one_moment else {}))
     xfall = jnp.zeros((NA + 1,) + t0.shape[:-1], R)
     vtcap = f(C.vtmaxsed)
 
     for il in _SPECIES:
+        if il == LHL and getattr(C, 'variant', 18) == 21:
+            continue
         v1 = jnp.minimum(vtcap, xvt[(il, 1)])
         v2 = jnp.minimum(vtcap, xvt[(il, 2)])
         v3 = jnp.minimum(vtcap, xvt[(il, 3)])
@@ -149,6 +152,8 @@ def sediment1d(an, t0, t7, dn, dz, dtp, C, prec, infdo=2):
         dtfrac = dtptmp / dtp
         ln = LN[il]
         lv = LVOL.get(il)
+        if one_moment and (getattr(C, 'variant', 18) == 21 or il != LH):
+            lv = None
 
         def body(n, carry, il=il, ln=ln, lv=lv, v1=v1, v2=v2, v3=v3, ndfall=ndfall,
                  dtptmp=dtptmp, dtfrac=dtfrac):
@@ -163,10 +168,12 @@ def sediment1d(an, t0, t7, dn, dz, dtp, C, prec, infdo=2):
                 xfall = xfall.at[idx].set(jnp.where(act, xfall[idx] + fl, xfall[idx]))
                 return an, xfall
 
-            z = calczgr1d(an, db1, il, C, prec) if il in _ZSPECIES else None
+            z = calczgr1d(an, db1, il, C, prec) if il in _ZSPECIES and not one_moment else None
             an, xfall = upd(an, xfall, il, v1, True)              # mass
             if lv is not None:
                 an, xfall = upd(an, xfall, lv, v1, False)         # particle volume
+            if one_moment:
+                return an, xfall  # WRF ipconc>0 guard: no number or Z fallout
             tmpn = an[ln]
             an, xfall = upd(an, xfall, ln, v2, False)             # number (in = 2)
             if il in _ZSPECIES:

@@ -1,0 +1,47 @@
+{
+  "schema": "gpuwrf.u2_optim.critic_fix.v1",
+  "source_commit": "8b083dff6bcb89a0d9d145d5d028ee5ee03fdf58",
+  "reviewed_commit": "30a8b8006e8854fbb6f026a9ede9d8bcfe311f08",
+  "critic_verdict": "<USER_HOME>/wrf_gpu2_lanes/rv-u2-optim/VERDICT.md",
+  "F1": "fit requires held-out scores for every exported station/variable; apply requires held-out support for each requested group, including legacy v1 models",
+  "F2": "study namelist serializer trailing whitespace removed; full main...HEAD diff check PASS",
+  "affected_gate": {
+    "pass": 22,
+    "errors": 0,
+    "skips": 0,
+    "xml": "<USER_HOME>/wrf_gpu2_lanes/u2-optim/OP17-f1.xml"
+  },
+  "mutant": {
+    "genuine_pytest_DID_NOT_RAISE_assertion_failures": 4,
+    "setup_errors": 0,
+    "override": "require_held_out_support=lambda groups,scores:None",
+    "immutable_source_unchanged": true,
+    "xml": "<USER_HOME>/wrf_gpu2_lanes/u2-optim/OP18-f1-mutant.xml"
+  },
+  "reuse": "prior420 composed,archive37,independent critic61 remain historical; only affected calibration and netcdf checks rerun; original qualification receipt unchanged",
+  "identity": {
+    "model_default_cli_entries_BYTE_unchanged": 14,
+    "study_AST_identical": true
+  },
+  "performance_memory": "Only offline group-support sets added; no model/device arrays, kernels, transfers, synchronization or compilation; CPU operation/heap overhead not separately benchmarked",
+  "GPU_demo": "OPEN; not run here",
+  "cache": "NONE; CPU8,24NI19OMP1/JAXcpu/JAX0;timeouts120/60;QUIET guarded",
+  "artifacts": [
+    {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/u2-optim/OP17-f1.xml",
+      "sha256": "6b0ede9f83d60bdf0e44f63709dfc94242e9358e1226e402dabe3129bc809e72"
+    },
+    {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/u2-optim/OP18-f1-mutant.xml",
+      "sha256": "7069de115ca7115439ec67d861aca43c83c9a202fb1039adf33b6d997cd89caf"
+    },
+    {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/u2-optim/OP18-f1-mutant-binding.json",
+      "sha256": "79a8ec0c7f2dd01db38a73f274e53634672f4ff4468726ebf17ae389298b0502"
+    },
+    {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/u2-optim/OP19-f2-diff-check.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ]
+}

@@ -1,0 +1,266 @@
+{
+  "source_commit": "33190f5ba45d2ab329163f37cd674568c5f884dc",
+  "platform": "cpu",
+  "gpu_executed": false,
+  "cache": "NONE",
+  "input": "<USER_HOME>/wrf_gpu2_lanes/release-docs/RD11/cpu",
+  "namelist_sha256": "0abb5c9b6f26dc2e3acdec2116ff9ba081a0f364b635038cdcae824608a2067f",
+  "steps": [
+    {
+      "step": 1,
+      "sgs_input": {
+        "qc_bl": {
+          "nonzero": 0,
+          "maximum": 0.0
+        },
+        "qi_bl": {
+          "nonzero": 0,
+          "maximum": 0.0
+        },
+        "cldfra_bl": {
+          "nonzero": 0,
+          "maximum": 0.0
+        }
+      },
+      "wall_s": 315.21377001702785,
+      "nonfinite_leaves": [],
+      "guards": 0,
+      "work_counts": {
+        "steps": 1,
+        "acoustic_trips": 7,
+        "kf_calls": 0,
+        "radiation_tendency_calls": 1,
+        "radiation_surface_calls": 0,
+        "native_mass_guard_events": 0,
+        "radiation_init_calls": 1,
+        "radiation_output_calls": 0,
+        "output_writes": 0
+      },
+      "held_radiation_sha256": "ec3da1e17da2da0ed4a12487323611e9ec18cfcf0037d0921b0df86c01b03b66",
+      "guard_counts": {},
+      "f2_negative_minima": [],
+      "sw_negative_heating_count": null,
+      "swdown_max": 0.0,
+      "glw_min": 201.769287109375,
+      "rthraten_max": 9.10151720745489e-05
+    },
+    {
+      "step": 2,
+      "sgs_input": {
+        "qc_bl": {
+          "nonzero": 3208,
+          "maximum": 6.547709199367091e-05
+        },
+        "qi_bl": {
+          "nonzero": 13430,
+          "maximum": 1.0126072993443813e-05
+        },
+        "cldfra_bl": {
+          "nonzero": 13730,
+          "maximum": 0.9781949520111084
+        }
+      },
+      "wall_s": 9.439912162953988,
+      "nonfinite_leaves": [],
+      "guards": 0,
+      "work_counts": {
+        "steps": 2,
+        "acoustic_trips": 14,
+        "kf_calls": 0,
+        "radiation_tendency_calls": 1,
+        "radiation_surface_calls": 0,
+        "native_mass_guard_events": 0,
+        "radiation_init_calls": 1,
+        "radiation_output_calls": 0,
+        "output_writes": 0
+      },
+      "held_radiation_sha256": "ec3da1e17da2da0ed4a12487323611e9ec18cfcf0037d0921b0df86c01b03b66",
+      "guard_counts": {},
+      "f2_negative_minima": [],
+      "sw_negative_heating_count": null,
+      "swdown_max": 0.0,
+      "glw_min": 201.769287109375,
+      "rthraten_max": 9.104993660002947e-05
+    },
+    {
+      "step": 3,
+      "sgs_input": {
+        "qc_bl": {
+          "nonzero": 3333,
+          "maximum": 6.620276690227911e-05
+        },
+        "qi_bl": {
+          "nonzero": 13566,
+          "maximum": 1.0949130228254944e-05
+        },
+        "cldfra_bl": {
+          "nonzero": 13860,
+          "maximum": 0.9842236638069153
+        }
+      },
+      "wall_s": 22.65598385198973,
+      "nonfinite_leaves": [],
+      "guards": 0,
+      "work_counts": {
+        "steps": 3,
+        "acoustic_trips": 21,
+        "kf_calls": 0,
+        "radiation_tendency_calls": 2,
+        "radiation_surface_calls": 0,
+        "native_mass_guard_events": 0,
+        "radiation_init_calls": 1,
+        "radiation_output_calls": 0,
+        "output_writes": 0
+      },
+      "held_radiation_sha256": "2c7d1ea2e8d79b7d33be88a3353d829bbb708c31283ca420c8e44b8cc3fd62cf",
+      "guard_counts": {},
+      "f2_negative_minima": [
+        {
+          "phase": "post_rk",
+          "field": "qc",
+          "minimum": -2.5028955051721394e-18,
+          "step": 3,
+          "flat_index": 24535
+        }
+      ],
+      "sw_negative_heating_count": null,
+      "swdown_max": 0.0,
+      "glw_min": 206.20155334472656,
+      "rthraten_max": 0.00014106076559983194
+    }
+  ],
+  "affinity": [
+    3,
+    12
+  ],
+  "environment": {
+    "OPENBLAS_NUM_THREADS": "1",
+    "OMP_NUM_THREADS": "1",
+    "GPUWRF_GFDL_INIT_CACHE": "<USER_HOME>/wrf_gpu2_lanes/s2-flggfdl/FG90_gfdl_native/cache",
+    "GPUWRF_CENSUS": "1",
+    "GPUWRF_FAST_DEFAULTS": "1",
+    "GPUWRF_JAX_CACHE": "0",
+    "JAX_PLATFORMS": "cpu",
+    "GPUWRF_DYN_FP32": "1",
+    "GPUWRF_DYN_ADVECTION_FP32": "1",
+    "GPUWRF_DYN_DIFFUSION_FP32": "1",
+    "GPUWRF_DYN_RK_FP32": "1",
+    "GPUWRF_DYN_CARRY_FP32": "1",
+    "GPUWRF_DYN_REAL_ALL": "1",
+    "GPUWRF_CARRY_REAL_ALL": "1",
+    "GPUWRF_DYN_PD_FP32": "1",
+    "GPUWRF_ACOUSTIC_ALIAS": "1",
+    "GPUWRF_ACOUSTIC_W2PASS": "3",
+    "GPUWRF_ACOUSTIC_MASS_BLOCK": "1",
+    "GPUWRF_ACOUSTIC_UV_MASKED": "1",
+    "GPUWRF_DYN_PD_SPECIES_LOOP": "1",
+    "GPUWRF_ACOUSTIC_W_RECUR_SL": "1",
+    "GPUWRF_BOUNDARY_FP32": "1",
+    "GPUWRF_SPEC_RING_SELECT": "1",
+    "GPUWRF_DYN_GLUE_FUSED": "momuvn_rhsph_uvn_pin",
+    "GPUWRF_LAYOUT_PIN": "ac_carry_cols_cum",
+    "GPUWRF_NOAHMP_NATIVE_REAL": "1",
+    "GPUWRF_NOAHMP_ITERATION_BARRIER": "1",
+    "GPUWRF_NOAHMP_LAYER_SELECT": "1",
+    "GPUWRF_NOAHMP_LAYER_LISTS": "1",
+    "GPUWRF_NOAHMP_COLUMN_KERNELS": "1",
+    "GPUWRF_SFCLAY_NATIVE_REAL": "1",
+    "GPUWRF_GWDO_NATIVE_REAL": "1",
+    "GPUWRF_EDMF_FUSED_PLUME": "1",
+    "GPUWRF_MYNN_FP32_PLUME": "1",
+    "GPUWRF_MYNN_FP32_COLUMNS": "1",
+    "GPUWRF_MYNN_FP32_BOULAC": "0",
+    "GPUWRF_MYNN_CLOUDMIX": "1",
+    "GPUWRF_MYNN_PLUME_SUMS": "1",
+    "GPUWRF_MYNN_TRIDIAG_REAL": "1",
+    "GPUWRF_KF_RESIDENT_TABLES": "1",
+    "GPUWRF_KF_COLUMN_FP32": "1",
+    "GPUWRF_MCICA_JUMPAHEAD": "1",
+    "GPUWRF_MCICA_LEGACY_FP64": "0",
+    "GPUWRF_RRTMG_LW_FUSED_TRANSFER": "1",
+    "GPUWRF_RRTMG_SW_FUSED_QUADRATURE": "1",
+    "GPUWRF_RRTMG_COLUMN_TILE_COLS": "4096",
+    "GPUWRF_RRTMG_LW_BAND_SUMS": "1",
+    "GPUWRF_MCICA_KISS_KERNEL": "1",
+    "GPUWRF_RRTMG_SW_BAND_SUMS": "1",
+    "GPUWRF_THOMPSON_FP32": "0",
+    "GPUWRF_THOMPSON_NATIVE_REAL": "1",
+    "GPUWRF_THOMPSON_FULL_COLUMN": "1",
+    "GPUWRF_THOMPSON_COLUMN_SED": "1",
+    "GPUWRF_THOMPSON_SED_FP32": "1",
+    "GPUWRF_THOMPSON_SED_PREP_FUSED": "0",
+    "GPUWRF_THOMPSON_COLUMN_LAYOUT": "1",
+    "GPUWRF_THOMPSON_FULL_COLUMN_EARLY_EXIT": "1",
+    "GPUWRF_THOMPSON_IMPLICIT_SED": "0",
+    "GPUWRF_HISTORY_INSTEP_DIAG": "1",
+    "GPUWRF_CARRY_DONATE": "1",
+    "GPUWRF_RRTMG_MAXRAND": "1",
+    "GPUWRF_RRTMG_MP_RE": "1",
+    "GPUWRF_MYNN_SGS_MIXING_RATIO": "1",
+    "GPUWRF_MYNN_SCALE_AWARE": "1",
+    "GPUWRF_W_SURFACE_RESET": "1",
+    "GPUWRF_MYNN_SFC_WSPD": "1",
+    "GPUWRF_SPEC_W_WORK_COPY": "1",
+    "GPUWRF_MYNN_FLTV_WRF": "1",
+    "GPUWRF_MYNN_DHEAT": "1",
+    "GPUWRF_MYNN_PSIQ_FLUX_WRF": "1",
+    "GPUWRF_W_DAMP_STAGE": "1",
+    "GPUWRF_ACOUSTIC_NO_MU_FLOOR": "1",
+    "GPUWRF_NOAHMP_JULIAN_ADVANCE": "1",
+    "GPUWRF_NEST_O3_FROM_PARENT": "1",
+    "GPUWRF_ROOT_SCALAR_BDY_RK1": "1",
+    "GPUWRF_THOMPSON_MIXED_PHASE_WRF": "1",
+    "GPUWRF_MYNN_DMP_KTOP_BOUND": "1",
+    "GPUWRF_MYNN_ELB_MF": "1",
+    "GPUWRF_MYNN_PHY_EXNER": "1",
+    "GPUWRF_MYNN_PSIG_CLAMP": "1",
+    "GPUWRF_MYNN_QNI_MIXING": "1",
+    "GPUWRF_MYNN_SFC_PBLH_WRF": "1",
+    "GPUWRF_KF_REAL_CONSTANTS": "1",
+    "GPUWRF_WRITER_RVOVRD_REAL": "1",
+    "GPUWRF_PHY_PREP_REAL_CONST": "1",
+    "GPUWRF_THOMPSON_WRF_CONSTANTS": "1",
+    "GPUWRF_MYNN_REAL_CONSTANTS": "1",
+    "GPUWRF_SOLAR_JULIAN_WRF": "1",
+    "GPUWRF_NEST_SCALAR_SPEC_FINAL": "1",
+    "GPUWRF_RRTMG_REAL_CONSTANTS": "1",
+    "GPUWRF_KF_PHYD_WRF": "1",
+    "GPUWRF_PHYS_TEND_RK_WRF": "1",
+    "GPUWRF_KF_TEND_RK_WRF": "1",
+    "GPUWRF_MYNN_PLUME_CLOUD_BASE": "1",
+    "GPUWRF_MYNN_SHSM_FLOORS": "1",
+    "GPUWRF_MYNN_TKEPROD_UP": "1",
+    "GPUWRF_MYNN_ELH_BUDGET": "1",
+    "GPUWRF_MYNN_RHOSFC_WRF": "1",
+    "GPUWRF_MYNN_CONDENSATION_WRF": "1",
+    "GPUWRF_NOAH_URBAN_SOIL_PARAMS": "1",
+    "GPUWRF_LAND_Q2_CAP_POSTLSM": "1",
+    "GPUWRF_HISTORY_SWDOWN_HORIZONTAL": "1",
+    "GPUWRF_MYNN_PREDICT_SAW_FLOOR": "1",
+    "GPUWRF_NOAH_CANWATER_ELAI": "1",
+    "GPUWRF_MYNN_SOURCE_PARITY2": "1",
+    "GPUWRF_MYNN_SFC_PSI_REAL": "1",
+    "GPUWRF_NOAH_QSFC_WRF": "1",
+    "GPUWRF_RRTMG_SW_REFTRA_WRF": "1"
+  },
+  "load_s": 19.95975558483042,
+  "carry_dtypes": {
+    "theta": "float32",
+    "qv": "float32",
+    "qc": "float32",
+    "qi": "float32",
+    "qc_bl": "float32",
+    "qi_bl": "float32"
+  },
+  "resolved_work": {
+    "ra_lw": 99,
+    "ra_sw": 99,
+    "mp": 8,
+    "dt_s": 18.0,
+    "radiation_cadence_steps": 2,
+    "steps": 3,
+    "cu": 0,
+    "scope": "experimental CPU-only; noGPU"
+  },
+  "verdict": "PASS"
+}

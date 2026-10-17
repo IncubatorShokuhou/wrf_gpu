@@ -1,0 +1,67 @@
+{
+  "utc": "2026-10-15T17:49:27.064199+00:00",
+  "next_candidates": [
+    {
+      "cases": [
+        "c87",
+        "c88"
+      ],
+      "owner": "t-ntucompile",
+      "condition": "Composed source approved and actual native GPU probe/E41/identity ready; originalCPU references alreadycomplete",
+      "cohort": "2Swiss concurrently if measuredVRAM allows",
+      "gpu_cap_minutes": 30
+    },
+    {
+      "cases": [
+        "c89"
+      ],
+      "owners": [
+        "t-rainnc",
+        "t-cammgws",
+        "t-mp11gate"
+      ],
+      "condition": "Proven nativefix +manager target, or managerintegratedCPU-onlyfallbackremovesGPUscope; no unchangedrepeat",
+      "gpu_cap_minutes": 30
+    }
+  ],
+  "today": {
+    "end_utc": "2026-10-15T18:45:00Z",
+    "last_24h_start_utc": "2026-10-15T18:15:00Z"
+  },
+  "overnight": {
+    "authority": "Manager direct: afterALISIOSnightlyDONE GPUoursagain",
+    "prerequisite": "Verify fresh nextnightly issue DONE; neverreuse20261014_12z DONE. CurrentownedauthorizationCLOSE18:45, so createfreshwindowbeforeovernightlaunch; honorlatestmanagerSTOP/RESUME.",
+    "ram": "19:15untilnightlyDONE wrf_gpu2<=15GB total; officialRAMslots6G andCPU-only; afterDONE followfreshmanagerRAMallocation.",
+    "next_reserved_window": "16.10 08:00\u201312:00Z ALISIOSR&D; lastnormalstart07:15Z/end<=08:00Z permanagerplan"
+  },
+  "resources": {
+    "GPU_ARM_CPUS": "3,19,13,29",
+    "scratch_max_GiB": 50,
+    "ROOT_free_floor_GiB": 45,
+    "DATA_free_floor_GiB": 120,
+    "cohort_cleanup": "Actual E41/PIN and full D6 consumers then exactcache/tmp/snapshotcleanup",
+    "references": "AllCPUoriginals and caseinputs retained, no synthetictruth",
+    "latest_storage_check": "17:46Z: scratch45.625GiB<=50/DATAfree548.56GiB; ROOTfree34.010<45 alerted manager; no further large ROOT move."
+  },
+  "scope": "Conditional queue, not authorization for unready/unmerged candidates; source-bound numericalevidence/F2OPEN. Compilerfix GPUminutes unknownuntilactualprobe; notS1.",
+  "completed_wdm6": {
+    "case": "c11",
+    "source": "de374a3c00e8bf0480f8ab91b873898916074264",
+    "approved_cap_s": 3300,
+    "expected_finish_utc": "2026-10-15T15:20:00Z",
+    "hard_cap_utc": "2026-10-15T15:29:43Z",
+    "qualification": "Full25 D6PASS/0bounded/NF0/E41FAILdisclosed",
+    "actual_wall_s": 2634.2398392540053,
+    "actual_whole_warm_s_per_fc_h": 109.75999330225022,
+    "sampled_peak_vram_MiB": 7050
+  },
+  "completed_acm2": {
+    "case": "c05",
+    "source": "5131ddffb1fdd0d15a0285cfc15b38e61f470daa",
+    "qualification": "Full24h/25paired/full353CPUinventory D6PASS;0bounded/NF0;actualE41FAILdisclosed/F2OPEN",
+    "RAINNC_h24_rmse_mm": 0.12903688502244157,
+    "proof": "C05_ACM2_FULL24.json",
+    "cleanup": "CPU219/cache/tmp/snapshot26 retired;2PINs retained;old49files SHA archived"
+  },
+  "program_change_policy": "Manager17:19: every program-changing merge needs its affected composites rerun on GPU before tag; v0.4.0 product freeze2026-10-16T12:00Z. Existing results stay source-bound."
+}

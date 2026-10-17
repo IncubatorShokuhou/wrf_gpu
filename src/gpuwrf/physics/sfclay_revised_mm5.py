@@ -102,6 +102,9 @@ del _np_z
 
 
 def _table_lookup(coord, table, full_fn, zolf):
+    # REAL urban entries run inside a wide parent; retain the input precision.
+    # The established double entry receives the same array (no conversion/op).
+    table = jnp.asarray(table, dtype=zolf.dtype)
     nzol = jnp.floor(coord).astype(jnp.int32)
     rzol = coord - nzol.astype(coord.dtype)
     in_table = (nzol + 1) < _N
@@ -340,10 +343,15 @@ def sfclay_revised_mm5_run(
 ) -> SfclayRevisedMM5Output:
     """Run the vectorized WRF ``sf_sfclayrev_run`` default path."""
 
-    if isftcflx != 0:
-        raise NotImplementedError("sfclayrev isftcflx options are not in the v0.6.0 option-1 oracle lane")
+    if isftcflx not in (0, 1, 2):
+        raise ValueError('isftcflx must be 0, 1 or 2')
     if iz0tlnd != 0:
         raise NotImplementedError("sfclayrev iz0tlnd land thermal-roughness options are not in this lane")
+
+    # New hurricane path is WRF REAL. Preserve the released legacy zero path.
+    _arr = lambda value: jnp.asarray(value, jnp.float32 if isftcflx else jnp.float64)
+    EP1=globals()['EP1'] if not isftcflx else np.float32(np.float32(461.6)/np.float32(287)-np.float32(1))
+    EP2=globals()['EP2'] if not isftcflx else np.float32(np.float32(287)/np.float32(461.6))
 
     ux = _arr(state.u)
     vx = _arr(state.v)
@@ -455,6 +463,8 @@ def sfclay_revised_mm5_run(
     psim10 = jnp.where(unstable, jnp.minimum(psim10, 0.9 * gz10oz0), psim10)
     psih10 = jnp.where(unstable, jnp.minimum(psih10, 0.9 * gz10oz0), psih10)
     regime = jnp.where(stable, 1.0, jnp.where(neutral, 3.0, 4.0))
+    if isftcflx:
+        regime=regime.astype(jnp.float32)
     zol = jnp.where(neutral, 0.0, zol)
     rmol = zol / za
 
@@ -472,6 +482,11 @@ def sfclay_revised_mm5_run(
     restar = ust_in * znt_in / visc
     z0t = jnp.clip(5.5e-5 * restar ** (-0.60), 2.0e-9, 1.0e-4)
     z0q = z0t
+    if isftcflx == 1:
+        z0q = jnp.full_like(z0q, 1.e-4)
+    elif isftcflx == 2:
+        z0t = znt_in / jnp.exp(.40*(7.3*jnp.sqrt(jnp.sqrt(restar))*jnp.sqrt(.71)-5.))
+        z0q = znt_in / jnp.exp(.40*(7.3*jnp.sqrt(jnp.sqrt(restar))*jnp.sqrt(.60)-5.))
 
     def heat_psih(z0):
         zz = zol * (za + z0) / za
@@ -504,6 +519,10 @@ def sfclay_revised_mm5_run(
     psiq = jnp.where(is_water, psiq_water, psiq)
     psiq2 = jnp.where(is_water, psiq2_water, psiq2)
     psiq10 = jnp.where(is_water, psiq10_water, psiq10)
+    if isftcflx == 1:
+        # WRF sf_sfclayrev_run :619–623 sets heat equal to moisture resistance.
+        psit = jnp.where(is_water, psiq, psit)
+        psit2 = jnp.where(is_water, psiq2, psit2)
 
     ck = (KARMAN / psix10) * (KARMAN / psiq10)
     cd = (KARMAN / psix10) * (KARMAN / psix10)
@@ -533,6 +552,9 @@ def sfclay_revised_mm5_run(
     znt_charnock = jnp.minimum(znt_charnock, 2.85e-3)
     znt_shallow = _depth_dependent_z0(water_depth, znt_in, ust)
     znt_water = jnp.where(shalwater_z0, znt_shallow, znt_charnock)
+    if isftcflx:
+        from gpuwrf.physics.hurricane_flux import davis
+        znt_water = davis(ust)
     znt = jnp.where(is_water & isfflx, znt_water, znt_in)
 
     flqc = rhox * mavail * ust * KARMAN / denomq

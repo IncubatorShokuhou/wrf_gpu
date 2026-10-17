@@ -72,7 +72,7 @@ def _write_case(tmp_path: Path, edits: dict[str, str], extra_physics: str = "") 
     return case
 
 
-def _load_nested(monkeypatch, tmp_path, edits, extra_physics=""):
+def _load_nested(monkeypatch, tmp_path, edits, extra_physics="", *, names=("d01", "d02", "d03")):
     from gpuwrf.validation.moving_nest_testbed import (
         _zero_tendencies,
         build_flat_grid,
@@ -114,8 +114,8 @@ def _load_nested(monkeypatch, tmp_path, edits, extra_physics=""):
 
     monkeypatch.setattr(lower_boundary, "load_lower_boundary", lambda *_a, **_k: None)
     config = nested_pipeline.NestedPipelineConfig(
-        input_dir=case, output_dir=tmp_path / "out", proof_dir=tmp_path / "proof", hours=1, max_dom=3)
-    _h, bundles, *_rest = nested_pipeline._load_domains(config, ("d01", "d02", "d03"))
+        input_dir=case, output_dir=tmp_path / "out", proof_dir=tmp_path / "proof", hours=1, max_dom=len(names))
+    _h, bundles, *_rest = nested_pipeline._load_domains(config, names)
     return bundles
 
 
@@ -142,14 +142,32 @@ def test_bind_returns_the_same_object_when_nothing_changes(tmp_path):
 
     @dataclass(frozen=True)
     class _NL:
+        mfshconv: int = 0  # effective WRF default outside QNSE
         mp_physics: int = 8
         bl_pbl_physics: int = 5
         sf_sfclay_physics: int = 5
         ra_lw_physics: int = 4
         ra_sw_physics: int = 4
         cu_physics: int = 1
+        sas_pgcon: float = 0.55
+        nsas_dx_factor: int = 0
+        cu_rad_feedback: bool = False
+        icloud: int = 1
+        cu_diag: int = 0
+        kfeta_trigger: int = 1
+        shcu_aerosols_opt: int = 0
+        shcu_physics: int = 0
+        shinhong_tke_diag: int = 0
+        ysu_topdown_pblmix: int = 1
+        accum_mode: float = 1.e9
+        aitken_mode: float = 3.e8
+        coarse_mode: float = 2.e5
+        shallowcu_forced_ra: bool = False
         sf_urban_physics: int = 0
         sf_lake_physics: int = 0
+        lakedepth_default: float = 50.0
+        lake_min_elev: float = 5.0
+        use_lakedepth: int = 1
         epssm: float = 0.5
         damp_opt: int = 3
         zdamp: float = 5000.0
@@ -164,7 +182,31 @@ def test_bind_returns_the_same_object_when_nothing_changes(tmp_path):
         mix_isotropic: int = 0
         mix_upper_bound: float = 0.1
         tke_upper_bound: float = 1000.0
+        moist_adv_opt: int = 1
+        scalar_adv_opt: int = 1
+        tracer_opt: int = 0
+        tracer_adv_opt: int = 1
+        tracer_mix2_off: bool = False
+        tracer_mix6_off: bool = False
+        tracer_pblmix: int = 1
         cam_abs_freq_s: float = 21600.0
+        ccn_conc: float = 1.0e8
+        ccnty: int = 2
+        prec_acc_dt: float = 0.0
+        do_radar_ref: int = 0
+        swint_opt: int = 0
+        windfarm_opt: int = 0
+        windfarm_ij: int = 0
+        windfarm_tke_factor: float = .25
+        sf_ocean_physics: int = 0
+        oml_hml0: float = 50.0
+        oml_gamma: float = 0.14
+        oml_relaxation_time: float = 0.0
+        isftcflx: int = 0
+        sst_skin: int = 0
+        noahmp_options: object = None
+        nwp_diagnostics: int = 0
+        diagnostic_history_interval: float = 60.0
         topo_shadow_length_m: float = 25000.0
 
     wrf = parse_namelist(FIXTURE)
@@ -236,6 +278,16 @@ def test_daily_replay_driver_without_keys_is_unchanged(monkeypatch, tmp_path):
     assert (nl.radiation_cadence_steps, nl.cumulus_cadence_steps, nl.top_lid) == (180, 1, False)
 
 
+def test_ccn_conc_bound_in_both_pipelines(monkeypatch, tmp_path):
+    nested = tmp_path/'nested'
+    nested.mkdir()
+    bundles = _load_nested(monkeypatch, nested, {}, extra_physics=' ccn_conc = 2.7e8,\n')
+    assert all(b.namelist.ccn_conc == 2.7e8 for b in bundles.values())
+    daily = tmp_path/'daily'
+    daily.mkdir()
+    assert _build_daily_case(monkeypatch, daily, ' ccn_conc = 2.7e8,\n').ccn_conc == 2.7e8
+
+
 @pytest.mark.parametrize("path", [
     REPO / "examples/switzerland_d01/namelist.input",
     FIXTURE,
@@ -258,7 +310,7 @@ def test_release_namelists_are_fully_honoured(path):
     (" smdiv = 0.2,\n", "dynamics", "smdiv=0.2"),
     (" rk_ord = 2,\n", "dynamics", "rk_ord=2"),
     (" non_hydrostatic = .false.,\n", "dynamics", "non_hydrostatic=False"),
-    (" dveg = 2,\n", "noah_mp", "dveg=2"),
+    (" dveg = 10,\n", "noah_mp", "dveg=10"),
     (" sf_surface_physics = 2,\n", "physics", "sf_surface_physics=[2]"),
     (" not_a_wrf_key = 1,\n", "physics", "not_a_wrf_key"),
 ])
@@ -277,7 +329,19 @@ def test_cli_refuses_unhonoured_values_before_jax(tmp_path, capsys, line, group,
                    "--domains-from-namelist", "--hours", "3", "--dry-run"])
     err = capsys.readouterr().err
     assert rc != 0, err
-    assert needle in err and ("would NOT honour" in err or "not bound" in err), err
+    if group == "noah_mp":
+        assert needle in err and "only the WRF-defined, ported choices" in err, err
+    else:
+        assert needle in err and ("would NOT honour" in err or "not bound" in err), err
+
+
+def test_cli_admits_ported_dynamic_vegetation_before_jax(tmp_path, capsys):
+    text = FIXTURE.read_text()
+    text += "\n&noah_mp\n dveg = 2,\n/\n"
+    (tmp_path / "namelist.input").write_text(text)
+    rc = cli.main(["run", "--input-dir", str(tmp_path), "--output-dir", str(tmp_path / "out"),
+                   "--domains-from-namelist", "--hours", "3", "--dry-run"])
+    assert rc == 0, capsys.readouterr().err
 
 
 @pytest.mark.parametrize("key,values", [("mp_physics", "8, 8, 0"), ("ra_sw_physics", "4, 1, 4"),
@@ -341,8 +405,9 @@ def test_omitted_dynamics_knobs_run_the_wrf_registry_default():
     assert any("bl_pbl_physics" in w and "omitted" in w for w in warnings)
 
 
-@pytest.mark.parametrize("diff,km,ok", [(1, 4, True), (0, 0, True), (0, 4, True), (2, 3, True), (2, 2, False),
-                                        (2, 5, False), (2, 1, False), (1, 1, False), (2, 4, False), (1, 0, False)])
+@pytest.mark.parametrize("diff,km,ok", [(1, 4, True), (0, 0, True), (0, 4, True), (2, 3, True), (2, 2, True),
+                                        (0, 2, False), (1, 2, False),
+                                        (2, 5, True), (2, 1, False), (1, 1, False), (2, 4, False), (1, 0, False)])
 def test_diffusion_pairs_without_an_operational_path_are_refused(diff, km, ok):
     # v0.3.4 probe: diff_opt=2/km_opt=1/khdif=100 traced exactly the diff_opt=0 program
     errors, _ = nb.namelist_honour_report({"dynamics": {"diff_opt": [diff], "km_opt": [km]}}, ("d01",))
@@ -382,30 +447,164 @@ def test_rk_ord_and_port_spelling_rk_order_share_semantics(tmp_path, capsys, spe
 
 
 
-@pytest.mark.parametrize("km", [2, 5])
-def test_km_opt_2_and_5_are_refused_pre_jax(tmp_path, capsys, km):
-    # manager decision (rel034 18:08Z): unqualified v022 scaffolds, NaN under the release REAL carry
+def test_sms_admitted_with_wrf_pairing_pre_jax(tmp_path, capsys):
     from gpuwrf.io.scheme_catalog import SupportStatus, classify_scheme
-
-    support = classify_scheme("km_opt", km)
-    assert support.status is SupportStatus.RECOGNIZED_FAIL_CLOSED and "NaN" in support.reason
-    errors, _ = nb.namelist_honour_report({"dynamics": {"diff_opt": [2], "km_opt": [km]}}, ("d01",))
-    assert any("NaN" in e and f"km_opt={km}" in e for e in errors)
+    support = classify_scheme("km_opt", 5)
+    assert support.status is SupportStatus.IMPLEMENTED and "CPU-oracle-qualified" in support.reason
     (tmp_path / "namelist.input").write_text(_edited(FIXTURE.read_text(), {"diff_opt": "2, 2, 2",
-                                                                          "km_opt": f"{km}, {km}, {km}"}))
+                           "km_opt": "5, 5, 5", "bl_pbl_physics": "0, 0, 0",
+                           "sf_sfclay_physics": "5, 5, 5"}))
     rc = cli.main(["run", "--input-dir", str(tmp_path), "--output-dir", str(tmp_path / "out"),
-                   "--domains-from-namelist", "--hours", "3", "--dry-run"])
-    err = capsys.readouterr().err
-    assert rc != 0 and "km_opt" in err and "NaN" in err, err
+                   "--max-dom", "1", "--hours", "3", "--dry-run"])
+    assert rc == 0, capsys.readouterr().err
 
 
-def test_km_opt_3_and_release_diffusion_still_run(tmp_path, capsys):
+@pytest.mark.parametrize('change,reason', [
+    ({'diff_opt':1},'requires diff_opt=2'),
+    ({'bl_pbl_physics':5},'requires bl_pbl_physics=0'),
+    ({'sf_sfclay_physics':7},'0/1/5/91'),
+    ({'sf_sfclay_physics':1},'MM5 surface caller'),
+    ({'sf_sfclay_physics':91},'MM5 surface caller'),
+    ({'cu_physics':11},'cu_physics=11'),
+    ({'mp_physics':40},'extra scalar diffusion'),
+    ({'sf_surface_physics':3},'SMS land caller'),
+    ({'sf_surface_physics':4,'sf_sfclay_physics':0},'surface layer 0 requires land 0'),
+])
+def test_sms_invalid_or_unqualified_pairings_fail_closed(change,reason):
+    wrf={'dynamics':{'diff_opt':[2],'km_opt':[5]},
+         'physics':{'bl_pbl_physics':[0],'sf_sfclay_physics':[5],'cu_physics':[0],'mp_physics':[8]}}
+    for key,value in change.items():
+        wrf['dynamics' if key=='diff_opt' else 'physics'][key]=[value]
+    errors,_=nb.namelist_honour_report(wrf,('d01',))
+    assert any(reason in e for e in errors),errors
+
+
+def test_sms_is_bound_in_both_pipelines(monkeypatch,tmp_path):
+    bundles=_load_nested(monkeypatch,tmp_path,{'diff_opt':'2, 2, 2','km_opt':'5, 5, 5',
+        'bl_pbl_physics':'0, 0, 0','sf_sfclay_physics':'5, 5, 5'},names=('d01',))
+    assert all((b.namelist.diff_opt,b.namelist.km_opt,b.namelist.bl_pbl_physics)==(2,5,0)
+               for b in bundles.values())
+    nl=_build_daily_case(monkeypatch,tmp_path,' bl_pbl_physics=0,\n sf_sfclay_physics=5,\n',
+                          ' diff_opt=2,\n km_opt=5,\n')
+    assert (nl.diff_opt,nl.km_opt,nl.bl_pbl_physics,nl.sf_sfclay_physics)==(2,5,0,5)
+
+
+def test_sms_live_child_stays_refused_until_two_domain_wrfgate():
+    from gpuwrf.io.namelist_check import refuse_unqualified_nested_options, UnsupportedSchemeError
+    wrf={'dynamics':{'diff_opt':[2,2],'km_opt':[5,5]}}
+    refuse_unqualified_nested_options(wrf,1)
+    with pytest.raises(UnsupportedSchemeError,match='SMS TKE'):
+        refuse_unqualified_nested_options(wrf,2)
+
+
+@pytest.mark.parametrize("km", [2, 3])
+def test_qualified_3d_and_release_diffusion_run(tmp_path, capsys, km):
     from gpuwrf.io.scheme_catalog import SupportStatus, classify_scheme
 
-    assert classify_scheme("km_opt", 3).status is SupportStatus.IMPLEMENTED
+    assert classify_scheme("km_opt", km).status is SupportStatus.IMPLEMENTED
     assert classify_scheme("km_opt", 4).status is SupportStatus.IMPLEMENTED
     (tmp_path / "namelist.input").write_text(_edited(FIXTURE.read_text(), {"diff_opt": "2, 2, 2",
-                                                                          "km_opt": "3, 3, 3"}))
+                                                                          "km_opt": f"{km}, {km}, {km}"}))
+    selector = ["--max-dom", "1"] if km == 2 else ["--domains-from-namelist"]
+    rc = cli.main(["run", "--input-dir", str(tmp_path), "--output-dir", str(tmp_path / "out"),
+                   *selector, "--hours", "3", "--dry-run"])
+    assert rc == 0, capsys.readouterr().err
+
+
+def test_km2_is_bound_in_both_loaders(monkeypatch, tmp_path):
+    # km_opt=2 is qualified for native single domains; live-child qualification is pending.
+    bundles = _load_nested(monkeypatch, tmp_path, {"diff_opt": "2, 2, 2", "km_opt": "2, 2, 2"}, names=("d01",))
+    assert all((b.namelist.diff_opt,b.namelist.km_opt)==(2,2) for b in bundles.values())
+    nl = _build_daily_case(monkeypatch, tmp_path, "", " diff_opt=2,\n km_opt=2,\n")
+    assert (nl.diff_opt,nl.km_opt)==(2,2)
+    assert nl.moist_adv_opt == 1  # WRF default when omitted, not the legacy 0.
+
+
+@pytest.mark.parametrize("mp", sorted(nb.KM2_UNWIRED_MP))
+def test_km2_unwired_extra_scalars_fail_closed(mp):
+    wrf = {"dynamics": {"diff_opt": [2], "km_opt": [2]}, "physics": {"mp_physics": [mp]}}
+    errors, _ = nb.namelist_honour_report(wrf, ("d01",))
+    assert any("extra scalar diffusion" in e for e in errors)
+    from gpuwrf.runtime.les3d_km3 import les3d_km3_forward_tendencies
+    with pytest.raises(NotImplementedError, match="extra microphysics scalar"):
+        les3d_km3_forward_tendencies(None, SimpleNamespace(km_opt=2, mp_physics=mp))
+
+
+def test_km2_with_moist_adv_opt0_runs_and_default_is_bound():
+    # o2-moistadv: option 0 now transports moisture (plain WRF stencil), so the
+    # km_opt=2 "legacy root source-update gap" refusal is gone.
+    wrf = {"dynamics": {"diff_opt": [2], "km_opt": [2], "moist_adv_opt": [0]}}
+    errors, _ = nb.namelist_honour_report(wrf, ("d01",))
+    assert not any("moist_adv_opt" in e for e in errors), errors
+    del wrf["dynamics"]["moist_adv_opt"]
+    assert nb.bound_options(wrf, "d01")["moist_adv_opt"] == 1
+
+
+# --------------------------------------------------------------------------- #
+# o2-moistadv: omitted moist/scalar_adv_opt -> WRF Registry default 1 (<= v0.3.4 bound 0,    #
+# and moist_adv_opt=0 then skipped moisture transport); omitted radt refused.               #
+# --------------------------------------------------------------------------- #
+def _without(text: str, *keys: str) -> str:
+    for key in keys:
+        pattern = re.compile(rf"^\s*{key}\s*=.*\n", re.M)
+        assert pattern.search(text), key
+        text = pattern.sub("", text)
+    return text
+
+
+@pytest.mark.parametrize("dynamics", [{}, {"diff_opt": [1], "km_opt": [4]}])
+def test_omitted_adv_opts_bind_the_registry_default(dynamics):
+    for domain in ("d01", "d02"):
+        bound = nb.bound_options({"dynamics": dict(dynamics)}, domain)
+        assert (bound["moist_adv_opt"], bound["scalar_adv_opt"]) == (1, 1)
+    explicit = {"dynamics": {"moist_adv_opt": [0, 2], "scalar_adv_opt": [2, 0]}}
+    assert (nb.bound_options(explicit, "d01")["moist_adv_opt"],
+            nb.bound_options(explicit, "d01")["scalar_adv_opt"]) == (0, 2)
+    assert (nb.bound_options(explicit, "d02")["moist_adv_opt"],
+            nb.bound_options(explicit, "d02")["scalar_adv_opt"]) == (2, 0)
+
+
+def test_nested_loader_binds_omitted_adv_opts_as_one(monkeypatch, tmp_path):
+    omitted = tmp_path / "omitted.namelist"
+    omitted.write_text(_without(FIXTURE.read_text(), "moist_adv_opt", "scalar_adv_opt"))
+    monkeypatch.setitem(globals(), "FIXTURE", omitted)  # _write_case reads the module FIXTURE
+    bundles = _load_nested(monkeypatch, tmp_path, {})
+    for domain in ("d01", "d02", "d03"):
+        nl = bundles[domain].namelist
+        assert (nl.moist_adv_opt, nl.scalar_adv_opt) == (1, 1), domain
+
+
+def test_nested_loader_keeps_explicit_adv_opt0(monkeypatch, tmp_path):
+    bundles = _load_nested(monkeypatch, tmp_path, {"moist_adv_opt": "0, 0, 0", "scalar_adv_opt": "0, 2, 0"})
+    assert [(b.namelist.moist_adv_opt, b.namelist.scalar_adv_opt) for b in bundles.values()] == [
+        (0, 0), (0, 2), (0, 0)]
+
+
+def test_daily_replay_driver_binds_omitted_adv_opts_as_one(monkeypatch, tmp_path):
+    nl = _build_daily_case(monkeypatch, tmp_path, " radt = 10,\n")
+    assert (nl.moist_adv_opt, nl.scalar_adv_opt) == (1, 1)
+
+
+def test_cli_with_adv_opts_omitted_passes_and_explicit_zero_passes(tmp_path, capsys):
+    (tmp_path / "namelist.input").write_text(_without(FIXTURE.read_text(), "moist_adv_opt", "scalar_adv_opt"))
     rc = cli.main(["run", "--input-dir", str(tmp_path), "--output-dir", str(tmp_path / "out"),
                    "--domains-from-namelist", "--hours", "3", "--dry-run"])
     assert rc == 0, capsys.readouterr().err
+    (tmp_path / "namelist.input").write_text(_edited(FIXTURE.read_text(), {"moist_adv_opt": "0, 0, 0"}))
+    rc = cli.main(["run", "--input-dir", str(tmp_path), "--output-dir", str(tmp_path / "out"),
+                   "--domains-from-namelist", "--hours", "3", "--dry-run"])
+    assert rc == 0, capsys.readouterr().err
+
+
+def test_cli_warns_on_omitted_radt_with_radiation(tmp_path, capsys):
+    (tmp_path / "namelist.input").write_text(_without(FIXTURE.read_text(), "radt"))
+    rc = cli.main(["run", "--input-dir", str(tmp_path), "--output-dir", str(tmp_path / "out"),
+                   "--domains-from-namelist", "--hours", "3", "--dry-run"])
+    err = capsys.readouterr().err
+    assert rc == 0 and "radt omitted" in err, err
+    _, warnings = nb.namelist_honour_report({"physics": {"ra_lw_physics": [0], "ra_sw_physics": [0]}}, ("d01",))
+    assert not any("radt" in w for w in warnings), warnings
+    _, warnings = nb.namelist_honour_report({"physics": {"radt": [30]}}, ("d01",))
+    assert not any("radt" in w for w in warnings), warnings
+    _, warnings = nb.namelist_honour_report({"physics": {}}, ("d01",))  # omitted ra_* -> release RRTMG
+    assert any("radt omitted" in w for w in warnings), warnings

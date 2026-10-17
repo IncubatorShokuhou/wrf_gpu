@@ -1,0 +1,14 @@
+{
+  "before": "e1003896aaa9658b2b0b3ae295c0adea474727ec",
+  "F1": "947ea8d747496ccd5f593245c894aa462b68f9fb",
+  "classd": "065409847c92f382dd76e53aed22774f165e76b8",
+  "merge_returncode": 1,
+  "conflicts": [
+    "KNOWN_ISSUES.md",
+    "src/gpuwrf/coupling/scan_adapters.py",
+    "src/gpuwrf/runtime/operational_mode.py"
+  ],
+  "status": "CLASSD product overlap requires author composed caller; F1 kept exact",
+  "why": "F1 Morrison adapters return (State,precip), ClassD returns (State,radar); shared dispatcher ClassD branch sets precip=None. Both channels needed together under NoahMP + do_radar_ref=1. No automatic one-side resolution allowed.",
+  "UTC": "2026-10-15T18:30:59.409815+00:00"
+}

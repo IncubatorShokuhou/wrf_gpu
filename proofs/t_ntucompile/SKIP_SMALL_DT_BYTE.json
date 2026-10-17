@@ -1,0 +1,21 @@
+{
+  "change": "advance_small CALLs small_dt only when some level merges it: support.masked_call (lax.cond on any(m9 & alive); NumPy literal reference always calls) + emitter SKIP_UNSELECTED={small_dt} (t-ntucompile 0d71839360)",
+  "measured_source_code_hash": {
+    "src/gpuwrf/physics/ntu/support.py": "a95b8a2f873a809179c3fa5160c0ec0612348b05cbd5684692ad66a238a80f9a",
+    "src/gpuwrf/physics/ntu/phases_generated.py": "da3a85d81561fe38d0d5cf4a0cff4118b99d473a12136ed0d14bcb2dc81d99a3"
+  },
+  "candidate_code_hash": {
+    "src/gpuwrf/physics/ntu/support.py": "426cb9d6e060a4d2b504005c8c501102b0c936315a70039542ed08d34144c72c",
+    "src/gpuwrf/physics/ntu/phases_generated.py": "cc002933cf8eba28f93c156e93903ac395aaffcf314488adccce35c8f0ab6648"
+  },
+  "frozen_observations_sha256": "0f70d7e4eadfad134f8a2e3987bd52ca14751e2928b94e27d36269189c446dba",
+  "candidate_observations_sha256": "0f70d7e4eadfad134f8a2e3987bd52ca14751e2928b94e27d36269189c446dba",
+  "bitwise": {
+    "arrays": 912,
+    "bitwise_equal": true,
+    "differing": {}
+  },
+  "run": "proofs/s2_ntu/native_probe.py --mode interpret, 12 cases x 2 steps, CPU, worktree 0d71839360 clean before/after (NP14), wall 5 min 34 s (was 10 min 31 s), peak RSS 18.3 GB",
+  "why_exact": "all 29 small_dt outputs merge as where(m9 & alive, out, old); call_out is not read afterwards; with no selected lane nothing returned is read (WRF IF around the CALL)",
+  "scope": "CPU interpreted production kernel; GPU real-column bitwise A/B separate (G08)"
+}

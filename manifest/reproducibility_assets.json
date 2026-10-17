@@ -49,6 +49,21 @@
       ],
       "pinned_in": "fixtures/manifests/rrtmg-intermediate-oracle-v1.yaml",
       "pin_verified": true
+    },
+    {
+      "name": "t-cfix-cu-c06-tiedtke-rows-v1",
+      "path": "proofs/t_cfix_cu/c06_tiedtke/c06_tiedtke_rows.npz",
+      "checksum_sha256": "95ca642f31cbc6f464b1a2bea171717d3c3766a563ea7e9ab999e08b731e4dda",
+      "bytes": 782519,
+      "vendored": true,
+      "consumed_by": [
+        "tests/test_t_cfix_cu_tiedtke_c06_rows.py (pins this exact sha256)",
+        "proofs/t_cfix_cu/c06_tiedtke/mutants.py"
+      ],
+      "pinned_in": "tests/test_t_cfix_cu_tiedtke_c06_rows.py",
+      "pin_verified": true,
+      "rebuild_cmd": "bash proofs/t_cfix_cu/c06_tiedtke/build.sh BUILD && python3 proofs/t_cfix_cu/c06_tiedtke/phyprep_from_restart.py RUN OUT BUILD && python3 proofs/t_cfix_cu/c06_tiedtke/build_fixture.py OUT/phyprep.npz BUILD WORK proofs/t_cfix_cu/c06_tiedtke/c06_tiedtke_rows.npz",
+      "rebuild_notes": "Real c06 cu6 Tiedtke oracle rows: WRF phy_prep (REAL4) of a private pristine serial c06 wrf.exe restart at 2023-01-15_15:00 (RUN = that run dir; provenance proofs/t_cfix_cu/c06_tiedtke/pristine_run/) + outputs of the UNMODIFIED module_cu_tiedtke.F called per tile row and per column. Needs gfortran + a WRF checkout + the c06 composite inputs to rebuild; vendored (783 KB) so tests need neither."
     }
   ],
   "external_inputs_not_vendored": {

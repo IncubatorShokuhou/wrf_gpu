@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""G3 urban BEP/BEM + WRF lake reference-only oracle gate.
+"""Historical G3 urban BEP/BEM reference-only oracle gate.
 
 This is intentionally not a fabricated physics port.  It proves that the WRF
 Fortran sources/objects and Registry state packages for the requested schemes
@@ -7,7 +7,8 @@ are present, that the gpuwrf catalog accepts them only as REFERENCE_ONLY, and
 that every operational path still fail-closes before compute.
 
 No numerical WRF single-column parity claim is made unless a meaningful
-standalone WRF driver exists for the full Urban/Lake initialization and state ABI.
+standalone WRF driver exists for the full urban initialization and state ABI.
+Lake graduated separately under proofs/s1_lake.
 """
 
 from __future__ import annotations
@@ -86,19 +87,8 @@ SCHEMES: dict[str, dict[str, Any]] = {
         "extra_state_members": BEM_EXTRA_REGISTRY_STATE,
         "entrypoint": bep_bem_step,
     },
-    "lake": {
-        "label": "WRF lake model",
-        "key": "sf_lake_physics",
-        "code": 1,
-        "sources": ("module_sf_lake.F",),
-        "objects": ("module_sf_lake.o",),
-        "modules": ("module_sf_lake.mod",),
-        "registry_package": None,
-        "registry_terms": ("sf_lake_physics", "lake_depth"),
-        "registry_members": LAKE_CARRY_MEMBERS,
-        "extra_state_members": (),
-        "entrypoint": lake_step,
-    },
+    # Lake graduated to proofs/s1_lake; this historical fail-closed inventory
+    # now covers only the still-unported BEP/BEM selections.
 }
 
 
@@ -469,13 +459,13 @@ def build_report() -> dict[str, Any]:
         "pieces": pieces,
         "small_grid_static_plausibility": small_grid,
         "claim_boundary": (
-            "BEP, BEP+BEM, and WRF lake are REFERENCE_ONLY. This proof validates "
+            "BEP and BEP+BEM are REFERENCE_ONLY; lake graduated to proofs/s1_lake. This proof validates "
             "WRF source/object/Registry presence and fail-closed wiring only; it "
             "does not claim numerical WRF parity or an operational JAX kernel."
         ),
         "recommended_milestone": (
-            "Create a dedicated urban/lake milestone to build fresh WRF Fortran "
-            "single-column savepoints, freeze the BEP/BEM/lake carry interfaces, "
+            "Create a dedicated urban milestone to build fresh WRF Fortran "
+            "single-column savepoints, freeze the BEP/BEM carry interfaces, "
             "and only then port faithful JAX kernels."
         ),
     }

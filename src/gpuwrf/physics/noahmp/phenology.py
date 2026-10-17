@@ -91,6 +91,7 @@ def noahmp_phenology_table(
     land_state: NoahMPLandState,
     forcing: NoahMPForcing,
     static: NoahMPStatic,
+    *, dveg: int = 4,crop=None,
 ) -> NoahMPPhenology:
     """Table phenology for dveg=4 (croptype == 0). See module docstring.
 
@@ -99,6 +100,13 @@ def noahmp_phenology_table(
     (the driver writes the returned LAI/SAI back into ``NoahMPLandState``).
     """
 
+    if dveg not in range(1,10):
+        raise ValueError("Noah-MP dveg must be 1..9")
+    if crop is not None:
+        base=noahmp_phenology_table(land_state,forcing,static,dveg=dveg)
+        return _crop_phenology(land_state,static,base,*crop)
+    if dveg in (2,5,6,7,8,9):
+        return _input_lai_phenology(land_state,forcing,static,dveg)
     land_state, forcing, static = real_tree((land_state, forcing, static))
     p = static.parameters
 
@@ -216,7 +224,14 @@ def noahmp_phenology_table(
 
     # --- FVEG for dveg=4 (NOAHMP_SFLX caller, :863-875) -----------------------
     # dveg=4: FVEG = SHDMAX; floor 0.05; urban/barren -> 0; ELAI+ESAI==0 -> 0.
-    fveg = jnp.where(shdmax <= 0.05, 0.05, shdmax)
+    if dveg==1:
+        if static.shdfac is None:raise ValueError("dveg=1 requires prescribed SHDFAC/VEGFRA")
+        green=jnp.asarray(static.shdfac,dtype=real_dtype())
+    elif dveg==3:
+        green=1.-jnp.exp(-.52*(lai+sai))
+    else:
+        green=shdmax
+    fveg = jnp.where(green <= 0.05, 0.05, green)
     fveg = jnp.where((vegtyp == ISURBAN_MODIS) | (vegtyp == ISBARREN_MODIS), 0.0, fveg)
     fveg = jnp.where((elai + esai) == 0.0, 0.0, fveg)
 
@@ -234,4 +249,69 @@ def noahmp_phenology_table(
     )
 
 
+def _input_lai_phenology(land_state,forcing,static,dveg):
+    """PHENOLOGY input-LAI branch and SFLX FVEG caller, without monthly gathers."""
+    land_state,forcing,static=real_tree((land_state,forcing,static))
+    p=static.parameters
+    r=real_dtype()
+    vegtyp=jnp.asarray(static.ivgtyp,jnp.int32)
+    tv=jnp.asarray(land_state.tv,r)
+    snowh=jnp.asarray(land_state.snowh,r)
+    lai=jnp.asarray(land_state.lai,r)
+    if dveg in (7,8,9):
+        sai=jnp.maximum(.05,.1*lai)
+        sai=jnp.where(lai<.05,0.,sai)
+    else:sai=jnp.asarray(land_state.sai,r)
+    sai=jnp.where(sai<.05,0.,sai)
+    lai=jnp.where((lai<.05)|(sai==0.),0.,lai)
+    no_veg=(vegtyp==ISWATER_MODIS)|(vegtyp==ISBARREN_MODIS)|(vegtyp==ISICE_MODIS)|(vegtyp==ISURBAN_MODIS)
+    lai,sai=jnp.where(no_veg,0.,lai),jnp.where(no_veg,0.,sai)
+    def gather(value):
+        value=jnp.asarray(value,r)
+        return value[jnp.clip(vegtyp,0,value.shape[0]-1)] if value.ndim==1 else value
+    hvt,hvb=gather(p.hvt),gather(p.hvb)
+    db=jnp.minimum(jnp.maximum(snowh-hvb,0.),hvt-hvb)
+    fb=db/jnp.maximum(1.e-6,hvt-hvb)
+    short=(hvt>0.)&(hvt<=1.)
+    snowhc=hvt*jnp.exp(-snowh/.2)
+    fb=jnp.where(short,jnp.minimum(snowh,snowhc)/snowhc,fb)
+    elai,esai=lai*(1.-fb),sai*(1.-fb)
+    esai=jnp.where(esai<.05,0.,esai)
+    elai=jnp.where((elai<.05)|(esai==0.),0.,elai)
+    if dveg in (6,7):
+        green=static.shdfac
+    elif dveg in (2,8):
+        green=1.-jnp.exp(-.52*(lai+sai))
+    else:
+        green=static.shdmax if static.shdmax is not None else static.shdfac
+    if green is None:raise ValueError("Input-LAI dveg requires prescribed vegetation fractions")
+    green=jnp.asarray(green,r)
+    fveg=jnp.where(green<=.05,.05,green)
+    fveg=jnp.where((vegtyp==ISURBAN_MODIS)|(vegtyp==ISBARREN_MODIS),0.,fveg)
+    fveg=jnp.where((elai+esai)==0.,0.,fveg)
+    igs=jnp.where(tv>_gather_per_category(_TMIN_MODIS_1BASED,vegtyp),real_scalar(1.),real_scalar(0.))
+    return NoahMPPhenology(lai,sai,elai,esai,fveg,igs)
+
+
 __all__ = ["noahmp_phenology_table"]
+
+
+def _crop_phenology(land,static,base,croptype,pgs):
+    """PHENOLOGY crop branch and SFLX:870; retain LAI/SAI and use old PGS."""
+    r=real_dtype();active=croptype>0
+    lai,sai,snowh=(jnp.asarray(v,r) for v in (land.lai,land.sai,land.snowh))
+    veg=jnp.asarray(static.ivgtyp,jnp.int32)
+    def gather(value):
+        value=jnp.asarray(value,r)
+        return value[veg] if value.ndim==1 else value
+    hvt,hvb=gather(static.parameters.hvt),gather(static.parameters.hvb)
+    db=jnp.minimum(jnp.maximum(snowh-hvb,0.),hvt-hvb)
+    fb=db/jnp.maximum(1.e-6,hvt-hvb)
+    snowhc=hvt*jnp.exp(-snowh/.2)
+    fb=jnp.where((hvt>0.)&(hvt<=1.),jnp.minimum(snowh,snowhc)/snowhc,fb)
+    elai,esai=lai*(1.-fb),sai*(1.-fb)
+    green=jnp.asarray(static.shdmax if static.shdmax is not None else static.shdfac,r)
+    fveg=jnp.where(green<=.05,.05,green)
+    fveg=jnp.where((veg==13)|(veg==16)|((elai+esai)==0.),0.,fveg)
+    igs=jnp.where((pgs>2)&(pgs<7),real_scalar(1.),real_scalar(0.))
+    return NoahMPPhenology(*(jnp.where(active,a,b) for a,b in zip((lai,sai,elai,esai,fveg,igs),base)))

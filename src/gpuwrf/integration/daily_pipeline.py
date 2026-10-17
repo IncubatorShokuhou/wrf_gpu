@@ -181,6 +181,8 @@ class DailyCase:
     metadata: dict[str, Any]
     writer_domain_authority: WrfoutDomainAuthority
     writer_diagnostics: Mapping[str, Any] | None = None
+    noahmp_land_initial: Any = None
+    noahmp_mmf_initial: Any = None
 
 
 @dataclass(frozen=True)
@@ -381,22 +383,47 @@ def _load_static_latlon_writer_diagnostics(
         "errors": errors,
         "note": "host-only wrfout diagnostics; not part of State/GridSpec/OperationalNamelist",
     }
+    if int(_domain_namelist_value(run, "physics", "sf_sfclay_physics", domain, 5)) == 0:
+        from gpuwrf.io.disabled_surface_history import load_disabled_surface_history
+        fields.update(load_disabled_surface_history(
+            run.wrfinput_file(domain), expected_shapes.get("XLAT")))
     return (fields if fields else None), meta
 
 
-def _merge_output_diagnostics(*diagnostics: Mapping[str, Any] | None) -> dict[str, Any] | None:
+def _merge_output_diagnostics(
+    *diagnostics: Mapping[str, Any] | None, namelist: Any = None,
+) -> dict[str, Any] | None:
     merged: dict[str, Any] = {}
     for item in diagnostics:
         if item:
             merged.update(item)
+    if int(getattr(namelist, "sf_sfclay_physics", 5)) == 0 and diagnostics and diagnostics[0]:
+        from gpuwrf.io.disabled_surface_history import HELD_SURFACE_FIELDS
+        # The first map is initialized writer data. sfclay=0 has no later
+        # producer for these fields; output-time surface solves cannot replace it.
+        for name in HELD_SURFACE_FIELDS:
+            if name in diagnostics[0]:
+                merged[name] = diagnostics[0][name]
     return merged or None
 
 
 def _build_real_case(config: DailyPipelineConfig) -> tuple[DailyCase, Path]:
     run_dir = resolve_run_dir(config.run_id, config.run_root)
+    from gpuwrf.io.cammg_config import validate_input_dir
+    validate_input_dir(run_dir)
     if not run_dir.is_dir():
         raise FileNotFoundError(f"missing run directory: {run_dir}")
+    from gpuwrf.timeseries.runtime import require_supported_run
+    require_supported_run(run_dir, replay=True)
+    from gpuwrf.streams.runtime import require_supported_run as require_stream_run
+    require_stream_run(run_dir, replay=True)
+    from gpuwrf.io.qnse_admission import refuse_qnse_sea_ice
+    admission_run = Gen2Run(run_dir)
+    refuse_qnse_sea_ice(admission_run, config.domain,
+                        _domain_namelist_value(admission_run, "physics", "bl_pbl_physics", config.domain, 5))
     replay = build_replay_case(run_dir, domain=config.domain)
+    if int(_domain_namelist_value(replay.run, "physics", "mp_physics", config.domain, 8)) == 9:
+        raise ValueError("Milbrandt mp_physics=9 requires native mode for mandatory radar; CPU-history replay is unsupported")
     # Seed the transitional legacy aliases (p/ph/mu) from the authoritative totals.
     # CRITICAL (donate-safety): ``State.replace(p=p_total, ...)`` aliases ``p`` to
     # the SAME device buffer as ``p_total`` -- a forecast entry compiled with
@@ -542,12 +569,12 @@ def _build_real_case(config: DailyPipelineConfig) -> tuple[DailyCase, Path]:
         # explicitly requests positive-definite or monotonic advection.
         moist_adv_opt=int(
             _domain_namelist_value(
-                replay.run, "dynamics", "moist_adv_opt", config.domain, 0
+                replay.run, "dynamics", "moist_adv_opt", config.domain, 1
             )
         ),
         scalar_adv_opt=int(
             _domain_namelist_value(
-                replay.run, "dynamics", "scalar_adv_opt", config.domain, 0
+                replay.run, "dynamics", "scalar_adv_opt", config.domain, 1
             )
         ),
         # v0.14 stage3/wrapper-cadence sprint: WRF SPECIFIED-domain per-stage
@@ -601,6 +628,51 @@ def _build_real_case(config: DailyPipelineConfig) -> tuple[DailyCase, Path]:
     # 180 steps and KF every step.  The replay harness's fixed dt/sound steps/land
     # replay are reported by namelist_binding (CLI warnings).
     namelist = bind_namelist_options(namelist, replay.run.namelist, config.domain)
+    if int(namelist.mp_physics) == 11:
+        from gpuwrf.physics.cammg.registry import warn_configuration
+        warn_configuration(namelist.cu_physics,namelist.shcu_physics)
+        from gpuwrf.physics.cammg.binding import bind_state
+        state=bind_state(state,run_dir/f'wrfinput_{config.domain}')
+    if namelist.windfarm_opt:
+        from gpuwrf.io.windfarm import bind_windfarm
+        namelist = bind_windfarm(namelist,run_dir,config.domain)
+    if namelist.tracer_opt or (replay.run.namelist.get("dynamics") or {}).get("gpuwrf_tracer_file"):
+        from gpuwrf.tracers.runtime import bind_inputs
+        namelist, state = bind_inputs(namelist, state, replay.run.namelist, config.domain, run_dir)
+    if int(namelist.mp_physics) in (5, 15):
+        from gpuwrf.physics.ferrier.binding import bind_ferrier_domain
+        namelist = bind_ferrier_domain(namelist, replay.run.namelist, config.domain)
+    if namelist.sst_skin:
+        raise ValueError("sst_skin=1 requires the native full-carry pipeline; CPU-history replay is unsupported")
+    if namelist.noahmp_options is not None:
+        raise ValueError("Nondefault Noah-MP choices require the native full-carry pipeline; CPU-history replay is unsupported")
+    if namelist.swint_opt:
+        raise ValueError("Solar interpolation requires the native full-carry pipeline; CPU-history replay cannot retain its state")
+    from gpuwrf.io.nesting_options import resolve_nesting_options
+    nesting = resolve_nesting_options(replay.run.namelist)
+    if int(namelist.sf_ocean_physics) == 1:
+        from gpuwrf.io.ocean_init import bind_ocean_model
+        namelist=bind_ocean_model(namelist,run_dir,config.domain,state=state)
+    if int(namelist.sf_lake_physics) == 1:
+        from gpuwrf.io.lake_init import bind_lake_model
+        namelist = bind_lake_model(namelist,run_dir,config.domain,state=state)
+    if int(namelist.sf_urban_physics) in (2,3):
+        raise ValueError('CPU-history replay cannot evolve BEP/BEM material/indoor/PBL state; use native/nested pipeline')
+    from gpuwrf.dfi.control import dfi_control_from_namelist  # o2-dfi: TDFI is native-driver only
+
+    if dfi_control_from_namelist(replay.run.namelist).active:
+        raise ValueError("&dfi_control dfi_opt!=0: digital filter initialization runs in the native driver only; "
+                         "the CPU-history replay driver cannot filter (set dfi_opt=0)")
+    if int(_domain_namelist_value(replay.run,"physics","sf_surface_physics",config.domain,0)) == 8:
+        from gpuwrf.io.ssib_land_init import bind_ssib_land
+        namelist=bind_ssib_land(namelist,run_dir,config.domain,state=state,
+            num_soil_layers=_domain_namelist_value(replay.run,"physics","num_soil_layers",config.domain,4))
+    if int(_domain_namelist_value(replay.run, "physics", "sf_surface_physics", config.domain, 0)) == 3:
+        from gpuwrf.io.ruc_land_init import bind_ruc_land
+        namelist = bind_ruc_land(
+            namelist, run_dir, config.domain, state=state,
+            num_soil_layers=_domain_namelist_value(replay.run, "physics", "num_soil_layers", config.domain, 4),
+        )
     _cadence: dict[str, Any] = {}
     _radt = _domain_namelist_value(replay.run, "physics", "radt", config.domain, None)
     if _radt is not None:
@@ -616,11 +688,43 @@ def _build_real_case(config: DailyPipelineConfig) -> tuple[DailyCase, Path]:
     if _cadence:
         namelist = replace(namelist, **_cadence)
     run_start = _coerce_run_start(str(replay.metadata["run_start_label"]))
+    if int(namelist.sf_lake_physics) == 1:
+        from gpuwrf.integration.nested_pipeline import _wrf_julian_yearlen
+        julian,yearlen = _wrf_julian_yearlen(run_start)
+        namelist = replace(namelist,time_utc=run_start,noahmp_julian=julian,noahmp_yearlen=yearlen)
+    # grid_fdda=1 analysis nudging (lane o2-fdda): wrffdda_d0N auxinput10 records + &fdda options.
+    from gpuwrf.io.wrffdda import load_grid_fdda
+    _fdda = load_grid_fdda(
+        run_dir, replay.run.namelist, config.domain, run_start=run_start, dt_s=float(namelist.dt_s),
+        nz=int(namelist.grid.nz), ny=int(namelist.grid.ny), nx=int(namelist.grid.nx),
+        run_seconds=float(config.hours) * 3600.0,
+        dx_m=float(namelist.grid.projection.dx_m),
+    )
+    if _fdda is not None:
+        namelist = replace(namelist, data_assimilation=_fdda)
+    from gpuwrf.io.obs_loader import load_observation_nudging
+    _obs = load_observation_nudging(run_dir,replay.run.namelist,config.domain,float(namelist.dt_s))
+    if _obs is not None:
+        namelist = replace(namelist,observation_nudging=_obs)
     writer_diagnostics, writer_static_latlon_meta = _load_static_latlon_writer_diagnostics(
         replay.run, config.domain, grid=replay.grid
     )
+    mmf_initial = mmf_land = None
+    from gpuwrf.io.noahmp_mmf import selected as mmf_selected, load_mmf
+    if mmf_selected(replay.run.namelist):
+        from gpuwrf.io.noahmp_land_init import build_noahmp_land_state, build_noahmp_params
+        from gpuwrf.integration.nested_pipeline import _wrf_julian_yearlen
+        mmf_land, mmf_static, _ = build_noahmp_land_state(run_dir, config.domain)
+        mmf_land, mmf_initial = load_mmf(replay.run, config.domain, mmf_land, mmf_static, namelist.dt_s)
+        energy, rad_params, nroot = build_noahmp_params(mmf_static)
+        julian, yearlen = _wrf_julian_yearlen(run_start)
+        namelist = replace(namelist, use_noahmp=True, noahmp_static=mmf_static,
+            noahmp_energy_params=energy, noahmp_rad_params=rad_params, noahmp_nroot=nroot,
+            noahmp_julian=julian, noahmp_yearlen=yearlen, time_utc=run_start,
+            noahmp_mmf_enabled=True, noahmp_mmf_opt_inf=mmf_initial.opt_inf)
     metadata = {
         "run_id": replay.metadata.get("run_id"),
+        "nesting": {**nesting, "active": False, "reason": "single-domain driver; no child feedback"},
         "run_dir": str(run_dir),
         "domain": config.domain,
         "grid": replay.metadata.get("grid", {}),
@@ -665,11 +769,17 @@ def _build_real_case(config: DailyPipelineConfig) -> tuple[DailyCase, Path]:
     writer_domain_authority = bind_wrfout_domain_authority(
         config.domain, replay.run.grid(config.domain), replay.grid
     )
+    if mmf_initial is not None:
+        metadata['mmf_work'] = dict(opt_run=5,opt_inf=mmf_initial.opt_inf,
+            wtddt_seconds=float(mmf_initial.seconds),stepwtd=int(mmf_initial.stepwtd),
+            noahmp_acc_dt=0)
     return (
         DailyCase(
             state=state,
             grid=replay.grid,
             namelist=namelist,
+            noahmp_land_initial=mmf_land,
+            noahmp_mmf_initial=mmf_initial,
             run_start=run_start,
             metadata=metadata,
             writer_diagnostics=writer_diagnostics,
@@ -755,6 +865,8 @@ def finite_guard_summary(state: Any) -> dict[str, Any]:
     state is never modified; success-path consumers read only ``all_finite``.
     """
 
+    from gpuwrf.runtime.finite_state_guard import assert_original_cammg_ok
+    assert_original_cammg_ok(state,domain='daily output',step=0)
     try:
         import jax
 
@@ -877,7 +989,7 @@ def _emit_auxhist_frame(
         return None
     valid_time = case.run_start + timedelta(minutes=float(lead_minutes))
     aux_path = output_dir / stream.filename(valid_time, config.domain)
-    output_diagnostics = _merge_output_diagnostics(case.writer_diagnostics, diagnostics)
+    output_diagnostics = _merge_output_diagnostics(case.writer_diagnostics, diagnostics, namelist=case.namelist)
     if prepared is None:
         prepared = prepare_wrfout_payload(
             state,
@@ -936,6 +1048,51 @@ def _segmented_forecast_fn(state: Any, namelist: Any, hours: float) -> Any:
     )
     block_until_ready(result)
     return result
+
+
+class _RucDailyStepper:
+    """Keep the complete operational carry across daily/auxhist boundaries.
+
+    The compatibility driver's State-only forecast callback reinitializes land
+    and the radiation/observation clocks on every call. RUC, lake, TEMF and observation
+    nudging and CuPlus use the bounded chunk runner with a global step and full restart.
+    """
+
+    def __init__(self, state, namelist, *, noahmp_land=None, noahmp_mmf=None):
+        from gpuwrf.runtime.operational_mode import (
+            _committed_initial_carry_for_run, _resolve_operational_suite, build_clock_base,
+        )
+        _resolve_operational_suite(namelist)
+        self.carry = _committed_initial_carry_for_run(state, namelist)
+        if noahmp_mmf is not None:
+            from gpuwrf.runtime.operational_mode import noahmp_initial_rad
+            held = noahmp_initial_rad(self.carry.state, namelist, land_state=noahmp_land)
+            self.carry = self.carry.replace(noahmp_land=noahmp_land, noahmp_rad=held,
+                                            noahmp_mmf=noahmp_mmf)
+        self.clock_base = build_clock_base(namelist)
+        self.next_step = 1
+
+    def __call__(self, state, namelist, hours):
+        import jax
+        import jax.numpy as jnp
+        from gpuwrf.runtime.operational_mode import _advance_chunk, _steps_for_hours
+
+        self.carry = self.carry.replace(state=_commit_to_operational_device(state))
+        remaining = _steps_for_hours(hours, float(namelist.dt_s))
+        cadence = int(namelist.radiation_cadence_steps)
+        if cadence <= 0:
+            raise ValueError("radiation_cadence_steps must be positive")
+        while remaining:
+            n = min(cadence, remaining)
+            self.carry = _advance_chunk(self.carry, namelist, jnp.asarray(self.next_step, jnp.int32),
+                                        self.clock_base, n_steps=n, cadence=cadence)
+            self.next_step += n
+            remaining -= n
+            jax.block_until_ready(self.carry.state.theta)
+        if getattr(self.carry,'cuplus',None) is not None:
+            from gpuwrf.runtime.finite_state_guard import assert_original_cumulus_ok
+            assert_original_cumulus_ok(self.carry,domain='daily',step=self.next_step-1)
+        return self.carry.state
 
 
 # Surface fields the operational M9 diagnostics supply to the wrfout writer.
@@ -1020,6 +1177,8 @@ def _surface_diagnostics_for_output(
     lead_seconds: float,
     variable_subset: tuple[str, ...] | frozenset[str] | None = None,
     output_radiation_work: list[int] | None = None,
+    ruc_carry: Any = None,
+    operational_carry: Any = None,
 ) -> dict[str, np.ndarray] | None:
     """Recompute the operational surface map for the wrfout writer.
 
@@ -1037,6 +1196,67 @@ def _surface_diagnostics_for_output(
 
     if not hasattr(namelist, "grid"):
         return None
+    from gpuwrf.coupling.fdda_rk import fdda_history
+
+    def held_diagnostics(values):
+        carry = operational_carry if operational_carry is not None else ruc_carry
+        values = fdda_history(getattr(carry, "fdda", None), values)
+        radar = getattr(carry, "radar_reflectivity", None)
+        if radar is not None:
+            values = dict(values or {}, REFL_10CM=radar)
+            if int(getattr(namelist, "mp_physics", 8)) == 40:
+                values["MSKF_REFL_10CM"] = radar  # aercu_opt=0: no MSKF hydrometeors
+        return values
+
+    if operational_carry is not None:
+        from gpuwrf.integration.nested_pipeline import _noahmp_surface_diagnostics_for_output
+        values = _noahmp_surface_diagnostics_for_output(
+            state, namelist, run_start, lead_seconds=lead_seconds,
+            noahmp_land=operational_carry.noahmp_land,
+            noahmp_rad=operational_carry.noahmp_rad,
+            radiation_diagnostics=operational_carry.radiation_diagnostics,
+            history_diagnostics=operational_carry.history_diagnostics,
+            variable_subset=variable_subset,
+            output_radiation_work=output_radiation_work,
+        )
+        if getattr(operational_carry,'temf',None) is not None:
+            from gpuwrf.coupling.temf import history_fields
+            values = dict(values or {},**history_fields(operational_carry.temf,state.t_skin.shape))
+        if getattr(operational_carry, 'noahmp_mmf', None) is not None:
+            from gpuwrf.io.noahmp_mmf import history_fields
+            values = dict(values or {}, **history_fields(operational_carry.noahmp_mmf, operational_carry.noahmp_land))
+        return held_diagnostics(values)
+    if ruc_carry is not None and getattr(ruc_carry,'temf',None) is not None:
+        from gpuwrf.integration.nested_pipeline import _history_surface_diagnostics_for_output
+        from gpuwrf.coupling.temf import history_fields
+        values = _history_surface_diagnostics_for_output(
+            state,namelist,run_start,lead_seconds=lead_seconds,
+            noahmp_land=ruc_carry.noahmp_land,noahmp_rad=ruc_carry.noahmp_rad,
+            radiation_diagnostics=ruc_carry.radiation_diagnostics,
+            history=ruc_carry.history_diagnostics,variable_subset=variable_subset,
+            output_radiation_work=output_radiation_work)
+        return held_diagnostics(dict(values or {},**history_fields(ruc_carry.temf,state.t_skin.shape)))
+    if ruc_carry is not None and getattr(ruc_carry,'lake',None) is not None:
+        from gpuwrf.integration.nested_pipeline import _history_surface_diagnostics_for_output
+        return held_diagnostics(_history_surface_diagnostics_for_output(
+            state,namelist,run_start,lead_seconds=lead_seconds,
+            noahmp_land=ruc_carry.noahmp_land,noahmp_rad=ruc_carry.noahmp_rad,
+            radiation_diagnostics=ruc_carry.radiation_diagnostics,
+            history=ruc_carry.history_diagnostics,variable_subset=variable_subset,
+            output_radiation_work=output_radiation_work))
+    if ruc_carry is not None:
+        from gpuwrf.integration.nested_pipeline import _history_surface_diagnostics_for_output
+        from gpuwrf.coupling.ruc_surface_hook import ruc_history_fields
+        values = _history_surface_diagnostics_for_output(
+            state, namelist, run_start, lead_seconds=lead_seconds,
+            noahmp_land=None, noahmp_rad=None, radiation_diagnostics=ruc_carry.radiation_diagnostics,
+            history=ruc_carry.history_diagnostics, variable_subset=variable_subset,
+            output_radiation_work=output_radiation_work,
+        )
+        if getattr(ruc_carry,"ssib_land",None) is not None:
+            from gpuwrf.coupling.ssib_surface_hook import ssib_history_fields
+            return held_diagnostics(dict(values or {},**ssib_history_fields(ruc_carry.ssib_land)))
+        return held_diagnostics(dict(values or {}, **ruc_history_fields(ruc_carry.ruc_land, namelist.ruc_static)))
     import jax  # local import: keeps module import light for non-GPU callers.
 
     clock_namelist = namelist
@@ -1298,6 +1518,37 @@ def _run_forecast_sequence(
     output_dir.mkdir(parents=True, exist_ok=True)
     case, run_dir = case_builder(config)
     state = case.state
+    ruc_active = (getattr(case.namelist, "sf_surface_physics", None) in (3,8)
+                  or int(getattr(case.namelist, "sf_lake_physics", 0)) == 1)
+    obs_active = getattr(case.namelist, "observation_nudging", None) is not None
+    from gpuwrf.coupling.fdda_rk import grid_fdda_active
+    fdda_active = grid_fdda_active(case.namelist)
+    carry_stepper = None
+    temf_active = int(getattr(case.namelist,'bl_pbl_physics',0)) == 10
+    mmf_active = bool(getattr(case.namelist, 'noahmp_mmf_enabled', False))
+    epsilon_active = int(getattr(case.namelist,'bl_pbl_physics',5)) in (16,17)
+    windfarm_active = int(getattr(case.namelist,'windfarm_opt',0)) == 1
+    tracer_active = getattr(state, "tracers", None) is not None
+    ocean_active=bool(getattr(case.namelist,'sf_ocean_physics',0) or getattr(case.namelist,'isftcflx',0))
+    from gpuwrf.coupling.cu_forcing import cu_forcing_required
+    # cu 7/10/11 resident cuplus; cu 3/5/6/16/93 held WRF RTHFTEN/RQVFTEN (t-cfix-cu F7/F14).
+    cuplus_active = (getattr(case.namelist, "cu_physics", 0) in (7, 10, 11)
+                     or cu_forcing_required(getattr(case.namelist, "cu_physics", 0)))
+    p3_active = int(getattr(case.namelist, "mp_physics", 8)) in (50,51,52,53)
+    if p3_active or mmf_active or ruc_active or obs_active or temf_active or epsilon_active or getattr(case.namelist,"stochastic_config",None) is not None or fdda_active or windfarm_active or tracer_active or ocean_active or cuplus_active:
+        if forecast_fn not in (_default_forecast_fn, _segmented_forecast_fn):
+            raise ValueError("RUC/TEMF/lake/observation/FDDA/epsilon-PBL/windfarm/tracer/ocean/CuPlus/MMF daily forecasts require the full-carry operational stepper")
+        # A continuous clock consumes the original full boundary time axis. Its
+        # cadence is the stored record spacing, without segment re-anchoring.
+        boundary_record_s = (case.metadata.get("boundary") or {}).get("interval_seconds")
+        if boundary_record_s and float(boundary_record_s) != _boundary_window_cadence_s(case.namelist):
+            case = replace(case, namelist=replace(case.namelist, boundary_config=replace(
+                case.namelist.boundary_config, update_cadence_s=float(boundary_record_s))))
+        carry_stepper = _RucDailyStepper(state, case.namelist,
+            **({'noahmp_land': case.noahmp_land_initial, 'noahmp_mmf': case.noahmp_mmf_initial}
+               if mmf_active else {}))
+        forecast_fn = carry_stepper
+    carry_diagnostic_key = "ruc_carry" if ruc_active else "operational_carry"
     # Lateral-boundary clock fix (v0.14 Switzerland d01): hold the full-time-axis
     # *_bdy leaves on host and feed every forecast segment a 2-level window
     # anchored at the segment's GLOBAL start time (see _rewindow_boundary_leaves).
@@ -1305,7 +1556,7 @@ def _run_forecast_sequence(
     # wrfout history for replay; ``interval_seconds`` for native-init wrfbdy
     # leaves (whose 6x/3x-fast consumption on this path is fixed by the same
     # windowing). ``window_s`` is the in-call walk cadence.
-    boundary_leaves = _capture_boundary_leaves(state, case.namelist)
+    boundary_leaves = _capture_boundary_leaves(state, case.namelist) if carry_stepper is None else {}
     boundary_window_s = _boundary_window_cadence_s(case.namelist)
     boundary_record_cadence_s = float(
         (case.metadata.get("boundary") or {}).get("interval_seconds") or boundary_window_s
@@ -1372,7 +1623,7 @@ def _run_forecast_sequence(
                 valid_time=valid_time,
                 lead_hours=float(lead_minutes) / 60.0,
                 run_start=case.run_start,
-                diagnostics=_merge_output_diagnostics(case.writer_diagnostics, diagnostics),
+                diagnostics=_merge_output_diagnostics(case.writer_diagnostics, diagnostics, namelist=case.namelist),
                 full_variable_set=full_variable_set,
             )
         for stream in firing:
@@ -1421,9 +1672,21 @@ def _run_forecast_sequence(
                         },
                     )
                 aux_surface_diag = _surface_diagnostics_for_output(
-                    state, case.namelist, case.run_start, lead_seconds=lead_minutes * 60.0
+                    state, case.namelist, case.run_start, lead_seconds=lead_minutes * 60.0,
+                    **({carry_diagnostic_key: carry_stepper.carry} if carry_stepper is not None else {}),
                 )
-                aux_diag = _merge_output_diagnostics(case.writer_diagnostics, aux_surface_diag)
+                aux_diag = _merge_output_diagnostics(case.writer_diagnostics, aux_surface_diag, namelist=case.namelist)
+                if carry_stepper is not None and getattr(carry_stepper.carry,'ocean',None) is not None:
+                    from gpuwrf.coupling.ocean_surface_hook import history as ocean_history
+                    aux_diag=dict(aux_diag or {},**ocean_history(carry_stepper.carry.ocean))
+                if carry_stepper is not None and getattr(carry_stepper.carry,'lake',None) is not None:
+                    from gpuwrf.coupling.lake_surface_hook import overlay_lake_history
+                    aux_diag = overlay_lake_history(aux_diag,carry_stepper.carry.lake,case.namelist.lake_bundle)
+                if carry_stepper is not None and getattr(carry_stepper.carry,"stochastic",None) is not None:
+                    from gpuwrf.io.stochastic_schema import history_fields as stochastic_history
+                    aux_diag.update(stochastic_history(carry_stepper.carry.stochastic,case.grid.nz,case.grid.ny,case.grid.nx))
+                if carry_stepper is not None and getattr(carry_stepper.carry,"windfarm_power",None) is not None:
+                    aux_diag = dict(aux_diag or {},POWER=carry_stepper.carry.windfarm_power)
                 _emit_streams_at(lead_minutes, cur_state=state, diagnostics=aux_diag)
         elapsed = time.perf_counter() - start
         per_hour_wall_s.append(float(elapsed))
@@ -1446,6 +1709,7 @@ def _run_forecast_sequence(
         # land state stands, and prognostic Noah-MP evolves it if enabled).
         if (
             bool(config.refresh_land_state_hourly)
+            and not ruc_active
             and case.metadata.get("source") == "gpuwrf.integration.d02_replay.build_replay_case"
             and not bool(case.metadata.get("standalone_native_init"))
         ):
@@ -1476,9 +1740,21 @@ def _run_forecast_sequence(
         # source: compute_m9_diagnostics(state, namelist_with_clock, lead_seconds).
         # time_utc is threaded so SWDOWN/GLW follow the real forecast diurnal clock.
         surface_diagnostics = _surface_diagnostics_for_output(
-            state, case.namelist, case.run_start, lead_seconds=float(hour) * 3600.0
+            state, case.namelist, case.run_start, lead_seconds=float(hour) * 3600.0,
+            **({carry_diagnostic_key: carry_stepper.carry} if carry_stepper is not None else {}),
         )
-        diagnostics = _merge_output_diagnostics(case.writer_diagnostics, surface_diagnostics)
+        diagnostics = _merge_output_diagnostics(case.writer_diagnostics, surface_diagnostics, namelist=case.namelist)
+        if carry_stepper is not None and getattr(carry_stepper.carry,'ocean',None) is not None:
+            from gpuwrf.coupling.ocean_surface_hook import history as ocean_history
+            diagnostics=dict(diagnostics or {},**ocean_history(carry_stepper.carry.ocean))
+        if carry_stepper is not None and getattr(carry_stepper.carry,'lake',None) is not None:
+            from gpuwrf.coupling.lake_surface_hook import overlay_lake_history
+            diagnostics = overlay_lake_history(diagnostics,carry_stepper.carry.lake,case.namelist.lake_bundle)
+        if carry_stepper is not None and getattr(carry_stepper.carry,"stochastic",None) is not None:
+            from gpuwrf.io.stochastic_schema import history_fields as stochastic_history
+            diagnostics.update(stochastic_history(carry_stepper.carry.stochastic,case.grid.nz,case.grid.ny,case.grid.nx))
+        if carry_stepper is not None and getattr(carry_stepper.carry,"windfarm_power",None) is not None:
+            diagnostics = dict(diagnostics or {},POWER=carry_stepper.carry.windfarm_power)
         prepared = None
         if writer is not None:
             # Pull this hour to host now (synchronous device->host), then write on
@@ -1529,14 +1805,21 @@ def _run_forecast_sequence(
 
         if checkpoint_at_hour is not None and hour == int(checkpoint_at_hour):
             checkpoint_path = output_dir / "checkpoints" / f"{config.run_id}_hour{hour:02d}.pkl"
-            write_checkpoint(
-                state,
-                case.namelist,
-                case.grid,
-                hour_steps(hour, float(config.dt_s)),
-                checkpoint_path,
-            )
-            state, restored_namelist, restored_grid, restored_step = read_checkpoint(checkpoint_path)
+            if carry_stepper is not None:
+                from gpuwrf.io.restart import write_restart, read_restart
+                carry_stepper.carry = carry_stepper.carry.replace(state=_commit_to_operational_device(state))
+                write_restart(carry_stepper.carry, case.namelist, case.grid,
+                              carry_stepper.next_step - 1, checkpoint_path)
+                restored_carry, restored_namelist, restored_grid, restored_step = read_restart(checkpoint_path)
+                carry_stepper.carry = restored_carry
+                carry_stepper.next_step = restored_step + 1
+                state = restored_carry.state
+            else:
+                write_checkpoint(
+                    state, case.namelist, case.grid,
+                    hour_steps(hour, float(config.dt_s)), checkpoint_path,
+                )
+                state, restored_namelist, restored_grid, restored_step = read_checkpoint(checkpoint_path)
             case = replace(case, state=state, namelist=restored_namelist, grid=restored_grid)
             checkpoint_payload = {
                 "path": str(checkpoint_path),
@@ -1953,6 +2236,8 @@ def execute_daily_pipeline(
     forecast_fn: Callable[[Any, Any, float], Any] | None = None,
     case_builder: Callable[[DailyPipelineConfig], tuple[DailyCase, Path]] = _build_real_case,
 ) -> dict[str, Any]:
+    from gpuwrf.io.cammg_config import validate_input_dir
+    validate_input_dir(resolve_run_dir(config.run_id, config.run_root))
     paths = _artifact_paths(config.proof_dir)
     config.proof_dir.mkdir(parents=True, exist_ok=True)
     config.output_dir.mkdir(parents=True, exist_ok=True)

@@ -1,0 +1,387 @@
+{
+  "created_utc": "2026-10-14T04:45:13.094006+00:00",
+  "scope": "COMPLETE opt-in experimental CPU family: dedicated cu7/cu10/cu11 bodies, resident caller/RK/radiation, both bindings, admission, restart and all four coupled profiles",
+  "decision": "READY for one independent critic after final contract check; not a release/GPU/D6 qualification",
+  "source_before_receipt_seal": "aa1a7b50f02223c839a8fc5ec46676046a3f62af",
+  "pristine_reference": "unmodified WRF 4.7.1 numerical bodies; compiler-defined zero initialization and separate snan sensitivity; no numerical body edits",
+  "supported_regime": "non-calm MSKF including weak nonzero winds; exactly calm singularity explicitly retained and reported",
+  "physics": {
+    "literal_primary_values": {
+      "cup": 3586,
+      "mskf_with_cmt": 3888,
+      "camzm": 5824
+    },
+    "literal_real_44level_values": {
+      "mskf": 3204,
+      "cup": 2950,
+      "camzm": 9612
+    },
+    "literal_transverse_wind_values": {
+      "mskf_with_cmt": 1944,
+      "camzm": 5832
+    },
+    "qualification_backend": "candidate equations with literal REAL/libm and original DOUBLE; separately compiled original WRF remains truth",
+    "compiled_strict_gate": "NOT every field passes strict128epsilon; small excesses disclosed under standing compiler policy; UPSTREAM_WRF_BUGS.md; D6 pending",
+    "calm_actual_native": "two original singular columns,40 vapor nonfinite each;devicecensus40,repairs0,finiteguardraises,bitsunchanged;MS20b source body hash equals final",
+    "original_zero_snan_sensitivity": "8CuP/8CAM/12MSKF whole stdout BYTE, including documented calm singularity"
+  },
+  "portable_reference": {
+    "frames": 236,
+    "finite_REAL32_values": 275314,
+    "fixture_sha256": "9a0ec62aa23e7228fc2fd4c0e7d731759d75e82454249ebcfe7e288ad2fa3473",
+    "provenance": "full_callers/manifest.json; original source/driver/compiler/stdout hashes; real_columns manifest distinguishes controlled diagnostics"
+  },
+  "coupled_profiles": [
+    {
+      "scheme": 10,
+      "pbl": 5,
+      "resolved_work": {
+        "dt_s": 18.0,
+        "cu_physics": 10,
+        "bl_pbl_physics": 5,
+        "sf_sfclay_physics": 5,
+        "mp_physics": 8,
+        "ra_sw_physics": 4,
+        "ra_lw_physics": 4,
+        "cumulus_cadence_steps": 1,
+        "cudt_minutes": 0.0,
+        "force_fp64": true
+      },
+      "shape": [
+        44,
+        42,
+        42
+      ],
+      "restart_continuation_byte_leaves": 202,
+      "main_guard_events": 0,
+      "source_events": 0,
+      "maxrss_KiB": 11359148,
+      "cpu_step_wall_s": [
+        284.09701348491944,
+        277.04993917094544,
+        2.2340408051386476
+      ],
+      "fixed_executable_compile_s": null,
+      "receipt": "receipts/CC05-cup.json",
+      "input_sha256": {
+        "namelist.input": "98eb3e0457b53a510931401ad1575e980a716da4588f8cbca4be95fd92846039",
+        "wrfinput_d01": "a5d696550d1dc6713e2e340b8c2fba83811d43f4a94a65ca95266035860e2781",
+        "wrfbdy_d01": "f3e556670e4768326997bdfa1dd8b0f77eb6d5da07d9c4dbf900bf8ff9e30230"
+      },
+      "scope": "real original Swiss input; CPU facade; not full forecast/GPU/D6"
+    },
+    {
+      "scheme": 11,
+      "pbl": 5,
+      "resolved_work": {
+        "dt_s": 18.0,
+        "cu_physics": 11,
+        "bl_pbl_physics": 5,
+        "sf_sfclay_physics": 5,
+        "mp_physics": 8,
+        "ra_sw_physics": 4,
+        "ra_lw_physics": 4,
+        "cumulus_cadence_steps": 1,
+        "cudt_minutes": 0.0,
+        "force_fp64": true
+      },
+      "shape": [
+        44,
+        42,
+        42
+      ],
+      "restart_continuation_byte_leaves": 187,
+      "main_guard_events": 0,
+      "source_events": 0,
+      "maxrss_KiB": 11347880,
+      "cpu_step_wall_s": [
+        270.92000807402655,
+        274.2706232939381,
+        1.8270263988524675
+      ],
+      "fixed_executable_compile_s": null,
+      "receipt": "receipts/CC06-mskf.json",
+      "input_sha256": {
+        "namelist.input": "98eb3e0457b53a510931401ad1575e980a716da4588f8cbca4be95fd92846039",
+        "wrfinput_d01": "a5d696550d1dc6713e2e340b8c2fba83811d43f4a94a65ca95266035860e2781",
+        "wrfbdy_d01": "f3e556670e4768326997bdfa1dd8b0f77eb6d5da07d9c4dbf900bf8ff9e30230"
+      },
+      "scope": "real original Swiss input; CPU facade; not full forecast/GPU/D6"
+    },
+    {
+      "scheme": 7,
+      "pbl": 2,
+      "resolved_work": {
+        "dt_s": 18.0,
+        "cu_physics": 7,
+        "bl_pbl_physics": 2,
+        "sf_sfclay_physics": 2,
+        "mp_physics": 8,
+        "ra_sw_physics": 4,
+        "ra_lw_physics": 4,
+        "cumulus_cadence_steps": 1,
+        "cudt_minutes": 0.0,
+        "force_fp64": true
+      },
+      "shape": [
+        44,
+        42,
+        42
+      ],
+      "restart_continuation_byte_leaves": 157,
+      "main_guard_events": 0,
+      "source_events": 0,
+      "maxrss_KiB": 9446420,
+      "cpu_step_wall_s": [
+        301.2681284251157,
+        285.0178593460005,
+        1.5888745139818639
+      ],
+      "fixed_executable_compile_s": null,
+      "receipt": "receipts/CC10-myj.json",
+      "input_sha256": {
+        "namelist.input": "98eb3e0457b53a510931401ad1575e980a716da4588f8cbca4be95fd92846039",
+        "wrfinput_d01": "a5d696550d1dc6713e2e340b8c2fba83811d43f4a94a65ca95266035860e2781",
+        "wrfbdy_d01": "f3e556670e4768326997bdfa1dd8b0f77eb6d5da07d9c4dbf900bf8ff9e30230"
+      },
+      "scope": "real original Swiss input; CPU facade; not full forecast/GPU/D6"
+    },
+    {
+      "scheme": 7,
+      "pbl": 9,
+      "resolved_work": {
+        "dt_s": 18.0,
+        "cu_physics": 7,
+        "bl_pbl_physics": 9,
+        "sf_sfclay_physics": 5,
+        "mp_physics": 8,
+        "ra_sw_physics": 4,
+        "ra_lw_physics": 4,
+        "cumulus_cadence_steps": 1,
+        "cudt_minutes": 0.0,
+        "force_fp64": true
+      },
+      "shape": [
+        44,
+        42,
+        42
+      ],
+      "restart_continuation_byte_leaves": 202,
+      "main_guard_events": 0,
+      "source_events": 0,
+      "maxrss_KiB": 13314912,
+      "cpu_step_wall_s": [
+        8.97524795285426,
+        1.8165015790145844,
+        1.7352267599198967
+      ],
+      "fixed_executable_compile_s": 231.1957198488526,
+      "receipt": "receipts/CC12-camuw-fixed.json",
+      "input_sha256": {
+        "namelist.input": "98eb3e0457b53a510931401ad1575e980a716da4588f8cbca4be95fd92846039",
+        "wrfinput_d01": "a5d696550d1dc6713e2e340b8c2fba83811d43f4a94a65ca95266035860e2781",
+        "wrfbdy_d01": "f3e556670e4768326997bdfa1dd8b0f77eb6d5da07d9c4dbf900bf8ff9e30230"
+      },
+      "scope": "real original Swiss input; CPU facade; not full forecast/GPU/D6"
+    }
+  ],
+  "pre_mask_events": "F2_DISPOSITION.json/.md: extremely small option-only postRK negatives, all guards/nonfinite/repairs0, wideCPUsummaryprecision disclosed; not release F2 closure",
+  "tests": {
+    "receipts": {
+      "SH01-shared": {
+        "passed": 337,
+        "failures": 29,
+        "errors": 0,
+        "skipped": 2,
+        "artifact": "<USER_HOME>/wrf_gpu2_lanes/s2-cuplus/SH01-shared.xml",
+        "sha256": "4a73ef5f7601e981800c21a2f3bcc77550c534b5efcb8e31531f4993e32c6383"
+      },
+      "SH02-fix": {
+        "passed": 107,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "artifact": "<USER_HOME>/wrf_gpu2_lanes/s2-cuplus/SH02-fix.xml",
+        "sha256": "3496c821ba093b67cf8f1e330f7c4764d838e4923de60d0a89dc6a703de24a9e"
+      },
+      "CA01-own": {
+        "passed": 127,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "artifact": "<USER_HOME>/wrf_gpu2_lanes/s2-cuplus/CA01-own.xml",
+        "sha256": "3698b4c7167c95b141fb76cedfc25521a4f811a64c97f195b54460ff0c549d11"
+      }
+    },
+    "unique_passing_checks": 446,
+    "numerical_deletion_mutants": 6,
+    "final_required": "tests/contracts/ and tests/test_v018_mp_family_fail_closed.py rechecked after metadata seal",
+    "reuse": "337SH01passes+focusedfixes; no repeat unchanged expensive smoke; CA01all127owned from clean gitarchive"
+  },
+  "release_identity": {
+    "sha256": "2bf12cb8374d3a84a440e47dea4b77b0c7436108fc2ee2616bba6ec79b17962a",
+    "probe": "proofs/s1_port/release_identity.py",
+    "scope": "CPU native-facade trace, FAST_DEFAULTS1; only artifact directory override",
+    "unchanged_since_measurement": "later changes only tests/proof harness/docs/PhysicsStepSpec notes"
+  },
+  "performance": {
+    "scope": "CPU only; default graph unchanged; GPU launches/VRAM/STACK/readiness unknown",
+    "resident_cup": {
+      "scope": "CPU artifact cost for the actual resident CuP caller, not GPU timing.",
+      "platform": "cpu",
+      "gpu_executed": false,
+      "source": "<DATA_ROOT>/wrf_gpu2/scratch/s2-cuplus/clean-archive",
+      "fixture_sha256": "9a0ec62aa23e7228fc2fd4c0e7d731759d75e82454249ebcfe7e288ad2fa3473",
+      "compile_s": 16.192289906088263,
+      "stable_f64_tokens": 48,
+      "optimized_f64_tokens": 0,
+      "timing": {
+        "fresh": {
+          "median_ms": 6.906999973580241,
+          "samples_ms": [
+            6.89136004075408,
+            6.909850984811783,
+            6.929181050509214,
+            6.906999973580241,
+            6.630259100347757
+          ]
+        },
+        "held": {
+          "median_ms": 0.44443318620324135,
+          "samples_ms": [
+            0.8529960177838802,
+            0.5335640162229538,
+            0.44443318620324135,
+            0.4285129252821207,
+            0.43553300201892853
+          ]
+        }
+      },
+      "memory": {
+        "argument_size_in_bytes": 5224,
+        "output_size_in_bytes": 3384,
+        "temp_size_in_bytes": 72464,
+        "alias_size_in_bytes": 0
+      },
+      "source_sha256": {
+        "src/gpuwrf/kernels/phys_cuplus_driver.py": "8ca0fa1e3aabe9cf51e2251eb316558471ecbcd299fb69d3958f119daed85303",
+        "src/gpuwrf/kernels/phys_kfcup_column.py": "64fc2fd3db17345c71f00b86f54634a34b1fc5d60b0f6db1f21e632e62529db9",
+        "src/gpuwrf/kernels/phys_kfcup_cps.py": "80d18aa4bcf2b2aa812931efe466bf910b63a01f3f8b2110f3756aeef2bcb661"
+      },
+      "execution": "one per-column Pallas program; resident NCA skips fresh solve inside program; CPU interpretation only",
+      "caveats": "No GPU launch count, STACK, VRAM or GPU speed claim. Compile includes interpreted CPU control flow."
+    },
+    "hot_path": "one Pallas program per column with local held-cloud branch; no added hot-loop host transfer; original CMT/CAM DOUBLE retained",
+    "camuw_composed_compiled_CPU_memory": "CompiledMemoryStats(generated_code_size_in_bytes=0, argument_size_in_bytes=79891100, output_size_in_bytes=76398920, alias_size_in_bytes=0, temp_size_in_bytes=1026604864, host_generated_code_size_in_bytes=0, host_argument_size_in_bytes=0, host_output_size_in_bytes=0, host_alias_size_in_bytes=0, host_temp_size_in_bytes=0)"
+  },
+  "historical_component_receipt": {
+    "path": "COMPONENT_QUALIFICATION.json",
+    "sha256": "4284da59edfc205ffa00c41d6b27a4756cc229d7f62656b95c278c105defd6e5"
+  },
+  "immutable_reference_blocker_sha256": "16a56132c71f8ae256e5bfbab80c43847a9fc8da094f0cb6a987be9ef0e89fa6",
+  "receipt_index": {
+    "CC05-cup.json": {
+      "sha256": "195d93b36269006af290a25733f3b52d2808629157f79107eb57e906ae816ec7",
+      "original_path": "<USER_HOME>/wrf_gpu2_lanes/s2-cuplus/CC05-cup.json"
+    },
+    "CC06-mskf.json": {
+      "sha256": "22cc12f4fc0687a2352daac53fdb6f4bb7302df1d655b640fbf31f70118cb252",
+      "original_path": "<USER_HOME>/wrf_gpu2_lanes/s2-cuplus/CC06-mskf.json"
+    },
+    "CC10-myj.json": {
+      "sha256": "b23c6647067b917e619797fff62cbd417047a714d53af7265b353f074c9af0f9",
+      "original_path": "<USER_HOME>/wrf_gpu2_lanes/s2-cuplus/CC10-myj.json"
+    },
+    "CC11-control-mynn.json": {
+      "sha256": "88eae1f187f8186b36d65fb76a885cc61203200e1fdfeaae00f0b844f497c55d",
+      "original_path": "<USER_HOME>/wrf_gpu2_lanes/s2-cuplus/CC11-control-mynn.json"
+    },
+    "CC12-camuw-fixed.json": {
+      "sha256": "1fcfad27f4f4fa6eafd89a4b8ecec4aa7ecb16ed17cd959b29434b9d4f7a9572",
+      "original_path": "<USER_HOME>/wrf_gpu2_lanes/s2-cuplus/CC12-camuw-fixed.json"
+    },
+    "F201-cup.json": {
+      "sha256": "073c5dce522177c2a1029e55903880c9d0920f0d92e2e33071d80e2eada2431e",
+      "original_path": "<USER_HOME>/wrf_gpu2_lanes/s2-cuplus/F201-cup.json"
+    },
+    "F202-mskf.json": {
+      "sha256": "3c931cfd4206454563b333a3e489f973bedc25ee2348bb27bb0d730433bd66cb",
+      "original_path": "<USER_HOME>/wrf_gpu2_lanes/s2-cuplus/F202-mskf.json"
+    },
+    "F203-myj.json": {
+      "sha256": "4235a9df163ff23d14ff5150f19c1b8b385567447b9f5d32f4361af475b1db91",
+      "original_path": "<USER_HOME>/wrf_gpu2_lanes/s2-cuplus/F203-myj.json"
+    },
+    "SA01-source-audit.json": {
+      "sha256": "6c3cd96df3611a6cba487e07421a33ef966325adb7b5a894f378e66bbb0de648",
+      "original_path": "<USER_HOME>/wrf_gpu2_lanes/s2-cuplus/SA01-source-audit.json"
+    },
+    "PC01-resident-cost.json": {
+      "sha256": "dc8a2a8beebcbcc59a6d92884d68f3a681557f635b5d474010f1083d3a4b016d",
+      "original_path": "<USER_HOME>/wrf_gpu2_lanes/s2-cuplus/PC01-resident-cost.json"
+    },
+    "RI02-release.json": {
+      "sha256": "0b2523e066ba99b7b79d103c95d26f90e10914a481ebe6471834843600c8a83a",
+      "original_path": "<USER_HOME>/wrf_gpu2_lanes/s2-cuplus/RI02-release.json"
+    },
+    "MS20b-calm-native.json": {
+      "sha256": "2d91fca81b441871d1a1b9b2529c599c405f96f7c24e5225f2bf81fa9cc12a62",
+      "original_path": "<USER_HOME>/wrf_gpu2_lanes/s2-cuplus/MS20b-calm-native.json"
+    },
+    "KC13-literal.json": {
+      "sha256": "7b944c983dc9da3c45fa2dda9671f4d43175364a0b40214fb7eadd6dad6200b9",
+      "original_path": "<USER_HOME>/wrf_gpu2_lanes/s2-cuplus/KC13-literal.json"
+    },
+    "MS18b-full-literal.json": {
+      "sha256": "2da2ecd8add73a7f4d3c086ba5b18be2de2f49e9e0a93457b447a397131abc13",
+      "original_path": "<USER_HOME>/wrf_gpu2_lanes/s2-cuplus/MS18b-full-literal.json"
+    },
+    "ZM11b-cps-literal.json": {
+      "sha256": "e0f01ef19d4e8a1ee8391e6dde9b181d00db2e497e513a3286f19a6a42f3256c",
+      "original_path": "<USER_HOME>/wrf_gpu2_lanes/s2-cuplus/ZM11b-cps-literal.json"
+    },
+    "RB-results.json": {
+      "sha256": "00743ef72067e7a8e9f4c368bce216ed4c2c787c6f90a5e47aa0d465dc30b009",
+      "original_path": "<USER_HOME>/wrf_gpu2_lanes/s2-cuplus/RB-results.json"
+    },
+    "VEC03-mskf-literal.json": {
+      "sha256": "86d74ad4499286a438faddf89a1768abd21cf36e6a40a0edbed05b7a2b4f01a4",
+      "original_path": "<USER_HOME>/wrf_gpu2_lanes/s2-cuplus/VEC03-mskf-literal.json"
+    },
+    "VEC05-zm-literal.json": {
+      "sha256": "c3c4a517de0a2a5ec27fa54800dd01e92adecbd95ce253f864d9a276ac769249",
+      "original_path": "<USER_HOME>/wrf_gpu2_lanes/s2-cuplus/VEC05-zm-literal.json"
+    },
+    "MU02-heat.json": {
+      "sha256": "d35359dc1f0b3c6db41257caf731ceb6981bcc844e8c4c62f6fa041f9cc3827b",
+      "original_path": "<USER_HOME>/wrf_gpu2_lanes/s2-cuplus/MU02-heat.json"
+    },
+    "MU02-u.json": {
+      "sha256": "5bdf77fa66d4fe43fa28fa3fd430377a91fecd4f639fe4fd00555ce79ea0565e",
+      "original_path": "<USER_HOME>/wrf_gpu2_lanes/s2-cuplus/MU02-u.json"
+    },
+    "MU02-v.json": {
+      "sha256": "c9aa703d44e6c49b938389fddc7fb842366f20d93420c367ed405c07cf9472e8",
+      "original_path": "<USER_HOME>/wrf_gpu2_lanes/s2-cuplus/MU02-v.json"
+    },
+    "MU02-number.json": {
+      "sha256": "0e6f1f71cfee192f9276545dc92c16eff00b6399035ca89cb6f2cf579b068426",
+      "original_path": "<USER_HOME>/wrf_gpu2_lanes/s2-cuplus/MU02-number.json"
+    },
+    "MU02-mskf_cloud.json": {
+      "sha256": "ac3bcf5bbae42c2736dac3d613385a3e922f040ed6a4af5a6654a864c22a7d28",
+      "original_path": "<USER_HOME>/wrf_gpu2_lanes/s2-cuplus/MU02-mskf_cloud.json"
+    },
+    "MU02-cup_cloud.json": {
+      "sha256": "34c463d647c973dc55dd9ea9ffcdb690d16c99d0bb8925845b7ea28278f8e142",
+      "original_path": "<USER_HOME>/wrf_gpu2_lanes/s2-cuplus/MU02-cup_cloud.json"
+    }
+  },
+  "gpu_executed": false,
+  "open_qualification": [
+    "GPU timings/VRAM/E41",
+    "full forecast D6 and station validation",
+    "release F2"
+  ],
+  "retained_failures": "all arms logged MAIN EXPERIMENTS; CC09 continuation CPU timeout superseded by CC12 exact202; RI01 wrongFAST0 superseded by RI02; missing-proof/setup mutants not numerical evidence"
+}

@@ -88,6 +88,7 @@ class NoahMPLandState:
         # accumulated runoff (Schaake, opt_run=3)
         "sfcrunoff",  # SFCRUNOFF  accumulated surface runoff [m]
         "udrunoff",   # UDRUNOFF   accumulated subsurface runoff [m]
+        "glacier_qsnow",  # QSNOWXY previous-call ground snowfall [mm/s]; None on ice-free grids
     )
 
     def __init__(
@@ -124,12 +125,14 @@ class NoahMPLandState:
         albedo: jax.Array,
         sfcrunoff: jax.Array,
         udrunoff: jax.Array,
+        glacier_qsnow: jax.Array | None = None,
     ) -> None:
         for name, value in zip(self.__slots__, (
             tslb, smois, sh2o, smcwtd, isnow, tsno, snice, snliq, zsnso, snowh,
             sneqv, sneqvo, tauss, albold, tv, tg, tah, eah, canliq, canice,
             fwet, lai, sai, cm, ch, t_skin, qsfc, znt, emiss, albedo,
             sfcrunoff, udrunoff,
+            glacier_qsnow,
         )):
             setattr(self, name, value)
 
@@ -142,7 +145,7 @@ class NoahMPLandState:
     def replace(self, **updates) -> "NoahMPLandState":
         """Return an updated land pytree with explicit field names (mirrors State)."""
 
-        values = {name: getattr(self, name) for name in self.__slots__}
+        values = {name: getattr(self, name, None) for name in self.__slots__}
         values.update(updates)
         return type(self)(**values)
 
@@ -153,7 +156,11 @@ class NoahMPLandState:
         return int(sum(int(l.size) * int(l.dtype.itemsize) for l in leaves))
 
     def tree_flatten(self):
-        return tuple(getattr(self, name) for name in self.__slots__), None
+        # Preserve the released ice-free pytree exactly; active glacier carries
+        # have a separate versioned structure and retain QSNOWXY through restart.
+        active = getattr(self, 'glacier_qsnow', None) is not None
+        fields = self.__slots__ if active else self.__slots__[:-1]
+        return tuple(getattr(self, name) for name in fields), (1 if active else None)
 
     @classmethod
     def tree_unflatten(cls, aux, children):
@@ -191,6 +198,7 @@ class NoahMPStatic:
         # NoahMPStatic(...) constructions (energy gate) keep working unchanged.
         "shdmax",     # annual-max green-veg fraction [0-1] (= VEGMAX/100); FVEG source for dveg=4
         "shdfac",     # instantaneous green-veg fraction [0-1] (= VEGFRA/100)
+        "glacier",    # immutable host partition/options; None preserves the ice-free program
     )
 
     def __init__(
@@ -209,25 +217,26 @@ class NoahMPStatic:
         parameters: Any,
         shdmax: Any = None,
         shdfac: Any = None,
+        glacier: Any = None,
     ) -> None:
         for name, value in zip(self.__slots__, (
             ivgtyp, isltyp, xland, landmask, lakemask, lu_index, tbot, dzs,
             zsoil, lat, dx_m, parameters, shdmax, shdfac,
+            glacier,
         )):
             setattr(self, name, value)
 
     def replace(self, **updates) -> "NoahMPStatic":
-        values = {name: getattr(self, name) for name in self.__slots__}
+        values = {name: getattr(self, name, None) for name in self.__slots__}
         values.update(updates)
         return type(self)(**values)
 
     def tree_flatten(self):
-        return tuple(getattr(self, name) for name in self.__slots__), None
+        return tuple(getattr(self, name) for name in self.__slots__[:-1]), getattr(self, 'glacier', None)
 
     @classmethod
     def tree_unflatten(cls, aux, children):
-        del aux
-        return cls(*children)
+        return cls(*children, glacier=aux)
 
 
 class NoahMPFluxes(NamedTuple):

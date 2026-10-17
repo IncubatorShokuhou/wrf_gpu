@@ -20,6 +20,37 @@ import pytest
 from scripts.v0234_event_aware_fusion_probe import _bounded_terminal_verdict
 
 
+def _assert_finite_terminals(jax, np, *terminals):
+    # _tree_maxabs uses max(), which can discard a NaN difference.
+    for terminal in terminals:
+        for value in jax.tree.leaves((terminal.states, terminal.carries)):
+            assert np.isfinite(np.asarray(value)).all()
+
+
+@pytest.mark.parametrize('location', ['states', 'carries'])
+@pytest.mark.parametrize('bad', [float('nan'), float('inf'), -float('inf')])
+def test_terminal_operands_reject_nonfinite(location, bad):
+    import jax
+    import numpy as np
+    from types import SimpleNamespace
+
+    terminal = SimpleNamespace(states={'theta': np.array([1., 2.])},
+                               carries={'held': np.array([3., 4.])})
+    next(iter(getattr(terminal, location).values()))[0] = bad
+    with pytest.raises(AssertionError):
+        _assert_finite_terminals(jax, np, terminal)
+
+
+def test_terminal_operands_accept_finite():
+    import jax
+    import numpy as np
+    from types import SimpleNamespace
+
+    _assert_finite_terminals(jax, np, SimpleNamespace(
+        states={'theta': np.array([1., 2.])}, carries={'held': np.array([3., 4.])},
+    ))
+
+
 def test_bounded_gate_accepts_reassociation_scale_difference():
     # Real measured values (B2_FUSED_EAGER_DISCRIMINATOR.json + eager-floor probe).
     v = _bounded_terminal_verdict(
@@ -77,8 +108,9 @@ def test_bounded_gate_respects_factor_boundary():
 
 
 @pytest.mark.slow
+@pytest.mark.heavy
 def test_real_fixture_fused_vs_eager_is_within_recompile_floor(monkeypatch):
-    """Integration: on the corrected finite all-7 fixture, the real fused-vs-eager
+    """Integration: on the finite analytic cascade, the real fused-vs-eager
     terminal difference is bounded by the model's own in-run recompile floor.
 
     Mirrors the probe's terminal decomposition exactly (control=K0 on the
@@ -143,6 +175,8 @@ def test_real_fixture_fused_vs_eager_is_within_recompile_floor(monkeypatch):
     assert candidate.cascade_counts == {"fused:d02": 8, "event_fallback:d02": 1}
     assert not floor_ref.cascade_counts
     assert floor_ref.own_steps == control.own_steps
+
+    _assert_finite_terminals(jax, np, control, candidate, floor_ref)
 
     v = _bounded_terminal_verdict(
         fused_vs_eager_state=_tree_maxabs(jax, np, control.states, candidate.states),

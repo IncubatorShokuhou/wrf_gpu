@@ -127,6 +127,7 @@ def mym_condensation_cloudpdf2(
     qs,          # (..., nz) resolved snow specific content (sqs)
     qsq,         # (..., nz) prognosed total-water variance <q'w q'w>
     pblh,        # (...,)    GET_PBLH boundary-layer height (m)
+    spp_pattern=None,
 ):
     """WRF ``mym_condensation`` CASE(2) subgrid cloud diagnosis.
 
@@ -148,6 +149,9 @@ def mym_condensation_cloudpdf2(
     rh = jnp.maximum(jnp.minimum(RHMAX, qw / jnp.maximum(1.0e-10, qsat_tk)), 0.001)
 
     qmq = qw - qsat_tk                         # qw_pert = qw (spp off)
+    if spp_pattern is not None:
+        from gpuwrf.physics.stochastic_spp import total_water
+        qmq = total_water(qw,spp_pattern)-qsat_tk
 
     # sigma from the prognosed variance, with dz inflation + z-dependent floors
     r3sq = jnp.maximum(qsq, 0.0)

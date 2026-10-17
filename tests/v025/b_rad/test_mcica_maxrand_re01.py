@@ -23,12 +23,16 @@ def _run(monkeypatch, *, maxrand, chain=None):
     monkeypatch.setattr(rad_mcica, "_MAXRAND", maxrand)
     if chain is not None:
         monkeypatch.setattr(rad_mcica, "max_random_cdf", chain)
-    for fn in (rrtmg_lw.solve_rrtmg_lw_column, rrtmg_sw.solve_rrtmg_sw_column):
+    # Earlier OOM-hardening tests reload these modules. _port_today retains its
+    # original imported callables; clear the caches it actually executes.
+    solvers = tuple(_port_today.__globals__[name] for name in
+                    ("solve_rrtmg_lw_column", "solve_rrtmg_sw_column"))
+    for fn in solvers:
         fn.clear_cache()  # the flag is read at trace time
     try:
         return _port_today(load(FIXTURE))
     finally:
-        for fn in (rrtmg_lw.solve_rrtmg_lw_column, rrtmg_sw.solve_rrtmg_sw_column):
+        for fn in solvers:
             fn.clear_cache()
 
 

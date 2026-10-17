@@ -27,7 +27,7 @@ C24 = dict(GPUWRF_THOMPSON_NATIVE_REAL="1", GPUWRF_THOMPSON_COLUMN_SED="1", GPUW
            GPUWRF_THOMPSON_COLUMN_LAYOUT="1", GPUWRF_THOMPSON_FULL_COLUMN="1",
            GPUWRF_THOMPSON_FULL_COLUMN_EARLY_EXIT="1", GPUWRF_THOMPSON_SED_PREP_FUSED="0")
 SED_MUTANTS = {  # name -> (fixed _fall_speeds snippet, the old port behaviour)
-    "legacy_sed_moment": ("rhof * av_g * cgg63 * ilamg ** bv_g", "rhof * av_g * 6.0 * ORG3 * ilamg ** bv_g"),
+    "legacy_sed_moment": ("_times_cgg63(rhof * av_g, cgg63) * ilamg ** bv_g", "rhof * av_g * 6.0 * ORG3 * ilamg ** bv_g"),
     "carried_ng": ("None if native else state.Ng", "state.Ng"),
 }
 BODY_MUTANTS = {"cold_rates_post_warm": ("state if cold_entry is None else cold_entry", "state")}

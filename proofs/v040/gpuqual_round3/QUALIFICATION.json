@@ -1,0 +1,171 @@
+{
+  "schema": "v-run-nssl-round3-v1",
+  "utc": "2026-10-15T00:25:56.845416+00:00",
+  "source_rev": "5abde3224a50e5f67674bb1865aa0cc6d1ff1937",
+  "scientific_scope": "Original CPU-WRF Swiss24h, two NSSL configurations; source5ab only. No current-main/default/other-config qualification inferred.",
+  "configs": [
+    {
+      "config": "mp18",
+      "source_rev": "5abde3224a50e5f67674bb1865aa0cc6d1ff1937",
+      "D6": "PASS",
+      "bounded_fields": 62,
+      "CPU_fields": 372,
+      "frames": 25,
+      "coverage_complete": true,
+      "NaN_Inf": 0,
+      "E41": "FAIL",
+      "max_stack_B": 1336,
+      "kinput_flags": [
+        [
+          "input_add_compare_convert_maximum_minimum_select_subtract_transpose_fusion",
+          1128
+        ],
+        [
+          "input_compare_divide_minimum_multiply_select_transpose_fusion",
+          662
+        ],
+        [
+          "input_add_and_divide_maximum_minimum_multiply_select_subtract_transpose_fusion",
+          1172
+        ],
+        [
+          "input_add_and_compare_divide_minimum_select_transpose_fusion",
+          835
+        ],
+        [
+          "input_add_select_transpose_fusion.1",
+          562
+        ],
+        [
+          "input_add_or_select_subtract_transpose_fusion",
+          1041
+        ],
+        [
+          "input_add_select_transpose_fusion",
+          724
+        ]
+      ],
+      "nonleaf_over1k": [],
+      "variable_metadata_mismatches": 0,
+      "different_globals": [
+        "NTASKS_X",
+        "NTASKS_Y",
+        "TITLE"
+      ],
+      "reflectivity": {
+        "REFL_10CM": {
+          "verdict": "REPORT_ONLY",
+          "rmse": 0.1790689433567618,
+          "max_abs": 23.737247467041016,
+          "frame_count": 25
+        },
+        "REFD_MAX": {
+          "verdict": "REPORT_ONLY",
+          "rmse": 0.0,
+          "max_abs": 0.0,
+          "frame_count": 25
+        }
+      },
+      "F2": {
+        "status": "OPEN",
+        "raw_counter_nonfinite": 0,
+        "negative_phase_field_visits": 25775790,
+        "interior_phase_field_visits": 22659657,
+        "records": 60,
+        "interpretation": "Repeated phase-field visits, not unique events. No every-event magnitude/operator justification and no transfer of another-case F2 disposition."
+      },
+      "wall_s": 920.801431408001,
+      "host_peak_rss_kib": 5919908,
+      "sampled_peak_vram_mib": 2714
+    },
+    {
+      "config": "mp18_cu5",
+      "source_rev": "5abde3224a50e5f67674bb1865aa0cc6d1ff1937",
+      "D6": "PASS",
+      "bounded_fields": 62,
+      "CPU_fields": 372,
+      "frames": 25,
+      "coverage_complete": true,
+      "NaN_Inf": 0,
+      "E41": "FAIL",
+      "max_stack_B": 1336,
+      "kinput_flags": [
+        [
+          "input_and_convert_minimum_multiply_select_transpose_fusion",
+          1064
+        ],
+        [
+          "input_add_compare_convert_maximum_minimum_select_subtract_transpose_fusion",
+          1134
+        ],
+        [
+          "input_compare_divide_minimum_multiply_select_transpose_fusion",
+          660
+        ],
+        [
+          "input_add_and_divide_maximum_minimum_multiply_select_subtract_transpose_fusion",
+          1172
+        ],
+        [
+          "input_add_and_compare_divide_minimum_select_transpose_fusion",
+          835
+        ],
+        [
+          "input_add_select_transpose_fusion.1",
+          562
+        ],
+        [
+          "input_add_or_select_subtract_transpose_fusion",
+          1041
+        ],
+        [
+          "input_add_select_transpose_fusion",
+          724
+        ]
+      ],
+      "nonleaf_over1k": [],
+      "variable_metadata_mismatches": 0,
+      "different_globals": [
+        "NTASKS_X",
+        "NTASKS_Y",
+        "TITLE"
+      ],
+      "reflectivity": {
+        "REFL_10CM": {
+          "verdict": "REPORT_ONLY",
+          "rmse": 0.17614081598572193,
+          "max_abs": 19.132549285888672,
+          "frame_count": 25
+        },
+        "REFD_MAX": {
+          "verdict": "REPORT_ONLY",
+          "rmse": 0.0,
+          "max_abs": 0.0,
+          "frame_count": 25
+        }
+      },
+      "F2": {
+        "status": "OPEN",
+        "raw_counter_nonfinite": 0,
+        "negative_phase_field_visits": 25841064,
+        "interior_phase_field_visits": 22739467,
+        "records": 60,
+        "interpretation": "Repeated phase-field visits, not unique events. No every-event magnitude/operator justification and no transfer of another-case F2 disposition."
+      },
+      "wall_s": 983.226287898,
+      "host_peak_rss_kib": 6193988,
+      "sampled_peak_vram_mib": 2720
+    }
+  ],
+  "D6_and_inventory": "PASS_BOTH",
+  "release_clearance": "NOT_CLAIMED",
+  "open": [
+    "E41 failures on opt-in executables disclosed; no gate waiver",
+    "F2 negative visits require actual-case/operator justification",
+    "REFL_10CM REPORT_ONLY because no frozen tolerance",
+    "mp40/mp28 per-config selected-program checks pending"
+  ],
+  "disposable_cache_tmp": "ALL_ABSENT",
+  "snapshot": "Retained briefly for imminent conditional selected-program probes; remove after last dependent probe.",
+  "timing": "Cold concurrent qualification, shared CPU/IO, NOT S1; original references not rerun."
+}

@@ -11,7 +11,7 @@ from types import SimpleNamespace
 import jax
 import jax.numpy as jnp
 from jax import lax
-from jax.experimental import pallas as pl
+from gpuwrf.backends import pallas as pl
 from jax.experimental.pallas import triton as plt
 
 from gpuwrf.kernels.phys_thompson_sedimentation import _gather, _load, _store
@@ -66,7 +66,7 @@ def _sed_registers(q, num, vm, vn, dz, rho, dt, steps, threshold, nz):
     return q, num, ppt
 
 
-def sediment_and_finish(state, dt, vts_boost=None, *, interpret=False):
+def sediment_and_finish(state, dt, vts_boost=None, *, interpret=False, return_radar_context=False):
     from gpuwrf.physics import thompson_column as tc
 
     shape = state.qv.shape
@@ -116,20 +116,29 @@ def sediment_and_finish(state, dt, vts_boost=None, *, interpret=False):
         qg, ng, graupel = _sed_registers(current.qg, current.Ng, vg, vng, dz, rho, step_dt,
                                         tc._nstep_per_column(vg, vg, dz, step_dt), threshold, nz)
         current = current.replace(qr=qr, Nr=nr, qi=qi, Ni=ni, qs=qs, Ns=ns, qg=qg, Ng=ng)
+        if return_radar_context:
+            from gpuwrf.diagnostics.thompson_radar import final_graupel_number
+            radar_ng = final_graupel_number(current.qg, current.Ng, current.rho)
         current = tc._real_state(tc._instant_melt_freeze(current, step_dt))
         current = tc._real_state(tc._finish(current))
         for key, ref in zip(keys, output_refs):
             _store(ref, (col, k), getattr(current, key), mask=valid)
-        for value, ref in zip((rain, ice, snow, graupel), precip_refs):
+        for value, ref in zip((rain, ice, snow, graupel), precip_refs[:4]):
             _store(ref, (col,), value)
+        if return_radar_context:
+            _store(precip_refs[4], (col, k), radar_ng, mask=valid)
 
     output_shapes = [jax.ShapeDtypeStruct((ncol, nz), jnp.float32) for _ in keys]
     output_shapes += [jax.ShapeDtypeStruct((ncol,), jnp.float32) for _ in range(4)]
+    if return_radar_context:
+        output_shapes += [jax.ShapeDtypeStruct((ncol, nz), jnp.float32)]
     outputs = pl.pallas_call(kernel, grid=(ncol,), out_shape=output_shapes,
                             interpret=interpret, compiler_params=plt.CompilerParams(num_warps=2),
                             name="thompson_sediment_prep_finish")(
                                 *arrays, boost.reshape(ncol, nz), coefficient_stack, scalars)
     result = state.replace(**{key: array.reshape(shape) for key, array in zip(keys, outputs[:len(keys)])})
     precip = {key: array.reshape(shape[:-1]) for key, array in
-              zip(("rain", "ice", "snow", "graupel"), outputs[len(keys):])}
+              zip(("rain", "ice", "snow", "graupel"), outputs[len(keys):len(keys)+4])}
+    if return_radar_context:
+        return result, precip, outputs[-1].reshape(shape)
     return result, precip

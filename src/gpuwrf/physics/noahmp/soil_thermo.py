@@ -240,6 +240,7 @@ def noahmp_soil_thermo(
     dzsnso: jax.Array,
     isnow: jax.Array,
     dt: float,
+    *, opt_tbot: int = 2, opt_stc: int = 1,
 ) -> jax.Array:
     """Semi-implicit snow/soil temperature solve (TSNOSOI, opt_stc=1/opt_tbot=2).
 
@@ -259,7 +260,8 @@ def noahmp_soil_thermo(
     snowh = jnp.where(isnow < 0, -zsnso[_SOIL_TOP - 1], 0.0)
     zbotsno = ZBOT - snowh  # (ny, nx)
 
-    ai, bi, ci, rhsts = _hrt(stc, tbot, zbotsno, df, hcpct, ssoil, zsnso, isnow)
+    ai, bi, ci, rhsts = _hrt(stc, tbot, zbotsno, df, hcpct, ssoil, zsnso, isnow,
+                            **({"opt_tbot":opt_tbot,"opt_stc":opt_stc} if (opt_tbot,opt_stc)!=(2,1) else {}))
 
     # HSTEP (:5506-5511): scale by DT and form the implicit system, then ROSR12.
     rhsts_dt = rhsts * dt
@@ -271,7 +273,7 @@ def noahmp_soil_thermo(
     return stc + delta
 
 
-def _hrt(stc, tbot, zbot, df, hcpct, ssoil, zsnso, isnow):
+def _hrt(stc, tbot, zbot, df, hcpct, ssoil, zsnso, isnow, *, opt_tbot=2, opt_stc=1):
     """HRT (:5375-5473): tridiagonal coefficients AI/BI/CI + RHS, opt_stc=1/opt_tbot=2.
 
     Vectorized over the column (axis 0). Inactive snow layers (index < NSNOW+isnow)
@@ -313,7 +315,9 @@ def _hrt(stc, tbot, zbot, df, hcpct, ssoil, zsnso, isnow):
     # bottom (opt_tbot=2): DTSDZ=(STC-TBOT)/(0.5*(ZSNSO(K-1)+ZSNSO(K))-ZBOT); BOTFLX=-DF*DTSDZ
     denom_bot = (zsnso_m1 - zsnso) * hcpct
     dtsdz_bot = (stc - tbot) / (0.5 * (zsnso_m1 + zsnso) - zbot)
-    botflx = -df * dtsdz_bot
+    if opt_tbot==2:botflx = -df * dtsdz_bot
+    elif opt_tbot==1:botflx=jnp.zeros_like(df)
+    else:raise ValueError("Noah-MP opt_tbot must be 1 or 2")
 
     ddz = jnp.where(is_top, ddz_top, jnp.where(is_bottom, 0.0, ddz_int))
     dtsdz = jnp.where(is_top, dtsdz_top, jnp.where(is_bottom, dtsdz_bot, dtsdz_int))
@@ -341,6 +345,9 @@ def _hrt(stc, tbot, zbot, df, hcpct, ssoil, zsnso, isnow):
     ai = jnp.where(is_top, 0.0, jnp.where(is_bottom, ai_bot, ai_int))
     ci = jnp.where(is_top, ci_top, jnp.where(is_bottom, 0.0, ci_int))
     bi = -(ai + ci)
+    if opt_stc==2:
+        bi=jnp.where(is_top,-ci+df/(.5*zsnso*zsnso*hcpct),bi)
+    elif opt_stc not in (1,3):raise ValueError("Noah-MP opt_stc must be 1, 2 or 3")
     # top opt_stc=1 special-case: BI = -CI (AI is 0 there, so -(ai+ci)==-ci already)
 
     rhsts = eflux / (-safe_denom)
@@ -442,6 +449,7 @@ def noahmp_phasechange(
     smcmax: jax.Array,
     psisat: jax.Array,
     bexp: jax.Array,
+    opt_frz: int = 1,
 ):
     """Melt/freeze of snow & soil water — PHASECHANGE (:5595-5810), opt_frz=1 land branch.
 
@@ -486,7 +494,12 @@ def noahmp_phasechange(
     # --- supercooled liquid threshold SUPERCOOL (soil only, opt_frz=1 NY06) ---
     below_frz_soil = stc[_SOIL_TOP:] < TFRZ
     smp = HFUS * (TFRZ - stc[_SOIL_TOP:]) / (GRAV * jnp.maximum(stc[_SOIL_TOP:], 1e-6))
-    supercool_soil = smcmax * (smp / psisat) ** (-1.0 / bexp)
+    if opt_frz==1:
+        supercool_soil = smcmax * (smp / psisat) ** (-1.0 / bexp)
+    elif opt_frz==2:
+        from gpuwrf.physics.noahmp.surface_options import supercooled_water_koren
+        supercool_soil=supercooled_water_koren(stc[_SOIL_TOP:],smc,sh2o,bexp,smcmax,psisat)
+    else:raise ValueError("Noah-MP opt_frz must be 1 or 2")
     supercool_soil = supercool_soil * dz_soil * 1000.0
     supercool_soil = jnp.where(below_frz_soil, supercool_soil, 0.0)
     supercool = jnp.concatenate([jnp.zeros_like(snice), supercool_soil], axis=0)

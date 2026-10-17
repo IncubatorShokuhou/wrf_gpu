@@ -1,0 +1,375 @@
+{
+  "candidate": "19947cf16b",
+  "review_from": "75cf395c4e",
+  "main_base": "c360fdf6ee",
+  "verdict": {
+    "series1": "MERGE CPU scope",
+    "series2": "MERGE CPU scope",
+    "series3": "MERGE CPU scope"
+  },
+  "healthy": 213,
+  "primary": 47,
+  "affected_consumers": 164,
+  "old_ocean_critic": 1,
+  "new_two_step_ocean_critic": 1,
+  "counts": {
+    "ST02-aot.xml": {
+      "tests": 13,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "ST02-blgfs.xml": {
+      "tests": 7,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "ST02-myj.xml": {
+      "tests": 8,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "ST02-selected.xml": {
+      "tests": 16,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "ST02-sf0.xml": {
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "ST03-ocean.xml": {
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "ST06-AOT.xml": {
+      "tests": 1,
+      "failures": 1,
+      "errors": 0,
+      "skipped": 0
+    },
+    "ST06-F13.xml": {
+      "tests": 1,
+      "failures": 1,
+      "errors": 0,
+      "skipped": 0
+    },
+    "ST06-SF0.xml": {
+      "tests": 1,
+      "failures": 1,
+      "errors": 0,
+      "skipped": 0
+    },
+    "ST07-AOT.xml": {
+      "tests": 49,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "ST07-CU.xml": {
+      "tests": 17,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "ST07-GFS.xml": {
+      "tests": 75,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "ST07-SF0.xml": {
+      "tests": 23,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "ST09.xml": {
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    }
+  },
+  "genuine_mutants": 3,
+  "original": {
+    "cases": {
+      "real_q1": {
+        "columns": 42,
+        "levels": 44,
+        "original_public_outputs_BYTE": true,
+        "copy_only_capture_outputs_BYTE": true,
+        "captured_inputs_outputs_frozen_BYTE": true
+      },
+      "real_q0": {
+        "columns": 42,
+        "levels": 44,
+        "original_public_outputs_BYTE": true,
+        "copy_only_capture_outputs_BYTE": true,
+        "captured_inputs_outputs_frozen_BYTE": true
+      },
+      "caller": {
+        "columns": 9,
+        "levels": 12,
+        "original_public_outputs_BYTE": true,
+        "copy_only_capture_outputs_BYTE": true,
+        "captured_inputs_outputs_frozen_BYTE": true
+      }
+    },
+    "exactly_two_copy_only_calls": true,
+    "original_source_restored_BYTE": true,
+    "constants_compiler_receipt_BYTE": true,
+    "manifest": {
+      "compiler": "GNU Fortran (conda-forge gcc 14.3.0-19) 14.3.0",
+      "sources": {
+        "module_bl_gfs.F": "a3898642ee386d60a74af2ef45867e6b5f7df518eef9543ae91586d00372b71c",
+        "module_gfs_funcphys.F": "0d43dccf0510bd49ef07f81c357e4b96fd9391604f7c14d7e3cf8700ff383e74",
+        "module_gfs_machine.F": "300ee4f75663e89d34c8a9b8733cc07a5dd48c3d973da019d31cb76524babe25",
+        "module_gfs_physcons.F": "2b8ef99663ba62748b57c7002f5e5b8c9338f2a825c1d32c113bd4e3bff2eb52",
+        "module_model_constants.F": "5b80377fecdc18a5f0ad38d3b6c15cfc86ad5d76701adbbbb08a08698d0f7062",
+        "module_progtm.F": "6d6c411638011f92f21764418bc7993ac7eefe8f05cfe79e0df05a5ab58d1b47",
+        "module_sf_gfs.F": "10eb3f3b47deb8f33d10e13a5b274db89a59cf5fb8c86a92f353205b9e73440e",
+        "module_sf_myjsfc.F": "7ae02680a9f2f781fd5c13c55b102cc86fa216f72de08ce6e58c1b012efa29f3",
+        "module_sf_pxsfclay.F": "cd1b2095f8e093d4bc423ebbc4a3bfbce58a7d17b34f1f41d770c6061b68d0a4",
+        "module_sf_sfclay.F": "dfd7aae5ef1f0bd979246480af5276a1ee956bc216ec8dc6e82eb963ded761dc"
+      },
+      "wrappers": {
+        "wrf_constants.inc": "8bc0de58e05db565da8016ddcfd276ad12c9a4cd05bdb53c5973c228cce7df65",
+        "blgfs_oracle.f90": "d487955a6783e3bf0c65813c03ad9e89c55ac69459be2ffcb116d2d4cf9386fa",
+        "blgfs_capture.f90": "2d6d64d1bce44427272b50ffb037afc4083c05c7345d406d4a21f997e7921bad"
+      },
+      "builds": {
+        "pbl3/zero": {
+          "flags": [
+            "-O0",
+            "-ffp-contract=off",
+            "-finit-real=zero"
+          ],
+          "sha256": "189c1c3873d2c042b905c0568340c6452c660739245ba38ebe12e04db7d6875f"
+        },
+        "pbl3/inf": {
+          "flags": [
+            "-O0",
+            "-ffp-contract=off",
+            "-finit-real=inf"
+          ],
+          "sha256": "7545da4d9cefe94ed5f39340842611996d524c536ee1fa2d9bbdbed9473d652c"
+        },
+        "pbl3/fma": {
+          "flags": [
+            "-O2",
+            "-mfma",
+            "-ffp-contract=fast",
+            "-finit-real=zero"
+          ],
+          "sha256": "5913a922e1da674d8efba310111880cbe0d70fb309d8e72eea0420a3cc651210"
+        },
+        "pbl3cap/zero": {
+          "flags": [
+            "-O0",
+            "-ffp-contract=off",
+            "-finit-real=zero"
+          ],
+          "sha256": "cf0845ad629bfbec795365b8f716fd055c6b8795a585ba25dfedd8b5208845e3"
+        },
+        "pbl3cap/inf": {
+          "flags": [
+            "-O0",
+            "-ffp-contract=off",
+            "-finit-real=inf"
+          ],
+          "sha256": "b3bec7c89003ec40f9357320fa18f9121997b9131d34aa3484f61f29f05b9889"
+        },
+        "pbl3cap/fma": {
+          "flags": [
+            "-O2",
+            "-mfma",
+            "-ffp-contract=fast",
+            "-finit-real=zero"
+          ],
+          "sha256": "6ef5a8a155202aac527e07ec2e1982efc6c6fd3b4bbf89ffd9c7466b8cc4d45e"
+        }
+      },
+      "generated": {
+        "module_bl_gfs_capture.F": {
+          "sha256": "6b944e8945edd5a55f1d200966dfbb915e08a6dfc5993bb6740437a591f61b35",
+          "base_sha256": "a3898642ee386d60a74af2ef45867e6b5f7df518eef9543ae91586d00372b71c",
+          "inserted": [
+            "CALL BLGFS_CAPTURE_IN(IM,KX,NTRAC,U1,V1,T1,Q1,PSK,RBSOIL,FM,FH,TSEA,HEAT,EVAP,STRESS,SPD1,PRSI,DEL,PRSL,PRSLK,PHII,PHIL,DELTIM)",
+            "CALL BLGFS_CAPTURE_OUT(IM,KX,NTRAC,DV,DU,TAU,RTG,KPBL,HPBL)"
+          ]
+        }
+      }
+    },
+    "unchanged_real_fixture_sha256": "53b571b208249568eeb96e88338e872657c3128bcd8adc13048a4bcff4a18c40"
+  },
+  "old_aot_critic": {
+    "before": {
+      "key": "20197d78c31a6249d5457f9b290ccd34f84fef01a8b4183049b4c88e9c56b61a",
+      "program": "a3532634cd95584174da5142ff89ed5bd6e45cfc3800c7768aa33984bda35b95",
+      "tables": "29dc973c3817ecdd3f0a14318db9afca4130795a4f08229a344a625746f49094",
+      "hlo": "24a1dac2a3e6637fef7143da792334b9c4bf46c97c335db7770cadedee4283db",
+      "result": [
+        -2.068437099456787,
+        -2.068437099456787
+      ]
+    },
+    "after": {
+      "key": "b4e7fd87d1b211aaf9ba3e74881b31cb66c9e629f235f8157f895d7daef5b3c2",
+      "program": "fe1d1d506a8bd49c106a8fca1ffc4f740ba9968a7f697d3b8b88b402fb4803d7",
+      "tables": "a7b0b3f52af1a042c8141fa5bbf3da9b9e45a011ade85136581a97a7b9154bf1",
+      "hlo": "f264c846c43082615038c3b0ec7c501e668ce02e2511e01ea08d8d20bd504493",
+      "result": [
+        -1.9684370756149292,
+        -1.9684370756149292
+      ]
+    },
+    "key_collision": false,
+    "hlo_changed": true,
+    "actual_result_changed": true,
+    "platform": "cpu",
+    "scope": "tiny actual MYJ REAL table consumer; sf2/bl2 operational namelist; no full advance/GPU timing"
+  },
+  "sf0_two_step": {
+    "admitted": true,
+    "steps": 2,
+    "ocean_calls": 0,
+    "expected_calls": 0,
+    "sst_update_calls": 0,
+    "sst_skin_calls": 0,
+    "ocean_and_skin_held": true
+  },
+  "legacy_api": {
+    "cases": {
+      "q1": {
+        "fields": 9,
+        "columns": 42,
+        "dtype": "float64",
+        "BYTE": true
+      },
+      "q0": {
+        "fields": 9,
+        "columns": 42,
+        "dtype": "float64",
+        "BYTE": true
+      },
+      "caller": {
+        "fields": 9,
+        "columns": 9,
+        "dtype": "float64",
+        "BYTE": true
+      }
+    },
+    "scope": "port-vs-port API regression on CPU; not original-WRF fidelity"
+  },
+  "source_reuse": {
+    "prior_critic": "60af615cff",
+    "current": "19947cf16b",
+    "sources": {
+      "proofs/t_cfix_sfc/fixtures/blgfs_wrf_oracle.npz": {
+        "BYTE": true,
+        "sha256": "53b571b208249568eeb96e88338e872657c3128bcd8adc13048a4bcff4a18c40"
+      },
+      "proofs/t_cfix_sfc/fixtures/myjsfc_wrf_oracle.npz": {
+        "BYTE": true,
+        "sha256": "4af394de151f81a17ad71fdb08a771f538435872620384145303dbb90da715ba"
+      },
+      "src/gpuwrf/physics/sfclay_janjic.py": {
+        "BYTE": true,
+        "sha256": "e13f79ae6b5e639ac91014287be1bd83768a0fa05ed9ce26957d26809ac251ca"
+      },
+      "src/gpuwrf/physics/sf_myj.py": {
+        "BYTE": true,
+        "sha256": "80fc51305e331abcc77e2468cca0e0bf07d9aa1fc56ca3d6156f6c59b4a18316"
+      },
+      "src/gpuwrf/coupling/myj_surface.py": {
+        "BYTE": true,
+        "sha256": "6516e3dd56ebbfad086da5846691525efad0ef040e6a8dfeb86673dea7eab7ba"
+      },
+      "src/gpuwrf/physics/myj_adapters.py": {
+        "BYTE": true,
+        "sha256": "de42038269b7f58ee4ccc571a1bbf78d06eee208eafa467280609bd44dbca72e"
+      },
+      "src/gpuwrf/coupling/sfclay_selected.py": {
+        "BYTE": true,
+        "sha256": "e58e422ea1b95f7b7271b8bb0c059ba249c45ce1f9b897952abd039629be3c51"
+      }
+    },
+    "reuse": "MYJSFC 126 frozen real columns x3 calls and selected sf3/7/91 original oracle from SFC2/SFC1; existing actual MYJ-Noah-PBL two-step chain; no second numerical run needed"
+  },
+  "reader_reuse": {
+    "base": "c360fdf6ee",
+    "head": "19947cf16b",
+    "census_test_BYTE": true,
+    "changed_file_reader_inventory": {
+      "src/gpuwrf/coupling/myj_surface.py": {
+        "reader_calls_same": true,
+        "calls": []
+      },
+      "src/gpuwrf/coupling/physics_dispatch.py": {
+        "reader_calls_same": true,
+        "calls": []
+      },
+      "src/gpuwrf/coupling/scan_adapters.py": {
+        "reader_calls_same": true,
+        "calls": []
+      },
+      "src/gpuwrf/coupling/sfclay_selected.py": {
+        "reader_calls_same": true,
+        "calls": []
+      },
+      "src/gpuwrf/physics/bl_gfs.py": {
+        "reader_calls_same": true,
+        "calls": []
+      },
+      "src/gpuwrf/physics/myj_adapters.py": {
+        "reader_calls_same": true,
+        "calls": []
+      },
+      "src/gpuwrf/physics/sf_myj.py": {
+        "reader_calls_same": true,
+        "calls": []
+      },
+      "src/gpuwrf/physics/sfclay_gfs.py": {
+        "reader_calls_same": true,
+        "calls": []
+      },
+      "src/gpuwrf/physics/sfclay_janjic.py": {
+        "reader_calls_same": true,
+        "calls": []
+      },
+      "src/gpuwrf/physics/sfclay_old_mm5.py": {
+        "reader_calls_same": true,
+        "calls": []
+      },
+      "src/gpuwrf/physics/sfclay_pleim_xiu.py": {
+        "reader_calls_same": true,
+        "calls": []
+      }
+    },
+    "scope": "No reader inventory change under the exact census predicate; owner paid pre-existing base failure retained, excluded from pass count. No second baseline pytest."
+  },
+  "default_ids": {
+    "swiss": "7379c7d77e94517f07e7bf37763cc1409d1287a13e50684ed9d624caafaec55e",
+    "prod": "6487f5b039a074f02f63d140f1e9212b7ede832d04bf5450e44ad2b3f2c34e73"
+  },
+  "compiled_gates": {
+    "REAL_setup_MONINP_operand_fields_BYTE": 61,
+    "case_field_counts": [
+      21,
+      20,
+      20
+    ],
+    "DOUBLE_MONINP_relative_gate": 1e-11,
+    "composed_extra_ULP_slack": 0,
+    "runtime_gpu_timing_peak_readiness": "unknown; owner component probe queued"
+  },
+  "scope": "CPU original column/caller/cache gates. No coupled forecast/GPU D6/E41/performance/peak claim."
+}

@@ -1,0 +1,23 @@
+{
+  "base": "2af43322bec3e2d722884048a2ad7d92d483500f",
+  "measured_source": "81978368326bd7e974308a17bd5e7f11ac3556c9",
+  "rebased_source": "4d5a9656d052953a03ff41e8743238ecd2739e76",
+  "changed_product_files": [
+    "src/gpuwrf/coupling/physics_couplers.py"
+  ],
+  "only_changed_function": "_aerosol_surface_emission_columns",
+  "all_other_module_AST_exact": true,
+  "measured_functions_AST_exact": {
+    "_aerosol_surface_emission_columns": "6af85b89fe1e94d91442876397a011845cf53327454c8517dee23d0bf724ff1c",
+    "_initialize_thompson_aero": "2f847c823460c7ec409a025a8faf7b75e163dedb1d53547cd08a45f2f8bd1437",
+    "_mass_level_height_columns": "0ceb2055700140ebff191b9cb5c5fce12038e9e67a0bf165bcc98ddce41cd5f6",
+    "_climatological_aerosol_profile_columns": "f972dabc00382efc53100ea9a178cfa324ce47d9d73c3e27ccfbc8d0eb2cbe1a",
+    "thompson_aero_coldstart_init": "5373ce80ebd5df018f70db7e29e8fb9b24fa1372a073c2a02dff4ebc7bb0635f",
+    "_to_columns": "cdf739c6a5a3585daf3e9917816b87b52ef9c5c9644a3ea51330e26a7490b329",
+    "_from_columns": "241b92c5fc19b30ed5b20fa47992b8005590ab259c8d5a4459583a620d9e4dbe",
+    "_output_dtype": "3581eff2f1d748025060cde68f86d2451b915f9b9f7a2371312f87852f47d7cc"
+  },
+  "default_scope": "Default mp8 cannot call mp28 coldstart/adapter: runtime coldstart if mp_physics==28; registry selects aerosol adapter only for mp28. All other product code BYTE main. Existing main Swiss/PROD identity reused; no new tracing claim.",
+  "storage_scope": "No carry/schema/restart changes. Startup uses two float32 interface planes instead of whole-column float64 mass-height temporary. No added hot-step ops on initialized mp28 path. Actual GPU startup launches/compile/E41/performance unmeasured.",
+  "limits": "Separate old 3D aerosol-profile geometry remains unchanged; no full-forecast fidelity claim."
+}

@@ -1,0 +1,127 @@
+{
+  "lane": "t-ntucompile",
+  "scope": "mp55/mp56 native compile readiness + NTU BYTE perf series (b); not D6/S1/F2",
+  "cpu": {
+    "isolated_compile_s": {
+      "ntu": 96.6,
+      "jensen": 253.8
+    },
+    "before": "Coalesce >300 s cap both",
+    "interpret_hlo_identity": {
+      "ntu44": "dc56b5e0",
+      "ntu12": "0bece37a",
+      "jensen44": "485507c6",
+      "jensen40": "ceb6fbff"
+    },
+    "tests": "16 PASS; mutants M1-M6 killed (assertion), 0 setup errors"
+  },
+  "gpu": {
+    "c87": {
+      "rc": 0,
+      "compile_s": 366,
+      "run_wall_s": 579.1,
+      "vram_mib": 6550,
+      "d6_1h": "PASS (manifest 9df4)"
+    },
+    "c88": {
+      "rc": 0,
+      "compile_s": 311,
+      "run_wall_s": 919.1,
+      "vram_mib": 6016,
+      "ntu_call_s_real": [
+        1.85,
+        1.35,
+        1.71
+      ]
+    },
+    "kernel_only": {
+      "jensen": {
+        "compile_s": 115.5,
+        "call_s": 0.0083
+      },
+      "ntu": {
+        "compile_s": 50.4,
+        "call_s_clear": 0.031
+      }
+    }
+  },
+  "e41": {
+    "coverage": "PASS",
+    "jensen_mp55_column": {
+      "stack": 5472,
+      "regs": 168
+    },
+    "ntu_mp56_column": {
+      "stack": 3496,
+      "regs": 255
+    },
+    "verdict": "FAIL STACK only (opt-in disclosure)"
+  },
+  "default_ids": {
+    "swiss": "f672a5739cb96e388b6b7a40ef80337bf81bdc14ef15268f3476e09d79fe055d",
+    "prod": "6fc715a2bd630934c4cf0f94427df19a527cbf429011c9ba5efe4d712744d27b"
+  },
+  "artifacts": "<USER_HOME>/wrf_gpu2_lanes/t-ntucompile/{NC*,G0*,NP0*,ID*}",
+  "open": [
+    "24 h D6 c87 by v-prep (REFL_10CM missing)",
+    "c88 final composite rerun on final main (manager 02:44Z)",
+    "E41 STACK ntu_mp56_column on the 2-warp kernel: actual value from the next c88 compile (CPU probe NP07 STACK 4672 B)"
+  ],
+  "perf_b": {
+    "changes": [
+      "phys_ntu num_warps 4->2",
+      "find_rc0 NaN fractions skip the bounded Newton loop (return NaN)",
+      "small_dt runs only when some level merges it (support.masked_call)"
+    ],
+    "ntu_call_s_real_c88": {
+      "frames": [
+        "+1h",
+        "+12h"
+      ],
+      "merged_4w": [
+        1.872,
+        1.783
+      ],
+      "w2": [
+        1.695,
+        1.145
+      ],
+      "w2_nan": [
+        0.389,
+        0.286
+      ],
+      "w2_nan_skip": [
+        0.223,
+        0.224
+      ]
+    },
+    "bitwise": {
+      "G05_4w_vs_2w_gpu": "40/40 outputs x 2 frames",
+      "G06_2w_vs_2w_nan_gpu": "80/80 arrays",
+      "NP06_cpu_frozen_observations": "912/912, NPZ sha 0f70d7e4",
+      "NP08_rebased_head_ttir": "native TTIR byte-identical 41ef3401; optimized identical modulo locations",
+      "NP14_cpu_frozen_observations_skip": "912/912, NPZ sha 0f70d7e4",
+      "G08_gpu_skip_vs_5307ed5286": "80/80 arrays"
+    },
+    "newton_trips_16_real_columns": [
+      10600,
+      552
+    ],
+    "c88_24h_merged_4w_v_prep": {
+      "wall_s": 13287,
+      "frames": 25,
+      "bounded_misses": 0,
+      "nonfinite": 0,
+      "missing": "QHAIL (writer)"
+    },
+    "estimated_c88_24h_saving_s": "4000-7000 [I]",
+    "heaviest_column_small_steps": {
+      "+1h": 1064,
+      "+12h": 715,
+      "empty_m9_share": [
+        0.954,
+        0.989
+      ]
+    }
+  }
+}

@@ -1,0 +1,145 @@
+{
+  "official_download": {
+    "url": "https://www2.mmm.ucar.edu/wrf/src/wps_files/groundwater.tar.bz2",
+    "download_bytes": 677741073,
+    "sha256": "ac204fd5bc7efe667fc9ba47cb5539dfa41f784745b7d1aedeac48891b853fa6",
+    "uncompressed_bytes": 7464961116,
+    "extract_seconds": 112.6095118210651,
+    "data_free_bytes_after": 400786059264
+  },
+  "indices": {
+    "f": {
+      "sha256": "d0f02c164f359e172a9a08feb02b088eb1fd6e37a486f16c8d9b21cfbe3d3cc6",
+      "index": "type=continuous\nprojection=regular_ll\ndx=0.00833333\ndy=0.00833333\nknown_x=1.0\nknown_y=1.0\nknown_lat=-89.995833\nknown_lon=-179.995833\nwordsize=2\nmissing_value=-9999\ntile_x=1200\ntile_y=1200\ntile_z=1\nscale_factor=0.01\nsigned = yes\nunits=\"m\"\ndescription=\"transmissivity e-folding depth\"\n"
+    },
+    "wtd": {
+      "sha256": "34277cb1f613b0980f978e561176a003060ab9b453856c1bf1ae4aac44bf8619",
+      "index": "type=continuous\nprojection=regular_ll\ndx=0.00833333\ndy=0.00833333\nknown_x=1.0\nknown_y=1.0\nknown_lat=-89.995833\nknown_lon=-179.995833\nwordsize=2\nmissing_value=-9999\ntile_x=1200\ntile_y=1200\ntile_z=1\nscale_factor=-0.03\nsigned = yes\nunits=\"m\"\ndescription=\"climatological water table depth\"\n"
+    },
+    "recharge": {
+      "sha256": "a6133b4df9292546fb4312150ecf3e729c361b05596a1370cd473c8ac13cda49",
+      "index": "type=continuous\nprojection=regular_ll\ndx=0.00833333\ndy=0.00833333\nknown_x=1.0\nknown_y=1.0\nknown_lat=-89.995833\nknown_lon=-179.995833\nwordsize=2\nmissing_value=-9999\ntile_x=1200\ntile_y=1200\ntile_z=1\nscale_factor=0.03\nsigned = yes\nunits=\"mm\"\ndescription=\"climatological recharge\"\n"
+    },
+    "riverbed": {
+      "sha256": "432e81705cf3d0f313f120b909a1284021eaa111b1c92c1e4f22ec92ddd29eae",
+      "index": "type=continuous\nprojection=regular_ll\ndx=0.00833333\ndy=0.00833333\nknown_x=1.0\nknown_y=1.0\nknown_lat=-89.995833\nknown_lon=-179.995833\nwordsize=2\nmissing_value=-9999\ntile_x=1200\ntile_y=1200\ntile_z=1\nscale_factor=0.3\nsigned = yes\nunits=\"m\"\ndescription=\"riverbed elevation\"\n"
+    }
+  },
+  "geogrid_table": {
+    "path": "<DATA_ROOT>/canairy_meteo/artifacts/wrf_src/WPS/geogrid/GEOGRID.TBL.ARW.noahmp",
+    "sha256": "b1332b323532f8e4b98c348b13ec69926edcfc30f40a9b7c9ecdcb2bd67daff8"
+  },
+  "case": "<DATA_ROOT>/wrf_gpu2/scratch/s2-mmf/MMF34_lowland",
+  "census": {
+    "shape": [
+      41,
+      47
+    ],
+    "glaciers": 0,
+    "fields": {
+      "FDEPTH": {
+        "finite": true,
+        "nonzero": 1927
+      },
+      "EQZWT": {
+        "finite": true,
+        "nonzero": 1919
+      },
+      "RECHCLIM": {
+        "finite": true,
+        "nonzero": 1927
+      },
+      "RIVERBED": {
+        "finite": true,
+        "nonzero": 1919
+      }
+    },
+    "plan": {
+      "schema": "GpuwrfRegionPlan",
+      "schema_version": 1,
+      "bbox": [
+        7.1,
+        47.25,
+        8.0,
+        47.7
+      ],
+      "domain_bbox": [
+        6.611828442770844,
+        46.91940403725238,
+        8.488171557229157,
+        48.02573636857642
+      ],
+      "resolution_km": 3,
+      "nx": 47,
+      "ny": 41,
+      "e_we": 48,
+      "e_sn": 42,
+      "e_vert": 45,
+      "dx_m": 3000,
+      "time_step": 15,
+      "map_proj": "mercator",
+      "truelat1": 47.475,
+      "ref_lat": 47.47548170849028,
+      "ref_lon": 7.55,
+      "start": "2026-10-12_00:00:00",
+      "end": "2026-10-12_03:00:00",
+      "hours": 3,
+      "boundary_hours": [
+        0,
+        3
+      ],
+      "vram_gib": 12,
+      "memory_estimate_gib": 1.2263753628098624,
+      "memory_label": "I",
+      "gpu_qualified": false,
+      "cu_physics": 0
+    }
+  },
+  "original_stages": {
+    "geogrid": {
+      "sha256": "5d716513917c71625e475a01f4a3c913e51cfdac9554c0a849a03e61ca537753",
+      "success_marker": true
+    },
+    "ungrib": {
+      "sha256": "d01fbc48eddc28d2bf618b7ce959d3ff854169c9cd8e73a4f33774fe503af62f",
+      "success_marker": true
+    },
+    "metgrid": {
+      "sha256": "8ed92c1cea2b10789ae72d31421abf6cd369c28cd930fd4d4989b1f47ccb0ca9",
+      "success_marker": true
+    },
+    "real": {
+      "sha256": "031e320f6bbae13be83743e631321157b26454d140ad39aa39ff71ad61bbfb5c",
+      "success_marker": true
+    }
+  },
+  "final_cli_resume": "ONLY final dry-run repeated after absolute PYTHONPATH correction; WPS/real not repeated",
+  "inputs": {
+    "wrfinput_d01": {
+      "sha256": "11a170c13df83e562a1b659f38f4f3748c62d5c029523f27a6cc28fbcdac4df9",
+      "bytes": 4132463
+    },
+    "wrfbdy_d01": {
+      "sha256": "a28d90eadee3808a2336f3cb08d2d57fd861c526599e9cea3e4598de1f0a8d4f",
+      "bytes": 1883726
+    },
+    "namelist.wps": {
+      "sha256": "d018f99f8849095da7e759c032ebc89c9105634300ca2a13e9507abd5a2503f2",
+      "bytes": 557
+    },
+    "namelist.input": {
+      "sha256": "7e982138452576b7ad57d7b1e53c573bdd18a0d6f1a71d04b2777fb30e5663f7",
+      "bytes": 1389
+    }
+  },
+  "forcing": {
+    "GRIBFILE.AAA": {
+      "sha256": "ff30408e243c14425b8f66b4d0fbf9dccbb8bab29d058be94a2ed09f24d35eb3",
+      "bytes": 964325
+    },
+    "GRIBFILE.AAB": {
+      "sha256": "321010cec9de6b3c8865fe0084fa4759c054e90a09371775d01dd7eedf0c7fb5",
+      "bytes": 1008317
+    }
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "created_utc": "2026-10-13T17:01:17.176830+00:00",
+  "pristine_commit": "f52c197ed39d12e087d02c50f412d90d418f6186",
+  "source_sha256": {
+    "phys/module_cu_mskf.F": "4bca54b294def08ffc98ef69a30650c943e2c394f34802e75e50c7f1a2896fcb",
+    "phys/module_cu_kfcup.F": "d5773c66c9e353b7838bc14e59d66905091425ce449e84cea58f14e7725b074c",
+    "phys/module_cu_camzm.F": "baab07991da90677e3dff4abb1c66022048b9caefab0d3f6f74b320db7cdda7b",
+    "phys/module_cu_camzm_driver.F": "a77aa3716ad10a8ef0264d58f220c5df92c093c9d12618dd4d052273b756eb3e",
+    "phys/module_cumulus_driver.F": "d73eb4b670599e0bbf98a3661b5dbf17413aed01139d18fa1a84161578dc31e3",
+    "phys/module_physics_init.F": "f48cf9793f782a72c3969e986eef24746252f030cd33cfba71cc82b81d128d90",
+    "phys/module_radiation_driver.F": "4f0177189eb616c9220fe2022186dd6cc310666ca29977557dfe53d4409d733b",
+    "share/module_check_a_mundo.F": "c66b3ef802da58e2a453b62fc00a04542c66ea93d752aa49bbd981fe00d40784",
+    "share/module_model_constants.F": "5b80377fecdc18a5f0ad38d3b6c15cfc86ad5d76701adbbbb08a08698d0f7062",
+    "Registry/Registry.EM_COMMON": "6f3ee02175b76487c5c6c046ff2fb4c5d41980b86c0f06eb2e09e34dacc9623a"
+  },
+  "qualified_scope": "CuP component helpers + radiation block only; full cu7/10/11 NOT QUALIFIED",
+  "requirements": {
+    "cu11": [
+      "check_a_mundo:1373-1415 km5 refused;icloud1+cu_rad_feedback forced;aercu>0 requiresmp40",
+      "physics_init:1116 icloud_cu2 regardlessaercu"
+    ],
+    "cu10": [
+      "check_a_mundo:2290-2300 cu_diag1",
+      "cumulus_driver:1518 KF_CUP_CPS;rad_driver:1510-1565 cloud fraction andcondensate mediation"
+    ],
+    "cu7": [
+      "cumulus_driver:1332-1385 requiresice andnumbertendencyarguments",
+      "camzm_driver:get_tpert:918-1018 requiresbl9 ORbl2+sf2;MGnotunconditional"
+    ]
+  }
+}

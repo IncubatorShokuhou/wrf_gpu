@@ -1,0 +1,91 @@
+{
+  "source": "<USER_HOME>/src/wrf_pristine/WRF/share/module_check_a_mundo.F",
+  "source_sha256": "c66b3ef802da58e2a453b62fc00a04542c66ea93d752aa49bbd981fe00d40784",
+  "first_line": 3395,
+  "body": "      DO i = 1, model_config_rec % max_dom\n         IF ( .NOT. model_config_rec % grid_allowed(i) ) CYCLE\n         IF ( model_config_rec % mp_physics(i) .EQ. 22            ) THEN\n              model_config_rec % mp_physics(i) = NSSL_2MOM\n              model_config_rec % nssl_2moment_on = 1\n              model_config_rec % nssl_hail_on = 0\n              model_config_rec % nssl_ccn_on = 1\n              model_config_rec % nssl_density_on = 1 ! set graupel density\n              WRITE (wrf_err_message, FMT='(A)') ' **CAUTION** mp_physics = 22 has been deprecated. '// &\n                'Instead you can use mp_physics=18, nssl_hail_on=0, nssl_ccn_on=1'\n              CALL wrf_debug ( 0, wrf_err_message )\n         ELSEIF ( model_config_rec % mp_physics(i) .EQ. 17        ) THEN\n              model_config_rec % mp_physics(i) = NSSL_2MOM\n              model_config_rec % nssl_2moment_on = 1\n              model_config_rec % nssl_hail_on = 1\n              model_config_rec % nssl_ccn_on = 1\n              model_config_rec % nssl_density_on = 2 ! set graupel+hail density\n              WRITE (wrf_err_message, FMT='(A)') ' **CAUTION** mp_physics = 17 has been deprecated. '// &\n                'Please use mp_physics=18, Note that nssl_ccn_on=0 is not recommended and default set to 1'\n              ! print statement for deprecated option\n              CALL wrf_debug ( 0, wrf_err_message )\n         ELSEIF ( model_config_rec % mp_physics(i) .EQ. 19        ) THEN\n             ! single-moment with hail + graupel density\n              model_config_rec % mp_physics(i) = NSSL_2MOM\n              model_config_rec % nssl_2moment_on = 0\n              model_config_rec % nssl_hail_on = 2\n              model_config_rec % nssl_density_on = 1 ! set  graupel density\n              ! print statement for deprecated option\n              WRITE (wrf_err_message, FMT='(A)') ' **CAUTION** mp_physics = 19 has been deprecated. '// &\n                'Instead you can use mp_physics=18, nssl_2moment_on=0, nssl_ccn_on=0'\n              CALL wrf_debug ( 0, wrf_err_message )\n         ELSEIF ( model_config_rec % mp_physics(i) .EQ. 21        ) THEN\n             ! single-moment without graupel volume, no hail\n              model_config_rec % mp_physics(i) = NSSL_2MOM\n              model_config_rec % nssl_2moment_on = 0\n              model_config_rec % nssl_hail_on = 0\n              model_config_rec % nssl_density_on = 0 ! set  graupel density\n              model_config_rec % nssl_ccn_on = 0\n              ! print statement for deprecated option\n              WRITE (wrf_err_message, FMT='(A)') ' **CAUTION** mp_physics = 21 has been deprecated. '// &\n                'Instead you can use mp_physics=18, nssl_2moment_on=0, nssl_ccn_on=0, nssl_hail_on=0'\n              CALL wrf_debug ( 0, wrf_err_message )\n         ENDIF\n         \n         IF ( model_config_rec % mp_physics(i) /= NSSL_2MOM ) THEN\n           ! If not NSSL-MP, make sure extra fields are turned off (in case of stray namelist settings)\n              model_config_rec % nssl_2moment_on = 0\n              model_config_rec % nssl_hail_on = 0\n              model_config_rec % nssl_density_on = 0 ! set  graupel density\n              model_config_rec % nssl_3moment = 0\n              model_config_rec % nssl_ccn_on = 0\n\n         ELSE ! make sure settings are consistent\n\n           IF ( model_config_rec % nssl_ccn_on < 0 ) THEN\n             ! nssl_ccn_on = -1, so set default\n              model_config_rec % nssl_ccn_on = 1\n           ENDIF\n\n           IF ( model_config_rec % nssl_2moment_on < 0 ) THEN ! turn on number concentrations\n             ! nssl_2moment_on = -1 so set default\n              model_config_rec % nssl_2moment_on = 1\n           ENDIF\n\n           IF ( model_config_rec % nssl_hail_on < 0 ) THEN\n              IF ( model_config_rec % nssl_2moment_on == 0 ) THEN\n                model_config_rec % nssl_hail_on = 2\n              ELSE\n                model_config_rec % nssl_hail_on = 1\n              ENDIF\n           ENDIF\n\n           IF ( model_config_rec % nssl_density_on < 0 ) THEN\n              IF ( model_config_rec % nssl_hail_on == 1 ) THEN\n                model_config_rec % nssl_density_on = 2 ! set default of graupel+hail density\n              ELSE\n                model_config_rec % nssl_density_on = 1 ! set graupel density (hail off)\n              ENDIF\n           ENDIF\n\n           IF ( model_config_rec % nssl_3moment == 1   ) THEN\n              model_config_rec % nssl_2moment_on = 1\n              IF ( model_config_rec % nssl_hail_on == 1 ) THEN\n                model_config_rec % nssl_3moment = 2 ! 3mom rain, graupel and hail\n              ELSE\n                model_config_rec % nssl_3moment = 1 ! 3mom rain and graupel (no hail)\n              ENDIF\n           ENDIF\n         ENDIF\n\n      ENDDO",
+  "body_sha256": "24f067b569950c1a50d74582920344df52d962d68e4c9c0ad01ceda20574671c",
+  "compiler": "<USER_HOME>/miniconda3/envs/wrfbuild/bin/gfortran",
+  "flags": [
+    "-O2",
+    "-ffree-form",
+    "-ffree-line-length-none",
+    "-finit-real=zero",
+    "-finit-integer=0",
+    "-finit-logical=false"
+  ],
+  "rows": [
+    {
+      "input_mp": 17,
+      "conflicting_flags": false,
+      "resolved": [
+        18,
+        1,
+        1,
+        1,
+        2,
+        0
+      ]
+    },
+    {
+      "input_mp": 18,
+      "conflicting_flags": false,
+      "resolved": [
+        18,
+        1,
+        1,
+        1,
+        2,
+        0
+      ]
+    },
+    {
+      "input_mp": 17,
+      "conflicting_flags": true,
+      "resolved": [
+        18,
+        1,
+        1,
+        1,
+        2,
+        0
+      ]
+    },
+    {
+      "input_mp": 19,
+      "conflicting_flags": false,
+      "resolved": [
+        18,
+        0,
+        2,
+        1,
+        1,
+        0
+      ]
+    },
+    {
+      "input_mp": 21,
+      "conflicting_flags": false,
+      "resolved": [
+        18,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "input_mp": 22,
+      "conflicting_flags": false,
+      "resolved": [
+        18,
+        1,
+        0,
+        1,
+        1,
+        0
+      ]
+    }
+  ],
+  "scope": "WRF original caller normalization; existing default18 pristine column qualification reused"
+}

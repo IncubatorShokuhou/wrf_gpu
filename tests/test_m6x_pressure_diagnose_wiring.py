@@ -48,7 +48,7 @@ def test_nonhydrostatic_carry_preserves_recurrence_pressure_perturbation():
         top_lid=True,
         buoyancy_scale=MPAS_COLUMN_BUOYANCY_TENDENCY_SCALE,
     )
-    diagnostic_pressure, _diagnostic_al, _diagnostic_alt = diagnose_pressure_al_alt(
+    diagnostic_pressure, _diagnostic_al, diagnostic_alt = diagnose_pressure_al_alt(
         recurrence_state,
         base,
         metrics,
@@ -67,7 +67,18 @@ def test_nonhydrostatic_carry_preserves_recurrence_pressure_perturbation():
     updated = acoustic_substep_carry(carry, metrics, config, DT_ACOUSTIC_S, base)
 
     assert _max_abs(recurrence_state.p_perturbation) > 1.0
-    assert _max_abs(diagnostic_pressure) < 1.0e-6
+    # WRF module_big_step_utilities_em.F:1082-1087 diagnoses the nonlinear
+    # EOS pressure; it is not zero for this warm, nonhydrostatic column.
+    # Preserve the old 1e-6 bound against the actual WRF equation instead.
+    theta = np.asarray(recurrence_state.theta, dtype=np.float64)
+    alt = np.asarray(diagnostic_alt, dtype=np.float64)
+    assert np.isfinite(alt).all() and np.all(alt > 0.0)
+    wrf_eos = 100000.0 * ((287.0 * theta) / (100000.0 * alt)) ** (1004.5 / 717.5) - np.asarray(base.pb)
+    assert _max_abs(np.asarray(diagnostic_pressure) - wrf_eos) < 1.0e-6
+    # A wrong diagnostic overwrite must remain distinguishable at the exact
+    # recurrence-preservation bound checked below (regression only).
+    assert not np.allclose(diagnostic_pressure, recurrence_state.p_perturbation,
+                           rtol=0.0, atol=1.0e-9)
     np.testing.assert_allclose(
         np.asarray(updated.state.p_perturbation),
         np.asarray(recurrence_state.p_perturbation),

@@ -1,0 +1,33 @@
+{
+  "source_commit": "76bafd1fbd4e60818fd4690f7a9e4d02d1e48d24",
+  "input": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c62/input",
+  "input_sha256": {
+    "namelist.input": "b5feb706cdf4f95e077c2cd55fd45a3967372a207b257ed1fb5e1eb1f1a928b0",
+    "wrfbdy_d01": "f3e556670e4768326997bdfa1dd8b0f77eb6d5da07d9c4dbf900bf8ff9e30230",
+    "wrfinput_d01": "a5d696550d1dc6713e2e340b8c2fba83811d43f4a94a65ca95266035860e2781"
+  },
+  "platform": "cpu",
+  "lowering_platform": "cuda",
+  "gpu_executed": false,
+  "load_s": 34.50164348213002,
+  "diagnostic_source_substitution": {
+    "old": "jnp.exp(-timean)",
+    "new": "jnp.exp(jnp.asarray(-0., jnp.float32) - timean)"
+  },
+  "trace_s": 10.78897707303986,
+  "status": "PASS",
+  "stablehlo_sha256": "1a75424c7cecac5be7a4223d30137416ab4c1bbcc30aea9a9536b0924e91e780",
+  "stablehlo_bytes": 44418724,
+  "triton_custom_calls": 149,
+  "native_facade": true,
+  "pallas_interpret": false,
+  "python_backend": "gpu",
+  "work": {
+    "mp_physics": 5,
+    "dt_s": 18.0,
+    "radiation_cadence_steps": 33,
+    "ferrier_gid": 1
+  },
+  "wall_s": 57.97962600598112,
+  "peakRSS_KiB": 2590540
+}

@@ -1,5 +1,5 @@
 """WRF-grounded operand order; solver stubs only expose caller operands."""
-from dataclasses import dataclass, replace
+from dataclasses import MISSING, dataclass, replace
 from datetime import datetime
 from pathlib import Path
 from types import SimpleNamespace
@@ -21,6 +21,7 @@ ROOT = Path("<DATA_ROOT>/server/work/src/alisios/wrf_gen")
 class Surface:
     t_skin: object
     xland: object
+    theta: object
 
     def replace(self, **kw):
         return replace(self, **kw)
@@ -35,6 +36,18 @@ class Land:
         return replace(self, **kw)
 
 
+def _contract_default(contract, name):
+    field = contract.__dataclass_fields__.get(name)
+    if field is not None and field.default is not MISSING:
+        return field.default
+    raise AttributeError(name)
+
+
+class Namelist(SimpleNamespace):
+    def __getattr__(self, name):
+        return _contract_default(op.OperationalNamelist, name)
+
+
 @dataclass(frozen=True)
 class Carry:
     state: object
@@ -42,6 +55,11 @@ class Carry:
     radiation_diagnostics: object = True
     rthraten: object = None
     census: object = None
+    nwp_diagnostics: object = None
+
+    def __getattr__(self, name):
+        from gpuwrf.runtime.operational_state import OperationalCarry
+        return _contract_default(OperationalCarry, name)
 
     def replace(self, **kw):
         return replace(self, **kw)
@@ -67,9 +85,11 @@ def test_resumed_alarm_radiation_old_surface_new(monkeypatch, case, domain, dt, 
         water = np.asarray(ds["XLAND"][0]) > 1.5
     boundary = load_lower_boundary(source, nml, domain, run_start=times[0], dt_s=dt, shape=water.shape)
     activation = int(boundary.activation_steps[record])
-    state = Surface(jnp.asarray(previous_tsk), jnp.asarray(np.where(water, 2., 1.)))
+    # Only the surface shape is consumed before the sentinel Noah-MP solve.
+    state = Surface(jnp.asarray(previous_tsk), jnp.asarray(np.where(water, 2., 1.)),
+                    jnp.full((1, *water.shape), 300.0))
     carry = Carry(state, Land(state.t_skin, jnp.asarray(previous_tslb)))
-    namelist = SimpleNamespace(lower_boundary=boundary, noahmp_static=None,
+    namelist = Namelist(lower_boundary=boundary, noahmp_static=None,
         dt_s=dt, boundary_config=None, run_physics=True, rad_rk_tendf=0,
         mp_physics=0, sf_sfclay_physics=5, cu_physics=0, use_noahmp=True,
         radiation_interval_s=1800., radiation_cadence_steps=int(1800 / dt),

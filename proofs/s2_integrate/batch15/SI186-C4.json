@@ -1,0 +1,527 @@
+{
+  "candidate": "4c866cec771f1b81a20df9bf7c433101c0904a49",
+  "chunk": 4,
+  "rc": 0,
+  "duration_s": 54.8632736189993,
+  "counts": {
+    "PASS": 126,
+    "XFAIL": 2
+  },
+  "reports": {
+    "tests/test_m3_edge_cases.py::test_state_and_tendencies_share_shape_per_field": {
+      "status": "PASS",
+      "phase": "call"
+    },
+    "tests/test_m3_edge_cases.py::test_precision_registry_blocks_typo_field": {
+      "status": "PASS",
+      "phase": "call"
+    },
+    "tests/test_m3_edge_cases.py::test_precision_registry_returns_fp64_for_every_state_field": {
+      "status": "XFAIL",
+      "phase": "call"
+    },
+    "tests/test_m3_edge_cases.py::test_precision_registry_factory_is_pure": {
+      "status": "PASS",
+      "phase": "call"
+    },
+    "tests/test_m3_edge_cases.py::test_halospec_rejects_width_zero": {
+      "status": "PASS",
+      "phase": "call"
+    },
+    "tests/test_m3_edge_cases.py::test_halospec_rejects_width_above_four": {
+      "status": "XFAIL",
+      "phase": "call"
+    },
+    "tests/test_m3_edge_cases.py::test_halospec_accepts_all_documented_edge_types[periodic]": {
+      "status": "PASS",
+      "phase": "call"
+    },
+    "tests/test_m3_edge_cases.py::test_halospec_accepts_all_documented_edge_types[open]": {
+      "status": "PASS",
+      "phase": "call"
+    },
+    "tests/test_m3_edge_cases.py::test_halospec_accepts_all_documented_edge_types[nest_boundary]": {
+      "status": "PASS",
+      "phase": "call"
+    },
+    "tests/test_m3_edge_cases.py::test_apply_halo_is_identity_for_empty_fields": {
+      "status": "PASS",
+      "phase": "call"
+    },
+    "tests/test_m3_edge_cases.py::test_dummy_step_with_zero_tendencies_is_bitwise_identity": {
+      "status": "PASS",
+      "phase": "call"
+    },
+    "tests/test_m3_edge_cases.py::test_run_dummy_loop_is_deterministic": {
+      "status": "PASS",
+      "phase": "call"
+    },
+    "tests/test_m3_edge_cases.py::test_run_dummy_loop_zero_steps_is_state_passthrough": {
+      "status": "PASS",
+      "phase": "call"
+    },
+    "tests/test_m3_edge_cases.py::test_run_dummy_loop_keeps_outputs_on_selected_device": {
+      "status": "PASS",
+      "phase": "call"
+    },
+    "tests/test_m3_edge_cases.py::test_run_dummy_loop_signature_uses_static_n_steps": {
+      "status": "PASS",
+      "phase": "call"
+    },
+    "tests/test_m3_edge_cases.py::test_run_dummy_loop_hlo_has_exactly_one_while_loop": {
+      "status": "PASS",
+      "phase": "call"
+    },
+    "tests/test_m3_edge_cases.py::test_spacetime_budget_totals_are_self_consistent": {
+      "status": "PASS",
+      "phase": "call"
+    },
+    "tests/test_m3_edge_cases.py::test_spacetime_budget_state_bytes_matches_live_state": {
+      "status": "PASS",
+      "phase": "call"
+    },
+    "tests/test_m3_edge_cases.py::test_spacetime_budget_obeys_soft_perf_bound": {
+      "status": "PASS",
+      "phase": "call"
+    },
+    "tests/test_m3_edge_cases.py::test_spacetime_budget_persistent_bytes_under_one_gb": {
+      "status": "PASS",
+      "phase": "call"
+    },
+    "tests/test_m3_edge_cases.py::test_transfer_audit_records_jax_version_and_method": {
+      "status": "PASS",
+      "phase": "call"
+    },
+    "tests/test_m3_edge_cases.py::test_transfer_audit_records_gpu_device_name": {
+      "status": "PASS",
+      "phase": "call"
+    },
+    "tests/test_m3_edge_cases.py::test_hlo_dump_artifact_exists_and_is_nonempty": {
+      "status": "PASS",
+      "phase": "call"
+    },
+    "tests/test_m3_edge_cases.py::test_hlo_dump_contains_jit_run_dummy_loop_module": {
+      "status": "PASS",
+      "phase": "call"
+    },
+    "tests/test_m3_edge_cases.py::test_kernel_launches_helper_reports_raw_hlo_count": {
+      "status": "PASS",
+      "phase": "call"
+    },
+    "tests/test_m3_edge_cases.py::test_agent_success_records_jax_pin": {
+      "status": "PASS",
+      "phase": "call"
+    },
+    "tests/test_m3_edge_cases.py::test_adr002_contains_required_tokens_and_size": {
+      "status": "PASS",
+      "phase": "call"
+    },
+    "tests/test_ysu_surface_contract.py::test_active_neutral_ysu_matches_pristine_caller": {
+      "status": "PASS",
+      "phase": "call"
+    },
+    "tests/test_ysu_surface_contract.py::test_operational_ysu_reuses_selected_surface_solve": {
+      "status": "PASS",
+      "phase": "call"
+    },
+    "tests/test_ysu_surface_contract.py::test_each_sf1_pbl_consumes_selected_contract[1-ysu_columns-True]": {
+      "status": "PASS",
+      "phase": "call"
+    },
+    "tests/test_ysu_surface_contract.py::test_each_sf1_pbl_consumes_selected_contract[11-shinhong_columns-True]": {
+      "status": "PASS",
+      "phase": "call"
+    },
+    "tests/test_ysu_surface_contract.py::test_each_sf1_pbl_consumes_selected_contract[3-gfs_columns-False]": {
+      "status": "PASS",
+      "phase": "call"
+    },
+    "tests/test_ysu_surface_contract.py::test_each_sf1_pbl_consumes_selected_contract[12-gbm_columns-False]": {
+      "status": "PASS",
+      "phase": "call"
+    },
+    "tests/test_ysu_surface_contract.py::test_each_sf1_pbl_consumes_selected_contract[99-mrf_columns-False]": {
+      "status": "PASS",
+      "phase": "call"
+    },
+    "tests/test_ysu_surface_contract.py::test_each_sf1_pbl_consumes_selected_contract[7-acm2_columns-False]": {
+      "status": "PASS",
+      "phase": "call"
+    },
+    "tests/test_ysu_surface_contract.py::test_each_sf1_pbl_consumes_selected_contract[8-boulac_columns-False]": {
+      "status": "PASS",
+      "phase": "call"
+    },
+    "tests/test_ysu_surface_contract.py::test_selected_sf1_pbl_rates_enter_rk_once[1]": {
+      "status": "PASS",
+      "phase": "call"
+    },
+    "tests/test_ysu_surface_contract.py::test_selected_sf1_pbl_rates_enter_rk_once[7]": {
+      "status": "PASS",
+      "phase": "call"
+    },
+    "tests/test_ysu_surface_contract.py::test_selected_sf1_pbl_rates_enter_rk_once[8]": {
+      "status": "PASS",
+      "phase": "call"
+    },
+    "tests/test_ysu_surface_contract.py::test_selected_sf1_pbl_rates_enter_rk_once[11]": {
+      "status": "PASS",
+      "phase": "call"
+    },
+    "tests/test_ysu_surface_contract.py::test_selected_sf1_pbl_rates_enter_rk_once[12]": {
+      "status": "PASS",
+      "phase": "call"
+    },
+    "tests/test_ysu_surface_contract.py::test_selected_sf1_pbl_rates_enter_rk_once[3]": {
+      "status": "PASS",
+      "phase": "call"
+    },
+    "tests/test_ysu_surface_contract.py::test_selected_sf1_pbl_rates_enter_rk_once[99]": {
+      "status": "PASS",
+      "phase": "call"
+    },
+    "tests/test_ysu_surface_contract.py::test_gbm_writes_reconstructed_ust_to_state": {
+      "status": "PASS",
+      "phase": "call"
+    },
+    "tests/test_v013_operational_smoke.py::test_operational_set_is_consistent_with_adapter_tables": {
+      "status": "PASS",
+      "phase": "call"
+    },
+    "tests/test_v060_physics_dispatch.py::test_default_suite_is_v020_baseline_and_gpu_ready": {
+      "status": "PASS",
+      "phase": "call"
+    },
+    "tests/test_v060_physics_dispatch.py::test_every_accepted_option_routes": {
+      "status": "PASS",
+      "phase": "call"
+    },
+    "tests/test_v060_physics_dispatch.py::test_fail_closed_on_out_of_matrix[microphysics-95]": {
+      "status": "PASS",
+      "phase": "call"
+    },
+    "tests/test_v060_physics_dispatch.py::test_fail_closed_on_out_of_matrix[cumulus-999]": {
+      "status": "PASS",
+      "phase": "call"
+    },
+    "tests/test_v060_physics_dispatch.py::test_fail_closed_on_out_of_matrix[land_surface-5]": {
+      "status": "PASS",
+      "phase": "call"
+    },
+    "tests/test_v060_physics_dispatch.py::test_myj_pairing_enforced_by_dispatcher_resolution": {
+      "status": "PASS",
+      "phase": "call"
+    },
+    "tests/test_v060_physics_dispatch.py::test_cumulus_gpu_readiness_flags": {
+      "status": "PASS",
+      "phase": "call"
+    },
+    "tests/test_v060_physics_dispatch.py::test_camuw_is_gpu_runnable_with_a_wrf_flux_producer": {
+      "status": "PASS",
+      "phase": "call"
+    },
+    "tests/test_v060_physics_dispatch.py::test_kf_is_implemented_and_scan_wired": {
+      "status": "PASS",
+      "phase": "call"
+    },
+    "tests/test_v060_physics_dispatch.py::test_use_noahmp_toggle_maps_land_surface": {
+      "status": "PASS",
+      "phase": "call"
+    },
+    "tests/test_v060_physics_dispatch.py::test_slab_lsm_is_operational_and_gpu_gate_ready": {
+      "status": "PASS",
+      "phase": "call"
+    },
+    "tests/test_v060_physics_dispatch.py::test_pleim_xiu_lsm_is_operational_and_gpu_gate_ready": {
+      "status": "PASS",
+      "phase": "call"
+    },
+    "tests/test_v060_physics_dispatch.py::test_all_routed_entrypoints_exist_on_module": {
+      "status": "PASS",
+      "phase": "call"
+    },
+    "tests/test_v060_physics_dispatch.py::test_nested_wrf_style_mapping_resolves": {
+      "status": "PASS",
+      "phase": "call"
+    },
+    "tests/test_restart_history_activity.py::test_history_field_activity[object-1]": {
+      "status": "PASS",
+      "phase": "call"
+    },
+    "tests/test_restart_history_activity.py::test_history_field_activity[object-2]": {
+      "status": "PASS",
+      "phase": "call"
+    },
+    "tests/test_restart_history_activity.py::test_history_field_activity[object-4]": {
+      "status": "PASS",
+      "phase": "call"
+    },
+    "tests/test_restart_history_activity.py::test_history_field_activity[object-5]": {
+      "status": "PASS",
+      "phase": "call"
+    },
+    "tests/test_restart_history_activity.py::test_history_field_activity[object-7]": {
+      "status": "PASS",
+      "phase": "call"
+    },
+    "tests/test_restart_history_activity.py::test_history_field_activity[object-10]": {
+      "status": "PASS",
+      "phase": "call"
+    },
+    "tests/test_restart_history_activity.py::test_history_field_activity[flat-1]": {
+      "status": "PASS",
+      "phase": "call"
+    },
+    "tests/test_restart_history_activity.py::test_history_field_activity[flat-2]": {
+      "status": "PASS",
+      "phase": "call"
+    },
+    "tests/test_restart_history_activity.py::test_history_field_activity[flat-4]": {
+      "status": "PASS",
+      "phase": "call"
+    },
+    "tests/test_restart_history_activity.py::test_history_field_activity[flat-5]": {
+      "status": "PASS",
+      "phase": "call"
+    },
+    "tests/test_restart_history_activity.py::test_history_field_activity[flat-7]": {
+      "status": "PASS",
+      "phase": "call"
+    },
+    "tests/test_restart_history_activity.py::test_history_field_activity[flat-10]": {
+      "status": "PASS",
+      "phase": "call"
+    },
+    "tests/test_restart_history_activity.py::test_history_field_activity[physics-1]": {
+      "status": "PASS",
+      "phase": "call"
+    },
+    "tests/test_restart_history_activity.py::test_history_field_activity[physics-2]": {
+      "status": "PASS",
+      "phase": "call"
+    },
+    "tests/test_restart_history_activity.py::test_history_field_activity[physics-4]": {
+      "status": "PASS",
+      "phase": "call"
+    },
+    "tests/test_restart_history_activity.py::test_history_field_activity[physics-5]": {
+      "status": "PASS",
+      "phase": "call"
+    },
+    "tests/test_restart_history_activity.py::test_history_field_activity[physics-7]": {
+      "status": "PASS",
+      "phase": "call"
+    },
+    "tests/test_restart_history_activity.py::test_history_field_activity[physics-10]": {
+      "status": "PASS",
+      "phase": "call"
+    },
+    "tests/test_restart_history_activity.py::test_active_history_wind_damage_refused[missing-u10e-2]": {
+      "status": "PASS",
+      "phase": "call"
+    },
+    "tests/test_restart_history_activity.py::test_active_history_wind_damage_refused[missing-u10e-4]": {
+      "status": "PASS",
+      "phase": "call"
+    },
+    "tests/test_restart_history_activity.py::test_active_history_wind_damage_refused[missing-v10e-2]": {
+      "status": "PASS",
+      "phase": "call"
+    },
+    "tests/test_restart_history_activity.py::test_active_history_wind_damage_refused[missing-v10e-4]": {
+      "status": "PASS",
+      "phase": "call"
+    },
+    "tests/test_restart_history_activity.py::test_active_history_wind_damage_refused[shape-u10e-2]": {
+      "status": "PASS",
+      "phase": "call"
+    },
+    "tests/test_restart_history_activity.py::test_active_history_wind_damage_refused[shape-u10e-4]": {
+      "status": "PASS",
+      "phase": "call"
+    },
+    "tests/test_restart_history_activity.py::test_active_history_wind_damage_refused[shape-v10e-2]": {
+      "status": "PASS",
+      "phase": "call"
+    },
+    "tests/test_restart_history_activity.py::test_active_history_wind_damage_refused[shape-v10e-4]": {
+      "status": "PASS",
+      "phase": "call"
+    },
+    "tests/test_restart_history_activity.py::test_active_history_wind_damage_refused[dtype-u10e-2]": {
+      "status": "PASS",
+      "phase": "call"
+    },
+    "tests/test_restart_history_activity.py::test_active_history_wind_damage_refused[dtype-u10e-4]": {
+      "status": "PASS",
+      "phase": "call"
+    },
+    "tests/test_restart_history_activity.py::test_active_history_wind_damage_refused[dtype-v10e-2]": {
+      "status": "PASS",
+      "phase": "call"
+    },
+    "tests/test_restart_history_activity.py::test_active_history_wind_damage_refused[dtype-v10e-4]": {
+      "status": "PASS",
+      "phase": "call"
+    },
+    "tests/test_restart_history_activity.py::test_active_history_wind_damage_refused[nan-u10e-2]": {
+      "status": "PASS",
+      "phase": "call"
+    },
+    "tests/test_restart_history_activity.py::test_active_history_wind_damage_refused[nan-u10e-4]": {
+      "status": "PASS",
+      "phase": "call"
+    },
+    "tests/test_restart_history_activity.py::test_active_history_wind_damage_refused[nan-v10e-2]": {
+      "status": "PASS",
+      "phase": "call"
+    },
+    "tests/test_restart_history_activity.py::test_active_history_wind_damage_refused[nan-v10e-4]": {
+      "status": "PASS",
+      "phase": "call"
+    },
+    "tests/test_restart_history_activity.py::test_active_history_wind_damage_refused[inf-u10e-2]": {
+      "status": "PASS",
+      "phase": "call"
+    },
+    "tests/test_restart_history_activity.py::test_active_history_wind_damage_refused[inf-u10e-4]": {
+      "status": "PASS",
+      "phase": "call"
+    },
+    "tests/test_restart_history_activity.py::test_active_history_wind_damage_refused[inf-v10e-2]": {
+      "status": "PASS",
+      "phase": "call"
+    },
+    "tests/test_restart_history_activity.py::test_active_history_wind_damage_refused[inf-v10e-4]": {
+      "status": "PASS",
+      "phase": "call"
+    },
+    "tests/test_restart_history_activity.py::test_active_history_wind_damage_refused[minus_inf-u10e-2]": {
+      "status": "PASS",
+      "phase": "call"
+    },
+    "tests/test_restart_history_activity.py::test_active_history_wind_damage_refused[minus_inf-u10e-4]": {
+      "status": "PASS",
+      "phase": "call"
+    },
+    "tests/test_restart_history_activity.py::test_active_history_wind_damage_refused[minus_inf-v10e-2]": {
+      "status": "PASS",
+      "phase": "call"
+    },
+    "tests/test_restart_history_activity.py::test_active_history_wind_damage_refused[minus_inf-v10e-4]": {
+      "status": "PASS",
+      "phase": "call"
+    },
+    "tests/test_restart_history_activity.py::test_qnse_pbl_uses_resolved_surface_history_activity[1]": {
+      "status": "PASS",
+      "phase": "call"
+    },
+    "tests/test_restart_history_activity.py::test_qnse_pbl_uses_resolved_surface_history_activity[4]": {
+      "status": "PASS",
+      "phase": "call"
+    },
+    "tests/test_restart_history_activity.py::test_myj_public_formats_retain_complete_carry[pickle]": {
+      "status": "PASS",
+      "phase": "call"
+    },
+    "tests/test_restart_history_activity.py::test_myj_public_formats_retain_complete_carry[netcdf]": {
+      "status": "PASS",
+      "phase": "call"
+    },
+    "tests/test_restart_history_activity.py::test_myj_public_formats_retain_complete_carry[native]": {
+      "status": "PASS",
+      "phase": "call"
+    },
+    "tests/test_restart_history_activity.py::test_myj_public_formats_refuse_missing_wind[u10e-pickle]": {
+      "status": "PASS",
+      "phase": "call"
+    },
+    "tests/test_restart_history_activity.py::test_myj_public_formats_refuse_missing_wind[u10e-netcdf]": {
+      "status": "PASS",
+      "phase": "call"
+    },
+    "tests/test_restart_history_activity.py::test_myj_public_formats_refuse_missing_wind[u10e-native]": {
+      "status": "PASS",
+      "phase": "call"
+    },
+    "tests/test_restart_history_activity.py::test_myj_public_formats_refuse_missing_wind[v10e-pickle]": {
+      "status": "PASS",
+      "phase": "call"
+    },
+    "tests/test_restart_history_activity.py::test_myj_public_formats_refuse_missing_wind[v10e-netcdf]": {
+      "status": "PASS",
+      "phase": "call"
+    },
+    "tests/test_restart_history_activity.py::test_myj_public_formats_refuse_missing_wind[v10e-native]": {
+      "status": "PASS",
+      "phase": "call"
+    },
+    "tests/test_restart_history_activity.py::test_myj_public_reads_refuse_damaged_wind[missing-pickle-u10e]": {
+      "status": "PASS",
+      "phase": "call"
+    },
+    "tests/test_restart_history_activity.py::test_myj_public_reads_refuse_damaged_wind[missing-pickle-v10e]": {
+      "status": "PASS",
+      "phase": "call"
+    },
+    "tests/test_restart_history_activity.py::test_myj_public_reads_refuse_damaged_wind[missing-native-u10e]": {
+      "status": "PASS",
+      "phase": "call"
+    },
+    "tests/test_restart_history_activity.py::test_myj_public_reads_refuse_damaged_wind[missing-native-v10e]": {
+      "status": "PASS",
+      "phase": "call"
+    },
+    "tests/test_restart_history_activity.py::test_myj_public_reads_refuse_damaged_wind[missing-netcdf-u10e]": {
+      "status": "PASS",
+      "phase": "call"
+    },
+    "tests/test_restart_history_activity.py::test_myj_public_reads_refuse_damaged_wind[missing-netcdf-v10e]": {
+      "status": "PASS",
+      "phase": "call"
+    },
+    "tests/test_restart_history_activity.py::test_myj_public_reads_refuse_damaged_wind[dtype-pickle-u10e]": {
+      "status": "PASS",
+      "phase": "call"
+    },
+    "tests/test_restart_history_activity.py::test_myj_public_reads_refuse_damaged_wind[dtype-pickle-v10e]": {
+      "status": "PASS",
+      "phase": "call"
+    },
+    "tests/test_restart_history_activity.py::test_myj_public_reads_refuse_damaged_wind[dtype-native-u10e]": {
+      "status": "PASS",
+      "phase": "call"
+    },
+    "tests/test_restart_history_activity.py::test_myj_public_reads_refuse_damaged_wind[dtype-native-v10e]": {
+      "status": "PASS",
+      "phase": "call"
+    },
+    "tests/test_restart_history_activity.py::test_myj_public_reads_refuse_damaged_wind[dtype-netcdf-u10e]": {
+      "status": "PASS",
+      "phase": "call"
+    },
+    "tests/test_restart_history_activity.py::test_myj_public_reads_refuse_damaged_wind[dtype-netcdf-v10e]": {
+      "status": "PASS",
+      "phase": "call"
+    },
+    "tests/test_restart_history_activity.py::test_myj_public_reads_refuse_damaged_wind[nonfinite-pickle-u10e]": {
+      "status": "PASS",
+      "phase": "call"
+    },
+    "tests/test_restart_history_activity.py::test_myj_public_reads_refuse_damaged_wind[nonfinite-pickle-v10e]": {
+      "status": "PASS",
+      "phase": "call"
+    },
+    "tests/test_restart_history_activity.py::test_myj_public_reads_refuse_damaged_wind[nonfinite-native-u10e]": {
+      "status": "PASS",
+      "phase": "call"
+    },
+    "tests/test_restart_history_activity.py::test_myj_public_reads_refuse_damaged_wind[nonfinite-native-v10e]": {
+      "status": "PASS",
+      "phase": "call"
+    }
+  },
+  "GPU_runs": 0,
+  "cache": "NONE persistent",
+  "scope": "FIFO RAM12GSwap0 CPU24,25nice19"
+}

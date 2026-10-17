@@ -1,0 +1,15 @@
+# Surface FIX round 2, series 3 F21 — MERGE (CPU scope)
+
+The admitted sf0/BL0/Noah-MP/ocean1 counterexample is closed by gating, preserving WRF's supported return behavior. `_physics_step_forcing` now skips ocean_surface_step, aux4 SST_UPDATE application and SST-skin application when sf_opt=0, matching the original surface_driver.F:1490 return before :1638/:1795/:4472. Surface and LSM calls remain gated as previously reviewed.
+
+**[M CPU]** The original critic ocean probe now records0 calls. The primary combined ocean/aux4/skin probe passes. An independent two-call probe supplies changing aux4 SST on successive20s forcing calls with resident OceanCarry and SST-skin memory: zero ocean/SST_UPDATE/skin/LSM calls; every OceanCarry leaf and TSK stays held. This isolates forcing/carry lifetime, not a dynamics/coupled forecast. Deleting the ocean condition recreates the genuine old critic assertion.
+
+Efficiency: suppressed surface paths avoid their solves and temporary allocations; no added carry or timestep computation. Actual GPU savings/peak/runtime are unmeasured. This hunk does not add a general sf0 admission policy: the previously disclosed WRF-fatal bl5+sf0 pairing remains separate admission debt, and is not used as the positive sf0 counterexample.
+
+**[M CPU] Final composed candidate:** 213 healthy checks, zero failures/errors/skips =47 primary +164 affected GFS/staging/condensate/YSU/AOT/solar/NetCDF/CuPlus-lifecycle consumers +the old ocean critic +an independent two-call ocean/SST hold probe. Three independent in-process deletion mutants (REAL Q1 staging, MYJ key registration, sf0 ocean gate) each cause exactly one assertion failure, zero errors/skips. No snapshot/model source mutation.
+
+Fresh full native-facade default identities: Swiss `7379c7d77e94517f07e7bf37763cc1409d1287a13e50684ed9d624caafaec55e`, PROD d01 `6487f5b039a074f02f63d140f1e9212b7ede832d04bf5450e44ad2b3f2c34e73`, both EXACT. The known external-reader census test is deselected, not counted as passing: its source is BYTE to main c360fdf6ee and changed physics/kernel/coupling files have the same reader inventory under that exact AST predicate, so retain the owner's paid pre-existing failure rather than rerun an unrelated baseline.
+
+MYJ solver/surface and selected sf3/7/91 sources plus frozen fixtures are BYTE to the previous independently reviewed candidate. Reuse this critic's pristine MYJSFC 126 frozen columns×3 calls, selected-surface original oracles, and real MYJ→Noah→MYJPBL two-step evidence; no duplicate numerical validation. Prior MYJ 8-ULP envelope slack/initialization disclosure remains, with coupled D6 still pending. Previously approved F8/F17/F23 hunks composed from main retain their own verdicts.
+
+Artifacts `<USER_HOME>/wrf_gpu2_lanes/rv-t-cfix/SFC3/`; quantitative receipts REVIEW_NUMBERS.json. ST01–09 logged to MAIN. All private Fortran builds, detached snapshot and pytest/Python caches removed. No GPU or producer edits. GPU c04/c43/c61/c03/c01/c39, D6/E41, runtime, peak VRAM and readiness remain pending; c25 is already refused as WRF-fatal.

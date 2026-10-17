@@ -207,15 +207,16 @@ class PleimXiuSfclayOutput(NamedTuple):
     molength: object
 
 
-def _arr(value):
-    return jnp.asarray(value, dtype=jnp.float64)
+def _arr(value, dtype=jnp.float64):
+    return jnp.asarray(value, dtype=dtype)
 
 
 def _svp_ground_px(tsk):
     """Saturation vapor pressure over ice/water, module_sf_pxsfclay.F:360-368."""
 
     ice = SVP1_KPA * jnp.exp(
-        4648.0 * (1.0 / SVPT0_K - 1.0 / tsk)
+        # 1./273.15 is a REAL constant in WRF: divide in the operand precision.
+        4648.0 * (jnp.asarray(1.0, tsk.dtype) / jnp.asarray(SVPT0_K, tsk.dtype) - 1.0 / tsk)
         - 11.64 * jnp.log(SVPT0_K / tsk)
         + 0.02265 * (SVPT0_K - tsk)
     )
@@ -253,33 +254,36 @@ def _pxsfclay_regime(br, gz1oz0):
     return regime, psim, psih, ricut
 
 
-def pxsfclay_run(state: PleimXiuSfclayColumnState, *, isfflx: bool = True) -> PleimXiuSfclayOutput:
+def pxsfclay_run(state: PleimXiuSfclayColumnState, *, isfflx: bool = True,
+                 dtype=jnp.float64) -> PleimXiuSfclayOutput:
     """Run vectorized WRF ``PXSFCLAY1D`` default path.
 
     ``isfflx`` is accepted for adapter symmetry with other surface-layer ports.
     WRF's Pleim-Xiu routine receives this flag but does not branch on it.
+    ``dtype=jnp.float32`` evaluates the WRF REAL routine in REAL (operational
+    sf=7 caller); the legacy default keeps the frozen fp64 evaluation.
     """
 
     del isfflx
-    ux = _arr(state.u)
-    vx = _arr(state.v)
-    t1d = _arr(state.temperature)
-    theta = _arr(state.theta)
-    qx = _arr(state.qv)
-    p1d = _arr(state.pressure)
-    dz = _arr(state.dz)
-    psfcpa = _arr(state.psfc)
-    tsk = _arr(state.tsk)
-    xland = _arr(state.xland)
-    mavail = _arr(state.mavail)
-    znt_in = _arr(state.znt)
-    ust_in = _arr(state.ust)
-    hfx_prev = _arr(state.hfx)
-    qfx_prev = _arr(state.qfx)
-    qsfc_in = _arr(state.qsfc)
-    pblh = _arr(state.pblh)
-    dx = _arr(state.dx)
-    itimestep = _arr(state.itimestep)
+    ux = _arr(state.u, dtype)
+    vx = _arr(state.v, dtype)
+    t1d = _arr(state.temperature, dtype)
+    theta = _arr(state.theta, dtype)
+    qx = _arr(state.qv, dtype)
+    p1d = _arr(state.pressure, dtype)
+    dz = _arr(state.dz, dtype)
+    psfcpa = _arr(state.psfc, dtype)
+    tsk = _arr(state.tsk, dtype)
+    xland = _arr(state.xland, dtype)
+    mavail = _arr(state.mavail, dtype)
+    znt_in = _arr(state.znt, dtype)
+    ust_in = _arr(state.ust, dtype)
+    hfx_prev = _arr(state.hfx, dtype)
+    qfx_prev = _arr(state.qfx, dtype)
+    qsfc_in = _arr(state.qsfc, dtype)
+    pblh = _arr(state.pblh, dtype)
+    dx = _arr(state.dx, dtype)
+    itimestep = _arr(state.itimestep, dtype)
 
     psfc = psfcpa / 1000.0
     tvcon = 1.0 + EP1 * qx

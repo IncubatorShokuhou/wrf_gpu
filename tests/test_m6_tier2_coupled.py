@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import jax
 import jax.numpy as jnp
 
 from gpuwrf.contracts.grid import GridSpec
@@ -74,22 +75,30 @@ def test_boundary_flux_closure_uses_pre_boundary_tendency_snapshot():
 def test_forecast_segment_pre_sanitize_tap_returns_one_state_per_step():
     state, tendencies, grid = _physical_state()
 
-    final_state, tap = run_forecast_segment(
-        state,
-        tendencies,
-        grid,
-        1.0,
-        2,
-        start_step=0,
-        total_steps=2,
-        n_acoustic=1,
-        radiation_cadence_steps=10,
-        final_radiation=False,
-        boundary_config=DEFAULT_BOUNDARY_CONFIG,
-        capture_pre_sanitize=True,
+    # This gate checks the real driver's tap structure, so trace its complete
+    # program without compiling/executing unrelated numerical physics.
+    final_state, tap = jax.eval_shape(
+        lambda current, forcing: run_forecast_segment(
+            current,
+            forcing,
+            grid,
+            1.0,
+            2,
+            start_step=0,
+            total_steps=2,
+            n_acoustic=1,
+            radiation_cadence_steps=10,
+            final_radiation=False,
+            boundary_config=DEFAULT_BOUNDARY_CONFIG,
+            capture_pre_sanitize=True,
+        ),
+        state, tendencies,
     )
 
     assert final_state.mu.shape == state.mu.shape
     assert tap.state.mu.shape[0] == 2
     assert tap.pre_boundary.mu.shape[0] == 2
     assert tap.boundary_tendency.mu.shape[0] == 2
+    assert all(leaf.shape[0] == 2 for group in
+               (tap.state, tap.pre_boundary, tap.boundary_tendency)
+               for leaf in jax.tree.leaves(group))

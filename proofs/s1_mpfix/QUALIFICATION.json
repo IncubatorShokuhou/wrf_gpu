@@ -1,0 +1,229 @@
+{
+  "schema": "s1-mpfix-qualification-v1",
+  "status": "READY_FOR_CRITIC",
+  "created_utc": "2026-10-13T21:49:12.224674+00:00",
+  "lane": "s1-mpfix",
+  "model_commit": "dcfea81c4d47ce3c130a468c6f1fa74ffaea1e7a",
+  "host_commit": "53355a06c73e6afc3ab963eda1ad2126f87410b9",
+  "main_base": "1a21233bcc72ad6e8322d721df769a02aa5795a4",
+  "release_qualified": false,
+  "nested_admitted_mp": [],
+  "nested_refused_mp": [
+    18,
+    24,
+    28,
+    40
+  ],
+  "implemented": [
+    "mp40 literal per-cell GOTO200 and per-column GOTO400 dry-Nc selection",
+    "use_mp_re radii producer/carry/RRTMG/restart mediation for mp18/24/28",
+    "mp40 and WSM7 dry-theta input with moist-theta carry restoration",
+    "WSM7 disabled radius selection retained",
+    "measured nested refusal reasons in host admission and catalog"
+  ],
+  "source_proof": {
+    "seal": {
+      "path": "<USER_HOME>/src/wrf_gpu2_wt/s1-mpfix/proofs/s1_mpfix/SOURCE_SEAL.json",
+      "sha256": "c00da2da30b120da4ab0c0e3e3466c0c2c294c75eab3900cfe8b2697b737282e"
+    },
+    "all_owned_source_sha256_verified": true,
+    "post_measurement_source_change": "scheme_catalog qualification-note literal only; numerical source byte-identical"
+  },
+  "original_WRF_evidence": {
+    "dry_Nc": {
+      "experiment": "MP05",
+      "tests_passed": 40,
+      "wall_s": 81.25,
+      "scope": "full pristine wrapper REAL4/REAL8 five added dry/active/mixed columns, plus existing gates"
+    },
+    "radii": {
+      "experiment": "MP37",
+      "tests_passed": 33,
+      "wall_s": 7.07
+    },
+    "radiation_driver": {
+      "experiment": "MP26",
+      "tests_passed": 1,
+      "wall_s": 47.88,
+      "original_calls": 18,
+      "real_RE01_columns": [
+        31,
+        78,
+        114
+      ],
+      "mp": [
+        18,
+        24,
+        28
+      ],
+      "use_mp_re": [
+        0,
+        1
+      ],
+      "bounds": "frozen flux 1W/m2+5%, heating 1e-4K/s+5%, radius forwarding exact"
+    },
+    "deletion_sensitivity": {
+      "experiment": "MP29",
+      "source_change": "deleted actual WSM7 production radius writeback five lines",
+      "genuine_numeric_assertions": 1,
+      "setup_errors": 0,
+      "wall_s": 3.14
+    }
+  },
+  "final_tests": {
+    "own_MP48": {
+      "passed": 95,
+      "failed": 1,
+      "wall_s": 1097.88,
+      "failure": "test_mp40_is_scan_wired_and_dispatched requires literal Ns/Ng/Nc; repaired host-only in53355a06c",
+      "junit": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/s1-mpfix/MP48-final-own.xml",
+        "sha256": "b108c4f94da27fe32d230d6123d5a059ef15b65e489d82706e9d6db10b4ad196"
+      },
+      "resolved_by": "MP50b exactfailednode PASS after host-only catalogliteral repair"
+    },
+    "shared_MP49": {
+      "status": "PASS",
+      "passed": 306,
+      "failed": 0,
+      "errors": 0,
+      "skipped": 0,
+      "wall_s": 1771.128,
+      "junit": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/s1-mpfix/MP49-final-shared.xml",
+        "sha256": "c91575f6af27ad80c955177ab513e7ac171d8ce36d317e92b28cbe76d8a169e0"
+      }
+    },
+    "host_MP50b": {
+      "status": "PASS",
+      "passed": 41,
+      "failed": 0,
+      "errors": 0,
+      "skipped": 0,
+      "wall_s": 1.985,
+      "junit": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/s1-mpfix/MP50b-host-catalog.xml",
+        "sha256": "42304ac2e0eef4441ee12306670d5c4705ba3f9553ba0d1612778cb601d6f129"
+      }
+    },
+    "host_MP50_initial": "collection harnessERROR: snapshotroot absentfromPYTHONPATH; rootcwd+root:src correction MP50b",
+    "counts_note": "Selections overlap; do not sum into a unique-test count. Numerical changes validated once; host-only prose repair rechecks affected consumers."
+  },
+  "program_identity": {
+    "scope": "JAX-vs-JAX source/program regression identity, not independent fidelity",
+    "nested_MP45_MP46b": "bothdomain canonicaljaxpr/inputbytes/closedconstants signatures+hashes EXACT",
+    "release_flags": {
+      "FAST": 1,
+      "MP_RE": 1,
+      "CENSUS": 0
+    },
+    "release_sha256": "2bf12cb8374d3a84a440e47dea4b77b0c7436108fc2ee2616bba6ec79b17962a",
+    "receipts": [
+      {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/s1-mpfix/MP45-measured.json",
+        "sha256": "ecc08a709f1afb9a24606fe343988d6c2a31e4f92d928963cd7dbae002b568df"
+      },
+      {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/s1-mpfix/MP45-composed.json",
+        "sha256": "e1202be9b32ce1c549ca97da9236dad7430739aacb74ee53e2e8586df3680456"
+      },
+      {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/s1-mpfix/MP46b-final-nested-identity.json",
+        "sha256": "365d34825f068c79f293e98bdb0bcafe5480b78d9c37705e34212197372a97cb"
+      },
+      {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/s1-mpfix/MP47c-final-release-identity.json",
+        "sha256": "d4e51027e7bceeab691f5e0b636574bcd33ab1913a97b94692cd415f7eb6ffa2"
+      }
+    ]
+  },
+  "nested_admission": {
+    "path": "<USER_HOME>/src/wrf_gpu2_wt/s1-mpfix/proofs/s1_mpfix/NESTED_ADMISSION.json",
+    "sha256": "2c5e703995cc6ebd5ec99edcfddaa1b143fda5cdb3d6abbc852e20ee998a1f90"
+  },
+  "performance_memory": {
+    "backend": "CPU component probes; no attributed GPU speed claim",
+    "mp40_adapter": {
+      "compile_before_after_s": [
+        10.277991808,
+        10.369182836
+      ],
+      "warm_before_after_ms": [
+        0.716985902,
+        0.685815001
+      ],
+      "temp_before_after_bytes": [
+        128304,
+        129136
+      ],
+      "arg_bytes": 301220,
+      "output_bytes": 302556
+    },
+    "mp24_adapter": {
+      "compile_before_after_s": [
+        7.747360271,
+        8.356750243
+      ],
+      "warm_before_after_ms": [
+        0.458113849,
+        0.380003126
+      ],
+      "temp_before_after_bytes": [
+        24992,
+        24992
+      ],
+      "arg_bytes": 97660,
+      "output_bytes": 98740
+    },
+    "new_radius_carry_bytes_per_mass_cell": 12,
+    "NSSL_radii_only": "avoids radar; measured40level temp99104->98528B, output+504B, warm.73944->.74009ms, compile20.872->21.570s",
+    "cpu_cost_receipts": [
+      {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/s1-mpfix/MP44-24-baseline.json",
+        "sha256": "d7a6a1528ca6ee6eb2e17940789f9480ed0fadef6a15eeb41c5fe90bb7b70265"
+      },
+      {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/s1-mpfix/MP44-24-candidate.json",
+        "sha256": "487a2128238faaf5ec289a9f2f37237ef859fe0d4c21bc0c06d795d4c0b97670"
+      },
+      {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/s1-mpfix/MP44-40-baseline.json",
+        "sha256": "5c474675e2baf22a88cde6e47e2679b11ae3f8097b28c7a3658e3aaff690bf35"
+      },
+      {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/s1-mpfix/MP44-40-candidate.json",
+        "sha256": "a08b1c5cfea808b3afaf6d60d976e2ee65ca9f236c2be9915fff7a75300b8b67"
+      }
+    ],
+    "limits": "changed physical branches and shared CPU prevent speed-gain attribution; GPU launch delta/traffic/peak delta/readiness unknown"
+  },
+  "external_GPU": {
+    "receipt": {
+      "path": "<USER_HOME>/src/wrf_gpu2_wt/s1-mpfix/proofs/s1_mpfix/EXTERNAL_GPU_RECEIPTS.json",
+      "sha256": "f20bde172b5c988f3f557fadf0b1c2c0632991692f9ac267fabc9a564140025d"
+    },
+    "scope": "independent s1-gpuqual official-lock exactphysics3e70f3b4b,Swiss24h; noGPU used by this lane",
+    "science": "mp24/40 FAILRAINNC;mp28 INCOMPLETE missingoriginalfields; fullcoverageFALSEall3",
+    "E41": "experimental24STACK3864B;28STACK928B/kInput1510;40STACK16B/kInput2226; no qualificationupgrade"
+  },
+  "open_risks": [
+    "nested40 parentboundaryNc and unresolved negativeNc F2",
+    "nested18/24 same-input upstream mechanism for negativeqi/Ni not established; amplitude alone insufficient",
+    "nested28 initial aerosol fields failbothdomains",
+    "full24h Swiss independent24/40RAINNC failures and24/28/40 missing original outputs",
+    "WSM7 pre-existing dry-density DEN and g9.80665 thickness caller audit remains open",
+    "mp26 has_req111 radius mediation outside this fix scope",
+    "mixedMP/staggered-start/full24h nested and release qualification unproved",
+    "attributed GPU overhead/readiness unmeasured"
+  ],
+  "cleanup": {
+    "status": "COMPLETE",
+    "verified_utc": "2026-10-13T21:53:15.752848+00:00",
+    "removed": "all own detached snapshots/build trees/pytest caches and scratchcomposed; dataWRFrefs preserved",
+    "cache": "GPUWRF_JAX_CACHE=0; no disposable JAX cache",
+    "preserved_original_reference_bytes_approx": 835715072,
+    "lane_total_bytes_approx": 838860800
+  },
+  "experiments": "MP01..MP51, including baseline failures, harness repairs, rejected configurations, stopped28 and timeout receipts; MAIN EXPERIMENTS.tsv; NREF18/28 original references",
+  "sealed_utc": "2026-10-13T21:53:15.752888+00:00"
+}

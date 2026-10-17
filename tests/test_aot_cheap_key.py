@@ -900,7 +900,7 @@ def _cache(monkeypatch, tmp_path):
 def test_v3_terrain_source_path_is_inert_but_content_and_geometry_remain_keyed():
     from gpuwrf.contracts.grid import TerrainProvenance
 
-    assert ck.KEY_SCHEMA == "GPUWRF-AOTKEY-v4"
+    assert ck.KEY_SCHEMA == "GPUWRF-AOTKEY-v5"
     base = TerrainProvenance(
         source_path="/namespace/a/terrain.nc",
         sha256="a" * 64,
@@ -1423,6 +1423,8 @@ _IMPORT_TIME_ENV_NOT_HLO = {
     "gpuwrf/__init__.py::_COMMAND_BUFFER_STATUS": "XLA_FLAGS is in exec_env_hash",
     "gpuwrf/__init__.py::_FAST_DEFAULTS_STATUS": "release switch VALUES land in os.environ; global_trace_env_hash hashes them",
     "gpuwrf/__init__.py::_JAX_CACHE_STATUS": "cache location, not a program determinant",
+    "gpuwrf/io/gen2_accessor.py::GEN2_READ_ONLY_ROOT": "host input-directory write protection; data enter model operands/holders",
+    "gpuwrf/io/gen2_accessor.py::DEFAULT_M6_GEN2_RUN_DIR": "host default input location; no file IO in model steps",
     "gpuwrf/physics/ra_lw_rrtm.py::WRF_ROOT": "known residual: ra_lw_physics=1 table path (not PROD)",
 }
 
@@ -1430,6 +1432,16 @@ _IMPORT_TIME_ENV_NOT_HLO = {
 # Import-time env-reading calls whose effect is keyed elsewhere.
 _IMPORT_TIME_ENV_SIDE_EFFECTS = {
     "gpuwrf._x64_config.configure_jax_x64": "resolved jax_enable_x64 is in program_config_hash",
+    # GPUWRF_TABLES_DIR/_URL/_OFFLINE and XDG_CACHE_HOME only choose WHERE a pinned table is stored or
+    # fetched from; the key hashes table CONTENT (pinned SHA-256 before the first download), see
+    # tests/test_runtime_assets.py::test_aot_key_hashes_table_content_before_and_after_download.
+    "gpuwrf.assets.asset_path": "pinned-table LOCATION only; content keyed by SHA-256",
+    "gpuwrf.assets.ensure_asset": "pinned-table LOCATION/download only; content keyed by SHA-256",
+    # Pre-JAX CLI admission (gpuwrf/__init__.py): a non-None result exits the process
+    # (SystemExit 2) before JAX imports, so every process that traces anything holds
+    # _cammg_refusal=None; it can never vary a traced program
+    # (test_cammg_bootstrap_refusal_cannot_reach_a_traced_program).
+    "gpuwrf.io.cammg_config.bootstrap_refusal": "refusal exits before JAX; surviving processes always hold None",
 }
 
 
@@ -1529,7 +1541,14 @@ def _import_time_env_offenders(trees, covered=frozenset(), relpaths=None):
             for child in node.orelse:
                 scan(child, module, scope)
             return
-        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+        if isinstance(node, ast.If):
+            # Classify bindings in reachable branches individually, preserving
+            # their registry/inert annotations. The condition itself remains a
+            # determinant: an env test cannot hide behind an annotated call.
+            parts = [node.test]
+            for child in node.body + node.orelse:
+                scan(child, module, scope)
+        elif isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
             parts = [d for d in node.args.defaults + node.args.kw_defaults if d is not None]
             parts += [ast.Call(func=d, args=[], keywords=[]) if isinstance(d, (ast.Name, ast.Attribute)) else d
                       for d in node.decorator_list]
@@ -1728,6 +1747,36 @@ def test_no_uncovered_import_time_env_constants():
         "(add each to aot_cheap_key.IMPORT_TIME_ENV_CONSTANTS so the cheap_key hashes "
         f"its RESOLVED value): {sorted(offenders)}"
     )
+
+
+def test_cammg_bootstrap_refusal_cannot_reach_a_traced_program(tmp_path, monkeypatch):
+    """Justifies the _IMPORT_TIME_ENV_SIDE_EFFECTS entry for the CAM-MG/km3 bootstrap.
+
+    (1) An imported gpuwrf always holds _cammg_refusal=None and no module reads it;
+    (2) after the mp11 GPU lift (stock-Triton route) a GPU `run` of an mp11 case is
+    admitted (None), while km_opt=3 is still refused, so a refused process never
+    survives import to trace a program."""
+    import ast
+    import gpuwrf
+    from gpuwrf.io import cammg_config
+
+    assert gpuwrf._cammg_refusal is None
+    src = Path(gpuwrf.__file__).resolve().parent
+    readers = [py for py in src.rglob("*.py")
+               if "_cammg_refusal" in py.read_text() and py.name != "__init__.py"]
+    assert readers == []
+    init = ast.parse((src / "__init__.py").read_text())
+    uses = [n for n in ast.walk(init) if isinstance(n, ast.Name) and n.id == "_cammg_refusal"]
+    assert len(uses) == 3  # assignment, the guard, the error message
+    monkeypatch.setattr(cammg_config, "target_backend", lambda: "cuda")
+    monkeypatch.setenv("GPUWRF_BATCH_ENSEMBLE", "1")
+    mp11 = tmp_path / "mp11"; mp11.mkdir()
+    (mp11 / "namelist.input").write_text("&physics\n mp_physics=11,\n/\n")
+    km3 = tmp_path / "km3"; km3.mkdir()
+    (km3 / "namelist.input").write_text("&dynamics\n km_opt=3,\n/\n")
+    assert cammg_config.bootstrap_refusal(["gpuwrf", "run", "--input-dir", str(mp11)]) is None
+    refusal = cammg_config.bootstrap_refusal(["gpuwrf", "run", "--input-dir", str(km3)])
+    assert refusal and "km_opt=3" in refusal
 
 
 def test_import_time_env_registry_entries_resolve():

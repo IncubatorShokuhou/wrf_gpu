@@ -1,0 +1,75 @@
+{
+  "cases": [
+    {
+      "hypsometric_opt": 1,
+      "smooth": 0,
+      "nz": 44,
+      "ny": 20,
+      "nx": 22
+    },
+    {
+      "hypsometric_opt": 1,
+      "smooth": 1,
+      "nz": 44,
+      "ny": 20,
+      "nx": 22
+    },
+    {
+      "hypsometric_opt": 1,
+      "smooth": 2,
+      "nz": 44,
+      "ny": 20,
+      "nx": 22
+    },
+    {
+      "hypsometric_opt": 2,
+      "smooth": 0,
+      "nz": 44,
+      "ny": 20,
+      "nx": 22
+    },
+    {
+      "hypsometric_opt": 2,
+      "smooth": 1,
+      "nz": 44,
+      "ny": 20,
+      "nx": 22
+    },
+    {
+      "hypsometric_opt": 2,
+      "smooth": 2,
+      "nz": 44,
+      "ny": 20,
+      "nx": 22
+    }
+  ],
+  "source": "<USER_HOME>/src/wrf_pristine/WRF/dyn_em/module_big_step_utilities_em.F",
+  "source_sha256": "bd177b6b5ba7949cf9e694d7ad654fd9ae2f07d39d85802f0716c5318889a815",
+  "routine_sha256": "59afe965bb28dcaf2917191b5bab376b82f2fb34c5c050f5a48a63b2f3b3df38",
+  "feedback_sources": {
+    "source": "<USER_HOME>/src/wrf_pristine/WRF/share/interp_fcn.F",
+    "source_sha256": "680881db48904396f38856ca1dd2578a84e8eb0a9cdd05d49f4c63cd8ce9bdaa",
+    "routines": {
+      "copy_fcn": "4d64447ed253836041a64401f3046db70848569b80f87b6ae280202f199b98d0",
+      "copy_fcnm": "ff0c27e1ede7ce820efff9e9e9f0dc25f6a93500f42ae6ce185bf09516ffc20b",
+      "copy_fcni": "2a6ff77faa604ca42e412bf0d6471a88aa4533f9696d1421bef0d1d8d32c3dca",
+      "sm121": "6785c858cf127077c0ff35fafeb205984036d154cdcd96122105efda4484b525",
+      "smdsm": "87c5b23f3c70bf3e3bda4f2455bd98b5c592dccf906cfc71f077218830bef171"
+    },
+    "compiler": "<DATA_ROOT>/canairy_meteo/artifacts/envs/wrf-build/bin/x86_64-conda-linux-gnu-gfortran",
+    "flags": [
+      "-shared",
+      "-fPIC",
+      "-ffree-form",
+      "-ffree-line-length-none",
+      "-O2",
+      "-march=nocona",
+      "-ffp-contract=off",
+      "-fcheck=bounds"
+    ],
+    "precision": "WRF REAL binary32",
+    "scope": "serial feedback operators; NOT a coupled forecast qualification"
+  },
+  "fixture_sha256": "5577405695137e84a2d74f780a2f2c80d1d4afc7e95292b61f43ac9c9ccecbf9",
+  "provenance": "WN3 native-input crops; separately supplied fedback ALB; verbatim original CPU-WRF calc_p_rho_phi"
+}

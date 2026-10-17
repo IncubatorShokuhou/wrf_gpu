@@ -23,6 +23,9 @@ from gpuwrf.physics.noahmp_coupler import noahmp_surface_adapter
 from gpuwrf.physics.surface_constants import CP_D
 from gpuwrf.physics.surface_layer import surface_layer_with_diagnostics
 
+B39_CARRY_LEAVES = ("mol", "hfx", "qfx", "qsfc", "pblh")
+assert SURFACE_LAYER_CARRY_LEAVES[:5] == B39_CARRY_LEAVES
+
 GWDO_HISTORY_LEAVES = getattr(precision_contract, "GWDO_DIAGNOSTIC_LEAVES", ())
 assert GWDO_HISTORY_LEAVES in ((), ("dtaux3d", "dtauy3d", "dusfcg", "dvsfcg"))
 
@@ -52,8 +55,8 @@ def test_leaves_are_real_locked_zero_seeded_and_survive_force_fp64(gwd_opt):
     state = _cpu_state(gwd_opt=gwd_opt)
     mynn_history = getattr(precision_contract, "MYNN_DIAGNOSTIC_LEAVES", ())
     assert mynn_history in ((), ("el_pbl", "maxmf", "maxwidth", "ztop_plume"))
-    real_leaves = SURFACE_LAYER_CARRY_LEAVES + mynn_history + GWDO_HISTORY_LEAVES
-    assert State.__slots__[71:] == real_leaves
+    real_leaves = B39_CARRY_LEAVES + mynn_history + GWDO_HISTORY_LEAVES
+    assert State.__slots__[71:71 + len(real_leaves)] == real_leaves
     for name in real_leaves:
         leaf = getattr(state, name)
         assert name in _PHYSICS_NON_DRY_REPLACE_FIELDS
@@ -86,7 +89,7 @@ def test_leaves_are_real_locked_zero_seeded_and_survive_force_fp64(gwd_opt):
 def test_column_view_passes_carry_and_grid_dx():
     state = _cpu_state()
     values = {name: jnp.full(state.xland.shape, 1.0 + i, jnp.float32)
-              for i, name in enumerate(SURFACE_LAYER_CARRY_LEAVES)}
+              for i, name in enumerate(B39_CARRY_LEAVES)}
     view = _build_column_view(state.replace(**values), _GridWithDx(9000.0))
     for name, value in values.items():
         np.testing.assert_array_equal(np.asarray(getattr(view, name)), np.asarray(value))
@@ -173,10 +176,10 @@ def test_pre_b39_pickled_state_unpickles_with_real_zero_leaves():
     # Simulate a pre-B39 pickle: drop the five slot entries from the slot-state dict.
     reduced = state.__reduce_ex__(2)
     dict_state, slot_state = reduced[2]
-    old_slot_state = {k: v for k, v in slot_state.items() if k not in SURFACE_LAYER_CARRY_LEAVES}
+    old_slot_state = {k: v for k, v in slot_state.items() if k not in B39_CARRY_LEAVES}
     restored = State.__new__(State)
     restored.__setstate__((dict_state, old_slot_state))
-    for name in SURFACE_LAYER_CARRY_LEAVES:
+    for name in B39_CARRY_LEAVES:
         leaf = getattr(restored, name)
         shape = state.qke.shape if name == "el_pbl" else state.xland.shape
         assert leaf.dtype == jnp.float32 and leaf.shape == shape

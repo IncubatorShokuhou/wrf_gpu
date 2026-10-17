@@ -1,0 +1,416 @@
+{
+  "verdict": "MERGE",
+  "scope": "Ten test-only repair commits; not the full-suite or release gate",
+  "created_utc": "2026-10-14T21:32:02.285164+00:00",
+  "snapshot": "37c4cf8c46c7129184f1af3df23bb0063f95a008",
+  "base": "09fce2d4f",
+  "measured_pass_executions": 183,
+  "explicit_skips": 5,
+  "inherited_xfails": 3,
+  "product_mutant_assertion_kills": 2,
+  "present_wrong_external_assertion": 1,
+  "zero_setup_errors": true,
+  "max_rss_kib": 2937432,
+  "resource_policy": "Each fresh CPU arm independently uses MAIN FIFO RAM slot, 6GiB/no swap, CPU8,9,24,25 nice19, timeout600, QUIET guarded",
+  "performance": "No production files changed; no added runtime launches/allocations/traffic/compile cost. No GPU/forecast speed claim.",
+  "per_commit": [
+    {
+      "commit": "de2e7089e",
+      "verdict": "MERGE",
+      "subject": "SSiB",
+      "evidence": "FAST0/1 each 4 PASS; land-value mutant AssertionError"
+    },
+    {
+      "commit": "9a958cb46",
+      "verdict": "MERGE",
+      "subject": "radiation isolation",
+      "evidence": "6 PASS with real reload predecessor and pristine C/D/deletion checks"
+    },
+    {
+      "commit": "984f5070c",
+      "verdict": "MERGE",
+      "subject": "absent external file",
+      "evidence": "8 PASS / 4 explicit SKIP; present-wrong path AssertionError, never SKIP"
+    },
+    {
+      "commit": "1c5561af4",
+      "verdict": "MERGE",
+      "subject": "CPU shell NVML isolation",
+      "evidence": "29 PASS; original lifecycle assertions unchanged"
+    },
+    {
+      "commit": "873cac346",
+      "verdict": "MERGE",
+      "subject": "FLG/open-top contract pins",
+      "evidence": "12 PASS; exact current admission/dispatch contracts"
+    },
+    {
+      "commit": "50873bfc5",
+      "verdict": "MERGE",
+      "subject": "history caller mock",
+      "evidence": "12 PASS / 1 inherited SKIP; omitted-T2-write mutant AssertionError"
+    },
+    {
+      "commit": "1b6cf9f93",
+      "verdict": "MERGE",
+      "subject": "lower-boundary caller mock",
+      "evidence": "18 PASS on original WN3 operands; all byte/order assertions unchanged"
+    },
+    {
+      "commit": "6122c751b",
+      "verdict": "MERGE",
+      "subject": "MYJ history mock",
+      "evidence": "8 PASS; pristine CPS rates/ULP/byte assertions unchanged"
+    },
+    {
+      "commit": "b0d618512",
+      "verdict": "MERGE",
+      "subject": "State/backend contract",
+      "evidence": "45 PASS / 3 inherited XFAIL; default dtype/device gates also PASS after analytics"
+    },
+    {
+      "commit": "d185e9dce",
+      "verdict": "MERGE",
+      "subject": "scoped analytic fp64",
+      "evidence": "32 strict analytic PASS + 3 independent restoration PASS + 2 default-consumer PASS"
+    }
+  ],
+  "arms": {
+    "R01": {
+      "arm": "R01",
+      "counts": {
+        "passed": 61,
+        "failed": 0,
+        "skipped": 5,
+        "errors": 0,
+        "assertion_failures": 0
+      },
+      "failures": [],
+      "skips": [
+        {
+          "node": "tests.test_canary_wrf_fixture::test_source_wrfout_exists_readable_and_is_not_touched",
+          "reason": "un-vendored original CPU-WRF source file absent: <DATA_ROOT>/wrf_gpu2/source_wrfouts/wrfout_d01_2026-05-18_18:00:00"
+        },
+        {
+          "node": "tests.test_canary_wrf_fixture::test_full_external_file_exists_at_external_uri",
+          "reason": "un-vendored external full.npz payload absent (only the small slice SAMPLE is committed)"
+        },
+        {
+          "node": "tests.test_canary_wrf_fixture::test_manifest_file_records_match_actual_payloads",
+          "reason": "un-vendored external full.npz payload absent (only the small slice SAMPLE is committed)"
+        },
+        {
+          "node": "tests.test_canary_wrf_fixture::test_external_checksums_file_covers_external_payloads",
+          "reason": "un-vendored external full.npz payload absent (only the small slice SAMPLE is committed)"
+        },
+        {
+          "node": "tests.test_history_instep_diag::test_chs2_cqs2_match_pristine_r8_mynn_oracle",
+          "reason": "real PROD operands (BP43 carry / CPU-WRF 13z frame) unavailable"
+        }
+      ],
+      "max_rss_kib": 2643612,
+      "returncode": 0
+    },
+    "R02a": {
+      "arm": "R02a",
+      "counts": {
+        "passed": 6,
+        "failed": 0,
+        "skipped": 0,
+        "xfailed": 0,
+        "errors": 0,
+        "assertion_failures": 0
+      },
+      "failures": [],
+      "skips": [],
+      "max_rss_kib": 2729536,
+      "returncode": 0,
+      "fast_defaults": "0",
+      "mutant": "",
+      "snapshot": "37c4cf8c46c7129184f1af3df23bb0063f95a008"
+    },
+    "R03": {
+      "arm": "R03",
+      "counts": {
+        "passed": 75,
+        "failed": 0,
+        "skipped": 0,
+        "xfailed": 3,
+        "errors": 0,
+        "assertion_failures": 0
+      },
+      "failures": [],
+      "skips": [
+        {
+          "node": "tests.test_m3_edge_cases::test_init_path_allocations_are_bounded_and_listed",
+          "reason": "STALE: the init-time allocator allowlist grew (jnp.ones/jnp.asarray now used in grid/state init); test pins the old allocator set. Pre-existing on v0.17."
+        },
+        {
+          "node": "tests.test_m3_edge_cases::test_precision_registry_returns_fp64_for_every_state_field",
+          "reason": "STALE: the precision registry now returns fp32 for some fields (fp32 work); test pins all-fp64. Pre-existing on v0.17."
+        },
+        {
+          "node": "tests.test_m3_edge_cases::test_halospec_rejects_width_above_four",
+          "reason": "STALE: HaloSpec no longer rejects width=5 (the halo-width ceiling was raised); test pins the old <=4 rule. Pre-existing on v0.17."
+        }
+      ],
+      "max_rss_kib": 1304292,
+      "returncode": 0,
+      "fast_defaults": "0",
+      "mutant": "",
+      "snapshot": "37c4cf8c46c7129184f1af3df23bb0063f95a008"
+    },
+    "R04": {
+      "arm": "R04",
+      "counts": {
+        "passed": 4,
+        "failed": 0,
+        "skipped": 0,
+        "xfailed": 0,
+        "errors": 0,
+        "assertion_failures": 0
+      },
+      "failures": [],
+      "skips": [],
+      "max_rss_kib": 967568,
+      "returncode": 0,
+      "fast_defaults": "1",
+      "mutant": "",
+      "snapshot": "37c4cf8c46c7129184f1af3df23bb0063f95a008"
+    },
+    "R07": {
+      "arm": "R07",
+      "counts": {
+        "passed": 37,
+        "failed": 0,
+        "skipped": 0,
+        "xfailed": 0,
+        "errors": 0,
+        "assertion_failures": 0
+      },
+      "failures": [],
+      "skips": [],
+      "max_rss_kib": 2937432,
+      "returncode": 0,
+      "fast_defaults": "0",
+      "mutant": "",
+      "snapshot": "37c4cf8c46c7129184f1af3df23bb0063f95a008"
+    },
+    "R09": {
+      "arm": "R09",
+      "counts": {
+        "passed": 0,
+        "failed": 3,
+        "skipped": 0,
+        "xfailed": 0,
+        "errors": 0,
+        "assertion_failures": 3
+      },
+      "failures": [
+        {
+          "node": "tests.test_s2_ssib_wiring::test_public_initial_carry_seeds_held_wind",
+          "message": "AssertionError: bwo3\nassert b'\\x00\\x00\\x8...\\x00\\x00\\x80?' == b'\\x00\\x00\\x0...0\\x00\\x00\\x00'\n  \n  At index 2 diff: b'\\x80' != b'\\x00'\n  Use -v to get more diff",
+          "genuine_assertion": true
+        },
+        {
+          "node": "tests.test_history_instep_diag::test_step_writes_history_container_from_surface_fields",
+          "message": "AssertionError: t2\nassert b'\\x00\\x00\\x0...0\\x00\\x00\\x00' == b'\\x00\\x00\\xc...\\x00\\x00\\xccB'\n  \n  At index 2 diff: b'\\x00' != b'\\xcc'\n  Use -v to get more diff",
+          "genuine_assertion": true
+        },
+        {
+          "node": "tests.test_canary_wrf_fixture::test_source_wrfout_exists_readable_and_is_not_touched",
+          "message": "AssertionError: assert False\n +  where False = is_file()\n +    where is_file = PosixPath('<USER_HOME>/wrf_gpu2_lanes/rv-t-redsuite/pytest/test_source_wrfout_exists_read0/present_directory_not_wrfout').is_file",
+          "genuine_assertion": true
+        }
+      ],
+      "skips": [],
+      "max_rss_kib": 940068,
+      "returncode": 1,
+      "fast_defaults": "0",
+      "mutant": "all-three",
+      "snapshot": "37c4cf8c46c7129184f1af3df23bb0063f95a008"
+    }
+  },
+  "audit": {
+    "base": "09fce2d4f",
+    "snapshot": "37c4cf8c46c7129184f1af3df23bb0063f95a008",
+    "commits": [
+      {
+        "commit": "de2e7089e",
+        "files": [
+          {
+            "file": "tests/test_s2_ssib_wiring.py",
+            "sha256": "d92a2aa34e2089f667792885626bc945062ee5f8ae7e0e64d9e96cf81e209589",
+            "original_tolerance_keywords": 0,
+            "removed_or_changed_tolerance_keywords": 0
+          }
+        ]
+      },
+      {
+        "commit": "9a958cb46",
+        "files": [
+          {
+            "file": "tests/v025/b_rad/test_mcica_maxrand_re01.py",
+            "sha256": "3042570bc8e833dd95a80c2ea11831496f88a50b9c2e3c6e371662f71d58454e",
+            "original_tolerance_keywords": 0,
+            "removed_or_changed_tolerance_keywords": 0
+          }
+        ]
+      },
+      {
+        "commit": "984f5070c",
+        "files": [
+          {
+            "file": "tests/test_canary_wrf_fixture.py",
+            "sha256": "a14c25e1127c5aa3bfc2376315b85087eeb3cb0e247d39e6e9bf218fa10b20a9",
+            "original_tolerance_keywords": 0,
+            "removed_or_changed_tolerance_keywords": 0
+          }
+        ]
+      },
+      {
+        "commit": "1c5561af4",
+        "files": [
+          {
+            "file": "tests/test_bench_summary.py",
+            "sha256": "8a28fa4dafe9324e38127f0b51df75cb0c7ecf431eeeb4133bb5be4c52d790af",
+            "original_tolerance_keywords": 0,
+            "removed_or_changed_tolerance_keywords": 0
+          }
+        ]
+      },
+      {
+        "commit": "873cac346",
+        "files": [
+          {
+            "file": "tests/test_cdudhia_sw_operational_wiring.py",
+            "sha256": "c212c008bde22ac7d6d2d3de4cb63e0198a46e59cf36697e4a46430903699814",
+            "original_tolerance_keywords": 1,
+            "removed_or_changed_tolerance_keywords": 0
+          },
+          {
+            "file": "tests/test_lw12_glue_default.py",
+            "sha256": "0b2e3207140fa43fbe3d824da6b0f8e7deea5bee8d85d7aaca1b9a8948bab4c2",
+            "original_tolerance_keywords": 0,
+            "removed_or_changed_tolerance_keywords": 0
+          }
+        ]
+      },
+      {
+        "commit": "50873bfc5",
+        "files": [
+          {
+            "file": "tests/test_history_instep_diag.py",
+            "sha256": "4d72ebe636cb70a966d38b013668d9de2a4dc82101070c10f77651b25318238e",
+            "original_tolerance_keywords": 4,
+            "removed_or_changed_tolerance_keywords": 0
+          }
+        ]
+      },
+      {
+        "commit": "1b6cf9f93",
+        "files": [
+          {
+            "file": "tests/test_lower_boundary_order.py",
+            "sha256": "6a4d20f486cd4091157460399ec403340c8d9d28a341a2de81463eb27bc5bd46",
+            "original_tolerance_keywords": 0,
+            "removed_or_changed_tolerance_keywords": 0
+          }
+        ]
+      },
+      {
+        "commit": "6122c751b",
+        "files": [
+          {
+            "file": "tests/v040/cuplus/test_rk_caller.py",
+            "sha256": "6e3f3411f3c5726fe4456673f6dcdf9f8839787bc429a941b96d13709854878e",
+            "original_tolerance_keywords": 0,
+            "removed_or_changed_tolerance_keywords": 0
+          }
+        ]
+      },
+      {
+        "commit": "b0d618512",
+        "files": [
+          {
+            "file": "tests/test_m3_edge_cases.py",
+            "sha256": "6d0bda380e45a705187b3f3e9e0ce3db646d0b2617e58cd77863a325af5367d7",
+            "original_tolerance_keywords": 0,
+            "removed_or_changed_tolerance_keywords": 0
+          },
+          {
+            "file": "tests/test_m3_state.py",
+            "sha256": "3a0059bd4489cbe86ac51c6cded7f4e700284853ff5a4a81be715da7952c613f",
+            "original_tolerance_keywords": 0,
+            "removed_or_changed_tolerance_keywords": 0
+          }
+        ]
+      },
+      {
+        "commit": "d185e9dce",
+        "files": [
+          {
+            "file": "tests/_legacy_fp64_state.py",
+            "sha256": "d076ca629ffc3f04984e8008baad9a75b772c0d28ebc4cf4e7e3c284bbb2bab8",
+            "original_tolerance_keywords": 0,
+            "removed_or_changed_tolerance_keywords": 0
+          },
+          {
+            "file": "tests/test_m4_tester_adversarial_attempt2.py",
+            "sha256": "e361089312788093a60ae0d1c11dd53ee0801f1d272ef9799542149b2b73864c",
+            "original_tolerance_keywords": 0,
+            "removed_or_changed_tolerance_keywords": 0
+          },
+          {
+            "file": "tests/test_m4_tier2_invariants.py",
+            "sha256": "078f0428d6938b629f34051b14b7578ae35aaf1f4c1418bd69f0299b478d1d2c",
+            "original_tolerance_keywords": 0,
+            "removed_or_changed_tolerance_keywords": 0
+          },
+          {
+            "file": "tests/test_m4_tier3_convergence.py",
+            "sha256": "215887e0067bdf3c66c02858e17c5000e00548032a04ede6b299ee93ed28da05",
+            "original_tolerance_keywords": 0,
+            "removed_or_changed_tolerance_keywords": 0
+          }
+        ]
+      }
+    ],
+    "producer_full_xml_sha256_verified": "af51fc23937d0bbce5487214de07381e930ab39d1747baaf5fb75875f2915624",
+    "production_diff": "EMPTY"
+  },
+  "receipt_sha256": {
+    "R01.xml": "8c2784d871bb71ac911301235ad25eb4fb005d4685f702e6c71c9940d0d4a301",
+    "R01.log": "6ef4c11296cddab7d58b0e65bee3757615705465ad4972fe5dddbd409a0969cd",
+    "R01.json": "0277392eaf9dd2244b15e7216381343f07f4010340a308ad988fd24a62e8c694",
+    "R02a.xml": "ebeddeb5c16db05e06c547b3f4ffe0b3298aa8f602691bc00757ebd9c3a5eef7",
+    "R02a.log": "f9cc6fad25e83cbc399634b4b2bc921b611592905a884373c3d6006a81ee7ebb",
+    "R02a.json": "fdb262ec89fb070692dcf4fac99fb769c1b469148d7953be3e9bc9683f5de894",
+    "R03.xml": "a90626bc939992e121df95886ff43c91d21785445719eb0a6b6fc4ca2fd9d52d",
+    "R03.log": "a2d3929c971e4c0660ef8baf4b94735114b02ed522e7650085578f78f9b234cb",
+    "R03.json": "e4b904eec1cc7a9461407bcc4cae29380b634c8bcf38680f16a7d0719e1c15d4",
+    "R04.xml": "f69f28819fac3b8106fc5704226cbe013f5f8054b97b788e8affa3dbfa7076cc",
+    "R04.log": "1a27e2f5a87b4d9482d10549f34a7b759e0e157c3da79e04d463a2a056c8ec74",
+    "R04.json": "f9eeb7e044cc461e14e85192ab6d58d26b6f2a59b08068fca07ca246a1a7eea6",
+    "R07.xml": "35608afe34f4c38fdac108dec31c2cec2c793745137ef5259f4e36fba9fbbe24",
+    "R07.log": "d9e7d13eb799b2a28e5d065e0fa6bc0c347d07ff2573a66757fea115f05ee4ac",
+    "R07.json": "af3edb7ce8cb23ed68ad8b7478ee82a4cb3e0bf2faea2cdb07b122410ad9c507",
+    "R09.xml": "edb1f209144320a140c9e5252e4be356b8ed6f51a596e916be73ca315a74fad9",
+    "R09.log": "4c244bb247475f585ee6f0ddd4e093ac8cbb01ac3440a82dd0bfd1835d0ed344",
+    "R09.json": "412b3ce55a1695f4b1af6c584ce847948d188e3fbdded4e8e23adc57791ea624"
+  },
+  "receipt_storage": {
+    "R09.log": {
+      "path": "receipts/R09.log.gz",
+      "compression": "gzip lossless",
+      "uncompressed_sha256": "4c244bb247475f585ee6f0ddd4e093ac8cbb01ac3440a82dd0bfd1835d0ed344",
+      "stored_sha256": "6e2b43c1a421015a52c493a3cdb6595d9263e704785c660ff8dab7eca64d0f73"
+    },
+    "R09.xml": {
+      "path": "receipts/R09.xml.gz",
+      "compression": "gzip lossless",
+      "uncompressed_sha256": "edb1f209144320a140c9e5252e4be356b8ed6f51a596e916be73ca315a74fad9",
+      "stored_sha256": "95bb0ee55fd38338faa8250058e69fa1cbaa098d4f740f8af55b0d41568058a9"
+    }
+  }
+}

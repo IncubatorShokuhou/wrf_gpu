@@ -266,7 +266,7 @@ RRTMG-derived regardless of which SW/LW θ-tendency scheme is active.
 | `sf_surface_physics` | 3 | 1 |
 | `ra_sw_physics`      | 4 | 2 |
 | `ra_lw_physics`      | 3 | 2 |
-| `sf_urban_physics`   | 1 | 2 |
+| `sf_urban_physics`   | 2 | 2 |
 | `sf_lake_physics`    | 1 | 1 |
 
 (Counts include the `0`/disabled option, which is operationally wired.)
@@ -276,9 +276,18 @@ RRTMG-derived regardless of which SW/LW θ-tendency scheme is active.
 `rk_ord=3` (WRF name; the port also accepts `rk_order`; RK3 only); `diff_opt` 0/1/2; `km_opt` 0/1/4; `diff_6th_opt` 0/2
 (2 = monotonic 6th-order filter, no up-gradient flux); `damp_opt` 0/3 (3 =
 upper-level w-Rayleigh); `w_damping` 0/1. Urban/lake defaults remain
-`sf_urban_physics=0` and `sf_lake_physics=0`; BEP/BEM (`sf_urban_physics=2/3`)
+`sf_urban_physics=0` and `sf_lake_physics=0`. `sf_urban_physics=1` (single-layer
+urban canopy model, v0.4.0) runs under `gpuwrf run` with `sf_surface_physics=4`
+(Noah-MP) only: CPU-oracle-qualified step-by-step against pristine WRF
+(`proofs/v040/urban_slucm`), GPU/coupled-forecast qualification pending; the
+CPU-history replay driver refuses it, and URBPARM.TBL `CH_SCHEME=1`, `GROPTION=1`,
+`IRI_SCHEME=1`, `AHOPTION`/`ALHOPTION=1`, NUDAPT morphology (`MH_URB2D>0`),
+WUDAPT/LCZ and `slucm_distributed_drag` are refused. BEP/BEM (`sf_urban_physics=2/3`)
 and Lake (`sf_lake_physics=1`) are accepted only as G3 reference-only
-selections and are rejected operationally. The 3-D closures `km_opt=2/3/5` fail
+selections and are rejected operationally. BEP/BEM now has [pristine numerical
+column fixtures and qualified component kernels](../proofs/v040/urban_bep_bem/README.md);
+full canopy/building energy and the urban YSU/MYJURB/BouLac PBL consumers remain
+unported. The 3-D closures `km_opt=2/3/5` fail
 closed (transition: constant-K `diff_opt=2`/`km_opt=1`).
 
 ### Mandatory WRF pairing enforced
@@ -312,8 +321,10 @@ runs):
 
 * **Advection orders** frozen to `h=5 / v=3` (5th-order horizontal, 3rd-order
   vertical — the WRF real-data default). `moist_adv_opt` / `scalar_adv_opt`
-  accept 0 (standard), 1 (positive-definite), 2 (monotonic); the WENO variants
-  (3/4) are not wired.
+  accept 0 (standard, WRF `ORIGINAL`: plain transport, no limiter), 1
+  (positive-definite, the Registry default), 2 (monotonic); the WENO variants
+  (3/4) are not wired. ≤ v0.3.4 ran option 0 — and an omitted `moist_adv_opt` —
+  without any dycore moisture transport (see `KNOWN_ISSUES.md`).
 * **`gwd_opt`** 0/1 (see `GPUWRF_GWD_NESTED` above); 3 not wired.
 * **`slope_rad`** 0/1 and **`topo_shading`** 0/1 (with `shadlen`) are bound per
   domain (RRTMG SW slope radiation / topographic shadowing).
@@ -324,6 +335,15 @@ runs):
   bound and fail closed (≤ v0.3.3 wrongly accepted `icloud_bl=0`/`mixlength=2` and
   refused `icloud_bl=1`).
 * **`radt`** and **`cudt`** are bound per domain (radiation cadence; KF STEPCU).
+  An **omitted `radt`** warns: WRF's default `radt = 0` calls radiation every step,
+  the port runs its driver cadence (30 min native/nested) — set `radt` explicitly.
+  Omitted-key audit (o2-moistadv): every other bound key's omitted value equals the
+  WRF Registry default, except the already-documented substitutions: omitted scheme
+  selectors (`mp/bl_pbl/sf_sfclay/ra_lw/ra_sw_physics`) run the release suite with a
+  warning, an omitted `sf_surface_physics` runs 0 (WRF -1; `physics_suite` fills it),
+  the replay driver's fixed harness values (`time_step_sound`, `sf_surface_physics`,
+  `sst_update`, warned), and `diff_opt`/`km_opt` (WRF fatal when omitted; the port
+  warns and runs 0/0).
   **`bldt`** — the port runs PBL **every dynamics step**; a positive interval is a
   non-fatal approximation warning (the run proceeds), not a rejection.
 
@@ -338,13 +358,14 @@ From v0.3.4 (`src/gpuwrf/io/namelist_binding.py`):
 
 * **Bound per domain** (native single-root / live-nested driver and the replay
   driver): `mp_physics`, `bl_pbl_physics`, `sf_sfclay_physics`, `ra_lw_physics`,
-  `ra_sw_physics`, `cu_physics`, `sf_urban_physics`, `sf_lake_physics`, `epssm`,
+  `ra_sw_physics`, `cu_physics`, `sf_urban_physics`, `sf_lake_physics`,
+  `moist_adv_opt`, `scalar_adv_opt` (omitted → Registry default 1; ≤ v0.3.4 bound 0), `epssm`,
   `damp_opt`, `zdamp`, `dampcoef`, `w_damping`, `diff_6th_opt`, `diff_6th_factor`,
   `khdif`, `kvdif`, `c_s`, `c_k`, `mix_isotropic`, `mix_upper_bound`,
   `tke_upper_bound`, `shadlen`, `cam_abs_freq_s` (CAM `ra_lw_physics=3` absorptivity refresh,
   single value for all domains). These keys were already bound: `radt`, `cudt`,
   `use_mp_re`, `gwd_opt`, `topo_shading`, `slope_rad`, `diff_opt`, `km_opt`,
-  `h_sca_adv_order`, `moist_adv_opt`, `scalar_adv_opt`, `time_step_sound`,
+  `h_sca_adv_order`, `time_step_sound`,
   `top_lid`, `sf_surface_physics` (native: 0 or 4), `sst_update`. `physics_suite =
   'CONUS'/'tropical'` fills omitted (or `-1`) scheme keys exactly like WRF.
 * An **omitted `&dynamics` knob runs the WRF Registry default** (epssm 0.1, w_damping 0,
@@ -450,6 +471,12 @@ Measured by tracing the production step (`_advance_chunk_fori`, one step) throug
 | rebased 2f9004938 (main 14253f8ca, +o1-camrad) :: cpu | `2bf12cb8374d` | `2bf12cb8374d` | True |
 | rebased 2f9004938 PROD d01 (main 14253f8ca) :: s0_case_20260725 | `6fc715a2bd63` | `6fc715a2bd63` | True |
 
+## Opt-in stochastic controls
+
+| Controls | Operational scope | Qualification |
+|---|---|---|
+| `skebs`, `stoch_force_opt`, `sppt`, `spp`, `spp_conv`, `spp_pbl`, `spp_lsm`, `rand_perturb` = 1 in `&stoch` | Native WRF patterns/RNG, RK forcing, MYNN SPP, parent SINT and exact restart. SPPT: PBL0/5, CU0/1, GWDO with MYNN; SPP-GSL GWDO3 refused. Original convection/LSM SPP physical no-ops and diagnostic `rand_perturb` preserved. | CPU-oracle-qualified; GPU/coupled-forecast qualification pending. Compiler profile, controls and limits: [stochastic.md](stochastic.md). Defaults remain OFF. |
+
 ## Out-of-scope features (documented decisions, fail closed)
 
 These WRF capabilities are deliberately **not ported**. Selecting a truthy
@@ -462,12 +489,10 @@ ignored:
 | WRF-Chem coupled chemistry/aerosols        | `chem_opt`                          | `chem_opt=0` |
 | WRF-Fire (SFIRE) wildfire spread           | `ifire`                             | `ifire=0`    |
 | WRF-Hydro hydrological coupling            | `wrf_hydro`                         | disable coupler |
-| FDDA analysis/obs/surface nudging          | `grid_fdda`, `obs_nudge_opt`, `grid_sfdda` | `=0` |
-| Stochastic physics                         | `sppt`, `skebs`, `spp`, `rand_perturb`, `stoch_force_opt` | `=0` |
+| FDDA spectral/obs/surface nudging          | `grid_fdda=2`, `obs_nudge_opt`, `grid_sfdda` | `=0` (or `grid_fdda=1`) |
 | Moving / vortex-following nests            | `vortex_interval`, `num_moves`      | static nest only |
-| Single-layer urban canopy (UCM)            | `sf_urban_physics=1`                | `sf_urban_physics=0` |
 | Wind-farm / turbine-drag parameterization  | `windfarm_opt`                      | `windfarm_opt=0` |
-| Coupled ocean mixed-layer / 3-D ocean      | `sf_ocean_physics`                  | `sf_ocean_physics=0` |
+| 3-D ocean (PWP; 1-D OML is experimental) | `sf_ocean_physics=2` | `sf_ocean_physics=1` (Noah-MP, no SST forcing) or 0 |
 | Time-varying SST lower-boundary update     | `sst_update`                        | `sst_update=0` |
 
 ## Bring-your-WRF-namelist transition recipe
@@ -563,3 +588,22 @@ To run an existing real-data WRF `namelist.input` on the port today:
   the compatibility test suites.
 * [`KNOWN_ISSUES.md`](KNOWN_ISSUES.md) — the open issues and deferred
   carry-overs (24 h skill gap, scheme long-tail, VRAM limits).
+
+## Grid analysis nudging (`grid_fdda=1`, v0.4.0 candidate, lane o2-fdda)
+
+`grid_fdda=1` runs WRF's PSU grid analysis nudging (`phys/module_fdda_psufddagd.F` `fddagd`) toward the
+real.exe analysis file `wrffdda_d0N` (auxinput10, `gfdda_inname`, NetCDF `io_form_gfdda=2`) in both CLI
+pipelines. Bound `&fdda` keys: `gfdda_interval_m` (or `gfdda_interval`), `gfdda_end_h`, `fgdt`
+(`STEPFG = max(nint(fgdt*60/dt),1)`), `fgdtzero`, `guv`/`gt`/`gq`, `if_no_pbl_nudging_uv/t/q` (needs
+`bl_pbl_physics=5`, the PBLH carrier), `if_zfac_uv/t/q` + `k_zfac_*`, `if_ramping`, `dtramp_min`. Per-domain
+`&fdda` entries that are not written take the WRF Registry default like a Fortran namelist read (`grid_fdda = 1,`
+nudges d01 only; `guv = 3e-4,` leaves the other domains at 0). Records are read
+at the first step at/after `k*gfdda_interval_m` up to `gfdda_end_h` (WRF alarm `StopTime`); the first-interval OLD
+analysis is the model state at step 1 (WRF `fddagd_driver`). The coupled tendencies follow WRF's
+`calculate_phy_tend` → `phy_fg_ten` (`add_a2a`/`add_c2c_*`, specified ring excluded) → `conv_t_tendf_to_moist`
+→ RK, and the held rates are decoupled with the end-of-step mass (`phy_prep_part2`); the analysis pair and the
+held rates are restart fields. Refused: `grid_fdda=2` (spectral), `grid_sfdda` (surface/FASDAS),
+`obs_nudge_opt`, WRF-fatal `gfdda_begin_*`/`gfdda_end_{y,d,m,s}`/`gfdda_interval_{y,d,h,s}`, `gfdda_interval_m<=0`,
+negative coefficients, unknown `&fdda` keys. Spectral/surface/observation-only keys are ignored as WRF's
+`fddagd` does. Status: CPU-oracle-qualified (pristine-WRF oracle, `proofs/o2_fdda/`); GPU/coupled-forecast
+qualification pending.

@@ -1,0 +1,127 @@
+{
+  "source_tree": "<USER_HOME>/wrf_gpu2_lanes/u2-land/snapshot_fixes",
+  "source_case": "<USER_HOME>/wrf_gpu2_lanes/release-docs/RD11/cpu",
+  "platform": "cpu",
+  "options": {
+    "sst_skin": 0,
+    "opt_alb": 2,
+    "opt_snf": 2,
+    "opt_irr": 3,
+    "opt_irrm": 2,
+    "opt_btr": 2,
+    "opt_rsf": 3,
+    "dveg": 8,
+    "opt_run": 2,
+    "opt_soil": 2,
+    "opt_crs": 2,
+    "opt_sfc": 2,
+    "opt_tbot": 1,
+    "opt_stc": 2,
+    "opt_frz": 2,
+    "opt_rad": 2,
+    "opt_inf": 2
+  },
+  "cache": "disabled",
+  "steps": 3,
+  "created_utc": "2026-10-14T09:13:42.056616+00:00",
+  "scope": "CPU integration/finite gate; real Swiss geometry/forcing with controlled crop map, NOT a forecast-fidelity comparison",
+  "coverage_crop_cells": [
+    [
+      37,
+      12
+    ],
+    [
+      37,
+      13
+    ],
+    [
+      37,
+      14
+    ],
+    [
+      37,
+      15
+    ]
+  ],
+  "soil_map_controls": "Replicated real surface category; four disclosed crop cells use layer categories1/2/3/4",
+  "load_s": 38.50212680711411,
+  "bound_options": {
+    "opt_alb": 2,
+    "opt_snf": 2,
+    "bats": null,
+    "opt_irr": 3,
+    "opt_irrm": 2,
+    "opt_btr": 2,
+    "opt_rsf": 3,
+    "rsurf_snow": null,
+    "dveg": 8,
+    "opt_tbot": 1,
+    "opt_stc": 2,
+    "opt_frz": 2,
+    "opt_rad": 2,
+    "opt_crs": 2,
+    "opt_sfc": 2,
+    "opt_inf": 2,
+    "opt_run": 2,
+    "fsatmx": 0.38,
+    "timean": 10.5,
+    "opt_crop": 0,
+    "opt_soil": 2,
+    "opt_infdv": 0,
+    "opt_tdrn": 0,
+    "drain_layer_opt": null
+  },
+  "flag_manifest": {
+    "GPUWRF_STRICT_GUARDS": "1",
+    "GPUWRF_CENSUS": "1",
+    "GPUWRF_DYN_CARRY_FP32": "1",
+    "GPUWRF_RRTMG_LW_FUSED_TRANSFER": "1",
+    "GPUWRF_JAX_CACHE": "0",
+    "GPUWRF_DYN_RK_FP32": "1",
+    "GPUWRF_RRTMG_SW_FUSED_QUADRATURE": "1",
+    "GPUWRF_FAST_DEFAULTS": "0",
+    "GPUWRF_NOAHMP_LAYER_LISTS": "1",
+    "GPUWRF_CARRY_REAL_ALL": "1",
+    "GPUWRF_DYN_REAL_ALL": "1",
+    "GPUWRF_NOAHMP_NATIVE_REAL": "1",
+    "GPUWRF_NOAHMP_COLUMN_KERNELS": "1",
+    "GPUWRF_DYN_FP32": "1",
+    "GPUWRF_NOAHMP_LAYER_SELECT": "1"
+  },
+  "option_resident_bytes": {
+    "sst_skin": 0,
+    "noahmp_irrigation": 84672,
+    "noahmp_carbon": 0,
+    "noahmp_groundwater": 0,
+    "noahmp_tile_drain": 0
+  },
+  "xla_flags": "--xla_cpu_use_fusion_emitters=false",
+  "step_wall_s": 300.6502094590105,
+  "restart_continuity": {
+    "leaves": 185,
+    "different": []
+  },
+  "nonfinite": 0,
+  "guards": 0,
+  "skin_present": false,
+  "irrigation_present": true,
+  "irrigation_sums": {
+    "irnumsi": 0.0,
+    "irnummi": 4.0,
+    "irnumfi": 0.0,
+    "irwatsi": 0.0,
+    "irwatmi": 0.3103225827217102,
+    "irwatfi": 0.0,
+    "irsivol": 0.0,
+    "irmivol": 0.0828000009059906,
+    "irfivol": 0.0,
+    "ireloss": 0.0,
+    "irrsplh": 0.0,
+    "loss_fallback": 0.0
+  },
+  "carbon_present": false,
+  "groundwater_present": false,
+  "tile_drain_present": false,
+  "status": "PASS",
+  "wall_s": 593.6961686469149
+}

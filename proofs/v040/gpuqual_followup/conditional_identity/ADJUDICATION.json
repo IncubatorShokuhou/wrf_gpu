@@ -1,0 +1,100 @@
+{
+  "utc": "2026-10-15T00:40:20.123993+00:00",
+  "scope": "Full selected native model trace, constants and initial array ABI/bytes; CPU-only identity evidence. No new CUDA executable byte identity or physics claim.",
+  "configs": {
+    "mp40": {
+      "old_source": "8afb83d7ddef7ef8e59f7f9635d3b5841b39d23c",
+      "new_source": "5abde3224a50e5f67674bb1865aa0cc6d1ff1937",
+      "program_canonical_equal": true,
+      "program_sha_old": "fc65a4b85dfa8f26aa6fa60514aea81081b250bc8191496c6d8a2a5d20984424",
+      "program_sha_new": "fc65a4b85dfa8f26aa6fa60514aea81081b250bc8191496c6d8a2a5d20984424",
+      "all_constants_equal": true,
+      "initial_array_ABI_and_bytes_equal": true,
+      "initial_python_pytree_equal": false,
+      "initial_arrays_old_new": [
+        175,
+        175
+      ],
+      "constant_count_old_new": [
+        61,
+        61
+      ],
+      "actual_old_scalar_bindings_checked": [
+        134,
+        134
+      ],
+      "all_measured_scalar_bindings_match": true,
+      "array_changes_ignoring_shifted_path_indices": [],
+      "classification": "MODEL_PROGRAM_BYTE_REUSE_SCIENCE",
+      "placement_override": "CPU device placement; native facade while tracing. No math replaced, no GPU/CUDA compile.",
+      "python_wrapper_note": "MP40 initial Python pytree differs only by added None/static metadata slots; full primitive program/constant bytes and all175 ordered array inputs match. This does not attest CUDA executable bytes."
+    },
+    "mp28": {
+      "old_source": "8afb83d7ddef7ef8e59f7f9635d3b5841b39d23c",
+      "new_source": "5abde3224a50e5f67674bb1865aa0cc6d1ff1937",
+      "program_canonical_equal": false,
+      "program_sha_old": "017556cae3766e6fe6117b3f41e3ec8363d6d3ee06739362ab03a8ced693df66",
+      "program_sha_new": "220063e18a959c038381f4630f794147f9abead988a92344078471ca6a870c62",
+      "all_constants_equal": true,
+      "initial_array_ABI_and_bytes_equal": false,
+      "initial_python_pytree_equal": false,
+      "initial_arrays_old_new": [
+        180,
+        182
+      ],
+      "constant_count_old_new": [
+        61,
+        61
+      ],
+      "actual_old_scalar_bindings_checked": [
+        134,
+        134
+      ],
+      "all_measured_scalar_bindings_match": true,
+      "array_changes_ignoring_shifted_path_indices": [
+        {
+          "operation": "insert",
+          "old_span": [
+            79,
+            79
+          ],
+          "new_span": [
+            79,
+            81
+          ],
+          "old_arrays": [],
+          "new_arrays": [
+            {
+              "path": "[<flat index 0>][<flat index 159>]",
+              "dtype": "<f4",
+              "shape": [
+                42,
+                42
+              ],
+              "weak_type": false,
+              "sha256": "75f54ca59bc8ae3b32597da8103d689ab994b4ceba2e415b54d14c14e5fef88f"
+            },
+            {
+              "path": "[<flat index 0>][<flat index 160>]",
+              "dtype": "<f4",
+              "shape": [
+                42,
+                42
+              ],
+              "weak_type": false,
+              "sha256": "2c2cbccd5d41f1ab10f0106ca8df33869145cbdd02930a498214ef5c10af503e"
+            }
+          ]
+        }
+      ],
+      "classification": "MODEL_PROGRAM_CHANGED_REQUIRES_AFFECTED_GPU24H",
+      "placement_override": "CPU device placement; native facade while tracing. No math replaced, no GPU/CUDA compile.",
+      "python_wrapper_note": "MP28 gains2 actual array leaves; selected primitive graph changes with static supplied emission retention."
+    }
+  },
+  "cleanup": {
+    "old_snapshot_removed": true,
+    "identity_cache_tmp_absent": true,
+    "new_snapshot": "5ab retained only for writer-only mp40 re-emission; removed after that consumer."
+  }
+}

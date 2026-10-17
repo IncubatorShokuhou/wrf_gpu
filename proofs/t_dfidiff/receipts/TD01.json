@@ -1,0 +1,372 @@
+{
+  "wrf_source": "<USER_HOME>/src/wrf_pristine/WRF",
+  "case": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c49",
+  "cache": "NONE",
+  "compiler": "<USER_HOME>/miniconda3/envs/wrfbuild/bin/gfortran",
+  "compiler_version": "GNU Fortran (conda-forge gcc 14.3.0-19) 14.3.0",
+  "source_sha256": "2e70074375767f5571fe1efef34271c410f47986e6b5fd53782ab6946cfdb36f",
+  "original_binary_sha256": "52f914cb38e0899d8a1da54bd52f3e08d81ba0f6a7015d3159e48393f5226bd6",
+  "original_case_inputs": {
+    "namelist.input": "fcddf24ce592a0af29b7729bef4a98b2ed37f11fbb47ed8cb26bef3cb9ce22b7",
+    "wrfinput_d01": "a5d696550d1dc6713e2e340b8c2fba83811d43f4a94a65ca95266035860e2781",
+    "wrfbdy_d01": "f3e556670e4768326997bdfa1dd8b0f77eb6d5da07d9c4dbf900bf8ff9e30230"
+  },
+  "commands": [
+    [
+      "<USER_HOME>/miniconda3/envs/wrfbuild/bin/gfortran",
+      "-O2",
+      "-ftree-vectorize",
+      "-funroll-loops",
+      "-w",
+      "-ffree-form",
+      "-ffree-line-length-none",
+      "-fconvert=big-endian",
+      "-frecord-marker=4",
+      "-fallow-argument-mismatch",
+      "-fallow-invalid-boz",
+      "-I<USER_HOME>/src/wrf_pristine/WRF/main",
+      "-I<USER_HOME>/src/wrf_pristine/WRF/frame",
+      "-I<USER_HOME>/src/wrf_pristine/WRF/share",
+      "-I<USER_HOME>/src/wrf_pristine/WRF/phys",
+      "-I<USER_HOME>/src/wrf_pristine/WRF/external/esmf_time_f90",
+      "-c",
+      "solve_interface.f90",
+      "-o",
+      "solve_interface.o"
+    ],
+    [
+      "<USER_HOME>/miniconda3/envs/wrfbuild/bin/gfortran",
+      "-O2",
+      "-ftree-vectorize",
+      "-funroll-loops",
+      "-w",
+      "-ffree-form",
+      "-ffree-line-length-none",
+      "-fconvert=big-endian",
+      "-frecord-marker=4",
+      "-fallow-argument-mismatch",
+      "-fallow-invalid-boz",
+      "-o",
+      "wrf.exe",
+      "<USER_HOME>/src/wrf_pristine/WRF/main/wrf.o",
+      "<USER_HOME>/src/wrf_pristine/WRF/main/module_wrf_top.o",
+      "solve_interface.o",
+      "<USER_HOME>/src/wrf_pristine/WRF/main/libwrflib.a",
+      "<USER_HOME>/src/wrf_pristine/WRF/external/fftpack/fftpack5/libfftpack.a",
+      "<USER_HOME>/src/wrf_pristine/WRF/external/io_grib1/libio_grib1.a",
+      "<USER_HOME>/src/wrf_pristine/WRF/external/io_grib_share/libio_grib_share.a",
+      "<USER_HOME>/src/wrf_pristine/WRF/external/io_int/libwrfio_int.a",
+      "-L<USER_HOME>/src/wrf_pristine/WRF/external/esmf_time_f90",
+      "-lesmf_time",
+      "<USER_HOME>/src/wrf_pristine/WRF/frame/module_internal_header_util.o",
+      "<USER_HOME>/src/wrf_pristine/WRF/frame/pack_utils.o",
+      "-L<USER_HOME>/src/wrf_pristine/WRF/external/io_netcdf",
+      "-lwrfio_nf",
+      "-L<USER_HOME>/miniconda3/envs/wrfbuild/lib",
+      "-lnetcdff",
+      "-lnetcdf"
+    ],
+    [
+      "<USER_HOME>/miniconda3/envs/wrfbuild/bin/gfortran",
+      "-O2",
+      "-ftree-vectorize",
+      "-funroll-loops",
+      "-w",
+      "-ffree-form",
+      "-ffree-line-length-none",
+      "-fconvert=big-endian",
+      "-frecord-marker=4",
+      "-fallow-argument-mismatch",
+      "-fallow-invalid-boz",
+      "-I<USER_HOME>/src/wrf_pristine/WRF/main",
+      "-I<USER_HOME>/src/wrf_pristine/WRF/frame",
+      "-I<USER_HOME>/src/wrf_pristine/WRF/share",
+      "-I<USER_HOME>/src/wrf_pristine/WRF/phys",
+      "-I<USER_HOME>/src/wrf_pristine/WRF/external/esmf_time_f90",
+      "-c",
+      "solve_interface.f90",
+      "-o",
+      "solve_interface.o"
+    ],
+    [
+      "<USER_HOME>/miniconda3/envs/wrfbuild/bin/gfortran",
+      "-O2",
+      "-ftree-vectorize",
+      "-funroll-loops",
+      "-w",
+      "-ffree-form",
+      "-ffree-line-length-none",
+      "-fconvert=big-endian",
+      "-frecord-marker=4",
+      "-fallow-argument-mismatch",
+      "-fallow-invalid-boz",
+      "-o",
+      "wrf.exe",
+      "<USER_HOME>/src/wrf_pristine/WRF/main/wrf.o",
+      "<USER_HOME>/src/wrf_pristine/WRF/main/module_wrf_top.o",
+      "solve_interface.o",
+      "<USER_HOME>/src/wrf_pristine/WRF/main/libwrflib.a",
+      "<USER_HOME>/src/wrf_pristine/WRF/external/fftpack/fftpack5/libfftpack.a",
+      "<USER_HOME>/src/wrf_pristine/WRF/external/io_grib1/libio_grib1.a",
+      "<USER_HOME>/src/wrf_pristine/WRF/external/io_grib_share/libio_grib_share.a",
+      "<USER_HOME>/src/wrf_pristine/WRF/external/io_int/libwrfio_int.a",
+      "-L<USER_HOME>/src/wrf_pristine/WRF/external/esmf_time_f90",
+      "-lesmf_time",
+      "<USER_HOME>/src/wrf_pristine/WRF/frame/module_internal_header_util.o",
+      "<USER_HOME>/src/wrf_pristine/WRF/frame/pack_utils.o",
+      "-L<USER_HOME>/src/wrf_pristine/WRF/external/io_netcdf",
+      "-lwrfio_nf",
+      "-L<USER_HOME>/miniconda3/envs/wrfbuild/lib",
+      "-lnetcdff",
+      "-lnetcdf"
+    ]
+  ],
+  "executables": {
+    "control": {
+      "sha256": "1d600569e40d77effa1f7baf36580722b3b75ce6c7d6c77af76cf52e32989182",
+      "wrapper_sha256": "2e70074375767f5571fe1efef34271c410f47986e6b5fd53782ab6946cfdb36f",
+      "private_dump_paths": [
+        {
+          "offset": 42549448,
+          "old": "<DATA_ROOT>/wrf_gpu2/wrf_truth/em_quarter_ss_center_dump.txt",
+          "new": "<USER_HOME>/wrf_gpu2_lanes/t-dfidiff/O1/control/d0"
+        },
+        {
+          "offset": 42549384,
+          "old": "<DATA_ROOT>/wrf_gpu2/wrf_truth/em_grav2d_x_touchdown_dump.txt",
+          "new": "<USER_HOME>/wrf_gpu2_lanes/t-dfidiff/O1/control/d1"
+        }
+      ]
+    },
+    "dump": {
+      "sha256": "ba254ac40babdf286c17eacfd4a0b1441781edce42155fe45a2d373d892f0a84",
+      "wrapper_sha256": "e7eb081416c958e666eaacb5e61565ef921c50e949192285bd1646d544911600",
+      "private_dump_paths": [
+        {
+          "offset": 42549456,
+          "old": "<DATA_ROOT>/wrf_gpu2/wrf_truth/em_quarter_ss_center_dump.txt",
+          "new": "<USER_HOME>/wrf_gpu2_lanes/t-dfidiff/O1/dump/d0"
+        },
+        {
+          "offset": 42549392,
+          "old": "<DATA_ROOT>/wrf_gpu2/wrf_truth/em_grav2d_x_touchdown_dump.txt",
+          "new": "<USER_HOME>/wrf_gpu2_lanes/t-dfidiff/O1/dump/d1"
+        }
+      ]
+    }
+  },
+  "verdict": "PASS",
+  "diagnostic_rows": [
+    [
+      2,
+      0,
+      0,
+      1,
+      0,
+      1
+    ],
+    [
+      2,
+      1,
+      0,
+      1,
+      0,
+      1
+    ],
+    [
+      2,
+      2,
+      0,
+      1,
+      0,
+      1
+    ],
+    [
+      3,
+      0,
+      0,
+      1,
+      0,
+      1
+    ],
+    [
+      3,
+      1,
+      0,
+      1,
+      0,
+      1
+    ],
+    [
+      3,
+      2,
+      0,
+      1,
+      0,
+      1
+    ]
+  ],
+  "diagnostic_columns": [
+    "dfi_stage",
+    "itimestep",
+    "grid_diff_opt",
+    "grid_km_opt",
+    "solver_diff_opt",
+    "solver_km_opt"
+  ],
+  "paired_output_byte_gate": [
+    {
+      "file": "wrfout_d01_2023-01-15_00:09:00",
+      "variables_byte_identical": 362,
+      "DIFF_OPT": 0,
+      "KM_OPT": 1
+    },
+    {
+      "file": "wrfout_d01_2023-01-15_00:09:18",
+      "variables_byte_identical": 362,
+      "DIFF_OPT": 0,
+      "KM_OPT": 1
+    },
+    {
+      "file": "wrfout_d01_2023-01-15_00:09:36",
+      "variables_byte_identical": 362,
+      "DIFF_OPT": 0,
+      "KM_OPT": 1
+    },
+    {
+      "file": "wrfout_d01_2023-01-15_00:09:54",
+      "variables_byte_identical": 362,
+      "DIFF_OPT": 0,
+      "KM_OPT": 1
+    },
+    {
+      "file": "wrfout_d01_2023-01-15_00:10:12",
+      "variables_byte_identical": 362,
+      "DIFF_OPT": 0,
+      "KM_OPT": 1
+    }
+  ],
+  "original_c49_headers": [
+    {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c49/cpu/wrfout_d01_2023-01-15_00:09:00",
+      "DIFF_OPT": 0,
+      "KM_OPT": 1
+    },
+    {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c49/cpu/wrfout_d01_2023-01-15_01:09:00",
+      "DIFF_OPT": 0,
+      "KM_OPT": 1
+    },
+    {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c49/cpu/wrfout_d01_2023-01-15_02:09:00",
+      "DIFF_OPT": 0,
+      "KM_OPT": 1
+    },
+    {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c49/cpu/wrfout_d01_2023-01-15_03:09:00",
+      "DIFF_OPT": 0,
+      "KM_OPT": 1
+    },
+    {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c49/cpu/wrfout_d01_2023-01-15_04:09:00",
+      "DIFF_OPT": 0,
+      "KM_OPT": 1
+    },
+    {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c49/cpu/wrfout_d01_2023-01-15_05:09:00",
+      "DIFF_OPT": 0,
+      "KM_OPT": 1
+    },
+    {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c49/cpu/wrfout_d01_2023-01-15_06:09:00",
+      "DIFF_OPT": 0,
+      "KM_OPT": 1
+    },
+    {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c49/cpu/wrfout_d01_2023-01-15_07:09:00",
+      "DIFF_OPT": 0,
+      "KM_OPT": 1
+    },
+    {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c49/cpu/wrfout_d01_2023-01-15_08:09:00",
+      "DIFF_OPT": 0,
+      "KM_OPT": 1
+    },
+    {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c49/cpu/wrfout_d01_2023-01-15_09:09:00",
+      "DIFF_OPT": 0,
+      "KM_OPT": 1
+    },
+    {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c49/cpu/wrfout_d01_2023-01-15_10:09:00",
+      "DIFF_OPT": 0,
+      "KM_OPT": 1
+    },
+    {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c49/cpu/wrfout_d01_2023-01-15_11:09:00",
+      "DIFF_OPT": 0,
+      "KM_OPT": 1
+    },
+    {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c49/cpu/wrfout_d01_2023-01-15_12:09:00",
+      "DIFF_OPT": 0,
+      "KM_OPT": 1
+    },
+    {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c49/cpu/wrfout_d01_2023-01-15_13:09:00",
+      "DIFF_OPT": 0,
+      "KM_OPT": 1
+    },
+    {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c49/cpu/wrfout_d01_2023-01-15_14:09:00",
+      "DIFF_OPT": 0,
+      "KM_OPT": 1
+    },
+    {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c49/cpu/wrfout_d01_2023-01-15_15:09:00",
+      "DIFF_OPT": 0,
+      "KM_OPT": 1
+    },
+    {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c49/cpu/wrfout_d01_2023-01-15_16:09:00",
+      "DIFF_OPT": 0,
+      "KM_OPT": 1
+    },
+    {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c49/cpu/wrfout_d01_2023-01-15_17:09:00",
+      "DIFF_OPT": 0,
+      "KM_OPT": 1
+    },
+    {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c49/cpu/wrfout_d01_2023-01-15_18:09:00",
+      "DIFF_OPT": 0,
+      "KM_OPT": 1
+    },
+    {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c49/cpu/wrfout_d01_2023-01-15_19:09:00",
+      "DIFF_OPT": 0,
+      "KM_OPT": 1
+    },
+    {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c49/cpu/wrfout_d01_2023-01-15_20:09:00",
+      "DIFF_OPT": 0,
+      "KM_OPT": 1
+    },
+    {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c49/cpu/wrfout_d01_2023-01-15_21:09:00",
+      "DIFF_OPT": 0,
+      "KM_OPT": 1
+    },
+    {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c49/cpu/wrfout_d01_2023-01-15_22:09:00",
+      "DIFF_OPT": 0,
+      "KM_OPT": 1
+    },
+    {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c49/cpu/wrfout_d01_2023-01-15_23:09:00",
+      "DIFF_OPT": 0,
+      "KM_OPT": 1
+    }
+  ],
+  "scope": "CPU original WRF solver configuration and dump-only byte identity; no GPU or performance claim"
+}

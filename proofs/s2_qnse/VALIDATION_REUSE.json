@@ -1,0 +1,76 @@
+{
+  "schema": 1,
+  "scope": "Reuse of source and compiled evidence; GPU performance remains unqualified",
+  "pure_source_ast_sha256": {
+    "src/gpuwrf/physics/pbl_qnse.py": "3992b50f265481d9d99429871dc18a02f2fcfb8ed110df3d081d005f912e88a7",
+    "src/gpuwrf/physics/sfclay_qnse.py": "de2402e4c43363e2288ad88cfd8d5327ec353a51f56ad2ff19ba33081147ecfe",
+    "src/gpuwrf/physics/qnse_edmf.py": "107c683804b567373a6ae8357ec41929acb981c06c496ea7f919fc6e6dfda6d2",
+    "src/gpuwrf/physics/_qnse_levels.py": "9a4dd15d913fca7bfa0883ccd5c093de1af35ad572d9c4a8f083e7e65be6807c"
+  },
+  "wrapper_old_ast_sha256": "5d40cb5baef830e5e69a2413fe04a229aa47349a6c14a7cdc69ebd75af6daad4",
+  "wrapper_current_ast_sha256": "c38c5eb5f4a63a087ef77fa6082ab8c52bb39ad1ab1237b482e219d2a10625e9",
+  "native_gpu_kernel_identity": {
+    "old_source": "df34a3773",
+    "new_source": "200cb38d5",
+    "result": "EXACT all3GPUkerneljaxprs+constants;0f64;noGPUexecution",
+    "kernels": {
+      "pbl": {
+        "kernel_jaxpr_sha256": "cd04a442df4d14815bdf565af3c903fe621b081e2bd918219fd8f4a720014f02",
+        "kernel_chars": 226307,
+        "constants_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "f64_types": false
+      },
+      "sfc": {
+        "kernel_jaxpr_sha256": "fef07f9df486a135ad9b1a3fb74cce83a96d9559792dc8bff4b5ab4e282217d6",
+        "kernel_chars": 73821,
+        "constants_sha256": "049b81f88c628debf46799e9c7d0721e8fc782ac27dda9c8519750a8fdf00bde",
+        "f64_types": false
+      },
+      "mf": {
+        "kernel_jaxpr_sha256": "5a62588364d856cbd41ec6d3d320666e26dfb9e7081b5748c9f619b845885aeb",
+        "kernel_chars": 900258,
+        "constants_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "f64_types": false
+      }
+    }
+  },
+  "literal_source_gate": "45/45 REAL4 BYTE, reused unchanged source",
+  "compiled_column_gate": "Q30 62PASS287.55s: interpreter+portable PBL/SFC inside independentlyderived enclosures; both MF paths BYTE to disclosed compiled artifact (regression only)",
+  "mf_raw_scientific_gate": "WRF compiler-spread FAIL130cells retained; standing disclosure policy, no tolerance floor or D6 change",
+  "restart_gate": "Q27 75PASS11.23s including required output cache and actual domain dimensions, all4public save/read routes",
+  "surface_history_gate": "Global historyflag0 still seedsQNSEcache; nonNoah paths cache native surface solve; Noah uses existing native cache",
+  "matched_control": "Q24release vsQ30MF0: dynamics.qc nonfinite0/out_of_range1/repaired1 at(k15,y41,x8), ring0; rawguardFAIL retained; matched-class disposition perstandingrule only",
+  "open": "No required feature work remains. Independent critic pending; GPU/forecast D6 qualification pending by wave contract; default CPU full-model fusion cost disclosed.",
+  "resources": {
+    "qnse_surface_bytes_per_cell": 36,
+    "qnse_profile_bytes_per_model_cell": 12,
+    "lookup_real4_bytes": 80008,
+    "existing_history_bytes_per_surface_cell": 24,
+    "history_note": "Already present with release FAST1; now required for QNSE even when the global cache flag is off."
+  },
+  "source_byte_identity": {
+    "tested_source": "200cb38d50620e051211bde92362763d28884f74",
+    "result": "EXACT all5completefiles, including comments and docstrings",
+    "file_sha256": {
+      "src/gpuwrf/physics/pbl_qnse.py": "81b767fef61627649f9f5114a93c33f93476ca0ef8d565c2ab6bbd704a3d1db3",
+      "src/gpuwrf/physics/sfclay_qnse.py": "befdc07de8c4e9ccf3517396d94402201e609d1177f37207713698a18628699d",
+      "src/gpuwrf/physics/qnse_edmf.py": "8767555c3400bd73e2019cfd4eee8c9eeac4d152cdc229280f96d0a71166577e",
+      "src/gpuwrf/physics/_qnse_levels.py": "8b57590c5d15a4ef16f768bb7dbc2b97fbc4ec39f522527dc4b04b672aad2861",
+      "src/gpuwrf/kernels/phys_qnse_columns.py": "63589287ecd352140b9e3de7e9fa350b43cc28b1a1ba38a6cf37675736f8a276"
+    }
+  },
+  "legacy_ast_digest_note": "The legacy AST serialization was not registered and a default ast.dump digest does not reproduce it. Retained historical digests are superseded for composition reuse by exact complete-file byte identity to the measured Q30 source, above.",
+  "final_composition_host_gate": "Q39 source90a605f3c on main0b3d3996f:315PASS12.99s allrequiredshared/contracts/legacyv018; release2bf12cb8 exact46.0s",
+  "coupled_packet": "COUPLED_SMOKE.json preserves completed MF0/control receipts, exact inputs, raw guard FAIL and matched-class disposition, and all incomplete MF1 arms",
+  "coupled_gate": "MF0 3finite steps with matchedrelease dynamics.qc event; MF1 legacyCPUemitter 3finite/fp32 steps guards0/0/0, warm13.8983/11.6342s",
+  "mf1_composition_reuse": {
+    "hlo_sha256": "f54dbd090b1ade06e841d3ed9f61fcb991f7c0e9918d0bef66be6953da8bb120",
+    "hlo_chars": 294298886,
+    "initial_leaves_sha256": "27c07998e31fd48e0ebd3c5b1fc10a70eb3a684dcc36df00be33cf42a927df93",
+    "leaves": 194,
+    "old_source": "67502f97fc7ffcfd697836094a4abe8ff122b570",
+    "final_source": "90a605f3cf6f9e6a98f123fcd2b5e62fdbc72049",
+    "result": "EXACT"
+  },
+  "legacy_cpu_compiler_gate": "PBL/SFC independentbound PASS; MF rawWRFspreadFAIL136 documented separately, original130default artifact retained"
+}

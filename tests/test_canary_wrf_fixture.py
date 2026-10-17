@@ -72,6 +72,8 @@ def _compare(candidate: Path, reference: Path = SAMPLE) -> subprocess.CompletedP
 
 
 def test_source_wrfout_exists_readable_and_is_not_touched() -> None:
+    if not SOURCE_WRFOUT.exists():
+        pytest.skip(f"un-vendored original CPU-WRF source file absent: {SOURCE_WRFOUT}")
     before_stat = SOURCE_WRFOUT.stat()
     before_hash = sha256_file(SOURCE_WRFOUT)
 

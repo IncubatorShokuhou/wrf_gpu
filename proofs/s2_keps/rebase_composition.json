@@ -1,0 +1,242 @@
+{
+  "status": "FIXED-REBASED",
+  "lane": "s2-keps",
+  "utc": "2026-10-14T03:06:20Z",
+  "main_base": "2eb72fac1fc9281989cebb1982735d3fbd7f7120",
+  "runtime_candidate": "87d47dd68c883194b8590b4ce79eda7fd8510d50",
+  "approved_before_rebase": "becb2023bdf16fc125e73783c210ec22b62ff79b",
+  "review_status": "rv-s2-keps MERGE; manager requested main-first rebase; s2-integrate now owns final merge train",
+  "resolution": [
+    "Keep all114 current-main State/precision slots (SMS and P3 included), then append5EPS boundary records and15EPS leaves.",
+    "Keep main47 PhysicsTendency keys as exact prefix; append8EPS keys. Preserve main catalog, restart validation, FDDA, P3/mp22/Milbrandt paths.",
+    "P3 scalar transport prefix is retained; selected EPS scalars appended. Main P3 allocation test now pins original105:114 positions instead of incorrectly requiring last slots."
+  ],
+  "exact_source_reuse": {
+    "candidate": "87d47dd68c883194b8590b4ce79eda7fd8510d50",
+    "main_base": "2eb72fac1",
+    "inventories": {
+      "state_slots": {
+        "main_count": 114,
+        "candidate_count": 134,
+        "main_prefix_exact": true,
+        "appended": [
+          "pek_adv_bdy",
+          "pep_adv_bdy",
+          "tke_adv_bdy",
+          "diss_adv_bdy",
+          "tpe_adv_bdy",
+          "epsilon_pbl",
+          "tpe_pbl",
+          "pr_pbl",
+          "pek_adv",
+          "pep_adv",
+          "tke_adv",
+          "diss_adv",
+          "tpe_adv",
+          "epsilon_exch_h",
+          "epsilon_exch_m",
+          "epsilon_wu",
+          "epsilon_wv",
+          "epsilon_wt",
+          "epsilon_wq",
+          "epsilon_pbl_step"
+        ]
+      },
+      "STATE_FIELD_ORDER": {
+        "main_count": 114,
+        "candidate_count": 134,
+        "main_prefix_exact": true,
+        "appended": [
+          "pek_adv_bdy",
+          "pep_adv_bdy",
+          "tke_adv_bdy",
+          "diss_adv_bdy",
+          "tpe_adv_bdy",
+          "epsilon_pbl",
+          "tpe_pbl",
+          "pr_pbl",
+          "pek_adv",
+          "pep_adv",
+          "tke_adv",
+          "diss_adv",
+          "tpe_adv",
+          "epsilon_exch_h",
+          "epsilon_exch_m",
+          "epsilon_wu",
+          "epsilon_wv",
+          "epsilon_wt",
+          "epsilon_wq",
+          "epsilon_pbl_step"
+        ]
+      },
+      "STATE_TENDENCY_KEYS": {
+        "main_count": 47,
+        "candidate_count": 55,
+        "main_prefix_exact": true,
+        "appended": [
+          "epsilon_pbl",
+          "tpe_pbl",
+          "pr_pbl",
+          "pek_adv",
+          "pep_adv",
+          "tke_adv",
+          "diss_adv",
+          "tpe_adv"
+        ]
+      },
+      "EXTRA_SCALAR_BOUNDARY_LEAVES": {
+        "main_count": 10,
+        "candidate_count": 15,
+        "main_prefix_exact": true,
+        "appended": [
+          "pek_adv_bdy",
+          "pep_adv_bdy",
+          "tke_adv_bdy",
+          "diss_adv_bdy",
+          "tpe_adv_bdy"
+        ]
+      },
+      "EXTRA_SCALAR_BOUNDARY_SPECIES": {
+        "main_count": 10,
+        "candidate_count": 15,
+        "main_prefix_exact": true,
+        "appended": [
+          "pek_adv",
+          "pep_adv",
+          "tke_adv",
+          "diss_adv",
+          "tpe_adv"
+        ]
+      }
+    },
+    "scientific_source_identity": {
+      "src/gpuwrf/physics/pbl_eeps.py": {
+        "reviewed_bytes_exact": true,
+        "sha256": "4481720e51b3d42d0973c65c56155ad6d3fbf52413a311dacc0769dc96880d40"
+      },
+      "src/gpuwrf/physics/pbl_keps.py": {
+        "reviewed_bytes_exact": true,
+        "sha256": "18b5ebbc9d932969ad18a10433da93220a570c9bde156ad67813fd7c711e6355"
+      },
+      "src/gpuwrf/coupling/epsilon_pbl.py": {
+        "reviewed_bytes_exact": true,
+        "sha256": "d0cef86a50ff4e4ffd3b14f356c709e6916deb64c8cfb33dd177776be81fc55d"
+      },
+      "src/gpuwrf/io/pbl_epsilon_schema.py": {
+        "reviewed_bytes_exact": true,
+        "sha256": "410afdd6866185efc06394efa7094dac78c80c87cf12ef8e24c43c4ca7c1ee0d"
+      }
+    },
+    "scope": "Static inventory and source proof; no numerical/GPU replay"
+  },
+  "checks": {
+    "passed": 276,
+    "skipped": 3,
+    "failures": 0,
+    "host_owned_shared_contracts_v018": {
+      "experiment": "KE77",
+      "passed": 171,
+      "skipped": 3,
+      "wall_s": 59.99
+    },
+    "affected_P3_Milbrandt_mp22_FDDA": {
+      "experiment": "KE78",
+      "passed": 105,
+      "wall_s": 15.71
+    },
+    "suites": {
+      "KE77_host.xml": {
+        "tests.test_v040_epsilon_wiring": {
+          "pass": 40,
+          "skip": 0,
+          "fail": 0
+        },
+        "tests.test_epsilon_native_restart": {
+          "pass": 58,
+          "skip": 0,
+          "fail": 0
+        },
+        "tests.test_m7_netcdf_writer": {
+          "pass": 24,
+          "skip": 3,
+          "fail": 0
+        },
+        "tests.test_m7_restart_checkpoint_roundtrip": {
+          "pass": 3,
+          "skip": 0,
+          "fail": 0
+        },
+        "tests.test_v0110_wrfrst_netcdf": {
+          "pass": 10,
+          "skip": 0,
+          "fail": 0
+        },
+        "tests.contracts.test_v060_physics_interfaces": {
+          "pass": 11,
+          "skip": 0,
+          "fail": 0
+        },
+        "tests.test_v018_mp_family_fail_closed": {
+          "pass": 25,
+          "skip": 0,
+          "fail": 0
+        }
+      },
+      "KE78_neighbors.xml": {
+        "tests.test_p3_state_transport_restart": {
+          "pass": 28,
+          "skip": 0,
+          "fail": 0
+        },
+        "tests.test_p3_radiation_history": {
+          "pass": 8,
+          "skip": 0,
+          "fail": 0
+        },
+        "tests.v040.milbrandt.test_restart": {
+          "pass": 20,
+          "skip": 0,
+          "fail": 0
+        },
+        "tests.v040.test_nssl_nohail22_history": {
+          "pass": 18,
+          "skip": 0,
+          "fail": 0
+        },
+        "tests.v040.fdda.test_t_fdda": {
+          "pass": 24,
+          "skip": 0,
+          "fail": 0
+        },
+        "tests.v040.fdda.test_o2_fdda_wiring": {
+          "pass": 7,
+          "skip": 0,
+          "fail": 0
+        }
+      }
+    },
+    "shipping_default_identity": {
+      "experiment": "KE79",
+      "sha256": "2bf12cb8374d3a84a440e47dea4b77b0c7436108fc2ee2616bba6ec79b17962a",
+      "chars": 13405317,
+      "wall_s": 66.4,
+      "official_script": "proofs/s1_port/release_identity.py",
+      "artifact_path_wrapper": "proofs/s2_keps/release_identity.py; changes only private scratch root before executing exact official probe"
+    },
+    "skips": "3 existing unavailable Gen2/retained-retry3 writer reference fixtures; all new Registry and selected-materialization assertions pass"
+  },
+  "performance_memory": "Default native-facade graph exact. Conditional EPS payload unchanged; main114-slot prefix preserved. P3/EPS scalar joins append static inventory to the existing transport call. No new timestep transfers or solves introduced; GPU cost/VRAM/readiness unmeasured.",
+  "qualification": "Existing60WRF records/1140BYTE fields/26690values, short coupled runs and original PD/RK evidence reused because reviewed column/adapter/schema bytes exact. EXPERIMENTAL upstream undefined-init sensitivity and strict1xPD intervalOPEN2.199412x remain disclosed; frozenC05PASS, GPU/forecast/D6 pending.",
+  "dependency": "s2-temf surface_diagnostics84020b732, already main28be38ec1",
+  "cleanup": "Private immutable rebased-snapshot and both pytest basetemps removed immediately after completed arms; persistent JAX cache disabled; no GPU.",
+  "private_artifacts": "<USER_HOME>/wrf_gpu2_lanes/s2-keps",
+  "artifact_sha256": {
+    "KE77.log": "f05878bb27c6aaf615eb67301016d288970ab31c068506e927c515b5e63a8965",
+    "KE77_host.xml": "706f490cba49c6359517de82b92ae543d0eb3810d1f2c9b4386d21c074932ac3",
+    "KE77_source_order.json": "6ab2929d7a7eba3a5d8ca6414a317b929095254a3bbe91c24985704649002b60",
+    "KE78.log": "93394b262913a0f011871ae1c06517f1c8f8eb9628ac05f949d99dd9e866e69a",
+    "KE78_neighbors.xml": "d71ee59708b510dcb209d02a7c5bcaf5ca9936a6b5c62039467cbae936d4ada2",
+    "KE79.log": "34644d05f1ffefe9676fc9b279e68eb88a5f93d92826e53b3b11a1e3e011991f",
+    "KE79_release.json": "12949fb0096325d8e7b90a6f4f78ad415ceed07b6b13bcf57afbbc9b98067d68"
+  }
+}

@@ -1482,13 +1482,30 @@ def _kf_closure_iter(UMF, UER, UDR, DMF, DER, DDR, DETLQ, DETIC, PPTLIQ, PPTICE,
     PRATEC = PPTFLX * (1.0 - fbfrc) / DXSQ
     RAINCV = dt * PRATEC
 
-    # feedback tendencies (mixed-phase: f_qi=f_qs=True)
+    # feedback tendencies by WRF microphysics flags (module_cu_kfeta.F KF_eta_PARA feedback;
+    # same branches as the native kernel and cumulus_kf_reference): warm_rain melts all
+    # ice/snow with -RLF heating; .NOT.F_QS freezes/melts at the melting level ML; the
+    # mixed-phase default (Thompson-class) keeps the original byte-identical arithmetic.
     QL0 = jnp.zeros(N); QI0 = jnp.zeros(N); QR0 = jnp.zeros(N); QS0 = jnp.zeros(N)
     tend_time = jnp.where(shallow, jnp.float64(2400.0), TIMEC)
-    DQCDT = jnp.where(inLT, (QLG - QL0) / tend_time, 0.0)
-    DQSDT = jnp.where(inLT, (QSG - QS0) / tend_time, 0.0)
-    DQRDT = jnp.where(inLT, (QRG - QR0) / tend_time, 0.0)
-    DQIDT = jnp.where(inLT, (QIG - QI0) / tend_time, 0.0)
+    if warm_rain or not f_qs:
+        CPM = CP * (1.0 + 0.887 * QG)
+        if warm_rain:
+            TG = TG - (QIG + QSG) * _RLF / CPM
+        else:
+            TG = TG + jnp.where(idx <= ML, -(QIG + QSG), QLG + QRG) * _RLF / CPM
+        DQCDT = jnp.where(inLT, (QLG + QIG - QL0 - QI0) / tend_time, 0.0)
+        DQRDT = jnp.where(inLT, (QRG + QSG - QR0 - QS0) / tend_time, 0.0)
+        DQIDT = jnp.zeros(N)
+        DQSDT = jnp.zeros(N)
+    else:
+        DQCDT = jnp.where(inLT, (QLG - QL0) / tend_time, 0.0)
+        DQSDT = jnp.where(inLT, (QSG - QS0) / tend_time, 0.0)
+        DQRDT = jnp.where(inLT, (QRG - QR0) / tend_time, 0.0)
+        DQIDT = jnp.where(inLT, (QIG - QI0) / tend_time, 0.0)
+        if not f_qi:
+            DQSDT = DQSDT + DQIDT
+            DQIDT = jnp.zeros(N)
     DTDT = jnp.where(inLT, (TG - T0p) / tend_time, 0.0)
     DQDT = jnp.where(inLT, (QG - Q0) / tend_time, 0.0)
 

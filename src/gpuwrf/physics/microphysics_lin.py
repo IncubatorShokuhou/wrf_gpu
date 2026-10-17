@@ -589,16 +589,20 @@ _lin_columns = jax.jit(
 # --------------------------------------------------------------------------
 # Public API
 # --------------------------------------------------------------------------
-def lin_run(th, qv, qc, qr, qi, qs, qg, rho, pii, p, z, dz8w, delt):
+def lin_run(th, qv, qc, qr, qi, qs, qg, rho, pii, p, z, dz8w, delt, *, ht=None):
     """Run Purdue-Lin on a batch of columns (shape (ncol, nlev)).
 
     Inputs are POTENTIAL-TEMPERATURE-based (th in K), matching the WRF
     ``lin_et_al`` interface. ``z`` is geometric height of each level (m), used
     by the Courant-limited sedimentation; ``dz8w`` is the layer thickness (m).
+    ``ht`` is terrain elevation (m); omitted only for sea-level standalone columns.
     Returns a dict with updated th, qv, qc, qr, qi, qs, qg and surface precip
     increments (mm) named rainncv/snowncv/graupelncv/sr.
     """
-    zsfc = jnp.zeros(th.shape[0], dtype=th.dtype)  # ht=0 in the oracle
+    # module_mp_lin.F:238 passes ht(I,J) to clphy1d. Its bottom-cell
+    # sedimentation Courant bound uses zz(kts)-zsfc, not height above sea level.
+    # Preserve the sea-level standalone API; operational callers supply HT.
+    zsfc = jnp.zeros(th.shape[0], dtype=th.dtype) if ht is None else jnp.asarray(ht, dtype=th.dtype)
     out = _lin_columns(th, qv, qc, qr, qi, qs, qg, rho, pii, p, z, dz8w, zsfc,
                        float(delt))
     # surface precip: WRF lin_et_al sets pptX = flux*del_tv summed; flux units
@@ -620,9 +624,9 @@ def lin_run(th, qv, qc, qr, qi, qs, qg, rho, pii, p, z, dz8w, delt):
     }
 
 
-def lin_physics_tendency(theta, qv, qc, qr, qi, qs, qg, pii, rho, p, z, dz, delt):
+def lin_physics_tendency(theta, qv, qc, qr, qi, qs, qg, pii, rho, p, z, dz, delt, *, ht=None):
     """Lin adapter returning a frozen PhysicsTendency (in-place replacements)."""
-    out = lin_run(theta, qv, qc, qr, qi, qs, qg, rho, pii, p, z, dz, delt)
+    out = lin_run(theta, qv, qc, qr, qi, qs, qg, rho, pii, p, z, dz, delt, ht=ht)
     return PhysicsTendency(
         state_replacements={
             "theta": out["th"], "qv": out["qv"], "qc": out["qc"],

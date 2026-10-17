@@ -91,11 +91,12 @@ def _coupler_build():
 
 class _Spy:
     def __init__(self, fn):
-        self.fn, self.calls = fn, []
+        self.fn, self.calls, self.kwargs = fn, [], []
 
-    def __call__(self, *args):
-        out = self.fn(*args)
+    def __call__(self, *args, **kwargs):
+        out = self.fn(*args, **kwargs)
         self.calls.append((args, out))
+        self.kwargs.append(kwargs)
         return out
 
 
@@ -110,6 +111,7 @@ def test_surface_layer_producer_dispatch(monkeypatch):
     on = sl.surface_layer_with_diagnostics(state)
     assert len(spy.calls) == 1
     (_, hfx_in, qfx_in, rho_in, _, tsk_in, p_in), ret = (None, *spy.calls[0][0]), spy.calls[0][1]
+    assert "pbl_limits" not in spy.kwargs[0]  # F20: SFCLAY handles double as the physical QFX carrier
     for got, want in ((on.fluxes.fltv, ret.fltv), (on.fluxes.theta_flux, ret.flt), (on.fluxes.qv_flux, ret.flqv)):
         np.testing.assert_array_equal(np.asarray(got), np.asarray(want))
     np.testing.assert_array_equal(np.asarray(hfx_in), np.asarray(on.hfx))  # the producer's own HFX/QFX feed it
@@ -132,6 +134,7 @@ def test_noahmp_coupler_producer_dispatch(monkeypatch):
     _, _, on = nc.noahmp_surface_adapter(state, land, static, radiation=rad, clock=clock, dt=90.0)
     assert len(spy.calls) == 1  # the coupler's own call (the inner sfclay uses surface_layer's binding)
     args, ret = spy.calls[0]
+    assert "pbl_limits" not in spy.kwargs[0]  # F20: shared handles stay physical (cumulus reads them)
     for got, want in ((on.fltv, ret.fltv), (on.theta_flux, ret.flt), (on.qv_flux, ret.flqv)):
         np.testing.assert_array_equal(np.asarray(got), np.asarray(want))
     np.testing.assert_array_equal(np.asarray(args[5]).reshape(-1), np.asarray(state.p)[..., 0].reshape(-1).astype(np.asarray(args[5]).dtype))

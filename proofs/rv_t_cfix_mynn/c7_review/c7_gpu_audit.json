@@ -1,0 +1,94 @@
+{
+  "head": "353a85f8a11abf4a12dcd78bad77ec7dc682a019",
+  "scope": "read-only review of actual-GPU receipts; no new GPU run",
+  "read_utc": "2026-10-16T11:26:37.058055+00:00",
+  "cold": {
+    "Swiss": {
+      "source": "353a85f8a11abf4a12dcd78bad77ec7dc682a019",
+      "gpu_rc": 0,
+      "E41": "PASS",
+      "programs": [
+        "d01"
+      ],
+      "entries": 2,
+      "max_stack_B": 16,
+      "run_sha256": "ef9a5dbcf0685b49d5613f258d2693c0de5a89401a056181cfef3344faf778ec",
+      "gate_sha256": "b39d82ce236ebd311d855c5aad5377317d2583344e87886bb9e88352ca72e293"
+    },
+    "PROD": {
+      "source": "353a85f8a11abf4a12dcd78bad77ec7dc682a019",
+      "gpu_rc": 0,
+      "E41": "PASS",
+      "programs": [
+        "d01",
+        "d02"
+      ],
+      "entries": 4,
+      "max_stack_B": 120,
+      "run_sha256": "b393c8eef3a790021017c84a1d4764f425f5771078ff985f665a62ecd3d46df7",
+      "gate_sha256": "57c2ee8c630faaff1217c354721330823d40ab075212b341bf703a2df3b75466"
+    },
+    "WN3-0227": {
+      "source": "353a85f8a11abf4a12dcd78bad77ec7dc682a019",
+      "gpu_rc": 0,
+      "E41": "PASS",
+      "programs": [
+        "d01",
+        "fused_d02"
+      ],
+      "entries": 4,
+      "max_stack_B": 120,
+      "run_sha256": "138f2e317d948745271039441068bec3c3448e018a026556ea3d0b5458dbfb23",
+      "gate_sha256": "411d9bdebd19b6702f52449d7678fbb69cb96be79cf83f18d87c464a1bfeed87"
+    }
+  },
+  "full24": {
+    "Swiss": {
+      "D6_d01.json": {
+        "verdict": "PASS",
+        "frames": 25,
+        "sha256": "1a12e964a5afedad24fa2c6ff258192e8a8f3fae5d6448d6d9cda5932af5e3ac"
+      }
+    },
+    "PROD": {
+      "D6_d01.json": {
+        "verdict": "PASS",
+        "frames": 25,
+        "sha256": "64c8a50b0e20546c2c8501db0e33fdf5a60c8d59afa24220447cd44586e4f554"
+      },
+      "D6_d02.json": {
+        "verdict": "PASS",
+        "frames": 25,
+        "sha256": "5394454646589eb642b70da2196590b3caf1d52a6e95c9fdc26fdb3b9a64f523"
+      }
+    },
+    "WN3-0227": "PENDING"
+  },
+  "transfer": {
+    "Swiss": {
+      "roots": 200,
+      "copy_count_bytes_equal": true,
+      "synchronization_counts_equal": true,
+      "callback_counts_equal": true,
+      "candidate_sha256": "3b1a04f2f54c544b339a759ecd8351ad7c3de26a284a2eb59dcaae633f5e7ed8",
+      "baseline_sha256": "249f33cfa709e69edc93bb20a51a96f40a5109810314880768cfad9050cd4ce3"
+    },
+    "PROD": {
+      "roots": 66,
+      "copy_count_bytes_equal": true,
+      "synchronization_counts_equal": true,
+      "callback_counts_equal": true,
+      "candidate_sha256": "8c6bd7f2ee33e157bd099c57cb23a9689f73a0ff7f2bc4b6e3ac94edabd4c369",
+      "baseline_sha256": "2eea1b98a08a80846f22055087cd4b9abb6cf9c63b5af7d33f46d7b5da06e9d2"
+    },
+    "WN3-0227": {
+      "roots": 66,
+      "copy_count_bytes_equal": true,
+      "synchronization_counts_equal": true,
+      "callback_counts_equal": true,
+      "candidate_sha256": "d179f3e90f290ed2dd6153adc0f09bcd5db4f3242dfb2cee95509ac107c6dfdd",
+      "baseline_sha256": "2879ed483e44b7cfe23f1e4ffba005f479788a2b5d704f0588451875c46680bc"
+    }
+  },
+  "timing_status": "Matched ABAB <=1.03 gate is separate and pending at audit start; do not accept unmatched +5.73pct or infer pass from attribution."
+}

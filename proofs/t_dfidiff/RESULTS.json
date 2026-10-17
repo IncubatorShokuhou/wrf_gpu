@@ -1,0 +1,140 @@
+{
+  "schema": "t-dfidiff-v1",
+  "verdict": "READY-FOR-CRITIC",
+  "scientific_conclusion": "DFL forward and forecast solver use diff_opt=0/km_opt=1 when *_dfi are omitted; existing port already matches. No dynamics change.",
+  "measured_commit": "7b04100910327f2de806cfddbc9a45a91cb86aeb",
+  "oracle_commit": "e35f311ab",
+  "CPU_only": true,
+  "gpu_used": false,
+  "pristine_source_sha256": {
+    "main/module_wrf_top.F": "3a6645ae7e4c64b8757987924c9fe661344c307c6de447cdc6fd063d09b1683c",
+    "share/dfi.F": "c7b94989ccdf637ebe756b9dcdff26d5b9ba798852ec74c3415a853a32a4ae0f",
+    "share/dfi.f90": "d8285f84f577eab43b5106f745f9efa4582e90c083103adf151b19220c4265fd",
+    "share/solve_interface.F": "83a5f376cfb82b7fbf31a163153d41afbb879b60cc40979f09d503a8b5fee025",
+    "share/solve_interface.f90": "2e70074375767f5571fe1efef34271c410f47986e6b5fd53782ab6946cfdb36f",
+    "frame/module_integrate.F": "10cb942dc9f98a7683a5ce52821bf1b95d0f9222ff57f5145fe9b8e848bb131c",
+    "dyn_em/start_em.F": "4b6c98a06fb2b2c4472af73415099e311502747dc5543d9e9b1323497d83ddb4",
+    "dyn_em/module_em.F": "11105cbf8255f30ca6a44cd7429a92cedce1fb91db6ce90fd7217002a72fb7fa",
+    "Registry/Registry.EM_COMMON": "6f3ee02175b76487c5c6c046ff2fb4c5d41980b86c0f06eb2e09e34dacc9623a",
+    "configure.wrf": "c1bd80d6d4db6c703a7af29479c75e8e6d2d9acda79c6fb928585c858f4c8aba"
+  },
+  "pristine_link_input_sha256": {
+    "<USER_HOME>/src/wrf_pristine/WRF/main/wrf.o": "97d548054c3ab23457b76f10af2d839c9cec151c83acc05c44fab40fbf29f044",
+    "<USER_HOME>/src/wrf_pristine/WRF/main/module_wrf_top.o": "2f4d32c89e806eb0c52850909f5d1295469cae3f317a5459b4832a4707a6f6e8",
+    "<USER_HOME>/src/wrf_pristine/WRF/main/libwrflib.a": "4886a500d7bbcbdc7cff40ed3baab72b6a014b4dd9879bf25bc7c24522dfadbe",
+    "<USER_HOME>/src/wrf_pristine/WRF/external/fftpack/fftpack5/libfftpack.a": "e6f9654798f998d182116f9db27fc49745c64e88ecb03174d3e8243475344742",
+    "<USER_HOME>/src/wrf_pristine/WRF/external/io_grib1/libio_grib1.a": "f21828b17182c549e4cda5882c177ab393c90d1c100493a590520fc02a032e62",
+    "<USER_HOME>/src/wrf_pristine/WRF/external/io_grib_share/libio_grib_share.a": "2e8f58c2071852967152666700e427fb1cda89216a137f3698df06f3da7790c8",
+    "<USER_HOME>/src/wrf_pristine/WRF/external/io_int/libwrfio_int.a": "3324ba18f4a2808e02097b9cfbd5e44eef412df47181ad7c4c5f9b6801177953",
+    "<USER_HOME>/src/wrf_pristine/WRF/frame/module_internal_header_util.o": "4c3b18d6c6ad8a6f8b7ec599ab6e072180db46f9effbce10fc33a98dc8ad7889",
+    "<USER_HOME>/src/wrf_pristine/WRF/frame/pack_utils.o": "6729216581f32e0a2c34f4e15fc664718dfd02ea5a281f0392885c7af4511519"
+  },
+  "private_artifacts_before_cleanup": {
+    "control": {
+      "binary": "1d600569e40d77effa1f7baf36580722b3b75ce6c7d6c77af76cf52e32989182",
+      "wrapper": "2e70074375767f5571fe1efef34271c410f47986e6b5fd53782ab6946cfdb36f",
+      "object": "0fd9caf6881d05eef7a7c69b4ac3807cdc4ffe1b6bbf5a468fbc4d7a2bb13aa6",
+      "frames": {
+        "wrfout_d01_2023-01-15_00:09:00": "57ca058374251519837eb3ebade9d2a00f44da0a28c69393d302d036318bf3e4",
+        "wrfout_d01_2023-01-15_00:09:18": "517b6e4d29f5ea7543b8136388e573f373e6dacfa7e63532847d9213dc4f42fd",
+        "wrfout_d01_2023-01-15_00:09:36": "f0f6bc2547052bee12d8f06dfa248f96e8e775cea90cedeec8106ad502530d89",
+        "wrfout_d01_2023-01-15_00:09:54": "87643c6e202d60d5f387213b3bc4b517168c43dc4de7d3f7500e6e19c7f4b6e2",
+        "wrfout_d01_2023-01-15_00:10:12": "97ff575cdf51ac332d3e9a25196a06ad6d9bded1c5a2288d72421921415fc5bb"
+      },
+      "fort98_emitted": false
+    },
+    "dump": {
+      "binary": "ba254ac40babdf286c17eacfd4a0b1441781edce42155fe45a2d373d892f0a84",
+      "wrapper": "e7eb081416c958e666eaacb5e61565ef921c50e949192285bd1646d544911600",
+      "object": "1628d38a10c8f2742d26b1cca877b7c95e1efba7b38a0428c47074ec6eaf1da8",
+      "frames": {
+        "wrfout_d01_2023-01-15_00:09:00": "57ca058374251519837eb3ebade9d2a00f44da0a28c69393d302d036318bf3e4",
+        "wrfout_d01_2023-01-15_00:09:18": "517b6e4d29f5ea7543b8136388e573f373e6dacfa7e63532847d9213dc4f42fd",
+        "wrfout_d01_2023-01-15_00:09:36": "f0f6bc2547052bee12d8f06dfa248f96e8e775cea90cedeec8106ad502530d89",
+        "wrfout_d01_2023-01-15_00:09:54": "87643c6e202d60d5f387213b3bc4b517168c43dc4de7d3f7500e6e19c7f4b6e2",
+        "wrfout_d01_2023-01-15_00:10:12": "97ff575cdf51ac332d3e9a25196a06ad6d9bded1c5a2288d72421921415fc5bb"
+      },
+      "fort98_emitted": false
+    }
+  },
+  "gate": {
+    "solver_rows": 6,
+    "solver_pairs": "all0/1",
+    "original_CPU_headers": 24,
+    "paired_variables_BYTE_finite": 1810,
+    "targeted_pytest": {
+      "passed": 15,
+      "failed": 0,
+      "errors": 0,
+      "seconds": 4.98
+    },
+    "mutant": {
+      "genuine_AssertionError_kills": 1,
+      "control_passes": 1,
+      "setup_errors": 0,
+      "seconds": 1.91
+    }
+  },
+  "release_identity_reuse": {
+    "measured_baseline": "e60716432ead48eaeab3c870861257499b2d2413",
+    "receipt_sha256": "4a2821e0cb6f09118911038de765d4bee0e036f588c479d79021b3d2d218dc2f",
+    "exact_trees": {
+      "src": {
+        "candidate": "0200ceea87c1c8bd029d747e00d80b6ea92df639",
+        "measured_baseline": "0200ceea87c1c8bd029d747e00d80b6ea92df639"
+      },
+      "data": {
+        "candidate": "a91a7fbcc850486e65e257c0d0f185a18c6e58c2",
+        "measured_baseline": "a91a7fbcc850486e65e257c0d0f185a18c6e58c2"
+      },
+      "scripts": {
+        "candidate": "a3f2c56035e47326c68e30f7d75763289ba9e1c6",
+        "measured_baseline": "a3f2c56035e47326c68e30f7d75763289ba9e1c6"
+      }
+    },
+    "Swiss": "f672a5739cb96e388b6b7a40ef80337bf81bdc14ef15268f3476e09d79fe055d",
+    "PROD_d01": "6fc715a2bd630934c4cf0f94427df19a527cbf429011c9ba5efe4d712744d27b",
+    "method": "exact source/data/scripts trees; no redundant model trace"
+  },
+  "archive_fixture": {
+    "sha256": "fcddf24ce592a0af29b7729bef4a98b2ed37f11fbb47ed8cb26bef3cb9ce22b7",
+    "bytes": 2123,
+    "original_c49_namelist_BYTE": true
+  },
+  "writer_rule": "DIFF_OPT/KM_OPT must use post-prepass forecast namelist; copied wrfinput headers/raw initialization are pre-DFI.",
+  "rerun_decision": "No new GPU model rerun required by this proof-only change. c49 has never started GPU (v-prep MAILBOX17:07Z); original planned qualification remains required.",
+  "performance_memory": "No runtime source changes: zero added forecast launches/arrays/transfers/compile work. No GPU/timing claim.",
+  "failed_harness_attempts": {
+    "TD02": "13pass2fail: host fixture missing QVAPOR; corrected in7b0410091",
+    "TD04": "ModuleNotFoundError before pytest; not a mutation kill",
+    "TD05": "cpu_guard late import before pytest; not a mutation kill"
+  },
+  "cache": "NONE GPUWRF_JAX_CACHE=0",
+  "artifacts_sha256": {
+    "TD01.json": "9f8be2e9c42b0fa915cf34067815dcab21f14e2ddf837e41eefb012f9ed01172",
+    "TD01_control.log": "633ec234f75f591e4fe327b97340babf936afa0089ddffd6921f6299dcba7b33",
+    "TD01_dump.log": "ada034f2cb73c4d6c5defccfbd8a48595ce179d23a5fa320e668ca51d2d8338d",
+    "TD02.log": "1f78370690667d7ea4edfa992faff89d2579383e10e5a63e98fa83afdde0786d",
+    "TD02.xml": "2f3ada1ca5a01673d9d23abf0c0310b53e359711312614460d9b1ecaf01a39d9",
+    "TD03.log": "1b198c48a882f8281d339373725c6c4572f0a8bc4ba515e62aa1103f85c281c1",
+    "TD03.xml": "176665a7021e5a31c2adff9926ca568958c7d8fb43a4002e76d985e8761d8da2",
+    "TD04.log": "18c6bdeeb3675b788ff730a25fa0ad27fa9511f27f2a23403eb3594dfc79ac85",
+    "TD05.log": "eff3042939fac9b3a902020190480ed891de3710f80ee128c5baa586243a37f4",
+    "TD06.log": "f45dd93de206cc9e04eb087e495e810dc8f46c9b04c2698f7f00001dd6b03011",
+    "TD06.xml": "763fbe86e4b69cc03c258a6c7b2900a1821c898b5102f530a4a480025f384764"
+  },
+  "raw_artifacts_sha256": {
+    "TD01.json": "9f8be2e9c42b0fa915cf34067815dcab21f14e2ddf837e41eefb012f9ed01172",
+    "TD01_control.log": "633ec234f75f591e4fe327b97340babf936afa0089ddffd6921f6299dcba7b33",
+    "TD01_dump.log": "ada034f2cb73c4d6c5defccfbd8a48595ce179d23a5fa320e668ca51d2d8338d",
+    "TD02.log": "61f0d4ad90f666c3a2c5a9f3cfda7e53073a3b9ee2b8512138ce7de26cdb37c4",
+    "TD02.xml": "8bbdea3e0c4c8e2d6edd97b9eed67386e98eebd683caa165ab987a0278db66b7",
+    "TD03.log": "1b198c48a882f8281d339373725c6c4572f0a8bc4ba515e62aa1103f85c281c1",
+    "TD03.xml": "a42053d3204d2aa0d853369c4bc29af10be922dc005d08473acac4c289b8991a",
+    "TD04.log": "18c6bdeeb3675b788ff730a25fa0ad27fa9511f27f2a23403eb3594dfc79ac85",
+    "TD05.log": "eff3042939fac9b3a902020190480ed891de3710f80ee128c5baa586243a37f4",
+    "TD06.log": "c7157bd803f3cde53ec1e503398e184143ff8a4dbb584837b6a3dd30ba709bc0",
+    "TD06.xml": "df3b84b6c1100a0c2c9773d8f07acd2c610ebe0a6b69265f09bed6365099d895"
+  },
+  "receipt_packaging": "Trailing whitespace stripped from committed log/XML copies for git diff --check; original raw logs/XML and their hashes retained under <USER_HOME>/wrf_gpu2_lanes/t-dfidiff/. Numerical arrays, diagnostics, test outcomes unchanged."
+}

@@ -44,10 +44,12 @@ def _real_state(state):
 def test_mp40_is_scan_wired_and_dispatched():
     assert MP_SCAN_ADAPTERS[40] is morrison_aero_adapter
     support = classify_scheme("mp_physics", 40)
-    # v0.3.4 o1-nlbind CLI probe: scan-wired, but the release root lateral boundary
-    # (GPUWRF_ROOT_SCALAR_BDY_RK1) has no Ns/Ng/Nc record -> refused by gpuwrf run.
-    assert support.status is SupportStatus.REFERENCE_ONLY
-    assert "Ns" in support.reason and "re_cloud" in support.reason
+    # v0.4.0 o2-rootbdy: the root Ns/Ng/Nc take WRF flow_dep_bdy (v0.3.4 o1-nlbind had refused
+    # mp=40 for the missing record) -> IMPLEMENTED, caveats in the note.
+    assert support.status is SupportStatus.IMPLEMENTED
+    assert "Ns/Ng/Nc" in support.reason
+    # Pristine physics_init excludes mp40 at supported aercu_opt=0.
+    assert "aercu_opt=0" in support.reason
     grid = _grid()
     _resolve_operational_suite(_namelist(grid, mp_physics=40, bl_pbl_physics=0,
                                          sf_sfclay_physics=0, cu_physics=0))
@@ -65,7 +67,10 @@ def test_mp40_adapter_real_carry_writes_constant_nc():
     # WRF aercu_opt=0: NC(i,k,j) = NDCNST*1e6/RHO everywhere (aero.F l.4997,
     # l.1142) with RHO = P/(R*T) of the ENTRY temperature T = TH*PII.
     pii = (np.maximum(np.asarray(state.p, np.float64), 1.0) / P0_PA) ** R_D_OVER_CP
-    rho = np.asarray(state.p, np.float64) / (C.R * np.asarray(state.theta, np.float64) * pii)
+    # WRF phy_prep supplies DRY theta, while State carries theta_m.
+    theta_dry = np.asarray(state.theta, np.float64) / (
+        1. + (461.6 / 287.) * np.asarray(state.qv, np.float64))
+    rho = np.asarray(state.p, np.float64) / (C.R * theta_dry * pii)
     np.testing.assert_allclose(np.asarray(out.Nc, np.float64), C.NDCNST * 1.0e6 / rho, rtol=2e-6)
     # seeded Nc input is dead (wrapper placeholder nc1d=0): the input is replaced.
     assert not np.allclose(np.asarray(out.Nc), np.asarray(state.Nc))
@@ -91,11 +96,13 @@ def test_aercu_opt_positive_is_refused(aercu_opt):
 
 
 def test_aercu_opt_zero_mp40_is_accepted():
-    # v0.3.4 (o1-nlbind): the namelist/aercu_opt=0 gate accepts mp=40; the operational
-    # CLI then refuses it under the release defaults (root boundary has no Ns/Ng/Nc
-    # record) with that named reason instead of a post-load NotImplementedError.
-    from gpuwrf.io.namelist_check import NotOperationallyWiredError, validate_namelist
+    # v0.4.0 (o2-rootbdy): the namelist/aercu_opt=0 gate accepts mp=40 and so does the
+    # operational CLI gate (root Ns/Ng/Nc take WRF flow_dep_bdy); nested runs are refused.
+    from gpuwrf.io.namelist_check import (NotOperationallyWiredError, refuse_single_domain_mp_nested,
+                                          validate_namelist)
 
     validate_namelist({"physics": {"mp_physics": [40], "cu_physics": [0], "aercu_opt": 0}})
-    with pytest.raises(NotOperationallyWiredError, match="Ns/Ng/Nc"):
-        validate_operational_namelist({"physics": {"mp_physics": [40]}})
+    validate_operational_namelist({"physics": {"mp_physics": [40]}})
+    refuse_single_domain_mp_nested({"physics": {"mp_physics": [40]}}, 1)
+    with pytest.raises(NotOperationallyWiredError, match="single domains only"):
+        refuse_single_domain_mp_nested({"physics": {"mp_physics": [40, 40]}}, 2)

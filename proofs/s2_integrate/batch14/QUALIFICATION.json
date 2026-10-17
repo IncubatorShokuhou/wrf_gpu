@@ -1,0 +1,402 @@
+{
+  "verdict": "READY-FOR-MERGE",
+  "scope": "Source/CPU integration gate; no GPU, release, new D6 or full-suite qualification",
+  "UTC": "2026-10-14T23:43:43.425639+00:00",
+  "lane": "s2-integrate",
+  "base_main": "e2ffb6858a96c5ce12e6bb6d422deacb8b77b448",
+  "latest_main": "f4fd9de7786e1276aef45a52c00526f25f19b0c3",
+  "measured_candidate": "32c105f21bdba069fbdc3f5a11ff50c3e8922868",
+  "merged": [
+    "5131df6405207b08ebd5ba3013c4aeccc39e4358",
+    "eb92733731f96d1b5ae356d773780d6bfd70eb4f"
+  ],
+  "integration_conflicts": 0,
+  "integrator_product_edits": false,
+  "integration_fixture_fix": {
+    "UTC": "2026-10-14T23:14:02.226595+00:00",
+    "commit": "32c105f21bdba069fbdc3f5a11ff50c3e8922868",
+    "paths": [
+      "tests/test_ysu_surface_contract.py"
+    ],
+    "line_delta": "+3 only",
+    "all_assert_AST_BYTE": true,
+    "src_diff_EMPTY": true,
+    "stub_KETHL_shape": "(grid.ny*grid.nx,grid.nz)",
+    "stub_KETHL_dtype": "float32; existing zero array",
+    "manager_authorized": true,
+    "test_status": "64PASS; full SF1 17 + writer 45 + GBM 2",
+    "GPU_runs": 0,
+    "review": {
+      "UTC": "2026-10-14T23:23:48.772071+00:00",
+      "approved_commit": "32c105f21bdba069fbdc3f5a11ff50c3e8922868",
+      "verdict": "OK",
+      "authority": "Manager direct message",
+      "message": "integration-fix 32c105f21 reviewed \u2014 OK (stub kethl for scheme 12 only, no assertion change). Finish batch 14 and post READY-FOR-MERGE.",
+      "test_receipt": "SI165-focus.json:64PASS",
+      "product_change": false
+    }
+  },
+  "sanity": {
+    "distinct_nodes": 575,
+    "PASS": 572,
+    "XFAIL": 3,
+    "FAIL": 0,
+    "ERROR": 0,
+    "XPASS": 0,
+    "per_arm_counts": {
+      "SI162-C0": {
+        "PASS": 128
+      },
+      "SI165-focus": {
+        "PASS": 64
+      },
+      "SI162-C1": {
+        "PASS": 113
+      },
+      "SI162-C2": {
+        "PASS": 98
+      },
+      "SI162-C3": {
+        "PASS": 127,
+        "XFAIL": 1
+      },
+      "SI162-C4": {
+        "PASS": 42,
+        "XFAIL": 2
+      }
+    },
+    "per_arm_duration_s": {
+      "SI162-C0": 2.770490676999543,
+      "SI165-focus": 40.62516749099996,
+      "SI162-C1": 9.800968084999113,
+      "SI162-C2": 6.728420831001131,
+      "SI162-C3": 11.33529287499914,
+      "SI162-C4": 5.181162181999753
+    },
+    "reuse": "C0 128PASS on OLD is source-BYTE unaffected by the only subsequent three-line test fix. Focus nodes excluded from remaining chunks; no duplicate executions."
+  },
+  "default_identities_fresh": {
+    "Swiss": {
+      "edits": {},
+      "bound": {
+        "mp_physics": 8,
+        "bl_pbl_physics": 5,
+        "sf_sfclay_physics": 5,
+        "ra_lw_physics": 4,
+        "ra_sw_physics": 4,
+        "cu_physics": 0,
+        "sf_surface_physics": 4,
+        "use_noahmp": true,
+        "sf_urban_physics": 0,
+        "diff_opt": 1,
+        "km_opt": 4,
+        "epssm": 0.5,
+        "damp_opt": 3,
+        "zdamp": 5000.0,
+        "dampcoef": 0.2,
+        "w_damping": 1,
+        "diff_6th_opt": 2,
+        "diff_6th_factor": 0.12,
+        "moist_adv_opt": 1,
+        "scalar_adv_opt": 1,
+        "topo_shadow_length_m": 25000.0,
+        "cumulus_cadence_steps": 1,
+        "radiation_cadence_steps": 33
+      },
+      "load_s": 25.0,
+      "sha": "f672a5739cb96e388b6b7a40ef80337bf81bdc14ef15268f3476e09d79fe055d",
+      "chars": 14504210,
+      "trace_s": 13.8,
+      "wall_s": 39.2
+    },
+    "PROD": {
+      "edits": {},
+      "bound": {
+        "mp_physics": 8,
+        "bl_pbl_physics": 5,
+        "sf_sfclay_physics": 5,
+        "ra_lw_physics": 4,
+        "ra_sw_physics": 4,
+        "cu_physics": 1,
+        "sf_surface_physics": 4,
+        "use_noahmp": true,
+        "sf_urban_physics": 0,
+        "diff_opt": 1,
+        "km_opt": 4,
+        "epssm": 0.5,
+        "damp_opt": 3,
+        "zdamp": 5000.0,
+        "dampcoef": 0.2,
+        "w_damping": 1,
+        "diff_6th_opt": 2,
+        "diff_6th_factor": 0.12,
+        "moist_adv_opt": 1,
+        "scalar_adv_opt": 1,
+        "topo_shadow_length_m": 25000.0,
+        "cumulus_cadence_steps": 6,
+        "radiation_cadence_steps": 33
+      },
+      "load_s": 26.2,
+      "sha": "6fc715a2bd630934c4cf0f94427df19a527cbf429011c9ba5efe4d712744d27b",
+      "chars": 14708888,
+      "trace_s": 12.3,
+      "wall_s": 67.6
+    }
+  },
+  "source_and_reviewed_proof_audit": {
+    "UTC": "2026-10-14T22:56:09.914059+00:00",
+    "status": "PASS",
+    "candidate": "bff652b42b7545af7822b5fc740a938e35f6f292",
+    "writer_source_files_BYTE_approved": [
+      "src/gpuwrf/contracts/precision.py",
+      "src/gpuwrf/contracts/state.py",
+      "src/gpuwrf/coupling/goddard_radiation.py",
+      "src/gpuwrf/coupling/physics_couplers.py",
+      "src/gpuwrf/coupling/scan_adapters.py",
+      "src/gpuwrf/integration/nested_pipeline.py",
+      "src/gpuwrf/io/microphysics_history.py",
+      "src/gpuwrf/io/producer_history.py",
+      "src/gpuwrf/io/restart.py",
+      "src/gpuwrf/io/restart_schema.py",
+      "src/gpuwrf/io/wrfout_writer.py",
+      "src/gpuwrf/io/wrfrst_netcdf.py",
+      "src/gpuwrf/nesting/scalar_initialization.py",
+      "src/gpuwrf/runtime/checkpoint.py",
+      "src/gpuwrf/runtime/operational_mode.py"
+    ],
+    "physical_kernel_dynamics_trees_BYTE_main": true,
+    "State_precision_and_conditional_order": "Existing AST prefix retained; WRITER_PROFILE_LEAVES appended",
+    "HOLD_c2_not_ancestor": true,
+    "HOLD_validate_ssib_and_qnse_AST_BYTE_main": true,
+    "writer_producer_receipts_SHA_size_exact": 68,
+    "writer_producer_unique_pass_reused": 504,
+    "critic_tracked_evidence_SHA_exact": 16,
+    "critic_passes_and_genuine_mutants_reused": [
+      156,
+      3
+    ],
+    "original_constant_sample_scope": {
+      "pairs": 5,
+      "files": 125,
+      "all_frames": 25,
+      "all_cells": "exact positive float32 zero",
+      "fields": [
+        "c20:CCN3_GS",
+        "c87:ICE_TYPE2",
+        "c46:FIELD_SF",
+        "c14:REFD_MAX",
+        "c78:HFX_BOTH"
+      ],
+      "source": "whole-file SHA against original CPU_OUTPUTS and producer seals; live namelists not used"
+    },
+    "original_producer_samples": {
+      "fields": 8,
+      "values_and_metadata": "BYTE against original sealed CPU wrfouts",
+      "rimi_caveat": "Original sample is zero; nonzero unit retention discriminator is a mocked seam, not new physics fidelity"
+    },
+    "schema_post_reseal": {
+      "status_counts": {
+        "PASS_CPU_SCHEMA_COVERAGE": 58,
+        "FAIL": 11,
+        "INCOMPLETE": 11,
+        "INCOMPLETE_PREPASS_SCHEMA": 1,
+        "INCOMPLETE_REFERENCE": 2
+      },
+      "cpu_frames_compared": 1752,
+      "remaining_input_provenance_failures": [],
+      "owned_missing_fields": [],
+      "full_report_sha256": "fefefd68a331106f35c62d02ec96a4df664254e7c1b0142ab7ddc14e64ba5d6d",
+      "c53": "INCOMPLETE_REFERENCE oneframe/nominal25",
+      "c78": "PASS25frames"
+    },
+    "lower_sweep_src_diff_EMPTY": true,
+    "lower_sweep_sealed_SHA_exact": 13,
+    "lower_sweep_scope": "75/76 admitted lower PASS; c65 OOM_AT_CAP owner-deferred; controls separate; no new current-source/GPU/scientific qualification",
+    "lower_sweep_CLI_help_smokes": 3,
+    "GPU_runs": 0,
+    "cache": "NONE",
+    "performance_memory": "PERFORMANCE_SCOPE.json; CPU defaulttrace maxRSS Swiss3041896KiB/PROD3882716KiB; notGPUVRAM/S1. Host constants share one readonly plane per shape. Changed opt-in GPU costs/E41/24h fidelity unknown/pending.",
+    "all_prior_scientific_limits_retained": true
+  },
+  "reviewed_producer_gates_reused": {
+    "writer_distinct_PASS": 504,
+    "critic_distinct_PASS": 156,
+    "genuine_assertion_mutants": 3,
+    "reason": "All 15 writer source files BYTE approved 5131df640; original numerical bodies and proof hashes unchanged. Counts overlap integration and are not summed."
+  },
+  "writer_schema": {
+    "post_reseal": {
+      "status_counts": {
+        "PASS_CPU_SCHEMA_COVERAGE": 58,
+        "FAIL": 11,
+        "INCOMPLETE": 11,
+        "INCOMPLETE_PREPASS_SCHEMA": 1,
+        "INCOMPLETE_REFERENCE": 2
+      },
+      "cpu_frames_compared": 1752,
+      "remaining_input_provenance_failures": [],
+      "owned_missing_fields": [],
+      "full_report_sha256": "fefefd68a331106f35c62d02ec96a4df664254e7c1b0142ab7ddc14e64ba5d6d",
+      "c53": "INCOMPLETE_REFERENCE oneframe/nominal25",
+      "c78": "PASS25frames"
+    },
+    "producer_older_schema": "Original packet retained unchanged; post-reseal critic record supersedes its stale input-provenance failures. Full scientific/D6 limits remain open."
+  },
+  "lower_sweep": {
+    "src_diff_EMPTY": true,
+    "proof_SHA_verified": 13,
+    "scope": "75/76 admitted lower PASS; c65 OOM_AT_CAP owner-deferred; controls separate; no new current-source/GPU/scientific qualification",
+    "status": "INCOMPLETE_OWNER_DEFERRED_C65",
+    "CLI_help_smokes": 3,
+    "current_tree_GPU_qualification": false
+  },
+  "held": {
+    "c2d131cd8": "NOT ADMITTED. Manager requires future real CLI + MP38 gates; original QNSE/SSiB validator ASTs retained."
+  },
+  "performance_memory": {
+    "default": "No extra default carry arrays; both full native-facade identities EXACT.",
+    "opt_in_payload_I_bytes_Swiss": {
+      "one_profile": 310464,
+      "Goddard_radius_tensor": 1862784,
+      "one_surface": 14112
+    },
+    "writer": "Retains existing GBM/SBU/Goddard/MP28 outputs; host constants share a readonly plane per shape. Physical kernels/dynamics BYTE base.",
+    "test_fix_and_lower_tools": "Zero forecast runtime work added.",
+    "unknown": "Active GPU launch/traffic/VRAM, readiness, E41/cubin/roofline and final D6 remain unmeasured here.",
+    "CPU_resources": "Official FIFO RAM6G/Swap0, CPU24,25 nice19, one lane job at a time; no GPU/native compile."
+  },
+  "cleanup": {
+    "UTC": "2026-10-14T23:43:32.145480+00:00",
+    "all_owned_scratch_absent": true,
+    "exact_removed_paths": [
+      "<DATA_ROOT>/wrf_gpu2/scratch/s2-integrate/batch14-tree",
+      "<DATA_ROOT>/wrf_gpu2/scratch/s2-integrate/pytest",
+      "<DATA_ROOT>/wrf_gpu2/scratch/s2-integrate/batch14-tmp",
+      "<DATA_ROOT>/wrf_gpu2/scratch/s2-integrate/batch14-cache"
+    ],
+    "final_consumers_complete": true,
+    "cache": "NONE retained",
+    "GPU_runs": 0,
+    "cubin_consumer": "NONE; no native compile"
+  },
+  "open_risks": [
+    "All inherited scientific failures/incomplete scopes retained.",
+    "Writer schema 58PASS /11FAIL /14INCOMPLETE; no owned class A/B omission or input-provenance failure; not a full scientific pass.",
+    "Lower-sweep c65 OOM at cap deferred; large-HLO-constant census unknown; original-source CPU lowering receipts do not qualify composed GPU tree.",
+    "QNSE/SSiB U10/V10 restart patch explicitly held.",
+    "No GPU, full forecast, F1/F2, E41, S1, VRAM or release claim."
+  ],
+  "proof_files": {
+    "SI157-writer-fields-merge.json": "61a706064a383495ce69fc449431af55337d35734867e05e57e7076729c15f51",
+    "SI158-lowersweep-merge.json": "441796f70588eade416336e2d6ca91a02987500e228259363a11d914a65587c5",
+    "SI159-source-proof-audit.json": "a9c7c2d7a8a828b70bc4dd8f7f9191eb3245e54cfba618c5570cc646afd05fc0",
+    "SI159-source-proof-audit.log.gz": "d2d952b918f7922b7f4cac922314cff51185f66db7f3bebe5c74b15aeca79801",
+    "SI160-snapshot.log.gz": "5d975254df85a32dd0afbf0875efef316be4be56412c1eec7203be7d983279de",
+    "SI161-collect.log.gz": "f564e639835c1580f30be31da4a3c50f043c57fdf02dd8b33f6ff7b1b1586092",
+    "SI161-selection.json": "e5ff95aa3cfb7b410964d46da9e3c1b35f1da2ad337f51c974986217a4b94d38",
+    "SI161a-SF1-mock-contract.json": "c9120f94200aeffa4b279cd6badd51ca49ee53ad67d98ea2ca966580ac88296b",
+    "SI162-C0-run.json": "77ca484642132e4bf0973f409d41f459c3f3d770f96af8d5e7c0970e65718a47",
+    "SI162-C0.json": "368ff1cb9fb29b0aa579d6b6f06caa68607057b40ee207ab64c365592ce6e390",
+    "SI162-C0.log.gz": "7abad2a7a947996ac502869a9f3616ec85c6e87e056d832276cf75f8012e2830",
+    "SI162-C0.xml.gz": "1040a14d6c58e2952b9d98672caaab284b27d392f5937121266e49edec50076b",
+    "SI162-C1-run.json": "db53f6ff9f536bd1556f8cde685bec17e9ed707f98fab473f00b6dbf33c1d910",
+    "SI162-C1.json": "9528d4ed792ec18bd7f9c354dc3ddcdd11355be3d839313bb5b23ea4c4cc5fde",
+    "SI162-C1.log.gz": "4c82e7cf195f794b39ad33dc5a4ed033f017e2e82c9cd0448f5ff5d4858acd8d",
+    "SI162-C1.xml.gz": "048e5aaff93430b1f1d259398bb1e07397685127eed897cbcc85ae2649865230",
+    "SI162-C2-run.json": "30cee8430d7fd958a13e24b1057711a6f09e6c9310a4cf46d41d217766770a22",
+    "SI162-C2.json": "de8cbdeeafeb0366a80187156cd0b98318b203cc84551b2ca2f4bd8fa5955513",
+    "SI162-C2.log.gz": "d4af4976bb5f2bb9b7b6e20c17e5eb5314563a964c8ada806550cc8a4f73649a",
+    "SI162-C2.xml.gz": "b9ec55565c5d1a092b1888e00b9f81d5a9bb150e431515c430f7d1e81cebf8de",
+    "SI162-C3-run.json": "054ca5ff7698a62dbf96a4a3acb4de79614cb3ccc3a6caf3a51173037458f382",
+    "SI162-C3.json": "5a0846d4407e14f7d067475f485c35c938a9a235854afa258196e62748e6fd3e",
+    "SI162-C3.log.gz": "24319d99a230bebf0adcf8dcb867c4a153e9f85a7e3307b0400446d8b5515826",
+    "SI162-C3.xml.gz": "9e5e8ca92bbff809003efad9cd86e87574c23bab3f83971752c931a1b14b50ca",
+    "SI162-C4-run.json": "df77e879f8a1e0c147ab6738b93d820f5a2bad5c7be9ef8753e1a217dd4d01a2",
+    "SI162-C4.json": "f1a35d8da9304a35cdbeb7b019aec696a0910e7b5be3dc5d1e28cd38a869b21c",
+    "SI162-C4.log.gz": "47fb0dd703a214ea41f60f218f4bbc13536e3419830dba1d9d4afdabcb879aac",
+    "SI162-C4.xml.gz": "02b318250be7095aff1f17593df5375a7e9379c4bca8e517bcca8a674e63010f",
+    "SI163-Swiss-run.json": "53697f4efe291151411d71ff137d4feb323d30211bfa4ba493603dc7ac646eae",
+    "SI163-Swiss.log.gz": "9a3c1765ee4c64ab44701a53e4236420666643e6a54ca2b903ee5f9873b3c496",
+    "SI164-final-snapshot.log.gz": "b38a845efa877c84182bcf423c71c3b26e3cc59987e1f3e750498cf37fa62147",
+    "SI164a-C1-unstarted-cancel.json": "20b5cc60d6e9e5a9189e9e4fba447d5cb9d5b9a0a9fa3940a818ab9022a8f134",
+    "SI164a-C1-unstarted-cancel.log.gz": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64",
+    "SI165-focus.json": "97d9492bfe87fe6c29ab05de2abebd84df6a5a8687c9bac316dd2fd91e39b291",
+    "SI165-focus.log.gz": "468c24afbfa94f9ce10d3c828e3b2dfc171498c864fd6c2424b7b44ffed16dc0",
+    "SI165-focus.xml.gz": "9ae4b87e570dddf5b370182b00b343cb0083101ec01c414d0802a8e140e9c556",
+    "SI166-integration-fixture-source.json": "75018114546518b7c1c97a3c61c53317827a9f01ca6ccc3021ed3ae253f24d30",
+    "SI167-manager-fix-approval.json": "891487d1452c85de09469a9021289d96798dc0fa8f86e9549b78de4c02b784e1",
+    "SI168-cleanup.json": "0cb50b7c04eff188682eab2b393ca034f4bd67cad8382f3f3b28fcfab1b368b2",
+    "SI169-main-contract-sync.json": "063cb1b8cff714f362bf4409749962cc7d3d987706d0151680254a918bb73c68",
+    "SI172-PROD-run.json": "08298e78ba659410914a76ad031f2b1b4a7093a43370ac631ce2fcb1124a21c3",
+    "SI172-PROD.json": "b77ee2516bc2eee0c654bec6303e839cf4811a0ea885140902d3cf716896452f",
+    "SI172-PROD.log.gz": "415a60a2535a65ec3413219aa82f220b103e4cb0349249a5acb8b7bac14cc17e",
+    "SI172-Swiss-run.json": "bebf3e5ad74ce618e73969900141fb00774b27f0beee96b1da0bdd2783db6e71",
+    "SI172-Swiss.json": "50ae88b48ed78f0d83a455f1fcc01140745a936d0083096d77d25795e6dc3cda",
+    "SI172-Swiss.log.gz": "1cb458e60ca1067b44826275442515de57dbe1a2842b0bf990dbf4d5f939309e",
+    "audit_batch14.py": "ba504731c5f1355fdd771a06d1f1027277d942703b763cb7de22da69fea2dd2f",
+    "run_batch14_suite.py": "63f19fc34cb993c4b3b3c79d4a042a600aeb3a2c4554b6f0f994a7bc6afec904",
+    "resume_batch14_arms.py": "c84c4769cb2dadcff70d61abf69a3e89f003a950b0e2322e9bc5602d5859a14b",
+    "run_batch14_identity.py": "427469735c7406ef5801253eb222440ebd134e492e2c68fb3ab65e3793c393b8",
+    "seal_batch14.py": "a92af53c9148585587d3b1b2dd2211542e1117310fb71691ea0a753938961336",
+    "check_batch14_archive.py": "7a608b4d3c656efbf3aa10ef3c1fd948ebea2680da5ccbf3e1f9d2985fff753a",
+    "cleanup_batch14.py": "e5d219f059f08964e014c68347c8526d89b951d9089bd9dedb83f2b8b0efb1be",
+    "retry_batch14_identities.py": "a8c3d339af097aebce21c5657e02f63d54f72f9f047c14213bb6dbf8cd16267f",
+    "TEST_NODES.json": "59553c96112e2d74db11d058f24cbe9bee2e9c8f3037b5510f69b178fc9e08e3"
+  },
+  "uncompressed_sha256": {
+    "SI157-writer-fields-merge.json": "61a706064a383495ce69fc449431af55337d35734867e05e57e7076729c15f51",
+    "SI158-lowersweep-merge.json": "441796f70588eade416336e2d6ca91a02987500e228259363a11d914a65587c5",
+    "SI159-source-proof-audit.json": "a9c7c2d7a8a828b70bc4dd8f7f9191eb3245e54cfba618c5570cc646afd05fc0",
+    "SI159-source-proof-audit.log": "7a3122ff9b6827fec53a5c2ba36430246d385e379d855223047126bf377ef59f",
+    "SI160-snapshot.log": "b1602c5f0e4b1b193122df314a0e420eb60946d29a7d29abda7aadb8ecd323b8",
+    "SI161-collect.log": "246cbd0208c4ed95b9433c88e0b5bf9b217f0c40acc987116d78daeb593c34b3",
+    "SI161-selection.json": "e5ff95aa3cfb7b410964d46da9e3c1b35f1da2ad337f51c974986217a4b94d38",
+    "SI161a-SF1-mock-contract.json": "c9120f94200aeffa4b279cd6badd51ca49ee53ad67d98ea2ca966580ac88296b",
+    "SI162-C0-run.json": "77ca484642132e4bf0973f409d41f459c3f3d770f96af8d5e7c0970e65718a47",
+    "SI162-C0.json": "368ff1cb9fb29b0aa579d6b6f06caa68607057b40ee207ab64c365592ce6e390",
+    "SI162-C0.log": "8de6136fc5d0131b18c224e6d1f734d9debcf12d9d4b691bd4bc8b8d0500ac2a",
+    "SI162-C0.xml": "3586011c4a58c754bc1f573073590580bf0b22152b83bb84f8d8fd871d393af4",
+    "SI162-C1-run.json": "db53f6ff9f536bd1556f8cde685bec17e9ed707f98fab473f00b6dbf33c1d910",
+    "SI162-C1.json": "9528d4ed792ec18bd7f9c354dc3ddcdd11355be3d839313bb5b23ea4c4cc5fde",
+    "SI162-C1.log": "83b672e46a8f808ca73bf6a5806c77878d0e0aa65294a306064267ce55ba1586",
+    "SI162-C1.xml": "5edcb3b9b3bee34d13c33f04bb3a9c34f7515fbbc8799129903f15ac1f6e4085",
+    "SI162-C2-run.json": "30cee8430d7fd958a13e24b1057711a6f09e6c9310a4cf46d41d217766770a22",
+    "SI162-C2.json": "de8cbdeeafeb0366a80187156cd0b98318b203cc84551b2ca2f4bd8fa5955513",
+    "SI162-C2.log": "8e0929c90d79d71ae508bed6ca868cedb1881416100425ec9ac08ede1f52f7a2",
+    "SI162-C2.xml": "74a94dd552d05cfd63d9d48594bf70d4c81effa0e7ee6fe8c2b4df12166dbc55",
+    "SI162-C3-run.json": "054ca5ff7698a62dbf96a4a3acb4de79614cb3ccc3a6caf3a51173037458f382",
+    "SI162-C3.json": "5a0846d4407e14f7d067475f485c35c938a9a235854afa258196e62748e6fd3e",
+    "SI162-C3.log": "6cc8648d84bdd4ff944bc10b318a9690a1995a7bea59033a7f3a0336f29467d1",
+    "SI162-C3.xml": "4f6933b0f416c3541c89598e671dd1afbb7b56181867be734f3262df751e0b44",
+    "SI162-C4-run.json": "df77e879f8a1e0c147ab6738b93d820f5a2bad5c7be9ef8753e1a217dd4d01a2",
+    "SI162-C4.json": "f1a35d8da9304a35cdbeb7b019aec696a0910e7b5be3dc5d1e28cd38a869b21c",
+    "SI162-C4.log": "c393a1b6220c451fbb21adfaf095a5a7756662dc4c7afe148d72639fcf5923f7",
+    "SI162-C4.xml": "b8568835778f9f68ea091638fae94382cc7a6ea5e3d16dc4dd4532861b545caf",
+    "SI163-Swiss-run.json": "53697f4efe291151411d71ff137d4feb323d30211bfa4ba493603dc7ac646eae",
+    "SI163-Swiss.log": "fae71b60a205033a4ffc8fb8321fb36141895e1db2c28015388f0aff72249644",
+    "SI164-final-snapshot.log": "631a31748eb0317e29f972b2f0952f00bfef790e63477d15000e0993e845922d",
+    "SI164a-C1-unstarted-cancel.json": "20b5cc60d6e9e5a9189e9e4fba447d5cb9d5b9a0a9fa3940a818ab9022a8f134",
+    "SI164a-C1-unstarted-cancel.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "SI165-focus.json": "97d9492bfe87fe6c29ab05de2abebd84df6a5a8687c9bac316dd2fd91e39b291",
+    "SI165-focus.log": "0ec0fde7116785411494bad40da2579fe126a0d8fc28d82e13ffd87b4c6270d8",
+    "SI165-focus.xml": "7ea76302abcda9d71b643511fbbd00b9bc8ec8621a3ec4626170b26ce512eca4",
+    "SI166-integration-fixture-source.json": "75018114546518b7c1c97a3c61c53317827a9f01ca6ccc3021ed3ae253f24d30",
+    "SI167-manager-fix-approval.json": "891487d1452c85de09469a9021289d96798dc0fa8f86e9549b78de4c02b784e1",
+    "SI168-cleanup.json": "0cb50b7c04eff188682eab2b393ca034f4bd67cad8382f3f3b28fcfab1b368b2",
+    "SI169-main-contract-sync.json": "063cb1b8cff714f362bf4409749962cc7d3d987706d0151680254a918bb73c68",
+    "SI172-PROD-run.json": "08298e78ba659410914a76ad031f2b1b4a7093a43370ac631ce2fcb1124a21c3",
+    "SI172-PROD.json": "b77ee2516bc2eee0c654bec6303e839cf4811a0ea885140902d3cf716896452f",
+    "SI172-PROD.log": "c7bce281354697a99c6ee3bcad02e0f958b3793710c5c14a4a04cdd47549cd82",
+    "SI172-Swiss-run.json": "bebf3e5ad74ce618e73969900141fb00774b27f0beee96b1da0bdd2783db6e71",
+    "SI172-Swiss.json": "50ae88b48ed78f0d83a455f1fcc01140745a936d0083096d77d25795e6dc3cda",
+    "SI172-Swiss.log": "b922e86d34a349123f30f1dfa685b4416533aa6ad93932ca81daf2a9264ada04",
+    "audit_batch14.py": "ba504731c5f1355fdd771a06d1f1027277d942703b763cb7de22da69fea2dd2f",
+    "run_batch14_suite.py": "63f19fc34cb993c4b3b3c79d4a042a600aeb3a2c4554b6f0f994a7bc6afec904",
+    "resume_batch14_arms.py": "c84c4769cb2dadcff70d61abf69a3e89f003a950b0e2322e9bc5602d5859a14b",
+    "run_batch14_identity.py": "427469735c7406ef5801253eb222440ebd134e492e2c68fb3ab65e3793c393b8",
+    "seal_batch14.py": "a92af53c9148585587d3b1b2dd2211542e1117310fb71691ea0a753938961336",
+    "check_batch14_archive.py": "7a608b4d3c656efbf3aa10ef3c1fd948ebea2680da5ccbf3e1f9d2985fff753a",
+    "cleanup_batch14.py": "e5d219f059f08964e014c68347c8526d89b951d9089bd9dedb83f2b8b0efb1be",
+    "retry_batch14_identities.py": "a8c3d339af097aebce21c5657e02f63d54f72f9f047c14213bb6dbf8cd16267f"
+  }
+}

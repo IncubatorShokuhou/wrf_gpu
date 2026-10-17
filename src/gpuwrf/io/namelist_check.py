@@ -137,9 +137,11 @@ SUPPORTED_OPTIONS: dict[str, SupportedOption] = {
     "mp_physics": SupportedOption(
         key="mp_physics",
         supported_values=frozenset(ACCEPTED_MP_PHYSICS),
-        implemented="0=disabled/passive qv, 1=Kessler, 2=Purdue-Lin, 3=WSM3, 4=WSM5, 6=WSM6, "
-        "8=Thompson, 10=Morrison, 13=SBU-YLin, 14=WDM5, 16=WDM6, 18=NSSL 2-moment (v0.3.4 port, "
-        "single domains, cu_physics=0; kernel CPU-oracle-qualified, coupled path not GPU-run), 24=WSM7, "
+        implemented="0=disabled/passive qv, 1=Kessler, 2=Purdue-Lin, 3=WSM3, 4=WSM5, 5=Ferrier, 6=WSM6, 7=Goddard4ice, "
+        "8=Thompson, 10=Morrison, 13=SBU-YLin, 14=WDM5, 15=Ferrier advected-rime, 16=WDM6, 17=WRF 4.7.1 legacy NSSL alias of 18, "
+        "18=NSSL 2-moment (single domains, supported cumulus; CPU-oracle-qualified, "
+        "GPU/coupled-forecast qualification pending), 19=NSSL one-moment with hail/graupel density, "
+        "21=NSSL one-moment without hail, 22=NSSL two-moment without hail, 24=WSM7, "
         "26=WDM7, 28=aerosol-aware Thompson, 40=Morrison-aerosol (aercu_opt=0), 97=Goddard GCE",
         action="Use one of the frozen accepted microphysics options; all other MP options remain unsupported.",
     ),
@@ -148,11 +150,12 @@ SUPPORTED_OPTIONS: dict[str, SupportedOption] = {
         supported_values=frozenset(ACCEPTED_CU_PHYSICS),
         implemented=(
             "0=disabled, 1=Kain-Fritsch, 2=Betts-Miller-Janjic (fp64 savepoint-parity), "
+            "7=CAM-ZM, 10=KF-CuP, 11=MSKF (experimental CPU-oracle-qualified; GPU pending, profile limits apply), "
             "3=Grell-Freitas (v0.9.0 GPU-batched jit/vmap scale-aware adapter, savepoint-parity), "
             "4/94/95/96=SAS family (v0.17 fp64 pristine-WRF savepoints staged, "
             "shared JAX endpoint RED vs oracle; fail-closed in the GPU scan), "
-            "6=Tiedtke (GPU-operational only with use_flux_advection=True and "
-            "moist_adv_opt=1/2 so RQVFTEN is available); "
+            "6=Tiedtke (GPU-operational only with use_flux_advection=True "
+            "so RQVFTEN is available); "
             "5=Grell-3D and 93=Grell-Devenyi (v0.3.4 line-faithful JAX ports, scan-wired; "
             "CPU-oracle-qualified vs pristine WRF, GPU qualification pending; cudt=0 only), "
             "14=KIM-SAS, 16=New Tiedtke, "
@@ -161,7 +164,7 @@ SUPPORTED_OPTIONS: dict[str, SupportedOption] = {
         ),
         action=(
             "Use cu_physics=0/1/2/3/5/6/93 for the operational GPU scan; cu=6 requires "
-            "active flux-form moisture advection (use_flux_advection=True, moist_adv_opt=1/2); "
+            "active flux-form moisture advection (use_flux_advection=True); "
             "4/14/16/94/95/96/99 remain reference-only until source-specific "
             "WRF parity and scan wiring land."
         ),
@@ -184,16 +187,18 @@ SUPPORTED_OPTIONS: dict[str, SupportedOption] = {
             "(CPU-oracle-qualified; GPU/coupled-forecast qualification pending; coupling caveat: "
             "it receives the held TOTAL RTHRATEN instead of WRF's LW-only RTHRATENLW, so daytime "
             "cloud-top radiative forcing is biased, exact at night). "
-            "4=QNSE, 10=TEMF, 16=EEPS, and 17=KEPS are accepted/reference-only "
+            "10=TEMF is CPU-oracle-qualified with mandatory TEMF surface layer 10; "
+            "4=QNSE with sf=4 is experimental and scan-wired, including mfshconv=0/1. "
+            "16=EEPS and 17=KEPS are accepted/reference-only "
             "v0.18 fp64 pristine-WRF oracle endpoints and fail-close in the "
             "operational GPU scan."
         ),
         action=(
-            "Use bl_pbl_physics=0/1/2/3/5/7/8/9/11/12/99 for the operational GPU scan; 2=MYJ MUST "
+            "Use bl_pbl_physics=0/1/2/3/4/5/7/8/9/10/11/12/99 for the operational GPU scan; 2=MYJ MUST "
             "pair with sf_sfclay_physics=2. "
             "Pair with the matching surface layer (MYNN<->5, ACM2<->7/1, YSU<->1, GFS<->1, "
             "Shin-Hong<->1, GBM<->1, MYJ<->2, MRF<->1, CAM-UW<->Noah-MP or 5). "
-            "Use bl_pbl_physics=4/10/16/17 only for single-column oracle/reference "
+            "Use bl_pbl_physics=16/17 only for single-column oracle/reference "
             "comparisons."
         ),
     ),
@@ -201,14 +206,15 @@ SUPPORTED_OPTIONS: dict[str, SupportedOption] = {
         key="sf_sfclay_physics",
         supported_values=frozenset(ACCEPTED_SF_SFCLAY_PHYSICS),
         implemented=(
-            "0=disabled, 1=revised-MM5, 2=Janjic Eta, 3=NCEP-GFS, 5=MYNN surface layer, "
+            "0=disabled, 1=revised-MM5, 2=Janjic Eta, 3=NCEP-GFS, 4=experimental QNSE (paired with bl=4), 5=MYNN surface layer, "
             "7=Pleim-Xiu, 91=old-MM5 surface layer (all GPU-operational, scan-wired); "
+            "10=TEMF is CPU-oracle-qualified, paired with TEMF PBL 10; GPU/forecast pending. "
             "2=Janjic Eta is the v0.13 jit/vmap-traceable MYJ pair (mandatorily paired "
             "with bl_pbl_physics=2 MYJ), savepoint-parity-proven; 3=NCEP-GFS and 91=old-MM5 "
             "are v0.13 Tier-3 fp64 pristine-WRF oracle-validated surface layers"
         ),
         action=(
-            "Use sf_sfclay_physics=0/1/2/3/5/7/91 for the operational GPU scan; 2=Janjic Eta "
+            "Use sf_sfclay_physics=0/1/2/3/4/5/7/10/91 for the operational GPU scan; 2=Janjic Eta "
             "MUST pair with bl_pbl_physics=2. "
             "All other sfclay options remain unsupported. "
             "Use the PBL-compatible partner (MYNN-SL 5<->MYNN PBL 5, Pleim-Xiu 7<->ACM2 7, Janjic 2<->MYJ 2)."
@@ -223,10 +229,10 @@ SUPPORTED_OPTIONS: dict[str, SupportedOption] = {
         "3=RUC LSM (explicit ruc_static/ruc_land bundles, MYNN-SL sf_sfclay=5; CPU-oracle-"
         "qualified vs proofs/v034/oracle/ruclsm, GPU/coupled-forecast qualification pending) "
         "-- all scan-wired; slab (1) + Pleim-Xiu (7) are fp64 pristine-WRF "
-        "oracle-validated (physics.lsm_slab / physics.lsm_pleim_xiu). 8=SSiB is "
-        "namelist-accepted REFERENCE-ONLY (fp64 pristine-WRF single-column oracle staged in "
-        "proofs/v017/oracle/ssib; faithful JAX column kernel is a carry-over) and "
-        "fails closed in the operational scan. 5=CLM4 and 6=CTSM are documented v0.18->v1.0 "
+        "oracle-validated (physics.lsm_slab / physics.lsm_pleim_xiu). 8=SSiB is an "
+        "experimental opt-in with prepared three-layer soil, revised-MM5/YSU, mp8, "
+        "SW1/LW4; literal CPU-oracle-qualified, compiled residuals disclosed, "
+        "GPU/coupled-forecast pending (proofs/s2_ssib). 5=CLM4 and 6=CTSM are "
         "CAM/CLM/CTSM ARCHITECTURE-BOUNDARY options that fail closed with a named reason "
         "(CLM4 is ~61.5k-LOC with a global clmtype + external surface-dataset; CTSM is the "
         "external CESM land model via LILAC) -- a faithful oracle is multi-session, carried "
@@ -234,7 +240,7 @@ SUPPORTED_OPTIONS: dict[str, SupportedOption] = {
         action="Use sf_surface_physics=4 (Noah-MP), 2 (Noah classic), 1 (slab, with an "
         "explicit slab_static SlabStaticBundle), or 7 (Pleim-Xiu, with an explicit "
         "px_static PleimXiuStaticBundle), or 3 (RUC, with explicit ruc_static/ruc_land) for "
-        "the operational scan; 8 (SSiB) is reference-only (oracle staged, JAX kernel carry-over); 5 (CLM4) and 6 (CTSM) are "
+        "the operational scan; 8 (experimental SSiB) requires prepared soil and revised-MM5/YSU, SW1/LW4; 5 (CLM4) and 6 (CTSM) are "
         "documented v1.0 architecture-boundary (fail-closed, carried to the CAM/CLM/CTSM "
         "ADR); all other land-surface options remain unsupported.",
     ),
@@ -248,12 +254,13 @@ SUPPORTED_OPTIONS: dict[str, SupportedOption] = {
         "(GPU-operational; the operational radiation slot runs RRTMG SW+LW), "
         "3=CAM SW (v0.3.4: physics.ra_cam port of phys/module_ra_cam.F scan-wired via "
         "coupling.cam_radiation; CPU-oracle-qualified, GPU qualification pending), "
-        "5=New Goddard SW, 7=FLG/UCLA SW, and 99=GFDL-Eta SW "
+        "5=New Goddard SW (experimental paired5/5 MP8/use_mp_re=1, CPU-oracle-qualified), "
+        "7=FLG/UCLA SW, and 99=GFDL-Eta SW "
         "(v0.18 REFERENCE-ONLY: exact-driver real-WRF oracles staged, but no "
         "faithful JAX kernel or operational scan wiring yet)",
         action="Use ra_sw_physics=4 (RRTMG SW+LW), 1 (Dudhia SW + RRTMG/RRTM LW), 2 (GSFC SW + "
         "RRTMG/RRTM LW) or 3 (CAM) for the operational SW path, or 0 when radiation is disabled. "
-        "ra_sw=5/7/99 are accepted for reference/parity development only and fail-close in "
+        "Use paired5/5 with MP8/use_mp_re=1 for experimental Goddard. ra_sw=7/99 are accepted for reference/parity development only and fail-close in "
         "the operational scan; the surface SWDOWN/flux history diagnostics remain RRTMG-derived. "
         "ra_sw=14 (RRTMG-K) and 24 (fast RRTMG) are compiled-out of standard WRF "
         "(configure.wrf BUILD_RRTMK=0 / BUILD_RRTMG_FAST=0) and cannot run even in unmodified WRF.",
@@ -266,13 +273,11 @@ SUPPORTED_OPTIONS: dict[str, SupportedOption] = {
         "physics.ra_lw_rrtm_jax port of phys/module_ra_rrtm.F), 4=RRTMG longwave "
         "(GPU-operational, default), 3=CAM LW (v0.3.4: physics.ra_cam port scan-wired via "
         "coupling.cam_radiation; CPU-oracle-qualified, GPU qualification pending), "
-        "5=GSFC/Goddard NUWRF longwave, "
+        "5=GSFC/Goddard NUWRF longwave (experimental paired5/5 MP8/use_mp_re=1, CPU-oracle-qualified), "
         "7=FLG/UCLA LW, and 99=GFDL-Eta longwave (v0.18 REFERENCE-ONLY: "
-        "exact-driver real-WRF oracles staged; ra_lw=5 also retains the v0.13 "
-        "single-column module_ra_goddard.F:lwrad oracle; no faithful JAX kernel or "
-        "operational scan wiring yet)",
+        "exact-driver real-WRF oracles staged; no faithful JAX kernel or operational scan wiring yet)",
         action="Use ra_lw_physics=4 (RRTMG), 1 (classic RRTM) or 3 (CAM) for the operational LW path, "
-        "or 0 when radiation is disabled. ra_lw=5/7/99 "
+        "or paired5/5 with MP8/use_mp_re=1 for experimental Goddard, or 0 when radiation is disabled. ra_lw=7/99 "
         "are reference-only and fail-close in the operational scan. SW and LW are "
         "selected independently; the surface GLW history diagnostic remains RRTMG-derived. "
         "ra_lw=14 (RRTMG-K) and 24 (fast RRTMG) are compiled-out of standard WRF "
@@ -280,7 +285,7 @@ SUPPORTED_OPTIONS: dict[str, SupportedOption] = {
     ),
     "use_mp_re": SupportedOption(
         key="use_mp_re", supported_values=frozenset({0, 1}),
-        implemented="1=Thompson held radii with GPUWRF_RRTMG_MP_RE=1; 0=disable the candidate radius path",
+        implemented="1=held MP radii (physics_init has_reqc/i/s: mp 3/4/6/8/14/16/18/22/24/26/28) with GPUWRF_RRTMG_MP_RE=1; 0=disable the candidate radius path",
         action="Use use_mp_re=1 (WRF default) with mp_physics=8 for the MP_RE candidate.",
     ),
     # Runtime/dynamics controls exposed by OperationalNamelist.
@@ -307,13 +312,13 @@ SUPPORTED_OPTIONS: dict[str, SupportedOption] = {
     ),
     "km_opt": SupportedOption(
         key="km_opt",
-        supported_values=frozenset({0, 1, 3, 4}),
+        supported_values=frozenset({0, 1, 2, 3, 4, 5}),
         implemented="0=off, 1=constant-K coefficient (programmatic only; gpuwrf run refuses it), "
+        "2=prognostic 3-D TKE (CPU-oracle-qualified, experimental), "
         "3=3-D Smagorinsky, 4=2-D Smagorinsky horizontal eddy viscosity; "
-        "2 (prognostic 3-D TKE) and 5 (SMS-3DTKE) are refused in v0.3.4 "
-        "(unqualified v022 scaffolds, NaN under the release REAL carry)",
+        "5=SMS-3DTKE (CPU-oracle-qualified, experimental; diff_opt=2/PBL=0/sfclay=0 or 5)",
         action="Use km_opt=4 with diff_opt=1 for the real-data default 2-D "
-        "Smagorinsky, km_opt=3 with diff_opt=2 for 3-D Smagorinsky, or 0.",
+        "Smagorinsky, km_opt=2/3/5 with diff_opt=2 for 3-D TKE/Smagorinsky/SMS, or 0.",
     ),
     "w_damping": SupportedOption(
         key="w_damping",
@@ -331,27 +336,28 @@ SUPPORTED_OPTIONS: dict[str, SupportedOption] = {
         key="sf_urban_physics",
         supported_values=frozenset(ACCEPTED_SF_URBAN_PHYSICS),
         implemented=(
-            "0=disabled; 2=BEP and 3=BEP+BEM are G3 REFERENCE-ONLY "
+            "0=disabled; 1=single-layer UCM (SLUCM) with sf_surface_physics=4 Noah-MP "
+            "(CPU-oracle-qualified; GPU/coupled-forecast qualification pending); "
+            "2=BEP and 3=BEP+BEM are G3 REFERENCE-ONLY "
             "(WRF source/object/Registry oracle inventory present, no faithful "
             "JAX kernel or numerical WRF single-column parity claim)"
         ),
         action=(
-            "Use sf_urban_physics=0 for operational runs; use 2/3 only for "
-            "reference/oracle development until the urban state carry and faithful "
-            "BEP/BEM kernels land."
+            "Use sf_urban_physics=0 or 1 (with sf_surface_physics=4) for operational runs; "
+            "use 2/3 only for reference/oracle development until the urban state carry and "
+            "faithful BEP/BEM kernels land."
         ),
     ),
     "sf_lake_physics": SupportedOption(
         key="sf_lake_physics",
         supported_values=frozenset(ACCEPTED_SF_LAKE_PHYSICS),
         implemented=(
-            "0=disabled; 1=WRF lake model is G3 REFERENCE-ONLY "
-            "(WRF source/object/Registry oracle inventory present, no faithful "
-            "JAX kernel or numerical WRF single-column parity claim)"
+            "0=disabled; 1=WRF lake model (lakeini/LakeMain), CPU-oracle-qualified; "
+            "GPU/coupled-forecast qualification pending"
         ),
         action=(
-            "Use sf_lake_physics=0 for operational runs; use 1 only for "
-            "reference/oracle development until the lake carry and faithful kernel land."
+            "sf_lake_physics=1 requires Noah-MP/Thompson/MYNN, WRF lake inputs and "
+            "lake-depth data or use_lakedepth=0; see docs/lake-model.md."
         ),
     ),
 }
@@ -393,6 +399,8 @@ def validate_supported_namelist(config: Any) -> None:
                 )
             )
     failures.extend(_myj_pairing_failures(config_obj))
+    failures.extend(_temf_pairing_failures(config_obj))
+    failures.extend(_qnse_pairing_failures(config_obj))
     if failures:
         raise UnsupportedNamelistOption(failures)
 
@@ -475,61 +483,212 @@ def validate_operational_namelist(config: Any) -> None:
     """
 
     config_obj = _coerce_config(config)
-    # The native CLI does not bind dfi_opt to the programmatic forward-DFI
-    # helpers. Refuse a requested filter instead of running unfiltered work.
-    dfi = _lookup(config_obj, "dfi_opt")
-    if dfi is not None:
-        location, raw = dfi
-        failures = [
-            UnsupportedSelection(
-                key="dfi_opt",
-                location=location,
-                value=_normalize_value(value),
-                supported_values=(0,),
-                implemented="0=disabled; digital filter initialization is not operationally wired",
-                action="Set dfi_opt=0 for an unfiltered forecast, or use CPU-WRF for DFI.",
-                outcome="recognized_control_not_wired",
-                wrf_scheme="digital filter initialization (DFI)",
-            )
-            for value in _domain_values(raw)
-            if _normalize_value(value) != 0
-        ]
-        if failures:
-            raise UnsupportedSchemeError(failures)
+    # Digital filter initialization: the native single-domain driver runs WRF's
+    # DFI (dfi_opt=1/2/3, gpuwrf.dfi); every DFI configuration the port
+    # does not reproduce are refused here, before any model import.
+    failures = _dfi_admission_failures(config_obj) + _solar_admission_failures(config_obj) + _goddard_admission_failures(config_obj) + _mpmisc_admission_failures(config_obj) + _flg_gfdl_admission_failures(config_obj) + _cammg_admission_failures(config_obj) + _km3_admission_failures(config_obj)
+    from gpuwrf.coupling.cuplus_config import selection_errors as cuplus_errors
+    failures.extend(UnsupportedSelection(key='cu_physics',location='physics',value='cuplus',supported_values=(7,10,11),
+        implemented=reason,action='Use a qualified cuplus producer/radiation profile; see docs/CUMULUS_CUPLUS.md.',
+        outcome='recognized_control_not_wired',wrf_scheme='MSKF/KF-CuP/CAM-ZM') for reason in cuplus_errors(config_obj))
+    if isinstance(config_obj,Mapping) and config_obj.get("stoch"):
+        from gpuwrf.io.stochastic_config import stochastic_refusals
+        failures.extend(UnsupportedSelection(key="stoch",location="&stoch",value="selected",
+            supported_values=(0,1),implemented=reason,
+            action="Use the qualified stochastic controls and WRF RK source-coupling profile.",
+            outcome="recognized_control_not_wired",wrf_scheme="WRF stochastic physics")
+            for reason in stochastic_refusals(config_obj))
+    from gpuwrf.io.windfarm import windfarm_errors
+    selected_wind = _lookup(config_obj,'windfarm_opt')
+    if selected_wind is not None:
+        for index,option in enumerate(_domain_values(selected_wind[1])):
+            messages = windfarm_errors(config_obj,f'd{index+1:02d}')
+            if messages:
+                failures.append(UnsupportedSelection(key='windfarm_opt',location=selected_wind[0],value=option,
+                    supported_values=(0,1),implemented='; '.join(messages),action='Use Fitch=1 with MYNN=5/5 or disable windfarm_opt=0.',
+                    outcome='recognized_control_not_wired',wrf_scheme='Fitch wind farm'))
+    if failures:
+        raise UnsupportedSchemeError(failures)
     # First: the existing full support + out-of-scope check (unchanged behavior).
     validate_namelist(config_obj)
-    _refuse_nssl_with_cumulus(config_obj)
     # Then: the operational-only strictness -- reject reference-only selections.
     ref_only = _reference_only_failures(config_obj)
     if ref_only:
         raise NotOperationallyWiredError(ref_only)
 
 
-def _refuse_nssl_with_cumulus(config_obj: Any) -> None:
-    """mp_physics=18 (NSSL) with ANY cu_physics /= 0 is refused: WRF's NSSL driver then adds number
-    concentrations for cumulus-produced condensate (cu_used=1 -> calcnfromcuten, module_mp_nssl_2mom.F:3119-3136;
-    check_a_mundo.F:1851), which is not ported (lane o1-nssl, rv-nssl F3)."""
+#: mp codes whose extra species (NSSL numbers/volumes, hail qh, Morrison-aero Ns/Ng/Nc, Thompson-aero
+#: Nc/nwfa/nifa) have root forcing. Extra nest records/consumers are staged, but
+#: nest-start interpolation and the real two-domain WRF gate remain incomplete.
+def _goddard_admission_failures(config):
+    from gpuwrf.io.goddard_config import selection_errors
+    errors=selection_errors(config)
+    return [UnsupportedSelection(key='ra_lw_physics',location='physics',value=5,supported_values=(5,),
+        implemented=error,action='Use paired Goddard5/5 with Thompson8 and use_mp_re=1, no aerosol/topography feedback.',
+        outcome='recognized_control_not_wired',wrf_scheme='Goddard radiation') for error in errors]
 
+def _mpmisc_admission_failures(config):
+    mp = _lookup(config, "mp_physics")
+    cu = _lookup(config, "cu_physics")
+    if mp is None:
+        return []
+    values = [_normalize_value(v) for v in _domain_values(cu[1])] if cu else [0]
+    values = values or [0]
+    failures = []
+    for index, value in enumerate(_domain_values(mp[1])):
+        option = _normalize_value(value)
+        chosen = values[min(index, len(values) - 1)]
+        if option in (5, 15) and chosen != 0:
+            failures.append(UnsupportedSelection(
+                key="cu_physics", location=cu[0], value=chosen, supported_values=(0,),
+                implemented="Ferrier mp_physics=5/15 has no QSNOW category (WRF F_QS=false); the cumulus caller for this package is not qualified",
+                action="Use cu_physics=0 with Ferrier.", outcome="recognized_control_not_wired",
+                wrf_scheme="Ferrier cumulus package caller"))
+        if option == 38:
+            aerosol = _lookup(config, "aer_init_opt")
+            if aerosol is not None:
+                modes = _domain_values(aerosol[1])
+                chosen_aerosol = _normalize_value(modes[min(index, len(modes)-1)]) if modes else 0
+                if chosen_aerosol != 0:
+                    failures.append(UnsupportedSelection(
+                        key="aer_init_opt", location=aerosol[0], value=chosen_aerosol, supported_values=(0,),
+                        implemented="Thompson-hail mp_physics=38 qualifies the default flow-dependent aerosol boundary only",
+                        action="Use aer_init_opt=0 with mp_physics=38.",
+                        outcome="recognized_control_not_wired", wrf_scheme="Thompson-hail aerosol root boundary"))
+        if option not in (5, 7, 11, 15, 38):
+            continue
+        key = "have_bcs_moist" if option == 7 else "have_bcs_scalar"
+        boundary = _lookup(config, key)
+        if boundary is not None:
+            flags = _domain_values(boundary[1])
+            if flags and _normalize_value(flags[min(index, len(flags) - 1)]) == 1:
+                failures.append(UnsupportedSelection(
+                    key=key, location=boundary[0], value=True, supported_values=(False,),
+                    implemented=f"mp_physics={option} extra-species specified records are not qualified; its WRF flow-dependent boundary path is implemented",
+                    action=f"Use {key}=.false. (WRF default) with mp_physics={option}.",
+                    outcome="recognized_control_not_wired", wrf_scheme="microphysics extra-species root boundary"))
+    return failures
+
+
+def _km3_admission_failures(config):
+    from gpuwrf.io.km3_config import selection_errors
+    return [UnsupportedSelection(
+        key='km_opt', location='dynamics', value=3, supported_values=(),
+        implemented=error, action='Set JAX_PLATFORMS=cpu or use default diff_opt=1/km_opt=4.',
+        outcome='recognized_control_not_wired', wrf_scheme='CPU-only 3-D Smagorinsky')
+        for error in selection_errors(config)]
+
+
+def _cammg_admission_failures(config):
+    from gpuwrf.io.cammg_config import selection_errors
+    return [UnsupportedSelection(
+        key='mp_physics', location='physics', value=11, supported_values=(),
+        implemented=error, action='Set JAX_PLATFORMS=cpu or select another microphysics scheme.',
+        outcome='recognized_control_not_wired', wrf_scheme='CPU-only CAM-MG')
+        for error in selection_errors(config)]
+
+
+def _flg_gfdl_admission_failures(config):
+    from gpuwrf.io.flg_gfdl_config import selection_errors
+    return [UnsupportedSelection(key='ra_lw_physics',location='physics',value=7,supported_values=(7,99),
+        implemented=error,action='Use JAX_PLATFORMS=cpu with the qualified paired caller, or RRTMG4/4 on GPU.',
+        outcome='recognized_control_not_wired',wrf_scheme='Experimental CPU-only FLG/GFDL')
+        for error in selection_errors(config)]
+
+
+def _solar_admission_failures(config):
+    """Solar caller scope, shared by strict admission and the honour report."""
+    selected = _lookup(config, "swint_opt")
+    if selected is None or _normalize_value(_domain_values(selected[1])[0]) != 1:
+        return []
+    bad = []
+    for key, expected in (("ra_sw_physics", 4), ("ra_lw_physics", 4), ("sf_surface_physics", 4),
+                          ("solar_opt", 0), ("topo_shading", 0), ("slope_rad", 0),
+                          ("sf_urban_physics", 0), ("sf_lake_physics", 0), ("use_adaptive_time_step", 0)):
+        found = _lookup(config, key)
+        if found is not None and any(_normalize_value(value) != expected for value in _domain_values(found[1])):
+            bad.append(f"{key}={expected}")
+    if not bad:
+        return []
+    return [UnsupportedSelection(
+        key="swint_opt", location=selected[0], value=1, supported_values=(0, 1),
+        implemented="Solar swint_opt=1 requires RRTMG4/4, Noah-MP4 and fixed dt; required " + ", ".join(bad),
+        action="Use the qualified native RRTMG/Noah-MP configuration or set swint_opt=0.",
+        outcome="recognized_control_not_wired", wrf_scheme="WRF-Solar interpolation")]
+
+
+SINGLE_DOMAIN_ONLY_MP: frozenset[int] = frozenset({5, 7, 9, 10, 14, 15, 16, 17, 18, 19, 21, 22, 24, 26, 28, 38, 40, 50, 51, 52, 53, 55, 56, 11})
+
+_NESTED_MP_FAILURES = {
+    19: "NSSL one-moment nested forecast qualification has not been completed",
+    21: "NSSL one-moment nested forecast qualification has not been completed",
+    18: "the WN3 N2/N6 numerical comparison passes, but pre-mask qi/Ni negative events lack WRF operator justification",
+    24: "the WN3 N2/N6 numerical comparison passes, but pre-mask qi/Ni negative events lack WRF operator justification",
+    28: "initial QNWFA/QNIFA fail the WN3 original-WRF comparison in both domains",
+    40: "parent boundary QNCLOUD fails the WN3 N2/N6 comparison and pre-mask Nc negative events remain unresolved",
+}
+
+
+
+def refuse_single_domain_mp_nested(config: Any, max_dom: int) -> None:
+    """Refuse a live-nested run (``max_dom > 1``) with a single-domain-only microphysics, pre-JAX."""
+
+    if int(max_dom) <= 1:
+        return
+    config_obj = _coerce_config(config)
     mp = _lookup(config_obj, "mp_physics")
-    cu = _lookup(config_obj, "cu_physics")
-    if mp is None or cu is None:
+    if mp is None:
         return
-    if not any(_normalize_value(v) == 18 for v in _domain_values(mp[1])):
-        return
-    bad = [_normalize_value(v) for v in _domain_values(cu[1]) if _normalize_value(v) != 0]
+    bad = [_normalize_value(v) for v in _domain_values(mp[1])[: int(max_dom)]
+           if _normalize_value(v) in SINGLE_DOMAIN_ONLY_MP]
     if bad:
         raise NotOperationallyWiredError([
             UnsupportedSelection(
-                key="cu_physics",
-                location=cu[0],
+                key="mp_physics",
+                location=mp[0],
                 value=bad[0],
-                supported_values=(0,),
-                implemented="mp_physics=18 (NSSL 2-moment) runs only with cu_physics=0",
-                action="Set cu_physics=0 with mp_physics=18, or use another microphysics with cumulus.",
+                supported_values=tuple(sorted(SINGLE_DOMAIN_ONLY_MP)),
+                implemented=f"mp_physics={bad[0]} runs on single domains only: parent->child coupled qualification remains refused because "
+                + _NESTED_MP_FAILURES.get(bad[0], "the two-domain CPU-WRF gate has not passed")
+                + ". Extra-species forcing and nest-start component tests do not replace this gate. "
+                "Measured evidence: proofs/s1_mpfix/NESTED_ADMISSION.json.",
+                action="Run a single domain (no --max-dom > 1), or use mp_physics=8 (Thompson) for nested runs.",
                 outcome="recognized_control_not_wired",
-                wrf_scheme="NSSL cu_used=1 calcnfromcuten (cumulus number sources)",
+                wrf_scheme="nest lateral forcing of extra microphysics species",
             )
         ])
+
+
+def refuse_unqualified_nested_options(config: Any, max_dom: int) -> None:
+    """Keep O2 single-domain qualification from implicitly admitting live nests.
+
+    These are port evidence gaps, not WRF restrictions. Grid FDDA is per-domain
+    and has independent coefficient/file/cursor binding; it is audited separately.
+    """
+    if int(max_dom) <= 1:
+        return
+    config_obj = _coerce_config(config)
+    failures = []
+    for key, code, reason in (
+        ("sf_surface_physics", 3, "RUC land initialization, held diagnostics and child-subcycle evolution"),
+        ("sf_urban_physics", 1, "SLUCM canopy initialization/carry and child surface fluxes"),
+        ("km_opt", 2, "LES TKE advection/diffusion at live-child boundary and halo cells"),
+        ("km_opt", 5, "SMS TKE and nonlocal carry at live-child boundary and halo cells"),
+    ):
+        found = _lookup(config_obj, key)
+        if found is None:
+            continue
+        for domain, raw in enumerate(_domain_values(found[1])[:int(max_dom)], 1):
+            if _normalize_value(raw) == code:
+                failures.append(UnsupportedSelection(
+                    key=key, location=found[0], value=code, supported_values=(),
+                    implemented=f"d{domain:02d}: {reason} are CPU-qualified only for a single domain; "
+                    "the two-domain CPU-WRF comparison is missing in this port",
+                    action="Run a single domain or disable this option for the nested run.",
+                    outcome="recognized_control_not_wired", wrf_scheme="unqualified live-nest option",
+                ))
+    if failures:
+        raise NotOperationallyWiredError(failures)
 
 
 def collect_namelist_warnings(config: Any) -> list[str]:
@@ -869,6 +1028,23 @@ def _classify_rejection(key: str, value: Any) -> tuple[str, str | None]:
     return "unsupported", None
 
 
+def _temf_pairing_failures(config: Any) -> list[UnsupportedSelection]:
+    found=[_lookup(config,k) for k in ('bl_pbl_physics','sf_sfclay_physics')]
+    values=[[_normalize_value(v) for v in _domain_values(f[1])] if f is not None else [None] for f in found]
+    failures=[]
+    for idx in range(max(map(len,values))):
+        bl,sf=(v[min(idx,len(v)-1)] for v in values)
+        if (bl==10)==(sf==10):
+            continue
+        failures.append(UnsupportedSelection(
+            key='temf_pairing',location='bl_pbl_physics/sf_sfclay_physics',
+            value={'bl_pbl_physics':bl,'sf_sfclay_physics':sf},
+            supported_values=('bl_pbl_physics=10 with sf_sfclay_physics=10',),
+            implemented='TEMF PBL and TEMF surface layer are a mandatory WRF pair',
+            action='Select both option values as 10, or select neither as 10.',domain_index=idx+1))
+    return failures
+
+
 def _myj_pairing_failures(config: Any) -> list[UnsupportedSelection]:
     bl_found = _lookup(config, "bl_pbl_physics")
     sf_found = _lookup(config, "sf_sfclay_physics")
@@ -901,6 +1077,69 @@ def _myj_pairing_failures(config: Any) -> list[UnsupportedSelection]:
             )
         )
     return failures
+
+
+def _qnse_pairing_failures(config):
+    bl_found,sf_found=_lookup(config,'bl_pbl_physics'),_lookup(config,'sf_sfclay_physics')
+    land_found=_lookup(config,'sf_surface_physics')
+    bls=[_normalize_value(v) for v in _domain_values(bl_found[1])] if bl_found else [None]
+    sfs=[_normalize_value(v) for v in _domain_values(sf_found[1])] if sf_found else [None]
+    lands=[_normalize_value(v) for v in _domain_values(land_found[1])] if land_found else [None]
+    failures=[]
+    for index in range(max(len(bls),len(sfs),len(lands))):
+        bl,sf=bls[min(index,len(bls)-1)],sfs[min(index,len(sfs)-1)]
+        land=lands[min(index,len(lands)-1)]
+        if (bl==4)!=(sf==4):
+            failures.append(UnsupportedSelection(key='qnse_pairing',location='physics',
+                value={'bl_pbl_physics':bl,'sf_sfclay_physics':sf},
+                supported_values=('bl_pbl_physics=4 with sf_sfclay_physics=4',),
+                implemented='QNSE PBL and surface layer are a mandatory WRF pair',
+                action='Select both option values as 4, or select neither as 4.',domain_index=index+1))
+        if bl==4 and land in (1,2,7):
+            failures.append(UnsupportedSelection(key='sf_surface_physics',location=land_found[0],
+                value=land,supported_values=(0,4),
+                implemented='QNSE post-land physical heat/moisture fluxes and caller operands are unqualified for slab, Noah-classic and Pleim-Xiu',
+                action='Select no LSM (sf_surface_physics=0) or Noah-MP (4) with QNSE.',domain_index=index+1))
+    return failures
+
+
+def _dfi_admission_failures(config_obj: Any) -> list[UnsupportedSelection]:
+    """``&dfi_control`` admission: dfi_opt 0 or a reproducible DFL/DDFI/TDFI request."""
+
+    dfi = _lookup(config_obj, "dfi_opt")
+    if dfi is None:
+        return []
+    location, raw = dfi
+    values = [_normalize_value(value) for value in _domain_values(raw)]
+    action = "Set dfi_opt=0 for an unfiltered forecast, or use CPU-WRF for this DFI configuration."
+
+    def failure(value: Any, implemented: str) -> UnsupportedSelection:
+        return UnsupportedSelection(
+            key="dfi_opt",
+            location=location,
+            value=value,
+            supported_values=(0, 1, 2, 3),
+            implemented=implemented,
+            action=action,
+            outcome="recognized_control_not_wired",
+            wrf_scheme="digital filter initialization (DFI)",
+        )
+
+    if len(values) > 1:
+        return [failure(values, "dfi_opt is a single WRF value (0=off, 1=DFL, 2=DDFI, 3=TDFI)")]
+    if not values or values[0] == 0:
+        return []
+    if values[0] not in (1, 2, 3):
+        return [failure(values[0], "0=disabled, 1=DFL, 2=DDFI, 3=TDFI (twice DFI)")]
+    from gpuwrf.dfi.control import dfi_refusals
+
+    if isinstance(config_obj, Mapping) and any(isinstance(v, Mapping) for v in config_obj.values()):
+        nested = config_obj
+    elif isinstance(config_obj, Mapping):
+        nested = {"dfi_control": dict(config_obj)}
+    else:
+        nested = {"dfi_control": {"dfi_opt": values[0]}}
+    return [failure(values[0], f"DFI refused: {reason}") for reason in dfi_refusals(nested)]
 
 
 def _coerce_config(config: Any) -> Any:

@@ -23,7 +23,8 @@ RAIN01_QC = 0.0069547
 
 
 def _namelist(grid, disable_guards=False):
-    return SimpleNamespace(dt_s=54, disable_guards=disable_guards, run_boundary=True, run_physics=False,
+    return _helpers._mock_namelist(dt_s=54, disable_guards=disable_guards, run_boundary=True, run_physics=False,
+        diff_opt=0, km_opt=0, bl_pbl_physics=5,
         boundary_config=SimpleNamespace(nested_frozen_wrf_boundary_bundle=False),
         metrics=grid.metrics, grid=grid, lower_boundary=None, force_fp64=True,
         acoustic_precision_mode="fp64_default")

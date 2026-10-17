@@ -1,0 +1,542 @@
+{
+  "lane": "s1-numbers",
+  "model": "gpt-6.1-sol codex_2",
+  "UTC": "2026-10-13T13:22:48Z",
+  "status": "READY-FOR-CRITIC: CPU operator/CLI scope only",
+  "measured_composed_source": "b2c768f0b2cd1aa51d8b9a0721af599d8baa4cb7",
+  "rebased_source_before_receipt_only_commit": "fa75dd9aacb9f8f98bf5c13aec3ac4994f0c8a99",
+  "main_base": "8a59ac1db3ed91b4f1cfdef2d60f03e7b4c6ef44",
+  "immutable_source_refs": [
+    "refs/experiments/s1-numbers/pre_rebase_9a",
+    "refs/experiments/s1-numbers/final_cpu_b2"
+  ],
+  "release_Swiss_jaxpr": "2bf12cb8374d3a84a440e47dea4b77b0c7436108fc2ee2616bba6ec79b17962a",
+  "experiments": "NS01 through NS23 in MAIN EXPERIMENTS.tsv; NS04 explicitly diagnostic/nonimmutable, discarded",
+  "tests": {
+    "NS07_shared.xml": {
+      "tests": 367,
+      "failures": 1,
+      "errors": 0,
+      "skipped": 1
+    },
+    "NS08_final_unit.xml": {
+      "tests": 49,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "NS18_composed_cli_rootbdy.xml": {
+      "tests": 55,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "NS19_final_input_unit.xml": {
+      "tests": 153,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "NS22_NSSL_composition.xml": {
+      "tests": 60,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    }
+  },
+  "NS07_disposition": "only obsolete expected raw32 Morrison crash assertion failed; corrected+PASS NS08. Eight mandatory shared files passed already; sole skip GPU-only hail allocation.",
+  "oracle": {
+    "reference": "unchanged original-WRF scalar/PD/RK/BC Fortran, NOT another port",
+    "pristine_WRF_git": "f52c197ed39d12e087d02c50f412d90d418f6186",
+    "QNN_byte_exact_cases": 9,
+    "scalar_RK_boundary_chains": 4,
+    "declared_bound": "32 ULP(max pristine field) per species per RK stage, finite both sides, registered before NS02",
+    "fixture_NPZ_sha256": "a23c607f8c4ba589a1b3bcaa3c7d7805fd22381a2a892e6496dfc978a6e8ced2",
+    "fixture_bytes": 75026,
+    "archive_gate": "15 tracked arrays shapes/kinds/finite/hash PASS",
+    "scope": "constructed active number profiles on real Swiss wind/mass/map/eta crop; operator fidelity, NOT coupled forecast parity"
+  },
+  "mutants": {
+    "pd": {
+      "genuine_assertion_kills": 1,
+      "setup_errors": 0,
+      "signatures": [
+        "AssertionError: mp=16 option=1 RK=3 species=Nn: assert np.float64(37147691.87817383) <= (32 * np.float32(32.0))\n +  where np.float64(37147691.87817383"
+      ],
+      "tests": [
+        "test_scalar_advection_rk_boundary_chain_vs_pristine[1-16]"
+      ]
+    },
+    "transport": {
+      "genuine_assertion_kills": 4,
+      "setup_errors": 0,
+      "signatures": [
+        "AssertionError: assert ('qv', 'qc', ...', 'qs', 'qg') == ('qv', 'qc', ...s', 'qg', ...)\n  \n  Right contains 2 more items, first extra item: 'Ns'\n  Use",
+        "AssertionError: assert ('qv', 'qc', ...', 'qs', 'qg') == ('qv', 'qc', ...s', 'qg', ...)\n  \n  Right contains 3 more items, first extra item: 'Nc'\n  Use",
+        "AssertionError: assert ('qv', 'qc', ...', 'qs', 'qg') == ('qv', 'qc', ...s', 'qg', ...)\n  \n  Right contains 3 more items, first extra item: 'Nc'\n  Use",
+        "AssertionError: assert ('qv', 'qc', ...s', 'qg', ...) == ('qv', 'qc', ...s', 'qg', ...)\n  \n  Right contains 3 more items, first extra item: 'Nc'\n  Use"
+      ],
+      "tests": [
+        "test_species_and_root_boundary_routes[10]",
+        "test_species_and_root_boundary_routes[14]",
+        "test_species_and_root_boundary_routes[16]",
+        "test_species_and_root_boundary_routes[26]"
+      ]
+    }
+  },
+  "final_trace_reuse": {
+    "qualified": "9828cb9cb",
+    "composed": "b2c768f0b",
+    "exact_arms": {
+      "release": "2bf12cb8374d3a84a440e47dea4b77b0c7436108fc2ee2616bba6ec79b17962a",
+      "mp_physics=10": "ff2d4805bcd3b06a7c233b3851c266b8f44ae26b3ec271fc20ffdfb646ced371",
+      "mp_physics=14": "28bdcf83861b7caedc6b040f22ed7519f6a1de5b439744729348c43fa0cd3c91",
+      "mp_physics=16": "28978bfc1ef763a314c6f44aedd4b00cac419786bfdbce81bdc56724325ae5d1",
+      "mp_physics=26": "fe7bf350a1cd62659cf179d7514019da4523e8afa1a2a11ec8c510ea59f36b10",
+      "mp_physics=16,moist_adv_opt=0,scalar_adv_opt=1,ccn_conc=2.7e8": "51d19c712c99d0086ec863f66515fd1e64ca5701f5b45ff1f7f3c0ea3b6d9bdf"
+    },
+    "exact_dispatch_and_bound": true,
+    "scope": "Regression/compiled-program identity for reusing CPU smoke and operator gates; not original-WRF fidelity"
+  },
+  "source_reuse": {
+    "receipt": "NS21_final_source_seal.json",
+    "final_rebase": "NS23_rebase_source_seal.json",
+    "reason": "unchanged operators plus all6 final canonical CLI trace hashes/bindings/dispatch exact qualified candidate; new nonzero QHAIL seam and NSSL caller consumers pass"
+  },
+  "strict_CPU_two_step_smokes": {
+    "16": {
+      "nonfinite_values": 0,
+      "disable_guards": true,
+      "policy_guard_water_kg": 0,
+      "recorded_guard_candidate_counters": {
+        "dynamics.qi": {
+          "nonfinite": 0,
+          "out_of_range": 5,
+          "repaired": 5
+        }
+      },
+      "active_number_phase_rows": 12,
+      "observations_per_row": 2,
+      "number_negative_events": 0,
+      "number_nonfinite_events": 0,
+      "remaining_events": [
+        {
+          "phase": "post_rk",
+          "field": "qi",
+          "event": "negative",
+          "count": 123,
+          "first_step": 2,
+          "first_flat_index": 25627,
+          "first_value": -2.1554934586734452e-30,
+          "first_index_kji": [
+            14,
+            22,
+            7
+          ]
+        },
+        {
+          "phase": "pre_dynamics_guard",
+          "field": "qi",
+          "event": "negative",
+          "count": 5,
+          "first_step": 2,
+          "first_flat_index": 36413,
+          "first_value": -3.989775552695992e-36,
+          "first_index_kji": [
+            20,
+            26,
+            41
+          ]
+        },
+        {
+          "phase": "pre_boundary_guard",
+          "field": "qi",
+          "event": "negative",
+          "count": 5,
+          "first_step": 2,
+          "first_flat_index": 36413,
+          "first_value": -3.989775552695992e-36,
+          "first_index_kji": [
+            20,
+            26,
+            41
+          ]
+        }
+      ],
+      "wall_s_CPU_cold_plus_two_steps_not_GPU": 306.1,
+      "receipt": "NS11_smoke16_f2.json"
+    },
+    "10": {
+      "nonfinite_values": 0,
+      "disable_guards": true,
+      "policy_guard_water_kg": 0,
+      "recorded_guard_candidate_counters": {},
+      "active_number_phase_rows": 16,
+      "observations_per_row": 2,
+      "number_negative_events": 0,
+      "number_nonfinite_events": 0,
+      "remaining_events": [],
+      "wall_s_CPU_cold_plus_two_steps_not_GPU": 262.9,
+      "receipt": "NS13_smoke10_14_26.json"
+    },
+    "14": {
+      "nonfinite_values": 0,
+      "disable_guards": true,
+      "policy_guard_water_kg": 0,
+      "recorded_guard_candidate_counters": {
+        "dynamics.qi": {
+          "nonfinite": 0,
+          "out_of_range": 5,
+          "repaired": 5
+        }
+      },
+      "active_number_phase_rows": 12,
+      "observations_per_row": 2,
+      "number_negative_events": 0,
+      "number_nonfinite_events": 0,
+      "remaining_events": [
+        {
+          "phase": "post_rk",
+          "field": "qi",
+          "event": "negative",
+          "count": 123,
+          "first_step": 2,
+          "first_flat_index": 25627,
+          "first_value": -2.1554934586734452e-30,
+          "first_index_kji": [
+            14,
+            22,
+            7
+          ]
+        },
+        {
+          "phase": "pre_dynamics_guard",
+          "field": "qi",
+          "event": "negative",
+          "count": 5,
+          "first_step": 2,
+          "first_flat_index": 36413,
+          "first_value": -3.989775552695992e-36,
+          "first_index_kji": [
+            20,
+            26,
+            41
+          ]
+        },
+        {
+          "phase": "pre_boundary_guard",
+          "field": "qi",
+          "event": "negative",
+          "count": 5,
+          "first_step": 2,
+          "first_flat_index": 36413,
+          "first_value": -3.989775552695992e-36,
+          "first_index_kji": [
+            20,
+            26,
+            41
+          ]
+        }
+      ],
+      "wall_s_CPU_cold_plus_two_steps_not_GPU": 246.0,
+      "receipt": "NS13_smoke10_14_26.json"
+    },
+    "26": {
+      "nonfinite_values": 0,
+      "disable_guards": true,
+      "policy_guard_water_kg": 0,
+      "recorded_guard_candidate_counters": {
+        "dynamics.qi": {
+          "nonfinite": 0,
+          "out_of_range": 5,
+          "repaired": 5
+        }
+      },
+      "active_number_phase_rows": 12,
+      "observations_per_row": 2,
+      "number_negative_events": 0,
+      "number_nonfinite_events": 0,
+      "remaining_events": [
+        {
+          "phase": "post_rk",
+          "field": "qi",
+          "event": "negative",
+          "count": 123,
+          "first_step": 2,
+          "first_flat_index": 25627,
+          "first_value": -2.1554934586734452e-30,
+          "first_index_kji": [
+            14,
+            22,
+            7
+          ]
+        },
+        {
+          "phase": "pre_dynamics_guard",
+          "field": "qi",
+          "event": "negative",
+          "count": 5,
+          "first_step": 2,
+          "first_flat_index": 36413,
+          "first_value": -3.989775552695992e-36,
+          "first_index_kji": [
+            20,
+            26,
+            41
+          ]
+        },
+        {
+          "phase": "pre_boundary_guard",
+          "field": "qi",
+          "event": "negative",
+          "count": 5,
+          "first_step": 2,
+          "first_flat_index": 36413,
+          "first_value": -3.989775552695992e-36,
+          "first_index_kji": [
+            20,
+            26,
+            41
+          ]
+        }
+      ],
+      "wall_s_CPU_cold_plus_two_steps_not_GPU": 283.9,
+      "receipt": "NS13_smoke10_14_26.json"
+    }
+  },
+  "performance_memory": {
+    "new_State_leaves": 0,
+    "ordinary_root_transport_calls_per_step": 3,
+    "ordinary_root_boundary_passes_per_step": 4,
+    "scalar_batch_lanes_before_after": {
+      "10": [
+        8,
+        10
+      ],
+      "14": [
+        8,
+        9
+      ],
+      "16": [
+        8,
+        9
+      ],
+      "26": [
+        9,
+        10
+      ]
+    },
+    "WDM_Nr_before": "could already use materialized old Ni/Nr path; now Nr once, adds Nc/Nn and removes inactive Ni",
+    "traffic": "necessary scalar/PD/diffusion/BC traffic grows; equal options keep one stacked call; no timestep host/device transfer added",
+    "input_hail": "one optional26 init read into existing qh buffer",
+    "GPU_launches_peak_VRAM_compile_readiness_and_speed": "UNKNOWN; no GPU; opt-in fp64 islands retained"
+  },
+  "open_gates": [
+    "GPU executable/launch/VRAM/E41/compile/performance",
+    "original-WRF coupled trajectories and station RMSE",
+    "all-field F2: inherited WDM qi events OPEN; old-source exact match is regression only",
+    "nested forcing refused for10/14/16/26",
+    "Morrison native REAL-column numerical qualification pending; existing fp64 island retained"
+  ],
+  "cleanup": {
+    "candidate_snapshot_removed": true,
+    "baseline_snapshot_removed": true,
+    "pytest_scratch_removed": true,
+    "persistent_JAX_cache": "disabled GPUWRF_JAX_CACHE0",
+    "temporary_archives_and_diagnostics": "removed; small receipts/oracle manifests retained"
+  },
+  "artifacts_root": "<USER_HOME>/wrf_gpu2_lanes/s1-numbers",
+  "artifact_sha256": {
+    "NS02_operator_tests.log": {
+      "sha256": "2c94c15c4b8ce045f4deee4e1993953f337645b6a09822eca69a9fe0d17c6282",
+      "bytes": 6509
+    },
+    "NS02_pd_diagnostic.log": {
+      "sha256": "66514897755ce0d5ca87489c8aea24dced73fe65186c57ff9eefd512dff25da8",
+      "bytes": 430
+    },
+    "NS03_native_pd.log": {
+      "sha256": "00e3cbd2fabc6a305293f03f2b62f2aa9e3b799bbc73c5669fc6d65cf31d3138",
+      "bytes": 114
+    },
+    "NS04_operator_tests.log": {
+      "sha256": "42eb754aca3049f7ad43c13c993f45038e4817873d4548404136cdc315096f8b",
+      "bytes": 5105
+    },
+    "NS05_operator_tests.log": {
+      "sha256": "bcccff6acbdc9cee9f224e19bc6c592e5ebeeb595c3a4598e94e62f3e3ac99de",
+      "bytes": 100
+    },
+    "NS06_production_trace.json": {
+      "sha256": "c6d7ce3f372e78b81e2526ec2b6b15008c9dcb3d6fa89094db76d9b97d1c4b28",
+      "bytes": 10985
+    },
+    "NS06_production_trace.log": {
+      "sha256": "cd1ea0e3d7fbb3c4654c04a34cf7dd4061e0d936902cbadb7c8e380db28c1a3e",
+      "bytes": 2278
+    },
+    "NS07_shared.log": {
+      "sha256": "7b75b265ca917f1460ec56f3f20945a2cf742b416fb627550162f21e4c2a7f29",
+      "bytes": 3106
+    },
+    "NS07_shared.xml": {
+      "sha256": "14d84292a66dcab6f0ab21fdb6b94c19de1ebd631b3bf291829b212d93889d4a",
+      "bytes": 49665
+    },
+    "NS08_final_unit.log": {
+      "sha256": "652eeb95bae36193b3dfaecd262a0439340cdc0476d841991bc93de7a43768c1",
+      "bytes": 100
+    },
+    "NS08_final_unit.xml": {
+      "sha256": "df722cc8e3380ef6f823be88e0c0144674d94b703a828176ff11444065a81a51",
+      "bytes": 6887
+    },
+    "NS09_production_trace.json": {
+      "sha256": "646fcba534d1cc8b58f30edf4063ac5e9f6cd59848cab76f7487a5a1147a197c",
+      "bytes": 14773
+    },
+    "NS09_production_trace.log": {
+      "sha256": "09ceeacdd04d995875e517d7f83f89b2db9e43e7bffc3520a72277fbdafaa101",
+      "bytes": 6331
+    },
+    "NS10_smoke16.json": {
+      "sha256": "67ef2d2d8d55d71c4da1b72b8c3b947b1a863dcda15b900e434bcbc96d5dcae3",
+      "bytes": 1088
+    },
+    "NS10_smoke16.log": {
+      "sha256": "e189bb34a8dd7f59587fd756d43c5bf0bd4f6a37b791f7d50467aeeb41df3737",
+      "bytes": 1766
+    },
+    "NS11_smoke16_f2.json": {
+      "sha256": "3cc867cd846ba6073d96b69314d5de4a21af04edf1ba27a951321ca9ae4e9b38",
+      "bytes": 29757
+    },
+    "NS11_smoke16_f2.log": {
+      "sha256": "87fe1b688d1eaa33e71fb17eb164e88791e8f4f7834e67e65675c285e4dba86e",
+      "bytes": 4016
+    },
+    "NS12_base16_f2.json": {
+      "sha256": "bb6f95466aa3a66ffbeedcb680133dd7d1a3f3274da334f76963cebafda3cd43",
+      "bytes": 31065
+    },
+    "NS12_base16_f2.log": {
+      "sha256": "6a3df27eedd386520307ef2c46e1a376d9691da0e088df00c4885cd440f6c017",
+      "bytes": 5216
+    },
+    "NS12_regression_attribution.json": {
+      "sha256": "726d51d879efc15a23d622c32d6ad3d7cc5587ace63201344ee8b86e5425fd3e",
+      "bytes": 3528
+    },
+    "NS13_smoke10_14_26.json": {
+      "sha256": "6de1f26219f968e03f2ec5b57d534f0b0300af6c82dbfc9f7683b91c56d41f73",
+      "bytes": 87771
+    },
+    "NS13_smoke10_14_26.log": {
+      "sha256": "9ade418816e0aa495cb95476710f3649c68e039b68d17dce1937062936cf342a",
+      "bytes": 8075
+    },
+    "NS14_archive_fixture.json": {
+      "sha256": "5b2e5e860a27285d7a08ae9eff2b18b6db5a52c7dd9a651a4213c42a794f79e1",
+      "bytes": 244
+    },
+    "NS15_composition_source_seal.json": {
+      "sha256": "6b661e372b5b2aeee10936329f66ec183626628dd2ff79a070bc08149156001f",
+      "bytes": 830
+    },
+    "NS16_pd_mutant.log": {
+      "sha256": "635440a75bf0116b7b95f7279103f91eb3f6c813a5c12a41e46b19fb560eb1a0",
+      "bytes": 5133
+    },
+    "NS16_pd_mutant.xml": {
+      "sha256": "682488c24427bb85a5345dd485616f110480cb83f85327e3ccd8e8ec74cdab1a",
+      "bytes": 7340
+    },
+    "NS17_MUTANT_VERDICT.json": {
+      "sha256": "2bf3c96150223b7d05443a9d4b4d8c606eeec2eea6cec543588f3bd693338a41",
+      "bytes": 1330
+    },
+    "NS17_transport_mutant.log": {
+      "sha256": "f3eed20f6fb46bc96acf2a701ac1b5f68fbaa05ecf7fb1700c557c66f11f3aca",
+      "bytes": 2216
+    },
+    "NS17_transport_mutant.xml": {
+      "sha256": "438e8470de4710207f107d5d3d4ef8205962e08f6b27e1f0b0319a7e885d1882",
+      "bytes": 2899
+    },
+    "NS18_composed_cli_rootbdy.log": {
+      "sha256": "377c0adbec17d0a3414921c2f8b03916c5d8aa790522556311778aeafa508298",
+      "bytes": 111
+    },
+    "NS18_composed_cli_rootbdy.xml": {
+      "sha256": "4af702a28aa3fe92b800ccdf8cd5a75b7aea220b032fe66bc37f83087858e236",
+      "bytes": 6846
+    },
+    "NS19_final_input_unit.log": {
+      "sha256": "f3d1564e03aa30c52e8b1598fd3feffab04627430e2bf9abc0340c32d13e096f",
+      "bytes": 261
+    },
+    "NS19_final_input_unit.xml": {
+      "sha256": "e186f2207de16fabbe1a11ca06d84852212bba7634de400e7c7ac1e572f023f1",
+      "bytes": 20947
+    },
+    "NS20_TRACE_REUSE.json": {
+      "sha256": "8313ea69f52cb0b87b4d850257c5edebfce2f37763c3af0dd173a838a1106860",
+      "bytes": 811
+    },
+    "NS20_composed_trace.json": {
+      "sha256": "d4e7f318439482fe2fb06639b040106cf8499501805f9e3529888025b269aa79",
+      "bytes": 14773
+    },
+    "NS20_composed_trace.log": {
+      "sha256": "79aa2652e447aa965ee12ac2c7fa7db63216ec9ec05b52634733edf082401aa1",
+      "bytes": 6331
+    },
+    "NS21_final_source_seal.json": {
+      "sha256": "42df1b571d34a1d1da6e646d02cea8f2d006e0a436d53808e7f0600726e8ce25",
+      "bytes": 4132
+    },
+    "NS22_NSSL_composition.log": {
+      "sha256": "753396493245573a7b26d319e26dec4d7085bd7a914948bf770d361b5225e860",
+      "bytes": 100
+    },
+    "NS22_NSSL_composition.xml": {
+      "sha256": "341b8f656e09b5e33bfbad521052779294d8abf3a908a334f0cb2a7b0d28000c",
+      "bytes": 8729
+    },
+    "NS23_rebase_source_seal.json": {
+      "sha256": "6c23028d7602fb9a1aa37ebeab01a6c3bfb38f6114e510ff55261e154183cb5c",
+      "bytes": 799
+    },
+    "base_trace.json": {
+      "sha256": "1a3eaa3128233ad714623bcbeaa5f279b583b77a4ccf491cbccbc81f16078961",
+      "bytes": 2691
+    },
+    "base_trace.log": {
+      "sha256": "11d33c86b17ae29841d167b822bc7b8e67395842300f6bc268e6425163818d55",
+      "bytes": 1000
+    },
+    "oracle_manifests/bc.json": {
+      "sha256": "0c1d6068eb2407562f233b1f42cdf047e99d8a5badee00a96ee42f0d4bfeea7a",
+      "bytes": 999
+    },
+    "oracle_manifests/pd.json": {
+      "sha256": "3974a60cbbf5b33c6b30a132a5e36372261fdb53e6ce92561fa883f7c5cec4c2",
+      "bytes": 969
+    },
+    "oracle_manifests/plain.json": {
+      "sha256": "a56785ed65d2831719590c928149adac04bdcbfd4a701320235ef551cca8eae3",
+      "bytes": 956
+    },
+    "oracle_manifests/update.json": {
+      "sha256": "731c7d2cf2c4c700de0a78f58bda4e2e0ce031d45911bd842043c461f0b50612",
+      "bytes": 864
+    }
+  },
+  "main_observed_at_packet_generation": "ae01e832e5bb3ef95b8c1a65c6b7e74d657c2f91",
+  "metadata_correction": "proofs/s1_numbers/STATUS_CORRECTION.json",
+  "post_review_rebase": {
+    "source_before_documentation_fix_commit": "d80e050c4530dd28a4678b6e99415f67f2e2e903",
+    "main_base": "941229fda142b580ced39e75bc3854c2072a0133",
+    "qualified_model_trees_byte_identical_to": "ab50b5ba9bcad08f610081511c889b68b10acbbc"
+  }
+}

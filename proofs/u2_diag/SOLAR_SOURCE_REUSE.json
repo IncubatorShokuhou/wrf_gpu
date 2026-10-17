@@ -1,0 +1,127 @@
+{
+  "schema_version": 1,
+  "lane": "u2-diag",
+  "source_commit": "20b0b4fb48dc70338e326316c8e5a42a8b34dbdf",
+  "phase1_accepted_rebase": "4b21dd8f6",
+  "source_delta": [
+    {
+      "path": "src/gpuwrf/coupling/physics_couplers.py",
+      "sha256": "475381e9aa3f0516467f7ec7d1cf5309002558bf6297f4b340539fb266ec6028",
+      "changed_functions": [
+        "rrtmg_theta_tendency"
+      ],
+      "added_functions": []
+    },
+    {
+      "path": "src/gpuwrf/integration/daily_pipeline.py",
+      "sha256": "05087e2dae30b36e14e6ce3ff9715e77bd7e366a4d56a557c32d280991354108",
+      "changed_functions": [
+        "_build_real_case"
+      ],
+      "added_functions": []
+    },
+    {
+      "path": "src/gpuwrf/integration/nested_pipeline.py",
+      "sha256": "8812300cc8cd5006f76dba977e325d2c93d219827376d741e56c78dd81af619c",
+      "changed_functions": [],
+      "added_functions": []
+    },
+    {
+      "path": "src/gpuwrf/io/namelist_binding.py",
+      "sha256": "33f3aeec1560900d4c358d5050a1282f1ed152b51db2a32d90340033d04e50a8",
+      "changed_functions": [
+        "namelist_honour_report"
+      ],
+      "added_functions": []
+    },
+    {
+      "path": "src/gpuwrf/io/namelist_check.py",
+      "sha256": "8395916102b6fbcf7ac04424995252f538a966c69a4236d1345a891b2ae94ac4",
+      "changed_functions": [
+        "validate_operational_namelist"
+      ],
+      "added_functions": [
+        "_solar_admission_failures"
+      ]
+    },
+    {
+      "path": "src/gpuwrf/io/restart.py",
+      "sha256": "d0293b0386f16c85aa38f53b564c8e9f1fd9ad6b3c465bb136334537054d5104",
+      "changed_functions": [
+        "_carry_to_payload",
+        "write_restart",
+        "_read_payload",
+        "read_restart"
+      ],
+      "added_functions": []
+    },
+    {
+      "path": "src/gpuwrf/io/scheme_catalog.py",
+      "sha256": "f51e65a07f3d4d7d52d794e279fa6d63df1ae452f1a5ba18d6da3021e8ad807c",
+      "changed_functions": [],
+      "added_functions": []
+    },
+    {
+      "path": "src/gpuwrf/io/wrfout_writer.py",
+      "sha256": "721715f3b7881e06119f13579215be6001d56fe92f7bf1dd31c9b224128107e8",
+      "changed_functions": [
+        "_requested_wrfout_source_values",
+        "prepare_wrfout_payload",
+        "write_prepared_wrfout",
+        "_apply_subset_diagnostics",
+        "_build_output_fields"
+      ],
+      "added_functions": []
+    },
+    {
+      "path": "src/gpuwrf/io/wrfrst_netcdf.py",
+      "sha256": "f8b81ed139039222d9acd2261b8efcecabfe178a224ae950850cf5e767ef82b6",
+      "changed_functions": [
+        "_write_wrfrst",
+        "_read_optional_carry_groups"
+      ],
+      "added_functions": []
+    },
+    {
+      "path": "src/gpuwrf/runtime/operational_mode.py",
+      "sha256": "a2db0e94c5dd2e6f633f4cb402cdd628a76258f0e748c59f6acd64435923ceba",
+      "changed_functions": [
+        "_initial_carry_for_run",
+        "_refresh_rrtmg_driver",
+        "_physics_step_forcing"
+      ],
+      "added_functions": [
+        "_validate_solar_runtime",
+        "_solar_current_coszen"
+      ]
+    },
+    {
+      "path": "src/gpuwrf/runtime/operational_state.py",
+      "sha256": "37f27a63947f7dda0deccf6727225b9dcc27e357715f4143fd7590ec6e75e7fa",
+      "changed_functions": [],
+      "added_functions": []
+    },
+    {
+      "path": "src/gpuwrf/runtime/restart_store.py",
+      "sha256": "26a3f5e244b6959d6a191a2650a71b076de243954534bf2b89e93f8531e73f11",
+      "changed_functions": [
+        "nested_identity",
+        "_validate_snapshot"
+      ],
+      "added_functions": []
+    }
+  ],
+  "solar_operator_byte_identical": "924387e82",
+  "science_reuse": "Solar01/02 unchanged operator45 tests,4224pristinevalues and CPUcompiledcost; phase1 diagnosticproducer sources unchanged",
+  "shared_reuse": "Unchanged numerical v013 physics adapters retain phase1 UD22b/UD23 and SOURCE_REUSE/SHARED_REUSE evidence; affected routing/binding/catalog/CLI/M7/NetCDF consumers rerun UD44b/c, nativeStore60 UD44a",
+  "performance_inferred": {
+    "solar_carry_bytes_per_horizontal_cell": 48,
+    "default_solar_array_leaves": 0,
+    "per_step_host_transfers_added": 0,
+    "current_solar_geometry_calls_per_active_step": 1,
+    "extra_rrtmg_solves_per_step": 0,
+    "extra_output_rrtmg_solves": 0,
+    "coupled_gpu_launches_and_peak": "UNKNOWN"
+  },
+  "default_identity": "PENDING both realcases on composed candidate"
+}

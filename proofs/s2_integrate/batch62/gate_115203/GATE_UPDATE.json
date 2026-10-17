@@ -1,0 +1,61 @@
+{
+  "UTC": "2026-10-16T11:55:09.602803+00:00",
+  "scope": "append-only timing-gate authority update; no tests/model/GPU repeated",
+  "supersedes_gate_conditions_in": "proofs/s2_integrate/batch62/QUALIFICATION.json only; original sealed file preserved",
+  "original_qualification_sha256": "d900411a1258ee8707bd7d7bd7ada6cec893946a3744384fce02e9b724bc89f3",
+  "original_archive_sha256": "9f7550e7018b3387436411c840148c5ba084a407bd6bcd165a1b586e53e0ae81",
+  "original_prepared_head": "9f308b0ef5bfa1f50cfce02f08527e36a6d8f747",
+  "approved_source_commit": "353a85f8a11abf4a12dcd78bad77ec7dc682a019",
+  "composed_src_tree": "5a2856b9864e8d91b3d7d44808b54e301087cc93",
+  "composed_tests_tree": "8bc273ac893f4b63bd510288a5ef9d4d7bd4c9f6",
+  "whole_source_tests_BYTE_approved": true,
+  "manager_authority": "2026-10-16T11:52:03Z manager -> v-prep + t-cfix-mynn + s2-integrate: DECISION C5' timing: the ABAB harness failed twice on fixture/loader issues (no samples) \u2192 stop that recipe (two-failures rule). Timing evidence accepted for the merge: matched nsys hour 3 on PROD (both profiled, same 66 roots) C5' 58.05 vs F20 58.89 ms/root (\u22121.4 %), host-launched kernel time equal (\u22120.04 %), cuLaunchKernelEx equal, host transfers exactly F20; the +5.73 % hour-2 number is the known E179 same-process-after-cold-compile artefact. Disclosed as [M nsys matched hour / not a warm-cache A/B]; the release S1 benchmark on the final tree remains the authoritative speed number. FF of batch62 now depends ONLY on WN3-0227 24 h D6 PASS (running).",
+  "timing_gate": "ACCEPTED FOR MERGE by manager11:52:03",
+  "timing_evidence_scope": "[M nsys matched profiled PROD hour3, both profiled, 66roots; NOT warm-cache ABAB; final-tree S1 authoritative]",
+  "manager_reported_ms_per_root": {
+    "C5prime": 58.05,
+    "F20": 58.89,
+    "reported_delta_pct": -1.4
+  },
+  "host_launched_kernel_device_ns": {
+    "C5prime": 2264736545,
+    "F20": 2265713445,
+    "delta_pct": -0.043116661648268106
+  },
+  "cuLaunchKernelEx_equal_count": 495752,
+  "host_transfer_sync_callback_equality": "all3 exact sources independently reviewed in c7_gpu_audit.json",
+  "ABAB": "recipe DROPPED after loader/fixture failures, INCOMPLETE/zero samples preserved; not timing PASS and not model FAIL",
+  "hour2_plus5_73pct": "unmatched cold-compile-process vs pin-restored E179, not merge decision",
+  "FF_remaining_condition": "ONLY WN3-0227 full24 originalCPU frozenD6 PASS",
+  "WN3_status": "PENDING; no QUALIFICATION.json at observation",
+  "fresh_CPU_reused": {
+    "tests": 330,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "new_default_ids": {
+    "swiss": {
+      "returncode": 0,
+      "sha": "3356e24924a9207b2264cec1dc8df0591cd85e1a856097251b6f2efeb7327c57",
+      "expected": "3356e24924a9207b2264cec1dc8df0591cd85e1a856097251b6f2efeb7327c57",
+      "PASS": true,
+      "elapsed_s": 37.42196452699136,
+      "forecast_steps": 0,
+      "platform": "cpu"
+    },
+    "prod": {
+      "returncode": 0,
+      "sha": "196aed9f9973499c5610fdf9965223503a61944156b8cd41357fd8c6e911911e",
+      "expected": "196aed9f9973499c5610fdf9965223503a61944156b8cd41357fd8c6e911911e",
+      "PASS": true,
+      "elapsed_s": 68.12725781998597,
+      "forecast_steps": 0,
+      "platform": "cpu"
+    }
+  },
+  "GPU_runs_this_update": 0,
+  "new_model_test_runs": 0,
+  "cache": "NONE; no snapshots or cache created",
+  "release_limits": "Final-tree S1 and other release/F2/resource gates remain separate; no whole-run maximum-speed claim"
+}

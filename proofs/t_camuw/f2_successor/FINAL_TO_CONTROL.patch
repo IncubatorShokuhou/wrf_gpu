@@ -1,0 +1,80 @@
+diff --git a/src/gpuwrf/coupling/scan_adapters.py b/src/gpuwrf/coupling/scan_adapters.py
+index 043ad4820..33e4190cc 100644
+--- a/src/gpuwrf/coupling/scan_adapters.py
++++ b/src/gpuwrf/coupling/scan_adapters.py
+@@ -1778,8 +1778,7 @@ def camuw_pbl_adapter(state: State, dt: float, grid=None, *, camuw: CamUwCarry |
+     """bl_pbl=9 CAM-UW (UW moist turbulence) ``(State, CamUwCarry) -> (State, CamUwCarry)``.
+ 
+     Inputs follow WRF ``phy_prep``/``module_pbl_driver.F:2033``: mass-point winds, dry physics
+-    temperature/nonhydrostatic Exner, ``rho=(1+qv)/alt`` (metrics) or EOS,
+-    hydrostatic ``p_phy/p8w`` (first_rk_step_part1.F:1130–1132),
++    temperature, ``rho=(1+qv)/alt`` (metrics) or EOS, ``p8w`` (fzm/fzp + extrapolated ends),
+     ``z_at_w=ph/g`` with WRF g, ``HFX/QFX/UST`` from the surface driver (State ``hfx/qfx/ustar``:
+     LSM-blended), ``CLDFRA`` = held radiation cloud fraction, ``QNC`` = 0 (only diffused, never
+     returned by WRF). Carry = WRF ``KVM3D/KVH3D/TAURESX2D/TAURESY2D`` (REAL, zero at itimestep 1,
+@@ -1807,19 +1806,16 @@ def camuw_pbl_adapter(state: State, dt: float, grid=None, *, camuw: CamUwCarry |
+         return jnp.asarray(a, f32).reshape(ncol)
+ 
+     theta_dry = _dry_theta_view(state)
+-    p_nonhyd = jnp.asarray(state.p, jnp.float64)
+-    exner = (jnp.maximum(p_nonhyd, 1.0) / 1.0e5) ** (287.0 / 1004.5)  # WRF phy_prep pi_phy
++    p = jnp.asarray(state.p, jnp.float64)
++    exner = (jnp.maximum(p, 1.0) / 1.0e5) ** (287.0 / 1004.5)  # WRF phy_prep pi_phy (rcp = r_d/cp)
+     t_phy = jnp.asarray(theta_dry, jnp.float64) * exner
+     z_face = jnp.asarray(state.ph, jnp.float64) / WRF_PHYSICS_G
+     z_mass = 0.5 * (z_face[:-1] + z_face[1:])
+     metrics = getattr(grid, "metrics", None)
+     if metrics is not None:
+-        # WRF passes p_hyd/p_hyd_w here, independently of pi_phy/t_phy.
+-        # Reuse the existing single-column GPU hydrostatic kernel.
+-        p, p8w, _psfc = _wrf_hydrostatic_pressure_profiles_from_state(state, metrics, output_dtype=f32)
++        p8w = _wrf_phy_prep_p8w(p, z_face, metrics.fnm, metrics.fnp)
+         rho = _wrf_phy_prep_rho_from_state(state, metrics, output_dtype=f32)
+     else:  # analytic callers without eta weights
+-        p = p_nonhyd
+         p8w = jnp.concatenate([p[:1], 0.5 * (p[:-1] + p[1:]), p[-1:]], axis=0)
+         rho = _rho_from_state(state) * (1.0 + jnp.asarray(state.qv, jnp.float64))
+     zeros3 = jnp.zeros((nz, ny, nx), f32)
+diff --git a/src/gpuwrf/runtime/operational_mode.py b/src/gpuwrf/runtime/operational_mode.py
+index 223cb9de2..4ce26ddc6 100644
+--- a/src/gpuwrf/runtime/operational_mode.py
++++ b/src/gpuwrf/runtime/operational_mode.py
+@@ -6656,8 +6656,7 @@ def _rad_clock_base(clock_base):
+ 
+ def _rrtmg_pbl_cloud_kwargs(namelist):
+     """WRF check_a_mundo disables icloud_bl for non-MYNN PBL selections."""
+-    return {} if int(namelist.bl_pbl_physics) == DEFAULT_BL_PBL_PHYSICS else {
+-        "use_mynn_sgs_cloud": False, "cloud_mp_physics": int(namelist.mp_physics)}
++    return {}  # TC26 matched control: restore pre-fix global MYNN SGS selection.
+ 
+ 
+ def noahmp_initial_rad(
+@@ -8618,26 +8617,10 @@ def _physics_step_forcing(
+         # CAM-UW threads its own carry and reads the held radiation CLDFRA/RTHRATEN.
+         from gpuwrf.coupling.scan_adapters import camuw_pbl_adapter
+         held_rad = getattr(next_carry, "radiation_diagnostics", None)
+-        camuw_rk = source_leaf_mode and _phys_tend_rk_wrf_enabled()
+-        camuw_result = camuw_pbl_adapter(
++        next_state, camuw_carry = camuw_pbl_adapter(
+             next_state, float(namelist.dt_s), namelist.grid, camuw=next_carry.camuw_pbl,
+             rthraten=next_carry.rthraten,
+-            cldfra=None if held_rad is None else getattr(held_rad, "cloud_fraction", None),
+-            return_tendencies=camuw_rk)
+-        next_state, camuw_carry = camuw_result[:2]
+-        if camuw_rk:
+-            # Original WRF CAMUWPBLSCHEME update_phy_ten: all BL rates
+-            # enter the coupled RK sources; later drivers see phy_prep state.
+-            rates = camuw_result[2]
+-            rublten, rvblten = rates["rublten"], rates["rvblten"]
+-            rthblten, rqvblten = rates["rthblten"], rates["rqvblten"]
+-            pbl_moist_raw = {"qv": rqvblten, "qc": rates["rqcblten"], "qi": rates["rqiblten"]}
+-            if next_state.Ni is not None and mp_opt not in (14, 16, 26):
+-                # CAM's QNI uses add_a2a (:963), unlike MYNN's full-tile
+-                # scalar_tend assignment. Preserve the specified/nested ring.
+-                periodic_x, specified, nested = _acoustic_lateral_bc_flags(namelist)
+-                pbl_moist_raw["Ni"] = kf_add_a2a(rates["rqniblten"],
+-                    specified_or_nested=specified or nested, periodic_x=periodic_x)
++            cldfra=None if held_rad is None else getattr(held_rad, "cloud_fraction", None))
+         next_carry = next_carry.replace(camuw_pbl=camuw_carry)
+     elif bl_opt in PBL_SCAN_ADAPTERS:
+         next_state = PBL_SCAN_ADAPTERS[bl_opt](next_state, float(namelist.dt_s), namelist.grid)

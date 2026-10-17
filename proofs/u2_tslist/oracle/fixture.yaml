@@ -1,0 +1,264 @@
+fixture_id: u2-tslist-swiss-four-step-v1
+source: Original CPU-WRF Swiss RD11 executable, private lane run
+source_commit: UNKNOWN installed WRF commit; pinned executable SHA256 1d0f5779fff143361e470e37f89c734497ed5a7bb55d0c53b7e3fccc569dd49b
+scenario: Swiss42x42x44 dt18 4steps,2inside+1outside station;LATLON+IJ,staggered+unstaggered,tsbuf3
+created_utc: '2026-10-13T11:51:55Z'
+variables:
+- name: T2
+  units: K
+  shape:
+  - 4
+  - 2
+  dtype: float32
+  absolute_tolerance: 5.1e-06
+  relative_tolerance: 2.0e-07
+  staggering: station mass point
+- name: Q2
+  units: kg kg-1
+  shape:
+  - 4
+  - 2
+  dtype: float32
+  absolute_tolerance: 5.1e-06
+  relative_tolerance: 2.0e-07
+  staggering: station mass point
+- name: U10
+  units: m s-1
+  shape:
+  - 4
+  - 2
+  dtype: float32
+  absolute_tolerance: 5.1e-06
+  relative_tolerance: 2.0e-07
+  staggering: station mass point
+- name: V10
+  units: m s-1
+  shape:
+  - 4
+  - 2
+  dtype: float32
+  absolute_tolerance: 5.1e-06
+  relative_tolerance: 2.0e-07
+  staggering: station mass point
+- name: PSFC
+  units: Pa
+  shape:
+  - 4
+  - 2
+  dtype: float32
+  absolute_tolerance: 5.1e-06
+  relative_tolerance: 2.0e-07
+  staggering: station mass point
+- name: GLW
+  units: W m-2
+  shape:
+  - 4
+  - 2
+  dtype: float32
+  absolute_tolerance: 5.1e-06
+  relative_tolerance: 2.0e-07
+  staggering: station mass point
+- name: GSW
+  units: W m-2
+  shape:
+  - 4
+  - 2
+  dtype: float32
+  absolute_tolerance: 5.1e-06
+  relative_tolerance: 2.0e-07
+  staggering: station mass point
+- name: HFX
+  units: W m-2
+  shape:
+  - 4
+  - 2
+  dtype: float32
+  absolute_tolerance: 5.1e-06
+  relative_tolerance: 2.0e-07
+  staggering: station mass point
+- name: LH
+  units: W m-2
+  shape:
+  - 4
+  - 2
+  dtype: float32
+  absolute_tolerance: 5.1e-06
+  relative_tolerance: 2.0e-07
+  staggering: station mass point
+- name: TSK
+  units: K
+  shape:
+  - 4
+  - 2
+  dtype: float32
+  absolute_tolerance: 5.1e-06
+  relative_tolerance: 2.0e-07
+  staggering: station mass point
+- name: TSLB
+  units: K
+  shape:
+  - 4
+  - 2
+  dtype: float32
+  absolute_tolerance: 5.1e-06
+  relative_tolerance: 2.0e-07
+  staggering: station mass point
+- name: RAINC
+  units: mm
+  shape:
+  - 4
+  - 2
+  dtype: float32
+  absolute_tolerance: 5.1e-06
+  relative_tolerance: 2.0e-07
+  staggering: station mass point
+- name: RAINNC
+  units: mm
+  shape:
+  - 4
+  - 2
+  dtype: float32
+  absolute_tolerance: 5.1e-06
+  relative_tolerance: 2.0e-07
+  staggering: station mass point
+- name: CLW
+  units: kg m-2
+  shape:
+  - 4
+  - 2
+  dtype: float32
+  absolute_tolerance: 5.1e-06
+  relative_tolerance: 2.0e-07
+  staggering: station mass point
+- name: UU
+  units: m s-1
+  shape:
+  - 4
+  - 2
+  - 5
+  dtype: float32
+  absolute_tolerance: 5.1e-06
+  relative_tolerance: 2.0e-07
+  staggering: WRF staggered, or WRF rotated-before-average option
+- name: VV
+  units: m s-1
+  shape:
+  - 4
+  - 2
+  - 5
+  dtype: float32
+  absolute_tolerance: 5.1e-06
+  relative_tolerance: 2.0e-07
+  staggering: WRF staggered, or WRF rotated-before-average option
+- name: WW
+  units: m s-1
+  shape:
+  - 4
+  - 2
+  - 5
+  dtype: float32
+  absolute_tolerance: 5.1e-06
+  relative_tolerance: 2.0e-07
+  staggering: station mass point
+- name: PH
+  units: m
+  shape:
+  - 4
+  - 2
+  - 5
+  dtype: float32
+  absolute_tolerance: 5.1e-06
+  relative_tolerance: 2.0e-07
+  staggering: station mass point
+- name: TH
+  units: K
+  shape:
+  - 4
+  - 2
+  - 5
+  dtype: float32
+  absolute_tolerance: 5.1e-06
+  relative_tolerance: 2.0e-07
+  staggering: station mass point
+- name: QV
+  units: kg kg-1
+  shape:
+  - 4
+  - 2
+  - 5
+  dtype: float32
+  absolute_tolerance: 5.1e-06
+  relative_tolerance: 2.0e-07
+  staggering: station mass point
+- name: PR
+  units: Pa
+  shape:
+  - 4
+  - 2
+  - 5
+  dtype: float32
+  absolute_tolerance: 5.1e-06
+  relative_tolerance: 2.0e-07
+  staggering: station mass point
+- name: active_CLW
+  units: kg m-2
+  shape:
+  - 2
+  dtype: float32
+  absolute_tolerance: 0.0
+  relative_tolerance: 9.5367431640625e-07
+  staggering: full44level pressure-face integral
+  scope: all5species constructed active;pristine literal Fortran source on real Swiss
+    pressures/heights
+files:
+  active_clw.json: 20a9c64d12d2f61771a1c324adfe8d4c0163440c92a1b278a1f286b87a88712b
+  active_clw.npz: 5152d73a9600e47495dd60a87cea7b08575ee6bc54646640a73c62bed6aa9814
+  columns.npz: 01b4d173fab33ecb5630a7edc7988ab29e2a2418d479438ced5aadf5d658a933
+  ctr.d01.PH: 61da05e8aeb2502824190e51c3cd096f6f036417b57b29ca386cdf7fd39f79bb
+  ctr.d01.PR: 9a22aa5bc2a2e22e717d708e5ec31cdddc622d139326e50a51beb39db01c7288
+  ctr.d01.QV: cb37fbb0863a70cc001a708537afadf68623a55e5e28674d2b4e0c58071cab9d
+  ctr.d01.TH: 39dc2d714126851357fb261644e7753b3b80045e06a085a0c277b7cce7c5a461
+  ctr.d01.TS: 3599ec0fc2e848560cdef4d211ba577ccc2adffd1e371fc0b8cf5be14cc3c776
+  ctr.d01.UU: 20fd07eebc2a8b11a07f8f973e5f65972ab52b8c73ee221a335780796a01b639
+  ctr.d01.VV: 9a7e46e5a17694a4891a84da322a86db4e3fac2a98b937307335787b6d5761fb
+  ctr.d01.WW: 659c5eb27a5bb93e0fb279f3ad793c57a6a238c87b69fde11874eac66dfcf440
+  ij_unstagger/ctr.d01.PH: 61da05e8aeb2502824190e51c3cd096f6f036417b57b29ca386cdf7fd39f79bb
+  ij_unstagger/ctr.d01.PR: 9a22aa5bc2a2e22e717d708e5ec31cdddc622d139326e50a51beb39db01c7288
+  ij_unstagger/ctr.d01.QV: cb37fbb0863a70cc001a708537afadf68623a55e5e28674d2b4e0c58071cab9d
+  ij_unstagger/ctr.d01.TH: 39dc2d714126851357fb261644e7753b3b80045e06a085a0c277b7cce7c5a461
+  ij_unstagger/ctr.d01.TS: 3599ec0fc2e848560cdef4d211ba577ccc2adffd1e371fc0b8cf5be14cc3c776
+  ij_unstagger/ctr.d01.UU: 0d029ab8aebed678ca2d3cd00c500de99de386b88c217866db40df0d26f05d46
+  ij_unstagger/ctr.d01.VV: 655b19508343e0d16eac31a6267531ab9d34f549a1b3b5d67ebb3a517fbd7684
+  ij_unstagger/ctr.d01.WW: 659c5eb27a5bb93e0fb279f3ad793c57a6a238c87b69fde11874eac66dfcf440
+  ij_unstagger/manifest.json: 5311ede849fdbc01e42f7426d09aa9e133b78811c0d7719bd22639c817010ed6
+  ij_unstagger/tslist: accedc15576378fdedb8d126a7638780176ddcb61051ad087254714fc51cd9d0
+  ij_unstagger/west.d01.PH: 4bfe333f32bd041ecad54d7d7d88db39aa8e7ff58e6e17e638424c0341fbbd8b
+  ij_unstagger/west.d01.PR: 7a3a137d8218b309692e12f7f15f545d67dc40b0c3cbc79b54a9239b56a51bf7
+  ij_unstagger/west.d01.QV: ab0849bac0c7a042b69a033fec3f8baa926b2532253652efa5e2b82a3ccd4603
+  ij_unstagger/west.d01.TH: 1e0acf378142a053771529370e53ed65abaa4df481bf7ade7a64e1ee29373794
+  ij_unstagger/west.d01.TS: e6df1649e08ba1fdab8acf168d7f2501326ab24ca2128053d074fa46837c69c2
+  ij_unstagger/west.d01.UU: ceaa947c410184ae7926d47f1154ec58c4e10b205d2807523dfb0a023a2ca347
+  ij_unstagger/west.d01.VV: 8a7bc31cb34690d1cfdfe9f4d6f8531d10d57d6e2555a83a9b8a90bd6a9dd628
+  ij_unstagger/west.d01.WW: 91e80f4c4e7bcde93c95ff2396171922486dbdf5918b7888796b8d6088d507d8
+  manifest.json: e37ca578264f88a0e0b1acf4db52b7cc8ac63b4afe1814a9552796a8354218ca
+  projection.json: 910bc645f5d5021a7c85b0faa83d197210c2461209837029f80e6c95aed13d77
+  tslist: f2fe1d3cb472b7ea4453ff1684ea05f9fa8532dac4e96bafe127137b8c4ada99
+  west.d01.PH: 4bfe333f32bd041ecad54d7d7d88db39aa8e7ff58e6e17e638424c0341fbbd8b
+  west.d01.PR: 7a3a137d8218b309692e12f7f15f545d67dc40b0c3cbc79b54a9239b56a51bf7
+  west.d01.QV: ab0849bac0c7a042b69a033fec3f8baa926b2532253652efa5e2b82a3ccd4603
+  west.d01.TH: 1e0acf378142a053771529370e53ed65abaa4df481bf7ade7a64e1ee29373794
+  west.d01.TS: e6df1649e08ba1fdab8acf168d7f2501326ab24ca2128053d074fa46837c69c2
+  west.d01.UU: 1274f344bf80bde01113df5a9649de1d2a812e7740b918105aeaa67327e3023a
+  west.d01.VV: 4e11ddecec05e24037f84e08f6e4e5a6bfddb67489c7627e84cb0c076e93ca3c
+  west.d01.WW: 91e80f4c4e7bcde93c95ff2396171922486dbdf5918b7888796b8d6088d507d8
+license_notes: WRF-derived diagnostic samples; no external station truth or ALISIOS
+  observation values
+generation_commands:
+- python proofs/u2_tslist/stage_oracle.py <private-case>
+- (cd <private-case> && mpirun -np 1 --bind-to none ./wrf.exe)
+- python proofs/u2_tslist/capture_oracle.py <private-case> <fixture>
+- python proofs/u2_tslist/stage_oracle.py <private-IJ-case> --ij-unstagger
+- python proofs/u2_tslist/active_oracle.py <lane-artifacts>
+qualification: CPU same-input diagnostic/format only; GPU/coupled forecast pending
+tracked_asset_authority: Binding _WAVE_S1_COMMON.md requires tracked test assets and
+  clean archive; all fixtures <200KB, no full WRF outputs

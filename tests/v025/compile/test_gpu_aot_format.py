@@ -56,7 +56,7 @@ def fake_dev(exported, stats=4):
         calls.append(blob)
         return loaded
 
-    return SimpleNamespace(platform="gpu", client=SimpleNamespace(deserialize_executable=deserialize)), calls
+    return SimpleNamespace(platform="gpu", device_kind="NVIDIA synthetic CUDA device", client=SimpleNamespace(deserialize_executable=deserialize)), calls
 
 
 def test_conversion_reexports_patched_blob_and_checks_buffer_sizes(monkeypatch):
@@ -80,7 +80,7 @@ def test_conversion_fails_open(monkeypatch):
     blob = legacy_blob()
     dev, _ = fake_dev(b"\x00\x0a\x02\x0a\x00")  # still legacy after export
     assert ax._convert_to_compiled_thunks(blob, dev)[1]["reason"] == "export-not-compiled-thunks"
-    broken = SimpleNamespace(platform="gpu", client=SimpleNamespace(
+    broken = SimpleNamespace(platform="gpu", device_kind="NVIDIA synthetic CUDA device", client=SimpleNamespace(
         deserialize_executable=lambda *a: (_ for _ in ()).throw(RuntimeError("boom"))))
     out, status = ax._convert_to_compiled_thunks(blob, broken)
     assert out == blob and status["reason"].startswith("error:RuntimeError")
@@ -90,14 +90,14 @@ def test_conversion_fails_open(monkeypatch):
 
 def test_unknown_version_refused_before_deserialization():
     client = SimpleNamespace(deserialize_executable=lambda *args: pytest.fail("loaded wrong format"))
-    dev = SimpleNamespace(platform="gpu", client=client)
+    dev = SimpleNamespace(platform="gpu", device_kind="NVIDIA synthetic CUDA device", client=client)
     meta = SimpleNamespace(executable_format="xla-gpu-thunks-riegeli-v2")
     with pytest.raises(RuntimeError, match="format/version mismatch"):
         ax.load(envelope(ax._RIEGELI_SIGNATURE), meta, dev)
 
 
 def test_export_format_opt_out_never_changes_keys(monkeypatch):
-    dev = SimpleNamespace(platform="gpu", client=None)
+    dev = SimpleNamespace(platform="gpu", device_kind="NVIDIA synthetic CUDA device", client=None)
     monkeypatch.delenv("GPUWRF_AOT_COMPILED_THUNKS", raising=False)
     before = (keys.exec_env_hash(dev), keys.global_trace_env_hash(), ax.target_fingerprint(dev))
     monkeypatch.setenv("GPUWRF_AOT_COMPILED_THUNKS", "0")

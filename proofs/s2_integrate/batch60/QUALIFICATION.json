@@ -1,0 +1,154 @@
+{
+  "UTC": "2026-10-16T07:37:36.326977+00:00",
+  "status": "GREEN integration scope",
+  "approved": "t-cfix-mynn exact7672228115299cb2a5f63bb63f3cd660e0caf377 C5 (rv3558e05e MERGE07:21:14)",
+  "source_tree": "86431e98435c9f6d54dc1bae09910aa633a0b55d",
+  "fresh_CPU": {
+    "UTC": "2026-10-16T07:37:19.466832+00:00",
+    "status": "PASS",
+    "returncode": 0,
+    "immutable_candidate": "0b30b9611622a947d419fd3a526cbfbde55ac25e",
+    "source": "86431e98435c9f6d54dc1bae09910aa633a0b55d",
+    "groups": [
+      {
+        "status": "PASS",
+        "returncode": 0,
+        "immutable_candidate": "0b30b9611622a947d419fd3a526cbfbde55ac25e",
+        "source": "86431e98435c9f6d54dc1bae09910aa633a0b55d",
+        "command": [
+          "<USER_HOME>/miniconda3/bin/python",
+          "-m",
+          "pytest",
+          "-q",
+          "-rs",
+          "-p",
+          "no:cacheprovider",
+          "--basetemp",
+          "<USER_HOME>/wrf_gpu2_lanes/s2-integrate/pytest",
+          "--junitxml",
+          "<USER_HOME>/wrf_gpu2_lanes/s2-integrate/batch60-shared/sanity.xml",
+          "tests/contracts/",
+          "tests/test_v018_mp_family_fail_closed.py",
+          "tests/test_v034_implemented_notes.py",
+          "tests/test_scheme_catalog_fail_closed.py",
+          "tests/test_namelist_check.py",
+          "tests/test_namelist_binding.py",
+          "tests/test_m7_restart_checkpoint_roundtrip.py",
+          "tests/test_netcdf_process_lock.py",
+          "tests/test_v0110_wrfrst_netcdf.py",
+          "tests/test_cli.py",
+          "tests/test_v060_physics_dispatch.py"
+        ],
+        "elapsed_s": 16.552149142997223,
+        "cap": "6G/noSwap",
+        "GPU_runs": 0,
+        "numerical_reuse": "C5 onlycouplerproduct BYTE767; unchangedMYNNformulas-kernels/pristinefixtures; critic13affectedPASS/2ASSERT/compiled9fluxarraysBYTE0ULP source-boundreuse. Freshcomposed NEWa616/4e identities+core/fullF20C5+surfaceexnercontracts; actualGPU E41/BYTE/warm-hostsync gate v-prep AFTERmerge.",
+        "counts": {
+          "tests": 253,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "RSS_KiB": 1293804,
+        "cleanup": true,
+        "UTC": "2026-10-16T07:33:22.192044+00:00"
+      },
+      {
+        "status": "PASS",
+        "returncode": 0,
+        "immutable_candidate": "0b30b9611622a947d419fd3a526cbfbde55ac25e",
+        "source": "86431e98435c9f6d54dc1bae09910aa633a0b55d",
+        "command": [
+          "<USER_HOME>/miniconda3/bin/python",
+          "-m",
+          "pytest",
+          "-q",
+          "-rs",
+          "-p",
+          "no:cacheprovider",
+          "--basetemp",
+          "<USER_HOME>/wrf_gpu2_lanes/s2-integrate/pytest",
+          "--junitxml",
+          "<USER_HOME>/wrf_gpu2_lanes/s2-integrate/batch60-affected/sanity.xml",
+          "tests/v025/t_cfix_mynn/test_f20_mynn_caller.py",
+          "tests/v025/b_phys/test_mynn_surface_exner.py",
+          "tests/v025/b_phys/test_mynn_exner_consumers.py"
+        ],
+        "elapsed_s": 201.2454866939952,
+        "cap": "6G/noSwap",
+        "GPU_runs": 0,
+        "numerical_reuse": "C5 onlycouplerproduct BYTE767; unchangedMYNNformulas-kernels/pristinefixtures; critic13affectedPASS/2ASSERT/compiled9fluxarraysBYTE0ULP source-boundreuse. Freshcomposed NEWa616/4e identities+core/fullF20C5+surfaceexnercontracts; actualGPU E41/BYTE/warm-hostsync gate v-prep AFTERmerge.",
+        "counts": {
+          "tests": 66,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "RSS_KiB": 3152320,
+        "cleanup": true,
+        "UTC": "2026-10-16T07:36:56.226159+00:00"
+      }
+    ],
+    "counts": {
+      "tests": 319,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "elapsed_s": 329.29009540900006,
+    "RSS_KiB": 3902956,
+    "default_identities": {
+      "swiss": {
+        "returncode": 0,
+        "sha": "a6166b20e08453f7a6d72167807c22610bf0453aebe17fc663d48633fff40cef",
+        "expected": "a6166b20e08453f7a6d72167807c22610bf0453aebe17fc663d48633fff40cef",
+        "PASS": true,
+        "elapsed_s": 37.56702621500881,
+        "forecast_steps": 0,
+        "platform": "cpu"
+      },
+      "prod": {
+        "returncode": 0,
+        "sha": "4e1879c2b1f1581867fa6d3862a0712a7477433880c4deb6a193574818d20865",
+        "expected": "4e1879c2b1f1581867fa6d3862a0712a7477433880c4deb6a193574818d20865",
+        "PASS": true,
+        "elapsed_s": 71.65439305199834,
+        "forecast_steps": 0,
+        "platform": "cpu"
+      }
+    },
+    "identity_control_not_added_to_unique_counts": true,
+    "cap": "6G/noSwap,sequentialchildprocesses",
+    "GPU_runs": 0,
+    "cleanup": true,
+    "numerical_reuse": "Combined SRC/tests patch BYTE reviewed db78..767 (only index/hunk offsets normalized); all three changed files BYTE767, only physics_couplers product. SSIB59/Tiedtke58/NTU57 and other main fixes preserved BYTE. MYNN formulas/kernels/pristine fixtures unchanged: original fidelity reused, not rerun. Critic13affectedPASS/2genuineASSERT/0setup; compiled9fluxarraysBYTE0ULP across inside/mixed/all-beyond and sharedphysicalState handles unchanged. Seven SHA-bound E41 calibration scans reproduced F20 mixedNoah 803/694 and preF20 407; five C5 prescreens kInput407/360/407/400/346 STACK152/32/152/32/16, nonleaf0/unknown0. Prescreens source4fab couplerBYTE767/rebase only nondefaultcu6-mp56; not authoritative actualGPU. Fresh composed default hashes/core/fullF20C5/adjacent exner contracts only; no duplicate Fortran/compiled-array/GPU experiment."
+  },
+  "explicit_skips": [],
+  "source_audit": {
+    "UTC": "2026-10-16T07:25:31.803903+00:00",
+    "base59": "36fcfaa64d42f10e22ea7f24bfdba402a69fced2",
+    "approved": "7672228115299cb2a5f63bb63f3cd660e0caf377",
+    "merge": "5dc7c8e23dfcf2a8aca186fefb71deafc39b8890",
+    "source": "86431e98435c9f6d54dc1bae09910aa633a0b55d",
+    "combined_SRC_tests_PATCH_BYTE_review": true,
+    "all3changedfiles_BYTE767": true,
+    "only_product_path": "coupling/physics_couplers.py",
+    "all59SSIB_58Tiedtke_57NTU_QNSE_Jensen_preserved_BYTE": true,
+    "new_expected_default_ids": {
+      "swiss": "a6166b20e08453f7a6d72167807c22610bf0453aebe17fc663d48633fff40cef",
+      "prod": "4e1879c2b1f1581867fa6d3862a0712a7477433880c4deb6a193574818d20865"
+    },
+    "source_reuse": "unchangedformulas/kernels/pristinefixtures; CPUcompiled9fluxarraysBYTE0ULP acrossinside/mixed/allbeyond;13affectedPASS/2genuineASSERT;7SHAcalibratedprescreensreviewed",
+    "prescreens": "5C5 maxkInput407/360/407/400/346;STACK152/32/152/32/16;nonleaf0 unknown0; NOTactualGPUgate",
+    "C5_GPU_owner": "v-prep manager05:16/07:21 plan AFTERbatch60merge",
+    "C5_GPU_gate": "PROD/WN30227/Swiss3h frameBYTEvssealedF20e7 outputsREGRESSIONONLY;wholeactualGPU E41inclchild/fused;matchedwarmper-root timingmustnotregress/noaddedhostsync;anynonBYTEcase->full24hD6originalCPU",
+    "freeze_candidate": "laterdefault-pathchange requires samegateagain permanager",
+    "performance_limits": "usualpathskipsreform/fullcolumnoperands;2Dboundtest/reduction/deviceconditional;rarebranchcomputeshydroprofile separately; GPUliveness/hostsync/peak/warmtime U;statickernelcountsincludeuntakenbranch notperformanceproof"
+  },
+  "reused_review": "Combined SRC/tests patch BYTE reviewed db78..767 (only index/hunk offsets normalized); all three changed files BYTE767, only physics_couplers product. SSIB59/Tiedtke58/NTU57 and other main fixes preserved BYTE. MYNN formulas/kernels/pristine fixtures unchanged: original fidelity reused, not rerun. Critic13affectedPASS/2genuineASSERT/0setup; compiled9fluxarraysBYTE0ULP across inside/mixed/all-beyond and sharedphysicalState handles unchanged. Seven SHA-bound E41 calibration scans reproduced F20 mixedNoah 803/694 and preF20 407; five C5 prescreens kInput407/360/407/400/346 STACK152/32/152/32/16, nonleaf0/unknown0. Prescreens source4fab couplerBYTE767/rebase only nondefaultcu6-mp56; not authoritative actualGPU. Fresh composed default hashes/core/fullF20C5/adjacent exner contracts only; no duplicate Fortran/compiled-array/GPU experiment.",
+  "limits": "Integration source/CPU scope only. ActualGPU E41 including children/fused programs, 3h GPU frame BYTE regression versus sealed F20 e7e37390cc, matched warm per-root timing/no added host sync remain mandatory after FF, owned by v-prep. Any nonBYTE case requires full24h D6 vs original CPU-WRF. Previous GPU frames are regression only, not fidelity truth. C5 may change fusion/FMA and trajectories despite CPU flux BYTE. Five clean prescreens do not declare GPU PASS. Batch60 default freeze candidate only; any later default-path change repeats gate. Other composite/F2/native-passive F8 holds remain separate.",
+  "performance_memory": "Usual path skips reform and full-column reform operands; adds 2D bound predicate/reduction/device conditional. Rare branch computes hydrostatic profile separately. No new persistent State carry or explicit host sync API; device predicate retained. Static kernel counts include untaken branch and do not prove runtime/peak. Actual GPU transfers/hostsync, live memory, compile-readiness and matched warm time unknown pending v-prep gate; no speed or release claim.",
+  "default_identity": "FRESH full composed CPU native-facade FAST1/CENSUS0/0forecaststeps must match approved NEW Swiss a6166b20e08453f7a6d72167807c22610bf0453aebe17fc663d48633fff40cef / PRODd01 4e1879c2b1f1581867fa6d3862a0712a7477433880c4deb6a193574818d20865. Old7379/6487 intentionally superseded by reviewed C5.",
+  "GPU_runs": 0,
+  "cleanup": true
+}

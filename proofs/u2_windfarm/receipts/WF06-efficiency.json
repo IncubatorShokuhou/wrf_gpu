@@ -1,0 +1,41 @@
+{
+  "backend": "cpu",
+  "scope": "component only; no GPU/runtime readiness or roofline claim",
+  "shape": [
+    20,
+    40,
+    80
+  ],
+  "arms": [
+    {
+      "nt": 1,
+      "compile_s": 0.3137531569227576,
+      "median_s": 0.00020716199651360512,
+      "argument_bytes": 1804800,
+      "output_bytes": 780832,
+      "temp_bytes": 1896,
+      "hlo_chars": 58199,
+      "analysis": "compact (nt,max_curve_rows) constants; no nt*domain*levels temporary; sequential turbines preserve collision order"
+    },
+    {
+      "nt": 10,
+      "compile_s": 0.5524372621439397,
+      "median_s": 9.622599463909864e-05,
+      "argument_bytes": 1804800,
+      "output_bytes": 780832,
+      "temp_bytes": 2584,
+      "hlo_chars": 59437,
+      "analysis": "compact (nt,max_curve_rows) constants; no nt*domain*levels temporary; sequential turbines preserve collision order"
+    },
+    {
+      "nt": 100,
+      "compile_s": 0.8650206411257386,
+      "median_s": 0.00041228800546377897,
+      "argument_bytes": 1804800,
+      "output_bytes": 780832,
+      "temp_bytes": 2584,
+      "hlo_chars": 73075,
+      "analysis": "compact (nt,max_curve_rows) constants; no nt*domain*levels temporary; sequential turbines preserve collision order"
+    }
+  ]
+}

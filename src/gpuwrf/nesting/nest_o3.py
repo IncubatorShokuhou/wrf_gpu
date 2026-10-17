@@ -55,6 +55,9 @@ def force_child_carry_o3rad(child_carry, parent_carry, weights, *, parent_grid_r
     ``batched`` maps over a leading case axis (the batched domain tree carries ``(B, z, y, x)``).
     """
 
+    if getattr(child_carry,"stochastic",None) is not None:
+        from gpuwrf.nesting.stochastic import force_child_stochastic
+        child_carry = force_child_stochastic(child_carry,parent_carry,weights,parent_grid_ratio,batched)
     child_o3 = getattr(child_carry, "o3rad", None)
     parent_o3 = getattr(parent_carry, "o3rad", None)
     if child_o3 is None or parent_o3 is None:

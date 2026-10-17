@@ -1,6 +1,7 @@
 """Unit tests for M7 checkpoint writer/reader round-trips."""
 
 from __future__ import annotations
+from gpuwrf.contracts.precision import WRITER_PROFILE_LEAVES
 
 from pathlib import Path
 
@@ -9,7 +10,8 @@ import jax.numpy as jnp
 import numpy as np
 
 from gpuwrf.contracts.grid import GridSpec
-from gpuwrf.contracts.precision import DEFAULT_DTYPES, MYNN_DIAGNOSTIC_LEAVES, GWDO_DIAGNOSTIC_LEAVES
+from gpuwrf.contracts.precision import DEFAULT_DTYPES, MYNN_DIAGNOSTIC_LEAVES, GWDO_DIAGNOSTIC_LEAVES, MP_RE_DIAGNOSTIC_LEAVES, LES_TKE_LEAVES, EXTRA_SCALAR_BOUNDARY_LEAVES, SMS_CARRY_LEAVES, P3_STATE_LEAVES, EPSILON_PBL_LEAVES, FERRIER_CARRY_LEAVES, GODDARD4ICE_CARRY_LEAVES, GODDARD4ICE_HISTORY_LEAVES, THOMPSON_HAIL_SURFACE_LEAVES, JENSEN_STATE_LEAVES, NTU_STATE_LEAVES, NTU_SCALAR_LEAVES, ICE_DIAGNOSTIC_LEAVES
+from gpuwrf.contracts.cammg_fields import STATE_FIELDS as CAMMG_STATE_FIELDS
 from gpuwrf.contracts.state import (
     CONDITIONAL_STATE_LEAVES,
     SCALAR_BOUNDARY_OPTIONAL_LEAVES,
@@ -78,9 +80,17 @@ def test_checkpoint_roundtrip_preserves_all_state_fields_bitwise(tmp_path: Path)
     # +5 B39 REAL-locked MYNN surface-layer carry leaves appended at the end = 76.
     assert MYNN_DIAGNOSTIC_LEAVES == ("el_pbl", "maxmf", "maxwidth", "ztop_plume")
     assert GWDO_DIAGNOSTIC_LEAVES == ("dtaux3d", "dtauy3d", "dusfcg", "dvsfcg")
-    legacy_order = State.__slots__[:-8]
-    assert len(State.__slots__) == 84 and len(legacy_order) == 76
-    assert State.__slots__[-8:] == (*MYNN_DIAGNOSTIC_LEAVES, *GWDO_DIAGNOSTIC_LEAVES)
+    legacy_order = State.__slots__[:76]
+    # +1 v0.4.0 o2-km2 LES TKE (WRF tke_2, km_opt=2 only) appended after the mp RE leaves = 89.
+    expected_tail = (*EXTRA_SCALAR_BOUNDARY_LEAVES[:10], *SMS_CARRY_LEAVES, *P3_STATE_LEAVES,
+                     *EXTRA_SCALAR_BOUNDARY_LEAVES[10:15], *EPSILON_PBL_LEAVES,
+                     "tracers", "tracer_bdy", "tracer_budget", "qt_bdy", "qrimef_bdy",
+                     *FERRIER_CARRY_LEAVES, *GODDARD4ICE_CARRY_LEAVES, *GODDARD4ICE_HISTORY_LEAVES, *THOMPSON_HAIL_SURFACE_LEAVES, *JENSEN_STATE_LEAVES, *WRITER_PROFILE_LEAVES, *NTU_STATE_LEAVES,
+                     *(f"{n}_bdy" for n in NTU_SCALAR_LEAVES), *CAMMG_STATE_FIELDS, *ICE_DIAGNOSTIC_LEAVES)
+    assert len(State.__slots__) == 89 + len(expected_tail) and len(legacy_order) == 76
+    assert State.__slots__[76:84] == (*MYNN_DIAGNOSTIC_LEAVES, *GWDO_DIAGNOSTIC_LEAVES)
+    assert State.__slots__[84:89] == ("sfc_wspd", *MP_RE_DIAGNOSTIC_LEAVES, *LES_TKE_LEAVES)
+    assert State.__slots__[89:] == expected_tail
     assert legacy_order[-5:] == ("mol", "hfx", "qfx", "qsfc", "pblh")
     assert legacy_order[-26:-12] == (
         "Nc", "Nn", "rainc_acc", "qsq", "qc_bl", "qi_bl", "cldfra_bl",
@@ -93,7 +103,8 @@ def test_checkpoint_roundtrip_preserves_all_state_fields_bitwise(tmp_path: Path)
     assert restored_namelist.acoustic_substeps == namelist.acoustic_substeps
 
     assert state.active_field_names() == tuple(name for name in State.__slots__
-        if name not in (*CONDITIONAL_STATE_LEAVES, *GWDO_DIAGNOSTIC_LEAVES))
+        if name not in (*CONDITIONAL_STATE_LEAVES, *GWDO_DIAGNOSTIC_LEAVES, *MP_RE_DIAGNOSTIC_LEAVES,
+                         *LES_TKE_LEAVES, *SMS_CARRY_LEAVES, *EPSILON_PBL_LEAVES))
     assert restored_state.active_field_names() == state.active_field_names()
     assert len(state.active_field_names()) == 66  # Frozen62 +4 requiredMYNN, inactiveGWDO absent.
     for field in state.active_field_names():
@@ -102,7 +113,7 @@ def test_checkpoint_roundtrip_preserves_all_state_fields_bitwise(tmp_path: Path)
         assert restored.dtype == original.dtype, field
         assert restored.shape == original.shape, field
         assert np.array_equal(restored, original), field
-    for field in (*CONDITIONAL_STATE_LEAVES, *GWDO_DIAGNOSTIC_LEAVES):
+    for field in (*CONDITIONAL_STATE_LEAVES, *GWDO_DIAGNOSTIC_LEAVES, *MP_RE_DIAGNOSTIC_LEAVES, *SMS_CARRY_LEAVES):
         assert getattr(restored_state, field) is None, field
 
     leaves = jax.tree_util.tree_leaves(restored_state)

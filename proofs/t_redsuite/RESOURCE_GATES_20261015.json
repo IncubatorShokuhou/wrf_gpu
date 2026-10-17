@@ -1,0 +1,164 @@
+{
+  "status": "Resource gates PASS; full CPU suite INCOMPLETE",
+  "source": "69e1a529807c24590a227961cd9916eb477d291a",
+  "heavy_roots": {
+    "status": "COMPLETE:2/2heavy-singletonsPASS in fresh12G/noSwap processes",
+    "cap_bytes": 12884901888,
+    "swap_max": 0,
+    "nodes": [
+      "tests/v040/rootbdy/test_root_flow_extras.py::test_swiss_production_step_dispatches_extra_flow_dep[28]",
+      "tests/v040/rootbdy/test_root_flow_extras.py::test_swiss_production_step_dispatches_extra_flow_dep[40]"
+    ],
+    "evidence": "P02 authoritative scope OOM6G at mp28 after18PASS; mp40 unexecuted heavy sibling",
+    "authorization": "MAILBOX2026-10-14T23:34:40Z",
+    "nightly_status": {
+      "issue": "20261014_12z",
+      "verdict": "DONE",
+      "updated_utc": "2026-10-14T22:52:36+00:00"
+    },
+    "runner": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/run_one_v3.py",
+    "results": [
+      {
+        "arm": "C002h-MP28-12G",
+        "source": "69e1a529807c24590a227961cd9916eb477d291a",
+        "outcome": "1PASS",
+        "pytest_seconds": 55.655,
+        "peak_rss_gib": 5.29656982421875,
+        "cgroup_peak_gib": 5.03338623046875,
+        "swap_kib": 0,
+        "xml_sha256": "c1b1408cc15e3e361f2e66b66e5c7c39e9ea2d93dbc38fd17f6cf6988d2844e0",
+        "receipt": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C002h-MP28-12G"
+      },
+      {
+        "arm": "C002i-MP40-12G",
+        "source": "69e1a529807c24590a227961cd9916eb477d291a",
+        "outcome": "1PASS",
+        "pytest_seconds": 55.225,
+        "peak_rss_gib": 4.9748687744140625,
+        "cgroup_peak_gib": 4.684772491455078,
+        "swap_kib": 0,
+        "xml_sha256": "bdc9ef5663fa4a391412fd19979d6cb5acaedbcc95a018cbb1682f18c0115fb0",
+        "receipt": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C002i-MP40-12G"
+      }
+    ],
+    "interpretation": "Both fresh composed-main tests peak below6GiB; original-source control D04 pending to separate source changes from session accumulation. Live-object leak not established.",
+    "additional_sms_heavy_nodes": [
+      "tests/dynamics/test_sms3dtke_full.py::test_sms_complete_compiled_pristine_operator",
+      "tests/dynamics/test_sms3dtke_full.py::test_sms_three_own_steps_nine_rk_stages_pristine"
+    ],
+    "additional_sms_status": "AUTHORIZED12G singleton retries NOW undermanager23:34decision"
+  },
+  "original_source_memory_control": {
+    "classification": "c: session memory accumulation; fresh-process isolation closes resource failure; live-object leak UNKNOWN",
+    "original_source": "c9bb4a76cf42f51302084c100fe034a03cc9a716",
+    "original_failure": "P02 actual6GscopeOOM at MP28 after18PASS; no original XML",
+    "original_mp28_start_rss_gib": 4.626701354980469,
+    "fresh_mp28_start_rss_gib": 0.7757186889648438,
+    "extra_preexisting_rss_gib": 3.850982666015625,
+    "largest_completed_rss_deltas": [
+      {
+        "nodeid": "tests/v040/rootbdy/test_root_flow_extras.py::test_swiss_production_step_dispatches_extra_flow_dep[24]",
+        "start_rss_gib": 1.3662986755371094,
+        "end_rss_gib": 4.626701354980469,
+        "delta_gib": 3.2604026794433594
+      },
+      {
+        "nodeid": "tests/v040/rootbdy/test_root_flow_extras.py::test_root_extras_chain_matches_pristine_wrf[24]",
+        "start_rss_gib": 0.7801780700683594,
+        "end_rss_gib": 1.2826080322265625,
+        "delta_gib": 0.5024299621582031
+      },
+      {
+        "nodeid": "tests/v040/rootbdy/test_root_flow_extras.py::test_root_extras_chain_matches_pristine_wrf[26]",
+        "start_rss_gib": 1.2826080322265625,
+        "end_rss_gib": 1.33062744140625,
+        "delta_gib": 0.0480194091796875
+      },
+      {
+        "nodeid": "tests/v040/rootbdy/test_root_flow_extras.py::test_root_extras_chain_matches_pristine_wrf[40]",
+        "start_rss_gib": 1.3436470031738281,
+        "end_rss_gib": 1.3637123107910156,
+        "delta_gib": 0.0200653076171875
+      },
+      {
+        "nodeid": "tests/v040/rootbdy/test_root_flow_extras.py::test_root_extras_chain_matches_pristine_wrf[28]",
+        "start_rss_gib": 1.33062744140625,
+        "end_rss_gib": 1.3436470031738281,
+        "delta_gib": 0.013019561767578125
+      }
+    ],
+    "same_original_source_control": {
+      "outcome": "1PASS",
+      "pytest_seconds": 55.826,
+      "peak_hwm_gib": 5.4098052978515625,
+      "cgroup_peak_gib": 5.121337890625,
+      "swap_kib": 0,
+      "cap": "12G/noSwap",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/D04-original-root28-memory",
+      "xml_sha256": "704b6946a27c523dcd4b9a3d7d56e96caf17011cca3b162f784397b086196a59"
+    },
+    "interpretation": "[M] MP24 retains3.26GiB RSS across its test despite existing jax.clear_caches; original MP28 starts4.63GiB vsfresh.776GiB. Exact original source/test singleton passes with peak below6GiB. [I] retained JAX/compiler/allocator/module resources; specific live-object leak [U]. Original input SHA unrecorded and old GPU_HELD=0 now correctlyabsent; no absolute byte-identical-world claim.",
+    "scope": "CPU loader/interpret-init/eval_shape tests; not GPU/forecast fidelity or speed"
+  },
+  "sms_compiled_24g": {
+    "status": "PASS one authorized24G attempt; no numerical bound/source change",
+    "source": "69e1a529807c24590a227961cd9916eb477d291a",
+    "node": "tests/dynamics/test_sms3dtke_full.py::test_sms_complete_compiled_pristine_operator",
+    "pytest_seconds": 110.023,
+    "peak_rss_gib": 12.52468490600586,
+    "max_sampled_rss_gib": 12.373310089111328,
+    "cgroup_peak_gib": 12.257701873779297,
+    "swap_kib": 0,
+    "headroom_preflight_gib": 62,
+    "headroom_test_start_gib": 62.79925537109375,
+    "hlo": {
+      "jit": "_assert_operator.<locals>.<lambda>",
+      "file": "<DATA_ROOT>/wrf_gpu2/scratch/t-redsuite/RS05-snapshot/tests/dynamics/test_sms3dtke_full.py",
+      "line": 25,
+      "target": "gpuwrf.dynamics.les3d_smagorinsky.les3d_smagorinsky_memory",
+      "key": "real_mixed",
+      "phase": "unoptimized HLO before original jit compile/execution",
+      "proto_bytes": 11344428,
+      "text_bytes": 7020414,
+      "instructions": 82967,
+      "proto_sha256": "aef0ba2eb4dd25bbc123bc7081e1f0c4af6fa5fc36b85977dd74f06c10624970",
+      "lowering_and_metadata_seconds": 9.851700966999488,
+      "platform": "cpu"
+    },
+    "instrumentation": "Outer lambda lower/raw HLO metadata exported first; original JittedFunction subsequently called with identical arguments/default flags; original assertions unchanged. HLO metadata seconds included in test duration.200ms sampled RSS plus actual per-report kernelHWM.",
+    "xml_sha256": "634f02b3fdfa9c75d81e4f1c668d662d3770c709c512d636ce8f1d4998ea5ec8",
+    "disposition": "Intrinsic CPU compiler/whole-operator harness peak exceeds12GiB, not product numerical red; approved24G original gate PASS. No further24G run authorized/started."
+  },
+  "sms_three_step": {
+    "outcome": "1PASS originalnine-RK bounds",
+    "pytest_seconds": 66.927,
+    "hwm_gib": 3.9465789794921875,
+    "cgroup_peak_gib": 3.7697715759277344,
+    "swap_kib": 0,
+    "receipt": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C030c-SMS-three-step-12G",
+    "xml_sha256": "8f54d3fee6d5590822f32f9202fbc269958991b74452277c7b830b9f431ea3de"
+  },
+  "sms_partial_continuation": {
+    "status": "ALL_ORIGINAL_NODES_ACCOUNTED",
+    "original_collected": [
+      "tests/dynamics/test_sms3dtke_full.py::test_sms_complete_pristine_operator[real_mixed]",
+      "tests/dynamics/test_sms3dtke_full.py::test_sms_complete_pristine_operator[periodic_convective]",
+      "tests/dynamics/test_sms3dtke_full.py::test_sms_complete_pristine_operator[zero_tke_stable]",
+      "tests/dynamics/test_sms3dtke_full.py::test_sms_complete_compiled_pristine_operator",
+      "tests/dynamics/test_sms3dtke_full.py::test_sms_three_own_steps_nine_rk_stages_pristine"
+    ],
+    "original_observer_only_passes": [
+      "tests/dynamics/test_sms3dtke_full.py::test_sms_complete_pristine_operator[real_mixed]",
+      "tests/dynamics/test_sms3dtke_full.py::test_sms_complete_pristine_operator[periodic_convective]",
+      "tests/dynamics/test_sms3dtke_full.py::test_sms_complete_pristine_operator[zero_tke_stable]"
+    ],
+    "original_pytest_xml": false,
+    "actual_retry_xml": [
+      "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C030d-SMS-compiled-24G/pytest.xml",
+      "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C030c-SMS-three-step-12G/pytest.xml"
+    ],
+    "remaining": []
+  },
+  "limits": "24G approved ONCE and spent; no further24G runs. All ordinary scopes6G/noSwap; manager-authorized singletons12G/noSwap until2026-10-15T19:15Z;4global slots. No GPU by this lane.",
+  "scope": "CPU regression, independent pristine fixture/caller gates and resource accounting; no new forecast/GPU speed/VRAM claim; no original numerical bound/source edits."
+}

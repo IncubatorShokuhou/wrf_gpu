@@ -15,9 +15,11 @@ from pathlib import Path
 import jax.numpy as jnp
 import numpy as np
 
+from gpuwrf.assets import asset_path, ensure_asset
+
 
 ROOT = Path(__file__).resolve().parents[3]
-OZONE_ASSET = ROOT / "data" / "fixtures" / "wrf-cam-ozone-v1.npz"
+OZONE_ASSET = asset_path("data/fixtures/wrf-cam-ozone-v1.npz")
 OZONE_ASSET_SHA256 = "621981243488618988b5d8b5926e981c5658d4a82ebabdf8c680874f3a3fec95"
 _DATE_OZ = np.asarray(
     [16, 45, 75, 105, 136, 166, 197, 228, 258, 289, 319, 350],
@@ -37,9 +39,10 @@ def _sha256(path: Path) -> str:
 def _load_wrf_cam_ozone_asset() -> tuple[np.ndarray, np.ndarray, np.ndarray]:
     """Load and validate the immutable WRF ozone table asset."""
 
-    if _sha256(OZONE_ASSET) != OZONE_ASSET_SHA256:
-        raise RuntimeError(f"WRF CAM ozone asset hash drift: {OZONE_ASSET}")
-    with np.load(OZONE_ASSET, allow_pickle=False) as archive:
+    asset = ensure_asset(OZONE_ASSET)
+    if _sha256(asset) != OZONE_ASSET_SHA256:
+        raise RuntimeError(f"WRF CAM ozone asset hash drift: {asset}")
+    with np.load(asset, allow_pickle=False) as archive:
         if set(archive.files) != {"latitude_deg", "pressure_pa", "ozone_vmr"}:
             raise RuntimeError(f"WRF CAM ozone asset schema drift: {archive.files}")
         latitude = np.asarray(archive["latitude_deg"], dtype=np.float32)

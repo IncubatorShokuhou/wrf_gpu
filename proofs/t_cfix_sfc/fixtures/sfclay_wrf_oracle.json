@@ -1,0 +1,181 @@
+{
+ "fixture_sha256": "e4e96fa426ac1efae33baeaa8996bc57276dde70135e8a22ea37ad5919f6c735",
+ "source": "WRF 4.7.1 phys/module_sf_sfclay.F (91), module_sf_pxsfclay.F (7), module_sf_gfs.F (3); unmodified",
+ "build_manifest": {
+  "compiler": "GNU Fortran (conda-forge gcc 14.3.0-19) 14.3.0",
+  "sources": {
+   "module_gfs_funcphys.F": "0d43dccf0510bd49ef07f81c357e4b96fd9391604f7c14d7e3cf8700ff383e74",
+   "module_gfs_machine.F": "300ee4f75663e89d34c8a9b8733cc07a5dd48c3d973da019d31cb76524babe25",
+   "module_gfs_physcons.F": "2b8ef99663ba62748b57c7002f5e5b8c9338f2a825c1d32c113bd4e3bff2eb52",
+   "module_progtm.F": "6d6c411638011f92f21764418bc7993ac7eefe8f05cfe79e0df05a5ab58d1b47",
+   "module_sf_gfs.F": "10eb3f3b47deb8f33d10e13a5b274db89a59cf5fb8c86a92f353205b9e73440e",
+   "module_sf_pxsfclay.F": "cd1b2095f8e093d4bc423ebbc4a3bfbce58a7d17b34f1f41d770c6061b68d0a4",
+   "module_sf_sfclay.F": "dfd7aae5ef1f0bd979246480af5276a1ee956bc216ec8dc6e82eb963ded761dc"
+  },
+  "wrappers": {
+   "wrf_constants.inc": "8bc0de58e05db565da8016ddcfd276ad12c9a4cd05bdb53c5973c228cce7df65",
+   "sfclay91_oracle.f90": "c41c6d0ed480741d06f6c51a78b4591d58f2891e3c8de66fd53c297894cc8b3b",
+   "sfclay7_oracle.f90": "225f7ebf309e395cafc93251bc3c89c2f54890d98bf1f0fcd8e0a8d900dcad2a",
+   "sfclay3_oracle.f90": "5bbc4c17b050882cd72b7be0d3dc83e1e6cc3dc2c968d07ea192b534ead1e655"
+  },
+  "builds": {
+   "sf91/zero": {
+    "flags": [
+     "-O0",
+     "-ffp-contract=off",
+     "-finit-real=zero"
+    ],
+    "sha256": "f3a2f5ee8facb11049f23d95344325288146e5971d42d75628245f1e2a0436fc"
+   },
+   "sf91/inf": {
+    "flags": [
+     "-O0",
+     "-ffp-contract=off",
+     "-finit-real=inf"
+    ],
+    "sha256": "4ef24f45a5ea63c4633f19bf52fa6b1b77fd03abd648ce31833ddd9676216535"
+   },
+   "sf91/fma": {
+    "flags": [
+     "-O2",
+     "-mfma",
+     "-ffp-contract=fast",
+     "-finit-real=zero"
+    ],
+    "sha256": "3cc25c56547587689ace2ae9498c6167398991c0114542eab6c3739fdb836cc8"
+   },
+   "sf7/zero": {
+    "flags": [
+     "-O0",
+     "-ffp-contract=off",
+     "-finit-real=zero"
+    ],
+    "sha256": "39442ec12f17490d1ccc069ae7993593f859efd623e473e3dcfc0da628e48678"
+   },
+   "sf7/inf": {
+    "flags": [
+     "-O0",
+     "-ffp-contract=off",
+     "-finit-real=inf"
+    ],
+    "sha256": "51a41a080931be576a0f5f9582ce984a1d68387cb45e12a98f8b56e6d3cbcd0b"
+   },
+   "sf7/fma": {
+    "flags": [
+     "-O2",
+     "-mfma",
+     "-ffp-contract=fast",
+     "-finit-real=zero"
+    ],
+    "sha256": "5c600a1960281e334933586f9ac93165b549771e1a3afd1dcd405d94854cc7b6"
+   },
+   "sf3/zero": {
+    "flags": [
+     "-O0",
+     "-ffp-contract=off",
+     "-finit-real=zero"
+    ],
+    "sha256": "de7dde8ddac369864b6ce8864dac8562bed6e5ea9fcc0a6c80934b308a6e862c"
+   },
+   "sf3/inf": {
+    "flags": [
+     "-O0",
+     "-ffp-contract=off",
+     "-finit-real=inf"
+    ],
+    "sha256": "2c507ed3add87d12c9d51e3b5065f33ec01d16a18681561b744af9bdf9f5132f"
+   },
+   "sf3/fma": {
+    "flags": [
+     "-O2",
+     "-mfma",
+     "-ffp-contract=fast",
+     "-finit-real=zero"
+    ],
+    "sha256": "4ca99d20415c67398f398cff99907621eca823e9907ae7d3aa1d6e24bdf87991"
+   }
+  }
+ },
+ "oracle_npz_sha256": "4508ea20f36f58b3abe8869ba7d28050c79033cef88b4a786904127622161b3a",
+ "envelope_draws": 256,
+ "inputs": [
+  "u",
+  "v",
+  "t",
+  "th",
+  "qv",
+  "p",
+  "dz",
+  "psfc",
+  "tsk",
+  "xland",
+  "lakemask",
+  "mavail",
+  "pblh",
+  "znt",
+  "ust",
+  "mol",
+  "qsfc",
+  "hfx",
+  "qfx",
+  "zol",
+  "dx",
+  "regime"
+ ],
+ "outputs": [
+  "ust",
+  "znt",
+  "mol",
+  "zol",
+  "rmol",
+  "regime",
+  "psim",
+  "psih",
+  "fm",
+  "fh",
+  "qsfc",
+  "qgh",
+  "cpm",
+  "hfx",
+  "qfx",
+  "lh",
+  "flhc",
+  "flqc",
+  "chs",
+  "chs2",
+  "cqs2",
+  "u10",
+  "v10",
+  "th2",
+  "t2",
+  "q2",
+  "gz1oz0",
+  "wspd",
+  "br",
+  "spare"
+ ],
+ "surfaces": [
+  "calm",
+  "land",
+  "water+1.5",
+  "water+6.0",
+  "water-0.5",
+  "water-4.0"
+ ],
+ "regimes": {
+  "91": [
+   1,
+   2,
+   3,
+   4
+  ],
+  "7": [
+   1,
+   2,
+   3
+  ]
+ },
+ "n_columns": 119,
+ "rule": "per call on identical operands: port inside [lower, upper] of WRF zero/FMA builds over +-1 ULP input draws, +-2 REAL4 output ULPs; SFCLAY regime-1 ZOL (entry value kept by WRF, no consumer) excluded",
+ "columns": "lowest level of ORIGINAL CPU-WRF c04 (Swiss 2023-01-15) + water/calm variants; call 2 consumes call-1 INOUT memory (UST ZNT MOL ZOL QSFC HFX QFX REGIME; SF_GFS UST ZNT)"
+}

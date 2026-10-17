@@ -68,7 +68,8 @@ def test_noah_init_cloud_fraction_matches_wrf_t0_and_keeps_fluxes(monkeypatch):
     calls=[]
     monkeypatch.setattr(O,'rrtmg_radiation_diagnostics',lambda *a,**k:calls.append(k) or rad)
     nl=SimpleNamespace(grid=None,time_utc=datetime(2026,2,27),radiation_static=None,topo_shading=0,slope_rad=0,
-                       topo_shadow_length_m=25000.,ra_sw_physics=4,ra_lw_physics=4)
+                       topo_shadow_length_m=25000.,ra_sw_physics=4,ra_lw_physics=4,
+                       mp_physics=8,sf_urban_physics=0,bl_pbl_physics=5)
     forcing,result=O.noahmp_initial_rad(state,nl,_with_diagnostics=True)
     assert result.cloud_fraction.shape==state.qv.shape
     assert not np.asarray(result.cloud_fraction).any()

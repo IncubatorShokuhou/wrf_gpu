@@ -1,0 +1,41 @@
+{
+  "origin": "pristine WRF 4.7.1 module_gfs_funcphys GFUNCPHYS",
+  "source_sha256": {
+    "module_gfs_machine.F": "300ee4f75663e89d34c8a9b8733cc07a5dd48c3d973da019d31cb76524babe25",
+    "module_gfs_physcons.F": "2b8ef99663ba62748b57c7002f5e5b8c9338f2a825c1d32c113bd4e3bff2eb52",
+    "module_gfs_funcphys.F": "0d43dccf0510bd49ef07f81c357e4b96fd9391604f7c14d7e3cf8700ff383e74"
+  },
+  "export_only": "Insert PUBLIC declaration before CONTAINS; all original source bytes preserved",
+  "builds": {
+    "r4": {
+      "flags": [
+        "-O2",
+        "-w",
+        "-ffree-form",
+        "-ffree-line-length-none",
+        "-cpp",
+        "-DEM_CORE=1",
+        "-DNMM_CORE=0"
+      ],
+      "sha256": "065dbf5606d82cd0b50f93f76119957df76024d2f2726c73e611e13035655e82",
+      "bytes": 631003,
+      "float64_values": 87159
+    },
+    "r8": {
+      "flags": [
+        "-O2",
+        "-w",
+        "-ffree-form",
+        "-ffree-line-length-none",
+        "-cpp",
+        "-DEM_CORE=1",
+        "-DNMM_CORE=0",
+        "-fdefault-real-8",
+        "-fdefault-double-8"
+      ],
+      "sha256": "8e219e31434e0233efd36197d5b2c40b671f9721d991db5415dd794e9514cb9b",
+      "bytes": 631001,
+      "float64_values": 87159
+    }
+  }
+}

@@ -1,0 +1,100 @@
+{
+  "shared": {
+    "rc": 0,
+    "expected_rc": 0,
+    "passed": true,
+    "wall_s": 1428.2699691308662,
+    "quiet_pauses": [],
+    "log": "<USER_HOME>/wrf_gpu2_lanes/s1-gpuqual/final_shared.log",
+    "log_sha256": "efe4a78af4415f48bbf029b28ce639506c820aed75ab401a572d81b30837ca9a",
+    "command": [
+      "python",
+      "-m",
+      "pytest",
+      "-q",
+      "--basetemp",
+      "<USER_HOME>/wrf_gpu2_lanes/s1-gpuqual/pytest",
+      "<USER_HOME>/wrf_gpu2_lanes/s1-gpuqual/final_snapshot/tests/test_v013_operational_smoke.py",
+      "<USER_HOME>/wrf_gpu2_lanes/s1-gpuqual/final_snapshot/tests/test_v060_physics_dispatch.py",
+      "<USER_HOME>/wrf_gpu2_lanes/s1-gpuqual/final_snapshot/tests/test_cli.py",
+      "<USER_HOME>/wrf_gpu2_lanes/s1-gpuqual/final_snapshot/tests/test_scheme_catalog_fail_closed.py",
+      "<USER_HOME>/wrf_gpu2_lanes/s1-gpuqual/final_snapshot/tests/test_v034_implemented_notes.py",
+      "<USER_HOME>/wrf_gpu2_lanes/s1-gpuqual/final_snapshot/tests/test_namelist_binding.py",
+      "<USER_HOME>/wrf_gpu2_lanes/s1-gpuqual/final_snapshot/tests/test_m7_restart_checkpoint_roundtrip.py",
+      "<USER_HOME>/wrf_gpu2_lanes/s1-gpuqual/final_snapshot/tests/test_namelist_check.py",
+      "<USER_HOME>/wrf_gpu2_lanes/s1-gpuqual/final_snapshot/tests/test_netcdf_process_lock.py"
+    ],
+    "source": "e52c6ebb8fb4e297cb57aece563a2eba1ffd7c99"
+  },
+  "identity": {
+    "rc": 0,
+    "expected_rc": 0,
+    "passed": true,
+    "wall_s": 253.83631728496403,
+    "quiet_pauses": [],
+    "log": "<USER_HOME>/wrf_gpu2_lanes/s1-gpuqual/final_identity.log",
+    "log_sha256": "dfd371b7564efc0f162b4b955fd07b0af0497c6a9486e7ac2f166e9f91f87c2d",
+    "command": [
+      "python",
+      "<USER_HOME>/wrf_gpu2_lanes/s1-gpuqual/final_snapshot/proofs/s1_port/release_identity.py",
+      "<USER_HOME>/wrf_gpu2_lanes/s1-gpuqual/final_snapshot",
+      "<USER_HOME>/wrf_gpu2_lanes/s1-gpuqual/RELEASE_IDENTITY.json"
+    ],
+    "source": "e52c6ebb8fb4e297cb57aece563a2eba1ffd7c99"
+  },
+  "mutant": {
+    "rc": 1,
+    "expected_rc": 1,
+    "passed": true,
+    "wall_s": 3.524350191000849,
+    "quiet_pauses": [],
+    "log": "<USER_HOME>/wrf_gpu2_lanes/s1-gpuqual/final_mutant.log",
+    "log_sha256": "e64a2d1c1d8aa7a393e14d4d053b109a35b3dace24b7b3195c9ed9c906ce2c0f",
+    "command": [
+      "python",
+      "-m",
+      "pytest",
+      "-q",
+      "-p",
+      "qual_note_mutant",
+      "--basetemp",
+      "<USER_HOME>/wrf_gpu2_lanes/s1-gpuqual/pytest",
+      "<USER_HOME>/wrf_gpu2_lanes/s1-gpuqual/final_snapshot/tests/test_v034_implemented_notes.py::test_notes_match_recorded_gpu_qualification[cu_physics-5]"
+    ],
+    "source": "e52c6ebb8fb4e297cb57aece563a2eba1ffd7c99"
+  },
+  "archive_extract": {
+    "rc": 0,
+    "expected_rc": 0,
+    "passed": true,
+    "wall_s": 0.5028100479394197,
+    "quiet_pauses": [],
+    "log": "<USER_HOME>/wrf_gpu2_lanes/s1-gpuqual/final_archive_extract.log",
+    "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "command": [
+      "bash",
+      "-c",
+      "git archive HEAD proofs/v040/gpuqual tests/test_v034_implemented_notes.py | tar -x -C <USER_HOME>/wrf_gpu2_lanes/s1-gpuqual/archive_check"
+    ],
+    "source": "e52c6ebb8fb4e297cb57aece563a2eba1ffd7c99"
+  },
+  "archive_notes": {
+    "rc": 0,
+    "expected_rc": 0,
+    "passed": true,
+    "wall_s": 3.512189870001748,
+    "quiet_pauses": [],
+    "log": "<USER_HOME>/wrf_gpu2_lanes/s1-gpuqual/final_archive_notes.log",
+    "log_sha256": "6e4bcb411b7633130746b8a7cc82d1281b5b115dbed9d4fc5ea14859900e495a",
+    "command": [
+      "python",
+      "-m",
+      "pytest",
+      "-q",
+      "--basetemp",
+      "<USER_HOME>/wrf_gpu2_lanes/s1-gpuqual/pytest",
+      "<USER_HOME>/wrf_gpu2_lanes/s1-gpuqual/archive_check/tests/test_v034_implemented_notes.py"
+    ],
+    "source": "e52c6ebb8fb4e297cb57aece563a2eba1ffd7c99"
+  }
+}

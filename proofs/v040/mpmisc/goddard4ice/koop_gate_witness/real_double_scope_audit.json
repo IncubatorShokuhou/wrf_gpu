@@ -1,0 +1,729 @@
+{
+  "utc": "2026-10-14T05:48:15.371229+00:00",
+  "base_commit": "62abd985cf03d2399f118e7b9ad8b94b3c4203e3",
+  "source_sha256": "fabf19e2a9073cff886e882b187080bfdf089d3fd40c0fce1d19bc93b1e5e802",
+  "source_files_sha256": {
+    "src/gpuwrf/physics/thompson_hail/native.py": "eaf268118d9241e3889bcb5a3ff997cdf7c05dfc6b2d0c23383cd1e2023fd1ba",
+    "src/gpuwrf/physics/thompson_hail/column.py": "8d425e68a66be4b99ffac980cc56f6e9a8f36c132c22f244290845351c88c600",
+    "src/gpuwrf/physics/thompson_hail/context.py": "6331feb5c657ba49b9623bff599d0397bd12536c5f332f885532cd91ae6880c9",
+    "src/gpuwrf/physics/thompson_hail/__init__.py": "798e80173111231bcd6b22c7ac96e24252493550c66bfaad0b6fe706037c9c42",
+    "src/gpuwrf/physics/thompson_hail/init.py": "06f9536c74ded9411ac9201d8d9241286d51b44004ac8a7b97ff15d3db82bc4a",
+    "src/gpuwrf/physics/thompson_column.py": "7228ec8ccdf972c1c7186fe8a124d7023141600e6af5bb41c21cbc8794d19ab9",
+    "src/gpuwrf/physics/thompson_aero_column.py": "07b6eb2ac31421e3d8ead2a7fdaddbc7152ade56ce747ba6f2a820b534403f93",
+    "src/gpuwrf/coupling/thompson_hail_adapter.py": "18fc9394c25b0a9807539ae1a7b1f9e491b76040f19d997bcbbb3ee2c127dfbf"
+  },
+  "JAX_imported": false,
+  "method": "AST/source-only explicit float64 reference inventory and actual private38 binding/call-path inspection; no numerical rerun or optimized HLO/device measurement.",
+  "original_REAL_scope": {
+    "1535-1541": "all input/output prognostics, pptrain/pptsnow/pptgraul/pptice, DT",
+    "1545-1548": "all held cumulative tendencies",
+    "1580-1586": "thermodynamic/work moments rho/rhof, qvs, lvap/ocp, snow moments",
+    "1603-1626": "terminal velocities, sediment fluxes, surface sums, rate_max/sump/ratio, REAL xDi/xmi and timestep reciprocals"
+  },
+  "original_DOUBLE_scope": {
+    "1549-1579": "condensation/aerosol/cloud/rain/ice/snow/graupel mass-number-volume process-rate arrays",
+    "1587-1598": "DOUBLE ilamr/ilamg/N0_r/N0_g, N0_melt, N0_exp/N0_min, lam_exp/lamc/lamr/lamg/lami/ilami/ilamc",
+    "1600,3444": "DOUBLE Dc_star/Dr_star; -2.D0/DSQRT droplet evaporation island",
+    "377-400": "DOUBLE collision, freezing, ice-deposition, efficiency and evaporation lookup tables; original CCN/coefficients are REAL",
+    "6111-6145": "theta_wetb REAL8 c/d polynomial coefficients promote Horner arithmetic then round REAL answer"
+  },
+  "binding_conclusions": [
+    {
+      "family": "private column State/tendencies/thermodynamics",
+      "verdict": "No explicit F64 held carry found; _real/_accumulate/_render round REAL, _body final leaves REAL32."
+    },
+    {
+      "family": "surface and sedimentation",
+      "verdict": "sediment_hail loop carries REAL32 tendencies/moments/flux/precip; return_rates cloud branch returns REAL flux; _body precip and original adapter totals/buckets REAL32; legacy F64 default precip returns bypassed."
+    },
+    {
+      "family": "slopes/intercepts/final number reconstruction",
+      "verdict": "Active F64 casts correspond original declared DOUBLE slopes/intercepts. REAL power results widen on original assignment; reconstructed numbers round back to REAL."
+    },
+    {
+      "family": "process rates, caps, accumulated tendencies",
+      "verdict": "F64 rate arrays correspond original declarations; REAL caps promoted when compared to DOUBLE rates are legal mixed expression. Tendencies round back to REAL at source assignment."
+    },
+    {
+      "family": "cloud evaporation and wetbulb",
+      "verdict": "Dc_star F64 DSQRT and wetbulb REAL8 Horner map original DOUBLE islands. No blanket thermo/F64 facade used."
+    },
+    {
+      "family": "default shared F64 source branches",
+      "verdict": "Shared default entry/final helpers and _cloud_distribution_aero F64 nuf/mvd calculations are overridden or unused in private38; source grep is not proof of live optimized HLO. _wrf_snow_speed casts vtr to REAL before REAL blend."
+    }
+  ],
+  "finding": {
+    "id": "G4-28-F1",
+    "severity": "source fidelity precision mismatch pending producer disposition",
+    "path": "src/gpuwrf/physics/thompson_aero_column.py",
+    "function": "_cloud_water_fall_speeds_aero",
+    "source_python_lines": "1188-1192",
+    "original_lines": "3659-3664, declarations1597-1598",
+    "description": "Private38 state and cloud coefficients are REAL32; this helper forms lamc and ilamc without widening, then REAL powers. Original assigns lamc and ilamc DOUBLE before its fall-speed power and rounds terminal vtc REAL. _sed_cloud_water_aero(return_rates=True) narrows returned velocity but cannot restore skipped DOUBLE intermediate rounding.",
+    "active_condition": "rc>R1 and w<.1 in cloud-sedimentation band",
+    "claim_scope": "Static mismatch; no measured numerical error claimed. Existing6160BYTE and3step gate remains valid for its sampled inputs, producer must assess active branch coverage."
+  },
+  "limitations": [
+    "No optimized HLO count or island partition measurement performed.",
+    "No real GPU executable/E41/roofline/performance/memory gate claimed.",
+    "Explicit reference inventory is not an implicit dtype-promotion proof.",
+    "Original DOUBLE tables create significant memory/traffic/compile cost; no measured cost claim."
+  ],
+  "explicit_float64_reference_inventory": [
+    {
+      "path": "src/gpuwrf/physics/thompson_hail/native.py",
+      "function": "_freezing_tables",
+      "line": 64,
+      "expression": "np.float64"
+    },
+    {
+      "path": "src/gpuwrf/physics/thompson_hail/native.py",
+      "function": "_freezing_tables",
+      "line": 68,
+      "expression": "np.float64"
+    },
+    {
+      "path": "src/gpuwrf/physics/thompson_hail/context.py",
+      "function": "collision_tables",
+      "line": 25,
+      "expression": "np.float64"
+    },
+    {
+      "path": "src/gpuwrf/physics/thompson_hail/context.py",
+      "function": "collision_tables",
+      "line": 30,
+      "expression": "np.float64"
+    },
+    {
+      "path": "src/gpuwrf/physics/thompson_hail/context.py",
+      "function": "__init__",
+      "line": 63,
+      "expression": "jnp.float64"
+    },
+    {
+      "path": "src/gpuwrf/physics/thompson_hail/context.py",
+      "function": "__init__",
+      "line": 67,
+      "expression": "jnp.float64"
+    },
+    {
+      "path": "src/gpuwrf/physics/thompson_hail/context.py",
+      "function": "__init__",
+      "line": 72,
+      "expression": "jnp.float64"
+    },
+    {
+      "path": "src/gpuwrf/physics/thompson_hail/context.py",
+      "function": "balance_cloud_number",
+      "line": 115,
+      "expression": "jnp.float64"
+    },
+    {
+      "path": "src/gpuwrf/physics/thompson_hail/context.py",
+      "function": "balance_cloud_number",
+      "line": 118,
+      "expression": "jnp.float64"
+    },
+    {
+      "path": "src/gpuwrf/physics/thompson_hail/context.py",
+      "function": "freezing",
+      "line": 156,
+      "expression": "jnp.float64"
+    },
+    {
+      "path": "src/gpuwrf/physics/thompson_hail/context.py",
+      "function": "freezing",
+      "line": 158,
+      "expression": "jnp.float64"
+    },
+    {
+      "path": "src/gpuwrf/physics/thompson_hail/context.py",
+      "function": "freezing",
+      "line": 159,
+      "expression": "jnp.float64"
+    },
+    {
+      "path": "src/gpuwrf/physics/thompson_hail/context.py",
+      "function": "freezing",
+      "line": 165,
+      "expression": "jnp.float64"
+    },
+    {
+      "path": "src/gpuwrf/physics/thompson_hail/context.py",
+      "function": "freezing",
+      "line": 165,
+      "expression": "jnp.float64"
+    },
+    {
+      "path": "src/gpuwrf/physics/thompson_hail/context.py",
+      "function": "freezing",
+      "line": 166,
+      "expression": "jnp.float64"
+    },
+    {
+      "path": "src/gpuwrf/physics/thompson_hail/context.py",
+      "function": "freezing",
+      "line": 166,
+      "expression": "jnp.float64"
+    },
+    {
+      "path": "src/gpuwrf/physics/thompson_hail/context.py",
+      "function": "freezing",
+      "line": 169,
+      "expression": "jnp.float64"
+    },
+    {
+      "path": "src/gpuwrf/physics/thompson_hail/context.py",
+      "function": "freezing",
+      "line": 170,
+      "expression": "jnp.float64"
+    },
+    {
+      "path": "src/gpuwrf/physics/thompson_hail/context.py",
+      "function": "freezing",
+      "line": 175,
+      "expression": "jnp.float64"
+    },
+    {
+      "path": "src/gpuwrf/physics/thompson_hail/context.py",
+      "function": "freezing",
+      "line": 176,
+      "expression": "jnp.float64"
+    },
+    {
+      "path": "src/gpuwrf/physics/thompson_hail/context.py",
+      "function": "aerosol_tendencies",
+      "line": 189,
+      "expression": "jnp.float64"
+    },
+    {
+      "path": "src/gpuwrf/physics/thompson_hail/context.py",
+      "function": "aerosol_tendencies",
+      "line": 194,
+      "expression": "jnp.float64"
+    },
+    {
+      "path": "src/gpuwrf/physics/thompson_hail/context.py",
+      "function": "sinks",
+      "line": 213,
+      "expression": "jnp.float64"
+    },
+    {
+      "path": "src/gpuwrf/physics/thompson_hail/context.py",
+      "function": "sinks",
+      "line": 215,
+      "expression": "jnp.float64"
+    },
+    {
+      "path": "src/gpuwrf/physics/thompson_hail/context.py",
+      "function": "aerosol_tendencies",
+      "line": 224,
+      "expression": "jnp.float64"
+    },
+    {
+      "path": "src/gpuwrf/physics/thompson_hail/__init__.py",
+      "function": "entry_distribution",
+      "line": 69,
+      "expression": "jnp.float64"
+    },
+    {
+      "path": "src/gpuwrf/physics/thompson_hail/__init__.py",
+      "function": "entry_distribution",
+      "line": 72,
+      "expression": "jnp.float64"
+    },
+    {
+      "path": "src/gpuwrf/physics/thompson_hail/__init__.py",
+      "function": "entry_distribution",
+      "line": 76,
+      "expression": "jnp.float64"
+    },
+    {
+      "path": "src/gpuwrf/physics/thompson_hail/__init__.py",
+      "function": "entry_distribution",
+      "line": 84,
+      "expression": "jnp.float64"
+    },
+    {
+      "path": "src/gpuwrf/physics/thompson_hail/__init__.py",
+      "function": "entry_distribution",
+      "line": 86,
+      "expression": "jnp.float64"
+    },
+    {
+      "path": "src/gpuwrf/physics/thompson_hail/__init__.py",
+      "function": "final_balance",
+      "line": 122,
+      "expression": "jnp.float64"
+    },
+    {
+      "path": "src/gpuwrf/physics/thompson_hail/__init__.py",
+      "function": "final_balance",
+      "line": 124,
+      "expression": "jnp.float64"
+    },
+    {
+      "path": "src/gpuwrf/physics/thompson_column.py",
+      "function": "_work_dtype",
+      "line": 175,
+      "expression": "jnp.float64"
+    },
+    {
+      "path": "src/gpuwrf/physics/thompson_column.py",
+      "function": "_dpow",
+      "line": 262,
+      "expression": "jnp.float64"
+    },
+    {
+      "path": "src/gpuwrf/physics/thompson_column.py",
+      "function": "_clamp_rain_number",
+      "line": 505,
+      "expression": "jnp.float64"
+    },
+    {
+      "path": "src/gpuwrf/physics/thompson_column.py",
+      "function": "_clamp_rain_number",
+      "line": 513,
+      "expression": "jnp.float64"
+    },
+    {
+      "path": "src/gpuwrf/physics/thompson_column.py",
+      "function": "_rain_distribution",
+      "line": 541,
+      "expression": "jnp.float64"
+    },
+    {
+      "path": "src/gpuwrf/physics/thompson_column.py",
+      "function": "_rain_distribution",
+      "line": 544,
+      "expression": "jnp.float64"
+    },
+    {
+      "path": "src/gpuwrf/physics/thompson_column.py",
+      "function": "_rain_distribution",
+      "line": 547,
+      "expression": "jnp.float64"
+    },
+    {
+      "path": "src/gpuwrf/physics/thompson_column.py",
+      "function": "_rain_distribution",
+      "line": 551,
+      "expression": "jnp.float64"
+    },
+    {
+      "path": "src/gpuwrf/physics/thompson_column.py",
+      "function": "_rain_distribution",
+      "line": 554,
+      "expression": "jnp.float64"
+    },
+    {
+      "path": "src/gpuwrf/physics/thompson_column.py",
+      "function": "_rain_distribution",
+      "line": 561,
+      "expression": "jnp.float64"
+    },
+    {
+      "path": "src/gpuwrf/physics/thompson_column.py",
+      "function": "_cloud_distribution",
+      "line": 577,
+      "expression": "jnp.float64"
+    },
+    {
+      "path": "src/gpuwrf/physics/thompson_column.py",
+      "function": "_ice_distribution",
+      "line": 593,
+      "expression": "jnp.float64"
+    },
+    {
+      "path": "src/gpuwrf/physics/thompson_column.py",
+      "function": "_ice_distribution",
+      "line": 600,
+      "expression": "jnp.float64"
+    },
+    {
+      "path": "src/gpuwrf/physics/thompson_column.py",
+      "function": "_ice_distribution",
+      "line": 606,
+      "expression": "jnp.float64"
+    },
+    {
+      "path": "src/gpuwrf/physics/thompson_column.py",
+      "function": "_ice_distribution",
+      "line": 610,
+      "expression": "jnp.float64"
+    },
+    {
+      "path": "src/gpuwrf/physics/thompson_column.py",
+      "function": "_ice_distribution",
+      "line": 621,
+      "expression": "jnp.float64"
+    },
+    {
+      "path": "src/gpuwrf/physics/thompson_column.py",
+      "function": "_balance_ice_number",
+      "line": 666,
+      "expression": "jnp.float64"
+    },
+    {
+      "path": "src/gpuwrf/physics/thompson_column.py",
+      "function": "_graupel_distribution",
+      "line": 881,
+      "expression": "jnp.float64"
+    },
+    {
+      "path": "src/gpuwrf/physics/thompson_column.py",
+      "function": "_graupel_distribution",
+      "line": 888,
+      "expression": "jnp.float64"
+    },
+    {
+      "path": "src/gpuwrf/physics/thompson_column.py",
+      "function": "_ice_collection_rates_from_moments",
+      "line": 967,
+      "expression": "jnp.float64"
+    },
+    {
+      "path": "src/gpuwrf/physics/thompson_column.py",
+      "function": "_saturation_adjustment_with_condensation",
+      "line": 1096,
+      "expression": "jnp.float64"
+    },
+    {
+      "path": "src/gpuwrf/physics/thompson_column.py",
+      "function": "_saturation_adjustment_with_condensation",
+      "line": 1096,
+      "expression": "jnp.float64"
+    },
+    {
+      "path": "src/gpuwrf/physics/thompson_column.py",
+      "function": "_warm_rain_collection",
+      "line": 1138,
+      "expression": "jnp.float64"
+    },
+    {
+      "path": "src/gpuwrf/physics/thompson_column.py",
+      "function": "_apply_rain_evaporation",
+      "line": 1259,
+      "expression": "jnp.float64"
+    },
+    {
+      "path": "src/gpuwrf/physics/thompson_column.py",
+      "function": "_ice_sources_with_process_flags",
+      "line": 1387,
+      "expression": "jnp.float64"
+    },
+    {
+      "path": "src/gpuwrf/physics/thompson_column.py",
+      "function": "_ice_sources_with_process_flags",
+      "line": 1470,
+      "expression": "jnp.float64"
+    },
+    {
+      "path": "src/gpuwrf/physics/thompson_column.py",
+      "function": "_ice_sources_with_process_flags",
+      "line": 1522,
+      "expression": "jnp.float64"
+    },
+    {
+      "path": "src/gpuwrf/physics/thompson_column.py",
+      "function": "_ice_sources_with_process_flags",
+      "line": 1667,
+      "expression": "jnp.float64"
+    },
+    {
+      "path": "src/gpuwrf/physics/thompson_column.py",
+      "function": "_fall_speeds",
+      "line": 2204,
+      "expression": "jnp.float64"
+    },
+    {
+      "path": "src/gpuwrf/physics/thompson_column.py",
+      "function": "_fall_speeds",
+      "line": 2220,
+      "expression": "jnp.float64"
+    },
+    {
+      "path": "src/gpuwrf/physics/thompson_column.py",
+      "function": "_cloud_water_fall_speed",
+      "line": 2373,
+      "expression": "jnp.float64"
+    },
+    {
+      "path": "src/gpuwrf/physics/thompson_column.py",
+      "function": "_sed_cloud_water",
+      "line": 2439,
+      "expression": "jnp.float64"
+    },
+    {
+      "path": "src/gpuwrf/physics/thompson_column.py",
+      "function": "_thompson_source_sink_body",
+      "line": 2719,
+      "expression": "jnp.float64"
+    },
+    {
+      "path": "src/gpuwrf/physics/thompson_column.py",
+      "function": "_mixed_phase_cold_tables",
+      "line": 2868,
+      "expression": "jnp.float64"
+    },
+    {
+      "path": "src/gpuwrf/physics/thompson_column.py",
+      "function": "_mixed_phase_cold_tables",
+      "line": 2868,
+      "expression": "jnp.float64"
+    },
+    {
+      "path": "src/gpuwrf/physics/thompson_column.py",
+      "function": "_mixed_phase_cold_tables",
+      "line": 2870,
+      "expression": "jnp.float64"
+    },
+    {
+      "path": "src/gpuwrf/physics/thompson_column.py",
+      "function": "_wrf_theta_wetb",
+      "line": 2892,
+      "expression": "jnp.float64"
+    },
+    {
+      "path": "src/gpuwrf/physics/thompson_column.py",
+      "function": "_wrf_warm_rain_rates",
+      "line": 2974,
+      "expression": "jnp.float64"
+    },
+    {
+      "path": "src/gpuwrf/physics/thompson_column.py",
+      "function": "_wrf_rain_snow_graupel_rates",
+      "line": 3014,
+      "expression": "jnp.float64"
+    },
+    {
+      "path": "src/gpuwrf/physics/thompson_column.py",
+      "function": "_wrf_rain_snow_graupel_rates",
+      "line": 3014,
+      "expression": "jnp.float64"
+    },
+    {
+      "path": "src/gpuwrf/physics/thompson_column.py",
+      "function": "_wrf_rain_snow_graupel_rates",
+      "line": 3014,
+      "expression": "jnp.float64"
+    },
+    {
+      "path": "src/gpuwrf/physics/thompson_column.py",
+      "function": "_wrf_rain_snow_graupel_rates",
+      "line": 3017,
+      "expression": "jnp.float64"
+    },
+    {
+      "path": "src/gpuwrf/physics/thompson_column.py",
+      "function": "_wrf_rain_snow_graupel_rates",
+      "line": 3018,
+      "expression": "jnp.float64"
+    },
+    {
+      "path": "src/gpuwrf/physics/thompson_column.py",
+      "function": "_wrf_rain_snow_graupel_rates",
+      "line": 3026,
+      "expression": "jnp.float64"
+    },
+    {
+      "path": "src/gpuwrf/physics/thompson_column.py",
+      "function": "_wrf_rain_snow_graupel_rates",
+      "line": 3028,
+      "expression": "jnp.float64"
+    },
+    {
+      "path": "src/gpuwrf/physics/thompson_column.py",
+      "function": "_wrf_mixed_phase_sources",
+      "line": 3065,
+      "expression": "jnp.float64"
+    },
+    {
+      "path": "src/gpuwrf/physics/thompson_column.py",
+      "function": "_wrf_mixed_phase_sources",
+      "line": 3280,
+      "expression": "np.float64"
+    },
+    {
+      "path": "src/gpuwrf/physics/thompson_aero_column.py",
+      "function": "_entry_cloud_number",
+      "line": 303,
+      "expression": "jnp.float64"
+    },
+    {
+      "path": "src/gpuwrf/physics/thompson_aero_column.py",
+      "function": "_entry_cloud_number",
+      "line": 312,
+      "expression": "jnp.float64"
+    },
+    {
+      "path": "src/gpuwrf/physics/thompson_aero_column.py",
+      "function": "_entry_cloud_number",
+      "line": 314,
+      "expression": "jnp.float64"
+    },
+    {
+      "path": "src/gpuwrf/physics/thompson_aero_column.py",
+      "function": "_entry_cloud_number",
+      "line": 315,
+      "expression": "jnp.float64"
+    },
+    {
+      "path": "src/gpuwrf/physics/thompson_aero_column.py",
+      "function": "_entry_cloud_number",
+      "line": 316,
+      "expression": "jnp.float64"
+    },
+    {
+      "path": "src/gpuwrf/physics/thompson_aero_column.py",
+      "function": "_cloud_distribution_aero",
+      "line": 329,
+      "expression": "jnp.float64"
+    },
+    {
+      "path": "src/gpuwrf/physics/thompson_aero_column.py",
+      "function": "_cloud_number_balance",
+      "line": 387,
+      "expression": "jnp.float64"
+    },
+    {
+      "path": "src/gpuwrf/physics/thompson_aero_column.py",
+      "function": "_warm_rain_collection_aero",
+      "line": 570,
+      "expression": "jnp.float64"
+    },
+    {
+      "path": "src/gpuwrf/physics/thompson_aero_column.py",
+      "function": "_saturation_adjustment_aero",
+      "line": 1022,
+      "expression": "jnp.float64"
+    },
+    {
+      "path": "src/gpuwrf/physics/thompson_aero_column.py",
+      "function": "_saturation_adjustment_aero",
+      "line": 1033,
+      "expression": "jnp.float64"
+    },
+    {
+      "path": "src/gpuwrf/physics/thompson_aero_column.py",
+      "function": "_saturation_adjustment_aero",
+      "line": 1034,
+      "expression": "jnp.float64"
+    },
+    {
+      "path": "src/gpuwrf/physics/thompson_aero_column.py",
+      "function": "_saturation_adjustment_aero",
+      "line": 1053,
+      "expression": "jnp.float64"
+    },
+    {
+      "path": "src/gpuwrf/physics/thompson_aero_column.py",
+      "function": "_saturation_adjustment_aero",
+      "line": 1053,
+      "expression": "jnp.float64"
+    },
+    {
+      "path": "src/gpuwrf/physics/thompson_aero_column.py",
+      "function": "_saturation_adjustment_aero",
+      "line": 1055,
+      "expression": "jnp.float64"
+    },
+    {
+      "path": "src/gpuwrf/physics/thompson_aero_column.py",
+      "function": "_saturation_adjustment_aero",
+      "line": 1056,
+      "expression": "jnp.float64"
+    },
+    {
+      "path": "src/gpuwrf/physics/thompson_aero_column.py",
+      "function": "_rain_evaporation_aero",
+      "line": 1152,
+      "expression": "jnp.float64"
+    },
+    {
+      "path": "src/gpuwrf/physics/thompson_aero_column.py",
+      "function": "_rain_evaporation_aero",
+      "line": 1155,
+      "expression": "jnp.float64"
+    },
+    {
+      "path": "src/gpuwrf/physics/thompson_aero_column.py",
+      "function": "_sed_cloud_water_aero",
+      "line": 1235,
+      "expression": "jnp.float64"
+    },
+    {
+      "path": "src/gpuwrf/physics/thompson_aero_column.py",
+      "function": "_finish_aero",
+      "line": 1362,
+      "expression": "jnp.float64"
+    },
+    {
+      "path": "src/gpuwrf/physics/thompson_aero_column.py",
+      "function": "_finish_aero",
+      "line": 1364,
+      "expression": "jnp.float64"
+    },
+    {
+      "path": "src/gpuwrf/physics/thompson_aero_column.py",
+      "function": "_finish_aero",
+      "line": 1365,
+      "expression": "jnp.float64"
+    },
+    {
+      "path": "src/gpuwrf/physics/thompson_aero_column.py",
+      "function": "_finish_aero",
+      "line": 1366,
+      "expression": "jnp.float64"
+    },
+    {
+      "path": "src/gpuwrf/physics/thompson_aero_column.py",
+      "function": "_finish_aero",
+      "line": 1368,
+      "expression": "jnp.float64"
+    },
+    {
+      "path": "src/gpuwrf/physics/thompson_aero_column.py",
+      "function": "_finish_aero",
+      "line": 1370,
+      "expression": "jnp.float64"
+    },
+    {
+      "path": "src/gpuwrf/physics/thompson_aero_column.py",
+      "function": "_finish_aero",
+      "line": 1371,
+      "expression": "jnp.float64"
+    },
+    {
+      "path": "src/gpuwrf/physics/thompson_aero_column.py",
+      "function": "_finish_aero",
+      "line": 1372,
+      "expression": "jnp.float64"
+    },
+    {
+      "path": "src/gpuwrf/physics/thompson_aero_column.py",
+      "function": "_finish_aero",
+      "line": 1374,
+      "expression": "jnp.float64"
+    },
+    {
+      "path": "src/gpuwrf/physics/thompson_aero_column.py",
+      "function": "_finish_aero",
+      "line": 1378,
+      "expression": "jnp.float64"
+    },
+    {
+      "path": "src/gpuwrf/physics/thompson_aero_column.py",
+      "function": "_thompson_aero_body",
+      "line": 1476,
+      "expression": "jnp.float64"
+    },
+    {
+      "path": "src/gpuwrf/physics/thompson_aero_column.py",
+      "function": "climatological_aerosol_profiles",
+      "line": 1508,
+      "expression": "np.float64"
+    }
+  ]
+}

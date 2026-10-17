@@ -1,0 +1,192 @@
+{
+  "lane": "t-fdda",
+  "branch": "lane/t-fdda",
+  "CPU_contract_gate": "COMPLETE; READY-FOR-CRITIC after final commit",
+  "model_tree": "47243c86551a2dea3ef715e1e32c5962037a02ca",
+  "measured_component_source_commit": "c6eeace92",
+  "active_trace_source_commit": "65384e19e",
+  "reference": "original CPU-WRF; executable arithmetic unchanged; only private E104 OPEN path literals",
+  "root_cause": "Missing FieldType=104 left original-WRF NEW analyses zero; TITLE-only repair was insufficient",
+  "ingestion": {
+    "old_NEW_fields_zero": 15,
+    "metadata_repaired_NEW_fields_byte": 15,
+    "original_forcing_payloads_byte_equal": 13,
+    "native_layout_NEW_fields_byte": 6,
+    "native_layout_history_arrays_byte": 1452
+  },
+  "corrected_24h": {
+    "frames": 25,
+    "bounded_fields_PASS": 62,
+    "numerical_failures": 0,
+    "PSFC_h1_rmse_Pa": 0.31718073447022666,
+    "PSFC_worst_hour_rmse_Pa": 0.9815110237098402,
+    "PSFC_limit_Pa": 120.0,
+    "old_GPU_coverage": "INCOMPLETE: missing HFX_FDDA only",
+    "reference_frames": "<USER_HOME>/wrf_gpu2_lanes/t-fdda/TF02/full24",
+    "full_score": "<USER_HOME>/wrf_gpu2_lanes/t-fdda/TF03_score/grid_gate.json",
+    "GPU_reuse": "completed original GPU c40cf0000; all13 forcing payloads byte-equal; loader ignores corrected metadata"
+  },
+  "CPU_oracle_arm": {
+    "passing": 106,
+    "artifact": "<USER_HOME>/wrf_gpu2_lanes/t-fdda/TF05_tests.xml",
+    "reference": "pristine WRF + actual original-WRF HFX savepoint; unchanged bounds"
+  },
+  "consumer_cohort": {
+    "cohort_count": 427,
+    "executed_passing_unique": 415,
+    "inherited_by_byteproof": 12,
+    "missing_nodeids": [],
+    "phase_pass_counts": {
+      "TF04_tests": 38,
+      "TF05_tests": 106,
+      "TF06_shared": 47,
+      "TF11_shared": 349,
+      "TF12_focus": 6,
+      "TF13_retry": 60,
+      "TF14b_ruc_fixture": 1
+    },
+    "scope": "All required shared consumers + RUC/OBS/native-online/MP-history/FDDA new tests. Exactly12 unchanged radiation/land tests inherited with source/default-program proof, not new measured passes."
+  },
+  "mutants": {
+    "hfx": {
+      "genuine_assertion_failures": 2,
+      "setup_errors": 0,
+      "names": [
+        "test_held_hfx_against_original_wrf_history[False]",
+        "test_held_hfx_against_original_wrf_history[True]"
+      ]
+    },
+    "clock": {
+      "genuine_assertion_failures": 2,
+      "setup_errors": 0,
+      "names": [
+        "test_daily_fdda_keeps_cursor_and_global_clock[None]",
+        "test_daily_fdda_keeps_cursor_and_global_clock[15]"
+      ]
+    },
+    "history": {
+      "genuine_assertion_failures": 3,
+      "setup_errors": 0,
+      "names": [
+        "test_actual_nested_callback_writes_held_hfx[False]",
+        "test_actual_nested_callback_writes_held_hfx[True]",
+        "test_actual_daily_history_consumes_held_hfx"
+      ]
+    }
+  },
+  "program_identity": {
+    "default_native_facade_sha": "2bf12cb8374d3a84a440e47dea4b77b0c7436108fc2ee2616bba6ec79b17962a",
+    "enabled_FDDA_sha": "403e8f5f7cda6d86512d3d0e887d19987fdcac6371e92ebc9e8e5d17c8e94961",
+    "GPU_executed": false
+  },
+  "cost": {
+    "platform": "cpu",
+    "shape": [
+      44,
+      42,
+      42
+    ],
+    "physical_tendency_arrays_byte_equal": 4,
+    "HFX_carry_bytes": 310464,
+    "baseline": {
+      "compile_s": 0.5157266079913825,
+      "memory": {
+        "argument_size_in_bytes": 5026572,
+        "output_size_in_bytes": 3770016,
+        "temp_size_in_bytes": 708,
+        "alias_size_in_bytes": 0,
+        "generated_code_size_in_bytes": 0
+      },
+      "median_cpu_wall_s": 0.00038360757753252983
+    },
+    "candidate": {
+      "compile_s": 0.37316716206260026,
+      "memory": {
+        "argument_size_in_bytes": 5965020,
+        "output_size_in_bytes": 4080488,
+        "temp_size_in_bytes": 708,
+        "alias_size_in_bytes": 0,
+        "generated_code_size_in_bytes": 0
+      },
+      "median_cpu_wall_s": 0.0004199879476800561
+    },
+    "GPU_cost_and_whole_model_memory": "UNKNOWN; manager changed-artifact qualification pending"
+  },
+  "validation_reuse": "Model/physics code byte-identical to qualified main for FDDA-off; default full trace exact. Prior coupled CPU smoke retained; no new physical-source arithmetic.",
+  "shared_fixture_repair": "RUC private Carry now has Solar None and namelist inactive urban=0, preserving original assertions; production code unchanged.",
+  "pending": [
+    "one independent critic",
+    "official-lock/bridge manager GPU run of changed executable",
+    "actual GPU E41 + finite/census + full24h D6/inventory incl held HFX_FDDA"
+  ],
+  "receipts_sha256": {
+    "receipts/CPU24_RUN.json": "489906b1b8bfbbd29c0c393c571ac06b7100cc18d5356ed7e668eca0d26cf357",
+    "receipts/CPU_TEST_COHORT.json": "6739732b1b38f3ce3accfde9bf313d2a22c6605ebcc283df06b011f4d884f69b",
+    "receipts/D6_CORRECTED_REFERENCE.json": "d58433dd0c1445547432508faf732c65c4eeca59648226c712495e6bdf2811a6",
+    "receipts/FINAL_COMPOSITION.json": "161032f585ecb3b8b0840ef0763ca0da9007382492a219725ba841495157c7d5",
+    "receipts/INGESTION.json": "94ccebb4c1471c837a0eacdfd831cfa6ac5e8f1ad3a5163afca6a784345b6e26",
+    "receipts/NATIVE_LAYOUT.json": "30f6b133d83bd3cc906dc1ccea7443392ab43d517b6a9a0d4a258fc6f261d2ab",
+    "receipts/REFERENCE_PREPARATION.json": "12f23ba442d30285c9a5c48c71c8b35ab8b5240ef5575311c38636935d2774f8",
+    "receipts/SOURCE_REUSE.json": "2065508ade74b1f9530f3c50053db2c3a084f7fed4ca683eb3e20757a11d14e2",
+    "receipts/TF06_partial.json": "bc080832394520e7fdcb5b0bfa2725d3a19551b354cef1e2ce54d2ad7558e295",
+    "receipts/TF08_cost.json": "52522c6fd855d317f2dcc3a63eb1529aae70ee587bab0e3b6c38c5b1ca5546da",
+    "receipts/TF09_MUTANTS.json": "9c48fafff06c4f7b2abfccb34a39afee508395ef7a0415f228eb82796b8f8951",
+    "receipts/TF10_identity.json": "2e182a58dae0efe6f88a46393411640da8daa36f9db9d9a9a6f18e9c0535c5ce",
+    "receipts/TF11_REUSED_UNCHANGED.json": "6d795e3723f9febd95bab08ff06d6323fbeaaaaede7472de4d99e7ecf65cb5ee",
+    "receipts/TF15_active_trace.json": "a0bc40a9561ae10b4478787d1bc3ff5dbaf6cf7e4b782e023d343c2c2a70d4ec",
+    "receipts/TF18_active_identity.json": "2ad7f71328754bdacd2c74441b34f506d47f9184b0de1a71ff2e9c5e91904152",
+    "receipts/TF18_default_identity.json": "7a67600c4ed31e5c069e7502d9c821413909c8cd696acdd580b8bd99051f28e3"
+  },
+  "raw_artifacts_sha256": {
+    "<USER_HOME>/wrf_gpu2_lanes/t-fdda/TF04_tests.xml": "5c9e9f99fd2463ec84a68464d51f379dd60a5aef92f95a6b323ae5faa523e1b6",
+    "<USER_HOME>/wrf_gpu2_lanes/t-fdda/TF05_tests.xml": "d1f1846ad1d0a6337300fb50b156019b36f24dbbf392566a82665db149136f3b",
+    "<USER_HOME>/wrf_gpu2_lanes/t-fdda/TF06_shared.xml": "575deb688b1d0f8fcd17fc9ec725a396246f41feb5496fc5ba1bae94d8340c82",
+    "<USER_HOME>/wrf_gpu2_lanes/t-fdda/TF11_shared.xml": "e0ffb3e99d73b0212241efa08621b98126b0e3c9cc0e29d3a7f248a885ceca9f",
+    "<USER_HOME>/wrf_gpu2_lanes/t-fdda/TF12_focus.xml": "47b87b801baafc64c018c14e5f44837f23750749c44d872965c1884a9d58e42f",
+    "<USER_HOME>/wrf_gpu2_lanes/t-fdda/TF13_retry.xml": "4a6ec54f8dc9af99cb610f1e07244d8bf1142f51b97895a4ac4e2748beb27c37",
+    "<USER_HOME>/wrf_gpu2_lanes/t-fdda/TF14_ruc_fixture.xml": "8d8a0a50109566ab067161f21b74e62686ce5c164fdefe0322aa00b5f953ade4",
+    "<USER_HOME>/wrf_gpu2_lanes/t-fdda/TF14b_ruc_fixture.xml": "77a150480b1dd7c5cca93a27fb14c85d3ac1590de656fd6966d3acc9d8afcaf2",
+    "<USER_HOME>/wrf_gpu2_lanes/t-fdda/TF09_hfx.xml": "3599fbd5d437894a4d123019a9d3c95a159787c2edb850191581655897a3cd09",
+    "<USER_HOME>/wrf_gpu2_lanes/t-fdda/TF09_clock.xml": "831d831cafa70a1dbac2830fcaa9da9d753971c94c96dbefced2f166161fef6d",
+    "<USER_HOME>/wrf_gpu2_lanes/t-fdda/TF09_history.xml": "5553d6cb551da15d28c424e577ec49bf18a2ad4fbf970a1ef01891e4930122fa",
+    "<USER_HOME>/wrf_gpu2_lanes/t-fdda/TF08_cost.json": "52522c6fd855d317f2dcc3a63eb1529aae70ee587bab0e3b6c38c5b1ca5546da",
+    "<USER_HOME>/wrf_gpu2_lanes/t-fdda/TF10_identity.json": "2e182a58dae0efe6f88a46393411640da8daa36f9db9d9a9a6f18e9c0535c5ce",
+    "<USER_HOME>/wrf_gpu2_lanes/t-fdda/TF15_active_trace.json": "a0bc40a9561ae10b4478787d1bc3ff5dbaf6cf7e4b782e023d343c2c2a70d4ec",
+    "<USER_HOME>/wrf_gpu2_lanes/t-fdda/TF02/INGESTION.json": "94ccebb4c1471c837a0eacdfd831cfa6ac5e8f1ad3a5163afca6a784345b6e26",
+    "<USER_HOME>/wrf_gpu2_lanes/t-fdda/TF02/PREPARATION.json": "12f23ba442d30285c9a5c48c71c8b35ab8b5240ef5575311c38636935d2774f8",
+    "<USER_HOME>/wrf_gpu2_lanes/t-fdda/TF02/NATIVE_LAYOUT.json": "30f6b133d83bd3cc906dc1ccea7443392ab43d517b6a9a0d4a258fc6f261d2ab",
+    "<USER_HOME>/wrf_gpu2_lanes/t-fdda/TF02/full24_run.json": "489906b1b8bfbbd29c0c393c571ac06b7100cc18d5356ed7e668eca0d26cf357",
+    "<USER_HOME>/wrf_gpu2_lanes/t-fdda/TF03_score/grid_gate.json": "30a8895a55fb47de474254f2447095827572acffdbb2d9270320180975c0a233",
+    "<USER_HOME>/wrf_gpu2_lanes/t-fdda/TF03_score/compare.json": "2b18bfbc0ec8dd692b6b7be3c6720f4e559bbe096daff6827fd203e8a6b1a21c"
+  },
+  "final_source_tree": "0f1d5ad3cc781d87a9df9bd99d5579bb003b8b97",
+  "final_composition": {
+    "base_main": "a6ae6fd296d710e7014cd5a82f36314f3dc43ba8",
+    "tested_commit": "5daf285a4af4955296f7769110f4030cdac9b75c",
+    "final_model_tree": "0f1d5ad3cc781d87a9df9bd99d5579bb003b8b97",
+    "preserved_conflicts": [
+      "daily full-carry condition includes FDDA and stochastic options",
+      "nested writer retains stochastic, feedback and FDDA history",
+      "native restart retains feedback and FDDA validation"
+    ],
+    "FDDA_module_bytes_reused": {
+      "src/gpuwrf/assimilation/fdda_grid.py": "d537285ba7db140001845fa5a2278fea159c63eb16ac3da29e460e8eda8cedb5",
+      "src/gpuwrf/coupling/fdda_rk.py": "82022e78c491df9c8eab1081d71693412783831614c5d1825b7df8625f4b4fc7"
+    },
+    "focused_composed_checks": {
+      "passed": 76,
+      "failed": 0,
+      "seconds": 18.56
+    },
+    "default_full_native_facade_sha": "2bf12cb8374d3a84a440e47dea4b77b0c7436108fc2ee2616bba6ec79b17962a",
+    "active_FDDA_full_native_facade_sha": "403e8f5f7cda6d86512d3d0e887d19987fdcac6371e92ebc9e8e5d17c8e94961",
+    "both_programs_exact_to_qualified_precomposition": true,
+    "validation_reuse": "Numerical/oracle/component-cost arms retained. Two final full production traces exact; changed shared consumers tested once. No GPU execution.",
+    "raw_artifacts_sha256": {
+      "<USER_HOME>/wrf_gpu2_lanes/t-fdda/TF17_composed.xml": "0dd217baa5a451283d68e287dd7efd67844974bf4de301b55aa19032f1760ae4",
+      "<USER_HOME>/wrf_gpu2_lanes/t-fdda/TF17_composed.log": "c96d81024259885c32f6b93bfd57fba6ce66a7b9dfc67e442ccbc83b2c9e9ac6",
+      "<USER_HOME>/wrf_gpu2_lanes/t-fdda/TF18_default_identity.json": "7a67600c4ed31e5c069e7502d9c821413909c8cd696acdd580b8bd99051f28e3",
+      "<USER_HOME>/wrf_gpu2_lanes/t-fdda/TF18_active_identity.json": "2ad7f71328754bdacd2c74441b34f506d47f9184b0de1a71ff2e9c5e91904152"
+    }
+  }
+}

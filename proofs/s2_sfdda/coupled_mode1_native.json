@@ -1,0 +1,522 @@
+{
+  "platform": "cpu",
+  "mode": 1,
+  "load_s": 6.540590975200757,
+  "steps": [
+    {
+      "step": 1,
+      "wall_s": 167.55242902599275,
+      "nonfinite": 0,
+      "held_absmax": [
+        0.0013791220262646675,
+        0.0009473807876929641,
+        0.002617581281810999,
+        4.6626385596937325e-07
+      ],
+      "guards": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ]
+      ],
+      "scores": {
+        "U": {
+          "rmse": 0.0014846745326882128,
+          "max_abs": 0.10548782348632812,
+          "frozen_limits": {
+            "gate": "hard_release_gate",
+            "kind": "column_staggered",
+            "units": "m s-1",
+            "rmse": 1.8,
+            "finite_pair_fraction_min": 1.0,
+            "rationale": "Predeclared operational limit for 3D zonal wind.",
+            "risk": "Stagger-aware shape equality is mandatory; do not crop or unstagger silently."
+          }
+        },
+        "V": {
+          "rmse": 0.0012559749196113222,
+          "max_abs": 0.06243240833282471,
+          "frozen_limits": {
+            "gate": "hard_release_gate",
+            "kind": "column_staggered",
+            "units": "m s-1",
+            "rmse": 1.8,
+            "finite_pair_fraction_min": 1.0,
+            "rationale": "Predeclared operational limit for 3D meridional wind.",
+            "risk": "KI-9 showed V drift much faster than U in old failed runs; a breach should remain a hard failure."
+          }
+        },
+        "W": {
+          "rmse": 0.0002526768182936075,
+          "max_abs": 0.012589775025844574,
+          "frozen_limits": {
+            "gate": "hard_release_gate",
+            "kind": "column_staggered",
+            "units": "m s-1",
+            "rmse": 0.3,
+            "finite_pair_fraction_min": 1.0,
+            "rationale": "Predeclared operational limit for small-magnitude, noisy 3D vertical velocity.",
+            "risk": "Small RMSE can coexist with localized acoustic artifacts; inspect p99/max and vertical worst index."
+          }
+        },
+        "QVAPOR": {
+          "rmse": 3.6612702792863744e-08,
+          "max_abs": 4.0496233850717545e-06,
+          "frozen_limits": {
+            "gate": "hard_release_gate",
+            "kind": "column_moisture",
+            "units": "kg kg-1",
+            "rmse": 0.001,
+            "finite_pair_fraction_min": 1.0,
+            "rationale": "Predeclared operational limit for 3D water-vapor mixing ratio.",
+            "risk": "Moisture can compensate in station metrics; require grid atlas inventory and hydrometeor report-only review."
+          }
+        },
+        "P": {
+          "rmse": 0.4401103424930491,
+          "max_abs": 5.97601318359375,
+          "frozen_limits": {
+            "gate": "critical_report_only",
+            "kind": "column_pressure",
+            "units": "Pa",
+            "report_only_reason": "Mandatory core inventory field, but no frozen v0.14 all-cell RMSE/max_abs envelope was found in the reviewed references."
+          }
+        },
+        "PH": {
+          "rmse": 0.0461622774006884,
+          "max_abs": 0.54449462890625,
+          "frozen_limits": {
+            "gate": "critical_report_only",
+            "kind": "column_geopotential",
+            "units": "m2 s-2",
+            "report_only_reason": "Mandatory core inventory field, but no frozen v0.14 all-cell RMSE/max_abs envelope was found in the reviewed references."
+          }
+        },
+        "T": {
+          "rmse": 0.0004126942158132583,
+          "max_abs": 0.031707763671875,
+          "frozen_limits": {
+            "gate": "hard_release_gate",
+            "kind": "column",
+            "units": "K",
+            "rmse": 1.5,
+            "finite_pair_fraction_min": 1.0,
+            "rationale": "Predeclared operational limit for 3D perturbation potential temperature, theta minus 300 K.",
+            "risk": "Temperature drift may be coupled to dynamics or physics; pooled pass is not a bitwise or operator-parity claim."
+          }
+        }
+      },
+      "held_rate_scores": {
+        "RUNDGDTEN": {
+          "rmse": 5.433474143501371e-06,
+          "max_abs": 0.0006466947379522026
+        },
+        "RVNDGDTEN": {
+          "rmse": 2.1750784071628004e-06,
+          "max_abs": 0.0002721667697187513
+        },
+        "RTHNDGDTEN": {
+          "rmse": 2.2531037757289596e-05,
+          "max_abs": 0.001798809040337801
+        },
+        "RQVNDGDTEN": {
+          "rmse": 1.1112738507179643e-09,
+          "max_abs": 1.3020137146213528e-07
+        }
+      },
+      "guard_shape": [
+        22,
+        3
+      ],
+      "guard_counters": 66,
+      "guard_event_total": 0,
+      "bounded_fields": [
+        "U",
+        "V",
+        "W",
+        "QVAPOR",
+        "T"
+      ],
+      "report_only_fields": [
+        "P",
+        "PH"
+      ]
+    },
+    {
+      "step": 2,
+      "wall_s": 0.8550131449010223,
+      "nonfinite": 0,
+      "held_absmax": [
+        0.0013797376304864883,
+        0.0009472343372181058,
+        0.002617595950141549,
+        4.662661297061277e-07
+      ],
+      "guards": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ]
+      ],
+      "scores": {
+        "U": {
+          "rmse": 0.0018290801859730816,
+          "max_abs": 0.14368021488189697,
+          "frozen_limits": {
+            "gate": "hard_release_gate",
+            "kind": "column_staggered",
+            "units": "m s-1",
+            "rmse": 1.8,
+            "finite_pair_fraction_min": 1.0,
+            "rationale": "Predeclared operational limit for 3D zonal wind.",
+            "risk": "Stagger-aware shape equality is mandatory; do not crop or unstagger silently."
+          }
+        },
+        "V": {
+          "rmse": 0.0014090214934528477,
+          "max_abs": 0.073822021484375,
+          "frozen_limits": {
+            "gate": "hard_release_gate",
+            "kind": "column_staggered",
+            "units": "m s-1",
+            "rmse": 1.8,
+            "finite_pair_fraction_min": 1.0,
+            "rationale": "Predeclared operational limit for 3D meridional wind.",
+            "risk": "KI-9 showed V drift much faster than U in old failed runs; a breach should remain a hard failure."
+          }
+        },
+        "W": {
+          "rmse": 0.00036103403853168716,
+          "max_abs": 0.009498078376054764,
+          "frozen_limits": {
+            "gate": "hard_release_gate",
+            "kind": "column_staggered",
+            "units": "m s-1",
+            "rmse": 0.3,
+            "finite_pair_fraction_min": 1.0,
+            "rationale": "Predeclared operational limit for small-magnitude, noisy 3D vertical velocity.",
+            "risk": "Small RMSE can coexist with localized acoustic artifacts; inspect p99/max and vertical worst index."
+          }
+        },
+        "QVAPOR": {
+          "rmse": 5.820349985949949e-08,
+          "max_abs": 5.393754690885544e-06,
+          "frozen_limits": {
+            "gate": "hard_release_gate",
+            "kind": "column_moisture",
+            "units": "kg kg-1",
+            "rmse": 0.001,
+            "finite_pair_fraction_min": 1.0,
+            "rationale": "Predeclared operational limit for 3D water-vapor mixing ratio.",
+            "risk": "Moisture can compensate in station metrics; require grid atlas inventory and hydrometeor report-only review."
+          }
+        },
+        "P": {
+          "rmse": 0.4584255387811777,
+          "max_abs": 5.974853515625,
+          "frozen_limits": {
+            "gate": "critical_report_only",
+            "kind": "column_pressure",
+            "units": "Pa",
+            "report_only_reason": "Mandatory core inventory field, but no frozen v0.14 all-cell RMSE/max_abs envelope was found in the reviewed references."
+          }
+        },
+        "PH": {
+          "rmse": 0.07771190801827689,
+          "max_abs": 0.6288528442382812,
+          "frozen_limits": {
+            "gate": "critical_report_only",
+            "kind": "column_geopotential",
+            "units": "m2 s-2",
+            "report_only_reason": "Mandatory core inventory field, but no frozen v0.14 all-cell RMSE/max_abs envelope was found in the reviewed references."
+          }
+        },
+        "T": {
+          "rmse": 0.000810259333635008,
+          "max_abs": 0.061676025390625,
+          "frozen_limits": {
+            "gate": "hard_release_gate",
+            "kind": "column",
+            "units": "K",
+            "rmse": 1.5,
+            "finite_pair_fraction_min": 1.0,
+            "rationale": "Predeclared operational limit for 3D perturbation potential temperature, theta minus 300 K.",
+            "risk": "Temperature drift may be coupled to dynamics or physics; pooled pass is not a bitwise or operator-parity claim."
+          }
+        }
+      },
+      "held_rate_scores": {
+        "RUNDGDTEN": {
+          "rmse": 5.434984814201016e-06,
+          "max_abs": 0.0006468837964348495
+        },
+        "RVNDGDTEN": {
+          "rmse": 2.17536285163078e-06,
+          "max_abs": 0.00027215483714826405
+        },
+        "RTHNDGDTEN": {
+          "rmse": 2.2539978090208024e-05,
+          "max_abs": 0.0018003262812271714
+        },
+        "RQVNDGDTEN": {
+          "rmse": 1.1114859033156677e-09,
+          "max_abs": 1.3019453604101727e-07
+        }
+      },
+      "guard_shape": [
+        22,
+        3
+      ],
+      "guard_counters": 66,
+      "guard_event_total": 0,
+      "bounded_fields": [
+        "U",
+        "V",
+        "W",
+        "QVAPOR",
+        "T"
+      ],
+      "report_only_fields": [
+        "P",
+        "PH"
+      ]
+    }
+  ],
+  "configuration": "SurfaceFddaOptions(guv=0.0003, gt=0.0003, gq=0.0003, interval_m=60, end_h=1, end_h_sfc=1, stepfg=3, fgdtzero=0, if_no_pbl_nudging_uv=0, if_no_pbl_nudging_t=0, if_no_pbl_nudging_q=0, if_zfac_uv=0, k_zfac_uv=0, if_zfac_t=0, k_zfac_t=0, if_zfac_q=0, k_zfac_q=0, if_ramping=0, dtramp_min=0.0, surface_code=1, interval_m_sfc=60, guv_sfc=0.0003, gt_sfc=0.0003, gq_sfc=0.0003, rinblw=100.0, dx_m=3000.0)",
+  "gpu_qualified": false,
+  "fast_defaults": "1",
+  "census": "1",
+  "restart_namelist_digest": "f045da0edcb12fa2857246ae51677a9a86eeaab26e2c3ff02358d24816b1b497",
+  "restart_exact_leaves": 207,
+  "wall_s": 352.4325690481346,
+  "hard_field_failures": [],
+  "source_commit": "7733af79d",
+  "evidence_scope": "Prior source before HFX/full-driver/carry addition; final coupled gate rerun separately.",
+  "guard_counters_per_step": [
+    66,
+    66
+  ],
+  "bounded_fields": [
+    "QVAPOR",
+    "T",
+    "U",
+    "V",
+    "W"
+  ],
+  "report_only_fields": [
+    "P",
+    "PH"
+  ]
+}

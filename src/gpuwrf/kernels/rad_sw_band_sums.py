@@ -19,7 +19,7 @@ import math
 
 import jax
 import jax.numpy as jnp
-from jax.experimental import pallas as pl
+from gpuwrf.backends import pallas as pl
 from jax.experimental.pallas import triton as pt
 
 TX = 8          # 8 columns x 16 g lanes = 128 elements = one per thread at 4 warps

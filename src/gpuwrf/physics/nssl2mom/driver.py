@@ -7,14 +7,16 @@ scheme's internal stack ``an`` (Fortran species indices, see ``indices.py``):
     qndrop -> CCW (lnc) | qnr -> CRW | qni -> CCI | qns -> CSW | qng -> CHW | qnh -> CHL
     qnn -> CN (activated CCN, lccna; background CCN lccn = constant qccn) | qvolg -> VHW | qvolh -> VHL
 
-All columns are ``(..., nz)`` arrays, k = 0 at the surface; ``rho`` is the dry-air-based density WRF
-passes as ``dn`` (``rho = rho_dry*(1+qv)``).  Order of operations per call (default WRF config,
-loopmax = 1, cu_used = 0, no chem/elec, ``isedonly = 0``):
+All columns are ``(..., nz)`` arrays, k = 0 at the surface; ``rho`` is the density WRF passes as ``dn``:
+the DRY ``1./(al+alb)`` of moist_physics_prep_em (module_big_step_utilities_em.F:5542), formed by the
+adapter.  Order of operations per call (default WRF config,
+loopmax = 1, optional cumulus rates, no chem/elec, ``isedonly = 0``):
 
   1. itimestep == 1: CN := 0 (cold start of activated CCN, lines 2717-2738)
   2. pack, t0 = th*pii, t00 = 380/p, t77 = pii, Meyers/Ferrier nucleation rate t7 (lines 2988-3078)
   3. density-scale indices lnb..na (#/kg -> #/m3, m3/kg -> m3/m3; lines 3094-3104)
   4. itimestep == 1: calcnfromq                                  -> cleanup.calcnfromq
+     cu_used == 1: calcnfromcuten                                -> cleanup.calcnfromcuten
   5. sediment1d + surface precipitation binding (lines 3153-3206)  -> sediment.sediment1d
   6. nssl_2mom_gs (parts A, B, C)                                   -> gs_a / gs_b / gs_c
   7. NUCOND, smallvalues                                             -> nucond / cleanup
@@ -53,8 +55,11 @@ def pack(fields: dict, itimestep: int, C, prec: Prec):
         cn = jnp.zeros(shape, R)
     rows = [jnp.zeros(shape, R)] * (NA + 1)
     for name, il in WRF_TO_AN.items():
+        if C.ipconc==0 and name=='qnn':
+            continue  # Original2900 CCN packing is inside ipconc>=2.
         rows[il] = cn if name == "qnn" else jnp.asarray(fields[name], R)
-    rows[LCCN] = jnp.full(shape, C.qccn, R)
+    if C.ipconc >= 2:
+        rows[LCCN] = jnp.full(shape, C.qccn, R)
     pii = jnp.asarray(fields["pii"], R)
     pn = jnp.asarray(fields["p"], R)
     dn = jnp.asarray(fields["rho"], R)
@@ -112,18 +117,36 @@ def liquid_rain(xfall, dn_sfc, dtp, prec: Prec):
 
 
 def nssl2mom_column(fields: dict, dtp, C, prec: Prec, *, itimestep: int | None = None,
-                    first_step=None, diag: bool = False):
+                    first_step=None, diag: bool = False, radii: bool = False, cumulus_tendencies=None,
+                    hail_enabled: bool = True, radar_depth=None):
     """One WRF ``nssl_2mom_driver`` call (default mp=18) on columns ``(..., nz)``.
 
     ``itimestep`` (static) selects the cold-start branch exactly like WRF (==1: CN := 0 and
     calcnfromq); alternatively ``first_step`` (traced bool, scalar) selects it at run time.
     Returns ``(out, precip, diagnostics)``: ``out`` = updated WRF fields (th, q*, numbers, volumes),
     ``precip`` = per-call accumulations (bind_precip + ``rain_liquid``), ``diagnostics`` = dbz and
-    effective radii when ``diag`` (driver ``makediag``) else {}.
+    effective radii when ``diag``; ``radii`` selects radii alone, independently
+    of WRF's radar ``makediag`` flag (has_req block at module lines3356-3386).
+    ``cumulus_tendencies`` optionally supplies WRF Q*CUTEN rates (kg/kg/s),
+    keyed by qc/qr/qi/qs, after phy_prep_part2; None means cu_used=0.
     """
     from . import cleanup, gs_a, gs_b, gs_c, nucond as nucond_mod, sediment
 
     R = prec.R
+    one_moment=C.ipconc==0
+    if one_moment:
+        if radii:
+            raise NotImplementedError('One-moment NSSL has no effective radii; original has_req flags are0')
+        z=jnp.zeros_like(fields['qg'],dtype=R)
+        fields={**fields,**{k:z for k in ('qndrop','qnr','qni','qns','qng','qnh','qvolh')}}
+        if C.variant==21:
+            fields={**fields,'qh':z,'qvolg':z,'qnn':z}
+    if not hail_enabled:
+        # WRF legacy22 has no QHL/CHL/VHL Registry members. Retain the
+        # canonical internal indexing, with compiler-known zero dummy slots.
+        # All active REAL constants are identical to default18 (oracle census).
+        zero_hail = jnp.zeros_like(fields["qg"], dtype=R)
+        fields = {**fields, "qh": zero_hail, "qnh": zero_hail, "qvolh": zero_hail}
     if first_step is None:
         first_step = jnp.asarray(itimestep == 1)
     first_step = jnp.asarray(first_step)
@@ -131,7 +154,12 @@ def nssl2mom_column(fields: dict, dtp, C, prec: Prec, *, itimestep: int | None =
     an_warm, _ = pack(fields, 2, C, prec)
     an = jnp.where(first_step, an_cold, an_warm)  # only CN differs (zeroed at cold start)
     dn, dz = aux["dn"], aux["dz"]
-    an = jnp.where(first_step, cleanup.calcnfromq(an, dn, C, prec), an)
+    if not one_moment:
+        an = jnp.where(first_step, cleanup.calcnfromq(an, dn, C, prec), an)
+    if cumulus_tendencies is not None and not one_moment:
+        mass = {name: jnp.asarray(dtp, R) * jnp.asarray(rate, R)
+                for name, rate in cumulus_tendencies.items()}
+        an = cleanup.calcnfromcuten(an, dn, mass, C, prec)
     an, xfall = sediment.sediment1d(an, aux["t0"], aux["t7"], dn, dz, dtp, C, prec)
     dn_sfc = dn[..., 0]
     precip = bind_precip(xfall, dn_sfc, dtp, C, prec)
@@ -141,15 +169,40 @@ def nssl2mom_column(fields: dict, dtp, C, prec: Prec, *, itimestep: int | None =
                        dtp, C, prec)
     G = gs_b.gs_part_b(G, C, prec, dtp)
     an, tt = gs_c.gs_part_c(G, an, aux["t0"], zero, zero, zero, zero, zero, zero, aux["t7"], zero, zero,
-                            C, prec, dtp)
-    an, t0, _ssat = nucond_mod.nucond(an, dn, aux["t77"], aux["pn"], aux["wn"], dtp, C, prec)
+                            C, prec, dtp, hail_enabled=hail_enabled)
+    if one_moment:
+        t0=tt[0]  # Original NUCOND10020 jumps to2200 for ipconc<=1.
+    else:
+        an, t0, _ssat = nucond_mod.nucond(an, dn, aux["t77"], aux["pn"], aux["wn"], dtp, C, prec)
     an, t0 = cleanup.smallvalues(an, t0, dn, aux["wn"], aux["t77"], dtp, C, prec)
     diagnostics = {}
     if diag:
         from . import diagnostics as diag_mod
-        diagnostics["dbz"] = diag_mod.radardd02(an, dn, C, prec)
+        radar = diag_mod.radardd02_one_moment if one_moment else diag_mod.radardd02
+        diagnostics["dbz"] = radar(an, dn, C, prec)
+    elif radar_depth is not None:
+        # WRF makediag/ke_diag: first-step bottom level, full history
+        # alarms, and no radar work on ordinary radar-only steps. Reuse S5
+        # before unpacking; reconstructing it from output loses REAL rounding.
+        import jax
+        from . import diagnostics as diag_mod
+        # ipconc = 0 (legacy mp=19/21) selects radardd02's one-moment intercept branches.
+        radardd02 = diag_mod.radardd02_one_moment if one_moment else diag_mod.radardd02
+        def active():
+            def bottom():
+                value=radardd02(an[..., :1],dn[..., :1],C,prec)
+                return jnp.concatenate((value,jnp.zeros_like(dn[..., 1:])),axis=-1)
+            return jax.lax.cond(radar_depth==dn.shape[-1],
+                                lambda:radardd02(an,dn,C,prec),bottom)
+        diagnostics["dbz"]=jax.lax.cond(radar_depth>0,active,lambda:jnp.zeros_like(dn))
+    if (diag and not one_moment) or radii:
+        from . import diagnostics as diag_mod
         re_c, re_i, re_s = diag_mod.eff_radius(an, dn, C, prec)
         diagnostics.update(re_cloud=re_c, re_ice=re_i, re_snow=re_s)
     out = unpack(an, dn, C, prec)
+    if one_moment:
+        # Original one-moment CN is an external held Registry scalar; it is
+        # not packed/scattered through the microphysics density-scaled stack.
+        out['qnn']=jnp.where(first_step,jnp.zeros_like(fields['qnn'],dtype=R),jnp.asarray(fields['qnn'],R))
     out = {k: jnp.asarray(v, R) for k, v in out.items()}
     return out, precip, diagnostics

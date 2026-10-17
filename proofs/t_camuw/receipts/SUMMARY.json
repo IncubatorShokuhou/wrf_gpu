@@ -1,0 +1,94 @@
+{
+  "schema": "t-camuw-triage-v1",
+  "status": "BLOCKED_GPU_VALIDATION",
+  "created_utc": "2026-10-14T01:11:57.826251+00:00",
+  "branch": "lane/t-camuw",
+  "final_model_source": "a23eadeaf91df877ce7a3aa45964674d90a65896",
+  "final_model_tree": "637bba92bf23f45d0359478b17a43ff01de557d4",
+  "measured_cpu_source": "bb14622a17ae73bcb3636021c0f51a14ff60c958",
+  "measured_source_pin": "refs/tags/evidence/t-camuw/TC15-bb14622a1",
+  "original_reference": "<USER_HOME>/wrf_gpu2_lanes/s1-gpuqual/bl9_final/cpu",
+  "gate": {
+    "original_failure": "GPU T2 h4 RMSE1.7002038357K >1.5K",
+    "cpu_h1_4_T2_RMSE_K": [
+      0.08583094280625249,
+      0.08799874030557074,
+      0.09363850684034253,
+      0.0839136820850667
+    ],
+    "CPU_h4_target": "PASS_CPU_ONLY",
+    "GPU_24h_D6": "NOT_RUN",
+    "CPU_first3steps_guard_candidates": 0,
+    "CPU_final_guard_candidates": 81424,
+    "F2_disposition": "OPEN; per-field/min/location not retained in firstCPUprobe; needactualGPUcensus",
+    "strict_guard_repair_disabled": true,
+    "CPU_steps_executed": 800,
+    "CPU_nonfinite_in_observed_completed_carries": 0,
+    "CPU_observation_steps": [
+      1,
+      2,
+      3,
+      200,
+      400,
+      600,
+      800
+    ]
+  },
+  "fixes": [
+    "NonMYNN RRTMG uses original cal_cldfra1 rather than unused MYNN SGS cloud zero override",
+    "CAM raw BL rates enter existing WRF RK dry/moist source consumers",
+    "CAM receives hydrostatic P/P8W independently of nonhyd Exner/temperature",
+    "Optin return_cumulus_inputs exposes original TPERTfloat32K/KPBLint32onebased to cu7 without newcarry"
+  ],
+  "validation": {
+    "shared_pass": 280,
+    "final_affected_pass": 15,
+    "final_cam_cumulus_pass": 8,
+    "original_cam_column_records_reused": 78,
+    "resolved_cloud_original_base_cases": 40,
+    "resolved_cloud_original_calls": 520,
+    "genuine_numeric_mutants_killed": [
+      "parentrawRK",
+      "cloudselection",
+      "cumulusforwarding"
+    ],
+    "native_release_jaxpr": "2bf12cb8374d3a84a440e47dea4b77b0c7436108fc2ee2616bba6ec79b17962a",
+    "actual_CPU_cu0_program": "9270203cbc35319b75b8e7d34a5eb1ac62990c9d84627f10f139f89f8ed0c5c0",
+    "captured_constants_identical": 61,
+    "archive_pass": true,
+    "manifest_pass": true,
+    "static_transfers_findings": 0
+  },
+  "efficiency": {
+    "scope": "CPU costs and source assessment; no newGPUperformance/memoryclaim",
+    "CPU_load_s": 32.52955220686272,
+    "CPU_firststep_including_compile_s": 202.56460569915362,
+    "CPU_4h_wall_s": 1192.6229353200179,
+    "CPU_maxrss_KiB": 9560268,
+    "persistent_carry_schema_changed": false,
+    "new_host_transfer_inside_step": false,
+    "inferred_cu7_surface_output_bytes_Swiss": 14112,
+    "duplicate_PBL_solve": false,
+    "GPU_launches_temp_peak_compile_readiness": "UNKNOWN; require actualchangedGPUarm"
+  },
+  "remaining": [
+    "Manager-agreed daytimeGPU24h exactcandidate: officiallock/lease/driverbridge/CUDAassert",
+    "Full25frame frozenD6 + actualF2field/min/location/eventclassification + E41 + changedartifacttiming/VRAM",
+    "Existing CAM total-vs-LW heating caveat remains disclosed; no daytime qualification claim"
+  ],
+  "next": "NEED-GPU ~20-30minutes officialdaywindow11:30-19Z; no partialREADY",
+  "receipts_sha256": {
+    "CPU_FORECAST.json": "6d1fe812a474c64cac83c73c9b68fe38f6131dec0cdb9f33b401f750f80d0305",
+    "ENVIRONMENT.json": "7076cb8063268937e3a95af394ec4bb23871165abcd0ef8e934f4a3aae2400df",
+    "MANIFEST_VALIDATION.json": "a1d1174d0221d14dddf0dc3ae3c280894dd3a384e3954f4cf2df8204d0f9a934",
+    "FINAL_VALIDATION_REUSE.json": "a26f6ddcff1e0cfb3a8f40ee98d495d7aa4572e6708c9b197d8eaa1137850206",
+    "RELEASE_IDENTITY.json": "22428ac40923fea314cdbaa709ad5c1e719d1acc6b040a639da4460de968e9fa",
+    "CAM_SOURCE_REUSE.json": "ee2ed54014b93331069f1d4e62d7ad62a627b58584d9e37b77323cc1ceae39e3",
+    "CU0_OPTIN_IDENTITY.json": "3f53e71b92998be31af0d3e85ff570d2e2804d86a30f3e74bb4ca5ba8ec5fd51",
+    "STATIC_TRANSFER.json": "1150f123209f96c52a8de1830efaf1a957e177dcb4a804ac18501f991995e896",
+    "GUARD_CONTEXT_OPEN.json": "99c4f8f36d22871a6cf0b809e36fb90657d2d0dad18d015e44655a0730275e91",
+    "REBASE_VALIDATION_REUSE.json": "791af10e8284a761604bb7967f2b9598343cc69125685065f19095d45c8b132b"
+  },
+  "cumulus_forwarding_commit": "78c4fa11d",
+  "cumulus_original_pinned_commit": "c313f125e"
+}

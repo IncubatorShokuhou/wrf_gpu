@@ -1,0 +1,348 @@
+{
+  "schema_version": 1,
+  "lane": "u2-diag",
+  "model": "GPT Sol / codex_2",
+  "model_commit": "e195d2d92ecbd4c41d3df16257df8e9f43fedcb9",
+  "main_base": "85ab27cb3fadbe16e5895a7ee28f588c34ca13fa",
+  "status": "FIXED second manager-requested rebase; phase1 accepted; Solar source/schema/oracle qualified, coupled/daylight handoff pending",
+  "source_files": {
+    "src/gpuwrf/coupling/physics_couplers.py": "475381e9aa3f0516467f7ec7d1cf5309002558bf6297f4b340539fb266ec6028",
+    "src/gpuwrf/diagnostics/nwp.py": "0838e871ee8e4e1f8c043f30e7a07f466965108d9ce7e2e1d558c6834bd8583a",
+    "src/gpuwrf/diagnostics/online.py": "617033eaef66f062b2030d5455621b83858d351de550d70a60e3bd67c573f506",
+    "src/gpuwrf/diagnostics/precipitation.py": "dcaac076f1038bad8a5ea4c2a5068c959bb5c90f8401fca9b963373918f28b28",
+    "src/gpuwrf/diagnostics/solar.py": "aa448e926d89fe287e21e278ab8dc8f8ffa82c42cb00674afeb26c2061ddcebe",
+    "src/gpuwrf/diagnostics/solar_config.py": "c48ebb72eee3c0f0deb70fa242566fbc92679e998a10404afc761f5837cbc864",
+    "src/gpuwrf/diagnostics/thompson_radar.py": "04f7b57df13c68941af840175af43124b2ba2f8d4cc0098043e98c9f963548e6",
+    "src/gpuwrf/integration/daily_pipeline.py": "4e6682976de04fa89caf2a79bb7cac4eab85f41db1d558b47d176a3fcca316c2",
+    "src/gpuwrf/integration/nested_pipeline.py": "e700b13a55a5cc1b1346b6df465e3c7accc8ab1522889eee90a0c9a9955ee288",
+    "src/gpuwrf/io/namelist_binding.py": "33f3aeec1560900d4c358d5050a1282f1ed152b51db2a32d90340033d04e50a8",
+    "src/gpuwrf/io/namelist_check.py": "8395916102b6fbcf7ac04424995252f538a966c69a4236d1345a891b2ae94ac4",
+    "src/gpuwrf/io/restart.py": "ba9b647d4b6ec31e374320edeb1094d60e172dbecfee2a57250f2f87f48eda30",
+    "src/gpuwrf/io/scheme_catalog.py": "f51e65a07f3d4d7d52d794e279fa6d63df1ae452f1a5ba18d6da3021e8ad807c",
+    "src/gpuwrf/io/wrfout_writer.py": "721715f3b7881e06119f13579215be6001d56fe92f7bf1dd31c9b224128107e8",
+    "src/gpuwrf/io/wrfrst_netcdf.py": "fc32240dc8e7459e85b00465cc5eaf1e0cb10ef3122143c87514443fd0d69424",
+    "src/gpuwrf/kernels/phys_thompson_full.py": "e7c09c3edd7c7c1e8c576ac18b2e3def4998ab1bfa96734fbbefba854a1ad595",
+    "src/gpuwrf/kernels/phys_thompson_prep.py": "665cc88cdfdf96b0c149c70bf21ca5c326ae33f0ac00a621287c15c2be5dfcb1",
+    "src/gpuwrf/physics/thompson_column.py": "16c486ccbe314a0a958f9a0c62b7f2db579861482ac6ff3a4e89d4ecf0dc2837",
+    "src/gpuwrf/runtime/operational_mode.py": "667341a6ffa0f6da6e6670ce62ebfb195a33203d3d2f4964a12c0589bb7d9446",
+    "src/gpuwrf/runtime/operational_state.py": "20c8414f97ddd8bb2d92eec2f4618a3e329c84b6074bfc40802d812ed403957b",
+    "src/gpuwrf/runtime/restart_store.py": "a677d18070b0d701303d23de058ad7f2ba9d2af7bdde427437c35a50ee55497b"
+  },
+  "scope": {
+    "enabled": [
+      "prec_acc_dt > 0 (Thompson8 / cu0 or WRFRK KF1)",
+      "nwp_diagnostics=1 (specified/nested nonperiodic mp8, fixed dt)",
+      "do_radar_ref=1 (Thompson8 native pipeline)"
+    ],
+    "binding": "NWP forces global do_radar_ref=1 like check_a_mundo.F2118; direct contradictory Python selections refuse.",
+    "refused": [
+      "CPU-history replay for online diagnostics",
+      "AFWA master/severe/radar; REFD is separate AFWA/RIP product",
+      "unsupported MP/cumulus pairings, invalid cadence, incompatible/missing active restart state"
+    ],
+    "not_implied": "T2MIN/MAX is output_diagnostics, not NWP; UH is restart-only.",
+    "staged_solar": "swint_opt=1 RRTMG4/4Noah4 bound/caller/history/3restart tested (250 checks); original operator45checks reused; separate actual coupled/daylight handoff still pending. FARMS2 and incompatible callers refuse."
+  },
+  "independent_science": {
+    "precipitation": {
+      "fixture": "precipitation_oracle.json",
+      "column_steps": 208,
+      "eager_max_ulp": 0,
+      "compiled_tolerance_ulp": 2,
+      "genuine_numeric_mutants": [
+        "reset_deleted",
+        "convective_snow_deleted"
+      ]
+    },
+    "nwp": {
+      "fixture": "nwp_oracle.json",
+      "sequential_steps": 7,
+      "columns": 42,
+      "simple_and_hail_tolerance_ulp": 4,
+      "helicity_rtol": 5e-06,
+      "helicity_atol": 1e-06,
+      "split_metrics_max_ulp": 0,
+      "genuine_numeric_mutant": "no-update"
+    },
+    "radar": {
+      "fixture": "radar_oracle.npz / radar_bottom_oracle.npz",
+      "full_max_absolute_dbz": 9.894371032714844e-06,
+      "max_absolute_tolerance_dbz": 5e-05,
+      "bottom_max_absolute_dbz": 0.0,
+      "private_final_ng_max_ulp": 0,
+      "private_ng_tolerance_ulp": 4,
+      "genuine_numeric_mutant": "wet-scattering disabled"
+    },
+    "reference": "Pristine CPU-WRF source operators; original WN3 Swiss CPU3h run retained with four frames. No older GPU implementation used as scientific truth."
+  },
+  "checks": {
+    "UD22b": {
+      "source": "83ff90f0b",
+      "passed": 312,
+      "wall_s": 81.19,
+      "scope": "Own operators/caller/IO/restart plus pure required shared consumers"
+    },
+    "UD23": {
+      "source": "83ff90f0b",
+      "passed": 27,
+      "wall_s": 832.72,
+      "scope": "Unfinished radiation/land and all16 dispatcher checks, normalJIT"
+    },
+    "UD26": {
+      "source": "bd1eaceb8",
+      "passed": 193,
+      "wall_s": 116.98,
+      "scope": "Latest-main Lake/CCN/diagnostics static and both restart/IO seams"
+    },
+    "shared_reuse": "SOURCE_REUSE.json and SHARED_REUSE.json bind earlier completed checks. GSFC/CAM program and all348/80 constants exact qualifieda0c; source/runtime property reuse, no native-binary identity claim.",
+    "off_identity": {
+      "Swiss": {
+        "mode": "identity",
+        "source": "<USER_HOME>/wrf_gpu2_lanes/u2-diag/rebase2_candidate",
+        "backend": "cpu",
+        "cache": "disabled",
+        "affinity": [
+          29
+        ],
+        "case": "<USER_HOME>/wrf_gpu2_lanes/release-docs/RD11/cpu",
+        "load_s": 83.6741094600875,
+        "prec_acc_dt": 0.0,
+        "nwp_diagnostics": 0,
+        "do_radar_ref": 0,
+        "swint_opt": 0,
+        "scope": "CPU trace of native default program; portable facade native only while tracing; no GPU execution",
+        "sha256": "2bf12cb8374d3a84a440e47dea4b77b0c7436108fc2ee2616bba6ec79b17962a",
+        "trace_s": 33.58430787897669
+      },
+      "PROD": {
+        "mode": "identity",
+        "source": "<USER_HOME>/wrf_gpu2_lanes/u2-diag/rebase2_candidate",
+        "backend": "cpu",
+        "cache": "disabled",
+        "affinity": [
+          29
+        ],
+        "case": "<DATA_ROOT>/wrf_gpu2/v025/s0_case_20260725",
+        "load_s": 101.66717178886756,
+        "prec_acc_dt": 0.0,
+        "nwp_diagnostics": 0,
+        "do_radar_ref": 0,
+        "swint_opt": 0,
+        "scope": "CPU trace of native default program; portable facade native only while tracing; no GPU execution",
+        "sha256": "6fc715a2bd630934c4cf0f94427df19a527cbf429011c9ba5efe4d712744d27b",
+        "trace_s": 39.86702520493418
+      }
+    },
+    "coupled_smoke": {
+      "source": "8b3f3a58e",
+      "receipt": "<USER_HOME>/wrf_gpu2_lanes/u2-diag/UD18-coupled-smoke.json",
+      "steps": 3,
+      "nonfinite": 0,
+      "pre_mask_guards": 0,
+      "scope": "RealSwiss nested loader and coupled own steps under CPUlegacy/Thomas harness; activeW/UH, precipitation/hail inactive first54s; no CPU-WRF trajectory/GPU qualification."
+    },
+    "on_identity": {
+      "reference_source": "8b3f3a58e",
+      "candidate_source": "bd1eaceb8",
+      "program_sha256": "7bc8bfe528c54aa71eb120d0a7b08f98bb670f601c6efb9c945e8def3ec7686d",
+      "constants_sha256": "ea5dbb183dd967d71f9777646ee5a860215925de088dea83a351da13cd02701e",
+      "harness_sha256": "8dd14af747d12e8061ea71e2ea94e11c9a77d892a73a7dd12da3978ca5e71808",
+      "exact": true,
+      "scope": "Program/constant identity only; carry completedUD18 CPUfinite/census smoke, no new fidelity or nativebinary claim"
+    },
+    "clean_archive": {
+      "source": "bd1eaceb8",
+      "passed": 3,
+      "wall_s": 31.2,
+      "dependencies": "tracked src+data+own fixtures/test helpers+scripts/v025/cpu_guard.py",
+      "cleaned": true
+    },
+    "UD31": {
+      "source": "26abe643b596b8d61f48bea4fdae8a99184fc2cc",
+      "passed": 2,
+      "wall_s": 11.44,
+      "scope": "Both restart formats refuse invalidNWP1/radar0; onlyrestartvalidator changes, all numerical/stepcaller functions byte-identical"
+    },
+    "critic_fix": {
+      "source": "81c061113",
+      "reviewed_source": "564111cf8",
+      "verdict": "<USER_HOME>/wrf_gpu2_lanes/rv-u2-diag/VERDICT.md",
+      "P1": "Native synchronized RestartStore per-domain selectors/cadences, both markers, exact REAL shapes and missing-group agreement validated at save/read before device restore. Native identities without explicit configs refuse E78.",
+      "P2": "13completeCPU-WRFhistorymetadata records, including3coordinates12MemoryOrder11descriptions; full/subset tests compare6attributes each.",
+      "UD33b": {
+        "passed": 109,
+        "failed": 1,
+        "wall_s": 168.57,
+        "failure": "Positive driver fixture omitted required forecast_hours; corrected in81c061113, product unchanged."
+      },
+      "UD33c": {
+        "passed": 7,
+        "wall_s": 25.69,
+        "scope": "Actual native driver exact valid control +6E78 damage admissions"
+      },
+      "UD33e": {
+        "genuine_deletion_assertion_failures": 1,
+        "setup_errors": 0,
+        "wall_s": 22.75,
+        "scope": "Remove native diagnostic guard; previouslygreen malformedbucketrestore no longer raises."
+      },
+      "source_reuse": "SOURCE_REUSE.json critic_fix_rebase: seven arithmetic files BYTE, online module BYTE to reviewed, four caller ASTs exact; timeseriesNone specialization exact.",
+      "performance": "Host checkpoint/output admission only; zero added timestep calls, device arrays, resident bytes or transfers by source audit. Existing checkpoint host finite-leaf traversal retained. Actual GPU costs stay pending.",
+      "clean_archive_metadata": {
+        "source": "81c061113",
+        "asset": "proofs/u2_diag/history_metadata.json",
+        "git_archive_byte_identical": true,
+        "sha256": "b1ea85ed6412379fab2410255810973104e8d4bd130825fb231440e1f19cf47e",
+        "fields": 13,
+        "scope": "Clean git archive asset admission; exact bytes already exercised in eight full/subset metadata writer tests UD33b; no numerical repeat",
+        "cache": "NONE"
+      }
+    },
+    "manager_rebase": {
+      "accepted": "82f69152d",
+      "candidate": "9f5a2a3f3",
+      "main_base": "77e23bb2aca7484082d2f034f18a74c8992bf9e8",
+      "UD39": {
+        "passed": 196,
+        "deselected_unchanged_math": 3,
+        "wall_s": 93.41,
+        "scope": "Own IO/caller/static/schema + M7 restart + NetCDF process lock + main seed ownership and observation IO"
+      },
+      "source_reuse": "SOURCE_REUSE.json manager_requested_rebase; all main optional carry fields/order prefix unchanged and ours appended; main ownership guard preserved."
+    },
+    "manager_rebase2": {
+      "proof": "REBASE_85AB.json",
+      "accepted_phase1": "82f69152d",
+      "main_base": "85ab27cb3fadbe16e5895a7ee28f588c34ca13fa",
+      "checks": {
+        "UD47": {
+          "passed": 449,
+          "obsolete_fixture_failure": 1,
+          "deselected_unchanged_math": 3,
+          "wall_s": 84.43
+        },
+        "UD47b": {
+          "passed": 1,
+          "wall_s": 6.32,
+          "change": "Only obsolete swint1refusal fixture becomes FARMS2; allproductsource identical"
+        },
+        "coverage_unique": {
+          "manager_requested_affected": 196,
+          "solar": 250,
+          "regional_restart": 4,
+          "total": 450
+        },
+        "off_identity": {
+          "Swiss": {
+            "mode": "identity",
+            "source": "<USER_HOME>/wrf_gpu2_lanes/u2-diag/rebase2_candidate",
+            "backend": "cpu",
+            "cache": "disabled",
+            "affinity": [
+              29
+            ],
+            "case": "<USER_HOME>/wrf_gpu2_lanes/release-docs/RD11/cpu",
+            "load_s": 83.6741094600875,
+            "prec_acc_dt": 0.0,
+            "nwp_diagnostics": 0,
+            "do_radar_ref": 0,
+            "swint_opt": 0,
+            "scope": "CPU trace of native default program; portable facade native only while tracing; no GPU execution",
+            "sha256": "2bf12cb8374d3a84a440e47dea4b77b0c7436108fc2ee2616bba6ec79b17962a",
+            "trace_s": 33.58430787897669
+          },
+          "PROD": {
+            "mode": "identity",
+            "source": "<USER_HOME>/wrf_gpu2_lanes/u2-diag/rebase2_candidate",
+            "backend": "cpu",
+            "cache": "disabled",
+            "affinity": [
+              29
+            ],
+            "case": "<DATA_ROOT>/wrf_gpu2/v025/s0_case_20260725",
+            "load_s": 101.66717178886756,
+            "prec_acc_dt": 0.0,
+            "nwp_diagnostics": 0,
+            "do_radar_ref": 0,
+            "swint_opt": 0,
+            "scope": "CPU trace of native default program; portable facade native only while tracing; no GPU execution",
+            "sha256": "6fc715a2bd630934c4cf0f94427df19a527cbf429011c9ba5efe4d712744d27b",
+            "trace_s": 39.86702520493418
+          }
+        }
+      },
+      "reuse": "Historical SOURCE_REUSE/SHARED_REUSE source-bound receipts remain historical. REBASE_85AB gives current producer arithmetic proof including main portability import-only changes; Solar operator BYTE924."
+    }
+  },
+  "costs": {
+    "scope": "Measured CPU component costs only; no GPU or wholeforecast speed claim",
+    "precip_117x267_warm_us": 33.26009027659893,
+    "precip_cold_s": 0.08500728104263544,
+    "radar_bottom_40col_speedup": 25.481498282770463,
+    "radar_42x42x44_bottom_ms": 3.2568550668656826,
+    "radar_42x42x44_full_ms": 133.3701480180025,
+    "radar_bottom_temporary_bytes": 2462936,
+    "radar_full_temporary_bytes": 14571096,
+    "logical_persistent_bytes_per_surface_cell": "12 precipitation +40 NWP +4*nz radar, all0OFF",
+    "swiss_42x42x44_persistent_bytes": 402192,
+    "new_radar_context_volume_bytes": 620928,
+    "liveness": "Six existing MP outputs alias context operands and live longer; actual GPU peak/traffic/kernel count/compile-readiness unmeasured. NWP has3 Pallas calls; radar adds1 bounded column call when due plus context/metric assembly."
+  },
+  "pending": [
+    "Manager accepts required critic fixes and merges",
+    "Locked GPU3h all3ON: original CPU-WRF history comparison, finite/census, native E41 disclosure/gate and actual performance/memory",
+    "WRF-Solar phase2: source/oracle draft staged; daylight coupled/reference evidence required"
+  ],
+  "gpu_arm": {
+    "tool": "proofs/u2_diag/gpu_smoke.py",
+    "minutes": 30,
+    "case": "Swiss42x42x44dt18 mp8cu0bl5sf4ra4/4radt10, prec60 nwp1 radar1 swint0 history60; FAST1+CENSUS1",
+    "require": "Reviewed clean immutable source, manager window/lease, driver bridge, official with_gpu_lock; script asserts actual CUDA backend",
+    "scientific_reference": "<USER_HOME>/wrf_gpu2_lanes/u2-diag/cpu_reference_3h",
+    "reference_note": "CPU referenceSolar1; allnight surfacefluxeszero. No Solar or speed qualification inferred."
+  },
+  "receipt_files": {
+    "<USER_HOME>/wrf_gpu2_lanes/u2-diag/UD22b-final-delta.log": "81fa233228a25e69426f6bd69801985993cf11ee926d3208482ed6a3c5254b3c",
+    "<USER_HOME>/wrf_gpu2_lanes/u2-diag/UD23-tail.log": "4ca1f7068f8291a4cf322f2fa221224945c79e5fba71d286832465b8a97c5bd8",
+    "<USER_HOME>/wrf_gpu2_lanes/u2-diag/UD26-main-composition.log": "c6f142536c26795a34c379b4d9c3d38aef7872c8c58a388fbc0ed6fe91945558",
+    "<USER_HOME>/wrf_gpu2_lanes/u2-diag/UD18-coupled-smoke.json": "c462df8ab458a9ec4a0e8d2a139b2819f628e387291b8a6bcb5ee3dea5083416",
+    "<USER_HOME>/wrf_gpu2_lanes/u2-diag/UD09-cost.json": "2bd369ce52d8d9ba919ae1c562151e1e30192f100bae0aac0c463ae39133bfde",
+    "<USER_HOME>/wrf_gpu2_lanes/u2-diag/UD10-mutants.json": "6895a5d19a282ad49a1d4a7ac90571b742e682201b619626292aedf8656aea1b",
+    "<USER_HOME>/wrf_gpu2_lanes/u2-diag/UD27-final-shared-trace.json": "f040bb3ccebf7cecdb626ff880daf61eb08c381bf1b3113b90a2c9be11ddb683",
+    "<USER_HOME>/wrf_gpu2_lanes/u2-diag/radar/COMPONENT_HANDOFF.json": "809361ddfb3b538daa8f853c0f8a6d538ca962fb0c468403f51aa09a7a426ae6",
+    "<USER_HOME>/wrf_gpu2_lanes/u2-diag/nwp/NWP04_lowering.json": "7bbb14cb33a30f58093fa8b3d36074b262295464a13ad9d44af414477e3b446b",
+    "<USER_HOME>/wrf_gpu2_lanes/u2-diag/UD25d-archive-tests.log": "51cebea37c2277110d02775dd1db1417ff39e1389ef0292075a2567b8c3a0db8",
+    "<USER_HOME>/wrf_gpu2_lanes/u2-diag/UD30-qualified-on.json": "da92e7a7e9dbbdb864fbebab55e03e1124e08ddba2844c8599bb0ceeeb1bf15b",
+    "<USER_HOME>/wrf_gpu2_lanes/u2-diag/UD30-final-on.json": "c0534d68f4ca6460a9a01de87a9ee675fa64f375e82e3a0ffd28ca0ea041acdb",
+    "<USER_HOME>/wrf_gpu2_lanes/u2-diag/UD30-final-on-cpu-time.log": "b203a4b5ca39ea5bfb799904c5d11c95f243137d3d503fbf0073f9b0fe7d9473",
+    "<USER_HOME>/wrf_gpu2_lanes/u2-diag/UD31-restart-invariant.log": "218f42d715e56cfed4030a35426f9c4a9ac9c24895b4d15332b7c3cc95d6f218",
+    "<USER_HOME>/wrf_gpu2_lanes/u2-diag/UD33-critic-fix-tests.log": "ae8800c0f1250f6b538f0f37465a606a7973680ccd16130b17c2a7971f374422",
+    "<USER_HOME>/wrf_gpu2_lanes/u2-diag/UD33b-critic-fix-tests.log": "b591b5cecb8dc1f13e8f5f40619a72d26a7559acd1cf018828f62e4a57439438",
+    "<USER_HOME>/wrf_gpu2_lanes/u2-diag/UD33c-native-driver-controls.log": "7a1b552260c7f3b83922d1733f5ee11430cb5c51bfced9cbe3ef86e4e520eeef",
+    "<USER_HOME>/wrf_gpu2_lanes/u2-diag/UD33d-native-guard-deletion.log": "3181c22deebfa675f368f6ae07d742fd5d8096ffe5562149bbb00600c5a0fca1",
+    "<USER_HOME>/wrf_gpu2_lanes/u2-diag/UD33e-native-guard-deletion.log": "7dd8a3280e5373d5b084369fb40c2d0da86c3ac085a2ce9ba88efef154e3c707",
+    "<USER_HOME>/wrf_gpu2_lanes/u2-diag/UD34-swiss-off.json": "1a797c08d9c14f58fdfe90ea423ea40d914a609d4f8bd9d4009320d62f507e62",
+    "<USER_HOME>/wrf_gpu2_lanes/u2-diag/UD34-swiss-off.log": "4ece6e1f741c7be833c54454fd4a14ee5f94132b4d985cfbc8f7f77d6d9bc23c",
+    "<USER_HOME>/wrf_gpu2_lanes/u2-diag/UD35-prod-off.json": "6f4da87d822b10b4b10f34362ca746c4ec71c2dc54abed8b796475ea762a3417",
+    "<USER_HOME>/wrf_gpu2_lanes/u2-diag/UD35-prod-off.log": "a8d47532653db55a9fed19134e1438f8df10a98975519ae1a3e259b281fb733c",
+    "<USER_HOME>/wrf_gpu2_lanes/u2-diag/UD36-archive-metadata.json": "293d5ab1377ec7e470aed8cce06a3c98fbec82fa956d80a6b1e1e7081031d5ed",
+    "<USER_HOME>/wrf_gpu2_lanes/u2-diag/UD39-rebased-io.log": "29fb903d16c8a9ba308907b393b9aa4ac4b35482440f6a1f5f0f6bc717374940",
+    "<USER_HOME>/wrf_gpu2_lanes/u2-diag/UD40-rebased-swiss-off.json": "39867d9e7def0899109cf8ad56be0b5c37f60b533e9df86ef1748d7b5ec5c244",
+    "<USER_HOME>/wrf_gpu2_lanes/u2-diag/UD40-rebased-swiss-off.log": "6a072a1f0bc265b08e3994f0ec83765640fa15a5fc97e355c19b94d48f677dbf",
+    "<USER_HOME>/wrf_gpu2_lanes/u2-diag/UD41-rebased-prod-off.json": "38344749517e23b17c39df76d53bee746fee134c1d53287c5bf857978a6fa126",
+    "<USER_HOME>/wrf_gpu2_lanes/u2-diag/UD41-rebased-prod-off.log": "364a969a6904a9e0707ff679f3fd846b99690df836397e00e8d040edf5a355dd",
+    "<USER_HOME>/wrf_gpu2_lanes/u2-diag/UD47-rebase2-composed.log": "561149be71905c43d0e71688325a5fa389b69df1f94f5c752aac78e404012c3c",
+    "<USER_HOME>/wrf_gpu2_lanes/u2-diag/UD47b-rebase2-farms-refusal.log": "55de899ad8acb5c7ef42aa898b1d1ad07a5db1a753d083c2ddbfcd42161e620f",
+    "<USER_HOME>/wrf_gpu2_lanes/u2-diag/UD48-rebase2-swiss-off.json": "7e52bdea1765b1e27ac9f4272baf806b9196f31ef6315ba72bd333e3a89c328d",
+    "<USER_HOME>/wrf_gpu2_lanes/u2-diag/UD48-rebase2-swiss-off.log": "2f8ec3409169cf093c72158f7134c63d03d104eeaae76a3b8eb8ee5f2e7e73e4",
+    "<USER_HOME>/wrf_gpu2_lanes/u2-diag/UD49-rebase2-prod-off.json": "908bf1aa88f5fba35c4a7191d75271c81a09f21395874114dac6575debcc5cd2",
+    "<USER_HOME>/wrf_gpu2_lanes/u2-diag/UD49-rebase2-prod-off.log": "502a520f6496575ce4c38caf33d3835bf7439d557c769508f721334aae9419e0"
+  },
+  "cleanup": {
+    "all_temporary_model_snapshots_removed": true,
+    "clean_archives_removed": true,
+    "pytest_removed": true,
+    "persistent_compile_caches": "NONE",
+    "preserved": "Original CPU-WRF3h/24h references and compact evidence; Solar commits on lane/u2-diag-solar-composed"
+  }
+}

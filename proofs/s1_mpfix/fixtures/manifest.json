@@ -1,0 +1,40 @@
+{
+  "cases": {
+    "8": "warm empty dry",
+    "9": "cold empty dry",
+    "10": "one warm cloudy level amid dry levels",
+    "11": "one cold icy level amid dry levels",
+    "12": "empty supersaturated warm"
+  },
+  "source_hashes": {
+    "proofs/v023/oracle/morraero/morraero_stub_modules.f90": "fbe5dce3fdb37cf894d6a6b0fbf69fa3d90acd29dad6d3db2989abe4212fb477",
+    "data/wrf_pristine/WRF/share/module_model_constants.F": "5b80377fecdc18a5f0ad38d3b6c15cfc86ad5d76701adbbbb08a08698d0f7062",
+    "data/wrf_pristine/WRF/phys/module_mp_radar.F": "ca069a12cc149313456fa8ee08a827e0f542768b66ff6c1ece95a40ab208fb88",
+    "data/wrf_pristine/WRF/phys/module_mp_morr_two_moment_aero.F": "d512aa16ad862b04c7278540a207a56aa10955e052bd9b9bc870e9a4f0812180"
+  },
+  "builds": {
+    "fp32": {
+      "flags": [
+        "-O2",
+        "-ffree-form",
+        "-ffree-line-length-none",
+        "-ffpe-summary=none",
+        "-cpp"
+      ],
+      "driver_sha256": "494201132e8e191d1a6d7fc119729b8fb0633e41bf41d53bfb02510ffb0dbb19"
+    },
+    "fp64": {
+      "flags": [
+        "-O2",
+        "-ffree-form",
+        "-ffree-line-length-none",
+        "-ffpe-summary=none",
+        "-cpp",
+        "-fdefault-real-8",
+        "-fdefault-double-8"
+      ],
+      "driver_sha256": "494201132e8e191d1a6d7fc119729b8fb0633e41bf41d53bfb02510ffb0dbb19"
+    }
+  },
+  "compiler": "GNU Fortran (conda-forge gcc 14.3.0-19) 14.3.0"
+}

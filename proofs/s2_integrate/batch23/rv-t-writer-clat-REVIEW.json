@@ -1,0 +1,149 @@
+{
+  "UTC": "2026-10-15T06:04:21.023173+00:00",
+  "verdict": "MERGE",
+  "lane": "rv-t-writer-clat",
+  "reviewed": "e80905aecf8df39e807a30a512f7534ca41cfe2d",
+  "product": "30af97a7e",
+  "base": "f737666b666271d4fc492a431f3754b70d531b9c",
+  "source_authority": {
+    "Registry/Registry.EM_COMMON": {
+      "lines": "1848",
+      "fact": "REAL CLAT ij, i012rhdu=(copy_fcnm), h history stream; XLAT uses its independent geographic field",
+      "path": "<USER_HOME>/src/wrf_pristine/WRF/Registry/Registry.EM_COMMON",
+      "sha256": "6f3ee02175b76487c5c6c046ff2fb4c5d41980b86c0f06eb2e09e34dacc9623a"
+    },
+    "inc/nest_feedbackup_interp.inc": {
+      "lines": "3455-3469",
+      "fact": "CALL copy_fcnm(grid%clat,...,ngrid%clat,...)",
+      "path": "<USER_HOME>/src/wrf_pristine/WRF/inc/nest_feedbackup_interp.inc",
+      "sha256": "7130d311917290f965623c5489965a92c8b50db8d23a16dd868ef23295ecbd47"
+    },
+    "share/mediation_integrate.F": {
+      "lines": "784,1043-1044",
+      "fact": "med_nest_initial calls med_nest_feedback before parent reinitialization; feedback!=0 calls med_feedback_domain",
+      "path": "<USER_HOME>/src/wrf_pristine/WRF/share/mediation_integrate.F",
+      "sha256": "7dc254b60c558d08354389d748c14fa1323f33448c1c6b26f7c91eff70ab9eef"
+    }
+  },
+  "source_and_receipt_audit": {
+    "status": "PASS",
+    "head": "e80905aecf8df39e807a30a512f7534ca41cfe2d",
+    "base": "f737666b666271d4fc492a431f3754b70d531b9c",
+    "changed_source_files": [
+      "src/gpuwrf/io/wrfout_writer.py"
+    ],
+    "changed_functions_excluding_docs": [
+      "prepare_wrfout_payload"
+    ],
+    "unchanged_functions": 60,
+    "producer_raw_and_tracked_hashes_verified": 17,
+    "unchanged_feedback_sources": {
+      "src/gpuwrf/nesting/initial_feedback.py": "7664e449a0e5f0613594d4c6e1e2f748a8de1ae312e99c5971064edfe7b51867",
+      "src/gpuwrf/coupling/boundary_feedback.py": "e0f1ffdf31a1991543d368329d8297227ffb23e2e0c3e3b37aeea90a733ded0e",
+      "src/gpuwrf/coupling/feedback_registry.py": "dd319a610f74803d5726f7f696a2933c6c09af0ab5c99139cfd19da7f4b43550"
+    },
+    "default_program_ids_reused": {
+      "Swiss": "f672a5739cb96e388b6b7a40ef80337bf81bdc14ef15268f3476e09d79fe055d",
+      "PROD": "6fc715a2bd630934c4cf0f94427df19a527cbf429011c9ba5efe4d712744d27b"
+    },
+    "identity_evidence": "Exact-source/byte proof from approved base plus freshly verified original CPU trace receipt hashes; no redundant numerical or trace run",
+    "default_identity_probe_sources_BYTE": [
+      "proofs/s1_port/release_identity.py",
+      "proofs/o1_nlbind/probe.py"
+    ],
+    "data_scripts_packaging_BYTE": true,
+    "pytest": {
+      "healthy": {
+        "tests": "75",
+        "failures": "0",
+        "errors": "0",
+        "skipped": "3",
+        "time": "16.037"
+      },
+      "mutant": {
+        "tests": "14",
+        "failures": "12",
+        "errors": "0",
+        "skipped": "0",
+        "time": "3.319",
+        "all_failure_signatures": "CLAT byte comparisons, no setup errors"
+      }
+    },
+    "cache": "NONE",
+    "gpu_used": false
+  },
+  "c42_parent_frames_BYTE": 25,
+  "c42_child_frames_BYTE": 25,
+  "original_file_hashes_fresh": 50,
+  "nonfinite_checked_frames": 50,
+  "no_feedback_control_variants": 8,
+  "cost": {
+    "parent": {
+      "seconds": [
+        0.0034012360047199763,
+        0.003217063996999059,
+        0.003659207999589853,
+        0.0031001239985926077,
+        0.003867769002681598,
+        0.0030809840027359314,
+        0.0029214120004326105,
+        0.0035875070025213063,
+        0.0029867330013075843
+      ],
+      "median_seconds": 0.003217063996999059,
+      "peak_traced_bytes": 17147340
+    },
+    "fixed": {
+      "seconds": [
+        0.0027952410018770024,
+        0.0027502810044097714,
+        0.0026390599959995598,
+        0.0029212230001576245,
+        0.0033209850007551722,
+        0.0027564409974729642,
+        0.002706610997847747,
+        0.0027533309985301457,
+        0.002769260994682554
+      ],
+      "median_seconds": 0.0027564409974729642,
+      "peak_traced_bytes": 17147244
+    }
+  },
+  "inherited_selected_limitation": "Without supplied CLAT selected builder omits CLAT; selected compatibility fills default instead of XLAT. Both BYTE before/after, outside this delta. Full and full-compatibility fallback BYTE wrfinput.",
+  "open": [
+    "C42 forecast completion/full D6 pending separately",
+    "3 original reference skips unwaived",
+    "No GPU or new compiled artifact claim"
+  ],
+  "cleanup": {
+    "<USER_HOME>/wrf_gpu2_lanes/rv-t-writer-clat/review-tree": true,
+    "<USER_HOME>/wrf_gpu2_lanes/rv-t-writer-clat/pytest/healthy": true,
+    "<USER_HOME>/wrf_gpu2_lanes/rv-t-writer-clat/pytest/mutant": true,
+    "<USER_HOME>/wrf_gpu2_lanes/rv-t-writer-clat/c42-output": true,
+    "cache": "NONE",
+    "own_jobs": 0,
+    "gpu_used": false,
+    "UTC": "2026-10-15T06:05:07.474105+00:00"
+  },
+  "experiments": [
+    "RC01",
+    "RC02",
+    "RC03",
+    "RC04a",
+    "RC04b",
+    "RC05a",
+    "RC05b",
+    "RC05c"
+  ],
+  "files": {
+    "VERDICT.md": "f16c28c7246483c2f4670017600dc5258ef6ba8eed8295e2b5deb2fd6ef9cb6e",
+    "audit.json": "8c7171e2503da1d76dfe211048d1d950647ab88f3303fe3a8a7bab4fc9e3c44f",
+    "audit.py": "8643dfc41101cda3a0fb228c10d9477f47663f7a32c014b4439d1496aa11bc03",
+    "c42.json": "fd7307a67473aea26332750e06509c5932a73ac37b375b29d472bdf247d49b7c",
+    "cleanup.json": "27f8813cc5b35b2a6f1a08910e0aa6cc51f7cda4a956db558db76994cfe1170c",
+    "healthy.xml.gz": "2c2c7cfbbf6c47ee32078bd2ae040f2af27815fdfd45b593990de099fe64f734",
+    "mutant.xml.gz": "87e0ed6fc0543fdc00b041865b45c5ef602d170882f44afe2c99f96519248db8",
+    "nonfeedback.json": "ee96acf8632dfe1afd512e22d8b3017c14a3f835d2b7a6d062247e578d62995f",
+    "nonfeedback.py": "85bf0b52104a6b9ed08247bfdddff872791f499dd3057ec4ee99826af11831dc"
+  }
+}

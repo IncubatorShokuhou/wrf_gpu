@@ -93,7 +93,7 @@ import os
 
 import jax
 import jax.numpy as jnp
-from jax.experimental import pallas as pl
+from gpuwrf.backends import pallas as pl
 
 __all__ = [
     "TX",

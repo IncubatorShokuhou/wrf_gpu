@@ -1,0 +1,217 @@
+{
+  "scope": "READY-FOR-CRITIC: final V11 CPU + completed actual GPU E41 gates PASS; scientific/reference/default gates PASS within stated scope",
+  "source_model_commit": "4521643cd (pre-rebase); owned physics byte-identical final c120f6d75",
+  "original_actual_gpu": {
+    "max_stack_B": 2144,
+    "kernel_count": 1427,
+    "total_allocation_B": 3557441123,
+    "artifacts": "<USER_HOME>/wrf_gpu2_lanes/s1-camstack/gpu-capture",
+    "retention": "through independent critic E177"
+  },
+  "matched_original_mlir_sha256": "8fd6460e99f900c3862c0fe2efecb59a84aa380cf83264eecc7a679c77bb850f",
+  "target_sha256": "f46c185780fdbd4aab62ef20293385bb8de31a71bd260e9ce62cbfc21f196a23",
+  "last_completed_native": {
+    "mlir_sha256": "dcb5219e92ff414e1fe4b2677a270b56543ecf8ce3b58cb59be7e7123a941ab6",
+    "original_options_sha256": "13510c0e8b244978b3a4d061f0ab7752f13c398887aa83992cc4f76be7cf8819",
+    "effective_options_sha256": "e18a21040000e8d36851c9bc8acc4021f10774e144fcb4f1afd5d97d79289ad3",
+    "diagnostic_overrides": {
+      "xla_dump_to": "<USER_HOME>/wrf_gpu2_lanes/s1-camstack/deviceless-v11/dump",
+      "xla_gpu_dump_autotune_results_to": "<USER_HOME>/wrf_gpu2_lanes/s1-camstack/deviceless-v11/autotune_results.pb",
+      "xla_gpu_require_complete_aot_autotune_results": true
+    },
+    "target_sha256": "f46c185780fdbd4aab62ef20293385bb8de31a71bd260e9ce62cbfc21f196a23",
+    "physical_backend": "cpu",
+    "virtual_target": "NVIDIA GeForce RTX 5090_0(process=0,(0))",
+    "scope": "deviceless native static prescreen; no GPU execution/performance claim",
+    "compile_s": 755.9480213481002,
+    "native_bytes": 367010439,
+    "native_sha256": "632d0916c2e9a9a23941dc3044d90294615ac599c7d761a246d05fcce52d8250",
+    "optimized_hlo_sha256": "325932d127f427a88b86299dd1c17d17a3da2167b86faf976bbe3572368ce98d",
+    "memory_api": "UNIMPLEMENTED: buffer_assignment is not supported.",
+    "memory": {
+      "total_allocation_bytes": 1606895467,
+      "source": "<USER_HOME>/wrf_gpu2_lanes/s1-camstack/deviceless-v11/dump/module_0001.jit__advance_chunk_fori.sm_12.0a_gpu_after_optimizations-memory-usage-report.txt"
+    },
+    "kinput_transpose_over500": [],
+    "all_transpose_prescreen_over500": [],
+    "real_gpu_kind_prescreen": "PASS",
+    "hlo_stats": {
+      "computations": 3374,
+      "n_fusions": 2636,
+      "kinput_transpose_fusions": 694,
+      "max_kinput_transpose_instr": 404
+    },
+    "stack_gate": "PASS",
+    "max_stack_B": 136,
+    "conservative_flags": false,
+    "hlo_transpose_gate": "PASS",
+    "native_gate": "PASS",
+    "coverage": {
+      "status": "PASS",
+      "aot_programs": [
+        "d01"
+      ],
+      "required_run_programs": [
+        "d01"
+      ],
+      "run_proofs": [],
+      "n_discovered": 1,
+      "n_scanned": 1
+    },
+    "receipt": "<USER_HOME>/wrf_gpu2_lanes/s1-camstack/deviceless-v11/receipt.json",
+    "all_transpose_max": 479,
+    "retained_memory_report": "<USER_HOME>/wrf_gpu2_lanes/s1-camstack/deviceless-v11/allocation-reports/module_0001.jit__advance_chunk_fori.sm_12.0a_gpu_after_optimizations-memory-usage-report.txt"
+  },
+  "science": {
+    "independent_WRF": "CAMSTACK55:8 LW PASS; CAMSTACK17:2 absorptivity PASS (source unchanged)",
+    "CPU_source_regression": "CAMSTACK52:40 active columns fresh/held BYTE PASS; all10 original helpers restored; not WRF fidelity",
+    "NetCDF_one_writer": "CAMSTACK58:3 PASS6.41s"
+  },
+  "release_identity": "2bf12cb8374d3a84a440e47dea4b77b0c7436108fc2ee2616bba6ec79b17962a EXACT",
+  "performance": "Final API0.683152085s vs original0.670020336s (+1.96%); 9samples each incl AOTload; notGPU-only or forecast. Inputclones excluded from timing, included in benchmark memory. Pool unchanged; launch delta unknown. Actual cold+first248.007s/load74.234s/process330.073s; CPU nativecompile755.948s sharedcore diagnostic, not cachedreadiness.",
+  "current_candidate": "V11 physics4521643cd pre-rebase; measured snapshot37ba424a3; final sourcec120f6d75 on mainacb0c9e40 exact completeMLIR3360026b",
+  "work": {
+    "case": "realSwiss42x42x44",
+    "dt_s": 18,
+    "radt_minutes": 10,
+    "radiation_cadence_steps": 33,
+    "ra_lw_physics": 3,
+    "ra_sw_physics": 3,
+    "cam_abs_freq_s_nominal": 21600,
+    "STEPABS_effective_steps": 1188,
+    "gpu_replay": "nine fixed-input ownstep0->1 coupled calls plus3advancingsteps"
+  },
+  "reference_preservation": "GPU_REFERENCE_RESTORED.json;5originalpaths exactsealed SHA, newreplaybytes retained separately",
+  "actual_gpu_earlier_V7": {
+    "source": "df9165c2c / physicsa2328c0d9",
+    "max_stack_B": 96,
+    "nonleaf_over1k": 0,
+    "callgraph_unknown": 0,
+    "kinput_transpose_flags": [
+      658,
+      1165,
+      513
+    ],
+    "full_e41_gate": "FAIL",
+    "candidate_api_replay_median_s": 0.8044620570726693,
+    "base_api_replay_median_s": 0.6700203360524029,
+    "performance_scope": "fresh coupled runner with AOT load,9samples, copies excluded; notGPU-only or forecast",
+    "XLA_allocation_B": 1588598051,
+    "benchmark_peak_live_B": 2474982400,
+    "pool_B": 25248645120,
+    "both_three_steps_finite": true,
+    "scope": "Superseded by final V11; retained negative HLO/control evidence"
+  },
+  "composition": {
+    "main": "acb0c9e40",
+    "source_commit": "c120f6d75",
+    "full_mlir_sha256": "3360026bbd8b418041f3c9aadca942ae381ccd84510fedcacc28b8cdf1a3aaeb",
+    "release_identity": "CAMSTACK60:2bf12cb8 EXACT52.6s",
+    "netcdf_lock": "CAMSTACK61:3 PASS3.18s",
+    "receipts": [
+      "final-main-lower/receipt.json",
+      "CAMSTACK60-identity.json",
+      "CAMSTACK61-netcdf.xml"
+    ]
+  },
+  "actual_gpu": {
+    "source_snapshot": "37ba424a3",
+    "main_composed_source": "c120f6d75",
+    "max_stack_B": 96,
+    "kinput_transpose_max": 479,
+    "nonleaf_over1k": 0,
+    "callgraph_unknown": 0,
+    "static_native_kernels": 1439,
+    "static_kernel_delta_vs_original": 12,
+    "dynamic_launch_delta": "UNKNOWN; no nsys claim",
+    "coverage": "2/2 stepping executable entries;d01",
+    "generic_gate": "INCOMPLETE only UNKNOWN_AOT_METADATA",
+    "completed_e41_gate": "PASS",
+    "completion": "exact observed delegate-output AOT blob SHA bound to retained full precompaction HLO; rich JIT HLO independently passes",
+    "native_elf_sha256": "d09bf629ee8196dd0ccccb2751e161f90aed06f745f34aaf6282f20b9d26c575",
+    "aot_blob_sha256": "8ad5f43daab69cac24940e65a5b3060b19b9dd76ff860721fbedde887dd643dc",
+    "optimized_hlo_sha256": "d31a2ba149e83e0ab586483874df9ed8dc824608d2d935747953cb1b48b9486c",
+    "native_scan": "<USER_HOME>/wrf_gpu2_lanes/s1-camstack/gpu-final/e41/wave_gate.json",
+    "hlo_completion": "<USER_HOME>/wrf_gpu2_lanes/s1-camstack/gpu-final/e41/bound_aot_gate.json",
+    "timing": {
+      "platform": "gpu",
+      "device": "cuda:0",
+      "scope": "warm coupled CAM first-step replay, identical input and radiation cadence",
+      "replay_s": [
+        0.7056099867913872,
+        0.6705143491271883,
+        0.6751285949721932,
+        0.655966408085078,
+        0.6888601090759039,
+        0.6739911451004446,
+        0.710454085143283,
+        0.6941066300496459,
+        0.6831520849373192
+      ],
+      "median_s": 0.6831520849373192,
+      "initial_own_steps": {
+        "d01": 0
+      },
+      "result_own_steps": {
+        "d01": 1
+      },
+      "carry_donation": true,
+      "input_clone_preparation_excluded": true,
+      "memory_scope": "benchmark allocator includes master/replay input copies; not forecast peak",
+      "compilation_excluded": true,
+      "forecast_speed_claim": false,
+      "allocator_memory_stats": {
+        "num_allocs": 14053,
+        "bytes_in_use": 324218112,
+        "peak_bytes_in_use": 2474969088,
+        "largest_alloc_size": 1350163456,
+        "bytes_limit": 25248645120,
+        "bytes_reserved": 0,
+        "peak_bytes_reserved": 0,
+        "largest_free_block_bytes": 0,
+        "pool_bytes": 25248645120,
+        "peak_pool_bytes": 25248645120
+      }
+    },
+    "advancing_run": {
+      "scheme": "ra3_cam",
+      "started_utc": "2026-10-13T18:20:47.161802+00:00",
+      "status": "ok",
+      "jax": "0.10.0",
+      "platform": "gpu",
+      "device": "cuda:0",
+      "load_s": 74.23364110803232,
+      "namelist_edits": {
+        "ra_lw_physics": 3,
+        "ra_sw_physics": 3
+      },
+      "step_s": [
+        248.00731143401936,
+        0.580764802871272,
+        0.5601720050908625
+      ],
+      "finite": true,
+      "nonfinite_leaves": [],
+      "n_float_leaves": 144,
+      "t_skin_range": [
+        254.0135498046875,
+        281.6654357910156
+      ],
+      "theta_range": [
+        280.0914306640625,
+        493.3251647949219
+      ],
+      "own_steps": 3,
+      "process_s": 330.07255010306835,
+      "compile_plus_first_step_s": 248.00731143401936,
+      "raw_first_step_with_replays_s": 254.56628509401344,
+      "replay_window_s": 6.558973659994081
+    },
+    "XLA_allocation_B": 1606880875,
+    "XLA_allocation_reduction_pct": 54.83042952950089,
+    "benchmark_peak_reduction_pct": 33.64745821433086,
+    "allocator_pool_B": 25248645120,
+    "api_latency_change_pct": 1.9599030325385902
+  },
+  "retention": "Original captured target/tools/native and final stepping executables/full HLO/bindings/compiler inputs retained through criticE177; disposable caches/dumps/snapshot removed after last arm; gpu-final/cleanup.json"
+}

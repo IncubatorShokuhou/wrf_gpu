@@ -1,0 +1,431 @@
+{
+  "schema": "v-run-qhmass-final-gpu24h-v1",
+  "utc": "2026-10-15T06:39:06.470174+00:00",
+  "source_rev": "627a033284dc457a9949c2a32f2c111d0227e6df",
+  "frozen_D6_manifest_sha256": "9df4fab8514523286f07b127eb8bf57a7545459c4448fef721ac44c0ecc351dc",
+  "scientific_scope": "Original CPU-WRF Swiss 24h; exact matched inputs/namelists, four affected hail configs on immutable627 only.",
+  "configs": [
+    {
+      "config": "mp18",
+      "source_rev": "627a033284dc457a9949c2a32f2c111d0227e6df",
+      "GPU_rc": 0,
+      "frames": 25,
+      "CPU_fields": 372,
+      "bounded_fields": 62,
+      "D6": "PASS",
+      "coverage_complete": true,
+      "verdict": "PASS",
+      "first_failure": null,
+      "missing_CPU_fields": [],
+      "raw_output_nonfinite": [],
+      "E41": "FAIL",
+      "E41_coverage": {
+        "status": "PASS",
+        "aot_programs": [
+          "d01"
+        ],
+        "required_run_programs": [
+          "d01"
+        ],
+        "run_proofs": [
+          "<USER_HOME>/wrf_gpu2_lanes/v-run/round4_qhmass/mp18/gpu/proofs/nested_pipeline_run.json"
+        ],
+        "n_discovered": 2,
+        "n_scanned": 2
+      },
+      "max_stack_B": 1336,
+      "kinput_flags": [
+        [
+          "input_add_and_compare_divide_minimum_select_transpose_fusion",
+          835
+        ],
+        [
+          "input_add_and_divide_maximum_minimum_multiply_select_subtract_transpose_fusion",
+          1172
+        ],
+        [
+          "input_add_compare_convert_maximum_minimum_select_subtract_transpose_fusion",
+          1128
+        ],
+        [
+          "input_add_or_select_subtract_transpose_fusion",
+          1041
+        ],
+        [
+          "input_add_select_transpose_fusion",
+          724
+        ],
+        [
+          "input_add_select_transpose_fusion.1",
+          562
+        ],
+        [
+          "input_compare_divide_minimum_multiply_select_transpose_fusion",
+          662
+        ]
+      ],
+      "nonleaf_over1k": [],
+      "variable_metadata_mismatches": 0,
+      "different_globals": [
+        "NTASKS_X",
+        "NTASKS_Y",
+        "TITLE"
+      ],
+      "F2": {
+        "status": "OPEN",
+        "records": 60,
+        "fields": [
+          "Nc",
+          "Ng",
+          "Nh",
+          "Ni",
+          "Nn",
+          "Nr",
+          "Ns",
+          "nifa",
+          "nwfa",
+          "qc",
+          "qg",
+          "qi",
+          "qr",
+          "qs",
+          "qv"
+        ],
+        "phases": [
+          "post_rk",
+          "pre_boundary_guard",
+          "pre_dynamics_guard",
+          "step_entry"
+        ],
+        "qh_counter_record_present": false,
+        "negative_phase_field_visits": 25781416,
+        "interior_phase_field_visits": 22669925,
+        "raw_counter_nonfinite": 0,
+        "interpretation": "Repeated phase-field visits, not unique events. No every-event source/magnitude justification; no transfer of another-case disposition."
+      },
+      "wall_s": 901.5076558420005,
+      "host_peak_rss_kib": 5983484,
+      "sampled_peak_vram_mib": 2714,
+      "report_only_fields": {
+        "REFD_MAX": {
+          "verdict": "REPORT_ONLY",
+          "rmse": 0.0,
+          "max_abs": 0.0,
+          "frame_count": 25
+        },
+        "REFL_10CM": {
+          "verdict": "REPORT_ONLY",
+          "rmse": 0.17895788593446552,
+          "max_abs": 24.256986618041992,
+          "frame_count": 25
+        }
+      }
+    },
+    {
+      "config": "mp18_cu5",
+      "source_rev": "627a033284dc457a9949c2a32f2c111d0227e6df",
+      "GPU_rc": 0,
+      "frames": 25,
+      "CPU_fields": 372,
+      "bounded_fields": 62,
+      "D6": "PASS",
+      "coverage_complete": true,
+      "verdict": "PASS",
+      "first_failure": null,
+      "missing_CPU_fields": [],
+      "raw_output_nonfinite": [],
+      "E41": "FAIL",
+      "E41_coverage": {
+        "status": "PASS",
+        "aot_programs": [
+          "d01"
+        ],
+        "required_run_programs": [
+          "d01"
+        ],
+        "run_proofs": [
+          "<USER_HOME>/wrf_gpu2_lanes/v-run/round4_qhmass/mp18_cu5/gpu/proofs/nested_pipeline_run.json"
+        ],
+        "n_discovered": 2,
+        "n_scanned": 2
+      },
+      "max_stack_B": 1336,
+      "kinput_flags": [
+        [
+          "input_add_and_compare_divide_minimum_select_transpose_fusion",
+          835
+        ],
+        [
+          "input_add_and_divide_maximum_minimum_multiply_select_subtract_transpose_fusion",
+          1172
+        ],
+        [
+          "input_add_compare_convert_maximum_minimum_select_subtract_transpose_fusion",
+          1134
+        ],
+        [
+          "input_add_or_select_subtract_transpose_fusion",
+          1041
+        ],
+        [
+          "input_add_select_transpose_fusion",
+          724
+        ],
+        [
+          "input_add_select_transpose_fusion.1",
+          562
+        ],
+        [
+          "input_and_convert_minimum_multiply_select_transpose_fusion",
+          1064
+        ],
+        [
+          "input_compare_divide_minimum_multiply_select_transpose_fusion",
+          660
+        ]
+      ],
+      "nonleaf_over1k": [],
+      "variable_metadata_mismatches": 0,
+      "different_globals": [
+        "NTASKS_X",
+        "NTASKS_Y",
+        "TITLE"
+      ],
+      "F2": {
+        "status": "OPEN",
+        "records": 60,
+        "fields": [
+          "Nc",
+          "Ng",
+          "Nh",
+          "Ni",
+          "Nn",
+          "Nr",
+          "Ns",
+          "nifa",
+          "nwfa",
+          "qc",
+          "qg",
+          "qi",
+          "qr",
+          "qs",
+          "qv"
+        ],
+        "phases": [
+          "post_rk",
+          "pre_boundary_guard",
+          "pre_dynamics_guard",
+          "step_entry"
+        ],
+        "qh_counter_record_present": false,
+        "negative_phase_field_visits": 25819153,
+        "interior_phase_field_visits": 22711669,
+        "raw_counter_nonfinite": 0,
+        "interpretation": "Repeated phase-field visits, not unique events. No every-event source/magnitude justification; no transfer of another-case disposition."
+      },
+      "wall_s": 963.845385714998,
+      "host_peak_rss_kib": 6195112,
+      "sampled_peak_vram_mib": 2720,
+      "report_only_fields": {
+        "REFD_MAX": {
+          "verdict": "REPORT_ONLY",
+          "rmse": 0.0,
+          "max_abs": 0.0,
+          "frame_count": 25
+        },
+        "REFL_10CM": {
+          "verdict": "REPORT_ONLY",
+          "rmse": 0.1867453284952621,
+          "max_abs": 21.747968673706055,
+          "frame_count": 25
+        }
+      }
+    },
+    {
+      "config": "mp24",
+      "source_rev": "627a033284dc457a9949c2a32f2c111d0227e6df",
+      "GPU_rc": 0,
+      "frames": 25,
+      "CPU_fields": 361,
+      "bounded_fields": 62,
+      "D6": "PASS",
+      "coverage_complete": true,
+      "verdict": "PASS",
+      "first_failure": null,
+      "missing_CPU_fields": [],
+      "raw_output_nonfinite": [],
+      "E41": "FAIL",
+      "E41_coverage": {
+        "status": "PASS",
+        "aot_programs": [
+          "d01"
+        ],
+        "required_run_programs": [
+          "d01"
+        ],
+        "run_proofs": [
+          "<USER_HOME>/wrf_gpu2_lanes/v-run/round4_qhmass/mp24/gpu/proofs/nested_pipeline_run.json"
+        ],
+        "n_discovered": 2,
+        "n_scanned": 2
+      },
+      "max_stack_B": 48,
+      "kinput_flags": [
+        [
+          "input_compare_reduce_select_fusion",
+          844
+        ]
+      ],
+      "nonleaf_over1k": [],
+      "variable_metadata_mismatches": 0,
+      "different_globals": [
+        "NTASKS_X",
+        "NTASKS_Y",
+        "TITLE"
+      ],
+      "F2": {
+        "status": "OPEN",
+        "records": 60,
+        "fields": [
+          "Nc",
+          "Ng",
+          "Nh",
+          "Ni",
+          "Nn",
+          "Nr",
+          "Ns",
+          "nifa",
+          "nwfa",
+          "qc",
+          "qg",
+          "qi",
+          "qr",
+          "qs",
+          "qv"
+        ],
+        "phases": [
+          "post_rk",
+          "pre_boundary_guard",
+          "pre_dynamics_guard",
+          "step_entry"
+        ],
+        "qh_counter_record_present": false,
+        "negative_phase_field_visits": 18384152,
+        "interior_phase_field_visits": 17145058,
+        "raw_counter_nonfinite": 0,
+        "interpretation": "Repeated phase-field visits, not unique events. No every-event source/magnitude justification; no transfer of another-case disposition."
+      },
+      "wall_s": 676.2866340010005,
+      "host_peak_rss_kib": 4918716,
+      "sampled_peak_vram_mib": 1600,
+      "report_only_fields": {}
+    },
+    {
+      "config": "mp26",
+      "source_rev": "627a033284dc457a9949c2a32f2c111d0227e6df",
+      "GPU_rc": 0,
+      "frames": 25,
+      "CPU_fields": 364,
+      "bounded_fields": 62,
+      "D6": "PASS",
+      "coverage_complete": true,
+      "verdict": "PASS",
+      "first_failure": null,
+      "missing_CPU_fields": [],
+      "raw_output_nonfinite": [],
+      "E41": "FAIL",
+      "E41_coverage": {
+        "status": "PASS",
+        "aot_programs": [
+          "d01"
+        ],
+        "required_run_programs": [
+          "d01"
+        ],
+        "run_proofs": [
+          "<USER_HOME>/wrf_gpu2_lanes/v-run/round4_qhmass/mp26/gpu/proofs/nested_pipeline_run.json"
+        ],
+        "n_discovered": 2,
+        "n_scanned": 2
+      },
+      "max_stack_B": 304,
+      "kinput_flags": [
+        [
+          "input_and_compare_multiply_select_transpose_fusion",
+          945
+        ],
+        [
+          "input_maximum_minimum_select_transpose_fusion",
+          874
+        ]
+      ],
+      "nonleaf_over1k": [],
+      "variable_metadata_mismatches": 0,
+      "different_globals": [
+        "NTASKS_X",
+        "NTASKS_Y",
+        "TITLE"
+      ],
+      "F2": {
+        "status": "OPEN",
+        "records": 60,
+        "fields": [
+          "Nc",
+          "Ng",
+          "Nh",
+          "Ni",
+          "Nn",
+          "Nr",
+          "Ns",
+          "nifa",
+          "nwfa",
+          "qc",
+          "qg",
+          "qi",
+          "qr",
+          "qs",
+          "qv"
+        ],
+        "phases": [
+          "post_rk",
+          "pre_boundary_guard",
+          "pre_dynamics_guard",
+          "step_entry"
+        ],
+        "qh_counter_record_present": false,
+        "negative_phase_field_visits": 18241343,
+        "interior_phase_field_visits": 16350871,
+        "raw_counter_nonfinite": 0,
+        "interpretation": "Repeated phase-field visits, not unique events. No every-event source/magnitude justification; no transfer of another-case disposition."
+      },
+      "wall_s": 920.5070774619962,
+      "host_peak_rss_kib": 4889076,
+      "sampled_peak_vram_mib": 1598,
+      "report_only_fields": {}
+    }
+  ],
+  "GPU_pair_RAM_scopes": [
+    {
+      "scope": "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice/run-p1847521-i1658481.scope",
+      "observed_memory_peak_B": 11503984640,
+      "memory_max_B": [
+        12884901888
+      ],
+      "max_observed_swap_B": 0,
+      "last_observed_memory_events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0\nsock_throttled 0"
+    },
+    {
+      "scope": "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice/run-p1978129-i1935173.scope",
+      "observed_memory_peak_B": 9320574976,
+      "memory_max_B": [
+        12884901888
+      ],
+      "max_observed_swap_B": 0,
+      "last_observed_memory_events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0\nsock_throttled 0"
+    }
+  ],
+  "timing_scope": "Cold concurrent qualification, shared CPU/IO; NOT S1 or isolated speed benchmark",
+  "release_clearance": "NOT_CLAIMED",
+  "model_code_changes_by_lane": 0,
+  "open_limits": "Opt-in E41 failures and F2 negative visits remain disclosed; direct-writer followup and unrelated configurations are not qualified by this packet."
+}

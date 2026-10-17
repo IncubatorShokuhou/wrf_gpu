@@ -51,7 +51,8 @@ Every option resolves to exactly one :class:`SupportStatus`:
 Honesty rules followed when authoring this catalog (do not relax them):
 
 * ``IMPLEMENTED`` is asserted ONLY for options that are actually threaded into
-  the operational GPU scan. The ground truth was read from
+  the operational scan. Explicit experimental CPU-only entries identify that
+  scope and refuse GPU selection before JAX initialization. Ground truth comes from
   ``runtime.operational_mode._SCAN_WIRED_OPTIONS`` and the adapter registries in
   ``coupling.scan_adapters`` (MP/CU/PBL/SFCLAY), and cross-checked against
   ``contracts.physics_registry`` (the frozen accept-matrix). See
@@ -161,13 +162,14 @@ _IMPLEMENTED: Mapping[str, frozenset[int]] = {
     # CPU-oracle-qualified (proofs/v034/f2_oracles/morrison_aero_opt0, fp64 port
     # <=1.6e-11 rel, fp32 REAL port in the base fp32 band, 7 regimes incl. ice
     # nucleation); GPU/coupled-forecast qualification pending. aercu_opt>0 needs
-    # cu_physics=11 (MSKF, not ported) and is refused by the namelist check.
-    # KNOWN GAP (user-facing, see physics_interfaces mp=40 spec): WRF feeds the
-    # Morrison re_cloud/re_ice/re_snow to RRTMG (Registry morr_tm_aero); the port
-    # does not yet -- RRTMG uses its default radii with mp=40 (roadmap item).
+    # cu_physics=11 (MSKF); aerosol coupling is not ported and is refused.
+    # Pristine physics_init leaves mp40 has_reqc/i/s=0 at aercu_opt=0.
+    # Morrison radii activate in radiation_driver's aercu_opt>0 MSKF blend
+    # (not ported, refused); Registry allocation alone does not enable them.
     # mp=18 NSSL 2-moment is the v0.3.4 JAX port (physics.nssl2mom; proofs/v034/f2_oracles/nssl_2mom):
-    # kernel CPU-oracle-qualified; coupled path not GPU-run (single domains only; refused with cu_physics/=0).
-    "mp_physics": frozenset({0, 1, 2, 3, 4, 6, 8, 10, 13, 14, 16, 18, 24, 26, 28, 40, 97}),
+    # CPU-oracle-qualified including cumulus number sources; single domains, GPU qualification pending.
+    "mp_physics": frozenset({0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 13, 14, 15, 16, 17, 18, 19, 21, 22, 24, 26, 28, 38, 40, 50, 51, 52, 53, 55, 56, 97, 11}),
+
     # cu=5 Grell-3D + cu=93 Grell-Devenyi (v0.3.4 o1-grell): line-faithful JAX ports
     # of G3DRV/conv_grell_spread3d and GRELLDRV, machine-precision vs pristine-WRF
     # multi-column tile oracles (proofs/v034); CPU-oracle-qualified; GPU/coupled-
@@ -176,7 +178,7 @@ _IMPLEMENTED: Mapping[str, frozenset[int]] = {
     # GD neg_check. Real-case CPU smoke (Swiss d01) too slow on CPU: 3 root steps ran
     # before a 45 min timeout without a finiteness receipt; the 12x12 operational-step
     # smoke (tests/test_v034_grell_cumulus_wiring.py) is the standing coupled evidence.
-    "cu_physics": frozenset({0, 1, 2, 3, 5, 6, 16, 93}),
+    "cu_physics": frozenset({0, 1, 2, 3, 5, 6, 7, 10, 11, 14, 16, 93, 94, 95, 96, 99}),
     # bl=2 MYJ + sf=2 Janjic Eta are the v0.13 traceable MYJ pair (operationally
     # scan-wired via physics.myj_adapters + runtime.operational_mode; mandatory pair).
     # bl=99 MRF is the v0.13 jit/vmap-traceable port of phys/module_bl_mrf.F
@@ -184,18 +186,19 @@ _IMPLEMENTED: Mapping[str, frozenset[int]] = {
     # surface layer (sf_sfclay=1), no new surface partner needed.
     # bl=3 GFS is the v0.17 jit/vmap-traceable port of phys/module_bl_gfs.F
     # (BL_GFS -> MONINP, savepoint-parity gated, proofs/v017/gfs_oracle.py ~1e-13);
-    # nonlocal-K, consumes the revised-MM5 surface layer (sf_sfclay=1).
-    # bl=11 Shin-Hong is the v0.18 JAX/vmap scale-aware PBL port: dynamics-green
-    # operational, with explicit non-driving TKE/EL diagnostic caveat vs the v090
-    # PARTIAL reference (TKE rel ~=0.285, EL rel ~=0.013). bl=12 GBM is the
+    # nonlocal-K; WRF admits it only with isfc=2 (module_physics_init.F:3743), so it
+    # pairs with sf_sfclay=3 and consumes that single SF_GFS solve (t-cfix-sfc F13).
+    # bl=11 Shin-Hong is the scale-aware PBL port, BYTE vs a pristine-WRF REAL4
+    # public-call oracle incl. the TKE diagnostic (proofs/t_shinhong);
+    # CPU-oracle-qualified, GPU/coupled-forecast qualification pending. bl=12 GBM is the
     # v0.18 JAX/vmap moist prognostic-TKE PBL port.
     # bl=9 CAM-UW is the v0.3.4 faithful r8 port (proofs/v034/camuw_oracle):
     # CPU-oracle-qualified; GPU/coupled-forecast qualification pending.
-    "bl_pbl_physics": frozenset({0, 1, 2, 3, 5, 7, 8, 9, 11, 12, 99}),
+    "bl_pbl_physics": frozenset({0, 1, 2, 3, 4, 5, 7, 8, 9, 10, 11, 12, 16, 17, 99}),
     # sf_sfclay 3 (NCEP-GFS) + 91 (old-MM5) are v0.13 Tier-3 scan-wired surface
     # layers (coupling.scan_adapters.{gfs_sfclay_adapter,sfclay_old_mm5_adapter};
     # fp64 pristine-WRF oracle-validated; B2 kinematic flux handles).
-    "sf_sfclay_physics": frozenset({0, 1, 2, 3, 5, 7, 91}),
+    "sf_sfclay_physics": frozenset({0, 1, 2, 3, 4, 5, 7, 10, 91}),
     # sf_surface=1 (5-layer thermal-diffusion slab LSM) is v0.17 operationally
     # scan-wired (coupling.slab_surface_hook.slab_surface_step over the fp64
     # pristine-WRF-oracle-validated physics.lsm_slab.slab_columns SLAB1D port;
@@ -206,7 +209,7 @@ _IMPLEMENTED: Mapping[str, frozenset[int]] = {
     # sf_surface=3 (RUC LSM) is v0.3.4 scan-wired (lane o1-ruc): faithful JAX LSMRUC
     # port physics.ruclsm via coupling.ruc_surface_hook.ruc_surface_step, CPU-oracle-
     # qualified (proofs/v034/oracle/ruclsm); see _IMPLEMENTED_NOTES.
-    "sf_surface_physics": frozenset({0, 1, 2, 3, 4, 7}),
+    "sf_surface_physics": frozenset({0, 1, 2, 3, 4, 7, 8}),
     # ra_lw=1 (classic AER RRTM 16-band LW) is now operationally scan-wired
     # (coupling.physics_couplers.rrtm_lw_theta_tendency over the JAX-traceable
     # physics.ra_lw_rrtm_jax kernel, dispatched in runtime.operational_mode by
@@ -220,15 +223,15 @@ _IMPLEMENTED: Mapping[str, frozenset[int]] = {
     # (proofs/v017/held_suarez_lw_savepoint_parity.json).
     # ra_lw=3 (CAM LW) is v0.3.4 scan-wired (lane o1-camrad): physics.ra_cam port of
     # phys/module_ra_cam.F via coupling.cam_radiation; see _IMPLEMENTED_NOTES.
-    "ra_lw_physics": frozenset({0, 1, 3, 4, 31}),
+    "ra_lw_physics": frozenset({0, 1, 3, 4, 5, 7, 31, 99}),
     # ra_sw=1 (Dudhia, Stephens-1984 broadband SW) and ra_sw=2 (GSFC/Chou-Suarez
     # multi-band delta-Eddington SW) are now operationally scan-wired
     # (coupling.physics_couplers.dudhia_sw_theta_tendency / gsfc_sw_theta_tendency,
     # dispatched in runtime.operational_mode by OperationalNamelist.ra_sw_physics).
-    # ra_sw=5/7/99 (Goddard-new/FLG/GFDL-Eta) are accepted reference-only
+    # ra_sw=7/99 (FLG/GFDL-Eta) are accepted reference-only
     # in v0.18 for real-WRF oracle/parity work, not operational scan-wiring.
     # ra_sw=3 (CAM SW) is v0.3.4 scan-wired (lane o1-camrad), see _IMPLEMENTED_NOTES.
-    "ra_sw_physics": frozenset({0, 1, 2, 3, 4}),
+    "ra_sw_physics": frozenset({0, 1, 2, 3, 4, 5, 7, 99}),
 }
 
 # Recognized WRF schemes with an oracle-backed reference path that the
@@ -239,46 +242,6 @@ _REFERENCE_ONLY: Mapping[str, dict[int, tuple[str, str]]] = {
     # v0.23 F2 staged single-column oracles for NSSL (18) and Morrison-aerosol (40); both graduated
     # to IMPLEMENTED in v0.3.4 (18: physics.nssl2mom, 40: aercu_opt=0) -- see _IMPLEMENTED.
     "mp_physics": {
-    },
-    # v0.23 G3: urban BEP/BEM (sf_urban=2/3) and WRF lake (sf_lake=1) are
-    # REFERENCE_ONLY (namelist-accepted for oracle/reference work, fail-closed in
-    # the operational GPU scan; default sf_urban_physics/sf_lake_physics=0). The
-    # faithful ports are their own milestone (see G3 report).
-    "sf_urban_physics": {
-        2: (
-            "G3 BEP urban canopy is REFERENCE_ONLY: pristine-WRF source/object "
-            "inventory and Registry carry metadata are staged for "
-            "phys/module_sf_bep.F:BEP, but no numerical WRF single-column parity "
-            "fixture or faithful JAX kernel is shipped. It is accepted only for "
-            "oracle/reference development and fail-closed in the operational GPU scan.",
-            "Use sf_urban_physics=0 for operational runs; carry BEP as its own "
-            "urban-canopy milestone with Registry bepscheme state, urban static "
-            "tables, and a numerical WRF oracle before scan wiring.",
-        ),
-        3: (
-            "G3 BEP+BEM urban canopy is REFERENCE_ONLY: pristine-WRF source/object "
-            "inventory and Registry carry metadata are staged for "
-            "phys/module_sf_bep.F:BEP plus phys/module_sf_bem.F:BEM, but no "
-            "numerical WRF single-column parity fixture or faithful JAX kernel is "
-            "shipped. It is accepted only for oracle/reference development and "
-            "fail-closed in the operational GPU scan.",
-            "Use sf_urban_physics=0 for operational runs; carry BEP+BEM as its own "
-            "urban-canopy milestone with bep_bemscheme state, BEM static tables, "
-            "and a numerical WRF oracle before scan wiring.",
-        ),
-    },
-    "sf_lake_physics": {
-        1: (
-            "G3 WRF lake model is REFERENCE_ONLY: pristine-WRF source/object "
-            "inventory and Registry carry metadata are staged for "
-            "phys/module_sf_lake.F:Lake/LakeMain/lakeini, but no numerical WRF "
-            "single-column parity fixture or faithful JAX kernel is shipped. It "
-            "is accepted only for oracle/reference development and fail-closed in "
-            "the operational GPU scan.",
-            "Use sf_lake_physics=0 for operational runs; carry the WRF lake model "
-            "as its own milestone with lakeini/state carry, lake-column numerics, "
-            "and a numerical WRF oracle before scan wiring.",
-        ),
     },
     "cu_physics": {
         # cu=4 scale-aware GFS SAS (v0.3.4 o1-sas, manager decision 2026-10-10): pristine WRF
@@ -299,163 +262,24 @@ _REFERENCE_ONLY: Mapping[str, dict[int, tuple[str, str]]] = {
         # column kernels are a documented carry-over. They are REFERENCE_ONLY:
         # registry-accepted so a single-column reference comparison can be run, but
         # fail-closed in the operational GPU scan (never silently wrong).
-        14: (
-            "KIM Simplified Arakawa-Schubert has a v0.13 single-column fp64 "
-            "pristine-WRF oracle staged, but its traceable JAX column kernel is not "
-            "yet ported, so it is fail-closed in the operational GPU scan.",
-            "Use cu_physics=1/2/3/6 (Kain-Fritsch / BMJ / Grell-Freitas / Tiedtke; "
-            "Tiedtke also requires active flux-form moisture advection for RQVFTEN).",
-        ),
         # cu=16 New-Tiedtke graduated to IMPLEMENTED in v0.23 F2: faithful fp64
         # kernel machine-precision-proven vs the v0.13 oracle savepoints
         # (cumulus_ntiedtke + cumulus_ntiedtke_jax), scan-wired via
         # coupling.scan_adapters.ntiedtke_adapter.
         # cu=5 Grell-3D and cu=93 Grell-Devenyi graduated to IMPLEMENTED in v0.3.4
         # (o1-grell; CPU-oracle-qualified, GPU qualification pending).
-        94: (
-            "2015 GFS SAS / HWRF has v0.17 single-column fp64 pristine-WRF "
-            "savepoints (module_cu_sas.F), but the shared JAX endpoint is RED "
-            "vs oracle, so it is fail-closed in the operational GPU scan.",
-            "Use cu_physics=1/2/3/6 for operational runs; use "
-            "proofs/v017/run_sas_family_parity.py for SAS oracle comparisons.",
-        ),
-        95: (
-            "Previous GFS SAS / HWRF OSAS has v0.17 single-column fp64 pristine-WRF "
-            "savepoints (module_cu_osas.F), but the shared JAX endpoint is RED "
-            "vs oracle, so it is fail-closed in the operational GPU scan.",
-            "Use cu_physics=1/2/3/6 for operational runs; use "
-            "proofs/v017/run_sas_family_parity.py for SAS oracle comparisons.",
-        ),
-        96: (
-            "Previous new GFS SAS / YSU NSAS has v0.17 single-column fp64 "
-            "pristine-WRF savepoints (module_cu_nsas.F), but the shared JAX "
-            "endpoint is RED vs oracle, so it is fail-closed in the operational "
-            "GPU scan.",
-            "Use cu_physics=1/2/3/6 for operational runs; use "
-            "proofs/v017/run_sas_family_parity.py for SAS oracle comparisons.",
-        ),
-        99: (
-            "Previous Kain-Fritsch is recognized for v0.17 oracle work, but the "
-            "available GPU endpoint is the KF-eta family (cu_physics=1), not a "
-            "parity-proven port of unmodified phys/module_cu_kf.F:KFCPS, so it "
-            "is fail-closed in the operational GPU scan.",
-            "Use cu_physics=1 (Kain-Fritsch eta, GPU-operational) or 0/2/3/6.",
-        ),
+
     },
     # sf_surface_physics=1 (5-layer thermal-diffusion slab LSM) was REFERENCE_ONLY
     # (JAX-ported + fp64 oracle, no operational hook); it is now operationally
     # scan-wired via coupling.slab_surface_hook.slab_surface_step (IMPLEMENTED
     # above), so it is no longer listed here.
-    # sf_surface_physics=3 (RUC) + 8 (SSiB) are v0.17 Tier-3 REFERENCE-ONLY: each has
-    # a fp64 pristine-WRF single-column oracle staged (proofs/v017/oracle/{ruclsm,ssib},
-    # built from the unmodified WRF LSMRUC / SSIB drivers, NOT a self-compare), but the
-    # faithful traceable JAX column kernels for these large multi-layer/biophysical
-    # solvers are documented carry-overs, so both are namelist-accepted (selectable for a
-    # single-column reference comparison) and fail-closed in the operational GPU scan with
-    # a named reason (never silently wrong).
-    "sf_surface_physics": {
-        8: (
-            "SSiB SiB biophysical canopy/soil/snow LSM has a v0.17 single-column fp64 "
-            "pristine-WRF oracle staged (the unmodified SSIB driver, proofs/v017/oracle/ssib), "
-            "but its faithful traceable JAX column kernel (the ~6.6k-LOC coupled SiB solver) "
-            "is not yet ported, so it is fail-closed in the operational GPU scan.",
-            "Use sf_surface_physics=4 (Noah-MP, GPU-operational), 2 (Noah classic), 1 (slab) "
-            "or 7 (Pleim-Xiu).",
-        ),
-    },
     # v0.18 RA tail: CAM/Goddard/FLG/GFDL-Eta have exact-driver real-WRF
     # savepoints in proofs/v018/savepoints/ra_tail_wrf. They remain REFERENCE_ONLY
     # because no faithful traceable JAX kernels are wired into the operational scan.
-    "ra_lw_physics": {
-        5: (
-            "GSFC/Goddard NUWRF longwave has a v0.13 single-column fp64 pristine-WRF "
-            "oracle staged (module_ra_goddard.F:lwrad) and a v0.18 real-WRF paired "
-            "driver oracle (proofs/v018/savepoints/ra_tail_wrf/ra5_wrf_real.json), "
-            "but its traceable JAX column kernel is not operationally scan-wired, so "
-            "it is fail-closed in the operational GPU scan.",
-            "Use ra_lw_physics=4 (RRTMG, GPU-operational default) or 1 (classic RRTM).",
-        ),
-        7: (
-            "FLG/UCLA longwave has a v0.18 real-WRF driver oracle "
-            "(proofs/v018/savepoints/ra_tail_wrf/ra7_wrf_real.json, "
-            "module_radiation_driver.F dispatch to module_ra_flg.F:RAD_FLG), but no "
-            "faithful JAX column kernel is operationally scan-wired, so it is "
-            "fail-closed in the operational GPU scan.",
-            "Use ra_lw_physics=4 (RRTMG, GPU-operational default) or 1 (classic RRTM).",
-        ),
-        99: (
-            "GFDL-Eta longwave has a v0.18 real-WRF paired driver oracle "
-            "(proofs/v018/savepoints/ra_tail_wrf/ra99_wrf_real.json, "
-            "module_radiation_driver.F dispatch to module_ra_gfdleta.F:ETARA), but no "
-            "faithful JAX column kernel is operationally scan-wired, so it is "
-            "fail-closed in the operational GPU scan.",
-            "Use ra_lw_physics=4 (RRTMG, GPU-operational default) or 1 (classic RRTM).",
-        ),
-    },
-    "ra_sw_physics": {
-        5: (
-            "New Goddard shortwave has a v0.18 real-WRF paired driver oracle "
-            "(proofs/v018/savepoints/ra_tail_wrf/ra5_wrf_real.json, "
-            "module_radiation_driver.F dispatch to module_ra_goddard.F:goddardrad), "
-            "but no faithful JAX column kernel is operationally scan-wired, so it is "
-            "fail-closed in the operational GPU scan.",
-            "Use ra_sw_physics=4 (RRTMG), 1 (Dudhia), or 2 (GSFC/Chou-Suarez).",
-        ),
-        7: (
-            "FLG/UCLA shortwave has a v0.18 real-WRF driver oracle "
-            "(proofs/v018/savepoints/ra_tail_wrf/ra7_wrf_real.json, "
-            "module_radiation_driver.F dispatch to module_ra_flg.F:RAD_FLG), but no "
-            "faithful JAX column kernel is operationally scan-wired, so it is "
-            "fail-closed in the operational GPU scan.",
-            "Use ra_sw_physics=4 (RRTMG), 1 (Dudhia), or 2 (GSFC/Chou-Suarez).",
-        ),
-        99: (
-            "GFDL-Eta shortwave has a v0.18 real-WRF paired driver oracle "
-            "(proofs/v018/savepoints/ra_tail_wrf/ra99_wrf_real.json, "
-            "module_radiation_driver.F dispatch to module_ra_gfdleta.F:ETARA), but no "
-            "faithful JAX column kernel is operationally scan-wired, so it is "
-            "fail-closed in the operational GPU scan.",
-            "Use ra_sw_physics=4 (RRTMG), 1 (Dudhia), or 2 (GSFC/Chou-Suarez).",
-        ),
-    },
-    "bl_pbl_physics": {
-        4: (
-            "QNSE-EDMF PBL has a v0.18 fp64 pristine-WRF single-column oracle "
-            "staged (unmodified phys/module_bl_qnsepbl.F; "
-            "proofs/v018/qnse_pbl4_reference_oracle.json), but no traceable JAX "
-            "column kernel is scan-wired, so it is fail-closed in the operational "
-            "GPU scan.",
-            "Use bl_pbl_physics=0/1/2/3/5/7/8/11/12/99 for operational runs; use "
-            "proofs/v018/run_qnse_pbl4_oracle_check.py for QNSE oracle comparisons.",
-        ),
-        10: (
-            "TEMF PBL has a v0.18 fp64 pristine-WRF single-column oracle staged "
-            "(unmodified phys/module_bl_temf.F; "
-            "proofs/v018/temf_pbl10_reference_oracle.json), but no traceable JAX "
-            "column kernel is scan-wired, so it is fail-closed in the operational "
-            "GPU scan.",
-            "Use bl_pbl_physics=0/1/2/3/5/7/8/11/12/99 for operational runs; use "
-            "proofs/v018/run_temf_pbl10_oracle_check.py for TEMF oracle comparisons.",
-        ),
-        16: (
-            "EEPS epsilon PBL has a v0.18 fp64 pristine-WRF single-column oracle "
-            "staged (unmodified phys/module_bl_eepsilon.F; "
-            "proofs/v018/eeps_pbl16_reference_oracle.json), but no traceable JAX "
-            "column kernel is scan-wired, so it is fail-closed in the operational "
-            "GPU scan.",
-            "Use bl_pbl_physics=0/1/2/3/5/7/8/11/12/99 for operational runs; use "
-            "proofs/v018/run_eeps_pbl16_oracle_check.py for EEPS oracle comparisons.",
-        ),
-        17: (
-            "KEPS k-epsilon PBL has a v0.18 fp64 pristine-WRF single-column oracle "
-            "staged (unmodified phys/module_bl_keps.F; "
-            "proofs/v018/keps_pbl17_reference_oracle.json), but no traceable JAX "
-            "column kernel is scan-wired, so it is fail-closed in the operational "
-            "GPU scan.",
-            "Use bl_pbl_physics=0/1/2/3/5/7/8/11/12/99 for operational runs; use "
-            "proofs/v018/run_keps_pbl17_oracle_check.py for KEPS oracle comparisons.",
-        ),
-    },
+    "ra_lw_physics": {},
+    "ra_sw_physics": {},
+    "bl_pbl_physics": {},
     # bl_pbl_physics=2 (MYJ) + sf_sfclay_physics=2 (Janjic Eta) were REFERENCE_ONLY
     # (host-NumPy savepoint kernels); they are now operationally scan-wired as a
     # mandatory pair via the JAX-traceable physics.bl_myj / physics.sf_myj rewrites
@@ -479,21 +303,8 @@ _REFERENCE_ONLY: Mapping[str, dict[int, tuple[str, str]]] = {
 # operationally) so validate_operational_namelist refuses them before compute.
 _RELEASE_CARRY_UNRUNNABLE: Mapping[str, dict[int, str]] = {
     "mp_physics": {
-        24: "the release root lateral moist/scalar boundary (GPUWRF_ROOT_SCALAR_BDY_RK1, "
-            "WRF RK1 sc_tend) has no record for the hail species qh "
-            "(coupling/boundary_apply.py root_scalar_rk1_split)",
-        26: "the release root lateral moist/scalar boundary (GPUWRF_ROOT_SCALAR_BDY_RK1, "
-            "WRF RK1 sc_tend) has no record for the hail species qh "
-            "(coupling/boundary_apply.py root_scalar_rk1_split)",
-        28: "the release root lateral moist/scalar boundary (GPUWRF_ROOT_SCALAR_BDY_RK1, "
-            "WRF RK1 sc_tend) has no record for the aerosol numbers nwfa/nifa, which "
-            "have their own WRF boundary branches (coupling/boundary_apply.py)",
-        40: "the release root lateral moist/scalar boundary (GPUWRF_ROOT_SCALAR_BDY_RK1, "
-            "WRF RK1 sc_tend) has no record for the Morrison number scalars Ns/Ng/Nc "
-            "(coupling/boundary_apply.py root_scalar_rk1_split). The v0.3.4 aercu_opt=0 column "
-            "kernel is CPU-oracle-qualified (proofs/v034/f2_oracles/morrison_aero_opt0); "
-            "aercu_opt>0 needs cu_physics=11 (MSKF, not ported); RRTMG does not yet receive the "
-            "Morrison re_cloud/re_ice/re_snow; GPU qualification pending",
+        # v0.4.0 O2 (o2-rootbdy): 24/28/40 now take WRF's flow_dep_bdy for their extra root
+        # species (root_scalar_rk1_split flow_only) and are IMPLEMENTED again (_IMPLEMENTED_NOTES).
     },
 }
 _RELEASE_CARRY_ALTERNATIVE: Mapping[str, str] = {
@@ -530,35 +341,35 @@ def _label(key: str) -> str:
 
 # Per-key fallback alternative text used for RECOGNIZED_FAIL_CLOSED schemes.
 _DEFAULT_ALTERNATIVE: Mapping[str, str] = {
-    "mp_physics": "Use one of mp_physics=0/1/2/3/4/6/8/10/13/14/16/18/97 (8=Thompson is the "
-    "operational default; 13=SBU-YLin; 18=NSSL 2-moment (single domains, cu_physics=0; kernel CPU-oracle-qualified, coupled path not GPU-run); 97=Goddard "
-    "GCE single-moment 3-ice). 24=WSM7 / 26=WDM7 / 28=aerosol-aware Thompson / 40=Morrison-aerosol are "
-    "refused under the release defaults (root boundary has no qh/nwfa,nifa/Ns,Ng,Nc record).",
-    "cu_physics": "Use one of cu_physics=0/1/2/3/5/6/16/93 (1=Kain-Fritsch eta, "
+    "mp_physics": "Use one of mp_physics=0/1/2/3/4/6/8/9/10/13/14/16/17/18/19/21/22/24/26/28/40/97 (8=Thompson is the "
+    "operational default; 13=SBU-YLin; 18=NSSL 2-moment (single domains, supported cumulus; CPU-oracle-qualified, GPU/coupled-forecast qualification pending); 97=Goddard "
+    "GCE single-moment 3-ice; 24=WSM7, 28=aerosol-aware Thompson, 40=Morrison-aerosol: single domains). "
+    "10=Morrison, 14/16/26=WDM5/6/7: single domains; number transport CPU-qualified, GPU qualification pending.",
+    "cu_physics": "Use one of cu_physics=0/1/2/3/5/6/14/16/93/94/95/96/99 (1=Kain-Fritsch eta, "
     "3=Grell-Freitas, 5=Grell-3D, 93=Grell-Devenyi, 6/16=Tiedtke family requires "
     "active flux-form moisture advection for RQVFTEN). Reference-only cumulus "
-    "options 4/14/94/95/96/99 fail-close in the operational scan.",
-    "bl_pbl_physics": "Use one of bl_pbl_physics=0/1/2/3/5/7/8/9/11/12/99 (5=MYNN, 1=YSU, 2=MYJ "
-    "[pair with sf_sfclay_physics=2], 3=GFS, 7=ACM2, 8=BouLac, 9=CAM-UW, 11=Shin-Hong, "
-    "12=GBM, 99=MRF). PBL4/10/16/17 are accepted reference-only and "
-    "fail-close in the operational scan.",
+    "option 4 fails closed in the operational scan.",
+    "bl_pbl_physics": "Use one of bl_pbl_physics=0/1/2/3/5/7/8/9/10/11/12/16/17/99 (5=MYNN, 1=YSU, 2=MYJ "
+    "[pair with sf_sfclay_physics=2], 3=GFS [surface pair 3], 7=ACM2, 8=BouLac, 9=CAM-UW, 11=Shin-Hong, "
+    "10=TEMF [surface pair 10], 12=GBM, 16/17=experimental EEPS/KEPS [surface pair 1], 99=MRF). "
+    "PBL4 is reference-only and fails closed in the operational scan.",
     "sf_sfclay_physics": "Use one of sf_sfclay_physics=0/1/2/3/5/7/91 (5=MYNN-SL, "
     "1=revised-MM5, 2=Janjic Eta [pair with bl_pbl_physics=2], 3=NCEP-GFS, "
     "7=Pleim-Xiu, 91=old-MM5).",
     "sf_surface_physics": "Use sf_surface_physics=4 (Noah-MP), 2 (Noah classic), 1 (slab), "
-    "3 (RUC, explicit ruc_static/ruc_land) or 7 (Pleim-Xiu); 8=SSiB is reference-only "
-    "(fp64 oracle staged, JAX kernel carry-over).",
-    "ra_lw_physics": "Use ra_lw_physics=4 (RRTMG), 1 (classic RRTM) or 3 (CAM); 5/7/99 are reference-only, 14/24 are compiled-out in this WRF build.",
-    "ra_sw_physics": "Use ra_sw_physics=4 (RRTMG), 1 (Dudhia), 2 (GSFC/Chou-Suarez) or 3 (CAM); 5/7/99 are reference-only, 14/24 are compiled-out in this WRF build.",
+    "3 (RUC, explicit ruc_static/ruc_land), 7 (Pleim-Xiu), or 8 (experimental SSiB; "
+    "prepared three-layer input, revised-MM5/YSU, SW=1/LW=4).",
+    "ra_lw_physics": "Use ra_lw_physics=4 (RRTMG), 1 (classic RRTM) or 3 (CAM); paired 5 is experimental, paired 7/99 are experimental CPU-only, 14/24 are compiled-out in this WRF build.",
+    "ra_sw_physics": "Use ra_sw_physics=4 (RRTMG), 1 (Dudhia), 2 (GSFC/Chou-Suarez) or 3 (CAM); paired 5 is experimental, paired 7/99 are experimental CPU-only, 14/24 are compiled-out in this WRF build.",
     "diff_opt": "Use diff_opt=0/1/2 (1+km_opt=4 = 2-D Smagorinsky real-data "
     "default; 2+km_opt=3 = 3-D Smagorinsky).",
     "km_opt": "Use km_opt=4 with diff_opt=1 (2-D Smagorinsky) or km_opt=3 with diff_opt=2 "
-    "(3-D Smagorinsky); km_opt=2/5 are refused in v0.3.4 (unqualified, NaN under the release carry).",
+    "(3-D Smagorinsky), or km_opt=2/5 with diff_opt=2 (experimental 3-D TKE/SMS-3DTKE).",
     "damp_opt": "Use damp_opt=0 (off) or 3 (upper-level w-Rayleigh).",
     "diff_6th_opt": "Use diff_6th_opt=0 (off) or 2 (monotonic 6th-order filter).",
     "rk_order": "Use rk_order=3 (WRF RK3).",
     "w_damping": "Use w_damping=0 or 1.",
-    "sf_urban_physics": "Set sf_urban_physics=0 for operational runs; BEP/BEM are G3 reference-only until the urban state/oracle port lands.",
+    "sf_urban_physics": "Use sf_urban_physics=0/1/2/3 with Noah-MP for urban1/2/3; BEP/BEM2/3 require YSU1 or BouLac8, revised-MM5 SF1 and RRTMG4/4; MYJURB is absent.",
     "sf_lake_physics": "Set sf_lake_physics=0 for operational runs; the WRF lake model is G3 reference-only until the lake column/state/oracle port lands.",
 }
 
@@ -570,17 +381,16 @@ _DEFAULT_ALTERNATIVE: Mapping[str, str] = {
 # --------------------------------------------------------------------------- #
 _DYNAMICS_IMPLEMENTED: Mapping[str, frozenset[int]] = {
     "diff_opt": frozenset({0, 1, 2}),
-    # v0.3.4: km_opt=2/5 refused (unqualified v022 scaffolds, NaN under the release REAL
-    # carry; manager decision on rel034 18:08Z) -> _PER_CODE_FAIL_CLOSED_REASON.
-    "km_opt": frozenset({0, 1, 3, 4}),
+    # Literal km2 and SMS km5 are CPU-oracle-qualified; forecast qualification pending.
+    "km_opt": frozenset({0, 1, 2, 3, 4, 5}),
     "damp_opt": frozenset({0, 3}),
     "diff_6th_opt": frozenset({0, 2}),
     "rk_order": frozenset({3}),
     "w_damping": frozenset({0, 1}),
-    # Urban/lake feature switches: only "off" (0) is a real path; active codes
-    # are recognized G3 targets that fail closed with source/oracle reasons.
-    "sf_urban_physics": frozenset({0}),
-    "sf_lake_physics": frozenset({0}),
+    # SLUCM, BEP/BEM and Lake are opt-in surface paths.
+    # Per-scheme qualification is recorded once in _IMPLEMENTED_NOTES.
+    "sf_urban_physics": frozenset({0, 1, 2, 3}),
+    "sf_lake_physics": frozenset({0,1}),
 }
 
 # Dynamics options that ARE valid WRF codes but are fail-closed by the port,
@@ -590,51 +400,12 @@ _DYNAMICS_IMPLEMENTED: Mapping[str, frozenset[int]] = {
 # classify_scheme (not only dynamics): it supplies a specific reason in place of
 # the generic "NOT YET IMPLEMENTED" string when the truth is more precise.
 _PER_CODE_FAIL_CLOSED_REASON: Mapping[str, dict[int, str]] = {
-    "km_opt": {
-        2: 'refused for v0.3.4 (unqualified, NaN under the release REAL carry): the km_opt=2 prognostic-TKE path (flat periodic-interior tke_km/tke_rhs reduction) is an unqualified v022 scaffold that produces NaN when executed with the release defaults (rel034 finding 2026-10-10 18:08Z); a literal km_opt=2 operator (gpuwrf.dynamics.les3d_smagorinsky) is CPU-oracle-qualified but not wired: the LES TKE prognostic has no carry leaf yet.',
-        5: 'refused for v0.3.4 (unqualified, NaN under the release REAL carry): the km_opt=5 SMS-3DTKE path (blend without the implicit l_diss solve) is an unqualified v022 scaffold that produces NaN when executed with the release defaults (rel034 finding 2026-10-10 18:08Z).',
-    },
-    "sf_urban_physics": {
-        1: "G3 URBAN fail-closed scaffold: WRF single-layer UCM is recognized, "
-        "but this sprint targets BEP/BEM and no UCM oracle/kernel/state carry is "
-        "operationally wired. The GPU port keeps urban effects limited to land-use "
-        "categories until a source-specific urban canopy port lands.",
-        2: "G3 URBAN fail-closed scaffold: WRF BEP (phys/module_sf_bep.F:BEP, "
-        "~3.5k LOC) needs the Registry bepscheme state package, urban mapping "
-        "tables, vertical urban-grid carry, and a pristine-WRF single-column "
-        "oracle before any GPU scan wiring. No faithful JAX BEP kernel is shipped "
-        "in this one-pass attempt.",
-        3: "G3 URBAN fail-closed scaffold: WRF BEP+BEM combines "
-        "phys/module_sf_bep.F:BEP with phys/module_sf_bem.F:BEM (~6.2k LOC total) "
-        "and the Registry bep_bemscheme state package (building energy, HVAC, PV, "
-        "green-roof, drainage and multi-layer urban-grid fields). No source-"
-        "specific pristine-WRF oracle or faithful JAX kernel is shipped in this "
-        "one-pass attempt.",
-    },
-    "sf_lake_physics": {
-        1: "G3 LAKE fail-closed scaffold: WRF lake model "
-        "(phys/module_sf_lake.F:Lake/LakeMain/lakeini, ~5.4k LOC) needs lake "
-        "depth/category initialization, snow/ice/water column carry, tridiagonal "
-        "thermal solves, hydrology, Monin-Obukhov fluxes and a pristine-WRF "
-        "single-column oracle before GPU scan wiring. No faithful JAX lake kernel "
-        "is shipped in this one-pass attempt.",
-    },
     # mp=24 WSM7 was fail-closed before v0.17 (it carries a separate precipitating
     # hail class qh the operational moist-state pytree did not hold). v0.17 added
     # the qh hail State substrate (ADR-032) + the hail surface accumulator and
     # scan-wired WSM7 (coupling.scan_adapters.wsm7_adapter); it is now IMPLEMENTED
     # (see _IMPLEMENTED["mp_physics"]), so it no longer has a fail-closed reason.
     "mp_physics": {
-        5: "REFERENCE-WITH-REAL-ORACLE / fail-closed: Ferrier-HRW (new Eta, "
-        "operational High-Resolution Window) has exact pristine-WRF FER_HIRES "
-        "savepoints under proofs/v018/mp_oracles/ferrier_hires for "
-        "phys/module_mp_fer_hires.F:FER_HIRES. The staged MP95 ETAMP_NEW oracle "
-        "drives phys/module_mp_etanew.F and is not reused for MP5. The JAX "
-        "endpoint is NOT YET "
-        "IMPLEMENTED: it carries lumped total condensate qt/CWM plus "
-        "f_ice_phy/f_rain_phy/f_rimef_phy state and ETAMPNEW_DATA lookup-table "
-        "control flow that is not present in the operational State or scan "
-        "interface.",
         95: "REFERENCE-WITH-REAL-ORACLE / fail-closed: Ferrier old Eta "
         "(etampnew) has exact pristine-WRF ETAMP_NEW oracle artifacts under "
         "proofs/v018/mp_oracles/ferrier_etanew for "
@@ -649,19 +420,6 @@ _PER_CODE_FAIL_CLOSED_REASON: Mapping[str, dict[int, str]] = {
         "wrf_debug; the real MadWRF cloud initialization/nudging lives outside "
         "the microphysics step, so there is no faithful MP kernel to wire and it "
         "is NOT YET IMPLEMENTED as an operational GPU microphysics option.",
-        7: "REFERENCE-WITH-REAL-ORACLE / fail-closed: Goddard 4-ice / NUWRF has "
-        "exact pristine-WRF oracle artifacts under "
-        "proofs/v018/mp_oracles/goddard4ice for "
-        "phys/module_mp_gsfcgce_4ice_nuwrf.F. The JAX kernel is NOT YET "
-        "IMPLEMENTED: this is the separate hail-class scheme with qh, hail "
-        "accumulators, large phys*/re_* carry, and the long saticel_s 4-ice path, "
-        "not the operational mp=97 Goddard GCE 3-ice port.",
-        38: "REFERENCE-WITH-REAL-ORACLE / fail-closed: Thompson graupel-hail has "
-        "exact pristine-WRF oracle artifacts under proofs/v018/mp_oracles/thompgh "
-        "for phys/module_mp_thompson.F. The JAX kernel is NOT YET IMPLEMENTED: "
-        "its hail path uses variable-density graupel via qvolg/Ng and hail-aware "
-        "collision/terminal-velocity tables that are not the operational "
-        "fixed-density mp=8/28 Thompson path.",
         9: "REFERENCE-WITH-REAL-ORACLE / fail-closed: Milbrandt-Yau 2-moment "
         "has active pristine-WRF full-model oracle artifacts under "
         "proofs/v018/mp_oracles/wrf_full_model/mp9 for "
@@ -669,37 +427,6 @@ _PER_CODE_FAIL_CLOSED_REASON: Mapping[str, dict[int, str]] = {
         "endpoint is NOT YET IMPLEMENTED: it is a real multimoment bulk scheme "
         "and requires qh plus qnc/qnr/qni/qns/qng/qnh number-state transport "
         "before operational scan wiring.",
-        11: "PROVEN-IRRELEVANT for the lean operational GPU target: CAM 5.1 "
-        "microphysics is recognized in phys/module_mp_cammgmp_driver.F, but its "
-        "WRF source warns that QME3D is wrong without CAM macrophysics, "
-        "convective cloud fraction is unavailable to microphysics, and the "
-        "outputs are not currently consumed by RRTMG. It is CAM-specific and "
-        "NOT YET IMPLEMENTED in the operational microphysics State/PhysicsCarry "
-        "contract.",
-        17: "PROVEN-IRRELEVANT / SUPERSEDED legacy NSSL option: "
-        "phys/module_mp_nssl_2mom.F recognizes it, but doc/README.NSSLmp says to "
-        "use mp_physics=18 with modifier flags going forward. It is NOT YET "
-        "IMPLEMENTED as a separate GPU scheme; MP18 is the reference-oracle-"
-        "backed exact NSSL target and carries the qh/qnh/qvolg/qvolh-style "
-        "state/oracle work.",
-        19: "PROVEN-IRRELEVANT / SUPERSEDED legacy NSSL option: "
-        "phys/module_mp_nssl_2mom.F recognizes it, but doc/README.NSSLmp maps it "
-        "to mp_physics=18 with nssl_2moment_on=0 and nssl_ccn_on=1. It is NOT "
-        "YET IMPLEMENTED as a separate GPU scheme; MP18 is the reference-oracle-"
-        "backed exact NSSL target and carries the "
-        "qh/qnh/qvolg/qvolh-style state/oracle work.",
-        21: "PROVEN-IRRELEVANT / SUPERSEDED legacy NSSL option: "
-        "phys/module_mp_nssl_2mom.F recognizes it, but doc/README.NSSLmp maps it "
-        "to mp_physics=18 with nssl_2moment_on=0, nssl_hail_on=0, "
-        "nssl_ccn_on=0, and nssl_density_on=0. It is NOT YET IMPLEMENTED as a "
-        "separate GPU scheme; MP18 is the reference-oracle-backed exact NSSL "
-        "target and carries the qh/qnh/qvolg/qvolh-style state/oracle work.",
-        22: "PROVEN-IRRELEVANT / SUPERSEDED legacy NSSL option: "
-        "phys/module_mp_nssl_2mom.F recognizes it, but doc/README.NSSLmp maps it "
-        "to mp_physics=18 with nssl_hail_on=0 and nssl_ccn_on=1. It is NOT YET "
-        "IMPLEMENTED as a separate GPU scheme; MP18 is the reference-oracle-"
-        "backed exact NSSL target and carries the qh/qnh/qvolg/qvolh-style "
-        "state/oracle work.",
         27: "REFERENCE-WITH-REAL-ORACLE / fail-closed: UDM 7-class "
         "microphysics has active pristine-WRF full-model oracle artifacts under "
         "proofs/v018/mp_oracles/wrf_full_model/mp27 for phys/module_mp_udm.F "
@@ -724,32 +451,6 @@ _PER_CODE_FAIL_CLOSED_REASON: Mapping[str, dict[int, str]] = {
         "phys/module_mp_full_sbm.F and requires full spectral-bin-state and "
         "external SBM lookup-table architecture. It is NOT YET IMPLEMENTED as an "
         "operational bulk-scheme adapter.",
-        50: "REFERENCE-WITH-REAL-ORACLE / fail-closed: P3 1-category "
-        "microphysics has active pristine-WRF full-model oracle artifacts under "
-        "proofs/v018/mp_oracles/wrf_full_model/mp50 for phys/module_mp_p3.F "
-        "selected by mp_physics=50. The JAX endpoint is NOT YET IMPLEMENTED: "
-        "the P3 family needs qir/qib/rime-density particle property state, "
-        "lookup-table initialization, and a dedicated State ADR before "
-        "operational scan wiring.",
-        51: "REFERENCE-WITH-REAL-ORACLE / fail-closed: P3 1-category + cloud-"
-        "number microphysics has active pristine-WRF full-model oracle artifacts "
-        "under proofs/v018/mp_oracles/wrf_full_model/mp51 for "
-        "phys/module_mp_p3.F selected by mp_physics=51. The JAX endpoint is NOT "
-        "YET IMPLEMENTED: the P3 family needs qnc/qir/qib/rime-density particle "
-        "property state, lookup-table initialization, and a dedicated State ADR.",
-        52: "REFERENCE-WITH-REAL-ORACLE / fail-closed: P3 2-category "
-        "microphysics has active pristine-WRF full-model oracle artifacts under "
-        "proofs/v018/mp_oracles/wrf_full_model/mp52 for phys/module_mp_p3.F "
-        "selected by mp_physics=52. The JAX endpoint is NOT YET IMPLEMENTED: it "
-        "adds qi2/qni2/qir2/qib2 second-ice-category state plus P3 particle-"
-        "property/rime-density carry that the operational State does not yet "
-        "expose.",
-        53: "REFERENCE-WITH-REAL-ORACLE / fail-closed: P3 1-category 3-moment "
-        "microphysics has active pristine-WRF full-model oracle artifacts under "
-        "proofs/v018/mp_oracles/wrf_full_model/mp53 for phys/module_mp_p3.F "
-        "selected by mp_physics=53. The JAX endpoint is NOT YET IMPLEMENTED: it "
-        "adds qzi and P3 particle-property/rime-density carry that need a "
-        "dedicated State ADR and kernel.",
         55: "PROVEN-IRRELEVANT / RESEARCH-ONLY for the lean operational GPU "
         "target: Jensen-ISHMAEL is recognized in phys/module_mp_jensen_ishmael.F "
         "as an initial-release habit research model with external ishmael-*.bin "
@@ -833,7 +534,7 @@ _PHYSICS_FAIL_CLOSED_REASON: Mapping[str, dict[int, tuple[str, str]]] = {
             "(multi-session) -- it is deferred to the v1.0 CAM/CLM/CTSM-family ADR "
             "and fails closed (never silently substituted by another LSM).",
             "Use sf_surface_physics=4 (Noah-MP, GPU-operational), 2 (Noah classic), "
-            "1 (slab), 3 (RUC) or 7 (Pleim-Xiu); 8=SSiB is reference-only. CLM4 is "
+            "1 (slab), 3 (RUC), 7 (Pleim-Xiu) or 8 (experimental SSiB). CLM4 is "
             "carried to the v1.0 CAM/CLM/CTSM ADR.",
         ),
         6: (
@@ -872,9 +573,8 @@ class OutOfScopeFeature:
 OUT_OF_SCOPE_FEATURES: tuple[OutOfScopeFeature, ...] = (
     OutOfScopeFeature(
         "windfarm_opt", "Wind-farm / wind-turbine drag parameterization",
-        "The wind-farm turbine-drag parameterization (windfarm_opt) is out of "
-        "scope for this port.",
-        "Set windfarm_opt=0.",
+        "Only the Fitch wind-farm parameterization (windfarm_opt=1) is ported; MAV=2 is not qualified.",
+        "Set windfarm_opt=0 or 1 with MYNN=5/5 and turbine input files.",
     ),
     OutOfScopeFeature(
         "grid_sfdda", "FDDA surface-analysis nudging",
@@ -900,22 +600,19 @@ OUT_OF_SCOPE_FEATURES: tuple[OutOfScopeFeature, ...] = (
         "Set wrf_hydro=0 / disable the WRF-Hydro coupler.",
     ),
     OutOfScopeFeature(
-        "grid_fdda", "FDDA analysis/observation nudging",
-        "Four-dimensional data assimilation (analysis/spectral/observation "
-        "nudging) is out of scope; this is a pure forecast-integration port.",
-        "Set grid_fdda=0 (and obs_nudge_opt=0); assimilate offline and start "
-        "from the analysis.",
+        "grid_fdda", "FDDA analysis/spectral nudging",
+        "Unknown grid_fdda selection; WRF supports 0 (off), 1 (PSU analysis) and 2 (spectral).",
+        "Use grid_fdda=0, 1 or 2.",
     ),
     OutOfScopeFeature(
         "obs_nudge_opt", "FDDA observation nudging",
-        "Observation-nudging FDDA is out of scope.",
-        "Set obs_nudge_opt=0.",
+        "Observation nudging requires obs_nudge_opt=1; other codes are not WRF observation nudging.",
+        "Use obs_nudge_opt=1 on a single root domain with MYNN PBL/SFCLAY and OBS_DOMAIN101, or set 0.",
     ),
     OutOfScopeFeature(
         "sf_ocean_physics", "Coupled ocean mixed-layer / 3-D ocean",
-        "The coupled ocean mixed-layer / 3-D ocean (sf_ocean_physics) is out of "
-        "scope.",
-        "Set sf_ocean_physics=0; SST is read from the input as a lower boundary.",
+        "The PWP 3-D ocean (sf_ocean_physics=2) is not implemented.",
+        "Use sf_ocean_physics=1 (1-D ocean mixed layer) or 0 (prescribed SST).",
     ),
     OutOfScopeFeature(
         "stoch_force_opt", "Stochastic physics forcing (generic)",
@@ -938,6 +635,21 @@ OUT_OF_SCOPE_FEATURES: tuple[OutOfScopeFeature, ...] = (
         "Set spp=0 (and spp_conv/spp_pbl/spp_mp/spp_lsm=0).",
     ),
     OutOfScopeFeature(
+        "spp_conv", "Stochastically Perturbed Convection Parameters (SPP)",
+        "SPP convection perturbations are not operationally wired; spp_conv activates independently of spp.",
+        "Set spp_conv=0 and spp=0.",
+    ),
+    OutOfScopeFeature(
+        "spp_pbl", "Stochastically Perturbed PBL Parameters (SPP)",
+        "SPP PBL perturbations are not operationally wired; spp_pbl activates independently of spp.",
+        "Set spp_pbl=0 and spp=0.",
+    ),
+    OutOfScopeFeature(
+        "spp_lsm", "Stochastically Perturbed Land-Surface Parameters (SPP)",
+        "SPP land-surface perturbations are not operationally wired; spp_lsm activates independently of spp.",
+        "Set spp_lsm=0 and spp=0.",
+    ),
+    OutOfScopeFeature(
         "rand_perturb", "Random-field stochastic perturbation",
         "Random-field stochastic perturbation is out of scope (deterministic port).",
         "Set rand_perturb=0.",
@@ -957,9 +669,21 @@ OUT_OF_SCOPE_FEATURES: tuple[OutOfScopeFeature, ...] = (
 )
 
 # Integer-enumerated out-of-scope codes live here when a recognized WRF code is a
-# permanent product boundary rather than a future-port target. G3 moves urban
-# BEP/BEM from out-of-scope to recognized fail-closed scaffold, so this is empty.
+# permanent product boundary rather than a future-port target. Urban BEP/BEM
+# have since graduated to the qualified opt-in path above.
 _OUT_OF_SCOPE_CODES: Mapping[str, dict[int, OutOfScopeFeature]] = {}
+
+#: Feature-switch values that ARE implemented although other values of the switch are
+#: out of scope: grid_fdda=1 PSU grid analysis nudging (v0.4.0 lane o2-fdda,
+#: assimilation.fdda_grid; &fdda details checked by io.fdda_namelist).
+_IMPLEMENTED_FEATURE_VALUES: Mapping[str, frozenset[int]] = {"grid_fdda": frozenset({1, 2}),
+    "obs_nudge_opt": frozenset({1}),
+    **{key: frozenset({1}) for key in ("skebs", "sppt", "spp", "spp_conv",
+        "spp_pbl", "spp_lsm", "rand_perturb", "stoch_force_opt")},
+    "windfarm_opt": frozenset({1}),
+    "sf_ocean_physics": frozenset({1}),
+    "grid_sfdda": frozenset({1, 2}),
+}
 
 OUT_OF_SCOPE_FEATURE_KEYS: frozenset[str] = frozenset(
     f.key.lower() for f in OUT_OF_SCOPE_FEATURES
@@ -1056,6 +780,14 @@ _ADV_OPT_REASON = (
     "RK3 stage; module_advect_em.F advect_scalar_pd/advect_scalar_mono). The WENO "
     "(3) and WENO-positive-definite (4) reconstruction variants are NOT yet "
     "scan-wired."
+)
+
+_GECROS_REFUSAL_REASON = (
+    "GECROS (opt_crop=2) is REFUSED: pristine WRF 4.7.1 never calls EMERG, "
+    "so cold-start crops cannot emerge. Its unassigned module parameters "
+    "(including CFO/YGO) remain zero; 8/8 active-column probes produced "
+    "NaN/Inf yield in STATE_GECROS(45). No functional pristine WRF oracle "
+    "exists. See proofs/s2_gecros/UPSTREAM_WRF_BUGS.md."
 )
 
 _RECOGNIZED_CONTROLS: tuple[RecognizedControl, ...] = (
@@ -1252,6 +984,13 @@ _RECOGNIZED_CONTROLS: tuple[RecognizedControl, ...] = (
         "Use a finite nonnegative cudt interval in minutes.",
         integer=False,
     ),
+    RecognizedControl(
+        "opt_crop", "Noah-MP crop model",
+        frozenset({0,1}),
+        lambda value: _GECROS_REFUSAL_REASON if _coerce_number(value) == 2 else
+        "The requested Noah-MP crop model is not ported.",
+        "Set opt_crop=0 (disabled) or 1 (Liu crop).",
+    ),
     # --- Noah-MP soil cadence (&noah_mp, seconds) -------------------------- #
     RecognizedControl(
         "soiltstep", "noahmp-soil-cadence",
@@ -1265,6 +1004,16 @@ _RECOGNIZED_CONTROLS: tuple[RecognizedControl, ...] = (
         integer=False,
     ),
 )
+
+from gpuwrf.io.noahmp_options import SUPPORTED as _NOAHMP_CONTROL_VALUES
+_RECOGNIZED_CONTROLS += tuple(
+    RecognizedControl(key,f'Noah-MP {key}',frozenset(values),
+        (lambda value,key=key: f'Noah-MP {key}: only the WRF-defined, ported choices {_NOAHMP_CONTROL_VALUES[key]} are admitted; see docs/noahmp-options.md.'),
+        f'Use a supported {key} value with native sf_surface_physics=4; see docs/noahmp-options.md.')
+    for key,values in _NOAHMP_CONTROL_VALUES.items() if key!='opt_crop'
+) + (RecognizedControl('sst_skin','WRF SST skin',frozenset({0,1}),
+       'Only WRF sst_skin=0/1 is defined and ported; the selected native path requires Noah-MP/RRTMG and ice-free prescribed SST.',
+       'Use sst_skin=0 or the admitted sst_skin=1 configuration.'),)
 
 RECOGNIZED_CONTROL_KEYS: frozenset[str] = frozenset(
     c.key.lower() for c in _RECOGNIZED_CONTROLS
@@ -1284,11 +1033,25 @@ _RECOGNIZED_CONTROL_BY_KEY: Mapping[str, RecognizedControl] = {
 # and topo_shading=1 ARE wired (RRTMG SW slope-radiation + topographic-shadow);
 # slope_rad=2 (the WRF "slope + shadow" combined flag) is NOT separately wired.
 _IMPLEMENTED_CONTROLS: Mapping[str, frozenset[int]] = {
+    "swint_opt": frozenset({0, 1}),
+    "dfi_opt": frozenset({0, 1, 2, 3}),
     "sst_update": frozenset({0, 1}),
     "slope_rad": frozenset({0, 1}),
     "topo_shading": frozenset({0, 1}),
+    "tracer_opt": frozenset({0, 2}),
+    "mfshconv": frozenset({0,1}),
 }
 _IMPLEMENTED_CONTROL_REASON: Mapping[str, tuple[str, str, str]] = {
+    "swint_opt": (
+        "WRF-Solar surface interpolation",
+        "Only native swint_opt=1 with RRTMG4/4, Noah-MP4 and fixed dt is wired; FARMS swint_opt=2 is not ported.",
+        "Use swint_opt=0 or the qualified swint_opt=1 configuration.",
+    ),
+    "dfi_opt": (
+        "digital filter initialization (DFI)",
+        "Single-domain native DFL/DDFI/TDFI; configuration-specific refusals are enforced by dfi_refusals.",
+        "Use dfi_opt=0 or an admitted single-domain DFI configuration.",
+    ),
     "sst_update": (
         "Time-varying lower-boundary SST update",
         "The standalone nested path wires sst_update=1 from NetCDF auxinput4 "
@@ -1308,6 +1071,15 @@ _IMPLEMENTED_CONTROL_REASON: Mapping[str, tuple[str, str, str]] = {
         "shadowing). Other topo_shading values are not wired.",
         "Use topo_shading=0 (off) or 1 (topographic shadowing on).",
     ),
+    "tracer_opt": (
+        "non-Chem passive tracers",
+        "CPU-oracle-qualified column mixing; resolved RK scalar transport, root/nest boundaries, "
+        "history and full restart wired opt-in. GPU/coupled-forecast qualification pending. "
+        "WRF-Chem tracer modes 1/3/4 are not implemented.",
+        "Use tracer_opt=0/2; custom tracers use gpuwrf_tracer_file.",
+    ),
+    "mfshconv": ('QNSE shallow mass flux','ARW MFSHCONVPBL precedes QNSEPBL for mfshconv=1; WRF resets it to 0 outside bl=4.',
+                 'Use mfshconv=0 or 1 with the mandatory bl=4/sf=4 pair.'),
 }
 IMPLEMENTED_CONTROL_KEYS: frozenset[str] = frozenset(_IMPLEMENTED_CONTROLS)
 
@@ -1339,7 +1111,7 @@ def classify_control(key: str, value: object) -> SchemeSupport | None:
                 key=lkey,
                 code=code,
                 status=SupportStatus.IMPLEMENTED,
-                reason="Operationally wired into the GPU scan.",
+                reason=_IMPLEMENTED_NOTES.get((lkey, code), "Operationally wired into the GPU scan."),
                 alternative="",
                 wrf_name=label,
             )
@@ -1412,7 +1184,7 @@ def classify_control(key: str, value: object) -> SchemeSupport | None:
             key=lkey,
             code=code,
             status=SupportStatus.IMPLEMENTED,
-            reason="Operationally wired into the GPU scan.",
+            reason=_IMPLEMENTED_NOTES.get((lkey, code), "Operationally wired into the GPU scan."),
             alternative="",
             wrf_name=control.label,
         )
@@ -1461,42 +1233,419 @@ def _coerce_number(value: object) -> float | None:
 
 # Honest per-scheme qualification notes for IMPLEMENTED options (default reason otherwise).
 _IMPLEMENTED_NOTES: Mapping[tuple[str, int], str] = {
-    ("km_opt", 3): "Operationally wired into the GPU scan: literal WRF diff_opt=2 3-D Smagorinsky "
+    ("mp_physics",11): "CPU-oracle-qualified; GPU/coupled-forecast qualification pending. Experimental original nonchem CAM-MG/macrophysics/modal activation, REAL4 seam and held carry with WRF DOUBLE internal island. All48 original public calls literal BYTE; native CPU artifact within independently frozen WRF FMA/input-ULP bounds. No mandatory mp11/bl9/ra3 pairing in WRF; cu!=7 and shcu!=2 warn and zero their convection operands. Native CUDA column compiled by stock Triton 3.6 (pip triton==3.6.*, required for GPU mp11) and launched via jaxlib triton_kernel_call (XLA's bundled Triton miscompiles it to zero precipitation); GPU admitted again (see KNOWN_ISSUES.md#cam-mg-gpu-precipitation); GPU frozen pristine controls and an active 44-level column match the CPU literal; native E41 STACK 1240 B/255 regs disclosed; coupled D6 pending. Standalone shallow convection remains unported.",
+    **{('cu_physics',option):'Experimental CPU-oracle-qualified MSKF/KF-CuP/CAM-ZM family; GPU/coupled-forecast/E41 qualification pending. '
+       'Dedicated pristine WRF REAL/DOUBLE bodies, actual surface/PBL producers, resident cadence and full restart carry, '
+       'WRF RK momentum/moisture/number sources and original convective radiation views. '
+       'Thompson8/RRTMG4/4 only; CuP/MSKF use MYNN5/5, CAM-ZM uses CAM-UW9/5 or MYJ2/2 (MYJ/Noah-MP refused). '
+       'Exactly calm MSKF singularity and small compiled deviations retained/disclosed; D6 decides. '
+       'See docs/CUMULUS_CUPLUS.md and proofs/v040/cuplus/UPSTREAM_WRF_BUGS.md.' for option in (7,10,11)},
+    ('moist_adv_opt', 0): "Standard WRF h5/v3 moisture transport (moist_adv_opt=0), single-domain release configuration. "
+    "GPU-qualified vs CPU-WRF Swiss 24 h; E41 robustness flag: none (full scan PASS). D6 every hourly "
+    "frame (25), all CPU fields inventoried; proofs/v040/gpuqual/moist0.",
+    **{(key, 1): "WRF stochastic RK forcing and resident GNU14 REAL4 RNG/patterns: "
+       "CPU-oracle-qualified; GPU/coupled-forecast qualification pending. "
+       "SPPT requires raw RK sources (PBL0/5, CU0/1; GWDO with MYNN); SPP-GSL GWDO3 refused. "
+       "MYNN SPP includes surface, diffusion, cloud-PDF and capped entrainment terms. "
+       "Original WRF convection/LSM SPP consumers are physical no-ops; rand_perturb is diagnostic. "
+       "Parent SINT fields, exact full-carry restart, pre-cap counters; docs/stochastic.md. "
+       "Native Triton IR preflight passed; actual GPU timing/memory/E41 not yet measured."
+       for key in ("skebs", "sppt", "spp", "spp_conv", "spp_pbl", "spp_lsm",
+                   "rand_perturb", "stoch_force_opt")},
+    ('ra_lw_physics',5): 'CPU-oracle-qualified; GPU/coupled-forecast qualification pending. Experimental paired Goddard5/5 with MP8/use_mp_re=1; held original REAL4 tendencies/fluxes, explicit WRF DOUBLE solver. Upstream cloudy-SW uninitialized taux is mirrored as zero per documented compiler-defined reference; sensitivity is material (docs/UPSTREAM_WRF_BUGS.md). Exact-equator climatology, mixed radiation, other MP mediation and aerosol/topography feedback are refused. Surface support: Noah-MP/SLUCM, RUC and no-LSM control; slab, Noah-classic, Pleim-Xiu, lake and BEP/BEM pairings are refused.',
+    ('ra_sw_physics',5): 'CPU-oracle-qualified; GPU/coupled-forecast qualification pending. Experimental paired Goddard5/5 with MP8/use_mp_re=1; held original REAL4 tendencies/fluxes, explicit WRF DOUBLE solver. Upstream cloudy-SW uninitialized taux is mirrored as zero per documented compiler-defined reference; sensitivity is material (docs/UPSTREAM_WRF_BUGS.md). Exact-equator climatology, mixed radiation, other MP mediation and aerosol/topography feedback are refused. Surface support: Noah-MP/SLUCM, RUC and no-LSM control; slab, Noah-classic, Pleim-Xiu, lake and BEP/BEM pairings are refused.',
+    **{("mp_physics", code): "CPU-oracle-qualified; GPU/coupled-forecast qualification pending. "
+       "Experimental P3 REAL column port: literal no-FMA BYTE against pristine WRF; compiled "
+       "within independently measured WRF FMA spread and source-derived near-zero radius bound "
+       "(proofs/s2_p3/COMPILED_BOUND.md). Conditional rime/volume, second ice or sqrt(N*Z) carry, "
+       "root scalar/flow_dep_bdy, held cloud/ice radii with P3 RRTMG snow-optics mediation, "
+       "Held WRF diameter/density/fall-speed history per category and lossless restart. Single domains only. Native resource/E41 flags "
+       "and D6 forecast qualification pending."
+       for code in (50,51,52,53)},
+    ("mp_physics", 56): "CPU-oracle-qualified; GPU/coupled-forecast qualification pending. "
+       "Experimental NTU multi-moment: literal REAL4/REAL8 pristine-WRF column, scalar, "
+       "activation and cold aerosol initialization gates BYTE. All 28 prognostics, CCNTY1..4, "
+       "root moist/scalar boundary transport, original REAL accumulated totals, history and restart. "
+       "Single domains only; original DOUBLE gamma/aerosol lookup/Newton islands retained. "
+       "Upstream compiler-zero initialization/scratch sensitivity disclosed in proofs/s2_ntu/UPSTREAM_WRF_BUGS.md. "
+       "313 small compiled excesses beyond fixed original input-ULP/FMA controls are disclosed in proofs/s2_ntu/COMPILED_DEVIATIONS.json; D6 decides. "
+       "Native column kernel compiles on GPU with typed global memory (whole Swiss step program 5 min 11 s; "
+       "proofs/t_ntucompile). Actual GPU E41: FAIL, ntu_mp56_column STACK 3496 B per thread vs the 256 B default cap "
+       "(opt-in resource disclosure; default hard gate unchanged; measured at 4 warps, the kernel now runs 2 warps with "
+       "bitwise-identical outputs). Measured kernel-only runtime on two real cloudy 1764-column Swiss states: "
+       "0.286-0.389 s per call (2 warps + aerosol-inversion NaN shortcut, bitwise-identical outputs; pre-shortcut 2-warp "
+       "baseline 1.15-1.70 s; original DOUBLE islands on 1/64-rate fp64). D6 forecast qualification pending.",
+    ("mp_physics", 55): "CPU-oracle-qualified; GPU/coupled-forecast qualification pending. "
+       "Experimental Jensen-ISHMAEL: literal REAL4/REAL8 original public columns and "
+       "evolved two-step habits BYTE. Three ice masses/numbers and six volume/aspect "
+       "moments, conditional State, root transport, Registry history, lossless restart, "
+       "held cloud/ice radii and WRF snow-optics mediation. Single domains only. "
+       "Original gammln DOUBLE island retained. Small compiled rounding excesses are "
+       "disclosed experimental deviations; D6 decides (docs/JENSEN_ISHMAEL.md). "
+       "Native column kernel compiles and runs on GPU with typed global memory and interpretation-identical gather "
+       "bounds (whole Swiss step program ~5-6 min; proofs/t_ntucompile). Actual GPU E41: FAIL, jensen_mp55_column "
+       "STACK 5472 B per thread vs the 256 B default cap (opt-in resource disclosure; default hard gate unchanged). "
+       "WRF fall speeds, diameters, densities and aspect ratios are held per habit with E78 restart "
+       "validation (docs/physics/ice_diagnostics.md). Ice type and radar diagnostics remain omitted.",
+
+
+    ('bl_pbl_physics', 16): 'EXPERIMENTAL: CPU-oracle-qualified against unchanged WRF 4.7.1 REAL32 with compiler-defined zero initialization and FP traps off (30 carried cases per scheme); GPU/coupled-forecast qualification pending. Upstream undefined reads (KEPS ttke GET_PBLH:822, radsum:1068, top dtmdz; EEPS radsum:748) materially affect outputs under alternate initialization. This port explicitly mirrors zero semantics. Requires sf_sfclay_physics=1; transports Registry epsilon/TKE scalars and requires versioned restart carry. See docs/EEPS_KEPS.md and proofs/s2_keps/initialization_sensitivity.json.',
+    ('bl_pbl_physics', 17): 'EXPERIMENTAL: CPU-oracle-qualified against unchanged WRF 4.7.1 REAL32 with compiler-defined zero initialization and FP traps off (30 carried cases per scheme); GPU/coupled-forecast qualification pending. Upstream undefined reads (KEPS ttke GET_PBLH:822, radsum:1068, top dtmdz; EEPS radsum:748) materially affect outputs under alternate initialization. This port explicitly mirrors zero semantics. Requires sf_sfclay_physics=1; transports Registry epsilon/TKE scalars and requires versioned restart carry. See docs/EEPS_KEPS.md and proofs/s2_keps/initialization_sensitivity.json.',
+    ("swint_opt", 1): "WRF-Solar REAL surface interpolation, refreshed parameters only at radiation calls, "
+        "surface fluxes each own step, held atmospheric heating/COSZEN, twelve REAL restart leaves. "
+        "CPU-oracle-qualified; GPU/coupled-forecast qualification pending.",
+    ('bl_pbl_physics',10): 'TEMF pair (bl=10/sfclay=10): CPU-oracle-qualified against unmodified WRF REAL module_bl_temf.F; GPU/coupled-forecast qualification pending. Stable and active shallow-cloud columns covered; no LSM or Noah-MP only. CPU parity requires AVX/no-FMA and disabled algsimp. GPU performance and column-kernel qualification pending.',
+    ('sf_sfclay_physics',10): 'TEMF pair (bl=10/sfclay=10): CPU-oracle-qualified against unmodified WRF REAL module_sf_temfsfclay.F; GPU/coupled-forecast qualification pending. Requires TEMF PBL and no LSM or Noah-MP; WRF zero-mavail exchange divisions remain undefined.',
+    ("grid_fdda", 2): "Spectral nudging through resident wrffdda analyses and WRF RK tendency lanes: "
+    "CPU-oracle-qualified; GPU/coupled-forecast qualification pending. "
+    "REAL32 pristine spectral_nudging + FFTPACK5 references in proofs/s1_specnudge; "
+    "wind, theta, perturbation geopotential and water vapor, linear vertical/PBL ramps and KTROP lid.",
+    ("dfi_opt", 1): "Native single-domain DFL prepass (WRF forward filtering and midpoint launch). "
+    "CPU-oracle-qualified; GPU/coupled-forecast qualification pending. "
+    "Configuration-specific admission, Noah-MP land handling and limitations: gpuwrf.dfi.control/driver12.",
+    ("dfi_opt", 2): "Native single-domain DDFI prepass (adiabatic backward endpoint, diabatic forward filtering). "
+    "CPU-oracle-qualified; GPU/coupled-forecast qualification pending. "
+    "Configuration-specific admission, Noah-MP land handling and limitations: gpuwrf.dfi.control/driver12.",
+    ("dfi_opt", 3): "Native single-domain TDFI prepass (backward and forward filtering). CPU-oracle-qualified; Existing "
+    "o2-dfi qualification and configuration-specific admission apply. GPU-qualified vs CPU-WRF Swiss 24 h; "
+    "E41 robustness flag: none (full scan PASS). D6 every hourly frame (25), all CPU fields inventoried; "
+    "proofs/v040/gpuqual/dfi3.",
+    ("mp_physics", 17): "WRF 4.7.1 legacy alias of mp=18 with predicted CCN and hail: "
+    "CPU-oracle-qualified; GPU/coupled-forecast qualification pending. Pristine check_a_mundo "
+    "normalization and exact default-18 program/State/restart reuse: proofs/s2_mpmore. "
+    "Same single-domain, scalar-transport, radiation and modifier limitations as mp=18; "
+    "Custom &nssl_mp_params are refused; this is the WRF 4.7.1 alias, not the older CCN-off variant.",
+    ("mp_physics", 22): "WRF legacy NSSL two-moment without hail, predicted CCN and graupel density: "
+    "CPU-oracle-qualified; GPU/coupled-forecast qualification pending. "
+    "Pristine REAL4/REAL8 active columns and actual one-ULP CCN threshold controls: proofs/s2_mpmore/nssl22. "
+    "Six moist species, Nc/Nr/Ni/Ns/Ng/Nn and graupel volume; no hail mass/number/volume carry. "
+    "Single domains; same scalar-advection and diffusion limits as18. Custom &nssl_mp_params refused.",
+    ("mp_physics", 18): "Operationally wired into the GPU scan (NSSL two-moment, single domains): "
+    "CPU-oracle-qualified; GPU/coupled-forecast qualification pending. Pristine-WRF fp32/fp64 column savepoint-parity "
+    "and cumulus number-source fixtures: proofs/v034/f2_oracles/nssl_2mom and proofs/v040/nssl_cumulus. "
+    "Supported WRF cumulus schemes admitted, including KF held rain/snow sources after phy_prep_part2; "
+    "WRF calcnfromcuten cloud/ice-only caller is a no-op. Root extra-species boundaries qualified; "
+    "nested NSSL remains refused: WN3 N2/N6 numerical regions pass, but pre-mask qi/Ni events "
+    "await WRF operator justification (proofs/s1_mpfix/NESTED_ADMISSION.json). WRF use_mp_re radii are CPU-oracle-qualified "
+    "through held re_cloud/re_ice/re_snow and RRTMG4/4 (proofs/s1_mpfix).",
+    **{("mp_physics", code): "Operationally wired into the GPU scan (single domains): WRF scalar "
+       "transport of " + ("Ni/Nr/Ns/Ng" if code == 10 else "Nc/Nr/Nn") +
+       "; root flow_dep_bdy, with QNN ccn_conc inflow for WDM; number fields read from wrfinput and "
+       "retained by restart. Column kernel remains a documented fp64 island on the REAL32 carry "
+       "(WDM7 hail qh also transported). CPU-oracle-qualified; GPU/coupled-forecast qualification pending. "
+       "Nested runs refused until parent->child forcing is qualified."
+       for code in (10, 14, 16, 26)},
+    ('sf_lake_physics',1): 'WRF Lake/lakeini/LakeMain (phys/module_sf_lake.F): full snow/water/soil timestep, '
+    'compact lake tiles bypass Noah-MP, held surface/radiation diagnostics and guarded restart/history. '
+    'Requires Noah-MP, Thompson and MYNN/MYNN-SL; both CLI pipelines bind lake depth/elevation controls. '
+    'CPU-oracle-qualified; GPU/coupled-forecast qualification pending. '
+    'Pristine 55-column initialization and 33 active trajectories (including 120-step freezing); docs/lake-model.md.',
+    ("obs_nudge_opt", 1): "Root-domain station observation nudging: resident OBS_DOMAIN101 read/QC/map projection, "
+    "multi-level soundings, time/radius/vertical weights, all WRF wind/temp/moisture flags and coefficients, "
+    "ionf holds, dynamic-initialization ramp and negative-QV innovation scaling. WRF pressure nudging was removed; "
+    "obs_nudge_pstr/coef_pstr and obs_rinsig remain inert as in pristine WRF. MYNN PBL=5/SFCLAY=5 currently required; "
+    "new VAROBS/RKO/SAVWT carry is restarted. CPU-oracle-qualified; GPU/coupled-forecast qualification pending.",
+    ("km_opt", 5): "Operational SMS-3DTKE (diff_opt=2, bl_pbl_physics=0): nonlocal flux, free-atmosphere "
+    "parcel lengths, mesoscale coefficients, implicit momentum/heat/TKE/moisture solves and horizontal "
+    "diffusion feed RK1-frozen sources and all three prognostic TKE RK stages. Separate REAL TKE, "
+    "BR/RMOL/WSPD/GAMU/GAMV/USTM carry; restart retains every SMS field. "
+    "CPU-oracle-qualified; GPU/coupled-forecast qualification pending. "
+    "Surface layer 0 or 5 and land model 0 or 4 only (surface layer 0 requires land 0); "
+    "MM5 1/91 and other land SMS callers remain refused. "
+    "WRF forbids PBL!=0, other surface-layer codes and cu_physics=11. "
+    "Extra microphysics scalar families 10/14/16/18/24/26/28/40 remain refused, as for km_opt=2. "
+    "Single domains only: live-child TKE/nonlocal carry needs the two-domain CPU-WRF gate. "
+    "Non-default surface-flux/TKE transport options remain subject to the honour check.",
+    ("km_opt", 2): "Operationally wired into the GPU scan: literal WRF 3-D TKE (diff_opt=2), tke_km/tke_rhs plus "
+    "RK1-frozen diffusion, prognostic REAL State.tke distinct from PBL qke, three-stage TKE_advance with "
+    "acoustic-averaged transport, PD update, bound_tke and flow_dep_bdy. Cold start seeds zero; restarts "
+    "retain TKE; optional TKE history leaves PBL TKE_PBL/QKE separate. CPU-oracle-qualified against "
+    "pristine WRF REAL4 diffusion and all three scalar RK stages. Swiss d01 release REAL32 CPU smoke "
+    "(Pallas interpret + PTX shim): finite, zero guards. "
+    "isfflx/tke_drag_coefficient/tke_heat_flux/tke_adv_opt/tke_mix6_off use WRF defaults 1/0/0/1/false; "
+    "non-default CLI values remain refused by the honour check. CLI microphysics with unwired extra scalar "
+    "diffusion (10/14/16/18/24/26/28/40) is refused. GPU-qualified vs CPU-WRF Swiss 24 h; E41 robustness "
+    "flag: input_multiply_transpose_fusion.5: 1287 HLO > 500; input_transpose_fusion.197: 891 HLO > 500. "
+    "D6 every hourly frame (25), all CPU fields inventoried; proofs/v040/gpuqual/km2.",
+    ("mp_physics", 24): "Operationally wired into the GPU scan (WSM7, single domains): savepoint-parity "
+    "column kernel run as a documented fp64 island under the release REAL32 carry "
+    "(coupling.scan_adapters.FP64_ISLAND_MP_CODES); root lateral boundary for the hail species qh = "
+    "WRF flow_dep_bdy (have_bcs_moist=.false., solve_em.F:2426), proven against the unchanged pristine "
+    "routines on real PROD d01 operands (tests/v040/rootbdy). Parent->child forcing is implemented; "
+    "nested runs remain refused despite WN3 N2/N6 numerical PASS: pre-mask qi/Ni events await "
+    "WRF operator justification (proofs/s1_mpfix/NESTED_ADMISSION.json). WRF use_mp_re radii are CPU-oracle-qualified through held diagnostics "
+    "and RRTMG4/4 (proofs/s1_mpfix). Current-candidate Swiss GPU E41: STACK 3864 B exceeds 256 B "
+    "(experimental opt-in disclosure). CPU-qualified (Swiss d01 coupled smoke); "
+    "GPU/coupled-forecast qualification pending.",
+    ("mp_physics", 28): "Operationally wired into the GPU scan (aerosol-aware Thompson, single domains, "
+    "use_aero_icbc=.false.): root lateral boundary for QNWFA/QNIFA = WRF flow_dep_bdy (aer_init_opt=0, "
+    "solve_em.F:2993-3021) and for QNCLOUD = flow_dep_bdy (have_bcs_scalar=.false.); the droplet number Nc is "
+    "transported like every WRF scalar (v0.4.0). Boundary route proven against the unchanged pristine "
+    "routines on real PROD d01 operands (tests/v040/rootbdy). Parent->child forcing is implemented; "
+    "nested runs remain refused: initial QNWFA/QNIFA fail the real WN3 original-WRF comparison "
+    "in both domains (proofs/s1_mpfix/NESTED_ADMISSION.json). Variable-Nc effective radii are CPU-oracle-qualified through "
+    "held diagnostics and RRTMG4/4 (proofs/s1_mpfix). Current-candidate Swiss GPU E41: STACK 928 B "
+    "and kInput transpose 1510 optimized HLO instructions exceed 256 B/500 "
+    "(experimental opt-in disclosure). CPU-qualified (Swiss d01 coupled smoke); GPU/coupled-forecast qualification "
+    "pending.",
+    ("mp_physics", 40): "Operationally wired into the GPU scan (Morrison-aerosol at aercu_opt=0, single "
+    "domains): CPU-oracle-qualified column kernel (proofs/v034/f2_oracles/morrison_aero_opt0); root lateral "
+    "boundary for QNSNOW/QNGRAUPEL/QNCLOUD = WRF flow_dep_bdy (have_bcs_scalar=.false., solve_em.F:2993-3021), "
+    "proven against the unchanged pristine routines on real PROD d01 operands (tests/v040/rootbdy). "
+    "aercu_opt>0 needs the unported MSKF aerosol coupling, which is refused. RRTMG uses default radii at "
+    "aercu_opt=0, matching pristine WRF has_reqc/i/s=0 (proofs/v040/nssl_cumulus/radius_audit.json). "
+    "Parent->child forcing of Ns/Ng/Nc is implemented; nested runs remain refused: parent boundary QNCLOUD "
+    "and unresolved pre-mask Nc negatives fail the real WN3 N2/N6 gate "
+    "(proofs/s1_mpfix/NESTED_ADMISSION.json). CPU-qualified "
+    "(Swiss d01 coupled smoke); current-candidate Swiss GPU E41 STACK 16 B passes, "
+    "kInput transpose 2226 optimized HLO instructions exceeds 500 (experimental opt-in disclosure). "
+    "GPU/coupled-forecast qualification pending.",
+    ("sf_urban_physics", 2): "Operationally wired into the scan: WRF BEP multi-layer canopy, canyon radiation, "
+    "material heat diffusion, Noah-MP rural blend and YSU1/BouLac8 urban PBL tendencies. Requires Noah-MP4, "
+    "revised-MM5 SF1 and RRTMG4/4; MYJ2 needs absent module_bl_myjurb and is refused. Default URBPARM.TBL "
+    "UTYPE=2 only; LCZ/NUDAPT refused: grouped per-type geometry/carries/PBL sources are required. Compact REAL32 material carry, PBL sources and held SF1/radiation "
+    "are restart-complete. CPU-oracle-qualified against pristine WRF REAL4/REAL8 full caller and PBL "
+    "savepoints (proofs/v040/urban_bep_bem); conditioned REAL4 quantities use approved independent "
+    "ROUND01 operands, state/REAL8/D6 gates unchanged. Authentic Madrid CPU coupled smoke; "
+    "GPU/coupled-forecast qualification pending. GPU E41/launch cost unmeasured.",
+    ("sf_urban_physics", 3): "Operationally wired into the scan: WRF BEP+BEM including indoor radiation, "
+    "wall/window/floor/roof diffusion, occupants/equipment, ventilation, HVAC and moisture regulation, "
+    "Noah-MP blend and YSU1/BouLac8 urban PBL tendencies. Requires Noah-MP4, revised-MM5 SF1 and RRTMG4/4; "
+    "MYJ2 needs absent module_bl_myjurb and is refused. Default URBPARM.TBL UTYPE=2 only; LCZ/NUDAPT/PV/green "
+    "roof refused; LCZ needs grouped per-type geometry/carries/PBL sources. Compact REAL32 state and held SF1/radiation are restart-complete. CPU-oracle-qualified "
+    "against pristine WRF REAL4/REAL8 full caller, AC on/off and PBL savepoints (proofs/v040/urban_bep_bem); "
+    "conditioned REAL4 quantities use approved independent ROUND01 operands, state/REAL8/D6 gates unchanged. "
+    "Authentic Madrid CPU coupled smoke; GPU/coupled-forecast qualification pending. GPU E41/launch cost unmeasured.",
+    ("sf_urban_physics", 1): "Operationally wired into the GPU scan (single-layer urban canopy model SLUCM, v0.4.0 lane o2-urban): "
+    "faithful port of phys/module_sf_urban.F (urban_param_init/urban_var_init/urban) coupled exactly like "
+    "WRF's noahmp_urban (Noah-MP runs urban cells as NATURAL with FVGMAX 0.96; FRC_URB2D blend of "
+    "TSK/HFX/QFX/LH/GRDFLX/ALBEDO/QSFC/UST; surface-driver urban T2/Q2/U10/V10). Requires "
+    "sf_surface_physics=4. CPU-oracle-qualified step-by-step against pristine WRF "
+    "(proofs/v040/urban_slucm: 18 real Tenerife urban columns day/night + stress regimes, 3 URBPARM "
+    "tables, fp64 <= 6e-12 rel, fp32 within the REAL rounding spread). URBPARM.TBL CH_SCHEME=1, "
+    "GROPTION=1, IRI_SCHEME=1 and "
+    "slucm_distributed_drag are refused, and so is a first model level within 15% of the canopy height "
+    "ZDC+Z0C+2 (WRF's FATAL in urban). GPU-qualified vs CPU-WRF Madrid GFS 20261013_00z 24 h; E41 "
+    "robustness flag: none (full scan PASS). D6 every hourly frame (25), all CPU fields inventoried; "
+    "proofs/v040/gpuqual/urban1. Active urban land use at 31 grid points; cold shared validation wall "
+    "441.600 s, sampled peak 1714 MiB. Additional opt-in LCZ51-61, NUDAPT morphology, diurnal AH/ALH and "
+    "distributed/hourly AHE have CPU column/integration evidence (proofs/v040/urban_lcz), GPU qualification pending. "
+    "NUDAPT LF1 is experimental one-cell zero-init parity only: WRF reuses undefined U10/V10 across tile cells; "
+    "compiler initialization does not reset them per cell. Sealed two-cell pristine differences are "
+    "HFX 6.273636 W/m2, U10 0.992088 m/s and TSK 0.301880 K; coupled CPU-WRF/D6 qualification pending "
+    "(docs/UPSTREAM_WRF_BUGS.md). LCZ without morphology is unaffected; urban2/3 LCZ remains refused.",
+    ("km_opt", 3): "CPU-ONLY: GPU selection refused CLI pre-JAX / API pre-device; the only GPU 24 h attempt became non-finite at 1 h, with no completed CPU-WRF reference (proofs/v040/gpuqual/km3/D6.json). Literal WRF diff_opt=2 3-D Smagorinsky "
     "(gpuwrf.dynamics.les3d_smagorinsky; RK1-frozen, vertical_diffusion_2 only with bl_pbl_physics=0; "
     "isfflx/tke_drag_coefficient/tke_heat_flux are not read from the namelist, WRF defaults 1/0/0 apply; "
-    "moist diffusion reaches the root scalar update only with moist_adv_opt!=0). CPU-oracle-qualified "
-    "against pristine WRF REAL4 module_diffusion_em on real terrain crops. Coupled evidence is CPU-only "
-    "(Swiss d01): 3 steps in the legacy fp64 carry and 1 step of the release REAL32 program with Pallas "
-    "interpret mode + CPU-emulated PTX rounding, finite with 0 guard events; the compiled GPU program has "
-    "not been executed. GPU/coupled-forecast qualification pending.",
+    "moist diffusion reaches the root scalar update through the flux-form moisture transport). "
+    "CPU-oracle-qualified against pristine WRF REAL4 module_diffusion_em on real terrain crops. Earlier "
+    "coupled evidence was CPU-only (Swiss d01): 3 steps in the legacy fp64 carry and 1 step of the release "
+    "REAL32 program with Pallas interpret mode + CPU-emulated PTX rounding, finite with 0 guard events; "
+    "the 24 h GPU attempt failed with nonfinite u at the hour-1 observation; original CPU-WRF crashed at "
+    "00:04:30 on Swiss and also crashed on a fresh authentic Madrid case, so no complete matched reference "
+    "is available (proofs/v040/gpuqual/km3). GPU/coupled-forecast qualification pending.",
     ("cu_physics", 5): "Operationally wired into the GPU scan (Grell-3D ensemble, v0.3.4): line-faithful port of "
-    "G3DRV/conv_grell_spread3d, CPU-oracle-qualified against the pristine-WRF multi-column tile oracle (proofs/v034); "
-    "GPU/coupled-forecast qualification pending. Positive cudt is refused. Not oracle-exercised: the CUP_enss "
-    "downdraft-origin (keep_going) search. Coupled evidence is a CPU 12x12 operational-step smoke only.",
+    "G3DRV/conv_grell_spread3d, CPU-oracle-qualified against the pristine-WRF multi-column tile oracle "
+    "(proofs/v034); Positive cudt is refused. Not oracle-exercised: the CUP_enss downdraft-origin "
+    "(keep_going) search. GPU-qualified vs CPU-WRF Swiss 24 h; E41 robustness flag: loop_add_fusion.79: "
+    "1713 HLO > 500. D6 every hourly frame (25), all CPU fields inventoried; proofs/v040/gpuqual/cu5.",
     ("cu_physics", 93): "Operationally wired into the GPU scan (Grell-Devenyi ensemble, v0.3.4): line-faithful port of "
-    "GRELLDRV, CPU-oracle-qualified against the pristine-WRF multi-column tile oracle (proofs/v034); GPU/coupled-"
-    "forecast qualification pending. Positive cudt is refused. Not oracle-exercised: the GD neg_check branch. "
-    "Coupled evidence is a CPU 12x12 operational-step smoke only.",
+    "GRELLDRV, CPU-oracle-qualified against the pristine-WRF multi-column tile oracle (proofs/v034); "
+    "Positive cudt is refused. Not oracle-exercised: the GD neg_check branch. GPU-qualified vs CPU-WRF "
+    "Swiss 24 h; E41 robustness flag: none (full scan PASS). D6 every hourly frame (25), all CPU fields "
+    "inventoried; proofs/v040/gpuqual/cu93.",
     ("bl_pbl_physics", 9): "Operationally wired into the GPU scan (CAM-UW, v0.3.4): CPU-oracle-qualified "
     "against proofs/v034/camuw_oracle; GPU/coupled-forecast qualification pending. Coupling caveat: WRF "
     "passes LW-only RTHRATENLW, the port passes the held TOTAL radiative heating RTHRATEN (LW+SW), so "
     "daytime cloud-top radiative forcing of the PBL is biased (exact at night).",
-    ("sf_surface_physics", 3): "Scan-wired via explicit bundles (RUC LSM, v0.3.4: coupling.ruc_surface_hook, "
-    "ruc_static/ruc_land, MYNN-SL, Thompson; API only -- gpuwrf run/nested pipeline still reject sf=3). "
-    "CPU-oracle-qualified: physics.ruclsm matches the unmodified WRF LSMRUC oracle (proofs/v034/oracle/ruclsm, "
-    "48 regimes x 12 steps incl. snow/melt/frozen soil/convective frpcpn, fp64 <=1.3e-10 rel); "
-    "GPU/coupled-forecast qualification pending. WRF SFCDIAGS_RUCLSM 2-m diagnostics are not ported. "
-    "Sea-ice/lake points fail closed.",
+    ("sf_surface_physics", 3): "Scan-wired RUC LSM (coupling.ruc_surface_hook); CLI and API, MYNN-SL/Thompson, real.exe-prepared RUC "
+    "wrfinput with 6 or 9 soil levels. CPU-oracle-qualified: physics.ruclsm matches the unmodified WRF "
+    "LSMRUC oracle (proofs/v034/oracle/ruclsm, 48 regimes x 12 steps incl. snow/melt/frozen "
+    "soil/convective frpcpn, fp64 <=1.3e-10 rel); RUCLSMINIT and SFCDIAGS_RUCLSM CPU-oracle-qualified "
+    "(proofs/o2_ruccli); held 2-m history and full restart. Sea-ice/lake points fail closed. GPU-qualified "
+    "vs CPU-WRF Madrid GFS 20261013_00z 24 h; E41 robustness flag: none (full scan PASS). D6 every hourly "
+    "frame (25), all CPU fields inventoried; proofs/v040/gpuqual/sf3. Measured RUC input has 6 soil "
+    "levels; 9-level input remains unqualified by this case.",
     ("ra_lw_physics", 3): "Operationally wired into the GPU scan (coupling.cam_radiation, held-rate RTHRATEN + CAM GLW to the "
     "land surface). CPU-oracle-qualified: physics.ra_cam matches the unmodified WRF camrad true caller "
     "(proofs/cam_rad CAM01, 210 real WN3 + augmented multi-region cloud columns, day/night; fluxes "
-    "bit-identical in REAL, heating <= 2 ulp, held abs/ems path bit-identical); GPU/coupled-forecast "
-    "qualification pending. Absorptivities/emissivity are held and recomputed at WRF STEPABS cadence "
-    "(cam_abs_freq_s, default 21600 s; carried in restart); XICE = 0.",
-    ("ra_sw_physics", 3): "Operationally wired into the GPU scan (coupling.cam_radiation, held-rate RTHRATEN + CAM "
-    "SWDOWN = GSW/(1-ALBEDO) to the land surface). CPU-oracle-qualified against the unmodified WRF "
-    "camrad true caller (proofs/cam_rad CAM01, day/night, cloudy/clear, uniform CAM aerosol "
-    "climatology); GPU/coupled-forecast qualification pending. XICE = 0.",
+    "bit-identical in REAL, heating <= 2 ulp, held abs/ems path bit-identical); Absorptivities/emissivity "
+    "are held and recomputed at WRF STEPABS cadence (cam_abs_freq_s, default 21600 s; carried in restart); "
+    "XICE = 0. GPU-qualified vs CPU-WRF Swiss 24 h; E41 robustness flag: "
+    "input_concatenate_exponential_transpose_fusion: 2141 HLO > 500; "
+    "loop_add_concatenate_divide_log_multiply_power_sqrt_transpose_fusion: 1144 HLO > 500; "
+    "loop_add_broadcast_clamp_concatenate_divide_exponential_maximum_multiply_sqrt_transpose_fusion: 1149 "
+    "HLO > 500; loop_add_concatenate_transpose_fusion: 1274 HLO > 500; "
+    "loop_add_concatenate_convert_exponential_multiply_transpose_fusion: 1426 HLO > 500; "
+    "input_divide_select_transpose_fusion: 641 HLO > 500; STACK 2144 B > 256. D6 every hourly frame (25), "
+    "all CPU fields inventoried; proofs/v040/gpuqual/ra3.",
+    ("ra_sw_physics", 3): "Operationally wired into the GPU scan (coupling.cam_radiation, held-rate RTHRATEN + CAM SWDOWN = "
+    "GSW/(1-ALBEDO) to the land surface). CPU-oracle-qualified against the unmodified WRF camrad true "
+    "caller (proofs/cam_rad CAM01, day/night, cloudy/clear, uniform CAM aerosol climatology); XICE = 0. "
+    "GPU-qualified vs CPU-WRF Swiss 24 h; E41 robustness flag: "
+    "input_concatenate_exponential_transpose_fusion: 2141 HLO > 500; "
+    "loop_add_concatenate_divide_log_multiply_power_sqrt_transpose_fusion: 1144 HLO > 500; "
+    "loop_add_broadcast_clamp_concatenate_divide_exponential_maximum_multiply_sqrt_transpose_fusion: 1149 "
+    "HLO > 500; loop_add_concatenate_transpose_fusion: 1274 HLO > 500; "
+    "loop_add_concatenate_convert_exponential_multiply_transpose_fusion: 1426 HLO > 500; "
+    "input_divide_select_transpose_fusion: 641 HLO > 500; STACK 2144 B > 256. D6 every hourly frame (25), "
+    "all CPU fields inventoried; proofs/v040/gpuqual/ra3.",
+    ("mp_physics", 9): "Milbrandt-Yau two-moment, six transported number species and separate hail: "
+    "CPU-oracle-qualified; GPU/coupled-forecast qualification pending. REAL32 pristine WRF active cold/hail "
+    "module_mp_milbrandt2mom.F column and caller outputs in proofs/s2_milbrandt. Root flow_dep_bdy, mandatory per-step REFL_10CM, "
+    "exact restart of all prognostics; WRF has_reqc/i/s=0 (unused local Dm diagnostics disclosed). "
+    "Single domains only; nested extra-species forcing not qualified.",
+    ("grid_fdda", 1): "PSU grid analysis nudging through resident wrffdda and WRF RK tendencies, "
+        "continuous daily clock and held HFX_FDDA history/restart. "
+        "CPU-oracle-qualified; GPU/coupled-forecast qualification pending. "
+        "Original WRF analysis ingestion requires FieldType=104 metadata; "
+        "successful completion alone does not establish ingestion.",
+    ("windfarm_opt",1): "Fitch turbine drag and QKE source with WRF power/Cp interpolation and energy normalization; "
+        "MYNN=5/5, windturbines[-ij].txt and wind-turbine-N.tbl required. POWER/QKE restart retained. "
+        "CPU-oracle-qualified; GPU/coupled-forecast qualification pending. Literal REAL4 path BYTE; "
+        "small compiled per-value contraction deviations disclosed in proofs/u2_windfarm/UPSTREAM_WRF_BUGS.md.",
+    ("tracer_opt", 2): "Non-Chem passive tracer operators are CPU-oracle-qualified; "
+    "GPU/coupled-forecast qualification pending. Opt-in root and one-way nested transport "
+    "(feedback=0), PBL mixing, custom sources/removal, history and full restart. "
+    "The unchanged coupled max-error gate remains FAIL-explained: 1.3697e-4 > 1e-4. "
+    "Operator exactness and mass conservation are accepted for lane scope; final composite D6 "
+    "decides coupled qualification. Actual GPU launches, memory and timing remain unmeasured.",
+    ("sf_ocean_physics",1): "WRF OML1D: seven resident REAL Registry fields, current surface fluxes, "
+    "step-entry winds, depth/temperature anchors and optional relaxation. Both CLI pipelines bind/init; "
+    "Noah-MP currently required; sst_update=1 and PWP 3-D refused. "
+    "CPU-oracle-qualified; GPU/coupled-forecast qualification pending. docs/ocean-mixed-layer.md",
+    ("sf_surface_physics", 8): "Experimental SSiB, CLI/API opt-in with real.exe-prepared three-layer soil, "
+    "sfclay=1/YSU=1, mp=8, SW=1/LW=4, no sea ice/lake/urban. CPU-oracle-qualified literal REAL4: "
+    "400/400 calls BYTE vs pristine WRF (proofs/s2_ssib), all 48 snow leaves and Registry history/restart. "
+    "Compiled REAL4 has 56 disclosed field residuals beyond native FMA/input bounds in 300 wet/melt calls: "
+    "maximum 0.0562 W/m2 flux and 0.000672 K temperature; no tolerance widened, QFX tightened by WRF HLAT. "
+    "Pristine UPDAT1 SNOWW(2) undefined read uses compiler-defined zero; tested sensitivity 7.85e-12 m runoff. "
+    "GPU/coupled-forecast qualification pending; D6 decides. Performance and other limitations: "
+    "proofs/s2_ssib/README.md and UPSTREAM_WRF_BUGS.md.",
+    ('grid_sfdda',1): 'PSU surface analysis nudging through resident auxinput9 analyses and WRF RK tendency lanes. '
+    'CPU-oracle-qualified; GPU/coupled-forecast qualification pending. Requires grid_fdda=1, MYNN PBL/SFCLAY=5, '
+    'Noah-MP=4; independent surface cadence, density smoothing, wind scaling and saturation restriction.',
+    ('grid_sfdda',2): 'FASDAS atmospheric surface nudging with Noah-MP=4. '
+    'CPU-oracle-qualified; GPU/coupled-forecast qualification pending. Requires grid_fdda=1 and MYNN PBL/SFCLAY=5. '
+    'Classic Noah indirect soil nudging is refused; WRF Noah-MP has no indirect FASDAS soil update. '
+    'SDA/QNORM/HFX_BOTH/QFX_BOTH history diagnostics are not written.',
+    ("bl_pbl_physics",4): "Experimental QNSE with optional ARW EDMF (mfshconv=1), mandatory sf=4. "
+    "No LSM or Noah-MP only; slab (1), Noah-classic (2) and Pleim-Xiu (7) caller wiring is refused. "
+    "CPU-oracle-qualified: pristine literal REAL4 byte parity and finite compiled PBL input-ULP bounds. "
+    "EDMF compiled rounding exceeds the pristine WRF FMA spread in 130 oracle values "
+    "(max heating excess 1.01747e-6 K/s, RC_MF 6.49016e-9 kg/kg); experimental deviation documented in proofs/s2_qnse. "
+    "GPU/coupled-forecast qualification pending; persistent surface exchange, TKE and MF condensate restart. "
+    "Actual c26 GPU E41: FAIL; PBL STACK 7232 B / optional EDMF STACK 2952 B per thread versus the 256 B default cap. Opt-in resource disclosures; default hard gate unchanged. See proofs/t_qnsecompile/QUALIFICATION.json.",
+    ("sf_sfclay_physics",4): "Experimental QNSE surface layer, mandatory bl=4. "
+    "No LSM or Noah-MP only; slab (1), Noah-classic (2) and Pleim-Xiu (7) caller wiring is refused. "
+    "CPU-oracle-qualified: pristine literal REAL4 byte parity with source-hashed WRF tables; finite compiled input-ULP bounds. "
+    "GPU/coupled-forecast qualification pending. Surface solve retained through land and PBL.",
+    ("cu_physics", 14): "KIM SAS, native WRF REAL32 CU_KSAS; CPU-oracle-qualified; "
+    "GPU/coupled-forecast qualification pending. Initial five-column literal AVX path rain/T/QV/U/V BYTE; REAL8 "
+    "scaled error <=6.94e-14. Disclosed default-ISA compiler contraction: rain abs 3.75509e-6 "
+    "versus pristine WRF FMA spread 3.33786e-6 (excess 4.17233e-7); tiny QC/QI/QV cells also "
+    "exceed that spread. Accepted by Owner; no tolerance/ISA change; final composite D6 is binding. "
+    "Expanded455 native32 rain abs 1.31726265e-5 vs original FMA spread 6.19366765e-5; "
+    "max same-cell excess 1.03116035e-5 in two cells. Held scalar/momentum cadence, same-step HPBL_HOLD; "
+    "docs/SAS_FAMILY_SUPPORT.md.",
+    ("cu_physics", 96): "GFS NSAS, native WRF REAL32 deep and own shallow; CPU-oracle-qualified; "
+    "GPU/coupled-forecast qualification pending. REAL8 scaled error <=5.70e-13. Disclosed "
+    "conditioning chain: FPVS max 2 ULP -> XAA0 1 ULP -> closure mass flux 44-68 ULP -> "
+    "rain 5.798721e-6 relative (1.0430813e-6 absolute). Accepted by Owner; no tolerance/ISA change; "
+    "final composite D6 is binding. Original i-row pressure limits, current HFX/QFX/HPBL, "
+    "held scalar/momentum cadence. Expanded455 native32 rain abs 4.45032492e-5 vs original FMA "
+    "spread 4.64038923e-4; max same-cell excess 2.55461782e-6 in13cells. Original FMA switches the "
+    "same near-zero rain/cloud-level branch. docs/SAS_FAMILY_SUPPORT.md.",
+    ("cu_physics", 99): "Experimental distinct old Kain-Fritsch, pristine module_cu_kf.F:KFCPS/KFPARA "
+    "analytic thermodynamics and gradual freezing; CPU-oracle-qualified; GPU/coupled-forecast qualification pending. "
+    "Native REAL32 kernel/carry, full promoted-REAL8 ten-field gate passes with exact lifetimes. "
+    "Disclosed compiled native conditioning: rain max abs 1.93715096e-6 vs original Fortran FMA "
+    "spread 1.89244747e-6 (excess 4.47034836e-8); QI 6.66489086e-12 vs 4.57589522e-12, "
+    "QV 8.46966941e-11 vs 7.84439180e-11. No tolerance/ISA change; final composite D6 binding. "
+    "W0AVG/NCA and seven held rates restart; old NCA half-step trigger and <=0 clear, not KF-eta <=1. "
+    "See docs/SAS_FAMILY_SUPPORT.md.",
+    ("cu_physics", 95): "Experimental old GFS OSAS, distinct pristine OSASCNV and source-identical ARW SHALCV; "
+    "CPU-oracle-qualified; GPU/coupled-forecast qualification pending. Native REAL4 all eight outputs "
+    "BYTE on 455 recorded-draw columns at two cadences (198/196 active); GFS DOUBLE internals. "
+    "WRF draws from the system clock; gpuwrf is deterministic by design. Fixed seed 950040, "
+    "Threefry2x32-20 key=(seed,domain), counter=(step,column); uint32 keys and clock restart. "
+    "Promoted-REAL8 fully evaporated ~1e-20 rain has disclosed exact-zero branch sensitivity; "
+    "original WRF FMA field spread covers maximum response; final composite D6 is binding. "
+    "See docs/SAS_FAMILY_SUPPORT.md.",
+    ("cu_physics", 94): "2015 GFS SAS, pristine WRF ARW CU_SAS/SASCNVN and OLD_ARW_SHALCV: "
+    "CPU-oracle-qualified; GPU/coupled-forecast qualification pending. WRF REAL4 driver outputs, "
+    "DOUBLE kind_phys internals; WRF first-step/STEPCU held-rate cadence and sas_pgcon binding. "
+    "No momentum tendencies coupled by WRF ARW. See docs/SAS_FAMILY_SUPPORT.md.",
+    ("mp_physics",19): "WRF legacy NSSL one-moment with hail mass and predicted graupel volume: "
+    "CPU-oracle-qualified; GPU/coupled-forecast qualification pending. "
+    "Original REAL4/REAL8 active columns, native moment-specific branches, same-input original FMA controls: "
+    "proofs/s2_mpmore/nssl1mom. Registry CCN scalar is advected and held by one-moment microphysics; "
+    "no prognostic hydrometeor numbers or hail volume. No effective-radius handoff (original has_req flags0). "
+    "Single domains; matching nonzero moist/scalar advection required; CCN0, km2 and custom nssl_mp_params refused. "
+    "REFL_10CM held with the NSSL makediag lifetime from radardd02's ipconc=0 branch (fp32 BYTE vs pristine S6, "
+    "proofs/t_classd). GPU E41/resources and forecast fidelity remain pending.",
+    ("mp_physics",21): "WRF legacy NSSL one-moment without hail or prognostic numbers/volume: "
+    "CPU-oracle-qualified; GPU/coupled-forecast qualification pending. "
+    "Original REAL4/REAL8 active columns, native saturation/freezing branches, same-input original FMA controls: "
+    "proofs/s2_mpmore/nssl1mom. Six moist species only; no effective-radius handoff (original has_req flags0). "
+    "Single domains; custom nssl_mp_params refused. REFL_10CM held with the NSSL makediag lifetime from "
+    "radardd02's ipconc=0 branch (fp32 BYTE vs pristine S6, proofs/t_classd). "
+    "GPU E41/resources and forecast fidelity remain pending.",
+    ("sf_surface_physics",4): "Noah-MP includes the independent WRF glacier timestep (opt_gla=1/2). CPU-oracle-qualified; GPU/coupled-forecast qualification pending for glacier domains. Glacier QRAINXY=0 matches WRF's defined per-point cold-zero hold; arbitrary nonzero externally seeded QRAINXY is outside this qualification. opt_snf=5 is refused on glacier domains. Released Noah-MP default path is unchanged. Experimental opt_run=5 MMF: CPU-oracle-qualified; GPU/coupled-forecast qualification pending. Original REAL4 cold initialization, soil columns and eight-neighbor groundwater transport; WTDDT cadence, complete restart and held history. Requires NCAR groundwater geography via GEOGRID.TBL.ARW.noahmp, one ice-free domain, no urban/lake, four STAS soil layers, opt_inf=1/2 and noahmp_acc_dt=0. Original-WRF input-ULP/FMA bounds; GPU performance, memory and E41 robustness unmeasured. proofs/s2_mmf/INPUT_REQUIREMENTS.md. Additional natural-soil controls: docs/noahmp-options.md; CPU-oracle-qualified, GPU/coupled-forecast qualification pending.",
+    **{("mp_physics", code): "CPU-oracle-qualified; GPU/coupled-forecast qualification pending. "
+       "Experimental Ferrier-Aligo REAL column kernel (module_mp_fer_hires.F): literal no-FMA execution is BYTE against "
+       "36 pristine-WRF columns (tests/v040/mpmisc). Compiled CPU rounding deviations beyond "
+       "the measured WRF FMA/input-ULP spread are explicitly disclosed in "
+       "proofs/v040/mpmisc/COMPILER_DEVIATIONS.md; D6 decides final qualification. "
+       "Native CUDA lowering passes; actual GPU E41/timing/VRAM remain unmeasured. "
+       "Single domains, cu_physics=0 only: mp5 transports CWM and holds ice/rain/rime fractions; mp15 transports QRIMEF."
+       for code in (5, 15)},
+    ("mp_physics", 7): "CPU-oracle-qualified; GPU/coupled-forecast qualification pending. "
+    "Experimental REAL Goddard NUWRF four-ice kernel (module_mp_gsfcgce_4ice_nuwrf.F): all 18 original-WRF columns/36 public fields "
+    "literal BYTE; all 5760 compiled prognostic values within independent 14-input-ULP/WRF-FMA bounds. "
+    "Small diagnostic/ACPHYSF compiled excesses disclosed in proofs/v040/mpmisc/goddard4ice/COMPILED_DEVIATIONS.md. "
+    "Separate hail mass, six accumulated latent budgets, six micron radii and held SR retained in restart. "
+    "Original PHYS_TOT history sum is retained (720 independently qualified REAL values BYTE). "
+    "Single domains, non-Chem defaults, WRF-order post-RK caller only. Native CUDA IR lowering passes; "
+    "actual GPU E41/timing/VRAM remain unmeasured; D6 pending.",
+    ("mp_physics", 38): "CPU-oracle-qualified; GPU/coupled-forecast qualification pending. "
+    "Experimental REAL Thompson variable-density hail+aerosol composition of module_mp_thompson.F: "
+    "11 pristine-WRF columns (6160 physical values/77 public surfaces) and three evolving own-steps literal BYTE. "
+    "Independent input-ULP/WRF-FMA bounds cover threshold branch sensitivity; 115/6237 small ordinary/fresh "
+    "compiled excesses are disclosed in proofs/v040/mpmisc/thompson38/COMPILED_DEVIATIONS.md; D6 decides final qualification. "
+    "Single domains, wif_input_opt=1/aer_init_opt=0 and zero black carbon; original volume/number/aerosol transport, "
+    "held emissions/SR/REAL accumulated totals and strict restart retained; no effective-radius flags. "
+    "JAX composition reuses shared Thompson equations, not a fused native column kernel. "
+    "Original tables occupy 929643480 bytes plus possible retained legacy table buffers. "
+    "Actual GPU E41/timing/VRAM remain unmeasured.",
+    ('ra_lw_physics', 7): "EXPERIMENTAL CPU-ONLY FLG, paired 7/7. CPU-oracle-qualified; GPU/coupled-forecast qualification pending. "
+    "GPU refused before JAX: native GPU column kernel pending (v0.4.x). Qualified caller: MP8, cu0, Noah-MP4, supplied WRF statics; "
+    "one cadence solve, held native rates/fluxes/clouds, exact restart. Literal REAL4 BYTE against pristine WRF; "
+    "17 strict compiled band failures (3254 values): 7 within the independent native FMA envelope; 10 outside (285 values). Maximum band error 0.00139618 W/m2, source-bound ratio 12.8554; full-field LW TOA error 0.00961304 W/m2 versus native FMA spread 0.00119019 W/m2, heating error 4.44816e-7 K/s. Ten residual bands and full-field excesses are small experimental deviations only, D6 pending; not native-envelope passes. No GPU speed/memory claim. "
+    "GFDL requires optional GNU Fortran once at initialization for bundled native CO2 tables. See docs/flg-gfdl-radiation.md and proofs/s2_flggfdl/receipts/FG93_flg_compiler_disposition.json (per-band independent bounds/dispositions/hashes).",
+    ('ra_sw_physics', 7): "EXPERIMENTAL CPU-ONLY FLG, paired 7/7. CPU-oracle-qualified; GPU/coupled-forecast qualification pending. "
+    "GPU refused before JAX: native GPU column kernel pending (v0.4.x). Qualified caller: MP8, cu0, Noah-MP4, supplied WRF statics; "
+    "one cadence solve, held native rates/fluxes/clouds, exact restart. Literal REAL4 BYTE against pristine WRF; "
+    "17 strict compiled band failures (3254 values): 7 within the independent native FMA envelope; 10 outside (285 values). Maximum band error 0.00139618 W/m2, source-bound ratio 12.8554; full-field LW TOA error 0.00961304 W/m2 versus native FMA spread 0.00119019 W/m2, heating error 4.44816e-7 K/s. Ten residual bands and full-field excesses are small experimental deviations only, D6 pending; not native-envelope passes. No GPU speed/memory claim. "
+    "GFDL requires optional GNU Fortran once at initialization for bundled native CO2 tables. See docs/flg-gfdl-radiation.md and proofs/s2_flggfdl/receipts/FG93_flg_compiler_disposition.json (per-band independent bounds/dispositions/hashes).",
+    ('ra_lw_physics', 99): "EXPERIMENTAL CPU-ONLY GFDL-Eta, paired 99/99. CPU-oracle-qualified; GPU/coupled-forecast qualification pending. "
+    "GPU refused before JAX: native GPU column kernel pending (v0.4.x). Qualified caller: MP8, cu0, Noah-MP4, supplied WRF statics; "
+    "one cadence solve, held native rates/fluxes/clouds, exact restart. Literal REAL4 BYTE against pristine WRF; "
+    "Compiled GFDL residuals: SW flux error 0.0181 W/m2 and SW heating error 7.52e-8 K/s; disclosed experimental deviations, D6 pending, not strict fidelity passes. No GPU speed/memory claim. "
+    "GFDL requires optional GNU Fortran once at initialization for bundled native CO2 tables. See docs/flg-gfdl-radiation.md and proofs/s2_flggfdl/receipts/FG93_flg_compiler_disposition.json (per-band independent bounds/dispositions/hashes).",
+    ('ra_sw_physics', 99): "EXPERIMENTAL CPU-ONLY GFDL-Eta, paired 99/99. CPU-oracle-qualified; GPU/coupled-forecast qualification pending. "
+    "GPU refused before JAX: native GPU column kernel pending (v0.4.x). Qualified caller: MP8, cu0, Noah-MP4, supplied WRF statics; "
+    "one cadence solve, held native rates/fluxes/clouds, exact restart. Literal REAL4 BYTE against pristine WRF; "
+    "Compiled GFDL residuals: SW flux error 0.0181 W/m2 and SW heating error 7.52e-8 K/s; disclosed experimental deviations, D6 pending, not strict fidelity passes. No GPU speed/memory claim. "
+    "GFDL requires optional GNU Fortran once at initialization for bundled native CO2 tables. See docs/flg-gfdl-radiation.md and proofs/s2_flggfdl/receipts/FG93_flg_compiler_disposition.json (per-band independent bounds/dispositions/hashes).",
+    **{(key,code): 'Native Noah-MP control, CPU-oracle-qualified; GPU/coupled-forecast qualification pending. '
+       'Literal REAL4 original-source gates, disclosed small compiled deviations, exact active carries/restart. '
+       'Glacier opt_gla=1/2 uses the approved independent WRF timestep; glacier opt_snf=5 is refused. QRAINXY=0 mirrors WRF cold-zero hold; arbitrary externally seeded nonzero QRAINXY is outside qualification. See docs/noahmp-options.md and proofs/u2_land. '
+       + ('EXPERIMENTAL dynamic VIC: original unassigned YD follows compiler-zero policy; initialization sensitivity is material. '
+          if (key=='opt_run' and code==8) or (key=='opt_infdv' and code!=0) else '')
+       for key,codes in _NOAHMP_CONTROL_VALUES.items() for code in codes},
+    ('sst_skin',1): 'WRF ocean_skin after radiation/aux4 and before surface physics; resident bulk SST/SSTSK/DTW with exact restart. '
+       'CPU-oracle-qualified; GPU/coupled-forecast qualification pending. Noah-MP/RRTMG, ice-free prescribed SST. docs/noahmp-options.md.',
 }
 
 
@@ -1525,7 +1674,7 @@ def classify_scheme(key: str, code: int) -> SchemeSupport:
 
     # 2) Operationally implemented (physics + dynamics).
     impl = _IMPLEMENTED.get(key) or _DYNAMICS_IMPLEMENTED.get(key)
-    if impl is not None and code in impl:
+    if (impl is not None and code in impl) or code in _IMPLEMENTED_FEATURE_VALUES.get(key, ()):
         return SchemeSupport(
             key=key,
             code=code,
@@ -1611,6 +1760,8 @@ def classify_feature_switch(key: str, value: object) -> SchemeSupport | None:
     if feat is None:
         return None
     if not _is_truthy(value):
+        return None
+    if _coerce_int_or_bool(value) in _IMPLEMENTED_FEATURE_VALUES.get(key.lower(), ()):
         return None
     return SchemeSupport(
         key=feat.key,

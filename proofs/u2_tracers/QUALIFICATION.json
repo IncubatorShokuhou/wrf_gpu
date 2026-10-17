@@ -1,0 +1,1494 @@
+{
+  "PBL_component": {
+    "GPU_qualification": "UNKNOWN",
+    "extracted_routines_sha256_recorded": "02e78b5181047611bcc87eae949a9c8fa2ce1359bca5e6fa03667d5181c47fe5",
+    "final_source_reuse": {
+      "coupled_program_and_initial_arguments": "TR36/TR37 exact",
+      "final_model_source": "eb8fb4fc7",
+      "fixtures": "TR40 SHA exact; literal/FMA numerical validation carried forward unchanged",
+      "measured_source": "caa735f33",
+      "pbl_module_git_blob_both": "da4b8effa14b7073b09758a2689a0076a8e40442"
+    },
+    "fma_fixture": {
+      "basis": "Exact original fixture SHA verified again in final sliced clean archive TR40; no fixture regeneration",
+      "bytes": 148238,
+      "commit": "b6af97abc",
+      "path": "proofs/u2_tracers/pbl_fma_fixture.json",
+      "sha256": "7478897fea775bc677860d64239f17dbaf41922f8252d45a8549c1cb5faba864",
+      "verified_commit": "c52011702"
+    },
+    "frozen_literal_bound": "16*eps32*(abs(q)/dt + abs(original tendency)); unchanged",
+    "literal_checks": {
+      "byte_equal_strict_ISA_JIT": 3360,
+      "eager_byte_equal": 3264,
+      "eager_degenerate_one_level_limit": "zero-length eager scan unsupported; separately compiled one-level tested",
+      "values": 3360
+    },
+    "literal_fixture": {
+      "basis": "Exact original fixture SHA verified again in final sliced clean archive TR40; no fixture regeneration",
+      "bytes": 148636,
+      "commit": "b6af97abc",
+      "path": "proofs/u2_tracers/pbl_fixture.json",
+      "sha256": "6501902034c3ae51e90c408f6946a7cac09288bb47006ba9f93d18e8cfb561ab",
+      "verified_commit": "c52011702"
+    },
+    "original_initialization_sensitivity": {
+      "all_byte_equal": true,
+      "all_finite": true,
+      "literal_fixture_sha256": "6501902034c3ae51e90c408f6946a7cac09288bb47006ba9f93d18e8cfb561ab",
+      "zero_vs_snan_values": 3360
+    },
+    "original_native_FMA": {
+      "finite_values": 3360,
+      "fixture_sha256": "7478897fea775bc677860d64239f17dbaf41922f8252d45a8549c1cb5faba864",
+      "interpretation": "Original unchanged WRF itself demonstrates compiler contraction spread. Native JAX comparison lies within independently measured original spread under standing policy; literal bound remains unchanged.",
+      "max_abs_spread": 1.5925616025924683e-07,
+      "max_ratio_to_literal_bound": 5.684880813,
+      "nonbyte_vs_literal": 557,
+      "strong_cells_exceeding_literal_bound": 99
+    },
+    "production_deletion_mutant": {
+      "healthy_base": "90df4756c",
+      "mutant_source": "85a2751ec",
+      "mutation": "Replace actual production interior EXCH_H with zeros",
+      "numerical_failures": 1,
+      "setup_errors": 0,
+      "status": "KILLED_BY_NUMERICAL_ASSERTION",
+      "wall_s": 1.44
+    },
+    "routines": "diff4d 2690:2818, diff 2822:2896, invert 2899:2931",
+    "source": "<USER_HOME>/src/wrf_pristine/WRF/phys/module_pbl_driver.F",
+    "source_sha256_recorded": "c1c083365a4e780381fce09b97231cd322913590f089ac91aa9bfc1f6be54424",
+    "status": "CPU_ORACLE_QUALIFIED_WITH_EXPLICIT_COMPILER_SCOPE"
+  },
+  "admitted_operand_localization": {
+    "limits": [
+      "Observer admission proves first-step complete carry184/184 BYTE, not all-stage/all-time instrumentation identity.",
+      "Matched PD exact at both selected coupled worst positions and folded raw max1.925929944387236e-34 does not establish complete transport equivalence over the forecast.",
+      "86 tiny values exceed pointwise original FMA spread in folded comparison; true WRF base/perturbation split has max2.9802322387695312e-8 and100 excess values. These are disclosed, not converted to PASS.",
+      "Different RU/RV/WW/MUTS and independently observed weather differences support a producer dependency; they do not prove all of the coupled tracer error is caused there. No full causal attribution."
+    ],
+    "matched_pristine_PD": [
+      {
+        "caller": "split_original",
+        "coupled_argmax_targets": {
+          "(0, 19, 17)": {
+            "error": 0.0,
+            "excess": -7.62939453125e-06,
+            "fma": -60.361228942871094,
+            "literal": -60.36122131347656,
+            "native": -60.36122131347656,
+            "spread": 7.62939453125e-06
+          },
+          "(0, 23, 24)": {
+            "error": 0.0,
+            "excess": 0.0,
+            "fma": -10.701509475708008,
+            "literal": -10.701509475708008,
+            "native": -10.701509475708008,
+            "spread": 0.0
+          }
+        },
+        "finite": true,
+        "literal_nonbyte": 142,
+        "max_abs_error": 2.9802322387695312e-08,
+        "max_abs_original_fma_spread": 2.574920654296875e-05,
+        "outside_pointwise_original_fma_spread": 100,
+        "rk": 3,
+        "values": 77616
+      },
+      {
+        "caller": "folded_captured",
+        "coupled_argmax_targets": {
+          "(0, 19, 17)": {
+            "error": 0.0,
+            "excess": -7.62939453125e-06,
+            "fma": -60.361228942871094,
+            "literal": -60.36122131347656,
+            "native": -60.36122131347656,
+            "spread": 7.62939453125e-06
+          },
+          "(0, 23, 24)": {
+            "error": 0.0,
+            "excess": 0.0,
+            "fma": -10.701509475708008,
+            "literal": -10.701509475708008,
+            "native": -10.701509475708008,
+            "spread": 0.0
+          }
+        },
+        "finite": true,
+        "literal_nonbyte": 94,
+        "max_abs_error": 1.925929944387236e-34,
+        "max_abs_original_fma_spread": 2.574920654296875e-05,
+        "outside_pointwise_original_fma_spread": 86,
+        "rk": 3,
+        "values": 77616
+      },
+      {
+        "caller": "split_vs_folded_mass_only",
+        "coupled_argmax_targets": {
+          "(0, 19, 17)": {
+            "error": 0.0,
+            "excess": 0.0,
+            "fma": -60.36122131347656,
+            "literal": -60.36122131347656,
+            "native": -60.36122131347656,
+            "spread": 0.0
+          },
+          "(0, 23, 24)": {
+            "error": 0.0,
+            "excess": 0.0,
+            "fma": -10.701509475708008,
+            "literal": -10.701509475708008,
+            "native": -10.701509475708008,
+            "spread": 0.0
+          }
+        },
+        "finite": true,
+        "literal_nonbyte": 48,
+        "max_abs_error": 2.9802322387695312e-08,
+        "max_abs_original_fma_spread": 0.0,
+        "outside_pointwise_original_fma_spread": 48,
+        "rk": 3,
+        "values": 77616
+      }
+    ],
+    "observer": {
+      "accepted": true,
+      "backend": "cpu",
+      "cache": "NONE",
+      "gate": "complete first-step production carry BYTE (E205)",
+      "leaves": 184,
+      "proof_sha256": "910dee5f3fdb0ce6df3cac63f59914cb89d486430708425033fdb1f152c6b210",
+      "source": "<USER_HOME>/wrf_gpu2_lanes/u2-tracers/TR26_snapshot",
+      "stages": [
+        3
+      ],
+      "unequal_leaves": []
+    },
+    "original_flux_comparison": {
+      "frame": "<USER_HOME>/wrf_gpu2_lanes/u2-tracers/TR25_flux_case/wrfout_d01_2023-01-15_00:00:18",
+      "frame_sha256_recorded": "d32e6ee21d2dfa50c22a95353e5fd82cf21224b05c33249f5e1d698fc23c4ac4",
+      "max_abs_differences": {
+        "mut": 0.6875,
+        "rom": 0.10671591758728027,
+        "ru": 2738.75,
+        "rv": 4148.96875
+      },
+      "normalization": "[I] effective velocity=flux/(c1*adjacent currentMUTS mean+c2)*face map; Courant=flux/mass*dt/dx*adjacent mass-map mean",
+      "scope": "first-step final-RK3 only; both target positions sampled in this step",
+      "units_and_names": {
+        "mut": "MUTS, Pa",
+        "rom": "WW_M, Pa s-1",
+        "ru": "RU_M, mass-coupled horizontal flux",
+        "rv": "RV_M, mass-coupled horizontal flux"
+      }
+    },
+    "pristine_transport_source": {
+      "advect_scalar_pd_routine_sha256_recorded": "04f6c26625f02dea9e85c1a51f8f21c606648aa5136a4eb7cd16f1e17958c05d",
+      "body_edits": false,
+      "path": "<USER_HOME>/src/wrf_pristine/WRF/dyn_em/module_advect_em.F",
+      "source_sha256_recorded": "58253bdbeb188dd47ed0579fcd2891086be1889b75c0c7d3696c9ad1d213559d"
+    },
+    "rejected_earlier_observer": {
+      "action": "All rates rejected; no oracle run on those unadmitted captures",
+      "byte_equal_leaves": 183,
+      "experiment": "TR-CORE24b",
+      "total_leaves": 184,
+      "unequal": "land_history leaf176"
+    },
+    "status": "DIAGNOSTIC_NOT_CAUSAL_CLOSURE"
+  },
+  "branch": "lane/u2-tracers",
+  "completed_utc": "2026-10-14T02:21:20.810041+00:00",
+  "coupled_gate": {
+    "attribution_basis": [
+      "TR31_transport_oracles.json matched pristine PD exact at both coupled worst positions",
+      "TR30_final_rk_capture.json accepted184/184 full production carry BYTE",
+      "TR29_off_control.json all77weatherfields ON/OFFBYTE4frames",
+      "original input weather BYTE; original retained acoustic flux inputs differ"
+    ],
+    "attribution_limit": "Operator/producer localization sampled the accepted first-step RK3 payload; it does not alone provide a complete all-RK multi-step causal decomposition. The manager supplied the shared-input acceptance disposition; no coupledPASS or changed threshold is claimed.",
+    "fixed_max_abs_tolerance": 0.0001,
+    "frames": [
+      {
+        "guard_events": 0,
+        "lead_s": 0,
+        "max_abs_all_eight_tracers": 0.0,
+        "step": 0,
+        "whole_carry_nonfinite": 0
+      },
+      {
+        "guard_events": 0,
+        "lead_s": 18,
+        "max_abs_all_eight_tracers": 4.678964614868164e-05,
+        "step": 1,
+        "whole_carry_nonfinite": 0
+      },
+      {
+        "guard_events": 0,
+        "lead_s": 36,
+        "max_abs_all_eight_tracers": 0.00013697147369384766,
+        "step": 2,
+        "whole_carry_nonfinite": 0
+      },
+      {
+        "guard_events": 0,
+        "lead_s": 54,
+        "max_abs_all_eight_tracers": 0.00012350082397460938,
+        "step": 3,
+        "whole_carry_nonfinite": 0
+      }
+    ],
+    "id": "original_CPU_WRF_coupled_tracer_parity",
+    "measured_max_abs": 0.00013697147369384766,
+    "raw_numerical_pass": false,
+    "source_commit": "caa735f33",
+    "statement": "All eight original-CPU-WRF tracer fields at all0/18/36/54s frames compared; measured max exceeds unchanged1e-4 gate. Explicit manager decision accepts tracer operators plus mass conservation and assigns this trajectory difference to shared acoustic/dynamics inputs(TR31); final composite D6 decides coupled qualification.",
+    "status": "FAIL-explained",
+    "units": "dimensionless TR17 mixing ratio"
+  },
+  "created_utc": "2026-10-14T02:01:40.532092+00:00",
+  "critic_fix_completed_utc": "2026-10-14T03:11:53.545416+00:00",
+  "critic_fix_main_experiment_rows": [
+    "2026-10-14T02:54:07.808374+00:00\tu2-tracers\tGPT Sol codex_2\tTR-CORE42\tRefuse resolvedREAL32 source overflow and retain analytic finite mass budgets\timmutableacb1bae6b critic3P2 fixes\tRV02decay3e38dt2/area1e35refusal pluslargewetfinite/ordinarymass3e-6/fourrestartformats\tcriticRV02NaN/Inf\t[M CPU]113PASS31.88s incl9newedges/91restart;no failures\tKEEP sourcefix;custombulkoperatornonbit gate repeated once\tartifact=<USER_HOME>/wrf_gpu2_lanes/u2-tracers/TR42_sources.log+.xml;cacheNONE;workCPU0-3/16-19NI19JAXcpuFAST0 timeout300QUIET;pytestcleanupimmediate;noGPU",
+    "2026-10-14T02:55:31.852764+00:00\tu2-tracers\tGPT Sol codex_2\tTR-CORE43\tOutput selects tracer volumes before batched materialization and retains scalar health\timmutableacb1bae6b\tT2zero4Dcopy/selected3Donly/onehostbatch/nonfiniterefusal/writerD31\tcriticRV07fullstackunrequested36864B\t[M CPU]39PASS3existingSKIP22.25s;7newactualhostbatchcasesPASS inclT2/subset/NaNInf/shape\tKEEP outputP2fix;finitehealthscalarbesideselectedvolumes;GPUcostUNKNOWN\tartifact=<USER_HOME>/wrf_gpu2_lanes/u2-tracers/TR43_output.log+.xml;cacheNONE;workCPU0-3/16-19NI19JAXcpuFAST0 timeout300QUIET;pytestcleanupimmediate;noGPU",
+    "2026-10-14T02:56:59.441716+00:00\tu2-tracers\tGPT Sol codex_2\tTR-CORE44\tSupported tracer selector exposes qualification disclosure\timmutableacb1bae6b actualclassify_control\tsingleimplementednote/operatorCPU/GPUcoupledpending/FAIL-explained/finalD6\tcriticRV08genericreason\t[M CPU]49PASS0.71s;actualsupportedreasonregressionPASS\tKEEP catalogP2fix\tartifact=<USER_HOME>/wrf_gpu2_lanes/u2-tracers/TR44_catalog.log+.xml;cacheNONE;workCPU0-3/16-19NI19JAXcpuFAST0 timeout120QUIET;pytestcleanupimmediate;noGPU",
+    "2026-10-14T02:59:15.355631+00:00\tu2-tracers\tGPT Sol codex_2\tTR-CORE45\tRobust custom loss weighting has bounded measured CPU component cost\timmutableacb1bae6b sameSwissgeometry syntheticpositiveinputprobe\tfinite/15samples/compiledtemp accounting;not WRFfidelity/GPUperf\tTR23 old .469/.540/2.608ms;temp1.55/1.55/6.52MB\t[M CPU][(1, 0, 0.0007553549949079752, 2483712), (1, 2, 0.0007370749954134226, 2483712), (8, 2, 0.0033478850964456797, 6521348)]\tKEEP correctness-required source normalization;N8tempunchanged,N1temp+931392B;timingsuncontrolled notspeedclaims\tartifact=<USER_HOME>/wrf_gpu2_lanes/u2-tracers/TR45_source_cost.json+.log;cacheNONE;workCPU0-3/16-19NI19JAXcpuFAST0 timeout180QUIET;noGPU",
+    "2026-10-14T03:00:49.784820+00:00\tu2-tracers\tGPT Sol codex_2\tTR-CORE46\tRequired P2 regressions kill actual production deletions\timmutableacb1bae6b inprocessfunction/helper/notetable mutations\tgenuineassertionFAIL/0setuperrors/healthycontrolsTR42-44\tcritic3P2\t[M CPU][('source-bound', 4, 0), ('history-stack', 2, 0), ('catalog-note', 1, 0)]\tKEEP deletion-sensitive P2 regressions\tartifact=<USER_HOME>/wrf_gpu2_lanes/u2-tracers/TR46_mutants.json+.log+3xml;cacheNONE;workCPU0-3/16-19NI19JAXcpuFAST0 timeout180QUIET;cpu_guardbeforeJAX;nomodel/snapshotfilemodification;pytestcleanupimmediate;noGPU",
+    "2026-10-14T03:05:20.912004+00:00\tu2-tracers\tGPT Sol codex_2\tTR-CORE49\tCarry completed ordinary science only where source/branch is unchanged\tgitblob+AST b962->897 andacb->897\toriginalkernelsBYTE/cfgNoneearlyreturnAST/onlyfinalhostguarddelta\tTR42/43/44 andoriginalTR26/39\t[M SOURCE]PASS4expectedmodelmodules changed;allothermodelsBYTE;originaltransport/PBLBYTE;cfgNoneunchanged;finalonlysourcegeometryguard\tKEEP justified validation reuse;no duplicate forecast or broadconsumer run\tartifact=<USER_HOME>/wrf_gpu2_lanes/u2-tracers/TR49_source_reuse.json;cacheNONE;workCPU0-3/16-19NI19JAXcpu timeout60QUIET stdlibGit/AST noJAX/GPU",
+    "2026-10-14T03:06:22.762229+00:00\tu2-tracers\tGPT Sol codex_2\tTR-CORE47a\tCriticfix Swiss OFF canonical release identity\timmutableacb1bae6b finalhost-onlysourceguarddeltaTR49 reusesidentity\tfrozenOFFidentity/REAL32cumulativebudgetrange\tcriticfixP2\t[M CPU native trace]PASS 2bf12cb8374d3a84a440e47dea4b77b0c7436108fc2ee2616bba6ec79b17962a;wall70.9s;noexecution\tKEEP fix proof;ordinaryscientificgateFAIL-explainedunchanged\tartifact=<USER_HOME>/wrf_gpu2_lanes/u2-tracers/TR47_swiss_off.json+.log;cacheNONE;workCPU0-3/16-19NI19JAXcpu timeout600/120QUIET;noGPU;pytestcleanupimmediate",
+    "2026-10-14T03:06:22.762244+00:00\tu2-tracers\tGPT Sol codex_2\tTR-CORE48\tReserve cumulative loss-budget capacity for admitted initial plus emitted inventory\timmutable897db7fd6 finalhostguard-onlydelta\tfrozenOFFidentity/REAL32cumulativebudgetrange\tcriticfixP2\t[M CPU]1PASS4.92s;individuallyrepresentableinventory/emissions jointlyoverflow refusedbeforestep\tKEEP fix proof;ordinaryscientificgateFAIL-explainedunchanged\tartifact=<USER_HOME>/wrf_gpu2_lanes/u2-tracers/TR48_budget_headroom.log+.xml;cacheNONE;workCPU0-3/16-19NI19JAXcpu timeout600/120QUIET;noGPU;pytestcleanupimmediate",
+    "2026-10-14T03:10:04.374906+00:00\tu2-tracers\tGPT Sol codex_2\tTR-CORE47b\tFinal criticfix PROD OFF canonical release identity\timmutable897db7fd6 officialrelease_identity unchanged\tnative6fc715a2 exact\tcriticRV06 andTR38prod baseline\t[M CPU native trace]PASS 6fc715a2bd630934c4cf0f94427df19a527cbf429011c9ba5efe4d712744d27b;wall114.4s;noexecution\tKEEP finaldefaultidentity;WN2regressiononly\tartifact=<USER_HOME>/wrf_gpu2_lanes/u2-tracers/TR47_prod_off.json+.log;cacheNONE;workCPU0-3/16-19NI19JAXcpuFAST1CENSUS0 timeout600QUIET;noGPU;snapshotcleanupimmediate"
+  ],
+  "critic_fixes": {
+    "affected_positive_counts": {
+      "catalog": 49,
+      "existing_skipped": 3,
+      "failures": 0,
+      "final_headroom": 1,
+      "output_and_D31": 39,
+      "passed": 202,
+      "source_and_restart": 113
+    },
+    "cleanup": "All own snapshots, pytest directories and disposable caches removed after last readers; original references preserved.",
+    "decision": "MERGE-WITH-FIXES; same manager verifies bounded checklist, no additional critic",
+    "deletion_sensitive_regressions": {
+      "cache": "NONE",
+      "files_modified": false,
+      "gpu_executed": false,
+      "mutants": [
+        {
+          "assertion_failures": 4,
+          "mutation": "source-bound",
+          "pytest_status": 1,
+          "setup_errors": 0,
+          "xml": "<USER_HOME>/wrf_gpu2_lanes/u2-tracers/TR46_mutants_source-bound.xml"
+        },
+        {
+          "assertion_failures": 2,
+          "mutation": "history-stack",
+          "pytest_status": 1,
+          "setup_errors": 0,
+          "xml": "<USER_HOME>/wrf_gpu2_lanes/u2-tracers/TR46_mutants_history-stack.xml"
+        },
+        {
+          "assertion_failures": 1,
+          "mutation": "catalog-note",
+          "pytest_status": 1,
+          "setup_errors": 0,
+          "xml": "<USER_HOME>/wrf_gpu2_lanes/u2-tracers/TR46_mutants_catalog-note.xml"
+        }
+      ],
+      "source": "<USER_HOME>/wrf_gpu2_lanes/u2-tracers/TR42_fix_snapshot"
+    },
+    "final_model_source": "897db7fd65a3f0962b7bb360a589aedcb7879139",
+    "items": [
+      {
+        "affected_checks": "TR42_sources.xml113PASS (91four-formatrestart,9newoverflow/large-wet cases,ordinaryanalytic+mass3e-6);TR48_budget_headroom.xml1PASS;ordinarycomponentnonbit validation repeated once",
+        "behavior": "Static admission checks REAL32 time/coefficient/nominal area products and full emission schedule totals. Seed admission checks mapped area, positive mass/depth, source concentration and cumulative budgets including future emitted inventory. Normalized loss coefficients/exposures prevent Inf/Inf sink allocation for large wet doses; exponential zero-survival limit retained without concentration/budget clamps. No timestep host transfer or fp64 model fallback.",
+        "id": "P2-source-overflow",
+        "scope": "Resolved geometry checks run once before scanning; host bounds use wide admission arithmetic, while source operator remains REAL32. Complete emission intervals must fit even when forecast ends earlier.",
+        "status": "FIXED"
+      },
+      {
+        "GPU_traffic_or_wall_claim": false,
+        "affected_checks": "TR43_output.xml39PASS3existingSKIP, including7newactualhostbatch tests",
+        "behavior": "Select retained tracer views before the single host batch; T2-only transfers zero tracer-volume bytes, subsets transfer only requested volumes. Partial/empty requests include one whole-stack finite-reduction scalar in the same batch; unrequested NaN/Inf still refuse. Full output keeps one stack transfer and host health check.",
+        "id": "P2-output-selection",
+        "measured_CPU_selection_bytes": {
+          "T2_only_tracer_bytes": 0,
+          "additional_health_scalar_bytes": 1,
+          "full_stack_bytes": 2880,
+          "full_test_stack_shape": [
+            9,
+            5,
+            4,
+            4
+          ],
+          "two_species_tracer_bytes": 640
+        },
+        "status": "FIXED"
+      },
+      {
+        "affected_checks": "TR44_catalog.xml49PASS",
+        "behavior": "Single _IMPLEMENTED_NOTES[(tracer_opt,2)] entry states CPU operator qualification, GPU/coupled qualification pending, disclosed fixed short coupled FAIL-explained and final composite D6 responsibility. Supported classify_control reason is tested directly.",
+        "id": "P2-supported-catalog-note",
+        "status": "FIXED"
+      }
+    ],
+    "mutant_runner": {
+      "assertion_failures": [
+        4,
+        2,
+        1
+      ],
+      "file_mutations": false,
+      "genuine_production_mutations": "remove bound helper/restore fullstack hostvisit/remove actual catalog note in memory",
+      "path": "proofs/u2_tracers/p2_mutants.py",
+      "setup_errors": 0,
+      "sha256": "1fc1dbdeb469748e33c1fa883142fdecd301d9363362bb0f64bafbde1a492f59"
+    },
+    "no_unchanged_coupled_forecast_rerun": true,
+    "reviewed_source": "b962c854733ac7dc76b98bd9b2632df7d3bfb729",
+    "skips": [
+      {
+        "reason": "Gen2 reference wrfout unavailable",
+        "test": "tests.test_m7_netcdf_writer::test_dim_and_attr_conformance_against_reference_schema"
+      },
+      {
+        "reason": "Gen2 full-reference wrfout unavailable",
+        "test": "tests.test_m7_netcdf_writer::test_full_wrfout_mode_matches_reference_variable_list_and_schema"
+      },
+      {
+        "reason": "immutable retained retry3 frame is unavailable",
+        "test": "tests.test_m7_netcdf_writer::test_retained_retry3_frame_reproduces_frame_grid_then_temp_copy_passes"
+      }
+    ],
+    "source_reuse_receipt": "TR49_source_reuse.json",
+    "supported_catalog_note": "(\"tracer_opt\", 2): \"Non-Chem passive tracer operators are CPU-oracle-qualified; \"",
+    "verdict": "<USER_HOME>/wrf_gpu2_lanes/rv-u2-tracers/VERDICT.md"
+  },
+  "critic_review_completed": true,
+  "custom_sources_and_restart": {
+    "history": {
+      "auxhist_subsets": true,
+      "initial_history": "Normal bound carry writer at own_step0; no emission applied before initial frame; source audit only, no separate tracer-specific full initial-history pipeline arm",
+      "ordinary_history": true,
+      "regional_JSON_streams": "Not supported: regional channels accept fixed2D fields, refuse tracer names",
+      "status": "CPU_WRITER_SUBSET_AND_METADATA_CHECKS_PASS",
+      "units": "built-ins Dimensionless; custom kg kg-1 dry air"
+    },
+    "mass_budget": {
+      "actual_max_relative_error": "not separately exported; passing independent assertion in TR07/TR22 retained",
+      "all_decay_drydep_wet_sinks_active": true,
+      "area_emission_expected_kg": 7.5,
+      "closed_domain_transport_adv_options": [
+        0,
+        1,
+        2
+      ],
+      "point_emission_expected_kg": 2.0,
+      "reference": "Independent pressure-coordinate dry-air mass and analytic exponential loss/source equations",
+      "relative_tolerance": 3e-06,
+      "status": "PASS_CPU_COMPONENT"
+    },
+    "restart_formats": [
+      "io.restart full OperationalCarry pickle",
+      "io.wrfrst_netcdf exact full-carry NetCDF",
+      "runtime.restart_store authenticated native generations",
+      "runtime.checkpoint State plus full runtime carry"
+    ],
+    "restart_tests": {
+      "cases": 90,
+      "covered": [
+        "byte-exact full carry and nested boundary records",
+        "missing/precision/shape/nonfinite refusal",
+        "ordered species and content SHA/rate/transport/dt binding",
+        "all4 formats real sources_and_sinks continuation using saved step17 dt2=34s",
+        "completed and straddling emission intervals with independently expected16kg",
+        "all three sinks positive and built-in tracer budgets zero",
+        "active state-only reader/write refusal; legacy OFF readable"
+      ],
+      "final_cases": 91,
+      "final_receipt": "TR39_composition.xml",
+      "included_in": "TR22 affected104 PASS",
+      "scope_limit": "Actual source-step continuation and exact memory roundtrip are not a full coupled forecast restart qualification."
+    },
+    "source_commit": "c82574da3",
+    "status": "CPU_COMPONENT_AND_FINAL_COMPOSED_IO_GATES_PASS"
+  },
+  "draft": false,
+  "final_main_experiment_rows": [
+    "2026-10-14T01:57:17.661287+00:00\tu2-tracers\tGPT Sol codex_2\tTR-CORE35a\tPre-rebase measured active program baseline plus recursive closed constants\timmutablecaa735f33 officialnativeidentity\tsamegraph+constantSHA required for numerical reuse\tTR26 coupled FAIL remains FAIL\t[M CPU trace]graph=2c0d57801453a18ec0ec3b06dd5150915cb9bd17995ce630e0ad645518a5be42;constants=c9138399cd5e6e6bbb60172e4f0aa29f51726dc6d0acbefdf28ff420c87b9254;2092constants133669500semanticB(notresident);no forecast execution\tKEEP reference program seal\tartifact=<USER_HOME>/wrf_gpu2_lanes/u2-tracers/TR35_old_on.json+.constants.json+.log;cacheNONE;workCPU0-3/16-19NI19JAXcpuFAST1CENSUS1strictISA timeout600QUIET;nativefacade=True;noGPU",
+    "2026-10-14T01:57:17.664038+00:00\tu2-tracers\tGPT Sol codex_2\tTR-CORE35b\tPre-rebase measured active program baseline plus recursive closed constants\timmutablecaa735f33 unchangedO1interpretedCPU policy\tsamegraph+constantSHA required for numerical reuse\tTR26 coupled FAIL remains FAIL\t[M CPU trace]graph=8ebfd8935e922f0c63a5fc7d74b67dbbbb2e2c80b9d744bd2add38728f5ae0de;constants=352245992d02ee89e5fac42e2574c217322bdde3cbd9ca3ecd17d0953084672d;2092constants133669500semanticB(notresident);no forecast execution\tKEEP reference program seal\tartifact=<USER_HOME>/wrf_gpu2_lanes/u2-tracers/TR35_old_cpu_on.json+.constants.json+.log;cacheNONE;workCPU0-3/16-19NI19JAXcpuFAST1CENSUS1strictISA timeout600QUIET;nativefacade=False;noGPU",
+    "2026-10-14T02:07:16.364744+00:00\tu2-tracers\tGPT Sol codex_2\tTR-CORE36a\tLatest main composition preserves actual CPU-interpreted active program\timmutableeb8fb4fc7/base181803bb4 vs immutablecaa735f33\twholegraph+recursiveconstantSHA exact\tTR26 coupled failure retained pending initialinputbyte check\t[M CPU trace]EXACT8ebfd893/35224599;2092constants133669500semanticB;trace19.5/load43.6/wall63.8s\tKEEP graph reuse evidence;no new numerical or GPU qualification\tartifact=<USER_HOME>/wrf_gpu2_lanes/u2-tracers/TR36_cpu_on.json+.constants.json+.log;cacheNONE;workCPU0-3/16-19NI19JAXcpuFAST1CENSUS1strictISA timeout600QUIET interpretedPallas/layoutomitted;noGPU",
+    "2026-10-14T02:08:45.481328+00:00\tu2-tracers\tGPT Sol codex_2\tTR-CORE36b\tLatest main composition preserves native active program\timmutableeb8fb4fc7/base181803bb4\texact existingprogram/source retention\tTR26 coupled FAIL unchanged\t[M CPU native trace]EXACT2c0d5780/c9138399;2092constants133669500semanticB;trace14.1/load25.4/wall39.9s\tKEEP composition/reuse evidence;not scientific gate upgrade\tartifact=<USER_HOME>/wrf_gpu2_lanes/u2-tracers/TR36_native_on.json+.constants.json+.log;cacheNONE;workCPU0-3/16-19NI19JAXcpu timeout600/60QUIET;noGPU",
+    "2026-10-14T02:08:45.481340+00:00\tu2-tracers\tGPT Sol codex_2\tTR-CORE36c\tSix conflict seams retain all main operations and State schema\timmutableeb8fb4fc7/base181803bb4\texact existingprogram/source retention\tTR26 coupled FAIL unchanged\t[M SOURCE]ALL3888maincalls retained explicittracernormalization;checkpointALL17defs retained;testALL26defs retained;main105fields precedetracer3\tKEEP composition/reuse evidence;not scientific gate upgrade\tartifact=<USER_HOME>/wrf_gpu2_lanes/u2-tracers/rebase_latest_ast_receipt.json;sha256=744de05228bdeb9f6aa93dc2d87af59dc3f3d87cf916f17e5e4d47164f36ae64;cacheNONE;workCPU0-3/16-19NI19JAXcpu timeout600/60QUIET;noGPU",
+    "2026-10-14T02:09:45.784015+00:00\tu2-tracers\tGPT Sol codex_2\tTR-CORE37\tComplete initial dynamic argument bytes close numerical-reuse admission\timmutableeb8fb4fc7 model plusc52011702 proof vsTR26savedframe0\tallleafdtype/shape/bytes exact plusTR36wholegraph/constantSHA\tTR26 strictcoupled failure\t[M CPU]184/184initialcarry leavesBYTE;step0tracers/weatheroriginalBYTE;nonfinite0guards0;NO timesteps executed\tKEEP TR26 numerical failure carriesforward;no redundant forecast compile\tartifact=<USER_HOME>/wrf_gpu2_lanes/u2-tracers/TR37_initial_carry.json+.log;cacheNONE;workCPU0-3/16-19NI19JAXcpuFAST1CENSUS1strictISA CPUinterpreted/layoutomitted timeout300QUIET;original44x42x42 dt18 sameinput/bdy;noGPU",
+    "2026-10-14T02:14:43.117483+00:00\tu2-tracers\tGPT Sol codex_2\tTR-CORE40\tFinal tracked tracer package and original fixture assets survive clean archive\timmutablec52011702 slicedgitarchive\t10hosttests/originalfixtureSHAexact/noJAX\tTR28priorarchivePASS\t[M HOST]10PASS/2fixtureSHAexact;alltracermodulesarchived;389120B;JAXnotimported\tKEEP packaging proof;not scientific or speed qualification\tartifact=<USER_HOME>/wrf_gpu2_lanes/u2-tracers/TR40_archive.json;cacheNONE;archiveCLEANED;workCPU0-3/16-19NI19JAXcpu TMPDIRlane timeout60QUIET noGPU",
+    "2026-10-14T02:15:20.888389+00:00\tu2-tracers\tGPT Sol codex_2\tTR-CORE38a\tFinal K1 OFF release identity on pinnedmain composition\timmutableeb8fb4fc7/base181803bb4 officialrelease_identity unchanged\tSwiss2bf12cb8/PROD6fc715a2\tTR15priorbothPASS\t[M CPU native trace]PASS Swiss 2bf12cb8374d3a84a440e47dea4b77b0c7436108fc2ee2616bba6ec79b17962a;wall43.9s;NOforecast execution\tKEEP default program identity;WN2PROD is regression only\tartifact=<USER_HOME>/wrf_gpu2_lanes/u2-tracers/TR38_swiss_off.json+.log;cacheNONE;workCPU0-3/16-19NI19JAXcpuFAST1CENSUS0 timeout600QUIET;noGPU",
+    "2026-10-14T02:15:20.888471+00:00\tu2-tracers\tGPT Sol codex_2\tTR-CORE38b\tFinal K1 OFF release identity on pinnedmain composition\timmutableeb8fb4fc7/base181803bb4 officialrelease_identity unchanged\tSwiss2bf12cb8/PROD6fc715a2\tTR15priorbothPASS\t[M CPU native trace]PASS PRODd01 6fc715a2bd630934c4cf0f94427df19a527cbf429011c9ba5efe4d712744d27b;wall81.7s;NOforecast execution\tKEEP default program identity;WN2PROD is regression only\tartifact=<USER_HOME>/wrf_gpu2_lanes/u2-tracers/TR38_prod_off.json+.log;cacheNONE;workCPU0-3/16-19NI19JAXcpuFAST1CENSUS0 timeout600QUIET;noGPU",
+    "2026-10-14T02:19:31.767804+00:00\tu2-tracers\tGPT Sol codex_2\tTR-CORE39\tFinal pinnedmain SMS/Goddard composition retains tracer/shared consumers\timmutableeb8fb4fc7/base181803bb4\t8mandatoryshared+4own+D31+NC+sourceMYNN+nestABI\tTR34oldmain401PASS\t[M CPU]418PASS1knownCAMdeselected5warnings349.78s;3disabledPBLdispatchPASS;4restartformatsPASS\tKEEP final consumer qualification;coupled1e-4 FAIL-explained per explicitmanagerdecision\tartifact=<USER_HOME>/wrf_gpu2_lanes/u2-tracers/TR39_composition.json+.xml+.log;cacheNONE;workCPU0-3/16-19NI19JAXcpuFAST0 timeout1200QUIET;exact baselineCAM control reproducedunmodifiedmain407 sourceBYTEthrough181;noGPU;snapshot/pytestcleanup immediately"
+  ],
+  "identity_and_reuse": {
+    "constant_inventory": {
+      "count_each": 2092,
+      "resident_memory_claim": false,
+      "semantic_nbytes_each": 133669500
+    },
+    "critic_fix_PROD_OFF": {
+      "graph_sha256": "6fc715a2bd630934c4cf0f94427df19a527cbf429011c9ba5efe4d712744d27b",
+      "receipt": "TR47_prod_off.json",
+      "scope": "CPU native trace0steps; PROD is WN2 regression only, no scientific/GPU claim",
+      "source_commit": "897db7fd65a3f0962b7bb360a589aedcb7879139",
+      "status": "PASS_EXACT"
+    },
+    "critic_fix_Swiss_OFF": {
+      "final_host_guard_delta": "TR49 proves only final validate_source_geometry changes; uncalled when OFF, no model arithmetic change",
+      "graph_sha256": "2bf12cb8374d3a84a440e47dea4b77b0c7436108fc2ee2616bba6ec79b17962a",
+      "receipt": "TR47_swiss_off.json",
+      "source_commit": "acb1bae6b",
+      "status": "PASS_EXACT"
+    },
+    "current_CPU_interpreted_ON": {
+      "constants_sha256": "352245992d02ee89e5fac42e2574c217322bdde3cbd9ca3ecd17d0953084672d",
+      "gpu_execution": false,
+      "graph_sha256": "8ebfd8935e922f0c63a5fc7d74b67dbbbb2e2c80b9d744bd2add38728f5ae0de",
+      "receipt": "TR36_cpu_on.constants.json",
+      "source_commit": "eb8fb4fc7fe089a532f72e72904a00c4f1c41dd2",
+      "status": "PASS_EXACT_GRAPH_AND_CONSTANTS"
+    },
+    "current_native_ON": {
+      "constants_sha256": "c9138399cd5e6e6bbb60172e4f0aa29f51726dc6d0acbefdf28ff420c87b9254",
+      "gpu_execution": false,
+      "graph_sha256": "2c0d57801453a18ec0ec3b06dd5150915cb9bd17995ce630e0ad645518a5be42",
+      "receipt": "TR36_native_on.constants.json",
+      "source_commit": "eb8fb4fc7fe089a532f72e72904a00c4f1c41dd2",
+      "status": "PASS_EXACT_GRAPH_AND_CONSTANTS"
+    },
+    "final_PROD_OFF": {
+      "gpu_execution": false,
+      "receipt": "TR38_prod_off.json",
+      "result": "6fc715a2bd630934c4cf0f94427df19a527cbf429011c9ba5efe4d712744d27b",
+      "scope": "PROD WN2 trace regression only; no forecast or validation claim",
+      "source_commit": "eb8fb4fc7fe089a532f72e72904a00c4f1c41dd2",
+      "status": "PASS_NATIVE_GRAPH_EXACT"
+    },
+    "final_Swiss_OFF": {
+      "gpu_execution": false,
+      "receipt": "TR38_swiss_off.json",
+      "result": "2bf12cb8374d3a84a440e47dea4b77b0c7436108fc2ee2616bba6ec79b17962a",
+      "source_commit": "eb8fb4fc7fe089a532f72e72904a00c4f1c41dd2",
+      "status": "PASS_NATIVE_GRAPH_EXACT"
+    },
+    "final_exact_graph_and_constants_reuse_decision": {
+      "cpu_graph_and_constant_receipts": [
+        "TR35_old_cpu_on.constants.json",
+        "TR36_cpu_on.constants.json"
+      ],
+      "initial_carry_receipt": "TR37_initial_carry.json",
+      "initial_leaves_byte_equal": 184,
+      "native_graph_and_constant_receipts": [
+        "TR35_old_on.constants.json",
+        "TR36_native_on.constants.json"
+      ],
+      "opaque_parameter_attributes": "excluded from additional constant collector; source audit and official canonical graph retain policy",
+      "result": "TR26 failed coupled1e-4 gate retained unchanged; no numerical qualification upgrade or forecast rerun",
+      "source_audit": "rebase_latest_ast_receipt.json",
+      "status": "PASS_ARGUMENTS_GRAPH_AND_CONSTANTS_EXACT_FAILURE_REUSED"
+    },
+    "historical_OFF": {
+      "PROD_d01_native_sha256": "6fc715a2bd630934c4cf0f94427df19a527cbf429011c9ba5efe4d712744d27b",
+      "Swiss_native_sha256": "2bf12cb8374d3a84a440e47dea4b77b0c7436108fc2ee2616bba6ec79b17962a",
+      "scope": "Canonical native-facade trace, no execution",
+      "source": "2183b0e55"
+    },
+    "measured_old_CPU_interpreted_ON": {
+      "constants_sha256": "352245992d02ee89e5fac42e2574c217322bdde3cbd9ca3ecd17d0953084672d",
+      "graph_sha256": "8ebfd8935e922f0c63a5fc7d74b67dbbbb2e2c80b9d744bd2add38728f5ae0de",
+      "source": "caa735f33"
+    },
+    "measured_old_native_ON": {
+      "constants_sha256": "c9138399cd5e6e6bbb60172e4f0aa29f51726dc6d0acbefdf28ff420c87b9254",
+      "graph_sha256": "2c0d57801453a18ec0ec3b06dd5150915cb9bd17995ce630e0ad645518a5be42",
+      "source": "caa735f33"
+    }
+  },
+  "lane": "u2-tracers",
+  "main_experiment_rows": [
+    {
+      "experiment_id": "TR-CORE19",
+      "row_sha256": "41cf50d71f731175b0f560381efab4c3d78e91a1bdc60d0e8e85fd6d8aa39225",
+      "utc": "2026-10-13T23:44:59.217116+00:00",
+      "verbatim_row": "2026-10-13T23:44:59.217116+00:00\tu2-tracers\tGPT Sol codex_2\tTR-CORE19\tTracked archive independently loads config and sealed original fixtures\timmutable90df4756c sliced gitarchive\t10hosttestsPASS twofixtureSHAexact\tlivehost10PASS/originalfixtureseals\t[M HOST]10PASS;literal65019020/FMA7478897fSHAexact;archive430080B\tKEEP packaging evidence; noJAX/fidelityrerun\tartifact=<USER_HOME>/wrf_gpu2_lanes/u2-tracers/TR19_archive.json;archiveTR19_archive CLEANED;cacheNONE;workCPU0-3/16-19nice19timeout60QUIET noJAX/GPU"
+    },
+    {
+      "experiment_id": "TR-CORE20",
+      "row_sha256": "9899ea781fc366b5de80dcae87453534b93191ae1f458e13b47836a47b621959",
+      "utc": "2026-10-13T23:48:16.053084+00:00",
+      "verbatim_row": "2026-10-13T23:48:16.053084+00:00\tu2-tracers\tGPT Sol codex_2\tTR-CORE20\tActualproductionPBLheat-exchange deletion mustfail original oracle\timmutablemutant85a2751ec parent90df4756c\tgenuineAssertionFailure notsetup\tpreviousinputKhzero mutant only\t[M CPU]1 numericalAssertionFAIL0setup1.44s\tKEEP deletion-sensitive gate;discardmutant\tartifact=<USER_HOME>/wrf_gpu2_lanes/u2-tracers/TR20_mutant.json+.log;cacheNONE;snapshotTR20_mutant REMOVED;workheterogeneousliteral originalWRFtestCPU0-3/16-19nice19timeout120QUIET;noGPU"
+    },
+    {
+      "experiment_id": "TR-CORE22",
+      "row_sha256": "998a2614619f4395088b0fcb55790373666ce351f2972bd003eeded101ea730f",
+      "utc": "2026-10-14T00:02:10.448257+00:00",
+      "verbatim_row": "2026-10-14T00:02:10.448257+00:00\tu2-tracers\tGPT Sol codex_2\tTR-CORE22\tFinalaffected source order/restartclock/history guards qualify once\timmutablec82574da3\toriginalPDpreloadBYTE+four-format timedsourcecontinuation+schema+history\tTR03/05/07 structuralpriorchecks\t[M CPU]104PASS31.75s includes2originalFortranpreload/90restart/5history/7priorruntime\tKEEP PDorder andrestartdt; no fullscientificclaim\tartifact=<USER_HOME>/wrf_gpu2_lanes/u2-tracers/TR22_affected_gates.log;cacheNONE;snapshotTR22_snapshot REMOVED;pytestCLEANED;workCPU0-3/16-19nice19timeout300QUIETJAXcpuFAST0"
+    },
+    {
+      "experiment_id": "TR-CORE23",
+      "row_sha256": "78ad3f6ef125d06630a69fd1b566d502ed4e9fb55dc3803d5c20ad4954eea657",
+      "utc": "2026-10-14T00:02:10.448257+00:00",
+      "verbatim_row": "2026-10-14T00:02:10.448257+00:00\tu2-tracers\tGPT Sol codex_2\tTR-CORE23\tCPU source/sink incrementalcomponent cost ismeasurable\timmutablec82574da3 component_cost.py\tfinite/samples15/temp memory; no GPUrooflineclaim\tOFF0programops bycanonicalidentity\t[M CPU](N,sources,median_s,tempB)=[(1, 0, 0.0004687730688601732, 1552320), (1, 2, 0.0005404551047831774, 1552320), (8, 2, 0.002608329989016056, 6521348)]\tKEEP measured CPUcost;GPUlaunch/VRAM/readinessUNKNOWN\tartifact=<USER_HOME>/wrf_gpu2_lanes/u2-tracers/TR23_source_sink_cost.json+.log;cacheNONE;snapshotTR22_snapshot REMOVED;workSwiss44x42x42positive syntheticoperands dt18 species1/8 all3sinks sources0/2each CPU0-3/16-19nice19timeout120QUIETFAST0;not WRFfidelity"
+    },
+    {
+      "experiment_id": "TR-CORE26",
+      "row_sha256": "7bcdfb0439c495300f3593f4706a644ebf335617318b385caf5b481275a154e7",
+      "utc": "2026-10-14T00:26:48.246135+00:00",
+      "verbatim_row": "2026-10-14T00:26:48.246135+00:00\tu2-tracers\tGPT Sol codex_2\tTR-CORE26\tFinal composed literalPDpreload andlatestmain closes strict tracerparity\timmutablecaa735f33 onmainde636d898\tall8all4frames max1e-4NF0guards0\tTR13/TR16prior max1.3697e-4\t[M CPU]FAILsame max0.00013697147369384766;NF0guards0;compile297.85059873503633s;weatherinitialBYTE after18sUmax.05534/Vmax.07729m/s/MUmax.6875Pa\tKEEP literalorder qualified independently;gapunchanged;bisectCPUcompiler next\tartifact=<USER_HOME>/wrf_gpu2_lanes/u2-tracers/TR26_final_candidate.json+.log+4pickle.gz;cacheNONE;snapshotTR26_snapshot stillneededTR27/defaultOFF;work3stepsdt18tracer2adv1PBL1diff1km4diff6opt2 nativeFAST1CENSUS1CPUlayoutmetadataomitted+SSE4_2/algsimpOFF CPU0-3/16-19nice19timeout900;noGPU"
+    },
+    {
+      "experiment_id": "TR-CORE29",
+      "row_sha256": "68da1d1a45f5e0c916d35ac811d3611dd929c3943a062d543baad1f7d1afc7ad",
+      "utc": "2026-10-14T00:46:51.415273+00:00",
+      "verbatim_row": "2026-10-14T00:46:51.415273+00:00\tu2-tracers\tGPT Sol codex_2\tTR-CORE29\tMatchedOFFcontrol identifiesmeteorologicalfeedback andexistingweatherdeviation\timmutablecaa735f33 onlyTRACER_OFF_CONTROL removes3Statearrays+heldrate andNLactiveflag\t77weatherStatefieldsBYTE all4frames/NF0guards0;CPUoriginaldeltasreported\tTR26ONstrictISA\t[M CPU]77/77x4 BYTEONOFF;NF0guards0;originalCPUUmax.05534/.11526/.09449m/s across3steps;CPUtemp725516264B\tKEEP nofeedbackregression +independentoriginalweatherdelta;nottracerfidelityPASS\tartifact=<USER_HOME>/wrf_gpu2_lanes/u2-tracers/TR29_off_control.json+.log+4pickle.gz;cacheNONE;snapshotTR26_snapshot lastdepTR30;workoriginalSwiss3stepsdt18 OFF SAMEfullphysicsreleaseflags strictISA sourceinputs CPU0-3/16-19nice19timeout900QUIET;noGPU"
+    },
+    {
+      "experiment_id": "TR-CORE30",
+      "row_sha256": "08153ba895b678ba583a26753e994a744457fa26f374eccdda56d2c4ec8d1094",
+      "utc": "2026-10-14T00:53:22.668738+00:00",
+      "verbatim_row": "2026-10-14T00:53:22.668738+00:00\tu2-tracers\tGPT Sol codex_2\tTR-CORE30\tCorrectproductionABI plusRK3-onlyobserver admits actualtransportoperands\timmutablecaa735f33 prooffinal520be5257\t184/184 completeproductioncarryBYTE E205\tTR24b183/184FAILED\t[M CPU]184/184BYTE inclland_history;NPZaccepted RK3q/qold/frozen/adv/mass/fluxes\tKEEP admittedoperands; originaloracle/comparisonnext\tartifact=<USER_HOME>/wrf_gpu2_lanes/u2-tracers/TR30_final_rk_capture.json+.npz+.log;cacheNONE;snapshotTR26_snapshot lastdepTR32nowdone;workoneactualstepdt18 sameFAST1CENSUS1+strictISA layoutomittedCPU;dynamic n_steps/cadence/donation/layout/admission matchproduction;CPU0-3/16-19NI19timeout900QUIET;noGPU"
+    },
+    {
+      "experiment_id": "TR-TRANSPORT01b",
+      "row_sha256": "97f8a9122632b2ba532d65ee4f26b9b7faf04119a661a21280bc7d846da3b444",
+      "utc": "2026-10-14T00:55:03Z",
+      "verbatim_row": "2026-10-14T00:55:03Z\tu2-tracers\tGPT Sol codex_2\tTR-TRANSPORT01b\tOriginalPD on exactacceptedRK3 operands separates kernel/caller/fluxproducer\tTR30 accepted184/184; unchanged original advect_scalar_pd literalO0off/FMAO2native\tpointwiseWRF ownFMAspread disclosed;coupled1e-4 unchanged\tTR26 coupledstrictgap\t[M CPU]foldedmatched rawmax1.92593e-34/86small outsideFMAspread;trueWRFsplit max2.98023e-8/100outside;bothcoupledspotsEXACT;WRF FMAspreadmax2.57492e-5;RU/RV producermax2738.75/4148.96875,WW.106715918,MUTS.6875\tKEEP direct localization;transportkernel/splitmass cannotexplain coupledargmax gap;not fullforecastPASS\tartifact=<USER_HOME>/wrf_gpu2_lanes/u2-tracers/TR31_transport_oracles.json+.npz+.log;captureTR30_final_rk_capture accepted184/184;referenceTR25_flux_caseframe1;cacheNONE;buildtransport_oracles_buildCLEANED;workRK3firsttracer44x42x42dt18/DXDY3000,nativeoriginalsameqcurrent/qold,splitMUB+oldpert vsfolded0+oldtotal;REAL32 initzero boundschecks trapsoff CPU0-3/16-19nice19timeout120 noJAX/GPU"
+    },
+    {
+      "experiment_id": "TR-CORE34",
+      "row_sha256": "74b1d910c0b18618a3ae2425a74d8ba0a586df0d7df37d744b0dc23782c9dbf7",
+      "utc": "2026-10-14T01:38:12.140333+00:00",
+      "verbatim_row": "2026-10-14T01:38:12.140333+00:00\tu2-tracers\tGPT Sol codex_2\tTR-CORE34\tLatestmain stochastic/urban/feedback plus tracer consumers compose\timmutable81a6257b6 onmaina6ae6fd29\t16requiredshared/affectedmodules incl4restart/D31/actualfeedbackadmission\tTR09 oldmain351PASS with1fixedfixture+1preexistingCAM\t[M CPU]401PASS1knownCAMdeselected6warnings673.78s\tKEEP currentcomposition;CAMsourcebyteunchanged407..a6 andmaincontrolTR11FAIL retained\tartifact=<USER_HOME>/wrf_gpu2_lanes/u2-tracers/TR34_composition.log;cacheNONE;snapshotTR34_snapshot REMOVED;pytestCLEANED;workCPU0-3/16-19NI19timeout900QUIETJAXcpuFAST0;only exactbaseline CAMtest_ra_lw_operational_runs_and_cools[3] deselected;noGPU"
+    }
+  ],
+  "manager_acceptance_decision": {
+    "coupled_pass_claim": false,
+    "gate_tolerance_changed": false,
+    "instruction": "Record fixed coupled gate FAIL-explained with TR31 shared acoustic/dynamics attribution and matched evidence; tracer acceptance uses operator-level exactness plus mass conservation; final composite D6 decides coupled qualification; finish remaining items and post READY-FOR-CRITIC with disclosure.",
+    "recorded_utc": "2026-10-14T02:17:11.386803+00:00",
+    "remaining_checks": "Completed final418consumer checks,archive host10,cleanedpytest/snapshots; ready for one independent critic",
+    "source": "explicit manager message in worker conversation"
+  },
+  "next_required_action": "Manager verifies the three original critic checklist fixes against TR42\u2013TR49 and integrates. No new critic/review of review requested. Coupled FAIL-explained remains at unchanged1e-4 with final composite D6 responsibility; GPU qualification remains pending.",
+  "non_feedback_regression": {
+    "definition": "All77 populated weather State fields identical byte-for-byte with tracer ON/OFF at all four frames; this is regression evidence, not CPU-WRF fidelity.",
+    "frames": [
+      {
+        "byte_equal": true,
+        "checked": 77,
+        "scope": "regression only, not WRF fidelity",
+        "step": 0,
+        "unequal": []
+      },
+      {
+        "byte_equal": true,
+        "checked": 77,
+        "scope": "regression only, not WRF fidelity",
+        "step": 1,
+        "unequal": []
+      },
+      {
+        "byte_equal": true,
+        "checked": 77,
+        "scope": "regression only, not WRF fidelity",
+        "step": 2,
+        "unequal": []
+      },
+      {
+        "byte_equal": true,
+        "checked": 77,
+        "scope": "regression only, not WRF fidelity",
+        "step": 3,
+        "unequal": []
+      }
+    ],
+    "source_commit": "caa735f33",
+    "status": "PASS_HISTORICAL_CPU_REGRESSION",
+    "weather_vs_original_CPU": [
+      {
+        "fields": {
+          "mu_total": {
+            "max_abs": 0.0,
+            "rmse": 0.0
+          },
+          "ph_total": {
+            "max_abs": 0.0,
+            "rmse": 0.0
+          },
+          "qv": {
+            "max_abs": 0.0,
+            "rmse": 0.0
+          },
+          "u": {
+            "max_abs": 0.0,
+            "rmse": 0.0
+          },
+          "v": {
+            "max_abs": 0.0,
+            "rmse": 0.0
+          },
+          "w": {
+            "max_abs": 0.0,
+            "rmse": 0.0
+          }
+        },
+        "step": 0
+      },
+      {
+        "fields": {
+          "mu_total": {
+            "max_abs": 0.6875,
+            "rmse": 0.10482554793854221
+          },
+          "ph_total": {
+            "max_abs": 0.5546875,
+            "rmse": 0.04523485138092164
+          },
+          "qv": {
+            "max_abs": 4.0463637560606e-06,
+            "rmse": 3.062646961580236e-08
+          },
+          "u": {
+            "max_abs": 0.05533921718597412,
+            "rmse": 0.0008344481473268707
+          },
+          "v": {
+            "max_abs": 0.0772879421710968,
+            "rmse": 0.0007342127140997991
+          },
+          "w": {
+            "max_abs": 0.005528241395950317,
+            "rmse": 0.00016356837306372363
+          }
+        },
+        "step": 1
+      },
+      {
+        "fields": {
+          "mu_total": {
+            "max_abs": 0.5625,
+            "rmse": 0.1539256660440955
+          },
+          "ph_total": {
+            "max_abs": 0.4609375,
+            "rmse": 0.07722099760765976
+          },
+          "qv": {
+            "max_abs": 8.121831342577934e-06,
+            "rmse": 5.661274376041873e-08
+          },
+          "u": {
+            "max_abs": 0.11525869369506836,
+            "rmse": 0.00116003013715953
+          },
+          "v": {
+            "max_abs": 0.035916924476623535,
+            "rmse": 0.000906215354850778
+          },
+          "w": {
+            "max_abs": 0.009351670742034912,
+            "rmse": 0.0003115023592685348
+          }
+        },
+        "step": 2
+      },
+      {
+        "fields": {
+          "mu_total": {
+            "max_abs": 0.6484375,
+            "rmse": 0.19085215747980147
+          },
+          "ph_total": {
+            "max_abs": 0.53125,
+            "rmse": 0.1085963173740122
+          },
+          "qv": {
+            "max_abs": 8.519971743226051e-06,
+            "rmse": 6.906351875926318e-08
+          },
+          "u": {
+            "max_abs": 0.09448575973510742,
+            "rmse": 0.0011507475652315152
+          },
+          "v": {
+            "max_abs": 0.05093812942504883,
+            "rmse": 0.0010090111804485545
+          },
+          "w": {
+            "max_abs": 0.00956234335899353,
+            "rmse": 0.0003791635324266239
+          }
+        },
+        "step": 3
+      }
+    ]
+  },
+  "one_way_admission": {
+    "behavior": "Parent/child tracers require the same ordered species; active tracer multi-domain two-way feedback refused before loading model arrays. One-way nesting remains admitted.",
+    "evidence": "Actual loader admission/refusal cases pass in final TR39 composition; rejects active multi-domain two-way before array loading",
+    "final_model_source": "eb8fb4fc7fe089a532f72e72904a00c4f1c41dd2",
+    "implementation_source": "81a6257b6",
+    "status": "REFUSE_UNQUALIFIED_TWO_WAY",
+    "two_way_tracer_qualification": "NOT_IMPLEMENTED_REFUSED"
+  },
+  "original_CPU_WRF_reference": {
+    "case_dir": "<USER_HOME>/wrf_gpu2_lanes/u2-tracers/TR01_original_cpu_case",
+    "independent_numeric_inventory": "369 numeric variables per frame finite; pristine negative/overshoot tracer values retained, never clipped",
+    "initial_TR17": {
+      "first_four": "81 bottom-layer cells at1, real.exe template; all other cells zero",
+      "io_names": "tr17_1 through tr17_8, exact lowercase Registry names",
+      "last_four": "all zero"
+    },
+    "preparation": {
+      "boundary_sha256": "f3e556670e4768326997bdfa1dd8b0f77eb6d5da07d9c4dbf900bf8ff9e30230",
+      "cpu_source": "<DATA_ROOT>/canairy_meteo/artifacts/wrf_src/WRF/install_gen2_dmpar/bin/wrf",
+      "dt_s": 18,
+      "executable_sha256": "1d0f5779fff143361e470e37f89c734497ed5a7bb55d0c53b7e3fccc569dd49b",
+      "history_interval_s": 18,
+      "input_sha256": "6ff59a88eb781b78a139e2edb50ac6958e2cd3eb498176bf49c081e915bb2faa",
+      "instrumented_dump_paths": false,
+      "io_name_reference": [
+        "pristine Registry/Registry.EM:28-35",
+        "pristine inc/scalar_indices.inc:19650-19748",
+        "pristine share/input_wrf.F:1698-1750",
+        "pristine external/io_netcdf/wrf_io.F90:2852-2880"
+      ],
+      "mass_shape": [
+        44,
+        42,
+        42
+      ],
+      "mpi_launcher": "<USER_HOME>/src/canairy_meteo/Gen2/artifacts/envs/wrf-build/bin/mpirun",
+      "namelist_sha256": "ec1de1ba553af24fb69448c25e56d83d40753f8f33cf01c9d36d3e5e24a1a600",
+      "ran_wrf": false,
+      "schema": "u2-tracers-original-cpu-case-v1",
+      "seed": {
+        "layer": 0,
+        "reference": "pristine dyn_em/module_initialize_real.F:4423-4438",
+        "species": [
+          "tr17_1",
+          "tr17_2",
+          "tr17_3",
+          "tr17_4"
+        ],
+        "value": 1,
+        "x0": 17,
+        "x1": 26,
+        "y0": 17,
+        "y1": 26
+      },
+      "source_case": "<USER_HOME>/wrf_gpu2_lanes/release-docs/RD11/cpu",
+      "source_input_sha256": "a5d696550d1dc6713e2e340b8c2fba83811d43f4a94a65ca95266035860e2781",
+      "steps": 3,
+      "suggested_mpi_ranks": 4,
+      "thompson_table_sha256": {
+        "freezeH2O.dat": "05497b0ed3f8dee78c9db25374f3e7f3da891580b15974453b608631433cce46",
+        "qr_acr_qg_V4.dat": "441bd8361b4df2ac6c6007fc7aceb333372496722a50adc94897422905dbfff8",
+        "qr_acr_qsV2.dat": "910fb31d5bc53b9b89ba5238b50efd4806a5877c859570b8d5ef3badc3f942c0"
+      },
+      "tracer_adv_opt": 1,
+      "tracer_names": [
+        "tr17_1",
+        "tr17_2",
+        "tr17_3",
+        "tr17_4",
+        "tr17_5",
+        "tr17_6",
+        "tr17_7",
+        "tr17_8"
+      ],
+      "tracer_opt": 2,
+      "tracer_pblmix": 1
+    },
+    "preparation_ran_wrf_false_note": "PREPARATION is prelaunch provenance; actual SUCCESS and finite history are established by the separate run log and TR02 inventory.",
+    "preservation": {
+      "TR14_coeff_case": {
+        "frames": [
+          {
+            "nonfinite_variables": [],
+            "original_variable_count": 370,
+            "original_variable_mismatches": [],
+            "path": "<USER_HOME>/wrf_gpu2_lanes/u2-tracers/TR14_coeff_case/wrfout_d01_2023-01-15_00:00:00",
+            "sha256_recorded_in_audit": "8fc6626f42ad55b4ac0c41a744bdffa45f27275a7ea4d6a9700b4254ea703f0c"
+          },
+          {
+            "nonfinite_variables": [],
+            "original_variable_count": 370,
+            "original_variable_mismatches": [],
+            "path": "<USER_HOME>/wrf_gpu2_lanes/u2-tracers/TR14_coeff_case/wrfout_d01_2023-01-15_00:00:18",
+            "sha256_recorded_in_audit": "4339fa805eb3f185d1387fd9ce671519bf865fe67c7e4cd4ee22411effa411a5"
+          },
+          {
+            "nonfinite_variables": [],
+            "original_variable_count": 370,
+            "original_variable_mismatches": [],
+            "path": "<USER_HOME>/wrf_gpu2_lanes/u2-tracers/TR14_coeff_case/wrfout_d01_2023-01-15_00:00:36",
+            "sha256_recorded_in_audit": "349f19ec1be193df2f97ac1075a78dcc1b786daa504558fa366424efb4a007cb"
+          },
+          {
+            "nonfinite_variables": [],
+            "original_variable_count": 370,
+            "original_variable_mismatches": [],
+            "path": "<USER_HOME>/wrf_gpu2_lanes/u2-tracers/TR14_coeff_case/wrfout_d01_2023-01-15_00:00:54",
+            "sha256_recorded_in_audit": "672ff4fa83cc760c248f94cdae0dd55de41e425b615992f5c26ca298e90bb762"
+          }
+        ],
+        "hash_basis": "recorded verified original-frame hashes from authenticated audit; large NetCDF frames not re-read for packet assembly"
+      },
+      "TR17_coeff_case": {
+        "frames": [
+          {
+            "nonfinite_variables": [],
+            "original_variable_count": 370,
+            "original_variable_mismatches": [],
+            "path": "<USER_HOME>/wrf_gpu2_lanes/u2-tracers/TR17_coeff_case/wrfout_d01_2023-01-15_00:00:00",
+            "sha256_recorded_in_audit": "2f6719b87baa6fe63686168b6dc2c873ac2035097a4534acdb19e2890e496c8e"
+          },
+          {
+            "nonfinite_variables": [],
+            "original_variable_count": 370,
+            "original_variable_mismatches": [],
+            "path": "<USER_HOME>/wrf_gpu2_lanes/u2-tracers/TR17_coeff_case/wrfout_d01_2023-01-15_00:00:18",
+            "sha256_recorded_in_audit": "2134fcc1c117ec8e17c1f6606afe75b48233067ac7db4261eebb9140f93b9d92"
+          },
+          {
+            "nonfinite_variables": [],
+            "original_variable_count": 370,
+            "original_variable_mismatches": [],
+            "path": "<USER_HOME>/wrf_gpu2_lanes/u2-tracers/TR17_coeff_case/wrfout_d01_2023-01-15_00:00:36",
+            "sha256_recorded_in_audit": "9fd9220ac6a1ef91d8debb2ad603132f3664aff9e5769164be9852be9721ad50"
+          },
+          {
+            "nonfinite_variables": [],
+            "original_variable_count": 370,
+            "original_variable_mismatches": [],
+            "path": "<USER_HOME>/wrf_gpu2_lanes/u2-tracers/TR17_coeff_case/wrfout_d01_2023-01-15_00:00:54",
+            "sha256_recorded_in_audit": "b174e2a016aea655423bf692097a5347d672db6a1f61b628aeb23b4b5b221574"
+          }
+        ],
+        "hash_basis": "recorded verified original-frame hashes from authenticated audit; large NetCDF frames not re-read for packet assembly"
+      },
+      "TR25_flux_case": {
+        "frames": [
+          {
+            "nonfinite_variables": [],
+            "original_variable_count": 370,
+            "original_variable_mismatches": [],
+            "path": "<USER_HOME>/wrf_gpu2_lanes/u2-tracers/TR25_flux_case/wrfout_d01_2023-01-15_00:00:00",
+            "sha256_recorded_in_audit": "8f470aefd380c9ae1cefa90813d3df8a0d64a632f4ad9643426a8a9d72508eec"
+          },
+          {
+            "nonfinite_variables": [],
+            "original_variable_count": 370,
+            "original_variable_mismatches": [],
+            "path": "<USER_HOME>/wrf_gpu2_lanes/u2-tracers/TR25_flux_case/wrfout_d01_2023-01-15_00:00:18",
+            "sha256_recorded_in_audit": "d32e6ee21d2dfa50c22a95353e5fd82cf21224b05c33249f5e1d698fc23c4ac4"
+          },
+          {
+            "nonfinite_variables": [],
+            "original_variable_count": 370,
+            "original_variable_mismatches": [],
+            "path": "<USER_HOME>/wrf_gpu2_lanes/u2-tracers/TR25_flux_case/wrfout_d01_2023-01-15_00:00:36",
+            "sha256_recorded_in_audit": "a7c9b9e00654aa7b4b43b36fc2017324fff49a00109eabe702bcca1ab86c3ffa"
+          },
+          {
+            "nonfinite_variables": [],
+            "original_variable_count": 370,
+            "original_variable_mismatches": [],
+            "path": "<USER_HOME>/wrf_gpu2_lanes/u2-tracers/TR25_flux_case/wrfout_d01_2023-01-15_00:00:54",
+            "sha256_recorded_in_audit": "c16d3cc132ac655db439d143c106e45c653b1f011d32aaf76d24a52d35b1ca8c"
+          }
+        ],
+        "hash_basis": "recorded verified original-frame hashes from authenticated audit; large NetCDF frames not re-read for packet assembly"
+      }
+    },
+    "scope": "Swiss/RD11 mass shape44x42x42, three18s steps, original uninstrumented CPU-WRF executable, four MPI ranks",
+    "source_sha_basis": "Executable/input/boundary hashes are recorded provenance; no large reference file or pristine source modified/rehashed here",
+    "status": "MEASURED_ORIGINAL_REFERENCE"
+  },
+  "packaging": {
+    "archive_bytes": 430080,
+    "archive_removed_after_check": true,
+    "host_config_checks": 10,
+    "jax_imported": false,
+    "latest_archive_reuse": {
+      "receipt": "TR40_archive.json",
+      "result": "all tracer modules archived,10hostPASS,2originalfixtureSHAexact,JAXnotimported,temporary archive cleaned",
+      "source_commit": "c5201170272090d6cd01e0f8ba04100776f474ba",
+      "status": "PASS_FRESH_SLICED_CLEAN_ARCHIVE"
+    },
+    "source": "90df4756c",
+    "status": "PASS_HISTORICAL_SLICED_CLEAN_ARCHIVE",
+    "two_original_fixture_SHA_exact": true
+  },
+  "packet_assembly": {
+    "main181_restart_source_audit": "SMS optional carry and Goddard held radiation additions retained; complete checkpoint and tests independently source-audited; all91tracer restart cases pass in final composed TR39 batch.",
+    "only_written_file": "proofs/u2_tracers/QUALIFICATION.json",
+    "receipt_hashes_recomputed_where_small": true,
+    "scope": "Read-only bounded host JSON/log/Git source reads; no JAX, pytest, model compile, GPU or heavy archive"
+  },
+  "performance_and_memory": {
+    "CPU_warm_comparison_limit": "Sequential short arms disclose cost; no noise-controlled whole-run speed claim",
+    "GPU_E41": "UNKNOWN",
+    "GPU_S1_whole_forecast_wall": "UNKNOWN",
+    "GPU_cached_readiness": "UNKNOWN",
+    "GPU_device_traffic": "UNKNOWN",
+    "GPU_launch_count": "UNKNOWN",
+    "GPU_peak_VRAM": "UNKNOWN",
+    "GPU_roofline": "UNKNOWN",
+    "coupled_OFF": {
+      "compile_s": 206.52908693510108,
+      "compiled_memory_bytes": {
+        "alias_size_in_bytes": 37129900,
+        "argument_size_in_bytes": 39554728,
+        "output_size_in_bytes": 37131356,
+        "temp_size_in_bytes": 725516264
+      },
+      "ordinary_step_s": [
+        0.6509274980053306,
+        0.6973429291974753
+      ],
+      "source": "caa735f33",
+      "wall_s": 246.48169738589786
+    },
+    "coupled_ON": {
+      "compile_s": 297.85059873503633,
+      "compiled_memory_bytes": {
+        "alias_size_in_bytes": 42097324,
+        "argument_size_in_bytes": 44522152,
+        "output_size_in_bytes": 42098796,
+        "temp_size_in_bytes": 753049088
+      },
+      "ordinary_step_s": [
+        1.020817789947614,
+        0.9894333039410412
+      ],
+      "source": "caa735f33",
+      "wall_s": 347.209445387125
+    },
+    "critic_fix_cost": "Robust normalization CPU medians .755/.737/3.348ms for N1noem/N1twoem/N8twoem, uncontrolled comparison to historical .469/.540/2.608ms. CPUtemps2,483,712/2,483,712/6,521,348B; N1+931392B,N8unchanged. Geometry/range admission is one-time host work before scan. Partial output adds one finite reduction and selected slices; actualGPUlaunch/compile/traffic/wall/VRAM cost unmeasured.",
+    "historical_source_sink_component_rows": [
+      {
+        "compile_s": 0.32803777093067765,
+        "compiled_memory_bytes": {
+          "alias_size_in_bytes": 0,
+          "argument_size_in_bytes": 987856,
+          "output_size_in_bytes": 310496,
+          "temp_size_in_bytes": 1552320
+        },
+        "emissions_per_species": 0,
+        "max_s": 0.0013744409661740065,
+        "median_s": 0.0004687730688601732,
+        "min_s": 0.000315292039886117,
+        "persistent_tracer_bytes": 310480,
+        "species": 1
+      },
+      {
+        "compile_s": 0.3728498271666467,
+        "compiled_memory_bytes": {
+          "alias_size_in_bytes": 0,
+          "argument_size_in_bytes": 987856,
+          "output_size_in_bytes": 310496,
+          "temp_size_in_bytes": 1552320
+        },
+        "emissions_per_species": 2,
+        "max_s": 0.0006102249026298523,
+        "median_s": 0.0005404551047831774,
+        "min_s": 0.00047536403872072697,
+        "persistent_tracer_bytes": 310480,
+        "species": 1
+      },
+      {
+        "compile_s": 0.6064455190207809,
+        "compiled_memory_bytes": {
+          "alias_size_in_bytes": 0,
+          "argument_size_in_bytes": 3161216,
+          "output_size_in_bytes": 2483856,
+          "temp_size_in_bytes": 6521348
+        },
+        "emissions_per_species": 2,
+        "max_s": 0.008488713996484876,
+        "median_s": 0.002608329989016056,
+        "min_s": 0.0019675849471241236,
+        "persistent_tracer_bytes": 2483840,
+        "species": 8
+      }
+    ],
+    "incremental_compiled_accounting_bytes": {
+      "alias_size_in_bytes": 4967424,
+      "argument_size_in_bytes": 4967424,
+      "output_size_in_bytes": 4967440,
+      "temp_size_in_bytes": 27532824
+    },
+    "persistent_basis": "Representation calculation matches measured argument/alias byte deltas; not resident peak VRAM/RSS measurement",
+    "persistent_tracer_plus_held_rate_bytes": 4967424,
+    "scope": "CPU interpreted native model and synthetic source/sink component only; not GPU acceleration or S1 benchmark",
+    "source_sink_component_rows": [
+      {
+        "compile_s": 0.8627241840586066,
+        "compiled_memory_bytes": {
+          "alias_size_in_bytes": 0,
+          "argument_size_in_bytes": 987856,
+          "output_size_in_bytes": 310496,
+          "temp_size_in_bytes": 2483712
+        },
+        "emissions_per_species": 0,
+        "max_s": 0.001335150096565485,
+        "median_s": 0.0007553549949079752,
+        "min_s": 0.0004416538868099451,
+        "persistent_tracer_bytes": 310480,
+        "species": 1
+      },
+      {
+        "compile_s": 0.5770583639387041,
+        "compiled_memory_bytes": {
+          "alias_size_in_bytes": 0,
+          "argument_size_in_bytes": 987856,
+          "output_size_in_bytes": 310496,
+          "temp_size_in_bytes": 2483712
+        },
+        "emissions_per_species": 2,
+        "max_s": 0.0012484691105782986,
+        "median_s": 0.0007370749954134226,
+        "min_s": 0.0004833729472011328,
+        "persistent_tracer_bytes": 310480,
+        "species": 1
+      },
+      {
+        "compile_s": 0.9692116701044142,
+        "compiled_memory_bytes": {
+          "alias_size_in_bytes": 0,
+          "argument_size_in_bytes": 3161216,
+          "output_size_in_bytes": 2483856,
+          "temp_size_in_bytes": 6521348
+        },
+        "emissions_per_species": 2,
+        "max_s": 0.0065368779469281435,
+        "median_s": 0.0033478850964456797,
+        "min_s": 0.0013934611342847347,
+        "persistent_tracer_bytes": 2483840,
+        "species": 8
+      }
+    ]
+  },
+  "ready_for_critic": false,
+  "ready_for_manager_fix_verification": true,
+  "receipt_manifest": {
+    "TR01_original_cpu_case/PREPARATION.json": {
+      "bytes": 1927,
+      "path": "<USER_HOME>/wrf_gpu2_lanes/u2-tracers/TR01_original_cpu_case/PREPARATION.json",
+      "sha256": "e1b758a7e985584ae96a448d663faae864bd29a8a2c8e4ce5ddbcad953948203",
+      "sha256_basis": "fresh bounded host read"
+    },
+    "TR02_original_cpu_inventory.json": {
+      "bytes": 14107,
+      "path": "<USER_HOME>/wrf_gpu2_lanes/u2-tracers/TR02_original_cpu_inventory.json",
+      "sha256": "3602138bcb95186ada9a957ccc54ed8fd67cb30908760f391072d0db60b283b5",
+      "sha256_basis": "fresh bounded host read"
+    },
+    "TR02_original_cpu_run.log": {
+      "bytes": 196,
+      "path": "<USER_HOME>/wrf_gpu2_lanes/u2-tracers/TR02_original_cpu_run.log",
+      "sha256": "3b865950affd31d7a8f04fd7adaf7230371e300bd502189fe6353dc78d1b4f46",
+      "sha256_basis": "fresh bounded host read"
+    },
+    "TR07_budget.log": {
+      "bytes": 98,
+      "path": "<USER_HOME>/wrf_gpu2_lanes/u2-tracers/TR07_budget.log",
+      "sha256": "36fe08e2829cde9a1e036d8b94e882148177428e1c2d7105c6fc0e2c1070c110",
+      "sha256_basis": "fresh bounded host read"
+    },
+    "TR10_pbl.log": {
+      "bytes": 99,
+      "path": "<USER_HOME>/wrf_gpu2_lanes/u2-tracers/TR10_pbl.log",
+      "sha256": "daa96104ddfc2f6b00bab85fee7ce945f63f7c5e503d4aa46a354517de89c6b1",
+      "sha256_basis": "fresh bounded host read"
+    },
+    "TR11_main_cam.log": {
+      "bytes": 3457,
+      "path": "<USER_HOME>/wrf_gpu2_lanes/u2-tracers/TR11_main_cam.log",
+      "sha256": "5253da46d22691f37ee7442e0e20afe912d2d39e586ffc7909ee4f630ebe0aa3",
+      "sha256_basis": "fresh bounded host read"
+    },
+    "TR14_coeff_case/COEFFICIENT_AUDIT.json": {
+      "bytes": 8296,
+      "path": "<USER_HOME>/wrf_gpu2_lanes/u2-tracers/TR14_coeff_case/COEFFICIENT_AUDIT.json",
+      "sha256": "bab6499ab5dd58b03eabedfd9e72c138095252a474dcca2357f19f2317c8780a",
+      "sha256_basis": "fresh bounded host read"
+    },
+    "TR17_coeff_case/COEFFICIENT_AUDIT.json": {
+      "bytes": 11812,
+      "path": "<USER_HOME>/wrf_gpu2_lanes/u2-tracers/TR17_coeff_case/COEFFICIENT_AUDIT.json",
+      "sha256": "8e5fe9def7506aa3156363cb40beeb5968451d1e758203e7679fd89da2be10bf",
+      "sha256_basis": "fresh bounded host read"
+    },
+    "TR18_original_pbl_expected.receipt.json": {
+      "bytes": 3474,
+      "path": "<USER_HOME>/wrf_gpu2_lanes/u2-tracers/TR18_original_pbl_expected.receipt.json",
+      "sha256": "db46f854a380a14450b11f55323c3653e373535b8b190164105222f40a3b1642",
+      "sha256_basis": "fresh bounded host read"
+    },
+    "TR19_archive.json": {
+      "bytes": 543,
+      "path": "<USER_HOME>/wrf_gpu2_lanes/u2-tracers/TR19_archive.json",
+      "sha256": "8e3e61fc4ae9fd29d7cb0337326f4bcfbe227bd2f395ccba38a88cf38c3f7dbf",
+      "sha256_basis": "fresh bounded host read"
+    },
+    "TR20_mutant.json": {
+      "bytes": 4699,
+      "path": "<USER_HOME>/wrf_gpu2_lanes/u2-tracers/TR20_mutant.json",
+      "sha256": "667bc9eacd33a419ad3814eb602c55d2bcec172ef002dddfc26215827d91e379",
+      "sha256_basis": "fresh bounded host read"
+    },
+    "TR22_affected_gates.log": {
+      "bytes": 181,
+      "path": "<USER_HOME>/wrf_gpu2_lanes/u2-tracers/TR22_affected_gates.log",
+      "sha256": "30c8a4173bded54c08a101a164196c7ebbc36a9d33b249cbca4e77feae1b5ef9",
+      "sha256_basis": "fresh bounded host read"
+    },
+    "TR23_source_sink_cost.json": {
+      "bytes": 1566,
+      "path": "<USER_HOME>/wrf_gpu2_lanes/u2-tracers/TR23_source_sink_cost.json",
+      "sha256": "c2fb8a4f4ea15e48838fcd8839e15abb01c56e4937261625d0a784793bbd01d6",
+      "sha256_basis": "fresh bounded host read"
+    },
+    "TR25_flux_case/COEFFICIENT_AUDIT.json": {
+      "bytes": 21385,
+      "path": "<USER_HOME>/wrf_gpu2_lanes/u2-tracers/TR25_flux_case/COEFFICIENT_AUDIT.json",
+      "sha256": "033c2ca7f9d2e467d9f241c03df4e799b85bdf7f7e5e0d76d140691ff5e4476a",
+      "sha256_basis": "fresh bounded host read"
+    },
+    "TR25_flux_case/COEFFICIENT_PREPARATION.json": {
+      "bytes": 3260,
+      "path": "<USER_HOME>/wrf_gpu2_lanes/u2-tracers/TR25_flux_case/COEFFICIENT_PREPARATION.json",
+      "sha256": "ab707f4efd89081d74ac797ca201e876be10ef4f1ecf76d66b3873c3e0979579",
+      "sha256_basis": "fresh bounded host read"
+    },
+    "TR26_final_candidate.json": {
+      "bytes": 46739,
+      "path": "<USER_HOME>/wrf_gpu2_lanes/u2-tracers/TR26_final_candidate.json",
+      "sha256": "811143bf9a7741fa68dd52b834d7607d7b9f093777d251ebeb15522d028c1898",
+      "sha256_basis": "fresh bounded host read"
+    },
+    "TR29_off_control.json": {
+      "bytes": 5628,
+      "path": "<USER_HOME>/wrf_gpu2_lanes/u2-tracers/TR29_off_control.json",
+      "sha256": "81979b363b97b15c2378e25bb555754faa4ed8285e6daa1130ae2bb61ce94d86",
+      "sha256_basis": "fresh bounded host read"
+    },
+    "TR30_final_rk_capture.json": {
+      "bytes": 343,
+      "path": "<USER_HOME>/wrf_gpu2_lanes/u2-tracers/TR30_final_rk_capture.json",
+      "sha256": "1ba206f218008fa82cd25981b003ffc6e37fbf0d711912cd540b35d1a7d89782",
+      "sha256_basis": "fresh bounded host read"
+    },
+    "TR31_source_seal.json": {
+      "bytes": 168217,
+      "path": "<USER_HOME>/wrf_gpu2_lanes/u2-tracers/TR31_source_seal.json",
+      "sha256": "5e539d1674c3a0a11cff084d93cadc45a4628b8bedc9208e66a37cf59cf3a9b1",
+      "sha256_basis": "fresh bounded host read"
+    },
+    "TR31_transport_oracles.json": {
+      "bytes": 18468,
+      "path": "<USER_HOME>/wrf_gpu2_lanes/u2-tracers/TR31_transport_oracles.json",
+      "sha256": "080840629841ae0aea7d845b215f43549e5b2ff562685b980ee5420202521a4c",
+      "sha256_basis": "fresh bounded host read"
+    },
+    "TR32_diffusivity.json": {
+      "bytes": 801,
+      "path": "<USER_HOME>/wrf_gpu2_lanes/u2-tracers/TR32_diffusivity.json",
+      "sha256": "0ecd5dc3687ce0b9fac5f6cc1152474fbd52c7dd613ea27ac25bdf04786777d2",
+      "sha256_basis": "fresh bounded host read"
+    },
+    "TR34_composition.log": {
+      "bytes": 2717,
+      "path": "<USER_HOME>/wrf_gpu2_lanes/u2-tracers/TR34_composition.log",
+      "sha256": "a8cb0b9026a7e3e6d8951a66b1856db310875258c0763641a349f9da29750da3",
+      "sha256_basis": "fresh bounded host read"
+    },
+    "TR35_old_cpu_on.constants.json": {
+      "bytes": 733253,
+      "path": "<USER_HOME>/wrf_gpu2_lanes/u2-tracers/TR35_old_cpu_on.constants.json",
+      "sha256": "216458b70e54f91297ac90476836e0aa876c8d79ef46ed7f187f52a2fa42bd39",
+      "sha256_basis": "fresh bounded host read"
+    },
+    "TR35_old_cpu_on.json": {
+      "bytes": 1102,
+      "path": "<USER_HOME>/wrf_gpu2_lanes/u2-tracers/TR35_old_cpu_on.json",
+      "sha256": "d6bd918646602f8c9c0c51197d26a7205d61f6c909a1455ebc3ddce9e6a03f55",
+      "sha256_basis": "fresh bounded host read"
+    },
+    "TR35_old_on.constants.json": {
+      "bytes": 733079,
+      "path": "<USER_HOME>/wrf_gpu2_lanes/u2-tracers/TR35_old_on.constants.json",
+      "sha256": "8ad16704e17084464e7578d8b3d6109aa9c71709b5554c63ba8faf15f6c1bd67",
+      "sha256_basis": "fresh bounded host read"
+    },
+    "TR35_old_on.json": {
+      "bytes": 1437,
+      "path": "<USER_HOME>/wrf_gpu2_lanes/u2-tracers/TR35_old_on.json",
+      "sha256": "28efe9e7271463ec21dd8c4edc933bcc52155ab665175b4fecbc579b037a9336",
+      "sha256_basis": "fresh bounded host read"
+    },
+    "TR36_cpu_on.constants.json": {
+      "bytes": 733241,
+      "path": "<USER_HOME>/wrf_gpu2_lanes/u2-tracers/TR36_cpu_on.constants.json",
+      "sha256": "bed169b9906c486600a3748d39ac2059003343af0faad935dc2a368478c9e8a4",
+      "sha256_basis": "fresh bounded host read"
+    },
+    "TR36_cpu_on.json": {
+      "bytes": 1094,
+      "path": "<USER_HOME>/wrf_gpu2_lanes/u2-tracers/TR36_cpu_on.json",
+      "sha256": "89cff180fe2b28d17836f449ea855bb05d83d07e45d346e929cf59d012d2b107",
+      "sha256_basis": "fresh bounded host read"
+    },
+    "TR36_native_on.constants.json": {
+      "bytes": 733369,
+      "path": "<USER_HOME>/wrf_gpu2_lanes/u2-tracers/TR36_native_on.constants.json",
+      "sha256": "cd55f8cfe4b6fe0eae37075edb3876ae5ded70ae6536e3e57409845c0ea41517",
+      "sha256_basis": "fresh bounded host read"
+    },
+    "TR36_native_on.json": {
+      "bytes": 1429,
+      "path": "<USER_HOME>/wrf_gpu2_lanes/u2-tracers/TR36_native_on.json",
+      "sha256": "fe71a7a64bea110d00e970ae647eac30fde21eb92ebe4fde16114f6c54a5cc69",
+      "sha256_basis": "fresh bounded host read"
+    },
+    "TR37_initial_carry.json": {
+      "bytes": 55128,
+      "path": "<USER_HOME>/wrf_gpu2_lanes/u2-tracers/TR37_initial_carry.json",
+      "sha256": "ae821b42e83fb841ad47c443224972321799af83574fba613c2e8294a5123095",
+      "sha256_basis": "fresh bounded host read"
+    },
+    "TR38_prod_off.json": {
+      "bytes": 1409,
+      "path": "<USER_HOME>/wrf_gpu2_lanes/u2-tracers/TR38_prod_off.json",
+      "sha256": "4a7d49544901d1baa704447d06b33c4bdd9b60dc79226b8cd2003279877ddc1d",
+      "sha256_basis": "fresh bounded host read"
+    },
+    "TR38_swiss_off.json": {
+      "bytes": 1417,
+      "path": "<USER_HOME>/wrf_gpu2_lanes/u2-tracers/TR38_swiss_off.json",
+      "sha256": "c49caa32950de2f850e1e6c14e13b7eb98bdb9bf5cf8ba266956f9710eaa20a7",
+      "sha256_basis": "fresh bounded host read"
+    },
+    "TR39_composition.json": {
+      "bytes": 1540,
+      "path": "<USER_HOME>/wrf_gpu2_lanes/u2-tracers/TR39_composition.json",
+      "sha256": "16a6c9cc2a1443b9f6cbd2966a33368ba3202613d94f09681f3fa70805320be8",
+      "sha256_basis": "fresh bounded host read"
+    },
+    "TR39_composition.log": {
+      "bytes": 2151,
+      "path": "<USER_HOME>/wrf_gpu2_lanes/u2-tracers/TR39_composition.log",
+      "sha256": "678989d84a5b8b6e965a829b72a16f2916b8e0d7aec39af0c50cf105fe77f41b",
+      "sha256_basis": "fresh bounded host read"
+    },
+    "TR39_composition.xml": {
+      "bytes": 54603,
+      "path": "<USER_HOME>/wrf_gpu2_lanes/u2-tracers/TR39_composition.xml",
+      "sha256": "83d88bffb7b5a564bc094f552878e0434c2207582ca9038e90fe86bbf7ccac1e",
+      "sha256_basis": "fresh bounded host read"
+    },
+    "TR40_archive.json": {
+      "bytes": 636,
+      "path": "<USER_HOME>/wrf_gpu2_lanes/u2-tracers/TR40_archive.json",
+      "sha256": "61cd5718b3f936ba89ebd7e56b10de3b77f3a247d96c7278b3725cf7742c81cb",
+      "sha256_basis": "fresh bounded host read"
+    },
+    "TR42_sources.log": {
+      "bytes": 181,
+      "path": "<USER_HOME>/wrf_gpu2_lanes/u2-tracers/TR42_sources.log",
+      "sha256": "6a12f03abce43507719f70e9d9c7ad058ba87e9e54d38675a4240a7f530f3029",
+      "sha256_basis": "fresh bounded host read"
+    },
+    "TR42_sources.xml": {
+      "bytes": 14694,
+      "path": "<USER_HOME>/wrf_gpu2_lanes/u2-tracers/TR42_sources.xml",
+      "sha256": "85882d464e8b6f5f0a6a6f53c08816ebaadbceb5bc420c9365a4e5bfbf0ce295",
+      "sha256_basis": "fresh bounded host read"
+    },
+    "TR43_output.log": {
+      "bytes": 111,
+      "path": "<USER_HOME>/wrf_gpu2_lanes/u2-tracers/TR43_output.log",
+      "sha256": "8f2f2802769a8b0ab143ce9ff3c94fcf0953e3c2cedab68c04a85b2aca07be88",
+      "sha256_basis": "fresh bounded host read"
+    },
+    "TR43_output.xml": {
+      "bytes": 6574,
+      "path": "<USER_HOME>/wrf_gpu2_lanes/u2-tracers/TR43_output.xml",
+      "sha256": "b9b2962160926f8432cacb6486e172020968e716e011d4c567d275de1894c480",
+      "sha256_basis": "fresh bounded host read"
+    },
+    "TR44_catalog.log": {
+      "bytes": 99,
+      "path": "<USER_HOME>/wrf_gpu2_lanes/u2-tracers/TR44_catalog.log",
+      "sha256": "eb46eb6a9a34022d8f11a3b60b6d0e042c80a8347b2b5cc2d60e94d2209abda5",
+      "sha256_basis": "fresh bounded host read"
+    },
+    "TR44_catalog.xml": {
+      "bytes": 6977,
+      "path": "<USER_HOME>/wrf_gpu2_lanes/u2-tracers/TR44_catalog.xml",
+      "sha256": "2c8ac236f8506bf323664e8f463a11b918d72b9f6142a17fce904727c6ede085",
+      "sha256_basis": "fresh bounded host read"
+    },
+    "TR45_source_cost.json": {
+      "bytes": 1566,
+      "path": "<USER_HOME>/wrf_gpu2_lanes/u2-tracers/TR45_source_cost.json",
+      "sha256": "5857036cb68ee11e7c5e8bb626ea7b6a7357dcae3354f637d0298376752f5877",
+      "sha256_basis": "fresh bounded host read"
+    },
+    "TR45_source_cost.log": {
+      "bytes": 1082,
+      "path": "<USER_HOME>/wrf_gpu2_lanes/u2-tracers/TR45_source_cost.log",
+      "sha256": "86ab70a12029fceca52ff25e123b269c3f1f4fc571118f28974be0e76827ed81",
+      "sha256_basis": "fresh bounded host read"
+    },
+    "TR46_mutants.json": {
+      "bytes": 802,
+      "path": "<USER_HOME>/wrf_gpu2_lanes/u2-tracers/TR46_mutants.json",
+      "sha256": "16fdc7f7f0583bac3c57e7c164324a1c5a138ff2c3e4d0150d698505f1043c25",
+      "sha256_basis": "fresh bounded host read"
+    },
+    "TR46_mutants.log": {
+      "bytes": 10930,
+      "path": "<USER_HOME>/wrf_gpu2_lanes/u2-tracers/TR46_mutants.log",
+      "sha256": "a29ad62a7bd2f7892706ca3f32ba8076180158e26fe829b17f1b8d2e86e46968",
+      "sha256_basis": "fresh bounded host read"
+    },
+    "TR46_mutants_catalog-note.xml": {
+      "bytes": 1630,
+      "path": "<USER_HOME>/wrf_gpu2_lanes/u2-tracers/TR46_mutants_catalog-note.xml",
+      "sha256": "4eaa6e9fa1ed58a65e890862fe02d7aef5a01a977b3d6a0c407c9dbb7e952191",
+      "sha256_basis": "fresh bounded host read"
+    },
+    "TR46_mutants_history-stack.xml": {
+      "bytes": 3367,
+      "path": "<USER_HOME>/wrf_gpu2_lanes/u2-tracers/TR46_mutants_history-stack.xml",
+      "sha256": "21a4583d37f784fc00328b5fb2f644d0af94d72557ebc86864142a4614b84433",
+      "sha256_basis": "fresh bounded host read"
+    },
+    "TR46_mutants_source-bound.xml": {
+      "bytes": 6931,
+      "path": "<USER_HOME>/wrf_gpu2_lanes/u2-tracers/TR46_mutants_source-bound.xml",
+      "sha256": "44b30103799f61c0e8ecaca2e436024f7a92cec09ac2e03a2c65752a59c2cdea",
+      "sha256_basis": "fresh bounded host read"
+    },
+    "TR47_prod_off.json": {
+      "bytes": 1418,
+      "path": "<USER_HOME>/wrf_gpu2_lanes/u2-tracers/TR47_prod_off.json",
+      "sha256": "da597fdb53e927999abdf1212b4d0333da4a8d113e37afb27b8c9ed0eb01f780",
+      "sha256_basis": "fresh bounded host read"
+    },
+    "TR47_prod_off.log": {
+      "bytes": 3855,
+      "path": "<USER_HOME>/wrf_gpu2_lanes/u2-tracers/TR47_prod_off.log",
+      "sha256": "4b45a589f25ddb0b76fef4154d6fa392e8762d9237de4fcd08f82ddf5aa01b9a",
+      "sha256_basis": "fresh bounded host read"
+    },
+    "TR47_swiss_off.json": {
+      "bytes": 1425,
+      "path": "<USER_HOME>/wrf_gpu2_lanes/u2-tracers/TR47_swiss_off.json",
+      "sha256": "a389143421d1a5247058b81c7bac4ed5efb863ba5d41e6df5e89455e9b99a02a",
+      "sha256_basis": "fresh bounded host read"
+    },
+    "TR48_budget_headroom.log": {
+      "bytes": 98,
+      "path": "<USER_HOME>/wrf_gpu2_lanes/u2-tracers/TR48_budget_headroom.log",
+      "sha256": "9d4474c1854330fc4444795c311f0e51551c123f8d28e9b45daa4f405550c218",
+      "sha256_basis": "fresh bounded host read"
+    },
+    "TR48_budget_headroom.xml": {
+      "bytes": 397,
+      "path": "<USER_HOME>/wrf_gpu2_lanes/u2-tracers/TR48_budget_headroom.xml",
+      "sha256": "fa9ff895e91bc4a8649de83be7a8ad765d7030ef5a0f1e23d3cbe42c7da32e15",
+      "sha256_basis": "fresh bounded host read"
+    },
+    "TR49_source_reuse.json": {
+      "bytes": 1070,
+      "path": "<USER_HOME>/wrf_gpu2_lanes/u2-tracers/TR49_source_reuse.json",
+      "sha256": "ab7bbcad6a22363e333fb0b5f7e340cfed84e24650387c669e601db0ee436007",
+      "sha256_basis": "fresh bounded host read"
+    },
+    "rebase_latest_ast_receipt.json": {
+      "bytes": 5076,
+      "path": "<USER_HOME>/wrf_gpu2_lanes/u2-tracers/rebase_latest_ast_receipt.json",
+      "sha256": "744de05228bdeb9f6aa93dc2d87af59dc3f3d87cf916f17e5e4d47164f36ae64",
+      "sha256_basis": "fresh bounded host read"
+    }
+  },
+  "schema": "gpuwrf-u2-tracers-qualification-draft-v1",
+  "shared_consumer_tests": {
+    "disabled_PBL_held_source_new_tests": {
+      "receipt": "TR39_composition.xml",
+      "result": [
+        "test_disabled_pbl_cannot_reuse_a_held_tracer_rate[0-5]",
+        "test_disabled_pbl_cannot_reuse_a_held_tracer_rate[1-0]",
+        "test_disabled_pbl_cannot_reuse_a_held_tracer_rate[0-0]"
+      ],
+      "source_commit": "eb8fb4fc7fe089a532f72e72904a00c4f1c41dd2",
+      "status": "PASS_3"
+    },
+    "historical_composition": {
+      "deselected": 1,
+      "deselected_exact_test": "tests/test_v013_operational_smoke.py::test_ra_lw_operational_runs_and_cools[3]",
+      "main_base": "a6ae6fd29",
+      "not_green_whole_suite": true,
+      "passed": 401,
+      "reason": "Same CAM HostLayoutConstraint NOT_FOUND failure independently reproduced on unmodified main40799926d (TR11), one failure29.60s; CAM source unchanged through a6 base.",
+      "source_commit": "81a6257b6",
+      "wall_s": 673.78,
+      "warnings": 6
+    },
+    "latest_composition": {
+      "CAM_source_byte_identity_407_and_181": "d2c790ec056daece50f45e169d4e976714418748",
+      "baseline_reproduction": "TR11_main_cam.log on unmodified main40799926d",
+      "deselected": 1,
+      "errors": 0,
+      "excluded_baseline_test": "tests/test_v013_operational_smoke.py::test_ra_lw_operational_runs_and_cools[3]",
+      "failures": 0,
+      "passed": 418,
+      "receipt": "TR39_composition.json",
+      "source_commit": "eb8fb4fc7fe089a532f72e72904a00c4f1c41dd2",
+      "status": "PASS_418_WITH_DISCLOSED_BASELINE_EXCLUSION",
+      "wall_s": 349.78,
+      "warnings": 5,
+      "whole_suite_pass_claim": false
+    }
+  },
+  "source_identity": {
+    "current_rebase_target_pinned_by_root": "181803bb4",
+    "final_composed_source_commit": "897db7fd65a3f0962b7bb360a589aedcb7879139",
+    "final_packet_commit": "containing Git commit; resolve with git log -1 -- proofs/u2_tracers/QUALIFICATION.json",
+    "historical_composed_source_commit": "eb8fb4fc7fe089a532f72e72904a00c4f1c41dd2",
+    "historical_host_guard_carryforward": {
+      "receipt": "TR31_source_seal.json",
+      "scope": "caa735f33 to 520be5257 only; 568/571 model files BYTE, remaining three host guard modules qualified by AST; not latest-main integration proof"
+    },
+    "last_pre_rebase_candidate": "b6af97abc",
+    "measured_coupled_source": "caa735f33",
+    "state": "Critic P2 source/output/catalog fixes on same pinnedmain181803bb4; affected202PASS3existingSKIP; originalPBL/PD/TR17cfgNone and othermodelmodules preserved viaTR49sourceproof. Changed custom source math independently rechecked TR42; finalhostbudgetguardTR48; OFF identities checked/reused bysource proof."
+  },
+  "status": "FIXED-MERGE-WITH-FIXES",
+  "tracer_acceptance": {
+    "GPU_qualification": "pending; no GPU execution in this lane",
+    "basis": "Explicit manager decision: operator-level exactness plus mass conservation, with FAIL-explained coupled gate and final composite D6 responsibility",
+    "closed_mass_conservation": "Independent pressure-coordinate mass and analytical losses/emission assertions pass at relative bound3e-6; point2kg+area7.5kg and allthree sinks; final TR39 affected runtime tests pass",
+    "coupled_gate": "FAIL-explained; fixed1e-4 unchanged; final composite D6 required",
+    "literal_PBL": "3360strictISA compiled valuesBYTE and3264nondegenerate eagerBYTE; native compiled comparison within independently measured original FMA spread",
+    "matched_pristine_PD": "exact at both worst trajectory locations; whole raw tendency maxdelta1.92593e-34 on folded same operands, subnormal tail disclosed"
+  },
+  "waiver_requested": false
+}

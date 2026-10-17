@@ -1,0 +1,161 @@
+{
+  "status": "VERIFIED: C12220nodes accounted; originalresourcefails preserved",
+  "selected_outcomes": {
+    "passed": 19,
+    "skipped": 1
+  },
+  "receipts": [
+    {
+      "arm": "C122r01",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C122r01",
+      "source": "a8dce009eaf9659d04a7efefd043d8574e181352",
+      "command_sha256": "fc1b70ecfe98cb474e670ca033f280713b3d9b6674a77b3a14eb32026e243fd9",
+      "xml_sha256": "eb24c71a5429123d39bba6104bc79b620ebb62a22f68afe2475a1919ab700822"
+    },
+    {
+      "arm": "C122r02",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C122r02",
+      "source": "a8dce009eaf9659d04a7efefd043d8574e181352",
+      "command_sha256": "9fa465c73780fc88dfb00436a09eadfbcd123b402fe139c71a4bc6074506a41d",
+      "xml_sha256": "4fac4a7900551d5522a5bf1d7083975f82673ab5ad83ead9d43924af280965f0"
+    },
+    {
+      "arm": "C122r03",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C122r03",
+      "source": "a8dce009eaf9659d04a7efefd043d8574e181352",
+      "command_sha256": "f16c27428c11a73046dd8039fb197e6f71f5e1ed649dd240c329badb2e30a16e",
+      "xml_sha256": "70e1dd61839632b21ab3802fa28e27870cebb36eb68467d97d2ad5c926fd6686"
+    },
+    {
+      "arm": "C122r04",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C122r04",
+      "source": "a8dce009eaf9659d04a7efefd043d8574e181352",
+      "command_sha256": "741056139d2f018ecd02dc3809478257ac914185f8ceeff55fff92214755db9d",
+      "xml_sha256": "a452a7c01676300ec4e645a46cd83912294d4e6a25506ffb679b352b961c9868"
+    },
+    {
+      "arm": "C122c-KF-prod-False-24G",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C122c-KF-prod-False-24G",
+      "source": "a8dce009eaf9659d04a7efefd043d8574e181352",
+      "command_sha256": "3f5142c02c83e259050ae62ced565e4f88337aa1eca61fefece1a219297ed70f",
+      "xml_sha256": "9a43212e36280f5ec923a03cc241e88aaf9347e25ee0acb2df984221a929bd23"
+    },
+    {
+      "arm": "C122e-KF-prod-True-24G",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C122e-KF-prod-True-24G",
+      "source": "a8dce009eaf9659d04a7efefd043d8574e181352",
+      "command_sha256": "5d1359ba346ba2fa21cd693e371ce0ed7930c3f1bdcc63344b49c63f11304d91",
+      "xml_sha256": "7f827ddff388f03e5b3b5844ae1a16d3a5ff6de46ecc6f452193518eb1d0f3a3"
+    }
+  ],
+  "observer_completed_reused": [
+    "tests/v025/b_column/test_kf_rk.py::test_default_key_and_live_trace_split",
+    "tests/v025/b_column/test_kf_rk.py::test_actual_kf_prepare_does_not_euler_or_clear_early",
+    "tests/v025/b_column/test_kf_rk.py::test_cu_is_added_before_one_conversion_and_mask",
+    "tests/v025/b_column/test_kf_rk.py::test_actual_driver_inlet_keeps_time_n_before_pbl"
+  ],
+  "heavy_results": [
+    {
+      "node": "tests/v025/b_column/test_kf_rk.py::test_actual_prod_rk_dispatch_d1_and_composed_keys[False]",
+      "receipt": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C122c-KF-prod-False-24G",
+      "rss_hwm_gib": 13.232498168945312,
+      "cgroup_peak_gib": 12.970966339111328,
+      "swap_kib": 0,
+      "cap": "24GSwap0",
+      "outcome": "PASS",
+      "phases": [
+        {
+          "event": "prod_domains_start",
+          "time": 1792041093.0821493,
+          "memory": {
+            "VmHWM": "809868 kB",
+            "VmRSS": "809868 kB",
+            "VmSwap": "0 kB"
+          }
+        },
+        {
+          "event": "prod_domains_finish",
+          "time": 1792041199.4287934,
+          "memory": {
+            "VmHWM": "13874456 kB",
+            "VmRSS": "7384516 kB",
+            "VmSwap": "0 kB"
+          }
+        },
+        {
+          "event": "eval_shape_start",
+          "time": 1792041201.2476308,
+          "memory": {
+            "VmHWM": "13874456 kB",
+            "VmRSS": "7361696 kB",
+            "VmSwap": "0 kB"
+          }
+        },
+        {
+          "event": "eval_shape_finish",
+          "time": 1792041213.4262452,
+          "memory": {
+            "VmHWM": "13874456 kB",
+            "VmRSS": "7497540 kB",
+            "VmSwap": "0 kB"
+          }
+        }
+      ],
+      "attribution": "Peak atprod_domains_finish beforeeval_shape; inputloading, not failedmodeljitcompile",
+      "once": "Per-node24GpermissionSPENT"
+    },
+    {
+      "node": "tests/v025/b_column/test_kf_rk.py::test_actual_prod_rk_dispatch_d1_and_composed_keys[True]",
+      "receipt": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C122e-KF-prod-True-24G",
+      "rss_hwm_gib": 13.278919219970703,
+      "cgroup_peak_gib": 13.207210540771484,
+      "swap_kib": 0,
+      "cap": "24GSwap0",
+      "outcome": "PASS",
+      "phases": [
+        {
+          "event": "prod_domains_start",
+          "time": 1792041553.5991373,
+          "memory": {
+            "VmHWM": "811268 kB",
+            "VmRSS": "811268 kB",
+            "VmSwap": "0 kB"
+          }
+        },
+        {
+          "event": "prod_domains_finish",
+          "time": 1792041659.978312,
+          "memory": {
+            "VmHWM": "13923284 kB",
+            "VmRSS": "7256632 kB",
+            "VmSwap": "0 kB"
+          }
+        },
+        {
+          "event": "eval_shape_start",
+          "time": 1792041661.696656,
+          "memory": {
+            "VmHWM": "13923284 kB",
+            "VmRSS": "7236968 kB",
+            "VmSwap": "0 kB"
+          }
+        },
+        {
+          "event": "eval_shape_finish",
+          "time": 1792041673.5062904,
+          "memory": {
+            "VmHWM": "13923284 kB",
+            "VmRSS": "7369936 kB",
+            "VmSwap": "0 kB"
+          }
+        }
+      ],
+      "attribution": "Peak atprod_domains_finish beforeeval_shape; inputloading, not failedmodeljitcompile",
+      "once": "Per-node24GpermissionSPENT"
+    }
+  ],
+  "scope": "Structural actualPRODdrivertrace plus independentliteralcouplingchecks; NOTexecutedforecastfidelity",
+  "production_changes": [],
+  "numeric_bound_changes": [],
+  "authorization": "Managerstandingrule actual12GsingletonOOM ->ONE24Gattempt pernode;>=45GiBavailable/actual24GSwap0/900s, bothmarkersSPENT; no repeat"
+}

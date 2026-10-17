@@ -49,7 +49,7 @@ import jax.numpy as jnp
 import os
 
 from gpuwrf.contracts.grid import DycoreMetrics, GridSpec
-from gpuwrf.contracts.state import State
+from gpuwrf.contracts.state import EXTRA_SCALAR_BOUNDARY_SPECIES, State
 from gpuwrf.coupling.boundary_apply import couple_scalar_real4
 from gpuwrf.nesting.interp import (
     InterpWeights,
@@ -383,14 +383,16 @@ _compiled_sint = jax.jit(
 )
 
 
-def initialize_child_scalar_boundaries(state: State) -> State:
+def initialize_child_scalar_boundaries(state: State, *, mp_physics: int = 8, bl_pbl_physics: int = 0) -> State:
     """Materialize live-child scalar records before carry/JIT construction.
 
-    The represented Thompson moist/number families have Registry ``f``/``d``
+    The represented moist/number families have Registry ``f``/``d``
     flags just like QV.  The parent overwrites these templates at the first
     force-down; allocating them here keeps that operation's carry interface
     fixed instead of silently skipping absent optional boundary leaves.
     """
+
+    from gpuwrf.nesting.scalar_species import extra_boundary_species
 
     shape = (2, *state.qv_bdy.shape[1:])
     updates = {
@@ -398,6 +400,11 @@ def initialize_child_scalar_boundaries(state: State) -> State:
         for name in ("qc", "qr", "qi", "qs", "qg", "Ni", "Nr")
         if getattr(state, f"{name}_bdy", None) is None
     }
+    for name in extra_boundary_species(mp_physics,bl_pbl_physics=bl_pbl_physics):
+        if getattr(state, name, None) is None:
+            raise ValueError(f"mp_physics={mp_physics}: live-child scalar {name!r} is absent before force-down")
+        if getattr(state, f"{name}_bdy", None) is None:
+            updates[f"{name}_bdy"] = jnp.zeros(shape, dtype=jnp.float32)
     return state.replace(**updates) if updates else state
 
 
@@ -702,7 +709,7 @@ def _package_updates(
     # every boundary leaf this State interface can represent; absent optional
     # leaves stay absent and therefore do not alter the carry interface.
     if bool(coupled_forcedown):
-        for field_name in ("qc", "qr", "qi", "qs", "qg", "Ni", "Nr"):
+        for field_name in ("qc", "qr", "qi", "qs", "qg", "Ni", "Nr", *EXTRA_SCALAR_BOUNDARY_SPECIES):
             leaf_name = f"{field_name}_bdy"
             leaf = getattr(child_state, leaf_name, None)
             if leaf is None:
@@ -716,6 +723,18 @@ def _package_updates(
             scalar_new = new_ring3d(parent_scalar, weights.mass)
             updates[leaf_name] = two_time(leaf, child_scalar, scalar_new)
 
+    if child_state.tracers is not None:
+        if not coupled_forcedown or parent_state.tracers is None:
+            raise ValueError("nested tracers require parent tracers and coupled force-down")
+        if parent_state.tracers.shape[0] != child_state.tracers.shape[0] or child_state.tracer_bdy is None:
+            raise ValueError("parent/child tracer schema differs or child boundary records are absent")
+        records = []
+        for i in range(child_state.tracers.shape[0]):
+            parent_scalar = couple_scalar_real4(parent_state.tracers[i], parent_state.mu_total, parent_metrics)
+            child_scalar = couple_scalar_real4(child_state.tracers[i], child_state.mu_total, child_metrics)
+            records.append(two_time(child_state.tracer_bdy[i], child_scalar,
+                                    new_ring3d(parent_scalar, weights.mass)))
+        updates["tracer_bdy"] = jnp.stack(records)
     return updates
 
 

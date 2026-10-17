@@ -1,0 +1,125 @@
+{
+  "source_commit": "0cfe4eb8d2992b97c3ec65dcbafee18a1c0d74e9",
+  "platform": "cpu",
+  "gpu_executed": false,
+  "cache": "NONE",
+  "input": "<USER_HOME>/wrf_gpu2_lanes/release-docs/RD11/cpu",
+  "namelist_sha256": "31e08bce9e2a70b7037b5839d7e6b1af701219d9566cdf3c4ebe9bff28c17e9e",
+  "steps": [
+    {
+      "step": 1,
+      "wall_s": 242.84011416020803,
+      "nonfinite_leaves": [],
+      "guards": 0,
+      "work_counts": {
+        "steps": 1,
+        "acoustic_trips": 7,
+        "kf_calls": 0,
+        "radiation_tendency_calls": 1,
+        "radiation_surface_calls": 0,
+        "native_mass_guard_events": 0,
+        "radiation_init_calls": 1,
+        "radiation_output_calls": 0,
+        "output_writes": 0
+      },
+      "held_radiation_sha256": "236d5c4c8ec4b0218fcdc421bc4c0427b5bdda3df79597e78b564874b41c0365",
+      "guard_counts": {},
+      "f2_negative_minima": [],
+      "sw_negative_heating_count": null,
+      "swdown_max": 0.0,
+      "glw_min": 190.98065185546875,
+      "rthraten_max": 0.00026497067301534116
+    },
+    {
+      "step": 2,
+      "wall_s": 4.572366289794445,
+      "nonfinite_leaves": [],
+      "guards": 0,
+      "work_counts": {
+        "steps": 2,
+        "acoustic_trips": 14,
+        "kf_calls": 0,
+        "radiation_tendency_calls": 1,
+        "radiation_surface_calls": 0,
+        "native_mass_guard_events": 0,
+        "radiation_init_calls": 1,
+        "radiation_output_calls": 0,
+        "output_writes": 0
+      },
+      "held_radiation_sha256": "236d5c4c8ec4b0218fcdc421bc4c0427b5bdda3df79597e78b564874b41c0365",
+      "guard_counts": {},
+      "f2_negative_minima": [],
+      "sw_negative_heating_count": null,
+      "swdown_max": 0.0,
+      "glw_min": 190.98065185546875,
+      "rthraten_max": 0.0002649726520758122
+    },
+    {
+      "step": 3,
+      "wall_s": 4.852022906998172,
+      "nonfinite_leaves": [],
+      "guards": 2,
+      "work_counts": {
+        "steps": 3,
+        "acoustic_trips": 21,
+        "kf_calls": 0,
+        "radiation_tendency_calls": 1,
+        "radiation_surface_calls": 0,
+        "native_mass_guard_events": 0,
+        "radiation_init_calls": 1,
+        "radiation_output_calls": 0,
+        "output_writes": 0
+      },
+      "held_radiation_sha256": "236d5c4c8ec4b0218fcdc421bc4c0427b5bdda3df79597e78b564874b41c0365",
+      "guard_counts": {
+        "dynamics.qc": {
+          "nonfinite": 0,
+          "out_of_range": 1,
+          "repaired": 1
+        }
+      },
+      "f2_negative_minima": [
+        {
+          "phase": "post_rk",
+          "field": "qc",
+          "minimum": -5.998730759437114e-18,
+          "step": 3,
+          "flat_index": 24535
+        },
+        {
+          "phase": "pre_dynamics_guard",
+          "field": "qc",
+          "minimum": -1.159596048014749e-36,
+          "step": 3,
+          "flat_index": 28190
+        },
+        {
+          "phase": "pre_boundary_guard",
+          "field": "qc",
+          "minimum": -1.159596048014749e-36,
+          "step": 3,
+          "flat_index": 28190
+        }
+      ],
+      "sw_negative_heating_count": null,
+      "swdown_max": 0.0,
+      "glw_min": 190.98065185546875,
+      "rthraten_max": 0.0002649746311362833
+    }
+  ],
+  "affinity": [
+    0
+  ],
+  "load_s": 10.957592704100534,
+  "resolved_work": {
+    "ra_lw": 7,
+    "ra_sw": 7,
+    "mp": 8,
+    "dt_s": 18.0,
+    "radiation_cadence_steps": 33,
+    "steps": 3,
+    "cu": 0,
+    "scope": "experimental CPU-only; noGPU"
+  },
+  "verdict": "NEEDS_MATCHED_CONTROL"
+}

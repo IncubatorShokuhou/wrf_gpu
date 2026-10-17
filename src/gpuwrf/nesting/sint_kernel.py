@@ -78,7 +78,7 @@ def _sint_sides_kernel(
     src, xc_ref, xig_ref, yc_ref, xjg_ref, out,
     *, nz, py, px, ny, nx, width, side_len, dtype, interpret, div_mode,
 ):
-    from jax.experimental import pallas as pl
+    from gpuwrf.backends import pallas as pl
     from jax.experimental.pallas import triton as pt
 
     np_dtype = np.dtype(dtype)
@@ -106,7 +106,7 @@ def _sint_sides_kernel(
     nan = f(np.nan)
 
     def rn(op, a, b):
-        if interpret:
+        if interpret or not pl.cuda_native():
             return {"mul": a * b, "add": a + b, "sub": a - b, "div": a / b}[op]
         mode = div_mode if op == "div" else "rn"
         return pt.elementwise_inline_asm(
@@ -201,7 +201,7 @@ def sint_sides(
     ``-nvptx-prec-divf32=1`` lowering; f64 only supports "rn").
     """
 
-    from jax.experimental import pallas as pl
+    from gpuwrf.backends import pallas as pl
     from jax.experimental.pallas import triton as pt
 
     was_2d = field.ndim == 2

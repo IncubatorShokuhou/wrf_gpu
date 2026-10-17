@@ -1,0 +1,46 @@
+{
+  "schema": "gpuqual-provenance-v1",
+  "artifacts": {
+    "<USER_HOME>/wrf_gpu2_lanes/s1-gpuqual/fdda1_fixed/grid_gate.json": {
+      "sha256": "1d34a81f73578e0d098c0a042e80cca542abc5f295a3685a26e655969daaf9e0",
+      "bytes": 2272524
+    },
+    "<USER_HOME>/wrf_gpu2_lanes/s1-gpuqual/fdda1_fixed/compare.json": {
+      "sha256": "3f8f0380e1cf200c27cf0d9f26d2f8d811eeecd76d4ec662f196049583f07073",
+      "bytes": 6383522
+    },
+    "<USER_HOME>/wrf_gpu2_lanes/s1-gpuqual/fdda1_fixed/cpu.log": {
+      "sha256": "1b6f46b8dc036793644cee1c819f87e0a2a7be7eab6719db3b9e2469418474cb",
+      "bytes": 419834
+    }
+  },
+  "matched_inputs": {
+    "namelist.input": {
+      "CPU_sha256": "0b06fea504a6bb77dad5ae7174ae5902ed36a4b5a4ac4352a3c80eae2f55d220",
+      "GPU_sha256": "0b06fea504a6bb77dad5ae7174ae5902ed36a4b5a4ac4352a3c80eae2f55d220",
+      "equal": true
+    },
+    "wrfinput_d01": {
+      "CPU_sha256": "a5d696550d1dc6713e2e340b8c2fba83811d43f4a94a65ca95266035860e2781",
+      "GPU_sha256": "a5d696550d1dc6713e2e340b8c2fba83811d43f4a94a65ca95266035860e2781",
+      "equal": true
+    },
+    "wrfbdy_d01": {
+      "CPU_sha256": "f3e556670e4768326997bdfa1dd8b0f77eb6d5da07d9c4dbf900bf8ff9e30230",
+      "GPU_sha256": "f3e556670e4768326997bdfa1dd8b0f77eb6d5da07d9c4dbf900bf8ff9e30230",
+      "equal": true
+    },
+    "wrffdda_d01": {
+      "CPU_sha256": "ae5a2f1bad91f31e9c5f47a87009b02621bb6f14a63b0f9f829a82c5fb40538f",
+      "GPU_sha256": "811e28ff791cf779b1cabf2d5fea954157743a6acf86e4954e20d49425e874d8",
+      "equal": false,
+      "numerical_variables_byte_equal": true,
+      "metadata_only_difference": "TITLE carries authentic source WRF V4.7.1 version plus explicit derived-FDDA provenance; provenance attribute added. No force_use_old_data bypass.",
+      "reuse_certificate": "validation_reuse.json"
+    }
+  },
+  "raw_artifact_root": "<USER_HOME>/wrf_gpu2_lanes/s1-gpuqual/fdda1_fixed",
+  "original_CPU_artifact_root": "<USER_HOME>/wrf_gpu2_lanes/s1-gpuqual/fdda1_fixed",
+  "large_raw_outputs": "Preserved external original CPU/GPU wrfout files, not copied into git.",
+  "GPU_input_directory_actually_consumed": "<USER_HOME>/wrf_gpu2_lanes/s1-gpuqual/fdda1/input"
+}

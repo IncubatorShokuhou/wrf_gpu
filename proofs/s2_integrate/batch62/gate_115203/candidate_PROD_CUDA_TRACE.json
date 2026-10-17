@@ -1,0 +1,163 @@
+{
+  "utc": "2026-10-16T10:47:37.177416+00:00",
+  "case": "PROD",
+  "kind": "cold",
+  "source_commit": "353a85f8a11abf4a12dcd78bad77ec7dc682a019",
+  "profiled_root_steps": 66,
+  "forecast_s": 3564.0,
+  "unprofiled_hour2_s_per_root": 0.05504848850750253,
+  "CUDA_API": [
+    {
+      "table": "CUPTI_ACTIVITY_KIND_RUNTIME",
+      "name": "cuCtxSetCurrent",
+      "count": 10903,
+      "total_ns": 50177347
+    },
+    {
+      "table": "CUPTI_ACTIVITY_KIND_RUNTIME",
+      "name": "cuEventRecord",
+      "count": 4766,
+      "total_ns": 5761077
+    },
+    {
+      "table": "CUPTI_ACTIVITY_KIND_RUNTIME",
+      "name": "cuGraphExecKernelNodeSetParams_v2",
+      "count": 160992,
+      "total_ns": 123059251
+    },
+    {
+      "table": "CUPTI_ACTIVITY_KIND_RUNTIME",
+      "name": "cuGraphExecMemcpyNodeSetParams",
+      "count": 6402,
+      "total_ns": 10399048
+    },
+    {
+      "table": "CUPTI_ACTIVITY_KIND_RUNTIME",
+      "name": "cuGraphLaunch",
+      "count": 200,
+      "total_ns": 82504688
+    },
+    {
+      "table": "CUPTI_ACTIVITY_KIND_RUNTIME",
+      "name": "cuLaunchHostFunc",
+      "count": 2764,
+      "total_ns": 12820932
+    },
+    {
+      "table": "CUPTI_ACTIVITY_KIND_RUNTIME",
+      "name": "cuLaunchKernelEx",
+      "count": 495752,
+      "total_ns": 1862741624
+    },
+    {
+      "table": "CUPTI_ACTIVITY_KIND_RUNTIME",
+      "name": "cuMemAllocFromPoolAsync",
+      "count": 2844,
+      "total_ns": 5139890
+    },
+    {
+      "table": "CUPTI_ACTIVITY_KIND_RUNTIME",
+      "name": "cuMemFreeAsync",
+      "count": 2825,
+      "total_ns": 4046030
+    },
+    {
+      "table": "CUPTI_ACTIVITY_KIND_RUNTIME",
+      "name": "cuMemcpyDtoDAsync_v2",
+      "count": 41881,
+      "total_ns": 129515804
+    },
+    {
+      "table": "CUPTI_ACTIVITY_KIND_RUNTIME",
+      "name": "cuMemcpyDtoHAsync_v2",
+      "count": 1154,
+      "total_ns": 4536988
+    },
+    {
+      "table": "CUPTI_ACTIVITY_KIND_RUNTIME",
+      "name": "cuMemcpyHtoDAsync_v2",
+      "count": 612,
+      "total_ns": 6242007
+    },
+    {
+      "table": "CUPTI_ACTIVITY_KIND_RUNTIME",
+      "name": "cuProfilerStart",
+      "count": 1,
+      "total_ns": 6900
+    },
+    {
+      "table": "CUPTI_ACTIVITY_KIND_RUNTIME",
+      "name": "cuStreamIsCapturing",
+      "count": 41910,
+      "total_ns": 3080233
+    },
+    {
+      "table": "CUPTI_ACTIVITY_KIND_RUNTIME",
+      "name": "cuStreamSynchronize",
+      "count": 900,
+      "total_ns": 403808246
+    },
+    {
+      "table": "CUPTI_ACTIVITY_KIND_RUNTIME",
+      "name": "cuStreamWaitEvent",
+      "count": 3852,
+      "total_ns": 3114308
+    },
+    {
+      "table": "CUPTI_ACTIVITY_KIND_RUNTIME",
+      "name": "cuTensorMapEncodeTiled",
+      "count": 5552,
+      "total_ns": 738607
+    }
+  ],
+  "host_blocking_synchronize_API": [
+    {
+      "table": "CUPTI_ACTIVITY_KIND_RUNTIME",
+      "name": "cuStreamSynchronize",
+      "count": 900,
+      "total_ns": 403808246
+    }
+  ],
+  "host_callback_API": [
+    {
+      "table": "CUPTI_ACTIVITY_KIND_RUNTIME",
+      "name": "cuLaunchHostFunc",
+      "count": 2764,
+      "total_ns": 12820932
+    }
+  ],
+  "copies": [
+    {
+      "kind": "Host-to-Device",
+      "count": 612,
+      "bytes": 321864,
+      "total_ns": 178080
+    },
+    {
+      "kind": "Device-to-Host",
+      "count": 1154,
+      "bytes": 219714222,
+      "total_ns": 8910147
+    },
+    {
+      "kind": "Device-to-Device",
+      "count": 41881,
+      "bytes": 95671753012,
+      "total_ns": 120801188
+    }
+  ],
+  "reported_kernel_rows": [
+    495752,
+    2264736545
+  ],
+  "artifacts": {
+    "nsys_rep": {
+      "path": "<DATA_ROOT>/wrf_gpu2/archive/v040/v-prep/C5_353a85f8a1_20261016/cold/PROD/profile/cold-PROD-warm.nsys-rep",
+      "sha256": "7ce8e2972c63ce88086c6e405888ac70bcd2a7bd1fde8c0ddb8f158311996062"
+    },
+    "sqlite_sha256": "971b8c02b33076fe6b959d3831b6dd64db034db2d9840cd4d447bf6483a86229",
+    "timing_sha256": "102cc4a58b371eeaebda3796f37baa8083d32c99ce9319ebaf41e6ac940cce0c"
+  },
+  "decoder": "NVIDIA Nsight Systems version 2025.5.2.266-255236693005v0",
+  "scope": "Hour-three actual CUDA API activity; graph-node tracing not enabled, kernel rows are NOT S3 counts. Boundary history/forcing included identically in matched baseline; counts are not latency claims."
+}

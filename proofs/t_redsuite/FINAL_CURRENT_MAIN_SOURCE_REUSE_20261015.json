@@ -1,0 +1,523 @@
+{
+  "utc": "2026-10-15T09:21:09.605446+00:00",
+  "final_exact_main": "11eee66edacb6424316085f63d03f7ddff61fbbc",
+  "own_all_test_repairs_integrated": true,
+  "prior_full_suite_source": "a29f73afeae186015c8929df987f44b93d4fec53",
+  "only_SRC_changes": [
+    "src/gpuwrf/coupling/scan_adapters.py",
+    "src/gpuwrf/io/wrfsfdda.py",
+    "src/gpuwrf/runtime/operational_mode.py"
+  ],
+  "accepted_owner_source_reuse": {
+    "src/gpuwrf/coupling/scan_adapters.py": {
+      "accepted_owner_commit": "e213b65c4",
+      "sha256": "5d41594889291e11af1d309af04f4f07337014aad9ee0a5552ae2c32483e135d",
+      "BYTE": true
+    },
+    "src/gpuwrf/io/wrfsfdda.py": {
+      "accepted_owner_commit": "2248dc315",
+      "sha256": "b0a7c1bfd1b655b5c26af8db904cb82deeaa946268a1871c7cbba1e11746c352",
+      "BYTE": true
+    },
+    "src/gpuwrf/runtime/operational_mode.py": {
+      "accepted_owner_commit": "e213b65c4",
+      "sha256": "10cb5bb70e14274c7c334e8f3bcc6b143dc7e03a4f44392d3bd99ce42614b37c",
+      "BYTE": true
+    }
+  },
+  "integrator_qualifications": {
+    "batch27": {
+      "path": "<USER_HOME>/src/wrf_gpu2/proofs/s2_integrate/batch27/QUALIFICATION.json",
+      "sha256": "65fae1b5b9e3c659626b165f0c772d5a189ae9595c8c681e959fe8f3a3354c04",
+      "qualification": {
+        "verdict": "READY-FOR-MERGE",
+        "scope": "Reviewedhostscalarlist admission+two testfixtures, no newGPU/numericaltrajectory claim",
+        "UTC": "2026-10-15T08:50:46.514101+00:00",
+        "base_main": "77e8252237a733283c1bb383b755fd70c485c525",
+        "candidate_before_seal": "af14cdcd3ec7c650e9b0b71450d28ca5ba13400f",
+        "SRC": "154eeee7b64190c97781d93e2640895334f8f571",
+        "model_inputs_scripts_packaging_BYTE_reviewed_2248": true,
+        "only_product_delta_main": "wrfsfdda.effective_surface_radius;hostsinglelist/tuple scalar normalization,4otherfunctions+tail unchanged",
+        "NSSL_test": "Exactlymockmp_physics0 added; predicate/expectedemptydict/allotherbytes unchanged",
+        "CuPlus_test": "Real seed_history_diagnostics(state,myjsfc=True) used forsf2; allassertASTsexact",
+        "test_repairs_paid_reuse": {
+          "NSSL_VALID_MP0_MOCK_20261015.json": {
+            "utc": "2026-10-15T08:38:52.462718+00:00",
+            "classification": "b: empty SimpleNamespace missing required OperationalNamelist.mp_physics; valid no-MP control uses0",
+            "before": {
+              "arm": "C160",
+              "passed": 110,
+              "failed": 1,
+              "error": "AttributeError namespace.mp_physics"
+            },
+            "after": {
+              "arm": "C160b-NSSL-valid-mp0-namelist",
+              "passed": 1,
+              "failed": 0,
+              "skipped": 0,
+              "peak_rss_gib": 0.773406982421875,
+              "swap_kib": 0
+            },
+            "source": {
+              "main": "77e8252237a733283c1bb383b755fd70c485c525",
+              "candidate": "eecb6ad447faed76858b387f2402610191ccd20b",
+              "test_only_file": "tests/v034/nssl2mom/test_wiring.py",
+              "exactly_one_assertion_mock_argument_added": "mp_physics=0",
+              "all_other_bytes_expectations_predicates_unchanged": true,
+              "real_namelist_contract": "operational_mode.py:1121 required int mp_physics; :7119 admits0"
+            },
+            "change": "Exactly one assertion mock argument mp_physics=0; comparator and expected {} unchanged; every other file byte/predicate/numeric bound unchanged",
+            "performance": "test mock only; no product code or arithmetic/buffer/kernel changes",
+            "receipts": {
+              "C160": {
+                "command.json": {
+                  "path": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C160/command.json",
+                  "sha256": "c1e98537cf7ed4d409e82bf13d585ef5f501c56b86aa3bbf8c01f701429e3366"
+                },
+                "pytest.xml": {
+                  "path": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C160/pytest.xml",
+                  "sha256": "9a6f6e1d891feb162f791d2b64383a156dd8e2ddf4226c360375d962f3194a50"
+                },
+                "result.json": {
+                  "path": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C160/result.json",
+                  "sha256": "7eb2f4b0faad33e5ca6e1ae8380d93d33c63c4bb3bcabdc6b487820cf7b4d03e"
+                },
+                "memory_summary.json": {
+                  "path": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C160/memory_summary.json",
+                  "sha256": "54a75dd35920ed8a0e86fcdb580fb039eee0a346394298b2a06e6d54f3fb8614"
+                }
+              },
+              "C160b-NSSL-valid-mp0-namelist": {
+                "command.json": {
+                  "path": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C160b-NSSL-valid-mp0-namelist/command.json",
+                  "sha256": "3b24eadd4f2ffc62489066c89b6f382b60452d676627d7c0cb55328bca69fb19"
+                },
+                "pytest.xml": {
+                  "path": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C160b-NSSL-valid-mp0-namelist/pytest.xml",
+                  "sha256": "1f4f7b13c36eb5937a15189183ceb7c46664a7b58ba5851939992b020c8a4e43"
+                },
+                "result.json": {
+                  "path": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C160b-NSSL-valid-mp0-namelist/result.json",
+                  "sha256": "f1721047111bcea28deace3b9f0adc932fb5cf015b08135b3258bbc20286441a"
+                },
+                "memory_summary.json": {
+                  "path": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C160b-NSSL-valid-mp0-namelist/memory_summary.json",
+                  "sha256": "dc6f700ea90e55f31da36b20e03831327681309061868a8b9bd241c60d123d32"
+                }
+              }
+            }
+          },
+          "CUPLUS_MYJSFC_HISTORY_SEED_20261015.json": {
+            "utc": "2026-10-15T08:46:35.917773+00:00",
+            "classification": "b: mocked committed initial carry bypassed real mandatory MYJSFC U10E/V10E seeding",
+            "before": {
+              "arm": "C161",
+              "passed": 105,
+              "failed": 2
+            },
+            "after": {
+              "arm": "C161b-CuPlus-MYJSFC-history-seed",
+              "passed": 2,
+              "failed": 0,
+              "skipped": 0,
+              "peak_rss_gib": 0.9850807189941406,
+              "swap_kib": 0
+            },
+            "source": {
+              "parent": "eecb6ad447faed76858b387f2402610191ccd20b",
+              "main": "53c0a96fb",
+              "candidate": "852defa03cc623be84fec7a8d61101ac364561bf",
+              "test_only_file": "tests/v040/cuplus/test_daily_lifecycle.py",
+              "all_original_assert_check_ASTs_unchanged": 16,
+              "production_seed_rule": "operational_mode.py:7886-7892; operational_state.py:277-284"
+            },
+            "change": "Mock seed uses real seed_history_diagnostics(state,myjsfc=True) for MYJSFC only; production initial-carry rule at operational_mode.py:7886-7892/operational_state.py:277-284 unchanged",
+            "all_original_assert_check_ASTs_unchanged": 16,
+            "performance": "test fixture only; required small history leaves in mocked carry, no product/kernel/arithmetic change; lifecycle/codec test, not physics validation",
+            "receipts": {
+              "C161": {
+                "command.json": {
+                  "path": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C161/command.json",
+                  "sha256": "db8ab9ff46f983af5f2391b09a6a8579bc595a1bca4de0a00c5631a0958a9079"
+                },
+                "pytest.xml": {
+                  "path": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C161/pytest.xml",
+                  "sha256": "5627ee487b69331a6af57b89bc2f133ba105af1320909d04f93fcd69b42c7127"
+                },
+                "result.json": {
+                  "path": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C161/result.json",
+                  "sha256": "ad67ffb3ea5ea4b9e5366e8b07c6045dad4c4cbafad7d35a07a9408ae37c0182"
+                },
+                "memory_summary.json": {
+                  "path": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C161/memory_summary.json",
+                  "sha256": "16bccf8b678764a8c0af734564f78fb21e8bd09d5c2f0c538d59d7b54b99dd0c"
+                }
+              },
+              "C161b-CuPlus-MYJSFC-history-seed": {
+                "command.json": {
+                  "path": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C161b-CuPlus-MYJSFC-history-seed/command.json",
+                  "sha256": "ba5f7ccc02a8bab1cb4762ebcd3d75650b44e1687507949e1caa945984e977f1"
+                },
+                "pytest.xml": {
+                  "path": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C161b-CuPlus-MYJSFC-history-seed/pytest.xml",
+                  "sha256": "f6730ba5a81ae1e240dc0263cafae02e8723b23ed9416d45af6c8288d7b7d037"
+                },
+                "result.json": {
+                  "path": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C161b-CuPlus-MYJSFC-history-seed/result.json",
+                  "sha256": "bb43fe67f0c0296a1db491e36a11ab21f8dcf29efbf7e1f8333bfb05d8b4b87f"
+                },
+                "memory_summary.json": {
+                  "path": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C161b-CuPlus-MYJSFC-history-seed/memory_summary.json",
+                  "sha256": "cd11853b1e9908904a69c81a6d68a73a74631daafb1c587b156edd1d1473920d"
+                }
+              }
+            }
+          }
+        },
+        "raw_test_SHA_fresh": 16,
+        "SFDDA_paid_reuse": {
+          "PASS": 106,
+          "actual_native_CLI": 70,
+          "scalar_list_tuple_child_refusal": 16,
+          "auxinput9_radius_NetCDF": 20,
+          "actualparent_mutant_ASSERT": 2,
+          "healthy_mutant_controls": 68,
+          "setup_errors": 0,
+          "source_and_IO_receipt_SHA": true
+        },
+        "default_FULL_ids_reused": {
+          "Swiss": "f672a5739cb96e388b6b7a40ef80337bf81bdc14ef15268f3476e09d79fe055d",
+          "PROD": "6fc715a2bd630934c4cf0f94427df19a527cbf429011c9ba5efe4d712744d27b"
+        },
+        "fresh_numerical_executions": 0,
+        "integrator_numerical_edits": false,
+        "performance_memory": "Scalar isinstance/len/index only at setup; no addedtimestepkernel/array/temp/hosttransfer/sync/persistentcarry[I]. Testfixtureonly changes, no productcost; no timing/VRAMbenchmarkclaim.",
+        "open": [
+          "c77/c78newlyadmitted GPU/coupledD6/E41/F2 qualification remainsrequired.",
+          "GlobalfullCPU suiteINCOMPLETE/mixed-source; no release/trajectory/station/24-72h claim.",
+          "AllpriorQPresourceFAIL/P3radarABI/c89/God/CLAT/F2/experimentalUB/strictFMA limits remain separate."
+        ],
+        "cleanup": {
+          "new_snapshots": 0,
+          "new_cache_dirs": 0,
+          "new_pytest_dirs": 0,
+          "model_jobs": 0,
+          "GPU_requested": false
+        },
+        "proof_files": {
+          "SI265-2248dc315.json": "4dadfa1434a51c14cdbe0ccef5fee030128c05e8cdaa0019a2fa0d7da762211e",
+          "SI265-46e5d8056.json": "17dfda63ba96293df69534bb935de78cd10b2eff3754f64f053b4f0c49a16f79",
+          "SI266-2b622a5f4.json": "a1e71dd3924ca83aa9e98490721b5c5020e00da1503c6a0a3a4de78f585cd145",
+          "SI266-317e2085c.json": "f8a044edc8041603558f88ef83eda78965c194bab15357f9c2117c2a2ed52d40",
+          "rv-vprep-sfdda-VERDICT.md": "91d661c071a373f0a15c8bfb30c635583e350c1d07d3864b283a87bc289ea7df",
+          "rv-vprep-sfdda-RS00-source.json": "44f0790d46a9beb0ee9aa603a9076a424571de92d147c31c91c3775573a03eb9",
+          "rv-vprep-sfdda-RS01-host.json": "7586fdd2ded7da6873dbc2c02e84c006aec281eea37848af0ec4ca071fbe94bd",
+          "rv-vprep-sfdda-RS01-host.xml.gz": "55962ad101a0e0486134fe2e9c7a619d2eeac3dfb44cfb7fb400863b08df5fb1",
+          "rv-vprep-sfdda-RS02b-io.json": "5bfa9b7cb37033299b47e238034fd0e049514d7103a80f1ec3605e969ff23f65",
+          "rv-vprep-sfdda-RS02b-io.xml.gz": "d32038038f51b9d19571e41edc08cbcaff44367d5ef674d7a95f3006ea311ae2",
+          "rv-vprep-sfdda-RS03-mutant.json": "1c9b6693bdf07e3e7ef607dbc4a8e349e5987cfd29bd86db159ff210cbbcb467",
+          "rv-vprep-sfdda-RS03-mutant.xml.gz": "57c3cad6b0154d9991d71677834784a07672f1157f88fcef69a6722f9e17832f",
+          "rv-vprep-sfdda-swiss_identity.json": "6459a5387e78bf955fb235f6b4efacf60642c3fc529a8b88606b6a5e5c0cc73e",
+          "rv-vprep-sfdda-prod_identity.json": "7cd642123703bf7f20cc4eab8448b0a5a0705e0064dda50ca504021830a9e3fc",
+          "integrate_batch27.py": "17f9aad9e61c3a06dda598c9ebaa83e93b5b3ea2b1b117f6f0696f5ad63cbbd0"
+        }
+      }
+    },
+    "batch28": {
+      "path": "<USER_HOME>/src/wrf_gpu2/proofs/s2_integrate/batch28/QUALIFICATION.json",
+      "sha256": "eb860d84e44df08628b5f3b2c94f7846c8c53bf7b02470d4ecf3afb75ace458c",
+      "qualification": {
+        "verdict": "READY-FOR-MERGE",
+        "scope": "CPU-qualified caller fixes+MP8testfixture; c05/c06 forecast/GPU requalification remains OPEN",
+        "UTC": "2026-10-15T09:13:46.738103+00:00",
+        "base_main": "48c2e04e6a8ac44d2cf821290233dd4657704a93",
+        "candidate_before_seal": "2206ad953f52e609062743d75908097f43c6ba67",
+        "SRC": "369486f64c204990b5365e75eafbcc3ce8e422aa",
+        "merges": [
+          "e213b65c43e11cf1ed8bde32ef9d7e146eb940eb"
+        ],
+        "exact_cherrypicks": [
+          "04a1e5ce958e4fb3d87b4ccc81bed92c749fa2e0"
+        ],
+        "source_audit": {
+          "status": "PASS",
+          "main": "48c2e04e6a8ac44d2cf821290233dd4657704a93",
+          "candidate": "2206ad953f52e609062743d75908097f43c6ba67",
+          "SRC": "369486f64c204990b5365e75eafbcc3ce8e422aa",
+          "product_BYTE_approved": [
+            "src/gpuwrf/coupling/scan_adapters.py",
+            "src/gpuwrf/runtime/operational_mode.py"
+          ],
+          "only_SRC_difference_approved": "src/gpuwrf/io/wrfsfdda.py",
+          "host_preserved_main": true,
+          "other_main_product_inputs_scripts_packaging": true,
+          "main_NSSL_CuPlus_preserved": true,
+          "asserts_same": 4,
+          "MP8_test_BYTE_approved": true,
+          "AST": {
+            "src/gpuwrf/coupling/scan_adapters.py": {
+              "changed_definitions": [
+                "_fp64_island",
+                "_pbl_surface_island",
+                "acm2_pbl_adapter",
+                "tiedtke_adapter"
+              ],
+              "other_definitions_same": 56,
+              "SHA256": "5d41594889291e11af1d309af04f4f07337014aad9ee0a5552ae2c32483e135d"
+            },
+            "src/gpuwrf/runtime/operational_mode.py": {
+              "changed_definitions": [
+                "_physics_step_forcing"
+              ],
+              "other_definitions_same": 207,
+              "SHA256": "10cb5bb70e14274c7c334e8f3bcc6b143dc7e03a4f44392d3bd99ce42614b37c"
+            }
+          },
+          "caller_receipts": [
+            {
+              "path": "proofs/t_rainnc_callers/receipts/RN05_old.xml.gz",
+              "sha256": "8805e907425150ad80687c7188a813c319190d3fdafd776a357cb2f81bf5f04d",
+              "original_sha256": "f999889fcbf1ce1a2aa7e1326b778bfda4d1695e483c795982103faa5cc45a4f"
+            },
+            {
+              "path": "proofs/t_rainnc_callers/receipts/RN05_old.log.gz",
+              "sha256": "2264a660454e587f666fe31369f26e6f2cee87731a95dde9dd2bdcdd9869a1b2",
+              "original_sha256": "1357fcc9031a361e529006b376678062ba5e4c2971c147aa346098527508e221"
+            },
+            {
+              "path": "proofs/t_rainnc_callers/receipts/RN06_path.xml.gz",
+              "sha256": "060700df7ec577d95ed7320ba41012c59eaeb198f36f5236e91a884d76390f09",
+              "original_sha256": "016fed074e8b77fdece6464d04719c80c78a5042e2ffdb1cbaa0cbcf35c6494c"
+            },
+            {
+              "path": "proofs/t_rainnc_callers/receipts/RN06_path.log.gz",
+              "sha256": "1e7533481f78a093e7e03d1d7aa5086ad98d5898b2a551d394101aa49f1404d4",
+              "original_sha256": "bcc8ffeb2ac2ba8c98852f9f942c27c20487522a51e1bbb2f95f2189132176f3"
+            },
+            {
+              "path": "proofs/t_rainnc_callers/receipts/RN08_resources.json",
+              "sha256": "27673334ee742430842191e6687cabdc4353af89f418c08d9dbec093c27cdd42",
+              "original_sha256": "27673334ee742430842191e6687cabdc4353af89f418c08d9dbec093c27cdd42"
+            },
+            {
+              "path": "proofs/t_rainnc_callers/receipts/RN15_swiss.json",
+              "sha256": "cc91a2c316a4631fa94edddc0f951fb619a430e2dc4fe7dc07ba58b9c11b346c",
+              "original_sha256": "cc91a2c316a4631fa94edddc0f951fb619a430e2dc4fe7dc07ba58b9c11b346c"
+            },
+            {
+              "path": "proofs/t_rainnc_callers/receipts/RN15_prod.json",
+              "sha256": "7aa8924718c8fb29ea82735e541e0971c8afed52831ed1750134f74c769beb5c",
+              "original_sha256": "7aa8924718c8fb29ea82735e541e0971c8afed52831ed1750134f74c769beb5c"
+            },
+            {
+              "path": "proofs/t_rainnc_callers/receipts/RN07c/tiedtke.json",
+              "sha256": "cd36cacbb10ab5f019584f9774dc848b57dd3b4678cf62e3b7d712280332bc88",
+              "original_sha256": "cd36cacbb10ab5f019584f9774dc848b57dd3b4678cf62e3b7d712280332bc88"
+            },
+            {
+              "path": "proofs/t_rainnc_callers/receipts/RN07c/tiedtke.xml.gz",
+              "sha256": "073f56d84e8c4763b68e3588ae0a2bcd22d9ffdbe32a5e9991f97441ab9934ec",
+              "original_sha256": "388f19bb7a76456129a463df3c945e838e6ad226b125f44f1560c012852cbfdd"
+            },
+            {
+              "path": "proofs/t_rainnc_callers/receipts/RN07c/acm2.json",
+              "sha256": "a2d6a71018051045367658f81ed0bf96004a22449650163208d41a5eab286453",
+              "original_sha256": "a2d6a71018051045367658f81ed0bf96004a22449650163208d41a5eab286453"
+            },
+            {
+              "path": "proofs/t_rainnc_callers/receipts/RN07c/acm2.xml.gz",
+              "sha256": "316bbb5ac491e7f18bee90211648ac566f10f3134922933b615c06e222209e62",
+              "original_sha256": "f3828c8674d3c081560dbddcf867e174ab03b6f4ea9589ab14adba3da9589f89"
+            },
+            {
+              "path": "proofs/t_rainnc_callers/receipts/RN16/00.xml.gz",
+              "sha256": "e6d6380f88045f49d172df3e7083b859caa1a462e09ce679b01030fed6a48391",
+              "original_sha256": "eabcc23cd0c4fd7d559d5ba5559495e3829596bf9ae625761a64cae30d4eee3d"
+            },
+            {
+              "path": "proofs/t_rainnc_callers/receipts/RN16/01.xml.gz",
+              "sha256": "2932611a37c2dc777355c9d50e4a92d13f785b12b83c9df77f9e23ea308fb361",
+              "original_sha256": "0f610dc1893c0d0f0a5ddfc0feeee8a81a99f7b2499b83c0f39b36e673b14151"
+            },
+            {
+              "path": "proofs/t_rainnc_callers/receipts/RN16/02.xml.gz",
+              "sha256": "9920837d5b63fe879877210e1d2792901f23496e3388fd29bc535c2e88ba08dc",
+              "original_sha256": "7d72d95977a654bd93fa2d15c4baa682eadefdbbe61ec635c7680fafc2dbab4b"
+            },
+            {
+              "path": "proofs/t_rainnc_callers/receipts/RN16/03.xml.gz",
+              "sha256": "62545317d21ff23e1c386bbd4b08a6bc0cb490132fadcaaa652cf0323d25696a",
+              "original_sha256": "888770a040e115316f45f0371fab6e91e8982a0192970e9372af66d6bbe4c9fe"
+            },
+            {
+              "path": "proofs/t_rainnc_callers/receipts/RN16/04.xml.gz",
+              "sha256": "47464e9dadfec9370b15f52cf6b42e38757e96ade41daf725937f910ab997ef8",
+              "original_sha256": "6019d0f69a6797692db3b93432f797dbbe6804d489046a71d780bded8b4ab37d"
+            },
+            {
+              "path": "proofs/t_rainnc_callers/receipts/RN16/05.xml.gz",
+              "sha256": "9912ca32a574ca531ab74e6c5323b247bd2c144d1f516edbfbc70623f2672d4e",
+              "original_sha256": "9da1aa86682398b25d772d4a98fe4b83a4497a1839d129595029250eda17b0bb"
+            },
+            {
+              "path": "proofs/t_rainnc_callers/receipts/RN16/06.xml.gz",
+              "sha256": "dcba2b374153fdbb91c7a9dc4543c72a4141f5181c9417cc0b61480bbf5b9730",
+              "original_sha256": "00369f1dfdfd580f422aaca9ac9c915445899a5a64b259222fa91e80ff45c271"
+            },
+            {
+              "path": "proofs/t_rainnc_callers/receipts/RN16/07.xml.gz",
+              "sha256": "fdb0baf819344d79a25146f340308c6d28acf14c5656a4b1c3d408b242ed2b60",
+              "original_sha256": "ac1c1589a49f34542387abd3bbe34599558abb0259fcd225010351e64170a520"
+            },
+            {
+              "path": "proofs/t_rainnc_callers/receipts/RN16/08.xml.gz",
+              "sha256": "a728afacd964ba30a7780fb88037f9f8a347da939d5763e70d223129f0fb52c4",
+              "original_sha256": "c60df24861ee31e5ee942d09265ec6690bab0d11ac1818cddbbeb1122f01e5de"
+            },
+            {
+              "path": "proofs/t_rainnc_callers/receipts/RN16/09.xml.gz",
+              "sha256": "1ca835b9081c89f9fe9ccfb556a7f152af4994a67e57443a0c67b9b596fee387",
+              "original_sha256": "bab95eddd17996b96a420c94ea023f24fff71db123d870a95c60eefa4768a5e2"
+            },
+            {
+              "path": "proofs/t_rainnc_callers/receipts/RN17/1.xml.gz",
+              "sha256": "331d70b1dfedda800292480e3725977563e082782e8c4274c6e333ff46904aa1",
+              "original_sha256": "022dc1dea4f78f7166f30a558f8459b39ea8f577d552c3ad92c72b4234da6291"
+            },
+            {
+              "path": "proofs/t_rainnc_callers/receipts/RN17/2.xml.gz",
+              "sha256": "138b92d5dd204dfb3c8e711f2888bbd3edb49af819a6c9ae1f1be4718921203a",
+              "original_sha256": "dccb7088f545ca96bcbfab80682a64359527fcc1502814361746b2797a1211c4"
+            },
+            {
+              "path": "proofs/t_rainnc_callers/receipts/RN17/3.xml.gz",
+              "sha256": "bcf8f25e7ee89907fa92a14a45c1903cb9f86b83d8180dbd6d5a586f7fa3aaf0",
+              "original_sha256": "5b895a3ed025444fcff4c421eaea0ed566604051ba7850c2535cd1b07252f73f"
+            }
+          ],
+          "MP8_raw_receipts": [
+            {
+              "path": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C166/command.json",
+              "sha256": "e71b2d38a4448c2ede7b28394acffb3f2da0a9f987bb04857f0cc5b7b7ce7f2b"
+            },
+            {
+              "path": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C166/pytest.xml",
+              "sha256": "78c5a68ce1113c7916f1ce8b5a383e2dbc06349e616b73c095649c91b845ab82"
+            },
+            {
+              "path": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C166/result.json",
+              "sha256": "37b5ef2634a427fd5af0e9510db3663a00192a79878cf19484c45a1b37d049e9"
+            },
+            {
+              "path": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C166/memory_summary.json",
+              "sha256": "2954e51b31f527635a8257931cfbd04e4798dc75c012883392de77bba4fe0fac"
+            },
+            {
+              "path": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C166b-radiation-qi3-mock/command.json",
+              "sha256": "cf207dc525968f42a232e3c5c6e9334068b4fba8078f78cf8e3a2bdedeae3540"
+            },
+            {
+              "path": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C166b-radiation-qi3-mock/pytest.xml",
+              "sha256": "a599079f91865cf9974055e7703399f70b70a3d3302be99592338dd813ddfc04"
+            },
+            {
+              "path": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C166b-radiation-qi3-mock/result.json",
+              "sha256": "7d8536902370a33bf1243f13f9ff94a4f1f0ed616fedbfb8a32a0e02ee753b31"
+            },
+            {
+              "path": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C166b-radiation-qi3-mock/memory_summary.json",
+              "sha256": "131a09dd932dbed3f89d89e8e53397368ac7b7f8dae5cdbbf150451d5df8be00"
+            },
+            {
+              "path": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C166c-original-collection-qi3/command.json",
+              "sha256": "b5f750a13065e0a2b0602470d378132f7b2c1c33089dc15ce016f3e59e9d76bc"
+            },
+            {
+              "path": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C166c-original-collection-qi3/pytest.xml",
+              "sha256": "20d81ebc1cc9d56aff27b849c2225adc5a04743a2e5495b5471f1eb0be008210"
+            },
+            {
+              "path": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C166c-original-collection-qi3/result.json",
+              "sha256": "fcb8ccf179523d97a93c5700e877a674ed990bbd48fec24f8aa64097533db7e0"
+            },
+            {
+              "path": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C166c-original-collection-qi3/memory_summary.json",
+              "sha256": "077a45c2f40a715274cf814dba172b539254d1e0d164f44011b36a4e6319ef5f"
+            }
+          ],
+          "shared_PASS": 243,
+          "affected_smoke_PASS": 3,
+          "reused_FULL_defaults": {
+            "Swiss": "f672a5739cb96e388b6b7a40ef80337bf81bdc14ef15268f3476e09d79fe055d",
+            "PROD": "6fc715a2bd630934c4cf0f94427df19a527cbf429011c9ba5efe4d712744d27b"
+          },
+          "closure": "Caller files BYTE reviewed e213; remaining SRC differs only host wrfsfdda parser. Caller/smoke/default routes do not enable surface FDDA; existing host fix retains reviewed106PASS. MP8 witness uses unchanged shared radiation/cloud definitions, adds optionalinactiveqi3 only. No new composition numerics."
+        },
+        "paid_reuse": {
+          "independent_callers": 9,
+          "pristine_values_EXACT": 42,
+          "actual_parent_numeric_ASSERT_CU6": 5,
+          "actual_parent_numeric_ASSERT_ACM2": 4,
+          "parent_other_failure_or_setup": 0,
+          "wrapper_passes": 16,
+          "wrapper_REAL_harness_failures_discarded": 8,
+          "actual_operational_and_density_checks": 5,
+          "producer_shared_unique_PASS": 243,
+          "producer_affected_smoke_PASS": 3,
+          "MP8_unique_PASS": 8,
+          "MP8_repeated_same_nodes_not_extra": 8,
+          "default_FULL": {
+            "Swiss": "f672a5739cb96e388b6b7a40ef80337bf81bdc14ef15268f3476e09d79fe055d",
+            "PROD": "6fc715a2bd630934c4cf0f94427df19a527cbf429011c9ba5efe4d712744d27b"
+          }
+        },
+        "performance_memory": {
+          "measured": "CPU changed arithmetic only, excluding unchanged CU6 solver; 44x117x267 +0.17354ms, compile32\u201341ms, temporary0, outputbytes unchanged; clock4 scalar JAXops/temp0",
+          "inferred": "No new carry/schema or host transfers. PHY_PREP uses existing resident ph/mu; native GPU launches/traffic/fullsolver time unmeasured."
+        },
+        "limits": [
+          "c05/c06 original frozen RAINNC FAIL unchanged; manager/v-prep must rerun final composed source",
+          "No proof these caller fixes explain all c05/c06 rain drift",
+          "Existing Tiedtke hydrostatic pressure/interface/eta approximations and legacy DOUBLE column remain disclosed",
+          "CAM-MG native zero-rain remains separate and absent from this patch",
+          "GPUlaunch/traffic/VRAM/latency U; no S1/R1 or full-release gate claim.",
+          "Broad shared-smoke6GOOM and reviewer8REAL harnessTypeErrors retained; neither countedPASS. Later90-smoke producercompletion announced but not in approved sealed packet, no claim here.",
+          "AllpriorF2/E41/fullsuite/strictFMA/experimentalUB limits source-scoped, unchanged."
+        ],
+        "fresh_numerical_or_GPU_runs": 0,
+        "integrator_numerical_edits": false,
+        "cleanup": "No new snapshots/cache/pytest/tmp or JAX/GPU jobs",
+        "proof_files": {
+          "rv-VERDICT.md": "2c5cbe036176c96d5d9de0820ccbb16125f512faad641ff94e1f1f46157d19eb",
+          "rv-RC07-audit.json": "1439eeb55479cbbc72ad3c6e73ef524360b990863d2b804de026429ba0f444ec",
+          "rv-RC03-compare.json": "29170950c611dfc82aafaf6a1881464359eec4e10acd0ca3499cac8583d2a34d",
+          "rv-RC03-oracle.json": "57d23308fc9ffa95f96c46b875116faf06b335cf70b74f28addf9650bcab8bbc",
+          "rv-RC01.xml.gz": "86b3bdfd6493dae41404a6dc0ed3992f5eb8d67fc5829ecbbe733e28a5e178a2",
+          "rv-RC05.xml.gz": "5de9427a15844ef328c0aead0582eafae5a2cf9a75c1c63cc1e31478a0c367b0",
+          "rv-RC05b.xml.gz": "dc7abb99512225a0082b7a16806b6cbd06ea964d1fb88df6e59b56f9a57dd5fc",
+          "rv-RC06.xml.gz": "b89dc62ff23b8816ea0b0571d46a0f0ceba976febaa53b06f3bd66126f824d4e",
+          "rv-RC04-Swiss.json": "bc25c796ac3e2f7b38f41317481a837fb4143552bf380cd3b85a29fc2205ee02",
+          "rv-RC04-PROD.json": "9aa78829aed361fcb51451eefe593b0a38ce38ca8809e1180a6952577d489a20",
+          "rv-test_critic_wrappers.py": "5022f8575af632eb1acfb7e6975177888631d635b621bee5b986d1f1c83978c3",
+          "MP8-0-command.json": "e71b2d38a4448c2ede7b28394acffb3f2da0a9f987bb04857f0cc5b7b7ce7f2b",
+          "MP8-1-pytest.xml.gz": "dab153d60acdd32f3b93f2da9e67729abae3938607c3fb9c83e00dfdf9ecf8cd",
+          "MP8-2-result.json": "37b5ef2634a427fd5af0e9510db3663a00192a79878cf19484c45a1b37d049e9",
+          "MP8-3-memory_summary.json": "2954e51b31f527635a8257931cfbd04e4798dc75c012883392de77bba4fe0fac",
+          "MP8-4-command.json": "cf207dc525968f42a232e3c5c6e9334068b4fba8078f78cf8e3a2bdedeae3540",
+          "MP8-5-pytest.xml.gz": "be67dcd6ba7f6b575a30da7a3912e165281b82bee12d8ae37c45325e9353dc9a",
+          "MP8-6-result.json": "7d8536902370a33bf1243f13f9ff94a4f1f0ed616fedbfb8a32a0e02ee753b31",
+          "MP8-7-memory_summary.json": "131a09dd932dbed3f89d89e8e53397368ac7b7f8dae5cdbbf150451d5df8be00",
+          "MP8-8-command.json": "b5f750a13065e0a2b0602470d378132f7b2c1c33089dc15ce016f3e59e9d76bc",
+          "MP8-9-pytest.xml.gz": "35d484cfcb15933d2172a8db3276622f7bdc6a5a831ee0e26cb0b2ddc075860f",
+          "MP8-10-result.json": "fcb8ccf179523d97a93c5700e877a674ed990bbd48fec24f8aa64097533db7e0",
+          "MP8-11-memory_summary.json": "077a45c2f40a715274cf814dba172b539254d1e0d164f44011b36a4e6319ef5f",
+          "qualify_batch28.py": "3e5cc43bdd8a902f14edb653d0c7608e30cb671d362877fc3e9b5392adaf1b32",
+          "integrate_batch28.py": "5692d03d7c07037174e7c82b90cd0f62b91eb549f53bf8fee3dd136212122261",
+          "SI273a-audit-helper.json": "542add5e98f05c06bcd5dd52b0933ee866cf3bdb8b27b8d39d8b4dff83455721",
+          "SOURCE_AUDIT.json": "07599cf890877a3b09958ce7655adc7b3e86cd95fed037d2a74910b73673bd5d"
+        }
+      }
+    }
+  },
+  "limitation": "Current inventory execution spans immutable sources; accepted owner validation reused for changed functions, not a fresh entire suite of this commit"
+}

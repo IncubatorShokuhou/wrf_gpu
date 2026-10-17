@@ -1,0 +1,192 @@
+{
+  "status": "FIXED",
+  "created_utc": "2026-10-14T02:27:44.264102+00:00",
+  "review_verdict": "<USER_HOME>/wrf_gpu2_lanes/rv-s2-p3/VERDICT.md",
+  "tested_fix_commit": "23d424513a02827102d7bf74c6005d4f22d61e25",
+  "integration_base": "c4a6321a573ee1bdd13eb40c618ff278b1db8cb3",
+  "qualified_model_commit_retained": "c0b1a910ec314d8d446e4010ca7b0ab476cf1514",
+  "qualified_model_tree_retained": "fd514da4537c540255c24c4b4751ea7d8f085d69",
+  "original_packet_sha256_unchanged": "190be5745ac371b27740e8f3c766f7cd5ecbe164ab3bc53705b72f66347d5fd6",
+  "original_receipt_seals_pass": 21,
+  "original_receipt_sha256": {
+    "gates.literal_REAL4_noFMA_ALL4_BYTE": "6debc01be3d9a106d4c78b6fc7599179b6496f64753aeaa71ddcc2559736ee63",
+    "gates.affected_literal52_53_BYTE": "5c4c0bd369f8fe67d99cfc8f80a0ba974ef649d2cbbc52bc68c8c5de89b82971",
+    "gates.compiled_ALL4_conditioned_PASS0": "42e08e856780fbe18c17cc6993b3dc5ec7d2d089d106c27e6b5b625954c096a7",
+    "gates.affected_QZI53_composed_PASS0": "14d6869303816e75e81ac448f98fb33316e98383e749dd891f351b924c17c9fe",
+    "gates.QZI_256_results_BYTE_eager_and_jit": "3ade45f34ba02cb3eb88145275726dc0bcf4bcfb707f5d799f6d8d4a94e6c485",
+    "gates.WRF_contraction_init_control": "95c531fceb9c6a808a1c887791fa76f1158e67e25f91128d9bed9627e32557b3",
+    "gates.native_release_identity": "5bc8dd45efea2ca53c1427f5a32a06734437a1935715cc183fb4ae5ee8d0ff90",
+    "gates.coupled.50": "66ca28ac28e29a4e32a599a2cfa87036857ef955f87226fd90eb633f3e3e99e1",
+    "gates.coupled.51": "bf6237d962d3d6769ec8d47f07db8f7c465c52bfcc9ead4ed65da7ecf26ad739",
+    "gates.coupled.52": "11c50ca86bd9e883e2c0ea110a3aff5b281d25a4af46fd5714ff50d245a66ee5",
+    "gates.coupled.53": "5894508e785a795f7e528b467be401b5612a61c4fb4b7c04c0074850c67d3f38",
+    "gates.native_CPU_TTIR.50": "3b6736b5824c0582d13eeeda31c70548ed18fe8bb111b5c0cb4c3c0568e71beb",
+    "gates.native_CPU_TTIR.51": "2b0ef9c6980d069170988a63a94cce38e29b0c4a6a82e0bbad67558b6df4e790",
+    "gates.native_CPU_TTIR.52": "2fa149658efdb1c1bdc4b8016ee30e1d9f833e48d611870dd7755f1ff52f06bc",
+    "gates.native_CPU_TTIR.53": "27c4024e66ef780986de3926c60ca8df6fd50377da16d1e21a1cb016f05ad6b5",
+    "gates.shared_consumers.final_composed": "96df011b7bdfdd216b6d0f964c903ab6058023af5cf6dec6df9d0ecd94eeafba",
+    "gates.shared_consumers.full_feature": "71d900b7a80a8d86b1c890842d82d8bf99385f9daf550da41d35cb80aaa82645",
+    "gates.shared_consumers.complete_operational_file": "ddc2dce6657db0994fcc7a1a8b4068731e1b800ba01bb75c998e4a683f20479a",
+    "gates.deletion_mutant": "01a2e8d15665affaacad982a376234a29ec3702f96fdb2ff0c7697b72b250961",
+    "gates.deletion_mutant.patch": "f43cb9216606dc4028db6ae121e433950ac08bb9ba89fb227e5ad1d46d92ca47",
+    "gates.final_rebase_source_BYTE": "83906dbfc0a06d751672d37be0fb6446466c2414b300892e61993fc909113502"
+  },
+  "byte_unchanged_P3_sources_fixtures_and_bounds": {
+    "proofs/s2_p3/COMPILED_BOUND.md": "cdef740dc4bfa92b938ccd7b8cc26b34b1346c7c3f588e5bb5d28e937cd26fcd",
+    "proofs/s2_p3/UPSTREAM_WRF_BUGS.md": "c4a0e49b1f39c7f6b7a1035cb1cd0adaa322f30897d2da70c9e0ce6e9df4d504",
+    "proofs/s2_p3/columns_manifest.json": "c4edb3138c4f3e7a43901112f6a529ed5d974cb3f7dec0b14dd70bc3cd84580c",
+    "proofs/s2_p3/fixtures/2mom.npz": "aa5be111b613d7534ea2de9ff1f96d3ce33433309adca695b5dc5219cd695c6e",
+    "proofs/s2_p3/fixtures/3mom.npz": "82a40a0d6248d7cb7c225170b31feb0658639e948f030d4afe83180d76506861",
+    "proofs/s2_p3/fixtures/columns_mp50.npz": "b596bedff87713bd16adef6495b96eff3e045be62982b3e18c8ac2fd0b2916f9",
+    "proofs/s2_p3/fixtures/columns_mp51.npz": "63a3e81863686f4c5f3be86bcae1d850503824b2a40906e660ecf914e011f49c",
+    "proofs/s2_p3/fixtures/columns_mp52.npz": "f80ade544d275c60c80f39c2a06f6d36201565c3d3839619fcb01b4435ec7587",
+    "proofs/s2_p3/fixtures/columns_mp53.npz": "4dfd8514370790156091fd877553827e4d3ba3592736eee74f3ccbe9edb1f747",
+    "proofs/s2_p3/fixtures/ice_ice.npz": "f45180ebd368099465d94775c9702e935eb6044a3f3c3fb8aff949082413e04e",
+    "proofs/s2_p3/fixtures/radiation.npz": "a837a84cc75836e3907b908558ef8af0a62a85884581d876b3d16354e4793f80",
+    "src/gpuwrf/kernels/phys_p3.py": "2874d5a6ca30925211f930306ef81b19c7eb119c4c896d69273d90cd4b018450",
+    "src/gpuwrf/physics/p3/__init__.py": "86e1e9f6d1bbe95f929faf6ffeaa3e41deba4fc8a3e708b83892b4cae41b9a54",
+    "src/gpuwrf/physics/p3/adapter.py": "7320dfe82153a4d97d8d82458f5de81eb4cc634c0d2ee7e0c95b81b990cbeb3b",
+    "src/gpuwrf/physics/p3/column.py": "39158e96901be58174cb9b9b673a4a84ee34933f99632b10c6c1ad6e34ad231f",
+    "src/gpuwrf/physics/p3/constants.py": "8d210b902ff1b7bf073f7543937b86529324deb57640a970fe84a955c593cef2",
+    "src/gpuwrf/physics/p3/data/2mom.npz": "8c4607b088f3af8b1e2781e47b0085b28d0b3fc1e7bb247e1ee72228fc4b12c7",
+    "src/gpuwrf/physics/p3/data/3mom.npz": "5f8f3bba8e2b320c5368395dadb4085561328f5395036d3c714603ce9c3ae500",
+    "src/gpuwrf/physics/p3/data/ice_ice.npz": "81cc042ee1fe747b440bb40af6604054c12523136fcf60f33cb62a5b36219ad7",
+    "src/gpuwrf/physics/p3/data/manifest.json": "d4b5897700300ded42971fca4fe3c96542501b04ec1b5b4a95f3cb0e544fcaab",
+    "src/gpuwrf/physics/p3/data/warm.npz": "f885ca763a7f5b82a85d58e9fa134ea8801ce69d0a0e0a9ae3313d53f68a505a",
+    "src/gpuwrf/physics/p3/final_generated.py": "7a60e5b9832d32e0d24f647f8e3038d99a375baf1e7dafc2a74027a961cfd350",
+    "src/gpuwrf/physics/p3/initial_generated.py": "0197eaba10b150d4d450660f2fc98b7a573b60303fd6c015ee383c37e56df054",
+    "src/gpuwrf/physics/p3/lookup.py": "eb78f3db57e56ccdb48b17759935294cfc2cd138756284b9edffad6f7ad7ce03",
+    "src/gpuwrf/physics/p3/process_support.py": "319633b63e26535d1e9bf69e295478c9fb9f739f3fd3706450745ac6c4bbe0f7",
+    "src/gpuwrf/physics/p3/processes_generated.py": "eef5e46e68cf98df6c8047c0a6b246b3d1c121559ccca854754533ebb562e74b",
+    "src/gpuwrf/physics/p3/properties.py": "2dab00b0f275d49264476b030a08560cfd9e1b7be11a59c4d2bf490b28ab338b",
+    "src/gpuwrf/physics/p3/qzi.py": "81e2e0ed1abaef05d93c0fe536e5239d688fb6070ceaf98603ec389d62b05e9c",
+    "src/gpuwrf/physics/p3/radiation.py": "a805f69bec6a7333c075fbd27cdcc18b3654bef1e0416143a61bd7a8ce9df622",
+    "src/gpuwrf/physics/p3/registry.py": "4acbd4b27bcc95db8074c482ca4eaa2af7800d57c95bc49688aa76cb7bc1126a",
+    "src/gpuwrf/physics/p3/tables.py": "81c09abd46cf93898e6c588c0e3800f32aaa24afb47e9700f36aed1022589d1a"
+  },
+  "rebased_pre_fix_commit": "65c0a1c0c08627a00427fcca15efa1743f83b2c0",
+  "rebased_pre_fix_model_tree": "7068f14497e7aabb307291e971dafaffd3ee1c60",
+  "fixed_model_tree": "7a927b11db56b3115b5bddc81072079b11bf54d3",
+  "src_delta_since_proof_fix_base": [
+    "src/gpuwrf/contracts/physics_interfaces.py"
+  ],
+  "contract_functions_AST_unchanged": true,
+  "literal_executor_non_main_functions_AST_unchanged": true,
+  "frozen_tolerance_function_AST_unchanged": true,
+  "validation": {
+    "P392": {
+      "passed": 722,
+      "seconds": 2.87,
+      "scope": "Both CLI entrypoints; saved-array replay; every compared and auxiliary field NaN/+Inf/-Inf, matching literal nonfinite, inventory/shape/dtype, derived limit and finite failure counts"
+    },
+    "P393": {
+      "verdict": "PASS",
+      "source": "original critic RV03 saved arrays; no physics or forecast execution",
+      "elapsed_cpu_s": 0.06426230608485639,
+      "schemes": {
+        "50": {
+          "field_scores_exact": 63,
+          "bad": 0,
+          "strict_bad": 162
+        },
+        "51": {
+          "field_scores_exact": 63,
+          "bad": 0,
+          "strict_bad": 185
+        },
+        "52": {
+          "field_scores_exact": 84,
+          "bad": 0,
+          "strict_bad": 350
+        },
+        "53": {
+          "field_scores_exact": 66,
+          "bad": 0,
+          "strict_bad": 301
+        }
+      },
+      "reused_array_sha256": {
+        "<USER_HOME>/wrf_gpu2_lanes/rv-s2-p3/RV03_compiled_mp50.npz": "a420486ece4336009a6e475dd063e54346be4b1ef3d270cf2c3fb73f67e36cf3",
+        "<USER_HOME>/wrf_gpu2_lanes/rv-s2-p3/RV03_compiled_mp51.npz": "e46c6219c16f9fd6606e5f7eba9442e9054d43620c65bdaa5abc613d8a9b22a9",
+        "<USER_HOME>/wrf_gpu2_lanes/rv-s2-p3/RV03_compiled_mp52.npz": "a26f39abc7f4576a4c76a9b941c3ff85899f8f5430b28be4724f57eb704a7395",
+        "<USER_HOME>/wrf_gpu2_lanes/rv-s2-p3/RV03_compiled_mp53.npz": "9426ea5ae238f24f8f1ff1df19a41ca529e09b22c2338f048cda77b6f631453c"
+      }
+    },
+    "P394": {
+      "passed": 260,
+      "seconds": 13.7,
+      "scope": "Rebased State/three restart formats/radii/shared consumers"
+    },
+    "P395": {
+      "passed": 37,
+      "seconds": 1.87,
+      "scope": "tests/contracts/ and test_v018_mp_family_fail_closed.py; four P3 PhysicsStepSpecs"
+    }
+  },
+  "evidence": {
+    "P392_gates.xml": {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/s2-p3/P392_gates.xml",
+      "sha256": "ad32bd401db87597ab5692a7f62e2f62f534c5fa0f607484f28d17b239803918"
+    },
+    "P392_gates.log": {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/s2-p3/P392_gates.log",
+      "sha256": "2f1504da3d989d8fdbd249e343be5bd9432d811ee9d002da4902a1e6a5046c01"
+    },
+    "P393_replay_summary.json": {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/s2-p3/P393_replay_summary.json",
+      "sha256": "b7e2d85b6c2c93c63c0e41d7da065ee033d0776e99ac63db86b1e3c6164cd698"
+    },
+    "P393_rescored.json": {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/s2-p3/P393_rescored.json",
+      "sha256": "504aa240c52e96f282d82361f69cbe0239fe3b31b518e69b3a86b9e4350c4429"
+    },
+    "P393_replay_scores.py": {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/s2-p3/P393_replay_scores.py",
+      "sha256": "87746758de1054100cc85c4b2685b55348c65ce394055072caeb8ec4f3fd6426"
+    },
+    "P394_shared.xml": {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/s2-p3/P394_shared.xml",
+      "sha256": "d75a81b90476f9b9372bba48c14f4db9f3fb0335b837d0697d828333d29ec124"
+    },
+    "P394_shared.log": {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/s2-p3/P394_shared.log",
+      "sha256": "fe652554e12c30499ad24bc709b15f7ef1b1d495ac19ceada396c40ba5693a4a"
+    },
+    "P395_contracts.xml": {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/s2-p3/P395_contracts.xml",
+      "sha256": "69811c4ea43b8c2a38c1bab0e8d734b629087068c34a8fbd7deac83a00933132"
+    },
+    "P395_contracts.log": {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/s2-p3/P395_contracts.log",
+      "sha256": "30ef35f226a1c6686a3106479fcd61fa94f83fdf0a20b3a3e23d7ef8c7e94126"
+    }
+  },
+  "performance_memory": "Proof-only CPU validation; new PhysicsStepSpecs are import-time metadata. No changed forecast arithmetic, timestep allocations, transfers, kernel launches or compilation. Saved-array rescoring 0.0643s CPU; this is not forecast/GPU speed evidence.",
+  "reuse": "Original qualified-model binding and sealed packet retained. P3 physics/native/fixtures BYTE; new src delta only declarative interface metadata. No repeated healthy column physics, forecast or GPU execution.",
+  "remaining_limits": "Experimental root-only; GPU execution/E41/VRAM/launch count/speed and long D6 forecast qualification remain pending.",
+  "final_rebase": {
+    "tested_commit": "6c00e187a1ac07ddbbf24491d5ea0d253c974ef4",
+    "integration_base": "e9824c1bdc0b0f77e0a32095856c4f02366b3eb1",
+    "fixed_model_tree": "6797099ca6f2173492676b9dafe07bb24fe7c687",
+    "source_delta_since_rebased_pre_fix": [
+      "src/gpuwrf/contracts/physics_interfaces.py"
+    ],
+    "protected_files_BYTE": 31,
+    "original_packet_BYTE": true,
+    "original_receipt_seals_PASS": 21,
+    "P392_comparison_sources_and_tests_BYTE": [
+      "proofs/s2_p3/comparison.py",
+      "proofs/s2_p3/literal_cpu.py",
+      "proofs/s2_p3/run_column_gate.py",
+      "tests/test_p3_comparison_gates.py"
+    ],
+    "contract_functions_AST_unchanged": true,
+    "P397": {
+      "passed": 297,
+      "seconds": 28.54,
+      "scope": "final mp22+P3 composition: tests/contracts/, legacy v018 pins, P3 State/radii/restart, all mandatory lightweight shared consumers",
+      "log_sha256": "b3c500ad0faec0522a5d1e96ada6ca15199a43e6516c92fbbc60db6f5ee95752",
+      "xml_sha256": "332fce5f3aa22236146d1395e0d55b59d9cd7f1627fb3210a8778c77fc073e56"
+    }
+  }
+}

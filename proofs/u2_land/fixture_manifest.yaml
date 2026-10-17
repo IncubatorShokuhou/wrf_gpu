@@ -1,0 +1,85 @@
+fixture_id: u2_land_wrf471_controls_v1
+source: local pristine WRF 4.7.1 source and independently compiled untouched routine/caller bodies
+source_commit: f52c197ed39d12e087d02c50f412d90d418f6186
+license_notes: Numeric outputs generated locally from pristine WRF 4.7.1; upstream source remains under its original WRF license and is not redistributed by these fixtures.
+scenario: Swiss snow/skin inputs and declared constructed active snow, irrigation, carbon, crop, soil, groundwater, runoff and tile regimes; component qualification, not forecast truth
+variables:
+  - snow: RAIN/SNOW/FPICE, ALBEDO/TAUSS/ALBOLD; mm s-1, dimensionless
+  - irrigation: INTEGER counters, REAL4 remaining/accumulated event water and losses; m
+  - skin: bulk SST/SSTSK/DTW; K
+  - surface_caps: canopy/bare last-Newton temperature and IR/SH/EV/GH fluxes; K, W m-2
+  - surface: BTRAN and RSURF; dimensionless, s m-1
+  - phenology: LAI/SAI/ELAI/ESAI/FVEG/IGS; dimensionless
+  - thermal: original HRT coefficients and frozen liquid SH2O; K s-1 and m3 m-3
+  - canopy: original Jarvis/SFCDIF2 exports; original source units in fixture definitions
+  - carbon: six original pools and GPP/NPP/NEE; g m-2 and original carbon/CO2 flux units
+  - crop: eight pools plus INTEGER PGS, LAI/SAI and original carbon fluxes; GDD degrees C day
+  - soil: nine four-layer hydraulic fields; source SI units after original conversions
+  - groundwater: REAL4 ZWT/WA/WT, SH2O/QIN/RUNSUB; m, mm, mm s-1
+  - runoff_tile: four-layer SH2O/SMC, RUNSRF/QDRAIN/RUNSUB/QTLDRN/ZWT; m3 m-3, mm s-1, m
+  - precision: REAL4 literal operation order; compiled bounds use independently frozen input-ULP variants; GROUNDWATER S_NODE explicit DOUBLE island only
+  - shapes: per fixture cases/steps/variables_out and builder read/write schemas; profiles have four soil and up to three snow layers; source staggering is a single WRF land column
+files:
+  - path: advanced_water_oracle.json
+    sha256: 1596236f94a9311cacba528f8f5cf4401208dd64fcf5fb1083496db606576bb7
+    bytes: 239479
+  - path: canopy_oracle.json
+    sha256: e5ba20f130b4308686ef53c6dfad6f1ef5248863e0505f648aedfac50629e399
+    bytes: 475355
+  - path: carbon_oracle.json
+    sha256: 8b7fc0b8aea557703016c1ec97d6bb4185780aa49d1b70a536bde8f635e7d939
+    bytes: 130103
+  - path: crop_oracle.json
+    sha256: 7b3c9d575553bc25ddaaeb8b0ba27f1dad68f6048f9993be7d7760c8268af6f7
+    bytes: 289528
+  - path: crop_phenology_oracle.json
+    sha256: 989cc80bc4fb706ce6f9f5c725b1bb849688a379db3ddf6784542cccaf9e11eb
+    bytes: 37031
+  - path: equilibrium_oracle.json
+    sha256: 26e9a84a09d6e7ef0b42a0cb2c12c10c593eacb747cebf878586dc51a3ed67a0
+    bytes: 21051
+  - path: gap_oracle.json
+    sha256: a9d96f70da8d9018e6d02f63d25e185c096f992a8198e03cae1934db4536092c
+    bytes: 38482
+  - path: groundwater_oracle.json
+    sha256: ae3ea333452c7e148362bba66d2a64fe68bc61f4c0a78c0c0e93a4df10bfdc61
+    bytes: 128470
+  - path: irrigation_oracle.json
+    sha256: c700367c8da24d93cc50a85aefd9519c92855d1bc49beff0fe5a8ed232a277c4
+    bytes: 68017
+  - path: phenology_dynamic_oracle.json
+    sha256: eb05e1d1976f547ac59842693ec972c9aa3d483bcd8f96a700b73e347b6b0d64
+    bytes: 19962
+  - path: phenology_oracle.json
+    sha256: 6124c96c2ed3ab7af41d7bd4c1151144ccfdd74ed9463c08585ed17a9dd127cf
+    bytes: 38659
+  - path: prognostic_water_oracle.json
+    sha256: ce6412022819c8b8546379d5c3377ab2f9291a64abec7c01ede6051ade0224a7
+    bytes: 23571
+  - path: runoff_oracle.json
+    sha256: bde698d7d1edc1f38282e7488aac91b1f59d97c0f09f0e898531e28fc9c6bc92
+    bytes: 94995
+  - path: skin_oracle.json
+    sha256: 7c8d12a3d9229a29789ef08818573849f77c6f655c45061cee0a680633305f3e
+    bytes: 22376
+  - path: snow_oracle.json
+    sha256: 814a2b6264f6212f1a19b52bbe26cbd7ac8b88c83bdd3bd28a9b0e002db8d106
+    bytes: 35430
+  - path: soil_oracle.json
+    sha256: f75308c9cb59905108c0357ce8c6bfaea008a1016be3eadf16394ae3f7668bdd
+    bytes: 53219
+  - path: surface_caps_oracle.json
+    sha256: 2bffca4417b3b9a93d10773d6abb60020213a5a3cf5e72ebe043884396fac8a9
+    bytes: 36379
+  - path: surface_oracle.json
+    sha256: 418d97789fb654619eb6df7bd479f96a3d719e070a54d33e9072b9fd50b96262
+    bytes: 40696
+  - path: thermal_oracle.json
+    sha256: 41aa5dafe2da284416d993abaace85e7139268366196947597dfb3e270903028
+    bytes: 171483
+  - path: water_oracle.json
+    sha256: 5a8babc3ecd53fb71dcd617aca06317eeaf04909d30797d42b18a4b0ae2c507e
+    bytes: 37542
+  - path: precision_bounds.json
+    sha256: 145e0ce48ecef1e00176ffe8dc71c983ded482d898475cbf638a8af6dec44a6e
+    bytes: 166564

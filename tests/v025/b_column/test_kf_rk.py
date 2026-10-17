@@ -106,7 +106,8 @@ def test_actual_prod_rk_dispatch_d1_and_composed_keys(monkeypatch,joint):
     from gpuwrf.runtime.domain_tree import DomainTree
     sys.path.insert(0,str(ROOT/'tests/v025/b_core'))
     from prod_inputs import prod_domains
-    hierarchy,bundles,_,_,_,carries=prod_domains()
+    # This gate only traces d01; loading d02 needlessly compiles its initial physics.
+    hierarchy,bundles,_,_,_,carries=prod_domains(root_only=True)
     tree=DomainTree.from_domains(hierarchy,bundles,feedback_enabled=False)
     nml=tree.domains['d01'].namelist;carry=carries['d01']
     events=[];records={}

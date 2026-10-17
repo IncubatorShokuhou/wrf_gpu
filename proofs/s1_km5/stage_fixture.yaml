@@ -1,0 +1,13 @@
+fixture_id: sms3dtke-stages-wrf-v1
+source: pristine WRF module_diffusion_em complete SMS + module_em TKE_advance
+source_commit: private pristine library hash below
+scenario: Swiss12x10x44 dx600m; 3 own steps and 9 RK stages; TKE/gamma evolve; other real operands frozen
+created_utc: 2026-10-13
+generation: proofs/s1_km5/build.sh sms_stage_driver; python proofs/s1_km5/stage_oracle.py FULL_EXE STAGE_EXE OUT WORK
+variables:
+  - {name: tke, units: m2 s-2, shape: [3,44,10,12], dtype: float32, absolute_tolerance: 32eps32*maxabs(reference), relative_tolerance: 32eps32}
+files:
+  - {path: data/fixtures/sms3dtke-stages-wrf-v1.npz, sha256: fbcbdf177fbef1e489ff0dee7d3a821d9887b5fb15d736421f64d31ae9e12475}
+  - {path: proofs/s1_km5/sms_stage_driver.F90, sha256: 1f0515eaf055f63a6028c56f67d060cb7595df55cc98df543335a1a687c359ee}
+wrf_library_sha256: 4886a500d7bbcbdc7cff40ed3baab72b6a014b4dd9879bf25bc7c24522dfadbe
+license_notes: compact numerical NCAR WRF component/caller fixture; no full wrfout redistributed

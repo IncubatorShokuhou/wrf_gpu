@@ -8,7 +8,7 @@ from functools import partial
 
 import jax
 import jax.numpy as jnp
-from jax.experimental import pallas as pl
+from gpuwrf.backends import pallas as pl
 from jax.experimental.pallas import triton as pt
 
 from gpuwrf.kernels.dyn_rk_fp32 import _rn
@@ -16,8 +16,9 @@ from gpuwrf.kernels.dyn_rk_fp32 import _rn
 BLOCK = 128
 
 
-def _sweep(mut, qv, qc, qr, qi, qs, qg, c1h, c2h, dnw, p_top, faces, p_hyd,
-           *, nz, ny, nx, interpret):
+def _sweep(mut, qv, qc, qr, qi, qs, qg, c1h, c2h, dnw, p_top, *tail,
+           nz, ny, nx, interpret):
+    faces, p_hyd = tail[-2:]
     lanes = pl.program_id(0) * BLOCK + jnp.arange(BLOCK, dtype=jnp.int32)
     live = lanes < ny * nx
     j, i = lanes // nx, lanes % nx
@@ -30,6 +31,8 @@ def _sweep(mut, qv, qc, qr, qi, qs, qg, c1h, c2h, dnw, p_top, faces, p_hyd,
         load = lambda ref: pt.load(ref.at[k, j, i], mask=live, other=zero)
         qtot = rn("add", rn("add", rn("add", rn("add", rn("add",
             load(qv), load(qc)), load(qr)), load(qi)), load(qs)), load(qg))
+        for ref in tail[:-2]:
+            qtot = rn("add", qtot, load(ref))
         mass = rn("add", rn("mul", jnp.broadcast_to(c1h[k], (BLOCK,)), m),
                   jnp.broadcast_to(c2h[k], (BLOCK,)))
         dp = rn("mul", rn("mul", rn("add", jnp.broadcast_to(one, (BLOCK,)), qtot), mass),
@@ -52,6 +55,6 @@ def hydrostatic_profiles(mut, moist, c1h, c2h, dnw, p_top, *, interpret=False):
         grid=((-(-(ny * nx) // BLOCK)),), interpret=bool(interpret),
         compiler_params=pt.CompilerParams(num_warps=4),
         name="phy_prep_hydrostatic_real",
-    )(f32(mut), *(f32(q) for q in moist), f32(c1h), f32(c2h), f32(dnw),
-      f32(p_top).reshape(()))
+    )(f32(mut), *(f32(q) for q in moist[:6]), f32(c1h), f32(c2h), f32(dnw),
+      f32(p_top).reshape(()), *(f32(q) for q in moist[6:]))
     return p_hyd, faces

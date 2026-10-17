@@ -1,0 +1,16 @@
+{
+  "source": "WRF4.7.1 f52c197ed39",
+  "calc_coszen_sha256": "16eef42ecbe61653612011fb779c0026e6f13d75ab775a183d1e775c72f08d94",
+  "surface_ahe_statement": "HFX(i, j) = HFX(i, j) + ahe(i, ihour, j)",
+  "pbl_ahe_statement": "RTHBLTEN(i, 1, j) = RTHBLTEN(i, 1, j) + ahe(i, ihour, j) / 1200 / DZ8W(i, 1, j)",
+  "ihour_statement": "ihour = (jmonth - 1) * 24 + MOD(INT(gmt + xtime / 60.0), 24)",
+  "flags": [
+    "-O2",
+    "-ffree-form",
+    "-ffree-line-length-none",
+    "-finit-real=zero",
+    "-finit-integer=0",
+    "-finit-logical=false"
+  ],
+  "fixture_sha256": "f2ee998181be2b4bfcedc20f4e6549f2fe660676e9bb1966992781ecbf8235b4"
+}

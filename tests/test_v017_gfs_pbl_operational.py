@@ -119,17 +119,17 @@ def _namelist(grid: GridSpec, **over) -> OperationalNamelist:
 
 def test_gfs_resolves_in_operational_suite() -> None:
     grid = _grid()
-    nml = _namelist(grid, bl_pbl_physics=3, sf_sfclay_physics=1, use_noahmp=False)
+    nml = _namelist(grid, bl_pbl_physics=3, sf_sfclay_physics=3, use_noahmp=False)
     suite = _resolve_operational_suite(nml)
     assert suite.pbl.option == 3
     assert suite.pbl.gpu_runnable is True
-    assert suite.surface_layer.option == 1
+    assert suite.surface_layer.option == 3
 
 
 def test_operational_step_routes_gfs_and_changes_state() -> None:
     grid = _grid()
     state = _state(grid)
-    nml = _namelist(grid, bl_pbl_physics=3, sf_sfclay_physics=1, use_noahmp=False)
+    nml = _namelist(grid, bl_pbl_physics=3, sf_sfclay_physics=3, use_noahmp=False)
     carry = initial_operational_carry(state)
     forcing = _physics_step_forcing(carry, nml, 0.0, run_radiation=False)
     after = forcing.state
@@ -165,7 +165,12 @@ def test_shinhong_columns_is_jit_traceable_and_finite() -> None:
 def test_operational_step_routes_shinhong_and_changes_state() -> None:
     grid = _grid()
     state = _state(grid)
-    nml = _namelist(grid, bl_pbl_physics=11, sf_sfclay_physics=1, use_noahmp=False)
+    # Match the 60 s Shin-Hong timestep used by the column test above.
+    # At 10 s the real heating increment is below np.allclose's default band;
+    # keep every mutation assertion/tolerance unchanged and exercise a full minute.
+    # Disable MP/cumulus so the mutation is attributable to PBL mixing.
+    nml = _namelist(grid, bl_pbl_physics=11, sf_sfclay_physics=1,
+                    use_noahmp=False, dt_s=60.0, mp_physics=0, cu_physics=0)
     suite = _resolve_operational_suite(nml)
     assert suite.pbl.option == 11
     carry = initial_operational_carry(state)

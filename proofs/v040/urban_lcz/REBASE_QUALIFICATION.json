@@ -1,0 +1,108 @@
+{
+  "status": "FIXED rebased for s2-integrate; affected LCZ/contracts/doctor/restart gates pass; five unrelated M7 failures reproduced on exact plain main base",
+  "approved_pre_rebase_commit": "98f06745bcbf3e75d0a4bec5e02b6d1afd6c7fe3",
+  "rebased_source_commit": "26bf7472717d11227e6d275907da35096d138fe6",
+  "rebase_main_commit": "2eb72fac1fc9281989cebb1982735d3fbd7f7120",
+  "conflicts_resolved": [
+    "docs/UPSTREAM_WRF_BUGS.md: keep main Goddard section first, append LCZ",
+    "io/wrfrst_netcdf.py: preserve main raw Goddard precision validation before appending urban validation",
+    "io/restart.py: preserve main feedback schema, append urban schema marker",
+    "runtime/restart_store.py: keep main grid-FDDA and feedback checks first, append LCZ checks"
+  ],
+  "source_sha256": {
+    "src/gpuwrf/coupling/noahmp_surface_hook.py": "4a8e87c47e73784e960277e78120104507723c1ffc1413c8692cf350213c6183",
+    "src/gpuwrf/coupling/urban_inputs.py": "fc1cec450272d35a5465b0206370f6b509b8c419bac0681899ac8704224d579f",
+    "src/gpuwrf/coupling/urban_slucm_hook.py": "de11bc8983097cd7b51aa24cbfe0fe2abbfb465951f5136a28653456b09b7dc3",
+    "src/gpuwrf/doctor/land.py": "c584c47c9abc8a160d877ad5cd2d2680e2f417a498f56414d9dccc363a60fb31",
+    "src/gpuwrf/integration/nested_pipeline.py": "57fd61c503d83a926e1fc8c6f8aec6c4777b3bbd31379d24a1e6ed63d7132c3c",
+    "src/gpuwrf/io/namelist_binding.py": "4925d0b6089b530a67741d1161401cc66debc5002c98bb53b60177f5a77e3d17",
+    "src/gpuwrf/io/restart.py": "f8b346f2a3e6aea7385dc0a06cfecb6ad2c0f50ff0439c7aad9abb664ae90854",
+    "src/gpuwrf/io/scheme_catalog.py": "0cb091f7f9d37e5c903b2e9dbba1532da2309ddfdd8a16eb0e65e0d7bee7be14",
+    "src/gpuwrf/io/urban_schema.py": "cced1f3ec836eec4965290989438810e015847314a265968f2a4301980077732",
+    "src/gpuwrf/io/wrfrst_netcdf.py": "fa5246cb603987b5b455e5766d6d914e21e5e1a147a3e5de9a6c65f869d03288",
+    "src/gpuwrf/physics/noahmp_coupler.py": "5feeff69a098d127769dff28e87d40502e56d789e7604129d074e6d51774ff2e",
+    "src/gpuwrf/physics/urban_slucm.py": "e161835dbc9f7406d235bc005442ae10157e758db9a356abec99bdbf10e3256b",
+    "src/gpuwrf/runtime/aot_cheap_key.py": "560b5745e087b835ab8e51dde1a806358ebfd5183d153c8f8b1e9f62fbb4c8bf",
+    "src/gpuwrf/runtime/history_accumulators.py": "3255e8d019d2412a083181eac79d620b6df71bf6ee695906e845f1a983e6cb24",
+    "src/gpuwrf/runtime/operational_mode.py": "98d1fd4f4b5cca941b25dd2b4b8e89dfed3bca7af768dfd5e446b9fbbdf69fd1",
+    "src/gpuwrf/runtime/restart_store.py": "81cb31c3d7935d64d8002f3a1e3436294c543106965cb23837e296c273ae77ac"
+  },
+  "source_audit": "evidence/rebase/REBASE_SOURCE_AUDIT.json",
+  "tests": {
+    "candidate_passed": 470,
+    "candidate_failed": 5,
+    "candidate_skipped": 11,
+    "candidate_xfailed": 2,
+    "cohort1": {
+      "pass": 224,
+      "fail": 5,
+      "skip": 11,
+      "xfail": 2,
+      "duration_s": 86.78
+    },
+    "cohort2": {
+      "pass": 246,
+      "fail": 0,
+      "skip": 0,
+      "duration_s": 166.97
+    },
+    "requested_contracts_passed": 11,
+    "doctor_passed": 54,
+    "M7_passed": 68,
+    "legacy_MP_fail_closed_passed": 25,
+    "cohort_groups": "evidence/rebase/REBASE_TEST_COHORTS.json",
+    "failure_disposition": "All five node IDs and first-line failure signatures match exact main2eb72 control (5FAIL29.44s). Independent s2-integrate newer-main4fd8 control also reproduces all five. No science or test assertions changed to mask them."
+  },
+  "baseline_control": {
+    "candidate": "26bf7472717d11227e6d275907da35096d138fe6",
+    "plain_main_base": "2eb72fac1fc9281989cebb1982735d3fbd7f7120",
+    "matching_failed_nodes_and_first_message_lines": {
+      "tests.test_m7_1km_memory_audit::test_static_model_tracks_state_contract_field_count": "ValueError: State field contract mismatch: STATE_FIELD_ORDER=114 slots=114 shapes=93",
+      "tests.test_m7_1km_memory_audit::test_static_model_uses_precision_registry_for_known_fields": "ValueError: State field contract mismatch: STATE_FIELD_ORDER=114 slots=114 shapes=93",
+      "tests.test_m7_skill_fix_algorithmic::test_guarded_physics_boundary_step_keeps_rk3_theta_mu_update": "assert 0.0 > 0.0",
+      "tests.test_m7_skill_fix_algorithmic::test_mynn_adapter_consumes_nonzero_surface_flux_inputs": "assert nan > 0.0001",
+      "tests.test_m7_skill_fix_iter2::test_lateral_boundary_apply_uses_strip_matching_relax_offset": "assert 0.20000000000000018 < 1e-06"
+    },
+    "failure_signatures_identical": true,
+    "all_five_preexisting_on_exact_base": true,
+    "independent_newer_main_control": "<USER_HOME>/wrf_gpu2_lanes/s2-integrate/SI04-main-control.json",
+    "newer_main_memory_count": "134 vs93, versus exactbase114vs93; same stale shape audit",
+    "no_source_or_tolerance_changed": true
+  },
+  "OFF_identity": {
+    "official_s1_port_probe": "native facade, only scratch destination redirected by retained wrapper",
+    "full_SHA": "2bf12cb8374d3a84a440e47dea4b77b0c7436108fc2ee2616bba6ec79b17962a",
+    "chars": 13405317,
+    "wall_s": 59.6,
+    "scope": "CPU trace, not GPU speed or forecast qualification"
+  },
+  "qualification_preserved": "Original QUALIFICATION.json and critic packets remain historical source-bound evidence; this receipt binds the rebase. Experimental LF1 one-cell-only policy and sealed multi-cell differences preserved, LCZ2/3 remains refused.",
+  "performance_and_memory": "No LCZ arithmetic, geometry/input/schema file change versus approved98f; no new step work or allocations added by conflict resolution. Final OFF native graph exact. No new GPU performance claim.",
+  "cleanup": {
+    "snapshot_removed": true,
+    "pytest_removed": true,
+    "JAX_persistent_cache_enabled": false,
+    "no_GPU_arm": true
+  },
+  "experiments": [
+    "LCZ37",
+    "LCZ37-result",
+    "LCZ38",
+    "LCZ39",
+    "LCZ40"
+  ],
+  "artifact_sha256": {
+    "LCZ37_rebased_tests.log": "96f92813299f517a50f26ac1f07583d04264b482704f7773eebe01752e47d868",
+    "LCZ37_rebased_tests.xml": "d5b4adeb4b2713bf8762aa07c167ccdc6ad979ec3ddd41fb95181bd16d25191a",
+    "LCZ38_rebased_shared.log": "a8ae244439f04fa8616b9411216b48423598c5e5244442b8e02b07ad42a1ece8",
+    "LCZ38_rebased_shared.xml": "eeeee0008d412f58f185ccbeeccf18a3d64923728056916cee5888b0c92e070f",
+    "LCZ39_rebased_identity.json": "a5f79fcdee00992ae218c46272e0f5788fb1c0a1e15357637b842f3e465ac8e8",
+    "LCZ39_rebased_identity.log": "9309d6e9e83477e39ba05f369c95198274cf06c42eee8fbe3e0562d64b5b7566",
+    "LCZ40_main_control.json": "430440e55d435bb2385130359af73dec1b5533b821ee54b513080e70eb46f4f5",
+    "LCZ40_main_control.xml": "33852f6490467d25063008738ffa7af9d7ddc61c9dedb5b32a51e75e95fcfc07",
+    "LCZ40_main_control.log": "4771cb4783485e173792060e0ab7840ed4280630fec70ab3f930d26652008dac",
+    "REBASE_TEST_COHORTS.json": "b125d84ee0619dcb115125b6afda55cfbe5b19991e5d860f66fe0aa73928ab02",
+    "REBASE_SOURCE_AUDIT.json": "17086de816529c87cbccb1cd6868479f189d3aa336a6f658ee238b452418f2f7",
+    "M7_UNCHANGED_SOURCE.json": "1fb8223f0d982fc6791cceb7d2f6f03063a2743c8d70423f79362c249d6dfaee"
+  }
+}

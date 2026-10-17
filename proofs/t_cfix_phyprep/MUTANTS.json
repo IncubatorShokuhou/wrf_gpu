@@ -1,0 +1,215 @@
+{
+ "mutants": [
+  {
+   "mutant": "M01 MYJ/Janjic theta moist",
+   "file": "src/gpuwrf/physics/myj_adapters.py",
+   "select": "myj_pbl_and_janjic",
+   "rc": 1,
+   "summary": "1 failed, 12 deselected in 8.19s",
+   "status": "KILLED"
+  },
+  {
+   "mutant": "M02 MYJ T moist",
+   "file": "src/gpuwrf/physics/myj_adapters.py",
+   "select": "myj_pbl_and_janjic or two_step and myj",
+   "rc": 1,
+   "summary": "1 failed, 11 deselected in 8.31s",
+   "status": "KILLED"
+  },
+  {
+   "mutant": "M03 MYJ dry rate on theta_m",
+   "file": "src/gpuwrf/physics/myj_adapters.py",
+   "select": "converts_dry_rthblten or two_step and myj",
+   "rc": 1,
+   "summary": "1 failed, 11 deselected in 7.39s",
+   "status": "KILLED"
+  },
+  {
+   "mutant": "M04 MYJ nonhydrostatic PMID",
+   "file": "src/gpuwrf/physics/myj_adapters.py",
+   "select": "myj_pbl_and_janjic",
+   "rc": 1,
+   "summary": "1 failed, 12 deselected in 7.74s",
+   "status": "KILLED"
+  },
+  {
+   "mutant": "M05 MYJ PSFC lowest level",
+   "file": "src/gpuwrf/physics/myj_adapters.py",
+   "select": "myj_pbl_and_janjic",
+   "rc": 1,
+   "summary": "1 failed, 12 deselected in 7.02s",
+   "status": "KILLED"
+  },
+  {
+   "mutant": "M06 GFS-PBL T moist",
+   "file": "src/gpuwrf/coupling/scan_adapters.py",
+   "select": "gfs_legacy or two_step and gfs",
+   "rc": 1,
+   "summary": "1 failed, 11 deselected in 4.88s",
+   "status": "KILLED"
+  },
+  {
+   "mutant": "M07 GFS-PBL dry rate on theta_m",
+   "file": "src/gpuwrf/coupling/scan_adapters.py",
+   "select": "gfs_legacy or two_step and gfs",
+   "rc": 1,
+   "summary": "1 failed, 11 deselected in 4.76s",
+   "status": "KILLED"
+  },
+  {
+   "mutant": "M08 cumulus nonhydrostatic P",
+   "file": "src/gpuwrf/coupling/scan_adapters.py",
+   "select": "bmj or ntiedtke or tiedtke or gf_receives",
+   "rc": 1,
+   "summary": "1 failed, 7 deselected in 6.89s",
+   "status": "KILLED"
+  },
+  {
+   "mutant": "M09 cumulus dry rho",
+   "file": "src/gpuwrf/coupling/scan_adapters.py",
+   "select": "bmj or ntiedtke or gf_receives",
+   "rc": 1,
+   "summary": "1 failed, 8 deselected in 7.52s",
+   "status": "KILLED"
+  },
+  {
+   "mutant": "M10 cumulus T moist",
+   "file": "src/gpuwrf/coupling/scan_adapters.py",
+   "select": "bmj or ntiedtke or gf_receives or two_step and (bmj or gf or ntiedtke)",
+   "rc": 1,
+   "summary": "1 failed, 6 deselected in 7.20s",
+   "status": "KILLED"
+  },
+  {
+   "mutant": "M11 BMJ dry rate",
+   "file": "src/gpuwrf/coupling/scan_adapters.py",
+   "select": "bmj",
+   "rc": 1,
+   "summary": "1 failed, 11 deselected in 6.74s",
+   "status": "KILLED"
+  },
+  {
+   "mutant": "M12 GF dry rate",
+   "file": "src/gpuwrf/coupling/scan_adapters.py",
+   "select": "gf_receives or two_step and gf",
+   "rc": 1,
+   "summary": "1 failed, 10 deselected in 4.51s",
+   "status": "KILLED"
+  },
+  {
+   "mutant": "M13 NTiedtke dry rate",
+   "file": "src/gpuwrf/coupling/scan_adapters.py",
+   "select": "ntiedtke",
+   "rc": 1,
+   "summary": "1 failed, 11 deselected in 5.64s",
+   "status": "KILLED"
+  },
+  {
+   "mutant": "M14 BMJ PSFC lowest mass level",
+   "file": "src/gpuwrf/coupling/scan_adapters.py",
+   "select": "bmj_receives",
+   "rc": 1,
+   "summary": "1 failed, 12 deselected in 7.23s",
+   "status": "KILLED"
+  },
+  {
+   "mutant": "M15 phy_prep g=9.80665",
+   "file": "src/gpuwrf/coupling/wrf_phy_prep.py",
+   "select": "helper or gfs_legacy or gf_receives",
+   "rc": 1,
+   "summary": "1 failed, 10 deselected in 4.09s",
+   "status": "KILLED"
+  },
+  {
+   "mutant": "M16 phy_prep moist th",
+   "file": "src/gpuwrf/coupling/wrf_phy_prep.py",
+   "select": "helper",
+   "rc": 1,
+   "summary": "1 failed, 12 deselected in 3.93s",
+   "status": "KILLED"
+  },
+  {
+   "mutant": "M17 Tiedtke mean-of-levels P8W",
+   "file": "src/gpuwrf/coupling/scan_adapters.py",
+   "select": "tiedtke_receives",
+   "rc": 1,
+   "summary": "1 failed, 1 passed, 11 deselected in 6.92s",
+   "status": "KILLED"
+  },
+  {
+   "mutant": "M18 G3/GD nonhydrostatic P",
+   "file": "src/gpuwrf/coupling/scan_adapters.py",
+   "select": "grell_receives",
+   "rc": 1,
+   "summary": "1 failed, 20 deselected in 3.69s",
+   "status": "KILLED"
+  },
+  {
+   "mutant": "M19 QNSE nonhydrostatic PMID",
+   "file": "src/gpuwrf/coupling/qnse_adapter.py",
+   "select": "qnse",
+   "rc": 1,
+   "summary": "1 failed, 21 deselected in 3.11s",
+   "status": "KILLED"
+  },
+  {
+   "mutant": "M20 TEMF nonhydrostatic P3D",
+   "file": "src/gpuwrf/coupling/temf.py",
+   "select": "temf",
+   "rc": 1,
+   "summary": "1 failed, 21 deselected in 3.39s",
+   "status": "KILLED"
+  },
+  {
+   "mutant": "M21 EEPS nonhydrostatic P3D",
+   "file": "src/gpuwrf/coupling/epsilon_pbl.py",
+   "select": "epsilon",
+   "rc": 1,
+   "summary": "1 failed, 20 deselected in 3.06s",
+   "status": "KILLED"
+  },
+  {
+   "mutant": "M22 KEPS phy_prep-extrapolated P8W",
+   "file": "src/gpuwrf/coupling/epsilon_pbl.py",
+   "select": "epsilon",
+   "rc": 1,
+   "summary": "1 failed, 1 passed, 20 deselected in 3.39s",
+   "status": "KILLED"
+  },
+  {
+   "mutant": "M23 SLAB T moist",
+   "file": "src/gpuwrf/coupling/slab_surface_hook.py",
+   "select": "slab",
+   "rc": 1,
+   "summary": "1 failed, 21 deselected in 4.09s",
+   "status": "KILLED"
+  },
+  {
+   "mutant": "M24 Noah TH2=theta_m",
+   "file": "src/gpuwrf/coupling/noahclassic_surface_hook.py",
+   "select": "noahclassic",
+   "rc": 1,
+   "summary": "1 failed, 21 deselected in 3.82s",
+   "status": "KILLED"
+  },
+  {
+   "mutant": "M25 PX THETA1 moist",
+   "file": "src/gpuwrf/coupling/pleim_xiu_surface_hook.py",
+   "select": "pleim",
+   "rc": 1,
+   "summary": "1 failed, 21 deselected in 3.47s",
+   "status": "KILLED"
+  },
+  {
+   "mutant": "M26 PX PSFC lowest level",
+   "file": "src/gpuwrf/coupling/pleim_xiu_surface_hook.py",
+   "select": "pleim",
+   "rc": 1,
+   "summary": "1 failed, 21 deselected in 3.64s",
+   "status": "KILLED"
+  }
+ ],
+ "killed": 26,
+ "total": 26,
+ "rule": "KILLED = pytest rc 1 + AssertionError + no setup errors (E202); source restored and SHA-verified after each"
+}

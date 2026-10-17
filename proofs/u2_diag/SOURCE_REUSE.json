@@ -1,0 +1,111 @@
+{
+  "current_model_commit": "9f5a2a3f3006861801dc682a9da0713cafd7363b",
+  "reference_model_commit": "8b3f3a58e",
+  "scope": "Byte proof for unchanged independently qualified arithmetic/context producers; runtime integration separately tested/traced",
+  "files": {
+    "src/gpuwrf/diagnostics/precipitation.py": {
+      "byte_identical": true,
+      "sha256": "dcaac076f1038bad8a5ea4c2a5068c959bb5c90f8401fca9b963373918f28b28"
+    },
+    "src/gpuwrf/diagnostics/nwp.py": {
+      "byte_identical": true,
+      "sha256": "0838e871ee8e4e1f8c043f30e7a07f466965108d9ce7e2e1d558c6834bd8583a"
+    },
+    "src/gpuwrf/diagnostics/thompson_radar.py": {
+      "byte_identical": true,
+      "sha256": "04f7b57df13c68941af840175af43124b2ba2f8d4cc0098043e98c9f963548e6"
+    },
+    "src/gpuwrf/coupling/physics_couplers.py": {
+      "byte_identical": false,
+      "sha256": "3cfacc5829679f398a6001a30ff5664d93c90fff78cefed67bbdf74e765f98cb",
+      "qualified_reuse": "All functions except main-owned surface_adapter AST exact reviewed82; observation_aux=False specialization AST exact82 after two value-preserving local aliases."
+    },
+    "src/gpuwrf/physics/thompson_column.py": {
+      "byte_identical": true,
+      "sha256": "16c486ccbe314a0a958f9a0c62b7f2db579861482ac6ff3a4e89d4ecf0dc2837"
+    },
+    "src/gpuwrf/kernels/phys_thompson_full.py": {
+      "byte_identical": true,
+      "sha256": "394d3a1e1b81248fc4ad1e452b07c38a37c6c7742056347f4c911a82f5cc6a78"
+    },
+    "src/gpuwrf/kernels/phys_thompson_prep.py": {
+      "byte_identical": true,
+      "sha256": "5f33d24105e208dc3da892ec404a9ce3c8e7702083ff14b0c478d71ea90f1d5b"
+    }
+  },
+  "shared_forcing_reuse": {
+    "qualified_commit": "b886a616a",
+    "qualified_experiment": "UD13",
+    "qualified_nodes": 82,
+    "artifact": "<USER_HOME>/wrf_gpu2_lanes/u2-diag/UD13-shared.log",
+    "function": "_physics_step_forcing",
+    "ast_sha256_non_wdm": "892b8a047bb26d3311247211e891a32a98e7febd609298e46de8f84429e6f58c",
+    "proof": "One current-main guard mp_opt not in (14,16,26) specializes to TRUE for the retained non-WDM forcing cases; otherwise exact function AST. New online caller hooks lie outside this forcing entry point. WDM/NSSL main changes retain their independent main qualification; NSSL18 rerun UD21 PASS.",
+    "applies_to_commit": "83ff90f0b6ee35ecbce62ec7b8389498aa6178ea"
+  },
+  "final_main_base": "77e23bb2aca7484082d2f034f18a74c8992bf9e8",
+  "final_shared_program_identity": "UD27 receipt compared to original qualified a0c source; no native-binary claim",
+  "final_main_forcing_ast": {
+    "source_base": "77e23bb2aca7484082d2f034f18a74c8992bf9e8",
+    "candidate": "9f5a2a3f3",
+    "exact": true,
+    "sha256": "f7fed749369bd9f8efd6abf15db986c501401740e4df78d0a19552b33fcc440d",
+    "scope": "Shared forcing exact main; all diagnostic arithmetic remains source-identical accepted82."
+  },
+  "final_restart_delta": {
+    "model_commit": "26abe643b596b8d61f48bea4fdae8a99184fc2cc",
+    "versus": "bd1eaceb8",
+    "only_changed_model_file": "src/gpuwrf/diagnostics/online.py",
+    "only_changed_function": "validate_restart",
+    "all_numerical_and_step_caller_functions_identical": true
+  },
+  "critic_fix_rebase": {
+    "candidate": "81c061113",
+    "main_base": "4d0af9c09",
+    "reviewed_source": "564111cf8",
+    "unchanged_arithmetic_files": [
+      "src/gpuwrf/diagnostics/precipitation.py",
+      "src/gpuwrf/diagnostics/nwp.py",
+      "src/gpuwrf/diagnostics/thompson_radar.py",
+      "src/gpuwrf/coupling/physics_couplers.py",
+      "src/gpuwrf/physics/thompson_column.py",
+      "src/gpuwrf/kernels/phys_thompson_full.py",
+      "src/gpuwrf/kernels/phys_thompson_prep.py"
+    ],
+    "online_module_byte_identical_to_reviewed": true,
+    "exact_caller_ast_sha256": {
+      "_physics_step_forcing": "9ae6c117e375550fc0e1a5fdd38306d06d2d16badd6705bb8d78d4285ac33930",
+      "_refresh_rrtmg_driver": "1adac157ef8011864ff1cf90882059f96ee3ae1c4bfcfc2d00ddfb7fbf10c5f5",
+      "_physics_boundary_step_with_limiter_diagnostics": "51278dca8fad4800a2fa640628f933dd070ea9a10693aa51b6e00e864732be86",
+      "_initial_carry_for_run": "0b5ff359782b49ff714e96a5fa0bb0bbc499f91b61f233c0660075a8e4cac155"
+    },
+    "physics_boundary_step_timeseries_none_specialization_exact": true,
+    "host_fix_files": [
+      "src/gpuwrf/runtime/restart_store.py",
+      "src/gpuwrf/io/wrfout_writer.py"
+    ],
+    "scope": "Reuse independent diagnostic numerical gates; main species/FDDA/DFI/station changes retain their own qualifications. Latest release identities checked separately."
+  },
+  "previous_reviewed_main_forcing_ast": {
+    "source_base": "f5d627cbfbf812bc1749127367ea901f59b9c7f0",
+    "candidate": "bd1eaceb8",
+    "exact": true,
+    "sha256": "9ae6c117e375550fc0e1a5fdd38306d06d2d16badd6705bb8d78d4285ac33930",
+    "scope": "Every shared v013 forcing test enters unchanged main function; online producers are outside this entrypoint."
+  },
+  "manager_requested_rebase": {
+    "accepted": "82f69152d",
+    "main_base": "77e23bb2aca7484082d2f034f18a74c8992bf9e8",
+    "candidate": "9f5a2a3f3",
+    "main_carry_order_prefix_exact": true,
+    "own_appended": [
+      "precipitation_buckets",
+      "nwp_diagnostics",
+      "radar_reflectivity"
+    ],
+    "main_seed_ownership_helper_ast_exact": true,
+    "seed_ownership_call_preserved_after_all_diagnostic_seeds": true,
+    "main_observation_aux_false_surface_adapter_ast_exact_accepted": true,
+    "model_delta": "Main changes plus mechanical conflicts union; no new diagnostic arithmetic; one static-marker composition test added."
+  }
+}

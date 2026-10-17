@@ -1,80 +1,75 @@
 ---
 name: run-wrf-gpu
-description: Use when a user asks to run, set up, or get their WRF or forecast case working with wrf_gpu.
+description: Run or set up an existing WRF forecast case with wrf_gpu, including prepared inputs, GPU checks, output and restart. Use the operator runbook; not for developing the model.
 ---
 
-# Run wrf_gpu for an End User
+# Run wrf_gpu for an end user
 
-This skill is for operating `wrf_gpu`, not developing the port.
+Read [AI_OPERATOR.md](../../../AI_OPERATOR.md) first. It is the authoritative
+runbook. This skill follows the **v0.4.0 candidate** documentation; use the
+installed release's matching guide and do not call a candidate published.
+Explain installs, cold compilation and long integrations, then report actual
+source, inputs, resolved options and output paths.
 
-First read the repo-root `AI_OPERATOR.md` and follow it as the authoritative
-runbook. Keep the user informed before installs, GPU checks, cold compiles, and
-long integrations.
+## Run the requested case
 
-Six-step dispatcher:
+Identify `namelist.input`, prepared `wrfinput_d0*`, `wrfbdy_d01` and required
+runtime tables/auxiliary files. Raw GRIB or `met_em` requires upstream
+WPS/real.exe. Distinguish native initialization from CPU-history replay.
+Resolve duration, domain count and products. Preserve requested physics; use
+single-domain `--domain` or `--domains-from-namelist`/`--max-dom` as documented.
+Use fresh output and disk-backed scratch. Explain unsupported selections;
+do not drop required options, replace physics or bypass preflight to get a run.
 
-1. Understand the request: identify the case directory, forecast hours, domain
-   or `--max-dom`, requested output, and whether inputs are standalone
-   `wrfinput`/`wrfbdy` or CPU-WRF replay `wrfout` files. Raw `met_em` alone is
-   upstream input, not directly runnable by the current CLI.
-2. Set up the environment: Python 3.11 venv, `pip install --upgrade
-   "jax[cuda13]"`, `pip install -e .` or `pip install -e ".[cuda]"`, then
-   `python -c "import jax; print(jax.devices())"` and confirm CUDA appears.
-3. Check GPU/driver: run `nvidia-smi` and confirm JAX lists a CUDA device.
-4. Smoke-test the bundled case: set `GPUWRF_WRF_ROOT`, run
-   `examples/switzerland_d01` for 1 hour with `python -m gpuwrf.cli run`, and
-   confirm a `wrfout_d01_*` appears.
-5. Prepare and run the user's case: use `GPUWRF_WRF_ROOT` for Noah-MP/RRTM/RRTMG,
-   let `gpuwrf run` fail-closed on unsupported namelist choices, choose
-   `--domain` for single-domain or `--max-dom N` for live nested, and narrate the
-   cold compile plus ETA. Mention the default finite guard and nested VRAM
-   preflight.
-6. Deliver and verify: show the `wrfout` path, inspect with `ncdump -h`, and
-   state any limitations honestly.
+Use the runbook's pinned Python/CUDA-JAX recipe, set `GPUWRF_WRF_ROOT`, and
+confirm JAX reports a GPU. On the shared development host, device queries and
+GPU commands require its official lease/lock; public installations do not
+require that infrastructure. CPU imports/Pallas interpretation are not GPU
+checks. A short Swiss smoke proves toolchain readiness, not forecast fidelity.
 
-The v0.23.4 candidate is **not yet published and must not be recommended for
-deployment ahead of that**: its production-faithful maxdom3 canary is 51.67%
-slower than v0.23.3 — measured, root-caused (occupancy/latency-bound, not
-bandwidth-bound), understood, but not fixed. The current published release
-remains v0.23.3. The candidate accepts
-one-way live nesting through d09 on its sealed one-hour
-all-physics fixture (27/27 outputs finite; 9 domains × 102 fields within frozen
-gates). Present that as a fixture-backed capability, not universal scheme
-coverage or a speed claim. Large nine-domain cold compiles can take well over an
-hour; the accepted one-hour stress replay used 5,744.407 s warm model wall. The
-optional release-canary maxdom9 diagnostic was aborted inconclusive after
-3:12:04 with zero completed calls and is not performance evidence.
+Compilation is expected for a new source, target, geometry or selected
+constants. Report compile versus integration progress and actual memory
+admission failures. Keep default fp32 WRF REAL carry, explicit WRF DOUBLE
+islands, cadence and cache compatibility checks. Do not promise a cache hit,
+fixed VRAM requirement or extrapolated speedup.
 
-Always disclose that nested execution currently uses a fixed 30-minute
-radiation target instead of arbitrary namelist `radt`, and that nested
-`topo_shading`/`slope_rad` currently bind disabled. Do not claim the broad
-seasonal/configuration-independent 24-72 h forecast-skill gate is closed.
-Also disclose that the single-domain daily pipeline currently drops requested
-`moist_adv_opt`/`scalar_adv_opt` and runs `0/0` (the accepted nested path honors
-them), and that omitted `time_step_sound` selects 10 acoustic substeps where
-WRF derives 4 on the tracked fixture. Residual dry-mass behavior is open; do
-not silently change either control or claim exact parity.
-For long or strongly ice-sedimentation-sensitive runs, also disclose that the
-static Thompson `NSED_MAX=16` cap and widespread exact-zero carried Ni remain
-future fidelity work; the v0.23.4 late-Ni fix does not close those separate
-items. AOT cheap-key fragmentation can cause a safe recompile when fused-phase
-shape or terrain-staging provenance differs, so preserve the cache/staging
-namespace and report fallback honestly rather than promising a warm hit.
-Default precision is fp64, but v0.23.4's physics fixes intentionally change
-ice-sensitive results relative to v0.23.3. Opt-in modes remain opt-in. No
-masking, clamps, or silent scheme substitution.
+## Selection and qualification limits
 
-For optimization, preserve `cuda_async`, the version-keyed warm cache, shipped
-RRTMG tiling, fp64, timestep, and acoustic settings by default. Propose
-`GPUWRF_BATCH_ENSEMBLE=B` only for same-date/same-geometry small-grid ensembles
-after a VRAM check. H100/B200/GB300 performance is not release-benchmarked;
-measure instead of extrapolating. Refuse or flag >~6000 m terrain, projected
-VRAM overflow, unsupported schemes, and unrequested deep nesting. The full
-decision table and current 5090 resource evidence are in `AI_OPERATOR.md`.
+Consult the [support matrix](../../../docs/release/SUPPORT_MATRIX_v0.4.0.md)
+and [known issues](../../../KNOWN_ISSUES.md):
 
-If running v0.23.4: disclose before a 3-domain
-(`--max-dom 3`) or 9-domain (`--max-dom 9`) run that `d03`-activating
-configurations measure ~51.67% slower wall-clock than v0.23.3 (correctness
-unaffected; the regression is measured, root-caused as occupancy/latency-bound,
-and understood, but not fixed). Single-domain and 2-domain (`d01`+`d02`)
-configurations have no measured performance regression.
+- Smagorinsky `km_opt=3` is GPU-refused. CAM-MG11 uses merged stock
+  Triton3.6.x (`pip install "triton==3.6.*"`); disclose the separate offline STACK1240B FAIL and
+  c89 D6/inventory/NF0 PASS at its registered source, native E41 UNKNOWN. Historical failures remain.
+- `sf_surface_mosaic=1` is refused. Crop/irrigation branches need geographically
+  valid maps; a column oracle does not qualify absent inputs.
+- DFI1/2/3 run in supported single-domain native cases; nested DFI remains
+  refused. Preserve DFL timestamps and the runbook's forcing/filter restrictions.
+- Where single-domain-only options remain admitted in nests, report **nested
+  not validated**. Actual combination refusals still apply.
+- Bounded D6, full variable inventory, E41, F2 and station skill are separate.
+  REPORT_ONLY/missing fields are not passes. Finite output does not justify
+  intermediate negatives or repairs.
+
+New optional state and held diagnostics can make older active checkpoints
+incompatible. Follow the [upgrade note](../../../docs/release/UPGRADE_v0.4.0.md);
+never edit authenticated checkpoints to bypass refusal. Incorrect historical
+precipitation accumulations require a fresh forecast for corrected totals.
+
+## Deliver useful output
+
+Use the installed command's help for syntax. v0.4 workflows include `post`,
+`export`, `quickstart`, `tslist-export`, `stream-check`, doctor/provenance,
+station verification, ensemble statistics and regional optimisation/cycling.
+Definitions/evidence are linked in the operator runbook. Resolve only missing
+preferences affecting the requested output; do not add an unrequested campaign.
+
+Inspect completion, dimensions/variables and finiteness; retain source/input
+hashes and deliver actual file paths. Original CPU-WRF/pristine WRF is fidelity
+truth; older GPU output is regression evidence. Report failed/incomplete gates
+plainly. The frozen default identities are Swiss3356e249/PROD196aed9f.
+The final ledger records66 accepted scientific scopes (65full24h+c45sixhour),
+with E41 33PASS/32FAIL-disclosed/1UNKNOWN(c89). This is scientific validation;
+package approval and publication remain manager-owned. Consult the
+[complete user guide](../../../docs/release/USER_GUIDE_v0.4.0.md) and
+[final source/receipt ledger](../../../proofs/r_docs040/FINAL_RELEASE_LEDGER.json).

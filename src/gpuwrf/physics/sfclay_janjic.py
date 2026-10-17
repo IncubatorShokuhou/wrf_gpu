@@ -59,6 +59,47 @@ _PSIM = jnp.asarray(_PSIM_NP, dtype=jnp.float64)
 _PSIH = jnp.asarray(_PSIH_NP, dtype=jnp.float64)
 
 
+def _build_psi_tables_real():
+    """MYJSFCINIT (module_sf_myjsfc.F:1170-1276) evaluated like the REAL build.
+
+    ZETA is ACCUMULATED in REAL (``ZETA1=ZETA1+DZETA1``), DZETA = REAL(6)/10000 and
+    ZTMAX1 = accumulated ZETA(KZTM) - EPS = 1.0000409 (not the nominal 1.0 - 1e-6).
+    Host NumPy only (E46); double libm rounded to binary32 per operation reproduces
+    the gfortran/glibc table except 16 PSIM / 11 PSIH entries at 1 ULP (logf/atanf).
+    """
+    import math
+    f = np.float32
+    dzeta = f(f(6.0) / f(C.KZTM - 1))
+    pihf = f(f(3.1415926) / f(2.0))
+    zeta, psim, psih, ztmax = f(C.SFC_ZTMIN1), [], [], None
+    for k in range(C.KZTM):
+        if zeta < 0:
+            x = f(math.sqrt(f(math.sqrt(f(f(1.) - f(f(16.) * zeta))))))
+            a = f(f(-2.) * f(math.log(f(f(x + f(1.)) / f(2.)))))
+            b = f(math.log(f(f(f(x * x) + f(1.)) / f(2.))))
+            psim.append(f(f(f(a - b) + f(f(2.) * f(math.atan(x)))) - pihf))
+            psih.append(f(f(-2.) * f(math.log(f(f(f(x * x) + f(1.)) / f(2.))))))
+        else:
+            s = f(f(f(f(0.75) * zeta) * f(f(6.) - f(f(0.35) * zeta))) * f(math.exp(f(f(-0.35) * zeta))))
+            psim.append(f(f(f(0.7) * zeta) + s))
+            psih.append(psim[-1])
+        if k == C.KZTM - 1:
+            ztmax = f(zeta - f(1.e-6))
+        zeta = f(zeta + dzeta)
+    return np.asarray(psim, f), np.asarray(psih, f), float(ztmax), float(dzeta)
+
+
+_PSIM_REAL_NP, _PSIH_REAL_NP, _ZTMAX_REAL, _DZETA_REAL = _build_psi_tables_real()
+
+
+def _psi_tables(wrf_real):
+    """(PSIM, PSIH, ZTMIN, ZTMAX, DZETA); WRF's REAL-built set when ``wrf_real``."""
+    if wrf_real:
+        return (jnp.asarray(_PSIM_REAL_NP, jnp.float32), jnp.asarray(_PSIH_REAL_NP, jnp.float32),
+                C.SFC_ZTMIN1, _ZTMAX_REAL, _DZETA_REAL)
+    return _PSIM, _PSIH, C.SFC_ZTMIN1, C.SFC_ZTMAX1, C.SFC_DZETA1
+
+
 def _interp_psi(table, zeta, ztmin, dzeta):
     """WRF table interpolation: ``RZ=(zeta-ZTMIN)/DZETA; K=INT(RZ);
     RDZT=RZ-REAL(K); K=MIN(MAX(K,0),KZTM2); PSI=(T[K+2]-T[K+1])*RDZT+T[K+1]``.
@@ -66,14 +107,14 @@ def _interp_psi(table, zeta, ztmin, dzeta):
 
     rz = (zeta - ztmin) / dzeta
     k = jnp.floor(rz).astype(jnp.int32)
-    rdzt = rz - k.astype(jnp.float64)
+    rdzt = rz - k.astype(rz.dtype)
     k = jnp.clip(k, 0, C.KZTM2)
     lo = table[k]
     hi = table[k + 1]
     return (hi - lo) * rdzt + lo
 
 
-def _myj_pblh(q2, dz):
+def _myj_pblh(q2, dz, iface=None):
     """MYJSFC PBL height from the TKE column (bottom-up index 0 = surface).
 
     WRF (top-down ``K=1..LMH``) scans ``DO K=LMH-1,1,-1`` for the first level
@@ -85,7 +126,8 @@ def _myj_pblh(q2, dz):
 
     nz = q2.shape[0]
     # interface heights: iface[0]=0 (surface), iface[k]=sum(dz[:k])
-    iface = jnp.concatenate([jnp.zeros((1,), q2.dtype), jnp.cumsum(dz)])
+    if iface is None:
+        iface = jnp.concatenate([jnp.zeros((1,), q2.dtype), jnp.cumsum(dz)])
     thresh = C.EPSQ2 * C.FH
     floored = (2.0 * q2) <= thresh                      # bottom-up per layer
     # consider layers j=1..nz-1 (WRF excludes the bottom layer and the top)
@@ -103,9 +145,13 @@ def _sfcdif_column(
     *,
     seamask, ths, qs_in, psfc, tz0, tsk, thz0_in, qz0_in, uz0_in, vz0_in,
     ustar_in, z0_in, z0base, akhs_in, akms_in, ulow, vlow, tlow, thlow,
-    thelow, qlow, cwmlow, zsl, plow, pblh, wetm,
+    thelow, qlow, cwmlow, zsl, plow, pblh, wetm, ntsd1=None, wrf_real=False,
 ):
     """1:1 transcription of WRF ``SFCDIF`` (NTSD>1 path) for one column.
+
+    ``ntsd1`` (bool, may be traced) selects WRF's NTSD==1 branches
+    (module_sf_myjsfc.F:459-466 sea AKMS=AKHS=CXCHS/QS=QLOW below USTR, THZ0/QZ0
+    without memory averaging, :647-649 land QS=QLOW); ``None`` keeps NTSD>1.
 
     Returns a dict of every SFCDIF output: exchange coeffs (AKHS/AKMS),
     surface roughness Z0, fluxes (HFX/QFX/LH/FLHC/FLQC), updated INOUT surface
@@ -121,10 +167,15 @@ def _sfcdif_column(
     btgh = jnp.where(pblh > 1000.0, btgx * pblh, btgx * 1000.0)
     is_sea = seamask > 0.5
     cxch = jnp.where(is_sea, cxchs, cxchl)
-    ztmin = jnp.where(is_sea, C.SFC_ZTMIN1, C.SFC_ZTMIN2)
-    ztmax = jnp.where(is_sea, C.SFC_ZTMAX1, C.SFC_ZTMAX2)
+    psim_t, psih_t, zt_min, zt_max, dzeta = _psi_tables(wrf_real)
+    # Sea (range 1) and land (range 2) tables/ranges are built identically in WRF.
+    ztmin = jnp.where(is_sea, zt_min, zt_min)
+    ztmax = jnp.where(is_sea, zt_max, zt_max)
     fhh = jnp.where(is_sea, C.FH01, C.FH02)
 
+    if ntsd1 is not None:
+        # module_sf_myjsfc.F:647-649: land QS=QLOW on the first time step.
+        qs_in = jnp.where(is_sea | ~ntsd1, qs_in, qlow)
     # CZIL/ZILFC/ZZIL for land are constant across iterations; precompute with
     # the land-branch RIB (which uses THZ0=THS, QZ0=QS, UZ0=VZ0=0).
     thz0_land = ths
@@ -158,6 +209,13 @@ def _sfcdif_column(
         # ---- SEA geometry (Janjic viscous sublayer, NTSD>1 path) ----
         z0_sea = jnp.maximum(C.USTFC * ustar * ustar, 1.59e-5)
         # below USTR
+        below_ustr = ustar < C.USTR
+        if ntsd1 is not None:
+            # :459-466 NTSD==1 below USTR: AKMS=AKHS=CXCHS, QS=QLOW (sea only).
+            first_sea = ntsd1 & below_ustr & is_sea & (ustar < C.USTC)
+            akms = jnp.where(first_sea, cxchs, akms)
+            akhs = jnp.where(first_sea, cxchs, akhs)
+            qs = jnp.where(first_sea, qlow, qs)
         zu_a = C.FZU1 * jnp.sqrt(jnp.sqrt(z0_sea * ustar * C.RVISC)) / ustar
         wght = akms * zu_a * C.RVISC
         rwgh = wght / (wght + 1.0)
@@ -169,6 +227,9 @@ def _sfcdif_column(
         wghtq_a = akhs * zq_a * C.RQVISC
         thz0_a = ((wghtt_a * thlow + ths) / (wghtt_a + 1.0) + thz0) * 0.5
         qz0_a = ((wghtq_a * qlow + qs) / (wghtq_a + 1.0) + qz0) * 0.5
+        if ntsd1 is not None:
+            thz0_a = jnp.where(ntsd1, (wghtt_a * thlow + ths) / (wghtt_a + 1.0), thz0_a)
+            qz0_a = jnp.where(ntsd1, (wghtq_a * qlow + qs) / (wghtq_a + 1.0), qz0_a)
         # USTR <= ustar < USTC
         zu_b = z0_sea
         zt_b = C.FZT2 * jnp.sqrt(jnp.sqrt(z0_sea * ustar * C.RVISC)) / ustar
@@ -177,13 +238,15 @@ def _sfcdif_column(
         wghtq_b = akhs * zq_b * C.RQVISC
         thz0_b = ((wghtt_b * thlow + ths) / (wghtt_b + 1.0) + thz0) * 0.5
         qz0_b = ((wghtq_b * qlow + qs) / (wghtq_b + 1.0) + qz0) * 0.5
+        if ntsd1 is not None:
+            thz0_b = jnp.where(ntsd1, (wghtt_b * thlow + ths) / (wghtt_b + 1.0), thz0_b)
+            qz0_b = jnp.where(ntsd1, (wghtq_b * qlow + qs) / (wghtq_b + 1.0), qz0_b)
         # ustar >= USTC
         zu_c = z0_sea
         zt_c = z0_sea
         thz0_c = ths
         qz0_c = qs
 
-        below_ustr = ustar < C.USTR
         below_ustc = ustar < C.USTC
         sel_a = below_ustc & below_ustr
         sel_b = below_ustc & (~below_ustr)
@@ -240,11 +303,11 @@ def _sfcdif_column(
         zetat = jnp.clip(zt * rlmo, ztmin / rzst, ztmax / rzst)
 
         # tables are identical for sea/land ranges; use range-1 constants
-        psmz = _interp_psi(_PSIM, zetau, C.SFC_ZTMIN1, C.SFC_DZETA1)
-        psmzl = _interp_psi(_PSIM, zetalu, C.SFC_ZTMIN1, C.SFC_DZETA1)
+        psmz = _interp_psi(psim_t, zetau, zt_min, dzeta)
+        psmzl = _interp_psi(psim_t, zetalu, zt_min, dzeta)
         simm = psmzl - psmz + rlogu
-        pshz = _interp_psi(_PSIH, zetat, C.SFC_ZTMIN1, C.SFC_DZETA1)
-        pshzl = _interp_psi(_PSIH, zetalt, C.SFC_ZTMIN1, C.SFC_DZETA1)
+        pshz = _interp_psi(psih_t, zetat, zt_min, dzeta)
+        pshzl = _interp_psi(psih_t, zetalt, zt_min, dzeta)
         simh = (pshzl - pshz + rlogt) * fhh
 
         ustark = ustar * C.VKARMAN
@@ -291,11 +354,11 @@ def _sfcdif_column(
     ztat02 = jnp.clip(zt02 * rlmo, ztmin, ztmax)
     ztat10 = jnp.clip(zt10 * rlmo, ztmin, ztmax)
 
-    psm10 = _interp_psi(_PSIM, ztau10, C.SFC_ZTMIN1, C.SFC_DZETA1)
+    psm10 = _interp_psi(psim_t, ztau10, zt_min, dzeta)
     simm10 = psm10 - psmz + rlnu10
-    psh02 = _interp_psi(_PSIH, ztat02, C.SFC_ZTMIN1, C.SFC_DZETA1)
+    psh02 = _interp_psi(psih_t, ztat02, zt_min, dzeta)
     simh02 = (psh02 - pshz + rlnt02) * fhh
-    psh10 = _interp_psi(_PSIH, ztat10, C.SFC_ZTMIN1, C.SFC_DZETA1)
+    psh10 = _interp_psi(psih_t, ztat10, zt_min, dzeta)
     simh10 = (psh10 - pshz + rlnt10) * fhh
 
     akms10 = jnp.maximum(ustark / simm10, cxch)
@@ -321,8 +384,8 @@ def _sfcdif_column(
     zu_e = jnp.maximum(zu * 0.35, zuuz)
     zu10_e = zu_e + 10.0
     rlnu10_e = jnp.log(zu10_e / zu_e)
-    ztau10_e = jnp.clip(zu10_e * rlmo, C.SFC_ZTMIN2, C.SFC_ZTMAX2)
-    psm10_e = _interp_psi(_PSIM, ztau10_e, C.SFC_ZTMIN2, C.SFC_DZETA2)
+    ztau10_e = jnp.clip(zu10_e * rlmo, zt_min, zt_max)
+    psm10_e = _interp_psi(psim_t, ztau10_e, zt_min, dzeta)
     simm10_e = psm10_e - psmz + rlnu10_e
     ekms10 = jnp.maximum(ustark / simm10_e, cxchl)
     u10e = jnp.where(is_sea, u10, umflx / ekms10 + uz0)
@@ -361,7 +424,7 @@ def _sfcdif_column(
 def myjsfc_column(
     *, u, v, temperature, theta, qv, qc, p_mid, dz, q2, tsk, xland, z0base,
     psfc, znt, ustar, mavail, dt=60.0, qsfc=None, thz0=None, qz0=None,
-    uz0=0.0, vz0=0.0, pblh=1000.0,
+    uz0=0.0, vz0=0.0, pblh=1000.0, itimestep=None, akhs=None, akms=None, wrf_real=False, ht=None,
 ):
     """Run the Janjic surface layer on one column; returns the SFCDIF dict.
 
@@ -371,7 +434,8 @@ def myjsfc_column(
     default to lowest-layer values (warm-start seed) when not supplied.
     """
 
-    f = lambda a: jnp.asarray(a, jnp.float64)
+    # ``wrf_real``: the WRF call (REAL MYJSFC, REAL-built MYJSFCINIT tables); else legacy fp64.
+    f = lambda a: jnp.asarray(a, jnp.float32 if wrf_real else jnp.float64)
     u = f(u); v = f(v); temperature = f(temperature); theta = f(theta)
     qv = f(qv); qc = f(qc); p_mid = f(p_mid); dz = f(dz); q2 = f(q2)
 
@@ -381,7 +445,16 @@ def myjsfc_column(
     # the interface heights are the cumulative DZ from the surface, and we take
     # the LOWEST interface (closest to ground) above which 2*TKE first drops to
     # the floor. EPSQ2*FH with EPSQ2=0.2 floors at the WRF threshold.
-    pblh = _myj_pblh(q2, dz)
+    iface = None
+    if ht is not None:
+        # module_sf_myjsfc.F:160-180, 280: ZINT accumulates DZ upward from HT in REAL and
+        # PBLH/ZSL are differences of those REAL heights (ZHK(.)-ZHK(LMH+1)).
+        f32 = jnp.float32
+        z = [jnp.asarray(ht, f32)]
+        for k in range(dz.shape[0]):
+            z.append((z[-1] + jnp.asarray(dz[k], f32)).astype(f32))
+        iface = f(jnp.stack(z) - z[0])
+    pblh = _myj_pblh(q2, dz, iface)
 
     # lowest model layer (LMH path; LOWLYR=1 => bottom layer)
     tlow = temperature[0]
@@ -393,12 +466,18 @@ def myjsfc_column(
     ulow = u[0]
     vlow = v[0]
     plow = p_mid[0]
-    zsl = dz[0] * 0.5
+    zsl = dz[0] * 0.5 if iface is None else iface[1] * 0.5
     psfc_v = f(psfc)
     apesfc = (psfc_v / C.P1000MB) ** C.CAPA
     thsk = f(tsk) / apesfc
     seamask = f(xland) - 1.0
     tz0 = (f(thz0) if thz0 is not None else thlow) * apesfc
+    ntsd1 = None
+    if itimestep is not None:
+        # module_sf_myjsfc.F:186-200, 297-302: NTSD==1 -> USTAR=0.1, TZ0=TSK.
+        ntsd1 = jnp.asarray(itimestep) == 1
+        ustar = jnp.where(ntsd1, 0.1, f(ustar))
+        tz0 = jnp.where(ntsd1, f(tsk), tz0)
 
     # QSFC is a WATER-VAPOR MIXING RATIO (WRF stores it as a mixing ratio); the
     # warm-start seed = lowest-layer mixing ratio qv[0]. QZ0 is a SPECIFIC
@@ -410,7 +489,8 @@ def myjsfc_column(
     out = _sfcdif_column(
         seamask=seamask, ths=thsk, qs_in=qsfc_in, psfc=psfc_v, tz0=tz0,
         tsk=f(tsk), thz0_in=thz0_in, qz0_in=qz0_in, ustar_in=f(ustar),
-        z0_in=f(znt), z0base=f(z0base), akhs_in=f(0.0), akms_in=f(0.0),
+        z0_in=f(znt), z0base=f(z0base), akhs_in=f(0.0 if akhs is None else akhs),
+        akms_in=f(0.0 if akms is None else akms), ntsd1=ntsd1, wrf_real=wrf_real,
         uz0_in=f(uz0), vz0_in=f(vz0),
         ulow=ulow, vlow=vlow, tlow=tlow, thlow=thlow, thelow=thelow,
         qlow=qlow, cwmlow=cwmlow, zsl=zsl, plow=plow, pblh=pblh,

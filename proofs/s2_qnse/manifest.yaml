@@ -1,0 +1,39 @@
+fixture_id: wrf471-qnse-paired-15-column-v1
+source: pristine WRF V4.7.1 ARW modules, staged serial oracle (no full forecast)
+source_commit: f52c197ed39d12e087d02c50f412d90d418f6186
+scenario: 15 stable/convective/land/water/cloud/snow/first-step/forced-flux columns; mfshconv=0
+created_utc: 2026-10-13T16:54:48Z
+variables:
+  profiles:
+    names: [u, v, temperature, theta, qv, qc, p_mid, p_int, exner, dz, q2, tke]
+    shape: 16 mass levels; p_int has 17 bottom-up interfaces
+    dtype: fp32 data from REAL4; fp64 data from promoted REAL8 build
+    units: u/v m/s; temperature/theta K; qv/qc kg/kg; p_mid/p_int Pa; dz m; q2/tke m2/s2; exner dimensionless
+  outputs:
+    names: [tke, EXCH_H, EXCH_M, EL_MYJ, RUBLTEN, RVBLTEN, RTHBLTEN, RQVBLTEN, RQCBLTEN, PBLH, KPBL]
+    shape: 16 mass-indexed slots, PBLH/KPBL scalar; EXCH_H/M slot0 preserved
+    dtype: REAL4 or promoted REAL8; KPBL integer
+    units: see oracle.json units and WRF routine declarations
+    absolute_tolerance: fp64 5e-10; fp32 literal BYTE including signed zero, compiled independent input-ULP enclosure
+    relative_tolerance: fp64 5e-11; fp32 no fitted floors or relative multipliers
+  surface_outputs:
+    names: [ustar, znt, akhs, akms, rmol, rib, hfx, qfx, flx_lh, thz0, qz0, qsfc, u10, v10, th02, th10, t02, q02, q10, pshltr]
+    shape: scalar per column
+    dtype: REAL4 or promoted REAL8
+    units: WRF SFCDIF declarations; hfx/flx_lh W/m2; qfx kg/m2/s; znt m; ustar/u10/v10 m/s; temperatures K; humidity kg/kg; pshltr Pa
+    absolute_tolerance: fp64 5e-10; fp32 literal BYTE including signed zero, compiled independent input-ULP enclosure
+    relative_tolerance: fp64 5e-11; fp32 no fitted floors or relative multipliers
+files:
+  - path: proofs/s2_qnse/oracle.json
+    sha256: e5a54fdf77852499db3370ff7e96e625638571f53018dedd3d2df8588005b5d7
+  - path: proofs/s2_qnse/oracle.f90
+    sha256: aec95112b98dcbf6c8cb3156a1ef69016dc9fe6d448c1495514b250f55c2b4e9
+license_notes: generated numerical facts from WRF; no WRF source or model output files redistributed
+qualification: literal REAL4 BYTE; surface/PBL finite independent compiled input-ULP enclosures; EDMF native excess disclosed under updated standing compiler policy, raw spread gate FAIL; coupled D6 unchanged
+
+rounding_packet:
+  path: proofs/s2_qnse/compiler_rounding.json
+  sha256: 3e0e644c0d749603a7a59b97113533c9a054bc83abed6449690b432411ff1757
+enclosures_packet:
+  path: proofs/s2_qnse/enclosures.json
+  sha256: cd0e5c51bed711b5e19d5be669b3431c36f1c69bd7b0a6e56b2227e9684b3daa

@@ -21,6 +21,7 @@ import jax.numpy as jnp
 from gpuwrf.contracts.grid import GridSpec
 from gpuwrf.contracts.precision import DEFAULT_DTYPES
 from gpuwrf.contracts.state import State, mynn_sfc_wspd_enabled
+from gpuwrf.contracts.moisture import active_moist_arrays
 from gpuwrf.kernels.layout_pin import pin as _layout_pin
 from gpuwrf.physics.mynn_pbl import (
     MynnPBLColumnState,
@@ -38,7 +39,12 @@ from gpuwrf.physics.mynn_pbl import (
 from gpuwrf.physics.mynn_sgs_cloud import sgs_cloud_enabled
 from gpuwrf.physics.mynn_surface_stub import SurfaceFluxes
 from gpuwrf.physics.gwd_gwdo import GWDOColumnState, GWDOStatics, gwdo_columns
-from gpuwrf.physics.surface_layer import surface_layer, surface_layer_with_diagnostics
+from gpuwrf.physics.surface_layer import (
+    mynn_driver_surface_fluxes,
+    mynn_fltv_wrf_enabled,
+    surface_layer,
+    surface_layer_with_diagnostics,
+)
 from gpuwrf.physics.ra_sw_dudhia import (
     DudhiaSWColumnState,
     solve_dudhia_sw_column,
@@ -279,6 +285,8 @@ class _SurfaceColumnState(NamedTuple):
     qfx: object = None
     qsfc: object = None
     pblh: object = None
+    sms_required: bool = False
+    sms_ustm: object = None
     dx_m: object = None
     # RETIRED (v0.9.0): the WRF-faithful MYNN-SL 2-m T2 diagnostic is
     # ``THGB + DTG*PSIT2/PSIT``; over LAND real WRF overwrites it with the Noah-MP LSM
@@ -346,6 +354,7 @@ class MynnPBLSourceLeaves(NamedTuple):
     rvblten: jax.Array
     rqcblten: jax.Array | None = None
     rqiblten: jax.Array | None = None
+    tracer_tendencies: jax.Array | None = None
 
 
 class RRTMGRadiationDiagnostics(NamedTuple):
@@ -386,6 +395,9 @@ class RRTMGRadiationDiagnostics(NamedTuple):
     # WRF CLDFRA is held at radiation cadence, before the current MYNN call.
     # Mass-grid (nz, ny, nx); None only for legacy diagnostic-only callers.
     cloud_fraction: object = None
+    # BEP/BEM alone consumes the held broadband direct/diffuse flux and solar angles.
+    # None on every existing configuration: no extra compiled outputs/work.
+    urban_radiation: object = None
 
 
 class SolarGeometry(NamedTuple):
@@ -439,6 +451,17 @@ def _w_mass(state: State, *, dtype=None):
 
     w = state.w if dtype is None else jnp.asarray(state.w, dtype=dtype)
     return 0.5 * (w[:-1, :, :] + w[1:, :, :])
+
+
+def _w_bottom_faces(state: State, *, dtype=None):
+    """WRF MYNN ``w1``: the bottom w-face of every mass layer, surface face included.
+
+    first_rk_step_part1.F:1142 passes ``W=grid%w_2`` and module_bl_mynnedmf_driver.F:348
+    copies ``w1(k) = w(i,k,j)`` for ``k=kts,kte`` -- faces 0..nz-1, no averaging.
+    """
+
+    w = state.w if dtype is None else jnp.asarray(state.w, dtype=dtype)
+    return w[:-1, :, :]
 
 
 def _mass_to_u_face(field):
@@ -711,7 +734,7 @@ def _wrf_solcon_real(julian, utc_minute, lead_seconds):
 
 
 
-def _wrf_solar_geometry_real(lat, lon, julian, utc_minute, lead_seconds, solar_lead_seconds=None):
+def _wrf_solar_geometry_real(lat, lon, julian, utc_minute, lead_seconds, solar_lead_seconds=None, *, solar_xtime_minutes=None):
     """Pristine REAL radconst/calc_coszen order; midpoint affects XTIME only."""
     from jax import lax
     F = jnp.float32
@@ -736,6 +759,8 @@ def _wrf_solar_geometry_real(lat, lon, julian, utc_minute, lead_seconds, solar_l
                     mul(F(.014615), jnp.cos(twice))),
                 mul(F(.04089), jnp.sin(twice))), F(229.18))
     solar_minute = lead_minute if solar_lead_seconds is None else div(F(solar_lead_seconds), F(60))
+    if solar_xtime_minutes is not None:
+        solar_minute = F(solar_xtime_minutes)
     # WRF MOD(XTIME), then GMT: retain the original hour-angle phase/order.
     xt24 = add(jnp.fmod(solar_minute, F(1440)), eot)
     tloc = add(add(div(utc_minute, F(60)), div(xt24, F(60))), div(jnp.asarray(lon, F), F(15)))
@@ -1256,7 +1281,13 @@ def _rrtmg_column_inputs(
     shadow_length_m: float = 25000.0,
     land_state=None,
     use_mp_re: int = 1,
+    mp_physics: int = 8,
     ozone_vmr_override=None,
+    use_mynn_sgs_cloud: bool = True,
+    cloud_mp_physics: int = 8,
+    use_sgs_cloud=True,
+    force_real=False,
+    cuplus_clouds=None, shallowcu_forced_ra=False,
 ) -> tuple[RRTMGSWColumnState, RRTMGLWColumnState, object, object, SolarGeometry, RRTMGSWTopographyState | None]:
     """Build SW/LW RRTMG column states and expose shared surface fields."""
 
@@ -1264,10 +1295,15 @@ def _rrtmg_column_inputs(
                   solar_lead_seconds=solar_lead_seconds, clock_base=clock_base,
                   radiation_static=radiation_static, topo_shading=topo_shading,
                   slope_rad=slope_rad, shadow_length_m=shadow_length_m,
-                  land_state=land_state, use_mp_re=use_mp_re)
+                  land_state=land_state, use_mp_re=use_mp_re, mp_physics=mp_physics, use_sgs_cloud=use_sgs_cloud)
     if ozone_vmr_override is not None:
         kwargs["ozone_vmr_override"] = ozone_vmr_override
-    if not _rrtmg_real_enabled():
+    if not use_mynn_sgs_cloud:
+        kwargs["use_mynn_sgs_cloud"] = False
+        kwargs["cloud_mp_physics"] = cloud_mp_physics
+    if cuplus_clouds is not None:
+        kwargs.update(cuplus_clouds=cuplus_clouds,shallowcu_forced_ra=shallowcu_forced_ra)
+    if not _rrtmg_real_enabled() and not force_real:
         return _rrtmg_column_inputs_impl(state, grid, **kwargs)
     # Keep the CLWRF REAL(8) anchor intact; the radiation-driver clock is REAL.
     if clock_base is not None:
@@ -1298,7 +1334,12 @@ def _rrtmg_column_inputs_impl(
     shadow_length_m: float = 25000.0,
     land_state=None,
     use_mp_re: int = 1,
+    mp_physics: int = 8,
     ozone_vmr_override=None,
+    use_mynn_sgs_cloud: bool = True,
+    cloud_mp_physics: int = 8,
+    use_sgs_cloud=True,
+    cuplus_clouds=None, shallowcu_forced_ra=False,
 ) -> tuple[RRTMGSWColumnState, RRTMGLWColumnState, object, object, SolarGeometry, RRTMGSWTopographyState | None]:
     """Build SW/LW RRTMG column states and expose shared surface fields."""
 
@@ -1340,10 +1381,31 @@ def _rrtmg_column_inputs_impl(
     qv_columns = _to_columns(state.qv)
     qc_columns = _to_columns(state.qc)
     qi_columns = _to_columns(state.qi)
+    if state.qi2 is not None:
+        # module_radiation_driver.F:1287-1295, temporary sum of P3 categories.
+        qi_columns = qi_columns + _to_columns(state.qi2)
+    if state.qi3 is not None:
+        # Original radiation_driver.F:1297-1306, Jensen's third ice category.
+        qi_columns = qi_columns + _to_columns(state.qi3)
     qs_columns = _to_columns(state.qs)
     qg_columns = _to_columns(state.qg)
     cloud_fraction = _cloud_fraction_columns(state)
-    if sgs_cloud_enabled():
+    if not use_mynn_sgs_cloud:
+        from gpuwrf.physics.cloud_fraction import wrf_resolved_cloud_fraction
+        cloud_fraction = wrf_resolved_cloud_fraction(
+            qv_columns, qc_columns, qi_columns, qs_columns, _to_columns(T), sw_p_columns,
+            mp_physics=cloud_mp_physics)
+    cup_fraction_update=None
+    if cuplus_clouds is not None:
+        from gpuwrf.physics.cloud_fraction import wrf_resolved_cloud_fraction
+        from gpuwrf.coupling.cuplus import radiation_merge
+        cloud_fraction,cu_flags=wrf_resolved_cloud_fraction(qv_columns,qc_columns,qi_columns,qs_columns,
+            _to_columns(T),sw_p_columns,mp_physics=cloud_mp_physics,return_flags=True)
+        cloud_fraction,qc_columns,qi_columns,_=radiation_merge(cloud_fraction,qc_columns,qi_columns,
+            cu_flags,cuplus_clouds,before_pbl=True)
+    if use_mynn_sgs_cloud and use_sgs_cloud and sgs_cloud_enabled():
+        # check_a_mundo.F:1802–1820 resets icloud_bl=0 without MYNN.
+        # Unused zero MYNN cloud carries must not erase another PBL's clouds.
         # WRF icloud_bl=1 (Registry default; both CPU-truth regions run it):
         # radiation sees the MYNN subgrid BL clouds. module_radiation_driver.F
         # :1404-1431 -- after the first step CLDFRA := CLDFRA_BL everywhere
@@ -1367,6 +1429,23 @@ def _rrtmg_column_inputs_impl(
         qi_columns = qi_columns + jnp.where(
             (qi_columns < 1.0e-8) & bl_active, qi_bl_cols, 0.0
         )
+    if cuplus_clouds is not None:
+        cloud_fraction,qc_columns,qi_columns,cup_fraction_update= radiation_merge(
+            cloud_fraction,qc_columns,qi_columns,cu_flags,cuplus_clouds,before_pbl=False,
+            shallowcu_forced_ra=shallowcu_forced_ra)
+    if int(mp_physics) == 11 and state.cldfra_mp_all is not None:
+        # radiation_driver:1433-1444, after the optional BL cloud merge.
+        held=_to_columns(state.cldfra_mp_all)
+        cloud_fraction=jnp.where(jnp.asarray(lead_seconds)>0,jnp.where(held<.01,0.,held),cloud_fraction)
+    if int(mp_physics) == 3:
+        # WSM3 carries ice in qc and snow in qr (F_QI=F_QS=.false., warm_rain=.false.):
+        # module_ra_rrtmg_lw.F:12075-12083 / module_ra_rrtmg_sw.F:10676-10684 restage
+        # them as QI1D/QS1D below 273.15 K; QI1D/QS1D stay 0 elsewhere.
+        cold = _to_columns(T).astype(jnp.float32) < jnp.float32(273.15)  # REAL T1D vs REAL literal
+        qr_columns = _to_columns(state.qr)
+        qi_columns = jnp.where(cold, qc_columns, 0.0).astype(qi_columns.dtype)
+        qs_columns = jnp.where(cold, qr_columns, 0.0).astype(qs_columns.dtype)
+        qc_columns = jnp.where(cold, 0.0, qc_columns).astype(qc_columns.dtype)
     dz = _column_dz_from_state(state, grid)
     rho = _to_columns(_rho_from_state(state))
     surface_shape = state.t_skin.shape
@@ -1452,12 +1531,19 @@ def _rrtmg_column_inputs_impl(
             ghg_time += timedelta(seconds=float(lead_seconds))
         ghg = clwrf_ssp245_gases_for_time(ghg_time)
 
-    from gpuwrf.physics.rrtmg_mp_re import mp_re_active
+    from gpuwrf.physics.p3.radiation import mp_re_active, optical_view
     radii_kwargs = {}
-    if mp_re_active(use_mp_re=int(use_mp_re)):
+    if int(mp_physics) == 11:
+        if state.lradius is None or state.iradius is None:
+            raise ValueError("CAM-MG radiation requires held liquid/ice radii seeded before radiation")
+        from gpuwrf.physics.cammg.radiation import optical_view
+        qi_columns,qs_columns,radii_kwargs=optical_view(state,qc_columns,qi_columns,qs_columns)
+    elif int(mp_physics) in (50, 51, 52, 53, 55) and mp_re_active(use_mp_re=int(use_mp_re), mp_physics=int(mp_physics)):
+        qi_columns, qs_columns, radii_kwargs = optical_view(state, qi_columns)
+    elif mp_re_active(use_mp_re=int(use_mp_re), mp_physics=int(mp_physics)):
         radii = tuple(getattr(state, name) for name in ("re_cloud", "re_ice", "re_snow"))
         if any(value is None for value in radii):
-            raise ValueError("MP_RE requires held Thompson radii seeded before radiation")
+            raise ValueError("MP_RE requires held microphysics radii seeded before radiation")
         radii_kwargs = dict(zip(("re_cloud", "re_ice", "re_snow"), map(_to_columns, radii)))
         radii_kwargs["xland"] = state.xland
     sw_state = RRTMGSWColumnState(
@@ -1506,7 +1592,8 @@ def _rrtmg_column_inputs_impl(
         ozone_vmr=ozone_vmr,
         **radii_kwargs,
     )
-    return sw_state, lw_state, surface_albedo, surface_emissivity, geometry, topography
+    result=(sw_state,lw_state,surface_albedo,surface_emissivity,geometry,topography)
+    return result+(cup_fraction_update,) if cuplus_clouds is not None else result
 
 
 def _bottom_column(surface_field, template_columns):
@@ -1579,8 +1666,7 @@ def _wrf_hydrostatic_pressure_profiles_from_state(state: State, metrics, *, outp
         from gpuwrf.kernels.phys_hydrostatic_real import hydrostatic_profiles
 
         p_hyd, faces = hydrostatic_profiles(
-            state.mu_total, tuple(getattr(state, field) for field in
-                                  ("qv", "qc", "qr", "qi", "qs", "qg")),
+            state.mu_total, active_moist_arrays(state),
             metrics.c1h, metrics.c2h, metrics.dnw, metrics.p_top,
         )
         return p_hyd.astype(output_dtype), faces, faces[0].astype(output_dtype)
@@ -1592,8 +1678,7 @@ def _wrf_hydrostatic_pressure_profiles_from_state(state: State, metrics, *, outp
     dnw = jnp.asarray(metrics.dnw, dtype=dtype)
     p_top = jnp.reshape(jnp.asarray(metrics.p_top, dtype=dtype), ())
     qtot = sum(
-        jnp.asarray(getattr(state, field), dtype=dtype)
-        for field in ("qv", "qc", "qr", "qi", "qs", "qg")
+        jnp.asarray(value, dtype=dtype) for value in active_moist_arrays(state)
     )
 
     nz = int(state.theta.shape[0])
@@ -1659,7 +1744,8 @@ def _wrf_phy_prep_temperature_interfaces(T, state: State, metrics):
     return jnp.concatenate((bottom[None, ...], middle, top[None, ...]), axis=0)
 
 
-def _wrf_phy_prep_rho_from_state(state: State, metrics, *, output_dtype=jnp.float64):
+def _wrf_phy_prep_rho_from_state(state: State, metrics, *, output_dtype=jnp.float64, return_alt=False,
+                                 kts_only=False):
     """Reconstruct WRF ``phy_prep`` density passed to surface/PBL physics.
 
     WRF passes ``rho = (1+QVAPOR)/ALT`` where ``ALT`` is the full inverse
@@ -1670,13 +1756,15 @@ def _wrf_phy_prep_rho_from_state(state: State, metrics, *, output_dtype=jnp.floa
     """
 
     dtype = jnp.float32
+    # kts_only: level kts alone, (ny, nx) -- the same statements on the kts (faces kts/kts+1) slices.
+    levels = (lambda field, n: field[:n]) if kts_only else (lambda field, n: field)
     mut = _total_or_legacy_field(state, "mu_total", "mu", dtype)
-    ph_total = _total_or_legacy_field(state, "ph_total", "ph", dtype)
-    qv = jnp.asarray(state.qv, dtype=dtype)
-    c3h = jnp.asarray(metrics.c3h, dtype=dtype)
-    c4h = jnp.asarray(metrics.c4h, dtype=dtype)
-    c3f = jnp.asarray(metrics.c3f, dtype=dtype)
-    c4f = jnp.asarray(metrics.c4f, dtype=dtype)
+    ph_total = jnp.asarray(levels(state.ph_total, 2), dtype=dtype)
+    qv = jnp.asarray(levels(state.qv, 1), dtype=dtype)
+    c3h = jnp.asarray(levels(metrics.c3h, 1), dtype=dtype)
+    c4h = jnp.asarray(levels(metrics.c4h, 1), dtype=dtype)
+    c3f = jnp.asarray(levels(metrics.c3f, 2), dtype=dtype)
+    c4f = jnp.asarray(levels(metrics.c4f, 2), dtype=dtype)
     p_top = jnp.reshape(jnp.asarray(metrics.p_top, dtype=dtype), ())
 
     p_up = c3f[1:, None, None] * mut[None, :, :] + c4f[1:, None, None] + p_top
@@ -1684,14 +1772,20 @@ def _wrf_phy_prep_rho_from_state(state: State, metrics, *, output_dtype=jnp.floa
     p_mid = c3h[:, None, None] * mut[None, :, :] + c4h[:, None, None] + p_top
     dph = ph_total[1:, :, :] - ph_total[:-1, :, :]
     alt = dph / p_mid / jnp.log(p_down / p_up)
+    if return_alt:
+        return alt.astype(output_dtype)
     rho = (1.0 + qv) / alt
-    return rho.astype(output_dtype)
+    return (rho[0] if kts_only else rho).astype(output_dtype)
 
 
 def _cloud_fraction_columns(state: State):
     """Builds a bounded diagnostic cloud fraction from hydrometeor occupancy."""
 
     condensate = state.qc + state.qi + state.qs + state.qg
+    if state.qi2 is not None:
+        condensate = condensate + state.qi2
+    if state.qi3 is not None:
+        condensate = condensate + state.qi3
     return _to_columns(jnp.clip(condensate * 1.0e5, 0.0, 1.0))
 
 
@@ -1773,7 +1867,7 @@ def _state_from_thompson_output(state: State, out: ThompsonColumnState, precip=N
         updates["graupel_acc"] = (jnp.asarray(state.graupel_acc, dtype=jnp.float64) + precip["graupel"]).astype(_output_dtype(state, "graupel_acc"))
         updates["ice_acc"] = (jnp.asarray(state.ice_acc, dtype=jnp.float64) + precip["ice"]).astype(_output_dtype(state, "ice_acc"))
     from gpuwrf.physics.rrtmg_mp_re import mp_re_active, calc_thompson_effective_radii
-    if mp_re_active() and state.re_cloud is not None:
+    if state.re_cloud is not None:
         radii = calc_thompson_effective_radii(out.T, out.p, out.qv, out.qc, out.qi, out.Ni, out.qs)
         updates.update(zip(("re_cloud", "re_ice", "re_snow"), map(_from_columns, radii)))
     return state.replace(**updates)
@@ -1810,7 +1904,7 @@ def _thompson_tendency_side_channel(
 
 
 def thompson_adapter(state: State, dt: float, grid: GridSpec | None = None, *, return_tendencies: bool = False,
-                     return_precipitation: bool = False):
+                     return_precipitation: bool = False, return_radar_context: bool = False):
     """Slice state to Thompson inputs, call the kernel, and reassemble State.
 
     Advances all hydrometeor mixing ratios (qv,qc,qr,qi,qs,qg), all number
@@ -1825,8 +1919,16 @@ def thompson_adapter(state: State, dt: float, grid: GridSpec | None = None, *, r
     """
 
     column = _thompson_column_from_state(state, grid)
-    out, precip = step_thompson_column_with_precip(column, dt, debug=False)
+    if return_radar_context:
+        out, precip, (raw_qv, radar_ng) = step_thompson_column_with_precip(column, dt, debug=False,
+                                                                         return_radar_context=True)
+    else:
+        out, precip = step_thompson_column_with_precip(column, dt, debug=False)
     next_state = _state_from_thompson_output(state, out, precip)
+    if return_radar_context:
+        from gpuwrf.diagnostics.thompson_radar import ThompsonRadarInputs
+        return next_state, precip, ThompsonRadarInputs(raw_qv, out.qr, out.Nr, out.qs, out.qg,
+                                                        radar_ng, out.T, out.p)
     if return_tendencies:
         return next_state, _thompson_tendency_side_channel(state, out, dt)
     if return_precipitation:
@@ -1932,29 +2034,30 @@ def _thompson_aero_column_from_state(state: State, grid: GridSpec | None = None)
 def _aerosol_surface_emission_columns(state: State, grid: GridSpec | None = None):
     """WRF ``thompson_init`` fake surface aerosol emission (nwfa2d, nifa2d).
 
-    Inline jnp transcription of the ``nwfa2d`` closed form in
-    :func:`gpuwrf.physics.thompson_aero_column.climatological_aerosol_profiles`
-    (module_mp_thompson.F:493-558, use_aero_icbc=.false. path) so the jitted
-    timestep loop never crosses to the host (the frozen helper is NumPy).
-    ``nifa2d`` is zero in WRF for this path. Returns per-kg-per-second columns
-    shaped ``(ny, nx)`` (the column batch shape).
+    ``start_em.F:873`` passes ``z_at_q=(ph_2+phb)/g`` to ``thompson_init``:
+    despite its name, this is INTERFACE height, not mass-level height. Match
+    its REAL4 operands before evaluating ``module_mp_thompson.F:493-510``.
+    NIFA2D is not assigned by that routine; the caller retains input NIFA2D.
+    Returns per-kg-per-second arrays shaped ``(ny, nx)``.
     """
     _initialize_thompson_aero()
 
     del grid
-    hgt = _mass_level_height_columns(state)  # (ny, nx, nz), m MSL
-    h0 = hgt[..., 0]
+    f = jnp.float32
+    # Keep the REAL4 division under JIT: reciprocal multiplication changes
+    # the thin first-layer depth after subtracting two large terrain heights.
+    # Only these two interfaces are needed; this is a cold-start operation.
+    z = state.ph[:2].astype(f) / jax.lax.optimization_barrier(f(WRF_PHYSICS_G_M_S2))
+    h0 = z[0]
     h_01 = jnp.where(
-        h0 <= 1000.0,
-        0.8,
-        jnp.where(h0 >= 2500.0, 0.01, 0.8 * jnp.cos(h0 * 0.001 - 1.0)),
+        h0 <= f(1000.0),
+        f(0.8),
+        jnp.where(h0 >= f(2500.0), f(0.01), f(0.8) * jnp.cos(h0 * f(0.001) - f(1.0))),
     )
-    ni_ccn3 = -1.0 * jnp.log(NA_CCN1 / NA_CCN0) / h_01
-    # Level 1 uses the LEVEL-2 height offset (WRF lines 508, 546).
-    dz1 = hgt[..., 1] - h0
-    nwfa1 = NA_CCN1 + NA_CCN0 * jnp.exp(-(dz1 / 1000.0) * ni_ccn3)
-    z1 = jnp.maximum(dz1, 1.0)
-    nwfa2d = nwfa1 * 0.000196 * (50.0 / z1)
+    ni_ccn3 = -jnp.log(f(NA_CCN1) / f(NA_CCN0)) / h_01
+    z1 = z[1] - h0
+    nwfa1 = f(NA_CCN1) + f(NA_CCN0) * jnp.exp(-(z1 / f(1000.0)) * ni_ccn3)
+    nwfa2d = nwfa1 * f(0.000196) * (f(50.0) / z1)
     return nwfa2d, jnp.zeros_like(nwfa2d)
 
 def _climatological_aerosol_profile_columns(state: State, grid: GridSpec | None = None):
@@ -1997,16 +2100,25 @@ def thompson_aero_coldstart_init(state: State, grid: GridSpec | None = None) -> 
     preserved, mirroring WRF's is_aerosol_aware input check.
     """
 
-    state = state.ensure_conditional_leaves(mp_physics=28)
+    state = state.ensure_conditional_leaves(mp_physics=28, use_mp_re=int(state.re_cloud is not None))
     existing_nwfa = jnp.asarray(state.nwfa)
     existing_nifa = jnp.asarray(state.nifa)
     nwfa_cols, nifa_cols = _climatological_aerosol_profile_columns(state, grid)
     seeded_nwfa = _from_columns(nwfa_cols).astype(_output_dtype(state, "nwfa"))
     seeded_nifa = _from_columns(nifa_cols).astype(_output_dtype(state, "nifa"))
     has_aerosol_input = jnp.max(jnp.abs(existing_nwfa)) > 0.0
+    # WRF thompson_init:493-518 computes fallback NWFA2D once when the
+    # initial CCN profile is absent, even if NWFA2D was read from input. With
+    # an existing CCN profile it leaves that input emission untouched.
+    # NIFA2D is not overwritten by this initialization routine.
+    emission = _aerosol_surface_emission_columns(state, grid)
+    water_emission = (emission[0] if state.nwfa2d is None else
+                      jnp.where(has_aerosol_input, state.nwfa2d, emission[0]))
     return state.replace(
         nwfa=jnp.where(has_aerosol_input, existing_nwfa, seeded_nwfa).astype(_output_dtype(state, "nwfa")),
         nifa=jnp.where(has_aerosol_input, existing_nifa, seeded_nifa).astype(_output_dtype(state, "nifa")),
+        nwfa2d=water_emission.astype(jnp.float32),
+        nifa2d=emission[1].astype(jnp.float32) if state.nifa2d is None else state.nifa2d,
     )
 
 
@@ -2040,6 +2152,12 @@ def _state_from_thompson_aero_output(state: State, out: ThompsonAeroColumnState,
         nwfa=_from_columns(out.nwfa).astype(_output_dtype(state, "nwfa")),
         nifa=_from_columns(out.nifa).astype(_output_dtype(state, "nifa")),
     )
+    if state.re_cloud is not None:
+        from gpuwrf.physics.rrtmg_mp_re import calc_thompson_effective_radii
+        radii = calc_thompson_effective_radii(
+            out.T, out.p, out.qv, out.qc, out.qi, out.Ni, out.qs,
+            Nc=out.Nc, aerosol_aware=True)
+        updates.update(zip(("re_cloud", "re_ice", "re_snow"), map(_from_columns, radii)))
     if precip is not None:
         updates["rain_acc"] = (jnp.asarray(state.rain_acc, dtype=jnp.float64) + precip["rain"]).astype(_output_dtype(state, "rain_acc"))
         updates["snow_acc"] = (jnp.asarray(state.snow_acc, dtype=jnp.float64) + precip["snow"]).astype(_output_dtype(state, "snow_acc"))
@@ -2047,7 +2165,8 @@ def _state_from_thompson_aero_output(state: State, out: ThompsonAeroColumnState,
         updates["ice_acc"] = (jnp.asarray(state.ice_acc, dtype=jnp.float64) + precip["ice"]).astype(_output_dtype(state, "ice_acc"))
     return state.replace(**updates)
 
-def thompson_aero_adapter(state: State, dt: float, grid: GridSpec | None = None, *, return_tendencies: bool = False):
+def thompson_aero_adapter(state: State, dt: float, grid: GridSpec | None = None, *, return_tendencies: bool = False,
+                         return_precipitation: bool = False):
     """Slice state to mp=28 inputs, call the aero kernel, reassemble State.
 
     Mirrors :func:`thompson_adapter` (mp=8) with the aerosol-aware additions:
@@ -2058,20 +2177,65 @@ def thompson_aero_adapter(state: State, dt: float, grid: GridSpec | None = None,
     """
     _initialize_thompson_aero()
 
-    state = state.ensure_conditional_leaves(mp_physics=28)
+    state = state.ensure_conditional_leaves(mp_physics=28, use_mp_re=int(state.re_cloud is not None))
     column = _thompson_aero_column_from_state(state, grid)
     out, precip = step_thompson_aero_column_with_precip(column, float(dt), debug=False)
-    nwfa2d, nifa2d = _aerosol_surface_emission_columns(state, grid)
+    nwfa2d, nifa2d = ((state.nwfa2d, state.nifa2d)
+                     if state.nwfa2d is not None and state.nifa2d is not None
+                     else _aerosol_surface_emission_columns(state, grid))
     out = apply_surface_aerosol_emission(out, nwfa2d, nifa2d, float(dt))
     next_state = _state_from_thompson_aero_output(state, out, precip)
+    next_state = next_state.replace(nwfa2d=nwfa2d.astype(jnp.float32), nifa2d=nifa2d.astype(jnp.float32))
     if return_tendencies:
         return next_state, _thompson_tendency_side_channel(state, out, dt)
+    if return_precipitation:  # THOMPSONAERO RAINNCV/SNOWNCV/GRAUPELNCV, as mp=8
+        return next_state, precip
     return next_state
 
 
 def _mynn_real_dtype():
     """Match the existing whole-MYNN flag at its retained coupling boundary."""
     return jnp.float32 if _mynn_env_bool("GPUWRF_MYNN_FP32_COLUMNS", False) else jnp.float64
+
+
+def _mynn_driver_limited_handles(state: State, grid: GridSpec | None, theta_flux, qv_flux, fltv):
+    """MYNN-only view of the driver's hfx1/qfx1 limits (module_bl_mynnedmf_driver.F:381-397).
+
+    WRF limits only the MYNN driver's local copies; grid%hfx/qfx and every other consumer stay
+    physical (cumulus cu3/cu6/cu16 rebuild HFX/QFX from the shared State handles, which therefore
+    remain unlimited). Columns inside the limits keep the producer's handles bit for bit; columns
+    beyond them get the driver statements (F90:859-876) re-formed from the limited physical
+    grid HFX/QFX with the producer's own operands (phy_prep rho/qv/pi_phy at kts, TSK).
+
+    Branch-free: a ``lax.cond`` on the bound test is a host-read predicate inside every stepping
+    while loop (+1 DtoH and sync per step, C5 host-transfer gate). The kts operands are therefore
+    formed from the kts (rho: kts/kts+1) slices of the State's native ``(z, y, x)`` fields alone, as
+    ``(ny, nx)`` arithmetic -- the same values as the surface column view's ``[..., 0]``, without its
+    layout-pinned (``cols``) 3-D transposes or a 3-D intermediate shared with the MYNN column prep;
+    either of those, read in the step graph, tipped PROD d01 into oversized kInput fusions (E41).
+    """
+
+    hfx, qfx = getattr(state, "hfx", None), getattr(state, "qfx", None)
+    metrics = getattr(grid, "metrics", None)
+    if not mynn_fltv_wrf_enabled() or hfx is None or qfx is None or metrics is None:
+        return theta_flux, qv_flux, fltv
+    dtype = theta_flux.dtype
+    c = lambda value: jnp.asarray(value, dtype=dtype)  # noqa: E731
+    hfx, qfx = jnp.asarray(hfx, dtype=dtype), jnp.asarray(qfx, dtype=dtype)
+    beyond = (hfx > c(1200.0)) | (hfx < c(-600.0)) | (qfx > c(9e-4)) | (qfx < c(-3e-4))
+    exner = {}
+    if _mynn_env_bool("GPUWRF_MYNN_PHY_EXNER", False):  # _mynn_surface_exner_kwargs of the column view
+        exner = {"exner": jnp.asarray(
+            _mynn_exner_from_pressure(jnp.asarray(state.p[0], dtype=_mynn_real_dtype())), dtype=dtype)}
+        p1 = jnp.asarray(state.p[0], dtype=dtype)  # superseded by pi_phy (dead under jit)
+    else:
+        p1 = jnp.asarray(_wrf_hydrostatic_pressure_from_state(state, metrics)[0][0], dtype=dtype)
+    limited = mynn_driver_surface_fluxes(
+        hfx, qfx, jnp.asarray(_wrf_phy_prep_rho_from_state(state, metrics, kts_only=True), dtype=dtype),
+        jnp.maximum(jnp.asarray(state.qv[0], dtype=dtype), c(0.0)), jnp.asarray(state.t_skin, dtype=dtype),
+        p1, **exner, pbl_limits=True)
+    return tuple(jnp.where(beyond, jnp.asarray(new, dtype=dtype), old)
+                 for new, old in ((limited.flt, theta_flux), (limited.flqv, qv_flux), (limited.fltv, fltv)))
 
 
 def _surface_fluxes_from_state(state: State, grid: GridSpec | None = None) -> SurfaceFluxes:
@@ -2090,14 +2254,16 @@ def _surface_fluxes_from_state(state: State, grid: GridSpec | None = None) -> Su
     psfc = None
     if _mynn_env_bool("GPUWRF_MYNN_RHOSFC_WRF", False):
         psfc = _surface_column_view(state, grid).psfc
+    theta_flux, qv_flux, fltv = _mynn_driver_limited_handles(
+        state, grid, *(jnp.asarray(f, dtype=dtype) for f in (state.theta_flux, state.qv_flux, state.fltv)))
     return SurfaceFluxes(
         ustar=jnp.asarray(state.ustar, dtype=dtype),
-        theta_flux=jnp.asarray(state.theta_flux, dtype=dtype),
-        qv_flux=jnp.asarray(state.qv_flux, dtype=dtype),
+        theta_flux=theta_flux,
+        qv_flux=qv_flux,
         tau_u=jnp.asarray(state.tau_u, dtype=dtype),
         tau_v=jnp.asarray(state.tau_v, dtype=dtype),
         rhosfc=jnp.asarray(state.rhosfc, dtype=dtype),
-        fltv=jnp.asarray(state.fltv, dtype=dtype),
+        fltv=fltv,
         # WRF land/sea mask drives the mym_length CASE(1) land/water branch
         # (elt_max + el(k) hurricane taper). Marine columns (xland=2) use the
         # faithful elt_max=350 vs 400 over land.
@@ -2114,7 +2280,8 @@ def _mynn_column_uses_wrf_phy_prep(grid: GridSpec | None) -> bool:
     return getattr(grid, "metrics", None) is not None
 
 
-def _mynn_column_from_state(state: State, grid: GridSpec | None) -> MynnPBLColumnState:
+def _mynn_column_from_state(state: State, grid: GridSpec | None,
+                            passive_scalars: tuple[str, ...] = ()) -> MynnPBLColumnState:
     """Build the MYNN column-kernel input view from State (mass-point winds).
 
     The live WRF path stores theta_m in the model state when ``use_theta_m=1``,
@@ -2156,7 +2323,7 @@ def _mynn_column_from_state(state: State, grid: GridSpec | None) -> MynnPBLColum
     return MynnPBLColumnState(
         column(_u_mass(state, dtype=wind_dtype)),
         column(_v_mass(state, dtype=wind_dtype)),
-        column(_w_mass(state, dtype=wind_dtype)),
+        column(_w_bottom_faces(state, dtype=wind_dtype)),
         column(theta),
         column(state.qv),
         0.5 * column(state.qke),  # tke = qke/2
@@ -2172,6 +2339,8 @@ def _mynn_column_from_state(state: State, grid: GridSpec | None) -> MynnPBLColum
         qsq=column(state.qsq),
         exner=None if exner is None else column(exner),
         ni=column(state.Ni) if _mynn_env_bool("GPUWRF_MYNN_QNI_MIXING",False) else None,
+        # module_pbl_driver.F:1720-1722 QNC/QNWFA/QNIFA (raw scalar mixing ratios).
+        passive={name: column(getattr(state, name)) for name in passive_scalars} or None,
     )
 
 
@@ -2278,7 +2447,9 @@ def _state_from_mynn_output(
         }
         if out.ni is not None:
             cloud_updates['Ni']=_from_columns(out.ni).astype(_output_dtype(state,'Ni'))
-    return state.replace(
+        for name, value in (out.passive or {}).items():
+            cloud_updates[name] = _from_columns(value).astype(_output_dtype(state, name))
+    result = state.replace(
         **cloud_updates,
         u=u_new,
         v=v_new,
@@ -2297,6 +2468,10 @@ def _state_from_mynn_output(
         **{name: jnp.asarray(getattr(out, name), dtype=getattr(state, name).dtype)
            for name in ("maxmf", "maxwidth", "ztop_plume")},
     )
+    if state.cam_kvh3d is not None:
+        from gpuwrf.physics.cammg.pbl import retain_columns
+        result=retain_columns(result,exch_h=out.kh)
+    return result
 
 
 def _mynn_dx(grid: GridSpec | None) -> float:
@@ -2432,6 +2607,7 @@ def mynn_adapter(
     *,
     first_timestep=False,
     restart: bool = False,
+    passive_scalars: tuple[str, ...] = (),
 ) -> State:
     """Advance the MYNN PBL using the surface fluxes ``surface_adapter`` wrote.
 
@@ -2449,7 +2625,7 @@ def mynn_adapter(
     state = _mynn_state_with_first_call_qke(
         state, grid, first_timestep, restart=restart
     )
-    column = _mynn_column_from_state(state, grid)
+    column = _mynn_column_from_state(state, grid, passive_scalars)
     surface = _surface_fluxes_from_state(state, grid)
     ny, nx = column.theta.shape[0], column.theta.shape[1]
     column_b = _flatten_columns_to_batch(column, ny, nx)
@@ -2561,6 +2737,9 @@ def mynn_adapter_with_source_leaves(
     *,
     first_timestep=False,
     restart: bool = False,
+    spp_pattern=None,
+    mix_tracers: bool = False,
+    passive_scalars: tuple[str, ...] = (),
 ) -> MynnPBLSourceLeaves:
     """Advance MYNN and expose raw WRF MYNN source tendencies.
 
@@ -2575,7 +2754,9 @@ def mynn_adapter_with_source_leaves(
     state = _mynn_state_with_first_call_qke(
         state, grid, first_timestep, restart=restart
     )
-    column = _mynn_column_from_state(state, grid)
+    column = _mynn_column_from_state(state, grid, passive_scalars)
+    if spp_pattern is not None:
+        column = column.replace(spp_pattern=jnp.moveaxis(spp_pattern, 0, -1))
     surface = _surface_fluxes_from_state(state, grid)
     ny, nx = column.theta.shape[0], column.theta.shape[1]
     column_b = _flatten_columns_to_batch(column, ny, nx)
@@ -2609,6 +2790,16 @@ def mynn_adapter_with_source_leaves(
     if cloudmix_enabled():
         rqcblten = ((_from_columns(out.qc) - jnp.asarray(state.qc, dtype=dtype)) / float(dt)).astype(_output_dtype(state, "qc"))
         rqiblten = ((_from_columns(out.qi) - jnp.asarray(state.qi, dtype=dtype)) / float(dt)).astype(_output_dtype(state, "qi"))
+    tracer_tendencies = None
+    if mix_tracers:
+        from gpuwrf.tracers.pbl import tracer_pbl_tendency
+        tracer_kh = _from_columns(out.kh).astype(jnp.float32)
+        tracer_km = _from_columns(out.km).astype(jnp.float32)
+        tracer_tendencies = tracer_pbl_tendency(
+            state.tracers, _from_columns(column.rho).astype(jnp.float32),
+            _from_columns(column.dz).astype(jnp.float32),
+            jnp.concatenate((tracer_kh, jnp.zeros_like(tracer_kh[:1]))),
+            jnp.concatenate((tracer_km, jnp.zeros_like(tracer_km[:1]))), dt)
     return MynnPBLSourceLeaves(
         state=_with_mynn_pblh(_state_from_mynn_output(
             state, out, theta_output_is_dry=_mynn_column_uses_wrf_phy_prep(grid)
@@ -2619,6 +2810,7 @@ def mynn_adapter_with_source_leaves(
         rvblten=rvblten,
         rqcblten=rqcblten,
         rqiblten=rqiblten,
+        tracer_tendencies=tracer_tendencies,
     )
 
 
@@ -2693,6 +2885,8 @@ def _surface_column_view(state: State, grid: GridSpec | None = None) -> _Surface
         qfx=getattr(state, "qfx", None),
         qsfc=getattr(state, "qsfc", None),
         pblh=getattr(state, "pblh", None),
+        sms_required=getattr(state, "sms_wspd", None) is not None,
+        sms_ustm=getattr(state,"sms_ustm",None),
         dx_m=None if metrics is None else float(grid.projection.dx_m),
         exner=(_to_columns(_mynn_exner_from_pressure(jnp.asarray(state.p, dtype=_mynn_real_dtype())))
                if metrics is not None and _mynn_env_bool("GPUWRF_MYNN_PHY_EXNER", False)
@@ -2700,7 +2894,8 @@ def _surface_column_view(state: State, grid: GridSpec | None = None) -> _Surface
     )
 
 
-def surface_adapter(state: State, dt: float, grid: GridSpec | None = None, *, first_timestep=False) -> State:
+def surface_adapter(state: State, dt: float, grid: GridSpec | None = None, *, first_timestep=False,
+                    observation_aux=False, spp_pattern=None, return_cumulus_inputs=False) -> State:
     """Run the WRF revised surface layer and store its surface-flux handles.
 
     THIN adapter: the algebra lives in ``physics.surface_layer`` (a faithful port
@@ -2710,11 +2905,16 @@ def surface_adapter(state: State, dt: float, grid: GridSpec | None = None, *, fi
     """
 
     del dt
-    diag = surface_layer_with_diagnostics(_surface_column_view(state, grid), first_timestep=first_timestep)
+    view = _surface_column_view(state, grid)
+    diag = surface_layer_with_diagnostics(view, first_timestep=first_timestep,
+        **({} if spp_pattern is None else {"spp_pattern": spp_pattern}))
     flux = diag.fluxes
-    wspd_write = {} if flux.wspd is None else {"sfc_wspd": flux.wspd.astype(_output_dtype(state, "sfc_wspd"))}
+    wspd_write = {} if flux.wspd is None or getattr(state,"sfc_wspd",None) is None else {"sfc_wspd": flux.wspd.astype(_output_dtype(state, "sfc_wspd"))}
     # B39: without an LSM, sfclay's MOL/HFX/QFX/QSFC are WRF's carried grid values.
     carried = {}
+    if getattr(state,"sms_br",None) is not None:
+        carried.update(sms_br=jnp.asarray(diag.br,jnp.float32),sms_rmol=jnp.asarray(diag.rmol,jnp.float32),
+                       sms_wspd=jnp.asarray(diag.fluxes.wspd,jnp.float32),sms_ustm=jnp.asarray(diag.ustm,jnp.float32))
     for name, value in (("mol", diag.mol), ("hfx", diag.hfx),
                         ("qfx", flux.qv_flux * flux.rhosfc), ("qsfc", diag.qsfc)):
         if getattr(state, name, None) is not None:
@@ -2722,7 +2922,7 @@ def surface_adapter(state: State, dt: float, grid: GridSpec | None = None, *, fi
     # Surface flux handles are fp64-locked in PRECISION_MATRIX, so the live
     # dtype is fp64 in both modes; written via _output_dtype for one consistent
     # adapter-write contract (fp32-defeat fix; see _output_dtype).
-    return state.replace(
+    result = state.replace(
         ustar=flux.ustar.astype(_output_dtype(state, "ustar")),
         theta_flux=flux.theta_flux.astype(_output_dtype(state, "theta_flux")),
         qv_flux=flux.qv_flux.astype(_output_dtype(state, "qv_flux")),
@@ -2733,6 +2933,14 @@ def surface_adapter(state: State, dt: float, grid: GridSpec | None = None, *, fi
         **wspd_write,
         **carried,
     )
+    extra = ()
+    if observation_aux:
+        from gpuwrf.coupling.obs_rk import surface_observation_aux
+        extra += (surface_observation_aux(view, diag),)
+    if return_cumulus_inputs:
+        # MSKF consumes original SFCLAY ZOL, not grid%MOL (temperature scale).
+        extra += (jnp.asarray(diag.zol, jnp.float32),)
+    return (result,) + extra if extra else result
 
 
 @jax.jit
@@ -2779,10 +2987,14 @@ def rrtmg_radiation_diagnostics(
     shadow_length_m: float = 25000.0,
     land_state=None,
     use_mp_re: int = 1,
+    mp_physics: int = 8,
     with_clear_sky: bool = False,
     column_tile_cols: int | None = None,
     _m9_flux_slices_only: bool = False,
     _kernel_call=None,
+    with_urban: bool = False,
+    use_mynn_sgs_cloud: bool = True,
+    cloud_mp_physics: int = 8,
 ) -> RRTMGRadiationDiagnostics:
     """Return surface RRTMG radiation diagnostics without changing State.
 
@@ -2811,6 +3023,8 @@ def rrtmg_radiation_diagnostics(
         shadow_length_m=shadow_length_m,
         land_state=land_state,
         use_mp_re=use_mp_re,
+        mp_physics=mp_physics,
+        **({"use_mynn_sgs_cloud": False, "cloud_mp_physics": cloud_mp_physics} if not use_mynn_sgs_cloud else {}),
     )
     if _m9_flux_slices_only:
         if with_clear_sky:
@@ -2844,6 +3058,7 @@ def rrtmg_radiation_diagnostics(
     diagnostics = _rrtmg_diagnostics_from_results(
         sw, lw, surface_albedo, surface_emissivity, geometry, topography, with_clear_sky,
         cloud_fraction=_from_columns(sw_state.cloud_fraction),
+        with_urban=with_urban,
     )
     return jax.tree.map(lambda value: value.astype(state.t_skin.dtype)
         if hasattr(value, "dtype") and jnp.issubdtype(value.dtype, jnp.floating)
@@ -2851,7 +3066,8 @@ def rrtmg_radiation_diagnostics(
 
 
 def _rrtmg_diagnostics_from_results(sw, lw, surface_albedo, surface_emissivity,
-                                    geometry, topography, with_clear_sky=False, *, cloud_fraction=None):
+                                    geometry, topography, with_clear_sky=False, *, cloud_fraction=None,
+                                    with_urban=False):
     """Expose the fluxes already computed by a radiation call."""
     shadow_mask = (
         jnp.zeros_like(surface_albedo, dtype=jnp.int32)
@@ -2897,6 +3113,8 @@ def _rrtmg_diagnostics_from_results(sw, lw, surface_albedo, surface_emissivity,
         lw_clear_sfc_down=lw_clear_sfc_down,
         lw_clear_sfc_up=lw_clear_sfc_up,
         cloud_fraction=cloud_fraction,
+        urban_radiation=(sw.surface_direct, sw.surface_diffuse,
+                         geometry.declination_rad, geometry.hour_angle_rad) if with_urban else None,
     )
 
 
@@ -2914,6 +3132,7 @@ def rrtmg_adapter(
     shadow_length_m: float = 25000.0,
     land_state=None,
     use_mp_re: int = 1,
+    mp_physics: int = 8,
 ) -> State:
     """Run SW and LW RRTMG column kernels and apply their temperature tendency.
 
@@ -2950,6 +3169,7 @@ def rrtmg_adapter(
         shadow_length_m=shadow_length_m,
         land_state=land_state,
         use_mp_re=use_mp_re,
+        mp_physics=mp_physics,
     )
     sw = solve_rrtmg_sw_column(sw_state, debug=False, topography=topography)
     lw = solve_rrtmg_lw_column(lw_state, debug=False)
@@ -2986,6 +3206,13 @@ def rrtmg_ozone_columns(
     return sw_state.ozone_vmr
 
 
+class RRTMGSurfaceSolarInputs(NamedTuple):
+    """REAL surface fields from the same radiation solve, before interpolation."""
+    swddir: object
+    swddif: object
+    gsw: object
+
+
 def rrtmg_theta_tendency(
     state: State,
     grid: GridSpec | None = None,
@@ -3000,9 +3227,15 @@ def rrtmg_theta_tendency(
     shadow_length_m: float = 25000.0,
     land_state=None,
     use_mp_re: int = 1,
+    mp_physics: int = 8,
     _with_diagnostics: bool = False,
+    _with_solar: bool = False,
     with_clear_sky: bool = False,
     ozone_vmr_override=None,
+    with_urban: bool = False,
+    use_mynn_sgs_cloud: bool = True,
+    cloud_mp_physics: int = 8,
+    cuplus_clouds=None, shallowcu_forced_ra=False,
 ) -> "jnp.ndarray":
     """Return the WRF ``RTHRATEN`` radiative potential-temperature tendency (K/s).
 
@@ -3022,8 +3255,10 @@ def rrtmg_theta_tendency(
     ``theta += dt * RTHRATEN`` -- no extra exner round trip per step.
     """
 
+    if _with_solar and (not _with_diagnostics or not _SOLAR_JULIAN_WRF):
+        raise ValueError("Solar export requires diagnostics and WRF REAL solar geometry")
     T = _temperature_from_theta(state.theta, state.p)
-    sw_state, lw_state, albedo, emissivity, geometry, topography = _rrtmg_column_inputs(
+    column_inputs = _rrtmg_column_inputs(
         state,
         grid,
         time_utc=time_utc,
@@ -3036,8 +3271,13 @@ def rrtmg_theta_tendency(
         shadow_length_m=shadow_length_m,
         land_state=land_state,
         use_mp_re=use_mp_re,
+        mp_physics=mp_physics,
         ozone_vmr_override=ozone_vmr_override,
+        **({'cuplus_clouds':cuplus_clouds,'shallowcu_forced_ra':shallowcu_forced_ra} if cuplus_clouds is not None else {}),
+        **({"use_mynn_sgs_cloud": False, "cloud_mp_physics": cloud_mp_physics} if not use_mynn_sgs_cloud else {}),
     )
+    sw_state,lw_state,albedo,emissivity,geometry,topography=column_inputs[:6]
+    cuplus_extra=(column_inputs[6],) if cuplus_clouds is not None else ()
     sw = solve_rrtmg_sw_column(sw_state, debug=False, topography=topography, with_clear_sky=with_clear_sky)
     lw = solve_rrtmg_lw_column(lw_state, debug=False, with_clear_sky=with_clear_sky)
     heating_rate_T = _from_columns(sw.heating_rate + lw.heating_rate)  # dT/dt (K/s)
@@ -3051,12 +3291,17 @@ def rrtmg_theta_tendency(
         diagnostics = _rrtmg_diagnostics_from_results(
             sw, lw, albedo, emissivity, geometry, topography, with_clear_sky,
             cloud_fraction=_from_columns(sw_state.cloud_fraction),
+            with_urban=with_urban,
         )
         if _rrtmg_real_enabled():
             diagnostics = jax.tree.map(lambda value: value.astype(state.t_skin.dtype)
                 if hasattr(value, "dtype") and jnp.issubdtype(value.dtype, jnp.floating)
                 else value, diagnostics)
-        return rate, diagnostics
+        if _with_solar:
+            raw = RRTMGSurfaceSolarInputs(*(jnp.asarray(value, jnp.float32) for value in
+                (sw.surface_direct, sw.surface_diffuse, sw.surface_absorbed)))
+            return (rate,diagnostics,raw)+cuplus_extra
+        return (rate,diagnostics)+cuplus_extra
     return rate
 
 
@@ -3073,6 +3318,9 @@ def rrtmg_sw_theta_tendency(
     shadow_length_m: float = 25000.0,
     land_state=None,
     use_mp_re: int = 1,
+    mp_physics: int = 8,
+    use_mynn_sgs_cloud: bool = True,
+    cloud_mp_physics: int = 8,
 ) -> "jnp.ndarray":
     """Return the RRTMG shortwave-ONLY ``RTHRATEN`` (K/s).
 
@@ -3095,6 +3343,8 @@ def rrtmg_sw_theta_tendency(
         shadow_length_m=shadow_length_m,
         land_state=land_state,
         use_mp_re=use_mp_re,
+        mp_physics=mp_physics,
+        **({"use_mynn_sgs_cloud": False, "cloud_mp_physics": cloud_mp_physics} if not use_mynn_sgs_cloud else {}),
     )
     sw = solve_rrtmg_sw_column(sw_state, debug=False, topography=topography)
     heating_rate_T = _from_columns(sw.heating_rate)  # dT/dt (K/s)
@@ -3377,6 +3627,9 @@ def rrtmg_lw_theta_tendency(
     radiation_static: RRTMGRadiationStatic | None = None,
     land_state=None,
     use_mp_re: int = 1,
+    mp_physics: int = 8,
+    use_mynn_sgs_cloud: bool = True,
+    cloud_mp_physics: int = 8,
 ) -> "jnp.ndarray":
     """Return the RRTMG longwave-ONLY ``RTHRATEN`` (K/s).
 
@@ -3395,6 +3648,8 @@ def rrtmg_lw_theta_tendency(
         radiation_static=radiation_static,
         land_state=land_state,
         use_mp_re=use_mp_re,
+        mp_physics=mp_physics,
+        **({"use_mynn_sgs_cloud": False, "cloud_mp_physics": cloud_mp_physics} if not use_mynn_sgs_cloud else {}),
     )
     lw = solve_rrtmg_lw_column(lw_state, debug=False)
     heating_rate_T = _from_columns(lw.heating_rate)  # dT/dt (K/s)

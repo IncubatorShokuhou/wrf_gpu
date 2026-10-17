@@ -46,7 +46,8 @@ LAND_HISTORY_FIELDS = frozenset((*LAND_LEAVES, *STATIC_FIELDS, *LAND_FLUX_FIELDS
                                  "ALBBCK", "CANWAT", "SFROFF", "UDROFF"))
 
 
-def load_land_history_inputs(path: Path, *, table_dir: Path, parameters=None) -> dict[str, np.ndarray]:
+def load_land_history_inputs(path: Path, *, table_dir: Path, parameters=None,
+                             field_overrides=None) -> dict[str, np.ndarray]:
     """Read statics once, with WRF LANDUSE initialization of ALBBCK/EMISS.
 
     ``real.exe`` inputs precede physics initialization: ALBBCK is overwritten
@@ -59,6 +60,10 @@ def load_land_history_inputs(path: Path, *, table_dir: Path, parameters=None) ->
             if name in ds.variables:
                 var = ds[name]
                 result[name] = np.asarray(var[0] if var.dimensions[0] == "Time" else var[:]).copy()
+        if field_overrides is not None:
+            for name in tuple(result):
+                if name in field_overrides:
+                    result[name] = np.asarray(field_overrides[name]).copy()
         if "SEAICE" in ds.variables and np.any(ds["SEAICE"][0] != 0):
             raise ValueError("land history initialization requires the supported ice-free tile")
         result["ALBBCK"], result["ALBEDO"], result["EMISS"] = _landuse_init(
@@ -116,10 +121,12 @@ def _landuse_init(ds, table_dir: Path, ivgtyp, snowc):
     return albbck, np.where(np.asarray(snowc) > .5, albbck * (np.float32(1) + scfx[index]), albbck), emiss[index]
 
 
-def wrf_initial_albedo(ds, table_dir: Path) -> np.ndarray:
+def wrf_initial_albedo(ds, table_dir: Path, *, field_overrides=None) -> np.ndarray:
     """ALBEDO entering WRF's first step (= its lead-zero history value) from an open wrfinput."""
-    snowc = np.asarray(ds["SNOWC"][0]) if "SNOWC" in ds.variables else 0
-    return _landuse_init(ds, table_dir, np.asarray(ds["IVGTYP"][0]), snowc)[1]
+    overrides = field_overrides or {}
+    snowc = overrides.get("SNOWC", np.asarray(ds["SNOWC"][0]) if "SNOWC" in ds.variables else 0)
+    ivgtyp = overrides.get("IVGTYP", np.asarray(ds["IVGTYP"][0]))
+    return _landuse_init(ds, table_dir, ivgtyp, snowc)[1]
 
 
 def land_history_diagnostics(land, initial, inputs, *, own_step: int, history=None, water_sst=None):

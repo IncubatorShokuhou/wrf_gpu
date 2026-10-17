@@ -1,0 +1,180 @@
+{
+  "lane": "t-writer",
+  "branch": "lane/t-writer-clat",
+  "product": "30af97a7e",
+  "base": "f737666b666271d4fc492a431f3754b70d531b9c",
+  "scope": "Writer retention only; actual input-feedback CLAT to publication, not a coupled forecast rerun",
+  "scientific_gate": "Original CPU-WRF CLAT exact float32 BYTE, bound unchanged at zero",
+  "healthy": {
+    "healthy": {
+      "name": "pytest",
+      "errors": "0",
+      "failures": "0",
+      "skipped": "3",
+      "tests": "72",
+      "time": "11.014",
+      "timestamp": "2026-10-15T06:46:55.630208+01:00",
+      "hostname": "user-battlestation"
+    },
+    "new_tests": 22,
+    "skips": [
+      {
+        "name": "test_dim_and_attr_conformance_against_reference_schema",
+        "reason": "Gen2 reference wrfout unavailable"
+      },
+      {
+        "name": "test_full_wrfout_mode_matches_reference_variable_list_and_schema",
+        "reason": "Gen2 full-reference wrfout unavailable"
+      },
+      {
+        "name": "test_retained_retry3_frame_reproduces_frame_grid_then_temp_copy_passes",
+        "reason": "immutable retained retry3 frame is unavailable"
+      }
+    ],
+    "healthy_peak_RSS_KiB": 1115616,
+    "proof_peak_RSS_KiB": 1088360,
+    "mutant": {
+      "name": "pytest",
+      "errors": "0",
+      "failures": "12",
+      "skipped": "0",
+      "tests": "14",
+      "time": "4.020",
+      "timestamp": "2026-10-15T06:49:07.535174+01:00",
+      "hostname": "user-battlestation"
+    },
+    "mutant_peak_RSS_KiB": 992176,
+    "mutant_setup_refusal": "TWCL01-mutant.log: imported native defaults before conftest, 14 ValueError setup failures, not numeric credit; corrected proof only"
+  },
+  "c42_field_publication": {
+    "parent_frames_BYTE": 25,
+    "child_frames_BYTE": 25,
+    "maximum_absolute_error": 0.0,
+    "original_file_SHA_verified": 50,
+    "writer_inputs": "wrfinput + existing initial-feedback producer only; no CPU history",
+    "producer_CLAT_sha256": "ce017b031d86d6f9abc77ff58706b353d025054a9a2f187d58224df661782d8f"
+  },
+  "cost": {
+    "parent": {
+      "seconds": [
+        0.0034122580000257585,
+        0.0030695449968334287,
+        0.0028451520011003595,
+        0.002795602998958202,
+        0.0026552710005489644,
+        0.002702722002140945,
+        0.0026821409992408007,
+        0.0026571310008876026,
+        0.002679122000699863
+      ],
+      "median_seconds": 0.002702722002140945,
+      "peak_traced_bytes": 17147340
+    },
+    "fixed": {
+      "seconds": [
+        0.0032979070019791834,
+        0.00298167299843044,
+        0.0027325109986122698,
+        0.002638662001118064,
+        0.0026005799991253298,
+        0.002814133000356378,
+        0.0031431350034836214,
+        0.0028497229977801908,
+        0.002703662001295015
+      ],
+      "median_seconds": 0.002814133000356378,
+      "peak_traced_bytes": 17147244
+    }
+  },
+  "other_full_fields_BYTE": 48,
+  "retains_same_numpy_object": true,
+  "new_array_allocation_or_device_work": false,
+  "resources": "CPU12,13,28,29 NI19 JAX_PLATFORMS=cpu officialRAMslot6GSwap0 one ownjob; QUIET/timeouts; GPUWRF_JAX_CACHE0/noGPU",
+  "cleanup": {
+    "<DATA_ROOT>/wrf_gpu2/scratch/t-writer/TWCL01-tree": true,
+    "<DATA_ROOT>/wrf_gpu2/scratch/t-writer/TWCL02-tree": true,
+    "<DATA_ROOT>/wrf_gpu2/scratch/t-writer/TWCL01-output": true,
+    "<USER_HOME>/wrf_gpu2_lanes/t-writer/pytest/TWCL01": true,
+    "<USER_HOME>/wrf_gpu2_lanes/t-writer/pytest/TWCL01-mutant": true,
+    "<USER_HOME>/wrf_gpu2_lanes/t-writer/pytest/TWCL02-mutant": true
+  },
+  "cache": "NONE",
+  "open": [
+    "Original capped c42 GPU stream needs separately scheduled warm completion/full D6 scoring. No forecast PASS claim.",
+    "Three unavailable retained-reference test skips are explicit.",
+    "Mutation import-time setup failure retained without numerical credit.",
+    "Deferred route test consumes actual OutputSnapshot in-process; no thread-scheduling claim."
+  ],
+  "files": [
+    {
+      "path": "proofs/t_writer_clat/C42_CLAT_PRODUCER.json",
+      "sha256": "aeac19d01365ff645780844c4fffec43779dc40c00a771839e2003f9788d1a96"
+    },
+    {
+      "path": "proofs/t_writer_clat/README.md",
+      "sha256": "854b3a848c750b28a633a4068c78f2054cb3349f9ae03a21034d0a7600ee9261"
+    },
+    {
+      "path": "proofs/t_writer_clat/SOURCE_REUSE.json",
+      "sha256": "ce8a5feb51e34c81cc892429df77eb89fa31a1cc493e22c5617d03c2dcf7acbd"
+    },
+    {
+      "path": "proofs/t_writer_clat/mutant.py",
+      "sha256": "3739e180a76e31faf27cd429100aa6827faeb3008c2c352e857729e540df6505"
+    },
+    {
+      "path": "proofs/t_writer_clat/prove_c42.py",
+      "sha256": "4aa453cc685f3050bd821b8ea8b3386bf49bc45d818419d02577851323181739"
+    },
+    {
+      "path": "proofs/t_writer_clat/receipts/SUMMARY.json",
+      "sha256": "84b0350c3562ede9a4878b7227e5e6f386ec1d3433d5fce50c739614891e8cec"
+    },
+    {
+      "path": "proofs/t_writer_clat/receipts/TWCL01-c42.json",
+      "sha256": "9ae9fe1b1cadfa710e209127b7684b99cc138eaf7f3c390cc61a68485ac793d6"
+    },
+    {
+      "path": "proofs/t_writer_clat/receipts/TWCL01.xml",
+      "sha256": "ae00de087155904e10da1795dfdaf056c435643e4aa1fdd1bda3246149f50e70"
+    },
+    {
+      "path": "proofs/t_writer_clat/receipts/TWCL02-mutant.xml.gz",
+      "sha256": "bb957bd03c7543c45a83583ffa409c6e0b4438961364f88c10c8f503e87bdf34"
+    }
+  ],
+  "raw": [
+    {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-writer/TWCL01.xml",
+      "sha256": "ae00de087155904e10da1795dfdaf056c435643e4aa1fdd1bda3246149f50e70"
+    },
+    {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-writer/TWCL01.log",
+      "sha256": "dd5f8fdc10dbb34e91430e903d673a569afbd931af5767bb13c1daecac24a3cb"
+    },
+    {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-writer/TWCL01-c42.json",
+      "sha256": "9ae9fe1b1cadfa710e209127b7684b99cc138eaf7f3c390cc61a68485ac793d6"
+    },
+    {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-writer/TWCL01-c42.log",
+      "sha256": "aa881f54a8dc50bb486467dcd0be5cab4e480268b2d3faca6789149da4a8cffd"
+    },
+    {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-writer/TWCL01-mutant.xml",
+      "sha256": "6c5b07a97cefb197614f59be0c26fc81854502f58bab4e0f9171e5372d9f2b0e"
+    },
+    {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-writer/TWCL01-mutant.log",
+      "sha256": "e6b9c0b2cacfe2000c07ffc61e893abab74bb4bce259b68a18f52296ee3a15e4"
+    },
+    {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-writer/TWCL02-mutant.xml",
+      "sha256": "3257bef4108cc84fc5c5b7615bbea429edec75570ceabe2fffb55d0c41b37a5c"
+    },
+    {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-writer/TWCL02-mutant.log",
+      "sha256": "ff2161816331160df1af6e11d931610f141b4a00b4689cdae7f79605908bc3bd"
+    }
+  ]
+}

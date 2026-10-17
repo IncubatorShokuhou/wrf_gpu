@@ -1,0 +1,107 @@
+fixture_id: s1-nestspec-pristine-real4-operators-v1
+source:
+  kind: unchanged_pristine_WRF_routines
+  root: "<USER_HOME>/src/wrf_pristine/WRF"
+  interpretation: "Constructed signed operator inputs; WRF routine outputs are the reference. No coupled forecast qualification."
+source_commit: f52c197ed39d12e087d02c50f412d90d418f6186
+created_utc: "2026-10-13T11:35:42.727204+00:00"
+scenario: "Parent32x28 child22x19 nz3 ratio3 start6/7; parentdt18 childdt6; width5 spec1 relax4; leads0/6/9/18; end mass1.001x for final pin."
+variables:
+  - name: qh
+    units: "kg kg-1"
+    shape: [3, 19, 22]
+    dtype: float32
+    absolute_tolerance: "old record <=1 ulp(max_abs_reference); rate/RK1/final <=32 ulp(max_abs_reference), float32 spacing"
+    relative_tolerance: 0
+    record_units: "Pa * (kg kg-1)"
+    record_shape: [2, 4, 5, 3, 23]
+  - name: Nc
+    units: "# kg-1"
+    shape: [3, 19, 22]
+    dtype: float32
+    absolute_tolerance: "old record <=1 ulp(max_abs_reference); rate/RK1/final <=32 ulp(max_abs_reference), float32 spacing"
+    relative_tolerance: 0
+    record_units: "Pa * (# kg-1)"
+    record_shape: [2, 4, 5, 3, 23]
+  - name: Nn
+    units: "# kg-1"
+    shape: [3, 19, 22]
+    dtype: float32
+    absolute_tolerance: "old record <=1 ulp(max_abs_reference); rate/RK1/final <=32 ulp(max_abs_reference), float32 spacing"
+    relative_tolerance: 0
+    record_units: "Pa * (# kg-1)"
+    record_shape: [2, 4, 5, 3, 23]
+  - name: Ns
+    units: "# kg-1"
+    shape: [3, 19, 22]
+    dtype: float32
+    absolute_tolerance: "old record <=1 ulp(max_abs_reference); rate/RK1/final <=32 ulp(max_abs_reference), float32 spacing"
+    relative_tolerance: 0
+    record_units: "Pa * (# kg-1)"
+    record_shape: [2, 4, 5, 3, 23]
+  - name: Ng
+    units: "# kg-1"
+    shape: [3, 19, 22]
+    dtype: float32
+    absolute_tolerance: "old record <=1 ulp(max_abs_reference); rate/RK1/final <=32 ulp(max_abs_reference), float32 spacing"
+    relative_tolerance: 0
+    record_units: "Pa * (# kg-1)"
+    record_shape: [2, 4, 5, 3, 23]
+  - name: Nh
+    units: "# kg-1"
+    shape: [3, 19, 22]
+    dtype: float32
+    absolute_tolerance: "old record <=1 ulp(max_abs_reference); rate/RK1/final <=32 ulp(max_abs_reference), float32 spacing"
+    relative_tolerance: 0
+    record_units: "Pa * (# kg-1)"
+    record_shape: [2, 4, 5, 3, 23]
+  - name: qvolg
+    units: "m3 kg-1"
+    shape: [3, 19, 22]
+    dtype: float32
+    absolute_tolerance: "old record <=1 ulp(max_abs_reference); rate/RK1/final <=32 ulp(max_abs_reference), float32 spacing"
+    relative_tolerance: 0
+    record_units: "Pa * (m3 kg-1)"
+    record_shape: [2, 4, 5, 3, 23]
+  - name: qvolh
+    units: "m3 kg-1"
+    shape: [3, 19, 22]
+    dtype: float32
+    absolute_tolerance: "old record <=1 ulp(max_abs_reference); rate/RK1/final <=32 ulp(max_abs_reference), float32 spacing"
+    relative_tolerance: 0
+    record_units: "Pa * (m3 kg-1)"
+    record_shape: [2, 4, 5, 3, 23]
+  - name: nwfa
+    units: "# kg-1"
+    shape: [3, 19, 22]
+    dtype: float32
+    absolute_tolerance: "old record <=1 ulp(max_abs_reference); rate/RK1/final <=32 ulp(max_abs_reference), float32 spacing"
+    relative_tolerance: 0
+    record_units: "Pa * (# kg-1)"
+    record_shape: [2, 4, 5, 3, 23]
+  - name: nifa
+    units: "# kg-1"
+    shape: [3, 19, 22]
+    dtype: float32
+    absolute_tolerance: "old record <=1 ulp(max_abs_reference); rate/RK1/final <=32 ulp(max_abs_reference), float32 spacing"
+    relative_tolerance: 0
+    record_units: "Pa * (# kg-1)"
+    record_shape: [2, 4, 5, 3, 23]
+files:
+  - path: "<USER_HOME>/src/wrf_pristine/WRF/share/interp_fcn.F"
+    sha256: 680881db48904396f38856ca1dd2578a84e8eb0a9cdd05d49f4c63cd8ce9bdaa
+  - path: "<USER_HOME>/src/wrf_pristine/WRF/share/sint.F"
+    sha256: 5df841aea44c53c745a90fe96d2b9b8404097b457cceb1321faed592b727af1c
+  - path: "<USER_HOME>/src/wrf_pristine/WRF/dyn_em/module_bc_em.F"
+    sha256: 6cfb52b849e3dd0b24769709cf502faa75886da454d9b668af725cccdc56d47f
+  - path: "<USER_HOME>/src/wrf_pristine/WRF/share/module_bc.F"
+    sha256: 61b9235004b2a7799faabaa928276af8a7ef2e4672619c8ad120c857461301ad
+  - path: "<USER_HOME>/src/wrf_pristine/WRF/dyn_em/module_em.F"
+    sha256: 11105cbf8255f30ca6a44cd7429a92cedce1fb91db6ce90fd7217002a72fb7fa
+  - path: "tools/host_sync/b36/pristine_forcedown.py"
+    sha256: d0930cffe0cf1c777c9a4dee58f87b7be627d6ea7906472b2798203eb3e18b46
+  - path: "tests/v025/b_diff/pristine_boundary.py"
+    sha256: b11beebeb86533e845f2234474c30479551e7c142328a8fd0dc0052ab71a68f9
+  - path: "tests/test_s1_nestspec.py"
+    sha256: ee51ac4553f2e73b53694ea5dadd329116261f091cc53d18ed99839e08d3ab27
+license_notes: "Original WRF repository licensing applies to extracted routines; no full WRF output files or compiled libraries are committed."

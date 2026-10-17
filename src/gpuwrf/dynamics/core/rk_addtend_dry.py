@@ -204,6 +204,8 @@ def _absolute_diagnostics(
     mass_base = c1h * mub[None, :, :] + c2h
     safe_base = jnp.where(jnp.abs(mass_base) > 1.0e-12, mass_base, jnp.asarray(1.0e-12, dtype=mass_base.dtype))
     alb = -rdnw * (phb[1:, :, :] - phb[:-1, :, :]) / safe_base
+    if base_state is not None and base_state.alb is not None:
+        alb = base_state.alb.astype(alb.dtype)
     if int(hypsometric_opt) == 2:
         # WRF calc_p_rho_phi hypsometric_opt=2 (module_big_step_utilities_em.F:
         # 1043-1062, the v4 Registry DEFAULT used by every real case):
@@ -226,9 +228,13 @@ def _absolute_diagnostics(
             return dph / phm / jnp.log(pfd / pfu)
 
         dph_tot = (phb[1:, :, :] + ph_pert[1:, :, :]) - (phb[:-1, :, :] + ph_pert[:-1, :, :])
-        al = _log_alpha(dph_tot, muts[None, :, :]) - _log_alpha(
-            phb[1:, :, :] - phb[:-1, :, :], mub[None, :, :]
-        )
+        if base_state is not None and base_state.alb is not None:
+            al = _log_alpha(dph_tot, muts[None, :, :]) - base_state.alb.astype(_RK_WORK_DTYPE)
+        else:
+            # Keep the released trace's operand evaluation order exactly.
+            al = _log_alpha(dph_tot, muts[None, :, :]) - _log_alpha(
+                phb[1:, :, :] - phb[:-1, :, :], mub[None, :, :]
+            )
     else:
         muts = mu_total + mu_pert  # legacy: grid%muts read as State.mu_total + mu'
         mass_t = c1h * muts[None, :, :] + c2h

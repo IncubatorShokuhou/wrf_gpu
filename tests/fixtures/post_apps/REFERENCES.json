@@ -1,0 +1,21 @@
+{
+  "fwi_1985.csv": {
+    "source_url": "https://raw.githubusercontent.com/cffdrs/cffdrs_py/7d8931e64fca7c5a0d0f34a14d258215a3b9506d/cffdrs/tests/data/fwi_test_data.csv",
+    "sha256": "8fdcea17a1bc8d5a908678e8012aec0e86135080a74974cacdceffbc5e0e38c8",
+    "definition": "Van Wagner and Pickett 1985 sequential weather/test table, reproduced by CFFDRS R, rounded to 1 decimal (DSR to 2). Initial FFMC85/DMC6/DC15, latitude40. Pure tabular numerical reference; no upstream implementation copied.",
+    "reference_test_provenance": "cffdrs/tests/test_fwi.py at same commit, sha256 52ece8d720e0f8fee9bcf7fe19a050edf272084a922523c07e030d78e68699fc"
+  },
+  "solar": "NREL SPA report NREL/TP-560-34302 (2003), example true zenith50.127954, azimuth194.340241; pvlib Erbs/isotropic/PVWatts reference implementation",
+  "wind": "DTU Rotor equivalent wind speed for power curve measurement, 2014 comparative exercise: cube root sum Ai/A * vi^3; independent Gauss-Legendre disk-chord integration",
+  "visibility": {
+    "algorithm": "NOAA-EMC UPP CALVIS.f method R, raw mixture volume and MAX(0,concentration),2%contrast,24.135kmceiling",
+    "params_source_url": "https://raw.githubusercontent.com/NOAA-EMC/UPP/cd68e265ff4431d21efcaa5ce3c7c5a91244c0ad/sorc/ncep_post.fd/params.F",
+    "params_sha256": "90d9632639efdf0920faa25f84c96ae291eb2a8a1e8a7252709d6d8a315afb72",
+    "constants": {
+      "RD": 287.04,
+      "D608": 0.608
+    }
+  },
+  "hdw": "Srock et al 2018, The Hot-Dry-Windy Index: A New Fire Weather Index, Atmosphere9(7)279; USDA HDWI documentation",
+  "icing": "NWS Houston Icing Hazards: liquid below0C, rare to-40C. This product is supercooled liquid content, not severity."
+}

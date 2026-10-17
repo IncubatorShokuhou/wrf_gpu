@@ -1,0 +1,149 @@
+{
+  "schema": "s1-nestspec-admission-chain-v1",
+  "created_utc": "2026-10-13T14:36:26.578143+00:00",
+  "status": "READY_FOR_CRITIC_DEPENDENCY_GATED",
+  "authority": "Manager 2026-10-13: complete clean handoff; s1-mpfix owns Nc/radii (E86). No new nested admission until affected gates pass.",
+  "source": {
+    "main_base": "d863dc7cab00764fb0c14833936b165bee29ca59",
+    "candidate_before_packet": "cd728dd8852cccc7863cac74d849e3ca58b4e88c",
+    "src_tree": "1c401576dfbacee5e220d7dd1d478d588b5878b1",
+    "final_composed_test_commit": "652f00a67",
+    "failed_two_domain_commit": "bfdd05baf",
+    "protected_trees_byte_identical_to_tests": [
+      "src/gpuwrf/runtime",
+      "src/gpuwrf/contracts",
+      "src/gpuwrf/coupling",
+      "src/gpuwrf/dynamics",
+      "src/gpuwrf/physics",
+      "src/gpuwrf/integration",
+      "src/gpuwrf/nesting",
+      "src/gpuwrf/io"
+    ],
+    "changed_src_sha256": {
+      "src/gpuwrf/cli.py": "d86477057cb5ed450203cbe04e8694bad517d48bddf51dbac1b463399b07f3a2",
+      "src/gpuwrf/contracts/precision.py": "00ea0f26dc4128800772da2173307cad8214390cf998830e3e122276f83417be",
+      "src/gpuwrf/contracts/state.py": "88a4f55a526f7991dcfd45f8e9ef7cac961df2bb27374f98bdceb32812d34c8c",
+      "src/gpuwrf/coupling/boundary_apply.py": "c6a12eb73121feab3e9f5ff4b0317a5708978f7702f320ab6a4b08017c6d581d",
+      "src/gpuwrf/dfi/control.py": "c2040e6695e8a298c8494ca77d9535898dffd5ea93edfdf5c61f1d06f9ffa729",
+      "src/gpuwrf/integration/d02_replay.py": "1fbdf9b48d5f4ff3965713edd89a38487dd578f8712f62cd6fd16406d7aec054",
+      "src/gpuwrf/integration/nested_pipeline.py": "46069cf0b007748df47a2551c0243387ef44ce245aaebdf49263e2bf3f0077e4",
+      "src/gpuwrf/io/namelist_check.py": "e36d7b06fd1c1cbd0c3498057d31edb622f42dfb8f0cfb5c5383ebe4c7ff9842",
+      "src/gpuwrf/io/restart_schema.py": "4c9c1ad784c0d8c9845f66dabbfe45bc1c017a0105fa80c2a08d4ccc9adff4b0",
+      "src/gpuwrf/io/wrfrst_netcdf.py": "801821d3d414d790f860db17d18785232d6234207a4bcf7ae0fe5a5400192b4f",
+      "src/gpuwrf/nesting/boundary_construction.py": "8692f0148eccf321be7b9d5369ea6e8eeecc218bd526a7d73c93a6ef67022283",
+      "src/gpuwrf/nesting/scalar_initialization.py": "ba7085199c2f7cd42a69698b3577f54dd5c762bcc9de23ca8c6b232a766f4c16",
+      "src/gpuwrf/nesting/scalar_species.py": "bdb12004643bcaa57b9e97a3b33e7f62381cdf922210171c6cc3c159df4fe155",
+      "src/gpuwrf/runtime/checkpoint.py": "7e36a117e5fa1d631cafa9c8a5aa93365f1a72acf7f5f8aa5ffd3479a354d04e",
+      "src/gpuwrf/runtime/operational_mode.py": "4c2ba8b4a1486d7965ddfcdef149ce6089e4cc3076b7150b40774a04e9d59bd9"
+    },
+    "physics_and_physics_adapters_byte_identical_to_main": true
+  },
+  "passed": {
+    "composed_tests": {
+      "passed": 315,
+      "failed": 0,
+      "skipped": 0,
+      "wall_s": 610.12
+    },
+    "final_cli_netcdf_composition": {
+      "passed": 24,
+      "wall_s": 3.03
+    },
+    "release_full_jaxpr_sha256": "2bf12cb8374d3a84a440e47dea4b77b0c7436108fc2ee2616bba6ec79b17962a",
+    "release_trace_chars": 13405317,
+    "new_tests": "17 child-start checks plus4 number-lane composition checks; included in315",
+    "init_mutants": {
+      "18_24_28_40": {
+        "genuine_assertions": 4,
+        "setup_errors": 0
+      },
+      "26": {
+        "genuine_assertions": 1,
+        "setup_errors": 0
+      }
+    },
+    "prior_operator_packet": "CPU_QUALIFICATION.json is an immutable prior packet, not a current source seal. NS25 reruns current operator/restart tests."
+  },
+  "two_domain": {
+    "scope": "Real WN3 original-CPU-WRF reference, same MP40 both domains, simultaneous start, main input stream, no cumulus, SST updates off.",
+    "geometry": "120x70 +267x117,44levels,ratio3,start16/16,dt54/18s",
+    "parent_steps": 2,
+    "child_steps": 6,
+    "duration_s": 108,
+    "wall_s": 1108.9066913670395,
+    "scored_core_D6_regions": "PASS; selected scored fields, not full release inventory/forecast gate",
+    "finite_carry_values": 0,
+    "guard_events": 0,
+    "policy_water_change_abs_kg": 0,
+    "Nc_child_nonzero_port": 1374516,
+    "Nc_child_nonzero_WRF": 220,
+    "Nc_child_regions": {
+      "boundary_0_4": {
+        "rmse": 1099993589.8157642,
+        "max_abs": 2892441344.0,
+        "max_normalized": 2892441344.0,
+        "gate": "FAIL"
+      },
+      "interior_5_plus": {
+        "rmse": 1100207678.234742,
+        "max_abs": 2891124224.0,
+        "max_normalized": 2891124224.0,
+        "gate": "FAIL"
+      }
+    },
+    "pre_mask_post_RK_Nc_negative_visits": 8,
+    "negative_amplitude": "UNKNOWN; not retained in failed arm",
+    "verdict": "FAIL extra Nc and unresolved negative visits; no nested admission",
+    "reference_executable_sha256": "1d0f5779fff143361e470e37f89c734497ed5a7bb55d0c53b7e3fccc569dd49b",
+    "mode": "Release CPU Pallas interpretation/RN32 asm shim/Thomas harness solver; constant_folding disabled; not the GPU executable"
+  },
+  "admission": {
+    "refused_mp": [
+      10,
+      14,
+      16,
+      18,
+      24,
+      26,
+      28,
+      40
+    ],
+    "mp40": "Depends on s1-mpfix Nc branch, final composed 2-domain gate and negative-event disposition.",
+    "mp18_24_28": "Depends on s1-mpfix WRF use_mp_re radius mediation and real coupled qualification.",
+    "mp26": "Reviewed numbers composed, init/routing enabled; scientific/nested gate still pending. Compiled WRF radius predicate also requires111 for26/use1.",
+    "mixed_MP_or_staggered_start": "Not qualified by the homogeneous simultaneous-start reference."
+  },
+  "audit": {
+    "RUC": "Refused nested: missing 2-domain land initialization/held diagnostics/subcycle qualification; needs real.exe6/9soil inputs.",
+    "SLUCM": "Refused nested: missing 2-domain canopy/carry/surface-flux qualification.",
+    "km_opt2": "Refused nested: missing 2-domain TKE boundary/halo qualification; Registry TKE restart-only, no d/f.",
+    "grid_FDDA": "Existing path retained; independent per-domain files, coefficient, dt/cursor and omitted Registry defaults tested. Whole nested forecast pending.",
+    "DFI": "WRF supports simultaneous-start nesting; port recursive filter phases/clocks absent; refusal retained."
+  },
+  "performance": {
+    "default_program": "Exact full release hash; cached GPU readiness/source-key effects unknown.",
+    "extra_child_boundary_bytes_MP40_measured": 5660160,
+    "CPU_RSS_sample_bytes_approx": 14104002560,
+    "CPU_RSS_scope": "Sample only, not peak; CPU interpreter cold compile+steps.",
+    "component_costs": "Prior packet reports measured10-record producer/RK1/final CPU temp/compile/latency increases; not GPU costs.",
+    "GPU_ops_transfers_timing_VRAM_compile_E41": "UNKNOWN: no GPU in wave"
+  },
+  "artifacts": {
+    "<USER_HOME>/wrf_gpu2_lanes/s1-nestspec/ns19_radius.json": "854f407855b46f10496e90fa0bcc26fd708043f94179627da4a2d72669e829f2",
+    "<USER_HOME>/wrf_gpu2_lanes/s1-nestspec/ns20_init.log": "309d572b678dadb1488058e79c5af6d4326a2b6841edfae00d2d260d470bc4d5",
+    "<USER_HOME>/wrf_gpu2_lanes/s1-nestspec/ns21_mutant.log": "a57db063dff8bb15e39a40e151aa2d4637e5f698060d131bbed9f471547c5d59",
+    "<USER_HOME>/wrf_gpu2_lanes/s1-nestspec/ns24_coupled40.json": "907a6152fa87ce83eda2caf0a7e2e16b35b486bd2fdbe0bb7465450cb5c2da5f",
+    "<USER_HOME>/wrf_gpu2_lanes/s1-nestspec/ns24_coupled40.log": "99025500bc7acc8f829ae4b4b7dbd8362fb941e65eb88c1898df6752fa9740e4",
+    "<USER_HOME>/wrf_gpu2_lanes/s1-nestspec/ns24_summary.json": "cb0591bcdb9b1ae842d2078637d607316739f7c34c4b09c19ed7e1b6662cabfc",
+    "<USER_HOME>/wrf_gpu2_lanes/s1-nestspec/ns25_composed_tests.log": "0c22ff17654be88038a3390afd63d26d219205231ae8108dd2be5ee0e3cb7911",
+    "<USER_HOME>/wrf_gpu2_lanes/s1-nestspec/ns26_release_identity.json": "58461f57bbec9e473b246e6ea17aa7581fc9c36e9f8de9b6b234396e05a223ba",
+    "<USER_HOME>/wrf_gpu2_lanes/s1-nestspec/ns27_mutant26.log": "3afde00f54ab3fedf48be84692f1520dc6e7df8ba0e1d85039a522fb27cd36b2",
+    "<USER_HOME>/wrf_gpu2_lanes/s1-nestspec/ns28_final_cli.log": "cc0cbf135e01303c32ab81bf01872b710936e25de11446007d836a0a656929d7",
+    "<USER_HOME>/wrf_gpu2_lanes/s1-nestspec/coupled/mp40/PLAN.json": "7ca69e032e89f119865183948e3e577acdd5decb7cc4b67196aeb26a6014e052",
+    "<USER_HOME>/wrf_gpu2_lanes/s1-nestspec/coupled/mp40/REFERENCE_RECEIPT.json": "f49ade014c34cccbbab5a9998f55dbf1bddf4237d39b185a54deef2a4fe6de98",
+    "<USER_HOME>/wrf_gpu2_lanes/s1-nestspec/coupled/mp24/PLAN.json": "d0c55227c336656eabb177907b0f1b8f2b640f90d4b1ca39b3e80c83fb27a0c9",
+    "<USER_HOME>/wrf_gpu2_lanes/s1-nestspec/coupled/mp24/REFERENCE_RECEIPT.json": "2332c89547cc81a76e86f7b0167976ca9365b1a22cfd34ceb90262a4e3fc0139"
+  },
+  "cleanup": "All disposable snapshots/pytest/trace-case/build/cache directories removed. Original CPU references and small receipts retained.",
+  "next": "One critic reviews guarded enabler; manager integrates. s1-mpfix composes fixes and reruns only affected final 2-domain gate before lifting admission."
+}

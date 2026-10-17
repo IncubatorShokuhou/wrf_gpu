@@ -98,7 +98,7 @@ def _mm_coeffs(xdn, C, R):
 
 def setvtz(qx, cx, rho0, rhovt, xdia, xmas, vtxbar, xdn, xv, cdxgs, fadvisc, temcg, alpha,
            axx, bxx, *, C, prec, infdo, ildo=0, qxmin=None, cdx=None, cno=None, cnostmp=None,
-           cwmasn=None, cwmasx=None, cwradn=None):
+           cwmasn=None, cwmasx=None, cwradn=None, cnina=None):
     """Port of SUBROUTINE setvtz (see module docstring for the argument contract)."""
     R = prec.R
     f = lambda v: jnp.asarray(v, R)  # noqa: E731
@@ -106,7 +106,10 @@ def setvtz(qx, cx, rho0, rhovt, xdia, xmas, vtxbar, xdn, xv, cdxgs, fadvisc, tem
     cwmasn = C.cwmasn if cwmasn is None else cwmasn
     cwmasx = C.cwmasx if cwmasx is None else cwmasx
     cwradn = C.cwradn if cwradn is None else cwradn
-    del cdx, cno, cnostmp, temcg  # dead for ipconc=5 / sssflg>0 / icdx=6 (kept for signature)
+    del cdx, temcg
+    one_moment = C.ipconc == 0
+    cno = C.cno if cno is None else cno
+    cnostmp = C.cno[LS] if cnostmp is None else cnostmp
 
     cx = dict(cx)
     xdia = dict(xdia)
@@ -121,7 +124,7 @@ def setvtz(qx, cx, rho0, rhovt, xdia, xmas, vtxbar, xdn, xv, cdxgs, fadvisc, tem
     rhovt = jnp.asarray(rhovt, R)
 
     def do(il):
-        return ildo == 0 or ildo == il
+        return (ildo == 0 or ildo == il) and not (il == LHL and getattr(C, 'variant', 18) == 21)
 
     pi = f(C.pi)
     pii = f(C.piinv)
@@ -152,6 +155,13 @@ def setvtz(qx, cx, rho0, rhovt, xdia, xmas, vtxbar, xdn, xv, cdxgs, fadvisc, tem
         cxc_h = jnp.where(big, cxc, cx_alt)
         xm_h = jnp.minimum(jnp.maximum(q * rho0 / cxc_h, f(cwmasn)), f(cwmasx))
         xv_h = xm_h / xdn_c
+        if one_moment:
+            # Pristine setvtz6555..6596: fixed droplet CCN, then diagnose N.
+            cxc_h = rho0 * f(C.ccn) / f(C.rho00)
+            xm_h = jnp.minimum(jnp.maximum(q * rho0 / cxc_h, xdn_c * f(C.xvmn[LC])),
+                               xdn_c * f(C.xvmx[LC]))
+            xv_h = xm_h / xdn_c
+            cxc_h = q * rho0 / xm_h
         d1_h = (xm_h * cwc1) ** (1. / 3.)
         cwrad = 0.5 * d1_h
         fad = jnp.asarray(fadvisc, R)
@@ -161,6 +171,8 @@ def setvtz(qx, cx, rho0, rhovt, xdia, xmas, vtxbar, xdn, xv, cdxgs, fadvisc, tem
         # qx <= qxmin branch
         xm_n = f(cwmasn)
         cx_n = jnp.where(q <= 0.0, zero, cxc)
+        if one_moment:
+            cx_n = jnp.full_like(q, f(.01))
         cx[LC] = jnp.where(has, cxc_h, cx_n)
         xmas[LC] = jnp.where(has, xm_h, xm_n)
         xv[LC] = jnp.where(has, xv_h, xm_n / xdn_c)
@@ -178,6 +190,19 @@ def setvtz(qx, cx, rho0, rhovt, xdia, xmas, vtxbar, xdn, xv, cdxgs, fadvisc, tem
         cxi = cx[LI]
         cxi_h = jnp.maximum(cxi, q * rho0 / cimasx)
         cxi_h = jnp.minimum(cxi_h, q * rho0 / cimasn)
+        if one_moment:
+            # Pristine setvtz6655: diagnosed primary ice; no prognostic Ni.
+            if cnina is None:
+                raise ValueError('one-moment setvtz requires original cnina')
+            cxi_h = jnp.asarray(cnina, R)
+            if C.cimn > 1.0:
+                cxi_h = jnp.maximum(f(C.cimn), cxi_h)
+            if C.cimx > 1.0:
+                cxi_h = jnp.minimum(f(C.cimx), cxi_h)
+            if C.itype1 >= 1 or C.itype2 >= 1:
+                cxi_h = jnp.maximum(cxi_h, q * rho0 / cimasx)
+                cxi_h = jnp.minimum(cxi_h, q * rho0 / cimasn)
+            cxi_h = jnp.maximum(f(1.e-20), cxi_h)
         xm_h = jnp.maximum(q * rho0 / jnp.where(has, cxi_h, 1.0), cimasn)
         # ixtaltype == 1 (column); xmas > 0 always true here (max with cimasn)
         d1_h = 0.1871 * (xm_h ** 0.3429)
@@ -186,7 +211,7 @@ def setvtz(qx, cx, rho0, rhovt, xdia, xmas, vtxbar, xdn, xv, cdxgs, fadvisc, tem
         tmp = (47.6273 * rhovt) / (((1.0 + f(C.cinu)) / xv_h) ** 0.18333 * f(C.gfcinu1))
         vt2_h = tmp * f(C.gfcinu1p18)
         vt1_h = tmp * f(C.gfcinu2p18) / (1. + f(C.cinu))
-        cx[LI] = jnp.where(has, cxi_h, jnp.where(q <= 0.0, zero, cxi))
+        cx[LI] = jnp.where(has, cxi_h, jnp.where(q <= 0.0, zero, cxi_h if one_moment else cxi))
         xmas[LI] = jnp.where(has, xm_h, f(1.e-13))
         xdn[LI] = xdn_i
         xv[LI] = jnp.where(has, xv_h, xv[LI])
@@ -214,6 +239,13 @@ def setvtz(qx, cx, rho0, rhovt, xdia, xmas, vtxbar, xdn, xv, cdxgs, fadvisc, tem
         xm_h = xv_h * xdn_r
         d3_h = (xm_h * cwc1) ** (1. / 3.)
         d1_h = (6. * pii * xv_h / ((a + 3.) * (a + 2.) * (a + 1.))) ** (1. / 3.)
+        if one_moment:
+            # Pristine setvtz6866..6874: fixed intercept; preserve statement order.
+            d1_h = (q * rho0 / (pi * xdn_r * f(cno[LR]))) ** .25
+            xm_h = xdn_r * (pi / 6.) * d1_h ** 3
+            d3_h = (xm_h * cwc1) ** (1. / 3.)
+            cx_h = f(cno[LR]) * d1_h
+            xv_h = rho0 * q / (xdn_r * cx_h)
         d1_n = f(1.e-9)
         xm_n = xdn_r * (pi / 6.) * d1_n ** 3
         cx[LR] = jnp.where(has, cx_h, cx[LR])
@@ -251,9 +283,18 @@ def setvtz(qx, cx, rho0, rhovt, xdia, xmas, vtxbar, xdn, xv, cdxgs, fadvisc, tem
         cxs = jnp.where(c2, cx2, cxs)
         xdn_h = jnp.where(c2, xdn2, xdn_s)
         d1 = jnp.where(c2, jnp.sqrt(xm2 / 0.069), d1)
+        if one_moment:
+            d1 = (q * rho0 / (pi * xdn_s * jnp.asarray(cnostmp, R))) ** .25
+            cxs = jnp.asarray(cnostmp, R) * d1
+            xvs = rho0 * q / (xdn_s * cxs)
+            d3 = (xvs * cwc0 * 6.) ** (1. / 3.)
+            xm = xmas[LS]  # original one-moment branch leaves xmas untouched
+            xdn_h = xdn_s
+        else:
+            d3 = d1
         d1 = jnp.where(has, d1, f(1.e-9))
         xdia[(LS, 1)] = d1
-        xdia[(LS, 3)] = d1
+        xdia[(LS, 3)] = jnp.where(has, d3, f(1.e-9)) if one_moment else d1
         xdia[(LS, 2)] = d1 ** 2
         cx[LS] = jnp.where(has, cxs, zero)
         xv[LS] = jnp.where(has, xvs, xv[LS])
@@ -280,6 +321,12 @@ def setvtz(qx, cx, rho0, rhovt, xdia, xmas, vtxbar, xdn, xv, cdxgs, fadvisc, tem
         else:
             d3 = (xvx * 6. / pi) ** (1. / 3.)
         d1 = cwchx * d3  # dmuh == 1
+        if one_moment:
+            d1 = (q * rho0 / (pi * xdnx * f(cno[il]))) ** .25
+            cxx = f(cno[il]) * d1
+            xvx = jnp.maximum(f(C.xvmn[il]), rho0 * q / (xdnx * cxx))
+            d3 = (xvx * 6. / pi) ** (1. / 3.)
+            xmx = xmas[il]  # not assigned in this original branch
         d1 = jnp.where(has, d1, f(1.e-9))
         xdia[(il, 1)] = d1
         xdia[(il, 3)] = jnp.where(has, d3, f(1.e-9))
@@ -298,6 +345,9 @@ def setvtz(qx, cx, rho0, rhovt, xdia, xmas, vtxbar, xdn, xv, cdxgs, fadvisc, tem
         vt2 = rhovt * arx * (1.0 - base ** (-alp - 1.0)) if infdo >= 1 else vt1
         # lines 7069-7078: rssflg == 1; the ELSE branches copy the mass-weighted speed
         vt3 = rhovt * arx * (1.0 - base ** (-alp - 7.0)) if infdo >= 2 else vt1
+        if one_moment:
+            vt1 = f(C.rainfallfac) * (f(C.ar) * f(C.gf4br) / 6.) * xdia[(LR, 1)] ** f(C.br) * rhovt
+            vt2, vt3 = vtxbar[(LR, 2)], vtxbar[(LR, 3)]
         vtxbar[(LR, 1)] = jnp.where(has, vt1, zero)
         vtxbar[(LR, 2)] = jnp.where(has, vt2, zero)
         vtxbar[(LR, 3)] = jnp.where(has, vt3, vtxbar[(LR, 3)])
@@ -311,6 +361,12 @@ def setvtz(qx, cx, rho0, rhovt, xdia, xmas, vtxbar, xdn, xv, cdxgs, fadvisc, tem
         vtxbar[(LS, 2)] = jnp.where(has, 7.02909 * rhovt * p, vtxbar[(LS, 2)])
         if infdo >= 2:
             vtxbar[(LS, 3)] = jnp.where(has, 13.3436 * rhovt * p, vtxbar[(LS, 3)])
+        if one_moment:
+            # Pristine7246: fixed-intercept snow uses its power-law speed.
+            vt = (f(12.42) * f(C.gf4ds) / 6.) * xdia[(LS, 1)] ** f(.42) * rhovt
+            vtxbar[(LS, 1)] = jnp.where(has, vt, zero)
+            vtxbar[(LS, 2)] = jnp.where(has, vt, vtxbar[(LS, 2)])
+            vtxbar[(LS, 3)] = jnp.zeros_like(vt)
 
     # ------------------------------------------------------------------ GRAUPEL / HAIL fall speeds (icdx=6)
     aaxd = {}
@@ -359,7 +415,7 @@ def setvtz(qx, cx, rho0, rhovt, xdia, xmas, vtxbar, xdn, xv, cdxgs, fadvisc, tem
                 axx=axx, bxx=bxx)
 
 
-def ziegfall1d(an, t0, dn, rhovtzx, *, C, prec, infdo):
+def ziegfall1d(an, t0, dn, rhovtzx, *, C, prec, infdo, t7=None):
     """ziegfall1d with ildo = 0 (all species), vectorised over columns and levels.
 
     Returns (an_new, xvt) where xvt[(il, m)] has the shape of ``t0`` and is zero at points not
@@ -373,6 +429,7 @@ def ziegfall1d(an, t0, dn, rhovtzx, *, C, prec, infdo):
     rho0 = jnp.asarray(dn, R)
     rhovt = jnp.asarray(rhovtzx, R)
     species = (LC, LR, LI, LS, LH, LHL)
+    one_moment = C.ipconc == 0
 
     flag = jnp.zeros(t0.shape, bool)
     for il in range(LC, LHAB + 1):
@@ -384,9 +441,11 @@ def ziegfall1d(an, t0, dn, rhovtzx, *, C, prec, infdo):
 
     qx = {il: jnp.maximum(an[il], f(0.0)) for il in range(LC, LHAB + 1)}
     cx = {il: jnp.maximum(an[LN[il]], f(0.0)) for il in species}
+    if one_moment:
+        cx = {il: jnp.zeros_like(t0) for il in species}
 
     # vaporize tiny values (lz < 1, ln > 1 for every hydrometeor), sequential over il
-    for il in range(LC, LHAB + 1):
+    for il in (() if one_moment else range(LC, LHAB + 1)):
         vap = flag & ((cx[il] <= f(C.cxmin)) | (qx[il] < f(C.qxmin[il])))
         cx[il] = jnp.where(vap, f(0.0), cx[il])
         an = an.at[LV].set(jnp.where(vap, an[LV] + an[il], an[LV]))
@@ -397,7 +456,8 @@ def ziegfall1d(an, t0, dn, rhovtzx, *, C, prec, infdo):
     shape = t0.shape
     xdn = {il: jnp.broadcast_to(f(C.xdn0[il]), shape) for il in species}
     # ldovol: graupel/hail density from the predicted volume
-    for il in (LH, LHL):
+    volumes = (() if getattr(C, 'variant', 18) == 21 else (LH,)) if one_moment else (LH, LHL)
+    for il in volumes:
         vx = jnp.maximum(an[LVOL[il]], f(0.0))
         ok = (vx > rho0 * f(C.qxmin[il]) * 1.e-3) & (qx[il] > f(C.qxmin[il]))
         dens = jnp.minimum(f(C.xdnmx[il]), jnp.maximum(f(C.xdnmn[il]), rho0 * qx[il] / jnp.where(ok, vx, 1.0)))
@@ -416,7 +476,7 @@ def ziegfall1d(an, t0, dn, rhovtzx, *, C, prec, infdo):
         xdn=xdn, xv={il: zero for il in species}, cdxgs={il: zero for il in species},
         fadvisc=fadvisc, temcg=temcg, alpha=alpha,
         axx={LH: zero, LHL: zero}, bxx={LH: zero, LHL: zero},
-        C=C, prec=prec, infdo=infdo, ildo=0)
+        C=C, prec=prec, infdo=infdo, ildo=0, **({'cnina': t7} if one_moment else {}))
     vt = out["vtxbar"]
 
     vtmax = f(150.0)

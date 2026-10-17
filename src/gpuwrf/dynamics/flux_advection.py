@@ -40,6 +40,8 @@ import jax
 from jax import config
 import jax.numpy as jnp
 
+from gpuwrf.dynamics.time_direction import upwind_sign
+
 from gpuwrf.contracts.grid import GridSpec
 from gpuwrf.kernels.layout_pin import pin as _layout_pin
 from gpuwrf.contracts.state import State, Tendencies
@@ -122,7 +124,7 @@ def flux5_face_periodic(field: jax.Array, vel: jax.Array, axis: int) -> jax.Arra
     mass-coupled face velocity collocated at the same face as the flux.
     """
 
-    return _flux6_face(field, axis) - jnp.sign(vel) * _flux5_correction(field, axis)
+    return _flux6_face(field, axis) - upwind_sign(jnp.sign(vel)) * _flux5_correction(field, axis)
 
 
 # --- mass-coupled velocities (rk_step_prep -> couple_momentum, calc_ww_cp) ---
@@ -365,10 +367,10 @@ def specified_flux_faces(
 
     face6 = (37.0 * (q_i + q_im1) - 8.0 * (q_ip1 + q_im2) + (q_ip2 + q_im3)) / 60.0
     corr6 = ((q_ip2 - q_im3) - 5.0 * (q_ip1 - q_im2) + 10.0 * (q_i - q_im1)) / 60.0
-    face5 = face6 - jnp.sign(vel) * corr6
+    face5 = face6 - upwind_sign(jnp.sign(vel)) * corr6
     face4 = (7.0 * (q_i + q_im1) - (q_ip1 + q_im2)) / 12.0
     corr4 = ((q_ip1 - q_im2) - 3.0 * (q_i - q_im1)) / 12.0
-    face3 = face4 + jnp.sign(vel) * corr4
+    face3 = face4 + upwind_sign(jnp.sign(vel)) * corr4
     face2 = 0.5 * (q_i + q_im1)
     if upstream:
         # WRF: at the low face (m==1) the boundary-side value is q_im1 (the
@@ -602,7 +604,7 @@ def advect_scalar_flux(
         corr = ((q_kp1 + 0.0) - q_km2 - 3.0 * (q_k - q_km1)) / 12.0
         # WRF flux3 = flux4 + sign(time_step)*sign(vel)*((q_ip1-q_im2)-3*(q_i-q_im1))/12
         corr = ((q_kp1 - q_km2) - 3.0 * (q_k - q_km1)) / 12.0
-        flux3 = flux4 + jnp.sign(velz) * corr
+        flux3 = flux4 + upwind_sign(jnp.sign(velz)) * corr
         vflux = vflux.at[2 : nz - 1, :, :].set(rom[2 : nz - 1, :, :] * flux3)
     # faces adjacent to rigid boundaries: k=1 (kts+1) and k=nz-1 (ktf): 2nd order
     if nz >= 2:
@@ -752,7 +754,7 @@ def _high_order_flux_z(field: jax.Array, rom: jax.Array, fzm: jax.Array, fzp: ja
         velz = -rom[2 : nz - 1, :, :]
         flux4 = (7.0 * (q_k + q_km1) - (q_kp1 + q_km2)) / 12.0
         corr = ((q_kp1 - q_km2) - 3.0 * (q_k - q_km1)) / 12.0
-        flux3 = flux4 + jnp.sign(velz) * corr
+        flux3 = flux4 + upwind_sign(jnp.sign(velz)) * corr
         vflux = vflux.at[2 : nz - 1, :, :].set(rom[2 : nz - 1, :, :] * flux3)
     if nz >= 2:
         vflux = vflux.at[1, :, :].set(
@@ -1085,6 +1087,7 @@ def advect_moisture_scalars(
     species_batch_width: int = 1,
     msfty: jax.Array | None = None,
     f2_pd_out: dict | None = None,
+    force_native_pd: bool = False,
 ) -> tuple[jax.Array, ...]:
     """WRF moisture-species flux-form advection loop (h=5/v=3), per species.
 
@@ -1181,7 +1184,9 @@ def advect_moisture_scalars(
                 dt=dt,
             )
 
-        if _native_pd_enabled(moist_adv_opt, vel):
+        if (_native_pd_enabled(moist_adv_opt, vel) or (
+                force_native_pd and int(moist_adv_opt) == 1 and bool(vel.specified)
+                and vel.ru_full is not None and vel.rv_full is not None)):
             # One native WRF advect_scalar_pd launch pair for every species
             # (kernels/dyn_pd_fp32.py); each output keeps the retained dtype.
             from gpuwrf.kernels.dyn_pd_fp32 import advect_scalar_pd_fp32
@@ -1622,7 +1627,7 @@ def _vertical_flux_div_3(field_mass: jax.Array, romq: jax.Array, rdzw: jax.Array
         # descent column (F7N: novadv test removed the mode; the scalar path
         # advect_scalar_flux already negates the velocity correctly).  Use the WRF
         # sign: subtract |vel|*corr.
-        flux3 = flux4 + jnp.sign(-rom_k) * corr
+        flux3 = flux4 + upwind_sign(jnp.sign(-rom_k)) * corr
         vflux = vflux.at[2 : nz - 1, :, :].set(rom_k * flux3)
     if nz >= 2:
         vflux = vflux.at[1, :, :].set(
@@ -1675,7 +1680,7 @@ def _vertical_flux_div_w(w: jax.Array, rom: jax.Array, rdn: jax.Array, *, top_li
         velz = -vel_face[3:nz, :, :]
         flux4 = (7.0 * (q_k + q_km1) - (q_kp1 + q_km2)) / 12.0
         corr = ((q_kp1 - q_km2) - 3.0 * (q_k - q_km1)) / 12.0
-        flux3 = flux4 + jnp.sign(velz) * corr
+        flux3 = flux4 + upwind_sign(jnp.sign(velz)) * corr
         vflux = vflux.at[3:nz, :, :].set(vel_face[3:nz, :, :] * flux3)
     # k=1 (kts+1): 2nd order 0.25*(rom(1)+rom(0))*(w(1)+w(0)) = vel_face(1)*0.5*(w1+w0)
     if nz >= 2:
@@ -1689,7 +1694,7 @@ def _vertical_flux_div_w(w: jax.Array, rom: jax.Array, rdn: jax.Array, *, top_li
         q_kp1 = w[k + 1, :, :]
         flux4 = (7.0 * (q_k + q_km1) - (q_kp1 + q_km2)) / 12.0
         corr = ((q_kp1 - q_km2) - 3.0 * (q_k - q_km1)) / 12.0
-        return vel_face[k, :, :] * (flux4 + jnp.sign(velz) * corr)
+        return vel_face[k, :, :] * (flux4 + upwind_sign(jnp.sign(velz)) * corr)
     if nz >= 4:
         vflux = vflux.at[2, :, :].set(_flux3_at(2))
         vflux = vflux.at[nz - 1, :, :].set(_flux3_at(nz - 1))

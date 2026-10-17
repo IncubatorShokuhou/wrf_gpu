@@ -1,0 +1,20 @@
+fixture_id: rv-t-classd-jensen-public-c87
+source: <USER_HOME>/src/wrf_pristine/WRF/phys/module_mp_jensen_ishmael.F
+source_commit: f52c197ed39d12e087d02c50f412d90d418f6186
+source_sha256: 4cefa1a2f28c2bc36061100bd4bef10371643ccf1e80da43be96f8ba31843326
+scenario: public pristine mp_jensen_ishmael REAL4, 128 columns from original CPU c87 h3/9/15/21, 44 levels, dt18, non-first it2001; frame comparison is attribution only
+precision: REAL4; documented original gammln DOUBLE island; no FMA; compiler-defined zero init
+variables:
+  P: pressure, Pa, vertical-last 128x44, REAL4
+  DZ: layer thickness, m, vertical-last 128x44, REAL4
+  TH: dry potential temperature, K, 128x44 REAL4; fixture Rv/Rd folding changes 6 inputs by1ULP versus literal WRF REAL division
+  QV_QC_QR_QI1_QI2_QI3: mixing ratios, kg kg-1, 128x44, REAL4
+  NR_NI1_NI2_NI3: number mixing ratios, number kg-1, 128x44, REAL4
+  AI_CI: ice habit volume and aspect-weighted volume moments, m3 kg-1, 3x128x44, REAL4
+  DBZ: pre-sedimentation reflectivity, dBZ, 128x44, REAL4, WRF floor -35
+  PUBLIC_OUTPUTS: all37profiles plus4precip amounts percolumn, finite REAL4
+files:
+  RV34_oracle.json: b5b37ec749e6c3139dff55f304ee082f1026f9acf638c80eefdbe68e947dc70e
+  upstream_oracle_npz: 4c6beb5aea2e95b503debc85d7bb1c873b5d4a3e54b8e4dad2e306713ac913a2
+tolerances: literal port BYTE against pristine routine on recorded inputs; XLA diagnostic regression absolute1e-3dBZ and identical echo mask; final GPU coupled D6 remains required
+license_notes: source/table/input hashes reference pristine WRF and original CPU outputs; no large forecast output or oracle executable retained

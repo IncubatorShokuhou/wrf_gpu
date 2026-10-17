@@ -17,10 +17,9 @@ from gpuwrf.contracts.state import State
 from gpuwrf.physics.surface_constants import CP_D, P0_PA, R_D_OVER_CP, XLV
 
 
-GRAVITY_M_S2 = 9.80665
-PRECIP_MM_TO_KG_M2 = 1.0
-
-WATER_SPECIES: tuple[str, ...] = ("qv", "qc", "qr", "qi", "qs", "qg")
+from gpuwrf.io.budget_definitions import (
+    GRAVITY_M_S2, PRECIP_MM_TO_KG_M2, STATE_WATER_SPECIES as WATER_SPECIES,
+)
 PRECIP_ACCUMULATORS: tuple[str, ...] = ("rain_acc", "snow_acc", "graupel_acc", "ice_acc")
 
 PREDECLARED_TOLERANCES: dict[str, float] = {

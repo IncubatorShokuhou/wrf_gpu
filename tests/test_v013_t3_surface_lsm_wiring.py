@@ -56,11 +56,9 @@ def test_scheme_catalog_classifications() -> None:
     assert classify_scheme("sf_sfclay_physics", 3).status is SupportStatus.IMPLEMENTED
     # slab (1) was bumped to IMPLEMENTED (v0.17 operationally scan-wired).
     assert classify_scheme("sf_surface_physics", 1).status is SupportStatus.IMPLEMENTED
-    # SSiB (8) is v0.17 Tier-3 REFERENCE_ONLY (fp64 pristine-WRF single-column oracle
-    # staged, faithful JAX column kernel = carry-over). RUC (3) graduated to IMPLEMENTED
-    # in v0.3.4 (explicit ruc_static/ruc_land bundle seam, like slab/Pleim-Xiu).
+    # RUC and experimental SSiB now have qualified, explicit land-bundle seams.
     assert classify_scheme("sf_surface_physics", 3).status is SupportStatus.IMPLEMENTED
-    assert classify_scheme("sf_surface_physics", 8).status is SupportStatus.REFERENCE_ONLY
+    assert classify_scheme("sf_surface_physics", 8).status is SupportStatus.IMPLEMENTED
 
 
 def test_registry_consistent_with_new_schemes() -> None:

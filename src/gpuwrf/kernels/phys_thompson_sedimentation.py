@@ -12,7 +12,7 @@ import math
 import jax
 import jax.numpy as jnp
 from jax import lax
-from jax.experimental import pallas as pl
+from gpuwrf.backends import pallas as pl
 from jax.experimental.pallas import triton as plt
 from jax.extend import core
 from jax.interpreters import mlir

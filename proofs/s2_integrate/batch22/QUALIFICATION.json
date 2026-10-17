@@ -1,0 +1,148 @@
+{
+  "verdict": "READY-FOR-MERGE",
+  "scope": "PRIORITY public/daily CAM-MG allocation and radiation correction; source-qualified CPU gate, not global suite/GPU/fidelity clearance",
+  "UTC": "2026-10-15T06:01:21.111487+00:00",
+  "lane": "s2-integrate",
+  "base_main": "375aa8e17721a6871c34a2dd87a9f49753c039e8",
+  "approved_head": "ac6aa7a52bf480e5db4f7dc94137a9f417fd19fd",
+  "merged": "f735cd9de1aecabdd05b742d7c2ee1fffae2e8e3",
+  "source_audit": {
+    "UTC": "2026-10-15T06:01:21.111487+00:00",
+    "status": "PASS",
+    "initial": "f737666b666271d4fc492a431f3754b70d531b9c",
+    "main": "375aa8e17721a6871c34a2dd87a9f49753c039e8",
+    "before_merge": "773ed5434ac32e5d7d1c183d41fc74a6c8575d03",
+    "incoming": "ac6aa7a52bf480e5db4f7dc94137a9f417fd19fd",
+    "merged": "f735cd9de1aecabdd05b742d7c2ee1fffae2e8e3",
+    "src_tree": "b65e2e1affd2e6b7b772ccb4b8b16a765285637a",
+    "conflicts": 0,
+    "AST_files": [
+      "proofs/t_cammgalloc/gate.py",
+      "proofs/t_cammgalloc/mutant.py",
+      "src/gpuwrf/contracts/state.py",
+      "src/gpuwrf/coupling/physics_couplers.py",
+      "tests/v040/test_cammg_activation.py"
+    ],
+    "whole_src_tests_data_scripts_pyproject_BYTE_reviewed": {
+      "src": "b65e2e1affd2e6b7b772ccb4b8b16a765285637a",
+      "tests": "7cbf65248b3725c45cf28d9ed3a430f7d0cd8f0b",
+      "data": "a91a7fbcc850486e65e257c0d0f185a18c6e58c2",
+      "scripts": "b531b6dd46f40527b34c67a2ecb0ba8849629aae",
+      "pyproject.toml": "6c5fdcd3ddc730c8c75c556379abb8d1162ed8c3"
+    },
+    "whole_source_BYTE_producer_measured": true,
+    "producer_receipts_SHA_fresh": 21,
+    "reuse_reason": "Complete product/input/test/script trees equal exact reviewed and measured candidate; critic explicitly requires no repetition for exact bytes. No new numerical/native/default/forecast/GPU arm.",
+    "resources": "Lightweight stdlib/git/source/receipt seal only, CPU24,25nice19/JAXcpu/QUIET/timeout180; no JAX imports or heavyCPU arm; no caches/snapshots."
+  },
+  "integrator_numerical_edits": false,
+  "fresh_numerical_executions": 0,
+  "assigned_C123_fixed_reused": 12,
+  "independent_CPU_selection_reused": {
+    "status": "ALL_12_C123_PASS",
+    "tests": 66,
+    "passes": 65,
+    "failure": [
+      "test_new_radius_carries_roundtrip_and_missing_leaf_refuses[18]"
+    ],
+    "errors": 0,
+    "C123_pass": [
+      "tests/v025/b_column/test_mp_re_activation.py::test_active_selection_rejects_each_missing_radius_in_both_readers[re_cloud]",
+      "tests/v025/b_column/test_mp_re_activation.py::test_active_selection_rejects_each_missing_radius_in_both_readers[re_ice]",
+      "tests/v025/b_column/test_mp_re_activation.py::test_active_selection_rejects_each_missing_radius_in_both_readers[re_snow]",
+      "tests/v025/b_column/test_mp_re_activation.py::test_dudhia_sw_runtime_lw_handoff_uses_no_mp_radii",
+      "tests/v025/b_column/test_mp_re_activation.py::test_flag_on_inactive_selection_roundtrips_all_restart_formats[selection0]",
+      "tests/v025/b_column/test_mp_re_activation.py::test_flag_on_inactive_selection_roundtrips_all_restart_formats[selection1]",
+      "tests/v025/b_column/test_mp_re_activation.py::test_flag_on_inactive_selection_roundtrips_all_restart_formats[selection2]",
+      "tests/v025/b_column/test_mp_re_activation.py::test_flag_on_inactive_selection_roundtrips_all_restart_formats[selection3]",
+      "tests/v025/b_column/test_mp_re_activation.py::test_flag_on_inactive_selection_roundtrips_all_restart_formats[selection4]",
+      "tests/v025/b_column/test_mp_re_activation.py::test_flag_on_inactive_selection_roundtrips_all_restart_formats[selection5]",
+      "tests/v025/b_column/test_s1_mpfix_radii.py::test_new_radius_carries_roundtrip_and_missing_leaf_refuses[24]",
+      "tests/v025/b_column/test_s1_mpfix_radii.py::test_new_radius_carries_roundtrip_and_missing_leaf_refuses[28]"
+    ],
+    "unrelated_extra_NSSL18": "Known preexisting radar fixture refusal; MAIN MAILBOX 2026-10-15T05:15:11.614595Z and 05:19:12.995388Z. Not one of the 12 assigned gates; no production/test changes.",
+    "NSSL18_fixture_BYTE_to_prior_failed_RS03_source": "0afe0aa0b3ab5c765d01b0ae8f7a3e69459ccebd",
+    "NSSL18_prior_observed_failure": {
+      "file": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C123/pytest.xml",
+      "name": "test_new_radius_carries_roundtrip_and_missing_leaf_refuses[18]",
+      "message": "ValueError: restart radar carry and selection disagree (E78)"
+    }
+  },
+  "producer_shared_consumers_reused_PASS": 263,
+  "producer_targeted_reused": {
+    "CG04_unchanged_tests_reused": 74,
+    "CG05_corrected_shape_test": 1,
+    "CG09c_shared_consumers": 263
+  },
+  "counts_overlap_not_summed": true,
+  "radiation_BYTE_reused": "9/9 compiled outputs/constants/canonicalinput programs; MP11 againstoldfunction, other8options againstpreCAM060; regressiononly, not newWRFforecast",
+  "independent_deletion_controls_reused": "3separateallocation/radius/cloudgenuineASSERT +3healthy controls0setup",
+  "default_FULL_ids_reused": {
+    "Swiss": "f672a5739cb96e388b6b7a40ef80337bf81bdc14ef15268f3476e09d79fe055d",
+    "PROD": "6fc715a2bd630934c4cf0f94427df19a527cbf429011c9ba5efe4d712744d27b"
+  },
+  "performance_memory": {
+    "new_step_device_operations": "[I] 0 additional: static selection, exact default program",
+    "new_host_transfers": "[I] 0 additional: no host/device operation added",
+    "scan_allocation_saved_small_grid_bytes_measured": 1656,
+    "public_entry_saved_PROD_bytes_inferred": [
+      22478400,
+      83595564
+    ],
+    "native_CLI_memory_effect": "unchanged; inactive leaves were already absent",
+    "timing_or_GPU_peak_claim": false,
+    "shared_CPU_process_HWM_KiB": 4334080,
+    "compile": "static selection branches only; default whole program ID unchanged; source-based cache keys may need normal first-use rebuild"
+  },
+  "scientific_scope": "CAMscience/kernel/metadata/strictrestart and operationalentry filesBYTE. NativeCLIselected-only bypassedoriginalbug; nativecompositesunexposed. Publicdaily/fulltail fixed inactive20leaves and override routing; no physics/tolerance/checkpointrelaxation.",
+  "limitations": [
+    "No new GPU/S1/E41 or full forecast fidelity claim; preserve existing scientific receipts by exact source/program identity.",
+    "The whole expanded option smoke matrix OOMed at6G without XML; required changed routes and all shared consumer files pass263 with cache cleanup. No blanket full-suite pass.",
+    "Separate c89 zero-precipitation issue is unchanged.",
+    "Inactive CAM fields in old invalid checkpoints still refuse under the unchanged strict schema.",
+    "IndependentextraNSSL18radiusroundtrip test stillfails E78 radar-carry fixture, identicalprior failure/testblob; outside12assignedgates, unwaived.",
+    "Priorc89precipitationissue and P3radar27GPU/E41/fullD6/F2/experimentalUB/strictFMA gates remain separate."
+  ],
+  "cleanup": {
+    "new_snapshots": 0,
+    "new_cache_dirs": 0,
+    "new_pytest_temp_dirs": 0,
+    "own_model_jobs": 0,
+    "cache": "NONE",
+    "GPU_requested": false
+  },
+  "proof_files": {
+    "rv-t-cammgalloc-VERDICT.md": "9266caa93aecd9b39cabfb70b617092cdb0d979ab192a19b7bd1dcb1d9fdfcaf",
+    "rv-t-cammgalloc-RV00-source-audit.json": "8b5ee328795029e0ba6f96bd296a19c2dc5dac321862173942a82dc32a2d5625",
+    "rv-t-cammgalloc-RV01-classified.json": "47f55ae4aa3acb650b6c16798471f5d3b7b3ea32830167a967a9bc3204a2c2f4",
+    "rv-t-cammgalloc-RV01.json": "259adf9d78fce4322d3ef524267dd224309114cba6732ba8b59286b77bcf5095",
+    "rv-t-cammgalloc-RV01.xml.gz": "36ae73e850de21e9876a4cb34f3ea72ece6241d74999779e7df5d09f8cd159ff",
+    "rv-t-cammgalloc-RV02-byte.json": "874477eb5715eab69996a7da308700cf437181b30319a41864ad5c0fd1ca5e6f",
+    "rv-t-cammgalloc-RV03-allocation-witness.json": "8300f64c395c98ac7c3aed515ca04cd21ef05c923b76354d661c620981349ff3",
+    "rv-t-cammgalloc-RV03-cloud-witness.json": "dc970a1038eb2a963d6652bb6d8f16c84421c3bd24b581431d0264a6dee38ad3",
+    "rv-t-cammgalloc-RV03-radii-witness.json": "5c2fec1dd32ea43ed28bef734ed5aa5c2c98e1fabc2e0de89fe9b101be18cddd",
+    "rv-t-cammgalloc-RV04-swiss-identity.json": "1309874cb5e8a09ec010c9cdcc31754243652d231e17da02bd273e93d924dfbc",
+    "rv-t-cammgalloc-RV05-prod-identity.json": "6f14179a72f49a4cec844d34a23dedbba17815f198e7242c4f09084223a170f0",
+    "rv-t-cammgalloc-SEAL.json": "ff1034cc3d8cdff731ecc984047776c3682bc83bd834c9f5603db987842280dd",
+    "rv-t-cammgalloc-CLEANUP.json": "e1f27c4ac4434961edb20f235caea3af0ed1f90c9f0ed8762488c60cee2266f9",
+    "integrate_batch22.py": "ea7ab878314f1ae1c6fbb6871566776d7f214d6132e9543a9fba500681f97801",
+    "SOURCE_AUDIT.json": "c855f5414721b7ae8b817987e15e779dc9699e1f9ff5800508d5a628d0611de7"
+  },
+  "uncompressed_sha256": {
+    "rv-t-cammgalloc-VERDICT.md": "9266caa93aecd9b39cabfb70b617092cdb0d979ab192a19b7bd1dcb1d9fdfcaf",
+    "rv-t-cammgalloc-RV00-source-audit.json": "8b5ee328795029e0ba6f96bd296a19c2dc5dac321862173942a82dc32a2d5625",
+    "rv-t-cammgalloc-RV01-classified.json": "47f55ae4aa3acb650b6c16798471f5d3b7b3ea32830167a967a9bc3204a2c2f4",
+    "rv-t-cammgalloc-RV01.json": "259adf9d78fce4322d3ef524267dd224309114cba6732ba8b59286b77bcf5095",
+    "rv-t-cammgalloc-RV01.xml": "55ddf51b206a0a18d455288baa05d261fd5a1761d850e8e2e0a15640a2481466",
+    "rv-t-cammgalloc-RV02-byte.json": "874477eb5715eab69996a7da308700cf437181b30319a41864ad5c0fd1ca5e6f",
+    "rv-t-cammgalloc-RV03-allocation-witness.json": "8300f64c395c98ac7c3aed515ca04cd21ef05c923b76354d661c620981349ff3",
+    "rv-t-cammgalloc-RV03-cloud-witness.json": "dc970a1038eb2a963d6652bb6d8f16c84421c3bd24b581431d0264a6dee38ad3",
+    "rv-t-cammgalloc-RV03-radii-witness.json": "5c2fec1dd32ea43ed28bef734ed5aa5c2c98e1fabc2e0de89fe9b101be18cddd",
+    "rv-t-cammgalloc-RV04-swiss-identity.json": "1309874cb5e8a09ec010c9cdcc31754243652d231e17da02bd273e93d924dfbc",
+    "rv-t-cammgalloc-RV05-prod-identity.json": "6f14179a72f49a4cec844d34a23dedbba17815f198e7242c4f09084223a170f0",
+    "rv-t-cammgalloc-SEAL.json": "ff1034cc3d8cdff731ecc984047776c3682bc83bd834c9f5603db987842280dd",
+    "rv-t-cammgalloc-CLEANUP.json": "e1f27c4ac4434961edb20f235caea3af0ed1f90c9f0ed8762488c60cee2266f9",
+    "integrate_batch22.py": "ea7ab878314f1ae1c6fbb6871566776d7f214d6132e9543a9fba500681f97801",
+    "SOURCE_AUDIT.json": "c855f5414721b7ae8b817987e15e779dc9699e1f9ff5800508d5a628d0611de7"
+  }
+}

@@ -1,0 +1,80 @@
+{
+  "loaders": {
+    "platform": "cpu",
+    "gpu_executed": false,
+    "native": {
+      "caller_trace": true,
+      "seconds": 41.30254527088255,
+      "enabled": true,
+      "opt_inf": 2,
+      "dt": 15.0,
+      "stepwtd": 3
+    },
+    "daily": {
+      "caller_trace": true,
+      "seconds": 34.45692932000384,
+      "enabled": true,
+      "opt_inf": 2,
+      "dt": 10.0,
+      "stepwtd": 5,
+      "next_step": 1
+    }
+  },
+  "public_cli": {
+    "status": "PASS",
+    "returncode": 0,
+    "command": [
+      "<USER_HOME>/miniconda3/bin/python",
+      "-m",
+      "gpuwrf.cli",
+      "run",
+      "--input-dir",
+      "<USER_HOME>/wrf_gpu2_lanes/s2-mmf/MMF38_cli_u9xqtn4m",
+      "--output-dir",
+      "<USER_HOME>/wrf_gpu2_lanes/s2-mmf/MMF38_out",
+      "--hours",
+      "1",
+      "--max-dom",
+      "1",
+      "--domain",
+      "d01",
+      "--dry-run"
+    ],
+    "plan": {
+      "aot_prefetch": true,
+      "compare_cpu_dir": null,
+      "dry_run": true,
+      "effective_domain": "d01",
+      "effective_hours": 1,
+      "effective_max_dom": 1,
+      "emit_initial_history": true,
+      "feedback": false,
+      "init_mode": "standalone_native_init",
+      "input_dir": "<USER_HOME>/wrf_gpu2_lanes/s2-mmf/MMF38_cli_u9xqtn4m",
+      "land_category_check": {
+        "checked": [
+          "<USER_HOME>/wrf_gpu2_lanes/s2-mmf/MMF38_cli_u9xqtn4m/wrfinput_d01"
+        ],
+        "scope": "land categories only; use gpuwrf doctor for complete input validation",
+        "unchecked": [],
+        "warnings": []
+      },
+      "namelist_max_dom": 1,
+      "namelist_path": "<USER_HOME>/wrf_gpu2_lanes/s2-mmf/MMF38_cli_u9xqtn4m/namelist.input",
+      "output_dir": "<USER_HOME>/wrf_gpu2_lanes/s2-mmf/MMF38_out",
+      "override_sources": {
+        "domain": "flag",
+        "hours": "flag",
+        "max_dom": "flag"
+      },
+      "proof_dir": "<USER_HOME>/wrf_gpu2_lanes/s2-mmf/MMF38_out/proofs",
+      "run_type": "single_domain",
+      "schema": "GpuwrfRunPlan",
+      "schema_version": 1,
+      "score": false,
+      "scratch_dir": "<USER_HOME>/wrf_gpu2_lanes/s2-mmf/MMF38_out/.scratch",
+      "smooth_option": 2,
+      "wrf_root_preflight": null
+    }
+  }
+}

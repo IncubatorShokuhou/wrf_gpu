@@ -1,0 +1,236 @@
+{
+  "started_utc": "2026-10-14T10:33:21.942838+00:00",
+  "deadline_utc": "2026-10-14T11:28:46+00:00",
+  "downloads": {
+    "utc": "2026-10-14T10:31:20.705254+00:00",
+    "deadline_utc": "2026-10-14T11:28:46+00:00",
+    "files": [
+      {
+        "name": "crop",
+        "url": "https://www2.mmm.ucar.edu/wrf/src/wps_files/crop.tar.bz2",
+        "path": "<DATA_ROOT>/wrf_gpu2/scratch/v-prep/crop.tar.bz2",
+        "bytes": 84852916,
+        "sha256": "5845052c1435477f03bd5af2b066ddc86d67bfc2e615b5baeb4e1526187fe843",
+        "wall_s": 6.447236571926624
+      },
+      {
+        "name": "soilgrids",
+        "url": "https://www2.mmm.ucar.edu/wrf/src/wps_files/soilgrids.tar.bz2",
+        "path": "<DATA_ROOT>/wrf_gpu2/scratch/v-prep/soilgrids.tar.bz2",
+        "bytes": 864090244,
+        "sha256": "3d42737a68a52a2be10281f0505c6cb6c05c03707e9382b3a823495afc7937bb",
+        "wall_s": 45.18220965680666
+      },
+      {
+        "name": "drainage_map",
+        "url": "https://www2.mmm.ucar.edu/wrf/src/wps_files/tile_drainage_map.tar.gz",
+        "path": "<DATA_ROOT>/wrf_gpu2/scratch/v-prep/tile_drainage_map.tar.gz",
+        "bytes": 425263,
+        "sha256": "5fd0e6eabf2f0a3995e0d499305bf61c6447bcd384ef347716da7ef858987064",
+        "wall_s": 1.6291826099622995
+      }
+    ],
+    "total_bytes": 949368423
+  },
+  "status": "COMPLETE_WPS_REAL_PARTIAL_MAP_COVERAGE",
+  "map_values": "unchanged official NCAR geographic samples",
+  "archives": [
+    {
+      "name": "crop",
+      "files": 824,
+      "raw_bytes": 2451176295,
+      "compressed_sha256": "5845052c1435477f03bd5af2b066ddc86d67bfc2e615b5baeb4e1526187fe843"
+    },
+    {
+      "name": "soilgrids",
+      "files": 4543,
+      "raw_bytes": 13138518107,
+      "compressed_sha256": "3d42737a68a52a2be10281f0505c6cb6c05c03707e9382b3a823495afc7937bb"
+    },
+    {
+      "name": "drainage_map",
+      "files": 2,
+      "raw_bytes": 193579512,
+      "compressed_sha256": "5fd0e6eabf2f0a3995e0d499305bf61c6447bcd384ef347716da7ef858987064"
+    }
+  ],
+  "table_sha256": {
+    "geogrid": "b1332b323532f8e4b98c348b13ec69926edcfc30f40a9b7c9ecdcb2bd67daff8",
+    "metgrid": "70a63d23fd5e67c2eeceb95f057cbfab21220e6198068ec5dd2cd66835ac8d5d"
+  },
+  "reused_original_ungrib_sha256": {
+    "FILE:2026-10-13_00": "2e244cfc0deed274a25e6affb0f0fbef280e85b77e7542c6dae35bd34b3a8022",
+    "FILE:2026-10-13_06": "9e9260f5be72939dffe168a3f75bb1b1e5cfce31fb6c55ed18c96066078768d5",
+    "FILE:2026-10-13_21": "6d99bb4fd997befd9f7659598dce4befb186b8fcb7c9fe22d930bf9cd037349b",
+    "FILE:2026-10-13_18": "f57c2ace7087fefef40baa50afe7c95ab0e4f4960c637cd1d8d68b9a2f08c2f6",
+    "FILE:2026-10-13_03": "61fd674e83e8f4b517d92de8e47d2dc737a377257c279e12ca78758f966c2830",
+    "FILE:2026-10-13_12": "bd1ff8f5d79efd76b9bd85077a5acd6f700035bc566728d39e0dbb780c094cb4",
+    "FILE:2026-10-13_15": "5d48bb3354f3c487847748257f2c1098252192e045a718c1070c7bd870aeb288",
+    "FILE:2026-10-14_00": "3b6af6cbc817015e1c3c3bdff44c9dc92b66bd774e89238142347f2adb9ed70b",
+    "FILE:2026-10-13_09": "c11899a2f337e46978b55b1ed0945bfe88ad38d424de912461a301da4d08ff0c"
+  },
+  "finished_utc": "2026-10-14T10:39:35.773882+00:00",
+  "resumes": [
+    "2026-10-14T10:38:35.548034+00:00"
+  ],
+  "stages": [
+    {
+      "name": "geogrid",
+      "rc": 0,
+      "wall_s": 56.876466379035264,
+      "executable": "<DATA_ROOT>/canairy_meteo/artifacts/wrf_src/WPS/install_gen2_dmpar/bin/geogrid",
+      "executable_sha256": "35df2dd112279a31879e7565d1c373efe97c12aac11229325afbc14dce5d5a76"
+    },
+    {
+      "name": "metgrid",
+      "rc": 0,
+      "wall_s": 1.4024492900352925,
+      "executable": "<DATA_ROOT>/canairy_meteo/artifacts/wrf_src/WPS/install_gen2_dmpar/bin/metgrid",
+      "executable_sha256": "d92acd19ff894b251310df7410e46ae8cb170fbdd3f4cbc50867f098530fa4b7"
+    },
+    {
+      "name": "real",
+      "rc": 0,
+      "wall_s": 1.2028284629341215,
+      "executable": "<USER_HOME>/src/wrf_pristine/WRF/main/real.exe",
+      "executable_sha256": "f96715e08dc6fa6f3781782652233825ba4d667184594fe4c5a4a8f5592534ce"
+    }
+  ],
+  "real_check": {
+    "status": "PASS",
+    "files": [
+      {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/madrid_maps_real/wrfinput_d01",
+        "sha256": "0492d62fc3aa8fd8c3f6cc03e9c2f80353ab48d741293693058b16c96c52b552",
+        "times": [
+          "2026-10-13_00:00:00"
+        ],
+        "variables": 320
+      },
+      {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/madrid_maps_real/wrfbdy_d01",
+        "sha256": "69831179eab806d4fcaf7171710f8179d252103812f25399eea624736a5c59b7",
+        "times": [
+          "2026-10-13_00:00:00",
+          "2026-10-13_03:00:00",
+          "2026-10-13_06:00:00",
+          "2026-10-13_09:00:00",
+          "2026-10-13_12:00:00",
+          "2026-10-13_15:00:00",
+          "2026-10-13_18:00:00",
+          "2026-10-13_21:00:00"
+        ],
+        "variables": 139
+      }
+    ]
+  },
+  "map_census": {
+    "SOILCL1": {
+      "nonzero": 1764,
+      "finite": true,
+      "min": 3.0,
+      "max": 9.0
+    },
+    "SOILCL2": {
+      "nonzero": 1764,
+      "finite": true,
+      "min": 3.0,
+      "max": 9.0
+    },
+    "SOILCL3": {
+      "nonzero": 1764,
+      "finite": true,
+      "min": 3.0,
+      "max": 9.0
+    },
+    "SOILCL4": {
+      "nonzero": 1764,
+      "finite": true,
+      "min": 3.0,
+      "max": 9.0
+    },
+    "SOILCOMP": {
+      "nonzero": 14112,
+      "finite": true,
+      "min": 12.495369911193848,
+      "max": 60.130767822265625
+    },
+    "CROPTYPE": {
+      "nonzero": 0,
+      "finite": true,
+      "min": 0.0,
+      "max": 0.0
+    },
+    "PLANTING": {
+      "nonzero": 1764,
+      "finite": true,
+      "min": 126.0,
+      "max": 126.0
+    },
+    "HARVEST": {
+      "nonzero": 1764,
+      "finite": true,
+      "min": 290.0,
+      "max": 290.0
+    },
+    "SEASON_GDD": {
+      "nonzero": 1764,
+      "finite": true,
+      "min": 1605.0,
+      "max": 1605.0
+    },
+    "TD_FRACTION": {
+      "nonzero": 0,
+      "finite": true,
+      "min": 0.0,
+      "max": 0.0
+    },
+    "IRFRACT": {
+      "nonzero": 1214,
+      "finite": true,
+      "min": 0.0,
+      "max": 0.9153845906257629
+    },
+    "SIFRACT": {
+      "nonzero": 0,
+      "finite": true,
+      "min": 0.0,
+      "max": 0.0
+    },
+    "MIFRACT": {
+      "nonzero": 0,
+      "finite": true,
+      "min": 0.0,
+      "max": 0.0
+    },
+    "FIFRACT": {
+      "nonzero": 0,
+      "finite": true,
+      "min": 0.0,
+      "max": 0.0
+    },
+    "IRRSPLH": {
+      "nonzero": 0,
+      "finite": true,
+      "min": 0.0,
+      "max": 0.0
+    }
+  },
+  "all_requested_maps_active": false,
+  "audit_utc": "2026-10-14T10:44:51.847516+00:00",
+  "missing_active_maps": [
+    "CROPTYPE",
+    "TD_FRACTION",
+    "SIFRACT",
+    "MIFRACT",
+    "FIFRACT"
+  ],
+  "explanation": "Official crop indices do not cover Madrid; planting/harvest/GDD are explicit WPS fill values. IRRSPLH starts zero as an evolving accumulator. No synthetic map or truth replacement.",
+  "input_sha256": {
+    "namelist.wps": "5cfe52651efe93563ac5df76fccc86b0afe31bd4a87570237497c8f4a5f720c1",
+    "namelist.input": "87bdfbaef6d6b0c3d8c10216013defe505e500f02d7fdca3e792ee795a3292e7",
+    "wrfbdy_d01": "69831179eab806d4fcaf7171710f8179d252103812f25399eea624736a5c59b7",
+    "wrfinput_d01": "0492d62fc3aa8fd8c3f6cc03e9c2f80353ab48d741293693058b16c96c52b552",
+    "geo_em.d01.nc": "a5e48b93d6f7f0a2306b62459eff341502136eb08cd9af0bc31f342eaad8e8b3"
+  }
+}

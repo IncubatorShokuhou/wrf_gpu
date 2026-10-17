@@ -1,0 +1,77 @@
+{
+  "candidate": "efc9441e8462ef2e00fa041c0d3d71674dd1592c",
+  "prior_candidate": "2daaa8e6d3",
+  "verdict": "MERGE F17 CPU scope; QNSE SICE remains OPEN",
+  "checks": {
+    "PF01.xml": {
+      "tests": 4,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "sha256": "06e706e7099baf729911523dd4f769acc3d2119a604c0602e9d9a2fb1761cdcc"
+    },
+    "PF02.xml": {
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "sha256": "9f81603fb121a54575748d1dc7cd742cb79d4b9390d5216694f0472320889934"
+    }
+  },
+  "mutant": {
+    "rc": 1,
+    "assertions": 1,
+    "errors": 0,
+    "skips": 0,
+    "genuine": true
+  },
+  "reuse": {
+    "model_files_changed": [
+      "src/gpuwrf/runtime/operational_mode.py"
+    ],
+    "whole_OM_AST_identical_after_default_false_condition": true,
+    "selector_condition_hits": [
+      1,
+      1
+    ],
+    "default_bl": 5,
+    "old_branch": false,
+    "new_branch": false,
+    "default_identity_reused": {
+      "swiss": "f672a5739cb96e388b6b7a40ef80337bf81bdc14ef15268f3476e09d79fe055d",
+      "prod": "6fc715a2bd630934c4cf0f94427df19a527cbf429011c9ba5efe4d712744d27b"
+    },
+    "original_GBMPBL_source_and_fixture_exact": true,
+    "prior_seal_and_restored_raw_failure_bytes_exact": true,
+    "scope": "Only bl12 legacy-refresh path changes. Reuse paid original columns and default native-facade identities; no redundant numerical/default arm."
+  },
+  "seaice_census": {
+    "files": 86,
+    "all_known_zero": true,
+    "qnse": [
+      {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c26/cpu/wrfinput_d01",
+        "variable": "SEAICE",
+        "shape": [
+          1,
+          42,
+          42
+        ],
+        "dtype": "float32",
+        "field_sha256": "2c2cbccd5d41f1ab10f0106ca8df33869145cbdd02930a498214ef5c10af503e",
+        "minimum": 0.0,
+        "maximum": 0.0,
+        "bl_pbl_physics": "5"
+      }
+    ],
+    "census_sha256": "a0b1650bce872e3f30c4252b7f543a63e9f5bb559d48205f21c6ea376096a0e8"
+  },
+  "source_sha256": {
+    "src/gpuwrf/runtime/operational_mode.py": "002d26fc07d329394d149b7a5dd68029bc17d094219ac792f9db80d29258bb00",
+    "src/gpuwrf/physics/bl_gbm.py": "355c7dadf938007360b9588409f70980194e340bad53d768aceb5fd3c926cd3a",
+    "proofs/t_cfix_pblmix/gbm_rthraten_fixture.json": "ba2fc3b3ec74c73d740b2a20cad81a118952611dbbfd7deaa11fa878d494871e"
+  },
+  "scope": "Changed caller/control only. Prior independently rebuilt original public GBMPBL evidence/default native-facade IDs reused by exact-source/static default proof. No GPU run.",
+  "performance": "One existing SW+LW refresh moved before GBM on legacy refresh steps; tests observe one SW+one LW, no calls on held step. No new State leaf/solver; changed GPU lifetime/peak/time/readiness unknown.",
+  "cleanup": "Snapshot/pytest/cache removed after last arm; original reference unchanged."
+}

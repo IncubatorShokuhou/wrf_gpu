@@ -1,0 +1,98 @@
+{
+  "candidate": "d0a02337c",
+  "base": "922130799",
+  "verdict": "MERGE CPU admission scope; ACCEPT-NA only within enforced sea-ice-free QNSE source domain",
+  "healthy": 54,
+  "counts": {
+    "QR01.xml": {
+      "tests": 29,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "QR02.xml": {
+      "tests": 17,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "QR04-Aliases.xml": {
+      "tests": 1,
+      "failures": 1,
+      "errors": 0,
+      "skipped": 0
+    },
+    "QR04-Noah.xml": {
+      "tests": 1,
+      "failures": 1,
+      "errors": 0,
+      "skipped": 0
+    },
+    "QR04-Replay.xml": {
+      "tests": 1,
+      "failures": 1,
+      "errors": 0,
+      "skipped": 0
+    },
+    "QR05.xml": {
+      "tests": 8,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    }
+  },
+  "genuine_mutants": 3,
+  "old_four_product_assertions_now_PASS": true,
+  "regression": {
+    "land_static_arrays_BYTE": 112,
+    "all_leaves_equal": true,
+    "glaciers": 22,
+    "nonQNSE_alias_reads_old": [
+      "SEAICE"
+    ],
+    "nonQNSE_alias_reads_new": [
+      "SEAICE",
+      "SEAICE"
+    ],
+    "warm_loader_seconds": {
+      "old": [
+        0.05538513600185979,
+        0.051575067001977004,
+        0.051286585003254004
+      ],
+      "new": [
+        0.05238066299352795,
+        0.05189257000165526,
+        0.052021820010850206
+      ]
+    },
+    "median_seconds": {
+      "old": 0.051575067001977004,
+      "new": 0.052021820010850206
+    },
+    "scope": "CPU port-vs-port loaded-state regression, not new fidelity/oracle; 3 warm repeated whole-loader samples after warming both functions; no GPU/readiness/peak claim"
+  },
+  "source_reuse": {
+    "base": "922130799",
+    "head": "d0a02337c",
+    "BYTE_files": {
+      "src/gpuwrf/runtime/operational_mode.py": "002d26fc07d329394d149b7a5dd68029bc17d094219ac792f9db80d29258bb00",
+      "src/gpuwrf/coupling/qnse_adapter.py": "26d3185738d449727a7b845431ca3c489eb1c016250ac1b7ab782d055c0ee7d7",
+      "src/gpuwrf/physics/pbl_qnse.py": "81b767fef61627649f9f5114a93c33f93476ca0ef8d565c2ab6bbd704a3d1db3",
+      "proofs/t_cfix_pblmix/qnse_sice_fixture.json": "1bdfb93506b341b3163aeadaeb017d498f7684fda5633d6fc934b6f5c22a54c0",
+      "src/gpuwrf/integration/daily_pipeline.py": "311149fd1d4c36d0ba05206af538e1011bd7e2594604f1e2c85b808b5dd747cb",
+      "src/gpuwrf/integration/nested_pipeline.py": "80408c3dadf30e564277aabd30044e65be50fa05b56b1edf651e09369031a6b2",
+      "src/gpuwrf/cli.py": "7d1b22b511ba122ae8f1210a26980522073faf4744eb6f8fa559abece92bd207"
+    },
+    "reuse": "original QS1 pristine kernel/caller mapping and QSF1 CLI/nested/restart/DFI/batch source routes; only3hostsourceboundaryfileschanged; new loader regression112arraysBYTE",
+    "scope": "No repeated original oracle/default jaxpr; not new postF20 composed identity/GPU forecast"
+  },
+  "receipt_classification": {
+    "current": "QSF2/QF02-public-replay.json raw overwritten by QR04 Replay mutant; raw moved toQR04-Replay-receipt.json; healthy reconstructed solely from passing explicit assertion inQR02 XML",
+    "prior": "SFC3/SS05-sf0-ocean.json is also the ST06-SF0 mutant receipt (ocean_calls1); healthy ST03-ocean.xml passes explicit no-calls assertion, and ST09-two-step.json records healthy0. Sealed SFC3 bytes untouched; verdict unchanged.",
+    "prior_receipt_sha256": "cc075270f9a2eac40e6b92cc1995510caa3652a1ce0d3e85aa06f45d8241c59a",
+    "lesson": "copy/redirect every artifact-writing test per mutant, not only per review series; XML is authoritative for healthy vs mutant classification"
+  },
+  "invalid_analysis": "QR06a rawreceipt classification assertion; not product/setup result and excluded",
+  "scope": "Host source admission and input-state regression. No new numerical/GPU/oracle/default trace; unchanged original kernel qualification reused."
+}

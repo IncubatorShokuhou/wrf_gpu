@@ -1,0 +1,923 @@
+{
+  "status": "FIXED-REBASED",
+  "full_feature": "Complete experimental EEPS16/KEPS17 feature; original frozen column/PD gates and restart integration met; strict 1x local compiler-interval excess disclosed for D6",
+  "source_commit": "87d47dd68c883194b8590b4ce79eda7fd8510d50",
+  "main_base": "2eb72fac1fc9281989cebb1982735d3fbd7f7120",
+  "reference": {
+    "version": "WRF 4.7.1",
+    "source_sha256": {
+      "share/module_model_constants.F": "5b80377fecdc18a5f0ad38d3b6c15cfc86ad5d76701adbbbb08a08698d0f7062",
+      "phys/module_bl_keps.F": "a79058405affcd293740b15137002e788d168a5eba51586d14cee41342ffc204",
+      "phys/module_bl_eepsilon.F": "b1ea6db55866af15cb3c6962b1a15fa512eda803078f7304e6a133462d7e12de"
+    },
+    "compiler_flags": [
+      "-ffree-form",
+      "-ffree-line-length-none",
+      "-O0",
+      "-ffp-contract=off",
+      "-fcheck=all",
+      "-finit-real=zero",
+      "-finit-integer=0",
+      "-finit-logical=false"
+    ],
+    "upstream_bugs": "UPSTREAM_WRF_BUGS.md",
+    "initialization_sensitivity": "material for both schemes; admission EXPERIMENTAL"
+  },
+  "completed": {
+    "literal_source_REAL4": {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/s2-keps/KE45_source_literal.json",
+      "sha256": "902ac93213b22028d1640ece42b649744b142efcf32978e5550b4bdf17aa5187",
+      "result": {
+        "scope": "host literal REAL4/libm evaluation of unchanged port bodies; compiled JAX qualified separately",
+        "xla_flags": "",
+        "fields": 1140,
+        "byte_fields": 1140,
+        "values": 26690,
+        "byte_values": 26690,
+        "differences": [],
+        "status": "PASS"
+      }
+    },
+    "compiled_full_column": {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/s2-keps/KE44_full_composed.json",
+      "sha256": "f35f77bd51f309940bb300055e4b3415f6a1585445a39de33931c8fd3de08fae",
+      "result": {
+        "status": "PASS",
+        "records": 60,
+        "failures": [],
+        "backend": "cpu",
+        "xla_flags": "--xla_cpu_max_isa=SSE4_2 --xla_disable_hlo_passes=algsimp",
+        "scope": "full-column zero-initialized pristine WRF; not coupled/GPU qualification"
+      }
+    },
+    "host_checks": {
+      "owned_native_restart_history": 77,
+      "shared_native_store": 227,
+      "logs": [
+        "KE46_host_composed.log",
+        "KE57_shared_store_final.log"
+      ],
+      "earlier_shared_consumers": "KE25 280 passes plus KE31 corrected catalog21 passes; regression only",
+      "final_matrix": {
+        "source": "0560c4c80",
+        "passed": 319,
+        "sole_failure": "default legacy v1 extra_fields absent",
+        "corrected_source": "a214a0b54",
+        "focused_passed": 5,
+        "seconds": 7.55,
+        "final_unique_cases_closed": 320,
+        "reuse": "Only default missing-extra-fields lookup changed; populated payload behavior is identical. Four active EPS history-deletion controls also pass.",
+        "logs": [
+          "KE61_final_host.log",
+          "KE63_legacy_history_final.log"
+        ]
+      },
+      "final_composition": {
+        "passed": 320,
+        "failed": 0,
+        "seconds": 93.41,
+        "log": "KE65_composed_host.log"
+      }
+    },
+    "release_identity": {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/s2-keps/KE66_composed_release.json",
+      "sha256": "870f44b23d1faa1eb74a0e01eb0ca92ed6b6283893c12aead0c695f29b2a4286",
+      "result": {
+        "edits": {},
+        "bound": {
+          "mp_physics": 8,
+          "bl_pbl_physics": 5,
+          "sf_sfclay_physics": 5,
+          "ra_lw_physics": 4,
+          "ra_sw_physics": 4,
+          "cu_physics": 0,
+          "sf_surface_physics": 4,
+          "use_noahmp": true,
+          "sf_urban_physics": 0,
+          "diff_opt": 1,
+          "km_opt": 4,
+          "epssm": 0.5,
+          "damp_opt": 3,
+          "zdamp": 5000.0,
+          "dampcoef": 0.2,
+          "w_damping": 1,
+          "diff_6th_opt": 2,
+          "diff_6th_factor": 0.12,
+          "moist_adv_opt": 1,
+          "scalar_adv_opt": 1,
+          "topo_shadow_length_m": 25000.0,
+          "cumulus_cadence_steps": 1,
+          "radiation_cadence_steps": 33
+        },
+        "load_s": 44.0,
+        "sha": "2bf12cb8374d3a84a440e47dea4b77b0c7436108fc2ee2616bba6ec79b17962a",
+        "chars": 13405317,
+        "trace_s": 17.8,
+        "wall_s": 62.5
+      }
+    },
+    "archive": {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/s2-keps/KE72_archive.json",
+      "sha256": "9f6b211ae2ad63ad104e76fe8d1ccb3212d460a64dbc86bf420bb5822224c20f",
+      "result": {
+        "status": "PASS",
+        "source_commit": "349ed605ddd8ef2a99e04e921f769f9d69739dc6",
+        "checks": {
+          "imports": "archive-local",
+          "records": 18,
+          "full_records": 60,
+          "fixture_sha256": "c656e0edd9342af2a4bba19e6cedce47e97041804ce9f0547e0a99e6d7bb2b35",
+          "pd_qc_arrays": {
+            "sha256": "a2ab1671243ec00593f73971360bb3db16d8eedff0a8b8919e9dbdff9eb80a20",
+            "shape": [
+              44,
+              42,
+              42
+            ],
+            "fields": 26
+          },
+          "numeric_replays": 0,
+          "gpu_cost": "UNKNOWN"
+        },
+        "scope": "clean tracked archive imports/assets; no repeated numeric validation"
+      }
+    },
+    "column_cpu_cost": {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/s2-keps/KE49_cost_final.json",
+      "sha256": "8794b751796b4c38294acbedad95e68005a9d2569c4b0f992d66cb77f7ddcb3e",
+      "result": {
+        "backend": "cpu",
+        "scope": "full columns only; GPU launch/traffic/compile costs unknown",
+        "schemes": {
+          "16": {
+            "columns": 2,
+            "levels": 44,
+            "lower_s": 0.46458808379247785,
+            "compile_s": 2.1752768978476524,
+            "warm_median_s": 0.00021228590048849583,
+            "argument_bytes": 6416,
+            "output_bytes": 5802,
+            "temporary_bytes": 17584,
+            "alias_bytes": 0,
+            "hlo_no_fp64": true
+          },
+          "17": {
+            "columns": 2,
+            "levels": 44,
+            "lower_s": 0.8319978481158614,
+            "compile_s": 4.604911201866344,
+            "warm_median_s": 0.00019484641961753368,
+            "argument_bytes": 6064,
+            "output_bytes": 6856,
+            "temporary_bytes": 24080,
+            "alias_bytes": 0,
+            "hlo_no_fp64": true
+          }
+        }
+      }
+    },
+    "eeps_native_coupling": {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/s2-keps/KE68_eeps_composed.json",
+      "sha256": "1693aa82ac9dcf105de5a769d35ae9df34594b36497533ea467ba1d18bbfecbd",
+      "result": {
+        "edits": {
+          "bl_pbl_physics": "16",
+          "sf_sfclay_physics": "1"
+        },
+        "bound": {
+          "mp_physics": 8,
+          "bl_pbl_physics": 16,
+          "sf_sfclay_physics": 1,
+          "ra_lw_physics": 4,
+          "ra_sw_physics": 4,
+          "cu_physics": 0,
+          "sf_surface_physics": 4,
+          "use_noahmp": true,
+          "sf_urban_physics": 0,
+          "diff_opt": 1,
+          "km_opt": 4,
+          "epssm": 0.5,
+          "damp_opt": 3,
+          "zdamp": 5000.0,
+          "dampcoef": 0.2,
+          "w_damping": 1,
+          "diff_6th_opt": 2,
+          "diff_6th_factor": 0.12,
+          "moist_adv_opt": 1,
+          "scalar_adv_opt": 1,
+          "topo_shadow_length_m": 25000.0,
+          "cumulus_cadence_steps": 1,
+          "radiation_cadence_steps": 33
+        },
+        "transport_dtypes": {
+          "theta": "float32",
+          "qv": "float32",
+          "qc": "float32",
+          "qi": "float32",
+          "qke": "float32"
+        },
+        "boundary": {
+          "spec_zone": 1,
+          "have_bcs_moist": false,
+          "have_bcs_scalar": false
+        },
+        "load_s": 87.2,
+        "sha": "2e97cbe0a3231da96baf72046b54df23f3ebe7930fe631ddb7f5ed47ba6f972c",
+        "chars": 13939876,
+        "trace_s": 40.3,
+        "nonfinite_values": 0,
+        "guard_total": 0,
+        "guards": {},
+        "f2_events": [
+          {
+            "phase": "post_rk",
+            "field": "qc",
+            "event": "negative",
+            "count": 10,
+            "step": 3,
+            "index": 20879,
+            "value": -1.5594316148720426e-28,
+            "min_negative": -1.4634070770065564e-17
+          }
+        ],
+        "delta": {
+          "theta": 1.023406982421875,
+          "qv": 0.0002159271389245987,
+          "u": 1.0869576930999756,
+          "w": 0.5655705779790878
+        },
+        "exec_s": 663.9,
+        "epsilon_nonzero": {
+          "epsilon_pbl": 77616,
+          "pek_adv": 74339,
+          "pep_adv": 74339,
+          "epsilon_exch_h": 75852,
+          "epsilon_exch_m": 75852,
+          "epsilon_wu": 0,
+          "epsilon_wv": 0,
+          "epsilon_wt": 0,
+          "epsilon_wq": 0,
+          "epsilon_pbl_step": 1
+        },
+        "epsilon_bytes": 2794180,
+        "epsilon_all_real32": true,
+        "call_counter": 3,
+        "scalar_delta": {
+          "pek_adv": 1.055033564567566,
+          "pep_adv": 0.015452481806278229
+        },
+        "wall_s": 792.8
+      }
+    },
+    "keps_native_coupling": {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/s2-keps/KE69_keps_composed.json",
+      "sha256": "f2f0918946f26245734ab0a62a5b1b2703ce626872295fb3c32596e2530dcab7",
+      "result": {
+        "edits": {
+          "bl_pbl_physics": "17",
+          "sf_sfclay_physics": "1"
+        },
+        "bound": {
+          "mp_physics": 8,
+          "bl_pbl_physics": 17,
+          "sf_sfclay_physics": 1,
+          "ra_lw_physics": 4,
+          "ra_sw_physics": 4,
+          "cu_physics": 0,
+          "sf_surface_physics": 4,
+          "use_noahmp": true,
+          "sf_urban_physics": 0,
+          "diff_opt": 1,
+          "km_opt": 4,
+          "epssm": 0.5,
+          "damp_opt": 3,
+          "zdamp": 5000.0,
+          "dampcoef": 0.2,
+          "w_damping": 1,
+          "diff_6th_opt": 2,
+          "diff_6th_factor": 0.12,
+          "moist_adv_opt": 1,
+          "scalar_adv_opt": 1,
+          "topo_shadow_length_m": 25000.0,
+          "cumulus_cadence_steps": 1,
+          "radiation_cadence_steps": 33
+        },
+        "transport_dtypes": {
+          "theta": "float32",
+          "qv": "float32",
+          "qc": "float32",
+          "qi": "float32",
+          "qke": "float32"
+        },
+        "boundary": {
+          "spec_zone": 1,
+          "have_bcs_moist": false,
+          "have_bcs_scalar": false
+        },
+        "load_s": 90.3,
+        "sha": "e9e85ae8fda68a7be6c819bf8ffa0c8a326d5eece83a8f16617ea46f73b4a479",
+        "chars": 14086072,
+        "trace_s": 47.2,
+        "nonfinite_values": 0,
+        "guard_total": 2,
+        "guards": {
+          "dynamics.qc": {
+            "out_of_range": 1,
+            "repaired": 1
+          }
+        },
+        "f2_events": [
+          {
+            "phase": "post_rk",
+            "field": "qc",
+            "event": "negative",
+            "count": 4,
+            "step": 3,
+            "index": 22772,
+            "value": -6.434322415646313e-18,
+            "min_negative": -2.0091355156714762e-17
+          },
+          {
+            "phase": "pre_dynamics_guard",
+            "field": "qc",
+            "event": "negative",
+            "count": 1,
+            "step": 3,
+            "index": 28190,
+            "value": -1.2946662032075212e-31,
+            "min_negative": -1.2946662032075212e-31
+          },
+          {
+            "phase": "pre_boundary_guard",
+            "field": "qc",
+            "event": "negative",
+            "count": 1,
+            "step": 3,
+            "index": 28190,
+            "value": -1.2946662032075212e-31,
+            "min_negative": -1.2946662032075212e-31
+          }
+        ],
+        "delta": {
+          "theta": 1.023345947265625,
+          "qv": 0.0002159124705940485,
+          "u": 1.0875217914581299,
+          "w": 0.5654899328947067
+        },
+        "exec_s": 631.4,
+        "epsilon_nonzero": {
+          "epsilon_pbl": 77616,
+          "tpe_pbl": 77616,
+          "pr_pbl": 77616,
+          "tke_adv": 74339,
+          "diss_adv": 74339,
+          "tpe_adv": 74339,
+          "epsilon_exch_h": 75852,
+          "epsilon_exch_m": 75852,
+          "epsilon_wu": 77616,
+          "epsilon_wv": 77616,
+          "epsilon_wt": 77616,
+          "epsilon_wq": 0,
+          "epsilon_pbl_step": 1
+        },
+        "epsilon_bytes": 3725572,
+        "epsilon_all_real32": true,
+        "call_counter": 3,
+        "scalar_delta": {
+          "tke_adv": 0.00010358385043218732,
+          "diss_adv": 1.0358384372466389e-07,
+          "tpe_adv": 1.0358384372466389e-07
+        },
+        "wall_s": 770.5
+      },
+      "classification": "EXPERIMENTAL: one WRF-sign-reproduced FMA roundoff repair; frozen C05 gate passes; stricter 1x interval remains OPEN and disclosed"
+    },
+    "original_pd_and_rk_event_reference": {
+      "scope": "Existing pristine WRF PD and RK oracles on actual captured QC operands.\n\nUse the previously registered C05 PD gate: ring>=1 max error bounded by\nmax(8*WRF FMA/no-FMA spread,1e-5*max|reference|), RMS by\nmax(8*spread RMS,1e-6*max|reference|). A QC event is source-justified here only\nwhen unchanged WRF also returns negative PD tendency AND negative RK QC at\nthe same interior source point, and the candidate lies within WRF's own\npointwise FMA/no-FMA interval. This is not a forecast/D6 qualification.\n",
+      "source_tree": "<USER_HOME>/wrf_gpu2_lanes/s2-keps/FINAL/snapshot",
+      "source_commit": "7ee49b2a9da2f535eb7f97fa77dd0136b6286283",
+      "point": [
+        15,
+        40,
+        8
+      ],
+      "array_sha256": "8e5dc7191af64cb2a6c0a768084941c3edb35baef1dee6d2c476c93c7a86a150",
+      "observed_guards": {
+        "dynamics.qc": {
+          "out_of_range": 1,
+          "repaired": 1
+        }
+      },
+      "candidate_pd_tendency": -6.396682124483199e-28,
+      "candidate_qc": -1.2946662032075212e-31,
+      "references": {
+        "off": {
+          "pd_tendency": 1.0097418984975843e-28,
+          "qc": 2.0436820053081876e-32,
+          "pd_manifest": {
+            "source": "<USER_HOME>/src/wrf_pristine/WRF/dyn_em/module_advect_em.F",
+            "routine_sha256": "04f6c26625f02dea9e85c1a51f8f21c606648aa5136a4eb7cd16f1e17958c05d",
+            "compile": [
+              "<USER_HOME>/miniconda3/envs/wrfbuild/bin/gfortran",
+              "-O2",
+              "-march=native",
+              "-ffp-contract=off",
+              "-fPIC",
+              "-shared",
+              "-fcheck=bounds",
+              "-ffree-line-length-none",
+              "-J",
+              "<USER_HOME>/wrf_gpu2_lanes/s2-keps/KE71_build/pd_off",
+              "<USER_HOME>/wrf_gpu2_lanes/s2-keps/KE71_build/pd_off/pd_original.f90",
+              "-o",
+              "<USER_HOME>/wrf_gpu2_lanes/s2-keps/KE71_build/pd_off/pd.so"
+            ],
+            "scope": "pristine full advect_scalar_pd; root specified, h5/v3, time_step1, tenddec false; all REAL4",
+            "caller": "mut=full current dry mass; mub=base; muold=old perturbation; memories include 4 edge-repeated halo cells; full physical tile",
+            "dimensions": "WRF i,k,j; ids/its1,ide nx+1,ite nx; analog y; k1..nz+1, ktf nz"
+          },
+          "rk_manifest": {
+            "source": "<USER_HOME>/src/wrf_pristine/WRF/dyn_em/module_em.F",
+            "routine_sha256": "124eb6c5cb22ccbdb2d471a226cda6fe55a399c67ae43720b08c34919eac0ecb",
+            "compile": [
+              "<USER_HOME>/miniconda3/envs/wrfbuild/bin/gfortran",
+              "-O2",
+              "-march=native",
+              "-ffp-contract=off",
+              "-fPIC",
+              "-shared",
+              "-fcheck=bounds",
+              "-ffree-line-length-none",
+              "-J",
+              "<USER_HOME>/wrf_gpu2_lanes/s2-keps/KE71_build/rk_off",
+              "<USER_HOME>/wrf_gpu2_lanes/s2-keps/KE71_build/rk_off/update_original.f90",
+              "-o",
+              "<USER_HOME>/wrf_gpu2_lanes/s2-keps/KE71_build/rk_off/update.so"
+            ],
+            "scope": "pristine full rk_update_scalar; specified root, rk_ord 3, tenddec false, all REAL4",
+            "caller": "solve_em other_scalar_advance: scalar_1=old, mu_old=mu_1, mu_new=mu_2 (perturbations), mu_base=mub"
+          }
+        },
+        "fast": {
+          "pd_tendency": -2.3577142897516183e-28,
+          "qc": -4.771931365980172e-32,
+          "pd_manifest": {
+            "source": "<USER_HOME>/src/wrf_pristine/WRF/dyn_em/module_advect_em.F",
+            "routine_sha256": "04f6c26625f02dea9e85c1a51f8f21c606648aa5136a4eb7cd16f1e17958c05d",
+            "compile": [
+              "<USER_HOME>/miniconda3/envs/wrfbuild/bin/gfortran",
+              "-O2",
+              "-march=native",
+              "-ffp-contract=fast",
+              "-fPIC",
+              "-shared",
+              "-fcheck=bounds",
+              "-ffree-line-length-none",
+              "-J",
+              "<USER_HOME>/wrf_gpu2_lanes/s2-keps/KE71_build/pd_fast",
+              "<USER_HOME>/wrf_gpu2_lanes/s2-keps/KE71_build/pd_fast/pd_original.f90",
+              "-o",
+              "<USER_HOME>/wrf_gpu2_lanes/s2-keps/KE71_build/pd_fast/pd.so"
+            ],
+            "scope": "pristine full advect_scalar_pd; root specified, h5/v3, time_step1, tenddec false; all REAL4",
+            "caller": "mut=full current dry mass; mub=base; muold=old perturbation; memories include 4 edge-repeated halo cells; full physical tile",
+            "dimensions": "WRF i,k,j; ids/its1,ide nx+1,ite nx; analog y; k1..nz+1, ktf nz"
+          },
+          "rk_manifest": {
+            "source": "<USER_HOME>/src/wrf_pristine/WRF/dyn_em/module_em.F",
+            "routine_sha256": "124eb6c5cb22ccbdb2d471a226cda6fe55a399c67ae43720b08c34919eac0ecb",
+            "compile": [
+              "<USER_HOME>/miniconda3/envs/wrfbuild/bin/gfortran",
+              "-O2",
+              "-march=native",
+              "-ffp-contract=fast",
+              "-fPIC",
+              "-shared",
+              "-fcheck=bounds",
+              "-ffree-line-length-none",
+              "-J",
+              "<USER_HOME>/wrf_gpu2_lanes/s2-keps/KE71_build/rk_fast",
+              "<USER_HOME>/wrf_gpu2_lanes/s2-keps/KE71_build/rk_fast/update_original.f90",
+              "-o",
+              "<USER_HOME>/wrf_gpu2_lanes/s2-keps/KE71_build/rk_fast/update.so"
+            ],
+            "scope": "pristine full rk_update_scalar; specified root, rk_ord 3, tenddec false, all REAL4",
+            "caller": "solve_em other_scalar_advance: scalar_1=old, mu_old=mu_1, mu_new=mu_2 (perturbations), mu_base=mub"
+          }
+        }
+      },
+      "frozen_pd_gate": {
+        "max_error": 1.1641532182693481e-10,
+        "max_bound": 8.099814876914025e-09,
+        "rms_error": 7.498125487379919e-13,
+        "rms_bound": 8.099814876914024e-10,
+        "passed": true
+      },
+      "wrf_reproduces_negative": true,
+      "inside_wrf_compiler_interval": false,
+      "status": "OPEN",
+      "original_receipt_sha256": "5e98997c63019c66cd07099bbed6be3605d4bfa02d5fc68209a9adde03d626f4",
+      "numerical_run_commit": "7ee49b2a9",
+      "fixture_sha256": "a2ab1671243ec00593f73971360bb3db16d8eedff0a8b8919e9dbdff9eb80a20",
+      "qualification_status": "EXPERIMENTAL_C05_PASS_WITH_DISCLOSED_POINT_INTERVAL_EXCESS",
+      "point_compiler_spread_ratios": {
+        "pd_tendency": 2.199412140483261,
+        "qc": 2.199412322965991
+      },
+      "deviation": "Strict 1x point-compiler interval remains OPEN; 2.20x spread is within the frozen C05 8x envelope. Small absolute FMA-dependent QC deviation disclosed; full-forecast D6 decides, per standing policy. No model clamp added."
+    },
+    "tracked_event_fixture": "fixtures/pd_qc_step3.npz",
+    "matched_controls": {
+      "legacy_matched_control": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/s2-keps/KE51_matched_release_control.json",
+        "sha256": "7b08d72929e6e9cd12c9e71a4b5d593ff665d6e74985e398c0ebed0934ae0754",
+        "result": {
+          "edits": {},
+          "bound": {
+            "mp_physics": 8,
+            "bl_pbl_physics": 5,
+            "sf_sfclay_physics": 5,
+            "ra_lw_physics": 4,
+            "ra_sw_physics": 4,
+            "cu_physics": 0,
+            "sf_surface_physics": 4,
+            "use_noahmp": true,
+            "sf_urban_physics": 0,
+            "diff_opt": 1,
+            "km_opt": 4,
+            "epssm": 0.5,
+            "damp_opt": 3,
+            "zdamp": 5000.0,
+            "dampcoef": 0.2,
+            "w_damping": 1,
+            "diff_6th_opt": 2,
+            "diff_6th_factor": 0.12,
+            "moist_adv_opt": 1,
+            "scalar_adv_opt": 1,
+            "topo_shadow_length_m": 25000.0,
+            "cumulus_cadence_steps": 1,
+            "radiation_cadence_steps": 33
+          },
+          "transport_dtypes": {
+            "theta": "float64",
+            "qv": "float64",
+            "qc": "float64",
+            "qi": "float64",
+            "qke": "float64"
+          },
+          "load_s": 88.4,
+          "sha": "3b9e3c5662099c9e3d46cc8b0b7404c5b34bcdb61b2d509b2ca051b19dde4e60",
+          "chars": 15817722,
+          "trace_s": 14.8,
+          "nonfinite_values": 0,
+          "guard_total": 0,
+          "guards": {},
+          "f2_events": [],
+          "delta": {
+            "theta": 1.4775940977252162,
+            "qv": 0.00028743851902807626,
+            "u": 1.080892946166732,
+            "w": 0.5632960965043051
+          },
+          "exec_s": 413.2,
+          "wall_s": 519.8
+        }
+      },
+      "native_matched_control": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/s2-keps/KE55_matched_native_release_control.json",
+        "sha256": "723a825f40b5c92caf38908bcd02e1881ba777170ab7961284b3f8cb3df156d5",
+        "result": {
+          "edits": {},
+          "bound": {
+            "mp_physics": 8,
+            "bl_pbl_physics": 5,
+            "sf_sfclay_physics": 5,
+            "ra_lw_physics": 4,
+            "ra_sw_physics": 4,
+            "cu_physics": 0,
+            "sf_surface_physics": 4,
+            "use_noahmp": true,
+            "sf_urban_physics": 0,
+            "diff_opt": 1,
+            "km_opt": 4,
+            "epssm": 0.5,
+            "damp_opt": 3,
+            "zdamp": 5000.0,
+            "dampcoef": 0.2,
+            "w_damping": 1,
+            "diff_6th_opt": 2,
+            "diff_6th_factor": 0.12,
+            "moist_adv_opt": 1,
+            "scalar_adv_opt": 1,
+            "topo_shadow_length_m": 25000.0,
+            "cumulus_cadence_steps": 1,
+            "radiation_cadence_steps": 33
+          },
+          "transport_dtypes": {
+            "theta": "float32",
+            "qv": "float32",
+            "qc": "float32",
+            "qi": "float32",
+            "qke": "float32"
+          },
+          "load_s": 63.1,
+          "sha": "a0defd59c27a2520880fe32335da6225444c047ac284424b629c3d9f9eb39b2c",
+          "chars": 14241458,
+          "trace_s": 19.2,
+          "nonfinite_values": 0,
+          "guard_total": 0,
+          "guards": {},
+          "f2_events": [
+            {
+              "phase": "post_rk",
+              "field": "qc",
+              "event": "negative",
+              "count": 1,
+              "step": 3,
+              "index": 28106,
+              "value": -7.832588482805903e-37,
+              "min_negative": -7.832588482805903e-37
+            }
+          ],
+          "delta": {
+            "theta": 1.4674072265625,
+            "qv": 0.00029058451764285564,
+            "u": 1.0916225910186768,
+            "w": 0.5655602067708969
+          },
+          "exec_s": 588.9,
+          "wall_s": 671.9
+        }
+      },
+      "operator_accounting": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/s2-keps/KE56_keps_scalar_point.json",
+        "sha256": "802c35d71ce6f389b6750be48c07d82a4cca443683cb0c01ddb5d92f844a8b5d",
+        "result": {
+          "edits": {
+            "bl_pbl_physics": "17",
+            "sf_sfclay_physics": "1"
+          },
+          "bound": {
+            "mp_physics": 8,
+            "bl_pbl_physics": 17,
+            "sf_sfclay_physics": 1,
+            "ra_lw_physics": 4,
+            "ra_sw_physics": 4,
+            "cu_physics": 0,
+            "sf_surface_physics": 4,
+            "use_noahmp": true,
+            "sf_urban_physics": 0,
+            "diff_opt": 1,
+            "km_opt": 4,
+            "epssm": 0.5,
+            "damp_opt": 3,
+            "zdamp": 5000.0,
+            "dampcoef": 0.2,
+            "w_damping": 1,
+            "diff_6th_opt": 2,
+            "diff_6th_factor": 0.12,
+            "moist_adv_opt": 1,
+            "scalar_adv_opt": 1,
+            "topo_shadow_length_m": 25000.0,
+            "cumulus_cadence_steps": 1,
+            "radiation_cadence_steps": 33
+          },
+          "transport_dtypes": {
+            "theta": "float32",
+            "qv": "float32",
+            "qc": "float32",
+            "qi": "float32",
+            "qke": "float32"
+          },
+          "boundary": {
+            "spec_zone": 1,
+            "have_bcs_moist": false,
+            "have_bcs_scalar": false
+          },
+          "fixed_qc_packet_index": 28148,
+          "load_s": 44.4,
+          "sha": "5a8dd72ff34f9e2afcf857e41bdff5292140eb8c85ea1871e368fc69c6c81f98",
+          "chars": 14136416,
+          "trace_s": 18.9,
+          "nonfinite_values": 0,
+          "guard_total": 2,
+          "guards": {
+            "dynamics.qc": {
+              "out_of_range": 1,
+              "repaired": 1
+            }
+          },
+          "f2_events": [
+            {
+              "phase": "post_rk",
+              "field": "qc",
+              "event": "negative",
+              "count": 4,
+              "step": 3,
+              "index": 22772,
+              "value": -6.434322415646313e-18,
+              "min_negative": -2.0091355156714762e-17
+            },
+            {
+              "phase": "pre_dynamics_guard",
+              "field": "qc",
+              "event": "negative",
+              "count": 1,
+              "step": 3,
+              "index": 28190,
+              "value": -9.626400214740125e-33,
+              "min_negative": -9.626400214740125e-33
+            },
+            {
+              "phase": "pre_boundary_guard",
+              "field": "qc",
+              "event": "negative",
+              "count": 1,
+              "step": 3,
+              "index": 28190,
+              "value": -9.626400214740125e-33,
+              "min_negative": -9.626400214740125e-33
+            }
+          ],
+          "qc_packet": {
+            "header": {
+              "version": 1,
+              "present": 1,
+              "own_step": 3,
+              "flat_index": 28148,
+              "nz": 44,
+              "ny": 42,
+              "nx": 42,
+              "rk_stage": 3,
+              "horizontal_ring0": 0,
+              "spec_zone": 1,
+              "nested": 0,
+              "root_flow_qc": 1,
+              "native_seen": 1,
+              "pd_preload": 1,
+              "physics_sc_present": 1,
+              "other_sc_present": 1,
+              "seam_complete": 1
+            },
+            "values": {
+              "post_rk_qc": -9.626400214740125e-33,
+              "physical_origin_qc": 0.0,
+              "rk1_origin_qc": 0.0,
+              "pd_preloaded_qc": 0.0,
+              "native_stage_qc": 8.339886177505531e-26,
+              "physical_origin_mu": 89185.1875,
+              "rk1_origin_mu": 89185.1875,
+              "native_old_mu": 89185.1875,
+              "native_current_mu": 89190.171875,
+              "update_new_mu": 89190.171875,
+              "native_mub": 0.0,
+              "c1h": 1.5647401809692383,
+              "c2h": -53650.31640625,
+              "msftx": 0.9659838080406189,
+              "msfty": 0.9659838080406189,
+              "rdnw": -20.250965118408203,
+              "fnm": 0.4953642785549164,
+              "fnp": 0.5046356916427612,
+              "frozen_physics_sc": 0.0,
+              "frozen_other_sc": 0.0,
+              "native_pd_tendency": -4.7562082803310027e-29,
+              "merged_update_tendency": -4.594420234426199e-29,
+              "before_flow_qc": -9.626400214740125e-33,
+              "post_nondry_qc": -9.626400214740125e-33,
+              "pre_mp_qc": -9.626400214740125e-33,
+              "dt_rk": 18.0,
+              "pd_dt": 18.0,
+              "pd_rdx": 0.00033333332976326346,
+              "pd_rdy": 0.00033333332976326346,
+              "actual_mass_old": 85901.328125,
+              "actual_mass_new": 85909.1328125,
+              "actual_inverse_mass_new": 1.1640206139418297e-05,
+              "actual_numerator": -8.269956662708401e-28,
+              "actual_q_update": -9.626400214740125e-33
+            },
+            "clocks": [
+              54.0,
+              36.0
+            ],
+            "scope": "CPU diagnostic ON accounting; original-WRF operator audit required; not production-equivalent"
+          },
+          "delta": {
+            "theta": 1.023345947265625,
+            "qv": 0.0002159124705940485,
+            "u": 1.0875217914581299,
+            "w": 0.5654899328947067
+          },
+          "exec_s": 263.3,
+          "epsilon_nonzero": {
+            "epsilon_pbl": 77616,
+            "tpe_pbl": 77616,
+            "pr_pbl": 77616,
+            "tke_adv": 74339,
+            "diss_adv": 74339,
+            "tpe_adv": 74339,
+            "epsilon_exch_h": 75852,
+            "epsilon_exch_m": 75852,
+            "epsilon_wu": 77616,
+            "epsilon_wv": 77616,
+            "epsilon_wt": 77616,
+            "epsilon_wq": 0,
+            "epsilon_pbl_step": 1
+          },
+          "epsilon_bytes": 3725572,
+          "epsilon_all_real32": true,
+          "call_counter": 3,
+          "scalar_delta": {
+            "tke_adv": 0.00010358385043218732,
+            "diss_adv": 1.0358384372466389e-07,
+            "tpe_adv": 1.0358384372466389e-07
+          },
+          "wall_s": 327.2
+        }
+      }
+    },
+    "full_restart_history": "Required REAL32 surface history validated on host before restoration; State-only restarts initialize a fresh carry",
+    "upstream_bug_list": "Tracked and requested lane-dir copies are byte-identical"
+  },
+  "exact_reuse": {
+    "own_source_byte_sha256": {
+      "src/gpuwrf/physics/pbl_keps.py": "18b5ebbc9d932969ad18a10433da93220a570c9bde156ad67813fd7c711e6355",
+      "src/gpuwrf/physics/pbl_eeps.py": "4481720e51b3d42d0973c65c56155ad6d3fbf52413a311dacc0769dc96880d40",
+      "src/gpuwrf/coupling/epsilon_pbl.py": "d0cef86a50ff4e4ffd3b14f356c709e6916deb64c8cfb33dd177776be81fc55d",
+      "src/gpuwrf/io/pbl_epsilon_schema.py": "410afdd6866185efc06394efa7094dac78c80c87cf12ef8e24c43c4ca7c1ee0d"
+    },
+    "old": "<USER_HOME>/wrf_gpu2_lanes/s2-keps/KE52_seal_old.json",
+    "new": "<USER_HOME>/wrf_gpu2_lanes/s2-keps/KE52_seal_new.json",
+    "matched": [
+      "sha",
+      "chars",
+      "input_arrays",
+      "closed_constants",
+      "lowered_hlo_sha256"
+    ],
+    "numeric_replay": "Column implementations byte-identical: retain 1140 literal/60 compiled gates. Repeat only affected current-main coupled integrations.",
+    "epsilon_schema": "All previously qualified functions remain an identical prefix; new host-only history validator appended",
+    "host_only_io_changes": [
+      "io/restart.py",
+      "io/wrfrst_netcdf.py",
+      "runtime/restart_store.py",
+      "io/pbl_epsilon_schema.py"
+    ],
+    "host_only_validation": "Final changed IO artifact covered by KE61/KE63; timestep/PBL arithmetic untouched, no numerical forecast replay",
+    "latest_composition": "KE64 initial arrays and closed constants match; timestep HLO changed by main REAL32 SF1 table lookup; affected coupling rerun KE68/KE69",
+    "old_main_rebase": "KE52 exact equality applied before the later main REAL32 SF1 table correction; latest affected coupled steps rerun in KE68/KE69",
+    "current_main": "2eb72fac1fc9281989cebb1982735d3fbd7f7120 frozen rebase; exact main prefixes and EPS science source bytes, 276 affected checks pass and full default2bf identity preserved; no repeated numerical validation"
+  },
+  "admission": {
+    "pbl": [
+      16,
+      17
+    ],
+    "surface_layer": [
+      1
+    ],
+    "land": [
+      0,
+      4
+    ],
+    "bldt": 0,
+    "transport": "WRF Registry scalars, root group boundary flags, generated live-child records",
+    "restart": "State checkpoint, full pickle, NetCDF State/carry, native RestartStore; strict E78 before restoration"
+  },
+  "dependency": "Shared optional surface_diagnostics API from s2-temf84020b732, merged main28be38ec1 before this lane",
+  "limitations": [
+    "Scalar REAL4/libm BYTE evaluates unchanged port bodies; eager XLA has separately recorded transcendental/FTZ residuals.",
+    "Full compiled oracle gate uses SSE4_2 and disabled algsimp; native ISA/GPU column arithmetic remains unqualified.",
+    "Short CPU coupling is integration evidence, not independent whole-forecast WRF/D6 qualification.",
+    "GPU launches/traffic, VRAM, compile/readiness and roofline cost unknown; AOT source identity changes.",
+    "No GPU was used."
+  ],
+  "historical_initial_block": "Original trapping pristine-source probe retained in source_probe_receipt.json; resolved by authorized compiler initialization, not a current block.",
+  "validated_model_source_commit": "794fed977",
+  "remaining_lane_gate_work": [],
+  "source_commit_before_final_receipt": "26799d3facb73645ee14456185f3a3131c4d10d6",
+  "final_source_commit_before_receipt": "a214a0b54c9aadb24c720768f73f310faf32fe29",
+  "final_composed_source": "87d47dd68c883194b8590b4ce79eda7fd8510d50",
+  "release_open_items": [
+    "Extra strict 1x local compiler interval OPEN: error2.199412x WRF compiler spread, within frozen8x C05 envelope; disclosed small absolute FMA deviation, D6 decides",
+    "GPU/full-forecast D6, native GPU arithmetic, launch/VRAM/compile/readiness and roofline costs pending"
+  ],
+  "final_runtime_source_commit": "87d47dd68c883194b8590b4ce79eda7fd8510d50",
+  "final_package_science_commit": "349ed605d",
+  "model_source_after_final_validation": "Critic fixes alter host output and smoke fixtures; PhysicsStepSpecs/key inventory updated; exact reviewed column/adapter/schema bytes carried forward. Main rebase composition checked by affected host suites and exact default release identity.",
+  "critic_fixes": {
+    "receipt": "critic_fixes.json",
+    "runtime_candidate": "1e54cd6f27e30d5e7093a7ff0f24fca1deb0af09",
+    "status": "FIXED",
+    "distinct_focused_passes": 173,
+    "unavailable_reference_skips": 3,
+    "required_contracts_v018_passes": 36
+  },
+  "rebase_composition": {
+    "receipt": "rebase_composition.json",
+    "runtime_candidate": "87d47dd68c883194b8590b4ce79eda7fd8510d50",
+    "status": "FIXED-REBASED",
+    "affected_passes": 276,
+    "reference_unavailable_skips": 3,
+    "integration_owner": "s2-integrate"
+  }
+}

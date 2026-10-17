@@ -1,0 +1,13 @@
+{
+  "mutant": "u",
+  "function": "gpuwrf.runtime.operational_mode._source_leaf_dry_tendencies",
+  "removed": "ru_tendf_source=cu_u if ru_tendf_source is None else ru_tendf_source+cu_u",
+  "replacement": "ru_tendf_source=jnp.zeros_like(cu_u)",
+  "target": "tests/v040/cuplus/test_rk_caller.py::test_pristine_rates_enter_rk_without_euler_increment[True-7-9]",
+  "pytest_exit": 1,
+  "failures": 1,
+  "errors": 0,
+  "assertion_only": true,
+  "files_changed": false,
+  "scope": "actual in-memory source deletion; original fixtures unchanged"
+}

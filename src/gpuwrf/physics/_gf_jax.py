@@ -2108,10 +2108,17 @@ GF_OUTPUT_KEYS = (
 
 def gfdrv_column(t_col, qv_col, p_col, pi_col, dz8w_col, rho_col, u_col, v_col,
                  w_col, rthblten_col, rqvblten_col, dt, dx, hfx, qfx, kpbl,
-                 xland, ht, kx, ishallow_g3=1, ichoice=0):
+                 xland, ht, kx, ishallow_g3=1, ichoice=0, rthften_col=None,
+                 rqvften_col=None, rthraten_col=None, psur_pa=None):
     """JAX traceable single-column GFDRV (cu_physics=3). 1-based length-(kx+1)
     inputs (index 0 unused). Returns dict of WRF cumulus-driver outputs as
-    length-(kx+1) arrays / scalars (index 0 unused for arrays)."""
+    length-(kx+1) arrays / scalars (index 0 unused for arrays).
+
+    ``rthften_col``/``rqvften_col``/``rthraten_col`` are WRF's held advective and
+    radiative forcing folded into the deep forced sounding (module_cu_gf_wrfdrv.F:
+    412-415 ``TN = t + (RTHFTEN+RTHRATEN+RTHBLTEN)*pi*dt``, ``QO = q + (RQVFTEN+
+    RQVBLTEN)*dt``); ``psur_pa`` is WRF's ``PSUR = p8w(1)*.01`` (:385).  Omitted:
+    zero forcing and the lowest mass-level pressure (the v060 column oracle's P8W=P)."""
     ktf = kx
     dicycle = 1
     tcrit = 258.0
@@ -2126,7 +2133,7 @@ def gfdrv_column(t_col, qv_col, p_col, pi_col, dz8w_col, rho_col, u_col, v_col,
     q2d = jnp.where(qv_col < 1.0e-8, 1.0e-8, qv_col)
     q2d = jnp.where(active, q2d, 0.0)
     po = jnp.where(active, p_col * 0.01, 0.0)
-    psur = p_col[1] * 0.01
+    psur = p_col[1] * 0.01 if psur_pa is None else jnp.asarray(psur_pa, F64) * 0.01
     ter11 = jnp.maximum(0.0, ht)
     # zo heights (cumulative)
     dz8w = dz8w_col
@@ -2136,8 +2143,16 @@ def gfdrv_column(t_col, qv_col, p_col, pi_col, dz8w_col, rho_col, u_col, v_col,
     zo = jnp.cumsum(jnp.where(k == 1, z1_val, incr_m))
     zo = jnp.where(active, zo, 0.0)
     # forced sounding
-    tn0 = t_col + rthblten_col * pi_col * dt
-    qo0 = q2d + rqvblten_col * dt
+    zero_col = jnp.zeros_like(t_col)
+    rthften_col = zero_col if rthften_col is None else rthften_col
+    rqvften_col = zero_col if rqvften_col is None else rqvften_col
+    rthraten_col = zero_col if rthraten_col is None else rthraten_col
+    if all(x is zero_col for x in (rthften_col, rqvften_col, rthraten_col)):
+        tn0 = t_col + rthblten_col * pi_col * dt
+        qo0 = q2d + rqvblten_col * dt
+    else:
+        tn0 = t_col + (rthften_col + rthraten_col + rthblten_col) * pi_col * dt
+        qo0 = q2d + (rqvften_col + rqvblten_col) * dt
     tshall = t_col + rthblten_col * pi_col * dt
     dhdt = CP * rthblten_col * pi_col + XLV * rqvblten_col
     qshall = q2d + rqvblten_col * dt
@@ -2154,14 +2169,24 @@ def gfdrv_column(t_col, qv_col, p_col, pi_col, dz8w_col, rho_col, u_col, v_col,
     ccn = 150.0
 
     # shallow
-    sh = cup_gf_sh(zo, t_col, q2d, ter11, tshall, qshall, po, psur, dhdt, kpbl,
-                   rho_col, hfx, qfx, xland, ichoice_s, tcrit, dt, kx)
-    cutens = jnp.where((ishallow_g3 == 1) & (sh['xmb_out'] > 0.0), 1.0, 0.0)
-    # neg_check shallow
     zoutu = jnp.zeros(kx + 1, F64)
-    outqs, outts, _ou, _ov, outqcs, pre_s = neg_check(
-        'shallow', dt, q2d, sh['outq'], sh['outt'], zoutu, zoutu, sh['outqc'],
-        sh['pre'], kx)
+    if ishallow_g3 == 1:
+        sh = cup_gf_sh(zo, t_col, q2d, ter11, tshall, qshall, po, psur, dhdt, kpbl,
+                       rho_col, hfx, qfx, xland, ichoice_s, tcrit, dt, kx)
+        cutens = jnp.where(sh['xmb_out'] > 0.0, 1.0, 0.0)
+        # neg_check shallow
+        outqs, outts, _ou, _ov, outqcs, pre_s = neg_check(
+            'shallow', dt, q2d, sh['outq'], sh['outt'], zoutu, zoutu, sh['outqc'],
+            sh['pre'], kx)
+    else:
+        # module_cu_gf_wrfdrv.F:504: ishallow_g3=0 never calls CUP_gf_sh, so OUTTs/OUTQs/OUTQCs
+        # and prets keep their zero initialisation (:365, :424-436) -- RQCCUTEN's unconditional
+        # outqcs term (:813-832) is 0 -- and the shallow diagnostics stay 0 (:284, :714).
+        i0 = jnp.asarray(0, jnp.int32)
+        sh = {'xmb_out': jnp.asarray(0.0, F64), 'k22': i0, 'kbcon': i0, 'ktop': i0, 'ierr': i0}
+        cutens = jnp.asarray(0.0, F64)
+        outqs = outts = outqcs = zoutu
+        pre_s = jnp.asarray(0.0, F64)
 
     # deep
     dp_res = cup_gf(dicycle, ichoice, ccn, dt, 0, kpbl, dhdt, xland, zo, t_col,
@@ -2220,20 +2245,32 @@ def gfdrv_column_jit(t1, qv1, p1, pi1, dz1, rho1, u1, v1, w1, rthbl1, rqvbl1,
 @functools.partial(jax.jit, static_argnums=(11,), static_argnames=('ishallow_g3', 'ichoice'))
 def gfdrv_batched(t1, qv1, p1, pi1, dz1, rho1, u1, v1, w1, rthbl1, rqvbl1,
                   kx, dt, dx, hfx, qfx, kpbl, xland, ht,
-                  ishallow_g3=1, ichoice=0):
+                  ishallow_g3=1, ichoice=0, rthften1=None, rqvften1=None, rthraten1=None,
+                  psur_pa=None):
     """GPU-batched GFDRV over a leading column axis via jax.vmap.
 
     Array inputs have shape (NCOL, kx+1) (1-based per column). Per-column
     scalars (dt, dx, hfx, qfx, kpbl, xland, ht) have shape (NCOL,). Returns a
     dict of stacked per-column outputs. No host transfer inside the column
     loop: the entire deep+shallow column physics runs inside one vmapped jit."""
-    col = lambda *a: gfdrv_column(*a, kx, ishallow_g3=ishallow_g3, ichoice=ichoice)
-    # vmap over arrays (axis 0) and per-column scalars (axis 0)
-    in_axes = (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,  # 11 arrays
-               0, 0, 0, 0, 0, 0, 0)              # dt,dx,hfx,qfx,kpbl,xland,ht
-    return jax.vmap(col, in_axes=in_axes)(
-        t1, qv1, p1, pi1, dz1, rho1, u1, v1, w1, rthbl1, rqvbl1,
-        dt, dx, hfx, qfx, kpbl, xland, ht)
+    if rthften1 is None and rqvften1 is None and rthraten1 is None and psur_pa is None:
+        col = lambda *a: gfdrv_column(*a, kx, ishallow_g3=ishallow_g3, ichoice=ichoice)
+        # vmap over arrays (axis 0) and per-column scalars (axis 0)
+        in_axes = (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,  # 11 arrays
+                   0, 0, 0, 0, 0, 0, 0)              # dt,dx,hfx,qfx,kpbl,xland,ht
+        return jax.vmap(col, in_axes=in_axes)(
+            t1, qv1, p1, pi1, dz1, rho1, u1, v1, w1, rthbl1, rqvbl1,
+            dt, dx, hfx, qfx, kpbl, xland, ht)
+    zero = jnp.zeros_like(t1)
+    forcing = tuple(zero if f is None else f for f in (rthften1, rqvften1, rthraten1))
+    psur = p1[:, 1] if psur_pa is None else psur_pa
+
+    def col(*a):
+        return gfdrv_column(*a[:18], kx, ishallow_g3=ishallow_g3, ichoice=ichoice,
+                            rthften_col=a[18], rqvften_col=a[19], rthraten_col=a[20], psur_pa=a[21])
+
+    return jax.vmap(col)(t1, qv1, p1, pi1, dz1, rho1, u1, v1, w1, rthbl1, rqvbl1,
+                         dt, dx, hfx, qfx, kpbl, xland, ht, *forcing, psur)
 
 
 def grell_freitas_column_gpu(t, qv, p, dz, rho, w, *, dt, dx, pi_exner=None,

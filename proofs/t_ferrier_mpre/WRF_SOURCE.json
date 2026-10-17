@@ -1,0 +1,76 @@
+{
+  "authority": "local original WRF 4.7.1 source; no body edits",
+  "selection": {
+    "use_mp_re": 1,
+    "mp_physics": 8,
+    "ra_lw_physics": 4,
+    "ra_sw_physics": 1
+  },
+  "finding": "LW-eligible AND SW-eligible required; mixed4/1 has_reqc/i/s=0, backgrounds and Thompson radius calculation inactive, LW uses flag-zero fallback; Dudhia has no radius interface",
+  "sources": {
+    "module_physics_init.F": {
+      "path": "<USER_HOME>/src/wrf_pristine/WRF/phys/module_physics_init.F",
+      "sha256": "f48cf9793f782a72c3969e986eef24746252f030cd33cfba71cc82b81d128d90",
+      "excerpts": [
+        {
+          "first_line": 985,
+          "last_line": 1027,
+          "text": "   has_reqc = 0\n   has_reqi = 0\n   has_reqs = 0\n   IF ( config_flags%use_mp_re .EQ. 1 ) THEN\n   if (( (config_flags%ra_lw_physics .eq. RRTMG_LWSCHEME ) .or. &\n#if( BUILD_RRTMG_FAST == 1)\n         (config_flags%ra_lw_physics .eq. RRTMG_LWSCHEME_FAST ) .or. &\n#endif\n#if( BUILD_RRTMK == 1)\n         (config_flags%ra_lw_physics .eq. RRTMK_LWSCHEME  ) .or. &\n#endif\n         (config_flags%ra_lw_physics .eq. goddardlwscheme ) ) .and. &\n       ( (config_flags%ra_sw_physics .eq. RRTMG_SWSCHEME ) .or. &\n#if( BUILD_RRTMG_FAST == 1)\n         (config_flags%ra_sw_physics .eq. RRTMG_SWSCHEME_FAST ) .or. &\n#endif\n#if( BUILD_RRTMK == 1)\n         (config_flags%ra_sw_physics .eq. RRTMK_SWSCHEME ) .or. &\n#endif\n         (config_flags%ra_sw_physics .eq. goddardswscheme ) ) .and. &\n        (config_flags%mp_physics  .eq. THOMPSON .or.        &\n         config_flags%mp_physics  .eq. THOMPSONAERO .or.    &\n         config_flags%mp_physics  .eq. RCON_MP_SCHEME .or.  &\n         (config_flags%mp_physics .eq. NSSL_2MOM .and. config_flags%nssl_2moment_on == 1) .or. &\n         config_flags%mp_physics  .eq. WSM3SCHEME .or.      &\n         config_flags%mp_physics  .eq. WSM5SCHEME .or.      &\n         config_flags%mp_physics  .eq. WSM6SCHEME .or.      &\n         config_flags%mp_physics  .eq. WSM7SCHEME .or.      &\n         config_flags%mp_physics  .eq. WDM5SCHEME .or.      &\n         config_flags%mp_physics  .eq. WDM6SCHEME .or.      &\n         config_flags%mp_physics  .eq. WDM7SCHEME .or.      &\n         config_flags%mp_physics  .eq. nuwrf4icescheme .or. &\n         config_flags%mp_physics  .eq. JENSEN_ISHMAEL .or.  &\n         config_flags%mp_physics  .eq. P3_1CATEGORY .or.    &\n         config_flags%mp_physics  .eq. P3_1CATEGORY_NC .or. &\n         config_flags%mp_physics  .eq. P3_2CATEGORY .or.    &    \n         config_flags%mp_physics  .eq. P3_1CAT_3MOM   ) ) then    ! P3\n      has_reqc = 1\n      has_reqi = 1\n      has_reqs = 1\n   endif\n\n! for P3, to ensure correct coupling with predicted effective radii"
+        },
+        {
+          "first_line": 1267,
+          "last_line": 1300,
+          "text": "\n!..Fill initial starting values of radiative effective radii for\n!.. cloud water (2.49 microns), cloud ice (4.99 microns), and\n!.. snow (9.99 microns).\n    if (has_reqc.ne.0) then\n       do j=jts,jtf\n          do k=kts,ktf\n          do i=its,itf\n             re_cloud(i,k,j) = RE_QC_BG\n          end do\n          end do\n       end do\n    endif\n    if (has_reqi.ne.0) then\n       do j=jts,jtf\n          do k=kts,ktf\n          do i=its,itf\n             re_ice(i,k,j) = RE_QI_BG\n          end do\n          end do\n       end do\n    endif\n    if (has_reqs.ne.0) then\n       do j=jts,jtf\n          do k=kts,ktf\n          do i=its,itf\n             re_snow(i,k,j) = RE_QS_BG\n          end do\n          end do\n       end do\n    endif\n\n!  Initialize cloud droplet effective radii for Goddard MP and/or Radiation\n#if ( EM_CORE == 1 )"
+        }
+      ]
+    },
+    "module_mp_thompson.F": {
+      "path": "<USER_HOME>/src/wrf_pristine/WRF/phys/module_mp_thompson.F",
+      "sha256": "fabf19e2a9073cff886e882b187080bfdf089d3fd40c0fce1d19bc93b1e5e802",
+      "excerpts": [
+        {
+          "first_line": 1463,
+          "last_line": 1479,
+          "text": "         endif\n         ENDIF\n\n         IF (has_reqc.ne.0 .and. has_reqi.ne.0 .and. has_reqs.ne.0) THEN\n          do k = kts, kte\n             re_qc1d(k) = RE_QC_BG\n             re_qi1d(k) = RE_QI_BG\n             re_qs1d(k) = RE_QS_BG\n          enddo\n          call calc_effectRad (t1d, p1d, qv1d, qc1d, nc1d, qi1d, ni1d, qs1d,  &\n                      re_qc1d, re_qi1d, re_qs1d, kts, kte)\n          do k = kts, kte\n             re_cloud(i,k,j) = MAX(RE_QC_BG, MIN(re_qc1d(k), 50.E-6))\n             re_ice(i,k,j)   = MAX(RE_QI_BG, MIN(re_qi1d(k), 125.E-6))\n             re_snow(i,k,j)  = MAX(RE_QS_BG, MIN(re_qs1d(k), 999.E-6))\n          enddo\n         ENDIF"
+        }
+      ]
+    },
+    "module_radiation_driver.F": {
+      "path": "<USER_HOME>/src/wrf_pristine/WRF/phys/module_radiation_driver.F",
+      "sha256": "4f0177189eb616c9220fe2022186dd6cc310666ca29977557dfe53d4409d733b",
+      "excerpts": [
+        {
+          "first_line": 2098,
+          "last_line": 2115,
+          "text": "                  cldovrlp=cldovrlp,idcor=idcor,XLAT=XLAT,          &\n#if (EM_CORE == 1)\n                  LRADIUS=lradius, IRADIUS=iradius,                 &\n#endif\n                  IS_CAMMGMP_USED=is_cammgmp_used,                  &\n\n!ckay\n!                 CLDFRA_KF3D=cldfra_KF,QC_KF3D=qc_KF,QI_KF3D=qi_KF,&\n                  F_ICE_PHY=F_ICE_PHY,F_RAIN_PHY=F_RAIN_PHY,        &\n                  XLAND=XLAND,XICE=XICE,SNOW=SNOW,                  &\n                  QV3D=QV,QC3D=QC,QR3D=QR,                          &\n                  QI3D=QI,QS3D=QS,QG3D=QG,                          &\n                  O3INPUT=O3INPUT,O33D=O3RAD,                       &\n                  F_QV=F_QV,F_QC=F_QC,F_QR=F_QR,                    &\n                  F_QI=F_QI,F_QS=F_QS,F_QG=F_QG,                    &\n                  RE_CLOUD=re_cloud,RE_ICE=re_ice,RE_SNOW=re_snow,  & ! G. Thompson\n                  has_reqc=has_reqc,has_reqi=has_reqi,has_reqs=has_reqs, & ! G. Thompson\n#if ( WRF_CHEM == 1 )"
+        },
+        {
+          "first_line": 2400,
+          "last_line": 2424,
+          "text": "\n     swrad_select: SELECT CASE(sw_physics)\n\n        CASE (SWRADSCHEME)\n             CALL wrf_debug(100, 'CALL swrad')\n             CALL SWRAD(                                               &\n                     DT=dt,RTHRATEN=rthraten,GSW=gsw                   &\n                    ,XLAT=xlat,XLONG=xlong,ALBEDO=albedo               &\n#if ( WRF_CHEM == 1 )\n                    ,PM2_5_DRY=pm2_5_dry,PM2_5_WATER=pm2_5_water       &\n                    ,PM2_5_DRY_EC=pm2_5_dry_ec                         &\n#endif\n                    ,RHO_PHY=rho,T3D=t                                 &\n                    ,P3D=p,PI3D=pi,DZ8W=dz8w,GMT=gmt                   &\n                    ,R=r_d,CP=cp,G=g,JULDAY=julday                     &\n                    ,GHG_INPUT=ghg_input                               &\n                    ,XTIME=xtime,DECLIN=declin,SOLCON=solcon           &\n                    ,RADFRQ=radt,ICLOUD=icloud,DEGRAD=degrad           &\n                    ,warm_rain=warm_rain                               &\n                    ,IDS=ids,IDE=ide, JDS=jds,JDE=jde, KDS=kds,KDE=kde &     \n                    ,IMS=ims,IME=ime, JMS=jms,JME=jme, KMS=kms,KME=kme &\n                    ,ITS=its,ITE=ite, JTS=jts,JTE=jte, KTS=kts,KTE=kte &\n                    ,QV3D=qv                                           &\n                    ,QC3D=qc                                           &\n                    ,QR3D=qr                                           &"
+        }
+      ]
+    },
+    "module_ra_rrtmg_lw.F": {
+      "path": "<USER_HOME>/src/wrf_pristine/WRF/phys/module_ra_rrtmg_lw.F",
+      "sha256": "c7a5238612aa8a4213c8d3af6708ec6a5248e6701e19758a80e563905d306de3",
+      "excerpts": [
+        {
+          "first_line": 12178,
+          "last_line": 12210,
+          "text": "\n!Mukul change the flags here with reference to the new effective cloud/ice/snow radius\n         IF (ICLOUD .ne. 0) THEN\n            IF ( has_reqc .ne. 0) THEN\n               inflglw = 3\n               DO K=kts,kte\n                  recloud1D(ncol,K) = MAX(2.5, re_cloud(I,K,J)*1.E6)\n                  if (recloud1D(ncol,K).LE.2.5.AND.cldfra3d(i,k,j).gt.0. &\n     &                            .AND. (XLAND(I,J)-1.5).GT.0.) then     !--- Ocean\n                     recloud1D(ncol,K) = 10.5\n                  elseif(recloud1D(ncol,K).LE.2.5.AND.cldfra3d(i,k,j).gt.0. &\n     &                            .AND. (XLAND(I,J)-1.5).LT.0.) then     !--- Land\n                     recloud1D(ncol,K) = 7.5\n                  endif\n               ENDDO\n            ELSE\n               DO K=kts,kte\n                  recloud1D(ncol,K) = 5.0\n               ENDDO\n            ENDIF\n\n            IF ( has_reqi .ne. 0) THEN\n               inflglw  = 4\n               iceflglw = 4\n               DO K=kts,kte\n                  reice1D(ncol,K) = MAX(5., re_ice(I,K,J)*1.E6)\n                  if (reice1D(ncol,K).LE.5..AND.cldfra3d(i,k,j).gt.0.) then\n                     idx_rei = int(t3d(i,k,j)-179.)\n                     idx_rei = min(max(idx_rei,1),75)\n                     corr = t3d(i,k,j) - int(t3d(i,k,j))\n                     reice1D(ncol,K) = retab(idx_rei)*(1.-corr) +       &\n     &                                 retab(idx_rei+1)*corr\n                     reice1D(ncol,K) = MAX(reice1D(ncol,K), 5.0)"
+        },
+        {
+          "first_line": 12238,
+          "last_line": 12248,
+          "text": "            IF ( has_reqs .ne. 0) THEN\n               inflglw  = 5\n               iceflglw = 5\n               DO K=kts,kte\n                  resnow1D(ncol,K) = MAX(10., re_snow(I,K,J)*1.E6)\n               ENDDO\n            ELSE\n               DO K=kts,kte\n                  resnow1D(ncol,K) = 10.0\n               ENDDO\n            ENDIF"
+        }
+      ]
+    },
+    "module_ra_sw.F": {
+      "path": "<USER_HOME>/src/wrf_pristine/WRF/phys/module_ra_sw.F",
+      "sha256": "cd7e1c89a962c9b62f042a8f24ee7d8892c0428866f7a44ec36df0d06705a4c0",
+      "all_three_radius_names_absent": true
+    }
+  }
+}

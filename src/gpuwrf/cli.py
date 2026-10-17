@@ -143,6 +143,9 @@ def build_parser() -> argparse.ArgumentParser:
     )
     subparsers = parser.add_subparsers(dest="command", metavar="<command>")
 
+    from gpuwrf.onboard.pipeline import add_parser as add_quickstart_parser
+    add_quickstart_parser(subparsers)
+
     run = subparsers.add_parser(
         "run",
         help="run a forecast through the GPU port and (optionally) dimension-compare vs CPU-WRF",
@@ -231,6 +234,13 @@ def build_parser() -> argparse.ArgumentParser:
         help="Nested runs: load cached executables during initialization. "
         "Use --no-aot-prefetch to load them at first dispatch.",
     )
+    run.add_argument(
+        "--decompose",
+        default=None,
+        metavar="PXxPY[,halo=H][,k=K][,transport=device_put|ppermute][,exchange=live|all]",
+        help="EXPERIMENTAL: split the single domain (native d01 from wrfinput/wrfbdy) into PX x PY tiles, one per "
+        "visible GPU, with deep-halo exchange (WRF nproc_x/nproc_y analogue). Default off.",
+    )
     run.add_argument("--checkpoint-dir", type=Path, default=None, help="Directory for verified rotating nested restart generations.")
     run.add_argument("--checkpoint-interval-steps", type=int, default=0, help="Checkpoint cadence in root-domain steps (required with --checkpoint-dir).")
     run.add_argument("--checkpoint-max-bytes", type=int, default=8 * 1024**3, help="Maximum retained checkpoint bytes (default 8 GiB).")
@@ -268,10 +278,11 @@ def build_parser() -> argparse.ArgumentParser:
     run.add_argument(
         "--feedback",
         action="store_true",
+        default=None,
         help="Enable TWO-WAY nesting (nested runs only): after each child finishes "
         "its subcycle, feed its interior back onto the overlapping parent cells "
-        "(WRF copy_fcn area-average + sm121 feedback-zone smoother). Default off "
-        "(one-way nesting, the v0.11.0/v0.12.0-validated wiring).",
+        "(WRF copy_fcn + namelist smooth_option=0/1/2). Otherwise use namelist "
+        "feedback (omitted means off). Experimental; coupled qualification pending.",
     )
     run.add_argument(
         "--force-gpu-run",
@@ -304,7 +315,64 @@ def build_parser() -> argparse.ArgumentParser:
     )
     support.set_defaults(func=_cmd_namelist_support)
 
+    # Offline station verification has no dependency on model execution.
+    from gpuwrf.verify.cli import register_parser as register_verify_parser
+
+    register_verify_parser(subparsers)
+    from gpuwrf.doctor.cli import register as register_doctor
+    register_doctor(subparsers)
+
+    post = subparsers.add_parser("post", help="write offline forecast products from CPU-WRF or gpuwrf history")
+    post.add_argument("--input", nargs="+", type=Path, help="wrfout files from one stationary domain")
+    post.add_argument("--output", type=Path, help="CF-annotated NetCDF product file")
+    post.add_argument("--product", action="append", help="product name (repeatable or comma-separated); see --list-products")
+    post.add_argument("--list-products", action="store_true")
+    post.add_argument("--heights", nargs="+", type=float, help="wind interpolation heights AGL in metres, increasing")
+    post.add_argument("--rolling-hours", nargs="+", type=float, help="trailing precipitation windows in hours")
+    post.add_argument("--bucket-mm", type=float, help="WRF rain bucket size; otherwise read BUCKET_MM")
+    post.add_argument("--storm-u", type=float, help="earth-relative eastward storm motion m/s (required for SRH)")
+    post.add_argument("--storm-v", type=float, help="earth-relative northward storm motion m/s (required for SRH)")
+    post.add_argument("--option", action="append", default=[], help="product option key=JSON; repeatable")
+    post.set_defaults(func=_cmd_post)
+
+    from gpuwrf.ens.cli import register_parser as register_ens_parser
+
+    register_ens_parser(subparsers)
+    from gpuwrf.optimize.cli import register_parser as register_optimize_parser
+    register_optimize_parser(subparsers)
+    from gpuwrf.perturb.cli import register as register_perturb
+    register_perturb(subparsers)
+    from gpuwrf.export.cli import register as register_export
+    register_export(subparsers)
+    ts_export = subparsers.add_parser("tslist-export", help="export WRF station surface time series to CSV/NetCDF (offline)")
+    ts_export.add_argument("--input", required=True, type=Path, help="one WRF *.TS station file")
+    ts_export.add_argument("--output", required=True, type=Path)
+    ts_export.add_argument("--format", choices=("csv", "netcdf", "station-csv"), default="csv")
+    ts_export.add_argument("--variables", default="T2,Q2,U10,V10,PSFC,GLW,GSW,HFX,LH,TSK,TSLB,RAINC,RAINNC,CLW")
+    ts_export.add_argument("--interval-seconds", type=float, default=None)
+    ts_export.add_argument("--station-uid", help="explicit verify station ID for --format station-csv")
+    def ts_export_command(args):
+        from gpuwrf.timeseries.export import command
+        return command(args)
+    ts_export.set_defaults(func=ts_export_command)
+
+    stream_check = subparsers.add_parser("stream-check", help="validate a gpuwrf.streams.json regional output file")
+    stream_check.add_argument("--input", required=True, type=Path)
+    stream_check.add_argument("--dt", type=float, help="optional domain timestep in seconds to check interval alignment")
+    def stream_check_command(args):
+        from gpuwrf.streams.cli import command
+        return command(args)
+    stream_check.set_defaults(func=stream_check_command)
+
+    from gpuwrf.cycling.cli import register as register_cycle
+    register_cycle(subparsers)
+
     return parser
+
+
+def _cmd_post(args: argparse.Namespace) -> int:
+    from gpuwrf.post.cli import command
+    return command(args)
 
 
 def _fail(message: str, *, code: int = 2) -> int:
@@ -420,6 +488,13 @@ _WRF_ROOT_TABLE_SCHEMES: tuple[tuple[str, int, str, tuple[str, ...], bool], ...]
         "classic RRTM longwave (ra_lw_physics=1)",
         ("RRTM_DATA_DBL", "RRTM_DATA"),
         False,
+    ),
+    (
+        "sf_urban_physics",
+        1,
+        "single-layer urban canopy model (sf_urban_physics=1)",
+        ("URBPARM.TBL",),
+        True,
     ),
 )
 
@@ -675,6 +750,9 @@ def _resolve_nested_allocator() -> str | None:
     """
     import os
 
+    from gpuwrf.backends.platform import target_backend
+    if target_backend() != "cuda":
+        return None
     if os.environ.get("XLA_PYTHON_CLIENT_ALLOCATOR"):
         return None  # operator chose explicitly -- honour it, do not override.
     requested = os.environ.get("GPUWRF_ALLOCATOR", "").strip().lower()
@@ -711,6 +789,9 @@ def _maybe_reexec_for_nested_allocator(args: argparse.Namespace) -> None:
     if bool(getattr(args, "dry_run", False)):
         return  # --dry-run never touches the GPU allocator.
     if _effective_max_dom(args) <= 1:
+        return
+    from gpuwrf.backends.platform import target_backend
+    if target_backend() != "cuda":
         return
     allocator = _resolve_nested_allocator()
     from gpuwrf.runtime.gpu_allocator import configure_cli_pool
@@ -848,6 +929,15 @@ def _cmd_run(args: argparse.Namespace) -> int:
         return _fail(f"--max-dom must be >= 1, got {max_dom}")
     if bool(getattr(args, "emit_initial_history", False)) and max_dom <= 1:
         return _fail("--emit-initial-history requires a nested run (--max-dom > 1)")
+    try:
+        from gpuwrf.io.namelist_check import (
+            UnsupportedSchemeError, refuse_single_domain_mp_nested, refuse_unqualified_nested_options,
+        )
+
+        refuse_single_domain_mp_nested(namelist, max_dom)
+        refuse_unqualified_nested_options(namelist, max_dom)
+    except UnsupportedSchemeError as exc:
+        return _fail(str(exc))
 
     # --- Resolve the single-domain id. WRF's root domain d01 is the default
     # (the historical d02 default surprised WRF users). An explicit --domain wins;
@@ -925,6 +1015,23 @@ def _cmd_run(args: argparse.Namespace) -> int:
         max_dom == 1 and effective_domain == "d01"
         and _detect_init_mode_light(input_dir, effective_domain, max_dom) == "standalone_native_init"
     )
+    import os
+
+    decompose = getattr(args, "decompose", None)
+    if decompose:
+        from gpuwrf.parallel.cli_runtime import ENV as _DECOMPOSE_ENV, parse as _parse_decompose
+
+        try:
+            _parse_decompose(decompose)
+        except ValueError as exc:
+            return _fail(f"--decompose: {exc}")
+        if not native_single:
+            return _fail("--decompose supports only a single native d01 domain initialized from wrfinput/wrfbdy "
+                         "(--max-dom 1); nested and replay runs are not decomposed")
+        os.environ[_DECOMPOSE_ENV] = str(decompose)
+        run_metadata["decompose"] = str(decompose)
+    elif os.environ.get("GPUWRF_DECOMPOSE"):
+        return _fail("GPUWRF_DECOMPOSE is set in the environment; use --decompose (or unset it)")
     # Checkpoint/resume lives in the shared native driver (nested or native
     # single-root d01). The CPU-WRF replay / non-d01 single-domain compatibility
     # path has no restart store, so it refuses the flags instead of ignoring them.
@@ -950,6 +1057,25 @@ def _cmd_run(args: argparse.Namespace) -> int:
         except Exception as exc:  # noqa: BLE001 - unreadable boundary file: fail cleanly pre-JAX
             return _fail(f"could not read the lateral boundary coverage of wrfbdy_d01: {type(exc).__name__}: {exc}")
 
+    # --- Digital filter initialization (o2-dfi): TDFI runs in the native single-domain
+    # d01 driver only; a resumed run shuts DFI off like WRF (check_a_mundo restart rule).
+    try:
+        from gpuwrf.dfi.control import dfi_control_from_namelist, dfi_refusals
+        from gpuwrf.io.namelist_check import _coerce_config as _dfi_coerce
+
+        _dfi_nml = _dfi_coerce(namelist)
+        _dfi_resume = getattr(args, "resume_checkpoint", None) is not None
+        _dfi_reasons = dfi_refusals(_dfi_nml, max_dom=max_dom, resume=_dfi_resume)
+        if (not _dfi_reasons and not _dfi_resume and max_dom == 1 and not native_single
+                and dfi_control_from_namelist(_dfi_nml).active):
+            _dfi_reasons = ["DFI runs in the native single-domain d01 driver (wrfinput/wrfbdy); the "
+                            "CPU-WRF replay / non-d01 compatibility driver cannot run it"]
+        if _dfi_reasons:
+            return _fail("&dfi_control: " + "; ".join(_dfi_reasons)
+                         + ". Set dfi_opt=0 for an unfiltered forecast, or use CPU-WRF for DFI.")
+    except Exception as exc:  # noqa: BLE001 - unreadable DFI controls: fail cleanly pre-JAX
+        return _fail(f"could not resolve &dfi_control: {type(exc).__name__}: {exc}")
+
     # --- v0.3.4 P0 (o1-nlbind): every explicit &physics/&dynamics/&noah_mp value
     # must be one the selected driver runs (<=v0.3.3 silently ran defaults). ----
     try:
@@ -958,6 +1084,7 @@ def _cmd_run(args: argparse.Namespace) -> int:
             require_namelist_honoured,
         )
         from gpuwrf.io.namelist_check import _coerce_config
+        from gpuwrf.io.nesting_options import resolve_nesting_options
 
         _run_domains = (
             tuple(f"d{i:02d}" for i in range(1, max_dom + 1)) if max_dom > 1 else (effective_domain,)
@@ -966,8 +1093,17 @@ def _cmd_run(args: argparse.Namespace) -> int:
             _coerce_config(namelist), _run_domains, replay=not (max_dom > 1 or native_single)
         ):
             print(f"gpuwrf: warning: {_warning}", file=sys.stderr)
+        _nesting = resolve_nesting_options(_coerce_config(namelist), feedback=getattr(args, "feedback", None))
     except NamelistNotHonouredError as exc:
         return _fail(str(exc))
+
+    try:
+        from gpuwrf.doctor.land import preflight as land_preflight
+        land_category_check = land_preflight(input_dir, namelist, _run_domains)
+        from gpuwrf.io.noahmp_mmf import preflight as mmf_preflight
+        mmf_preflight(input_dir, _coerce_config(namelist), _run_domains)
+    except (ValueError, OSError, TypeError, KeyError) as exc:
+        return _fail(f"land-category preflight: {exc}")
 
     # --- DRY RUN: print the effective plan as JSON and exit WITHOUT importing
     # the heavy JAX/GPU forecast pipeline or allocating a GPU. -----------------
@@ -976,6 +1112,7 @@ def _cmd_run(args: argparse.Namespace) -> int:
             "schema": "GpuwrfRunPlan",
             "schema_version": 1,
             "dry_run": True,
+            "land_category_check": land_category_check,
             "run_type": "nested_live" if max_dom > 1 else "single_domain",
             "init_mode": _detect_init_mode_light(input_dir, effective_domain, max_dom),
             "input_dir": str(input_dir),
@@ -983,7 +1120,8 @@ def _cmd_run(args: argparse.Namespace) -> int:
             "proof_dir": str(proof_dir),
             "scratch_dir": str(scratch_dir),
             "compare_cpu_dir": str(compare_dir) if compare_dir is not None else None,
-            "feedback": bool(getattr(args, "feedback", False)),
+            "feedback": _nesting["feedback"],
+            "smooth_option": _nesting["smooth_option"],
             "score": bool(getattr(args, "score", False)),
             "wrf_root_preflight": wrf_root_note,
             **run_metadata,
@@ -1001,6 +1139,19 @@ def _cmd_run(args: argparse.Namespace) -> int:
             }
         print(json.dumps(plan, indent=2, sort_keys=True, default=str))
         return 0
+
+    # --- CUDA architecture gate (every run mode; skipped above for --dry-run): refuse a GPU
+    # below sm_80 before any model work instead of FAILED_PRECONDITION inside an XLA compile.
+    from gpuwrf.runtime.gpu_preflight import (
+        UNSUPPORTED_GPU_EXIT_CODE,
+        UnsupportedGpuError,
+        run_gpu_architecture_preflight,
+    )
+
+    try:
+        gpu_architecture = run_gpu_architecture_preflight()
+    except UnsupportedGpuError as exc:
+        return _fail(str(exc), code=UNSUPPORTED_GPU_EXIT_CODE)
 
     # --- Nested GPU preflight (nested runs only; skipped above for --dry-run).
     if max_dom > 1:
@@ -1045,6 +1196,20 @@ def _cmd_run(args: argparse.Namespace) -> int:
             f"no CPU-WRF wrfout); hours={effective_hours}; scratch={scratch_dir}",
             file=sys.stderr,
         )
+        # Pinned > 10 MiB tables of the selected microphysics: download once (SHA-checked) BEFORE the
+        # model is imported, so the run loads them exactly like a checkout (import never downloads;
+        # gpuwrf.assets). Offline without them -> stop here with the fix instructions.
+        try:
+            from gpuwrf.assets import AssetUnavailableError, prefetch_for_schemes
+            from gpuwrf.io.gen2_accessor import parse_namelist
+
+            _mp_codes = _namelist_scheme_codes(parse_namelist(namelist).get("physics", {}), "mp_physics")
+        except Exception:  # noqa: BLE001 - unreadable here: the driver reports it; tables then load on first use
+            _mp_codes = set()
+        try:
+            prefetch_for_schemes(sorted(_mp_codes))
+        except AssetUnavailableError as exc:
+            return _fail(str(exc))
         try:
             from gpuwrf.integration.nested_pipeline import (
                 NestedPipelineConfig,
@@ -1063,7 +1228,7 @@ def _cmd_run(args: argparse.Namespace) -> int:
             hours=int(effective_hours),
             max_dom=int(max_dom),
             scratch_dir=scratch_dir,
-            feedback=bool(getattr(args, "feedback", False)),
+            feedback=_nesting["feedback"],
             emit_initial_history=native_single or bool(getattr(args, "emit_initial_history", False)),
             aot_prefetch=bool(getattr(args, "aot_prefetch", True)),
             checkpoint_dir=getattr(args, "checkpoint_dir", None),
@@ -1076,8 +1241,8 @@ def _cmd_run(args: argparse.Namespace) -> int:
         )
         if nested_config.feedback:
             print(
-                "gpuwrf: TWO-WAY nesting ENABLED (child->parent copy_fcn + sm121 "
-                "feedback-zone smoother).",
+                "gpuwrf: TWO-WAY nesting ENABLED (experimental WRF feedback; "
+                "coupled qualification pending).",
                 file=sys.stderr,
             )
         try:
@@ -1103,6 +1268,7 @@ def _cmd_run(args: argparse.Namespace) -> int:
         payload.update(run_metadata)
         if gpu_preflight is not None:
             payload["gpu_preflight"] = gpu_preflight
+        payload["gpu_architecture"] = gpu_architecture
         # Persist the run payload alongside the single-domain pipeline artifact name.
         proof_dir.mkdir(parents=True, exist_ok=True)
         (proof_dir / "nested_pipeline_run.json").write_text(
@@ -1169,6 +1335,7 @@ def _cmd_run(args: argparse.Namespace) -> int:
     payload["init_mode"] = init_mode
     payload["scratch_dir"] = str(scratch_dir)
     payload.update(run_metadata)
+    payload["gpu_architecture"] = gpu_architecture
 
     verdict = str(payload.get("verdict", "UNKNOWN"))
     exit_code = 0 if verdict == "PIPELINE_GREEN" else 1

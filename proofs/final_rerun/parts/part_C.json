@@ -1,0 +1,478 @@
+[
+ {
+  "fix": "t-cfix-phyprep S2/S3: EEPS/KEPS (bl16/17) hydrostatic P_PHY/P8W",
+  "batch": 49,
+  "lane": "t-cfix-phyprep",
+  "class": "B",
+  "commits": [
+   "cfe70e98e6"
+  ],
+  "changed": [
+   "src/gpuwrf/coupling/epsilon_pbl.py"
+  ],
+  "reach": "bl_pbl_physics in (16,17)",
+  "caller_sites": [
+   "src/gpuwrf/runtime/operational_mode.py:9855 elif bl_opt in (16,17)",
+   "src/gpuwrf/coupling/epsilon_pbl.py:146 scheme==16 p_hyd",
+   "src/gpuwrf/coupling/epsilon_pbl.py:154 keps p8w=p_hyd_w"
+  ],
+  "affected": [
+   "c10",
+   "c11"
+  ],
+  "numeric_change": "yes",
+  "notes": ""
+ },
+ {
+  "fix": "t-cfix-phyprep S2/S3: QNSE PBL (bl4) hydrostatic P_PHY/P8W",
+  "batch": 49,
+  "lane": "t-cfix-phyprep",
+  "class": "B",
+  "commits": [
+   "cfe70e98e6"
+  ],
+  "changed": [
+   "src/gpuwrf/coupling/qnse_adapter.py"
+  ],
+  "reach": "bl_pbl_physics==4 (WRF pairing forces sf_sfclay=4)",
+  "caller_sites": [
+   "src/gpuwrf/coupling/qnse_adapter.py:75 _geometry p_hyd/p_hyd_w (always, metrics required)"
+  ],
+  "affected": [
+   "c26"
+  ],
+  "numeric_change": "yes",
+  "notes": ""
+ },
+ {
+  "fix": "t-cfix-phyprep S2/S3: TEMF PBL (bl10) hydrostatic P_PHY/P8W",
+  "batch": 49,
+  "lane": "t-cfix-phyprep",
+  "class": "B",
+  "commits": [
+   "cfe70e98e6"
+  ],
+  "changed": [
+   "src/gpuwrf/coupling/temf.py"
+  ],
+  "reach": "bl_pbl_physics==10",
+  "caller_sites": [
+   "src/gpuwrf/coupling/temf.py:50 phy_inputs p_hyd/p8w"
+  ],
+  "affected": [
+   "c27"
+  ],
+  "numeric_change": "yes",
+  "notes": ""
+ },
+ {
+  "fix": "t-cfix-phyprep S2/S3: Grell-3D/GD (cu5/93) P=p_hyd, P8W=p_hyd_w",
+  "batch": 49,
+  "lane": "t-cfix-phyprep",
+  "class": "B",
+  "commits": [
+   "cfe70e98e6"
+  ],
+  "changed": [
+   "src/gpuwrf/coupling/scan_adapters.py (grell_cumulus_adapter)"
+  ],
+  "reach": "cu_physics in (5,93) with grid metrics (always in operational runs)",
+  "caller_sites": [
+   "src/gpuwrf/coupling/scan_adapters.py:1590 grell_cumulus_adapter if metrics is not None"
+  ],
+  "affected": [
+   "c05",
+   "c13",
+   "c17"
+  ],
+  "numeric_change": "yes",
+  "notes": "adapter later re-edited by batch56 (t-cfix-cu F7/F11); same composites"
+ },
+ {
+  "fix": "t-cfix-phyprep S2/S3: Noah-classic / Pleim-Xiu LSM / slab LSM phy_prep air T, PSFC, ZLVL",
+  "batch": 49,
+  "lane": "t-cfix-phyprep",
+  "class": "B",
+  "commits": [
+   "cfe70e98e6"
+  ],
+  "changed": [
+   "src/gpuwrf/coupling/noahclassic_surface_hook.py",
+   "src/gpuwrf/coupling/pleim_xiu_surface_hook.py",
+   "src/gpuwrf/coupling/slab_surface_hook.py",
+   "src/gpuwrf/runtime/operational_mode.py (grid= pass)"
+  ],
+  "reach": "sf_surface_physics in (1,2,7) (API-only; CLI refuses them)",
+  "caller_sites": [
+   "src/gpuwrf/runtime/operational_mode.py:9433 noahclassic_surface_step(grid=)",
+   "src/gpuwrf/runtime/operational_mode.py:9472 slab_surface_step(grid=)",
+   "src/gpuwrf/runtime/operational_mode.py:9505 pleim_xiu_surface_step(grid=)"
+  ],
+  "affected": [],
+  "numeric_change": "yes (API only)",
+  "notes": "no composite exercises sf_surface 1/2/7 (MATRIX api_only); CPU-only evidence"
+ },
+ {
+  "fix": "t-cammgws DLF2 history for mp11 (Registry zero without UW shallow cu)",
+  "batch": 49,
+  "lane": "t-cammgws",
+  "class": "diagnostic-only",
+  "commits": [
+   "8c024430b1",
+   "1d0d6594ec"
+  ],
+  "changed": [
+   "src/gpuwrf/io/producer_history.py",
+   "src/gpuwrf/io/wrf_variable_metadata.py"
+  ],
+  "reach": "mp_physics==11 and shcu_physics!=2 (history inventory only)",
+  "caller_sites": [
+   "src/gpuwrf/io/producer_history.py:62 mp==11 and shcu_physics!=2 -> DLF2 zero field"
+  ],
+  "affected": [
+   "c89"
+  ],
+  "numeric_change": "history-only (new zero DLF2 field; model state BYTE)",
+  "notes": "inventory check only"
+ },
+ {
+  "fix": "F20 MYNN default path: bottom-face w1 to EDMF/DMP taper + driver-local HFX/QFX limits",
+  "batch": 50,
+  "lane": "t-cfix-mynn",
+  "class": "A",
+  "commits": [
+   "946141e288"
+  ],
+  "changed": [
+   "src/gpuwrf/coupling/physics_couplers.py",
+   "src/gpuwrf/physics/mynn_edmf.py",
+   "src/gpuwrf/physics/surface_layer.py"
+  ],
+  "reach": "bl_pbl_physics==5 (MYNN; limits need GPUWRF_MYNN_FLTV_WRF=1, release default via _fast_defaults.py:104)",
+  "caller_sites": [
+   "src/gpuwrf/runtime/operational_mode.py:9985 elif bl_opt == DEFAULT_BL_PBL_PHYSICS (5) -> mynn_adapter[_with_source_leaves]",
+   "src/gpuwrf/coupling/physics_couplers.py:2312 column(_w_bottom_faces)",
+   "src/gpuwrf/coupling/physics_couplers.py:2199 _mynn_driver_limited_handles (via _surface_fluxes_from_state)",
+   "src/gpuwrf/physics/mynn_edmf.py:294 DMP activation k<kte"
+  ],
+  "affected": [
+   "c00",
+   "c12",
+   "c13",
+   "c14",
+   "c15",
+   "c16",
+   "c17",
+   "c18",
+   "c19",
+   "c20",
+   "c21",
+   "c22",
+   "c23",
+   "c24",
+   "c30",
+   "c31",
+   "c32",
+   "c33",
+   "c36",
+   "c41",
+   "c42",
+   "c44",
+   "c45",
+   "c46",
+   "c47",
+   "c48",
+   "c49",
+   "c50",
+   "c51",
+   "c52",
+   "c53",
+   "c54",
+   "c55",
+   "c58",
+   "c60",
+   "c62",
+   "c63",
+   "c64",
+   "c65",
+   "c66",
+   "c67",
+   "c68",
+   "c69",
+   "c70",
+   "c77",
+   "c78",
+   "c79",
+   "c71",
+   "c72",
+   "c73",
+   "c83",
+   "c84",
+   "c86",
+   "c87",
+   "c88",
+   "c90"
+  ],
+  "numeric_change": "yes (default IDs changed: Swiss 7379c7d7 / PROD d01 6487f5b0)",
+  "notes": "also every default-namelist run (PROD, WN3, Swiss). cuplus (cu7/10/11) and obs-nudging use _mynn_column_from_state for dz only (w unused) -> no extra reach. surface_layer_diagnostics output fallback (OM:11328, only when in-step history is absent) also reads the limited handles [I]"
+ },
+ {
+  "fix": "F8 MYNN mixes QNC/QNWFA/QNIFA (CLOUDMIX number scalars)",
+  "batch": 51,
+  "lane": "t-cfix-pblmix",
+  "class": "B",
+  "commits": [
+   "27305db75d"
+  ],
+  "changed": [
+   "src/gpuwrf/runtime/operational_mode.py",
+   "src/gpuwrf/coupling/physics_couplers.py",
+   "src/gpuwrf/kernels/phys_mynn_numbers.py",
+   "src/gpuwrf/kernels/phys_mynn_cloudmix.py",
+   "src/gpuwrf/kernels/phys_mynn_columns.py",
+   "src/gpuwrf/physics/mynn_edmf.py",
+   "src/gpuwrf/physics/mynn_pbl.py"
+  ],
+  "reach": "bl_pbl_physics==5 and mp_physics in (9,11,14,16,26,28,38,40,51,52,53,56) (bl_mynn_cloudmix=1, WRF default; no composite overrides it)",
+  "caller_sites": [
+   "src/gpuwrf/runtime/operational_mode.py:8933 _pbl_mynn_number_scalars",
+   "src/gpuwrf/runtime/operational_mode.py:9994 / :10064 passive_scalars into MYNN"
+  ],
+  "affected": [
+   "c18",
+   "c19",
+   "c20",
+   "c22",
+   "c23",
+   "c24",
+   "c65",
+   "c88"
+  ],
+  "numeric_change": "yes (Nc/nwfa/nifa; qnc feeds MP)",
+  "notes": "mp9 (c07, bl11), mp11 (c89, bl9), mp14 (c10, bl16), mp16 (c11, bl17) not reached (non-MYNN PBL)"
+ },
+ {
+  "fix": "F17 GBM (bl12) WRF multi-layer pblhgt + held/this-step RTHRATEN",
+  "batch": 51,
+  "lane": "t-cfix-pblmix",
+  "class": "B",
+  "commits": [
+   "ae796cdfd0",
+   "04ec7edd90",
+   "a1819bd3e6"
+  ],
+  "changed": [
+   "src/gpuwrf/physics/bl_gbm.py",
+   "src/gpuwrf/coupling/scan_adapters.py (gbm_pbl_adapter rthraten)",
+   "src/gpuwrf/runtime/operational_mode.py (early RTHRATEN refresh for bl 1,12)"
+  ],
+  "reach": "bl_pbl_physics==12",
+  "caller_sites": [
+   "src/gpuwrf/runtime/operational_mode.py: early_rthraten if bl_pbl_physics in (1,12)",
+   "src/gpuwrf/runtime/operational_mode.py:9957 rthraten kwarg if bl_opt==12"
+  ],
+  "affected": [
+   "c08"
+  ],
+  "numeric_change": "yes",
+  "notes": "early-RTHRATEN branch also covers bl1 but that was pre-existing for YSU (no change for bl1)"
+ },
+ {
+  "fix": "F23 SSiB/RUC receive topographic SWDOWN/GSW (swnorm, swup_topographic)",
+  "batch": 51,
+  "lane": "t-cfix-pblmix",
+  "class": "B",
+  "commits": [
+   "087e926beb",
+   "dad9dd5fc5"
+  ],
+  "changed": [
+   "src/gpuwrf/runtime/operational_mode.py"
+  ],
+  "reach": "sf_surface_physics in (3,8); numerics change only with slope_rad=1",
+  "caller_sites": [
+   "src/gpuwrf/runtime/operational_mode.py:9525 SSiB swnorm",
+   "src/gpuwrf/runtime/operational_mode.py:9546 RUC swnorm - swup_topographic"
+  ],
+  "affected": [
+   "c33",
+   "c40"
+  ],
+  "numeric_change": "BYTE expected [I]: c33/c40 have slope_rad=0 (namelist default) -> swnorm==swdown, swup_topographic==swup",
+  "notes": "no composite combines RUC/SSiB with slope_rad=1 (slope_rad=1 only in c58/c59/c60, all Noah-MP)"
+ },
+ {
+  "fix": "Noah-MP opt_sfc=2 keeps its own CH/CM (SFCDIF2 seed)",
+  "batch": 51,
+  "lane": "t-cfix-pblmix",
+  "class": "B",
+  "commits": [
+   "087e926beb"
+  ],
+  "changed": [
+   "src/gpuwrf/physics/noahmp_coupler.py"
+  ],
+  "reach": "Noah-MP (sf_surface 4) and opt_sfc==2",
+  "caller_sites": [
+   "src/gpuwrf/physics/noahmp_coupler.py:324 own_sfcdif = opt_sfc==2"
+  ],
+  "affected": [
+   "c62"
+  ],
+  "numeric_change": "yes",
+  "notes": "opt_sfc from composite namelist.input (sha-matched); only c62 sets opt_sfc=2 (mp5 bl5 sf5)"
+ },
+ {
+  "fix": "F3/F19 selected surface layer sf 3/7/91: ONE WRF call on phy_prep operands, feeds Noah-MP/PBL/history (+WRF constants, REAL tables)",
+  "batch": 53,
+  "lane": "t-cfix-sfc",
+  "class": "A",
+  "commits": [
+   "19947cf16b"
+  ],
+  "changed": [
+   "src/gpuwrf/coupling/sfclay_selected.py",
+   "src/gpuwrf/runtime/operational_mode.py",
+   "src/gpuwrf/physics/sfclay_gfs.py",
+   "src/gpuwrf/physics/sfclay_old_mm5.py",
+   "src/gpuwrf/physics/sfclay_pleim_xiu.py",
+   "src/gpuwrf/runtime/aot_baked_tables.py"
+  ],
+  "reach": "sf_sfclay_physics in (3,7,91) and not isftcflx and sf_urban_physics in (0,1) and (Noah-MP or no LSM)",
+  "caller_sites": [
+   "src/gpuwrf/runtime/operational_mode.py:9162 sf_opt in SELECTED_SFCLAY_OPTIONS"
+  ],
+  "affected": [
+   "c04",
+   "c25",
+   "c43",
+   "c61"
+  ],
+  "numeric_change": "yes",
+  "notes": "c25 (sf91+bl3) is now refused at the binding (bl3 requires sf3) = refusal control; hurricane isftcflx path through sfclay_old_mm5 keeps legacy constants (BYTE, sf5 composites c58/c84 unaffected)"
+ },
+ {
+  "fix": "F13 BL_GFS (bl3) REAL/DOUBLE island on the selected SF_GFS forcing + UST/WSPD INOUT; bl3 requires sf3",
+  "batch": 53,
+  "lane": "t-cfix-sfc",
+  "class": "A",
+  "commits": [
+   "19947cf16b"
+  ],
+  "changed": [
+   "src/gpuwrf/coupling/scan_adapters.py",
+   "src/gpuwrf/physics/bl_gfs.py",
+   "src/gpuwrf/coupling/physics_dispatch.py",
+   "src/gpuwrf/io/namelist_binding.py"
+  ],
+  "reach": "bl_pbl_physics==3 (with sf_sfclay=3; any other sf refused)",
+  "caller_sites": [
+   "src/gpuwrf/runtime/operational_mode.py:9943 selected_surface_forcing and bl_opt==3",
+   "src/gpuwrf/coupling/scan_adapters.py:2153 gfs_bl_real_double when surface_forcing",
+   "src/gpuwrf/coupling/physics_dispatch.py:690 bl3 requires sf3"
+  ],
+  "affected": [
+   "c04",
+   "c25"
+  ],
+  "numeric_change": "yes (c04); refusal (c25)",
+  "notes": ""
+ },
+ {
+  "fix": "F12 MYJ sf2/bl2: ONE MYJSFC call with carried THZ0/QZ0/UZ0/VZ0/AKHS/AKMS, MYJPBL reads it, ELFLX/CHKLOWQ/SNOW",
+  "batch": 53,
+  "lane": "t-cfix-sfc",
+  "class": "A",
+  "commits": [
+   "19947cf16b"
+  ],
+  "changed": [
+   "src/gpuwrf/coupling/myj_surface.py",
+   "src/gpuwrf/physics/myj_adapters.py",
+   "src/gpuwrf/physics/sf_myj.py",
+   "src/gpuwrf/physics/sfclay_janjic.py",
+   "src/gpuwrf/runtime/operational_mode.py",
+   "src/gpuwrf/io/restart_schema.py",
+   "src/gpuwrf/io/wrfrst_netcdf.py",
+   "src/gpuwrf/runtime/restart_store.py"
+  ],
+  "reach": "sf_sfclay_physics==2 and not isftcflx and urban in (0,1) and (Noah-MP or no LSM); bl_pbl_physics==2 consumes it",
+  "caller_sites": [
+   "src/gpuwrf/runtime/operational_mode.py:9175 sf_opt==2 myj_surface_step",
+   "src/gpuwrf/runtime/operational_mode.py (bl_opt==2 myj_kwargs)"
+  ],
+  "affected": [
+   "c03"
+  ],
+  "numeric_change": "yes",
+  "notes": "QNSE (bl4/sf4, c26) shares the qnse carry leaf type only; its arithmetic is unchanged"
+ },
+ {
+  "fix": "F21 sf_sfclay_physics=0: no surface layer and no LSM/SST/ocean (surface_driver returns first)",
+  "batch": 53,
+  "lane": "t-cfix-sfc",
+  "class": "A",
+  "commits": [
+   "19947cf16b"
+  ],
+  "changed": [
+   "src/gpuwrf/runtime/operational_mode.py"
+  ],
+  "reach": "sf_sfclay_physics==0",
+  "caller_sites": [
+   "src/gpuwrf/runtime/operational_mode.py:9212 if sf_opt == 0: pass",
+   "src/gpuwrf/runtime/operational_mode.py:9095/9129/9578 lower_fields/sst_skin/ocean gated sf_opt!=0"
+  ],
+  "affected": [
+   "c01",
+   "c39"
+  ],
+  "numeric_change": "yes (pre-batch53 the non-LSM else-branch ran the MYNN surface_adapter for sf0 unless km_opt=5)",
+  "notes": "c01/c39 are all-off composites (bl0, sf_surface 0)"
+ },
+ {
+  "fix": "QNSE (bl4) sea-ice refusal at the public loaders",
+  "batch": 54,
+  "lane": "t-cfix-pblmix",
+  "class": "admission",
+  "commits": [
+   "f63fdff1a6",
+   "97deead34a",
+   "507e4a76ea",
+   "b19a68e897"
+  ],
+  "changed": [
+   "src/gpuwrf/io/qnse_admission.py",
+   "src/gpuwrf/integration/daily_pipeline.py",
+   "src/gpuwrf/integration/nested_pipeline.py",
+   "src/gpuwrf/integration/d02_replay.py",
+   "src/gpuwrf/io/noahmp_land_init.py"
+  ],
+  "reach": "bl_pbl_physics==4 with sea ice in wrfinput -> refusal before model work",
+  "caller_sites": [
+   "src/gpuwrf/io/qnse_admission.py (called from the three loaders)"
+  ],
+  "affected": [
+   "c26"
+  ],
+  "numeric_change": "refusal-only (no model change; c26 Swiss has no sea ice -> admitted, BYTE)",
+  "notes": "admission check executes for c26"
+ },
+ {
+  "fix": "wz1080 remote tooling",
+  "batch": 52,
+  "lane": "wz1080",
+  "class": "tooling",
+  "commits": [
+   "28cc3848a8"
+  ],
+  "changed": [
+   "scripts/remote/**"
+  ],
+  "reach": "none (no src change)",
+  "caller_sites": [],
+  "affected": [],
+  "numeric_change": "none",
+  "notes": ""
+ }
+]

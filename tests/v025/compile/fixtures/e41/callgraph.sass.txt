@@ -1,0 +1,14 @@
+// Reduced cuobjdump formatting fixture: local direct call, predicated branch,
+// predicated return and a separate stacked function. Addresses are byte PCs.
+Function : large_root
+/*0000*/ CALL.REL.NOINC 0x40 ;
+/*0010*/ EXIT ;
+/*0020*/ BRA 0x20 ;
+/*0030*/ NOP ;
+/*0040*/ @P0 BRA 0x70 ;
+/*0050*/ FADD R0, R0, R1 ;
+/*0060*/ @P1 RET.REL.NODEC R20, 0x0 ;
+/*0070*/ RET.REL.NODEC R20, 0x0 ;
+Function : stacked_cam_sample
+/*0000*/ MOV R0, R1 ;
+/*0010*/ EXIT ;

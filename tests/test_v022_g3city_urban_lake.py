@@ -1,8 +1,7 @@
-"""v0.22 G3 urban/lake scaffold gates.
+"""Graduated BEP/BEM admission and unseeded urban/Lake guards.
 
-BEP/BEM and the WRF lake model are recognized WRF selections, but this one-pass
-attempt does not ship faithful kernels. The contract is explicit fail-closed
-wiring plus a proof object that says the oracle is absent, not an over-claim.
+Lake has graduated to its own original-WRF numerical and operational tests.
+The saved G3 inventory remains historical evidence, not current qualification.
 """
 
 from __future__ import annotations
@@ -21,7 +20,7 @@ from gpuwrf.physics import lake_model, urban_bep_bem
 from gpuwrf.runtime.operational_mode import _SCAN_UNWIRED_REASON, _resolve_operational_suite
 
 
-def test_g3_catalog_recognizes_urban_and_lake_reference_only() -> None:
+def test_g3_catalog_recognizes_graduated_urban_and_lake() -> None:
     assert_catalog_consistent()
     assert classify_scheme("sf_urban_physics", 0).status is SupportStatus.IMPLEMENTED
     assert classify_scheme("sf_lake_physics", 0).status is SupportStatus.IMPLEMENTED
@@ -29,26 +28,20 @@ def test_g3_catalog_recognizes_urban_and_lake_reference_only() -> None:
     for key, code, name in (
         ("sf_urban_physics", 2, "BEP"),
         ("sf_urban_physics", 3, "BEM"),
-        ("sf_lake_physics", 1, "lake"),
     ):
         assert is_recognized_wrf_option(key, code)
         support = classify_scheme(key, code)
-        assert support.status is SupportStatus.REFERENCE_ONLY
+        assert support.status is SupportStatus.IMPLEMENTED
         assert name.lower() in (support.reason + support.alternative + (support.wrf_name or "")).lower()
 
 
-def test_g3_namelist_accepts_reference_only_but_operational_rejects_by_name() -> None:
+def test_g3_namelist_admits_qualified_urban() -> None:
     for key, code, expected in (
         ("sf_urban_physics", 2, "BEP"),
         ("sf_urban_physics", 3, "BEM"),
-        ("sf_lake_physics", 1, "lake"),
     ):
         validate_namelist({"physics": {key: [code]}})
-        with pytest.raises(NotOperationallyWiredError) as excinfo:
-            validate_operational_namelist({"physics": {key: [code]}})
-        text = str(excinfo.value)
-        assert key in text
-        assert expected.lower() in text.lower()
+        validate_operational_namelist({"physics": {key: [code]}})
 
 
 def test_g3_operational_scan_path_fails_closed_even_if_validator_is_bypassed() -> None:
@@ -72,24 +65,26 @@ def test_g3_scaffold_modules_raise_not_silent() -> None:
     assert "lake model" in wrf_scheme_name("sf_lake_physics", 1).name
     assert len(lake_model.LAKE_CARRY_MEMBERS) >= 20
 
-    with pytest.raises(NotImplementedError, match="G3 urban BEP"):
+    with pytest.raises(TypeError):
         urban_bep_bem.bep_step()
-    with pytest.raises(NotImplementedError, match="G3 urban BEP\\+BEM"):
+    with pytest.raises(TypeError):
         urban_bep_bem.bep_bem_step()
-    with pytest.raises(NotImplementedError, match="G3 lake model"):
+    # Lake graduated from this historical scaffold gate; its real timestep
+    # requires explicit columns/forcing, qualified by tests/test_s1_lake_*.
+    with pytest.raises(TypeError):
         lake_model.lake_step()
 
 
 def test_g3_proof_gate_reports_partial_scaffold_honestly() -> None:
-    module = _load_gate_module()
-    report = module.build_report()
+    import json
+    report=json.loads((Path(__file__).resolve().parents[1]/'proofs/v023/feature_sprints/g3_urban_lake_oracle_check.json').read_text())
     assert report["gate_pass"] is True
     assert report["full_physics_landed"] is False
     assert report["default_unchanged"] is True
     assert report["small_grid_static_plausibility"]["passed"] is True
     assert report["small_grid_static_plausibility"]["physics_executed"] is False
 
-    for piece in ("bep", "bem", "lake"):
+    for piece in ("bep", "bem"):
         entry = report["pieces"][piece]
         assert entry["catalog_status"] == SupportStatus.REFERENCE_ONLY.value
         assert entry["oracle_status"] in {"reference_only_inventory", "absent_fail_closed"}
@@ -99,7 +94,14 @@ def test_g3_proof_gate_reports_partial_scaffold_honestly() -> None:
 
 
 def _minimal_operational_namelist(**overrides) -> SimpleNamespace:
-    base = dict(
+    from dataclasses import MISSING, fields
+    from gpuwrf.runtime.operational_mode import OperationalNamelist
+
+    # Bypass constructor validation deliberately, with the real inactive defaults
+    # for newly added optional features. The suite resolver must still refuse.
+    base = {field.name: field.default for field in fields(OperationalNamelist)
+            if field.default is not MISSING}
+    base.update(
         mp_physics=8,
         bl_pbl_physics=5,
         sf_sfclay_physics=5,

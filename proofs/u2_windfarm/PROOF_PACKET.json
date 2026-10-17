@@ -1,0 +1,105 @@
+{
+  "lane": "u2-windfarm",
+  "status": "CPU-GATES-GREEN-READY-FOR-CRITIC",
+  "product_commit": "d0e94e0fab8b7fb1e89f6d027e19e3821be896ed",
+  "product_src_tree": "0fa0970b2667e108f1e4b9a05859f4da7d262766",
+  "main_base": "de636d898",
+  "scope": "Fitch windfarm_opt=1 opt-in; CPU oracle/caller/IO/restart graduation; GPU/coupled-forecast qualification pending",
+  "gates": {
+    "pristine_literal_real32": {
+      "cases": 72,
+      "byte_values": 31968,
+      "status": "PASS"
+    },
+    "init_sensitivity": {
+      "zero_vs_poison": "BYTE",
+      "admitted_cases": 72
+    },
+    "compiled": {
+      "frozen_bounds_unchanged": true,
+      "maxima_within_WRF_compiler_maxima": true,
+      "per_value_excesses_disclosed": "UPSTREAM_WRF_BUGS.md"
+    },
+    "final_composed_consumers": {
+      "passed_in_WF21": 378,
+      "stale_mock_fixed_and_passed_in_WF22": 1,
+      "selected_unique": 379,
+      "unchanged_oracle_test_deselected": 1,
+      "status": "PASS"
+    },
+    "coupled": {
+      "receipt": "receipts/final_coupled.json",
+      "status": "PASS",
+      "steps": 2,
+      "nonfinite": 0,
+      "guards": 0,
+      "restarts_byte": [
+        "pickle",
+        "netcdf",
+        "native-store"
+      ]
+    },
+    "off_graphs": {
+      "Swiss": "2bf12cb8374d3a84a440e47dea4b77b0c7436108fc2ee2616bba6ec79b17962a",
+      "PROD": "6fc715a2bd630934c4cf0f94427df19a527cbf429011c9ba5efe4d712744d27b"
+    },
+    "clean_archive": {
+      "commit": "8b65c4a3a",
+      "literal_byte": 31968,
+      "status": "PASS"
+    },
+    "energy_normalization_mutant": {
+      "killed": true,
+      "receipt": "receipts/energy_mutant.json"
+    },
+    "namelist_array_defaults": {
+      "supported_Fortran_cases_exact": 5,
+      "indexed_syntax_refused": 1,
+      "measured_root_binding_identity": 3
+    }
+  },
+  "validation_reuse": {
+    "jit_sources": {
+      "src/gpuwrf/physics/wind_fitch.py": {
+        "sha256": "d890589619775b37e0bdd172bd848a9bf8554de9f4560e493e7b0392ace8684b",
+        "identical_to_coupled_and_byte_oracle_source": true
+      },
+      "src/gpuwrf/coupling/windfarm_hook.py": {
+        "sha256": "fa5287cebed8463817533b433b32046d377afc6dc0c783ff0cd4871af9df051a",
+        "identical_to_coupled_and_byte_oracle_source": true
+      }
+    },
+    "host_binding_outputs_identical": true,
+    "upstream_urban_path_disabled": true,
+    "evidence": "Fortran/default binding receipt + final OFF graphs; new BEP/BEM branches are static inactive for sf_urban_physics=0; no duplicate numerical run"
+  },
+  "performance_memory": {
+    "full_hook_receipt": "receipts/full_hook_memory.json",
+    "cpu_temp_bytes": 1039384,
+    "cpu_median_ms": 0.6754950154572725,
+    "cpu_compile_s": 0.45457263803109527,
+    "optimized_f64_type_mentions": 0,
+    "new_POWER_bytes": "4*ny*nx",
+    "GPU_launches_traffic_peak_E41": "UNMEASURED"
+  },
+  "open_limits": [
+    "MAV=2 refused",
+    "MYNN PBL/SFCLAY=5/5; bldt=0; bracketed hubs/full rotor and positive REAL32-distinct curve speeds required",
+    "GPU E41/throughput/VRAM and full CPU-WRF coupled D6 remain pending; no gate/tolerance waiver"
+  ],
+  "experiments": "WF01-WF24 append-logged in MAIN EXPERIMENTS.tsv",
+  "receipt_sha256": {
+    "receipts/WF06-efficiency.json": "d86549d6bb693206303c3d1fa169ad56523d0c1c779e3525134ad065682c516a",
+    "receipts/WF09-nofma.json": "8de2af7ba0fa41fe82ca908bb232fe9a288246427a5ab844c2ec65f5512eba93",
+    "receipts/contraction.json": "8eddd8e4f15a6c43a016e3e68ed02d0af3b95ab03a90f319472b698a0b22cb9d",
+    "receipts/coupled.json": "2eddb4ad1c96929b771c7b51ffce044b96a33feeb53d17ebfb1e31b57c1f9796",
+    "receipts/energy_mutant.json": "5621f888148eb1806133b18d769397c4e46acb6abe869129b812b446bda2ee8b",
+    "receipts/final_coupled.json": "48ea75cbd78a2c19ccfd32218269f588f72b10524a2415c018bbf36dccf626b5",
+    "receipts/final_work.json": "f2402beccba70def2d31dbcbb51cdd689c73b84e1930c2496ea67482e6997c5d",
+    "receipts/full_hook_memory.json": "fa54181892aa0fc9a7659c7faac6990c83e0facf0ee8a5f80972941504244ded",
+    "receipts/namelist_defaults.json": "d3ea0bc93f50784c955e6242568ff28c472cbe219e4b6338363315c8191fffec",
+    "receipts/prod_off_identity.json": "466a6cc7107c5da0974e8a1af2ad0999716fcb1a539732aa3fe1d83f4f44cb24",
+    "receipts/swiss_off_identity.json": "dbe24c6cf8551a0ebea031299c388d0900f76b7f71211480693d044b1d38a7ad"
+  },
+  "cache": "NONE; all measurement builds/snapshots/caches cleaned after use"
+}

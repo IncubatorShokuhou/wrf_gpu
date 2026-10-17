@@ -1,0 +1,140 @@
+{
+  "scope": "Full root-domain obs_nudge_opt=1 CPU chain; MYNN PBL/SFCLAY; GPU/long-forecast qualification pending",
+  "required_shared_tests": 249,
+  "additional_shared_tests": 41,
+  "unique_lane_tests": 125,
+  "total_unique_cpu_tests": 415,
+  "component_pristine_cases": 86,
+  "component_pristine_calls": 492,
+  "full_projection_evaluations": 36,
+  "original_cpu_obs_steps": 3,
+  "original_cpu_window_steps": 12,
+  "original_cpu_grid_obs_steps": 3,
+  "cpu_smoke": {
+    "finite": true,
+    "guards": 0,
+    "frozen_D6_checked_fields": [
+      "T",
+      "U",
+      "V",
+      "W",
+      "QVAPOR"
+    ],
+    "report_only_fields": [
+      "P",
+      "PH"
+    ]
+  },
+  "restart_byte_exact_leaves": 183,
+  "restart_formats": [
+    "full-carry pickle",
+    "WRF NetCDF",
+    "runtime checkpoint"
+  ],
+  "source_merge_mutant": {
+    "numeric_failures": 1,
+    "setup_errors": 0
+  },
+  "cpu_component_cost": {
+    "platform": "cpu",
+    "shape": [
+      44,
+      42,
+      42
+    ],
+    "reports": 4,
+    "max_levels": 3,
+    "ionf": 2,
+    "compile_s": 6.147900062147528,
+    "timing": {
+      "refresh": {
+        "median_s": 0.03499652701430023,
+        "min_s": 0.033601335948333144,
+        "samples_s": [
+          0.03746453602798283,
+          0.04008323512971401,
+          0.03755930601619184,
+          0.035290829138830304,
+          0.03420120105147362,
+          0.035475049866363406,
+          0.033913098042830825,
+          0.03465324407443404,
+          0.036132296081632376,
+          0.03512137709185481,
+          0.03584561310708523,
+          0.03461428405717015,
+          0.03523101913742721,
+          0.03575196210294962,
+          0.03387239808216691,
+          0.03411492006853223,
+          0.033601335948333144,
+          0.03395168902352452,
+          0.03466819389723241,
+          0.035237757954746485,
+          0.035164797911420465,
+          0.03426944091916084,
+          0.03491675714030862,
+          0.0340685888659209,
+          0.03499652701430023
+        ]
+      },
+      "hold": {
+        "median_s": 0.00013304105959832668,
+        "min_s": 0.00012849108316004276,
+        "samples_s": [
+          0.00014252099208533764,
+          0.00013927114196121693,
+          0.00013069109991192818,
+          0.0001375910360366106,
+          0.00013091089203953743,
+          0.00013304105959832668,
+          0.00013121101073920727,
+          0.00012863101437687874,
+          0.00013458100147545338,
+          0.00013098097406327724,
+          0.00012923101894557476,
+          0.0001288910862058401,
+          0.00012849108316004276,
+          0.0001326811034232378,
+          0.00013015116564929485,
+          0.00013161101378500462,
+          0.0001349109224975109,
+          0.00013228110037744045,
+          0.00013601104728877544,
+          0.00015717116184532642,
+          0.0001383011694997549,
+          0.00013550091534852982,
+          0.00013655098155140877,
+          0.00015575112774968147,
+          0.00013764109462499619
+        ]
+      }
+    },
+    "resident_carry_bytes": 1242252,
+    "resident_input_bytes": 480,
+    "compiled_memory": {
+      "argument_size_in_bytes": 3515316,
+      "output_size_in_bytes": 2499012,
+      "temp_size_in_bytes": 7316496,
+      "alias_size_in_bytes": 0
+    },
+    "optimized_f64_tokens": 0,
+    "scope": "component CPU timing only; no GPU performance/VRAM claim"
+  },
+  "default_jaxpr_sha256": "2bf12cb8374d3a84a440e47dea4b77b0c7436108fc2ee2616bba6ec79b17962a",
+  "observed_limitations": [
+    "GPU launches/traffic/VRAM/readiness unmeasured",
+    "long coupled forecasts unqualified",
+    "child-domain observation nudging, other PBL/SFCLAY, latitude/longitude maps and RUC surface capture refused"
+  ],
+  "reuse": "Historical SOURCE_REUSE.json plus LATE_MAIN_REUSE.json:10observation modules and surface producers BYTE; selected grid1/physics paths exact; current default full2bf; latest297+180interface checks.",
+  "timing_disclosure": "FON08 scientific gates completed1428.55s; process teardown reached timeout1500rc124; no scientific rerun",
+  "historical_partial_seal": "FINAL_SEAL.json retained unchanged; superseded in feature scope",
+  "latest_main_integration": {
+    "base": "ffaf5c39d",
+    "rerun297_pass_1_stale_inventory_fail": "FON24; fixed preserving timeseries checkpoint refusal",
+    "changed_admission_and_inventory_180_pass": "FON25",
+    "numerical_reuse": "LATE_MAIN_REUSE.json; 10observation module blobs and surface producers exact; non-spectral source paths exact",
+    "final_default_identity": "FON26 full2bf EXACT;81.0s CPU trace, notGPUreadiness"
+  }
+}

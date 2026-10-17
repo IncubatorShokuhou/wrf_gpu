@@ -1,0 +1,24 @@
+{
+  "reviewed_commit": "ef72b4a5c81218ade23faab30da36a7484178306",
+  "fix_source_commit": "f339e99face27e05a519541c0fb57ea9f119de44",
+  "critic_verdict": "<USER_HOME>/wrf_gpu2_lanes/rv-u2-tslist/VERDICT.md",
+  "critic_verdict_sha256": "2b2ef13d064f565c857d870b6453e9cd9ab639d82c1934a25ed375954e16046e",
+  "host_fixes": [
+    "empty plans return None and original carries",
+    "nonzero scalar/list solar_diagnostics refused before output"
+  ],
+  "affected_gate": "TS30 38PASS54.83s=36own+2exactcriticrepros;32WRFfilesBYTE and activeCLW/eachsurface/profile sampler fields qualified",
+  "compiled_and_sampler_files_byte_exact": {
+    "src/gpuwrf/runtime/operational_mode.py": "c08a113cd77635060bf4d7f722dd0816d0eb88dc0cbb31db9efc56d6d0d2b0b6",
+    "src/gpuwrf/runtime/operational_state.py": "4a8ed134db19dd721ab04c2686b1af1de7c9fa6677ad5133aa4e7fe39809a875",
+    "src/gpuwrf/integration/nested_pipeline.py": "5340c7c9d510b70745350dbb67356c51b2173ea35629682d96873846b1bf1041",
+    "src/gpuwrf/timeseries/files.py": "76f45bd553e442a650a5026683977931032ec0d9637f84e2444495495672731f",
+    "src/gpuwrf/timeseries/locations.py": "ac7f23ced564c170b67df29b59529efde29d0f9dce4f6cbf9ebd06f0cdc92d68",
+    "src/gpuwrf/timeseries/export.py": "13d87ea3a8a54c659a020a08ffb4045b129907b9b7b47722906cdcef9d3a1512"
+  },
+  "validation_reuse": "Default2bf12cb8 reused by exact operational guard/model/integration; affected sampler+host CPU gates repeated once at final source; old numerical+new host sum36own",
+  "GPU_status": "All four critic conditions CLOSED in finalsourcef339e99fa/measuredsnapshot492468d4d; TS31 GPU+E41 exit0",
+  "sampler_change": "Measured actual754HLO fusion split by station-scalar optimization barriers every96terms; literal WRF accumulation order retained",
+  "GPU_receipts": "gpu_TS31_{bench,E41,cost_memory,trace_audit,artifact_manifest}.json",
+  "measured_snapshot_source_tree_exact_current_branch": "3311fb6721b6b3288afdf9892e0aa673052a5d36"
+}

@@ -1,0 +1,36 @@
+{
+  "executable": "<DATA_ROOT>/canairy_meteo/artifacts/wrf_src/WRF/install_gen2_dmpar/bin/wrf",
+  "executable_sha256": "1d0f5779fff143361e470e37f89c734497ed5a7bb55d0c53b7e3fccc569dd49b",
+  "identical_copy": true,
+  "known_shared_dump_path_absent": true,
+  "source_inputs": "<USER_HOME>/wrf_gpu2_lanes/release-docs/RD11/cpu",
+  "argv": [
+    "<DATA_ROOT>/canairy_meteo/artifacts/envs/wrf-build/bin/mpirun",
+    "--bind-to",
+    "none",
+    "-np",
+    "1",
+    "./wrf.exe"
+  ],
+  "affinity": [
+    29
+  ],
+  "options": {
+    "nwp_diagnostics": 1,
+    "prec_acc_dt": 60.0,
+    "do_radar_ref": 1,
+    "swint_opt": 1
+  },
+  "namelist_sha256": "2cc8093ccbbb788d877f7c9ca754e0a20c2c9a3d92431830bef121d567b313f0",
+  "timing_valid": false,
+  "timing_reason": "shared CPU core; science reference only",
+  "rc": 0,
+  "wall_s": 388.1168240129482,
+  "success": true,
+  "frames": [
+    "wrfout_d01_2023-01-15_00:00:00",
+    "wrfout_d01_2023-01-15_01:00:00",
+    "wrfout_d01_2023-01-15_02:00:00",
+    "wrfout_d01_2023-01-15_03:00:00"
+  ]
+}

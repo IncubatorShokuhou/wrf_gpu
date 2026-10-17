@@ -1,0 +1,123 @@
+{
+  "source": "<DATA_ROOT>/wrf_gpu2/scratch/t-cfix-mynn/snap_c4",
+  "source_commit": "24bbefdfd785d706e46e63cd65e7034619e3148a",
+  "source_dirty": "",
+  "case": "<DATA_ROOT>/wrf_gpu2/archive/v040/v-prep/F20_20261016/PROD",
+  "domain": "d01",
+  "physical_backend": "cpu",
+  "lowering_platform": "cuda",
+  "gpu_executed": false,
+  "scope": "deviceless CompileOnly prescreen (autotune 0); actual GPU E41 scan stays authoritative",
+  "target_sha256": "b753abdddbace1e913de3767a1afbdfeba2b272e77f2be93658c766968e4960f",
+  "harness_sha256": "16a3604562142b6fcb894334a8cd88848ee69595eb68f7171d7d178feabca173",
+  "environment": {
+    "GPUWRF_CENSUS_SLIM": "0",
+    "GPUWRF_CENSUS": "1",
+    "GPUWRF_JAX_CACHE": "0",
+    "CUDA_VISIBLE_DEVICES": "",
+    "GPUWRF_AOT_SLIM_MODULE": "0",
+    "JAX_PLATFORMS": "cpu",
+    "GPUWRF_FAST_DEFAULTS": "1",
+    "GPUWRF_RRTMG_MP_RE": "1"
+  },
+  "phase": "done",
+  "wall_s": 378.1332230929984,
+  "peak_rss_KiB": 7199888,
+  "input_sha256": {
+    "namelist.input": "5ef3a96be3324deb712b0e0114288244bcf5f53edb21461fee7374aa766cef4b",
+    "wrfinput_d02": "b3013bbb337adbe20c10331f46b309d288424e54a41e9cc4ba2e8eba53abb16f",
+    "wrfbdy_d01": "296cef912e17dc0dfff4b78103dedfb1329cd184de5bc2cd0d44cc6edf823599",
+    "wrfinput_d01": "1024ddb7d6badc958fb1a4f385117ce5c46d20249b75bcce2ea4261d34f648f0"
+  },
+  "gpuwrf_file": "<DATA_ROOT>/wrf_gpu2/scratch/t-cfix-mynn/snap_c4/src/gpuwrf/__init__.py",
+  "static_kwargs": {
+    "n_steps": 1,
+    "cadence": 33
+  },
+  "traced_pallas_calls": 161,
+  "stablehlo_sha256": "b4badcacd6dc69d9f10c3f36a9c3dabf3ed1c8823a0bf48547475cf2e44a3b7d",
+  "stablehlo_bytes": 269517716,
+  "compile_s": 182.54252256298787,
+  "optimized_hlo_sha256": "d54245705e9a40b15dc4c80c4c9e2315ccd9d54ec36981f09e18decf30ebc3b3",
+  "n_fusions": 3443,
+  "transpose_fusions": 841,
+  "kinput_transpose_over500": [
+    [
+      "input_add_clamp_divide_minimum_multiply_power_select_transpose_fusion",
+      661
+    ]
+  ],
+  "any_transpose_over500": [
+    [
+      "input_add_clamp_divide_minimum_multiply_power_select_transpose_fusion",
+      "kInput",
+      661
+    ]
+  ],
+  "top_transpose": [
+    [
+      661,
+      "kInput",
+      "input_add_clamp_divide_minimum_multiply_power_select_transpose_fusion"
+    ],
+    [
+      391,
+      "kInput",
+      "input_divide_power_select_transpose_fusion"
+    ],
+    [
+      367,
+      "kInput",
+      "input_add_multiply_transpose_fusion"
+    ],
+    [
+      360,
+      "kInput",
+      "input_transpose_fusion.210"
+    ],
+    [
+      322,
+      "kInput",
+      "input_maximum_pad_transpose_fusion"
+    ],
+    [
+      312,
+      "kInput",
+      "input_maximum_multiply_transpose_fusion"
+    ],
+    [
+      302,
+      "kLoop",
+      "loop_add_transpose_fusion.1"
+    ],
+    [
+      301,
+      "kLoop",
+      "loop_add_transpose_fusion.2"
+    ],
+    [
+      287,
+      "kInput",
+      "input_transpose_fusion.224"
+    ],
+    [
+      285,
+      "kInput",
+      "input_multiply_transpose_fusion.5"
+    ],
+    [
+      274,
+      "kInput",
+      "input_divide_multiply_select_transpose_fusion"
+    ],
+    [
+      271,
+      "kLoop",
+      "loop_transpose_fusion.6"
+    ]
+  ],
+  "native_gate": "FAIL",
+  "hard_stack_gate": "PASS",
+  "max_stack_B": 32,
+  "kernels": 2498
+}

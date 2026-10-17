@@ -1,0 +1,73 @@
+{
+  "schema": "s2-integrate-batch5-proof-only-v1",
+  "utc": "2026-10-14T12:48:21.637141+00:00",
+  "status": "READY-FOR-MERGE",
+  "base_main": "6e8b447e286cafddbbbde74a2d7f7c6be543055c",
+  "merge_commit": "cae0064a815d1e37691b32bbdd7f6e53211c7e22",
+  "approved_commits": [
+    "a7ff1181a06ecf5431ce7e4dcea1e0e035fd81cc"
+  ],
+  "scope": "Manager-accepted narrow F2 KNOWN_ISSUE; proof-only",
+  "critic": "Not required: explicit manager proof-only exemption",
+  "integration_fixes": [],
+  "compiled_new_python": 4,
+  "model_changes": 0,
+  "test_changes": 0,
+  "proof_tree_BYTE_approved": "cb7475c36549e1d0cf2608c55f035413cb2507fa",
+  "sanity_checks": {
+    "external_files_SHA256": 51,
+    "external_bytes": 411507629,
+    "tracked_manifest_SHA256": 18,
+    "original_E26_field_hash_pairs_equal": 18125,
+    "known_record_and_quantile_index": "PASS",
+    "malformed_reader_controls_rejected": 5,
+    "duration_s": 1.6638947469182312
+  },
+  "validation_reuse": {
+    "unique_scoped_composed_PASS": 735,
+    "prior_qualification": "proofs/s2_integrate/batch4/QUALIFICATION.json",
+    "prior_qualification_SHA256": "709e8bb7b5fc25143fa30b81d02c2addbb11efbcebadb3d9260a24c75b56f1c7",
+    "protected_trees_BYTE": {
+      "src": "cdac4e9c74fed7a80736fb68ed725f0e9d06686b",
+      "tests": "fe04add1935c840c6a897dca4a8bc3f07ccb5b01",
+      "scripts": "a3f2c56035e47326c68e30f7d75763289ba9e1c6",
+      "proofs/s1_port": "f0a95ede6964e0fc96adb3a37ec07deb59bc9498",
+      "proofs/s2_integrate": "d5510e2f831d27c9da3088a8965f81a7abdbff4c"
+    },
+    "reason": "No product or test delta. AGENTS validation reuse applies; no duplicate model/oracle/forecast tests.",
+    "prior_scientific_limits": "All batch4 compiled excess/XFAIL, experimental CPU-only, GPU/E41/VRAM/D6/long-forecast limitations remain unchanged"
+  },
+  "release_identity": {
+    "Swiss": "f672a5739cb96e388b6b7a40ef80337bf81bdc14ef15268f3476e09d79fe055d",
+    "PROD_d01": "6fc715a2bd630934c4cf0f94427df19a527cbf429011c9ba5efe4d712744d27b",
+    "evidence": "Measured batch4 identities carried forward through exact model/loader/scripts/test source equality",
+    "GPU_run": false
+  },
+  "F2": {
+    "disposition": "ACCEPTED_NARROW_KNOWN_ISSUE_PROOF_ONLY",
+    "global_F2": "NOT_CLOSED",
+    "residuals_OPEN": [
+      "default QI/QG extrema",
+      "WDM QS/Nr extrema",
+      "WDM QS/QG negative visit-count differences"
+    ],
+    "report": "proofs/t_f2neg/REPORT.md",
+    "manifest": "proofs/t_f2neg/EVIDENCE_MANIFEST.json",
+    "manifest_SHA256": "3290223b960b036a5b8a0978625536dd693a8af630ae61b94f90abb3e1f82565",
+    "release_next_step": "Release lane copies suggested known-issue wording; no clipping/tolerance/model change"
+  },
+  "performance_memory": "Model/source byte-identical: launches, allocations, traffic, sync and compiled path unchanged; no GPU timing claim",
+  "cleanup": {
+    "snapshot_removed": true,
+    "worktmp_removed": true,
+    "JAX_cache": "NONE",
+    "author_raw_evidence": "Retained read-only at manifest paths"
+  },
+  "proof_files": {
+    "SI62-proof-merge.json": "55f309833d498a5c2840a2b0f24f758527fa2b7698f3be99261f513118aa5772",
+    "SI63-proof-sanity.json": "217a18688b1db465c6eb334f1e505cec8e98c8ae95cee9c6da9f0fc86ba446a8",
+    "SI63-reader-controls.json": "2aa5ecce930ad778e6db5f2dedf973e9dcb69ccad7a3bfcb778f39e340d59bc3",
+    "SI63-proof-sanity.log": "d2b0a6bf2d6ed7ef4c5154bb393e9f58af17ee27d6d38a6f1356e7e9fba09117",
+    "check_batch5_proof.py": "5e4a544e5c45ec0eb228ae1e6c5c14b9765468b71963076bf2cd22faff0337da"
+  }
+}

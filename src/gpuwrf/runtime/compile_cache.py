@@ -209,10 +209,15 @@ def _backend_tag() -> str:
     ).strip().lower()
     if platforms:
         first = platforms.split(",")[0].strip()
-        if first in ("cpu", "tpu"):
+        if first in ("cpu", "tpu", "rocm", "metal", "oneapi"):
             return first
-        if first in ("cuda", "gpu", "rocm"):
+        if first == "cuda":
             return _cuda_tag()
+
+    from gpuwrf.backends.platform import target_backend
+    target = target_backend()
+    if target != "cuda":
+        return target
 
     cvd = os.environ.get("CUDA_VISIBLE_DEVICES")
     if cvd is not None:

@@ -1,0 +1,157 @@
+{
+ "cache": "<USER_HOME>/wrf_gpu2_lanes/s1-gpuqual/km3/cache/jax",
+ "entries": [
+  {
+   "entry": "jit__advance_chunk_fori-aed7a6fca66f23acffb8a3527f2f197ecf924d1a8dec7da1a4f32efb08fb5aca-cache",
+   "path": "<USER_HOME>/wrf_gpu2_lanes/s1-gpuqual/km3/cache/jax/jit__advance_chunk_fori-aed7a6fca66f23acffb8a3527f2f197ecf924d1a8dec7da1a4f32efb08fb5aca-cache",
+   "source_kind": "jax_cache",
+   "program": null,
+   "aliases": [],
+   "format": "xla-gpu-legacy-v1",
+   "blob_sha256": "c7640c4325ee563eae5a84de4ff091c76642caad700756b125f4958261948d3a",
+   "elfs": [
+    {
+     "elf": 0,
+     "sha256": "6eb3fb2a6fa092ce052d17797a371c7cb1f3ddee2613682767ce06c2f476693e",
+     "kernels": 2602,
+     "max_stack_B": 64,
+     "stack_over256": [],
+     "root_callers_over1k": [
+      [
+       "thompson_full_column",
+       19304,
+       67
+      ],
+      [
+       "mynn_tridiag2_real",
+       2224,
+       87
+      ],
+      [
+       "input_add_reduce_select_fusion",
+       1344,
+       4
+      ],
+      [
+       "input_divide_select_transpose_fusion_1",
+       1688,
+       2
+      ],
+      [
+       "input_maximum_select_subtract_transpose_fusion",
+       1920,
+       3
+      ],
+      [
+       "loop_or_select_fusion",
+       2224,
+       6
+      ]
+     ],
+     "nonleaf_over1k": [],
+     "callgraph_unknown": []
+    }
+   ],
+   "kinput_transpose_over500": [
+    [
+     "input_pad_transpose_fusion",
+     751
+    ],
+    [
+     "input_multiply_transpose_fusion.7",
+     853
+    ],
+    [
+     "input_transpose_fusion.129",
+     592
+    ]
+   ],
+   "kinput_transpose_status": "MEASURED_RICH_JIT_HLO"
+  },
+  {
+   "entry": "108223aa7707d8744b06b78cbb06b67f9a8ef3474cac9ab9697144f71ee3c1e9.xlaexec",
+   "path": "<USER_HOME>/wrf_gpu2_lanes/s1-gpuqual/km3/cache/jax/aot/0.3.4-jax0.10.0-jaxlib0.10.0-cuda_sm120/d01/108223aa7707d8744b06b78cbb06b67f9a8ef3474cac9ab9697144f71ee3c1e9.xlaexec",
+   "source_kind": "aot",
+   "program": "d01",
+   "aliases": [
+    "<USER_HOME>/wrf_gpu2_lanes/s1-gpuqual/km3/cache/jax/aot/0.3.4-jax0.10.0-jaxlib0.10.0-cuda_sm120/d01/k_3b1f2de333cfadaf950b9558146af6e1841864f71241fac8893ee4475b96bb23.xlaexec"
+   ],
+   "format": "xla-gpu-thunks-riegeli-v1",
+   "blob_sha256": "bcde8422c8aae3dd7454869a3bf18b5b54c0facbe5f2d28bc2eb472068a44bbb",
+   "elfs": [
+    {
+     "elf": 0,
+     "sha256": "6eb3fb2a6fa092ce052d17797a371c7cb1f3ddee2613682767ce06c2f476693e",
+     "kernels": 2602,
+     "max_stack_B": 64,
+     "stack_over256": [],
+     "root_callers_over1k": [
+      [
+       "thompson_full_column",
+       19304,
+       67
+      ],
+      [
+       "mynn_tridiag2_real",
+       2224,
+       87
+      ],
+      [
+       "input_add_reduce_select_fusion",
+       1344,
+       4
+      ],
+      [
+       "input_divide_select_transpose_fusion_1",
+       1688,
+       2
+      ],
+      [
+       "input_maximum_select_subtract_transpose_fusion",
+       1920,
+       3
+      ],
+      [
+       "loop_or_select_fusion",
+       2224,
+       6
+      ]
+     ],
+     "nonleaf_over1k": [],
+     "callgraph_unknown": []
+    }
+   ],
+   "kinput_transpose_over500": [
+    [
+     "input_pad_transpose_fusion",
+     751
+    ],
+    [
+     "input_multiply_transpose_fusion.7",
+     853
+    ],
+    [
+     "input_transpose_fusion.129",
+     592
+    ]
+   ],
+   "kinput_transpose_status": "MEASURED_RICH_AOT_HLO"
+  }
+ ],
+ "n_entries": 2,
+ "e41_gate": "FAIL",
+ "hard_stack_gate": "PASS",
+ "conservative_flags": true,
+ "coverage": {
+  "status": "PASS",
+  "aot_programs": [
+   "d01"
+  ],
+  "required_run_programs": [
+   "d01"
+  ],
+  "run_proofs": [],
+  "n_discovered": 2,
+  "n_scanned": 2
+ }
+}

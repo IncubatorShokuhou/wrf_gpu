@@ -1,0 +1,10 @@
+fixture_id: wrf471_lcz_nudapt_zero_init
+source: pristine WRF 4.7.1 module_sf_urban.F and verbatim noahmp_urban caller
+source_commit: f52c197ed39d12e087d02c50f412d90d418f6186
+scenario: 25 real-structured day/night columns, LCZ1-11 plus urban fallback5, 30 steps, alternate positive morphology and street-width fallback
+variables: cell-centred REAL4 and REAL8 urban states and surface fluxes; heights m; heat W m-2; wind m s-1; humidity kg kg-1; 4 urban layers
+files: savepoints/manifest.json records exact source, driver and compressed numerical fixture SHA256
+license_notes: WRF-derived numeric savepoints and table data; WRF license applies to source routines
+tolerances: fp64 max <= 1e-10*reference maximum; fp32 <= 3*WRF REAL4-REAL8 spread +4ulp; reject nonfinite input and poststep output
+generation: JAX_PLATFORMS=cpu taskset -c 0,1,2,3,16,17,18,19 nice -n 19 timeout 600 python proofs/v040/urban_lcz/build_oracle.py
+initialization_policy: -finit-real=zero, manager-authorized; see docs/UPSTREAM_WRF_BUGS.md

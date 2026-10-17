@@ -1,0 +1,62 @@
+{
+  "commit": "f68ca7296",
+  "corpus_sha256": "f455fed5c576aad6a7b8e9cfb0a4c40eb2cbeaa425108104a989b158dbb93792",
+  "source_sha256": {
+    "ccpp_kind_types.F": "0cc7b2d71d8a93ff1f2b401324de8fd1ee70ba598f83d89254d6dbe8c31d0e4b",
+    "physics_mmm/bl_ysu.F90": "b2c9f11f92f967b053948b42a7c5dbaf1b7f72ddb9d35948e96c32a5d91092d2",
+    "module_bl_ysu.F": "46ad9d21ecc88461ec3fc06086f9cb25fdccf9fc0f9b8f122a0cc2ff7c92a662"
+  },
+  "builds": {
+    "zero": {
+      "flags": [
+        "-O0",
+        "-ffp-contract=off",
+        "-finit-real=zero",
+        "-finit-integer=0",
+        "-finit-logical=false"
+      ],
+      "sha256": "83a9504ec3a1ef93b7450f803c51e7fbe63b98e549e4c6405c518dc046a92790",
+      "fma_instructions": 0,
+      "consumed_values_byte": 85770,
+      "nonfinite_consumed": 0
+    },
+    "inf": {
+      "flags": [
+        "-O0",
+        "-ffp-contract=off",
+        "-finit-real=inf",
+        "-finit-integer=0",
+        "-finit-logical=false"
+      ],
+      "sha256": "adb35aa033f671fcbb7ed0a339c822ee5cbd4f7663d58ce82b2af2cf887f81ef",
+      "fma_instructions": 0,
+      "consumed_values_byte": 85770,
+      "nonfinite_consumed": 0
+    },
+    "fma": {
+      "flags": [
+        "-O2",
+        "-mfma",
+        "-ffp-contract=fast",
+        "-finit-real=zero",
+        "-finit-integer=0",
+        "-finit-logical=false"
+      ],
+      "sha256": "4ba7f70ecceca80bc39d5713069105c8f6127ab960f70060f90584d14ea6268e",
+      "fma_instructions": 87,
+      "consumed_values_byte": 85770,
+      "nonfinite_consumed": 0
+    }
+  },
+  "rows": 218,
+  "fixture_rows": 48,
+  "fixture_envelope_byte": true,
+  "envelope": {
+    "npert": 96,
+    "calls": 20928,
+    "seed": 20261015,
+    "elapsed_s": 2.7633832990104565,
+    "kpbl_varies_rows": 0
+  },
+  "init_sensitivity_consumed_byte": true
+}

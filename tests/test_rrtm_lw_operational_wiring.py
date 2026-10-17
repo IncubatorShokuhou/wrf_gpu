@@ -203,11 +203,11 @@ def test_default_ra4_ra4_matches_combined_rrtmg() -> None:
     assert np.max(np.abs(rth_combined)) > 0.0
 
 
-def test_unwired_ra_lw_value_fails_closed() -> None:
+def test_unpaired_flg_ra_lw_value_fails_closed() -> None:
     grid = _grid()
-    nml = _namelist(grid, ra_lw_physics=5)  # Goddard LW: reference-only, not scan-wired (3 = CAM is wired since v0.3.4)
-    with pytest.raises((UnsupportedSchemeSelection, Exception)):
-        _resolve_operational_suite(nml)
+    # FLG has graduated as an experimental CPU-only paired 7/7 suite.
+    with pytest.raises(ValueError, match="requires paired ra_lw_physics=ra_sw_physics=7 or 99"):
+        _resolve_operational_suite(_namelist(grid, ra_lw_physics=7))
 
 
 def test_wired_ra_lw_values_resolve_ok() -> None:

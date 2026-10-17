@@ -13,6 +13,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 import pytest
+from _historical_artifacts import require_historical
 
 
 REPO = Path(__file__).resolve().parents[2]
@@ -236,6 +237,7 @@ def test_r1_boundary_mutations_fail_closed(field, value):
 def test_r1_source_authority_hash_and_import_order_mutations_fail_closed(
     tmp_path, monkeypatch
 ):
+    require_historical(FAST / "namelist.input")
     environment = {
         variable: str(wsa.CANONICAL_ROOT)
         for variable in wsa.ROOT_ENV_VARS
@@ -579,6 +581,7 @@ def test_real_cpu_boundary_executes_loader_fast_builder_and_exact_lower(
         variable: str(wsa.CANONICAL_ROOT)
         for variable in wsa.ROOT_ENV_VARS
     }
+    require_historical(FAST / "namelist.input")
     authority = wsa.build_source_authority(
         namelist_path=FAST / "namelist.input",
         environ=authority_environment,

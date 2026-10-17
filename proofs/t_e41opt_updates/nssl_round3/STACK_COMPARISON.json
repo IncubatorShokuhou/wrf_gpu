@@ -1,0 +1,3119 @@
+{
+  "scope": "exact rich-HLO source census and native resource join; no runtime attribution or causal A/B",
+  "program_max_STACK_growth_B": 832,
+  "program_max_STACK_ratio": 2.6507936507936507,
+  "core_files_byte_unchanged": [
+    {
+      "file": "src/gpuwrf/physics/nssl2mom/gs_a.py",
+      "git_blob": "ca105eee644577a5cd7b630758df3465b41eaa4c",
+      "old_new_BYTE": true
+    },
+    {
+      "file": "src/gpuwrf/physics/nssl2mom/gs_b.py",
+      "git_blob": "8b249a40bdd763abdd0e32b0ed372a63999682d1",
+      "old_new_BYTE": true
+    },
+    {
+      "file": "src/gpuwrf/physics/nssl2mom/gs_c.py",
+      "git_blob": "951ae86bf413b7fbc03da68aa531bac87ef813f4",
+      "old_new_BYTE": true
+    },
+    {
+      "file": "src/gpuwrf/physics/nssl2mom/mathfun.py",
+      "git_blob": "51f9d4209da875404e807bf320162b48a4cad407",
+      "old_new_BYTE": true
+    },
+    {
+      "file": "src/gpuwrf/physics/nssl2mom/diagnostics.py",
+      "git_blob": "7ea98a6f54ce4ca893f0b18ca4fd24aae85492b2",
+      "old_new_BYTE": true
+    }
+  ],
+  "records": [
+    {
+      "case": "mp18-old",
+      "map_path": "<DATA_ROOT>/wrf_gpu2/scratch/t-e41opt/EO31_mp18/source_map.json",
+      "map_sha256": "52e0c80b2849828b4cf8b58c408853dd0d7988cd8e92f511267ebeb04ca8948c",
+      "blob_sha256": "f16ea75c92ee9078fd7dfa5ede52c0413b9bac5b20708fe0c268d9fc5fe1cc60",
+      "max_STACK_fusion": {
+        "fusion": "input_and_multiply_power_reduce_select_fusion",
+        "body_instructions": 495,
+        "attributed_instructions": 374,
+        "radar_stack_instructions": 0,
+        "file_counts": {
+          "/gpuwrf/physics/nssl2mom/gs_b.py": 95,
+          "/gpuwrf/physics/nssl2mom/mathfun.py": 220,
+          "/gpuwrf/physics/nssl2mom/gs_a.py": 12,
+          "/gpuwrf/physics/nssl2mom/fallspeed.py": 8,
+          "/gpuwrf/physics/mynn_pbl.py": 1,
+          "/gpuwrf/physics/nssl2mom/gs_c.py": 5,
+          "/gpuwrf/diagnostics/census.py": 33
+        },
+        "function_counts": [
+          {
+            "file": "/gpuwrf/physics/nssl2mom/mathfun.py",
+            "function": "gamxinfdp",
+            "instructions": 144
+          },
+          {
+            "file": "/gpuwrf/physics/nssl2mom/gs_b.py",
+            "function": "gs_part_b",
+            "instructions": 40
+          },
+          {
+            "file": "/gpuwrf/physics/nssl2mom/gs_b.py",
+            "function": "_iacr_interp",
+            "instructions": 39
+          },
+          {
+            "file": "/gpuwrf/physics/nssl2mom/mathfun.py",
+            "function": "gaminterp",
+            "instructions": 35
+          },
+          {
+            "file": "/gpuwrf/diagnostics/census.py",
+            "function": "observe_f2_state",
+            "instructions": 33
+          },
+          {
+            "file": "/gpuwrf/physics/nssl2mom/mathfun.py",
+            "function": "iacr_table",
+            "instructions": 27
+          },
+          {
+            "file": "/gpuwrf/physics/nssl2mom/gs_b.py",
+            "function": "_bigg_rain",
+            "instructions": 10
+          },
+          {
+            "file": "/gpuwrf/physics/nssl2mom/mathfun.py",
+            "function": "_gamxinflu_node",
+            "instructions": 10
+          },
+          {
+            "file": "/gpuwrf/physics/nssl2mom/gs_a.py",
+            "function": "_post_setvtz",
+            "instructions": 6
+          },
+          {
+            "file": "/gpuwrf/physics/nssl2mom/fallspeed.py",
+            "function": "setvtz",
+            "instructions": 6
+          },
+          {
+            "file": "/gpuwrf/physics/nssl2mom/gs_b.py",
+            "function": "gs_part_b.<locals>.<lambda>",
+            "instructions": 6
+          },
+          {
+            "file": "/gpuwrf/physics/nssl2mom/gs_c.py",
+            "function": "gs_part_c",
+            "instructions": 5
+          }
+        ],
+        "native_STACK_B": 504
+      },
+      "all_flagged_fusions": {
+        "input_and_multiply_power_reduce_select_fusion": {
+          "fusion": "input_and_multiply_power_reduce_select_fusion",
+          "body_instructions": 495,
+          "attributed_instructions": 374,
+          "radar_stack_instructions": 0,
+          "file_counts": {
+            "/gpuwrf/physics/nssl2mom/gs_b.py": 95,
+            "/gpuwrf/physics/nssl2mom/mathfun.py": 220,
+            "/gpuwrf/physics/nssl2mom/gs_a.py": 12,
+            "/gpuwrf/physics/nssl2mom/fallspeed.py": 8,
+            "/gpuwrf/physics/mynn_pbl.py": 1,
+            "/gpuwrf/physics/nssl2mom/gs_c.py": 5,
+            "/gpuwrf/diagnostics/census.py": 33
+          },
+          "function_counts": [
+            {
+              "file": "/gpuwrf/physics/nssl2mom/mathfun.py",
+              "function": "gamxinfdp",
+              "instructions": 144
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_b.py",
+              "function": "gs_part_b",
+              "instructions": 40
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_b.py",
+              "function": "_iacr_interp",
+              "instructions": 39
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/mathfun.py",
+              "function": "gaminterp",
+              "instructions": 35
+            },
+            {
+              "file": "/gpuwrf/diagnostics/census.py",
+              "function": "observe_f2_state",
+              "instructions": 33
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/mathfun.py",
+              "function": "iacr_table",
+              "instructions": 27
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_b.py",
+              "function": "_bigg_rain",
+              "instructions": 10
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/mathfun.py",
+              "function": "_gamxinflu_node",
+              "instructions": 10
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_a.py",
+              "function": "_post_setvtz",
+              "instructions": 6
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/fallspeed.py",
+              "function": "setvtz",
+              "instructions": 6
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_b.py",
+              "function": "gs_part_b.<locals>.<lambda>",
+              "instructions": 6
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_c.py",
+              "function": "gs_part_c",
+              "instructions": 5
+            }
+          ],
+          "native_STACK_B": 504
+        },
+        "input_add_convert_select_transpose_fusion": {
+          "fusion": "input_add_convert_select_transpose_fusion",
+          "body_instructions": 665,
+          "attributed_instructions": 454,
+          "radar_stack_instructions": 0,
+          "file_counts": {
+            "/gpuwrf/physics/nssl2mom/gs_c.py": 140,
+            "/gpuwrf/physics/nssl2mom/gs_b.py": 181,
+            "/gpuwrf/physics/nssl2mom/gs_a.py": 110,
+            "/gpuwrf/physics/nssl2mom/fallspeed.py": 19,
+            "/gpuwrf/coupling/physics_couplers.py": 3,
+            "/gpuwrf/physics/mynn_pbl.py": 1
+          },
+          "function_counts": [
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_c.py",
+              "function": "gs_part_c",
+              "instructions": 128
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_b.py",
+              "function": "gs_part_b",
+              "instructions": 121
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_a.py",
+              "function": "_post_setvtz",
+              "instructions": 82
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_b.py",
+              "function": "_bigg_rain",
+              "instructions": 20
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/fallspeed.py",
+              "function": "setvtz",
+              "instructions": 19
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_a.py",
+              "function": "gs_part_a",
+              "instructions": 16
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_b.py",
+              "function": "_bigg_droplets",
+              "instructions": 14
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_b.py",
+              "function": "gs_part_b.<locals>.<lambda>",
+              "instructions": 12
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_a.py",
+              "function": "_post_setvtz.<locals>.<lambda>",
+              "instructions": 10
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_b.py",
+              "function": "_melting",
+              "instructions": 9
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_c.py",
+              "function": "gs_part_c.<locals>.sc",
+              "instructions": 4
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_c.py",
+              "function": "gs_part_c.<locals>.scr",
+              "instructions": 4
+            }
+          ],
+          "native_STACK_B": 0
+        },
+        "input_add_and_transpose_fusion": {
+          "fusion": "input_add_and_transpose_fusion",
+          "body_instructions": 728,
+          "attributed_instructions": 535,
+          "radar_stack_instructions": 0,
+          "file_counts": {
+            "/gpuwrf/physics/nssl2mom/gs_a.py": 60,
+            "/gpuwrf/physics/nssl2mom/gs_c.py": 310,
+            "/gpuwrf/physics/nssl2mom/gs_b.py": 145,
+            "/gpuwrf/physics/nssl2mom/fallspeed.py": 17,
+            "/gpuwrf/physics/mynn_pbl.py": 1,
+            "/gpuwrf/coupling/physics_couplers.py": 1,
+            "/gpuwrf/physics/nssl2mom/sediment.py": 1
+          },
+          "function_counts": [
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_c.py",
+              "function": "gs_part_c",
+              "instructions": 249
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_b.py",
+              "function": "gs_part_b",
+              "instructions": 81
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_a.py",
+              "function": "_post_setvtz",
+              "instructions": 30
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_c.py",
+              "function": "gs_part_c.<locals>.vap_d",
+              "instructions": 21
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_c.py",
+              "function": "gs_part_c.<locals>.vap_i",
+              "instructions": 20
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_a.py",
+              "function": "gs_part_a",
+              "instructions": 19
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_b.py",
+              "function": "_bigg_rain",
+              "instructions": 18
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/fallspeed.py",
+              "function": "setvtz",
+              "instructions": 17
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_b.py",
+              "function": "_bigg_droplets",
+              "instructions": 14
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_b.py",
+              "function": "gs_part_b.<locals>.<lambda>",
+              "instructions": 12
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_c.py",
+              "function": "gs_part_c.<locals>.srr",
+              "instructions": 10
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_a.py",
+              "function": "_post_setvtz.<locals>.<lambda>",
+              "instructions": 10
+            }
+          ],
+          "native_STACK_B": 0
+        }
+      },
+      "radar_attributed_fusions": [],
+      "radar_native_matched_count": 0,
+      "radar_native_max_STACK_B": null
+    },
+    {
+      "case": "mp18-r3",
+      "map_path": "<DATA_ROOT>/wrf_gpu2/scratch/t-e41opt/EO42_mp18_r3/source_map.json",
+      "map_sha256": "325176e81d8a8c722fab966b2207f04391a29aeef21ae61ebb7bbecf73151dc7",
+      "blob_sha256": "33aac465b79f8d8f7f8404c93b689c74b63a87b24fd62d5adf375b6b5eedc9fc",
+      "max_STACK_fusion": {
+        "fusion": "input_add_and_divide_maximum_minimum_multiply_select_subtract_transpose_fusion",
+        "body_instructions": 1172,
+        "attributed_instructions": 880,
+        "radar_stack_instructions": 0,
+        "file_counts": {
+          "/gpuwrf/physics/nssl2mom/gs_c.py": 580,
+          "/gpuwrf/physics/nssl2mom/gs_a.py": 132,
+          "/gpuwrf/physics/nssl2mom/gs_b.py": 126,
+          "/gpuwrf/physics/nssl2mom/fallspeed.py": 16,
+          "/gpuwrf/physics/nssl2mom/satfun.py": 19,
+          "/gpuwrf/coupling/physics_couplers.py": 4,
+          "/gpuwrf/physics/nssl2mom/driver.py": 1,
+          "/gpuwrf/physics/nssl2mom/sediment.py": 1,
+          "/gpuwrf/physics/mynn_pbl.py": 1
+        },
+        "function_counts": [
+          {
+            "file": "/gpuwrf/physics/nssl2mom/gs_c.py",
+            "function": "gs_part_c",
+            "instructions": 576
+          },
+          {
+            "file": "/gpuwrf/physics/nssl2mom/gs_b.py",
+            "function": "gs_part_b",
+            "instructions": 67
+          },
+          {
+            "file": "/gpuwrf/physics/nssl2mom/gs_a.py",
+            "function": "gs_part_a",
+            "instructions": 61
+          },
+          {
+            "file": "/gpuwrf/physics/nssl2mom/gs_a.py",
+            "function": "_post_setvtz",
+            "instructions": 51
+          },
+          {
+            "file": "/gpuwrf/physics/nssl2mom/gs_b.py",
+            "function": "_melting",
+            "instructions": 30
+          },
+          {
+            "file": "/gpuwrf/physics/nssl2mom/gs_a.py",
+            "function": "_post_setvtz.<locals>.<lambda>",
+            "instructions": 19
+          },
+          {
+            "file": "/gpuwrf/physics/nssl2mom/fallspeed.py",
+            "function": "setvtz",
+            "instructions": 16
+          },
+          {
+            "file": "/gpuwrf/physics/nssl2mom/gs_b.py",
+            "function": "_ventilation",
+            "instructions": 13
+          },
+          {
+            "file": "/gpuwrf/physics/nssl2mom/satfun.py",
+            "function": "ltemq_index",
+            "instructions": 9
+          },
+          {
+            "file": "/gpuwrf/physics/nssl2mom/gs_b.py",
+            "function": "_deposition",
+            "instructions": 9
+          },
+          {
+            "file": "/gpuwrf/physics/nssl2mom/gs_b.py",
+            "function": "gs_part_b.<locals>.<lambda>",
+            "instructions": 6
+          },
+          {
+            "file": "/gpuwrf/physics/nssl2mom/satfun.py",
+            "function": "tabqvs",
+            "instructions": 5
+          }
+        ],
+        "native_STACK_B": 1336
+      },
+      "all_flagged_fusions": {
+        "input_add_compare_convert_maximum_minimum_select_subtract_transpose_fusion": {
+          "fusion": "input_add_compare_convert_maximum_minimum_select_subtract_transpose_fusion",
+          "body_instructions": 1128,
+          "attributed_instructions": 748,
+          "radar_stack_instructions": 0,
+          "file_counts": {
+            "/gpuwrf/physics/nssl2mom/gs_c.py": 56,
+            "/gpuwrf/physics/nssl2mom/gs_b.py": 387,
+            "/gpuwrf/physics/nssl2mom/fallspeed.py": 82,
+            "/gpuwrf/physics/nssl2mom/gs_a.py": 182,
+            "/gpuwrf/physics/nssl2mom/driver.py": 5,
+            "/gpuwrf/physics/nssl2mom/satfun.py": 32,
+            "/gpuwrf/coupling/physics_couplers.py": 2,
+            "/gpuwrf/physics/nssl2mom/sediment.py": 1,
+            "/gpuwrf/physics/mynn_pbl.py": 1
+          },
+          "function_counts": [
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_b.py",
+              "function": "gs_part_b",
+              "instructions": 176
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_b.py",
+              "function": "_deposition",
+              "instructions": 87
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/fallspeed.py",
+              "function": "setvtz",
+              "instructions": 81
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_a.py",
+              "function": "gs_part_a",
+              "instructions": 79
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_a.py",
+              "function": "_post_setvtz",
+              "instructions": 73
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_b.py",
+              "function": "_contact_freezing",
+              "instructions": 65
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_c.py",
+              "function": "gs_part_c",
+              "instructions": 56
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_b.py",
+              "function": "gs_part_b.<locals>.<lambda>",
+              "instructions": 22
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_b.py",
+              "function": "_bigg_droplets",
+              "instructions": 20
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_a.py",
+              "function": "_post_setvtz.<locals>.<lambda>",
+              "instructions": 13
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/satfun.py",
+              "function": "tabqis",
+              "instructions": 12
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_a.py",
+              "function": "gs_part_a.<locals>._num",
+              "instructions": 12
+            }
+          ],
+          "native_STACK_B": 0
+        },
+        "input_compare_divide_minimum_multiply_select_transpose_fusion": {
+          "fusion": "input_compare_divide_minimum_multiply_select_transpose_fusion",
+          "body_instructions": 662,
+          "attributed_instructions": 431,
+          "radar_stack_instructions": 0,
+          "file_counts": {
+            "/gpuwrf/physics/nssl2mom/gs_c.py": 47,
+            "/gpuwrf/physics/nssl2mom/gs_a.py": 149,
+            "/gpuwrf/physics/nssl2mom/gs_b.py": 198,
+            "/gpuwrf/physics/nssl2mom/fallspeed.py": 12,
+            "/gpuwrf/physics/mynn_pbl.py": 1,
+            "/gpuwrf/coupling/physics_couplers.py": 3,
+            "/gpuwrf/physics/nssl2mom/driver.py": 1,
+            "/gpuwrf/physics/nssl2mom/satfun.py": 19,
+            "/gpuwrf/physics/nssl2mom/sediment.py": 1
+          },
+          "function_counts": [
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_b.py",
+              "function": "gs_part_b",
+              "instructions": 110
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_a.py",
+              "function": "gs_part_a",
+              "instructions": 78
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_a.py",
+              "function": "_post_setvtz",
+              "instructions": 54
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_c.py",
+              "function": "gs_part_c",
+              "instructions": 47
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_b.py",
+              "function": "gs_part_b.<locals>.<lambda>",
+              "instructions": 27
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_b.py",
+              "function": "_deposition",
+              "instructions": 26
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_b.py",
+              "function": "_ventilation",
+              "instructions": 24
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/fallspeed.py",
+              "function": "setvtz",
+              "instructions": 12
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_a.py",
+              "function": "_post_setvtz.<locals>.<lambda>",
+              "instructions": 10
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_b.py",
+              "function": "_melting",
+              "instructions": 9
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/satfun.py",
+              "function": "ltemq_index",
+              "instructions": 9
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_a.py",
+              "function": "_w",
+              "instructions": 7
+            }
+          ],
+          "native_STACK_B": 0
+        },
+        "input_add_and_divide_maximum_minimum_multiply_select_subtract_transpose_fusion": {
+          "fusion": "input_add_and_divide_maximum_minimum_multiply_select_subtract_transpose_fusion",
+          "body_instructions": 1172,
+          "attributed_instructions": 880,
+          "radar_stack_instructions": 0,
+          "file_counts": {
+            "/gpuwrf/physics/nssl2mom/gs_c.py": 580,
+            "/gpuwrf/physics/nssl2mom/gs_a.py": 132,
+            "/gpuwrf/physics/nssl2mom/gs_b.py": 126,
+            "/gpuwrf/physics/nssl2mom/fallspeed.py": 16,
+            "/gpuwrf/physics/nssl2mom/satfun.py": 19,
+            "/gpuwrf/coupling/physics_couplers.py": 4,
+            "/gpuwrf/physics/nssl2mom/driver.py": 1,
+            "/gpuwrf/physics/nssl2mom/sediment.py": 1,
+            "/gpuwrf/physics/mynn_pbl.py": 1
+          },
+          "function_counts": [
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_c.py",
+              "function": "gs_part_c",
+              "instructions": 576
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_b.py",
+              "function": "gs_part_b",
+              "instructions": 67
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_a.py",
+              "function": "gs_part_a",
+              "instructions": 61
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_a.py",
+              "function": "_post_setvtz",
+              "instructions": 51
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_b.py",
+              "function": "_melting",
+              "instructions": 30
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_a.py",
+              "function": "_post_setvtz.<locals>.<lambda>",
+              "instructions": 19
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/fallspeed.py",
+              "function": "setvtz",
+              "instructions": 16
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_b.py",
+              "function": "_ventilation",
+              "instructions": 13
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/satfun.py",
+              "function": "ltemq_index",
+              "instructions": 9
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_b.py",
+              "function": "_deposition",
+              "instructions": 9
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_b.py",
+              "function": "gs_part_b.<locals>.<lambda>",
+              "instructions": 6
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/satfun.py",
+              "function": "tabqvs",
+              "instructions": 5
+            }
+          ],
+          "native_STACK_B": 1336
+        },
+        "input_add_and_compare_divide_minimum_select_transpose_fusion": {
+          "fusion": "input_add_and_compare_divide_minimum_select_transpose_fusion",
+          "body_instructions": 835,
+          "attributed_instructions": 583,
+          "radar_stack_instructions": 0,
+          "file_counts": {
+            "/gpuwrf/physics/nssl2mom/gs_a.py": 111,
+            "/gpuwrf/physics/nssl2mom/gs_c.py": 259,
+            "/gpuwrf/physics/nssl2mom/gs_b.py": 153,
+            "/gpuwrf/physics/nssl2mom/fallspeed.py": 16,
+            "/gpuwrf/coupling/physics_couplers.py": 4,
+            "/gpuwrf/physics/mynn_pbl.py": 1,
+            "/gpuwrf/physics/nssl2mom/sediment.py": 1,
+            "/gpuwrf/runtime/operational_mode.py": 1,
+            "/gpuwrf/physics/nssl2mom/driver.py": 16,
+            "/gpuwrf/physics/nssl2mom/satfun.py": 19,
+            "/gpuwrf/physics/nssl2mom/adapter.py": 1,
+            "/gpuwrf/physics/noahmp/phenology.py": 1
+          },
+          "function_counts": [
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_c.py",
+              "function": "gs_part_c",
+              "instructions": 225
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_b.py",
+              "function": "gs_part_b",
+              "instructions": 68
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_a.py",
+              "function": "gs_part_a.<locals>.<lambda>",
+              "instructions": 45
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_b.py",
+              "function": "_bigg_rain",
+              "instructions": 29
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_a.py",
+              "function": "_post_setvtz",
+              "instructions": 28
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_a.py",
+              "function": "gs_part_a",
+              "instructions": 26
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_b.py",
+              "function": "_bigg_droplets",
+              "instructions": 18
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/fallspeed.py",
+              "function": "setvtz",
+              "instructions": 16
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_c.py",
+              "function": "gs_part_c.<locals>.sc",
+              "instructions": 16
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/driver.py",
+              "function": "pack",
+              "instructions": 16
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_b.py",
+              "function": "_deposition",
+              "instructions": 13
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_c.py",
+              "function": "gs_part_c.<locals>.srr",
+              "instructions": 12
+            }
+          ],
+          "native_STACK_B": 0
+        },
+        "input_add_select_transpose_fusion_1": {
+          "fusion": "input_add_select_transpose_fusion_1",
+          "body_instructions": 562,
+          "attributed_instructions": 383,
+          "radar_stack_instructions": 0,
+          "file_counts": {
+            "/gpuwrf/physics/nssl2mom/gs_a.py": 47,
+            "/gpuwrf/physics/nssl2mom/gs_c.py": 249,
+            "/gpuwrf/physics/nssl2mom/gs_b.py": 80,
+            "/gpuwrf/coupling/physics_couplers.py": 1,
+            "/gpuwrf/runtime/operational_mode.py": 1,
+            "/gpuwrf/physics/nssl2mom/fallspeed.py": 3,
+            "/gpuwrf/physics/nssl2mom/sediment.py": 1,
+            "/gpuwrf/physics/nssl2mom/driver.py": 1
+          },
+          "function_counts": [
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_c.py",
+              "function": "gs_part_c",
+              "instructions": 201
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_a.py",
+              "function": "gs_part_a",
+              "instructions": 23
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_c.py",
+              "function": "gs_part_c.<locals>.srr",
+              "instructions": 20
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_b.py",
+              "function": "gs_part_b",
+              "instructions": 20
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_b.py",
+              "function": "_bigg_droplets",
+              "instructions": 18
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_b.py",
+              "function": "_bigg_rain",
+              "instructions": 16
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_a.py",
+              "function": "_post_setvtz",
+              "instructions": 14
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_a.py",
+              "function": "_post_setvtz.<locals>.<lambda>",
+              "instructions": 10
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_b.py",
+              "function": "_melting",
+              "instructions": 10
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_c.py",
+              "function": "gs_part_c.<locals>.sc",
+              "instructions": 10
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_c.py",
+              "function": "gs_part_c.<locals>.scw",
+              "instructions": 10
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_c.py",
+              "function": "gs_part_c.<locals>.ssw",
+              "instructions": 8
+            }
+          ],
+          "native_STACK_B": 0
+        },
+        "input_add_or_select_subtract_transpose_fusion": {
+          "fusion": "input_add_or_select_subtract_transpose_fusion",
+          "body_instructions": 1041,
+          "attributed_instructions": 736,
+          "radar_stack_instructions": 0,
+          "file_counts": {
+            "/gpuwrf/physics/nssl2mom/gs_c.py": 286,
+            "/gpuwrf/physics/nssl2mom/gs_a.py": 134,
+            "/gpuwrf/physics/nssl2mom/gs_b.py": 253,
+            "/gpuwrf/physics/nssl2mom/fallspeed.py": 33,
+            "/gpuwrf/coupling/physics_couplers.py": 4,
+            "/gpuwrf/physics/mynn_pbl.py": 1,
+            "/gpuwrf/physics/nssl2mom/driver.py": 1,
+            "/gpuwrf/physics/nssl2mom/satfun.py": 24
+          },
+          "function_counts": [
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_c.py",
+              "function": "gs_part_c",
+              "instructions": 270
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_b.py",
+              "function": "gs_part_b",
+              "instructions": 166
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_a.py",
+              "function": "_post_setvtz",
+              "instructions": 82
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/fallspeed.py",
+              "function": "setvtz",
+              "instructions": 33
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_a.py",
+              "function": "gs_part_a",
+              "instructions": 32
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_b.py",
+              "function": "gs_part_b.<locals>.<lambda>",
+              "instructions": 32
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_b.py",
+              "function": "_bigg_rain",
+              "instructions": 26
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_b.py",
+              "function": "_bigg_droplets",
+              "instructions": 14
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_a.py",
+              "function": "_post_setvtz.<locals>.<lambda>",
+              "instructions": 10
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_b.py",
+              "function": "_melting",
+              "instructions": 10
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/satfun.py",
+              "function": "ltemq_index",
+              "instructions": 9
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_c.py",
+              "function": "gs_part_c.<locals>.sc",
+              "instructions": 8
+            }
+          ],
+          "native_STACK_B": 0
+        },
+        "input_add_select_transpose_fusion": {
+          "fusion": "input_add_select_transpose_fusion",
+          "body_instructions": 724,
+          "attributed_instructions": 529,
+          "radar_stack_instructions": 0,
+          "file_counts": {
+            "/gpuwrf/physics/nssl2mom/gs_a.py": 33,
+            "/gpuwrf/physics/nssl2mom/gs_c.py": 289,
+            "/gpuwrf/physics/nssl2mom/gs_b.py": 49,
+            "/gpuwrf/coupling/physics_couplers.py": 1,
+            "/gpuwrf/runtime/operational_mode.py": 1,
+            "/gpuwrf/physics/mynn_pbl.py": 1,
+            "/gpuwrf/physics/nssl2mom/fallspeed.py": 12,
+            "/gpuwrf/physics/nssl2mom/mathfun.py": 143
+          },
+          "function_counts": [
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_c.py",
+              "function": "gs_part_c",
+              "instructions": 253
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/mathfun.py",
+              "function": "gamxinfdp",
+              "instructions": 92
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/mathfun.py",
+              "function": "gaminterp",
+              "instructions": 35
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_b.py",
+              "function": "_melting",
+              "instructions": 19
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_b.py",
+              "function": "gs_part_b",
+              "instructions": 15
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_a.py",
+              "function": "_post_setvtz",
+              "instructions": 13
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_b.py",
+              "function": "_bigg_rain",
+              "instructions": 13
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_c.py",
+              "function": "gs_part_c.<locals>.srr",
+              "instructions": 12
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_c.py",
+              "function": "gs_part_c.<locals>.sc",
+              "instructions": 10
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_a.py",
+              "function": "_post_setvtz.<locals>.<lambda>",
+              "instructions": 10
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/mathfun.py",
+              "function": "_gamxinflu_node",
+              "instructions": 10
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/fallspeed.py",
+              "function": "setvtz",
+              "instructions": 9
+            }
+          ],
+          "native_STACK_B": 0
+        }
+      },
+      "radar_attributed_fusions": [
+        {
+          "fusion": "input_multiply_power_transpose_fusion",
+          "body_instructions": 36,
+          "attributed_instructions": 19,
+          "radar_stack_instructions": 3,
+          "file_counts": {
+            "/gpuwrf/physics/thompson_column.py": 5,
+            "/gpuwrf/coupling/physics_couplers.py": 7,
+            "/gpuwrf/physics/nssl2mom/adapter.py": 2,
+            "/gpuwrf/physics/nssl2mom/diagnostics.py": 3,
+            "/gpuwrf/physics/nssl2mom/cleanup.py": 2
+          },
+          "function_counts": [
+            {
+              "file": "/gpuwrf/physics/thompson_column.py",
+              "function": "density_from_pressure_temperature",
+              "instructions": 5
+            },
+            {
+              "file": "/gpuwrf/coupling/physics_couplers.py",
+              "function": "_temperature_from_theta",
+              "instructions": 4
+            },
+            {
+              "file": "/gpuwrf/coupling/physics_couplers.py",
+              "function": "_dry_theta_view",
+              "instructions": 3
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/diagnostics.py",
+              "function": "radardd02",
+              "instructions": 3
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/adapter.py",
+              "function": "nssl2mom_adapter",
+              "instructions": 2
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/cleanup.py",
+              "function": "calcnfromq",
+              "instructions": 2
+            }
+          ],
+          "native_STACK_B": 0
+        },
+        {
+          "fusion": "input_compare_slice_transpose_fusion",
+          "body_instructions": 252,
+          "attributed_instructions": 122,
+          "radar_stack_instructions": 5,
+          "file_counts": {
+            "/gpuwrf/physics/nssl2mom/gs_b.py": 2,
+            "/gpuwrf/physics/nssl2mom/gs_c.py": 52,
+            "/gpuwrf/physics/nssl2mom/gs_a.py": 10,
+            "/gpuwrf/physics/noahmp/phenology.py": 1,
+            "/gpuwrf/diagnostics/census.py": 2,
+            "/gpuwrf/physics/nssl2mom/driver.py": 14,
+            "/gpuwrf/physics/nssl2mom/nucond.py": 7,
+            "/gpuwrf/physics/nssl2mom/cleanup.py": 28,
+            "/gpuwrf/physics/nssl2mom/diagnostics.py": 6
+          },
+          "function_counts": [
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_c.py",
+              "function": "gs_part_c",
+              "instructions": 50
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/cleanup.py",
+              "function": "smallvalues",
+              "instructions": 23
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_a.py",
+              "function": "gs_part_a",
+              "instructions": 10
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/driver.py",
+              "function": "unpack",
+              "instructions": 10
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/nucond.py",
+              "function": "nucond",
+              "instructions": 7
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/cleanup.py",
+              "function": "_rimed_ice_check",
+              "instructions": 5
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/diagnostics.py",
+              "function": "radardd02",
+              "instructions": 5
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/driver.py",
+              "function": "pack",
+              "instructions": 4
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_b.py",
+              "function": "_iacr_interp",
+              "instructions": 2
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_c.py",
+              "function": "gs_part_c.<locals>.vap_d",
+              "instructions": 2
+            },
+            {
+              "file": "/gpuwrf/diagnostics/census.py",
+              "function": "observe_f2_state",
+              "instructions": 2
+            },
+            {
+              "file": "/gpuwrf/physics/noahmp/phenology.py",
+              "function": "noahmp_phenology_table.<locals>._pick",
+              "instructions": 1
+            }
+          ],
+          "native_STACK_B": 0
+        },
+        {
+          "fusion": "input_and_slice_transpose_fusion",
+          "body_instructions": 360,
+          "attributed_instructions": 178,
+          "radar_stack_instructions": 13,
+          "file_counts": {
+            "/gpuwrf/runtime/operational_mode.py": 9,
+            "/gpuwrf/physics/nssl2mom/gs_b.py": 2,
+            "/gpuwrf/physics/nssl2mom/gs_c.py": 52,
+            "/gpuwrf/physics/nssl2mom/gs_a.py": 10,
+            "/gpuwrf/physics/noahmp/phenology.py": 1,
+            "/gpuwrf/diagnostics/census.py": 2,
+            "/gpuwrf/physics/nssl2mom/driver.py": 36,
+            "/gpuwrf/physics/nssl2mom/nucond.py": 7,
+            "/gpuwrf/physics/nssl2mom/cleanup.py": 28,
+            "/gpuwrf/kernels/layout_pin.py": 11,
+            "/gpuwrf/physics/nssl2mom/diagnostics.py": 20
+          },
+          "function_counts": [
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_c.py",
+              "function": "gs_part_c",
+              "instructions": 50
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/driver.py",
+              "function": "unpack",
+              "instructions": 32
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/cleanup.py",
+              "function": "smallvalues",
+              "instructions": 23
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/diagnostics.py",
+              "function": "radardd02",
+              "instructions": 13
+            },
+            {
+              "file": "/gpuwrf/kernels/layout_pin.py",
+              "function": "row_major",
+              "instructions": 11
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_a.py",
+              "function": "gs_part_a",
+              "instructions": 10
+            },
+            {
+              "file": "/gpuwrf/runtime/operational_mode.py",
+              "function": "_microphysics_interior_only",
+              "instructions": 9
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/nucond.py",
+              "function": "nucond",
+              "instructions": 7
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/diagnostics.py",
+              "function": "eff_radius.<locals>.radius",
+              "instructions": 7
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/cleanup.py",
+              "function": "_rimed_ice_check",
+              "instructions": 5
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/driver.py",
+              "function": "pack",
+              "instructions": 4
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_b.py",
+              "function": "_iacr_interp",
+              "instructions": 2
+            }
+          ],
+          "native_STACK_B": 0
+        },
+        {
+          "fusion": "input_and_transpose_fusion_1",
+          "body_instructions": 342,
+          "attributed_instructions": 167,
+          "radar_stack_instructions": 21,
+          "file_counts": {
+            "/gpuwrf/physics/nssl2mom/gs_b.py": 2,
+            "/gpuwrf/physics/nssl2mom/gs_c.py": 52,
+            "/gpuwrf/physics/nssl2mom/gs_a.py": 10,
+            "/gpuwrf/physics/noahmp/phenology.py": 1,
+            "/gpuwrf/diagnostics/census.py": 6,
+            "/gpuwrf/physics/nssl2mom/driver.py": 30,
+            "/gpuwrf/physics/nssl2mom/nucond.py": 7,
+            "/gpuwrf/physics/nssl2mom/cleanup.py": 28,
+            "/gpuwrf/physics/nssl2mom/diagnostics.py": 22,
+            "/gpuwrf/runtime/operational_mode.py": 7,
+            "/gpuwrf/kernels/layout_pin.py": 2
+          },
+          "function_counts": [
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_c.py",
+              "function": "gs_part_c",
+              "instructions": 50
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/driver.py",
+              "function": "unpack",
+              "instructions": 25
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/cleanup.py",
+              "function": "smallvalues",
+              "instructions": 23
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/diagnostics.py",
+              "function": "radardd02",
+              "instructions": 21
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_a.py",
+              "function": "gs_part_a",
+              "instructions": 10
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/nucond.py",
+              "function": "nucond",
+              "instructions": 7
+            },
+            {
+              "file": "/gpuwrf/runtime/operational_mode.py",
+              "function": "_microphysics_interior_only",
+              "instructions": 7
+            },
+            {
+              "file": "/gpuwrf/diagnostics/census.py",
+              "function": "observe_f2_state",
+              "instructions": 6
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/cleanup.py",
+              "function": "_rimed_ice_check",
+              "instructions": 5
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/driver.py",
+              "function": "pack",
+              "instructions": 4
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_b.py",
+              "function": "_iacr_interp",
+              "instructions": 2
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_c.py",
+              "function": "gs_part_c.<locals>.vap_d",
+              "instructions": 2
+            }
+          ],
+          "native_STACK_B": 0
+        },
+        {
+          "fusion": "input_divide_select_slice_transpose_fusion",
+          "body_instructions": 400,
+          "attributed_instructions": 219,
+          "radar_stack_instructions": 80,
+          "file_counts": {
+            "/gpuwrf/physics/nssl2mom/driver.py": 19,
+            "/gpuwrf/physics/nssl2mom/diagnostics.py": 98,
+            "/gpuwrf/physics/nssl2mom/gs_b.py": 2,
+            "/gpuwrf/physics/nssl2mom/gs_c.py": 52,
+            "/gpuwrf/physics/nssl2mom/gs_a.py": 10,
+            "/gpuwrf/physics/noahmp/phenology.py": 1,
+            "/gpuwrf/diagnostics/census.py": 2,
+            "/gpuwrf/physics/nssl2mom/nucond.py": 7,
+            "/gpuwrf/physics/nssl2mom/cleanup.py": 28
+          },
+          "function_counts": [
+            {
+              "file": "/gpuwrf/physics/nssl2mom/diagnostics.py",
+              "function": "radardd02",
+              "instructions": 80
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_c.py",
+              "function": "gs_part_c",
+              "instructions": 50
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/cleanup.py",
+              "function": "smallvalues",
+              "instructions": 23
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/diagnostics.py",
+              "function": "eff_radius.<locals>.radius",
+              "instructions": 18
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/driver.py",
+              "function": "nssl2mom_column.<locals>.active",
+              "instructions": 15
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_a.py",
+              "function": "gs_part_a",
+              "instructions": 10
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/nucond.py",
+              "function": "nucond",
+              "instructions": 7
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/cleanup.py",
+              "function": "_rimed_ice_check",
+              "instructions": 5
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/driver.py",
+              "function": "pack",
+              "instructions": 4
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_b.py",
+              "function": "_iacr_interp",
+              "instructions": 2
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_c.py",
+              "function": "gs_part_c.<locals>.vap_d",
+              "instructions": 2
+            },
+            {
+              "file": "/gpuwrf/diagnostics/census.py",
+              "function": "observe_f2_state",
+              "instructions": 2
+            }
+          ],
+          "native_STACK_B": 0
+        },
+        {
+          "fusion": "input_transpose_fusion_349",
+          "body_instructions": 233,
+          "attributed_instructions": 109,
+          "radar_stack_instructions": 3,
+          "file_counts": {
+            "/gpuwrf/physics/nssl2mom/gs_b.py": 2,
+            "/gpuwrf/physics/nssl2mom/gs_c.py": 52,
+            "/gpuwrf/physics/nssl2mom/gs_a.py": 10,
+            "/gpuwrf/physics/noahmp/phenology.py": 1,
+            "/gpuwrf/diagnostics/census.py": 2,
+            "/gpuwrf/physics/nssl2mom/driver.py": 4,
+            "/gpuwrf/physics/nssl2mom/nucond.py": 7,
+            "/gpuwrf/physics/nssl2mom/cleanup.py": 28,
+            "/gpuwrf/physics/nssl2mom/diagnostics.py": 3
+          },
+          "function_counts": [
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_c.py",
+              "function": "gs_part_c",
+              "instructions": 50
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/cleanup.py",
+              "function": "smallvalues",
+              "instructions": 23
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_a.py",
+              "function": "gs_part_a",
+              "instructions": 10
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/nucond.py",
+              "function": "nucond",
+              "instructions": 7
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/cleanup.py",
+              "function": "_rimed_ice_check",
+              "instructions": 5
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/driver.py",
+              "function": "pack",
+              "instructions": 4
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/diagnostics.py",
+              "function": "radardd02",
+              "instructions": 3
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_b.py",
+              "function": "_iacr_interp",
+              "instructions": 2
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_c.py",
+              "function": "gs_part_c.<locals>.vap_d",
+              "instructions": 2
+            },
+            {
+              "file": "/gpuwrf/diagnostics/census.py",
+              "function": "observe_f2_state",
+              "instructions": 2
+            },
+            {
+              "file": "/gpuwrf/physics/noahmp/phenology.py",
+              "function": "noahmp_phenology_table.<locals>._pick",
+              "instructions": 1
+            }
+          ],
+          "native_STACK_B": 0
+        },
+        {
+          "fusion": "loop_and_compare_multiply_select_slice_fusion",
+          "body_instructions": 350,
+          "attributed_instructions": 203,
+          "radar_stack_instructions": 45,
+          "file_counts": {
+            "/gpuwrf/physics/nssl2mom/gs_b.py": 2,
+            "/gpuwrf/physics/nssl2mom/gs_c.py": 52,
+            "/gpuwrf/physics/nssl2mom/gs_a.py": 10,
+            "/gpuwrf/physics/noahmp/phenology.py": 1,
+            "/gpuwrf/diagnostics/census.py": 2,
+            "/gpuwrf/physics/nssl2mom/driver.py": 26,
+            "/gpuwrf/physics/nssl2mom/nucond.py": 7,
+            "/gpuwrf/physics/nssl2mom/cleanup.py": 28,
+            "/gpuwrf/physics/nssl2mom/diagnostics.py": 45,
+            "/gpuwrf/coupling/boundary_apply.py": 3,
+            "/gpuwrf/runtime/operational_mode.py": 11,
+            "/gpuwrf/physics/nssl2mom/adapter.py": 16
+          },
+          "function_counts": [
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_c.py",
+              "function": "gs_part_c",
+              "instructions": 50
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/diagnostics.py",
+              "function": "radardd02",
+              "instructions": 45
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/cleanup.py",
+              "function": "smallvalues",
+              "instructions": 23
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/adapter.py",
+              "function": "nssl2mom_adapter",
+              "instructions": 16
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_a.py",
+              "function": "gs_part_a",
+              "instructions": 10
+            },
+            {
+              "file": "/gpuwrf/runtime/operational_mode.py",
+              "function": "_microphysics_interior_only",
+              "instructions": 10
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/driver.py",
+              "function": "bind_precip",
+              "instructions": 9
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/nucond.py",
+              "function": "nucond",
+              "instructions": 7
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/driver.py",
+              "function": "nssl2mom_column.<locals>.active",
+              "instructions": 6
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/cleanup.py",
+              "function": "_rimed_ice_check",
+              "instructions": 5
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/driver.py",
+              "function": "liquid_rain",
+              "instructions": 5
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/driver.py",
+              "function": "pack",
+              "instructions": 4
+            }
+          ],
+          "native_STACK_B": 0
+        },
+        {
+          "fusion": "input_transpose_fusion_450",
+          "body_instructions": 9,
+          "attributed_instructions": 4,
+          "radar_stack_instructions": 4,
+          "file_counts": {
+            "/gpuwrf/physics/nssl2mom/diagnostics.py": 4
+          },
+          "function_counts": [
+            {
+              "file": "/gpuwrf/physics/nssl2mom/diagnostics.py",
+              "function": "radardd02",
+              "instructions": 4
+            }
+          ],
+          "native_STACK_B": 0
+        },
+        {
+          "fusion": "input_transpose_fusion_116",
+          "body_instructions": 289,
+          "attributed_instructions": 212,
+          "radar_stack_instructions": 138,
+          "file_counts": {
+            "/gpuwrf/diagnostics/online.py": 34,
+            "/gpuwrf/runtime/operational_mode.py": 5,
+            "/gpuwrf/physics/nssl2mom/driver.py": 33,
+            "/gpuwrf/physics/nssl2mom/diagnostics.py": 138,
+            "/gpuwrf/physics/nssl2mom/gs_b.py": 1,
+            "/gpuwrf/kernels/layout_pin.py": 1
+          },
+          "function_counts": [
+            {
+              "file": "/gpuwrf/physics/nssl2mom/diagnostics.py",
+              "function": "radardd02",
+              "instructions": 138
+            },
+            {
+              "file": "/gpuwrf/diagnostics/online.py",
+              "function": "radar_from_context",
+              "instructions": 28
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/driver.py",
+              "function": "nssl2mom_column.<locals>.active",
+              "instructions": 26
+            },
+            {
+              "file": "/gpuwrf/diagnostics/online.py",
+              "function": "history_due",
+              "instructions": 6
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/driver.py",
+              "function": "nssl2mom_column",
+              "instructions": 6
+            },
+            {
+              "file": "/gpuwrf/runtime/operational_mode.py",
+              "function": "_apply_post_rk_microphysics",
+              "instructions": 2
+            },
+            {
+              "file": "/gpuwrf/runtime/operational_mode.py",
+              "function": "_acoustic_scan",
+              "instructions": 1
+            },
+            {
+              "file": "/gpuwrf/runtime/operational_mode.py",
+              "function": "_advance_chunk_fori.<locals>.body",
+              "instructions": 1
+            },
+            {
+              "file": "/gpuwrf/runtime/operational_mode.py",
+              "function": "_physics_boundary_step_with_limiter_diagnostics",
+              "instructions": 1
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_b.py",
+              "function": "_iacr_interp",
+              "instructions": 1
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/driver.py",
+              "function": "nssl2mom_column.<locals>.active.<locals>.bottom",
+              "instructions": 1
+            },
+            {
+              "file": "/gpuwrf/kernels/layout_pin.py",
+              "function": "row_major",
+              "instructions": 1
+            }
+          ],
+          "native_STACK_B": 0
+        }
+      ],
+      "radar_native_matched_count": 9,
+      "radar_native_max_STACK_B": 0
+    },
+    {
+      "case": "mp18_cu5-r3",
+      "map_path": "<DATA_ROOT>/wrf_gpu2/scratch/t-e41opt/EO43_mp18_cu5_r3/source_map.json",
+      "map_sha256": "d7e0d2f6752f667d801a62ffc23057fb6524d8ab10c4911b6b0343140cfc6c93",
+      "blob_sha256": "de5d4f340fb3af4486b31919ee567ebd2fc30a25e9b713c363db417ccddb5390",
+      "max_STACK_fusion": {
+        "fusion": "input_add_and_divide_maximum_minimum_multiply_select_subtract_transpose_fusion",
+        "body_instructions": 1172,
+        "attributed_instructions": 879,
+        "radar_stack_instructions": 0,
+        "file_counts": {
+          "/gpuwrf/physics/nssl2mom/gs_c.py": 580,
+          "/gpuwrf/physics/nssl2mom/gs_a.py": 132,
+          "/gpuwrf/physics/nssl2mom/gs_b.py": 126,
+          "/gpuwrf/physics/nssl2mom/fallspeed.py": 16,
+          "/gpuwrf/physics/nssl2mom/satfun.py": 19,
+          "/gpuwrf/physics/nssl2mom/driver.py": 1,
+          "/gpuwrf/coupling/physics_couplers.py": 3,
+          "/gpuwrf/physics/nssl2mom/sediment.py": 1,
+          "/gpuwrf/physics/mynn_pbl.py": 1
+        },
+        "function_counts": [
+          {
+            "file": "/gpuwrf/physics/nssl2mom/gs_c.py",
+            "function": "gs_part_c",
+            "instructions": 576
+          },
+          {
+            "file": "/gpuwrf/physics/nssl2mom/gs_b.py",
+            "function": "gs_part_b",
+            "instructions": 67
+          },
+          {
+            "file": "/gpuwrf/physics/nssl2mom/gs_a.py",
+            "function": "gs_part_a",
+            "instructions": 61
+          },
+          {
+            "file": "/gpuwrf/physics/nssl2mom/gs_a.py",
+            "function": "_post_setvtz",
+            "instructions": 51
+          },
+          {
+            "file": "/gpuwrf/physics/nssl2mom/gs_b.py",
+            "function": "_melting",
+            "instructions": 30
+          },
+          {
+            "file": "/gpuwrf/physics/nssl2mom/gs_a.py",
+            "function": "_post_setvtz.<locals>.<lambda>",
+            "instructions": 19
+          },
+          {
+            "file": "/gpuwrf/physics/nssl2mom/fallspeed.py",
+            "function": "setvtz",
+            "instructions": 16
+          },
+          {
+            "file": "/gpuwrf/physics/nssl2mom/gs_b.py",
+            "function": "_ventilation",
+            "instructions": 13
+          },
+          {
+            "file": "/gpuwrf/physics/nssl2mom/satfun.py",
+            "function": "ltemq_index",
+            "instructions": 9
+          },
+          {
+            "file": "/gpuwrf/physics/nssl2mom/gs_b.py",
+            "function": "_deposition",
+            "instructions": 9
+          },
+          {
+            "file": "/gpuwrf/physics/nssl2mom/gs_b.py",
+            "function": "gs_part_b.<locals>.<lambda>",
+            "instructions": 6
+          },
+          {
+            "file": "/gpuwrf/physics/nssl2mom/satfun.py",
+            "function": "tabqvs",
+            "instructions": 5
+          }
+        ],
+        "native_STACK_B": 1336
+      },
+      "all_flagged_fusions": {
+        "input_and_convert_minimum_multiply_select_transpose_fusion": {
+          "fusion": "input_and_convert_minimum_multiply_select_transpose_fusion",
+          "body_instructions": 1064,
+          "attributed_instructions": 790,
+          "radar_stack_instructions": 0,
+          "file_counts": {
+            "/gpuwrf/physics/nssl2mom/gs_a.py": 49,
+            "/gpuwrf/physics/nssl2mom/gs_b.py": 250,
+            "/gpuwrf/physics/nssl2mom/mathfun.py": 411,
+            "/gpuwrf/physics/nssl2mom/fallspeed.py": 60,
+            "/gpuwrf/physics/mynn_pbl.py": 1,
+            "/gpuwrf/physics/nssl2mom/gs_c.py": 17,
+            "/gpuwrf/coupling/physics_couplers.py": 1,
+            "/gpuwrf/physics/nssl2mom/sediment.py": 1
+          },
+          "function_counts": [
+            {
+              "file": "/gpuwrf/physics/nssl2mom/mathfun.py",
+              "function": "gamxinfdp",
+              "instructions": 310
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_b.py",
+              "function": "_iacr_interp",
+              "instructions": 98
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/mathfun.py",
+              "function": "iacr_table",
+              "instructions": 95
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_b.py",
+              "function": "gs_part_b",
+              "instructions": 92
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/fallspeed.py",
+              "function": "setvtz",
+              "instructions": 54
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_b.py",
+              "function": "_bigg_rain",
+              "instructions": 48
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_a.py",
+              "function": "_post_setvtz",
+              "instructions": 18
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_c.py",
+              "function": "gs_part_c",
+              "instructions": 17
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_a.py",
+              "function": "gs_part_a",
+              "instructions": 11
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_a.py",
+              "function": "_post_setvtz.<locals>.<lambda>",
+              "instructions": 11
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_a.py",
+              "function": "gs_part_a.<locals>._num",
+              "instructions": 7
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/fallspeed.py",
+              "function": "gmoi_interp",
+              "instructions": 6
+            }
+          ],
+          "native_STACK_B": 48
+        },
+        "input_add_compare_convert_maximum_minimum_select_subtract_transpose_fusion": {
+          "fusion": "input_add_compare_convert_maximum_minimum_select_subtract_transpose_fusion",
+          "body_instructions": 1134,
+          "attributed_instructions": 750,
+          "radar_stack_instructions": 0,
+          "file_counts": {
+            "/gpuwrf/physics/nssl2mom/gs_c.py": 56,
+            "/gpuwrf/physics/nssl2mom/gs_b.py": 387,
+            "/gpuwrf/physics/nssl2mom/fallspeed.py": 82,
+            "/gpuwrf/physics/nssl2mom/gs_a.py": 182,
+            "/gpuwrf/physics/nssl2mom/driver.py": 5,
+            "/gpuwrf/physics/nssl2mom/satfun.py": 32,
+            "/gpuwrf/coupling/physics_couplers.py": 1,
+            "/gpuwrf/physics/nssl2mom/sediment.py": 1,
+            "/gpuwrf/physics/mynn_pbl.py": 1,
+            "/gpuwrf/runtime/operational_mode.py": 1,
+            "/gpuwrf/diagnostics/census.py": 2
+          },
+          "function_counts": [
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_b.py",
+              "function": "gs_part_b",
+              "instructions": 176
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_b.py",
+              "function": "_deposition",
+              "instructions": 87
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/fallspeed.py",
+              "function": "setvtz",
+              "instructions": 81
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_a.py",
+              "function": "gs_part_a",
+              "instructions": 79
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_a.py",
+              "function": "_post_setvtz",
+              "instructions": 73
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_b.py",
+              "function": "_contact_freezing",
+              "instructions": 65
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_c.py",
+              "function": "gs_part_c",
+              "instructions": 56
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_b.py",
+              "function": "gs_part_b.<locals>.<lambda>",
+              "instructions": 22
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_b.py",
+              "function": "_bigg_droplets",
+              "instructions": 20
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_a.py",
+              "function": "_post_setvtz.<locals>.<lambda>",
+              "instructions": 13
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/satfun.py",
+              "function": "tabqis",
+              "instructions": 12
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_a.py",
+              "function": "gs_part_a.<locals>._num",
+              "instructions": 12
+            }
+          ],
+          "native_STACK_B": 0
+        },
+        "input_compare_divide_minimum_multiply_select_transpose_fusion": {
+          "fusion": "input_compare_divide_minimum_multiply_select_transpose_fusion",
+          "body_instructions": 660,
+          "attributed_instructions": 428,
+          "radar_stack_instructions": 0,
+          "file_counts": {
+            "/gpuwrf/physics/nssl2mom/gs_c.py": 47,
+            "/gpuwrf/physics/nssl2mom/gs_a.py": 147,
+            "/gpuwrf/physics/nssl2mom/gs_b.py": 198,
+            "/gpuwrf/physics/nssl2mom/fallspeed.py": 12,
+            "/gpuwrf/physics/mynn_pbl.py": 1,
+            "/gpuwrf/coupling/physics_couplers.py": 2,
+            "/gpuwrf/physics/nssl2mom/driver.py": 1,
+            "/gpuwrf/physics/nssl2mom/satfun.py": 19,
+            "/gpuwrf/physics/nssl2mom/sediment.py": 1
+          },
+          "function_counts": [
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_b.py",
+              "function": "gs_part_b",
+              "instructions": 110
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_a.py",
+              "function": "gs_part_a",
+              "instructions": 76
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_a.py",
+              "function": "_post_setvtz",
+              "instructions": 54
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_c.py",
+              "function": "gs_part_c",
+              "instructions": 47
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_b.py",
+              "function": "gs_part_b.<locals>.<lambda>",
+              "instructions": 27
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_b.py",
+              "function": "_deposition",
+              "instructions": 26
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_b.py",
+              "function": "_ventilation",
+              "instructions": 24
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/fallspeed.py",
+              "function": "setvtz",
+              "instructions": 12
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_a.py",
+              "function": "_post_setvtz.<locals>.<lambda>",
+              "instructions": 10
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_b.py",
+              "function": "_melting",
+              "instructions": 9
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/satfun.py",
+              "function": "ltemq_index",
+              "instructions": 9
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_a.py",
+              "function": "_w",
+              "instructions": 7
+            }
+          ],
+          "native_STACK_B": 0
+        },
+        "input_add_and_divide_maximum_minimum_multiply_select_subtract_transpose_fusion": {
+          "fusion": "input_add_and_divide_maximum_minimum_multiply_select_subtract_transpose_fusion",
+          "body_instructions": 1172,
+          "attributed_instructions": 879,
+          "radar_stack_instructions": 0,
+          "file_counts": {
+            "/gpuwrf/physics/nssl2mom/gs_c.py": 580,
+            "/gpuwrf/physics/nssl2mom/gs_a.py": 132,
+            "/gpuwrf/physics/nssl2mom/gs_b.py": 126,
+            "/gpuwrf/physics/nssl2mom/fallspeed.py": 16,
+            "/gpuwrf/physics/nssl2mom/satfun.py": 19,
+            "/gpuwrf/physics/nssl2mom/driver.py": 1,
+            "/gpuwrf/coupling/physics_couplers.py": 3,
+            "/gpuwrf/physics/nssl2mom/sediment.py": 1,
+            "/gpuwrf/physics/mynn_pbl.py": 1
+          },
+          "function_counts": [
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_c.py",
+              "function": "gs_part_c",
+              "instructions": 576
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_b.py",
+              "function": "gs_part_b",
+              "instructions": 67
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_a.py",
+              "function": "gs_part_a",
+              "instructions": 61
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_a.py",
+              "function": "_post_setvtz",
+              "instructions": 51
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_b.py",
+              "function": "_melting",
+              "instructions": 30
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_a.py",
+              "function": "_post_setvtz.<locals>.<lambda>",
+              "instructions": 19
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/fallspeed.py",
+              "function": "setvtz",
+              "instructions": 16
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_b.py",
+              "function": "_ventilation",
+              "instructions": 13
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/satfun.py",
+              "function": "ltemq_index",
+              "instructions": 9
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_b.py",
+              "function": "_deposition",
+              "instructions": 9
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_b.py",
+              "function": "gs_part_b.<locals>.<lambda>",
+              "instructions": 6
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/satfun.py",
+              "function": "tabqvs",
+              "instructions": 5
+            }
+          ],
+          "native_STACK_B": 1336
+        },
+        "input_add_and_compare_divide_minimum_select_transpose_fusion": {
+          "fusion": "input_add_and_compare_divide_minimum_select_transpose_fusion",
+          "body_instructions": 835,
+          "attributed_instructions": 582,
+          "radar_stack_instructions": 0,
+          "file_counts": {
+            "/gpuwrf/physics/nssl2mom/gs_a.py": 111,
+            "/gpuwrf/physics/nssl2mom/gs_c.py": 259,
+            "/gpuwrf/physics/nssl2mom/gs_b.py": 153,
+            "/gpuwrf/physics/nssl2mom/fallspeed.py": 16,
+            "/gpuwrf/coupling/physics_couplers.py": 2,
+            "/gpuwrf/physics/mynn_pbl.py": 1,
+            "/gpuwrf/physics/nssl2mom/sediment.py": 1,
+            "/gpuwrf/runtime/operational_mode.py": 1,
+            "/gpuwrf/physics/nssl2mom/driver.py": 16,
+            "/gpuwrf/physics/nssl2mom/satfun.py": 19,
+            "/gpuwrf/physics/nssl2mom/adapter.py": 1,
+            "/gpuwrf/physics/noahmp/phenology.py": 1,
+            "/gpuwrf/dynamics/core/small_step_finish.py": 1
+          },
+          "function_counts": [
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_c.py",
+              "function": "gs_part_c",
+              "instructions": 225
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_b.py",
+              "function": "gs_part_b",
+              "instructions": 68
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_a.py",
+              "function": "gs_part_a.<locals>.<lambda>",
+              "instructions": 45
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_b.py",
+              "function": "_bigg_rain",
+              "instructions": 29
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_a.py",
+              "function": "_post_setvtz",
+              "instructions": 28
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_a.py",
+              "function": "gs_part_a",
+              "instructions": 26
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_b.py",
+              "function": "_bigg_droplets",
+              "instructions": 18
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/fallspeed.py",
+              "function": "setvtz",
+              "instructions": 16
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_c.py",
+              "function": "gs_part_c.<locals>.sc",
+              "instructions": 16
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/driver.py",
+              "function": "pack",
+              "instructions": 16
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_b.py",
+              "function": "_deposition",
+              "instructions": 13
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_c.py",
+              "function": "gs_part_c.<locals>.srr",
+              "instructions": 12
+            }
+          ],
+          "native_STACK_B": 0
+        },
+        "input_add_select_transpose_fusion_1": {
+          "fusion": "input_add_select_transpose_fusion_1",
+          "body_instructions": 562,
+          "attributed_instructions": 383,
+          "radar_stack_instructions": 0,
+          "file_counts": {
+            "/gpuwrf/physics/nssl2mom/gs_a.py": 47,
+            "/gpuwrf/physics/nssl2mom/gs_c.py": 249,
+            "/gpuwrf/physics/nssl2mom/gs_b.py": 80,
+            "/gpuwrf/coupling/physics_couplers.py": 1,
+            "/gpuwrf/runtime/operational_mode.py": 1,
+            "/gpuwrf/physics/nssl2mom/fallspeed.py": 3,
+            "/gpuwrf/physics/nssl2mom/sediment.py": 1,
+            "/gpuwrf/physics/nssl2mom/driver.py": 1
+          },
+          "function_counts": [
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_c.py",
+              "function": "gs_part_c",
+              "instructions": 201
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_a.py",
+              "function": "gs_part_a",
+              "instructions": 23
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_c.py",
+              "function": "gs_part_c.<locals>.srr",
+              "instructions": 20
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_b.py",
+              "function": "gs_part_b",
+              "instructions": 20
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_b.py",
+              "function": "_bigg_droplets",
+              "instructions": 18
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_b.py",
+              "function": "_bigg_rain",
+              "instructions": 16
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_a.py",
+              "function": "_post_setvtz",
+              "instructions": 14
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_a.py",
+              "function": "_post_setvtz.<locals>.<lambda>",
+              "instructions": 10
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_b.py",
+              "function": "_melting",
+              "instructions": 10
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_c.py",
+              "function": "gs_part_c.<locals>.sc",
+              "instructions": 10
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_c.py",
+              "function": "gs_part_c.<locals>.scw",
+              "instructions": 10
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_c.py",
+              "function": "gs_part_c.<locals>.ssw",
+              "instructions": 8
+            }
+          ],
+          "native_STACK_B": 0
+        },
+        "input_add_or_select_subtract_transpose_fusion": {
+          "fusion": "input_add_or_select_subtract_transpose_fusion",
+          "body_instructions": 1041,
+          "attributed_instructions": 735,
+          "radar_stack_instructions": 0,
+          "file_counts": {
+            "/gpuwrf/physics/nssl2mom/gs_c.py": 286,
+            "/gpuwrf/physics/nssl2mom/gs_a.py": 134,
+            "/gpuwrf/physics/nssl2mom/gs_b.py": 253,
+            "/gpuwrf/physics/nssl2mom/fallspeed.py": 33,
+            "/gpuwrf/coupling/physics_couplers.py": 3,
+            "/gpuwrf/physics/mynn_pbl.py": 1,
+            "/gpuwrf/physics/nssl2mom/driver.py": 1,
+            "/gpuwrf/physics/nssl2mom/satfun.py": 24
+          },
+          "function_counts": [
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_c.py",
+              "function": "gs_part_c",
+              "instructions": 270
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_b.py",
+              "function": "gs_part_b",
+              "instructions": 166
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_a.py",
+              "function": "_post_setvtz",
+              "instructions": 82
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/fallspeed.py",
+              "function": "setvtz",
+              "instructions": 33
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_a.py",
+              "function": "gs_part_a",
+              "instructions": 32
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_b.py",
+              "function": "gs_part_b.<locals>.<lambda>",
+              "instructions": 32
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_b.py",
+              "function": "_bigg_rain",
+              "instructions": 26
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_b.py",
+              "function": "_bigg_droplets",
+              "instructions": 14
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_a.py",
+              "function": "_post_setvtz.<locals>.<lambda>",
+              "instructions": 10
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_b.py",
+              "function": "_melting",
+              "instructions": 10
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/satfun.py",
+              "function": "ltemq_index",
+              "instructions": 9
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_c.py",
+              "function": "gs_part_c.<locals>.sc",
+              "instructions": 8
+            }
+          ],
+          "native_STACK_B": 0
+        },
+        "input_add_select_transpose_fusion": {
+          "fusion": "input_add_select_transpose_fusion",
+          "body_instructions": 724,
+          "attributed_instructions": 529,
+          "radar_stack_instructions": 0,
+          "file_counts": {
+            "/gpuwrf/physics/nssl2mom/gs_a.py": 33,
+            "/gpuwrf/physics/nssl2mom/gs_c.py": 289,
+            "/gpuwrf/physics/nssl2mom/gs_b.py": 49,
+            "/gpuwrf/coupling/physics_couplers.py": 1,
+            "/gpuwrf/runtime/operational_mode.py": 1,
+            "/gpuwrf/physics/mynn_pbl.py": 1,
+            "/gpuwrf/physics/nssl2mom/fallspeed.py": 12,
+            "/gpuwrf/physics/nssl2mom/mathfun.py": 143
+          },
+          "function_counts": [
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_c.py",
+              "function": "gs_part_c",
+              "instructions": 253
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/mathfun.py",
+              "function": "gamxinfdp",
+              "instructions": 92
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/mathfun.py",
+              "function": "gaminterp",
+              "instructions": 35
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_b.py",
+              "function": "_melting",
+              "instructions": 19
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_b.py",
+              "function": "gs_part_b",
+              "instructions": 15
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_a.py",
+              "function": "_post_setvtz",
+              "instructions": 13
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_b.py",
+              "function": "_bigg_rain",
+              "instructions": 13
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_c.py",
+              "function": "gs_part_c.<locals>.srr",
+              "instructions": 12
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_c.py",
+              "function": "gs_part_c.<locals>.sc",
+              "instructions": 10
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_a.py",
+              "function": "_post_setvtz.<locals>.<lambda>",
+              "instructions": 10
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/mathfun.py",
+              "function": "_gamxinflu_node",
+              "instructions": 10
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/fallspeed.py",
+              "function": "setvtz",
+              "instructions": 9
+            }
+          ],
+          "native_STACK_B": 0
+        }
+      },
+      "radar_attributed_fusions": [
+        {
+          "fusion": "input_transpose_fusion_102",
+          "body_instructions": 7,
+          "attributed_instructions": 5,
+          "radar_stack_instructions": 3,
+          "file_counts": {
+            "/gpuwrf/physics/nssl2mom/diagnostics.py": 3,
+            "/gpuwrf/physics/nssl2mom/cleanup.py": 2
+          },
+          "function_counts": [
+            {
+              "file": "/gpuwrf/physics/nssl2mom/diagnostics.py",
+              "function": "radardd02",
+              "instructions": 3
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/cleanup.py",
+              "function": "calcnfromq",
+              "instructions": 2
+            }
+          ],
+          "native_STACK_B": 0
+        },
+        {
+          "fusion": "input_select_transpose_fusion_1",
+          "body_instructions": 251,
+          "attributed_instructions": 117,
+          "radar_stack_instructions": 3,
+          "file_counts": {
+            "/gpuwrf/physics/nssl2mom/gs_b.py": 2,
+            "/gpuwrf/physics/nssl2mom/gs_c.py": 52,
+            "/gpuwrf/physics/nssl2mom/gs_a.py": 10,
+            "/gpuwrf/physics/noahmp/phenology.py": 1,
+            "/gpuwrf/diagnostics/census.py": 1,
+            "/gpuwrf/physics/nssl2mom/driver.py": 3,
+            "/gpuwrf/physics/nssl2mom/nucond.py": 7,
+            "/gpuwrf/physics/nssl2mom/cleanup.py": 38,
+            "/gpuwrf/physics/nssl2mom/diagnostics.py": 3
+          },
+          "function_counts": [
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_c.py",
+              "function": "gs_part_c",
+              "instructions": 50
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/cleanup.py",
+              "function": "smallvalues",
+              "instructions": 33
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_a.py",
+              "function": "gs_part_a",
+              "instructions": 10
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/nucond.py",
+              "function": "nucond",
+              "instructions": 7
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/cleanup.py",
+              "function": "_rimed_ice_check",
+              "instructions": 5
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/driver.py",
+              "function": "pack",
+              "instructions": 3
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/diagnostics.py",
+              "function": "radardd02",
+              "instructions": 3
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_b.py",
+              "function": "_iacr_interp",
+              "instructions": 2
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_c.py",
+              "function": "gs_part_c.<locals>.vap_d",
+              "instructions": 2
+            },
+            {
+              "file": "/gpuwrf/physics/noahmp/phenology.py",
+              "function": "noahmp_phenology_table.<locals>._pick",
+              "instructions": 1
+            },
+            {
+              "file": "/gpuwrf/diagnostics/census.py",
+              "function": "observe_f2_state",
+              "instructions": 1
+            }
+          ],
+          "native_STACK_B": 0
+        },
+        {
+          "fusion": "input_transpose_fusion_93",
+          "body_instructions": 242,
+          "attributed_instructions": 112,
+          "radar_stack_instructions": 8,
+          "file_counts": {
+            "/gpuwrf/physics/nssl2mom/gs_b.py": 2,
+            "/gpuwrf/physics/nssl2mom/gs_c.py": 52,
+            "/gpuwrf/physics/nssl2mom/gs_a.py": 10,
+            "/gpuwrf/physics/noahmp/phenology.py": 1,
+            "/gpuwrf/diagnostics/census.py": 1,
+            "/gpuwrf/physics/nssl2mom/driver.py": 3,
+            "/gpuwrf/physics/nssl2mom/nucond.py": 7,
+            "/gpuwrf/physics/nssl2mom/cleanup.py": 28,
+            "/gpuwrf/physics/nssl2mom/diagnostics.py": 8
+          },
+          "function_counts": [
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_c.py",
+              "function": "gs_part_c",
+              "instructions": 50
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/cleanup.py",
+              "function": "smallvalues",
+              "instructions": 23
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_a.py",
+              "function": "gs_part_a",
+              "instructions": 10
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/diagnostics.py",
+              "function": "radardd02",
+              "instructions": 8
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/nucond.py",
+              "function": "nucond",
+              "instructions": 7
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/cleanup.py",
+              "function": "_rimed_ice_check",
+              "instructions": 5
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/driver.py",
+              "function": "pack",
+              "instructions": 3
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_b.py",
+              "function": "_iacr_interp",
+              "instructions": 2
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_c.py",
+              "function": "gs_part_c.<locals>.vap_d",
+              "instructions": 2
+            },
+            {
+              "file": "/gpuwrf/physics/noahmp/phenology.py",
+              "function": "noahmp_phenology_table.<locals>._pick",
+              "instructions": 1
+            },
+            {
+              "file": "/gpuwrf/diagnostics/census.py",
+              "function": "observe_f2_state",
+              "instructions": 1
+            }
+          ],
+          "native_STACK_B": 0
+        },
+        {
+          "fusion": "input_and_slice_transpose_fusion",
+          "body_instructions": 283,
+          "attributed_instructions": 137,
+          "radar_stack_instructions": 21,
+          "file_counts": {
+            "/gpuwrf/physics/nssl2mom/gs_b.py": 2,
+            "/gpuwrf/physics/nssl2mom/gs_c.py": 52,
+            "/gpuwrf/physics/nssl2mom/gs_a.py": 10,
+            "/gpuwrf/physics/noahmp/phenology.py": 1,
+            "/gpuwrf/diagnostics/census.py": 1,
+            "/gpuwrf/physics/nssl2mom/driver.py": 14,
+            "/gpuwrf/physics/nssl2mom/nucond.py": 7,
+            "/gpuwrf/physics/nssl2mom/cleanup.py": 28,
+            "/gpuwrf/physics/nssl2mom/diagnostics.py": 22
+          },
+          "function_counts": [
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_c.py",
+              "function": "gs_part_c",
+              "instructions": 50
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/cleanup.py",
+              "function": "smallvalues",
+              "instructions": 23
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/diagnostics.py",
+              "function": "radardd02",
+              "instructions": 21
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_a.py",
+              "function": "gs_part_a",
+              "instructions": 10
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/driver.py",
+              "function": "unpack",
+              "instructions": 10
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/nucond.py",
+              "function": "nucond",
+              "instructions": 7
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/cleanup.py",
+              "function": "_rimed_ice_check",
+              "instructions": 5
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/driver.py",
+              "function": "pack",
+              "instructions": 3
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_b.py",
+              "function": "_iacr_interp",
+              "instructions": 2
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_c.py",
+              "function": "gs_part_c.<locals>.vap_d",
+              "instructions": 2
+            },
+            {
+              "file": "/gpuwrf/physics/noahmp/phenology.py",
+              "function": "noahmp_phenology_table.<locals>._pick",
+              "instructions": 1
+            },
+            {
+              "file": "/gpuwrf/diagnostics/census.py",
+              "function": "observe_f2_state",
+              "instructions": 1
+            }
+          ],
+          "native_STACK_B": 0
+        },
+        {
+          "fusion": "input_divide_transpose_fusion",
+          "body_instructions": 278,
+          "attributed_instructions": 129,
+          "radar_stack_instructions": 3,
+          "file_counts": {
+            "/gpuwrf/physics/nssl2mom/gs_b.py": 2,
+            "/gpuwrf/physics/nssl2mom/gs_c.py": 52,
+            "/gpuwrf/physics/nssl2mom/gs_a.py": 10,
+            "/gpuwrf/physics/noahmp/phenology.py": 1,
+            "/gpuwrf/diagnostics/census.py": 1,
+            "/gpuwrf/physics/nssl2mom/driver.py": 25,
+            "/gpuwrf/physics/nssl2mom/nucond.py": 7,
+            "/gpuwrf/physics/nssl2mom/cleanup.py": 28,
+            "/gpuwrf/physics/nssl2mom/diagnostics.py": 3
+          },
+          "function_counts": [
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_c.py",
+              "function": "gs_part_c",
+              "instructions": 50
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/cleanup.py",
+              "function": "smallvalues",
+              "instructions": 23
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/driver.py",
+              "function": "unpack",
+              "instructions": 22
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_a.py",
+              "function": "gs_part_a",
+              "instructions": 10
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/nucond.py",
+              "function": "nucond",
+              "instructions": 7
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/cleanup.py",
+              "function": "_rimed_ice_check",
+              "instructions": 5
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/driver.py",
+              "function": "pack",
+              "instructions": 3
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/diagnostics.py",
+              "function": "radardd02",
+              "instructions": 3
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_b.py",
+              "function": "_iacr_interp",
+              "instructions": 2
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_c.py",
+              "function": "gs_part_c.<locals>.vap_d",
+              "instructions": 2
+            },
+            {
+              "file": "/gpuwrf/physics/noahmp/phenology.py",
+              "function": "noahmp_phenology_table.<locals>._pick",
+              "instructions": 1
+            },
+            {
+              "file": "/gpuwrf/diagnostics/census.py",
+              "function": "observe_f2_state",
+              "instructions": 1
+            }
+          ],
+          "native_STACK_B": 0
+        },
+        {
+          "fusion": "input_and_compare_slice_transpose_fusion",
+          "body_instructions": 317,
+          "attributed_instructions": 152,
+          "radar_stack_instructions": 6,
+          "file_counts": {
+            "/gpuwrf/runtime/operational_mode.py": 5,
+            "/gpuwrf/physics/nssl2mom/gs_b.py": 2,
+            "/gpuwrf/physics/nssl2mom/gs_c.py": 52,
+            "/gpuwrf/physics/nssl2mom/gs_a.py": 10,
+            "/gpuwrf/physics/noahmp/phenology.py": 1,
+            "/gpuwrf/diagnostics/census.py": 1,
+            "/gpuwrf/physics/nssl2mom/driver.py": 29,
+            "/gpuwrf/physics/nssl2mom/nucond.py": 7,
+            "/gpuwrf/physics/nssl2mom/cleanup.py": 28,
+            "/gpuwrf/kernels/layout_pin.py": 3,
+            "/gpuwrf/physics/nssl2mom/diagnostics.py": 14
+          },
+          "function_counts": [
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_c.py",
+              "function": "gs_part_c",
+              "instructions": 50
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/driver.py",
+              "function": "unpack",
+              "instructions": 26
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/cleanup.py",
+              "function": "smallvalues",
+              "instructions": 23
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_a.py",
+              "function": "gs_part_a",
+              "instructions": 10
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/diagnostics.py",
+              "function": "eff_radius.<locals>.radius",
+              "instructions": 8
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/nucond.py",
+              "function": "nucond",
+              "instructions": 7
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/diagnostics.py",
+              "function": "radardd02",
+              "instructions": 6
+            },
+            {
+              "file": "/gpuwrf/runtime/operational_mode.py",
+              "function": "_microphysics_interior_only",
+              "instructions": 5
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/cleanup.py",
+              "function": "_rimed_ice_check",
+              "instructions": 5
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/driver.py",
+              "function": "pack",
+              "instructions": 3
+            },
+            {
+              "file": "/gpuwrf/kernels/layout_pin.py",
+              "function": "row_major",
+              "instructions": 3
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_b.py",
+              "function": "_iacr_interp",
+              "instructions": 2
+            }
+          ],
+          "native_STACK_B": 0
+        },
+        {
+          "fusion": "input_transpose_fusion_213",
+          "body_instructions": 313,
+          "attributed_instructions": 154,
+          "radar_stack_instructions": 3,
+          "file_counts": {
+            "/gpuwrf/physics/nssl2mom/gs_b.py": 2,
+            "/gpuwrf/physics/nssl2mom/gs_c.py": 52,
+            "/gpuwrf/physics/nssl2mom/gs_a.py": 10,
+            "/gpuwrf/physics/noahmp/phenology.py": 1,
+            "/gpuwrf/diagnostics/census.py": 1,
+            "/gpuwrf/physics/nssl2mom/driver.py": 35,
+            "/gpuwrf/physics/nssl2mom/nucond.py": 7,
+            "/gpuwrf/physics/nssl2mom/cleanup.py": 28,
+            "/gpuwrf/kernels/layout_pin.py": 11,
+            "/gpuwrf/runtime/operational_mode.py": 2,
+            "/gpuwrf/coupling/physics_couplers.py": 2,
+            "/gpuwrf/physics/nssl2mom/diagnostics.py": 3
+          },
+          "function_counts": [
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_c.py",
+              "function": "gs_part_c",
+              "instructions": 50
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/driver.py",
+              "function": "unpack",
+              "instructions": 32
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/cleanup.py",
+              "function": "smallvalues",
+              "instructions": 23
+            },
+            {
+              "file": "/gpuwrf/kernels/layout_pin.py",
+              "function": "row_major",
+              "instructions": 11
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_a.py",
+              "function": "gs_part_a",
+              "instructions": 10
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/nucond.py",
+              "function": "nucond",
+              "instructions": 7
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/cleanup.py",
+              "function": "_rimed_ice_check",
+              "instructions": 5
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/driver.py",
+              "function": "pack",
+              "instructions": 3
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/diagnostics.py",
+              "function": "radardd02",
+              "instructions": 3
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_b.py",
+              "function": "_iacr_interp",
+              "instructions": 2
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_c.py",
+              "function": "gs_part_c.<locals>.vap_d",
+              "instructions": 2
+            },
+            {
+              "file": "/gpuwrf/runtime/operational_mode.py",
+              "function": "_apply_physics_non_dry_updates",
+              "instructions": 2
+            }
+          ],
+          "native_STACK_B": 0
+        },
+        {
+          "fusion": "input_divide_select_slice_transpose_fusion",
+          "body_instructions": 400,
+          "attributed_instructions": 217,
+          "radar_stack_instructions": 80,
+          "file_counts": {
+            "/gpuwrf/physics/nssl2mom/driver.py": 18,
+            "/gpuwrf/physics/nssl2mom/diagnostics.py": 98,
+            "/gpuwrf/physics/nssl2mom/gs_b.py": 2,
+            "/gpuwrf/physics/nssl2mom/gs_c.py": 52,
+            "/gpuwrf/physics/nssl2mom/gs_a.py": 10,
+            "/gpuwrf/physics/noahmp/phenology.py": 1,
+            "/gpuwrf/diagnostics/census.py": 1,
+            "/gpuwrf/physics/nssl2mom/nucond.py": 7,
+            "/gpuwrf/physics/nssl2mom/cleanup.py": 28
+          },
+          "function_counts": [
+            {
+              "file": "/gpuwrf/physics/nssl2mom/diagnostics.py",
+              "function": "radardd02",
+              "instructions": 80
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_c.py",
+              "function": "gs_part_c",
+              "instructions": 50
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/cleanup.py",
+              "function": "smallvalues",
+              "instructions": 23
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/diagnostics.py",
+              "function": "eff_radius.<locals>.radius",
+              "instructions": 18
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/driver.py",
+              "function": "nssl2mom_column.<locals>.active",
+              "instructions": 15
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_a.py",
+              "function": "gs_part_a",
+              "instructions": 10
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/nucond.py",
+              "function": "nucond",
+              "instructions": 7
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/cleanup.py",
+              "function": "_rimed_ice_check",
+              "instructions": 5
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/driver.py",
+              "function": "pack",
+              "instructions": 3
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_b.py",
+              "function": "_iacr_interp",
+              "instructions": 2
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_c.py",
+              "function": "gs_part_c.<locals>.vap_d",
+              "instructions": 2
+            },
+            {
+              "file": "/gpuwrf/physics/noahmp/phenology.py",
+              "function": "noahmp_phenology_table.<locals>._pick",
+              "instructions": 1
+            }
+          ],
+          "native_STACK_B": 0
+        },
+        {
+          "fusion": "loop_and_compare_multiply_select_slice_fusion",
+          "body_instructions": 339,
+          "attributed_instructions": 191,
+          "radar_stack_instructions": 45,
+          "file_counts": {
+            "/gpuwrf/physics/nssl2mom/gs_b.py": 2,
+            "/gpuwrf/physics/nssl2mom/gs_c.py": 52,
+            "/gpuwrf/physics/nssl2mom/gs_a.py": 10,
+            "/gpuwrf/physics/noahmp/phenology.py": 1,
+            "/gpuwrf/diagnostics/census.py": 1,
+            "/gpuwrf/physics/nssl2mom/driver.py": 25,
+            "/gpuwrf/physics/nssl2mom/nucond.py": 7,
+            "/gpuwrf/physics/nssl2mom/cleanup.py": 28,
+            "/gpuwrf/physics/nssl2mom/diagnostics.py": 45,
+            "/gpuwrf/physics/nssl2mom/adapter.py": 16,
+            "/gpuwrf/runtime/operational_mode.py": 4
+          },
+          "function_counts": [
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_c.py",
+              "function": "gs_part_c",
+              "instructions": 50
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/diagnostics.py",
+              "function": "radardd02",
+              "instructions": 45
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/cleanup.py",
+              "function": "smallvalues",
+              "instructions": 23
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/adapter.py",
+              "function": "nssl2mom_adapter",
+              "instructions": 16
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_a.py",
+              "function": "gs_part_a",
+              "instructions": 10
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/driver.py",
+              "function": "bind_precip",
+              "instructions": 9
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/nucond.py",
+              "function": "nucond",
+              "instructions": 7
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/driver.py",
+              "function": "nssl2mom_column.<locals>.active",
+              "instructions": 6
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/cleanup.py",
+              "function": "_rimed_ice_check",
+              "instructions": 5
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/driver.py",
+              "function": "liquid_rain",
+              "instructions": 5
+            },
+            {
+              "file": "/gpuwrf/runtime/operational_mode.py",
+              "function": "_microphysics_interior_only",
+              "instructions": 4
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/driver.py",
+              "function": "pack",
+              "instructions": 3
+            }
+          ],
+          "native_STACK_B": 0
+        },
+        {
+          "fusion": "input_transpose_fusion_399",
+          "body_instructions": 9,
+          "attributed_instructions": 4,
+          "radar_stack_instructions": 4,
+          "file_counts": {
+            "/gpuwrf/physics/nssl2mom/diagnostics.py": 4
+          },
+          "function_counts": [
+            {
+              "file": "/gpuwrf/physics/nssl2mom/diagnostics.py",
+              "function": "radardd02",
+              "instructions": 4
+            }
+          ],
+          "native_STACK_B": 0
+        },
+        {
+          "fusion": "input_transpose_fusion_113",
+          "body_instructions": 289,
+          "attributed_instructions": 212,
+          "radar_stack_instructions": 138,
+          "file_counts": {
+            "/gpuwrf/diagnostics/online.py": 34,
+            "/gpuwrf/runtime/operational_mode.py": 5,
+            "/gpuwrf/physics/nssl2mom/driver.py": 33,
+            "/gpuwrf/physics/nssl2mom/diagnostics.py": 138,
+            "/gpuwrf/physics/nssl2mom/gs_b.py": 1,
+            "/gpuwrf/kernels/layout_pin.py": 1
+          },
+          "function_counts": [
+            {
+              "file": "/gpuwrf/physics/nssl2mom/diagnostics.py",
+              "function": "radardd02",
+              "instructions": 138
+            },
+            {
+              "file": "/gpuwrf/diagnostics/online.py",
+              "function": "radar_from_context",
+              "instructions": 28
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/driver.py",
+              "function": "nssl2mom_column.<locals>.active",
+              "instructions": 26
+            },
+            {
+              "file": "/gpuwrf/diagnostics/online.py",
+              "function": "history_due",
+              "instructions": 6
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/driver.py",
+              "function": "nssl2mom_column",
+              "instructions": 6
+            },
+            {
+              "file": "/gpuwrf/runtime/operational_mode.py",
+              "function": "_apply_post_rk_microphysics",
+              "instructions": 2
+            },
+            {
+              "file": "/gpuwrf/runtime/operational_mode.py",
+              "function": "_acoustic_scan",
+              "instructions": 1
+            },
+            {
+              "file": "/gpuwrf/runtime/operational_mode.py",
+              "function": "_advance_chunk_fori.<locals>.body",
+              "instructions": 1
+            },
+            {
+              "file": "/gpuwrf/runtime/operational_mode.py",
+              "function": "_physics_boundary_step_with_limiter_diagnostics",
+              "instructions": 1
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/gs_b.py",
+              "function": "_iacr_interp",
+              "instructions": 1
+            },
+            {
+              "file": "/gpuwrf/physics/nssl2mom/driver.py",
+              "function": "nssl2mom_column.<locals>.active.<locals>.bottom",
+              "instructions": 1
+            },
+            {
+              "file": "/gpuwrf/kernels/layout_pin.py",
+              "function": "row_major",
+              "instructions": 1
+            }
+          ],
+          "native_STACK_B": 0
+        }
+      ],
+      "radar_native_matched_count": 11,
+      "radar_native_max_STACK_B": 0
+    }
+  ],
+  "causal_limit": "Different source/coupling graphs and different flagged fusions; no radar-only native ablation was measured."
+}

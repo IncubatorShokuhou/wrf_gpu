@@ -1286,7 +1286,11 @@ def _finalize_aero(t, qv, qc, qi, qs, qr, qg, nc, ni, ns, nr, ng,
     # constant reset and no (NANEW1+NANEW2)/RHO bound — aero.F l.4985-5001)
     ni = jnp.minimum(ni, 0.3e6 / rho)
     if iinum == 1:  # aercu_opt=0: constant droplet reset (aero.F l.4997-5000)
-        nc = C.NDCNST * 1.0e6 / rho
+        # LTRUE is set after any level passes GOTO 200 (:4274). GOTO 400
+        # (:4289) bypasses this entire final loop only for wholly dry columns;
+        # otherwise WRF resets NC at EVERY level, including skipped dry cells.
+        nc = jnp.where(jnp.any(do_cell, axis=-1, keepdims=True),
+                       C.NDCNST * 1.0e6 / rho, nc)
 
     return (t, qv, qc, qi, qs, qr, qg, nc, ni, ns, nr, ng,
             effc, effi, effs, effr, effg)

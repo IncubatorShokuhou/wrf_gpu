@@ -1,0 +1,321 @@
+{
+  "status": "VERIFIED late test-only repair, joins ONE FINAL; full CPU suite incomplete",
+  "commits": [
+    {
+      "commit": "c9c6a796de93471a676a263d6bad5a70edb7d0ce",
+      "summary": "test: use canonical root-flow namelist default; 17 pass",
+      "files": [
+        "tests/v040/rootbdy/test_root_flow_extras.py"
+      ],
+      "class": "b stale namelist mock",
+      "before": "N02116PASS1FAIL afterNTUmerge; requiredmp_physics missing",
+      "after": "N021b failednode1PASS +unchanged16 originalXMLPASS",
+      "authority": "OperationalNamelist.mp_physics declareddefault8; helper requires realnamelist contract; no-route{} expectation unchanged"
+    },
+    {
+      "commit": "b2f71e5c43fb7b63a899f24131749cd8c5953b2b",
+      "summary": "test: supply retained SBU diagnostic mock; 2 repaired callers pass",
+      "files": [
+        "tests/test_thetafix_microphysics_callers.py"
+      ],
+      "class": "b mock lacks real ri3d output channel",
+      "before": "30PASS2FAIL in original32-node module C077",
+      "after": "2 previouslyfailednodesPASS C077b; other30 originalXMLPASS",
+      "authority": "microphysics_sbu_ylin.py:767 real diagnostic ->scan_adapters.py:292 rimi retention",
+      "scope": "newdistincttwo-step ri3d values are explicitly mapping-only sentinels, not WRF reference; originalfrozenWRF thermal/mass outputs and bounds unchanged",
+      "assert_preservation": {
+        "original_assert_count": 13,
+        "all_original_assert_ASTs_retained": true,
+        "other_function_AST_equal": {
+          "assert_real_theta": true,
+          "fixture": true,
+          "state_for": true,
+          "test_real_swiss_inputs_exercise_moist_theta": true,
+          "test_two_step_real_dispatcher_thermal_and_mass": true
+        },
+        "old_test_sha256": "78b9d8cb4db34b3d3da0780ed37fad6659d118bbd993cbbaad99233efc9f2d7d",
+        "candidate_test_sha256": "17636d50489972821f0ebb868a525cb0a95f6e154dcb691dfa0c3bf67d84c80e",
+        "numeric_tests_rerun": "Only two previously failed mock nodes; unchanged real dispatcher numeric gate alreadyPASS C077",
+        "new_rimi_values": "Explicit mapping-only sentinels; no WRF-fidelity credit"
+      }
+    },
+    {
+      "commit": "a367c1a57acdf20a4c56ffa473d8970e9180a5fc",
+      "summary": "test: assert WRF Shin-Hong diag0 hold and diag1 mutation; 2 pass",
+      "files": [
+        "tests/test_v013_operational_smoke.py"
+      ],
+      "class": "b staleBL11 mutation under approved WRFdiag0 default",
+      "before": "C087r17originalBL11FAIL; otherBL12/16PASS",
+      "after": "C087u2PASS: default0exactdtype/BYTEQKEhold, explicit1finite/mutates; no nondefaultnumericalparityclaim",
+      "authority": {
+        "Registry.EM_COMMON:2475": "defaultdiag0",
+        "Registry.EM_COMMON:1119": "REALQKE",
+        "phys/module_bl_shinhong.F:1478": "diag1conditional",
+        "phys/module_bl_shinhong.F:1603": "onlyTKEwriteinsideblockthrough1608"
+      },
+      "failed_new_setup_attempts": "C087s/C087t newdtypeassertfailures retained; State.replace(default_cast=True) recastsupdate tooldtype. D06bconstructorprobe1PASS proves_cast=Falsecorrectnativeinput, finalstrictassertsunchanged",
+      "changed_functions_and_helpers_AST_equal_actual_snapshot": {
+        "test_pbl_operational_runs_and_mixes": true,
+        "test_shinhong_diag1_operational_updates_tke": true,
+        "_grid": true,
+        "_base_state": true,
+        "_namelist": true
+      },
+      "measured_test_sha256": "7f96203b6d1560aeef3e1bca72a47afbe3b538273979c69b2c1cf2095a459e55",
+      "kept_branch_test_sha256": "b56c6188a17072d80cec45d3cfec53ed6aadd4aa5a4aad35f0b6528a12fad8bd",
+      "whole_file_identity": "Branchbase predates mainNTU testupdates; actual3waycandidate preserves them. Do not claim wholefileequality; changedfunctions/helpersASTsame."
+    },
+    {
+      "commit": "a085a9b970f177362f062ef781e3bf4d95053a92",
+      "summary": "test: isolate meaningful Shin-Hong wiring fixture; 1 repaired pass",
+      "files": [
+        "tests/test_v017_gfs_pbl_operational.py"
+      ],
+      "class": "b fixture heating signal below unchanged no-op detector",
+      "before": "C0901FAIL: realtheta increment.00064K below np.allclose .00295K defaultband",
+      "after": "C090c finalisolated60sMP0CU0functionalnode1PASS; ALLoriginalassertASTs unchanged",
+      "scope": "Existing60s standaloneShinfixture; physicallyvalidfixedone-stepPBLwiring, notoriginalWRFparity. No numericbound/tolerancechange.",
+      "measured_file_sha256": "30b04d708bd0cf2758651e1275fb21ee041454f4f7d6fc444502288d156d092b",
+      "kept_branch_file_sha256": "30b04d708bd0cf2758651e1275fb21ee041454f4f7d6fc444502288d156d092b",
+      "file_bytes_equal": true
+    },
+    {
+      "commit": "ab6fce68d9261926dc8061d6ce15de8d15362a52",
+      "summary": "test: bind CAMMG static aux alongside dynamic gases; 1 repaired pass",
+      "files": [
+        "tests/test_v0234_rrtmg_clwrf_ghg.py"
+      ],
+      "class": "b stale static aux tuple pin",
+      "before": "C101109PASS1SKIP1FAIL; expectedLWaux(5000,) now(5000,False)",
+      "after": "C101b previouslyfailednode1PASS; unchangedrestC101 reused",
+      "authority": "main dd787cec99; rrtmg_lw.py347 _LW_STATIC_FIELDS=(top_pressure_pa,cammg_radii); rrtmg_sw.py219 cammg_radii",
+      "scope": "Originaldynamicgas/JITcache-size/static-top checks retained; newexactFalsepin plusTrue specialization/roundtrip; no numericbounds/model changes"
+    },
+    {
+      "commit": "2bc272a6528bdd80a8e38ea236090b3851adc378",
+      "summary": "test: isolate B2 minigrid proof output; 1 pass at2.63GiB",
+      "files": [
+        "tests/test_v023_batched_minigrid.py"
+      ],
+      "class": "c test overwrites tracked historical proof",
+      "before": "C103numericPASS then immutable snapshotSTOP90; generated historicalproofwrite preserved beforeexactrestore",
+      "after": "C103b1PASS oncomposedmainc959; 2.629GiBRSS/0swap/snapshotclean",
+      "authority": "privateJSON_OUT outputglobal; same realdriver/gate/function; original8assertASTs exact",
+      "assert_preservation": {
+        "status": "VERIFIED: final1PASS/2.63GiB and no tracked snapshotmutation",
+        "all_original_assert_AST_equal": true,
+        "original_assert_count": 8,
+        "before": "OriginalC103 actualnumericPASS but trackedproof overwritten; preservedgeneratedJSON+diff thenrestoredexactoriginal",
+        "output": "tmp_path/F1_CPU_B2_BIT_IDENTITY.json",
+        "source": "2224d2fdb7e37c3f4c2eb4022f2744c1859c0541",
+        "original_snapshot": "435d3d428321e5ce76f0349e8afbb8d28ae0db30",
+        "fixture_only": true
+      }
+    },
+    {
+      "commit": "e38b343ecafbbf1905aa86ddf62f162b521833be",
+      "summary": "test: audit retained P3 ice diagnostics; 4 allocation checks pass",
+      "files": [
+        "tests/test_p3_state_transport_restart.py"
+      ],
+      "class": "b stale allocationcount",
+      "before": "4 source-identical inheritedcriticFAIL; oldC063 sourcePASS notcurrentcredit",
+      "after": "4PASS on RS35/currentmainSRC; allselectedzero/dtype/shape+unusedNone checks",
+      "authority": "originalWRF Registry1599-1610/approved31321cce1a appended3/3/6/3diagnostics; keeporiginal4/4/8/5particlecounts unchanged",
+      "classification": {
+        "utc": "2026-10-15T04:48:39.248987+00:00",
+        "status": "VERIFIED_REPAIRED:4PASS originalparticlecounts+literaldiagset",
+        "root": "stale P3 allocation count after accepted ice diagnostic retention31321cce1a",
+        "owner": "t-redsuite test-only",
+        "nodes": [
+          "tests/test_p3_state_transport_restart.py::test_p3_allocates_only_selected_real_carries[50-4]",
+          "tests/test_p3_state_transport_restart.py::test_p3_allocates_only_selected_real_carries[51-4]",
+          "tests/test_p3_state_transport_restart.py::test_p3_allocates_only_selected_real_carries[52-8]",
+          "tests/test_p3_state_transport_restart.py::test_p3_allocates_only_selected_real_carries[53-5]"
+        ],
+        "before_receipt": "<USER_HOME>/wrf_gpu2_lanes/rv-t-writer-p3radar/VERDICT.md:25 confirms4 genuine FAIL; source-identical reuse, no redundantbefore-arm",
+        "reviewed_source": "6e911aa42c6f9559a0a720526d3e7fb915bfdd07",
+        "current_main": "66417ad8c29eecafa4020ffcf943800958db63db",
+        "source_byte_proof": {
+          "src/gpuwrf/contracts/state.py": true,
+          "src/gpuwrf/contracts/precision.py": true,
+          "src/gpuwrf/contracts/ice_diagnostics.py": true,
+          "allocation_test_AST": true
+        },
+        "prior_own_C063": "4PASS on oldmodel9059; cannot creditcurrentmodel689f; explicitly superseded by knowncurrent-sourcecritic4FAIL classification",
+        "authority": "originalWRF Registry.EM_COMMON1599-1610 +accepted31321cce1a retainedhistorydiagnostics",
+        "candidate": "refs/experiments/t-redsuite/RS35 a8dce009e; active snapshot unchanged until currentcoordinatorfinishes",
+        "change": "Keep oldparticlecounts4/4/8/5; literalexpecteddiagnosticsets3/3/6/3, allselected0/f32/shape andallunusedNoneaudit. No numericbound/productedit.",
+        "fix_commit": "e38b343ecafbbf1905aa86ddf62f162b521833be",
+        "final_receipt": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C063b-P3-history-allocation",
+        "final_source": "a8dce009eaf9659d04a7efefd043d8574e181352",
+        "rss_hwm_gib": 0.8976631164550781,
+        "changed_test_function_AST_equal_measured_candidate": true,
+        "other_main_changes": "3way preserves mainradar changes in restart test; no wholefilebranchidentity claimed"
+      }
+    },
+    {
+      "commit": "eec09ea7eb54c4f3b5c9cccf13520525c1c06629",
+      "summary": "Seed required NSSL radar fixture; one repaired caller PASS, twelve owner product consumers PASS",
+      "files": [
+        "tests/v025/b_column/test_mp_re_activation.py"
+      ],
+      "class": "b lowlevel fixture omitted requiredradarseed",
+      "before": "C123NSSL18 restart radarcarry/selection mismatch",
+      "after": "C123b13PASS:1ownfixture repair+12ownerproductclosures; immutable907732be2 pendingowner958ce5266 integration",
+      "authority": "Actual_initial_carry_for_run7839-7843 seedsREALzero forforcedNSSLradar; no source/assert/boundchanges by thislane",
+      "scope": "Test-only fixture verified against composed ownerfix; main product merge remainsseparate"
+    }
+  ],
+  "selected_outcomes": {
+    "passed": 59
+  },
+  "receipts": [
+    {
+      "arm": "N021",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/N021",
+      "source": "e539567abf442ffe657cfcf3c654e6bd966f782b",
+      "xml_sha256": "cf2fbe4151f5d9651f4b5cd5fcc037872a64ed348185dd144b10edd3e1aea581",
+      "command_sha256": "492b37d417de9a2369c515c1d0962133bb15890804bc1d3b5d323289450bda2c"
+    },
+    {
+      "arm": "N021b-default-namelist",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/N021b-default-namelist",
+      "source": "55c4e486170d7bedd1db35726a4491c7112040cc",
+      "xml_sha256": "7306d57055659fc8f7bdfcdf53342d6ec003eb7995d664ac8e2fedf4ba59476e",
+      "command_sha256": "6b10bda26a7dbf3c71c7254a9f282379e0c0afa5c8bb9fdb07b55bbb2c5819f6"
+    },
+    {
+      "arm": "C077",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C077",
+      "source": "55c4e486170d7bedd1db35726a4491c7112040cc",
+      "xml_sha256": "222f0ad927f5837f4e0eb77999ba1d7bca1d137c0cebb33fc9939ad663ce0111",
+      "command_sha256": "0fc34b418a88139de16ef4129b5420b5acb518c527d7deabcf540a45dae12cd9"
+    },
+    {
+      "arm": "C077b-SBU-riming-mock",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C077b-SBU-riming-mock",
+      "source": "028047e967c3d52113d43b87d115ef2d247005a8",
+      "xml_sha256": "541212f9330026255a0f1f6ed372c966b12ea7b5b0b89cce0a60c9a483d47ed6",
+      "command_sha256": "76e34749b7ab96a19f1138c33d59b227cb083c5b79429de41008252e8c633cc8"
+    },
+    {
+      "arm": "C087r17",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C087r17",
+      "source": "028047e967c3d52113d43b87d115ef2d247005a8",
+      "xml_sha256": "326a8f3e02762f709eb7af438733d10ce9f4f85492dcafda34defeb87970cefd",
+      "command_sha256": "b12ce8c9c240fc75659757e945517a3c301f1fd093b8a8ead013b47758db3899"
+    },
+    {
+      "arm": "C087s-shinhong-modes",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C087s-shinhong-modes",
+      "source": "a0bea1ae9a395f048bc6e5120d0946bd57d7c423",
+      "xml_sha256": "ce10cbb3bad092d17d82d0f904264e283edb7f3dbb660e6f6215d523386f944b",
+      "command_sha256": "970c6b3a36aed50fc272356006b68646fe42e0347be578108db2d6ecfe08d713"
+    },
+    {
+      "arm": "C087t-shinhong-real4",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C087t-shinhong-real4",
+      "source": "3ae8c14063ff6d24e4a75bb93270e82d4f342cae",
+      "xml_sha256": "af43a0d9668e4b1daf8dd9074710cc211e74a7fc63b204b070ef4b6c1174fc22",
+      "command_sha256": "e42923d9b984745e889609fa7ace9beacc60ccae160c796a9c1e7b4bb7f02d3f"
+    },
+    {
+      "arm": "C087u-shinhong-native-qke",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C087u-shinhong-native-qke",
+      "source": "e0a611d5e0d045d4c33af0c1db15f3da4475a62b",
+      "xml_sha256": "2350a0d4023a0c7d4286e31bc222079818068f1bdb38d841efbb1914ff8f14f0",
+      "command_sha256": "bbbb3e06d86597ba9422b1f5d15b8ced5bf73a08dec1c90bb601537369c6e766"
+    },
+    {
+      "arm": "C090",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C090",
+      "source": "e0a611d5e0d045d4c33af0c1db15f3da4475a62b",
+      "command_sha256": "9bfc30f544a473452518e41ddab04e69e09cb8e231069a0382bce69ad46a5174",
+      "xml_sha256": "47519261a20a81118322c252d74212efe0d56fa174814e8705dd6557b1309499"
+    },
+    {
+      "arm": "C090b-Shin-route-and-audit",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C090b-Shin-route-and-audit",
+      "source": "f1afc5444d06527e732a204e234bc41fb07ec069",
+      "command_sha256": "bdf02cbf1deecb85e97094edb2f5f4b0153aa74d6efe352815990ddbbcc0c254",
+      "xml_sha256": "6dc41a7e3ddd001ae2a59bafb456008848be75f9567e7de91afbdb6cf5596e50"
+    },
+    {
+      "arm": "C090c-Shin-isolated60s",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C090c-Shin-isolated60s",
+      "source": "84d4e695863f663fbaab3301b18da45eaa019a66",
+      "command_sha256": "e0314cfffa09eedb89cb182e5ccae9983df4bdeb689f5750ff0216da1fa990ba",
+      "xml_sha256": "c33f90178803e88c9b7f3617b6547529bb0aa3de3e40d09e33deb7b6d8c48731"
+    },
+    {
+      "arm": "C101",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C101",
+      "source": "84d4e695863f663fbaab3301b18da45eaa019a66",
+      "command_sha256": "491bb73e2ad46bc33af5eaaee98537e1e926becf71d8919a84a444b16274ec9d",
+      "xml_sha256": "683a38d899cbeca6b50bd934317dd6ab7b7f2a4b2f05a92402921d2f5f64808f"
+    },
+    {
+      "arm": "C101b-CAMMG-static-aux",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C101b-CAMMG-static-aux",
+      "source": "435d3d428321e5ce76f0349e8afbb8d28ae0db30",
+      "command_sha256": "9d1eb42635c3ebe3b60cdb29b8e81e142eafd684f0ebaca7b016c20cb33de6dc",
+      "xml_sha256": "befb882e37f8d1720dad510dd1afef0e96f9e6da9e756c749fd59851a0b22fc7"
+    },
+    {
+      "arm": "C103",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C103",
+      "source": "435d3d428321e5ce76f0349e8afbb8d28ae0db30",
+      "command_sha256": "d81bacfd88810ea251b1aa8823bd9012db806bc943fcaf7c009bb516f4b03896",
+      "xml_sha256": "95fb6b32fece9677a4a07af79645ee6c12ffc40e08799795d2dffeefa0f4632e"
+    },
+    {
+      "arm": "C103b-private-proof",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C103b-private-proof",
+      "source": "2224d2fdb7e37c3f4c2eb4022f2744c1859c0541",
+      "command_sha256": "f8a098092b7ea77109b62552be660e649146cef5134a994b4bc04d473530112f",
+      "xml_sha256": "431f81f83e6f5c53ed8be4c61ee2787b89d36b782181a35524b3fec3c4ca0b1b"
+    },
+    {
+      "arm": "C063b-P3-history-allocation",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C063b-P3-history-allocation",
+      "source": "a8dce009eaf9659d04a7efefd043d8574e181352",
+      "command_sha256": "d8efa04e0121c9033689ca98c7eec18e4dc2debd7cba4a9254cba54f35254bcb",
+      "xml_sha256": "c8d7f1526c04ca6b01124aaf8478da50867c4fd4fea44e7223c567dcf88ca048"
+    },
+    {
+      "arm": "C123b-CAM-owner-and-radar-fixture",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C123b-CAM-owner-and-radar-fixture",
+      "source": "907732be204c6753c4095633d95d211a10ab4d8d",
+      "command_sha256": "6e188b82b31fcd3abcfaa0f86962a597bf9dd45ee326b234b655a7a0064bd084",
+      "xml_sha256": "ff2338f05e5080c7a7e65f0f269afb0e63271b422f587af076b7e5673676a173"
+    }
+  ],
+  "kept_file_sha256": {
+    "tests/v040/rootbdy/test_root_flow_extras.py": "9ec3861a98760f1a76c8fccd33f0ee8b895a4787d61116d2d6a116d1aeba3e69",
+    "tests/test_thetafix_microphysics_callers.py": "17636d50489972821f0ebb868a525cb0a95f6e154dcb691dfa0c3bf67d84c80e",
+    "tests/test_v013_operational_smoke.py": "b56c6188a17072d80cec45d3cfec53ed6aadd4aa5a4aad35f0b6528a12fad8bd",
+    "tests/test_v017_gfs_pbl_operational.py": "30b04d708bd0cf2758651e1275fb21ee041454f4f7d6fc444502288d156d092b",
+    "tests/test_v0234_rrtmg_clwrf_ghg.py": "2c099739a42b95926c0d92342bd6c0080f81cf5f107a9fbed4999b80932835a5",
+    "tests/test_v023_batched_minigrid.py": "871e86aeb6d1aba953c2ed1a50b204dff76c6b52cfc6d52a9407ca90142e3a00",
+    "tests/test_p3_state_transport_restart.py": "238238e7a5e158aaca2b32ada440c98b9b39ae721b87e97e4cad0a70d7f3a84a",
+    "tests/v025/b_column/test_mp_re_activation.py": "4158308cbf220bb9a00da97278add515d575a9e152527230638933e2fcb6fc95"
+  },
+  "production_changes": [],
+  "performance": "Test mock reads declared dataclass default only; production source/launches/allocations unchanged",
+  "created_utc": "2026-10-15T02:18:57.541090+00:00",
+  "shared_audit_consumer": {
+    "node": "tests/test_t_mainreds.py::test_audit_optional_geometry_and_tracer_scaling",
+    "owner_fix": "bc8892abd onmain6e1",
+    "receipt": "C090b-Shin-route-and-audit",
+    "status": "PASS originalstrictasserts unchanged; notownproductrepair"
+  },
+  "CAMMG_shared_consumers": {
+    "count": 12,
+    "outcome": "PASS",
+    "owner": "t-cammgalloc958ce5266",
+    "source": "907732be204c6753c4095633d95d211a10ab4d8d",
+    "main_merge": "pending"
+  }
+}

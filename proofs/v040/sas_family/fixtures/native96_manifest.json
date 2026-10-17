@@ -1,0 +1,301 @@
+{
+  "input_original_sha256": "eb1ed297e287bb4b3373ab6d0c331d14486251323d06ea0f53fc6614fb48d405",
+  "inputs_sha256": "133d380f9aa0d64fd0c8749ef5c3de50e89efc399dc4f7457428bdaf3afb3eb6",
+  "source_sha256": "092cfc6685a7006ecf9200b0dbb9296f0e7bb6af11e46bbbd92a843a4d1b911a",
+  "work": {
+    "N": 455,
+    "KX": 44,
+    "DT": 18.0,
+    "STEPCU": 1,
+    "MP": 8,
+    "DX": 9000.0,
+    "PGCON": 0.55,
+    "DX_FACTOR_NSAS": 0
+  },
+  "arms": {
+    "r4": {
+      "flags": [
+        "-O2",
+        "-ftree-vectorize",
+        "-funroll-loops",
+        "-w",
+        "-ffree-form",
+        "-ffree-line-length-none",
+        "-cpp",
+        "-DEM_CORE=1",
+        "-DNMM_CORE=0",
+        "-finit-real=zero",
+        "-finit-integer=0",
+        "-finit-logical=false"
+      ],
+      "active": 259,
+      "finite": true,
+      "oracle_sha256": "4625588720209b6f53284c682824a5c9fde519ee02b54606a266bf031adebcac"
+    },
+    "r8": {
+      "flags": [
+        "-O2",
+        "-ftree-vectorize",
+        "-funroll-loops",
+        "-w",
+        "-ffree-form",
+        "-ffree-line-length-none",
+        "-cpp",
+        "-DEM_CORE=1",
+        "-DNMM_CORE=0",
+        "-finit-real=zero",
+        "-finit-integer=0",
+        "-finit-logical=false",
+        "-fdefault-real-8",
+        "-fdefault-double-8"
+      ],
+      "active": 259,
+      "finite": true,
+      "oracle_sha256": "5a0f57a98ae7f3bac527b9ce3fcee034a0d35f3903c70087c28d3d51b53f8cbb"
+    }
+  },
+  "scheme": 96,
+  "fixtures": {
+    "native96_inputs.npz": "133d380f9aa0d64fd0c8749ef5c3de50e89efc399dc4f7457428bdaf3afb3eb6",
+    "native96_r4.npz": "4625588720209b6f53284c682824a5c9fde519ee02b54606a266bf031adebcac",
+    "native96_r8.npz": "5a0f57a98ae7f3bac527b9ce3fcee034a0d35f3903c70087c28d3d51b53f8cbb"
+  },
+  "qualification": {
+    "literal_real8": {
+      "source": "4b7e0ab1abceabd637d9ccc28269a5c8da97c804",
+      "scheme": 96,
+      "mode": "r8",
+      "fields": {
+        "HBOT": {
+          "pass": true,
+          "max_abs": 0.0,
+          "failed_values": 0,
+          "max_scaled": 0.0,
+          "active_oracle": 455
+        },
+        "HTOP": {
+          "pass": true,
+          "max_abs": 0.0,
+          "failed_values": 0,
+          "max_scaled": 0.0,
+          "active_oracle": 260
+        },
+        "PRATEC": {
+          "pass": true,
+          "max_abs": 9.481347998385736e-15,
+          "failed_values": 0,
+          "max_scaled": 6.842333776299718e-13,
+          "active_oracle": 259
+        },
+        "RAINCV": {
+          "pass": true,
+          "max_abs": 1.7066209556659828e-13,
+          "failed_values": 0,
+          "max_scaled": 6.842246839843632e-13,
+          "active_oracle": 259
+        },
+        "RQCCUTEN": {
+          "pass": true,
+          "max_abs": 1.905030037934125e-18,
+          "failed_values": 0,
+          "max_scaled": 1.4837650607785839e-12,
+          "active_oracle": 2212
+        },
+        "RQICUTEN": {
+          "pass": true,
+          "max_abs": 5.049772203513723e-19,
+          "failed_values": 0,
+          "max_scaled": 5.658056979531937e-13,
+          "active_oracle": 2700
+        },
+        "RQVCUTEN": {
+          "pass": true,
+          "max_abs": 1.0025481963701899e-17,
+          "failed_values": 0,
+          "max_scaled": 1.3355889432931623e-13,
+          "active_oracle": 5778
+        },
+        "RTHCUTEN": {
+          "pass": true,
+          "max_abs": 9.624245844719326e-15,
+          "failed_values": 0,
+          "max_scaled": 6.111538541236847e-14,
+          "active_oracle": 5767
+        },
+        "RUCUTEN": {
+          "pass": true,
+          "max_abs": 3.848744239975943e-14,
+          "failed_values": 0,
+          "max_scaled": 1.3772831232177428e-12,
+          "active_oracle": 5710
+        },
+        "RVCUTEN": {
+          "pass": true,
+          "max_abs": 1.5543122344752192e-15,
+          "failed_values": 0,
+          "max_scaled": 1.446742152208772e-13,
+          "active_oracle": 5702
+        }
+      },
+      "all_pass": true,
+      "oracle_active": 259,
+      "port_active": 259,
+      "compile_s": 22.74046653904952,
+      "warm_median_s": 0.025694679003208876,
+      "argument_bytes": 977340,
+      "output_bytes": 975600,
+      "temp_bytes": 15864056,
+      "platform": "cpu"
+    },
+    "native_real4": {
+      "source": "7f71cf90f17e9d3250a80efc40c3ba0178a946cd",
+      "scheme": 96,
+      "mode": "r4",
+      "fields": {
+        "HBOT": {
+          "pass": false,
+          "max_abs": 41.0,
+          "failed_values": 1,
+          "max_scaled": 0.9111111111111111,
+          "active_oracle": 455
+        },
+        "HTOP": {
+          "pass": false,
+          "max_abs": 24.0,
+          "failed_values": 1,
+          "max_scaled": 0.5581395348837209,
+          "active_oracle": 260
+        },
+        "PRATEC": {
+          "pass": false,
+          "max_abs": 2.472370397299528e-06,
+          "failed_values": 39,
+          "max_scaled": 0.00017856842565499613,
+          "active_oracle": 259
+        },
+        "RAINCV": {
+          "pass": false,
+          "max_abs": 4.450324922800064e-05,
+          "failed_values": 39,
+          "max_scaled": 0.00017857076659516413,
+          "active_oracle": 259
+        },
+        "RQCCUTEN": {
+          "pass": false,
+          "max_abs": 3.983876839530609e-10,
+          "failed_values": 506,
+          "max_scaled": 0.00031038935234351477,
+          "active_oracle": 2211
+        },
+        "RQICUTEN": {
+          "pass": false,
+          "max_abs": 7.609212565595769e-11,
+          "failed_values": 561,
+          "max_scaled": 8.532765558549257e-05,
+          "active_oracle": 2696
+        },
+        "RQVCUTEN": {
+          "pass": false,
+          "max_abs": 3.849527274724096e-08,
+          "failed_values": 41,
+          "max_scaled": 0.0005128321195603762,
+          "active_oracle": 5648
+        },
+        "RTHCUTEN": {
+          "pass": true,
+          "max_abs": 3.594381269067526e-06,
+          "failed_values": 0,
+          "max_scaled": 2.284351316820977e-05,
+          "active_oracle": 5579
+        },
+        "RUCUTEN": {
+          "pass": false,
+          "max_abs": 5.192227035877295e-06,
+          "failed_values": 7,
+          "max_scaled": 0.00018595790451157222,
+          "active_oracle": 5577
+        },
+        "RVCUTEN": {
+          "pass": false,
+          "max_abs": 1.2185838613731903e-06,
+          "failed_values": 5,
+          "max_scaled": 0.0001135281059721453,
+          "active_oracle": 5527
+        }
+      },
+      "all_pass": false,
+      "oracle_active": 259,
+      "port_active": 260,
+      "compile_s": 25.340420244028792,
+      "warm_median_s": 0.02924586716108024,
+      "argument_bytes": 977340,
+      "output_bytes": 487840,
+      "temp_bytes": 8058360,
+      "platform": "cpu"
+    },
+    "conditioning": {
+      "RAINCV": {
+        "candidate_original_abs": 4.450324922800064e-05,
+        "original_FMA_spread_abs": 0.0004640389233827591,
+        "max_same_cell_excess": 2.5546178221702576e-06,
+        "same_cell_excess_count": 13
+      },
+      "PRATEC": {
+        "candidate_original_abs": 2.472370397299528e-06,
+        "original_FMA_spread_abs": 2.577994018793106e-05,
+        "max_same_cell_excess": 1.4191027730703354e-07,
+        "same_cell_excess_count": 13
+      },
+      "HBOT": {
+        "candidate_original_abs": 41.0,
+        "original_FMA_spread_abs": 41.0,
+        "max_same_cell_excess": 0.0,
+        "same_cell_excess_count": 0
+      },
+      "HTOP": {
+        "candidate_original_abs": 24.0,
+        "original_FMA_spread_abs": 24.0,
+        "max_same_cell_excess": 0.0,
+        "same_cell_excess_count": 0
+      },
+      "RTHCUTEN": {
+        "candidate_original_abs": 3.594381269067526e-06,
+        "original_FMA_spread_abs": 0.00014421343803405762,
+        "max_same_cell_excess": 2.1529849618673325e-06,
+        "same_cell_excess_count": 16
+      },
+      "RQVCUTEN": {
+        "candidate_original_abs": 3.849527274724096e-08,
+        "original_FMA_spread_abs": 4.211688064970076e-08,
+        "max_same_cell_excess": 7.244125299621373e-10,
+        "same_cell_excess_count": 83
+      },
+      "RQCCUTEN": {
+        "candidate_original_abs": 3.983876839530609e-10,
+        "original_FMA_spread_abs": 5.1804249778797384e-09,
+        "max_same_cell_excess": 3.673505943879718e-11,
+        "same_cell_excess_count": 105
+      },
+      "RQICUTEN": {
+        "candidate_original_abs": 7.609212565595769e-11,
+        "original_FMA_spread_abs": 1.3732446291214728e-09,
+        "max_same_cell_excess": 4.462208380573429e-12,
+        "same_cell_excess_count": 72
+      },
+      "RUCUTEN": {
+        "candidate_original_abs": 5.192227035877295e-06,
+        "original_FMA_spread_abs": 0.00010458612814545631,
+        "max_same_cell_excess": 2.1187588572502136e-07,
+        "same_cell_excess_count": 45
+      },
+      "RVCUTEN": {
+        "candidate_original_abs": 1.2185838613731903e-06,
+        "original_FMA_spread_abs": 6.066169589757919e-06,
+        "max_same_cell_excess": 1.0596704669296741e-07,
+        "same_cell_excess_count": 31
+      }
+    },
+    "tol_files_changed": false,
+    "final_D6_binding": true
+  }
+}

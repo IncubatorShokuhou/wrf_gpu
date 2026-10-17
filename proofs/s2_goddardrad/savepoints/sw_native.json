@@ -1,0 +1,45 @@
+{
+  "schema": "wrf-goddard-swrad-native-v1",
+  "source_sha256": "0917531726cbed5a128e05c45e70ee292c209dbcd1ae2bad17db6e46b8d3a5ad",
+  "shim_sha256": "44ba704d83dc65b61d8663ad2a6bd42c7daeb4fe85e7d58fb0e26ba2b2eb92f9",
+  "driver_sha256": "29f5c41d3d11b5d7f46a3dfae858f16f045831448f35e1ac83ec2ff667cb3423",
+  "command": [
+    "<USER_HOME>/miniconda3/envs/wrfbuild/bin/gfortran",
+    "-O2",
+    "-ffree-form",
+    "-ffree-line-length-none",
+    "-cpp",
+    "-DRWORDSIZE=4",
+    "-DNO_IEEE_MODULE",
+    "-fcheck=bounds",
+    "-ffpe-summary=none",
+    "-fallow-argument-mismatch",
+    "-std=legacy",
+    "-finit-real=zero",
+    "stubs.f90",
+    "module_checkerror.F",
+    "module_ra_goddard.F",
+    "driver.f90",
+    "-o",
+    "sw"
+  ],
+  "precision": "original default REAL4; explicit fp_kind REAL8; output REAL4",
+  "reference_policy": "manager-approved -finit-real=zero; port zero only at undefined taux read original5315",
+  "source_changes": "visibility only",
+  "cache": "NONE",
+  "affinity": [
+    0,
+    1,
+    2,
+    3,
+    16,
+    17,
+    18,
+    19
+  ],
+  "tolerance": {
+    "rtol": 5e-07,
+    "atol": 3e-07
+  },
+  "savepoint_sha256": "417c36c6b425932b3ce33ee98c66d9eef6aedf9f8b9e6171e6fbaab8aeff3119"
+}

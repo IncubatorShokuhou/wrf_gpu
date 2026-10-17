@@ -43,23 +43,41 @@ NZ = 44
 def _grell_state(grid):
     """Smoke State carrying realistic deep/dry-upper/marginal soundings (the
     oracle generator's), sub-saturated and with a stratosphere -- the shallow
-    supersaturated b2 smoke column gives G3/GD no cloud top / no valid k22."""
+    supersaturated b2 smoke column gives G3/GD no cloud top / no valid k22.
+
+    The Grell callers hand WRF phy_prep ``P=p_hyd``/``P8W=p_hyd_w`` (from MU and the hybrid
+    coefficients); ``DycoreMetrics.flat`` sets ``c1h=eta`` (WRF terrain-following: c1=1, c2=0).
+    So the soundings sit on sigma metrics: per-column MU from the sounding surface pressure,
+    p from WRF's hydrostatic recursion, T from the sounding theta, hypsometric heights."""
+    nz, ny, nx = NZ, grid.ny, grid.nx
+    grid = dataclasses.replace(grid, metrics=dataclasses.replace(
+        grid.metrics, c1h=jnp.ones((nz,)), c2h=jnp.zeros((nz,)), c1f=jnp.ones((nz + 1,)), c2f=jnp.zeros((nz + 1,))))
     state = smoke._convective_state(grid)
     tile = gio.make_tile(11, nx=grid.nx, ny=grid.ny, kx=NZ,
                          regimes=("deep", "deep_dryupper", "marginal"))
     lev = lambda n: tile["f3"][n].transpose(1, 2, 0)  # (nx,k,ny) -> (k,ny,nx)
-    t, q, pi, p = (lev(n)[:NZ] for n in ("t", "q", "pi", "p"))
-    theta_m = (t / pi) * (1.0 + 461.6 / 287.0 * q)
-    zf = np.concatenate([np.zeros((1, grid.ny, grid.nx)), np.cumsum(lev("dz8w")[:NZ], axis=0)])
+    t, q, pi = (lev(n)[:NZ] for n in ("t", "q", "pi"))
+    theta = t / pi
+    p_top = float(np.asarray(grid.metrics.p_top))
+    dnw = np.asarray(grid.metrics.dnw, np.float64)
+    psfc = lev("p8w")[0]
+    mu = (psfc - p_top) / np.sum((1.0 + q) * (-dnw)[:, None, None], axis=0)
+    faces = [np.full((ny, nx), p_top)]
+    for k in range(nz - 1, -1, -1):  # phy_prep :4950-4957
+        faces.append(faces[-1] - (1.0 + q[k]) * mu * dnw[k])
+    pw = np.stack(faces[::-1])
+    p = 0.5 * (pw[:-1] + pw[1:])
+    tv = theta * (p / 1.0e5) ** (287.0 / 1004.5) * (1.0 + 0.608 * q)
+    zf = np.concatenate([np.zeros((1, ny, nx)), np.cumsum(287.0 * tv / 9.81 * np.log(pw[:-1] / pw[1:]), axis=0)])
+    theta_m = theta * (1.0 + 461.6 / 287.0 * q)
     ph = jnp.asarray(9.81 * zf)
-    return state.replace(theta=jnp.asarray(theta_m), qv=jnp.asarray(q), p=jnp.asarray(p),
-                         p_total=jnp.asarray(p), ph=ph, ph_total=ph,
-                         qc=jnp.zeros_like(state.qc), w=jnp.asarray(lev("w")))
+    return grid, state.replace(theta=jnp.asarray(theta_m), qv=jnp.asarray(q), p=jnp.asarray(p),
+                               p_total=jnp.asarray(p), ph=ph, ph_total=ph, mu=jnp.asarray(mu),
+                               qc=jnp.zeros_like(state.qc), w=jnp.asarray(lev("w")))
 
 
 def _setup(cu):
-    grid = smoke._grid(nz=NZ, ny=12, nx=12)
-    state = _grell_state(grid)
+    grid, state = _grell_state(smoke._grid(nz=NZ, ny=12, nx=12))
     nml = smoke._namelist(grid, dt_s=60.0, mp_physics=0, bl_pbl_physics=0,
                           sf_sfclay_physics=0, cu_physics=cu)
     return grid, state, nml
@@ -69,7 +87,9 @@ def _setup(cu):
 def test_grell_operational_step_triggers_and_rains(cu):
     _grid, state, nml = _setup(cu)
     _resolve_operational_suite(nml)
-    carry = initial_operational_carry(state)
+    from gpuwrf.coupling.cu_forcing import initial_cu_forcing
+    # itimestep 1: WRF's held RTHFTEN/RQVFTEN are zero (t-cfix-cu F7 carry leaf).
+    carry = initial_operational_carry(state).replace(cu_forcing=initial_cu_forcing(state.theta))
     after = _physics_step_forcing(carry, nml, 0.0, run_radiation=False).state
     assert smoke._all_finite(after), f"cu={cu} produced a non-finite field"
     rain = np.asarray(after.rainc_acc) - np.asarray(state.rainc_acc)

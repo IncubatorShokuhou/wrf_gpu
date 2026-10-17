@@ -1,0 +1,225 @@
+{
+  "schema": "t-ferrier-mpre-c40-v1",
+  "scope_gate": "PASS",
+  "consumer_status": "12 pre-existing history/restart failures; FAST1 adds 3 pre-existing wind/identity failures; none waived",
+  "baseline_ref": "4c4b3fa63298829d4df4421b078e8e950f49a9f8",
+  "measured_lower_source": "4bd38da577f1e5fe43fc061fcd39a67635850d8a",
+  "measured_default_source": "48635985d55690e83b93d694021c190bc08d5282",
+  "source_tree": "ba3e608ca7417e366f6614468e8571165c32f604",
+  "changed_production_file": {
+    "src/gpuwrf/coupling/ssib_surface_hook.py": "8dde63f2cdbff850db70e10a8f9c0caadb1450bca380d5d989bceacac86a28fa"
+  },
+  "source_audit_sha256": "ffa8d314bbf6dbdaa0f5a20f7549a8611d40facd346aad98fc3d16c3988665aa",
+  "wrf_behaviour": "Both eligible LW AND SW required for has_reqc/i/s; RRTMG-LW+Dudhia-SW keeps flags0, no microphysics radii seeded/calculated/consumed",
+  "implementation": "Use standard mp_re_active(namelist) plus explicit mp_physics at SSiB RRTMG builder; no radii invented",
+  "actual_c40_native_cuda_lower": {
+    "case": "c40",
+    "source_commit": "4bd38da577f1e5fe43fc061fcd39a67635850d8a",
+    "physical_backend": "cpu",
+    "lowering_platform": "cuda",
+    "gpu_executed": false,
+    "scope": "native CUDA lowering / optional AUTOTUNE0 deviceless prescreen, not fidelity or speed",
+    "lower": "OK",
+    "compile": "NOT_ATTEMPTED",
+    "programs": [
+      {
+        "name": "d01",
+        "lower": "OK",
+        "lower_s": 43.210377268027514,
+        "static_kwargs": {
+          "n_steps": 72,
+          "cadence": 12
+        },
+        "stablehlo_bytes": 269549752,
+        "stablehlo_sha256": "5de9e15c4eeb1627a45f3a95fe9d4144bccd2925bda4d4789e16a8562a589df7",
+        "triton_custom_calls": 128,
+        "compile": "NOT_ATTEMPTED",
+        "stack": "UNKNOWN"
+      }
+    ],
+    "cache": "NONE; GPUWRF_JAX_CACHE=0",
+    "target_sha256": "f46c185780fdbd4aab62ef20293385bb8de31a71bd260e9ce62cbfc21f196a23",
+    "harness_sha256": "0b2db04ef80417d4739b97c104e2fb573b5f7e36826446f4a535a71fb31a27af",
+    "environment": {
+      "JAX_PLATFORMS": "cpu",
+      "CUDA_VISIBLE_DEVICES": "",
+      "GPUWRF_JAX_CACHE": "0",
+      "GPUWRF_FAST_DEFAULTS": "1",
+      "GPUWRF_CENSUS": "1",
+      "GPUWRF_CENSUS_SLIM": "0",
+      "GPUWRF_AOT_SLIM_MODULE": "0",
+      "GPUWRF_RRTMG_MP_RE": "1",
+      "GPUWRF_SCRATCH": "<USER_HOME>/wrf_gpu2_lanes/t-ferrier-mpre/MR03_scratch",
+      "GPUWRF_TMPDIR": "<USER_HOME>/wrf_gpu2_lanes/t-ferrier-mpre/MR03_scratch"
+    },
+    "wall_s": 55.61481371195987,
+    "peak_rss_KiB": 2888500,
+    "matrix_status": "ADMITTED",
+    "input_sha256": {
+      "namelist.input": "c65eac590d38007c94695984b18842efaf52f9a5b373aa476048cef4119b2531",
+      "wrfbdy_d01": "6e221d03b8611c38dd44ee3e231927730a50a5acf4d9afb2839365bee448a621",
+      "wrfinput_d01": "5d7cb92333e3a23cdd2e000a8163eb33a2285c32da48fb3e87f330c4a36979a1"
+    },
+    "jax_version": "0.10.0",
+    "jax_enable_x64_before_native_trace": true,
+    "dfi_prepass": "INACTIVE",
+    "init_s": 10.543727122014388,
+    "native_trace": {
+      "facade": true,
+      "capability_resolver": "cuda",
+      "mcica_native": true,
+      "python_backend": "gpu",
+      "pallas_interpret": false,
+      "product_tridiagonal": true,
+      "virtual_target": "NVIDIA GeForce RTX 5090_0(process=0,(0))"
+    },
+    "physical_devices_at_exit": [
+      "cpu"
+    ]
+  },
+  "default_identities": {
+    "Swiss": "f672a5739cb96e388b6b7a40ef80337bf81bdc14ef15268f3476e09d79fe055d",
+    "PROD": "6fc715a2bd630934c4cf0f94427df19a527cbf429011c9ba5efe4d712744d27b"
+  },
+  "caller_gate": {
+    "tests": 3,
+    "passed": 3,
+    "work": "two actual runtime radiation refreshes for use_mp_re0/1 and selection forwarding",
+    "scope": "constructed 6z2y3x caller; not forecast fidelity"
+  },
+  "mutant": {
+    "failures": 1,
+    "setup_errors": 0,
+    "reason": "actual held-radii caller refusal"
+  },
+  "consumer_results": {
+    "FAST1": {
+      "passed": 98,
+      "failures": 15
+    },
+    "matched_unchanged_main_FAST1": {
+      "passed": 1,
+      "failures": 15,
+      "same_failed_nodes": true
+    },
+    "FAST0": {
+      "passed": 101,
+      "failures": 12,
+      "all_failed_nodes_in_matched_parent_set": true
+    },
+    "required_contracts_legacy_mp_and_netcdf_lock": "PASS"
+  },
+  "preexisting_failed_nodes_FAST1": {
+    "tests.test_s2_ssib_wiring::test_complete_ssib_public_restart_roundtrip[pickle]": "ValueError: SSiB restart invalid history.u10e (E78)",
+    "tests.test_s2_ssib_wiring::test_complete_ssib_public_restart_roundtrip[netcdf]": "ValueError: SSiB restart invalid history.u10e (E78)",
+    "tests.test_s2_ssib_wiring::test_complete_ssib_public_restart_roundtrip[native]": "ValueError: SSiB restart invalid history.u10e (E78)",
+    "tests.test_s2_ssib_wiring::test_public_restart_write_refuses_bad_ssib[wind-pickle]": "AssertionError: Regex pattern did not match.\n  Expected regex: 'SSiB'\n  Actual message: 'restart is missing held MYNN sfc_wspd (E78)'",
+    "tests.test_s2_ssib_wiring::test_public_restart_write_refuses_bad_ssib[wind-netcdf]": "AssertionError: Regex pattern did not match.\n  Expected regex: 'SSiB'\n  Actual message: 'restart is missing held MYNN sfc_wspd (E78)'",
+    "tests.test_s2_ssib_wiring::test_native_public_read_refuses_hash_valid_damage[group]": "ValueError: SSiB restart invalid history.u10e (E78)",
+    "tests.test_s2_ssib_wiring::test_native_public_read_refuses_hash_valid_damage[schema]": "ValueError: SSiB restart invalid history.u10e (E78)",
+    "tests.test_s2_ssib_wiring::test_native_public_read_refuses_hash_valid_damage[radiation]": "ValueError: SSiB restart invalid history.u10e (E78)",
+    "tests.test_s2_ssib_wiring::test_native_public_read_refuses_hash_valid_damage[snow]": "ValueError: SSiB restart invalid history.u10e (E78)",
+    "tests.test_s2_ssib_wiring::test_native_public_read_refuses_hash_valid_damage[shape]": "ValueError: SSiB restart invalid history.u10e (E78)",
+    "tests.test_s2_ssib_wiring::test_native_public_read_refuses_hash_valid_damage[dtype]": "ValueError: SSiB restart invalid history.u10e (E78)",
+    "tests.test_s2_ssib_wiring::test_native_public_read_refuses_hash_valid_damage[wind]": "ValueError: SSiB restart invalid history.u10e (E78)",
+    "tests.test_s2_ssib_wiring::test_native_public_read_refuses_hash_valid_damage[history]": "ValueError: SSiB restart invalid history.u10e (E78)",
+    "tests.test_s2_ssib_wiring::test_native_public_read_refuses_hash_valid_damage[precipitation]": "ValueError: SSiB restart invalid history.u10e (E78)",
+    "tests.test_s2_ssib_wiring::test_public_initial_carry_seeds_held_wind": "AssertionError: assert SsibLandState(www1=Array([[0.25, 0.25, 0.25],\\n       [0.25, 0.25, 0.25]], dtype=float32), www2=Array([[0.25, 0.25, 0.2...([[0., 0., 0.],\\n       [0., 0., 0.]], dtype=float32), sfcevp=Array([[0., 0., 0.],\\n       [0., 0., 0.]], dtype=float32)) is SsibLandState(www1=Array([[0.25, 0.25, 0.25],\\n       [0.25, 0.25, 0.25]], dtype=float32), www2=Array([[0.25, 0.25, 0.2...([[0., 0., 0.],\\n       [0., 0., 0.]], dtype=float32), sfcevp=Array([[0., 0., 0.],\\n       [0., 0., 0.]], dtype=float32))\n +  where SsibLandState(www1=Array([[0.25, 0.25, 0.25],\\n       [0.25, 0.25, 0.25]], dtype=float32), www2=Array([[0.25, 0.25, 0.2...([[0., 0., 0.],\\n       [0., 0., 0.]], dtype=float32), sfcevp=Array([[0., 0., 0.],\\n       [0., 0., 0.]], dtype=float32)) = OperationalCarry(state=<gpuwrf.contracts.state.State object at 0x5d63175390a0>, t_2ave=Array([[[0., 0., 0.],\\n        [...ation=None, sst_skin=None, noahmp_irrigation=None, noahmp_carbon=None, noahmp_groundwater=None, noahmp_tile_drain=None).ssib_land\n +  and   SsibLandState(www1=Array([[0.25, 0.25, 0.25],\\n       [0.25, 0.25, 0.25]], dtype=float32), www2=Array([[0.25, 0.25, 0.2...([[0., 0., 0.],\\n       [0., 0., 0.]], dtype=float32), sfcevp=Array([[0., 0., 0.],\\n       [0., 0., 0.]], dtype=float32)) = OperationalNamelist(grid=GridSpec(projection=Projection(kind='lambert', lat_0=0.0, lon_0=0.0, dx_m=3000.0, dy_m=3000.0...in=0, sst_skin_initial=None, noahmp_irrigation_static=None, noahmp_carbon_static=None, noahmp_groundwater_initial=None).ssib_land"
+  },
+  "matched_parent_failed_nodes": {
+    "tests.test_s2_ssib_wiring::test_complete_ssib_public_restart_roundtrip[pickle]": "ValueError: SSiB restart invalid history.u10e (E78)",
+    "tests.test_s2_ssib_wiring::test_complete_ssib_public_restart_roundtrip[netcdf]": "ValueError: SSiB restart invalid history.u10e (E78)",
+    "tests.test_s2_ssib_wiring::test_complete_ssib_public_restart_roundtrip[native]": "ValueError: SSiB restart invalid history.u10e (E78)",
+    "tests.test_s2_ssib_wiring::test_public_restart_write_refuses_bad_ssib[wind-pickle]": "AssertionError: Regex pattern did not match.\n  Expected regex: 'SSiB'\n  Actual message: 'restart is missing held MYNN sfc_wspd (E78)'",
+    "tests.test_s2_ssib_wiring::test_public_restart_write_refuses_bad_ssib[wind-netcdf]": "AssertionError: Regex pattern did not match.\n  Expected regex: 'SSiB'\n  Actual message: 'restart is missing held MYNN sfc_wspd (E78)'",
+    "tests.test_s2_ssib_wiring::test_native_public_read_refuses_hash_valid_damage[group]": "ValueError: SSiB restart invalid history.u10e (E78)",
+    "tests.test_s2_ssib_wiring::test_native_public_read_refuses_hash_valid_damage[schema]": "ValueError: SSiB restart invalid history.u10e (E78)",
+    "tests.test_s2_ssib_wiring::test_native_public_read_refuses_hash_valid_damage[radiation]": "ValueError: SSiB restart invalid history.u10e (E78)",
+    "tests.test_s2_ssib_wiring::test_native_public_read_refuses_hash_valid_damage[snow]": "ValueError: SSiB restart invalid history.u10e (E78)",
+    "tests.test_s2_ssib_wiring::test_native_public_read_refuses_hash_valid_damage[shape]": "ValueError: SSiB restart invalid history.u10e (E78)",
+    "tests.test_s2_ssib_wiring::test_native_public_read_refuses_hash_valid_damage[dtype]": "ValueError: SSiB restart invalid history.u10e (E78)",
+    "tests.test_s2_ssib_wiring::test_native_public_read_refuses_hash_valid_damage[wind]": "ValueError: SSiB restart invalid history.u10e (E78)",
+    "tests.test_s2_ssib_wiring::test_native_public_read_refuses_hash_valid_damage[history]": "ValueError: SSiB restart invalid history.u10e (E78)",
+    "tests.test_s2_ssib_wiring::test_native_public_read_refuses_hash_valid_damage[precipitation]": "ValueError: SSiB restart invalid history.u10e (E78)",
+    "tests.test_s2_ssib_wiring::test_public_initial_carry_seeds_held_wind": "AssertionError: assert SsibLandState(www1=Array([[0.25, 0.25, 0.25],\\n       [0.25, 0.25, 0.25]], dtype=float32), www2=Array([[0.25, 0.25, 0.2...([[0., 0., 0.],\\n       [0., 0., 0.]], dtype=float32), sfcevp=Array([[0., 0., 0.],\\n       [0., 0., 0.]], dtype=float32)) is SsibLandState(www1=Array([[0.25, 0.25, 0.25],\\n       [0.25, 0.25, 0.25]], dtype=float32), www2=Array([[0.25, 0.25, 0.2...([[0., 0., 0.],\\n       [0., 0., 0.]], dtype=float32), sfcevp=Array([[0., 0., 0.],\\n       [0., 0., 0.]], dtype=float32))\n +  where SsibLandState(www1=Array([[0.25, 0.25, 0.25],\\n       [0.25, 0.25, 0.25]], dtype=float32), www2=Array([[0.25, 0.25, 0.2...([[0., 0., 0.],\\n       [0., 0., 0.]], dtype=float32), sfcevp=Array([[0., 0., 0.],\\n       [0., 0., 0.]], dtype=float32)) = OperationalCarry(state=<gpuwrf.contracts.state.State object at 0x5e1a81694350>, t_2ave=Array([[[0., 0., 0.],\\n        [...ation=None, sst_skin=None, noahmp_irrigation=None, noahmp_carbon=None, noahmp_groundwater=None, noahmp_tile_drain=None).ssib_land\n +  and   SsibLandState(www1=Array([[0.25, 0.25, 0.25],\\n       [0.25, 0.25, 0.25]], dtype=float32), www2=Array([[0.25, 0.25, 0.2...([[0., 0., 0.],\\n       [0., 0., 0.]], dtype=float32), sfcevp=Array([[0., 0., 0.],\\n       [0., 0., 0.]], dtype=float32)) = OperationalNamelist(grid=GridSpec(projection=Projection(kind='lambert', lat_0=0.0, lon_0=0.0, dx_m=3000.0, dy_m=3000.0...in=0, sst_skin_initial=None, noahmp_irrigation_static=None, noahmp_carbon_static=None, noahmp_groundwater_initial=None).ssib_land"
+  },
+  "preexisting_failed_nodes_FAST0": {
+    "tests.test_s2_ssib_wiring::test_complete_ssib_public_restart_roundtrip[pickle]": "ValueError: SSiB restart invalid history.u10e (E78)",
+    "tests.test_s2_ssib_wiring::test_complete_ssib_public_restart_roundtrip[netcdf]": "ValueError: SSiB restart invalid history.u10e (E78)",
+    "tests.test_s2_ssib_wiring::test_complete_ssib_public_restart_roundtrip[native]": "ValueError: SSiB restart invalid history.u10e (E78)",
+    "tests.test_s2_ssib_wiring::test_native_public_read_refuses_hash_valid_damage[group]": "ValueError: SSiB restart invalid history.u10e (E78)",
+    "tests.test_s2_ssib_wiring::test_native_public_read_refuses_hash_valid_damage[schema]": "ValueError: SSiB restart invalid history.u10e (E78)",
+    "tests.test_s2_ssib_wiring::test_native_public_read_refuses_hash_valid_damage[radiation]": "ValueError: SSiB restart invalid history.u10e (E78)",
+    "tests.test_s2_ssib_wiring::test_native_public_read_refuses_hash_valid_damage[snow]": "ValueError: SSiB restart invalid history.u10e (E78)",
+    "tests.test_s2_ssib_wiring::test_native_public_read_refuses_hash_valid_damage[shape]": "ValueError: SSiB restart invalid history.u10e (E78)",
+    "tests.test_s2_ssib_wiring::test_native_public_read_refuses_hash_valid_damage[dtype]": "ValueError: SSiB restart invalid history.u10e (E78)",
+    "tests.test_s2_ssib_wiring::test_native_public_read_refuses_hash_valid_damage[wind]": "ValueError: SSiB restart invalid history.u10e (E78)",
+    "tests.test_s2_ssib_wiring::test_native_public_read_refuses_hash_valid_damage[history]": "ValueError: SSiB restart invalid history.u10e (E78)",
+    "tests.test_s2_ssib_wiring::test_native_public_read_refuses_hash_valid_damage[precipitation]": "ValueError: SSiB restart invalid history.u10e (E78)"
+  },
+  "unchanged_physics_math": {
+    "src/gpuwrf/physics/_ssib_generated.py": "654514268895bf6705f59fdba734f4dc0c005f9a8b6aee4c21359205abac1222",
+    "src/gpuwrf/physics/lsm_ssib.py": "d6267bcbbc14c9e64410bfd2e406170bfd250277ec997a40ed083cb09928a868",
+    "src/gpuwrf/physics/rrtmg_mp_re.py": "cdece2533c8c57903050962c7305a4c361aa163c4acf5a28059e7bacffea4b4d",
+    "src/gpuwrf/physics/rrtmg_lw.py": "1bebad80a700a592bc6ca377940937d38de8cd62a2879be817b4b1f400239eee",
+    "src/gpuwrf/physics/ra_sw_dudhia.py": "c2cfb96ea205b64f857d10893c328d0d41e88aaae4a1e720509997868cff0283",
+    "src/gpuwrf/physics/pbl_ysu.py": "e1e6f33cb3a36968f5561c8ead93215e8cc2b33dab8105cae7ec1f0b7680c00d",
+    "src/gpuwrf/coupling/physics_couplers.py": "67f9dc66ae9323f213a1505a0a34c52b5f211771857cea9780fff5c20cf7cf7f",
+    "src/gpuwrf/physics/p3/radiation.py": "3813d77cef06e0ae552b63dfe9d2936934286b009731b31ab954a745baee032d"
+  },
+  "unchanged_hook_other_functions_AST": true,
+  "resource_assessment": {
+    "new_arrays": 0,
+    "new_kernel_calls": 0,
+    "new_transfers": 0,
+    "new_baked_inputs": 0,
+    "basis": "Python-static predicate and existing MP selection; source/I, no GPU timing or VRAM claim"
+  },
+  "cache": "NONE; GPUWRF_JAX_CACHE=0",
+  "gpu_executed": false,
+  "release_gates_pending": [
+    "GPU executable/E41",
+    "full CPU-WRF forecast D6",
+    "runtime timing/VRAM"
+  ],
+  "receipts_sha256": {
+    "receipts/MR01.json": "2519cd4e3ad86430e5f3de8ee6b2584fdcd805403a1fc983a0f9d0daffd77153",
+    "receipts/MR03.json": "13e3f3861d92649f44e46a6b75a6aa53b9982c064b22a08ae32a2ac83fb20632",
+    "receipts/MR01.log.gz": "fea8e366351549615fc97ea9d3803af4fa44be4657e957fd99635e90ce80eb4d",
+    "receipts/MR02.log.gz": "d9190019c472821af8a70936d1f9180b33c011f8636e1e0ff31bddc99c24750c",
+    "receipts/MR02.xml.gz": "a60e2d72112e60a42d78a5a86d12bcbdbb596ebafb5939454bb6eda5257ff05d",
+    "receipts/MR03.log.gz": "66affe919c86640fb7834d7da30ac74a759b9d6b21a506abcd59fd898ac29553",
+    "receipts/MR04.log.gz": "b6a8fc6af261531dc101d135aa58f7503a93d369e453c2e55962a117d676a585",
+    "receipts/MR04.xml.gz": "2f69c75a678b1f931a54541368f5e16f4d3b8cd8ddfb05abbf4c42835e4f76f6",
+    "receipts/MR05.log.gz": "bb627ec9ae5737c91e0fc9a463de383456ff85147c7068404ac8f0a5c5223dce",
+    "receipts/MR05.xml.gz": "a0aea3766a25adc0dc361cbf65b5151d784f37a8f1f98d45dc871f34c074ef2e",
+    "receipts/MR06.log.gz": "8faff437bf2caa36ea2315ebb7d4cc9554b900e3685cb37093c805bd694bfd60",
+    "receipts/MR06.xml.gz": "a4e25da67c335ab4c9e87dd2fcae7608e6ab55fd6d0995dfb65d5c7e1e60dbf4",
+    "receipts/MR07.log.gz": "e5999ed16af37942a67a903f09f4ee465c4e4c63d3cf18446f4c33a3845632e2",
+    "receipts/MR07.xml.gz": "1c6a1b3750870f36c477e7984e63139dc030cd62545954c584cae49451b703ea",
+    "receipts/MR08.json": "41249a49120bdf383aa53978deed7727118c6f53f988959f8b31070af084fa02",
+    "receipts/MR08.log.gz": "cba672be811306c9f65e8168de758cf3ab02a12c06249eaf200b9767f700714c",
+    "receipts/MR09.json": "df5b813f421563e6025434141cfdce3b1d1af57c88849e80f41ff7120ece76e6",
+    "receipts/MR09.log.gz": "ecdc266c55a8f266de1fe4eedf15e6cf354353a393f1bb0dde35a056b0924e0a"
+  },
+  "uncompressed_receipts_sha256": {
+    "MR01.json": "2519cd4e3ad86430e5f3de8ee6b2584fdcd805403a1fc983a0f9d0daffd77153",
+    "MR03.json": "13e3f3861d92649f44e46a6b75a6aa53b9982c064b22a08ae32a2ac83fb20632",
+    "MR01.log": "617323f4996802a7a9e51b8545d19c7e1f44f2b091f2d4da1203675ee82e8041",
+    "MR02.log": "79b619a1d93521e1b13722d6d123a7711cb52e9d6f1b92cc2a9b48e4835c32c3",
+    "MR02.xml": "758e9337bed574d0e5a093c57825a2f6e3ed73a55aa18c3ce6b6f31aedc604fd",
+    "MR03.log": "94535b4078a6a894cbf2337a5c1bd02054deeb52a900dd35c6e62c83c3dea521",
+    "MR04.log": "ab2159c471a108178c25a30cb1ef87ceb9660bb18bbfbd4d77f43facaf04b856",
+    "MR04.xml": "c236da27e9c67bf21e92d969756d6b3be87b109b81fa020d1b77168089a48f34",
+    "MR05.log": "1b38fb3c06a7a9a5c42f851b3ba8291a9aee7038e5f235635b889dd01c48dc3e",
+    "MR05.xml": "cbd87e11060536b3a34f028c2807f03384c475799f5fa3658b1fee7ad87da503",
+    "MR06.log": "4ab203f10b133c39e9b296e54a12a64600b1ecef99c54c2b08b351c9b6784b84",
+    "MR06.xml": "d866fe8c4f2825d6d6a9a87995daf942dba81438c177bb896e482150388a4859",
+    "MR07.log": "49d9461d765410a0521bdeff2fbcb2ca2bc6f5af09d01bb83be7174f6072cf03",
+    "MR07.xml": "38014b0f1d0f950cdf72a47c7ffc29cf12ef557330230f046e70005c73516467",
+    "MR08.json": "41249a49120bdf383aa53978deed7727118c6f53f988959f8b31070af084fa02",
+    "MR08.log": "c547c403efd9cb1dac86a6a3008135d2ad4356c353fa15149398b7f14f93cf9c",
+    "MR09.json": "df5b813f421563e6025434141cfdce3b1d1af57c88849e80f41ff7120ece76e6",
+    "MR09.log": "1b26b5832821ae74321d2e69ef1c83946e5bd2239f0f093e833efea7cf9ec11a"
+  }
+}

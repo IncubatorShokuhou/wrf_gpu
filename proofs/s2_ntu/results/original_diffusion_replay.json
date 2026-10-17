@@ -1,0 +1,122 @@
+{
+  "scope": "Reproduce the original sixth-order source class on frozen full-grid inputs.\n\nOriginal REAL4 is the physical source reference. Promoted REAL8 is a\ndiagnostic against the wider FAST0 component; neither is a full forecast.\nNo input is cropped, no source body is edited and no positivity repair is added.\n",
+  "context": {
+    "source": "9e5363172",
+    "capture": "NTU67b",
+    "scope": "actual fullgrid CPU FAST0 with original-nativePD flag; reference source-class evidence, not GPU/forecast qualification",
+    "shape": [
+      44,
+      42,
+      42
+    ],
+    "rk_order": 3,
+    "diff_6th_factor": 0.12,
+    "diff_6th_opt": 2,
+    "diff_6th_slopeopt": 0,
+    "namelist_sha256": "e0e115e592d5d490a579cafaa03e117628bb53925e64534cad684e93550a94f0",
+    "input_sha256": "a5d696550d1dc6713e2e340b8c2fba83811d43f4a94a65ca95266035860e2781",
+    "arrays_sha256": {
+      "maps.npz": "5986aade1687c051eb6f80c5f12525c7970673c13f4da50d189b5d9f0ddc9f19",
+      "rk1.npz": "0cd8a52f75db1b9b9fcf7709457deefacad2e5c1713219d014bacefad4b25c14",
+      "post_rk.npz": "6e40c67671a2ab561eba8ab7913efbae964d408b33ff277d06755abb88392913",
+      "rk3.npz": "be9561e5aad2b2748684dd4beec0feb1314c2f420fccd932e3310a54156f842b"
+    }
+  },
+  "dt_rk": 6.0,
+  "final_dt": 18.0,
+  "original_manifest": {
+    "source": "<USER_HOME>/src/wrf_pristine/WRF/dyn_em/module_big_step_utilities_em.F",
+    "source_sha256": "bd177b6b5ba7949cf9e694d7ad654fd9ae2f07d39d85802f0716c5318889a815",
+    "routine_sha256": {
+      "sixth_order_diffusion": "2300302940f398fc7768e38b1c5fa8db110fca566b875026df8bc3585c613e1a",
+      "horizontal_diffusion": "d05fbb06cb8846ca196b4a4a22b1e8322d408cdb3f7170102884f24283461d17",
+      "horizontal_diffusion_3dmp": "31ca9e57bc3e08acd5dfa6e5384df4b55eeb53f59b5cd7bf28f2f602b7f72c45"
+    },
+    "caller": "<USER_HOME>/src/wrf_pristine/WRF/dyn_em/module_em.F",
+    "caller_sha256": "11105cbf8255f30ca6a44cd7429a92cedce1fb91db6ce90fd7217002a72fb7fa",
+    "caller_calls": [
+      "CALL sixth_order_diffusion( 'u', u, ru_tendf, mut, dt,          &\n                                       config_flags, c1h, c2h,        &\n                                       diff_6th_opt, diff_6th_factor, &\n                                       phb, ph,                       &\n                                       rdx, rdy,                      &\n                                       msftx, msfty,                  &\n                                       msfux, msfuy,                  &\n                                       msfvx, msfvy,                  &\n                                       ids, ide, jds, jde, kds, kde,  &\n                                       ims, ime, jms, jme, kms, kme,  &\n                                       its, ite, jts, jte, kts, kte )",
+      "CALL sixth_order_diffusion( 'v', v, rv_tendf, mut, dt,          &\n                                       config_flags, c1h, c2h,        &\n                                       diff_6th_opt, diff_6th_factor, &\n                                       phb, ph,                       &\n                                       rdx, rdy,                      &\n                                       msftx, msfty,                  &\n                                       msfux, msfuy,                  &\n                                       msfvx, msfvy,                  &\n                                       ids, ide, jds, jde, kds, kde,  &\n                                       ims, ime, jms, jme, kms, kme,  &\n                                       its, ite, jts, jte, kts, kte )",
+      "CALL sixth_order_diffusion( 'w', w, rw_tendf, mut, dt,          &\n                                       config_flags, c1f, c2f,        &\n                                       diff_6th_opt, diff_6th_factor, &\n                                       phb, ph,                       &\n                                       rdx, rdy,                      &\n                                       msftx, msfty,                  &\n                                       msfux, msfuy,                  &\n                                       msfvx, msfvy,                  &\n                                       ids, ide, jds, jde, kds, kde,  &\n                                       ims, ime, jms, jme, kms, kme,  &\n                                       its, ite, jts, jte, kts, kte )",
+      "CALL sixth_order_diffusion( 'm', t,  t_tendf, mut, dt,          &\n                                       config_flags, c1h, c2h,        &\n                                       diff_6th_opt, diff_6th_factor, &\n                                       phb, ph,                       &\n                                       rdx, rdy,                      &\n                                       msftx, msfty,                  &\n                                       msfux, msfuy,                  &\n                                       msfvx, msfvy,                  &\n                                       ids, ide, jds, jde, kds, kde,  &\n                                       ims, ime, jms, jme, kms, kme,  &\n                                       its, ite, jts, jte, kts, kte )"
+    ],
+    "command": [
+      "<USER_HOME>/miniconda3/envs/wrfbuild/bin/gfortran",
+      "-O2",
+      "-fPIC",
+      "-shared",
+      "-ffree-line-length-none",
+      "-ffp-contract=off",
+      "-fcheck=bounds",
+      "-J",
+      "<DATA_ROOT>/wrf_gpu2/scratch/s2-ntu/NTU70-replay",
+      "<DATA_ROOT>/wrf_gpu2/scratch/s2-ntu/NTU70-replay/oracle.f90",
+      "-o",
+      "<DATA_ROOT>/wrf_gpu2/scratch/s2-ntu/NTU70-replay/oracle.so"
+    ],
+    "real_kind_bytes": 4,
+    "limitations": "Real-derived b-core stage fields, not internal WRF step savepoints; slopeopt=0, specified/nested."
+  },
+  "rows": [
+    {
+      "kind": "original_REAL4",
+      "field": "qi",
+      "actual_count": 135,
+      "actual_min": -1.3227253992798823e-10,
+      "original_sixth_only_count": 80,
+      "original_sixth_only_min": -1.3419280462236097e-10,
+      "without_sixth_min": -1.2898493086027717e-15,
+      "source_component_max_abs_difference": 9.460931192458084e-13,
+      "original_component_sha256": "43914a74597bfbb7f894b8090a9af9c46e0e9a7b06c54661fbb815859e51f589"
+    },
+    {
+      "kind": "promoted_REAL8",
+      "field": "qi",
+      "actual_count": 135,
+      "actual_min": -1.3227253992798823e-10,
+      "original_sixth_only_count": 80,
+      "original_sixth_only_min": -1.341928032970192e-10,
+      "without_sixth_min": -1.2898235337017557e-15,
+      "source_component_max_abs_difference": 1.6940658945086007e-21,
+      "original_component_sha256": "912d160e3fee84974692547caa5fe060a280c866c03ea0c796d6e079b3157728"
+    },
+    {
+      "kind": "original_REAL4",
+      "field": "Ni",
+      "actual_count": 141,
+      "actual_min": -954.5972024230209,
+      "original_sixth_only_count": 72,
+      "original_sixth_only_min": -946.7988329164068,
+      "without_sixth_min": -0.008552197604175929,
+      "source_component_max_abs_difference": 7.513832055032253,
+      "original_component_sha256": "6aad4294bb215e81160e5f548d4cd64bc41b75212bfa78767786a4c596091f33"
+    },
+    {
+      "kind": "promoted_REAL8",
+      "field": "Ni",
+      "actual_count": 141,
+      "actual_min": -954.5972024230209,
+      "original_sixth_only_count": 72,
+      "original_sixth_only_min": -946.7988680335272,
+      "without_sixth_min": -0.008552197775861867,
+      "source_component_max_abs_difference": 1.4901161193847656e-08,
+      "original_component_sha256": "52c4c4edb53af1a809c18b7c9db6e7c3022d288370c9f813ced8d87c26782d10"
+    }
+  ],
+  "promoted_compile": [
+    "<USER_HOME>/miniconda3/envs/wrfbuild/bin/gfortran",
+    "-O2",
+    "-fdefault-real-8",
+    "-fdefault-double-8",
+    "-fPIC",
+    "-shared",
+    "-ffree-line-length-none",
+    "-ffp-contract=off",
+    "-fcheck=bounds",
+    "-J",
+    "<DATA_ROOT>/wrf_gpu2/scratch/s2-ntu/NTU70-replay",
+    "<DATA_ROOT>/wrf_gpu2/scratch/s2-ntu/NTU70-replay/oracle_r8.f90",
+    "-o",
+    "<DATA_ROOT>/wrf_gpu2/scratch/s2-ntu/NTU70-replay/oracle_r8.so"
+  ]
+}

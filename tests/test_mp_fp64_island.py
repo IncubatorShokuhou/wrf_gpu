@@ -38,8 +38,15 @@ def test_island_runs_on_real32_state_and_keeps_carry_dtypes(table, code):
     s64, s32, narrow = _states()
     island = getattr(sa, f"{table}_SCAN_ADAPTERS")[code]
     raw = island.__wrapped__
-    with pytest.raises(TypeError, match="must have equal"):
-        jax.eval_shape(lambda s: raw(s, 18.0), s32)  # the v0.3.3-masked crash
+    if table == "MP" and code == 10:
+        # s1-numbers repaired POLYSVP's strong f64 literals. The raw REAL32
+        # adapter now traces too; retain the previously qualified island until
+        # the REAL column kernel has its own numerical qualification.
+        raw_out = jax.eval_shape(lambda s: raw(s, 18.0), s32)
+        assert all(getattr(raw_out, n).dtype == jnp.float32 for n in narrow)
+    else:
+        with pytest.raises(TypeError, match="must have equal"):
+            jax.eval_shape(lambda s: raw(s, 18.0), s32)  # the v0.3.3-masked crash
     out = jax.eval_shape(lambda s: island(s, 18.0), s32)
     assert all(getattr(out, n).dtype == jnp.float32 for n in narrow)
     # leaves the scheme does not touch keep their identity (spec-zone change detection)

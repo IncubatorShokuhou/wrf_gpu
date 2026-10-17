@@ -1,0 +1,98 @@
+{
+  "status": "FIXED",
+  "date_utc": "2026-10-14T02:34:51Z",
+  "lane": "s2-keps",
+  "main_base": "e9824c1bdc0b0f77e0a32095856c4f02366b3eb1",
+  "runtime_candidate": "1e54cd6f27e30d5e7093a7ff0f24fca1deb0af09",
+  "critic_reviewed_commit": "c29ee06fe57ef7ff974dd4808cab16d77541f981",
+  "critic_verdict": "MERGE-WITH-FIXES; <USER_HOME>/wrf_gpu2_lanes/rv-s2-keps/VERDICT.md",
+  "fixes": [
+    "TKE_PBL preserves original Registry.EM_COMMON:1230 bottom_top_stag/Z schema, nz physical TKE prefix and zero unused top (KEPS kts:kte; WRF gen_allocs.c:235 initial_data_value=0). Other EPS fields retain mass dimensions.",
+    "Requested EPS names are filtered before source lookup/coercion inside the existing batched device_get boundary. Tests record zero EPS leaves/coercions for T2-only and exactly the requested source for single EPS requests.",
+    "Shared bl16/17 smoke fixtures use _initial_carry_for_run; subsequent KEPS calls retain forcing.carry and the new State, including held history."
+  ],
+  "manager_followup": "PhysicsStepSpecs16/17 now describe actual kernels, original REAL4 fixtures, carry/transport and experimental qualification; generic PhysicsTendency inventory includes 8 actual EPS State fields.",
+  "rebase_resolution": "Preserved main SMS, FDDA and microphysics changes; original 105-slot State prefix retained, EPS appended.",
+  "checks": {
+    "distinct_passed": 173,
+    "unavailable_reference_skips": 3,
+    "KE73": {
+      "candidate": "93d1c3df6",
+      "passed": 170,
+      "failed": 1,
+      "skipped": 3,
+      "wall_s": 102.55,
+      "failure": "New EPS spec declared fields absent from generic STATE_TENDENCY_KEYS; fixed in 1e54cd6f27e30d5e7093a7ff0f24fca1deb0af09",
+      "reused_passes": "135 output/wiring/native restart/shared restart checks; metadata-only key fix does not affect these"
+    },
+    "KE74": {
+      "candidate": "93d1c3df6",
+      "selected_shared_smoke_passed": 2,
+      "wall_s": 32.8
+    },
+    "KE75": {
+      "candidate": "93d1c3df6",
+      "release_sha256": "2bf12cb8374d3a84a440e47dea4b77b0c7436108fc2ee2616bba6ec79b17962a",
+      "chars": 13405317,
+      "wall_s": 76.8,
+      "scope": "Official shipping-default native-facade CPU trace; subsequent key-inventory edit is metadata only"
+    },
+    "KE76": {
+      "candidate": "1e54cd6f27e30d5e7093a7ff0f24fca1deb0af09",
+      "contracts_and_v018_passed": 36,
+      "wall_s": 1.86
+    },
+    "count_explanation": "135 output/restart checks from KE73 + 36 final contracts/v018 checks from KE76 + 2 selected smoke cases from KE74 = 173 distinct passes; repeated checks not counted twice.",
+    "skips": [
+      "Gen2 reference wrfout unavailable",
+      "Gen2 full-reference wrfout unavailable",
+      "Immutable retained retry3 frame unavailable"
+    ]
+  },
+  "scientific_reuse": {
+    "candidate": "93d1c3df6ed6fa7a8d9ec7d9eb6bde2463958894",
+    "reviewed": "c29ee06fe57ef7ff974dd4808cab16d77541f981",
+    "files": {
+      "src/gpuwrf/physics/pbl_eeps.py": {
+        "identical_to_reviewed": true,
+        "sha256": "4481720e51b3d42d0973c65c56155ad6d3fbf52413a311dacc0769dc96880d40"
+      },
+      "src/gpuwrf/physics/pbl_keps.py": {
+        "identical_to_reviewed": true,
+        "sha256": "18b5ebbc9d932969ad18a10433da93220a570c9bde156ad67813fd7c711e6355"
+      },
+      "src/gpuwrf/coupling/epsilon_pbl.py": {
+        "identical_to_reviewed": true,
+        "sha256": "d0cef86a50ff4e4ffd3b14f356c709e6916deb64c8cfb33dd177776be81fc55d"
+      },
+      "src/gpuwrf/io/pbl_epsilon_schema.py": {
+        "identical_to_reviewed": true,
+        "sha256": "410afdd6866185efc06394efa7094dac78c80c87cf12ef8e24c43c4ca7c1ee0d"
+      }
+    },
+    "numerical_evidence_reused": "60 full WRF records; 1140 fields / 26690 values BYTE; native coupled and PD/QC originals; no replay for byte-identical column/adapter/schema bodies",
+    "limits": "Rebase retains later main SMS/FDDA/microphysics integration. Focused restart/output/contracts tests and default release identity verify final composition; no new GPU or forecast claim."
+  },
+  "efficiency": {
+    "T2_only_EPS_materializations_before": 4,
+    "T2_only_EPS_materializations_after": 0,
+    "single_EPS_request_sources_after": 1,
+    "Swiss_unrequested_KEPS_source_bytes_avoided_inferred": 1241856,
+    "Swiss_required_TKE_top_plane_bytes_inferred": 7056,
+    "scope": "CPU source-selection/coercion evidence. Required padded TKE host array has nz+1 planes; GPU traffic/timing/peak/readiness were not measured."
+  },
+  "admission": "EXPERIMENTAL CPU-oracle-qualified; GPU/full-forecast/D6 pending; undefined-init sensitivity and strict1x compiler-interval OPEN2.199412x remain disclosed.",
+  "dependency": "s2-temf optional surface_diagnostics API 84020b732, merged on main28be38ec1",
+  "artifacts_directory": "<USER_HOME>/wrf_gpu2_lanes/s2-keps",
+  "artifact_sha256": {
+    "KE73_fixed.log": "b54c7025f15150819315f66e6024deca238aaf990188725e06e1b15d92632c3b",
+    "KE73_fixed_host.xml": "a9632e90e772e102c51b1a8ba27b5789d1c1e896202ac6cd82990d7eae3fb75e",
+    "KE73_source_identity.json": "55b88674bdfd825122a10d0a6e5608b48a874617ae6bb8abe2e39147d860a667",
+    "KE74_fixed.log": "f175c9391326ad49243e24744679e7af2837c49959d2d8ff4964c7c6875ee18c",
+    "KE74_fixed_smoke.xml": "37580d0b1a5021a47619d650c833b93825aa1645b14bcf86ab3fcdd1739e3b3b",
+    "KE75_fixed_release.json": "b8840cbf9b0085d340d73f630d6738e954d7d65f73e15c646ac00a8bfb96c9b9",
+    "KE76_contracts.log": "1768501e5fd61b041da0d9cec3580c5df0d1230c24a3bafe01b6801c64e765c8",
+    "KE76_contracts.xml": "ba6576d72e757720cf71d1e81066487d7cbc12350a4915c36fd3daef9b6aac0c"
+  },
+  "cleanup": "fixed-snapshot and all three pytest basetemps removed immediately after last reader; persistent JAX cache disabled; no GPU used"
+}

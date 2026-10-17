@@ -1,0 +1,104 @@
+{
+  "reference": "unchanged pristine WRF module_mp_lin.F public lin_et_al",
+  "source_sha256": {
+    "module_mp_radar.F": "ca069a12cc149313456fa8ee08a827e0f542768b66ff6c1ece95a40ab208fb88",
+    "module_mp_lin.F": "bb9d0b99ab4ecd5ed6ce566e20f8f0b74b496410f47b4a9211a51501224f4b69",
+    "driver.f90": "8dc789942cf277a9ad2fd84dcb5776c75dd87eff1b7c52839163fb91a083bf3e"
+  },
+  "commands": [
+    [
+      "<USER_HOME>/miniconda3/envs/wrfbuild/bin/gfortran",
+      "-O2",
+      "-ffree-form",
+      "-ffree-line-length-none",
+      "-cpp",
+      "-ffpe-summary=none",
+      "-fno-range-check",
+      "-finit-real=zero",
+      "-finit-integer=0",
+      "-finit-logical=false",
+      "-c",
+      "module_wrf_error.f90"
+    ],
+    [
+      "<USER_HOME>/miniconda3/envs/wrfbuild/bin/gfortran",
+      "-O2",
+      "-ffree-form",
+      "-ffree-line-length-none",
+      "-cpp",
+      "-ffpe-summary=none",
+      "-fno-range-check",
+      "-finit-real=zero",
+      "-finit-integer=0",
+      "-finit-logical=false",
+      "-c",
+      "module_mp_radar.F"
+    ],
+    [
+      "<USER_HOME>/miniconda3/envs/wrfbuild/bin/gfortran",
+      "-O2",
+      "-ffree-form",
+      "-ffree-line-length-none",
+      "-cpp",
+      "-ffpe-summary=none",
+      "-fno-range-check",
+      "-finit-real=zero",
+      "-finit-integer=0",
+      "-finit-logical=false",
+      "-c",
+      "module_mp_lin.F"
+    ],
+    [
+      "<USER_HOME>/miniconda3/envs/wrfbuild/bin/gfortran",
+      "-O2",
+      "-ffree-form",
+      "-ffree-line-length-none",
+      "-cpp",
+      "-ffpe-summary=none",
+      "-fno-range-check",
+      "-finit-real=zero",
+      "-finit-integer=0",
+      "-finit-logical=false",
+      "-c",
+      "driver.f90"
+    ],
+    [
+      "<USER_HOME>/miniconda3/envs/wrfbuild/bin/gfortran",
+      "-o",
+      "oracle",
+      "module_wrf_error.o",
+      "module_mp_radar.o",
+      "module_mp_lin.o",
+      "driver.o"
+    ]
+  ],
+  "terrain_m": [
+    0,
+    1500
+  ],
+  "cases": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6
+  ],
+  "init": "compiler-defined zero; production traps off",
+  "existing_tolerances": "proofs/v060/run_lin_parity.py PREDECLARED_TOL unchanged",
+  "fixture_sha256": "0d371d52bd9b0d7570d785fe54616b97811d37bc6de6fe6fedbcd915e75a5e11",
+  "raw_sha256": {
+    "case_1_ht0.txt": "4c92e71d999e7905484705ef41c2dc65ff8ad38ed7458e2249732cbb85b94467",
+    "case_1_ht1500.txt": "eef3f72fa4eddeac6226ac3b03e0fd65c9a1986e4137f49189019b0d93034a43",
+    "case_2_ht0.txt": "d09f114d62be0cd8d819a54ad8c16ce346605d04560368523a716755911cd7ac",
+    "case_2_ht1500.txt": "57df2a5f1561e3a1868afb31532128e67f843f13038a852a35100a3c2f963c68",
+    "case_3_ht0.txt": "81ec5d36a1e7d09f760a26549892e6cb973bf03cee35a6c51747a720f6721bc9",
+    "case_3_ht1500.txt": "d1425ca75eed977c67228d2fb5e0d519e49d40f369578be77f2bdb24d5b5aa02",
+    "case_4_ht0.txt": "1f62d34f6c8a21dceeb992902be393e411c3d34f5ba8a4df10a5e6eed6f89eec",
+    "case_4_ht1500.txt": "0f95535a28ab7f6161e7b210f1865145592e4a31929ad98b8b5b92a930a4ed8a",
+    "case_5_ht0.txt": "2f681d0f6db6ca592bc65d4f509fe03889c1ec91204fbc5ff6497800559086c1",
+    "case_5_ht1500.txt": "7bf024892c50a01fb509f57b4dc8d243de50146152eb969b5459b7300c9f1cc5",
+    "case_6_ht0.txt": "8aa452766dd371efce1d45ed8ef3d2ed972db7662fdfd3936f61f57b5e189521",
+    "case_6_ht1500.txt": "1bbaafb47a33558a83948080aa3ea2e14ec53b44377b263bb13b1aafbed5fcb4"
+  }
+}

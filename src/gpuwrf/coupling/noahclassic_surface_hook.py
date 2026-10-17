@@ -32,6 +32,7 @@ from gpuwrf.coupling.physics_couplers import (
     _u_mass,
     _v_mass,
 )
+from gpuwrf.coupling.wrf_phy_prep import wrf_phy_prep
 from gpuwrf.physics.lsm_noah_classic import (
     CP,
     RD,
@@ -158,12 +159,21 @@ def _held_rad(radiation: Any, shape):
     )
 
 
-def _surface_layer_ch_from_handles(state, land: NoahClassicLandState) -> jax.Array:
+def _noah_air(state, prep):
+    """noahdrv :795-825 SFCTMP=t_phy(1), SFCPRS=p_hyd(1), TH2=SFCTMP*(1E5/SFCPRS)**CAPA/(1E5/PSFC)**CAPA."""
+
+    t_air = jnp.asarray(prep["t_phy"][0], dtype=jnp.float64)
+    sfcprs = jnp.maximum(jnp.asarray(state.p[0] if prep["p_hyd"] is None else prep["p_hyd"][0], dtype=jnp.float64), 1.0)
+    psfc = jnp.maximum(jnp.asarray(state.p[0] if prep["psfc"] is None else prep["psfc"], dtype=jnp.float64), 1.0)
+    capa = R_D_OVER_CP
+    th2 = t_air * (1.0e5 / sfcprs) ** capa / (1.0e5 / psfc) ** capa
+    return t_air, sfcprs, th2
+
+
+def _surface_layer_ch_from_handles(state, land: NoahClassicLandState, prep=None) -> jax.Array:
     """Infer CH from the surface-layer heat flux handle entering Noah-classic."""
 
-    t_air = _temperature_from_theta(state.theta, state.p)[0]
-    sfcprs = jnp.maximum(jnp.asarray(state.p[0], dtype=jnp.float64), 1.0)
-    th2 = jnp.asarray(state.theta[0], dtype=jnp.float64)
+    t_air, sfcprs, th2 = _noah_air(state, wrf_phy_prep(state) if prep is None else prep)
     t1 = jnp.asarray(land.t1, dtype=jnp.float64)
     rho = jnp.maximum(_rho_from_state(state)[0], 1.0e-12)
     hfx_seed = jnp.asarray(state.theta_flux, dtype=jnp.float64) * rho * CP
@@ -178,41 +188,59 @@ def _surface_layer_ch_from_handles(state, land: NoahClassicLandState) -> jax.Arr
     return jnp.where(jnp.isfinite(ch) & (ch > 0.0), ch, cm_like)
 
 
+def noahclassic_precipitation(precipitation: Any):
+    """WRF Noah-classic precipitation forcing from the held previous-step carry.
+
+    module_sf_noahdrv.F:835 ``PRCP=RAINBL(i,j)/DT`` with RAINBL = MAX(RAINCV+RAINNCV, 0)
+    (module_surface_driver.F:1568-1570, reset every step :4539, bldt=0), i.e. the carry's
+    PRCPCONV+PRCPNONC (RAINCV/DT + RAINNCV/DT: <= 2 ULP association, disclosed), and
+    :859-866 ``FFROZP=SR(I,J)`` (FRPCPN is .true. whenever SR is present, :2708).
+    """
+    if precipitation is None or getattr(precipitation, "sr", None) is None:
+        raise ValueError("Noah-classic needs the held previous-step precipitation carry with SR (E78); "
+                         "the checkpoint or caller predates it")
+    rate = jnp.asarray(precipitation.prcpconv, jnp.float32) + jnp.asarray(precipitation.prcpnonc, jnp.float32)
+    return jnp.maximum(rate, jnp.float32(0.0)), jnp.asarray(precipitation.sr, jnp.float32)
+
+
 def assemble_noahclassic_forcing(
     state: Any,
     land: NoahClassicLandState,
     static: NoahClassicStatic,
     radiation: Any = None,
+    precipitation: Any = None,
+    grid: Any = None,
 ) -> NoahClassicForcing:
     """Build Noah-classic SFLX forcing from the operational State and held radiation."""
 
-    t_air = _temperature_from_theta(state.theta, state.p)[0]
-    sfcprs = jnp.maximum(jnp.asarray(state.p[0], dtype=jnp.float64), 1.0)
+    prep = wrf_phy_prep(state, getattr(grid, "metrics", None))
+    t_air, sfcprs, th2 = _noah_air(state, prep)
     q2 = jnp.maximum(jnp.asarray(state.qv[0], dtype=jnp.float64), 0.0)
     q2sat, dqsdt2 = _saturation_qsat_dqdt(land.t1, sfcprs)
     shape = t_air.shape
     rad = _held_rad(radiation, shape)
+    prcp, ffrozp = noahclassic_precipitation(precipitation)
     params = static.params
     solnet_albedo = params.alb if static.solnet_albedo is None else _surface_2d(static.solnet_albedo)
     lwdn_emiss = params.embrd if static.lwdn_emissivity is None else _surface_2d(static.lwdn_emissivity)
     soldn = jnp.maximum(_surface_2d(rad.soldn), 0.0)
     lwdn = _surface_2d(rad.lwdn) * lwdn_emiss
-    ch = _surface_layer_ch_from_handles(state, land)
+    ch = _surface_layer_ch_from_handles(state, land, prep)
     cm = (jnp.asarray(state.ustar, dtype=jnp.float64) ** 2) / jnp.maximum(_wind_speed(state), 1.0e-6)
     return NoahClassicForcing(
         sfctmp=t_air,
         sfcprs=sfcprs,
-        th2=jnp.asarray(state.theta[0], dtype=jnp.float64),
+        th2=th2,
         q2=q2,
         q2sat=q2sat,
         dqsdt2=dqsdt2,
         soldn=soldn,
         solnet=soldn * (1.0 - solnet_albedo),
         lwdn=lwdn,
-        prcp=jnp.zeros(shape, dtype=jnp.float64),
-        ffrozp=jnp.zeros(shape, dtype=jnp.float64),
+        prcp=jnp.asarray(prcp, dtype=jnp.float64),
+        ffrozp=jnp.asarray(ffrozp, dtype=jnp.float64),
         sfcspd=_wind_speed(state),
-        zlvl=_reference_height(state),
+        zlvl=0.5 * jnp.maximum(jnp.asarray(prep["dz8w"][0], dtype=jnp.float64), 1.0),
         snoalb=_surface_2d(static.snoalb),
         tbot=_surface_2d(static.tbot),
         ch=ch,
@@ -231,12 +259,14 @@ def noahclassic_surface_step(
     dt: float,
     *,
     radiation: Any = None,
+    precipitation: Any = None,
+    grid: Any = None,
 ) -> tuple[Any, NoahClassicLandState]:
     """Run Noah-classic over land and write land flux handles back into State."""
 
     if land_state is None or static is None:
         raise ValueError("Noah-classic scan coupling requires noahclassic_land and noahclassic_static")
-    forcing = assemble_noahclassic_forcing(state, land_state, static, radiation)
+    forcing = assemble_noahclassic_forcing(state, land_state, static, radiation, precipitation, grid=grid)
     out = sflx_step(
         forcing,
         static.params,
@@ -251,7 +281,7 @@ def noahclassic_surface_step(
     rho = jnp.maximum(jnp.asarray(state.rhosfc, dtype=jnp.float64), 1.0e-12)
     theta_flux = out.hfx / (rho * CP)
     qv_flux = out.qfx / rho
-    thx = jnp.asarray(state.theta[0], dtype=jnp.float64)
+    thx = jnp.asarray(wrf_phy_prep(state)["th_phy"][0], dtype=jnp.float64)
     qx = jnp.asarray(state.qv[0], dtype=jnp.float64)
     fltv = (1.0 + EP1 * qx) * theta_flux + EP1 * thx * qv_flux
 

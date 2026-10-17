@@ -1,0 +1,26 @@
+fixture_id: u2-diag-wrf-solar-swint1-original-real4
+source: WRF/phys/module_radiation_driver.F update_swinterp_parameters and interp_sw_radiation
+source_commit: f52c197ed39d12e087d02c50f412d90d418f6186
+created_utc: 2026-10-13T14:00:44Z
+scenario: two sequential 11-step16-cell cold/warm sequences, daylight/night/sunrise/cloud/endpoints/interior/zero refs
+variables:
+  - {name: swddir_ref, units: W m-2, shape: [16], dtype: float32, relative_tolerance: 2.0e-6, absolute_tolerance: 2.0e-5}
+  - {name: bb, units: dimensionless, shape: [16], dtype: float32, relative_tolerance: 2.0e-6, absolute_tolerance: 2.0e-5}
+  - {name: Bx, units: W m-2, shape: [16], dtype: float32, relative_tolerance: 2.0e-6, absolute_tolerance: 2.0e-5}
+  - {name: swdown_ref, units: W m-2, shape: [16], dtype: float32, relative_tolerance: 2.0e-6, absolute_tolerance: 2.0e-5}
+  - {name: gg, units: dimensionless, shape: [16], dtype: float32, relative_tolerance: 2.0e-6, absolute_tolerance: 2.0e-5}
+  - {name: Gx, units: W m-2, shape: [16], dtype: float32, relative_tolerance: 2.0e-6, absolute_tolerance: 2.0e-5}
+  - {name: coszen_ref, units: dimensionless, shape: [16], dtype: float32, relative_tolerance: 2.0e-6, absolute_tolerance: 2.0e-5}
+  - {name: SWDOWN, units: W m-2, shape: [16], dtype: float32, relative_tolerance: 2.0e-6, absolute_tolerance: 2.0e-5}
+  - {name: SWDDIR, units: W m-2, shape: [16], dtype: float32, relative_tolerance: 2.0e-6, absolute_tolerance: 2.0e-5}
+  - {name: SWDDNI, units: W m-2, shape: [16], dtype: float32, relative_tolerance: 2.0e-6, absolute_tolerance: 2.0e-5}
+  - {name: SWDDIF, units: W m-2, shape: [16], dtype: float32, relative_tolerance: 2.0e-6, absolute_tolerance: 2.0e-5}
+  - {name: GSW, units: W m-2, shape: [16], dtype: float32, relative_tolerance: 2.0e-6, absolute_tolerance: 2.0e-5}
+files:
+  - path: solar_oracle.json
+    sha256: df70cbebad9a4d4050fc9ac8e2810f4ee4f07195c234f6fef7cec94a1efa7742
+    contents: exact original operator outputs and all original input states/ownstep radiation flags
+generation: python proofs/u2_diag/solar_generate_oracle.py <USER_HOME>/wrf_gpu2_lanes/u2-diag/solar_oracle_build
+precision: REAL=4 only, gfortran -O0 -ffp-contract=off -fno-fast-math
+license_notes: small generated numerical data and extraction wrapper; no large model output or modified pristine source
+qualification: original-source oracle; unchanged NumPy draft precheck SOLAR-DRAFT02 passed; JAX/composed/coupled/GPU qualification pending

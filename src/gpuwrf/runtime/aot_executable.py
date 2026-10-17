@@ -60,6 +60,7 @@ from dataclasses import dataclass
 from typing import Any, Callable
 
 import jax
+from gpuwrf.backends.platform import cuda_native, device_backend
 
 __all__ = [
     "AotMeta",
@@ -383,7 +384,7 @@ def export_compile_options() -> dict[str, Any] | None:
     metadata in its retained module (E81), so this is only on when the slim
     module removes it. ``GPUWRF_AOT_DIRECT_THUNKS=0`` keeps the conversion route.
     """
-    if jax.default_backend() != "gpu":
+    if not cuda_native():
         return None
     if not (_env_on("GPUWRF_AOT_DIRECT_THUNKS", "1") and _env_on("GPUWRF_AOT_COMPILED_THUNKS", "1")
             and _env_on("GPUWRF_AOT_SLIM_MODULE", "1")
@@ -955,7 +956,7 @@ def serialize(
 
     trace_metadata = "rich"
     retained_module = None
-    if getattr(dev, "platform", None) == "gpu":
+    if device_backend(dev) == "cuda":
         import os
         import time
         keep_trace = os.environ.get("GPUWRF_AOT_KEEP_TRACE_METADATA", "0").lower() in {
@@ -1017,7 +1018,7 @@ def serialize(
         blob_sha256=blob_sha256(blob),
         trace_metadata=trace_metadata,
         executable_format=(_gpu_blob_format(blob)
-                           if getattr(dev, "platform", None) == "gpu" else None),
+                           if device_backend(dev) == "cuda" else None),
         retained_module=retained_module,
     )
     return blob, meta
@@ -1079,7 +1080,7 @@ def load(
         dev = jax.devices()[0]
 
     _check_cpu_native_objects(blob, getattr(dev, "platform", None))
-    if getattr(dev, "platform", None) == "gpu":
+    if device_backend(dev) == "cuda":
         import os
         saved_format = getattr(meta, "executable_format", None)
         if saved_format is not None and saved_format != _gpu_blob_format(blob):

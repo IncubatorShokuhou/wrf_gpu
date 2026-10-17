@@ -1,0 +1,242 @@
+{
+  "UTC": "2026-10-15T01:06:52.373699+00:00",
+  "status": "PASS",
+  "candidate": "612fe5a5f8dcd540548fca00edc952fd7a673fdb",
+  "measured_candidate": "612fe5a5f8dcd540548fca00edc952fd7a673fdb",
+  "CORE_model_files_BYTE_approved": [
+    "src/gpuwrf/physics/_morrison_cold.py",
+    "src/gpuwrf/physics/goddard4ice/equations.py",
+    "src/gpuwrf/physics/goddard4ice/native.py"
+  ],
+  "CORE_builder_AST_BYTE_after_excluding_two_inactive_NTU_blocks": true,
+  "Goddard_CPU_literal_AST_BYTE_after_ratio_inlining": true,
+  "prior_science_and_dynamics_unchanged_after_CORE": true,
+  "proof_blobs_BYTE": {
+    "proofs/t_c02nan": 25,
+    "proofs/v040/gpuqual_round3": 53,
+    "proofs/t_e41opt_updates/nssl_round3": 6,
+    "proofs/t_p3fix": 69
+  },
+  "E41_update_SHA": 6,
+  "E41_disclosure": {
+    "active_receipts": 22,
+    "flagged_fusions": 77,
+    "nonleaf_callee_findings": 3,
+    "E41": "both new arms FAIL retained; no waiver",
+    "causality": "program STACK growth measured; no direct radar source in failing fusion; indirect cause not isolated"
+  },
+  "CORE_paid_GPU_scopes": {
+    "c64": {
+      "GPU_source": "8236fdf5209f1be19a3330c4f0302d9d404dc2e5",
+      "GPU_rc": 0,
+      "frames": 25,
+      "hours": 24,
+      "D6": {
+        "verdict": "PASS",
+        "coverage_complete": true,
+        "numeric_fields": 367,
+        "bounded_fields": 62,
+        "bounded_failures": [],
+        "raw_nonfinite": [],
+        "missing_vs_CPU": []
+      }
+    },
+    "c08": {
+      "GPU_source": "8236fdf5209f1be19a3330c4f0302d9d404dc2e5",
+      "GPU_rc": 0,
+      "frames": 25,
+      "hours": 24,
+      "D6": {
+        "verdict": "INCOMPLETE",
+        "coverage_complete": false,
+        "numeric_fields": 359,
+        "bounded_fields": 62,
+        "bounded_failures": [],
+        "raw_nonfinite": [],
+        "missing_vs_CPU": [
+          "EXCH_TKE"
+        ]
+      }
+    }
+  },
+  "CORE_risks": [
+    "C08 EXCH_TKE absent in measured mainf4fd snapshot; writer-fields513 landed in latermain5ab. Never fabricate missing output or claim full C08 D6 PASS.",
+    "C08 E41 FAIL (408B stack,5kInput fusions) retains old failure classes; new actual HLO/pins are authoritative, no old map reuse.",
+    "F2 negative phase observations are preserved and disclosed; no blanket claim all negatives are roundoff/justified.",
+    "C08 full-run composition also includes original GBM cold seed1b and already-merged UST; MP root causal proof is independent exact-failure-column/pristine/deletion.",
+    "No coupled original-GPU preMP-byte claim for the CPU inputs; G4 native internal SSI value not tapped.",
+    "No GPU work active/queued; manager owns next integration/matrix scheduling."
+  ],
+  "NSSL_paid_GPU_scopes": [
+    {
+      "config": "mp18",
+      "source_rev": "5abde3224a50e5f67674bb1865aa0cc6d1ff1937",
+      "D6": "PASS",
+      "bounded_fields": 62,
+      "CPU_fields": 372,
+      "frames": 25,
+      "coverage_complete": true,
+      "NaN_Inf": 0,
+      "E41": "FAIL",
+      "max_stack_B": 1336,
+      "kinput_flags": [
+        [
+          "input_add_compare_convert_maximum_minimum_select_subtract_transpose_fusion",
+          1128
+        ],
+        [
+          "input_compare_divide_minimum_multiply_select_transpose_fusion",
+          662
+        ],
+        [
+          "input_add_and_divide_maximum_minimum_multiply_select_subtract_transpose_fusion",
+          1172
+        ],
+        [
+          "input_add_and_compare_divide_minimum_select_transpose_fusion",
+          835
+        ],
+        [
+          "input_add_select_transpose_fusion.1",
+          562
+        ],
+        [
+          "input_add_or_select_subtract_transpose_fusion",
+          1041
+        ],
+        [
+          "input_add_select_transpose_fusion",
+          724
+        ]
+      ],
+      "nonleaf_over1k": [],
+      "variable_metadata_mismatches": 0,
+      "different_globals": [
+        "NTASKS_X",
+        "NTASKS_Y",
+        "TITLE"
+      ],
+      "reflectivity": {
+        "REFL_10CM": {
+          "verdict": "REPORT_ONLY",
+          "rmse": 0.1790689433567618,
+          "max_abs": 23.737247467041016,
+          "frame_count": 25
+        },
+        "REFD_MAX": {
+          "verdict": "REPORT_ONLY",
+          "rmse": 0.0,
+          "max_abs": 0.0,
+          "frame_count": 25
+        }
+      },
+      "F2": {
+        "status": "OPEN",
+        "raw_counter_nonfinite": 0,
+        "negative_phase_field_visits": 25775790,
+        "interior_phase_field_visits": 22659657,
+        "records": 60,
+        "interpretation": "Repeated phase-field visits, not unique events. No every-event magnitude/operator justification and no transfer of another-case F2 disposition."
+      },
+      "wall_s": 920.801431408001,
+      "host_peak_rss_kib": 5919908,
+      "sampled_peak_vram_mib": 2714
+    },
+    {
+      "config": "mp18_cu5",
+      "source_rev": "5abde3224a50e5f67674bb1865aa0cc6d1ff1937",
+      "D6": "PASS",
+      "bounded_fields": 62,
+      "CPU_fields": 372,
+      "frames": 25,
+      "coverage_complete": true,
+      "NaN_Inf": 0,
+      "E41": "FAIL",
+      "max_stack_B": 1336,
+      "kinput_flags": [
+        [
+          "input_and_convert_minimum_multiply_select_transpose_fusion",
+          1064
+        ],
+        [
+          "input_add_compare_convert_maximum_minimum_select_subtract_transpose_fusion",
+          1134
+        ],
+        [
+          "input_compare_divide_minimum_multiply_select_transpose_fusion",
+          660
+        ],
+        [
+          "input_add_and_divide_maximum_minimum_multiply_select_subtract_transpose_fusion",
+          1172
+        ],
+        [
+          "input_add_and_compare_divide_minimum_select_transpose_fusion",
+          835
+        ],
+        [
+          "input_add_select_transpose_fusion.1",
+          562
+        ],
+        [
+          "input_add_or_select_subtract_transpose_fusion",
+          1041
+        ],
+        [
+          "input_add_select_transpose_fusion",
+          724
+        ]
+      ],
+      "nonleaf_over1k": [],
+      "variable_metadata_mismatches": 0,
+      "different_globals": [
+        "NTASKS_X",
+        "NTASKS_Y",
+        "TITLE"
+      ],
+      "reflectivity": {
+        "REFL_10CM": {
+          "verdict": "REPORT_ONLY",
+          "rmse": 0.17614081598572193,
+          "max_abs": 19.132549285888672,
+          "frame_count": 25
+        },
+        "REFD_MAX": {
+          "verdict": "REPORT_ONLY",
+          "rmse": 0.0,
+          "max_abs": 0.0,
+          "frame_count": 25
+        }
+      },
+      "F2": {
+        "status": "OPEN",
+        "raw_counter_nonfinite": 0,
+        "negative_phase_field_visits": 25841064,
+        "interior_phase_field_visits": 22739467,
+        "records": 60,
+        "interpretation": "Repeated phase-field visits, not unique events. No every-event magnitude/operator justification and no transfer of another-case F2 disposition."
+      },
+      "wall_s": 983.226287898,
+      "host_peak_rss_kib": 6193988,
+      "sampled_peak_vram_mib": 2720
+    }
+  ],
+  "NSSL_open": [
+    "E41 failures on opt-in executables disclosed; no gate waiver",
+    "F2 negative visits require actual-case/operator justification",
+    "REFL_10CM REPORT_ONLY because no frozen tolerance",
+    "mp40/mp28 per-config selected-program checks pending"
+  ],
+  "P3_status": "READY-FOR-CRITIC",
+  "P3_scope": "P3/MYNN reference correction and retained GPU disposition; no production port change",
+  "P3_remaining": [
+    "c21/c22 missing ice/radar/cloud-number field coverage",
+    "c23 onlyinitialGPUframe/native compile hang",
+    "c24 no GPU forecast",
+    "final composed artifact GPU/E41/performance/VRAM"
+  ],
+  "test_reuse": "Only seven failed cases repeated; all healthy PASS retained. Old writer/restart tests use constructed values, not Morrison cold arithmetic. Old Goddard CPU math AST exact after helper inlining. The two changed CORE regression files run on final source. New init measured in actual C08 frontend loader. Default identities and changed native frontends fresh on final tree.",
+  "integrator_NUM_edits": false,
+  "GPU_runs": 0,
+  "cache": "NONE"
+}

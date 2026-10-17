@@ -68,6 +68,8 @@ def _check_config(C):
                lzr=0, lzs=0, lzh=0, lzhl=0, eqtset=1, ibfc=1, ipconc=5, imaxdiaopt=3, imurain=1,
                imusnow=3, iwetsoak=True, lnhf=0, lnhlf=0, lss=0, lhl=8, lh=7, ls=6, lccn=9,
                lwsm6=False, ldovol=True, ibinhmlr=0, ibinhlmlr=0, dmhlopt=0)
+    if C.ipconc == 0:
+        exp.update(ipconc=0,ihlcnh=0,lccn=0,lhl=8 if C.variant==19 else 0,ldovol=C.variant==19)
     for k, v in exp.items():
         got = getattr(C, k)
         if got != v:
@@ -101,7 +103,8 @@ class _State:
         self._d[k] = v
 
 
-def gs_part_c(G, an, t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, C, prec, dtp, gz=None, return_state=False):
+def gs_part_c(G, an, t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, C, prec, dtp, gz=None, return_state=False,
+              *, hail_enabled=True):
     """Run nssl_2mom_gs lines 19696-25151.
 
     G      : dict of gs locals after line 19695 (``oracle_io.load_gs_dump`` layout); per-point arrays
@@ -113,6 +116,7 @@ def gs_part_c(G, an, t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, C, prec, dtp, gz=No
     """
     _check_config(C)
     R = prec.R
+    one_moment = C.ipconc == 0
     g = _State(G)
     W = jnp.where
     mn = jnp.minimum
@@ -123,6 +127,8 @@ def gs_part_c(G, an, t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, C, prec, dtp, gz=No
 
     dtp = r(dtp)
     dtpinv = r(1.0) / dtp
+    if one_moment:
+        dtpinv=r(G['dtpinv'])  # Original13729 DOUBLE literal division stored REAL.
     pi = r(C.pi)
     tfr = r(C.tfr)
     evapfac = r(C.evapfac)
@@ -204,6 +210,8 @@ def gs_part_c(G, an, t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, C, prec, dtp, gz=No
     cisbv = (cx[LI] / (qx[LI] + 1.e-20)) * qisbv
     chsbv = (cx[LH] / (qx[LH] + 1.e-20)) * qhsbv
     chlsbv = (cx[LHL] / (qx[LHL] + 1.e-20)) * qhlsbv
+    if one_moment:
+        cssbv=cisbv=chsbv=chlsbv=zero
     csdpv = zero
     cidpv = zero
     chdpv = zero
@@ -216,6 +224,9 @@ def gs_part_c(G, an, t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, C, prec, dtp, gz=No
     qscni = W(c1, mn(0.5, xdia[(LI, 3)] / 200.e-6) * qidpv, zero)
     cscni = W(c1, r(C.fscni) * qscni * rho0 / mx(r(C.rho_qs) * xvmn[LS], xmas[LI]), zero)
     cscnis = cscni
+    if one_moment:
+        qscni=mn(r(.001)*g['eii']*mx(qx[LI]-r(1.e-3),0.),qxmxd[LI])
+        cscni=cscnis=zero
 
     # 19921-20047: incwet = 0 -> dhwet = dhlwet = dfwet = d1t (not used further in part C)
 
@@ -266,6 +277,8 @@ def gs_part_c(G, an, t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, C, prec, dtp, gz=No
     chshrr = rho0 * qhshr / (xdn[LR] * vshdgs[LH])
     chlshr = zero
     chlshrr = rho0 * qhlshr / (xdn[LR] * vshdgs[LHL])
+    if one_moment:
+        chshrr=chlshrr=zero
 
     # ------------------------------------------------------------------ 20394-20560 final decisions
     sn = qsshr < 0.0
@@ -399,6 +412,10 @@ def gs_part_c(G, an, t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, C, prec, dtp, gz=No
     dg0 = W(c2, mn(dg0, r(C.dwmax)), dg0)
     wtest = (dg0 > 0.0) & (dg0 < dg0thresh)
     conv = wtest & ((qhacw * dtp > qxmin[LH]) & (temg < tfr + hailcnvtoffset) & (qx[LH] > hlcnhqmin))
+    if not hail_enabled or one_moment:
+        # Original WRF :20648 guards this source with lhl>1. Legacy22
+        # has lhl=0; dummy canonical hail slots must never be populated.
+        conv = jnp.zeros_like(conv)
     alpha = g["alpha"]
     ratio = mn(r(100.0), dg0 / xdia[(LH, 1)])
     ratio = W(conv, ratio, zero)
@@ -425,6 +442,15 @@ def gs_part_c(G, an, t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, C, prec, dtp, gz=No
     chlcnhhl = W(conv & big, chlcnhhl_c, chlcnhhl)
     vhlcnh = W(conv, rho0 * qhlcnh / xdn[LH], vhlcnh)
     vhlcnhl = W(conv, rho0 * qhlcnh / mx(xdnmn[LHL], xdn[LH]), vhlcnhl)
+    if one_moment and C.variant==19:
+        # Original20968..20989 ihlcnh==0 fixed-intercept wet-growth tail.
+        on=wetgrowth & (temg<tfr-r(5.)) & (qx[LH]>qxmin[LH]) & (qhacw>r(1.e-6)) & (xdn[LH]>r(700.))
+        d=xdia[(LH,1)];h=r(C.hldia1)
+        rate=(pi*xdn[LH]*cx[LH])/(r(6.)*rho0*dtp)*jnp.exp(-h/d)*(h**3+r(3.)*h**2*d+r(6.)*h*d**2+r(6.)*d**3)
+        qhlcnh=W(on,mn(rate,g['qhmxd']),zero)
+        chlcnh=chlcnhhl=zero
+        vhlcnh=rho0*qhlcnh/xdn[LH]
+        vhlcnhl=rho0*qhlcnh/mx(xdnmn[LHL],xdn[LH])
     # icvhl2h = 0: no hail -> graupel conversion
 
     # ------------------------------------------------------------------ 21018-21142 snow -> graupel (iglcnvs = 2)
@@ -442,6 +468,12 @@ def gs_part_c(G, an, t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, C, prec, dtp, gz=No
     chcns = W(c1, cx[LS] * qhcns / W(c1, qx[LS], r(1.0)), zero)
     chcnsh = W(c1, mn(chcns, rho0 * qhcns / (rr * xvmn[LH])), zero)
     vhcns = W(c1, rho0 * qhcns / rr, zero)
+    if one_moment:
+        # Original21135 is the ipconc<5 alternative, not the two-moment
+        # snow-rime density conversion above. Its threshold is literal6e-4.
+        qhcns=mn(r(.001)*g['ehscnv']*mx(qx[LS]-r(6.e-4),0.),qxmxd[LS])
+        chcns=chcnsh=zero
+        vhcns=rho0*qhcns/mx(xdn[LS],r(400.)) if C.variant==19 else zero
 
     # ------------------------------------------------------------------ 21149-21215 rain freezing heat budget
     qrfrz, qrfrzs, qrfrzf = g["qrfrz"], g["qrfrzs"], g["qrfrzf"]
@@ -503,6 +535,21 @@ def gs_part_c(G, an, t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, C, prec, dtp, gz=No
     c2 = c1 & (qx[LHL] > qxmin[LHL]) & ~wetsfchl
     chlmul1 = W(c2, (ft * ex1 * chlacw), chlmul1)
     qhlmul1 = W(c2, cimas0 * chlmul1 * rhoinv, qhlmul1)
+    if one_moment:
+        # Original21372..21465 one-moment Hallett-Mossop mass source.
+        active=(qx[LC]>qxmin[LC]) & (temg>=r(265.15)) & (temg<=r(271.15))
+        fimt1=W((temg>=r(265.15))&(temg<=r(267.15)),r(.5),zero)
+        fimt1=W((temg>=r(267.15))&(temg<=r(269.15)),r(1.),fimt1)
+        fimt1=W((temg>=r(269.15))&(temg<=r(271.15)),r(.5),fimt1)
+        xcwmas=g['xmas'][LC]*r(1000.)
+        mid=(xcwmas>=r(1.26e-9))&(xcwmas<=r(3.55e-9))
+        fimt2=W(mid,r(2.27)*jnp.log(W(mid,xcwmas,r(1.)))+r(13.39),zero)
+        fimt2=W(xcwmas>r(3.55e-9),r(1.),fimt2)
+        fimt2=mx(mn(fimt2,r(1.)),r(0.))
+        chmul1=W(active & ~wetsfc,fimt1*(r(4.e-3)*fimt2)*qhacw,zero)
+        qhmul1=chmul1*(cimas0/rho0)
+        chlmul1=W(active & (qx[LHL]>qxmin[LHL]) & ~wetsfchl,fimt1*(r(4.e-3)*fimt2)*qhlacw,zero)
+        qhlmul1=cimas0*chlmul1*rhoinv
     # isnwfrac = 0: no snow fragmentation
     csmul = zero
     qsmul = zero
@@ -542,90 +589,101 @@ def gs_part_c(G, an, t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, C, prec, dtp, gz=No
     qrshr = qsshr + qhshr + qhlshr
     crshr = chshrr / g["rzxh"] + chlshrr / g["rzxhl"]
 
-    # ------------------------------------------------------------------ 21713-22189 number tendencies
-    cwfrzc, cwctfzc, cicichr = g["cwfrzc"], g["cwctfzc"], g["cicichr"]
-    csplinter, csplinter2 = g["csplinter"], g["csplinter2"]
-    pccii = (il5r * cicint
-             + il5r * ((1.0 - r(C.cwfrz2snowfrac)) * cwfrzc + cwctfzc + cicichr)
-             + chmul1 + chlmul1 + csplinter + csplinter2 + csmul)
-    pccii = pccii * (1.0 - r(C.ffrzs))
-    cimlr = g["cimlr"]
-    pccid = (il5r * (-cscni - g["cscnvi"] - craci - g["csaci"] - chaci - chlaci - chcni)
-             + il5r * cisbv - (1. - il5r) * cimlr)
-    pccin = ciint
+    if not one_moment:
+        # ------------------------------------------------------------------ 21713-22189 number tendencies
+        cwfrzc, cwctfzc, cicichr = g["cwfrzc"], g["cwctfzc"], g["cicichr"]
+        csplinter, csplinter2 = g["csplinter"], g["csplinter2"]
+        pccii = (il5r * cicint
+                 + il5r * ((1.0 - r(C.cwfrz2snowfrac)) * cwfrzc + cwctfzc + cicichr)
+                 + chmul1 + chlmul1 + csplinter + csplinter2 + csmul)
+        pccii = pccii * (1.0 - r(C.ffrzs))
+        cimlr = g["cimlr"]
+        pccid = (il5r * (-cscni - g["cscnvi"] - craci - g["csaci"] - chaci - chlaci - chcni)
+                 + il5r * cisbv - (1. - il5r) * cimlr)
+        pccin = ciint
 
-    ciacw, cwfrz, cwctfzp = g["ciacw"], g["cwfrz"], g["cwctfzp"]
-    cracw, csacw = g["cracw"], g["csacw"]
-    pccwi = (0.0) - cwshw
-    cautn = jnp.asarray(g["cautn"], F64)
-    pccwd = ((-cautn + (il5r * (-ciacw - cwfrz - cwctfzp - cwctfzc)).astype(F64))
-             - cracw.astype(F64) - csacw.astype(F64) - chacw.astype(F64) - chlacw.astype(F64)).astype(R)
-    lim = -pccwd * dtp > cx[LC]
-    frac = -cx[LC] / W(lim, pccwd * dtp, r(1.0))
-    pccwd = W(lim, -cx[LC] * dtpinv, pccwd)
-    ciacw = W(lim, frac * ciacw, ciacw)
-    cwfrz = W(lim, frac * cwfrz, cwfrz)
-    cracw = W(lim, frac * cracw, cracw)
-    csacw = W(lim, frac * csacw, csacw)
-    chacw = W(lim, frac * chacw, chacw)
-    cwfrzc = W(lim, frac * cwfrzc, cwfrzc)
-    cwctfzc = W(lim, frac * cwctfzc, cwctfzc)
-    # frac is DOUBLE PRECISION: (1.-frac)*... is evaluated in double (line 21907)
-    pccii = W(lim, (pccii.astype(F64) - (1. - frac.astype(F64)) * il5r.astype(F64)
-                    * (cwfrzc + cwctfzc).astype(F64) * (1. - r(C.ffrzs)).astype(F64)).astype(R), pccii)
-    chlacw = W(lim, frac * chlacw, chlacw)
+        ciacw, cwfrz, cwctfzp = g["ciacw"], g["cwfrz"], g["cwctfzp"]
+        cracw, csacw = g["cracw"], g["csacw"]
+        pccwi = (0.0) - cwshw
+        cautn = jnp.asarray(g["cautn"], F64)
+        pccwd = ((-cautn + (il5r * (-ciacw - cwfrz - cwctfzp - cwctfzc)).astype(F64))
+                 - cracw.astype(F64) - csacw.astype(F64) - chacw.astype(F64) - chlacw.astype(F64)).astype(R)
+        lim = -pccwd * dtp > cx[LC]
+        frac = -cx[LC] / W(lim, pccwd * dtp, r(1.0))
+        pccwd = W(lim, -cx[LC] * dtpinv, pccwd)
+        ciacw = W(lim, frac * ciacw, ciacw)
+        cwfrz = W(lim, frac * cwfrz, cwfrz)
+        cracw = W(lim, frac * cracw, cracw)
+        csacw = W(lim, frac * csacw, csacw)
+        chacw = W(lim, frac * chacw, chacw)
+        cwfrzc = W(lim, frac * cwfrzc, cwfrzc)
+        cwctfzc = W(lim, frac * cwctfzc, cwctfzc)
+        # frac is DOUBLE PRECISION: (1.-frac)*... is evaluated in double (line 21907)
+        pccii = W(lim, (pccii.astype(F64) - (1. - frac.astype(F64)) * il5r.astype(F64)
+                        * (cwfrzc + cwctfzc).astype(F64) * (1. - r(C.ffrzs)).astype(F64)).astype(R), pccii)
+        chlacw = W(lim, frac * chlacw, chlacw)
 
-    crcnw = g["crcnw"]
-    chmlrr, chlmlrr, csmlrr = g["chmlrr"], g["chlmlrr"], g["csmlrr"]
-    rzxh, rzxhl = g["rzxh"], g["rzxhl"]
-    cracr, chacr, chlacr = g["cracr"], g["chacr"], g["chlacr"]
-    oml5 = (1 - jnp.asarray(il5)).astype(R)
-    pcrwi = (crcnw + oml5 * (-chmlrr / rzxh - chlmlrr / rzxhl - csmlrr - cimlr)
-             - mn(0.0, cracr) - crshr)
-    pcrwd = (il5r * (-ciacr - crfrz) - chacr - chlacr + crcev - mx(0.0, cracr))
-    lim = -pcrwd * dtp > cx[LR]
-    frac = -cx[LR] / W(lim, pcrwd * dtp, r(1.0))
-    pcrwd = W(lim, -cx[LR] * dtpinv, pcrwd)
+        crcnw = g["crcnw"]
+        chmlrr, chlmlrr, csmlrr = g["chmlrr"], g["chlmlrr"], g["csmlrr"]
+        rzxh, rzxhl = g["rzxh"], g["rzxhl"]
+        cracr, chacr, chlacr = g["cracr"], g["chacr"], g["chlacr"]
+        oml5 = (1 - jnp.asarray(il5)).astype(R)
+        pcrwi = (crcnw + oml5 * (-chmlrr / rzxh - chlmlrr / rzxhl - csmlrr - cimlr)
+                 - mn(0.0, cracr) - crshr)
+        pcrwd = (il5r * (-ciacr - crfrz) - chacr - chlacr + crcev - mx(0.0, cracr))
+        lim = -pcrwd * dtp > cx[LR]
+        frac = -cx[LR] / W(lim, pcrwd * dtp, r(1.0))
+        pcrwd = W(lim, -cx[LR] * dtpinv, pcrwd)
 
-    def scr(v):
-        return W(lim, frac * v, v)
+        def scr(v):
+            return W(lim, frac * v, v)
 
-    ciacr, ciacrf, ciacrs = scr(ciacr), scr(ciacrf), scr(ciacrs)
-    crfrz, crfrzf, crfrzs = scr(crfrz), scr(crfrzf), scr(crfrzs)
-    chacr, chlacr, crcev, cracr = scr(chacr), scr(chlacr), scr(crcev), scr(cracr)
+        ciacr, ciacrf, ciacrs = scr(ciacr), scr(ciacrf), scr(ciacrs)
+        crfrz, crfrzf, crfrzs = scr(crfrz), scr(crfrzf), scr(crfrzs)
+        chacr, chlacr, crcev, cracr = scr(chacr), scr(chlacr), scr(crcev), scr(cracr)
 
-    cscnvis, csacs = g["cscnvis"], g["csacs"]
-    csmlr = g["csmlr"]
-    ifrzs = r(C.ifrzs)
-    pcswi = (il5r * (cscnis + cscnvis) + r(C.cwfrz2snowfrac) * cwfrz / r(C.cwfrz2snowratio) + cscnh)
-    pcswd = (-chacs - chlacs - chcns + oml5 * csmlr + csshr + cssbv - csacs)
-    lim = cx[LS] + dtp * (pcswi + pcswd) < 0.0
-    frac = (-cx[LS] + pcswi * dtp) / W(lim, pcswd * dtp, r(1.0))
+        cscnvis, csacs = g["cscnvis"], g["csacs"]
+        csmlr = g["csmlr"]
+        ifrzs = r(C.ifrzs)
+        pcswi = (il5r * (cscnis + cscnvis) + r(C.cwfrz2snowfrac) * cwfrz / r(C.cwfrz2snowratio) + cscnh)
+        pcswd = (-chacs - chlacs - chcns + oml5 * csmlr + csshr + cssbv - csacs)
+        lim = cx[LS] + dtp * (pcswi + pcswd) < 0.0
+        frac = (-cx[LS] + pcswi * dtp) / W(lim, pcswd * dtp, r(1.0))
 
-    def scs(v):
-        return W(lim, frac * v, v)
+        def scs(v):
+            return W(lim, frac * v, v)
 
-    pcswd = scs(pcswd)
-    chacs, chlacs, chcns, csmlr = scs(chacs), scs(chlacs), scs(chcns), scs(csmlr)
-    csshr, cssbv, csacs = scs(csshr), scs(cssbv), scs(csacs)
-    pccii = pccii + (1. - ifrzs) * crfrzs + (1. - ifrzs) * ciacrs
-    pcswi = pcswi + (ifrzs) * crfrzs + (ifrzs) * ciacrs
+        pcswd = scs(pcswd)
+        chacs, chlacs, chcns, csmlr = scs(chacs), scs(chlacs), scs(chcns), scs(csmlr)
+        csshr, cssbv, csacs = scs(csshr), scs(cssbv), scs(csacs)
+        pccii = pccii + (1. - ifrzs) * crfrzs + (1. - ifrzs) * ciacrs
+        pcswi = pcswi + (ifrzs) * crfrzs + (ifrzs) * ciacrs
 
-    ffrzh = r(g["ffrzh"])
-    ifrzg, ifiacrg, f2h = r(C.ifrzg), r(C.ifiacrg), r(C.f2h)
-    chmlr, chlmlr = g["chmlr"], g["chlmlr"]
-    pchwi = ((ffrzh * ifrzg * crfrzf + il5r * ffrzh * ifiacrg * (ciacrf))
-             + f2h * chcnsh + f2h * chcnih + chcnhl)
-    pchwd = (oml5 * chmlr + chsbv - il5r * chlcnh - cscnh)
-    pchli = ((ffrzh * (1.0 - ifrzg) * crfrzf + il5r * ffrzh * (1.0 - ifiacrg) * (ciacrf))
-             + chlcnhhl * g["rzxhlh"])
-    pchld = (oml5 * chlmlr + chlsbv - chcnhl)
-    lim = cx[LHL] + dtp * (pchli + pchld) < 0.0
-    frac = (-cx[LHL] + pchli * dtp) / W(lim, pchld * dtp, r(1.0))
-    chlmlr = W(lim, frac * chlmlr, chlmlr)
-    chlsbv = W(lim, frac * chlsbv, chlsbv)
-    chcnhl = W(lim, frac * chcnhl, chcnhl)
-    pchld = W(lim, frac * pchld, pchld)
+        ffrzh = r(g["ffrzh"])
+        ifrzg, ifiacrg, f2h = r(C.ifrzg), r(C.ifiacrg), r(C.f2h)
+        chmlr, chlmlr = g["chmlr"], g["chlmlr"]
+        pchwi = ((ffrzh * ifrzg * crfrzf + il5r * ffrzh * ifiacrg * (ciacrf))
+                 + f2h * chcnsh + f2h * chcnih + chcnhl)
+        pchwd = (oml5 * chmlr + chsbv - il5r * chlcnh - cscnh)
+        pchli = ((ffrzh * (1.0 - ifrzg) * crfrzf + il5r * ffrzh * (1.0 - ifiacrg) * (ciacrf))
+                 + chlcnhhl * g["rzxhlh"])
+        pchld = (oml5 * chlmlr + chlsbv - chcnhl)
+        lim = cx[LHL] + dtp * (pchli + pchld) < 0.0
+        frac = (-cx[LHL] + pchli * dtp) / W(lim, pchld * dtp, r(1.0))
+        chlmlr = W(lim, frac * chlmlr, chlmlr)
+        chlsbv = W(lim, frac * chlsbv, chlsbv)
+        chcnhl = W(lim, frac * chcnhl, chcnhl)
+        pchld = W(lim, frac * pchld, pchld)
+
+    else:
+        # Original21713..22189 is guarded by ipconc>=1. No number rates or
+        # their limiters may alter the one-moment mass-source operands.
+        pccii=pccid=pccin=pccwi=pccwd=pcrwi=pcrwd=zero
+        pcswi=pcswd=pchwi=pchwd=pchli=pchld=zero
+        ifrzs=r(C.ifrzs)
+        ffrzh=r(g['ffrzh'])
+        ifrzg,ifiacrg,f2h=r(C.ifrzg),r(C.ifiacrg),r(C.f2h)
+        oml5=(1-jnp.asarray(il5)).astype(R)
 
     # ------------------------------------------------------------------ 22199-22685 mass tendencies
     qhmlr_, qsmlr_, qhlmlr_, qimlr = qhmlr, qsmlr, qhlmlr, g["qimlr"]
@@ -816,16 +874,19 @@ def gs_part_c(G, an, t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, C, prec, dtp, gz=No
     qx[LH] = qx[LH] + dtp * (pqhwi + pqhwd)
     qx[LHL] = qx[LHL] + dtp * (pqhli + pqhld)
     vx = dict(vx)
-    vx[LH] = vx[LH] + dtp * (pvhwi + pvhwd)
-    vx[LHL] = vx[LHL] + dtp * (pvhli + pvhld)
+    if not one_moment or C.variant==19:
+        vx[LH] = vx[LH] + dtp * (pvhwi + pvhwd)
+    if not one_moment:
+        vx[LHL] = vx[LHL] + dtp * (pvhli + pvhld)
     cx = dict(cx)
-    cx[LI] = cx[LI] + dtp * (pccii + pccid)
-    cina = g["cina"] + pccin * dtp
-    cx[LC] = cx[LC] + dtp * (pccwi + pccwd)
-    cx[LR] = cx[LR] + dtp * (pcrwi + pcrwd)
-    cx[LS] = cx[LS] + dtp * (pcswi + pcswd)
-    cx[LH] = cx[LH] + dtp * (pchwi + pchwd)
-    cx[LHL] = cx[LHL] + dtp * (pchli + pchld)
+    if not one_moment:
+        cx[LI] = cx[LI] + dtp * (pccii + pccid)
+        cina = g["cina"] + pccin * dtp
+        cx[LC] = cx[LC] + dtp * (pccwi + pccwd)
+        cx[LR] = cx[LR] + dtp * (pcrwi + pcrwd)
+        cx[LS] = cx[LS] + dtp * (pcswi + pcswd)
+        cx[LH] = cx[LH] + dtp * (pchwi + pchwd)
+        cx[LHL] = cx[LHL] + dtp * (pchli + pchld)
 
     # ------------------------------------------------------------------ 24008-24046 melt cloud ice above 0C
     theta0, qv0, pk = g["theta0"], g["qv0"], g["pk"]
@@ -843,6 +904,9 @@ def gs_part_c(G, an, t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, C, prec, dtp, gz=No
     vx[LI] = W(melt, zero, vx[LI]) if LI in vx else zero
     # 24060-24157 homogeneous freezing: ibfc = 1 with ipconc = 5 -> branch never taken
     # 24167-24438 ipconc <= 1 saturation adjustment: dead
+    if one_moment:
+        from .one_moment_adjustment import adjust
+        qx,cx,thetap,qwvp,temg=adjust(qx,cx,thetap,qwvp,temg,an,g,C,prec,dtp,dtpinv)
 
     # ------------------------------------------------------------------ 24455-25112 scatter + size limiter
     an = jnp.asarray(an)
@@ -855,7 +919,7 @@ def gs_part_c(G, an, t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, C, prec, dtp, gz=No
         an_new = an_new.at[il].set(W(gathered, val, an[il]))
         qx[il] = val
     xvbar = {}
-    for il in (LC, LR, LI, LS, LH, LHL):
+    for il in (() if one_moment else (LC, LR, LI, LS, LH, LHL)):
         q = qx[il]
         c = cx[il]
         nonpos = q <= 0.0
@@ -875,7 +939,8 @@ def gs_part_c(G, an, t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, C, prec, dtp, gz=No
         cx[il] = c
         xvbar[il] = xvbarmax
         an_new = an_new.at[LN[il]].set(W(gathered, mx(c, 0.0), an[LN[il]]))
-    an_new = an_new.at[LCCN].set(W(gathered, mx(0.0, g["ccnc"]), an[LCCN]))
+    if not one_moment:
+        an_new = an_new.at[LCCN].set(W(gathered, mx(0.0, g["ccnc"]), an[LCCN]))
     for il in (LI, LS, LH, LHL):
         lv_ = int(C.lvol[il])
         if lv_ >= 1:

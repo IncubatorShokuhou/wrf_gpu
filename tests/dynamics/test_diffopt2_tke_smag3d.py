@@ -70,11 +70,11 @@ def _build_grid(ny: int, nx: int, nz: int, dx: float) -> GridSpec:
         metrics,
         c1h=one_h,
         c2h=zero_h,
-        c3h=one_h,
+        c3h=0.5 * (eta[:-1] + eta[1:]),
         c4h=zero_h,
         c1f=one_f,
         c2f=zero_f,
-        c3f=one_f,
+        c3f=eta,
         c4f=zero_f,
     )
     return GridSpec(
@@ -110,6 +110,7 @@ def _build_state(grid: GridSpec) -> State:
     shapes = _state_field_shapes(grid)
     fields = {name: jnp.zeros(shape, dtype=jnp.float64) for name, shape in shapes.items()}
     mu = jnp.full((ny, nx), 9.0e4, dtype=jnp.float64)
+    pressure = grid.metrics.c3h[:, None, None] * mu[None] + grid.metrics.p_top
     ph = jnp.broadcast_to(
         jnp.linspace(0.0, 6000.0 * 9.81, nz + 1, dtype=jnp.float64)[:, None, None],
         (nz + 1, ny, nx),
@@ -126,6 +127,11 @@ def _build_state(grid: GridSpec) -> State:
         ph=ph,
         ph_total=ph,
         ph_perturbation=jnp.zeros_like(ph),
+        # Positive absolute pressure and nonzero vertical pressure thickness.
+        # Constant C3F makes phy_prep density zero (K5-52); SMS needs that
+        # actual WRF density when converting surface heat flux.
+        p=pressure,
+        p_total=pressure,
     )
     return State(**fields)
 
@@ -146,7 +152,13 @@ def _cpu_tendencies(grid: GridSpec) -> Tendencies:
 
 
 def _namelist(grid: GridSpec, **over) -> OperationalNamelist:
-    return OperationalNamelist.from_grid(
+    physics = {}
+    if over.get('km_opt')==5:
+        # Pristine check_a_mundo pairing; the replacement uses separate tke_2,
+        # not the old scaffold's MYNN QKE.
+        physics={'bl_pbl_physics':0,'sf_sfclay_physics':0,'mp_physics':0,'cu_physics':0,
+                 'use_noahmp':False,'ra_lw_physics':0,'ra_sw_physics':0}
+    return dataclasses.replace(OperationalNamelist.from_grid(
         grid,
         tendencies=_cpu_tendencies(grid),
         metrics=grid.metrics,
@@ -158,7 +170,16 @@ def _namelist(grid: GridSpec, **over) -> OperationalNamelist:
         force_fp64=True,
         use_flux_advection=False,
         **over,
-    )
+    ), **physics)
+
+
+def _sms_state(state):
+    from gpuwrf.contracts.precision import SMS_CARRY_LEAVES
+    fields={n:jnp.zeros_like(state.xland,dtype=jnp.float32) for n in SMS_CARRY_LEAVES}
+    fields.update(sms_wspd=jnp.full_like(state.xland,5.,dtype=jnp.float32),
+                  sms_ustm=jnp.full_like(state.xland,.05,dtype=jnp.float32),
+                  tke=jnp.full_like(state.theta,.075,dtype=jnp.float32))
+    return state.replace(**fields)
 
 
 def _smag3d_oracle(d11, d22, d33, d12, d13, d23, bn2, *, dx, dy, dz, dt, c_s, pr, mix_upper_bound):
@@ -289,12 +310,12 @@ def test_tke_rhs_is_finite_produces_shear_and_bounds_sink():
     assert np.min(np.asarray(sink) - lower) >= -1.0e-9
 
 
-# km_opt=3 is the literal WRF path (gpuwrf.dynamics.les3d_smagorinsky), qualified against the
-# pristine-WRF oracle in tests/dynamics/test_les3d_smagorinsky.py; this fixture's phy_prep rho is 0.
-@pytest.mark.parametrize("km_opt", [2, 5])
+# km_opt=2/3 use the literal WRF path (gpuwrf.dynamics.les3d_smagorinsky), qualified against the
+# pristine-WRF oracle in tests/dynamics/test_les3d_smagorinsky.py.
+@pytest.mark.parametrize("km_opt", [5])
 def test_diffopt2_turbulence_augment_is_finite_and_nonzero(km_opt):
     grid = _build_grid(ny=6, nx=8, nz=4, dx=1000.0)
-    state = _build_state(grid)
+    state = _sms_state(_build_state(grid))
     haloed = apply_halo(state, halo_spec(grid))
     nl0 = _namelist(grid, diff_opt=0, km_opt=0)
     nl1 = _namelist(grid, diff_opt=2, km_opt=km_opt)
@@ -302,6 +323,8 @@ def test_diffopt2_turbulence_augment_is_finite_and_nonzero(km_opt):
     t0 = _augment_large_step_tendencies(haloed, nl0.tendencies, nl0, rk_step=3)
     t1 = _augment_large_step_tendencies(haloed, nl1.tendencies, nl1, rk_step=3)
     for field in ("u", "v", "w", "theta"):
+        assert np.isfinite(np.asarray(getattr(t0, field))).all(), (field, 'diffusion OFF')
+        assert np.isfinite(np.asarray(getattr(t1, field))).all(), (field, 'SMS full operator')
         delta = np.asarray(getattr(t1, field) - getattr(t0, field))
         assert np.all(np.isfinite(delta)), field
         assert np.max(np.abs(delta)) > 0.0, field
@@ -314,8 +337,8 @@ def test_diffopt2_turbulence_augment_is_finite_and_nonzero(km_opt):
 
 def test_diffopt2_turbulence_jittable():
     grid = _build_grid(ny=5, nx=6, nz=4, dx=800.0)
-    state = _build_state(grid)
-    nl = _namelist(grid, diff_opt=2, km_opt=2)
+    state = _sms_state(_build_state(grid))
+    nl = _namelist(grid, diff_opt=2, km_opt=5)
     hspec = halo_spec(grid)
 
     @jax.jit

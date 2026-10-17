@@ -1,0 +1,208 @@
+{
+  "status": "READY_FOR_CRITIC_SCOPED_OFFLINE_PRODUCT",
+  "model_account": "GPT Sol / codex_2",
+  "code_commit": "018f622ce",
+  "numerically_measured_commit": "95900b3f4",
+  "source_seal": "SOURCE_SEAL.json",
+  "gpu_used": false,
+  "gates": {
+    "pristine_thompson_columns": {
+      "status": "PASS",
+      "columns": 40,
+      "levels": 44,
+      "real_field_columns": 24,
+      "constructed_active_regimes": 16,
+      "max_abs_dbz": 3.814697265625e-06,
+      "tolerance_dbz": 5e-06
+    },
+    "ncar_rip_fortran": {
+      "status": "PASS",
+      "cases": 60,
+      "max_abs_dbz": 1.4210854715202004e-14,
+      "tolerance_dbz": 1e-12
+    },
+    "mie_wiscombe_published": {
+      "status": "PASS",
+      "cases": 7,
+      "relative_tolerance": 6e-06,
+      "miepython_version": "3.3.0",
+      "source": "https://miepython.readthedocs.io/en/3.0.1/09_backscattering.html"
+    },
+    "saved_real_cpu_wrf_cli": {
+      "code_commit": "018f622ce",
+      "frames": [
+        {
+          "reference": "<USER_HOME>/wrf_gpu2_lanes/u2-diag/cpu_reference_3h/wrfout_d01_2023-01-15_00:00:00",
+          "reference_sha256": "2563f8b772d2738703434a7642bc91ca68e8f855cffc51f31a2a5e8d42eaf177",
+          "shape": [
+            1,
+            44,
+            42,
+            42
+          ],
+          "byte_exact": true,
+          "time_exact": true
+        },
+        {
+          "reference": "<USER_HOME>/wrf_gpu2_lanes/u2-diag/cpu_reference_3h/wrfout_d01_2023-01-15_01:00:00",
+          "reference_sha256": "1c0d61f4756caf2238dc45a4d0306bf4ab4566eebf8dcb0833b4ba1c2b02f2bc",
+          "shape": [
+            1,
+            44,
+            42,
+            42
+          ],
+          "byte_exact": true,
+          "time_exact": true
+        },
+        {
+          "reference": "<USER_HOME>/wrf_gpu2_lanes/u2-diag/cpu_reference_3h/wrfout_d01_2023-01-15_02:00:00",
+          "reference_sha256": "4c7c28a9dde597c5077eefd515e906ada95d2999eb37a93ad217fcc190877317",
+          "shape": [
+            1,
+            44,
+            42,
+            42
+          ],
+          "byte_exact": true,
+          "time_exact": true
+        },
+        {
+          "reference": "<USER_HOME>/wrf_gpu2_lanes/u2-diag/cpu_reference_3h/wrfout_d01_2023-01-15_03:00:00",
+          "reference_sha256": "d1ab058a9e5fa660e86e4f0b8b03e084d05bf7da3632bf0fe0ec2cf129f0edbf",
+          "shape": [
+            1,
+            44,
+            42,
+            42
+          ],
+          "byte_exact": true,
+          "time_exact": true
+        }
+      ],
+      "value_count": 310464,
+      "status": "PASS",
+      "scope": "real4frame CLI NetCDF roundtrip;S savedfield parity only"
+    },
+    "tests": {
+      "radar": {
+        "pass": 92,
+        "skip": 0
+      },
+      "affected_post_cli": {
+        "pass": 122,
+        "skip": 7,
+        "skip_reason": "optional MetPy absent; unchanged byte-identical thermo validated by reviewed u1-post"
+      },
+      "after_main_rebase_composition": {
+        "pass": 23,
+        "skip": 0
+      },
+      "clean_archive_assets_cli": {
+        "pass": 4,
+        "skip": 0
+      },
+      "after_main_apps_merge": {
+        "pass": 2,
+        "skip": 0,
+        "triple_product_orders_exact": 6
+      }
+    },
+    "mutant": {
+      "status": "KILLED",
+      "changed": "runtime rain mass coefficient +10%",
+      "assertion": "independent pristine numeric allclose",
+      "violations": 380,
+      "max_error_dbz": 0.827858,
+      "setup_errors": 0
+    }
+  },
+  "performance": {
+    "forecast_launches_transfers_compile_memory": "unchanged by exact model/entry-source identity; no JAX code in new post modules",
+    "saved_real42x42x44": {
+      "frames": [
+        {
+          "file": "<USER_HOME>/wrf_gpu2_lanes/u2-diag/cpu_reference_3h/wrfout_d01_2023-01-15_03:00:00",
+          "sha256": "d1ab058a9e5fa660e86e4f0b8b03e084d05bf7da3632bf0fe0ec2cf129f0edbf",
+          "shape": [
+            1,
+            44,
+            42,
+            42
+          ],
+          "byte_exact": true,
+          "max_dbz": 25.515432357788086,
+          "echo_columns": 14
+        }
+      ],
+      "component_cpu_seconds_median": 0.005165129899978638,
+      "component_cpu_seconds_all": [
+        0.005562883103266358,
+        0.005357631016522646,
+        0.005237870151177049,
+        0.0021533670369535685,
+        0.005115418927744031,
+        0.005165129899978638,
+        0.005192900076508522,
+        0.005147429183125496,
+        0.005144180031493306
+      ],
+      "tracemalloc_peak_bytes": 4236236,
+      "timing_scope": "saved S-band full42x42x44 postprocessing only, data already read; shared nice19CPU28; not forecast/GPU timing",
+      "fixture_scope": "none, cost-only",
+      "fixture_sha256": null
+    },
+    "thompson40x44_multiband": {
+      "source_commit": "95900b3f4",
+      "shape": [
+        40,
+        44
+      ],
+      "work": "24Swissreal-field+16constructedactivecol;40x44;no forecast noGPU",
+      "timing_scope": "sharedCPU28nice19 offlineoperator only;no forecast speed claim",
+      "bands": {
+        "S": {
+          "first_s": 0.004223342053592205,
+          "warm_s": [
+            0.0007524960674345493,
+            0.0007120659574866295,
+            0.003808538895100355
+          ],
+          "warm_median_s": 0.0007524960674345493,
+          "tracemalloc_peak_bytes": 375346
+        },
+        "C": {
+          "first_s": 0.3308199611492455,
+          "warm_s": [
+            0.1006171538028866,
+            0.10406701918691397,
+            0.10098457615822554
+          ],
+          "warm_median_s": 0.10098457615822554,
+          "tracemalloc_peak_bytes": 2410336
+        },
+        "X": {
+          "first_s": 0.16927109099924564,
+          "warm_s": [
+            0.12711788597516716,
+            0.11012336611747742,
+            0.11148809688165784
+          ],
+          "warm_median_s": 0.11148809688165784,
+          "tracemalloc_peak_bytes": 2410336
+        }
+      }
+    },
+    "scope": "offline CPU component costs under shared nice19 CPU28; traced allocations are not RSS/VRAM; no forecast/GPU speed claim"
+  },
+  "limits": [
+    "Standard mp8 history omits transient graupel number; active-graupel reconstruction requires explicit QNGRAUPEL. Saved REFL_10CM is exact S-band history route.",
+    "History-time reconstruction is not microphysics-exit sampling identity. Operator qualification uses verbatim pristine Fortran on real-field and constructed active columns.",
+    "C/X full Mie uses effective homogeneous spheres and WRF mixing assumptions; no nonspherical/coated-sphere aggregate, attenuation, polarimetry or beam model; bulk observational radar validation remains OPEN.",
+    "Online do_radar_ref producer owned by u2-diag is outside K0 scope; no model changes or GPU qualification."
+  ],
+  "experiments": "UR01\u2013UR17 appended to MAIN EXPERIMENTS.tsv, including setup failures/incomplete probes; early manually-transcribed timestamps corrected in MAIN INBOX",
+  "review_scope": "new radar files + two-line optional registry extension + optional radar dependency + docs/tests/proofs; no review of reviewed u1-post required",
+  "final_composed_source_commit": "24008d7ccea35732ec5f4b02b5f9a96295b38796",
+  "final_main": "3db4bb690c322af6594d7507698eb0edc0c8dcc9"
+}

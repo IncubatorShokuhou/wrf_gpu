@@ -19,6 +19,7 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 import pytest
+from _historical_artifacts import require_historical
 
 
 REPO = Path(__file__).resolve().parents[2]
@@ -94,6 +95,7 @@ def pure_session(monkeypatch, tmp_path):
     processes, by ``test_session_modules_import_no_accelerator_in_a_hostile_environment``.
     """
 
+    require_historical(window_parent.FAST_RUN_DIR / "namelist.input")
     monkeypatch.setattr(session, "assert_accelerator_free", lambda: None)
     monkeypatch.setattr(window_parent, "_assert_parent_accelerator_free", lambda: None)
     monkeypatch.setattr(postlock, "assert_accelerator_free", lambda: None)
@@ -209,6 +211,7 @@ def _write_preflight_fixture(
 ) -> tuple[Path, Path]:
     """Publish a content-addressed CPU-only preflight for held-session tests."""
 
+    require_historical(window_parent.FAST_RUN_DIR / "namelist.input")
     import m0_w1_fast_pair as pairmod
 
     proof_root.mkdir(parents=True, exist_ok=True)
@@ -1172,6 +1175,7 @@ def test_outer_owner_source_mechanically_reaches_release_posts_and_finalizer():
 def test_prelock_revalidation_accepts_symlinked_tools_but_rejects_retarget(
     tmp_path, monkeypatch
 ):
+    require_historical(window_parent.FAST_RUN_DIR / "namelist.input")
     import fast_case
     import m0_vram_sampler as mvs
 

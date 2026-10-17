@@ -1,0 +1,262 @@
+{
+  "schema": "v-run-next-window-plan-v1",
+  "prepared_utc": "2026-10-14T20:53:59.447565+00:00",
+  "status": "PLANNED_NOT_RUN",
+  "authority": [
+    "manager direct RESUME 2026-10-14: plan light now; idle until tomorrow; NSSL full reruns after t-writer merges; mp40/mp28 only if compiled program changed",
+    "MAIN MAILBOX manager 2026-10-14T20:50:56Z: nightly DONE barrier; heavy CPU RAM slots; 15GB total; one job/lane"
+  ],
+  "source_revision": null,
+  "source_binding": "Resolve and freeze current main AFTER reviewed t-writer merge/successor admission; record commit, src tree, clean status and reviewed writer receipt. Current main is not a preapproved execution candidate.",
+  "writer_review_observed": {
+    "candidate": "0356523161d989fed9e457c017cf2e89f272b2a5",
+    "verdict": "MERGE",
+    "receipt": "<USER_HOME>/wrf_gpu2_lanes/rv-t-writer/VERDICT.md",
+    "note": "NSSL producer graph changed; later writer producer work ordered 19:05 is not assumed merged or admitted."
+  },
+  "start_conditions": {
+    "date_utc_not_before": "2026-10-15",
+    "nightly_state_file": "<DATA_ROOT>/alisios/state/nightly_9nest/LAST_RUN.json",
+    "required_nightly_issue": "20261014_12z",
+    "required_nightly_verdict": "DONE",
+    "earliest_clock_time_is_not_permission": true,
+    "nightly_check": "Re-read immediately before queuing and after lock acquisition; require exact issue plus DONE. Re-read MAIN MAILBOX/core plan/lease/window on resume.",
+    "hard_gpu_end_utc": "19:15",
+    "planned_gpu_end_utc": "19:10",
+    "last_start_utc": "18:40",
+    "quiet_guard": "if [ -e /tmp/wrf_gpu2_quiet ]; then echo QUIET; exit 3; fi",
+    "lease": "/tmp/wrf_gpu2_run_approvals/v-run.lease",
+    "lease_must_cover_whole_arm": true,
+    "data_free_gib_min": 120,
+    "host_available_gib_min_during_nightly": 30,
+    "free_memory_check": "free -g before any heavy job"
+  },
+  "resources": {
+    "cpu_affinity": "9",
+    "cpu_env": {
+      "JAX_PLATFORMS": "cpu",
+      "GPUWRF_JAX_CACHE": "0",
+      "OMP_NUM_THREADS": "1",
+      "OPENBLAS_NUM_THREADS": "1"
+    },
+    "nice": 19,
+    "one_job_per_lane": true,
+    "nightly_project_rss_gb_max": 15,
+    "heavy_cpu_threshold_gb": 1,
+    "heavy_wrapper": "<USER_HOME>/src/wrf_gpu2/scripts/with_ram_slot.sh --label v-run --timeout <bounded_wait_s> -- <same-line-QUIET-guarded, timeout-bounded command>",
+    "heavy_memory_max": "6G",
+    "heavy_memory_swap_max": 0,
+    "gpu_wrapper": "scripts/with_gpu_lock.sh --label v-run --timeout <bounded_wait_s> -- timeout --signal=TERM --kill-after=15 1800 <measured_gpu_process>",
+    "gpu_host_scope": "Use the global RAM slot for a >1GB GPU host process as well; CPU-only supervisor stays backend-dark, official lock FD passed only after validating device/inode.",
+    "concurrency": "Sequential configurations by default: aggregate host RSS for a pair has not been proved below 6G; release GPU lock between arms. Never launch a waiting GPU job tonight.",
+    "driver": "595.99 matched after reboot; old bridge is neutralized/optional. Do not restore backed-up 595.91 library paths. No GPU probe tonight."
+  },
+  "work": {
+    "grid": "Swiss 42x42x44 single domain",
+    "hours": 24,
+    "dt_s": 18,
+    "history_minutes": 60,
+    "expected_frames": 25,
+    "boundary_width": 5,
+    "flags": "Reconstruct exact actual per-case flags and CLI-resolved FAST defaults from the measured 8afb tree. Explicit RE=1 for mp18/mp18_cu5/mp28 and measured RE=0 for mp40; do not silently normalize old flags.",
+    "inputs": "Rehash actual CLI input-dir files against registered SHA before each actual arm; unchanged CPU reference inputs/namelist => reuse original CPU-WRF. No CPU forecast tonight."
+  },
+  "conditional_identity": {
+    "cases": [
+      "mp40",
+      "mp28"
+    ],
+    "status": "NOT_CHECKED",
+    "comparison": "Full selected model programs, each configuration separately: measured source 8afb versus frozen admitted main, same actual namelist, inputs, shapes/dtypes, static aux/constants, flags and cadence. Include first-step/init, ordinary/radiation and history/chunk variants actually used. Bind old retained native/JCT/AOT PIN provenance; generic default hashes or source-only equality do not establish identity.",
+    "method": "CPU/backend-dark selected native-facade trace/lower in fresh capped processes; compare complete program/constant bytes, ABI and static inputs with only metadata canonicalization documented. Do not claim new CUDA-executable byte identity from CPU IR. Any required GPU-only artifact check waits for the window/official lock.",
+    "unchanged": "Reuse old numerical science; no new forecast. Assess retained 25 frames/available held state for faithful writer-only re-emission and report exact unavailable producer data. Recheck changed writer outputs/metadata once.",
+    "changed": "Log precise changed program/ABI/constants and run one full affected GPU24h on frozen new main; obtain new D6/E41/F2 and resource receipts.",
+    "unknown": "Remain pending; report concrete missing proof. UNKNOWN is neither unchanged nor authorization for an unnecessary forecast."
+  },
+  "gates": {
+    "frozen_manifest": "<USER_HOME>/src/wrf_gpu2_wt/v-run/proofs/v014/grid_delta_atlas/tolerance_manifest_candidate.json",
+    "frozen_manifest_sha256": "9df4fab8514523286f07b127eb8bf57a7545459c4448fef721ac44c0ecc351dc",
+    "D6": "Original CPU-WRF, every bounded field at every hour0..24; full CPU variable inventory, missing/schema fields make INCOMPLETE; raw NaN/Inf rejection includes GPU-only fields.",
+    "writer": "Audit every frame variable dims/dtypes/units/description/MemoryOrder/stagger and global actual namelist controls. NSSL radar output must come from admitted producer. REFD_MAX nwp_diag0 constant only with original-WRF/source/every-frame constant proof per manager19:05; no invented radar/zero-fill.",
+    "E41": "Scan every actual cold executable JIT+AOT before cache cleanup with scripts/wave_cubin_gate.py plus actual run proof; STACK256B/nonleaf1000SASS/kInput500optimizedHLO. Opt-in flags disclosed under current policy; no default waiver.",
+    "F2": "Record pre-mask counts/minima/phase/location class, raw finite status and actual flags; prior RE0 case-scoped known issue does not automatically clear new NSSL or other arms.",
+    "resource_reporting": "Exact cold wall + sampled process VRAM + capped host memory/compile status; cold/shared qualification is NOT S1. Prior timings are planning evidence only.",
+    "tests": "No full suite or redundant numerical validation. Any required writer/NetCDF consumer check fresh capped process, <=~200tests or one directory, lane basetemp."
+  },
+  "execution_order": [
+    "Confirm exact nightly DONE and latest manager/core/RAM/lease rules; confirm reviewed writer merge.",
+    "Freeze immutable DATA snapshot of final main with pristine symlink; prepare isolated round3 roots/tools, no overwrite of round2 evidence.",
+    "Run full mp18 and mp18_cu5 24h arms, each <=1800s; E41 immediately after cold compile; bounded CPU scoring/writer/F2 checks in same lane sequentially.",
+    "Perform per-configuration mp40/mp28 selected-program identity and follow only the proven changed/unchanged branch.",
+    "Append every arm to MAIN EXPERIMENTS, lessons INBOX, per-config first failure/coverage/E41 to MAILBOX. Cleanup exact disposable caches/tmp/snapshots after last consumer; preserve references, science and minimal native PINs.",
+    "Commit proof-only packet after diff check; <=15line handoff plus MAILBOX commit/hash. No model edits."
+  ],
+  "storage": {
+    "artifact_root": "<USER_HOME>/wrf_gpu2_lanes/v-run/round3",
+    "data_root": "<DATA_ROOT>/wrf_gpu2/scratch/v-run/round3",
+    "snapshot": "<DATA_ROOT>/wrf_gpu2/scratch/v-run/round3/snapshot_<resolved_commit>",
+    "disposable_caches": "Per-case runtime/cache/{jax,autotune,triton,cuda,xdg} and runtime/tmp; NONE CREATED NOW.",
+    "preserve": [
+      "all round2 receipts/25frames/nativePINs",
+      "all original CPU-WRF references"
+    ],
+    "cleanup": "Exact declared paths only, QUIET guarded, no broad deletes or case-dir removal; same-source no-repeat rule."
+  },
+  "launcher_migration": "Old tools/vrun_queue.py,batch.py,gpu_cli.py,consume.py hardcode round2 paths/status/time windows. DO NOT run unchanged. Prepare new isolated round3 helpers only when resuming; include exact nightly-DONE checks, final-source binding, global RAM wrapper, bounded window and independent status. Preserve old helper SHA/provenance.",
+  "cases": [
+    {
+      "config": "mp18",
+      "action": "FULL_GPU_24H_REQUIRED",
+      "identity_status": "NOT_CHECKED",
+      "reference": "<USER_HOME>/wrf_gpu2_lanes/s1-gpuqual/mp18/cpu",
+      "input_dir": "<USER_HOME>/wrf_gpu2_lanes/v-run/mp18/input",
+      "expected_input_sha256": {
+        "namelist.input": "135159449bc39ef69be37ec83aa02b61cc20d2f2ee14aba6d4cfd4047860a9b1",
+        "wrfinput_d01": "a5d696550d1dc6713e2e340b8c2fba83811d43f4a94a65ca95266035860e2781",
+        "wrfbdy_d01": "f3e556670e4768326997bdfa1dd8b0f77eb6d5da07d9c4dbf900bf8ff9e30230"
+      },
+      "old_gpu_receipt": "<USER_HOME>/wrf_gpu2_lanes/v-run/mp18/gpu_run.json",
+      "old_source_rev": "8afb83d7ddef7ef8e59f7f9635d3b5841b39d23c",
+      "actual_old_measurement_flags": {
+        "JAX_PLATFORMS": "cuda",
+        "GPUWRF_FAST_DEFAULTS": null,
+        "GPUWRF_CENSUS": "1",
+        "GPUWRF_STRICT_GUARDS": null,
+        "GPUWRF_AOT_SLIM_MODULE": "0",
+        "GPUWRF_RRTMG_MP_RE": "1",
+        "XLA_PYTHON_CLIENT_PREALLOCATE": "false"
+      },
+      "old_pin_map": "<USER_HOME>/src/wrf_gpu2_wt/v-run/proofs/v040/gpuqual_round2/mp18/E41_PIN_MAP.json",
+      "old_missing_cpu_fields": [
+        "REFD_MAX",
+        "REFL_10CM"
+      ],
+      "observed_old_cold_wall_s": 934.8658716350328,
+      "observed_old_sampled_vram_mib": 2634,
+      "reference_frame_count_by_directory_listing": 25,
+      "retained_gpu_frame_count_by_directory_listing": 25,
+      "new_case_root": "<USER_HOME>/wrf_gpu2_lanes/v-run/round3/mp18",
+      "new_runtime": "<DATA_ROOT>/wrf_gpu2/scratch/v-run/round3/runtime/mp18",
+      "gpu_timeout_s": 1800
+    },
+    {
+      "config": "mp18_cu5",
+      "action": "FULL_GPU_24H_REQUIRED",
+      "identity_status": "NOT_CHECKED",
+      "reference": "<USER_HOME>/wrf_gpu2_lanes/s1-gpuqual/mp18_cu5/cpu",
+      "input_dir": "<USER_HOME>/wrf_gpu2_lanes/v-run/mp18_cu5/input",
+      "expected_input_sha256": {
+        "namelist.input": "83c8b77d262de0d9c5736c317a9c1f29f1ccb6f6cf23ae809e655a35bd1d529d",
+        "wrfinput_d01": "a5d696550d1dc6713e2e340b8c2fba83811d43f4a94a65ca95266035860e2781",
+        "wrfbdy_d01": "f3e556670e4768326997bdfa1dd8b0f77eb6d5da07d9c4dbf900bf8ff9e30230"
+      },
+      "old_gpu_receipt": "<USER_HOME>/wrf_gpu2_lanes/v-run/mp18_cu5/gpu_run.json",
+      "old_source_rev": "8afb83d7ddef7ef8e59f7f9635d3b5841b39d23c",
+      "actual_old_measurement_flags": {
+        "JAX_PLATFORMS": "cuda",
+        "GPUWRF_FAST_DEFAULTS": null,
+        "GPUWRF_CENSUS": "1",
+        "GPUWRF_STRICT_GUARDS": null,
+        "GPUWRF_AOT_SLIM_MODULE": "0",
+        "GPUWRF_RRTMG_MP_RE": "1",
+        "XLA_PYTHON_CLIENT_PREALLOCATE": "false"
+      },
+      "old_pin_map": "<USER_HOME>/src/wrf_gpu2_wt/v-run/proofs/v040/gpuqual_round2/mp18_cu5/E41_PIN_MAP.json",
+      "old_missing_cpu_fields": [
+        "REFD_MAX",
+        "REFL_10CM"
+      ],
+      "observed_old_cold_wall_s": 991.9939571719151,
+      "observed_old_sampled_vram_mib": 2638,
+      "reference_frame_count_by_directory_listing": 25,
+      "retained_gpu_frame_count_by_directory_listing": 25,
+      "new_case_root": "<USER_HOME>/wrf_gpu2_lanes/v-run/round3/mp18_cu5",
+      "new_runtime": "<DATA_ROOT>/wrf_gpu2/scratch/v-run/round3/runtime/mp18_cu5",
+      "gpu_timeout_s": 1800
+    },
+    {
+      "config": "mp40",
+      "action": "FULL_GPU_24H_ONLY_IF_SELECTED_PROGRAM_CHANGED",
+      "identity_status": "NOT_CHECKED",
+      "reference": "<USER_HOME>/wrf_gpu2_lanes/s1-gpuqual/mp40/cpu",
+      "input_dir": "<USER_HOME>/wrf_gpu2_lanes/v-run/mp40/input",
+      "expected_input_sha256": {
+        "namelist.input": "19d4ab6b10726359cf6ab46950572adeca49b3f6b70d9e579b9219c31d65911b",
+        "wrfinput_d01": "a5d696550d1dc6713e2e340b8c2fba83811d43f4a94a65ca95266035860e2781",
+        "wrfbdy_d01": "f3e556670e4768326997bdfa1dd8b0f77eb6d5da07d9c4dbf900bf8ff9e30230"
+      },
+      "old_gpu_receipt": "<USER_HOME>/wrf_gpu2_lanes/v-run/mp40/gpu_run.json",
+      "old_source_rev": "8afb83d7ddef7ef8e59f7f9635d3b5841b39d23c",
+      "actual_old_measurement_flags": {
+        "JAX_PLATFORMS": "cuda",
+        "GPUWRF_FAST_DEFAULTS": null,
+        "GPUWRF_CENSUS": "1",
+        "GPUWRF_STRICT_GUARDS": null,
+        "GPUWRF_AOT_SLIM_MODULE": "0",
+        "GPUWRF_RRTMG_MP_RE": "0",
+        "XLA_PYTHON_CLIENT_PREALLOCATE": "false"
+      },
+      "old_pin_map": "<USER_HOME>/src/wrf_gpu2_wt/v-run/proofs/v040/gpuqual_round2/mp40/E41_PIN_MAP.json",
+      "old_missing_cpu_fields": [
+        "CCN1_GS",
+        "CCN2_GS",
+        "CCN3_GS",
+        "CCN4_GS",
+        "CCN5_GS",
+        "CCN6_GS",
+        "CCN7_GS",
+        "EFCG",
+        "EFIG",
+        "EFSG",
+        "MSKF_REFL_10CM",
+        "WACT"
+      ],
+      "observed_old_cold_wall_s": 518.4127517060842,
+      "observed_old_sampled_vram_mib": 1594,
+      "reference_frame_count_by_directory_listing": 25,
+      "retained_gpu_frame_count_by_directory_listing": 25,
+      "new_case_root": "<USER_HOME>/wrf_gpu2_lanes/v-run/round3/mp40",
+      "new_runtime": "<DATA_ROOT>/wrf_gpu2/scratch/v-run/round3/runtime/mp40",
+      "gpu_timeout_s": 1800
+    },
+    {
+      "config": "mp28",
+      "action": "FULL_GPU_24H_ONLY_IF_SELECTED_PROGRAM_CHANGED",
+      "identity_status": "NOT_CHECKED",
+      "reference": "<USER_HOME>/wrf_gpu2_lanes/s1-gpuqual/mp28/cpu",
+      "input_dir": "<USER_HOME>/wrf_gpu2_lanes/v-run/mp28/input",
+      "expected_input_sha256": {
+        "namelist.input": "679b484d14e9d2a1443703eb34aec64a3ef7860e88f55d62b4be9a0dd6bbddd1",
+        "wrfinput_d01": "a5d696550d1dc6713e2e340b8c2fba83811d43f4a94a65ca95266035860e2781",
+        "wrfbdy_d01": "f3e556670e4768326997bdfa1dd8b0f77eb6d5da07d9c4dbf900bf8ff9e30230"
+      },
+      "old_gpu_receipt": "<USER_HOME>/wrf_gpu2_lanes/v-run/mp28/gpu_run.json",
+      "old_source_rev": "8afb83d7ddef7ef8e59f7f9635d3b5841b39d23c",
+      "actual_old_measurement_flags": {
+        "JAX_PLATFORMS": "cuda",
+        "GPUWRF_FAST_DEFAULTS": null,
+        "GPUWRF_CENSUS": "1",
+        "GPUWRF_STRICT_GUARDS": null,
+        "GPUWRF_AOT_SLIM_MODULE": "0",
+        "GPUWRF_RRTMG_MP_RE": "1",
+        "XLA_PYTHON_CLIENT_PREALLOCATE": "false"
+      },
+      "old_pin_map": "<USER_HOME>/src/wrf_gpu2_wt/v-run/proofs/v040/gpuqual_round2/mp28/E41_PIN_MAP.json",
+      "old_missing_cpu_fields": [
+        "QNBCA",
+        "QNIFA2D",
+        "QNWFA2D",
+        "TAOD5502D"
+      ],
+      "observed_old_cold_wall_s": 532.2085768650286,
+      "observed_old_sampled_vram_mib": 2870,
+      "reference_frame_count_by_directory_listing": 25,
+      "retained_gpu_frame_count_by_directory_listing": 25,
+      "new_case_root": "<USER_HOME>/wrf_gpu2_lanes/v-run/round3/mp28",
+      "new_runtime": "<DATA_ROOT>/wrf_gpu2/scratch/v-run/round3/runtime/mp28",
+      "gpu_timeout_s": 1800
+    }
+  ],
+  "preparation_scope": "Standard-library JSON/read/stat only; no JAX import, tracing, forecast, compile, GPU query, new snapshot/cache or automated waiter.",
+  "interrupted_lane_forecasts_to_rerun": []
+}

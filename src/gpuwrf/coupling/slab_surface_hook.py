@@ -46,6 +46,7 @@ from gpuwrf.coupling.physics_couplers import (
     _output_dtype,
     _temperature_from_theta,
 )
+from gpuwrf.coupling.wrf_phy_prep import wrf_phy_prep
 from gpuwrf.physics.lsm_slab import (
     NUM_SOIL_LAYERS,
     nsoil_substeps,
@@ -159,7 +160,7 @@ PSIT_FLOOR = 2.0          # module_sf_sfclay.F:706 ("PREVENT LARGE FLHC IN SOIL 
 PSIQ_WATER_FLOOR = 2.0    # module_sf_sfclay.F:731 (water-branch PSIQ floor; land has none -> conservative guard)
 
 
-def _flhc_flqc_from_handles(state: Any, land: SlabLandState):
+def _flhc_flqc_from_handles(state: Any, land: SlabLandState, prep=None):
     """Reconstruct FLHC/FLQC from the resident surface-layer kinematic fluxes.
 
     The surface-layer adapter wrote ``theta_flux = HFX/(rho*cp)`` and
@@ -195,13 +196,14 @@ def _flhc_flqc_from_handles(state: Any, land: SlabLandState):
     hfx_seed = theta_flux * rho * CP
     qfx_seed = qv_flux * rho
 
-    # Surface pressure proxy = lowest model level (state.p axis-0 index 0).
-    psfc = jnp.maximum(jnp.asarray(state.p[0], dtype=jnp.float64), 1.0)
+    # WRF PSFC = p8w(kts) = p_hyd_w(1) (surface_driver.F:1988); dry TH_PHY (phy_prep :4834).
+    prep = wrf_phy_prep(state) if prep is None else prep
+    psfc = jnp.maximum(jnp.asarray(state.p[0] if prep["psfc"] is None else prep["psfc"], dtype=jnp.float64), 1.0)
     psfc_cmb = psfc / 1000.0
     rovcp = R_D_OVER_CP
     tsk = jnp.asarray(land.tslb[..., 0], dtype=jnp.float64)  # skin = TSLB(1)
     thg = tsk * (100.0 / psfc_cmb) ** rovcp
-    thx = jnp.asarray(state.theta[0], dtype=jnp.float64)
+    thx = jnp.asarray(prep["th_phy"][0], dtype=jnp.float64)
     qsg = _saturation_qsg(tsk, psfc_cmb)
     qx = jnp.asarray(state.qv[0], dtype=jnp.float64)
 
@@ -239,6 +241,7 @@ def slab_surface_step(
     dt: float,
     *,
     radiation: Any = None,
+    grid: Any = None,
 ) -> tuple[Any, SlabLandState]:
     """Run the slab LSM over land and write land flux handles back into State.
 
@@ -254,7 +257,9 @@ def slab_surface_step(
     nsoil_steps = nsoil_substeps(float(static.dzs[0]), float(dt))
     rad = _held_rad(radiation, jnp.asarray(state.t_skin, dtype=jnp.float64).shape)
 
-    t_bottom = _temperature_from_theta(state.theta, state.p)[0]
+    # surface_driver SLAB(T3D=t_phy, P3D=p_hyd, PSFC=p_hyd_w(1)): WRF phy_prep staging.
+    prep = wrf_phy_prep(state, getattr(grid, "metrics", None))
+    t_bottom = prep["t_phy"][0]
     grid_shape = jnp.asarray(state.t_skin, dtype=jnp.float64).shape  # (ny, nx)
     nsoil = land_state.tslb.shape[-1]
 
@@ -265,9 +270,10 @@ def slab_surface_step(
         return jnp.asarray(_surface_2d(field), dtype=jnp.float64).reshape(-1)
 
     qv_bottom = jnp.asarray(state.qv[0], dtype=jnp.float64).reshape(-1)
-    p_bottom = jnp.maximum(jnp.asarray(state.p[0], dtype=jnp.float64).reshape(-1), 1.0)
-    # Surface pressure proxy = lowest model level (state.p axis-0 index 0).
-    psfc = jnp.maximum(jnp.asarray(state.p[0], dtype=jnp.float64).reshape(-1), 1.0)
+    p_lowest = state.p[0] if prep["p_hyd"] is None else prep["p_hyd"][0]
+    p_bottom = jnp.maximum(jnp.asarray(p_lowest, dtype=jnp.float64).reshape(-1), 1.0)
+    psfc = jnp.maximum(jnp.asarray(state.p[0] if prep["psfc"] is None else prep["psfc"],
+                                   dtype=jnp.float64).reshape(-1), 1.0)
     xland2d = _surface_2d(getattr(state, "xland", jnp.ones_like(t_bottom)))
     xland = jnp.asarray(xland2d, dtype=jnp.float64).reshape(-1)
     tsk_in = _flat(state.t_skin)
@@ -275,7 +281,7 @@ def slab_surface_step(
     mavail = _flat(state.mavail)
     tb_flat = jnp.asarray(t_bottom, dtype=jnp.float64).reshape(-1)
 
-    flhc2d, flqc2d = _flhc_flqc_from_handles(state, land_state)
+    flhc2d, flqc2d = _flhc_flqc_from_handles(state, land_state, prep)
     flhc = jnp.asarray(flhc2d, dtype=jnp.float64).reshape(-1)
     flqc = jnp.asarray(flqc2d, dtype=jnp.float64).reshape(-1)
 

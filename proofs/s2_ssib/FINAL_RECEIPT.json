@@ -1,0 +1,83 @@
+{
+  "lane": "s2-ssib",
+  "admission": "complete experimental CPU-oracle-qualified option; independent critic and manager merge next",
+  "source_commit": "b2941dd06",
+  "core_pristine_sha256": "2b83b39640fd5d53859f1f281be59a9866baf97924e5d03d9964ec5d69bd5c73",
+  "literal_original_WRF": {
+    "calls": 400,
+    "BYTE": true,
+    "receipt": "LITERAL_BYTE.json"
+  },
+  "startup_original_WRF": {
+    "rows": 356,
+    "fields_BYTE": 2136,
+    "receipt": "landuse_reference.json"
+  },
+  "compiled_original_WRF": {
+    "calls": 400,
+    "fields_checked": 38775,
+    "within_all_frozen_bounds": false,
+    "disclosed_excesses": 56,
+    "original_excesses": 51,
+    "additional_units_correct_QFX": 5,
+    "policy": "standing manager small-compiled-excess experimental admission; D6 decides",
+    "receipt": "compiled_residuals.json"
+  },
+  "S2": {
+    "carry_fp64": 0,
+    "fp64_outside_explicit_WRF_DOUBLE_expressions": 0,
+    "receipt": "PRECISION.json"
+  },
+  "tests": {
+    "own_numerical_restart_schema": "SS59:479PASS3knownXFAIL100.11s; final QFX scoring is host-only retained-data reuse",
+    "final_required_contracts_MP_and_wiring": "SS69:108PASS39.86s",
+    "shared_consumers": "SS56:322PASS2ownedassertionFAIL; SS57:5PASS closes both, preserving 324 shared/wiring checks; baseline MP17 reds fixed by main M22 merge",
+    "mutant": "MUTANT.json KILLED 26615 numerical differences, no setup failures",
+    "archive": "tracked core and LANDUSE assets byte-checked in clean git archive",
+    "final_metadata_units_archive_closure": "SS72:13PASS1.26s"
+  },
+  "coupled_CPU": {
+    "steps": 2,
+    "nonfinite": 0,
+    "pre_mask_guards": 0,
+    "first_including_compile_s": 295.5720461879391,
+    "warm_second_s": 5.973945762962103,
+    "peak_rss_kib": 9096708,
+    "receipt": "COUPLED_CPU.json",
+    "scope": "production plumbing on Swiss test-only interpolated soil; no forecast fidelity claim"
+  },
+  "performance_memory": {
+    "scalar_compile_s": 53.50609510601498,
+    "temporary_bytes": 55352,
+    "before_temporary_bytes": 97784,
+    "traced_operations": 99253,
+    "before_traced_operations": 181756,
+    "logical_resident_ssib_bytes_per_cell_including_rad_and_wind": 420,
+    "default_hot_path": "release jaxpr 2bf12cb8 unchanged",
+    "GPU": "unmeasured; E41/launch/VRAM/throughput qualification pending",
+    "required_generic_history_and_precipitation_bytes_per_cell": 44,
+    "logical_total_with_required_driver_context_bytes_per_cell": 464
+  },
+  "release_identity": "2bf12cb8374d3a84a440e47dea4b77b0c7436108fc2ee2616bba6ec79b17962a",
+  "supported_work": {
+    "sf_surface": 8,
+    "sfclay": 1,
+    "pbl": 1,
+    "mp": 8,
+    "sw": 1,
+    "lw": 4,
+    "soil_layers": 3,
+    "fractional_seaice": 1,
+    "lake": 0,
+    "urban": 0
+  },
+  "risks": [
+    "56 small compiled precision excesses disclosed; QFX gate tightened only",
+    "UPDAT1 SNOWW(2) compiler-defined zero policy, limited sensitivity coverage",
+    "sea ice, spectral SW3/4, custom LANDUSE/usemonalb not admitted",
+    "GPU/batched and full coupled-forecast D6 qualification pending"
+  ],
+  "experiments": "MAIN EXPERIMENTS.tsv SS01-SS72 series; absolute artifacts <USER_HOME>/wrf_gpu2_lanes/s2-ssib/",
+  "caches": "NONE GPUWRF_JAX_CACHE=0; disposable snapshot, inputs and pytest data removed after last arm",
+  "cleanup": "Completed: no .o/.so/.mod, JAX caches disabled, sole detached snapshot + pytest data + private inputs removed; retained lane artifacts 16MiB"
+}

@@ -1,0 +1,340 @@
+{
+  "candidate": "6e7cad8122",
+  "base": "f0df0156ae",
+  "model": "0a51318458",
+  "verdict": "FIX packaging only; CPU scientific ROOT1/2/3 gates accepted",
+  "clean_checkout": {
+    "tests": 3,
+    "failures": 0,
+    "errors": 2,
+    "skipped": 0
+  },
+  "qualified_with_own_reconstructed_original_fixture": 79,
+  "counts": {
+    "TR00.xml": {
+      "tests": 3,
+      "failures": 0,
+      "errors": 2,
+      "skipped": 0
+    },
+    "TR02.xml": {
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "TR04-ROOT1JAX.xml": {
+      "tests": 1,
+      "failures": 1,
+      "errors": 0,
+      "skipped": 0
+    },
+    "TR04-ROOT1NP.xml": {
+      "tests": 1,
+      "failures": 1,
+      "errors": 0,
+      "skipped": 0
+    },
+    "TR04-ROOT2.xml": {
+      "tests": 1,
+      "failures": 1,
+      "errors": 0,
+      "skipped": 0
+    },
+    "TR04-ROOT3.xml": {
+      "tests": 1,
+      "failures": 1,
+      "errors": 0,
+      "skipped": 0
+    },
+    "TR05.xml": {
+      "tests": 51,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "TR06.xml": {
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "TR07.xml": {
+      "tests": 24,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    }
+  },
+  "genuine_root_mutants": 4,
+  "original_reference": {
+    "pristine_module_sha256": "3514aaaaf6084edc0f6a6b2097e34607562f0b6f12934cc3c675a9e651566999",
+    "rows_binary_sha256": "95ca642f31cbc6f464b1a2bea171717d3c3766a563ea7e9ab999e08b731e4dda",
+    "owner_binary_sha256": "95ca642f31cbc6f464b1a2bea171717d3c3766a563ea7e9ab999e08b731e4dda",
+    "arrays_BYTE": 33,
+    "real_rows": [
+      3,
+      21,
+      29,
+      36,
+      37,
+      38,
+      39,
+      40,
+      41
+    ],
+    "all_inputs_outputs_finite": true,
+    "original_files": [
+      {
+        "path": "<DATA_ROOT>/wrf_gpu2/scratch/t-cfix-cu/c06w/wrfrst_d01_2023-01-15_15:00:00",
+        "sha256": "ddc3b5faf4590d43af9d71233e138a2a97722a5011a8f0b56a645ac1c260b53e"
+      },
+      {
+        "path": "<DATA_ROOT>/wrf_gpu2/scratch/t-cfix-cu/c06w/aux2_d01_2023-01-15_15:00:00",
+        "sha256": "7608171ef17042e82e0c3dc1b38c55bc49512da1f615fd4e5a463db0d2254e87"
+      },
+      {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c06/input/namelist.input",
+        "sha256": "4d80d9d0eebd49bc8d6ba570d82a3cabd5a5d6e5615cdb1dbf76834085d1fd26"
+      },
+      {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c06/input/wrfbdy_d01",
+        "sha256": "f3e556670e4768326997bdfa1dd8b0f77eb6d5da07d9c4dbf900bf8ff9e30230"
+      },
+      {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c06/input/wrfinput_d01",
+        "sha256": "a5d696550d1dc6713e2e340b8c2fba83811d43f4a94a65ca95266035860e2781"
+      }
+    ],
+    "original_private_executable_exact_dump_path_patch": true,
+    "compiler": "GNU Fortran (conda-forge gcc 14.3.0-19) 14.3.0",
+    "pristine_vs_WRF": {
+      "phyprep_checks": {
+        "P_HYD_restart_vs_phyprep_maxabs": 1.2578125,
+        "P_HYD_W_restart_vs_phyprep_maxabs": 1.2578125,
+        "T_PHY_restart_vs_phyprep_maxabs": 0.062896728515625,
+        "U_PHY_restart_vs_phyprep_maxabs": 0.08562397956848145,
+        "V_PHY_restart_vs_phyprep_maxabs": 0.12714624404907227,
+        "RHO_restart_vs_phyprep_maxabs": 0.005891323089599609
+      },
+      "pristine_fortran_vs_wrf_aux": {
+        "RTHCUTEN": 0.0001597294267346716,
+        "RQVCUTEN": 1.0912654148565197e-05,
+        "RQCCUTEN": 1.2081208053217483e-05,
+        "RQICUTEN": 1.020997475860695e-05,
+        "RUCUTEN": 7.201646006715791e-06,
+        "RVCUTEN": 4.150608611368484e-06,
+        "RAINCV": 1.711695180914518e-05
+      },
+      "raincv_n_pos": {
+        "wrf_aux": 27,
+        "pristine_fortran": 27
+      },
+      "raincv_sum": {
+        "wrf_aux": 0.029670273885130882,
+        "pristine_fortran": 0.029670242220163345
+      }
+    },
+    "scope": "Fresh unmodified original public row and one-column calls; nine original c06 rows +one assembled row of real columns. No new CPU-WRF forecast/GPU run; Python phy_prep reference checked against original aux fields."
+  },
+  "actual_adapter": {
+    "run_dir": "<DATA_ROOT>/wrf_gpu2/scratch/t-cfix-cu/c06w",
+    "restart_sha256": "ddc3b5faf4590d43af9d71233e138a2a97722a5011a8f0b56a645ac1c260b53e",
+    "stamp": "2023-01-15_15:00:00",
+    "hydrated_leaves": [
+      "mu_perturbation",
+      "mu_total",
+      "p_perturbation",
+      "p_total",
+      "ph_perturbation",
+      "ph_total",
+      "qc",
+      "qg",
+      "qi",
+      "qr",
+      "qs",
+      "qv",
+      "rhosfc",
+      "theta",
+      "u",
+      "v",
+      "w"
+    ],
+    "xland_unique": [
+      1.0
+    ],
+    "raincv": {
+      "wrf_n_pos": 27,
+      "port_n_pos": 27,
+      "wrf_sum": 0.029670276748281897,
+      "port_sum": 0.029670256765578527,
+      "both_pos": 27,
+      "stats": {
+        "rms_wrf": 0.00017078208422919623,
+        "rms_err": 2.4057846236869825e-09,
+        "rel_rms": 1.408686768606434e-05,
+        "max_abs_err": 8.080511817174299e-08,
+        "max_abs_wrf": 0.0027947910130023956
+      }
+    },
+    "rates": {
+      "RTHCUTEN": {
+        "all": {
+          "rms_wrf": 0.0004299010643289858,
+          "rms_err": 1.820419091454749e-06,
+          "rel_rms": 0.0042345070587256235,
+          "max_abs_err": 0.00035210409818230994,
+          "max_abs_wrf": 0.027397828176617622
+        },
+        "interior5": {
+          "rms_wrf": 0.00022711142490457244,
+          "rms_err": 2.1911827537957374e-07,
+          "rel_rms": 0.000964805163243737,
+          "max_abs_err": 1.426799183273464e-05,
+          "max_abs_wrf": 0.004046353977173567
+        }
+      },
+      "RQVCUTEN": {
+        "all": {
+          "rms_wrf": 2.049738122912519e-07,
+          "rms_err": 3.4030479613005146e-10,
+          "rel_rms": 0.0016602354824064292,
+          "max_abs_err": 5.515010886774135e-08,
+          "max_abs_wrf": 1.042478561430471e-05
+        },
+        "interior5": {
+          "rms_wrf": 9.32790146843885e-08,
+          "rms_err": 3.93224966503187e-11,
+          "rel_rms": 0.00042155780465056577,
+          "max_abs_err": 5.729885668946168e-09,
+          "max_abs_wrf": 1.7020739733197843e-06
+        }
+      },
+      "RQCCUTEN": {
+        "all": {
+          "rms_wrf": 1.048495393463591e-07,
+          "rms_err": 4.055588768926084e-10,
+          "rel_rms": 0.0038680081898394285,
+          "max_abs_err": 9.420027260200041e-08,
+          "max_abs_wrf": 7.964488759171218e-06
+        },
+        "interior5": {
+          "rms_wrf": 5.534378673446097e-08,
+          "rms_err": 2.066464683002618e-11,
+          "rel_rms": 0.00037338693373431395,
+          "max_abs_err": 2.4581745194266533e-09,
+          "max_abs_wrf": 1.8126635268345126e-06
+        }
+      },
+      "RQICUTEN": {
+        "all": {
+          "rms_wrf": 2.6903608176396743e-08,
+          "rms_err": 8.67384717529551e-11,
+          "rel_rms": 0.0032240460530142973,
+          "max_abs_err": 2.2563052692215175e-08,
+          "max_abs_wrf": 2.1901566924498184e-06
+        },
+        "interior5": {
+          "rms_wrf": 2.0328239704194154e-08,
+          "rms_err": 7.1481715028820914e-12,
+          "rel_rms": 0.0003516375056029701,
+          "max_abs_err": 8.419800783312731e-10,
+          "max_abs_wrf": 7.088497682161687e-07
+        }
+      },
+      "RUCUTEN": {
+        "all": {
+          "rms_wrf": 0.0012712678099222289,
+          "rms_err": 2.7640592934963465e-06,
+          "rel_rms": 0.0021742541358499754,
+          "max_abs_err": 0.000553940021704206,
+          "max_abs_wrf": 0.09257152676582336
+        },
+        "interior5": {
+          "rms_wrf": 0.0005131856857281326,
+          "rms_err": 5.149893771002393e-07,
+          "rel_rms": 0.0010035146954061034,
+          "max_abs_err": 7.463240561696627e-05,
+          "max_abs_wrf": 0.008280305191874504
+        }
+      },
+      "RVCUTEN": {
+        "all": {
+          "rms_wrf": 0.0008855884712177998,
+          "rms_err": 7.256629132564415e-07,
+          "rel_rms": 0.0008194132340708549,
+          "max_abs_err": 0.0001611871338882779,
+          "max_abs_wrf": 0.07761212438344955
+        },
+        "interior5": {
+          "rms_wrf": 0.00020424542798664998,
+          "rms_err": 1.6952691153197192e-07,
+          "rel_rms": 0.000830015698285558,
+          "max_abs_err": 2.376923124922407e-05,
+          "max_abs_wrf": 0.004627905786037445
+        }
+      }
+    },
+    "wall_s": 20.014199268000084
+  },
+  "before_new_row_mask": {
+    "before_row_mask_columns": 420,
+    "before_row_mask_nonfinite": 0,
+    "row_active": [
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      false
+    ],
+    "first_ascent_active_columns": 328,
+    "quantitative_gate": {
+      "rel_rms": {
+        "RTHCUTEN": 0.0006632219524948385,
+        "RQVCUTEN": 5.648839377670688e-05,
+        "RQCCUTEN": 2.036847494825259e-05,
+        "RQICUTEN": 1.876723813739881e-05,
+        "RUCUTEN": 1.5941022647678816e-05,
+        "RVCUTEN": 1.9541956582632978e-05
+      },
+      "raining_columns": 18,
+      "ref_raining_columns": 18,
+      "rain_sum": 0.015380329770795276,
+      "ref_rain_sum": 0.01538039930164814
+    },
+    "scope": "CPU debug callback immediately before NEW row mask, six rates+rain only; not comprehensive inner-mask/F2/GPU event census. One additional instrumented final probe addresses mask concern."
+  },
+  "ntiedtke": {
+    "ROOT1": "NTiedtke pristine1939 resets only KTYPE3; NP727 andJAX771 already match. No old-cu6 unconditionalreset/organized3.1seed to transplant.",
+    "ROOT2": "No whole ICUM==0 routine early return in NTiedtke. IS gates in cutypen/cudlfs etc skip work selected by per-column predicates; no new implementation changed here. This is a limited source applicability audit, not proof of all row-independence or real-cu16 fidelity.",
+    "ROOT3": "No IHMIN search in pristine NTiedtke; different detrainment formulation.",
+    "pristine_sha256": "e762101f04d4acd2d19047a92d0b7cd4e244df930f9f9ef7aabae54bfe9a9fd1",
+    "unchanged_ntiedtke_modules": {
+      "src/gpuwrf/physics/cumulus_ntiedtke.py": "fed058c69d78e7d8fdcbb93565025bd9ad5567b1b65378de4035dea341652d06",
+      "src/gpuwrf/physics/cumulus_ntiedtke_jax.py": "e0e87f8da6165f0bfab2b2579a3cdc6c0720211db148c4537ee380e8dcc798a9"
+    },
+    "manager_followup": "After merge rerun c06 and all cu6/cu16 FINAL composites, including cu16 despite source-only non-applicability finding.",
+    "scope": "Source inference and preserved synthetic-column checks only; no new real-data NTiedtke oracle."
+  },
+  "identities": {
+    "producer_full_ids": {
+      "swiss": "7379c7d77e94517f07e7bf37763cc1409d1287a13e50684ed9d624caafaec55e",
+      "prod": "6487f5b039a074f02f63d140f1e9212b7ede832d04bf5450e44ad2b3f2c34e73",
+      "c06": "e33ca43e35956b1cfb2d1f0fa1a0c7fa75093072603e06510ddd03fa904d6956"
+    },
+    "scope": "Producer CPU native-facade traces; default hot paths do not call changedcu6 kernels. Reuse7379/6487, no freshcriticdefaulttrace. c06programchangesintentionally."
+  },
+  "packaging_required": {
+    "path": "proofs/t_cfix_cu/c06_tiedtke/c06_tiedtke_rows.npz",
+    "bytes": 782519,
+    "sha256": "95ca642f31cbc6f464b1a2bea171717d3c3766a563ea7e9ab999e08b731e4dda",
+    "why": "ignored by *.npz; absent commit tree and asset manifest; clean snapshot two FileNotFound fixture errors",
+    "followup": "track exact independently reconstructed blob/provenance; unchanged model/test source may reuse all numerical qualification"
+  },
+  "scope": "Original CPU-WRF row/column/caller component evidence. No GPU/coupledforecast/D6/E41/fullF2/performance qualification."
+}

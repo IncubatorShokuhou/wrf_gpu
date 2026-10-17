@@ -1,0 +1,46 @@
+{
+  "UTC": "2026-10-15T20:45:26.414303+00:00",
+  "status": "PASS approvedF6 composed with YSU via mechanical disjoint helper/kwargs union",
+  "reviewed_F6": "b9b6891e5",
+  "rebased_exact": "3617594695691a4fd852745e1076b0369be8d36d",
+  "base_YSU": "cfe988ae34d9a5ff646bd1c40b38e4206e119899",
+  "candidate": "33bf580017a91ae64aebae31d6dfd76d0d8d0f46",
+  "SRC": "7feb2a4746d4c98c78a4a1d00a9b1a4154958fee",
+  "changed_paths": [
+    "src/gpuwrf/coupling/scan_adapters.py",
+    "src/gpuwrf/physics/bl_gfs.py",
+    "src/gpuwrf/physics/bl_mrf.py",
+    "src/gpuwrf/physics/bl_myj.py",
+    "src/gpuwrf/physics/myj_adapters.py",
+    "src/gpuwrf/runtime/operational_mode.py",
+    "tests/test_t_cfix_pblmix_pbl_condensate.py",
+    "tests/test_ysu_surface_contract.py",
+    "tests/v040/cuplus/test_producer_forwarding.py"
+  ],
+  "source_audit": {
+    "src/gpuwrf/coupling/scan_adapters.py": {
+      "F6_definitions_exact": [
+        "_apply_pbl_condensate",
+        "gfs_pbl_adapter",
+        "mrf_pbl_adapter"
+      ],
+      "all_YSU_F1_ACM2_SH_other_defs_preserved": true
+    },
+    "src/gpuwrf/runtime/operational_mode.py": {
+      "exact_new_FQI_predicate": true,
+      "remove_only_F6_2MYJflags_2unpacks_1moistdict_restores_prior_YSU_AST": true
+    }
+  },
+  "mechanical_conflicts": [
+    "src/gpuwrf/coupling/scan_adapters.py",
+    "src/gpuwrf/runtime/operational_mode.py"
+  ],
+  "critic_verdict_sha256": "d50e6070baa1d9dc8848f9a42f7683f1fe62bb3e6dda1276f9f1c8d890e37374",
+  "excluded": [
+    "F8",
+    "F17",
+    "F23",
+    "ClassD pendingfinaldelta"
+  ],
+  "CPU_runtime_runs": 0
+}

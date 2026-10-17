@@ -214,6 +214,9 @@ def configure_cli_pool(args: Any, env: dict[str, str]) -> bool:
     demand allocation until its successful run provides a verified plan.
     """
     global _SESSION
+    from gpuwrf.backends.platform import target_backend
+    if target_backend(env) != "cuda":
+        return False
     before = dict(env)
     requested = env.get("GPUWRF_ALLOCATOR", "cuda_async").strip().lower() or "cuda_async"
     env.setdefault("XLA_PYTHON_CLIENT_ALLOCATOR", "default" if requested == "bfc" else requested)

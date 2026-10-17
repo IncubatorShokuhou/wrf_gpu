@@ -16,6 +16,14 @@ from gpuwrf.runtime.gpu_preflight import (
 )
 
 
+@pytest.fixture(autouse=True)
+def cuda_policy_backend(monkeypatch):
+    # These are CUDA admission-policy tests with mocked VRAM queries, even on
+    # a CPU-only host. Non-CUDA skip/tooling behavior is in test_portability.
+    from gpuwrf.backends import platform
+    monkeypatch.setattr(platform, "target_backend", lambda environ=None: "cuda")
+
+
 def _locked_env(tmp_path: Path, token: str = "test-token"):
     lock_file = tmp_path / "gpu.lock"
     holder_file = tmp_path / "gpu.lock.holder"

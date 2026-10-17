@@ -1,0 +1,293 @@
+[
+  {
+    "family": "history",
+    "nodes": [
+      "tests/test_history_swdown_horizontal.py::test_real_original_wrf_slopes_choose_horizontal_history"
+    ],
+    "rc": 1,
+    "tests": 1,
+    "failures": 1,
+    "errors": 0,
+    "killed": true,
+    "signatures": [
+      "tests/test_history_swdown_horizontal.py:66: in test_real_original_wrf_slopes_choose_horizontal_history\n    assert_wrf_horizontal(got,f)\ntests/test_history_swdown_horizontal.py:57: in assert_wrf_horizontal\n    assert np.max(np.abs(actual-expected)) <= .001, 'WRF horizontal SWDOWN not restored'\nE   AssertionError: WRF horizontal SWDOWN not restored\nE   assert np.float64(440.4625549316406) <= 0.001\nE    +  where np.float64(440.4625549316406) = <function max at 0x7eae5dd7deb0>(array([440.46255493, 426.40820312, 409.26934814, 389.67272949,\\n       364.51541138, 356.99298096, 356.64910889, 340.4286499 ]))\nE    +    where <function max at 0x7eae5dd7deb0> = np.max\nE    +    and   array([440.46255493, 426.40820312, 409.26934814, 389.67272949,\\n       364.51541138, 356.99298096, 356.64910889, 340.4286499 ]) = <ufunc 'absolute'>((array([436.79476929, 455.74664307, 464.13580322, 494.02001953,\\n       504.17245483, 526.69042969, 522.08746338, 548.36358643]) - array([877.2573 , 882.15485, 873.40515, 883.69275, 868.68787, 883.6834 ,\\n       878.7366 , 888.79224], dtype=float32)))\nE    +      where <ufunc 'absolute'> = np.abs"
+    ]
+  },
+  {
+    "family": "writer",
+    "nodes": [
+      "tests/test_writer_rvovrd_real.py::test_real_order_and_legacy_source_bits[float32-float32-ON]"
+    ],
+    "rc": 1,
+    "tests": 1,
+    "failures": 1,
+    "errors": 0,
+    "killed": true,
+    "signatures": [
+      "tests/test_writer_rvovrd_real.py:88: in test_real_order_and_legacy_source_bits\n    np.testing.assert_array_equal(bits(actual), bits(expected))\nE   AssertionError: \nE   Arrays are not equal\nE   \nE   Mismatched elements: 65 / 4620 (1.41%)\nE   First 5 mismatches are at indices:\nE    [44]: 1133609967 (ACTUAL), 1133609966 (DESIRED)\nE    [88]: 1133615093 (ACTUAL), 1133615092 (DESIRED)\nE    [132]: 1133582254 (ACTUAL), 1133582253 (DESIRED)\nE    [176]: 1133549479 (ACTUAL), 1133549478 (DESIRED)\nE    [224]: 1133591645 (ACTUAL), 1133591644 (DESIRED)\nE   Max absolute difference among violations: 2\nE   Max relative difference among violations: 1.76433295e-09\nE    ACTUAL: array([1133607023, 1133604726, 1133601726, ..., 1139317730, 1139790264,\nE          1140278626], shape=(4620,), dtype=uint32)\nE    DESIRED: array([1133607023, 1133604726, 1133601726, ..., 1139317730, 1139790264,\nE          1140278626], shape=(4620,), dtype=uint32)"
+    ]
+  },
+  {
+    "family": "kf",
+    "nodes": [
+      "tests/v025/b_column/test_kf_real_constants.py::test_runtime_and_compiled_constants_have_exact_source_bits[True-expected1]"
+    ],
+    "rc": 1,
+    "tests": 1,
+    "failures": 1,
+    "errors": 0,
+    "killed": true,
+    "signatures": [
+      "tests/v025/b_column/test_kf_real_constants.py:55: in test_runtime_and_compiled_constants_have_exact_source_bits\n    assert _bits(K._runtime_constants()) == expected\nE   assert (1142475981, 3156214219) == (1142475980, 3156214220)\nE     \nE     At index 0 diff: 1142475981 != 1142475980\nE     Use -v to get more diff"
+    ]
+  },
+  {
+    "family": "noah",
+    "nodes": [
+      "tests/v025/b_noahmp/test_noah_urban_soil_params.py::test_key_on_matches_wired_pristine"
+    ],
+    "rc": 1,
+    "tests": 1,
+    "failures": 1,
+    "errors": 0,
+    "killed": true,
+    "signatures": [
+      "tests/v025/b_noahmp/test_noah_urban_soil_params.py:121: in test_key_on_matches_wired_pristine\n    assert s[\"ulp\"].max() <= TSLB_ULP, (s[\"ulp\"].max(0), s[\"ulp\"].argmax())\nE   AssertionError: (array([17685.,  2400.,     0.,   600.]), np.int64(0))\nE   assert np.float64(17685.0) <= 2.0\nE    +  where np.float64(17685.0) = <built-in method max of numpy.ndarray object at 0x7634a98939f0>()\nE    +    where <built-in method max of numpy.ndarray object at 0x7634a98939f0> = array([[1.7685e+04, 3.9400e+02, 0.0000e+00, 6.0000e+02],\\n       [3.2860e+03, 1.1550e+03, 0.0000e+00, 6.0000e+02],\\n    ...00],\\n       [5.3800e+03, 5.7600e+02, 0.0000e+00, 0.0000e+00],\\n       [0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00]]).max"
+    ]
+  },
+  {
+    "family": "mynn",
+    "nodes": [
+      "tests/v025/b_phys/test_mynn_real_constants.py::test_live_virtual_temperature_uses_original_p608"
+    ],
+    "rc": 1,
+    "tests": 1,
+    "failures": 1,
+    "errors": 0,
+    "killed": true,
+    "signatures": [
+      "tests/v025/b_phys/test_mynn_real_constants.py:58: in test_live_virtual_temperature_uses_original_p608\n    np.testing.assert_array_equal(actual,expected)\nE   AssertionError: \nE   Arrays are not equal\nE   \nE   Mismatched elements: 176 / 352 (50%)\nE   First 5 mismatches are at indices:\nE    [0, 0]: 281.00531005859375 (ACTUAL), 281.0057678222656 (DESIRED)\nE    [0, 1]: 280.92449951171875 (ACTUAL), 280.9249267578125 (DESIRED)\nE    [0, 2]: 280.88800048828125 (ACTUAL), 280.888427734375 (DESIRED)\nE    [0, 3]: 280.9482727050781 (ACTUAL), 280.9486999511719 (DESIRED)\nE    [0, 4]: 281.8393249511719 (ACTUAL), 281.8397521972656 (DESIRED)\nE   Max absolute difference among violations: 0.0005188\nE   Max relative difference among violations: 1.8122854e-06\nE    ACTUAL: array([[281.0053 , 280.9245 , 280.888  , 280.94827, 281.83932, 282.8857 ,\nE           284.00363, 285.21478, 286.57834, 288.7742 , 291.38367, 294.73007,\nE           297.2509 , 299.17484, 301.04678, 303.26202, 305.84464, 308.62366,...\nE    DESIRED: array([[281.00577, 280.92493, 280.88843, 280.9487 , 281.83975, 282.88614,\nE           284.0041 , 285.21527, 286.57886, 288.7747 , 291.384  , 294.73038,\nE           297.2512 , 299.1751 , 301.0469 , 303.26212, 305.8447 , 308.6237 ,..."
+    ]
+  },
+  {
+    "family": "radiation",
+    "nodes": [
+      "tests/v025/b_phys/test_rrtmg_sw_reftra_wrf.py::test_original_clear_sw_real_columns[0-d03]"
+    ],
+    "rc": 1,
+    "tests": 1,
+    "failures": 1,
+    "errors": 0,
+    "killed": true,
+    "signatures": [
+      "tests/v025/b_phys/test_rrtmg_sw_reftra_wrf.py:72: in test_original_clear_sw_real_columns\n    assert np.all(np.abs(error) <= .02 + 2e-5 * np.abs(expected)), error\nE   AssertionError: array([[ 1.22070312e-04,  1.19030762e+00, -1.38220215e+00,\nE             -3.00796509e-01],\nE            [ 1.22070312e-04,  1.18963...80e+00,\nE             -2.52700806e-01],\nE            [-1.22070312e-04,  1.01885986e+00, -1.30908203e+00,\nE             -2.54776001e-01]])\nE   assert np.False_\nE    +  where np.False_ = <function all at 0x7a0548b8d7b0>(array([[1.22070312e-04, 1.19030762e+00, 1.38220215e+00, 3.00796509e-01],\\n       [1.22070312e-04, 1.18963623e+00, 1.355...2738037e-01, 1.27917480e+00, 2.52700806e-01],\\n       [1.22070312e-04, 1.01885986e+00, 1.30908203e+00, 2.54776001e-01]]) <= (0.02 + (2e-05 * array([[1081.8243 ,  215.99716,  860.1744 ,  187.23528],\\n       [1081.1556 ,  214.9892 ,  864.5521 ,  186.83072],\\n    ...77.164  ,  202.27911,  880.48694,  173.97722],\\n       [1076.8157 ,  197.29536,  854.44055,  166.29199]], dtype=float32))))\nE    +    where <function all at 0x7a0548b8d7b0> = np.all\nE    +    and   array([[1.22070312e-04, 1.19030762e+00, 1.38220215e+00, 3.00796509e-01],\\n       [1.22070312e-04, 1.18963623e+00, 1.355...2738037e-01, 1.27917480e+00, 2.52700806e-01],\\n       [1.22070312e-04, 1.01885986e+00, 1.30908203e+00, 2.54776001e-01]]) = <ufunc 'absolute'>(array([[ 1.22070312e-04,  1.19030762e+00, -1.38220215e+00,\\n        -3.00796509e-01],\\n       [ 1.22070312e-04,  1.18963...80e+00,\\n        -2.52700806e-01],\\n       [-1.22070312e-04,  1.01885986e+00, -1.30908203e+00,\\n        -2.54776001e-01]]))\nE    +      where <ufunc 'absolute'> = np.abs\nE    +    and   array([[1081.8243 ,  215.99716,  860.1744 ,  187.23528],\\n       [1081.1556 ,  214.9892 ,  864.5521 ,  186.83072],\\n    ...77.164  ,  202.27911,  880.48694,  173.97722],\\n       [1076.8157 ,  197.29536,  854.44055,  166.29199]], dtype=float32) = <ufunc 'absolute'>(array([[1081.8243 ,  215.99716,  860.1744 ,  187.23528],\\n       [1081.1556 ,  214.9892 ,  864.5521 ,  186.83072],\\n    ...77.164  ,  202.27911,  880.48694,  173.97722],\\n       [1076.8157 ,  197.29536,  854.44055,  166.29199]], dtype=float32))\nE    +      where <ufunc 'absolute'> = np.abs"
+    ]
+  },
+  {
+    "family": "thompson",
+    "nodes": [
+      "tests/v025/b_thompson/test_thompson_wrf_constants.py::test_selector_is_native_real_only[1-1-True]"
+    ],
+    "rc": 1,
+    "tests": 1,
+    "failures": 1,
+    "errors": 0,
+    "killed": true,
+    "signatures": [
+      "tests/v025/b_thompson/test_thompson_wrf_constants.py:96: in test_selector_is_native_real_only\n    assert tc._wrf(name, legacy) == (WRF[name] if expect_wrf else legacy), name\nE   AssertionError: AM_R\nE   assert 523.5987756000001 == 523.5988159179688\nE    +  where 523.5987756000001 = <function _wrf at 0x7d3e5a315ee0>('AM_R', 523.5987756000001)\nE    +    where <function _wrf at 0x7d3e5a315ee0> = tc._wrf"
+    ]
+  },
+  {
+    "family": "phy",
+    "nodes": [
+      "tests/v025/b_phys/test_phy_prep_real_const.py::test_actual_native_consumer_matches_original_bits[mynn]"
+    ],
+    "rc": 1,
+    "tests": 1,
+    "failures": 1,
+    "errors": 0,
+    "killed": true,
+    "signatures": [
+      "tests/v025/b_phys/test_phy_prep_real_const.py:56: in test_actual_native_consumer_matches_original_bits\n    np.testing.assert_array_equal(got.view(np.uint32),ref.view(np.uint32))\nE   AssertionError: \nE   Arrays are not equal\nE   \nE   Mismatched elements: 96 / 192 (50%)\nE   First 5 mismatches are at indices:\nE    [0]: 1133609966 (ACTUAL), 1133609965 (DESIRED)\nE    [1]: 1133616294 (ACTUAL), 1133616293 (DESIRED)\nE    [2]: 1133547463 (ACTUAL), 1133547462 (DESIRED)\nE    [3]: 1133608751 (ACTUAL), 1133608750 (DESIRED)\nE    [4]: 1133571848 (ACTUAL), 1133571847 (DESIRED)\nE   Max absolute difference among violations: 2\nE   Max relative difference among violations: 1.76434787e-09\nE    ACTUAL: array([1133609966, 1133616294, 1133547463, 1133608751, 1133571848,\nE          1133550660, 1133531879, 1133575367, 1133544832, 1133649280,\nE          1133573906, 1133532906, 1133669837, 1133574713, 1133717774,...\nE    DESIRED: array([1133609965, 1133616293, 1133547462, 1133608750, 1133571847,\nE          1133550659, 1133531878, 1133575366, 1133544831, 1133649279,\nE          1133573905, 1133532905, 1133669836, 1133574712, 1133717772,..."
+    ]
+  },
+  {
+    "family": "land_q2",
+    "nodes": [
+      "tests/v025/b_phys/test_land_q2_postlsm.py::test_pristine_postlsm_literal_real4"
+    ],
+    "rc": 1,
+    "tests": 1,
+    "failures": 1,
+    "errors": 0,
+    "killed": true,
+    "signatures": [
+      "tests/v025/b_phys/test_land_q2_postlsm.py:67: in test_pristine_postlsm_literal_real4\n    finite(candidate=got,reference=out);np.testing.assert_array_equal(got,out)\n                                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nE   AssertionError: \nE   Arrays are not equal\nE   \nE   Mismatched elements: 131 / 347 (37.8%)\nE   First 5 mismatches are at indices:\nE    [0]: 0.007891979068517685 (ACTUAL), 0.007852497510612011 (DESIRED)\nE    [1]: 0.006076102145016193 (ACTUAL), 0.004051774740219116 (DESIRED)\nE    [2]: 0.007197264581918716 (ACTUAL), 0.0061071766540408134 (DESIRED)\nE    [3]: 0.007264967542141676 (ACTUAL), 0.0041295806877315044 (DESIRED)\nE    [4]: 0.0064175063744187355 (ACTUAL), 0.004674968775361776 (DESIRED)\nE   Max absolute difference among violations: 0.00313539\nE   Max relative difference among violations: 0.75925064\nE    ACTUAL: array([0.007892, 0.006076, 0.007197, 0.007265, 0.006418, 0.007469,\nE          0.009332, 0.009601, 0.008175, 0.008172, 0.008141, 0.008135,\nE          0.008893, 0.008876, 0.008859, 0.008841, 0.008484, 0.008268,...\nE    DESIRED: array([0.007852, 0.004052, 0.006107, 0.00413 , 0.004675, 0.006389,\nE          0.00902 , 0.008617, 0.008175, 0.008172, 0.008141, 0.008135,\nE          0.008893, 0.008876, 0.008859, 0.008841, 0.008484, 0.008268,..."
+    ]
+  },
+  {
+    "family": "canwater",
+    "nodes": [
+      "tests/v025/b_noahmp/test_noah_canwater_elai.py::test_key_on_matches_pristine_canwater[1]"
+    ],
+    "rc": 1,
+    "tests": 1,
+    "failures": 1,
+    "errors": 0,
+    "killed": true,
+    "signatures": [
+      "tests/v025/b_noahmp/test_noah_canwater_elai.py:196: in test_key_on_matches_pristine_canwater\n    assert fails(z, res, native) == {v: 0 for v in OUT}, excess_summary(z, res, native)\nE   AssertionError: {'canice': 0.0, 'canliq': 0.0, 'fwet': 9446180.0, 'tv': 72467.0}\nE   assert {'canice': 0,...04, 'tv': 303} == {'canice': 0,...': 0, 'tv': 0}\nE     \nE     Omitting 2 identical items, use -vv to show\nE     Differing items:\nE     {'tv': 303} != {'tv': 0}\nE     {'fwet': 804} != {'fwet': 0}\nE     Use -v to get more diff"
+    ]
+  },
+  {
+    "family": "noah_qsfc",
+    "nodes": [
+      "tests/v025/b_noahmp/test_noah_qsfc_wrf.py::test_key_on_matches_wired_pristine"
+    ],
+    "rc": 1,
+    "tests": 1,
+    "failures": 1,
+    "errors": 0,
+    "killed": true,
+    "signatures": [
+      "tests/v025/b_noahmp/test_noah_qsfc_wrf.py:133: in test_key_on_matches_wired_pristine\n    assert e[\"step1\"].max() <= STEP1, (e[\"step1\"].max(), int(e[\"step1\"].argmax()))\nE   AssertionError: (np.float64(0.006207749247550964), 63)\nE   assert np.float64(0.006207749247550964) <= 1e-06\nE    +  where np.float64(0.006207749247550964) = <built-in method max of numpy.ndarray object at 0x77bb7b687390>()\nE    +    where <built-in method max of numpy.ndarray object at 0x77bb7b687390> = array([0.00000000e+00, 0.00000000e+00, 2.79396772e-09, 0.00000000e+00,\\n       0.00000000e+00, 1.86264515e-09, 0.000000...4.82248329e-03, 2.55677663e-03, 3.36647592e-03,\\n       2.64388975e-03, 8.82196240e-04, 2.08453898e-03, 2.14889832e-03]).max"
+    ]
+  },
+  {
+    "family": "condensation",
+    "nodes": [
+      "tests/v025/b_phys/test_mynn_condensation_wrf.py::test_original_call_inputs_and_qc_exit"
+    ],
+    "rc": 1,
+    "tests": 2,
+    "failures": 2,
+    "errors": 0,
+    "killed": true,
+    "signatures": [
+      "tests/v025/b_phys/test_mynn_condensation_wrf.py:80: in test_original_call_inputs_and_qc_exit\n    np.testing.assert_allclose(actual[:,0],reference[:,0],rtol=0,atol=2*np.spacing(np.float32(300)),err_msg='THV')\nE   AssertionError: \nE   Not equal to tolerance rtol=0, atol=6.10352e-05\nE   THV\nE   Mismatched elements: 163 / 589 (27.7%)\nE   First 5 mismatches are at indices:\nE    [2]: 290.7394714355469 (ACTUAL), 290.7398681640625 (DESIRED)\nE    [3]: 291.16448974609375 (ACTUAL), 291.1648254394531 (DESIRED)\nE    [6]: 290.7493896484375 (ACTUAL), 290.7497253417969 (DESIRED)\nE    [7]: 291.1811828613281 (ACTUAL), 291.1815490722656 (DESIRED)\nE    [10]: 290.75872802734375 (ACTUAL), 290.7591247558594 (DESIRED)\nE   Max absolute difference among violations: 0.00061035\nE   Max relative difference among violations: 2.094221e-06\nE    ACTUAL: array([290.53314, 290.52542, 290.73947, 291.1645 , 290.5373 , 290.52957,\nE          290.7494 , 291.18118, 290.54144, 290.53387, 290.75873, 291.1964 ,\nE          290.54565, 290.53815, 290.76767, 291.21057, 291.66025, 290.5498 ,...\nE    DESIRED: array([290.53314, 290.52542, 290.73987, 291.16483, 290.5373 , 290.52957,\nE          290.74973, 291.18155, 290.54144, 290.53387, 290.75912, 291.19684,\nE          290.54565, 290.53815, 290.76807, 291.211  , 291.66046, 290.5498 ,...",
+      "tests/v025/b_phys/test_mynn_condensation_wrf.py:80: in test_original_call_inputs_and_qc_exit\n    np.testing.assert_allclose(actual[:,0],reference[:,0],rtol=0,atol=2*np.spacing(np.float32(300)),err_msg='THV')\nE   AssertionError: \nE   Not equal to tolerance rtol=0, atol=6.10352e-05\nE   THV\nE   Mismatched elements: 95 / 417 (22.8%)\nE   First 5 mismatches are at indices:\nE    [15]: 291.08905029296875 (ACTUAL), 291.0887145996094 (DESIRED)\nE    [21]: 291.17486572265625 (ACTUAL), 291.17437744140625 (DESIRED)\nE    [27]: 291.2406005859375 (ACTUAL), 291.24005126953125 (DESIRED)\nE    [28]: 291.8554992675781 (ACTUAL), 291.85540771484375 (DESIRED)\nE    [34]: 291.2922668457031 (ACTUAL), 291.29241943359375 (DESIRED)\nE   Max absolute difference among violations: 0.00054932\nE   Max relative difference among violations: 1.8873784e-06\nE    ACTUAL: array([290.70792, 290.68634, 290.6609 , 290.63388, 290.61008, 290.71338,\nE          290.69705, 290.67676, 290.65366, 290.63086, 290.7173 , 290.7045 ,\nE          290.68802, 290.66846, 290.6479 , 291.08905, 290.72037, 290.71   ,...\nE    DESIRED: array([290.70792, 290.68634, 290.6609 , 290.63388, 290.61008, 290.71338,\nE          290.69705, 290.67676, 290.65366, 290.63086, 290.7173 , 290.7045 ,\nE          290.68802, 290.66846, 290.6479 , 291.0887 , 290.72037, 290.71   ,..."
+    ]
+  },
+  {
+    "family": "predict",
+    "nodes": [
+      "tests/v025/b_phys/test_mynn_predict_saw_floor.py::test_original_predict_qke_qsq_real4"
+    ],
+    "rc": 1,
+    "tests": 2,
+    "failures": 1,
+    "errors": 0,
+    "killed": true,
+    "signatures": [
+      "tests/v025/b_phys/test_mynn_predict_saw_floor.py:105: in test_original_predict_qke_qsq_real4\n    assert np.max(error)<=64*np.finfo(np.float32).eps,(name,float(np.max(error)))\nE   AssertionError: ('qke', 9.737901849374605e-05)\nE   assert np.float64(9.737901849374605e-05) <= (64 * np.float32(1.1920929e-07))\nE    +  where np.float64(9.737901849374605e-05) = <function max at 0x72d9c0d767b0>(array([[0.00000000e+00, 7.08614520e-08, 7.08614520e-08, 7.08614520e-08,\\n        1.41722904e-07, 0.00000000e+00, 0.0000...00000000e+00, 0.00000000e+00, 0.00000000e+00,\\n        0.00000000e+00, 0.00000000e+00, 0.00000000e+00, 0.00000000e+00]]))\nE    +    where <function max at 0x72d9c0d767b0> = np.max\nE    +  and   np.float32(1.1920929e-07) = finfo(resolution=1e-06, min=-3.4028235e+38, max=3.4028235e+38, dtype=float32).eps\nE    +    where finfo(resolution=1e-06, min=-3.4028235e+38, max=3.4028235e+38, dtype=float32) = <class 'numpy.finfo'>(<class 'numpy.float32'>)\nE    +      where <class 'numpy.finfo'> = np.finfo\nE    +      and   <class 'numpy.float32'> = np.float32"
+    ]
+  },
+  {
+    "family": "source_parity",
+    "nodes": [
+      "tests/v025/b_phys/test_mynn_source_parity2.py::test_original_top_face_footprint_witness",
+      "tests/v025/b_phys/test_mynn_source_parity2.py::test_original_dmp_gtr_all_real_columns"
+    ],
+    "rc": 1,
+    "tests": 3,
+    "failures": 3,
+    "errors": 0,
+    "killed": true,
+    "signatures": [
+      "tests/v025/b_phys/test_mynn_source_parity2.py:100: in test_original_top_face_footprint_witness\n    np.testing.assert_array_equal(actual.view(np.uint32), oh.view(np.uint32))\nE   AssertionError: \nE   Arrays are not equal\nE   \nE   Mismatched elements: 1 / 45 (2.22%)\nE   Mismatch at index:\nE    [43]: 1032545764 (ACTUAL), 840526485 (DESIRED)\nE   Max absolute difference among violations: 192019279\nE   Max relative difference among violations: 0.22845119\nE    ACTUAL: array([         0, 1048910724, 1056632619, 1050389860, 1026537323,\nE          1000045347,  982646751,  965496061,  945031248,  908280224,\nE           915754774,  915619279,  912872182,  908711811,  903058150,...\nE    DESIRED: array([         0, 1048910724, 1056632619, 1050389860, 1026537323,\nE          1000045347,  982646751,  965496061,  945031248,  908280224,\nE           915754774,  915619279,  912872182,  908711811,  903058150,...",
+      "tests/v025/b_phys/test_mynn_source_parity2.py:112: in test_original_dmp_gtr_all_real_columns\n    np.testing.assert_array_equal(actual.view(np.uint32), np.full(actual.shape, ref.view(np.uint32), np.uint32))\nE   AssertionError: \nE   Arrays are not equal\nE   \nE   (shapes (1036,), (518,) mismatch)\nE    ACTUAL: array([3978857703, 1067499021, 3978857703, ..., 1067499021, 3978857703,\nE          1067499021], shape=(1036,), dtype=uint32)\nE    DESIRED: array([1023799408, 1023799408, 1023799408, 1023799408, 1023799408,\nE          1023799408, 1023799408, 1023799408, 1023799408, 1023799408,\nE          1023799408, 1023799408, 1023799408, 1023799408, 1023799408,...",
+      "tests/v025/b_phys/test_mynn_source_parity2.py:112: in test_original_dmp_gtr_all_real_columns\n    np.testing.assert_array_equal(actual.view(np.uint32), np.full(actual.shape, ref.view(np.uint32), np.uint32))\nE   AssertionError: \nE   Arrays are not equal\nE   \nE   (shapes (1008,), (504,) mismatch)\nE    ACTUAL: array([3978857703, 1067499021, 3978857703, ..., 1067499021, 3978857703,\nE          1067499021], shape=(1008,), dtype=uint32)\nE    DESIRED: array([1023799408, 1023799408, 1023799408, 1023799408, 1023799408,\nE          1023799408, 1023799408, 1023799408, 1023799408, 1023799408,\nE          1023799408, 1023799408, 1023799408, 1023799408, 1023799408,..."
+    ]
+  },
+  {
+    "family": "sfc_psi",
+    "nodes": [
+      "tests/v025/b_phys/test_mynn_sfc_psi_real.py::test_real_tables_bit_exact_original"
+    ],
+    "rc": 1,
+    "tests": 4,
+    "failures": 4,
+    "errors": 0,
+    "killed": true,
+    "signatures": [
+      "tests/v025/b_phys/test_mynn_sfc_psi_real.py:94: in test_real_tables_bit_exact_original\n    np.testing.assert_array_equal(actual.view(np.uint32), ref.view(np.uint32))\nE   AssertionError: \nE   Arrays are not equal\nE   \nE   Mismatched elements: 385 / 1001 (38.5%)\nE   First 5 mismatches are at indices:\nE    [1]: 3178804933 (ACTUAL), 3178805003 (DESIRED)\nE    [2]: 3187124954 (ACTUAL), 3187124957 (DESIRED)\nE    [3]: 3191407524 (ACTUAL), 3191407510 (DESIRED)\nE    [4]: 3195388358 (ACTUAL), 3195388312 (DESIRED)\nE    [5]: 3197701087 (ACTUAL), 3197701068 (DESIRED)\nE   Max absolute difference among violations: 70\nE   Max relative difference among violations: 2.20208537e-08\nE    ACTUAL: array([2147483648, 3178804933, 3187124954, ..., 3247579137, 3247582335,\nE          3247585530], shape=(1001,), dtype=uint32)\nE    DESIRED: array([2147483648, 3178805003, 3187124957, ..., 3247579137, 3247582335,\nE          3247585529], shape=(1001,), dtype=uint32)",
+      "tests/v025/b_phys/test_mynn_sfc_psi_real.py:94: in test_real_tables_bit_exact_original\n    np.testing.assert_array_equal(actual.view(np.uint32), ref.view(np.uint32))\nE   AssertionError: \nE   Arrays are not equal\nE   \nE   Mismatched elements: 450 / 1001 (45%)\nE   First 5 mismatches are at indices:\nE    [1]: 3181999363 (ACTUAL), 3181999434 (DESIRED)\nE    [2]: 3190584963 (ACTUAL), 3190584971 (DESIRED)\nE    [3]: 3196210204 (ACTUAL), 3196210190 (DESIRED)\nE    [4]: 3199090875 (ACTUAL), 3199090876 (DESIRED)\nE    [5]: 3201954726 (ACTUAL), 3201954715 (DESIRED)\nE   Max absolute difference among violations: 71\nE   Max relative difference among violations: 2.23130147e-08\nE    ACTUAL: array([2147483648, 3181999363, 3190584963, ..., 3246419877, 3246422554,\nE          3246425228], shape=(1001,), dtype=uint32)\nE    DESIRED: array([2147483648, 3181999434, 3190584971, ..., 3246419877, 3246422554,\nE          3246425228], shape=(1001,), dtype=uint32)",
+      "tests/v025/b_phys/test_mynn_sfc_psi_real.py:94: in test_real_tables_bit_exact_original\n    np.testing.assert_array_equal(actual.view(np.uint32), ref.view(np.uint32))\nE   AssertionError: \nE   Arrays are not equal\nE   \nE   Mismatched elements: 837 / 1001 (83.6%)\nE   First 5 mismatches are at indices:\nE    [1]: 1025261119 (ACTUAL), 1025261114 (DESIRED)\nE    [2]: 1033217477 (ACTUAL), 1033217470 (DESIRED)\nE    [3]: 1037549945 (ACTUAL), 1037549949 (DESIRED)\nE    [4]: 1040885909 (ACTUAL), 1040885924 (DESIRED)\nE    [5]: 1042775944 (ACTUAL), 1042775950 (DESIRED)\nE   Max absolute difference among violations: 15\nE   Max relative difference among violations: 1.44108011e-08\nE    ACTUAL: array([         0, 1025261119, 1033217477, ..., 1076497335, 1076500595,\nE          1076503851], shape=(1001,), dtype=uint32)\nE    DESIRED: array([         0, 1025261114, 1033217470, ..., 1076497335, 1076500597,\nE          1076503854], shape=(1001,), dtype=uint32)",
+      "tests/v025/b_phys/test_mynn_sfc_psi_real.py:94: in test_real_tables_bit_exact_original\n    np.testing.assert_array_equal(actual.view(np.uint32), ref.view(np.uint32))\nE   AssertionError: \nE   Arrays are not equal\nE   \nE   Mismatched elements: 769 / 1001 (76.8%)\nE   First 5 mismatches are at indices:\nE    [1]: 1033555565 (ACTUAL), 1033555575 (DESIRED)\nE    [2]: 1041438734 (ACTUAL), 1041438729 (DESIRED)\nE    [3]: 1045600408 (ACTUAL), 1045600407 (DESIRED)\nE    [5]: 1050776426 (ACTUAL), 1050776424 (DESIRED)\nE    [6]: 1052431394 (ACTUAL), 1052431397 (DESIRED)\nE   Max absolute difference among violations: 10\nE   Max relative difference among violations: 9.67533845e-09\nE    ACTUAL: array([         0, 1033555565, 1041438734, ..., 1080679345, 1080682885,\nE          1080686421], shape=(1001,), dtype=uint32)\nE    DESIRED: array([         0, 1033555575, 1041438729, ..., 1080679349, 1080682885,\nE          1080686422], shape=(1001,), dtype=uint32)"
+    ]
+  },
+  {
+    "family": "shsm",
+    "nodes": [
+      "tests/v025/b_phys/test_mynn_closure_carries.py::test_actual_turbulence_budget_matches_original_real4"
+    ],
+    "rc": 1,
+    "tests": 2,
+    "failures": 2,
+    "errors": 0,
+    "killed": true,
+    "signatures": [
+      "tests/v025/b_phys/test_mynn_closure_carries.py:175: in test_actual_turbulence_budget_matches_original_real4\n    np.testing.assert_array_equal(np.asarray(got[name])[:,1:],reference[name][:,1:],err_msg=name)\nE   AssertionError: \nE   Arrays are not equal\nE   pdk\nE   Mismatched elements: 9 / 516 (1.74%)\nE   First 5 mismatches are at indices:\nE    [2, 5]: 9.088573278859258e-05 (ACTUAL), 5.730023258365691e-05 (DESIRED)\nE    [2, 6]: 0.00012451273505575955 (ACTUAL), 8.410542795900255e-05 (DESIRED)\nE    [5, 6]: 9.742136626300635e-07 (ACTUAL), -1.4614214705943596e-05 (DESIRED)\nE    [6, 6]: 3.4898469039035263e-06 (ACTUAL), -1.1048830856452696e-05 (DESIRED)\nE    [7, 6]: 1.610099275239918e-06 (ACTUAL), -1.6152036550920457e-05 (DESIRED)\nE   Max absolute difference among violations: 4.0407307e-05\nE   Max relative difference among violations: 2.063262\nE    ACTUAL: array([[4.122279e-03, 1.639016e-03, 1.884436e-03, 4.455951e-04,\nE           2.008771e-04, 1.189577e-04, 3.498443e-05, 1.633981e-06,\nE           5.369915e-09, 6.998519e-08, 9.910884e-08, 1.111053e-07,...\nE    DESIRED: array([[ 4.122279e-03,  1.639016e-03,  1.884436e-03,  4.455951e-04,\nE            2.008771e-04,  1.189577e-04,  3.498443e-05,  1.633981e-06,\nE            5.369915e-09,  6.998519e-08,  9.910884e-08,  1.111053e-07,...",
+      "tests/v025/b_phys/test_mynn_closure_carries.py:175: in test_actual_turbulence_budget_matches_original_real4\n    np.testing.assert_array_equal(np.asarray(got[name])[:,1:],reference[name][:,1:],err_msg=name)\nE   AssertionError: \nE   Arrays are not equal\nE   pdk\nE   Mismatched elements: 7 / 344 (2.03%)\nE   First 5 mismatches are at indices:\nE    [0, 5]: 3.065158580284333e-06 (ACTUAL), -1.3562237654696219e-05 (DESIRED)\nE    [2, 6]: 7.268575245689135e-06 (ACTUAL), 6.291561930993339e-06 (DESIRED)\nE    [3, 6]: 7.0345904532587156e-06 (ACTUAL), -1.962717760761734e-06 (DESIRED)\nE    [4, 6]: 2.1492980977200205e-06 (ACTUAL), -1.4197548807715066e-05 (DESIRED)\nE    [5, 6]: 6.735351689712843e-06 (ACTUAL), -3.5505784126144135e-06 (DESIRED)\nE   Max absolute difference among violations: 1.6627397e-05\nE   Max relative difference among violations: 4.584107\nE    ACTUAL: array([[7.150660e-03, 1.435864e-03, 8.001205e-04, 4.330112e-04,\nE           8.632697e-05, 3.065159e-06, 1.546792e-06, 1.342765e-05,\nE           1.926529e-06, 2.050109e-07, 1.328573e-08, 3.285465e-08,...\nE    DESIRED: array([[ 7.150660e-03,  1.435864e-03,  8.001205e-04,  4.330112e-04,\nE            8.632697e-05, -1.356224e-05,  1.546792e-06,  1.342765e-05,\nE            1.926529e-06,  2.050109e-07,  1.328573e-08,  3.285465e-08,..."
+    ]
+  },
+  {
+    "family": "rhosfc",
+    "nodes": [
+      "tests/v025/b_phys/test_mynn_closure_carries.py::test_plume_tke_source_and_surface_density_are_original_real4"
+    ],
+    "rc": 1,
+    "tests": 2,
+    "failures": 2,
+    "errors": 0,
+    "killed": true,
+    "signatures": [
+      "tests/v025/b_phys/test_mynn_closure_carries.py:196: in test_plume_tke_source_and_surface_density_are_original_real4\n    np.testing.assert_array_equal(actual,density)\nE   AssertionError: \nE   Arrays are not equal\nE   \nE   Mismatched elements: 12 / 12 (100%)\nE   First 5 mismatches are at indices:\nE    [0]: 1.1974222660064697 (ACTUAL), 1.2083064317703247 (DESIRED)\nE    [1]: 1.2091091871261597 (ACTUAL), 1.2202255725860596 (DESIRED)\nE    [2]: 1.210039496421814 (ACTUAL), 1.2208819389343262 (DESIRED)\nE    [3]: 1.2151451110839844 (ACTUAL), 1.2256927490234375 (DESIRED)\nE    [4]: 1.2153606414794922 (ACTUAL), 1.2259230613708496 (DESIRED)\nE   Max absolute difference among violations: 0.01111639\nE   Max relative difference among violations: 0.00911011\nE    ACTUAL: array([1.197422, 1.209109, 1.210039, 1.215145, 1.215361, 1.215785,\nE          1.216172, 1.216501, 1.216755, 1.216805, 1.217514, 1.217391],\nE         dtype=float32)\nE    DESIRED: array([1.208306, 1.220226, 1.220882, 1.225693, 1.225923, 1.22618 ,\nE          1.226526, 1.226829, 1.227054, 1.227087, 1.227753, 1.227602],\nE         dtype=float32)",
+      "tests/v025/b_phys/test_mynn_closure_carries.py:196: in test_plume_tke_source_and_surface_density_are_original_real4\n    np.testing.assert_array_equal(actual,density)\nE   AssertionError: \nE   Arrays are not equal\nE   \nE   Mismatched elements: 8 / 8 (100%)\nE   First 5 mismatches are at indices:\nE    [0]: 1.214877963066101 (ACTUAL), 1.2254664897918701 (DESIRED)\nE    [1]: 1.2151165008544922 (ACTUAL), 1.225584864616394 (DESIRED)\nE    [2]: 1.215524673461914 (ACTUAL), 1.2259387969970703 (DESIRED)\nE    [3]: 1.2159146070480347 (ACTUAL), 1.226254940032959 (DESIRED)\nE    [4]: 1.2162631750106812 (ACTUAL), 1.2265585660934448 (DESIRED)\nE   Max absolute difference among violations: 0.01058853\nE   Max relative difference among violations: 0.0086404\nE    ACTUAL: array([1.214878, 1.215117, 1.215525, 1.215915, 1.216263, 1.21666 ,\nE          1.21712 , 1.217113], dtype=float32)\nE    DESIRED: array([1.225466, 1.225585, 1.225939, 1.226255, 1.226559, 1.226961,\nE          1.227354, 1.227351], dtype=float32)"
+    ]
+  },
+  {
+    "family": "tkeprod",
+    "nodes": [
+      "tests/v025/b_phys/test_mynn_closure_carries.py::test_plume_tke_source_and_surface_density_are_original_real4"
+    ],
+    "rc": 1,
+    "tests": 2,
+    "failures": 2,
+    "errors": 0,
+    "killed": true,
+    "signatures": [
+      "tests/v025/b_phys/test_mynn_closure_carries.py:184: in test_plume_tke_source_and_surface_density_are_original_real4\n    assert set(got)=={'mf_aw','tkeprod_up'}\nE   AssertionError: assert {'mf_aw'} == {'mf_aw', 'tkeprod_up'}\nE     \nE     Extra items in the right set:\nE     'tkeprod_up'\nE     Use -v to get more diff",
+      "tests/v025/b_phys/test_mynn_closure_carries.py:184: in test_plume_tke_source_and_surface_density_are_original_real4\n    assert set(got)=={'mf_aw','tkeprod_up'}\nE   AssertionError: assert {'mf_aw'} == {'mf_aw', 'tkeprod_up'}\nE     \nE     Extra items in the right set:\nE     'tkeprod_up'\nE     Use -v to get more diff"
+    ]
+  },
+  {
+    "family": "pblh",
+    "nodes": [
+      "tests/v025/b_phys/test_sfclay_pblh_wrf.py::test_real_zero_pblh_surface_memory_matches_original"
+    ],
+    "rc": 1,
+    "tests": 2,
+    "failures": 2,
+    "errors": 0,
+    "killed": true,
+    "signatures": [
+      "tests/v025/b_phys/test_sfclay_pblh_wrf.py:71: in test_real_zero_pblh_surface_memory_matches_original\n    actual=values(out);check(actual,reference,inputs)\n                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\ntests/v025/b_phys/test_sfclay_pblh_wrf.py:48: in check\n    assert np.all(abs(actual['wspd']-reference['wspd'])<=4*spacing),'WRF WSPD >4 REAL32 ULP'\nE   AssertionError: WRF WSPD >4 REAL32 ULP\nE   assert np.False_\nE    +  where np.False_ = <function all at 0x705ad2185c30>(array([0.00214577, 0.0004015 , 0.00038052, 0.        , 0.00064659,\\n       0.00054741, 0.        , 0.        , 0.000610... 0.00046062, 0.00052738, 0.00061417, 0.00047779,\\n       0.        , 0.00046539, 0.00039864, 0.00032806], dtype=float32) <= (4 * array([4.76837158e-07, 4.76837158e-07, 4.76837158e-07, 4.76837158e-07,\\n       4.76837158e-07, 4.76837158e-07, 4.768371...9.53674316e-07, 9.53674316e-07, 9.53674316e-07,\\n       9.53674316e-07, 9.53674316e-07, 9.53674316e-07, 1.90734863e-06])))\nE    +    where <function all at 0x705ad2185c30> = np.all\nE    +    and   array([0.00214577, 0.0004015 , 0.00038052, 0.        , 0.00064659,\\n       0.00054741, 0.        , 0.        , 0.000610... 0.00046062, 0.00052738, 0.00061417, 0.00047779,\\n       0.        , 0.00046539, 0.00039864, 0.00032806], dtype=float32) = abs((array([ 4.0151033,  5.23489  ,  5.992218 ,  6.4775777,  7.0731897,\\n        7.348765 ,  7.781398 ,  7.985717 ,  8.00667... 12.004237 , 12.272919 , 12.613298 , 12.964798 ,\\n       13.328361 , 13.723173 , 14.196926 , 16.437998 ], dtype=float32) - array([ 4.0129576,  5.2344885,  5.9918375,  6.4775777,  7.072543 ,\\n        7.3482175,  7.781398 ,  7.985717 ,  8.00606... 12.003777 , 12.272391 , 12.612684 , 12.96432  ,\\n       13.328361 , 13.722708 , 14.1965275, 16.43767  ], dtype=float32)))",
+      "tests/v025/b_phys/test_sfclay_pblh_wrf.py:71: in test_real_zero_pblh_surface_memory_matches_original\n    actual=values(out);check(actual,reference,inputs)\n                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\ntests/v025/b_phys/test_sfclay_pblh_wrf.py:48: in check\n    assert np.all(abs(actual['wspd']-reference['wspd'])<=4*spacing),'WRF WSPD >4 REAL32 ULP'\nE   AssertionError: WRF WSPD >4 REAL32 ULP\nE   assert np.False_\nE    +  where np.False_ = <function all at 0x705ad2185c30>(array([2.14561232e-03, 4.01802359e-04, 3.80061430e-04, 9.21571290e-08,\\n       6.46455990e-04, 5.48114298e-04, 1.852843...5.28216524e-04, 6.15215760e-04, 4.77625724e-04,\\n       4.38489254e-07, 4.64717789e-04, 3.98319590e-04, 3.27526899e-04]) <= (4 * array([4.76837158e-07, 4.76837158e-07, 4.76837158e-07, 4.76837158e-07,\\n       4.76837158e-07, 4.76837158e-07, 4.768371...9.53674316e-07, 9.53674316e-07, 9.53674316e-07,\\n       9.53674316e-07, 9.53674316e-07, 9.53674316e-07, 1.90734863e-06])))\nE    +    where <function all at 0x705ad2185c30> = np.all\nE    +    and   array([2.14561232e-03, 4.01802359e-04, 3.80061430e-04, 9.21571290e-08,\\n       6.46455990e-04, 5.48114298e-04, 1.852843...5.28216524e-04, 6.15215760e-04, 4.77625724e-04,\\n       4.38489254e-07, 4.64717789e-04, 3.98319590e-04, 3.27526899e-04]) = abs((array([ 4.01510319,  5.23489029,  5.99221756,  6.47757778,  7.0731896 ,\\n        7.3487656 ,  7.781398  ,  7.98571702, ...298385, 12.00423626, 12.27291954, 12.61329947, 12.96479781,\\n       13.328361  , 13.72317247, 14.1969258 , 16.43799728]) - array([ 4.0129576,  5.2344885,  5.9918375,  6.4775777,  7.072543 ,\\n        7.3482175,  7.781398 ,  7.985717 ,  8.00606... 12.003777 , 12.272391 , 12.612684 , 12.96432  ,\\n       13.328361 , 13.722708 , 14.1965275, 16.43767  ], dtype=float32)))"
+    ]
+  },
+  {
+    "family": "fence",
+    "nodes": [
+      "tests/v025/b_diff/test_theta_sum_fence.py::test_fence_is_a_barrier_on_f32_only"
+    ],
+    "rc": 1,
+    "tests": 1,
+    "failures": 1,
+    "errors": 0,
+    "killed": true,
+    "signatures": [
+      "tests/v025/b_diff/test_theta_sum_fence.py:33: in test_fence_is_a_barrier_on_f32_only\n    assert _barriers(op._real_theta_sum_fence, x32) == 1\nE   assert 0 == 1\nE    +  where 0 = _barriers(<function pytest_collection_modifyitems.<locals>.<lambda> at 0x7b1366983ce0>, Array([[[ 1.10725523e-03, -8.12428654e-04,  1.17866613e-03,\\n          6.31771109e-04,  5.78376930e-04, -7.31334614e-04...5, -5.26567863e-04,  1.85456080e-03,\\n         -1.49708183e-04,  1.18941045e-03, -2.34860141e-04]]],      dtype=float32))\nE    +    where <function pytest_collection_modifyitems.<locals>.<lambda> at 0x7b1366983ce0> = op._real_theta_sum_fence"
+    ]
+  }
+]

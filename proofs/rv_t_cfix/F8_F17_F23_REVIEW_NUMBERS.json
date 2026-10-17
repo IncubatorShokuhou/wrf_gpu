@@ -1,0 +1,190 @@
+{
+  "candidate": "2daaa8e6d31137c337374479057abd2dcd260eed",
+  "base": "50517329d8db7e5d321a995f4d45189c9fe1421e",
+  "platform": "cpu",
+  "gpu_executed": false,
+  "identity": {
+    "swiss": "f672a5739cb96e388b6b7a40ef80337bf81bdc14ef15268f3476e09d79fe055d",
+    "prod": "6fc715a2bd630934c4cf0f94427df19a527cbf429011c9ba5efe4d712744d27b"
+  },
+  "original_reference": [
+    {
+      "name": "mynn",
+      "fixture_byte_equal": false,
+      "fixture_sha256": "b031bf56a3fcc4eac5d51faea807ae754f9cd1aa0f9c45c89bb9b97f4f85be28",
+      "all_values_equal": true
+    },
+    {
+      "name": "gbm",
+      "fixture_byte_equal": false,
+      "fixture_sha256": "f8e948fe23e439f4a836e2e08e4a9b4df9090494c0542ec7f3626cb2012ca385",
+      "all_values_equal": true
+    }
+  ],
+  "mutants": {
+    "F8solve": {
+      "mutation": "F8solve",
+      "pytest_rc": 1,
+      "assertions": 1,
+      "errors": 0,
+      "skips": 0,
+      "genuine": true
+    },
+    "F8caller": {
+      "mutation": "F8caller",
+      "pytest_rc": 1,
+      "assertions": 1,
+      "errors": 0,
+      "skips": 0,
+      "genuine": true
+    },
+    "F17": {
+      "mutation": "F17",
+      "pytest_rc": 1,
+      "assertions": 1,
+      "errors": 0,
+      "skips": 0,
+      "genuine": true
+    },
+    "F23": {
+      "mutation": "F23",
+      "pytest_rc": 1,
+      "assertions": 1,
+      "errors": 0,
+      "skips": 0,
+      "genuine": true
+    }
+  },
+  "GBM_refresh": {
+    "order": [
+      "pbl",
+      "radiation"
+    ],
+    "pbl_rthraten": -3e-05,
+    "new_rthraten": -7e-05
+  },
+  "plume_accounting": {
+    "platform": "cpu",
+    "scope": "Unoptimized CPU JAXpr; count opaque plume calls/output buffer declarations. Not GPU allocations, device ops, timing or S1.",
+    "mp8": {
+      "pallas_calls": 1,
+      "declared_output_bytes": 32320,
+      "calls": [
+        {
+          "outputs": 13,
+          "output_bytes": 32320,
+          "interpret": true
+        }
+      ]
+    },
+    "Nc": {
+      "pallas_calls": 2,
+      "declared_output_bytes": 64640,
+      "calls": [
+        {
+          "outputs": 13,
+          "output_bytes": 32320,
+          "interpret": true
+        },
+        {
+          "outputs": 13,
+          "output_bytes": 32320,
+          "interpret": true
+        }
+      ]
+    },
+    "mp28": {
+      "pallas_calls": 4,
+      "declared_output_bytes": 129280,
+      "calls": [
+        {
+          "outputs": 13,
+          "output_bytes": 32320,
+          "interpret": true
+        },
+        {
+          "outputs": 13,
+          "output_bytes": 32320,
+          "interpret": true
+        },
+        {
+          "outputs": 13,
+          "output_bytes": 32320,
+          "interpret": true
+        },
+        {
+          "outputs": 13,
+          "output_bytes": 32320,
+          "interpret": true
+        }
+      ]
+    }
+  },
+  "sources": {
+    "src/gpuwrf/physics/bl_gbm.py": "355c7dadf938007360b9588409f70980194e340bad53d768aceb5fd3c926cd3a",
+    "src/gpuwrf/kernels/phys_mynn_numbers.py": "4a0089d84044dd63d584b5be9c3713c906a85f5596129422248d45cdb68c6691",
+    "src/gpuwrf/physics/mynn_edmf.py": "a0b72d9439d7d7ca0799651b1129462ee3302992d51dc0462adc8347ba7a2b61",
+    "src/gpuwrf/physics/noahmp_coupler.py": "486e96566706dc77a79100731c5c8b581168e6b85f1713d29293a6db156a9117",
+    "src/gpuwrf/runtime/operational_mode.py": "260898ac7915fcf1c54f71994460b428aa3c1a7040bf35f26572d19aadf98b19",
+    "proofs/t_cfix_pblmix/mynn_number_fixture.json": "31fabcc6b0b3948b22607547e8ed9b976cf1a46962ecdc13895dc4f638f025cd",
+    "proofs/t_cfix_pblmix/gbm_rthraten_fixture.json": "ba2fc3b3ec74c73d740b2a20cad81a118952611dbbfd7deaa11fa878d494871e"
+  },
+  "healthy_checks": 49,
+  "genuine_deletion_assertions": 4,
+  "product_red_assertions": 1,
+  "verdicts": {
+    "F8": "MERGE CPU correctness scope",
+    "F17": "FIX legacy GBM refresh order",
+    "F23": "MERGE implemented CPU hunks; QNSE SICE OPEN"
+  },
+  "healthy_xml": [
+    "PM01.xml",
+    "PM03.xml (11 healthy; two invalid dictionary-order assertions excluded)",
+    "PM03b.xml",
+    "PM09c-noah.xml",
+    "PM09d-ruc.xml",
+    "PM09d-ssib.xml"
+  ],
+  "excluded": {
+    "PM02": "private driver pathname only; all raw numerical bytes/digests equal",
+    "PM02b": "GBM builder clean-manifest ordering error; completed raw builds retained and assembled PM02c",
+    "PM03": "two reviewer dict-order assertions, corrected to set membership; ten other MYNN+GBM passes retained",
+    "PM04-swiss/PM04-prod": "rc0 despite caught FileNotFoundError; no hash/identity result; replaced by successful PM04b",
+    "PM09": "missing external cpu_pallas_interpret fixture",
+    "PM09b": "CPU guard import order; no JAX workload/test collected",
+    "PM09c-ruc/ssib": "reviewer MP sentinel failed to return precipitation tuple; rerun only these after repair"
+  },
+  "cleanup": "Detached snapshot, pristine build dirs, pytest scratch, identity scratch and own Python caches removed; GPUWRF_JAX_CACHE=0; no GPU execution.",
+  "F23_solver_reuse": {
+    "src/gpuwrf/physics/noahmp": {
+      "base_object": "953fb959964c051806608f959977b9416bc0afce",
+      "final_object": "953fb959964c051806608f959977b9416bc0afce",
+      "exact": true
+    },
+    "src/gpuwrf/physics/ruclsm.py": {
+      "base_object": "d9f74672ac4215720d088063583393c9c2e92688",
+      "final_object": "d9f74672ac4215720d088063583393c9c2e92688",
+      "exact": true
+    },
+    "src/gpuwrf/physics/lsm_ssib.py": {
+      "base_object": "bfd6b268b8a8088a248e48ef57af074515066f69",
+      "final_object": "bfd6b268b8a8088a248e48ef57af074515066f69",
+      "exact": true
+    },
+    "src/gpuwrf/physics/rrtmg_sw.py": {
+      "base_object": "ea9b1b1bac67bf17a499733d9310d78f3f96505e",
+      "final_object": "ea9b1b1bac67bf17a499733d9310d78f3f96505e",
+      "exact": true
+    },
+    "src/gpuwrf/coupling/ruc_surface_hook.py": {
+      "base_object": "4fab7c19b567d82f2811591d27dabacac897c4a8",
+      "final_object": "4fab7c19b567d82f2811591d27dabacac897c4a8",
+      "exact": true
+    },
+    "src/gpuwrf/coupling/ssib_surface_hook.py": {
+      "base_object": "9fe33a37b9c23a5215b297a6b88d144fdc77d068",
+      "final_object": "9fe33a37b9c23a5215b297a6b88d144fdc77d068",
+      "exact": true
+    }
+  }
+}

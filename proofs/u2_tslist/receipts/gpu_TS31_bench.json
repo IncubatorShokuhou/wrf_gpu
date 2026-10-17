@@ -1,0 +1,154 @@
+{
+  "backend": "gpu",
+  "device": "cuda:0",
+  "source": "<USER_HOME>/wrf_gpu2_lanes/u2-tslist/TS_GPU_snapshot",
+  "source_commit": "492468d4d32d5462cc29f22392a35216e8ef3c3b",
+  "source_sha256": {
+    "src/gpuwrf/timeseries/locations.py": "ac7f23ced564c170b67df29b59529efde29d0f9dce4f6cbf9ebd06f0cdc92d68",
+    "src/gpuwrf/timeseries/__init__.py": "8df58c35ba6406dfc5af68c51a1ead50750277f27c027255701723d2890cac91",
+    "src/gpuwrf/timeseries/export.py": "13d87ea3a8a54c659a020a08ffb4045b129907b9b7b47722906cdcef9d3a1512",
+    "src/gpuwrf/timeseries/sampling.py": "20755c1490e4b894520d0d6ff90b6534a96ed13d8d3387c586c1db475e9eb5e7",
+    "src/gpuwrf/timeseries/files.py": "76f45bd553e442a650a5026683977931032ec0d9637f84e2444495495672731f",
+    "src/gpuwrf/timeseries/runtime.py": "72bed9e10ca40233d9d699d321c446f114f61546219f31b6d3072aa608747ebc"
+  },
+  "work": "real Swiss42x42x44 dt18 4steps level5 tsbuf3 2inside+1outside station; release fast defaults",
+  "initialization_s": 69.18698192993179,
+  "off_first4_s": 162.9577817430254,
+  "on_first4_including_flush_s": 166.56348391994834,
+  "compiled_variants_after_first_on": 2,
+  "compiled_variants_after_flush": 2,
+  "files": {
+    "d01": {
+      "stations": 2,
+      "rows_per_station": 4,
+      "levels": 5,
+      "files": [
+        "<USER_HOME>/wrf_gpu2_lanes/u2-tslist/TS31_GPU/station_files/ctr.d01.TS",
+        "<USER_HOME>/wrf_gpu2_lanes/u2-tslist/TS31_GPU/station_files/ctr.d01.UU",
+        "<USER_HOME>/wrf_gpu2_lanes/u2-tslist/TS31_GPU/station_files/ctr.d01.VV",
+        "<USER_HOME>/wrf_gpu2_lanes/u2-tslist/TS31_GPU/station_files/ctr.d01.WW",
+        "<USER_HOME>/wrf_gpu2_lanes/u2-tslist/TS31_GPU/station_files/ctr.d01.PH",
+        "<USER_HOME>/wrf_gpu2_lanes/u2-tslist/TS31_GPU/station_files/ctr.d01.TH",
+        "<USER_HOME>/wrf_gpu2_lanes/u2-tslist/TS31_GPU/station_files/ctr.d01.QV",
+        "<USER_HOME>/wrf_gpu2_lanes/u2-tslist/TS31_GPU/station_files/ctr.d01.PR",
+        "<USER_HOME>/wrf_gpu2_lanes/u2-tslist/TS31_GPU/station_files/west.d01.TS",
+        "<USER_HOME>/wrf_gpu2_lanes/u2-tslist/TS31_GPU/station_files/west.d01.UU",
+        "<USER_HOME>/wrf_gpu2_lanes/u2-tslist/TS31_GPU/station_files/west.d01.VV",
+        "<USER_HOME>/wrf_gpu2_lanes/u2-tslist/TS31_GPU/station_files/west.d01.WW",
+        "<USER_HOME>/wrf_gpu2_lanes/u2-tslist/TS31_GPU/station_files/west.d01.PH",
+        "<USER_HOME>/wrf_gpu2_lanes/u2-tslist/TS31_GPU/station_files/west.d01.TH",
+        "<USER_HOME>/wrf_gpu2_lanes/u2-tslist/TS31_GPU/station_files/west.d01.QV",
+        "<USER_HOME>/wrf_gpu2_lanes/u2-tslist/TS31_GPU/station_files/west.d01.PR"
+      ]
+    }
+  },
+  "observer_regression": {
+    "theta": {
+      "max_abs": 0.0,
+      "rmse": 0.0,
+      "byte_equal": true
+    },
+    "u": {
+      "max_abs": 0.0,
+      "rmse": 0.0,
+      "byte_equal": true
+    },
+    "v": {
+      "max_abs": 0.0,
+      "rmse": 0.0,
+      "byte_equal": true
+    },
+    "w": {
+      "max_abs": 0.0,
+      "rmse": 0.0,
+      "byte_equal": true
+    },
+    "qv": {
+      "max_abs": 0.0,
+      "rmse": 0.0,
+      "byte_equal": true
+    },
+    "p_total": {
+      "max_abs": 0.0,
+      "rmse": 0.0,
+      "byte_equal": true
+    },
+    "ph_total": {
+      "max_abs": 0.0,
+      "rmse": 0.0,
+      "byte_equal": true
+    }
+  },
+  "resolved_work": {
+    "dt_s": 18.0,
+    "radiation_cadence_steps": 33,
+    "warm_start_step": 6,
+    "warm_steps": 16,
+    "warm_buffer_capacity": 16,
+    "mp": 8,
+    "land": 4
+  },
+  "matched_unprofiled_warm16_s": {
+    "off": [
+      0.051684344885870814,
+      0.05209057801403105,
+      0.05100916908122599,
+      0.052185069071128964,
+      0.054301803931593895,
+      0.050824577920138836,
+      0.0508218880277127,
+      0.05128417117521167,
+      0.05139391194097698
+    ],
+    "on": [
+      0.05203234707005322,
+      0.05147477309219539,
+      0.05162266385741532,
+      0.058127084048464894,
+      0.05427857395261526,
+      0.05191026604734361,
+      0.05196971702389419,
+      0.05493942997418344,
+      0.06227933499030769
+    ]
+  },
+  "matched_unprofiled_median_s": {
+    "off": 0.05139391194097698,
+    "on": 0.05203234707005322
+  },
+  "matched_on_over_off": 1.0124223882744994,
+  "compiled_memory": {
+    "off": {
+      "argument_size_in_bytes": 39547220,
+      "output_size_in_bytes": 37123740,
+      "temp_size_in_bytes": 224357968,
+      "alias_size_in_bytes": 37122388
+    },
+    "on": {
+      "argument_size_in_bytes": 39553578,
+      "output_size_in_bytes": 37130154,
+      "temp_size_in_bytes": 224358008,
+      "alias_size_in_bytes": 37128746
+    }
+  },
+  "device_memory_stats_cumulative_before_trace": {
+    "num_allocs": 9291,
+    "bytes_in_use": 279186432,
+    "peak_bytes_in_use": 714494720,
+    "largest_alloc_size": 268435456,
+    "bytes_limit": 25248645120,
+    "bytes_reserved": 0,
+    "peak_bytes_reserved": 0,
+    "largest_free_block_bytes": 0,
+    "pool_bytes": 1071644672,
+    "peak_pool_bytes": 1071644672
+  },
+  "matched_scope": "9 interleaved 16-step OFF/ON pairs, both outside CUDA profiler capture; same step-5 inputs and step6-21 work; compiled memory is full evolving forecast, cumulative device peak includes all variants",
+  "off_warm16_s": 0.06140541913919151,
+  "off_warm_s_per_own_step": 0.0038378386961994693,
+  "on_warm16_s": 0.09718290204182267,
+  "on_warm_s_per_own_step": 0.006073931377613917,
+  "timing_scope": "single short warm 16-step component sample; no S1 speedup claim or noise attribution",
+  "profile_scope": "cudaProfiler capture only around ON warm16; Nsight may inflate that component wall",
+  "scope": "CPU-WRF file/diagnostic parity is covered by tracked oracles; observer diff is GPU-vs-GPU regression only"
+}

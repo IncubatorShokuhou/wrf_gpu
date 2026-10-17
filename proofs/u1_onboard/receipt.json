@@ -1,0 +1,203 @@
+{
+  "schema": "GpuwrfOnboardingCPUQualification",
+  "schema_version": 1,
+  "lane": "u1-onboard",
+  "measured_source_commit": "3d14d4503900a711e162bc05841c4f70c615edac",
+  "src_tree": "9d9a2d146f9528b472bf220093a2aa841e1db2ea",
+  "status": "CPU_GFS_GATE_GREEN_GPU_PENDING",
+  "features": [
+    "quickstart region planning and bounded GFS retrieval",
+    "original WPS4.6/WRF4.7.1 real preprocessing",
+    "separate low-resolution geography helper",
+    "19-package constrained CUDA/JAX/Triton image",
+    "native ECMWF availability report with truthful refusal",
+    "12/16/24/32GiB inferred profiles"
+  ],
+  "tests": {
+    "onboarding_final": 30,
+    "shared_consumers": 249,
+    "final_composed_own_cli_verify": 53,
+    "mutant": "1 genuine AssertionError, 0 setup errors"
+  },
+  "regions": [
+    {
+      "region": "ON08-tenerife",
+      "grid": [
+        40,
+        40,
+        44
+      ],
+      "forcing_bytes": 1510991,
+      "forcing_times": [
+        0,
+        3
+      ],
+      "metgrid_levels": 34,
+      "real_files": [
+        {
+          "path": "<USER_HOME>/wrf_gpu2_lanes/u1-onboard/ON08-tenerife/wrfinput_d01",
+          "sha256": "c4d8b3f331ef00434761249a9616465f08474762c0a6d3988817687c67842410",
+          "times": [
+            "2026-10-12_00:00:00"
+          ],
+          "variables": 320
+        },
+        {
+          "path": "<USER_HOME>/wrf_gpu2_lanes/u1-onboard/ON08-tenerife/wrfbdy_d01",
+          "sha256": "846b3619a1cb969a7d1e55ebcdad165effd93b2920c7bbfe1357f6f320232749",
+          "times": [
+            "2026-10-12_00:00:00"
+          ],
+          "variables": 139
+        }
+      ],
+      "max_rss_kib": 255588,
+      "wall_clock": "0:41.43",
+      "source": "b2f03386b",
+      "gpu_execution": false
+    },
+    {
+      "region": "ON09-swiss",
+      "grid": [
+        40,
+        40,
+        44
+      ],
+      "forcing_bytes": 1972642,
+      "forcing_times": [
+        0,
+        3
+      ],
+      "metgrid_levels": 34,
+      "real_files": [
+        {
+          "path": "<USER_HOME>/wrf_gpu2_lanes/u1-onboard/ON09-swiss/wrfinput_d01",
+          "sha256": "9a3d6014f52491149ed46799e8f9aaa550980a88ca4abb34a4aa89dbba4d3914",
+          "times": [
+            "2026-10-12_00:00:00"
+          ],
+          "variables": 320
+        },
+        {
+          "path": "<USER_HOME>/wrf_gpu2_lanes/u1-onboard/ON09-swiss/wrfbdy_d01",
+          "sha256": "83290ca1bc8aa157ad93e9b0fdffdde859becb1bae94fb161bf21f19c1611419",
+          "times": [
+            "2026-10-12_00:00:00"
+          ],
+          "variables": 139
+        }
+      ],
+      "max_rss_kib": 253900,
+      "wall_clock": "3:29.26",
+      "source": "b2f03386b",
+      "gpu_execution": false
+    },
+    {
+      "region": "ON09-sydney",
+      "grid": [
+        40,
+        40,
+        44
+      ],
+      "forcing_bytes": 1731200,
+      "forcing_times": [
+        0,
+        3
+      ],
+      "metgrid_levels": 34,
+      "real_files": [
+        {
+          "path": "<USER_HOME>/wrf_gpu2_lanes/u1-onboard/ON09-sydney/wrfinput_d01",
+          "sha256": "e2201dddc637f4dcd63b604134ac900ecaa5cb692df048dc40b64a8c424158ea",
+          "times": [
+            "2026-10-12_00:00:00"
+          ],
+          "variables": 320
+        },
+        {
+          "path": "<USER_HOME>/wrf_gpu2_lanes/u1-onboard/ON09-sydney/wrfbdy_d01",
+          "sha256": "c72634b76654ed780f939e5babc312e599e1ea96f7cb77c7a008d0586525f74a",
+          "times": [
+            "2026-10-12_00:00:00"
+          ],
+          "variables": 139
+        }
+      ],
+      "max_rss_kib": 253316,
+      "wall_clock": "0:48.10",
+      "source": "b2f03386b",
+      "gpu_execution": false
+    }
+  ],
+  "container": {
+    "image": "wrfgpu-u1-onboard:handoff",
+    "image_id": "6ce39c254a38",
+    "software_pins": 19,
+    "cpu_end_to_end_seconds": 40.22734323795885,
+    "python_peak_rss_kib": 150344,
+    "max_individual_child_peak_rss_kib": 177048,
+    "jax_backend_initializations": 0,
+    "pushed": false,
+    "reuse": "ON27 exact CPU executables/tables/dependencies/GFS source; composed CLI additionally qualified in ON29/ON31"
+  },
+  "model_identity": {
+    "protected_blobs": 258,
+    "exact": true,
+    "trace_files": 229,
+    "trace_content_digest": "ebadb85420aa7932b7c2db65dfa0ea4067c9fd25612e78e6f2a42c47cab5fb7a",
+    "source_cache_fingerprint": "fca1ff1ab45d6fcd8a7932e5d33280dc74ff9d46d75ad7f5b79eceb603207f91",
+    "source_cache_fallback": false,
+    "default_cmd_run_ast_exact": true,
+    "swiss_release_jaxpr": "2bf12cb8 carried forward by exact-source validation reuse, not freshly measured"
+  },
+  "resources": {
+    "step_ops_added": 0,
+    "step_temporary_bytes_added": 0,
+    "basis": "exact model-source and traced-source closure identity",
+    "gpu_timing": "not measured",
+    "cli_startup_timing": "not measured",
+    "memory_profiles": "inferred from FINDINGS A58, not measured limits"
+  },
+  "ecmwf": [
+    {
+      "source": "ifs",
+      "status": "UNQUALIFIED_VTABLE",
+      "missing": [],
+      "index_sha256": "cf2a59ad3200f336f45efae88c13a72e550576a7cbb19e0008870f0202af75dc"
+    },
+    {
+      "source": "aifs",
+      "status": "MISSING_FIELDS",
+      "missing": [
+        "sd",
+        "soil_temperature_layer_3",
+        "soil_temperature_layer_4",
+        "soil_moisture_layer_3",
+        "soil_moisture_layer_4"
+      ],
+      "index_sha256": "dbf1ae49041cbfe1f6c540914645454489ca027c62311adc417dc236f608b2cd"
+    }
+  ],
+  "limits": [
+    "automatic IFS/AIFS preparation remains refused: incompatible/unqualified Vtable encoding and AIFS missing deep soil/snow",
+    "no GPU forecast, fresh-region fidelity, or consumer-card maximum measured",
+    "educational low-resolution geography; single root, no automatic nests"
+  ],
+  "gpu_plan": "<USER_HOME>/wrf_gpu2_lanes/u1-onboard/GPU_SMOKE_PLAN.json",
+  "artifact_root": "<USER_HOME>/wrf_gpu2_lanes/u1-onboard",
+  "evidence_sha256": {
+    "ON29-composed-tests.log": "91e86848df4c10815e6dd172b6f2d0cbea40a5cd45626b2e56d1e6c7c2ecef7f",
+    "ON31-composed/composed-gate.json": "c44ca4fba5e3a013fc1e969bde464a73ea48c22764587d2a28117c2715302594",
+    "ON18-container/container-gate.json": "cde819de8d466e0d88e3bac00ec8a0da9d0a1f587446ffcb89135ba946ba43ef",
+    "ON27-container-reuse.json": "9c9ce0a84bce1c8a02d97ac609b7e944d43050eb92347f350e51d321c4e5e4eb",
+    "ON26-live-source-check.json": "c3d5b79cf31baa8edcc920256547e7de5157a433e5b174085391c673656b7e63",
+    "ON22-vtable-probe.json": "a1ee45530a3bc9a006cc331e6ee8e462237a9907f6243e79d9b0fbebcaa3193a",
+    "ON19-geography-gate.json": "3eaa6c1f513535f327b7312003535c63e9b91e4312abe3d8f6e4a5f9464f85ab",
+    "ON25-cache-source-identity.json": "0928c51b0309acee6100bff4d4028338fc3abb1a86adf7b0719ed12a8e1898d1",
+    "ON10-mutant.log": "e0f75e2ed150ec4ca3fb8f3d6767d855ddd2d6b6260ce4dc38e84fe5e10684f9",
+    "ON11-shared-resume.log": "81f5bf1c3d63a840646d8c8d03ea68daf438a3ff20fbe4e62a884d09e604a4a2",
+    "ON05-resume-items.json": "64f3f9f2471cb439c0adac8d4631a9c930a827e67292edd030f0bec56333ea82",
+    "ON16-original-real-headers.json": "9671d75b725868eb9073a8a6d2fa209dbe79057ea9c2262d7262910751497bcf"
+  },
+  "accounting_correction": "earlier 20-package prose/hardcoded ON18 count corrected to actual 19; all constraints matched"
+}

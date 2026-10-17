@@ -1,0 +1,412 @@
+{
+  "schema": "main-mp-caller-source-audit-v1",
+  "main_commit": "ce35f684c0d8be4a82bad3963f3412d24f4f9924",
+  "generated_utc": "2026-10-14T13:25:24.087510+00:00",
+  "accepted_codes": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    21,
+    22,
+    24,
+    26,
+    28,
+    38,
+    40,
+    50,
+    51,
+    52,
+    53,
+    97
+  ],
+  "rows": [
+    {
+      "mp": 0,
+      "route": "disabled/passive",
+      "evidence": "src/gpuwrf/contracts/physics_registry.py:93",
+      "helper": "N/A",
+      "verdict": "PASSIVE",
+      "T_pi_qv": "No microphysics handoff."
+    },
+    {
+      "mp": 1,
+      "route": "kessler_adapter",
+      "evidence": "src/gpuwrf/coupling/scan_adapters.py:209",
+      "helper": "NONE; state.theta -> dry-TH kernel; direct replacement",
+      "verdict": "MISSING_PREP_AND_FINISH",
+      "T_pi_qv": "Positive qv: theta_m*pi is warmer than dry T; PII itself is (p/1e5)^(Rd/Cp); qv remains dry-air mixing ratio.",
+      "body_sha256": "6432f00c6c151c4c9cc1fb8aa5c46bc7d3f4b98f4651c77082421040cac7e5ab"
+    },
+    {
+      "mp": 2,
+      "route": "lin_adapter",
+      "evidence": "src/gpuwrf/coupling/scan_adapters.py:228",
+      "helper": "NONE; state.theta -> dry-TH kernel; direct replacement",
+      "verdict": "MISSING_PREP_AND_FINISH",
+      "T_pi_qv": "Positive qv: theta_m*pi is warmer than dry T; PII itself is (p/1e5)^(Rd/Cp); qv remains dry-air mixing ratio.",
+      "body_sha256": "510dad9779fdc94d849356bb4f69f8f204e09efeca24e2f8ce5bf226ef49d89f"
+    },
+    {
+      "mp": 3,
+      "route": "wsm3_adapter",
+      "evidence": "src/gpuwrf/coupling/scan_adapters.py:363",
+      "helper": "NONE; state.theta -> dry-TH kernel; direct replacement",
+      "verdict": "MISSING_PREP_AND_FINISH",
+      "T_pi_qv": "Positive qv: theta_m*pi is warmer than dry T; PII itself is (p/1e5)^(Rd/Cp); qv remains dry-air mixing ratio.",
+      "body_sha256": "56d18bcbbde84a70c32b1fae714ad9318d571e97a3bd50f26213b9e314b889be"
+    },
+    {
+      "mp": 4,
+      "route": "wsm5_adapter",
+      "evidence": "src/gpuwrf/coupling/scan_adapters.py:381",
+      "helper": "NONE; state.theta -> dry-TH kernel; direct replacement",
+      "verdict": "MISSING_PREP_AND_FINISH",
+      "T_pi_qv": "Positive qv: theta_m*pi is warmer than dry T; PII itself is (p/1e5)^(Rd/Cp); qv remains dry-air mixing ratio.",
+      "body_sha256": "ec47b1ce426a8c66cddb50a0db8121c5896a0ab0f1ac5c4236d6f92be1311ff1"
+    },
+    {
+      "mp": 5,
+      "route": "ferrier_adapter",
+      "evidence": "src/gpuwrf/physics/ferrier/adapter.py:8",
+      "helper": "_dry_theta_view + _theta_m_from_microphysics",
+      "verdict": "HANDOFF_PRESENT",
+      "T_pi_qv": "Dry TH/pi; vapor mixing ratio enters prepare_level, which uses q=vapor/(1+vapor), then finish_level returns q/(1-q).",
+      "body_sha256": "d576603595541d1516ea03ef43948287226dd378c0d4d5ca56a89769a38bddb7"
+    },
+    {
+      "mp": 6,
+      "route": "wsm6_adapter",
+      "evidence": "src/gpuwrf/coupling/scan_adapters.py:284",
+      "helper": "NONE; state.theta -> dry-TH kernel; direct replacement",
+      "verdict": "MISSING_PREP_AND_FINISH",
+      "T_pi_qv": "Positive qv: theta_m*pi is warmer than dry T; PII itself is (p/1e5)^(Rd/Cp); qv remains dry-air mixing ratio.",
+      "body_sha256": "df6ddb2bf55882faf35c963ba8ae20e81ea1bd5575e699f90d06e7f9ef7257eb"
+    },
+    {
+      "mp": 7,
+      "route": "goddard4ice_adapter",
+      "evidence": "src/gpuwrf/coupling/goddard4ice_adapter.py:8",
+      "helper": "_dry_theta_view + _theta_m_from_microphysics",
+      "verdict": "HANDOFF_PRESENT",
+      "T_pi_qv": "Dry TH, total pressure Pa, Exner, mixing-ratio qv; WRF phy_prep moist density.",
+      "body_sha256": "434b22393c82169f8e8e593c9051ab2370d3bf3f25a952fd276b9c27f5f66d31"
+    },
+    {
+      "mp": 8,
+      "route": "thompson_adapter",
+      "evidence": "src/gpuwrf/coupling/physics_couplers.py:1866",
+      "helper": "_dry_temperature_from_state -> T/pi -> _theta_m_from_microphysics",
+      "verdict": "HANDOFF_PRESENT",
+      "T_pi_qv": "Input T is dry theta*pi; pressure Pa; qv mixing ratio. Thompson-specific dry density is intentional.",
+      "body_sha256": "2f8145ce96f45817fe7e67ba2871d23444f28f61b236d0fb46b92817bd207baf"
+    },
+    {
+      "mp": 9,
+      "route": "milbrandt_adapter",
+      "evidence": "src/gpuwrf/physics/milbrandt2mom/adapter.py:13",
+      "helper": "manual REAL old_theta/(1+Rv/Rd*qv) + _theta_m_from_microphysics",
+      "verdict": "HANDOFF_PRESENT",
+      "T_pi_qv": "Explicit rounded REAL prep and T=theta*pi; returns dry T/pi before moist finish; no helper-name false positive.",
+      "body_sha256": "7ea11ed60c8f819f9aa44d52a0a8ba3a8950a358b775564754a3c4bf34cd9493"
+    },
+    {
+      "mp": 10,
+      "route": "morrison_adapter",
+      "evidence": "src/gpuwrf/coupling/scan_adapters.py:399",
+      "helper": "NONE; state.theta -> dry-TH kernel; direct replacement",
+      "verdict": "MISSING_PREP_AND_FINISH",
+      "T_pi_qv": "Positive qv: theta_m*pi is warmer than dry T; PII itself is (p/1e5)^(Rd/Cp); qv remains dry-air mixing ratio.",
+      "body_sha256": "443c8cee255e369d2c43b801cdfb72c96a7003076f242e10683744acd1ffa942"
+    },
+    {
+      "mp": 11,
+      "route": "not bound on this main snapshot",
+      "evidence": "src/gpuwrf/contracts/physics_registry.py:93; src/gpuwrf/coupling/physics_dispatch.py:149",
+      "helper": "N/A",
+      "verdict": "UNBOUND",
+      "T_pi_qv": "No operational State caller to audit; no implementation/fidelity claim."
+    },
+    {
+      "mp": 13,
+      "route": "sbu_ylin_adapter",
+      "evidence": "src/gpuwrf/coupling/scan_adapters.py:255",
+      "helper": "NONE; state.theta -> dry-TH kernel; direct replacement",
+      "verdict": "MISSING_PREP_AND_FINISH",
+      "T_pi_qv": "Positive qv: theta_m*pi is warmer than dry T; PII itself is (p/1e5)^(Rd/Cp); qv remains dry-air mixing ratio.",
+      "body_sha256": "45cdac1630fb7256b0961232af07b4e2eb39e5509be3cbe930b20a56f8061ecc"
+    },
+    {
+      "mp": 14,
+      "route": "wdm5_adapter",
+      "evidence": "src/gpuwrf/coupling/scan_adapters.py:449",
+      "helper": "NONE; state.theta -> dry-TH kernel; direct replacement",
+      "verdict": "MISSING_PREP_AND_FINISH",
+      "T_pi_qv": "Positive qv: theta_m*pi is warmer than dry T; PII itself is (p/1e5)^(Rd/Cp); qv remains dry-air mixing ratio.",
+      "body_sha256": "982e128321e736403bb4afa7009a27a2e807190a61f776f18072cd6f633be299"
+    },
+    {
+      "mp": 15,
+      "route": "ferrier_adapter",
+      "evidence": "src/gpuwrf/physics/ferrier/adapter.py:8",
+      "helper": "_dry_theta_view + _theta_m_from_microphysics",
+      "verdict": "HANDOFF_PRESENT",
+      "T_pi_qv": "Dry TH/pi; vapor mixing ratio enters prepare_level, which uses q=vapor/(1+vapor), then finish_level returns q/(1-q).",
+      "body_sha256": "d576603595541d1516ea03ef43948287226dd378c0d4d5ca56a89769a38bddb7"
+    },
+    {
+      "mp": 16,
+      "route": "wdm6_adapter",
+      "evidence": "src/gpuwrf/coupling/scan_adapters.py:484",
+      "helper": "_dry_theta_view + _theta_m_from_microphysics",
+      "verdict": "HANDOFF_PRESENT",
+      "T_pi_qv": "Dry TH; PII from total p; qv mixing ratio. FP64 island where registered; precision is not certified by this source audit.",
+      "body_sha256": "42588628c06b39a04fb677c2309bc8b7ef35983dad36a7e6759883ff80dd0d0d"
+    },
+    {
+      "mp": 17,
+      "route": "nssl2mom_adapter",
+      "evidence": "src/gpuwrf/physics/nssl2mom/adapter.py:39",
+      "helper": "_dry_theta_view + _temperature_from_theta(dry) + _theta_m_from_microphysics",
+      "verdict": "HANDOFF_PRESENT",
+      "T_pi_qv": "17 normalizes to18; 19/21 select one-moment variants; qv mixing ratio, total-density multiplier (1+qv) explicit.",
+      "body_sha256": "b0b2bceb843d75621215630251ffc167fefc13e53883b8db4d0d0325e1a1ebc2"
+    },
+    {
+      "mp": 18,
+      "route": "nssl2mom_adapter",
+      "evidence": "src/gpuwrf/physics/nssl2mom/adapter.py:39",
+      "helper": "_dry_theta_view + _temperature_from_theta(dry) + _theta_m_from_microphysics",
+      "verdict": "HANDOFF_PRESENT",
+      "T_pi_qv": "17 normalizes to18; 19/21 select one-moment variants; qv mixing ratio, total-density multiplier (1+qv) explicit.",
+      "body_sha256": "b0b2bceb843d75621215630251ffc167fefc13e53883b8db4d0d0325e1a1ebc2"
+    },
+    {
+      "mp": 19,
+      "route": "nssl2mom_adapter",
+      "evidence": "src/gpuwrf/physics/nssl2mom/adapter.py:39",
+      "helper": "_dry_theta_view + _temperature_from_theta(dry) + _theta_m_from_microphysics",
+      "verdict": "HANDOFF_PRESENT",
+      "T_pi_qv": "17 normalizes to18; 19/21 select one-moment variants; qv mixing ratio, total-density multiplier (1+qv) explicit.",
+      "body_sha256": "b0b2bceb843d75621215630251ffc167fefc13e53883b8db4d0d0325e1a1ebc2"
+    },
+    {
+      "mp": 20,
+      "route": "not bound on this main snapshot",
+      "evidence": "src/gpuwrf/contracts/physics_registry.py:93; src/gpuwrf/coupling/physics_dispatch.py:149",
+      "helper": "N/A",
+      "verdict": "UNBOUND",
+      "T_pi_qv": "No operational State caller to audit; no implementation/fidelity claim."
+    },
+    {
+      "mp": 21,
+      "route": "nssl2mom_adapter",
+      "evidence": "src/gpuwrf/physics/nssl2mom/adapter.py:39",
+      "helper": "_dry_theta_view + _temperature_from_theta(dry) + _theta_m_from_microphysics",
+      "verdict": "HANDOFF_PRESENT",
+      "T_pi_qv": "17 normalizes to18; 19/21 select one-moment variants; qv mixing ratio, total-density multiplier (1+qv) explicit.",
+      "body_sha256": "b0b2bceb843d75621215630251ffc167fefc13e53883b8db4d0d0325e1a1ebc2"
+    },
+    {
+      "mp": 22,
+      "route": "nssl2mom_adapter",
+      "evidence": "src/gpuwrf/physics/nssl2mom/adapter.py:39",
+      "helper": "_dry_theta_view + _temperature_from_theta(dry) + _theta_m_from_microphysics",
+      "verdict": "HANDOFF_PRESENT",
+      "T_pi_qv": "17 normalizes to18; 19/21 select one-moment variants; qv mixing ratio, total-density multiplier (1+qv) explicit.",
+      "body_sha256": "b0b2bceb843d75621215630251ffc167fefc13e53883b8db4d0d0325e1a1ebc2"
+    },
+    {
+      "mp": 24,
+      "route": "wsm7_adapter",
+      "evidence": "src/gpuwrf/coupling/scan_adapters.py:331",
+      "helper": "_dry_theta_view + _theta_m_from_microphysics",
+      "verdict": "HANDOFF_PRESENT",
+      "T_pi_qv": "Dry TH; PII from total p; qv mixing ratio. FP64 island where registered; precision is not certified by this source audit.",
+      "body_sha256": "e7d7b35dfaa9efc8850668af1ed6b5a02e9ad7fdaccb7c9a624cc5143830ab83"
+    },
+    {
+      "mp": 26,
+      "route": "wdm7_adapter",
+      "evidence": "src/gpuwrf/coupling/scan_adapters.py:524",
+      "helper": "_dry_theta_view + _theta_m_from_microphysics",
+      "verdict": "HANDOFF_PRESENT",
+      "T_pi_qv": "Dry TH; PII from total p; qv mixing ratio. FP64 island where registered; precision is not certified by this source audit.",
+      "body_sha256": "d14152fc96c093ea60d39c340cbb0c56ca2fbb7d08d8550ce25985292fdac2b9"
+    },
+    {
+      "mp": 28,
+      "route": "thompson_aero_adapter",
+      "evidence": "src/gpuwrf/coupling/physics_couplers.py:2118",
+      "helper": "_dry_temperature_from_state -> T/pi -> _theta_m_from_microphysics",
+      "verdict": "HANDOFF_PRESENT",
+      "T_pi_qv": "Input T is dry theta*pi; pressure Pa; qv mixing ratio. Thompson-specific dry density is intentional.",
+      "body_sha256": "42d749d7923c002e1c1509e6a792ec36d1852576eb3dcbfff0fc586891824093"
+    },
+    {
+      "mp": 30,
+      "route": "not bound on this main snapshot",
+      "evidence": "src/gpuwrf/contracts/physics_registry.py:93; src/gpuwrf/coupling/physics_dispatch.py:149",
+      "helper": "N/A",
+      "verdict": "UNBOUND",
+      "T_pi_qv": "No operational State caller to audit; no implementation/fidelity claim."
+    },
+    {
+      "mp": 32,
+      "route": "not bound on this main snapshot",
+      "evidence": "src/gpuwrf/contracts/physics_registry.py:93; src/gpuwrf/coupling/physics_dispatch.py:149",
+      "helper": "N/A",
+      "verdict": "UNBOUND",
+      "T_pi_qv": "No operational State caller to audit; no implementation/fidelity claim."
+    },
+    {
+      "mp": 38,
+      "route": "thompson_hail_adapter",
+      "evidence": "src/gpuwrf/coupling/thompson_hail_adapter.py:5",
+      "helper": "_dry_theta_view + T=th*pi + _theta_m_from_microphysics",
+      "verdict": "HANDOFF_PRESENT",
+      "T_pi_qv": "Dry T; total pressure Pa; mixing-ratio vapor; Thompson-specific dry rho.",
+      "body_sha256": "74731c578d66e411ab7c2bd99519a093c8d8cfdbd79b7265d0b5b31ce61e027b"
+    },
+    {
+      "mp": 40,
+      "route": "morrison_aero_adapter",
+      "evidence": "src/gpuwrf/coupling/scan_adapters.py:418",
+      "helper": "_dry_theta_view + _theta_m_from_microphysics",
+      "verdict": "HANDOFF_PRESENT",
+      "T_pi_qv": "Dry TH; PII from total p; qv mixing ratio. FP64 island where registered; precision is not certified by this source audit.",
+      "body_sha256": "4b83a3d3dea6d1ca9cc19ebb7854cdd7d375446db5b265c1522dcbd2828e3696"
+    },
+    {
+      "mp": 50,
+      "route": "p3_adapter",
+      "evidence": "src/gpuwrf/physics/p3/adapter.py:22",
+      "helper": "_dry_theta_view + _theta_m_from_microphysics",
+      "verdict": "HANDOFF_PRESENT",
+      "T_pi_qv": "Dry current TH and dry TH_OLD history; kernel T=TH*pi, P inPa, qv mixing ratio. Source audit does not qualify compiled math.",
+      "body_sha256": "e503a5f6166de927ab7df0844ba6e3ed82d4ac7d156ed2855c7ab89fa12224b7"
+    },
+    {
+      "mp": 51,
+      "route": "p3_adapter",
+      "evidence": "src/gpuwrf/physics/p3/adapter.py:22",
+      "helper": "_dry_theta_view + _theta_m_from_microphysics",
+      "verdict": "HANDOFF_PRESENT",
+      "T_pi_qv": "Dry current TH and dry TH_OLD history; kernel T=TH*pi, P inPa, qv mixing ratio. Source audit does not qualify compiled math.",
+      "body_sha256": "e503a5f6166de927ab7df0844ba6e3ed82d4ac7d156ed2855c7ab89fa12224b7"
+    },
+    {
+      "mp": 52,
+      "route": "p3_adapter",
+      "evidence": "src/gpuwrf/physics/p3/adapter.py:22",
+      "helper": "_dry_theta_view + _theta_m_from_microphysics",
+      "verdict": "HANDOFF_PRESENT",
+      "T_pi_qv": "Dry current TH and dry TH_OLD history; kernel T=TH*pi, P inPa, qv mixing ratio. Source audit does not qualify compiled math.",
+      "body_sha256": "e503a5f6166de927ab7df0844ba6e3ed82d4ac7d156ed2855c7ab89fa12224b7"
+    },
+    {
+      "mp": 53,
+      "route": "p3_adapter",
+      "evidence": "src/gpuwrf/physics/p3/adapter.py:22",
+      "helper": "_dry_theta_view + _theta_m_from_microphysics",
+      "verdict": "HANDOFF_PRESENT",
+      "T_pi_qv": "Dry current TH and dry TH_OLD history; kernel T=TH*pi, P inPa, qv mixing ratio. Source audit does not qualify compiled math.",
+      "body_sha256": "e503a5f6166de927ab7df0844ba6e3ed82d4ac7d156ed2855c7ab89fa12224b7"
+    },
+    {
+      "mp": 54,
+      "route": "not bound on this main snapshot",
+      "evidence": "src/gpuwrf/contracts/physics_registry.py:93; src/gpuwrf/coupling/physics_dispatch.py:149",
+      "helper": "N/A",
+      "verdict": "UNBOUND",
+      "T_pi_qv": "No operational State caller to audit; no implementation/fidelity claim."
+    },
+    {
+      "mp": 55,
+      "route": "not bound on this main snapshot",
+      "evidence": "src/gpuwrf/contracts/physics_registry.py:93; src/gpuwrf/coupling/physics_dispatch.py:149",
+      "helper": "N/A",
+      "verdict": "UNBOUND",
+      "T_pi_qv": "No operational State caller to audit; no implementation/fidelity claim."
+    },
+    {
+      "mp": 56,
+      "route": "not bound on this main snapshot",
+      "evidence": "src/gpuwrf/contracts/physics_registry.py:93; src/gpuwrf/coupling/physics_dispatch.py:149",
+      "helper": "N/A",
+      "verdict": "UNBOUND",
+      "T_pi_qv": "No operational State caller to audit; no implementation/fidelity claim."
+    },
+    {
+      "mp": 95,
+      "route": "not bound on this main snapshot",
+      "evidence": "src/gpuwrf/contracts/physics_registry.py:93; src/gpuwrf/coupling/physics_dispatch.py:149",
+      "helper": "N/A",
+      "verdict": "UNBOUND",
+      "T_pi_qv": "No operational State caller to audit; no implementation/fidelity claim."
+    },
+    {
+      "mp": 97,
+      "route": "goddard_adapter",
+      "evidence": "src/gpuwrf/coupling/scan_adapters.py:303",
+      "helper": "NONE; state.theta -> dry-TH kernel; direct replacement",
+      "verdict": "MISSING_PREP_AND_FINISH",
+      "T_pi_qv": "Positive qv: theta_m*pi is warmer than dry T; PII itself is (p/1e5)^(Rd/Cp); qv remains dry-air mixing ratio.",
+      "body_sha256": "2e34b956e1099ed80e69d2c329bc3e43776566ddb120f7ba6ab0134910589492"
+    }
+  ],
+  "summary": {
+    "active": 29,
+    "passive": 1,
+    "missing_thermo_boundary": 9,
+    "handoff_present": 20,
+    "requested_unbound": 8
+  },
+  "source_sha256": {
+    "src/gpuwrf/contracts/physics_registry.py": "23b628fb9de52ca730c9be0a48e4aef17c50ac652644906b0df27d06e8680a9b",
+    "src/gpuwrf/coupling/physics_dispatch.py": "7b41e7cf0a8017075a226fd3ccacfcbd01ea04ebdb40980e2f3443ab53d2925f",
+    "src/gpuwrf/coupling/scan_adapters.py": "ef0464950242336c81c6a85ece55d92cc521a36c155cf2b178a9ca6fa13b27d2",
+    "src/gpuwrf/coupling/physics_couplers.py": "d0e47d8c3e4c6d31b6871ebe8f1a964681f3d40b49d6b4d5ea86ee408f864195",
+    "src/gpuwrf/physics/ferrier/adapter.py": "474819e2c922cc0defb895e89a85b405288d0ac101c76fbe13524a9d248bf2a6",
+    "src/gpuwrf/coupling/goddard4ice_adapter.py": "41aea88a4fb8622cd0469b22ce590996c00d293761784a3cd8621319afaab671",
+    "src/gpuwrf/physics/milbrandt2mom/adapter.py": "fed7161e7ed0a43a0e1148e577e84b2977d41cb509f36857c6e29265858c6779",
+    "src/gpuwrf/physics/nssl2mom/adapter.py": "578ba24c32d52df37998da2a66d37a15979561eabc9b7c08c9fac2a859fac12a",
+    "src/gpuwrf/coupling/thompson_hail_adapter.py": "0e1155f0cbfd5d5fe2db89bac19fe3d2be3871846adfee0d9e6ad0175fa15353",
+    "src/gpuwrf/physics/p3/adapter.py": "7320dfe82153a4d97d8d82458f5de81eb4cc634c0d2ee7e0c95b81b990cbeb3b",
+    "src/gpuwrf/runtime/operational_mode.py": "3bbaea40204cf67a701e082dd1aad95d1e657f9b82fa20e77f173325ca9db9ee",
+    "src/gpuwrf/physics/ferrier/column.py": "3a8bb4d04629817083b8c2c59e25d577200e2ec3ced80e939c4c264c10818f07",
+    "src/gpuwrf/physics/p3/column.py": "39158e96901be58174cb9b9b673a4a84ee34933f99632b10c6c1ad6e34ad231f",
+    "src/gpuwrf/physics/thompson_column.py": "57aac49fb214216ad1b68a01e9fdfa48e9141ce1dac36d1f3947720c97c9e1bd",
+    "src/gpuwrf/physics/microphysics_kessler.py": "5d516763da5b33e20d8125ec7a5dd60fbf8345130c8418933eb8866c845aaeed",
+    "src/gpuwrf/physics/microphysics_lin.py": "8b63d2982fb38d8bf3e895317e5989e57c7f2f0e97833ff39438234665e02677",
+    "src/gpuwrf/physics/microphysics_wsm3.py": "8461c54d62f325e0952455cc9608a4415a353170d9dc54b6ac0a53aa8f685fbd",
+    "src/gpuwrf/physics/microphysics_wsm5.py": "9e69a43679eb95c4ddd03aa7dbc84b79257d35a777cde651c455a7fceb3a2180",
+    "src/gpuwrf/physics/microphysics_wsm6.py": "2d1894625801b6e454863a87f7927de13a0a7841331bb41394791b251441f4f7",
+    "src/gpuwrf/physics/microphysics_morrison.py": "760526d346e4b3e5aec2ec3d7ed102d5e405243c0c62ad7e888a37fa58a1e7a5",
+    "src/gpuwrf/physics/microphysics_sbu_ylin.py": "7f914ac7b9bf939a2987f3cc8817258f659a6c1f5fb3e4ad293672fceb50e498",
+    "src/gpuwrf/physics/microphysics_wdm5.py": "8ec9abbe09f2e4fb60d585f34e6071aad96f0d8d1aa1214b03dcc4167b187889",
+    "src/gpuwrf/physics/microphysics_goddard.py": "0326b1cc9917cbd083fdb7bba86bb847a45dea5827a64670ce09bceee1fc2a4b"
+  },
+  "qualification": "SOURCE AUDIT ONLY; no new oracle/GPU/trajectory qualification",
+  "secondary_suspects": [
+    "Generic _rho_from_state uses Thompson dry density (physics_couplers:1579/1587, thompson_column:447/450); legacy rho-argument schemes should be checked against WRF phy_prep rho=(1+qv)/ALT (:4856). This includes helpers-present WDM16/WSM24/WDM26; separate from proven missing theta boundaries.",
+    "Goddard97 goddard_run hardcodes zsfc=0 at microphysics_goddard:852-853, analogous to independently proven Lin terrain bug; no change here."
+  ],
+  "route_coverage": "physics_registry + physics_dispatch + MP_SCAN_ADAPTERS + operational post-RK/pre-RK special branches; alternate Thompson callers share the same conversion adapter",
+  "fp64_island": "dtype widening only; does not repair any missing thermodynamic conversion",
+  "fix_scope": "Only Lin fixed in lane/t-c03rain; other rows remain unchanged for manager assignment"
+}

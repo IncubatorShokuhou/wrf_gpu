@@ -80,8 +80,19 @@ def _harness(tmp_path, per_shape_census, *, repeats=1, fail_shapes=()):
         shape = path.name.split("_")[1]
         return per_shape_census[shape]
 
-    obj = sweep.run_sweep(out=tmp_path / "sweep.json", raw_dir=tmp_path / "raw",
-                          repeats=repeats, launch=launch, read_census=read)
+    # Launch and census are stubs. Small private input bytes exercise the real
+    # file/hash preflight without depending on deleted external forecast files.
+    shapes = {}
+    for shape, spec in sweep.SHAPES.items():
+        root = tmp_path / "synthetic_inputs" / shape
+        root.mkdir(parents=True, exist_ok=True)
+        for role in ("previous", "snapshot"):
+            (root / spec[role]).write_bytes(f"shape-sweep unit input {shape} {role}".encode())
+        shapes[shape] = dict(spec, run_dir=str(root))
+    with pytest.MonkeyPatch.context() as patch:
+        patch.setattr(sweep, "SHAPES", shapes)
+        obj = sweep.run_sweep(out=tmp_path / "sweep.json", raw_dir=tmp_path / "raw",
+                             repeats=repeats, launch=launch, read_census=read)
     return obj, launched
 
 

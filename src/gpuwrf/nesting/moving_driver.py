@@ -407,6 +407,10 @@ _CARRY_FAIL_CLOSED_SUBTREES = (
     "ruc_land",
     "cumulus_carry",
     "base_state",
+    "fdda",  # grid_fdda=1 analysis pair + held rates are grid-fixed (no moving-nest shift)
+    "urban_slucm",  # sf_urban_physics=1 urban canopy state is grid-fixed (no moving-nest shift)
+    "urban_bep",  # compact urban index map is grid-fixed; moving-nest relocation unsupported
+    "cu_forcing",  # cu 3/5/6/16/93 held RTHFTEN/RQVFTEN pair is grid-fixed (no moving-nest shift)
 )
 
 

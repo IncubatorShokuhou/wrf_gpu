@@ -1,0 +1,255 @@
+{
+  "schema": "t-p3mp53-qualification-v1",
+  "created_utc": "2026-10-15T09:47:40.541036+00:00",
+  "disposition": "READY_FOR_CRITIC: MP53 compile fix and complete c24 frozen-D6/E41 gate",
+  "source": "38d00155289902b9ff6a3b5a28c5c3872f27fdc8",
+  "objective": "remove MP53 compile stall without arithmetic changes",
+  "mechanism": "MP53-scoped typed PTX I/O, four warps and bool singleton reshape; existing MP52 route unchanged",
+  "CPU": {
+    "BYTE_field_frames": 66,
+    "BYTE_values": 20136,
+    "steps": 3,
+    "columns": 8,
+    "levels": 44,
+    "focused_pass": 108,
+    "deselected_unrelated_archive": 1,
+    "real_mutant_assertions": 1,
+    "setup_errors_corrected_arm": 0,
+    "earlier_setup_refusal_not_kill": true
+  },
+  "native_component": {
+    "compile_s": 9.49422675200185,
+    "lower_s": 2.6919125780041213,
+    "REG": 255,
+    "STACK": 48,
+    "scope": "CPU captured target isolated prescreen, not actual GPU"
+  },
+  "actual_GPU": {
+    "cold_qualification_wall_s": 431.920179474997,
+    "sampled_process_peak_vram_mib": 5376,
+    "hours": 24,
+    "frames": 25,
+    "steps": 4800,
+    "platform": "gpu",
+    "native_P3": {
+      "kernel": "p3_mp53_column",
+      "regs": 241,
+      "stack": 0,
+      "shared": 1024,
+      "local": 0,
+      "sass": 13824,
+      "calls": 10,
+      "callees": 2,
+      "stl": 0,
+      "callee_rows": [
+        {
+          "function": "p3_mp53_column",
+          "target_pc": 218896,
+          "instructions": 23,
+          "nested_calls": 0
+        },
+        {
+          "function": "p3_mp53_column",
+          "target_pc": 219264,
+          "instructions": 104,
+          "nested_calls": 0
+        }
+      ],
+      "nonleaf_over1k": [],
+      "callgraph_unknown": [],
+      "callgraph_status": "PASS"
+    },
+    "E41": {
+      "gate": "PASS",
+      "entries": 2,
+      "coverage": {
+        "status": "PASS",
+        "aot_programs": [
+          "d01"
+        ],
+        "required_run_programs": [
+          "d01"
+        ],
+        "run_proofs": [
+          "<USER_HOME>/wrf_gpu2_lanes/t-p3mp53/MP5312/c24/gpu_proof/nested_pipeline_run.json"
+        ],
+        "n_discovered": 2,
+        "n_scanned": 2
+      }
+    }
+  },
+  "fidelity": {
+    "scope": "actual MP53 GPU vs original ZERO CPU-WRF, frozen D6",
+    "source": "38d00155289902b9ff6a3b5a28c5c3872f27fdc8",
+    "gpu_receipt_sha256": "c276391d026b65c71680e05da4802cb403b4d1b805a08cc95f257b60bf8ca174",
+    "zero_receipt_sha256": "a30f63b92f389f8ed2a6bdf983248b67a631c5b782255f76c073b548cb423761",
+    "zero_executable_sha256": "9a67a93dd891115c095f64a95ce8f50e7ff0942ef1abf4185faf20bd7065742a",
+    "manifest_sha256": "9df4fab8514523286f07b127eb8bf57a7545459c4448fef721ac44c0ecc351dc",
+    "score_source_sha256": "4c025af8382c9626e7f7e0de1e888a91bd0270376f5c837431d1000c70c2c21d",
+    "tool_sha256": {
+      "scripts/compare_wrfout_grid.py": "5d87d80c8bc50372ce6699ee23163d1e1ba1a253c9fd91b43a2ecf40aa7f1dfd",
+      "proofs/v014/grid_delta_atlas/tolerance_manifest_candidate.json": "9df4fab8514523286f07b127eb8bf57a7545459c4448fef721ac44c0ecc351dc",
+      "proofs/v040/final_validation/score.py": "4c025af8382c9626e7f7e0de1e888a91bd0270376f5c837431d1000c70c2c21d"
+    },
+    "wall_s": 23.08620348599652,
+    "verdict": "PASS",
+    "paired_frames": 25,
+    "bounded_misses": 0,
+    "nonfinite": 0,
+    "missing": []
+  },
+  "default_ids": {
+    "EXACT": true,
+    "source": "29f4a42156b37a6a294edae73b9262d881b34d97",
+    "ids": {
+      "swiss": "f672a5739cb96e388b6b7a40ef80337bf81bdc14ef15268f3476e09d79fe055d",
+      "prod": "6fc715a2bd630934c4cf0f94427df19a527cbf429011c9ba5efe4d712744d27b"
+    }
+  },
+  "source_reuse": {
+    "measured_GPU_source": "38d00155289902b9ff6a3b5a28c5c3872f27fdc8",
+    "final_proof_parent": "c2b559ca3068c4732a27cf4d9cf4b65c37ccb388",
+    "product_trees_BYTE": {
+      "src": "b2a6d99a91acbf943053763a9779fa6db39c85a9",
+      "data": "a91a7fbcc850486e65e257c0d0f185a18c6e58c2",
+      "pyproject.toml": "6c5fdcd3ddc730c8c75c556379abb8d1162ed8c3"
+    },
+    "status": "exact source/data/packaging identity; no numerical repeats"
+  },
+  "performance_memory": {
+    "extra_runtime_costs": "typed vector output atomic exchange and four-warps geometry; actual REG241 STACK0 STL0; native/shared1024 bytes",
+    "no_added_launches": true,
+    "no_added_global_buffers": true,
+    "no_in_step_host_transfers_added": true,
+    "timing_scope": "one cold shared-CPU/IO qualification; not S1 warm speedup or R1/R2 claim"
+  },
+  "open_risks": [
+    "F2 negative phase visits remain unattributed to original WRF; extra P3 species pre-mask coverage not established",
+    "Original-WRF MYNN uninitialized RMOL sensitivity and ZERO convention disclosure retained; no threshold/reference modification",
+    "Private Pallas/Triton/PTX APIs qualified on this CUDA SM120 stack only"
+  ],
+  "F2_summary": {
+    "d01": {
+      "negative_phase_visits": 17951617,
+      "interior_phase_visits": 15623747,
+      "nonfinite_phase_visits": 0,
+      "tracked_fields": [
+        "Nc",
+        "Ng",
+        "Nh",
+        "Ni",
+        "Nn",
+        "Nr",
+        "Ns",
+        "nifa",
+        "nwfa",
+        "qc",
+        "qg",
+        "qi",
+        "qr",
+        "qs",
+        "qv"
+      ],
+      "unattributed_to_original_WRF": true,
+      "extra_P3_species_coverage": "QZI/QIR/BIR pre-mask coverage not established by these core-species records",
+      "status": "OPEN; frozen-D6 qualification does not close global F2"
+    }
+  },
+  "sealed_receipts": {
+    "proofs/t_p3mp53/receipts/ACTUAL_E41.json": "7dec0db02a09fd04d4648ca34f4d1a46d8578c5e991949483e01b8f387b25823",
+    "proofs/t_p3mp53/receipts/ACTUAL_P3_ELF.json": "f87033f7bf6adc235f33a24f8d202907c1d7ad801d899642f249cd543d38b5c1",
+    "proofs/t_p3mp53/receipts/ACTUAL_P3_RESOURCES.json": "16924997ba4f6513bbe7d0793cd1be10e81c6f84b51d52300802402c6f2c537f",
+    "proofs/t_p3mp53/receipts/CONTROL_TESTS.xml": "6d0424d8bce0d6b81e8f239ab1e15449603836285942cfbbee9561323cb9a5ae",
+    "proofs/t_p3mp53/receipts/CPU_BYTE.json": "a7e82ae1cb5fd597d2c14ed773d6d976d6aeb24ee10e7de559e60cacf0986e18",
+    "proofs/t_p3mp53/receipts/CPU_CLEANUP.json": "85ec1ac14598ec3ad673e2dbc6c8b064128f6abcd1dd3fb41f3c13aa8c9109a6",
+    "proofs/t_p3mp53/receipts/D6_ZERO.json": "382aa784900ef8c4dc753303ca2fa5c8c5e4520ee13ddcd1b776b9b071381450",
+    "proofs/t_p3mp53/receipts/DEFAULT_IDS.json": "7f964dd33965712662f289592c163b1bb8d6ae53265edf8d6e926491618c7d3c",
+    "proofs/t_p3mp53/receipts/F2_DISCLOSURE.json": "39674f7110a9a08dfa446cd998e37c9134ec0cb0873ce531dac22dd4149c395b",
+    "proofs/t_p3mp53/receipts/GPU_ADMISSION.json": "3528f0d671099def5b2fcf76bcd50f1e091232f196d7acbd0648ad66093b94e3",
+    "proofs/t_p3mp53/receipts/GPU_CACHE_CLEANUP.json": "f489f0cd3465fe66cbf085ee1f692aee07a8cd2a980a9db5519010d401f2da8e",
+    "proofs/t_p3mp53/receipts/GPU_FRAMES.json": "9ca7a835e573fb6fa1149d867a086b0b39c730078a94e3c9ce9166f8166e0e7a",
+    "proofs/t_p3mp53/receipts/GPU_RUN.json": "c276391d026b65c71680e05da4802cb403b4d1b805a08cc95f257b60bf8ca174",
+    "proofs/t_p3mp53/receipts/HOST_MEMORY_SAMPLES.jsonl": "b90e71483a88bd92f1c0c8edd535be511d29b2fde6577fec612cda2b1b3192d5",
+    "proofs/t_p3mp53/receipts/MUTANT.xml": "398bb7fa7afcca0540f12175fba0d24c8ad87a911cefa636096e791a1c467862",
+    "proofs/t_p3mp53/receipts/MUTANT_ASSERTION.txt": "a6ce2cf84106954c8a635f498bb2d9e5944c98906f9295e938e44f35d0397faa",
+    "proofs/t_p3mp53/receipts/MUTANT_SETUP_REFUSAL.txt": "ac27b03856bd3a7833ae22dd747e576d7cb17a3202cb7f33c961108235ea1ced",
+    "proofs/t_p3mp53/receipts/NATIVE_COMPONENT.json": "649cc336c9fbc3ad740168008f36109bbed288abb0a15e96924a3ae55475b41b",
+    "proofs/t_p3mp53/receipts/PASS_TRACE.txt": "46b209399f3091775aa4266c686fb566a4e20870044edaf113f37a21ce363e2b",
+    "proofs/t_p3mp53/receipts/PINS.json": "b7f554655e9f68bcc2e5d7d806a4a8e2e61ac223cd7c8a53f292b2ca3592a98c",
+    "proofs/t_p3mp53/receipts/SOURCE_BYTE.json": "3bba292b2ff0474e96c02328f402030e57754a194d4067f6fbbe3399f0815236",
+    "proofs/t_p3mp53/receipts/CLEANUP.json": "219e9618c9a624ca0f31e3bea5327992ac93cacb0195720de28609b4c9de1a32"
+  },
+  "raw_artifacts": {
+    "<USER_HOME>/wrf_gpu2_lanes/t-p3mp53/MP5314/D6_d01.json": {
+      "bytes": 5928522,
+      "sha256": "6294ead8fb058fdf6a29364f43d7edd7af0ab3d904c9633b1672770ea3cd1156"
+    },
+    "<USER_HOME>/wrf_gpu2_lanes/t-p3mp53/MP5314/compare_d01.json": {
+      "bytes": 6477167,
+      "sha256": "6f3542c234c738e6864c0758aa2b7f34d8e3c9067ca05050163818513e0c5d60"
+    },
+    "<USER_HOME>/wrf_gpu2_lanes/t-p3mp53/MP5312-gpu.log": {
+      "bytes": 24252,
+      "sha256": "6ff20f713d316b455e3869cf5aaefe72d885897a4ac6174f30a0a42d816e2835"
+    },
+    "<USER_HOME>/wrf_gpu2_lanes/t-p3mp53/MP5314-score.log": {
+      "bytes": 1362,
+      "sha256": "93c5ea6eb777bf0cb0060f9a198849945d0f89a623363f71bcf745ea2f5b4d62"
+    },
+    "<USER_HOME>/wrf_gpu2_lanes/t-p3mp53/MP5310/native.cubin": {
+      "bytes": 1577784,
+      "sha256": "220f69391d1ab8363c0a0bedc31c6552666e473eb2456c73e9919b16693846b8"
+    },
+    "<USER_HOME>/wrf_gpu2_lanes/t-p3mp53/MP5313-scan.log": {
+      "bytes": 482,
+      "sha256": "c95edb1576ef95ff8a38dec87a9b85db61a3d7caba3c22aeb9528fbcdd540daa"
+    },
+    "<USER_HOME>/wrf_gpu2_lanes/t-p3mp53/MP5301/receipt.json": {
+      "bytes": 916,
+      "sha256": "7be66a4ede6f1a8ac8400412618b6b8dcecfd8566e1ff80ff4d25886f9703b92"
+    },
+    "<USER_HOME>/wrf_gpu2_lanes/t-p3mp53/MP5302_passes.log": {
+      "bytes": 317,
+      "sha256": "5948ecbe9fcfdd0f044f54ff98f82c5b0f9dac863fb582987de2b4e6df73f955"
+    },
+    "<USER_HOME>/wrf_gpu2_lanes/t-p3mp53/MP5309/report.json": {
+      "bytes": 1125,
+      "sha256": "3e9160d021c4b185d95f29c5ecad9ea5e54dd567cb87bf634e57b1291aa9db2a"
+    },
+    "<USER_HOME>/wrf_gpu2_lanes/t-p3mp53/MP5307_ERROR.json": {
+      "bytes": 5252,
+      "sha256": "17f92f9cbe1bd0e5f90b296f555c038857ad7721953d1871bb728a96cf7297b5"
+    },
+    "<USER_HOME>/wrf_gpu2_lanes/t-p3mp53/MP5304_ERROR.json": {
+      "bytes": 5252,
+      "sha256": "e23307f4c7ca6a277347c5a807c84dbf6b1f4c4672500f9a70ad679a172760e3"
+    },
+    "<USER_HOME>/wrf_gpu2_lanes/t-p3mp53/MP5308_ERROR.json": {
+      "bytes": 7001,
+      "sha256": "bead8c1fc519daefe4a55bdec1f5a127659fe893caaa64429264fd3f24f2f90e"
+    },
+    "<USER_HOME>/wrf_gpu2_lanes/t-p3mp53/MP5306_ERROR.json": {
+      "bytes": 7008,
+      "sha256": "33dc50a6e557a3f72c8894e5e65fbbb4d0e3d1c55d0a397e675fb400d857b451"
+    },
+    "<USER_HOME>/wrf_gpu2_lanes/t-p3mp53/MP5303_ERROR.json": {
+      "bytes": 5238,
+      "sha256": "76e23d794001395e2a640359eaff022c6bfbd4ed78cac5e68702f4bdd357b640"
+    },
+    "<USER_HOME>/wrf_gpu2_lanes/t-p3mp53/MP5313/PIN/00_jax_cache_jit__advance_chunk_fori-60e7b23178c901a10d4f3a6f188665a843539eede665558a6817b4adb82f2711-cache": {
+      "bytes": 11539667,
+      "sha256": "016e17f221efe90b53b03b8af946a7c5b81ed44bcc2872f5aae7af0e0b4308fd"
+    },
+    "<USER_HOME>/wrf_gpu2_lanes/t-p3mp53/MP5313/PIN/01_aot_e030cba3fa7fa8379c50c1be7df396ec3727a28b44de70451a99269d196f8cfa.xlaexec": {
+      "bytes": 22378630,
+      "sha256": "d688c18efda5889a77f566f1b7fe3e1915c191dbcdb151fd686c0df36a19ea64"
+    },
+    "<USER_HOME>/wrf_gpu2_lanes/t-p3mp53/MP5313/p3_mp53_6c73c119815e7f79.cubin": {
+      "bytes": 14318584,
+      "sha256": "6c73c119815e7f7938f3036adbd10a6114311d9ac210637a437703769204d489"
+    }
+  },
+  "experiments": "MP5301..MP5314 MAIN logged (including failed compiler theories and setup refusal)",
+  "scientific_outputs_and_references_preserved": true,
+  "cleanup": "compile caches removed after actual PIN scan; last snapshot and scanner tmp removed before final handoff"
+}

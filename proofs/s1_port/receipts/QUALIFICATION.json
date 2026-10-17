@@ -1,0 +1,58 @@
+{
+  "status": "READY-FOR-CRITIC",
+  "base": "489a91483",
+  "model_source": "0336d487e0414826e9f4f9202a4e8cf2b7ca4721",
+  "model_tree": "8063c7f205647bf0caa67a6d121db9fbdd2ba00e",
+  "gate": "manager 2026-10-13: same native kernels through facade; legacy reference deviations documented, no legacy fixes",
+  "family_checks": {
+    "modules": 31,
+    "factory_sites": 48,
+    "unique_passing_tests": 120,
+    "manifest": "../FAMILY_INVENTORY.json",
+    "source_receipt": "PORT24_source_identity.json",
+    "current_kernel_bytes_verified": 31
+  },
+  "shared_consumers": {
+    "covered": 252,
+    "executed_passing": 251,
+    "exact_program_and_all_constants_reused_passing": 1,
+    "receipt": "SHARED_CONSUMERS.json"
+  },
+  "native_default_compiler_and_backend_consumers": {
+    "passing": 29,
+    "receipt": "SHARED_CONSUMERS.json"
+  },
+  "release_jaxpr_identity": {
+    "swiss": "2bf12cb8374d3a84a440e47dea4b77b0c7436108fc2ee2616bba6ec79b17962a",
+    "prod_d01": "6fc715a2bd630934c4cf0f94427df19a527cbf429011c9ba5efe4d712744d27b",
+    "composition_proof": "PORT31_ownership_composition.json",
+    "scope": "CPU trace of native program; no CUDA compile/execution"
+  },
+  "cpu_coupled_smoke": {
+    "receipt": "PORT32_cpu_smoke.json",
+    "steps": 2,
+    "floating_leaves": 167,
+    "nonfinite": 0,
+    "nvidia_tools_called": false,
+    "census_guard_total": null,
+    "first_step_including_compile_s": 1376.2162870981265,
+    "second_step_s": 1.8901675620581955,
+    "maxrss_KiB": 6359104
+  },
+  "deletion_sensitivity": {
+    "receipt": "PORT25_mutant.json",
+    "expected_assertion_failures": 1,
+    "errors": 0
+  },
+  "clean_archive": {
+    "receipt": "PORT33_archive.json",
+    "passing": 40,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "hardware_scope": "CPU executed; CUDA callable/source/jaxpr identity only; ROCm/TPU/Apple/Intel hardware untested",
+  "performance_scope": "CUDA original callable/source preserved: no new launches, buffers or copies inferred; cache fingerprints change. CPU compile/memory costs measured in smoke receipt; no GPU speed claim.",
+  "cache": "NONE; GPUWRF_JAX_CACHE=0",
+  "cleanup": "private archive, pytest and detached snapshot removed before handoff; only small logs/JSON evidence retained"
+}

@@ -1,0 +1,10 @@
+[with_ram_slot] t-p3mp53 got slot 2 (MemoryMax=6G, no swap)
+ImportError while loading conftest '<USER_HOME>/wrf_gpu2_lanes/t-p3mp53/candidate-tree/tests/conftest.py'.
+tests/conftest.py:58: in <module>
+    import cpu_guard  # noqa: F401
+    ^^^^^^^^^^^^^^^^
+scripts/v025/cpu_guard.py:93: in <module>
+    force_cpu()
+scripts/v025/cpu_guard.py:65: in force_cpu
+    raise GpuPlatformRefused(
+E   cpu_guard.GpuPlatformRefused: cpu_guard was imported AFTER jax/jaxlib. JAX reads JAX_PLATFORMS and CUDA_VISIBLE_DEVICES at import, so forcing them now would be a no-op that looks like protection. Import cpu_guard before any jax/gpuwrf import.

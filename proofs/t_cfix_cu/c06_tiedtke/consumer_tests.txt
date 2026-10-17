@@ -1,0 +1,17 @@
+# consumer suite on 0a51318458 + stub ABI commit (per-file, CPU, with_ram_slot)
+tests/test_ntiedtke_cumulus_oracle.py rc=0 7 passed in 0.66s
+tests/test_ntiedtke_jax_parity.py rc=0 16 passed in 12.71s
+tests/test_scheme_catalog_fail_closed.py rc=0 25 passed in 0.23s
+tests/test_t_cfix_cu_cu_rk.py rc=0 16 passed in 10.46s
+tests/test_t_cfix_cu_g3_forcing.py rc=0 10 passed in 17.70s
+tests/test_t_cfix_cu_tiedtke_c06_rows.py rc=0 3 passed, 5 warnings in 7.84s
+tests/test_t_cfix_cu_tiedtke_forcing.py rc=0 14 passed, 15 warnings in 23.23s
+tests/test_tiedtke_cumulus_oracle.py rc=0 1 passed in 0.67s
+tests/test_v022_f2_missing_scheme_bundle.py rc=0 3 passed in 1.37s
+# after ICUM1 stub ABI update:
+tests/test_t_cfix_phyprep.py rc=0 22 passed, 2 warnings in 18.99s
+tests/test_t_rainnc_callers.py rc=0 9 passed in 4.24s
+tests/v025/t_cfix_mynn/test_f20_mynn_caller.py rc=0 29 passed in 80.09s (0:01:20)
+tests/v040/test_t_calleraudit_land_precip.py rc=0 62 passed in 13.12s
+tests/test_v013_operational_smoke.py -k 'cumulus or cuplus' (12G): 15 passed, 78 deselected, 10 warnings in 41.62s
+# whole smoke file cannot run in one slot (memory grows across tests; known since round 1: chunked) -> cumulus subset only

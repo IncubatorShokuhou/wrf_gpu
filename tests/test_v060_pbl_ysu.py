@@ -113,6 +113,8 @@ def _run_case(case_id: int) -> dict:
         xland=scalars["XLAND"],
         u10=scalars["U10"],
         v10=scalars["V10"],
+        # proofs/v060/oracle/ysu_oracle_driver.f90 runs topdown = 0, FLAG_QC/QI false.
+        ysu_topdown_pblmix=0,
     )
     assert isinstance(result, PhysicsStepResult)
 

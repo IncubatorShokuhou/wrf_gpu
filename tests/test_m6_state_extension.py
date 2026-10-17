@@ -51,18 +51,19 @@ def _platform(array) -> str:
 def test_m6_new_state_leaves_are_device_arrays_with_expected_shape_and_dtype():
     grid = GridSpec.canary_3km_template()
     state = State.zeros(grid)
+    selected_platform = jax.devices()[0].platform
 
     for field in NEW_3D:
         leaf = getattr(state, field)
         assert isinstance(leaf, jax.Array)
-        assert _platform(leaf) == "gpu"
+        assert _platform(leaf) == selected_platform
         assert leaf.shape == (grid.nz, grid.ny, grid.nx)
         assert leaf.dtype == PRECISION_MATRIX[field][0]
 
     for field in SURFACE_2D:
         leaf = getattr(state, field)
         assert isinstance(leaf, jax.Array)
-        assert _platform(leaf) == "gpu"
+        assert _platform(leaf) == selected_platform
         assert leaf.shape == (grid.ny, grid.nx)
         assert leaf.dtype == PRECISION_MATRIX[field][0]
 
@@ -88,7 +89,7 @@ def test_m6_new_state_leaves_are_device_arrays_with_expected_shape_and_dtype():
     for field in BOUNDARY:
         leaf = getattr(state, field)
         assert isinstance(leaf, jax.Array)
-        assert _platform(leaf) == "gpu"
+        assert _platform(leaf) == selected_platform
         assert leaf.dtype == PRECISION_MATRIX[field][0]
 
 

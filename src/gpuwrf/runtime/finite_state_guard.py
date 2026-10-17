@@ -13,6 +13,7 @@ from typing import Any, Mapping
 import jax
 import jax.numpy as jnp
 import numpy as np
+from gpuwrf.contracts.cammg_fields import STATE_FIELDS as CAMMG_STATE_FIELDS
 
 
 _FALSEY = {"0", "false", "no", "off", ""}
@@ -72,6 +73,7 @@ PROGNOSTIC_STATE_FIELDS: tuple[str, ...] = (
     "fltv",
     "t_skin",
     "soil_moisture",
+    *CAMMG_STATE_FIELDS,
 )
 
 _LEGACY_TOTAL_ALIASES = {"p": "p_total", "ph": "ph_total", "mu": "mu_total"}
@@ -185,9 +187,12 @@ def assert_state_finite_at_boundary(
     sim_time_s: float | None = None,
     enabled: bool | None = None,
     environ: Mapping[str, str] | None = None,
+    physics_carry=None,
 ) -> None:
     """Fail fast if a boundary/output-cadence state contains NaN/Inf."""
 
+    assert_original_cumulus_ok(physics_carry,domain=domain,step=step)
+    assert_original_cammg_ok(state,domain=domain,step=step)
     if enabled is None:
         enabled = finite_check_enabled(environ)
     if not enabled:
@@ -197,6 +202,23 @@ def assert_state_finite_at_boundary(
     )
     if location is not None:
         raise NonFiniteStateError(location)
+
+
+def assert_original_cumulus_ok(carry,*,domain,step):
+    """Surface original CAM ENDRUN status at an existing host boundary only."""
+    cu=getattr(carry,'cuplus',None)
+    if cu is None or 'ENTROPY_FAILED' not in cu.held:return
+    failed=cu.held['ENTROPY_FAILED']
+    if bool(np.asarray(jax.device_get(jnp.any(failed!=0)))):
+        column=int(np.flatnonzero(np.asarray(jax.device_get(failed))!=0)[0])
+        raise RuntimeError(f'original CAM-ZM entropy inversion failed: domain={domain} step={step} column={column}; WRF ENDRUN')
+
+
+def assert_original_cammg_ok(state,*,domain,step):
+    """Check the cumulative original ENDRUN counter at an existing boundary."""
+    failed=getattr(state,'cam_fatal',None)
+    if failed is not None and bool(np.asarray(jax.device_get(jnp.any(failed!=0)))):
+        raise RuntimeError(f'original CAM-MG fatal event: domain={domain} step={step}; WRF ENDRUN')
 
 
 def _is_floating_array(value: Any) -> bool:

@@ -1,0 +1,78 @@
+{
+  "lane": "u2-windfarm",
+  "status": "FIXED-MANAGER-REQUESTED-GATES-GREEN",
+  "product_commit": "e9e9ebf6e5ab58f8565bb78f57d97d7529d5231c",
+  "supersedes": {
+    "packet": "PROOF_PACKET.json",
+    "sha256": "0f9a768b04ff75686f6fa792634679042e5aa4fdc5bc3d3dac485ad5b92234d8",
+    "reviewed_commit": "0b6d675d0",
+    "scope": "Only turbine_area ELSE association and its affected component/cost gates; original sealed packet is historical"
+  },
+  "source_delta": {
+    "changed_product_files": [
+      "src/gpuwrf/physics/wind_fitch.py"
+    ],
+    "outside_turbine_area_byte_identical": true,
+    "kernel_sha256": "32a8402ecec8bb399d0b5828f7e7c0806eb3beb55293472361a67c9d18213ef7",
+    "hook_sha256": "fa5287cebed8463817533b433b32046d377afc6dc0c783ff0cd4871af9df051a",
+    "WRF_operation": "ELSE ((d1+d2)+c1)+c2, then density; same-sign branches unchanged"
+  },
+  "gates": {
+    "affected_tests": {
+      "passed": 23,
+      "seconds": 14.89
+    },
+    "pristine_literal": {
+      "component_byte_values": 31968,
+      "component_cases": 72,
+      "asymmetric_scalar_byte_values": 5,
+      "passed_tests": 2,
+      "seconds": 4.02
+    },
+    "old_association_mutant": {
+      "killed": true,
+      "byte_equal": 0,
+      "witnesses": 5,
+      "product_files_changed": false
+    },
+    "compiled_frozen_bounds_unchanged": true,
+    "product_compiler_flags_unchanged": true
+  },
+  "cost": {
+    "backend": "cpu",
+    "scope": "Fitch hook including actual preparation; not full model or GPU peak memory",
+    "shape": [
+      20,
+      40,
+      80
+    ],
+    "nt": 100,
+    "compile_s": 0.2754753821063787,
+    "median_s": 0.0003392120124772191,
+    "argument_bytes": 1558400,
+    "output_bytes": 780832,
+    "temp_bytes": 1039384,
+    "optimized_hlo_chars": 244242,
+    "f64_type_mentions": 0,
+    "new_power_carry_bytes": 12800
+  },
+  "cost_interpretation": "Same reported args/output/temp/POWER bytes and zero f64 types as WF18; concurrent CPU timings imply no speedup claim. GPU unmeasured.",
+  "validation_reuse": {
+    "unchanged_product_scope": "All product files other than turbine_area are byte-identical to reviewed0b6d675d0; remainder of kernel also byte-identical.",
+    "carried": "Independent reviewed OFF Swiss/PROD, caller, IO, namelist, restart/schema and prior coupled integration receipts. No new full coupled run or BYTE final trajectory claim.",
+    "changed_arithmetic": "Rerun affected component once normal compiled and once literal diagnostic; remeasure full hook per manager request."
+  },
+  "residuals": "Independent RV07/RV08 residual compiler/intrinsic mismatches explicitly disclosed in UPSTREAM_WRF_BUGS.md; five witnesses and72-case fixture are not universal BYTE claims.",
+  "receipt_sha256": {
+    "receipts/fix_area_mutant.json": "5831486aad6e43883dac6d5eb444def8c6c6fe61b580e7c14caf65eb1c5dee1b",
+    "receipts/fix_compiled.json": "3642b9695d0c55d81229096d23d6a1150f54f93de06c4eba669f58fa23eb7c02",
+    "receipts/fix_component.log": "42807f80802f559c39eb1608d857401b2f87f9f6d4bc89d0099cfe850d334039",
+    "receipts/fix_full_hook.json": "80e5f08cde7fdce75c22d57bed4789cce31f3b0bdd230974e1f1af954c556b7f",
+    "receipts/fix_literal.json": "19f5a9a4236b1f08e6f468e1c26f14e14e0151708bf1ae5018ad0f823036c4ef",
+    "receipts/fix_literal.log": "de2437bf84efc2e0c672191dd410c78c8830509613d1285c1190f05991386fdf"
+  },
+  "fixture_sha256": "e9a22925a05e71fd6f1118b8fa8a12ecd098fbc53b4b5614808fd43c8d38e5f7",
+  "experiments": "WF25-WF28 append-logged in MAIN EXPERIMENTS.tsv",
+  "cleanup": "WF25-tree snapshot removed after WF28; pytest removed after arms; persistent JAX cache disabled.",
+  "open_limits": "GPU launches/traffic/VRAM/E41/throughput and original CPU-WRF full coupled D6 remain pending per existing CPU-only wave scope."
+}

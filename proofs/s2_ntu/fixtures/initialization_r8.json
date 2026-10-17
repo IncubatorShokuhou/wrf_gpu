@@ -1,0 +1,32 @@
+{
+  "kind": "r8",
+  "compile": [
+    "<DATA_ROOT>/canairy_meteo/artifacts/envs/wrf-build/bin/x86_64-conda-linux-gnu-gfortran",
+    "-fdefault-real-8",
+    "-fdefault-double-8",
+    "-ffree-form",
+    "-ffree-line-length-none",
+    "-O0",
+    "-ffp-contract=off",
+    "-fno-range-check",
+    "-finit-real=zero",
+    "-finit-integer=0",
+    "-finit-logical=false",
+    "error.F90",
+    "original.F90",
+    "driver.F90",
+    "-o",
+    "oracle"
+  ],
+  "source_sha256": "c864483fa572d42ab1dc51cc538f8062dc2f582369f597261e8c850c49ce34dd",
+  "npz_sha256": "ab00cd9c677fcc02492962735610be27840d3334b28f13ed3e305031c8a8d6da",
+  "ccnty": [
+    1,
+    2,
+    3,
+    4
+  ],
+  "cases": 12,
+  "levels": 12,
+  "nonfinite": 0
+}

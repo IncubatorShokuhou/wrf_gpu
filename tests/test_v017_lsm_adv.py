@@ -1,22 +1,8 @@
-"""v0.17 advanced LSM wiring + oracle integrity: RUC (sf_surface_physics=3) and
-SSiB (sf_surface_physics=8), both REFERENCE-ONLY.
+"""Historical SSiB oracle integrity plus graduation metadata.
 
-These two large land-surface models are wired through the full registry /
-interface / dispatch / catalog / operational seam exactly like the other Tier-3
-reference-only schemes (Grell-3D, KSAS, Goddard-LW): each has a fp64 pristine-WRF
-single-column oracle staged (built from the UNMODIFIED WRF Fortran -- NOT a
-self-compare), but its faithful traceable JAX column kernel is a documented
-carry-over, so each is namelist-accepted (selectable for a single-column
-reference comparison) and FAIL-CLOSES in the operational GPU scan.
-
-This module proves:
-  1. the scheme is registry/interface/dispatch/catalog consistent and classified
-     REFERENCE_ONLY (never over-claimed as IMPLEMENTED);
-  2. the operational scan fail-closes it with a scheme-specific named reason;
-  3. the staged Fortran oracle savepoints exist, are finite, regime-varying, and
-     checksum the UNMODIFIED pristine WRF source (the load-bearing evidence);
-  4. the JAX column-kernel stub raises rather than silently returning a wrong
-     land state, and freezes the land-carry shape the future port must thread.
+SSiB now has an experimental JAX kernel and requires explicit prepared bundles.
+Literal original-WRF arithmetic, snow/caller/restart gates live in test_s2_ssib*.
+The historical fp64 savepoints remain independent provenance evidence.
 """
 
 from __future__ import annotations
@@ -54,7 +40,7 @@ _REPO_ROOT = Path(__file__).resolve().parents[1]
 # (option, name-substring, JAX module, column entrypoint, oracle savepoint glob,
 #  the unmodified WRF source the oracle checksums)
 # RUC (3) graduated to IMPLEMENTED in v0.3.4 (tests/test_v034_ruclsm.py).
-_REF_LSMS = [
+_GRADUATED_LSMS = [
     (
         8,
         "SSiB",
@@ -75,31 +61,29 @@ def test_registry_interface_catalog_consistent_with_ruc_ssib() -> None:
     assert set(ACCEPTED_SF_SURFACE_PHYSICS) == {0, 1, 2, 3, 4, 7, 8}
 
 
-@pytest.mark.parametrize("opt, name, _mod, _ep, _sp, _src", _REF_LSMS)
-def test_reference_only_classification(opt, name, _mod, _ep, _sp, _src) -> None:
-    """RUC/SSiB are REFERENCE_ONLY -- accepted at the namelist layer, never
-    over-claimed as IMPLEMENTED."""
+@pytest.mark.parametrize("opt, name, _mod, _ep, _sp, _src", _GRADUATED_LSMS)
+def test_experimental_graduation_classification(opt, name, _mod, _ep, _sp, _src) -> None:
+    """Catalog admits opt-in execution; qualification limits remain explicit."""
 
-    assert classify_scheme("sf_surface_physics", opt).status is SupportStatus.REFERENCE_ONLY
+    assert classify_scheme("sf_surface_physics", opt).status is SupportStatus.IMPLEMENTED
     assert name.lower() in SURFACE_SCHEMES[opt].name.lower()
     # The land carry shape is frozen for the future port.
     assert LAND_CARRY_MEMBERS[opt]
 
 
-@pytest.mark.parametrize("opt, name, _mod, _ep, _sp, _src", _REF_LSMS)
-def test_dispatch_routes_but_not_gpu_runnable(opt, name, _mod, _ep, _sp, _src) -> None:
-    """The dispatcher routes the scheme (accepted) but marks it not GPU-runnable,
-    so any suite selecting it is excluded from the integrated GPU gate."""
+@pytest.mark.parametrize("opt, name, _mod, _ep, _sp, _src", _GRADUATED_LSMS)
+def test_dispatch_routes_traceable_experimental_kernel(opt, name, _mod, _ep, _sp, _src) -> None:
+    """Traceability is dispatch metadata, not GPU/forecast qualification."""
 
     entry = scheme_entry("land_surface", opt)
     assert entry.option == opt
-    assert entry.gpu_runnable is False
+    assert entry.gpu_runnable is True
     suite = resolve_physics_suite({"sf_surface_physics": opt})
     assert suite.land_surface.option == opt
-    assert suite.gpu_gate_ready is False
+    assert suite.gpu_gate_ready is True
 
 
-@pytest.mark.parametrize("opt, name, _mod, _ep, _sp, _src", _REF_LSMS)
+@pytest.mark.parametrize("opt, name, _mod, _ep, _sp, _src", _GRADUATED_LSMS)
 def test_operational_scan_fails_closed_with_named_reason(opt, name, _mod, _ep, _sp, _src) -> None:
     """The operational scan must fail-close RUC/SSiB with a scheme-specific reason
     (never silently substituted by another LSM)."""
@@ -110,24 +94,21 @@ def test_operational_scan_fails_closed_with_named_reason(opt, name, _mod, _ep, _
     with pytest.raises(UnsupportedSchemeSelection) as excinfo:
         _resolve_operational_suite(nml)
     assert f"sf_surface_physics={opt}" in str(excinfo.value)
-    assert "oracle staged" in str(excinfo.value)
+    assert "ssib_static" in str(excinfo.value)
 
 
-@pytest.mark.parametrize("opt, name, mod, ep, _sp, _src", _REF_LSMS)
-def test_column_entrypoint_state_shape_and_fail_closed_stub(opt, name, mod, ep, _sp, _src) -> None:
-    """The dispatch entrypoint resolves to the module.  SSiB remains a
-    reference-only stub; RUC now has a v0.18 CPU parity port but is still
-    registry-fail-closed until the integration owner wires land carry."""
+@pytest.mark.parametrize("opt, name, mod, ep, _sp, _src", _GRADUATED_LSMS)
+def test_column_entrypoint_and_complete_state_shape(opt, name, mod, ep, _sp, _src) -> None:
+    """The complete carry inventory agrees across the kernel and registry."""
 
     entry = scheme_entry("land_surface", opt)
     assert entry.owner_module == mod and entry.entrypoint == ep
     module = importlib.import_module(mod)
     fn = getattr(module, ep)
+    assert callable(fn)
     if opt == 8:
-        with pytest.raises(NotImplementedError, match="REFERENCE-ONLY"):
-            fn()
-    else:
-        assert callable(fn)
+        import inspect
+        assert set(inspect.signature(fn).parameters) == {"land", "forcing", "is_land", "is_ice"}
     # The kernel's frozen land-carry NamedTuple fields match the registry carry.
     carry_cls = next(
         getattr(module, n)
@@ -137,7 +118,7 @@ def test_column_entrypoint_state_shape_and_fail_closed_stub(opt, name, mod, ep, 
     assert tuple(carry_cls._fields) == tuple(LAND_CARRY_MEMBERS[opt])
 
 
-@pytest.mark.parametrize("opt, name, _mod, _ep, savepoint_dir, src", _REF_LSMS)
+@pytest.mark.parametrize("opt, name, _mod, _ep, savepoint_dir, src", _GRADUATED_LSMS)
 def test_oracle_savepoints_are_real_non_self_compare_evidence(
     opt, name, _mod, _ep, savepoint_dir, src
 ) -> None:

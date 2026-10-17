@@ -1,0 +1,65 @@
+{
+  "case": "c40",
+  "source_commit": "4bd38da577f1e5fe43fc061fcd39a67635850d8a",
+  "physical_backend": "cpu",
+  "lowering_platform": "cuda",
+  "gpu_executed": false,
+  "scope": "native CUDA lowering / optional AUTOTUNE0 deviceless prescreen, not fidelity or speed",
+  "lower": "OK",
+  "compile": "NOT_ATTEMPTED",
+  "programs": [
+    {
+      "name": "d01",
+      "lower": "OK",
+      "lower_s": 43.210377268027514,
+      "static_kwargs": {
+        "n_steps": 72,
+        "cadence": 12
+      },
+      "stablehlo_bytes": 269549752,
+      "stablehlo_sha256": "5de9e15c4eeb1627a45f3a95fe9d4144bccd2925bda4d4789e16a8562a589df7",
+      "triton_custom_calls": 128,
+      "compile": "NOT_ATTEMPTED",
+      "stack": "UNKNOWN"
+    }
+  ],
+  "cache": "NONE; GPUWRF_JAX_CACHE=0",
+  "target_sha256": "f46c185780fdbd4aab62ef20293385bb8de31a71bd260e9ce62cbfc21f196a23",
+  "harness_sha256": "0b2db04ef80417d4739b97c104e2fb573b5f7e36826446f4a535a71fb31a27af",
+  "environment": {
+    "JAX_PLATFORMS": "cpu",
+    "CUDA_VISIBLE_DEVICES": "",
+    "GPUWRF_JAX_CACHE": "0",
+    "GPUWRF_FAST_DEFAULTS": "1",
+    "GPUWRF_CENSUS": "1",
+    "GPUWRF_CENSUS_SLIM": "0",
+    "GPUWRF_AOT_SLIM_MODULE": "0",
+    "GPUWRF_RRTMG_MP_RE": "1",
+    "GPUWRF_SCRATCH": "<USER_HOME>/wrf_gpu2_lanes/t-ferrier-mpre/MR03_scratch",
+    "GPUWRF_TMPDIR": "<USER_HOME>/wrf_gpu2_lanes/t-ferrier-mpre/MR03_scratch"
+  },
+  "wall_s": 55.61481371195987,
+  "peak_rss_KiB": 2888500,
+  "matrix_status": "ADMITTED",
+  "input_sha256": {
+    "namelist.input": "c65eac590d38007c94695984b18842efaf52f9a5b373aa476048cef4119b2531",
+    "wrfbdy_d01": "6e221d03b8611c38dd44ee3e231927730a50a5acf4d9afb2839365bee448a621",
+    "wrfinput_d01": "5d7cb92333e3a23cdd2e000a8163eb33a2285c32da48fb3e87f330c4a36979a1"
+  },
+  "jax_version": "0.10.0",
+  "jax_enable_x64_before_native_trace": true,
+  "dfi_prepass": "INACTIVE",
+  "init_s": 10.543727122014388,
+  "native_trace": {
+    "facade": true,
+    "capability_resolver": "cuda",
+    "mcica_native": true,
+    "python_backend": "gpu",
+    "pallas_interpret": false,
+    "product_tridiagonal": true,
+    "virtual_target": "NVIDIA GeForce RTX 5090_0(process=0,(0))"
+  },
+  "physical_devices_at_exit": [
+    "cpu"
+  ]
+}

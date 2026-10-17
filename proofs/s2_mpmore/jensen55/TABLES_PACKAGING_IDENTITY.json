@@ -1,0 +1,106 @@
+{
+ "producer": "r-pkg040",
+ "CPU": true,
+ "GPU": false,
+ "head": "6dd81964596983c2351375c0f60efded1d02a73e",
+ "measured_commit": "02a42169939e9c69bc01aa6f888d709f6f34558c",
+ "packaging_commit": "1fb21286869439790b43b64c9d5cf86cbbf965b1",
+ "packaging_parent": "5a6f88ac0f9c59f399675fb82c7185b33029cd78",
+ "table": {
+  "path": "src/gpuwrf/physics/jensen_ishmael/data/lookup_tables.npz",
+  "git_blob": {
+   "02a42169939e9c69bc01aa6f888d709f6f34558c": "5a15a357e94d9c3ea7ea3fe608f952a960bd6ff9",
+   "5a6f88ac0f9c59f399675fb82c7185b33029cd78": "5a15a357e94d9c3ea7ea3fe608f952a960bd6ff9",
+   "1fb2128686": "5a15a357e94d9c3ea7ea3fe608f952a960bd6ff9",
+   "6dd81964596983c2351375c0f60efded1d02a73e": "5a15a357e94d9c3ea7ea3fe608f952a960bd6ff9"
+  },
+  "sha256": {
+   "02a42169939e9c69bc01aa6f888d709f6f34558c": "4cbe72b01c7f509a05309e89e9b8e82223ddf0c8cc833f5b16b0ed1237741b76",
+   "5a6f88ac0f9c59f399675fb82c7185b33029cd78": "4cbe72b01c7f509a05309e89e9b8e82223ddf0c8cc833f5b16b0ed1237741b76",
+   "1fb2128686": "4cbe72b01c7f509a05309e89e9b8e82223ddf0c8cc833f5b16b0ed1237741b76",
+   "6dd81964596983c2351375c0f60efded1d02a73e": "4cbe72b01c7f509a05309e89e9b8e82223ddf0c8cc833f5b16b0ed1237741b76"
+  },
+  "working_sha256": "4cbe72b01c7f509a05309e89e9b8e82223ddf0c8cc833f5b16b0ed1237741b76",
+  "manifest_pin": {
+   "asset": "jensen_ishmael-lookup_tables.npz",
+   "bytes": 44468557,
+   "kind": "remote",
+   "sha256": "4cbe72b01c7f509a05309e89e9b8e82223ddf0c8cc833f5b16b0ed1237741b76"
+  },
+  "identical": true
+ },
+ "source": {
+  "path": "src/gpuwrf/physics/jensen_ishmael/tables.py",
+  "measured_sha256": "7c06e2345824a6f5482e0ab3577b2e2187b1f7e56b7d43aae6589266ccf89a64",
+  "current_sha256": "5e538385548570a34619e0541ef33b12bcc133a23d83062de143a0186e5b78af",
+  "substitutions": [
+   [
+    "_ASSET=Path(__file__).with_name('data')/'lookup_tables.npz'\n",
+    "from gpuwrf.assets import asset_path, ensure_asset\n\n# > 10 MB: repo copy in a private checkout, else fetched on first use (gpuwrf.assets, fail-closed).\n_ASSET=asset_path('src/gpuwrf/physics/jensen_ishmael/data/lookup_tables.npz')\n"
+   ],
+   [
+    "np.load(_ASSET,",
+    "np.load(ensure_asset(_ASSET),"
+   ]
+  ],
+  "reverted_sha256": "7c06e2345824a6f5482e0ab3577b2e2187b1f7e56b7d43aae6589266ccf89a64",
+  "reverted_equals_measured": true,
+  "changed_between_measured_and_head": [
+   "1fb2128686 packaging: pinned runtime tables; wheel bundles small ones, fetches >10 MiB",
+   "d3e89e5c19 feat: stage packaged original Jensen tables after 50456 literal public values BYTE"
+  ]
+ },
+ "arrays": {
+  "names": [
+   "coltab_fp32",
+   "coltab_fp64",
+   "coltabn_fp32",
+   "coltabn_fp64",
+   "gamma_tab",
+   "igrdata",
+   "itab",
+   "itabr"
+  ],
+  "repo_old_vs_new_bitwise": true,
+  "cache_vs_old_bitwise": true,
+  "cache_path_pattern": "<GPUWRF_TABLES_DIR>/<sha256>/<asset>",
+  "cache_resolved": true,
+  "new_loader_path": "src/gpuwrf/physics/jensen_ishmael/data/lookup_tables.npz"
+ },
+ "lowered": {
+  "program": "jit(full_column interpret=True, operational outputs) on fixtures/fp32_4.json",
+  "variants": {
+   "new": {
+    "tables_sha256": "5e538385548570a34619e0541ef33b12bcc133a23d83062de143a0186e5b78af",
+    "stablehlo_debug_sha256": "0da15b22b44fa0fee3eb3e44beb3c798628c1c0d71ef078f1e8e771e06bcd546",
+    "stablehlo_debug_characters": 118744547,
+    "tables_py_in_locations": false,
+    "table_loads": 1,
+    "lower_s": 14.731645275998744
+   },
+   "measured": {
+    "tables_sha256": "7c06e2345824a6f5482e0ab3577b2e2187b1f7e56b7d43aae6589266ccf89a64",
+    "stablehlo_debug_sha256": "0da15b22b44fa0fee3eb3e44beb3c798628c1c0d71ef078f1e8e771e06bcd546",
+    "stablehlo_debug_characters": 118744547,
+    "tables_py_in_locations": false,
+    "table_loads": 1,
+    "lower_s": 15.362501269002678
+   },
+   "new_again": {
+    "tables_sha256": "5e538385548570a34619e0541ef33b12bcc133a23d83062de143a0186e5b78af",
+    "stablehlo_debug_sha256": "0da15b22b44fa0fee3eb3e44beb3c798628c1c0d71ef078f1e8e771e06bcd546",
+    "stablehlo_debug_characters": 118744547,
+    "tables_py_in_locations": false,
+    "table_loads": 1,
+    "lower_s": 13.964360430007218
+   }
+  },
+  "identical": true,
+  "sources_seen": [
+   "5e538385548570a34619e0541ef33b12bcc133a23d83062de143a0186e5b78af",
+   "7c06e2345824a6f5482e0ab3577b2e2187b1f7e56b7d43aae6589266ccf89a64",
+   "5e538385548570a34619e0541ef33b12bcc133a23d83062de143a0186e5b78af"
+  ]
+ },
+ "verdict": "IDENTICAL"
+}

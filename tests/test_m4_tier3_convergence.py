@@ -5,14 +5,16 @@ from pathlib import Path
 
 from gpuwrf.validation.tier3 import convergence_record, run_tier3
 
+from _legacy_fp64_state import legacy_fp64_state
 
-def test_tier3_convergence_record_passes():
+
+def test_tier3_convergence_record_passes(legacy_fp64_state):
     record = convergence_record()
     assert record["pass"] is True
     assert record["observed_order"] >= record["expected_order"] - 0.5
 
 
-def test_tier3_runner_writes_artifact(tmp_path: Path):
+def test_tier3_runner_writes_artifact(tmp_path: Path, legacy_fp64_state):
     out = tmp_path / "tier3.json"
     record = run_tier3(out)
     assert record["pass"] is True

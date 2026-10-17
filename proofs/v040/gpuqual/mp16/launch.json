@@ -1,0 +1,38 @@
+{
+  "argv": [
+    "bash",
+    "-c",
+    "source <USER_HOME>/wrf_gpu2_lanes/driver_bridge_59591/bridge.env; exec \"$@\"",
+    "gpuqual-bridge",
+    "timeout",
+    "--signal=TERM",
+    "--kill-after=15",
+    "3630",
+    "<USER_HOME>/wrf_gpu2_lanes/s1-gpuqual/snapshot/scripts/with_gpu_lock.sh",
+    "--timeout",
+    "1800",
+    "--label",
+    "s1-gpuqual",
+    "--",
+    "timeout",
+    "--signal=TERM",
+    "--kill-after=15",
+    "1800",
+    "python",
+    "<USER_HOME>/wrf_gpu2_lanes/s1-gpuqual/mp16/harness/gpu_cli.py",
+    "run",
+    "--input-dir",
+    "<USER_HOME>/wrf_gpu2_lanes/s1-gpuqual/mp16/input",
+    "--output-dir",
+    "<USER_HOME>/wrf_gpu2_lanes/s1-gpuqual/mp16/gpu",
+    "--hours",
+    "24"
+  ],
+  "launcher_sha256": "f832b9b57e611d0b559b564dd8a6bcc90fc4463f623b7a30b4b1954642483273",
+  "environment": {
+    "JAX_PLATFORMS": "cuda",
+    "GPUWRF_CENSUS": "1",
+    "GPUWRF_AOT_SLIM_MODULE": "0"
+  },
+  "started_utc": "2026-10-13T15:44:51Z"
+}

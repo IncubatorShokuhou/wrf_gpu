@@ -1,0 +1,85 @@
+{
+  "created_utc": "2026-10-13T17:25:40.134189+00:00",
+  "scope": "PARTIAL verified CPU component enabler only; full lane graduation OPEN",
+  "measured_source_commit": "80742ab016d288ba9798e2a41cbe88b6680f319e",
+  "composed_source_commit": "caf91d530b0ce5f6dd46b4909b378d1376073b01",
+  "composed_source_and_tests_byte_identical": true,
+  "physics_source_sha256": "aae6c50287f9f4412c1e530980f273ae408a2128996c11655551b1d8604739ba",
+  "fixture_sha256": "c9c3bb1e149da561b0fa1bf34124a1e504ea490bce477abbe62ff3f3fddd75f8",
+  "pristine_cases": 45,
+  "original_checked_vs_uninstrumented_identical": 45,
+  "qualified_jax_checks": 60,
+  "selected_shared_interface_checks": 196,
+  "total_positive_checks": 256,
+  "clean_archive_checks": 3,
+  "genuine_numeric_mutants_killed": 2,
+  "component_stablehlo_f64_present": false,
+  "swiss_release_jaxpr_sha256": "2bf12cb8374d3a84a440e47dea4b77b0c7436108fc2ee2616bba6ec79b17962a",
+  "cpu_cost_diagnostic": {
+    "platform": "cpu",
+    "source_commit": "80742ab016d288ba9798e2a41cbe88b6680f319e",
+    "cache": "NONE (GPUWRF_JAX_CACHE=0)",
+    "scope": "component CPU cost only; no GPU wall/VRAM/E41/launch count or forecast claim",
+    "jax_version": "0.10.0",
+    "rows": [
+      {
+        "program": "jfd9",
+        "compile_seconds": 0.33724400820210576,
+        "cpu_warm_median_ms": 0.02536,
+        "memory": {
+          "argument_size_in_bytes": 24,
+          "output_size_in_bytes": 468,
+          "temp_size_in_bytes": 708,
+          "alias_size_in_bytes": 0,
+          "generated_code_size_in_bytes": 0
+        },
+        "stablehlo_f64_present": false
+      },
+      {
+        "program": "cloud6",
+        "compile_seconds": 0.3465228390414268,
+        "cpu_warm_median_ms": 0.01356,
+        "memory": {
+          "argument_size_in_bytes": 136,
+          "output_size_in_bytes": 112,
+          "temp_size_in_bytes": 324,
+          "alias_size_in_bytes": 0,
+          "generated_code_size_in_bytes": 0
+        },
+        "stablehlo_f64_present": false
+      },
+      {
+        "program": "radiation6",
+        "compile_seconds": 0.17986035998910666,
+        "cpu_warm_median_ms": 0.011071,
+        "memory": {
+          "argument_size_in_bytes": 113,
+          "output_size_in_bytes": 96,
+          "temp_size_in_bytes": 0,
+          "alias_size_in_bytes": 0,
+          "generated_code_size_in_bytes": 0
+        },
+        "stablehlo_f64_present": false
+      }
+    ]
+  },
+  "full_scheme_status": {
+    "cu7": "REFUSED / full driver unported",
+    "cu10": "REFUSED / components only; ensemble and full driver unported",
+    "cu11": "REFUSED / full driver unported"
+  },
+  "limitations": [
+    "No full convection-driver activation or coupled forecast qualification. ISHALL/mass-flux inputs supplied at component boundary.",
+    "CP06 legacy full tests/test_v013_operational_smoke.py arm timed out at600s; INCOMPLETE. Final pass includes its adapter-consistency check plus eight other full shared consumer files and NetCDF lock tests.",
+    "JFD original signed-overflow branch preserved but outside finite-case qualification.",
+    "No GPU use or GPU speed/VRAM/E41 claim; future complete drivers need manager-authorized GPU qualification."
+  ],
+  "artifacts": {
+    "CP07-qualified.xml": "<USER_HOME>/wrf_gpu2_lanes/s2-cuplus/CP07-qualified.xml",
+    "CP04-mutant.xml": "<USER_HOME>/wrf_gpu2_lanes/s2-cuplus/CP04-mutant.xml",
+    "CP11-mutant.xml": "<USER_HOME>/wrf_gpu2_lanes/s2-cuplus/CP11-mutant.xml",
+    "CP09-release.json": "<USER_HOME>/wrf_gpu2_lanes/s2-cuplus/CP09-release.json",
+    "CP10b-archive.xml": "<USER_HOME>/wrf_gpu2_lanes/s2-cuplus/CP10b-archive.xml",
+    "CP08-cost.json": "<USER_HOME>/wrf_gpu2_lanes/s2-cuplus/CP08-cost.json"
+  }
+}

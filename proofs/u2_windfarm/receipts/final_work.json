@@ -1,0 +1,38 @@
+{
+  "source": "8b65c4a3aa76d37aff56a4931c0c0b2bb2b8d24f",
+  "backend": "cpu",
+  "input_text_sha256": {
+    "namelist.input": "eebb2d5423a2a27f43eddbd726edc6e9527a3fa3712d7566fe6c9b9ff0c4d24b",
+    "windturbines-ij.txt": "be431a532581d5d2241bd69fa6034195f9fb7fb312214a33f1cae71af03148e3",
+    "wind-turbine-1.tbl": "2f09f73bd6da4f5d6e80fd24d68a39e0d656c1928888a7093eadb71b148bdf54"
+  },
+  "work": {
+    "shape": [
+      44,
+      42,
+      42
+    ],
+    "dt_s": 18.0,
+    "steps": 2,
+    "nt": 3,
+    "windfarm_opt": 1,
+    "windfarm_ij": 1,
+    "windfarm_tke_factor": 0.25,
+    "mp_physics": 8,
+    "bl_pbl_physics": 5,
+    "sf_sfclay_physics": 5,
+    "sf_surface_physics": 4,
+    "ra_sw_physics": 4,
+    "ra_lw_physics": 4,
+    "cu_physics": 0,
+    "radiation_cadence_steps": 33
+  },
+  "flags": {
+    "GPUWRF_FAST_DEFAULTS": "0",
+    "GPUWRF_PHYS_TEND_RK_WRF": "1",
+    "GPUWRF_CENSUS": "1",
+    "JAX_ENABLE_X64": "1",
+    "GPUWRF_JAX_CACHE": "0"
+  },
+  "scope": "real Swiss meteorology with three explicitly synthetic turbines; CPU Thomas shim, full production RK/physics and resumed continuation; no CPU-WRF trajectory or GPU claim"
+}

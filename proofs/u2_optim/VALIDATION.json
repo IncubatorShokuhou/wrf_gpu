@@ -1,0 +1,155 @@
+{
+  "schema": "gpuwrf.u2_optim.cpu_qualification.v1",
+  "measured_commit": "eeabf575d75bd1c1f7a1cce739719a2ad07c8bc1",
+  "final_code_commit": "329b4d525ae79c6ec06769ce1c57d936eb4ca83f",
+  "rebase_src_tests_byte_identical": true,
+  "composed_unique_pass": 420,
+  "remaining_skips": 0,
+  "archive_feature_pass": 37,
+  "mutants": [
+    {
+      "commit": "5f29a83e44eea8a59616a698a812a153b102101b",
+      "mutation": "train = pairs (includes future truth)",
+      "genuine_assertion_failures": 1,
+      "setup_errors": 0,
+      "xml": "<USER_HOME>/wrf_gpu2_lanes/u2-optim/OP14-mutant.xml"
+    },
+    {
+      "commit": "0f7579093d6bab858c17865aacfa89216946e0cb",
+      "mutation": "sort objective losses in descending order",
+      "genuine_assertion_failures": 1,
+      "setup_errors": 0,
+      "xml": "<USER_HOME>/wrf_gpu2_lanes/u2-optim/OP15-mutant.xml"
+    }
+  ],
+  "default_model_source": {
+    "baseline": "d26ef80459facb1e0dec8fa84248157e879ad46b",
+    "candidate": "eeabf575d75bd1c1f7a1cce739719a2ad07c8bc1",
+    "source_closure": [
+      {
+        "path": "src/gpuwrf/contracts",
+        "tree_entry": "040000 tree 46fc8678f05b648caa8856ca59c140c292850181\tsrc/gpuwrf/contracts",
+        "byte_identical": true
+      },
+      {
+        "path": "src/gpuwrf/coupling",
+        "tree_entry": "040000 tree e9b0b32d01ac332950ef9162bd6f5eaf901ae7b3\tsrc/gpuwrf/coupling",
+        "byte_identical": true
+      },
+      {
+        "path": "src/gpuwrf/dynamics",
+        "tree_entry": "040000 tree cb3f3803ef2438d3ee7b1ea009a88f2555724147\tsrc/gpuwrf/dynamics",
+        "byte_identical": true
+      },
+      {
+        "path": "src/gpuwrf/physics",
+        "tree_entry": "040000 tree 1b4d0cb8bdfce441afbb2e7d06535ffb9d4d4fcf\tsrc/gpuwrf/physics",
+        "byte_identical": true
+      },
+      {
+        "path": "src/gpuwrf/kernels",
+        "tree_entry": "040000 tree c9b2493e08c41a97bc6d5417e1ea8b042b4902ba\tsrc/gpuwrf/kernels",
+        "byte_identical": true
+      },
+      {
+        "path": "src/gpuwrf/runtime",
+        "tree_entry": "040000 tree 5b1714d9fc7fc216698f5a65ae67304eb1a1b06f\tsrc/gpuwrf/runtime",
+        "byte_identical": true
+      },
+      {
+        "path": "src/gpuwrf/integration",
+        "tree_entry": "040000 tree d951dede0516b07289a180c639d60dd9131d1874\tsrc/gpuwrf/integration",
+        "byte_identical": true
+      },
+      {
+        "path": "src/gpuwrf/nesting",
+        "tree_entry": "040000 tree fc0e957696bcf646c3e6c1a28c794f2649e84b9f\tsrc/gpuwrf/nesting",
+        "byte_identical": true
+      },
+      {
+        "path": "src/gpuwrf/io",
+        "tree_entry": "040000 tree 52e0f86a2b2356796d43d290c5aa3d47450229d0\tsrc/gpuwrf/io",
+        "byte_identical": true
+      },
+      {
+        "path": "src/gpuwrf/dfi",
+        "tree_entry": "040000 tree a8eb3bf0cb54f686d90ce77036fba0f6dbfb0c90\tsrc/gpuwrf/dfi",
+        "byte_identical": true
+      },
+      {
+        "path": "src/gpuwrf/_fast_defaults.py",
+        "tree_entry": "100644 blob 796ac29a770f5db1bd8547dc1e946d14ef576df7\tsrc/gpuwrf/_fast_defaults.py",
+        "byte_identical": true
+      },
+      {
+        "path": "src/gpuwrf/_x64_config.py",
+        "tree_entry": "100644 blob fc5723a3e0080c361dcaea917c61ac5157a6f678\tsrc/gpuwrf/_x64_config.py",
+        "byte_identical": true
+      }
+    ],
+    "bootstrap_only_added_offline_names": [
+      "optimize",
+      "calibrate"
+    ],
+    "run_offline_condition": false,
+    "cli_only_added_two_registration_lines": true,
+    "release_identity": "Swiss 2bf12cb8 carried forward by exact unchanged model source and run bootstrap; not a new JAX trace",
+    "GPU": "not run",
+    "performance_memory": "K0: zero new device launches/temps/transfers/compile; offline station tables and date-bootstrap only. Actual GPU demo pending."
+  },
+  "cli_cost": {
+    "kind": "CPU CLI parser instrumentation only; not forecast timing",
+    "source": "<USER_HOME>/wrf_gpu2_lanes/u2-optim/snapshot/src/gpuwrf/cli.py",
+    "n_interleaved": 80,
+    "median_seconds": {
+      "baseline": 0.0050629639299586415,
+      "candidate": 0.005587247549556196
+    },
+    "tracemalloc_peak_bytes": {
+      "baseline": 172795,
+      "candidate": 215950
+    },
+    "run_arguments_identical": true,
+    "jax_imported": false,
+    "device_launches_added": 0,
+    "device_temps_added": 0,
+    "model_compile_cost_added": 0
+  },
+  "scientific_scope": "analytic independent formulas + original CPU-WRF recorded surface reader; no forecast skill claim",
+  "GPU_demo": "PENDING; lane contract forbids GPU execution here",
+  "artifacts": [
+    {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/u2-optim/OP07-gate.xml",
+      "sha256": "5df58675ed9643883355954f1e9bf35385a3e7890498f9f9f003dffb3a7be450"
+    },
+    {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/u2-optim/OP11-noah.xml",
+      "sha256": "efd0019057ec16119e247868c6b02fbdfd998e79ed6745ed0f8198f7c2104f12"
+    },
+    {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/u2-optim/OP12-binding.xml",
+      "sha256": "812e7ab00fddeea0adf4ba47681846f00662823c0ab099daa8544f76f36ff22d"
+    },
+    {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/u2-optim/OP13-archive.xml",
+      "sha256": "d791f9d51e50007a59f8e0faf160f0118856b42bd0910b2efaf90ac48a017903"
+    },
+    {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/u2-optim/OP14-mutant.xml",
+      "sha256": "ed03f91b8b85970ecd6a239876a277dd58bebff2aef637d19d8d13c14551a637"
+    },
+    {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/u2-optim/OP15-mutant.xml",
+      "sha256": "66772a0000ebe93e3906665076b8936b0b5f7fd8b7154a90a5e7d5d8b8941513"
+    },
+    {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/u2-optim/OP08-default-source-identity.json",
+      "sha256": "dbea219e2bc0aeab5aebb323fe249f53bc574bf4c2b923eaa42cb2c0bbc92a9e"
+    },
+    {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/u2-optim/OP10-cli-cost.json",
+      "sha256": "8f8b26ffd76e2dcb4c26a6f5d3695a1d1362c176569ba2a78fae6e1b1b798b10"
+    }
+  ],
+  "cache": "NONE; JAX_PLATFORMS=cpu GPUWRF_JAX_CACHE=0; CPU8,24 nice19 OMP1; explicit QUIET guards; timeout60/180/300/900"
+}

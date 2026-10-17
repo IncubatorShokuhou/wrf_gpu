@@ -1,0 +1,55 @@
+{
+  "kind": "changed",
+  "source": "b5f9d737c21fec5c4ae97d877693a19ea77972cf",
+  "command": [
+    "<USER_HOME>/miniconda3/bin/python",
+    "-m",
+    "pytest",
+    "-q",
+    "-rs",
+    "-p",
+    "no:cacheprovider",
+    "--basetemp",
+    "<USER_HOME>/wrf_gpu2_lanes/s2-integrate/pytest",
+    "--junitxml",
+    "<USER_HOME>/wrf_gpu2_lanes/s2-integrate/batch34/changed.xml",
+    "tests/test_t_wsmdz_wsm_callers.py",
+    "tests/v025/b_column/test_mp_re_activation.py",
+    "tests/v025/b_column/test_t_wsmdz_radius_restart.py",
+    "tests/test_heavy_cpu_tier.py",
+    "tests/v025/b_core/test_prod_inputs_selection.py",
+    "tests/test_v0234_b2_bounded_terminal_gate.py"
+  ],
+  "environment": {
+    "JAX_PLATFORMS": "cpu",
+    "GPUWRF_JAX_CACHE": "0",
+    "GPUWRF_FAST_DEFAULTS": "0",
+    "JAX_ENABLE_X64": "1",
+    "GPUWRF_CENSUS": "0",
+    "TMPDIR": "<DATA_ROOT>/wrf_gpu2/scratch/s2-integrate/batch34-tmp",
+    "JAX_COMPILATION_CACHE_DIR": "<DATA_ROOT>/wrf_gpu2/scratch/s2-integrate/batch34-cache",
+    "OMP_NUM_THREADS": "1"
+  },
+  "cap": "6G/noSwap",
+  "cache": "<DATA_ROOT>/wrf_gpu2/scratch/s2-integrate/batch34-cache",
+  "tmp": "<DATA_ROOT>/wrf_gpu2/scratch/s2-integrate/batch34-tmp",
+  "basetemp": "<USER_HOME>/wrf_gpu2_lanes/s2-integrate/pytest",
+  "platform": "cpu",
+  "GPU_runs": 0,
+  "work": "finalcomposed exactWSM54/de+tests75+vprepproofc987; manager requested fresh cappedgates",
+  "returncode": 0,
+  "elapsed_s": 21.582785470003728,
+  "RSS_KiB": 1499460,
+  "counts": {
+    "tests": 83,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 1
+  },
+  "skip_reasons": [
+    "heavy CPU test needs ~17 GiB; run with --run-heavy in a 24G RAM slot"
+  ],
+  "cache_tmp_pytest_deleted": true,
+  "status": "PASS",
+  "UTC": "2026-10-15T13:20:16.486269+00:00"
+}

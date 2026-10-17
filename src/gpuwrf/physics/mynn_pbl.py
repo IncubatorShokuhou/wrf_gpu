@@ -213,11 +213,16 @@ class MynnPBLColumnState:
         # WRF passes pi_phy independently of the hydrostatic pressure p1.
         "exner",
         "ni",
+        "spp_pattern",
+        # WRF MYNN passive number scalars beyond QNI (QNC, QNWFA, QNIFA; dict keyed
+        # by State leaf name, None when the MP carries none of them).
+        "passive",
     )
 
     def __init__(self, u, v, w, theta, qv, tke, p, rho, dz, km, kh, el, qc=None, qi=None,
                  qs=None, qsq=None, qc_bl=None, qi_bl=None, cldfra_bl=None,
-                 maxmf=None, maxwidth=None, ztop_plume=None, exner=None, ni=None) -> None:
+                 maxmf=None, maxwidth=None, ztop_plume=None, exner=None, ni=None, spp_pattern=None,
+                 passive=None) -> None:
         self.u = u
         self.v = v
         self.w = w
@@ -239,6 +244,8 @@ class MynnPBLColumnState:
         self.cldfra_bl = jnp.zeros_like(qv) if cldfra_bl is None else cldfra_bl
         self.exner = exner
         self.ni = ni
+        self.spp_pattern = spp_pattern
+        self.passive = passive
         for name, value in (("maxmf", maxmf), ("maxwidth", maxwidth), ("ztop_plume", ztop_plume)):
             setattr(self, name, jnp.zeros_like(qv[..., 0]) if value is None else value)
 
@@ -366,7 +373,8 @@ def _column_exner(state):
 
 
 def _ni_plume_kwargs(state):
-    return {} if state.ni is None else {'qni':state.ni}
+    return {**({} if state.ni is None else {'qni':state.ni}),
+            **({} if not state.passive else {'passive':state.passive})}
 
 
 def _specific_moisture_components(state: MynnPBLColumnState):
@@ -1364,6 +1372,9 @@ def _mym_turbulence(state: MynnPBLColumnState, qke, fltv, ustar, dx, xland=1.0,
     dfm = jnp.concatenate((zeros, dfm[..., 1:]), axis=-1)
     dfh = jnp.concatenate((zeros, dfh[..., 1:]), axis=-1)
     dfq = jnp.concatenate((zeros, dfq[..., 1:]), axis=-1)
+    if state.spp_pattern is not None:
+        from gpuwrf.physics.stochastic_spp import diffusion
+        dfm,dfh = diffusion(dfm,dfh,state.spp_pattern,_wrf_zw(state.dz))
     pdk = jnp.concatenate((zeros, pdk[..., 1:]), axis=-1)
     qshear = jnp.concatenate((zeros, qshear[..., 1:]), axis=-1)
     qbuoy = jnp.concatenate((zeros, qbuoy[..., 1:]), axis=-1)
@@ -1765,7 +1776,9 @@ def _apply_mean_tendencies_with_clouds(state, turb, dt, flux, wind, rhosfc, mf=N
         return apply_mean_cloudmix(state, turb, dt, flux, wind, rhosfc, mf, diss_heat=diss_heat)
     u, v, theta, qv = _apply_mean_tendencies_legacy(state, turb, dt, flux, wind, rhosfc, mf, diss_heat=diss_heat)
     result = (u, v, theta, qv, state.qc, state.qi)
-    return result if state.ni is None else result + (state.ni,)
+    result = result if state.ni is None else result + (state.ni,)
+    # bl_mynn_cloudmix=0: WRF keeps qnc2=qnc etc. (no number mixing).
+    return result if not state.passive else result + (state.passive,)
 
 
 def _apply_mean_tendencies(state, turb, dt, flux, wind, rhosfc, mf=None, diss_heat=None):
@@ -1819,6 +1832,7 @@ def _edmf_arrays_from_state(state, flux, fltv, pblh, dt, dx, *, qc_bl=None, cldf
         psig_shcu=_edmf_scale_aware_psig(dx, pblh),
         **_edmf_cloud_base_kwargs(state, pblh, qc_bl, cldfra_bl),
         **_ni_plume_kwargs(state),
+        **({} if state.spp_pattern is None else {"spp_pattern":state.spp_pattern}),
     )
 
 
@@ -1870,6 +1884,7 @@ def _step_mynn_pbl_impl_with_pblh(state: MynnPBLColumnState, dt: float, debug: b
             qs=_specific_snow_content(state),
             qsq=state.qsq,
             pblh=pblh0,
+            **({} if state.spp_pattern is None else {"spp_pattern":state.spp_pattern}),
         )
         if edmf:
             mf = _edmf_arrays_from_state(state, flux, fltv, pblh0, dt, dx,
@@ -1914,6 +1929,8 @@ def _step_mynn_pbl_impl_with_pblh(state: MynnPBLColumnState, dt: float, debug: b
         **_mynn_dheat_kwargs(qke_new, turb["el"], state.p))
     u, v, theta, qv, qc, qi = means[:6]
     ni_update = {} if state.ni is None else {'ni':means[6]}
+    if state.passive:
+        ni_update['passive'] = means[-1]
     km, kh = _retrieve_exchange_coeffs(state, turb)
     tke = 0.5 * qke_new
 

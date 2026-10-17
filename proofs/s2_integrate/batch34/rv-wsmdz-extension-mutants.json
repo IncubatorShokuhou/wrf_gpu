@@ -1,0 +1,296 @@
+{
+ "snapshot": "<USER_HOME>/wrf_gpu2_lanes/rv-t-wsmdz/snapshot",
+ "gate": "tests/test_t_wsmdz_wsm_callers.py",
+ "source": "de374a3c00e8bf0480f8ab91b873898916074264",
+ "mutants": {
+  "M1_drop_wsm_wdm_radius_selection": {
+   "rc": 1,
+   "tests": 44,
+   "failures": [
+    [
+     "test_wsm_radius_selection_matches_compiled_pristine_physics_init[mp4_use1]",
+     "assert False is True\n +  where False = <function mp_re_active at 0x7c1d2823c180>(mp_physics=4, use_mp_re=1)\n +    where <function mp_re_active at 0x7c1d2823c180"
+    ],
+    [
+     "test_wsm_radius_selection_matches_compiled_pristine_physics_init[mp6_use1]",
+     "assert False is True\n +  where False = <function mp_re_active at 0x7c1d2823c180>(mp_physics=6, use_mp_re=1)\n +    where <function mp_re_active at 0x7c1d2823c180"
+    ],
+    [
+     "test_wsm_radius_selection_matches_compiled_pristine_physics_init[mp14_use1]",
+     "assert False is True\n +  where False = <function mp_re_active at 0x7c1d2823c180>(mp_physics=14, use_mp_re=1)\n +    where <function mp_re_active at 0x7c1d2823c18"
+    ],
+    [
+     "test_wsm_radius_selection_matches_compiled_pristine_physics_init[mp16_use1]",
+     "assert False is True\n +  where False = <function mp_re_active at 0x7c1d2823c180>(mp_physics=16, use_mp_re=1)\n +    where <function mp_re_active at 0x7c1d2823c18"
+    ],
+    [
+     "test_wsm_radius_selection_matches_compiled_pristine_physics_init[mp26_use1]",
+     "assert False is True\n +  where False = <function mp_re_active at 0x7c1d2823c180>(mp_physics=26, use_mp_re=1)\n +    where <function mp_re_active at 0x7c1d2823c18"
+    ],
+    [
+     "test_wsm_radii_are_seeded_held_and_forwarded_to_both_rrtmg_calls[4]",
+     "assert False\n +  where False = <function mp_re_active at 0x7c1d2823c180>(mp_physics=4)\n +    where <function mp_re_active at 0x7c1d2823c180> = R.mp_re_active"
+    ],
+    [
+     "test_wsm_radii_are_seeded_held_and_forwarded_to_both_rrtmg_calls[6]",
+     "assert False\n +  where False = <function mp_re_active at 0x7c1d2823c180>(mp_physics=6)\n +    where <function mp_re_active at 0x7c1d2823c180> = R.mp_re_active"
+    ],
+    [
+     "test_wsm_radii_are_seeded_held_and_forwarded_to_both_rrtmg_calls[14]",
+     "assert False\n +  where False = <function mp_re_active at 0x7c1d2823c180>(mp_physics=14)\n +    where <function mp_re_active at 0x7c1d2823c180> = R.mp_re_active"
+    ],
+    [
+     "test_wsm_radii_are_seeded_held_and_forwarded_to_both_rrtmg_calls[16]",
+     "assert False\n +  where False = <function mp_re_active at 0x7c1d2823c180>(mp_physics=16)\n +    where <function mp_re_active at 0x7c1d2823c180> = R.mp_re_active"
+    ],
+    [
+     "test_wsm_radii_are_seeded_held_and_forwarded_to_both_rrtmg_calls[26]",
+     "assert False\n +  where False = <function mp_re_active at 0x7c1d2823c180>(mp_physics=26)\n +    where <function mp_re_active at 0x7c1d2823c180> = R.mp_re_active"
+    ]
+   ],
+   "errors": [],
+   "tail": [
+    "10 failed, 34 passed in 6.66s"
+   ],
+   "killed": true
+  },
+  "M4_wdm7_reseeds_disabled_radii": {
+   "rc": 1,
+   "tests": 44,
+   "failures": [
+    [
+     "test_wsm_radius_leaves_stay_absent_when_wrf_disables_them[26]",
+     "assert False\n +  where False = all(<generator object test_wsm_radius_leaves_stay_absent_when_wrf_disables_them.<locals>.<genexpr> at 0x73226d4ac120>)"
+    ]
+   ],
+   "errors": [],
+   "tail": [
+    "1 failed, 43 passed in 7.83s"
+   ],
+   "killed": true
+  },
+  "M2_delz_legacy_gravity": {
+   "rc": 1,
+   "tests": 44,
+   "failures": [
+    [
+     "test_wsm_caller_den_delz_are_pristine_post_rk_prep[1-1-float32-3]",
+     "AssertionError: (3, array([0.0160141 , 0.02038574, 0.02566528]), array([0.00024796, 0.00024796, 0.00025177], dtype=float32))\nassert np.False_\n +  where np.False"
+    ],
+    [
+     "test_wsm_caller_den_delz_are_pristine_post_rk_prep[1-1-float32-4]",
+     "AssertionError: (4, array([0.0160141 , 0.02038574, 0.02566528]), array([0.00024796, 0.00024796, 0.00025177], dtype=float32))\nassert np.False_\n +  where np.False"
+    ],
+    [
+     "test_wsm_caller_den_delz_are_pristine_post_rk_prep[1-1-float32-6]",
+     "AssertionError: (6, array([0.0160141 , 0.02038574, 0.02566528]), array([0.00024796, 0.00024796, 0.00025177], dtype=float32))\nassert np.False_\n +  where np.False"
+    ],
+    [
+     "test_wsm_caller_den_delz_are_pristine_post_rk_prep[1-1-float32-14]",
+     "AssertionError: (14, array([0.0160141 , 0.02038574, 0.02566528]), array([0.00024796, 0.00024796, 0.00025177], dtype=float32))\nassert np.False_\n +  where np.Fals"
+    ],
+    [
+     "test_wsm_caller_den_delz_are_pristine_post_rk_prep[1-1-float32-16]",
+     "AssertionError: (16, array([0.0160141 , 0.02038574, 0.02566528]), array([0.00024796, 0.00024796, 0.00025177], dtype=float32))\nassert np.False_\n +  where np.Fals"
+    ],
+    [
+     "test_wsm_caller_den_delz_are_pristine_post_rk_prep[1-1-float32-26]",
+     "AssertionError: (26, array([0.0160141 , 0.02038574, 0.02566528]), array([0.00024796, 0.00024796, 0.00025177], dtype=float32))\nassert np.False_\n +  where np.Fals"
+    ],
+    [
+     "test_wsm_caller_den_delz_are_pristine_post_rk_prep[1-1-float64-3]",
+     "AssertionError: (3, array([0.0160141 , 0.02038574, 0.02566528]), array([0.00024796, 0.00024796, 0.00025177], dtype=float32))\nassert np.False_\n +  where np.False"
+    ],
+    [
+     "test_wsm_caller_den_delz_are_pristine_post_rk_prep[1-1-float64-4]",
+     "AssertionError: (4, array([0.0160141 , 0.02038574, 0.02566528]), array([0.00024796, 0.00024796, 0.00025177], dtype=float32))\nassert np.False_\n +  where np.False"
+    ],
+    [
+     "test_wsm_caller_den_delz_are_pristine_post_rk_prep[1-1-float64-6]",
+     "AssertionError: (6, array([0.0160141 , 0.02038574, 0.02566528]), array([0.00024796, 0.00024796, 0.00025177], dtype=float32))\nassert np.False_\n +  where np.False"
+    ],
+    [
+     "test_wsm_caller_den_delz_are_pristine_post_rk_prep[1-1-float64-14]",
+     "AssertionError: (14, array([0.0160141 , 0.02038574, 0.02566528]), array([0.00024796, 0.00024796, 0.00025177], dtype=float32))\nassert np.False_\n +  where np.Fals"
+    ],
+    [
+     "test_wsm_caller_den_delz_are_pristine_post_rk_prep[1-1-float64-16]",
+     "AssertionError: (16, array([0.0160141 , 0.02038574, 0.02566528]), array([0.00024796, 0.00024796, 0.00025177], dtype=float32))\nassert np.False_\n +  where np.Fals"
+    ],
+    [
+     "test_wsm_caller_den_delz_are_pristine_post_rk_prep[1-1-float64-26]",
+     "AssertionError: (26, array([0.0160141 , 0.02038574, 0.02566528]), array([0.00024796, 0.00024796, 0.00025177], dtype=float32))\nassert np.False_\n +  where np.Fals"
+    ],
+    [
+     "test_wsm_caller_den_delz_are_pristine_post_rk_prep[2-3-float32-3]",
+     "AssertionError: (3, array([0.0160141 , 0.02038574, 0.02566528]), array([0.00024796, 0.00024796, 0.00025177], dtype=float32))\nassert np.False_\n +  where np.False"
+    ],
+    [
+     "test_wsm_caller_den_delz_are_pristine_post_rk_prep[2-3-float32-4]",
+     "AssertionError: (4, array([0.0160141 , 0.02038574, 0.02566528]), array([0.00024796, 0.00024796, 0.00025177], dtype=float32))\nassert np.False_\n +  where np.False"
+    ],
+    [
+     "test_wsm_caller_den_delz_are_pristine_post_rk_prep[2-3-float32-6]",
+     "AssertionError: (6, array([0.0160141 , 0.02038574, 0.02566528]), array([0.00024796, 0.00024796, 0.00025177], dtype=float32))\nassert np.False_\n +  where np.False"
+    ],
+    [
+     "test_wsm_caller_den_delz_are_pristine_post_rk_prep[2-3-float32-14]",
+     "AssertionError: (14, array([0.0160141 , 0.02038574, 0.02566528]), array([0.00024796, 0.00024796, 0.00025177], dtype=float32))\nassert np.False_\n +  where np.Fals"
+    ],
+    [
+     "test_wsm_caller_den_delz_are_pristine_post_rk_prep[2-3-float32-16]",
+     "AssertionError: (16, array([0.0160141 , 0.02038574, 0.02566528]), array([0.00024796, 0.00024796, 0.00025177], dtype=float32))\nassert np.False_\n +  where np.Fals"
+    ],
+    [
+     "test_wsm_caller_den_delz_are_pristine_post_rk_prep[2-3-float32-26]",
+     "AssertionError: (26, array([0.0160141 , 0.02038574, 0.02566528]), array([0.00024796, 0.00024796, 0.00025177], dtype=float32))\nassert np.False_\n +  where np.Fals"
+    ],
+    [
+     "test_wsm_caller_den_delz_are_pristine_post_rk_prep[2-3-float64-3]",
+     "AssertionError: (3, array([0.0160141 , 0.02038574, 0.02566528]), array([0.00024796, 0.00024796, 0.00025177], dtype=float32))\nassert np.False_\n +  where np.False"
+    ],
+    [
+     "test_wsm_caller_den_delz_are_pristine_post_rk_prep[2-3-float64-4]",
+     "AssertionError: (4, array([0.0160141 , 0.02038574, 0.02566528]), array([0.00024796, 0.00024796, 0.00025177], dtype=float32))\nassert np.False_\n +  where np.False"
+    ],
+    [
+     "test_wsm_caller_den_delz_are_pristine_post_rk_prep[2-3-float64-6]",
+     "AssertionError: (6, array([0.0160141 , 0.02038574, 0.02566528]), array([0.00024796, 0.00024796, 0.00025177], dtype=float32))\nassert np.False_\n +  where np.False"
+    ],
+    [
+     "test_wsm_caller_den_delz_are_pristine_post_rk_prep[2-3-float64-14]",
+     "AssertionError: (14, array([0.0160141 , 0.02038574, 0.02566528]), array([0.00024796, 0.00024796, 0.00025177], dtype=float32))\nassert np.False_\n +  where np.Fals"
+    ],
+    [
+     "test_wsm_caller_den_delz_are_pristine_post_rk_prep[2-3-float64-16]",
+     "AssertionError: (16, array([0.0160141 , 0.02038574, 0.02566528]), array([0.00024796, 0.00024796, 0.00025177], dtype=float32))\nassert np.False_\n +  where np.Fals"
+    ],
+    [
+     "test_wsm_caller_den_delz_are_pristine_post_rk_prep[2-3-float64-26]",
+     "AssertionError: (26, array([0.0160141 , 0.02038574, 0.02566528]), array([0.00024796, 0.00024796, 0.00025177], dtype=float32))\nassert np.False_\n +  where np.Fals"
+    ]
+   ],
+   "errors": [],
+   "tail": [
+    "24 failed, 20 passed in 8.21s"
+   ],
+   "killed": true
+  },
+  "M3_den_legacy_thompson_density": {
+   "rc": 1,
+   "tests": 44,
+   "failures": [
+    [
+     "test_wsm_caller_den_delz_are_pristine_post_rk_prep[1-1-float32-3]",
+     "AssertionError: (3, array([0.01398461, 0.0165637 , 0.01972844]), array([9.45010369e-06, 7.64022232e-06, 6.24407779e-06]))\nassert np.False_\n +  where np.False_ ="
+    ],
+    [
+     "test_wsm_caller_den_delz_are_pristine_post_rk_prep[1-1-float32-4]",
+     "AssertionError: (4, array([0.01398461, 0.0165637 , 0.01972844]), array([9.45010369e-06, 7.64022232e-06, 6.24407779e-06]))\nassert np.False_\n +  where np.False_ ="
+    ],
+    [
+     "test_wsm_caller_den_delz_are_pristine_post_rk_prep[1-1-float32-6]",
+     "AssertionError: (6, array([0.01398461, 0.0165637 , 0.01972844]), array([9.45010369e-06, 7.64022232e-06, 6.24407779e-06]))\nassert np.False_\n +  where np.False_ ="
+    ],
+    [
+     "test_wsm_caller_den_delz_are_pristine_post_rk_prep[1-1-float32-14]",
+     "AssertionError: (14, array([0.01398461, 0.0165637 , 0.01972844]), array([9.45010369e-06, 7.64022232e-06, 6.24407779e-06]))\nassert np.False_\n +  where np.False_ "
+    ],
+    [
+     "test_wsm_caller_den_delz_are_pristine_post_rk_prep[1-1-float32-16]",
+     "AssertionError: (16, array([0.01398461, 0.0165637 , 0.01972844]), array([9.45010369e-06, 7.64022232e-06, 6.24407779e-06]))\nassert np.False_\n +  where np.False_ "
+    ],
+    [
+     "test_wsm_caller_den_delz_are_pristine_post_rk_prep[1-1-float32-26]",
+     "AssertionError: (26, array([0.01398461, 0.0165637 , 0.01972844]), array([9.45010369e-06, 7.64022232e-06, 6.24407779e-06]))\nassert np.False_\n +  where np.False_ "
+    ],
+    [
+     "test_wsm_caller_den_delz_are_pristine_post_rk_prep[1-1-float64-3]",
+     "AssertionError: (3, array([0.01398457, 0.01656374, 0.0197284 ]), array([9.45010369e-06, 7.64022232e-06, 6.24407779e-06]))\nassert np.False_\n +  where np.False_ ="
+    ],
+    [
+     "test_wsm_caller_den_delz_are_pristine_post_rk_prep[1-1-float64-4]",
+     "AssertionError: (4, array([0.01398457, 0.01656374, 0.0197284 ]), array([9.45010369e-06, 7.64022232e-06, 6.24407779e-06]))\nassert np.False_\n +  where np.False_ ="
+    ],
+    [
+     "test_wsm_caller_den_delz_are_pristine_post_rk_prep[1-1-float64-6]",
+     "AssertionError: (6, array([0.01398457, 0.01656374, 0.0197284 ]), array([9.45010369e-06, 7.64022232e-06, 6.24407779e-06]))\nassert np.False_\n +  where np.False_ ="
+    ],
+    [
+     "test_wsm_caller_den_delz_are_pristine_post_rk_prep[1-1-float64-14]",
+     "AssertionError: (14, array([0.01398457, 0.01656374, 0.0197284 ]), array([9.45010369e-06, 7.64022232e-06, 6.24407779e-06]))\nassert np.False_\n +  where np.False_ "
+    ],
+    [
+     "test_wsm_caller_den_delz_are_pristine_post_rk_prep[1-1-float64-16]",
+     "AssertionError: (16, array([0.01398457, 0.01656374, 0.0197284 ]), array([9.45010369e-06, 7.64022232e-06, 6.24407779e-06]))\nassert np.False_\n +  where np.False_ "
+    ],
+    [
+     "test_wsm_caller_den_delz_are_pristine_post_rk_prep[1-1-float64-26]",
+     "AssertionError: (26, array([0.01398457, 0.01656374, 0.0197284 ]), array([9.45010369e-06, 7.64022232e-06, 6.24407779e-06]))\nassert np.False_\n +  where np.False_ "
+    ],
+    [
+     "test_wsm_caller_den_delz_are_pristine_post_rk_prep[2-3-float32-3]",
+     "AssertionError: (3, array([0.01398461, 0.0165637 , 0.01972844]), array([9.45010369e-06, 7.64022232e-06, 6.24407779e-06]))\nassert np.False_\n +  where np.False_ ="
+    ],
+    [
+     "test_wsm_caller_den_delz_are_pristine_post_rk_prep[2-3-float32-4]",
+     "AssertionError: (4, array([0.01398461, 0.0165637 , 0.01972844]), array([9.45010369e-06, 7.64022232e-06, 6.24407779e-06]))\nassert np.False_\n +  where np.False_ ="
+    ],
+    [
+     "test_wsm_caller_den_delz_are_pristine_post_rk_prep[2-3-float32-6]",
+     "AssertionError: (6, array([0.01398461, 0.0165637 , 0.01972844]), array([9.45010369e-06, 7.64022232e-06, 6.24407779e-06]))\nassert np.False_\n +  where np.False_ ="
+    ],
+    [
+     "test_wsm_caller_den_delz_are_pristine_post_rk_prep[2-3-float32-14]",
+     "AssertionError: (14, array([0.01398461, 0.0165637 , 0.01972844]), array([9.45010369e-06, 7.64022232e-06, 6.24407779e-06]))\nassert np.False_\n +  where np.False_ "
+    ],
+    [
+     "test_wsm_caller_den_delz_are_pristine_post_rk_prep[2-3-float32-16]",
+     "AssertionError: (16, array([0.01398461, 0.0165637 , 0.01972844]), array([9.45010369e-06, 7.64022232e-06, 6.24407779e-06]))\nassert np.False_\n +  where np.False_ "
+    ],
+    [
+     "test_wsm_caller_den_delz_are_pristine_post_rk_prep[2-3-float32-26]",
+     "AssertionError: (26, array([0.01398461, 0.0165637 , 0.01972844]), array([9.45010369e-06, 7.64022232e-06, 6.24407779e-06]))\nassert np.False_\n +  where np.False_ "
+    ],
+    [
+     "test_wsm_caller_den_delz_are_pristine_post_rk_prep[2-3-float64-3]",
+     "AssertionError: (3, array([0.01398457, 0.01656374, 0.0197284 ]), array([9.45010369e-06, 7.64022232e-06, 6.24407779e-06]))\nassert np.False_\n +  where np.False_ ="
+    ],
+    [
+     "test_wsm_caller_den_delz_are_pristine_post_rk_prep[2-3-float64-4]",
+     "AssertionError: (4, array([0.01398457, 0.01656374, 0.0197284 ]), array([9.45010369e-06, 7.64022232e-06, 6.24407779e-06]))\nassert np.False_\n +  where np.False_ ="
+    ],
+    [
+     "test_wsm_caller_den_delz_are_pristine_post_rk_prep[2-3-float64-6]",
+     "AssertionError: (6, array([0.01398457, 0.01656374, 0.0197284 ]), array([9.45010369e-06, 7.64022232e-06, 6.24407779e-06]))\nassert np.False_\n +  where np.False_ ="
+    ],
+    [
+     "test_wsm_caller_den_delz_are_pristine_post_rk_prep[2-3-float64-14]",
+     "AssertionError: (14, array([0.01398457, 0.01656374, 0.0197284 ]), array([9.45010369e-06, 7.64022232e-06, 6.24407779e-06]))\nassert np.False_\n +  where np.False_ "
+    ],
+    [
+     "test_wsm_caller_den_delz_are_pristine_post_rk_prep[2-3-float64-16]",
+     "AssertionError: (16, array([0.01398457, 0.01656374, 0.0197284 ]), array([9.45010369e-06, 7.64022232e-06, 6.24407779e-06]))\nassert np.False_\n +  where np.False_ "
+    ],
+    [
+     "test_wsm_caller_den_delz_are_pristine_post_rk_prep[2-3-float64-26]",
+     "AssertionError: (26, array([0.01398457, 0.01656374, 0.0197284 ]), array([9.45010369e-06, 7.64022232e-06, 6.24407779e-06]))\nassert np.False_\n +  where np.False_ "
+    ]
+   ],
+   "errors": [],
+   "tail": [
+    "24 failed, 20 passed in 7.67s"
+   ],
+   "killed": true
+  }
+ },
+ "control": {
+  "rc": 0,
+  "tests": 44,
+  "failures": [],
+  "errors": [],
+  "tail": [
+   "44 passed in 8.95s"
+  ]
+ }
+}

@@ -385,3 +385,258 @@ def test_km3_moist_diffusion_reaches_the_rk_scalar_update(monkeypatch):
     # final-stage moisture limiter is nonlinear (measured 3.9 % of max). Deleting the routing gives 100 %.
     assert np.abs(diff - expected).max() <= 0.10 * np.abs(expected).max()
     assert np.corrcoef(diff.ravel(), expected.ravel())[0, 1] > 0.99
+# --------------------------------------------------------------------------- #
+# km_opt=2 prognostic LES TKE leaf (WRF grid%tke_2): seeding, wiring, restart  #
+# --------------------------------------------------------------------------- #
+def test_km2_tke_leaf_seeded_real_and_bundle_has_tke_tend():
+    import dataclasses
+
+    from gpuwrf.contracts.precision import LES_TKE_LEAVES, STATE_FIELD_ORDER, les_tke_active
+    from gpuwrf.contracts.state import State
+    from gpuwrf.runtime.les3d_km3 import les3d_km3_forward_tendencies
+
+    assert State.__slots__[88] == "tke" and STATE_FIELD_ORDER[88] == "tke" and LES_TKE_LEAVES == ("tke",)
+    state, nl2 = _toy_case(km_opt=2)
+    assert les_tke_active(nl2) and not les_tke_active(dataclasses.replace(nl2, km_opt=3))
+    assert state.tke is None
+    state = state.replace(tke=jnp.full(state.theta.shape, 0.2, dtype=jnp.float32))
+    assert state.tke.dtype == jnp.float32
+    bundle = les3d_km3_forward_tendencies(state, nl2)
+    tke_t = np.asarray(bundle.tke_t)
+    assert tke_t.shape == state.theta.shape and np.isfinite(tke_t).all() and np.abs(tke_t).max() > 0
+    assert les3d_km3_forward_tendencies(state, dataclasses.replace(nl2, km_opt=3)).tke_t is None
+    with pytest.raises(ValueError, match="State.tke"):
+        les3d_km3_forward_tendencies(state.replace(tke=None), nl2)
+
+
+def test_km2_initial_carry_seeds_only_cold_start():
+    from gpuwrf.runtime.operational_mode import _initial_carry_for_run
+
+    state, nl = _toy_case(km_opt=2)
+    nl = dataclasses_replace(nl, mp_physics=0, bl_pbl_physics=0, sf_sfclay_physics=0,
+                            ra_lw_physics=0, ra_sw_physics=0, cu_physics=0, use_noahmp=False)
+    cold = _initial_carry_for_run(state, nl)
+    assert cold.state.tke.dtype == jnp.float32
+    np.testing.assert_array_equal(np.asarray(cold.state.tke), np.zeros(state.theta.shape, np.float32))
+    populated = state.replace(tke=jnp.full(state.theta.shape, .25, dtype=jnp.float32))
+    resumed = _initial_carry_for_run(populated, nl)
+    np.testing.assert_array_equal(np.asarray(resumed.state.tke), np.asarray(populated.tke))
+    assert _initial_carry_for_run(state, dataclasses_replace(nl, km_opt=3)).state.tke is None
+
+
+def test_km2_tke_stage_update_is_rk_update_scalar_with_bound():
+    """les_tke_stage_update = WRF rk_update_scalar (+bound_tke) when advection is zero (uniform TKE, no wind)."""
+    from gpuwrf.runtime.les3d_km3 import les_tke_stage_update
+    from gpuwrf.runtime.operational_mode import _stage_transport_velocities
+
+    state, nl2 = _toy_case(km_opt=2)
+    zeros_u = jnp.zeros_like(state.u)
+    state = state.replace(u=zeros_u, v=jnp.zeros_like(state.v), w=jnp.zeros_like(state.w),
+                          tke=jnp.full(state.theta.shape, 0.5, dtype=jnp.float32))
+    origin = state
+    mu_new = state.mu_total * 1.001
+    stage_state = state.replace(mu_total=mu_new)
+    tend = jnp.asarray(np.random.default_rng(3).normal(0.0, 50.0, state.theta.shape))
+    out = les_tke_stage_update(stage_state, origin, tke_tend=tend, rk_step=1, dt_rk=2.0, namelist=nl2,
+                               transport_velocities=_stage_transport_velocities(stage_state, nl2))
+    m = nl2.metrics
+    mass_old = np.asarray(m.c1h)[:, None, None] * np.asarray(origin.mu_total)[None] + np.asarray(m.c2h)[:, None, None]
+    mass_new = np.asarray(m.c1h)[:, None, None] * np.asarray(mu_new)[None] + np.asarray(m.c2h)[:, None, None]
+    expect = np.clip((mass_old * 0.5 + 2.0 * np.asarray(tend)) / mass_new, 0.0, 1000.0)
+    np.testing.assert_allclose(np.asarray(out.tke, np.float64), expect, rtol=2e-6, atol=1e-6)
+    assert np.asarray(out.tke).min() >= 0.0 and out.tke.dtype == jnp.float32
+
+
+def test_km2_tke_restart_roundtrip_and_e78(tmp_path):
+    import pickle
+
+    from gpuwrf.io.restart import read_restart, write_restart
+    from gpuwrf.io.wrfrst_netcdf import read_wrfrst_carry, write_wrfrst_carry
+    from gpuwrf.runtime.operational_state import initial_operational_carry
+
+    state, nl2 = _toy_case(km_opt=2)
+    tke = jnp.asarray(np.random.default_rng(5).uniform(0.0, 3.0, state.theta.shape), jnp.float32)
+    carry = initial_operational_carry(state.replace(tke=tke))
+    path = tmp_path / "km2.pkl"
+    write_restart(carry, nl2, nl2.grid, 4, path)
+    back = read_restart(path)[0]
+    assert np.asarray(back.state.tke).tobytes() == np.asarray(tke).tobytes() and back.state.tke.dtype == jnp.float32
+    nc = tmp_path / "km2.nc"
+    write_wrfrst_carry(carry, nl2.grid, nl2, nc, valid_time="2026-02-28_00:00:12",
+                       run_start="2026-02-28_00:00:00", step_index=2)
+    assert np.asarray(read_wrfrst_carry(nc)[0].state.tke).tobytes() == np.asarray(tke).tobytes()
+    # E78: a km_opt=2 restart without tke must fail closed (no silent cold start).
+    with path.open("rb") as stream:
+        payload = pickle.load(stream)
+    payload["carry"]["state_field_order"].remove("tke")
+    del payload["carry"]["state_fields"]["tke"]
+    with path.open("wb") as stream:
+        pickle.dump(payload, stream)
+    with pytest.raises(ValueError, match="LES TKE.*E78"):
+        read_restart(path)
+
+
+def test_km2_operational_wiring_adds_bundle_not_scaffold():
+    from gpuwrf.runtime.les3d_km3 import les3d_km3_forward_tendencies
+    from gpuwrf.runtime.operational_mode import _augment_large_step_tendencies
+
+    state, nl2 = _toy_case(km_opt=2)
+    state = state.replace(tke=jnp.full(state.theta.shape, 0.3, dtype=jnp.float32))
+    _, nl0 = _toy_case(km_opt=0)
+    t0 = _augment_large_step_tendencies(state, nl0.tendencies, dataclasses_replace(nl0, diff_opt=0), rk_step=1)
+    t2 = _augment_large_step_tendencies(state, nl2.tendencies, nl2, rk_step=1)
+    bundle = les3d_km3_forward_tendencies(state, nl2)
+    for field, part in (("u", bundle.u_t), ("v", bundle.v_t), ("w", bundle.w_t), ("theta", bundle.theta_t)):
+        delta = np.asarray(getattr(t2, field) - getattr(t0, field))
+        np.testing.assert_allclose(delta, np.asarray(part), rtol=1e-12, atol=1e-9 * np.abs(part).max())
+    assert np.abs(np.asarray(bundle.u_t)).max() > 0
+
+
+@pytest.mark.parametrize("use_flux", [False, True])
+def test_km2_tke_reaches_every_operational_rk_stage(monkeypatch, use_flux):
+    from gpuwrf.runtime import les3d_km3
+    from gpuwrf.runtime.operational_mode import _rk_scan_step
+    from gpuwrf.runtime.operational_state import initial_operational_carry
+
+    state, nl = _toy_case(km_opt=2, use_flux_advection=use_flux)
+    state = state.replace(tke=jnp.full(state.theta.shape, .3, dtype=jnp.float32))
+    seen = []
+    real = les3d_km3.les_tke_stage_update
+
+    def capture(state, origin, **kw):
+        seen.append(kw["rk_step"])
+        assert kw["transport_velocities"] is not None
+        return real(state, origin, **kw)
+
+    monkeypatch.setattr(les3d_km3, "les_tke_stage_update", capture)
+    jax.clear_caches()
+    out = _rk_scan_step(initial_operational_carry(state), nl)
+    assert seen == [1, 2, 3]
+    assert np.isfinite(np.asarray(out.state.tke)).all()
+    assert out.state.tke.dtype == jnp.float32
+    assert np.abs(np.asarray(out.state.tke) - np.asarray(state.tke)).max() > 1e-5
+
+
+def _sms_case():
+    from gpuwrf.contracts.precision import SMS_CARRY_LEAVES
+    state, nl = _toy_case(km_opt=5, bl_pbl_physics=0, use_flux_advection=True)
+    nl = dataclasses_replace(nl, mp_physics=0, sf_sfclay_physics=0, cu_physics=0,
+                            ra_lw_physics=0, ra_sw_physics=0, use_noahmp=False)
+    fields = {n: jnp.full(state.xland.shape, (i+1)*.001, jnp.float32)
+              for i,n in enumerate(SMS_CARRY_LEAVES)}
+    fields.update(sms_wspd=jnp.full(state.xland.shape, 5., jnp.float32),
+                  sms_br=jnp.full(state.xland.shape, -.1, jnp.float32),
+                  sms_rmol=jnp.full(state.xland.shape, -.002, jnp.float32),
+                  sms_ustm=jnp.full(state.xland.shape, .12, jnp.float32),
+                  hfx=jnp.full(state.xland.shape,25.,jnp.float32),
+                  ustar=jnp.full(state.xland.shape,.2,jnp.float32),
+                  tke=jnp.full(state.theta.shape, .3, jnp.float32))
+    return state.replace(**fields), nl
+
+
+def test_sms_initial_carry_preserves_every_held_leaf_and_cold_seeds_real():
+    from gpuwrf.contracts.precision import SMS_CARRY_LEAVES
+    from gpuwrf.runtime.operational_mode import _initial_carry_for_run
+    state, nl = _sms_case()
+    names = (*SMS_CARRY_LEAVES, 'tke')
+    cold = _initial_carry_for_run(state.replace(**dict.fromkeys(names)), nl).state
+    resumed = _initial_carry_for_run(state, nl).state
+    for n in names:
+        assert getattr(cold,n).dtype == jnp.float32
+        assert np.count_nonzero(np.asarray(getattr(cold,n))) == 0
+        np.testing.assert_array_equal(np.asarray(getattr(resumed,n)), np.asarray(getattr(state,n)))
+    off = _initial_carry_for_run(state.replace(**dict.fromkeys(names)), dataclasses_replace(nl,km_opt=3)).state
+    assert all(getattr(off,n) is None for n in names)
+
+
+def test_sms_restart_both_formats_byte_exact_and_missing_each_leaf_refused(tmp_path):
+    import pickle
+    from gpuwrf.contracts.precision import SMS_CARRY_LEAVES
+    from gpuwrf.io.restart import read_restart, write_restart
+    from gpuwrf.io.wrfrst_netcdf import read_wrfrst_carry, write_wrfrst_carry, _validate_state_field_order
+    from gpuwrf.contracts.state import State
+    from gpuwrf.runtime.operational_state import initial_operational_carry
+    state,nl = _sms_case(); carry = initial_operational_carry(state)
+    p=tmp_path/'sms.pkl'; nc=tmp_path/'sms.nc'
+    write_restart(carry,nl,nl.grid,4,p)
+    write_wrfrst_carry(carry,nl.grid,nl,nc,valid_time='2026-02-28_00:00:12',
+                      run_start='2026-02-28_00:00:00',step_index=2)
+    for back in (read_restart(p)[0], read_wrfrst_carry(nc)[0]):
+        for n in (*SMS_CARRY_LEAVES,'tke'):
+            assert np.asarray(getattr(back.state,n)).tobytes() == np.asarray(getattr(state,n)).tobytes()
+            assert getattr(back.state,n).dtype == jnp.float32
+    original=pickle.loads(p.read_bytes())
+    for n in (*SMS_CARRY_LEAVES,'tke'):
+        payload=pickle.loads(pickle.dumps(original))
+        payload['carry']['state_field_order'].remove(n)
+        del payload['carry']['state_fields'][n]
+        p.write_bytes(pickle.dumps(payload))
+        with pytest.raises(ValueError,match='E78'):read_restart(p)
+        with pytest.raises(ValueError,match='E78'):
+            _validate_state_field_order(tuple(x for x in State.__slots__ if x!=n),namelist=nl)
+    # Old inactive checkpoints remain legal; active SMS cannot silently seed.
+    _validate_state_field_order(tuple(x for x in State.__slots__ if x not in SMS_CARRY_LEAVES),
+                                namelist=dataclasses_replace(nl,km_opt=3))
+
+
+def test_sms_runtime_checkpoint_retains_each_leaf_and_refuses_missing_active_state(tmp_path):
+    import pickle
+    from gpuwrf.contracts.precision import SMS_CARRY_LEAVES
+    from gpuwrf.runtime.checkpoint import read_checkpoint, write_checkpoint
+    state, nl = _sms_case()
+    path = tmp_path / 'sms-checkpoint.pkl'
+    write_checkpoint(state, nl, nl.grid, 4, path)
+    back = read_checkpoint(path)[0]
+    names = (*SMS_CARRY_LEAVES, 'tke')
+    for name in names:
+        assert getattr(back, name).dtype == jnp.float32
+        assert np.asarray(getattr(back, name)).tobytes() == np.asarray(getattr(state, name)).tobytes()
+    original = path.read_bytes()
+    for name in names:
+        damaged = pickle.loads(original)
+        damaged['state_field_order'].remove(name)
+        damaged['state_field_count'] -= 1
+        del damaged['state_fields'][name]
+        path.write_bytes(pickle.dumps(damaged))
+        with pytest.raises(ValueError, match='E78'):
+            read_checkpoint(path)
+        path.write_bytes(original)
+        with pytest.raises(ValueError, match='E78'):
+            write_checkpoint(state.replace(**{name: None}), nl, nl.grid, 4, path)
+        assert path.read_bytes() == original
+
+
+def test_sms_rk_calls_full_bundle_once_and_advances_all_three_stages(monkeypatch):
+    from gpuwrf.runtime import les3d_km3 as bridge
+    from gpuwrf.runtime.operational_mode import _rk_scan_step
+    from gpuwrf.runtime.operational_state import initial_operational_carry
+    state,nl=_sms_case(); stages=[]; bundles=[]
+    real_stage,real_bundle=bridge.les_tke_stage_update,bridge.les3d_km3_forward_tendencies
+    def stage(s,o,**kw):
+        stages.append(kw['rk_step']); assert kw['transport_velocities'] is not None
+        return real_stage(s,o,**kw)
+    def bundle(s,n,**kw):
+        out=real_bundle(s,n,**kw);bundles.append(out);return out
+    monkeypatch.setattr(bridge,'les_tke_stage_update',stage)
+    monkeypatch.setattr(bridge,'les3d_km3_forward_tendencies',bundle)
+    jax.clear_caches()
+    out=_rk_scan_step(initial_operational_carry(state),nl)
+    assert stages == [1,2,3] and len(bundles)==1
+    assert out.state.tke.dtype == jnp.float32 and np.isfinite(np.asarray(out.state.tke)).all()
+    for n in ('sms_gamu','sms_gamv','pblh','hfx'):
+        np.testing.assert_array_equal(np.asarray(getattr(out.state,n)),np.asarray(bundles[0].sms_updates[n]))
+
+
+def test_sms_surface_zero_does_not_call_mynn(monkeypatch):
+    from gpuwrf.runtime import operational_mode as om
+    from gpuwrf.runtime.operational_state import initial_operational_carry
+    from gpuwrf.contracts.precision import SMS_CARRY_LEAVES
+    state,nl=_sms_case()
+    # MP remains selected, so this exercises the live physics step rather than
+    # the run_physics=False shortcut. Its WRF-order slot executes after RK.
+    nl=dataclasses_replace(nl,mp_physics=8,run_physics=True,sf_surface_physics=0)
+    def forbidden(*args,**kwargs):raise AssertionError('SMS sfclay=0 invoked MYNN')
+    monkeypatch.setattr(om,'surface_adapter',forbidden)
+    out=om._physics_step_forcing(initial_operational_carry(state),nl,0.,run_radiation=False)
+    for n in (*SMS_CARRY_LEAVES,'hfx','qfx','ustar'):
+        np.testing.assert_array_equal(np.asarray(getattr(out.state,n)),np.asarray(getattr(state,n)))

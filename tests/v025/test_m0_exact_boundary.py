@@ -15,6 +15,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 import pytest
+from _historical_artifacts import require_historical
 
 
 REPO = Path(__file__).resolve().parents[2]
@@ -880,6 +881,7 @@ def test_parent_death_kills_trapping_child_grandchild_and_spends_receipt(
 ):
     import wrf_source_authority as wsa
 
+    require_historical(parent.FAST_RUN_DIR / "namelist.input")
     authority = wsa.build_source_authority(
         namelist_path=parent.FAST_RUN_DIR / "namelist.input",
         environ={

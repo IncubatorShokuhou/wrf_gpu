@@ -1,0 +1,43 @@
+{
+  "utc": "2026-10-14T23:58:41.842055+00:00",
+  "argv": [
+    "<USER_HOME>/src/wrf_gpu2/scripts/with_ram_slot.sh",
+    "--label",
+    "v-run",
+    "--max",
+    "12G",
+    "--timeout",
+    "1800",
+    "--",
+    "bash",
+    "-c",
+    "if [ -e /tmp/wrf_gpu2_quiet ]; then echo QUIET; exit 3; fi; exec \"$@\"",
+    "v-run-pair",
+    "timeout",
+    "--signal=TERM",
+    "--kill-after=30",
+    "3660",
+    "<USER_HOME>/src/wrf_gpu2/scripts/with_gpu_lock.sh",
+    "--label",
+    "v-run",
+    "--timeout",
+    "1800",
+    "--",
+    "timeout",
+    "--signal=TERM",
+    "--kill-after=15",
+    "1800",
+    "<USER_HOME>/miniconda3/bin/python",
+    "<USER_HOME>/wrf_gpu2_lanes/v-run/round3/tools/batch.py",
+    "mp18",
+    "mp18_cu5"
+  ],
+  "source_rev": "5abde3224a50e5f67674bb1865aa0cc6d1ff1937",
+  "order_release": {
+    "mode": "QUEUE_BEHIND_ACTIVE_PREDECESSOR",
+    "active_holder": "holder=t-c02nan pid=691774 since=2026-10-14T23:50:34Z token=gpuwrf-lock-691774-11652-1792021834762829013 cmd=timeout --kill-after=10 900 bash <DATA_ROOT>/wrf_gpu2/scratch/t-c02nan/TCN56_c64/pair_inside.sh",
+    "checked_utc": "2026-10-14T23:58:41.809009+00:00",
+    "P3_DONE_evidence": "MAIN MAILBOX23:39:07",
+    "TCN_status": "Active actual holder, not claimed complete"
+  }
+}

@@ -1,0 +1,99 @@
+{
+  "status": "READY_FOR_CRITIC",
+  "lane": "t-cammgalloc",
+  "utc": "2026-10-15T05:46:07.296741+00:00",
+  "product_commit": "958ce5266",
+  "measured_final_source_commit": "58c69a7628369d70e556da5a0751e5c07544e63f",
+  "source_reuse": "receipts/CG10-final-source.json",
+  "known_reds_closed": 12,
+  "targeted_passes": 338,
+  "pass_components": {
+    "CG04_unchanged_tests_reused": 74,
+    "CG05_corrected_shape_test": 1,
+    "CG09c_shared_consumers": 263
+  },
+  "mutants": {
+    "allocation": "genuine bare assertion + healthy control; original XML reused after witness parser correction",
+    "radii": "genuine assertion + healthy control",
+    "cloud": "genuine numeric assertion + healthy control",
+    "errors": 0
+  },
+  "byte_program_gate": {
+    "active_CAM11": "old allocation carry, compiled radiation, constants and traced program BYTE/EXACT",
+    "non_CAM": [
+      6,
+      8,
+      24,
+      28,
+      40,
+      50,
+      55,
+      56
+    ],
+    "non_CAM_reference": "pre-CAM main 0602830b40275bb8d952bab89115d53d546994c4; compiled outputs/program/constants BYTE/EXACT",
+    "claim_scope": "regression/program identity, not new WRF forecast fidelity"
+  },
+  "release_IDs": {
+    "Swiss": "f672a573",
+    "PROD_d01": "6fc715a2",
+    "scope": "full official CPU trace with native facade; no GPU execution"
+  },
+  "numerical_impact": {
+    "native_single_nested_CLI": "selected-only initial carry bypasses original faulty all-tail helper; existing composite runs unexposed to THIS allocation bug",
+    "public_daily": "old all-tail entry demonstrably erased cloud fraction (max0 vs fixed1) and selected inactive CAM radii; restored premerge radiation for nonCAM",
+    "CAM11": "unchanged; entire CAM source tree, metadata, native kernel, restart validator and operational entry files BYTE to baseline"
+  },
+  "efficiency": {
+    "new_step_device_operations": "[I] 0 additional: static selection, exact default program",
+    "new_host_transfers": "[I] 0 additional: no host/device operation added",
+    "scan_allocation_saved_small_grid_bytes_measured": 1656,
+    "public_entry_saved_PROD_bytes_inferred": [
+      22478400,
+      83595564
+    ],
+    "native_CLI_memory_effect": "unchanged; inactive leaves were already absent",
+    "timing_or_GPU_peak_claim": false,
+    "shared_CPU_process_HWM_KiB": 4334080,
+    "compile": "static selection branches only; default whole program ID unchanged; source-based cache keys may need normal first-use rebuild"
+  },
+  "limitations": [
+    "No new GPU/S1/E41 or full forecast fidelity claim; preserve existing scientific receipts by exact source/program identity.",
+    "The whole expanded option smoke matrix OOMed at6G without XML; required changed routes and all shared consumer files pass263 with cache cleanup. No blanket full-suite pass.",
+    "Separate c89 zero-precipitation issue is unchanged.",
+    "Inactive CAM fields in old invalid checkpoints still refuse under the unchanged strict schema."
+  ],
+  "cleanup": {
+    "snapshots_removed": [
+      "baseline",
+      "candidate",
+      "final",
+      "final2"
+    ],
+    "pytest_removed": true,
+    "JAX_cache": "OFF throughout",
+    "GPU_jobs": 0
+  },
+  "receipt_SHA256": {
+    "CG01-source-triage.json": "18b8b5c37221c8326714cf7569646a18a97873a988efe658aa6e2cea26c029a3",
+    "CG01-swiss-baseline.json": "af9cbd5bff87a210c0b09a1e58c71047e3e43ca6b2c7084f6372ed824565ccfb",
+    "CG02-prod-baseline.json": "759171563cc5fd9edf84e7d792a374aa8032845b7ab899405dd3ae9a9c77c9d7",
+    "CG03-source-seal.json": "861480efa3eb37d96274317a717ada42ddfb993bff74df8e2a2b13e803afbcec",
+    "CG04-tests.xml": "cbdf1deb911b800d7e52e138863fd5477a477c29e8de2613a89b6651a2488a97",
+    "CG05-test.xml": "8712d05cd894b20938380ffc966981f1277d3ba2a2220a2d9049a5ceccc9c3ec",
+    "CG05-byte.json": "6f362b9b9ba4a2ff05fdd9e6f38fea4c6cf3ce728fe0501f8e84694d66ebd070",
+    "CG06b-allocation.json": "612b835ea3221db99ccd2ab9d439b72b4247319be8c36ebe161ac3ee4b80c8c9",
+    "CG06b-allocation.xml": "cb5a830090357e68118b7f83f06d128a881b244d4aabb4d339ee5347b24c8648",
+    "CG06b-radii.json": "49df617f73b88e49e569279ca4ea3ca0019106ff5b51a4285883a49b4a244118",
+    "CG06b-radii.xml": "b7b8ffe52a58405a93a11d8abc0057e0af1515f0a5d2bf0b9153a5abc4a492dc",
+    "CG06b-cloud.json": "e7a7d2b8e8f32ceee4e015ad2bf16c3093e0b96beaa84603864adf204ca9c430",
+    "CG06b-cloud.xml": "12ed0f8474bec8ad3993efb2c8eb6110646a4f2ecf9debd3cf29b29ae7e20f59",
+    "CG07-swiss.json": "e63ab8499927a1123bc0f029e371d3a21b02ddbd7bb4f2b74e7d7859e29d17c9",
+    "CG08-prod.json": "8088ab9ab9cfb445e6e259d0d941ff4cfcad2e4aa5370d1de18b2c12007eaca2",
+    "CG09c-shared-summary.json": "b6e88f62ce7c27f38666a16f34a382eadba8caff1d36f0d6fe03ddafd667c393",
+    "CG09c-shared.xml": "ade44e0596855adcc78010229fafb5491b99f20cbb936abbe129d858e89d9d15",
+    "CG10-final-source.json": "a14cf4bdb193aec2b8bd9f30dd9d8a2c5996bc1ecf9ffdd514dfe604c456584a",
+    "CG09b-cancelled.json": "0411e37fe77167b57cc753efabf51841c833ac511fc23b398038c54beaf72fc4",
+    "CG09-OOM-scope.log": "9221292b1ef44c14d9f19b62cef58a66e9c21f26a32d25189bf1f00d31909c50",
+    "CG06-allocation.log": "e37797dfeba96337e7b4fe5799eb52e1b000fd1c56e240a2d087e89afb909406"
+  }
+}

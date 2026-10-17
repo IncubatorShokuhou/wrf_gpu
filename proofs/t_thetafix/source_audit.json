@@ -1,0 +1,100 @@
+{
+  "baseline": "1612acc49",
+  "candidate": "be1ed16f1f89f4ec5bdceba5d51056e0e638ea57",
+  "changed_functions": [
+    "kessler_adapter",
+    "sbu_ylin_adapter",
+    "wsm6_adapter",
+    "goddard_adapter",
+    "wsm3_adapter",
+    "wsm5_adapter",
+    "morrison_adapter",
+    "wdm5_adapter"
+  ],
+  "unchanged_function_count": 47,
+  "unchanged_defaults": [
+    "lin_adapter",
+    "wdm6_adapter",
+    "_fp64_island",
+    "_apply_mp_replacements"
+  ],
+  "changed_source_files": [
+    "src/gpuwrf/coupling/scan_adapters.py"
+  ],
+  "additional_nonMP_suspects": [
+    {
+      "function": "_surface_layer_bottom_inputs",
+      "line": 600,
+      "issue": "theta_m used to derive dry physical T"
+    },
+    {
+      "function": "_flux_handles_from_hfx_qfx",
+      "line": 688,
+      "issue": "theta_m used to derive dry physical T"
+    },
+    {
+      "function": "tiedtke_adapter",
+      "line": 929,
+      "issue": "theta_m used to derive dry physical T"
+    },
+    {
+      "function": "ntiedtke_adapter",
+      "line": 1065,
+      "issue": "theta_m used to derive dry physical T"
+    },
+    {
+      "function": "gf_adapter",
+      "line": 1234,
+      "issue": "theta_m used to derive dry physical T"
+    },
+    {
+      "function": "bmj_adapter",
+      "line": 1433,
+      "issue": "theta_m used to derive dry physical T"
+    },
+    {
+      "function": "_pbl_surface_forcing",
+      "line": 1532,
+      "issue": "theta_m used to derive dry physical T"
+    }
+  ],
+  "affected_staged_composites": [
+    {
+      "case": "c02",
+      "mp": 1
+    },
+    {
+      "case": "c04",
+      "mp": 3
+    },
+    {
+      "case": "c05",
+      "mp": 4
+    },
+    {
+      "case": "c06",
+      "mp": 6
+    },
+    {
+      "case": "c08",
+      "mp": 10
+    },
+    {
+      "case": "c09",
+      "mp": 13
+    },
+    {
+      "case": "c10",
+      "mp": 14
+    },
+    {
+      "case": "c25",
+      "mp": 97
+    },
+    {
+      "case": "c61",
+      "mp": 97
+    }
+  ],
+  "baked_runtime_inputs_added": []
+}

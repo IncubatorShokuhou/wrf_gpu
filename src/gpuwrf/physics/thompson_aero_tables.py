@@ -24,12 +24,13 @@ from jax import config
 import jax.numpy as jnp
 import numpy as np
 
+from gpuwrf.assets import asset_path, ensure_asset, load_or_lazy
 from gpuwrf.physics.thompson_tables import TABLE_ASSET as MP8_ASSET
 
 configure_jax_x64()
 
 ROOT = Path(__file__).resolve().parents[3]
-AERO_ASSET = ROOT / "data" / "fixtures" / "thompson-aero-tables-v1.npz"
+AERO_ASSET = asset_path("data/fixtures/thompson-aero-tables-v1.npz")
 
 # Table dimensions (module_mp_thompson.F header).
 N_ARC, N_ARW, N_ART = 7, 9, 7
@@ -67,12 +68,12 @@ class ThompsonAeroTableBundle(NamedTuple):
 
 
 def asset_sha256(path: Path = AERO_ASSET) -> str:
-    return hashlib.sha256(path.read_bytes()).hexdigest()
+    return hashlib.sha256(ensure_asset(path).read_bytes()).hexdigest()
 
 
 @lru_cache(maxsize=1)
 def _load(path: str) -> dict[str, np.ndarray]:
-    asset = Path(path)
+    asset = ensure_asset(Path(path))
     if not asset.exists():
         raise FileNotFoundError(
             f"missing Thompson aero table asset: {asset} "
@@ -84,7 +85,7 @@ def _load(path: str) -> dict[str, np.ndarray]:
 
 def load_thompson_aero_tables(path: Path = AERO_ASSET) -> ThompsonAeroTableBundle:
     arrays = _load(str(path))
-    with np.load(MP8_ASSET, allow_pickle=False) as mp8:
+    with np.load(ensure_asset(MP8_ASSET), allow_pickle=False) as mp8:
         qrfz4 = np.stack(
             (
                 np.asarray(mp8["tpi_qrfz"], dtype=np.float64),
@@ -120,4 +121,5 @@ def load_thompson_aero_tables(path: Path = AERO_ASSET) -> ThompsonAeroTableBundl
     )
 
 
-THOMPSON_AERO_TABLES = load_thompson_aero_tables()
+# Loaded at import when installed, else downloaded on first use (gpuwrf.assets.LazyTable).
+THOMPSON_AERO_TABLES = load_or_lazy("THOMPSON_AERO_TABLES", (AERO_ASSET, MP8_ASSET), load_thompson_aero_tables)

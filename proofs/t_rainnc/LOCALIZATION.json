@@ -1,0 +1,590 @@
+{
+  "status": "ROOT LOCALIZATION HANDOFF READY; proof-only; tiny stockGPU32/32/E41PASS4; fullproduct gates separate",
+  "objective": "Localize CAM-MG zero precipitation without changing WRF physics or frozen bounds",
+  "full_model_gate": {
+    "original_pristine_controls": 36,
+    "outputs_each": 27,
+    "requirement": "0 outside unchanged compiler-FMA/input-ULP bounds; fatal0/NF0, actual GPU platform asserted",
+    "full24h": "v-prep c89 vs original CPU-WRF after component fix and critic/merge"
+  },
+  "findings": [
+    {
+      "id": "RN29",
+      "measured": "Adding original micro preprocessing block _outer75 changes activity LTRUE/i/k from1/1/24 to0/0/0; pre72 exactTTIR reuses paidpre57, pre73 measured",
+      "scope": "Compiler-context diagnostic, not proof Fortran block wrong"
+    },
+    {
+      "id": "RN33",
+      "measured": "Indexed numeric scalar reads CPU48 PASS, GPU same8945 frozen violations/zero rain both24/44; E41PASS2",
+      "disposition": "DISCARDED; original scalar reads restored"
+    },
+    {
+      "id": "RN36",
+      "measured": "Cuts before/after cold-phase _outer86 both GPUfalse0/0/0; E41PASS1+1",
+      "implication": "Cold-phase block not required"
+    },
+    {
+      "id": "RN37",
+      "measured": "Cuts before/after early cmei reset region both GPUfalse0/0/0; E41PASS1+1",
+      "implication": "cmei reset not required"
+    },
+    {
+      "id": "RN38",
+      "measured": "Empty INNER payload +remaining outer saturation helper: preactivity i/k1/24 correct, postLTRUE0; posti/k1/24 maycarry fromprep; E41PASS1+1",
+      "limitation": "Cannot infer activity trip count from inherited indices; observing preindices changes liveness"
+    },
+    {
+      "id": "RN39",
+      "measured": "Also remove outer vqsatd_water+3assignments: pre1/24+postLTRUE/i/k1/1/24 EXACTCPU; E41PASS1",
+      "implication": "Helper-call/outputs compilation context is required for this reduced failure"
+    },
+    {
+      "id": "RN40",
+      "measured": "Empty-helper-call variant timedout90s after writing3.802MB serialized executable; first-loop-only child NOTSTARTED; E41PASS1",
+      "limitation": "No numerical verdict or resolved stall stage"
+    },
+    {
+      "id": "RN40_ELF",
+      "measured": "RN40 timeout cubin EXACTBYTE RN39 successful cubin bb3340e82547e0d47786f6fb34bf53e12b9dd26917029ecc597c9f23ef340b65",
+      "limitation": "Serialized wrappers differ; no whole-program/constants/buffer-plan identity proof"
+    },
+    {
+      "id": "helper_inventory",
+      "measured": "column.py109 ncol=1 Pythonliteral forwards into cloud.vqsatd_water len; two unit-trip jump loops atcloud.py253/286 bound to cloud._loop",
+      "implication": "Replacing micro._loop does not replace these helper loops"
+    },
+    {
+      "id": "RN41",
+      "measured": "Paid empty-helper native replay completes: LTRUE/i/k1/1/24, pre_i/k1/24; timeout45 occurs at UNOBSERVED_BASELINE DESERIALIZE, not native execution",
+      "limitation": "22physical observer comparison not completed in this arm"
+    },
+    {
+      "id": "RN42",
+      "measured": "First helper loop only: native execution completes; encodedfatal403701760 means LTRUE0 vsCPU1; timeout115 at baseline DESERIALIZE",
+      "implication": "FIRST helper loop alone is sufficient for reduced false flag; second gamma loop not required",
+      "limitation": "New pre/post indices and22physical observer arrays not persisted before stall; recover from paidpin without recompile"
+    },
+    {
+      "id": "RN45",
+      "measured": "Paid EMPTY/FIRST pins both22physicalBYTE to sealed same-input output reference; emptyLTRUE1, firstLTRUE0; BOTHpre_i/k1/24 andposti/k1/24",
+      "limitation": "Post indices may be inherited; no activity-trip inference"
+    },
+    {
+      "id": "RN46",
+      "measured": "ES-only setter+polysvp(T,0) already LTRUE0; addingQS before negative branch remains0;22BYTE/E41PASS each",
+      "implication": "QS calculation and negative-QS branch not required; first ES statement context sufficient"
+    },
+    {
+      "id": "RN47",
+      "measured": "ConstantES1 andES=T bothGPU LTRUE0; pre1/24,22physicalBYTE,E41PASS1+1",
+      "implication": "Original saturation polynomial is not required; unused T/P arguments still read"
+    },
+    {
+      "id": "RN48",
+      "measured": "SameconstantES1+neutralT/P: originalhelperunitwhile givesLTRUE0; directbodyonce givesLTRUE1 EXACTCPU; BOTHpre1/24,22physicalBYTE,E41PASS1+1",
+      "implication": "Causal unithelperloop-lowering context independent of original saturation arithmetic",
+      "limitation": "Reduced diagnostic with omitted physics; not a qualified full-math fix"
+    },
+    {
+      "id": "RN49",
+      "measured": "Full-originalmath bothunithelperbodies direct: GPUFAIL8945 frozenoutside/rain-snow0 both24/44/fatal0/NF0; CPU48PASS/E41PASS2",
+      "disposition": "DISCARD as productfix; reducedRN48 cause doesnot generalize tofullcolumn",
+      "performance": "Warm1.394/3.063ms; temporary2060B; unqualified physics cannot support speed claim"
+    },
+    {
+      "id": "RN50",
+      "measured": "OriginalES-only andfull-originalhelper directbody bothGPU LTRUE1 EXACTCPU/pre1/24/22BYTE/E41PASS1+1",
+      "implication": "Causalhelperunitloop effect remains withoriginalmath andoriginalT/Preads",
+      "limitation": "Body77 andmicro suffix omitted; notfullphysicalqualification"
+    },
+    {
+      "id": "RN51",
+      "measured": "Prefix86 andWHOLEoriginal_body77 withhelperunitdirect BOTHGPU LTRUE1 EXACTCPU/pre1/24/22BYTE/E41PASS1+1",
+      "implication": "Entirelocalized_outer75 reducedfailure cleared byhelperunitdirect; RN49wholekernel stillfails",
+      "limitation": "No remaining-context source attribution orfullproductfix"
+    },
+    {
+      "id": "RN52",
+      "measured": "SMALL standalonehelperwhile reproducesfalseflag BOTH24/44(8expectedtrue->0);direct/absenthelperPASSbothsizes;ALLpre/postindices1/nz correct;CPU6PASS48/E41PASS6",
+      "implication": "Complexmodelcolumn is NOTrequired; nestedhelperunitwhile context triggerslateractivityfalseflag",
+      "limitation": "ConstantES/compilerdiagnostic; NOTfullphysicalfix",
+      "correction": "9259b999f title and earlycommentary readtailonly; fullauditcorrected before anyfalseMAINexperiment row"
+    },
+    {
+      "id": "RN53",
+      "measured": "Helpercounti32 stillLTRUE0; helperfori-nojump givesLTRUE1 EXACTCPU;BOTHpre1/24/22BYTE/E41PASS1+1",
+      "implication": "Countwidth change insufficient; guardedwhile vscountedloop context matters",
+      "limitation": "OnlyreducedES1/neutralargs; notproductfix"
+    },
+    {
+      "id": "RN54",
+      "measured": "SmallhelperemptyPASS24/44, helperconstantES1while withoutjumpguardFAIL24/44(8falseflagmisses),indicescorrectALL;CPU32PASS/E41PASS4",
+      "implication": "ESsetter+whilecarrycontext required; jumpguardNOTrequired",
+      "artifacts": "ROOT_REPRO/pins fourtinyAOTs144KB good/bad +RN54_CPU fourTTIR99KB"
+    },
+    {
+      "id": "RN55",
+      "measured": "HelperESfp32tile/fp64scalar bothFAIL24/44 allflag0/16misses;indicescorrectALL;CPU32PASS/E41PASS4",
+      "implication": "NotFP64-only or1-element-tensor-only; retainoriginalDOUBLE physics"
+    },
+    {
+      "id": "RN55PTX",
+      "measured": "ActualpaidbadPTX2064B has0inputloads andstoresconstantflag0+indices1/24;good6087B has3inputloads+30shuffles;inputTTIR24971BhasliveQC/activityloops",
+      "implication": "ErroralreadybeforePTXassembly/GPUexecution",
+      "evidence": "ROOT_REPRO/PTX_PHASE.json plussealedAOTs/PTX/SASS"
+    },
+    {
+      "id": "RN56CPU",
+      "measured": "IdenticalsmallTTIR JAXregisteredplugincompiler alsohasgood3loads/bad0loads;compile0.0253/0.0104s",
+      "implication": "FailurecanbereproducedCPUcompiler-only; alternatepluginroute alone doesnotfixsmallreproducer",
+      "limitation": "CG19fullcolumnGPU resultunknown"
+    },
+    {
+      "id": "RN57CPU",
+      "measured": "StockPythonTriton3.6 identicalsmallTTIR retains3inputloads/30shuffles GOODandBAD;JAXpluginbad0loads",
+      "implication": "Differentcompilerpipeline preservesactivitycomputation"
+    },
+    {
+      "id": "RN59GPU",
+      "measured": "Rawstockboth24/44empty/noguard kernelsPASSALL32pristineactivitychecks;regs32/38/spills0/E41PASS4 exactloadedcubinSHA",
+      "implication": "Stockpipeline fixesSMALLreproducer onactualGPU",
+      "limitation": "Fullmodel/coupledtrajectoryOPEN"
+    },
+    {
+      "id": "RN60CPU",
+      "measured": "Rawfull original ABI195inputs+28outputs EXACT223ptrs/publicinputBYTE; unoptimizedstockfirstkernel coldcompiletimeout600,no binary",
+      "disposition": "DISCARD unoptimizedrawcompile; noGPUclaim"
+    },
+    {
+      "id": "RN63CPU",
+      "measured": "All8standardstockinitialpassprefixes retain3inputloads onsmallfailingTTIR",
+      "implication": "No exactbadpassidentifiedinJAXbundledcompiler; stockinitialpipeline iscorrectforsmallreproducer"
+    },
+    {
+      "id": "RN65CPU",
+      "measured": "Standardinitialpasses27.119s shrink9.889MBto5.562MB; fullrawcompilationcancelledatCoalesce toavoidproductownerduplicate",
+      "disposition": "No binary/numerical verdict; use t-cammgws productroute qualification"
+    }
+  ],
+  "observers": {
+    "physical_BYTE_check": "22 untouched outputs vs same-input paid UNOBSERVED RN03 executable",
+    "excluded": [
+      "rainnc",
+      "snownc",
+      "sr",
+      "lradius",
+      "iradius",
+      "encoded fatal"
+    ],
+    "limitation": "Regression/observer evidence only; failed baseline is not WRF truth or internal register identity"
+  },
+  "pending": [
+    {
+      "owner": "t-cammgws",
+      "source": "4f6104e26",
+      "gates": "CG25 full36frozen +CG26 active44 +E41 +independentcritic +v-prep c89full24h",
+      "CPU": "Ownerreceipt CPU48 1296/1296BYTE; Swissf672a573/PROD6fc715a2 exact",
+      "root_lane": "No more duplicate fullraw GPU arms; sourceunchanged; rootartifacthandoff/monitor"
+    }
+  ],
+  "coordination": {
+    "worker": "t-rainnc root-cause bisect only",
+    "structural_owner": "t-cammgws",
+    "WSM_owner": "t-wsmdz",
+    "fallback_owner": "t-mp11gate",
+    "deadline_UTC": "2026-10-15T17:30:00Z",
+    "GPU_CPUs": "3,19,13,29",
+    "CPU_CPUs": "16,17,18",
+    "standing_approval": "CAM GPU arms <=5min until17:30; still log NEED-GPU; official lock/timeouts/E41/cleanup"
+  },
+  "evidence": [
+    {
+      "label": "RN29",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-rainnc/RN29/result.json",
+      "bytes": 8090,
+      "sha256": "b0d837dace6c329cd864536bb88bef5ccc3c1498df421b19ab6b76d9f5008863"
+    },
+    {
+      "label": "RN33",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-rainnc/RN33/result.json",
+      "bytes": 84609,
+      "sha256": "46ca710410ee3228fd4cffc83c91e8f15eb08ab6c8d53354d37542073f20af86"
+    },
+    {
+      "label": "RN36",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-rainnc/RN36/summary.json",
+      "bytes": 1721,
+      "sha256": "be3a78f31c4fefeaead16becc90d768b2c6a3d81d3746884d7de9c80876619d3"
+    },
+    {
+      "label": "RN37",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-rainnc/RN37/summary.json",
+      "bytes": 1720,
+      "sha256": "32bd7591caf83792d18b08b13cb273a3c0ff552495ca5becd0f7c2ab261ba3ae"
+    },
+    {
+      "label": "RN38",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-rainnc/RN38/summary.json",
+      "bytes": 2158,
+      "sha256": "c7f4a816d1d864ebbe53a4e46a595bd157deee6ebee4ac2691a5ac2c3b19baf5"
+    },
+    {
+      "label": "RN39",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-rainnc/RN39/result.json",
+      "bytes": 8181,
+      "sha256": "d2f0f48d38a8a7638a439479419cc72e9db13486c64749f80c794132b758d7a0"
+    },
+    {
+      "label": "RN40",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-rainnc/RN40/GPU.log",
+      "bytes": 3405,
+      "sha256": "7a0fc7e270aff6007266a449432abda6e2bd49ce83e10a0731e815083c5d98ff"
+    },
+    {
+      "label": "RN40_ELF",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-rainnc/RN40_ELF_BYTE.json",
+      "bytes": 409,
+      "sha256": "1d3b0510fc82b64824c11736f60ae10aa20def680e359d09e6711a203b4b8adc"
+    },
+    {
+      "label": "RN41_registration",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-rainnc/RN41_manifest.json",
+      "bytes": 361,
+      "sha256": "80a5c09042b40e07e6794a5185db89c2e711c402f7daa22fd619d2d27a9cd114"
+    },
+    {
+      "label": "helper_inventory",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-rainnc/RN43_helper_loop_inventory.json",
+      "bytes": 989,
+      "sha256": "9f57078ee598600566d379daf384bd94ef454641e84b4a8d964c58e61eee7008"
+    },
+    {
+      "label": "RN41",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-rainnc/RN41/result.json",
+      "bytes": 552,
+      "sha256": "5e9d1a27758a158588ef8d305ae22ade00ecde17214312f13d64dc235d986646"
+    },
+    {
+      "label": "RN42",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-rainnc/RN42/result.json",
+      "bytes": 1501,
+      "sha256": "977c95ae012b8f59d28cfc8bcdffe6fd823517f4fd4a407a2874f8b79f282c97"
+    },
+    {
+      "label": "RN45_empty",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-rainnc/RN45_46/raw-empty/result.json",
+      "bytes": 645,
+      "sha256": "6cec0f10b8ba456b45bca6dab9c1d75bfb8c57ac42d44024e5789822df33a4cb"
+    },
+    {
+      "label": "RN45_first",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-rainnc/RN45_46/raw-first/result.json",
+      "bytes": 645,
+      "sha256": "efcf8aec98e1ed0661c4dedd1d41777771a9a98228df98d3fbfa797f3df1049c"
+    },
+    {
+      "label": "RN46_ES",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-rainnc/RN45_46/sat-first-es/result.json",
+      "bytes": 8342,
+      "sha256": "b22672381c4d7eb2078b9819f5a33e8f6bb14df9e09b8207bbda3656bf58d41f"
+    },
+    {
+      "label": "RN46_QS",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-rainnc/RN45_46/sat-first-qs/result.json",
+      "bytes": 8344,
+      "sha256": "79872dea580aa1631f285d09e1124b7599705f24e2109206e21a55385377177a"
+    },
+    {
+      "label": "RN47_preflight",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-rainnc/RN47/preflight.json",
+      "bytes": 866,
+      "sha256": "71a22208c4f64b6e4ccfd8b9dbecaa2768270f16e12d0ce51dda2492e1885791"
+    },
+    {
+      "label": "paid_reference",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-rainnc/BASELINE_OUTPUTS.json",
+      "bytes": 5643,
+      "sha256": "891e97864a60a1e7201bdd8420506ef3edc40767ad1b0b80c568ea8296cf4d99"
+    },
+    {
+      "label": "RN47/summary.json",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-rainnc/RN47/summary.json",
+      "bytes": 2369,
+      "sha256": "791b2c5ba18853a8c4e4b86d774e1dd4e7f049c4643e33d76ba0fdb177bca163"
+    },
+    {
+      "label": "RN48/summary.json",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-rainnc/RN48/summary.json",
+      "bytes": 2374,
+      "sha256": "5ac46a70c497e2069a9fc2a5fab2221ec6fdd33aff8113be75c427d3cbd16132"
+    },
+    {
+      "label": "RN49_CPU48.json",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-rainnc/RN49_CPU48.json",
+      "bytes": 9163,
+      "sha256": "2c2e55fa9bea6182bca753315b42fa79fd90b6e1ee532bfa5b44a23e5c70ff88"
+    },
+    {
+      "label": "RN49_cuda24.json",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-rainnc/RN49_cuda24.json",
+      "bytes": 546,
+      "sha256": "c7362f44d0032877d6710b6a78bbc1a6b8081b16cb93c674608c0a8af9383b1d"
+    },
+    {
+      "label": "RN49_cuda44.json",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-rainnc/RN49_cuda44.json",
+      "bytes": 546,
+      "sha256": "0ad4767d959b241d6a1f2e56ffc66edcf0fb7bab4de07af528f4edaa933db005"
+    },
+    {
+      "label": "RN49/result.json",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-rainnc/RN49/result.json",
+      "bytes": 85094,
+      "sha256": "4e68640c69308052045210687e3db4691e57791698e8f89674402d0ee28ece97"
+    },
+    {
+      "label": "RN49/E41.json/wave_gate.json",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-rainnc/RN49/E41.json/wave_gate.json",
+      "bytes": 1900,
+      "sha256": "c0a956b01dee802d5017d708cef2c7f8f5c4b7c58398260387c510ad8a57058e"
+    },
+    {
+      "label": "RN50/summary.json",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-rainnc/RN50/summary.json",
+      "bytes": 2368,
+      "sha256": "519e6da196b4c21b60f4f4dea2de692584c7c2f2d105ccf844e1a178fcde78aa"
+    },
+    {
+      "label": "RN50/E41_first/wave_gate.json",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-rainnc/RN50/E41_first/wave_gate.json",
+      "bytes": 1166,
+      "sha256": "a1bab8f799e07b3b4a402e3dabbd21ba0bc2798a20418db319b8bc896b0e8f9a"
+    },
+    {
+      "label": "RN50/E41_full/wave_gate.json",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-rainnc/RN50/E41_full/wave_gate.json",
+      "bytes": 1158,
+      "sha256": "a0daeed7991347190c22d6711dbbe6e1404e25948e4ef318bb69bf63435f7f18"
+    },
+    {
+      "label": "RN51/summary.json",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-rainnc/RN51/summary.json",
+      "bytes": 2348,
+      "sha256": "7b19768ccfe328c4758c3ec228be1288439054d74a5983949c717aebab73f892"
+    },
+    {
+      "label": "RN51/E41_86/wave_gate.json",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-rainnc/RN51/E41_86/wave_gate.json",
+      "bytes": 1142,
+      "sha256": "37fcfdbf3f1110af1920717e2fc6bb6f22195dab4fe0f1c88843a7156a5bf3ce"
+    },
+    {
+      "label": "RN51/E41_full/wave_gate.json",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-rainnc/RN51/E41_full/wave_gate.json",
+      "bytes": 1142,
+      "sha256": "887f82b0f0cf27c2121d5edd6f59de27f30eab463b72748c5dfd5c1c9c3bdf6a"
+    },
+    {
+      "label": "RN52_CPU/result.json",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-rainnc/RN52_CPU/result.json",
+      "bytes": 10135,
+      "sha256": "b3841fbe65049b142c99276526187348414d27ca7164d323e4406519e754838f"
+    },
+    {
+      "label": "RN52/result.json",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-rainnc/RN52/result.json",
+      "bytes": 9766,
+      "sha256": "8e6a63a1a5688b183be1f0fef2a061a9db3d9636ac8a2dad9a8ae5cb1e28e1b5"
+    },
+    {
+      "label": "RN52/E41/wave_gate.json",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-rainnc/RN52/E41/wave_gate.json",
+      "bytes": 4595,
+      "sha256": "1e6a79741671ac8225e0089910946ef089099be66938ce8323c104d3053677d0"
+    },
+    {
+      "label": "RN53/summary.json",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-rainnc/RN53/summary.json",
+      "bytes": 2372,
+      "sha256": "205cbf7dfc9466b9a306506badbd89c0fc50979884d45787ff4545cccb4016c2"
+    },
+    {
+      "label": "RN53/E41_int32/wave_gate.json",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-rainnc/RN53/E41_int32/wave_gate.json",
+      "bytes": 1166,
+      "sha256": "1fc71dfba994f54122abdf9eda07f74ddc61e37c784c8824234352a8e4fa0881"
+    },
+    {
+      "label": "RN53/E41_fori/wave_gate.json",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-rainnc/RN53/E41_fori/wave_gate.json",
+      "bytes": 1164,
+      "sha256": "e39f722873409cee05d066c351b2f61e1925f5ccc37b0f63a10b0abe7e802fc0"
+    },
+    {
+      "label": "RN54/result.json",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-rainnc/RN54/result.json",
+      "bytes": 6614,
+      "sha256": "17901b09c5ee80d345022451e5a40ab898eb177a2df33877c408c4d6901822c7"
+    },
+    {
+      "label": "RN54/E41/wave_gate.json",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-rainnc/RN54/E41/wave_gate.json",
+      "bytes": 3193,
+      "sha256": "2146f913bee98cba64cd6a0981dfd9f0dd6edc357fe08de755c595d7a07fe714"
+    },
+    {
+      "label": "ROOT_REPRO/PINS.json",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-rainnc/ROOT_REPRO/PINS.json",
+      "bytes": 811,
+      "sha256": "491154895a5b2215234137517aa520337930242342a45152570189de44e97492"
+    },
+    {
+      "label": "RN55/result.json",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-rainnc/RN55/result.json",
+      "bytes": 6612,
+      "sha256": "fe4e585ae5f5c68daa959dc611750ff533506c0a70a41b5aa01327391ecf9036"
+    },
+    {
+      "label": "RN55/E41/wave_gate.json",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-rainnc/RN55/E41/wave_gate.json",
+      "bytes": 3181,
+      "sha256": "365b004ad6c7b0c4da32def0bff539ceed61bdeec98bb4af8f81feec708530a0"
+    },
+    {
+      "label": "ROOT_REPRO/PTX_PHASE.json",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-rainnc/ROOT_REPRO/PTX_PHASE.json",
+      "bytes": 556,
+      "sha256": "6da9502f31fb3b3bc16364258d753dfc13484045c2fb49b6c0c1c20dff2a3b9b"
+    },
+    {
+      "label": "RN56CPU",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-rainnc/RN56_CPU/result.json",
+      "bytes": 846,
+      "sha256": "ea50f43d2a96d9a9e6d967467b0c82d8dcb23234e01dd0ef561b88a18566ae7c"
+    },
+    {
+      "label": "RN57_CPU/result.json",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-rainnc/RN57_CPU/result.json",
+      "bytes": 880,
+      "sha256": "4778d9567d8a99b825f48afd68968308fc9bf4d89ae90d48dc5c7ef09a99d8aa"
+    },
+    {
+      "label": "RN59/result.json",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-rainnc/RN59/result.json",
+      "bytes": 6927,
+      "sha256": "199f64655757d9c5f9fc26cc15baa7a2b1ea22fc27a109953cfa4dd676ae6bf9"
+    },
+    {
+      "label": "RN59/E41.json",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-rainnc/RN59/E41.json",
+      "bytes": 2538,
+      "sha256": "4a67c4a2f2a24ebe89baa0dbabd266fc7e25b8d8677540d259a2d5626cb9b39c"
+    },
+    {
+      "label": "ROOT_REPRO/MODULE_PATHS.json",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-rainnc/ROOT_REPRO/MODULE_PATHS.json",
+      "bytes": 331,
+      "sha256": "08feca75691ceeb901408ba3d9720385c9004888b684102b5a427d2259c2eb20"
+    },
+    {
+      "label": "RN60_CPU/result.json",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-rainnc/RN60_CPU/result.json",
+      "bytes": 11521,
+      "sha256": "a7ac0d9e2785ce63a72806bc3cb2144a63306b157088292df3c56071fa214a84"
+    },
+    {
+      "label": "RN63_CPU/result.json",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-rainnc/RN63_CPU/result.json",
+      "bytes": 2279,
+      "sha256": "1469d881464aaa06c71cbd855303cabd641b0d2d27c58288384d89f658723034"
+    },
+    {
+      "label": "RN64_CPU.log",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-rainnc/RN64_CPU.log",
+      "bytes": 650,
+      "sha256": "bc1c9dc5b302a78f2833fb26178aff7558765466a5a11246d3bc4e89a585ca07"
+    },
+    {
+      "label": "RN65_CPU/result.json",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-rainnc/RN65_CPU/result.json",
+      "bytes": 11699,
+      "sha256": "b869576203b9e312e5c266e76fa1b0d5bbd65609be91883c2d098184faf86e3e"
+    },
+    {
+      "label": "RN65_CPU/passes.log",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-rainnc/RN65_CPU/passes.log",
+      "bytes": 1322,
+      "sha256": "22764afbe3cee546fb3b9929c0a2f9d957ac05acb025881a297f084e7405fb2a"
+    }
+  ],
+  "observer_protocol": "Sealed cached27outputs from actualpaidRN29/RN03 baseline; inputs/producer/pin provenance validated; no binaryreload needed. Regressiononly, failedbaselineNOTWRFtruth.",
+  "small_reproducer": {
+    "source": "bca567683",
+    "script": "proofs/t_rainnc/activity_reducer.py",
+    "flag": "--preface",
+    "versions": {
+      "jax": "0.10.0",
+      "jaxlib": "0.10.0",
+      "triton": "3.6.0"
+    },
+    "CPU": "6/6PASS48",
+    "GPU": "helperwhileFAIL2, directPASS2, absentPASS2",
+    "E41": "PASS6",
+    "source_physical_fidelity": "Only exact original activity AST has pristine oracle; constantES helper is deliberate compiler diagnostic"
+  },
+  "upstream_reproducer": {
+    "status": "LOCAL DRAFT ONLY; nothing posted externally",
+    "attachments": [
+      {
+        "path": "proofs/t_rainnc/upstream_repro/24_helper-empty.ttir",
+        "bytes": 24509,
+        "sha256": "15c359fca27ee8b2a7064fd6c13fff4cc558fc400eed395782935648a044d0eb",
+        "measured_artifact": "<USER_HOME>/wrf_gpu2_lanes/t-rainnc/RN54_CPU/24_helper-empty.ttir"
+      },
+      {
+        "path": "proofs/t_rainnc/upstream_repro/24_helper-noguard.ttir",
+        "bytes": 24971,
+        "sha256": "a916412c152f0bff5a181aa92639eb232b5d3b06075fff1703824116481781b0",
+        "measured_artifact": "<USER_HOME>/wrf_gpu2_lanes/t-rainnc/RN54_CPU/24_helper-noguard.ttir"
+      },
+      {
+        "path": "proofs/t_rainnc/upstream_repro/44_helper-empty.ttir",
+        "bytes": 24509,
+        "sha256": "bc347023bcc899044b2a9da3748a322ff257086cec86c8a1bc2421c5ad7b2045",
+        "measured_artifact": "<USER_HOME>/wrf_gpu2_lanes/t-rainnc/RN54_CPU/44_helper-empty.ttir"
+      },
+      {
+        "path": "proofs/t_rainnc/upstream_repro/44_helper-noguard.ttir",
+        "bytes": 24971,
+        "sha256": "44f21c8846b64036bf35441b70c0ca0cd333bf7d37c5b0fa617fb4d0e69799bc",
+        "measured_artifact": "<USER_HOME>/wrf_gpu2_lanes/t-rainnc/RN54_CPU/44_helper-noguard.ttir"
+      }
+    ],
+    "environment": {
+      "jax": "0.10.0",
+      "jaxlib": "0.10.0",
+      "jax-cuda13-plugin": "0.10.0",
+      "jax-cuda13-pjrt": "0.10.0",
+      "triton": "3.6.0",
+      "torch": "2.11.0",
+      "numpy": "2.4.4",
+      "python": "3.13.11",
+      "system": "Linux-7.0.0-38-generic-x86_64-with-glibc2.43",
+      "driver_proc": "NVRM version: NVIDIA UNIX Open Kernel Module for x86_64  595.99.02  Release Build  (dvs-builder@U22-I3-AF05-06-2)  Wed Aug 26 05:20:50 UTC 2026\nGCC version:  gcc version 15.2.0 (Ubuntu 15.2.0-16ubuntu1) \n",
+      "GPU": "NVIDIA GeForce RTX 5090",
+      "compute_capability": "12.0 / sm_120a",
+      "stock_triton_ptxas_path": "<USER_HOME>/.local/lib/python3.13/site-packages/triton/backends/nvidia/bin/ptxas-blackwell",
+      "stock_triton_ptxas_version": "ptxas-blackwell: NVIDIA (R) Ptx optimizing assembler\nCopyright (c) 2005-2025 NVIDIA Corporation\nBuilt on Tue_May_27_02:18:05_PDT_2025\nCuda compilation tools, release 12.9, V12.9.86\nBuild cuda_12.9.r12.9/compiler.36037853_0\n"
+    },
+    "draft_path": "<USER_HOME>/wrf_gpu2_lanes/t-rainnc/UPSTREAM_BUG_DRAFT.md",
+    "draft_sha256": "ba7bd8985e2a953e94e1a2e6a89110e4d3df1ee20eda05dcdf4a14d0d1ae15a9",
+    "minimal_CPU_repro": "Self-contained code in draft compiles attachedTTIR via JAXplugin andstock; expectedloads3/0 vs3/3",
+    "executed_GPU_evidence": "RN54 failingPallas vsRN59 correctstock;32stockcolumnchecks/E41PASS4; exactloadedcubins recorded",
+    "product_scope": "Proof-only packet. FullCAM product/24h qualifications ownedby t-cammgws; no productSRC change in handoff.",
+    "integration_scope": [
+      "proofs/t_rainnc/LOCALIZATION.json",
+      "proofs/t_rainnc/upstream_repro/*.ttir",
+      ".agent/kernel/lanes/t-rainnc.notes.md"
+    ]
+  }
+}

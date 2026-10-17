@@ -11,7 +11,7 @@ def _platform(array) -> str:
     return array.devices().copy().pop().platform
 
 
-def test_state_zeros_allocates_gpu_shapes_and_dtype():
+def test_state_zeros_allocates_selected_device_shapes_and_dtype():
     grid = GridSpec.canary_3km_template()
     state = State.zeros(grid)
 
@@ -31,7 +31,9 @@ def test_state_zeros_allocates_gpu_shapes_and_dtype():
     assert state.mu_perturbation.shape == (grid.ny, grid.nx)
     for field in state.active_field_names():
         assert getattr(state, field).dtype == DEFAULT_DTYPES.dtype_for(field)
-    assert all(_platform(leaf) == "gpu" for leaf in jax.tree_util.tree_leaves(state))
+    # The portable State constructor selects CPU/TPU as well as CUDA.
+    selected_platform = jax.devices()[0].platform
+    assert all(_platform(leaf) == selected_platform for leaf in jax.tree_util.tree_leaves(state))
 
 
 def test_state_and_tendency_bytes_match_manual_sum():

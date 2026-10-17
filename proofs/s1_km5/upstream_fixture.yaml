@@ -1,0 +1,19 @@
+fixture_id: sms3dtke-upstream-wrf-v1
+source: unmodified WRF v4.7.1 nonlocal_flux + free_atmos_length + meso_length_scale
+source_commit: staged pristine library, hash-bound below
+scenario: Swiss real12x10x44; grey-zone dx400/600/1200; prescribed BR/RMOL regimes; mixed/convective/zero-TKE; held incoming GAMU/GAMV
+created_utc: 2026-10-13
+generation: proofs/s1_km5/build.sh sms_upstream_driver; python proofs/s1_km5/upstream_oracle.py EXE OUT WORK
+variables:
+  - {name: nlflux, units: K m s-1, shape: [variable vertical, j, i], dtype: float32, absolute_tolerance: 32*eps32*maxabs(reference), relative_tolerance: 32*eps32}
+  - {name: gamu, units: s-1, shape: [variable vertical, j, i], dtype: float32, absolute_tolerance: 32*eps32*maxabs(reference), relative_tolerance: 32*eps32}
+  - {name: gamv, units: s-1, shape: [variable vertical, j, i], dtype: float32, absolute_tolerance: 32*eps32*maxabs(reference), relative_tolerance: 32*eps32}
+  - {name: hpbl, units: m, shape: [variable vertical, j, i], dtype: float32, absolute_tolerance: 32*eps32*maxabs(reference), relative_tolerance: 32*eps32}
+  - {name: dlk, units: m, shape: [variable vertical, j, i], dtype: float32, absolute_tolerance: 32*eps32*maxabs(reference), relative_tolerance: 32*eps32}
+  - {name: elmin, units: m, shape: [variable vertical, j, i], dtype: float32, absolute_tolerance: 32*eps32*maxabs(reference), relative_tolerance: 32*eps32}
+  - {name: hfx, units: W m-2, shape: [variable vertical, j, i], dtype: float32, absolute_tolerance: 32*eps32*maxabs(reference), relative_tolerance: 32*eps32}
+files:
+  - {path: data/fixtures/sms3dtke-upstream-wrf-v1.npz, sha256: 227a19174d49b4ca1950ab0d25fa1ee5a30dcf2038064e71e9dafe80c2df2acf}
+  - {path: proofs/s1_km5/sms_upstream_driver.F90, sha256: 907137e3119d9e5074f52e3eef6631b6159881e0b35766fcb701f43c48a3d2c1}
+wrf_library_sha256: 4886a500d7bbcbdc7cff40ed3baab72b6a014b4dd9879bf25bc7c24522dfadbe
+license_notes: NCAR WRF numerical component fixture, no full wrfout

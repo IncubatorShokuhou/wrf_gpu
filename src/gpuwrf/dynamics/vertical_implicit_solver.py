@@ -147,7 +147,8 @@ def solve_tridiagonal_xla(a: jax.Array, b: jax.Array, c: jax.Array, rhs: jax.Arr
     """
 
     rhs = jnp.asarray(rhs)
-    if jax.default_backend() == "cpu":
+    from gpuwrf.backends.platform import cuda_native
+    if not cuda_native():
         return solve_tridiagonal_thomas(
             jnp.asarray(a, dtype=rhs.dtype),
             jnp.asarray(b, dtype=rhs.dtype),

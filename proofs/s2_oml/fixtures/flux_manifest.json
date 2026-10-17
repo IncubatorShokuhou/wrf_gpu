@@ -1,0 +1,68 @@
+{
+  "compiler": "<USER_HOME>/miniconda3/envs/wrfbuild/bin/gfortran",
+  "flags": [
+    "-O0",
+    "-ffp-contract=off",
+    "-ffree-form",
+    "-ffree-line-length-none",
+    "-cpp",
+    "-DEM_CORE=1",
+    "-finit-real=zero",
+    "-finit-integer=0",
+    "-finit-logical=false"
+  ],
+  "source_sha256": {
+    "phys/ccpp_kind_types.f90": "a69fcccd5e8115cfa4b15b209e3ce0993d494d91d8b65fbd36d1a6b0a4177f0b",
+    "phys/physics_mmm/sf_sfclayrev.F90": "76412a20ec95275973418888b0cdc378ea92f9cc28e3731b6a1c1a6985fa6142",
+    "phys/module_sf_sfclayrev.F": "388633bac8063c8e773083ea4f280f69f25e607efb903ed221e112e239cb1cb2",
+    "phys/module_sf_sfclay.F": "dfd7aae5ef1f0bd979246480af5276a1ee956bc216ec8dc6e82eb963ded761dc",
+    "phys/module_sf_mynn.F": "86395534a6c9bfc79dcad50094bce290eff05756777a95794b2673795f9761c3"
+  },
+  "active_columns": {
+    "mynn": 14,
+    "revised": 14,
+    "old": 14
+  },
+  "regimes": [
+    "high-wind stable water",
+    "high-wind unstable water",
+    "land",
+    "calm MYNN"
+  ],
+  "wrf_constants": "CP=1004.5, EP1=REAL(461.6)/287-1, EP2=287/REAL(461.6)",
+  "pristine_bodies_modified": false,
+  "conditioning": "sum of pristine-only +/-1 REAL ULP per-operand envelopes; no port data used",
+  "compiler_init_sensitivity_byte_equal": {
+    "mynn_1": true,
+    "mynn_2": true,
+    "revised_1": true,
+    "revised_2": true,
+    "old_1": true,
+    "old_2": true
+  },
+  "sensitivity_flags": [
+    "-O0",
+    "-ffp-contract=off",
+    "-ffree-form",
+    "-ffree-line-length-none",
+    "-cpp",
+    "-DEM_CORE=1",
+    "-finit-real=snan",
+    "-finit-integer=-999",
+    "-finit-logical=true"
+  ],
+  "fma_flags": [
+    "-O0",
+    "-ffp-contract=off",
+    "-ffree-form",
+    "-ffree-line-length-none",
+    "-cpp",
+    "-DEM_CORE=1",
+    "-finit-real=zero",
+    "-finit-integer=0",
+    "-finit-logical=false",
+    "-O2",
+    "-march=native",
+    "-ffp-contract=fast"
+  ]
+}

@@ -1,0 +1,30 @@
+fixture_id: t-camuw-cal-cldfra1-real4
+source: verbatim original WRF phys/module_radiation_driver.F cal_cldfra1
+source_commit: "f52c197ed39d12e087d02c50f412d90d418f6186"
+source_file_sha256: "4f0177189eb616c9220fe2022186dd6cc310666ca29977557dfe53d4409d733b"
+subroutine_sha256: "145872818ec771c0a5c5b9db127580da68a4cb5820c8752a38a7b788473ed11a"
+scenario: 40 clear/saturated/partial/ice/snow/threshold cases, MP1/3/8/50/51; 520 original calls including six-input +/-1ULP perturbations
+created_utc: "2026-10-14T00:39:01.958508+00:00"
+precision: WRF REAL4, no FMA; port compiled REAL4 bounded by independently measured input-ULP response
+staggering: mass points; point-local scalar routine, no spatial stencil
+variables:
+  - {name: mp_physics, units: '1', shape: [40], dtype: int32, absolute_tolerance: 0, relative_tolerance: 0}
+  - {name: temperature, units: K, shape: [40], dtype: float32, absolute_tolerance: 0, relative_tolerance: 0}
+  - {name: pressure, units: Pa, shape: [40], dtype: float32, absolute_tolerance: 0, relative_tolerance: 0}
+  - {name: qv, units: kg/kg, shape: [40], dtype: float32, absolute_tolerance: 0, relative_tolerance: 0}
+  - {name: qc, units: kg/kg, shape: [40], dtype: float32, absolute_tolerance: 0, relative_tolerance: 0}
+  - {name: qi, units: kg/kg, shape: [40], dtype: float32, absolute_tolerance: 0, relative_tolerance: 0}
+  - {name: qs, units: kg/kg, shape: [40], dtype: float32, absolute_tolerance: 0, relative_tolerance: 0}
+  - name: cloud_fraction
+    units: '1'
+    shape: [40]
+    dtype: float32
+    absolute_tolerance: per-case input_ulp_bound in cloud_oracle.json
+    relative_tolerance: 0
+    tolerance_rationale: sum of each original input's worst +/-1REAL4-ULP output response, measured before evaluating JAX
+files:
+  - path: cloud_oracle.json
+    sha256: 71cdda9aa1f2161032c0c730337b455ff09cfb0a4a346641e82002a320720a96
+generation_command: python proofs/t_camuw/acquire_cloud_oracle.py SOURCE_ROOT OUTPUT_JSON PRIVATE_BUILD
+comparison_command: python -m pytest tests/test_camuw_resolved_radiation.py -k matches_original_wrf
+license_notes: WRF source is retained in original checkout; derived small numerical fixtures follow project/WRF provenance, no large WRF outputs committed

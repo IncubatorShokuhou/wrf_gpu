@@ -1,0 +1,630 @@
+{
+  "verdict": "READY-FOR-CRITIC",
+  "lane": "t-orphantests",
+  "candidate": "4302862e4",
+  "base": "1e9f09c07",
+  "scope": "Tests, frozen fixtures, oracle reproducibility sources/receipts, lane notes only. No GPU execution, new forecast fidelity or runtime speed claim.",
+  "gate": {
+    "test_files": 23,
+    "passed": 698,
+    "skipped": 4,
+    "failures": 0,
+    "errors": 0,
+    "mutants_verified": 20,
+    "mutant_setup_errors": 0,
+    "numeric_bounds_changed": false
+  },
+  "validation_reuse": "OT02 changes only the two missing frozen raw-vapor inputs and notes relative to OT01; all 23 test files and all production trees are identical. Reuse 22 completed file results; rerun only raw-vapor file.",
+  "resources": {
+    "cpu_affinity": "24,25",
+    "nice": 19,
+    "jax_platform": "cpu",
+    "ram_max_bytes": 6442450944,
+    "swap_max_bytes": 0,
+    "OT01_peak_bytes": 3495862272,
+    "OT03_peak_bytes": 2285010944,
+    "gpu_arms": 0,
+    "persistent_cache": "disabled: GPUWRF_JAX_CACHE=0"
+  },
+  "mutation_classification": "Require pytest failure in a test call with AssertionError or explicit rewritten E_assert signature, rc=1, and zero setup errors. Preserve OT03 initial 19/20 outcome and source-parity survivor; OT04 uses the pre-existing discriminating gold nodes. KF/fence false negatives corrected from preserved XML without numerical rerun.",
+  "suite": [
+    {
+      "file": "tests/test_history_swdown_horizontal.py",
+      "tests": 8,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "time_s": 7.325,
+      "measured_commit": "82626487b",
+      "xml": "<USER_HOME>/wrf_gpu2_lanes/t-orphantests/test_history_swdown_horizontal.xml",
+      "xml_sha256": "b4676a4d8334a4290942918fe1f17092f7c44d07749cac2847832c6f0420810a",
+      "skip_reasons": []
+    },
+    {
+      "file": "tests/test_noahmp_radiation_native_layout.py",
+      "tests": 6,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "time_s": 10.846,
+      "measured_commit": "82626487b",
+      "xml": "<USER_HOME>/wrf_gpu2_lanes/t-orphantests/test_noahmp_radiation_native_layout.xml",
+      "xml_sha256": "9159b2763da835200099eff2e06962172aa239b62ea46e630653a595feb79e4d",
+      "skip_reasons": []
+    },
+    {
+      "file": "tests/test_writer_rvovrd_real.py",
+      "tests": 66,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "time_s": 10.93,
+      "measured_commit": "82626487b",
+      "xml": "<USER_HOME>/wrf_gpu2_lanes/t-orphantests/test_writer_rvovrd_real.xml",
+      "xml_sha256": "237042c0dc1d3e18d0f0dcb5d873e89697fc3dc46e23cc026cd9f94555fb493f",
+      "skip_reasons": []
+    },
+    {
+      "file": "tests/v025/b_column/test_joint_kf_pbl_rk.py",
+      "tests": 4,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 4,
+      "time_s": 2.319,
+      "measured_commit": "82626487b",
+      "xml": "<USER_HOME>/wrf_gpu2_lanes/t-orphantests/test_joint_kf_pbl_rk.xml",
+      "xml_sha256": "5e02495f001927e6f561c38fc26559b85b017f87c4263f04ae9c5a2f77bd942a",
+      "skip_reasons": [
+        "requires original P0227 d01 restart"
+      ]
+    },
+    {
+      "file": "tests/v025/b_column/test_kf_real_constants.py",
+      "tests": 8,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "time_s": 2.193,
+      "measured_commit": "82626487b",
+      "xml": "<USER_HOME>/wrf_gpu2_lanes/t-orphantests/test_kf_real_constants.xml",
+      "xml_sha256": "85a9f7dcb1f852a99c1f3533e3b6ab12ae7df9e1d30d32746ad86bb57074d78a",
+      "skip_reasons": []
+    },
+    {
+      "file": "tests/v025/b_diff/test_theta_sum_fence.py",
+      "tests": 12,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "time_s": 2.202,
+      "measured_commit": "82626487b",
+      "xml": "<USER_HOME>/wrf_gpu2_lanes/t-orphantests/test_theta_sum_fence.xml",
+      "xml_sha256": "e54ae563a7395986b4bcec1d1a0f7b936706cbb071463046bce9548a42f08708",
+      "skip_reasons": []
+    },
+    {
+      "file": "tests/v025/b_noahmp/test_noah_canwater_elai.py",
+      "tests": 13,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "time_s": 35.662,
+      "measured_commit": "82626487b",
+      "xml": "<USER_HOME>/wrf_gpu2_lanes/t-orphantests/test_noah_canwater_elai.xml",
+      "xml_sha256": "f5bbc682271b462dc040ab3361943b4a65e0637bf408e54a94802525b5d821e8",
+      "skip_reasons": []
+    },
+    {
+      "file": "tests/v025/b_noahmp/test_noah_qsfc_wrf.py",
+      "tests": 6,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "time_s": 145.487,
+      "measured_commit": "82626487b",
+      "xml": "<USER_HOME>/wrf_gpu2_lanes/t-orphantests/test_noah_qsfc_wrf.xml",
+      "xml_sha256": "432c9f22b6c847c4863f033ba33d3a311a2bc5f4a4e19ccd9202ea4d249f2ccd",
+      "skip_reasons": []
+    },
+    {
+      "file": "tests/v025/b_noahmp/test_noah_urban_soil_params.py",
+      "tests": 9,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "time_s": 309.31,
+      "measured_commit": "82626487b",
+      "xml": "<USER_HOME>/wrf_gpu2_lanes/t-orphantests/test_noah_urban_soil_params.xml",
+      "xml_sha256": "ebd26a23f954bce69ccc7c64d09d0fa2560b681d1a7a836d2a7ab592c3e7dfc0",
+      "skip_reasons": []
+    },
+    {
+      "file": "tests/v025/b_phys/test_land_q2_postlsm.py",
+      "tests": 14,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "time_s": 23.021,
+      "measured_commit": "82626487b",
+      "xml": "<USER_HOME>/wrf_gpu2_lanes/t-orphantests/test_land_q2_postlsm.xml",
+      "xml_sha256": "f67b851b37da40cc6dc07c685b131a9e08bcd166b918444789d506036265e4d4",
+      "skip_reasons": []
+    },
+    {
+      "file": "tests/v025/b_phys/test_mynn_closure_carries.py",
+      "tests": 19,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "time_s": 25.296,
+      "measured_commit": "82626487b",
+      "xml": "<USER_HOME>/wrf_gpu2_lanes/t-orphantests/test_mynn_closure_carries.xml",
+      "xml_sha256": "39e6c0c752de3e9748b001d87cc496168fe5e62f6622e8461d047272485f9d67",
+      "skip_reasons": []
+    },
+    {
+      "file": "tests/v025/b_phys/test_mynn_condensation_wrf.py",
+      "tests": 17,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "time_s": 3.05,
+      "measured_commit": "82626487b",
+      "xml": "<USER_HOME>/wrf_gpu2_lanes/t-orphantests/test_mynn_condensation_wrf.xml",
+      "xml_sha256": "b45200f28b0a64da7835595f40aada578e46c8c77894740fb56463b13eb9f7bd",
+      "skip_reasons": []
+    },
+    {
+      "file": "tests/v025/b_phys/test_mynn_plume_real_coverage.py",
+      "tests": 8,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "time_s": 5.624,
+      "measured_commit": "82626487b",
+      "xml": "<USER_HOME>/wrf_gpu2_lanes/t-orphantests/test_mynn_plume_real_coverage.xml",
+      "xml_sha256": "e28e28df805c1fb63da68b3d62e178e9d8f3da312694c3ce45902ceb40c96dcf",
+      "skip_reasons": []
+    },
+    {
+      "file": "tests/v025/b_phys/test_mynn_predict_saw_floor.py",
+      "tests": 15,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "time_s": 26.661,
+      "measured_commit": "82626487b",
+      "xml": "<USER_HOME>/wrf_gpu2_lanes/t-orphantests/test_mynn_predict_saw_floor.xml",
+      "xml_sha256": "083854c6fa5f547cee884f47470b7e682d8af66498146d1d55cb68a31ecaca1e",
+      "skip_reasons": []
+    },
+    {
+      "file": "tests/v025/b_phys/test_mynn_real_constants.py",
+      "tests": 165,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "time_s": 52.168,
+      "measured_commit": "82626487b",
+      "xml": "<USER_HOME>/wrf_gpu2_lanes/t-orphantests/test_mynn_real_constants.xml",
+      "xml_sha256": "b540dfe6405ca2f88085186aa262fda92327dcab038c73f7c09b25ec967b2a95",
+      "skip_reasons": []
+    },
+    {
+      "file": "tests/v025/b_phys/test_mynn_sfc_psi_real.py",
+      "tests": 17,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "time_s": 1.666,
+      "measured_commit": "82626487b",
+      "xml": "<USER_HOME>/wrf_gpu2_lanes/t-orphantests/test_mynn_sfc_psi_real.xml",
+      "xml_sha256": "9f6b1c2155ea4cf56b8d03818b74289f6f983419fbc05bc62b62f134cc9e196d",
+      "skip_reasons": []
+    },
+    {
+      "file": "tests/v025/b_phys/test_mynn_source_parity2.py",
+      "tests": 11,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "time_s": 2.89,
+      "measured_commit": "82626487b",
+      "xml": "<USER_HOME>/wrf_gpu2_lanes/t-orphantests/test_mynn_source_parity2.xml",
+      "xml_sha256": "9ffa1c46db554fbec9a0546f57cb8f5eb51a0eac9796b3ca8638f2ae6c00bd51",
+      "skip_reasons": []
+    },
+    {
+      "file": "tests/v025/b_phys/test_phy_prep_real_const.py",
+      "tests": 17,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "time_s": 3.224,
+      "measured_commit": "82626487b",
+      "xml": "<USER_HOME>/wrf_gpu2_lanes/t-orphantests/test_phy_prep_real_const.xml",
+      "xml_sha256": "039c1edf6b77d83e484b04c6758054bf00479a0359912fbef38d698994416f4c",
+      "skip_reasons": []
+    },
+    {
+      "file": "tests/v025/b_phys/test_rrtmg_sw_reftra_wrf.py",
+      "tests": 13,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "time_s": 41.479,
+      "measured_commit": "82626487b",
+      "xml": "<USER_HOME>/wrf_gpu2_lanes/t-orphantests/test_rrtmg_sw_reftra_wrf.xml",
+      "xml_sha256": "a2d212ca9b2480d981bf0068d3d66c86bba5f7cb3951ffa51f098f390055add7",
+      "skip_reasons": []
+    },
+    {
+      "file": "tests/v025/b_phys/test_sfclay_pblh_wrf.py",
+      "tests": 213,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "time_s": 17.101,
+      "measured_commit": "82626487b",
+      "xml": "<USER_HOME>/wrf_gpu2_lanes/t-orphantests/test_sfclay_pblh_wrf.xml",
+      "xml_sha256": "dd473a86d1a855751a36cb5ad934d6c88e581cd66e0e9601b77a0675721234bf",
+      "skip_reasons": []
+    },
+    {
+      "file": "tests/v025/b_thompson/test_raw_qv_wrf_oracle.py",
+      "tests": 24,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "time_s": 7.913,
+      "measured_commit": "4302862e4",
+      "xml": "<USER_HOME>/wrf_gpu2_lanes/t-orphantests/test_raw_qv_wrf_oracle.xml",
+      "xml_sha256": "73718c29ca865f061e24bc142cca16b2206c78350f16798844d0d22e4465a18d",
+      "skip_reasons": []
+    },
+    {
+      "file": "tests/v025/b_thompson/test_thompson_wrf_constants.py",
+      "tests": 24,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "time_s": 5.223,
+      "measured_commit": "82626487b",
+      "xml": "<USER_HOME>/wrf_gpu2_lanes/t-orphantests/test_thompson_wrf_constants.xml",
+      "xml_sha256": "2dfe35161a030f2ab345eaac5c97976b4da486a24c532a36c31b08d4e7634b8c",
+      "skip_reasons": []
+    },
+    {
+      "file": "tests/v025/census/test_f2_negative_summary.py",
+      "tests": 13,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "time_s": 7.542,
+      "measured_commit": "82626487b",
+      "xml": "<USER_HOME>/wrf_gpu2_lanes/t-orphantests/test_f2_negative_summary.xml",
+      "xml_sha256": "a6475f804b3e8d5de50fc5be890120b8340a66d052f5d58f5c3ce9168270e665",
+      "skip_reasons": []
+    }
+  ],
+  "mutations": [
+    {
+      "family": "history",
+      "node": "tests/test_history_swdown_horizontal.py::test_real_original_wrf_slopes_choose_horizontal_history",
+      "rc": 1,
+      "tests": 1,
+      "assertion_failures": 1,
+      "errors": 0,
+      "killed": true,
+      "wall_s": 3.045763343994622,
+      "verified_assertion_failure": true,
+      "verification_signatures": [
+        "E   AssertionError: WRF horizontal SWDOWN not restored"
+      ]
+    },
+    {
+      "family": "writer",
+      "node": "tests/test_writer_rvovrd_real.py::test_real_order_and_legacy_source_bits[float32-float32-ON]",
+      "rc": 1,
+      "tests": 1,
+      "assertion_failures": 1,
+      "errors": 0,
+      "killed": true,
+      "wall_s": 1.6915049749950413,
+      "verified_assertion_failure": true,
+      "verification_signatures": [
+        "E   AssertionError: "
+      ]
+    },
+    {
+      "family": "kf",
+      "node": "tests/v025/b_column/test_kf_real_constants.py::test_runtime_and_compiled_constants_have_exact_source_bits[True-expected1]",
+      "rc": 1,
+      "tests": 1,
+      "assertion_failures": 1,
+      "errors": 0,
+      "killed": false,
+      "wall_s": 2.12170239900297,
+      "verified_assertion_failure": true,
+      "verification_signatures": [
+        "E   assert (1142475981, 3156214219) == (1142475980, 3156214220)"
+      ]
+    },
+    {
+      "family": "noah",
+      "node": "tests/v025/b_noahmp/test_noah_urban_soil_params.py::test_key_on_matches_wired_pristine",
+      "rc": 1,
+      "tests": 1,
+      "assertion_failures": 1,
+      "errors": 0,
+      "killed": true,
+      "wall_s": 44.798003579999204,
+      "verified_assertion_failure": true,
+      "verification_signatures": [
+        "E   AssertionError: (array([17685.,  2400.,     0.,   600.]), np.int64(0))"
+      ]
+    },
+    {
+      "family": "mynn",
+      "node": "tests/v025/b_phys/test_mynn_real_constants.py::test_live_virtual_temperature_uses_original_p608",
+      "rc": 1,
+      "tests": 1,
+      "assertion_failures": 1,
+      "errors": 0,
+      "killed": true,
+      "wall_s": 2.928127655002754,
+      "verified_assertion_failure": true,
+      "verification_signatures": [
+        "E   AssertionError: "
+      ]
+    },
+    {
+      "family": "radiation",
+      "node": "tests/v025/b_phys/test_rrtmg_sw_reftra_wrf.py::test_original_clear_sw_real_columns[0-d03]",
+      "rc": 1,
+      "tests": 1,
+      "assertion_failures": 1,
+      "errors": 0,
+      "killed": true,
+      "wall_s": 8.420614098999067,
+      "verified_assertion_failure": true,
+      "verification_signatures": [
+        "E   AssertionError: array([[ 1.22070312e-04,  1.19030762e+00, -1.38220215e+00,"
+      ]
+    },
+    {
+      "family": "thompson",
+      "node": "tests/v025/b_thompson/test_thompson_wrf_constants.py::test_selector_is_native_real_only[1-1-True]",
+      "rc": 1,
+      "tests": 1,
+      "assertion_failures": 1,
+      "errors": 0,
+      "killed": true,
+      "wall_s": 1.8614359850034816,
+      "verified_assertion_failure": true,
+      "verification_signatures": [
+        "E   AssertionError: AM_R"
+      ]
+    },
+    {
+      "family": "phy",
+      "node": "tests/v025/b_phys/test_phy_prep_real_const.py::test_actual_native_consumer_matches_original_bits[mynn]",
+      "rc": 1,
+      "tests": 1,
+      "assertion_failures": 1,
+      "errors": 0,
+      "killed": true,
+      "wall_s": 2.714838697007508,
+      "verified_assertion_failure": true,
+      "verification_signatures": [
+        "E   AssertionError: "
+      ]
+    },
+    {
+      "family": "land_q2",
+      "node": "tests/v025/b_phys/test_land_q2_postlsm.py::test_pristine_postlsm_literal_real4",
+      "rc": 1,
+      "tests": 1,
+      "assertion_failures": 1,
+      "errors": 0,
+      "killed": true,
+      "wall_s": 2.4929374619969167,
+      "verified_assertion_failure": true,
+      "verification_signatures": [
+        "E   AssertionError: "
+      ]
+    },
+    {
+      "family": "canwater",
+      "node": "tests/v025/b_noahmp/test_noah_canwater_elai.py::test_key_on_matches_pristine_canwater[1]",
+      "rc": 1,
+      "tests": 1,
+      "assertion_failures": 1,
+      "errors": 0,
+      "killed": true,
+      "wall_s": 4.374954697006615,
+      "verified_assertion_failure": true,
+      "verification_signatures": [
+        "E   AssertionError: {'canice': 0.0, 'canliq': 0.0, 'fwet': 9446180.0, 'tv': 72467.0}"
+      ]
+    },
+    {
+      "family": "noah_qsfc",
+      "node": "tests/v025/b_noahmp/test_noah_qsfc_wrf.py::test_key_on_matches_wired_pristine",
+      "rc": 1,
+      "tests": 1,
+      "assertion_failures": 1,
+      "errors": 0,
+      "killed": true,
+      "wall_s": 47.88213482500578,
+      "verified_assertion_failure": true,
+      "verification_signatures": [
+        "E   AssertionError: (np.float64(0.006207749247550964), 63)"
+      ]
+    },
+    {
+      "family": "condensation",
+      "node": "tests/v025/b_phys/test_mynn_condensation_wrf.py::test_original_call_inputs_and_qc_exit",
+      "rc": 1,
+      "tests": 2,
+      "assertion_failures": 2,
+      "errors": 0,
+      "killed": true,
+      "wall_s": 2.3890064290026203,
+      "verified_assertion_failure": true,
+      "verification_signatures": [
+        "E   AssertionError: ",
+        "E   AssertionError: "
+      ]
+    },
+    {
+      "family": "predict",
+      "node": "tests/v025/b_phys/test_mynn_predict_saw_floor.py::test_original_predict_qke_qsq_real4",
+      "rc": 1,
+      "tests": 2,
+      "assertion_failures": 1,
+      "errors": 0,
+      "killed": true,
+      "wall_s": 15.356582301988965,
+      "verified_assertion_failure": true,
+      "verification_signatures": [
+        "E   AssertionError: ('qke', 9.737901849374605e-05)"
+      ]
+    },
+    {
+      "family": "source_parity",
+      "node": "tests/v025/b_phys/test_mynn_source_parity2.py::test_original_mean_floor_all_real_columns",
+      "rc": 0,
+      "tests": 2,
+      "assertion_failures": 0,
+      "errors": 0,
+      "killed": false,
+      "wall_s": 2.479683430006844,
+      "verified_assertion_failure": true,
+      "verification_signatures": [
+        "E   AssertionError: ",
+        "E   AssertionError: ",
+        "E   AssertionError: "
+      ],
+      "initial_survival": "Two unmodified real mean-floor cohorts do not activate the corrected top-face footprint.",
+      "final_nodes": [
+        "tests/v025/b_phys/test_mynn_source_parity2.py::test_original_top_face_footprint_witness",
+        "tests/v025/b_phys/test_mynn_source_parity2.py::test_original_dmp_gtr_all_real_columns"
+      ],
+      "final_assertion_failures": 3,
+      "final_errors": 0,
+      "final_xml": "<USER_HOME>/wrf_gpu2_lanes/t-orphantests/mutant_source_parity_witness.xml"
+    },
+    {
+      "family": "sfc_psi",
+      "node": "tests/v025/b_phys/test_mynn_sfc_psi_real.py::test_real_tables_bit_exact_original",
+      "rc": 1,
+      "tests": 4,
+      "assertion_failures": 4,
+      "errors": 0,
+      "killed": true,
+      "wall_s": 2.0921339390042704,
+      "verified_assertion_failure": true,
+      "verification_signatures": [
+        "E   AssertionError: ",
+        "E   AssertionError: ",
+        "E   AssertionError: ",
+        "E   AssertionError: "
+      ]
+    },
+    {
+      "family": "shsm",
+      "node": "tests/v025/b_phys/test_mynn_closure_carries.py::test_actual_turbulence_budget_matches_original_real4",
+      "rc": 1,
+      "tests": 2,
+      "assertion_failures": 2,
+      "errors": 0,
+      "killed": true,
+      "wall_s": 14.392216986001586,
+      "verified_assertion_failure": true,
+      "verification_signatures": [
+        "E   AssertionError: ",
+        "E   AssertionError: "
+      ]
+    },
+    {
+      "family": "rhosfc",
+      "node": "tests/v025/b_phys/test_mynn_closure_carries.py::test_plume_tke_source_and_surface_density_are_original_real4",
+      "rc": 1,
+      "tests": 2,
+      "assertion_failures": 2,
+      "errors": 0,
+      "killed": true,
+      "wall_s": 3.2771677959972294,
+      "verified_assertion_failure": true,
+      "verification_signatures": [
+        "E   AssertionError: ",
+        "E   AssertionError: "
+      ]
+    },
+    {
+      "family": "tkeprod",
+      "node": "tests/v025/b_phys/test_mynn_closure_carries.py::test_plume_tke_source_and_surface_density_are_original_real4",
+      "rc": 1,
+      "tests": 2,
+      "assertion_failures": 2,
+      "errors": 0,
+      "killed": true,
+      "wall_s": 2.7765377110044938,
+      "verified_assertion_failure": true,
+      "verification_signatures": [
+        "E   AssertionError: assert {'mf_aw'} == {'mf_aw', 'tkeprod_up'}",
+        "E   AssertionError: assert {'mf_aw'} == {'mf_aw', 'tkeprod_up'}"
+      ]
+    },
+    {
+      "family": "pblh",
+      "node": "tests/v025/b_phys/test_sfclay_pblh_wrf.py::test_real_zero_pblh_surface_memory_matches_original",
+      "rc": 1,
+      "tests": 2,
+      "assertion_failures": 2,
+      "errors": 0,
+      "killed": true,
+      "wall_s": 7.089911964998464,
+      "verified_assertion_failure": true,
+      "verification_signatures": [
+        "E   AssertionError: WRF WSPD >4 REAL32 ULP",
+        "E   AssertionError: WRF WSPD >4 REAL32 ULP"
+      ]
+    },
+    {
+      "family": "fence",
+      "node": "tests/v025/b_diff/test_theta_sum_fence.py::test_fence_is_a_barrier_on_f32_only",
+      "rc": 1,
+      "tests": 1,
+      "assertion_failures": 1,
+      "errors": 0,
+      "killed": false,
+      "wall_s": 3.5263084690086544,
+      "verified_assertion_failure": true,
+      "verification_signatures": [
+        "E   assert 0 == 1"
+      ]
+    }
+  ],
+  "artifact_root": "<USER_HOME>/wrf_gpu2_lanes/t-orphantests",
+  "artifact_sha256": {
+    "OT01.log": "caea54f818f3b98a9c23efc3e34a75a612b0fc3bf00f614d541698ccb4b8ac08",
+    "OT02.log": "3a0fabb4669437af01dfccb85d5304a2a16d4270dede6ea2598ae8ba0e20180d",
+    "OT03.log": "2f064e5459d64fca50d783fcf5594592f21284a4cea5b04a3698e3983621d025",
+    "OT04.log": "f161878d0df7eb5576bb3f354c2009040e92207f7f9f3f6635b45fb10b072cc7",
+    "run_suite.py": "e9b21e673ce1fdd48df105e855b023c32fa9ce8f12a43401a97dd7b1ffe1c897",
+    "run_mutants.py": "be231a52cd9adc4127aafc387579bf93f7e905dbc99cbac9323c1a9cd8f28105",
+    "mutation_plugin.py": "ce6b5017829efb881def45e9346d04831679451ca0a60951eee952b6e472221a",
+    "mutants.json": "bb01f14e07930eb1f5d0a0173a99836f49fdfcb7fb2ea426cd077121e27727f5",
+    "mutants_verified.json": "d02519095f1856a953aafbc5b3eb21a55ec3150039335d6241f2233d8bfcb76e",
+    "resources.json": "79230e4b602b653c0dbf69b3c3f34428c2006d2027d0e53734b559941f43f8aa",
+    "OT03_resources.json": "c1c25b97560f686498f85fad2b292cb69ecf6b0882453f5b708c8ce27df40261"
+  },
+  "experiments": [
+    "OT01",
+    "OT02",
+    "OT03",
+    "OT04"
+  ]
+}

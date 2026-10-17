@@ -1,0 +1,24 @@
+fixture_id: sms3dtke-coefficients-wrf-v1
+source: unmodified WRF v4.7.1 module_diffusion_em tke_km + tke_dissip (km_opt=5)
+source_commit: staged pristine library identified by exact checksums
+scenario: Swiss real 12x10x44 terrain/wind crops; dx80/400/600/1200/3000; explicit hpbl/dlk operands; specified/periodic, isfflx0/1/2, zero/high TKE
+created_utc: 2026-10-13T10:49:24.928888+00:00
+generation: JAX_PLATFORMS=cpu GPUWRF_JAX_CACHE=0 taskset -c24 nice -n19 python proofs/s1_km5/oracle.py EXE OUT.npz WORK
+limits: SMS-specific branch boundary after exact common WRF savepoints (incl dthrdn/BN2); hpbl/dlk are supplied physical operands, not produced by SMS; no nonlocal/mesoscale/implicit/full-forecast qualification
+variables:
+  - {name: xkmh, units: m2 s-1, shape: [45, 17, 19], dtype: float32, absolute_tolerance: 32*eps32*maxabs(reference), relative_tolerance: 32*eps32}
+  - {name: xkmv, units: m2 s-1, shape: [45, 17, 19], dtype: float32, absolute_tolerance: 32*eps32*maxabs(reference), relative_tolerance: 32*eps32}
+  - {name: xkhh, units: m2 s-1, shape: [45, 17, 19], dtype: float32, absolute_tolerance: 32*eps32*maxabs(reference), relative_tolerance: 32*eps32}
+  - {name: xkhv, units: m2 s-1, shape: [45, 17, 19], dtype: float32, absolute_tolerance: 32*eps32*maxabs(reference), relative_tolerance: 32*eps32}
+  - {name: xkmv_meso, units: m2 s-1, shape: [45, 17, 19], dtype: float32, absolute_tolerance: 32*eps32*maxabs(reference), relative_tolerance: 32*eps32}
+  - {name: l_diss, units: m, shape: [45, 17, 19], dtype: float32, absolute_tolerance: 32*eps32*maxabs(reference), relative_tolerance: 32*eps32}
+files:
+  - {path: data/fixtures/sms3dtke-coefficients-wrf-v1.npz, sha256: a817728bc6391a1b38a9cca63924850f6f20054364f2475139f0dfa7ce680a0d}
+  - {path: data/fixtures/les3d-smag3d-oracle-v1.npz, sha256: b6028e36bba6ac233f42b53fad89ed7e957be3aa4fd5062ec2a98dbb60f62fe8}
+  - {path: proofs/s1_km5/sms_driver.F90, sha256: 56d4c9bcbec3c1b3226a0cca39fd521b842fe29e2ddfa855a520833a02baa699}
+wrf_library_sha256: 4886a500d7bbcbdc7cff40ed3baab72b6a014b4dd9879bf25bc7c24522dfadbe
+wrf_sources:
+  - {path: dyn_em/module_diffusion_em.F, sha256: a7d4570c97e51c635e86a0dbd628c6846457ac5b93d5a7af798b118c7d8d2d54}
+  - {path: share/module_bc.F, sha256: 61b9235004b2a7799faabaa928276af8a7ef2e4672619c8ad120c857461301ad}
+  - {path: share/module_model_constants.F, sha256: 5b80377fecdc18a5f0ad38d3b6c15cfc86ad5d76701adbbbb08a08698d0f7062}
+license_notes: NCAR WRF reference; compact numerical fixture only, no full wrfout redistributed

@@ -1,0 +1,197 @@
+{
+  "status": "READY-FOR-MERGE; QUICK MANAGER REVIEW OF TWO TEST-ONLY INTEGRATION-FIX COMMITS BEFORE FAST-FORWARD",
+  "timestamp_utc": "2026-10-14T05:25:17.758104+00:00",
+  "lane": "s2-integrate",
+  "prior_ready_commit": "150e29c75",
+  "main_base": "6101f8acf895268ec7ee73822242bc46f0b6168a",
+  "final_candidate_source_commit": "7e857536c405b1b0a0d53c3511aa811a9f468891",
+  "measured_final_source_commit": "717bb46917e917515d4484acde7e291a4a234dc1",
+  "source_and_tests_byte_to_measured": true,
+  "ordered_approved_inputs": {
+    "s2-sas": "a2c2f27fccd49f9549ace5bee3448191dbe11b75",
+    "s2-mpmore_mp19_21": "f86b06a9393f101d4c0bd1c2f1f23034e782ab3b",
+    "s2-glacier_LAST": "c6346730a4ca78bae93579283b702a69d0ea3c07"
+  },
+  "glacier_successor_audit": {
+    "reviewed": "0349f53d5",
+    "approved": "c6346730a",
+    "delta": "Seven paths: prose/notes/two source-audit receipts and one catalog string; all other production BYTE; catalog AST exact except corrected string",
+    "correction": "QRAINXY is defined per-point cold-zero hold at WRF driver823/1259/init2141; externally seeded nonzero QRAINXY outside qualification"
+  },
+  "integration_fixes": {
+    "commits": {
+      "a39401d19": "a39401d1931e1e16a7216f9445daca5152921267",
+      "73fb4b620": "73fb4b62032a4a25b6d710e0c3d515bbdcad3d14"
+    },
+    "review_required": true,
+    "scope": "a394 adds mandatory SAS metadata to two manual restart fixtures;73fb retains four real radiation refusals and updates stale positive SAS status expectations. Test-only; no source/assertion relaxation.",
+    "batch2_host_fixes": "7134d2090 and69163b9ca reviewed/approved by manager and already on main150e29c75"
+  },
+  "cpu_checks": {
+    "final_composed_pass": 519,
+    "final_failures": 0,
+    "final_errors": 0,
+    "final_skips": 0,
+    "final_wall_s": 91.994,
+    "pre_glacier_unique_pass": 960,
+    "combined_unique_pass": 982,
+    "raw_receipts": [
+      "SI35-batch3-composed.xml",
+      "SI36-batch3-fixture-controls.xml",
+      "SI37-batch3-label-fixed.xml",
+      "SI43-final-glacier-consumers.xml"
+    ],
+    "superseded": [
+      {
+        "receipt": "SI35-batch3-composed.xml",
+        "node": "test_operational_validator_rejects_reference_only_scheme[NOTSET]",
+        "reason": "Empty obsolete matrix replaced by four actual radiation refusals"
+      }
+    ],
+    "reuse": "Approved numerical sources/fixtures/tests BYTE. No repeated4896/58 glacier or SAS/NSSL columns; changed shared/IO consumers rerun on complete final composition."
+  },
+  "identities": {
+    "SI41-final-swiss-identity.json": {
+      "sha256": "f672a5739cb96e388b6b7a40ef80337bf81bdc14ef15268f3476e09d79fe055d",
+      "CPU_trace": true,
+      "GPU_execution": false,
+      "load_s": 25.9,
+      "trace_s": 15.0,
+      "wall_s": 48.9,
+      "chars": 14504210
+    },
+    "SI42-final-prod-identity.json": {
+      "sha256": "6fc715a2bd630934c4cf0f94427df19a527cbf429011c9ba5efe4d712744d27b",
+      "CPU_trace": true,
+      "GPU_execution": false,
+      "load_s": 33.3,
+      "trace_s": 12.9,
+      "wall_s": 75.9,
+      "chars": 14708888
+    }
+  },
+  "source_composition": {
+    "protected_blobs_byte": 96,
+    "approved_owned_test_blobs_byte": 12,
+    "approved_proof_files_byte": 285,
+    "prior_published_packet_files_byte": 24,
+    "prior_order_preserved": true,
+    "CAM_TPERT_KPBL_and_SSIB_host_fix": "AST exact",
+    "glacier_specs_catalog_identity": "Appended after all prior entries"
+  },
+  "science_limits_retained": [
+    "SAS14/96/99 raw compiler/conditioning misses and OSAS95 near-zero R8 branch sensitivity disclosed. No tolerance/ISA change; final D6 binding. CU4 API only, original WRF ARW refusal retained; OSAS deterministic RNG disclosed.",
+    "NSSL19/21 frozen original bounds; soleR4QC16k1 original same-input FMA control retained.19CCN0/km2/customparams/nests refused;21sixbulk only. No unrepresented history fields or effective-radius claim.",
+    "Glacier4896literalBYTE/58independentULP, both3stepCPU/183resumeBYTE retained; coldzeroQRAINXY defined hold, arbitrary nonzero seed outside scope; opt_snf5 glacier refused.54WN3zeroice is universal source proof, not54 measured executions.",
+    "Previous KEPS/LF1/tracer/CAM-F2/SSIB/SFDDA/QNSE experimental qualifications unchanged in immutable prior packets."
+  ],
+  "performance_memory": {
+    "integration": "Metadata/order/test fixture composition only; approved numerical bodies BYTE.",
+    "SAS_reused_CPU_component": "Consumer temp0;warm.649125->.459474ms;compile.186446->.233301s; not GPU claims.",
+    "NSSL_reused": "19adds627984B Swiss persistent and931392B history/frame;21no new extras;CPUcolumn temp32520/25792B.",
+    "glacier_reused": "Ice-free adds0kernels/bytes;Swiss3columnkernels+gather/scatter,+7056B persistentland;stage logicaloutputs8096/8272/8976B before aliasing/DCE;nativeCPUcompile194.389/170.151s.",
+    "GPU_launches_VRAM_whole_executable_E41_readiness_forecast_D6": "UNMEASURED/PENDING; final Swiss24h CPU-WRF qualification must use glacier graph; no GPU used"
+  },
+  "cleanup": "Own snapshot/pytest removed immediately after final arm;no caches/shared refs untouched",
+  "cache": "NONE GPUWRF_JAX_CACHE=0",
+  "runtime": "CPU24,25 nice19;single JAX;immutable snapshots",
+  "critic_verdicts": {
+    "SAS": {
+      "source": "<USER_HOME>/wrf_gpu2_lanes/rv-s2-sas/VERDICT_FINAL.md",
+      "sha256": "386a006ec20ef9f36b5e1ea60a5b24dd78d5d6a393fa7446cc8848950c9cd7e9",
+      "sealed_copy": "SAS_CRITIC_VERDICT.md"
+    },
+    "MP19_21": {
+      "source": "<USER_HOME>/wrf_gpu2_lanes/rv-s2-mpmore/VERDICT.mp19-21.f86b06a93.md",
+      "sha256": "cc1494661cadfd382f6c20f09283f0099d8105b933b2ca06efef5802fb0b760e",
+      "sealed_copy": "MP19_21_CRITIC_VERDICT.md"
+    },
+    "GLACIER": {
+      "source": "<USER_HOME>/wrf_gpu2_lanes/rv-s2-glacier/VERDICT.md",
+      "sha256": "66ee6ca5386824bf296d32c6f37f3a94e1bf3206fc769aaf0a1594c97a5565c9",
+      "sealed_copy": "GLACIER_CRITIC_VERDICT.md"
+    }
+  },
+  "artifacts": {
+    "SI30-sas-merge.json": {
+      "sha256": "0d779a3d15c053b5bfe49bf9c507c577d81ba05f76ad223d663ca76832ef5133",
+      "original_sha256": "0d779a3d15c053b5bfe49bf9c507c577d81ba05f76ad223d663ca76832ef5133"
+    },
+    "SI31-mpmore-merge.json": {
+      "sha256": "a66aaa7a94696cc093e023d21b6d04e7cd3ae9e9554a5f42748b459be40e5583",
+      "original_sha256": "a66aaa7a94696cc093e023d21b6d04e7cd3ae9e9554a5f42748b459be40e5583"
+    },
+    "SI33-batch3-source-audit.json": {
+      "sha256": "84256393de2f62e7da6d19c4f90d85ec85f88c0d6da7cdfd1392b3b217317c97",
+      "original_sha256": "84256393de2f62e7da6d19c4f90d85ec85f88c0d6da7cdfd1392b3b217317c97"
+    },
+    "SI34-batch3-identity.json": {
+      "sha256": "36910579dc786d69878fea37df073ca10421a04e974a17b11b6f07a72bb08e0b",
+      "original_sha256": "36910579dc786d69878fea37df073ca10421a04e974a17b11b6f07a72bb08e0b"
+    },
+    "SI35-batch3-test-selection.json": {
+      "sha256": "b2d810096a8336199bd37e60ae7b17719cb10c45a2ae4707bd1a7374444837ca",
+      "original_sha256": "b2d810096a8336199bd37e60ae7b17719cb10c45a2ae4707bd1a7374444837ca"
+    },
+    "SI38-batch3-final-audit.json": {
+      "sha256": "daae6020be566a7577d1d30a0bebcb6797b469dd5dee9d98f82e45b72ad21427",
+      "original_sha256": "daae6020be566a7577d1d30a0bebcb6797b469dd5dee9d98f82e45b72ad21427"
+    },
+    "SI39-glacier-merge.json": {
+      "sha256": "520164915279e22b4494adc1cd4fd765494f7f361dc6f73414007de68d102b7a",
+      "original_sha256": "520164915279e22b4494adc1cd4fd765494f7f361dc6f73414007de68d102b7a"
+    },
+    "SI40-final-glacier-source-audit.json": {
+      "sha256": "85b102f3e3d498ffea0f8f531c8f243d70cfce2f6be5fa0b31f04041c3df2c6b",
+      "original_sha256": "85b102f3e3d498ffea0f8f531c8f243d70cfce2f6be5fa0b31f04041c3df2c6b"
+    },
+    "SI41-final-swiss-identity.json": {
+      "sha256": "1bb77598aa571f1c366f4d8110ca54d39ac26221dad926c20f544ca0a42f3782",
+      "original_sha256": "1bb77598aa571f1c366f4d8110ca54d39ac26221dad926c20f544ca0a42f3782"
+    },
+    "SI42-final-prod-identity.json": {
+      "sha256": "8f7f2c33d5922a95364da967c272e85dcb4f2b94271f62356ce5558555741329",
+      "original_sha256": "8f7f2c33d5922a95364da967c272e85dcb4f2b94271f62356ce5558555741329"
+    },
+    "SI43-final-glacier-test-selection.json": {
+      "sha256": "95a7e83ff66a607203c91c982b36fd85226d220dab6c911877c59a6cbabeda3e",
+      "original_sha256": "95a7e83ff66a607203c91c982b36fd85226d220dab6c911877c59a6cbabeda3e"
+    },
+    "SI44-final-source-audit.json": {
+      "sha256": "e5340a7e7e159393cd713e5290288c06e8fbf830b6e6790719f5846be47b8cc8",
+      "original_sha256": "e5340a7e7e159393cd713e5290288c06e8fbf830b6e6790719f5846be47b8cc8"
+    },
+    "batch3_audit.py": {
+      "sha256": "56601fbdbcfda733ac32f578fe9d919fa872958c50980e88c5103b10a53449b0",
+      "original_sha256": "56601fbdbcfda733ac32f578fe9d919fa872958c50980e88c5103b10a53449b0"
+    },
+    "run_batch3_suite.py": {
+      "sha256": "d9e3b66d7cabedf73f59f7266630e56ff1c9e29ca70d5d3b62c59577acc0865d",
+      "original_sha256": "d9e3b66d7cabedf73f59f7266630e56ff1c9e29ca70d5d3b62c59577acc0865d"
+    },
+    "run_glacier_suite.py": {
+      "sha256": "6be7f9b478ff1c2755adbd29d2295942272a8e785460caf6709cfb46b465f92a",
+      "original_sha256": "6be7f9b478ff1c2755adbd29d2295942272a8e785460caf6709cfb46b465f92a"
+    },
+    "run_final_identity.py": {
+      "sha256": "c53b0c04357d6c0d421a9eab5db5c977d4d6587c8cc5bed7016807f0b08576c0",
+      "original_sha256": "c53b0c04357d6c0d421a9eab5db5c977d4d6587c8cc5bed7016807f0b08576c0"
+    },
+    "SI35-batch3-composed.xml.gz": {
+      "sha256": "8ff9c1ec098c2e2a138ff86e747a1185d5a64ef9c1b43ea1273bc671568c6217",
+      "original_sha256": "8122cde338db1bfde2bf896b379cfb93a353dc9ffcb416b12c96f46eab17b973"
+    },
+    "SI36-batch3-fixture-controls.xml.gz": {
+      "sha256": "cb3b8c6588e5fbf7f84f3dd202080cd9e3a553b2db3ca5b2a4b9fedfe4eefc23",
+      "original_sha256": "9019c83088466290763bf676d7f5c02f140d377a36a392e8ad6eb3877d472767"
+    },
+    "SI37-batch3-label-fixed.xml.gz": {
+      "sha256": "d45158bbec544d0acaa26b6daf4dd284a04d5b9bd3b4ed8c9a4b9c3d58a1d0fc",
+      "original_sha256": "7d6fc44e457465f50e650555fd0dfa71dc3a9819342380ddcace49287417ee49"
+    },
+    "SI43-final-glacier-consumers.xml.gz": {
+      "sha256": "15ec4eef038d6d090924764c9017871f43b4736a9472e04c9a6396833d8914ae",
+      "original_sha256": "1ae0ab682e826fca010c2a944141524d920e6e807c88f5e311e5c62afa8e0c20"
+    }
+  }
+}

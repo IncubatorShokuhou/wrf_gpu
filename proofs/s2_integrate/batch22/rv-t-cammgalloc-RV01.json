@@ -1,0 +1,32 @@
+{
+  "arm": "RV01",
+  "utc": "2026-10-15T05:50:52.093031+00:00",
+  "returncode": 1,
+  "wall_s": 54.3620097660023,
+  "peak_RSS_KiB": 1361608,
+  "command": [
+    "timeout",
+    "600",
+    "python",
+    "-m",
+    "pytest",
+    "-q",
+    "-p",
+    "no:cacheprovider",
+    "--tb=short",
+    "--basetemp",
+    "<USER_HOME>/wrf_gpu2_lanes/rv-t-cammgalloc/pytest",
+    "--junitxml",
+    "<USER_HOME>/wrf_gpu2_lanes/rv-t-cammgalloc/RV01.xml",
+    "tests/v040/test_cammg_activation.py",
+    "tests/v040/test_cammg.py",
+    "tests/v025/b_column/test_mp_re_activation.py::test_active_selection_rejects_each_missing_radius_in_both_readers",
+    "tests/v025/b_column/test_mp_re_activation.py::test_dudhia_sw_runtime_lw_handoff_uses_no_mp_radii",
+    "tests/v025/b_column/test_mp_re_activation.py::test_flag_on_inactive_selection_roundtrips_all_restart_formats",
+    "tests/v025/b_column/test_s1_mpfix_radii.py::test_new_radius_carries_roundtrip_and_missing_leaf_refuses"
+  ],
+  "cwd": "<USER_HOME>/wrf_gpu2_lanes/rv-t-cammgalloc/candidate",
+  "platform": "cpu",
+  "cache": "OFF",
+  "source_commit": "ac6aa7a52bf480e5db4f7dc94137a9f417fd19fd"
+}

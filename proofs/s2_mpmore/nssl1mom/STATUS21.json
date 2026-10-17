@@ -1,0 +1,313 @@
+{
+  "status": "READY-FOR-CRITIC",
+  "scope": "COMPLETE original WRF4.7.1 legacy NSSL mp=21 subset",
+  "source_commit": "9fb8b1ef71d5cddaad287c0f0ad9f52142c52110",
+  "source_tree": "325d4aed0f657b7200851c637a41a72c03059da8",
+  "composed_on_main": "f202fa34955a088f2adc19987276c9009fc2f101",
+  "original_normalization": {
+    "selector18": true,
+    "nssl_2moment_on": 0,
+    "nssl_hail_on": 0,
+    "nssl_density_on": 0,
+    "nssl_ccn_on": 0,
+    "note": "19 uses original defaultCCN1;explicit0 preserved by WRF and refused here"
+  },
+  "original_source_sha256": "29f42e76fbeca027a3ffb2ac805b148aaa1425c7f99ed1d8f19a90ebc1d015f8",
+  "fidelity": {
+    "reference": "Original pristine module bodies, lane-dir REAL4/REAL8 builds, caller flags and has_req radiiOFF;17 active atmospheric regimes, all68E26 columns retained",
+    "component_passes": 119,
+    "complete_columns_passes": 34,
+    "same_input_FMA_control_seals": 1,
+    "totals_both_variants": "238 component +68 complete +2 original FMA seals =308; final composed complete70PASS83.84s",
+    "frozen_bounds": "Inherited NSSL R8 1e-10 relative+1e-13 column scale;R4 dual REAL4/REAL8 2e-3 relative+1e-6 scale; inherited volume dust criterion only at graupel mass<1e-10",
+    "contraction": "ONLY REAL4 case16 QC zero-based level0 uses independently measured original same-input FMA/noFMA spread;4controls/rawbytes/noFMA BYTE/objectopcode seals in fma/manifest.json; no general bound relaxation or fp64 fallback",
+    "original_init_sensitivity": "Original REAL4 INF vsZERO,34/34 returned columns/scalars BYTE; finite corpus only, R8 sensitivity unmeasured"
+  },
+  "wiring": {
+    "native_bound": 21,
+    "daily": {
+      "requested_mp": 21,
+      "bound_mp": 21,
+      "grid": [
+        44,
+        42,
+        42
+      ],
+      "CPU": true,
+      "scope": "Actual daily initialization/binding; no executed forecast"
+    },
+    "PhysicsStepSpec": true,
+    "post_RK_first_step": true,
+    "moist_fields": [
+      "qv",
+      "qc",
+      "qr",
+      "qi",
+      "qs",
+      "qg"
+    ],
+    "scalar_transport": [],
+    "predicted_hydrometeor_numbers": [],
+    "CCN": "19 passive transported/held BYTE after original first-step zeroing;21absent",
+    "effective_radius_handoff": false
+  },
+  "restart": "Existing generic pickle+NetCDF schemas;all6bulk carries plus19qh/qvolg/Nn/hail_acc BYTE;Nh/qvolh absent;21allhail/volume extras absent",
+  "history": {
+    "modes": [
+      "full",
+      "operational",
+      "subset"
+    ],
+    "extra_fields": {},
+    "original_shared_metadata_and_values": "Original CPU-WRF18 Registry samples qualify output transcription only, not19/21 trajectory",
+    "unrepresented_numbers": "Never emitted from uniform State slots;21also suppresses hail/CCN/volumes",
+    "represented_NaN_Inf_checks": 0,
+    "unprovided_held_diagnostics": [
+      "REFL_10CM",
+      "REFD_MAX"
+    ]
+  },
+  "coupled_smoke": {
+    "CPU_only": true,
+    "input": "Real Swiss RD11/cpu 42x42x44 dt18,FAST_DEFAULTS0,CENSUS1",
+    "steps": 2,
+    "nonfinite_values": 0,
+    "guard_total": 0,
+    "canonical_jaxpr_sha256": "75cd7e6d9aa1d9d90c9020bca579a72836681ab77fef54a4cad2f192744a1909",
+    "chars": 16081615,
+    "wall_s": 323.0,
+    "scope": "Production native step;CPU Thomas shim; finite/census smoke, not forecast-fidelity validation"
+  },
+  "validation": {
+    "unique_passed_nodes": 614,
+    "final_shared_passes": 288,
+    "prior22_history_regression_passes": 18,
+    "tests": [
+      {
+        "receipt": "MPM1D-sediment.xml",
+        "name": "pytest",
+        "errors": "0",
+        "failures": "0",
+        "skipped": "0",
+        "tests": "68",
+        "time": "11.624",
+        "timestamp": "2026-10-14T02:44:59.469232+01:00",
+        "hostname": "user-battlestation"
+      },
+      {
+        "receipt": "MPM1J-preparation.xml",
+        "name": "pytest",
+        "errors": "0",
+        "failures": "0",
+        "skipped": "0",
+        "tests": "34",
+        "time": "4.181",
+        "timestamp": "2026-10-14T03:20:30.218153+01:00",
+        "hostname": "user-battlestation"
+      },
+      {
+        "receipt": "MPM1M-collection.xml",
+        "name": "pytest",
+        "errors": "0",
+        "failures": "0",
+        "skipped": "0",
+        "tests": "34",
+        "time": "63.719",
+        "timestamp": "2026-10-14T03:37:26.417541+01:00",
+        "hostname": "user-battlestation"
+      },
+      {
+        "receipt": "MPM1O-mass-saturation.xml",
+        "name": "pytest",
+        "errors": "0",
+        "failures": "0",
+        "skipped": "0",
+        "tests": "34",
+        "time": "173.990",
+        "timestamp": "2026-10-14T03:54:07.603990+01:00",
+        "hostname": "user-battlestation"
+      },
+      {
+        "receipt": "MPM1P-cleanup.xml",
+        "name": "pytest",
+        "errors": "0",
+        "failures": "0",
+        "skipped": "0",
+        "tests": "68",
+        "time": "2.350",
+        "timestamp": "2026-10-14T04:00:53.575562+01:00",
+        "hostname": "user-battlestation"
+      },
+      {
+        "receipt": "MPM1Y-final-columns.xml",
+        "name": "pytest",
+        "errors": "0",
+        "failures": "0",
+        "skipped": "0",
+        "tests": "70",
+        "time": "83.838",
+        "timestamp": "2026-10-14T05:10:40.988516+01:00",
+        "hostname": "user-battlestation"
+      },
+      {
+        "receipt": "MPM2O-final-admission.xml",
+        "name": "pytest",
+        "errors": "0",
+        "failures": "0",
+        "skipped": "0",
+        "tests": "288",
+        "time": "10.126",
+        "timestamp": "2026-10-14T05:37:16.287343+01:00",
+        "hostname": "user-battlestation"
+      },
+      {
+        "receipt": "MPM2P-22history-regression.xml",
+        "name": "pytest",
+        "errors": "0",
+        "failures": "0",
+        "skipped": "0",
+        "tests": "18",
+        "time": "0.950",
+        "timestamp": "2026-10-14T05:38:49.067414+01:00",
+        "hostname": "user-battlestation"
+      }
+    ],
+    "genuine_mutant": {
+      "killed": true,
+      "scope": "one-moment saturation/freezing update",
+      "assertion": "AssertionError: (21, 'fp64', 4, 'th', array([ 0,  1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15, 16,\n         17, 18, 19]), ...771324, 374.31330695, 377.23158293, 380.16238988,\n         383.10552272, 386.06074125, 389.02778026, 392.00642699]), ...)\nassert not np.True_\n +  where np.True_ = <built-in method any of numpy.ndarray object at 0x70cf1bc85530>()\n +    where <built-in method any of numpy.ndarray object at 0x70cf1bc85530> = array([ True,  True,  True,  True,  True,  True,  True,  True,  True,\\n        True,  True,  True,  True,  True,  True,... True,  True,\\n        True,  True,  True,  True,  True,  True,  True,  True,  True,\\n        True,  True,  True,  True]).any"
+    },
+    "reuse": "FinalmodelBYTE to smoke802937423;only CCN0preflight/catalog changed,finalshared rerun;all238unchangedcomponents carried"
+  },
+  "identity": {
+    "release": "2bf12cb8374d3a84a440e47dea4b77b0c7436108fc2ee2616bba6ec79b17962a",
+    "existing17_census1": "ade2d9c1ff599ecc018fcdbc69c14cbee3f093381954606c05ff1647c7fbc56d",
+    "existing17_chars": 17672774,
+    "existing22_census1": "7b45dbaee5d939bf9a220e54e41c2a93bae8f7f6727dc2983b2f209df232a4b0",
+    "explanation": "Original17 successful smoke MPM07 is sameCENSUS1/ADE2 program; oldE560 trace usedCENSUS0. Redundant currentmain control stopped after matching the actual oldsmoke. Regression/determinism evidence only."
+  },
+  "performance_memory": {
+    "measured_CPU_column_artifacts": {
+      "('full', 19, 'fp64', 60.0)": {
+        "CPU_compile_s": 8.315251369960606,
+        "arguments_B": 4801,
+        "outputs_B": 5672,
+        "temps_B": 55176
+      },
+      "('full', 21, 'fp64', 60.0)": {
+        "CPU_compile_s": 8.106773935025558,
+        "arguments_B": 3841,
+        "outputs_B": 5672,
+        "temps_B": 44480
+      },
+      "('full', 19, 'fp32', 60.0)": {
+        "CPU_compile_s": 8.059065726120025,
+        "arguments_B": 2401,
+        "outputs_B": 2928,
+        "temps_B": 32520
+      },
+      "('full', 21, 'fp32', 60.0)": {
+        "CPU_compile_s": 5.958101697033271,
+        "arguments_B": 1921,
+        "outputs_B": 2928,
+        "temps_B": 25792
+      },
+      "('full', 19, 'fp64', 18.0)": {
+        "CPU_compile_s": 7.085324503015727,
+        "arguments_B": 4801,
+        "outputs_B": 5672,
+        "temps_B": 55176
+      },
+      "('full', 21, 'fp64', 18.0)": {
+        "CPU_compile_s": 5.850195766892284,
+        "arguments_B": 3841,
+        "outputs_B": 5672,
+        "temps_B": 44480
+      },
+      "('full', 19, 'fp32', 18.0)": {
+        "CPU_compile_s": 6.97887081396766,
+        "arguments_B": 2401,
+        "outputs_B": 2928,
+        "temps_B": 32520
+      },
+      "('full', 21, 'fp32', 18.0)": {
+        "CPU_compile_s": 5.911941629135981,
+        "arguments_B": 1921,
+        "outputs_B": 2928,
+        "temps_B": 25792
+      },
+      "('full', 19, 'fp64', 54.0)": {
+        "CPU_compile_s": 6.92383716092445,
+        "arguments_B": 4801,
+        "outputs_B": 5672,
+        "temps_B": 55176
+      },
+      "('full', 21, 'fp64', 54.0)": {
+        "CPU_compile_s": 5.774594594025984,
+        "arguments_B": 3841,
+        "outputs_B": 5672,
+        "temps_B": 44480
+      },
+      "('full', 19, 'fp32', 54.0)": {
+        "CPU_compile_s": 7.089822882087901,
+        "arguments_B": 2401,
+        "outputs_B": 2928,
+        "temps_B": 32520
+      },
+      "('full', 21, 'fp32', 54.0)": {
+        "CPU_compile_s": 6.106494679115713,
+        "arguments_B": 1921,
+        "outputs_B": 2928,
+        "temps_B": 25792
+      }
+    },
+    "new_optin_persistent_buffers": "19two3D(qh,qvolg)+hail_acc surface=627984B onSwiss;Nn alreadyuniformState.21noextras",
+    "uniform_unused_State": "Inherited genericNc/Ni/Nr/Ns/Ng slots retained but not transported/updated/emitted; internal19slot stack padding remains",
+    "output": "19threeREAL4 extra volumes=931392B perSwiss frame;no timestep recomputation;21noextra history",
+    "default": "Release2bf exact; existing17 and22 completeprograms exact under matchedcensus;no extra default numerical work",
+    "GPU": "UNMEASURED launch/VRAM/E41/compile/readiness/performance; no GPU use in this wave; no speedup claim"
+  },
+  "admission": "Single domains;default internal parameters only;19matching nonzero moist/scalar advopts,CCN0/km2 refused;21sixbulk LES path unchanged. Three-moment/custom internal params refused.",
+  "GPU_and_full_forecast": "PENDING;CPU-oracle-qualified experimental option, not a D6 forecast qualification or release/performance claim",
+  "archive": {
+    "reference_hashes": 140,
+    "packaged_runtime_table": true,
+    "loader4": true,
+    "asset_rebuilt_BYTE": true
+  },
+  "reviewed17_and22_packets": "STATUS17/STATUS22/HISTORY_FIX/SPEC_FIX immutable BYTE; revieweddd719ad10 ancestor",
+  "artifact_root": "<USER_HOME>/wrf_gpu2_lanes/s2-mpmore",
+  "artifact_sha256": {
+    "MPM1D-sediment.xml": "bf444ba9b183e4ef2ec4ff795b2ecf6b514e314ebdb892cfc05976d01898b638",
+    "MPM1J-preparation.xml": "43b15c895b1fd437fcd3e6237eed06f3e17b8b170c7f64fa79d346d762592770",
+    "MPM1M-collection.xml": "4b23dbcd24c0fc6ab5359f460d99f093635fa743667fb3625c385673c8eb92f7",
+    "MPM1O-mass-saturation.xml": "0ff1439830a043433cc2afa203cc7569b853eb6a62431ddb02b4c17c8e4d4310",
+    "MPM1P-cleanup.xml": "0ab61ab1b0bdf34425bb332bc5558677344c91d6312aa2c68fc7073a4f194aba",
+    "MPM1Y-final-columns.xml": "d4e232c3f08c6aeaebccdfd95692e536042c1ab586616062c85b816d55fcb4a3",
+    "MPM2O-final-admission.xml": "fa6cb13f107d1ef285865b8727bfa44a37ce1b3abb13d962cdd9b1cf55c7c5ea",
+    "MPM2P-22history-regression.xml": "bb718a844d80185dafef19755a3792719ceacbe296e9b77d4781f75daabcf5b7",
+    "MPM1Y-compiled-cost.json": "a3e10cb884888532b13bf014fd633e3848edf8853407c016d03fee7a43db5f85",
+    "MPM1R-init-sensitivity.json": "994b073b18012960574bd75a98e3c786155e0e281db3c51026f823bdb187c218",
+    "MPM2B-physical-mutant.json": "2eb474c161e62da8b3fb32ee2cc3a303bdbaae16c7e36a12498bf97128ff7aa0",
+    "MPM2C-daily19.json": "1fec720b886834cbd9723f3addb4e324ef79a84dcd06c5b285afc7ecd7d7ae2a",
+    "MPM2D-daily21.json": "e113c2b7e112ee1c1a40d893b42a61871b596397e1a70239acb5618544225ef0",
+    "MPM2E-swiss19.json": "19f88c9758673655131fb54e0c3165011e4e3aef875fc2a6d6047755692fbc5c",
+    "MPM2F-swiss21.json": "100ce6b33da8ad1347cf97d66879a87eb022173bbba849a4c35cc0cef934aae7",
+    "MPM2G-unchanged17.json": "b3376800adf0af161193093ea8ef2143011473312e0188162d47924240aa4818",
+    "MPM2H-unchanged22.json": "76ac77890dc6aff2b8efe73d675b876210da9a6e619c7d01e8175bda0edbca54",
+    "MPM2I-release.json": "b701a0f4590e256ada3e32c19373dc1d0faf63dd79600fe29d556a77626d24bc",
+    "MPM2J-archive.json": "919a3d43166ac051753ba2fef7fb587427847a3dac894308189f4afe2126dfb3",
+    "MPM2K-original-normalization.json": "70d711b42a2497440e528d981186658257d6260b56c6148a3aebc9d9c2b8d77d",
+    "MPM2L-source-reuse.json": "5a36b8388dd35b19015724661cf7bb9c4c8e47dbf819d07f521c4665efb0e5bc",
+    "MPM2M-validation-reuse.json": "250e29bbbda134e333f4a4be976467d271ee2d840eaf68dc6d8b7c51d06a2204",
+    "MPM2Q-clean-loader.json": "3d7662af5cca2c94ef8333f9c0c954527dd759623ccd51efd5e80c882b39cee0",
+    "MPM2S-asset-rebuild.json": "2314a5da1eeaa7fae122f3487268bc4dc485923fa7101c8ad98a83e61e888e96"
+  },
+  "temporary_artifacts": "Allone-moment snapshots/builds/disposable pytest caches removed;generatedduplicate constants removed;noJAXpersistentcache",
+  "remaining_lane_work": [
+    "Jensen55",
+    "NTU56",
+    "CAM-MG11"
+  ],
+  "time": "2026-10-14T04:43:34.495597+00:00"
+}

@@ -12,7 +12,9 @@ import hashlib
 from pathlib import Path
 
 import numpy as np
-from netCDF4 import Dataset, chartostring
+from netCDF4 import chartostring
+
+from gpuwrf.io.netcdf_lock import Dataset
 
 
 STATE_FIELDS = {
@@ -27,6 +29,7 @@ STATE_FIELDS = {
     'graupel_acc': 'GRAUPELNC', 'dtaux3d': 'DTAUX3D', 'dtauy3d': 'DTAUY3D',
     'dusfcg': 'DUSFCG', 'dvsfcg': 'DVSFCG',
     're_cloud': 'RE_CLOUD', 're_ice': 'RE_ICE', 're_snow': 'RE_SNOW',
+    'tke': 'TKE_2',  # WRF km_opt=2 grid%tke_2 (Registry DataName TKE_2, restart-only)
 }
 LAND_FIELDS = {
     'tslb': 'TSLB', 'smois': 'SMOIS', 'sh2o': 'SH2O', 'smcwtd': 'SMCWTD',
@@ -88,7 +91,7 @@ def read_wrfrst(path: Path) -> WRFRestart:
     wanted = set(STATE_FIELDS.values()) | set(LAND_FIELDS.values()) | set(RAD_FIELDS.values())
     wanted |= set(KF_FIELDS) | set(CLOCK_FIELDS) | set(LAND_FLUX_FIELDS) | set(ENERGY_ACCUMULATORS)
     wanted |= {'THM_2', 'P', 'PB', 'PH_2', 'PHB', 'MU_2', 'MUB', 'RHO', 'WW',
-               'RTHRATEN', 'H_DIABATIC', 'W0AVG', 'NCA', 'O3RAD', 'EL_PBL',
+               'RTHRATEN', 'H_DIABATIC', 'W0AVG', 'NCA', 'O3RAD', 'EL_PBL', 'RTHFTEN', 'RQVFTEN',
                'RUCUTEN', 'RVCUTEN', 'RAINCV', 'RAINSHV', 'RAINNCV', 'SNOWNCV',
                'GRAUPELNCV', 'HAILNCV', 'XTIME', 'T2', 'Q2', 'U10', 'V10', 'LH', 'PSFC'}
     with Dataset(path, 'r') as ds:
@@ -167,6 +170,25 @@ def load_restart_templates(config, restarts):
         return pipeline._load_domains(config, tuple(restarts))
     finally:
         pipeline.noahmp_initial_rad = original
+
+
+def _hydrate_cu_forcing(carry, cu_physics, source, put):
+    """Held G3/GD/GF/Tiedtke/NTiedtke forcing RTHFTEN/RQVFTEN (Registry.EM_COMMON:1691-1692, 'r' stream).
+
+    The restart holds them as phy_prep_part2 left them (uncoupled; RTHFTEN dry under
+    use_theta_m) -- the port's ``carry.cu_forcing`` contract -- so they are copied.
+    """
+    from gpuwrf.coupling.cu_forcing import cu_forcing_required
+
+    if not cu_forcing_required(cu_physics):
+        if getattr(carry, 'cu_forcing', None) is not None:
+            raise ValueError('inactive cumulus forcing source cannot seed an active target')
+        return {}
+    if getattr(carry, 'cu_forcing', None) is None:
+        raise ValueError('active held RTHFTEN/RQVFTEN target unseeded')
+    return {'cu_forcing': tuple(
+        put(old, source(name), 'cu_forcing.' + name, name + ' held uncoupled (phy_prep_part2)')
+        for old, name in zip(carry.cu_forcing, ('RTHFTEN', 'RQVFTEN'), strict=True))}
 
 
 def hydrate_wrfrst(carry, restart: WRFRestart, namelist, *, require_ozone=True):
@@ -296,6 +318,7 @@ def hydrate_wrfrst(carry, restart: WRFRestart, namelist, *, require_ozone=True):
             raise ValueError('port KF carry has no held momentum slots for nonzero CPU RUCUTEN/RVCUTEN')
     elif carry.cumulus_carry is not None or carry.cumulus_tendencies is not None:
         raise ValueError('inactive KF source cannot seed an active target')
+    extra.update(_hydrate_cu_forcing(carry, restart.physics['CU_PHYSICS'], source, put))
     if require_ozone:
         old = getattr(carry, 'o3rad', None)
         if old is None:
@@ -328,10 +351,11 @@ def hydrate_wrfrst(carry, restart: WRFRestart, namelist, *, require_ozone=True):
     if carry.noahmp_precipitation is not None:
         precipitation = (source('RAINCV') + source('RAINSHV'), source('RAINNCV'),
                          source('SNOWNCV'), source('GRAUPELNCV'), source('HAILNCV'))
-        extra['noahmp_precipitation'] = type(carry.noahmp_precipitation)(*(
+        held = carry.noahmp_precipitation
+        extra['noahmp_precipitation'] = type(held)(*(
             put(old, value / restart.dt_s, 'precip.' + name, name + ' previous amount / DT')
-            for name, old, value in zip(carry.noahmp_precipitation._fields,
-                                        carry.noahmp_precipitation, precipitation, strict=True)))
+            for name, old, value in zip(held._fields[:5], held[:5], precipitation, strict=True)),
+            sr=None if held.sr is None else put(held.sr, source('SR'), 'precip.sr', 'SR'))
     hydrated = carry.replace(**extra)
     for leaf in jax.tree.leaves(hydrated):
         finite(np.asarray(jax.device_get(leaf)), 'hydrated carry')

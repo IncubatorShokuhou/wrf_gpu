@@ -1,0 +1,23 @@
+fixture_id: u2-diag-pristine-nwp-helicity-real4-double8
+source: pristine WRF module_diag_nwp.F and module_diffusion_em.F::cal_helicity
+source_commit: f52c197ed39d12e087d02c50f412d90d418f6186
+created_utc: 2026-10-13T12:49:00Z
+scenario: 7 sequential steps, 7x6x9 mass grid, dt20s/history1min/idump3, specified BC, Thompson NG_CURR absent
+variables:
+  - {name: WSPD10MAX, units: m s-1, shape: [6,7], dtype: float32, absolute_tolerance: 0, relative_tolerance: 0, ulp_tolerance: 4}
+  - {name: W_UP_MAX, units: m s-1, shape: [6,7], dtype: float32, absolute_tolerance: 0, relative_tolerance: 0, ulp_tolerance: 4}
+  - {name: W_DN_MAX, units: m s-1, shape: [6,7], dtype: float32, absolute_tolerance: 0, relative_tolerance: 0, ulp_tolerance: 4}
+  - {name: UP_HELI_MAX, units: m2 s-2, shape: [6,7], dtype: float32, absolute_tolerance: 1.0e-6, relative_tolerance: 5.0e-6}
+  - {name: W_MEAN, units: m s-1, shape: [6,7], dtype: float32, absolute_tolerance: 0, relative_tolerance: 0, ulp_tolerance: 4}
+  - {name: GRPL_MAX, units: kg m-2, shape: [6,7], dtype: float32, absolute_tolerance: 0, relative_tolerance: 0, ulp_tolerance: 4}
+  - {name: REFD_MAX, units: dBZ, shape: [6,7], dtype: float32, absolute_tolerance: 0, relative_tolerance: 0, ulp_tolerance: 4}
+  - {name: HAIL_MAXK1, units: m, shape: [6,7], dtype: float32, absolute_tolerance: 0, relative_tolerance: 0, ulp_tolerance: 4}
+  - {name: HAIL_MAX2D, units: m, shape: [6,7], dtype: float32, absolute_tolerance: 0, relative_tolerance: 0, ulp_tolerance: 4}
+  - {name: UH, units: m2 s-2, shape: [6,7], dtype: float32, absolute_tolerance: 1.0e-6, relative_tolerance: 5.0e-6}
+files:
+  - path: nwp_oracle.json
+    sha256: e717eb6f6a2d9c5baab4f6158b12e4f208249c4393ea57ea2fe2e021d8d41717
+    contents: full REAL operands, initial carries, source SHA256 values, seven pre-helicity and post-NWP output frames
+generation: python proofs/u2_diag/nwp_generate_oracle.py <USER_HOME>/wrf_gpu2_lanes/u2-diag/nwp/oracle_build
+precision: original REAL=4 and DOUBLE=8, gfortran -O0 -ffp-contract=off -fno-fast-math
+license_notes: Original WRF scientific operators; only generated small numerical data and extraction wrapper retained, no large model output

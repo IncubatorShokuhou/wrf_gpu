@@ -111,6 +111,8 @@ class _DuckState:
     pure boundary-package structural test.
     """
 
+    tracers = None  # This fixture exercises meteorological boundary leaves only.
+
     _FIELDS = ("u", "v", "w", "theta", "qv", "p_perturbation", "p_total",
                "ph_perturbation", "ph_total", "mu_perturbation", "mu_total")
     _BDY = ("u_bdy", "v_bdy", "w_bdy", "theta_bdy", "qv_bdy", "ph_bdy", "phb_bdy",

@@ -1,0 +1,41 @@
+fixture_id: s2_keps_defined_operators_real32_v1
+source: pristine WRF phys/module_bl_keps.F and phys/module_bl_eepsilon.F
+source_commit: v4.7.1
+created_utc: 2026-10-13T16:54:00Z
+scenario: 18 constructed subroutine-input records, 8/12/44 levels, six active numerical regimes
+precision: float32 WRF REAL, gfortran -O0 -ffp-contract=off
+staggering: KEPS bottom-up mass levels plus n+1 interfaces; EEPS solver caller order
+scope: deterministic helpers only; full EEPS/KEPS and GPU qualification OPEN
+variables:
+  - {name: shear, units: s-2, shape: '[n]', dtype: float32}
+  - {name: buoyancy, units: s-2, shape: '[n]', dtype: float32}
+  - {name: exchange_m, units: m2 s-1, shape: '[n+1]', dtype: float32}
+  - {name: exchange_h, units: m2 s-1, shape: '[n+1]', dtype: float32}
+  - {name: invert, units: '1 (constructed RHS)', shape: '[n]', dtype: float32}
+  - {name: diffusion_1, units: '1 (constructed concentration)', shape: '[n]', dtype: float32}
+  - {name: diffusion_2, units: '1 (constructed concentration)', shape: '[n]', dtype: float32}
+  - {name: flux_1, units: m s-1, shape: '[n]', dtype: float32}
+  - {name: flux_2, units: m s-1, shape: '[n]', dtype: float32}
+  - {name: tpe_implicit, units: s-1, shape: '[n]', dtype: float32}
+  - {name: tpe_explicit, units: K2 s-1, shape: '[n]', dtype: float32}
+  - {name: tpe_coeff, units: '1', shape: '[n]', dtype: float32}
+  - {name: countergradient, units: K s-1, shape: '[n]', dtype: float32}
+  - {name: analytic_tke, units: m2 s-2, shape: '[n]', dtype: float32}
+  - {name: analytic_epsilon, units: m2 s-3, shape: '[n]', dtype: float32}
+  - {name: analytic_source, units: s-1, shape: '[n]', dtype: float32}
+  - {name: eeps_solution, units: '1 (constructed RHS)', shape: '[n]', dtype: float32}
+  - {name: eeps_modified_c, units: '1', shape: '[n]', dtype: float32}
+tolerances:
+  applies_to: every variable above, every record
+  absolute_tolerance: 16 * spacing(float32(max(abs(reference))))
+  relative_tolerance: 0
+  zero_fields: exact
+  nonfinite_values: rejected in candidate AND reference before reduction
+  rationale: chained REAL32 operations and transcendentals; fixed before generation
+files:
+  - path: operators_real32.json
+    sha256: c656e0edd9342af2a4bba19e6cedce47e97041804ce9f0547e0a99e6d7bb2b35
+    source_sha256: embedded per pristine source, plus exact driver and serialized input SHA
+  - path: source_probe_receipt.json
+    scope: diagnostic sNaN/trap probes, never numerical truth
+license_notes: Small generated numeric fixtures; upstream WRF source/binaries and real-case outputs are not redistributed here.

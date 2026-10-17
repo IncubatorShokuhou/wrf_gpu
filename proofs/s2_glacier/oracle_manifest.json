@@ -1,0 +1,585 @@
+{
+  "source": "WRF v4.7.1 phys/module_sf_noahmp_glacier.F; unmodified scientific bodies",
+  "source_sha256": "a35d61ea29f660f4f4c6384bc019d4a57ddc8b0c2ca0f3ef7c6e621b79b4dece",
+  "fields": [
+    {
+      "name": "iloc",
+      "extent": 1,
+      "bounds": null,
+      "integer": true,
+      "intent": "IN",
+      "offset": 0
+    },
+    {
+      "name": "jloc",
+      "extent": 1,
+      "bounds": null,
+      "integer": true,
+      "intent": "IN",
+      "offset": 1
+    },
+    {
+      "name": "cosz",
+      "extent": 1,
+      "bounds": null,
+      "integer": false,
+      "intent": "IN",
+      "offset": 2
+    },
+    {
+      "name": "nsnow",
+      "extent": 1,
+      "bounds": null,
+      "integer": true,
+      "intent": "IN",
+      "offset": 3
+    },
+    {
+      "name": "nsoil",
+      "extent": 1,
+      "bounds": null,
+      "integer": true,
+      "intent": "IN",
+      "offset": 4
+    },
+    {
+      "name": "dt",
+      "extent": 1,
+      "bounds": null,
+      "integer": false,
+      "intent": "IN",
+      "offset": 5
+    },
+    {
+      "name": "sfctmp",
+      "extent": 1,
+      "bounds": null,
+      "integer": false,
+      "intent": "IN",
+      "offset": 6
+    },
+    {
+      "name": "sfcprs",
+      "extent": 1,
+      "bounds": null,
+      "integer": false,
+      "intent": "IN",
+      "offset": 7
+    },
+    {
+      "name": "uu",
+      "extent": 1,
+      "bounds": null,
+      "integer": false,
+      "intent": "IN",
+      "offset": 8
+    },
+    {
+      "name": "vv",
+      "extent": 1,
+      "bounds": null,
+      "integer": false,
+      "intent": "IN",
+      "offset": 9
+    },
+    {
+      "name": "q2",
+      "extent": 1,
+      "bounds": null,
+      "integer": false,
+      "intent": "IN",
+      "offset": 10
+    },
+    {
+      "name": "soldn",
+      "extent": 1,
+      "bounds": null,
+      "integer": false,
+      "intent": "IN",
+      "offset": 11
+    },
+    {
+      "name": "prcp",
+      "extent": 1,
+      "bounds": null,
+      "integer": false,
+      "intent": "IN",
+      "offset": 12
+    },
+    {
+      "name": "lwdn",
+      "extent": 1,
+      "bounds": null,
+      "integer": false,
+      "intent": "IN",
+      "offset": 13
+    },
+    {
+      "name": "tbot",
+      "extent": 1,
+      "bounds": null,
+      "integer": false,
+      "intent": "IN",
+      "offset": 14
+    },
+    {
+      "name": "zlvl",
+      "extent": 1,
+      "bounds": null,
+      "integer": false,
+      "intent": "IN",
+      "offset": 15
+    },
+    {
+      "name": "ficeold",
+      "extent": 3,
+      "bounds": "-3+1:    0",
+      "integer": false,
+      "intent": "IN",
+      "offset": 16
+    },
+    {
+      "name": "zsoil",
+      "extent": 4,
+      "bounds": "1:4",
+      "integer": false,
+      "intent": "IN",
+      "offset": 19
+    },
+    {
+      "name": "qsnow",
+      "extent": 1,
+      "bounds": null,
+      "integer": false,
+      "intent": "INOUT",
+      "offset": 23
+    },
+    {
+      "name": "sneqvo",
+      "extent": 1,
+      "bounds": null,
+      "integer": false,
+      "intent": "INOUT",
+      "offset": 24
+    },
+    {
+      "name": "albold",
+      "extent": 1,
+      "bounds": null,
+      "integer": false,
+      "intent": "INOUT",
+      "offset": 25
+    },
+    {
+      "name": "cm",
+      "extent": 1,
+      "bounds": null,
+      "integer": false,
+      "intent": "INOUT",
+      "offset": 26
+    },
+    {
+      "name": "ch",
+      "extent": 1,
+      "bounds": null,
+      "integer": false,
+      "intent": "INOUT",
+      "offset": 27
+    },
+    {
+      "name": "isnow",
+      "extent": 1,
+      "bounds": null,
+      "integer": true,
+      "intent": "INOUT",
+      "offset": 28
+    },
+    {
+      "name": "sneqv",
+      "extent": 1,
+      "bounds": null,
+      "integer": false,
+      "intent": "INOUT",
+      "offset": 29
+    },
+    {
+      "name": "smc",
+      "extent": 4,
+      "bounds": "1:4",
+      "integer": false,
+      "intent": "INOUT",
+      "offset": 30
+    },
+    {
+      "name": "zsnso",
+      "extent": 7,
+      "bounds": "-3+1:4",
+      "integer": false,
+      "intent": "INOUT",
+      "offset": 34
+    },
+    {
+      "name": "snowh",
+      "extent": 1,
+      "bounds": null,
+      "integer": false,
+      "intent": "INOUT",
+      "offset": 41
+    },
+    {
+      "name": "snice",
+      "extent": 3,
+      "bounds": "-3+1:    0",
+      "integer": false,
+      "intent": "INOUT",
+      "offset": 42
+    },
+    {
+      "name": "snliq",
+      "extent": 3,
+      "bounds": "-3+1:    0",
+      "integer": false,
+      "intent": "INOUT",
+      "offset": 45
+    },
+    {
+      "name": "tg",
+      "extent": 1,
+      "bounds": null,
+      "integer": false,
+      "intent": "INOUT",
+      "offset": 48
+    },
+    {
+      "name": "stc",
+      "extent": 7,
+      "bounds": "-3+1:4",
+      "integer": false,
+      "intent": "INOUT",
+      "offset": 49
+    },
+    {
+      "name": "sh2o",
+      "extent": 4,
+      "bounds": "1:4",
+      "integer": false,
+      "intent": "INOUT",
+      "offset": 56
+    },
+    {
+      "name": "tauss",
+      "extent": 1,
+      "bounds": null,
+      "integer": false,
+      "intent": "INOUT",
+      "offset": 60
+    },
+    {
+      "name": "qsfc",
+      "extent": 1,
+      "bounds": null,
+      "integer": false,
+      "intent": "INOUT",
+      "offset": 61
+    },
+    {
+      "name": "fsa",
+      "extent": 1,
+      "bounds": null,
+      "integer": false,
+      "intent": "OUT",
+      "offset": 62
+    },
+    {
+      "name": "fsr",
+      "extent": 1,
+      "bounds": null,
+      "integer": false,
+      "intent": "OUT",
+      "offset": 63
+    },
+    {
+      "name": "fira",
+      "extent": 1,
+      "bounds": null,
+      "integer": false,
+      "intent": "OUT",
+      "offset": 64
+    },
+    {
+      "name": "fsh",
+      "extent": 1,
+      "bounds": null,
+      "integer": false,
+      "intent": "OUT",
+      "offset": 65
+    },
+    {
+      "name": "fgev",
+      "extent": 1,
+      "bounds": null,
+      "integer": false,
+      "intent": "OUT",
+      "offset": 66
+    },
+    {
+      "name": "ssoil",
+      "extent": 1,
+      "bounds": null,
+      "integer": false,
+      "intent": "OUT",
+      "offset": 67
+    },
+    {
+      "name": "trad",
+      "extent": 1,
+      "bounds": null,
+      "integer": false,
+      "intent": "OUT",
+      "offset": 68
+    },
+    {
+      "name": "edir",
+      "extent": 1,
+      "bounds": null,
+      "integer": false,
+      "intent": "OUT",
+      "offset": 69
+    },
+    {
+      "name": "runsrf",
+      "extent": 1,
+      "bounds": null,
+      "integer": false,
+      "intent": "OUT",
+      "offset": 70
+    },
+    {
+      "name": "runsub",
+      "extent": 1,
+      "bounds": null,
+      "integer": false,
+      "intent": "OUT",
+      "offset": 71
+    },
+    {
+      "name": "sag",
+      "extent": 1,
+      "bounds": null,
+      "integer": false,
+      "intent": "OUT",
+      "offset": 72
+    },
+    {
+      "name": "albedo",
+      "extent": 1,
+      "bounds": null,
+      "integer": false,
+      "intent": "OUT",
+      "offset": 73
+    },
+    {
+      "name": "qsnbot",
+      "extent": 1,
+      "bounds": null,
+      "integer": false,
+      "intent": "OUT",
+      "offset": 74
+    },
+    {
+      "name": "ponding",
+      "extent": 1,
+      "bounds": null,
+      "integer": false,
+      "intent": "OUT",
+      "offset": 75
+    },
+    {
+      "name": "ponding1",
+      "extent": 1,
+      "bounds": null,
+      "integer": false,
+      "intent": "OUT",
+      "offset": 76
+    },
+    {
+      "name": "ponding2",
+      "extent": 1,
+      "bounds": null,
+      "integer": false,
+      "intent": "OUT",
+      "offset": 77
+    },
+    {
+      "name": "t2m",
+      "extent": 1,
+      "bounds": null,
+      "integer": false,
+      "intent": "OUT",
+      "offset": 78
+    },
+    {
+      "name": "q2e",
+      "extent": 1,
+      "bounds": null,
+      "integer": false,
+      "intent": "OUT",
+      "offset": 79
+    },
+    {
+      "name": "emissi",
+      "extent": 1,
+      "bounds": null,
+      "integer": false,
+      "intent": "OUT",
+      "offset": 80
+    },
+    {
+      "name": "fpice",
+      "extent": 1,
+      "bounds": null,
+      "integer": false,
+      "intent": "OUT",
+      "offset": 81
+    },
+    {
+      "name": "ch2b",
+      "extent": 1,
+      "bounds": null,
+      "integer": false,
+      "intent": "OUT",
+      "offset": 82
+    },
+    {
+      "name": "hcpct",
+      "extent": 7,
+      "bounds": "-3+1:4",
+      "integer": false,
+      "intent": "OUT",
+      "offset": 83
+    },
+    {
+      "name": "qmelt",
+      "extent": 1,
+      "bounds": null,
+      "integer": false,
+      "intent": "OUT",
+      "offset": 90
+    }
+  ],
+  "width": 91,
+  "options": [
+    "opt_alb",
+    "opt_snf",
+    "opt_tbot",
+    "opt_stc",
+    "opt_gla"
+  ],
+  "compiler": "GNU Fortran (conda-forge gcc 14.3.0-19) 14.3.0",
+  "builds": [
+    {
+      "variant": "zero",
+      "command": [
+        "<USER_HOME>/miniconda3/envs/wrfbuild/bin/gfortran",
+        "-O2",
+        "-shared",
+        "-fPIC",
+        "-cpp",
+        "-ffree-form",
+        "-ffree-line-length-none",
+        "-ffp-contract=off",
+        "-finit-real=zero",
+        "-finit-integer=0",
+        "-finit-logical=false",
+        "module_sf_noahmp_glacier.F",
+        "wrapper.f90",
+        "-o",
+        "glacier_zero.so"
+      ]
+    },
+    {
+      "variant": "alternate",
+      "command": [
+        "<USER_HOME>/miniconda3/envs/wrfbuild/bin/gfortran",
+        "-O2",
+        "-shared",
+        "-fPIC",
+        "-cpp",
+        "-ffree-form",
+        "-ffree-line-length-none",
+        "-ffp-contract=off",
+        "-finit-real=nan",
+        "-finit-integer=0",
+        "-finit-logical=false",
+        "module_sf_noahmp_glacier.F",
+        "wrapper.f90",
+        "-o",
+        "glacier_alternate.so"
+      ]
+    }
+  ],
+  "caller": "module_sf_noahmpdrv.F:1049-1063; Q_ML specific humidity, TBOT<=263.15, FICEOLD entry snow ice fraction",
+  "tolerances": "literal binary32 byte identity; compiled within independently measured WRF FMA spread/input-ULP propagation; reject nonfinite",
+  "fixture_sha256": "798343f130e9220e2d93a3e47454f968114035db05201207d24a2dd2577ee7e7",
+  "source_input_sha256": "067a28cd0cd7e40f7c28a9f741a9c65cd81e750719a5e8ad9ee35db46fd1f482",
+  "case_count": 4896,
+  "literal_gate": "all defined INOUT/OUT binary32 values BYTE",
+  "regimes": [
+    "Swiss_y14_x6",
+    "Swiss_y15_x6",
+    "Swiss_y15_x7",
+    "Swiss_y15_x8",
+    "Swiss_y15_x9",
+    "Swiss_y16_x10",
+    "Swiss_y16_x6",
+    "Swiss_y16_x7",
+    "Swiss_y16_x8",
+    "Swiss_y16_x9",
+    "Swiss_y17_x10",
+    "Swiss_y17_x6",
+    "Swiss_y17_x7",
+    "Swiss_y17_x8",
+    "Swiss_y17_x9",
+    "Swiss_y18_x10",
+    "Swiss_y18_x7",
+    "Swiss_y18_x8",
+    "Swiss_y18_x9",
+    "Swiss_y19_x10",
+    "Swiss_y19_x9",
+    "Swiss_y20_x10",
+    "accumulation",
+    "bare",
+    "deep",
+    "drain",
+    "ice_freeze_exchange",
+    "ice_heat_exchange",
+    "ice_melt_all",
+    "melt",
+    "one_remove",
+    "one_small",
+    "one_split",
+    "rainsnow_0.49",
+    "rainsnow_0.51",
+    "rainsnow_1.99",
+    "rainsnow_2.01",
+    "rainsnow_2.19",
+    "rainsnow_2.21",
+    "rainsnow_2.49",
+    "rainsnow_2.51",
+    "refreeze",
+    "thin",
+    "three_merge_bottom",
+    "three_merge_mid",
+    "three_merge_top",
+    "three_remove_bottom",
+    "three_remove_mid",
+    "three_remove_top",
+    "two_split",
+    "two_thin"
+  ],
+  "matrix_summary": {
+    "nonfinite": 0,
+    "byte_mismatches": 0,
+    "zero_vs_nan_init_sensitive": 0
+  }
+}

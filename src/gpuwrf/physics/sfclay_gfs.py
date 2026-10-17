@@ -152,29 +152,58 @@ def sf_gfs_column(
     ust: jax.Array,          # u* (m/s) -- INOUT
     *,
     isfflx: int = 1,
+    wrf_constants: bool = False,
 ):
     """Faithful per-column port of WRF ``SF_GFS`` (default ARW surface-layer path).
 
     Returns a dict of the WRF B2 surface-layer handles. All math is fp64 when
     the inputs are fp64; nothing allocates outside the trace.
+
+    ``wrf_constants=True`` (operational sf=3 caller) takes REAL inputs and
+    reproduces the WRF call: surface_driver passes CP=cp (7*r_d/2), RCP, R_d,
+    EP_1, EP_2 (module_surface_driver.F:2344-2353, E83), SF_GFS forms its
+    REAL-literal products in REAL and stores REAL grid outputs, while PROGTM
+    runs in kind_phys DOUBLE (module_gfs_machine.F:8). Outputs are REAL.
     """
 
-    # --- SF_GFS pre-loop (module_sf_gfs.F:191-215) ---
+    if wrf_constants:
+        f32, f64 = jnp.float32, jnp.float64
+        real = lambda x: jnp.asarray(x, f32)
+        dbl = lambda x: jnp.asarray(x, f64)
+        cp_w, r_w = real(1004.5), real(287.0)
+        rovcp_w = r_w / cp_w
+        ep1_w = real(461.6) / r_w - real(1.0)
+        ep2_w = r_w / real(461.6)
+        karman_w = real(0.4)
+        # module_sf_gfs.F:191-215; REAL*REAL-literal products are REAL first.
+        prsl1 = dbl(real(p3d) * real(0.001))
+        ps_cb = dbl(real(psfc) * real(0.001))
+        q1_in = dbl(real(qv3d))
+        tskin, t1, u1, v1, ustar = (dbl(real(x)) for x in (tsk, t3d, u3d, v3d, ust))
+        z0rl = dbl(real(znt) * real(100.0))
+        xland = dbl(real(xland))
+        prslki = (ps_cb / prsl1) ** dbl(rovcp_w)
+        thgb = tskin * (100.0 / ps_cb) ** dbl(rovcp_w)
+        thx = t1 * (100.0 / prsl1) ** dbl(rovcp_w)
+        rho1 = prsl1 * 1000.0 / (dbl(r_w) * t1 * (1.0 + dbl(ep1_w) * q1_in))
+        qv3d = real(qv3d)
+    else:
+        # --- SF_GFS pre-loop (module_sf_gfs.F:191-215) ---
+        prsl1 = p3d * 0.001          # cb
+        ps_cb = psfc * 0.001
+        q1_in = qv3d
+        tskin = tsk
+        t1 = t3d
+        u1 = u3d
+        v1 = v3d
+        ustar = ust
+        z0rl = znt * 100.0
+        prslki = (ps_cb / prsl1) ** ROVCP
+        thgb = tskin * (100.0 / ps_cb) ** ROVCP
+        thx = t1 * (100.0 / prsl1) ** ROVCP
+        rho1 = prsl1 * 1000.0 / (R * t1 * (1.0 + EP1 * q1_in))
     rcl = 1.0
-    prsl1 = p3d * 0.001          # cb
-    ps_cb = psfc * 0.001
-    q1_in = qv3d
     slimsk = jnp.abs(xland - 2.0)   # 0=water, 1=land (sea-ice=2 not modeled here)
-    tskin = tsk
-    t1 = t3d
-    u1 = u3d
-    v1 = v3d
-    ustar = ust
-    z0rl = znt * 100.0
-    prslki = (ps_cb / prsl1) ** ROVCP
-    thgb = tskin * (100.0 / ps_cb) ** ROVCP
-    thx = t1 * (100.0 / prsl1) ** ROVCP
-    rho1 = prsl1 * 1000.0 / (R * t1 * (1.0 + EP1 * q1_in))
     q1 = q1_in / (1.0 + q1_in)      # specific humidity
 
     # --- PROGTM pre (module_sf_gfs.F:454-486) ---
@@ -307,6 +336,32 @@ def sf_gfs_column(
     v10m = f10m * xrcl * v1
     # T2M/Q2M are WRF-commented in PROGTM; SF_GFS does not read them.
 
+    if wrf_constants:
+        # --- SF_GFS outer wrapper (module_sf_gfs.F:234-276) with REAL grid stores ---
+        chs = real(ch * wind)
+        chs2 = real(ustar * dbl(karman_w) / fh2)
+        cpm = cp_w * (real(1.0) + real(0.8) * qv3d)
+        esat = real(fpvs(t1))
+        qgh = real(dbl(ep2_w * esat) / (1000.0 * ps_cb - dbl(esat)))
+        qsfc = real(qss)
+        z0 = z0rl * dbl(real(0.01))
+        flhc = real(dbl(cpm) * rho1 * dbl(chs))
+        flqc = real(rho1 * dbl(chs))
+        if isfflx == 0:
+            hfx = lh = qfx = jnp.zeros_like(chs)
+        else:
+            hfx = real(dbl(flhc) * (thgb - thx))
+            hfx = jnp.where((xland - 1.5) < 0.0, jnp.maximum(hfx, real(-250.0)), hfx)
+            qfx = jnp.maximum(real(dbl(flqc) * (dbl(qsfc) - q1)), real(0.0))
+            lh = real(2.5e6) * qfx
+        return {
+            "ust": real(ustar), "znt": real(z0), "chs": chs, "chs2": chs2, "cqs2": chs2,
+            "cpm": cpm, "psim": real(pm), "psih": real(ph), "qgh": qgh, "qsfc": qsfc,
+            "u10": real(u10m), "v10": real(v10m), "wspd": real(wind), "br": real(rb),
+            "gz1oz0": real(jnp.log(z1 / z0)), "flhc": flhc, "flqc": flqc, "hfx": hfx,
+            "qfx": qfx, "lh": lh, "fm": fm, "fh": fh, "cm": cm, "ch": ch, "z1": z1, "rb": rb,
+        }
+
     # --- SF_GFS outer wrapper outputs (module_sf_gfs.F:234-276) ---
     u10 = u10m
     v10 = v10m
@@ -352,11 +407,12 @@ def sf_gfs_column(
 
 def sf_gfs_columns(
     u3d, v3d, t3d, qv3d, p3d, psfc, tsk, xland, znt, ust, *, isfflx: int = 1,
+    wrf_constants: bool = False,
 ):
     """Batched (vmap) entry over the grid columns (all inputs shape ``(ncol,)``)."""
 
     def one(*a):
-        return sf_gfs_column(*a, isfflx=isfflx)
+        return sf_gfs_column(*a, isfflx=isfflx, wrf_constants=wrf_constants)
 
     return jax.vmap(one, in_axes=(0,) * 10)(
         u3d, v3d, t3d, qv3d, p3d, psfc, tsk, xland, znt, ust,

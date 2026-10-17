@@ -290,7 +290,8 @@ def _dmp_setup(sqw, sqv, u, v, w, thv, thl, p, dz, zw, rho, pblh, ts, xland,
     qt1 = sqw
     # ---- activation: maxw / Psig_w (lines 5855-5879) ----
     zagl_mid = zw[:-1] + 0.5 * dz  # length nz
-    below = zagl_mid <= (pblh + 500.0)
+    # ``do k=1,kte-1`` (F90:5857): w1 holds the bottom faces kts..kte; the top one is never read.
+    below = (zagl_mid <= (pblh + 500.0)) & (jnp.arange(nz) < nz - 1)
     wpbl = jnp.where(w < 0.0, 2.0 * w, w)
     maxw = jnp.max(jnp.where(below, jnp.abs(wpbl), 0.0))
     maxw = jnp.maximum(0.0, maxw - 1.0)
@@ -406,7 +407,7 @@ def _dmp_setup(sqw, sqv, u, v, w, thv, thl, p, dz, zw, rho, pblh, ts, xland,
     }
 
 
-def _dmp_scan(s, thl, thv, p, dz, zw, u, v, pblh):
+def _dmp_scan(s, thl, thv, p, dz, zw, u, v, pblh, spp_pattern=None):
     """DMP_mf per-plume vertical integration (F90:6128-6330) + veto/full_up.
 
     v0.25 M2 family-#2 (pblbatch): verbatim extraction of the former
@@ -439,6 +440,9 @@ def _dmp_scan(s, thl, thv, p, dz, zw, u, v, pblh):
             ent = jnp.maximum(ent, 0.0003)
             ent = jnp.where(zw[k] >= jnp.minimum(pblh + 1500.0, 4000.0),
                             ent + (zw[k] - jnp.minimum(pblh + 1500.0, 4000.0)) * 5.0e-6, ent)
+            if spp_pattern is not None:
+                from gpuwrf.physics.stochastic_spp import entrainment
+                ent = entrainment(ent,spp_pattern[k])
             ent = jnp.minimum(ent, 0.9 / (zw[k + 1] - zw[k]))
 
             entexp = ent * (zw[k + 1] - zw[k])
@@ -662,7 +666,7 @@ def _plume_top_height(setup, live_levels):
 
 def _single_column_dmp_mf(sqw, sqv, sqc, u, v, w, th, thl, thv, tk, qke,
                           p, exner, rho, dz, zw, ust, flt, fltv, flq, flqv,
-                          pblh, ts, xland, psig_shcu, *, dx, dt, cloud_base=None, qni=None):
+                          pblh, ts, xland, psig_shcu, *, dx, dt, cloud_base=None, qni=None, spp_pattern=None):
     """Port of DMP_mf for ONE column. All inputs are 1-D arrays length nz
     (interfaces zw length nz+1). Returns dict of solver arrays.
 
@@ -684,15 +688,16 @@ def _single_column_dmp_mf(sqw, sqv, sqc, u, v, w, th, thl, thv, tk, qke,
         flt, fltv, flq, psig_shcu, dx=dx, cloud_base=cloud_base,
     )
     UPA, UPW, UPQT, UPQC, UPTHL, UPU, UPV, active = _dmp_scan(
-        s, thl, thv, p, dz, zw, u, v, pblh)
+        s, thl, thv, p, dz, zw, u, v, pblh,**({} if spp_pattern is None else {"spp_pattern":spp_pattern}))
     out = _dmp_assemble(s, rho, thv, dz, fltv, active,
                          UPA, UPW, UPQT, UPQC, UPTHL, UPU, UPV)
     if qni is not None:
-        out['s_awqni'] = _passive_ni_flux(qni,s,rho,thv,dz,zw,fltv,pblh,active,UPA,UPW)
+        out['s_awqni'] = _passive_ni_flux(qni,s,rho,thv,dz,zw,fltv,pblh,active,UPA,UPW,
+            **({} if spp_pattern is None else {"spp_pattern":spp_pattern}))
     return out
 
 
-def _passive_ni_flux(qni,s,rho,thv,dz,zw,fltv,pblh,active,UPA,UPW):
+def _passive_ni_flux(qni,s,rho,thv,dz,zw,fltv,pblh,active,UPA,UPW,spp_pattern=None):
     """WRF passive UPQNI recurrence and limited flux, retained reference path."""
     nz=qni.shape[-1];l=s['l_per_plume']
     initial=(qni[0]*dz[1]+qni[1]*dz[0])/(dz[0]+dz[1])
@@ -704,6 +709,9 @@ def _passive_ni_flux(qni,s,rho,thv,dz,zw,fltv,pblh,active,UPA,UPW):
         ent=jnp.maximum(ent,.0003)
         cap=jnp.minimum(pblh+1500.,4000.)
         ent=jnp.where(zw[k]>=cap,ent+(zw[k]-cap)*5e-6,ent)
+        if spp_pattern is not None:
+            from gpuwrf.physics.stochastic_spp import entrainment
+            ent=entrainment(ent,spp_pattern[k])
         ent=jnp.minimum(ent,.9/(zw[k+1]-zw[k]));ex=ent*(zw[k+1]-zw[k])
         value=previous*(1.-ex)+qni[k]*ex
         live=UPW[:,k]>0
@@ -723,15 +731,50 @@ def _passive_ni_flux(qni,s,rho,thv,dz,zw,fltv,pblh,active,UPA,UPW):
 
 def dmp_mf_columns(sqw, sqv, sqc, u, v, w, th, thl, thv, tk, qke,
                    p, exner, rho, dz, zw, ust, flt, fltv, flq, flqv,
-                   pblh, ts, dx, xland, dt, psig_shcu=None, cloud_base=None, qni=None):
+                   pblh, ts, dx, xland, dt, psig_shcu=None, cloud_base=None, qni=None, spp_pattern=None,
+                   passive=None):
     """Batched DMP_mf over a leading column dimension.
 
     All profile args shape (B, nz); surface args (flt, fltv, flq, flqv, ust,
     pblh, ts, xland) shape (B,); zw shape (B, nz+1). Returns dict of (B, nz+1)
-    solver arrays (plus diagnostics). dx scalar."""
+    solver arrays (plus diagnostics). dx scalar.
+
+    ``passive`` (dict of (B, nz) State number leaves: Nc, nwfa, nifa) adds WRF's
+    s_awqnc1/s_awqnwfa1/s_awqnifa1 (module_bl_mynnedmf.F DMP_mf UPQNC/UPQNWFA/
+    UPQNIFA, :6099-6103, :6172-6176, :6411-6420): the same passive entrainment
+    recurrence and flux limiter as QNI, so each one reuses the QNI lane of an
+    otherwise identical plume evaluation (passive lanes do not feed back).
+    """
+    if passive:
+        call = lambda q: dmp_mf_columns(  # noqa: E731
+            sqw, sqv, sqc, u, v, w, th, thl, thv, tk, qke, p, exner, rho, dz, zw, ust, flt, fltv, flq, flqv,
+            pblh, ts, dx, xland, dt, psig_shcu=psig_shcu, cloud_base=cloud_base, qni=q, spp_pattern=spp_pattern)
+        from gpuwrf.kernels.phys_mynn_numbers import mf_flux_key
+        out = dict(call(qni))
+        for name, values in passive.items():
+            out[mf_flux_key(name)] = call(values)["s_awqni"]
+        return out
     B = th.shape[0]
     if psig_shcu is None:
         psig_shcu = jnp.ones((B,))
+
+    if spp_pattern is not None:
+        if _fused_plume_enabled():
+            from gpuwrf.kernels.phys_mynn_plume import dmp_mf_columns_native
+            return dmp_mf_columns_native(sqw,sqv,sqc,u,v,w,th,thl,thv,tk,qke,p,exner,rho,dz,zw,
+                ust,flt,fltv,flq,flqv,pblh,ts,dx,xland,dt,psig_shcu=psig_shcu,
+                cloud_base=cloud_base,qni=qni,spp_pattern=spp_pattern,
+                interpret=jax.default_backend()=="cpu")
+        base=jnp.full_like(pblh,9000.) if cloud_base is None else cloud_base
+        if qni is None:
+            return jax.vmap(lambda *a:_single_column_dmp_mf(*a[:-3],dx=dx,dt=dt,
+                cloud_base=a[-3],psig_shcu=a[-2],spp_pattern=a[-1]))(
+                sqw,sqv,sqc,u,v,w,th,thl,thv,tk,qke,p,exner,rho,dz,zw,ust,flt,fltv,flq,flqv,pblh,ts,xland,
+                base,psig_shcu,spp_pattern)
+        return jax.vmap(lambda *a:_single_column_dmp_mf(*a[:-4],dx=dx,dt=dt,
+            cloud_base=a[-4],psig_shcu=a[-3],qni=a[-2],spp_pattern=a[-1]))(
+            sqw,sqv,sqc,u,v,w,th,thl,thv,tk,qke,p,exner,rho,dz,zw,ust,flt,fltv,flq,flqv,pblh,ts,xland,
+            base,psig_shcu,qni,spp_pattern)
 
     if _fused_plume_enabled():
         from gpuwrf.kernels.fused_edmf_plume import dmp_mf_columns_fused

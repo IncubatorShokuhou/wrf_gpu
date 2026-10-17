@@ -1,0 +1,46 @@
+{
+  "verdict": "READY-FOR-CRITIC after1612acc49",
+  "product_commit": "d41ee5873",
+  "final_tested_commit": "cfbb40c5c",
+  "src_tree": "756cf68f511a9470530e958f129c5ba813b429d7",
+  "qnse_composed_passes": 107,
+  "consumer_passes": 10,
+  "mutants": [
+    {
+      "artifact": "<USER_HOME>/wrf_gpu2_lanes/t-c03rain/CR44_history_mutant.xml",
+      "failures": 2,
+      "errors": 0,
+      "verdict": "KILLED_NUMERICAL_ASSERTION"
+    },
+    {
+      "artifact": "<USER_HOME>/wrf_gpu2_lanes/t-c03rain/CR45_producer_mutant.xml",
+      "failures": 1,
+      "errors": 0,
+      "verdict": "KILLED_NUMERICAL_ASSERTION"
+    }
+  ],
+  "release_identities": {
+    "swiss": "f672a5739cb96e388b6b7a40ef80337bf81bdc14ef15268f3476e09d79fe055d",
+    "prod": "6fc715a2bd630934c4cf0f94427df19a527cbf429011c9ba5efe4d712744d27b"
+  },
+  "c03_program_sha": "60c7d0db0bce8616f301dc2b4c8acd3128e262b0e7cfaff40852927319d001c6",
+  "c03_program_exact": true,
+  "c26_full_step_trace_sha": "fb20be5589385681a32dbdef10747cdbb1021cdf6b77b060ec713ab558775f60",
+  "c03_D6": "PASS25frames0boundedFAIL0missing0NF;RAINNCmaxRMSE.490325852<1mm",
+  "e41_owner": "t-e41opt;FAIL disclosed",
+  "raw_receipts": {
+    "<USER_HOME>/wrf_gpu2_lanes/t-c03rain/CR37_qnse.xml": "8e651bb9078cd061cbea39b872da45615280da055dc036d6cbf7321bf2b4c404",
+    "<USER_HOME>/wrf_gpu2_lanes/t-c03rain/CR38_retention.xml": "deada5c05a7651f1f0ac6be2154b45fff7b2c3200d125042ab8fe636323f8ff1",
+    "<USER_HOME>/wrf_gpu2_lanes/t-c03rain/CR41_consumers.xml": "4a67658687909e0e77a78e5f93cc9984c126a6671fca8adc860dabd9fc676f58",
+    "<USER_HOME>/wrf_gpu2_lanes/t-c03rain/CR44_history_mutant.xml": "74259dd4917b14f49176084453903034b3ff170c9b932a602208fd39ba0ea517",
+    "<USER_HOME>/wrf_gpu2_lanes/t-c03rain/CR45_producer_mutant.xml": "5cd2baf7339f42d9667e447ea06b586e4e5ae4be1809cb7b2630522471726c08",
+    "<USER_HOME>/wrf_gpu2_lanes/t-c03rain/CR40_final_identity/receipt.json": "5322a9de403479033cdbacec6fa9d4b05f83a9890b318b78a609d81a043f014d"
+  },
+  "cleanup": "All detached snapshots/cache/scratch removed after last consumers; raw outputs and nativePINs retained",
+  "risks": [
+    "No new c26 GPU/D6 or incremental GPU performance claim",
+    "Missing new SF4 wind history in old restarts fails existing E78 checks"
+  ],
+  "cleanup_verified_utc": "2026-10-14T14:43:59.144976+00:00",
+  "all_own_detached_snapshots_absent": true
+}

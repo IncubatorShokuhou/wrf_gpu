@@ -1,0 +1,13 @@
+fixture_id: u2-streams-swiss-original-auxhist7-real4
+source: Original CPU-WRF auxhist7 (copied executable, immutable RD11 inputs; full provenance in manifest.json)
+source_commit: UNKNOWN; exact executable SHA256 in manifest.json is the binary authority
+scenario: Swiss 42x42x44, dt18s, four own steps, auxhist7 every18s, two exact mass centers
+variables:
+  names: [T2, Q2, U10, V10, PSFC, LH, HFX, PBLH, TSK, RAINC, RAINNC, SWDOWN, GLW]
+  dtype: float32 (WRF REAL4)
+  shape_each: [5, 2]
+  units_and_tolerances: manifest.json
+files:
+  frames.npz: 7c8089ddd5a0aa1350a71a86a80ff9e7ed9fbd882022d6428c3a42e37e2bbf40
+  manifest.json: 5b849fc5ffe6a3d80f5e4b587c22ec9fe05943960bd3ffcd406a2472c37866b9
+license_notes: Small numerical model output only; no WRF executable/source or large wrfout files redistributed.

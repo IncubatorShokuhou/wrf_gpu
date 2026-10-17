@@ -46,9 +46,11 @@ def test_flag_default_off(monkeypatch):
 
 def test_seed_is_real_and_write_casts_explicitly():
     seed = seed_history_diagnostics(SimpleNamespace(t_skin=jnp.ones((2, 3), jnp.float64)))
-    assert all(leaf.dtype == jnp.float32 and leaf.shape == (2, 3) for leaf in seed)
+    assert seed.u10e is None and seed.v10e is None  # MYJSFC-only diagnostics add no default leaves.
+    assert len(jax.tree_util.tree_leaves(seed)) == 7
+    assert all(leaf.dtype == jnp.float32 and leaf.shape == (2, 3) for leaf in jax.tree_util.tree_leaves(seed))
     written = seed.write({name: np.full((2, 3), 300.0 + 1e-9) for name in seed._fields})
-    assert all(leaf.dtype == jnp.float32 and leaf.shape == (2, 3) for leaf in written)
+    assert all(leaf.dtype == jnp.float32 and leaf.shape == (2, 3) for leaf in jax.tree_util.tree_leaves(written))
     assert np.asarray(written.t2).tobytes() == np.full((2, 3), 300.0 + 1e-9).astype(np.float32).tobytes()
 
 
@@ -210,42 +212,43 @@ class _StopAtPbl(Exception):
 
 def _step_write_harness(monkeypatch, *, with_container: bool):
     """Drive the real step through the Noah-MP surface slot with a stubbed surface step."""
-    from dataclasses import dataclass, replace
+    from dataclasses import MISSING, dataclass, replace
+    from gpuwrf.runtime.operational_state import OperationalCarry
+
+    def contract_default(contract, name):
+        field = contract.__dataclass_fields__.get(name)
+        if field is not None and field.default is not MISSING:
+            return field.default
+        raise AttributeError(name)
 
     @dataclass(frozen=True)
     class _Surface:
         t_skin: object
         xland: object
+        theta: object
 
         def replace(self, **kw):
             return replace(self, **kw)
 
-    @dataclass(frozen=True)
-    class _Carry:
-        state: object
-        noahmp_land: object
-        radiation_diagnostics: object
-        noahmp_rad: object = None
-        rthraten: object = None
-        census: object = None
-        history_diagnostics: object = None
+    class _Carry(SimpleNamespace):
+        def __getattr__(self, name):
+            return contract_default(OperationalCarry, name)
 
         def replace(self, **kw):
             updates.append(kw)
-            return replace(self, **kw)
+            return type(self)(**{**vars(self), **kw})
 
     class _Namelist(SimpleNamespace):
         def __getattr__(self, name):
-            if name == "bl_pbl_physics":
-                raise _StopAtPbl()
-            raise AttributeError(name)
+            return contract_default(op.OperationalNamelist, name)
 
     updates, calls = [], []
     z = jnp.zeros(SHAPE)
-    state = _Surface(jnp.full(SHAPE, 290.0), jnp.ones(SHAPE))
+    state = _Surface(jnp.full(SHAPE, 290.0), jnp.ones(SHAPE), jnp.full((1, *SHAPE), 300.0))
     rad = SimpleNamespace(swnorm=z, glw=z, coszen=z)
     container = seed_history_diagnostics(state) if with_container else None
-    carry = _Carry(state, object(), rad, history_diagnostics=container)
+    carry = _Carry(state=state, noahmp_land=object(), radiation_diagnostics=rad,
+                   rthraten=None, census=None, history_diagnostics=container)
     fields = {name: jnp.full(SHAPE, 100.0 + i, jnp.float64)
               for i, name in enumerate(("hfx", "lh", "t2", "q2", "u10", "v10", "psfc"))}
 
@@ -254,7 +257,7 @@ def _step_write_harness(monkeypatch, *, with_container: bool):
         return (st, land, dict(fields)) if history else (st, land)
 
     namelist = _Namelist(lower_boundary=None, noahmp_static=None, dt_s=54.0, boundary_config=None,
-                         run_physics=True, rad_rk_tendf=0, mp_physics=0, sf_sfclay_physics=5, cu_physics=0,
+                         run_physics=True, rad_rk_tendf=0, mp_physics=0, bl_pbl_physics=5, sf_sfclay_physics=5, cu_physics=0,
                          use_noahmp=True, radiation_interval_s=1800.0, radiation_cadence_steps=33, grid=None,
                          time_utc=datetime(2026, 7, 26, tzinfo=timezone.utc), radiation_static=None,
                          topo_shading=0, slope_rad=0, topo_shadow_length_m=25000.0,
@@ -263,6 +266,12 @@ def _step_write_harness(monkeypatch, *, with_container: bool):
     monkeypatch.setattr(op, "_noahmp_params", lambda nml: (None, None))
     monkeypatch.setattr(op, "_lane_noahmp_static", lambda nml, clock_base=None: None)
     monkeypatch.setattr(op, "noahmp_surface_step", _surface)
+    # New scheme mediation reads the PBL selector before the surface solve.
+    # Stop at the real PBL-entry firewall, after the history write, instead of
+    # throwing from an early namelist attribute lookup.
+    def stop_at_pbl(*args, **kwargs):
+        raise _StopAtPbl()
+    monkeypatch.setattr(op, "_small_grid_firewall", stop_at_pbl)
     with pytest.raises(_StopAtPbl):
         op._physics_boundary_step_with_limiter_diagnostics(
             carry, namelist, jnp.asarray(2, jnp.int32), run_radiation=False)

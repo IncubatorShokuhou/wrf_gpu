@@ -250,9 +250,18 @@ def _boulac_column(u, v, theta, qv, qc, rho, dz, tke, hfx, qfx, ust, dt, cp, g):
     )
 
 
-def boulac_columns(u, v, theta, qv, qc, rho, dz, tke, *, hfx, qfx, ust, dt, cp=CP_DEFAULT, g=G_DEFAULT):
+def boulac_columns(u, v, theta, qv, qc, rho, dz, tke, *, hfx, qfx, ust, dt, cp=CP_DEFAULT, g=G_DEFAULT,
+                   urban=None, sf_urban_physics=0):
     """Batched, jit/vmap-traceable BouLac over ``(ncol, nz)`` columns."""
 
+    if sf_urban_physics in (2,3):
+        if urban is None:raise ValueError('BEP/BEM BouLac requires urban multilayer sources')
+        from gpuwrf.physics.urban_bep_pbl import boulac_urban_columns
+        if u.dtype == jnp.float32:
+            with jax.enable_x64(False):
+                return boulac_urban_columns(u,v,theta,qv,qc,rho,dz,tke,hfx=hfx,qfx=qfx,ust=ust,dt=dt,cp=cp,g=g,urban=urban)
+        return boulac_urban_columns(u,v,theta,qv,qc,rho,dz,tke,hfx=hfx,qfx=qfx,ust=ust,dt=dt,cp=cp,g=g,urban=urban)
+    if urban is not None:raise ValueError('BouLac urban sources require sf_urban_physics=2 or 3')
     ncol = u.shape[0]
     dt_b = jnp.broadcast_to(jnp.asarray(dt, jnp.float64), (ncol,))
     cp_b = jnp.broadcast_to(jnp.asarray(cp, jnp.float64), (ncol,))

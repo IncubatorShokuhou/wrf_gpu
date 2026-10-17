@@ -1,0 +1,75 @@
+{
+ "tree": "<USER_HOME>/wrf_gpu2_lanes/t-calleraudit/snap/mut2",
+ "head": "716d292d3a69904bb4de18de63fd6a9aecb7d73c",
+ "mutants": [
+  {
+   "mutant": "M1_revert_passive_kwarg",
+   "file": "src/gpuwrf/kernels/phys_mynn_plume.py",
+   "tests": [
+    "tests/test_t_calleraudit_mynn_passive_native.py::test_native_entry_passive_fluxes_match_pristine_dmp_mf",
+    "tests/test_t_calleraudit_mynn_passive_native.py::test_release_mynn_root_step_lowers_with_number_scalars[28]"
+   ],
+   "rc": 1,
+   "summary": "2 failed in 46.35s",
+   "signature": "TypeError: float\\(\\) argument must be a string or a real number, not 'dict'",
+   "signature_found": true,
+   "setup_errors": 0,
+   "killed": true
+  },
+  {
+   "mutant": "M2_lane_keeps_qni",
+   "file": "src/gpuwrf/kernels/phys_mynn_plume.py",
+   "tests": [
+    "tests/test_t_calleraudit_mynn_passive_native.py::test_native_entry_passive_fluxes_match_pristine_dmp_mf"
+   ],
+   "rc": 1,
+   "summary": "1 failed, 1 warning in 3.08s",
+   "signature": "AssertionError",
+   "signature_found": true,
+   "setup_errors": 0,
+   "killed": true
+  },
+  {
+   "mutant": "M3_passive_dropped",
+   "file": "src/gpuwrf/kernels/phys_mynn_plume.py",
+   "tests": [
+    "tests/test_t_calleraudit_mynn_passive_native.py::test_native_entry_passive_fluxes_match_pristine_dmp_mf",
+    "tests/test_t_calleraudit_mynn_passive_native.py::test_release_mynn_root_step_lowers_with_number_scalars[28]"
+   ],
+   "rc": 1,
+   "summary": "2 failed, 1 warning in 54.81s",
+   "signature": "KeyError: 's_awqNc'|AssertionError",
+   "signature_found": true,
+   "setup_errors": 0,
+   "killed": true
+  },
+  {
+   "mutant": "M4_no_traceback_print",
+   "file": "src/gpuwrf/runtime/domain_tree.py",
+   "tests": [
+    "tests/test_t_calleraudit_lower_error_traceback.py::test_lower_error_text_prints_the_traceback"
+   ],
+   "rc": 1,
+   "summary": "1 failed in 1.37s",
+   "signature": "AssertionError",
+   "signature_found": true,
+   "setup_errors": 0,
+   "killed": true
+  },
+  {
+   "mutant": "M5_fused_site_bypasses_helper",
+   "file": "src/gpuwrf/runtime/domain_tree.py",
+   "tests": [
+    "tests/test_t_calleraudit_lower_error_traceback.py::test_both_lowering_sites_report_through_the_helper"
+   ],
+   "rc": 1,
+   "summary": "1 failed in 1.40s",
+   "signature": "AssertionError",
+   "signature_found": true,
+   "setup_errors": 0,
+   "killed": true
+  }
+ ],
+ "killed": 5,
+ "total": 5
+}

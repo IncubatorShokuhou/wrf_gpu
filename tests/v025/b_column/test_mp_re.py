@@ -67,7 +67,7 @@ def test_disabled_path_keeps_absent_leaves_and_fixed_operator(monkeypatch):
 def test_enabled_missing_saved_radii_fails_closed(monkeypatch):
     monkeypatch.setattr(R, "_MP_RE", True)
     state, _ = _real_state()
-    with pytest.raises(ValueError, match="held Thompson radii"):
+    with pytest.raises(ValueError, match="held microphysics radii"):
         C._rrtmg_column_inputs(state, None, time_utc="2026-02-28_00:00:00")
 
 
@@ -173,6 +173,7 @@ def test_startup_land_radiation_uses_the_static_radius_selection(monkeypatch, us
     monkeypatch.setattr(op, "rrtmg_radiation_diagnostics", diagnostics)
     nml = SimpleNamespace(grid=None, time_utc="2026-02-28_00:00:00", radiation_static=None,
                           topo_shading=0, slope_rad=0, topo_shadow_length_m=25000.,
+                          sf_urban_physics=0, bl_pbl_physics=5,
                           mp_physics=8, use_mp_re=use_mp_re, ra_sw_physics=4, ra_lw_physics=4)
     op.noahmp_initial_rad(state, nml)
     assert len(seen) == 2

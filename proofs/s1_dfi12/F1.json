@@ -1,0 +1,78 @@
+{
+  "schema": "gpuwrf.s1-dfi12.critic-F1.v1",
+  "utc": "2026-10-13T16:27:46.069480+00:00",
+  "status": "F1 FIXED; return to rv-s1-dfi12",
+  "fix_commit": "de947943a",
+  "final_source_commit": "ab0bf25e4ad6c09325a72f8ff4eab83c90ea7709",
+  "final_src_tree": "3f2b9751254b1af78e70dce14a84beac1f54e13d",
+  "main_rebase": "c40cf0000 (u2-tslist merge landed before rebase)",
+  "problem": "Admitted DFL omitted forecast diff_opt/km_opt were inserted into physics; native loader reads dynamics.",
+  "fix": "DFL-local real stage writer restores both keys in dynamics for forward and forecast inputs. Shared TDFI writer and DDFI route unchanged. Slash-containing comments stay inside group.",
+  "gates": {
+    "focused_compatibility": {
+      "tests": 92,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "receipt": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/s1-dfi12/DF12-F1-tests.xml",
+        "sha256": "d65a8386cc524210f2e39fb7d8bd4502696096a298bffe569e9d1d9190a13afe"
+      }
+    },
+    "final_writer_bindings": {
+      "tests": 8,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "receipt": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/s1-dfi12/DF12-F1-comment-bindings.xml",
+        "sha256": "2061a78ce1a01a2af4222194638c9734f55f7c6f2a222f8246babbde69e60f74"
+      }
+    },
+    "final_writer_deletion_mutant": {
+      "tests": 8,
+      "failures": 4,
+      "errors": 0,
+      "skipped": 0,
+      "receipt": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/s1-dfi12/DF12-F1-comment-mutant-retry.xml",
+        "sha256": "14731bef4d38282aec8c6e9adb521426405009d1712a276338d1c2e46bc54735"
+      }
+    },
+    "native_bindings": "Actual Gen2Run and _domain_int group/domain resolutions used by _load_domains; defaults0/1 and explicit1/4; both forward/forecast; present/omitted keys.",
+    "measured_case_stage_text_exact": 6,
+    "source_stage_reuse": {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/s1-dfi12/DF12-F1-source-reuse-final.json",
+      "sha256": "cd58b036b87c12b5dcb30a8c74ed9c13aa617acf8e2d0d11fffa7b96beda8d03"
+    },
+    "active_phase_programs_exact": 3,
+    "seed_array_records_exact": 641,
+    "release_jaxpr_sha256": "2bf12cb8374d3a84a440e47dea4b77b0c7436108fc2ee2616bba6ec79b17962a",
+    "phase_reuse": {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/s1-dfi12/DF12-F1-phase-composed.json",
+      "sha256": "538e5c345ee96fb0283d22636a316de2886687aaf2d3f2d595bb533b4bb2048a"
+    },
+    "raw_phase": {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/s1-dfi12/DF12-F1-phase.json",
+      "sha256": "0a29cf8fec42f2ba8cc03833f0435f3bb39518f4b1a9b43a7259c8efca54d3de"
+    },
+    "prior_qualification_packet": "evidence.json (unchanged prior source packet)",
+    "original_cpu_wrf_comparisons_reused": "Five original-WRF prepasses130/130primary;1600numericfinite/missing0. No numerical model rerun; six effective stage files and retained numerical code exact.",
+    "shared_tdfi_driver_filter_control_exact": true
+  },
+  "procedural_disclosure": "Initial mutant KeyError failures were replaced with explicit assertions. One later mutant arm invalidated by premature own pytest-scratch cleanup (1assert/7setup errors); preserved receipt, rerun serially gives4 genuine assertions/4controls/0setup. Host source helper briefly overlapped; no timing/performance claim from these checks.",
+  "performance_memory": {
+    "measured_namelist_bytes": [
+      4346,
+      4329,
+      4114,
+      4098,
+      4113,
+      4097
+    ],
+    "impact": "Host namelist text read/edit/write only; unchanged NetCDF data copy; no new forecast State arrays, device operations, intermediate weather fields or JIT/scan change. No measured GPU performance claim.",
+    "prior_costs": "Existing CPU prepass608.6/711.7s, DDFI peak8.804GiB, sequential shorts11.86GiB. BC gcd storage expansion and GPU/compile/VRAM costs remain disclosed in README."
+  },
+  "limits": "Experimental CPU prepass only. GPU/coupled forecast qualification pending; inherited nonprimary field differences remain disclosed.",
+  "cleanup": "fix_snapshot and pytest scratch removed after final consumers; persistent JAX cacheNONE; original scientific reference outputs retained."
+}

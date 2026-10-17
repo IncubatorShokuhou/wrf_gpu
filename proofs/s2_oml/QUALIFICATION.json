@@ -1,0 +1,194 @@
+{
+  "lane": "s2-oml",
+  "model": "GPT Sol",
+  "status": "CPU complete; ready for independent critic; GPU/coupled-forecast qualification pending",
+  "main_base": "e9824c1bd",
+  "model_source_commit": "7abf98cf6772cdfa3a109c9bc823925c28bd7bf1",
+  "src_tree": "d7a3280795fcfeae9c88d33ee91992eb7097c742",
+  "scientific_scope": "Pristine WRF REAL columns; independent input-ULP and original compiler-FMA envelopes. CPU integration smoke is not coupled WRF forecast fidelity.",
+  "options": {
+    "sf_ocean_physics": [
+      1
+    ],
+    "isftcflx": [
+      1,
+      2
+    ],
+    "hurricane_surface_layers": [
+      1,
+      5,
+      91
+    ],
+    "refused_ocean": [
+      2
+    ]
+  },
+  "gates": {
+    "pristine_owned_final_x64": {
+      "passed": 37,
+      "seconds": 28.49,
+      "source": "7abf98cf6"
+    },
+    "required_contracts_v018_binding_restart_netcdf": {
+      "passed": 120,
+      "seconds": 13.54,
+      "source": "ba986e59f"
+    },
+    "shared_consumers_pre_rebase": {
+      "passed": 325,
+      "seconds": 586.56,
+      "source": "d8f3deeb1",
+      "scope": "includes37owned, all8required consumers, stoch and NetCDF"
+    },
+    "redundant_broad_final_repeat": {
+      "source": "ba986e59f",
+      "exit": 124,
+      "seconds_limit": 600,
+      "completed_pass_dots": 127,
+      "reported_failures": 0,
+      "complete": false
+    },
+    "archive": {
+      "passed": 19,
+      "seconds": 10.67,
+      "source": "d8f3deeb1",
+      "reuse": "test/fixture/source BYTE proof; include existing repo data assets"
+    },
+    "genuine_mutant": {
+      "assertion_failures": 1,
+      "setup_errors": 0,
+      "killed": true
+    },
+    "native_cli": {
+      "earlier_arms": 6,
+      "final_exact_programs": 2,
+      "default_sha": "2bf12cb8374d3a84a440e47dea4b77b0c7436108fc2ee2616bba6ec79b17962a",
+      "final_ocean_flux2_sha": "bdd81b65f7f656f148c44b2ef8ec01b13cd237747b8d131bd3825b12f518276b",
+      "exec_steps": 0
+    },
+    "compiled_kind": {
+      "programs": 7,
+      "x64_enabled": true,
+      "f64_arithmetic": 0,
+      "physical_array_dtypes": [
+        "float32"
+      ]
+    },
+    "final_cpu_coupled": {
+      "source": "7abf98cf6772cdfa3a109c9bc823925c28bd7bf1",
+      "backend": "cpu",
+      "recipe": "GPUWRF_FAST_DEFAULTS=0; actual steps1..3 incl first/radiation; real Swiss geometry/meteorology plus two declared synthetic warm-water cells",
+      "steps": [
+        {
+          "step": 1,
+          "wall_s": 231.2793354850728,
+          "nonfinite": 0,
+          "ocean_TML_max_change_K": 0.00018310546875,
+          "ocean_HML_max_change_m": 0.0013275146484375,
+          "ustm_max": 0.4702796936035156,
+          "dtypes": [
+            "float32"
+          ]
+        },
+        {
+          "step": 2,
+          "wall_s": 15.224428626941517,
+          "nonfinite": 0,
+          "ocean_TML_max_change_K": 0.00018310546875,
+          "ocean_HML_max_change_m": 0.0013427734375,
+          "ustm_max": 0.650946855545044,
+          "dtypes": [
+            "float32"
+          ]
+        },
+        {
+          "step": 3,
+          "wall_s": 13.838766745990142,
+          "nonfinite": 0,
+          "ocean_TML_max_change_K": 0.000213623046875,
+          "ocean_HML_max_change_m": 0.001361846923828125,
+          "ustm_max": 0.7619504332542419,
+          "dtypes": [
+            "float32"
+          ]
+        }
+      ],
+      "load_s": 97.45358390104957,
+      "nonfinite": 0,
+      "pre_mask_guard_observations": 63,
+      "pre_mask_guard_events": 0,
+      "f2_observations": 144,
+      "f2_events": 0,
+      "restart_byte_exact": true,
+      "matched_control": "unnecessary: all pre-mask event counts zero",
+      "forecast_fidelity_claim": false,
+      "gpu_performance_claim": false
+    }
+  },
+  "resources": {
+    "backend": "CPU only",
+    "physical_carry_bytes_per_cell": 32,
+    "initial_arrays_retained_max_bytes_per_cell": 28,
+    "extra_history_if_previously_disabled_bytes_per_cell": 24,
+    "persistent_jax_cache": false,
+    "gpu_launches_traffic_vram_readiness": "unmeasured; pending GPU qualification",
+    "cleanup": "Detached snapshot and private pytest/build/cache directories removed immediately after dependent arms; retained receipts and explicit smoke input/checkpoints only."
+  },
+  "artifacts": {
+    "component_x64.json": {
+      "sha256": "23f497a3256abd79729a1116d1a77f414000bf4205174997cfefbef7c1a70572",
+      "original_artifact": "<USER_HOME>/wrf_gpu2_lanes/s2-oml/component_x64.json"
+    },
+    "native_trace.json": {
+      "sha256": "f320ed25b6999452441c5e6197a80aaf6e0db38f634f3e22cf7adfcbb66aac8f",
+      "original_artifact": "<USER_HOME>/wrf_gpu2_lanes/s2-oml/native_trace.json"
+    },
+    "native_composed.json": {
+      "sha256": "539e867ed9c48f538aa980d7ba74f7832d9ebc4c843ae5a1b21c60d45c5c4482",
+      "original_artifact": "<USER_HOME>/wrf_gpu2_lanes/s2-oml/native_composed.json"
+    },
+    "mutant_verified.json": {
+      "sha256": "76eeaaa91edf4616358896c9025c7a5d66706f90aa06092cb33bd5d5f2702611",
+      "original_artifact": "<USER_HOME>/wrf_gpu2_lanes/s2-oml/mutant_verified.json"
+    },
+    "contracts_required.xml": {
+      "sha256": "5ebc52efbf2473046a7f4a3567011020fa61ba41408bcd5d43e4c54a511e520e",
+      "original_artifact": "<USER_HOME>/wrf_gpu2_lanes/s2-oml/contracts_required.xml"
+    },
+    "oracle_x64.xml": {
+      "sha256": "96574388f14ff9e038a1d70abd52154598a17efedeb058208d118383491f751c",
+      "original_artifact": "<USER_HOME>/wrf_gpu2_lanes/s2-oml/oracle_x64.xml"
+    },
+    "composed_final.log": {
+      "sha256": "02a9ae1c458d261946ca56ca4e88184e0f4a8df268975f4968b7c099af275f8e",
+      "original_artifact": "<USER_HOME>/wrf_gpu2_lanes/s2-oml/composed_final.log",
+      "retained_locally": true
+    },
+    "archive_complete.log": {
+      "sha256": "4867eef0afa6052018364df16b3538dfbf20f36d1a044f5a010ec449836d6565",
+      "original_artifact": "<USER_HOME>/wrf_gpu2_lanes/s2-oml/archive_complete.log",
+      "retained_locally": true
+    },
+    "contracts_final.log": {
+      "sha256": "f7048a80c96c96a7cc06e2054d37254a60e64aeab552b4c4d1de588306602320",
+      "original_artifact": "<USER_HOME>/wrf_gpu2_lanes/s2-oml/contracts_final.log",
+      "retained_locally": true
+    },
+    "coupled_final.json": {
+      "sha256": "e6165f836fa01c42a24c458db13779b6ba68d0887570f7ad5263e618a9c55fc1",
+      "original_artifact": "<USER_HOME>/wrf_gpu2_lanes/s2-oml/coupled_final/receipt.json"
+    },
+    "mutant_final.xml.gz": {
+      "sha256": "148e8bb3190c3432d0c1601643a6ebcca4b1af8ce2c8d7ad8d0e88d4bb258850",
+      "original_artifact": "<USER_HOME>/wrf_gpu2_lanes/s2-oml/mutant_final.xml",
+      "uncompressed_sha256": "f7a339cce9ec015ec84530d36da58016d02c856bd1b2840f3dde1a8ba1dad6ab",
+      "encoding": "gzip; original XML bytes unchanged (pytest assertion whitespace preserved)"
+    }
+  },
+  "review_followup": {
+    "status": "Four reproduced P1 fixed; see REVIEW_FIXES.json for rebased source and277 targeted checks",
+    "packet": "proofs/s2_oml/REVIEW_FIXES.json",
+    "physical_kernels": "seven source files byte-identical to reviewed27be13e8c; prior numerical/kind/coupled evidence retained without repeat",
+    "admission_scope": "Hurricane+RUC/SLUCM/BEP/BEM/epsilon-PBL refused pending combined surface qualification"
+  }
+}

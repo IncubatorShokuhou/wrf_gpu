@@ -1,0 +1,64 @@
+{
+  "lane": "s2-goddardrad",
+  "status": "READY-FOR-CRITIC",
+  "timestamp_utc": "2026-10-14T00:18:52.811031+00:00",
+  "source_commit": "32929548c1786d6efdf4029507ff40ae6ef27d8e",
+  "rebased_main": "de636d89842588825b41b5a5d7d36a3a84f905b2",
+  "qualification": "CPU-wave experimental paired Goddard5/5 MP8 use_mp_re1",
+  "platform": "cpu",
+  "gpu_executed": false,
+  "tests_unique": {
+    "PASS": 741,
+    "SKIP": 9,
+    "FAIL": 0
+  },
+  "Goddard_tests": 101,
+  "literal_public_REAL4_BYTE": "148/148",
+  "mutant": "1 genuine numerical assertion,0 setup errors",
+  "coupled_smoke": "3 actual Swiss CPU steps,all finite,GodSWcounter0; matched control identical; raw strict QC FAIL preserved",
+  "release_sha256": "2bf12cb8374d3a84a440e47dea4b77b0c7436108fc2ee2616bba6ec79b17962a",
+  "compiled_SW_deviation": {
+    "max_abs_K_s": 1.7280399333685637e-10,
+    "max_ulp": 95,
+    "WRF_FMA_spread_max_K_s": 9.094947017729282e-12,
+    "policy": "small excess disclosed; frozen oracle tolerances unchanged; full forecast D6 pending"
+  },
+  "CPU_component": {
+    "columns": 128,
+    "levels": 12,
+    "compile_s": 4.412111596902832,
+    "temporary_bytes": 3320328,
+    "argument_bytes": 132616,
+    "output_bytes": 19584,
+    "warm_mixed_median_s": 0.0340200059581548,
+    "warm_night_median_s": 0.02389457984827459,
+    "speedup_claim": false
+  },
+  "resident_history_bytes": "20*n_horizontal_cells +4 counter",
+  "pending": [
+    "GPU execution",
+    "E41",
+    "GPU launches/VRAM/performance",
+    "CPU-WRF full forecast D6/station drift"
+  ],
+  "cache": "NONE GPUWRF_JAX_CACHE0",
+  "artifacts": {
+    "<USER_HOME>/wrf_gpu2_lanes/s2-goddardrad/G26_literal.json": "36b526e0ef65c4be395d674e91706a81b80b332b0baf8748b01fa956dc12073b",
+    "<USER_HOME>/wrf_gpu2_lanes/s2-goddardrad/G29_mutant.json": "bf5d4a0b4e800d1654ddb5799e11e670d005992ae4e23241f895170638813d7a",
+    "<USER_HOME>/wrf_gpu2_lanes/s2-goddardrad/G30_shared.xml": "66b5ab37ace982b655ceecf62f250e665452f86c031736c8358d372b9a2adf29",
+    "<USER_HOME>/wrf_gpu2_lanes/s2-goddardrad/G31_packaging.json": "4de8c8cc04e2b4f9b044e1adb149beb424113f45e359079820a974943fbb8ec6",
+    "<USER_HOME>/wrf_gpu2_lanes/s2-goddardrad/G32_compiler_spread.json": "15e9931bc031fc2dcbdb728ca86273e5ee6d5e215e88d1fbae5157a159e63380",
+    "<USER_HOME>/wrf_gpu2_lanes/s2-goddardrad/G34_final.xml": "9ebe74b9dfc584c372a2c5a64f130adc6589ba7e0204eacf7b976f2915c125f3",
+    "<USER_HOME>/wrf_gpu2_lanes/s2-goddardrad/G34_math_source_BYTE.json": "6f2f97ab43777a14839073a4ffeddea2eacfc6bfa771e0e7dd1183985b156836",
+    "<USER_HOME>/wrf_gpu2_lanes/s2-goddardrad/G35_component.json": "8bf425a453993979e9e8e9029726ffe7715f895fc966827c857a981bd025af8a",
+    "<USER_HOME>/wrf_gpu2_lanes/s2-goddardrad/G36_compiled_spread.json": "cb1c2023cd0733276a276ab90c1ba5ba5ab49ca93d5b75b024f6f8791008c0a6",
+    "<USER_HOME>/wrf_gpu2_lanes/s2-goddardrad/G37_final_smoke/receipt.json": "50f0bfdef62e65996dc50bc7b4ecf677d0bf0e91187619a9c005d314dbeca759",
+    "<USER_HOME>/wrf_gpu2_lanes/s2-goddardrad/FINAL_CPU_SMOKE_DISPOSITION.json": "b5d39f8cd066ed6ad3a9a0c6b021ccc67a6e10dce29c103e34ee516dc0ce8217",
+    "<USER_HOME>/wrf_gpu2_lanes/s2-goddardrad/G38_release_identity.json": "db2f0f85262c1bcd1ee1888dcc2d5838379af178e98e73dd187129595402845b",
+    "<USER_HOME>/wrf_gpu2_lanes/s2-goddardrad/G39_restart.xml": "41cd805f3f9684906f24c4fdb9e9eef1347e40b5fa6c6605abe8e8acea623c8a",
+    "<USER_HOME>/wrf_gpu2_lanes/s2-goddardrad/G39_model_source_BYTE.json": "202373a0cca65dc798e9c17e406dde72d6ae7149608e86b04d913dbe12404b9c",
+    "<USER_HOME>/wrf_gpu2_lanes/s2-goddardrad/G40_history.xml": "5987098e5e1d6686b7821aa060188b343e16b459ac4f8fc57fa7305d8d10f850",
+    "<USER_HOME>/wrf_gpu2_lanes/s2-goddardrad/G40_source_BYTE.json": "68694448e782c2522a536b4c1b2115f064f18b0cd99fa2b190edfd9aebb4dc8e"
+  },
+  "validation_reuse": "G26/G29 numerical sources BYTE via G34; G35/G36/G37/G38 hot sources BYTE via G39 (checkpoint-only fix) then G40 (main host-history-only merge). No repeated physical forecast."
+}

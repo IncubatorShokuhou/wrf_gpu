@@ -45,10 +45,12 @@ def _exact(a, b):
 
 def test_bp90_tail_and_both_flags_roundtrip_in_all_restart_formats(monkeypatch, tmp_path):
     grid, nml, carry = _combined(monkeypatch)
-    assert state_contract.State.__slots__[-4:] == ("sfc_wspd", "re_cloud", "re_ice", "re_snow")
-    assert STATE_FIELD_ORDER[-4:] == state_contract.State.__slots__[-4:]
+    # Frozen BP90/MP_RE/LES prefix; newer scheme groups append after it.
+    assert state_contract.State.__slots__[84:89] == ("sfc_wspd", "re_cloud", "re_ice", "re_snow", "tke")
+    assert STATE_FIELD_ORDER[84:89] == state_contract.State.__slots__[84:89]
+    assert carry.state.tke is None
     widened = op._enforce_operational_precision(carry.state, force_fp64=True)
-    for name in state_contract.State.__slots__[-4:]:
+    for name in state_contract.State.__slots__[84:88]:
         assert getattr(widened, name).dtype == jnp.float32
         np.testing.assert_array_equal(getattr(widened, name), getattr(carry.state, name))
     path = tmp_path / "both.pkl"

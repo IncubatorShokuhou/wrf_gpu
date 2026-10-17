@@ -1,0 +1,89 @@
+{
+  "source_root": "<USER_HOME>/src/wrf_pristine/WRF",
+  "source_sha256": {
+    "phys/module_cu_sas.F": "a59026ff2061293ce657e7d56fdcbe2381a615721e2801616997cd3f96456158",
+    "phys/module_gfs_machine.F": "300ee4f75663e89d34c8a9b8733cc07a5dd48c3d973da019d31cb76524babe25",
+    "phys/module_gfs_physcons.F": "2b8ef99663ba62748b57c7002f5e5b8c9338f2a825c1d32c113bd4e3bff2eb52",
+    "phys/module_gfs_funcphys.F": "0d43dccf0510bd49ef07f81c357e4b96fd9391604f7c14d7e3cf8700ff383e74",
+    "phys/module_cumulus_driver.F": "d73eb4b670599e0bbf98a3661b5dbf17413aed01139d18fa1a84161578dc31e3",
+    "phys/module_physics_addtendc.F": "824929ccaf29d99670545cf5cea3e20f4344f06604d1d778cbdbdc2dd445fe44",
+    "Registry/Registry.EM_COMMON": "6f3ee02175b76487c5c6c046ff2fb4c5d41980b86c0f06eb2e09e34dacc9623a",
+    "share/module_check_a_mundo.F": "c66b3ef802da58e2a453b62fc00a04542c66ea93d752aa49bbd981fe00d40784"
+  },
+  "fixture_sha256": {
+    "dt54_stepcu5_r4.npz": "05db21e496dcfc4ae53406102877cc82093e703cc660986a53a2b1464d399d8d",
+    "dt54_stepcu5_r8.npz": "e29b74bad57bd6fe8ecaff55190cfe048b00d6be4435740056792c3eb0d2ec21",
+    "dt18_stepcu1_r4.npz": "c87dc273c47854fbd27def62f99ea2b12c6922fb4c6cc0de3a95ca26a54f1ba8",
+    "dt18_stepcu1_r8.npz": "7869262a538e4dfae69330e5c73bbe511f4d5148d568c2906d7af9b5c40372ad"
+  },
+  "tolerances": {
+    "r4_max_ulp": 1,
+    "r4_min_byte_fraction": 0.999,
+    "cloud_levels": "exact",
+    "r8_max_per_column_scaled": 1e-09,
+    "exclusions": []
+  },
+  "configs": {
+    "dt54_stepcu5": {
+      "dt": 54.0,
+      "stepcu": 5,
+      "pgcon": 0.55,
+      "shallow": 1,
+      "ncol": 455,
+      "nz": 44,
+      "build_flags": "-O2 -ftree-vectorize -funroll-loops -w -ffree-form -ffree-line-length-none -cpp -DEM_CORE=1 -DNMM_CORE=0",
+      "r4": {
+        "active_deep": 214,
+        "inactive_deep": 241,
+        "shallow_changed_columns": 153,
+        "cloud_water_source_columns": 221,
+        "ice_source_columns": 193,
+        "water_active": null
+      },
+      "r8": {
+        "active_deep": 214,
+        "inactive_deep": 241,
+        "shallow_changed_columns": 153,
+        "cloud_water_source_columns": 218,
+        "ice_source_columns": 193,
+        "water_active": null
+      }
+    },
+    "dt18_stepcu1": {
+      "dt": 18.0,
+      "stepcu": 1,
+      "pgcon": 0.55,
+      "shallow": 1,
+      "ncol": 455,
+      "nz": 44,
+      "build_flags": "-O2 -ftree-vectorize -funroll-loops -w -ffree-form -ffree-line-length-none -cpp -DEM_CORE=1 -DNMM_CORE=0",
+      "r4": {
+        "active_deep": 214,
+        "inactive_deep": 241,
+        "shallow_changed_columns": 153,
+        "cloud_water_source_columns": 221,
+        "ice_source_columns": 193,
+        "water_active": null
+      },
+      "r8": {
+        "active_deep": 214,
+        "inactive_deep": 241,
+        "shallow_changed_columns": 153,
+        "cloud_water_source_columns": 218,
+        "ice_source_columns": 193,
+        "water_active": null
+      }
+    }
+  },
+  "input_path": "proofs/v034/scalesas/savepoints/columns_inputs.npz",
+  "input_sha256": "eb1ed297e287bb4b3373ab6d0c331d14486251323d06ea0f53fc6614fb48d405",
+  "rare_input": "rare_inputs.npz",
+  "rare_input_sha256": "b78b711809095e2922925e42cd3c44b2ce787046c5803b9b380941f4b223a87c",
+  "rare_fixture_sha256": {
+    "rare_dt54_stepcu5_r4.npz": "8d502f1a816630977aeed24ea7f96696d51711e3559d5543fab59b153e8df8ab",
+    "rare_dt54_stepcu5_r8.npz": "ce5363842c6ee7697953f8976aa59476014e6c127d4763563a6f55adecdc3429",
+    "rare_dt18_stepcu1_r4.npz": "0a9d90bc812f9bf499a51f385e1f369ddeaa74a1c5aed4b84d9e9d2fb180be31",
+    "rare_dt18_stepcu1_r8.npz": "04d762a00b93b513fb8f4948a6679b0b612ad3caa6ded9525d858fcffd0335a7"
+  },
+  "gate_scope_decision": "Manager2026-10-13: .999 BYTE per field over complete455+12corpus; everyvalue max1ULP, levels exact, no productISA/tolerancechange"
+}

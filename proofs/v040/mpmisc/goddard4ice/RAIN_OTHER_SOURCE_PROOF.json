@@ -1,0 +1,24 @@
+{
+  "numerical_validation_source_commit": "7c71fcbaa",
+  "enabler_commit": "01626b100",
+  "original36outputs_equation_source_identity": [
+    {
+      "file": "src/gpuwrf/physics/goddard4ice/column.py",
+      "baseline_sha256": "5d7099c4a096f2367c21f54344ffe3d1e973d679f1c8627f6f3d0de86c5ebb39",
+      "enabler_sha256": "acb62f122fd0642ed9e692e1a3e99b843b3a2d9a4dd6380f703234f68fee532f",
+      "only_AST_change": "result.update rain_other=rain+ice",
+      "all_existing_equation_AST_identical": true
+    },
+    {
+      "file": "src/gpuwrf/physics/goddard4ice/native.py",
+      "baseline_sha256": "56ece9428572a068195b9b7f34251cd184fb020c750cda7cdef0b2027e852b9d",
+      "enabler_sha256": "c17f033223595679bc12715ffccd6604df818bd099f1bb390a9d51fb839cd352",
+      "only_AST_change": "SURFACE append rain_other",
+      "all_existing_equation_AST_identical": true
+    }
+  ],
+  "new_output": "rain_other=pptrain+pptice",
+  "new_output_bytes_per_column": 4,
+  "new_scratch_bytes": 0,
+  "validation_reuse": "Existing36outputs literal BYTE and independently bounded prognostics carried forward; only changed native executable ABI/lowering needs recheck."
+}

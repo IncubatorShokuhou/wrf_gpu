@@ -1,0 +1,90 @@
+{
+  "status": "FIXED remaining P1 actual obs output consumer",
+  "critic_reviewed_commit": "6193a5bfb41d62a3a8dc7cbd143850a510ab104d",
+  "critic_verdict": "<USER_HOME>/wrf_gpu2_lanes/rv-s1-obsnudge/FIX_DELTA_VERDICT.md",
+  "critic_verdict_sha256": "281cfa03ebf34b1f7ebd61307e4e932dbbb5f026927498cb3a021f0aa8fcf32a",
+  "measured_final_composed_commit": "ff5c7cb3e6d5252d6f6dfd999066e9a6758f3a8b",
+  "receipts": {
+    "FON34.xml": {
+      "sha256": "4fdb814d96010e5079abfd1805cbfcdca78133d23917746498fd955de783e04b",
+      "tests": 14,
+      "failures": 4,
+      "errors": 0,
+      "seconds": 19.229
+    },
+    "FON35.xml": {
+      "sha256": "05ecd2b8f42c2abee031edd3c61feec6d6861236ea418637095716b3555dde99",
+      "tests": 4,
+      "failures": 0,
+      "errors": 0,
+      "seconds": 10.678
+    },
+    "FON36.xml": {
+      "sha256": "821d2556fa1ced4e19b5a4a6511b0192ad9c09245d00805afd0697e4102a01fe",
+      "tests": 1,
+      "failures": 1,
+      "errors": 0,
+      "seconds": 2.406
+    },
+    "FON37.json": {
+      "sha256": "090d26634d93d08a609cb315c875debd85803a32206f67ba0c0f40c5333ebe78"
+    },
+    "FON38.xml": {
+      "sha256": "bb98b655730217bdafa80e46dcdbc488fb7d447e4f3b154659bbb0d11122ff59",
+      "tests": 5,
+      "failures": 0,
+      "errors": 0,
+      "seconds": 26.897
+    },
+    "FON39.json": {
+      "sha256": "4308892b8894d28a5d7edf1bdedc70970fcaf4e612672f1ad1690911b756906a"
+    }
+  },
+  "gates": {
+    "actual_output_regressions": 4,
+    "actual_NetCDF_files_checked": 24,
+    "history_absent_Q2": "exact bulk REAL32 .007",
+    "history_present_Q2": "exact held REAL32 .013",
+    "one_carry_initialization": true,
+    "bulk_calls_with_history": 0,
+    "bulk_calls_without_history": "one per diagnostic output frame",
+    "land_and_radiation_forwarded": true,
+    "actual_obs_seed_donation_test": "PASS;input leaves BYTE,undeleted",
+    "old_route_mutant": "killed with actual None.q2 AttributeError;zero setup errors"
+  },
+  "source_reuse": {
+    "candidate": "ff5c7cb3e6d5252d6f6dfd999066e9a6758f3a8b",
+    "measured_output_source": "45e3ec82b2d16324a65a354a3f78cfeb0304d93c",
+    "integrated_main": "489a914837303cf0c76644cff919f49363f39e5c",
+    "changed_src_paths": [
+      "src/gpuwrf/__init__.py",
+      "src/gpuwrf/cli.py",
+      "src/gpuwrf/optimize/__init__.py",
+      "src/gpuwrf/optimize/calibration.py",
+      "src/gpuwrf/optimize/cli.py",
+      "src/gpuwrf/optimize/data.py",
+      "src/gpuwrf/optimize/study.py",
+      "src/gpuwrf/runtime/operational_mode.py"
+    ],
+    "unchanged_existing_src_blobs": 526,
+    "daily_output_source_byte_exact": true,
+    "daily_sha256": "9d3fcbec2f2c55ca6f710d8fe4184b81fb574862b6926a11637339db069a9e1d",
+    "numerical_model_AST_exact_after_removing_reviewed_host_seed_guard": true,
+    "ownership_guard_AST_exact_main": true,
+    "upstream_host_blobs_exact_main": [
+      "src/gpuwrf/__init__.py",
+      "src/gpuwrf/cli.py",
+      "src/gpuwrf/optimize/__init__.py",
+      "src/gpuwrf/optimize/calibration.py",
+      "src/gpuwrf/optimize/cli.py",
+      "src/gpuwrf/optimize/data.py",
+      "src/gpuwrf/optimize/study.py"
+    ],
+    "reused_release_sha256": "2bf12cb8374d3a84a440e47dea4b77b0c7436108fc2ee2616bba6ec79b17962a",
+    "scope": "Only upstream host initialization guard and optimizer/version/CLI code differ from measured output fix. Observation seed precedes ownership guard; no timestep, physics, restart or output arithmetic change.",
+    "performance": "No added timestep kernels/temps/transfers. None-safe dispatcher uses existing output work; present history avoids bulk recomputation. Main ownership guard copies shared seeds once at init."
+  },
+  "prior_evidence": "Critic independently accepted original daily83, clock mutant and full WRF/native/default2bf evidence. Only output dispatcher changes; source-bound reuse, no repeated operator/trajectory work.",
+  "disclosure": "FON34 has 10 healthy passes +4 fixture precision failures; Q2 fixtures corrected to REAL32, without tolerance change. FON35 passes4; final composed FON38 passes5. Tests use actual committed observation initialization, daily loop, output consumers and NetCDF writers/readers; only expensive step and diagnostic numerical work stubbed. Main ownership guard retained after obs seeding. No full 2h numerical forecast claim.",
+  "limits": "GPU/long coupled forecast qualification remains pending; no GPU used."
+}

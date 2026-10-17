@@ -1,0 +1,455 @@
+{
+  "schema": "t-mprain-root-cause-v1",
+  "utc": "2026-10-14T00:25:33Z",
+  "source_commit": "c8e7ff26c98109b5e9b5c134e5c5404695a260a4",
+  "source_tree": "3c0eaaa58b4664040b7659472762316267d0824c",
+  "shared_test_source": "bc458b6ae",
+  "entire_src_tree_identical_to_299pass_candidate": true,
+  "product_files": {
+    "src/gpuwrf/coupling/scan_adapters.py": "ae692e21b714a2b06330977219928a0540ec472c7fc35b062b1e9fe761fd6634"
+  },
+  "changes": [
+    "Convert MP_SCAN all-phase RAINNCV to disjoint liquid increment at State boundary",
+    "WDM16/26 dry-theta prep and literal moist-theta finish",
+    "WDM16 water mask2",
+    "Accumulator math follows live carry kind"
+  ],
+  "scope": "Complete CPU root-cause/defect-fix review packet; GPU24h numerical qualification and global F2 justification remain open",
+  "tests": {
+    "focused": 41,
+    "shared_including_focused": 299,
+    "clean_archive_focused": 41,
+    "deletion_controls": {
+      "precip": {
+        "genuine_numeric_assertions": 14,
+        "setup_errors": 0,
+        "log_sha256": "b9cad379b68dc75e94b98654983fcfddc943e6e7dd2cc0576794e9bcb15e4a55"
+      },
+      "thermo": {
+        "genuine_numeric_assertions": 2,
+        "setup_errors": 0,
+        "log_sha256": "2bb45fbbbde344a8089421a84f59a234a8f867f96467e03d00aa69fdc8615cd4"
+      },
+      "water_mask": {
+        "genuine_numeric_assertions": 1,
+        "setup_errors": 0,
+        "log_sha256": "d6a912fe8014e811802566b9053b5b751400f536267b6cf9cc7817616d3ec689"
+      }
+    },
+    "frozen_release_jaxpr_sha256": "2bf12cb8374d3a84a440e47dea4b77b0c7436108fc2ee2616bba6ec79b17962a"
+  },
+  "retained_field_projection": {
+    "diagnostic_only": true,
+    "original_D6_FAIL_verdicts_unchanged": true,
+    "cases": {
+      "16": {
+        "max_raw_rmse_mm": 4.982346939298702,
+        "max_projected_rmse_mm": 3.5973509471457095,
+        "projected_above_frozen_1mm": 14
+      },
+      "24": {
+        "max_raw_rmse_mm": 6.626939620439575,
+        "max_projected_rmse_mm": 0.368955918638744,
+        "projected_above_frozen_1mm": 0
+      },
+      "26": {
+        "max_raw_rmse_mm": 5.035033704454369,
+        "max_projected_rmse_mm": 3.6937193459602975,
+        "projected_above_frozen_1mm": 14
+      },
+      "40": {
+        "max_raw_rmse_mm": 4.182827488047035,
+        "max_projected_rmse_mm": 0.18868069312957753,
+        "projected_above_frozen_1mm": 0
+      }
+    }
+  },
+  "cpu_one_hour": {
+    "source": "fe481a6edd2099b13e6ed246abad8c1176c0563e",
+    "scope": "CPU diagnosis only; final24hGPU and F2 justification pending",
+    "frames": 201,
+    "fields": {
+      "T": {
+        "h1": {
+          "rmse": 0.01090111452267683,
+          "max_abs": 0.62066650390625,
+          "max_index": [
+            16,
+            40,
+            40
+          ],
+          "actual_at_max": 10.751953125,
+          "reference_at_max": 11.37261962890625
+        },
+        "max_rmse": 0.011068175267732221
+      },
+      "THM": {
+        "h1": {
+          "rmse": 0.010170698484404947,
+          "max_abs": 0.5316162109375,
+          "max_index": [
+            16,
+            40,
+            40
+          ],
+          "actual_at_max": 11.46875,
+          "reference_at_max": 12.0003662109375
+        },
+        "max_rmse": 0.010267381396152138
+      },
+      "QVAPOR": {
+        "h1": {
+          "rmse": 2.5267617016435256e-06,
+          "max_abs": 0.0001807658700272441,
+          "max_index": [
+            16,
+            40,
+            40
+          ],
+          "actual_at_max": 0.0014342229114845395,
+          "reference_at_max": 0.0012534570414572954
+        },
+        "max_rmse": 2.9745177913939698e-06
+      },
+      "QCLOUD": {
+        "h1": {
+          "rmse": 1.376743386839138e-07,
+          "max_abs": 6.784197466913611e-06,
+          "max_index": [
+            13,
+            41,
+            10
+          ],
+          "actual_at_max": 4.002787318313494e-05,
+          "reference_at_max": 3.324367571622133e-05
+        },
+        "max_rmse": 1.442649443629888e-07
+      },
+      "QRAIN": {
+        "h1": {
+          "rmse": 8.292805873235762e-08,
+          "max_abs": 9.299678822571877e-06,
+          "max_index": [
+            7,
+            40,
+            37
+          ],
+          "actual_at_max": 0.0,
+          "reference_at_max": 9.299678822571877e-06
+        },
+        "max_rmse": 1.007318588852372e-07
+      },
+      "QICE": {
+        "h1": {
+          "rmse": 3.409803492878706e-06,
+          "max_abs": 0.00017342690352961654,
+          "max_index": [
+            17,
+            40,
+            36
+          ],
+          "actual_at_max": 1.49965480886749e-05,
+          "reference_at_max": 0.00018842345161829144
+        },
+        "max_rmse": 3.617579893111324e-06
+      },
+      "QSNOW": {
+        "h1": {
+          "rmse": 4.768257456092371e-06,
+          "max_abs": 0.000250913346917514,
+          "max_index": [
+            17,
+            41,
+            37
+          ],
+          "actual_at_max": 2.031157691817498e-06,
+          "reference_at_max": 0.0002529445046093315
+        },
+        "max_rmse": 6.7107602077309136e-06
+      },
+      "QGRAUP": {
+        "h1": {
+          "rmse": 4.0971009474171575e-08,
+          "max_abs": 2.067245077341795e-06,
+          "max_index": [
+            12,
+            41,
+            17
+          ],
+          "actual_at_max": 7.726137846475467e-05,
+          "reference_at_max": 7.519413338741288e-05
+        },
+        "max_rmse": 4.685805852513708e-08
+      },
+      "RAINNC": {
+        "h1": {
+          "rmse": 3.442651503345699e-06,
+          "max_abs": 9.008962661027908e-05,
+          "max_index": [
+            18,
+            29
+          ],
+          "actual_at_max": 0.0022466585505753756,
+          "reference_at_max": 0.0021565689239650965
+        },
+        "max_rmse": 3.442651503345699e-06
+      },
+      "SNOWNC": {
+        "h1": {
+          "rmse": 3.382872618979483e-06,
+          "max_abs": 9.008962661027908e-05,
+          "max_index": [
+            18,
+            29
+          ],
+          "actual_at_max": 0.0022466585505753756,
+          "reference_at_max": 0.0021565689239650965
+        },
+        "max_rmse": 3.382872618979483e-06
+      },
+      "GRAUPELNC": {
+        "h1": {
+          "rmse": 0.0,
+          "max_abs": 0.0,
+          "max_index": [
+            0,
+            0
+          ],
+          "actual_at_max": 0.0,
+          "reference_at_max": 0.0
+        },
+        "max_rmse": 0.0
+      }
+    },
+    "F2_nonfinite": 0,
+    "post_rk_negative_minima": {
+      "qc": {
+        "value": -5.179158435453246e-09,
+        "step": 73,
+        "flat_index": 26217,
+        "index_kji": [
+          14,
+          36,
+          9
+        ]
+      },
+      "qr": {
+        "value": -1.1222605280636344e-06,
+        "step": 165,
+        "flat_index": 19258,
+        "index_kji": [
+          10,
+          38,
+          22
+        ]
+      },
+      "qi": {
+        "value": -6.316893177427119e-07,
+        "step": 174,
+        "flat_index": 33218,
+        "index_kji": [
+          18,
+          34,
+          38
+        ]
+      },
+      "qs": {
+        "value": -1.371796429339156e-06,
+        "step": 135,
+        "flat_index": 33373,
+        "index_kji": [
+          18,
+          38,
+          25
+        ]
+      },
+      "qg": {
+        "value": -2.92953283853592e-09,
+        "step": 97,
+        "flat_index": 19245,
+        "index_kji": [
+          10,
+          38,
+          9
+        ]
+      },
+      "Nr": {
+        "value": -112.94405364990234,
+        "step": 197,
+        "flat_index": 13979,
+        "index_kji": [
+          7,
+          38,
+          35
+        ]
+      },
+      "Nc": {
+        "value": -6.106732368469238,
+        "step": 193,
+        "flat_index": 20924,
+        "index_kji": [
+          11,
+          36,
+          8
+        ]
+      },
+      "Nn": {
+        "value": -28139070.0,
+        "step": 127,
+        "flat_index": 22729,
+        "index_kji": [
+          12,
+          37,
+          7
+        ]
+      }
+    }
+  },
+  "component_resources": {
+    "platform": "cpu",
+    "gpu_executed": false,
+    "scope": "Changed accumulator artifact cost on CPU, not a GPU/forecast speed claim.",
+    "cache": "NONE GPUWRF_JAX_CACHE=0",
+    "shapes": {
+      "42x42": {
+        "old": {
+          "compile_s": 0.03525672107934952,
+          "warm_median_us": 43.835025280714035,
+          "argument_bytes": 70560,
+          "output_bytes": 35320,
+          "temporary_bytes": 0,
+          "alias_bytes": 0,
+          "optimized_f64_array_tokens": 20,
+          "hlo_sha256": "26e2f5f6e66fa8ebdac9d44b810b6741155a13f6488533077595504458a019a0"
+        },
+        "new": {
+          "compile_s": 0.06047631683759391,
+          "warm_median_us": 46.465080231428146,
+          "argument_bytes": 70560,
+          "output_bytes": 35320,
+          "temporary_bytes": 0,
+          "alias_bytes": 0,
+          "optimized_f64_array_tokens": 0,
+          "hlo_sha256": "1560d2651adbe2b98ce9fd33babf505e4d5df52cbcf8e081b25b8e9f3c86fc70"
+        }
+      },
+      "70x120": {
+        "old": {
+          "compile_s": 0.033956451108679175,
+          "warm_median_us": 57.955505326390266,
+          "argument_bytes": 336000,
+          "output_bytes": 168040,
+          "temporary_bytes": 0,
+          "alias_bytes": 0,
+          "optimized_f64_array_tokens": 20,
+          "hlo_sha256": "1fe24038546f031af82ad70dda269fbcda3c090f2a8118c39579e86365f03a44"
+        },
+        "new": {
+          "compile_s": 0.059429288841784,
+          "warm_median_us": 60.60057785362005,
+          "argument_bytes": 336000,
+          "output_bytes": 168040,
+          "temporary_bytes": 0,
+          "alias_bytes": 0,
+          "optimized_f64_array_tokens": 0,
+          "hlo_sha256": "5102fadea8652e02e90f8bb046e464a70643fdecbe9e6c4b15d7c26d2d066ff4"
+        }
+      },
+      "117x267": {
+        "old": {
+          "compile_s": 0.032349349930882454,
+          "warm_median_us": 107.31560178101063,
+          "argument_bytes": 1249560,
+          "output_bytes": 624820,
+          "temporary_bytes": 0,
+          "alias_bytes": 0,
+          "optimized_f64_array_tokens": 20,
+          "hlo_sha256": "97a6b0286abf239c1ae4001903dcfe0db4a743319e8df35329d8d76caf642ed5"
+        },
+        "new": {
+          "compile_s": 0.07166671101003885,
+          "warm_median_us": 133.85596685111523,
+          "argument_bytes": 1249560,
+          "output_bytes": 624820,
+          "temporary_bytes": 0,
+          "alias_bytes": 0,
+          "optimized_f64_array_tokens": 0,
+          "hlo_sha256": "6b20eb7ee0f777ac8fefb08abdb8f16af23e21da7bb518ddbd5f3820d0998f74"
+        }
+      }
+    },
+    "real_kind_component_identity": {
+      "equal": true,
+      "prior_sha256": "931cd645d83aee94b647f59c0b359e61a9e5c404d4d628284fc89dcb8cec3db1",
+      "final_sha256": "931cd645d83aee94b647f59c0b359e61a9e5c404d4d628284fc89dcb8cec3db1",
+      "scope": "accumulator component under CPU REAL context; prior fe481a6ed vs final carry-kind cleanup"
+    }
+  },
+  "requalification": {
+    "configs": [
+      16,
+      24,
+      26,
+      40
+    ],
+    "scope": "Swiss single-domain matched originalCPU-WRF24h, then manager composite/release gates",
+    "reference_dirs": {
+      "16": "<USER_HOME>/wrf_gpu2_lanes/s1-gpuqual/mp16/cpu",
+      "24": "<USER_HOME>/wrf_gpu2_lanes/s1-gpuqual/mp24/cpu",
+      "26": "<USER_HOME>/wrf_gpu2_lanes/s1-gpuqual/mp26/cpu",
+      "40": "<USER_HOME>/wrf_gpu2_lanes/s1-gpuqual/mp40/cpu"
+    },
+    "input_dirs": {
+      "16": "<USER_HOME>/wrf_gpu2_lanes/s1-gpuqual/mp16/input",
+      "24": "<USER_HOME>/wrf_gpu2_lanes/s1-gpuqual/mp24/input",
+      "26": "<USER_HOME>/wrf_gpu2_lanes/s1-gpuqual/mp26/input",
+      "40": "<USER_HOME>/wrf_gpu2_lanes/s1-gpuqual/mp40/input"
+    },
+    "scientific_gates": [
+      "Frozen D6 all25frames (62 bounded fields)",
+      "All originalCPU-WRF field inventory with t-mpout composition",
+      "Finite carry/fields and explicit F2 event attribution",
+      "Actual GPU backend assertion and E41 disclosed/gated per experimental/default policy",
+      "Necessary changed-artifact timing and memory"
+    ],
+    "qualification_status": "PENDING; retained projections and CPU1h are not finalGPU24h qualification",
+    "preserve": "Existing catalog notes, nested refusals and frozen tolerances; no upgrades here"
+  },
+  "carry_and_restart": "No new fields/structure/schema; native checkpoint tests pass; no repair/migration of old erroneous accumulations is claimed",
+  "limits": [
+    "F2 negative events include substantial number and moist excursions; not blanket roundoff or a matched-control verdict",
+    "Remaining density/geopotential approximations were not changed",
+    "CPU1h diagnostic source fe481a6ed precedes carry-kind cleanup; changed accumulator component has identical lower HLO under CPU REAL context; no fullGPU-byte identity claimed",
+    "MP14 and several other legacy adapters also lack dry-theta prep; outside assigned16/24/26/40 thermo scope"
+  ],
+  "artifacts": {
+    "RA01_retained_rain.json": {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-mprain/RA01_retained_rain.json",
+      "sha256": "3a435362676baa63b5831005d31d85904e422e67ec2aec009c8c58b4e10d60a6"
+    },
+    "RA06_coupled_steps.json": {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-mprain/RA06_coupled_steps.json",
+      "sha256": "22f41417c25b56a8caac4a8cce9977f258e9f68250b486b06cc3b3b32c4ad72a"
+    },
+    "RA07_final_shared.log": {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-mprain/RA07_final_shared.log",
+      "sha256": "c3ef27589d3918007e647becee3d1ce83a44e4471211a52eb2e00a96f8cd6197"
+    },
+    "RA08_bench.json": {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-mprain/RA08_bench.json",
+      "sha256": "a1a8d689a483ebbfbb527f5123571dcd649f6199ccc708c221fa8fd88f5fef19"
+    },
+    "RA10_release_identity.json": {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-mprain/RA10_release_identity.json",
+      "sha256": "917e94961a18dbb9edb994db826258a878b6ecf27a421d0932927855896514ec"
+    },
+    "RA12_archive.log": {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-mprain/RA12_archive.log",
+      "sha256": "a3af83a93516ceaf78f213a8d83ecb24d510e58d438604314aa43df045a6c95c"
+    },
+    "manifest.json": {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-mprain/step_cpu/manifest.json",
+      "sha256": "0849312f48a05350915881ec964b06419a1ee28b5743f495c1a9613e33a3b8e2"
+    }
+  }
+}

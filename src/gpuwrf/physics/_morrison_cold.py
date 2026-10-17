@@ -67,6 +67,10 @@ def _cold_branch(cold, t, qv, qc, qr, qi, qs, qg, nc, ni, ns, nr, ng,
     lamg, n0g, ng_c = _slope_generic(qg, ngw, C.CONS2, 1.0 / C.DG,
                                      C.LAMMING, C.LAMMAXG, QSMALL)
 
+    # WRF :2116-2120 and distribution setup write these numbers back before
+    # process rates (:2434 NSAGG). Use the existing corrected values here too.
+    ni, ns, nr, ng = ni_c, ns_c, nr_c, ng_c
+
     # droplet PGAM/LAMC/CDIST1
     qc_act = qc >= QSMALL
     dum_rho = p / (287.15 * t)

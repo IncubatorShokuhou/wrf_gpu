@@ -7,6 +7,31 @@ WRF v4 GPU port — see `PROJECT_PLAN.md`).
 
 The format is loosely based on [Keep a Changelog](https://keepachangelog.com/).
 
+## [0.4.0] — 2026-10-17 (release candidate)
+
+- Expanded WRF4.7.1 physics menu and optional DFI/nudging/urban/lake/ocean,
+  stochastic, turbine, tracer, diagnostic and nesting workflows; exact
+  combinations retain their documented restrictions.
+- Forecast/application products, observation verification, ensemble statistics,
+  doctor/provenance, onboarding, export, radar and regional optimisation/cycling.
+- Corrected species transport, dry/moist theta handoffs, precipitation
+  accounting, WSM/WDM radiation mediation, glacier physics and held diagnostics.
+- Smagorinsky km3 and mosaic are refused. CAM-MG11 uses merged
+  stock Triton3.6.x with offline STACK1240B FAIL disclosed; c89 scientific PASS/native E41 UNKNOWN. c05 has a paid source-specific D6 successor; c87 scientific PASS/E41FAIL; c88 full24h scientific PASS/E41FAIL; c11 full24h PASS/E41-disclosed. Default-program E41 remains hard; opt-in strict D6/inventory/NF0 with E41 failures disclosed, F2,
+  REPORT_ONLY fields and raw missing-field/precision failures remain disclosed.
+- Caller-audit class-A and F20/C5′ repairs integrated through batches38–62,
+  including Tiedtke ROOT1–3, SSiB SWDOWN and MYNN passive-number lowering.
+  Frozen defaults: Swiss3356e249 / PROD196aed9f; five F20 24h cases plus
+  C5′ Swiss/PROD/WN3-0227 D6/E413/3 and equal host-transfer counts.
+  Matched nsys −1.4% is profiling evidence, not S1/ABAB.
+- FINAL ledger00:26Z17October:66/66 accepted-scope scientific D6 PASS (65 full24h + c45 accepted6h). Source-bound E41
+  failures/unknown scans remain disclosed; no new S1/energy claim.
+  [Fixes](docs/release/FIXES_v0.4.0.md) · [FINAL rows](docs/release/FINAL_COMPOSITES_v0.4.0.md).
+- [Release draft](release_notes/RELEASE_NOTES_v0.4.0.md) ·
+  [Support matrix](docs/release/SUPPORT_MATRIX_v0.4.0.md) ·
+  [Upgrade](docs/release/UPGRADE_v0.4.0.md) ·
+  [Source/receipt inventory](proofs/r_docs040/EVIDENCE_SNAPSHOT.json).
+
 ## [0.3.4] - 2026-10-10
 
 - **Fix:** ≤0.3.3 `gpuwrf run` silently ignored non-default `mp_physics`, `bl_pbl_physics`, `sf_sfclay_physics`, `ra_lw/sw_physics` and the `&dynamics` damping/filter keys, running the release suite instead. v0.3.4 binds every option per domain or refuses it before compute. Re-run affected forecasts. Catalog MP/PBL/SW codes that crashed under the fp32 carry now run in explicit fp64 islands; `mp_physics` 24/26/28/40 are refused (root boundary species not carried). Omitted `&dynamics` keys now take WRF Registry defaults (epssm 0.1, w_damping 0, diff_6th_opt 0) instead of the old hard-wired 0.5/1/2; `diff_opt=2`/`km_opt=1,2,5` refused.
@@ -773,18 +798,20 @@ Removed one faithful Thompson sedimentation inefficiency. Full notes:
 Consolidated native real-init + the operational physics menu into a standalone
 forecast system. Full notes: [`RELEASE_NOTES_v0.9.0.md`](release_notes/RELEASE_NOTES_v0.9.0.md).
 
-## [0.4.0]
+## [0.4.0-realinit] — legacy pre-0.9 numbering (no tag)
 
 Native real-init (assembles `wrfinput`/`wrfbdy` from met_em-stage forcing,
-proven equivalent to `real.exe` at t=0). Accessible via the `v0.4.0` git tag.
+proven equivalent to `real.exe` at t=0). This milestone is not the 2026-10
+v0.4.0 release, and no `v0.4.0` tag marks it.
 
-## [0.3.0]
+## [0.3.0-metgrid] — legacy pre-0.9 numbering (no tag)
 
-Native metgrid. Accessible via the `v0.3.0` git tag.
+Native metgrid. The `v0.3.0` tag marks the 2026-10-04 release listed above,
+not this milestone.
 
-## [0.2.0] — Paper baseline
+## [0.2.0] — Paper baseline (legacy numbering, no tag)
 
-The stable paper-claims baseline. Accessible via the `v0.2.0` git tag.
+The stable paper-claims baseline.
 
 ## [0.1.0] — First validated release
 

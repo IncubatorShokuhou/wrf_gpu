@@ -25,9 +25,18 @@ EXPECTED = {
     'GPUWRF_MYNN_PHY_EXNER': '1',
     'GPUWRF_MYNN_PSIG_CLAMP': '1',
     'GPUWRF_MYNN_QNI_MIXING': '1',
+    # GPUWRF_MYNN_PLUME_CLOUD_BASE (BP91) was EXCLUDED at the v0.3.3 RC (manager 2026-10-06T07:12:53Z)
+    # under an open night-sea Sc candidate-phase fallback (CANDIDATE_HISTORY F0x). The shipped release
+    # RESTORES WRF plume cloud-base geometry (docs/release/V0.3.3.md: "the release restores WRF plume
+    # cloud-base geometry"; the smallest sufficient matched set was plume geometry + Sm/Sh floors +
+    # condensation) and registers the flag ON with the closure set (6e38cbf17 v0.3.3 release DELTA;
+    # GATES_FROZEN_FINAL33V 18-key DELTA; MYNNSET72 72 h guard PASS manager 01:03:20Z). Pin tracks the
+    # CURRENT registered selection; the exclusion is resolved.
+    'GPUWRF_MYNN_PLUME_CLOUD_BASE': '1',
 }
-# Pre-registered exclusion (open known issue: forecast night-sea Sc overgrowth when combined): must stay OFF by default.
-EXCLUDED = ('GPUWRF_MYNN_PLUME_CLOUD_BASE',)
+# No open-issue default remains excluded from the shipped v0.3.3 registry: the sole historical exclusion
+# (GPUWRF_MYNN_PLUME_CLOUD_BASE) is resolved and is now a registered default in EXPECTED above.
+EXCLUDED: tuple[str, ...] = ()
 
 
 @pytest.fixture(autouse=True)
@@ -54,12 +63,19 @@ def test_v033_default_values_are_the_registered_selections():
 
 
 def test_v033_excluded_flags_are_not_defaults(monkeypatch):
+    # Fail-closed companion: any flag listed in EXCLUDED must stay entirely absent from the defaults
+    # registry and must never be force-set by apply_fast_path_defaults. (EXCLUDED is empty now that the
+    # sole historical exclusion, GPUWRF_MYNN_PLUME_CLOUD_BASE, is resolved and registered in EXPECTED.)
     assert not set(EXCLUDED) & set(defaults.FAST_PATH_DEFAULTS)
     for key in EXCLUDED:
         monkeypatch.delenv(key, raising=False)
     monkeypatch.setenv('GPUWRF_FAST_DEFAULTS', '1')
+    before = set(os.environ)
     defaults.apply_fast_path_defaults()
     assert all(key not in os.environ for key in EXCLUDED)
+    # Fail-closed: apply writes only registered release keys, never a foreign/excluded one.
+    written = set(os.environ) - before
+    assert written <= set(defaults.FAST_PATH_DEFAULTS)
 
 
 @pytest.mark.parametrize('override', list(EXPECTED))

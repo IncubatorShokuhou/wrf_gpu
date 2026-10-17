@@ -83,12 +83,15 @@ def _landuse_season_for_run(run: Gen2Run, domain: str) -> tuple[int, int, float]
     return season, julday, cen_lat
 
 
-def load_prescribed_land_state(run: Gen2Run, domain: str = "d02", time: int = 0) -> PrescribedNoahMPState:
+def load_prescribed_land_state(run: Gen2Run, domain: str = "d02", time: int = 0,
+                               *, field_overrides=None) -> PrescribedNoahMPState:
     """Load the Option-A Noah-MP prescribed lower boundary from `wrfinput_d02`."""
 
     del time
     wrfinput_variables = set(run.wrfinput_variables(domain))
     loaded = {name: run.load_wrfinput(domain, name, lazy=False) for name in LAND_STATE_VARIABLES if name in wrfinput_variables}
+    if field_overrides is not None:
+        loaded.update({name:value for name,value in field_overrides.items() if name in LAND_STATE_VARIABLES})
     missing = sorted(set(LAND_STATE_VARIABLES) - set(loaded))
     required = {"XLAND", "LANDMASK", "IVGTYP", "ISLTYP", "LU_INDEX", "SST", "TSK", "SMOIS", "SH2O", "TSLB"}
     absent_required = sorted(required - set(loaded))

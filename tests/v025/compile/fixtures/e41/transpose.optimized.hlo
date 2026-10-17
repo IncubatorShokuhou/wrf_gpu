@@ -1,0 +1,14 @@
+HloModule e41_fixture, is_scheduled=true
+
+%transposing (input: f32[2,3]) -> f32[3,2] {
+  %input = f32[2,3]{1,0} parameter(0)
+  %zero = f32[] constant(0)
+  %full = f32[2,3]{1,0} broadcast(%zero), dimensions={}
+  %added = f32[2,3]{1,0} add(%input, %full)
+  ROOT %turned = f32[3,2]{1,0} transpose(%added), dimensions={1,0}
+}
+
+ENTRY %entry (input: f32[2,3]) -> f32[3,2] {
+  %input = f32[2,3]{1,0} parameter(0)
+  ROOT %fusion = f32[3,2]{1,0} fusion(%input), kind=kInput, calls=%transposing
+}

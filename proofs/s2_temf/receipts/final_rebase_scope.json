@@ -1,0 +1,18 @@
+{
+  "qualified_science_commit": "ec6263994114cc653632c958b44956f171c705e1",
+  "rebased_commit": "84020b732ef88d12fc9f37f758c659451a7ca727",
+  "main_base": "3ef9f2fbf3bdd73ecec35cd98acc4a5dacfe2378",
+  "all_changed_model_files": [
+    "src/gpuwrf/physics/ra_cam_lw.py",
+    "src/gpuwrf/physics/ra_cam_lw_abs.py"
+  ],
+  "all_other_model_files_byte_identical": true,
+  "unchanged_model_file_count": 536,
+  "bound_radiation_in_both_qualified_programs": {
+    "ra_lw_physics": 4,
+    "ra_sw_physics": 4
+  },
+  "selection_proof": "Changed CAM longwave helpers are only imported by physics.ra_cam; its runtime CAM initial/step calls are guarded by radiation option3. Measured RRTMG option4 programs exclude those helpers. Operational runtime, all couplers, TEMF kernels, input pipeline and RRTMG files are byte-identical. No repeated numerical validation required.",
+  "api": "surface_diagnostics optional callback API exactly unchanged vs84020b732; reserved for s2-keps",
+  "scope": "Source closure for selected/default programs; no claim for TEMF paired with CAM radiation3."
+}

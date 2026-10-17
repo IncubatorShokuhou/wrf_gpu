@@ -13,11 +13,14 @@ from jax import config
 import jax.numpy as jnp
 import numpy as np
 
+from gpuwrf.assets import asset_path, ensure_asset, is_present, load_or_lazy
+
 
 configure_jax_x64()
 
 ROOT = Path(__file__).resolve().parents[3]
-TABLE_ASSET = ROOT / "data" / "fixtures" / "thompson-tables-v1.npz"
+# Repo copy in a checkout, else the user table cache (fetched on first use, fail-closed; gpuwrf.assets).
+TABLE_ASSET = asset_path("data/fixtures/thompson-tables-v1.npz")
 
 
 ASSET_TABLE_NAMES = (
@@ -87,14 +90,14 @@ N_EFRW_C = 100
 def asset_sha256(path: Path = TABLE_ASSET) -> str:
     """Returns the table asset digest pinned in the fixture manifest."""
 
-    return hashlib.sha256(path.read_bytes()).hexdigest()
+    return hashlib.sha256(ensure_asset(path).read_bytes()).hexdigest()
 
 
 @lru_cache(maxsize=1)
 def _load_npz(path: str) -> dict[str, np.ndarray]:
     """Loads the extracted table asset once per interpreter."""
 
-    asset = Path(path)
+    asset = ensure_asset(Path(path))
     if not asset.exists():
         raise FileNotFoundError(f"missing Thompson table asset: {asset}")
     with np.load(asset, allow_pickle=False) as loaded:
@@ -127,7 +130,9 @@ def load_thompson_tables(path: Path = TABLE_ASSET) -> ThompsonTableBundle:
     )
 
 
-THOMPSON_TABLES = load_thompson_tables()
+# Loaded at import when the table file is installed; otherwise a stand-in that downloads on first
+# use (gpuwrf.assets.LazyTable: import never touches the network).
+THOMPSON_TABLES = load_or_lazy("THOMPSON_TABLES", (TABLE_ASSET,), load_thompson_tables)
 
 
 # ---------------------------------------------------------------------------
@@ -137,7 +142,7 @@ THOMPSON_TABLES = load_thompson_tables()
 # proofs/v015/cold_collection_oracle/extract_collision_tables.py.  These are the
 # Fortran-computed table contents, not a recomputation.
 # ---------------------------------------------------------------------------
-COLD_TABLE_ASSET = ROOT / "data" / "fixtures" / "thompson-cold-collection-v1.npz"
+COLD_TABLE_ASSET = asset_path("data/fixtures/thompson-cold-collection-v1.npz")
 
 COLD_TABLE_NAMES = (
     # qr_acr_qs: (ntb_s, ntb_t, ntb_r1, ntb_r)
@@ -179,23 +184,27 @@ class ColdCollectionTables(NamedTuple):
 
 
 def cold_tables_available(path: Path = COLD_TABLE_ASSET) -> bool:
-    """True when the cold-collection fixture is present (lane is gated off it)."""
+    """True when the cold-collection table file is installed now (presence only, never downloads).
 
-    return Path(path).exists()
+    Model runs do not consult this: COLD_COLLECTION_TABLES is always the loaded bundle or a
+    stand-in that downloads on first use or fails closed (never None, so cold collection
+    cannot silently switch off when the file is missing).
+    """
+
+    return is_present(Path(path))
 
 
 @lru_cache(maxsize=1)
-def load_cold_collection_tables(path: str = str(COLD_TABLE_ASSET)) -> ColdCollectionTables:
+def load_cold_collection_tables(path: str | Path = COLD_TABLE_ASSET) -> ColdCollectionTables:
     """Loads the cold-collection tables as fp64 JAX arrays (once per interpreter)."""
 
-    with np.load(Path(path), allow_pickle=False) as loaded:
+    with np.load(ensure_asset(Path(path)), allow_pickle=False) as loaded:
         arrays = {name: jnp.asarray(loaded[name], dtype=jnp.float64) for name in COLD_TABLE_NAMES}
     return ColdCollectionTables(**arrays)
 
 
-COLD_COLLECTION_TABLES = (
-    load_cold_collection_tables() if cold_tables_available() else None
-)
+# Registered table: never None (absent -> fetched on first use or fail closed, see cold_tables_available).
+COLD_COLLECTION_TABLES = load_or_lazy("COLD_COLLECTION_TABLES", (COLD_TABLE_ASSET,), load_cold_collection_tables)
 
 
 TABLE_SOURCE_LINES = {
@@ -225,7 +234,7 @@ TABLE_SOURCE_LINES = {
 # - tpi_qcfz/tni_qcfz at WRF's idx_n = 66: nic1 is INTEGER (:246), so idx_n = NINT(1+nbc*DLOG(Nt_c/t_Nc(1))/nic1)
 #   (:2278) is 66, not the idx_n = 59 planes stored in v1.
 # ---------------------------------------------------------------------------
-MIXED_PHASE_ASSET = ROOT / "data" / "fixtures" / "thompson-mixed-phase-v1.npz"
+MIXED_PHASE_ASSET = asset_path("data/fixtures/thompson-mixed-phase-v1.npz")
 IDX_BG1_OFFSET = (5 - 1) * 37 * 37
 
 
@@ -253,10 +262,10 @@ class WrfColdCollectionTables(NamedTuple):
     tcg_racg: jnp.ndarray
 
 
-def mixed_phase_numpy_tables(path: str = str(MIXED_PHASE_ASSET)) -> dict:
+def mixed_phase_numpy_tables(path: str | Path = MIXED_PHASE_ASSET) -> dict:
     """Effective tcg_racg (fixture layout (g1, g, r1, r)) and the idx_n = 66 qcfz planes (ntb_c, ntb_tc), fp64."""
 
-    with np.load(Path(path), allow_pickle=False) as loaded:
+    with np.load(ensure_asset(Path(path)), allow_pickle=False) as loaded:
         flat = loaded["tcg_racg"].reshape(-1, order="F")
         planes = {name: np.ascontiguousarray(loaded[name]) for name in ("tpi_qcfz", "tni_qcfz")}
     eff = np.concatenate([flat[IDX_BG1_OFFSET:], np.zeros(IDX_BG1_OFFSET)])
@@ -264,14 +273,14 @@ def mixed_phase_numpy_tables(path: str = str(MIXED_PHASE_ASSET)) -> dict:
 
 
 @lru_cache(maxsize=1)
-def load_wrf_cold_collection_tables(path: str = str(COLD_TABLE_ASSET)) -> WrfColdCollectionTables:
+def load_wrf_cold_collection_tables(path: str | Path = COLD_TABLE_ASSET) -> WrfColdCollectionTables:
     """Cold-collection tables for the mixed-phase flag as read-only HOST NumPy fp64 (loaded on first use, flag on).
 
     Never cache a jax value here: the first call can sit inside a jit trace, where jnp.asarray stages a tracer that
     the next program would reuse (F0, FINDINGS E206). thompson_column._mixed_phase_cold_tables converts per call.
     """
 
-    with np.load(Path(path), allow_pickle=False) as loaded:
+    with np.load(ensure_asset(Path(path)), allow_pickle=False) as loaded:
         host = {name: np.asarray(loaded[name], dtype=np.float64) for name in COLD_TABLE_NAMES}
     host.update(mixed_phase_numpy_tables())
     for value in host.values():

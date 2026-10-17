@@ -1,0 +1,200 @@
+{
+  "source_commit": "c3d4327bcd1f593895a164da6c06f6efb02d04f1",
+  "product_commit": "1e2ae174e",
+  "base_commit": "893bfa557",
+  "status": "READY-FOR-CRITIC CPU caller fix; final GPU c28 D6/E41 pending manager",
+  "hypothesis": "CAM inherited MYNN icloud_bl cloud replacement under BL9; WRF check_a_mundo explicitly disables it",
+  "gates": {
+    "caller_and_original_cloud_tests": "15 PASS (CR02 healthy14 + corrected MYNNcontrol CR04 one)",
+    "mutant": "CR05 actual source AST deletes 2 forwarding keywords: 1 numerical AssertionError, 0 setup errors; healthy CR02 counterpart passes",
+    "real_c28_original_wrf": {
+      "rows": 484,
+      "native_calls": 6292,
+      "branches": [
+        1.0,
+        2.0,
+        3.0
+      ],
+      "outside_input_ulp_envelope": 0,
+      "max_abs": 3.5762786865234375e-07,
+      "full_old_cloud_nonzero": 0,
+      "full_new_cloud_nonzero": 6737
+    },
+    "shared_consumers": "243 PASS CR10; contracts+restart+NetCDF included",
+    "operational_cam_spectral_smoke": "2 PASS CR11",
+    "default_identities": {
+      "Swiss": "f672a5739cb96e388b6b7a40ef80337bf81bdc14ef15268f3476e09d79fe055d",
+      "PROD_d01": "6fc715a2bd630934c4cf0f94427df19a527cbf429011c9ba5efe4d712744d27b"
+    },
+    "source_reuse": {
+      "source": "ae16a127e36a6d3c410d702202732c2af940cbc2",
+      "base": "893bfa557",
+      "changed_product_files": [
+        "src/gpuwrf/coupling/cam_radiation.py",
+        "src/gpuwrf/runtime/operational_mode.py"
+      ],
+      "operational_ast_after_removing_only_3_cam_kwargs": "EXACT",
+      "unchanged_physics_tree": "70fc77d994c85b166e81a5a1b314df570592abec",
+      "original_cloud_source_sha256": "4f0177189eb616c9220fe2022186dd6cc310666ca29977557dfe53d4409d733b",
+      "original_cloud_body_sha256": "145872818ec771c0a5c5b9db127580da68a4cb5820c8752a38a7b788473ed11a",
+      "reuse": "All spectral CAM LW/abs/SW code and WRF cloud-fraction code/fixtures unchanged; existing numerical gates retained",
+      "new_baked_inputs": [],
+      "new_carry_fields": [],
+      "gpu_evidence": "PENDING manager c28 final-candidate rerun"
+    }
+  },
+  "limitations": [
+    "No final forecast or actual GPU speed/VRAM/E41 claim before the manager c28 rerun",
+    "Other history fluxes can be RRTMG fallback diagnostics; GLW/SWDOWN use held CAM land fluxes",
+    "Initial CPU resource probe is clear-sky, all active cloud correctness is separately covered by CR12"
+  ],
+  "resources": {
+    "cpu_operand_median_ms": [
+      0.443398505,
+      0.898901999
+    ],
+    "cpu_operand_temp_bytes": [
+      1251024,
+      1871952
+    ],
+    "cpu_compile_s": [
+      0.6190471,
+      0.634624065
+    ],
+    "output_bytes_unchanged": 2857920,
+    "new_spectral_solves": 0,
+    "new_carry_fields": 0,
+    "new_baked_assets": 0,
+    "actual_gpu_cost": "UNKNOWN"
+  },
+  "receipts": {
+    "CR01_hourly.json": {
+      "sha256": "60def1f80fc3094c6a7b4841c9e997a16a037587178889cfab8da0d8733a3c9f",
+      "raw_sha256": "60def1f80fc3094c6a7b4841c9e997a16a037587178889cfab8da0d8733a3c9f",
+      "raw_bytes": 227884
+    },
+    "CR02.xml.gz": {
+      "sha256": "4d9d3a9995a9011d24e0473608bf0ec163dcfb1dc539ad1aca4a47a8dffecb18",
+      "raw_sha256": "7bbf867ecad9becb42df22ea01ef5a30a4f6a3478394ab6e419c3298095db47a",
+      "raw_bytes": 4809
+    },
+    "CR02.log.gz": {
+      "sha256": "c15d55f0a1daf63f4f6025d0ad93861253062467afe2139a591902ce33b2949a",
+      "raw_sha256": "72ee0d967499444b470cbc9e7dc670f618436181871d192bc97d7169f58eb993",
+      "raw_bytes": 3309
+    },
+    "CR03.xml.gz": {
+      "sha256": "4e9157505a8003d0be9a64e72c24917ed509af9647ab185e152ee552306a21ff",
+      "raw_sha256": "d5ac0e9ce93a3e67805fa6152cee0f0cd9e1de474a93d44da1c75b65a7a4b098",
+      "raw_bytes": 3355
+    },
+    "CR03_localize.json": {
+      "sha256": "e2304122965645d80e2564c7023e9857838a315841bdae7ce7cd3d53e69f097e",
+      "raw_sha256": "e2304122965645d80e2564c7023e9857838a315841bdae7ce7cd3d53e69f097e",
+      "raw_bytes": 554
+    },
+    "CR04.xml.gz": {
+      "sha256": "a224e0878317eb0bcdbc5648799ba5993d5de9ea84cf30cd96bffe361b28fb75",
+      "raw_sha256": "2bb1607d56eb36f14b3d9d302481eddfb5537f12ff732fd67482b15374790730",
+      "raw_bytes": 406
+    },
+    "CR04.log.gz": {
+      "sha256": "da3b13cba01a0a23ba92f3b1812ab65b76633499ecb20b396415c941c3b8f666",
+      "raw_sha256": "5a4eddce532230cf9990a4f74cc27188c53f149a89fae768ab8abae395c32ee9",
+      "raw_bytes": 1139
+    },
+    "CR05_mutant.xml.gz": {
+      "sha256": "7e426ace77de6e0213531c76e34b68c47b62432c36e6de5a590d8d6f70864bb1",
+      "raw_sha256": "8e2abc1b7d1c3e9825d7b6ebe696fbefa0a9a7e3ff636cf829fc2b3dc3e6f3f6",
+      "raw_bytes": 2697
+    },
+    "CR05_mutant.log.gz": {
+      "sha256": "1f51c53075f40079d7b85ce8d88593e3128499c36b7aa77a3029029c4e026885",
+      "raw_sha256": "d1bfbbb74590ee554f1d351225d9027db77bca779b5f1e6de4c2bbf47ad4bf67",
+      "raw_bytes": 3241
+    },
+    "CR06_resources.json": {
+      "sha256": "42af8c76642f9ac1d04dbf642ea93d27fa1c894deb1f5ac86d72ab4383e9e20d",
+      "raw_sha256": "42af8c76642f9ac1d04dbf642ea93d27fa1c894deb1f5ac86d72ab4383e9e20d",
+      "raw_bytes": 3389
+    },
+    "CR06_resources.log.gz": {
+      "sha256": "6bcbafd577f867591c41373c2f301ef9ef83a847dafb7e34820d3d14d04fc934",
+      "raw_sha256": "2cb711909fa9903ebcc89f8d0ef3ce16745cbe7930ad006e954476ddfb34b9af",
+      "raw_bytes": 1785
+    },
+    "CR07_swiss.json": {
+      "sha256": "8b9c8a4c35c83bd6f21bdfcd3365d91385fa1d8124817ab3c7b26b89aeef1c34",
+      "raw_sha256": "8b9c8a4c35c83bd6f21bdfcd3365d91385fa1d8124817ab3c7b26b89aeef1c34",
+      "raw_bytes": 1399
+    },
+    "CR07_swiss.log.gz": {
+      "sha256": "78ad0fca3863627eafd72340e1c33a36f2d57fa1d81b349bcdd49cb6b2344aaa",
+      "raw_sha256": "d3e9652056cb759337cc256437585e1e06b7b9dd3d417f7d293b97e8601d1dc2",
+      "raw_bytes": 1569
+    },
+    "CR08_prod.json": {
+      "sha256": "c24dc79f11a222e55e259e65290895fe407ef9b7893a7afb24d2ddf0ca50cc95",
+      "raw_sha256": "c24dc79f11a222e55e259e65290895fe407ef9b7893a7afb24d2ddf0ca50cc95",
+      "raw_bytes": 1391
+    },
+    "CR08_prod.log.gz": {
+      "sha256": "02eb69dd31b87d42d53a244aac1dccc5781363f869625927ddda1382183fc173",
+      "raw_sha256": "69357ddbab3b285d0d1258e9b4901f18d12200149aa1f0665c895f8aacc858c0",
+      "raw_bytes": 4752
+    },
+    "CR09_source.json": {
+      "sha256": "7484ec3b227f1c882e4a2c02a435447f2b6e1c446c9a03af9c72fb0899e5302d",
+      "raw_sha256": "7484ec3b227f1c882e4a2c02a435447f2b6e1c446c9a03af9c72fb0899e5302d",
+      "raw_bytes": 785
+    },
+    "CR10_shared.xml.gz": {
+      "sha256": "7774a6d4eea36c0dfd277204cd89412a3413749e0d6aeaf769b11c730f000bc9",
+      "raw_sha256": "25a6376fecfe0473a518ddb8dc03d41ddeb0a10603342fba98d5b2c0eef909df",
+      "raw_bytes": 32563
+    },
+    "CR10_shared.log.gz": {
+      "sha256": "6c93f35aa719a43d2bf6cc9dd151e32d03a2c8c9f44016e6e0234ea4cf4c30a0",
+      "raw_sha256": "8ba8c6a73ee6e4ac69215aa49b9d969452c39e892731aadc856379359b2b57c3",
+      "raw_bytes": 1613
+    },
+    "CR11_cam_smoke.xml.gz": {
+      "sha256": "b22b2b6d0cd8b1d3779e04a4a32ef66906e94f58acad713d8c92052f97f264fd",
+      "raw_sha256": "4d1b96659687cb0af60428a1ae72662aa62a955d50bf5121c84ba6855bd0834e",
+      "raw_bytes": 496
+    },
+    "CR11_cam_smoke.log.gz": {
+      "sha256": "2ea8dcbe8a46c95c632749a3a9db7681744936b38e21a734a08363101787eb92",
+      "raw_sha256": "f28f4ee06562da79ab214d38b1fc412bf56361f90b455d82331c435edf4d01fe",
+      "raw_bytes": 1207
+    },
+    "CR12_real_cloud.json": {
+      "sha256": "8d22e0b3ff6518acb2e7999d61d96f631442613f44b5b846330eb8e0867b6a9c",
+      "raw_sha256": "8d22e0b3ff6518acb2e7999d61d96f631442613f44b5b846330eb8e0867b6a9c",
+      "raw_bytes": 1419
+    },
+    "CR12_real_cloud.npz": {
+      "sha256": "e2e818796b211bb44badcd676fb5d21257ff5ccc3e572a85b5f8ffe50c50fca2",
+      "raw_sha256": "e2e818796b211bb44badcd676fb5d21257ff5ccc3e572a85b5f8ffe50c50fca2",
+      "raw_bytes": 8176
+    },
+    "CR12_real_cloud.log.gz": {
+      "sha256": "b80bf67c0cc0e0235e40bbd9bc278d68011deb1f9f53928b12a950b7bc86978a",
+      "raw_sha256": "220eb18e9dbf363afbaed08bd36a973d65eebd14894988fbbde0e85869858971",
+      "raw_bytes": 2410
+    },
+    "CR13_rebased_source.json": {
+      "sha256": "078b8e92e8a6e5e66b16e053249c3eff00e2cb9cd41dbbb937a9ac6f9568778a",
+      "raw_sha256": "078b8e92e8a6e5e66b16e053249c3eff00e2cb9cd41dbbb937a9ac6f9568778a",
+      "raw_bytes": 785
+    },
+    "CR13_archive_reuse.json": {
+      "sha256": "c6d89d29f8d9ad4ee56d90ec45cef474f070b61f1a500830acd1487aa65405e3",
+      "raw_sha256": "c6d89d29f8d9ad4ee56d90ec45cef474f070b61f1a500830acd1487aa65405e3",
+      "raw_bytes": 966
+    }
+  },
+  "rebased_review_source": "6758cc16a9e2baa4da457b3a5f0322981e2e0676",
+  "final_product_commit": "560b55fae",
+  "validation_reuse": "Rebase adds manager critic-contract only; whole src and tests Git trees BYTE to measured c3d4327bc. CR13 seals archive/23 receipts; no numerical repeat."
+}

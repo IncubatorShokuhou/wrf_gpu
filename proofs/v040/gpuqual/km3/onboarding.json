@@ -1,0 +1,904 @@
+{
+  "plan": {
+    "schema": "GpuwrfRegionPlan",
+    "schema_version": 1,
+    "bbox": [
+      -4.65,
+      39.69,
+      -2.75,
+      41.14
+    ],
+    "domain_bbox": [
+      -5.932801113460195,
+      38.69762021048073,
+      -1.4671988865398058,
+      42.097254972258504
+    ],
+    "resolution_km": 9.0,
+    "nx": 42,
+    "ny": 42,
+    "e_we": 43,
+    "e_sn": 43,
+    "e_vert": 45,
+    "dx_m": 9000.0,
+    "time_step": 50,
+    "map_proj": "mercator",
+    "truelat1": 40.415,
+    "ref_lat": 40.418906239961025,
+    "ref_lon": -3.7,
+    "start": "2026-10-13_00:00:00",
+    "end": "2026-10-14_00:00:00",
+    "hours": 24,
+    "boundary_hours": [
+      0,
+      3,
+      6,
+      9,
+      12,
+      15,
+      18,
+      21,
+      24
+    ],
+    "vram_gib": 12,
+    "memory_estimate_gib": 1.2072268500241812,
+    "memory_label": "I",
+    "gpu_qualified": false,
+    "cu_physics": 1,
+    "source": "gfs"
+  },
+  "status": "PREPARED_CPU_ONLY",
+  "source": "gfs",
+  "executables": {
+    "geogrid": "<DATA_ROOT>/canairy_meteo/artifacts/wrf_src/WPS/install_gen2_dmpar/bin/geogrid",
+    "ungrib": "<DATA_ROOT>/canairy_meteo/artifacts/wrf_src/WPS/install_gen2_dmpar/bin/ungrib",
+    "metgrid": "<DATA_ROOT>/canairy_meteo/artifacts/wrf_src/WPS/install_gen2_dmpar/bin/metgrid",
+    "real": "<USER_HOME>/wrf_gpu2_lanes/s1-gpuqual/pristine/real.exe"
+  },
+  "forcing": [
+    {
+      "lead_hours": 0,
+      "path": "<USER_HOME>/wrf_gpu2_lanes/s1-gpuqual/km3_madrid/input/grib/gfs.f000.grib2",
+      "url": "https://nomads.ncep.noaa.gov/cgi-bin/filter_gfs_0p25.pl?file=gfs.t00z.pgrb2.0p25.f000&dir=%2Fgfs.20261013%2F00%2Fatmos&all_lev=on&all_var=on&subregion=&leftlon=-7.932801113460195&rightlon=0.5328011134601942&bottomlat=36.69762021048073&toplat=44.097254972258504",
+      "bytes": 881190,
+      "sha256": "184d07bfa03345034d565ce9f5d9e3edabd3f966fa1381b14aa47e1fd60304da",
+      "field_report": {
+        "status": "PASS",
+        "missing": [],
+        "common_pressure_levels_hpa": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          7,
+          10,
+          15,
+          20,
+          30,
+          40,
+          50,
+          70,
+          100,
+          150,
+          200,
+          250,
+          300,
+          350,
+          400,
+          450,
+          500,
+          550,
+          600,
+          650,
+          700,
+          750,
+          800,
+          850,
+          900,
+          925,
+          950,
+          975,
+          1000
+        ],
+        "soil_depths_m": {
+          "soil_temperature": [
+            [
+              0.0,
+              0.1
+            ],
+            [
+              0.1,
+              0.4
+            ],
+            [
+              0.4,
+              1.0
+            ],
+            [
+              1.0,
+              2.0
+            ]
+          ],
+          "soil_moisture": [
+            [
+              0.0,
+              0.1
+            ],
+            [
+              0.1,
+              0.4
+            ],
+            [
+              0.4,
+              1.0
+            ],
+            [
+              1.0,
+              2.0
+            ]
+          ]
+        },
+        "valid_time": "2026-10-13T00:00:00",
+        "messages": 696,
+        "note": "Metadata completeness only; no soil replacement or fabricated fields"
+      }
+    },
+    {
+      "lead_hours": 3,
+      "path": "<USER_HOME>/wrf_gpu2_lanes/s1-gpuqual/km3_madrid/input/grib/gfs.f003.grib2",
+      "url": "https://nomads.ncep.noaa.gov/cgi-bin/filter_gfs_0p25.pl?file=gfs.t00z.pgrb2.0p25.f003&dir=%2Fgfs.20261013%2F00%2Fatmos&all_lev=on&all_var=on&subregion=&leftlon=-7.932801113460195&rightlon=0.5328011134601942&bottomlat=36.69762021048073&toplat=44.097254972258504",
+      "bytes": 927097,
+      "sha256": "7cb648a5e26510fd3ef3190eeacd9c337afec4d6f8a78f1ece5e1300502cb64d",
+      "field_report": {
+        "status": "PASS",
+        "missing": [],
+        "common_pressure_levels_hpa": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          7,
+          10,
+          15,
+          20,
+          30,
+          40,
+          50,
+          70,
+          100,
+          150,
+          200,
+          250,
+          300,
+          350,
+          400,
+          450,
+          500,
+          550,
+          600,
+          650,
+          700,
+          750,
+          800,
+          850,
+          900,
+          925,
+          950,
+          975,
+          1000
+        ],
+        "soil_depths_m": {
+          "soil_temperature": [
+            [
+              0.0,
+              0.1
+            ],
+            [
+              0.1,
+              0.4
+            ],
+            [
+              0.4,
+              1.0
+            ],
+            [
+              1.0,
+              2.0
+            ]
+          ],
+          "soil_moisture": [
+            [
+              0.0,
+              0.1
+            ],
+            [
+              0.1,
+              0.4
+            ],
+            [
+              0.4,
+              1.0
+            ],
+            [
+              1.0,
+              2.0
+            ]
+          ]
+        },
+        "valid_time": "2026-10-13T03:00:00",
+        "messages": 743,
+        "note": "Metadata completeness only; no soil replacement or fabricated fields"
+      }
+    },
+    {
+      "lead_hours": 6,
+      "path": "<USER_HOME>/wrf_gpu2_lanes/s1-gpuqual/km3_madrid/input/grib/gfs.f006.grib2",
+      "url": "https://nomads.ncep.noaa.gov/cgi-bin/filter_gfs_0p25.pl?file=gfs.t00z.pgrb2.0p25.f006&dir=%2Fgfs.20261013%2F00%2Fatmos&all_lev=on&all_var=on&subregion=&leftlon=-7.932801113460195&rightlon=0.5328011134601942&bottomlat=36.69762021048073&toplat=44.097254972258504",
+      "bytes": 933450,
+      "sha256": "1d77fbf9adedd8c62708bd098de7a04c4fc1de8e89bcce486d7cd6eca0fc96ee",
+      "field_report": {
+        "status": "PASS",
+        "missing": [],
+        "common_pressure_levels_hpa": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          7,
+          10,
+          15,
+          20,
+          30,
+          40,
+          50,
+          70,
+          100,
+          150,
+          200,
+          250,
+          300,
+          350,
+          400,
+          450,
+          500,
+          550,
+          600,
+          650,
+          700,
+          750,
+          800,
+          850,
+          900,
+          925,
+          950,
+          975,
+          1000
+        ],
+        "soil_depths_m": {
+          "soil_temperature": [
+            [
+              0.0,
+              0.1
+            ],
+            [
+              0.1,
+              0.4
+            ],
+            [
+              0.4,
+              1.0
+            ],
+            [
+              1.0,
+              2.0
+            ]
+          ],
+          "soil_moisture": [
+            [
+              0.0,
+              0.1
+            ],
+            [
+              0.1,
+              0.4
+            ],
+            [
+              0.4,
+              1.0
+            ],
+            [
+              1.0,
+              2.0
+            ]
+          ]
+        },
+        "valid_time": "2026-10-13T06:00:00",
+        "messages": 743,
+        "note": "Metadata completeness only; no soil replacement or fabricated fields"
+      }
+    },
+    {
+      "lead_hours": 9,
+      "path": "<USER_HOME>/wrf_gpu2_lanes/s1-gpuqual/km3_madrid/input/grib/gfs.f009.grib2",
+      "url": "https://nomads.ncep.noaa.gov/cgi-bin/filter_gfs_0p25.pl?file=gfs.t00z.pgrb2.0p25.f009&dir=%2Fgfs.20261013%2F00%2Fatmos&all_lev=on&all_var=on&subregion=&leftlon=-7.932801113460195&rightlon=0.5328011134601942&bottomlat=36.69762021048073&toplat=44.097254972258504",
+      "bytes": 934226,
+      "sha256": "235d079eda2148e8b9be2f92659a644686f5d4bcdc9b62cdee28e3dc13b54a2c",
+      "field_report": {
+        "status": "PASS",
+        "missing": [],
+        "common_pressure_levels_hpa": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          7,
+          10,
+          15,
+          20,
+          30,
+          40,
+          50,
+          70,
+          100,
+          150,
+          200,
+          250,
+          300,
+          350,
+          400,
+          450,
+          500,
+          550,
+          600,
+          650,
+          700,
+          750,
+          800,
+          850,
+          900,
+          925,
+          950,
+          975,
+          1000
+        ],
+        "soil_depths_m": {
+          "soil_temperature": [
+            [
+              0.0,
+              0.1
+            ],
+            [
+              0.1,
+              0.4
+            ],
+            [
+              0.4,
+              1.0
+            ],
+            [
+              1.0,
+              2.0
+            ]
+          ],
+          "soil_moisture": [
+            [
+              0.0,
+              0.1
+            ],
+            [
+              0.1,
+              0.4
+            ],
+            [
+              0.4,
+              1.0
+            ],
+            [
+              1.0,
+              2.0
+            ]
+          ]
+        },
+        "valid_time": "2026-10-13T09:00:00",
+        "messages": 743,
+        "note": "Metadata completeness only; no soil replacement or fabricated fields"
+      }
+    },
+    {
+      "lead_hours": 12,
+      "path": "<USER_HOME>/wrf_gpu2_lanes/s1-gpuqual/km3_madrid/input/grib/gfs.f012.grib2",
+      "url": "https://nomads.ncep.noaa.gov/cgi-bin/filter_gfs_0p25.pl?file=gfs.t00z.pgrb2.0p25.f012&dir=%2Fgfs.20261013%2F00%2Fatmos&all_lev=on&all_var=on&subregion=&leftlon=-7.932801113460195&rightlon=0.5328011134601942&bottomlat=36.69762021048073&toplat=44.097254972258504",
+      "bytes": 946363,
+      "sha256": "09682ed1dac75643675316e969e9125c0dfec20736ba1526a9ca39b31a6c6e1b",
+      "field_report": {
+        "status": "PASS",
+        "missing": [],
+        "common_pressure_levels_hpa": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          7,
+          10,
+          15,
+          20,
+          30,
+          40,
+          50,
+          70,
+          100,
+          150,
+          200,
+          250,
+          300,
+          350,
+          400,
+          450,
+          500,
+          550,
+          600,
+          650,
+          700,
+          750,
+          800,
+          850,
+          900,
+          925,
+          950,
+          975,
+          1000
+        ],
+        "soil_depths_m": {
+          "soil_temperature": [
+            [
+              0.0,
+              0.1
+            ],
+            [
+              0.1,
+              0.4
+            ],
+            [
+              0.4,
+              1.0
+            ],
+            [
+              1.0,
+              2.0
+            ]
+          ],
+          "soil_moisture": [
+            [
+              0.0,
+              0.1
+            ],
+            [
+              0.1,
+              0.4
+            ],
+            [
+              0.4,
+              1.0
+            ],
+            [
+              1.0,
+              2.0
+            ]
+          ]
+        },
+        "valid_time": "2026-10-13T12:00:00",
+        "messages": 743,
+        "note": "Metadata completeness only; no soil replacement or fabricated fields"
+      }
+    },
+    {
+      "lead_hours": 15,
+      "path": "<USER_HOME>/wrf_gpu2_lanes/s1-gpuqual/km3_madrid/input/grib/gfs.f015.grib2",
+      "url": "https://nomads.ncep.noaa.gov/cgi-bin/filter_gfs_0p25.pl?file=gfs.t00z.pgrb2.0p25.f015&dir=%2Fgfs.20261013%2F00%2Fatmos&all_lev=on&all_var=on&subregion=&leftlon=-7.932801113460195&rightlon=0.5328011134601942&bottomlat=36.69762021048073&toplat=44.097254972258504",
+      "bytes": 958474,
+      "sha256": "c4efff926590f8dd00007b0660ce4e689d84a9fdb7ddfbd4d401a98007fee785",
+      "field_report": {
+        "status": "PASS",
+        "missing": [],
+        "common_pressure_levels_hpa": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          7,
+          10,
+          15,
+          20,
+          30,
+          40,
+          50,
+          70,
+          100,
+          150,
+          200,
+          250,
+          300,
+          350,
+          400,
+          450,
+          500,
+          550,
+          600,
+          650,
+          700,
+          750,
+          800,
+          850,
+          900,
+          925,
+          950,
+          975,
+          1000
+        ],
+        "soil_depths_m": {
+          "soil_temperature": [
+            [
+              0.0,
+              0.1
+            ],
+            [
+              0.1,
+              0.4
+            ],
+            [
+              0.4,
+              1.0
+            ],
+            [
+              1.0,
+              2.0
+            ]
+          ],
+          "soil_moisture": [
+            [
+              0.0,
+              0.1
+            ],
+            [
+              0.1,
+              0.4
+            ],
+            [
+              0.4,
+              1.0
+            ],
+            [
+              1.0,
+              2.0
+            ]
+          ]
+        },
+        "valid_time": "2026-10-13T15:00:00",
+        "messages": 743,
+        "note": "Metadata completeness only; no soil replacement or fabricated fields"
+      }
+    },
+    {
+      "lead_hours": 18,
+      "path": "<USER_HOME>/wrf_gpu2_lanes/s1-gpuqual/km3_madrid/input/grib/gfs.f018.grib2",
+      "url": "https://nomads.ncep.noaa.gov/cgi-bin/filter_gfs_0p25.pl?file=gfs.t00z.pgrb2.0p25.f018&dir=%2Fgfs.20261013%2F00%2Fatmos&all_lev=on&all_var=on&subregion=&leftlon=-7.932801113460195&rightlon=0.5328011134601942&bottomlat=36.69762021048073&toplat=44.097254972258504",
+      "bytes": 964868,
+      "sha256": "50a6e52eefa766c4ef75f614dada33f2f461fd96709617bbd4b09c9e57315e65",
+      "field_report": {
+        "status": "PASS",
+        "missing": [],
+        "common_pressure_levels_hpa": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          7,
+          10,
+          15,
+          20,
+          30,
+          40,
+          50,
+          70,
+          100,
+          150,
+          200,
+          250,
+          300,
+          350,
+          400,
+          450,
+          500,
+          550,
+          600,
+          650,
+          700,
+          750,
+          800,
+          850,
+          900,
+          925,
+          950,
+          975,
+          1000
+        ],
+        "soil_depths_m": {
+          "soil_temperature": [
+            [
+              0.0,
+              0.1
+            ],
+            [
+              0.1,
+              0.4
+            ],
+            [
+              0.4,
+              1.0
+            ],
+            [
+              1.0,
+              2.0
+            ]
+          ],
+          "soil_moisture": [
+            [
+              0.0,
+              0.1
+            ],
+            [
+              0.1,
+              0.4
+            ],
+            [
+              0.4,
+              1.0
+            ],
+            [
+              1.0,
+              2.0
+            ]
+          ]
+        },
+        "valid_time": "2026-10-13T18:00:00",
+        "messages": 743,
+        "note": "Metadata completeness only; no soil replacement or fabricated fields"
+      }
+    },
+    {
+      "lead_hours": 21,
+      "path": "<USER_HOME>/wrf_gpu2_lanes/s1-gpuqual/km3_madrid/input/grib/gfs.f021.grib2",
+      "url": "https://nomads.ncep.noaa.gov/cgi-bin/filter_gfs_0p25.pl?file=gfs.t00z.pgrb2.0p25.f021&dir=%2Fgfs.20261013%2F00%2Fatmos&all_lev=on&all_var=on&subregion=&leftlon=-7.932801113460195&rightlon=0.5328011134601942&bottomlat=36.69762021048073&toplat=44.097254972258504",
+      "bytes": 949004,
+      "sha256": "e5d14802ad5421c1c2c8183f6775c36ba3818a5b33a3ef61252fc5cdbf4cc313",
+      "field_report": {
+        "status": "PASS",
+        "missing": [],
+        "common_pressure_levels_hpa": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          7,
+          10,
+          15,
+          20,
+          30,
+          40,
+          50,
+          70,
+          100,
+          150,
+          200,
+          250,
+          300,
+          350,
+          400,
+          450,
+          500,
+          550,
+          600,
+          650,
+          700,
+          750,
+          800,
+          850,
+          900,
+          925,
+          950,
+          975,
+          1000
+        ],
+        "soil_depths_m": {
+          "soil_temperature": [
+            [
+              0.0,
+              0.1
+            ],
+            [
+              0.1,
+              0.4
+            ],
+            [
+              0.4,
+              1.0
+            ],
+            [
+              1.0,
+              2.0
+            ]
+          ],
+          "soil_moisture": [
+            [
+              0.0,
+              0.1
+            ],
+            [
+              0.1,
+              0.4
+            ],
+            [
+              0.4,
+              1.0
+            ],
+            [
+              1.0,
+              2.0
+            ]
+          ]
+        },
+        "valid_time": "2026-10-13T21:00:00",
+        "messages": 743,
+        "note": "Metadata completeness only; no soil replacement or fabricated fields"
+      }
+    },
+    {
+      "lead_hours": 24,
+      "path": "<USER_HOME>/wrf_gpu2_lanes/s1-gpuqual/km3_madrid/input/grib/gfs.f024.grib2",
+      "url": "https://nomads.ncep.noaa.gov/cgi-bin/filter_gfs_0p25.pl?file=gfs.t00z.pgrb2.0p25.f024&dir=%2Fgfs.20261013%2F00%2Fatmos&all_lev=on&all_var=on&subregion=&leftlon=-7.932801113460195&rightlon=0.5328011134601942&bottomlat=36.69762021048073&toplat=44.097254972258504",
+      "bytes": 942523,
+      "sha256": "78463fb6ad46398a817838916eb686fa8dd3d1c2c010c511ab7d8ab4ee85e282",
+      "field_report": {
+        "status": "PASS",
+        "missing": [],
+        "common_pressure_levels_hpa": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          7,
+          10,
+          15,
+          20,
+          30,
+          40,
+          50,
+          70,
+          100,
+          150,
+          200,
+          250,
+          300,
+          350,
+          400,
+          450,
+          500,
+          550,
+          600,
+          650,
+          700,
+          750,
+          800,
+          850,
+          900,
+          925,
+          950,
+          975,
+          1000
+        ],
+        "soil_depths_m": {
+          "soil_temperature": [
+            [
+              0.0,
+              0.1
+            ],
+            [
+              0.1,
+              0.4
+            ],
+            [
+              0.4,
+              1.0
+            ],
+            [
+              1.0,
+              2.0
+            ]
+          ],
+          "soil_moisture": [
+            [
+              0.0,
+              0.1
+            ],
+            [
+              0.1,
+              0.4
+            ],
+            [
+              0.4,
+              1.0
+            ],
+            [
+              1.0,
+              2.0
+            ]
+          ]
+        },
+        "valid_time": "2026-10-14T00:00:00",
+        "messages": 743,
+        "note": "Metadata completeness only; no soil replacement or fabricated fields"
+      }
+    }
+  ],
+  "real_check": {
+    "status": "PASS",
+    "files": [
+      {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/s1-gpuqual/km3_madrid/input/wrfinput_d01",
+        "sha256": "3b2a89e63040bb108ba49e3e5f2c1bb24de0790011977b3c0a83b1e5305b7b48",
+        "times": [
+          "2026-10-13_00:00:00"
+        ],
+        "variables": 320
+      },
+      {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/s1-gpuqual/km3_madrid/input/wrfbdy_d01",
+        "sha256": "0f888de11c777c6c5c26372ace5a15b20993ca27c393b5dfabe6842600498463",
+        "times": [
+          "2026-10-13_00:00:00",
+          "2026-10-13_03:00:00",
+          "2026-10-13_06:00:00",
+          "2026-10-13_09:00:00",
+          "2026-10-13_12:00:00",
+          "2026-10-13_15:00:00",
+          "2026-10-13_18:00:00",
+          "2026-10-13_21:00:00"
+        ],
+        "variables": 139
+      }
+    ]
+  },
+  "num_metgrid_levels": 34,
+  "forecast_argv": [
+    "<USER_HOME>/miniconda3/bin/python",
+    "-m",
+    "gpuwrf.cli",
+    "run",
+    "--input-dir",
+    "<USER_HOME>/wrf_gpu2_lanes/s1-gpuqual/km3_madrid/input",
+    "--output-dir",
+    "<USER_HOME>/wrf_gpu2_lanes/s1-gpuqual/km3_madrid/input/forecast",
+    "--domain",
+    "d01",
+    "--hours",
+    "24",
+    "--scratch-dir",
+    "<USER_HOME>/wrf_gpu2_lanes/s1-gpuqual/km3_madrid/input/scratch"
+  ],
+  "qualification_overrides": {
+    "diff_opt": 2,
+    "km_opt": 3
+  },
+  "geography_reused_read_only": "<DATA_ROOT>/canairy_meteo/artifacts/wps_geog/WPS_GEOG_LOW_RES",
+  "original_real_sha256": "f96715e08dc6fa6f3781782652233825ba4d667184594fe4c5a4a8f5592534ce",
+  "private_real_sha256": "f96715e08dc6fa6f3781782652233825ba4d667184594fe4c5a4a8f5592534ce"
+}

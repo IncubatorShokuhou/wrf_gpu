@@ -460,6 +460,10 @@ class SurfaceLayerDiagnostics(NamedTuple):
     # 2-m exchange coefficients for diagnostics only (module_sf_mynn.F:1090-1091).
     chs2: object = None  # UST*KARMAN/PSIT2
     cqs2: object = None  # UST*KARMAN/PSIQ2
+    # CHS = UST*KARMAN/PSIT (module_sf_mynn.F:1081); only exported on request
+    # (with_chs=True, sf_urban_physics=1 SLUCM), None otherwise.
+    chs: object = None
+    ustm: object = None  # WRF friction u* without convective gustiness; SMS only.
 
 
 def _field(state, name: str, default):
@@ -507,7 +511,8 @@ def _mynn_surface_exner_kwargs(state, dtype):
     return {} if exner is None else {"exner": _surface(jnp.asarray(exner, dtype=dtype))}
 
 
-def mynn_driver_surface_fluxes(hfx, qfx, rho1, qv1, tsk, p1, *, exner=None) -> MynnDriverSurfaceFluxes:
+def mynn_driver_surface_fluxes(hfx, qfx, rho1, qv1, tsk, p1, *, exner=None,
+                               pbl_limits=False) -> MynnDriverSurfaceFluxes:
     """WRF MYNN-PBL kinematic surface fluxes, formed inside the MYNN driver from HFX/QFX (lowest level).
 
     Same statements and order as pristine WRF, arithmetic in the dtype of ``hfx`` (REAL on the native path):
@@ -516,8 +521,18 @@ def mynn_driver_surface_fluxes(hfx, qfx, rho1, qv1, tsk, p1, *, exner=None) -> M
     ``flqv = qfx/rho1(kts)`` (:869); ``th_sfc = ts/ex1(kts)`` with ``ts = TSK`` (:871);
     ``flt = hfx/(rho1(kts)*cpm) - xlvcp*flqc/ex1(kts)`` with ``flqc = zero`` (:870, :875);
     ``fltv = flt + flqv*p608*th_sfc`` (:876), ``p608 = r_v/r_d - 1.`` in REAL (module_model_constants).
+
+    ``pbl_limits``: the MYNN driver's own copies ``hfx1``/``qfx1`` are limited to [-600, 1200] W m-2 and
+    [-3e-4, 9e-4] kg m-2 s-1 first (module_bl_mynnedmf_driver.F:381-397); grid%hfx/qfx stay unlimited. Only
+    callers whose result is exclusively the MYNN PBL input may pass ``True``.
     """
     c = lambda value: _lit(hfx, value)
+    if pbl_limits:
+        cq = lambda value: _lit(qfx, value)
+        hfx = jnp.where(hfx > c(1200.0), c(1200.0), hfx)
+        hfx = jnp.where(hfx < c(-600.0), c(-600.0), hfx)
+        qfx = jnp.where(qfx > cq(9e-4), cq(9e-4), qfx)
+        qfx = jnp.where(qfx < cq(-3e-4), cq(-3e-4), qfx)
     sqv1 = qv1 / (c(1.0) + qv1)
     ex1 = (p1 / c(P0_PA)) ** c(R_D_OVER_CP)
     if exner is not None and os.environ.get("GPUWRF_MYNN_PHY_EXNER", "0").strip().lower() in {"1", "true", "yes", "on"}:
@@ -543,8 +558,16 @@ def surface_layer(state, *, first_timestep=False) -> SurfaceFluxes:
     return surface_layer_with_diagnostics(state, first_timestep=first_timestep).fluxes
 
 
-def surface_layer_with_diagnostics(state, *, first_timestep=False, snowh=None) -> SurfaceLayerDiagnostics:
+def surface_layer_with_diagnostics(state, *, first_timestep=False, snowh=None,
+                                   with_chs=False, spp_pattern=None) -> SurfaceLayerDiagnostics:
     from gpuwrf.physics.fp32.surface_layer_real import native_real_enabled, surface_layer_with_diagnostics_real
+    if spp_pattern is not None:
+        F = jnp.float32 if native_real_enabled() else jnp.float64
+        return _surface_layer_impl(state, first_timestep, F, snowh=snowh,
+                                   _return_chs=with_chs, spp_pattern=spp_pattern)
+    if with_chs:
+        F = jnp.float32 if native_real_enabled() else jnp.float64
+        return _surface_layer_impl(state, first_timestep, F, snowh=snowh, _return_chs=True)
     if native_real_enabled():
         return surface_layer_with_diagnostics_real(state, first_timestep=first_timestep, snowh=snowh)
     return _surface_layer_impl(state, first_timestep, jnp.float64, snowh=snowh)
@@ -576,7 +599,7 @@ def _andreas_2002(visc, ustar):
             length((1.61, 0.351, 0.396), (0.0, -0.628, -0.512), (0.0, 0.0, -0.180)))
 
 
-def surface_layer_with_exchange(state, *, first_timestep=False, snowh=None):
+def surface_layer_with_exchange(state, *, first_timestep=False, snowh=None, spp_pattern=None):
     """``surface_layer_with_diagnostics`` plus the LSM exchange coefficients.
 
     Returns ``(diag, flhc, flqc)`` with WRF ``FLHC``/``FLQC`` (module_sf_mynn.F:1051-1052)
@@ -586,10 +609,13 @@ def surface_layer_with_exchange(state, *, first_timestep=False, snowh=None):
 
     from gpuwrf.physics.fp32.surface_layer_real import native_real_enabled
     F = jnp.float32 if native_real_enabled() else jnp.float64
-    return _surface_layer_impl(state, first_timestep, F, snowh=snowh, _return_exchange=True)
+    return _surface_layer_impl(state, first_timestep, F, snowh=snowh, _return_exchange=True,
+                               **({} if spp_pattern is None else {"spp_pattern": spp_pattern}))
 
 
-def _surface_layer_impl(state, first_timestep, F, *, snowh=None, _return_exchange=False) -> SurfaceLayerDiagnostics:
+def _surface_layer_impl(state, first_timestep, F, *, snowh=None, _return_exchange=False,
+                        _return_chs=False, spp_pattern=None, isftcflx=0, ustm=None,
+                        _return_hurricane=False) -> SurfaceLayerDiagnostics:
     """Run one vectorized ``sf_sfclayrev_run`` solve over surface columns.
 
     ``state`` is a column-oriented view (trailing-z) carrying ``u, v, theta, qv,
@@ -609,6 +635,12 @@ def _surface_layer_impl(state, first_timestep, F, *, snowh=None, _return_exchang
 
     # --- lowest-level column inputs (sf_sfclayrev_pre_run picks kts) ---
     EP1 = _mynn_constant("P608", F, globals()["EP1"])
+    EP2 = globals()['EP2']
+    if isftcflx:
+        # E83: surface_driver passes original REAL constants even when the
+        # legacy/default MYNN precision flags are disabled.
+        EP1 = jnp.asarray(461.6,F)/jnp.asarray(287.,F)-jnp.asarray(1.,F)
+        EP2 = jnp.asarray(287.,F)/jnp.asarray(461.6,F)
     u0 = _surface(jnp.asarray(state.u, dtype=F))
     v0 = _surface(jnp.asarray(state.v, dtype=F))
     theta0 = _surface(jnp.asarray(state.theta, dtype=F))
@@ -756,19 +788,34 @@ def _surface_layer_impl(state, first_timestep, F, *, snowh=None, _return_exchang
         czc * ust_in * ust_in / G + 0.11 * visc / jnp.maximum(ust_in, 0.05),
         1.27e-7, 2.85e-3,
     )
+    if isftcflx in (1, 2):
+        from gpuwrf.physics.hurricane_flux import davis
+        znt_water = davis(ust_in)
     znt = jnp.where(is_water, znt_water, znt)
+    if spp_pattern is not None:
+        from gpuwrf.physics.stochastic_spp import momentum_roughness
+        base_znt = znt
+        znt = momentum_roughness(znt, jnp.asarray(spp_pattern, F))
 
     restar = jnp.maximum(ust_in * znt / visc, 0.1)   # module_sf_mynn.F:675/725 (NEW znt)
 
     # LAND: Zilitinkevich for bare/thin-snow columns (WRF:731-750), Andreas_2002
-    # for SNOWH >= 0.1 m. spp_pbl=0. Bare-land z_q == z_t with only a 0.75*z0 cap.
+    # for SNOWH >= 0.1 m. Bare-land z_q == z_t with only a 0.75*z0 cap.
     CZIL = 0.085
     z_t_land = jnp.minimum(znt * jnp.exp(-KARMAN * CZIL * jnp.sqrt(restar)), 0.75 * znt)
     # WATER: fairall_etal_2003 (COARE_OPT=3.0 default), z_q == z_t
     # (module_sf_mynn.F:1442-1467): Zt = 5.5e-5*restar^-0.6, clipped [2e-9, 1e-4].
     z_t_water = _clip((5.5e-5) * (restar ** (-0.60)), 2.0e-9, 1.0e-4)
+    if spp_pattern is not None:
+        from gpuwrf.physics.stochastic_spp import thermal_roughness
+        z_t_land, z_t_water = thermal_roughness(
+            z_t_land, (5.5e-5) * (restar ** (-0.60)), jnp.asarray(spp_pattern, F))
     z_t = jnp.where(is_land, z_t_land, z_t_water)
     z_q = z_t  # bare land and fairall water set z_q = z_t
+    if isftcflx == 2:
+        # MYNN Garratt is NOT MM5's Brutsaert formula (WRF :1421–1426).
+        z_t = jnp.where(is_water, _clip(znt*jnp.exp(2.0-2.48*restar**0.25),2.e-9,5.5e-5),z_t)
+        z_q = jnp.where(is_water, _clip(znt*jnp.exp(2.0-2.28*restar**0.25),2.e-9,5.5e-5),z_q)
     snow_depth = _as_surface(_field(state, "snowh", 0.0) if snowh is None else snowh, shape, F)
     snow_land = is_land & (snow_depth >= _lit(snow_depth, 0.1))
     # Inactive snow branches need no division by a possibly zero warm UST.
@@ -893,6 +940,16 @@ def _surface_layer_impl(state, first_timestep, F, *, snowh=None, _return_exchang
     psix10 = gz10oz0 - psim10
     ustar = 0.5 * ust_in + 0.5 * KARMAN * wspd / psix   # module_sf_mynn.F:949
     ustar = jnp.where(is_land, jnp.maximum(ustar, 0.005), ustar)  # 959
+    sms_ustm_in=getattr(state,"sms_ustm",None)
+    sms_ustm=(jnp.where(is_land,ustar,.5*sms_ustm_in+.5*KARMAN*jnp.maximum(wspd_raw,MIN_WIND_M_S)/psix)
+              if sms_ustm_in is not None else None)
+    if isftcflx:
+        # WRF :955–962: USTM carries the nongusty momentum velocity independently.
+        ustm = jnp.asarray(ustm, F)
+        wspdi = jnp.maximum(wspd_raw, MIN_WIND_M_S)
+        # km_opt=5 exposes the same WRF grid%USTM through its State leaf.
+        # Keep a single authoritative calculation when both options are active.
+        ustm = sms_ustm if sms_ustm is not None else jnp.where(is_land, ustar, 0.5*ustm+0.5*KARMAN*wspdi/psix)
 
     # Resistances (module_sf_mynn.F:972-977). Numerators always use the thermal /
     # moisture roughness; PSIT/PSIQ subtract the thermal-baseline PSIH; PSIT2/PSIQ2
@@ -908,7 +965,7 @@ def _surface_layer_impl(state, first_timestep, F, *, snowh=None, _return_exchang
     # WRF retains the resistance above for first-loop QSTAR (:995), then
     # recomputes moisture resistances in the flux loop (:1023-1025).
     psiq_flux, psiq2_flux = psiq, psiq2
-    if _MYNN_PSIQ_FLUX_WRF:
+    if _MYNN_PSIQ_FLUX_WRF or isftcflx:
         psiq_flux = jnp.maximum(jnp.log((za + z_q) / z_q) - psih, 1.0)
         psiq2_flux = jnp.maximum(jnp.log((2.0 + z_q) / z_q) - psih2, 1.0)
 
@@ -996,6 +1053,8 @@ def _surface_layer_impl(state, first_timestep, F, *, snowh=None, _return_exchang
     lh = XLV * qfx
     # HFX (1066/1074): same FLHC*(THGB-TH1D) on land and water; land floored -250.
     hfx = flhc * (thgb - thx)
+    if isftcflx:
+        hfx = jnp.where(xland > 1.5, hfx + rhox*ustm*ustm*wspdi, hfx)
     hfx = jnp.where(is_land, jnp.maximum(hfx, -250.0), hfx)
 
     # --- kinematic flux handles for MYNN (positive upward) ---
@@ -1011,6 +1070,9 @@ def _surface_layer_impl(state, first_timestep, F, *, snowh=None, _return_exchang
                                         **_mynn_surface_exner_kwargs(state, F))
         theta_flux, qv_flux, fltv = mynn.flt, mynn.flqv, mynn.fltv
 
+    if spp_pattern is not None:
+        # WRF's ZNTstoch is local: the restart/output ZNT remains the base value.
+        znt = base_znt
     # Fence completed array exports only; SurfaceFluxes' static sentinels stay Python scalars.
     (ustar, theta_flux, qv_flux, tau_u, tau_v, rhox, fltv, hfx, lh,
      u10, v10, th2, t2, q2, qsfc, mol, znt) = jax.lax.optimization_barrier(
@@ -1026,7 +1088,8 @@ def _surface_layer_impl(state, first_timestep, F, *, snowh=None, _return_exchang
         rhosfc=rhox,
         fltv=fltv,
         xland=xland,
-        wspd=wspd if mynn_sfc_wspd_enabled() else None,
+        wspd=wspd if (mynn_sfc_wspd_enabled() or getattr(state,"sms_wspd",None) is not None
+                      or getattr(state,"sms_required",False)) else None,
     )
     diag = SurfaceLayerDiagnostics(
         fluxes=fluxes,
@@ -1045,11 +1108,16 @@ def _surface_layer_impl(state, first_timestep, F, *, snowh=None, _return_exchang
         psim=psim,
         psih=psih,
         br=br,
+        ustm=sms_ustm,
         znt=znt,
         chs2=ustar * KARMAN / psit2,
         # WRF's flux loop re-derives PSIQ2 with z_q in the numerator (module_sf_mynn.F:1024).
         cqs2=ustar * KARMAN / jnp.maximum(jnp.log((2.0 + z_q) / z_q) - psih2, 1.0),
     )
+    if _return_chs:
+        diag = diag._replace(chs=ustar * KARMAN / psit)
+    if _return_hurricane:
+        return diag, ustm
     if _return_exchange:
         return diag, flhc, flqc
     return diag

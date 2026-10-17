@@ -1,0 +1,178 @@
+{
+  "status": "FIXED_MERGE_WITH_FIXES",
+  "utc": "2026-10-13T23:27:24.710320+00:00",
+  "reviewed_candidate": "0feac83ce84816904e983b172aacb062d7049ce4",
+  "gate_snapshot": "12705f62b",
+  "rebased_main": "0013f53df9f8b3c0d2f22b7a205f38a3944e507e",
+  "production_src_tree": "421a9e6a0a2ebd7e98910a384502066b12a60219",
+  "physical_forecast_repeated": false,
+  "prior_qualification_unchanged_sha256": "5a11a9368b6d8840d23a82d014a3db9c0ecae0774f9edcd6bbe40d69f44a73ad",
+  "E78": {
+    "required_fields": "all declared active state/source/fraction/SF1 fields before flattening",
+    "shapes": "compact count, positive material/building axes, source nz/nz+1, actual domain grid",
+    "radiation": "finite REAL32; direct/diffuse grid; solar angles scalar or grid",
+    "malformed_payloads_per_format": {
+      "BEP2": 52,
+      "BEM3": 65
+    },
+    "rejected_write_boundaries": 234,
+    "rejected_read_boundaries": 234,
+    "healthy_exact_roundtrips": 24,
+    "zero_urban_and_scalar_angles_preserved": true
+  },
+  "E200": {
+    "finite_before_reductions": [
+      "candidate",
+      "reference including REAL8 operands",
+      "raw limit",
+      "conditioning term",
+      "final limit",
+      "error",
+      "ratio"
+    ],
+    "actual_one_value_reference_controls": 9,
+    "nonfinite_operand_controls": 12,
+    "exact_zero_KPBL_bound": true,
+    "thresholds_and_raw_failure_reporting_unchanged": true,
+    "BEM03_saved_comparison_rows_exact": 1392,
+    "raw_failures_retained": [
+      458,
+      468
+    ]
+  },
+  "affected_tests": {
+    "unique_pass": 107,
+    "retained_FIX02_pass": 83,
+    "FIX03_closed_failures": 24,
+    "residual_failures": 0,
+    "physical_driver_tests_deselected": 3
+  },
+  "source_deletion_controls": {
+    "restart": {
+      "kind": "restart",
+      "reviewed": "0feac83ce84816904e983b172aacb062d7049ce4",
+      "source_function_hashes": {
+        "validate_urban_bep": "951539a3c29beadacde3dcb111f218afbda6647d9b1622018862cc5279f11e64",
+        "validate_urban_radiation": "c8113f32a87794d45ad7a41a2024c46524b817a0d9c4c04f75c5649d90151481"
+      },
+      "pytest_exit": 1,
+      "call_failures": 1,
+      "setup_errors": 0,
+      "expected_failure": "DID NOT RAISE",
+      "killed": true
+    },
+    "read-pickle": {
+      "kind": "read-pickle",
+      "reviewed": "0feac83ce84816904e983b172aacb062d7049ce4",
+      "source_function_hashes": {
+        "_read_payload": {
+          "original": "e385ad90a24631e068e372cae14754ec71e8b5f628fbcd45a9bbfe70a2e896e3",
+          "mutant": "eb599d9c3cdbbf8a988d4d38a971edf605c52c71788f45bfab237bc1aa89720f"
+        }
+      },
+      "pytest_exit": 1,
+      "call_failures": 1,
+      "setup_errors": 0,
+      "expected_failure": "DID NOT RAISE",
+      "killed": true
+    },
+    "read-netcdf": {
+      "kind": "read-netcdf",
+      "reviewed": "0feac83ce84816904e983b172aacb062d7049ce4",
+      "source_function_hashes": {
+        "_read_optional_carry_groups": {
+          "original": "18819f2c5ebb5a2a15ba56ffc329856000289d0cb2b92f28ad19968d270f3e83",
+          "mutant": "7e12cbb2ca68dac5a23a0a1e199c33cce9340fb2d2c7a8c06090dcfd75c99fd5"
+        }
+      },
+      "pytest_exit": 1,
+      "call_failures": 1,
+      "setup_errors": 0,
+      "expected_failure": "DID NOT RAISE",
+      "killed": true
+    },
+    "pbl": {
+      "kind": "pbl",
+      "reviewed": "0feac83ce84816904e983b172aacb062d7049ce4",
+      "source_function_hashes": {
+        "run": "4aab905bb372c79eedf21c56645d0570c7ef68ca51e6d424c91eeaf9da8aace0"
+      },
+      "pytest_exit": 1,
+      "call_failures": 1,
+      "setup_errors": 0,
+      "expected_failure": "corrupted reference reached physics/JIT",
+      "killed": true
+    }
+  },
+  "numerical_reuse": "15 numerical sources +34 assets +7 seals BYTE;4 driver preparation functions AST exact",
+  "full_default_programs": {
+    "release": {
+      "sha": "2bf12cb8374d3a84a440e47dea4b77b0c7436108fc2ee2616bba6ec79b17962a",
+      "chars": 13405317
+    },
+    "bl_pbl_physics=1,sf_sfclay_physics=1,sf_urban_physics=0": {
+      "sha": "77bcd7dc9e4032930d72eea94a2b2e06b5bf4bb7d2801853febf27a1142010fe",
+      "chars": 12849021
+    },
+    "bl_pbl_physics=8,sf_sfclay_physics=1,sf_urban_physics=0": {
+      "sha": "a6377d3f2eba9ef9eec1159c9516dee83f37573ece64c100416ab120f825185e",
+      "chars": 12853539
+    },
+    "bl_pbl_physics=1,sf_sfclay_physics=1,sf_urban_physics=1": {
+      "sha": "1880b28d2a262561a93be33e0f8b352de8d786c4284db553777936c786dd23f6",
+      "chars": 12973938
+    },
+    "bl_pbl_physics=8,sf_sfclay_physics=1,sf_urban_physics=1": {
+      "sha": "967ff71a3c0651da6d206f00791fbd0f5caf031b161059ec3189ce7c54bc799f",
+      "chars": 12978603
+    }
+  },
+  "performance_memory": {
+    "checkpoint_only": true,
+    "new_timestep_work": false,
+    "default_graphs_exact": 5,
+    "finite_scan_scratch_bound_bytes": 20480,
+    "scratch_bound_label": "I: 4096 REAL32 values plus 4096 finite booleans",
+    "new_GPU_or_forecast_performance_claim": false
+  },
+  "source_sha256": {
+    "src/gpuwrf/io/restart_schema.py": "7072fc77d1e93bb09d8dc5658bff90f6e3d1bcad33d6c9d51ea701b1dd691679",
+    "src/gpuwrf/io/wrfrst_netcdf.py": "652b55a232c1ca4183b5fc00c854968e327f448d0880178e10d830de48120a14",
+    "proofs/v040/urban_bep_bem/conditioned_gate.py": "91a3ccb1794c2df1c7472507b362e5146ddec33caf3872e2eaa052f1f80c93fe",
+    "proofs/v040/urban_bep_bem/pbl_parity.py": "edd991fe723b9498fe33708130ec31de40ac17571b2917f81b641543640ed0ae",
+    "proofs/v040/urban_bep_bem/bep_driver_parity.py": "6f057d21feec20ff653e6951c3fb8d36c649bedae8a95f87958602920a577762",
+    "proofs/v040/urban_bep_bem/bem_driver_parity.py": "7905c96bb18e71ac80151ad5175dc838653f45a4738bfda8a5f7b50e8c8645d0",
+    "tests/test_v040_urban_boundaries.py": "ebe183323807bb45c944b22555073b62c433f05c4f7492fe73b7a546f7e0ad9b",
+    "tests/test_v040_urban_multilayer.py": "034f9b9d22fd83ac7e1782ddd9659b4a2cda603793024e6db4269668e6eb421c",
+    "proofs/v040/urban_bep_bem/critic_fix_mutants.py": "2bb75179494670c73895d3cddee8d445920ce43defb5bd162c579264b857745c",
+    "proofs/v040/urban_bep_bem/critic_fix_reuse.py": "0ebf4b134b866a10bdc9934f929aec8eabcd1613ebe479b112288e27b1300f50"
+  },
+  "receipt_sha256": {
+    "FIX02.xml": "8d3c1ee430e725cd9a74e42d25cb3a334eb4394eb01703b5383703364a26c9f1",
+    "FIX03.xml": "3ef07ad839de2beb0cbbdadf622616356a2b3ddd195f74333e323204a5525290",
+    "FIX_REUSE01.json": "32b153506a7cc644694264983fcd19fa603796ea6d63ee1b3ccdb5b3e901514b",
+    "FIX_ID01.json": "879221dd3ae0ae84d22491bf4a717ce2b76d2876774a8b84e4dd47bb8c83063d",
+    "FIX_ID02.json": "98f3eff3771a0c953590582cff0bb741e4c0a445778d0bfa069ff8b7b80cd8d9",
+    "FIX_MUT02_restart.json": "ffda4493372275f76fbc2c4494e72b6b502d3ab8fdf2059cadced8418be09c69",
+    "FIX_MUT02_read-pickle.json": "ff56f8102dde341239bc8a871e7a4627b706551dc79c4b20a95a0d5fb47cacf8",
+    "FIX_MUT02_read-netcdf.json": "fca2938aa211c46e73ddc16699ae3a95c3c8922b6bf413b6f05fa424c2183064",
+    "FIX_MUT02_pbl.json": "0359516518c680c5d8c839188c076add974ec4b46cb4d1d753c240f21d9b94a6"
+  },
+  "original_artifact_sha256": {
+    "FIX02.xml": "aee76c6184b62dc69283196f821e2a9c028ff7fd9d793e2278a6caf119d72f57",
+    "FIX03.xml": "263c29914adee7d2a672a726f32efbedcf2126c6b75f03733b64bf61905f51be",
+    "FIX_REUSE01.json": "32b153506a7cc644694264983fcd19fa603796ea6d63ee1b3ccdb5b3e901514b",
+    "FIX_ID01.json": "879221dd3ae0ae84d22491bf4a717ce2b76d2876774a8b84e4dd47bb8c83063d",
+    "FIX_ID02.json": "98f3eff3771a0c953590582cff0bb741e4c0a445778d0bfa069ff8b7b80cd8d9",
+    "FIX_MUT02_restart.json": "ffda4493372275f76fbc2c4494e72b6b502d3ab8fdf2059cadced8418be09c69",
+    "FIX_MUT02_read-pickle.json": "ff56f8102dde341239bc8a871e7a4627b706551dc79c4b20a95a0d5fb47cacf8",
+    "FIX_MUT02_read-netcdf.json": "fca2938aa211c46e73ddc16699ae3a95c3c8922b6bf413b6f05fa424c2183064",
+    "FIX_MUT02_pbl.json": "0359516518c680c5d8c839188c076add974ec4b46cb4d1d753c240f21d9b94a6"
+  },
+  "receipt_formatting": "Copied XML traceback trailing whitespace normalized; raw artifacts preserved unchanged.",
+  "notes": [
+    "FIX02 healthy synthetic seeds exposed swapped nx/nz positional arguments; corrected explicit dimensions without weakening gates.",
+    "Initial mutation setup was rejected by cpu_guard; final mutants import it before JAX. Four experiment source IDs corrected append-only to f6ba0b28a.",
+    "All original science/default/smoke claims remain in the unchanged reviewed qualification packet; GPU/E41/long-forecast qualification remains pending."
+  ]
+}

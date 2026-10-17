@@ -1,0 +1,34 @@
+{
+  "sources": {
+    "phys/module_mp_thompson.F": "fabf19e2a9073cff886e882b187080bfdf089d3fd40c0fce1d19bc93b1e5e802",
+    "phys/module_mp_radar.F": "ca069a12cc149313456fa8ee08a827e0f542768b66ff6c1ece95a40ab208fb88"
+  },
+  "calc_refl10cm_sha256": "93caef82c352c192f823962621b0dfc7de04220bea910bec4b89d20ad6f01923",
+  "ng_block_sha256": "d071c13d2485a556370b484b30c1cda5e72e0c3b50d347b7c55542537ca9fc02",
+  "compiler": "GNU Fortran (conda-forge gcc 14.3.0-19) 14.3.0",
+  "command": [
+    "<USER_HOME>/miniconda3/envs/wrfbuild/bin/gfortran",
+    "-cpp",
+    "-ffree-form",
+    "-ffree-line-length-none",
+    "-O2",
+    "-fno-fast-math",
+    "-ffp-contract=off",
+    "stub.f90",
+    "radar.F90",
+    "thompson.F90",
+    "driver.f90",
+    "-o",
+    "oracle"
+  ],
+  "scope": "original calc_refl10cm bottom-only with active wet snow; whole-column melting detection preserved",
+  "fixture_sha256": "7e248f453719af4654e22b002fb2d11e25d8f4a6bddcd11cf452828c807eb11e",
+  "original_fixture_sha256": "c1e1bc103b79cf9fbfa8b679a979968b6823335ffee6f5cc88492bac8e15d8ef",
+  "tolerance": {
+    "max_absolute_dbz": 5e-05
+  },
+  "census": {
+    "bottom_active_snow_columns": 8,
+    "warm_raining_bottom_columns": 5
+  }
+}

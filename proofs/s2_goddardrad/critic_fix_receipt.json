@@ -1,0 +1,113 @@
+{
+  "lane": "s2-goddardrad",
+  "status": "FIXED pending same critic recheck",
+  "prior_reviewed_commit": "21fa82da90d9eef67960038573117ee45ab07d8d",
+  "source_commit": "5adc0d961876a8c4549a9c92bad0c1a89540aab0",
+  "timestamp_utc": "2026-10-14T00:50:28.919579+00:00",
+  "finding": "rv-s2-goddardrad P1: selected RUC ALBEDO/EMISS dropped at Goddard cadence refresh",
+  "correction": "Forward existing RucRadiationSurface exactly like RRTMG; same two array references. Initial and refresh operands now agree.",
+  "tests": {
+    "affected_unique_PASS": 180,
+    "new_surface_checks": 10,
+    "FAIL": 0,
+    "note": "G41 raw fixture shape failure preserved; G42 corrected nx/nz keywords, same production fix."
+  },
+  "mutant": {
+    "platform": "cpu",
+    "gpu_executed": false,
+    "cache": "NONE",
+    "mode": "mutant",
+    "source_commit": "5adc0d961876a8c4549a9c92bad0c1a89540aab0",
+    "assertions": [
+      "Goddard dropped the admitted RUC ALBEDO/EMISS view\nassert None is not None"
+    ],
+    "setup_errors": [],
+    "pytest_returncode": 1,
+    "mutant_killed": true
+  },
+  "non_RUC_refresh_proof": {
+    "platform": "cpu",
+    "gpu_executed": false,
+    "cache": "NONE",
+    "mode": "trace",
+    "source_commit": "5adc0d961876a8c4549a9c92bad0c1a89540aab0",
+    "prior_commit": "21fa82da9",
+    "unchanged_functions": {
+      "history_fields": true,
+      "initial_diagnostics": true,
+      "goddard_column": true,
+      "solve_goddard_columns": true,
+      "paired_radiation": true
+    },
+    "records": [
+      {
+        "surface": "no_lsm",
+        "jaxpr_sha256": "b3991f95a778d7547c454f283a29540639537f95cf8065cfe52c093f628166d1",
+        "constant_count": 39,
+        "jaxpr_and_constants_BYTE": true
+      },
+      {
+        "surface": "noahmp",
+        "jaxpr_sha256": "89ca8f1dfb08fe6af3fc3d67c94e9f347bdd54f6cc8e0ed852370cf4d8e22dc8",
+        "constant_count": 39,
+        "jaxpr_and_constants_BYTE": true
+      },
+      {
+        "surface": "slucm_surface",
+        "jaxpr_sha256": "89ca8f1dfb08fe6af3fc3d67c94e9f347bdd54f6cc8e0ed852370cf4d8e22dc8",
+        "constant_count": 39,
+        "jaxpr_and_constants_BYTE": true
+      }
+    ]
+  },
+  "unchanged_source": {
+    "src/gpuwrf/physics/ra_goddard_common.py": {
+      "BYTE": true,
+      "sha256": "5fdfe2039e47180e41ccba0180f7cd5890af0c5b009e3017c2a2c08ce9554a2c"
+    },
+    "src/gpuwrf/physics/ra_goddard_lw.py": {
+      "BYTE": true,
+      "sha256": "c214fac79903b6bb0e72d076b361ca2aca4f3689bb35707c54889daa43f25e26"
+    },
+    "src/gpuwrf/physics/ra_goddard_sw.py": {
+      "BYTE": true,
+      "sha256": "762a8930abdd9b67f03744e613198b0379efb956a54e84400eb007005994666f"
+    },
+    "src/gpuwrf/physics/goddard_tables.npz": {
+      "BYTE": true,
+      "sha256": "56a6b92f557675d137ddf108bcd0abbd447280b0033dbb842fba5788e39bd1ea"
+    },
+    "src/gpuwrf/physics/goddard_tables.json": {
+      "BYTE": true,
+      "sha256": "7618459649575a52a5e87bc3a4ec23ca7a918041139aa65ad9b608973dcb6b10"
+    },
+    "src/gpuwrf/physics/goddard_table_digest.py": {
+      "BYTE": true,
+      "sha256": "18ba05ad27fb17bcda33df942b33b5cdf9fd77e7a740a23f96ba9af50978c97a"
+    },
+    "src/gpuwrf/runtime/operational_mode.py": {
+      "BYTE": true,
+      "sha256": "5f461af81974e1dc068defdfdfcd230fd43dda4d8089f0778fbbd0a687270b26"
+    }
+  },
+  "audit": {
+    "NoahMP4": "existing held view forwarded",
+    "RUC3": "fixed existing surface view, real-bundle regression",
+    "SLUCM1": "existing merged Noah-MP surface forwarded",
+    "Lake1": "refused God pair: shared land-only mask drops water-marked lake overlay",
+    "Slab1_NoahClassic2_PleimXiu7": "refused God pair: current held ALBEDO/EMISS view unavailable",
+    "BEP2_BEM3": "refused God pair: existing urban contract requires RRTMG4/4",
+    "NoLSM0": "existing common surface-table control"
+  },
+  "validation_reuse": "Original oracle/literal148BYTE/taux mutant/defaultSwiss2bf/NoahMP coupled smoke and component memory evidence preserved: exact six source/assets + operational_mode bytes, all five non-refresh coupling functions AST identical, three non-RUC refresh closed programs and 39 constants each BYTE. No redundant physical forecast.",
+  "performance_memory": "RUC view reuses two resident arrays without copies or new carry. No adapter allocation/host transfer/sync/device operation is needed to construct the view. Non-RUC whole refresh program BYTE; existing paired component timing/memory retained. GPU changed-option performance/E41/VRAM/full forecast D6 pending.",
+  "gpu_executed": false,
+  "cache": "NONE GPUWRF_JAX_CACHE0",
+  "artifact_sha256": {
+    "<USER_HOME>/wrf_gpu2_lanes/s2-goddardrad/G41_surfaces.xml": "74b42b0ad7cfce22276e73c7951e5bcccf31cc182a9c97a0b06cdd0f722eaeeb",
+    "<USER_HOME>/wrf_gpu2_lanes/s2-goddardrad/G42_ruc.xml": "03ea7c46b867d48f60e17cad5003fb9e3d2663ca7654738bc02d7950d76d3e2b",
+    "<USER_HOME>/wrf_gpu2_lanes/s2-goddardrad/G43_refresh_identity.json": "abd1a65250c964aa2ca06db04dd533233305cc5bb10e14404f65c701a3ab845c",
+    "<USER_HOME>/wrf_gpu2_lanes/s2-goddardrad/G44_surface_mutant.json": "06df35dfcd305137cbb1e0db72c5b1ebc36357a7591700699fa30d58655c0ee8"
+  },
+  "prior_qualification_receipts_preserved": true
+}

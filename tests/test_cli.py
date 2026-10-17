@@ -419,6 +419,8 @@ def test_resolve_nested_allocator_default_is_cuda_async(
 ) -> None:
     from gpuwrf.cli import _resolve_nested_allocator
 
+    monkeypatch.setenv("JAX_PLATFORMS", "cuda")  # Resolver policy only; no backend initialization.
+
     monkeypatch.delenv("XLA_PYTHON_CLIENT_ALLOCATOR", raising=False)
     monkeypatch.delenv("GPUWRF_ALLOCATOR", raising=False)
     assert _resolve_nested_allocator() == "cuda_async"
@@ -428,6 +430,8 @@ def test_resolve_nested_allocator_platform_fallback(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     from gpuwrf.cli import _resolve_nested_allocator
+
+    monkeypatch.setenv("JAX_PLATFORMS", "cuda")  # Resolver policy only; no backend initialization.
 
     monkeypatch.delenv("XLA_PYTHON_CLIENT_ALLOCATOR", raising=False)
     monkeypatch.setenv("GPUWRF_ALLOCATOR", "platform")
@@ -439,6 +443,8 @@ def test_resolve_nested_allocator_bfc_maps_to_default(
 ) -> None:
     from gpuwrf.cli import _resolve_nested_allocator
 
+    monkeypatch.setenv("JAX_PLATFORMS", "cuda")  # Resolver policy only; no backend initialization.
+
     monkeypatch.delenv("XLA_PYTHON_CLIENT_ALLOCATOR", raising=False)
     monkeypatch.setenv("GPUWRF_ALLOCATOR", "bfc")
     assert _resolve_nested_allocator() == "default"
@@ -448,6 +454,8 @@ def test_resolve_nested_allocator_operator_override_is_authoritative(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     from gpuwrf.cli import _resolve_nested_allocator
+
+    monkeypatch.setenv("JAX_PLATFORMS", "cuda")  # Resolver policy only; no backend initialization.
 
     # Explicit operator XLA var wins; resolver returns None so callers do NOT
     # override the operator's choice.
@@ -460,6 +468,8 @@ def test_resolve_nested_allocator_case_insensitive(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     from gpuwrf.cli import _resolve_nested_allocator
+
+    monkeypatch.setenv("JAX_PLATFORMS", "cuda")  # Resolver policy only; no backend initialization.
 
     monkeypatch.delenv("XLA_PYTHON_CLIENT_ALLOCATOR", raising=False)
     monkeypatch.setenv("GPUWRF_ALLOCATOR", "  Platform  ")

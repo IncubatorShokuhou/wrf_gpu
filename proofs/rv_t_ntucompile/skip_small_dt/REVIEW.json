@@ -1,0 +1,94 @@
+{
+  "target": "346cbeb5b65c6d58e36b7586207af02baf1a6ded",
+  "base": "04cb09f816",
+  "gpu_byte": {
+    "arrays": 80,
+    "finite": true,
+    "byte_equal": true,
+    "sha256": [
+      "732bd18f41df06533b45d88afbe93d1281fb2b0aeb57d11048511b84f67e8cb8",
+      "732bd18f41df06533b45d88afbe93d1281fb2b0aeb57d11048511b84f67e8cb8"
+    ]
+  },
+  "cpu_byte": {
+    "arrays": 912,
+    "finite": true,
+    "byte_equal": true,
+    "sha256": [
+      "0f70d7e4eadfad134f8a2e3987bd52ca14751e2928b94e27d36269189c446dba",
+      "0f70d7e4eadfad134f8a2e3987bd52ca14751e2928b94e27d36269189c446dba"
+    ]
+  },
+  "runner_closure_files": 43,
+  "runner_closure_sha256": "94b9dbe9bcb56922dd8a01cd524a5b334a9ec5bd61e70fc247f3aed7eebd95d5",
+  "runner_sha256": "fff3c5b569d8e7561248b6891a48742d25cb1ee7eabcd3873a607d1998bc71b3",
+  "runtime_assets": {
+    "src/gpuwrf/physics/ntu/data/aerosol_r4.npz": "8ea20dcff54d916771cbe665ce9e7d6d8af7b470fe8ee05e3ce0b6024279a9cb",
+    "src/gpuwrf/physics/ntu/data/aerosol_r8.npz": "eb65777fb6abac24b6b77d89e45c4b7ff22a75dc86703180d1a933b33584349e"
+  },
+  "input_cpu_frame_sha256": {
+    "wrfout_d01_2023-01-15_01:00:00": "21e00d2eb977bc6ed3d5e4dcb753639ded20014f2a5e2bf6d7ee58f5b4072fa4",
+    "wrfout_d01_2023-01-15_12:00:00": "28306cbdc7c0a8496d76e1e0de9e325b3982ad7980e399f0057df95d564ec331"
+  },
+  "timing_G08_same_session": {
+    "wrfout_d01_2023-01-15_01:00:00": {
+      "base_s": 0.3882350689964369,
+      "candidate_s": 0.22294766899722163,
+      "ratio": 1.741373079802306,
+      "reduction_pct": 42.57405195941541
+    },
+    "wrfout_d01_2023-01-15_12:00:00": {
+      "base_s": 0.2806470040086424,
+      "candidate_s": 0.22376258800795767,
+      "ratio": 1.2542177247192983,
+      "reduction_pct": 20.269026637794784
+    }
+  },
+  "generated_AST_exact_except_wrapper_import": true,
+  "scope": "Regression/validation reuse only; final coupled c88 D6/E41/F2 and whole-forecast speed remain pending",
+  "verdict": "MERGE",
+  "utc": "2026-10-16T04:00:38.327808+00:00",
+  "cpu_tests": {
+    "pass": 224,
+    "fail": 0,
+    "error": 0,
+    "skip": 0,
+    "xml_sha256": "ad683223d410874bb8bcef1337b3124395b6e655f29de373cee68df95603e1d5"
+  },
+  "mutant": {
+    "genuine_assertions": 1,
+    "setup_errors": 0,
+    "mutation": "masked_call always invokes routine",
+    "xml_sha256": "62f8c7ee0f4ef813bbce0ac9cfe151d0e376a88a099b5e4c7c021a363790c3e3"
+  },
+  "emitter": {
+    "all_four_files_byte": true,
+    "files_sha256": {
+      "constants.py": "daf155229e70289e9c2fb3ac69ac3fe7e686ea48eda7a5b22e375f451535a50a",
+      "scalar_generated.py": "b1f3d3963f09060e493ad65a4226729ceee0e334f55cc2267406bcc12ba20b15",
+      "aerosol_generated.py": "01a65fa56ba811364ea3392c0869c79c3a5ed07220d16e27d95b57c152fb6168",
+      "phases_generated.py": "1b2bfa5fb094ff729cdde3203e7fd2be62eacef28fe3719a5e29d197b1912122"
+    }
+  },
+  "native_lower": {
+    "source": "346cbeb5b65c6d58e36b7586207af02baf1a6ded",
+    "ttir_sha256": "3071fcff72e1f052e61d25570da2fc748d22d07ddac40efea17fc4daaee36edb",
+    "scf_if": 1,
+    "optimized_equal_except_exact_source_filename": true,
+    "compiler_params": "CompilerParams(num_warps=2, num_stages=None)"
+  },
+  "default_ids": {
+    "swiss": "7379c7d77e94517f07e7bf37763cc1409d1287a13e50684ed9d624caafaec55e",
+    "prod": "6487f5b039a074f02f63d140f1e9212b7ede832d04bf5450e44ad2b3f2c34e73"
+  },
+  "limits": [
+    "G08 GPU comparison is regression evidence on two originalCPU-WRF states, not fresh coupled fidelity",
+    "Actual2w GPU E41/peakVRAM/F2/full24h final c88 remain pending; no wholeforecast speed claim",
+    "Producer CPU prescreen report NP13 used dirty working source; its retained TTIR matches target, but no CPU54s timing claim reused"
+  ],
+  "compile_cost": {
+    "G08_kernel_only_base_s": 46.709540891009965,
+    "G08_kernel_only_candidate_s": 49.804097701999126,
+    "scope": "assertedGPU immutable snapshots, observation only, not full cold/cache-readiness R3"
+  }
+}

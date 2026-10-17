@@ -1,0 +1,84 @@
+{
+  "UTC": "2026-10-15T21:41:03.377072+00:00",
+  "status": "SOURCE-PREPARED/HEAVY VALIDATION HELD; NOT READY-FOR-MERGE",
+  "frozen_validation_candidate": "ce933db9fa72e6780d79606282a0547fd5ffac12",
+  "source_tree": "c47a8b88ab2f3af0c4b35491b19e710da8809e1c",
+  "approved_series1": "cd518dc813bde7b323131802d3201fd875e65cb5",
+  "TEST_ONLY": "b4fc21c8761aea10e521447bffe1f20a273b0b9a",
+  "critic_request": "Four mock sites gain existing zero(ncol,nz,float64) RQC/RQI outputs. Removing eight keyword fields gives exact original test AST; no product/assertion/tolerance change.",
+  "content_source_audit": {
+    "UTC": "2026-10-15T21:19:22.252800+00:00",
+    "status": "PASS exact PHY+F6 composition/source; freshcombinedCPU pendingQUIET",
+    "approved_PHY": "cd518dc813bde7b323131802d3201fd875e65cb5",
+    "base_published40": "b770ccbcecc7030142791dc04baf64342f65dac6",
+    "product_commit": "7c65eaa3626d11d3b3cd3cca349be49868e7142a",
+    "TEST_ONLY_four_mock_commit": "b4fc21c8761aea10e521447bffe1f20a273b0b9a",
+    "candidate": "38ba5dbee08daa73b0274b016952307e85cbdb55",
+    "SRC": "c47a8b88ab2f3af0c4b35491b19e710da8809e1c",
+    "model_SHA": {
+      "src/gpuwrf/coupling/scan_adapters.py": "8c8255d20137d43464cea44f7cdedacabead3190c432fe2b934af385e8be477c",
+      "src/gpuwrf/coupling/wrf_phy_prep.py": "fd26cd7392cb8f9d7c90e26ce6ca3c0569af4989cac857b97fd44f06b637c5cf",
+      "src/gpuwrf/physics/myj_adapters.py": "b1031b60050be74eeb2bccb4b7c5b54a9d8274df99beb7b8a21d78902950dc94"
+    },
+    "source_audit": {
+      "MYJ_reverse_only_F6_ABI_restores_entire_reviewed_PHY_module_AST": true,
+      "MRF_GFS_reverse_only_PHY_grid_operand_restores_full_prior_F6_functions": true,
+      "selected_SF1_branch_AST_exact_base": true,
+      "all_other_changed_SCAN_defs_exact_reviewed_PHY": true,
+      "all_other_YSU_ClassD_F1_ACM2_SH_defs_preserved": true,
+      "PHY_new_helper_BYTE_reviewed": true
+    },
+    "four_mock_sites": 4,
+    "zero_rate_shape_dtype": "zero(ncol,nz,float64), two fields per site; uppercaseMYJ/lowercaseGFS real F6 ABI",
+    "test_AST_reverse_zero_fields_equals_original_reviewed": true,
+    "critic_proof_blobs_SHA": {
+      "proofs/rv_t_cfix/F6_REBASE_361759469.json": "f5eb9bf4149e3ea29a8ac75051cefaa131012462c6483ffa493e18b7a900e7b2",
+      "proofs/rv_t_cfix/PP1_VERDICT.md": "5ba199546437c56f3ec760f82581ac75eb4b6e3a2a54ed893298fdb76fa390a0"
+    },
+    "helper_only_assumptions_corrected": [
+      "SurfaceContract source retains inherited2F6stubfields; exactotherPHYbytes",
+      "Critic commit hasPP1verdict plusindependentF6rebase receipt; bothproof-only imported"
+    ],
+    "runtime_attempts": 0,
+    "QUIET_lightmetadata_only": true,
+    "heavy_tests_compile_snapshot_started": false
+  },
+  "original_reference_reuse": {
+    "UTC": "2026-10-15T21:22:48.474845+00:00",
+    "status": "PASS source-bound original PHY proof reuse; no compile/build/tests duringQUIET",
+    "frozen_and_independently_rebuilt_NPZ_SHA": "275e10030c8c46615213100ebcafb980ba22f67a70ab34cc70a32f68873f0ef1",
+    "raw_receipt_SHA": {
+      "VERDICT.md": "5ba199546437c56f3ec760f82581ac75eb4b6e3a2a54ed893298fdb76fa390a0",
+      "CP00-source-scope.json": "70953549a48e9fd9bda32a5512f4151679791ec8705f386eba59753d08166296",
+      "CP01b-targeted.xml": "6aa2963f2c35bc1a2687dd9e02d2dc927ea5e5bd596139e2670833652be4eea0",
+      "CP02-oracle.json": "1614a235aa30519d7991cfef270d1f0ceb29112cbb670474090c01f57c75a236",
+      "CP02-rebuilt.json": "569d668c1bf42c88ae8a7c35fbb25a71821c0a0db473558b631b030d1081d252",
+      "CP02-dry-history.json": "adb28113304b5a4adfae3d0c21f492574785084c32411bcab2579d04299eed9e",
+      "CP03-full-carry.xml": "169e9816dd7da4f78e115aff98d99089809daedc77c1514c20babb787fce0d36",
+      "CP04-swiss.json": "507cb5504325a322d74d31693d694d8ffdb797631f2aa1c2a61521e4fa562434",
+      "CP04-prod.json": "d7669c9bc3b84da02370e0cac4c44f6f5581da44112c04fd1b2b57e8a65de5aa",
+      "CP05-mutant.json": "9194a420ea2f44b6459f276a325e116821094dc8797c405418c01a2c35369fb8",
+      "CP05-mutant.xml": "5c78a1316a84bf4cb61c6847556e4d13fdf01bbd6c9689cf3af04e408ea31cd2",
+      "test_full_carry.py": "db2facb81b8eab4754d2ba6587e398770b018920118ffca4e752250ba2f7a338",
+      "run_mutant.py": "091d6d3e8cbaff9d7b9f74a71a2590f3caf48d6a7631584999872a5b413fb2ac"
+    },
+    "prior_review_counts": "35targetedPASS+5actual2stepcallerPASS/62pristinearraysBYTE/drythetaoriginalCPUhistoryBYTE;1numericASSERT0setup; oldbroadCP01INCOMPLETE12GB notPASS",
+    "defaultIDs": "FULLf672a573/6fc715a2 originalreview CP04/source-bound; finalcurrent native defaults unchanged, no fresh trace/GPU claim",
+    "science": "Inherited total-density residual~2.1e-5relative remains disclosed/frozen input-ULP bound; GPUc03c04c06c07c25 finalclassA composition pending",
+    "cost": "Affectedlegacy callers addhydroface scan +totaldensity reconstruction/REALcolumntemps;GPUlaunch/peak/readiness/runtimeU; no newState/table/defaultMYNNpath",
+    "cache": "NONE",
+    "snapshot": "NONE"
+  },
+  "resource_hold": "Manager MAILBOX2026-10-15T21:02:11Z: QUIET+slots1 until ALISIOSnightlyDONE; all >1GB probes via official6G; resume work after newmanagerRESUME. No GPU.",
+  "fresh_tests": 0,
+  "obsolete_batch40_arm": "NOTRUN/QUIET3 before runner/cache/snapshot. Batch40 source83 alreadymanagerpublished5c1f804d72; finalB41arm includesB40caller/shared tests once.",
+  "idle_watcher_plan": "FreshmanagerRESUME newer than21:02+QUIETclear+no wrf.exe onCPU24/25. Exactpinnedce source preflight. Official6G/noSwap, testtimeout300, snapshot/cache cleanup. READY only after tests and finalsource/main/archiveseal pass. Waitbounded3h.",
+  "scripts_sha256": {
+    "<USER_HOME>/wrf_gpu2_lanes/s2-integrate/batch41_run.py": "5503499465e78cac58c61712aef7b980787cfca26d5ac9459357fb40b23fd4eb",
+    "<USER_HOME>/wrf_gpu2_lanes/s2-integrate/batch41_finish.py": "ffce9ac238e57cafd2eedc462430b0c6b72170d9f4d9d5ba4df598eb1d496863",
+    "<USER_HOME>/wrf_gpu2_lanes/s2-integrate/batch41_wait_resume.py": "d25a4183f48e03b0f8f242825d33eba41ca7054edc30e8d5ed12ed903cae7c59"
+  },
+  "pid_file": "<USER_HOME>/wrf_gpu2_lanes/s2-integrate/batch41/resume_watcher.pid",
+  "watcher_receipt": "<USER_HOME>/wrf_gpu2_lanes/s2-integrate/batch41/WATCHER.json",
+  "model_jobs_cache_snapshots": 0
+}

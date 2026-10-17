@@ -39,7 +39,7 @@ RVRD, _dry, _exner_port, _grid, _state, _wrf_phy_prep_rho = (
 def _kf_spy(record):
     """KF kernel stub.  kf_adapter vmaps the kernel, so inputs are tracers: like gate 1, T0 and RHOE are carried
     out through the qc/qr tendency channels (read back with _kf_channels); only a trace-time flag is recorded."""
-    def spy(T0, QV0, P0_, DZQ, RHOE, w0a, U0, V0, dt, dx, *, w=None, nca=None, stepcu=5, cudt=0.0):
+    def spy(T0, QV0, P0_, DZQ, RHOE, w0a, U0, V0, dt, dx, *, w=None, nca=None, stepcu=5, cudt=0.0, pi_phy=None):
         record["called"] = True
         z = jnp.zeros_like(T0)
         tend = {"theta": z + 2.0e-3, "qv": z - 3.0e-6, "qc": T0, "qr": RHOE, "qi": z, "qs": z}

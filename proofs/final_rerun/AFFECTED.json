@@ -1,0 +1,4026 @@
+{
+ "schema": "final-rerun-affected-v1",
+ "lane": "t-calleraudit",
+ "main": "04cb09f816d1284e72c515eca64a94909f40e071",
+ "method": "per merged fix of batches 38-56 (src diff per batch on main first-parent), the dispatch/caller condition at main 04cb09f816 that executes the changed code, evaluated on every composite's options/extra/features (v-prep MATRIX.json); numeric_change yes|BYTE|history-only|refusal-only|restart-only; only 'yes' puts a composite on the rerun list",
+ "runnable_source": "<USER_HOME>/wrf_gpu2_lanes/v-prep/GPU_PROGRESS.json active composites at 2026-10-16T02:49:48.260522+00:00 (70)",
+ "composites_source": "<USER_HOME>/wrf_gpu2_lanes/v-prep/MATRIX.json",
+ "composites_source_commit": "478de7d54c7941a38c81146d0183212b3e1beeb7",
+ "parts_sha256": {
+  "part_A.json": "4e14a3dd382fce654f5586eb79c97d9600abddb75c605aee09d5c4dbe2fb9a48",
+  "part_B.json": "b9d54a94e892ff908e5d630f1d07ccb2a5fb03214e9786ef5238dd5c2d2e1a4c",
+  "part_C.json": "3fe165ee32626611d52e145ad4876a47156aa714fcb13ddec4df7577abc600d3",
+  "part_D.json": "524db7969f670b4550a3ebf06abff320b8de11d4bdf71e2adf2a6fb2002c7092"
+ },
+ "fixes": [
+  {
+   "fix": "MP11 CAM-MG GPU refusal (cammg_config) \u2014 SUPERSEDED by batch45 mp11 lift",
+   "batch": 38,
+   "lane": "t-mp11gate",
+   "class": "admission",
+   "commits": [
+    "e0e54811b",
+    "e0952523d (shared)"
+   ],
+   "changed": [
+    "io/cammg_config.py:selection_errors/validate_input_dir/bootstrap_refusal",
+    "io/namelist_check.py:_cammg_admission_failures",
+    "io/namelist_binding.py:bind_namelist_options",
+    "integration/nested_pipeline.py:_admit_cammg_inputs/_load_domains",
+    "__init__.py bootstrap"
+   ],
+   "reach": "mp_physics==11 on a non-CPU backend (admission before model work)",
+   "caller_sites": [
+    "src/gpuwrf/integration/nested_pipeline.py:execute_nested_pipeline -> _admit_cammg_inputs (target_backend()!='cpu')",
+    "src/gpuwrf/io/namelist_binding.py:bind_namelist_options validate_cammg"
+   ],
+   "affected": [
+    "c89"
+   ],
+   "numeric_change": "refusal-only",
+   "notes": "batch45 (t-cammgws 3ec98090e1) lifts the mp11 refusal; c89 is covered by that fix, not by this one.",
+   "numeric_change_detail": "refusal-only"
+  },
+  {
+   "fix": "KM3 km_opt=3 GPU refusal (km3_config)",
+   "batch": 38,
+   "lane": "t-mp11gate",
+   "class": "admission",
+   "commits": [
+    "e0952523d"
+   ],
+   "changed": [
+    "io/km3_config.py:selection_errors",
+    "io/namelist_check.py:_km3_admission_failures",
+    "io/cammg_config.py:_gpu_selection_errors"
+   ],
+   "reach": "km_opt==3 on a non-CPU backend (refused before model work; retained BYTE in batch45)",
+   "caller_sites": [
+    "src/gpuwrf/io/cammg_config.py:_gpu_selection_errors (km3_errors) via validate_input_dir/bootstrap_refusal",
+    "src/gpuwrf/io/namelist_check.py:validate_operational_namelist _km3_admission_failures"
+   ],
+   "affected": [
+    "c48"
+   ],
+   "numeric_change": "refusal-only",
+   "notes": "c48 namelist km_opt=3 (status OWNER_EXCLUDED_KM3_NO_COUPLED_REFERENCE): expected outcome is refusal, no GPU forecast.",
+   "numeric_change_detail": "refusal-only"
+  },
+  {
+   "fix": "ACM2 PBL mixes QC3D/QI3D, returns RQC/RQIBLTEN (t-wsmdz)",
+   "batch": 38,
+   "lane": "t-wsmdz",
+   "class": "A",
+   "commits": [
+    "5131ddffb"
+   ],
+   "changed": [
+    "physics/pbl_acm2.py:_acm2_column_traceable/acm2_columns/step_acm2_column",
+    "coupling/scan_adapters.py:acm2_pbl_adapter"
+   ],
+   "reach": "bl_pbl_physics==7",
+   "caller_sites": [
+    "src/gpuwrf/coupling/scan_adapters.py:2005 acm2_pbl_adapter (PBL dispatch bl_opt==7)"
+   ],
+   "affected": [
+    "c05"
+   ],
+   "numeric_change": "yes",
+   "notes": "c05 already GPU-D6 PASS on 061d53020 (t-wsmdz); final rerun on 04cb09f816 still needed because later batches touch c05 (F1/F2/F7/phyprep).",
+   "numeric_change_detail": "yes"
+  },
+  {
+   "fix": "F1 land precipitation for every MP (public RAINNCV/SNOWNCV/GRAUPELNCV/HAILNCV slots; seed mp!=0)",
+   "batch": 39,
+   "lane": "t-calleraudit",
+   "class": "A",
+   "commits": [
+    "052f16d2b"
+   ],
+   "changed": [
+    "runtime/operational_mode.py:_initial_carry_for_run seed (now _land_precipitation_seed)",
+    "runtime/operational_mode.py:_apply_post_rk_microphysics return_precipitation (generic/NSSL/Milbrandt/Thompson-aero)",
+    "coupling/scan_adapters.py:_mp_public_precipitation + 15 MP adapters return_precipitation",
+    "coupling/physics_couplers.py:thompson_aero_adapter"
+   ],
+   "reach": "land precipitation consumer Noah-MP (sf4)/RUC (sf3)/SSiB (sf8) with run_physics and mp_physics NOT in {0,5,7,8,15,38} (those were already seeded before F1; mp0 seeded only after batch44)",
+   "caller_sites": [
+    "src/gpuwrf/runtime/operational_mode.py:_initial_carry_for_run -> _land_precipitation_seed (use_noahmp|explicit RUC|explicit SSiB)",
+    "src/gpuwrf/runtime/operational_mode.py:_apply_post_rk_microphysics(return_precipitation=True) when carry.noahmp_precipitation is not None"
+   ],
+   "affected": [
+    "c02",
+    "c03",
+    "c04",
+    "c05",
+    "c06",
+    "c07",
+    "c08",
+    "c09",
+    "c10",
+    "c11",
+    "c12",
+    "c13",
+    "c14",
+    "c15",
+    "c16",
+    "c17",
+    "c18",
+    "c19",
+    "c20",
+    "c21",
+    "c22",
+    "c23",
+    "c24",
+    "c25",
+    "c61",
+    "c87",
+    "c88",
+    "c89"
+   ],
+   "numeric_change": "yes",
+   "notes": "mp28 (Thompson-aero) and mp55/56/11 included: before F1 they were unseeded (dry land). Mp8 composites unchanged by F1 (BYTE, default IDs exact).",
+   "numeric_change_detail": "yes"
+  },
+  {
+   "fix": "YSU (bl1) QC3D/QI3D mixing, top-down cloud mixing, in-cloud Ri, CTOPO, this-step RTHRATEN; SSiB/urban-BEP YSU callers (F6/rv-t-ysuqc)",
+   "batch": 40,
+   "lane": "t-ysuqc (F6)",
+   "class": "A",
+   "commits": [
+    "70914e2ad3",
+    "4bc9325fdb",
+    "12b06cfeb3 (merge 5e6a43634c)"
+   ],
+   "changed": [
+    "physics/pbl_ysu.py:_ysu_column_traceable",
+    "coupling/scan_adapters.py:ysu_pbl_adapter/_apply_ysu_cloud_rates",
+    "coupling/ssib_surface_hook.py:ssib_ysu_step",
+    "coupling/urban_pbl_hook.py",
+    "physics/urban_bep_pbl.py:ysu urban columns",
+    "runtime/operational_mode.py:_physics_step_forcing early_rthraten/_legacy_radiation_refresh (bl==1)",
+    "io/namelist_binding.py ysu_topdown_pblmix"
+   ],
+   "reach": "bl_pbl_physics==1 (generic, SSiB sf8 and BEP/BEM urban YSU paths)",
+   "caller_sites": [
+    "src/gpuwrf/runtime/operational_mode.py:9764 early_rthraten when bl_pbl_physics==1 and radiation_diagnostics is None",
+    "src/gpuwrf/runtime/operational_mode.py:9936 ssib_ysu_step (explicit SSiB + bl1)",
+    "src/gpuwrf/coupling/scan_adapters.py:1952 ysu_pbl_adapter"
+   ],
+   "affected": [
+    "c02",
+    "c34",
+    "c40",
+    "c56",
+    "c59",
+    "c85"
+   ],
+   "numeric_change": "yes",
+   "notes": "c34 is an INPUT_HEADER_REFUSAL_CONTROL (urban2+bl1).",
+   "numeric_change_detail": "yes"
+  },
+  {
+   "fix": "MRF (bl99) QC3D/QI3D mixing + RQC/RQIBLTEN, MRF2D UST rebuild; F_QI gate",
+   "batch": 40,
+   "lane": "F6 (t-cfix-pblmix/t-ysuqc)",
+   "class": "A",
+   "commits": [
+    "2da0bc6f37",
+    "625299d3fa (F_QI gate)",
+    "402271c915 (merge 361759469)"
+   ],
+   "changed": [
+    "physics/bl_mrf.py",
+    "coupling/scan_adapters.py:mrf_pbl_adapter",
+    "runtime/operational_mode.py:_pbl_f_qi"
+   ],
+   "reach": "bl_pbl_physics==99",
+   "caller_sites": [
+    "src/gpuwrf/runtime/operational_mode.py:9955/9972/9982 f_qi=_pbl_f_qi(mp) if bl_opt in (3,99)",
+    "src/gpuwrf/coupling/scan_adapters.py:2085 mrf_pbl_adapter"
+   ],
+   "affected": [
+    "c09"
+   ],
+   "numeric_change": "yes",
+   "notes": "",
+   "numeric_change_detail": "yes"
+  },
+  {
+   "fix": "GFS (bl3) QC3D/QI3D tracers + RQC/RQIBLTEN, PBLFLG KPBL<=1 off-by-one; F_QI gate",
+   "batch": 40,
+   "lane": "F6",
+   "class": "A",
+   "commits": [
+    "69ae945617",
+    "625299d3fa"
+   ],
+   "changed": [
+    "physics/bl_gfs.py",
+    "coupling/scan_adapters.py:gfs_pbl_adapter",
+    "runtime/operational_mode.py:_pbl_f_qi"
+   ],
+   "reach": "bl_pbl_physics==3 (F_QI off for mp 0/1/3)",
+   "caller_sites": [
+    "src/gpuwrf/coupling/scan_adapters.py:2127 gfs_pbl_adapter",
+    "src/gpuwrf/runtime/operational_mode.py:_pbl_f_qi"
+   ],
+   "affected": [
+    "c04",
+    "c25"
+   ],
+   "numeric_change": "yes",
+   "notes": "c25 is a WRF_PAIRING_REFUSAL_CONTROL (mp97+bl3+sf91).",
+   "numeric_change_detail": "yes"
+  },
+  {
+   "fix": "MYJ (bl2) QCI species + RQC/RQIBLTEN into moist_tendf; F_QI gate",
+   "batch": 40,
+   "lane": "F6",
+   "class": "A",
+   "commits": [
+    "625299d3fa"
+   ],
+   "changed": [
+    "physics/bl_myj.py",
+    "physics/myj_adapters.py",
+    "runtime/operational_mode.py:myj branch pbl_moist_raw qc/qi"
+   ],
+   "reach": "bl_pbl_physics==2",
+   "caller_sites": [
+    "src/gpuwrf/runtime/operational_mode.py:9839-9852 myj_pbl_adapter(... f_qi=_pbl_f_qi(mp))"
+   ],
+   "affected": [
+    "c03"
+   ],
+   "numeric_change": "yes",
+   "notes": "",
+   "numeric_change_detail": "yes"
+  },
+  {
+   "fix": "ClassD Morrison mp10/40 REFL_10CM (refl10cm_hm, t_exit) under do_radar_ref=1; dual precip+radar adapter return",
+   "batch": 40,
+   "lane": "t-classd",
+   "class": "diagnostic-only",
+   "commits": [
+    "7f7ca82de6",
+    "e934790288",
+    "4c910db585"
+   ],
+   "changed": [
+    "diagnostics/morrison_radar.py",
+    "diagnostics/online.py:radar_from_context",
+    "runtime/operational_mode.py:_apply_post_rk_microphysics mp10/40 return_radar_context",
+    "physics/microphysics_morrison(_aero).py t_exit (radar=True only)",
+    "runtime/aot_baked_tables.py morrison_radar key"
+   ],
+   "reach": "mp_physics in {10,40} AND do_radar_ref==1 (none of the composites set do_radar_ref for mp10/40); the precip half is F1",
+   "caller_sites": [
+    "src/gpuwrf/runtime/operational_mode.py:_apply_post_rk_microphysics elif mp_opt in (10,40) and return_radar_context",
+    "src/gpuwrf/diagnostics/online.py:radar_from_context mp in (10,40)"
+   ],
+   "affected": [],
+   "numeric_change": "history-only",
+   "notes": "do_radar_ref=1 only in c41/c46/c90 (all mp8). Morrison precipitation side channel for c08/c20 is counted under F1.",
+   "numeric_change_detail": "history-only"
+  },
+  {
+   "fix": "ClassD NSSL one-moment mp19/21 REFL_10CM (radardd02 ipconc=0), radar forced on like check_a_mundo",
+   "batch": 40,
+   "lane": "t-classd",
+   "class": "diagnostic-only",
+   "commits": [
+    "eb1ec60e65",
+    "05c1b1775c"
+   ],
+   "changed": [
+    "physics/nssl2mom/diagnostics.py:radardd02_one_moment",
+    "physics/nssl2mom/driver.py",
+    "diagnostics/online.py:_radar_setting/before_rk",
+    "runtime/operational_mode.py:_initial_carry_for_run radar carry for mp 19/21"
+   ],
+   "reach": "mp_physics in {19,21} (radar allocated unconditionally, like WRF check_a_mundo)",
+   "caller_sites": [
+    "src/gpuwrf/diagnostics/online.py:23 _radar_setting mp in (9,17,18,19,21,22,50-53,55)",
+    "src/gpuwrf/runtime/operational_mode.py:_initial_carry_for_run radar leaf mp in (9,18,19,21,22,50-53)"
+   ],
+   "affected": [
+    "c14",
+    "c15"
+   ],
+   "numeric_change": "history-only",
+   "notes": "REFL_10CM history field only; prognostics unchanged.",
+   "numeric_change_detail": "history-only"
+  },
+  {
+   "fix": "ClassD WRF-constant history QNBCA/TAOD5502D (mp28/38), MSKF_REFL_10CM (mp40) + mp28 nonzero-QNBCA input refusal",
+   "batch": 40,
+   "lane": "t-classd",
+   "class": "diagnostic-only",
+   "commits": [
+    "50def0e200"
+   ],
+   "changed": [
+    "io/producer_history.py:inactive_names",
+    "io/microphysics_history.py:WRF_CONSTANT_FIELDS",
+    "nesting/scalar_initialization.py mp in (28,38)"
+   ],
+   "reach": "mp_physics in {28,38,40} (history constants; mp28/38 also refuse nonzero QNBCA input at load)",
+   "caller_sites": [
+    "src/gpuwrf/io/producer_history.py:inactive_names mp in (28,38) / mp==40 and do_radar_ref==0",
+    "src/gpuwrf/nesting/scalar_initialization.py:initialize_extra_scalar_fields mp in (28,38) and read_input"
+   ],
+   "affected": [
+    "c19",
+    "c20",
+    "c65"
+   ],
+   "numeric_change": "history-only",
+   "notes": "Fields are +0 in WRF; inventory/history check only.",
+   "numeric_change_detail": "history-only"
+  },
+  {
+   "fix": "ClassD BEP+BEM green-roof/PV history (QGR_URB4D held, TGR/DRAINGR/EP_PV zero) + BEP/BEM native-restart binding (E78)",
+   "batch": 40,
+   "lane": "t-classd",
+   "class": "diagnostic-only",
+   "commits": [
+    "50def0e200",
+    "a7def3b99f"
+   ],
+   "changed": [
+    "coupling/urban_multilayer_hook.py:green_roof carry",
+    "integration/nested_pipeline.py:_load_urban_multilayer smois / writer QGR_URB4D",
+    "io/producer_history.py URBAN_FIELDS",
+    "io/restart_schema.py:validate_urban_bep",
+    "runtime/restart_store.py:_urban_bep_restart_config"
+   ],
+   "reach": "sf_urban_physics==3 (history + carry); restart binding for sf_urban_physics in {2,3} only on checkpoint/restart arms",
+   "caller_sites": [
+    "src/gpuwrf/integration/nested_pipeline.py:_load_urban_multilayer initial_multilayer_carry(smois=...)",
+    "src/gpuwrf/io/producer_history.py:add_fields sf_urban_physics==3"
+   ],
+   "affected": [
+    "c35",
+    "c57"
+   ],
+   "numeric_change": "history-only",
+   "notes": "c35 is an INPUT_HEADER_REFUSAL_CONTROL; BEP(2) cases c34/c56 reach only the restart binding (no restart arm in the composites).",
+   "numeric_change_detail": "history-only"
+  },
+  {
+   "fix": "phyprep series 1 (F4/F5/F15/F16): legacy PBL view = WRF phy_prep (dry T/theta, p_hyd/p_hyd_w/PSFC, total rho, g=9.81, theta_m Euler-rate conversion)",
+   "batch": 41,
+   "lane": "t-cfix-phyprep",
+   "class": "A",
+   "commits": [
+    "abb6100577",
+    "5b09a6e2fc",
+    "7c65eaa362 (merge cd518dc813)"
+   ],
+   "changed": [
+    "coupling/wrf_phy_prep.py (new)",
+    "coupling/scan_adapters.py:_pbl_surface_forcing (+grid now passed by boulac/mrf/gfs/shinhong)"
+   ],
+   "reach": "bl_pbl_physics in {1,3,7,8,11,12,99} (every _pbl_surface_forcing caller: YSU, GFS, ACM2, BouLac incl. urban BEP, Shin-Hong, GBM, MRF)",
+   "caller_sites": [
+    "src/gpuwrf/coupling/scan_adapters.py:1786 _pbl_surface_forcing; callers 1980 ysu, 2009 acm2, 2049 boulac, 2096 mrf, 2139 gfs, 2198 shinhong, 2270 gbm"
+   ],
+   "affected": [
+    "c02",
+    "c04",
+    "c05",
+    "c06",
+    "c07",
+    "c08",
+    "c09",
+    "c25",
+    "c34",
+    "c35",
+    "c40",
+    "c56",
+    "c57",
+    "c59",
+    "c85"
+   ],
+   "numeric_change": "yes",
+   "notes": "MYNN (bl5), QNSE(4), CAM-UW(9), TEMF(10), EEPS(16), KEPS(17) do not use this view.",
+   "numeric_change_detail": "yes"
+  },
+  {
+   "fix": "phyprep series 1: legacy cumulus phy_prep staging (BMJ/GF/NTiedtke/Tiedtke) + dry RTHCUTEN -> theta_m (BMJ/GF/NTiedtke)",
+   "batch": 41,
+   "lane": "t-cfix-phyprep",
+   "class": "A",
+   "commits": [
+    "5b09a6e2fc"
+   ],
+   "changed": [
+    "coupling/scan_adapters.py:_wrf_cumulus_prep, tiedtke_adapter, ntiedtke_adapter, gf_adapter, bmj_adapter"
+   ],
+   "reach": "cu_physics in {2,3,6,16}",
+   "caller_sites": [
+    "src/gpuwrf/coupling/scan_adapters.py:1081 tiedtke, 1236 ntiedtke, 1430 gf, 1693 bmj (_wrf_cumulus_prep)"
+   ],
+   "affected": [
+    "c03",
+    "c04",
+    "c06",
+    "c07"
+   ],
+   "numeric_change": "yes",
+   "notes": "Grell G3/GD (5/93) not touched here (batch56 F7).",
+   "numeric_change_detail": "yes"
+  },
+  {
+   "fix": "phyprep series 1: MYJ PBL + MYJ (Janjic) surface layer phy_prep geometry, moist-form RTHBLTEN",
+   "batch": 41,
+   "lane": "t-cfix-phyprep",
+   "class": "A",
+   "commits": [
+    "b1226cb97c"
+   ],
+   "changed": [
+    "physics/myj_adapters.py:_myj_geometry, janjic_sfclay_adapter, myj_pbl_adapter"
+   ],
+   "reach": "bl_pbl_physics==2 or sf_sfclay_physics==2",
+   "caller_sites": [
+    "src/gpuwrf/physics/myj_adapters.py:janjic_sfclay_adapter/myj_pbl_adapter -> _myj_geometry(state, grid.metrics)"
+   ],
+   "affected": [
+    "c03"
+   ],
+   "numeric_change": "yes",
+   "notes": "",
+   "numeric_change_detail": "yes"
+  },
+  {
+   "fix": "NTU mp56 / Jensen mp55 native column typed global memory (Triton compile enabler)",
+   "batch": 42,
+   "lane": "t-ntucompile (s2-integrate c2e549f66c)",
+   "commits": "c2e549f66c (batch42 head 46868408b4)",
+   "changed": [
+    "src/gpuwrf/kernels/_column_memory.py (new)",
+    "src/gpuwrf/kernels/phys_ntu.py",
+    "src/gpuwrf/kernels/phys_jensen.py",
+    "src/gpuwrf/io/scheme_catalog.py (notes)"
+   ],
+   "reach": "mp_physics in {55,56} on a CUDA backend (Pallas-Triton lowering only; CPU interpret path stock)",
+   "caller_sites": [
+    "src/gpuwrf/runtime/operational_mode.py:8617 elif mp_opt == 56 -> ntu_adapter -> kernels/phys_ntu.py:16 _column_memory",
+    "src/gpuwrf/runtime/operational_mode.py:8621 elif mp_opt == 55 -> jensen_adapter -> kernels/phys_jensen.py:14 _column_memory"
+   ],
+   "numeric_change": "BYTE",
+   "notes": "Actual GPU E41 FAIL disclosed (STACK 3496 B mp56 / 5472 B mp55, opt-in resource disclosure). c87/c88 already in the manager's FINAL list.",
+   "class": "perf-BYTE",
+   "affected": [
+    "c87",
+    "c88"
+   ],
+   "numeric_change_detail": "BYTE by construction (arithmetic/buffers/launch geometry unchanged; memory ops lowered as typed PTX). GPU-only compile enabler: before batch42 these kernels hit the E157 Coalesce hang, so any earlier c87/c88 GPU artifact is a different program"
+  },
+  {
+   "fix": "t-classd-mprho: Ferrier/Goddard-4ice/NSSL microphysics receive WRF moist_physics_prep_em DRY rho=1/(al+alb) and dz8w from (ph+phb)/g",
+   "batch": 43,
+   "lane": "t-classd-mprho ab5545b28",
+   "commits": "ab5545b28fc0209229f3aca9d3230f972408da14",
+   "changed": [
+    "src/gpuwrf/physics/ferrier/adapter.py",
+    "src/gpuwrf/coupling/goddard4ice_adapter.py",
+    "src/gpuwrf/physics/nssl2mom/adapter.py",
+    "src/gpuwrf/physics/nssl2mom/driver.py (doc)"
+   ],
+   "reach": "mp_physics in {5,15} (Ferrier), 7 (Goddard-4ice), {17,18,19,21,22} (NSSL); any LSM/PBL",
+   "caller_sites": [
+    "src/gpuwrf/runtime/operational_mode.py:8631 elif mp_opt in (18,19,21,22) -> nssl2mom_adapter (adapter.py:64 _wrf_moist_prep_den_delz)",
+    "src/gpuwrf/coupling/scan_adapters.py:2484 MP_SCAN_ADAPTERS[17]=nssl2mom_scan_adapter (mp17 via src/gpuwrf/runtime/operational_mode.py:8685 generic branch)",
+    "src/gpuwrf/runtime/operational_mode.py:8653 elif mp_opt in (5,15) -> ferrier_adapter (adapter.py:22)",
+    "src/gpuwrf/runtime/operational_mode.py:8657 elif mp_opt == 7 -> goddard4ice_adapter (goddard4ice_adapter.py:24)"
+   ],
+   "numeric_change": "yes",
+   "notes": "Origin class-D (t-classd) caller-input fix, class-B effect on numerics. NSSL REFL_10CM vs original CPU-WRF c14/c15 reproduced to 7.6e-6 dBZ only with the dry density.",
+   "class": "B",
+   "affected": [
+    "c12",
+    "c13",
+    "c14",
+    "c15",
+    "c16",
+    "c62",
+    "c63",
+    "c64"
+   ],
+   "numeric_change_detail": "YES: microphysics density/dz inputs change (prev. phy_prep (1+qv)/alt or EOS rho and surface dz)"
+  },
+  {
+   "fix": "F2: convective RAINCV of stateless cu 2/3/5/6/16/93 reaches the land surface (PRCPCONV)",
+   "batch": 44,
+   "lane": "t-calleraudit 74995985f",
+   "commits": "412e0eeff (F2) within exact 74995985f",
+   "changed": [
+    "src/gpuwrf/coupling/scan_adapters.py (tiedtke/ntiedtke/gf/grell/bmj return_raincv)",
+    "src/gpuwrf/runtime/operational_mode.py (_PhysicsStepForcing.convective_amount, post-RK PRCPCONV)"
+   ],
+   "reach": "land precipitation carry present (sf_surface 3 RUC / 4 Noah-MP / 8 SSiB; API 2/7) AND cu_physics in {2,3,5,6,16,93}",
+   "caller_sites": [
+    "src/gpuwrf/runtime/operational_mode.py:10114 want_raincv = carry.noahmp_precipitation is not None",
+    "src/gpuwrf/runtime/operational_mode.py:10192 cu6 tiedtke, :10216 cu16 ntiedtke, :10238 cu5/93 grell, :10257 cu3 gf, :10390-10401 cu2 bmj -> convective_amount",
+    "src/gpuwrf/runtime/operational_mode.py:10839 elif physics_forcing.convective_amount is not None -> PRCPCONV=f32(RAINCV)/f32(dt) -> precipitation_from_step",
+    "src/gpuwrf/runtime/operational_mode.py:7876 seed _land_precipitation_seed"
+   ],
+   "numeric_change": "yes",
+   "notes": "Same 7 composites as listed in F2_QUALIFICATION. batch56 (t-cfix-cu) later wrapped these calls in _stateless_cu; the RAINCV hand-off is preserved there.",
+   "class": "A",
+   "affected": [
+    "c03",
+    "c04",
+    "c05",
+    "c06",
+    "c07",
+    "c13",
+    "c17"
+   ],
+   "numeric_change_detail": "YES: Noah-MP PRCPCONV was 0 for these cumulus schemes"
+  },
+  {
+   "fix": "F2-FIX: land precipitation carry seeded for every LSM consumer independent of mp; mp=0 returns zero RAINNCV/SNOWNCV/GRAUPELNCV/SR",
+   "batch": 44,
+   "lane": "t-calleraudit 74995985f",
+   "commits": "76860e2d1 within exact 74995985f",
+   "changed": [
+    "src/gpuwrf/runtime/operational_mode.py (_land_precipitation_seed, mp0 zero-precip branch)"
+   ],
+   "reach": "mp_physics == 0 AND land precipitation consumer (sf 3/4/8, API 2/7); seed predicate also newly true for sf 2/7 (F24)",
+   "caller_sites": [
+    "src/gpuwrf/runtime/operational_mode.py:7284 _land_precipitation_seed",
+    "src/gpuwrf/runtime/operational_mode.py:7876 seed_mode -> seed_precipitation",
+    "src/gpuwrf/runtime/operational_mode.py:8692 else-branch (mp0) returns zero precipitation dict"
+   ],
+   "numeric_change": "yes",
+   "notes": "No composite reaches it; CPU evidence only (actual _physics_boundary_step cu2/3/5/6/16/93 x mp{6,0}).",
+   "class": "A",
+   "affected": [],
+   "numeric_change_detail": "YES for mp0+LSM (+stateless cu: PRCPCONV); none in the matrix (c01/c39 are mp0 with sf_surface 0)"
+  },
+  {
+   "fix": "F24: Noah-classic PRCP=RAINBL/DT + FFROZP=SR, Pleim-Xiu PRECIP=1e-3*RAINBL/DTBL; optional SR channel in the held precipitation carry; restart FORMAT_VERSION 6 + E78 refusal",
+   "batch": 44,
+   "lane": "t-calleraudit 74995985f",
+   "commits": "76860e2d1/8ca93b81f/8438460a2 within exact 74995985f",
+   "changed": [
+    "src/gpuwrf/coupling/noahclassic_surface_hook.py",
+    "src/gpuwrf/coupling/pleim_xiu_surface_hook.py",
+    "src/gpuwrf/runtime/noahmp_precipitation.py",
+    "src/gpuwrf/io/restart.py",
+    "src/gpuwrf/io/restart_schema.py",
+    "src/gpuwrf/validation/wrf_restart_hydration.py",
+    "producer 'sr' entries: scan_adapters._mp_public_precipitation, morrison(_aero) diagnostics, ferrier, goddard4ice, thompson_hail, nssl, ntu, cammg, jensen, p3(return_sr)"
+   ],
+   "reach": "numeric: sf_surface_physics in {2,7} (API-only, CLI refuses). Producer 'sr' extraction executes for every MP with a land carry but is consumed only when with_sr (Noah-classic): precipitation_from_step returns sr=None and noahmp_surface_hook drops it",
+   "caller_sites": [
+    "src/gpuwrf/coupling/noahclassic_surface_hook.py:191 noahclassic_precipitation",
+    "src/gpuwrf/coupling/pleim_xiu_surface_hook.py:150 pleim_xiu_precipitation",
+    "src/gpuwrf/runtime/operational_mode.py:10824/:10832 return_sr only if _explicit_noahclassic",
+    "src/gpuwrf/coupling/scan_adapters.py:248 generic sr (unused unless with_sr)",
+    "src/gpuwrf/runtime/noahmp_precipitation.py:31-38 sr=None unless with_sr"
+   ],
+   "numeric_change": "yes",
+   "notes": "Restart v6 bump affects resume of any run (pre-v6 Noah-classic checkpoints refused); WRF-restart hydration SR edit not exercised by a runnable test (P0227 savepoints absent). No GPU composite needed.",
+   "class": "A",
+   "affected": [],
+   "numeric_change_detail": "YES only for sf 2/7 (none in the matrix). All LSM composites: BYTE (unused sr DCE'd; treedef +1 None field may change AOT/cheap keys, not values; Swiss/PROD identity EXACT)"
+  },
+  {
+   "fix": "CAM-MG mp11 GPU admission: native column compiled by stock Triton 3.6 via jaxlib triton_kernel_call (XLA bundled Triton miscompiled -> zero RAINNCV/SNOWNCV)",
+   "batch": 45,
+   "lane": "t-cammgws 3ec98090e1",
+   "commits": "3ec98090e1 (reviewed SRC 67102aecc1)",
+   "changed": [
+    "src/gpuwrf/kernels/_triton_kernel_call.py (new)",
+    "src/gpuwrf/kernels/phys_cammg.py",
+    "src/gpuwrf/io/cammg_config.py",
+    "src/gpuwrf/runtime/aot_baked_tables.py",
+    "src/gpuwrf/io/scheme_catalog.py"
+   ],
+   "reach": "mp_physics == 11 on CUDA (admission + kernel route); CPU path unchanged",
+   "caller_sites": [
+    "src/gpuwrf/io/cammg_config.py:15/28 GPU_REFUSED_MP_PHYSICS empty -> GPU admitted",
+    "src/gpuwrf/kernels/phys_cammg.py:85 KernelCallCompilerParams",
+    "src/gpuwrf/runtime/operational_mode.py:8598 elif mp_opt == 11 -> cammg_adapter"
+   ],
+   "numeric_change": "yes",
+   "notes": "c89 whole-old-source carry-over FORBIDDEN (s2-integrate batch45); native E41 STACK 1240 B/255 regs disclosed; requires pip triton==3.6.*. c89 already in manager's FINAL list.",
+   "class": "A",
+   "affected": [
+    "c89"
+   ],
+   "numeric_change_detail": "YES on GPU (was refused; old bundled-Triton kernel gave zero precipitation). km_opt=3 refusal retained"
+  },
+  {
+   "fix": "wz1080: CUDA architecture preflight (refuse < sm_80 before model work)",
+   "batch": 46,
+   "lane": "wz1080 341a3064f + bd9e37998",
+   "commits": "341a3064f, bd9e37998",
+   "changed": [
+    "src/gpuwrf/cli.py",
+    "src/gpuwrf/contracts/state.py (_gpu_device guard)",
+    "src/gpuwrf/runtime/gpu_preflight.py",
+    "src/gpuwrf/runtime/aot_cheap_key.py (PROCESS_INFRA_ENV)"
+   ],
+   "reach": "every CLI run (control path) and every GPU state allocation; pure Python, no traced program change",
+   "caller_sites": [
+    "src/gpuwrf/cli.py:1152 run_gpu_architecture_preflight()",
+    "src/gpuwrf/contracts/state.py:45 _require_supported_gpu_architecture"
+   ],
+   "numeric_change": "none",
+   "notes": "Executes in every composite run but cannot change numerics; no rerun needed for it.",
+   "class": "tooling",
+   "affected": [],
+   "numeric_change_detail": "NONE (no traced change; on sm_120 passes; GPUWRF_ALLOW_UNSUPPORTED_GPU in PROCESS_INFRA_ENV, not in cheap key)"
+  },
+  {
+   "fix": "r-pkg040: packaged table assets (asset_path/ensure_asset, LazyTable) for RRTMG/Thompson/Thompson-aero/Thompson-hail/Jensen/CAM ozone; AOT cheap key content-keyed",
+   "batch": 47,
+   "lane": "r-pkg040 1b8f0fce6a",
+   "commits": "1b8f0fce6a0a12a6ed4ca170e7351a9763a773fe (+batch55 85fb2ee05 Jensen pin)",
+   "changed": [
+    "src/gpuwrf/assets.py",
+    "src/gpuwrf/assets_manifest.json",
+    "src/gpuwrf/physics/{rrtmg_lw,rrtmg_tables,thompson_tables,thompson_aero_tables,wrf_cam_ozone}.py",
+    "src/gpuwrf/physics/thompson_hail/{context,native}.py",
+    "src/gpuwrf/physics/jensen_ishmael/tables.py",
+    "src/gpuwrf/runtime/{aot_baked_tables,aot_cheap_key}.py",
+    "src/gpuwrf/cli.py"
+   ],
+   "reach": "every run loading these tables (ra 4 RRTMG, mp 8/28/38, mp55, CAM ozone): path resolution only; in a repo checkout asset_path() = the same repo file",
+   "caller_sites": [
+    "src/gpuwrf/physics/rrtmg_tables.py:23 TABLE_ASSET=asset_path(...)",
+    "src/gpuwrf/physics/thompson_tables.py:23 TABLE_ASSET=asset_path(...)"
+   ],
+   "numeric_change": "none",
+   "notes": "Release packaging smoke (wheel install) is a separate gate, not a composite rerun.",
+   "class": "tooling",
+   "affected": [],
+   "numeric_change_detail": "NONE in a checkout (identical bytes; s2-integrate fresh FULL Swiss/PROD IDs match). Installed-wheel path = fetched/bundled copies, SHA-manifest fail-closed"
+  },
+  {
+   "fix": "t-classd-jensen: Jensen mp55 REFL_10CM from DIAG_DBZ3D every call; REFD_MAX only under do_radar_ref=1; NTU QHAIL history",
+   "batch": 48,
+   "lane": "t-classd-jensen 8b844b8bb",
+   "commits": "8b844b8bbd451b2b0add84c022c58d29494bc992",
+   "changed": [
+    "src/gpuwrf/physics/jensen_ishmael/adapter.py",
+    "src/gpuwrf/diagnostics/online.py",
+    "src/gpuwrf/runtime/operational_mode.py",
+    "src/gpuwrf/io/microphysics_history.py",
+    "src/gpuwrf/io/producer_history.py",
+    "src/gpuwrf/integration/nested_pipeline.py"
+   ],
+   "reach": "mp_physics == 55 (radar carry seeded + kernel dbz output); history inventory also for mp 56 (QHAIL listed as prognostic history)",
+   "caller_sites": [
+    "src/gpuwrf/runtime/operational_mode.py:7924 radar_reflectivity seed for mp in (...,55)",
+    "src/gpuwrf/diagnostics/online.py:134 radar_from_context mp 55",
+    "src/gpuwrf/physics/jensen_ishmael/adapter.py:28 dbz kernel output",
+    "src/gpuwrf/runtime/operational_mode.py:8621 elif mp_opt == 55"
+   ],
+   "numeric_change": "history-only",
+   "notes": "Inventory gate of c87/c88 must expect REFL_10CM (c87) and QHAIL (c88).",
+   "class": "diagnostic-only",
+   "affected": [
+    "c87",
+    "c88"
+   ],
+   "numeric_change_detail": "History-only: REFL_10CM (mp55) now written; prognostics unchanged by intent (extra kernel output). mp56: QHAIL history inventory only"
+  },
+  {
+   "fix": "t-cfix-phyprep S2/S3: EEPS/KEPS (bl16/17) hydrostatic P_PHY/P8W",
+   "batch": 49,
+   "lane": "t-cfix-phyprep",
+   "class": "B",
+   "commits": [
+    "cfe70e98e6"
+   ],
+   "changed": [
+    "src/gpuwrf/coupling/epsilon_pbl.py"
+   ],
+   "reach": "bl_pbl_physics in (16,17)",
+   "caller_sites": [
+    "src/gpuwrf/runtime/operational_mode.py:9855 elif bl_opt in (16,17)",
+    "src/gpuwrf/coupling/epsilon_pbl.py:146 scheme==16 p_hyd",
+    "src/gpuwrf/coupling/epsilon_pbl.py:154 keps p8w=p_hyd_w"
+   ],
+   "affected": [
+    "c10",
+    "c11"
+   ],
+   "numeric_change": "yes",
+   "notes": "",
+   "numeric_change_detail": "yes"
+  },
+  {
+   "fix": "t-cfix-phyprep S2/S3: QNSE PBL (bl4) hydrostatic P_PHY/P8W",
+   "batch": 49,
+   "lane": "t-cfix-phyprep",
+   "class": "B",
+   "commits": [
+    "cfe70e98e6"
+   ],
+   "changed": [
+    "src/gpuwrf/coupling/qnse_adapter.py"
+   ],
+   "reach": "bl_pbl_physics==4 (WRF pairing forces sf_sfclay=4)",
+   "caller_sites": [
+    "src/gpuwrf/coupling/qnse_adapter.py:75 _geometry p_hyd/p_hyd_w (always, metrics required)"
+   ],
+   "affected": [
+    "c26"
+   ],
+   "numeric_change": "yes",
+   "notes": "",
+   "numeric_change_detail": "yes"
+  },
+  {
+   "fix": "t-cfix-phyprep S2/S3: TEMF PBL (bl10) hydrostatic P_PHY/P8W",
+   "batch": 49,
+   "lane": "t-cfix-phyprep",
+   "class": "B",
+   "commits": [
+    "cfe70e98e6"
+   ],
+   "changed": [
+    "src/gpuwrf/coupling/temf.py"
+   ],
+   "reach": "bl_pbl_physics==10",
+   "caller_sites": [
+    "src/gpuwrf/coupling/temf.py:50 phy_inputs p_hyd/p8w"
+   ],
+   "affected": [
+    "c27"
+   ],
+   "numeric_change": "yes",
+   "notes": "",
+   "numeric_change_detail": "yes"
+  },
+  {
+   "fix": "t-cfix-phyprep S2/S3: Grell-3D/GD (cu5/93) P=p_hyd, P8W=p_hyd_w",
+   "batch": 49,
+   "lane": "t-cfix-phyprep",
+   "class": "B",
+   "commits": [
+    "cfe70e98e6"
+   ],
+   "changed": [
+    "src/gpuwrf/coupling/scan_adapters.py (grell_cumulus_adapter)"
+   ],
+   "reach": "cu_physics in (5,93) with grid metrics (always in operational runs)",
+   "caller_sites": [
+    "src/gpuwrf/coupling/scan_adapters.py:1590 grell_cumulus_adapter if metrics is not None"
+   ],
+   "affected": [
+    "c05",
+    "c13",
+    "c17"
+   ],
+   "numeric_change": "yes",
+   "notes": "adapter later re-edited by batch56 (t-cfix-cu F7/F11); same composites",
+   "numeric_change_detail": "yes"
+  },
+  {
+   "fix": "t-cfix-phyprep S2/S3: Noah-classic / Pleim-Xiu LSM / slab LSM phy_prep air T, PSFC, ZLVL",
+   "batch": 49,
+   "lane": "t-cfix-phyprep",
+   "class": "B",
+   "commits": [
+    "cfe70e98e6"
+   ],
+   "changed": [
+    "src/gpuwrf/coupling/noahclassic_surface_hook.py",
+    "src/gpuwrf/coupling/pleim_xiu_surface_hook.py",
+    "src/gpuwrf/coupling/slab_surface_hook.py",
+    "src/gpuwrf/runtime/operational_mode.py (grid= pass)"
+   ],
+   "reach": "sf_surface_physics in (1,2,7) (API-only; CLI refuses them)",
+   "caller_sites": [
+    "src/gpuwrf/runtime/operational_mode.py:9433 noahclassic_surface_step(grid=)",
+    "src/gpuwrf/runtime/operational_mode.py:9472 slab_surface_step(grid=)",
+    "src/gpuwrf/runtime/operational_mode.py:9505 pleim_xiu_surface_step(grid=)"
+   ],
+   "affected": [],
+   "numeric_change": "yes",
+   "notes": "no composite exercises sf_surface 1/2/7 (MATRIX api_only); CPU-only evidence",
+   "numeric_change_detail": "yes (API only)"
+  },
+  {
+   "fix": "t-cammgws DLF2 history for mp11 (Registry zero without UW shallow cu)",
+   "batch": 49,
+   "lane": "t-cammgws",
+   "class": "diagnostic-only",
+   "commits": [
+    "8c024430b1",
+    "1d0d6594ec"
+   ],
+   "changed": [
+    "src/gpuwrf/io/producer_history.py",
+    "src/gpuwrf/io/wrf_variable_metadata.py"
+   ],
+   "reach": "mp_physics==11 and shcu_physics!=2 (history inventory only)",
+   "caller_sites": [
+    "src/gpuwrf/io/producer_history.py:62 mp==11 and shcu_physics!=2 -> DLF2 zero field"
+   ],
+   "affected": [
+    "c89"
+   ],
+   "numeric_change": "history-only",
+   "notes": "inventory check only",
+   "numeric_change_detail": "history-only (new zero DLF2 field; model state BYTE)"
+  },
+  {
+   "fix": "F20 MYNN default path: bottom-face w1 to EDMF/DMP taper + driver-local HFX/QFX limits",
+   "batch": 50,
+   "lane": "t-cfix-mynn",
+   "class": "A",
+   "commits": [
+    "946141e288"
+   ],
+   "changed": [
+    "src/gpuwrf/coupling/physics_couplers.py",
+    "src/gpuwrf/physics/mynn_edmf.py",
+    "src/gpuwrf/physics/surface_layer.py"
+   ],
+   "reach": "bl_pbl_physics==5 (MYNN; limits need GPUWRF_MYNN_FLTV_WRF=1, release default via _fast_defaults.py:104)",
+   "caller_sites": [
+    "src/gpuwrf/runtime/operational_mode.py:9985 elif bl_opt == DEFAULT_BL_PBL_PHYSICS (5) -> mynn_adapter[_with_source_leaves]",
+    "src/gpuwrf/coupling/physics_couplers.py:2312 column(_w_bottom_faces)",
+    "src/gpuwrf/coupling/physics_couplers.py:2199 _mynn_driver_limited_handles (via _surface_fluxes_from_state)",
+    "src/gpuwrf/physics/mynn_edmf.py:294 DMP activation k<kte"
+   ],
+   "affected": [
+    "c00",
+    "c12",
+    "c13",
+    "c14",
+    "c15",
+    "c16",
+    "c17",
+    "c18",
+    "c19",
+    "c20",
+    "c21",
+    "c22",
+    "c23",
+    "c24",
+    "c30",
+    "c31",
+    "c32",
+    "c33",
+    "c36",
+    "c41",
+    "c42",
+    "c44",
+    "c45",
+    "c46",
+    "c47",
+    "c48",
+    "c49",
+    "c50",
+    "c51",
+    "c52",
+    "c53",
+    "c54",
+    "c55",
+    "c58",
+    "c60",
+    "c62",
+    "c63",
+    "c64",
+    "c65",
+    "c66",
+    "c67",
+    "c68",
+    "c69",
+    "c70",
+    "c77",
+    "c78",
+    "c79",
+    "c71",
+    "c72",
+    "c73",
+    "c83",
+    "c84",
+    "c86",
+    "c87",
+    "c88",
+    "c90"
+   ],
+   "numeric_change": "yes",
+   "notes": "also every default-namelist run (PROD, WN3, Swiss). cuplus (cu7/10/11) and obs-nudging use _mynn_column_from_state for dz only (w unused) -> no extra reach. surface_layer_diagnostics output fallback (OM:11328, only when in-step history is absent) also reads the limited handles [I]",
+   "numeric_change_detail": "yes (default IDs changed: Swiss 7379c7d7 / PROD d01 6487f5b0)"
+  },
+  {
+   "fix": "F8 MYNN mixes QNC/QNWFA/QNIFA (CLOUDMIX number scalars)",
+   "batch": 51,
+   "lane": "t-cfix-pblmix",
+   "class": "B",
+   "commits": [
+    "27305db75d"
+   ],
+   "changed": [
+    "src/gpuwrf/runtime/operational_mode.py",
+    "src/gpuwrf/coupling/physics_couplers.py",
+    "src/gpuwrf/kernels/phys_mynn_numbers.py",
+    "src/gpuwrf/kernels/phys_mynn_cloudmix.py",
+    "src/gpuwrf/kernels/phys_mynn_columns.py",
+    "src/gpuwrf/physics/mynn_edmf.py",
+    "src/gpuwrf/physics/mynn_pbl.py"
+   ],
+   "reach": "bl_pbl_physics==5 and mp_physics in (9,11,14,16,26,28,38,40,51,52,53,56) (bl_mynn_cloudmix=1, WRF default; no composite overrides it)",
+   "caller_sites": [
+    "src/gpuwrf/runtime/operational_mode.py:8933 _pbl_mynn_number_scalars",
+    "src/gpuwrf/runtime/operational_mode.py:9994 / :10064 passive_scalars into MYNN"
+   ],
+   "affected": [
+    "c18",
+    "c19",
+    "c20",
+    "c22",
+    "c23",
+    "c24",
+    "c65",
+    "c88"
+   ],
+   "numeric_change": "yes",
+   "notes": "mp9 (c07, bl11), mp11 (c89, bl9), mp14 (c10, bl16), mp16 (c11, bl17) not reached (non-MYNN PBL)",
+   "numeric_change_detail": "yes (Nc/nwfa/nifa; qnc feeds MP)"
+  },
+  {
+   "fix": "F17 GBM (bl12) WRF multi-layer pblhgt + held/this-step RTHRATEN",
+   "batch": 51,
+   "lane": "t-cfix-pblmix",
+   "class": "B",
+   "commits": [
+    "ae796cdfd0",
+    "04ec7edd90",
+    "a1819bd3e6"
+   ],
+   "changed": [
+    "src/gpuwrf/physics/bl_gbm.py",
+    "src/gpuwrf/coupling/scan_adapters.py (gbm_pbl_adapter rthraten)",
+    "src/gpuwrf/runtime/operational_mode.py (early RTHRATEN refresh for bl 1,12)"
+   ],
+   "reach": "bl_pbl_physics==12",
+   "caller_sites": [
+    "src/gpuwrf/runtime/operational_mode.py: early_rthraten if bl_pbl_physics in (1,12)",
+    "src/gpuwrf/runtime/operational_mode.py:9957 rthraten kwarg if bl_opt==12"
+   ],
+   "affected": [
+    "c08"
+   ],
+   "numeric_change": "yes",
+   "notes": "early-RTHRATEN branch also covers bl1 but that was pre-existing for YSU (no change for bl1)",
+   "numeric_change_detail": "yes"
+  },
+  {
+   "fix": "F23 SSiB/RUC receive topographic SWDOWN/GSW (swnorm, swup_topographic)",
+   "batch": 51,
+   "lane": "t-cfix-pblmix",
+   "class": "B",
+   "commits": [
+    "087e926beb",
+    "dad9dd5fc5"
+   ],
+   "changed": [
+    "src/gpuwrf/runtime/operational_mode.py"
+   ],
+   "reach": "sf_surface_physics in (3,8); numerics change only with slope_rad=1",
+   "caller_sites": [
+    "src/gpuwrf/runtime/operational_mode.py:9525 SSiB swnorm",
+    "src/gpuwrf/runtime/operational_mode.py:9546 RUC swnorm - swup_topographic"
+   ],
+   "affected": [
+    "c33",
+    "c40"
+   ],
+   "numeric_change": "BYTE",
+   "notes": "no composite combines RUC/SSiB with slope_rad=1 (slope_rad=1 only in c58/c59/c60, all Noah-MP)",
+   "numeric_change_detail": "BYTE expected [I]: c33/c40 have slope_rad=0 (namelist default) -> swnorm==swdown, swup_topographic==swup"
+  },
+  {
+   "fix": "Noah-MP opt_sfc=2 keeps its own CH/CM (SFCDIF2 seed)",
+   "batch": 51,
+   "lane": "t-cfix-pblmix",
+   "class": "B",
+   "commits": [
+    "087e926beb"
+   ],
+   "changed": [
+    "src/gpuwrf/physics/noahmp_coupler.py"
+   ],
+   "reach": "Noah-MP (sf_surface 4) and opt_sfc==2",
+   "caller_sites": [
+    "src/gpuwrf/physics/noahmp_coupler.py:324 own_sfcdif = opt_sfc==2"
+   ],
+   "affected": [
+    "c62"
+   ],
+   "numeric_change": "yes",
+   "notes": "opt_sfc from composite namelist.input (sha-matched); only c62 sets opt_sfc=2 (mp5 bl5 sf5)",
+   "numeric_change_detail": "yes"
+  },
+  {
+   "fix": "F3/F19 selected surface layer sf 3/7/91: ONE WRF call on phy_prep operands, feeds Noah-MP/PBL/history (+WRF constants, REAL tables)",
+   "batch": 53,
+   "lane": "t-cfix-sfc",
+   "class": "A",
+   "commits": [
+    "19947cf16b"
+   ],
+   "changed": [
+    "src/gpuwrf/coupling/sfclay_selected.py",
+    "src/gpuwrf/runtime/operational_mode.py",
+    "src/gpuwrf/physics/sfclay_gfs.py",
+    "src/gpuwrf/physics/sfclay_old_mm5.py",
+    "src/gpuwrf/physics/sfclay_pleim_xiu.py",
+    "src/gpuwrf/runtime/aot_baked_tables.py"
+   ],
+   "reach": "sf_sfclay_physics in (3,7,91) and not isftcflx and sf_urban_physics in (0,1) and (Noah-MP or no LSM)",
+   "caller_sites": [
+    "src/gpuwrf/runtime/operational_mode.py:9162 sf_opt in SELECTED_SFCLAY_OPTIONS"
+   ],
+   "affected": [
+    "c04",
+    "c25",
+    "c43",
+    "c61"
+   ],
+   "numeric_change": "yes",
+   "notes": "c25 (sf91+bl3) is now refused at the binding (bl3 requires sf3) = refusal control; hurricane isftcflx path through sfclay_old_mm5 keeps legacy constants (BYTE, sf5 composites c58/c84 unaffected)",
+   "numeric_change_detail": "yes"
+  },
+  {
+   "fix": "F13 BL_GFS (bl3) REAL/DOUBLE island on the selected SF_GFS forcing + UST/WSPD INOUT; bl3 requires sf3",
+   "batch": 53,
+   "lane": "t-cfix-sfc",
+   "class": "A",
+   "commits": [
+    "19947cf16b"
+   ],
+   "changed": [
+    "src/gpuwrf/coupling/scan_adapters.py",
+    "src/gpuwrf/physics/bl_gfs.py",
+    "src/gpuwrf/coupling/physics_dispatch.py",
+    "src/gpuwrf/io/namelist_binding.py"
+   ],
+   "reach": "bl_pbl_physics==3 (with sf_sfclay=3; any other sf refused)",
+   "caller_sites": [
+    "src/gpuwrf/runtime/operational_mode.py:9943 selected_surface_forcing and bl_opt==3",
+    "src/gpuwrf/coupling/scan_adapters.py:2153 gfs_bl_real_double when surface_forcing",
+    "src/gpuwrf/coupling/physics_dispatch.py:690 bl3 requires sf3"
+   ],
+   "affected": [
+    "c04",
+    "c25"
+   ],
+   "numeric_change": "yes",
+   "notes": "",
+   "numeric_change_detail": "yes (c04); refusal (c25)"
+  },
+  {
+   "fix": "F12 MYJ sf2/bl2: ONE MYJSFC call with carried THZ0/QZ0/UZ0/VZ0/AKHS/AKMS, MYJPBL reads it, ELFLX/CHKLOWQ/SNOW",
+   "batch": 53,
+   "lane": "t-cfix-sfc",
+   "class": "A",
+   "commits": [
+    "19947cf16b"
+   ],
+   "changed": [
+    "src/gpuwrf/coupling/myj_surface.py",
+    "src/gpuwrf/physics/myj_adapters.py",
+    "src/gpuwrf/physics/sf_myj.py",
+    "src/gpuwrf/physics/sfclay_janjic.py",
+    "src/gpuwrf/runtime/operational_mode.py",
+    "src/gpuwrf/io/restart_schema.py",
+    "src/gpuwrf/io/wrfrst_netcdf.py",
+    "src/gpuwrf/runtime/restart_store.py"
+   ],
+   "reach": "sf_sfclay_physics==2 and not isftcflx and urban in (0,1) and (Noah-MP or no LSM); bl_pbl_physics==2 consumes it",
+   "caller_sites": [
+    "src/gpuwrf/runtime/operational_mode.py:9175 sf_opt==2 myj_surface_step",
+    "src/gpuwrf/runtime/operational_mode.py (bl_opt==2 myj_kwargs)"
+   ],
+   "affected": [
+    "c03"
+   ],
+   "numeric_change": "yes",
+   "notes": "QNSE (bl4/sf4, c26) shares the qnse carry leaf type only; its arithmetic is unchanged",
+   "numeric_change_detail": "yes"
+  },
+  {
+   "fix": "F21 sf_sfclay_physics=0: no surface layer and no LSM/SST/ocean (surface_driver returns first)",
+   "batch": 53,
+   "lane": "t-cfix-sfc",
+   "class": "A",
+   "commits": [
+    "19947cf16b"
+   ],
+   "changed": [
+    "src/gpuwrf/runtime/operational_mode.py"
+   ],
+   "reach": "sf_sfclay_physics==0",
+   "caller_sites": [
+    "src/gpuwrf/runtime/operational_mode.py:9212 if sf_opt == 0: pass",
+    "src/gpuwrf/runtime/operational_mode.py:9095/9129/9578 lower_fields/sst_skin/ocean gated sf_opt!=0"
+   ],
+   "affected": [
+    "c01",
+    "c39"
+   ],
+   "numeric_change": "yes",
+   "notes": "c01/c39 are all-off composites (bl0, sf_surface 0)",
+   "numeric_change_detail": "yes (pre-batch53 the non-LSM else-branch ran the MYNN surface_adapter for sf0 unless km_opt=5)"
+  },
+  {
+   "fix": "QNSE (bl4) sea-ice refusal at the public loaders",
+   "batch": 54,
+   "lane": "t-cfix-pblmix",
+   "class": "admission",
+   "commits": [
+    "f63fdff1a6",
+    "97deead34a",
+    "507e4a76ea",
+    "b19a68e897"
+   ],
+   "changed": [
+    "src/gpuwrf/io/qnse_admission.py",
+    "src/gpuwrf/integration/daily_pipeline.py",
+    "src/gpuwrf/integration/nested_pipeline.py",
+    "src/gpuwrf/integration/d02_replay.py",
+    "src/gpuwrf/io/noahmp_land_init.py"
+   ],
+   "reach": "bl_pbl_physics==4 with sea ice in wrfinput -> refusal before model work",
+   "caller_sites": [
+    "src/gpuwrf/io/qnse_admission.py (called from the three loaders)"
+   ],
+   "affected": [
+    "c26"
+   ],
+   "numeric_change": "refusal-only",
+   "notes": "admission check executes for c26",
+   "numeric_change_detail": "refusal-only (no model change; c26 Swiss has no sea ice -> admitted, BYTE)"
+  },
+  {
+   "fix": "wz1080 remote tooling",
+   "batch": 52,
+   "lane": "wz1080",
+   "class": "tooling",
+   "commits": [
+    "28cc3848a8"
+   ],
+   "changed": [
+    "scripts/remote/**"
+   ],
+   "reach": "none (no src change)",
+   "caller_sites": [],
+   "affected": [],
+   "numeric_change": "none",
+   "notes": "",
+   "numeric_change_detail": "none"
+  },
+  {
+   "fix": "NTU mp56 column kernel 4->2 warps + find_rc0 NaN-fraction shortcut (perf); mp56 catalog note string",
+   "batch": 55,
+   "lane": "t-ntucompile",
+   "class": "perf-BYTE",
+   "commits": [
+    "ed7a9d983c",
+    "88745696cf",
+    "ededd12fb0",
+    "fd8022cea4",
+    "96f63caf39",
+    "dea8510102"
+   ],
+   "changed": [
+    "src/gpuwrf/kernels/phys_ntu.py:90 num_warps=2",
+    "src/gpuwrf/physics/ntu/math.py:151-181 find_rc0 undefined=isnan(xafrc)",
+    "src/gpuwrf/io/scheme_catalog.py mp56 note (string only)"
+   ],
+   "reach": "mp_physics == 56",
+   "caller_sites": [
+    "src/gpuwrf/kernels/phys_ntu.py:_full_column (pallas_call name ntu_mp56_column) \u2014 NTU adapter, mp_physics==56 only",
+    "src/gpuwrf/physics/ntu/math.py:find_rc0 \u2014 NTU aerosol inversion, mp56 only"
+   ],
+   "affected": [
+    "c88"
+   ],
+   "numeric_change": "BYTE",
+   "notes": "Speed/E41 relevance only (ntu_mp56_column STACK); the Jensen re-pin in the same batch (52d357a436) is proof/test-only, no src change.",
+   "numeric_change_detail": "BYTE (claimed: GPU G06 80/80 bitwise vs 4-warp, CPU frozen NTU observations 912/912 bitwise); runtime only"
+  },
+  {
+   "fix": "F7/F14/F18 held WRF RTHFTEN/RQVFTEN closure forcing (last-RK-stage capture x msfty, phy_prep_part2 decouple + dry conversion; G3/GD/GF/NTiedtke theta+qv, Tiedtke qv only; step-1 zero for both Tiedtkes; new carry leaf cu_forcing)",
+   "batch": 56,
+   "lane": "t-cfix-cu",
+   "class": "A",
+   "commits": [
+    "ed95bfea3",
+    "5df2145e9",
+    "e83d97351",
+    "f64e6137e",
+    "abac2ce26"
+   ],
+   "changed": [
+    "src/gpuwrf/runtime/operational_mode.py",
+    "src/gpuwrf/coupling/cu_forcing.py",
+    "src/gpuwrf/coupling/scan_adapters.py (gf/g3/gd/tiedtke/ntiedtke adapters)",
+    "src/gpuwrf/runtime/operational_state.py",
+    "src/gpuwrf/integration/daily_pipeline.py",
+    "src/gpuwrf/nesting/moving_driver.py"
+   ],
+   "reach": "cu_physics in (3, 5, 6, 16, 93)  [CU_FORCING_SCHEMES]",
+   "caller_sites": [
+    "src/gpuwrf/runtime/operational_mode.py:6175 _rk_scan_step cu_capture = last RK stage and cu_forcing_required(cu_physics)",
+    "src/gpuwrf/runtime/operational_mode.py:7978 _initial_carry_for_run seeds cu_forcing if cu_forcing_required(cu_opt)",
+    "src/gpuwrf/runtime/operational_mode.py:10171 _physics_step_forcing cu_opt in (6,16) held RQVFTEN(/RTHFTEN)",
+    "src/gpuwrf/runtime/operational_mode.py:10217 cu_opt in (5,93) G3/GD rthften/rqvften/rthraten",
+    "src/gpuwrf/runtime/operational_mode.py:10239 cu_opt == 3 GF (PSUR, staggered w, KPBL, interior band)",
+    "src/gpuwrf/runtime/operational_mode.py:10783 _physics_boundary_step_with_limiter_diagnostics finish_cu_forcing if cu_forcing_required"
+   ],
+   "affected": [
+    "c04",
+    "c05",
+    "c06",
+    "c07",
+    "c13",
+    "c17"
+   ],
+   "numeric_change": "yes",
+   "notes": "cu codes per composite: c04 cu3, c05 cu5, c06 cu6, c07 cu16, c13 cu5, c17 cu93. All have cudt=0 (namelists checked), so the extended cudt>0 refusal (OM:7395) refuses none.",
+   "numeric_change_detail": "yes"
+  },
+  {
+   "fix": "F9 cumulus R*CUTEN as RK sources (calculate_phy_tend couple with time-n mut, phy_cu_ten per-scheme field set, advance_ppt RAINC; no Euler add) for the stateless schemes",
+   "batch": 56,
+   "lane": "t-cfix-cu",
+   "class": "A",
+   "commits": [
+    "ed95bfea3",
+    "cdcd77b8e"
+   ],
+   "changed": [
+    "src/gpuwrf/runtime/operational_mode.py",
+    "src/gpuwrf/coupling/cu_rk.py",
+    "src/gpuwrf/coupling/scan_adapters.py (return_rates)"
+   ],
+   "reach": "rad_rk_tendf != 0 (CLI/nested default 1: nested_pipeline.py:570 unless GPUWRF_PHYS_RK_TENDF=0) and cu_physics in (2, 3, 5, 6, 16, 93)",
+   "caller_sites": [
+    "src/gpuwrf/runtime/operational_mode.py:8994 source_leaf_mode = rad_rk_tendf != 0",
+    "src/gpuwrf/runtime/operational_mode.py:10125 cu input = PBL-entry state + PBL increment/dt when the PBL was not restored",
+    "src/gpuwrf/runtime/operational_mode.py:10171/10217/10239 _stateless_cu(... return_rates=source_leaf_mode)",
+    "src/gpuwrf/runtime/operational_mode.py:10397 BMJ bmj_adapter(cu_state, return_rates=source_leaf_mode)"
+   ],
+   "affected": [
+    "c03",
+    "c04",
+    "c05",
+    "c06",
+    "c07",
+    "c13",
+    "c17"
+   ],
+   "numeric_change": "yes",
+   "notes": "c03 = BMJ cu2. KF cu1 (OM:10361-10388) and cuplus 7/10/11 keep their previous paths (c29/c30/c31 not reached by F9).",
+   "numeric_change_detail": "yes"
+  },
+  {
+   "fix": "F9 held-rate cumulus (SAS 4/14/94/95/96, KF99) coupled into the RK + post-RK decouple; KF99 advance_ppt clear after consumption",
+   "batch": 56,
+   "lane": "t-cfix-cu",
+   "class": "A",
+   "commits": [
+    "ed95bfea3"
+   ],
+   "changed": [
+    "src/gpuwrf/runtime/operational_mode.py",
+    "src/gpuwrf/coupling/cu_rk.py",
+    "src/gpuwrf/coupling/kf99_adapter.py"
+   ],
+   "reach": "rad_rk_tendf != 0 and cu_physics in (4, 14, 94, 95, 96, 99)  [cu_rk.HELD_APPLIED]",
+   "caller_sites": [
+    "src/gpuwrf/runtime/operational_mode.py:10267 cu4, :10282 cu14/96, :10317 cu95, :10332 cu94 _held_cu_rk when source_leaf_mode",
+    "src/gpuwrf/runtime/operational_mode.py:10292 cu99 kf99_refresh + kf99_advance_ppt + _held_cu_rk",
+    "src/gpuwrf/runtime/operational_mode.py:10756 decouple_held if cu in HELD_APPLIED and rad_rk_tendf != 0"
+   ],
+   "affected": [
+    "c08",
+    "c09",
+    "c10",
+    "c11",
+    "c14"
+   ],
+   "numeric_change": "yes",
+   "notes": "c08 cu14, c09 cu94, c10 cu95, c11 cu96, c14 cu99. No composite uses cu4.",
+   "numeric_change_detail": "yes"
+  },
+  {
+   "fix": "F9 MYJ PBL (bl2) publishes RU/RV/RTH/RQV/RQC/RQIBLTEN coupled into the RK (previously only with cu7)",
+   "batch": 56,
+   "lane": "t-cfix-cu",
+   "class": "A",
+   "commits": [
+    "ed95bfea3",
+    "abac2ce26 (composed with t-cfix-sfc myj_kwargs)"
+   ],
+   "changed": [
+    "src/gpuwrf/runtime/operational_mode.py"
+   ],
+   "reach": "bl_pbl_physics == 2 and rad_rk_tendf != 0 and GPUWRF_PHYS_TEND_RK_WRF == 1 (release fast default, _fast_defaults.py:129)",
+   "caller_sites": [
+    "src/gpuwrf/runtime/operational_mode.py:9834 if cu_opt==7 or (source_leaf_mode and _phys_tend_rk_wrf_enabled())"
+   ],
+   "affected": [
+    "c03"
+   ],
+   "numeric_change": "yes",
+   "notes": "Only bl2 composite is c03.",
+   "numeric_change_detail": "yes"
+  },
+  {
+   "fix": "F9 generic PBL Euler -> RK branch for PBL_SCAN_ADAPTERS without the sf1 handoff",
+   "batch": 56,
+   "lane": "t-cfix-cu",
+   "class": "A",
+   "commits": [
+    "ed95bfea3"
+   ],
+   "changed": [
+    "src/gpuwrf/runtime/operational_mode.py"
+   ],
+   "reach": "bl in (1,3,7,8,11,12,99) and rad_rk_tendf != 0 and PHYS_TEND_RK_WRF=1 and NOT [urban 2/3 (bl1/8)] and NOT [bl1 explicit SSiB] and NOT [sf_sfclay==1 handoff (sf1, bl not 16/17, urban 0/1, no SSiB, isftcflx 0)] and NOT [bl3 with selected sf 3/7/91 + Noah-MP]",
+   "caller_sites": [
+    "src/gpuwrf/runtime/operational_mode.py:9964 elif bl_opt in PBL_SCAN_ADAPTERS and source_leaf_mode and _phys_tend_rk_wrf_enabled()",
+    "src/gpuwrf/runtime/operational_mode.py:9149 sf1 handoff predicate; :9160-9167 selected surface (3,7,91) predicate"
+   ],
+   "affected": [],
+   "numeric_change": "yes",
+   "notes": "Every composite with bl 1/7/8/11/12/99 uses sf_sfclay=1 (sf1 handoff branch) or urban/SSiB branches; bl3 composites c04 (sf3) and c25 (sf91) take the selected-surface handoff branch. So 0 composites.",
+   "numeric_change_detail": "yes where reached; no composite reaches it"
+  },
+  {
+   "fix": "F10 GF ishallow_g3 default 1 -> 0 (WRF Registry) and GF kernel skips CUP_gf_sh at ishallow=0 (no outqcs leak into RQCCUTEN)",
+   "batch": 56,
+   "lane": "t-cfix-cu",
+   "class": "A",
+   "commits": [
+    "47f7b683e",
+    "aaee4d0f1"
+   ],
+   "changed": [
+    "src/gpuwrf/coupling/scan_adapters.py:1362 gf_adapter(ishallow_g3=0)",
+    "src/gpuwrf/physics/_gf_jax.py:2173-2182"
+   ],
+   "reach": "cu_physics == 3",
+   "caller_sites": [
+    "src/gpuwrf/runtime/operational_mode.py:10239 elif cu_opt == 3 -> CU_STATELESS_SCAN_ADAPTERS[3] = gf_adapter"
+   ],
+   "affected": [
+    "c04"
+   ],
+   "numeric_change": "yes",
+   "notes": "",
+   "numeric_change_detail": "yes"
+  },
+  {
+   "fix": "F11 KF species flags (warm_rain for Kessler; F_QR/F_QI/F_QS from the MP moist array) and KF_eta_CPS output gate",
+   "batch": 56,
+   "lane": "t-cfix-cu",
+   "class": "A",
+   "commits": [
+    "f7bd3e60d",
+    "c3478e6cc"
+   ],
+   "changed": [
+    "src/gpuwrf/coupling/scan_adapters.py:846 kf_cps_species_gate, :937 species_flags",
+    "src/gpuwrf/physics/cumulus_kf.py:1482-1510 feedback branches"
+   ],
+   "reach": "cu_physics == 1 (KF; kf_adapter OM:10388 and _kf_cadence_step OM:8719). Numerics change only if mp_physics == 1 or the MP moist set lacks qr/qi/qs (physics_registry.MP_MOIST_MEMBERS); all-true flags take the byte-identical branch, the gate emits no ops",
+   "caller_sites": [
+    "src/gpuwrf/runtime/operational_mode.py:8719 _kf_cadence_step passes mp_physics",
+    "src/gpuwrf/runtime/operational_mode.py:10388 kf_adapter(mp_physics=int(namelist.mp_physics))"
+   ],
+   "affected": [
+    "c02"
+   ],
+   "numeric_change": "yes",
+   "notes": "reached-but-BYTE: c36 c41 c46 c71 c72 c73 c90 (no rerun needed for F11).",
+   "numeric_change_detail": "yes for c02 (cu1 + mp1 Kessler: warm_rain melt + RQRCUTEN fold); BYTE for cu1 + mp8 (c36, c41, c46, c71, c72, c73, c90: Thompson has qr/qi/qs; PROD d01 KF+mp8 identity 6487 EXACT on 04cb09f816)"
+  },
+  {
+   "fix": "F11 condensate species gating (F_QC/F_QI) for G3/GD/GF/Tiedtke/NTiedtke outputs",
+   "batch": 56,
+   "lane": "t-cfix-cu",
+   "class": "A",
+   "commits": [
+    "f7bd3e60d"
+   ],
+   "changed": [
+    "src/gpuwrf/coupling/scan_adapters.py:1012 _cu_condensate_flags and its uses in tiedtke/ntiedtke/gf/grell adapters"
+   ],
+   "reach": "cu_physics in (3, 5, 6, 16, 93) and the MP moist set lacks qc or qi",
+   "caller_sites": [
+    "src/gpuwrf/runtime/operational_mode.py:10171/10217/10239 adapters get mp_physics=mp_opt"
+   ],
+   "affected": [
+    "c04"
+   ],
+   "numeric_change": "yes",
+   "notes": "c05/c06/c07/c13/c17 are reached by F7/F9 anyway.",
+   "numeric_change_detail": "yes for c04 (mp3 WSM3 has no qi: GF RQICUTEN dropped); BYTE for c05 (mp4), c06 (mp6), c07 (mp9), c13 (mp18), c17 (mp24), which have qc and qi"
+  },
+  {
+   "fix": "F18 r1: legacy (non-driver) radiation refresh/hold on the step-entry state also for G3/GD/GF/NTiedtke, so they read this step's RTHRATEN",
+   "batch": 56,
+   "lane": "t-cfix-cu",
+   "class": "B",
+   "commits": [
+    "0aea32eb9"
+   ],
+   "changed": [
+    "src/gpuwrf/runtime/operational_mode.py:9766"
+   ],
+   "reach": "(bl in (1,12) or cu in (3,5,16,93)) and carry.radiation_diagnostics is None (legacy radiation path)",
+   "caller_sites": [
+    "src/gpuwrf/runtime/operational_mode.py:9766 early_rthraten condition"
+   ],
+   "affected": [
+    "c04",
+    "c05",
+    "c07",
+    "c13",
+    "c17"
+   ],
+   "numeric_change": "yes",
+   "notes": "UNCERTAIN: whether radiation_diagnostics is None for these composites' radiation families (ra 4/4; c04 ra_sw 1) was not traced; all 5 are already affected by F7/F9.",
+   "numeric_change_detail": "yes where radiation_diagnostics is None; new only for the cu side (bl 1/12 already had it)"
+  },
+  {
+   "fix": "F18 r3: BL_GFS KPBL2D published with the GFS RK rates; GF reads it as grid%kpbl",
+   "batch": 56,
+   "lane": "t-cfix-cu",
+   "class": "B",
+   "commits": [
+    "f64e6137e",
+    "fd18b5e54",
+    "abac2ce26"
+   ],
+   "changed": [
+    "src/gpuwrf/coupling/scan_adapters.py:2127 gfs_pbl_adapter publishes kpbl",
+    "src/gpuwrf/runtime/operational_mode.py _raw_pbl_sources pbl_published['kpbl'], GF kpbl=pbl_published.get('kpbl')"
+   ],
+   "reach": "bl_pbl_physics == 3 publishes it (BYTE for PBL values); consumed only when cu_physics == 3",
+   "caller_sites": [
+    "src/gpuwrf/runtime/operational_mode.py:10239 GF kpbl=pbl_published.get('kpbl')"
+   ],
+   "affected": [
+    "c04"
+   ],
+   "numeric_change": "yes",
+   "notes": "",
+   "numeric_change_detail": "yes for c04 (bl3 + cu3); BYTE for c25 (bl3 + cu0: kpbl published but unused; c25 is a refusal control: sf91+bl3 refused since batch53)"
+  },
+  {
+   "fix": "F7 r5 + restart schema: held RTHFTEN/RQVFTEN in pkl/NetCDF/checkpoint/restart_store with E78 refusal; CPU-WRF wrfrst hydration copies RTHFTEN/RQVFTEN",
+   "batch": 56,
+   "lane": "t-cfix-cu",
+   "class": "restart-only",
+   "commits": [
+    "ed95bfea3",
+    "fb088b13c"
+   ],
+   "changed": [
+    "src/gpuwrf/io/cu_forcing_schema.py",
+    "src/gpuwrf/io/restart.py",
+    "src/gpuwrf/io/wrfrst_netcdf.py",
+    "src/gpuwrf/runtime/checkpoint.py",
+    "src/gpuwrf/runtime/restart_store.py",
+    "src/gpuwrf/validation/wrf_restart_hydration.py"
+   ],
+   "reach": "write/read of a restart or checkpoint (or CPU-WRF wrfrst hydration) with cu_physics in (3,5,6,16,93); other schemes write cu_forcing=None",
+   "caller_sites": [
+    "src/gpuwrf/io/restart.py validate_cu_forcing on write/read",
+    "src/gpuwrf/runtime/checkpoint.py validate_cu_forcing on write/read"
+   ],
+   "affected": [],
+   "numeric_change": "restart-only",
+   "notes": "No composite declares a restart feature. Only a resumed run of c04/c05/c06/c07/c13/c17 would exercise it.",
+   "numeric_change_detail": "restart-only (no forecast-numeric change in an uninterrupted run)"
+  },
+  {
+   "fix": "cudt>0 refusal extended from cu 5/93 to cu 2/3/5/6/16/93",
+   "batch": 56,
+   "lane": "t-cfix-cu",
+   "class": "admission",
+   "commits": [
+    "ed95bfea3"
+   ],
+   "changed": [
+    "src/gpuwrf/runtime/operational_mode.py:7395"
+   ],
+   "reach": "cu_physics in (2,3,5,6,16,93) and cumulus_cadence_steps > 1 (cudt > 0)",
+   "caller_sites": [
+    "src/gpuwrf/runtime/operational_mode.py:7395 _resolve_operational_suite grell_cu"
+   ],
+   "affected": [],
+   "numeric_change": "refusal-only",
+   "notes": "Every composite with these cu codes has cudt = 0 in v-prep cXX/input/namelist.input, so none is refused.",
+   "numeric_change_detail": "refusal-only"
+  }
+ ],
+ "rerun_numeric": [
+  "c04",
+  "c03",
+  "c05",
+  "c07",
+  "c06",
+  "c13",
+  "c17",
+  "c02",
+  "c09",
+  "c08",
+  "c14",
+  "c10",
+  "c11",
+  "c12",
+  "c15",
+  "c16",
+  "c18",
+  "c19",
+  "c20",
+  "c22",
+  "c23",
+  "c24",
+  "c88",
+  "c21",
+  "c40",
+  "c56",
+  "c61",
+  "c85",
+  "c87",
+  "c89",
+  "c62",
+  "c64",
+  "c65",
+  "c00",
+  "c01",
+  "c30",
+  "c31",
+  "c33",
+  "c36",
+  "c39",
+  "c42",
+  "c43",
+  "c45",
+  "c46",
+  "c47",
+  "c49",
+  "c50",
+  "c51",
+  "c55",
+  "c57",
+  "c60",
+  "c68",
+  "c69",
+  "c70",
+  "c71",
+  "c72",
+  "c73",
+  "c77",
+  "c78",
+  "c79",
+  "c83",
+  "c84",
+  "c86",
+  "c90",
+  "c26",
+  "c27"
+ ],
+ "rerun_numeric_class_a": [
+  "c04",
+  "c03",
+  "c05",
+  "c07",
+  "c06",
+  "c13",
+  "c17",
+  "c02",
+  "c09",
+  "c08",
+  "c14",
+  "c10",
+  "c11",
+  "c12",
+  "c15",
+  "c16",
+  "c18",
+  "c19",
+  "c20",
+  "c22",
+  "c23",
+  "c24",
+  "c88",
+  "c21",
+  "c40",
+  "c56",
+  "c61",
+  "c85",
+  "c87",
+  "c89",
+  "c62",
+  "c64",
+  "c65",
+  "c00",
+  "c01",
+  "c30",
+  "c31",
+  "c33",
+  "c36",
+  "c39",
+  "c42",
+  "c43",
+  "c45",
+  "c46",
+  "c47",
+  "c49",
+  "c50",
+  "c51",
+  "c55",
+  "c57",
+  "c60",
+  "c68",
+  "c69",
+  "c70",
+  "c71",
+  "c72",
+  "c73",
+  "c77",
+  "c78",
+  "c79",
+  "c83",
+  "c84",
+  "c86",
+  "c90"
+ ],
+ "reached_only_non_numeric": [],
+ "not_reached": [
+  "c28",
+  "c29",
+  "c37",
+  "c38"
+ ],
+ "not_runnable": [
+  "c25",
+  "c32",
+  "c34",
+  "c35",
+  "c41",
+  "c44",
+  "c48",
+  "c52",
+  "c53",
+  "c54",
+  "c58",
+  "c59",
+  "c63",
+  "c66",
+  "c67"
+ ],
+ "caveats": [
+  "Reach covers the src changes of batches 38-56 only (main first-parent heads 668f27f694..04cb09f816). A composite outside rerun_numeric may reuse a paid result only if that result's source already contains every pre-batch-38 change it reaches (v-prep checks its source commit).",
+  "BYTE/history-only/refusal-only items are listed per composite under other_reach; they need inventory (history fields) or E41/timing on the rerun, not a fidelity rerun.",
+  "c25 (bl3+sf91) is not runnable: pairing-refusal control, and since batch53 also refused by 'bl3 requires sf3'. c26 (QNSE) reruns for b49 (QNSE P_PHY/P8W); b54 sea-ice admission is refusal-only.",
+  "[I] items: F23 SSiB/RUC topographic SW BYTE at slope_rad=0 (c33 traced, c40 producer not traced); F18 r1 reach for ra4/ra1 not traced (c04 c05 c07 c13 c17 are on the list through F7/F9 anyway); cu1+mp8 F11 BYTE (c36 c41 c46 c71-73 c90) rests on the all-flags branch + PROD 6487 identity."
+ ],
+ "manager_mandated_extra": [
+  "c87",
+  "c88",
+  "c89",
+  "OVN-YSU3 (c02 c40 c56)",
+  "OVN-CAM89 (c89)"
+ ],
+ "per_composite": {
+  "c00": {
+   "status": "ADMITTED",
+   "runnable": true,
+   "options": {
+    "mp_physics": 8,
+    "cu_physics": 0,
+    "bl_pbl_physics": 5,
+    "sf_sfclay_physics": 5,
+    "sf_surface_physics": 4,
+    "ra_lw_physics": 4,
+    "ra_sw_physics": 4
+   },
+   "extra": {},
+   "features": [],
+   "numeric_fixes": [
+    "b50:F20 MYNN default path: bottom-face w1 to EDMF/DMP taper + driver-local HFX/QFX limits"
+   ],
+   "class_a_numeric": [
+    "b50:F20 MYNN default path: bottom-face w1 to EDMF/DMP taper + driver-local HFX/QFX limits"
+   ],
+   "other_reach": []
+  },
+  "c01": {
+   "status": "ADMITTED",
+   "runnable": true,
+   "options": {
+    "mp_physics": 0,
+    "cu_physics": 0,
+    "bl_pbl_physics": 0,
+    "sf_sfclay_physics": 0,
+    "sf_surface_physics": 0,
+    "ra_lw_physics": 0,
+    "ra_sw_physics": 0
+   },
+   "extra": {},
+   "features": [],
+   "numeric_fixes": [
+    "b53:F21 sf_sfclay_physics=0: no surface layer and no LSM/SST/ocean (surface_driver returns first)"
+   ],
+   "class_a_numeric": [
+    "b53:F21 sf_sfclay_physics=0: no surface layer and no LSM/SST/ocean (surface_driver returns first)"
+   ],
+   "other_reach": []
+  },
+  "c02": {
+   "status": "ADMITTED",
+   "runnable": true,
+   "options": {
+    "mp_physics": 1,
+    "cu_physics": 1,
+    "bl_pbl_physics": 1,
+    "sf_sfclay_physics": 1,
+    "sf_surface_physics": 4,
+    "ra_lw_physics": 1,
+    "ra_sw_physics": 1
+   },
+   "extra": {},
+   "features": [],
+   "numeric_fixes": [
+    "b39:F1 land precipitation for every MP (public RAINNCV/SNOWNCV/GRAUPELNCV/HAILNCV slots; seed mp!=0)",
+    "b40:YSU (bl1) QC3D/QI3D mixing, top-down cloud mixing, in-cloud Ri, CTOPO, this-step RTHRATEN; SSiB/urban-BEP YSU callers (F6/rv-t-ysuqc)",
+    "b41:phyprep series 1 (F4/F5/F15/F16): legacy PBL view = WRF phy_prep (dry T/theta, p_hyd/p_hyd_w/PSFC, total rho, g=9.81, theta_m Euler-rate conversion)",
+    "b56:F11 KF species flags (warm_rain for Kessler; F_QR/F_QI/F_QS from the MP moist array) and KF_eta_CPS output gate"
+   ],
+   "class_a_numeric": [
+    "b39:F1 land precipitation for every MP (public RAINNCV/SNOWNCV/GRAUPELNCV/HAILNCV slots; seed mp!=0)",
+    "b40:YSU (bl1) QC3D/QI3D mixing, top-down cloud mixing, in-cloud Ri, CTOPO, this-step RTHRATEN; SSiB/urban-BEP YSU callers (F6/rv-t-ysuqc)",
+    "b41:phyprep series 1 (F4/F5/F15/F16): legacy PBL view = WRF phy_prep (dry T/theta, p_hyd/p_hyd_w/PSFC, total rho, g=9.81, theta_m Euler-rate conversion)",
+    "b56:F11 KF species flags (warm_rain for Kessler; F_QR/F_QI/F_QS from the MP moist array) and KF_eta_CPS output gate"
+   ],
+   "other_reach": []
+  },
+  "c03": {
+   "status": "ADMITTED",
+   "runnable": true,
+   "options": {
+    "mp_physics": 2,
+    "cu_physics": 2,
+    "bl_pbl_physics": 2,
+    "sf_sfclay_physics": 2,
+    "sf_surface_physics": 4,
+    "ra_lw_physics": 4,
+    "ra_sw_physics": 2
+   },
+   "extra": {},
+   "features": [],
+   "numeric_fixes": [
+    "b39:F1 land precipitation for every MP (public RAINNCV/SNOWNCV/GRAUPELNCV/HAILNCV slots; seed mp!=0)",
+    "b40:MYJ (bl2) QCI species + RQC/RQIBLTEN into moist_tendf; F_QI gate",
+    "b41:phyprep series 1: legacy cumulus phy_prep staging (BMJ/GF/NTiedtke/Tiedtke) + dry RTHCUTEN -> theta_m (BMJ/GF/NTiedtke)",
+    "b41:phyprep series 1: MYJ PBL + MYJ (Janjic) surface layer phy_prep geometry, moist-form RTHBLTEN",
+    "b44:F2: convective RAINCV of stateless cu 2/3/5/6/16/93 reaches the land surface (PRCPCONV)",
+    "b53:F12 MYJ sf2/bl2: ONE MYJSFC call with carried THZ0/QZ0/UZ0/VZ0/AKHS/AKMS, MYJPBL reads it, ELFLX/CHKLOWQ/SNOW",
+    "b56:F9 cumulus R*CUTEN as RK sources (calculate_phy_tend couple with time-n mut, phy_cu_ten per-scheme field set, advance_ppt RAINC; no Euler add) for the stateless schemes",
+    "b56:F9 MYJ PBL (bl2) publishes RU/RV/RTH/RQV/RQC/RQIBLTEN coupled into the RK (previously only with cu7)"
+   ],
+   "class_a_numeric": [
+    "b39:F1 land precipitation for every MP (public RAINNCV/SNOWNCV/GRAUPELNCV/HAILNCV slots; seed mp!=0)",
+    "b40:MYJ (bl2) QCI species + RQC/RQIBLTEN into moist_tendf; F_QI gate",
+    "b41:phyprep series 1: legacy cumulus phy_prep staging (BMJ/GF/NTiedtke/Tiedtke) + dry RTHCUTEN -> theta_m (BMJ/GF/NTiedtke)",
+    "b41:phyprep series 1: MYJ PBL + MYJ (Janjic) surface layer phy_prep geometry, moist-form RTHBLTEN",
+    "b44:F2: convective RAINCV of stateless cu 2/3/5/6/16/93 reaches the land surface (PRCPCONV)",
+    "b53:F12 MYJ sf2/bl2: ONE MYJSFC call with carried THZ0/QZ0/UZ0/VZ0/AKHS/AKMS, MYJPBL reads it, ELFLX/CHKLOWQ/SNOW",
+    "b56:F9 cumulus R*CUTEN as RK sources (calculate_phy_tend couple with time-n mut, phy_cu_ten per-scheme field set, advance_ppt RAINC; no Euler add) for the stateless schemes",
+    "b56:F9 MYJ PBL (bl2) publishes RU/RV/RTH/RQV/RQC/RQIBLTEN coupled into the RK (previously only with cu7)"
+   ],
+   "other_reach": []
+  },
+  "c04": {
+   "status": "ADMITTED",
+   "runnable": true,
+   "options": {
+    "mp_physics": 3,
+    "cu_physics": 3,
+    "bl_pbl_physics": 3,
+    "sf_sfclay_physics": 3,
+    "sf_surface_physics": 4,
+    "ra_lw_physics": 4,
+    "ra_sw_physics": 1
+   },
+   "extra": {},
+   "features": [],
+   "numeric_fixes": [
+    "b39:F1 land precipitation for every MP (public RAINNCV/SNOWNCV/GRAUPELNCV/HAILNCV slots; seed mp!=0)",
+    "b40:GFS (bl3) QC3D/QI3D tracers + RQC/RQIBLTEN, PBLFLG KPBL<=1 off-by-one; F_QI gate",
+    "b41:phyprep series 1 (F4/F5/F15/F16): legacy PBL view = WRF phy_prep (dry T/theta, p_hyd/p_hyd_w/PSFC, total rho, g=9.81, theta_m Euler-rate conversion)",
+    "b41:phyprep series 1: legacy cumulus phy_prep staging (BMJ/GF/NTiedtke/Tiedtke) + dry RTHCUTEN -> theta_m (BMJ/GF/NTiedtke)",
+    "b44:F2: convective RAINCV of stateless cu 2/3/5/6/16/93 reaches the land surface (PRCPCONV)",
+    "b53:F3/F19 selected surface layer sf 3/7/91: ONE WRF call on phy_prep operands, feeds Noah-MP/PBL/history (+WRF constants, REAL tables)",
+    "b53:F13 BL_GFS (bl3) REAL/DOUBLE island on the selected SF_GFS forcing + UST/WSPD INOUT; bl3 requires sf3",
+    "b56:F7/F14/F18 held WRF RTHFTEN/RQVFTEN closure forcing (last-RK-stage capture x msfty, phy_prep_part2 decouple + dry conversion; G3/GD/GF/NTiedtke theta+qv, Tiedtke qv only; step-1 zero for both Tiedtkes; new carry leaf cu_forcing)",
+    "b56:F9 cumulus R*CUTEN as RK sources (calculate_phy_tend couple with time-n mut, phy_cu_ten per-scheme field set, advance_ppt RAINC; no Euler add) for the stateless schemes",
+    "b56:F10 GF ishallow_g3 default 1 -> 0 (WRF Registry) and GF kernel skips CUP_gf_sh at ishallow=0 (no outqcs leak into RQCCUTEN)",
+    "b56:F11 condensate species gating (F_QC/F_QI) for G3/GD/GF/Tiedtke/NTiedtke outputs",
+    "b56:F18 r1: legacy (non-driver) radiation refresh/hold on the step-entry state also for G3/GD/GF/NTiedtke, so they read this step's RTHRATEN",
+    "b56:F18 r3: BL_GFS KPBL2D published with the GFS RK rates; GF reads it as grid%kpbl"
+   ],
+   "class_a_numeric": [
+    "b39:F1 land precipitation for every MP (public RAINNCV/SNOWNCV/GRAUPELNCV/HAILNCV slots; seed mp!=0)",
+    "b40:GFS (bl3) QC3D/QI3D tracers + RQC/RQIBLTEN, PBLFLG KPBL<=1 off-by-one; F_QI gate",
+    "b41:phyprep series 1 (F4/F5/F15/F16): legacy PBL view = WRF phy_prep (dry T/theta, p_hyd/p_hyd_w/PSFC, total rho, g=9.81, theta_m Euler-rate conversion)",
+    "b41:phyprep series 1: legacy cumulus phy_prep staging (BMJ/GF/NTiedtke/Tiedtke) + dry RTHCUTEN -> theta_m (BMJ/GF/NTiedtke)",
+    "b44:F2: convective RAINCV of stateless cu 2/3/5/6/16/93 reaches the land surface (PRCPCONV)",
+    "b53:F3/F19 selected surface layer sf 3/7/91: ONE WRF call on phy_prep operands, feeds Noah-MP/PBL/history (+WRF constants, REAL tables)",
+    "b53:F13 BL_GFS (bl3) REAL/DOUBLE island on the selected SF_GFS forcing + UST/WSPD INOUT; bl3 requires sf3",
+    "b56:F7/F14/F18 held WRF RTHFTEN/RQVFTEN closure forcing (last-RK-stage capture x msfty, phy_prep_part2 decouple + dry conversion; G3/GD/GF/NTiedtke theta+qv, Tiedtke qv only; step-1 zero for both Tiedtkes; new carry leaf cu_forcing)",
+    "b56:F9 cumulus R*CUTEN as RK sources (calculate_phy_tend couple with time-n mut, phy_cu_ten per-scheme field set, advance_ppt RAINC; no Euler add) for the stateless schemes",
+    "b56:F10 GF ishallow_g3 default 1 -> 0 (WRF Registry) and GF kernel skips CUP_gf_sh at ishallow=0 (no outqcs leak into RQCCUTEN)",
+    "b56:F11 condensate species gating (F_QC/F_QI) for G3/GD/GF/Tiedtke/NTiedtke outputs"
+   ],
+   "other_reach": []
+  },
+  "c05": {
+   "status": "ADMITTED",
+   "runnable": true,
+   "options": {
+    "mp_physics": 4,
+    "cu_physics": 5,
+    "bl_pbl_physics": 7,
+    "sf_sfclay_physics": 1,
+    "sf_surface_physics": 4,
+    "ra_lw_physics": 4,
+    "ra_sw_physics": 4
+   },
+   "extra": {},
+   "features": [],
+   "numeric_fixes": [
+    "b38:ACM2 PBL mixes QC3D/QI3D, returns RQC/RQIBLTEN (t-wsmdz)",
+    "b39:F1 land precipitation for every MP (public RAINNCV/SNOWNCV/GRAUPELNCV/HAILNCV slots; seed mp!=0)",
+    "b41:phyprep series 1 (F4/F5/F15/F16): legacy PBL view = WRF phy_prep (dry T/theta, p_hyd/p_hyd_w/PSFC, total rho, g=9.81, theta_m Euler-rate conversion)",
+    "b44:F2: convective RAINCV of stateless cu 2/3/5/6/16/93 reaches the land surface (PRCPCONV)",
+    "b49:t-cfix-phyprep S2/S3: Grell-3D/GD (cu5/93) P=p_hyd, P8W=p_hyd_w",
+    "b56:F7/F14/F18 held WRF RTHFTEN/RQVFTEN closure forcing (last-RK-stage capture x msfty, phy_prep_part2 decouple + dry conversion; G3/GD/GF/NTiedtke theta+qv, Tiedtke qv only; step-1 zero for both Tiedtkes; new carry leaf cu_forcing)",
+    "b56:F9 cumulus R*CUTEN as RK sources (calculate_phy_tend couple with time-n mut, phy_cu_ten per-scheme field set, advance_ppt RAINC; no Euler add) for the stateless schemes",
+    "b56:F18 r1: legacy (non-driver) radiation refresh/hold on the step-entry state also for G3/GD/GF/NTiedtke, so they read this step's RTHRATEN"
+   ],
+   "class_a_numeric": [
+    "b38:ACM2 PBL mixes QC3D/QI3D, returns RQC/RQIBLTEN (t-wsmdz)",
+    "b39:F1 land precipitation for every MP (public RAINNCV/SNOWNCV/GRAUPELNCV/HAILNCV slots; seed mp!=0)",
+    "b41:phyprep series 1 (F4/F5/F15/F16): legacy PBL view = WRF phy_prep (dry T/theta, p_hyd/p_hyd_w/PSFC, total rho, g=9.81, theta_m Euler-rate conversion)",
+    "b44:F2: convective RAINCV of stateless cu 2/3/5/6/16/93 reaches the land surface (PRCPCONV)",
+    "b56:F7/F14/F18 held WRF RTHFTEN/RQVFTEN closure forcing (last-RK-stage capture x msfty, phy_prep_part2 decouple + dry conversion; G3/GD/GF/NTiedtke theta+qv, Tiedtke qv only; step-1 zero for both Tiedtkes; new carry leaf cu_forcing)",
+    "b56:F9 cumulus R*CUTEN as RK sources (calculate_phy_tend couple with time-n mut, phy_cu_ten per-scheme field set, advance_ppt RAINC; no Euler add) for the stateless schemes"
+   ],
+   "other_reach": []
+  },
+  "c06": {
+   "status": "ADMITTED",
+   "runnable": true,
+   "options": {
+    "mp_physics": 6,
+    "cu_physics": 6,
+    "bl_pbl_physics": 8,
+    "sf_sfclay_physics": 1,
+    "sf_surface_physics": 4,
+    "ra_lw_physics": 4,
+    "ra_sw_physics": 4
+   },
+   "extra": {},
+   "features": [],
+   "numeric_fixes": [
+    "b39:F1 land precipitation for every MP (public RAINNCV/SNOWNCV/GRAUPELNCV/HAILNCV slots; seed mp!=0)",
+    "b41:phyprep series 1 (F4/F5/F15/F16): legacy PBL view = WRF phy_prep (dry T/theta, p_hyd/p_hyd_w/PSFC, total rho, g=9.81, theta_m Euler-rate conversion)",
+    "b41:phyprep series 1: legacy cumulus phy_prep staging (BMJ/GF/NTiedtke/Tiedtke) + dry RTHCUTEN -> theta_m (BMJ/GF/NTiedtke)",
+    "b44:F2: convective RAINCV of stateless cu 2/3/5/6/16/93 reaches the land surface (PRCPCONV)",
+    "b56:F7/F14/F18 held WRF RTHFTEN/RQVFTEN closure forcing (last-RK-stage capture x msfty, phy_prep_part2 decouple + dry conversion; G3/GD/GF/NTiedtke theta+qv, Tiedtke qv only; step-1 zero for both Tiedtkes; new carry leaf cu_forcing)",
+    "b56:F9 cumulus R*CUTEN as RK sources (calculate_phy_tend couple with time-n mut, phy_cu_ten per-scheme field set, advance_ppt RAINC; no Euler add) for the stateless schemes"
+   ],
+   "class_a_numeric": [
+    "b39:F1 land precipitation for every MP (public RAINNCV/SNOWNCV/GRAUPELNCV/HAILNCV slots; seed mp!=0)",
+    "b41:phyprep series 1 (F4/F5/F15/F16): legacy PBL view = WRF phy_prep (dry T/theta, p_hyd/p_hyd_w/PSFC, total rho, g=9.81, theta_m Euler-rate conversion)",
+    "b41:phyprep series 1: legacy cumulus phy_prep staging (BMJ/GF/NTiedtke/Tiedtke) + dry RTHCUTEN -> theta_m (BMJ/GF/NTiedtke)",
+    "b44:F2: convective RAINCV of stateless cu 2/3/5/6/16/93 reaches the land surface (PRCPCONV)",
+    "b56:F7/F14/F18 held WRF RTHFTEN/RQVFTEN closure forcing (last-RK-stage capture x msfty, phy_prep_part2 decouple + dry conversion; G3/GD/GF/NTiedtke theta+qv, Tiedtke qv only; step-1 zero for both Tiedtkes; new carry leaf cu_forcing)",
+    "b56:F9 cumulus R*CUTEN as RK sources (calculate_phy_tend couple with time-n mut, phy_cu_ten per-scheme field set, advance_ppt RAINC; no Euler add) for the stateless schemes"
+   ],
+   "other_reach": []
+  },
+  "c07": {
+   "status": "ADMITTED",
+   "runnable": true,
+   "options": {
+    "mp_physics": 9,
+    "cu_physics": 16,
+    "bl_pbl_physics": 11,
+    "sf_sfclay_physics": 1,
+    "sf_surface_physics": 4,
+    "ra_lw_physics": 4,
+    "ra_sw_physics": 4
+   },
+   "extra": {
+    "physics": {
+     "use_mp_re": 1
+    }
+   },
+   "features": [],
+   "numeric_fixes": [
+    "b39:F1 land precipitation for every MP (public RAINNCV/SNOWNCV/GRAUPELNCV/HAILNCV slots; seed mp!=0)",
+    "b41:phyprep series 1 (F4/F5/F15/F16): legacy PBL view = WRF phy_prep (dry T/theta, p_hyd/p_hyd_w/PSFC, total rho, g=9.81, theta_m Euler-rate conversion)",
+    "b41:phyprep series 1: legacy cumulus phy_prep staging (BMJ/GF/NTiedtke/Tiedtke) + dry RTHCUTEN -> theta_m (BMJ/GF/NTiedtke)",
+    "b44:F2: convective RAINCV of stateless cu 2/3/5/6/16/93 reaches the land surface (PRCPCONV)",
+    "b56:F7/F14/F18 held WRF RTHFTEN/RQVFTEN closure forcing (last-RK-stage capture x msfty, phy_prep_part2 decouple + dry conversion; G3/GD/GF/NTiedtke theta+qv, Tiedtke qv only; step-1 zero for both Tiedtkes; new carry leaf cu_forcing)",
+    "b56:F9 cumulus R*CUTEN as RK sources (calculate_phy_tend couple with time-n mut, phy_cu_ten per-scheme field set, advance_ppt RAINC; no Euler add) for the stateless schemes",
+    "b56:F18 r1: legacy (non-driver) radiation refresh/hold on the step-entry state also for G3/GD/GF/NTiedtke, so they read this step's RTHRATEN"
+   ],
+   "class_a_numeric": [
+    "b39:F1 land precipitation for every MP (public RAINNCV/SNOWNCV/GRAUPELNCV/HAILNCV slots; seed mp!=0)",
+    "b41:phyprep series 1 (F4/F5/F15/F16): legacy PBL view = WRF phy_prep (dry T/theta, p_hyd/p_hyd_w/PSFC, total rho, g=9.81, theta_m Euler-rate conversion)",
+    "b41:phyprep series 1: legacy cumulus phy_prep staging (BMJ/GF/NTiedtke/Tiedtke) + dry RTHCUTEN -> theta_m (BMJ/GF/NTiedtke)",
+    "b44:F2: convective RAINCV of stateless cu 2/3/5/6/16/93 reaches the land surface (PRCPCONV)",
+    "b56:F7/F14/F18 held WRF RTHFTEN/RQVFTEN closure forcing (last-RK-stage capture x msfty, phy_prep_part2 decouple + dry conversion; G3/GD/GF/NTiedtke theta+qv, Tiedtke qv only; step-1 zero for both Tiedtkes; new carry leaf cu_forcing)",
+    "b56:F9 cumulus R*CUTEN as RK sources (calculate_phy_tend couple with time-n mut, phy_cu_ten per-scheme field set, advance_ppt RAINC; no Euler add) for the stateless schemes"
+   ],
+   "other_reach": []
+  },
+  "c08": {
+   "status": "ADMITTED",
+   "runnable": true,
+   "options": {
+    "mp_physics": 10,
+    "cu_physics": 14,
+    "bl_pbl_physics": 12,
+    "sf_sfclay_physics": 1,
+    "sf_surface_physics": 4,
+    "ra_lw_physics": 4,
+    "ra_sw_physics": 4
+   },
+   "extra": {},
+   "features": [],
+   "numeric_fixes": [
+    "b39:F1 land precipitation for every MP (public RAINNCV/SNOWNCV/GRAUPELNCV/HAILNCV slots; seed mp!=0)",
+    "b41:phyprep series 1 (F4/F5/F15/F16): legacy PBL view = WRF phy_prep (dry T/theta, p_hyd/p_hyd_w/PSFC, total rho, g=9.81, theta_m Euler-rate conversion)",
+    "b51:F17 GBM (bl12) WRF multi-layer pblhgt + held/this-step RTHRATEN",
+    "b56:F9 held-rate cumulus (SAS 4/14/94/95/96, KF99) coupled into the RK + post-RK decouple; KF99 advance_ppt clear after consumption"
+   ],
+   "class_a_numeric": [
+    "b39:F1 land precipitation for every MP (public RAINNCV/SNOWNCV/GRAUPELNCV/HAILNCV slots; seed mp!=0)",
+    "b41:phyprep series 1 (F4/F5/F15/F16): legacy PBL view = WRF phy_prep (dry T/theta, p_hyd/p_hyd_w/PSFC, total rho, g=9.81, theta_m Euler-rate conversion)",
+    "b56:F9 held-rate cumulus (SAS 4/14/94/95/96, KF99) coupled into the RK + post-RK decouple; KF99 advance_ppt clear after consumption"
+   ],
+   "other_reach": []
+  },
+  "c09": {
+   "status": "ADMITTED",
+   "runnable": true,
+   "options": {
+    "mp_physics": 13,
+    "cu_physics": 94,
+    "bl_pbl_physics": 99,
+    "sf_sfclay_physics": 1,
+    "sf_surface_physics": 4,
+    "ra_lw_physics": 4,
+    "ra_sw_physics": 4
+   },
+   "extra": {},
+   "features": [],
+   "numeric_fixes": [
+    "b39:F1 land precipitation for every MP (public RAINNCV/SNOWNCV/GRAUPELNCV/HAILNCV slots; seed mp!=0)",
+    "b40:MRF (bl99) QC3D/QI3D mixing + RQC/RQIBLTEN, MRF2D UST rebuild; F_QI gate",
+    "b41:phyprep series 1 (F4/F5/F15/F16): legacy PBL view = WRF phy_prep (dry T/theta, p_hyd/p_hyd_w/PSFC, total rho, g=9.81, theta_m Euler-rate conversion)",
+    "b56:F9 held-rate cumulus (SAS 4/14/94/95/96, KF99) coupled into the RK + post-RK decouple; KF99 advance_ppt clear after consumption"
+   ],
+   "class_a_numeric": [
+    "b39:F1 land precipitation for every MP (public RAINNCV/SNOWNCV/GRAUPELNCV/HAILNCV slots; seed mp!=0)",
+    "b40:MRF (bl99) QC3D/QI3D mixing + RQC/RQIBLTEN, MRF2D UST rebuild; F_QI gate",
+    "b41:phyprep series 1 (F4/F5/F15/F16): legacy PBL view = WRF phy_prep (dry T/theta, p_hyd/p_hyd_w/PSFC, total rho, g=9.81, theta_m Euler-rate conversion)",
+    "b56:F9 held-rate cumulus (SAS 4/14/94/95/96, KF99) coupled into the RK + post-RK decouple; KF99 advance_ppt clear after consumption"
+   ],
+   "other_reach": []
+  },
+  "c10": {
+   "status": "ADMITTED",
+   "runnable": true,
+   "options": {
+    "mp_physics": 14,
+    "cu_physics": 95,
+    "bl_pbl_physics": 16,
+    "sf_sfclay_physics": 1,
+    "sf_surface_physics": 4,
+    "ra_lw_physics": 4,
+    "ra_sw_physics": 4
+   },
+   "extra": {},
+   "features": [],
+   "numeric_fixes": [
+    "b39:F1 land precipitation for every MP (public RAINNCV/SNOWNCV/GRAUPELNCV/HAILNCV slots; seed mp!=0)",
+    "b49:t-cfix-phyprep S2/S3: EEPS/KEPS (bl16/17) hydrostatic P_PHY/P8W",
+    "b56:F9 held-rate cumulus (SAS 4/14/94/95/96, KF99) coupled into the RK + post-RK decouple; KF99 advance_ppt clear after consumption"
+   ],
+   "class_a_numeric": [
+    "b39:F1 land precipitation for every MP (public RAINNCV/SNOWNCV/GRAUPELNCV/HAILNCV slots; seed mp!=0)",
+    "b56:F9 held-rate cumulus (SAS 4/14/94/95/96, KF99) coupled into the RK + post-RK decouple; KF99 advance_ppt clear after consumption"
+   ],
+   "other_reach": []
+  },
+  "c11": {
+   "status": "ADMITTED",
+   "runnable": true,
+   "options": {
+    "mp_physics": 16,
+    "cu_physics": 96,
+    "bl_pbl_physics": 17,
+    "sf_sfclay_physics": 1,
+    "sf_surface_physics": 4,
+    "ra_lw_physics": 4,
+    "ra_sw_physics": 4
+   },
+   "extra": {},
+   "features": [],
+   "numeric_fixes": [
+    "b39:F1 land precipitation for every MP (public RAINNCV/SNOWNCV/GRAUPELNCV/HAILNCV slots; seed mp!=0)",
+    "b49:t-cfix-phyprep S2/S3: EEPS/KEPS (bl16/17) hydrostatic P_PHY/P8W",
+    "b56:F9 held-rate cumulus (SAS 4/14/94/95/96, KF99) coupled into the RK + post-RK decouple; KF99 advance_ppt clear after consumption"
+   ],
+   "class_a_numeric": [
+    "b39:F1 land precipitation for every MP (public RAINNCV/SNOWNCV/GRAUPELNCV/HAILNCV slots; seed mp!=0)",
+    "b56:F9 held-rate cumulus (SAS 4/14/94/95/96, KF99) coupled into the RK + post-RK decouple; KF99 advance_ppt clear after consumption"
+   ],
+   "other_reach": []
+  },
+  "c12": {
+   "status": "ADMITTED",
+   "runnable": true,
+   "options": {
+    "mp_physics": 17,
+    "cu_physics": 0,
+    "bl_pbl_physics": 5,
+    "sf_sfclay_physics": 5,
+    "sf_surface_physics": 4,
+    "ra_lw_physics": 4,
+    "ra_sw_physics": 4
+   },
+   "extra": {
+    "physics": {
+     "use_mp_re": 1
+    }
+   },
+   "features": [],
+   "numeric_fixes": [
+    "b39:F1 land precipitation for every MP (public RAINNCV/SNOWNCV/GRAUPELNCV/HAILNCV slots; seed mp!=0)",
+    "b43:t-classd-mprho: Ferrier/Goddard-4ice/NSSL microphysics receive WRF moist_physics_prep_em DRY rho=1/(al+alb) and dz8w from (ph+phb)/g",
+    "b50:F20 MYNN default path: bottom-face w1 to EDMF/DMP taper + driver-local HFX/QFX limits"
+   ],
+   "class_a_numeric": [
+    "b39:F1 land precipitation for every MP (public RAINNCV/SNOWNCV/GRAUPELNCV/HAILNCV slots; seed mp!=0)",
+    "b50:F20 MYNN default path: bottom-face w1 to EDMF/DMP taper + driver-local HFX/QFX limits"
+   ],
+   "other_reach": []
+  },
+  "c13": {
+   "status": "ADMITTED",
+   "runnable": true,
+   "options": {
+    "mp_physics": 18,
+    "cu_physics": 5,
+    "bl_pbl_physics": 5,
+    "sf_sfclay_physics": 5,
+    "sf_surface_physics": 4,
+    "ra_lw_physics": 4,
+    "ra_sw_physics": 4
+   },
+   "extra": {
+    "physics": {
+     "use_mp_re": 1
+    }
+   },
+   "features": [],
+   "numeric_fixes": [
+    "b39:F1 land precipitation for every MP (public RAINNCV/SNOWNCV/GRAUPELNCV/HAILNCV slots; seed mp!=0)",
+    "b43:t-classd-mprho: Ferrier/Goddard-4ice/NSSL microphysics receive WRF moist_physics_prep_em DRY rho=1/(al+alb) and dz8w from (ph+phb)/g",
+    "b44:F2: convective RAINCV of stateless cu 2/3/5/6/16/93 reaches the land surface (PRCPCONV)",
+    "b49:t-cfix-phyprep S2/S3: Grell-3D/GD (cu5/93) P=p_hyd, P8W=p_hyd_w",
+    "b50:F20 MYNN default path: bottom-face w1 to EDMF/DMP taper + driver-local HFX/QFX limits",
+    "b56:F7/F14/F18 held WRF RTHFTEN/RQVFTEN closure forcing (last-RK-stage capture x msfty, phy_prep_part2 decouple + dry conversion; G3/GD/GF/NTiedtke theta+qv, Tiedtke qv only; step-1 zero for both Tiedtkes; new carry leaf cu_forcing)",
+    "b56:F9 cumulus R*CUTEN as RK sources (calculate_phy_tend couple with time-n mut, phy_cu_ten per-scheme field set, advance_ppt RAINC; no Euler add) for the stateless schemes",
+    "b56:F18 r1: legacy (non-driver) radiation refresh/hold on the step-entry state also for G3/GD/GF/NTiedtke, so they read this step's RTHRATEN"
+   ],
+   "class_a_numeric": [
+    "b39:F1 land precipitation for every MP (public RAINNCV/SNOWNCV/GRAUPELNCV/HAILNCV slots; seed mp!=0)",
+    "b44:F2: convective RAINCV of stateless cu 2/3/5/6/16/93 reaches the land surface (PRCPCONV)",
+    "b50:F20 MYNN default path: bottom-face w1 to EDMF/DMP taper + driver-local HFX/QFX limits",
+    "b56:F7/F14/F18 held WRF RTHFTEN/RQVFTEN closure forcing (last-RK-stage capture x msfty, phy_prep_part2 decouple + dry conversion; G3/GD/GF/NTiedtke theta+qv, Tiedtke qv only; step-1 zero for both Tiedtkes; new carry leaf cu_forcing)",
+    "b56:F9 cumulus R*CUTEN as RK sources (calculate_phy_tend couple with time-n mut, phy_cu_ten per-scheme field set, advance_ppt RAINC; no Euler add) for the stateless schemes"
+   ],
+   "other_reach": []
+  },
+  "c14": {
+   "status": "ADMITTED",
+   "runnable": true,
+   "options": {
+    "mp_physics": 19,
+    "cu_physics": 99,
+    "bl_pbl_physics": 5,
+    "sf_sfclay_physics": 5,
+    "sf_surface_physics": 4,
+    "ra_lw_physics": 4,
+    "ra_sw_physics": 4
+   },
+   "extra": {
+    "physics": {
+     "use_mp_re": 1
+    }
+   },
+   "features": [],
+   "numeric_fixes": [
+    "b39:F1 land precipitation for every MP (public RAINNCV/SNOWNCV/GRAUPELNCV/HAILNCV slots; seed mp!=0)",
+    "b43:t-classd-mprho: Ferrier/Goddard-4ice/NSSL microphysics receive WRF moist_physics_prep_em DRY rho=1/(al+alb) and dz8w from (ph+phb)/g",
+    "b50:F20 MYNN default path: bottom-face w1 to EDMF/DMP taper + driver-local HFX/QFX limits",
+    "b56:F9 held-rate cumulus (SAS 4/14/94/95/96, KF99) coupled into the RK + post-RK decouple; KF99 advance_ppt clear after consumption"
+   ],
+   "class_a_numeric": [
+    "b39:F1 land precipitation for every MP (public RAINNCV/SNOWNCV/GRAUPELNCV/HAILNCV slots; seed mp!=0)",
+    "b50:F20 MYNN default path: bottom-face w1 to EDMF/DMP taper + driver-local HFX/QFX limits",
+    "b56:F9 held-rate cumulus (SAS 4/14/94/95/96, KF99) coupled into the RK + post-RK decouple; KF99 advance_ppt clear after consumption"
+   ],
+   "other_reach": [
+    "b40:ClassD NSSL one-moment mp19/21 REFL_10CM (radardd02 ipconc=0), radar forced on like check_a_mundo (history-only)"
+   ]
+  },
+  "c15": {
+   "status": "ADMITTED",
+   "runnable": true,
+   "options": {
+    "mp_physics": 21,
+    "cu_physics": 0,
+    "bl_pbl_physics": 5,
+    "sf_sfclay_physics": 5,
+    "sf_surface_physics": 4,
+    "ra_lw_physics": 4,
+    "ra_sw_physics": 4
+   },
+   "extra": {
+    "physics": {
+     "use_mp_re": 1
+    }
+   },
+   "features": [],
+   "numeric_fixes": [
+    "b39:F1 land precipitation for every MP (public RAINNCV/SNOWNCV/GRAUPELNCV/HAILNCV slots; seed mp!=0)",
+    "b43:t-classd-mprho: Ferrier/Goddard-4ice/NSSL microphysics receive WRF moist_physics_prep_em DRY rho=1/(al+alb) and dz8w from (ph+phb)/g",
+    "b50:F20 MYNN default path: bottom-face w1 to EDMF/DMP taper + driver-local HFX/QFX limits"
+   ],
+   "class_a_numeric": [
+    "b39:F1 land precipitation for every MP (public RAINNCV/SNOWNCV/GRAUPELNCV/HAILNCV slots; seed mp!=0)",
+    "b50:F20 MYNN default path: bottom-face w1 to EDMF/DMP taper + driver-local HFX/QFX limits"
+   ],
+   "other_reach": [
+    "b40:ClassD NSSL one-moment mp19/21 REFL_10CM (radardd02 ipconc=0), radar forced on like check_a_mundo (history-only)"
+   ]
+  },
+  "c16": {
+   "status": "ADMITTED",
+   "runnable": true,
+   "options": {
+    "mp_physics": 22,
+    "cu_physics": 0,
+    "bl_pbl_physics": 5,
+    "sf_sfclay_physics": 5,
+    "sf_surface_physics": 4,
+    "ra_lw_physics": 4,
+    "ra_sw_physics": 4
+   },
+   "extra": {
+    "physics": {
+     "use_mp_re": 1
+    }
+   },
+   "features": [],
+   "numeric_fixes": [
+    "b39:F1 land precipitation for every MP (public RAINNCV/SNOWNCV/GRAUPELNCV/HAILNCV slots; seed mp!=0)",
+    "b43:t-classd-mprho: Ferrier/Goddard-4ice/NSSL microphysics receive WRF moist_physics_prep_em DRY rho=1/(al+alb) and dz8w from (ph+phb)/g",
+    "b50:F20 MYNN default path: bottom-face w1 to EDMF/DMP taper + driver-local HFX/QFX limits"
+   ],
+   "class_a_numeric": [
+    "b39:F1 land precipitation for every MP (public RAINNCV/SNOWNCV/GRAUPELNCV/HAILNCV slots; seed mp!=0)",
+    "b50:F20 MYNN default path: bottom-face w1 to EDMF/DMP taper + driver-local HFX/QFX limits"
+   ],
+   "other_reach": []
+  },
+  "c17": {
+   "status": "ADMITTED",
+   "runnable": true,
+   "options": {
+    "mp_physics": 24,
+    "cu_physics": 93,
+    "bl_pbl_physics": 5,
+    "sf_sfclay_physics": 5,
+    "sf_surface_physics": 4,
+    "ra_lw_physics": 4,
+    "ra_sw_physics": 4
+   },
+   "extra": {
+    "physics": {
+     "use_mp_re": 1
+    }
+   },
+   "features": [],
+   "numeric_fixes": [
+    "b39:F1 land precipitation for every MP (public RAINNCV/SNOWNCV/GRAUPELNCV/HAILNCV slots; seed mp!=0)",
+    "b44:F2: convective RAINCV of stateless cu 2/3/5/6/16/93 reaches the land surface (PRCPCONV)",
+    "b49:t-cfix-phyprep S2/S3: Grell-3D/GD (cu5/93) P=p_hyd, P8W=p_hyd_w",
+    "b50:F20 MYNN default path: bottom-face w1 to EDMF/DMP taper + driver-local HFX/QFX limits",
+    "b56:F7/F14/F18 held WRF RTHFTEN/RQVFTEN closure forcing (last-RK-stage capture x msfty, phy_prep_part2 decouple + dry conversion; G3/GD/GF/NTiedtke theta+qv, Tiedtke qv only; step-1 zero for both Tiedtkes; new carry leaf cu_forcing)",
+    "b56:F9 cumulus R*CUTEN as RK sources (calculate_phy_tend couple with time-n mut, phy_cu_ten per-scheme field set, advance_ppt RAINC; no Euler add) for the stateless schemes",
+    "b56:F18 r1: legacy (non-driver) radiation refresh/hold on the step-entry state also for G3/GD/GF/NTiedtke, so they read this step's RTHRATEN"
+   ],
+   "class_a_numeric": [
+    "b39:F1 land precipitation for every MP (public RAINNCV/SNOWNCV/GRAUPELNCV/HAILNCV slots; seed mp!=0)",
+    "b44:F2: convective RAINCV of stateless cu 2/3/5/6/16/93 reaches the land surface (PRCPCONV)",
+    "b50:F20 MYNN default path: bottom-face w1 to EDMF/DMP taper + driver-local HFX/QFX limits",
+    "b56:F7/F14/F18 held WRF RTHFTEN/RQVFTEN closure forcing (last-RK-stage capture x msfty, phy_prep_part2 decouple + dry conversion; G3/GD/GF/NTiedtke theta+qv, Tiedtke qv only; step-1 zero for both Tiedtkes; new carry leaf cu_forcing)",
+    "b56:F9 cumulus R*CUTEN as RK sources (calculate_phy_tend couple with time-n mut, phy_cu_ten per-scheme field set, advance_ppt RAINC; no Euler add) for the stateless schemes"
+   ],
+   "other_reach": []
+  },
+  "c18": {
+   "status": "ADMITTED",
+   "runnable": true,
+   "options": {
+    "mp_physics": 26,
+    "cu_physics": 0,
+    "bl_pbl_physics": 5,
+    "sf_sfclay_physics": 5,
+    "sf_surface_physics": 4,
+    "ra_lw_physics": 4,
+    "ra_sw_physics": 4
+   },
+   "extra": {
+    "physics": {
+     "use_mp_re": 1
+    }
+   },
+   "features": [],
+   "numeric_fixes": [
+    "b39:F1 land precipitation for every MP (public RAINNCV/SNOWNCV/GRAUPELNCV/HAILNCV slots; seed mp!=0)",
+    "b50:F20 MYNN default path: bottom-face w1 to EDMF/DMP taper + driver-local HFX/QFX limits",
+    "b51:F8 MYNN mixes QNC/QNWFA/QNIFA (CLOUDMIX number scalars)"
+   ],
+   "class_a_numeric": [
+    "b39:F1 land precipitation for every MP (public RAINNCV/SNOWNCV/GRAUPELNCV/HAILNCV slots; seed mp!=0)",
+    "b50:F20 MYNN default path: bottom-face w1 to EDMF/DMP taper + driver-local HFX/QFX limits"
+   ],
+   "other_reach": []
+  },
+  "c19": {
+   "status": "ADMITTED",
+   "runnable": true,
+   "options": {
+    "mp_physics": 28,
+    "cu_physics": 0,
+    "bl_pbl_physics": 5,
+    "sf_sfclay_physics": 5,
+    "sf_surface_physics": 4,
+    "ra_lw_physics": 4,
+    "ra_sw_physics": 4
+   },
+   "extra": {
+    "physics": {
+     "use_mp_re": 1
+    }
+   },
+   "features": [],
+   "numeric_fixes": [
+    "b39:F1 land precipitation for every MP (public RAINNCV/SNOWNCV/GRAUPELNCV/HAILNCV slots; seed mp!=0)",
+    "b50:F20 MYNN default path: bottom-face w1 to EDMF/DMP taper + driver-local HFX/QFX limits",
+    "b51:F8 MYNN mixes QNC/QNWFA/QNIFA (CLOUDMIX number scalars)"
+   ],
+   "class_a_numeric": [
+    "b39:F1 land precipitation for every MP (public RAINNCV/SNOWNCV/GRAUPELNCV/HAILNCV slots; seed mp!=0)",
+    "b50:F20 MYNN default path: bottom-face w1 to EDMF/DMP taper + driver-local HFX/QFX limits"
+   ],
+   "other_reach": [
+    "b40:ClassD WRF-constant history QNBCA/TAOD5502D (mp28/38), MSKF_REFL_10CM (mp40) + mp28 nonzero-QNBCA input refusal (history-only)"
+   ]
+  },
+  "c20": {
+   "status": "ADMITTED",
+   "runnable": true,
+   "options": {
+    "mp_physics": 40,
+    "cu_physics": 0,
+    "bl_pbl_physics": 5,
+    "sf_sfclay_physics": 5,
+    "sf_surface_physics": 4,
+    "ra_lw_physics": 4,
+    "ra_sw_physics": 4
+   },
+   "extra": {},
+   "features": [],
+   "numeric_fixes": [
+    "b39:F1 land precipitation for every MP (public RAINNCV/SNOWNCV/GRAUPELNCV/HAILNCV slots; seed mp!=0)",
+    "b50:F20 MYNN default path: bottom-face w1 to EDMF/DMP taper + driver-local HFX/QFX limits",
+    "b51:F8 MYNN mixes QNC/QNWFA/QNIFA (CLOUDMIX number scalars)"
+   ],
+   "class_a_numeric": [
+    "b39:F1 land precipitation for every MP (public RAINNCV/SNOWNCV/GRAUPELNCV/HAILNCV slots; seed mp!=0)",
+    "b50:F20 MYNN default path: bottom-face w1 to EDMF/DMP taper + driver-local HFX/QFX limits"
+   ],
+   "other_reach": [
+    "b40:ClassD WRF-constant history QNBCA/TAOD5502D (mp28/38), MSKF_REFL_10CM (mp40) + mp28 nonzero-QNBCA input refusal (history-only)"
+   ]
+  },
+  "c21": {
+   "status": "ADMITTED",
+   "runnable": true,
+   "options": {
+    "mp_physics": 50,
+    "cu_physics": 0,
+    "bl_pbl_physics": 5,
+    "sf_sfclay_physics": 5,
+    "sf_surface_physics": 4,
+    "ra_lw_physics": 4,
+    "ra_sw_physics": 4
+   },
+   "extra": {
+    "physics": {
+     "use_mp_re": 1
+    }
+   },
+   "features": [],
+   "numeric_fixes": [
+    "b39:F1 land precipitation for every MP (public RAINNCV/SNOWNCV/GRAUPELNCV/HAILNCV slots; seed mp!=0)",
+    "b50:F20 MYNN default path: bottom-face w1 to EDMF/DMP taper + driver-local HFX/QFX limits"
+   ],
+   "class_a_numeric": [
+    "b39:F1 land precipitation for every MP (public RAINNCV/SNOWNCV/GRAUPELNCV/HAILNCV slots; seed mp!=0)",
+    "b50:F20 MYNN default path: bottom-face w1 to EDMF/DMP taper + driver-local HFX/QFX limits"
+   ],
+   "other_reach": []
+  },
+  "c22": {
+   "status": "ADMITTED",
+   "runnable": true,
+   "options": {
+    "mp_physics": 51,
+    "cu_physics": 0,
+    "bl_pbl_physics": 5,
+    "sf_sfclay_physics": 5,
+    "sf_surface_physics": 4,
+    "ra_lw_physics": 4,
+    "ra_sw_physics": 4
+   },
+   "extra": {
+    "physics": {
+     "use_mp_re": 1
+    }
+   },
+   "features": [],
+   "numeric_fixes": [
+    "b39:F1 land precipitation for every MP (public RAINNCV/SNOWNCV/GRAUPELNCV/HAILNCV slots; seed mp!=0)",
+    "b50:F20 MYNN default path: bottom-face w1 to EDMF/DMP taper + driver-local HFX/QFX limits",
+    "b51:F8 MYNN mixes QNC/QNWFA/QNIFA (CLOUDMIX number scalars)"
+   ],
+   "class_a_numeric": [
+    "b39:F1 land precipitation for every MP (public RAINNCV/SNOWNCV/GRAUPELNCV/HAILNCV slots; seed mp!=0)",
+    "b50:F20 MYNN default path: bottom-face w1 to EDMF/DMP taper + driver-local HFX/QFX limits"
+   ],
+   "other_reach": []
+  },
+  "c23": {
+   "status": "ADMITTED",
+   "runnable": true,
+   "options": {
+    "mp_physics": 52,
+    "cu_physics": 0,
+    "bl_pbl_physics": 5,
+    "sf_sfclay_physics": 5,
+    "sf_surface_physics": 4,
+    "ra_lw_physics": 4,
+    "ra_sw_physics": 4
+   },
+   "extra": {
+    "physics": {
+     "use_mp_re": 1
+    }
+   },
+   "features": [],
+   "numeric_fixes": [
+    "b39:F1 land precipitation for every MP (public RAINNCV/SNOWNCV/GRAUPELNCV/HAILNCV slots; seed mp!=0)",
+    "b50:F20 MYNN default path: bottom-face w1 to EDMF/DMP taper + driver-local HFX/QFX limits",
+    "b51:F8 MYNN mixes QNC/QNWFA/QNIFA (CLOUDMIX number scalars)"
+   ],
+   "class_a_numeric": [
+    "b39:F1 land precipitation for every MP (public RAINNCV/SNOWNCV/GRAUPELNCV/HAILNCV slots; seed mp!=0)",
+    "b50:F20 MYNN default path: bottom-face w1 to EDMF/DMP taper + driver-local HFX/QFX limits"
+   ],
+   "other_reach": []
+  },
+  "c24": {
+   "status": "ADMITTED",
+   "runnable": true,
+   "options": {
+    "mp_physics": 53,
+    "cu_physics": 0,
+    "bl_pbl_physics": 5,
+    "sf_sfclay_physics": 5,
+    "sf_surface_physics": 4,
+    "ra_lw_physics": 4,
+    "ra_sw_physics": 4
+   },
+   "extra": {
+    "physics": {
+     "use_mp_re": 1
+    }
+   },
+   "features": [],
+   "numeric_fixes": [
+    "b39:F1 land precipitation for every MP (public RAINNCV/SNOWNCV/GRAUPELNCV/HAILNCV slots; seed mp!=0)",
+    "b50:F20 MYNN default path: bottom-face w1 to EDMF/DMP taper + driver-local HFX/QFX limits",
+    "b51:F8 MYNN mixes QNC/QNWFA/QNIFA (CLOUDMIX number scalars)"
+   ],
+   "class_a_numeric": [
+    "b39:F1 land precipitation for every MP (public RAINNCV/SNOWNCV/GRAUPELNCV/HAILNCV slots; seed mp!=0)",
+    "b50:F20 MYNN default path: bottom-face w1 to EDMF/DMP taper + driver-local HFX/QFX limits"
+   ],
+   "other_reach": []
+  },
+  "c25": {
+   "status": "WRF_PAIRING_REFUSAL_CONTROL",
+   "runnable": false,
+   "options": {
+    "mp_physics": 97,
+    "cu_physics": 0,
+    "bl_pbl_physics": 3,
+    "sf_sfclay_physics": 91,
+    "sf_surface_physics": 4,
+    "ra_lw_physics": 4,
+    "ra_sw_physics": 4
+   },
+   "extra": {},
+   "features": [],
+   "numeric_fixes": [
+    "b39:F1 land precipitation for every MP (public RAINNCV/SNOWNCV/GRAUPELNCV/HAILNCV slots; seed mp!=0)",
+    "b40:GFS (bl3) QC3D/QI3D tracers + RQC/RQIBLTEN, PBLFLG KPBL<=1 off-by-one; F_QI gate",
+    "b41:phyprep series 1 (F4/F5/F15/F16): legacy PBL view = WRF phy_prep (dry T/theta, p_hyd/p_hyd_w/PSFC, total rho, g=9.81, theta_m Euler-rate conversion)",
+    "b53:F3/F19 selected surface layer sf 3/7/91: ONE WRF call on phy_prep operands, feeds Noah-MP/PBL/history (+WRF constants, REAL tables)",
+    "b53:F13 BL_GFS (bl3) REAL/DOUBLE island on the selected SF_GFS forcing + UST/WSPD INOUT; bl3 requires sf3"
+   ],
+   "class_a_numeric": [
+    "b39:F1 land precipitation for every MP (public RAINNCV/SNOWNCV/GRAUPELNCV/HAILNCV slots; seed mp!=0)",
+    "b40:GFS (bl3) QC3D/QI3D tracers + RQC/RQIBLTEN, PBLFLG KPBL<=1 off-by-one; F_QI gate",
+    "b41:phyprep series 1 (F4/F5/F15/F16): legacy PBL view = WRF phy_prep (dry T/theta, p_hyd/p_hyd_w/PSFC, total rho, g=9.81, theta_m Euler-rate conversion)",
+    "b53:F3/F19 selected surface layer sf 3/7/91: ONE WRF call on phy_prep operands, feeds Noah-MP/PBL/history (+WRF constants, REAL tables)",
+    "b53:F13 BL_GFS (bl3) REAL/DOUBLE island on the selected SF_GFS forcing + UST/WSPD INOUT; bl3 requires sf3"
+   ],
+   "other_reach": []
+  },
+  "c26": {
+   "status": "ADMITTED",
+   "runnable": true,
+   "options": {
+    "mp_physics": 8,
+    "cu_physics": 0,
+    "bl_pbl_physics": 4,
+    "sf_sfclay_physics": 4,
+    "sf_surface_physics": 4,
+    "ra_lw_physics": 4,
+    "ra_sw_physics": 4
+   },
+   "extra": {},
+   "features": [],
+   "numeric_fixes": [
+    "b49:t-cfix-phyprep S2/S3: QNSE PBL (bl4) hydrostatic P_PHY/P8W"
+   ],
+   "class_a_numeric": [],
+   "other_reach": [
+    "b54:QNSE (bl4) sea-ice refusal at the public loaders (refusal-only)"
+   ]
+  },
+  "c27": {
+   "status": "ADMITTED",
+   "runnable": true,
+   "options": {
+    "mp_physics": 8,
+    "cu_physics": 0,
+    "bl_pbl_physics": 10,
+    "sf_sfclay_physics": 10,
+    "sf_surface_physics": 4,
+    "ra_lw_physics": 4,
+    "ra_sw_physics": 4
+   },
+   "extra": {},
+   "features": [],
+   "numeric_fixes": [
+    "b49:t-cfix-phyprep S2/S3: TEMF PBL (bl10) hydrostatic P_PHY/P8W"
+   ],
+   "class_a_numeric": [],
+   "other_reach": []
+  },
+  "c28": {
+   "status": "ADMITTED",
+   "runnable": true,
+   "options": {
+    "mp_physics": 8,
+    "cu_physics": 0,
+    "bl_pbl_physics": 9,
+    "sf_sfclay_physics": 5,
+    "sf_surface_physics": 4,
+    "ra_lw_physics": 3,
+    "ra_sw_physics": 3
+   },
+   "extra": {},
+   "features": [],
+   "numeric_fixes": [],
+   "class_a_numeric": [],
+   "other_reach": []
+  },
+  "c29": {
+   "status": "ADMITTED",
+   "runnable": true,
+   "options": {
+    "mp_physics": 8,
+    "cu_physics": 7,
+    "bl_pbl_physics": 9,
+    "sf_sfclay_physics": 5,
+    "sf_surface_physics": 4,
+    "ra_lw_physics": 4,
+    "ra_sw_physics": 4
+   },
+   "extra": {},
+   "features": [],
+   "numeric_fixes": [],
+   "class_a_numeric": [],
+   "other_reach": []
+  },
+  "c30": {
+   "status": "ADMITTED",
+   "runnable": true,
+   "options": {
+    "mp_physics": 8,
+    "cu_physics": 10,
+    "bl_pbl_physics": 5,
+    "sf_sfclay_physics": 5,
+    "sf_surface_physics": 4,
+    "ra_lw_physics": 4,
+    "ra_sw_physics": 4
+   },
+   "extra": {},
+   "features": [],
+   "numeric_fixes": [
+    "b50:F20 MYNN default path: bottom-face w1 to EDMF/DMP taper + driver-local HFX/QFX limits"
+   ],
+   "class_a_numeric": [
+    "b50:F20 MYNN default path: bottom-face w1 to EDMF/DMP taper + driver-local HFX/QFX limits"
+   ],
+   "other_reach": []
+  },
+  "c31": {
+   "status": "ADMITTED",
+   "runnable": true,
+   "options": {
+    "mp_physics": 8,
+    "cu_physics": 11,
+    "bl_pbl_physics": 5,
+    "sf_sfclay_physics": 5,
+    "sf_surface_physics": 4,
+    "ra_lw_physics": 4,
+    "ra_sw_physics": 4
+   },
+   "extra": {},
+   "features": [],
+   "numeric_fixes": [
+    "b50:F20 MYNN default path: bottom-face w1 to EDMF/DMP taper + driver-local HFX/QFX limits"
+   ],
+   "class_a_numeric": [
+    "b50:F20 MYNN default path: bottom-face w1 to EDMF/DMP taper + driver-local HFX/QFX limits"
+   ],
+   "other_reach": []
+  },
+  "c32": {
+   "status": "REFERENCE_INIT_CONTROL_ONLY",
+   "runnable": false,
+   "options": {
+    "mp_physics": 8,
+    "cu_physics": 0,
+    "bl_pbl_physics": 5,
+    "sf_sfclay_physics": 5,
+    "sf_surface_physics": 4,
+    "ra_lw_physics": 5,
+    "ra_sw_physics": 5
+   },
+   "extra": {
+    "physics": {
+     "use_mp_re": 1
+    }
+   },
+   "features": [],
+   "numeric_fixes": [
+    "b50:F20 MYNN default path: bottom-face w1 to EDMF/DMP taper + driver-local HFX/QFX limits"
+   ],
+   "class_a_numeric": [
+    "b50:F20 MYNN default path: bottom-face w1 to EDMF/DMP taper + driver-local HFX/QFX limits"
+   ],
+   "other_reach": []
+  },
+  "c33": {
+   "status": "ADMITTED",
+   "runnable": true,
+   "options": {
+    "mp_physics": 8,
+    "cu_physics": 0,
+    "bl_pbl_physics": 5,
+    "sf_sfclay_physics": 5,
+    "sf_surface_physics": 3,
+    "ra_lw_physics": 4,
+    "ra_sw_physics": 4
+   },
+   "extra": {},
+   "features": [],
+   "numeric_fixes": [
+    "b50:F20 MYNN default path: bottom-face w1 to EDMF/DMP taper + driver-local HFX/QFX limits"
+   ],
+   "class_a_numeric": [
+    "b50:F20 MYNN default path: bottom-face w1 to EDMF/DMP taper + driver-local HFX/QFX limits"
+   ],
+   "other_reach": [
+    "b51:F23 SSiB/RUC receive topographic SWDOWN/GSW (swnorm, swup_topographic) (BYTE)"
+   ]
+  },
+  "c34": {
+   "status": "INPUT_HEADER_REFUSAL_CONTROL",
+   "runnable": false,
+   "options": {
+    "mp_physics": 8,
+    "cu_physics": 0,
+    "bl_pbl_physics": 1,
+    "sf_sfclay_physics": 1,
+    "sf_surface_physics": 4,
+    "ra_lw_physics": 4,
+    "ra_sw_physics": 4
+   },
+   "extra": {
+    "physics": {
+     "sf_urban_physics": 2
+    }
+   },
+   "features": [],
+   "numeric_fixes": [
+    "b40:YSU (bl1) QC3D/QI3D mixing, top-down cloud mixing, in-cloud Ri, CTOPO, this-step RTHRATEN; SSiB/urban-BEP YSU callers (F6/rv-t-ysuqc)",
+    "b41:phyprep series 1 (F4/F5/F15/F16): legacy PBL view = WRF phy_prep (dry T/theta, p_hyd/p_hyd_w/PSFC, total rho, g=9.81, theta_m Euler-rate conversion)"
+   ],
+   "class_a_numeric": [
+    "b40:YSU (bl1) QC3D/QI3D mixing, top-down cloud mixing, in-cloud Ri, CTOPO, this-step RTHRATEN; SSiB/urban-BEP YSU callers (F6/rv-t-ysuqc)",
+    "b41:phyprep series 1 (F4/F5/F15/F16): legacy PBL view = WRF phy_prep (dry T/theta, p_hyd/p_hyd_w/PSFC, total rho, g=9.81, theta_m Euler-rate conversion)"
+   ],
+   "other_reach": []
+  },
+  "c35": {
+   "status": "INPUT_HEADER_REFUSAL_CONTROL",
+   "runnable": false,
+   "options": {
+    "mp_physics": 8,
+    "cu_physics": 0,
+    "bl_pbl_physics": 8,
+    "sf_sfclay_physics": 1,
+    "sf_surface_physics": 4,
+    "ra_lw_physics": 4,
+    "ra_sw_physics": 4
+   },
+   "extra": {
+    "physics": {
+     "sf_urban_physics": 3
+    }
+   },
+   "features": [],
+   "numeric_fixes": [
+    "b41:phyprep series 1 (F4/F5/F15/F16): legacy PBL view = WRF phy_prep (dry T/theta, p_hyd/p_hyd_w/PSFC, total rho, g=9.81, theta_m Euler-rate conversion)"
+   ],
+   "class_a_numeric": [
+    "b41:phyprep series 1 (F4/F5/F15/F16): legacy PBL view = WRF phy_prep (dry T/theta, p_hyd/p_hyd_w/PSFC, total rho, g=9.81, theta_m Euler-rate conversion)"
+   ],
+   "other_reach": [
+    "b40:ClassD BEP+BEM green-roof/PV history (QGR_URB4D held, TGR/DRAINGR/EP_PV zero) + BEP/BEM native-restart binding (E78) (history-only)"
+   ]
+  },
+  "c36": {
+   "status": "ADMITTED",
+   "runnable": true,
+   "options": {
+    "mp_physics": 8,
+    "cu_physics": 1,
+    "bl_pbl_physics": 5,
+    "sf_sfclay_physics": 5,
+    "sf_surface_physics": 4,
+    "ra_lw_physics": 4,
+    "ra_sw_physics": 4
+   },
+   "extra": {
+    "physics": {
+     "sf_urban_physics": 1
+    }
+   },
+   "features": [],
+   "numeric_fixes": [
+    "b50:F20 MYNN default path: bottom-face w1 to EDMF/DMP taper + driver-local HFX/QFX limits"
+   ],
+   "class_a_numeric": [
+    "b50:F20 MYNN default path: bottom-face w1 to EDMF/DMP taper + driver-local HFX/QFX limits"
+   ],
+   "other_reach": []
+  },
+  "c37": {
+   "status": "ADMITTED",
+   "runnable": true,
+   "options": {
+    "mp_physics": 8,
+    "cu_physics": 0,
+    "bl_pbl_physics": 0,
+    "sf_sfclay_physics": 5,
+    "sf_surface_physics": 4,
+    "ra_lw_physics": 4,
+    "ra_sw_physics": 4
+   },
+   "extra": {
+    "dynamics": {
+     "diff_opt": 2,
+     "km_opt": 5
+    }
+   },
+   "features": [],
+   "numeric_fixes": [],
+   "class_a_numeric": [],
+   "other_reach": []
+  },
+  "c38": {
+   "status": "ADMITTED",
+   "runnable": true,
+   "options": {
+    "mp_physics": 8,
+    "cu_physics": 0,
+    "bl_pbl_physics": 0,
+    "sf_sfclay_physics": 5,
+    "sf_surface_physics": 4,
+    "ra_lw_physics": 4,
+    "ra_sw_physics": 4
+   },
+   "extra": {
+    "dynamics": {
+     "diff_opt": 2,
+     "km_opt": 2
+    }
+   },
+   "features": [],
+   "numeric_fixes": [],
+   "class_a_numeric": [],
+   "other_reach": []
+  },
+  "c39": {
+   "status": "ADMITTED",
+   "runnable": true,
+   "options": {
+    "mp_physics": 0,
+    "cu_physics": 0,
+    "bl_pbl_physics": 0,
+    "sf_sfclay_physics": 0,
+    "sf_surface_physics": 0,
+    "ra_lw_physics": 31,
+    "ra_sw_physics": 0
+   },
+   "extra": {},
+   "features": [],
+   "numeric_fixes": [
+    "b53:F21 sf_sfclay_physics=0: no surface layer and no LSM/SST/ocean (surface_driver returns first)"
+   ],
+   "class_a_numeric": [
+    "b53:F21 sf_sfclay_physics=0: no surface layer and no LSM/SST/ocean (surface_driver returns first)"
+   ],
+   "other_reach": []
+  },
+  "c40": {
+   "status": "ADMITTED",
+   "runnable": true,
+   "options": {
+    "mp_physics": 8,
+    "cu_physics": 0,
+    "bl_pbl_physics": 1,
+    "sf_sfclay_physics": 1,
+    "sf_surface_physics": 8,
+    "ra_lw_physics": 4,
+    "ra_sw_physics": 1
+   },
+   "extra": {},
+   "features": [],
+   "numeric_fixes": [
+    "b40:YSU (bl1) QC3D/QI3D mixing, top-down cloud mixing, in-cloud Ri, CTOPO, this-step RTHRATEN; SSiB/urban-BEP YSU callers (F6/rv-t-ysuqc)",
+    "b41:phyprep series 1 (F4/F5/F15/F16): legacy PBL view = WRF phy_prep (dry T/theta, p_hyd/p_hyd_w/PSFC, total rho, g=9.81, theta_m Euler-rate conversion)"
+   ],
+   "class_a_numeric": [
+    "b40:YSU (bl1) QC3D/QI3D mixing, top-down cloud mixing, in-cloud Ri, CTOPO, this-step RTHRATEN; SSiB/urban-BEP YSU callers (F6/rv-t-ysuqc)",
+    "b41:phyprep series 1 (F4/F5/F15/F16): legacy PBL view = WRF phy_prep (dry T/theta, p_hyd/p_hyd_w/PSFC, total rho, g=9.81, theta_m Euler-rate conversion)"
+   ],
+   "other_reach": [
+    "b51:F23 SSiB/RUC receive topographic SWDOWN/GSW (swnorm, swup_topographic) (BYTE)"
+   ]
+  },
+  "c41": {
+   "status": "DEFAULT_GAUSSIAN_CONTROL_ONLY",
+   "runnable": false,
+   "options": {
+    "mp_physics": 8,
+    "cu_physics": 1,
+    "bl_pbl_physics": 5,
+    "sf_sfclay_physics": 5,
+    "sf_surface_physics": 4,
+    "ra_lw_physics": 4,
+    "ra_sw_physics": 4
+   },
+   "extra": {},
+   "features": [
+    "tslist",
+    "nwp_diagnostics",
+    "prec_acc_dt=60",
+    "regional_streams",
+    "WRF-tracer_opt=2",
+    "Fitch-two-declared-turbines",
+    "SKEBS/SPPT/SPP-PBL/RAND"
+   ],
+   "numeric_fixes": [
+    "b50:F20 MYNN default path: bottom-face w1 to EDMF/DMP taper + driver-local HFX/QFX limits"
+   ],
+   "class_a_numeric": [
+    "b50:F20 MYNN default path: bottom-face w1 to EDMF/DMP taper + driver-local HFX/QFX limits"
+   ],
+   "other_reach": []
+  },
+  "c42": {
+   "status": "ADMITTED",
+   "runnable": true,
+   "options": {
+    "mp_physics": 8,
+    "cu_physics": 0,
+    "bl_pbl_physics": 5,
+    "sf_sfclay_physics": 5,
+    "sf_surface_physics": 4,
+    "ra_lw_physics": 4,
+    "ra_sw_physics": 4
+   },
+   "extra": {
+    "domains": {
+     "feedback": 1,
+     "smooth_option": 2
+    }
+   },
+   "features": [
+    "live-two-way-feedback"
+   ],
+   "numeric_fixes": [
+    "b50:F20 MYNN default path: bottom-face w1 to EDMF/DMP taper + driver-local HFX/QFX limits"
+   ],
+   "class_a_numeric": [
+    "b50:F20 MYNN default path: bottom-face w1 to EDMF/DMP taper + driver-local HFX/QFX limits"
+   ],
+   "other_reach": []
+  },
+  "c43": {
+   "status": "ADMITTED",
+   "runnable": true,
+   "options": {
+    "mp_physics": 8,
+    "cu_physics": 0,
+    "bl_pbl_physics": 0,
+    "sf_sfclay_physics": 7,
+    "sf_surface_physics": 4,
+    "ra_lw_physics": 4,
+    "ra_sw_physics": 4
+   },
+   "extra": {},
+   "features": [
+    "Pleim-Xiu-surface-layer-with-native-NoahMP"
+   ],
+   "numeric_fixes": [
+    "b53:F3/F19 selected surface layer sf 3/7/91: ONE WRF call on phy_prep operands, feeds Noah-MP/PBL/history (+WRF constants, REAL tables)"
+   ],
+   "class_a_numeric": [
+    "b53:F3/F19 selected surface layer sf 3/7/91: ONE WRF call on phy_prep operands, feeds Noah-MP/PBL/history (+WRF constants, REAL tables)"
+   ],
+   "other_reach": []
+  },
+  "c44": {
+   "status": "ADMITTED",
+   "runnable": false,
+   "options": {
+    "mp_physics": 8,
+    "cu_physics": 0,
+    "bl_pbl_physics": 5,
+    "sf_sfclay_physics": 5,
+    "sf_surface_physics": 4,
+    "ra_lw_physics": 4,
+    "ra_sw_physics": 4
+   },
+   "extra": {
+    "physics": {
+     "sf_lake_physics": 1
+    }
+   },
+   "features": [
+    "lake1-active-geography-census-required"
+   ],
+   "numeric_fixes": [
+    "b50:F20 MYNN default path: bottom-face w1 to EDMF/DMP taper + driver-local HFX/QFX limits"
+   ],
+   "class_a_numeric": [
+    "b50:F20 MYNN default path: bottom-face w1 to EDMF/DMP taper + driver-local HFX/QFX limits"
+   ],
+   "other_reach": []
+  },
+  "c45": {
+   "status": "ADMITTED",
+   "runnable": true,
+   "options": {
+    "mp_physics": 8,
+    "cu_physics": 0,
+    "bl_pbl_physics": 5,
+    "sf_sfclay_physics": 5,
+    "sf_surface_physics": 4,
+    "ra_lw_physics": 5,
+    "ra_sw_physics": 5
+   },
+   "extra": {
+    "physics": {
+     "use_mp_re": 1
+    }
+   },
+   "features": [
+    "Goddard5-compiler-zero-reference"
+   ],
+   "numeric_fixes": [
+    "b50:F20 MYNN default path: bottom-face w1 to EDMF/DMP taper + driver-local HFX/QFX limits"
+   ],
+   "class_a_numeric": [
+    "b50:F20 MYNN default path: bottom-face w1 to EDMF/DMP taper + driver-local HFX/QFX limits"
+   ],
+   "other_reach": []
+  },
+  "c46": {
+   "status": "ADMITTED",
+   "runnable": true,
+   "options": {
+    "mp_physics": 8,
+    "cu_physics": 1,
+    "bl_pbl_physics": 5,
+    "sf_sfclay_physics": 5,
+    "sf_surface_physics": 4,
+    "ra_lw_physics": 4,
+    "ra_sw_physics": 4
+   },
+   "extra": {},
+   "features": [
+    "tslist",
+    "nwp_diagnostics",
+    "prec_acc_dt=60",
+    "regional_streams",
+    "WRF-tracer_opt=2",
+    "Fitch-two-declared-turbines",
+    "SKEBS/SPPT/SPP-PBL/RAND",
+    "resolved-Gaussian15km",
+    "SPP-master+conv+LSM-original-no-op-consumers",
+    "SKEBS-alias-stoch_force_opt1"
+   ],
+   "numeric_fixes": [
+    "b50:F20 MYNN default path: bottom-face w1 to EDMF/DMP taper + driver-local HFX/QFX limits"
+   ],
+   "class_a_numeric": [
+    "b50:F20 MYNN default path: bottom-face w1 to EDMF/DMP taper + driver-local HFX/QFX limits"
+   ],
+   "other_reach": []
+  },
+  "c47": {
+   "status": "ADMITTED",
+   "runnable": true,
+   "options": {
+    "mp_physics": 8,
+    "cu_physics": 0,
+    "bl_pbl_physics": 5,
+    "sf_sfclay_physics": 5,
+    "sf_surface_physics": 4,
+    "ra_lw_physics": 4,
+    "ra_sw_physics": 4
+   },
+   "extra": {},
+   "features": [
+    "MMF5-authentic-active-groundwater",
+    "opt_inf1"
+   ],
+   "numeric_fixes": [
+    "b50:F20 MYNN default path: bottom-face w1 to EDMF/DMP taper + driver-local HFX/QFX limits"
+   ],
+   "class_a_numeric": [
+    "b50:F20 MYNN default path: bottom-face w1 to EDMF/DMP taper + driver-local HFX/QFX limits"
+   ],
+   "other_reach": []
+  },
+  "c48": {
+   "status": "OWNER_EXCLUDED_KM3_NO_COUPLED_REFERENCE",
+   "runnable": false,
+   "options": {
+    "mp_physics": 8,
+    "cu_physics": 0,
+    "bl_pbl_physics": 5,
+    "sf_sfclay_physics": 5,
+    "sf_surface_physics": 4,
+    "ra_lw_physics": 4,
+    "ra_sw_physics": 4
+   },
+   "extra": {},
+   "features": [
+    "KM3-pristine-zero-reference-probe"
+   ],
+   "numeric_fixes": [
+    "b50:F20 MYNN default path: bottom-face w1 to EDMF/DMP taper + driver-local HFX/QFX limits"
+   ],
+   "class_a_numeric": [
+    "b50:F20 MYNN default path: bottom-face w1 to EDMF/DMP taper + driver-local HFX/QFX limits"
+   ],
+   "other_reach": [
+    "b38:KM3 km_opt=3 GPU refusal (km3_config) (refusal-only)"
+   ]
+  },
+  "c49": {
+   "status": "ADMITTED",
+   "runnable": true,
+   "options": {
+    "mp_physics": 8,
+    "cu_physics": 0,
+    "bl_pbl_physics": 5,
+    "sf_sfclay_physics": 5,
+    "sf_surface_physics": 4,
+    "ra_lw_physics": 4,
+    "ra_sw_physics": 4
+   },
+   "extra": {},
+   "features": [
+    "DFI1-original-phase-windows;clock-inventory-required"
+   ],
+   "numeric_fixes": [
+    "b50:F20 MYNN default path: bottom-face w1 to EDMF/DMP taper + driver-local HFX/QFX limits"
+   ],
+   "class_a_numeric": [
+    "b50:F20 MYNN default path: bottom-face w1 to EDMF/DMP taper + driver-local HFX/QFX limits"
+   ],
+   "other_reach": []
+  },
+  "c50": {
+   "status": "ADMITTED",
+   "runnable": true,
+   "options": {
+    "mp_physics": 8,
+    "cu_physics": 0,
+    "bl_pbl_physics": 5,
+    "sf_sfclay_physics": 5,
+    "sf_surface_physics": 4,
+    "ra_lw_physics": 4,
+    "ra_sw_physics": 4
+   },
+   "extra": {},
+   "features": [
+    "DFI2-original-phase-windows;clock-inventory-required"
+   ],
+   "numeric_fixes": [
+    "b50:F20 MYNN default path: bottom-face w1 to EDMF/DMP taper + driver-local HFX/QFX limits"
+   ],
+   "class_a_numeric": [
+    "b50:F20 MYNN default path: bottom-face w1 to EDMF/DMP taper + driver-local HFX/QFX limits"
+   ],
+   "other_reach": []
+  },
+  "c51": {
+   "status": "ADMITTED",
+   "runnable": true,
+   "options": {
+    "mp_physics": 8,
+    "cu_physics": 0,
+    "bl_pbl_physics": 5,
+    "sf_sfclay_physics": 5,
+    "sf_surface_physics": 4,
+    "ra_lw_physics": 4,
+    "ra_sw_physics": 4
+   },
+   "extra": {},
+   "features": [
+    "DFI3-original-phase-windows;clock-inventory-required"
+   ],
+   "numeric_fixes": [
+    "b50:F20 MYNN default path: bottom-face w1 to EDMF/DMP taper + driver-local HFX/QFX limits"
+   ],
+   "class_a_numeric": [
+    "b50:F20 MYNN default path: bottom-face w1 to EDMF/DMP taper + driver-local HFX/QFX limits"
+   ],
+   "other_reach": []
+  },
+  "c52": {
+   "status": "ADMITTED",
+   "runnable": false,
+   "options": {
+    "mp_physics": 8,
+    "cu_physics": 0,
+    "bl_pbl_physics": 5,
+    "sf_sfclay_physics": 5,
+    "sf_surface_physics": 4,
+    "ra_lw_physics": 4,
+    "ra_sw_physics": 4
+   },
+   "extra": {},
+   "features": [
+    "gridFDDA1+surfaceFDDA1",
+    "solar-swint1",
+    "original-CPU-replay-analyses"
+   ],
+   "numeric_fixes": [
+    "b50:F20 MYNN default path: bottom-face w1 to EDMF/DMP taper + driver-local HFX/QFX limits"
+   ],
+   "class_a_numeric": [
+    "b50:F20 MYNN default path: bottom-face w1 to EDMF/DMP taper + driver-local HFX/QFX limits"
+   ],
+   "other_reach": []
+  },
+  "c53": {
+   "status": "ADMITTED",
+   "runnable": false,
+   "options": {
+    "mp_physics": 8,
+    "cu_physics": 0,
+    "bl_pbl_physics": 5,
+    "sf_sfclay_physics": 5,
+    "sf_surface_physics": 4,
+    "ra_lw_physics": 4,
+    "ra_sw_physics": 4
+   },
+   "extra": {},
+   "features": [
+    "gridFDDA1+surfaceFDDA2",
+    "solar-swint1",
+    "original-CPU-replay-analyses"
+   ],
+   "numeric_fixes": [
+    "b50:F20 MYNN default path: bottom-face w1 to EDMF/DMP taper + driver-local HFX/QFX limits"
+   ],
+   "class_a_numeric": [
+    "b50:F20 MYNN default path: bottom-face w1 to EDMF/DMP taper + driver-local HFX/QFX limits"
+   ],
+   "other_reach": []
+  },
+  "c54": {
+   "status": "ADMITTED",
+   "runnable": false,
+   "options": {
+    "mp_physics": 8,
+    "cu_physics": 0,
+    "bl_pbl_physics": 5,
+    "sf_sfclay_physics": 5,
+    "sf_surface_physics": 4,
+    "ra_lw_physics": 4,
+    "ra_sw_physics": 4
+   },
+   "extra": {},
+   "features": [
+    "spectralFDDA2",
+    "diffusion-off",
+    "damping-off",
+    "standard-scalar-advection0"
+   ],
+   "numeric_fixes": [
+    "b50:F20 MYNN default path: bottom-face w1 to EDMF/DMP taper + driver-local HFX/QFX limits"
+   ],
+   "class_a_numeric": [
+    "b50:F20 MYNN default path: bottom-face w1 to EDMF/DMP taper + driver-local HFX/QFX limits"
+   ],
+   "other_reach": []
+  },
+  "c55": {
+   "status": "ADMITTED",
+   "runnable": true,
+   "options": {
+    "mp_physics": 8,
+    "cu_physics": 0,
+    "bl_pbl_physics": 5,
+    "sf_sfclay_physics": 5,
+    "sf_surface_physics": 4,
+    "ra_lw_physics": 4,
+    "ra_sw_physics": 4
+   },
+   "extra": {},
+   "features": [
+    "observation-nudging1",
+    "monotonic-advection2",
+    "diff0/km1-not-constantK"
+   ],
+   "numeric_fixes": [
+    "b50:F20 MYNN default path: bottom-face w1 to EDMF/DMP taper + driver-local HFX/QFX limits"
+   ],
+   "class_a_numeric": [
+    "b50:F20 MYNN default path: bottom-face w1 to EDMF/DMP taper + driver-local HFX/QFX limits"
+   ],
+   "other_reach": []
+  },
+  "c56": {
+   "status": "ADMITTED",
+   "runnable": true,
+   "options": {
+    "mp_physics": 8,
+    "cu_physics": 0,
+    "bl_pbl_physics": 1,
+    "sf_sfclay_physics": 1,
+    "sf_surface_physics": 4,
+    "ra_lw_physics": 4,
+    "ra_sw_physics": 4
+   },
+   "extra": {
+    "physics": {
+     "sf_urban_physics": 2
+    }
+   },
+   "features": [
+    "BEP/BEM2-authentic-original-real",
+    "actual-urban-geography"
+   ],
+   "numeric_fixes": [
+    "b40:YSU (bl1) QC3D/QI3D mixing, top-down cloud mixing, in-cloud Ri, CTOPO, this-step RTHRATEN; SSiB/urban-BEP YSU callers (F6/rv-t-ysuqc)",
+    "b41:phyprep series 1 (F4/F5/F15/F16): legacy PBL view = WRF phy_prep (dry T/theta, p_hyd/p_hyd_w/PSFC, total rho, g=9.81, theta_m Euler-rate conversion)"
+   ],
+   "class_a_numeric": [
+    "b40:YSU (bl1) QC3D/QI3D mixing, top-down cloud mixing, in-cloud Ri, CTOPO, this-step RTHRATEN; SSiB/urban-BEP YSU callers (F6/rv-t-ysuqc)",
+    "b41:phyprep series 1 (F4/F5/F15/F16): legacy PBL view = WRF phy_prep (dry T/theta, p_hyd/p_hyd_w/PSFC, total rho, g=9.81, theta_m Euler-rate conversion)"
+   ],
+   "other_reach": []
+  },
+  "c57": {
+   "status": "ADMITTED",
+   "runnable": true,
+   "options": {
+    "mp_physics": 8,
+    "cu_physics": 0,
+    "bl_pbl_physics": 8,
+    "sf_sfclay_physics": 1,
+    "sf_surface_physics": 4,
+    "ra_lw_physics": 4,
+    "ra_sw_physics": 4
+   },
+   "extra": {
+    "physics": {
+     "sf_urban_physics": 3
+    }
+   },
+   "features": [
+    "BEP/BEM3-authentic-original-real",
+    "actual-urban-geography"
+   ],
+   "numeric_fixes": [
+    "b41:phyprep series 1 (F4/F5/F15/F16): legacy PBL view = WRF phy_prep (dry T/theta, p_hyd/p_hyd_w/PSFC, total rho, g=9.81, theta_m Euler-rate conversion)"
+   ],
+   "class_a_numeric": [
+    "b41:phyprep series 1 (F4/F5/F15/F16): legacy PBL view = WRF phy_prep (dry T/theta, p_hyd/p_hyd_w/PSFC, total rho, g=9.81, theta_m Euler-rate conversion)"
+   ],
+   "other_reach": [
+    "b40:ClassD BEP+BEM green-roof/PV history (QGR_URB4D held, TGR/DRAINGR/EP_PV zero) + BEP/BEM native-restart binding (E78) (history-only)"
+   ]
+  },
+  "c58": {
+   "status": "ADMITTED",
+   "runnable": false,
+   "options": {
+    "mp_physics": 8,
+    "cu_physics": 0,
+    "bl_pbl_physics": 5,
+    "sf_sfclay_physics": 5,
+    "sf_surface_physics": 4,
+    "ra_lw_physics": 4,
+    "ra_sw_physics": 4
+   },
+   "extra": {},
+   "features": [
+    "OML1",
+    "hurricane-flux1",
+    "slope1+topo1",
+    "GWDO1"
+   ],
+   "numeric_fixes": [
+    "b50:F20 MYNN default path: bottom-face w1 to EDMF/DMP taper + driver-local HFX/QFX limits"
+   ],
+   "class_a_numeric": [
+    "b50:F20 MYNN default path: bottom-face w1 to EDMF/DMP taper + driver-local HFX/QFX limits"
+   ],
+   "other_reach": []
+  },
+  "c59": {
+   "status": "ADMITTED",
+   "runnable": false,
+   "options": {
+    "mp_physics": 8,
+    "cu_physics": 0,
+    "bl_pbl_physics": 1,
+    "sf_sfclay_physics": 1,
+    "sf_surface_physics": 4,
+    "ra_lw_physics": 4,
+    "ra_sw_physics": 4
+   },
+   "extra": {},
+   "features": [
+    "OML1",
+    "hurricane-flux2",
+    "slope1+topo1",
+    "GWDO1"
+   ],
+   "numeric_fixes": [
+    "b40:YSU (bl1) QC3D/QI3D mixing, top-down cloud mixing, in-cloud Ri, CTOPO, this-step RTHRATEN; SSiB/urban-BEP YSU callers (F6/rv-t-ysuqc)",
+    "b41:phyprep series 1 (F4/F5/F15/F16): legacy PBL view = WRF phy_prep (dry T/theta, p_hyd/p_hyd_w/PSFC, total rho, g=9.81, theta_m Euler-rate conversion)"
+   ],
+   "class_a_numeric": [
+    "b40:YSU (bl1) QC3D/QI3D mixing, top-down cloud mixing, in-cloud Ri, CTOPO, this-step RTHRATEN; SSiB/urban-BEP YSU callers (F6/rv-t-ysuqc)",
+    "b41:phyprep series 1 (F4/F5/F15/F16): legacy PBL view = WRF phy_prep (dry T/theta, p_hyd/p_hyd_w/PSFC, total rho, g=9.81, theta_m Euler-rate conversion)"
+   ],
+   "other_reach": []
+  },
+  "c60": {
+   "status": "ADMITTED",
+   "runnable": true,
+   "options": {
+    "mp_physics": 8,
+    "cu_physics": 0,
+    "bl_pbl_physics": 5,
+    "sf_sfclay_physics": 5,
+    "sf_surface_physics": 4,
+    "ra_lw_physics": 4,
+    "ra_sw_physics": 4
+   },
+   "extra": {},
+   "features": [
+    "sst_update1",
+    "slope1+topo1",
+    "GWDO1",
+    "authentic-wrflowinp",
+    "Noah-SSTskin1-on-active-Atlantic-water"
+   ],
+   "numeric_fixes": [
+    "b50:F20 MYNN default path: bottom-face w1 to EDMF/DMP taper + driver-local HFX/QFX limits"
+   ],
+   "class_a_numeric": [
+    "b50:F20 MYNN default path: bottom-face w1 to EDMF/DMP taper + driver-local HFX/QFX limits"
+   ],
+   "other_reach": []
+  },
+  "c61": {
+   "status": "ADMITTED",
+   "runnable": true,
+   "options": {
+    "mp_physics": 97,
+    "cu_physics": 0,
+    "bl_pbl_physics": 0,
+    "sf_sfclay_physics": 91,
+    "sf_surface_physics": 4,
+    "ra_lw_physics": 4,
+    "ra_sw_physics": 4
+   },
+   "extra": {},
+   "features": [
+    "MP97-GCE3ice",
+    "sfclay91",
+    "WRF-valid-PBL0-pair",
+    "Noah-dveg6+Xinanjiang7"
+   ],
+   "numeric_fixes": [
+    "b39:F1 land precipitation for every MP (public RAINNCV/SNOWNCV/GRAUPELNCV/HAILNCV slots; seed mp!=0)",
+    "b53:F3/F19 selected surface layer sf 3/7/91: ONE WRF call on phy_prep operands, feeds Noah-MP/PBL/history (+WRF constants, REAL tables)"
+   ],
+   "class_a_numeric": [
+    "b39:F1 land precipitation for every MP (public RAINNCV/SNOWNCV/GRAUPELNCV/HAILNCV slots; seed mp!=0)",
+    "b53:F3/F19 selected surface layer sf 3/7/91: ONE WRF call on phy_prep operands, feeds Noah-MP/PBL/history (+WRF constants, REAL tables)"
+   ],
+   "other_reach": []
+  },
+  "c62": {
+   "status": "ADMITTED",
+   "runnable": true,
+   "options": {
+    "mp_physics": 5,
+    "cu_physics": 0,
+    "bl_pbl_physics": 5,
+    "sf_sfclay_physics": 5,
+    "sf_surface_physics": 4,
+    "ra_lw_physics": 4,
+    "ra_sw_physics": 4
+   },
+   "extra": {},
+   "features": [
+    "primary-MP5",
+    "Noah-MP:{\"dveg\":1,\"opt_run\":1,\"opt_crs\":2,\"opt_btr\":2,\"opt_sfc\":2,\"opt_frz\":2,\"opt_inf\":2,\"opt_rad\":1,\"opt_alb\":1,\"opt_snf\":2,\"opt_tbot\":1,\"opt_stc\":2,\"opt_rsf\":2,\"opt_gla\":2}"
+   ],
+   "numeric_fixes": [
+    "b43:t-classd-mprho: Ferrier/Goddard-4ice/NSSL microphysics receive WRF moist_physics_prep_em DRY rho=1/(al+alb) and dz8w from (ph+phb)/g",
+    "b50:F20 MYNN default path: bottom-face w1 to EDMF/DMP taper + driver-local HFX/QFX limits",
+    "b51:Noah-MP opt_sfc=2 keeps its own CH/CM (SFCDIF2 seed)"
+   ],
+   "class_a_numeric": [
+    "b50:F20 MYNN default path: bottom-face w1 to EDMF/DMP taper + driver-local HFX/QFX limits"
+   ],
+   "other_reach": []
+  },
+  "c63": {
+   "status": "ADMITTED",
+   "runnable": false,
+   "options": {
+    "mp_physics": 15,
+    "cu_physics": 0,
+    "bl_pbl_physics": 5,
+    "sf_sfclay_physics": 5,
+    "sf_surface_physics": 4,
+    "ra_lw_physics": 4,
+    "ra_sw_physics": 4
+   },
+   "extra": {},
+   "features": [
+    "primary-MP15",
+    "Noah-MP:{\"dveg\":2,\"opt_run\":2,\"opt_btr\":3,\"opt_rad\":2,\"opt_snf\":3,\"opt_stc\":3,\"opt_rsf\":3}"
+   ],
+   "numeric_fixes": [
+    "b43:t-classd-mprho: Ferrier/Goddard-4ice/NSSL microphysics receive WRF moist_physics_prep_em DRY rho=1/(al+alb) and dz8w from (ph+phb)/g",
+    "b50:F20 MYNN default path: bottom-face w1 to EDMF/DMP taper + driver-local HFX/QFX limits"
+   ],
+   "class_a_numeric": [
+    "b50:F20 MYNN default path: bottom-face w1 to EDMF/DMP taper + driver-local HFX/QFX limits"
+   ],
+   "other_reach": []
+  },
+  "c64": {
+   "status": "ADMITTED",
+   "runnable": true,
+   "options": {
+    "mp_physics": 7,
+    "cu_physics": 0,
+    "bl_pbl_physics": 5,
+    "sf_sfclay_physics": 5,
+    "sf_surface_physics": 4,
+    "ra_lw_physics": 4,
+    "ra_sw_physics": 4
+   },
+   "extra": {},
+   "features": [
+    "primary-MP7",
+    "Noah-MP:{\"dveg\":3,\"opt_run\":4,\"opt_snf\":4,\"opt_rsf\":4}"
+   ],
+   "numeric_fixes": [
+    "b43:t-classd-mprho: Ferrier/Goddard-4ice/NSSL microphysics receive WRF moist_physics_prep_em DRY rho=1/(al+alb) and dz8w from (ph+phb)/g",
+    "b50:F20 MYNN default path: bottom-face w1 to EDMF/DMP taper + driver-local HFX/QFX limits"
+   ],
+   "class_a_numeric": [
+    "b50:F20 MYNN default path: bottom-face w1 to EDMF/DMP taper + driver-local HFX/QFX limits"
+   ],
+   "other_reach": []
+  },
+  "c65": {
+   "status": "ADMITTED",
+   "runnable": true,
+   "options": {
+    "mp_physics": 38,
+    "cu_physics": 0,
+    "bl_pbl_physics": 5,
+    "sf_sfclay_physics": 5,
+    "sf_surface_physics": 4,
+    "ra_lw_physics": 4,
+    "ra_sw_physics": 4
+   },
+   "extra": {},
+   "features": [
+    "primary-MP38",
+    "Noah-MP:{\"dveg\":5,\"opt_run\":6}"
+   ],
+   "numeric_fixes": [
+    "b50:F20 MYNN default path: bottom-face w1 to EDMF/DMP taper + driver-local HFX/QFX limits",
+    "b51:F8 MYNN mixes QNC/QNWFA/QNIFA (CLOUDMIX number scalars)"
+   ],
+   "class_a_numeric": [
+    "b50:F20 MYNN default path: bottom-face w1 to EDMF/DMP taper + driver-local HFX/QFX limits"
+   ],
+   "other_reach": [
+    "b40:ClassD WRF-constant history QNBCA/TAOD5502D (mp28/38), MSKF_REFL_10CM (mp40) + mp28 nonzero-QNBCA input refusal (history-only)"
+   ]
+  },
+  "c66": {
+   "status": "ADMITTED",
+   "runnable": false,
+   "options": {
+    "mp_physics": 8,
+    "cu_physics": 0,
+    "bl_pbl_physics": 5,
+    "sf_sfclay_physics": 5,
+    "sf_surface_physics": 4,
+    "ra_lw_physics": 4,
+    "ra_sw_physics": 4
+   },
+   "extra": {},
+   "features": [
+    "Lake1-eight-genuine-NCAR-lake-cells"
+   ],
+   "numeric_fixes": [
+    "b50:F20 MYNN default path: bottom-face w1 to EDMF/DMP taper + driver-local HFX/QFX limits"
+   ],
+   "class_a_numeric": [
+    "b50:F20 MYNN default path: bottom-face w1 to EDMF/DMP taper + driver-local HFX/QFX limits"
+   ],
+   "other_reach": []
+  },
+  "c67": {
+   "status": "ADMITTED",
+   "runnable": false,
+   "options": {
+    "mp_physics": 8,
+    "cu_physics": 0,
+    "bl_pbl_physics": 5,
+    "sf_sfclay_physics": 5,
+    "sf_surface_physics": 4,
+    "ra_lw_physics": 4,
+    "ra_sw_physics": 4
+   },
+   "extra": {},
+   "features": [
+    "Noah-snow-partition5-authentic-icefree-lowland"
+   ],
+   "numeric_fixes": [
+    "b50:F20 MYNN default path: bottom-face w1 to EDMF/DMP taper + driver-local HFX/QFX limits"
+   ],
+   "class_a_numeric": [
+    "b50:F20 MYNN default path: bottom-face w1 to EDMF/DMP taper + driver-local HFX/QFX limits"
+   ],
+   "other_reach": []
+  },
+  "c68": {
+   "status": "ADMITTED",
+   "runnable": true,
+   "options": {
+    "mp_physics": 8,
+    "cu_physics": 0,
+    "bl_pbl_physics": 5,
+    "sf_sfclay_physics": 5,
+    "sf_surface_physics": 4,
+    "ra_lw_physics": 4,
+    "ra_sw_physics": 4
+   },
+   "extra": {},
+   "features": [
+    "Noah-carbon-DVEG7",
+    "dynamicVIC8-infiltration1-compiler-zero"
+   ],
+   "numeric_fixes": [
+    "b50:F20 MYNN default path: bottom-face w1 to EDMF/DMP taper + driver-local HFX/QFX limits"
+   ],
+   "class_a_numeric": [
+    "b50:F20 MYNN default path: bottom-face w1 to EDMF/DMP taper + driver-local HFX/QFX limits"
+   ],
+   "other_reach": []
+  },
+  "c69": {
+   "status": "ADMITTED",
+   "runnable": true,
+   "options": {
+    "mp_physics": 8,
+    "cu_physics": 0,
+    "bl_pbl_physics": 5,
+    "sf_sfclay_physics": 5,
+    "sf_surface_physics": 4,
+    "ra_lw_physics": 4,
+    "ra_sw_physics": 4
+   },
+   "extra": {},
+   "features": [
+    "Noah-carbon-DVEG8",
+    "dynamicVIC8-infiltration2-compiler-zero"
+   ],
+   "numeric_fixes": [
+    "b50:F20 MYNN default path: bottom-face w1 to EDMF/DMP taper + driver-local HFX/QFX limits"
+   ],
+   "class_a_numeric": [
+    "b50:F20 MYNN default path: bottom-face w1 to EDMF/DMP taper + driver-local HFX/QFX limits"
+   ],
+   "other_reach": []
+  },
+  "c70": {
+   "status": "ADMITTED",
+   "runnable": true,
+   "options": {
+    "mp_physics": 8,
+    "cu_physics": 0,
+    "bl_pbl_physics": 5,
+    "sf_sfclay_physics": 5,
+    "sf_surface_physics": 4,
+    "ra_lw_physics": 4,
+    "ra_sw_physics": 4
+   },
+   "extra": {},
+   "features": [
+    "Noah-carbon-DVEG9",
+    "dynamicVIC8-infiltration3-compiler-zero"
+   ],
+   "numeric_fixes": [
+    "b50:F20 MYNN default path: bottom-face w1 to EDMF/DMP taper + driver-local HFX/QFX limits"
+   ],
+   "class_a_numeric": [
+    "b50:F20 MYNN default path: bottom-face w1 to EDMF/DMP taper + driver-local HFX/QFX limits"
+   ],
+   "other_reach": []
+  },
+  "c77": {
+   "status": "ADMITTED",
+   "runnable": true,
+   "options": {
+    "mp_physics": 8,
+    "cu_physics": 0,
+    "bl_pbl_physics": 5,
+    "sf_sfclay_physics": 5,
+    "sf_surface_physics": 4,
+    "ra_lw_physics": 4,
+    "ra_sw_physics": 4
+   },
+   "extra": {},
+   "features": [
+    "gridFDDA1+surfaceFDDA1",
+    "solar-swint1",
+    "original-CPU-replay-analyses",
+    "corrected-original-WRF-TITLE+FieldType104-ingestion"
+   ],
+   "numeric_fixes": [
+    "b50:F20 MYNN default path: bottom-face w1 to EDMF/DMP taper + driver-local HFX/QFX limits"
+   ],
+   "class_a_numeric": [
+    "b50:F20 MYNN default path: bottom-face w1 to EDMF/DMP taper + driver-local HFX/QFX limits"
+   ],
+   "other_reach": []
+  },
+  "c78": {
+   "status": "ADMITTED",
+   "runnable": true,
+   "options": {
+    "mp_physics": 8,
+    "cu_physics": 0,
+    "bl_pbl_physics": 5,
+    "sf_sfclay_physics": 5,
+    "sf_surface_physics": 4,
+    "ra_lw_physics": 4,
+    "ra_sw_physics": 4
+   },
+   "extra": {},
+   "features": [
+    "gridFDDA1+surfaceFDDA2",
+    "solar-swint1",
+    "original-CPU-replay-analyses",
+    "corrected-original-WRF-TITLE+FieldType104-ingestion"
+   ],
+   "numeric_fixes": [
+    "b50:F20 MYNN default path: bottom-face w1 to EDMF/DMP taper + driver-local HFX/QFX limits"
+   ],
+   "class_a_numeric": [
+    "b50:F20 MYNN default path: bottom-face w1 to EDMF/DMP taper + driver-local HFX/QFX limits"
+   ],
+   "other_reach": []
+  },
+  "c79": {
+   "status": "ADMITTED",
+   "runnable": true,
+   "options": {
+    "mp_physics": 8,
+    "cu_physics": 0,
+    "bl_pbl_physics": 5,
+    "sf_sfclay_physics": 5,
+    "sf_surface_physics": 4,
+    "ra_lw_physics": 4,
+    "ra_sw_physics": 4
+   },
+   "extra": {},
+   "features": [
+    "spectralFDDA2",
+    "diffusion-off",
+    "damping-off",
+    "standard-scalar-advection0",
+    "corrected-original-WRF-TITLE+FieldType104-ingestion"
+   ],
+   "numeric_fixes": [
+    "b50:F20 MYNN default path: bottom-face w1 to EDMF/DMP taper + driver-local HFX/QFX limits"
+   ],
+   "class_a_numeric": [
+    "b50:F20 MYNN default path: bottom-face w1 to EDMF/DMP taper + driver-local HFX/QFX limits"
+   ],
+   "other_reach": []
+  },
+  "c71": {
+   "status": "ADMITTED",
+   "runnable": true,
+   "options": {
+    "mp_physics": 8,
+    "cu_physics": 1,
+    "bl_pbl_physics": 5,
+    "sf_sfclay_physics": 5,
+    "sf_surface_physics": 4,
+    "ra_lw_physics": 4,
+    "ra_sw_physics": 4
+   },
+   "extra": {},
+   "features": [
+    "Noah-soil2",
+    "explicit-irrigation-trigger1-method1"
+   ],
+   "numeric_fixes": [
+    "b50:F20 MYNN default path: bottom-face w1 to EDMF/DMP taper + driver-local HFX/QFX limits"
+   ],
+   "class_a_numeric": [
+    "b50:F20 MYNN default path: bottom-face w1 to EDMF/DMP taper + driver-local HFX/QFX limits"
+   ],
+   "other_reach": []
+  },
+  "c72": {
+   "status": "ADMITTED",
+   "runnable": true,
+   "options": {
+    "mp_physics": 8,
+    "cu_physics": 1,
+    "bl_pbl_physics": 5,
+    "sf_sfclay_physics": 5,
+    "sf_surface_physics": 4,
+    "ra_lw_physics": 4,
+    "ra_sw_physics": 4
+   },
+   "extra": {},
+   "features": [
+    "Noah-soil3",
+    "explicit-irrigation-trigger2-method2"
+   ],
+   "numeric_fixes": [
+    "b50:F20 MYNN default path: bottom-face w1 to EDMF/DMP taper + driver-local HFX/QFX limits"
+   ],
+   "class_a_numeric": [
+    "b50:F20 MYNN default path: bottom-face w1 to EDMF/DMP taper + driver-local HFX/QFX limits"
+   ],
+   "other_reach": []
+  },
+  "c73": {
+   "status": "ADMITTED",
+   "runnable": true,
+   "options": {
+    "mp_physics": 8,
+    "cu_physics": 1,
+    "bl_pbl_physics": 5,
+    "sf_sfclay_physics": 5,
+    "sf_surface_physics": 4,
+    "ra_lw_physics": 4,
+    "ra_sw_physics": 4
+   },
+   "extra": {},
+   "features": [
+    "Noah-soil3",
+    "explicit-irrigation-trigger3-method3",
+    "icefree-snow5"
+   ],
+   "numeric_fixes": [
+    "b50:F20 MYNN default path: bottom-face w1 to EDMF/DMP taper + driver-local HFX/QFX limits"
+   ],
+   "class_a_numeric": [
+    "b50:F20 MYNN default path: bottom-face w1 to EDMF/DMP taper + driver-local HFX/QFX limits"
+   ],
+   "other_reach": []
+  },
+  "c83": {
+   "status": "ADMITTED",
+   "runnable": true,
+   "options": {
+    "mp_physics": 8,
+    "cu_physics": 0,
+    "bl_pbl_physics": 5,
+    "sf_sfclay_physics": 5,
+    "sf_surface_physics": 4,
+    "ra_lw_physics": 4,
+    "ra_sw_physics": 4
+   },
+   "extra": {},
+   "features": [
+    "Lake1-eight-genuine-NCAR-lake-cells",
+    "explicit-WRF-default-depth50m"
+   ],
+   "numeric_fixes": [
+    "b50:F20 MYNN default path: bottom-face w1 to EDMF/DMP taper + driver-local HFX/QFX limits"
+   ],
+   "class_a_numeric": [
+    "b50:F20 MYNN default path: bottom-face w1 to EDMF/DMP taper + driver-local HFX/QFX limits"
+   ],
+   "other_reach": []
+  },
+  "c84": {
+   "status": "ADMITTED",
+   "runnable": true,
+   "options": {
+    "mp_physics": 8,
+    "cu_physics": 0,
+    "bl_pbl_physics": 5,
+    "sf_sfclay_physics": 5,
+    "sf_surface_physics": 4,
+    "ra_lw_physics": 4,
+    "ra_sw_physics": 4
+   },
+   "extra": {},
+   "features": [
+    "OML1",
+    "hurricane-flux1"
+   ],
+   "numeric_fixes": [
+    "b50:F20 MYNN default path: bottom-face w1 to EDMF/DMP taper + driver-local HFX/QFX limits"
+   ],
+   "class_a_numeric": [
+    "b50:F20 MYNN default path: bottom-face w1 to EDMF/DMP taper + driver-local HFX/QFX limits"
+   ],
+   "other_reach": []
+  },
+  "c85": {
+   "status": "ADMITTED",
+   "runnable": true,
+   "options": {
+    "mp_physics": 8,
+    "cu_physics": 0,
+    "bl_pbl_physics": 1,
+    "sf_sfclay_physics": 1,
+    "sf_surface_physics": 4,
+    "ra_lw_physics": 4,
+    "ra_sw_physics": 4
+   },
+   "extra": {},
+   "features": [
+    "OML1",
+    "hurricane-flux2"
+   ],
+   "numeric_fixes": [
+    "b40:YSU (bl1) QC3D/QI3D mixing, top-down cloud mixing, in-cloud Ri, CTOPO, this-step RTHRATEN; SSiB/urban-BEP YSU callers (F6/rv-t-ysuqc)",
+    "b41:phyprep series 1 (F4/F5/F15/F16): legacy PBL view = WRF phy_prep (dry T/theta, p_hyd/p_hyd_w/PSFC, total rho, g=9.81, theta_m Euler-rate conversion)"
+   ],
+   "class_a_numeric": [
+    "b40:YSU (bl1) QC3D/QI3D mixing, top-down cloud mixing, in-cloud Ri, CTOPO, this-step RTHRATEN; SSiB/urban-BEP YSU callers (F6/rv-t-ysuqc)",
+    "b41:phyprep series 1 (F4/F5/F15/F16): legacy PBL view = WRF phy_prep (dry T/theta, p_hyd/p_hyd_w/PSFC, total rho, g=9.81, theta_m Euler-rate conversion)"
+   ],
+   "other_reach": []
+  },
+  "c86": {
+   "status": "ADMITTED",
+   "runnable": true,
+   "options": {
+    "mp_physics": 8,
+    "cu_physics": 0,
+    "bl_pbl_physics": 5,
+    "sf_sfclay_physics": 5,
+    "sf_surface_physics": 4,
+    "ra_lw_physics": 4,
+    "ra_sw_physics": 4
+   },
+   "extra": {},
+   "features": [
+    "Noah-options-repacked-from-owner-excluded-MP15",
+    "dveg2/run2/btr3/rad2/snf3/stc3/rsf3"
+   ],
+   "numeric_fixes": [
+    "b50:F20 MYNN default path: bottom-face w1 to EDMF/DMP taper + driver-local HFX/QFX limits"
+   ],
+   "class_a_numeric": [
+    "b50:F20 MYNN default path: bottom-face w1 to EDMF/DMP taper + driver-local HFX/QFX limits"
+   ],
+   "other_reach": []
+  },
+  "c87": {
+   "status": "ADMITTED",
+   "runnable": true,
+   "options": {
+    "mp_physics": 55,
+    "cu_physics": 0,
+    "bl_pbl_physics": 5,
+    "sf_sfclay_physics": 5,
+    "sf_surface_physics": 4,
+    "ra_lw_physics": 4,
+    "ra_sw_physics": 4
+   },
+   "extra": {},
+   "features": [
+    "primary-MP55-Jensen-admitted-batch6"
+   ],
+   "numeric_fixes": [
+    "b39:F1 land precipitation for every MP (public RAINNCV/SNOWNCV/GRAUPELNCV/HAILNCV slots; seed mp!=0)",
+    "b50:F20 MYNN default path: bottom-face w1 to EDMF/DMP taper + driver-local HFX/QFX limits"
+   ],
+   "class_a_numeric": [
+    "b39:F1 land precipitation for every MP (public RAINNCV/SNOWNCV/GRAUPELNCV/HAILNCV slots; seed mp!=0)",
+    "b50:F20 MYNN default path: bottom-face w1 to EDMF/DMP taper + driver-local HFX/QFX limits"
+   ],
+   "other_reach": [
+    "b42:NTU mp56 / Jensen mp55 native column typed global memory (Triton compile enabler) (BYTE)",
+    "b48:t-classd-jensen: Jensen mp55 REFL_10CM from DIAG_DBZ3D every call; REFD_MAX only under do_radar_ref=1; NTU QHAIL history (history-only)"
+   ]
+  },
+  "c88": {
+   "status": "ADMITTED",
+   "runnable": true,
+   "options": {
+    "mp_physics": 56,
+    "cu_physics": 0,
+    "bl_pbl_physics": 5,
+    "sf_sfclay_physics": 5,
+    "sf_surface_physics": 4,
+    "ra_lw_physics": 4,
+    "ra_sw_physics": 4
+   },
+   "extra": {},
+   "features": [
+    "primary-MP56-admitted-batch15",
+    "original-WRF-inputs-no-synthetic-fields"
+   ],
+   "numeric_fixes": [
+    "b39:F1 land precipitation for every MP (public RAINNCV/SNOWNCV/GRAUPELNCV/HAILNCV slots; seed mp!=0)",
+    "b50:F20 MYNN default path: bottom-face w1 to EDMF/DMP taper + driver-local HFX/QFX limits",
+    "b51:F8 MYNN mixes QNC/QNWFA/QNIFA (CLOUDMIX number scalars)"
+   ],
+   "class_a_numeric": [
+    "b39:F1 land precipitation for every MP (public RAINNCV/SNOWNCV/GRAUPELNCV/HAILNCV slots; seed mp!=0)",
+    "b50:F20 MYNN default path: bottom-face w1 to EDMF/DMP taper + driver-local HFX/QFX limits"
+   ],
+   "other_reach": [
+    "b42:NTU mp56 / Jensen mp55 native column typed global memory (Triton compile enabler) (BYTE)",
+    "b48:t-classd-jensen: Jensen mp55 REFL_10CM from DIAG_DBZ3D every call; REFD_MAX only under do_radar_ref=1; NTU QHAIL history (history-only)",
+    "b55:NTU mp56 column kernel 4->2 warps + find_rc0 NaN-fraction shortcut (perf); mp56 catalog note string (BYTE)"
+   ]
+  },
+  "c89": {
+   "status": "ADMITTED",
+   "runnable": true,
+   "options": {
+    "mp_physics": 11,
+    "cu_physics": 0,
+    "bl_pbl_physics": 9,
+    "sf_sfclay_physics": 5,
+    "sf_surface_physics": 4,
+    "ra_lw_physics": 4,
+    "ra_sw_physics": 4
+   },
+   "extra": {},
+   "features": [
+    "primary-MP11-admitted-batch15",
+    "original-WRF-inputs-no-synthetic-fields"
+   ],
+   "numeric_fixes": [
+    "b39:F1 land precipitation for every MP (public RAINNCV/SNOWNCV/GRAUPELNCV/HAILNCV slots; seed mp!=0)",
+    "b45:CAM-MG mp11 GPU admission: native column compiled by stock Triton 3.6 via jaxlib triton_kernel_call (XLA bundled Triton miscompiled -> zero RAINNCV/SNOWNCV)"
+   ],
+   "class_a_numeric": [
+    "b39:F1 land precipitation for every MP (public RAINNCV/SNOWNCV/GRAUPELNCV/HAILNCV slots; seed mp!=0)",
+    "b45:CAM-MG mp11 GPU admission: native column compiled by stock Triton 3.6 via jaxlib triton_kernel_call (XLA bundled Triton miscompiled -> zero RAINNCV/SNOWNCV)"
+   ],
+   "other_reach": [
+    "b38:MP11 CAM-MG GPU refusal (cammg_config) \u2014 SUPERSEDED by batch45 mp11 lift (refusal-only)",
+    "b49:t-cammgws DLF2 history for mp11 (Registry zero without UW shallow cu) (history-only)"
+   ]
+  },
+  "c90": {
+   "status": "ADMITTED",
+   "runnable": true,
+   "options": {
+    "mp_physics": 8,
+    "cu_physics": 1,
+    "bl_pbl_physics": 5,
+    "sf_sfclay_physics": 5,
+    "sf_surface_physics": 4,
+    "ra_lw_physics": 4,
+    "ra_sw_physics": 4
+   },
+   "extra": {},
+   "features": [
+    "K1-matched-original-real-tracer-template",
+    "positive-passive-tracer-inputs"
+   ],
+   "numeric_fixes": [
+    "b50:F20 MYNN default path: bottom-face w1 to EDMF/DMP taper + driver-local HFX/QFX limits"
+   ],
+   "class_a_numeric": [
+    "b50:F20 MYNN default path: bottom-face w1 to EDMF/DMP taper + driver-local HFX/QFX limits"
+   ],
+   "other_reach": []
+  }
+ }
+}

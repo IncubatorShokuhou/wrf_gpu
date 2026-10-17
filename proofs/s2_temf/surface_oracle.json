@@ -1,0 +1,31 @@
+{
+  "source": "WRF v4.7.1 phys/module_sf_temfsfclay.F (unmodified)",
+  "caller": "phys/module_surface_driver.F:2521-2533; full 3-D temfsfclay, lowest mass level; WRF REAL constants",
+  "precision": "float32; no DOUBLE islands",
+  "gate": "8 binary32 ULP of each output field scale per record; reject NaN/Inf",
+  "compile_command": [
+    "<USER_HOME>/miniconda3/envs/wrfbuild/bin/gfortran",
+    "-O2",
+    "-ffp-contract=off",
+    "-ffree-form",
+    "-ffree-line-length-none",
+    "-cpp",
+    "-DEM_CORE=1",
+    "-fcheck=all",
+    "-finit-real=snan",
+    "module_model_constants.F",
+    "module_sf_temfsfclay.F",
+    "surface_driver.f90",
+    "-o",
+    "oracle.exe"
+  ],
+  "sources": {
+    "<USER_HOME>/src/wrf_pristine/WRF/phys/module_sf_temfsfclay.F": "70f2ed6bc48aad5b1bf68be4e01753a132f2ecdb4fa6d95c0ecce5d5554fcd94",
+    "<USER_HOME>/src/wrf_pristine/WRF/share/module_model_constants.F": "5b80377fecdc18a5f0ad38d3b6c15cfc86ad5d76701adbbbb08a08698d0f7062",
+    "<USER_HOME>/wrf_gpu2_lanes/s2-temf/snapshot/proofs/s2_temf/surface_driver.f90": "759b2d6b173b939569d09f1d5f96d22ad42ebf96804f8a6803d7a0e9b5c5a098"
+  },
+  "compiler": "GNU Fortran (conda-forge gcc 14.3.0-19) 14.3.0",
+  "fixture_sha256": "6639b1d410c5f083b6826fc7dd32b14b0975b8f1d78733469b9d002f4349658c",
+  "record_count": 96,
+  "source_json_sha256": "a309a46328cf7fc8dabf6ea3ce359ad5435bb5e1c3cc25c9265a6f989aaa8b31"
+}

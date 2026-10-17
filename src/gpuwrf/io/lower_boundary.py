@@ -53,8 +53,8 @@ def load_lower_boundary(run_dir, namelist, domain, *, run_start, dt_s, shape):
     tc = namelist.get("time_control", {})
     if int(_domain_value(tc, "io_form_auxinput4", index, 0)) != 2:
         raise ValueError(f"{domain}: sst_update=1 requires io_form_auxinput4=2 (NetCDF)")
-    if int(_domain_value(physics, "sst_skin", index, 0)) or int(_domain_value(physics, "sf_lake_physics", index, 0)):
-        raise ValueError(f"{domain}: aux4 SST with sst_skin/lake physics is not wired")
+    if int(_domain_value(physics, "sf_lake_physics", index, 0)):
+        raise ValueError(f"{domain}: aux4 SST with lake physics is not wired")
     seconds = sum(float(_domain_value(tc, f"auxinput4_interval_{key}", index, 0)) * factor
                   for key, factor in (("d", 86400), ("h", 3600), ("m", 60), ("s", 1)))
     if seconds == 0:

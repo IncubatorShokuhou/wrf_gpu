@@ -30,6 +30,7 @@ from __future__ import annotations
 
 import calendar
 from collections import Counter, deque
+from collections.abc import Mapping
 from dataclasses import dataclass, replace as dataclass_replace
 from datetime import datetime, timedelta, timezone
 from fractions import Fraction
@@ -128,15 +129,14 @@ class NestedPipelineConfig:
     input_dir: Path
     output_dir: Path
     proof_dir: Path
-    hours: int
+    hours: int | float  # DFL retains the original end after shifting the start to its midpoint.
     max_dom: int
     scratch_dir: Path | None = None
     # Two-way nesting: when True, after each child completes its parent_grid_ratio
     # subcycle its interior is fed back onto the overlapping parent cells (WRF
-    # copy_fcn area-average) followed by the WRF sm121 feedback-zone smoother.
-    # Defaults to False to preserve the v0.11.0/v0.12.0-validated one-way wiring;
-    # opt in for the two-way path.
-    feedback: bool = False
+    # copy_fcn area-average) followed by namelist smooth_option=0/1/2. None reads
+    # the explicit namelist feedback (omitted means OFF for release compatibility).
+    feedback: bool | None = None
     # WRF history includes the initialized state at lead zero.  Keep this explicit
     # and default-off so historical callers retain their exact post-step-only
     # output count/bytes; corrected identity runs opt in through the CLI.
@@ -713,12 +713,126 @@ def _domain_cu_physics(run, domain: str) -> int:
     return _domain_physics_int(run, "cu_physics", domain, 0)
 
 
-# Land-surface options this standalone nested pipeline can wire: 4 = Noah-MP
-# (the prognostic land path CPU truth runs) and 0 = no LSM selected (legacy
+# Land-surface options this standalone nested pipeline can wire: 3 = RUC with
+# prepared 6/9-level input, 4 = Noah-MP, and 0 = no LSM selected (legacy
 # prescribed bulk surface). Anything else fails closed -- silently falling back
 # to the bulk path freezes land TSK for the whole run on every domain
 # (proofs/v014/canary_h24_residual_adjudication.md, the v0.14 release blocker).
-_SUPPORTED_NESTED_LAND_OPTIONS = (0, 4)
+_SUPPORTED_NESTED_LAND_OPTIONS = (0, 3, 4, 8)
+
+
+def _load_urban_slucm(run, domain: str, noahmp_land, noahmp_static, *, dz1,
+                      run_start=None, hours=24, dt_s=1):
+    """sf_urban_physics=1: URBPARM.TBL bundle, urban_var_init carry, NATURAL Noah-MP static.
+
+    ``dz1`` is the initial lowest-layer thickness DZ8W(kts) [m] (phy_prep g = 9.81) for WRF's
+    ZDC+Z0C+2 < ZA FATAL check.
+    """
+
+    import jax.numpy as jnp
+
+    from gpuwrf.config.paths import wrf_run_dir
+    from gpuwrf.coupling.urban_slucm_hook import (
+        check_first_level_above_canopy, initial_urban_carry, load_urban_bundle, urban_noahmp_static)
+
+    ivg = np.asarray(noahmp_static.ivgtyp)
+    lcz = _domain_physics_int(run, "use_wudapt_lcz", "d01", 0)
+    ahe_opt = _domain_physics_int(run, "distributed_ahe_opt", "d01", 0)
+    if lcz not in (0, 1) or ahe_opt not in (0, 1, 2):
+        raise ValueError("use_wudapt_lcz must be 0/1; distributed_ahe_opt must be 0/1/2")
+    if np.any((ivg >= 51) & (ivg <= 61)) and not lcz:
+        raise NotImplementedError(f"{domain}: sf_urban_physics=1 with WUDAPT LCZ land-use categories (51-61) is "
+                                  "inconsistent with use_wudapt_lcz=0; select use_wudapt_lcz=1")
+    bundle = load_urban_bundle(wrf_run_dir(), isurban=int(noahmp_static.parameters.isurban),
+                               use_wudapt_lcz=bool(lcz), ahe_opt=ahe_opt, start=run_start,
+                               rad_interval_s=60*_domain_float(run,"physics","radt",domain,30),
+                               dt_s=float(dt_s))
+    if "FRC_URB2D" in run.wrfinput_variables(domain):
+        raw_frc = np.ma.asarray(run.load_wrfinput(domain, "FRC_URB2D", lazy=False),dtype=np.float32).filled(np.nan)
+        if not np.isfinite(raw_frc).all():
+            raise ValueError("FRC_URB2D contains nonfinite/missing values")
+        frc = jnp.asarray(raw_frc.reshape(ivg.shape))
+    else:
+        frc = jnp.zeros(jnp.shape(noahmp_land.t_skin), jnp.float32)
+    from dataclasses import replace
+    from gpuwrf.coupling.urban_inputs import UrbanInputs, prepare_morphology, load_hourly, load_layered, file_sha256
+    available = run.wrfinput_variables(domain)
+    shape = ivg.shape
+    fields = {}
+    for key in ("MH_URB2D","HGT_URB2D","STDH_URB2D","LP_URB2D","LB_URB2D","LF_URB2D"):
+        # Registry variable names differ from the Fortran grid member names.
+        alias = {"HGT_URB2D":"BUILD_HEIGHT","LP_URB2D":"BUILD_AREA_FRACTION",
+                 "LB_URB2D":"BUILD_SURF_RATIO"}.get(key,key)
+        source = alias if alias in available else key
+        if source in available:
+            if key == "LF_URB2D":
+                raw = load_layered(run,domain,source,shape,4)
+                fields[key] = np.moveaxis(raw,0,-1)
+            else:
+                raw = np.asarray(run.load_wrfinput(domain,source,lazy=False),np.float32)
+                fields[key] = raw.reshape(shape)
+    if "URB_PARAM" in available:
+        raw = load_layered(run,domain,"URB_PARAM",shape)
+        if raw.shape[0] < 99:
+            raise ValueError("URB_PARAM must be (num_urb_params>=99,y,x)")
+        for key,k in (("LP_URB2D",90),("MH_URB2D",91),("STDH_URB2D",92),
+                      ("HGT_URB2D",93),("LB_URB2D",94)):
+            fields[key] = raw[k]
+        fields["LF_URB2D"] = np.moveaxis(raw[95:99],0,-1)
+    # Resolve FRC fallbacks before deriving morphology (same urban_var_init order).
+    seed = initial_urban_carry(bundle,ivgtyp=ivg,tsk=noahmp_land.t_skin,
+        tslb=noahmp_land.tslb,frc_urb2d=frc,dtype=jnp.float32)
+    if lcz and np.max(np.asarray(seed.utype)) <= 3:
+        raise ValueError("use_wudapt_lcz=1 but maximum UTYPE_URB2D<=3: WRF's urban table "
+                         "consistency check refuses this input (module_physics_init.F:3353)")
+    morphology = prepare_morphology(bundle.table,ivg,bundle.isurban,np.asarray(seed.frc_urb),fields)
+    check_first_level_above_canopy(bundle,ivgtyp=ivg,dz1=dz1,domain=domain,morphology=morphology)
+    ahe = hourly = longitude = None
+    file = (run.namelist.get("physics") or {}).get("urban_ahe_file")
+    if isinstance(file,(list,tuple)):
+        file = _domain_list_value(file,int(domain[1:])-1,None)
+    if ahe_opt and not file:
+        if "AHE" not in available:
+            raise ValueError(f"{domain}: distributed_ahe_opt requires AHE(month_hour=288,y,x)")
+        ahe = load_layered(run,domain,"AHE",shape,288)
+    if file:
+        if not ahe_opt or run_start is None:
+            raise ValueError("urban_ahe_file requires distributed_ahe_opt=1/2 and a dated run")
+        file=Path(file).expanduser()
+        if not file.is_absolute(): file=Path(run.path)/file
+        before=file_sha256(file)
+        hourly = load_hourly(file,start=run_start,hours=hours,shape=shape)
+        if file_sha256(file)!=before:
+            raise ValueError("hourly AHE changed while loading")
+        ahe = None
+    if bundle.table.ahoption or bundle.table.alhoption:
+        if run_start is None or "XLONG" not in available:
+            raise ValueError("diurnal urban heat requires run_start and XLONG")
+        longitude = np.asarray(run.load_wrfinput(domain,"XLONG",lazy=False),np.float32).reshape(shape)
+        if not np.isfinite(longitude).all():
+            raise ValueError("XLONG contains nonfinite values")
+    needs_inputs = morphology is not None or ahe_opt or longitude is not None
+    if ahe_opt and run_start is None:
+        raise ValueError("AHE requires a dated run")
+    clock = None
+    if ahe_opt or bundle.table.ahoption or bundle.table.alhoption:
+        clock=np.asarray([run_start.timetuple().tm_yday,
+            run_start.hour+run_start.minute/60+run_start.second/3600,
+            run_start.hour*60+run_start.minute+run_start.second/60,run_start.month],np.float32)
+    # Date anchors ride traced inputs, avoiding a whole-model recompile per forecast date (B41).
+    bundle = replace(bundle,start=None,requires_inputs=bool(needs_inputs),has_morphology=morphology is not None)
+    if file:
+        # Host-only receipt: not a dataclass field, never read by traced physics
+        # or included in the AOT static key. Native restart identity binds it.
+        object.__setattr__(bundle,"_hourly_source",(str(file.resolve()),before))
+    inputs = None
+    if needs_inputs:
+        import jax
+        inputs = jax.tree.map(jnp.asarray,UrbanInputs(morphology,longitude,ahe,hourly,clock))
+    # The already seeded state/fractions/types are unchanged by adding inputs;
+    # avoid constructing every urban prognostic array a second time at load.
+    carry = seed._replace(inputs=inputs)
+    return bundle, carry, urban_noahmp_static(noahmp_static, bundle)
 
 
 def _domain_sf_surface_physics(run, domain: str) -> int:
@@ -728,11 +842,39 @@ def _domain_sf_surface_physics(run, domain: str) -> int:
     if option not in _SUPPORTED_NESTED_LAND_OPTIONS:
         raise ValueError(
             f"{domain}: sf_surface_physics={option} is not wired in the standalone "
-            "nested pipeline (supported: 0 = prescribed bulk surface, 4 = Noah-MP). "
+            "nested pipeline (supported: 0 = prescribed bulk surface, 3 = RUC, 4 = Noah-MP, 8 = experimental SSiB). "
             "Refusing the silent bulk-surface fallback: it leaves land TSK frozen "
             "for the whole run (proofs/v014/canary_h24_residual_adjudication.md)."
         )
     return option
+
+
+def _load_urban_multilayer(run,domain,noahmp_land,noahmp_static,*,option,nz):
+    """BEP/BEM table geometry, compact urban_var_init and NATURAL Noah-MP land."""
+    from gpuwrf.config.paths import wrf_run_dir
+    from gpuwrf.coupling.urban_multilayer_hook import load_multilayer_bundle,initial_multilayer_carry
+    from gpuwrf.coupling.urban_slucm_hook import urban_noahmp_static
+    if _domain_physics_int(run,'use_wudapt_lcz',domain,0)!=0:
+        raise NotImplementedError(f'{domain}: BEP/BEM use_wudapt_lcz requires unqualified LCZ tables/classes; default UTYPE=2 only')
+    pbl=_domain_physics_int(run,'bl_pbl_physics',domain,5)
+    if pbl==2:
+        raise NotImplementedError(f'{domain}: BEP/BEM+MYJ requires module_bl_myjurb (MYJURB), absent from the port')
+    if pbl not in (1,8):
+        raise ValueError(f'{domain}: WRF BEP/BEM allows YSU1/MYJ2/BouLac8; the port admits YSU1 or BouLac8')
+    for key in ('ra_sw_physics','ra_lw_physics'):
+        if _domain_physics_int(run,key,domain,4)!=4:
+            raise NotImplementedError(f'{domain}: BEP/BEM requires RRTMG4/4 held direct/diffuse radiation in this port')
+    ivg=np.asarray(noahmp_static.ivgtyp)
+    bundle=load_multilayer_bundle(wrf_run_dir(),option=option,ivgtyp=ivg,
+        isurban=int(noahmp_static.parameters.isurban),
+        dataset=('USGS' if int(noahmp_static.parameters.isurban)==1 else 'MODIFIED_IGBP_MODIS_NOAH'))
+    names=run.wrfinput_variables(domain)
+    for key in ('MH_URB2D','HI_URB2D','LP_URB2D','LB_URB2D','HGT_URB2D'):
+        if key in names and np.any(np.asarray(run.load_wrfinput(domain,key,lazy=False))!=0):
+            raise NotImplementedError(f'{domain}: BEP/BEM NUDAPT morphology ({key} nonzero) is not qualified; table geometry only')
+    frc=np.squeeze(np.asarray(run.load_wrfinput(domain,'FRC_URB2D',lazy=False))) if 'FRC_URB2D' in names else np.zeros(ivg.shape,np.float32)
+    carry=initial_multilayer_carry(bundle,tslb=noahmp_land.tslb,frc_urb2d=frc,nz=nz,smois=noahmp_land.smois)
+    return bundle,carry,urban_noahmp_static(noahmp_static,bundle)
 
 
 def _wrf_julian_yearlen(run_start: datetime) -> tuple[float, float]:
@@ -785,13 +927,36 @@ def _load_domains(
     promotion inside the run is impossible by construction.
     """
 
+    from gpuwrf.io.cammg_config import validate_input_dir
+    validate_input_dir(config.input_dir)
     if _init_kernel_call is None:
         from gpuwrf.integration.init_kernels import InitKernelCache
         _init_kernel_call = InitKernelCache()
     run_dir = Path(config.input_dir)
+    if len(names) > 1:
+        from gpuwrf.io.gen2_accessor import Gen2Run
+        from gpuwrf.io.namelist_check import refuse_single_domain_mp_nested, refuse_unqualified_nested_options
+        raw_namelist = Gen2Run(run_dir).namelist
+        from gpuwrf.io.nesting_options import admit_feedback
+        admit_feedback(raw_namelist,names,feedback=config.feedback)
+        from gpuwrf.io.nesting_options import resolve_nesting_options
+        if resolve_nesting_options(raw_namelist,feedback=config.feedback)['feedback']:
+            if _batch_ensemble_size_from_env()>1:
+                raise ValueError('two-way feedback is qualified for B=1; batched feedback is unqualified')
+            from gpuwrf.tracers.runtime import refuse_unwired_feedback
+            refuse_unwired_feedback(raw_namelist, names)
+        refuse_single_domain_mp_nested(raw_namelist, len(names))
+        refuse_unqualified_nested_options(raw_namelist, len(names))
+    from gpuwrf.io.gen2_accessor import Gen2Run
+    from gpuwrf.io.qnse_admission import refuse_qnse_sea_ice
+    admission_run = Gen2Run(run_dir)
+    for name in names:
+        refuse_qnse_sea_ice(admission_run, name, _domain_physics_int(admission_run, "bl_pbl_physics", name, 5))
     # Build the root case first so we share its Gen2Run for namelist/grid metadata.
     root_case = build_replay_case(run_dir, domain=names[0], standalone=True)
     run = root_case.run
+    from gpuwrf.io.nesting_options import resolve_nesting_options
+    nesting = resolve_nesting_options(run.namelist, feedback=config.feedback)
     dt_by_domain = _dt_by_domain(run, names)
 
     run_start = _coerce_run_start(str(root_case.metadata["run_start_label"]))
@@ -799,13 +964,14 @@ def _load_domains(
     for name in names[1:]:
         grid = run.grid(name)
         parent = f"d{int(grid.parent_id):02d}"
-        edges.append(_nest_edge(run, name, parent, feedback=bool(config.feedback)))
+        edges.append(_nest_edge(run, name, parent, feedback=nesting["feedback"]))
     hierarchy = DomainHierarchy.from_edges(names, tuple(edges), max_dom=max(5, len(names)))
 
     bundles: dict[str, DomainBundle] = {}
     initial_carries: dict[str, Any] = {}
     loaded_cases: dict[str, Any] = {names[0]: root_case}
-    meta: dict[str, Any] = {"domains": {}, "edges": [edge.__dict__ for edge in edges]}
+    meta: dict[str, Any] = {"domains": {}, "edges": [edge.__dict__ for edge in edges],
+                            "nesting": nesting}
 
     for name in names:
         if name == names[0]:
@@ -825,6 +991,7 @@ def _load_domains(
                 domain=name,
                 load_lateral_boundaries=False,
                 live_nest_parent=loaded_cases[parent],
+                live_nest_parent_scalar_state=initial_carries[parent].state,
                 live_nest_child_opens_at_start=any(
                     edge.child in names and wrf_nest_opens_with_parent_start(run, name, edge.child)
                     for edge in hierarchy.children(name)
@@ -881,6 +1048,12 @@ def _load_domains(
         sf_surface_physics = _domain_sf_surface_physics(run, name)
         noahmp_land = None
         noahmp_init_meta = None
+        urban_bundle = urban_carry = None
+        urban_opt = _domain_physics_int(run, "sf_urban_physics", name, 0)
+        if urban_opt in (1,2,3) and sf_surface_physics != 4:
+            raise NotImplementedError(
+                f"{name}: sf_urban_physics=1 (SLUCM) is coupled only to sf_surface_physics=4 Noah-MP "
+                f"in this port; got sf_surface_physics={sf_surface_physics}")
         if sf_surface_physics == 4:
             if _resolve_full_wrfout_variables():
                 # These options require bucket counters / diagnostic time-window
@@ -893,6 +1066,27 @@ def _load_domains(
             noahmp_land, noahmp_static, noahmp_init_meta = build_noahmp_land_state(
                 run_dir, name
             )
+            from gpuwrf.io.noahmp_mmf import selected as mmf_selected, load_mmf
+            if mmf_selected(run.namelist):
+                noahmp_land, mmf_initial = load_mmf(
+                    case.run, name, noahmp_land, noahmp_static, dt_by_domain[name])
+                noahmp_init_meta['mmf'] = 'pristine GROUNDWATER_INIT; NCAR groundwater geography'
+                noahmp_init_meta['mmf_work'] = dict(opt_run=5,opt_inf=mmf_initial.opt_inf,
+                    wtddt_seconds=float(mmf_initial.seconds),stepwtd=int(mmf_initial.stepwtd),
+                    noahmp_acc_dt=0)
+                noahmp_init_meta['cold_init_provenance']['smcwtd'] = 'pristine GROUNDWATER_INIT equilibrium/Newton deep moisture'
+            else:
+                mmf_initial = None
+            if urban_opt == 1:
+                # WRF sf_urban_physics>0: Noah-MP runs urban cells as NATURAL/FVGMAX 0.96 and
+                # noahmp_urban blends SLUCM on top (coupling.urban_slucm_hook).
+                ph = np.asarray(case.state.ph_total, np.float64)
+                urban_bundle, urban_carry, noahmp_static = _load_urban_slucm(
+                    case.run, name, noahmp_land, noahmp_static, dz1=(ph[1] - ph[0]) / 9.81,
+                    run_start=run_start,hours=config.hours,dt_s=dt_by_domain[name])
+            elif urban_opt in (2,3):
+                urban_bundle, urban_carry, noahmp_static = _load_urban_multilayer(
+                    case.run, name, noahmp_land, noahmp_static, option=urban_opt, nz=int(case.grid.nz))
             noahmp_energy_params, noahmp_rad_params, noahmp_nroot = build_noahmp_params(
                 noahmp_static
             )
@@ -927,10 +1121,10 @@ def _load_domains(
                 run, "dynamics", "h_sca_adv_order", name, 5
             ),
             moist_adv_opt=_domain_int(
-                run, "dynamics", "moist_adv_opt", name, 0
+                run, "dynamics", "moist_adv_opt", name, 1
             ),
             scalar_adv_opt=_domain_int(
-                run, "dynamics", "scalar_adv_opt", name, 0
+                run, "dynamics", "scalar_adv_opt", name, 1
             ),
             topo_shading=_domain_physics_int(run, "topo_shading", name, 0),
             slope_rad=slope_rad,
@@ -940,6 +1134,31 @@ def _load_domains(
         # filter/diffusion knobs; <=v0.3.3 silently ran from_grid's defaults.
         # Absent keys keep the values above (release namelists: same program).
         namelist = bind_namelist_options(namelist, run.namelist, name)
+        if int(namelist.mp_physics) == 11:
+            from gpuwrf.physics.cammg.registry import warn_configuration
+            warn_configuration(namelist.cu_physics,namelist.shcu_physics)
+            from gpuwrf.physics.cammg.binding import bind_state
+            state=bind_state(state,run_dir/f'wrfinput_{name}')
+        if namelist.windfarm_opt:
+            from gpuwrf.io.windfarm import bind_windfarm
+            namelist = bind_windfarm(namelist,run_dir,name)
+        if namelist.tracer_opt or (run.namelist.get("dynamics") or {}).get("gpuwrf_tracer_file"):
+            from gpuwrf.tracers.runtime import bind_inputs
+            namelist, state = bind_inputs(namelist, state, run.namelist, name, run_dir)
+        if parent_dt is not None and (state.tracers is not None or initial_carries[parent].state.tracers is not None):
+            from gpuwrf.tracers.runtime import inherit_parent
+            state = inherit_parent(state, namelist, initial_carries[parent].state, bundles[parent].namelist,
+                bundles[parent].grid, case.grid, run.grid(name), run.namelist, name, run_dir)
+        if sf_surface_physics == 8:
+            from gpuwrf.io.ssib_land_init import bind_ssib_land
+            namelist=bind_ssib_land(namelist,run_dir,name,state=state,
+                num_soil_layers=_domain_physics_int(run,"num_soil_layers",name,4))
+        if sf_surface_physics == 3:
+            from gpuwrf.io.ruc_land_init import bind_ruc_land
+            namelist = bind_ruc_land(
+                namelist, run_dir, name, state=state,
+                num_soil_layers=_domain_physics_int(run, "num_soil_layers", name, 4),
+            )
         if noahmp_land is not None:
             namelist = dataclass_replace(
                 namelist,
@@ -951,7 +1170,43 @@ def _load_domains(
                 noahmp_nroot=noahmp_nroot,
                 noahmp_julian=noahmp_julian,
                 noahmp_yearlen=noahmp_yearlen,
+                **({"urban_bundle": urban_bundle} if urban_bundle is not None else {}),
+                **({'noahmp_land':noahmp_land} if namelist.noahmp_options is not None else {}),
             )
+        if int(namelist.sf_ocean_physics) == 1:
+            from gpuwrf.io.ocean_init import bind_ocean_model
+            namelist=bind_ocean_model(namelist,run_dir,name,state=state)
+        if int(namelist.sf_lake_physics) == 1:
+            from gpuwrf.io.lake_init import bind_lake_model
+            namelist = bind_lake_model(namelist,run_dir,name,state=state)
+        if namelist.sst_skin:
+            from gpuwrf.coupling.sst_skin_hook import bind_sst_skin
+            namelist = bind_sst_skin(namelist, run_dir, name, state=state)
+        if namelist.noahmp_options is not None and namelist.noahmp_options.dveg in (7,8,9):
+            from gpuwrf.io.noahmp_land_init import cold_initialize_input_lai
+            namelist=dataclass_replace(namelist,noahmp_land=cold_initialize_input_lai(
+                namelist.noahmp_land,namelist.noahmp_static,sf_urban_physics=urban_opt))
+        if namelist.noahmp_options is not None and namelist.noahmp_options.opt_soil!=1:
+            from gpuwrf.io.noahmp_soil import bind_soil
+            namelist=bind_soil(namelist,run_dir,name,state=state)
+        if namelist.noahmp_options is not None and (namelist.noahmp_options.dveg in (2,5,6) or namelist.noahmp_options.opt_crop==1):
+            from gpuwrf.io.noahmp_carbon import bind_carbon
+            namelist=bind_carbon(namelist,run_dir,name,state=state)
+        if namelist.noahmp_options is not None and namelist.noahmp_options.opt_irr:
+            from gpuwrf.io.noahmp_irrigation import bind_irrigation
+            namelist=bind_irrigation(namelist,run_dir,name,state=state)
+        if namelist.noahmp_options is not None and namelist.noahmp_options.opt_run==1:
+            from gpuwrf.io.noahmp_groundwater import bind_groundwater
+            namelist=bind_groundwater(namelist,state=state)
+        if namelist.noahmp_options is not None and (namelist.noahmp_options.opt_run in (6,7,8) or namelist.noahmp_options.opt_tdrn):
+            from gpuwrf.io.noahmp_hydrology import bind_hydrology
+            namelist=bind_hydrology(namelist,run_dir,name,state=state)
+        if namelist.noahmp_options is not None and noahmp_land is not None:
+            # Host option binders need the actual initialized land. Seed their
+            # updated LAI/SAI below, then drop this initialization-only owner
+            # from the namelist so it adds no retained timestep input planes.
+            noahmp_land=namelist.noahmp_land
+            namelist=dataclass_replace(namelist,noahmp_land=None)
         if name == names[0]:
             namelist = _root_boundary_cadence_override(namelist, case.metadata, run.namelist)
         from gpuwrf.io.lower_boundary import load_lower_boundary
@@ -961,19 +1216,44 @@ def _load_domains(
         )
         if lower_boundary is not None:
             namelist = dataclass_replace(namelist, lower_boundary=lower_boundary)
+        # grid_fdda=1 analysis nudging (lane o2-fdda): wrffdda_d0N auxinput10 records + &fdda options.
+        from gpuwrf.io.wrffdda import load_grid_fdda
+        fdda_inputs = load_grid_fdda(
+            run_dir, run.namelist, name, run_start=run_start, dt_s=dt_by_domain[name],
+            nz=state.theta.shape[0], ny=state.theta.shape[1], nx=state.theta.shape[2],
+            run_seconds=float(config.hours) * 3600.0,
+            dx_m=float(namelist.grid.projection.dx_m),
+        )
+        if fdda_inputs is not None:
+            namelist = dataclass_replace(namelist, data_assimilation=fdda_inputs)
+        from gpuwrf.io.obs_loader import load_observation_nudging
+        obs_inputs = load_observation_nudging(run_dir,run.namelist,name,dt_by_domain[name])
+        if obs_inputs is not None:
+            namelist = dataclass_replace(namelist,observation_nudging=obs_inputs)
+        if int(namelist.bl_pbl_physics) in (16,17):
+            from gpuwrf.coupling.epsilon_pbl import seed_epsilon_pbl_state
+            state=seed_epsilon_pbl_state(state,namelist.bl_pbl_physics)
+        if int(namelist.mp_physics) in (5, 15):
+            from gpuwrf.physics.ferrier.binding import bind_ferrier_domain
+            namelist = bind_ferrier_domain(namelist, run.namelist, name)
         if parent_dt is not None and _coupled_forcedown_enabled(namelist):
             # Registry moist/scalar force-down records must exist before the
             # child carry is frozen for compilation or restart.  The first
             # parent force-down replaces these unread two-time templates; the
             # predicate is the edge's own coupled_forcedown switch, so legacy
             # (uncoupled) packages never see zero records.
-            state = initialize_child_scalar_boundaries(state)
+            state = initialize_child_scalar_boundaries(state, mp_physics=int(namelist.mp_physics),
+                                                       bl_pbl_physics=int(namelist.bl_pbl_physics))
         # Initial carry: identical to the domain-tree cold start for the bulk path
         # (same _initial_carry_for_run on the same state/namelist); under Noah-MP the
         # prognostic land carry plus the REAL t=0 held surface radiation are seeded
         # NOW so the scan carry pytree is structurally stable from step 1 (mirrors
         # the proven s6b/TOST carry seeding; nocturnal LWDN cold-start mitigation).
         carry = _initial_carry_for_run(state, namelist)
+        if noahmp_land is not None and mmf_initial is not None:
+            namelist = dataclass_replace(namelist, noahmp_mmf_enabled=True,
+                                        noahmp_mmf_opt_inf=mmf_initial.opt_inf)
+            carry = carry.replace(noahmp_mmf=mmf_initial)
         if noahmp_land is not None:
             initial_surface_rad, initial_full_rad = noahmp_initial_rad(
                 carry.state, namelist, land_state=noahmp_land, _with_diagnostics=True,
@@ -990,7 +1270,12 @@ def _load_domains(
                 seed_history_diagnostics,
             )
             if history_instep_diag_enabled():
-                carry = carry.replace(history_diagnostics=seed_history_diagnostics(carry.state))
+                carry = carry.replace(history_diagnostics=seed_history_diagnostics(
+                    carry.state, **({'myjsfc': True} if int(namelist.sf_sfclay_physics) == 2
+                                    else {'qnsesfc': True} if int(namelist.sf_sfclay_physics) == 4 else {})))
+            if urban_carry is not None:
+                carry = (carry.replace(urban_bep=urban_carry) if urban_opt in (2,3)
+                         else carry.replace(urban_slucm=urban_carry))
         from gpuwrf.kernels.dyn_carry_fp32 import real_carry
         carry = real_carry(carry)  # GPUWRF_CARRY_REAL_ALL: post-seed held radiation as REAL
         from gpuwrf.nesting.nest_o3 import nest_o3_from_parent_enabled  # noqa: PLC0415
@@ -1066,6 +1351,15 @@ def _load_domains(
                 ),
             },
         }
+    if any(bundle.state.tracers is not None for bundle in bundles.values()):
+        from gpuwrf.tracers.runtime import names as tracer_names
+        for edge in edges:
+            if tracer_names(bundles[edge.parent].namelist) != tracer_names(bundles[edge.child].namelist):
+                raise ValueError("parent/child passive tracers require the same ordered species list")
+    if nesting["feedback"] and hierarchy.nests:
+        from gpuwrf.nesting.initial_feedback import initialize_two_way_domains
+        meta["initial_feedback"]=initialize_two_way_domains(
+            hierarchy,bundles,initial_carries,run,nesting,kernel_call=_init_kernel_call)
     return hierarchy, bundles, meta, run_start, dt_by_domain, initial_carries
 
 
@@ -1138,6 +1432,7 @@ def _namelist_homogeneous_signature(namelist: Any) -> tuple[Any, ...]:
         "gwd_opt",
         "rad_rk_tendf",
         "acoustic_precision_mode",
+        "sf_urban_physics",
     )
     return tuple(getattr(namelist, field, None) for field in fields)
 
@@ -1162,9 +1457,12 @@ _BATCH_CANONICAL_NAMELIST_FIELDS = (
     "px_static",
     "px_land",
     "px_rad",
+    "ssib_static", "ssib_land", "ssib_rad",
     "ruc_static",
     "ruc_land",
     "ruc_rad",
+    "urban_bundle",
+    "lake_bundle", "ocean_initial",
 )
 
 
@@ -1515,6 +1813,9 @@ def _load_batched_domains(
     dict[str, tuple[tuple[Any, Any, Any] | None, ...]],
 ]:
     input_dirs = _resolve_batch_input_dirs(config, batch_size)
+    from gpuwrf.io.cammg_config import validate_input_dir
+    for input_dir in dict.fromkeys(input_dirs):
+        validate_input_dir(input_dir)
     loaded = []
     loaded_by_path = {}
     for path in input_dirs:
@@ -2009,6 +2310,12 @@ def _noahmp_surface_diagnostics_for_output(
     land-surface record this sprint removes).
     """
 
+    if type(radiation_diagnostics).__name__=='GoddardRadiationDiagnostics' and variable_subset is not None:
+        import jax
+        from gpuwrf.coupling.goddard_radiation import HISTORY_FIELDS,history_fields
+        if set(variable_subset)<=set(HISTORY_FIELDS):
+            if output_radiation_work is not None:output_radiation_work.append(0)
+            return {name:np.asarray(jax.device_get(value)) for name,value in history_fields(radiation_diagnostics,variable_subset).items()}
     if radiation_diagnostics is None and _nested_m9_radiation_from_carry_from_env() and noahmp_rad is not None:
         return _noahmp_surface_diagnostics_from_held_radiation(
             state,
@@ -2114,6 +2421,12 @@ def _noahmp_surface_diagnostics_for_output(
         if value is None:
             continue
         out[wrf_name] = np.asarray(jax.device_get(value))
+    if type(radiation_diagnostics).__name__=='GoddardRadiationDiagnostics':
+        from gpuwrf.coupling.goddard_radiation import history_fields
+        out.update({name:np.asarray(jax.device_get(value)) for name,value in history_fields(radiation_diagnostics,variable_subset).items()})
+    if type(radiation_diagnostics).__name__=='LegacyRadiationDiagnostics':
+        from gpuwrf.coupling.flg_gfdl_radiation import history_fields
+        out.update({name:np.asarray(jax.device_get(value)) for name,value in history_fields(radiation_diagnostics,variable_subset).items()})
     return out or None
 
 
@@ -2171,12 +2484,23 @@ def _history_surface_diagnostics_for_output(
         for wrf_name, attr in _M9_OUTPUT_FIELDS
     }
     values.update(HFX=m9.hfx, LH=m9.lh)
+    # Both single-domain and nested writers use the held in-step MYJSFC values.
+    for name in ('u10e', 'v10e'):
+        value = getattr(history, name, None)
+        if value is not None:
+            values[name.upper()] = value
     requested = _requested_m9_output_names(variable_subset)
     out = {
         name: value
         for name, value in values.items()
         if value is not None and (requested is None or name in requested)
     }
+    if type(radiation_diagnostics).__name__=='GoddardRadiationDiagnostics':
+        from gpuwrf.coupling.goddard_radiation import history_fields
+        out.update(history_fields(radiation_diagnostics,variable_subset))
+    if type(radiation_diagnostics).__name__=='LegacyRadiationDiagnostics':
+        from gpuwrf.coupling.flg_gfdl_radiation import history_fields
+        out.update(history_fields(radiation_diagnostics,variable_subset))
     host_out = jax.device_get(out)
     return {name: np.asarray(value) for name, value in host_out.items()} or None
 
@@ -2674,6 +2998,9 @@ class _PerDomainWrfoutWriter:
             diagnostics, meta = _load_static_latlon_writer_diagnostics(
                 run, domain, grid=bundle.grid
             )
+            overrides=getattr(bundle,"writer_static_overrides",None)
+            if overrides:
+                diagnostics={**(diagnostics or {}),**overrides}
             self.writer_static_latlon_metadata[domain] = meta
             if diagnostics:
                 self.writer_diagnostics[domain] = diagnostics
@@ -2683,6 +3010,7 @@ class _PerDomainWrfoutWriter:
                 self._land_history_inputs[domain] = load_land_history_inputs(
                     self.input_dir / f"wrfinput_{domain}", table_dir=wrf_run_dir(),
                     parameters=bundle.namelist.noahmp_static.parameters,
+                    **({"field_overrides":overrides} if overrides else {}),
                 )
 
     def _initial_surface_fields(self, name: str) -> dict[str, np.ndarray]:
@@ -2701,6 +3029,7 @@ class _PerDomainWrfoutWriter:
         grid = self.bundles[name].grid
         fields = {}
         path = self.input_dir / f"wrfinput_{name}"
+        namelist = getattr(self.bundles[name], 'namelist', None)
         with Dataset(path, "r") as initial:
             for field in ("PSFC", "T2", "TSK", "U10", "V10", "Q2"):
                 variable = initial.variables[field]
@@ -2711,6 +3040,9 @@ class _PerDomainWrfoutWriter:
                 if value.shape != (grid.ny, grid.nx) or not np.all(np.isfinite(value)):
                     raise ValueError(f"{path}:{field} is not a finite initialized surface field")
                 fields[field] = value
+                overrides = getattr(self.bundles[name], "writer_static_overrides", None)
+                if overrides and field in overrides:
+                    fields[field] = np.asarray(overrides[field])
             for field in [wrf_name for wrf_name, _attr in _M9_OUTPUT_FIELDS] + [
                 "HFX", "LH", "SWDNBC", "SWUPBC", "SWDNTC", "SWUPTC",
                 "LWDNBC", "LWUPBC", "LWDNTC", "LWUPTC",
@@ -2727,6 +3059,10 @@ class _PerDomainWrfoutWriter:
                 if value.shape != (grid.ny, grid.nx) or not np.all(np.isfinite(value)):
                     raise ValueError(f"{path}:{field} is not a finite initialized surface field")
                 fields[field] = value
+            if getattr(namelist, 'sf_sfclay_physics', 5) in (2, 4):
+                # Pristine module_physics_init.F:1326-1327 initializes special
+                # winds from U10/V10, before the first MYJSFC or QNSESFC solve.
+                fields.update(U10E=fields['U10'], V10E=fields['V10'])
             # Pre-solve history: TH2 is the real.exe value, not T2/Exner recomputed
             # by the writer. UST's missing-input seed is physics_init.F:1174.
             for field, default in (("TH2", None), ("UST", 1.e-4)):
@@ -2863,7 +3199,7 @@ class _PerDomainWrfoutWriter:
         t0 = perf_timers.start()
         try:
             assert_state_finite_at_boundary(
-                state, domain=name, step=int(own_step), sim_time_s=lead_seconds
+                state, domain=name, step=int(own_step), sim_time_s=lead_seconds,physics_carry=carry
             )
         finally:
             perf_timers.stop(
@@ -2880,6 +3216,14 @@ class _PerDomainWrfoutWriter:
                 # WRF lead-zero history precedes the first solve: no surface-layer,
                 # Noah-MP or radiation re-solve at step 0 (SI38).
                 surface_diagnostics = dict(initial)
+            elif getattr(carry, "ruc_land", None) is not None or getattr(carry,"ssib_land",None) is not None:
+                surface_diagnostics = _history_surface_diagnostics_for_output(
+                    state, namelist, self.run_start, lead_seconds=lead_seconds,
+                    noahmp_land=None, noahmp_rad=None,
+                    radiation_diagnostics=getattr(carry, "radiation_diagnostics", None),
+                    history=carry.history_diagnostics, variable_subset=self._variable_subset,
+                    output_radiation_work=radiation_work,
+                )
             elif bool(getattr(namelist, "use_noahmp", False)) and noahmp_land is not None:
                 surface_diagnostics = _noahmp_surface_diagnostics_for_output(
                     state,
@@ -2903,8 +3247,53 @@ class _PerDomainWrfoutWriter:
                     **({"output_radiation_work": radiation_work} if radiation_work is not None else {}),
                 )
             diagnostics = self._merge_output_diagnostics(
-                self.writer_diagnostics.get(name), surface_diagnostics
+                self.writer_diagnostics.get(name), surface_diagnostics,
+                **({"namelist": namelist} if int(getattr(namelist, "sf_sfclay_physics", 5)) == 0 else {}),
             )
+            if getattr(carry, "solar_interpolation", None) is not None:
+                from gpuwrf.diagnostics.solar import history_fields as solar_history_fields
+                # The held profile SWDNB remains distinct. Overlay after M9,
+                # including its optional horizontal SWDOWN compatibility path.
+                diagnostics = dict(diagnostics or {}, **solar_history_fields(carry.solar_interpolation))
+            if getattr(carry, "precipitation_buckets", None) is not None:
+                from gpuwrf.diagnostics.precipitation import history_fields
+                diagnostics = dict(diagnostics or {}, **history_fields(carry.precipitation_buckets))
+            if getattr(carry,"windfarm_power",None) is not None:
+                diagnostics = dict(diagnostics or {}, POWER=carry.windfarm_power)
+            if getattr(carry,"nwp_diagnostics",None) is not None:
+                from gpuwrf.diagnostics.nwp import history_fields as nwp_history_fields
+                diagnostics=dict(diagnostics or {},**nwp_history_fields(carry.nwp_diagnostics))
+            if getattr(carry,"radar_reflectivity",None) is not None:
+                diagnostics=dict(diagnostics or {},REFL_10CM=carry.radar_reflectivity)
+                mp=(namelist.get("physics",namelist).get("mp_physics",8)
+                    if isinstance(namelist,Mapping) else namelist.mp_physics)
+                mp=mp[0] if isinstance(mp,(tuple,list)) else mp
+                if int(mp)==40:
+                    # Second refl10cm_hm adds MSKF cumulus hydrometeors*CU_UAF; their arrays
+                    # exist only under aercu_opt>0 (refused) -> zero contribution (UPSTREAM note).
+                    diagnostics["MSKF_REFL_10CM"]=carry.radar_reflectivity
+                if (getattr(carry,"nwp_diagnostics",None) is None
+                        and int(mp) not in (17,18,19,21,22,50,51,52,53,55)):
+                    # ARW's radar_refl Registry package also allocates REFD_MAX.
+                    # Only NWP updates it (module_diag_refl is NMM-only), so
+                    # fixed-selection radar-only runs retain the allocator zero.
+                    diagnostics["REFD_MAX"]=np.zeros(state.t_skin.shape,dtype=np.float32)
+                # NSSL radar-only ARW has no REFD_MAX producer. Disclose that
+                # omission rather than make an uncomputed field look complete.
+                # Jensen (55): REFD_MAX only under do_radar_ref=1 (producer_history).
+            green_roof=getattr(getattr(carry,"urban_bep",None),"green_roof",None)
+            if green_roof is not None:
+                # BEP+BEM held QGR_URB3D (history name QGR_URB4D).
+                diagnostics=dict(diagnostics or {},QGR_URB4D=green_roof)
+            rad = getattr(carry, "radiation_diagnostics", None)
+            if initial is not None and type(rad).__name__ == 'GoddardRadiationDiagnostics':
+                from gpuwrf.coupling.goddard_radiation import history_fields as goddard_history_fields
+                diagnostics = dict(diagnostics or {}, **goddard_history_fields(rad, self._variable_subset))
+            for wrf_name,attr in (("COD2D_OUT","cod2d_out"),("CTOP2D_OUT","ctop2d_out")):
+                value=getattr(rad,attr,None)
+                if value is not None:
+                    diagnostics=dict(diagnostics or {})
+                    diagnostics[wrf_name]=value
             if initial is None:
                 diagnostics = dict(diagnostics or {})
                 rad = getattr(carry, "radiation_diagnostics", None)
@@ -2930,9 +3319,21 @@ class _PerDomainWrfoutWriter:
                     raise ValueError("native RK output requires its initial WRF base state")
                 diagnostics = dict(diagnostics or {})
                 diagnostics.update(PB=base.pb, PHB=base.phb, MUB=base.mub)
+            if getattr(carry,'temf',None) is not None:
+                from gpuwrf.coupling.temf import history_fields
+                diagnostics = dict(diagnostics or {},**history_fields(carry.temf,state.t_skin.shape))
             if initial is not None:
                 diagnostics = dict(diagnostics or {})
                 diagnostics.update(initial)
+            if getattr(carry,"ssib_land",None) is not None:
+                from gpuwrf.coupling.ssib_surface_hook import ssib_history_fields
+                diagnostics=dict(diagnostics or {})
+                diagnostics.update(ssib_history_fields(carry.ssib_land))
+                diagnostics["SWDOWN"]=carry.ssib_rad[0]
+            if getattr(carry, "ruc_land", None) is not None:
+                from gpuwrf.coupling.ruc_surface_hook import ruc_history_fields
+                diagnostics = dict(diagnostics or {})
+                diagnostics.update(ruc_history_fields(carry.ruc_land, namelist.ruc_static))
             if noahmp_land is not None and name in getattr(self, "_land_history_inputs", {}):
                 from gpuwrf.io.land_history import land_history_diagnostics
                 initial_land = self._land_history_initial.get(name)
@@ -2952,6 +3353,38 @@ class _PerDomainWrfoutWriter:
             if getattr(namelist, "lower_boundary", None) is not None:
                 from gpuwrf.io.lower_boundary import lower_boundary_history
                 diagnostics.update(lower_boundary_history(namelist.lower_boundary, own_step))
+            if getattr(carry,'ocean',None) is not None:
+                from gpuwrf.coupling.ocean_surface_hook import history as ocean_history
+                diagnostics=dict(diagnostics or {},**ocean_history(carry.ocean))
+            if getattr(carry, 'noahmp_mmf', None) is not None:
+                from gpuwrf.io.noahmp_mmf import history_fields
+                diagnostics = dict(diagnostics or {}, **history_fields(carry.noahmp_mmf, noahmp_land))
+            if getattr(carry,'lake',None) is not None:
+                from gpuwrf.coupling.lake_surface_hook import overlay_lake_history
+                diagnostics = overlay_lake_history(diagnostics,carry.lake,namelist.lake_bundle)
+            if getattr(carry,"stochastic",None) is not None:
+                from gpuwrf.io.stochastic_schema import history_fields as stochastic_history
+                diagnostics = dict(diagnostics or {})
+                diagnostics.update(stochastic_history(carry.stochastic,grid.nz,grid.ny,grid.nx))
+            # Initial feedback precedes parent start_domain and lead-zero
+            # history. Its resident auxiliaries also override raw input at t0.
+            if getattr(carry,'feedback_history',None) is not None:
+                diagnostics.update(carry.feedback_history)
+                diagnostics['_TWO_WAY_TH2']=True
+            from gpuwrf.coupling.fdda_rk import fdda_history
+            diagnostics = fdda_history(getattr(carry, "fdda", None), diagnostics)
+            if getattr(carry, "sst_skin", None) is not None:
+                diagnostics = dict(diagnostics or {}, SSTSK=carry.sst_skin.sstsk,
+                                   SST=carry.sst_skin.bulk_sst, SST_INPUT=carry.sst_skin.bulk_sst)
+            if getattr(carry,"noahmp_irrigation",None) is not None:
+                diagnostics=dict(diagnostics or {},**{key.upper():getattr(carry.noahmp_irrigation,key)
+                    for key in carry.noahmp_irrigation._fields if key not in ("irwatsi","irwatmi","irwatfi","loss_fallback")})
+            if getattr(carry,"noahmp_carbon",None) is not None:
+                diagnostics=dict(diagnostics or {},**{key.upper():getattr(carry.noahmp_carbon,key) for key in carry.noahmp_carbon._fields})
+            if getattr(carry,"noahmp_groundwater",None) is not None:
+                diagnostics=dict(diagnostics or {},**{key.upper():getattr(carry.noahmp_groundwater,key) for key in carry.noahmp_groundwater._fields})
+            if getattr(carry,'noahmp_tile_drain',None) is not None:
+                diagnostics=dict(diagnostics or {},QTDRAIN=carry.noahmp_tile_drain)
         finally:
             perf_timers.stop(
                 "M9-diag", t0, domain=name, own_step=int(own_step)
@@ -3206,11 +3639,26 @@ def _nested_event_tail_cap_from_env(default: int = 4096) -> int:
         return int(default)
 
 
+def _admit_cammg_inputs(config: NestedPipelineConfig) -> None:
+    from gpuwrf.io.cammg_config import target_backend, validate_input_dir
+    if target_backend() == "cpu":
+        return
+    for input_dir in dict.fromkeys(_resolve_batch_input_dirs(config, _batch_ensemble_size_from_env())):
+        validate_input_dir(input_dir)
+
+
 def execute_nested_pipeline(config: NestedPipelineConfig) -> dict[str, Any]:
     """Run the nested pipeline and join all owned AOT loader threads on exit."""
+    _admit_cammg_inputs(config)
     prefetch_handles = []
     try:
-        return _execute_nested_pipeline(config, _prefetch_handles=prefetch_handles)
+        from gpuwrf.dfi.driver import apply_dfi_prepass  # &dfi_control TDFI (o2-dfi)
+
+        config, dfi_report = apply_dfi_prepass(config)
+        payload = _execute_nested_pipeline(config, _prefetch_handles=prefetch_handles)
+        if dfi_report is not None:
+            payload["dfi"] = {k: v for k, v in dfi_report.items() if not k.endswith("hcoeff")}
+        return payload
     finally:
         for handle in prefetch_handles:
             handle.close()
@@ -3264,6 +3712,8 @@ def _execute_nested_pipeline(
     ``standalone_native_init_nested`` and a per-domain finite/output summary.
     """
 
+    _admit_cammg_inputs(config)
+
     # NESTED allocator (v0.20.0 speed lever G_allocator_env).  The live nest
     # allocates a recurring ~8-9 GiB RRTMG g-point radiation transient every
     # radiation step.  The DEFAULT is now ``cuda_async`` -- the stream-ordered
@@ -3279,7 +3729,8 @@ def _execute_nested_pipeline(
     # nested path's first device op is inside this function, and the only earlier
     # jax touch (CLI namelist parsing) does no device op, so setting it here is in
     # time.  ``setdefault`` keeps an explicit operator override authoritative.
-    if not os.environ.get("XLA_PYTHON_CLIENT_ALLOCATOR"):
+    from gpuwrf.backends.platform import target_backend
+    if target_backend() == "cuda" and not os.environ.get("XLA_PYTHON_CLIENT_ALLOCATOR"):
         _requested = os.environ.get("GPUWRF_ALLOCATOR", "").strip().lower()
         if not _requested:
             _allocator = "cuda_async"  # v0.20.0 default (was "platform")
@@ -3297,12 +3748,17 @@ def _execute_nested_pipeline(
     config.output_dir.mkdir(parents=True, exist_ok=True)
     config.proof_dir.mkdir(parents=True, exist_ok=True)
 
-    if int(config.hours) <= 0:
+    if not (0 < float(config.hours) < float("inf")):
         raise ValueError("hours must be positive")
 
     overall_start = time.perf_counter()
     batch_size = _batch_ensemble_size_from_env()
     restart_enabled = config.checkpoint_dir is not None or config.resume_checkpoint is not None
+    from gpuwrf.timeseries.runtime import require_supported_run
+    from gpuwrf.streams.runtime import require_supported_run as require_stream_run
+    for input_dir in config.batch_input_dirs or (config.input_dir,):
+        require_supported_run(input_dir, restart=restart_enabled, batch_size=batch_size)
+        require_stream_run(input_dir, batch_size=batch_size)
     if restart_enabled and batch_size != 1:
         raise ValueError("operational checkpoint/resume currently requires B=1")
     if config.checkpoint_dir is not None and config.checkpoint_interval_steps < 1:
@@ -3377,6 +3833,11 @@ def _execute_nested_pipeline(
             config.checkpoint_reserve_bytes,
         )
         restart_identity = nested_identity(config, bundles, run_start)
+        if len(names)>1 and meta.get('nesting',{}).get('feedback'):
+            from gpuwrf.io.feedback_restart import configuration as feedback_configuration
+            restart_identity['feedback_schema']={name:feedback_configuration(
+                carry.base_state,carry.feedback_history,carry.state.qv.shape,carry.state.t_skin.shape,
+                required=True) for name,carry in initial_carries.items()}
         if config.resume_checkpoint is not None:
             resume_t0 = time.perf_counter()
             restart_snapshot, receipt = restart_store.read(
@@ -3387,6 +3848,9 @@ def _execute_nested_pipeline(
             restart_report["end_time"] = _restart_end_time(restart_snapshot["driver_state"], config)
             initial_carries = {name: _commit_to_operational_device(carry) for name, carry in restart_snapshot["carries"].items()}
             _require_native_base_state(initial_carries, config.resume_checkpoint)
+            if len(names)>1 and meta.get('nesting',{}).get('feedback'):
+                from gpuwrf.io.nesting_options import require_feedback_restart
+                require_feedback_restart(initial_carries)
             restart_report.update(resumed_from=str(config.resume_checkpoint), read_wall_s=time.perf_counter() - resume_t0)
     root_steps_raw = float(config.hours) * 3600.0 / root_dt
     root_steps = int(round(root_steps_raw))
@@ -3398,6 +3862,23 @@ def _execute_nested_pipeline(
     from gpuwrf.io.gen2_accessor import Gen2Run
 
     cadence_run = Gen2Run(Path(config.input_dir))
+    timeseries = None
+    if (Path(config.input_dir) / "tslist").is_file():
+        from gpuwrf.timeseries.runtime import prepare_time_series
+        timeseries, initial_carries = prepare_time_series(
+            config, names, bundles, initial_carries, dt_by_domain, run_start, cadence_run.namelist,
+        )
+    regional_streams = None
+    if ((Path(config.input_dir) / "gpuwrf.streams.json").is_file() or
+            any(getattr(c, "regional_streams", None) is not None for c in initial_carries.values()) or
+            (restart_snapshot is not None and restart_snapshot["driver_state"].get("regional_streams") is not None)):
+        from gpuwrf.streams.runtime import prepare_streams
+        regional_streams, initial_carries = prepare_streams(
+            config, names, initial_carries, dt_by_domain, run_start,
+            resumed=restart_snapshot is not None, restart_store=restart_store,
+            restart_identity=restart_identity if restart_enabled else None,
+            saved=restart_snapshot["driver_state"].get("regional_streams") if restart_snapshot is not None else None,
+        )
     output_cadence, history_interval_minutes = _output_cadence_steps_by_domain(
         cadence_run, names, dt_by_domain
     )
@@ -3420,8 +3901,11 @@ def _execute_nested_pipeline(
         )
     )
 
-    feedback_enabled = bool(config.feedback)
-    tree = DomainTree.from_domains(hierarchy, bundles, feedback_enabled=feedback_enabled)
+    nesting = meta.get("nesting", {"feedback": bool(config.feedback), "spec_zone": 1, "smooth_option": 1})
+    feedback_enabled = nesting["feedback"]
+    tree = DomainTree.from_domains(
+        hierarchy, bundles, feedback_enabled=feedback_enabled,
+        feedback_spec_zone=nesting["spec_zone"], feedback_smooth_option=nesting["smooth_option"])
     forcedown_warmup = (
         _start_forcedown_warmup(tree, initial_carries) if int(batch_size) == 1 else None
     )
@@ -3590,6 +4074,10 @@ def _execute_nested_pipeline(
 
     forecast_start = time.perf_counter()
     root_seg_steps = int(output_cadence[root])  # one root history-output segment
+    if timeseries is not None:
+        root_seg_steps = min(root_seg_steps, timeseries.max_root_steps)
+    if regional_streams is not None:
+        root_seg_steps = min(root_seg_steps, regional_streams.max_root_steps)
     # Pre-seeded initial carries from _load_domains: bit-identical to the former
     # domain-tree cold start for the bulk path, and REQUIRED under Noah-MP so the
     # land carry is structurally present from the very first scan segment.
@@ -3688,8 +4176,14 @@ def _execute_nested_pipeline(
                     domain=domain_name,
                     step=domain_step,
                     sim_time_s=float(domain_step) * float(dt_by_domain[domain_name]),
+                    physics_carry=result.carries[domain_name],
                 )
             carries = result.carries
+            if timeseries is not None:
+                carries = timeseries.flush(carries)
+                meta["timeseries"] = timeseries.report()
+            if regional_streams is not None:
+                carries = regional_streams.flush(carries)
             own_steps = dict(result.own_steps)
             from gpuwrf.diagnostics.census import write_segment
             write_segment(config.output_dir, carries, bundles, own_steps, writer, output_cadence)
@@ -3723,6 +4217,8 @@ def _execute_nested_pipeline(
                         "aot": nested_aot_report(),
                         "event_counts": dict(event_counts), "force_counts": dict(force_counts),
                         "cascade_counts": dict(cascade_counts), "events_tail": tuple(events_tail),
+                        **({"regional_streams": regional_streams.checkpoint_state()}
+                           if regional_streams is not None else {}),
                     },
                 )
                 restart_report["checkpoints"].append({"path": str(generation), "root_step": start, "wall_s": time.perf_counter() - checkpoint_t0, **storage_receipt})
@@ -3766,6 +4262,14 @@ def _execute_nested_pipeline(
         from gpuwrf.diagnostics.census import write_segment
         write_segment(config.output_dir, carries, bundles, own_steps, writer, output_cadence)
     finally:
+        regional_body_error = sys.exc_info()[0]
+        regional_output_error = None
+        if regional_streams is not None:
+            try:
+                regional_streams.close()
+                meta["regional_streams"] = regional_streams.report()
+            except BaseException as error:
+                regional_output_error = error
         # Fail-closed: if the forecast loop above raised (NaN/OOM/etc.), still drain
         # the background stages so no daemon thread outlives the run and any in-flight
         # frame is flushed -- but do NOT mask the body's exception with a secondary
@@ -3785,6 +4289,8 @@ def _execute_nested_pipeline(
             except BaseException:
                 if sys.exc_info()[0] is None:
                     raise
+        if regional_output_error is not None and regional_body_error is None:
+            raise regional_output_error
     result = DomainTreeResult(
         carries=carries or {},
         states=final_states,
@@ -3857,8 +4363,9 @@ def _execute_nested_pipeline(
         "max_dom": int(config.max_dom),
         "domains": list(names),
         "feedback": bool(feedback_enabled),
+        "smooth_option": nesting["smooth_option"],
         "nesting_mode": "two_way" if feedback_enabled else "one_way",
-        "hours": int(config.hours),
+        "hours": int(config.hours) if float(config.hours).is_integer() else float(config.hours),
         "root_steps": int(root_steps),
         "device": visible_gpu_name(),
         "cpu_affinity": sorted(os.sched_getaffinity(0)) if hasattr(os, "sched_getaffinity") else None,
@@ -3888,8 +4395,9 @@ def _execute_nested_pipeline(
         "metadata": meta,
         "carry_overs": [
             (
-                "Two-way feedback (child->parent copy_fcn area-average + WRF sm121 "
-                "feedback-zone smoother) is ENABLED."
+                "Two-way feedback (child->parent copy_fcn area-average; "
+                f"smooth_option={nesting['smooth_option']}) is ENABLED. "
+                "Coupled forecast qualification pending."
                 if feedback_enabled
                 else "Two-way feedback is OFF (one-way nesting); matches the "
                 "v0.11.0 validated wiring."

@@ -11,7 +11,8 @@ def test_instantaneous_amounts_feed_total_and_frozen_rates_without_accumulator_c
     precip = {name: jnp.full((4, 5), value, jnp.float32)
               for name, value in {'rain': .18, 'snow': .09, 'ice': .018, 'graupel': .036}.items()}
     rates = precipitation_from_step(precip, jnp.full((4, 5), .002), 18, spec_zone=1)
-    assert all(x.dtype == jnp.float32 for x in rates)
+    assert rates.sr is None  # optional Noah-classic SR channel stays off here
+    assert all(x.dtype == jnp.float32 for x in rates[:5])
     for name, expected in [('prcpconv', .002), ('prcpnonc', .018), ('prcpsnow', .006), ('prcpgrpl', .002), ('prcphail', 0)]:
         value = np.asarray(getattr(rates, name))
         np.testing.assert_allclose(value[1:-1, 1:-1], expected, atol=2e-9, rtol=0)
@@ -109,6 +110,9 @@ def test_precipitation_restart_is_exact_and_old_active_land_schema_fails_closed(
     for restored in (read_restart(pkl)[0], read_wrfrst_carry(nc)[0]):
         assert restored.noahmp_precipitation._fields == precipitation._fields
         for actual, expected in zip(restored.noahmp_precipitation, precipitation):
+            if expected is None:  # optional SR channel (Noah-classic only; t-calleraudit F24)
+                assert actual is None
+                continue
             assert np.asarray(actual).dtype == np.float32
             assert np.asarray(actual).tobytes() == np.asarray(expected).tobytes()
     with pkl.open('rb') as stream:
@@ -138,6 +142,7 @@ def test_operational_init_seeds_previous_precipitation_independently_of_output_m
     assert carry.land_history is None
     assert carry.noahmp_precipitation is not None
     assert carry.noahmp_precipitation._fields == seed_precipitation(state)._fields
-    for rate in carry.noahmp_precipitation:
+    assert carry.noahmp_precipitation.sr is None  # Noah-MP: no SR channel (Noah-classic only)
+    for rate in carry.noahmp_precipitation[:5]:
         assert rate.dtype == jnp.float32 and rate.shape == state.t_skin.shape
         np.testing.assert_array_equal(rate, 0)

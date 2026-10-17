@@ -54,8 +54,8 @@ class _StubRun:
 # Per-domain sf_surface_physics resolution
 # ---------------------------------------------------------------------------
 
-def test_supported_options_are_bulk_and_noahmp_only():
-    assert _SUPPORTED_NESTED_LAND_OPTIONS == (0, 4)
+def test_supported_options_include_prepared_ruc_and_experimental_ssib():
+    assert _SUPPORTED_NESTED_LAND_OPTIONS == (0, 3, 4, 8)
 
 
 def test_noahmp_option_resolves_per_domain_from_max_dom_list():
@@ -80,9 +80,17 @@ def test_missing_option_defaults_to_bulk_zero():
     assert _domain_sf_surface_physics(_StubRun({}), "d01") == 0
 
 
-@pytest.mark.parametrize("option", [1, 2, 3, 5, 7, 8])
+def test_experimental_ssib_option_resolves_per_domain():
+    # Selection only: real.exe-prepared soil and scheme qualification are
+    # checked by the SSiB loader/admission gates, not this metadata helper.
+    run = _StubRun({"sf_surface_physics": [8, 8]})
+    assert _domain_sf_surface_physics(run, "d01") == 8
+    assert _domain_sf_surface_physics(run, "d02") == 8
+
+
+@pytest.mark.parametrize("option", [1, 2, 5, 7])
 def test_unsupported_land_option_fails_closed(option):
-    """No silent bulk fallback: anything but 0/4 must raise with the reason."""
+    """No silent bulk fallback: anything but 0/3/4/8 must raise with the reason."""
     run = _StubRun({"sf_surface_physics": [option, option]})
     with pytest.raises(ValueError, match="not wired"):
         _domain_sf_surface_physics(run, "d01")

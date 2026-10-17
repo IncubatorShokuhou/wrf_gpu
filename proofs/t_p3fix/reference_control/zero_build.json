@@ -1,0 +1,50 @@
+{
+  "scope": "ZERO activeWRF build repair; bodies unchanged; GCC14 blanketSAVE/automatic-array init conflict in UNSELECTED mp40 Morrison; only that module omits finit flags; P3/default8/MYNN/NoahMP/RRTMG+all16generatedgetters/setters ZERO",
+  "parent_failed_build": "<USER_HOME>/wrf_gpu2_lanes/t-p3fix/TP26_zero/receipt.json",
+  "initial_config_sha256": "6921d0c37e6ce960a15d4be10f356999d060a72ea4fdf3fad199bd9fc5135cf9",
+  "config_sha256": "5b93ffbb082bcc5876d74075758834d2c881785e00aea6e3f06e72fb295751f9",
+  "inactive_only_exception": {
+    "module": "module_mp_morr_two_moment_aero",
+    "options": [
+      40
+    ],
+    "compiler_command": [
+      "<USER_HOME>/miniconda3/envs/wrfbuild/bin/gfortran",
+      "-o",
+      "module_mp_morr_two_moment_aero.o",
+      "-c",
+      "-O2",
+      "-ftree-vectorize",
+      "-funroll-loops",
+      "-w",
+      "-ffree-form",
+      "-ffree-line-length-none",
+      "-fconvert=big-endian",
+      "-frecord-marker=4",
+      "-fallow-argument-mismatch",
+      "-fallow-invalid-boz",
+      "-g1",
+      "-I../dyn_em",
+      "-I<USER_HOME>/wrf_gpu2_lanes/t-p3fix/TP26_zero/WRF/external/esmf_time_f90",
+      "-I<USER_HOME>/wrf_gpu2_lanes/t-p3fix/TP26_zero/WRF/main",
+      "-I<USER_HOME>/wrf_gpu2_lanes/t-p3fix/TP26_zero/WRF/external/io_netcdf",
+      "-I<USER_HOME>/wrf_gpu2_lanes/t-p3fix/TP26_zero/WRF/external/io_int",
+      "-I<USER_HOME>/wrf_gpu2_lanes/t-p3fix/TP26_zero/WRF/frame",
+      "-I<USER_HOME>/wrf_gpu2_lanes/t-p3fix/TP26_zero/WRF/share",
+      "-I<USER_HOME>/wrf_gpu2_lanes/t-p3fix/TP26_zero/WRF/phys",
+      "-I<USER_HOME>/wrf_gpu2_lanes/t-p3fix/TP26_zero/WRF/wrftladj",
+      "-I<USER_HOME>/wrf_gpu2_lanes/t-p3fix/TP26_zero/WRF/chem",
+      "-I<USER_HOME>/wrf_gpu2_lanes/t-p3fix/TP26_zero/WRF/inc",
+      "-I<USER_HOME>/miniconda3/envs/wrfbuild/include",
+      "module_mp_morr_two_moment_aero.f90"
+    ]
+  },
+  "init_flags": "-finit-real=zero -finit-integer=0 -finit-logical=false",
+  "FP_traps": "OFF",
+  "cache": "NONE",
+  "GPU_execution": false,
+  "status": "BUILT",
+  "rc": 0,
+  "wall_s": 164.0364855580001,
+  "executable_sha256": "9a67a93dd891115c095f64a95ce8f50e7ff0942ef1abf4185faf20bd7065742a"
+}

@@ -103,7 +103,7 @@ DEFAULT_SF_SURFACE_PHYSICS = 4  # Noah-MP
 # WRF's isfc==1 requirement for YSU/MRF (sf in {1,91}); we further restrict to {1}
 # because only the revised-MM5 forcing path is wired into these adapters (the old-MM5
 # sf=91 forcing is NOT separately threaded into the PBL re-derivation).
-_PBL_REQUIRES_REVISED_MM5_SFCLAY: frozenset[int] = frozenset({1, 7, 8, 11, 12, 99})
+_PBL_REQUIRES_REVISED_MM5_SFCLAY: frozenset[int] = frozenset({1, 7, 8, 11, 12, 16, 17, 99})
 _REVISED_MM5_SFCLAY_OPTION = 1
 
 
@@ -142,7 +142,7 @@ def _mp_entry(option: int, module: str, entrypoint: str, *, gpu: bool, adapter: 
         gpu_runnable=gpu,
         reads_state=("theta", "qv", "p", *leaves),
         writes_state=("theta", *leaves),
-        accumulators=("rain_acc", "snow_acc", "graupel_acc", "ice_acc"),
+        accumulators=("rain_acc", "snow_acc", "graupel_acc", "ice_acc") + (("hail_acc",) if option == 9 else ()),
     )
 
 
@@ -157,16 +157,26 @@ _MP_ENTRIES: dict[int, SchemeEntry] = {
     2: _mp_entry(2, "gpuwrf.physics.microphysics_lin", "lin_physics_tendency", gpu=True),
     3: _mp_entry(3, "gpuwrf.physics.microphysics_wsm3", "wsm3_physics_tendency", gpu=True),
     4: _mp_entry(4, "gpuwrf.physics.microphysics_wsm5", "wsm5_physics_tendency", gpu=True),
+    5: _mp_entry(5, "gpuwrf.coupling.scan_adapters", "ferrier5_adapter", gpu=True, adapter=True),
     6: _mp_entry(6, "gpuwrf.physics.microphysics_wsm6", "wsm6_physics_tendency", gpu=True),
+    7: _mp_entry(7, "gpuwrf.coupling.goddard4ice_adapter", "goddard4ice_adapter", gpu=True, adapter=True),
     8: _mp_entry(8, "gpuwrf.coupling.physics_couplers", "thompson_adapter", gpu=True, adapter=True),
+    # Native kernel available; CPU-oracle-qualified, GPU/forecast D6 pending.
+    9: _mp_entry(9, "gpuwrf.physics.milbrandt2mom.adapter", "milbrandt_adapter", gpu=True, adapter=True),
     10: _mp_entry(10, "gpuwrf.physics.microphysics_morrison", "morrison_tendency", gpu=True),
+    11: _mp_entry(11, "gpuwrf.physics.cammg.adapter", "cammg_adapter", gpu=True, adapter=True),
     13: _mp_entry(13, "gpuwrf.physics.microphysics_sbu_ylin", "sbu_ylin_physics_tendency", gpu=True),
     14: _mp_entry(14, "gpuwrf.physics.microphysics_wdm5", "wdm5_physics_tendency", gpu=True),
+    15: _mp_entry(15, "gpuwrf.coupling.scan_adapters", "ferrier15_adapter", gpu=True, adapter=True),
     16: _mp_entry(16, "gpuwrf.physics.microphysics_wdm6", "wdm6_physics_tendency", gpu=True),
     # v0.3.4 mp=18 NSSL 2-moment: JAX port of module_mp_nssl_2mom.F (physics.nssl2mom), parity-gated
     # stage by stage vs the pristine-WRF oracle proofs/v034/f2_oracles/nssl_2mom; CPU-oracle-qualified,
     # GPU/coupled-forecast qualification pending. Single (root) domains only; nested fail closed.
+    17: _mp_entry(17, "gpuwrf.physics.nssl2mom.adapter", "nssl2mom_adapter", gpu=True, adapter=True),
     18: _mp_entry(18, "gpuwrf.physics.nssl2mom.adapter", "nssl2mom_adapter", gpu=True, adapter=True),
+    19: _mp_entry(19, "gpuwrf.physics.nssl2mom.adapter", "nssl1mom19_adapter", gpu=True, adapter=True),
+    21: _mp_entry(21, "gpuwrf.physics.nssl2mom.adapter", "nssl1mom21_adapter", gpu=True, adapter=True),
+    22: _mp_entry(22, "gpuwrf.coupling.scan_adapters", "nssl_nohail_scan_adapter", gpu=True, adapter=True),
     # v0.17 WSM7 = WSM6 + separate precipitating hail (qh + hail_acc).
     24: _mp_entry(24, "gpuwrf.physics.microphysics_wsm7", "wsm7_physics_tendency", gpu=True),
     # v0.17 WDM7 = WDM6 double-moment + separate single-moment hail (qh + hail_acc).
@@ -176,12 +186,19 @@ _MP_ENTRIES: dict[int, SchemeEntry] = {
     # Ni/Nr/Ns/Ng + the aerosol-aware prognostics Nc/nwfa/nifa and applying the
     # WRF fake surface aerosol emission each step.
     28: _mp_entry(28, "gpuwrf.coupling.physics_couplers", "thompson_aero_adapter", gpu=True, adapter=True),
+    38: _mp_entry(38, "gpuwrf.coupling.thompson_hail_adapter", "thompson_hail_adapter", gpu=True, adapter=True),
     # v0.3.4 O1 mp=40 Morrison-aerosol: scan-wired at WRF's stand-alone point
     # aercu_opt=0 (constant droplets, INUC=0, aero DCS cascade; Nc = WRF qnc);
     # pristine-WRF oracle proofs/v034/f2_oracles/morrison_aero_opt0. The
     # aercu_opt=2 prescribed-aerosol kernel path is oracle-proven but needs
     # cu_physics=11 (MSKF) in WRF and is not operational.
     40: _mp_entry(40, "gpuwrf.physics.microphysics_morrison_aero", "morrison_aero_tendency", gpu=True),
+    50: _mp_entry(50, "gpuwrf.physics.p3.adapter", "p3_50_adapter", gpu=True, adapter=True),
+    51: _mp_entry(51, "gpuwrf.physics.p3.adapter", "p3_51_adapter", gpu=True, adapter=True),
+    52: _mp_entry(52, "gpuwrf.physics.p3.adapter", "p3_52_adapter", gpu=True, adapter=True),
+    53: _mp_entry(53, "gpuwrf.physics.p3.adapter", "p3_53_adapter", gpu=True, adapter=True),
+    56: _mp_entry(56, "gpuwrf.physics.ntu.adapter", "ntu_adapter", gpu=True, adapter=True),
+    55: _mp_entry(55, "gpuwrf.physics.jensen_ishmael.adapter", "jensen_adapter", gpu=True, adapter=True),
     # mp=97 Goddard GCE single-moment 3-ice (gsfcgce): jit/vmap column port,
     # savepoint-parity-proven against unmodified phys/module_mp_gsfcgce.F
     # (proofs/v090/goddard_mp_r2_savepoint_parity.json). No new prognostic state.
@@ -197,6 +214,10 @@ _MP_ENTRIES: dict[int, SchemeEntry] = {
 # parity re-passes on the traceable path). The dispatcher entry point names the
 # per-column ``step_*_column`` (which now also routes through the traceable kernel).
 _PBL_ENTRIES: dict[int, SchemeEntry] = {
+    4: SchemeEntry("pbl",4,PBL_SCHEMES[4].name,"gpuwrf.coupling.qnse_adapter","qnse_pbl_step",
+                   "state_adapter",True,reads_state=("u","v","theta","qv","qc","qke","hfx","qfx"),
+                   writes_state=("u","v","theta","qv","qc","qke","pblh"),carry_members=("qnse",),
+                   notes="Paired QNSE sf=4; optional pristine ARW mfshconv=1 mass flux."),
     0: SchemeEntry("pbl", 0, "disabled", "", "", "disabled", True),
     1: SchemeEntry("pbl", 1, PBL_SCHEMES[1].name, "gpuwrf.physics.pbl_ysu", "step_ysu_column",
                    "column_state", True,
@@ -205,11 +226,13 @@ _PBL_ENTRIES: dict[int, SchemeEntry] = {
                    "column_state", True,
                    reads_state=("u", "v", "theta", "qv", "tke_pbl"),
                    writes_state=("u", "v", "theta", "qv"),
-                   carry_members=("tke_pbl", "el_pbl"),
-                   notes="MUST pair with sf_sfclay_physics=2 (Janjic Eta surface layer)."),
+                   carry_members=("tke_pbl", "el_pbl", "qnse"),
+                   notes="MUST pair with sf_sfclay_physics=2 (Janjic Eta surface layer); reads "
+                         "that call's held MYJSFC memory (qnse carry)."),
     # GFS(3): v0.17 jit/vmap-traceable port of phys/module_bl_gfs.F, scan-wired as a
     # State->State adapter (coupling.scan_adapters.gfs_pbl_adapter). Nonlocal-K, no
-    # prognostic PBL carry; consumes the revised-MM5 surface forcing (sf_sfclay=1).
+    # prognostic PBL carry; WRF pairs it with the GFS surface layer (sf_sfclay=3, isfc=2)
+    # whose single SF_GFS solve is the forcing (coupling.sfclay_selected).
     3: SchemeEntry("pbl", 3, PBL_SCHEMES[3].name, "gpuwrf.coupling.scan_adapters", "gfs_pbl_adapter",
                    "state_adapter", True,
                    reads_state=("u", "v", "theta", "qv"), writes_state=("u", "v", "theta", "qv")),
@@ -235,6 +258,9 @@ _PBL_ENTRIES: dict[int, SchemeEntry] = {
                    carry_members=("camuw_pbl",),
                    notes="CPU-oracle-qualified (78 records, <=1-2 REAL ulp); GPU/coupled-forecast "
                    "qualification pending. Needs WRF HFX/QFX from Noah-MP or sf_sfclay=5."),
+    10: SchemeEntry('pbl',10,PBL_SCHEMES[10].name,'gpuwrf.coupling.temf','pbl_step','state_adapter',True,
+                    reads_state=('u','v','theta','qv','qc','hfx','qfx'),writes_state=('u','v','theta','qv','qc','pblh'),
+                    carry_members=('temf',),notes='CPU-oracle-qualified; GPU/coupled-forecast qualification pending; mandatory sfclay=10'),
     # Shin-Hong(11): v0.18 JAX/vmap port of the scale-aware YSU-family PBL,
     # scan-wired as a State->State adapter. It consumes revised-MM5 surface
     # forcing and grid dx/dy for the scale-aware partition functions.
@@ -249,6 +275,16 @@ _PBL_ENTRIES: dict[int, SchemeEntry] = {
                     "state_adapter", True,
                     reads_state=("u", "v", "theta", "qv", "qc", "qke"),
                     writes_state=("u", "v", "theta", "qv", "qc", "qke"), carry_members=("qke",)),
+    16: SchemeEntry("pbl",16,PBL_SCHEMES[16].name,"gpuwrf.coupling.epsilon_pbl","epsilon_pbl_adapter",
+                    "state_adapter",True,reads_state=("qke","epsilon_pbl","pek_adv","pep_adv"),
+                    writes_state=("u","v","theta","qv","qc","qi","qke","epsilon_pbl","pek_adv","pep_adv"),
+                    carry_members=("epsilon_pbl","epsilon_pbl_step","pek_adv","pep_adv"),
+                    notes="Experimental compiler-zero WRF semantics; CPU-oracle-qualified; GPU/coupled-forecast qualification pending."),
+    17: SchemeEntry("pbl",17,PBL_SCHEMES[17].name,"gpuwrf.coupling.epsilon_pbl","epsilon_pbl_adapter",
+                    "state_adapter",True,reads_state=("qke","epsilon_pbl","tpe_pbl","pr_pbl","tke_adv","diss_adv","tpe_adv"),
+                    writes_state=("u","v","theta","qv","qke","epsilon_pbl","tpe_pbl","pr_pbl","tke_adv","diss_adv","tpe_adv"),
+                    carry_members=("epsilon_pbl","tpe_pbl","pr_pbl","epsilon_pbl_step","tke_adv","diss_adv","tpe_adv"),
+                    notes="Experimental compiler-zero WRF semantics; CPU-oracle-qualified; GPU/coupled-forecast qualification pending."),
     # MRF(99): v0.13 jit/vmap-traceable port of phys/module_bl_mrf.F, scan-wired as a
     # State->State adapter (coupling.scan_adapters.mrf_pbl_adapter). Nonlocal-K, no
     # prognostic PBL carry; consumes the revised-MM5 surface forcing (sf_sfclay=1).
@@ -264,6 +300,12 @@ _PBL_ENTRIES: dict[int, SchemeEntry] = {
 _SFCLAY_WRITES = ("ustar", "theta_flux", "qv_flux", "tau_u", "tau_v", "rhosfc", "fltv")
 _SFCLAY_READS = ("u", "v", "theta", "qv", "t_skin", "soil_moisture")
 _SFCLAY_ENTRIES: dict[int, SchemeEntry] = {
+    10: SchemeEntry('surface_layer',10,SFCLAY_SCHEMES[10].name,'gpuwrf.coupling.temf','surface_step','state_adapter',True,
+                    reads_state=_SFCLAY_READS,writes_state=_SFCLAY_WRITES,carry_members=('temf',),
+                    notes='CPU-oracle-qualified; GPU/coupled-forecast qualification pending; mandatory bl=10'),
+    4: SchemeEntry("surface_layer",4,SFCLAY_SCHEMES[4].name,"gpuwrf.coupling.qnse_adapter","qnse_surface_step",
+                   "state_adapter",True,reads_state=(*_SFCLAY_READS,"qke"),writes_state=_SFCLAY_WRITES,
+                   carry_members=("qnse",),notes="Mandatory bl=4 pairing; surface solve retained for PBL."),
     0: SchemeEntry("surface_layer", 0, "disabled", "", "", "disabled", True),
     1: SchemeEntry("surface_layer", 1, SFCLAY_SCHEMES[1].name, "gpuwrf.physics.sfclay_revised_mm5",
                    "step_sfclay_revised_mm5_column", "column_state", True,
@@ -300,11 +342,20 @@ _SFCLAY_ENTRIES: dict[int, SchemeEntry] = {
 # runtime RQVFTEN/RQVBLTEN from active moisture advection and the PBL qv increment.
 # Grell-Freitas (cu=3) is the v0.9.0 GPU-batched jit/vmap port of the scale-aware
 # closure-ensemble kernel (physics._gf_jax.gfdrv_batched), savepoint-parity gated.
-# Scale-aware SAS (cu=4) is scan-wired since v0.3.4. New Tiedtke (cu=16) and SAS 94/95/96 stay
+# Scale-aware SAS (cu=4) is scan-wired since v0.3.4; SAS94 is wired in v0.4.0.
+# SAS95/96 stay
 # gpu_runnable=False / fail-closed until their distinct WRF source paths pass
 # traceable JAX parity. All route through the combined R*CUTEN tendency +
 # RAINCV/PRATEC family (S0 cugd_* correction: no inert cugd_* State carry for GF).
 _CU_ENTRIES: dict[int, SchemeEntry] = {
+    **{option:SchemeEntry('cumulus',option,CU_SCHEMES[option].name,'gpuwrf.coupling.cuplus','driver',
+        'resident_grid_rk_sources',True,reads_state=('u','v','w','theta','qv','qc','qi','p','ph','pblh','hfx','qfx','ustar'),
+        writes_state=('theta','qv','qc','qr','qi','qs') if option==10 else
+                     ('u','v','theta','qv','qc','qi','Ni') if option==7 else ('u','v','theta','qv','qc','qr','qi','qs'),
+        carry_members=CUMULUS_CARRY_MEMBERS[option],tendency_members=CUMULUS_TENDENCY_MEMBERS[option],
+        accumulators=('rainc_acc',),notes='Experimental CPU-oracle-qualified source column; GPU/D6/E41 qualification pending. '
+        'Dedicated original body, resident cadence/restart, actual producer inputs and RK sources; '
+        'profile limits and compiler/upstream deviations: proofs/v040/cuplus/UPSTREAM_WRF_BUGS.md') for option in (7,10,11)},
     0: SchemeEntry("cumulus", 0, "disabled", "", "", "disabled", True),
     1: SchemeEntry("cumulus", 1, CU_SCHEMES[1].name, "gpuwrf.physics.cumulus_kf", "step_kf_column",
                    "column_state", True,
@@ -386,39 +437,49 @@ _CU_ENTRIES: dict[int, SchemeEntry] = {
                     "(proofs/v034). CPU-oracle-qualified; GPU/coupled-forecast qualification "
                     "pending. Not oracle-verified (no staged column exercises them): the "
                     "keep_going downdraft-origin search and neg_check."),
-    94: SchemeEntry("cumulus", 94, CU_SCHEMES[94].name, "gpuwrf.physics.cumulus_sas",
-                    "step_sas_family_column", "column_state", False,
+    94: SchemeEntry("cumulus", 94, CU_SCHEMES[94].name, "gpuwrf.physics.cumulus_sas94",
+                    "cu_sas94_columns", "column_state", True,
                     reads_state=("u", "v", "w", "theta", "qv", "qc", "qi", "p", "ph"),
-                    writes_state=("theta", "qv", "qc", "qi", "u", "v"),
+                    writes_state=("theta", "qv", "qc", "qi"),
                     tendency_members=CUMULUS_TENDENCY_MEMBERS[94], accumulators=("rainc_acc",),
-                    notes="v0.17 reference-only: fp64 pristine-WRF oracle exists for "
-                    "phys/module_cu_sas.F:CU_SAS, but the shared JAX endpoint is "
-                    "RED vs oracle (proofs/v017/sas_family_parity.json); fail-closed."),
-    95: SchemeEntry("cumulus", 95, CU_SCHEMES[95].name, "gpuwrf.physics.cumulus_sas",
-                    "step_sas_family_column", "column_state", False,
-                    reads_state=("u", "v", "w", "theta", "qv", "qc", "qi", "p", "ph"),
+                    notes="WRF ARW CU_SAS deep and shallow; CPU-oracle-qualified; "
+                    "GPU/coupled-forecast qualification pending. Held REAL rates via sas94_adapter."),
+    95: SchemeEntry("cumulus",95,CU_SCHEMES[95].name,"gpuwrf.physics.cumulus_osas95",
+                    "cu_osas95_columns","column_state",True,
+                    reads_state=("u","v","w","theta","qv","qc","qi","p","ph"),
+                    writes_state=("theta","qv","qc","qi"),
+                    tendency_members=CUMULUS_TENDENCY_MEMBERS[95],accumulators=("rainc_acc",),
+                    notes="Experimental; CPU-oracle-qualified against pristine recorded XKT2; "
+                    "GPU/coupled-forecast qualification pending. WRF draws from the system clock; "
+                    "gpuwrf is deterministic by design. Fixed counter RNG keys are restarted; "
+                    "ARW does not couple momentum. Disclosed promoted-R8 exact-zero sensitivity; final D6 binding."),
+    14: SchemeEntry("cumulus", 14, CU_SCHEMES[14].name, "gpuwrf.physics.cumulus_ksas14",
+                    "cu_ksas14_columns", "column_state", True,
+                    reads_state=("u", "v", "w", "theta", "qv", "qc", "qi", "p", "ph", "pblh"),
                     writes_state=("theta", "qv", "qc", "qi", "u", "v"),
-                    tendency_members=CUMULUS_TENDENCY_MEMBERS[95], accumulators=("rainc_acc",),
-                    notes="v0.17 reference-only: fp64 pristine-WRF oracle exists for "
-                    "phys/module_cu_osas.F:CU_OSAS, but the shared JAX endpoint is "
-                    "RED vs oracle (proofs/v017/sas_family_parity.json); fail-closed."),
-    96: SchemeEntry("cumulus", 96, CU_SCHEMES[96].name, "gpuwrf.physics.cumulus_sas",
-                    "step_sas_family_column", "column_state", False,
-                    reads_state=("u", "v", "w", "theta", "qv", "qc", "qi", "p", "ph"),
+                    tendency_members=CUMULUS_TENDENCY_MEMBERS[14], accumulators=("rainc_acc",),
+                    notes="CPU-oracle-qualified with disclosed compiler-contraction deviation; "
+                    "GPU/coupled-forecast qualification pending; final D6 is binding. "
+                    "Held REAL scalar and momentum rates via native_sas_adapter."),
+    96: SchemeEntry("cumulus", 96, CU_SCHEMES[96].name, "gpuwrf.physics.cumulus_nsas96",
+                    "cu_nsas96_columns", "column_state", True,
+                    reads_state=("u", "v", "w", "theta", "qv", "qc", "qi", "p", "ph", "pblh", "hfx", "qfx"),
                     writes_state=("theta", "qv", "qc", "qi", "u", "v"),
                     tendency_members=CUMULUS_TENDENCY_MEMBERS[96], accumulators=("rainc_acc",),
-                    notes="v0.17 reference-only: fp64 pristine-WRF oracle exists for "
-                    "phys/module_cu_nsas.F:CU_NSAS, but the shared JAX endpoint is "
-                    "RED vs oracle (proofs/v017/sas_family_parity.json); fail-closed."),
-    99: SchemeEntry("cumulus", 99, CU_SCHEMES[99].name, "gpuwrf.physics.cumulus_kf_previous",
-                    "step_previous_kf_column", "column_state", False,
-                    reads_state=("u", "v", "w", "theta", "qv", "qc", "qr", "qi", "qs"),
-                    writes_state=("theta", "qv", "qc", "qr", "qi", "qs"),
+                    notes="CPU-oracle-qualified with disclosed FPVS/closure conditioning deviation; "
+                    "GPU/coupled-forecast qualification pending; final D6 is binding. "
+                    "Deep and own shallow, held REAL scalar and momentum rates via native_sas_adapter."),
+    99: SchemeEntry("cumulus",99,CU_SCHEMES[99].name,"gpuwrf.physics.cumulus_kf99",
+                    "step_kf99_column","column_state",True,
+                    reads_state=("u","v","w","theta","qv","p","ph"),
+                    writes_state=("theta","qv","qc","qr","qi","qs"),
                     carry_members=CUMULUS_CARRY_MEMBERS[99],
-                    tendency_members=CUMULUS_TENDENCY_MEMBERS[99], accumulators=("rainc_acc",),
-                    notes="v0.17 RED/reference-only candidate: reuses the KF-eta family endpoint for "
-                    "comparison only; not parity-proven against phys/module_cu_kf.F:KFCPS and not "
-                    "scan-wired."),
+                    tendency_members=CUMULUS_TENDENCY_MEMBERS[99],accumulators=("rainc_acc",),
+                    notes="Experimental distinct KFCPS/KFPARA native REAL32 port, not KF-eta; "
+                    "CPU-oracle-qualified; GPU/coupled-forecast qualification pending. "
+                    "Compiled conditioning measured against original Fortran FMA; final D6 binding. "
+                    "Held scalar rates plus REAL W0AVG/NCA, source-specific <=0 clear."),
+
 }
 
 # --- Land surface (sf_surface_physics) -----------------------------------------
@@ -469,20 +530,16 @@ _SURFACE_ENTRIES: dict[int, SchemeEntry] = {
                    reads_state=("t_skin", "soil_moisture", "mavail"),
                    writes_state=("t_skin",),
                    carry_members=("tg", "t2", "wg", "w2", "wr")),
-    # v0.17 SSiB LSM (8): REFERENCE-ONLY. A fp64 pristine-WRF single-column oracle is
-    # staged (proofs/v017/oracle/ssib; the unmodified SSIB driver), but the ~6.6k-LOC
-    # coupled SiB canopy/soil/4-level-snow JAX column kernel is a documented carry-over,
-    # so it is gpu_runnable=False / fail-closed in the operational scan.
+    # Opt-in SSiB: literal REAL4 original-WRF oracle, disclosed compiled residuals.
     8: SchemeEntry("land_surface", 8, SURFACE_SCHEMES[8].name, "gpuwrf.physics.lsm_ssib",
-                   "ssib_column", "land_step", False,
-                   reads_state=("t_skin", "soil_moisture", "mavail"),
-                   writes_state=("t_skin", "soil_moisture", "mavail"),
+                   "ssib_column", "land_step", True,
+                   reads_state=("t_skin", "soil_moisture", "roughness_m"),
+                   writes_state=("t_skin", "soil_moisture", "roughness_m", "ustar", "hfx", "qfx"),
                    carry_members=LAND_CARRY_MEMBERS[8],
-                   notes="SSiB SiB biophysical canopy/soil/snow LSM; fp64 pristine-WRF oracle "
-                   "staged (proofs/v017/oracle/ssib) but the faithful JAX column port "
-                   "(TEMRS1/TEMRS2+UPDAT1+RADAB+STOMA1+INTERC+STRES1+NEWTON) is a carry-over -- "
-                   "accepted/fail-closed in the operational GPU scan, NOT parity-proven as a "
-                   "JAX kernel yet."),
+                   notes="Experimental CPU-oracle-qualified SSiB; literal REAL4 BYTE, compiled small "
+                   "residuals disclosed in proofs/s2_ssib. Operational caller requires prepared soil, "
+                   "revised-MM5/YSU, mp8, SW1/LW4 and explicit ssib_static/ssib_land. "
+                   "GPU/coupled-forecast qualification pending."),
 }
 
 
@@ -626,6 +683,16 @@ def resolve_physics_suite(config: Any) -> PhysicsSuite:
             "MYJ pairing violation: bl_pbl_physics=2 and sf_sfclay_physics=2 "
             "must be selected together; no fallback surface-layer/PBL pairing is WRF-faithful."
         )
+    if (pbl_opt == 10) != (sfclay_opt == 10):
+        raise UnsupportedSchemeSelection('TEMF pairing violation: bl_pbl_physics=10 and sf_sfclay_physics=10 must be selected together (WRF check_a_mundo)')
+    if (pbl_opt == 4) != (sfclay_opt == 4):
+        raise UnsupportedSchemeSelection('QNSE pairing violation: bl_pbl_physics=4 and sf_sfclay_physics=4 must be selected together')
+    if pbl_opt == 3 and sfclay_opt != 3:
+        # module_physics_init.F:3743-3745: BL_GFS needs isfc=2 (sf 2/3/88) and stops
+        # "use myjsfc scheme for this pbl option"; sf=2 is the mandatory MYJ pair here.
+        raise UnsupportedSchemeSelection(
+            f"GFS PBL pairing violation: bl_pbl_physics=3 requires sf_sfclay_physics=3 (WRF isfc=2; "
+            f"selected {sfclay_opt} is WRF-fatal in module_physics_init)")
     if (
         pbl_opt in _PBL_REQUIRES_REVISED_MM5_SFCLAY
         and sfclay_opt != _REVISED_MM5_SFCLAY_OPTION

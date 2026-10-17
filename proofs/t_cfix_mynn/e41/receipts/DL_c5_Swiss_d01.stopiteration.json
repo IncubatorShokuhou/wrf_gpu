@@ -1,0 +1,34 @@
+{
+  "source": "<DATA_ROOT>/wrf_gpu2/scratch/t-cfix-mynn/snap_c5",
+  "source_commit": "ffabfefaf42e485f2cccf625fe8acf8578b7a1b7",
+  "source_dirty": "",
+  "case": "<DATA_ROOT>/wrf_gpu2/archive/v040/v-prep/F20_20261016/Swiss",
+  "domain": "d01",
+  "physical_backend": "cpu",
+  "lowering_platform": "cuda",
+  "gpu_executed": false,
+  "scope": "deviceless CompileOnly prescreen (autotune 0); actual GPU E41 scan stays authoritative",
+  "target_sha256": "b753abdddbace1e913de3767a1afbdfeba2b272e77f2be93658c766968e4960f",
+  "harness_sha256": "7f402c7bb747df4a68bdffcbff5ae049e49298d2d861b650b13953b8e487b17e",
+  "environment": {
+    "GPUWRF_CENSUS_SLIM": "0",
+    "GPUWRF_CENSUS": "1",
+    "GPUWRF_JAX_CACHE": "0",
+    "CUDA_VISIBLE_DEVICES": "",
+    "GPUWRF_AOT_SLIM_MODULE": "0",
+    "JAX_PLATFORMS": "cpu",
+    "GPUWRF_FAST_DEFAULTS": "1",
+    "GPUWRF_RRTMG_MP_RE": "1"
+  },
+  "phase": "init_done",
+  "wall_s": 24.655992313986644,
+  "peak_rss_KiB": 2714972,
+  "input_sha256": {
+    "namelist.input": "98eb3e0457b53a510931401ad1575e980a716da4588f8cbca4be95fd92846039",
+    "wrfbdy_d01": "f3e556670e4768326997bdfa1dd8b0f77eb6d5da07d9c4dbf900bf8ff9e30230",
+    "wrfinput_d01": "a5d696550d1dc6713e2e340b8c2fba83811d43f4a94a65ca95266035860e2781"
+  },
+  "gpuwrf_file": "<DATA_ROOT>/wrf_gpu2/scratch/t-cfix-mynn/snap_c5/src/gpuwrf/__init__.py",
+  "exception": "StopIteration()",
+  "traceback": "Traceback (most recent call last):\n  File \"<USER_HOME>/wrf_gpu2_lanes/t-cfix-mynn/e41/dl_prod_d01.py\", line 136, in <module>\n    n_steps = next(int(e.parent_grid_ratio) for es in tree.edges.values() for e in es if e.child == name)\nStopIteration\n"
+}

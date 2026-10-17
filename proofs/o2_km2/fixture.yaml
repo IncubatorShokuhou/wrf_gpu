@@ -1,0 +1,23 @@
+fixture_id: les-tke-stage-wrf-v2
+source: unmodified WRF v4.7.1 libwrflib.a; module_em TKE_advance caller
+source_commit: staged pristine tree (module checksums below identify actual source)
+scenario: real Swiss 12x10x44 crop; periodic/specified; sixth_order 0/2; three RK stages; dt18
+created_utc: 2026-10-10T20:15:48.466779+00:00
+generation: JAX_PLATFORMS=cpu GPUWRF_JAX_CACHE=0 GPUWRF_FAST_DEFAULTS=0 taskset -c 24 nice -n19 python proofs/o2_km2/stage_oracle.py --generate EXE data/fixtures/les-tke-stage-wrf-v2.npz
+variables:
+  - {name: tke, units: m2 s-2, shape: [3, 44, 10, 12], dtype: float32, absolute_tolerance: 32*eps32*maxabs(reference), relative_tolerance: 32*eps32}
+  - {name: advection, units: Pa m2 s-3 / mapfactor_y, shape: [3, 44, 10, 12], dtype: float32, purpose: active-regime census}
+  - {name: source, units: Pa m2 s-3, shape: [3, 44, 10, 12], dtype: float32, purpose: active-regime census}
+limits: vertical eta transport is zero; real horizontal transport and pristine diffusion sources active; fixed transport operands isolate scalar caller; not full CPU-WRF forecast parity
+files:
+  - {path: data/fixtures/les-tke-stage-wrf-v2.npz, sha256: 3f1c8e539a9f27efe6cd40da5de478b7082ddfccade550e233d82f5c6c573828}
+  - {path: data/fixtures/les3d-smag3d-oracle-v1.npz, sha256: b6028e36bba6ac233f42b53fad89ed7e957be3aa4fd5062ec2a98dbb60f62fe8}
+  - {path: proofs/o2_km2/tke_stage_driver.F90, sha256: 4758b9042e7035983875ed4050761b21315c1d3821e093a040af4dbe9c7ddc4a}
+wrf_sources:
+  - {path: dyn_em/module_em.F, sha256: 11105cbf8255f30ca6a44cd7429a92cedce1fb91db6ce90fd7217002a72fb7fa}
+  - {path: dyn_em/module_advect_em.F, sha256: 58253bdbeb188dd47ed0579fcd2891086be1889b75c0c7d3696c9ad1d213559d}
+  - {path: dyn_em/module_diffusion_em.F, sha256: a7d4570c97e51c635e86a0dbd628c6846457ac5b93d5a7af798b118c7d8d2d54}
+  - {path: share/module_bc.F, sha256: 61b9235004b2a7799faabaa928276af8a7ef2e4672619c8ad120c857461301ad}
+wrf_library_sha256: 4886a500d7bbcbdc7cff40ed3baab72b6a014b4dd9879bf25bc7c24522dfadbe
+license_notes: WRF reference from NCAR WRF; compact numeric fixture, no full wrfout redistributed
+supersedes: v1 driver omitted east/north halo fill by passing mass rather than tile endpoints; v1 retained in commit01356e607 and KM03 receipts

@@ -1,0 +1,173 @@
+{
+  "status": "QUALIFIED ShinHong-only product/testfix/capped sanity/c07sourceboundreuse",
+  "base_main": "1e9f09c07b4b710060bad875be03a3d42bb3c000",
+  "product": "44b7b226b55f991d8a5aa26da207ff049dfb5be9",
+  "tests_head": "2903f695d1f2ffcfbef9492655b5934deab6f87f",
+  "SRC": "7b6c87860ae88acc256ed460592872d57279d6bc",
+  "two_dot_only_product_tests": [
+    "src/gpuwrf/contracts/physics_registry.py",
+    "src/gpuwrf/coupling/scan_adapters.py",
+    "src/gpuwrf/io/scheme_catalog.py",
+    "src/gpuwrf/physics/bl_shinhong.py",
+    "tests/test_ysu_surface_contract.py",
+    "tests/v040/test_cammg.py",
+    "tests/v040/test_shinhong_tke_caller.py",
+    "tests/v040/test_shinhong_wrf_oracle.py"
+  ],
+  "AST": [
+    "proofs/t_shinhong/build_oracle.py",
+    "proofs/t_shinhong/check_envelope.py",
+    "proofs/t_shinhong/compare_port.py",
+    "proofs/t_shinhong/make_fixture.py",
+    "proofs/t_shinhong/mutants.py",
+    "proofs/t_shinhong/observe_momentum.py",
+    "proofs/t_shinhong/observe_tke.py",
+    "proofs/t_shinhong/ulp_envelope.py",
+    "src/gpuwrf/contracts/physics_registry.py",
+    "src/gpuwrf/coupling/scan_adapters.py",
+    "src/gpuwrf/io/scheme_catalog.py",
+    "src/gpuwrf/physics/bl_shinhong.py",
+    "tests/test_ysu_surface_contract.py",
+    "tests/v040/test_cammg.py",
+    "tests/v040/test_shinhong_tke_caller.py",
+    "tests/v040/test_shinhong_wrf_oracle.py"
+  ],
+  "whole_product_tests_data_packaging_docs_BYTE_final_reviewed": true,
+  "scripts_BYTE_except_manager_GPUlock_checksum": true,
+  "product_BYTE_paid44b": true,
+  "MP11_excluded": true,
+  "held_MP11_ref": "lane/s2-integrate-b37-mp11-held",
+  "held_MP11_head": "cc20bab68f265cad5b577ee9f47e749a5d6a8c68",
+  "UTC": "2026-10-15T17:23:31.144362+00:00",
+  "snapshot_commit": "5531e5c8ca58fe91239b8fd5c44b9c136e4213bc",
+  "capped_sanity": {
+    "status": "PASS",
+    "returncode": 0,
+    "immutable_source": "5531e5c8ca58fe91239b8fd5c44b9c136e4213bc",
+    "command": [
+      "<USER_HOME>/miniconda3/bin/python",
+      "-m",
+      "pytest",
+      "-q",
+      "-rs",
+      "-p",
+      "no:cacheprovider",
+      "--basetemp",
+      "<USER_HOME>/wrf_gpu2_lanes/s2-integrate/pytest",
+      "--junitxml",
+      "<USER_HOME>/wrf_gpu2_lanes/s2-integrate/batch37-shinhong/sanity.xml",
+      "tests/contracts/",
+      "tests/test_v018_mp_family_fail_closed.py",
+      "tests/test_v034_implemented_notes.py",
+      "tests/test_scheme_catalog_fail_closed.py",
+      "tests/test_namelist_check.py",
+      "tests/test_namelist_binding.py",
+      "tests/test_m7_restart_checkpoint_roundtrip.py",
+      "tests/test_netcdf_process_lock.py",
+      "tests/test_v0110_wrfrst_netcdf.py",
+      "tests/test_cli.py",
+      "tests/test_v060_physics_dispatch.py",
+      "tests/test_ysu_surface_contract.py",
+      "tests/v040/test_shinhong_tke_caller.py",
+      "tests/v040/test_shinhong_wrf_oracle.py",
+      "tests/v040/test_cammg.py::test_scan_pbl_retains_shared_outputs_once"
+    ],
+    "elapsed_s": 86.15686324700073,
+    "cap": "6G/noSwap",
+    "GPU_runs": 0,
+    "cache": "<DATA_ROOT>/wrf_gpu2/scratch/s2-integrate/batch37-shinhong-cache",
+    "tmp": "<DATA_ROOT>/wrf_gpu2/scratch/s2-integrate/batch37-shinhong-tmp",
+    "snapshot": "<DATA_ROOT>/wrf_gpu2/scratch/s2-integrate/batch37-shinhong-snapshot",
+    "counts": {
+      "tests": 295,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "RSS_KiB": 3941060,
+    "cache_tmp_pytest_snapshot_deleted": true,
+    "UTC": "2026-10-15T17:23:31.122123+00:00"
+  },
+  "critic_R2": {
+    "target": "2903f695d1f2ffcfbef9492655b5934deab6f87f",
+    "gate_and_sentinels_passed": 4,
+    "intentional_mutant_failures": [
+      [
+        "test_erase_compiled_outputs_mutant",
+        "AssertionError: outside envelope row 0 exch_h k=1"
+      ]
+    ],
+    "setup_errors": 0,
+    "elapsed_s": 4.603,
+    "unchanged_product_trees": {
+      "src": "7b6c87860ae88acc256ed460592872d57279d6bc",
+      "data": "a91a7fbcc850486e65e257c0d0f185a18c6e58c2",
+      "scripts": "9175adb9504deb7fe7d8f1cb0adbf7706575bec4",
+      "pyproject.toml": "7da92fc565a2d047f5fd5acbd067f781300fea54",
+      "docs": "b3fb442ecb53782ea541284dad144705b09abcf9"
+    },
+    "numerical_default_cost_evidence_reused": true,
+    "gpu_runs": 0
+  },
+  "c07": {
+    "case": "c07",
+    "source": "44b7b226b55f991d8a5aa26da207ff049dfb5be9",
+    "frames": 25,
+    "D6": "PASS",
+    "bounded_misses": 0,
+    "nonfinite": 0,
+    "E41": "FAIL",
+    "wall_s": 993.766447643,
+    "sampled_peak_vram_MiB": 5380,
+    "cache_remaining": false,
+    "receipts": {
+      "gpu_run.json": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c07/gpu_run.json",
+        "sha256": "825c2abdb1d9cd13d3131c5bfa2debbcc003d73b3707aa36ad9cb9af29662a72"
+      },
+      "QUALIFICATION.json": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c07/QUALIFICATION.json",
+        "sha256": "303725dee56ac7024a974aa13844b328dd6bb7138e2a59079b36beb572635d2f"
+      },
+      "D6_d01.json": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c07/D6_d01.json",
+        "sha256": "04f19716c8eb252ee74f7674a67baa990e1bb78ce306c4913dd20ba082fe06ee"
+      },
+      "e41/wave_gate.json": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c07/e41/wave_gate.json",
+        "sha256": "a97a66037b7ef56069dc7a8105da6ccc209def6fdead6a5727ed7d26bc73c227"
+      }
+    },
+    "scope": "OriginalCPU/frozenD6 full24/actualcandidate44b. E41FAILdisclosed/F2OPEN; coldnotS1; originalolderPASSattemptSHAarchived."
+  },
+  "critic_CPU_cost": {
+    "parent": {
+      "compile_s": 1.2212872010059073,
+      "warm_median_s": 0.006647042006079573,
+      "argument_bytes": 2801232,
+      "output_bytes": 2201560,
+      "temp_bytes": 16163488,
+      "generated_code_bytes": 0,
+      "hlo_chars": 990457,
+      "while_ops": 10
+    },
+    "candidate": {
+      "compile_s": 1.3970331660020747,
+      "warm_median_s": 0.004198542999802157,
+      "argument_bytes": 2801232,
+      "output_bytes": 2822504,
+      "temp_bytes": 14794144,
+      "generated_code_bytes": 0,
+      "hlo_chars": 860815,
+      "while_ops": 8
+    },
+    "platform": "cpu",
+    "shape": [
+      1764,
+      44
+    ],
+    "diag": 0,
+    "limitations": "CPU component diagnostics on replicated real column; no GPU speed/memory qualification"
+  },
+  "cleanup": true
+}

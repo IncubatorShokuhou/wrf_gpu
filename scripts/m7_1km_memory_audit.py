@@ -39,8 +39,14 @@ from gpuwrf.contracts.grid import (  # noqa: E402
     TerrainProvenance,
     VerticalCoord,
 )
-from gpuwrf.contracts.precision import DEFAULT_DTYPES, PRECISION_MATRIX, STATE_FIELD_ORDER  # noqa: E402
-from gpuwrf.contracts.state import State, Tendencies, _state_field_shapes  # noqa: E402
+from gpuwrf.contracts.precision import (  # noqa: E402
+    DEFAULT_DTYPES, PRECISION_MATRIX, STATE_FIELD_ORDER, EPSILON_PBL_LEAVES,
+    MP_RE_DIAGNOSTIC_LEAVES, LES_TKE_LEAVES, SMS_CARRY_LEAVES, WRITER_PROFILE_LEAVES,
+)
+from gpuwrf.contracts.state import (  # noqa: E402
+    State, Tendencies, _state_field_shapes, EXTRA_SCALAR_BOUNDARY_SPECIES,
+    SCALAR_BOUNDARY_OPTIONAL_LEAVES,
+)
 from gpuwrf.integration.d02_replay import build_replay_case  # noqa: E402
 from gpuwrf.profiling.transfer_audit import block_until_ready, visible_gpu_name  # noqa: E402
 from gpuwrf.runtime.operational_mode import OperationalNamelist, run_forecast_operational  # noqa: E402
@@ -296,14 +302,27 @@ def _grid_namespace(nz: int, ny: int, nx: int) -> SimpleNamespace:
     return SimpleNamespace(nz=int(nz), ny=int(ny), nx=int(nx))
 
 
-def field_shapes_for(nz: int, ny: int, nx: int) -> dict[str, tuple[int, ...]]:
+def field_shapes_for(nz: int, ny: int, nx: int, *, tracer_count: int = 1) -> dict[str, tuple[int, ...]]:
+    """All-slot capacity geometry, with an explicit count for variable-size tracers."""
+    if isinstance(tracer_count, bool) or not isinstance(tracer_count, int) or tracer_count < 1:
+        raise ValueError("tracer_count must be a positive integer")
     # Conservative capacity envelope: include every optional physics slot and
     # live-nest scalar boundary. A real run allocates only its selected subset.
     shapes = _state_field_shapes(
         _grid_namespace(nz, ny, nx), include_all_conditional=True
     )
-    for field in ("qc_bdy", "qr_bdy", "qi_bdy", "qs_bdy", "qg_bdy", "Ni_bdy", "Nr_bdy"):
+    for field in (*SCALAR_BOUNDARY_OPTIONAL_LEAVES,
+                  *(f"{name}_bdy" for name in EXTRA_SCALAR_BOUNDARY_SPECIES)):
         shapes[field] = shapes["qv_bdy"]
+    shapes.update({name: (nz, ny, nx) for name in
+                   (*MP_RE_DIAGNOSTIC_LEAVES, *LES_TKE_LEAVES, *EPSILON_PBL_LEAVES, *WRITER_PROFILE_LEAVES)})
+    shapes["epsilon_pbl_step"] = ()  # seed_epsilon_pbl_state: one int32 scalar.
+    shapes.update({name: (ny, nx) for name in (*SMS_CARRY_LEAVES, "sfc_wspd")})
+    # tracers.runtime.initialize_tracers uses two boundary times and an
+    # unstaggered side index, unlike the standard scalar boundary padding.
+    shapes["tracers"] = (tracer_count, nz, ny, nx)
+    shapes["tracer_bdy"] = (tracer_count, 2, 4, 5, nz, max(ny, nx))
+    shapes["tracer_budget"] = (tracer_count, 4)
     return shapes
 
 
@@ -313,10 +332,11 @@ def dtype_record(field: str) -> dict[str, Any]:
     return {"dtype": dtype.name, "itemsize": int(dtype.itemsize), "fp32_gated": bool(gated)}
 
 
-def build_static_memory_model(grid_shape: dict[str, Any], total_vram_bytes: int | None = None) -> dict[str, Any]:
+def build_static_memory_model(grid_shape: dict[str, Any], total_vram_bytes: int | None = None,
+                              *, tracer_count: int = 1) -> dict[str, Any]:
     derived = grid_shape["derived_full_1km"]
     nz, ny, nx = (int(value) for value in derived["mass_shape"])
-    shapes = field_shapes_for(nz=nz, ny=ny, nx=nx)
+    shapes = field_shapes_for(nz=nz, ny=ny, nx=nx, tracer_count=tracer_count)
     state_slots = list(State.__slots__)
     shape_fields = list(shapes)
     field_order = list(STATE_FIELD_ORDER)
@@ -354,9 +374,10 @@ def build_static_memory_model(grid_shape: dict[str, Any], total_vram_bytes: int 
         "state_slot_count": len(state_slots),
         "contract_note": (
             f"Fully populated capacity envelope for all {len(state_slots)} State slots; "
-            "includes optional physics and live-nest boundary arrays. "
+            f"includes optional physics and live-nest boundary arrays, {tracer_count} tracer(s). "
             "Operational memory depends on the selected physics and boundaries."
         ),
+        "tracer_count": tracer_count,
         "grid": {
             "nx": nx,
             "ny": ny,

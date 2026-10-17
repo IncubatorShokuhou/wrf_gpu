@@ -25,7 +25,7 @@ import os
 import jax
 import jax.numpy as jnp
 import numpy as np
-from jax.experimental import pallas as pl
+from gpuwrf.backends import pallas as pl
 from jax.experimental.pallas import triton as pt
 
 _F = np.float32

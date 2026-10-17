@@ -170,12 +170,13 @@ def _pbl_first_guess(thvx, ux, vx, za, zq, br, thermal_in, brcr_val, n):
 
 
 def mrf_column(u, v, t, qv, qc, p, pii, dz, z, *, psfc, znt, ust, hfx, qfx, tsk,
-               gz1oz0, wspd, br, psim, psih, xland, dt):
+               gz1oz0, wspd, br, psim, psih, xland, dt, qi=None):
     """One MRF PBL column. All profile inputs are bottom-up length-``n`` arrays.
 
     Returns dict of bottom-up tendency columns (``rublten, rvblten, rthblten,
-    rqvblten, rqcblten`` -- theta tendency already divided by exner like WRF) and
-    scalar diagnostics (``pblh, kpbl`` [bottom-up 0-based], ``zol, hol, regime``).
+    rqvblten, rqcblten, rqiblten`` -- theta tendency already divided by exner like
+    WRF) and scalar diagnostics (``pblh, kpbl`` [bottom-up 0-based], ``zol, hol,
+    regime``).  ``qi=None`` is WRF ``FLAG_QI=.false.`` (QIX=0, module_bl_mrf.F:571).
     """
     n = u.shape[0]
     kl = n - 1  # surface in top-down 0-based storage
@@ -194,7 +195,8 @@ def mrf_column(u, v, t, qv, qc, p, pii, dz, z, *, psfc, znt, ust, hfx, qfx, tsk,
     # PL=P2D/1000 -> THCON = (P1000/P2D)**ROVCP.
     thx = tx_in * (P1000 / p_td) ** ROVCP
     scr3 = tx_in
-    qixx = jnp.zeros(n, dtype=jnp.float64)  # flag_qi=False -> QIX=0
+    # module_bl_mrf.F:560-574: QIX=QI2D when FLAG_QI (driver QI3D=qi_curr), else 0.
+    qixx = jnp.zeros(n, dtype=jnp.float64) if qi is None else _flip(qi)
     tvcon = 1.0 + EP1 * qx
     thvx = thx * tvcon
     scr4 = scr3 * tvcon
@@ -220,6 +222,13 @@ def mrf_column(u, v, t, qv, qc, p, pii, dz, z, *, psfc, znt, ust, hfx, qfx, tsk,
 
     rhox = (psfc / 1000.0) * 1000.0 / (R_D * scr4[kl])  # PS(cb)*1000/(R*SCR4(KL))
     govrth = G / thx[kl]
+
+    # --- frictional velocity (module_bl_mrf.F:767-783, ZA(1982) eqs 2.60/2.61) -- #
+    # MRF2D overwrites the driver's UST (INOUT) before the PBL section: every
+    # later use (WSCALE, momentum surface drag) and the returned grid UST see
+    # KARMAN*WSPD/(GZ1OZ0-PSIM), floored at 0.1 over land only.
+    ust = KARMAN * wspd / (gz1oz0 - psim)
+    ust = jnp.where((xland - 1.5) >= 0.0, ust, jnp.maximum(ust, 0.1))
 
     # --- first-guess PBL (BRCR=0.5), then add thermal excess, re-scan, then PBL0 #
     sfcflg = br <= 0.0  # SFCFLG true unless BR>0
@@ -471,8 +480,9 @@ def mrf_column(u, v, t, qv, qc, p, pii, dz, z, *, psfc, znt, ust, hfx, qfx, tsk,
         return adc, alc, auc, a1c, a2c
 
     adc, alc, auc, a1c, a2c = jax.lax.fori_loop(0, n - 1, cloud_body, (adc, alc, auc, a1c, a2c))
-    qc_new, _qi_new = _tridi2(alc, adc, auc, a1c, a2c)
+    qc_new, qi_new = _tridi2(alc, adc, auc, a1c, a2c)
     qctend = (qc_new - qcx_bu) * rdt
+    qitend = (qi_new - qix_bu) * rdt  # QITEND -> QI2DTEN (module_bl_mrf.F:1197,1259-1265)
 
     # --- pack tendencies bottom-up; theta tendency = ttend / exner (WRF wrapper) #
     pii_bu = pii  # pii is bottom-up exner (input)
@@ -483,6 +493,8 @@ def mrf_column(u, v, t, qv, qc, p, pii, dz, z, *, psfc, znt, ust, hfx, qfx, tsk,
         "rthblten": rthblten,
         "rqvblten": qtend,
         "rqcblten": qctend,
+        "rqiblten": qitend,
+        "ust": ust,
         "pblh": pbl0,
         "kpbl": kpbl_bu,
         "zol": jnp.zeros((), dtype=jnp.float64),  # ZOL stays 0 in this code path
@@ -491,20 +503,21 @@ def mrf_column(u, v, t, qv, qc, p, pii, dz, z, *, psfc, znt, ust, hfx, qfx, tsk,
 
 
 def mrf_columns(u, v, t, qv, qc, p, pii, dz, z, *, psfc, znt, ust, hfx, qfx, tsk,
-                gz1oz0, wspd, br, psim, psih, xland, dt):
+                gz1oz0, wspd, br, psim, psih, xland, dt, qi=None):
     """vmap-batched MRF over a leading ``(ncol,)`` axis. Profiles are
-    ``(ncol, n)``; surface forcings are ``(ncol,)``. Returns batched dict."""
+    ``(ncol, n)``; surface forcings are ``(ncol,)``. Returns batched dict.
+    ``qi`` (``(ncol, n)``) is the driver's QI3D under FLAG_QI; None = no ice slot."""
 
     def one(u, v, t, qv, qc, p, pii, dz, z,
-            psfc, znt, ust, hfx, qfx, tsk, gz1oz0, wspd, br, psim, psih, xland):
+            psfc, znt, ust, hfx, qfx, tsk, gz1oz0, wspd, br, psim, psih, xland, qi):
         return mrf_column(
             u, v, t, qv, qc, p, pii, dz, z,
             psfc=psfc, znt=znt, ust=ust, hfx=hfx, qfx=qfx, tsk=tsk,
             gz1oz0=gz1oz0, wspd=wspd, br=br, psim=psim, psih=psih,
-            xland=xland, dt=dt,
+            xland=xland, dt=dt, qi=qi,
         )
 
     return jax.vmap(one)(
         u, v, t, qv, qc, p, pii, dz, z,
-        psfc, znt, ust, hfx, qfx, tsk, gz1oz0, wspd, br, psim, psih, xland,
+        psfc, znt, ust, hfx, qfx, tsk, gz1oz0, wspd, br, psim, psih, xland, qi,
     )

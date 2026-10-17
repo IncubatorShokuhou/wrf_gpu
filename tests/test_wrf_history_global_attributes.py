@@ -14,15 +14,34 @@ from gpuwrf.io.wrfout_writer import _write_global_attrs, prepare_wrfout_payload,
 from test_m7_netcdf_writer import synthetic_case, writer_authority
 
 FIXTURE = json.loads((Path(__file__).parent/'fixtures/wrf_history_attributes_wn3_0227.json').read_text())
-CASE = Path('<USER_HOME>/wrf_gpu2_lanes/wn3/cases/20260227_18z_a1')
+INPUT = json.loads((Path(__file__).parent/'fixtures/wrf_history_input_metadata_wn3_0227.json').read_text())
+
+
+@pytest.fixture
+def original_input_headers(tmp_path):
+    """Original WRF input headers/namelist, independent of expected history.
+
+    The old external lane case was deleted. This small, source-hashed fixture
+    preserves the actual inputs of this metadata-only helper without weather
+    arrays, a forecast, or a mounted server.
+    """
+    case=tmp_path/'original_input_headers'
+    case.mkdir()
+    (case/'namelist.input').write_text(INPUT['namelist'])
+    for domain,row in INPUT['domains'].items():
+        with Dataset(case/f'wrfinput_{domain}','w') as ds:
+            for key,value in row['attributes'].items():
+                dtype=row['types'][key]
+                ds.setncattr(key,value if dtype=='str' else np.asarray(value,dtype=dtype))
+    return case
 
 
 @pytest.mark.parametrize('domain', ['d01', 'd02', 'd03'])
-def test_all_cpu_wrf_history_attributes_are_supplied(domain):
+def test_all_cpu_wrf_history_attributes_are_supplied(domain,original_input_headers):
     expected = FIXTURE[domain]['attributes']
     assert len(expected) == 155
-    attrs = wrf_history_global_attributes(CASE/f'wrfinput_{domain}',
-        parse_namelist(CASE/'namelist.input'), domain, expected['DT'])
+    attrs = wrf_history_global_attributes(original_input_headers/f'wrfinput_{domain}',
+        parse_namelist(original_input_headers/'namelist.input'), domain, expected['DT'])
     assert set(expected) <= set(attrs)
     for name, value in expected.items():
         if name in {'TITLE', 'NTASKS_X', 'NTASKS_Y', 'NTASKS_TOTAL'}:
@@ -31,11 +50,11 @@ def test_all_cpu_wrf_history_attributes_are_supplied(domain):
     assert attrs['NTASKS_TOTAL'] == attrs['NTASKS_X'] == attrs['NTASKS_Y'] == 1
 
 
-def test_metadata_reaches_actual_host_payload_and_writer(tmp_path):
+def test_metadata_reaches_actual_host_payload_and_writer(tmp_path,original_input_headers):
     state, grid, namelist = synthetic_case()
     start = datetime(2026, 2, 27, 18, tzinfo=timezone.utc)
-    attrs = wrf_history_global_attributes(CASE/'wrfinput_d02',
-        parse_namelist(CASE/'namelist.input'), 'd02', 18.0)
+    attrs = wrf_history_global_attributes(original_input_headers/'wrfinput_d02',
+        parse_namelist(original_input_headers/'namelist.input'), 'd02', 18.0)
     attrs['GRID_ID'] = np.int32(999)  # The writer's authenticated identity wins.
     authority = writer_authority(grid, 'd02')
     prepared = prepare_wrfout_payload(state, grid, namelist, tmp_path/'history.nc',

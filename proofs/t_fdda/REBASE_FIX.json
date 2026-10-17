@@ -1,0 +1,89 @@
+{
+  "created_utc": "2026-10-14T02:13:06Z",
+  "base_main": "8a1c024546e5273c2f84be5d1f68b1e48463e015",
+  "reviewed_pre_rebase_commit": "f3c4443e4a58e1a9c34b1c572abae901120b0cf7",
+  "tested_model_commit": "38c7cb3d79de5cc8ab38e48897cc05261e13ff24",
+  "first_suite_commit": "2fea1a6982b7e0cadf737d077ef02aa5fe4f1c24",
+  "final_src_tree": "c83ceb5b430421e60b3686f1028d34080bb2cee8",
+  "final_gpuwrf_tree": "e53d566846cdb46d64ac1031634d9558e9afba56",
+  "main_ancestry_verified": true,
+  "conflicts_resolved": [
+    "wrfout writer: retain all main Goddard/MP/SMS fields; append HFX_FDDA after main write-order extensions",
+    "scheme_catalog: preserve every main note/order; append grid_fdda=1"
+  ],
+  "ordering": [
+    "daily carry selection: main stochastic condition before FDDA",
+    "nested diagnostics: main stochastic/feedback before FDDA",
+    "native restart identity and payload validation: main fields/checks before FDDA",
+    "support table and history specs: main rows first, FDDA appended"
+  ],
+  "protected_bytes_exact_to_reviewed": {
+    "src/gpuwrf/assimilation/fdda_grid.py": "d537285ba7db140001845fa5a2278fea159c63eb16ac3da29e460e8eda8cedb5",
+    "src/gpuwrf/coupling/fdda_rk.py": "82022e78c491df9c8eab1081d71693412783831614c5d1825b7df8625f4b4fc7",
+    "proofs/t_fdda/QUALIFICATION.json": "734102e9df88e9b74e04e06291a3e8bc2de1426290f79d61c47853c2311b480a"
+  },
+  "affected_suite": {
+    "first_run": {
+      "passed": 590,
+      "failed": 1,
+      "pytest_seconds": 140.85
+    },
+    "failure": "RUC fixture missing ra_sw_physics read by newly merged Goddard dispatch",
+    "fix": "test-only ra_sw_physics=4 and ra_lw_physics=4; all original assertions unchanged",
+    "retry": {
+      "passed": 1,
+      "failed": 0,
+      "pytest_seconds": 3.27
+    },
+    "unique_final_passes": 591,
+    "unique_final_failures": 0,
+    "per_class_pass_counts": {
+      "tests.v040.fdda.test_o2_fdda_assets": 2,
+      "tests.v040.fdda.test_o2_fdda_namelist_io": 15,
+      "tests.v040.fdda.test_o2_fdda_oracle_parity": 16,
+      "tests.v040.fdda.test_o2_fdda_wiring": 7,
+      "tests.v040.fdda.test_s1_spectral_oracle": 78,
+      "tests.v040.fdda.test_s1_spectral_wiring": 6,
+      "tests.v040.fdda.test_t_fdda": 24,
+      "tests.test_m7_restart_checkpoint_roundtrip": 3,
+      "tests.test_netcdf_process_lock": 3,
+      "tests.test_microphysics_history_inventory": 39,
+      "tests.test_online_diagnostics_restart_store": 60,
+      "tests.test_restart_schema_held_physics": 30,
+      "tests.test_stochastic_binding": 27,
+      "tests.test_goddard_history": 17,
+      "tests.v040.milbrandt.test_restart": 20,
+      "tests.dynamics.test_sms3dtke_assets": 1,
+      "tests.test_o2_ruccli": 35,
+      "tests.test_v060_physics_dispatch": 16,
+      "tests.test_cli": 21,
+      "tests.test_scheme_catalog_fail_closed": 24,
+      "tests.test_v034_implemented_notes": 27,
+      "tests.test_namelist_binding": 77,
+      "tests.test_namelist_check": 43
+    },
+    "reuse": "Final production src tree exact to 590-pass snapshot; only failed fixture defaults changed; re-run affected test once"
+  },
+  "release_identity": {
+    "official_script": "proofs/s1_port/release_identity.py",
+    "wrapper": "proofs/t_fdda/release_identity_local.py",
+    "wrapper_scope": "Only lane-owned scratch directory; official probe/model logic unchanged",
+    "full_sha": "2bf12cb8374d3a84a440e47dea4b77b0c7436108fc2ee2616bba6ec79b17962a",
+    "chars": 13405317,
+    "wall_seconds": 58.4,
+    "native_facade_at_trace": true,
+    "gpu_executed": false,
+    "receipt": "receipts/TF22_identity.json"
+  },
+  "performance_memory": "Rebase only reorders opt-in history/config/validation additions. FDDA numerical code byte-identical; prior CPU driver +36.38us, +310464B held HFX, 708B scratch retained. No extra timestep transfers or device work vs reviewed lane. GPU costs remain unknown; default trace exact.",
+  "scientific_scope": "Original accepted CPU/WRF evidence reused without modification. This receipt proves rebased composition, not new GPU/full-24h HFX qualification.",
+  "cache_policy": "GPUWRF_JAX_CACHE=0; no compile cache; pytest base cleaned after each arm; detached snapshot removed after identity.",
+  "raw_artifacts_sha256": {
+    "<USER_HOME>/wrf_gpu2_lanes/t-fdda/TF20_tests.xml": "f63f11a96b0b7fd3fd7b22abdc77659db6cf61c4c3b7d1a667b865512b356bf5",
+    "<USER_HOME>/wrf_gpu2_lanes/t-fdda/TF20_tests.log": "97d2d4d4709827428334632b0fd6c3c29c17571338960d1552d5a0788dd84e1e",
+    "<USER_HOME>/wrf_gpu2_lanes/t-fdda/TF21_ruc.xml": "971ba8bcd766603031a3308133fb0e7199ebe09a41ba2068e87e08e6a39d5b8e",
+    "<USER_HOME>/wrf_gpu2_lanes/t-fdda/TF21_ruc.log": "fa112e3429536679dc2f62d9313df6e6026558b7881768ac24372524b9edc3ea",
+    "<USER_HOME>/wrf_gpu2_lanes/t-fdda/TF22_identity.json": "86dab2ac998eaed9cfe108d75bba0edb8c4426ce51ca04f2098cf69087f0740e",
+    "<USER_HOME>/wrf_gpu2_lanes/t-fdda/TF22_identity.log": "28be37a92de8b6c4cfcf73bb00fc0522555489814f1278c5d03a81e571831330"
+  }
+}

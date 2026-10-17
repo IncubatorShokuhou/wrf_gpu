@@ -13,7 +13,7 @@ import os
 
 import jax
 import jax.numpy as jnp
-from jax.experimental import pallas as pl
+from gpuwrf.backends import pallas as pl
 from jax.experimental.pallas import triton as pt
 
 from gpuwrf.dynamics.core.acoustic import AcousticCoreConfig, AcousticCoreState

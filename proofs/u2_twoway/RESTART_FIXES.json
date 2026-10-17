@@ -1,0 +1,151 @@
+{
+  "lane": "u2-twoway",
+  "verdict": "FIXED_ALL_3_MERGE_CONDITIONS",
+  "completed_utc": "2026-10-14T00:19:12.017289+00:00",
+  "critic_reviewed_commit": "2b10be639",
+  "main_rebase": "644da7f75",
+  "rebased_before_fix": "89ecb0498",
+  "fixed_model_commit": "0b0a55da4519534c0fe5e9067f24a6253ccb7b0f",
+  "P1": {
+    "status": "PASS",
+    "schema_version": 1,
+    "ALB": "exact per-domain mass volume shape andfloat32",
+    "history": "PackedFields exact ordered initialized names, packed count/surface shape andfloat32; requiredTH2+16instantaneousfluxes; names must beRegistryupfields",
+    "native_binding": "freshly initialized completefieldlist per domain in authenticated identity, includingnamelistselectedfeedback whenCLIflagNone; activechildselectionrequired",
+    "formats": [
+      "native synchronizedRestartStore",
+      "full-carrypickle",
+      "NetCDFwrfrst"
+    ],
+    "read_boundary": "metadata/shape/dtype/fieldset checked on host before_restore_carry orjnp.asarray restoration",
+    "portable_binding": "saved completeinitializedfieldlist; optionalfeedback_schema compares currentinitializedtemplate onwrite/read",
+    "exact_roundtrip": "all carry leaves dtype/shape/bytes preserved; extra initializedSHDMAX field binding tested",
+    "corruption": "fivecriticmalformedwrites plusauthenticatedreadcorruption,droppedstaticfield,bad/missingschema andpredevice sentinel tests pass"
+  },
+  "P2_inactive_single_domain": {
+    "status": "PASS",
+    "guard": "requiresselectedfeedback AND len(names)>1; inactive/legacy groups remainoptional",
+    "evidence": "critic feedbackFalse/True single-domain native resume controls both reach actual next driver boundary"
+  },
+  "P2_whitespace": {
+    "status": "PASS",
+    "full_reviewed_diff": "git diff --check40799926d...HEAD",
+    "current_main_diff": "git diff --checkmain...HEAD",
+    "fix": "removednewEOFblank in test_u2_alb_eos_wrf.py"
+  },
+  "tests": {
+    "original_critic_probes_passed": 8,
+    "combined_distinct_targeted_nodes_passed": 449,
+    "initial_full_arm": "TB54 67PASS2fixtureNameError;bothcorrectednodesPASSinTB55",
+    "affected_restart_consumers": "TB55 381PASS+TB57 1PASS=382;onepreexistingmainTEMFidentityfixtureupdated withrequiredselectors; productionfunctionASTunchanged",
+    "final_remaining_failures": 0,
+    "numerical_trajectory_repeated": false,
+    "GPU_executed": false
+  },
+  "source_reuse": {
+    "verdict": "PASS",
+    "baseline_rebased_before_fix": "89ecb0498",
+    "main_base": "644da7f75",
+    "candidate": "0b0a55da4519534c0fe5e9067f24a6253ccb7b0f",
+    "source_changes": [
+      "src/gpuwrf/integration/nested_pipeline.py",
+      "src/gpuwrf/io/feedback_restart.py",
+      "src/gpuwrf/io/nesting_options.py",
+      "src/gpuwrf/io/restart.py",
+      "src/gpuwrf/io/wrfrst_netcdf.py",
+      "src/gpuwrf/runtime/restart_store.py"
+    ],
+    "all_other_source_blobs_BYTE": true,
+    "initial_loader_and_writer_AST_identical": true,
+    "driver_AST_identical_except_authenticated_schema_binding_and_effective_child_guard": true,
+    "device_restore_AST_identical_except_preflight_validation": true,
+    "preexisting_identity_fixture_failure_function_AST_identical": true,
+    "metadata_validator_has_no_array_copy_transfer_reduction_or_compile": true,
+    "scientific_reuse": "Accepted original CPU-WRF/oracle/default evidence carried forward; no repeated forecast/GPU work. These fixes do not modify timestep arithmetic, State/Carry leaves or kernel sources.",
+    "cache": "NONE",
+    "backend": "no JAX imported (stdlib source proof)",
+    "script_sha256": "30152fe18db40003c45259f0ea5911bb2707906cad8830a120b22b50d9776e5a"
+  },
+  "performance_memory": {
+    "backend": "cpu",
+    "fixture": "structural metadata only,31 Registry-selected names/44x70x120 ALB/31x70x120 packed history; no atmospheric/oracle fidelity claim",
+    "omitted_non_up_fields": [
+      "VAR",
+      "CON",
+      "OA1",
+      "OA2",
+      "OA3",
+      "OA4",
+      "OL1",
+      "OL2",
+      "OL3",
+      "OL4"
+    ],
+    "old_presence_only_s": 1.807019580155611e-07,
+    "complete_schema_s": 5.297408904880285e-06,
+    "added_s_per_domain_checkpoint": 5.116706946864724e-06,
+    "python_allocator_current_bytes": 0,
+    "python_allocator_peak_bytes": 4712,
+    "array_storage_bytes": 2520000,
+    "validator_reads_array_values": false,
+    "scope": "Host metadata API only, shared nice19 CPU9; no timestep work, no model compile or GPU memory/launch/readiness claim",
+    "cache": "NONE",
+    "candidate": "0b0a55da4519534c0fe5e9067f24a6253ccb7b0f"
+  },
+  "limitations": "Existing accepted CPU/operator/shortcoupled/default evidence and GPU24h/E41/libdevice limitations retained. These tests are structural restart evidence, not additional weather fidelity.",
+  "cleanup": "JAXcache disabled; disposablepytestanddetachedsnapshot removed; original scientificreferencecases untouched",
+  "artifacts": {
+    "TB54-restart-critic-fixes.log": {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/u2-twoway/TB54-restart-critic-fixes.log",
+      "sha256": "b875dafcfc170046291a37c8fcc23bf0650a253ec29a4d14d0b724bf04a5e6ce"
+    },
+    "TB55-restart-consumers.log": {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/u2-twoway/TB55-restart-consumers.log",
+      "sha256": "9c9bcebdfd506647878cd14c76986631afc963fc8011f262d1cd47080b20c930"
+    },
+    "TB56-full-reviewed-diff-check.log": {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/u2-twoway/TB56-full-reviewed-diff-check.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "TB56-main-diff-check.log": {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/u2-twoway/TB56-main-diff-check.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "TB57-identity-fixture.log": {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/u2-twoway/TB57-identity-fixture.log",
+      "sha256": "01b75beb7b0597f640ac9f620561b3967e0cb9c22b749c45c463e054acf44ace"
+    },
+    "TB58-restart-source-scope.json": {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/u2-twoway/TB58-restart-source-scope.json",
+      "sha256": "83d111f6fdf34ca10003983aa48fb18a07258eb20fbaa5ae82e34ab304a300de"
+    },
+    "TB58-restart-source-scope.log": {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/u2-twoway/TB58-restart-source-scope.log",
+      "sha256": "83d111f6fdf34ca10003983aa48fb18a07258eb20fbaa5ae82e34ab304a300de"
+    },
+    "TB59-restart-metadata-bench.json": {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/u2-twoway/TB59-restart-metadata-bench.json",
+      "sha256": "6c161c28d5edf209017a8a5159bf0ed04383319c8a509cfbabb9d97fe4850f73"
+    },
+    "TB59-restart-metadata-bench.py": {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/u2-twoway/TB59-restart-metadata-bench.py",
+      "sha256": "cfde6f586b21a847a804094050bd2b15f8e7ec0a73aaf284aa0de92ae804696a"
+    },
+    "TB59-restart-metadata-bench.log": {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/u2-twoway/TB59-restart-metadata-bench.log",
+      "sha256": "6c161c28d5edf209017a8a5159bf0ed04383319c8a509cfbabb9d97fe4850f73"
+    },
+    "TB59a-restart-metadata-bench.py": {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/u2-twoway/TB59a-restart-metadata-bench.py",
+      "sha256": "0b7e90d96d0c8ad3831cc95f1320b2b631fa3211f56d5a672f5f6960509bef63"
+    },
+    "TB59a-restart-metadata-bench.log": {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/u2-twoway/TB59a-restart-metadata-bench.log",
+      "sha256": "89d45559a59a7bce4179494e3dc93e8a03a9d91424ab4d52210a7acf130bcc8c"
+    },
+    "critic_verdict": {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/rv-u2-twoway/VERDICT.md",
+      "sha256": "8979415e4e77dba7af656c78f9ace13579c32137f6d0dc47ee02c25ca7e99f8f"
+    }
+  }
+}

@@ -127,10 +127,15 @@ def test_real_sfclay_noah_mynn_handoff_and_pristine_bc(monkeypatch, pristine_bc,
     nm=View(hfx=field("HFX"),qfx=field("QFX"),lh=field("LH"),znt=field("ZNT"),tsk=field("TSK"),qsfc=arr("qsfc_seed"))
     land=View(ch=jnp.zeros_like(arr("u")),cm=jnp.zeros_like(arr("u")),snowh=arr("snowh"))
     forcing=View(qair=arr("qv")/(1+arr("qv")),psfc=arr("psfc"),sfctmp=arr("temp"))
-    monkeypatch.setattr(N,"surface_layer_with_diagnostics",lambda *a,**kw:diag)
+    surface_calls=[]
+    monkeypatch.setattr(N,"surface_layer_with_diagnostics",lambda *a,**kw:surface_calls.append(1) or diag)
     monkeypatch.setattr(N,"noah_mp_step",lambda state,*a,**kw:(state,nm))
     wb,landout,blended=N.noahmp_surface_adapter(view,land,None,forcing=forcing)
-    assert blended.wspd is diag.fluxes.wspd
+    # The small-grid optimization barrier returns new array wrappers. Pin the
+    # held operand's exact bytes and one producer call, rather than Python id.
+    assert surface_calls==[1]
+    assert blended.wspd.shape==diag.fluxes.wspd.shape and blended.wspd.dtype==diag.fluxes.wspd.dtype
+    assert np.asarray(blended.wspd).tobytes()==np.asarray(diag.fluxes.wspd).tobytes()
     state,grid=real_state(view)
     assert state.sfc_wspd.shape==state.xland.shape and state.sfc_wspd.dtype==jnp.float32
     # Without Noah-MP the standalone surface adapter writes the same handle.

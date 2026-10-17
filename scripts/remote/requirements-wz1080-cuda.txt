@@ -1,0 +1,5 @@
+# wz1080 GPU layer (GTX 1080 Ti = Pascal sm_61). CUDA 13 dropped Pascal (toolkit, ptxas, libraries), so the box
+# uses JAX's CUDA-12 plugin of the SAME jax/jaxlib 0.10.0 as the reference stack; the pip CUDA-12 wheels bring
+# ptxas 12.x (sm_61 still supported). Needs an R580-or-older NVIDIA driver (R590+ dropped Pascal).
+jax-cuda12-pjrt==0.10.0
+jax-cuda12-plugin[with-cuda]==0.10.0

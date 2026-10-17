@@ -1,0 +1,99 @@
+{
+ "M1_mass_w": {
+  "file": "coupling/physics_couplers.py",
+  "failed": [
+   "test_caller_hands_mynn_the_bottom_w_faces[0]",
+   "test_caller_hands_mynn_the_bottom_w_faces[1]",
+   "test_two_step_operational_mynn_reads_the_current_bottom_faces"
+  ],
+  "summary": "3 failed, 28 deselected",
+  "setup_errors": 0,
+  "assertion": true,
+  "killed": true,
+  "tail": "(ACTUAL), -1.9862019691545012 (DESIRED)\nE            [0, 1]: -0.10136486989360172 (ACTUAL), 0.023833264488995393 (DESIRED)\nE            [0, 2]: 0.06484291939764743 (ACTUAL), -0.22656300427619883 (DESIRED)\nE            [0, 3]: 0.2379997813898711 (ACTUAL), 0.3562488430714937 (DESIRED)\nE            [0, 4]: 0.29247250646839645 (ACTUAL), 0.1197507197082485 (DESIRED)\nE           Max absolute difference among violations: 1.96144503\nE           Max relative difference among violations: 953.74548773\nE            ACTUAL: array([[-9.811844e-01, -1.013649e-01,  6.484292e-02,  2.379998e-01,\nE                    2.924725e-01,  1.910005e-01, -9.902000e-02, -3.096399e-01,\nE                   -9.875555e-02,  4.233309e-01,  9.744814e-02,  1.162246e-01,...\nE            DESIRED: array([[-1.986202e+00,  2.383326e-02, -2.265630e-01,  3.562488e-01,\nE                    1.197507e-01,  4.651943e-01, -8.319320e-02, -1.148468e-01,\nE                   -5.044330e-01,  3.069219e-01,  5.397399e-01, -3.448436e-01,...\n\ntests/v025/t_cfix_mynn/test_f20_mynn_caller.py:558: AssertionError\n=========================== short test summary info ============================\nFAILED tests/v025/t_cfix_mynn/test_f20_mynn_caller.py::test_caller_hands_mynn_the_bottom_w_faces[0]\nFAILED tests/v025/t_cfix_mynn/test_f20_mynn_caller.py::test_caller_hands_mynn_the_bottom_w_faces[1]\nFAILED tests/v025/t_cfix_mynn/test_f20_mynn_caller.py::test_two_step_operational_mynn_reads_the_current_bottom_faces\n3 failed, 28 deselected in 9.60s\n"
+ },
+ "M2_upper_faces": {
+  "file": "coupling/physics_couplers.py",
+  "failed": [
+   "test_caller_hands_mynn_the_bottom_w_faces[0]",
+   "test_caller_hands_mynn_the_bottom_w_faces[1]",
+   "test_two_step_operational_mynn_reads_the_current_bottom_faces"
+  ],
+  "summary": "3 failed, 28 deselected",
+  "setup_errors": 0,
+  "assertion": true,
+  "killed": true,
+  "tail": "(ACTUAL), -1.9862019691545012 (DESIRED)\nE            [0, 1]: -0.22656300427619883 (ACTUAL), 0.023833264488995393 (DESIRED)\nE            [0, 2]: 0.3562488430714937 (ACTUAL), -0.22656300427619883 (DESIRED)\nE            [0, 3]: 0.1197507197082485 (ACTUAL), 0.3562488430714937 (DESIRED)\nE            [0, 4]: 0.46519429322854444 (ACTUAL), 0.1197507197082485 (DESIRED)\nE           Max absolute difference among violations: 3.92289006\nE           Max relative difference among violations: 1907.49097545\nE            ACTUAL: array([[ 2.383326e-02, -2.265630e-01,  3.562488e-01,  1.197507e-01,\nE                    4.651943e-01, -8.319320e-02, -1.148468e-01, -5.044330e-01,\nE                    3.069219e-01,  5.397399e-01, -3.448436e-01,  5.772928e-01,...\nE            DESIRED: array([[-1.986202e+00,  2.383326e-02, -2.265630e-01,  3.562488e-01,\nE                    1.197507e-01,  4.651943e-01, -8.319320e-02, -1.148468e-01,\nE                   -5.044330e-01,  3.069219e-01,  5.397399e-01, -3.448436e-01,...\n\ntests/v025/t_cfix_mynn/test_f20_mynn_caller.py:558: AssertionError\n=========================== short test summary info ============================\nFAILED tests/v025/t_cfix_mynn/test_f20_mynn_caller.py::test_caller_hands_mynn_the_bottom_w_faces[0]\nFAILED tests/v025/t_cfix_mynn/test_f20_mynn_caller.py::test_caller_hands_mynn_the_bottom_w_faces[1]\nFAILED tests/v025/t_cfix_mynn/test_f20_mynn_caller.py::test_two_step_operational_mynn_reads_the_current_bottom_faces\n3 failed, 28 deselected in 9.65s\n"
+ },
+ "M3_kte_face": {
+  "file": "physics/mynn_edmf.py",
+  "failed": [
+   "test_taper_reads_faces_kts_to_kte_minus_1_only"
+  ],
+  "summary": "1 failed, 30 deselected",
+  "setup_errors": 0,
+  "assertion": true,
+  "killed": true,
+  "tail": "lh\n            for pblh in (np.float32(1.0e6), np.float32(800.0)):\n                cases.append((w.copy(), pblh))\n        dz = cols[\"dz\"][0]\n        zw = jnp.concatenate((jnp.zeros((1,), jnp.float32), jnp.cumsum(jnp.asarray(dz))))\n        z = jnp.zeros((nz,), jnp.float32)\n        s = jnp.zeros((), jnp.float32)\n        open_taper = [literal_taper(w1, dz, np.float32(1.0e6), np.float32(1.0)) for w1, pblh in cases if pblh > 1.0e5]\n        assert len(set(open_taper)) == 1 and 0.6 < open_taper[0] < 0.8, open_taper  # WRF ignores face kte\n        for w1, pblh in cases:\n            wrf = literal_taper(w1, dz, pblh, np.float32(1.0))\n            port = E._dmp_setup(z, z, z, z, jnp.asarray(w1), z + 300.0, z + 300.0, z + 9.0e4, jnp.asarray(dz), zw,\n                                z + 1.0, jnp.float32(pblh), s + 290.0, s + 1.0, s, s, s, jnp.float32(1.0),\n                                dx=meta[\"dx\"])[\"psig_w\"]\n>           assert _bits(port) == _bits(wrf), (float(port), float(wrf), float(w1[nz - 1]), float(pblh))\nE           AssertionError: (0.0, 0.7000000476837158, 6.0, 1000000.0)\nE           assert array([0], dtype=uint32) == array([106032... dtype=uint32)\nE             \nE             Use -v to get more diff\n\ntests/v025/t_cfix_mynn/test_f20_mynn_caller.py:248: AssertionError\n=========================== short test summary info ============================\nFAILED tests/v025/t_cfix_mynn/test_f20_mynn_caller.py::test_taper_reads_faces_kts_to_kte_minus_1_only\n1 failed, 30 deselected in 2.41s\n"
+ },
+ "M4_no_limits": {
+  "file": "physics/surface_layer.py",
+  "failed": [
+   "test_driver_flux_limits_match_pristine_public_call_bytewise[prod_d02_night]",
+   "test_driver_flux_limits_match_pristine_public_call_bytewise[wn3_d03_day]",
+   "test_mynn_view_alone_applies_the_driver_limits"
+  ],
+  "summary": "3 failed, 28 deselected",
+  "setup_errors": 0,
+  "assertion": true,
+  "killed": true,
+  "tail": "_jit():\n            view = C._surface_fluxes_from_state(state, grid)\n        f32 = lambda a: np.asarray(jnp.asarray(a, jnp.float32))  # noqa: E731\n        shared = [f32(state.theta_flux), f32(state.qv_flux), f32(state.fltv)]\n        got = [np.asarray(view.theta_flux), np.asarray(view.qv_flux), np.asarray(view.fltv)]\n        for a in shared + got:  # E200: a degenerate operand (rho 0 -> inf == inf) must not pass vacuously\n            assert np.isfinite(a).all()\n        for g, h in zip(got, shared):\n            assert g.dtype == np.float32 and np.array_equal(_bits(g[~BEYOND]), _bits(h[~BEYOND]))\n>           assert not np.any(_bits(g[BEYOND]) == _bits(h[BEYOND]))\nE           assert not np.True_\nE            +  where np.True_ = <function any at 0x7f158a56d4f0>(array([105774... dtype=uint32) == array([105774... dtype=uint32)\nE            +    where <function any at 0x7f158a56d4f0> = np.any\nE               \nE               Use -v to get more diff)\n\ntests/v025/t_cfix_mynn/test_f20_mynn_caller.py:434: AssertionError\n=========================== short test summary info ============================\nFAILED tests/v025/t_cfix_mynn/test_f20_mynn_caller.py::test_driver_flux_limits_match_pristine_public_call_bytewise[prod_d02_night]\nFAILED tests/v025/t_cfix_mynn/test_f20_mynn_caller.py::test_driver_flux_limits_match_pristine_public_call_bytewise[wn3_d03_day]\nFAILED tests/v025/t_cfix_mynn/test_f20_mynn_caller.py::test_mynn_view_alone_applies_the_driver_limits\n3 failed, 28 deselected in 14.01s\n"
+ },
+ "M5_producer_limits_leak": {
+  "file": "physics/noahmp_coupler.py",
+  "failed": [
+   "test_extreme_fluxes_reach_cumulus_unlimited[3]",
+   "test_extreme_fluxes_reach_cumulus_unlimited[6]",
+   "test_extreme_fluxes_reach_cumulus_unlimited[16]",
+   "test_shared_handle_producers_stay_unlimited[physics/noahmp_coupler.py]"
+  ],
+  "summary": "4 failed, 3 passed, 24 deselected",
+  "setup_errors": 0,
+  "assertion": true,
+  "killed": true,
+  "tail": "step_part1.F:1416); only MYNN's copy is limited.\"\"\"\n        shipped, calls = _extreme_noahmp_step(monkeypatch)\n>       assert \"pbl_limits\" not in calls[0]\nE       AssertionError: assert 'pbl_limits' not in {'pbl_limits': True}\n\ntests/v025/t_cfix_mynn/test_f20_mynn_caller.py:400: AssertionError\n____ test_shared_handle_producers_stay_unlimited[physics/noahmp_coupler.py] ____\n\npath = 'physics/noahmp_coupler.py'\n\n    @pytest.mark.parametrize(\"path\", _PRODUCERS)\n    def test_shared_handle_producers_stay_unlimited(path):\n        calls = _driver_calls(path)\n        assert len(calls) == 1, path\n>       assert all(k.arg != \"pbl_limits\" for k in calls[0][1].keywords), path\nE       AssertionError: physics/noahmp_coupler.py\nE       assert False\nE        +  where False = all(<generator object test_shared_handle_producers_stay_unlimited.<locals>.<genexpr> at 0x752c860c4450>)\n\ntests/v025/t_cfix_mynn/test_f20_mynn_caller.py:519: AssertionError\n=========================== short test summary info ============================\nFAILED tests/v025/t_cfix_mynn/test_f20_mynn_caller.py::test_extreme_fluxes_reach_cumulus_unlimited[3]\nFAILED tests/v025/t_cfix_mynn/test_f20_mynn_caller.py::test_extreme_fluxes_reach_cumulus_unlimited[6]\nFAILED tests/v025/t_cfix_mynn/test_f20_mynn_caller.py::test_extreme_fluxes_reach_cumulus_unlimited[16]\nFAILED tests/v025/t_cfix_mynn/test_f20_mynn_caller.py::test_shared_handle_producers_stay_unlimited[physics/noahmp_coupler.py]\n4 failed, 3 passed, 24 deselected in 10.83s\n"
+ },
+ "M6_view_unlimited": {
+  "file": "coupling/physics_couplers.py",
+  "failed": [
+   "test_mynn_view_alone_applies_the_driver_limits"
+  ],
+  "summary": "1 failed, 30 deselected",
+  "setup_errors": 0,
+  "assertion": true,
+  "killed": true,
+  "tail": "_land_grid()\n        # Op by op, like the eager reference below: lax.cond compiles its branch even outside jit, and XLA:CPU\n        # then reassociates the phy_prep divides (E130/E186) -> <= 1 REAL4 ulp vs eager on the beyond columns.\n        with jax.disable_jit():\n            view = C._surface_fluxes_from_state(state, grid)\n        f32 = lambda a: np.asarray(jnp.asarray(a, jnp.float32))  # noqa: E731\n        shared = [f32(state.theta_flux), f32(state.qv_flux), f32(state.fltv)]\n        got = [np.asarray(view.theta_flux), np.asarray(view.qv_flux), np.asarray(view.fltv)]\n        for a in shared + got:  # E200: a degenerate operand (rho 0 -> inf == inf) must not pass vacuously\n            assert np.isfinite(a).all()\n        for g, h in zip(got, shared):\n            assert g.dtype == np.float32 and np.array_equal(_bits(g[~BEYOND]), _bits(h[~BEYOND]))\n>           assert not np.any(_bits(g[BEYOND]) == _bits(h[BEYOND]))\nE           assert not np.True_\nE            +  where np.True_ = <function any at 0x7480a8f7cfb0>(array([105774... dtype=uint32) == array([105774... dtype=uint32)\nE            +    where <function any at 0x7480a8f7cfb0> = np.any\nE               \nE               Use -v to get more diff)\n\ntests/v025/t_cfix_mynn/test_f20_mynn_caller.py:434: AssertionError\n=========================== short test summary info ============================\nFAILED tests/v025/t_cfix_mynn/test_f20_mynn_caller.py::test_mynn_view_alone_applies_the_driver_limits\n1 failed, 30 deselected in 11.46s\n"
+ },
+ "M7_reformation_in_step_graph": {
+  "file": "coupling/physics_couplers.py",
+  "failed": [
+   "test_limit_reformation_is_traced_only_inside_the_cond"
+  ],
+  "summary": "1 failed, 30 deselected",
+  "setup_errors": 0,
+  "assertion": true,
+  "killed": true,
+  "tail": " jnp.float32) for f in (state.theta_flux, state.qv_flux, state.fltv))\n        jaxpr = jax.make_jaxpr(lambda st, *h: C._mynn_driver_limited_handles(st, grid, *h))(state, *handles)  # E140\n    \n        def prims(j, into_cond=True):  # every primitive, nested jit bodies included (jnp.where is a pjit)\n            out = set()\n            for e in j.eqns:\n                out.add(e.primitive.name)\n                if e.primitive.name == \"cond\" and not into_cond:\n                    continue\n                for v in e.params.values():\n                    for sub in (v if isinstance(v, (tuple, list)) else (v,)):\n                        sub = getattr(sub, \"jaxpr\", sub)\n                        if hasattr(sub, \"eqns\"):\n                            out |= prims(sub, into_cond)\n            return out\n    \n        conds = [e for e in jaxpr.jaxpr.eqns if e.primitive.name == \"cond\"]\n        step_graph = prims(jaxpr.jaxpr, into_cond=False)\n>       assert len(conds) == 1 and not {\"pow\", \"div\", \"log\", \"transpose\", \"select_n\"} & step_graph, step_graph\nE       AssertionError: {'add', 'broadcast_in_dim', 'concatenate', 'convert_element_type', 'div', 'gt', ...}\nE       assert (0 == 1)\nE        +  where 0 = len([])\n\ntests/v025/t_cfix_mynn/test_f20_mynn_caller.py:498: AssertionError\n=========================== short test summary info ============================\nFAILED tests/v025/t_cfix_mynn/test_f20_mynn_caller.py::test_limit_reformation_is_traced_only_inside_the_cond\n1 failed, 30 deselected in 10.63s\n"
+ },
+ "M8_cond_all_columns": {
+  "file": "coupling/physics_couplers.py",
+  "failed": [
+   "test_mynn_view_alone_applies_the_driver_limits"
+  ],
+  "summary": "1 failed, 30 deselected",
+  "setup_errors": 0,
+  "assertion": true,
+  "killed": true,
+  "tail": "_land_grid()\n        # Op by op, like the eager reference below: lax.cond compiles its branch even outside jit, and XLA:CPU\n        # then reassociates the phy_prep divides (E130/E186) -> <= 1 REAL4 ulp vs eager on the beyond columns.\n        with jax.disable_jit():\n            view = C._surface_fluxes_from_state(state, grid)\n        f32 = lambda a: np.asarray(jnp.asarray(a, jnp.float32))  # noqa: E731\n        shared = [f32(state.theta_flux), f32(state.qv_flux), f32(state.fltv)]\n        got = [np.asarray(view.theta_flux), np.asarray(view.qv_flux), np.asarray(view.fltv)]\n        for a in shared + got:  # E200: a degenerate operand (rho 0 -> inf == inf) must not pass vacuously\n            assert np.isfinite(a).all()\n        for g, h in zip(got, shared):\n            assert g.dtype == np.float32 and np.array_equal(_bits(g[~BEYOND]), _bits(h[~BEYOND]))\n>           assert not np.any(_bits(g[BEYOND]) == _bits(h[BEYOND]))\nE           assert not np.True_\nE            +  where np.True_ = <function any at 0x737606f70cf0>(array([105774... dtype=uint32) == array([105774... dtype=uint32)\nE            +    where <function any at 0x737606f70cf0> = np.any\nE               \nE               Use -v to get more diff)\n\ntests/v025/t_cfix_mynn/test_f20_mynn_caller.py:434: AssertionError\n=========================== short test summary info ============================\nFAILED tests/v025/t_cfix_mynn/test_f20_mynn_caller.py::test_mynn_view_alone_applies_the_driver_limits\n1 failed, 30 deselected in 12.36s\n"
+ }
+}

@@ -67,10 +67,12 @@ def test_rrtmg_intermediate_validation_helpers_report_pass_and_fail():
     assert validate_lw_planck_corrections(zeros, zeros, zeros, zeros)["pass"] is True
 
 
-def test_rrtmg_intermediate_artifacts_are_written_honestly():
-    record = run_intermediate_validation()
-    assert Path("artifacts/m5/rrtmg_intermediate_validation.json").exists()
-    assert Path("artifacts/m5/rrtmg_per_band_status.json").exists()
+def test_rrtmg_intermediate_artifacts_are_written_honestly(tmp_path):
+    out = tmp_path / "rrtmg_intermediate_validation.json"
+    status = tmp_path / "rrtmg_per_band_status.json"
+    record = run_intermediate_validation(out=out, status_out=status)
+    assert out.exists()
+    assert status.exists()
     assert record["sw"]["taur"]["pass"] is True
     assert all(item["pass"] for item in record["sw"]["taug_per_band"])
     assert all(item["pass"] for item in record["lw"]["per_band"])

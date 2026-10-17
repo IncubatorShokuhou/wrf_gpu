@@ -1,0 +1,34 @@
+{
+  "argv": [
+    "timeout",
+    "--signal=TERM",
+    "--kill-after=15",
+    "1770",
+    "<USER_HOME>/miniconda3/bin/python",
+    "<USER_HOME>/wrf_gpu2_lanes/v-run/round4_qhmass/tools/gpu_cli.py",
+    "run",
+    "--input-dir",
+    "<USER_HOME>/wrf_gpu2_lanes/v-run/round4_qhmass/mp18/input",
+    "--output-dir",
+    "<DATA_ROOT>/wrf_gpu2/scratch/v-run/round4_qhmass/runtime/mp18/gpu",
+    "--hours",
+    "24"
+  ],
+  "official_lock_label": "v-run",
+  "concurrent_group": [
+    "mp18",
+    "mp18_cu5"
+  ],
+  "source_rev": "627a033284dc457a9949c2a32f2c111d0227e6df",
+  "started_utc": "2026-10-15T05:27:55.966748+00:00",
+  "environment": {
+    "JAX_PLATFORMS": "cuda",
+    "GPUWRF_CENSUS": "1",
+    "GPUWRF_AOT_SLIM_MODULE": "0",
+    "GPUWRF_RRTMG_MP_RE": "1",
+    "JAX_COMPILATION_CACHE_DIR": "<DATA_ROOT>/wrf_gpu2/scratch/v-run/round4_qhmass/runtime/mp18/cache/jax",
+    "GPUWRF_CACHE": "<DATA_ROOT>/wrf_gpu2/scratch/v-run/round4_qhmass/runtime/mp18/cache",
+    "GPUWRF_XLA_AUTOTUNE_CACHE_DIR": "<DATA_ROOT>/wrf_gpu2/scratch/v-run/round4_qhmass/runtime/mp18/cache/autotune",
+    "XLA_PYTHON_CLIENT_PREALLOCATE": "false"
+  }
+}

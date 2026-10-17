@@ -133,6 +133,9 @@ def test_state_feedback_gate_updates_parent_overlap_and_rebuilds_totals():
     weights = StateFeedbackWeights(mass=_weights(""), u=_weights("U"), v=_weights("V"))
     parent = _duck_state(12, 12, fill=0.0, base=100.0)
     child = _duck_state(24, 24, fill=9.0, base=900.0)
+    # State.theta is full potential temperature; WRF feeds perturbation T.
+    parent=parent.replace(theta=parent.theta+300.)
+    child=child.replace(theta=child.theta+300.)
 
     off = apply_state_feedback(parent, child, weights, feedback=False)
     assert off is parent
@@ -143,7 +146,11 @@ def test_state_feedback_gate_updates_parent_overlap_and_rebuilds_totals():
     qke = np.asarray(out.qke)
     p_base = np.asarray(parent.p_total - parent.p_perturbation)
 
-    assert np.all(theta[:, mask] == 9.0)
-    assert np.all(theta[:, ~mask] == 0.0)
-    assert np.all(qke[:, mask] == 9.0)
-    assert np.all(np.asarray(out.p_total) == p_base + np.asarray(out.p_perturbation))
+    assert np.all(theta[:, mask] == 309.0)
+    assert np.all(theta[:, ~mask] == 300.0)
+    # Registry qke=irh has no feedback flag (qke_adv is a separate scalar).
+    assert np.all(qke == 0.0)
+    # PB is a separate Registry feedback field; perturbation P stays held.
+    assert np.all(np.asarray(out.p_perturbation) == 0.0)
+    assert np.all(np.asarray(out.p_total)[:, mask] > p_base[:, mask])
+    assert np.all(np.asarray(out.p_total)[:, ~mask] == p_base[:, ~mask])

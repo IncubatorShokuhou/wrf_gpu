@@ -37,6 +37,7 @@ from gpuwrf.coupling.boundary_apply import BoundaryConfig
 from gpuwrf.coupling.boundary_feedback import (
     StateFeedbackWeights,
     apply_state_feedback,
+    apply_carry_feedback,
     build_state_feedback_weights,
 )
 from gpuwrf.nesting.boundary_construction import (
@@ -92,6 +93,7 @@ class DomainBundle:
     namelist: OperationalNamelist
     grid: GridSpec | None = None
     metrics: DycoreMetrics | None = None
+    writer_static_overrides: dict | None = None
 
     def __post_init__(self) -> None:
         grid = self.grid if self.grid is not None else self.namelist.grid
@@ -146,6 +148,7 @@ class DomainTree:
         registration: str = "sint",
         feedback_enabled: bool = False,
         feedback_spec_zone: int = 1,
+        feedback_smooth_option: int = 1,
     ) -> "DomainTree":
         """Build a runtime tree and precompute all forcedown/feedback weights."""
 
@@ -176,6 +179,7 @@ class DomainTree:
                 parent_grid=parent.grid,
                 child_grid=child.grid,
                 spec_zone=int(feedback_spec_zone),
+                smooth_option=int(feedback_smooth_option),
             )
             edges_by_parent.setdefault(edge.parent, []).append(
                 DomainEdge(
@@ -938,6 +942,21 @@ def run_domain_tree_callbacks(
     )
 
 
+def _lower_error_text(exc: BaseException) -> str:
+    """One-line lower-error status; the full traceback goes to stderr.
+
+    Both lowering sites fail open to the plain jitted path, which usually
+    re-raises the same error and the CLI reports only ``type: message`` -- the
+    traceback (the only pointer to the failing trace site) was lost.
+    """
+    import traceback
+
+    print("[gpuwrf:nested-aot] lower-error traceback:", file=sys.stderr)
+    traceback.print_exception(exc, file=sys.stderr)
+    sys.stderr.flush()
+    return f"{type(exc).__name__}: {exc}"
+
+
 def _nested_aot_enabled() -> bool:
     """``GPUWRF_NESTED_AOT`` truthy? DEFAULT-ON (vNext cheap-key manifest).
 
@@ -1287,7 +1306,7 @@ def _operational_advance_factory(tree: DomainTree) -> AdvanceFn:
                 return lowered, None, "lowered HLO digest unavailable"
             return lowered, hlo, None
         except BaseException as exc:  # noqa: BLE001 - fail-open to jitted path
-            return None, None, f"{type(exc).__name__}: {exc}"
+            return None, None, _lower_error_text(exc)
 
     def _verify_cheap_key_blob(
         name: str,
@@ -1654,6 +1673,10 @@ def _operational_advance_factory(tree: DomainTree) -> AdvanceFn:
             )
 
     def advance(name: str, carry: OperationalCarry, start_step: int, n_steps: int) -> OperationalCarry:
+        if os.environ.get("GPUWRF_DECOMPOSE"):  # opt-in multi-device domain decomposition (gpuwrf run --decompose)
+            from gpuwrf.parallel.cli_runtime import decomposed_advance
+
+            return decomposed_advance(tree, name, carry, start_step, n_steps, _clock_bases[name])
         carry = unalias_donated_carry(carry)  # GPUWRF_CARRY_DONATE only; identity otherwise
         namelist = tree.domains[name].namelist
         cadence = int(namelist.radiation_cadence_steps)
@@ -2328,7 +2351,7 @@ def _build_fused_cascade_program(
                 return lowered, None, "lowered HLO digest unavailable"
             return lowered, hlo, None
         except BaseException as exc:  # noqa: BLE001 - fail-open to normal fused jit
-            return None, None, f"{type(exc).__name__}: {exc}"
+            return None, None, _lower_error_text(exc)
 
     def _store_cached_call(
         sig: AvalSignature,
@@ -2786,11 +2809,11 @@ def _operational_fused_cascade_factory(tree: DomainTree) -> FusedCascadeLookup:
 def _operational_feedback(edge: DomainEdge, parent: OperationalCarry, child: OperationalCarry) -> OperationalCarry:
     if edge.feedback_weights is None:
         return parent
-    # NOTE (v0.13 VRAM).  The feedback runs EAGERLY (op-by-op), NOT jitted, on
+    # NOTE (v0.13 VRAM). Feedback runs leaf-by-leaf, not as one jitted State, on
     # purpose: a measured A/B on the 9/3/1 km d02->d03 edge showed the eager path
     # peaks LOWER than a fused ``jax.jit`` feedback program.  Eager dispatch keeps
     # only ONE leaf's gather/scatter/smoother scratch live at a time (each
-    # ``apply_state_feedback`` per-leaf result is consumed and freed before the next
+    # leaf-local compiled helper's result is consumed and freed before the next
     # leaf), whereas XLA's buffer-assignment schedules several leaves' transients
     # concurrently, raising the simultaneous working set.  Donating the parent
     # state is also unsafe here: the carried WRF ``*_save`` scratch aliases the
@@ -2799,8 +2822,7 @@ def _operational_feedback(edge: DomainEdge, parent: OperationalCarry, child: Ope
     # ``apply_state_feedback`` (rebuilding each p/ph/mu total ONCE and sharing it
     # with its legacy alias, removing 6 redundant full-parent-field temporaries),
     # measured bit-identical; see proofs/v013/twoway_vram.*.
-    fed = apply_state_feedback(parent.state, child.state, edge.feedback_weights, feedback=True)
-    return parent.replace(state=fed)
+    return apply_carry_feedback(parent, child, edge.feedback_weights)
 
 
 def _prepare_operational_domain_tree_runtime(

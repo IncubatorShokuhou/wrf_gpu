@@ -1,0 +1,244 @@
+{
+  "lane": "s2-ntu",
+  "option": "mp_physics=56",
+  "source": "80e535ab3c46c23ac5c3d570812eb38715273ee2",
+  "status": "READY_FOR_CRITIC_CPU_FEATURE",
+  "GPU_execution": false,
+  "scientific_reference": "pristine WRF 4.7.1, compiler-defined zero initialization; no old GPU port as truth",
+  "original_NTU_sha256": "c864483fa572d42ab1dc51cc538f8062dc2f582369f597261e8c850c49ce34dd",
+  "literal_columns": {
+    "precisions": [
+      "REAL4",
+      "REAL8"
+    ],
+    "cases": 12,
+    "evolving_steps": 2,
+    "public_values_per_precision": 8568,
+    "different": 0,
+    "nonfinite": 0
+  },
+  "components": {
+    "scalar_routines": 10,
+    "activation_calls_per_precision": 128,
+    "CCNTY": [
+      1,
+      2,
+      3,
+      4
+    ],
+    "initialization_values_per_precision": 2880,
+    "literal_BYTE": true,
+    "fast_host_init_max_ULP": {
+      "REAL4": 2,
+      "REAL8": 1
+    }
+  },
+  "compiled_native_CPU": {
+    "values": 8568,
+    "nonfinite": 0,
+    "independent_original_controls": 134,
+    "outside_enclosure": 313,
+    "disposition": "experimental disclosed excess, NOT enclosure PASS; D6 pending",
+    "timings": "INVALID/E60 host hibernation; numerical and static buffers retained"
+  },
+  "native_preflight": {
+    "target": "CUDA/sm120 TTIR only, CPU lowering",
+    "physical_levels": 44,
+    "register_tile": 64,
+    "production_outputs": 40,
+    "TTIR_bytes": 6898275,
+    "lower_seconds": 7.510434867115691,
+    "fp64_arithmetic_outside_original_DOUBLE": 0,
+    "GPU_executable_E41": "NOT_ATTEMPTED"
+  },
+  "required_CPU_JAX_singleton": {
+    "backend": "JAX compiled shared column body",
+    "CPU": true,
+    "GPU": false,
+    "JAX_NTU_execution": true,
+    "ccnty": 2,
+    "profile_shape": [
+      4,
+      4,
+      24
+    ],
+    "lower_s": 4.492874147137627,
+    "compile_s": 79.83408320695162,
+    "execute_s": 11.479995755013078,
+    "peak_RSS_KiB": 7207460,
+    "compiler_options": {
+      "xla_backend_optimization_level": 0
+    },
+    "scope_peak_bytes": 7092654080,
+    "source": "d2321955e",
+    "test": "tests/test_v013_operational_smoke.py::test_microphysics_operational_runs_and_mutates[56]",
+    "status": "PASS",
+    "pytest_s": 101.53,
+    "scope": "run-p681831-i84513210.scope",
+    "MemoryMax": 12884901888,
+    "MemorySwapMax": 0,
+    "swaps": 0
+  },
+  "shared_checks": {
+    "original_NTU45_completed_PASS": 336,
+    "original_failure_count": 6,
+    "original_unfinished": 1,
+    "closed_by_NTU52_light_PASS": 16,
+    "required_mp56_closed_by_NTU54_PASS": 1,
+    "final_composed_light_receipt": "NTU72:16PASS13.21s immutable80e535ab3 RAMslot6GSwap0"
+  },
+  "archive": {
+    "runtime_all_banks_and_8_oracle_assets": "NTU59 PASS",
+    "sealed_fullgrid_source_replay": "NTU71 PASS 4 exact row payloads"
+  },
+  "physical_mutant": {
+    "source": "aaefc1796",
+    "mutant": "92c31fe9c",
+    "change": "delete original RAINNC precipitation increment",
+    "result": "genuine original-WRF numerical AssertionError",
+    "failures": 1,
+    "errors": 0,
+    "field": "rainnc",
+    "max_difference": 0.03842036,
+    "scope": "CPU literal R4 public column gate; no source-hash/setup kill",
+    "xml_sha256": "50521159dab54be208f67f33ae2c77e889e11b11a500748240ef27d78fe3525f"
+  },
+  "default_identities": {
+    "Swiss": "f672a5739cb96e388b6b7a40ef80337bf81bdc14ef15268f3476e09d79fe055d",
+    "PROD_d01": "6fc715a2bd630934c4cf0f94427df19a527cbf429011c9ba5efe4d712744d27b",
+    "scope": "Canonical CPU trace/native facade, zero execution steps, no GPU; pre-rebase exact; inactive-source reuse audited separately"
+  },
+  "coupled_CPU": {
+    "case": "real Swiss 44x42x42",
+    "steps": 2,
+    "dt_seconds": 18,
+    "microphysics_backend": "shared NumPy body, extra coupling evidence only",
+    "all_carry_nonfinite": 0,
+    "guard_events": 0,
+    "full_restart_BYTE": true,
+    "peak_RSS_KiB": 4751648,
+    "new_NTU_carry": "REAL4; FAST0 shared legacy qh/Nh/hail wider dtypes explicitly recorded",
+    "matched_default_control": "NTU62 2 finite steps, guard0/F2ALL0/restartBYTE"
+  },
+  "F2": {
+    "pre_existing": false,
+    "roundoff_column_decision_limit": 1e-12,
+    "roundoff_predicate": "FAIL",
+    "legacy_count": {
+      "qi": 93,
+      "Ni": 127
+    },
+    "legacy_minimum": {
+      "qi": -1.3227253920416996e-10,
+      "Ni": -954.5971969055023
+    },
+    "legacy_max_column_relative_negative": {
+      "qi": 0.015012977672963163,
+      "Ni": 0.01495807302328145
+    },
+    "native_PD_only_bisect": "same large class persists; hypothesis discarded, no model change",
+    "source_class": "RK1-frozen sixth-order scalar diffusion source; NOT an NTU source-term sign/units/clip mismatch",
+    "independent_original_fullgrid_sixth_minimum": {
+      "qi": -1.3419280462236097e-10,
+      "Ni": -946.7988329164068
+    },
+    "without_original_sixth_minimum": {
+      "qi": -1.2898493086027717e-15,
+      "Ni": -0.008552197604175929
+    },
+    "source_caller": "solve_em.F:2299/2300 -> module_em.F rk_scalar_tend:1098/1423, dt_rk6 frozen, final update18",
+    "disposition": "ACCEPTED case-scoped SOURCE-DIFFUSION F2 known issue for v0.4.0; not roundoff or global F2 clearance",
+    "limits": "Component original-source evidence; not complete original coupled forecast or all-config proof",
+    "decision": {
+      "authority": "manager; explicit user instruction and MAIN .agent/kernel/MAILBOX.md",
+      "UTC": "2026-10-14T22:44:27Z",
+      "full_original_RK_chain_required": false,
+      "scope": "Captured two-step single-domain Swiss CPU FAST0 continuation, 44x42x42, dt18, CCNTY2; legacy and existing native PD transport bisect",
+      "captured_diffusion": {
+        "diff_6th_opt": 2,
+        "diff_6th_factor": 0.12,
+        "diff_6th_slopeopt": 0
+      },
+      "no_new_clip": true,
+      "disclosure": "KNOWN_ISSUES.md#ntu56-development-case-scoped-f2-source-diffusion-undershoots",
+      "support_matrix": "docs/release/SUPPORT_MATRIX_v0.3.4.md"
+    }
+  },
+  "performance_memory": {
+    "GPU_launches_traffic_spills_VRAM_roofline": "UNKNOWN",
+    "architecture": "one column-local Pallas program, resident adaptive loops",
+    "additional_carry_volume_arrays": 17,
+    "additional_surface_arrays": 4,
+    "static_new_carry_MiB_at_44x42x42": 5.060302734375,
+    "CPU_compiler_peak_RSS_GiB": 6.873569488525391,
+    "CPU_compile_setting": "LLVM opt0, measured79.834s; >6GiB memory limitation, manager12GiB singleton exception",
+    "time_level_column_loops": "dynamic loops/vector dimensions, not Python-unrolled physical iterations"
+  },
+  "remaining": [
+    "one independent critic and manager integration via s2-integrate",
+    "manager-scheduled actual GPU executable/E41/VRAM/performance and full original-CPU D6"
+  ],
+  "artifact_sha256": {
+    "KNOWN_ISSUES.md": "0837bf1281262a6880f6e3e6ada6c7a0cfb62c76423bc390ec7e231632050d45",
+    "docs/NTU.md": "18c99f215c99b1b31f97dfc8eb1cab367e3a8b6fecadcc38ca53ad752440f21f",
+    "docs/release/SUPPORT_MATRIX_v0.3.4.md": "9e1111dfae24e3746761fc6beee6818fc45925e13dfda5cfe9e0ba131ae7917f",
+    "proofs/s2_ntu/COMPILED_DEVIATIONS.json": "63287918d75b45406d34fb7bd8078a9874eda48f6916e6850752bafe2100da13",
+    "proofs/s2_ntu/CPU_COMPILATION.json": "80e9da7b83454435fc8a24a65fefa6a6be4423041aed305e31ee00ece4c92c6e",
+    "proofs/s2_ntu/FINAL_COMPOSITION.json": "ed5a2f60383a692faba79a77fc4a2ab392d7106292c8811efc066424e811ffba",
+    "proofs/s2_ntu/NATIVE_PREFLIGHT.json": "670d9ac95350ddcc61c5aac55a4b87ffc0c4855b3c9832257e9a38112addd10d",
+    "proofs/s2_ntu/README.md": "6cb1e98a2ae305ea8fdce851c26b545363ea5751c6eefb3756f6874c123f265d",
+    "proofs/s2_ntu/SOURCE_REUSE.json": "38892a1b0e19e3acc1da4384f02e51664ef60aac73a606c3475028870d340051",
+    "proofs/s2_ntu/compiler_controls/controls.npz": "ce3af47f6fa9e8c987ef75c5411878058316bbec1c536d9c885acdec3dc8f5e1",
+    "proofs/s2_ntu/compiler_controls/manifest.json": "65df451f09d08bccb6d7585ff33c99a85c9f5ebe961e0d0edc0e9f49b0103637",
+    "proofs/s2_ntu/f2_legacy/capture_provenance.json": "321f9aaeb345592dc58e7e79838d636c29e3a23660664835fe9a972b87a81a82",
+    "proofs/s2_ntu/f2_legacy/manifest.json": "c31039038bc434b91774fa30ffeb8747e5b1ad0c86137e3c9450f509b2dc8ea8",
+    "proofs/s2_ntu/f2_legacy/step2_post_rk1.npz": "fbaa66bf07b4fd88a3d88050b6ee1c841c75650146eeaa97df92e676cf90b791",
+    "proofs/s2_ntu/f2_legacy/step2_update3.npz": "aa988b190f64b8da7578f96d25e3d8a8371008934875d98dc95e4e2f333e9b58",
+    "proofs/s2_ntu/f2_source_diffusion/context.json": "9a9ef53d8a31fea8b461c6e61345b539a31b896deedb91d8ddb58746965792ff",
+    "proofs/s2_ntu/f2_source_diffusion/maps.npz": "5986aade1687c051eb6f80c5f12525c7970673c13f4da50d189b5d9f0ddc9f19",
+    "proofs/s2_ntu/f2_source_diffusion/post_rk.npz": "6e40c67671a2ab561eba8ab7913efbae964d408b33ff277d06755abb88392913",
+    "proofs/s2_ntu/f2_source_diffusion/rk1.npz": "0cd8a52f75db1b9b9fcf7709457deefacad2e5c1713219d014bacefad4b25c14",
+    "proofs/s2_ntu/f2_source_diffusion/rk3.npz": "be9561e5aad2b2748684dd4beec0feb1314c2f420fccd932e3310a54156f842b",
+    "proofs/s2_ntu/fixtures/activation_r4.json": "a835c8b5b93e7d492c54f331fe13f09d3de1a6c087ba41e33506d66d01f46f79",
+    "proofs/s2_ntu/fixtures/activation_r4.npz": "eb86f8c2848e73e3a87201489c56085c71692517d5543cd9cb0613a46b736da2",
+    "proofs/s2_ntu/fixtures/activation_r8.json": "18abc8a0ce3fc9c4472ab292a2486c9c3f9712cd53d147b9d3c6ace4c7198370",
+    "proofs/s2_ntu/fixtures/activation_r8.npz": "ec262f317648ed2a90d6ca8ed627e19315127ff32613a69729e4f10e41876fe8",
+    "proofs/s2_ntu/fixtures/columns_r4.json": "762a5f31c8e2cc007f4bba2ba69bec989e38683abcd01371a899ba8c0b913196",
+    "proofs/s2_ntu/fixtures/columns_r4.npz": "03ba886c987cbb590574ed17161844e507b2827d3bba2f4054f6c4c3a699c7e0",
+    "proofs/s2_ntu/fixtures/columns_r8.json": "d19ba5e0b18c7e913705d92aa1bfd34112f2f57b0b0790df30515622c0578f85",
+    "proofs/s2_ntu/fixtures/columns_r8.npz": "8e92f6f8d5b123ae8383944a3d60a7163c994ad950bbb6293b38e673395dff14",
+    "proofs/s2_ntu/fixtures/initialization_r4.json": "df5d6a25eea94ad2012a31ec4abf49e27b2b34c13ff0d85fcfc90cc899653eaa",
+    "proofs/s2_ntu/fixtures/initialization_r4.npz": "ed9c22480a8df0566b0a936f7c1554aa9919ff56bd6dc84ea49bc24b610b94f4",
+    "proofs/s2_ntu/fixtures/initialization_r8.json": "cf724b214f03f1e5b11e72aadd6f731e76b0d3869be94a49621c0758ebc0356a",
+    "proofs/s2_ntu/fixtures/initialization_r8.npz": "ab00cd9c677fcc02492962735610be27840d3334b28f13ed3e305031c8a8d6da",
+    "proofs/s2_ntu/fixtures/scalar_byte_r4.json": "08bfe87937dc06d3ac985c017f3e582759d4ffb97ca5115daeeef5ca9ce03cf9",
+    "proofs/s2_ntu/fixtures/scalar_byte_r8.json": "1f7322daa5371af0e5a38bde43d7bce5f9aaa3d81897c9737795005d3cd76d65",
+    "proofs/s2_ntu/fixtures/scalars_r4.json": "4fad669c07a8ab5708eee4d04d5f26f55743acea3e14ac7d3f1ffab4227af780",
+    "proofs/s2_ntu/fixtures/scalars_r4.npz": "9e3e7666f43ce28aaaf6b0000600367a49307d77b7d37498212810974ac2303b",
+    "proofs/s2_ntu/fixtures/scalars_r8.json": "ca59752f60eb476983df3cde7122bb9e230ca15997a5ef64c5c709049fb1e753",
+    "proofs/s2_ntu/fixtures/scalars_r8.npz": "87c626bcd8b11ce1c6cbc6d80991dc62816cb5b21bf4c5e4a630ddc1174524bc",
+    "proofs/s2_ntu/native_public_observations.npz": "0f70d7e4eadfad134f8a2e3987bd52ca14751e2928b94e27d36269189c446dba",
+    "proofs/s2_ntu/results/activation_byte_r4.json": "eb3e218418f06d458ea209cff25fb4a754f47cf3b80e2c56fde328955ed12650",
+    "proofs/s2_ntu/results/activation_byte_r8.json": "5f900e295e46656ae4ef1ace3e6aafc37e141a2143ca6774380582cbfe6fbafb",
+    "proofs/s2_ntu/results/archive.json": "072b52d3ca6f47ec3f8cd8625262b3f935a32d9a1342fd6a734f9f29afb9ceb1",
+    "proofs/s2_ntu/results/columns_byte_r4.json": "3e116053805467fa0d5557ccaf0d140fb95040f63cdde6874f57e5149028f513",
+    "proofs/s2_ntu/results/columns_byte_r8.json": "8705a6c40a6de0f201bd86900aa1ffc0a494aa83c771b9dc3a250c05a72a73ed",
+    "proofs/s2_ntu/results/coupled_default_control.json": "a6fdf679e93bd19ff9b375d05fb2e6e0bc2c1283988083c314c80ffa1d976ade",
+    "proofs/s2_ntu/results/coupled_swiss.json": "5b2eb92cf3c35d5b60be2b56f186d863f3fa1933364b2b047587094802e93445",
+    "proofs/s2_ntu/results/f2_legacy_analysis.json": "c4b893b36adb96fc47c798bf35258c2ef890f134c00db585b602c2e47d4fb0f7",
+    "proofs/s2_ntu/results/f2_legacy_capture.json": "1c53ce4432489552ac03f8b31a41cff349d7b03616e1752a7d4257fe0bb1afe3",
+    "proofs/s2_ntu/results/f2_original_rk_assignment.json": "044c0ce0caf757eab53e2d405e5363d371ae62cf584bf5f8b252358093221cde",
+    "proofs/s2_ntu/results/final_light.xml": "8f736492c8cdc4d80b8cb6eda8584e1a671a4594526af39ad71c11962477eb12",
+    "proofs/s2_ntu/results/initialization_byte_r4.json": "4b21d83cf789656f4d19106f09ea93145c5936feac49a7ff0bf4ab913db9e415",
+    "proofs/s2_ntu/results/initialization_byte_r8.json": "5b7f3d6cb9177adc3aa3fab10751fc37c1fc4909b1228a661c73d61889cdb0f2",
+    "proofs/s2_ntu/results/native_pd_capture.json": "963523411efdc808e7014af3174cbdd1cca5bc68179b7b07714164aca44600c6",
+    "proofs/s2_ntu/results/original_diffusion_replay.json": "d6ecffe21817458d4f8fc35210b2df0cdb2105a6e5c2ff3b919ce22b75ea2ff3",
+    "proofs/s2_ntu/results/original_sixth_REAL4.json": "8d9e8e9a5d6f5c7ebeddf1307564e0ec7ef2b66b17c140008cc7aa66f643c8fb",
+    "proofs/s2_ntu/results/original_sixth_REAL8.json": "68696710dec0453043a7fdf1816f07679ce9855692c5eadbb38ec991dadd6f57",
+    "proofs/s2_ntu/results/physical_mutant.json": "d2f39643b2dbe656430535687da9082f018a89ced37ae0b97ccc358b580ac1d4",
+    "proofs/s2_ntu/results/proof_archive.json": "51a0f0fab7411997d3ddee3e58805a38acc696dbb7b9482971cccd1dd55de923",
+    "proofs/s2_ntu/results/release_identity_prod.json": "8989614f325c8976a93b04db860d07b753e42e2068941253bdf03ea4716a1397",
+    "proofs/s2_ntu/results/release_identity_swiss.json": "4b5a25237f084f87a51a93b3526283f05c99fedd12d515a6c08f28d968ad2a53"
+  },
+  "final_composition": "proofs/s2_ntu/FINAL_COMPOSITION.json"
+}

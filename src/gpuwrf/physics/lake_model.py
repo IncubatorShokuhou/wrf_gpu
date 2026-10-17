@@ -1,13 +1,13 @@
-"""G3 WRF lake-model scaffold: recognized, fail-closed.
+"""WRF lake-model entrypoints: REAL32 carry and explicit DOUBLE internals.
 
 WRF reference: ``phys/module_sf_lake.F`` dispatches ``Lake``/``LakeMain`` and
 initializes with ``lakeini``. The model carries lake depth/category state, snow
 layers, lake-water temperatures, soil/snow ice/liquid water, lake ice fraction,
 Monin-Obukhov flux state, hydrology and tridiagonal thermal solves.
 
-No faithful JAX kernel or pristine-WRF single-column oracle is shipped here.
-Calling an entrypoint raises so ``sf_lake_physics=1`` cannot silently run the
-wrong surface path.
+The initializer and full Lake/LakeMain timestep are CPU-oracle-qualified. CLI
+selection requires an ingested lake bundle with Noah-MP/Thompson/MYNN. GPU and
+coupled-forecast qualification remain pending; see ``docs/lake-model.md``.
 """
 
 from __future__ import annotations
@@ -53,24 +53,19 @@ class LakeState(NamedTuple):
 
 
 def lake_step(*args, **kwargs):
-    """WRF lake-model entrypoint -- fail-closed until oracle/kernel work lands."""
-
-    raise NotImplementedError(
-        "G3 lake model is a fail-closed scaffold, not an operational physics "
-        f"kernel. Required carry members: {len(LAKE_CARRY_MEMBERS)}; WRF source: "
-        f"{LAKE_SOURCE}. Add a pristine-WRF single-column oracle and faithful JAX "
-        "kernel before wiring sf_lake_physics into the operational scan."
-    )
+    """Full REAL32 WRF Lake/LakeMain column timestep (lazy component import)."""
+    from gpuwrf.physics.lake_step import lake_step as advance
+    return advance(*args,**kwargs)
 
 
 def lake_initial_state(*args, **kwargs):
-    """WRF ``lakeini`` scaffold -- fail-closed until source-faithful init lands."""
+    """Standalone REAL32 WRF ``lakeini`` component; see its typed inputs/config.
 
-    raise NotImplementedError(
-        "G3 lakeini is a fail-closed scaffold. The WRF initialization path "
-        "requires lake_depth/use_lakedepth/lake_min_elev handling and lake/snow/"
-        "soil column carry creation from the input fields before it can run."
-    )
+    Import lazily so the released operational path and its trace are unchanged.
+    """
+    from gpuwrf.physics.lake_initialization import lake_initial_state as initialize
+
+    return initialize(*args, **kwargs)
 
 
 __all__ = [

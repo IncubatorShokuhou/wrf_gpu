@@ -3,17 +3,20 @@
 Help the user run an existing WRF case with the public CLI. This is the
 operator runbook; development lanes follow their separate agent kernel.
 
-**Version:** v0.3.3. Eight final comparisons are closed; accepted deviations and raw failures are disclosed in the release evidence.
-The live published guide was v0.3.2 at 2026-10-07 10:15Z, confirmed by direct
-HTTP and a cache-busted fetch. Use the installed release and its matching
-README/guide/evidence. W2 and earlier plots retain their source labels;
-their source labels remain historical. See [final identity plots](docs/release/evidence/v033/final_w3/index.html), [validation](docs/release/V0.3.3.md),
-[all retained identity galleries](docs/release/evidence/v033/index.html),
-[known issues](KNOWN_ISSUES.md) and [history cleanup](docs/release/HISTORY_CLEANUP.md).
+**Version:** v0.4.0 release candidate. Defaults are frozen on5c15881ede:
+Swiss3356e249 / PROD196aed9f, with F20/C5′ D6 and E41 gates closed.
+At00:26Z on17October,66/66 registered FINAL composites pass their accepted scientific scope;
+all66 registered scientific scopes pass. Consult the [exact-source table](docs/release/FINAL_COMPOSITES_v0.4.0.md).
+Use the installed release's matching guide; do not recommend an unreleased
+checkout as a published release. Read the [support matrix](docs/release/SUPPORT_MATRIX_v0.4.0.md),
+[upgrade note](docs/release/UPGRADE_v0.4.0.md) and [known issues](KNOWN_ISSUES.md).
+Historical [v0.3.3 comparisons](docs/release/V0.3.3.md) retain their sources.
 
 Explain each material action and the expected wait. During compilation or
 integration, report progress and name any blocker. Use original CPU-WRF or
 pristine WRF as fidelity truth; older GPU output is regression evidence.
+
+Read the [v0.4.0 quickstart/command guide](docs/release/USER_GUIDE_v0.4.0.md) for verified workflow names (`quickstart`, `cycle`, `ens`, `optimize`).
 
 ## Understand the case
 
@@ -31,13 +34,23 @@ directory and disk-backed scratch; preserve existing outputs and physics
 choices. Unsupported choices fail with a named reason; do not silently
 substitute a scheme or bypass preflight.
 
-DFI admission is fail-closed: `dfi_opt=0` or omission preserves an unfiltered
-forecast; any nonzero requested DFI is refused by the CLI before operational
-model initialization. Programmatic forward-filter helpers are not the full
-WRF operational DFI workflow, which remains future work. Admission-only change
-`68704c1eb` does not replace the numerical source of existing forecast receipts.
+DFI modes `dfi_opt=1` (DFL), `2` (DDFI) and `3` (TDFI) run in supported
+single-domain native configurations, subject to filter/land/forcing/window
+rules. DFL has natural shifted timestamps; do not pad or retime them. Nested
+DFI and unsupported combinations are refused. Zero/omission keeps an unfiltered
+forecast; resume never filters. Check [source-specific evidence](docs/release/SUPPORT_MATRIX_v0.4.0.md#other-options-and-workflows).
+
+Smagorinsky `km_opt=3` is GPU-refused. CAM-MG `mp_physics=11` uses the
+merged stock-Triton3.6.x route and requires `pip install "triton==3.6.*"`.
+Its separate offline native STACK1240B failure is disclosed; registered-source c89 D6/inventory/NF0 now passes; native E41 remains UNKNOWN. Historical failures remain failed.
+See [CAM-MG scope](docs/CAMMGMP.md).
 
 ## Install and check the GPU
+
+Minimum NVIDIA GPU: **Ampere, compute capability ≥8.0**, for the Pallas/Triton
+release fast path. Pascal and Turing are unsupported; seeing a CUDA device
+alone does not meet this requirement. The legacy GTX1080Ti debug shim is not
+an operational fallback. [Hardware scope](proofs/r_docs040/GPU_REQUIREMENTS.json).
 
 Python 3.11 is the reference interpreter; the package requires Python ≥3.10.
 The measured platform is RTX 5090, sm_120, CUDA 13, on a Ryzen 9 9950X host.
@@ -104,8 +117,8 @@ Use `python -m gpuwrf.cli run --help` for the current controls.
 
 Native runs support ice-free `sst_update=1` using per-domain `wrflowinp`,
 `io_form_auxinput4=2` and a positive auxiliary interval. Records start at
-the run start and increase on that interval. Nonzero SEAICE and SST skin/lake
-coupling are refused. Preserve requested SST forcing; do not advise turning
+the run start and increase on that interval. Nonzero SEAICE and unsupported skin/lake/forcing combinations are refused;
+check the selected pair. Preserve requested SST forcing; do not advise turning
 it off merely to get through setup. `sst_update=0` reads no auxiliary SST file.
 
 ## Memory admission: C-auto before cold fallback
@@ -128,6 +141,16 @@ scripts/run_parallel_cases.sh --out-root runs/batch CASE_A CASE_B -- \
 
 The launcher admits work against both GPU and host budgets, and queues the
 rest. A throughput result is distinct from individual-case latency.
+
+On a machine with several GPUs (ensembles, many cases), add `--gpus all` (or
+`--gpus 0,1`): every case runs in its own process bound to one GPU
+(`CUDA_VISIBLE_DEVICES`, PCI bus order), sized and admitted per GPU; host RAM
+is shared. One failed member never stops the others. `--checkpoint-interval-steps N`
+gives each member its own checkpoint store, and `--retry-failed K` re-runs a
+failed member from its newest checkpoint (else from scratch, keeping the
+failed history under `failed-attempt-<k>/`). All GPUs must be the same model.
+Experimental: CPU-tested with simulated devices; multi-GPU hardware runs are
+not yet qualified.
 
 ## Verified checkpoint and resume
 
@@ -159,6 +182,28 @@ python -m gpuwrf.cli run --input-dir CASE --output-dir runs/case \
 
 Check the actual installed release's restart evidence before making a
 cross-version or original-CPU-WRF restart compatibility claim.
+
+## v0.4 tools around a forecast
+
+Use `python -m gpuwrf.cli --help` and the selected command's `--help` for the
+installed syntax. These workflows supplement the forecast:
+
+| Need | Tool / definition |
+| --- | --- |
+| Diagnose inputs and record provenance | [Doctor, manifest and reproduce](docs/doctor.md) |
+| Prepare a region with original WPS/real.exe | `gpuwrf quickstart`; [onboarding](docs/onboarding.md) |
+| Forecast/application products | `gpuwrf post`; [products](docs/post.md), [applications](docs/post_apps.md) |
+| Observation verification | [Station scores and reports](docs/station_verification.md) |
+| Ensemble products/preparation | [Ensemble workflows](docs/ensemble.md) |
+| CF-NetCDF/Zarr/GRIB2 | `gpuwrf export`; [formats/dependencies](docs/export.md) |
+| Station and regional outputs | `gpuwrf tslist-export`, `gpuwrf stream-check`; [stream qualification](proofs/u2_streams/QUALIFICATION.json) |
+| Regional optimisation / land cycling | [Optimisation](docs/regional_optimization.md), [cycling](docs/cycling.md) |
+
+Product definitions distinguish instantaneous samples from interval totals
+and extrema. A finite smoke, a matching header or an analysis tool does not
+establish station skill. Selected large runtime tables must match the installed
+release's SHA-pinned inventory; follow its asset-fetch instructions rather than
+substituting tables. Final packaging details belong to the release manager.
 
 ## Report the result
 

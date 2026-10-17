@@ -1,0 +1,267 @@
+{
+  "utc": "2026-10-14T14:55:05.108775+00:00",
+  "lane": "t-c01nophys",
+  "lane_numerical_gate": "PASS",
+  "full_D6_verdict": "INCOMPLETE",
+  "full_D6_coverage_complete": false,
+  "full_D6_receipt": "<DATA_ROOT>/wrf_gpu2/scratch/t-c01nophys/CN04-run/D6_d01.json",
+  "full_D6_receipt_sha256": "bc7fb4212993eb4cea274cffb7a7f808ca0be4d33b84610bbaf244f63c8877ba",
+  "original_bounded_failures": 95,
+  "final_bounded_failures": 0,
+  "bounded_field_count": 60,
+  "paired_frames": 25,
+  "raw_nonfinite": [],
+  "held_fields": {
+    "PSFC": {
+      "rmse": 0.0,
+      "max_abs": 0.0
+    },
+    "T2": {
+      "rmse": 0.0,
+      "max_abs": 0.0
+    },
+    "Q2": {
+      "rmse": 0.0,
+      "max_abs": 0.0
+    },
+    "U10": {
+      "rmse": 0.0,
+      "max_abs": 0.0
+    },
+    "V10": {
+      "rmse": 0.0,
+      "max_abs": 0.0
+    },
+    "TH2": {
+      "rmse": 0.0,
+      "max_abs": 0.0
+    }
+  },
+  "original_PSFC_h2_RMSE_Pa": 133.192,
+  "PSFC_cause": "WRF surface_driver.F:1490 returns for sfclay=0 before PSFC=p8w at1988; CPU all25frames BYTE input. Port output recomputed an evolving quantity. Host-only held-field correction, no dycore edits.",
+  "full_field_byte_equal": {
+    "count": 150,
+    "required": 150,
+    "fields": 6,
+    "frames": 25
+  },
+  "schema_mismatches": [
+    {
+      "field": "DZS",
+      "cpu_dimensions": [
+        "Time",
+        "soil_layers_stag"
+      ],
+      "gpu_dimensions": [
+        "Time",
+        "soil_layers_stag"
+      ],
+      "cpu_shape": [
+        1,
+        5
+      ],
+      "gpu_shape": [
+        1,
+        4
+      ]
+    },
+    {
+      "field": "SH2O",
+      "cpu_dimensions": [
+        "Time",
+        "soil_layers_stag",
+        "south_north",
+        "west_east"
+      ],
+      "gpu_dimensions": [
+        "Time",
+        "soil_layers_stag",
+        "south_north",
+        "west_east"
+      ],
+      "cpu_shape": [
+        1,
+        5,
+        42,
+        42
+      ],
+      "gpu_shape": [
+        1,
+        4,
+        42,
+        42
+      ]
+    },
+    {
+      "field": "SMOIS",
+      "cpu_dimensions": [
+        "Time",
+        "soil_layers_stag",
+        "south_north",
+        "west_east"
+      ],
+      "gpu_dimensions": [
+        "Time",
+        "soil_layers_stag",
+        "south_north",
+        "west_east"
+      ],
+      "cpu_shape": [
+        1,
+        5,
+        42,
+        42
+      ],
+      "gpu_shape": [
+        1,
+        4,
+        42,
+        42
+      ]
+    },
+    {
+      "field": "TSLB",
+      "cpu_dimensions": [
+        "Time",
+        "soil_layers_stag",
+        "south_north",
+        "west_east"
+      ],
+      "gpu_dimensions": [
+        "Time",
+        "soil_layers_stag",
+        "south_north",
+        "west_east"
+      ],
+      "cpu_shape": [
+        1,
+        5,
+        42,
+        42
+      ],
+      "gpu_shape": [
+        1,
+        4,
+        42,
+        42
+      ]
+    },
+    {
+      "field": "ZS",
+      "cpu_dimensions": [
+        "Time",
+        "soil_layers_stag"
+      ],
+      "gpu_dimensions": [
+        "Time",
+        "soil_layers_stag"
+      ],
+      "cpu_shape": [
+        1,
+        5
+      ],
+      "gpu_shape": [
+        1,
+        4
+      ]
+    }
+  ],
+  "schema_owner": "t-writer; not fixed or waived by this lane",
+  "missing_CPU_fields": [],
+  "E41": {
+    "gate": "PASS",
+    "hard_stack_gate": "PASS",
+    "entries": 2,
+    "max_stack_B": 8,
+    "coverage": {
+      "status": "PASS",
+      "aot_programs": [
+        "d01"
+      ],
+      "required_run_programs": [
+        "d01"
+      ],
+      "run_proofs": [
+        "<DATA_ROOT>/wrf_gpu2/scratch/t-c01nophys/CN04-run/gpu_proof/nested_pipeline_run.json"
+      ],
+      "n_discovered": 2,
+      "n_scanned": 2
+    },
+    "pins": "<DATA_ROOT>/wrf_gpu2/scratch/t-c01nophys/CN04-run/e41/PIN_MAP.json"
+  },
+  "GPU": {
+    "backend": "gpu",
+    "own_steps": 4800,
+    "cold_shared_process_wall_s": 275.49118372704834,
+    "sampled_process_vram_mib_peak": 5364,
+    "scope": "ONE actualcold24h qualification; not S1/warm performance"
+  },
+  "pre_mask_event_counts": null,
+  "pre_mask_event_note": "CENSUS1 requested in actual receipt; native CLI proof does not serialize per-event counts. No zero-event or new F2 closure claim.",
+  "CPU_checks": {
+    "focused_passed": 35,
+    "shared_passed": 417,
+    "shared_skipped": 4,
+    "same_parent_failures": 3,
+    "lane_regressions": 0,
+    "mutant": "PSFC numericalAssertionError;0setuperrors"
+  },
+  "release_identities": {
+    "Swiss": "f672a5739cb96e388b6b7a40ef80337bf81bdc14ef15268f3476e09d79fe055d",
+    "PROD_d01": "6fc715a2bd630934c4cf0f94427df19a527cbf429011c9ba5efe4d712744d27b"
+  },
+  "source": {
+    "GPU_measured_commit": "2e42e125417c3204fc1ec83f183b419b091e87a9",
+    "tests_successor": "0ec922bc8496ac333f8f56bef6d8d0dabede5fe2",
+    "product_tree": "b2facca817ec2eba329705a8345cedbf3946649c",
+    "product_BYTE_identical": true,
+    "unchanged_model_subtrees": 7
+  },
+  "performance_memory": {
+    "scope": "CPU host output merge microbenchmark only, not GPU or whole forecast speed",
+    "reps": 10,
+    "merges_per_rep": 10000,
+    "ns_per_merge": {
+      "normal": [
+        204.1566,
+        200.6125,
+        202.2255,
+        201.9805,
+        202.0265,
+        205.3835,
+        201.9525,
+        213.0205,
+        203.9455,
+        231.6687
+      ],
+      "disabled": [
+        486.8846,
+        492.7327,
+        490.9176,
+        490.2997,
+        491.9987,
+        485.3326,
+        488.8417,
+        486.3587,
+        489.3806,
+        519.2559
+      ]
+    },
+    "median_ns_per_merge": {
+      "normal": 203.08550000000002,
+      "disabled": 489.84015
+    },
+    "held_host_bytes": 42336,
+    "host_array_count": 6,
+    "array_copy_in_merge": false,
+    "extra_device_arrays": 0,
+    "device_claim_basis": "new code is host NumPy/NetCDF and dictionary reference overlay, no JAX calls; unchanged step functions checked separately"
+  },
+  "baked_inputs": "none added: wrfinput arrays stay host writer metadata; no JAX/carry/AOT/restart changes",
+  "cleanup": {
+    "disposable_cache_removed": true,
+    "tmp_removed": true,
+    "all_own_snapshots_removed": true,
+    "actual_GPU_outputs_and_scanned_PINs_retained": "<DATA_ROOT>/wrf_gpu2/scratch/t-c01nophys/CN04-run"
+  }
+}

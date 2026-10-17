@@ -22,7 +22,7 @@
         <img src="_assets/logo.svg" alt="wrf_gpu logo">
         <span class="brand-text">
           <span class="brand-name">wrf_gpu</span>
-          <span class="brand-sub">User's Guide · v0.3.4</span>
+          <span class="brand-sub">User's Guide · v0.4.0</span>
         </span>
       </a>
       <div class="search-box">
@@ -55,8 +55,8 @@
 <a href="nesting.html#gwd">Gravity-wave drag on nests</a>
 <a href="nesting.html#restart">Restart</a>
 <a href="nesting.html#two-way">Opt-in two-way feedback</a>
-<a href="nesting.html#moving-nests">Opt-in moving nests</a>
-<a href="nesting.html#v034-plan">Future v0.3.4 roadmap</a>
+<a href="nesting.html#moving-nests">Moving nests are refused</a>
+<a href="nesting.html#single-domain-evidence">Nested not validated</a>
 </div>
 <div class="group-title">Performance &amp; validation</div>
 <a class="" href="performance.html">Performance &amp; GPU Modes</a>
@@ -106,7 +106,7 @@ forecast.</p>
 
 <div class="admon note">
   <div class="admon-title">A namelist max_dom is not auto-run</div>
-  <p>If your namelist declares <code>max_dom&nbsp;&gt;&nbsp;1</code> but you omit <code>--max-dom</code>,
+  <p>If your namelist declares <code>max_dom&nbsp;&gt;&nbsp;1</code> but you omit both <code>--max-dom</code> and <code>--domains-from-namelist</code>,
   the CLI runs a <strong>single</strong> domain (<code>--domain</code>) by default and prints a note
   telling you to pass <code>--max-dom N</code> to run the standalone live-nested forecast. Nesting is
   never entered implicitly. Remember the one-time cold compile on the first run (a large nested case
@@ -134,21 +134,9 @@ using WRF's <strong><code>copy_fcn</code> area-average</strong> plus the
 <strong><code>sm121</code> feedback-zone smoother</strong>. The default is off (one-way nesting, the
 validated wiring).</p>
 
-<div class="admon warn">
-  <div class="admon-title">Two-way equivalence is untested (KI-11)</div>
-  <p>The two-way feedback path is <strong>finite and stable</strong>, but its 24&nbsp;h real-GPU
-  equivalence versus CPU-WRF is <strong>untested</strong>. One-way live nesting is accepted on
-  the v0.3.0 three-domain Tenerife release gate (24&nbsp;h), the v0.23.4 one-hour nine-domain fixture and
-  a separate 24-hour SP2 chain; broad 24–72 h
-  equivalence remains open. Two-way is opt-in and not yet validated for equivalence.</p>
-</div>
-
-<h2 id="moving-nests">Opt-in moving nests<a class="headerlink" href="#moving-nests" aria-label="Permalink">¶</a></h2>
-<p>An <strong>opt-in operational moving-nest driver</strong> is available. The
-<strong>static-nest path is byte-identical</strong> — enabling the moving-nest capability does not
-change results for a fixed nest. Vortex-following / adaptive-move configuration beyond this remains
-outside the validated operational default.</p>
-
+<div class="admon warn"><div class="admon-title">Source-specific two-way qualification</div><p>The current registered c42/5c15881ede has full24h original-CPU scientific D6 PASS, complete inventory and50 paired domain-frames, with E41FAIL disclosed. The raw historical CLAT failure is preserved. This is not arbitrary nested-scheme qualification. Publication approval remains separate; see the <a href="release/SUPPORT_MATRIX_v0.4.0.md">matrix</a>.</p></div>
+<h2 id="moving-nests">Moving nests are refused<a class="headerlink" href="#moving-nests" aria-label="Permalink">¶</a></h2><p>Moving and vortex-following configurations are outside this release's operational scope. Historical experimental driver fixtures do not authorize production support.</p>
+<h2 id="single-domain-evidence">Nested not validated<a class="headerlink" href="#single-domain-evidence" aria-label="Permalink">¶</a></h2><p>Where a single-domain-only option remains admitted for nesting, explicitly report <strong>nested not validated</strong>. This includes advanced surface/PBL/cumulus paths without matched evidence; actual refusals still apply.</p>
 <div class="admon note">
   <div class="admon-title">See also</div>
   <p><a href="running.html">Running the Model</a> for the full <code>gpuwrf run</code> command,
@@ -156,8 +144,6 @@ outside the validated operational default.</p>
   <a href="performance.html">Performance</a> for the nested-run compile, VRAM, and throughput
   behavior.</p>
 </div>
-
-<h2 id="v034-plan">Future v0.3.4 roadmap<a class="headerlink" href="#v034-plan" aria-label="Permalink">¶</a></h2><p>Standalone restart, actual cluster interfaces qualified through simulation, grid FDDA first, then RUC/NSSL and further schemes. Chem/Fire are separate program tracks. This is a future plan, not current support or v0.3.3 closure; real-cluster performance is unmeasured. <a href="https://github.com/wrf-gpu/wrf_gpu/blob/main/docs/release/V0.3.4_ROADMAP.md">Ordered public roadmap and qualifications</a>.</p>
 
         <nav class="page-nav">
 <a class="prev" href="dynamics.html"><span class="pn-dir">← Previous</span><span class="pn-title">Dynamical Core</span></a>

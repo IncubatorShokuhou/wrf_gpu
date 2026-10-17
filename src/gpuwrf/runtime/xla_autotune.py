@@ -294,10 +294,15 @@ def _gpu_is_target() -> tuple[bool, str]:
     ).strip().lower()
     if platforms:
         first = platforms.split(",")[0].strip()
-        if first in ("cpu", "tpu"):
+        if first in ("cpu", "tpu", "rocm", "metal", "oneapi"):
             return False, f"platform-pinned:{first}"
-        if first in ("cuda", "gpu", "rocm"):
+        if first == "cuda":
             return True, f"platform-pinned:{first}"
+
+    from gpuwrf.backends.platform import target_backend
+    target = target_backend()
+    if target != "cuda":
+        return False, f"non-CUDA-target:{target}"
 
     cvd = os.environ.get("CUDA_VISIBLE_DEVICES")
     if cvd is not None:

@@ -1,0 +1,49 @@
+{
+  "status": "VERIFIED_PARTIAL_OPERATIONAL_BLOCKED",
+  "component_helpers": 11,
+  "numerical_gate_tests": 26,
+  "gate_mode": "validation reuse: BEP05 25 PASS + BEP07 affected function 2 PASS + final 9 affected fixture/material/control PASS",
+  "shared_consumers": {
+    "passed": 194,
+    "scope": "8 files; operational consistency node, 7 complete shared files"
+  },
+  "fixture_sets": 8,
+  "full_column_fixtures": {
+    "sets": 6,
+    "regimes_per_set": 6,
+    "steps": 6,
+    "dt_s": 6,
+    "scope": "WN3-derived lowest-level forcing, constructed vertical profiles, fixed rural LSM/sfclay inputs"
+  },
+  "mutant": {
+    "numerical_assertions": 1,
+    "setup_errors": 0
+  },
+  "default_jaxpr_sha256": "2bf12cb8374d3a84a440e47dea4b77b0c7436108fc2ee2616bba6ec79b17962a",
+  "source_sha256": "8fa636a15a3e4fa19dd147044909a8f860f1bf383e5950b58dbfabd1a1f7f839",
+  "fixture_sha256": {
+    "savepoints/urban3_fp64_ac_off.npz": "0bbbbb450011a34b4d0560a855ff4f163232ab78617cc76258e085182595704c",
+    "savepoints/urban2_fp32_ac_on.npz": "388d52c551959bc9ce4c70e822dba39ca25e0c6eb7e2135dda51acff299cc9eb",
+    "savepoints/urban3_fp32_ac_off.npz": "4f96a0c2e14057eb599bbeef90841450b6e5cec0caede1af01a711c21db4fcd7",
+    "savepoints/urban3_fp32_ac_on.npz": "95508d8df98a8ab10db5c5faadf9e9e948eac34bd787ceca4accaba8ea58063a",
+    "savepoints/components_fp32.npz": "ea57bf216da742656e9dabaa52c449324b7bbbd37df0ef2dc8df5875920033f7",
+    "savepoints/urban3_fp64_ac_on.npz": "c545e85426fa74be656d3260bab04dee4cce08d97f3ca92a85f1b8d8cadd6ed3",
+    "savepoints/components_fp64.npz": "b02a3015738b8acb9a4ea8cbbc8b625f6d8d25060239bc8c35e8cd8ce4ff8bb8",
+    "savepoints/urban2_fp64_ac_on.npz": "4c3e7c73b97136244d60472930a1954cc1f50aafd1558e70d9fe3cb1e7b6702c"
+  },
+  "rebase_identity": {
+    "old_base": "798b7305d",
+    "new_base": "d863dc7ca",
+    "all_hot_source_blobs_identical": true,
+    "own_component_and_test_blobs_identical_to_tested_c8424ce87": true
+  },
+  "remaining": [
+    "Full BEP and BEP+BEM canopy/radiation/parameter/building-energy kernels",
+    "Noah-MP urban fraction/rural blend and both operational pipelines",
+    "Urban PBL: YSU BEP consumer, separate MYJURB implementation, BouLac BEP consumer",
+    "Operational state/restart carry and coupled CPU smoke",
+    "GPU qualification, E41, launch/memory/forecast performance"
+  ],
+  "GPU": "NOT_RUN_WAVE_FORBIDS",
+  "retracted": "BEP01 full-fixture completion: Fortran STOP-zero during init; replaced by strict complete fixtures"
+}

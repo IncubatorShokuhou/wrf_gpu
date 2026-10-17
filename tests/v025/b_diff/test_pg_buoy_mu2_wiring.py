@@ -24,7 +24,7 @@ def _operands(nz=4, ny=3, nx=5):
     mu2 = jnp.asarray(-500.0 + 1000.0 * rng.random((ny, nx)), jnp.float32)
     zeros = jnp.zeros((nz, ny, nx), jnp.float32)
     state = SimpleNamespace(theta=zeros + 300.0, p_perturbation=zeros,
-                            qv=zeros + 1e-2, qc=zeros, qr=zeros, qi=zeros, qs=zeros, qg=zeros)
+                            qv=zeros + 1e-2, qc=zeros, qr=zeros, qi=zeros, qi2=None, qi3=None, qs=zeros, qg=zeros)
     prep = SimpleNamespace(entry_state=state, theta_offset=300.0, phb=jnp.zeros((nz + 1, ny, nx), jnp.float32),
                            theta_work=zeros, mub=mub, mut=mub + mu2, mu_save=mu2)
     vec = lambda n: jnp.ones((n,), jnp.float32)

@@ -1,0 +1,83 @@
+{
+  "source": "original serial WRF v4.7.1, c01 all physics off; never GPU reference",
+  "case_inputs": {
+    "id": "c01",
+    "geography": "Swiss",
+    "hours": 24,
+    "domains": [
+      "d01"
+    ],
+    "options": {
+      "mp_physics": 0,
+      "cu_physics": 0,
+      "bl_pbl_physics": 0,
+      "sf_sfclay_physics": 0,
+      "sf_surface_physics": 0,
+      "ra_lw_physics": 0,
+      "ra_sw_physics": 0
+    },
+    "extra": {},
+    "status": "ADMITTED",
+    "admission_errors": [],
+    "admission_warnings": [],
+    "input_sha256": {
+      "namelist.input": "249214e0451e9e0ef874d47c685529a21a9f261619bedfce5e7e126f94f53e90",
+      "wrfbdy_d01": "f3e556670e4768326997bdfa1dd8b0f77eb6d5da07d9c4dbf900bf8ff9e30230",
+      "wrfinput_d01": "a5d696550d1dc6713e2e340b8c2fba83811d43f4a94a65ca95266035860e2781"
+    }
+  },
+  "cpu_executable": {
+    "original": "<USER_HOME>/src/wrf_pristine/WRF/main/wrf.exe",
+    "original_sha256": "52f914cb38e0899d8a1da54bd52f3e08d81ba0f6a7015d3159e48393f5226bd6",
+    "private_sha256": "34d04fb3cfab12dd259b0337f2edabcfc5bc35884ca6f5ef54b0131222c967ac",
+    "patches": [
+      {
+        "offset": 42405936,
+        "old": "<DATA_ROOT>/wrf_gpu2/wrf_truth/em_quarter_ss_center_dump.txt",
+        "new": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c01/d0"
+      },
+      {
+        "offset": 42405872,
+        "old": "<DATA_ROOT>/wrf_gpu2/wrf_truth/em_grav2d_x_touchdown_dump.txt",
+        "new": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c01/d1"
+      }
+    ],
+    "arithmetic_bytes_unchanged": true,
+    "configure_sha256": "c1bd80d6d4db6c703a7af29479c75e8e6d2d9acda79c6fb928585c858f4c8aba",
+    "mode": "retained original serial WRF; only two private diagnostic OPEN literals changed"
+  },
+  "crop": {
+    "south_north": [
+      19,
+      23
+    ],
+    "west_east": [
+      18,
+      23
+    ]
+  },
+  "source_files": {
+    "input": {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c01/input/wrfinput_d01",
+      "sha256": "a5d696550d1dc6713e2e340b8c2fba83811d43f4a94a65ca95266035860e2781"
+    },
+    "h0": {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c01/cpu/wrfout_d01_2023-01-15_00:00:00",
+      "sha256": "65ba4cfb41615dbe9533c7011650e656a1b8b21d215d22d5c81095e57df34e54"
+    },
+    "h1": {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c01/cpu/wrfout_d01_2023-01-15_01:00:00",
+      "sha256": "74f7d105ac5e783cfa6e24937447c759a0e7f8b5c228377edbbc84cd82f10cec"
+    },
+    "h2": {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c01/cpu/wrfout_d01_2023-01-15_02:00:00",
+      "sha256": "512b27d9ae0e11c70c40f9b70ca30dcfbc10a1027576c25ef9b697d3d4d3d590"
+    },
+    "h24": {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c01/cpu/wrfout_d01_2023-01-16_00:00:00",
+      "sha256": "bee8f83182f70a21ab700c2b88e1e81bbd68be11ed1c1f78ecd8c00c65d16e5c"
+    }
+  },
+  "fixture_sha256": "098606bac1c7b3d0afd5dd09bc44e5d7c490754e28266549883aa97fe9899fc0",
+  "all_fields_all_hours_byte_equal_input": true
+}

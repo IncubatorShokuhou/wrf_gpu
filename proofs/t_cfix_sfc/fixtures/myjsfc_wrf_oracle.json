@@ -1,0 +1,116 @@
+{
+ "fixture_sha256": "4af394de151f81a17ad71fdb08a771f538435872620384145303dbb90da715ba",
+ "source": "WRF 4.7.1 phys/module_sf_myjsfc.F + share/module_model_constants.F (unmodified)",
+ "sources": {
+  "module_model_constants.F": "5b80377fecdc18a5f0ad38d3b6c15cfc86ad5d76701adbbbb08a08698d0f7062",
+  "module_sf_myjsfc.F": "7ae02680a9f2f781fd5c13c55b102cc86fa216f72de08ce6e58c1b012efa29f3"
+ },
+ "builds": {
+  "sf2/zero": {
+   "flags": [
+    "-O0",
+    "-ffp-contract=off",
+    "-finit-real=zero"
+   ],
+   "sha256": "68d409349487afae7590ef11c48d9384e4db8a8104ce0aee325496f0bc3837bf"
+  },
+  "sf2/inf": {
+   "flags": [
+    "-O0",
+    "-ffp-contract=off",
+    "-finit-real=inf"
+   ],
+   "sha256": "65ca938f58267c6f143b2c0f1c6e84953876cd557a6faf7346d3df54ed2d8c37"
+  },
+  "sf2/fma": {
+   "flags": [
+    "-O2",
+    "-mfma",
+    "-ffp-contract=fast",
+    "-finit-real=zero"
+   ],
+   "sha256": "63089e52fbc25e0fdabd22852599026857dce5429302e56309f19388aa64c756"
+  }
+ },
+ "wrapper_sha256": "20ecf1a723611b6b9c9f436e5720d39ce2ed6ddbcc73ee2d2e52db1cd6cfe4f4",
+ "oracle_npz_sha256": "444c4bb5f592ef54972bac5d5be4d745f2540953956150403210caddd2c24074",
+ "envelope_draws": 128,
+ "prof": [
+  "dz",
+  "pmid",
+  "pint",
+  "th",
+  "t",
+  "qv",
+  "qc",
+  "u",
+  "v",
+  "q2"
+ ],
+ "sfc": [
+  "ht",
+  "tsk",
+  "qsfc",
+  "thz0",
+  "qz0",
+  "uz0",
+  "vz0",
+  "xland",
+  "ust",
+  "znt",
+  "z0base",
+  "mavail",
+  "akhs",
+  "akms"
+ ],
+ "outputs": [
+  "ust",
+  "znt",
+  "pblh",
+  "rmol",
+  "akhs",
+  "akms",
+  "rib",
+  "chs",
+  "chs2",
+  "cqs2",
+  "hfx",
+  "qfx",
+  "lh",
+  "flhc",
+  "flqc",
+  "qgh",
+  "cpm",
+  "ct",
+  "u10",
+  "v10",
+  "t02",
+  "th02",
+  "tshltr",
+  "th10",
+  "q02",
+  "qshltr",
+  "q10",
+  "pshltr",
+  "u10e",
+  "v10e",
+  "qsfc",
+  "thz0",
+  "qz0",
+  "uz0",
+  "vz0",
+  "spare"
+ ],
+ "surfaces": [
+  "calm",
+  "calm_water",
+  "land",
+  "water+1.5",
+  "water+6.0",
+  "water-0.5",
+  "water-4.0"
+ ],
+ "n_columns": 126,
+ "rule": "per call on identical operands: port inside [lower, upper] (+-1 ULP input draws of the zero build and the FMA build) +-8 REAL4 output ULPs (compiled REAL path; 123 of 79380 cells need 3-8 ULP: 5-iteration SFCDIF fixed point, XLA vs glibc libm; disclosed)",
+ "columns": "ORIGINAL CPU-WRF c03 (Swiss 2023-01-15, bl=2/sf=2/Noah-MP) 44-level profiles + water/calm variants"
+}

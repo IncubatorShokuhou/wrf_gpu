@@ -40,6 +40,23 @@ from gpuwrf.physics.noahmp.precision import native_real_enabled, real_tree
 DEFAULT_TABLE_DIR = wrf_run_dir()
 
 
+def cold_initialize_input_lai(land, static, *, sf_urban_physics=0):
+    """NOAHMP_INIT:2163–2182 for newly admitted input-LAI modes, once at load.
+
+    The default monthly-LAI path and evolving/restarted values do not call this.
+    NumPy work stays in initialization; no new timestep operations or carries.
+    """
+    veg=np.asarray(static.ivgtyp,np.int32)
+    p=static.parameters
+    no_veg=np.isin(veg,(p.iswater,p.isbarren,p.isice))
+    if sf_urban_physics==0:
+        no_veg|=(veg==p.isurban)|((veg>=51)&(veg<=61))
+    r=np.float32
+    lai=np.where(no_veg,r(0),np.maximum(np.asarray(land.lai,r),r(.05)))
+    sai=np.where(no_veg,r(0),np.maximum(r(.1)*lai,r(.05)))
+    return land.replace(lai=jnp.asarray(lai),sai=jnp.asarray(sai))
+
+
 def _i32(field) -> jnp.ndarray:
     return jnp.asarray(np.asarray(field).astype(np.int32), dtype=jnp.int32)
 
@@ -63,11 +80,13 @@ def build_noahmp_land_state(
     domain: str = "d02",
     *,
     table_dir: str | Path | None = None,
+    field_overrides: dict[str, Any] | None = None,
 ) -> tuple[NoahMPLandState, NoahMPStatic, dict[str, Any]]:
     """Warm-start land with one read-only wrfinput handle during init."""
     run = Gen2Run(Path(run_dir))
     with run.input_read_scope(domain):
-        return _build_noahmp_land_state(run_dir, domain, table_dir=table_dir, _run=run)
+        return _build_noahmp_land_state(run_dir, domain, table_dir=table_dir, _run=run,
+                                        field_overrides=field_overrides)
 
 
 def _build_noahmp_land_state(
@@ -76,6 +95,7 @@ def _build_noahmp_land_state(
     *,
     table_dir: str | Path | None = None,
     _run: Gen2Run | None = None,
+    field_overrides: dict[str, Any] | None = None,
 ) -> tuple[NoahMPLandState, NoahMPStatic, dict[str, Any]]:
     """Warm-start the prognostic Noah-MP land carry from a corpus wrfinput.
 
@@ -90,10 +110,22 @@ def _build_noahmp_land_state(
     tdir = Path(table_dir) if table_dir is not None else wrf_run_dir()
 
     def L(name):
+        if field_overrides is not None and name in field_overrides:
+            return field_overrides[name]
         return run.load_wrfinput(domain, name, lazy=False)
 
     def has(name: str) -> bool:
-        return name in present
+        return name in present or (field_overrides is not None and name in field_overrides)
+
+    # Public source boundary: QNSE on sea-ice input (any present alias, overrides
+    # included) is refused before the land state is built.
+    from gpuwrf.io.qnse_admission import SEA_ICE_ALIASES, check_qnse_sea_ice_fields, domain_bl_pbl_physics
+    try:
+        namelist = run.namelist
+    except FileNotFoundError:
+        namelist = None
+    check_qnse_sea_ice_fields(domain, domain_bl_pbl_physics(namelist, domain),
+                              {key: L(key) for key in SEA_ICE_ALIASES if has(key)})
 
     provenance: dict[str, str] = {}
 
@@ -262,7 +294,8 @@ def _build_noahmp_land_state(
     # keeps until NOAHMP_SFLX returns a valid SALB (module_sf_noahmpdrv.F:1230-1232); not ALBOLD.
     from gpuwrf.io.land_history import wrf_initial_albedo
     with run._read_dataset(run.wrfinput_file(domain)) as ds:
-        albedo = jnp.asarray(wrf_initial_albedo(ds, tdir), dtype=jnp.float64)
+        albedo = jnp.asarray(wrf_initial_albedo(ds, tdir, field_overrides=field_overrides), dtype=jnp.float64)
+        cycled = "GPUWRF_LAND_CYCLE" in ds.ncattrs()
     provenance["albedo"] = "WRF landuse_init ALBEDO (LANDUSE.TBL season, SNOWC>0.5 x (1+SCFX))"
     sfcrunoff = jnp.zeros((ny, nx), dtype=jnp.float64)
     udrunoff = jnp.zeros((ny, nx), dtype=jnp.float64)
@@ -276,6 +309,20 @@ def _build_noahmp_land_state(
         t_skin=t_skin, qsfc=qsfc, znt=znt, emiss=emiss, albedo=albedo,
         sfcrunoff=sfcrunoff, udrunoff=udrunoff,
     )
+
+    # Glacier timestep routing uses VEGTYP==ISICE, independently of the init
+    # XICE predicate above (pristine module_sf_noahmpdrv.F:1049).
+    from gpuwrf.io.noahmp_glacier_options import GlacierStatic, glacier_options
+    ice_points = np.flatnonzero(np.asarray(ivgtyp).reshape(-1) == int(parameters.isice))
+    if ice_points.size:
+        options = glacier_options(run.namelist)
+        if options['opt_snf'] not in (1,2,3,4):
+            raise ValueError('WRF glacier OPT_SNF has branches 1/2/3/4 only; opt_snf=5 is undefined at glacier points')
+        static = static.replace(glacier=GlacierStatic(tuple(map(int,ice_points)),
+            tuple(map(int,np.flatnonzero(np.asarray(ivgtyp).reshape(-1) != int(parameters.isice)))), (ny,nx), **options))
+        glacier_qsnow = _surface_2d(L('QSNOWXY')) if has('QSNOWXY') else jnp.zeros((ny,nx),jnp.float64)
+        land_state = land_state.replace(glacier_qsnow=jnp.asarray(glacier_qsnow,jnp.float32))
+        provenance['glacier_qsnow'] = 'QSNOWXY previous-call rate (Noah-MP driver:822/1258); cold zero'
 
     meta = {
         "source": "warm-start from corpus wrfinput",
@@ -300,6 +347,18 @@ def _build_noahmp_land_state(
         ),
         "cold_init_provenance": provenance,
     }
+    # Explicit soil/snow cycling is analogous to WRF NOAHMP_INIT's restart
+    # branch (module_sf_noahmpdrv.F:2008): retain spun-up state, including zero
+    # liquid/canopy values, rather than reconstructing it as cold real.exe data.
+    if cycled:
+        with run._read_dataset(run.wrfinput_file(domain)) as ds:
+            from gpuwrf.cycling.core import restore_land_state
+            meta["land_cycle"] = restore_land_state(ds, land_state)
+            meta["source"] = "soil/snow cycle from previous forecast"
+            meta["init_note"] = (
+                "Provenance-bound active land fields retained from the prior forecast; "
+                "cold_init_provenance describes fallback values on untransferred cells only."
+            )
     if native_real_enabled():
         land_state, static = real_tree((land_state, static))
     return land_state, static, meta

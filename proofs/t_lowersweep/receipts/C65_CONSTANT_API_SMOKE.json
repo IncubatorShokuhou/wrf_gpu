@@ -1,0 +1,25 @@
+{
+  "stage": "tool API smoke, not model validation",
+  "result": {
+    "stage": "unoptimized CUDA StableHLO, before serialization/compile",
+    "count": 1,
+    "total_literal_tensor_bytes": 48,
+    "largest": [
+      {
+        "shape": [
+          2,
+          3
+        ],
+        "dtype": "f64",
+        "nbytes": 48
+      }
+    ],
+    "scope": "tensor byte sizes, not process peak/unique buffer memory or optimized executable footprint"
+  },
+  "compact": "module {\n  func.func @main() -> tensor<2x3xf64> {\n    %cst = stablehlo.constant dense_resource<__elided__> : tensor<2x3xf64>\n    return %cst : tensor<2x3xf64>\n  }\n}\n",
+  "failed_setup": [
+    "RankedTensorType.isinstance unavailable; direct cast works",
+    "splat attr is intentionally printed as one value; nonsplat control confirms elision"
+  ],
+  "physical_backend_initialized": false
+}

@@ -21,6 +21,7 @@ indices are precomputed once from the static domain geometry.
 from __future__ import annotations
 
 from dataclasses import dataclass
+from functools import partial
 
 import jax
 import jax.numpy as jnp
@@ -102,7 +103,7 @@ class StateFeedbackWeights:
 
     Each ``*_smooth`` member is the matching WRF ``sm121`` feedback-zone smoother
     for that staggering; ``smooth_option`` selects the WRF ``smooth_option``
-    (0 = no smoother, 1 = the default 1-2-1 ``sm121``).  These default to ``None``
+    (0 = none, 1 = 1-2-1 ``sm121``, 2 = ``smdsm`` smooth/desmooth). These default to ``None``
     only for legacy/hand-built weights; :func:`build_state_feedback_weights`
     always populates them.
     """
@@ -114,15 +115,16 @@ class StateFeedbackWeights:
     u_smooth: FeedbackSmoother | None = None
     v_smooth: FeedbackSmoother | None = None
     smooth_option: int = 1
+    point: FeedbackWeights | None = None
 
     def tree_flatten(self):
-        children = (self.mass, self.u, self.v)
+        children = (self.mass, self.u, self.v, self.point)
         aux = (self.mass_smooth, self.u_smooth, self.v_smooth, int(self.smooth_option))
         return children, aux
 
     @classmethod
     def tree_unflatten(cls, aux, children):
-        mass, u, v = children
+        mass, u, v, point = children
         mass_smooth, u_smooth, v_smooth, smooth_option = aux
         return cls(
             mass=mass,
@@ -132,6 +134,7 @@ class StateFeedbackWeights:
             u_smooth=u_smooth,
             v_smooth=v_smooth,
             smooth_option=smooth_option,
+            point=point,
         )
 
 
@@ -319,6 +322,20 @@ def build_feedback_smoother(
     )
 
 
+def point_feedback_weights(mass: FeedbackWeights) -> FeedbackWeights:
+    """WRF copy_fcnm/copy_fcni odd-ratio point sample (no averaging).
+
+    WRF chooses fine index `(coarse-ipos)*ratio + 2`, including ratio 5;
+    it is the second donor in each direction, not a generic geometric center.
+    Build once outside the timestep loop.
+    """
+    from dataclasses import replace
+    # copy_fcnm: ni=(ci-ipos)*nri+istag+1, likewise j. Along
+    # the face the area plan already has offset 1; across it choose donor 1.
+    donor = 1 if mass.stagger else mass.ratio + 1
+    return replace(mass,child_lin=mass.child_lin[:,donor:donor+1],stencil=1)
+
+
 def build_state_feedback_weights(
     *,
     parent_grid_ratio: int,
@@ -330,6 +347,9 @@ def build_state_feedback_weights(
     smooth_option: int = 1,
 ) -> StateFeedbackWeights:
     """Build mass/U/V feedback weights + ``sm121`` smoothers for a ``State`` edge."""
+
+    if int(smooth_option) not in (0, 1, 2):
+        raise ValueError(f"smooth_option must be 0, 1 or 2, got {smooth_option}")
 
     common = dict(
         parent_grid_ratio=int(parent_grid_ratio),
@@ -348,17 +368,20 @@ def build_state_feedback_weights(
         child_we=int(child_grid.nx),
         child_sn=int(child_grid.ny),
     )
+    mass = build_feedback_weights(stagger="", **common)
     return StateFeedbackWeights(
-        mass=build_feedback_weights(stagger="", **common),
+        mass=mass,
         u=build_feedback_weights(stagger="U", **common),
         v=build_feedback_weights(stagger="V", **common),
         mass_smooth=build_feedback_smoother(stagger="", **smooth_common),
         u_smooth=build_feedback_smoother(stagger="U", **smooth_common),
         v_smooth=build_feedback_smoother(stagger="V", **smooth_common),
         smooth_option=int(smooth_option),
+        point=point_feedback_weights(mass),
     )
 
 
+@jax.jit
 def _feedback_values(child: jax.Array, weights: FeedbackWeights) -> jax.Array:
     child_idx = weights.child_lin.reshape(-1)
     if child.ndim == 3:
@@ -366,13 +389,21 @@ def _feedback_values(child: jax.Array, weights: FeedbackWeights) -> jax.Array:
         flat = child.reshape(z, weights.csn * weights.cwe)
         gathered = jnp.take(flat, child_idx, axis=1)
         gathered = gathered.reshape(z, weights.parent_lin.shape[0], weights.stencil)
-        return jnp.mean(gathered, axis=2)
-    if child.ndim == 2:
+    elif child.ndim == 2:
         flat = child.reshape(weights.csn * weights.cwe)
         gathered = jnp.take(flat, child_idx, axis=0)
         gathered = gathered.reshape(weights.parent_lin.shape[0], weights.stencil)
-        return jnp.mean(gathered, axis=1)
-    raise ValueError(f"feedback expects a 2D or 3D child field, got {child.shape}")
+    else:
+        raise ValueError(f"feedback expects a 2D or 3D child field, got {child.shape}")
+    # copy_fcn sums WEIGHTED donors in i-fast, j-slow order. A reduce-mean
+    # changes REAL rounding, particularly for nearly cancelling perturbations.
+    # One leaf-local executable keeps the ordered arithmetic off eager dispatch.
+    scale = jnp.asarray(1.0 / weights.stencil, dtype=child.dtype)
+    values = jnp.zeros(gathered.shape[:-1], dtype=child.dtype)
+    for donor in range(weights.stencil):
+        term = jax.lax.optimization_barrier(scale * gathered[..., donor])
+        values = values + term
+    return values
 
 
 def feedback_to_parent_grid(child: jax.Array, weights: FeedbackWeights) -> jax.Array:
@@ -494,6 +525,40 @@ def sm121_smooth(field: jax.Array, smoother: FeedbackSmoother) -> jax.Array:
     return out
 
 
+def smdsm_smooth(field: jax.Array, smoother: FeedbackSmoother) -> jax.Array:
+    """WRF option 2: j then i smoothing (0.50), then desmoothing (-0.52).
+
+    Each directional pass reads the completed previous field. The untouched
+    overlap halo is read again in every pass (share/interp_fcn.F::smdsm).
+    """
+    i0, i1, j0, j1 = smoother.i_lo, smoother.i_hi, smoother.j_lo, smoother.j_hi
+    if i1 <= i0 or j1 <= j0:
+        return field
+    if field.ndim not in (2, 3):
+        raise ValueError(f"smdsm_smooth expects a 2D or 3D field, got {field.shape}")
+    if i0 < 1 or j0 < 1 or i1 >= field.shape[-1] or j1 >= field.shape[-2]:
+        raise ValueError("feedback smoother requires a one-cell parent halo")
+    arr = field
+    for nu in (0.50, -0.52):
+        center = arr[..., j0:j1, i0:i1]
+        blend = center + nu * ((arr[..., j0+1:j1+1, i0:i1]
+                               + arr[..., j0-1:j1-1, i0:i1]) * 0.5 - center)
+        arr = arr.at[..., j0:j1, i0:i1].set(blend)
+        center = arr[..., j0:j1, i0:i1]
+        blend = center + nu * ((arr[..., j0:j1, i0+1:i1+1]
+                               + arr[..., j0:j1, i0-1:i1-1]) * 0.5 - center)
+        arr = arr.at[..., j0:j1, i0:i1].set(blend)
+    return arr
+
+
+@partial(jax.jit, static_argnames=("option",))
+def _feedback_leaf(parent, child, weights, smoother, option):
+    fed = apply_feedback(parent, child, weights)
+    if smoother is not None and option:
+        fed = (sm121_smooth if option == 1 else smdsm_smooth)(fed, smoother)
+    return fed
+
+
 def _base_pressure(state: State) -> jax.Array:
     return state.p_total - state.p_perturbation
 
@@ -506,58 +571,83 @@ def _base_mu(state: State) -> jax.Array:
     return state.mu_total - state.mu_perturbation
 
 
-def apply_state_feedback(
+def _apply_state_feedback_and_base(
     parent: State,
     child: State,
     weights: StateFeedbackWeights,
     *,
     feedback: bool = True,
-) -> State:
+    parent_base=None,
+    child_base=None,
+):
     """Apply optional two-way feedback to the current ``State`` contract.
 
-    The default runtime passes ``feedback=False``.  When enabled, feedback updates
-    the WRF forced prognostic set plus carried moisture/TKE number fields on mass
-    points.  Parent base-state leaves are preserved; total aliases are rebuilt
-    from the fed-back perturbation leaves.
+    The default runtime passes ``feedback=False``. Registry-selected prognostic,
+    moisture and number fields plus PB/PHB/MUB are fed back. Diagnostic pressure and
+    QKE (distinct from WRF's advected qke_adv) stay held. Total aliases are rebuilt
+    from the fed-back bases and perturbations.
     """
 
     if not bool(feedback):
-        return parent
+        return parent, parent_base
 
     mass = weights.mass
-    smooth = int(getattr(weights, "smooth_option", 1)) != 0
+    point = weights.point if weights.point is not None else point_feedback_weights(mass)
+    option = int(getattr(weights, "smooth_option", 1))
+    if option not in (0, 1, 2):
+        raise ValueError(f"smooth_option must be 0, 1 or 2, got {option}")
     mass_sm = getattr(weights, "mass_smooth", None)
     u_sm = getattr(weights, "u_smooth", None)
     v_sm = getattr(weights, "v_smooth", None)
+    base_mask = None
+    if parent_base is not None:
+        base_mask = jnp.zeros((mass.psn*mass.pwe,),dtype=bool).at[mass.parent_lin].set(True)
+        base_mask = base_mask.reshape(mass.psn,mass.pwe)
+        if option and mass_sm is not None:
+            base_mask = base_mask.at[mass_sm.j_lo:mass_sm.j_hi,mass_sm.i_lo:mass_sm.i_hi].set(True)
 
     def _fb(parent_leaf, child_leaf, fb_weights, smoother):
-        """copy_fcn feedback then the matching sm121 feedback-zone smoother."""
-        fed = apply_feedback(parent_leaf, child_leaf, fb_weights, feedback=True)
-        if smooth and smoother is not None:
-            fed = sm121_smooth(fed, smoother)
-        return fed
+        return _feedback_leaf(parent_leaf, child_leaf, fb_weights, smoother, option)
 
     u = _fb(parent.u, child.u, weights.u, u_sm)
     v = _fb(parent.v, child.v, weights.v, v_sm)
     w = _fb(parent.w, child.w, mass, mass_sm)
-    theta = _fb(parent.theta, child.theta, mass, mass_sm)
+    # WRF feeds perturbation T, while State stores the full theta_m.
+    theta_offset=jnp.asarray(300.,dtype=parent.theta.dtype)
+    theta = _fb(parent.theta-theta_offset, child.theta-theta_offset, mass, mass_sm)+theta_offset
     qv = _fb(parent.qv, child.qv, mass, mass_sm)
-    p_pert = _fb(parent.p_perturbation, child.p_perturbation, mass, mass_sm)
     ph_pert = _fb(parent.ph_perturbation, child.ph_perturbation, mass, mass_sm)
     mu_pert = _fb(parent.mu_perturbation, child.mu_perturbation, mass, mass_sm)
+    # Registry: p=irh (diagnostic, no feedback); pb/phb/mub=irhdus (feedback
+    # AND smoothing). Prefer the resident authoritative base over total-prime.
+    pphb = parent_base.phb if parent_base is not None else _base_geopotential(parent)
+    cphb = child_base.phb if child_base is not None else _base_geopotential(child)
+    pmub = parent_base.mub if parent_base is not None else _base_mu(parent)
+    cmub = child_base.mub if child_base is not None else _base_mu(child)
+    ppb = parent_base.pb if parent_base is not None else _base_pressure(parent)
+    cpb = child_base.pb if child_base is not None else _base_pressure(child)
+    # These resident bases are stored as DOUBLE by the port, but WRF declares
+    # the feedback fields REAL. Round the operator to REAL, retain the storage
+    # dtype and the exact parent values outside the feedback overlap.
+    def _base_fb(pbase, cbase):
+        if parent_base is None:
+            return _fb(pbase, cbase, mass, mass_sm)
+        result = _fb(pbase.astype(jnp.float32), cbase.astype(jnp.float32), mass, mass_sm)
+        return jnp.where(base_mask, result.astype(pbase.dtype), pbase)
+    phb = _base_fb(pphb, cphb)
+    mub = _base_fb(pmub, cmub)
+    pb = _base_fb(ppb, cpb)
+    base = parent_base.replace(pb=pb, phb=phb, mub=mub) if parent_base is not None else None
+    if base is not None and getattr(parent_base,"alb",None) is not None:
+        if getattr(child_base,"alb",None) is None:
+            raise ValueError("two-way feedback requires both resident WRF ALB fields")
+        base=base.replace(alb=_base_fb(parent_base.alb,child_base.alb))
 
-    # Rebuild each total ONCE and share the buffer between the total and its
-    # transitional legacy alias (p<-p_total, ph<-ph_total, mu<-mu_total).  Computing
-    # ``_base_pressure(parent) + p_pert`` twice (once for ``p_total``, once for
-    # ``p``) allocated TWO equal full-size buffers per total plus a second base-state
-    # subtraction transient -- 6 redundant full-size temporaries across p/ph/mu.
-    # ``State.replace`` already forces ``p == p_total`` when both are supplied (it
-    # sets ``values[legacy] = values[total]``), so binding both to the same object
-    # here is byte-identical AND eliminates the redundant allocations -- a pure
-    # VRAM/op reduction with no change to the feedback math or result.
-    p_val = _base_pressure(parent) + p_pert
-    ph_val = _base_geopotential(parent) + ph_pert
-    mu_val = _base_mu(parent) + mu_pert
+    # Rebuild each changed total once and share its transitional legacy alias.
+    # Perturbation pressure is held; its total alias follows the updated PB.
+    p_val = pb + parent.p_perturbation
+    ph_val = phb + ph_pert
+    mu_val = mub + mu_pert
 
     updates = {
         "u": u,
@@ -565,7 +655,6 @@ def apply_state_feedback(
         "w": w,
         "theta": theta,
         "qv": qv,
-        "p_perturbation": p_pert,
         "p_total": p_val,
         "p": p_val,
         "ph_perturbation": ph_pert,
@@ -581,7 +670,7 @@ def apply_state_feedback(
     # carry the leaf, and for a run without them the leaves are zero
     # (_fb(0,0,...) == 0), so the nest feedback is byte-unchanged.
     for name in (
-        "qc", "qr", "qi", "qs", "qg", "Ni", "Nr", "Ns", "Ng", "qke", "Nc", "Nn",
+        "qc", "qr", "qi", "qs", "qg", "Ni", "Nr", "Ns", "Ng", "Nc", "Nn",
         "qh", "Nh", "qvolg", "qvolh", "nwfa", "nifa",
     ):
         if hasattr(parent, name) and hasattr(child, name):
@@ -589,7 +678,57 @@ def apply_state_feedback(
             child_value = getattr(child, name)
             if parent_value is not None and child_value is not None:
                 updates[name] = _fb(parent_value, child_value, mass, mass_sm)
-    return parent.replace(_cast=False, **updates)
+    # Registry accumulated precipitation has `u` but NO `s` flag.
+    for name in ("rain_acc", "rainc_acc", "snow_acc", "graupel_acc", "hail_acc"):
+        pv, cv = getattr(parent, name, None), getattr(child, name, None)
+        if pv is not None and cv is not None:
+            updates[name] = _feedback_leaf(pv, cv, mass, None, 0)
+    # Registry explicit u=(copy_fcnm), not the default area average.
+    for name in ("t_skin", "soil_moisture", "xland", "lu_index"):
+        pv, cv = getattr(parent, name, None), getattr(child, name, None)
+        if pv is not None and cv is not None:
+            updates[name] = _feedback_leaf(pv, cv, point, None, 0)
+    if "xland" in updates and getattr(parent,"landmask",None) is not None:
+        updates["landmask"]=(updates["xland"]<1.5).astype(parent.landmask.dtype)
+    return parent.replace(_cast=False, **updates), base
+
+
+def apply_state_feedback(parent: State, child: State, weights: StateFeedbackWeights,
+                         *, feedback: bool = True) -> State:
+    """Registry feedback on state fields; pressure is refreshed by the next step."""
+    return _apply_state_feedback_and_base(parent, child, weights, feedback=feedback)[0]
+
+
+def apply_carry_feedback(parent, child, weights: StateFeedbackWeights):
+    """Feedback state, resident PB/PHB/MUB and unsmoothed WRF h_diabatic."""
+    fed, base = _apply_state_feedback_and_base(
+        parent.state, child.state, weights,
+        parent_base=parent.base_state, child_base=child.base_state)
+    updates = {"state": fed, "base_state": base}
+    if parent.h_diabatic is not None and child.h_diabatic is not None:
+        # Registry h_diabatic=rdu: no `s` flag, hence no smoother.
+        updates["h_diabatic"] = _feedback_leaf(parent.h_diabatic, child.h_diabatic, weights.mass, None, 0)
+    pl, cl = getattr(parent,"noahmp_land",None),getattr(child,"noahmp_land",None)
+    if pl is not None and cl is not None:
+        # registry.noahmp / EM_COMMON explicit copy_fcnm (ISNOW copy_fcni).
+        # LAI, TAUSS, SMCWTD, QSFC, ZNT, ALBEDO/EMISS and runoff have NO u flag.
+        point = weights.point if weights.point is not None else point_feedback_weights(weights.mass)
+        fields=("tslb","smois","sh2o","isnow","tsno","snice","snliq","zsnso",
+                "snowh","sneqv","sneqvo","albold","tv","tg","tah","eah",
+                "canliq","canice","fwet","sai","cm","ch","t_skin")
+        updates["noahmp_land"]=pl.replace(**{name:_feedback_leaf(getattr(pl,name),getattr(cl,name),point,None,0)
+                                             for name in fields})
+    from gpuwrf.coupling.feedback_aux import feedback_group
+    ph,ch=getattr(parent,'history_diagnostics',None),getattr(child,'history_diagnostics',None)
+    if ph is not None and ch is not None:
+        updates['history_diagnostics']=ph._replace(**{name:_feedback_leaf(
+            getattr(ph,name),getattr(ch,name),weights.mass,None,0)
+            for name in ('t2','q2','u10','v10','psfc')})
+    for name in ("land_history","energy_accumulators","feedback_history"):
+        pv,cv=getattr(parent,name,None),getattr(child,name,None)
+        if pv is not None and cv is not None:
+            updates[name]=feedback_group(pv,cv,weights)
+    return parent.replace(**updates)
 
 
 def feedback_overlap_conservation(
@@ -642,6 +781,7 @@ __all__ = [
     "StateFeedbackWeights",
     "apply_feedback",
     "apply_state_feedback",
+    "apply_carry_feedback",
     "build_feedback_smoother",
     "build_feedback_weights",
     "build_state_feedback_weights",
@@ -649,4 +789,6 @@ __all__ = [
     "feedback_overlap_conservation",
     "feedback_to_parent_grid",
     "sm121_smooth",
+    "smdsm_smooth",
+    "point_feedback_weights",
 ]

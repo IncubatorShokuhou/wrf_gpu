@@ -10,9 +10,8 @@ config_flags%moist_adv_opt)``), decoupled by ``mu`` AFTER the acoustic loop.
 
 This suite proves the OPERATIONAL WIRING in ``runtime.operational_mode``:
 
-  * ABSOLUTE GUARDRAIL: ``moist_adv_opt=0`` (default) leaves moisture BYTE-IDENTICAL
-    (pure passthrough -- the v0.12.0 behaviour) and the new code path is never
-    traced; the full operational step is bit-identical to the default namelist.
+  * ``moist_adv_opt=0`` explicit == the namelist default (bit-identical step).  Since
+    o2-moistadv option 0 is WRF ORIGINAL plain transport, not a passthrough.
   * the wired large-step update reproduces the WRF formula
     ``q_new=(mut_old*q_old + dt_rk*adv_tend)/mut_new`` exactly (algebraic ref).
   * the coupled per-species tendency conserves coupled moisture mass (periodic
@@ -92,9 +91,9 @@ def _run(carry, namelist, steps):
 
 
 # ----------------------------------------------------------------------------
-# ABSOLUTE GUARDRAIL: moist_adv_opt=0 (default) is byte-identical + passthrough.
+# moist_adv_opt=0 explicit == the namelist default (bit-identical step).
 # ----------------------------------------------------------------------------
-def test_default_moist_adv_opt0_byte_identical_and_passthrough():
+def test_default_moist_adv_opt0_byte_identical():
     setup = _setup()
     state = _seed_blob(setup.state)
 
@@ -111,16 +110,10 @@ def test_default_moist_adv_opt0_byte_identical_and_passthrough():
             err_msg=f"moist_adv_opt=0 must be byte-identical to the default for {name}",
         )
 
-    # With moisture advection OFF + physics/boundary OFF, the dycore must leave
-    # every moisture species EXACTLY unchanged (pure passthrough, the gap).
-    nml_off = _nml(setup.namelist, moist_adv_opt=0)
-    off = _run(initial_operational_carry(state), nml_off, 4)
-    for name in _MOISTURE_SPECIES:
-        np.testing.assert_array_equal(
-            np.asarray(getattr(off.state, name)),
-            np.asarray(getattr(state, name)),
-            err_msg=f"dycore must NOT change {name} when moist_adv_opt=0 (passthrough)",
-        )
+    # o2-moistadv: moist_adv_opt=0 is WRF ORIGINAL (plain transport), NOT "no
+    # moisture transport"; the <= v0.3.4 passthrough assertion that stood here
+    # pinned that bug.  tests/test_o2_moistadv_original.py proves the transport
+    # (pristine advect_scalar oracle + operational dispatch).
 
 
 # ----------------------------------------------------------------------------

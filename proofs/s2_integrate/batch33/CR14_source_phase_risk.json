@@ -1,0 +1,19 @@
+{
+  "source": "99408e7973719c47aa7b2f2251dc343a77b866e0",
+  "scope": "Read-only source attribution of an unchanged CAM solar clock; no numerical/forecast claim",
+  "evidence": {
+    "WRF": "module_radiation_driver.F:1208 calc_coszen(julian,xtime+radt*.5,gmt)",
+    "surface_CAM": "_refresh_noahmp_rad passes max(lead-.5*dt*STEPRA,0) to cam_surface_forcing; default solar_lead_seconds=None",
+    "heating_CAM": "_physics_step_forcing passes raw step-entry lead to CAM SW; cam_operands has no midpoint parameter",
+    "shared_geometry": "_compute_solar_geometry None=>same current lead; native RRTMG driver separately passes +radiation_interval_s/2",
+    "c28_namelist": "dt18/radt600s/STEPRA33=>surface clock minus297s; pristine solar midpoint plus300s"
+  },
+  "measured": "SOURCE dataflow only; unchanged by cloud fix",
+  "inferred": "daylight CAM coszen may be behind WRF; cannot explain first-night cold failure",
+  "unknown": "quantitative solar/trajectory residual after cloud fix",
+  "source_sha256": {
+    "src/gpuwrf/runtime/operational_mode.py": "679e74f8ebf1097d44cade0f67e785d40f74cfccf9b871c0b2cfbab428504b74",
+    "src/gpuwrf/coupling/cam_radiation.py": "f612c8e9fdd73556bb0911ed3c34a39fb1896451fe594e02b7271165ca04d075",
+    "src/gpuwrf/coupling/physics_couplers.py": "eba9481aba243b48e2360e1a183f914d9b8077f57f2d5da193dc5b09467d4f80"
+  }
+}

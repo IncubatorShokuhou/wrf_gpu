@@ -17,6 +17,7 @@ from jax import config
 import jax.numpy as jnp
 import numpy as np
 
+from gpuwrf.assets import ensure_asset
 from gpuwrf.debug.asserts import assert_finite, assert_physical_bounds
 from gpuwrf.physics.rrtmg_constants import (
     AVOGADRO,
@@ -344,7 +345,7 @@ _LW_GAS_FIELDS: tuple[str, ...] = (
     "cfc11_vmr",
     "cfc12_vmr",
 )
-_LW_STATIC_FIELDS: tuple[str, ...] = ("top_pressure_pa",)
+_LW_STATIC_FIELDS: tuple[str, ...] = ("top_pressure_pa", "cammg_radii")
 # Append new optional leaves after the existing gas leaves: OFF argument paths
 # and the original column ABI remain identical.
 _LW_MP_RE_FIELDS = ("re_cloud", "re_ice", "re_snow", "xland")
@@ -389,7 +390,7 @@ class RRTMGLWColumnState:
         "pressure_interfaces",
         "temperature_interfaces",
         "ozone_vmr",
-        "re_cloud", "re_ice", "re_snow", "xland",
+        "re_cloud", "re_ice", "re_snow", "xland", "cammg_radii",
         "top_pressure_pa",
         "co2_vmr",
         "n2o_vmr",
@@ -421,8 +422,9 @@ class RRTMGLWColumnState:
         cfc11_vmr: float | None = None,
         cfc12_vmr: float | None = None,
         ozone_vmr=None,
-        re_cloud=None, re_ice=None, re_snow=None, xland=None,
+        re_cloud=None, re_ice=None, re_snow=None, xland=None, cammg_radii=False,
     ) -> None:
+        self.cammg_radii = bool(cammg_radii)
         self.T = T
         self.p = p
         self.qv = qv
@@ -879,8 +881,8 @@ def _take_rows(table, idx):
 def _extract_rrtmg_tables_module():
     """Loads the repository-local table extractor without relying on package path."""
 
-    root = Path(__file__).resolve().parents[3]
-    path = root / "scripts" / "extract_rrtmg_tables.py"
+    # Repo script in a checkout; the wheel bundles a byte-identical copy (gpuwrf.assets, setup.py).
+    path = ensure_asset("scripts/extract_rrtmg_tables.py")
     spec = importlib.util.spec_from_file_location("_gpuwrf_extract_rrtmg_tables", path)
     if spec is None or spec.loader is None:
         raise ImportError(f"cannot load RRTMG table extractor from {path}")
@@ -913,7 +915,7 @@ def _parse_chi_mls(lw_source) -> np.ndarray:
 def _read_lw_records_from_asset() -> list[bytes]:
     """Reconstructs WRF LW DATA records from the existing table fixture."""
 
-    with np.load(TABLE_ASSET, allow_pickle=False) as loaded:
+    with np.load(ensure_asset(TABLE_ASSET), allow_pickle=False) as loaded:
         raw = np.asarray(loaded["lw_raw_payload_bytes"], dtype=np.uint8)
         offsets = np.asarray(loaded["lw_record_offsets"], dtype=np.uint64)
         lengths = np.asarray(loaded["lw_record_lengths"], dtype=np.uint32)
@@ -3515,8 +3517,14 @@ def solve_rrtmg_lw_column_debug_stripped(
 def _lw_mp_radii(state, p_ext):
     """has_req mediation with clear above-model-top buffers."""
     from gpuwrf.physics.rrtmg_mp_re import prepare_radiation_radii, RadiationRadii
-    r = prepare_radiation_radii(state.T, state.cloud_fraction, state.xland,
-                                state.re_cloud, state.re_ice, state.re_snow)
+    if state.cammg_radii:
+        # RRTMG_LW: original CAM-MG override is in microns, with
+        # combined qi+qs optics and no separate snow path.
+        from gpuwrf.physics.cammg.radiation import radius_view
+        r = radius_view(state.re_cloud,state.re_ice)
+    else:
+        r = prepare_radiation_radii(state.T, state.cloud_fraction, state.xland,
+                                    state.re_cloud, state.re_ice, state.re_snow)
     n = (p_ext if isinstance(p_ext, int) else p_ext.shape[-1]) - state.p.shape[-1]
     def extend(v, value):
         return jnp.concatenate((v, jnp.full(v.shape[:-1] + (n,), value, v.dtype)), axis=-1)

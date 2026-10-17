@@ -1,0 +1,114 @@
+{
+  "scope": "Original REAL4 WRF compilerFMA vsnoFMA with identical rawbaseline inputs; bodyobjects reused, onlycaller frozenreadsadded",
+  "rows": [
+    {
+      "variant": 19,
+      "mode": "noFMA",
+      "input_bytes_sha256": "17596f142bcb656390a00b490fc6904d392d37fb9e57113e2cbef3ce510e1223",
+      "same_input_bits": true,
+      "caller_sha256": "09c9ca506b0986d38ab40faba706d16301eff8bdb2a5e743a9b01ea52931b013",
+      "flags": [
+        "-O2",
+        "-ffree-form",
+        "-ffree-line-length-none",
+        "-cpp",
+        "-finit-real=zero",
+        "-finit-integer=0",
+        "-finit-logical=false",
+        "-mfma",
+        "-ffp-contract=off"
+      ],
+      "output_sha256": "0bbdff7430369af8c5d0162c14ee27b283c660207ab588fcfa0b9654c28eea6d",
+      "QC0": 3.070793809456518e-06
+    },
+    {
+      "variant": 21,
+      "mode": "noFMA",
+      "input_bytes_sha256": "f54a778d4cb38bfeb46e8a2bfe0138bb37b8a40b5de6c87157dab31da2b23b06",
+      "same_input_bits": true,
+      "caller_sha256": "09c9ca506b0986d38ab40faba706d16301eff8bdb2a5e743a9b01ea52931b013",
+      "flags": [
+        "-O2",
+        "-ffree-form",
+        "-ffree-line-length-none",
+        "-cpp",
+        "-finit-real=zero",
+        "-finit-integer=0",
+        "-finit-logical=false",
+        "-mfma",
+        "-ffp-contract=off"
+      ],
+      "output_sha256": "81c68dff364fcec02794ab514a774a35be5ef3c5f7f9102f1dc8f30d635d0690",
+      "QC0": 3.070793809456518e-06
+    },
+    {
+      "variant": 19,
+      "mode": "FMA",
+      "input_bytes_sha256": "17596f142bcb656390a00b490fc6904d392d37fb9e57113e2cbef3ce510e1223",
+      "same_input_bits": true,
+      "caller_sha256": "09c9ca506b0986d38ab40faba706d16301eff8bdb2a5e743a9b01ea52931b013",
+      "flags": [
+        "-O2",
+        "-ffree-form",
+        "-ffree-line-length-none",
+        "-cpp",
+        "-finit-real=zero",
+        "-finit-integer=0",
+        "-finit-logical=false",
+        "-mfma",
+        "-ffp-contract=fast"
+      ],
+      "output_sha256": "1bfaf1187b93da39ede4151a264b85f4baeaa83d184caa9c7609bc5a23bf2085",
+      "QC0": 3.104321422142675e-06
+    },
+    {
+      "variant": 21,
+      "mode": "FMA",
+      "input_bytes_sha256": "f54a778d4cb38bfeb46e8a2bfe0138bb37b8a40b5de6c87157dab31da2b23b06",
+      "same_input_bits": true,
+      "caller_sha256": "09c9ca506b0986d38ab40faba706d16301eff8bdb2a5e743a9b01ea52931b013",
+      "flags": [
+        "-O2",
+        "-ffree-form",
+        "-ffree-line-length-none",
+        "-cpp",
+        "-finit-real=zero",
+        "-finit-integer=0",
+        "-finit-logical=false",
+        "-mfma",
+        "-ffp-contract=fast"
+      ],
+      "output_sha256": "e7ac379eabccec3a02eba9a87765833487ad40ce0d9be94181932452224fdc93",
+      "QC0": 3.104321422142675e-06
+    }
+  ],
+  "source_sha256": "29f42e76fbeca027a3ffb2ac805b148aaa1425c7f99ed1d8f19a90ebc1d015f8",
+  "compiled_objects": {
+    "noFMA": {
+      "sha256": "d831dc1077ce076e1cc9340fbb975a1aa91c95a93bcb9d282db4e72ad0283178",
+      "fma_opcode_rows": 0
+    },
+    "FMA": {
+      "sha256": "4ae4d59d6ea9d667385373dfd4b765553cb3648f0780be1104bf93f3c7b0c4dd",
+      "fma_opcode_rows": 712
+    }
+  },
+  "accepted_bound": {
+    "19": {
+      "case": 16,
+      "field": "QC_OUT",
+      "zero_based_level": 0,
+      "min": 3.070793809456518e-06,
+      "max": 3.104321422142675e-06,
+      "scope": "Originalsame-inputREAL4compiler-contractionspread; no general tolerance change"
+    },
+    "21": {
+      "case": 16,
+      "field": "QC_OUT",
+      "zero_based_level": 0,
+      "min": 3.070793809456518e-06,
+      "max": 3.104321422142675e-06,
+      "scope": "Originalsame-inputREAL4compiler-contractionspread; no general tolerance change"
+    }
+  }
+}

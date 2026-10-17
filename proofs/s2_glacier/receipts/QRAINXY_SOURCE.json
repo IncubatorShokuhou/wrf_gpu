@@ -1,0 +1,22 @@
+{
+  "status": "PASS_DEFINED_PER_POINT_COLD_ZERO_HOLD",
+  "source": "<USER_HOME>/src/wrf_pristine/WRF/phys/module_sf_noahmpdrv.F",
+  "source_sha256": "29f16622740d7388a17ff9ba6c2f4640487e44f3f26b8c4bdd47aad42e0a4572",
+  "checked_assignments": [
+    {
+      "line": 823,
+      "assignment": "QRAIN                 = QRAINXY (I,J)"
+    },
+    {
+      "line": 1259,
+      "assignment": "QRAINXY  (I,J)                = QRAIN"
+    },
+    {
+      "line": 2141,
+      "assignment": "qrainxy    (I,J) = 0.0"
+    }
+  ],
+  "meaning": "QRAIN loads the current point before glacier dispatch and is written back unchanged; NOAHMP_INIT supplies its defined zero.",
+  "qualified_scope": "Cold-initialized glacier path; arbitrary nonzero externally seeded QRAINXY outside qualification.",
+  "reference_review": "<USER_HOME>/wrf_gpu2_lanes/rv-s2-glacier/VERDICT.md"
+}

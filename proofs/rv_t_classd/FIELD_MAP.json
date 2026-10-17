@@ -1,0 +1,83 @@
+{
+  "candidate": "165de18b3",
+  "model_tree": "3debec4a5d02e337f00796df99d5453f0889bdd4",
+  "fields": [
+    {
+      "field": "REFL_10CM",
+      "selection": "mp19/21",
+      "wrf_producer": "module_mp_nssl_2mom.F:radardd02 ipconc0; driver S5->S6",
+      "caller_and_writer": "nssl2mom.driver -> diagnostics.online -> nested writer",
+      "carry_or_gate": "Existing radar carry/schema; forced allocation",
+      "evidence": "RV01.xml;original REFL_CPU_HISTORY_c14/c15_dry receipts"
+    },
+    {
+      "field": "REFL_10CM",
+      "selection": "mp10/40 radar1 NWP0",
+      "wrf_producer": "module_mp_morr_two_moment[_aero].F:refl10cm_hm; MP-exit column call",
+      "caller_and_writer": "scan_adapters._morrison_radar_context -> online.radar_from_context -> nested/daily writer",
+      "carry_or_gate": "Existing radar carry/schema",
+      "evidence": "RV01.xml;RV07_fresh_oracle.json;RV11_c08_cpu_provenance.json"
+    },
+    {
+      "field": "QGR_URB4D",
+      "selection": "urban3",
+      "wrf_producer": "module_sf_urban.F:2947;module_sf_bep_bem.F:1059",
+      "caller_and_writer": "initial_multilayer_carry(smois=noahmp_land.smois) -> apply_urban_multilayer -> nested writer",
+      "carry_or_gate": "New green_roof leaf;native E78 FAIL F1",
+      "evidence": "RV05_urban_cpu.json;RV05_metadata.json;RV02_restart.json"
+    },
+    {
+      "field": "TGR_URB4D",
+      "selection": "urban3 GR/PV0",
+      "wrf_producer": "module_sf_urban.F:2948;module_sf_bep_bem.F:1055-1060",
+      "caller_and_writer": "producer_history.URBAN_ZERO_FIELDS",
+      "carry_or_gate": "Prescribed+0;active branch refused",
+      "evidence": "RV05_urban_cpu.json;RV05_metadata.json"
+    },
+    {
+      "field": "DRAINGR_URB3D",
+      "selection": "urban3 GR/PV0",
+      "wrf_producer": "module_sf_urban.F:2949;module_sf_bep_bem.F:1055-1060",
+      "caller_and_writer": "producer_history.URBAN_ZERO_FIELDS",
+      "carry_or_gate": "Prescribed+0;active branch refused",
+      "evidence": "RV05_urban_cpu.json;RV05_metadata.json"
+    },
+    {
+      "field": "EP_PV_URB3D",
+      "selection": "urban3 GR/PV0",
+      "wrf_producer": "module_sf_urban.F:2935;module_sf_bem.F:903 PV-weighted",
+      "caller_and_writer": "producer_history.URBAN_ZERO_FIELDS",
+      "carry_or_gate": "Prescribed+0;active branch refused",
+      "evidence": "RV05_urban_cpu.json;RV05_metadata.json"
+    },
+    {
+      "field": "QNBCA",
+      "selection": "mp28/38 wif!=2",
+      "wrf_producer": "module_mp_thompson.F:1336-1338 nbca=0",
+      "caller_and_writer": "scalar_initialization rejects nonzero input -> producer_history.inactive_names",
+      "carry_or_gate": "Zero-input branch;wif2refused",
+      "evidence": "RV01.xml;RV05_constants_cpu.json;RV05_metadata.json"
+    },
+    {
+      "field": "TAOD5502D",
+      "selection": "mp28/38 aer_opt0",
+      "wrf_producer": "module_radiation_driver.F:1653-1689 aer_opt3 gate",
+      "caller_and_writer": "namelist admission -> producer_history.inactive_names",
+      "carry_or_gate": "Prescribed+0;aer_opt3refused",
+      "evidence": "RV01.xml;RV05_constants_cpu.json;RV05_metadata.json"
+    },
+    {
+      "field": "MSKF_REFL_10CM",
+      "selection": "mp40",
+      "wrf_producer": "module_mp_morr_two_moment_aero.F:1183-1203",
+      "caller_and_writer": "radar0 prescribedzero;radar1 nested/daily use held REFL",
+      "carry_or_gate": "Radar1 source-zero convention on upstreamOOB;active CPU qualification pending",
+      "evidence": "RV01.xml;RV05_constants_cpu.json;UPSTREAM_WRF_BUGS.md"
+    }
+  ],
+  "notes": [
+    "NSSL density finding outside contract verdict",
+    "Source references identify bodies;exact oracle source hashes in RV07",
+    "No GPU/coupled trajectory/performance qualification claimed"
+  ]
+}

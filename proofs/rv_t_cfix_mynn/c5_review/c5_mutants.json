@@ -1,0 +1,24 @@
+{
+ "M7_reformation_in_step_graph": {
+  "file": "coupling/physics_couplers.py",
+  "failed": [
+   "test_limit_reformation_is_traced_only_inside_the_cond"
+  ],
+  "summary": "1 failed, 30 deselected",
+  "setup_errors": 0,
+  "assertion": true,
+  "killed": true,
+  "tail": " jnp.float32) for f in (state.theta_flux, state.qv_flux, state.fltv))\n        jaxpr = jax.make_jaxpr(lambda st, *h: C._mynn_driver_limited_handles(st, grid, *h))(state, *handles)  # E140\n    \n        def prims(j, into_cond=True):  # every primitive, nested jit bodies included (jnp.where is a pjit)\n            out = set()\n            for e in j.eqns:\n                out.add(e.primitive.name)\n                if e.primitive.name == \"cond\" and not into_cond:\n                    continue\n                for v in e.params.values():\n                    for sub in (v if isinstance(v, (tuple, list)) else (v,)):\n                        sub = getattr(sub, \"jaxpr\", sub)\n                        if hasattr(sub, \"eqns\"):\n                            out |= prims(sub, into_cond)\n            return out\n    \n        conds = [e for e in jaxpr.jaxpr.eqns if e.primitive.name == \"cond\"]\n        step_graph = prims(jaxpr.jaxpr, into_cond=False)\n>       assert len(conds) == 1 and not {\"pow\", \"div\", \"log\", \"transpose\", \"select_n\"} & step_graph, step_graph\nE       AssertionError: {'add', 'broadcast_in_dim', 'concatenate', 'convert_element_type', 'div', 'gt', ...}\nE       assert (0 == 1)\nE        +  where 0 = len([])\n\ntests/v025/t_cfix_mynn/test_f20_mynn_caller.py:500: AssertionError\n=========================== short test summary info ============================\nFAILED tests/v025/t_cfix_mynn/test_f20_mynn_caller.py::test_limit_reformation_is_traced_only_inside_the_cond\n1 failed, 30 deselected in 11.97s\n"
+ },
+ "M8_cond_all_columns": {
+  "file": "coupling/physics_couplers.py",
+  "failed": [
+   "test_mynn_view_alone_applies_the_driver_limits"
+  ],
+  "summary": "1 failed, 30 deselected",
+  "setup_errors": 0,
+  "assertion": true,
+  "killed": true,
+  "tail": "_land_grid()\n        # Op by op, like the eager reference below: lax.cond compiles its branch even outside jit, and XLA:CPU\n        # then reassociates the phy_prep divides (E130/E186) -> <= 1 REAL4 ulp vs eager on the beyond columns.\n        with jax.disable_jit():\n            view = C._surface_fluxes_from_state(state, grid)\n        f32 = lambda a: np.asarray(jnp.asarray(a, jnp.float32))  # noqa: E731\n        shared = [f32(state.theta_flux), f32(state.qv_flux), f32(state.fltv)]\n        got = [np.asarray(view.theta_flux), np.asarray(view.qv_flux), np.asarray(view.fltv)]\n        for a in shared + got:  # E200: a degenerate operand (rho 0 -> inf == inf) must not pass vacuously\n            assert np.isfinite(a).all()\n        for g, h in zip(got, shared):\n            assert g.dtype == np.float32 and np.array_equal(_bits(g[~BEYOND]), _bits(h[~BEYOND]))\n>           assert not np.any(_bits(g[BEYOND]) == _bits(h[BEYOND]))\nE           assert not np.True_\nE            +  where np.True_ = <function any at 0x7f9c3436d570>(array([105774... dtype=uint32) == array([105774... dtype=uint32)\nE            +    where <function any at 0x7f9c3436d570> = np.any\nE               \nE               Use -v to get more diff)\n\ntests/v025/t_cfix_mynn/test_f20_mynn_caller.py:436: AssertionError\n=========================== short test summary info ============================\nFAILED tests/v025/t_cfix_mynn/test_f20_mynn_caller.py::test_mynn_view_alone_applies_the_driver_limits\n1 failed, 30 deselected in 13.23s\n"
+ }
+}

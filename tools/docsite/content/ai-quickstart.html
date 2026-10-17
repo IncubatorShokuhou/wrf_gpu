@@ -63,11 +63,11 @@ long each wait should take, roughly like this:</p>
 </ol>
 <div class="admon note">
   <div class="admon-title">Time estimates the agent will quote</div>
-  <p>The first run of a new grid or version includes a one-time compile: the bundled Swiss single-domain
-  example took 380&nbsp;s for its cold 24&nbsp;h run versus 26&nbsp;s warm (grid-dependent; nested cases compile
-  longer). Later runs hit the warm cache. Warm throughput on an RTX 5090 is a few seconds per forecast hour for the
-  two-domain Canary case (4.12&nbsp;s; grid-dependent) — the agent refines the
-  ETA from observed progress. See <a href="performance.html">Performance &amp; GPU Modes</a>.</p>
+  <p>A new geometry/source/target can require cold compilation. Estimate its wait
+  from the actual run and distinguish compile, initialization and stepping.
+  Compatible warm caches can reduce readiness work, but a cache hit is not
+  guaranteed. Historical speed figures retain their version and clocks; see
+  <a href="performance.html">performance evidence</a>.</p>
 </div>
 
 <h2 id="honesty">Use source-specific evidence</h2>
@@ -75,10 +75,8 @@ long each wait should take, roughly like this:</p>
 Prepared inputs, supported schemes, full history, automatic sound steps and memory
 admission have explicit scope. Original CPU-WRF is fidelity truth; selected
 24/72-hour comparisons and all hourly plots are linked on <a href="validation.html">validation</a>.
-The W3 candidate remains held pending its affected gates; no universal observational
-equivalence or old-source transfer is claimed.</p>
+Historical W3 reports retain their dated raw failures and dispositions; no
+universal observational equivalence or old-source transfer is claimed.</p>
 <h2 id="current-operator">Version-matched operator guide</h2><p>The candidate guide and
 <a href="https://github.com/wrf-gpu/wrf_gpu/blob/main/AI_OPERATOR.md">AI_OPERATOR</a> share
-current CLI controls. Direct HTTP confirmed the live published guide v0.3.2 on
-2026-10-07 10:15Z; a five-day-old search crawl is not publication evidence.
-Use original CPU-WRF comparisons with named source and scope, not old GPU output as truth.</p>
+current CLI controls. The v0.4.0 operator runbook and skill cover current controls, fp32 WRF REAL with DOUBLE islands, DFI1/2/3, GPU refusals and analysis tools. Use the installed version's matching evidence; final release approval remains TBD-VALIDATION.</p>

@@ -1,0 +1,128 @@
+{
+  "verdict": "READY-FOR-MERGE",
+  "scope": "Output-only writer PSFC correction; composed source/CPU-qualified seam; no new GPU/fullforecast claim",
+  "UTC": "2026-10-15T05:26:47.123968+00:00",
+  "lane": "s2-integrate",
+  "base_main": "07b94ae6ee79c1df7200d852bbbce1f9e69cbd8a",
+  "approved_head": "b43c721e7dccd9b6dd96385c45fe158f8b41ee55",
+  "merged": "0a0ea2295a38e5aa8546ca6c8ba891a2946026c6",
+  "source_audit": {
+    "UTC": "2026-10-15T05:26:47.123968+00:00",
+    "status": "PASS",
+    "initial": "627a033284dc457a9949c2a32f2c111d0227e6df",
+    "main": "07b94ae6ee79c1df7200d852bbbce1f9e69cbd8a",
+    "before_merge": "36bb615718970fa929d0b89463c882c779feb58a",
+    "incoming": "b43c721e7dccd9b6dd96385c45fe158f8b41ee55",
+    "merged": "0a0ea2295a38e5aa8546ca6c8ba891a2946026c6",
+    "src_tree": "e0599aa82f54473560fc065bdb7e27706a6730e9",
+    "conflicts": 0,
+    "AST_files": [
+      "proofs/t_writer_psfc/bench.py",
+      "proofs/t_writer_psfc/mutant.py",
+      "src/gpuwrf/io/wrfout_writer.py",
+      "tests/test_writer_psfc_active_moist.py"
+    ],
+    "only_changed_product": "src/gpuwrf/io/wrfout_writer.py",
+    "writer_and_new_tests_BYTE_reviewed": true,
+    "shared_moisture_helper_BYTE_reviewed": true,
+    "only_source_difference_from_review": "Main independently accepted Goddard2048 module, outside host-writer dependency closure",
+    "only_test_difference_from_review": "Main already accepted and final-tested BL11 patch; kept unchanged",
+    "all_other_product_inputs_scripts_packaging_BYTE_main": true,
+    "producer_packet_and_raw_SHA_fresh": 20,
+    "source_reuse": "Writer imports unchanged shared moisture/Registry/IO contracts, no Goddard dependency. All95paid checks and host timing source-bound unchanged; no repeated numerical/default/native/forecast arm."
+  },
+  "integrator_numerical_edits": false,
+  "fresh_numerical_executions": 0,
+  "CPU_checks_reused": {
+    "tests": 98,
+    "pass": 95,
+    "fail": 0,
+    "skip": 3,
+    "errors": 0,
+    "failed_nodes": []
+  },
+  "new_writer_tests_reused_PASS": 26,
+  "genuine_numeric_mutant_reused": {
+    "tests": 8,
+    "pass": 4,
+    "fail": 4,
+    "skip": 0,
+    "errors": 0,
+    "failed_nodes": [
+      "test_direct_writer_all_masses_match_original[optional1-state-full]",
+      "test_direct_writer_all_masses_match_original[optional1-state-psfc_only]",
+      "test_direct_writer_all_masses_match_original[optional1-wrf_alias-full]",
+      "test_direct_writer_all_masses_match_original[optional1-wrf_alias-psfc_only]"
+    ]
+  },
+  "default_FULL_ids_reused": {
+    "Swiss": "f672a5739cb96e388b6b7a40ef80337bf81bdc14ef15268f3476e09d79fe055d",
+    "PROD": "6fc715a2bd630934c4cf0f94427df19a527cbf429011c9ba5efe4d712744d27b"
+  },
+  "reference": "Compiled pristine REAL4 phy_prep; unchanged source/body/helper hashes verified by samecritic; all26newwriter tests include nonuniform active columns/aliases/batching/overrides/compatibility/hailNetCDF.",
+  "performance_memory": {
+    "independent_host_receipt": "rv-t-writer-psfc-host_bench.json",
+    "full_no_hail_ms": [
+      11.171,
+      11.224
+    ],
+    "full_no_hail_python_numpy_peak_MB": [
+      80.738,
+      61.18
+    ],
+    "full_timing": "Unchangedwithinnoise; producerfull-writer speedup not independently established",
+    "selected_no_hail_ms": [
+      1.946,
+      6.162
+    ],
+    "selected_python_numpy_peak_MB": [
+      34.371,
+      55.681
+    ],
+    "selected_extra_ms": 4.216,
+    "selected_extra_peak_MB": 21.311,
+    "no_hail_full_output_fields_BYTE": 55,
+    "scope": "Seven-sample controlled host output boundary, not S1/VRAM/GPU speed. No timestep device arithmetic/transfers or newcarry; optional massvolumes join one existing device_get batch. Selectedresidenthybrid PSFC intentionally changes evenwithout hail. HeldPSFCwins; fallbackevaluatedeagerlybeforeoverride."
+  },
+  "open_risks": [
+    "3unavailable-reference checks explicitlySKIP/unwaived.",
+    "AffectedhailGPU/D6/E41/24-72h/station/globalF2 remainOPEN.",
+    "Directpoststepfallback is not proof of operationalstepstart PSFC timing; heldproducer override preserved.",
+    "Existing27-outputP3radar GPU/E41/fullD6/perf and Goddardwholemodel qualification remain separate.",
+    "Inheritedallocationreds/broadsmokeOOM/experimentalUB/strictFMA limits carriedunchanged."
+  ],
+  "cleanup": {
+    "new_snapshots": 0,
+    "new_cache_dirs": 0,
+    "new_pytest_temp_dirs": 0,
+    "own_model_jobs": 0,
+    "cache": "NONE",
+    "GPU_requested": false
+  },
+  "proof_files": {
+    "rv-t-writer-psfc-VERDICT.md": "dd7075a2b84264e586f9a7a1731ec0180a8597f9fc5eb8d68ce315c47de59e73",
+    "rv-t-writer-psfc-REVIEW.json": "a56dfb8d32b4940a5eb5cecac6018e07b7e23085e5f9eb346b82d9f4ca7bd73b",
+    "rv-t-writer-psfc-key_tests.xml.gz": "1b68ffd3f21545e7f36cb7b6ae86a3af69e8574d1e92ea32e3ef77277650b4ae",
+    "rv-t-writer-psfc-deletion_mutant.xml.gz": "7c29cbf9b387b6a7aee13d59b3b6cd5035b143bb1f05e64ac60ba4d5c5c98ad4",
+    "rv-t-writer-psfc-source_receipt_audit.json": "f590186c3b0507adaa93c18a67982c8bdf47540f766b292f68e718eb41331bee",
+    "rv-t-writer-psfc-oracle_provenance.json": "70e00a1fcae6e0782632b51c49fc2f0379266e7978eb23d90483a290f9a11299",
+    "rv-t-writer-psfc-host_bench.json": "b0b85ffd9a1a77700717e1a531633265056e4752a723bdd37a45ab141af741b9",
+    "rv-t-writer-psfc-swiss_release.json": "d2f23b15dd2b61ebf672ce551bd51b85e99292356e84395b2e6bb549d2eda476",
+    "rv-t-writer-psfc-prod_release.json": "9265598b151c3082cf16d897c608d3b9d602be0fa326886a61ce57829fab9969",
+    "integrate_batch21.py": "6337cebd50a807b725664a847e3bbfbf9510e40ec3443bd1cf7f7691fcc00742",
+    "SOURCE_AUDIT.json": "2e6354ecee6070e5504fb6be98ab28caa6108740f8a0452ff932a128f10b5692"
+  },
+  "uncompressed_sha256": {
+    "rv-t-writer-psfc-VERDICT.md": "dd7075a2b84264e586f9a7a1731ec0180a8597f9fc5eb8d68ce315c47de59e73",
+    "rv-t-writer-psfc-REVIEW.json": "a56dfb8d32b4940a5eb5cecac6018e07b7e23085e5f9eb346b82d9f4ca7bd73b",
+    "rv-t-writer-psfc-key_tests.xml": "0d67e859a9472e7f9a3b270419d53febd0b6c194e03c2a7839ed8c972df7fb0b",
+    "rv-t-writer-psfc-deletion_mutant.xml": "38272154e42ca1dc1a46541779090918253250ebbf4aceb77d2ba69a1309f8ec",
+    "rv-t-writer-psfc-source_receipt_audit.json": "f590186c3b0507adaa93c18a67982c8bdf47540f766b292f68e718eb41331bee",
+    "rv-t-writer-psfc-oracle_provenance.json": "70e00a1fcae6e0782632b51c49fc2f0379266e7978eb23d90483a290f9a11299",
+    "rv-t-writer-psfc-host_bench.json": "b0b85ffd9a1a77700717e1a531633265056e4752a723bdd37a45ab141af741b9",
+    "rv-t-writer-psfc-swiss_release.json": "d2f23b15dd2b61ebf672ce551bd51b85e99292356e84395b2e6bb549d2eda476",
+    "rv-t-writer-psfc-prod_release.json": "9265598b151c3082cf16d897c608d3b9d602be0fa326886a61ce57829fab9969",
+    "integrate_batch21.py": "6337cebd50a807b725664a847e3bbfbf9510e40ec3443bd1cf7f7691fcc00742",
+    "SOURCE_AUDIT.json": "2e6354ecee6070e5504fb6be98ab28caa6108740f8a0452ff932a128f10b5692"
+  }
+}

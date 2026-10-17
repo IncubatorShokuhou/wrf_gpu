@@ -1,0 +1,266 @@
+{
+  "base": "0b3d3996f",
+  "candidate": "ec2511ab3",
+  "checks": {
+    "STATE_FIELD_ORDER": {
+      "main_prefix": 86,
+      "appended": [
+        "Constant(value='tracers')",
+        "Constant(value='tracer_bdy')",
+        "Constant(value='tracer_budget')"
+      ]
+    },
+    "conditional_state": {
+      "main_prefix": 11,
+      "appended": [
+        "tracers",
+        "tracer_bdy",
+        "tracer_budget"
+      ]
+    },
+    "State_slots": {
+      "main_prefix_expressions": 99,
+      "appended": [
+        "tracers",
+        "tracer_bdy",
+        "tracer_budget"
+      ]
+    },
+    "OperationalCarry": {
+      "main_prefix": 52,
+      "appended": [
+        "windfarm_power",
+        "tracer_tendencies",
+        "ocean",
+        "hurricane_ustm"
+      ]
+    },
+    "OperationalNamelist": {
+      "main_prefix": 98,
+      "appended": [
+        "windfarm_opt",
+        "windfarm_ij",
+        "windfarm_tke_factor",
+        "windfarm",
+        "tracer_opt",
+        "tracer_adv_opt",
+        "tracer_mix2_off",
+        "tracer_mix6_off",
+        "tracer_pblmix",
+        "tracer_config",
+        "gpuwrf_tracer_file",
+        "sf_ocean_physics",
+        "oml_hml0",
+        "oml_gamma",
+        "oml_relaxation_time",
+        "isftcflx",
+        "ocean_initial"
+      ]
+    },
+    "OPTIONAL_CARRY_FIELDS": {
+      "main_prefix": 36,
+      "appended": [
+        "windfarm_power",
+        "tracer_tendencies",
+        "ocean",
+        "hurricane_ustm"
+      ]
+    },
+    "_LATE_PYTREE_CARRY_FIELDS": {
+      "main_prefix": 19,
+      "appended": [
+        "windfarm_power",
+        "tracer_tendencies",
+        "ocean",
+        "hurricane_ustm"
+      ]
+    },
+    "PRECISION_MATRIX": {
+      "main_prefix": 91,
+      "new_entries": 3
+    },
+    "_IMPLEMENTED_CONTROLS": {
+      "main_prefix": 5,
+      "new_entries": 1
+    },
+    "_IMPLEMENTED_CONTROL_REASON": {
+      "main_prefix": 5,
+      "new_entries": 1
+    },
+    "catalog_notes": {
+      "main_prefix": 50,
+      "appended": [
+        [
+          "windfarm_opt",
+          1
+        ],
+        [
+          "tracer_opt",
+          2
+        ],
+        [
+          "sf_ocean_physics",
+          1
+        ]
+      ],
+      "approved_updates": [
+        [
+          "sf_urban_physics",
+          2
+        ],
+        [
+          "sf_urban_physics",
+          3
+        ],
+        [
+          "sf_urban_physics",
+          1
+        ]
+      ]
+    },
+    "physics_interfaces": "BYTE approved OML c81780048; existing registry BYTE main",
+    "approved_camuw_seams": "AST exact CAM raw rates/QNI/TPERT/KPBL and RRTMG cloud functions",
+    "native_identity": {
+      "main_prefix": 16,
+      "appended": [
+        "Constant(value='windfarm_config')",
+        "Constant(value='urban_inputs_config')",
+        "**unpack",
+        "Constant(value='tracer_config')"
+      ]
+    },
+    "all_existing_source_definitions_retained": 1241
+  },
+  "owned_blob_identities": {
+    "src/gpuwrf/physics/pbl_eeps.py": {
+      "approved": "ea5ecaf22",
+      "sha256": "4481720e51b3d42d0973c65c56155ad6d3fbf52413a311dacc0769dc96880d40"
+    },
+    "src/gpuwrf/physics/pbl_keps.py": {
+      "approved": "ea5ecaf22",
+      "sha256": "18b5ebbc9d932969ad18a10433da93220a570c9bde156ad67813fd7c711e6355"
+    },
+    "src/gpuwrf/coupling/epsilon_pbl.py": {
+      "approved": "ea5ecaf22",
+      "sha256": "d0cef86a50ff4e4ffd3b14f356c709e6916deb64c8cfb33dd177776be81fc55d"
+    },
+    "src/gpuwrf/io/pbl_epsilon_schema.py": {
+      "approved": "ea5ecaf22",
+      "sha256": "410afdd6866185efc06394efa7094dac78c80c87cf12ef8e24c43c4ca7c1ee0d"
+    },
+    "src/gpuwrf/physics/wind_fitch.py": {
+      "approved": "9e1412d88",
+      "sha256": "32a8402ecec8bb399d0b5828f7e7c0806eb3beb55293472361a67c9d18213ef7"
+    },
+    "src/gpuwrf/coupling/windfarm_hook.py": {
+      "approved": "9e1412d88",
+      "sha256": "fa5287cebed8463817533b433b32046d377afc6dc0c783ff0cd4871af9df051a"
+    },
+    "src/gpuwrf/io/windfarm.py": {
+      "approved": "9e1412d88",
+      "sha256": "591ffffd1a18be2e2d17ee0df1fa143efc0a4660b2de870cd491e9233d4bd67d"
+    },
+    "src/gpuwrf/io/windfarm_schema.py": {
+      "approved": "9e1412d88",
+      "sha256": "d81725c925209466510adabca15046c8d735272cc9b6cd273bc371eb8ef39a53"
+    },
+    "proofs/u2_windfarm/oracle.npz": {
+      "approved": "9e1412d88",
+      "sha256": "d14c7716fc8d5ae9a170fa035ddf5c209e97bae4393e8300df2f44fe34966f92"
+    },
+    "src/gpuwrf/physics/urban_slucm.py": {
+      "approved": "01620288f",
+      "sha256": "e161835dbc9f7406d235bc005442ae10157e758db9a356abec99bdbf10e3256b"
+    },
+    "src/gpuwrf/coupling/urban_inputs.py": {
+      "approved": "01620288f",
+      "sha256": "fc1cec450272d35a5465b0206370f6b509b8c419bac0681899ac8704224d579f"
+    },
+    "src/gpuwrf/coupling/urban_slucm_hook.py": {
+      "approved": "01620288f",
+      "sha256": "de11bc8983097cd7b51aa24cbfe0fe2abbfb465951f5136a28653456b09b7dc3"
+    },
+    "src/gpuwrf/io/urban_schema.py": {
+      "approved": "01620288f",
+      "sha256": "cced1f3ec836eec4965290989438810e015847314a265968f2a4301980077732"
+    },
+    "src/gpuwrf/physics/ocean_mixed_layer.py": {
+      "approved": "c81780048",
+      "sha256": "a3f7918cc758bc052685ef17bb39b38952536002ab4c485a15258db4b158e62b"
+    },
+    "src/gpuwrf/physics/hurricane_flux.py": {
+      "approved": "c81780048",
+      "sha256": "285f0faf44bdb614a35b05b49d8933df901825d7bf1f8616217f330d2caa0ab9"
+    },
+    "src/gpuwrf/physics/sfclay_old_mm5.py": {
+      "approved": "c81780048",
+      "sha256": "a728e095e00fa9a5af1303cb3399fe045e94739200c76b912eed6c488bcc6e2d"
+    },
+    "src/gpuwrf/physics/surface_layer.py": {
+      "approved": "c81780048",
+      "sha256": "33962bdcfe05e1a960aeac149732fe3ed02977a7b32172c043a889057d6381fe"
+    },
+    "src/gpuwrf/physics/sfclay_revised_mm5.py": {
+      "approved": "c81780048",
+      "sha256": "6c9876907365b86cdb349d8f191a59a24a6121e1c7254a3d57b5f057b3940d3b"
+    },
+    "src/gpuwrf/coupling/ocean_surface_hook.py": {
+      "approved": "c81780048",
+      "sha256": "0d8be1c09942f488b067143cadf8aa1a315b493105e457a3009469b989fcb178"
+    },
+    "src/gpuwrf/coupling/hurricane_surface_hook.py": {
+      "approved": "c81780048",
+      "sha256": "58dac882c1a7c6113cd8d5c7244bf96c0794613eb8e82b36c2751157b50e9fbc"
+    },
+    "src/gpuwrf/io/ocean_schema.py": {
+      "approved": "c81780048",
+      "sha256": "980c025517236be2c6c2006ce7a398972dee86d4870f753adcc4df2f75148692"
+    },
+    "src/gpuwrf/io/ocean_init.py": {
+      "approved": "c81780048",
+      "sha256": "8c5d17eca01052b7f1c2f3dd7f00af7b4e403df876e69b12dc9d538f62ac277b"
+    },
+    "src/gpuwrf/io/ocean_options.py": {
+      "approved": "c81780048",
+      "sha256": "5be17f88a8e1a8153a9cd9fcb52bf3642572d9f798893fc21ebfa197381ff7e7"
+    },
+    "src/gpuwrf/physics/cloud_fraction.py": {
+      "approved": "eb73c8c3b",
+      "sha256": "b61d44943a74492f3344c0e11fb8e61dec7c1792ea4477ad47425fc98eef7dad"
+    },
+    "src/gpuwrf/tracers/__init__.py": {
+      "approved": "908196975",
+      "sha256": "a50fc3f8b56f4f4d97d70e00c93ddc88be8bd3ad2b3d06a237f27d00debdbf5a"
+    },
+    "src/gpuwrf/tracers/config.py": {
+      "approved": "908196975",
+      "sha256": "5ceb09eb758563ffcbad6c29798fc0f7bd9703a7bb6ec600dd0de9844a0606d7"
+    },
+    "src/gpuwrf/tracers/history.py": {
+      "approved": "908196975",
+      "sha256": "d715c9045badc7f9fea9cc6a4bb9d0d68fd557c79bf8eb63eddedf9066ea7e9c"
+    },
+    "src/gpuwrf/tracers/pbl.py": {
+      "approved": "908196975",
+      "sha256": "a4229f6efe5be68e951747f441ee231431646d4fe82baeeb33705cbb8d18073f"
+    },
+    "src/gpuwrf/tracers/restart.py": {
+      "approved": "908196975",
+      "sha256": "6e3af9969f0b92d9ef7c7443724b5bab23d2b6d5f4d4d690482b009d02cf36c9"
+    },
+    "src/gpuwrf/tracers/runtime.py": {
+      "approved": "908196975",
+      "sha256": "260ce65ab1067f131e3b12147de67ca6a43ff069637723d81673b20208310088"
+    }
+  },
+  "proof_files_byte": {
+    "proofs/s2_keps": 29,
+    "proofs/u2_windfarm": 42,
+    "proofs/v040/urban_lcz": 72,
+    "proofs/u2_tracers": 18,
+    "proofs/s2_oml": 33,
+    "proofs/t_camuw": 47
+  },
+  "result": "PASS",
+  "GPU_execution": false
+}

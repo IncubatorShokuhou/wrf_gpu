@@ -12,7 +12,9 @@ from functools import partial
 
 import jax
 import jax.numpy as jnp
-from jax.experimental import pallas as pl
+
+from gpuwrf.dynamics.time_direction import upwind_sign
+from gpuwrf.backends import pallas as pl
 from jax.experimental.pallas import triton as pt
 
 F = jnp.float32
@@ -20,7 +22,7 @@ F = jnp.float32
 
 def _tiered(qm3, qm2, qm1, qc, qp1, qp2, v, m, extent, upstream):
     """specified_flux_faces value at face m (between cells m-1, m) times v."""
-    sign = jnp.where(v >= F(0), F(1), F(-1))
+    sign = upwind_sign(jnp.where(v >= F(0), F(1), F(-1)))
     f6 = (F(37) * (qc + qm1) - F(8) * (qp1 + qm2) + (qp2 + qm3)) / F(60)
     f5 = f6 - sign * ((qp2 - qm3) - F(5) * (qp1 - qm2) + F(10) * (qc - qm1)) / F(60)
     f4 = (F(7) * (qc + qm1) - (qp1 + qm2)) / F(12)
@@ -38,7 +40,7 @@ def _tiered(qm3, qm2, qm1, qc, qp1, qp2, v, m, extent, upstream):
 
 def _flux3(qm2, qm1, qc, qp1, v):
     """flux3(q, -v) * v as in _vertical_flux_div_3 (sign(-v); v == 0 gives 0)."""
-    sign = jnp.where(v <= F(0), F(1), F(-1))
+    sign = upwind_sign(jnp.where(v <= F(0), F(1), F(-1)))
     f4 = (F(7) * (qc + qm1) - (qp1 + qm2)) / F(12)
     return v * (f4 + sign * ((qp1 - qm2) - F(3) * (qc - qm1)) / F(12))
 
@@ -175,7 +177,7 @@ def _w_kernel(w, ru, rv, rom, msf, rdn, fzm, fzp, out, *, nzp1, ny, nx, rdx, rdy
         vel = F(.5) * (rf(f) + rf(f - 1))
         qm2, qm1, qc, qp1 = zq[shift:shift + 4]  # w(f-2..f+1)
         second = vel * (F(.5) * (qc + qm1))
-        sign = jnp.where(-vel > F(0), F(1), jnp.where(-vel < F(0), F(-1), F(0)))
+        sign = upwind_sign(jnp.where(-vel > F(0), F(1), jnp.where(-vel < F(0), F(-1), F(0))))
         f4 = (F(7) * (qc + qm1) - (qp1 + qm2)) / F(12)
         third = vel * (f4 + sign * ((qp1 - qm2) - F(3) * (qc - qm1)) / F(12))
         return jnp.where((f >= 2) & (f <= nz - 1), third, jnp.where((f == 1) | (f == nz), second, F(0)))

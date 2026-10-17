@@ -95,6 +95,7 @@ def gs_part_a(an, t0, t7, t00, t77, pn, wn, dn, dz, dtp, C, prec, setvtz_fn=None
     """
     R = prec.R
     r = C.R  # numpy scalar type of REAL literals
+    one_moment = C.ipconc == 0
     an = jnp.asarray(an, R)
     t0 = jnp.asarray(t0, R)
     t7 = jnp.asarray(t7, R)
@@ -235,14 +236,16 @@ def gs_part_a(an, t0, t7, t00, t77, pn, wn, dn, dz, dtp, C, prec, setvtz_fn=None
 
     cx = {il: zero for il in _LC_LHAB}
     # ipconc >= 1
-    cx[LI] = jnp.maximum(an[LNI], r(0.0))
-    cx[LI] = _w(qx[LI] <= C.qxmin[LI], r(0.0), cx[LI])
+    if not one_moment:
+        cx[LI] = jnp.maximum(an[LNI], r(0.0))
+        cx[LI] = _w(qx[LI] <= C.qxmin[LI], r(0.0), cx[LI])
     G["cina"] = cx[LI]  # lcina = 0
     # ipconc >= 2
-    cx[LC] = jnp.maximum(an[LNC], r(0.0))
-    cx[LC] = _w(qx[LC] <= C.qxmin[LC], r(0.0), cx[LC])
-    G["ccnc"] = an[LCCN]
-    G["ccna"] = an[LCCNA]
+    if not one_moment:
+        cx[LC] = jnp.maximum(an[LNC], r(0.0))
+        cx[LC] = _w(qx[LC] <= C.qxmin[LC], r(0.0), cx[LC])
+    G["ccnc"] = zero if one_moment else an[LCCN]
+    G["ccna"] = zero if one_moment else an[LCCNA]
 
     def _num(il, ln, zero_below):
         c = jnp.maximum(an[ln], r(0.0))
@@ -257,21 +260,26 @@ def gs_part_a(an, t0, t7, t00, t77, pn, wn, dn, dz, dtp, C, prec, setvtz_fn=None
         # ilimit (=0) >= ipc(il) is false for ls/lh/lhl: no intercept limiter
         cx[il] = c
 
-    _num(LR, LNR, False)  # ipconc >= 3
-    _num(LS, LNS, False)  # ipconc >= 4
-    _num(LH, LNH, False)  # ipconc >= 5
-    _num(LHL, LNHL, True)  # lhl > 1
+    if not one_moment:
+        _num(LR, LNR, False)  # ipconc >= 3
+        _num(LS, LNS, False)  # ipconc >= 4
+        _num(LH, LNH, False)  # ipconc >= 5
+        _num(LHL, LNHL, True)  # lhl > 1
 
     # volumes (ldovol): lvol(lh) = lvh, lvol(lhl) = lvhl; lvol(li) = lvol(ls) = 0
     vx = {il: zero for il in _LI_LHAB}
-    vx[LH] = jnp.maximum(an[LVH], r(0.0))
-    vx[LHL] = jnp.maximum(an[LVHL], r(0.0))
+    if not one_moment or C.variant == 19:
+        vx[LH] = jnp.maximum(an[LVH], r(0.0))
+    if not one_moment:
+        vx[LHL] = jnp.maximum(an[LVHL], r(0.0))
     G["fhw"], G["fsw"], G["fhlw"] = zero, zero, zero
 
     # ipconc == 5: g1x factors (lines 14400-14410)
     def _g1(a):
         return (r(6.0) + a) * (r(5.0) + a) * (r(4.0) + a) / ((r(3.0) + a) * (r(2.0) + a) * (r(1.0) + a))
     G["g1x"] = {LR: full(_g1(C.alphar)), LH: full(_g1(C.alphah)), LHL: full(_g1(C.alphahl))}
+    if one_moment:
+        G["g1x"] = {il: zero for il in (LR, LH, LHL)}
     G["scx"] = {il: zero for il in _LC_LHAB}
 
     # shape parameters (14417-14444)
@@ -296,6 +304,8 @@ def gs_part_a(an, t0, t7, t00, t77, pn, wn, dn, dz, dtp, C, prec, setvtz_fn=None
     G["rzxhl"] = full(C.rzhl)
     G["rzxs"] = full(C.rzs)  # imurain == 1, imusnow == 3, lzr < 1
     G["da0lhl"] = full(C.da0[LHL])
+    if one_moment and C.variant == 21:
+        G['da0lhl'] = zero  # Original14472: no assignment when lhl==0.
     G["ventrx"] = full(C.ventr)
     G["ventrxn"] = full(C.ventrn)
     G["gf1palp"] = jnp.broadcast_to(mathfun.gamma_sp(r(1.0) + C.alphar, R), shape)
@@ -374,6 +384,10 @@ def gs_part_a(an, t0, t7, t00, t77, pn, wn, dn, dz, dtp, C, prec, setvtz_fn=None
     vx[LHL] = _w(c2, rho0 * qx[LHL] / xdn[LHL], vx[LHL])
     G["dnmx"] = dnmx
     G["xdntmp"] = xdntmp
+    if one_moment:
+        vx[LHL] = zero
+        if C.variant == 21:
+            vx[LH] = zero
     # (imydiagalpha == 2 block 14674-14776 dead)
 
     # rain shape factors for melting/shedding (imurain == 1, lzr <= 1)
@@ -411,12 +425,14 @@ def gs_part_a(an, t0, t7, t00, t77, pn, wn, dn, dz, dtp, C, prec, setvtz_fn=None
     # setvtz rain branch (module lines 7075-7079): with infdo < 2 Fortran sets the Z-weighted rain
     # fall speed to the mass-weighted one where qr > qxmin. Idempotent guard (fallspeed.setvtz
     # omitted this ELSE branch when first ported).
-    if G["infdo"] < 2:
+    if G["infdo"] < 2 and not one_moment:
         vt = dict(G["vtxbar"])
         vt[(LR, 3)] = jnp.where(G["qx"][LR] > C.qxmin[LR], vt[(LR, 1)], vt[(LR, 3)])
         G["vtxbar"] = vt
 
     _post_setvtz(G, C, prec, shape)
+    if one_moment:
+        G['cina'] = G['cx'][LI]  # WRF15601 ipconc<1
     return G
 
 
@@ -432,7 +448,8 @@ def _setvtz_call(setvtz, G, C, prec):
     bxx = {il: z for il in _LH_LHAB}
     return setvtz(G["qx"], G["cx"], G["rho0"], G["rhovt"], G["xdia"], G["xmas"], G["vtxbar"], G["xdn"],
                   G["xv"], cdxgs, G["fadvisc"], G["temcg"], G["alpha"], axx, bxx, C=C, prec=prec,
-                  infdo=G["infdo"], ildo=0, cnostmp=G["cnostmp"])
+                  infdo=G["infdo"], ildo=0, cnostmp=G["cnostmp"],
+                  **({'cnina': G['cnina']} if C.ipconc == 0 else {}))
 
 
 def _post_setvtz(G, C, prec, shape):
@@ -457,6 +474,10 @@ def _post_setvtz(G, C, prec, shape):
     rh = jnp.where(big, jnp.maximum(D(41.e-6), D(6.3e-4) / (D(1.e6) * (jnp.where(big, rb, D(1.0)) - D(3.5e-6)))), D(41.e-6))
     nh = jnp.where(xl2p > 0.0, D(4.2e9) * xl2p, dl(1.e30))
     G["rb"], G["xl2p"], G["rh"], G["nh"] = rb, xl2p, rh, nh
+    if C.ipconc == 0:
+        # The ipconc>=2 block is skipped (15632). These locals are unused
+        # by the corresponding one-moment collection/autoconversion paths.
+        G['rb'],G['xl2p'],G['rh'],G['nh'] = (jnp.zeros(shape,D),)*4
 
     # depletion limits (15656-15716)
     qvimxd = r(0.70) * (qx[LV] - G["qis"]) * dtpinv
@@ -531,6 +552,28 @@ def _post_setvtz(G, C, prec, shape):
     G["eiw"] = eiw
     # rain-cloud (lnr > 1)
     erw = jnp.where(has[LR] & has[LC], r(1.0), zero)
+    if C.ipconc == 0:
+        # Original15964..16001, including its x2 row icp1 (literal WRF).
+        cwr = jnp.asarray(_CWR, R).T
+        grad = jnp.asarray(_GRAD, R).T
+        ew = jnp.asarray([[.03,.10,.15,.17,.17,.15], [.07,.20,.31,.37,.40,.37],
+                          [.17,.34,.44,.50,.54,.52], [.41,.58,.65,.70,.71,.74],
+                          [.58,.70,.75,.81,.83,.82], [.69,.78,.83,.87,.88,.88],
+                          [.82,.88,.96,.93,.94,.94], [.88,.92,.91,.96,.98,.98]], R)
+        cr = r(.5)*xdia[(LC, 3)]
+        rr = r(.5)*xdia[(LR, 3)]
+        ic = jnp.sum(cr[...,None] >= r(1.e-6)*cwr[:,0], axis=-1)
+        ir = jnp.sum(rr[...,None] >= r(1.e-6)*grad[:,0], axis=-1)
+        ic,ir = jnp.maximum(1,ic),jnp.maximum(1,ir)
+        icp,irp = jnp.minimum(8,ic+1),jnp.minimum(6,ir+1)
+        slope1 = (ew[icp-1,ir-1]-ew[ic-1,ir-1])*cwr[ic-1,1]
+        slope2 = (ew[icp-1,irp-1]-ew[ic-1,irp-1])*cwr[ic-1,1]
+        x1 = ew[ic-1,ir-1]+slope1*jnp.maximum(r(0.),cr-cwr[ic-1,0])
+        x2 = ew[icp-1,ir-1]+slope2*jnp.maximum(r(0.),cr-cwr[ic-1,0])
+        slope1 = (x2-x1)*grad[ir-1,1]
+        ev = jnp.maximum(r(0.),x1+slope1*jnp.maximum(r(0.),rr-grad[ir-1,0]))
+        ev = jnp.where(rr<r(50.e-6),zero,jnp.where(rr<r(100.e-6),ev*(rr-r(50.e-6))/r(50.e-6),ev))
+        erw = jnp.where(has[LR]&has[LC],ev,zero)
     G["erw"] = jnp.where(cx[LC] <= 0.0, r(0.0), erw)
     G["err"] = jnp.where(has[LR], r(1.0), zero)
     G["ers"] = jnp.where(has[LR] & has[LS], r(1.0), zero)
@@ -551,17 +594,23 @@ def _post_setvtz(G, C, prec, shape):
     G["esr"] = jnp.where(c, jnp.exp(-(r(40.e-6) ** 3) / xv_lr) * jnp.exp(-r(40.e-6) / xd_ls), zero)
     G["il2"] = jnp.where(c & (qx[LS] < r(1.e-4)) & (qx[LR] < r(1.e-4)), 1, 0).astype(jnp.int32)
     G["il3"] = jnp.zeros(shape, jnp.int32)  # ipconc < 3 dead
+    if C.ipconc == 0:
+        G['il3'] = ((temg < C.tfr) & has[LR] & (qx[LR] < r(1.e-4))).astype(jnp.int32)
     # snow aggregation (iessopt = 1)
     fac = abs(C.ess0)
     ramp = fac * jnp.exp(C.ess1 * (C.esstem2)) * (temcg - C.esstem1) / (C.esstem2 - C.esstem1)
     hi = fac * jnp.exp(C.ess1 * jnp.minimum(temcg, r(0.0)))
     ess = jnp.where((temcg > C.esstem1) & (temcg < C.esstem2), ramp, jnp.where(temcg >= C.esstem2, hi, zero))
     G["ess"] = jnp.where((temcg < 0.0) & ~(temcg < C.esstem1), ess, zero)  # ipconc >= 4
+    if C.ipconc == 0:
+        G['ess'] = zero
     G["ehsfac"] = one
     # snow-ice
     c = has[LS] & has[LI]
     G["esiclsn"] = jnp.where(c, r(ESI_COLLSN), zero)
     esi = jnp.minimum(r(0.1), C.esi0 * jnp.exp(r(0.1) * jnp.minimum(temcg, r(0.0))))
+    if C.ipconc == 0:
+        esi = jnp.exp(r(.025)*jnp.minimum(temcg,r(0.)))
     esi = jnp.where(temg > r(273.15), r(0.0), esi)
     G["esi"] = jnp.where(c, esi, zero)
     # graupel
@@ -579,6 +628,8 @@ def _post_setvtz(G, C, prec, shape):
     ehr = jnp.exp(-(r(40.e-6)) / xd_r) * jnp.exp(-r(40.e-6) / xd_h)
     G["ehr"] = jnp.where(c, jnp.minimum(C.ehr0, ehr), zero)
     ehscnv = jnp.where(has[LS], C.ehs0 * jnp.exp(C.ehs1 * jnp.minimum(temcg, r(0.0))), zero)
+    if C.ipconc == 0:
+        ehscnv = jnp.where(has[LS], jnp.exp(r(.09)*jnp.minimum(temcg,r(0.))),zero)
     G["ehscnv"] = ehscnv
     c = has[LS] & has[LH] & (qx[LC] >= qmin[LC])
     xs3 = xdia[(LS, 3)]

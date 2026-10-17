@@ -1,0 +1,72 @@
+{
+  "case": "c31",
+  "source_commit": "39aac3571a555ea30a44ba841f770f2cbe9030f5",
+  "physical_backend": "cpu",
+  "lowering_platform": "cuda",
+  "gpu_executed": false,
+  "scope": "native CUDA lowering / optional AUTOTUNE0 deviceless prescreen, not fidelity or speed",
+  "lower": "OK",
+  "compile": "NOT_ATTEMPTED",
+  "programs": [
+    {
+      "name": "d01",
+      "lower": "OK",
+      "lower_s": 27.38075002306141,
+      "static_kwargs": {
+        "n_steps": 200,
+        "cadence": 33
+      },
+      "stablehlo_bytes": 263934281,
+      "stablehlo_sha256": "adafa5ee428d27d385640ffbba3862e2c4bfeb61f7bc17cc527caad289005b2c",
+      "triton_custom_calls": 160,
+      "compile": "NOT_ATTEMPTED",
+      "stack": "UNKNOWN"
+    }
+  ],
+  "cache": "private per-arm scratch directories; managed GPUWRF cache off; cleaned by supervisor",
+  "target_sha256": "f46c185780fdbd4aab62ef20293385bb8de31a71bd260e9ce62cbfc21f196a23",
+  "harness_sha256": "7aaf7e29f3471fac9f1d04893ac7402b34308cf5a85d358bd1e6c83de28e96df",
+  "environment": {
+    "GPUWRF_XLA_AUTOTUNE_CACHE_DIR": "<USER_HOME>/wrf_gpu2_lanes/t-zmpow2/ZP17_c31_scratch/autotune",
+    "CUDA_CACHE_PATH": "<USER_HOME>/wrf_gpu2_lanes/t-zmpow2/ZP17_c31_scratch/cuda",
+    "GPUWRF_JAX_CACHE_DIR": "<USER_HOME>/wrf_gpu2_lanes/t-zmpow2/ZP17_c31_scratch/jax",
+    "GPUWRF_CENSUS_SLIM": "0",
+    "TMPDIR": "<USER_HOME>/wrf_gpu2_lanes/t-zmpow2/ZP17_c31_scratch/tmp",
+    "GPUWRF_CENSUS": "1",
+    "JAX_COMPILATION_CACHE_DIR": "<USER_HOME>/wrf_gpu2_lanes/t-zmpow2/ZP17_c31_scratch/jax",
+    "TRITON_CACHE_DIR": "<USER_HOME>/wrf_gpu2_lanes/t-zmpow2/ZP17_c31_scratch/triton",
+    "GPUWRF_JAX_CACHE": "0",
+    "CUDA_VISIBLE_DEVICES": "",
+    "GPUWRF_AOT_SLIM_MODULE": "0",
+    "JAX_PLATFORMS": "cpu",
+    "GPUWRF_FAST_DEFAULTS": "1",
+    "GPUWRF_RRTMG_MP_RE": "1"
+  },
+  "wall_s": 60.313767509069294,
+  "peak_rss_KiB": 3214292,
+  "matrix_status": "ADMITTED",
+  "input_sha256": {
+    "namelist.input": "a71a8c1c731d196c0acf6748ac753f738c1fcb40d8bca3fe901a56f0ae98e2c3",
+    "wrfbdy_d01": "f3e556670e4768326997bdfa1dd8b0f77eb6d5da07d9c4dbf900bf8ff9e30230",
+    "wrfinput_d01": "a5d696550d1dc6713e2e340b8c2fba83811d43f4a94a65ca95266035860e2781"
+  },
+  "phase": "native_CUDA_lower",
+  "jax_version": "0.10.0",
+  "jax_enable_x64_before_native_trace": true,
+  "dfi_prepass": "INACTIVE",
+  "init_s": 29.888639374170452,
+  "native_trace": {
+    "facade": true,
+    "capability_resolver": "cuda",
+    "mcica_native": true,
+    "python_backend": "gpu",
+    "pallas_interpret": false,
+    "product_tridiagonal": true,
+    "virtual_target": "NVIDIA GeForce RTX 5090_0(process=0,(0))"
+  },
+  "traced_pallas_calls": 162,
+  "traced_interpreted_pallas_calls": 0,
+  "physical_devices_at_exit": [
+    "cpu"
+  ]
+}

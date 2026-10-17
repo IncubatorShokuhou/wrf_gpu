@@ -22,7 +22,7 @@
         <img src="_assets/logo.svg" alt="wrf_gpu logo">
         <span class="brand-text">
           <span class="brand-name">wrf_gpu</span>
-          <span class="brand-sub">User's Guide · v0.3.4</span>
+          <span class="brand-sub">User's Guide · v0.4.0</span>
         </span>
       </a>
       <div class="search-box">
@@ -54,14 +54,11 @@
 <a class="" href="validation.html">Validation &amp; WRF Identity</a>
 <a class="active" href="limitations.html">Boundaries &amp; Known Issues</a>
 <div class="subnav">
-<a href="limitations.html#not-claimed">Supported scope</a>
-<a href="limitations.html#terrain-ceiling">Terrain and geometry</a>
-<a href="limitations.html#free-running">Initial and boundary forcing</a>
-<a href="limitations.html#oom">Memory and compilation</a>
-<a href="limitations.html#known-issues">Current source-specific findings</a>
-<a href="limitations.html#carried-v0234">Earlier findings are history</a>
-<a href="limitations.html#completion-roadmap">Beyond the validated configuration</a>
-<a href="limitations.html#v034-plan">Future v0.3.4 roadmap</a>
+<a href="limitations.html#gates">Separate the gates</a>
+<a href="limitations.html#current">Current qualification limits</a>
+<a href="limitations.html#inputs">Input and nesting boundaries</a>
+<a href="limitations.html#performance">Performance and hardware</a>
+<a href="limitations.html#history">Historical science records</a>
 </div>
 <div class="group-title">Reference</div>
 <a class="" href="version-history.html">Version History</a>
@@ -72,39 +69,19 @@
     <div class="content-wrap">
       <main>
         <div class="breadcrumb"><a href="index.html">User's Guide</a> › Performance &amp; validation › Boundaries &amp; Known Issues</div>
-        <h1>Configuration boundaries and current findings</h1>
-<h2 id="not-claimed">Supported scope<a class="headerlink" href="#not-claimed" aria-label="Permalink">¶</a></h2><p>Use the <a href="physics.html">wired physics menu</a>
-and <a href="namelist.html">named namelist checks</a>. Selected original-CPU regional
-comparisons cover 24/72 hours; broader seasonal observational equivalence is not claimed.
-The current v0.3.3 W3 candidate still needs its affected frozen gates.</p>
-<h2 id="terrain-ceiling">Terrain and geometry<a class="headerlink" href="#terrain-ceiling" aria-label="Permalink">¶</a></h2><p>Validate a new geometry and forcing
-against its own original CPU reference; the shipped Alpine example does not establish
-arbitrary terrain or glacier physics. Dedicated Noah-MP glacier evolution is unported.</p>
-<h2 id="free-running">Initial and boundary forcing<a class="headerlink" href="#free-running" aria-label="Permalink">¶</a></h2><p>Use consistent prepared WRF inputs
-and lateral boundaries for regional forecasts. Support for an option is not a blanket
-stability guarantee outside the measured cases.</p>
-<h2 id="oom">Memory and compilation<a class="headerlink" href="#oom" aria-label="Permalink">¶</a></h2><p>Use the case-sized memory plan and measured host/GPU
-headroom. C-auto precedence and cold fallback are described under <a href="running.html#vram-preflight">running</a>.
-Source/geometry/target changes can compile anew. Small launch-limited grids and large
-measured regional workloads have different performance; <a href="performance.html">dated benchmarks</a>
-include substantial single-card gains.</p>
-<h2 id="known-issues">Current source-specific findings<a class="headerlink" href="#known-issues" aria-label="Permalink">¶</a></h2><p>Read
-<a href="https://github.com/wrf-gpu/wrf_gpu/blob/main/KNOWN_ISSUES.md">KNOWN_ISSUES</a> and
-<a href="validation.html">validation</a>. W2 0115 has recorded annex-real wind failures and
-systematic station WS10 damage; W2 Monica has a hard compiled-stack failure. W3 composes
-the reviewed shortwave correction and bitwise layout fixes, then applies affected gates
-once. Old passes, controls or trace judgements are not relabelled as W3.</p>
-<h2 id="carried-v0234">Earlier findings are history<a class="headerlink" href="#carried-v0234" aria-label="Permalink">¶</a></h2><p>Earlier v0.23.x and v0.3.0 limitations
-are source-dated in <a href="version-history.html">version history</a>. Do not treat the old
-104-field default, fixed native sound count, ignored advection controls or pending v0.3.1
-fixes as current capabilities. Full history is default; native controls and SST support
-have explicit scope on their corresponding pages.</p>
-<h2 id="completion-roadmap">Beyond the validated configuration<a class="headerlink" href="#completion-roadmap" aria-label="Permalink">¶</a></h2><p>MPI/multi-GPU domain
-decomposition, moving nests, coupled chemistry/fire/hydrology and universal scheme pairing
-are outside the present operational scope. Checkpoint/resume covers native single-domain d01 and nested runs, not CPU-WRF replay; WRF
-<code>wrfrst</code> interchange is not supported. Benchmark
-and extrapolation assumptions are kept on <a href="performance.html">performance</a>.</p>
-<h2 id="v034-plan">Future v0.3.4 roadmap<a class="headerlink" href="#v034-plan" aria-label="Permalink">¶</a></h2><p>Standalone restart, actual cluster interfaces qualified through simulation, grid FDDA first, then RUC/NSSL and further schemes. Chem/Fire are separate program tracks. This is a future plan, not current support or v0.3.3 closure; real-cluster performance is unmeasured. <a href="https://github.com/wrf-gpu/wrf_gpu/blob/main/docs/release/V0.3.4_ROADMAP.md">Ordered public roadmap and qualifications</a>.</p>
+        <h1>Boundaries and known issues</h1>
+<p class="lead">v0.4.0 is a candidate. Default source/identities and F20/C5′ gates are frozen. FINAL00:26Z17October:66/66 accepted-scope scientific D6PASS (65full24h + c45accepted6h); Scientific validation is complete. The old c11 cold-cap failure remains historical; the reviewed batch65 source now has full24h D6/inventory/NF0 PASS with E41 disclosed.</p>
+<h2 id="gates">Separate the gates<a class="headerlink" href="#gates" aria-label="Permalink">¶</a></h2>
+<p>Bounded D6 applies only to fields with frozen limits. REPORT_ONLY fields have no invented tolerance; missing fields make full coverage incomplete. E41 resources, F2 pre-mask events, restart and station skill are separate. Default WN3/PROD/Swiss F20 must pass E41. Opt-in composites require strict D6, complete inventory and NF0, with raw E41 FAIL disclosed as perf/robustness limits. F2 remains separate. Finite history does not justify intermediate negatives or repairs.</p>
+<h2 id="current">Current qualification limits<a class="headerlink" href="#current" aria-label="Permalink">¶</a></h2>
+<p>km3 is GPU-refused; CAM-MG11 uses stock Triton3.6.x with c89 scientific PASS/native E41 UNKNOWN. The paid c05 ACM2 successor passes source-specific D6; Jensen/NTU writers are merged; c87 scientific PASS/E41FAIL; c88 full24h scientific PASS/E41FAIL; c11 full24h PASS/E41-disclosed. Goddard5/5 has an accepted6h gate and a24h attempt missing its final frame. <a href="../KNOWN_ISSUES.md#c11-resolved-compiler-stall-and-residual-resources">c11 host compile/RAM note</a>. The <a href="release/E41_LEDGER_v0.4.0.md">complete provisional E41 inventory</a> retains resource failures on exact executables.</p>
+<p>Original MYNN cold-start undefined initialization, P3/Jensen/WDM5 precision residuals and NTU source-diffusion negatives remain disclosed. Class-D producers are merged and the66 registered accepted scientific scopes are complete (65 full24h plus c45 accepted6h). Active green-roof/PV/aerosol branches remain refused; other unqualified regimes and publication approval remain separate. Read the <a href="release/RELEASE_NOTES_v0.4.0.md">release draft</a> and <a href="release/SUPPORT_MATRIX_v0.4.0.md">support matrix</a>.</p>
+<h2 id="inputs">Input and nesting boundaries<a class="headerlink" href="#inputs" aria-label="Permalink">¶</a></h2>
+<p>Surface mosaic is refused. Crop/tile/map-selected irrigation needs valid geography; synthetic maps do not supply scientific truth. Options with only single-domain evidence are <strong>nested not validated</strong> where admitted. Actual refused combinations remain refused. Moving/vortex-following nests and unsupported chemistry/fire/hydrology/DA paths remain outside this release.</p>
+<h2 id="performance">Performance and hardware<a class="headerlink" href="#performance" aria-label="Permalink">¶</a></h2>
+<p>Historical speed/energy figures keep their measured version, hardware and clock definitions. Shared cold qualification time is not warm S1. Real multi-GPU scaling and new hardware extrapolations are not qualified measurements. The <a href="performance.html">performance page</a> retains dated evidence.</p>
+<h2 id="history">Historical science records<a class="headerlink" href="#history" aria-label="Permalink">¶</a></h2>
+<p>The <a href="validation.html">v0.3.3 galleries</a> retain raw rain/wind/cirrus failures and accepted source-specific annexes. They are not relabelled as new v0.4 observations. See the repository's <a href="https://github.com/wrf-gpu/wrf_gpu/blob/main/KNOWN_ISSUES.md">full issue record</a>.</p>
 
         <nav class="page-nav">
 <a class="prev" href="validation.html"><span class="pn-dir">← Previous</span><span class="pn-title">Validation &amp; WRF Identity</span></a>

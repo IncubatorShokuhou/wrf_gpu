@@ -1,0 +1,150 @@
+{
+  "source_tree": "<USER_HOME>/wrf_gpu2_lanes/u2-land/snapshot_snow",
+  "source_case": "<USER_HOME>/wrf_gpu2_lanes/release-docs/RD11/cpu",
+  "platform": "cpu",
+  "options": {
+    "sst_skin": 1,
+    "opt_alb": 1,
+    "opt_snf": 4,
+    "opt_irr": 2,
+    "opt_irrm": 0,
+    "opt_btr": 3,
+    "opt_rsf": 4,
+    "dveg": 5,
+    "opt_run": 1,
+    "opt_crop": 1,
+    "opt_soil": 3,
+    "opt_sfc": 2,
+    "opt_tbot": 1,
+    "opt_stc": 3,
+    "opt_frz": 2,
+    "opt_rad": 1,
+    "opt_inf": 2
+  },
+  "cache": "disabled",
+  "steps": 3,
+  "created_utc": "2026-10-14T06:02:29.886599+00:00",
+  "scope": "CPU integration/finite gate; real Swiss geometry/forcing with controlled crop map, NOT a forecast-fidelity comparison",
+  "coverage_crop_cells": [
+    [
+      37,
+      12
+    ],
+    [
+      37,
+      13
+    ],
+    [
+      37,
+      14
+    ],
+    [
+      37,
+      15
+    ]
+  ],
+  "soil_map_controls": "Original composition retained, or allocator-zero fallback; four disclosed crop cells use sand/clay profiles",
+  "crop_map_controls": "Existing crop fractions zeroed; only four disclosed cells select Liu crop with valid calendar and season-GDD maps",
+  "load_s": 39.20479302410968,
+  "bound_options": {
+    "opt_alb": 1,
+    "opt_snf": 4,
+    "bats": [
+      2.0,
+      0.95,
+      0.65,
+      0.2,
+      0.5,
+      0.4,
+      0.4
+    ],
+    "opt_irr": 2,
+    "opt_irrm": 0,
+    "opt_btr": 3,
+    "opt_rsf": 4,
+    "rsurf_snow": 50.0,
+    "dveg": 5,
+    "opt_tbot": 1,
+    "opt_stc": 3,
+    "opt_frz": 2,
+    "opt_rad": 1,
+    "opt_crs": 1,
+    "opt_sfc": 2,
+    "opt_inf": 2,
+    "opt_run": 1,
+    "fsatmx": 0.38,
+    "timean": 10.5,
+    "opt_crop": 1,
+    "opt_soil": 3,
+    "opt_infdv": 0,
+    "opt_tdrn": 0,
+    "drain_layer_opt": null
+  },
+  "flag_manifest": {
+    "GPUWRF_STRICT_GUARDS": "1",
+    "GPUWRF_CENSUS": "1",
+    "GPUWRF_DYN_CARRY_FP32": "1",
+    "GPUWRF_RRTMG_LW_FUSED_TRANSFER": "1",
+    "GPUWRF_JAX_CACHE": "0",
+    "GPUWRF_DYN_RK_FP32": "1",
+    "GPUWRF_RRTMG_SW_FUSED_QUADRATURE": "1",
+    "GPUWRF_FAST_DEFAULTS": "0",
+    "GPUWRF_CARRY_REAL_ALL": "1",
+    "GPUWRF_NOAHMP_NATIVE_REAL": "1",
+    "GPUWRF_DYN_REAL_ALL": "1",
+    "GPUWRF_DYN_FP32": "1"
+  },
+  "option_resident_bytes": {
+    "sst_skin": 21168,
+    "noahmp_irrigation": 84672,
+    "noahmp_carbon": 63504,
+    "noahmp_groundwater": 21168,
+    "noahmp_tile_drain": 0
+  },
+  "xla_flags": "--xla_cpu_use_fusion_emitters=false",
+  "active_crop_columns": 4,
+  "step_wall_s": 286.3560592678841,
+  "restart_continuity": {
+    "leaves": 200,
+    "different": []
+  },
+  "nonfinite": 0,
+  "guards": 0,
+  "skin_present": true,
+  "irrigation_present": true,
+  "irrigation_sums": {
+    "irnumsi": 4.0,
+    "irnummi": 4.0,
+    "irnumfi": 4.0,
+    "irwatsi": 0.1357865184545517,
+    "irwatmi": 0.18116915225982666,
+    "irwatfi": 0.24358290433883667,
+    "irsivol": 0.11025239527225494,
+    "irmivol": 0.03311999887228012,
+    "irfivol": 28.22051429748535,
+    "ireloss": 0.004947624169290066,
+    "irrsplh": 12420.515625,
+    "loss_fallback": 0.0
+  },
+  "carbon_present": true,
+  "carbon_sums": {
+    "lfmass": 14653.6259765625,
+    "rtmass": 868999.125,
+    "stmass": 39416.69921875,
+    "wood": 853000.0,
+    "stblcp": 1742000.0,
+    "fastcp": 1742001.75,
+    "grain": 1.7639999327911937e-07,
+    "gdd": 0.0,
+    "pgs": 4.0
+  },
+  "groundwater_present": true,
+  "groundwater_sums": {
+    "zwt": 4409.97216796875,
+    "wa": 8643605.0,
+    "wt": 8643605.0
+  },
+  "tile_drain_present": false,
+  "status": "PASS",
+  "wall_s": 606.8448807380628
+}

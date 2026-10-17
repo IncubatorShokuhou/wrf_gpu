@@ -85,7 +85,7 @@ def test_gpu_export_compacts_and_hashes_the_published_bytes(monkeypatch):
     from gpuwrf.runtime import aot_executable as ax
     monkeypatch.delenv("GPUWRF_AOT_KEEP_TRACE_METADATA", raising=False)
     status = {}
-    blob, meta = ax.serialize(fake_compiled(), dev=SimpleNamespace(platform="gpu"), hlo_sha256="source-hlo", status=status)
+    blob, meta = ax.serialize(fake_compiled(), dev=SimpleNamespace(platform="gpu", device_kind="NVIDIA synthetic CUDA device"), hlo_sha256="source-hlo", status=status)
     assert blob != fixture() and meta.trace_metadata == "compact"
     assert meta.blob_sha256 == ax.blob_sha256(blob)
     assert meta.hlo_sha256 == "source-hlo"
@@ -97,7 +97,7 @@ def test_profiler_rich_opt_out_preserves_original_blob(monkeypatch):
     from types import SimpleNamespace
     from gpuwrf.runtime import aot_executable as ax
     monkeypatch.setenv("GPUWRF_AOT_KEEP_TRACE_METADATA", "1")
-    blob, meta = ax.serialize(fake_compiled(), dev=SimpleNamespace(platform="gpu"), hlo_sha256="source-hlo")
+    blob, meta = ax.serialize(fake_compiled(), dev=SimpleNamespace(platform="gpu", device_kind="NVIDIA synthetic CUDA device"), hlo_sha256="source-hlo")
     assert blob == fixture() and meta.trace_metadata == "rich"
 
 
@@ -106,7 +106,7 @@ def test_rich_request_refuses_compacted_cached_blob(monkeypatch):
     import pytest
     from gpuwrf.runtime import aot_executable as ax
     monkeypatch.delenv("GPUWRF_AOT_KEEP_TRACE_METADATA", raising=False)
-    blob, meta = ax.serialize(fake_compiled(), dev=SimpleNamespace(platform="gpu"), hlo_sha256="source-hlo")
+    blob, meta = ax.serialize(fake_compiled(), dev=SimpleNamespace(platform="gpu", device_kind="NVIDIA synthetic CUDA device"), hlo_sha256="source-hlo")
     monkeypatch.setenv("GPUWRF_AOT_KEEP_TRACE_METADATA", "1")
     with pytest.raises(RuntimeError, match="profiler-rich"):
-        ax.load(blob, meta, SimpleNamespace(platform="gpu"))
+        ax.load(blob, meta, SimpleNamespace(platform="gpu", device_kind="NVIDIA synthetic CUDA device"))

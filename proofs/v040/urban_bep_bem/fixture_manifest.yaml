@@ -1,0 +1,76 @@
+fixture_id: v040-bep-bem-components-and-caller-v1
+source: <USER_HOME>/src/wrf_pristine/WRF
+source_commit: f52c197ed39d12e087d02c50f412d90d418f6186
+scenario: >
+  48 constructed active component regimes and 6 column regimes with tracked
+  WN3-derived surface forcing and explicitly constructed vertical extensions.
+  Whole columns use verbatim Noah-MP urban caller, urban2/3, six steps at dt6,
+  day/night/predawn/rain/wind, AC on/off. Full column and urban PBL CPU oracle
+  gates; CPU smoke does not claim long-forecast/GPU qualification.
+created_utc: 2026-10-13T14:00:00Z
+variables:
+  - name: BEP horizontal and wall momentum, heat, TKE fluxes
+    units: m2/s2, K*m/s, m2/s3 (BEM sensible and latent fluxes W/m2)
+    shape: 48 regimes, 4/7/5/7 fields
+    dtype: WRF REAL4 and REAL8 reference builds
+    absolute_tolerance: fp64 2e-11; fp32 2e-5
+    relative_tolerance: fp64 2e-12; fp32 4e-6
+  - name: BEP material temperature and surface diagnostics
+    units: K, W/m2
+    shape: 48 regimes, 6 steps, 10 material layers plus 3 diagnostics
+    dtype: WRF REAL4 and REAL8
+    absolute_tolerance: fp64 2e-11; fp32 8e-5
+    relative_tolerance: fp64 2e-12; fp32 4e-6
+  - name: BEP interpolation, multilayer sources, geometry and lengths
+    units: K; s-1, m/s2, K/s, m2/s3; fraction; m
+    shape: 48 regimes, 5 mesoscale layers, 6 urban layers, 1/2 directions
+    dtype: WRF REAL4 and REAL8
+    absolute_tolerance: fp64 2e-11; fp32 2e-5
+    relative_tolerance: fp64 2e-12; fp32 4e-6
+  - name: BEM HVAC sensible/latent need, exhaust, electrical consumption
+    units: W
+    shape: 48 regimes, 6 fields including hlneed INOUT
+    dtype: WRF REAL4 and REAL8
+    absolute_tolerance: fp64 2e-11; fp32 2e-5
+    relative_tolerance: fp64 2e-12; fp32 4e-6
+  - name: full WRF caller carry and flux fixture
+    units: field-dependent WRF Registry units
+    shape: 6 regimes, 0..6 steps, complete per-column arrays
+    dtype: WRF REAL4 and REAL8, lossless float64 text decoding
+    absolute_tolerance: REAL8 2e-11; REAL4 twice original REAL4-REAL8 output spread plus 8eps*max(abs(ref),scale)
+    relative_tolerance: REAL8 2e-12; REAL4 output scale 1 for BEP material/skin temperature, 1e-3 otherwise
+    conditioned_REAL4_only: fixed sealed evidence/ROUND01.npz approved by manager before new candidate comparison; state/geometry/REAL8 unchanged
+  - name: urban YSU and BouLac full PBL output
+    units: m/s2, K/s, kg/kg/s, m2/s2, m2/s, gradient flux units
+    shape: 6 regimes, both REALs, original caller columns
+    absolute_tolerance: REAL8 2e-11; REAL4 twice original REAL4-REAL8 spread plus 8eps*max(abs(ref),1e-8)
+    relative_tolerance: REAL8 2e-12; approved ROUND01 only for conditioned tendencies/gradient fluxes
+files:
+  - path: proofs/v040/urban_bep_bem/evidence/ROUND01_APPROVAL.json
+    role: manager approval, independent budget/generator checksums and unchanged state/REAL8/D6 scope
+  - path: proofs/v040/urban_bep_bem/evidence/WRF_flux_operands.json
+    role: WRITE-only observer operands, all 87 original arrays BYTE, never candidate results
+  - path: proofs/v040/urban_bep_bem/savepoints/pbl/manifest.json
+    role: staged pristine YSU/BouLac urban caller sources and 24 output sets
+  - path: proofs/v040/urban_bep_bem/savepoints/manifest.json
+    role: source, caller-extract, driver, table and savepoint hashes, flags and dimensions
+  - path: proofs/v040/urban_bep_bem/savepoints/components_fp32.npz
+    role: recorded exact inputs and pristine REAL4 component outputs
+  - path: proofs/v040/urban_bep_bem/savepoints/components_fp64.npz
+    role: recorded exact inputs and pristine REAL8 component outputs
+  - path: proofs/v040/urban_bep_bem/savepoints/urban2_fp32_ac_on.npz
+    role: complete pristine caller reference
+  - path: proofs/v040/urban_bep_bem/savepoints/urban2_fp64_ac_on.npz
+    role: complete pristine caller reference
+  - path: proofs/v040/urban_bep_bem/savepoints/urban3_fp32_ac_on.npz
+    role: complete pristine caller reference
+  - path: proofs/v040/urban_bep_bem/savepoints/urban3_fp64_ac_on.npz
+    role: complete pristine caller reference
+  - path: proofs/v040/urban_bep_bem/savepoints/urban3_fp32_ac_off.npz
+    role: complete pristine caller reference
+  - path: proofs/v040/urban_bep_bem/savepoints/urban3_fp64_ac_off.npz
+    role: complete pristine caller reference
+license_notes: >
+  WRF source stays external. These are small generated numerical fixtures and
+  driver/manifest files, not WRF history outputs. Regimes derive from the tracked
+  SLUCM fixture, not ALISIOS station/truth values. Source hashes bind local WRF.

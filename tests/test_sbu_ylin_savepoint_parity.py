@@ -185,4 +185,9 @@ def test_sbu_ylin_dispatch_and_scan_wired():
     e = scheme_entry("microphysics", 13)
     assert e.gpu_runnable
     assert "sbu_ylin" in e.entrypoint
-    assert MP_SCAN_ADAPTERS[13] is sbu_ylin_adapter
+    # REAL32 State mediation now uses the declared fp64 island for SBU-YLin's
+    # adaptive sedimentation; the wrapped kernel must still be this scheme.
+    from inspect import unwrap
+    from gpuwrf.coupling.scan_adapters import FP64_ISLAND_MP_CODES
+    assert 13 in FP64_ISLAND_MP_CODES
+    assert unwrap(MP_SCAN_ADAPTERS[13]) is sbu_ylin_adapter

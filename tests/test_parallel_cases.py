@@ -213,9 +213,21 @@ def _synthetic_case(path: Path, nx: int = 30) -> Path:
     return path
 
 
-def test_product_sizing_finds_the_plan_the_case_cli_records(tmp_path):
+def test_product_sizing_finds_the_plan_the_case_cli_records(tmp_path, monkeypatch):
     """Keyed in a child with the case environment, as the case CLI keys it; dates do not split plans, geometry does."""
     from gpuwrf.runtime import gpu_allocator as ga
+    # C-auto is CUDA-only since portability landed. Keep the child on CPU and
+    # fake only the backend-dark metadata probe (allocator='platform' exits
+    # before any vendor query/device allocation); retain the real child/env/key.
+    trampoline = tmp_path / "cuda_metadata_only.py"
+    trampoline.write_text(
+        "import runpy\nfrom gpuwrf.backends import platform\n"
+        "original = platform.target_backend\n"
+        "platform.target_backend = lambda env=None: 'cuda' if env is not None and "
+        "env.get('XLA_PYTHON_CLIENT_ALLOCATOR') == 'platform' else original(env)\n"
+        f"runpy.run_path({str(pc.__file__)!r}, run_name='__main__')\n"
+    )
+    monkeypatch.setattr(pc, "__file__", str(trampoline))
     env = {**os.environ, "GPUWRF_JAX_CACHE_DIR": str(tmp_path / "cache"), "JAX_PLATFORMS": "cpu", "PYTHONPATH": str(REPO / "src")}
     a = _synthetic_case(tmp_path / "a")
     size = lambda d: pc.product_sizing([d], ["--max-dom", "2"], env)[0]  # noqa: E731

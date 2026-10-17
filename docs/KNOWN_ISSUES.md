@@ -1,6 +1,16 @@
 # Known Issues — Deep History (through the v0.15.0 release gate)
 
-> For the **current v0.18 known issues**, see [`../KNOWN_ISSUES.md`](../KNOWN_ISSUES.md). This file is the deep per-issue archive (KI-1…KI-11, including resolved items).
+> For the **current known issues**, see [`../KNOWN_ISSUES.md`](../KNOWN_ISSUES.md). This file is the deep per-issue archive (KI-1…KI-11, including resolved items).
+
+> **v0.4.0 development disclosure:** v0.3.0–v0.3.4 and pre-fix v0.4.0 builds
+> double-counted frozen precipitation in `RAINNC` when the generic adapters
+> actually ran (`mp_physics=2/3/4/6/10/13/14/16/24/26/40/97`). Shipped WDM6
+> (`16`) had dry/moist-theta and water-mask defects; WDM7 (`26`) had the
+> dry/moist-theta defect. The development fix has CPU evidence; full 24-hour
+> GPU and F2 re-qualification remain pending. Accumulations in checkpoints
+> written by older affected versions are **not repaired**. See the
+> [current disclosure](../KNOWN_ISSUES.md#non-thompson-precipitation-and-wdm-caller-defects)
+> for scheme availability, scope and restart consequences.
 
 Honest, code-grounded list of the open issues. Each entry states the symptom, what was ruled
 out, the current best understanding, the workaround, and the tracked follow-up. No spin. This

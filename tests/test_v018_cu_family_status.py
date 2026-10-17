@@ -7,10 +7,13 @@ from pathlib import Path
 from _historical_artifacts import require_historical
 
 
-def test_v018_tail_cu_schemes_are_not_accepted_without_oracles() -> None:
+def test_former_v018_tail_cu_schemes_have_graduated() -> None:
     from gpuwrf.contracts.physics_registry import ACCEPTED_CU_PHYSICS
+    from gpuwrf.io.scheme_catalog import SupportStatus, classify_scheme
 
-    assert not ({7, 10, 11} & set(ACCEPTED_CU_PHYSICS))
+    assert {7, 10, 11} <= set(ACCEPTED_CU_PHYSICS)
+    for code in (7, 10, 11):
+        assert classify_scheme("cu_physics", code).status is SupportStatus.IMPLEMENTED
 
 
 def test_v018_cu_family_status_has_no_scoped_oracle_gaps() -> None:

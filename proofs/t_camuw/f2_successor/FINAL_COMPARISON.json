@@ -1,0 +1,6551 @@
+{
+  "candidate_source": "702096abf52063eebe0645d74a23ef3015733d8b",
+  "control_source": "5098e87a981d5b591704239dbfee873281ea839b",
+  "input_sha256": {
+    "namelist.input": "8cbfbda97dc9c9d500c2fe93ef2cd1071b2b2e0d1d87f76d7941c07270891cf6",
+    "wrfinput_d01": "a5d696550d1dc6713e2e340b8c2fba83811d43f4a94a65ca95266035860e2781",
+    "wrfbdy_d01": "f3e556670e4768326997bdfa1dd8b0f77eb6d5da07d9c4dbf900bf8ff9e30230"
+  },
+  "work": {
+    "dt_s": 18.0,
+    "bl_pbl_physics": 9,
+    "mp_physics": 8,
+    "sf_sfclay_physics": 5,
+    "sf_surface_physics": 4,
+    "ra_lw_physics": 4,
+    "ra_sw_physics": 4,
+    "radiation_cadence_steps": 33,
+    "force_fp64": true,
+    "disable_guards": true
+  },
+  "comparisons": [
+    {
+      "end_step": 1,
+      "candidate_guard_total": 0,
+      "control_guard_total": 0,
+      "guards": [],
+      "f2": []
+    },
+    {
+      "end_step": 2,
+      "candidate_guard_total": 0,
+      "control_guard_total": 0,
+      "guards": [],
+      "f2": []
+    },
+    {
+      "end_step": 3,
+      "candidate_guard_total": 0,
+      "control_guard_total": 0,
+      "guards": [],
+      "f2": [
+        {
+          "phase": "post_rk",
+          "field": "qc",
+          "candidate": {
+            "phase": "post_rk",
+            "field": "qc",
+            "coverage": "OBSERVED",
+            "present_observations": 3,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 1,
+            "minimum_negative": {
+              "value": -2.6758647615212654e-18,
+              "step": 3,
+              "flat_index": 24535,
+              "index_kji": [
+                13,
+                38,
+                7
+              ]
+            },
+            "ring0_count": 0,
+            "interior_count": 1,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "APPLICABLE"
+          },
+          "control": {
+            "phase": "post_rk",
+            "field": "qc",
+            "coverage": "OBSERVED",
+            "present_observations": 3,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 0,
+            "minimum_negative": null,
+            "ring0_count": 0,
+            "interior_count": 0,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "APPLICABLE"
+          },
+          "exact_count_location_match": false
+        }
+      ]
+    },
+    {
+      "end_step": 200,
+      "candidate_guard_total": 11594,
+      "control_guard_total": 118,
+      "guards": [
+        {
+          "field": "dynamics.qc",
+          "candidate": {
+            "nonfinite": 0,
+            "out_of_range": 5148,
+            "repaired": 5148
+          },
+          "control": {
+            "nonfinite": 0,
+            "out_of_range": 51,
+            "repaired": 51
+          }
+        },
+        {
+          "field": "dynamics.qi",
+          "candidate": {
+            "nonfinite": 0,
+            "out_of_range": 115,
+            "repaired": 115
+          },
+          "control": {
+            "nonfinite": 0,
+            "out_of_range": 1,
+            "repaired": 1
+          }
+        },
+        {
+          "field": "dynamics.qr",
+          "candidate": {
+            "nonfinite": 0,
+            "out_of_range": 429,
+            "repaired": 429
+          },
+          "control": {
+            "nonfinite": 0,
+            "out_of_range": 6,
+            "repaired": 6
+          }
+        },
+        {
+          "field": "dynamics.qs",
+          "candidate": {
+            "nonfinite": 0,
+            "out_of_range": 105,
+            "repaired": 105
+          },
+          "control": {
+            "nonfinite": 0,
+            "out_of_range": 1,
+            "repaired": 1
+          }
+        }
+      ],
+      "f2": [
+        {
+          "phase": "step_entry",
+          "field": "qc",
+          "candidate": {
+            "phase": "step_entry",
+            "field": "qc",
+            "coverage": "OBSERVED",
+            "present_observations": 200,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 5121,
+            "minimum_negative": {
+              "value": -1.0517904567588186e-16,
+              "step": 119,
+              "flat_index": 28203,
+              "index_kji": [
+                15,
+                41,
+                21
+              ]
+            },
+            "ring0_count": 5121,
+            "interior_count": 0,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "APPLICABLE"
+          },
+          "control": {
+            "phase": "step_entry",
+            "field": "qc",
+            "coverage": "OBSERVED",
+            "present_observations": 200,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 51,
+            "minimum_negative": {
+              "value": -8.005572658779936e-14,
+              "step": 70,
+              "flat_index": 26423,
+              "index_kji": [
+                14,
+                41,
+                5
+              ]
+            },
+            "ring0_count": 51,
+            "interior_count": 0,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "APPLICABLE"
+          },
+          "exact_count_location_match": false
+        },
+        {
+          "phase": "step_entry",
+          "field": "qr",
+          "candidate": {
+            "phase": "step_entry",
+            "field": "qr",
+            "coverage": "OBSERVED",
+            "present_observations": 200,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 428,
+            "minimum_negative": {
+              "value": -2.6572333841782122e-20,
+              "step": 174,
+              "flat_index": 26425,
+              "index_kji": [
+                14,
+                41,
+                7
+              ]
+            },
+            "ring0_count": 428,
+            "interior_count": 0,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "APPLICABLE"
+          },
+          "control": {
+            "phase": "step_entry",
+            "field": "qr",
+            "coverage": "OBSERVED",
+            "present_observations": 200,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 6,
+            "minimum_negative": {
+              "value": -1.3204242759153353e-19,
+              "step": 118,
+              "flat_index": 28208,
+              "index_kji": [
+                15,
+                41,
+                26
+              ]
+            },
+            "ring0_count": 6,
+            "interior_count": 0,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "APPLICABLE"
+          },
+          "exact_count_location_match": false
+        },
+        {
+          "phase": "step_entry",
+          "field": "qi",
+          "candidate": {
+            "phase": "step_entry",
+            "field": "qi",
+            "coverage": "OBSERVED",
+            "present_observations": 200,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 114,
+            "minimum_negative": {
+              "value": -1.4603262376452239e-19,
+              "step": 187,
+              "flat_index": 45898,
+              "index_kji": [
+                26,
+                0,
+                34
+              ]
+            },
+            "ring0_count": 114,
+            "interior_count": 0,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "APPLICABLE"
+          },
+          "control": {
+            "phase": "step_entry",
+            "field": "qi",
+            "coverage": "OBSERVED",
+            "present_observations": 200,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 1,
+            "minimum_negative": {
+              "value": -1.6267928714968604e-22,
+              "step": 148,
+              "flat_index": 46703,
+              "index_kji": [
+                26,
+                19,
+                41
+              ]
+            },
+            "ring0_count": 1,
+            "interior_count": 0,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "APPLICABLE"
+          },
+          "exact_count_location_match": false
+        },
+        {
+          "phase": "step_entry",
+          "field": "qs",
+          "candidate": {
+            "phase": "step_entry",
+            "field": "qs",
+            "coverage": "OBSERVED",
+            "present_observations": 200,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 105,
+            "minimum_negative": {
+              "value": -1.562642450248798e-22,
+              "step": 175,
+              "flat_index": 45904,
+              "index_kji": [
+                26,
+                0,
+                40
+              ]
+            },
+            "ring0_count": 105,
+            "interior_count": 0,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "APPLICABLE"
+          },
+          "control": {
+            "phase": "step_entry",
+            "field": "qs",
+            "coverage": "OBSERVED",
+            "present_observations": 200,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 1,
+            "minimum_negative": {
+              "value": -1.4114429976823797e-20,
+              "step": 152,
+              "flat_index": 46703,
+              "index_kji": [
+                26,
+                19,
+                41
+              ]
+            },
+            "ring0_count": 1,
+            "interior_count": 0,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "APPLICABLE"
+          },
+          "exact_count_location_match": false
+        },
+        {
+          "phase": "step_entry",
+          "field": "Ni",
+          "candidate": {
+            "phase": "step_entry",
+            "field": "Ni",
+            "coverage": "OBSERVED",
+            "present_observations": 200,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 804,
+            "minimum_negative": {
+              "value": -9.36412636320938e-09,
+              "step": 133,
+              "flat_index": 44729,
+              "index_kji": [
+                25,
+                14,
+                41
+              ]
+            },
+            "ring0_count": 804,
+            "interior_count": 0,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "N_A"
+          },
+          "control": {
+            "phase": "step_entry",
+            "field": "Ni",
+            "coverage": "OBSERVED",
+            "present_observations": 200,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 0,
+            "minimum_negative": null,
+            "ring0_count": 0,
+            "interior_count": 0,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "N_A"
+          },
+          "exact_count_location_match": false
+        },
+        {
+          "phase": "step_entry",
+          "field": "Nr",
+          "candidate": {
+            "phase": "step_entry",
+            "field": "Nr",
+            "coverage": "OBSERVED",
+            "present_observations": 200,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 2152,
+            "minimum_negative": {
+              "value": -7.373052689219062e-12,
+              "step": 174,
+              "flat_index": 26425,
+              "index_kji": [
+                14,
+                41,
+                7
+              ]
+            },
+            "ring0_count": 2152,
+            "interior_count": 0,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "N_A"
+          },
+          "control": {
+            "phase": "step_entry",
+            "field": "Nr",
+            "coverage": "OBSERVED",
+            "present_observations": 200,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 5,
+            "minimum_negative": {
+              "value": -2.069739345189614e-11,
+              "step": 97,
+              "flat_index": 28206,
+              "index_kji": [
+                15,
+                41,
+                24
+              ]
+            },
+            "ring0_count": 5,
+            "interior_count": 0,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "N_A"
+          },
+          "exact_count_location_match": false
+        },
+        {
+          "phase": "post_rk",
+          "field": "qc",
+          "candidate": {
+            "phase": "post_rk",
+            "field": "qc",
+            "coverage": "OBSERVED",
+            "present_observations": 200,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 15746,
+            "minimum_negative": {
+              "value": -3.552014149477145e-08,
+              "step": 43,
+              "flat_index": 22707,
+              "index_kji": [
+                12,
+                36,
+                27
+              ]
+            },
+            "ring0_count": 5148,
+            "interior_count": 10598,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "APPLICABLE"
+          },
+          "control": {
+            "phase": "post_rk",
+            "field": "qc",
+            "coverage": "OBSERVED",
+            "present_observations": 200,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 1087,
+            "minimum_negative": {
+              "value": -4.4170514001962147e-07,
+              "step": 69,
+              "flat_index": 22633,
+              "index_kji": [
+                12,
+                34,
+                37
+              ]
+            },
+            "ring0_count": 51,
+            "interior_count": 1036,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "APPLICABLE"
+          },
+          "exact_count_location_match": false
+        },
+        {
+          "phase": "post_rk",
+          "field": "qr",
+          "candidate": {
+            "phase": "post_rk",
+            "field": "qr",
+            "coverage": "OBSERVED",
+            "present_observations": 200,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 5756,
+            "minimum_negative": {
+              "value": -2.52356890939609e-09,
+              "step": 189,
+              "flat_index": 19257,
+              "index_kji": [
+                10,
+                38,
+                21
+              ]
+            },
+            "ring0_count": 429,
+            "interior_count": 5327,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "APPLICABLE"
+          },
+          "control": {
+            "phase": "post_rk",
+            "field": "qr",
+            "coverage": "OBSERVED",
+            "present_observations": 200,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 3090,
+            "minimum_negative": {
+              "value": -3.1526727894970463e-09,
+              "step": 192,
+              "flat_index": 19257,
+              "index_kji": [
+                10,
+                38,
+                21
+              ]
+            },
+            "ring0_count": 6,
+            "interior_count": 3084,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "APPLICABLE"
+          },
+          "exact_count_location_match": false
+        },
+        {
+          "phase": "post_rk",
+          "field": "qi",
+          "candidate": {
+            "phase": "post_rk",
+            "field": "qi",
+            "coverage": "OBSERVED",
+            "present_observations": 200,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 3526,
+            "minimum_negative": {
+              "value": -1.666264282107477e-08,
+              "step": 163,
+              "flat_index": 41025,
+              "index_kji": [
+                23,
+                10,
+                33
+              ]
+            },
+            "ring0_count": 115,
+            "interior_count": 3411,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "APPLICABLE"
+          },
+          "control": {
+            "phase": "post_rk",
+            "field": "qi",
+            "coverage": "OBSERVED",
+            "present_observations": 200,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 1253,
+            "minimum_negative": {
+              "value": -1.4687646654465425e-08,
+              "step": 191,
+              "flat_index": 44558,
+              "index_kji": [
+                25,
+                10,
+                38
+              ]
+            },
+            "ring0_count": 1,
+            "interior_count": 1252,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "APPLICABLE"
+          },
+          "exact_count_location_match": false
+        },
+        {
+          "phase": "post_rk",
+          "field": "qs",
+          "candidate": {
+            "phase": "post_rk",
+            "field": "qs",
+            "coverage": "OBSERVED",
+            "present_observations": 200,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 3866,
+            "minimum_negative": {
+              "value": -2.1548838269325188e-09,
+              "step": 150,
+              "flat_index": 43040,
+              "index_kji": [
+                24,
+                16,
+                32
+              ]
+            },
+            "ring0_count": 105,
+            "interior_count": 3761,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "APPLICABLE"
+          },
+          "control": {
+            "phase": "post_rk",
+            "field": "qs",
+            "coverage": "OBSERVED",
+            "present_observations": 200,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 851,
+            "minimum_negative": {
+              "value": -9.155861624421391e-10,
+              "step": 151,
+              "flat_index": 40861,
+              "index_kji": [
+                23,
+                6,
+                37
+              ]
+            },
+            "ring0_count": 1,
+            "interior_count": 850,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "APPLICABLE"
+          },
+          "exact_count_location_match": false
+        },
+        {
+          "phase": "post_rk",
+          "field": "Ni",
+          "candidate": {
+            "phase": "post_rk",
+            "field": "Ni",
+            "coverage": "OBSERVED",
+            "present_observations": 200,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 6413,
+            "minimum_negative": {
+              "value": -7696.3017578125,
+              "step": 124,
+              "flat_index": 42831,
+              "index_kji": [
+                24,
+                11,
+                33
+              ]
+            },
+            "ring0_count": 818,
+            "interior_count": 5595,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "N_A"
+          },
+          "control": {
+            "phase": "post_rk",
+            "field": "Ni",
+            "coverage": "OBSERVED",
+            "present_observations": 200,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 2087,
+            "minimum_negative": {
+              "value": -10215.51953125,
+              "step": 198,
+              "flat_index": 46440,
+              "index_kji": [
+                26,
+                13,
+                30
+              ]
+            },
+            "ring0_count": 0,
+            "interior_count": 2087,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "N_A"
+          },
+          "exact_count_location_match": false
+        },
+        {
+          "phase": "post_rk",
+          "field": "Nr",
+          "candidate": {
+            "phase": "post_rk",
+            "field": "Nr",
+            "coverage": "OBSERVED",
+            "present_observations": 200,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 9161,
+            "minimum_negative": {
+              "value": -0.2181652933359146,
+              "step": 189,
+              "flat_index": 21022,
+              "index_kji": [
+                11,
+                38,
+                22
+              ]
+            },
+            "ring0_count": 2163,
+            "interior_count": 6998,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "N_A"
+          },
+          "control": {
+            "phase": "post_rk",
+            "field": "Nr",
+            "coverage": "OBSERVED",
+            "present_observations": 200,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 3099,
+            "minimum_negative": {
+              "value": -0.25581276416778564,
+              "step": 179,
+              "flat_index": 21023,
+              "index_kji": [
+                11,
+                38,
+                23
+              ]
+            },
+            "ring0_count": 5,
+            "interior_count": 3094,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "N_A"
+          },
+          "exact_count_location_match": false
+        },
+        {
+          "phase": "pre_dynamics_guard",
+          "field": "qc",
+          "candidate": {
+            "phase": "pre_dynamics_guard",
+            "field": "qc",
+            "coverage": "OBSERVED",
+            "present_observations": 200,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 5148,
+            "minimum_negative": {
+              "value": -1.0517904567588186e-16,
+              "step": 118,
+              "flat_index": 28203,
+              "index_kji": [
+                15,
+                41,
+                21
+              ]
+            },
+            "ring0_count": 5148,
+            "interior_count": 0,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "APPLICABLE"
+          },
+          "control": {
+            "phase": "pre_dynamics_guard",
+            "field": "qc",
+            "coverage": "OBSERVED",
+            "present_observations": 200,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 51,
+            "minimum_negative": {
+              "value": -8.005572658779936e-14,
+              "step": 69,
+              "flat_index": 26423,
+              "index_kji": [
+                14,
+                41,
+                5
+              ]
+            },
+            "ring0_count": 51,
+            "interior_count": 0,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "APPLICABLE"
+          },
+          "exact_count_location_match": false
+        },
+        {
+          "phase": "pre_dynamics_guard",
+          "field": "qr",
+          "candidate": {
+            "phase": "pre_dynamics_guard",
+            "field": "qr",
+            "coverage": "OBSERVED",
+            "present_observations": 200,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 429,
+            "minimum_negative": {
+              "value": -2.6572333841782122e-20,
+              "step": 173,
+              "flat_index": 26425,
+              "index_kji": [
+                14,
+                41,
+                7
+              ]
+            },
+            "ring0_count": 429,
+            "interior_count": 0,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "APPLICABLE"
+          },
+          "control": {
+            "phase": "pre_dynamics_guard",
+            "field": "qr",
+            "coverage": "OBSERVED",
+            "present_observations": 200,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 6,
+            "minimum_negative": {
+              "value": -1.3204242759153353e-19,
+              "step": 117,
+              "flat_index": 28208,
+              "index_kji": [
+                15,
+                41,
+                26
+              ]
+            },
+            "ring0_count": 6,
+            "interior_count": 0,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "APPLICABLE"
+          },
+          "exact_count_location_match": false
+        },
+        {
+          "phase": "pre_dynamics_guard",
+          "field": "qi",
+          "candidate": {
+            "phase": "pre_dynamics_guard",
+            "field": "qi",
+            "coverage": "OBSERVED",
+            "present_observations": 200,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 115,
+            "minimum_negative": {
+              "value": -1.4603262376452239e-19,
+              "step": 186,
+              "flat_index": 45898,
+              "index_kji": [
+                26,
+                0,
+                34
+              ]
+            },
+            "ring0_count": 115,
+            "interior_count": 0,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "APPLICABLE"
+          },
+          "control": {
+            "phase": "pre_dynamics_guard",
+            "field": "qi",
+            "coverage": "OBSERVED",
+            "present_observations": 200,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 1,
+            "minimum_negative": {
+              "value": -1.6267928714968604e-22,
+              "step": 147,
+              "flat_index": 46703,
+              "index_kji": [
+                26,
+                19,
+                41
+              ]
+            },
+            "ring0_count": 1,
+            "interior_count": 0,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "APPLICABLE"
+          },
+          "exact_count_location_match": false
+        },
+        {
+          "phase": "pre_dynamics_guard",
+          "field": "qs",
+          "candidate": {
+            "phase": "pre_dynamics_guard",
+            "field": "qs",
+            "coverage": "OBSERVED",
+            "present_observations": 200,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 105,
+            "minimum_negative": {
+              "value": -1.562642450248798e-22,
+              "step": 174,
+              "flat_index": 45904,
+              "index_kji": [
+                26,
+                0,
+                40
+              ]
+            },
+            "ring0_count": 105,
+            "interior_count": 0,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "APPLICABLE"
+          },
+          "control": {
+            "phase": "pre_dynamics_guard",
+            "field": "qs",
+            "coverage": "OBSERVED",
+            "present_observations": 200,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 1,
+            "minimum_negative": {
+              "value": -1.4114429976823797e-20,
+              "step": 151,
+              "flat_index": 46703,
+              "index_kji": [
+                26,
+                19,
+                41
+              ]
+            },
+            "ring0_count": 1,
+            "interior_count": 0,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "APPLICABLE"
+          },
+          "exact_count_location_match": false
+        },
+        {
+          "phase": "pre_dynamics_guard",
+          "field": "Ni",
+          "candidate": {
+            "phase": "pre_dynamics_guard",
+            "field": "Ni",
+            "coverage": "OBSERVED",
+            "present_observations": 200,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 818,
+            "minimum_negative": {
+              "value": -9.36412636320938e-09,
+              "step": 132,
+              "flat_index": 44729,
+              "index_kji": [
+                25,
+                14,
+                41
+              ]
+            },
+            "ring0_count": 818,
+            "interior_count": 0,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "N_A"
+          },
+          "control": {
+            "phase": "pre_dynamics_guard",
+            "field": "Ni",
+            "coverage": "OBSERVED",
+            "present_observations": 200,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 0,
+            "minimum_negative": null,
+            "ring0_count": 0,
+            "interior_count": 0,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "N_A"
+          },
+          "exact_count_location_match": false
+        },
+        {
+          "phase": "pre_dynamics_guard",
+          "field": "Nr",
+          "candidate": {
+            "phase": "pre_dynamics_guard",
+            "field": "Nr",
+            "coverage": "OBSERVED",
+            "present_observations": 200,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 2163,
+            "minimum_negative": {
+              "value": -7.373052689219062e-12,
+              "step": 173,
+              "flat_index": 26425,
+              "index_kji": [
+                14,
+                41,
+                7
+              ]
+            },
+            "ring0_count": 2163,
+            "interior_count": 0,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "N_A"
+          },
+          "control": {
+            "phase": "pre_dynamics_guard",
+            "field": "Nr",
+            "coverage": "OBSERVED",
+            "present_observations": 200,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 5,
+            "minimum_negative": {
+              "value": -2.069739345189614e-11,
+              "step": 96,
+              "flat_index": 28206,
+              "index_kji": [
+                15,
+                41,
+                24
+              ]
+            },
+            "ring0_count": 5,
+            "interior_count": 0,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "N_A"
+          },
+          "exact_count_location_match": false
+        },
+        {
+          "phase": "pre_boundary_guard",
+          "field": "qc",
+          "candidate": {
+            "phase": "pre_boundary_guard",
+            "field": "qc",
+            "coverage": "OBSERVED",
+            "present_observations": 200,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 5148,
+            "minimum_negative": {
+              "value": -1.0517904567588186e-16,
+              "step": 118,
+              "flat_index": 28203,
+              "index_kji": [
+                15,
+                41,
+                21
+              ]
+            },
+            "ring0_count": 5148,
+            "interior_count": 0,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "APPLICABLE"
+          },
+          "control": {
+            "phase": "pre_boundary_guard",
+            "field": "qc",
+            "coverage": "OBSERVED",
+            "present_observations": 200,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 51,
+            "minimum_negative": {
+              "value": -8.005572658779936e-14,
+              "step": 69,
+              "flat_index": 26423,
+              "index_kji": [
+                14,
+                41,
+                5
+              ]
+            },
+            "ring0_count": 51,
+            "interior_count": 0,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "APPLICABLE"
+          },
+          "exact_count_location_match": false
+        },
+        {
+          "phase": "pre_boundary_guard",
+          "field": "qr",
+          "candidate": {
+            "phase": "pre_boundary_guard",
+            "field": "qr",
+            "coverage": "OBSERVED",
+            "present_observations": 200,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 429,
+            "minimum_negative": {
+              "value": -2.6572333841782122e-20,
+              "step": 173,
+              "flat_index": 26425,
+              "index_kji": [
+                14,
+                41,
+                7
+              ]
+            },
+            "ring0_count": 429,
+            "interior_count": 0,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "APPLICABLE"
+          },
+          "control": {
+            "phase": "pre_boundary_guard",
+            "field": "qr",
+            "coverage": "OBSERVED",
+            "present_observations": 200,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 6,
+            "minimum_negative": {
+              "value": -1.3204242759153353e-19,
+              "step": 117,
+              "flat_index": 28208,
+              "index_kji": [
+                15,
+                41,
+                26
+              ]
+            },
+            "ring0_count": 6,
+            "interior_count": 0,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "APPLICABLE"
+          },
+          "exact_count_location_match": false
+        },
+        {
+          "phase": "pre_boundary_guard",
+          "field": "qi",
+          "candidate": {
+            "phase": "pre_boundary_guard",
+            "field": "qi",
+            "coverage": "OBSERVED",
+            "present_observations": 200,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 115,
+            "minimum_negative": {
+              "value": -1.4603262376452239e-19,
+              "step": 186,
+              "flat_index": 45898,
+              "index_kji": [
+                26,
+                0,
+                34
+              ]
+            },
+            "ring0_count": 115,
+            "interior_count": 0,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "APPLICABLE"
+          },
+          "control": {
+            "phase": "pre_boundary_guard",
+            "field": "qi",
+            "coverage": "OBSERVED",
+            "present_observations": 200,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 1,
+            "minimum_negative": {
+              "value": -1.6267928714968604e-22,
+              "step": 147,
+              "flat_index": 46703,
+              "index_kji": [
+                26,
+                19,
+                41
+              ]
+            },
+            "ring0_count": 1,
+            "interior_count": 0,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "APPLICABLE"
+          },
+          "exact_count_location_match": false
+        },
+        {
+          "phase": "pre_boundary_guard",
+          "field": "qs",
+          "candidate": {
+            "phase": "pre_boundary_guard",
+            "field": "qs",
+            "coverage": "OBSERVED",
+            "present_observations": 200,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 105,
+            "minimum_negative": {
+              "value": -1.562642450248798e-22,
+              "step": 174,
+              "flat_index": 45904,
+              "index_kji": [
+                26,
+                0,
+                40
+              ]
+            },
+            "ring0_count": 105,
+            "interior_count": 0,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "APPLICABLE"
+          },
+          "control": {
+            "phase": "pre_boundary_guard",
+            "field": "qs",
+            "coverage": "OBSERVED",
+            "present_observations": 200,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 1,
+            "minimum_negative": {
+              "value": -1.4114429976823797e-20,
+              "step": 151,
+              "flat_index": 46703,
+              "index_kji": [
+                26,
+                19,
+                41
+              ]
+            },
+            "ring0_count": 1,
+            "interior_count": 0,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "APPLICABLE"
+          },
+          "exact_count_location_match": false
+        },
+        {
+          "phase": "pre_boundary_guard",
+          "field": "Ni",
+          "candidate": {
+            "phase": "pre_boundary_guard",
+            "field": "Ni",
+            "coverage": "OBSERVED",
+            "present_observations": 200,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 818,
+            "minimum_negative": {
+              "value": -9.36412636320938e-09,
+              "step": 132,
+              "flat_index": 44729,
+              "index_kji": [
+                25,
+                14,
+                41
+              ]
+            },
+            "ring0_count": 818,
+            "interior_count": 0,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "N_A"
+          },
+          "control": {
+            "phase": "pre_boundary_guard",
+            "field": "Ni",
+            "coverage": "OBSERVED",
+            "present_observations": 200,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 0,
+            "minimum_negative": null,
+            "ring0_count": 0,
+            "interior_count": 0,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "N_A"
+          },
+          "exact_count_location_match": false
+        },
+        {
+          "phase": "pre_boundary_guard",
+          "field": "Nr",
+          "candidate": {
+            "phase": "pre_boundary_guard",
+            "field": "Nr",
+            "coverage": "OBSERVED",
+            "present_observations": 200,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 2163,
+            "minimum_negative": {
+              "value": -7.373052689219062e-12,
+              "step": 173,
+              "flat_index": 26425,
+              "index_kji": [
+                14,
+                41,
+                7
+              ]
+            },
+            "ring0_count": 2163,
+            "interior_count": 0,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "N_A"
+          },
+          "control": {
+            "phase": "pre_boundary_guard",
+            "field": "Nr",
+            "coverage": "OBSERVED",
+            "present_observations": 200,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 5,
+            "minimum_negative": {
+              "value": -2.069739345189614e-11,
+              "step": 96,
+              "flat_index": 28206,
+              "index_kji": [
+                15,
+                41,
+                24
+              ]
+            },
+            "ring0_count": 5,
+            "interior_count": 0,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "N_A"
+          },
+          "exact_count_location_match": false
+        }
+      ]
+    },
+    {
+      "end_step": 400,
+      "candidate_guard_total": 31506,
+      "control_guard_total": 438,
+      "guards": [
+        {
+          "field": "dynamics.qc",
+          "candidate": {
+            "nonfinite": 0,
+            "out_of_range": 12555,
+            "repaired": 12555
+          },
+          "control": {
+            "nonfinite": 0,
+            "out_of_range": 70,
+            "repaired": 70
+          }
+        },
+        {
+          "field": "dynamics.qi",
+          "candidate": {
+            "nonfinite": 0,
+            "out_of_range": 970,
+            "repaired": 970
+          },
+          "control": {
+            "nonfinite": 0,
+            "out_of_range": 5,
+            "repaired": 5
+          }
+        },
+        {
+          "field": "dynamics.qr",
+          "candidate": {
+            "nonfinite": 0,
+            "out_of_range": 1082,
+            "repaired": 1082
+          },
+          "control": {
+            "nonfinite": 0,
+            "out_of_range": 124,
+            "repaired": 124
+          }
+        },
+        {
+          "field": "dynamics.qs",
+          "candidate": {
+            "nonfinite": 0,
+            "out_of_range": 1146,
+            "repaired": 1146
+          },
+          "control": {
+            "nonfinite": 0,
+            "out_of_range": 20,
+            "repaired": 20
+          }
+        }
+      ],
+      "f2": [
+        {
+          "phase": "step_entry",
+          "field": "qc",
+          "candidate": {
+            "phase": "step_entry",
+            "field": "qc",
+            "coverage": "OBSERVED",
+            "present_observations": 400,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 12513,
+            "minimum_negative": {
+              "value": -2.1517848968013895e-16,
+              "step": 257,
+              "flat_index": 26165,
+              "index_kji": [
+                14,
+                34,
+                41
+              ]
+            },
+            "ring0_count": 12513,
+            "interior_count": 0,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "APPLICABLE"
+          },
+          "control": {
+            "phase": "step_entry",
+            "field": "qc",
+            "coverage": "OBSERVED",
+            "present_observations": 400,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 70,
+            "minimum_negative": {
+              "value": -8.005572658779936e-14,
+              "step": 70,
+              "flat_index": 26423,
+              "index_kji": [
+                14,
+                41,
+                5
+              ]
+            },
+            "ring0_count": 70,
+            "interior_count": 0,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "APPLICABLE"
+          },
+          "exact_count_location_match": false
+        },
+        {
+          "phase": "step_entry",
+          "field": "qr",
+          "candidate": {
+            "phase": "step_entry",
+            "field": "qr",
+            "coverage": "OBSERVED",
+            "present_observations": 400,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 1072,
+            "minimum_negative": {
+              "value": -2.6572333841782122e-20,
+              "step": 174,
+              "flat_index": 26425,
+              "index_kji": [
+                14,
+                41,
+                7
+              ]
+            },
+            "ring0_count": 1072,
+            "interior_count": 0,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "APPLICABLE"
+          },
+          "control": {
+            "phase": "step_entry",
+            "field": "qr",
+            "coverage": "OBSERVED",
+            "present_observations": 400,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 124,
+            "minimum_negative": {
+              "value": -1.0754056236588858e-18,
+              "step": 262,
+              "flat_index": 28211,
+              "index_kji": [
+                15,
+                41,
+                29
+              ]
+            },
+            "ring0_count": 124,
+            "interior_count": 0,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "APPLICABLE"
+          },
+          "exact_count_location_match": false
+        },
+        {
+          "phase": "step_entry",
+          "field": "qi",
+          "candidate": {
+            "phase": "step_entry",
+            "field": "qi",
+            "coverage": "OBSERVED",
+            "present_observations": 400,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 968,
+            "minimum_negative": {
+              "value": -3.240590561006323e-17,
+              "step": 237,
+              "flat_index": 44132,
+              "index_kji": [
+                25,
+                0,
+                32
+              ]
+            },
+            "ring0_count": 968,
+            "interior_count": 0,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "APPLICABLE"
+          },
+          "control": {
+            "phase": "step_entry",
+            "field": "qi",
+            "coverage": "OBSERVED",
+            "present_observations": 400,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 5,
+            "minimum_negative": {
+              "value": -2.956592955917994e-19,
+              "step": 225,
+              "flat_index": 49429,
+              "index_kji": [
+                28,
+                0,
+                37
+              ]
+            },
+            "ring0_count": 5,
+            "interior_count": 0,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "APPLICABLE"
+          },
+          "exact_count_location_match": false
+        },
+        {
+          "phase": "step_entry",
+          "field": "qs",
+          "candidate": {
+            "phase": "step_entry",
+            "field": "qs",
+            "coverage": "OBSERVED",
+            "present_observations": 400,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 1137,
+            "minimum_negative": {
+              "value": -3.629276586444003e-20,
+              "step": 254,
+              "flat_index": 44127,
+              "index_kji": [
+                25,
+                0,
+                27
+              ]
+            },
+            "ring0_count": 1137,
+            "interior_count": 0,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "APPLICABLE"
+          },
+          "control": {
+            "phase": "step_entry",
+            "field": "qs",
+            "coverage": "OBSERVED",
+            "present_observations": 400,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 20,
+            "minimum_negative": {
+              "value": -2.832362060139893e-19,
+              "step": 316,
+              "flat_index": 31457,
+              "index_kji": [
+                17,
+                34,
+                41
+              ]
+            },
+            "ring0_count": 20,
+            "interior_count": 0,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "APPLICABLE"
+          },
+          "exact_count_location_match": false
+        },
+        {
+          "phase": "step_entry",
+          "field": "Ni",
+          "candidate": {
+            "phase": "step_entry",
+            "field": "Ni",
+            "coverage": "OBSERVED",
+            "present_observations": 400,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 5157,
+            "minimum_negative": {
+              "value": -1.420829562448489e-06,
+              "step": 255,
+              "flat_index": 44133,
+              "index_kji": [
+                25,
+                0,
+                33
+              ]
+            },
+            "ring0_count": 5157,
+            "interior_count": 0,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "N_A"
+          },
+          "control": {
+            "phase": "step_entry",
+            "field": "Ni",
+            "coverage": "OBSERVED",
+            "present_observations": 400,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 11,
+            "minimum_negative": {
+              "value": -1.8729795669969462e-07,
+              "step": 251,
+              "flat_index": 49431,
+              "index_kji": [
+                28,
+                0,
+                39
+              ]
+            },
+            "ring0_count": 11,
+            "interior_count": 0,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "N_A"
+          },
+          "exact_count_location_match": false
+        },
+        {
+          "phase": "step_entry",
+          "field": "Nr",
+          "candidate": {
+            "phase": "step_entry",
+            "field": "Nr",
+            "coverage": "OBSERVED",
+            "present_observations": 400,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 5740,
+            "minimum_negative": {
+              "value": -7.373052689219062e-12,
+              "step": 174,
+              "flat_index": 26425,
+              "index_kji": [
+                14,
+                41,
+                7
+              ]
+            },
+            "ring0_count": 5740,
+            "interior_count": 0,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "N_A"
+          },
+          "control": {
+            "phase": "step_entry",
+            "field": "Nr",
+            "coverage": "OBSERVED",
+            "present_observations": 400,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 47,
+            "minimum_negative": {
+              "value": -6.190675749806474e-11,
+              "step": 383,
+              "flat_index": 28208,
+              "index_kji": [
+                15,
+                41,
+                26
+              ]
+            },
+            "ring0_count": 47,
+            "interior_count": 0,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "N_A"
+          },
+          "exact_count_location_match": false
+        },
+        {
+          "phase": "post_rk",
+          "field": "qc",
+          "candidate": {
+            "phase": "post_rk",
+            "field": "qc",
+            "coverage": "OBSERVED",
+            "present_observations": 400,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 43854,
+            "minimum_negative": {
+              "value": -3.5558065292207175e-07,
+              "step": 213,
+              "flat_index": 24462,
+              "index_kji": [
+                13,
+                36,
+                18
+              ]
+            },
+            "ring0_count": 12555,
+            "interior_count": 31299,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "APPLICABLE"
+          },
+          "control": {
+            "phase": "post_rk",
+            "field": "qc",
+            "coverage": "OBSERVED",
+            "present_observations": 400,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 3605,
+            "minimum_negative": {
+              "value": -1.0104469083671574e-06,
+              "step": 274,
+              "flat_index": 26185,
+              "index_kji": [
+                14,
+                35,
+                19
+              ]
+            },
+            "ring0_count": 70,
+            "interior_count": 3535,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "APPLICABLE"
+          },
+          "exact_count_location_match": false
+        },
+        {
+          "phase": "post_rk",
+          "field": "qr",
+          "candidate": {
+            "phase": "post_rk",
+            "field": "qr",
+            "coverage": "OBSERVED",
+            "present_observations": 400,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 16672,
+            "minimum_negative": {
+              "value": -2.52356890939609e-09,
+              "step": 189,
+              "flat_index": 19257,
+              "index_kji": [
+                10,
+                38,
+                21
+              ]
+            },
+            "ring0_count": 1082,
+            "interior_count": 15590,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "APPLICABLE"
+          },
+          "control": {
+            "phase": "post_rk",
+            "field": "qr",
+            "coverage": "OBSERVED",
+            "present_observations": 400,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 7827,
+            "minimum_negative": {
+              "value": -3.1526727894970463e-09,
+              "step": 192,
+              "flat_index": 19257,
+              "index_kji": [
+                10,
+                38,
+                21
+              ]
+            },
+            "ring0_count": 124,
+            "interior_count": 7703,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "APPLICABLE"
+          },
+          "exact_count_location_match": false
+        },
+        {
+          "phase": "post_rk",
+          "field": "qi",
+          "candidate": {
+            "phase": "post_rk",
+            "field": "qi",
+            "coverage": "OBSERVED",
+            "present_observations": 400,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 25766,
+            "minimum_negative": {
+              "value": -6.62787300598211e-08,
+              "step": 322,
+              "flat_index": 36557,
+              "index_kji": [
+                20,
+                30,
+                17
+              ]
+            },
+            "ring0_count": 970,
+            "interior_count": 24796,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "APPLICABLE"
+          },
+          "control": {
+            "phase": "post_rk",
+            "field": "qi",
+            "coverage": "OBSERVED",
+            "present_observations": 400,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 11697,
+            "minimum_negative": {
+              "value": -7.570709215087845e-08,
+              "step": 388,
+              "flat_index": 36516,
+              "index_kji": [
+                20,
+                29,
+                18
+              ]
+            },
+            "ring0_count": 5,
+            "interior_count": 11692,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "APPLICABLE"
+          },
+          "exact_count_location_match": false
+        },
+        {
+          "phase": "post_rk",
+          "field": "qs",
+          "candidate": {
+            "phase": "post_rk",
+            "field": "qs",
+            "coverage": "OBSERVED",
+            "present_observations": 400,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 32104,
+            "minimum_negative": {
+              "value": -2.0673629919087944e-08,
+              "step": 333,
+              "flat_index": 36557,
+              "index_kji": [
+                20,
+                30,
+                17
+              ]
+            },
+            "ring0_count": 1146,
+            "interior_count": 30958,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "APPLICABLE"
+          },
+          "control": {
+            "phase": "post_rk",
+            "field": "qs",
+            "coverage": "OBSERVED",
+            "present_observations": 400,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 12400,
+            "minimum_negative": {
+              "value": -6.2036811243615375e-09,
+              "step": 394,
+              "flat_index": 27746,
+              "index_kji": [
+                15,
+                30,
+                26
+              ]
+            },
+            "ring0_count": 20,
+            "interior_count": 12380,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "APPLICABLE"
+          },
+          "exact_count_location_match": false
+        },
+        {
+          "phase": "post_rk",
+          "field": "Ni",
+          "candidate": {
+            "phase": "post_rk",
+            "field": "Ni",
+            "coverage": "OBSERVED",
+            "present_observations": 400,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 43655,
+            "minimum_negative": {
+              "value": -8775.3505859375,
+              "step": 230,
+              "flat_index": 44427,
+              "index_kji": [
+                25,
+                7,
+                33
+              ]
+            },
+            "ring0_count": 5181,
+            "interior_count": 38474,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "N_A"
+          },
+          "control": {
+            "phase": "post_rk",
+            "field": "Ni",
+            "coverage": "OBSERVED",
+            "present_observations": 400,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 18955,
+            "minimum_negative": {
+              "value": -10215.51953125,
+              "step": 198,
+              "flat_index": 46440,
+              "index_kji": [
+                26,
+                13,
+                30
+              ]
+            },
+            "ring0_count": 11,
+            "interior_count": 18944,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "N_A"
+          },
+          "exact_count_location_match": false
+        },
+        {
+          "phase": "post_rk",
+          "field": "Nr",
+          "candidate": {
+            "phase": "post_rk",
+            "field": "Nr",
+            "coverage": "OBSERVED",
+            "present_observations": 400,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 25895,
+            "minimum_negative": {
+              "value": -0.2181652933359146,
+              "step": 189,
+              "flat_index": 21022,
+              "index_kji": [
+                11,
+                38,
+                22
+              ]
+            },
+            "ring0_count": 5767,
+            "interior_count": 20128,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "N_A"
+          },
+          "control": {
+            "phase": "post_rk",
+            "field": "Nr",
+            "coverage": "OBSERVED",
+            "present_observations": 400,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 7852,
+            "minimum_negative": {
+              "value": -0.2666938602924347,
+              "step": 225,
+              "flat_index": 22788,
+              "index_kji": [
+                12,
+                38,
+                24
+              ]
+            },
+            "ring0_count": 48,
+            "interior_count": 7804,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "N_A"
+          },
+          "exact_count_location_match": false
+        },
+        {
+          "phase": "pre_dynamics_guard",
+          "field": "qc",
+          "candidate": {
+            "phase": "pre_dynamics_guard",
+            "field": "qc",
+            "coverage": "OBSERVED",
+            "present_observations": 400,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 12555,
+            "minimum_negative": {
+              "value": -2.1517848968013895e-16,
+              "step": 256,
+              "flat_index": 26165,
+              "index_kji": [
+                14,
+                34,
+                41
+              ]
+            },
+            "ring0_count": 12555,
+            "interior_count": 0,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "APPLICABLE"
+          },
+          "control": {
+            "phase": "pre_dynamics_guard",
+            "field": "qc",
+            "coverage": "OBSERVED",
+            "present_observations": 400,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 70,
+            "minimum_negative": {
+              "value": -8.005572658779936e-14,
+              "step": 69,
+              "flat_index": 26423,
+              "index_kji": [
+                14,
+                41,
+                5
+              ]
+            },
+            "ring0_count": 70,
+            "interior_count": 0,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "APPLICABLE"
+          },
+          "exact_count_location_match": false
+        },
+        {
+          "phase": "pre_dynamics_guard",
+          "field": "qr",
+          "candidate": {
+            "phase": "pre_dynamics_guard",
+            "field": "qr",
+            "coverage": "OBSERVED",
+            "present_observations": 400,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 1082,
+            "minimum_negative": {
+              "value": -2.6572333841782122e-20,
+              "step": 173,
+              "flat_index": 26425,
+              "index_kji": [
+                14,
+                41,
+                7
+              ]
+            },
+            "ring0_count": 1082,
+            "interior_count": 0,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "APPLICABLE"
+          },
+          "control": {
+            "phase": "pre_dynamics_guard",
+            "field": "qr",
+            "coverage": "OBSERVED",
+            "present_observations": 400,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 124,
+            "minimum_negative": {
+              "value": -1.0754056236588858e-18,
+              "step": 261,
+              "flat_index": 28211,
+              "index_kji": [
+                15,
+                41,
+                29
+              ]
+            },
+            "ring0_count": 124,
+            "interior_count": 0,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "APPLICABLE"
+          },
+          "exact_count_location_match": false
+        },
+        {
+          "phase": "pre_dynamics_guard",
+          "field": "qi",
+          "candidate": {
+            "phase": "pre_dynamics_guard",
+            "field": "qi",
+            "coverage": "OBSERVED",
+            "present_observations": 400,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 970,
+            "minimum_negative": {
+              "value": -3.240590561006323e-17,
+              "step": 236,
+              "flat_index": 44132,
+              "index_kji": [
+                25,
+                0,
+                32
+              ]
+            },
+            "ring0_count": 970,
+            "interior_count": 0,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "APPLICABLE"
+          },
+          "control": {
+            "phase": "pre_dynamics_guard",
+            "field": "qi",
+            "coverage": "OBSERVED",
+            "present_observations": 400,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 5,
+            "minimum_negative": {
+              "value": -2.956592955917994e-19,
+              "step": 224,
+              "flat_index": 49429,
+              "index_kji": [
+                28,
+                0,
+                37
+              ]
+            },
+            "ring0_count": 5,
+            "interior_count": 0,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "APPLICABLE"
+          },
+          "exact_count_location_match": false
+        },
+        {
+          "phase": "pre_dynamics_guard",
+          "field": "qs",
+          "candidate": {
+            "phase": "pre_dynamics_guard",
+            "field": "qs",
+            "coverage": "OBSERVED",
+            "present_observations": 400,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 1146,
+            "minimum_negative": {
+              "value": -3.629276586444003e-20,
+              "step": 253,
+              "flat_index": 44127,
+              "index_kji": [
+                25,
+                0,
+                27
+              ]
+            },
+            "ring0_count": 1146,
+            "interior_count": 0,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "APPLICABLE"
+          },
+          "control": {
+            "phase": "pre_dynamics_guard",
+            "field": "qs",
+            "coverage": "OBSERVED",
+            "present_observations": 400,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 20,
+            "minimum_negative": {
+              "value": -2.832362060139893e-19,
+              "step": 315,
+              "flat_index": 31457,
+              "index_kji": [
+                17,
+                34,
+                41
+              ]
+            },
+            "ring0_count": 20,
+            "interior_count": 0,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "APPLICABLE"
+          },
+          "exact_count_location_match": false
+        },
+        {
+          "phase": "pre_dynamics_guard",
+          "field": "Ni",
+          "candidate": {
+            "phase": "pre_dynamics_guard",
+            "field": "Ni",
+            "coverage": "OBSERVED",
+            "present_observations": 400,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 5181,
+            "minimum_negative": {
+              "value": -1.420829562448489e-06,
+              "step": 254,
+              "flat_index": 44133,
+              "index_kji": [
+                25,
+                0,
+                33
+              ]
+            },
+            "ring0_count": 5181,
+            "interior_count": 0,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "N_A"
+          },
+          "control": {
+            "phase": "pre_dynamics_guard",
+            "field": "Ni",
+            "coverage": "OBSERVED",
+            "present_observations": 400,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 11,
+            "minimum_negative": {
+              "value": -1.8729795669969462e-07,
+              "step": 250,
+              "flat_index": 49431,
+              "index_kji": [
+                28,
+                0,
+                39
+              ]
+            },
+            "ring0_count": 11,
+            "interior_count": 0,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "N_A"
+          },
+          "exact_count_location_match": false
+        },
+        {
+          "phase": "pre_dynamics_guard",
+          "field": "Nr",
+          "candidate": {
+            "phase": "pre_dynamics_guard",
+            "field": "Nr",
+            "coverage": "OBSERVED",
+            "present_observations": 400,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 5767,
+            "minimum_negative": {
+              "value": -7.373052689219062e-12,
+              "step": 173,
+              "flat_index": 26425,
+              "index_kji": [
+                14,
+                41,
+                7
+              ]
+            },
+            "ring0_count": 5767,
+            "interior_count": 0,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "N_A"
+          },
+          "control": {
+            "phase": "pre_dynamics_guard",
+            "field": "Nr",
+            "coverage": "OBSERVED",
+            "present_observations": 400,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 48,
+            "minimum_negative": {
+              "value": -6.190675749806474e-11,
+              "step": 382,
+              "flat_index": 28208,
+              "index_kji": [
+                15,
+                41,
+                26
+              ]
+            },
+            "ring0_count": 48,
+            "interior_count": 0,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "N_A"
+          },
+          "exact_count_location_match": false
+        },
+        {
+          "phase": "pre_boundary_guard",
+          "field": "qc",
+          "candidate": {
+            "phase": "pre_boundary_guard",
+            "field": "qc",
+            "coverage": "OBSERVED",
+            "present_observations": 400,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 12555,
+            "minimum_negative": {
+              "value": -2.1517848968013895e-16,
+              "step": 256,
+              "flat_index": 26165,
+              "index_kji": [
+                14,
+                34,
+                41
+              ]
+            },
+            "ring0_count": 12555,
+            "interior_count": 0,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "APPLICABLE"
+          },
+          "control": {
+            "phase": "pre_boundary_guard",
+            "field": "qc",
+            "coverage": "OBSERVED",
+            "present_observations": 400,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 70,
+            "minimum_negative": {
+              "value": -8.005572658779936e-14,
+              "step": 69,
+              "flat_index": 26423,
+              "index_kji": [
+                14,
+                41,
+                5
+              ]
+            },
+            "ring0_count": 70,
+            "interior_count": 0,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "APPLICABLE"
+          },
+          "exact_count_location_match": false
+        },
+        {
+          "phase": "pre_boundary_guard",
+          "field": "qr",
+          "candidate": {
+            "phase": "pre_boundary_guard",
+            "field": "qr",
+            "coverage": "OBSERVED",
+            "present_observations": 400,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 1082,
+            "minimum_negative": {
+              "value": -2.6572333841782122e-20,
+              "step": 173,
+              "flat_index": 26425,
+              "index_kji": [
+                14,
+                41,
+                7
+              ]
+            },
+            "ring0_count": 1082,
+            "interior_count": 0,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "APPLICABLE"
+          },
+          "control": {
+            "phase": "pre_boundary_guard",
+            "field": "qr",
+            "coverage": "OBSERVED",
+            "present_observations": 400,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 124,
+            "minimum_negative": {
+              "value": -1.0754056236588858e-18,
+              "step": 261,
+              "flat_index": 28211,
+              "index_kji": [
+                15,
+                41,
+                29
+              ]
+            },
+            "ring0_count": 124,
+            "interior_count": 0,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "APPLICABLE"
+          },
+          "exact_count_location_match": false
+        },
+        {
+          "phase": "pre_boundary_guard",
+          "field": "qi",
+          "candidate": {
+            "phase": "pre_boundary_guard",
+            "field": "qi",
+            "coverage": "OBSERVED",
+            "present_observations": 400,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 970,
+            "minimum_negative": {
+              "value": -3.240590561006323e-17,
+              "step": 236,
+              "flat_index": 44132,
+              "index_kji": [
+                25,
+                0,
+                32
+              ]
+            },
+            "ring0_count": 970,
+            "interior_count": 0,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "APPLICABLE"
+          },
+          "control": {
+            "phase": "pre_boundary_guard",
+            "field": "qi",
+            "coverage": "OBSERVED",
+            "present_observations": 400,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 5,
+            "minimum_negative": {
+              "value": -2.956592955917994e-19,
+              "step": 224,
+              "flat_index": 49429,
+              "index_kji": [
+                28,
+                0,
+                37
+              ]
+            },
+            "ring0_count": 5,
+            "interior_count": 0,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "APPLICABLE"
+          },
+          "exact_count_location_match": false
+        },
+        {
+          "phase": "pre_boundary_guard",
+          "field": "qs",
+          "candidate": {
+            "phase": "pre_boundary_guard",
+            "field": "qs",
+            "coverage": "OBSERVED",
+            "present_observations": 400,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 1146,
+            "minimum_negative": {
+              "value": -3.629276586444003e-20,
+              "step": 253,
+              "flat_index": 44127,
+              "index_kji": [
+                25,
+                0,
+                27
+              ]
+            },
+            "ring0_count": 1146,
+            "interior_count": 0,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "APPLICABLE"
+          },
+          "control": {
+            "phase": "pre_boundary_guard",
+            "field": "qs",
+            "coverage": "OBSERVED",
+            "present_observations": 400,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 20,
+            "minimum_negative": {
+              "value": -2.832362060139893e-19,
+              "step": 315,
+              "flat_index": 31457,
+              "index_kji": [
+                17,
+                34,
+                41
+              ]
+            },
+            "ring0_count": 20,
+            "interior_count": 0,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "APPLICABLE"
+          },
+          "exact_count_location_match": false
+        },
+        {
+          "phase": "pre_boundary_guard",
+          "field": "Ni",
+          "candidate": {
+            "phase": "pre_boundary_guard",
+            "field": "Ni",
+            "coverage": "OBSERVED",
+            "present_observations": 400,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 5181,
+            "minimum_negative": {
+              "value": -1.420829562448489e-06,
+              "step": 254,
+              "flat_index": 44133,
+              "index_kji": [
+                25,
+                0,
+                33
+              ]
+            },
+            "ring0_count": 5181,
+            "interior_count": 0,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "N_A"
+          },
+          "control": {
+            "phase": "pre_boundary_guard",
+            "field": "Ni",
+            "coverage": "OBSERVED",
+            "present_observations": 400,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 11,
+            "minimum_negative": {
+              "value": -1.8729795669969462e-07,
+              "step": 250,
+              "flat_index": 49431,
+              "index_kji": [
+                28,
+                0,
+                39
+              ]
+            },
+            "ring0_count": 11,
+            "interior_count": 0,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "N_A"
+          },
+          "exact_count_location_match": false
+        },
+        {
+          "phase": "pre_boundary_guard",
+          "field": "Nr",
+          "candidate": {
+            "phase": "pre_boundary_guard",
+            "field": "Nr",
+            "coverage": "OBSERVED",
+            "present_observations": 400,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 5767,
+            "minimum_negative": {
+              "value": -7.373052689219062e-12,
+              "step": 173,
+              "flat_index": 26425,
+              "index_kji": [
+                14,
+                41,
+                7
+              ]
+            },
+            "ring0_count": 5767,
+            "interior_count": 0,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "N_A"
+          },
+          "control": {
+            "phase": "pre_boundary_guard",
+            "field": "Nr",
+            "coverage": "OBSERVED",
+            "present_observations": 400,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 48,
+            "minimum_negative": {
+              "value": -6.190675749806474e-11,
+              "step": 382,
+              "flat_index": 28208,
+              "index_kji": [
+                15,
+                41,
+                26
+              ]
+            },
+            "ring0_count": 48,
+            "interior_count": 0,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "N_A"
+          },
+          "exact_count_location_match": false
+        }
+      ]
+    },
+    {
+      "end_step": 600,
+      "candidate_guard_total": 58042,
+      "control_guard_total": 864,
+      "guards": [
+        {
+          "field": "dynamics.qc",
+          "candidate": {
+            "nonfinite": 0,
+            "out_of_range": 21692,
+            "repaired": 21692
+          },
+          "control": {
+            "nonfinite": 0,
+            "out_of_range": 108,
+            "repaired": 108
+          }
+        },
+        {
+          "field": "dynamics.qg",
+          "candidate": {
+            "nonfinite": 0,
+            "out_of_range": 465,
+            "repaired": 465
+          },
+          "control": {
+            "nonfinite": 0,
+            "out_of_range": 4,
+            "repaired": 4
+          }
+        },
+        {
+          "field": "dynamics.qi",
+          "candidate": {
+            "nonfinite": 0,
+            "out_of_range": 2592,
+            "repaired": 2592
+          },
+          "control": {
+            "nonfinite": 0,
+            "out_of_range": 35,
+            "repaired": 35
+          }
+        },
+        {
+          "field": "dynamics.qr",
+          "candidate": {
+            "nonfinite": 0,
+            "out_of_range": 1833,
+            "repaired": 1833
+          },
+          "control": {
+            "nonfinite": 0,
+            "out_of_range": 203,
+            "repaired": 203
+          }
+        },
+        {
+          "field": "dynamics.qs",
+          "candidate": {
+            "nonfinite": 0,
+            "out_of_range": 2439,
+            "repaired": 2439
+          },
+          "control": {
+            "nonfinite": 0,
+            "out_of_range": 82,
+            "repaired": 82
+          }
+        }
+      ],
+      "f2": [
+        {
+          "phase": "step_entry",
+          "field": "qc",
+          "candidate": {
+            "phase": "step_entry",
+            "field": "qc",
+            "coverage": "OBSERVED",
+            "present_observations": 600,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 21646,
+            "minimum_negative": {
+              "value": -2.1517848968013895e-16,
+              "step": 257,
+              "flat_index": 26165,
+              "index_kji": [
+                14,
+                34,
+                41
+              ]
+            },
+            "ring0_count": 21646,
+            "interior_count": 0,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "APPLICABLE"
+          },
+          "control": {
+            "phase": "step_entry",
+            "field": "qc",
+            "coverage": "OBSERVED",
+            "present_observations": 600,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 107,
+            "minimum_negative": {
+              "value": -1.2686707695670763e-13,
+              "step": 446,
+              "flat_index": 21163,
+              "index_kji": [
+                11,
+                41,
+                37
+              ]
+            },
+            "ring0_count": 107,
+            "interior_count": 0,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "APPLICABLE"
+          },
+          "exact_count_location_match": false
+        },
+        {
+          "phase": "step_entry",
+          "field": "qr",
+          "candidate": {
+            "phase": "step_entry",
+            "field": "qr",
+            "coverage": "OBSERVED",
+            "present_observations": 600,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 1829,
+            "minimum_negative": {
+              "value": -4.0023469980502094e-19,
+              "step": 589,
+              "flat_index": 15862,
+              "index_kji": [
+                8,
+                41,
+                28
+              ]
+            },
+            "ring0_count": 1829,
+            "interior_count": 0,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "APPLICABLE"
+          },
+          "control": {
+            "phase": "step_entry",
+            "field": "qr",
+            "coverage": "OBSERVED",
+            "present_observations": 600,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 203,
+            "minimum_negative": {
+              "value": -4.4500604691484904e-18,
+              "step": 541,
+              "flat_index": 26417,
+              "index_kji": [
+                14,
+                40,
+                41
+              ]
+            },
+            "ring0_count": 203,
+            "interior_count": 0,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "APPLICABLE"
+          },
+          "exact_count_location_match": false
+        },
+        {
+          "phase": "step_entry",
+          "field": "qi",
+          "candidate": {
+            "phase": "step_entry",
+            "field": "qi",
+            "coverage": "OBSERVED",
+            "present_observations": 600,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 2582,
+            "minimum_negative": {
+              "value": -3.240590561006323e-17,
+              "step": 237,
+              "flat_index": 44132,
+              "index_kji": [
+                25,
+                0,
+                32
+              ]
+            },
+            "ring0_count": 2582,
+            "interior_count": 0,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "APPLICABLE"
+          },
+          "control": {
+            "phase": "step_entry",
+            "field": "qi",
+            "coverage": "OBSERVED",
+            "present_observations": 600,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 35,
+            "minimum_negative": {
+              "value": -2.956592955917994e-19,
+              "step": 225,
+              "flat_index": 49429,
+              "index_kji": [
+                28,
+                0,
+                37
+              ]
+            },
+            "ring0_count": 35,
+            "interior_count": 0,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "APPLICABLE"
+          },
+          "exact_count_location_match": false
+        },
+        {
+          "phase": "step_entry",
+          "field": "qs",
+          "candidate": {
+            "phase": "step_entry",
+            "field": "qs",
+            "coverage": "OBSERVED",
+            "present_observations": 600,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 2437,
+            "minimum_negative": {
+              "value": -3.629276586444003e-20,
+              "step": 254,
+              "flat_index": 44127,
+              "index_kji": [
+                25,
+                0,
+                27
+              ]
+            },
+            "ring0_count": 2437,
+            "interior_count": 0,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "APPLICABLE"
+          },
+          "control": {
+            "phase": "step_entry",
+            "field": "qs",
+            "coverage": "OBSERVED",
+            "present_observations": 600,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 81,
+            "minimum_negative": {
+              "value": -4.736221947699985e-18,
+              "step": 574,
+              "flat_index": 27173,
+              "index_kji": [
+                15,
+                16,
+                41
+              ]
+            },
+            "ring0_count": 81,
+            "interior_count": 0,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "APPLICABLE"
+          },
+          "exact_count_location_match": false
+        },
+        {
+          "phase": "step_entry",
+          "field": "qg",
+          "candidate": {
+            "phase": "step_entry",
+            "field": "qg",
+            "coverage": "OBSERVED",
+            "present_observations": 600,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 464,
+            "minimum_negative": {
+              "value": -8.280936131541331e-20,
+              "step": 440,
+              "flat_index": 24485,
+              "index_kji": [
+                13,
+                36,
+                41
+              ]
+            },
+            "ring0_count": 464,
+            "interior_count": 0,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "APPLICABLE"
+          },
+          "control": {
+            "phase": "step_entry",
+            "field": "qg",
+            "coverage": "OBSERVED",
+            "present_observations": 600,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 4,
+            "minimum_negative": {
+              "value": -1.6796194436043035e-19,
+              "step": 497,
+              "flat_index": 29777,
+              "index_kji": [
+                16,
+                36,
+                41
+              ]
+            },
+            "ring0_count": 4,
+            "interior_count": 0,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "APPLICABLE"
+          },
+          "exact_count_location_match": false
+        },
+        {
+          "phase": "step_entry",
+          "field": "Ni",
+          "candidate": {
+            "phase": "step_entry",
+            "field": "Ni",
+            "coverage": "OBSERVED",
+            "present_observations": 600,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 10895,
+            "minimum_negative": {
+              "value": -1.420829562448489e-06,
+              "step": 255,
+              "flat_index": 44133,
+              "index_kji": [
+                25,
+                0,
+                33
+              ]
+            },
+            "ring0_count": 10895,
+            "interior_count": 0,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "N_A"
+          },
+          "control": {
+            "phase": "step_entry",
+            "field": "Ni",
+            "coverage": "OBSERVED",
+            "present_observations": 600,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 59,
+            "minimum_negative": {
+              "value": -1.8729795669969462e-07,
+              "step": 251,
+              "flat_index": 49431,
+              "index_kji": [
+                28,
+                0,
+                39
+              ]
+            },
+            "ring0_count": 59,
+            "interior_count": 0,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "N_A"
+          },
+          "exact_count_location_match": false
+        },
+        {
+          "phase": "step_entry",
+          "field": "Nr",
+          "candidate": {
+            "phase": "step_entry",
+            "field": "Nr",
+            "coverage": "OBSERVED",
+            "present_observations": 600,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 8684,
+            "minimum_negative": {
+              "value": -1.1826589707553126e-10,
+              "step": 517,
+              "flat_index": 8816,
+              "index_kji": [
+                4,
+                41,
+                38
+              ]
+            },
+            "ring0_count": 8684,
+            "interior_count": 0,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "N_A"
+          },
+          "control": {
+            "phase": "step_entry",
+            "field": "Nr",
+            "coverage": "OBSERVED",
+            "present_observations": 600,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 106,
+            "minimum_negative": {
+              "value": -1.5124227425999948e-09,
+              "step": 565,
+              "flat_index": 26081,
+              "index_kji": [
+                14,
+                32,
+                41
+              ]
+            },
+            "ring0_count": 106,
+            "interior_count": 0,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "N_A"
+          },
+          "exact_count_location_match": false
+        },
+        {
+          "phase": "post_rk",
+          "field": "qc",
+          "candidate": {
+            "phase": "post_rk",
+            "field": "qc",
+            "coverage": "OBSERVED",
+            "present_observations": 600,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 85198,
+            "minimum_negative": {
+              "value": -3.69015083379054e-07,
+              "step": 546,
+              "flat_index": 20445,
+              "index_kji": [
+                11,
+                24,
+                33
+              ]
+            },
+            "ring0_count": 21692,
+            "interior_count": 63506,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "APPLICABLE"
+          },
+          "control": {
+            "phase": "post_rk",
+            "field": "qc",
+            "coverage": "OBSERVED",
+            "present_observations": 600,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 8442,
+            "minimum_negative": {
+              "value": -2.2908957362233195e-06,
+              "step": 531,
+              "flat_index": 20566,
+              "index_kji": [
+                11,
+                27,
+                28
+              ]
+            },
+            "ring0_count": 110,
+            "interior_count": 8332,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "APPLICABLE"
+          },
+          "exact_count_location_match": false
+        },
+        {
+          "phase": "post_rk",
+          "field": "qr",
+          "candidate": {
+            "phase": "post_rk",
+            "field": "qr",
+            "coverage": "OBSERVED",
+            "present_observations": 600,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 36746,
+            "minimum_negative": {
+              "value": -1.1658052301299904e-08,
+              "step": 544,
+              "flat_index": 8520,
+              "index_kji": [
+                4,
+                34,
+                36
+              ]
+            },
+            "ring0_count": 1833,
+            "interior_count": 34913,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "APPLICABLE"
+          },
+          "control": {
+            "phase": "post_rk",
+            "field": "qr",
+            "coverage": "OBSERVED",
+            "present_observations": 600,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 18803,
+            "minimum_negative": {
+              "value": -3.756810418309442e-09,
+              "step": 546,
+              "flat_index": 8520,
+              "index_kji": [
+                4,
+                34,
+                36
+              ]
+            },
+            "ring0_count": 203,
+            "interior_count": 18600,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "APPLICABLE"
+          },
+          "exact_count_location_match": false
+        },
+        {
+          "phase": "post_rk",
+          "field": "qi",
+          "candidate": {
+            "phase": "post_rk",
+            "field": "qi",
+            "coverage": "OBSERVED",
+            "present_observations": 600,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 56757,
+            "minimum_negative": {
+              "value": -8.185754296619052e-08,
+              "step": 575,
+              "flat_index": 36594,
+              "index_kji": [
+                20,
+                31,
+                12
+              ]
+            },
+            "ring0_count": 2592,
+            "interior_count": 54165,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "APPLICABLE"
+          },
+          "control": {
+            "phase": "post_rk",
+            "field": "qi",
+            "coverage": "OBSERVED",
+            "present_observations": 600,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 28368,
+            "minimum_negative": {
+              "value": -8.218576397212018e-08,
+              "step": 429,
+              "flat_index": 36516,
+              "index_kji": [
+                20,
+                29,
+                18
+              ]
+            },
+            "ring0_count": 35,
+            "interior_count": 28333,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "APPLICABLE"
+          },
+          "exact_count_location_match": false
+        },
+        {
+          "phase": "post_rk",
+          "field": "qs",
+          "candidate": {
+            "phase": "post_rk",
+            "field": "qs",
+            "coverage": "OBSERVED",
+            "present_observations": 600,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 72445,
+            "minimum_negative": {
+              "value": -4.4729770110052414e-08,
+              "step": 598,
+              "flat_index": 18979,
+              "index_kji": [
+                10,
+                31,
+                37
+              ]
+            },
+            "ring0_count": 2439,
+            "interior_count": 70006,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "APPLICABLE"
+          },
+          "control": {
+            "phase": "post_rk",
+            "field": "qs",
+            "coverage": "OBSERVED",
+            "present_observations": 600,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 31112,
+            "minimum_negative": {
+              "value": -2.1765471203138986e-08,
+              "step": 570,
+              "flat_index": 33032,
+              "index_kji": [
+                18,
+                30,
+                20
+              ]
+            },
+            "ring0_count": 82,
+            "interior_count": 31030,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "APPLICABLE"
+          },
+          "exact_count_location_match": false
+        },
+        {
+          "phase": "post_rk",
+          "field": "qg",
+          "candidate": {
+            "phase": "post_rk",
+            "field": "qg",
+            "coverage": "OBSERVED",
+            "present_observations": 600,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 9218,
+            "minimum_negative": {
+              "value": -2.1797394111899848e-08,
+              "step": 517,
+              "flat_index": 22676,
+              "index_kji": [
+                12,
+                35,
+                38
+              ]
+            },
+            "ring0_count": 465,
+            "interior_count": 8753,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "APPLICABLE"
+          },
+          "control": {
+            "phase": "post_rk",
+            "field": "qg",
+            "coverage": "OBSERVED",
+            "present_observations": 600,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 2973,
+            "minimum_negative": {
+              "value": -4.8202157820753655e-09,
+              "step": 544,
+              "flat_index": 22634,
+              "index_kji": [
+                12,
+                34,
+                38
+              ]
+            },
+            "ring0_count": 4,
+            "interior_count": 2969,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "APPLICABLE"
+          },
+          "exact_count_location_match": false
+        },
+        {
+          "phase": "post_rk",
+          "field": "Ni",
+          "candidate": {
+            "phase": "post_rk",
+            "field": "Ni",
+            "coverage": "OBSERVED",
+            "present_observations": 600,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 92603,
+            "minimum_negative": {
+              "value": -8775.3505859375,
+              "step": 230,
+              "flat_index": 44427,
+              "index_kji": [
+                25,
+                7,
+                33
+              ]
+            },
+            "ring0_count": 10925,
+            "interior_count": 81678,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "N_A"
+          },
+          "control": {
+            "phase": "post_rk",
+            "field": "Ni",
+            "coverage": "OBSERVED",
+            "present_observations": 600,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 40952,
+            "minimum_negative": {
+              "value": -12080.9931640625,
+              "step": 499,
+              "flat_index": 36848,
+              "index_kji": [
+                20,
+                37,
+                14
+              ]
+            },
+            "ring0_count": 59,
+            "interior_count": 40893,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "N_A"
+          },
+          "exact_count_location_match": false
+        },
+        {
+          "phase": "post_rk",
+          "field": "Nr",
+          "candidate": {
+            "phase": "post_rk",
+            "field": "Nr",
+            "coverage": "OBSERVED",
+            "present_observations": 600,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 50541,
+            "minimum_negative": {
+              "value": -2.3589999675750732,
+              "step": 535,
+              "flat_index": 12090,
+              "index_kji": [
+                6,
+                35,
+                36
+              ]
+            },
+            "ring0_count": 8696,
+            "interior_count": 41845,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "N_A"
+          },
+          "control": {
+            "phase": "post_rk",
+            "field": "Nr",
+            "coverage": "OBSERVED",
+            "present_observations": 600,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 19463,
+            "minimum_negative": {
+              "value": -1.7571614980697632,
+              "step": 536,
+              "flat_index": 12090,
+              "index_kji": [
+                6,
+                35,
+                36
+              ]
+            },
+            "ring0_count": 106,
+            "interior_count": 19357,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "N_A"
+          },
+          "exact_count_location_match": false
+        },
+        {
+          "phase": "pre_dynamics_guard",
+          "field": "qc",
+          "candidate": {
+            "phase": "pre_dynamics_guard",
+            "field": "qc",
+            "coverage": "OBSERVED",
+            "present_observations": 600,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 21692,
+            "minimum_negative": {
+              "value": -2.1517848968013895e-16,
+              "step": 256,
+              "flat_index": 26165,
+              "index_kji": [
+                14,
+                34,
+                41
+              ]
+            },
+            "ring0_count": 21692,
+            "interior_count": 0,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "APPLICABLE"
+          },
+          "control": {
+            "phase": "pre_dynamics_guard",
+            "field": "qc",
+            "coverage": "OBSERVED",
+            "present_observations": 600,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 108,
+            "minimum_negative": {
+              "value": -1.2686707695670763e-13,
+              "step": 445,
+              "flat_index": 21163,
+              "index_kji": [
+                11,
+                41,
+                37
+              ]
+            },
+            "ring0_count": 108,
+            "interior_count": 0,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "APPLICABLE"
+          },
+          "exact_count_location_match": false
+        },
+        {
+          "phase": "pre_dynamics_guard",
+          "field": "qr",
+          "candidate": {
+            "phase": "pre_dynamics_guard",
+            "field": "qr",
+            "coverage": "OBSERVED",
+            "present_observations": 600,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 1833,
+            "minimum_negative": {
+              "value": -4.0023469980502094e-19,
+              "step": 588,
+              "flat_index": 15862,
+              "index_kji": [
+                8,
+                41,
+                28
+              ]
+            },
+            "ring0_count": 1833,
+            "interior_count": 0,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "APPLICABLE"
+          },
+          "control": {
+            "phase": "pre_dynamics_guard",
+            "field": "qr",
+            "coverage": "OBSERVED",
+            "present_observations": 600,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 203,
+            "minimum_negative": {
+              "value": -4.4500604691484904e-18,
+              "step": 540,
+              "flat_index": 26417,
+              "index_kji": [
+                14,
+                40,
+                41
+              ]
+            },
+            "ring0_count": 203,
+            "interior_count": 0,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "APPLICABLE"
+          },
+          "exact_count_location_match": false
+        },
+        {
+          "phase": "pre_dynamics_guard",
+          "field": "qi",
+          "candidate": {
+            "phase": "pre_dynamics_guard",
+            "field": "qi",
+            "coverage": "OBSERVED",
+            "present_observations": 600,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 2592,
+            "minimum_negative": {
+              "value": -3.240590561006323e-17,
+              "step": 236,
+              "flat_index": 44132,
+              "index_kji": [
+                25,
+                0,
+                32
+              ]
+            },
+            "ring0_count": 2592,
+            "interior_count": 0,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "APPLICABLE"
+          },
+          "control": {
+            "phase": "pre_dynamics_guard",
+            "field": "qi",
+            "coverage": "OBSERVED",
+            "present_observations": 600,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 35,
+            "minimum_negative": {
+              "value": -2.956592955917994e-19,
+              "step": 224,
+              "flat_index": 49429,
+              "index_kji": [
+                28,
+                0,
+                37
+              ]
+            },
+            "ring0_count": 35,
+            "interior_count": 0,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "APPLICABLE"
+          },
+          "exact_count_location_match": false
+        },
+        {
+          "phase": "pre_dynamics_guard",
+          "field": "qs",
+          "candidate": {
+            "phase": "pre_dynamics_guard",
+            "field": "qs",
+            "coverage": "OBSERVED",
+            "present_observations": 600,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 2439,
+            "minimum_negative": {
+              "value": -3.629276586444003e-20,
+              "step": 253,
+              "flat_index": 44127,
+              "index_kji": [
+                25,
+                0,
+                27
+              ]
+            },
+            "ring0_count": 2439,
+            "interior_count": 0,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "APPLICABLE"
+          },
+          "control": {
+            "phase": "pre_dynamics_guard",
+            "field": "qs",
+            "coverage": "OBSERVED",
+            "present_observations": 600,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 82,
+            "minimum_negative": {
+              "value": -4.736221947699985e-18,
+              "step": 573,
+              "flat_index": 27173,
+              "index_kji": [
+                15,
+                16,
+                41
+              ]
+            },
+            "ring0_count": 82,
+            "interior_count": 0,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "APPLICABLE"
+          },
+          "exact_count_location_match": false
+        },
+        {
+          "phase": "pre_dynamics_guard",
+          "field": "qg",
+          "candidate": {
+            "phase": "pre_dynamics_guard",
+            "field": "qg",
+            "coverage": "OBSERVED",
+            "present_observations": 600,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 465,
+            "minimum_negative": {
+              "value": -8.280936131541331e-20,
+              "step": 439,
+              "flat_index": 24485,
+              "index_kji": [
+                13,
+                36,
+                41
+              ]
+            },
+            "ring0_count": 465,
+            "interior_count": 0,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "APPLICABLE"
+          },
+          "control": {
+            "phase": "pre_dynamics_guard",
+            "field": "qg",
+            "coverage": "OBSERVED",
+            "present_observations": 600,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 4,
+            "minimum_negative": {
+              "value": -1.6796194436043035e-19,
+              "step": 496,
+              "flat_index": 29777,
+              "index_kji": [
+                16,
+                36,
+                41
+              ]
+            },
+            "ring0_count": 4,
+            "interior_count": 0,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "APPLICABLE"
+          },
+          "exact_count_location_match": false
+        },
+        {
+          "phase": "pre_dynamics_guard",
+          "field": "Ni",
+          "candidate": {
+            "phase": "pre_dynamics_guard",
+            "field": "Ni",
+            "coverage": "OBSERVED",
+            "present_observations": 600,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 10925,
+            "minimum_negative": {
+              "value": -1.420829562448489e-06,
+              "step": 254,
+              "flat_index": 44133,
+              "index_kji": [
+                25,
+                0,
+                33
+              ]
+            },
+            "ring0_count": 10925,
+            "interior_count": 0,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "N_A"
+          },
+          "control": {
+            "phase": "pre_dynamics_guard",
+            "field": "Ni",
+            "coverage": "OBSERVED",
+            "present_observations": 600,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 59,
+            "minimum_negative": {
+              "value": -1.8729795669969462e-07,
+              "step": 250,
+              "flat_index": 49431,
+              "index_kji": [
+                28,
+                0,
+                39
+              ]
+            },
+            "ring0_count": 59,
+            "interior_count": 0,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "N_A"
+          },
+          "exact_count_location_match": false
+        },
+        {
+          "phase": "pre_dynamics_guard",
+          "field": "Nr",
+          "candidate": {
+            "phase": "pre_dynamics_guard",
+            "field": "Nr",
+            "coverage": "OBSERVED",
+            "present_observations": 600,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 8696,
+            "minimum_negative": {
+              "value": -1.1826589707553126e-10,
+              "step": 516,
+              "flat_index": 8816,
+              "index_kji": [
+                4,
+                41,
+                38
+              ]
+            },
+            "ring0_count": 8696,
+            "interior_count": 0,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "N_A"
+          },
+          "control": {
+            "phase": "pre_dynamics_guard",
+            "field": "Nr",
+            "coverage": "OBSERVED",
+            "present_observations": 600,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 106,
+            "minimum_negative": {
+              "value": -1.5124227425999948e-09,
+              "step": 564,
+              "flat_index": 26081,
+              "index_kji": [
+                14,
+                32,
+                41
+              ]
+            },
+            "ring0_count": 106,
+            "interior_count": 0,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "N_A"
+          },
+          "exact_count_location_match": false
+        },
+        {
+          "phase": "pre_boundary_guard",
+          "field": "qc",
+          "candidate": {
+            "phase": "pre_boundary_guard",
+            "field": "qc",
+            "coverage": "OBSERVED",
+            "present_observations": 600,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 21692,
+            "minimum_negative": {
+              "value": -2.1517848968013895e-16,
+              "step": 256,
+              "flat_index": 26165,
+              "index_kji": [
+                14,
+                34,
+                41
+              ]
+            },
+            "ring0_count": 21692,
+            "interior_count": 0,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "APPLICABLE"
+          },
+          "control": {
+            "phase": "pre_boundary_guard",
+            "field": "qc",
+            "coverage": "OBSERVED",
+            "present_observations": 600,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 108,
+            "minimum_negative": {
+              "value": -1.2686707695670763e-13,
+              "step": 445,
+              "flat_index": 21163,
+              "index_kji": [
+                11,
+                41,
+                37
+              ]
+            },
+            "ring0_count": 108,
+            "interior_count": 0,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "APPLICABLE"
+          },
+          "exact_count_location_match": false
+        },
+        {
+          "phase": "pre_boundary_guard",
+          "field": "qr",
+          "candidate": {
+            "phase": "pre_boundary_guard",
+            "field": "qr",
+            "coverage": "OBSERVED",
+            "present_observations": 600,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 1833,
+            "minimum_negative": {
+              "value": -4.0023469980502094e-19,
+              "step": 588,
+              "flat_index": 15862,
+              "index_kji": [
+                8,
+                41,
+                28
+              ]
+            },
+            "ring0_count": 1833,
+            "interior_count": 0,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "APPLICABLE"
+          },
+          "control": {
+            "phase": "pre_boundary_guard",
+            "field": "qr",
+            "coverage": "OBSERVED",
+            "present_observations": 600,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 203,
+            "minimum_negative": {
+              "value": -4.4500604691484904e-18,
+              "step": 540,
+              "flat_index": 26417,
+              "index_kji": [
+                14,
+                40,
+                41
+              ]
+            },
+            "ring0_count": 203,
+            "interior_count": 0,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "APPLICABLE"
+          },
+          "exact_count_location_match": false
+        },
+        {
+          "phase": "pre_boundary_guard",
+          "field": "qi",
+          "candidate": {
+            "phase": "pre_boundary_guard",
+            "field": "qi",
+            "coverage": "OBSERVED",
+            "present_observations": 600,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 2592,
+            "minimum_negative": {
+              "value": -3.240590561006323e-17,
+              "step": 236,
+              "flat_index": 44132,
+              "index_kji": [
+                25,
+                0,
+                32
+              ]
+            },
+            "ring0_count": 2592,
+            "interior_count": 0,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "APPLICABLE"
+          },
+          "control": {
+            "phase": "pre_boundary_guard",
+            "field": "qi",
+            "coverage": "OBSERVED",
+            "present_observations": 600,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 35,
+            "minimum_negative": {
+              "value": -2.956592955917994e-19,
+              "step": 224,
+              "flat_index": 49429,
+              "index_kji": [
+                28,
+                0,
+                37
+              ]
+            },
+            "ring0_count": 35,
+            "interior_count": 0,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "APPLICABLE"
+          },
+          "exact_count_location_match": false
+        },
+        {
+          "phase": "pre_boundary_guard",
+          "field": "qs",
+          "candidate": {
+            "phase": "pre_boundary_guard",
+            "field": "qs",
+            "coverage": "OBSERVED",
+            "present_observations": 600,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 2439,
+            "minimum_negative": {
+              "value": -3.629276586444003e-20,
+              "step": 253,
+              "flat_index": 44127,
+              "index_kji": [
+                25,
+                0,
+                27
+              ]
+            },
+            "ring0_count": 2439,
+            "interior_count": 0,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "APPLICABLE"
+          },
+          "control": {
+            "phase": "pre_boundary_guard",
+            "field": "qs",
+            "coverage": "OBSERVED",
+            "present_observations": 600,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 82,
+            "minimum_negative": {
+              "value": -4.736221947699985e-18,
+              "step": 573,
+              "flat_index": 27173,
+              "index_kji": [
+                15,
+                16,
+                41
+              ]
+            },
+            "ring0_count": 82,
+            "interior_count": 0,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "APPLICABLE"
+          },
+          "exact_count_location_match": false
+        },
+        {
+          "phase": "pre_boundary_guard",
+          "field": "qg",
+          "candidate": {
+            "phase": "pre_boundary_guard",
+            "field": "qg",
+            "coverage": "OBSERVED",
+            "present_observations": 600,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 465,
+            "minimum_negative": {
+              "value": -8.280936131541331e-20,
+              "step": 439,
+              "flat_index": 24485,
+              "index_kji": [
+                13,
+                36,
+                41
+              ]
+            },
+            "ring0_count": 465,
+            "interior_count": 0,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "APPLICABLE"
+          },
+          "control": {
+            "phase": "pre_boundary_guard",
+            "field": "qg",
+            "coverage": "OBSERVED",
+            "present_observations": 600,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 4,
+            "minimum_negative": {
+              "value": -1.6796194436043035e-19,
+              "step": 496,
+              "flat_index": 29777,
+              "index_kji": [
+                16,
+                36,
+                41
+              ]
+            },
+            "ring0_count": 4,
+            "interior_count": 0,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "APPLICABLE"
+          },
+          "exact_count_location_match": false
+        },
+        {
+          "phase": "pre_boundary_guard",
+          "field": "Ni",
+          "candidate": {
+            "phase": "pre_boundary_guard",
+            "field": "Ni",
+            "coverage": "OBSERVED",
+            "present_observations": 600,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 10925,
+            "minimum_negative": {
+              "value": -1.420829562448489e-06,
+              "step": 254,
+              "flat_index": 44133,
+              "index_kji": [
+                25,
+                0,
+                33
+              ]
+            },
+            "ring0_count": 10925,
+            "interior_count": 0,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "N_A"
+          },
+          "control": {
+            "phase": "pre_boundary_guard",
+            "field": "Ni",
+            "coverage": "OBSERVED",
+            "present_observations": 600,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 59,
+            "minimum_negative": {
+              "value": -1.8729795669969462e-07,
+              "step": 250,
+              "flat_index": 49431,
+              "index_kji": [
+                28,
+                0,
+                39
+              ]
+            },
+            "ring0_count": 59,
+            "interior_count": 0,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "N_A"
+          },
+          "exact_count_location_match": false
+        },
+        {
+          "phase": "pre_boundary_guard",
+          "field": "Nr",
+          "candidate": {
+            "phase": "pre_boundary_guard",
+            "field": "Nr",
+            "coverage": "OBSERVED",
+            "present_observations": 600,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 8696,
+            "minimum_negative": {
+              "value": -1.1826589707553126e-10,
+              "step": 516,
+              "flat_index": 8816,
+              "index_kji": [
+                4,
+                41,
+                38
+              ]
+            },
+            "ring0_count": 8696,
+            "interior_count": 0,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "N_A"
+          },
+          "control": {
+            "phase": "pre_boundary_guard",
+            "field": "Nr",
+            "coverage": "OBSERVED",
+            "present_observations": 600,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 106,
+            "minimum_negative": {
+              "value": -1.5124227425999948e-09,
+              "step": 564,
+              "flat_index": 26081,
+              "index_kji": [
+                14,
+                32,
+                41
+              ]
+            },
+            "ring0_count": 106,
+            "interior_count": 0,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "N_A"
+          },
+          "exact_count_location_match": false
+        }
+      ]
+    },
+    {
+      "end_step": 800,
+      "candidate_guard_total": 81424,
+      "control_guard_total": 1542,
+      "guards": [
+        {
+          "field": "dynamics.qc",
+          "candidate": {
+            "nonfinite": 0,
+            "out_of_range": 29208,
+            "repaired": 29208
+          },
+          "control": {
+            "nonfinite": 0,
+            "out_of_range": 333,
+            "repaired": 333
+          }
+        },
+        {
+          "field": "dynamics.qg",
+          "candidate": {
+            "nonfinite": 0,
+            "out_of_range": 990,
+            "repaired": 990
+          },
+          "control": {
+            "nonfinite": 0,
+            "out_of_range": 5,
+            "repaired": 5
+          }
+        },
+        {
+          "field": "dynamics.qi",
+          "candidate": {
+            "nonfinite": 0,
+            "out_of_range": 4533,
+            "repaired": 4533
+          },
+          "control": {
+            "nonfinite": 0,
+            "out_of_range": 56,
+            "repaired": 56
+          }
+        },
+        {
+          "field": "dynamics.qr",
+          "candidate": {
+            "nonfinite": 0,
+            "out_of_range": 2937,
+            "repaired": 2937
+          },
+          "control": {
+            "nonfinite": 0,
+            "out_of_range": 261,
+            "repaired": 261
+          }
+        },
+        {
+          "field": "dynamics.qs",
+          "candidate": {
+            "nonfinite": 0,
+            "out_of_range": 3044,
+            "repaired": 3044
+          },
+          "control": {
+            "nonfinite": 0,
+            "out_of_range": 116,
+            "repaired": 116
+          }
+        }
+      ],
+      "f2": [
+        {
+          "phase": "step_entry",
+          "field": "qc",
+          "candidate": {
+            "phase": "step_entry",
+            "field": "qc",
+            "coverage": "OBSERVED",
+            "present_observations": 800,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 29180,
+            "minimum_negative": {
+              "value": -2.0021364361061996e-15,
+              "step": 793,
+              "flat_index": 3864,
+              "index_kji": [
+                2,
+                8,
+                0
+              ]
+            },
+            "ring0_count": 29180,
+            "interior_count": 0,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "APPLICABLE"
+          },
+          "control": {
+            "phase": "step_entry",
+            "field": "qc",
+            "coverage": "OBSERVED",
+            "present_observations": 800,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 333,
+            "minimum_negative": {
+              "value": -2.9079698176358304e-13,
+              "step": 606,
+              "flat_index": 29777,
+              "index_kji": [
+                16,
+                36,
+                41
+              ]
+            },
+            "ring0_count": 333,
+            "interior_count": 0,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "APPLICABLE"
+          },
+          "exact_count_location_match": false
+        },
+        {
+          "phase": "step_entry",
+          "field": "qr",
+          "candidate": {
+            "phase": "step_entry",
+            "field": "qr",
+            "coverage": "OBSERVED",
+            "present_observations": 800,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 2932,
+            "minimum_negative": {
+              "value": -6.161724734586733e-19,
+              "step": 648,
+              "flat_index": 1746,
+              "index_kji": [
+                0,
+                41,
+                24
+              ]
+            },
+            "ring0_count": 2932,
+            "interior_count": 0,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "APPLICABLE"
+          },
+          "control": {
+            "phase": "step_entry",
+            "field": "qr",
+            "coverage": "OBSERVED",
+            "present_observations": 800,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 260,
+            "minimum_negative": {
+              "value": -4.4500604691484904e-18,
+              "step": 541,
+              "flat_index": 26417,
+              "index_kji": [
+                14,
+                40,
+                41
+              ]
+            },
+            "ring0_count": 260,
+            "interior_count": 0,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "APPLICABLE"
+          },
+          "exact_count_location_match": false
+        },
+        {
+          "phase": "step_entry",
+          "field": "qi",
+          "candidate": {
+            "phase": "step_entry",
+            "field": "qi",
+            "coverage": "OBSERVED",
+            "present_observations": 800,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 4528,
+            "minimum_negative": {
+              "value": -3.240590561006323e-17,
+              "step": 237,
+              "flat_index": 44132,
+              "index_kji": [
+                25,
+                0,
+                32
+              ]
+            },
+            "ring0_count": 4528,
+            "interior_count": 0,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "APPLICABLE"
+          },
+          "control": {
+            "phase": "step_entry",
+            "field": "qi",
+            "coverage": "OBSERVED",
+            "present_observations": 800,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 56,
+            "minimum_negative": {
+              "value": -2.956592955917994e-19,
+              "step": 225,
+              "flat_index": 49429,
+              "index_kji": [
+                28,
+                0,
+                37
+              ]
+            },
+            "ring0_count": 56,
+            "interior_count": 0,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "APPLICABLE"
+          },
+          "exact_count_location_match": false
+        },
+        {
+          "phase": "step_entry",
+          "field": "qs",
+          "candidate": {
+            "phase": "step_entry",
+            "field": "qs",
+            "coverage": "OBSERVED",
+            "present_observations": 800,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 3039,
+            "minimum_negative": {
+              "value": -1.428019923340141e-19,
+              "step": 687,
+              "flat_index": 26432,
+              "index_kji": [
+                14,
+                41,
+                14
+              ]
+            },
+            "ring0_count": 3039,
+            "interior_count": 0,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "APPLICABLE"
+          },
+          "control": {
+            "phase": "step_entry",
+            "field": "qs",
+            "coverage": "OBSERVED",
+            "present_observations": 800,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 116,
+            "minimum_negative": {
+              "value": -4.736221947699985e-18,
+              "step": 574,
+              "flat_index": 27173,
+              "index_kji": [
+                15,
+                16,
+                41
+              ]
+            },
+            "ring0_count": 116,
+            "interior_count": 0,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "APPLICABLE"
+          },
+          "exact_count_location_match": false
+        },
+        {
+          "phase": "step_entry",
+          "field": "qg",
+          "candidate": {
+            "phase": "step_entry",
+            "field": "qg",
+            "coverage": "OBSERVED",
+            "present_observations": 800,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 990,
+            "minimum_negative": {
+              "value": -5.185368302414361e-19,
+              "step": 696,
+              "flat_index": 15864,
+              "index_kji": [
+                8,
+                41,
+                30
+              ]
+            },
+            "ring0_count": 990,
+            "interior_count": 0,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "APPLICABLE"
+          },
+          "control": {
+            "phase": "step_entry",
+            "field": "qg",
+            "coverage": "OBSERVED",
+            "present_observations": 800,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 5,
+            "minimum_negative": {
+              "value": -1.6796194436043035e-19,
+              "step": 497,
+              "flat_index": 29777,
+              "index_kji": [
+                16,
+                36,
+                41
+              ]
+            },
+            "ring0_count": 5,
+            "interior_count": 0,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "APPLICABLE"
+          },
+          "exact_count_location_match": false
+        },
+        {
+          "phase": "step_entry",
+          "field": "Ni",
+          "candidate": {
+            "phase": "step_entry",
+            "field": "Ni",
+            "coverage": "OBSERVED",
+            "present_observations": 800,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 16693,
+            "minimum_negative": {
+              "value": -1.420829562448489e-06,
+              "step": 255,
+              "flat_index": 44133,
+              "index_kji": [
+                25,
+                0,
+                33
+              ]
+            },
+            "ring0_count": 16693,
+            "interior_count": 0,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "N_A"
+          },
+          "control": {
+            "phase": "step_entry",
+            "field": "Ni",
+            "coverage": "OBSERVED",
+            "present_observations": 800,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 61,
+            "minimum_negative": {
+              "value": -2.5111530703725293e-05,
+              "step": 708,
+              "flat_index": 35272,
+              "index_kji": [
+                19,
+                41,
+                34
+              ]
+            },
+            "ring0_count": 61,
+            "interior_count": 0,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "N_A"
+          },
+          "exact_count_location_match": false
+        },
+        {
+          "phase": "step_entry",
+          "field": "Nr",
+          "candidate": {
+            "phase": "step_entry",
+            "field": "Nr",
+            "coverage": "OBSERVED",
+            "present_observations": 800,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 11545,
+            "minimum_negative": {
+              "value": -1.7255158413220784e-10,
+              "step": 614,
+              "flat_index": 15863,
+              "index_kji": [
+                8,
+                41,
+                29
+              ]
+            },
+            "ring0_count": 11545,
+            "interior_count": 0,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "N_A"
+          },
+          "control": {
+            "phase": "step_entry",
+            "field": "Nr",
+            "coverage": "OBSERVED",
+            "present_observations": 800,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 178,
+            "minimum_negative": {
+              "value": -1.5124227425999948e-09,
+              "step": 565,
+              "flat_index": 26081,
+              "index_kji": [
+                14,
+                32,
+                41
+              ]
+            },
+            "ring0_count": 178,
+            "interior_count": 0,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "N_A"
+          },
+          "exact_count_location_match": false
+        },
+        {
+          "phase": "post_rk",
+          "field": "qc",
+          "candidate": {
+            "phase": "post_rk",
+            "field": "qc",
+            "coverage": "OBSERVED",
+            "present_observations": 800,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 125779,
+            "minimum_negative": {
+              "value": -1.1878236136908527e-06,
+              "step": 616,
+              "flat_index": 20601,
+              "index_kji": [
+                11,
+                28,
+                21
+              ]
+            },
+            "ring0_count": 29208,
+            "interior_count": 96571,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "APPLICABLE"
+          },
+          "control": {
+            "phase": "post_rk",
+            "field": "qc",
+            "coverage": "OBSERVED",
+            "present_observations": 800,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 14889,
+            "minimum_negative": {
+              "value": -2.895215175158228e-06,
+              "step": 732,
+              "flat_index": 19017,
+              "index_kji": [
+                10,
+                32,
+                33
+              ]
+            },
+            "ring0_count": 335,
+            "interior_count": 14554,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "APPLICABLE"
+          },
+          "exact_count_location_match": false
+        },
+        {
+          "phase": "post_rk",
+          "field": "qr",
+          "candidate": {
+            "phase": "post_rk",
+            "field": "qr",
+            "coverage": "OBSERVED",
+            "present_observations": 800,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 64954,
+            "minimum_negative": {
+              "value": -1.2869772803014712e-08,
+              "step": 740,
+              "flat_index": 8685,
+              "index_kji": [
+                4,
+                38,
+                33
+              ]
+            },
+            "ring0_count": 2937,
+            "interior_count": 62017,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "APPLICABLE"
+          },
+          "control": {
+            "phase": "post_rk",
+            "field": "qr",
+            "coverage": "OBSERVED",
+            "present_observations": 800,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 34023,
+            "minimum_negative": {
+              "value": -7.389656442313708e-09,
+              "step": 752,
+              "flat_index": 10449,
+              "index_kji": [
+                5,
+                38,
+                33
+              ]
+            },
+            "ring0_count": 261,
+            "interior_count": 33762,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "APPLICABLE"
+          },
+          "exact_count_location_match": false
+        },
+        {
+          "phase": "post_rk",
+          "field": "qi",
+          "candidate": {
+            "phase": "post_rk",
+            "field": "qi",
+            "coverage": "OBSERVED",
+            "present_observations": 800,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 90851,
+            "minimum_negative": {
+              "value": -8.319658917343986e-08,
+              "step": 679,
+              "flat_index": 36594,
+              "index_kji": [
+                20,
+                31,
+                12
+              ]
+            },
+            "ring0_count": 4533,
+            "interior_count": 86318,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "APPLICABLE"
+          },
+          "control": {
+            "phase": "post_rk",
+            "field": "qi",
+            "coverage": "OBSERVED",
+            "present_observations": 800,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 48632,
+            "minimum_negative": {
+              "value": -8.358757952464657e-08,
+              "step": 719,
+              "flat_index": 36558,
+              "index_kji": [
+                20,
+                30,
+                18
+              ]
+            },
+            "ring0_count": 56,
+            "interior_count": 48576,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "APPLICABLE"
+          },
+          "exact_count_location_match": false
+        },
+        {
+          "phase": "post_rk",
+          "field": "qs",
+          "candidate": {
+            "phase": "post_rk",
+            "field": "qs",
+            "coverage": "OBSERVED",
+            "present_observations": 800,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 114793,
+            "minimum_negative": {
+              "value": -1.6274879044431145e-07,
+              "step": 800,
+              "flat_index": 22548,
+              "index_kji": [
+                12,
+                32,
+                36
+              ]
+            },
+            "ring0_count": 3044,
+            "interior_count": 111749,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "APPLICABLE"
+          },
+          "control": {
+            "phase": "post_rk",
+            "field": "qs",
+            "coverage": "OBSERVED",
+            "present_observations": 800,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 57249,
+            "minimum_negative": {
+              "value": -3.9811347107843176e-08,
+              "step": 727,
+              "flat_index": 18980,
+              "index_kji": [
+                10,
+                31,
+                38
+              ]
+            },
+            "ring0_count": 116,
+            "interior_count": 57133,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "APPLICABLE"
+          },
+          "exact_count_location_match": false
+        },
+        {
+          "phase": "post_rk",
+          "field": "qg",
+          "candidate": {
+            "phase": "post_rk",
+            "field": "qg",
+            "coverage": "OBSERVED",
+            "present_observations": 800,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 26993,
+            "minimum_negative": {
+              "value": -4.2524444410219076e-08,
+              "step": 768,
+              "flat_index": 15452,
+              "index_kji": [
+                8,
+                31,
+                38
+              ]
+            },
+            "ring0_count": 990,
+            "interior_count": 26003,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "APPLICABLE"
+          },
+          "control": {
+            "phase": "post_rk",
+            "field": "qg",
+            "coverage": "OBSERVED",
+            "present_observations": 800,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 11941,
+            "minimum_negative": {
+              "value": -2.7085778953050976e-08,
+              "step": 798,
+              "flat_index": 10409,
+              "index_kji": [
+                5,
+                37,
+                35
+              ]
+            },
+            "ring0_count": 5,
+            "interior_count": 11936,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "APPLICABLE"
+          },
+          "exact_count_location_match": false
+        },
+        {
+          "phase": "post_rk",
+          "field": "Ni",
+          "candidate": {
+            "phase": "post_rk",
+            "field": "Ni",
+            "coverage": "OBSERVED",
+            "present_observations": 800,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 145136,
+            "minimum_negative": {
+              "value": -8899.9755859375,
+              "step": 716,
+              "flat_index": 40165,
+              "index_kji": [
+                22,
+                32,
+                13
+              ]
+            },
+            "ring0_count": 16725,
+            "interior_count": 128411,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "N_A"
+          },
+          "control": {
+            "phase": "post_rk",
+            "field": "Ni",
+            "coverage": "OBSERVED",
+            "present_observations": 800,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 66698,
+            "minimum_negative": {
+              "value": -12080.9931640625,
+              "step": 499,
+              "flat_index": 36848,
+              "index_kji": [
+                20,
+                37,
+                14
+              ]
+            },
+            "ring0_count": 61,
+            "interior_count": 66637,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "N_A"
+          },
+          "exact_count_location_match": false
+        },
+        {
+          "phase": "post_rk",
+          "field": "Nr",
+          "candidate": {
+            "phase": "post_rk",
+            "field": "Nr",
+            "coverage": "OBSERVED",
+            "present_observations": 800,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 83470,
+            "minimum_negative": {
+              "value": -2.3589999675750732,
+              "step": 535,
+              "flat_index": 12090,
+              "index_kji": [
+                6,
+                35,
+                36
+              ]
+            },
+            "ring0_count": 11570,
+            "interior_count": 71900,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "N_A"
+          },
+          "control": {
+            "phase": "post_rk",
+            "field": "Nr",
+            "coverage": "OBSERVED",
+            "present_observations": 800,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 35763,
+            "minimum_negative": {
+              "value": -1.7571614980697632,
+              "step": 536,
+              "flat_index": 12090,
+              "index_kji": [
+                6,
+                35,
+                36
+              ]
+            },
+            "ring0_count": 178,
+            "interior_count": 35585,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "N_A"
+          },
+          "exact_count_location_match": false
+        },
+        {
+          "phase": "pre_dynamics_guard",
+          "field": "qc",
+          "candidate": {
+            "phase": "pre_dynamics_guard",
+            "field": "qc",
+            "coverage": "OBSERVED",
+            "present_observations": 800,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 29208,
+            "minimum_negative": {
+              "value": -2.0021364361061996e-15,
+              "step": 792,
+              "flat_index": 3864,
+              "index_kji": [
+                2,
+                8,
+                0
+              ]
+            },
+            "ring0_count": 29208,
+            "interior_count": 0,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "APPLICABLE"
+          },
+          "control": {
+            "phase": "pre_dynamics_guard",
+            "field": "qc",
+            "coverage": "OBSERVED",
+            "present_observations": 800,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 333,
+            "minimum_negative": {
+              "value": -2.9079698176358304e-13,
+              "step": 605,
+              "flat_index": 29777,
+              "index_kji": [
+                16,
+                36,
+                41
+              ]
+            },
+            "ring0_count": 333,
+            "interior_count": 0,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "APPLICABLE"
+          },
+          "exact_count_location_match": false
+        },
+        {
+          "phase": "pre_dynamics_guard",
+          "field": "qr",
+          "candidate": {
+            "phase": "pre_dynamics_guard",
+            "field": "qr",
+            "coverage": "OBSERVED",
+            "present_observations": 800,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 2937,
+            "minimum_negative": {
+              "value": -6.161724734586733e-19,
+              "step": 647,
+              "flat_index": 1746,
+              "index_kji": [
+                0,
+                41,
+                24
+              ]
+            },
+            "ring0_count": 2937,
+            "interior_count": 0,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "APPLICABLE"
+          },
+          "control": {
+            "phase": "pre_dynamics_guard",
+            "field": "qr",
+            "coverage": "OBSERVED",
+            "present_observations": 800,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 261,
+            "minimum_negative": {
+              "value": -4.4500604691484904e-18,
+              "step": 540,
+              "flat_index": 26417,
+              "index_kji": [
+                14,
+                40,
+                41
+              ]
+            },
+            "ring0_count": 261,
+            "interior_count": 0,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "APPLICABLE"
+          },
+          "exact_count_location_match": false
+        },
+        {
+          "phase": "pre_dynamics_guard",
+          "field": "qi",
+          "candidate": {
+            "phase": "pre_dynamics_guard",
+            "field": "qi",
+            "coverage": "OBSERVED",
+            "present_observations": 800,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 4533,
+            "minimum_negative": {
+              "value": -3.240590561006323e-17,
+              "step": 236,
+              "flat_index": 44132,
+              "index_kji": [
+                25,
+                0,
+                32
+              ]
+            },
+            "ring0_count": 4533,
+            "interior_count": 0,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "APPLICABLE"
+          },
+          "control": {
+            "phase": "pre_dynamics_guard",
+            "field": "qi",
+            "coverage": "OBSERVED",
+            "present_observations": 800,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 56,
+            "minimum_negative": {
+              "value": -2.956592955917994e-19,
+              "step": 224,
+              "flat_index": 49429,
+              "index_kji": [
+                28,
+                0,
+                37
+              ]
+            },
+            "ring0_count": 56,
+            "interior_count": 0,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "APPLICABLE"
+          },
+          "exact_count_location_match": false
+        },
+        {
+          "phase": "pre_dynamics_guard",
+          "field": "qs",
+          "candidate": {
+            "phase": "pre_dynamics_guard",
+            "field": "qs",
+            "coverage": "OBSERVED",
+            "present_observations": 800,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 3044,
+            "minimum_negative": {
+              "value": -1.428019923340141e-19,
+              "step": 686,
+              "flat_index": 26432,
+              "index_kji": [
+                14,
+                41,
+                14
+              ]
+            },
+            "ring0_count": 3044,
+            "interior_count": 0,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "APPLICABLE"
+          },
+          "control": {
+            "phase": "pre_dynamics_guard",
+            "field": "qs",
+            "coverage": "OBSERVED",
+            "present_observations": 800,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 116,
+            "minimum_negative": {
+              "value": -4.736221947699985e-18,
+              "step": 573,
+              "flat_index": 27173,
+              "index_kji": [
+                15,
+                16,
+                41
+              ]
+            },
+            "ring0_count": 116,
+            "interior_count": 0,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "APPLICABLE"
+          },
+          "exact_count_location_match": false
+        },
+        {
+          "phase": "pre_dynamics_guard",
+          "field": "qg",
+          "candidate": {
+            "phase": "pre_dynamics_guard",
+            "field": "qg",
+            "coverage": "OBSERVED",
+            "present_observations": 800,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 990,
+            "minimum_negative": {
+              "value": -5.185368302414361e-19,
+              "step": 695,
+              "flat_index": 15864,
+              "index_kji": [
+                8,
+                41,
+                30
+              ]
+            },
+            "ring0_count": 990,
+            "interior_count": 0,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "APPLICABLE"
+          },
+          "control": {
+            "phase": "pre_dynamics_guard",
+            "field": "qg",
+            "coverage": "OBSERVED",
+            "present_observations": 800,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 5,
+            "minimum_negative": {
+              "value": -1.6796194436043035e-19,
+              "step": 496,
+              "flat_index": 29777,
+              "index_kji": [
+                16,
+                36,
+                41
+              ]
+            },
+            "ring0_count": 5,
+            "interior_count": 0,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "APPLICABLE"
+          },
+          "exact_count_location_match": false
+        },
+        {
+          "phase": "pre_dynamics_guard",
+          "field": "Ni",
+          "candidate": {
+            "phase": "pre_dynamics_guard",
+            "field": "Ni",
+            "coverage": "OBSERVED",
+            "present_observations": 800,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 16725,
+            "minimum_negative": {
+              "value": -1.420829562448489e-06,
+              "step": 254,
+              "flat_index": 44133,
+              "index_kji": [
+                25,
+                0,
+                33
+              ]
+            },
+            "ring0_count": 16725,
+            "interior_count": 0,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "N_A"
+          },
+          "control": {
+            "phase": "pre_dynamics_guard",
+            "field": "Ni",
+            "coverage": "OBSERVED",
+            "present_observations": 800,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 61,
+            "minimum_negative": {
+              "value": -2.5111530703725293e-05,
+              "step": 707,
+              "flat_index": 35272,
+              "index_kji": [
+                19,
+                41,
+                34
+              ]
+            },
+            "ring0_count": 61,
+            "interior_count": 0,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "N_A"
+          },
+          "exact_count_location_match": false
+        },
+        {
+          "phase": "pre_dynamics_guard",
+          "field": "Nr",
+          "candidate": {
+            "phase": "pre_dynamics_guard",
+            "field": "Nr",
+            "coverage": "OBSERVED",
+            "present_observations": 800,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 11570,
+            "minimum_negative": {
+              "value": -1.7255158413220784e-10,
+              "step": 613,
+              "flat_index": 15863,
+              "index_kji": [
+                8,
+                41,
+                29
+              ]
+            },
+            "ring0_count": 11570,
+            "interior_count": 0,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "N_A"
+          },
+          "control": {
+            "phase": "pre_dynamics_guard",
+            "field": "Nr",
+            "coverage": "OBSERVED",
+            "present_observations": 800,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 178,
+            "minimum_negative": {
+              "value": -1.5124227425999948e-09,
+              "step": 564,
+              "flat_index": 26081,
+              "index_kji": [
+                14,
+                32,
+                41
+              ]
+            },
+            "ring0_count": 178,
+            "interior_count": 0,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "N_A"
+          },
+          "exact_count_location_match": false
+        },
+        {
+          "phase": "pre_boundary_guard",
+          "field": "qc",
+          "candidate": {
+            "phase": "pre_boundary_guard",
+            "field": "qc",
+            "coverage": "OBSERVED",
+            "present_observations": 800,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 29208,
+            "minimum_negative": {
+              "value": -2.0021364361061996e-15,
+              "step": 792,
+              "flat_index": 3864,
+              "index_kji": [
+                2,
+                8,
+                0
+              ]
+            },
+            "ring0_count": 29208,
+            "interior_count": 0,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "APPLICABLE"
+          },
+          "control": {
+            "phase": "pre_boundary_guard",
+            "field": "qc",
+            "coverage": "OBSERVED",
+            "present_observations": 800,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 333,
+            "minimum_negative": {
+              "value": -2.9079698176358304e-13,
+              "step": 605,
+              "flat_index": 29777,
+              "index_kji": [
+                16,
+                36,
+                41
+              ]
+            },
+            "ring0_count": 333,
+            "interior_count": 0,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "APPLICABLE"
+          },
+          "exact_count_location_match": false
+        },
+        {
+          "phase": "pre_boundary_guard",
+          "field": "qr",
+          "candidate": {
+            "phase": "pre_boundary_guard",
+            "field": "qr",
+            "coverage": "OBSERVED",
+            "present_observations": 800,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 2937,
+            "minimum_negative": {
+              "value": -6.161724734586733e-19,
+              "step": 647,
+              "flat_index": 1746,
+              "index_kji": [
+                0,
+                41,
+                24
+              ]
+            },
+            "ring0_count": 2937,
+            "interior_count": 0,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "APPLICABLE"
+          },
+          "control": {
+            "phase": "pre_boundary_guard",
+            "field": "qr",
+            "coverage": "OBSERVED",
+            "present_observations": 800,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 261,
+            "minimum_negative": {
+              "value": -4.4500604691484904e-18,
+              "step": 540,
+              "flat_index": 26417,
+              "index_kji": [
+                14,
+                40,
+                41
+              ]
+            },
+            "ring0_count": 261,
+            "interior_count": 0,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "APPLICABLE"
+          },
+          "exact_count_location_match": false
+        },
+        {
+          "phase": "pre_boundary_guard",
+          "field": "qi",
+          "candidate": {
+            "phase": "pre_boundary_guard",
+            "field": "qi",
+            "coverage": "OBSERVED",
+            "present_observations": 800,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 4533,
+            "minimum_negative": {
+              "value": -3.240590561006323e-17,
+              "step": 236,
+              "flat_index": 44132,
+              "index_kji": [
+                25,
+                0,
+                32
+              ]
+            },
+            "ring0_count": 4533,
+            "interior_count": 0,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "APPLICABLE"
+          },
+          "control": {
+            "phase": "pre_boundary_guard",
+            "field": "qi",
+            "coverage": "OBSERVED",
+            "present_observations": 800,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 56,
+            "minimum_negative": {
+              "value": -2.956592955917994e-19,
+              "step": 224,
+              "flat_index": 49429,
+              "index_kji": [
+                28,
+                0,
+                37
+              ]
+            },
+            "ring0_count": 56,
+            "interior_count": 0,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "APPLICABLE"
+          },
+          "exact_count_location_match": false
+        },
+        {
+          "phase": "pre_boundary_guard",
+          "field": "qs",
+          "candidate": {
+            "phase": "pre_boundary_guard",
+            "field": "qs",
+            "coverage": "OBSERVED",
+            "present_observations": 800,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 3044,
+            "minimum_negative": {
+              "value": -1.428019923340141e-19,
+              "step": 686,
+              "flat_index": 26432,
+              "index_kji": [
+                14,
+                41,
+                14
+              ]
+            },
+            "ring0_count": 3044,
+            "interior_count": 0,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "APPLICABLE"
+          },
+          "control": {
+            "phase": "pre_boundary_guard",
+            "field": "qs",
+            "coverage": "OBSERVED",
+            "present_observations": 800,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 116,
+            "minimum_negative": {
+              "value": -4.736221947699985e-18,
+              "step": 573,
+              "flat_index": 27173,
+              "index_kji": [
+                15,
+                16,
+                41
+              ]
+            },
+            "ring0_count": 116,
+            "interior_count": 0,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "APPLICABLE"
+          },
+          "exact_count_location_match": false
+        },
+        {
+          "phase": "pre_boundary_guard",
+          "field": "qg",
+          "candidate": {
+            "phase": "pre_boundary_guard",
+            "field": "qg",
+            "coverage": "OBSERVED",
+            "present_observations": 800,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 990,
+            "minimum_negative": {
+              "value": -5.185368302414361e-19,
+              "step": 695,
+              "flat_index": 15864,
+              "index_kji": [
+                8,
+                41,
+                30
+              ]
+            },
+            "ring0_count": 990,
+            "interior_count": 0,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "APPLICABLE"
+          },
+          "control": {
+            "phase": "pre_boundary_guard",
+            "field": "qg",
+            "coverage": "OBSERVED",
+            "present_observations": 800,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 5,
+            "minimum_negative": {
+              "value": -1.6796194436043035e-19,
+              "step": 496,
+              "flat_index": 29777,
+              "index_kji": [
+                16,
+                36,
+                41
+              ]
+            },
+            "ring0_count": 5,
+            "interior_count": 0,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "APPLICABLE"
+          },
+          "exact_count_location_match": false
+        },
+        {
+          "phase": "pre_boundary_guard",
+          "field": "Ni",
+          "candidate": {
+            "phase": "pre_boundary_guard",
+            "field": "Ni",
+            "coverage": "OBSERVED",
+            "present_observations": 800,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 16725,
+            "minimum_negative": {
+              "value": -1.420829562448489e-06,
+              "step": 254,
+              "flat_index": 44133,
+              "index_kji": [
+                25,
+                0,
+                33
+              ]
+            },
+            "ring0_count": 16725,
+            "interior_count": 0,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "N_A"
+          },
+          "control": {
+            "phase": "pre_boundary_guard",
+            "field": "Ni",
+            "coverage": "OBSERVED",
+            "present_observations": 800,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 61,
+            "minimum_negative": {
+              "value": -2.5111530703725293e-05,
+              "step": 707,
+              "flat_index": 35272,
+              "index_kji": [
+                19,
+                41,
+                34
+              ]
+            },
+            "ring0_count": 61,
+            "interior_count": 0,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "N_A"
+          },
+          "exact_count_location_match": false
+        },
+        {
+          "phase": "pre_boundary_guard",
+          "field": "Nr",
+          "candidate": {
+            "phase": "pre_boundary_guard",
+            "field": "Nr",
+            "coverage": "OBSERVED",
+            "present_observations": 800,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 11570,
+            "minimum_negative": {
+              "value": -1.7255158413220784e-10,
+              "step": 613,
+              "flat_index": 15863,
+              "index_kji": [
+                8,
+                41,
+                29
+              ]
+            },
+            "ring0_count": 11570,
+            "interior_count": 0,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "N_A"
+          },
+          "control": {
+            "phase": "pre_boundary_guard",
+            "field": "Nr",
+            "coverage": "OBSERVED",
+            "present_observations": 800,
+            "absent_observations": 0,
+            "non_real32_observations": 0,
+            "exact_real32_extremum": true,
+            "negative_count": 178,
+            "minimum_negative": {
+              "value": -1.5124227425999948e-09,
+              "step": 564,
+              "flat_index": 26081,
+              "index_kji": [
+                14,
+                32,
+                41
+              ]
+            },
+            "ring0_count": 178,
+            "interior_count": 0,
+            "nonfinite_count": 0,
+            "moisture_cap_applicability": "N_A"
+          },
+          "exact_count_location_match": false
+        }
+      ]
+    }
+  ],
+  "endpoint_negative_counts": [
+    {
+      "hour": 1,
+      "field": "qv",
+      "candidate": {
+        "negative_count": 0,
+        "ring0_count": 0,
+        "interior_count": 0,
+        "nonfinite_count": 0
+      },
+      "control": {
+        "negative_count": 0,
+        "ring0_count": 0,
+        "interior_count": 0,
+        "nonfinite_count": 0
+      },
+      "original": {
+        "negative_count": 0,
+        "ring0_count": 0,
+        "interior_count": 0,
+        "nonfinite_count": 0
+      }
+    },
+    {
+      "hour": 1,
+      "field": "qc",
+      "candidate": {
+        "negative_count": 27,
+        "ring0_count": 27,
+        "interior_count": 0,
+        "nonfinite_count": 0
+      },
+      "control": {
+        "negative_count": 0,
+        "ring0_count": 0,
+        "interior_count": 0,
+        "nonfinite_count": 0
+      },
+      "original": {
+        "negative_count": 38,
+        "ring0_count": 38,
+        "interior_count": 0,
+        "nonfinite_count": 0
+      }
+    },
+    {
+      "hour": 1,
+      "field": "qr",
+      "candidate": {
+        "negative_count": 1,
+        "ring0_count": 1,
+        "interior_count": 0,
+        "nonfinite_count": 0
+      },
+      "control": {
+        "negative_count": 0,
+        "ring0_count": 0,
+        "interior_count": 0,
+        "nonfinite_count": 0
+      },
+      "original": {
+        "negative_count": 6,
+        "ring0_count": 6,
+        "interior_count": 0,
+        "nonfinite_count": 0
+      }
+    },
+    {
+      "hour": 1,
+      "field": "qi",
+      "candidate": {
+        "negative_count": 1,
+        "ring0_count": 1,
+        "interior_count": 0,
+        "nonfinite_count": 0
+      },
+      "control": {
+        "negative_count": 0,
+        "ring0_count": 0,
+        "interior_count": 0,
+        "nonfinite_count": 0
+      },
+      "original": {
+        "negative_count": 1,
+        "ring0_count": 1,
+        "interior_count": 0,
+        "nonfinite_count": 0
+      }
+    },
+    {
+      "hour": 1,
+      "field": "qs",
+      "candidate": {
+        "negative_count": 0,
+        "ring0_count": 0,
+        "interior_count": 0,
+        "nonfinite_count": 0
+      },
+      "control": {
+        "negative_count": 0,
+        "ring0_count": 0,
+        "interior_count": 0,
+        "nonfinite_count": 0
+      },
+      "original": {
+        "negative_count": 1,
+        "ring0_count": 1,
+        "interior_count": 0,
+        "nonfinite_count": 0
+      }
+    },
+    {
+      "hour": 1,
+      "field": "qg",
+      "candidate": {
+        "negative_count": 0,
+        "ring0_count": 0,
+        "interior_count": 0,
+        "nonfinite_count": 0
+      },
+      "control": {
+        "negative_count": 0,
+        "ring0_count": 0,
+        "interior_count": 0,
+        "nonfinite_count": 0
+      },
+      "original": {
+        "negative_count": 0,
+        "ring0_count": 0,
+        "interior_count": 0,
+        "nonfinite_count": 0
+      }
+    },
+    {
+      "hour": 1,
+      "field": "Ni",
+      "candidate": {
+        "negative_count": 14,
+        "ring0_count": 14,
+        "interior_count": 0,
+        "nonfinite_count": 0
+      },
+      "control": {
+        "negative_count": 0,
+        "ring0_count": 0,
+        "interior_count": 0,
+        "nonfinite_count": 0
+      },
+      "original": {
+        "negative_count": 14,
+        "ring0_count": 14,
+        "interior_count": 0,
+        "nonfinite_count": 0
+      }
+    },
+    {
+      "hour": 1,
+      "field": "Nr",
+      "candidate": {
+        "negative_count": 11,
+        "ring0_count": 11,
+        "interior_count": 0,
+        "nonfinite_count": 0
+      },
+      "control": {
+        "negative_count": 0,
+        "ring0_count": 0,
+        "interior_count": 0,
+        "nonfinite_count": 0
+      },
+      "original": {
+        "negative_count": 12,
+        "ring0_count": 12,
+        "interior_count": 0,
+        "nonfinite_count": 0
+      }
+    },
+    {
+      "hour": 2,
+      "field": "qv",
+      "candidate": {
+        "negative_count": 0,
+        "ring0_count": 0,
+        "interior_count": 0,
+        "nonfinite_count": 0
+      },
+      "control": {
+        "negative_count": 0,
+        "ring0_count": 0,
+        "interior_count": 0,
+        "nonfinite_count": 0
+      },
+      "original": {
+        "negative_count": 0,
+        "ring0_count": 0,
+        "interior_count": 0,
+        "nonfinite_count": 0
+      }
+    },
+    {
+      "hour": 2,
+      "field": "qc",
+      "candidate": {
+        "negative_count": 42,
+        "ring0_count": 42,
+        "interior_count": 0,
+        "nonfinite_count": 0
+      },
+      "control": {
+        "negative_count": 0,
+        "ring0_count": 0,
+        "interior_count": 0,
+        "nonfinite_count": 0
+      },
+      "original": {
+        "negative_count": 51,
+        "ring0_count": 51,
+        "interior_count": 0,
+        "nonfinite_count": 0
+      }
+    },
+    {
+      "hour": 2,
+      "field": "qr",
+      "candidate": {
+        "negative_count": 10,
+        "ring0_count": 10,
+        "interior_count": 0,
+        "nonfinite_count": 0
+      },
+      "control": {
+        "negative_count": 0,
+        "ring0_count": 0,
+        "interior_count": 0,
+        "nonfinite_count": 0
+      },
+      "original": {
+        "negative_count": 4,
+        "ring0_count": 4,
+        "interior_count": 0,
+        "nonfinite_count": 0
+      }
+    },
+    {
+      "hour": 2,
+      "field": "qi",
+      "candidate": {
+        "negative_count": 2,
+        "ring0_count": 2,
+        "interior_count": 0,
+        "nonfinite_count": 0
+      },
+      "control": {
+        "negative_count": 0,
+        "ring0_count": 0,
+        "interior_count": 0,
+        "nonfinite_count": 0
+      },
+      "original": {
+        "negative_count": 6,
+        "ring0_count": 6,
+        "interior_count": 0,
+        "nonfinite_count": 0
+      }
+    },
+    {
+      "hour": 2,
+      "field": "qs",
+      "candidate": {
+        "negative_count": 9,
+        "ring0_count": 9,
+        "interior_count": 0,
+        "nonfinite_count": 0
+      },
+      "control": {
+        "negative_count": 0,
+        "ring0_count": 0,
+        "interior_count": 0,
+        "nonfinite_count": 0
+      },
+      "original": {
+        "negative_count": 11,
+        "ring0_count": 11,
+        "interior_count": 0,
+        "nonfinite_count": 0
+      }
+    },
+    {
+      "hour": 2,
+      "field": "qg",
+      "candidate": {
+        "negative_count": 0,
+        "ring0_count": 0,
+        "interior_count": 0,
+        "nonfinite_count": 0
+      },
+      "control": {
+        "negative_count": 0,
+        "ring0_count": 0,
+        "interior_count": 0,
+        "nonfinite_count": 0
+      },
+      "original": {
+        "negative_count": 0,
+        "ring0_count": 0,
+        "interior_count": 0,
+        "nonfinite_count": 0
+      }
+    },
+    {
+      "hour": 2,
+      "field": "Ni",
+      "candidate": {
+        "negative_count": 24,
+        "ring0_count": 24,
+        "interior_count": 0,
+        "nonfinite_count": 0
+      },
+      "control": {
+        "negative_count": 0,
+        "ring0_count": 0,
+        "interior_count": 0,
+        "nonfinite_count": 0
+      },
+      "original": {
+        "negative_count": 22,
+        "ring0_count": 22,
+        "interior_count": 0,
+        "nonfinite_count": 0
+      }
+    },
+    {
+      "hour": 2,
+      "field": "Nr",
+      "candidate": {
+        "negative_count": 27,
+        "ring0_count": 27,
+        "interior_count": 0,
+        "nonfinite_count": 0
+      },
+      "control": {
+        "negative_count": 1,
+        "ring0_count": 1,
+        "interior_count": 0,
+        "nonfinite_count": 0
+      },
+      "original": {
+        "negative_count": 19,
+        "ring0_count": 19,
+        "interior_count": 0,
+        "nonfinite_count": 0
+      }
+    },
+    {
+      "hour": 3,
+      "field": "qv",
+      "candidate": {
+        "negative_count": 0,
+        "ring0_count": 0,
+        "interior_count": 0,
+        "nonfinite_count": 0
+      },
+      "control": {
+        "negative_count": 0,
+        "ring0_count": 0,
+        "interior_count": 0,
+        "nonfinite_count": 0
+      },
+      "original": {
+        "negative_count": 0,
+        "ring0_count": 0,
+        "interior_count": 0,
+        "nonfinite_count": 0
+      }
+    },
+    {
+      "hour": 3,
+      "field": "qc",
+      "candidate": {
+        "negative_count": 46,
+        "ring0_count": 46,
+        "interior_count": 0,
+        "nonfinite_count": 0
+      },
+      "control": {
+        "negative_count": 1,
+        "ring0_count": 1,
+        "interior_count": 0,
+        "nonfinite_count": 0
+      },
+      "original": {
+        "negative_count": 48,
+        "ring0_count": 48,
+        "interior_count": 0,
+        "nonfinite_count": 0
+      }
+    },
+    {
+      "hour": 3,
+      "field": "qr",
+      "candidate": {
+        "negative_count": 4,
+        "ring0_count": 4,
+        "interior_count": 0,
+        "nonfinite_count": 0
+      },
+      "control": {
+        "negative_count": 0,
+        "ring0_count": 0,
+        "interior_count": 0,
+        "nonfinite_count": 0
+      },
+      "original": {
+        "negative_count": 4,
+        "ring0_count": 4,
+        "interior_count": 0,
+        "nonfinite_count": 0
+      }
+    },
+    {
+      "hour": 3,
+      "field": "qi",
+      "candidate": {
+        "negative_count": 10,
+        "ring0_count": 10,
+        "interior_count": 0,
+        "nonfinite_count": 0
+      },
+      "control": {
+        "negative_count": 0,
+        "ring0_count": 0,
+        "interior_count": 0,
+        "nonfinite_count": 0
+      },
+      "original": {
+        "negative_count": 16,
+        "ring0_count": 16,
+        "interior_count": 0,
+        "nonfinite_count": 0
+      }
+    },
+    {
+      "hour": 3,
+      "field": "qs",
+      "candidate": {
+        "negative_count": 2,
+        "ring0_count": 2,
+        "interior_count": 0,
+        "nonfinite_count": 0
+      },
+      "control": {
+        "negative_count": 1,
+        "ring0_count": 1,
+        "interior_count": 0,
+        "nonfinite_count": 0
+      },
+      "original": {
+        "negative_count": 4,
+        "ring0_count": 4,
+        "interior_count": 0,
+        "nonfinite_count": 0
+      }
+    },
+    {
+      "hour": 3,
+      "field": "qg",
+      "candidate": {
+        "negative_count": 1,
+        "ring0_count": 1,
+        "interior_count": 0,
+        "nonfinite_count": 0
+      },
+      "control": {
+        "negative_count": 0,
+        "ring0_count": 0,
+        "interior_count": 0,
+        "nonfinite_count": 0
+      },
+      "original": {
+        "negative_count": 2,
+        "ring0_count": 2,
+        "interior_count": 0,
+        "nonfinite_count": 0
+      }
+    },
+    {
+      "hour": 3,
+      "field": "Ni",
+      "candidate": {
+        "negative_count": 30,
+        "ring0_count": 30,
+        "interior_count": 0,
+        "nonfinite_count": 0
+      },
+      "control": {
+        "negative_count": 0,
+        "ring0_count": 0,
+        "interior_count": 0,
+        "nonfinite_count": 0
+      },
+      "original": {
+        "negative_count": 32,
+        "ring0_count": 32,
+        "interior_count": 0,
+        "nonfinite_count": 0
+      }
+    },
+    {
+      "hour": 3,
+      "field": "Nr",
+      "candidate": {
+        "negative_count": 12,
+        "ring0_count": 12,
+        "interior_count": 0,
+        "nonfinite_count": 0
+      },
+      "control": {
+        "negative_count": 0,
+        "ring0_count": 0,
+        "interior_count": 0,
+        "nonfinite_count": 0
+      },
+      "original": {
+        "negative_count": 21,
+        "ring0_count": 21,
+        "interior_count": 0,
+        "nonfinite_count": 0
+      }
+    },
+    {
+      "hour": 4,
+      "field": "qv",
+      "candidate": {
+        "negative_count": 0,
+        "ring0_count": 0,
+        "interior_count": 0,
+        "nonfinite_count": 0
+      },
+      "control": {
+        "negative_count": 0,
+        "ring0_count": 0,
+        "interior_count": 0,
+        "nonfinite_count": 0
+      },
+      "original": {
+        "negative_count": 0,
+        "ring0_count": 0,
+        "interior_count": 0,
+        "nonfinite_count": 0
+      }
+    },
+    {
+      "hour": 4,
+      "field": "qc",
+      "candidate": {
+        "negative_count": 28,
+        "ring0_count": 28,
+        "interior_count": 0,
+        "nonfinite_count": 0
+      },
+      "control": {
+        "negative_count": 0,
+        "ring0_count": 0,
+        "interior_count": 0,
+        "nonfinite_count": 0
+      },
+      "original": {
+        "negative_count": 37,
+        "ring0_count": 37,
+        "interior_count": 0,
+        "nonfinite_count": 0
+      }
+    },
+    {
+      "hour": 4,
+      "field": "qr",
+      "candidate": {
+        "negative_count": 5,
+        "ring0_count": 5,
+        "interior_count": 0,
+        "nonfinite_count": 0
+      },
+      "control": {
+        "negative_count": 1,
+        "ring0_count": 1,
+        "interior_count": 0,
+        "nonfinite_count": 0
+      },
+      "original": {
+        "negative_count": 7,
+        "ring0_count": 7,
+        "interior_count": 0,
+        "nonfinite_count": 0
+      }
+    },
+    {
+      "hour": 4,
+      "field": "qi",
+      "candidate": {
+        "negative_count": 5,
+        "ring0_count": 5,
+        "interior_count": 0,
+        "nonfinite_count": 0
+      },
+      "control": {
+        "negative_count": 0,
+        "ring0_count": 0,
+        "interior_count": 0,
+        "nonfinite_count": 0
+      },
+      "original": {
+        "negative_count": 5,
+        "ring0_count": 5,
+        "interior_count": 0,
+        "nonfinite_count": 0
+      }
+    },
+    {
+      "hour": 4,
+      "field": "qs",
+      "candidate": {
+        "negative_count": 5,
+        "ring0_count": 5,
+        "interior_count": 0,
+        "nonfinite_count": 0
+      },
+      "control": {
+        "negative_count": 0,
+        "ring0_count": 0,
+        "interior_count": 0,
+        "nonfinite_count": 0
+      },
+      "original": {
+        "negative_count": 3,
+        "ring0_count": 3,
+        "interior_count": 0,
+        "nonfinite_count": 0
+      }
+    },
+    {
+      "hour": 4,
+      "field": "qg",
+      "candidate": {
+        "negative_count": 0,
+        "ring0_count": 0,
+        "interior_count": 0,
+        "nonfinite_count": 0
+      },
+      "control": {
+        "negative_count": 0,
+        "ring0_count": 0,
+        "interior_count": 0,
+        "nonfinite_count": 0
+      },
+      "original": {
+        "negative_count": 2,
+        "ring0_count": 2,
+        "interior_count": 0,
+        "nonfinite_count": 0
+      }
+    },
+    {
+      "hour": 4,
+      "field": "Ni",
+      "candidate": {
+        "negative_count": 32,
+        "ring0_count": 32,
+        "interior_count": 0,
+        "nonfinite_count": 0
+      },
+      "control": {
+        "negative_count": 0,
+        "ring0_count": 0,
+        "interior_count": 0,
+        "nonfinite_count": 0
+      },
+      "original": {
+        "negative_count": 32,
+        "ring0_count": 32,
+        "interior_count": 0,
+        "nonfinite_count": 0
+      }
+    },
+    {
+      "hour": 4,
+      "field": "Nr",
+      "candidate": {
+        "negative_count": 25,
+        "ring0_count": 25,
+        "interior_count": 0,
+        "nonfinite_count": 0
+      },
+      "control": {
+        "negative_count": 0,
+        "ring0_count": 0,
+        "interior_count": 0,
+        "nonfinite_count": 0
+      },
+      "original": {
+        "negative_count": 24,
+        "ring0_count": 24,
+        "interior_count": 0,
+        "nonfinite_count": 0
+      }
+    }
+  ],
+  "scope": "same-work regression attribution, not WRF fidelity; scientific disposition required"
+}

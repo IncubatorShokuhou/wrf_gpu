@@ -1,4 +1,4 @@
-"""WRF mp8 effective radii and the has_reqc/i/s RRTMG mediation contract.
+"""WRF microphysics effective radii and the has_reqc/i/s RRTMG contract.
 
 Radii are held mass-grid diagnostics in meters.  Radiation converts them to
 microns and applies the *caller* fallbacks before cldprmc, not inside Thompson.
@@ -42,14 +42,26 @@ def mp_re_config(namelist=None) -> dict[str, int]:
 
 
 def mp_re_active(namelist=None, **selection) -> bool:
-    """WRF physics_init: supported mp8 radii require the RRTMG LW/SW pair.
+    """WRF physics_init: qualified mp3/4/6/8/14/16/18/24/26/28 radii with RRTMG LW/SW.
 
+    physics_init.F:1003-1021 also sets has_reqc/i/s=1 for WSM3/5/6 (mp3/4/6)
+    and WDM5/6/7 (mp14/16/26); their effectRad routines then hold the radii
+    RRTMG reads (module_ra_rrtmg_lw.F:12181-12247). WSM3 relies on RRTMG's cold
+    qc/qr -> qi/qs view (physics_couplers._rrtmg_column_inputs_impl).
     The environment flag is resolved at import (E80). The four namelist
     controls are static. Use this predicate for seeding, handoff and restart.
     """
     config = mp_re_config(namelist)
     config.update(selection)
-    return (_MP_RE and config["use_mp_re"] == 1 and config["mp_physics"] == 8
+    if config["mp_physics"] == 7:
+        # physics_init.F:988-1024; radiation_driver.F:1139 copies the six
+        # GSFC micron diagnostics into the general meter-radius interface.
+        return (config["use_mp_re"] == 1 and config["ra_lw_physics"] in (4, 5)
+                and config["ra_sw_physics"] in (4, 5))
+    goddard_pair = config["ra_lw_physics"] == 5 and config["ra_sw_physics"] == 5
+    if goddard_pair:
+        return config["use_mp_re"] == 1 and config["mp_physics"] == 8
+    return (_MP_RE and config["use_mp_re"] == 1 and config["mp_physics"] in (3, 4, 6, 8, 14, 16, 18, 22, 24, 26, 28)
             and config["ra_lw_physics"] == 4 and config["ra_sw_physics"] == 4)
 
 

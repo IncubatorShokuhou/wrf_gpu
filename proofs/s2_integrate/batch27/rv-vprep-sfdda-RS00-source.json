@@ -1,0 +1,24 @@
+{
+  "utc": "2026-10-15T08:39:05.574109+00:00",
+  "candidate": "2248dc315a7849285bad02e23955002c9610aa14",
+  "product_commit": "46e5d80565ee4a2f72dcc993f28a2ee342c7656b",
+  "parent": "55aa3e891c7f57a5a2456f3d7a7d2c775048576f",
+  "product_changes": [
+    "src/gpuwrf/io/wrfsfdda.py"
+  ],
+  "unchanged_functions_AST": [
+    "surface_code",
+    "surface_interval",
+    "surface_errors",
+    "attach_surface_fdda"
+  ],
+  "normalization_tail_BYTE": true,
+  "candidate_file_sha256": "b0a7c1bfd1b655b5c26af8db904cb82deeaa946268a1871c7cbba1e11746c352",
+  "producer_IO_receipt_SHA_verified": true,
+  "producer_proof_sha256": "3f42a3aa111a32d2582d5ad879b759223d15feb3c8e6824fcc41d880556674fa",
+  "pristine_registry_sha256": "6f3ee02175b76487c5c6c046ff2fb4c5d41980b86c0f06eb2e09e34dacc9623a",
+  "pristine_check_sha256": "c66b3ef802da58e2a453b62fc00a04542c66ea93d752aa49bbd981fe00d40784",
+  "WRF_normalization_lines_1679_1704": "    IF (model_config_rec%grid_sfdda(j) .EQ. 1 ) THEN\n      DO i = 2, model_config_rec%max_dom\n         IF ( .NOT. model_config_rec % grid_allowed(i) ) CYCLE\n         IF ( model_config_rec%rinblw(i) .EQ. -1 ) THEN\n            model_config_rec%rinblw(i) = model_config_rec % rinblw(1)\n            IF ( .NOT. rinblw_already_done ) THEN\n               wrf_err_message = 'Setting blank rinblw entries to domain #1 values.'\n               CALL wrf_debug ( 1, TRIM( wrf_err_message ) )\n               wrf_err_message = ' --> The rinblw entry in the namelist.input is now max_domains.'\n               CALL wrf_debug ( 1, TRIM( wrf_err_message ) )\n            END IF\n            rinblw_already_done = .TRUE.\n         END IF\n       ENDDO\n\n!------------------------------------------------------------------------\n! Check that rinblw is not -1 if sfdda is active\n!------------------------------------------------------------------------\n       IF ( model_config_rec%rinblw(1) .EQ. -1 ) THEN\n            wrf_err_message = '--- ERROR: rinblw needs to be set in the namelist.input file.'\n         CALL wrf_debug ( 0, TRIM( wrf_err_message ) )\n         count_fatal_error = count_fatal_error + 1\n       END IF\n    END IF\n    END DO\n",
+  "source_scope": "host preflight + auxinput9 setup only; no model/State/kernel/step code changes",
+  "efficiency": "[I source] one isinstance/len/index scalar operation at preflight/setup; no array, launch, transfer, sync, device memory or compiled timestep additions. No speed/VRAM benchmark claim."
+}

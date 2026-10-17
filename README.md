@@ -1,414 +1,213 @@
 # wrf_gpu
 
-[User guide and forecast instructions](https://wrf-gpu.github.io/wrf_gpu/)
+[User guide](https://wrf-gpu.github.io/wrf_gpu/) · [v0.4.0 quickstart](docs/release/USER_GUIDE_v0.4.0.md) · [Supported configurations](docs/release/SUPPORT_MATRIX_v0.4.0.md)
 
-**WRF-compatible forecasts on one NVIDIA GPU.**
+**WRF-compatible regional forecasts on NVIDIA Ampere or newer GPUs.**
 
-`wrf_gpu` is a GPU rewrite of WRF v4's ARW dynamics and physics, validated against
-the original Fortran. It reads WRF inputs, advances the physical equations with
-JAX/XLA/Pallas, and writes WRF-compatible history. The aim is practical regional
-forecasting: shorter turnaround, more independent forecasts per workstation,
-and less energy per forecast hour.
+`wrf_gpu` implements WRF v4 ARW dynamics and physics with JAX/XLA/Pallas. It
+reads prepared WRF inputs, advances the forecast on the GPU, and writes WRF
+NetCDF history and authenticated restart state. Existing WPS/real preparation,
+namelists and downstream analysis remain useful.
 
-This is an independent implementation, not WRF itself, and is not affiliated
-with or endorsed by UCAR/NCAR. **v0.3.4** is a fix release: `gpuwrf run` now binds or refuses every
-namelist physics option (≤0.3.3 silently ran the default suite for other schemes; re-run those).
-Its default program is unchanged from **v0.3.3**, which completed its eight-arm validation with the disclosed deviations below. WRF-order physics corrections and fast paths
-are enabled by default. Its fresh 72-hour identity evidence is described below;
-the speed and energy figures retain their explicitly dated v0.3.2 receipts.
+**v0.4.0 release candidate:** default programs are frozen as Swiss
+`3356e249` and PROD d01 `196aed9f`. **All 66 registered configurations pass
+their accepted scientific scope**: 65 full 24-hour cases plus Goddard radiation
+c45's accepted six-hour case. The [source-bound ledger](docs/release/FINAL_COMPOSITES_v0.4.0.md)
+records every option tuple, clock and raw result. E41 resource failures,
+c89's native-scan uncertainty and F2 limits stay disclosed. Publication
+follows final review and the release chain.
 
-## Speed and energy first — measured on v0.3.2
+The project is independent of UCAR/NCAR. WRF option support and forecast
+qualification belong to the exact configurations in the support matrix.
 
-On an **RTX 5090 (sm_120, CUDA 13)** with a **Ryzen 9 9950X host**, a cached
-two-domain Canary 9/3 km forecast completes 24 simulated hours at **3.305 seconds
-per forecast hour**: a **27.9× ratio to the twelve-core CPU-WRF reference** [M].
-Four independent three-domain Tenerife forecasts sharing the card reach
-**5.507 seconds per case-forecast-hour**, or **22.4× CPU-WRF's three-by-four-core
-throughput** [M], in the measured 24-hour sweep. Its all-four-running steady
-window reaches **4.857 s/case-hour, 25.4×** [M].
+## Install and run a forecast
 
-The GPU timings include start-up and output. The CPU reference clocks cover
-their main loops. These are ratios of explicitly stated clocks, not identical
-timing windows. Other NVIDIA GPUs and other hosts have not been tested in these measurements. The absolute Canary result was measured under host contention and is
-conservative; the accepted matched A/B ratio is **0.901, 9.9% less whole-run
-wall time** against v0.3.1 [M]. It is not a quiet-host absolute benchmark.
-Details and source hashes are in the [measurement report](docs/release/V0.3.2.md).
+The Pallas/Triton fast path requires **NVIDIA Ampere or newer, compute
+capability 8.0 or higher**. Pascal and Turing are unsupported. A supported
+architecture still needs enough GPU and host memory for the chosen grid,
+physics and cold compilation. The release evidence uses an RTX 5090;
+[hardware scope](proofs/r_docs040/GPU_REQUIREMENTS.json) is explicit.
 
-| Canary 9/3 km, 24 h | CPU-WRF, 12 cores | v0.3.1, matched host | v0.3.2, matched host |
-|---|---:|---:|---:|
-| Seconds per forecast hour [M] | 92.3 | 3.669 | **3.305** |
-
-<picture><source media="(prefers-color-scheme: dark)" srcset="docs/release/img/v032_speed_dark.png"><img src="docs/release/img/v032_speed.png" alt="Canary forecast seconds per forecast hour: CPU-WRF and the matched v0.3.1/v0.3.2 pair under host contention"></picture>
-
-The matched complete GPU process took **79.319 seconds for 24 forecast hours**,
-against **88.060 seconds** for its v0.3.1 reference on the same contended host.
-The v0.3.2 steady-segment median is **2.625 s/hour** and initialization/pre-step
-work **15.008 seconds**, both diagnostics included in the whole run [M]. The
-first unpaired S1 attempt had 11.9% A/A variation and is excluded from speed
-claims. Historical v0.3.1's quieter 3.604 s/hour remains a separately scoped
-measurement; it is not used to manufacture the matched percentage.
-
-Energy matters as much as speed. For the 24-hour Tenerife sweep, timestamped
-board-power samples give **0.678 Wh (2.441 kJ) per case-forecast-hour** at N=4 [M].
-Adding an explicit host-share scenario gives **0.780 Wh (2.808 kJ)** [I], versus
-**6.86 Wh (24.68 kJ)** [I] for the CPU reference. That is approximately **8.8×
-less energy on this accounting basis**, not a measured whole-machine efficiency
-claim. The next figure makes the measured and assumed parts visible.
-
-<picture><source media="(prefers-color-scheme: dark)" srcset="docs/release/img/v032_energy_dark.png"><img src="docs/release/img/v032_energy.png" alt="24-hour Tenerife energy: CPU reference versus measured GPU board energy plus inferred host share"></picture>
-
-The CPU basis is **approximately 200 W, owner-reported power for the twelve-core
-CPU-WRF run**. CPU energy multiplies that power by its 123.4 s/case-hour
-reference [I]. GPU board energy integrates actual timestamped `nvidia-smi`
-samples with a trapezoid rule [M]. The added host share is **4/12 of 200 W,
-about 67 W per GPU**, an assumption [I]. GPU sampling gaps and endpoint tails
-are disclosed; no DRAM, storage, PSU or whole-node measurement is invented.
-The [energy method and receipts](docs/release/V0.3.2.md#energy-accounting)
-state the windows. The shipped four-core Swiss example has no CPU energy claim.
-
-## What it is good for — and what it is not
-
-Use a supported regional WRF configuration with existing `wrfinput`, `wrfbdy`
-and `namelist.input` files. Keep WRF preprocessing and downstream analysis,
-and run time integration on one GPU. Original-CPU comparisons cover maritime
-terrain, convection-permitting nests and winter Alpine snow.
-
-Independent cases are another useful match. Different initial dates, ensemble
-members or parameter studies can share the card through separate processes.
-The launcher checks both GPU and host memory and queues remaining work. More
-concurrency improves aggregate throughput here, but can increase the elapsed
-time of an individual case: N=4 is a batching result, not a promise that each
-forecast finishes four times sooner.
-
-It is **not universal WRF option parity**, an MPI replacement or a neural weather
-surrogate. Multi-GPU domain decomposition is unimplemented. An isolated module
-or oracle does not establish operational support: preflight refuses unsupported
-selections with a named reason.
-
-## Scope and physics menu at a glance
-
-The v0.3.3 final validation uses **Thompson microphysics, RRTMG radiation, MYNN
-turbulence/surface layer and Noah-MP land physics**. Kain–Fritsch is used on
-the appropriate outer Canary/Tenerife domains; the Swiss examples disable
-cumulus. Those choices define the headline evidence, rather than every possible
-combination in the wider scheme catalog.
-
-| Area | Current scope |
-|---|---|
-| Implemented and measured in this release | WRF real-data inputs; ARW dynamics; the physics combination above; fixed one-way nests; complete history; memory-aware independent-case launcher |
-| Implemented, with a historical v0.3.1 regression gate | Nested checkpoint/resume; 2,262 variables byte-identical across six control/resume files [M] |
-| Implemented in v0.3.4 | Single-domain checkpoint/resume and `--extend-run`; GPU SIGKILL + resume byte-identical in 754/754 history variables [M] |
-| Experimental opt-in (v0.3.4) | New schemes matched to unmodified-WRF oracles on CPU; not forecast-validated ([support matrix](docs/release/SUPPORT_MATRIX_v0.3.4.md)) |
-| Recognized, but refused before compute where unwired | Reference-only schemes and unsupported options; diagnostics explain the selected scheme and reason |
-| Out of scope or unimplemented | MPI/multi-GPU domain decomposition, moving/vortex-following nests, coupled chemistry/fire/hydrology, FDDA/4DVAR and stochastic physics |
-
-The wider catalog includes Kessler/Lin/WSM/Morrison/aerosol-aware Thompson,
-KF/BMJ/Grell–Freitas/Tiedtke and several boundary-layer/surface-layer pairs.
-Catalog support does not extend these measurements to every pairing.
-The [v0.3.4 support matrix](docs/release/SUPPORT_MATRIX_v0.3.4.md), the [physics guide](https://wrf-gpu.github.io/wrf_gpu/physics.html)
-and [machine-readable catalog](src/gpuwrf/io/scheme_catalog.py) give exact status;
-operational preflight is authoritative. Recognized cadence approximations are
-reported separately from scheme support.
-
-The dedicated Noah-MP glacier runtime remains unported. Glacier initialization
-and missing-value history conventions are corrected, but agreement on a whole
-domain does not establish each glacier process. Urban, ocean and other advanced
-options should be checked against their individual support status, not inferred
-from the presence of similarly named source files.
-
-## Quickstart: run the bundled Alpine case
-
-Use **Python 3.11+**, CUDA 13-compatible NVIDIA drivers and WRF v4 runtime tables.
-The tested workstation is RTX 5090/9950X; other recent NVIDIA GPUs should be
-usable in principle but are untested [I]. Install the CUDA JAX build before
-running the model:
+Use Python 3.11+ and a compatible CUDA 13 driver for the tested CUDA JAX setup.
+Install the GPU backend explicitly, then the package:
 
 ```bash
 git clone https://github.com/wrf-gpu/wrf_gpu.git
 cd wrf_gpu
-pip install "jax[cuda13]==0.10.*"
-pip install -e .
-export GPUWRF_WRF_ROOT=/path/to/WRF   # contains run/ and its runtime tables
+python -m pip install "jax[cuda13]==0.10.*"
+python -m pip install -e .
+export GPUWRF_WRF_ROOT=/path/to/WRF
+```
 
-python -m gpuwrf.cli run --input-dir examples/switzerland_d01 \
+`GPUWRF_WRF_ROOT` points to the original WRF source/run tree and runtime tables
+needed by selected physics, including Noah-MP. CAM-MG microphysics additionally
+requires stock `triton==3.6.*`. Read the [installation and case guide](docs/release/USER_GUIDE_v0.4.0.md)
+for table assets and optional dependencies.
+
+Inspect the bundled 3 km Alpine case, then run it in a fresh output directory:
+
+```bash
+gpuwrf doctor examples/switzerland_d01
+gpuwrf run --input-dir examples/switzerland_d01 \
   --output-dir runs/switzerland --domain d01 --hours 24 \
   --scratch-dir runs/switzerland_scratch
 ```
 
-The [bundled example](examples/switzerland_d01/README.md) is a small 3 km Alpine
-cutout initialized on 2023-01-15 00Z. Its input files ship with the repository.
-It selects Thompson/RRTMG/Noah-MP/MYNN, with cumulus off. The example page explains
-the expected files and original four-core CPU-WRF comparison. The pre-W2
-69d8a9a7d run passes D6 and strict integrity on all 25 hourly frames; its
-benchmark states the timestamp precision and clocks. W2 Swiss was cancelled. The final be0 Swiss 24-hour D6 and all-frame integrity pass; earlier benchmarks retain their original source labels.
+The [example](examples/switzerland_d01/README.md) includes the prepared inputs
+for 2023-01-15 00Z and selects Thompson/RRTMG/MYNN/Noah-MP with cumulus off.
+The first run compiles and can spend minutes before advancing. Cache reuse
+helps later runs of the same geometry and physics; cold compiler host memory
+can greatly exceed the warm forecast process footprint. The former c11 compile stall is resolved on the validated changed source;
+its [resource disclosure](KNOWN_ISSUES.md#c11-resolved-compiler-stall-and-residual-resources)
+keeps the earlier failure and current E41 limits distinct.
 
-**The first run compiles.** It can spend minutes before the first integration
-output; a new geometry is a new compilation workload. Later runs reuse cached
-executables. Run a new version or domain geometry alone once first, so its compiled programs and memory plan are cached.
-Keep the case inputs and runtime tables consistent. v0.3.2 repairs auxiliary
-cache reuse after installation relocation; a new version or geometry still
-needs compilation.
+For your own case, supply `namelist.input`, `wrfinput_d0*`, `wrfbdy_d01` and
+selected forcing/static inputs. Use `--domains-from-namelist` for fixed nests:
 
-History uses WRF NetCDF names/dimensions and familiar NetCDF/xarray tools.
-A matching header establishes compatibility, not physics fidelity. For a new
-case, retain the original CPU reference, input hashes and cadence, and use a
-fresh output directory rather than mixing histories.
+```bash
+gpuwrf doctor /path/to/case
+gpuwrf run --input-dir /path/to/case --output-dir runs/my_case \
+  --domains-from-namelist --hours 24
+```
 
-For multiple fixed nests, use `--domains-from-namelist` so the domain count comes
-from the case. For operational setup, follow the [User's Guide](https://wrf-gpu.github.io/wrf_gpu/)
-or [AI-assisted operator instructions](AI_OPERATOR.md). `python -m gpuwrf.cli
-run --help` lists the supported controls. The normal recipe uses the public CLI;
-no development lock or force override is required in a public installation.
+A directory containing two or more CPU `wrfout` files can select the
+compatibility replay path. Keep standalone forecast inputs separate from
+reference histories and retain the reported execution mode. `doctor` checks
+admission and inputs; it does not certify forecast fidelity.
 
-An approved [history cleanup](docs/release/HISTORY_CLEANUP.md) is not established in that historical record.
-After its verified push, use a fresh clone; affected commit/tag hashes change,
-and retained maps connect old receipts to the new hashes. Forecast source
-trees must remain unchanged by the cleanup.
+The [v0.4.0 command guide](docs/release/USER_GUIDE_v0.4.0.md) covers checkpoint
+and resume, prepared ensembles, output products, station verification,
+regional optimisation and land/snow cycling. For AI-assisted operation, use
+[AI_OPERATOR.md](AI_OPERATOR.md).
 
-## Several independent forecasts on one GPU
+## Features and validation classes
+
+The **[v0.4.0 support matrix](docs/release/SUPPORT_MATRIX_v0.4.0.md) is the
+authoritative feature list**. It enumerates the physics selectors and optional
+workflows, their admission rules, validation classes and source receipts.
+This table is a summary, not a second per-option inventory.
+
+| Area | Scope | Validation class and detail |
+| --- | --- | --- |
+| Default forecast suite | ARW; Thompson microphysics, RRTMG, MYNN, Noah-MP; Kain–Fritsch where configured; fixed nests, history and restart | Default-qualified at the frozen sources; [F20/C5′ evidence](docs/release/SUPPORT_MATRIX_v0.4.0.md#frozen-defaults-and-results-so-far) |
+| Microphysics | WSM/WDM, NSSL, Morrison, Milbrandt, Ferrier, Goddard, aerosol-aware Thompson, CAM-MG, P3, Jensen and NTU families | Per-composite D6 PASS, E41-disclosed, or incomplete; c11 now has full 24-hour D6 PASS with E41 disclosed. [Every code](docs/release/SUPPORT_MATRIX_v0.4.0.md#mp_physics) |
+| Cumulus, PBL and surface layer | Expanded Grell/SAS/KF/Tiedtke and PBL/surface families, with WRF pairing restrictions | Source-bound composite D6 and resource classes; [cumulus](docs/release/SUPPORT_MATRIX_v0.4.0.md#cu_physics), [PBL](docs/release/SUPPORT_MATRIX_v0.4.0.md#bl_pbl_physics), [surface](docs/release/SUPPORT_MATRIX_v0.4.0.md#sf_sfclay_physics) |
+| Radiation and land | RRTMG/RRTM/CAM/Goddard; admitted Noah-MP/RUC/SSiB, glacier, lake, ocean and urban branches | Exact composite scopes; c45 is six hours. FLG/GFDL are CPU-only; named land modes are API-only or refused. [Radiation](docs/release/SUPPORT_MATRIX_v0.4.0.md#ra_lw_physics), [land](docs/release/SUPPORT_MATRIX_v0.4.0.md#sf_surface_physics) |
+| Optional online features | DFI, analysis/observation/spectral/surface nudging, two-way feedback, stochastic forcing, turbines, passive tracers, diagnostics, station profiles and regional streams | Individual composite, source/oracle or experimental scopes; [options and workflows](docs/release/SUPPORT_MATRIX_v0.4.0.md#other-options-and-workflows) |
+| Forecast tools | Offline weather/application products, station verification, ensemble products and preparation, doctor/provenance, onboarding, export, radar, optimisation and cycling | Tool/source/fixture qualification is separate from a coupled GPU forecast or improved station skill; [workflow classes](docs/release/SUPPORT_MATRIX_v0.4.0.md#other-options-and-workflows) |
+| Multi-GPU | Independent-case scheduling and experimental domain decomposition | Real multi-GPU scaling remains unqualified; [scope](docs/release/SUPPORT_MATRIX_v0.4.0.md#other-options-and-workflows) |
+| Refused selections | GPU km3, surface mosaic, active unsupported green-roof/PV/aerosol branches, moving nests and named chemistry/fire/hydrology/DA combinations | Refused, CPU-only or API-only as specified per selector; [matrix](docs/release/SUPPORT_MATRIX_v0.4.0.md), [known issues](KNOWN_ISSUES.md) |
+
+An admitted option is not arbitrary-combination approval. Single-domain
+qualification does not extend to nests. E41 resource failures remain raw
+FAILs even where the opt-in scientific gate passes. Refusals name the reason;
+changing the namelist merely to bypass one changes the requested forecast.
+
+## How v0.4.0 was validated
+
+The reference is **original CPU-WRF or pristine WRF code**. GPU-vs-GPU
+agreement provides regression evidence only. The release uses several checks
+because an oracle-matched column, finite output and a completed forecast
+answer different questions.
+
+1. **Audit the real callers.** The caller audit recorded 24 findings and the
+   release's 13 class-A repair areas. All 13 code repairs are merged. They restore WRF operands,
+   physics cadence, precipitation/number carry and RK coupling. The
+   [fix inventory](docs/release/FIXES_v0.4.0.md) links the audit and integration
+   receipts. A repair being merged did not close its affected GPU gate; c11 required
+   its changed-source full 24-hour run, now PASS.
+2. **Compare composed forecasts.** The [66-configuration ledger](docs/release/FINAL_COMPOSITES_v0.4.0.md)
+   compares the actual selected schemes with original CPU-WRF, using frozen
+   strict D6 bounds and complete registered-scope field inventories. 65 cases span 24 hours; c45's accepted six-hour scope is explicit. Unbounded fields remain REPORT_ONLY. Missing fields,
+   initial frames and nonfinite values are not relabelled into passes.
+3. **Requalify the defaults.** F20 covers WN3 0227/0502/0614, PROD and Swiss:
+   300 paired domain-frames over 24 hours. C5′ then requalifies Swiss, PROD and
+   WN3-0227 with 150 paired domain-frames, full D6/inventory/NF0 and actual
+   E41 PASS 3/3. Host-transfer counts/bytes, synchronization and callbacks
+   equal F20. [Exact sources and identities](proofs/r_docs040/RELEASE_CHECKPOINT.json)
+   keep the F20 and C5′ measurements distinct.
+4. **Let the final runs find defects.** c06 exposed Tiedtke ROOT1–3; c40
+   exposed the SSiB SWDOWN handoff; native MYNN scalar lowering exposed the F8
+   passive-number interface; c11 exposed a pathological WDM6 ptxas fusion.
+   [Before/fix/qualification evidence](docs/release/FIXES_v0.4.0.md) preserves
+   the original failed attempts and the affected reruns.
+5. **Disclose residuals.** The [E41 inventory](docs/release/E41_LEDGER_v0.4.0.md)
+   lists executable resource failures; [known issues](KNOWN_ISSUES.md) retain
+   intermediate negative-event limits, precision residuals, incomplete
+   scopes and input restrictions. Zero output NaN/Inf does not justify
+   intermediate repairs or establish global F2 clearance.
+
+C5′'s accepted matched nsys interval is 58.05 versus 58.89 ms (−1.4% [M]).
+It is a profiled root interval, **not whole-run S1 or a valid ABAB benchmark**.
+No new v0.4.0 speed, energy, universal station-skill or all-variable PASS claim
+is inferred from it.
+
+## What the original-WRF comparisons show
+
+[![c06 Tiedtke RAINNC RMSE before and after the repaired caller/kernel path](docs/release/v040_figures/c06_tiedtke_rain.png)](docs/release/v040_figures/c06_tiedtke_rain.svg)
+
+**Validation caught a real bug.** Against the same original CPU-WRF and input
+hashes, c06's worst hourly RAINNC RMSE falls from **1.111 to 0.0297 mm: 37.4×
+smaller [M]** after Tiedtke ROOT1–3. Both complete 25-frame curves and the
+unchanged 1 mm D6 limit are shown; this is a case-specific error metric.
+
+[![66 configurations by62 bounded fields, with separate forecast RMSE and static-grid checks](docs/release/v040_figures/composite_matrix.png)](docs/release/v040_figures/composite_matrix.svg)
+
+**The whole registered suite is visible.** Left: 10 forecast-field RMSE checks.
+Right: 52 grid/static max-absolute-error checks, including 48 exact-zero rules.
+Each cell is the worst gated hourly/domain statistic divided by its actual
+frozen limit. c45 is explicitly six hours; the other 65 cases cover 24 hours. Unbounded fields
+have no invented tolerance; E41 and F2 are disclosed separately.
+
+[![WN3-0227 hourly differences across all three domains and ten forecast fields](docs/release/v040_figures/wn3_deviation_bands.png)](docs/release/v040_figures/wn3_deviation_bands.svg)
+
+**A real three-nest forecast, all 24 hours.** Lines show full-field RMSE against
+original CPU-WRF over 75 paired domain-frames; shading shows the spatial 95th
+percentile absolute error. These are spatial distributions, not confidence
+intervals or pointwise bounds; the remaining 5% can have larger errors.
+[Plot data, sources, hashes and reproduction](docs/release/v040_figures/README.md)
+cover all three figures. No model was rerun to make them.
+
+## Measured performance — dated v0.3.2 evidence
+
+These are historical measurements, not v0.4.0 timings. They show the practical
+use case while a new whole-run benchmark remains separate.
+
+| Measured workload | GPU result [M] | CPU-WRF comparison [M] |
+| --- | --- | --- |
+| Canary 9/3 km, 24-hour warm whole process | 3.305 s/forecast-hour, including startup/output | 92.3 s/forecast-hour for the 12-core CPU main loop; ratio 27.9× |
+| Four independent three-nest Tenerife cases sharing one RTX 5090, 24 hours each | 5.507 s/case-forecast-hour aggregate | 22.4× the measured CPU 3×4-core throughput |
+| Same four-case sweep, GPU board energy only | 0.678 Wh/case-forecast-hour | No measured whole-machine CPU energy comparison |
+
+GPU whole-process and CPU main-loop clocks differ. The matched GPU
+v0.3.2/v0.3.1 whole-run ratio was 0.901 (9.9% less wall time [M]) under host
+contention. [Timing, hardware, windows and power receipts](docs/release/V0.3.2.md)
+state the scope. The former inferred datacentre/domain-size/host-energy
+scenarios remain in their dated reports; they are not new release claims.
+
+For several prepared cases on one card, the parallel launcher checks GPU and
+host memory, queues excess work and records admissions:
 
 ```bash
 scripts/run_parallel_cases.sh --out-root runs/batch CASE_A CASE_B CASE_C -- \
   --domains-from-namelist --hours 24
 ```
 
-The launcher admits cases when both the GPU and host budgets allow them,
-records the admission decisions and queues the rest. Cold compilation needs
-more host memory than a warm forecast. The launcher recognizes the required cached
-executables and supports the fused three-nest C-auto memory plan; a guessed
-steady-state memory budget is not used to admit several cold compiles at once.
+Concurrency improves aggregate throughput in the measured workload; it can
+lengthen an individual case's elapsed time. Cold compilation and cached
+forecast memory have different budgets. The command guide also describes
+`ens prepare`/`ens launch` for reproducible member plans.
 
-| WN3 Tenerife, three nests, four concurrent 24-hour runs [M] | Whole run | All-four-running steady window |
-|---|---:|---:|
-| Aggregate s/case-forecast-hour | **5.507** | **4.857** |
-| CPU-WRF 3×4-core throughput ratio | **22.4×** | **25.4×** |
+## Release notes, contributions and license
 
-<picture><source media="(prefers-color-scheme: dark)" srcset="docs/release/img/v032_parallel_dark.png"><img src="docs/release/img/v032_parallel.png" alt="Measured four-case 24-hour Tenerife whole-run and steady rates"></picture>
+Read the [v0.4.0 release notes](release_notes/RELEASE_NOTES_v0.4.0.md),
+[upgrade guide](docs/release/UPGRADE_v0.4.0.md),
+[validation methods](docs/release/METHODS.md) and
+[contribution guide](CONTRIBUTING.md). Report the namelist, input provenance,
+source/version, resolved options and output cadence with any issue. Numerical
+changes need original-WRF evidence; speed claims need matched timing evidence.
 
-These are whole-run figures including each case's start-up, so longer runs amortize it further; output was not compressed (the v0.3.0 figures used compression).
-The whole aggregate clock is the first process start to the phase's last history
-file divided by 4×24 forecast hours. The steady rate uses the measured window
-where all four cases were advancing. The v0.3.1 six-hour N=1/3/4 results remain
-[historical context](docs/release/V0.3.1.md#parallel-throughput-m); the change in
-run length prevents treating the whole-run difference as a pure code speedup.
-
-Warm per-case GPU allocation was **5,032 MiB**, with reported host high-water
-memory around **5.6 GB**. Every case exited successfully, and the shared 0227
-case retained all 75 file hashes against cold/validation outputs [M], a GPU
-regression control. Those resources are observed values, not universal sizing
-constants. Actual admission still checks CUDA/desktop use, host headroom and
-the resolved geometry. [Sweep receipts](docs/release/evidence/v032/sweep24_summary.json)
-retain the clocks, memory samples and decisions.
-
-## v0.3.3 validation
-
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="docs/release/evidence/v033/final_w3/stability_six_runs_dark.png">
-  <img src="docs/release/evidence/v033/final_w3/stability_six_runs.png" alt="v0.3.3 GPU versus original CPU-WRF: ten normalized RMSE panels, mean and spread across six Tenerife runs from three cases, all 73 paired hours">
-</picture>
-
-Six Tenerife runs come from **three independent cases**, including related IC members and a same-IC fresh-compile replica; they are not six independent samples. Every curve uses the fixed innermost **d03**, all native cells and all 73 paired hours. The thick line is the equal-run mean of stored RMSE divided by the unchanged frozen D6 limit. Light shading is the min–max envelope; dark shading is mean ± one sample SD (ddof=1, lower edge clipped at zero). These are descriptive run-to-run bands, not confidence intervals.
-
-Solid grey is the empirical spread of **two original CPU-WRF 0227 runs with slightly different initial conditions** (intrinsic predictability context). Dotted grey is the **older GPU 0115 IC-pair proxy**, not CPU spread; its T/U/V/QVAPOR curves are unavailable and remain absent. No 0408 pair is available. IC-member comparisons include their IC difference from the admitted original CPU R reference. Monica72 and Swiss24 are separate linked comparisons, excluded from this aggregate. Accumulated RAINNC is included; hourly rain has no separate frozen RMSE bound. [Figure data and source hashes](docs/release/evidence/v033/final_w3/STABILITY_MANIFEST.json) retain the method and exact captured inputs.
-
-Ratios above 1 remain raw failures. In 0227, accumulated-rain RMSE rises from 1.10 mm at h67 to **2.465 mm at h72** (about 2.47× the 1 mm limit); all eight raw breaches are FLOOR-LIMITED under the frozen A3 annex, with original CPU-pair C/X = 0.81–0.95. The CPU runs differ almost as much; the annex explains these breaches without changing the raw scores or limit. The 0115 strict rain, late wind and cirrus differences remain separately disclosed below.
-
-All eight original-CPU scoring readers are closed. The manager accepts the disclosed deviations under the Owner rule; raw failed checks remain failed.
-
-[All final identity plots](docs/release/evidence/v033/final_w3/index.html) show per-hour RMSE, bias and spatial bands against original CPU-WRF. Seven 72 h runs include six Tenerife primary/IC/replica arms and Storm Monica; the shipped Swiss case is 24 h.
-
-| Comparison | Forecast | Strict 24 h (raw) | Full-window D6 (raw) | Interpretation |
-|---|---:|---|---|---|
-| Tenerife 0115 primary | 72 h | FAIL | FAIL | 61 floor-limited rows; one real V10 miss. Rain and cirrus lifetime differences disclosed (L4/L6/L7). |
-| Tenerife 0227 primary | 72 h | PASS | FAIL | Rain reaches 2.465 mm at h72; all eight breaches are explained by the frozen CPU-pair floor annex (C/X 0.81–0.95; L5). |
-| Tenerife 0408 primary | 72 h | PASS | PASS | D6 passes; trace graupel integrity miss disclosed (L1). |
-| 0227 IC member | 72 h | PASS | FAIL | All six breaches pass the frozen CPU-pair spread annex; integrity annex passes. |
-| 0115 IC member | 72 h | FAIL | FAIL | 54 floor-limited rows; strict rain FAIL retained. Integrity annex passes; IC difference included. |
-| 0115 same-IC replica | 72 h | PASS | FAIL | Eight floor-limited rows, two real V10 misses (h42/h44). Cirrus lifetime integrity FAIL disclosed; same-IC fresh-compile replica. |
-| Storm Monica | 72 h | PASS | PASS | D6 and all-frame integrity pass. |
-| Shipped Swiss | 24 h | PASS | PASS | D6 and all-frame integrity pass; 25 frames on one domain. |
-
-0227 stations classify CLEAR (raw DAMAGE retained). 0115 coastal wind-speed RMSE is about 1.8% higher; temperature, humidity and wind direction improve. The small persistent excess and late cirrus lifetime differences are disclosed, not renamed PASS. [Release notes](release_notes/RELEASE_NOTES_v0.3.3.md) and [technical appendix](docs/release/TECHNICAL_VALIDATION_APPENDIX_v0.3.3.md) give the numbers, unchanged limits, IC/replica qualifications and source bridge.
-
-Whole-run speed/energy figures above remain dated v0.3.2 measurements; no new throughput benchmark is inferred from this science wave.
-
-Earlier W2 results remain available in the [source-dated historical gallery](docs/release/evidence/v033/w2/index.html); their raw failures are retained.
-
-## Honest limitations and what is not claimed
-
-All-hour integrity retains its raw reports. A pre-registered trace annex explains
-13 new rows; two disclosed manager judgements accept three canopy-ice and two
-boundary-graupel rows above their unchanged caps. One canopy cell is reproduced
-by the CPU IC twin; the other is a GPU-only placement departure. These are
-**recorded exceptions**, not an unqualified clean-output claim.
-
-W2 adds eight reviewed defaults, including urban soil coefficients, MYNN
-predictor floors and horizontal SWDOWN history. Their original-WRF source
-bindings are in the [fix inventory](docs/release/V033_W2_FIXES.md).
-
-BD92(c) remains a **known residual**, with binding d01 diagnostic maximum
-0.0136 K; the non-binding late 0227 d03 departure is disclosed separately.
-Night clear-sky cooling aloft is a v0.3.4 investigation. Dedicated glacier
-runtime, universal physics pairing parity, MPI/multi-GPU domain decomposition,
-whole-machine energy savings and data-centre GPU measurements are not claimed.
-
-Earlier six-case 72-hour Tenerife and 162-hour Canary studies remain dated
-v0.3.0 evidence, including their [raw frame failures](docs/release/VALIDATION.md).
-They are not relabelled as new v0.3.3 runs. The detailed
-[floor, integrity and residual disclosures](docs/release/V0.3.3.md) distinguish
-accepted release rules from raw clean results. Original CPU-WRF is the fidelity
-reference; comparisons with older GPU releases establish regression only.
-
-## How it works — and where the time goes
-
-WRF's ARW equations remain recognizable: third-order Runge–Kutta dynamics,
-time-split acoustic integration, staggered-grid state and column physics.
-JAX stages programs for fixed geometry and XLA compiles them; Pallas/native
-GPU kernels handle hot stencils, vertical recurrences and column operations.
-The Python interfaces retain the case/grid/state/I/O structure while the
-expensive execution is rewritten for the device.
-
-Precision is a performance decision with a fidelity gate. **WRF REAL work and
-carry use fp32 fast kernels by default; WRF DOUBLE islands retain double
-precision.** On the tested consumer GPU, fp64 arithmetic throughput is about
-**1/64 of fp32**, inferred from [NVIDIA’s documented SM core counts](https://docs.nvidia.com/cuda/archive/12.9.1/cuda-c-programming-guide/index.html#compute-capability-12-0) [I]. Moving an entire legacy array program onto a card therefore
-does not automatically make it fast. The rewrite targets arithmetic precision,
-kernel structure and memory traffic together; it does not simply disable
-double precision globally or loosen comparison bounds.
-
-The hot path combines larger device operations, keeps forecast carry on the
-device and avoids repeatedly materializing intermediates. Column dependencies
-need deliberate layouts and recurrences; radiation has different work from an
-ordinary dynamics root. Stable executable reuse and buffer lifetime matter
-alongside arithmetic. Init, load, history writing and process completion still
-cost time, which is why the headline uses a complete forecast clock.
-
-On the historical v0.3.1 Canary profiling program, ordinary-root device time is **30.393 ms** and
-radiation-root device time **78.093 ms** [M]. A root represents one outer step
-and its nested work; these are profiler diagnostics, not seconds per forecast
-hour. Eight conservative kInput flags are bound to their actual PROD runtime:
-maximum **0.049 ms**, ordinary-root sum **0.213 ms**, maximum stack **32 B**.
-The flags are disclosed rather than called absent. The source/executable/options
-binding accompanies the [v0.3.1 runtime evidence](docs/release/V0.3.1.md); these
-profile numbers are not transferred to the optimized v0.3.2 program as new measurements.
-
-That historical ordinary kernel-plus-copy **mean is 33.109 ms/root**; the figures
-above are kernel-only medians and should not be mixed. The latest accepted
-[endpoint evidence](docs/release/S4_ENDPOINT_RC3.md) preserves all measured time:
-
-| Largest ordinary-root families | Device ms/root [M] |
-|---|---:|
-| Acoustics | 9.835 |
-| MYNN | 4.028 |
-| Advection | 3.304 |
-| Carry/stage glue | 2.499 |
-| Positive-definite scalar transport | 2.076 |
-| Full kernel + copy mean | **33.109** |
-
-Even deleting all d02 advection, glue and scalar-transport work would cap that
-scoped device speedup at **1.27× [I]**. A further 2× needs changes across several
-families: a common stable layout and cooperative spatial/column tiles keeping
-acoustic coefficients, face fluxes and stage intermediates on chip are a
-structural route to investigate. Such a gain is unproven. The traffic model
-actually overcounts the measured total; it is not a calibrated bandwidth floor
-or a claim of “90% hardware utilization.”
-
-A roofline compares arithmetic capacity with memory bandwidth, but neither
-number alone predicts a full forecast. Launch latency, dependent vertical
-work, cache state, layouts, output and host scheduling can limit progress
-before a theoretical roof is reached. The N=4 sweep reported median SM
-utilization near 99% [M]; utilization is evidence of activity, not a proof that
-every kernel is optimal. Performance changes still need measured profiles and
-the same physical work, with correctness riding alongside.
-
-## Scaling direction: larger GPUs and independent batches
-
-JAX is the foundation for a scalable implementation, and data-centre GPUs are
-a development target. Today one forecast runs on one GPU. Independent cases
-offer a route to larger batches; distributed domains and a validated multi-GPU
-forecast driver remain future work.
-
-The new figures show **best-case potential [I]** for long ensembles and giant
-single domains, anchored on the measured v0.3.2 24-hour sweep and PROD steady
-rate. A common **32-member × 72-hour ensemble** makes the workload comparable:
-the conditional completion estimates are about **195 minutes on RTX 5090**, 134
-on H100 and **61 minutes on B200/B300** [I]. Even CPU/RTX durations are inferred
-from measured rates; no 72-hour v0.3.2 benchmark is claimed.
-
-<picture><source media="(prefers-color-scheme: dark)" srcset="docs/release/img/v032_best_case_ensemble_dark.png"><img src="docs/release/img/v032_best_case_ensemble.png" alt="Best-case inferred 32-member 72-hour ensembles, measured rate anchors and data-centre extrapolations"></picture>
-
-Run length matters because the fixed start-up cost per case is amortized over
-more forecast hours. The 24-hour anchor gives a **15.6-second fixed-cost proxy
-per case**; it stays unscaled and is divided by 72 in the ensemble scenario.
-Device-related steady work scales with bandwidth and a historical efficiency
-assumption. These are warm, saturated, well-provisioned cases; cold compilation
-and FIFO-tail under-utilization are not priced as a measured completion result.
-Resident capacities are H100 **11**, B200 **27** and B300 **40** cases, requiring
-roughly **64/156/231 GB host RAM** before reserve [I].
-
-<picture><source media="(prefers-color-scheme: dark)" srcset="docs/release/img/v032_best_case_giant_domain_dark.png"><img src="docs/release/img/v032_best_case_giant_domain.png" alt="Largest estimated single 44-level one-kilometre domain per GPU and matched-size CPU/GPU times, all inferred"></picture>
-
-The giant-domain scenario estimates about **488×488 at 1 km on RTX 5090**,
-781×781 on H100, **1,215×1,215 on B200** and **1,490×1,490 on B300**, each with
-44 levels [I]. GPU/CPU times are compared at the same domain size for each
-card. Gross allocated bytes per cell include pools, context and scratch; the
-linear capacity/work assumption does not prove a domain fits or passes physics
-validation. The explicit timestep is **6 seconds**. Different layouts, physics,
-stability and output needs can change both the limit and the speed.
-
-**B200 measured on earlier versions; H100/B200/B300 extrapolated to v0.3.2,
-best case, not measured.** Historical B200/5090 efficiency transfers to this
-new kernel mix by assumption; bands are not confidence intervals. The
-[best-case scaling method](docs/release/V032_BEST_CASE_SCALING.md) and
-[actual normalized anchors](docs/release/evidence/v032/best_case_anchors.json)
-record the model, reserves, timestep and source hashes. The v0.3.1 shorter-run
-[scenarios](docs/release/SCALING_METHOD.md) remain a conservative, differently
-scoped reference; no multi-GPU forecast or data-centre run is claimed.
-
-## WRF-order corrections in v0.3.3
-
-The release includes reviewed surface, MYNN, radiation and Thompson snow corrections. The [fix inventory](docs/release/V033_W2_FIXES.md) retains the source-dated W2 investigations; final-source validation and all accepted deviations are reported above and in the release notes.
-
-## What's new, and what comes next
-
-v0.3.3 restores WRF's MYNN plume geometry, cloud/mass-flux floors, condensation
-carry and per-column convergence, plus surface density and TKE/length budgets.
-D1/D2/D3 restore held KF, PBL water/moist-theta and radiation tendency coupling
-through RK. WRF constants, boundary re-pinning, Julian timing and restart/import
-corrections compose with those changes; the validated set is default on.
-[Release notes](release_notes/RELEASE_NOTES_v0.3.3.md) give the exact source,
-original-WRF gates and remaining limitations.
-
-The next work includes the measured BD92(c) clear-night residual, broader
-independent station/case verification, glacier runtime, and measured memory
-and launch-overhead opportunities. These are research directions, not booked
-speedups. Existing v0.3.2 ensemble/giant-domain scenarios remain [I] with their
-original assumptions; v0.3.3 has not re-benchmarked those data-centre scenarios.
-
-| Version | Short history |
-|---|---|
-| v0.3.4 | Fix release: every namelist physics option bound or refused (≤0.3.3 silently ran defaults); experimental opt-in schemes; default program and validation unchanged |
-| v0.3.3 | Released with WRF-order MYNN, D1/D2/D3, snow and layout corrections; seven 72 h comparisons plus Swiss24, with raw rain/wind/ice/trace failures and accepted disclosures retained |
-| v0.3.2 | Matched whole-run −9.9%; N=4 24 h throughput 22.4× CPU; stable layout, startup/cache and momentum work |
-| v0.3.1 | WRF-order/snow/writer corrections; historical performance and validation |
-| v0.3.0 | fp32 hot kernels became default; historical six-case gates and long-lead studies |
-| v0.23.4 and earlier | Earlier capability/oracle work; different precision and performance baseline |
-
-## Get involved and read further
-
-If the rewrite interests you, start with [CONTRIBUTING.md](CONTRIBUTING.md),
-the [release methods](docs/release/METHODS.md), the
-[validation report](docs/release/V0.3.2.md) and the [User's Guide](https://wrf-gpu.github.io/wrf_gpu/).
-Include the namelist, input provenance, version, output cadence and a
-reproducible comparison in reports.
-[Questions and issues](https://github.com/wrf-gpu/wrf_gpu/issues) are welcome.
-Documentation, setup, fidelity, performance and independent validation
-contributions are welcome; speedups need scientific and timing evidence.
-
-## License
-
-wrf_gpu's own code is released under the [MIT License](LICENSE). Some files keep
-upstream terms: AER's RRTMG/RRTM code and data may not be sold; NCAR MMM physics
-translations carry NCAR's BSD 3-Clause notice; WRF-derived material carries the
-UCAR public-domain notice. See [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
-wrf_gpu is not affiliated with UCAR/NCAR; WRF® is a registered trademark of UCAR.
+`wrf_gpu`'s own code is MIT-licensed. WRF-derived files and bundled AER/NCAR
+components retain their upstream terms; see [LICENSE](LICENSE) and
+[THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md). The project is not affiliated
+with or endorsed by UCAR/NCAR; WRF® is a registered trademark of UCAR.

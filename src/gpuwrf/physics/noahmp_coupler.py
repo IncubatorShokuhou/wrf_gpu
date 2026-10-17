@@ -36,7 +36,7 @@ from typing import Any
 import os
 
 import jax.numpy as jnp
-from jax import lax
+from jax import lax,tree_util
 
 from gpuwrf.contracts.noahmp_state import NoahMPLandState, NoahMPStatic
 from gpuwrf.physics.mynn_surface_stub import SurfaceFluxes
@@ -233,6 +233,22 @@ def noahmp_surface_adapter(
     first_timestep: Any = False,
     history: bool = False,
     land_history: bool = False,
+    urban: Any = None,
+    lake_bundle: Any = None,
+    observation_aux: bool = False,
+    return_cumulus_inputs: bool = False,
+    surface_diagnostics: Any = None,
+    spp_pattern: Any = None,
+    urban_lead_seconds: Any = None,
+    surface_is_mynn: bool = False,
+    surface_cpm_factor: float = 0.0,
+    mmf: Any = None,
+    itimestep: Any = None,
+    options: Any = None,
+    irrigation: Any = None,
+    carbon: Any = None,
+    groundwater: Any = None,
+    tile_drain: Any = None,
 ) -> tuple[Any, NoahMPLandState, SurfaceFluxes]:
     """Run the land-masked Noah-MP / sfclay blend for one physics step.
 
@@ -248,6 +264,10 @@ def noahmp_surface_adapter(
 
     ``history=True`` appends the WRF history surface fields this step produced
     (blended HFX/LH; T2/Q2 = land Noah-MP blend, ISWATER bulk-flux form; sfclay U10/V10).
+
+    ``urban=(UrbanBundle, UrbanCarry)`` (sf_urban_physics=1) runs WRF ``noahmp_urban``
+    on the Noah-MP outputs (coupling.urban_slucm_hook) and appends the advanced
+    UrbanCarry as the LAST return element; ``None`` leaves this path unchanged.
     """
     # ---- 1. sfclay over ALL columns (UNCHANGED formulae). ``first_timestep``
     #         engages the WRF MYNN surface FIRST-CALL semantics (UST first guess,
@@ -255,10 +275,22 @@ def noahmp_surface_adapter(
     #         without it the blend ran the warm-call branch at step 1 while the
     #         standalone surface slot ran the fixed first-call branch. ----
     # WRF surface_driver feeds the PRE-Noah snow depth to SFCLAY_mynn.
-    diag = surface_layer_with_diagnostics(
-        state, first_timestep=first_timestep, snowh=land_state.snowh,
-    )
+    multilayer = urban is not None and getattr(urban[0], 'option', 1) in (2, 3)
+    if multilayer:
+        from gpuwrf.coupling.urban_surface_layer import revised_surface_layer
+        diag, urban_pbl_resistances = revised_surface_layer(state, return_pbl_resistances=True)
+    else:
+        diag = surface_diagnostics if surface_diagnostics is not None else surface_layer_with_diagnostics(
+            state, first_timestep=first_timestep, snowh=land_state.snowh,
+            **({"with_chs": True} if urban is not None else {}),
+            **({"spp_pattern": spp_pattern} if spp_pattern is not None else {}),
+        )
     sf = diag.fluxes                          # SurfaceFluxes (kinematic)
+    obs_aux = ()
+    if observation_aux:
+        from gpuwrf.coupling.obs_rk import surface_observation_aux
+        obs_aux = (surface_observation_aux(state, diag),)
+    cumulus_aux = (jnp.asarray(diag.zol, jnp.float32),) if return_cumulus_inputs else ()
     # WRF's surface driver supplies lowest-level RHO3D to sfclay.  That density
     # is therefore the authority for converting physical HFX/QFX to the
     # kinematic handles below (module_sf_mynn.F:322,1051-1052).
@@ -283,24 +315,118 @@ def noahmp_surface_adapter(
     # independent density boundary still consumes WRF QVAPOR (mixing ratio).
     state_qv = _get(state, "qv", None)
     qv_mixing_ratio = None if state_qv is None else _surface(state_qv)
-    pbl_density = _mynn_pbl_surface_density(forcing, qv_mixing_ratio)
+    pbl_density = flux_density if multilayer else _mynn_pbl_surface_density(forcing, qv_mixing_ratio)
     # seed sfclay CH/CM (opt_sfc=1 supplies the drag coeffs Noah-MP consumes).
-    ch_seed = _surface(_get(diag, "ch", land_state.ch))
-    cm_seed = _surface(_get(diag, "cm", land_state.cm))
+    land_before_surface = land_state
+    # noahmpdrv.F:817-818 passes CM=CMXY, CH=CHXY (Noah-MP's own previous values);
+    # SFCDIF2 (opt_sfc=2) iterates from them, so a sfclay CH/CM (e.g. QNSESFC) must
+    # not overwrite them. opt_sfc=1 SFCDIF1 recomputes both (seed is inert there).
+    own_sfcdif = options is not None and int(getattr(options, "opt_sfc", 1)) == 2
+    ch_seed = _surface(land_state.ch if own_sfcdif else _get(diag, "ch", land_state.ch))
+    cm_seed = _surface(land_state.cm if own_sfcdif else _get(diag, "cm", land_state.cm))
     land_state = land_state.replace(ch=ch_seed, cm=cm_seed); land_state, forcing, diag, sf = _small_grid_firewall((land_state, forcing, diag, sf), flux_density.shape)
 
-    land_state_out, nm = noah_mp_step(
-        land_state, forcing, static, dt,
-        energy_params=energy_params, rad_params=rad_params,
-        **({"history": True} if land_history else {}),
-    )
+    if getattr(static,'glacier',None) is not None:
+        if mmf is not None:
+            raise ValueError('MMF glacier coupling is not qualified; use an ice-free domain')
+        from gpuwrf.coupling.glacier_surface_hook import route_glacier_with_lakes
+        tile_options={key:value for key,value in (('options',options),('irrigation',irrigation),
+            ('carbon',carbon),('groundwater',groundwater),('tile_drain',tile_drain)) if value is not None}
+        if tile_options:
+            from gpuwrf.coupling.noahmp_option_tiles import option_glacier_step
+            step_result=option_glacier_step(noah_mp_step,land_state,forcing,static,dt,
+                energy_params=energy_params,rad_params=rad_params,history=land_history,
+                lake_bundle=lake_bundle,frozen_land=land_before_surface,**tile_options)
+        else:
+            step_result = route_glacier_with_lakes(noah_mp_step,land_state,forcing,static,dt,
+                energy_params=energy_params,rad_params=rad_params,history=land_history,
+                lake_bundle=lake_bundle,frozen_land=land_before_surface)
+    elif lake_bundle is not None:
+        if mmf is not None:
+            raise ValueError('MMF plus the compact lake coupling is not qualified')
+        if carbon is not None:raise ValueError("Dynamic Noah-MP vegetation plus compact lake tiles is not qualified")
+        if groundwater is not None:raise ValueError("Noah-MP groundwater plus compact lake tiles is not qualified")
+        if tile_drain is not None:raise ValueError("Noah-MP tile drainage plus compact lake tiles is not qualified")
+        if irrigation is not None:
+            raise ValueError("Noah-MP irrigation plus compact lake tiles is not qualified")
+        from gpuwrf.coupling.lake_surface_hook import noahmp_without_lakes
+        from functools import partial
+        land_kernel = noah_mp_step if options is None else partial(noah_mp_step, options=options)
+        step_result = noahmp_without_lakes(land_kernel,land_state,forcing,static,dt,lake_bundle,
+            energy_params=energy_params,rad_params=rad_params,history=land_history,frozen_land=land_before_surface)
+    else:
+        step_result = noah_mp_step(
+            land_state, forcing, static, dt,
+            energy_params=energy_params, rad_params=rad_params,
+            **({"history": True} if land_history else {}),
+            **({'mmf': mmf} if mmf is not None else {}),
+            **({"options": options} if options is not None else {}),
+            **({"irrigation": irrigation} if irrigation is not None else {}),
+            **({"carbon":carbon} if carbon is not None else {}),
+            **({"groundwater":groundwater} if groundwater is not None else {}),
+            **({"tile_drain":tile_drain} if tile_drain is not None else {}),
+        )
+    if mmf is not None:*step_result,mmf=step_result
+    if tile_drain is not None:*step_result,tile_out=step_result
+    if groundwater is not None:*step_result,groundwater_out=step_result
+    if carbon is not None:*step_result,carbon_out=step_result
+    if irrigation is not None:*step_result,irrigation_out=step_result
+    land_state_out,nm=step_result
+    if mmf is not None:
+        if itimestep is None:raise ValueError('MMF needs the absolute WRF itimestep for STEPWTD cadence')
+        from gpuwrf.physics.noahmp.groundwater import advance_lateral
+        mmf,land_state_out=advance_lateral(mmf,land_state_out,static,itimestep)
+    mmf_aux=() if mmf is None else (mmf,)
+    # module_sf_noahmpdrv.F:732 skips ocean columns. Retain the incoming
+    # option carries there, just as the surface state blend does below.
+    hold_water=lambda new,old:tree_util.tree_map(lambda a,b:jnp.where(is_land,a,b),new,old)
+    if irrigation is not None:irrigation_out=hold_water(irrigation_out,irrigation[1])
+    if carbon is not None:carbon_out=hold_water(carbon_out,carbon[1])
+    if groundwater is not None:groundwater_out=hold_water(groundwater_out,groundwater)
+    if tile_drain is not None:tile_out=jnp.where(is_land,tile_out,tile_drain)
+    irrigation_aux=() if irrigation is None else (irrigation_out,)
+    carbon_aux=() if carbon is None else (carbon_out,)
+    groundwater_aux=() if groundwater is None else (groundwater_out,)
+    tile_aux=() if tile_drain is None else (tile_out,)
+    urban_carry_out = urban_step = None
+    if urban is not None:
+        # WRF noahmp_urban (after noahmplsm): blended TSK/HFX/QFX/LH/GRDFLX/ALBEDO/QSFC/UST
+        # become the grid fields MYNN, radiation and the next Noah-MP call read.
+        if getattr(urban[0], 'option', 1) in (2, 3):
+            from gpuwrf.coupling.urban_multilayer_hook import apply_urban_multilayer
+            nm, ust_urban, urban_carry_out, urban_step = apply_urban_multilayer(
+                urban[0], urban[1], atmosphere=urban[2], forcing=forcing, nm=nm, ust=sf.ustar, dt=dt)
+        else:
+            from gpuwrf.coupling.urban_slucm_hook import apply_urban_slucm
+            nm, ust_urban, urban_carry_out, urban_step = apply_urban_slucm(
+                urban[0], urban[1], forcing=forcing, nm=nm, ust=sf.ustar, chs=diag.chs,
+                chs2=diag.chs2, cqs2=diag.cqs2, qv_mixing_ratio=qv_mixing_ratio, dt=dt,
+                **({"lead_seconds":urban_lead_seconds} if urban[0].requires_inputs else {}))
+        sf = sf._replace(ustar=ust_urban)
+        if multilayer:
+            from gpuwrf.coupling.urban_surface_layer import UrbanSurfaceLayer
+            idx=jnp.asarray(urban[0].indices,jnp.int32);shape=diag.u10.shape
+            profile=urban[2][0]
+            u10_bep=diag.u10.reshape(-1).at[idx].set(profile.u[:,0]).reshape(shape)
+            v10_bep=diag.v10.reshape(-1).at[idx].set(profile.v[:,0]).reshape(shape)
+            urban_carry_out = urban_carry_out._replace(surface_layer=UrbanSurfaceLayer(
+                diag.br,urban_pbl_resistances[0],urban_pbl_resistances[1],sf.wspd,u10_bep,v10_bep))
+        land_state_out = land_state_out.replace(
+            t_skin=jnp.asarray(nm.tsk, land_state_out.t_skin.dtype),
+            qsfc=jnp.asarray(nm.qsfc, land_state_out.qsfc.dtype),
+            albedo=jnp.asarray(nm.albedo, land_state_out.albedo.dtype))
+        if getattr(urban[0], 'option', 1) in (2, 3):
+            land_state_out = land_state_out.replace(emiss=jnp.asarray(nm.emiss, land_state_out.emiss.dtype))
 
     # ---- 3. masked blend (land vs water). Water path = sfclay diagnostics. ----
     # rho*cpm with the WRF MYNN moist heat capacity (surface_layer.py): cpm =
     # CP_D*(1+0.84*qx) (module_sf_mynn.F:552). theta_flux = hfx/(rho*cpm) inverts the
     # MYNN-SL flux mapping, so the coefficient MUST match surface_layer.py (0.84).
     qx = jnp.maximum(_surface(_get(state, "qv", jnp.zeros_like(flux_density))), 0.0)
-    rho_cpm = flux_density * (CP_D * (1.0 + 0.84 * qx))
+    rho_cpm = (flux_density * CP_D if surface_diagnostics is not None and not multilayer
+               else flux_density * (CP_D * (1.0 + (0.8 if multilayer else 0.84) * qx)))
+    if surface_cpm_factor:
+        rho_cpm=flux_density*(CP_D*(1.+surface_cpm_factor*qx))
 
     # blended physical fluxes (W/m2 and kg/m2/s)
     hfx_water = jnp.asarray(diag.hfx, dtype=real_dtype())
@@ -310,6 +436,11 @@ def noahmp_surface_adapter(
     tsk_water = _surface(_get(state, "t_skin", jnp.asarray(nm.tsk)))
 
     hfx = jnp.where(is_land, jnp.asarray(nm.hfx), hfx_water)
+    if urban is not None and getattr(urban[0],"ahe_opt",0) == 2:
+        from gpuwrf.coupling.urban_inputs import ahe_at_lead
+        # surface_driver:4588, AFTER urban and land/water blends; no FRC scaling.
+        hfx_before_ahe = hfx  # ACHFX accumulation precedes distributed AHE (:3432).
+        hfx = hfx+ahe_at_lead(urban[0],urban[1].inputs,urban_lead_seconds)
     qfx = jnp.where(is_land, jnp.asarray(nm.qfx), qfx_water)
     znt = jnp.where(is_land, jnp.asarray(nm.znt), znt_water)
     tsk = jnp.where(is_land, jnp.asarray(nm.tsk), tsk_water)
@@ -323,7 +454,7 @@ def noahmp_surface_adapter(
     qv_flux = qfx / jnp.maximum(flux_density, 1.0e-12)
     ep1 = _mynn_constant("P608", real_dtype(), EP1)
     fltv = (1.0 + ep1 * qx) * theta_flux + ep1 * thx * qv_flux
-    if mynn_fltv_wrf_enabled():
+    if (surface_diagnostics is None or surface_is_mynn) and mynn_fltv_wrf_enabled() and not multilayer:
         # WRF's MYNN derives flt/flqv/fltv itself from the blended HFX/QFX, TSK and the lowest-level
         # p_phy (module_bl_mynnedmf.F:859-876); same helper as the surface-layer producer.
         r = real_dtype()
@@ -349,6 +480,11 @@ def noahmp_surface_adapter(
     #         unchanged; qsfc written only if the State carries that slot. ----
     updates = {"t_skin": _broadcast_like(state, "t_skin", tsk),
                "roughness_m": _broadcast_like(state, "roughness_m", znt)}
+    if getattr(state,"sms_br",None) is not None:
+        updates.update(sms_br=_broadcast_like(state,"sms_br",diag.br),
+                       sms_rmol=_broadcast_like(state,"sms_rmol",diag.rmol),
+                       sms_wspd=_broadcast_like(state,"sms_wspd",diag.fluxes.wspd),
+                       sms_ustm=_broadcast_like(state,"sms_ustm",diag.ustm))
     if hasattr(state, "qsfc"):
         # WRF grid%QSFC after the surface driver: Noah-MP QSFC1D over land
         # (module_sf_noahmpdrv.F:1244), the sfclay value over water.
@@ -375,14 +511,30 @@ def noahmp_surface_adapter(
                        jnp.where(iswater, t2_water, jnp.asarray(diag.t2, dtype=real_dtype())))
         q2 = jnp.where(is_land, jnp.asarray(nm.q2),
                        jnp.where(iswater, q2_water, jnp.asarray(diag.q2, dtype=real_dtype())))
+        u10, v10 = diag.u10, diag.v10
+        if urban_step is not None:
+            if getattr(urban[0], 'option', 1) in (2, 3):
+                from gpuwrf.coupling.urban_multilayer_hook import multilayer_history_overwrite as urban_history_overwrite
+            else:
+                from gpuwrf.coupling.urban_slucm_hook import urban_history_overwrite
+            t2, q2, u10, v10 = urban_history_overwrite(t2, q2, u10, v10, urban_step,
+                                                       _get(state, "psfc", forcing.psfc))
         q2 = _land_q2_postlsm(q2, _surface(_get(state, "qv")), is_land)
-        fields = {"hfx": hfx, "lh": lh, "t2": t2, "q2": q2, "u10": diag.u10, "v10": diag.v10}
+        fields = {"hfx": hfx, "lh": lh, "t2": t2, "q2": q2, "u10": u10, "v10": v10}
+        if land_history and urban is not None and getattr(urban[0],"ahe_opt",0) == 2:
+            fields["accumulator_hfx"] = hfx_before_ahe
+        if lake_bundle is not None:
+            fields.update(grdflx=jnp.where(is_land,nm.grdflx,0.),albedo=land_state_out.albedo)
         if land_history:
             fields["land_history"] = {name: jnp.where(is_land, value, 0)
                                       for name, value in nm.history.items()}
             fields["grdflx"] = jnp.where(is_land, nm.grdflx, 0)
-        return state_out, land_state_out, blended, fields
-    return state_out, land_state_out, blended
+        if urban is not None:
+            return (state_out, land_state_out, blended, fields, urban_carry_out) + irrigation_aux + carbon_aux + groundwater_aux + tile_aux + mmf_aux + obs_aux + cumulus_aux
+        return (state_out, land_state_out, blended, fields) + irrigation_aux + carbon_aux + groundwater_aux + tile_aux + mmf_aux + obs_aux + cumulus_aux
+    if urban is not None:
+        return (state_out, land_state_out, blended, urban_carry_out) + irrigation_aux + carbon_aux + groundwater_aux + tile_aux + mmf_aux + obs_aux + cumulus_aux
+    return (state_out, land_state_out, blended) + irrigation_aux + carbon_aux + groundwater_aux + tile_aux + mmf_aux + obs_aux + cumulus_aux
 
 
 def _land_q2_postlsm(q2, qv_mixing_ratio, is_land):

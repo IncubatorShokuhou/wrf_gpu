@@ -1,0 +1,214 @@
+{
+  "baseline": "e9d13879439271f336781ee082c0ecfa57d04e53",
+  "candidate": "0cdbc59f89013249a42c0dbc52b028b0fccbfe33",
+  "candidate_src_tree": "08f5878f86cfad0db6cd1c12ac82f3b8eecb5270",
+  "main_base": "5427eed2faf6a53e4535004116201d2f1fcd37f5",
+  "valid_host_region_cases": [
+    {
+      "region": {
+        "bbox": [
+          11,
+          0,
+          12,
+          1
+        ]
+      },
+      "spec_and_signature_exact": true,
+      "selected_indices_and_ids_BYTE": true
+    },
+    {
+      "region": {
+        "bbox": [
+          11,
+          1,
+          11,
+          1
+        ]
+      },
+      "spec_and_signature_exact": true,
+      "selected_indices_and_ids_BYTE": true
+    },
+    {
+      "region": {
+        "bbox": [
+          -180,
+          -90,
+          180,
+          90
+        ]
+      },
+      "spec_and_signature_exact": true,
+      "selected_indices_and_ids_BYTE": true
+    },
+    {
+      "region": {
+        "polygon": [
+          [
+            11,
+            0
+          ],
+          [
+            12,
+            0
+          ],
+          [
+            12,
+            1
+          ],
+          [
+            11,
+            1
+          ]
+        ]
+      },
+      "spec_and_signature_exact": true,
+      "selected_indices_and_ids_BYTE": true
+    },
+    {
+      "region": {
+        "polygon": [
+          [
+            10,
+            0
+          ],
+          [
+            12,
+            0
+          ],
+          [
+            12,
+            2
+          ]
+        ]
+      },
+      "spec_and_signature_exact": true,
+      "selected_indices_and_ids_BYTE": true
+    },
+    {
+      "region": {
+        "polygon": [
+          [
+            11,
+            0
+          ],
+          [
+            12,
+            0
+          ],
+          [
+            12,
+            1
+          ],
+          [
+            11,
+            1
+          ],
+          [
+            11,
+            0
+          ]
+        ]
+      },
+      "spec_and_signature_exact": true,
+      "selected_indices_and_ids_BYTE": true
+    },
+    {
+      "region": {
+        "stations": [
+          {
+            "id": "a",
+            "i": 1,
+            "j": 1
+          },
+          {
+            "id": "b",
+            "i": 3,
+            "j": 2
+          }
+        ]
+      },
+      "spec_and_signature_exact": true,
+      "selected_indices_and_ids_BYTE": true
+    },
+    {
+      "region": {
+        "stations": [
+          {
+            "id": "ll",
+            "lat": 0.9,
+            "lon": 12.1
+          },
+          {
+            "id": "ij",
+            "i": 1,
+            "j": 3
+          }
+        ]
+      },
+      "spec_and_signature_exact": true,
+      "selected_indices_and_ids_BYTE": true
+    },
+    {
+      "region": {
+        "stations": [
+          {
+            "id": "tie",
+            "lat": 0.5,
+            "lon": 10.5
+          }
+        ]
+      },
+      "spec_and_signature_exact": true,
+      "selected_indices_and_ids_BYTE": true
+    }
+  ],
+  "byte_identical_protected_sources": {
+    "streams/device.py": "a89461025ced24fabe5a39f9c20ccff5bbefeffa2fdce08ae0257195c243596e",
+    "streams/runtime.py": "c3cb97197f473fcb34e954b1d3221f4fa487b727206baf670c8e46e3d4c3c19a",
+    "streams/writer.py": "983b06a6e7df502fc1d825670aa42f57e00e650e8081a3c6a0b93833df62f7db",
+    "streams/restart.py": "33879cf3a3e30198ca154ca0423b69e8faf2f8f518e234f2f67f0482b9b9508f",
+    "runtime/operational_mode.py": "65ac72eb2ccb69c7e81a9cfd0e87dcfe46c879c62d6e722d38c4033b507f059a",
+    "runtime/operational_state.py": "1398ecbdcd91d20d9e4dc04103591b25387856b667614ff716a5ad87505803f5",
+    "integration/nested_pipeline.py": "943866a49978455d44f796a7d9dd52daad3a1168a1f463b6dcb4116911faa0ca",
+    "integration/daily_pipeline.py": "10eaf7b453d6d505814154218a51f6848616a99e01f93e9007f5dbd21f1ce1f2",
+    "runtime/restart_store.py": "37c4fe22b946f380e19c3027eb742974d53afcc54d841c0b9edaac05f650da7a",
+    "io/wrfrst_netcdf.py": "c6305a8321700832e6a0106e4c2c4f06701793abbf9a06ba6c5a33da0c32fc95"
+  },
+  "all_src_changes": [
+    "src/gpuwrf/physics/ra_cam_lw.py",
+    "src/gpuwrf/physics/ra_cam_lw_abs.py",
+    "src/gpuwrf/streams/config.py"
+  ],
+  "incoming_cam_scope": "main merge3ef9f2fbf; independently qualified default2bf and CAM E41/byte gates; no lane-owned CAM edits",
+  "scope": "Host parser/grid selection semantics only; nine small unit grids are not forecast fidelity. Prior coupled/native qualification reused; no new GPU or final ELF identity claim.",
+  "efficiency": "Validation executes at configuration/domain setup only; O(vertices+stations) host temporary storage. No device kernels, carry, timestep transfers or compiled temporaries changed by P2. Extra parser latency unmeasured.",
+  "status": "P2_FIXED",
+  "review": "<USER_HOME>/wrf_gpu2_lanes/rv-u2-streams/VERDICT.md",
+  "recorded_utc": "2026-10-13T20:55:57Z",
+  "tests": {
+    "affected_pass": 50,
+    "critic_four_cases_pass": 4,
+    "backend_dark_subprocess_pass": 5,
+    "parser_invalid_payload_cases": 19,
+    "US26": "49PASS, one compact-archive fixture setup failure",
+    "US27": "remaining case setup failure; missing second tracked table asset",
+    "US28": "remaining case PASS; same immutable source with full tracked fixtures; no 49-test repetition",
+    "valid_region_differential_cases": 9
+  },
+  "cleanup": {
+    "snapshot_retired": true,
+    "pytest_retired": true,
+    "jax_cache": "NONE; GPUWRF_JAX_CACHE=0",
+    "GPU": "not run"
+  },
+  "qualification_reused": "QUALIFICATION.json and prior critic-accepted numerical/native/E41 evidence preserved unchanged; P2 is host admission only.",
+  "artifacts_sha256": {
+    "US26_regions.log": "eb664dd8f296a548d9f16dd8220ee19628f05257be3d03cb9333bab16399467c",
+    "US26_regions.xml": "2cc71fe139887cd206f3b0a88e34155c5138bcaa3847618b1b659771bcce1740",
+    "US27_cache.log": "1a40cf9c69519515eed18f2c99ea07675546e36fed685cec4672fafeedaec245",
+    "US27_cache.xml": "d44876d8d6f777307c4af7066f436f25dddd4bca88d61ea3a22451c702b98cfc",
+    "US28_cache.log": "42403b3237535effb4d094c37f8d86274061c962392db3e494518ffacb49a4e1",
+    "US28_cache.xml": "6daccf8693d929121596ab1177a9db93c6f57198dbf4edb7ccab9d2fee54ccea",
+    "US29_source_reuse.json": "97d0f410b2972223def2272b03ff57e3affe1a2bd4eaa63fee5d7b48b6e2b289"
+  }
+}

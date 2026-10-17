@@ -19,6 +19,9 @@ from typing import Any, Iterator, Mapping
 import numpy as np
 from gpuwrf.io.netcdf_lock import Dataset
 
+from gpuwrf.contracts.moisture import total_moist_mass
+from gpuwrf.contracts.physics_registry import MOIST_SPECIES, MOIST_WRFOUT_NAME
+
 from gpuwrf.io.wrfout_theta_convention import parse_use_theta_m, thm_source
 from gpuwrf.physics.surface_constants import CP_D, KARMAN, P0_PA, R_D_OVER_CP, XLV
 from gpuwrf.physics.surface_layer import surface_layer_with_diagnostics
@@ -297,7 +300,10 @@ MICROPHYSICS_EXTRA_VARIABLES: tuple[str, ...] = (
     # (State nwfa/nifa); emitted only when the source leaves are present.
     "QNWFA",
     "QNIFA",
+    "QIR", "QIB", "QICE2", "QNICE2", "QIR2", "QIB2", "QZI",
     "QKE",
+    # Optional LES prognostic, distinct from the PBL's QKE/TKE_PBL.
+    "TKE",
 )
 
 # (b) Grid-static coordinate / projection / map-factor / Coriolis fields. Source
@@ -373,8 +379,8 @@ PRECIP_PARTITION_VARIABLES: tuple[str, ...] = (
 # (h) Trivially-derived diagnostics (v0.12.0 A2). WRF-FAITHFUL closed forms from
 #     fields the writer already has -- NO physics, NO GPU. Each self-gates on the
 #     availability of its inputs:
-#       CLAT   = XLAT (computational-grid latitude; identical to XLAT for the
-#                operational lat/lon grid).
+#       CLAT   = supplied computational latitude (initial nest feedback may
+#                change it); XLAT is the legacy fallback when absent.
 #       COSZEN = WRF radconst/calc_coszen cosine solar zenith from XLAT/XLONG +
 #                the forecast clock (run_start + lead) -- the exact transcription
 #                already in coupling.physics_couplers._compute_coszen.
@@ -705,6 +711,8 @@ WRFOUT_VARIABLE_SPECS: dict[str, WrfoutVariableSpec] = {
     "LU_INDEX": _spec("LU_INDEX", XY, "XY ", "LAND USE CATEGORY", "", coordinates="XLONG XLAT XTIME"),
     "U10": _spec("U10", XY, "XY ", "U at 10 M", "m s-1", coordinates="XLONG XLAT XTIME"),
     "V10": _spec("V10", XY, "XY ", "V at 10 M", "m s-1", coordinates="XLONG XLAT XTIME"),
+    "U10E": _spec("U10E", XY, "XY ", "Special U at 10 M from MYJSFC", "m s-1", coordinates="XLONG XLAT XTIME"),
+    "V10E": _spec("V10E", XY, "XY ", "Special V at 10 M from MYJSFC", "m s-1", coordinates="XLONG XLAT XTIME"),
     "T2": _spec("T2", XY, "XY ", "TEMP at 2 M", "K", coordinates="XLONG XLAT XTIME"),
     "Q2": _spec("Q2", XY, "XY ", "QV at 2 M", "kg kg-1", coordinates="XLONG XLAT XTIME"),
     "PSFC": _spec("PSFC", XY, "XY ", "SFC PRESSURE", "Pa", coordinates="XLONG XLAT XTIME"),
@@ -912,6 +920,13 @@ WRFOUT_VARIABLE_SPECS: dict[str, WrfoutVariableSpec] = {
     "QNHAIL": _spec("QNHAIL", XYZ, "XYZ", "Hail Number concentration", "  kg(-1)", coordinates="XLONG XLAT XTIME"),
     "QVGRAUPEL": _spec("QVGRAUPEL", XYZ, "XYZ", "Graupel Particle Volume", "m(3) kg(-1)", coordinates="XLONG XLAT XTIME"),
     "QVHAIL": _spec("QVHAIL", XYZ, "XYZ", "Hail Particle Volume", "m(3) kg(-1)", coordinates="XLONG XLAT XTIME"),
+    "QIR": _spec("QIR", XYZ, "XYZ", "Rime ice mass-1 mixing ratio", "kg kg(-1)", coordinates="XLONG XLAT XTIME"),
+    "QIB": _spec("QIB", XYZ, "XYZ", "Rime ice volume-1 mixing ratio", "m(3) kg(-1)", coordinates="XLONG XLAT XTIME"),
+    "QICE2": _spec("QICE2", XYZ, "XYZ", "Ice mixing ratio cat 2", "kg kg-1", coordinates="XLONG XLAT XTIME"),
+    "QNICE2": _spec("QNICE2", XYZ, "XYZ", "Ice Number concentration cat 2", "# kg-1", coordinates="XLONG XLAT XTIME"),
+    "QIR2": _spec("QIR2", XYZ, "XYZ", "Rime ice mass-2 mixing ratio", "kg kg(-1)", coordinates="XLONG XLAT XTIME"),
+    "QIB2": _spec("QIB2", XYZ, "XYZ", "Rime ice volume-2 mixing ratio", "m(3) kg(-1)", coordinates="XLONG XLAT XTIME"),
+    "QZI": _spec("QZI", XYZ, "XYZ", "Sq root of sixth moment ice mixing ratio times number mixing ratio", "m(3) kg(-1)", coordinates="XLONG XLAT XTIME"),
     # v0.16 aerosol-aware Thompson (mp=28) aerosol numbers (WRF Registry
     # thompsonaero qnwfa/qnifa names/descriptions).
     "QNWFA": _spec(
@@ -919,7 +934,7 @@ WRFOUT_VARIABLE_SPECS: dict[str, WrfoutVariableSpec] = {
         XYZ,
         "XYZ",
         "water-friendly aerosol number con",
-        "  kg-1",
+        "  kg(-1)",
         coordinates="XLONG XLAT XTIME",
     ),
     "QNIFA": _spec(
@@ -927,10 +942,11 @@ WRFOUT_VARIABLE_SPECS: dict[str, WrfoutVariableSpec] = {
         XYZ,
         "XYZ",
         "ice-friendly aerosol number con",
-        "  kg-1",
+        "  kg(-1)",
         coordinates="XLONG XLAT XTIME",
     ),
     "QKE": _spec("QKE", XYZ, "XYZ", "twice TKE from MYNN", "m2 s-2", coordinates="XLONG XLAT XTIME"),
+    "TKE": _spec("TKE", XYZ, "XYZ", "LES turbulence kinetic energy (km_opt=2)", "m2 s-2", coordinates="XLONG XLAT XTIME"),
     # --- P0-5a (b) grid-static coordinate / map-factor / Coriolis fields ---
     "ZNU": _spec("ZNU", Z_HALF, "Z  ", "eta values on half (mass) levels", ""),
     "ZNW": _spec("ZNW", Z_FULL, "Z  ", "eta values on full (w) levels", "", stagger="Z"),
@@ -1246,15 +1262,63 @@ WRFOUT_VARIABLE_SPECS: dict[str, WrfoutVariableSpec] = {
         "LWUPTC", XY, "XY ", "INSTANTANEOUS UPWELLING CLEAR SKY LONGWAVE FLUX AT TOP", "W m-2",
         coordinates="XLONG XLAT XTIME",
     ),
+    "CWM": _spec("CWM", XYZ, "XYZ", "Total condensate mixing ratio", "kg kg-1", coordinates="XLONG XLAT XTIME"),
+    **{name: _spec(name, XYZ, "XYZ", description, "micron", coordinates="XLONG XLAT XTIME")
+       for name, description in (("RE_CLOUD_GSFC", "Cloud Water effective radius"),
+                                 ("RE_RAIN_GSFC", "Rain Water effective radius"),
+                                 ("RE_ICE_GSFC", "Cloud Ice effective radius"),
+                                 ("RE_SNOW_GSFC", "Snow effective radius"),
+                                 ("RE_GRAUPEL_GSFC", "Graupel Water effective radius"),
+                                 ("RE_HAIL_GSFC", "Hail Water effective radius"))},
+    "QRIMEF": _spec("QRIMEF", XYZ, "XYZ", "rime factor * qi", "kg kg-1", coordinates="XLONG XLAT XTIME"),
+    "QNWFA2D": _spec("QNWFA2D", XY, "XY ", "Surface aerosol number conc emission", "kg-1 s-1", coordinates="XLONG XLAT XTIME"),
+    "QNIFA2D": _spec("QNIFA2D", XY, "XY ", "Surface dust number conc emission", "kg-1 s-1", coordinates="XLONG XLAT XTIME"),
+    "PHYS_TOT": _spec("PHYS_TOT", XYZ, "XYZ", "TOTAL MICROPHYSICAL LATENT HEATING", "K s-1", coordinates="XLONG XLAT XTIME"),
+    "F_ICE_PHY": _spec("F_ICE_PHY", XYZ, "XYZ", "FRACTION OF ICE", "", coordinates="XLONG XLAT XTIME"),
+    "F_RAIN_PHY": _spec("F_RAIN_PHY", XYZ, "XYZ", "FRACTION OF RAIN ", "", coordinates="XLONG XLAT XTIME"),
+    "F_RIMEF_PHY": _spec("F_RIMEF_PHY", XYZ, "XYZ", "MASS RATIO OF RIMED ICE ", "", coordinates="XLONG XLAT XTIME"),
 }
 
 
 _FULL_XYZ_GENERIC_NAMES: tuple[str, ...] = (
     "P_HYD", "DTAUX3D", "DTAUY3D",
 )
+
+# Registry.EM_COMMON RUC-only history slots. They are emitted only on sf=3;
+# adding specs leaves every existing stream's variable list unchanged.
+_RUC_EXTRA_HISTORY = ("SOILT1", "RHOSNF", "SNOWFALLAC", "ACRUNOFF")
+for _name, _description, _units in (
+    ("SOILT1", "TEMPERATURE INSIDE SNOW", "K"),
+    ("RHOSNF", "DENSITY OF FROZEN PRECIP", "kg/m^3"),
+    ("SNOWFALLAC", "RUN-TOTAL ACCUMULATED SNOWFALL [mm]", ""),
+    ("ACRUNOFF", "ACCUMULATED RUNOFF", "kg m-2"),
+):
+    WRFOUT_VARIABLE_SPECS[_name] = _spec(_name, XY, "XY ", _description, _units,
+                                         coordinates="XLONG XLAT XTIME")
 _FULL_Z_XYZ_GENERIC_NAMES: tuple[str, ...] = (
     "TKE_PBL", "EL_PBL",
 )
+# MMF Registry restart fields can also be explicitly requested in history.
+# Their specs alone add no variables to the existing default streams.
+MMF_HISTORY_FIELDS = ('FDEPTH', 'AREA', 'EQZWT', 'RIVERBED', 'RIVERCOND', 'PEXP',
+                      'SMOISEQ', 'RECHCLIM', 'ZWT', 'DEEPRECH', 'RECH', 'QLAT',
+                      'QSLAT', 'QRF', 'QRFS', 'QSPRING', 'QSPRINGS', 'SMCWTD', 'WA', 'WT',
+                      'ACRECH', 'ACQSPRING')
+for _name, _description, _units in (
+    ('FDEPTH', 'e-folding depth for transmissivity', 'm'),
+    ('AREA', 'area of grid boxes', 'm2'), ('EQZWT', 'equilibrium water table depth', 'm'),
+    ('RIVERBED', 'river bed depth', 'm'), ('RIVERCOND', 'river conductance', 'Kg m s-1'),
+    ('PEXP', 'exponent for river conductance', 'Kg m s-1'),
+    ('SMOISEQ', 'EQ. SOIL MOISTURE', 'm3 m-3'),
+    ('RECHCLIM', 'equilibrium recharge rate', 'mm'),
+    ('DEEPRECH', 'deep water table recharge', 'mm'),
+    ('QLAT', 'instantaneous lateral flow', 'mm'), ('QRF', 'baseflow', 'm'),
+    ('QSPRING', 'seeping water', 'm'),
+    ('ACRECH', 'accumulated recharge', 'mm'), ('ACQSPRING', 'accumulated seeping water', 'mm'),
+):
+    WRFOUT_VARIABLE_SPECS[_name] = _spec(_name, SOIL if _name == 'SMOISEQ' else XY,
+        'XYZ' if _name == 'SMOISEQ' else 'XY ', _description, _units,
+        coordinates='XLONG XLAT XTIME')
 _FULL_XY_GENERIC_NAMES: tuple[str, ...] = (
     "VAR_SSO", "NEST_POS", "AREA2D", "DX2D", "SHDMAX", "SHDMIN", "SHDAVG", "SNOALB",
     "SEAICE", "XICEM", "VEGFRA", "ACGRDFLX", "ACSNOM", "SSTSK", "WATER_DEPTH", "LAI",
@@ -1298,6 +1362,54 @@ _FULL_TIME_INT_GENERIC_NAMES: tuple[str, ...] = (
 _FULL_SEED_INT_GENERIC_NAMES: tuple[str, ...] = ("ISEEDARR_RAND_PERTURB",)
 
 
+ONLINE_SURFACE_FIELDS = ("PREC_ACC_C","PREC_ACC_NC","SNOW_ACC_NC","WSPD10MAX","W_UP_MAX","W_DN_MAX",
+                         "UP_HELI_MAX","W_MEAN","GRPL_MAX","REFD_MAX","HAIL_MAXK1","HAIL_MAX2D","POWER")
+WRFOUT_VARIABLE_SPECS["POWER"] = _spec("POWER",XY,"XY ","Power generated by wind turbines","W",coordinates="XLONG XLAT XTIME")
+SOLAR_SURFACE_FIELDS = ("SWDOWN", "SWDDIR", "SWDDNI", "SWDDIF", "GSW")
+GODDARD_SURFACE_FIELDS = ('COD2D_OUT','CTOP2D_OUT')
+# radiation_driver.F:2331-2334/2981-2984 and the retained Goddard
+# diagnostics: native names for the SAME surface/TOA all-sky fluxes.
+GODDARD_NATIVE_FLUXES = {
+    'SLWDN':'LWDNB', 'SLWUP':'LWUPB', 'SSWDN':'SWDNB', 'SSWUP':'SWUPB',
+    'TLWDN':'LWDNT', 'TLWUP':'LWUPT', 'TSWDN':'SWDNT', 'TSWUP':'SWUPT',
+}
+for _name in GODDARD_NATIVE_FLUXES:
+    WRFOUT_VARIABLE_SPECS[_name]=_spec(_name,XY,'XY ',_name,'W m-2',coordinates='XLONG XLAT XTIME')
+for _name,_description,_units in (
+    ('COD2D_OUT','Column Cloud Optical Depth',' '),
+    ('CTOP2D_OUT','Cloud-Top Pressure','mb'),
+):
+    WRFOUT_VARIABLE_SPECS[_name]=_spec(_name,XY,'XY ',_description,_units,coordinates='XLONG XLAT XTIME')
+for _name, _description in (
+    ("SWDDIR", "Shortwave surface downward direct irradiance"),
+    ("SWDDNI", "Shortwave surface downward direct normal irradiance"),
+    ("SWDDIF", "Shortwave surface downward diffuse irradiance"),
+    ("GSW", "NET SHORT WAVE FLUX AT GROUND SURFACE"),
+):
+    WRFOUT_VARIABLE_SPECS[_name] = _spec(_name, XY, "XY ", _description, "W m-2", coordinates="XLONG XLAT XTIME")
+
+for _name,_units,_description in (
+    ("WSPD10MAX","m s-1","WIND SPD MAX 10 M"),
+    ("W_UP_MAX","m s-1","MAX Z-WIND UPDRAFT"),
+    ("W_DN_MAX","m s-1","MAX Z-WIND DOWNDRAFT"),
+    ("UP_HELI_MAX","m2 s-2","MAX UPDRAFT HELICITY"),
+    ("W_MEAN","m s-1","HOURLY MEAN Z-WIND"),
+    ("GRPL_MAX","kg m-2","MAX COL INT GRAUPEL"),
+    ("REFD_MAX","dbZ","MAX DERIVED RADAR REFL"),
+    ("HAIL_MAXK1","m","MAX HAIL DIAMETER K=1"),
+    ("HAIL_MAX2D","m","MAX HAIL DIAMETER ENTIRE COLUMN"),
+):
+    WRFOUT_VARIABLE_SPECS[_name]=_spec(_name,XY,"XY ",_description,_units,coordinates="XLONG XLAT XTIME")
+WRFOUT_VARIABLE_SPECS["REFL_10CM"]=_spec("REFL_10CM",XYZ,"XYZ","Radar reflectivity (lamda = 10 cm)","dBZ",coordinates="XLONG XLAT XTIME")
+
+for _bucket, _description in (
+    ("PREC_ACC_C", "ACCUMULATED CUMULUS PRECIPITATION OVER prec_acc_dt PERIODS OF TIME"),
+    ("PREC_ACC_NC", "ACCUMULATED GRID SCALE  PRECIPITATION OVER prec_acc_dt PERIODS OF TIME"),
+    ("SNOW_ACC_NC", "ACCUMULATED SNOW WATER EQUIVALENT OVER prec_acc_dt PERIODS OF TIME"),
+):
+    WRFOUT_VARIABLE_SPECS[_bucket] = _spec(_bucket, XY, "XY ", _description, "mm", coordinates="XLONG XLAT XTIME")
+
+
 def _register_full_wrfout_generic_specs() -> None:
     for name in _FULL_XYZ_GENERIC_NAMES:
         WRFOUT_VARIABLE_SPECS.setdefault(
@@ -1338,6 +1450,41 @@ def _register_full_wrfout_generic_specs() -> None:
 
 _register_full_wrfout_generic_specs()
 
+# Registry.EM_COMMON EEPS/KEPS history reads the held physical fields. These
+# extra variables are emitted only for bl=16/17; no output-time closure solve.
+_EPSILON_HISTORY = {
+    "PEK_PBL": ("qke","TKE from EEPS","m2 s-2"),
+    "PEP_PBL": ("epsilon_pbl","TKE dissipation from EEPS","m2 s-3"),
+    "TKE_PBL": ("qke","TKE from KEPS","m2 s-2"),
+    "DISS_PBL": ("epsilon_pbl","TKE dissipation from KEPS","m2 s-3"),
+    "TPE_PBL": ("tpe_pbl","TPE from KEPS","K2"),
+    "PR_PBL": ("pr_pbl","Prandtl number from KEPS","-"),
+}
+for _name, (_leaf,_description,_units) in _EPSILON_HISTORY.items():
+    if _name != "TKE_PBL":  # Existing non-epsilon full streams retain their spec.
+        WRFOUT_VARIABLE_SPECS[_name] = _spec(_name,XYZ,"XYZ",_description,_units,coordinates="XLONG XLAT XTIME")
+
+
+def _epsilon_history_fields(state,bl,shape,*,requested_names=None):
+    names=("PEK_PBL","PEP_PBL") if int(bl)==16 else ("TKE_PBL","DISS_PBL","TPE_PBL","PR_PBL")
+    fields={}
+    for name in names:
+        if requested_names is not None and name not in requested_names:
+            continue
+        leaf=_EPSILON_HISTORY[name][0]
+        source=_lookup(state,leaf,None)
+        if source is None: raise ValueError(f"epsilon PBL history missing held {leaf}")
+        value=_coerce_array(name,source,shape,dtype=np.float32)
+        if not np.isfinite(value).all(): raise ValueError(f"epsilon PBL history nonfinite {leaf}")
+        if name == "TKE_PBL":
+            # Registry.EM_COMMON:1230 is Z-staggered. KEPS:249-340 writes
+            # kts:kte only; the unused top retains gen_allocs.c:235 zero init.
+            padded=np.zeros((shape[0]+1,*shape[1:]),dtype=np.float32)
+            padded[:-1]=value
+            value=padded
+        fields[name]=value
+    return fields
+
 # Generic full-stream placeholders had blank units for active land/AC fields.
 # These definitions are the real WRF inventory, independent of output values.
 from gpuwrf.io.land_history_metadata import LAND_HISTORY_METADATA
@@ -1346,6 +1493,13 @@ for _land_name, (_land_description, _land_units) in LAND_HISTORY_METADATA.items(
         WRFOUT_VARIABLE_SPECS[_land_name] = dataclass_replace(
             WRFOUT_VARIABLE_SPECS[_land_name], description=_land_description, units=_land_units,
         )
+
+
+# SSiB Registry history inventory; no model/JAX import is added here.
+from gpuwrf.io.ssib_history import SSIB_EXTRA_HISTORY,SSIB_STANDARD_HISTORY,SSIB_HISTORY_METADATA
+for _ssib_name,(_ssib_description,_ssib_units,_ssib_stagger) in SSIB_HISTORY_METADATA.items():
+    WRFOUT_VARIABLE_SPECS[_ssib_name]=_spec(_ssib_name,XY,"XY ",_ssib_description,_ssib_units,
+        stagger=_ssib_stagger,coordinates="XLONG XLAT XTIME")
 
 
 def write_wrfout_netcdf(
@@ -1484,6 +1638,7 @@ def _batched_wrfout_device_get(
     diagnostics: Mapping[str, Any] | None,
     land_state: Any | None,
     requested_names: frozenset[str] | None = None,
+    tracer_history: Any = None,
 ) -> Iterator[None]:
     """Materialize device leaves once for one wrfout payload build."""
 
@@ -1493,6 +1648,7 @@ def _batched_wrfout_device_get(
         diagnostics,
         land_state,
         requested_names=requested_names,
+        tracer_history=tracer_history,
     )
     token = _WRFOUT_HOST_ARRAYS.set(context)
     try:
@@ -1502,7 +1658,7 @@ def _batched_wrfout_device_get(
 
 
 def _build_wrfout_host_arrays(
-    *sources: Any, requested_names: frozenset[str] | None = None
+    *sources: Any, requested_names: frozenset[str] | None = None, tracer_history: Any = None
 ) -> _WrfoutHostArrays:
     try:
         import jax
@@ -1565,6 +1721,10 @@ def _build_wrfout_host_arrays(
         )
     for source in scan_sources:
         visit(source)
+    if tracer_history is not None:
+        visit(tracer_history.stack)
+        visit(tracer_history.volumes)
+        visit(tracer_history.finite)
     if not leaves:
         return _WrfoutHostArrays({})
     host_leaves = jax.device_get(tuple(leaves))
@@ -1578,6 +1738,61 @@ def _host_materialized_value(value: Any) -> Any:
     if context is None:
         return value
     return context.host_value(value)
+
+
+from gpuwrf.io.lake_schema import specs as _lake_specs
+WRFOUT_VARIABLE_SPECS.update(_lake_specs(_spec))
+from gpuwrf.io.ocean_schema import FIELDS as OCEAN_FIELDS
+WRFOUT_VARIABLE_SPECS.update({name.upper():_spec(name.upper(),XY,'XY ',
+    'Ocean mixed layer '+name, 'K' if name in ('tml','t0ml','tmoml') else ('m2 s-1' if name in ('huml','hvml') else 'm')) for name in OCEAN_FIELDS})
+
+from gpuwrf.io.temf_schema import TEMF_HISTORY
+WRFOUT_VARIABLE_SPECS.update({name.upper():_spec(name.upper(),XYZ if volume else XY,'XYZ' if volume else 'XY ',description,units)
+                             for name,description,units,volume in TEMF_HISTORY})
+from gpuwrf.io.microphysics_history import (
+    DIAGNOSTIC_METADATA as _MP_DIAGNOSTIC_METADATA,
+    SCHEME_FIELDS as _MP_HISTORY_FIELDS,
+    STATE_ALIASES as _MP_STATE_ALIASES,
+    UNREPRESENTED_FIELDS as _MP_UNREPRESENTED_FIELDS,
+)
+WRFOUT_VARIABLE_SPECS.update({
+    name: _spec(name, XYZ if volume else XY, "XYZ" if volume else "XY ",
+                description, units, coordinates="XLONG XLAT XTIME")
+    for name, (description, units, volume) in _MP_DIAGNOSTIC_METADATA.items()
+})
+from gpuwrf.io.stochastic_schema import history_specs as _stochastic_specs, SPECTRAL_FIELDS as _STOCH_SPECTRAL_FIELDS
+WRFOUT_VARIABLE_SPECS.update(_stochastic_specs(_spec))
+WRFOUT_VARIABLE_SPECS["HFX_FDDA"] = _spec("HFX_FDDA", XYZ, "XYZ", "PSEUDO RADIATIVE HEAT FLUX FROM TEMPERATURE FDDA", "W m-2", coordinates="XLONG XLAT XTIME")
+# Restart's compatibility metadata remains its existing ABI. History-only
+# corrections below must not silently alter authenticated restart formats.
+RESTART_WRFOUT_VARIABLE_SPECS = dict(WRFOUT_VARIABLE_SPECS)
+from gpuwrf.io.producer_history import FIELDS as _PRODUCER_HISTORY_FIELDS
+from gpuwrf.io.wrf_variable_metadata import WRF_VARIABLE_METADATA as _PRODUCER_METADATA
+for _name in _PRODUCER_HISTORY_FIELDS:
+    _meta = _PRODUCER_METADATA[_name]
+    _dims = (("Time", "num_stoch_levels", "south_north", "west_east")
+             if _name.startswith("FIELD_") else XY if _meta["MemoryOrder"].strip() == "XY" else XYZ)
+    WRFOUT_VARIABLE_SPECS[_name] = _spec(_name, _dims, _meta["MemoryOrder"],
+        _meta["description"], _meta["units"], coordinates=_meta.get("coordinates"))
+for _name, _description, _units, _volume in TEMF_HISTORY:
+    RESTART_WRFOUT_VARIABLE_SPECS.pop(_name.upper(), None)
+    RESTART_WRFOUT_VARIABLE_SPECS[_name] = _spec(
+        _name, XYZ if _volume else XY, 'XYZ' if _volume else 'XY ', _description, _units)
+from gpuwrf.io.wrf_variable_metadata import WRF_VARIABLE_METADATA as _WRF_METADATA
+for _name, _metadata in _WRF_METADATA.items():
+    if _name in WRFOUT_VARIABLE_SPECS:
+        WRFOUT_VARIABLE_SPECS[_name] = dataclass_replace(
+            WRFOUT_VARIABLE_SPECS[_name],
+            memory_order=_metadata['MemoryOrder'], description=_metadata['description'],
+            units=_metadata['units'], stagger=_metadata['stagger'],
+            coordinates=_metadata.get('coordinates'),
+        )
+# WRF registry.stoch uses num_stoch_levels without the stagger suffix.
+for _name, _specification in tuple(WRFOUT_VARIABLE_SPECS.items()):
+    if 'num_stoch_levels_stag' in _specification.dimensions:
+        WRFOUT_VARIABLE_SPECS[_name] = dataclass_replace(_specification, dimensions=tuple(
+            'num_stoch_levels' if dim == 'num_stoch_levels_stag' else dim
+            for dim in _specification.dimensions))
 
 
 def _prepare_requested_names(
@@ -1596,6 +1811,8 @@ def _prepare_requested_names(
 
 
 _STATE_SOURCE_ALIASES: Mapping[str, tuple[str, ...]] = {
+    **{name:(name,source) for name,source in GODDARD_NATIVE_FLUXES.items()},
+    **_MP_STATE_ALIASES,
     "U": ("U", "u"),
     "V": ("V", "v"),
     "W": ("W", "w"),
@@ -1605,9 +1822,13 @@ _STATE_SOURCE_ALIASES: Mapping[str, tuple[str, ...]] = {
     "QCLOUD": ("QCLOUD", "qc", "qcloud"),
     "QICE": ("QICE", "qi", "qice"),
     "QRAIN": ("QRAIN", "qr", "qrain"),
+    "QIR": ("QIR", "qir"), "QIB": ("QIB", "qib"),
+    "QICE2": ("QICE2", "qi2"), "QNICE2": ("QNICE2", "Ni2"),
+    "QIR2": ("QIR2", "qir2"), "QIB2": ("QIB2", "qib2"), "QZI": ("QZI", "qzi"),
     "QSNOW": ("QSNOW", "qs", "qsnow"),
     "QGRAUP": ("QGRAUP", "qg", "qgraup"),
     "QKE": ("QKE", "qke"),
+    "TKE": ("TKE", "tke"),
     "CLDFRA": ("CLDFRA", "cldfra", "cloud_fraction"),
     "P": ("p_perturbation", "P"),
     "PB": ("pb", "p_base", "PB"),
@@ -1621,7 +1842,7 @@ _STATE_SOURCE_ALIASES: Mapping[str, tuple[str, ...]] = {
     "Q2": ("Q2", "q2"),
     "PSFC": ("PSFC", "psfc"),
     "RAINC": ("RAINC", "rainc", "rainc_acc"),
-    "RAINNC": ("RAINNC", "rainnc", "rain_acc"),
+    "RAINNC": ("RAINNC", "rainnc", "rain_acc", "thompson_rainnc", "ntu_rainnc"),
     "RAINSH": ("RAINSH", "rainsh"),
     "SWDOWN": ("SWDOWN", "swdown"),
     "GLW": ("GLW", "glw"),
@@ -1639,6 +1860,11 @@ _STATE_SOURCE_ALIASES: Mapping[str, tuple[str, ...]] = {
     "XLONG_U": ("XLONG_U", "xlong_u", "lon_u"),
     "XLAT_V": ("XLAT_V", "xlat_v", "lat_v"),
     "XLONG_V": ("XLONG_V", "xlong_v", "lon_v"),
+    "QNWFA2D": ("QNWFA2D", "nwfa2d"),
+    "QNIFA2D": ("QNIFA2D", "nifa2d"),
+    "CWM": ("CWM", "qt"),
+    "SR": ("SR", "ferrier_sr", "goddard_sr", "thompson_sr", "ntu_sr"),
+    "SNOWNC": ("SNOWNC", "snow_acc", "ice_acc", "thompson_snownc", "ntu_snownc"),
 }
 
 
@@ -1662,8 +1888,15 @@ def _requested_wrfout_source_values(
             add(_lookup_raw(source, alias, None))
 
     names = _expand_requested_source_names(requested_names)
+    # Health checks cover held online diagnostics even when a stream omits them.
+    if diagnostics is not None:
+        names.update(name for name in (*ONLINE_SURFACE_FIELDS,"REFL_10CM",*GODDARD_SURFACE_FIELDS) if name in diagnostics)
+        if any(name in diagnostics for name in ("SWDDIR", "SWDDNI", "SWDDIF")):
+            names.update(name for name in SOLAR_SURFACE_FIELDS if name in diagnostics)
     for name in names:
-        aliases = _STATE_SOURCE_ALIASES.get(name, (name, name.lower()))
+        aliases = ((_EPSILON_HISTORY[name][0],) if name in _EPSILON_HISTORY and
+                   _lookup_raw(state,'epsilon_pbl',None) is not None else
+                   _STATE_SOURCE_ALIASES.get(name, (name, name.lower())))
         add_aliases(state, aliases)
         add_aliases(diagnostics, aliases)
 
@@ -1711,7 +1944,8 @@ def _expand_requested_source_names(requested_names: frozenset[str]) -> set[str]:
     if names & {"T", "THM", "T2", "TSK", "HFX", "LH"}:
         names.update({"T", "QVAPOR", "P", "PB"})
     if names & {"PSFC"}:
-        names.update({"P", "PB", "PH", "PHB", "MU", "MUB", "QVAPOR", "QCLOUD", "QICE", "QSNOW", "QGRAUP"})
+        names.update({"P", "PB", "PH", "PHB", "MU", "MUB"})
+        names.update(MOIST_WRFOUT_NAME.values())
     if names & {"CLDFRA"}:
         names.update({"QCLOUD", "QICE", "QRAIN"})
     if names & {"U10", "HFX", "LH"}:
@@ -1760,15 +1994,24 @@ def prepare_wrfout_payload(
     target = Path(path)
     run_start_dt = _coerce_datetime(run_start)
     valid_dt = _coerce_datetime(valid_time)
+    tracer_names = ()
+    if getattr(state, "tracers", None) is not None:
+        from gpuwrf.tracers.history import register_specs
+        tracer_names = register_specs(namelist)
     nx, ny, nz = _grid_extent(grid)
     bound_authority = _validate_wrfout_domain_authority(
         domain_authority, expected_domain=domain, output_grid=grid
     )
-    dimensions = _dimension_sizes(nx=nx, ny=ny, nz=nz, namelist=namelist)
+    dimensions = _dimension_sizes(nx=nx, ny=ny, nz=nz, namelist=namelist,
+        resolved_lsm=(source_global_attrs or {}).get('SF_SURFACE_PHYSICS'))
     requested_names = _prepare_requested_names(
         variable_subset,
         include_mandatory_coords=include_mandatory_coords,
     )
+    tracer_history = None
+    if tracer_names:
+        from gpuwrf.tracers.history import select_history
+        tracer_history = select_history(state, namelist, requested_names)
     # The single device->host boundary: materialize all reachable device leaves in
     # one jax.device_get call, then let the existing field builder coerce host
     # arrays in its historical order.
@@ -1778,6 +2021,7 @@ def prepare_wrfout_payload(
         diagnostics=diagnostics,
         land_state=land_state,
         requested_names=requested_names,
+        tracer_history=tracer_history,
     ):
         if requested_names is None:
             fields = _build_output_fields(
@@ -1792,6 +2036,20 @@ def prepare_wrfout_payload(
                 diagnostics=diagnostics, land_state=land_state,
                 run_start=run_start_dt, lead_hours=float(lead_hours),
             )
+        # Registry CLAT has u=(copy_fcnm): initial feedback can change the
+        # parent's computational latitude while XLAT remains unchanged. Keep
+        # the supplied producer value after the compatibility builders (whose
+        # CLAT fallback is XLAT), for both full and selected history streams.
+        if requested_names is None or "CLAT" in requested_names:
+            clat = _optional_field_array(diagnostics, ("CLAT", "clat"), (ny, nx))
+            if clat is None:
+                clat = _optional_field_array(state, ("CLAT", "clat"), (ny, nx))
+            if clat is not None:
+                fields["CLAT"] = clat
+        _add_microphysics_history_fields(
+            fields, state=state, namelist=namelist, dimensions=dimensions,
+            diagnostics=diagnostics, requested_names=requested_names,
+        )
         if full_variable_set:
             _add_full_wrfout_fields(
                 fields,
@@ -1805,9 +2063,34 @@ def prepare_wrfout_payload(
                 lead_hours=float(lead_hours),
                 requested_names=requested_names,
             )
+        for name in _MP_UNREPRESENTED_FIELDS.get(int(_lookup(namelist,"mp_physics",0)),()):
+            fields.pop(name,None)
+        from gpuwrf.io.producer_history import add_fields as _add_producer_history
+        _add_producer_history(fields, state=state, namelist=namelist, diagnostics=diagnostics,
+            dimensions=dimensions, requested_names=requested_names, lookup=_lookup,
+            coerce=_coerce_array, specs=WRFOUT_VARIABLE_SPECS,
+            shape_for_dimensions=_shape_for_dimensions)
+        if _lookup(namelist,'bl_pbl_physics') in (16,17):
+            fields.update(_epsilon_history_fields(
+                state,_lookup(namelist,'bl_pbl_physics'),(nz,ny,nx),
+                requested_names=requested_names,
+            ))
+        if tracer_names:
+            from gpuwrf.tracers.history import history_fields
+            fields.update(history_fields(state, namelist, requested_names, selection=tracer_history))
         # Explicit WRF land history wins over defaults and raw sibling-carry
         # values (notably the initialized water tile). Host-only output work.
         from gpuwrf.io.land_history import LAND_HISTORY_FIELDS
+        if _lookup(namelist,'bl_pbl_physics') == 10:
+            for name in (*(row[0] for row in TEMF_HISTORY),'TH2'):
+                output_name = name.upper()
+                if requested_names is not None and output_name not in requested_names:
+                    continue
+                if diagnostics is None or diagnostics.get(name) is None:
+                    raise ValueError(f'TEMF history is missing held {name}; refusing invented output')
+                spec=WRFOUT_VARIABLE_SPECS[output_name]
+                fields[output_name]=_coerce_array(output_name,diagnostics[name],_shape_for_dimensions(spec.dimensions,dimensions),
+                                          dtype=_numpy_dtype_for_spec(spec))
         for name in LAND_HISTORY_FIELDS:
             if diagnostics is None or diagnostics.get(name) is None:
                 continue
@@ -1818,19 +2101,120 @@ def prepare_wrfout_payload(
                 continue
             fields[name] = _coerce_array(name, diagnostics[name],
                 _shape_for_dimensions(spec.dimensions, dimensions), dtype=_numpy_dtype_for_spec(spec))
-        if float(lead_hours) == 0.0 and diagnostics is not None and "TH2" in diagnostics:
+        if _lookup(namelist,"sf_surface_physics")==8:
+            for name in (*SSIB_EXTRA_HISTORY,*SSIB_STANDARD_HISTORY,"TSLB","SMOIS","ZS","DZS"):
+                if diagnostics is None or diagnostics.get(name) is None: continue
+                if requested_names is not None and name not in requested_names: continue
+                spec=WRFOUT_VARIABLE_SPECS[name]
+                fields[name]=_coerce_array(name,diagnostics[name],_shape_for_dimensions(spec.dimensions,dimensions),
+                                           dtype=_numpy_dtype_for_spec(spec))
+        if _lookup(namelist, "sf_surface_physics") == 3:
+            from gpuwrf.coupling.ruc_surface_hook import RUC_HISTORY_FIELDS
+            for name in (*RUC_HISTORY_FIELDS, "ZS", "DZS"):
+                if diagnostics is None or diagnostics.get(name) is None:
+                    continue
+                if requested_names is not None and name not in requested_names:
+                    continue
+                spec = WRFOUT_VARIABLE_SPECS[name]
+                fields[name] = _coerce_array(name, diagnostics[name],
+                    _shape_for_dimensions(spec.dimensions, dimensions), dtype=_numpy_dtype_for_spec(spec))
+            if "T2" in fields and "PSFC" in fields and (requested_names is None or "TH2" in requested_names):
+                # SFCDIAGS_RUCLSM's final TH2 uses WRF REAL at each operation.
+                # Reconstruct this algebraic diagnostic from the HELD T2/PSFC;
+                # an extra prognostic carry plane would duplicate these values.
+                cp_ratio = np.float32(_lookup(namelist, "ruc_static").cfg.rovcp)
+                fields["TH2"] = (np.asarray(fields["T2"], np.float32)
+                                  * (np.float32(1.e5) / np.asarray(fields["PSFC"], np.float32)) ** cp_ratio)
+        if diagnostics is not None and "TH2" in diagnostics and (
+                float(lead_hours)==0.0 or diagnostics.get('_TWO_WAY_TH2',False)
+                or int(_lookup(namelist, "sf_sfclay_physics", 5)) == 0):
             if requested_names is None or "TH2" in requested_names:
                 fields["TH2"] = _coerce_array("TH2", diagnostics["TH2"], (ny, nx))
         # These are held model diagnostics, including WRF's pre-solve t0 values.
         # Apply them after the compatibility builder so a hydrometeor proxy or
         # cold-start turbulence seed cannot replace the requested history leaf.
         if diagnostics is not None:
-            for name in ("CLDFRA", "QC_BL", "CLDFRA_BL", "QKE", "DTAUX3D", "DTAUY3D", "T"):
+            solar_names = (SOLAR_SURFACE_FIELDS if any(name in diagnostics for name in
+                           ("SWDDIR", "SWDDNI", "SWDDIF")) else ())
+            for name in (*ONLINE_SURFACE_FIELDS,"REFL_10CM", *solar_names,*GODDARD_SURFACE_FIELDS):
+                value=diagnostics.get(name)
+                if value is not None and not np.isfinite(_host_materialized_value(value)).all():
+                    kind="precipitation" if name in ONLINE_SURFACE_FIELDS[:3] else "online diagnostic"
+                    raise ValueError(f"nonfinite {kind} history field {name}")
+            for name in ("CLDFRA", "QC_BL", "CLDFRA_BL", "QKE", "DTAUX3D", "DTAUY3D", "T", "REFL_10CM", "HFX_FDDA"):
                 if (requested_names is None or name in requested_names) and name in diagnostics:
+                    if name == "HFX_FDDA" and not np.isfinite(_host_materialized_value(diagnostics[name])).all():
+                        raise ValueError("nonfinite FDDA history field HFX_FDDA")
                     fields[name] = _coerce_array(name, diagnostics[name], (nz, ny, nx))
-            for name in ("DUSFCG", "DVSFCG"):
+            for name in ("DUSFCG", "DVSFCG", *GODDARD_SURFACE_FIELDS):
                 if (requested_names is None or name in requested_names) and name in diagnostics:
                     fields[name] = _coerce_array(name, diagnostics[name], (ny, nx))
+            if _lookup(namelist,'ra_lw_physics') == 5 and _lookup(namelist,'ra_sw_physics') == 5:
+                for name,source in GODDARD_NATIVE_FLUXES.items():
+                    if requested_names is not None and name not in requested_names:
+                        continue
+                    value=diagnostics.get(name,diagnostics.get(source))
+                    if value is not None:
+                        if not np.isfinite(_host_materialized_value(value)).all():
+                            raise ValueError(f'nonfinite Goddard native flux {name}')
+                        fields[name]=_coerce_array(name,value,(ny,nx))
+            if _lookup(namelist,'stochastic_config') is not None:
+                for name in _STOCH_SPECTRAL_FIELDS:
+                    if name not in diagnostics or (requested_names is not None and name not in requested_names):
+                        continue
+                    value=_host_materialized_value(diagnostics[name])
+                    if not np.isfinite(value).all():
+                        raise ValueError(f'nonfinite stochastic spectral history {name}')
+                    spec=WRFOUT_VARIABLE_SPECS[name]
+                    fields[name]=_coerce_array(name,value,_shape_for_dimensions(spec.dimensions,dimensions))
+    if _lookup(namelist,'sf_ocean_physics') == 1:
+        for name in OCEAN_FIELDS:
+            key=name.upper()
+            if requested_names is None or key in requested_names:
+                if diagnostics is None or key not in diagnostics:
+                    raise ValueError(f'ocean history missing resident {key}')
+                fields[key]=_coerce_array(key,diagnostics[key],(ny,nx))
+    if _lookup(namelist, 'noahmp_mmf_enabled'):
+        for name in MMF_HISTORY_FIELDS:
+            if requested_names is not None and name not in requested_names:
+                continue
+            if diagnostics is None or diagnostics.get(name) is None:
+                raise ValueError(f'MMF history missing held {name}; refusing invented output')
+            spec = WRFOUT_VARIABLE_SPECS[name]
+            fields[name] = _coerce_array(name, diagnostics[name],
+                _shape_for_dimensions(spec.dimensions, dimensions), dtype=np.float32)
+    if _lookup(namelist,'sf_lake_physics') == 1:
+        from gpuwrf.io.lake_schema import LAKE_HISTORY_FIELDS
+        bundle = _lookup(namelist,'lake_bundle')
+        if bundle is None or diagnostics is None:
+            raise ValueError('lake history requires lake_bundle and held lake fields')
+        for name in LAKE_HISTORY_FIELDS:
+            if requested_names is None or name in requested_names:
+                if name not in diagnostics:
+                    raise ValueError(f'lake history missing {name}')
+                spec = WRFOUT_VARIABLE_SPECS[name]
+                fields[name] = _coerce_array(name,diagnostics[name],_shape_for_dimensions(spec.dimensions,dimensions))
+        for key in ('HFX','LH','GRDFLX','TSK','QFX','T2','TH2','Q2','ALBEDO'):
+            if requested_names is not None and key not in requested_names:
+                continue
+            compact = diagnostics.get('_LAKE_'+key)
+            if compact is not None:
+                from gpuwrf.coupling.lake_surface_hook import scatter_columns
+                old = fields.get(key,diagnostics.get(key,np.zeros((ny,nx),np.float32)))
+                fields[key] = np.asarray(scatter_columns(old,compact,bundle),np.float32)
+            elif key in diagnostics:
+                fields[key] = _coerce_array(key,diagnostics[key],(ny,nx))
+    if _lookup(namelist,"stochastic_config") is not None:
+        from gpuwrf.io.stochastic_schema import HISTORY_FIELDS
+        if diagnostics is None:
+            raise ValueError("active stochastic history requires held patterns and seeds")
+        for name in HISTORY_FIELDS:
+            if name in _STOCH_SPECTRAL_FIELDS:
+                continue  # already materialized INSIDE the single host batch
+            if name in diagnostics and (requested_names is None or name in requested_names):
+                spec = WRFOUT_VARIABLE_SPECS[name]
+                fields[name] = _coerce_array(name,diagnostics[name],
+                    _shape_for_dimensions(spec.dimensions,dimensions),dtype=_numpy_dtype_for_spec(spec))
     return PreparedWrfout(
         target=target,
         dimensions=dimensions,
@@ -1932,6 +2316,12 @@ def write_prepared_wrfout(
                 source_global_attrs=prepared.source_global_attrs,
             )
             _write_times(dataset, prepared.valid_dt)
+            if _lookup(prepared.namelist,'isftcflx',0):
+                dataset.ISFTCFLX=np.int32(_lookup(prepared.namelist,'isftcflx'))
+            if _lookup(prepared.namelist,'sf_ocean_physics') == 1:
+                for key,default in (('sf_ocean_physics',0),('oml_hml0',50.),('oml_gamma',.14),('oml_relaxation_time',0.)):
+                    dtype=np.int32 if key=='sf_ocean_physics' else np.float32
+                    dataset.setncattr(key.upper(),dtype(_lookup(prepared.namelist,key,default)))
             # Write in the canonical operational order, but emit ONLY the fields
             # actually prepared. Optional sources self-gate; ``subset`` further
             # restricts to a stream's requested variables.
@@ -1940,8 +2330,39 @@ def write_prepared_wrfout(
             else:
                 _write_xtime(dataset, prepared.run_start_dt, prepared.lead_hours)
                 write_order = OPERATIONAL_WRFOUT_VARIABLES
-            write_order = (*write_order, *(name for name in ("QC_BL", "CLDFRA_BL")
+            write_order = (*write_order, *(name for name in ("U10E", "V10E", "QC_BL", "CLDFRA_BL", *ONLINE_SURFACE_FIELDS, "REFL_10CM", *SOLAR_SURFACE_FIELDS, *GODDARD_SURFACE_FIELDS, *GODDARD_NATIVE_FLUXES,
+                                         "CWM", "QRIMEF", "F_ICE_PHY", "F_RAIN_PHY", "F_RIMEF_PHY",
+                                         "RE_CLOUD_GSFC", "RE_RAIN_GSFC", "RE_ICE_GSFC", "RE_SNOW_GSFC", "RE_GRAUPEL_GSFC", "RE_HAIL_GSFC", "PHYS_TOT", "QNWFA2D", "QNIFA2D")
                                          if name in prepared.fields and name not in write_order))
+            write_order = (*write_order, *(name for name in _MP_HISTORY_FIELDS.get(
+                int(_lookup(prepared.namelist, "mp_physics", 0)), ())
+                if name in prepared.fields and name not in write_order))
+            write_order = (*write_order, *(name for name in _PRODUCER_HISTORY_FIELDS
+                if name in prepared.fields and name not in write_order))
+            if getattr(prepared.namelist, "tracer_opt", 0) or getattr(prepared.namelist, "tracer_config", None) is not None:
+                from gpuwrf.tracers.history import register_specs
+                write_order += tuple(n for n in register_specs(prepared.namelist) if n in prepared.fields and n not in write_order)
+            if _lookup(prepared.namelist,"sf_surface_physics")==8:
+                write_order=(*write_order,*(name for name in (*SSIB_EXTRA_HISTORY,*SSIB_STANDARD_HISTORY,"TSLB","SMOIS","ZS","DZS") if name not in write_order))
+            if _lookup(prepared.namelist, "sf_surface_physics") == 3:
+                write_order = (*write_order, *(name for name in _RUC_EXTRA_HISTORY if name not in write_order))
+            if _lookup(prepared.namelist,'bl_pbl_physics') == 10:
+                write_order = (*write_order,*(name.upper() for name in (*(row[0] for row in TEMF_HISTORY),'TH2') if name.upper() not in write_order))
+            if _lookup(prepared.namelist,'sf_ocean_physics') == 1:
+                write_order=(*write_order,*(name.upper() for name in OCEAN_FIELDS if name.upper() not in write_order))
+            if _lookup(prepared.namelist,'noahmp_mmf_enabled'):
+                write_order=(*write_order,*(name for name in MMF_HISTORY_FIELDS
+                    if name in prepared.fields and name not in write_order))
+            if _lookup(prepared.namelist,'sf_lake_physics') == 1:
+                from gpuwrf.io.lake_schema import LAKE_HISTORY_FIELDS
+                write_order = (*write_order,*(name for name in (*LAKE_HISTORY_FIELDS,'GRDFLX','TH2','ALBEDO') if name not in write_order))
+            if _lookup(prepared.namelist,"stochastic_config") is not None:
+                from gpuwrf.io.stochastic_schema import HISTORY_FIELDS
+                write_order = (*write_order,*(name for name in HISTORY_FIELDS if name not in write_order))
+            if "HFX_FDDA" in prepared.fields and "HFX_FDDA" not in write_order:
+                write_order = (*write_order, "HFX_FDDA")
+            if _lookup(prepared.namelist,'bl_pbl_physics') in (16,17):
+                write_order=(*write_order,*(name for name in _EPSILON_HISTORY if name in prepared.fields and name not in write_order))
             for name in write_order:
                 if name == "Times":
                     continue
@@ -2007,12 +2428,27 @@ def _create_wrfout_temporary(target: Path) -> tuple[int, Path]:
     raise FileExistsError("WRFOUT_TEMPORARY_NAME_EXHAUSTED")
 
 
-def _dimension_sizes(*, nx: int, ny: int, nz: int, namelist: Mapping[str, Any] | Any | None) -> dict[str, int | None]:
+def _dimension_sizes(*, nx: int, ny: int, nz: int, namelist: Mapping[str, Any] | Any | None,
+                     history_schema: bool = True, resolved_lsm=None) -> dict[str, int | None]:
     soil_layers = int(_lookup(namelist, "soil_layers_stag", DEFAULT_SOIL_LAYERS))
+    # WRF module_check_a_mundo.F:set_physics_rconfigs (3566-3590).
+    # Omitted selector retains the compatibility writer's explicit dimensions.
+    lsm = _lookup(namelist, "sf_surface_physics")
+    if lsm is None:
+        lsm=resolved_lsm  # operational disabled LSM uses None; raw WRF selector is0
+    if history_schema and lsm in (0, 1, 2, 4, 5, 7, 8):
+        soil_layers = {0: 5, 1: 5, 2: 4, 4: 4, 5: 10, 7: 2, 8: 3}[lsm]
+    elif lsm == 8:
+        soil_layers = 3
+    if _lookup(namelist, "sf_surface_physics") == 3:
+        static = _lookup(namelist, "ruc_static")
+        if static is None:
+            raise ValueError("RUC history requires ruc_static soil geometry")
+        soil_layers = static.cfg.nzs
     snow_layers = int(_lookup(namelist, "snow_layers_stag", DEFAULT_SNOW_LAYERS))
     snso_layers = int(_lookup(namelist, "snso_layers_stag", DEFAULT_SNSO_LAYERS))
     seed_dim = int(_lookup(namelist, "seed_dim_stag", DEFAULT_SEED_DIM))
-    return {
+    result = {
         "Time": None,
         "DateStrLen": DATE_STR_LEN,
         "west_east": int(nx),
@@ -2026,6 +2462,12 @@ def _dimension_sizes(*, nx: int, ny: int, nz: int, namelist: Mapping[str, Any] |
         "snso_layers_stag": snso_layers,
         "seed_dim_stag": seed_dim,
     }
+    if _lookup(namelist,'sf_lake_physics') == 1:
+        from gpuwrf.io.lake_schema import LAKE_DIMENSIONS
+        result.update(LAKE_DIMENSIONS)
+    if _lookup(namelist,"stochastic_config") is not None:
+        result["num_stoch_levels" if history_schema else "num_stoch_levels_stag"] = int(nz)+1
+    return result
 
 
 def _create_dimensions(dataset: Dataset, dimensions: Mapping[str, int | None]) -> None:
@@ -2042,6 +2484,8 @@ def _create_dimensions(dataset: Dataset, dimensions: Mapping[str, int | None]) -
         "snow_layers_stag",
         "snso_layers_stag",
         "seed_dim_stag",
+        *(name for name in ('soil_levels_or_lake_levels_stag','snow_and_soil_levels_stag','interface_levels_stag') if name in dimensions),
+        *(name for name in ("num_stoch_levels", "num_stoch_levels_stag") if name in dimensions),
     ):
         dataset.createDimension(name, dimensions[name])
 
@@ -2167,6 +2611,8 @@ def _write_global_attrs(
     if use_theta_m is not None:
         # WRF share/output_wrf.F:679 writes the integer global USE_THETA_M (wrfout only here; restart is M3R's).
         attrs["USE_THETA_M"] = np.int32(parse_use_theta_m(use_theta_m))
+    if _lookup(namelist,'sf_lake_physics') == 1:
+        attrs['SF_LAKE_PHYSICS'] = np.int32(1)
     for name, value in attrs.items():
         dataset.setncattr(name, value)
     if domain_authority is not None:
@@ -2183,6 +2629,75 @@ def _set_wrfout_grid_id_attr(
     if "GRID_ID" in dataset.ncattrs():
         raise ValueError("WRFOUT_GRID_ID_DUPLICATE_OR_CONFLICT")
     dataset.setncattr("GRID_ID", np.int32(domain_authority.grid_id))
+
+
+def _moist_hydrostatic_psfc(
+    state: Any, grid: Any, shape_xyz: tuple[int, ...],
+    mu_pert: np.ndarray, mu_base: np.ndarray, p_pert: np.ndarray,
+) -> np.ndarray | None:
+    """WRF phy_prep moist surface pressure for either direct writer route.
+
+    PSFC = p_hyd_w(kts): surface_driver.F:1988, first_rk_step_part1.F:1400,
+    big_step_utilities_em.F:4946-4958. All represented moist mass members
+    contribute; particle numbers, volumes and rime partitions do not.
+    Return None without usable hybrid metrics, preserving the caller's
+    existing compatibility extrapolation. Reduction precision is unchanged.
+    """
+    _psfc_default = None
+    _psfc_metrics = _lookup(grid, "metrics")
+    if _psfc_metrics is not None:
+        _c1h = _lookup(_psfc_metrics, "c1h")
+        _c2h = _lookup(_psfc_metrics, "c2h")
+        _dnw = _lookup(_psfc_metrics, "dnw")
+        _p_top = _lookup(_psfc_metrics, "p_top")
+        if all(v is not None for v in (_c1h, _c2h, _dnw, _p_top)):
+            _c1h = np.asarray(_c1h, dtype=np.float64)
+            _c2h = np.asarray(_c2h, dtype=np.float64)
+            _dnw = np.asarray(_dnw, dtype=np.float64)
+            _nz = shape_xyz[0]
+            if _c1h.shape == (_nz,) and _c2h.shape == (_nz,) and _dnw.shape == (_nz,):
+                # Normalize writer aliases and missing inactive core slots on
+                # the host; the shared selector owns moist membership/order.
+                # Scalar zeros avoid allocating missing core volume arrays.
+                _moist = {}
+                for _name, _history_name in MOIST_WRFOUT_NAME.items():
+                    _value = _optional_field_array(
+                        state, _STATE_SOURCE_ALIASES[_history_name], shape_xyz
+                    )
+                    _moist[_name] = (np.float32(0) if _value is None and
+                                     _name in MOIST_SPECIES else _value)
+                _qtot = total_moist_mass(SimpleNamespace(**_moist))
+                _mut = mu_pert + mu_base
+                _dp_dry = (
+                    _c1h[:, None, None] * _mut[None, :, :] + _c2h[:, None, None]
+                ) * (-_dnw[:, None, None])
+                _terms = np.asarray((1.0 + _qtot) * _dp_dry, dtype=np.float64)
+                # v0.20 fp32 INTEGRATION bit-identity fix (secondary source): the S4
+                # merge unconditionally switched this PSFC column integral to Kahan
+                # compensated summation, which rounds differently from the historical
+                # plain .sum(axis=0) and broke fp64_default PSFC bit-identity. Kahan
+                # is only needed for the perturbation-authoritative fp32 mode (its
+                # accumulator is fp32-sensitive); gate on the perturbation storage
+                # dtype so fp64_default re-emits the exact pre-S4 plain sum.
+                _mixed_fp32_psfc = (
+                    np.asarray(mu_pert).dtype == np.float32
+                    or np.asarray(p_pert).dtype == np.float32
+                )
+                if _mixed_fp32_psfc:
+                    _total = np.zeros_like(_terms[0], dtype=np.float64)
+                    _comp = np.zeros_like(_total, dtype=np.float64)
+                    for _k in range(_terms.shape[0]):
+                        _y = _terms[_k] - _comp
+                        _t = _total + _y
+                        _comp = (_t - _total) - _y
+                        _total = _t
+                    _psfc_default = float(np.asarray(_p_top).reshape(-1)[0]) + (_total - _comp)
+                else:
+                    # fp64_default: historical plain vertical sum (byte-identical).
+                    _psfc_default = (
+                        float(np.asarray(_p_top).reshape(-1)[0]) + _terms.sum(axis=0)
+                    )
+    return _psfc_default
 
 
 def _build_subset_output_fields(
@@ -2217,9 +2732,9 @@ def _build_subset_output_fields(
     need_v = bool(requested & {"V", "V10", "HFX", "LH"})
     need_w = want("W")
     need_theta = bool(requested & {"T", "THM", "T2", "TSK", "HFX", "LH"})
-    need_qv = bool(requested & {"T", "THM", "QVAPOR", "Q2", "T2", "TSK", "HFX", "LH", "PSFC"})
-    need_qc = bool(requested & {"QCLOUD", "CLDFRA", "PSFC"})
-    need_qi = bool(requested & {"QICE", "CLDFRA", "PSFC"})
+    need_qv = bool(requested & {"T", "THM", "QVAPOR", "Q2", "T2", "TSK", "HFX", "LH"})
+    need_qc = bool(requested & {"QCLOUD", "CLDFRA"})
+    need_qi = bool(requested & {"QICE", "CLDFRA"})
     need_qr = bool(requested & {"QRAIN", "CLDFRA"})
     need_pressure = bool(requested & {"P", "PB", "T2", "TSK", "PSFC", "HFX", "LH"})
     need_geopotential = bool(requested & {"PH", "PHB", "PSFC", "HFX", "LH"})
@@ -2296,7 +2811,12 @@ def _build_subset_output_fields(
         ("QSNOW", ("QSNOW", "qs", "qsnow")),
         ("QGRAUP", ("QGRAUP", "qg", "qgraup")),
         ("QKE", ("QKE", "qke")),
+        ("TKE", ("TKE", "tke")),
     ):
+        # EEPS/KEPS store physical TKE in State.qke. Registry history uses
+        # PEK_PBL/TKE_PBL; it must not be labelled as MYNN's twice-TKE QKE.
+        if wrf_name == "QKE" and _lookup(namelist, "bl_pbl_physics", 5) in (16, 17):
+            continue
         if want(wrf_name):
             value = _optional_field_array(state, state_names, shape_xyz)
             if value is not None:
@@ -2377,8 +2897,10 @@ def _build_subset_output_fields(
         tsk_default = theta_dry[0] * (np.maximum(p_pert[0] + p_base[0], 1.0) / P0_PA) ** R_D_OVER_CP
         fields["TSK"] = _field_array(state, ("TSK", "tsk", "t_skin"), shape_xy, default=tsk_default)
     if want("PSFC"):
-        psfc_default = 0.0
-        if p_pert is not None and p_base is not None and ph_pert is not None and ph_base is not None:
+        psfc_default = _moist_hydrostatic_psfc(
+            state, grid, shape_xyz, mu_pert, mu_base, p_pert
+        )
+        if psfc_default is None:
             p_total = p_pert + p_base
             phi = ph_pert + ph_base
             phi0 = phi[0]
@@ -2421,6 +2943,30 @@ def _build_subset_output_fields(
         else:
             fields["RAINNC"] = _field_array(state, ("RAINNC", "rainnc", "rain_acc"), shape_xy)
 
+    for name, leaf in (("PHYS_TOT", "phys_tot"), ("CWM", "qt"), ("QRIMEF", "qrimef"), ("F_ICE_PHY", "f_ice_phy"),
+                       ("F_RAIN_PHY", "f_rain_phy"), ("F_RIMEF_PHY", "f_rimef_phy"),
+                       *((name.upper(), name) for name in ("re_cloud_gsfc", "re_rain_gsfc", "re_ice_gsfc",
+                                                           "re_snow_gsfc", "re_graupel_gsfc", "re_hail_gsfc"))):
+        if want(name):
+            value = _optional_field_array(state, (name, leaf), shape_xyz)
+            if value is not None:
+                fields[name] = value
+    # mp38 holds the original overlapping REAL totals, whose per-step rounding
+    # cannot be recovered by summing the independent component accumulators.
+    for name, leaf in (("RAINNC", "thompson_rainnc"), ("SNOWNC", "thompson_snownc"), ("RAINNC", "ntu_rainnc"), ("SNOWNC", "ntu_snownc"), ("RAINNC", "cam_rainnc"), ("SNOWNC", "cam_snownc")):
+        if want(name):
+            value = _optional_field_array(state, (leaf,), shape_xy)
+            if value is not None:
+                fields[name] = value
+    for name, leaf in (("QNWFA2D", "nwfa2d"), ("QNIFA2D", "nifa2d")):
+        if want(name):
+            value = _optional_field_array(state, (name, leaf), shape_xy)
+            if value is not None:
+                fields[name] = value
+    if want("SR"):
+        value = _optional_field_array(state, ("ferrier_sr", "goddard_sr", "thompson_sr", "ntu_sr", "cam_sr"), shape_xy)
+        if value is not None:
+            fields["SR"] = value
     if requested & {"ZNU", "ZNW", "MAPFAC_M", "SINALPHA", "COSALPHA"}:
         _add_subset_grid_fields(fields, grid, dimensions, requested_names=requested_names, shape_xy=shape_xy)
 
@@ -2479,6 +3025,11 @@ def _apply_subset_diagnostics(
     if diagnostics is None:
         return
     diagnostic_surface_fields = {
+        "U10E", "V10E",
+        *ONLINE_SURFACE_FIELDS,
+        *SOLAR_SURFACE_FIELDS,
+        *GODDARD_SURFACE_FIELDS,
+        "PREC_ACC_C", "PREC_ACC_NC", "SNOW_ACC_NC",
         "T2", "U10", "V10", "Q2", "PSFC", "SWDOWN", "GLW", "PBLH", "UST",
         "HFX", "LH", "TSK", "QFX", "GRDFLX",
         "SWDNB", "SWUPB", "LWDNB", "LWUPB",
@@ -2489,6 +3040,8 @@ def _apply_subset_diagnostics(
     }
     for name in requested_names & diagnostic_surface_fields:
         value = diagnostics.get(name)
+        if name in ("PREC_ACC_C", "PREC_ACC_NC", "SNOW_ACC_NC") and value is not None and not np.isfinite(_host_materialized_value(value)).all():
+            raise ValueError(f"nonfinite precipitation history field {name}")
         if value is not None:
             fields[name] = _coerce_array(name, value, shape_xy)
     if "OLR" in requested_names and "OLR" not in fields:
@@ -2560,72 +3113,9 @@ def _build_output_fields(
         shape=shape_xy,
         base_source=diagnostics,
     )
-    # WRF-faithful surface-pressure fallback (used only when the operational M9
-    # PSFC diagnostic is absent from ``state``). WRF's runtime PSFC is the MOIST
-    # hydrostatic surface pressure, NOT an extrapolation of the nonhydrostatic
-    # total pressure: PSFC = p8w(kts) (module_surface_driver.F:1988) where the
-    # surface driver's p8w argument is grid%p_hyd_w
-    # (module_first_rk_step_part1.F:1400), built in phy_prep
-    # (module_big_step_utilities_em.F:4946-4958) as
-    #   p_hyd_w(kte) = p_top
-    #   p_hyd_w(k)   = p_hyd_w(k+1) - (1+qtot)*(c1h(k)*MUT+c2h(k))*dnw(k)
-    # with qtot summed over ALL moist species and MUT = mu+mub the full dry
-    # column mass. When the hybrid-eta metrics are resident on ``grid.metrics``
-    # we evaluate that integral exactly (CPU-truth residual <= 0.18 Pa RMSE,
-    # proofs/v014/psfc_moist_pressure_state_closure.*). Without metrics
-    # (synthetic/test states) fall back to the height extrapolation of total
-    # pressure, which tracks WRF only to ~14 Pa on a moist-consistent state and
-    # misses the vapor column load (~200-230 Pa) on a dry-balanced one.
-    _psfc_default = None
-    _psfc_metrics = _lookup(grid, "metrics")
-    if _psfc_metrics is not None:
-        _c1h = _lookup(_psfc_metrics, "c1h")
-        _c2h = _lookup(_psfc_metrics, "c2h")
-        _dnw = _lookup(_psfc_metrics, "dnw")
-        _p_top = _lookup(_psfc_metrics, "p_top")
-        if all(v is not None for v in (_c1h, _c2h, _dnw, _p_top)):
-            _c1h = np.asarray(_c1h, dtype=np.float64)
-            _c2h = np.asarray(_c2h, dtype=np.float64)
-            _dnw = np.asarray(_dnw, dtype=np.float64)
-            _nz = qv.shape[0]
-            if _c1h.shape == (_nz,) and _c2h.shape == (_nz,) and _dnw.shape == (_nz,):
-                _qs = _optional_field_array(state, ("QSNOW", "qs", "qsnow"), shape_xyz)
-                _qg = _optional_field_array(state, ("QGRAUP", "qg", "qgraup"), shape_xyz)
-                _qtot = qv + qc + qr + qi
-                if _qs is not None:
-                    _qtot = _qtot + _qs
-                if _qg is not None:
-                    _qtot = _qtot + _qg
-                _mut = mu_pert + mu_base
-                _dp_dry = (
-                    _c1h[:, None, None] * _mut[None, :, :] + _c2h[:, None, None]
-                ) * (-_dnw[:, None, None])
-                _terms = np.asarray((1.0 + _qtot) * _dp_dry, dtype=np.float64)
-                # v0.20 fp32 INTEGRATION bit-identity fix (secondary source): the S4
-                # merge unconditionally switched this PSFC column integral to Kahan
-                # compensated summation, which rounds differently from the historical
-                # plain .sum(axis=0) and broke fp64_default PSFC bit-identity. Kahan
-                # is only needed for the perturbation-authoritative fp32 mode (its
-                # accumulator is fp32-sensitive); gate on the perturbation storage
-                # dtype so fp64_default re-emits the exact pre-S4 plain sum.
-                _mixed_fp32_psfc = (
-                    np.asarray(mu_pert).dtype == np.float32
-                    or np.asarray(p_pert).dtype == np.float32
-                )
-                if _mixed_fp32_psfc:
-                    _total = np.zeros_like(_terms[0], dtype=np.float64)
-                    _comp = np.zeros_like(_total, dtype=np.float64)
-                    for _k in range(_terms.shape[0]):
-                        _y = _terms[_k] - _comp
-                        _t = _total + _y
-                        _comp = (_t - _total) - _y
-                        _total = _t
-                    _psfc_default = float(np.asarray(_p_top).reshape(-1)[0]) + (_total - _comp)
-                else:
-                    # fp64_default: historical plain vertical sum (byte-identical).
-                    _psfc_default = (
-                        float(np.asarray(_p_top).reshape(-1)[0]) + _terms.sum(axis=0)
-                    )
+    _psfc_default = _moist_hydrostatic_psfc(
+        state, grid, shape_xyz, mu_pert, mu_base, p_pert
+    )
     if _psfc_default is None:
         _p_total = p_pert + p_base
         _phi = ph_pert + ph_base
@@ -2749,8 +3239,26 @@ def _build_output_fields(
         # v0.16 aerosol-aware Thompson (mp=28) aerosol numbers (optional).
         ("QNWFA", ("QNWFA", "nwfa", "qnwfa")),
         ("QNIFA", ("QNIFA", "nifa", "qnifa")),
+        ("QIR", ("QIR", "qir")), ("QIB", ("QIB", "qib")),
+        ("QICE2", ("QICE2", "qi2")), ("QNICE2", ("QNICE2", "Ni2")),
+        ("QIR2", ("QIR2", "qir2")), ("QIB2", ("QIB2", "qib2")), ("QZI", ("QZI", "qzi")),
+        ("PHYS_TOT", ("PHYS_TOT", "phys_tot")),
+        ("CWM", ("CWM", "qt")),
+        ("QRIMEF", ("QRIMEF", "qrimef")),
+        ("F_ICE_PHY", ("F_ICE_PHY", "f_ice_phy")),
+        ("F_RAIN_PHY", ("F_RAIN_PHY", "f_rain_phy")),
+        ("F_RIMEF_PHY", ("F_RIMEF_PHY", "f_rimef_phy")),
+        *((name.upper(), (name.upper(), name)) for name in ("re_cloud_gsfc", "re_rain_gsfc", "re_ice_gsfc",
+                                                         "re_snow_gsfc", "re_graupel_gsfc", "re_hail_gsfc")),
         ("QKE", ("QKE", "qke")),
+        ("TKE", ("TKE", "tke")),
     ):
+        if wrf_name == "QNCLOUD" and int(_lookup(namelist, "mp_physics", 0)) == 22:
+            continue  # Original NSSL Registry names its Nc field QNDROP.
+        if wrf_name in _MP_UNREPRESENTED_FIELDS.get(int(_lookup(namelist,"mp_physics",0)),()):
+            continue
+        if wrf_name == "QKE" and _lookup(namelist, "bl_pbl_physics", 5) in (16, 17):
+            continue
         value = _optional_field_array(state, state_names, shape_xyz)
         if value is not None:
             fields[wrf_name] = value
@@ -2798,6 +3306,11 @@ def _build_output_fields(
         )
         fields["RAINNC"] = _coerce_array("RAINNC", rainnc_total, shape_xy)
 
+    for name, leaf in (("RAINNC", "thompson_rainnc"), ("SNOWNC", "thompson_snownc"), ("RAINNC", "ntu_rainnc"), ("SNOWNC", "ntu_snownc"), ("RAINNC", "cam_rainnc"), ("SNOWNC", "cam_snownc")):
+        value = _optional_field_array(state, (leaf,), shape_xy)
+        if value is not None:
+            fields[name] = value
+
     # --- P0-5a (b) grid-static coordinate / map-factor / Coriolis fields. Source
     # = GridSpec.metrics + GridSpec.vertical (always present on a real GridSpec).
     # Skipped wholesale when the grid carries no metrics (dict/synthetic grid). ---
@@ -2829,6 +3342,11 @@ def _build_output_fields(
     # they appear only when the operational coupler supplies them -- never
     # fabricated). All are mass-point (ny, nx).
     _DIAGNOSTIC_SURFACE_FIELDS = {
+        "U10E", "V10E",
+        *ONLINE_SURFACE_FIELDS,
+        *SOLAR_SURFACE_FIELDS,
+        *GODDARD_SURFACE_FIELDS,
+        "PREC_ACC_C", "PREC_ACC_NC", "SNOW_ACC_NC",
         "T2", "U10", "V10", "Q2", "PSFC", "SWDOWN", "GLW", "PBLH", "UST",
         "HFX", "LH", "TSK", "QFX", "GRDFLX",
         # --- B1 (v0.12.0) RRTMG up/down all-sky surface + TOA flux diagnostics ---
@@ -2860,6 +3378,8 @@ def _build_output_fields(
         for name, value in diagnostics.items():
             if value is None or name not in _DIAGNOSTIC_SURFACE_FIELDS:
                 continue
+            if name in ("PREC_ACC_C", "PREC_ACC_NC", "SNOW_ACC_NC") and not np.isfinite(_host_materialized_value(value)).all():
+                raise ValueError(f"nonfinite precipitation history field {name}")
             fields[name] = _coerce_array(name, value, shape_xy)
 
         # --- B1 (v0.12.0) OLR = WRF's TOA outgoing longwave == LWUPT (the
@@ -2893,6 +3413,36 @@ def _build_output_fields(
     return {name: _materialized_dtype(name, value) for name, value in fields.items()}
 
 
+def _add_microphysics_history_fields(
+    fields: dict[str, np.ndarray], *, state: Any, namelist: Any,
+    dimensions: Mapping[str, int | None], diagnostics: Mapping[str, Any] | None,
+    requested_names: frozenset[str] | None,
+) -> None:
+    """Transcribe existing species/held diagnostics; never re-solve physics."""
+    if int(_lookup(namelist,"mp_physics",0))==11:
+        shape=_shape_for_dimensions(WRFOUT_VARIABLE_SPECS["RAINNC"].dimensions,dimensions)
+        for name,leaf in (("RAINNC","cam_rainnc"),("SNOWNC","cam_snownc"),("SR","cam_sr")):
+            if requested_names is None or name in requested_names:
+                value=_optional_field_array(state,(leaf,),shape)
+                if value is not None:
+                    if not np.isfinite(value).all(): raise ValueError(f"nonfinite CAM-MG history {name}")
+                    fields[name]=value
+    for name in _MP_HISTORY_FIELDS.get(int(_lookup(namelist, "mp_physics", 0)), ()):
+        if requested_names is not None and name not in requested_names:
+            continue
+        spec = WRFOUT_VARIABLE_SPECS[name]
+        shape = _shape_for_dimensions(spec.dimensions, dimensions)
+        value = _optional_field_array(diagnostics, (name,), shape)
+        if value is None:
+            value = _optional_field_array(state, _MP_STATE_ALIASES.get(name, (name, name.lower())), shape)
+        if value is None and int(_lookup(namelist, "mp_physics", 0)) == 14:
+            raise ValueError(f"WDM5 history requires computed {name}; refusing invented output")
+        if value is not None:
+            if not np.isfinite(value).all():
+                raise ValueError(f"nonfinite microphysics history field {name}")
+            fields[name] = value
+
+
 def _add_full_wrfout_fields(
     fields: dict[str, np.ndarray],
     *,
@@ -2916,6 +3466,8 @@ def _add_full_wrfout_fields(
     """
 
     for name in FULL_WRFOUT_VARIABLES:
+        if name in _MP_UNREPRESENTED_FIELDS.get(int(_lookup(namelist,"mp_physics",0)),()):
+            continue
         if requested_names is not None and name not in requested_names:
             continue
         if name in {"Times", "XTIME"} or name in fields:
@@ -3122,8 +3674,8 @@ def _add_derived_diagnostic_fields(
     Each field self-gates on the availability of its inputs and uses a closed
     WRF-faithful form -- never a fabricated quantity:
 
-    - ``CLAT`` (computational-grid latitude) == ``XLAT`` for the operational
-      lat/lon grid; always present because the writer always resolves XLAT.
+    - ``CLAT`` uses ``XLAT`` as its compatibility fallback. The public payload
+      builder preserves a supplied CLAT producer, including initial feedback.
     - ``COSZEN`` is WRF's ``radconst``/``calc_coszen`` cosine solar zenith angle
       (module_radiation_driver.F:3594-3666) evaluated from XLAT/XLONG and the
       forecast clock (``run_start`` + ``lead_hours``). Routed through the exact
@@ -3137,7 +3689,7 @@ def _add_derived_diagnostic_fields(
       carry's ``sneqv``; skipped when there is no land carry (never fabricated).
     """
 
-    # CLAT == XLAT (computational == geographic latitude on the operational grid).
+    # Compatibility fallback; prepare_wrfout_payload retains supplied CLAT.
     fields["CLAT"] = _coerce_array("CLAT", np.asarray(xlat), shape_xy)
 
     # WRF lead-zero history precedes the first radiation call.
@@ -3163,7 +3715,14 @@ def _add_derived_diagnostic_fields(
     snow_acc = _optional_field_array(state, ("snow_acc", "SNOWNC"), shape_xy)
     graupel_acc = _optional_field_array(state, ("graupel_acc", "GRAUPELNC"), shape_xy)
     ice_acc = _optional_field_array(state, ("ice_acc",), shape_xy)
-    if any(a is not None for a in (rain_acc, snow_acc, graupel_acc, ice_acc)):
+    for name, leaf in (("QNWFA2D", "nwfa2d"), ("QNIFA2D", "nifa2d")):
+        value = _optional_field_array(state, (name, leaf), shape_xy)
+        if value is not None:
+            fields[name] = value
+    held_ferrier_sr = _optional_field_array(state, ("ferrier_sr", "goddard_sr", "thompson_sr", "ntu_sr", "cam_sr"), shape_xy)
+    if held_ferrier_sr is not None:
+        fields["SR"] = held_ferrier_sr
+    elif any(a is not None for a in (rain_acc, snow_acc, graupel_acc, ice_acc)):
         def _z(a: np.ndarray | None) -> np.ndarray:
             return np.asarray(a, dtype=np.float64) if a is not None else np.zeros(shape_xy, dtype=np.float64)
 

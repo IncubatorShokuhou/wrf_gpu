@@ -1,0 +1,63 @@
+{
+  "utc": "2026-10-15T01:26:54.063298+00:00",
+  "hypothesis": "Startup thompson_init receives interface geopotential heights; port uses mass-level heights.",
+  "method": "Same originalCPU/GPUframe0 PH+PHB; NumPyREAL4 literal source algebra, no Fortran compile/no GPU/no model change. Small libm/FMA residuals are reported, not treated as a new oracle tolerance.",
+  "WRF_call_chain": [
+    "dyn_em/start_em.F:873 z_at_q=(ph_2+phb)/g, NOmassaverage",
+    "phys/module_physics_init.F:4530 thompson_init(HGT=z_at_q)",
+    "phys/module_mp_thompson.F:496-510 closedform uses hgt levels1/2"
+  ],
+  "port": "coupling/physics_couplers.py:2002 _aerosol_surface_emission_columns -> _mass_level_height_columns:1955 (averages boundinginterfaces)",
+  "rows": {
+    "CPU": {
+      "interface_formula_vs_saved": {
+        "rmse": 0.0037601330006944845,
+        "max_abs": 0.015625
+      },
+      "mass_formula_vs_saved": {
+        "rmse": 8920.413245898626,
+        "max_abs": 22511.8291015625
+      },
+      "j21_i18": {
+        "first_interfaces_m": [
+          2479.177734375,
+          2524.638427734375,
+          2582.1982421875
+        ],
+        "first_mass_m": [
+          2501.908203125,
+          2553.41845703125
+        ],
+        "saved_emission": 32030.09765625,
+        "interface_formula": 32030.09765625,
+        "mass_formula": 9518.2685546875
+      }
+    },
+    "GPU": {
+      "interface_formula_vs_saved": {
+        "rmse": 8920.412309677877,
+        "max_abs": 22511.8251953125
+      },
+      "mass_formula_vs_saved": {
+        "rmse": 0.0975659509576207,
+        "max_abs": 0.4140625
+      },
+      "j21_i18": {
+        "first_interfaces_m": [
+          2479.177734375,
+          2524.638427734375,
+          2582.1982421875
+        ],
+        "first_mass_m": [
+          2501.908203125,
+          2553.41845703125
+        ],
+        "saved_emission": 9518.2724609375,
+        "interface_formula": 32030.09765625,
+        "mass_formula": 9518.2685546875
+      }
+    }
+  },
+  "diagnostic_only": true,
+  "no_new_tolerance_or_fidelity_pass": true
+}

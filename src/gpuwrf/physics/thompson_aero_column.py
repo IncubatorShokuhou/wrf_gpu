@@ -283,7 +283,7 @@ def _nu_c_from_nc(nc_m3):
     return jnp.clip(nint + 2.0, 3.0, 15.0).astype(jnp.int32) - 1
 
 
-def _entry_cloud_number(qc, Nc, rho, aero: ThompsonAeroTableBundle):
+def _entry_cloud_number(qc, Nc, rho, aero: ThompsonAeroTableBundle, *, wrf_hail=False):
     """Entry-clamp the working cloud number (WRF lines 1827-1849).
 
     Where ``qc > R1`` the working nc (per-m3) is clamped to [2, Nt_c_max] then
@@ -304,6 +304,16 @@ def _entry_cloud_number(qc, Nc, rho, aero: ThompsonAeroTableBundle):
     lamc = jnp.where(xdc < D0C, cce2 / D0C, lamc)
     lamc = jnp.where(xdc > D0R * 2.0, cce2 / (D0R * 2.0), lamc)
     nc_balanced = jnp.minimum(NT_C_MAX, ccg1 * ocg2 * rc / AM_R * lamc**3.0)
+    if wrf_hail:
+        # Original :1831-1843 widens the REAL power to a DOUBLE slope,
+        # then assigns the DOUBLE number reconstruction back to REAL nc.
+        f = np.float32
+        rc = jnp.where(qc > f(R1), qc*rho, f(R1))
+        lamc = ((nc*f(AM_R)*ccg2*ocg1/rc)**f(OBMR)).astype(jnp.float64)
+        xdc = ((f(3.)+(nu+1).astype(jnp.float32)+f(1.))/lamc).astype(jnp.float32)
+        lamc = jnp.where(xdc < f(D0C), (cce2/f(D0C)).astype(jnp.float64), lamc)
+        lamc = jnp.where(xdc > f(D0R)*f(2.), (cce2/(f(D0R)*f(2.))).astype(jnp.float64), lamc)
+        nc_balanced = jnp.minimum(jnp.asarray(f(NT_C_MAX),jnp.float64),ccg1*ocg2*rc/f(AM_R)*lamc**f(3.)).astype(jnp.float32)
     return jnp.where(qc > R1, nc_balanced, 2.0)
 
 
@@ -399,7 +409,7 @@ def _ice_demott(tempc, rho, nifa_m3):
     return jnp.maximum(0.0, xni)
 
 
-def _ice_koop(temp, qv, qvs, naero_m3, dt):
+def _ice_koop(temp, qv, qvs, naero_m3, dt, *, wrf_hail=False):
     """Koop et al. (2001) homogeneous freezing count, per m3 (WRF 5521-5546)."""
 
     satw = qv / qvs
@@ -407,6 +417,11 @@ def _ice_koop(temp, qv, qvs, naero_m3, dt):
     a_w_i = jnp.exp(mu_diff / (R_UNI * temp))
     delta_aw = satw - a_w_i
     log_j = -906.7 + 8502.0 * delta_aw - 26924.0 * delta_aw**2 + 29180.0 * delta_aw**3
+    if wrf_hail:
+        # Original :5534-5536 multiplies each REAL polynomial coefficient
+        # successively by delta_aw. Factoring its square/cube changes the
+        # exponent; read-only GDB H38-32 matches this order 40/40 BYTE.
+        log_j = -906.7 + 8502.0*delta_aw - 26924.0*delta_aw*delta_aw + 29180.0*delta_aw*delta_aw*delta_aw
     log_j = jnp.minimum(20.0, log_j)
     j_rate = 10.0**log_j
     prob_h = jnp.minimum(1.0 - jnp.exp(-j_rate * AR_VOLUME * dt), 1.0)
@@ -414,7 +429,7 @@ def _ice_koop(temp, qv, qvs, naero_m3, dt):
     return jnp.maximum(0.0, xni)
 
 
-def _eff_aero(d, da, visco, rho, temp, species: str):
+def _eff_aero(d, da, visco, rho, temp, species: str, *, wrf_hail=False):
     """Aerosol collection efficiency (WRF ``Eff_aero``, 4965-5001)."""
 
     if species == "r":
@@ -425,14 +440,25 @@ def _eff_aero(d, da, visco, rho, temp, species: str):
         vt = AV_G_OLD * d**BV_G_OLD
     else:  # pragma: no cover - transcription guard
         raise ValueError(species)
+    if wrf_hail:
+        # Hail init leaves the Brown--Lawler idx_bg1 coefficients in av_g/
+        # bv_g. The original Eff_aero :4980 reads that module slot, not the
+        # old mp8 fall law. Keep the default mp28 path unchanged.
+        da = np.float32(da)
+        if species == "g":
+            vt = np.float32(143.204224) * d ** np.float32(.640961647)
+        elif species == "r":
+            vt = -0.1021 + 4.932e3*d - 0.9551e6*d*d + 0.07934e9*d*d*d - 0.002362e12*d*d*d*d
     cc = 1.0 + 2.0 * MEAN_PATH / da * (1.257 + 0.4 * math.exp(-0.55 * da / MEAN_PATH))
+    if wrf_hail:
+        cc = np.float32(1.) + np.float32(2.) * np.float32(MEAN_PATH) / da * (np.float32(1.257) + np.float32(.4) * jnp.exp(-np.float32(.55) * da / np.float32(MEAN_PATH)))
     diff = BOLTZMAN * temp * cc / (3.0 * PI * visco * da)
     re = 0.5 * rho * d * vt / visco
     sc = visco / (rho * diff)
     st = da * da * vt * 1000.0 / (9.0 * visco * d)
     aval = 1.0 + jnp.log(1.0 + re)
     st2 = (1.2 + 1.0 / 12.0 * aval) / (1.0 + aval)
-    eff = 4.0 / (re * sc) * (1.0 + 0.4 * jnp.sqrt(re) * sc ** (1.0 / 3.0) + 0.16 * jnp.sqrt(re) * jnp.sqrt(sc)) \
+    eff = 4.0 / (re * sc) * (1.0 + 0.4 * jnp.sqrt(re) * sc ** (np.float32(.3333) if wrf_hail else (1.0 / 3.0)) + 0.16 * jnp.sqrt(re) * jnp.sqrt(sc)) \
         + 4.0 * da / d * (0.02 + da / d * (1.0 + 2.0 * jnp.sqrt(re)))
     eff = jnp.where(st > st2, eff + ((st - st2) / (st - st2 + 0.666667)) ** 1.5, eff)
     return jnp.maximum(1.0e-5, jnp.minimum(eff, 1.0))
@@ -919,6 +945,7 @@ def _saturation_adjustment_aero(
     state: ThompsonAeroColumnState,
     dt: float,
     aero: ThompsonAeroTableBundle = THOMPSON_AERO_TABLES,
+    *, return_rates=False,
 ) -> tuple[ThompsonAeroColumnState, jax.Array]:
     """Cloud condensation/evaporation with explicit CCN (WRF 3399-3494).
 
@@ -930,10 +957,15 @@ def _saturation_adjustment_aero(
     """
 
     odt = 1.0 / float(dt)
+    if return_rates:
+        odt = np.float32(1.) / np.float32(dt)
     qvs = saturation_mixing_ratio_liquid(state.p, state.T)
     lvap = latent_heat_vaporization(state.T)
     ocp = cp_inverse(state.qv)
     lvt2 = lvap * lvap * ocp / RV / (state.T * state.T)
+    if return_rates:
+        otemp = np.float32(1.) / state.T
+        lvt2 = lvap*lvap*ocp*(np.float32(1.)/np.float32(RV))*otemp*otemp
     clap = (state.qv - qvs) / (1.0 + lvt2 * qvs)
     for _ in range(3):
         expo = jnp.exp(lvt2 * clap)
@@ -950,6 +982,8 @@ def _saturation_adjustment_aero(
 
     # --- Droplet nucleation (WRF 3413-3420). ---
     nwfa_m3 = _nwfa_working(state.nwfa, state.rho)
+    if return_rates:
+        nwfa_m3 = jnp.maximum(np.float32(11.1e6), state.nwfa*state.rho)
     xnc_act = jnp.maximum(2.0, _activ_ncloud(state.T, state.w, nwfa_m3, aero))
     pnc_wcd_pos = 0.5 * (xnc_act - nc_m3 + jnp.abs(xnc_act - nc_m3)) * odt / state.rho  # per kg s^-1
 
@@ -963,21 +997,41 @@ def _saturation_adjustment_aero(
         + (-2.0 * lvap * otemp**3 / RV)
         + otemp * otemp
     )
+    if return_rates:
+        orv = np.float32(1.) / np.float32(RV)
+        rvs_p = rvs*otemp*(lvap*otemp*orv-1.)
+        rvs_pp = rvs*(otemp*(lvap*otemp*orv-1.)*otemp*(lvap*otemp*orv-1.)
+                     +(-2.*lvap*otemp*otemp*otemp*orv)+otemp*otemp)
     diffu = 2.11e-5 * (state.T / 273.15) ** 1.94 * (101325.0 / state.p)
     tcond = (5.69 + 0.0168 * tempc) * 1.0e-5 * 418.936
     gamsc = lvap * diffu / tcond * rvs_p
     alphsc = 0.5 * (gamsc / (1.0 + gamsc)) ** 2 * rvs_pp / rvs_p * rvs / rvs_p
+    if return_rates:
+        alphsc = 0.5*(gamsc/(1.+gamsc))*(gamsc/(1.+gamsc))*rvs_pp/rvs_p*rvs/rvs_p
     alphsc = jnp.maximum(1.0e-9, alphsc)
     xsat = jnp.where(jnp.abs(ssatw) < 1.0e-9, 0.0, ssatw)
     t1_evap = 2.0 * PI * (1.0 - alphsc * xsat + 2.0 * alphsc**2 * xsat**2 - 5.0 * alphsc**3 * xsat**3) / (1.0 + gamsc)
     dc_star_sq = jnp.maximum(0.0, -2.0 * float(dt) * t1_evap / (2.0 * PI) * 4.0 * diffu * ssatw * rvs / 1000.0)
     dc_star = jnp.sqrt(dc_star_sq)
+    if return_rates:
+        t1_evap = 2.*np.float32(PI)*(1.-alphsc*xsat+2.*alphsc*alphsc*xsat*xsat
+                   -5.*alphsc*alphsc*alphsc*xsat*xsat*xsat)/(1.+gamsc)
+        # Original :3444 starts with -2.D0 and calls DSQRT. Only the
+        # original droplet-evaporation branch evaluates this DOUBLE island.
+        drop_evap = active & (clap < -EPS) & (ssatw < -1.e-6) & (xrc > R1)
+        dc_star_sq = (jnp.asarray(-2.,jnp.float64)*np.float32(dt)*t1_evap
+                      /(np.float32(2.)*np.float32(PI))*4.*diffu*ssatw*rvs/1000.)
+        dc_star = jnp.sqrt(jnp.where(drop_evap, dc_star_sq, 0.))
     idx_d = jnp.clip(jnp.floor(1.0e6 * dc_star).astype(jnp.int32), 1, NBC) - 1
     idx_n = _idx_n_from_nc(nc_m3, aero)
     idx_c = _idx_c_from_rc(rc)
     wev_flat_idx = (idx_d.astype(jnp.int32) * N_C_TABLE + idx_c.astype(jnp.int32)) * NBC + idx_n.astype(jnp.int32)
     tnc_wev = jnp.take(aero.tnc_wev, wev_flat_idx)
     pnc_wcd_neg = jnp.maximum(-nc_m3 * 0.99 / state.rho * odt, -tnc_wev / state.rho * odt)
+    if return_rates:
+        orho = np.float32(1.) / state.rho
+        pnc_wcd_pos = (0.5*(xnc_act-nc_m3+jnp.abs(xnc_act-nc_m3))*odt*orho).astype(jnp.float64)
+        pnc_wcd_neg = jnp.maximum((-nc_m3*np.float32(.99)*orho*odt).astype(jnp.float64),-tnc_wev*orho*odt)
 
     # Branch select (WRF 3409-3475).
     cond_branch = clap > EPS
@@ -995,6 +1049,16 @@ def _saturation_adjustment_aero(
 
     prw_vcd = jnp.where(active, prw_vcd, 0.0)
     pnc_wcd = jnp.where(active, pnc_wcd, 0.0)
+    if return_rates:
+        prw_vcd = jnp.where(full_evap, (-rc*orho*odt).astype(jnp.float64), (clap*odt).astype(jnp.float64))
+        prw_vcd = jnp.where(~full_evap & evap_branch,
+            jnp.maximum((-rc*np.float32(.99)*orho*odt).astype(jnp.float64),prw_vcd),prw_vcd)
+        pnc_wcd = jnp.where(full_evap,(-nc_m3*orho*odt).astype(jnp.float64),
+            jnp.where(cond_branch,pnc_wcd_pos,jnp.where(evap_branch,pnc_wcd_neg,0.)))
+        prw_vcd, pnc_wcd = jnp.where(active,prw_vcd,0.),jnp.where(active,pnc_wcd,0.)
+        # mp38 retains WRF's REAL cumulative tendencies (:3479-3483).
+        # The default mp28 path below keeps its existing returned tuple.
+        return prw_vcd, pnc_wcd, lvap, ocp, active
     # Bound the condensate by available vapor (mp=8 kernel guard).
     delta_q = jnp.clip(prw_vcd * float(dt), -state.qc, state.qv - 1.0e-10)
     delta_nc = pnc_wcd * float(dt)
@@ -1019,10 +1083,15 @@ def _rain_evaporation_aero(
     dt: float,
     skip_evaporation: jax.Array | bool = False,
     graupel_melt: jax.Array | float = 0.0,
+    *, working=None, return_rates=False,
 ) -> ThompsonAeroColumnState:
     """Rain evaporation (WRF 3500-3574) + CCN return ``nwfaten += pnr_rev``."""
 
     _tempc, diffu, _visco, tcond, lvap, ocp, _rhof, rhof2, vsc2 = _air_properties(state)
+    if return_rates:
+        orho = np.float32(1.) / state.rho
+        rhonot = np.float32(101325.) / (np.float32(287.05)*np.float32(298.))
+        rhof2 = jnp.sqrt(jnp.sqrt(rhonot*orho))
     qvs = saturation_mixing_ratio_liquid(state.p, state.T)
     ssatw = state.qv / qvs - 1.0
     rvs = state.rho * qvs
@@ -1033,12 +1102,27 @@ def _rain_evaporation_aero(
         + (-2.0 * lvap * otemp**3 / RV)
         + otemp * otemp
     )
+    if return_rates:
+        orv = np.float32(1.) / np.float32(RV)
+        rvs_p = rvs*otemp*(lvap*otemp*orv-1.)
+        rvs_pp = rvs*(otemp*(lvap*otemp*orv-1.)*otemp*(lvap*otemp*orv-1.)
+                     +(-2.*lvap*otemp*otemp*otemp*orv)+otemp*otemp)
     gamsc = lvap * diffu / tcond * rvs_p
     alphsc = 0.5 * (gamsc / (1.0 + gamsc)) ** 2 * rvs_pp / rvs_p * rvs / rvs_p
+    if return_rates:
+        alphsc = 0.5*(gamsc/(1.+gamsc))*(gamsc/(1.+gamsc))*rvs_pp/rvs_p*rvs/rvs_p
     alphsc = jnp.maximum(1.0e-9, alphsc)
     xsat = jnp.minimum(-1.0e-9, ssatw)
     t1_evap = 2.0 * PI * (1.0 - alphsc * xsat + 2.0 * alphsc**2 * xsat**2 - 5.0 * alphsc**3 * xsat**3) / (1.0 + gamsc)
+    if return_rates:
+        t1_evap = 2.*np.float32(PI)*(1.-alphsc*xsat+2.*alphsc*alphsc*xsat*xsat
+                   -5.*alphsc*alphsc*alphsc*xsat*xsat*xsat)/(1.+gamsc)
     rr, nr, lamr, ilamr, _mvd_r, n0_r, active_rain = _rain_distribution(state.qr, state.Nr, state.rho)
+    if working is not None:
+        # Original :3535 uses the pre-condensation ilamr/N0_r and rr/nr.
+        rr, nr, lamr, ilamr, n0_r, active_rain = (working[name] for name in
+            ("rr", "nr", "lamr", "ilamr", "n0_r", "rain_active"))
+        lamr = np.float32(1.) / ilamr
     evap_raw = (
         t1_evap
         * diffu
@@ -1056,6 +1140,20 @@ def _rain_evaporation_aero(
     active = (ssatw < -EPS) & active_rain & ~jnp.asarray(skip_evaporation, dtype=bool)
     limited_rate = jnp.minimum(rate_max, evap_rate)
     limited_rate = jnp.where((jnp.asarray(graupel_melt) > 0.0) & ~fast_clear, limited_rate * eva_factor, limited_rate)
+    if return_rates:
+        # :3540-3560 limits with private density moments, which remain
+        # unchanged when cloud condensation changes the thermodynamic rho.
+        odts = np.float32(1.) / np.float32(dt)
+        orho = np.float32(1.) / state.rho
+        evap_raw = (t1_evap*diffu*(-ssatw)*n0_r*rvs
+            *(T1_QR_EV*ilamr**CRE10+T2_QR_EV*vsc2*rhof2*((lamr+np.float32(.5)*np.float32(FV_R))**(-CRE11))))*orho
+        fast_clear = (state.qv/qvs < np.float32(.95)) & (rr*orho <= np.float32(1.e-8))
+        rate_max = jnp.minimum(rr * orho * odts, (qvs - state.qv) * odts)
+        limited_rate = jnp.where(fast_clear, rr * orho * odts, jnp.minimum(rate_max.astype(jnp.float64), evap_raw))
+        limited_rate = jnp.where((jnp.asarray(graupel_melt) > 0.) & ~fast_clear, limited_rate * eva_factor, limited_rate)
+        prv_rev = jnp.where(active, limited_rate, 0.)
+        pnr_rev = jnp.minimum((nr * np.float32(.99) * orho * odts).astype(jnp.float64), prv_rev * nr / rr)
+        return prv_rev, pnr_rev, lvap, ocp, active
     evap = jnp.where(active, limited_rate * float(dt), 0.0)
     # pnr_rev (WRF 3559-3560): number of fully evaporated drops, returned as CCN.
     nr_loss = jnp.where(state.qr > 0.0, jnp.minimum(state.Nr * 0.99, state.Nr * evap / jnp.maximum(state.qr, R1)), 0.0)
@@ -1068,7 +1166,7 @@ def _rain_evaporation_aero(
     )
 
 
-def _cloud_water_fall_speeds_aero(state: ThompsonAeroColumnState, aero: ThompsonAeroTableBundle, rho_rc=None, rho_f=None):
+def _cloud_water_fall_speeds_aero(state: ThompsonAeroColumnState, aero: ThompsonAeroTableBundle, rho_rc=None, rho_f=None, *, wrf_hail=False):
     """Cloud mass/number fall speeds with variable nu_c (WRF 3655-3665).
 
     Density stages (P0 closure K5, as mp=8): rc and the droplet number density use the pre-condensation rho
@@ -1088,15 +1186,21 @@ def _cloud_water_fall_speeds_aero(state: ThompsonAeroColumnState, aero: Thompson
     ocg2 = jnp.take(aero.ocg2, nu)
     ccg4 = jnp.take(aero.ccg[3], nu)
     lamc = (nc_m3 * AM_R * ccg2 * ocg1 / rc) ** OBMR
+    if wrf_hail:
+        # Original :3659-3660 assigns the REAL power to DOUBLE lamc and
+        # computes a DOUBLE reciprocal before the terminal-velocity power.
+        lamc = lamc.astype(jnp.float64)
     ilamc = 1.0 / lamc
     vtc = rhof * AV_C * ccg5 * ocg2 * ilamc**BV_C
     vtnc = rhof * AV_C * ccg4 * ocg1 * ilamc**BV_C
+    if wrf_hail:
+        vtc, vtnc = vtc.astype(jnp.float32), vtnc.astype(jnp.float32)
     active = (rc > R1) & (state.w < 1.0e-1)   # WRF :3657 tests the density rc = MAX(R1, qc*rho)
     return jnp.where(active, vtc, 0.0), jnp.where(active, vtnc, 0.0)
 
 
 def _sed_cloud_water_aero(state: ThompsonAeroColumnState, dt: float, aero: ThompsonAeroTableBundle, cloud_sed_on=None,
-                          cloud_rho=None):
+                          cloud_rho=None, *, return_rates=False):
     """Cloud water + droplet-number sedimentation on the WRF ksed1(5) band (WRF 3646-3655, 3824-3837), gated on WRF
     ANY(L_qc) (``cloud_sed_on``; see thompson_column._wrf_l_qc_any / _wrf_cloud_sed_band).  ``cloud_rho`` = the WRF
     density stages (rc/nc, rhof, orho) of thompson_column._cloud_sed_rho_stages; ``None`` uses ``state.rho``."""
@@ -1104,8 +1208,14 @@ def _sed_cloud_water_aero(state: ThompsonAeroColumnState, dt: float, aero: Thomp
     rho_rc, rho_f, rho_o = (state.rho,) * 3 if cloud_rho is None else cloud_rho
     rho = jnp.maximum(rho_rc, R1)
     orho_rho = jnp.maximum(rho_o, R1)
-    dz = jnp.maximum(state.dz, 1.0)
-    vtc, vtnc = _cloud_water_fall_speeds_aero(state, aero, rho_rc, rho_f)
+    if return_rates:
+        # mp38 WRF :3646-3655/:3830-3833 uses raw DZQ for both the
+        # 500-m band and flux divergence, including positive sub-metre DZ.
+        dz = state.dz
+        vtc, vtnc = _cloud_water_fall_speeds_aero(state, aero, rho_rc, rho_f, wrf_hail=True)
+    else:
+        dz = jnp.maximum(state.dz, 1.0)
+        vtc, vtnc = _cloud_water_fall_speeds_aero(state, aero, rho_rc, rho_f)
     if cloud_sed_on is not None:
         vtc = jnp.where(cloud_sed_on, vtc, jnp.zeros_like(vtc))
         vtnc = jnp.where(cloud_sed_on, vtnc, jnp.zeros_like(vtnc))
@@ -1117,10 +1227,18 @@ def _sed_cloud_water_aero(state: ThompsonAeroColumnState, dt: float, aero: Thomp
     # WRF sed_n = vtnck*nc(k) with the working nc = MAX(2., MIN(nc*rho, Nt_c_max)) (:3217, :3486, :3826); the :3835
     # MAX(10., ...) floor only updates that working nc, which WRF never reads after this loop (outputs use ncten).
     nc = jnp.maximum(2.0, jnp.minimum(state.Nc * rho, NT_C_MAX))
+    if return_rates:
+        # Original terminal velocities and fluxes are REAL (:3655/:3826).
+        vtc, vtnc = vtc.astype(jnp.float32), vtnc.astype(jnp.float32)
     sed_c = jnp.where(band, vtc * rc, 0.0)
     sed_n = jnp.where(band, vtnc * nc, 0.0)
     sed_c_above = jnp.concatenate([sed_c[..., 1:], jnp.zeros_like(sed_c[..., :1])], axis=-1)
     sed_n_above = jnp.concatenate([sed_n[..., 1:], jnp.zeros_like(sed_n[..., :1])], axis=-1)
+    if return_rates:
+        odzq, orho = np.float32(1.) / dz, np.float32(1.) / orho_rho
+        qrate = jnp.where(band, (sed_c_above - sed_c) * odzq * orho, 0.)
+        nrate = jnp.where(band, (sed_n_above - sed_n) * odzq * orho, 0.)
+        return qrate, nrate, sed_c[..., 0] * dt_a
     dq = (sed_c_above - sed_c) / dz / orho_rho * dt_a   # WRF :3831-3833, orho = 1/current rho
     dn = (sed_n_above - sed_n) / dz / orho_rho * dt_a
     qc_new = jnp.where(band, jnp.maximum(state.qc + dq, 0.0), state.qc)
@@ -1197,7 +1315,7 @@ def _instant_melt_freeze_aero(state: ThompsonAeroColumnState, dt: float) -> Thom
     )
 
 
-def _finish_aero(state: ThompsonAeroColumnState, aero: ThompsonAeroTableBundle) -> ThompsonAeroColumnState:
+def _finish_aero(state: ThompsonAeroColumnState, aero: ThompsonAeroTableBundle, *, working_rho=None) -> ThompsonAeroColumnState:
     """Final floors/balances incl. the aerosol writeback (WRF 3972-4055).
 
     qc/nc: floor nc at 2/rho, cap Nt_c_max, zero with the cloud, then the
@@ -1213,6 +1331,9 @@ def _finish_aero(state: ThompsonAeroColumnState, aero: ThompsonAeroTableBundle) 
     qg = jnp.where(state.qg <= R1, 0.0, jnp.maximum(state.qg, 0.0))
     T = jnp.maximum(state.T, 50.0)
     rho = density_from_pressure_temperature(state.p, T, qv)
+    if working_rho is not None:
+        # WRF final number balances use the held private rho (:3976-4055).
+        rho = working_rho
 
     # Cloud number writeback (WRF 3976, 4007-4021).
     nc = jnp.maximum(2.0 / rho, jnp.minimum(state.Nc, NT_C_MAX))
@@ -1239,6 +1360,36 @@ def _finish_aero(state: ThompsonAeroColumnState, aero: ThompsonAeroTableBundle) 
     mvd_r = jnp.minimum(2.5e-3, jnp.maximum(D0R * 0.75, mvd_r))
     lamr = (3.0 + 0.672) / mvd_r
     Nr = jnp.where(qr <= R1, 0.0, CRG2 * ORG3 * rr * lamr**3.0 / AM_R / rho)
+    if working_rho is not None:
+        # Original :4007-4055 uses per-kg moments, REAL powers widened to
+        # DOUBLE slopes, and always reconstructs the final cloud number.
+        # The legacy helper above uses volume moments/edge-only cloud
+        # balancing; keep that default path unchanged for mp28.
+        f = np.float32
+        safe_qc, safe_qi, safe_qr = jnp.maximum(qc, f(R1)), jnp.maximum(qi, f(R1)), jnp.maximum(qr, f(R1))
+        nu = _nu_c_from_nc(nc * rho)
+        ccg1, ccg2 = jnp.take(aero.ccg[0], nu), jnp.take(aero.ccg[1], nu)
+        ocg1, ocg2 = jnp.take(aero.ocg1, nu), jnp.take(aero.ocg2, nu)
+        cce2 = jnp.take(aero.cce[1], nu)
+        lamc = ((f(AM_R) * ccg2 * ocg1 * nc / safe_qc) ** f(OBMR)).astype(jnp.float64)
+        xdc = ((f(3.) + (nu + 1).astype(jnp.float32) + f(1.)) / lamc).astype(jnp.float32)
+        lamc = jnp.where(xdc < f(D0C), (cce2 / f(D0C)).astype(jnp.float64), lamc)
+        lamc = jnp.where(xdc > f(D0R)*f(2.), (cce2 / (f(D0R)*f(2.))).astype(jnp.float64), lamc)
+        Nc = jnp.minimum(ccg1 * ocg2 * qc / f(AM_R) * lamc**f(3.), jnp.asarray(f(NT_C_MAX), jnp.float64) / rho).astype(jnp.float32)
+        Nc = jnp.where(qc > f(R1), Nc, f(0.))
+        lami = ((f(AM_I) * f(6.) * f(OIG1) * ni_raw / safe_qi) ** f(OBMI)).astype(jnp.float64)
+        xdi = (f(4.) * (f(1.) / lami)).astype(jnp.float32)
+        lami = jnp.where(xdi < f(5.e-6), jnp.asarray(f(CIE2) / f(5.e-6), jnp.float64), lami)
+        lami = jnp.where(xdi > f(300.e-6), jnp.asarray(f(CIE2) / f(300.e-6), jnp.float64), lami)
+        Ni = jnp.minimum(f(OIG2) * qi / f(AM_I) * lami**f(3.), jnp.asarray(999.e3, jnp.float64) / rho).astype(jnp.float32)
+        Ni = jnp.where(qi > f(R1), Ni, f(0.))
+        lamr = ((f(AM_R) * f(CRG3) * f(ORG2) * nr_raw / safe_qr) ** f(OBMR)).astype(jnp.float64)
+        factor = f(3.) + f(.672)
+        mvd_r = (factor / lamr).astype(jnp.float32)
+        mvd_r = jnp.minimum(f(2.5e-3), jnp.maximum(f(D0R) * f(.75), mvd_r))
+        lamr = (factor / mvd_r).astype(jnp.float64)
+        Nr = (f(CRG2) * f(ORG3) * qr * lamr**f(3.) / f(AM_R)).astype(jnp.float32)
+        Nr = jnp.where(qr > f(R1), Nr, f(0.))
     return state.replace(
         qv=qv, qc=qc, qr=qr, qi=qi, qs=qs, qg=qg,
         Ni=Ni, Nr=Nr, Nc=Nc, nwfa=nwfa, nifa=nifa, T=T, rho=rho,

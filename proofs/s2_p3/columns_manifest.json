@@ -1,0 +1,175 @@
+{
+  "fixture_id": "p3-original-wrf-wrappers-real4-v1",
+  "created_utc": "2026-10-13T17:04:55.263616+00:00",
+  "source": "<USER_HOME>/src/wrf_pristine/WRF/phys/module_mp_p3.F",
+  "source_sha256": "716950a3081ec4e338c9a918d26ec80f7ee0e40b3e284283f070423237f6a3c6",
+  "staged_sha256": "716950a3081ec4e338c9a918d26ec80f7ee0e40b3e284283f070423237f6a3c6",
+  "caller_source_sha256": "68acf025323b643ae976b89f40691675557cb9787fdc558fee6cb77472a6e518",
+  "registry_sha256": "6f3ee02175b76487c5c6c046ff2fb4c5d41980b86c0f06eb2e09e34dacc9623a",
+  "source_commit": "f52c197ed39d12e087d02c50f412d90d418f6186",
+  "flags": [
+    "-cpp",
+    "-ffree-form",
+    "-ffree-line-length-none",
+    "-O2",
+    "-ffp-contract=off",
+    "-fcheck=all"
+  ],
+  "driver_sha256": "87791a3caaa59e21bad95aa96658848d837c76e110c2ebacbfc7f32371e24f3d",
+  "fields": [
+    "th",
+    "qv",
+    "qc",
+    "qr",
+    "nr",
+    "qi",
+    "ni",
+    "qir",
+    "bir",
+    "nc",
+    "qi2",
+    "ni2",
+    "qir2",
+    "bir2",
+    "qzi",
+    "th_old",
+    "qv_old",
+    "p",
+    "exner",
+    "dz",
+    "w",
+    "ze",
+    "re_cloud",
+    "re_ice",
+    "vm",
+    "di",
+    "rhoi",
+    "vm2",
+    "di2",
+    "rhoi2"
+  ],
+  "units": {
+    "th": "K",
+    "qv": "kg kg-1",
+    "qc": "kg kg-1",
+    "qr": "kg kg-1",
+    "nr": "kg-1",
+    "qi": "kg kg-1",
+    "ni": "kg-1",
+    "qir": "kg kg-1",
+    "bir": "m3 kg-1",
+    "nc": "kg-1",
+    "qi2": "kg kg-1",
+    "ni2": "kg-1",
+    "qir2": "kg kg-1",
+    "bir2": "m3 kg-1",
+    "qzi": "m3 kg-1 (advected sqrt(N*Z))",
+    "th_old": "K",
+    "qv_old": "kg kg-1",
+    "p": "Pa",
+    "exner": "1",
+    "dz": "m",
+    "w": "m s-1",
+    "ze": "dBZ",
+    "re_cloud": "m",
+    "re_ice": "m",
+    "vm": "m s-1",
+    "di": "m",
+    "rhoi": "kg m-3",
+    "vm2": "m s-1",
+    "di2": "m",
+    "rhoi2": "kg m-3"
+  },
+  "scenario": "8 constructed columns x12 levels; clear,warm rain,cold unrimed/rimed,mixed phase;3 calls dt18s",
+  "qualification": "original WRF savepoint enabler ONLY; no JAX p3_main/coupled/GPU qualification",
+  "files": {
+    "columns_mp50.npz": {
+      "sha256": "b596bedff87713bd16adef6495b96eff3e045be62982b3e18c8ac2fd0b2916f9",
+      "shape": [
+        8,
+        12,
+        4
+      ],
+      "dtype": "float32"
+    },
+    "columns_mp51.npz": {
+      "sha256": "63a3e81863686f4c5f3be86bcae1d850503824b2a40906e660ecf914e011f49c",
+      "shape": [
+        8,
+        12,
+        4
+      ],
+      "dtype": "float32"
+    },
+    "columns_mp52.npz": {
+      "sha256": "f80ade544d275c60c80f39c2a06f6d36201565c3d3839619fcb01b4435ec7587",
+      "shape": [
+        8,
+        12,
+        4
+      ],
+      "dtype": "float32"
+    },
+    "columns_mp53.npz": {
+      "sha256": "4dfd8514370790156091fd877553827e4d3ba3592736eee74f3ccbe9edb1f747",
+      "shape": [
+        8,
+        12,
+        4
+      ],
+      "dtype": "float32"
+    }
+  },
+  "census": {
+    "50": {
+      "qi": 72,
+      "qir": 60,
+      "qi2": 0,
+      "qir2": 0,
+      "qc": 72,
+      "qr": 72,
+      "changed_qi": 240,
+      "changed_nc": 0,
+      "surface_total_mm": 1.1383484601974487
+    },
+    "51": {
+      "qi": 72,
+      "qir": 60,
+      "qi2": 0,
+      "qir2": 0,
+      "qc": 72,
+      "qr": 72,
+      "changed_qi": 240,
+      "changed_nc": 288,
+      "surface_total_mm": 1.1389542818069458
+    },
+    "52": {
+      "qi": 72,
+      "qir": 60,
+      "qi2": 72,
+      "qir2": 72,
+      "qc": 72,
+      "qr": 72,
+      "changed_qi": 240,
+      "changed_nc": 288,
+      "surface_total_mm": 1.3689916133880615
+    },
+    "53": {
+      "qi": 72,
+      "qir": 60,
+      "qi2": 0,
+      "qir2": 0,
+      "qc": 72,
+      "qr": 72,
+      "changed_qi": 240,
+      "changed_nc": 288,
+      "surface_total_mm": 1.0957233905792236
+    }
+  },
+  "raw_tables": {
+    "p3_lookupTable_2.dat-v5.3": "c9103041ead719cf9e2e215cf846e0ef81b2004f29386156444a079af6b24d97",
+    "p3_lookupTable_1.dat-v5.4_2momI": "be1ab6fb03481e376e47c6c79d808af5d8ab069f2b242931e9c54801bad4ae84",
+    "p3_lookupTable_1.dat-v5.4_3momI": "9a3c57ecc09498802c8d7cb3931dbb0200dcf0f51466b3e288120c080271e6dc"
+  },
+  "compiler": "GNU Fortran (conda-forge gcc 14.3.0-19) 14.3.0"
+}

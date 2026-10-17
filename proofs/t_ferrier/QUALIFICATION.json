@@ -1,0 +1,186 @@
+{
+  "schema": "t-ferrier-lowering-gate-v1",
+  "status": "PASS",
+  "scope": "CPU-native CUDA lowering; no GPU executable or forecast qualification",
+  "source_commit_measured_c62": "585d81a557e768d4a400d78650661fa54b44156d",
+  "source_commit_measured_c63": "37966bdbec6ca0709791eddf1801818098e033f6",
+  "source_tree": "2dcb18a83cd03287d19b10383080cf6ef52312ba",
+  "changed_production_file": {
+    "src/gpuwrf/physics/noahmp/groundwater_options.py": "ef1fddcff79807c8a421c645ae62793bd36c959ae654c725a8c0042c8969ba74"
+  },
+  "root_cause": "Noah-MP static REAL TIMEAN unary negation reaches Triton _minus as TypedNdArray; Ferrier itself already lowers",
+  "native_lower_cases": {
+    "FF10.json": {
+      "source_commit": "585d81a557e768d4a400d78650661fa54b44156d",
+      "input": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c62/input",
+      "input_sha256": {
+        "namelist.input": "b5feb706cdf4f95e077c2cd55fd45a3967372a207b257ed1fb5e1eb1f1a928b0",
+        "wrfbdy_d01": "f3e556670e4768326997bdfa1dd8b0f77eb6d5da07d9c4dbf900bf8ff9e30230",
+        "wrfinput_d01": "a5d696550d1dc6713e2e340b8c2fba83811d43f4a94a65ca95266035860e2781"
+      },
+      "platform": "cpu",
+      "lowering_platform": "cuda",
+      "gpu_executed": false,
+      "load_s": 24.60668856697157,
+      "trace_s": 10.697933376999572,
+      "status": "PASS",
+      "stablehlo_sha256": "78ca7b460b6d935c7772cd8e70c56e6ba6674e4ebb75770d4ccc69c7159b9ee5",
+      "stablehlo_bytes": 44418752,
+      "triton_custom_calls": 149,
+      "native_facade": true,
+      "pallas_interpret": false,
+      "python_backend": "gpu",
+      "work": {
+        "mp_physics": 5,
+        "dt_s": 18.0,
+        "radiation_cadence_steps": 33,
+        "ferrier_gid": 1
+      },
+      "wall_s": 49.511360104894266,
+      "peakRSS_KiB": 2595784
+    },
+    "FF12.json": {
+      "source_commit": "37966bdbec6ca0709791eddf1801818098e033f6",
+      "input": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c63/input",
+      "input_sha256": {
+        "namelist.input": "5dfd8a31d4fd3bfc994221bf62d1f39285bc4834cfa008829abf72da988d0102",
+        "wrfbdy_d01": "f3e556670e4768326997bdfa1dd8b0f77eb6d5da07d9c4dbf900bf8ff9e30230",
+        "wrfinput_d01": "a5d696550d1dc6713e2e340b8c2fba83811d43f4a94a65ca95266035860e2781"
+      },
+      "platform": "cpu",
+      "lowering_platform": "cuda",
+      "gpu_executed": false,
+      "load_s": 25.753122322959825,
+      "trace_s": 10.710517135914415,
+      "status": "PASS",
+      "stablehlo_sha256": "1db20332e7b14e26a477b9aa022a1c109f513d17485c21394b1b7b02a8ccaffa",
+      "stablehlo_bytes": 44489615,
+      "triton_custom_calls": 150,
+      "native_facade": true,
+      "pallas_interpret": false,
+      "python_backend": "gpu",
+      "work": {
+        "mp_physics": 15,
+        "dt_s": 18.0,
+        "radiation_cadence_steps": 33,
+        "ferrier_gid": 1
+      },
+      "wall_s": 49.89888387499377,
+      "peakRSS_KiB": 2585828
+    }
+  },
+  "default_identities": {
+    "Swiss": "f672a5739cb96e388b6b7a40ef80337bf81bdc14ef15268f3476e09d79fe055d",
+    "PROD": "6fc715a2bd630934c4cf0f94427df19a527cbf429011c9ba5efe4d712744d27b"
+  },
+  "literal_original_wrf_values_byte": 1872,
+  "compiled_old_new_values_byte": 1872,
+  "positive_tests": 50,
+  "positive_test_receipts": [
+    "receipts/FF06.xml.gz (11 passed, 2 superseded instrumentation failures)",
+    "receipts/FF07.xml.gz (2 passed)",
+    "receipts/FF15.xml.gz (37 passed: contracts, legacy MP refusal pins, NetCDF process lock)"
+  ],
+  "deletion_mutant": {
+    "failures": 2,
+    "setup_errors": 0,
+    "reason": "TypedNdArray AttributeError in actual native CUDA lowering"
+  },
+  "ferrier_family": {
+    "5": "native CUDA lower PASS; WRF DOUBLE retained",
+    "15": "native CUDA lower PASS; WRF DOUBLE retained",
+    "85": "unadmitted unchanged",
+    "95": "unadmitted unchanged"
+  },
+  "unchanged_ferrier_assets_equations_and_scientific_references": {
+    "src/gpuwrf/physics/ferrier/__init__.py": "a4d0ec84a0e10f3fa7d7d36c3416b3ec436a0079d78d2332e8392f1bc3104ca7",
+    "src/gpuwrf/physics/ferrier/adapter.py": "474819e2c922cc0defb895e89a85b405288d0ac101c76fbe13524a9d248bf2a6",
+    "src/gpuwrf/physics/ferrier/binding.py": "da42dd27498608b1dab758484c8b36fb3e9a23a31c1bd9ae45bf234076bf313b",
+    "src/gpuwrf/physics/ferrier/column.py": "3a8bb4d04629817083b8c2c59e25d577200e2ec3ced80e939c4c264c10818f07",
+    "src/gpuwrf/physics/ferrier/native.py": "bc3de349d49af1a146c9a1732d6cb0513263192d4a09c89667ef0527cc612471",
+    "src/gpuwrf/physics/ferrier/saturation.py": "ea92c7376f444ec24ffeed28f676a732c277f49fb98664b51b664f520ac00a43",
+    "src/gpuwrf/physics/ferrier/tables.json": "6e502b76f3625b38b801bf2cd253a1580a6fb9a526b6ffde52d13c8bd4f8f013",
+    "src/gpuwrf/physics/ferrier/tables.npz": "50b26be8d2ca01f157f88d5ac34e6d8105cf5812a26a9027c8a59eb1c6365ef0",
+    "proofs/u2_land/groundwater_oracle.json": "ae3ea333452c7e148362bba66d2a64fe68bc61f4c0a78c0c0e93a4df10bfdc61",
+    "proofs/u2_land/equilibrium_oracle.json": "26e9a84a09d6e7ef0b42a0cb2c12c10c593eacb747cebf878586dc51a3ed67a0",
+    "proofs/u2_land/prognostic_water_oracle.json": "ce6412022819c8b8546379d5c3377ab2f9291a64abec7c01ede6051ade0224a7",
+    "proofs/v040/mpmisc/COMPILER_DEVIATIONS.md": "684aca801a4d89c4c205dcce1880d30ab34d0aa17e2d50b68ee91ef668ecfaaf"
+  },
+  "performance_memory": {
+    "new_state_arrays": 0,
+    "new_native_calls": 0,
+    "new_domain_intermediates": 0,
+    "new_host_device_transfers": 0,
+    "assessment": "One scalar negation replaced per active water path; static scalar folds in existing kernel [I]. CPU lowering RSS/time recorded [M]; GPU speed/VRAM unknown."
+  },
+  "cache": "NONE; GPUWRF_JAX_CACHE=0",
+  "gpu_executed": false,
+  "remaining_release_gates": [
+    "GPU executable/E41",
+    "full CPU-WRF forecast D6",
+    "GPU timing/VRAM"
+  ],
+  "receipts_sha256": {
+    "receipts/FF01.json": "18b8710e243c1b710c05e11a22bfd07f7f64a5aae5428424488f1d5992673645",
+    "receipts/FF01.log.gz": "fbe57f8889f462f91988c3914dcd647f86f871da65e251f93dd57fca65bfed98",
+    "receipts/FF02.log.gz": "fdee87828bd4fb9e2b5ee4e757f03cd1f91ce9d6ba131429c98d32294346900e",
+    "receipts/FF02.xml.gz": "5b8df60cd5b06d299893cb47d8f58c1f7c03e36a2807d98e3d3eedae2d38e9ce",
+    "receipts/FF03.log.gz": "ee95ccbb71ecc68777a97f9aba5bd83f9fffa9f75550fde265ec08fc1c2dd0c5",
+    "receipts/FF03.xml.gz": "69f871b919ecec5b7392db975cbbb2917e3ddd0c7adbf3c9cfb2995e369e1a53",
+    "receipts/FF04.json": "5f129c1511a2356af175ec034a0db23160866aa7565ca6b2ad18135b9a84ea2e",
+    "receipts/FF04.log.gz": "957fe9f81455556e3014616616894ddfa7675e2dcc48a048cddff2921d0cb3e1",
+    "receipts/FF05.json": "0b79da00598c3f4f0596f6c35f5aa2835a2dbd23787a5f28ce7eb0b83a15fa68",
+    "receipts/FF05.log.gz": "471004f8faded952ef9d121968eadf52f801f613d2e3ce1277996008f0ad6599",
+    "receipts/FF06.log.gz": "2693b8e90412a22bd516a24532b3eb64aeb329e214af1d4dc2abc76c4100bcec",
+    "receipts/FF06.xml.gz": "c578c22b2424aa179555c5c0d9b935cc0a342d226a6a985fdecb0cc1f8705809",
+    "receipts/FF07.log.gz": "20c83a02f24e77b39e1b5e68751acf38c41cafbec570ff0fcb33a1f965d09042",
+    "receipts/FF07.xml.gz": "f01435fd61aef270c63f8bc294c8c5b64e4d30f2b771ed925056c8cccf22dec8",
+    "receipts/FF08.json": "3e72b05a26e91f8a0e9b2d81994e2d01d52ee43270c4c09ec25c5172f0235480",
+    "receipts/FF08.log.gz": "e4e8b090dfe2c82855f972765d6959782f987d1539b7d3f043c20bf5cd30aedc",
+    "receipts/FF09.log.gz": "4ca8d9d9b08891a7cbe86fe370cc230598bb2e8bdf6f3d5b8c857e512541977e",
+    "receipts/FF10.json": "c978cdc36ba89ce4e3471b2e99ba6ebc173aa54a34eb3940b7db45d3714f7c33",
+    "receipts/FF10.log.gz": "73653e5c1f2d66b5d2b2cec0473a044219b86f18dc1eb023c8fc886d0f9630a2",
+    "receipts/FF11.log.gz": "edbf9e8cdf20f401f1933ff5f3c19357a4d6d2cf3bbf299604af77c10a13c9d7",
+    "receipts/FF11.xml.gz": "6bd08e13fbc3bb52c0db8c4a2b697991356e07c0b21069d8f6c0d69ce175666a",
+    "receipts/FF12.json": "cabb5044f61e758a58a74ce15e3d85172b32311845b70d032d337ecf7b8b8fa5",
+    "receipts/FF12.log.gz": "7a1215cb38bc917f77f24b27aed6ecffec47ba937af24dbd8c23f2fce1cece74",
+    "receipts/FF13.json": "e785c5f7fc231bd1be6ec3049ebdbfe408e6ced0e578320962673806b0805550",
+    "receipts/FF13.log.gz": "2464a79be6558514a558463de578a70fc78de56c0a48118df84fca7b52034cd0",
+    "receipts/FF14.json": "f76bd89b9048ad9fd82cbd2adfd4f8fb78a40bbf35e4fd526dadcc39c57afc7f",
+    "receipts/FF14.log.gz": "f6e9f09231eccc173a3ffd372244a800c000171203226d85478030c1a0ee2ade",
+    "receipts/FF15.log.gz": "b8c63ed6d799b5292705aafc2019cf0de09917d16cbd32becf0ce2003e37eea8",
+    "receipts/FF15.xml.gz": "564c506dcd7fb6f130c828cdb69e346d63feb92973d6d8aaffb9d7fd9ce19cf1"
+  },
+  "uncompressed_receipts_sha256": {
+    "FF01.json": "18b8710e243c1b710c05e11a22bfd07f7f64a5aae5428424488f1d5992673645",
+    "FF01.log": "324b4ae43afbbf130734bb1e3f0d989352a9056d70272133ee7217073a8ecce4",
+    "FF02.log": "fc574ffa102d726bbafdeef53500e06f4b0f8d5f21ebfcab743e818b278f6366",
+    "FF02.xml": "66824d2a054f57c532f9b1f23d32b800fdac502b0207431b30f5dc89d15adb81",
+    "FF03.log": "e3c8dc9fae995210478c9f23ef7cdb30836ada7babcacf1d89a9ca38dabde923",
+    "FF03.xml": "d35bd144928d21d8ddc3787decf129e6756af67e11d03a0451082b5a04bae93a",
+    "FF04.json": "5f129c1511a2356af175ec034a0db23160866aa7565ca6b2ad18135b9a84ea2e",
+    "FF04.log": "4607d682ab583cba114d195c4366a62523e34a8253fdb6b0c433db3529bfdd01",
+    "FF05.json": "0b79da00598c3f4f0596f6c35f5aa2835a2dbd23787a5f28ce7eb0b83a15fa68",
+    "FF05.log": "377a909c6efece9c148b893a27c102c6b0b980f4bebf89d23cc4fa05c6601df4",
+    "FF06.log": "89ad19b1be5a772db0bd1dc9e8c3ecfee5b5e253b97db375b19d3a0359ef2b7f",
+    "FF06.xml": "14d2337b2264ef253cf526d85ca3d823316e63b403d8a1ef68f97f90a6580fd5",
+    "FF07.log": "eb1c10ae1211c29510b8722c30d52119ef58842d24f1fc16451d6944ad51fe49",
+    "FF07.xml": "d0b700c68deb217fe5200cfafe49e3ae858d1c2a730f65d689b8402e4b3d4fd5",
+    "FF08.json": "3e72b05a26e91f8a0e9b2d81994e2d01d52ee43270c4c09ec25c5172f0235480",
+    "FF08.log": "51d768c59959da2f19a72d17d89d33a8ca74ad33c06fd0cca7d0097e7d7a9635",
+    "FF09.log": "ad29dbb64e6d4e4be786d3de9e8a49fe49c3f7545def14039eb06c634c728b96",
+    "FF10.json": "c978cdc36ba89ce4e3471b2e99ba6ebc173aa54a34eb3940b7db45d3714f7c33",
+    "FF10.log": "75b3fd173d8408231e821da9c58a798084505811c5ab64b5d33acb570d16191f",
+    "FF11.log": "ef0c089d47148ee72bd38609f0cdcf73f83e7939d797d3cd97c48024f2ecf64f",
+    "FF11.xml": "fdc5e105aca2b82ae19864c977a7bb794b11c5f84158f36ca72cabdb9c2b749a",
+    "FF12.json": "cabb5044f61e758a58a74ce15e3d85172b32311845b70d032d337ecf7b8b8fa5",
+    "FF12.log": "0b6241bcd52f808123a5740660a9e35a7d0071e0062056379d3c57dc0551f490",
+    "FF13.json": "e785c5f7fc231bd1be6ec3049ebdbfe408e6ced0e578320962673806b0805550",
+    "FF13.log": "e0e939098bcc9b96c43e25effb49acd6ddcf1f602abe9ae1baea231966b99b00",
+    "FF14.json": "f76bd89b9048ad9fd82cbd2adfd4f8fb78a40bbf35e4fd526dadcc39c57afc7f",
+    "FF14.log": "4b6a12f7db64e067f266d0dd13c46433c52bf397cf4cbbad7f53b643e5d7af37",
+    "FF15.log": "7935c398dee9b271a02142d7ed07ae9cedb0bd2595000d7b370ad5596d2f8c0a",
+    "FF15.xml": "a30a5fac3695463a6efec61c5e379d3e2b0d9832cd223cfe46a724b5bfd50262"
+  },
+  "receipt_storage": "Lossless gzip for logs/XML; original raw bytes SHA and compression SHA both sealed."
+}

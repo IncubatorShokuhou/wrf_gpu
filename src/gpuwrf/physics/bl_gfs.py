@@ -36,9 +36,12 @@ from __future__ import annotations
 
 from gpuwrf._x64_config import configure_jax_x64
 
+from typing import NamedTuple
+
 import jax
 from jax import config
 import jax.numpy as jnp
+import numpy as np
 
 configure_jax_x64()
 
@@ -89,6 +92,62 @@ GAMCRT = 3.0
 GAMCRQ = 0.0  # WRF active PARAMETER (line 671): GAMCRQ=0.
 RBCR_CONST = 0.25  # EM-core constant critical Richardson number
 RCL = 1.0  # BL_GFS sets RCL=1 (no map-factor reduction)
+
+
+class MoninpConstants(NamedTuple):
+    """MONINP constants whose WRF value differs from the exact decimal (see WRF_MONINP)."""
+
+    CON_G: float
+    GOR: float
+    GOCP: float
+    FV: float
+    VK: float
+    DW2MIN: float
+    CFAC: float
+    SFCFRAC: float
+    QMIN: float
+    ZFMIN: float
+    PRINV_LIT: float  # CFAC*VK*.1 (:976)
+    DKU_LIT: float  # 1+1.746*SRI (:1054)
+    DKT_LIT: float  # 1+1.286*SRI (:1055)
+    PRNUM_LIT: float  # 1.0+2.1*RI (:1063)
+
+
+# Legacy fp64 path (v0.17 oracle): exact decimal values.
+LEGACY_MONINP = MoninpConstants(CON_G, GOR, GOCP, FV, VK, DW2MIN, CFAC, SFCFRAC, QMIN, ZFMIN,
+                                0.1, 1.746, 1.286, 2.1)
+
+
+def _kind_phys_literal(value):
+    """A default-REAL literal stored into REAL(kind_phys): the REAL value, widened."""
+    return float(np.float32(value))
+
+
+# --- WRF typing of the BL_GFS call (t-cfix-sfc F13) -------------------------- #
+# The BL_GFS wrapper constants are REAL dummy arguments (module_bl_gfs.F:75-82)
+# passed from module_model_constants (module_pbl_driver.F:1413,1418), folded in REAL.
+_REAL = np.float32
+WRF_R_D = _REAL(287.0)
+WRF_CP = _REAL(7.0) * WRF_R_D / _REAL(2.0)
+WRF_G = _REAL(9.81)
+WRF_RCP = WRF_R_D / WRF_CP
+WRF_ROVG = WRF_R_D / WRF_G
+WRF_EP_1 = _REAL(461.6) / WRF_R_D - _REAL(1.0)
+WRF_KARMAN = _REAL(0.4)
+# MODULE_GFS_PHYSCONS and the MONINP PARAMETERs/inline literals are REAL(kind_phys)
+# initialised from default-REAL literals (no _kind suffix): the REAL value widened;
+# derived parameters are DOUBLE arithmetic on those (module_gfs_physcons.F:13-36,
+# module_bl_gfs.F:663-672).
+WRF_CON_G = _kind_phys_literal(9.80665)
+WRF_CON_RD = _kind_phys_literal(2.8705e2)
+WRF_CON_RV = _kind_phys_literal(4.6150e2)
+WRF_CON_CP = _kind_phys_literal(1.0046e3)
+WRF_MONINP = MoninpConstants(
+    CON_G=WRF_CON_G, GOR=WRF_CON_G / WRF_CON_RD, GOCP=WRF_CON_G / WRF_CON_CP,
+    FV=WRF_CON_RV / WRF_CON_RD - 1.0, VK=_kind_phys_literal(0.4), DW2MIN=_kind_phys_literal(0.0001),
+    CFAC=_kind_phys_literal(7.8), SFCFRAC=_kind_phys_literal(0.1), QMIN=_kind_phys_literal(1.0e-8),
+    ZFMIN=_kind_phys_literal(1.0e-8), PRINV_LIT=_kind_phys_literal(0.1), DKU_LIT=_kind_phys_literal(1.746),
+    DKT_LIT=_kind_phys_literal(1.286), PRNUM_LIT=_kind_phys_literal(2.1))
 
 
 def _assemble_diag(au, al):
@@ -215,15 +274,10 @@ def _thomas1(cl, cm, cu, r1):
     return jnp.concatenate([a1_lower, a1_n[None]])
 
 
-def _gfs_column(u, v, t, qv, qc, p, pii, dz, z, *, psfc, ust_in, hfx, qfx,
-                tsk, gz1oz0, psim, psih, wspd_in, br, dt):
-    """One-column GFS PBL: returns (du, dv, rthblten, rqvblten, rqcblten, pbl, kpbl, ust).
-
-    Direct transcription of ``BL_GFS`` (EM core, NMM/HWRF off) + ``MONINP``. All
-    arrays are length-``n`` bottom-up WRF mass-level columns.
-    """
+def _bl_gfs_setup_legacy(u, v, t, qv, qc, p, dz, z, *, psfc, hfx, qfx, tsk, gz1oz0, psim, psih,
+                         wspd_in, br, qi):
+    """Legacy BL_GFS setup: every statement in the operand dtype (v0.17 fp64 path)."""
     n = u.shape[0]
-    kmpbl = n // 2
 
     # ---- BL_GFS setup (driver constants G/R/CP) ----
     rrhox = (R_D * t[0] * (1.0 + EP1 * qv[0])) / psfc
@@ -268,6 +322,73 @@ def _gfs_column(u, v, t, qv, qc, p, pii, dz, z, *, psfc, ust_in, hfx, qfx,
     phil = 0.5 * (z[1:] + z[:-1] - 2.0 * z0) * G  # length n-1
     phil_top = phii_full[n - 1] - phil[n - 2] + phii_full[n - 1]
     phil_full = jnp.concatenate([phil, phil_top[None]])  # length n
+    q1i = None if qi is None else qi / (1.0 + qi)
+    return dict(u1=u1, v1=v1, t1=t1, q1=q1, q1c=q1c, q1i=q1i, prsl=prsl, prslk=prslk, delp=delp,
+                prsi=prsi, phii=phii_full, phil=phil_full, psk=psk, fm=fm, fh=fh, tsea=tsea, heat=heat,
+                evap=evap, stress=stress, spd1=spd1, rbsoil=rbsoil, qfx=qfx)
+
+
+def _bl_gfs_setup_wrf(u, v, t, qv, qc, p, dz, z, *, psfc, hfx, qfx, tsk, gz1oz0, psim, psih,
+                      wspd_in, br, qi):
+    """WRF BL_GFS setup (module_bl_gfs.F:276-398) on REAL grid operands.
+
+    Pure-REAL right-hand sides (REAL grid arrays, REAL dummy constants, default-REAL
+    literals) are evaluated in REAL and only then stored into the REAL(kind_phys) work
+    arrays; statements that read a kind_phys variable are DOUBLE. Returns the DOUBLE
+    MONINP operands. Requires an x64-enabled scope.
+    """
+    n = u.shape[0]
+    lit = jnp.float32  # default-REAL literal
+    one = lit(1.0)
+    dbl = lambda value: jnp.asarray(value, jnp.float64)  # noqa: E731  REAL -> kind_phys store
+    # :278-302 surface statements
+    rrhox = dbl((WRF_R_D * t[0] * (one + WRF_EP_1 * qv[0])) / psfc)
+    cpm = dbl(WRF_CP * (one + lit(0.8) * qv[0]))
+    fmtmp = dbl(gz1oz0 - psim)
+    psk = dbl((psfc * lit(1.0e-5)) ** WRF_RCP)
+    fh = dbl(gz1oz0 - psih)
+    heat = dbl(hfx) / cpm * rrhox
+    evap = dbl(qfx) * rrhox
+    stress = dbl(WRF_KARMAN * WRF_KARMAN * wspd_in * wspd_in) / (fmtmp * fmtmp)
+    # :349-366 profiles
+    q1 = dbl(qv / (one + qv))
+    q1c = dbl(qc / (one + qc))
+    q1i = None if qi is None else dbl(qi / (one + qi))  # :392-398
+    prsl = dbl(p * lit(0.001))
+    prslk = (prsl * dbl(lit(0.01))) ** dbl(WRF_RCP)  # :368-372 DOUBLE
+    # :375-390 DEL/PRSI/PHII/PHIL: DOUBLE where a kind_phys operand enters, REAL otherwise
+    # Opaque divisor: XLA algsimp would rewrite PRSL/ROVG into PRSL*(1/ROVG) (E130).
+    rovg = jax.lax.optimization_barrier(dbl(WRF_ROVG))
+    delp = prsl[: n - 1] / rovg * dbl(dz[: n - 1]) / dbl(t[: n - 1])
+    delp = jnp.concatenate([delp, delp[n - 2:n - 1]])
+    prsi = [dbl(psfc * lit(0.001))]
+    for k in range(1, n):
+        prsi.append(prsi[k - 1] - delp[k - 1])
+    prsi.append(prsi[n - 1] - delp[n - 2])
+    phii = dbl((z - z[0]) * WRF_G)
+    phii_full = jnp.concatenate([phii, (phii[n - 1] + dbl(dz[n - 1] * WRF_G))[None]])
+    phil = dbl(lit(0.5) * (z[1:] + z[:-1] - lit(2.0) * z[0]) * WRF_G)
+    phil_full = jnp.concatenate([phil, (phii_full[n - 1] - phil[n - 2] + phii_full[n - 1])[None]])
+    return dict(u1=dbl(u), v1=dbl(v), t1=dbl(t), q1=q1, q1c=q1c, q1i=q1i, prsl=prsl, prslk=prslk,
+                delp=delp, prsi=jnp.stack(prsi), phii=phii_full, phil=phil_full, psk=psk, fm=fmtmp,
+                fh=fh, tsea=dbl(tsk), heat=heat, evap=evap, stress=stress, spd1=dbl(wspd_in),
+                rbsoil=dbl(br), qfx=dbl(qfx))
+
+
+def _moninp_and_store(w, pii, dt, c):
+    """MONINP (module_bl_gfs.F:569-1298) + BL_GFS tendency/UST recovery (:432-466).
+
+    ``w``: setup work arrays; ``c``: MoninpConstants. Returns
+    (du, dv, rthblten, rqvblten, rqcblten, rqiblten, pbl, kpbl, ust).
+    """
+    u1, v1, t1, q1, q1c, q1i = w['u1'], w['v1'], w['t1'], w['q1'], w['q1c'], w['q1i']
+    prsl, prslk, delp, prsi = w['prsl'], w['prslk'], w['delp'], w['prsi']
+    phii_full, phil_full, psk, fm, fh = w['phii'], w['phil'], w['psk'], w['fm'], w['fh']
+    tsea, heat, evap, stress, spd1 = w['tsea'], w['heat'], w['evap'], w['stress'], w['spd1']
+    rbsoil, qfx = w['rbsoil'], w['qfx']
+    CON_G, GOR, GOCP, FV, VK, DW2MIN, CFAC, SFCFRAC, QMIN, ZFMIN = c[:10]
+    n = u1.shape[0]
+    kmpbl = n // 2
 
     # ---- MONINP ----
     gravi = 1.0 / CON_G
@@ -369,7 +490,9 @@ def _gfs_column(u, v, t, qv, qc, p, pii, dz, z, *, psfc, ust_in, hfx, qfx,
 
     hpbl2 = interp_hpbl(kpbl2, rbdn2, rbup2)
     kpbl2 = jnp.where(hpbl2 < zi[kpbl2], kpbl2 - 1, kpbl2)
-    pblflg2 = pblflg & (kpbl2 > 1)
+    # module_bl_gfs.F:935 IF(KPBL(I).LE.1) PBLFLG=.FALSE. -- 1-based KPBL; kpbl2
+    # here is 0-based (KPBL2D = kpbl+1 below), so the test is kpbl2 <= 0.
+    pblflg2 = pblflg & (kpbl2 > 0)
 
     # Final HPBL/KPBL: thermal branch when pblflg else first-guess
     hpbl = jnp.where(pblflg, hpbl2, hpbl1)
@@ -377,7 +500,7 @@ def _gfs_column(u, v, t, qv, qc, p, pii, dz, z, *, psfc, ust_in, hfx, qfx,
     pblflg = jnp.where(pblflg, pblflg2, pblflg)
 
     # ---- diffusion coefficients below PBL (k=0..kmpbl-1) ----
-    prinv = 1.0 / (phih / phim + CFAC * VK * 0.1)
+    prinv = 1.0 / (phih / phim + CFAC * VK * c.PRINV_LIT)
     prinv = jnp.clip(prinv, PRMIN, PRMAX)
     kidx = jnp.arange(n)
     zfac = jnp.maximum(1.0 - (zi[1:] - zl[0]) / (hpbl - zl[0]), ZFMIN)  # zi[k+1], len n
@@ -400,11 +523,11 @@ def _gfs_column(u, v, t, qv, qc, p, pii, dz, z, *, psfc, ust_in, hfx, qfx,
     rl2 = zk * RLAM / (RLAM + zk)
     dk = rl2 * rl2 * jnp.sqrt(shr2)
     sri = jnp.sqrt(jnp.maximum(-ri, 0.0))
-    dku_unst = XKZO + dk * (1.0 + 8.0 * (-ri) / (1.0 + 1.746 * sri))
-    dkt_unst = XKZO + dk * (1.0 + 8.0 * (-ri) / (1.0 + 1.286 * sri))
+    dku_unst = XKZO + dk * (1.0 + 8.0 * (-ri) / (1.0 + c.DKU_LIT * sri))
+    dkt_unst = XKZO + dk * (1.0 + 8.0 * (-ri) / (1.0 + c.DKT_LIT * sri))
     tem_st = dk / (1.0 + 5.0 * ri) ** 2
     dkt_st = XKZO + tem_st
-    prnum = jnp.minimum(1.0 + 2.1 * ri, PRMAX)
+    prnum = jnp.minimum(1.0 + c.PRNUM_LIT * ri, PRMAX)
     dku_st = (dkt_st - XKZO) * prnum + XKZO
     dku_free = jnp.where(ri < 0.0, dku_unst, dku_st)
     dkt_free = jnp.where(ri < 0.0, dkt_unst, dkt_st)
@@ -474,6 +597,14 @@ def _gfs_column(u, v, t, qv, qc, p, pii, dz, z, *, psfc, ust_in, hfx, qfx,
     cl_t = jnp.concatenate([jnp.zeros(1), al_t])
     qc_sol = _thomas1(cl_t, ad_t, au_t, q1c)
     qctend = (qc_sol - q1c) * rdt
+    # Tracer 3 (QI) shares the TRIDIT LHS (module_bl_gfs.F:1250-1292); each RHS
+    # column is eliminated independently, so a separate one-RHS solve is exact.
+    qi = q1i  # tracer 3: None = NTRAC=2
+    if qi is None:
+        rqiblten = jnp.zeros_like(qctend)
+    else:
+        qi_sol = _thomas1(cl_t, ad_t, au_t, q1i)
+        rqiblten = (qi_sol - q1i) * rdt / (1.0 - q1i) ** 2  # :455-461
 
     # ---- BL_GFS tendency recovery (driver constants) ----
     rthblten = tau / pii
@@ -486,11 +617,26 @@ def _gfs_column(u, v, t, qv, qc, p, pii, dz, z, *, psfc, ust_in, hfx, qfx,
     pbl_out = hpbl
     kpbl_out = kpbl + 1  # WRF KPBL2D is 1-based
 
-    return rublten, rvblten, rthblten, rqvblten, rqcblten, pbl_out, kpbl_out, ust_out
+    return rublten, rvblten, rthblten, rqvblten, rqcblten, rqiblten, pbl_out, kpbl_out, ust_out
+
+
+def _gfs_column(u, v, t, qv, qc, p, pii, dz, z, *, psfc, ust_in, hfx, qfx,
+                tsk, gz1oz0, psim, psih, wspd_in, br, dt, qi=None):
+    """One-column GFS PBL: returns (du, dv, rthblten, rqvblten, rqcblten, rqiblten, pbl, kpbl, ust).
+
+    ``qi`` is BL_GFS's QI3D tracer 3 (``NTRAC=3`` when ``P_QI>=P_FIRST_SCALAR``,
+    module_bl_gfs.F:274,392-398); ``None`` = NTRAC=2 (no ice slot, RQIBLTEN 0).
+
+    Direct transcription of ``BL_GFS`` (EM core, NMM/HWRF off) + ``MONINP``. All
+    arrays are length-``n`` bottom-up WRF mass-level columns.
+    """
+    work = _bl_gfs_setup_legacy(u, v, t, qv, qc, p, dz, z, psfc=psfc, hfx=hfx, qfx=qfx, tsk=tsk,
+                                gz1oz0=gz1oz0, psim=psim, psih=psih, wspd_in=wspd_in, br=br, qi=qi)
+    return _moninp_and_store(work, pii, dt, LEGACY_MONINP)
 
 
 def gfs_columns(u, v, t, qv, qc, p, pii, dz, z, *, psfc, ust, hfx, qfx,
-                tsk, gz1oz0, psim, psih, wspd, br, dt=60.0):
+                tsk, gz1oz0, psim, psih, wspd, br, dt=60.0, qi=None):
     """Batched GFS PBL kernel over the leading (column) axis.
 
     Profile args are ``(B, n)`` bottom-up WRF mass-level columns; scalar surface
@@ -502,23 +648,69 @@ def gfs_columns(u, v, t, qv, qc, p, pii, dz, z, *, psfc, ust, hfx, qfx,
     )
 
     def one(u_, v_, t_, qv_, qc_, p_, pii_, dz_, z_,
-            psfc_, ust_, hfx_, qfx_, tsk_, gz_, psim_, psih_, wspd_, br_):
+            psfc_, ust_, hfx_, qfx_, tsk_, gz_, psim_, psih_, wspd_, br_, qi_):
         return _gfs_column(
             u_, v_, t_, qv_, qc_, p_, pii_, dz_, z_,
             psfc=psfc_, ust_in=ust_, hfx=hfx_, qfx=qfx_, tsk=tsk_,
-            gz1oz0=gz_, psim=psim_, psih=psih_, wspd_in=wspd_, br=br_, dt=dt,
+            gz1oz0=gz_, psim=psim_, psih=psih_, wspd_in=wspd_, br=br_, dt=dt, qi=qi_,
         )
 
-    batched = jax.vmap(one, in_axes=(0,) * 19)
-    ru, rv, rth, rqv, rqc, pbl, kpbl, ust_o = batched(
+    batched = jax.vmap(one, in_axes=(0,) * 20)
+    ru, rv, rth, rqv, rqc, rqi, pbl, kpbl, ust_o = batched(
         u, v, t, qv, qc, p, pii, dz, z,
-        psfc, ust, hfx, qfx, tsk, gz1oz0, psim, psih, wspd, br,
+        psfc, ust, hfx, qfx, tsk, gz1oz0, psim, psih, wspd, br, qi,
     )
     return {
         "rublten": ru, "rvblten": rv, "rthblten": rth,
-        "rqvblten": rqv, "rqcblten": rqc,
+        "rqvblten": rqv, "rqcblten": rqc, "rqiblten": rqi,
         "pblh": pbl, "kpbl": kpbl, "ust": ust_o,
     }
 
 
-__all__ = ["gfs_columns"]
+_WRF_SURFACE = ("psfc", "hfx", "qfx", "tsk", "gz1oz0", "psim", "psih", "wspd_in", "br")
+
+
+def bl_gfs_wrf_stage(u, v, t, qv, qc, p, dz, z, *, psfc, hfx, qfx, tsk, gz1oz0, psim, psih, wspd, br,
+                     qi=None):
+    """Batched WRF BL_GFS setup: REAL ``(B, n)``/``(B,)`` operands -> DOUBLE MONINP work arrays.
+
+    Must run in an x64-enabled scope (the kind_phys stores widen to float64).
+    """
+    def one(profiles, surface, qi_):
+        return _bl_gfs_setup_wrf(*profiles, **dict(zip(_WRF_SURFACE, surface)), qi=qi_)
+    return jax.vmap(one)((u, v, t, qv, qc, p, dz, z), (psfc, hfx, qfx, tsk, gz1oz0, psim, psih, wspd, br), qi)
+
+
+def bl_gfs_wrf_moninp(work, pii, dt):
+    """Batched DOUBLE MONINP + BL_GFS stores on ``bl_gfs_wrf_stage`` work arrays (x64 scope).
+
+    ``pii`` is the REAL PI3D, ``dt`` the REAL ``dtbl`` (DELTIM=DT). Outputs are the
+    kind_phys values before the REAL grid stores.
+    """
+    deltim = float(np.float32(dt))
+    out = jax.vmap(lambda w, pi: _moninp_and_store(w, jnp.asarray(pi, jnp.float64), deltim, WRF_MONINP))(work, pii)
+    return dict(zip(("rublten", "rvblten", "rthblten", "rqvblten", "rqcblten", "rqiblten", "pblh", "kpbl",
+                     "ust"), out))
+
+
+def bl_gfs_wrf_columns(u, v, t, qv, qc, p, pii, dz, z, *, psfc, ust, hfx, qfx, tsk, gz1oz0, psim, psih,
+                       wspd, br, dt, qi=None):
+    """WRF ``BL_GFS`` public call on REAL grid columns (t-cfix-sfc F13).
+
+    REAL setup statements in REAL (module_bl_gfs.F:276-398), MONINP in DOUBLE
+    (kind_phys, module_gfs_machine.F:8) with WRF's literal constants, REAL stores
+    of the tendencies/UST/PBL (:432-466). ``ust`` (UST INOUT) is overwritten by
+    BL_GFS and not read. Same column layout and output keys as ``gfs_columns``.
+    """
+    del ust
+    real = lambda value: None if value is None else jnp.asarray(value, jnp.float32)  # noqa: E731
+    with jax.enable_x64(True):
+        work = bl_gfs_wrf_stage(*(real(a) for a in (u, v, t, qv, qc, p, dz, z)), psfc=real(psfc),
+                                hfx=real(hfx), qfx=real(qfx), tsk=real(tsk), gz1oz0=real(gz1oz0),
+                                psim=real(psim), psih=real(psih), wspd=real(wspd), br=real(br), qi=real(qi))
+        out = bl_gfs_wrf_moninp(work, real(pii), dt)
+        return {k: (v.astype(jnp.float32) if jnp.issubdtype(v.dtype, jnp.floating) else v)
+                for k, v in out.items()}
+
+
+__all__ = ["gfs_columns", "bl_gfs_wrf_columns", "bl_gfs_wrf_stage", "bl_gfs_wrf_moninp"]

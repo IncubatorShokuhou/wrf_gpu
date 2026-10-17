@@ -1,0 +1,304 @@
+{
+  "status": "READY-FOR-MERGE ShinHong-only +scoped rainnc proof; MP11 fallback EXCLUDED",
+  "base_main": "1e9f09c07b4b710060bad875be03a3d42bb3c000",
+  "product": "44b7b226b55f991d8a5aa26da207ff049dfb5be9",
+  "tests_head": "2903f695d1f2ffcfbef9492655b5934deab6f87f",
+  "SRC": "7b6c87860ae88acc256ed460592872d57279d6bc",
+  "two_dot_only_product_tests": [
+    "src/gpuwrf/contracts/physics_registry.py",
+    "src/gpuwrf/coupling/scan_adapters.py",
+    "src/gpuwrf/io/scheme_catalog.py",
+    "src/gpuwrf/physics/bl_shinhong.py",
+    "tests/test_ysu_surface_contract.py",
+    "tests/v040/test_cammg.py",
+    "tests/v040/test_shinhong_tke_caller.py",
+    "tests/v040/test_shinhong_wrf_oracle.py"
+  ],
+  "AST": [
+    "proofs/t_shinhong/build_oracle.py",
+    "proofs/t_shinhong/check_envelope.py",
+    "proofs/t_shinhong/compare_port.py",
+    "proofs/t_shinhong/make_fixture.py",
+    "proofs/t_shinhong/mutants.py",
+    "proofs/t_shinhong/observe_momentum.py",
+    "proofs/t_shinhong/observe_tke.py",
+    "proofs/t_shinhong/ulp_envelope.py",
+    "src/gpuwrf/contracts/physics_registry.py",
+    "src/gpuwrf/coupling/scan_adapters.py",
+    "src/gpuwrf/io/scheme_catalog.py",
+    "src/gpuwrf/physics/bl_shinhong.py",
+    "tests/test_ysu_surface_contract.py",
+    "tests/v040/test_cammg.py",
+    "tests/v040/test_shinhong_tke_caller.py",
+    "tests/v040/test_shinhong_wrf_oracle.py"
+  ],
+  "whole_product_tests_data_packaging_docs_BYTE_final_reviewed": true,
+  "scripts_BYTE_except_manager_GPUlock_checksum": true,
+  "product_BYTE_paid44b": true,
+  "MP11_excluded": true,
+  "held_MP11_ref": "lane/s2-integrate-b37-mp11-held",
+  "held_MP11_head": "cc20bab68f265cad5b577ee9f47e749a5d6a8c68",
+  "UTC": "2026-10-15T17:23:31.144362+00:00",
+  "snapshot_commit": "5531e5c8ca58fe91239b8fd5c44b9c136e4213bc",
+  "capped_sanity": {
+    "status": "PASS",
+    "returncode": 0,
+    "immutable_source": "5531e5c8ca58fe91239b8fd5c44b9c136e4213bc",
+    "command": [
+      "<USER_HOME>/miniconda3/bin/python",
+      "-m",
+      "pytest",
+      "-q",
+      "-rs",
+      "-p",
+      "no:cacheprovider",
+      "--basetemp",
+      "<USER_HOME>/wrf_gpu2_lanes/s2-integrate/pytest",
+      "--junitxml",
+      "<USER_HOME>/wrf_gpu2_lanes/s2-integrate/batch37-shinhong/sanity.xml",
+      "tests/contracts/",
+      "tests/test_v018_mp_family_fail_closed.py",
+      "tests/test_v034_implemented_notes.py",
+      "tests/test_scheme_catalog_fail_closed.py",
+      "tests/test_namelist_check.py",
+      "tests/test_namelist_binding.py",
+      "tests/test_m7_restart_checkpoint_roundtrip.py",
+      "tests/test_netcdf_process_lock.py",
+      "tests/test_v0110_wrfrst_netcdf.py",
+      "tests/test_cli.py",
+      "tests/test_v060_physics_dispatch.py",
+      "tests/test_ysu_surface_contract.py",
+      "tests/v040/test_shinhong_tke_caller.py",
+      "tests/v040/test_shinhong_wrf_oracle.py",
+      "tests/v040/test_cammg.py::test_scan_pbl_retains_shared_outputs_once"
+    ],
+    "elapsed_s": 86.15686324700073,
+    "cap": "6G/noSwap",
+    "GPU_runs": 0,
+    "cache": "<DATA_ROOT>/wrf_gpu2/scratch/s2-integrate/batch37-shinhong-cache",
+    "tmp": "<DATA_ROOT>/wrf_gpu2/scratch/s2-integrate/batch37-shinhong-tmp",
+    "snapshot": "<DATA_ROOT>/wrf_gpu2/scratch/s2-integrate/batch37-shinhong-snapshot",
+    "counts": {
+      "tests": 295,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "RSS_KiB": 3941060,
+    "cache_tmp_pytest_snapshot_deleted": true,
+    "UTC": "2026-10-15T17:23:31.122123+00:00"
+  },
+  "critic_R2": {
+    "target": "2903f695d1f2ffcfbef9492655b5934deab6f87f",
+    "gate_and_sentinels_passed": 4,
+    "intentional_mutant_failures": [
+      [
+        "test_erase_compiled_outputs_mutant",
+        "AssertionError: outside envelope row 0 exch_h k=1"
+      ]
+    ],
+    "setup_errors": 0,
+    "elapsed_s": 4.603,
+    "unchanged_product_trees": {
+      "src": "7b6c87860ae88acc256ed460592872d57279d6bc",
+      "data": "a91a7fbcc850486e65e257c0d0f185a18c6e58c2",
+      "scripts": "9175adb9504deb7fe7d8f1cb0adbf7706575bec4",
+      "pyproject.toml": "7da92fc565a2d047f5fd5acbd067f781300fea54",
+      "docs": "b3fb442ecb53782ea541284dad144705b09abcf9"
+    },
+    "numerical_default_cost_evidence_reused": true,
+    "gpu_runs": 0
+  },
+  "c07": {
+    "case": "c07",
+    "source": "44b7b226b55f991d8a5aa26da207ff049dfb5be9",
+    "frames": 25,
+    "D6": "PASS",
+    "bounded_misses": 0,
+    "nonfinite": 0,
+    "E41": "FAIL",
+    "wall_s": 993.766447643,
+    "sampled_peak_vram_MiB": 5380,
+    "cache_remaining": false,
+    "receipts": {
+      "gpu_run.json": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c07/gpu_run.json",
+        "sha256": "825c2abdb1d9cd13d3131c5bfa2debbcc003d73b3707aa36ad9cb9af29662a72"
+      },
+      "QUALIFICATION.json": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c07/QUALIFICATION.json",
+        "sha256": "303725dee56ac7024a974aa13844b328dd6bb7138e2a59079b36beb572635d2f"
+      },
+      "D6_d01.json": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c07/D6_d01.json",
+        "sha256": "04f19716c8eb252ee74f7674a67baa990e1bb78ce306c4913dd20ba082fe06ee"
+      },
+      "e41/wave_gate.json": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c07/e41/wave_gate.json",
+        "sha256": "a97a66037b7ef56069dc7a8105da6ccc209def6fdead6a5727ed7d26bc73c227"
+      }
+    },
+    "scope": "OriginalCPU/frozenD6 full24/actualcandidate44b. E41FAILdisclosed/F2OPEN; coldnotS1; originalolderPASSattemptSHAarchived."
+  },
+  "critic_CPU_cost": {
+    "parent": {
+      "compile_s": 1.2212872010059073,
+      "warm_median_s": 0.006647042006079573,
+      "argument_bytes": 2801232,
+      "output_bytes": 2201560,
+      "temp_bytes": 16163488,
+      "generated_code_bytes": 0,
+      "hlo_chars": 990457,
+      "while_ops": 10
+    },
+    "candidate": {
+      "compile_s": 1.3970331660020747,
+      "warm_median_s": 0.004198542999802157,
+      "argument_bytes": 2801232,
+      "output_bytes": 2822504,
+      "temp_bytes": 14794144,
+      "generated_code_bytes": 0,
+      "hlo_chars": 860815,
+      "while_ops": 8
+    },
+    "platform": "cpu",
+    "shape": [
+      1764,
+      44
+    ],
+    "diag": 0,
+    "limitations": "CPU component diagnostics on replicated real column; no GPU speed/memory qualification"
+  },
+  "cleanup": true,
+  "candidate_before_seal": "31957e4b41c2de0976f95124825a4c7c54d65732",
+  "scoped_rainnc_proof": {
+    "UTC": "2026-10-15T17:25:33.816387+00:00",
+    "scoped_commit": "d8c1f18a4edc75f29eb05e6c2add869d088c3c60",
+    "before": "5531e5c8ca58fe91239b8fd5c44b9c136e4213bc",
+    "after": "31957e4b41c2de0976f95124825a4c7c54d65732",
+    "exact_six_paths": [
+      ".agent/kernel/lanes/t-rainnc.notes.md",
+      "proofs/t_rainnc/LOCALIZATION.json",
+      "proofs/t_rainnc/upstream_repro/24_helper-empty.ttir",
+      "proofs/t_rainnc/upstream_repro/24_helper-noguard.ttir",
+      "proofs/t_rainnc/upstream_repro/44_helper-empty.ttir",
+      "proofs/t_rainnc/upstream_repro/44_helper-noguard.ttir"
+    ],
+    "proof_SHA": {
+      "proofs/t_rainnc/LOCALIZATION.json": "0d0439d8f06c173d4666f5a0bfaa1ff57015da70df0d5eba4e56b8395b224611",
+      "proofs/t_rainnc/upstream_repro/24_helper-empty.ttir": "15c359fca27ee8b2a7064fd6c13fff4cc558fc400eed395782935648a044d0eb",
+      "proofs/t_rainnc/upstream_repro/24_helper-noguard.ttir": "a916412c152f0bff5a181aa92639eb232b5d3b06075fff1703824116481781b0",
+      "proofs/t_rainnc/upstream_repro/44_helper-empty.ttir": "bc347023bcc899044b2a9da3748a322ff257086cec86c8a1bc2421c5ad7b2045",
+      "proofs/t_rainnc/upstream_repro/44_helper-noguard.ttir": "44f21c8846b64036bf35441b70c0ca0cd333bf7d37c5b0fa617fb4d0e69799bc"
+    },
+    "TTIR_count": 4,
+    "TTIR_bytes": 98960,
+    "notes_resolution": "main-first + exactaddedlines fromthiscommit only",
+    "model_tests_scripts_data_packaging_BYTE_sanity_candidate": true,
+    "status": "PASS scopedproof only; no native product fix or external posting"
+  },
+  "scoped_rainnc_limit": "Proof-localization only, tinystockGPU32/32/E41PASS4 does notqualify full CAM-MG native product or forecast; no branchWIP/source import or externalposting.",
+  "metadata_script_exception": "Only latest manager scripts/with_gpu_lock.sha256 differs from paid44/finaltests2903 scripts tree. Actual GPU-lock/forecast scripts BYTE; checksum verified matches current launcher. No scientific/compile artifact change.",
+  "default_identities_reused": {
+    "Swiss": "f672a5739cb96e388b6b7a40ef80337bf81bdc14ef15268f3476e09d79fe055d",
+    "PROD": "6fc715a2bd630934c4cf0f94427df19a527cbf429011c9ba5efe4d712744d27b"
+  },
+  "scientific_limits": [
+    "Compiled synthetic v tendency excesses rows3/4/5level9 remain explicitlyquantum-bounded; fullstrict envelopePASS notclaimed. mode0sibling uses assertedidentical-input originalWRF driving bounds.",
+    "C07full24h25D6PASS/0boundedNF0/actualGPUrc0 reused at exactlyidenticalSRC44; actualE41FAIL(optindisclosed)/F2OPEN.",
+    "Coldwall993.766s/sampled5380MiB notwarmS1/R1/readiness/roofline/globalreleasequalification.",
+    "YSUsibling separate; allpriorF2/strictFMA/ZERORMOL/othermissing-scheme gates remain scoped.",
+    "MP11 fallback savedcc20 on separateheldref, absent frompublishablecandidate; inclusionONLYonlaterexplicitmanagerdecision."
+  ],
+  "fresh_GPU_native_default_runs": 0,
+  "proof_files": {
+    "SI314-batch37-ShinHong-merge.json": {
+      "sha256": "c670ff4e4dadbbf7b71534b9e693cbf16488db0531516b18791a741e40c3c4d8",
+      "raw_sha256": "c670ff4e4dadbbf7b71534b9e693cbf16488db0531516b18791a741e40c3c4d8"
+    },
+    "SI314a-preflight.json": {
+      "sha256": "d1936cd1e46e5870689e009f8916dcc49f98d8aa9725a5d6682dce8d126ec56f",
+      "raw_sha256": "d1936cd1e46e5870689e009f8916dcc49f98d8aa9725a5d6682dce8d126ec56f"
+    },
+    "SI315-batch37-ShinHong-capped.json": {
+      "sha256": "4a74b6928e204938ce9af8e5ea6237e5d17950d14a03d76d833b3eb35099fcfd",
+      "raw_sha256": "4a74b6928e204938ce9af8e5ea6237e5d17950d14a03d76d833b3eb35099fcfd"
+    },
+    "SI316-batch37-ShinHong-qualified.json": {
+      "sha256": "034cb6f9f1215f55a8b49d23ebc22aa37db4d766d00347f9085203383aff5661",
+      "raw_sha256": "034cb6f9f1215f55a8b49d23ebc22aa37db4d766d00347f9085203383aff5661"
+    },
+    "SI317-scoped-rainnc-proof.json": {
+      "sha256": "e9069aeaf2aef09db6c378524f3473a8e92118212196c05aff8a828353f2277a",
+      "raw_sha256": "e9069aeaf2aef09db6c378524f3473a8e92118212196c05aff8a828353f2277a"
+    },
+    "sanity.log.gz": {
+      "sha256": "2f9aa242fcd421ae0bc159efb7cdcf3288bfca153f16f555400526062081dfe7",
+      "raw_sha256": "a7f0cc9ac7d757558e8faf7dc7238e7c5921ed274d7d1d329e7e4a930d492d8d"
+    },
+    "sanity.time": {
+      "sha256": "876a5024352abb1df3ff65d66974b52ba3afc6d0d95611a54d6c9dbf1fbf434b",
+      "raw_sha256": "876a5024352abb1df3ff65d66974b52ba3afc6d0d95611a54d6c9dbf1fbf434b"
+    },
+    "sanity.xml.gz": {
+      "sha256": "f387e1d608909b9aaa00aad5594424b9196923f32f33a97840843342a17a30c0",
+      "raw_sha256": "76ebaf266d2b1f255906156b8d482a615d1ec12581cc9cbb5ab00b04677b14f9"
+    },
+    "SI313-batch37-split.json": {
+      "sha256": "31981918b99ef267e2f67a8b69617c983da38a4ad4e585cf32dc2425f27f334b",
+      "raw_sha256": "31981918b99ef267e2f67a8b69617c983da38a4ad4e585cf32dc2425f27f334b"
+    },
+    "batch37_shinhong.py": {
+      "sha256": "831856dc0e56923dfe72ccdb56ba88339f9fa385daa1a91c4126cb186bf543ab",
+      "raw_sha256": "831856dc0e56923dfe72ccdb56ba88339f9fa385daa1a91c4126cb186bf543ab"
+    },
+    "rv-VERDICT.md": {
+      "sha256": "31deddb1b81891d2178cdd9a4fd6a5ef625695d13c192d6838751878b5740d31",
+      "raw_sha256": "31deddb1b81891d2178cdd9a4fd6a5ef625695d13c192d6838751878b5740d31"
+    },
+    "rv-RV02_oracle.json": {
+      "sha256": "472e6eef36b4d3b20e09e5e90d895f61453fdbdaed0152e6eeecc5cdcb6469e1",
+      "raw_sha256": "472e6eef36b4d3b20e09e5e90d895f61453fdbdaed0152e6eeecc5cdcb6469e1"
+    },
+    "rv-RV03_swiss.json": {
+      "sha256": "a2baa411ec7839fac2cf63a3aa9eaba4615f299a9f5efb02901e107e696e8514",
+      "raw_sha256": "a2baa411ec7839fac2cf63a3aa9eaba4615f299a9f5efb02901e107e696e8514"
+    },
+    "rv-RV03_prod.json": {
+      "sha256": "6fcc772f3f714b0712f885bf9f7f16a26c9bca1ef72e17cbc10253f2ae249ddc",
+      "raw_sha256": "6fcc772f3f714b0712f885bf9f7f16a26c9bca1ef72e17cbc10253f2ae249ddc"
+    },
+    "rv-RV04_compiled.json": {
+      "sha256": "4ea5674ed1dff8a78ff5c1a8f8b42c583b88d37f940eba07c612a405bfa450e7",
+      "raw_sha256": "4ea5674ed1dff8a78ff5c1a8f8b42c583b88d37f940eba07c612a405bfa450e7"
+    },
+    "rv-RV05_mutant.json": {
+      "sha256": "007e3abaed5f247b37262ae3f13559407f3306fdb215dfa6ada413be888f676b",
+      "raw_sha256": "007e3abaed5f247b37262ae3f13559407f3306fdb215dfa6ada413be888f676b"
+    },
+    "rv-RV06_cost.json": {
+      "sha256": "16098890ccc7f6ebe1bd30ed9e8cb71076c4f9f5363315ca645ffbf574c4f747",
+      "raw_sha256": "16098890ccc7f6ebe1bd30ed9e8cb71076c4f9f5363315ca645ffbf574c4f747"
+    },
+    "rv-RV07.xml.gz": {
+      "sha256": "e2552dbc8da308ae0e4e9e0b6ef255f07bac3c1b04ff6e08fd74baabe6a967ab",
+      "raw_sha256": "95af9041f4036fd0eb352ff9eb9d38fe8b7dce5233acc38fe3830710bf4878ce"
+    },
+    "rv-R2-VERDICT.md": {
+      "sha256": "fb9f6fc24423a85ca0209da3b3cd0685d44d7aea4c812328b54df1a2f7f5eda2",
+      "raw_sha256": "fb9f6fc24423a85ca0209da3b3cd0685d44d7aea4c812328b54df1a2f7f5eda2"
+    },
+    "rv-R2-RESULT.json": {
+      "sha256": "1f05745bf938af2079453ee3fb058c17a36a86a6f4d867215045dcf35a83ce82",
+      "raw_sha256": "1f05745bf938af2079453ee3fb058c17a36a86a6f4d867215045dcf35a83ce82"
+    },
+    "rv-R2-reuse.json": {
+      "sha256": "ed16a70b53ee55fb76493f92fa2618551eb21697fba445d72a85e36e42928fe6",
+      "raw_sha256": "ed16a70b53ee55fb76493f92fa2618551eb21697fba445d72a85e36e42928fe6"
+    },
+    "rv-R2-RV08.xml.gz": {
+      "sha256": "db6070444fec8d4b62a876db93a43bd36f84443807f8af352bec6f329a21bcf4",
+      "raw_sha256": "03b0d30e87733b86a32ad6eae95ed94387a458645be5627dd50f7fc0974617bf"
+    }
+  }
+}

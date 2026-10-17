@@ -28,7 +28,8 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 MANIFEST_PATH = REPO_ROOT / "proofs/v018/mp_endpoint_manifest.json"
 STATUS_PATH = REPO_ROOT / "proofs/v018/mp_family_status.json"
 
-OPERATIONAL_MP = {0, 1, 2, 3, 4, 6, 8, 10, 13, 14, 16, 24, 26, 28, 97}
+OPERATIONAL_MP = {0, 1, 2, 3, 4, 6, 8, 9, 10, 13, 14, 16, 17, 19, 21, 22, 24, 26, 28, 50, 51, 52, 53, 97}
+V040_GRADUATED_MP = {9, 17, 19, 21, 22, 50, 51, 52, 53}
 
 REQUESTED_FAIL_CLOSED: dict[int, tuple[str, ...]] = {
     5: ("Ferrier", "module_mp_fer_hires.F", "qt/CWM", "NOT YET IMPLEMENTED"),
@@ -36,23 +37,22 @@ REQUESTED_FAIL_CLOSED: dict[int, tuple[str, ...]] = {
     96: ("MadWRF", "CASE (MADWRF_MP)", "no-op", "NOT YET IMPLEMENTED"),
     7: ("Goddard 4-ice", "module_mp_gsfcgce_4ice_nuwrf.F", "qh", "NOT YET IMPLEMENTED"),
     38: ("Thompson graupel-hail", "module_mp_thompson.F", "qvolg", "NOT YET IMPLEMENTED"),
-    9: ("Milbrandt-Yau", "module_mp_milbrandt2mom.F", "qnh", "NOT YET IMPLEMENTED"),
     11: ("CAM 5.1", "module_mp_cammgmp_driver.F", "CAM-specific", "NOT YET IMPLEMENTED"),
-    17: ("NSSL", "module_mp_nssl_2mom.F", "qvolg", "NOT YET IMPLEMENTED"),
-    19: ("NSSL", "module_mp_nssl_2mom.F", "qvolg", "NOT YET IMPLEMENTED"),
-    21: ("NSSL", "module_mp_nssl_2mom.F", "qvolg", "NOT YET IMPLEMENTED"),
-    22: ("NSSL", "module_mp_nssl_2mom.F", "qvolg", "NOT YET IMPLEMENTED"),
     27: ("UDM", "module_mp_udm.F", "qnn/qnc/qnr", "NOT YET IMPLEMENTED"),
     29: ("RCON", "module_mp_rcon.F", "cloudnc", "NOT YET IMPLEMENTED"),
     30: ("HUJI fast", "module_mp_fast_sbm.F", "bin-state", "NOT YET IMPLEMENTED"),
     32: ("HUJI full", "module_mp_full_sbm.F", "bin-state", "NOT YET IMPLEMENTED"),
-    50: ("P3", "module_mp_p3.F", "qir/qib", "NOT YET IMPLEMENTED"),
-    51: ("P3", "module_mp_p3.F", "qnc/qir/qib", "NOT YET IMPLEMENTED"),
-    52: ("P3", "module_mp_p3.F", "qi2", "NOT YET IMPLEMENTED"),
-    53: ("P3", "module_mp_p3.F", "qzi", "NOT YET IMPLEMENTED"),
     55: ("Jensen-ISHMAEL", "module_mp_jensen_ishmael.F", "qi2/qi3", "NOT YET IMPLEMENTED"),
     56: ("NTU", "module_mp_ntu.F", "i3m", "NOT YET IMPLEMENTED"),
 }
+
+# Frozen v0.18 evidence groups describe the historical manifest, not current
+# admission. Graduated codes retain their original source/oracle evidence.
+# Preserve the v018 inventory/receipts while testing today's admission matrix.
+HISTORICAL_REQUESTED_FAIL_CLOSED = dict(REQUESTED_FAIL_CLOSED)
+V040_GRADUATED_MP |= {5, 7, 15, 38, 55, 56, 11}
+REQUESTED_FAIL_CLOSED = {code: reason for code, reason in REQUESTED_FAIL_CLOSED.items()
+                         if code not in V040_GRADUATED_MP}
 
 REFERENCE_WITH_ORACLE = {5, 7, 9, 18, 27, 29, 38, 40, 50, 51, 52, 53, 56, 95}
 # v0.23 F2: NSSL(18) + Morrison-aerosol(40) gained REAL standalone single-column
@@ -118,7 +118,7 @@ def test_v018_mp_operational_set_is_preserved() -> None:
 
     # v0.23 F2: accepted = operational + the two reference-only oracle-backed
     # MP options (18 NSSL, 40 Morrison-aero); only OPERATIONAL_MP is scan-wired.
-    assert set(ACCEPTED_MP_PHYSICS) == OPERATIONAL_MP | V023_REFERENCE_ONLY_MP
+    assert set(ACCEPTED_MP_PHYSICS) == OPERATIONAL_MP | V023_REFERENCE_ONLY_MP | V040_GRADUATED_MP
     # v0.3.4 (o1-nlbind): scan-wired codes the CLI cannot run under the release
     # defaults are demoted to REFERENCE_ONLY with the measured reason.
     from gpuwrf.io.scheme_catalog import _RELEASE_CARRY_UNRUNNABLE
@@ -126,17 +126,22 @@ def test_v018_mp_operational_set_is_preserved() -> None:
     demoted = set(_RELEASE_CARRY_UNRUNNABLE.get("mp_physics", {}))
     for mp in sorted(OPERATIONAL_MP - demoted):
         assert classify_scheme("mp_physics", mp).status is SupportStatus.IMPLEMENTED
+    for mp in sorted(V040_GRADUATED_MP):
+        support = classify_scheme("mp_physics", mp)
+        assert support.status is SupportStatus.IMPLEMENTED
+        assert "CPU-oracle-qualified" in support.reason and "pending" in support.reason
     for mp in sorted(demoted):
         support = classify_scheme("mp_physics", mp)
         assert support.status is SupportStatus.REFERENCE_ONLY
         assert "release defaults" in support.reason
 
-    # WSM7/WDM7 hail schemes: scan-wired, but the release root boundary has no qh
-    # record (v0.3.4 CLI probe) -> refused operationally with that reason.
-    for mp in (24, 26):
-        support = classify_scheme("mp_physics", mp)
-        assert support.status is SupportStatus.REFERENCE_ONLY
-        assert "qh" in support.reason
+    # WSM7/WDM7 hail schemes: v0.4.0 o2-rootbdy routes the root qh boundary (WRF flow_dep_bdy)
+    # -> WSM7 IMPLEMENTED; WDM7 stays refused (no REAL32 island, Nc/Nn/Nr not transported).
+    assert classify_scheme("mp_physics", 24).status is SupportStatus.IMPLEMENTED
+    assert "qh" in classify_scheme("mp_physics", 24).reason
+    support = classify_scheme("mp_physics", 26)
+    assert support.status is SupportStatus.IMPLEMENTED
+    assert "Nc/Nr/Nn" in support.reason
 
 
 @pytest.mark.parametrize("mp, expected_tokens", sorted(REQUESTED_FAIL_CLOSED.items()))
@@ -148,8 +153,8 @@ def test_v018_open_mp_family_fails_closed_with_named_reason(
     assert mp not in ACCEPTED_MP_PHYSICS
     for token in expected_tokens:
         assert token in support.reason
-    # v0.3.4: 24/26/28/40 are refused under the release defaults (o1-nlbind CLI probe); 18 NSSL is operational.
-    assert "mp_physics=0/1/2/3/4/6/8/10/13/14/16/18/97" in support.alternative
+    # v0.4.0 (o2-rootbdy): 24/28/40 operational again (single domains); 26 stays refused.
+    assert "mp_physics=0/1/2/3/4/6/8/9/10/13/14/16/17/18/19/21/22/24/26/28/40/97" in support.alternative
 
 
 def test_v018_open_mp_family_is_rejected_at_namelist_layer() -> None:
@@ -204,10 +209,10 @@ def _walk_numbers(value: Any) -> list[float]:
 def test_v018_endpoint_manifest_covers_every_requested_mp_code() -> None:
     manifest = _manifest()
     entries = _manifest_entries()
-    expected = OPERATIONAL_MP | set(REQUESTED_FAIL_CLOSED) | V023_REFERENCE_ONLY_MP
+    expected = OPERATIONAL_MP | set(HISTORICAL_REQUESTED_FAIL_CLOSED) | V023_REFERENCE_ONLY_MP
     assert set(entries) == expected
     assert (REFERENCE_WITH_ORACLE | PROVEN_IRRELEVANT | STILL_OPEN
-            == set(REQUESTED_FAIL_CLOSED) | V023_REFERENCE_ONLY_MP)
+            == set(HISTORICAL_REQUESTED_FAIL_CLOSED) | V023_REFERENCE_ONLY_MP | (V040_GRADUATED_MP - {15}))
     assert REFERENCE_WITH_ORACLE.isdisjoint(PROVEN_IRRELEVANT)
     assert REFERENCE_WITH_ORACLE.isdisjoint(STILL_OPEN)
     assert PROVEN_IRRELEVANT.isdisjoint(STILL_OPEN)
@@ -223,6 +228,13 @@ def test_v018_endpoint_manifest_matches_catalog_status() -> None:
     entries = _manifest_entries()
     for mp, entry in entries.items():
         support = classify_scheme("mp_physics", mp)
+        if mp in V040_GRADUATED_MP:
+            historical_endpoint = "ref_with_oracle_fail_closed" if mp in {5, 7, 9, 38, 50, 51, 52, 53, 56} else "proven_irrelevant_fail_closed"
+            assert entry["endpoint"] == historical_endpoint
+            assert mp in (OPERATIONAL_MP | V040_GRADUATED_MP) and mp in ACCEPTED_MP_PHYSICS
+            assert support.status is SupportStatus.IMPLEMENTED
+            assert "CPU-oracle-qualified" in support.reason
+            continue
         if mp in V034_GRADUATED_MP:
             assert entry["endpoint"] == "reference_only_accepted"
             # scan-wired in v0.3.4; refused by the CLI under the release defaults
@@ -434,7 +446,7 @@ def test_v018_fail_closed_mp_reasons_are_source_backed() -> None:
     for mp, relative_path in SOURCE_BY_CODE.items():
         path = WRF_ROOT / relative_path
         assert path.exists(), f"mp={mp} missing WRF source {path}"
-        if mp in V034_GRADUATED_MP:  # scan-wired; may be CLI-demoted (o1-nlbind)
+        if mp in V034_GRADUATED_MP | V040_GRADUATED_MP:  # historical endpoint superseded
             assert classify_scheme("mp_physics", mp).status in (SupportStatus.IMPLEMENTED,
                                                                 SupportStatus.REFERENCE_ONLY)
             continue

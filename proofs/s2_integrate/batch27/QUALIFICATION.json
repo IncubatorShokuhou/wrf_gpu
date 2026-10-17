@@ -1,0 +1,193 @@
+{
+  "verdict": "READY-FOR-MERGE",
+  "scope": "Reviewedhostscalarlist admission+two testfixtures, no newGPU/numericaltrajectory claim",
+  "UTC": "2026-10-15T08:50:46.514101+00:00",
+  "base_main": "77e8252237a733283c1bb383b755fd70c485c525",
+  "candidate_before_seal": "af14cdcd3ec7c650e9b0b71450d28ca5ba13400f",
+  "SRC": "154eeee7b64190c97781d93e2640895334f8f571",
+  "model_inputs_scripts_packaging_BYTE_reviewed_2248": true,
+  "only_product_delta_main": "wrfsfdda.effective_surface_radius;hostsinglelist/tuple scalar normalization,4otherfunctions+tail unchanged",
+  "NSSL_test": "Exactlymockmp_physics0 added; predicate/expectedemptydict/allotherbytes unchanged",
+  "CuPlus_test": "Real seed_history_diagnostics(state,myjsfc=True) used forsf2; allassertASTsexact",
+  "test_repairs_paid_reuse": {
+    "NSSL_VALID_MP0_MOCK_20261015.json": {
+      "utc": "2026-10-15T08:38:52.462718+00:00",
+      "classification": "b: empty SimpleNamespace missing required OperationalNamelist.mp_physics; valid no-MP control uses0",
+      "before": {
+        "arm": "C160",
+        "passed": 110,
+        "failed": 1,
+        "error": "AttributeError namespace.mp_physics"
+      },
+      "after": {
+        "arm": "C160b-NSSL-valid-mp0-namelist",
+        "passed": 1,
+        "failed": 0,
+        "skipped": 0,
+        "peak_rss_gib": 0.773406982421875,
+        "swap_kib": 0
+      },
+      "source": {
+        "main": "77e8252237a733283c1bb383b755fd70c485c525",
+        "candidate": "eecb6ad447faed76858b387f2402610191ccd20b",
+        "test_only_file": "tests/v034/nssl2mom/test_wiring.py",
+        "exactly_one_assertion_mock_argument_added": "mp_physics=0",
+        "all_other_bytes_expectations_predicates_unchanged": true,
+        "real_namelist_contract": "operational_mode.py:1121 required int mp_physics; :7119 admits0"
+      },
+      "change": "Exactly one assertion mock argument mp_physics=0; comparator and expected {} unchanged; every other file byte/predicate/numeric bound unchanged",
+      "performance": "test mock only; no product code or arithmetic/buffer/kernel changes",
+      "receipts": {
+        "C160": {
+          "command.json": {
+            "path": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C160/command.json",
+            "sha256": "c1e98537cf7ed4d409e82bf13d585ef5f501c56b86aa3bbf8c01f701429e3366"
+          },
+          "pytest.xml": {
+            "path": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C160/pytest.xml",
+            "sha256": "9a6f6e1d891feb162f791d2b64383a156dd8e2ddf4226c360375d962f3194a50"
+          },
+          "result.json": {
+            "path": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C160/result.json",
+            "sha256": "7eb2f4b0faad33e5ca6e1ae8380d93d33c63c4bb3bcabdc6b487820cf7b4d03e"
+          },
+          "memory_summary.json": {
+            "path": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C160/memory_summary.json",
+            "sha256": "54a75dd35920ed8a0e86fcdb580fb039eee0a346394298b2a06e6d54f3fb8614"
+          }
+        },
+        "C160b-NSSL-valid-mp0-namelist": {
+          "command.json": {
+            "path": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C160b-NSSL-valid-mp0-namelist/command.json",
+            "sha256": "3b24eadd4f2ffc62489066c89b6f382b60452d676627d7c0cb55328bca69fb19"
+          },
+          "pytest.xml": {
+            "path": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C160b-NSSL-valid-mp0-namelist/pytest.xml",
+            "sha256": "1f4f7b13c36eb5937a15189183ceb7c46664a7b58ba5851939992b020c8a4e43"
+          },
+          "result.json": {
+            "path": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C160b-NSSL-valid-mp0-namelist/result.json",
+            "sha256": "f1721047111bcea28deace3b9f0adc932fb5cf015b08135b3258bbc20286441a"
+          },
+          "memory_summary.json": {
+            "path": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C160b-NSSL-valid-mp0-namelist/memory_summary.json",
+            "sha256": "dc6f700ea90e55f31da36b20e03831327681309061868a8b9bd241c60d123d32"
+          }
+        }
+      }
+    },
+    "CUPLUS_MYJSFC_HISTORY_SEED_20261015.json": {
+      "utc": "2026-10-15T08:46:35.917773+00:00",
+      "classification": "b: mocked committed initial carry bypassed real mandatory MYJSFC U10E/V10E seeding",
+      "before": {
+        "arm": "C161",
+        "passed": 105,
+        "failed": 2
+      },
+      "after": {
+        "arm": "C161b-CuPlus-MYJSFC-history-seed",
+        "passed": 2,
+        "failed": 0,
+        "skipped": 0,
+        "peak_rss_gib": 0.9850807189941406,
+        "swap_kib": 0
+      },
+      "source": {
+        "parent": "eecb6ad447faed76858b387f2402610191ccd20b",
+        "main": "53c0a96fb",
+        "candidate": "852defa03cc623be84fec7a8d61101ac364561bf",
+        "test_only_file": "tests/v040/cuplus/test_daily_lifecycle.py",
+        "all_original_assert_check_ASTs_unchanged": 16,
+        "production_seed_rule": "operational_mode.py:7886-7892; operational_state.py:277-284"
+      },
+      "change": "Mock seed uses real seed_history_diagnostics(state,myjsfc=True) for MYJSFC only; production initial-carry rule at operational_mode.py:7886-7892/operational_state.py:277-284 unchanged",
+      "all_original_assert_check_ASTs_unchanged": 16,
+      "performance": "test fixture only; required small history leaves in mocked carry, no product/kernel/arithmetic change; lifecycle/codec test, not physics validation",
+      "receipts": {
+        "C161": {
+          "command.json": {
+            "path": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C161/command.json",
+            "sha256": "db8ab9ff46f983af5f2391b09a6a8579bc595a1bca4de0a00c5631a0958a9079"
+          },
+          "pytest.xml": {
+            "path": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C161/pytest.xml",
+            "sha256": "5627ee487b69331a6af57b89bc2f133ba105af1320909d04f93fcd69b42c7127"
+          },
+          "result.json": {
+            "path": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C161/result.json",
+            "sha256": "ad67ffb3ea5ea4b9e5366e8b07c6045dad4c4cbafad7d35a07a9408ae37c0182"
+          },
+          "memory_summary.json": {
+            "path": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C161/memory_summary.json",
+            "sha256": "16bccf8b678764a8c0af734564f78fb21e8bd09d5c2f0c538d59d7b54b99dd0c"
+          }
+        },
+        "C161b-CuPlus-MYJSFC-history-seed": {
+          "command.json": {
+            "path": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C161b-CuPlus-MYJSFC-history-seed/command.json",
+            "sha256": "ba5f7ccc02a8bab1cb4762ebcd3d75650b44e1687507949e1caa945984e977f1"
+          },
+          "pytest.xml": {
+            "path": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C161b-CuPlus-MYJSFC-history-seed/pytest.xml",
+            "sha256": "f6730ba5a81ae1e240dc0263cafae02e8723b23ed9416d45af6c8288d7b7d037"
+          },
+          "result.json": {
+            "path": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C161b-CuPlus-MYJSFC-history-seed/result.json",
+            "sha256": "bb43fe67f0c0296a1db491e36a11ab21f8dcf29efbf7e1f8333bfb05d8b4b87f"
+          },
+          "memory_summary.json": {
+            "path": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C161b-CuPlus-MYJSFC-history-seed/memory_summary.json",
+            "sha256": "cd11853b1e9908904a69c81a6d68a73a74631daafb1c587b156edd1d1473920d"
+          }
+        }
+      }
+    }
+  },
+  "raw_test_SHA_fresh": 16,
+  "SFDDA_paid_reuse": {
+    "PASS": 106,
+    "actual_native_CLI": 70,
+    "scalar_list_tuple_child_refusal": 16,
+    "auxinput9_radius_NetCDF": 20,
+    "actualparent_mutant_ASSERT": 2,
+    "healthy_mutant_controls": 68,
+    "setup_errors": 0,
+    "source_and_IO_receipt_SHA": true
+  },
+  "default_FULL_ids_reused": {
+    "Swiss": "f672a5739cb96e388b6b7a40ef80337bf81bdc14ef15268f3476e09d79fe055d",
+    "PROD": "6fc715a2bd630934c4cf0f94427df19a527cbf429011c9ba5efe4d712744d27b"
+  },
+  "fresh_numerical_executions": 0,
+  "integrator_numerical_edits": false,
+  "performance_memory": "Scalar isinstance/len/index only at setup; no addedtimestepkernel/array/temp/hosttransfer/sync/persistentcarry[I]. Testfixtureonly changes, no productcost; no timing/VRAMbenchmarkclaim.",
+  "open": [
+    "c77/c78newlyadmitted GPU/coupledD6/E41/F2 qualification remainsrequired.",
+    "GlobalfullCPU suiteINCOMPLETE/mixed-source; no release/trajectory/station/24-72h claim.",
+    "AllpriorQPresourceFAIL/P3radarABI/c89/God/CLAT/F2/experimentalUB/strictFMA limits remain separate."
+  ],
+  "cleanup": {
+    "new_snapshots": 0,
+    "new_cache_dirs": 0,
+    "new_pytest_dirs": 0,
+    "model_jobs": 0,
+    "GPU_requested": false
+  },
+  "proof_files": {
+    "SI265-2248dc315.json": "4dadfa1434a51c14cdbe0ccef5fee030128c05e8cdaa0019a2fa0d7da762211e",
+    "SI265-46e5d8056.json": "17dfda63ba96293df69534bb935de78cd10b2eff3754f64f053b4f0c49a16f79",
+    "SI266-2b622a5f4.json": "a1e71dd3924ca83aa9e98490721b5c5020e00da1503c6a0a3a4de78f585cd145",
+    "SI266-317e2085c.json": "f8a044edc8041603558f88ef83eda78965c194bab15357f9c2117c2a2ed52d40",
+    "rv-vprep-sfdda-VERDICT.md": "91d661c071a373f0a15c8bfb30c635583e350c1d07d3864b283a87bc289ea7df",
+    "rv-vprep-sfdda-RS00-source.json": "44f0790d46a9beb0ee9aa603a9076a424571de92d147c31c91c3775573a03eb9",
+    "rv-vprep-sfdda-RS01-host.json": "7586fdd2ded7da6873dbc2c02e84c006aec281eea37848af0ec4ca071fbe94bd",
+    "rv-vprep-sfdda-RS01-host.xml.gz": "55962ad101a0e0486134fe2e9c7a619d2eeac3dfb44cfb7fb400863b08df5fb1",
+    "rv-vprep-sfdda-RS02b-io.json": "5bfa9b7cb37033299b47e238034fd0e049514d7103a80f1ec3605e969ff23f65",
+    "rv-vprep-sfdda-RS02b-io.xml.gz": "d32038038f51b9d19571e41edc08cbcaff44367d5ef674d7a95f3006ea311ae2",
+    "rv-vprep-sfdda-RS03-mutant.json": "1c9b6693bdf07e3e7ef607dbc4a8e349e5987cfd29bd86db159ff210cbbcb467",
+    "rv-vprep-sfdda-RS03-mutant.xml.gz": "57c3cad6b0154d9991d71677834784a07672f1157f88fcef69a6722f9e17832f",
+    "rv-vprep-sfdda-swiss_identity.json": "6459a5387e78bf955fb235f6b4efacf60642c3fc529a8b88606b6a5e5c0cc73e",
+    "rv-vprep-sfdda-prod_identity.json": "7cd642123703bf7f20cc4eab8448b0a5a0705e0064dda50ca504021830a9e3fc",
+    "integrate_batch27.py": "17f9aad9e61c3a06dda598c9ebaa83e93b5b3ea2b1b117f6f0696f5ad63cbbd0"
+  }
+}

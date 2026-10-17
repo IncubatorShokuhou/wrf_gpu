@@ -1,0 +1,104 @@
+! Unmodified pristine scheme bodies are linked by build_oracle.py.
+! The two thermodynamic assignments are extracted verbatim from pristine WRF.
+program caller
+ use module_model_constants, only: g,r_d,cp,r_v,cpv,cliq,cice,psat,xlv,xls,xlf, &
+     svpt0,ep_1,ep_2,epsilon,rhoair0,rhowater,rhosnow, &
+     re_qc_bg,re_qi_bg,re_qs_bg,re_qc_max,re_qi_max,re_qs_max
+ use module_mp_kessler, only: kessler
+ use module_mp_wsm3, only: wsm3,wsm3init
+ use module_mp_wsm5, only: wsm5,wsm5init
+ use module_mp_wsm6, only: wsm6
+ use mp_wsm6, only: mp_wsm6_init
+ use module_mp_morr_two_moment, only: mp_morr_two_moment,morr_two_moment_init
+ use module_mp_sbu_ylin, only: sbu_ylin
+ use module_mp_wdm5, only: wdm5,wdm5init
+ use module_mp_gsfcgce, only: gsfcgce
+ implicit none
+ integer :: n,option,step,i,j,k,errflg
+ real :: dt,t0,mpten,qvten
+ real(kind=4) :: dt4,ht4,outprecip(3)
+ real(kind=4),allocatable :: input4(:,:),output4(:,:)
+ real,allocatable :: x(:,:),out(:,:),t_new(:,:,:),qv(:,:,:),th_phy(:,:,:), &
+     h_diabatic(:,:,:),qv_diabatic(:,:,:),qc(:,:,:),qr(:,:,:),qi(:,:,:),qs(:,:,:),qg(:,:,:), &
+     ni(:,:,:),ns(:,:,:),nr(:,:,:),ng(:,:,:),nn(:,:,:),nc(:,:,:), &
+     rho(:,:,:),pii(:,:,:),p(:,:,:),z(:,:,:),dz(:,:,:),w(:,:,:),ri(:,:,:), &
+     refl(:,:,:),reqc(:,:,:),reqi(:,:,:),reqs(:,:,:), &
+     qrcu(:,:,:),qscu(:,:,:),qicu(:,:,:)
+ real :: ht(1,1),rain(1,1),rainv(1,1),snow(1,1),snowv(1,1),graupel(1,1),graupelv(1,1),sr(1,1)
+ character(len=1024) :: infile,outfile,errmsg
+ call get_command_argument(1,infile)
+ call get_command_argument(2,outfile)
+ open(10,file=trim(infile),access='stream',form='unformatted',status='old')
+ read(10) option,n,dt4,ht4
+ dt=dt4;ht=ht4
+ allocate(x(n,20),out(n,15),t_new(1,n,1),qv(1,n,1),th_phy(1,n,1), &
+     h_diabatic(1,n,1),qv_diabatic(1,n,1),qc(1,n,1),qr(1,n,1),qi(1,n,1),qs(1,n,1),qg(1,n,1), &
+     ni(1,n,1),ns(1,n,1),nr(1,n,1),ng(1,n,1),nn(1,n,1),nc(1,n,1), &
+     rho(1,n,1),pii(1,n,1),p(1,n,1),z(1,n,1),dz(1,n,1),w(1,n,1),ri(1,n,1), &
+     refl(1,n,1),reqc(1,n,1),reqi(1,n,1),reqs(1,n,1),qrcu(1,n,1),qscu(1,n,1),qicu(1,n,1))
+ allocate(input4(n,20),output4(n,15))
+ read(10) input4
+ x=input4
+ close(10)
+ t0=300.
+ t_new(1,:,1)=x(:,1)-t0
+ qv(1,:,1)=x(:,2);qc(1,:,1)=x(:,3);qr(1,:,1)=x(:,4)
+ qi(1,:,1)=x(:,5);qs(1,:,1)=x(:,6);qg(1,:,1)=x(:,7)
+ ni(1,:,1)=x(:,8);ns(1,:,1)=x(:,9);nr(1,:,1)=x(:,10);ng(1,:,1)=x(:,11)
+ nn(1,:,1)=x(:,12);nc(1,:,1)=x(:,13)
+ p(1,:,1)=x(:,14);pii(1,:,1)=x(:,15);z(1,:,1)=x(:,16);dz(1,:,1)=x(:,17);w(1,:,1)=x(:,18)
+ rain=0.;snow=0.;graupel=0.;rainv=0.;snowv=0.;graupelv=0.;sr=0.;ri=0.
+ refl=0.;reqc=re_qc_bg;reqi=re_qi_bg;reqs=re_qs_bg
+ qrcu=0.;qscu=0.;qicu=0.
+ select case(option)
+ case(3)
+ call wsm3init(rhoair0,rhowater,rhosnow,cliq,cpv,.false.)
+ case(4)
+ call wsm5init(rhoair0,rhowater,rhosnow,cliq,cpv,.false.)
+ case(6)
+ call mp_wsm6_init(rhoair0,rhowater,rhosnow,cliq,cpv,0,errmsg,errflg)
+ if(errflg/=0) stop 4
+ case(10)
+ call morr_two_moment_init(0)
+ case(14)
+ call wdm5init(rhoair0,rhowater,rhosnow,cliq,cpv,1.e8,.false.)
+ end select
+ open(11,file=trim(outfile),access='stream',form='unformatted',status='replace')
+ do step=1,2
+ do k=1,n
+ i=1;j=1
+ @PREP@
+ enddo
+ h_diabatic=th_phy;qv_diabatic=qv
+ ! Shared port caller diagnostics are held equal; this gate isolates theta wiring.
+ rho=0.622*p/(r_d*(th_phy*pii)*(qv+0.622))
+ out(:,14)=th_phy(1,:,1)
+ select case(option)
+ @CALLS@
+ case default
+ stop 5
+ end select
+ do k=1,n
+ i=1;j=1
+ mpten=th_phy(i,k,j)-h_diabatic(i,k,j)
+ qvten=qv(i,k,j)-qv_diabatic(i,k,j)
+ @FINISH@
+ enddo
+ out(:,1)=t_new(1,:,1)+t0;out(:,2)=qv(1,:,1);out(:,3)=qc(1,:,1);out(:,4)=qr(1,:,1)
+ out(:,5)=qi(1,:,1);out(:,6)=qs(1,:,1);out(:,7)=qg(1,:,1)
+ out(:,8)=ni(1,:,1);out(:,9)=ns(1,:,1);out(:,10)=nr(1,:,1);out(:,11)=ng(1,:,1)
+ out(:,12)=nn(1,:,1);out(:,13)=nc(1,:,1);out(:,15)=th_phy(1,:,1)
+ output4=real(out,4)
+ outprecip=[real(rain(1,1),4),real(snow(1,1),4),real(graupel(1,1),4)]
+ write(11) output4,outprecip
+ ! Production's existing fp64 island narrows its State after every MP call.
+ ! In REAL4 this is an identity; in the transparency oracle it preserves the
+ ! actual two-step carry ABI rather than giving the oracle a better trajectory.
+ t_new(1,:,1)=real(output4(:,1))-t0
+ qv(1,:,1)=real(output4(:,2));qc(1,:,1)=real(output4(:,3));qr(1,:,1)=real(output4(:,4))
+ qi(1,:,1)=real(output4(:,5));qs(1,:,1)=real(output4(:,6));qg(1,:,1)=real(output4(:,7))
+ ni(1,:,1)=real(output4(:,8));ns(1,:,1)=real(output4(:,9));nr(1,:,1)=real(output4(:,10))
+ ng(1,:,1)=real(output4(:,11));nn(1,:,1)=real(output4(:,12));nc(1,:,1)=real(output4(:,13))
+ enddo
+ close(11)
+end program

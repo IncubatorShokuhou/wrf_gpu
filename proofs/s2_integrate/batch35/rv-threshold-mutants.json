@@ -1,0 +1,46 @@
+{
+ "snapshot": "<USER_HOME>/wrf_gpu2_lanes/rv-t-wsmdz/series2/snapshot",
+ "gate": "<USER_HOME>/wrf_gpu2_lanes/rv-t-wsmdz/series2/test_real_threshold.py",
+ "source": "c846bfe3c756fe769bd05705679bb129c51e8d09",
+ "mutants": {
+  "M7_non_strict_273K_threshold": {
+   "rc": 1,
+   "tests": 1,
+   "failures": [
+    [
+     "test_original_real_T1D_strict_threshold_with_float64_operands",
+     "AssertionError: \nArrays are not equal\n\nMismatched elements: 3 / 5 (60%)\nMismatch at indices:\n [1]: 0.001 (ACTUAL), 0.0 (DESIRED)\n [2]: 0.001 (ACTUAL), 0.0 (DESI"
+    ]
+   ],
+   "errors": [],
+   "tail": [
+    "1 failed in 5.41s"
+   ],
+   "killed": true
+  },
+  "M8_skip_T1D_REAL_conversion": {
+   "rc": 1,
+   "tests": 1,
+   "failures": [
+    [
+     "test_original_real_T1D_strict_threshold_with_float64_operands",
+     "AssertionError: \nArrays are not equal\n\nMismatched elements: 1 / 5 (20%)\nMismatch at index:\n [1]: 0.001 (ACTUAL), 0.0 (DESIRED)\nMax absolute difference among vio"
+    ]
+   ],
+   "errors": [],
+   "tail": [
+    "1 failed in 5.23s"
+   ],
+   "killed": true
+  }
+ },
+ "control": {
+  "rc": 0,
+  "tests": 1,
+  "failures": [],
+  "errors": [],
+  "tail": [
+   "1 passed in 5.28s"
+  ]
+ }
+}

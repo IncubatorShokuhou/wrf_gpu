@@ -1,0 +1,191 @@
+{
+  "candidate": "bf2e8c36ae",
+  "main_base": "c360fdf6ee",
+  "previous_critic": "9a5d13e14c",
+  "verdict": "MERGE CPU caller scope and independently reanalyzed registered release F7 gate; no full GPU composite/E41/performance approval",
+  "healthy": 191,
+  "counts": {
+    "CF02-0.xml": {
+      "tests": 14,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "CF02-1.xml": {
+      "tests": 10,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "CF02-2.xml": {
+      "tests": 16,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "CF02-3.xml": {
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "CF02-4.xml": {
+      "tests": 109,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "CF03.xml": {
+      "tests": 6,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "CF05-Capture.xml": {
+      "tests": 1,
+      "failures": 1,
+      "errors": 0,
+      "skipped": 0
+    },
+    "CF05-Finish.xml": {
+      "tests": 1,
+      "failures": 1,
+      "errors": 0,
+      "skipped": 0
+    },
+    "CF06.xml": {
+      "tests": 33,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    }
+  },
+  "genuine_mutants": 2,
+  "original_GPU_reanalysis": {
+    "gate": {
+      "rthften_rel": 0.0007208724606557576,
+      "rqvften_rel": 0.0004552843749724083,
+      "accuracy_pass": true,
+      "no_dry_ratio": 59.11958057316503,
+      "zero_ratio_th": 1387.207938406092,
+      "zero_ratio_qv": 2196.429429541928,
+      "discrimination_pass": true
+    },
+    "fields_sha256": "0c61fd8a1a756362d12c7608f291faea96204eeef6c31ec0d584b9ca664ba4ee",
+    "raw_fields_all_finite": true,
+    "CPU_reference_fields_exact": [
+      "wrf_RTHFTEN",
+      "wrf_RQVFTEN",
+      "wrf_T",
+      "wrf_QVAPOR",
+      "wrf_W",
+      "wrf_MU",
+      "wrf_MUB",
+      "wrf_RTHCUTEN"
+    ],
+    "original_input_history_hashes": [
+      {
+        "path": "c05port/namelist.input",
+        "sha256": "2113bd1682776aacb166756e3370cb9f5a1a8b50486dbc1868a1057badc2e731"
+      },
+      {
+        "path": "c05port/wrfbdy_d01",
+        "sha256": "f3e556670e4768326997bdfa1dd8b0f77eb6d5da07d9c4dbf900bf8ff9e30230"
+      },
+      {
+        "path": "c05port/wrfinput_d01",
+        "sha256": "a5d696550d1dc6713e2e340b8c2fba83811d43f4a94a65ca95266035860e2781"
+      },
+      {
+        "path": "c05w/wrfout_d01_2023-01-15_00:00:00",
+        "sha256": "e75f069843a27b6473da304257c80ecde80d9208b1f3d9d0a650cc896a19a0b2"
+      },
+      {
+        "path": "c05w/wrfout_d01_2023-01-15_00:00:18",
+        "sha256": "ac50caf015b85b0d51beb99a234792998b94e5691632e699b9281775ceebb605"
+      },
+      {
+        "path": "c05w/wrfout_d01_2023-01-15_00:00:36",
+        "sha256": "bd681e1fc1c09dde0ae14b4d34ee0bce800124ad3e8df7198d6492c9dd181fb4"
+      },
+      {
+        "path": "c05w/wrfout_d01_2023-01-15_00:00:54",
+        "sha256": "088acdf66594a0dc8bbab77c9e5afa0e6e52e0df50d0e87b6ca4da3c88a54e71"
+      }
+    ],
+    "original_executable_patch_proof_reused_from": "CU1/CU04-c05-binding.json; exact same7input/historySHA; CPU_executable.json unmodified",
+    "gpu_producer": {
+      "snapshot": "54cdee223893240707481b6e833d7dd5427d076e",
+      "dirty_source_rows": 0,
+      "platform": "gpu",
+      "device": "RTX5090 from official lock log",
+      "fast_defaults": "<unset=1>",
+      "dt": 18,
+      "cadence": 33,
+      "lock": "official with_gpu_lock t-cfix-cu lease+RAM12G",
+      "e41": "UNKNOWN manager accepts here; c05 composite must carry gate"
+    },
+    "control_scope": "Same frozen algebraic no-dry/zero controls; not executed mutant forecasts. Step1 ring5 frozen thresholds <=.10 and each>=3x.",
+    "critic": "CPU raw-reanalysis only; no GPU run; field attribution dynamics diagnosis not needed for verdict"
+  },
+  "program_identities": {
+    "c05": "481eb074d699b3866a690aad9ceae284abcee8ac2cfefc34a8b42a1a52b0957d",
+    "swiss": "7379c7d77e94517f07e7bf37763cc1409d1287a13e50684ed9d624caafaec55e",
+    "prod": "6487f5b039a074f02f63d140f1e9212b7ede832d04bf5450e44ad2b3f2c34e73"
+  },
+  "source_reuse": {
+    "prior_critic": "9a5d13e14c",
+    "prior_original_savepoints": 32,
+    "BYTE_sources": {
+      "src/gpuwrf/physics/_gf_jax.py": "41e7f170adad80a0d5b74355f99cb877a1569b0d1f5548019e6b6298678e556f",
+      "src/gpuwrf/physics/cumulus_kf.py": "8c55595925c67f5d2e239218f3d78dac2ad956d8e7aa604761b07eb64525a6a4",
+      "proofs/t_cfix_cu/gf_ishallow/savepoints/gf_case_1_ish0.json": "4d80c7d299da41b874943e57f37ef7b611c58cce679900fa633225886fc46e5b",
+      "proofs/t_cfix_cu/gf_ishallow/savepoints/gf_case_1_ish0_f1.json": "76f133180e26a250534a6e84e7be1e9a184d393faae266dd26481459451dfed3",
+      "proofs/t_cfix_cu/gf_ishallow/savepoints/gf_case_1_ish1.json": "b636e15cd3e473a66214d2bcafd815e10ad6b828cad405286b30adc3523f2452",
+      "proofs/t_cfix_cu/gf_ishallow/savepoints/gf_case_1_ish1_f1.json": "0be0033e925f00584fd0c696602ab788749df7bf9d3d850ad7f451ebe458c71c",
+      "proofs/t_cfix_cu/gf_ishallow/savepoints/gf_case_2_ish0.json": "4089a68ba6e732fa1339690b55ef32da3902ba8063d0b600f4e4717fbbd0bfc9",
+      "proofs/t_cfix_cu/gf_ishallow/savepoints/gf_case_2_ish0_f1.json": "d2e5fa6a2ac5f98fbc074b985cef948212a8b88a91f03280dd8641f73625d208",
+      "proofs/t_cfix_cu/gf_ishallow/savepoints/gf_case_2_ish1.json": "8193b1e4006c388eb2b25e73554cd1ab65f3fb8c284f9cdf46ffd66739ed973d",
+      "proofs/t_cfix_cu/gf_ishallow/savepoints/gf_case_2_ish1_f1.json": "f47cce672d4eb02daf30e90601c674f3c054d99e1025fa1cfc24ab830b945757",
+      "proofs/t_cfix_cu/gf_ishallow/savepoints/gf_case_3_ish0.json": "52e37774bf57af89ababf31de6837a0f85344d5d03b0dde2435c25e049a121a1",
+      "proofs/t_cfix_cu/gf_ishallow/savepoints/gf_case_3_ish0_f1.json": "a47f571b2a4dbac67833d8b1b631adc71d530d3102c77de62f274b75dccc148a",
+      "proofs/t_cfix_cu/gf_ishallow/savepoints/gf_case_3_ish1.json": "598e69da525039c207e021bdd90b88fdd3ade88b219a86b9d06aba5ddc13c0ea",
+      "proofs/t_cfix_cu/gf_ishallow/savepoints/gf_case_3_ish1_f1.json": "d6631710603ac640510e861fdf6c1ef2125fafb2e2b971165893ab73c9e334e8",
+      "proofs/t_cfix_cu/gf_ishallow/savepoints/gf_case_4_ish0.json": "33556265f231a7e32f348074d430e7c09fb5aaccc78f55d007187e6e7a73000a",
+      "proofs/t_cfix_cu/gf_ishallow/savepoints/gf_case_4_ish0_f1.json": "189eaf5b37f7614aaa2460097655dbd6fea34c620a56724453ac03ac680e7c38",
+      "proofs/t_cfix_cu/gf_ishallow/savepoints/gf_case_4_ish1.json": "ca33fb044fd7bd419f767c805ffcdd171f373cc4156144e688742e0e26bf9085",
+      "proofs/t_cfix_cu/gf_ishallow/savepoints/gf_case_4_ish1_f1.json": "67f57b33cfd0777fc5b9c16b1241e169a1a7fde3a96aa32560d444482ff71076",
+      "proofs/t_cfix_cu/gf_ishallow/savepoints/gf_case_5_ish0.json": "4cd47e2d238c6ec51e8b95d1da2cf14be2f309c9ae8d462c9da290a83fec3b24",
+      "proofs/t_cfix_cu/gf_ishallow/savepoints/gf_case_5_ish0_f1.json": "b866c419d84dfbfb938457c49046b6af27f58e28f8e6cc4642b1db63c00db87a",
+      "proofs/t_cfix_cu/gf_ishallow/savepoints/gf_case_5_ish1.json": "e25e5d18226d9cdbecf33726af4a3f7d6fb5d6888ca11b149b3bcfb6dd981557",
+      "proofs/t_cfix_cu/gf_ishallow/savepoints/gf_case_5_ish1_f1.json": "00f1651ef4061c9019cb9ac7fe4374d7a43e3d35614d2891623fee54165d12e2",
+      "proofs/t_cfix_cu/kf_species/savepoints/kf_case_1_m0.json": "a02bd11d53c576dc24b80dccefaad3ce019f234541ad5361faa7a0d5049f89b1",
+      "proofs/t_cfix_cu/kf_species/savepoints/kf_case_1_m1.json": "7830c5182c8c2dfc35b9bdccb47f6411447ef19d9f0808be07874225896184b8",
+      "proofs/t_cfix_cu/kf_species/savepoints/kf_case_1_m2.json": "54c0e8c37091bb0d0ac019e32ffe13faeb73593d6be311a72c9e4bc2d0d6886d",
+      "proofs/t_cfix_cu/kf_species/savepoints/kf_case_2_m0.json": "083ad586715af353ee28f06e71504bbcf29d49670cedd7e9d8148ec647a70592",
+      "proofs/t_cfix_cu/kf_species/savepoints/kf_case_2_m1.json": "b32f9821f27b8a2e7847a0abd1448a9d501cb805ebf11c8cf4d977e02e801f05",
+      "proofs/t_cfix_cu/kf_species/savepoints/kf_case_2_m2.json": "e13260ee01d1cb892b7100d0c35dcdcc755f1572fb69a2390ea9ebbfe5277adb",
+      "proofs/t_cfix_cu/kf_species/savepoints/kf_case_3_m0.json": "7944429b0c78451498884ca6fd4646bae0b48fcc8bbd7a1d730a6614792e245f",
+      "proofs/t_cfix_cu/kf_species/savepoints/kf_case_3_m1.json": "3ef624937c9f905a914689bde4b9a7a5a9dd4e37df2e2a9fbebc9aadcc0bf129",
+      "proofs/t_cfix_cu/kf_species/savepoints/kf_case_3_m2.json": "9bd4d84857b8003c27c6dfb48426ba9a9dd3475567f31f6ece1391beefa51596",
+      "proofs/t_cfix_cu/kf_species/savepoints/kf_case_4_m0.json": "a5c8f682f3cb3bd30c48ef92780f9c37cd8873a8c9582382543720287d9503ff",
+      "proofs/t_cfix_cu/kf_species/savepoints/kf_case_4_m1.json": "39b654300390fabb1619b2b006834aa9ca911163ee3200731f98400c288fd094",
+      "proofs/t_cfix_cu/kf_species/savepoints/kf_case_4_m2.json": "39b654300390fabb1619b2b006834aa9ca911163ee3200731f98400c288fd094"
+    },
+    "owner_final_paid_tree": "f3ea0c0f3",
+    "owner_paid_src_tests_BYTE_to_final": true,
+    "original_CPU_executable_manifest_BYTE": true,
+    "reuse": "Own CU1 independently rebuilt32originalGF/KFsavepoints retained. Root-path-only oracle shell fix is not numerical; no redundant original compile.",
+    "scope": "No source-only speed claim; mainF20/F17 prior approvals carried, not reviewed again"
+  },
+  "open": [
+    "E41 unknown for original producer arm, explicitly manager accepted02:51; c05composite must carry",
+    "r2 HFX/QFX kinematic handles",
+    "r4 documentation table",
+    "nonGFS/nonMYNN KPBL fallback",
+    "affected long composites/D6/resources/timing"
+  ],
+  "controls": "Frozen no-dry/zero algebraic output controls, not executed mutant forecasts",
+  "critic_execution": "CPU official6G only; no GPU",
+  "old_legacy_gate": "2.879446706x MISS retained as history; no threshold relaxation or new field-attribution claim"
+}

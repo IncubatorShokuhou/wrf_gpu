@@ -57,6 +57,7 @@ def _native_edmf_arrays(state, flux, fltv, pblh, dt, dx, *, qc_bl=None, cldfra_b
         psig_shcu=P._edmf_scale_aware_psig(dx, pblh),
         **P._edmf_cloud_base_kwargs(state, pblh, qc_bl, cldfra_bl),
         **P._ni_plume_kwargs(state),
+        **({} if state.spp_pattern is None else {"spp_pattern":state.spp_pattern}),
         interpret=jax.default_backend() == "cpu",
     )
 
@@ -97,6 +98,7 @@ def _advance_native(state: P.MynnPBLColumnState, dt: float, debug: bool,
             qs=P._specific_snow_content(state),
             qsq=state.qsq,
             pblh=pblh0,
+            **({} if state.spp_pattern is None else {"spp_pattern":state.spp_pattern}),
         )
         if edmf:
             mf = _native_edmf_arrays(state, flux, fltv, pblh0, dt, dx,
@@ -141,6 +143,8 @@ def _advance_native(state: P.MynnPBLColumnState, dt: float, debug: bool,
         **P._mynn_dheat_kwargs(qke_new, turb["el"], state.p))
     u, v, theta, qv, qc, qi = means[:6]
     ni_update = {} if state.ni is None else {'ni':means[6]}
+    if state.passive:
+        ni_update['passive'] = means[-1]
     km, kh = P._retrieve_exchange_coeffs(state, turb)
     tke = 0.5 * qke_new
 

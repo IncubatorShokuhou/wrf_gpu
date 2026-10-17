@@ -1,0 +1,768 @@
+{
+  "UTC": "2026-10-16T16:56:34.596723+00:00",
+  "status": "GREEN private integration and actual composed curated public subset",
+  "approved": "t-calleraudit exactc4e3f0d47d4d3f4c3b080a8d4ab314f3e22fbf6c NSSL test-only mock/import repair (rvMERGE16:35:16)",
+  "source_tree": "5a2856b9864e8d91b3d7d44808b54e301087cc93",
+  "fresh_CPU": {
+    "UTC": "2026-10-16T16:55:25.435687+00:00",
+    "status": "PASS integration +composed curated public subset",
+    "returncode": 0,
+    "immutable_candidate": "aa6d9a10125f5a0635cfd0d4d74923ccbc80cfb9",
+    "source": "5a2856b9864e8d91b3d7d44808b54e301087cc93",
+    "groups": [
+      {
+        "status": "PASS",
+        "returncode": 0,
+        "immutable_candidate": "aa6d9a10125f5a0635cfd0d4d74923ccbc80cfb9",
+        "source": "5a2856b9864e8d91b3d7d44808b54e301087cc93",
+        "command": [
+          "<USER_HOME>/miniconda3/bin/python",
+          "-m",
+          "pytest",
+          "-q",
+          "-rs",
+          "-p",
+          "no:cacheprovider",
+          "--basetemp",
+          "<USER_HOME>/wrf_gpu2_lanes/s2-integrate/pytest",
+          "--junitxml",
+          "<USER_HOME>/wrf_gpu2_lanes/s2-integrate/batch64-shared/sanity.xml",
+          "tests/contracts/",
+          "tests/test_v018_mp_family_fail_closed.py",
+          "tests/test_v034_implemented_notes.py",
+          "tests/test_scheme_catalog_fail_closed.py",
+          "tests/test_namelist_check.py",
+          "tests/test_namelist_binding.py",
+          "tests/test_m7_restart_checkpoint_roundtrip.py",
+          "tests/test_netcdf_process_lock.py",
+          "tests/test_v0110_wrfrst_netcdf.py",
+          "tests/test_cli.py",
+          "tests/test_v060_physics_dispatch.py"
+        ],
+        "elapsed_s": 14.417014883976663,
+        "cap": "6G/noSwap",
+        "GPU_runs": 0,
+        "numerical_reuse": "NSSL test-only source-data-manifest-toolsBYTE63/wholeassertASTexact; prior frozen3356-196a IDs/source science reused; fresh privatecore+actual composedcuratedpublicsubset; no model or GPU repeat.",
+        "counts": {
+          "tests": 253,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "RSS_KiB": 1295220,
+        "cleanup": true,
+        "UTC": "2026-10-16T16:45:13.134912+00:00"
+      },
+      {
+        "status": "PASS",
+        "returncode": 0,
+        "immutable_candidate": "de723c84d04230a1936ed3723e492aeaaef06a86",
+        "source": "1561f69de643391a7c89f478de0ac52120e1f34f",
+        "private_candidate": "aa6d9a10125f5a0635cfd0d4d74923ccbc80cfb9",
+        "integration_source": "5a2856b9864e8d91b3d7d44808b54e301087cc93",
+        "public_base": "6ca296edd7c23c98172088645cdc145b1701bb37",
+        "source_BYTE_approved_public_base": true,
+        "only3approved_test_changes": [
+          "tests/v034/nssl2mom/test_radius_handoff.py",
+          "tests/v040/test_nssl_nohail22.py",
+          "tests/v040/test_nssl_one_moment_wiring.py"
+        ],
+        "arms": [
+          {
+            "selector": "tests/v034/nssl2mom/test_radius_handoff.py",
+            "category": "additional_changed_file_alone",
+            "returncode": 0,
+            "elapsed_s": 26.427892817999236,
+            "command": [
+              "<USER_HOME>/miniconda3/bin/python",
+              "-m",
+              "pytest",
+              "-v",
+              "-rs",
+              "-p",
+              "no:cacheprovider",
+              "-p",
+              "si64_provenance",
+              "--basetemp",
+              "<USER_HOME>/wrf_gpu2_lanes/s2-integrate/pytest",
+              "--junitxml",
+              "<USER_HOME>/wrf_gpu2_lanes/s2-integrate/batch64-public/case1.xml",
+              "tests/v034/nssl2mom/test_radius_handoff.py"
+            ],
+            "public_commit": "de723c84d04230a1936ed3723e492aeaaef06a86",
+            "counts": {
+              "tests": 2,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0
+            },
+            "RSS_KiB": 2345748,
+            "provenance": {
+              "gpuwrf_file": "<DATA_ROOT>/wrf_gpu2/scratch/s2-integrate/batch64-public-snapshot/src/gpuwrf/__init__.py",
+              "platform": "cpu",
+              "public_tree": "<DATA_ROOT>/wrf_gpu2/scratch/s2-integrate/batch64-public-snapshot",
+              "exitstatus": 0
+            },
+            "cache_tmp_pytest_deleted": true
+          },
+          {
+            "selector": "tests/test_ice_diagnostics_cpu_files.py",
+            "category": "dependent14",
+            "returncode": 0,
+            "elapsed_s": 1.4630844670173246,
+            "command": [
+              "<USER_HOME>/miniconda3/bin/python",
+              "-m",
+              "pytest",
+              "-v",
+              "-rs",
+              "-p",
+              "no:cacheprovider",
+              "-p",
+              "si64_provenance",
+              "--basetemp",
+              "<USER_HOME>/wrf_gpu2_lanes/s2-integrate/pytest",
+              "--junitxml",
+              "<USER_HOME>/wrf_gpu2_lanes/s2-integrate/batch64-public/case2.xml",
+              "tests/test_ice_diagnostics_cpu_files.py"
+            ],
+            "public_commit": "de723c84d04230a1936ed3723e492aeaaef06a86",
+            "counts": {
+              "tests": 9,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0
+            },
+            "RSS_KiB": 660016,
+            "provenance": {
+              "gpuwrf_file": "<DATA_ROOT>/wrf_gpu2/scratch/s2-integrate/batch64-public-snapshot/src/gpuwrf/__init__.py",
+              "platform": "cpu",
+              "public_tree": "<DATA_ROOT>/wrf_gpu2/scratch/s2-integrate/batch64-public-snapshot",
+              "exitstatus": 0
+            },
+            "cache_tmp_pytest_deleted": true
+          },
+          {
+            "selector": "tests/test_writer_psfc_active_moist.py",
+            "category": "dependent14",
+            "returncode": 0,
+            "elapsed_s": 1.623671776993433,
+            "command": [
+              "<USER_HOME>/miniconda3/bin/python",
+              "-m",
+              "pytest",
+              "-v",
+              "-rs",
+              "-p",
+              "no:cacheprovider",
+              "-p",
+              "si64_provenance",
+              "--basetemp",
+              "<USER_HOME>/wrf_gpu2_lanes/s2-integrate/pytest",
+              "--junitxml",
+              "<USER_HOME>/wrf_gpu2_lanes/s2-integrate/batch64-public/case3.xml",
+              "tests/test_writer_psfc_active_moist.py"
+            ],
+            "public_commit": "de723c84d04230a1936ed3723e492aeaaef06a86",
+            "counts": {
+              "tests": 26,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0
+            },
+            "RSS_KiB": 710340,
+            "provenance": {
+              "gpuwrf_file": "<DATA_ROOT>/wrf_gpu2/scratch/s2-integrate/batch64-public-snapshot/src/gpuwrf/__init__.py",
+              "platform": "cpu",
+              "public_tree": "<DATA_ROOT>/wrf_gpu2/scratch/s2-integrate/batch64-public-snapshot",
+              "exitstatus": 0
+            },
+            "cache_tmp_pytest_deleted": true
+          },
+          {
+            "selector": "tests/test_v034_implemented_notes.py",
+            "category": "dependent14",
+            "returncode": 0,
+            "elapsed_s": 0.7421251640189439,
+            "command": [
+              "<USER_HOME>/miniconda3/bin/python",
+              "-m",
+              "pytest",
+              "-v",
+              "-rs",
+              "-p",
+              "no:cacheprovider",
+              "-p",
+              "si64_provenance",
+              "--basetemp",
+              "<USER_HOME>/wrf_gpu2_lanes/s2-integrate/pytest",
+              "--junitxml",
+              "<USER_HOME>/wrf_gpu2_lanes/s2-integrate/batch64-public/case4.xml",
+              "tests/test_v034_implemented_notes.py"
+            ],
+            "public_commit": "de723c84d04230a1936ed3723e492aeaaef06a86",
+            "counts": {
+              "tests": 27,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0
+            },
+            "RSS_KiB": 563852,
+            "provenance": {
+              "gpuwrf_file": "<DATA_ROOT>/wrf_gpu2/scratch/s2-integrate/batch64-public-snapshot/src/gpuwrf/__init__.py",
+              "platform": "cpu",
+              "public_tree": "<DATA_ROOT>/wrf_gpu2/scratch/s2-integrate/batch64-public-snapshot",
+              "exitstatus": 0
+            },
+            "cache_tmp_pytest_deleted": true
+          },
+          {
+            "selector": "tests/test_t_qhmass.py",
+            "category": "dependent14",
+            "returncode": 0,
+            "elapsed_s": 8.346751548990142,
+            "command": [
+              "<USER_HOME>/miniconda3/bin/python",
+              "-m",
+              "pytest",
+              "-v",
+              "-rs",
+              "-p",
+              "no:cacheprovider",
+              "-p",
+              "si64_provenance",
+              "--basetemp",
+              "<USER_HOME>/wrf_gpu2_lanes/s2-integrate/pytest",
+              "--junitxml",
+              "<USER_HOME>/wrf_gpu2_lanes/s2-integrate/batch64-public/case5.xml",
+              "tests/test_t_qhmass.py"
+            ],
+            "public_commit": "de723c84d04230a1936ed3723e492aeaaef06a86",
+            "counts": {
+              "tests": 8,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0
+            },
+            "RSS_KiB": 874292,
+            "provenance": {
+              "gpuwrf_file": "<DATA_ROOT>/wrf_gpu2/scratch/s2-integrate/batch64-public-snapshot/src/gpuwrf/__init__.py",
+              "platform": "cpu",
+              "public_tree": "<DATA_ROOT>/wrf_gpu2/scratch/s2-integrate/batch64-public-snapshot",
+              "exitstatus": 0
+            },
+            "cache_tmp_pytest_deleted": true
+          },
+          {
+            "selector": "tests/test_v040_urban_multilayer.py",
+            "category": "dependent14",
+            "returncode": 0,
+            "elapsed_s": 92.46256055898266,
+            "command": [
+              "<USER_HOME>/miniconda3/bin/python",
+              "-m",
+              "pytest",
+              "-v",
+              "-rs",
+              "-p",
+              "no:cacheprovider",
+              "-p",
+              "si64_provenance",
+              "--basetemp",
+              "<USER_HOME>/wrf_gpu2_lanes/s2-integrate/pytest",
+              "--junitxml",
+              "<USER_HOME>/wrf_gpu2_lanes/s2-integrate/batch64-public/case6.xml",
+              "tests/test_v040_urban_multilayer.py"
+            ],
+            "public_commit": "de723c84d04230a1936ed3723e492aeaaef06a86",
+            "counts": {
+              "tests": 35,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0
+            },
+            "RSS_KiB": 3256136,
+            "provenance": {
+              "gpuwrf_file": "<DATA_ROOT>/wrf_gpu2/scratch/s2-integrate/batch64-public-snapshot/src/gpuwrf/__init__.py",
+              "platform": "cpu",
+              "public_tree": "<DATA_ROOT>/wrf_gpu2/scratch/s2-integrate/batch64-public-snapshot",
+              "exitstatus": 0
+            },
+            "cache_tmp_pytest_deleted": true
+          },
+          {
+            "selector": "tests/test_v040_urban_boundaries.py",
+            "category": "dependent14",
+            "returncode": 0,
+            "elapsed_s": 18.8704628389969,
+            "command": [
+              "<USER_HOME>/miniconda3/bin/python",
+              "-m",
+              "pytest",
+              "-v",
+              "-rs",
+              "-p",
+              "no:cacheprovider",
+              "-p",
+              "si64_provenance",
+              "--basetemp",
+              "<USER_HOME>/wrf_gpu2_lanes/s2-integrate/pytest",
+              "--junitxml",
+              "<USER_HOME>/wrf_gpu2_lanes/s2-integrate/batch64-public/case7.xml",
+              "tests/test_v040_urban_boundaries.py"
+            ],
+            "public_commit": "de723c84d04230a1936ed3723e492aeaaef06a86",
+            "counts": {
+              "tests": 42,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0
+            },
+            "RSS_KiB": 951868,
+            "provenance": {
+              "gpuwrf_file": "<DATA_ROOT>/wrf_gpu2/scratch/s2-integrate/batch64-public-snapshot/src/gpuwrf/__init__.py",
+              "platform": "cpu",
+              "public_tree": "<DATA_ROOT>/wrf_gpu2/scratch/s2-integrate/batch64-public-snapshot",
+              "exitstatus": 0
+            },
+            "cache_tmp_pytest_deleted": true
+          },
+          {
+            "selector": "tests/test_microphysics_history_inventory.py",
+            "category": "dependent14",
+            "returncode": 0,
+            "elapsed_s": 5.442583234980702,
+            "command": [
+              "<USER_HOME>/miniconda3/bin/python",
+              "-m",
+              "pytest",
+              "-v",
+              "-rs",
+              "-p",
+              "no:cacheprovider",
+              "-p",
+              "si64_provenance",
+              "--basetemp",
+              "<USER_HOME>/wrf_gpu2_lanes/s2-integrate/pytest",
+              "--junitxml",
+              "<USER_HOME>/wrf_gpu2_lanes/s2-integrate/batch64-public/case8.xml",
+              "tests/test_microphysics_history_inventory.py"
+            ],
+            "public_commit": "de723c84d04230a1936ed3723e492aeaaef06a86",
+            "counts": {
+              "tests": 37,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0
+            },
+            "RSS_KiB": 859668,
+            "provenance": {
+              "gpuwrf_file": "<DATA_ROOT>/wrf_gpu2/scratch/s2-integrate/batch64-public-snapshot/src/gpuwrf/__init__.py",
+              "platform": "cpu",
+              "public_tree": "<DATA_ROOT>/wrf_gpu2/scratch/s2-integrate/batch64-public-snapshot",
+              "exitstatus": 0
+            },
+            "cache_tmp_pytest_deleted": true
+          },
+          {
+            "selector": "tests/contracts/test_v060_physics_interfaces.py",
+            "category": "dependent14",
+            "returncode": 0,
+            "elapsed_s": 0.9054041969939135,
+            "command": [
+              "<USER_HOME>/miniconda3/bin/python",
+              "-m",
+              "pytest",
+              "-v",
+              "-rs",
+              "-p",
+              "no:cacheprovider",
+              "-p",
+              "si64_provenance",
+              "--basetemp",
+              "<USER_HOME>/wrf_gpu2_lanes/s2-integrate/pytest",
+              "--junitxml",
+              "<USER_HOME>/wrf_gpu2_lanes/s2-integrate/batch64-public/case9.xml",
+              "tests/contracts/test_v060_physics_interfaces.py"
+            ],
+            "public_commit": "de723c84d04230a1936ed3723e492aeaaef06a86",
+            "counts": {
+              "tests": 15,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0
+            },
+            "RSS_KiB": 635500,
+            "provenance": {
+              "gpuwrf_file": "<DATA_ROOT>/wrf_gpu2/scratch/s2-integrate/batch64-public-snapshot/src/gpuwrf/__init__.py",
+              "platform": "cpu",
+              "public_tree": "<DATA_ROOT>/wrf_gpu2/scratch/s2-integrate/batch64-public-snapshot",
+              "exitstatus": 0
+            },
+            "cache_tmp_pytest_deleted": true
+          },
+          {
+            "selector": "tests/v040/test_nssl_one_moment_wiring.py",
+            "category": "dependent14",
+            "returncode": 0,
+            "elapsed_s": 3.982446562004043,
+            "command": [
+              "<USER_HOME>/miniconda3/bin/python",
+              "-m",
+              "pytest",
+              "-v",
+              "-rs",
+              "-p",
+              "no:cacheprovider",
+              "-p",
+              "si64_provenance",
+              "--basetemp",
+              "<USER_HOME>/wrf_gpu2_lanes/s2-integrate/pytest",
+              "--junitxml",
+              "<USER_HOME>/wrf_gpu2_lanes/s2-integrate/batch64-public/case10.xml",
+              "tests/v040/test_nssl_one_moment_wiring.py"
+            ],
+            "public_commit": "de723c84d04230a1936ed3723e492aeaaef06a86",
+            "counts": {
+              "tests": 25,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0
+            },
+            "RSS_KiB": 859268,
+            "provenance": {
+              "gpuwrf_file": "<DATA_ROOT>/wrf_gpu2/scratch/s2-integrate/batch64-public-snapshot/src/gpuwrf/__init__.py",
+              "platform": "cpu",
+              "public_tree": "<DATA_ROOT>/wrf_gpu2/scratch/s2-integrate/batch64-public-snapshot",
+              "exitstatus": 0
+            },
+            "cache_tmp_pytest_deleted": true
+          },
+          {
+            "selector": "tests/v040/test_ntu_native_evidence.py",
+            "category": "dependent14",
+            "returncode": 0,
+            "elapsed_s": 2.312069713982055,
+            "command": [
+              "<USER_HOME>/miniconda3/bin/python",
+              "-m",
+              "pytest",
+              "-v",
+              "-rs",
+              "-p",
+              "no:cacheprovider",
+              "-p",
+              "si64_provenance",
+              "--basetemp",
+              "<USER_HOME>/wrf_gpu2_lanes/s2-integrate/pytest",
+              "--junitxml",
+              "<USER_HOME>/wrf_gpu2_lanes/s2-integrate/batch64-public/case11.xml",
+              "tests/v040/test_ntu_native_evidence.py"
+            ],
+            "public_commit": "de723c84d04230a1936ed3723e492aeaaef06a86",
+            "counts": {
+              "tests": 2,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0
+            },
+            "RSS_KiB": 563596,
+            "provenance": {
+              "gpuwrf_file": "<DATA_ROOT>/wrf_gpu2/scratch/s2-integrate/batch64-public-snapshot/src/gpuwrf/__init__.py",
+              "platform": "cpu",
+              "public_tree": "<DATA_ROOT>/wrf_gpu2/scratch/s2-integrate/batch64-public-snapshot",
+              "exitstatus": 0
+            },
+            "cache_tmp_pytest_deleted": true
+          },
+          {
+            "selector": "tests/v040/test_nssl_nohail22_history.py",
+            "category": "dependent14",
+            "returncode": 0,
+            "elapsed_s": 1.0430880200001411,
+            "command": [
+              "<USER_HOME>/miniconda3/bin/python",
+              "-m",
+              "pytest",
+              "-v",
+              "-rs",
+              "-p",
+              "no:cacheprovider",
+              "-p",
+              "si64_provenance",
+              "--basetemp",
+              "<USER_HOME>/wrf_gpu2_lanes/s2-integrate/pytest",
+              "--junitxml",
+              "<USER_HOME>/wrf_gpu2_lanes/s2-integrate/batch64-public/case12.xml",
+              "tests/v040/test_nssl_nohail22_history.py"
+            ],
+            "public_commit": "de723c84d04230a1936ed3723e492aeaaef06a86",
+            "counts": {
+              "tests": 18,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0
+            },
+            "RSS_KiB": 654992,
+            "provenance": {
+              "gpuwrf_file": "<DATA_ROOT>/wrf_gpu2/scratch/s2-integrate/batch64-public-snapshot/src/gpuwrf/__init__.py",
+              "platform": "cpu",
+              "public_tree": "<DATA_ROOT>/wrf_gpu2/scratch/s2-integrate/batch64-public-snapshot",
+              "exitstatus": 0
+            },
+            "cache_tmp_pytest_deleted": true
+          },
+          {
+            "selector": "tests/v040/test_ntu_columns.py",
+            "category": "dependent14",
+            "returncode": 0,
+            "elapsed_s": 10.558894297020743,
+            "command": [
+              "<USER_HOME>/miniconda3/bin/python",
+              "-m",
+              "pytest",
+              "-v",
+              "-rs",
+              "-p",
+              "no:cacheprovider",
+              "-p",
+              "si64_provenance",
+              "--basetemp",
+              "<USER_HOME>/wrf_gpu2_lanes/s2-integrate/pytest",
+              "--junitxml",
+              "<USER_HOME>/wrf_gpu2_lanes/s2-integrate/batch64-public/case13.xml",
+              "tests/v040/test_ntu_columns.py"
+            ],
+            "public_commit": "de723c84d04230a1936ed3723e492aeaaef06a86",
+            "counts": {
+              "tests": 3,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0
+            },
+            "RSS_KiB": 622348,
+            "provenance": {
+              "gpuwrf_file": "<DATA_ROOT>/wrf_gpu2/scratch/s2-integrate/batch64-public-snapshot/src/gpuwrf/__init__.py",
+              "platform": "cpu",
+              "public_tree": "<DATA_ROOT>/wrf_gpu2/scratch/s2-integrate/batch64-public-snapshot",
+              "exitstatus": 0
+            },
+            "cache_tmp_pytest_deleted": true
+          },
+          {
+            "selector": "tests/v040/radiation/test_s2_gfdl_capture_state.py",
+            "category": "dependent14",
+            "returncode": 0,
+            "elapsed_s": 0.7045311580004636,
+            "command": [
+              "<USER_HOME>/miniconda3/bin/python",
+              "-m",
+              "pytest",
+              "-v",
+              "-rs",
+              "-p",
+              "no:cacheprovider",
+              "-p",
+              "si64_provenance",
+              "--basetemp",
+              "<USER_HOME>/wrf_gpu2_lanes/s2-integrate/pytest",
+              "--junitxml",
+              "<USER_HOME>/wrf_gpu2_lanes/s2-integrate/batch64-public/case14.xml",
+              "tests/v040/radiation/test_s2_gfdl_capture_state.py"
+            ],
+            "public_commit": "de723c84d04230a1936ed3723e492aeaaef06a86",
+            "counts": {
+              "tests": 1,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0
+            },
+            "RSS_KiB": 561576,
+            "provenance": {
+              "gpuwrf_file": "<DATA_ROOT>/wrf_gpu2/scratch/s2-integrate/batch64-public-snapshot/src/gpuwrf/__init__.py",
+              "platform": "cpu",
+              "public_tree": "<DATA_ROOT>/wrf_gpu2/scratch/s2-integrate/batch64-public-snapshot",
+              "exitstatus": 0
+            },
+            "cache_tmp_pytest_deleted": true
+          },
+          {
+            "selector": "tests/v040/radiation/test_s2_gfdl_loop_control.py",
+            "category": "dependent14",
+            "returncode": 0,
+            "elapsed_s": 0.8479127479949966,
+            "command": [
+              "<USER_HOME>/miniconda3/bin/python",
+              "-m",
+              "pytest",
+              "-v",
+              "-rs",
+              "-p",
+              "no:cacheprovider",
+              "-p",
+              "si64_provenance",
+              "--basetemp",
+              "<USER_HOME>/wrf_gpu2_lanes/s2-integrate/pytest",
+              "--junitxml",
+              "<USER_HOME>/wrf_gpu2_lanes/s2-integrate/batch64-public/case15.xml",
+              "tests/v040/radiation/test_s2_gfdl_loop_control.py"
+            ],
+            "public_commit": "de723c84d04230a1936ed3723e492aeaaef06a86",
+            "counts": {
+              "tests": 1,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0
+            },
+            "RSS_KiB": 561420,
+            "provenance": {
+              "gpuwrf_file": "<DATA_ROOT>/wrf_gpu2/scratch/s2-integrate/batch64-public-snapshot/src/gpuwrf/__init__.py",
+              "platform": "cpu",
+              "public_tree": "<DATA_ROOT>/wrf_gpu2/scratch/s2-integrate/batch64-public-snapshot",
+              "exitstatus": 0
+            },
+            "cache_tmp_pytest_deleted": true
+          },
+          {
+            "selector": "tests/v040/test_nssl_nohail22.py",
+            "category": "additional_changed_file_alone",
+            "returncode": 0,
+            "elapsed_s": 67.26696052300395,
+            "command": [
+              "<USER_HOME>/miniconda3/bin/python",
+              "-m",
+              "pytest",
+              "-v",
+              "-rs",
+              "-p",
+              "no:cacheprovider",
+              "-p",
+              "si64_provenance",
+              "--basetemp",
+              "<USER_HOME>/wrf_gpu2_lanes/s2-integrate/pytest",
+              "--junitxml",
+              "<USER_HOME>/wrf_gpu2_lanes/s2-integrate/batch64-public/case16.xml",
+              "tests/v040/test_nssl_nohail22.py"
+            ],
+            "public_commit": "de723c84d04230a1936ed3723e492aeaaef06a86",
+            "counts": {
+              "tests": 39,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0
+            },
+            "RSS_KiB": 2960068,
+            "provenance": {
+              "gpuwrf_file": "<DATA_ROOT>/wrf_gpu2/scratch/s2-integrate/batch64-public-snapshot/src/gpuwrf/__init__.py",
+              "platform": "cpu",
+              "public_tree": "<DATA_ROOT>/wrf_gpu2/scratch/s2-integrate/batch64-public-snapshot",
+              "exitstatus": 0
+            },
+            "cache_tmp_pytest_deleted": true
+          }
+        ],
+        "counts": {
+          "tests": 290,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "dependent14_counts": {
+          "tests": 249,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "elapsed_s": 243.5895336549729,
+        "RSS_KiB": 3256136,
+        "cap": "6G/noSwap eachfile freshprocess",
+        "GPU_runs": 0,
+        "scope": "actual curated public14dependent subset +twoadditional changed NSSL files, radius FIRST/alone; no skip/assert relaxation; 0model/GPU repeat",
+        "cleanup": true,
+        "UTC": "2026-10-16T16:54:24.230214+00:00"
+      }
+    ],
+    "counts": {
+      "tests": 543,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "counts_scope": "test invocations across privatecore and actualpublic, not unique global nodes; overlap between artifacts is explicit",
+    "private_core_counts": {
+      "tests": 253,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "curated_public_counts": {
+      "tests": 290,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "public_dependent14_counts": {
+      "tests": 249,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "public_commit": "de723c84d04230a1936ed3723e492aeaaef06a86",
+    "public_source_tree": "1561f69de643391a7c89f478de0ac52120e1f34f",
+    "elapsed_s": 258.0065485389496,
+    "RSS_KiB": 3256136,
+    "cap": "6G/noSwap sequential freshprocesses",
+    "GPU_runs": 0,
+    "cleanup": true,
+    "default_identities": {
+      "swiss": {
+        "returncode": 0,
+        "sha": "3356e24924a9207b2264cec1dc8df0591cd85e1a856097251b6f2efeb7327c57",
+        "expected": "3356e24924a9207b2264cec1dc8df0591cd85e1a856097251b6f2efeb7327c57",
+        "PASS": true,
+        "elapsed_s": 45.25990472402191,
+        "forecast_steps": 0,
+        "platform": "cpu"
+      },
+      "prod": {
+        "returncode": 0,
+        "sha": "196aed9f9973499c5610fdf9965223503a61944156b8cd41357fd8c6e911911e",
+        "expected": "196aed9f9973499c5610fdf9965223503a61944156b8cd41357fd8c6e911911e",
+        "PASS": true,
+        "elapsed_s": 59.14758733997587,
+        "forecast_steps": 0,
+        "platform": "cpu"
+      }
+    },
+    "identities_reused_not_retraced": true,
+    "identity_source": "batch63 fresh3356/196a +SRC/data/manifest BYTE64; critic explicitno re-trace/model/GPUrepeat",
+    "known_red_scope": "All7 NSSL failures addressed in approved3files; public14subset249green+extra2filesgreen; not a full18563-test-suite run or fullrelease pipeline."
+  },
+  "explicit_skips": [],
+  "source_audit": {
+    "UTC": "2026-10-16T16:41:31.290789+00:00",
+    "base63": "ad085c699c551531bd473c62a00790112f6fdb4d",
+    "approved": "c4e3f0d47d4d3f4c3b080a8d4ab314f3e22fbf6c",
+    "merge": "b984b264dfc978eb5b17f65d06c7a4f626aa21e5",
+    "source": "5a2856b9864e8d91b3d7d44808b54e301087cc93",
+    "3changed_test_files": [
+      "tests/v034/nssl2mom/test_radius_handoff.py",
+      "tests/v040/test_nssl_nohail22.py",
+      "tests/v040/test_nssl_one_moment_wiring.py"
+    ],
+    "wholefile_AST_exact_after_only_mock_keys_and_import_removed": true,
+    "no_assertion_marker_parameterization_change": true,
+    "SRC_data_manifest_release_tooling_BYTE63": true,
+    "tracked_pyc_count": 0,
+    "critic": "39520571a6",
+    "critic66PASS_2genuineASSERT_0errors": "review source reused; radius alone; wrongvariant mutant assertion vs SR KeyError schema control distinguished",
+    "identity_reuse": "batch63 fresh full3356/196a; runtime/data/manifest BYTE, no re-trace needed per critic",
+    "curated_gate_plan": "reviewed public6ca296edd successor +ONLY3private reviewed test blobs; original14 proof-dependent files all rerun +nohails22+radius alone; perfile6G/numerical gates unchanged"
+  },
+  "reused_review": "Three changed test files BYTE reviewedc4e; whole-file ASTs equal base after only rainncv/sr mock keywords and module-level scan_adapters import removed. All assertions, markers, parameters, array shapes/dtypes unchanged. Actual producer six precipitation slots modelled; import order matches real operational module. Source/data/manifest and batch63 release tooling BYTE main63, noPYC reintroduced. Critic66PASS/2genuine wrong-variant ASSERT/0errors including radius ALONE, broader producer536 over12files source-bound reuse; missing-SR KeyErrors are schema-negative controls, not assertion kills. Actual curated artifact de723 is reviewed public6ca successor with ONLYthree repaired test blobs BYTE composed privatecandidate; publicSRC/data BYTE reviewedpublicbase; all14 proof-dependent paths unchanged. Re-run full public249 subset and two extra changed files with radius FIRST/alone/freshprocess and import provenance, core private separately. No model/GPU/identity/oracle re-trace beyond required unchanged original tests inside public subset.",
+  "limits": "GREEN integration and actual composed curated subset only; no full18563-test-suite or final-release pipeline/wheel/site/version claim. Public artifact retains approved simulated0.4.0 staging6ca version/docs and curation, applies ONLY64 testchanges; no publication/push or private README replacement. This rerun closes known-red subset required by manager16:35; final release owner still runs final complete tooling pipeline on actual release head. Low-level fresh-JIT lazy-import hazard is unchanged in product; test now follows production import order, not a product fix. Frozen C5prime scientific/S1/F2/resources/remaining c11 gates remain separate. Private identities reuse fresh63 source-bound proof; public model BYTE approved publicbase, not claimed identical private Git tree due approved curation/version metadata. Initial public harness setup had FC/GF None because PATH lacks unversioned gfortran; zero pytest executions, complete cleanup, invalid refusal retained. Explicit configured wrfbuild compiler fixes setup; private core253 result retained.",
+  "performance_memory": "Test-only/mock dictionaries and import order; runtime/data/manifest/tooling BYTE63 proves no model kernels, allocations, synchronization, compile graph or carry/schema change. Radius module import merely mirrors existing production initialization; no production performance effect. Per-file fresh pytest parents cap host memory at6G and avoid known combined NSSL OOM; caches/P deleted each file, publicsnapshot only until last dependentfile. Actual imported gpuwrf path is asserted under public/src and CPU platform in each process; no private editable-install fallback.",
+  "default_identity": "REUSED batch63 fresh fullSwiss3356e24924a9207b2264cec1dc8df0591cd85e1a856097251b6f2efeb7327c57 /PRODd01196aed9f9973499c5610fdf9965223503a61944156b8cd41357fd8c6e911911e by exact private SRC/data/manifest BYTE. No new identity trace per critic/source-reuse rule; defaultfreeze unchanged.",
+  "GPU_runs": 0,
+  "cleanup": true
+}

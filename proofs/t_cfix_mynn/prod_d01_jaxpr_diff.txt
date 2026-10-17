@@ -1,0 +1,54 @@
+lines main 251322 cand 251393 only cand 85 only main 14
+ + 8 V:f32[70,120] = V V V
+ + 5 ] V
+ + 4 start_indices=(0, 0, 0)
+ + 4 V
+ + 4 limit_indices=(70, 120, 1)
+ + 3 V:V[70,120] = V V V
+ + 3 V:f32[70,120] = V[V=_where jaxpr=_where1] V V V
+ + 2 strides=None
+ + 2 weak_type=False
+ + 2 new_dtype=float32
+ + 2 V:f32[70,120] = convert_element_type[
+ + 2 V:f32[70,120] = V 1.0:f32[] V
+ + 2 V:f32[70,120,44] = layout_constraint[
+ + 2 V:f32[70,120,1] = slice[
+ + 2 V:f32[70,120] = squeeze[dimensions=(2,)] V
+ + 2 V:f64[70,120,44] = layout_constraint[
+ + 2 V:V[70,120] = V V 1200.0:f32[]
+ + 2 V:V[70,120] = V V -600.0:f32[]
+ + 2 V:V[70,120] = V V 0.0008999999845400453:f32[]
+ + 2 V:V[70,120] = V V -0.0003000000142492354:f32[]
+ + 2 V:f64[70,120,1] = slice[
+ + 2 V:f64[70,120] = squeeze[dimensions=(2,)] V
+ + 1 sharding=None
+ + 1 dimension=0
+ + 1 dtype=int32
+ + 1 ]
+ + 1 V V
+ + 1 V:f32[] = V 461.6000061035156:f32[] 287.0:f32[]
+ + 1 V:f32[] = V V 1.0:f32[]
+ + 1 broadcast_dimensions=(np.int64(1),)
+ + 1 V:f32[70,120] = V V 0.0:f32[]
+ + 1 V:f32[70,120] = V 0.8399999737739563:f32[] V
+ + 1 V:f32[70,120] = V 1004.5:f32[] V
+ + 1 V:f32[70,120] = V V 100000.0:f32[]
+ + 1 _:f32[70,120] = V V 0.2857142984867096:f32[]
+ + 1 V:f32[70,120] = V V 9.99999993922529e-09:f32[]
+ + 1 V:f32[70,120] V:f32[70,120] V:f32[70,120] = optimization_barrier V
+ + 1 V:i32[44] = V[
+ + 1 shape=(44,)
+ + 1 V:V[1,44] = broadcast_in_dim[
+ + 1 V:V[8400,44] = V V V
+ + 1 V:f32[70,120] = V[V=_where jaxpr=_where4] V 1200.0:f32[]
+ + 1 V:f32[70,120] = V[V=_where jaxpr=_where4] V -600.0:f32[]
+ + 1 V:f32[70,120] = V[V=_where jaxpr=_where4] V 0.0008999999845400453:f32[]
+ + 1 V:f32[70,120] = V[V=_where jaxpr=_where4] V -0.0003000000142492354:f32[]
+ + 1 V:V[44] = V V 43:i32[]
+ - 2 V:f32[44,70,120] = slice[
+ - 2 limit_indices=(45, 70, 120)
+ - 2 V:f32[44,70,120] = V V V
+ - 2 _:f32[70,120,44] = layout_constraint[
+ - 2 start_indices=(1, 0, 0)
+ - 2 V:f32[44,70,120] = V 0.5:f32[] V
+ - 2 _:f64[70,120,44] = layout_constraint[

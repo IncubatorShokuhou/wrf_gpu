@@ -1,0 +1,319 @@
+{
+  "candidate": "8236fdf52",
+  "base_main": "f4fd9de77",
+  "status": "FULL24H_0NF_62BOUNDS_PASS;EXCH_TKE_COVERAGE_E41_OPEN",
+  "root_operation": {
+    "python": "src/gpuwrf/physics/_morrison_cold.py:127-130 before fix",
+    "WRF": "module_mp_morr_two_moment.F:2116-2120,2232/2239,2434",
+    "input_ns_k19": -6.015444853346708e-08,
+    "first_bad": "NSAGG negative-base fractional power",
+    "detection": "qs/Ns levels17-19 after sedimentation; actualGPU and CPU firststep36/cell17,36,11",
+    "mechanism": "existing corrected ni_c/ns_c/nr_c/ng_c not used until after process rates"
+  },
+  "fix": "Alias the already corrected numbers before all cold process rates; no new clamp, denominator guard, allocation, solve or host transfer",
+  "pristine_oracle": {
+    "physics_untouched": true,
+    "input_sha256": "88dbdb943efcf0b9b274e778aecaa03e16ce3eb0059015f5f659a9b016048677",
+    "sources": {
+      "module_model_constants.F": {
+        "path": "<USER_HOME>/src/wrf_pristine/WRF/share/module_model_constants.F",
+        "sha256": "5b80377fecdc18a5f0ad38d3b6c15cfc86ad5d76701adbbbb08a08698d0f7062"
+      },
+      "module_mp_radar.F": {
+        "path": "<USER_HOME>/src/wrf_pristine/WRF/phys/module_mp_radar.F",
+        "sha256": "ca069a12cc149313456fa8ee08a827e0f542768b66ff6c1ece95a40ab208fb88"
+      },
+      "module_mp_morr_two_moment.F": {
+        "path": "<USER_HOME>/src/wrf_pristine/WRF/phys/module_mp_morr_two_moment.F",
+        "sha256": "2dcd1c70127ea57c8a2437baf2b8a2388b1722e4d4ead9411834946439b8c273"
+      },
+      "morrison_stub_modules.f90": {
+        "path": "<USER_HOME>/src/wrf_gpu2_wt/t-c02nan/proofs/v060/oracle/morrison_stub_modules.f90",
+        "sha256": "fbe5dce3fdb37cf894d6a6b0fbf69fa3d90acd29dad6d3db2989abe4212fb477"
+      }
+    },
+    "driver_sha256": "1faff9b8ccad63514edf8d577aa6a6a8eb4a5a35ab8a58e9570705858ca32964",
+    "modes": {
+      "fp32": {
+        "inputs_BYTE": {
+          "TH_IN": true,
+          "QV_IN": true,
+          "QC_IN": true,
+          "QR_IN": true,
+          "QI_IN": true,
+          "QS_IN": true,
+          "QG_IN": true,
+          "NI_IN": true,
+          "NS_IN": true,
+          "NR_IN": true,
+          "NG_IN": true,
+          "PII": true,
+          "P": true,
+          "DZ": true,
+          "W": true
+        },
+        "nonfinite": {},
+        "repeat_BYTE": true,
+        "flags": [
+          "-O2",
+          "-ffree-form",
+          "-ffree-line-length-none",
+          "-ffpe-summary=none",
+          "-cpp",
+          "-ffp-contract=off"
+        ],
+        "original_executable_sha256": "eeb5c5cf7c5d53c193a361b3eab1a128fb90d8b25117bf1b8d4e4c88a7438443"
+      },
+      "fp64": {
+        "inputs_BYTE": {
+          "TH_IN": true,
+          "QV_IN": true,
+          "QC_IN": true,
+          "QR_IN": true,
+          "QI_IN": true,
+          "QS_IN": true,
+          "QG_IN": true,
+          "NI_IN": true,
+          "NS_IN": true,
+          "NR_IN": true,
+          "NG_IN": true,
+          "PII": true,
+          "P": true,
+          "DZ": true,
+          "W": true
+        },
+        "nonfinite": {},
+        "repeat_BYTE": true,
+        "flags": [
+          "-O2",
+          "-ffree-form",
+          "-ffree-line-length-none",
+          "-ffpe-summary=none",
+          "-cpp",
+          "-ffp-contract=off",
+          "-fdefault-real-8",
+          "-fdefault-double-8"
+        ],
+        "original_executable_sha256": "1b96bd8049ce8e990b71b9b51aa14c3f9291a5e718229166c75d5eff1f403473"
+      }
+    },
+    "seconds": 2.139633294000305,
+    "peak_child_RSS_KiB": 95124,
+    "finished_utc": "2026-10-14T23:43:38.962752+00:00"
+  },
+  "CPU_gate": {
+    "platform": "cpu",
+    "source": "<DATA_ROOT>/wrf_gpu2/scratch/t-c02nan/TCN55/source",
+    "corrected_all20_fields_finite": true,
+    "pristine": {
+      "fp64": {
+        "th": {
+          "maxabs": 0.0,
+          "bound": 1e-09,
+          "pass_gate": true
+        },
+        "qv": {
+          "maxabs": 0.0,
+          "bound": 4.530697129666806e-12,
+          "pass_gate": true
+        },
+        "qc": {
+          "maxabs": 3.308722450212111e-24,
+          "bound": 1e-12,
+          "pass_gate": true
+        },
+        "qr": {
+          "maxabs": 2.5849394142282115e-26,
+          "bound": 1e-12,
+          "pass_gate": true
+        },
+        "qi": {
+          "maxabs": 7.623296525288703e-21,
+          "bound": 1e-12,
+          "pass_gate": true
+        },
+        "qs": {
+          "maxabs": 3.3087224502121107e-22,
+          "bound": 1e-12,
+          "pass_gate": true
+        },
+        "qg": {
+          "maxabs": 0.0,
+          "bound": 1e-12,
+          "pass_gate": true
+        },
+        "ni": {
+          "maxabs": 1.8189894035458565e-12,
+          "bound": 0.004684810654357799,
+          "pass_gate": true
+        },
+        "ns": {
+          "maxabs": 4.121147867408581e-13,
+          "bound": 0.001,
+          "pass_gate": true
+        },
+        "nr": {
+          "maxabs": 3.552713678800501e-15,
+          "bound": 0.001,
+          "pass_gate": true
+        },
+        "ng": {
+          "maxabs": 0.0,
+          "bound": 0.001,
+          "pass_gate": true
+        },
+        "rainncv": {
+          "maxabs": 0.0,
+          "bound": 1e-09,
+          "pass_gate": true
+        },
+        "snowncv": {
+          "maxabs": 0.0,
+          "bound": 1e-09,
+          "pass_gate": true
+        },
+        "graupelncv": {
+          "maxabs": 0.0,
+          "bound": 1e-09,
+          "pass_gate": true
+        },
+        "sr": {
+          "maxabs": 0.0,
+          "bound": 1e-07,
+          "pass_gate": true
+        }
+      },
+      "fp32": {
+        "th": {
+          "maxabs": 3.140783343269504e-05,
+          "bound": 0.05,
+          "pass_gate": true
+        },
+        "qv": {
+          "maxabs": 2.6303482196163297e-09,
+          "bound": 0.0002718418277800083,
+          "pass_gate": true
+        },
+        "qc": {
+          "maxabs": 2.539063549262231e-09,
+          "bound": 6.641523214057088e-06,
+          "pass_gate": true
+        },
+        "qr": {
+          "maxabs": 3.1449472926713327e-16,
+          "bound": 1e-06,
+          "pass_gate": true
+        },
+        "qi": {
+          "maxabs": 4.6939235956397235e-11,
+          "bound": 1e-06,
+          "pass_gate": true
+        },
+        "qs": {
+          "maxabs": 1.9114925583247394e-12,
+          "bound": 1e-06,
+          "pass_gate": true
+        },
+        "qg": {
+          "maxabs": 0.0,
+          "bound": 1e-06,
+          "pass_gate": true
+        },
+        "ni": {
+          "maxabs": 0.014660434680990875,
+          "bound": 234240.53125,
+          "pass_gate": true
+        },
+        "ns": {
+          "maxabs": 0.0023095948534148647,
+          "bound": 1000.0,
+          "pass_gate": true
+        },
+        "nr": {
+          "maxabs": 1.0492611828283316e-06,
+          "bound": 1000.0,
+          "pass_gate": true
+        },
+        "ng": {
+          "maxabs": 0.0,
+          "bound": 1000.0,
+          "pass_gate": true
+        },
+        "rainncv": {
+          "maxabs": 0.0,
+          "bound": 0.0005,
+          "pass_gate": true
+        },
+        "snowncv": {
+          "maxabs": 0.0,
+          "bound": 0.0005,
+          "pass_gate": true
+        },
+        "graupelncv": {
+          "maxabs": 0.0,
+          "bound": 0.0005,
+          "pass_gate": true
+        },
+        "sr": {
+          "maxabs": 0.0,
+          "bound": 0.005,
+          "pass_gate": true
+        }
+      }
+    },
+    "failed": [],
+    "gate_source": "unchanged proofs/v060/run_morrison_parity.py PREDECLARED_TOL",
+    "mutant": {
+      "result": "GENUINE_ARRAY_ASSERTION_ERROR",
+      "setup_errors": 0,
+      "nonfinite": {
+        "ns": [
+          [
+            0,
+            17
+          ],
+          [
+            0,
+            18
+          ],
+          [
+            0,
+            19
+          ]
+        ],
+        "qs": [
+          [
+            0,
+            17
+          ],
+          [
+            0,
+            18
+          ],
+          [
+            0,
+            19
+          ]
+        ]
+      }
+    },
+    "seconds": 7.613605189000737,
+    "peak_RSS_KiB": 1204200
+  },
+  "affected_tests": {
+    "passed": 26,
+    "seconds": 26.75,
+    "receipt": "<USER_HOME>/wrf_gpu2_lanes/t-c02nan/TCN55/shared.xml"
+  },
+  "fixture": "proofs/t_c02nan/savepoints/morrison_c08_step36.json",
+  "new_permanent_test": "tests/test_morrison_cold_number_contract.py; two test-consumer nodes pending after GPU release",
+  "performance": {
+    "source": "no new arithmetic/buffers; existing corrected values forwarded",
+    "GPU_HLO_E41_cost": "pending actual final forecast executable",
+    "precision": "Measured original GPU Morrison F645577metadata instructions; current correction retains precision. S2 fallback is separate."
+  },
+  "scope": "Does not include already merged SF1+UST170 review; GBM init1b original REAL.001 separately CPU-qualified and included in c08 forecast arm",
+  "GPU_arm": "<DATA_ROOT>/wrf_gpu2/scratch/t-c02nan/TCN57_c08",
+  "future_aero": "Independent aero cold source copy appears to share stale-number pattern; source-only followup, no aero edit or NF claim",
+  "final_GPU_qualification": "proofs/t_c02nan/NAN_REPAIRS_QUALIFICATION.json"
+}

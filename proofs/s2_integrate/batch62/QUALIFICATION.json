@@ -1,0 +1,167 @@
+{
+  "UTC": "2026-10-16T11:46:37.267069+00:00",
+  "status": "GREEN source/CPU only; FF HELD pending manager WN3D6 and ABAB timing gates",
+  "approved": "t-cfix-mynn exact353a85f8a11abf4a12dcd78bad77ec7dc682a019 C5prime (rv85a60b05e MERGE11:34:56)",
+  "source_tree": "5a2856b9864e8d91b3d7d44808b54e301087cc93",
+  "fresh_CPU": {
+    "UTC": "2026-10-16T11:46:26.770716+00:00",
+    "status": "PASS",
+    "returncode": 0,
+    "immutable_candidate": "ef017dda2d54c7b0f324ef426d136d0095689b7b",
+    "source": "5a2856b9864e8d91b3d7d44808b54e301087cc93",
+    "groups": [
+      {
+        "status": "PASS",
+        "returncode": 0,
+        "immutable_candidate": "ef017dda2d54c7b0f324ef426d136d0095689b7b",
+        "source": "5a2856b9864e8d91b3d7d44808b54e301087cc93",
+        "command": [
+          "<USER_HOME>/miniconda3/bin/python",
+          "-m",
+          "pytest",
+          "-q",
+          "-rs",
+          "-p",
+          "no:cacheprovider",
+          "--basetemp",
+          "<USER_HOME>/wrf_gpu2_lanes/s2-integrate/pytest",
+          "--junitxml",
+          "<USER_HOME>/wrf_gpu2_lanes/s2-integrate/batch62-shared/sanity.xml",
+          "tests/contracts/",
+          "tests/test_v018_mp_family_fail_closed.py",
+          "tests/test_v034_implemented_notes.py",
+          "tests/test_scheme_catalog_fail_closed.py",
+          "tests/test_namelist_check.py",
+          "tests/test_namelist_binding.py",
+          "tests/test_m7_restart_checkpoint_roundtrip.py",
+          "tests/test_netcdf_process_lock.py",
+          "tests/test_v0110_wrfrst_netcdf.py",
+          "tests/test_cli.py",
+          "tests/test_v060_physics_dispatch.py"
+        ],
+        "elapsed_s": 14.721950280974852,
+        "cap": "6G/noSwap",
+        "GPU_runs": 0,
+        "numerical_reuse": "C5prime wholeSRC/tests BYTEapproved353; productonlyPC; main61F8/SSIB/Tiedtke/NTU/manifest retained. Critic13affectedPASS/4ASSERT/8fullrho+4ktsBYTE/18fluxBYTE0ULP/source43c7 reuse; pristineformulas/oracles unchanged. Reviewed exact353 actualGPU E41 threePASS/transfers-sync-callbacks equalF20/SwissPROD24D6PASS. Fresh new3356/196a identities/core/fullF20+surface/Exner/sharedrho callers only. FF held WN3D6 and matchedABAB<=1.03, no ownGPU/repeatednumerics.",
+        "counts": {
+          "tests": 253,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "RSS_KiB": 1295164,
+        "cleanup": true,
+        "UTC": "2026-10-16T11:41:19.612017+00:00"
+      },
+      {
+        "status": "PASS",
+        "returncode": 0,
+        "immutable_candidate": "ef017dda2d54c7b0f324ef426d136d0095689b7b",
+        "source": "5a2856b9864e8d91b3d7d44808b54e301087cc93",
+        "command": [
+          "<USER_HOME>/miniconda3/bin/python",
+          "-m",
+          "pytest",
+          "-v",
+          "-rs",
+          "-p",
+          "no:cacheprovider",
+          "--basetemp",
+          "<USER_HOME>/wrf_gpu2_lanes/s2-integrate/pytest",
+          "--junitxml",
+          "<USER_HOME>/wrf_gpu2_lanes/s2-integrate/batch62-affected/sanity.xml",
+          "tests/v025/t_cfix_mynn/test_f20_mynn_caller.py",
+          "tests/v025/b_phys/test_mynn_surface_exner.py",
+          "tests/v025/b_phys/test_mynn_exner_consumers.py",
+          "tests/test_v014_mynn_surface_layer_regressions.py::test_wrf_phy_prep_rho_reconstructs_alt_density",
+          "tests/test_v014_mynn_surface_layer_regressions.py::test_wrf_phy_prep_rho_uses_state_replace_synced_totals",
+          "tests/test_s1_lake_wiring.py::test_lake_mynn_forwards_independent_original_wrf_exner",
+          "tests/test_t_rainnc_callers.py::test_tiedtke_receives_phy_prep_total_density",
+          "tests/v025/b_phys/test_mynn_phy_exner.py::test_real_coupler_keeps_hydro_p_and_supplies_dynamic_pi",
+          "tests/v025/b_phys/test_mynn_phy_exner.py::test_both_actual_whole_callers_forward_independent_pi",
+          "tests/v025/b_phys/test_mynn_phy_exner.py::test_both_plume_suppliers_use_dynamic_pi_for_skin_theta",
+          "tests/v025/b_phys/test_phy_prep_real_const.py::test_actual_native_consumer_matches_original_bits",
+          "tests/v025/b_phys/test_phy_prep_real_const.py::test_double_consumers_keep_same_values"
+        ],
+        "elapsed_s": 196.53337052901043,
+        "cap": "6G/noSwap",
+        "GPU_runs": 0,
+        "numerical_reuse": "C5prime wholeSRC/tests BYTEapproved353; productonlyPC; main61F8/SSIB/Tiedtke/NTU/manifest retained. Critic13affectedPASS/4ASSERT/8fullrho+4ktsBYTE/18fluxBYTE0ULP/source43c7 reuse; pristineformulas/oracles unchanged. Reviewed exact353 actualGPU E41 threePASS/transfers-sync-callbacks equalF20/SwissPROD24D6PASS. Fresh new3356/196a identities/core/fullF20+surface/Exner/sharedrho callers only. FF held WN3D6 and matchedABAB<=1.03, no ownGPU/repeatednumerics.",
+        "counts": {
+          "tests": 77,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "RSS_KiB": 3170012,
+        "cleanup": true,
+        "UTC": "2026-10-16T11:44:43.354858+00:00"
+      }
+    ],
+    "counts": {
+      "tests": 330,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "elapsed_s": 319.08496585895773,
+    "RSS_KiB": 3892148,
+    "default_identities": {
+      "swiss": {
+        "returncode": 0,
+        "sha": "3356e24924a9207b2264cec1dc8df0591cd85e1a856097251b6f2efeb7327c57",
+        "expected": "3356e24924a9207b2264cec1dc8df0591cd85e1a856097251b6f2efeb7327c57",
+        "PASS": true,
+        "elapsed_s": 37.42196452699136,
+        "forecast_steps": 0,
+        "platform": "cpu"
+      },
+      "prod": {
+        "returncode": 0,
+        "sha": "196aed9f9973499c5610fdf9965223503a61944156b8cd41357fd8c6e911911e",
+        "expected": "196aed9f9973499c5610fdf9965223503a61944156b8cd41357fd8c6e911911e",
+        "PASS": true,
+        "elapsed_s": 68.12725781998597,
+        "forecast_steps": 0,
+        "platform": "cpu"
+      }
+    },
+    "identity_control_not_added_to_unique_counts": true,
+    "cap": "6G/noSwap,sequentialchildprocesses",
+    "GPU_runs": 0,
+    "cleanup": true,
+    "numerical_reuse": "Whole SRC/tests BYTE approved353a85f8a1; composed SRC/tests patch BYTE reviewed main61..353, three changed files only (PC + F20 tests/mutants). Main61 F8 native/traceback plus SSiB59/Tiedtke58/NTU57/runtime/physics kernels and asset manifest preserved BYTE. C7 source BYTE gated43c7; shared full-column density8/8 BYTE, new kts4/4 BYTE level0, compiled limited-view18/18flux arrays BYTE0ULP with Exner1/0 inside/mixed/all-beyond; original State HFX/QFX/shared handles unchanged. These parent comparisons are CPU regression, not fidelity. Critic13affectedPASS/four genuine ASSERT mutants0setup; unchanged pristine formulas/kernels/fixtures reuse original fidelity without duplicate oracle or compiled-array tests. Reviewed actual353 GPU Swiss/PROD/WN3 E41PASS/fullJIT+AOT; all HtoD/DtoH/DtoD counts+bytes/sync+callbacks equal F20; Swiss25+PROD50 full24 originalCPU D6PASS. Source-identity permits reuse on composed candidate, no GPU rerun here. Fresh new default hashes/core/fullF20 and affected sharedrho/surface/Exner caller checks only."
+  },
+  "explicit_skips": [],
+  "source_audit": {
+    "UTC": "2026-10-16T11:37:49.376012+00:00",
+    "base61": "2ed8c04c26e6066d0bce51e4466dcb14f556e5db",
+    "approved": "353a85f8a11abf4a12dcd78bad77ec7dc682a019",
+    "merge": "19d85f03a6afba996530e8e9868b04db0adfaedf",
+    "source": "5a2856b9864e8d91b3d7d44808b54e301087cc93",
+    "whole_SRC_and_tests_BYTE_incoming353": true,
+    "changed_SRC_tests": [
+      "src/gpuwrf/coupling/physics_couplers.py",
+      "tests/v025/t_cfix_mynn/mutants.py",
+      "tests/v025/t_cfix_mynn/test_f20_mynn_caller.py"
+    ],
+    "combined_patch_BYTE_review": true,
+    "touched_python_AST_PASS": true,
+    "F8native61_SSIB59_Tiedtke58_NTU57_runtime_physics_kernels_manifest_preserved_BYTE": true,
+    "new_default_expected": {
+      "swiss": "3356e24924a9207b2264cec1dc8df0591cd85e1a856097251b6f2efeb7327c57",
+      "prod": "196aed9f9973499c5610fdf9965223503a61944156b8cd41357fd8c6e911911e"
+    },
+    "source_reuse": "C7 same measured43c7 PC; all18CPUfluxBYTE0ULP,8sharedfullrhoBYTE+4ktsBYTE,13affectedPASS/4genuineASSERT; formulas/oracles unchanged",
+    "reviewed_GPU": "exact353 Swiss/PROD/WN3 allE41PASS JIT+AOT; HtoD/DtoH/DtoD counts+bytes/sync+callbacks EXACTF20; Swiss25+PROD50frames full24 originalCPU D6PASS",
+    "FF_HOLD": "manager11:35 explicit: WN30227 full24 originalCPU D6PASS AND matched ABAB candidate/F20median<=1.03; pending, sourceCPU verdictnotwaiver",
+    "owner": "manager FF only; v-prep existingGPU/scoring/timing no repeat here",
+    "cost": "kts/kts+1 earlyslice2Dalgebra/branchfree; fullcolumndefaultBYTE; no predicate cond/reduction/persistentcarry/newexplicittransfer. Runtime/peak judgedprimaryGPU; unmatchedcold/pin+5.73 notdecision; no newS1 claim"
+  },
+  "reused_review": "Whole SRC/tests BYTE approved353a85f8a1; composed SRC/tests patch BYTE reviewed main61..353, three changed files only (PC + F20 tests/mutants). Main61 F8 native/traceback plus SSiB59/Tiedtke58/NTU57/runtime/physics kernels and asset manifest preserved BYTE. C7 source BYTE gated43c7; shared full-column density8/8 BYTE, new kts4/4 BYTE level0, compiled limited-view18/18flux arrays BYTE0ULP with Exner1/0 inside/mixed/all-beyond; original State HFX/QFX/shared handles unchanged. These parent comparisons are CPU regression, not fidelity. Critic13affectedPASS/four genuine ASSERT mutants0setup; unchanged pristine formulas/kernels/fixtures reuse original fidelity without duplicate oracle or compiled-array tests. Reviewed actual353 GPU Swiss/PROD/WN3 E41PASS/fullJIT+AOT; all HtoD/DtoH/DtoD counts+bytes/sync+callbacks equal F20; Swiss25+PROD50 full24 originalCPU D6PASS. Source-identity permits reuse on composed candidate, no GPU rerun here. Fresh new default hashes/core/fullF20 and affected sharedrho/surface/Exner caller checks only.",
+  "limits": "PREPARED source/CPU scope; FF HELD by manager11:35 until WN3-0227 full24 originalCPU frozenD6 PASS AND matched fresh-process cache-loaded PROD ABAB median candidate/F20<=1.03. Source verdict and Swiss/PROD D6 do not waive pending WN3/timing. Existing exact353 GPU receipts reviewed and source-bound, not fresh integration runs. Raw GPU cold-control NONBYTE requires originalCPU D6 (not GPU truth); Swiss scorer setup failure retained/rescore only, no model rerun. Prior C5 added host predicate transfer was superseded by branch-free C5prime; current verified equal transfer/sync/callback counts do not claim zero total host work. Keep existing F2/resource/release requirements separate; no unconditional performance or release PASS.",
+  "performance_memory": "kts/kts+1 slices feed 2D algebra before conversion; no new conditional/while, reduction predicate, persistent carry or explicit host sync. Shared density defaultFalse/full-column path BYTE parent. New code removes 3D layout linkage, but liveness and speed require primary compiled/runtime evidence. All3 actual GPU copies/sync/callback counts equal F20 reviewed. Unmatched cold-compiled vs pin-restored PROD hour2 +5.73% is not decisive; matched profiled hour3 -1.4% supportive only. Manager decision is matched cache-loaded ABAB<=1.03; peak-memory/readiness/whole-run S1 not inferred from CPU/source.",
+  "default_identity": "FRESH full composed CPU native-facade FAST1/CENSUS0/0forecaststeps must reproduce NEW Swiss3356e24924a9207b2264cec1dc8df0591cd85e1a856097251b6f2efeb7327c57 / PRODd01196aed9f9973499c5610fdf9965223503a61944156b8cd41357fd8c6e911911e (supersede C5 a616/4e only after manager FF conditions).",
+  "GPU_runs": 0,
+  "cleanup": true
+}

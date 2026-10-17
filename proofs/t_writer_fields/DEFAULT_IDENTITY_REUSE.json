@@ -1,0 +1,34 @@
+{
+  "schema": "t-writer-fields-default-identity-reuse-v1",
+  "measured_source": "29a258f688b698920e4f0b7f5f33755b924af615",
+  "final_model_source": "ae26cf92549e32cd8169e11b7d299ef51dd693ed",
+  "changed_product_files": [
+    "src/gpuwrf/io/producer_history.py",
+    "src/gpuwrf/io/wrfout_writer.py"
+  ],
+  "unchanged_model_and_initialization_trees": {
+    "contracts": "b01693903f1378338c74989761d1598ea21e8341",
+    "coupling": "a8ecac846488c143c168ff067d25aace1bf57f45",
+    "runtime": "0b6e11549fe81e78435e55e16f7b191452bf3714",
+    "physics": "0dd366cc8af138124fb2b22e407b57a61b66b1fe",
+    "integration": "1803eea9be31d0281ee030a9ef624c681f11fa54",
+    "nesting": "826d0d6402bc9ff2f886211511db8bfc40448a04",
+    "init": "edb4f99c11e4a520d300bf8109a9e2561c3ff4a5",
+    "kernels": "8a4116861162cf7f1670a3bc7f16e16dde75e96b",
+    "dynamics": "596463f9a7983a1c5242a1e48dba4adc08009f3a"
+  },
+  "identities": {
+    "swiss": {
+      "receipt": "<USER_HOME>/wrf_gpu2_lanes/t-writer/TWF09_swiss.json",
+      "sha256": "1523bc9bab2721c7f75f59b9ed82049495dbb5d5690f00fffe780b9b495f9a27",
+      "full_default_program_sha256": "f672a5739cb96e388b6b7a40ef80337bf81bdc14ef15268f3476e09d79fe055d"
+    },
+    "prod": {
+      "receipt": "<USER_HOME>/wrf_gpu2_lanes/t-writer/TWF09_prod.json",
+      "sha256": "e5906d67556cb0fbe305cce8506b5387c01c62189e0947f1f08a6e4c83eb877c",
+      "full_default_program_sha256": "6fc715a2bd630934c4cf0f94427df19a527cbf429011c9ba5efe4d712744d27b"
+    }
+  },
+  "reason": "The final delta adds only manager-approved host history constants and field specs. No timestep/init/physics/coupling/State code differs. Native default identities carry forward; no duplicated trace or numerical qualification.",
+  "scope": "CPU native-program tracing; no GPU execution, timing, E41 or full forecast qualification"
+}

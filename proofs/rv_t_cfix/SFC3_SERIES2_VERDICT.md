@@ -1,0 +1,17 @@
+# Surface FIX round 2, series 2 MYJ/AOT tables — MERGE (CPU scope)
+
+The MYJ cache-determinant blocker is closed. `aot_baked_tables` now keys the actual MYJSFC REAL tables/ZTMAX/DZETA and MYJ namespaces for sf/bl2, old-MM5 tables for sf91, GFS namespaces for sf/bl3 and Pleim-Xiu for sf7. Existing registration scans actual bound uppercase values/defaults; no numerical kernel modification was needed for MYJ.
+
+**[M CPU]** Ten individual bound-value tests change the active table hash and preserve the inactive hash, restoring the original hash after mutation. Three actual tiny consumers (MYJ/sf91/GFS) change non-null full executable key, lowered HLO and output together. Re-executing the original critic's SS09 probe now changes the full key `20197d78…→b4e7fd87…` for the same table perturbation that previously collided; HLO and actual result change as before. Removing the MYJ registration reproduces a genuine full-key collision assertion.
+
+The prior physical caller chain remains qualified by exact-source reuse, plus current MYJ primary and CuPlus lifecycle consumers. The later test-only resident-memory seed matches `_initial_carry_for_run`; it is not a new product implementation.
+
+Efficiency: registration performs host metadata hashing at cache-key creation, not per timestep; active-option selection avoids adding these table digests to other schemes' baked-table hash. No new device operation/carry/buffer from this repair. Existing MYJ QnseCarry unused-profile capacity and initializer alias evidence are unchanged; restored/GPU peak remains unknown. Hash wall time/readiness was not benchmarked; the cache-key schema/source update can invalidate old executable lookup.
+
+**[M CPU] Final composed candidate:** 213 healthy checks, zero failures/errors/skips =47 primary +164 affected GFS/staging/condensate/YSU/AOT/solar/NetCDF/CuPlus-lifecycle consumers +the old ocean critic +an independent two-call ocean/SST hold probe. Three independent in-process deletion mutants (REAL Q1 staging, MYJ key registration, sf0 ocean gate) each cause exactly one assertion failure, zero errors/skips. No snapshot/model source mutation.
+
+Fresh full native-facade default identities: Swiss `7379c7d77e94517f07e7bf37763cc1409d1287a13e50684ed9d624caafaec55e`, PROD d01 `6487f5b039a074f02f63d140f1e9212b7ede832d04bf5450e44ad2b3f2c34e73`, both EXACT. The known external-reader census test is deselected, not counted as passing: its source is BYTE to main c360fdf6ee and changed physics/kernel/coupling files have the same reader inventory under that exact AST predicate, so retain the owner's paid pre-existing failure rather than rerun an unrelated baseline.
+
+MYJ solver/surface and selected sf3/7/91 sources plus frozen fixtures are BYTE to the previous independently reviewed candidate. Reuse this critic's pristine MYJSFC 126 frozen columns×3 calls, selected-surface original oracles, and real MYJ→Noah→MYJPBL two-step evidence; no duplicate numerical validation. Prior MYJ 8-ULP envelope slack/initialization disclosure remains, with coupled D6 still pending. Previously approved F8/F17/F23 hunks composed from main retain their own verdicts.
+
+Artifacts `<USER_HOME>/wrf_gpu2_lanes/rv-t-cfix/SFC3/`; quantitative receipts REVIEW_NUMBERS.json. ST01–09 logged to MAIN. All private Fortran builds, detached snapshot and pytest/Python caches removed. No GPU or producer edits. GPU c04/c43/c61/c03/c01/c39, D6/E41, runtime, peak VRAM and readiness remain pending; c25 is already refused as WRF-fatal.

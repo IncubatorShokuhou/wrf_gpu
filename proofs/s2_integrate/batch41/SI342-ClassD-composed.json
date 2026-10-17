@@ -1,0 +1,109 @@
+{
+  "UTC": "2026-10-15T20:49:52.851111+00:00",
+  "status": "PASS finalYSU+F6+ClassD exact scoped composition",
+  "approved_ClassD_final": "54cee8bd8eb9ee36d12b043729e5c9fdc13a8c1f",
+  "measured_model_tests": "601842b9b9c0d8fca81157cefa9c854f3d01386a",
+  "base_YSU_F6": "33bf580017a91ae64aebae31d6dfd76d0d8d0f46",
+  "candidate": "83b282a25cfa561e20dd275886e87c2923e6c5d1",
+  "SRC": "b79d1d09d79c08715aba4b07ba9c18c36d66e717",
+  "changed_paths": [
+    "src/gpuwrf/coupling/scan_adapters.py",
+    "src/gpuwrf/coupling/urban_multilayer_hook.py",
+    "src/gpuwrf/diagnostics/morrison_radar.py",
+    "src/gpuwrf/diagnostics/online.py",
+    "src/gpuwrf/integration/daily_pipeline.py",
+    "src/gpuwrf/integration/nested_pipeline.py",
+    "src/gpuwrf/io/microphysics_history.py",
+    "src/gpuwrf/io/namelist_binding.py",
+    "src/gpuwrf/io/producer_history.py",
+    "src/gpuwrf/io/restart_schema.py",
+    "src/gpuwrf/io/scheme_catalog.py",
+    "src/gpuwrf/nesting/scalar_initialization.py",
+    "src/gpuwrf/physics/microphysics_morrison.py",
+    "src/gpuwrf/physics/microphysics_morrison_aero.py",
+    "src/gpuwrf/physics/nssl2mom/diagnostics.py",
+    "src/gpuwrf/physics/nssl2mom/driver.py",
+    "src/gpuwrf/runtime/aot_baked_tables.py",
+    "src/gpuwrf/runtime/operational_mode.py",
+    "src/gpuwrf/runtime/restart_store.py",
+    "tests/test_microphysics_history_inventory.py",
+    "tests/test_online_diagnostics_restart_store.py",
+    "tests/test_s2_ssib_wiring.py",
+    "tests/test_v040_urban_boundaries.py",
+    "tests/test_v040_urban_multilayer.py",
+    "tests/test_writer_producer_fields.py",
+    "tests/v040/test_classd_constant_fields.py",
+    "tests/v040/test_classd_morrison_precip_radar_compose.py",
+    "tests/v040/test_classd_morrison_radar.py",
+    "tests/v040/test_classd_urban_green_roof.py",
+    "tests/v040/test_nssl_one_moment_radar.py"
+  ],
+  "source_audit": {
+    "src/gpuwrf/coupling/scan_adapters.py": {
+      "ClassD_changed_defs_exact": [
+        "_morrison_radar_context",
+        "_with_morrison_side_outputs",
+        "morrison_adapter",
+        "morrison_aero_adapter"
+      ],
+      "all_other_defs_preserved": true
+    },
+    "src/gpuwrf/io/namelist_binding.py": {
+      "ClassD_bytes_exact_except_preserved_YSU_binding_and_comment": true
+    },
+    "src/gpuwrf/runtime/operational_mode.py": {
+      "ClassD_changed_defs_exact": [
+        "_apply_post_rk_microphysics",
+        "_initial_carry_for_run"
+      ],
+      "all_other_defs_preserved": true
+    }
+  },
+  "two_NSSL_mock_edits_EXCLUDED": true,
+  "composition_review": {
+    "candidate": "54cee8bd8eb9ee36d12b043729e5c9fdc13a8c1f",
+    "measured_snapshot": "601842b9b9c0d8fca81157cefa9c854f3d01386a",
+    "source_tree": "e62b4e3bde56b64d10ad05db3f3a08492c28f169",
+    "gpuwrf_tree": "f65c2869f35c0b07097854a114c83bd337e9de1b",
+    "verdict": "MERGE",
+    "scope": "composition delta + both-active Morrison caller tests only; NSSL mocks excluded",
+    "positive_tests": 10,
+    "genuine_assertion_controls": 1,
+    "setup_errors": 0,
+    "gpu_used": false,
+    "completed_utc": "2026-10-15T20:44:32Z",
+    "report_sha256": "c3ada082860a62b7543d44c9b0c0340fa7b798d9d1e30daf553038ef32dd3eb7",
+    "files": {
+      "PRECHECK.json": "f36929a7d3135026432802b9c0fc56f28f31ecaa9325e3c7ced98fc87c07d4c6",
+      "RV21_caller.log": "84bee14c3b81830e4dfcc78bb2b5e259c1873756e435ee8cb8c5b75322472b4b",
+      "RV21_caller.xml": "0ef32a7a7f72c897d91c40413546b695b038352b70c36b82b3626257388f97c7",
+      "RV22_mutant.log": "4825b2b24758bbc1d5b0bc4f84025faf0de2645374fd2fb62a697e6e3b91dc52",
+      "RV22_mutant.xml": "17a9f89dd605846b230ff4688f652699ff7cbf88eb23c9bd2b2677b9d1e636df",
+      "RV22_mutant_result.json": "9733f27284266b434520c98597724b6e96eee048a903db01d08dd66577d30e97",
+      "RV23_source.json": "7d40893cf5dba898788ef42861247f6893fa086b5d7fff2489abea0de9fa4075",
+      "RV24_final_binding.json": "70309a89b906f24e22c60f92b576affe5436e3d04054eab9da9798e42cceb3f4",
+      "VERDICT_COMPOSITION.md": "c3ada082860a62b7543d44c9b0c0340fa7b798d9d1e30daf553038ef32dd3eb7",
+      "mutant.py": "a47fa94982bfb66491a2f6e0af374416f8afd4922a88e4ac5d8ee2e241c36872"
+    }
+  },
+  "review_commit": "2b4ce1a123fae2dcdcbf0e49d72b8b24485ffc15",
+  "critic_proof_blobs": {
+    "proofs/rv_t_classd/composition_review/.gitattributes": "204e409dc30ec41d775e44c7e6ca1b77f65d863ce08a84ee32a4309979d5e59d",
+    "proofs/rv_t_classd/composition_review/FINAL_SEAL.json": "3db0842a2ad7b388e41498d68e6e1f43983b03a179236d89af99a41b729f0df7",
+    "proofs/rv_t_classd/composition_review/PRECHECK.json": "f36929a7d3135026432802b9c0fc56f28f31ecaa9325e3c7ced98fc87c07d4c6",
+    "proofs/rv_t_classd/composition_review/RV21_caller.log": "84bee14c3b81830e4dfcc78bb2b5e259c1873756e435ee8cb8c5b75322472b4b",
+    "proofs/rv_t_classd/composition_review/RV21_caller.xml": "0ef32a7a7f72c897d91c40413546b695b038352b70c36b82b3626257388f97c7",
+    "proofs/rv_t_classd/composition_review/RV22_mutant.log": "4825b2b24758bbc1d5b0bc4f84025faf0de2645374fd2fb62a697e6e3b91dc52",
+    "proofs/rv_t_classd/composition_review/RV22_mutant.xml": "17a9f89dd605846b230ff4688f652699ff7cbf88eb23c9bd2b2677b9d1e636df",
+    "proofs/rv_t_classd/composition_review/RV22_mutant_result.json": "9733f27284266b434520c98597724b6e96eee048a903db01d08dd66577d30e97",
+    "proofs/rv_t_classd/composition_review/RV23_source.json": "7d40893cf5dba898788ef42861247f6893fa086b5d7fff2489abea0de9fa4075",
+    "proofs/rv_t_classd/composition_review/RV24_final_binding.json": "70309a89b906f24e22c60f92b576affe5436e3d04054eab9da9798e42cceb3f4",
+    "proofs/rv_t_classd/composition_review/VERDICT_COMPOSITION.md": "c3ada082860a62b7543d44c9b0c0340fa7b798d9d1e30daf553038ef32dd3eb7",
+    "proofs/rv_t_classd/composition_review/mutant.py": "a47fa94982bfb66491a2f6e0af374416f8afd4922a88e4ac5d8ee2e241c36872"
+  },
+  "initial_metadata_helper_assumptions_corrected": [
+    "ClassD source delta includes _with_morrison_side_outputs; all4SCANdefs exact",
+    "YSU binding adds one option+onecomment; exact2lineblock preserved"
+  ],
+  "runtime_attempts": 0
+}

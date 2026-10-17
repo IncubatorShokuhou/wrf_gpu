@@ -1,11 +1,14 @@
 """Deletion-sensitive tests of the mp=18 wiring (rv-nssl F2/F3/F4).
 
-(a) State -> nssl2mom_adapter -> State vs the pristine-WRF fp64 oracle on an active column (case 4) with WRF's
-    phy_prep density rho_d*(1+qv); the dry-density mutant (the pre-F4 adapter) must fail.  Template: rv-nssl
-    adapter_probe.py (columns replicated on a 2x2 State).
+(a) State -> nssl2mom_adapter -> State vs the pristine-WRF fp64 column oracle on an active column (case 4).
+    The fixture column was generated with DN = rho_d*(1+qv) (phy_prep form, a fixture convention); WRF's
+    microphysics caller passes the DRY moist_physics_prep_em density 1./(al+alb) (t-classd, 2026-10-15:
+    tests/test_t_classd_mp_rho_callers.py; original CPU-WRF c14/c15 REFL_10CM reproduced to 7.6e-6 dBZ only
+    with the dry density). The fixture DN is therefore fed through the production density seam so the
+    State packing/unpacking/precipitation binding stay oracle-checked.  Template: rv-nssl adapter_probe.py.
 (b) root lateral boundary routing of the NSSL extras: flow_only -> WRF flow_dep_bdy, have_bcs guard, mp gating,
     number scalars added to the transported species.
-(c) mp_physics=18 with cu_physics /= 0 is refused pre-JAX (calcnfromcuten not ported).
+(c) mp_physics=18 with supported WRF cumulus options is accepted after calcnfromcuten qualification.
 """
 
 from __future__ import annotations
@@ -72,30 +75,45 @@ def _run_adapter(sp):
     return jax.tree_util.tree_map(np.asarray, fn(_state(sp)))
 
 
-def test_adapter_density_matches_oracle_and_dry_mutant_dies(monkeypatch):
-    """(a) F4: the coupled adapter reproduces the oracle (which passes DN = rho_d*(1+qv)); the dry density dies."""
+def test_adapter_seam_matches_oracle_given_its_density(monkeypatch):
+    """(a) Coupled seam vs the column oracle with the fixture's DN; production DN is that DN without (1+qv)."""
+    from gpuwrf.coupling import scan_adapters as sa
     sp = oio.load_case("fp64", 4)  # cold start, active rain/snow/graupel, dt 60
+    production = sa._wrf_moist_prep_den_delz
+
+    def fixture_density(state, grid, dtype):
+        rho, delz = production(state, grid, dtype)
+        dn = jnp.asarray(sp["columns"]["DN"], dtype)[:, None, None]
+        return jnp.broadcast_to(dn, rho.shape), delz
+
+    monkeypatch.setattr(sa, "_wrf_moist_prep_den_delz", fixture_density)
     new, precip = _run_adapter(sp)
     w = _worst(new, precip, sp)
     # remaining ~1e-4 is the shared pii/T convention (R_D_OVER_CP), rv-nssl F4
     assert max(w.values()) <= 1e-3, w
-    from gpuwrf.coupling import physics_couplers as pc
-    dry = pc.density_from_pressure_temperature
-    monkeypatch.setattr(pc, "density_from_pressure_temperature", lambda p, T, qv: dry(p, T, qv) / (1.0 + qv))
-    new_m, precip_m = _run_adapter(sp)
-    wm = _worst(new_m, precip_m, sp)
-    assert max(wm[k] for k in ("rainncv", "snowncv", "grplncv")) > 1e-3, wm
+    # Without metrics the production density is the dry EOS value: fixture DN / (1+qv).
+    qv = np.asarray(sp["columns"]["QV_IN"], np.float64)
+    dry = np.asarray(sp["columns"]["DN"], np.float64) / (1.0 + qv)
+    rho, _ = production(_state(sp), None, jnp.float64)
+    rho = np.asarray(rho, np.float64)[:, 0, 0]
+    # ~1.4e-4 is the fixture's own pii/T/R convention (rv-nssl F4 note above).
+    np.testing.assert_allclose(rho, dry, rtol=5e-4)
+    moist = qv > 3e-3
+    assert moist.sum() >= 5
+    total = np.asarray(sp["columns"]["DN"], np.float64)
+    assert np.all(np.abs(rho[moist] / total[moist] - 1.0) > 2e-3)  # never the (1+qv) form
 
 
 def test_root_flow_only_routing_of_nssl_extras():
     """(b) NSSL extras without boundary records take WRF flow_dep_bdy; have_bcs True fails closed; other mp unchanged."""
     from gpuwrf.coupling.boundary_apply import root_scalar_rk1_split
-    from gpuwrf.runtime.operational_mode import _NSSL_NUMBER_SCALARS, _nssl_number_scalars, _nssl_root_flow_only
+    from gpuwrf.runtime.operational_mode import _NSSL_NUMBER_SCALARS, _nssl_number_scalars
+    from gpuwrf.runtime.operational_mode import _root_flow_only as _nssl_root_flow_only
     nml18 = types.SimpleNamespace(mp_physics=18, moist_adv_opt=1, scalar_adv_opt=1)
     extras = ("qh", "qvolg", "qvolh") + _NSSL_NUMBER_SCALARS
     assert set(_nssl_root_flow_only(nml18)["flow_only"]) == set(extras)
     assert _nssl_root_flow_only(types.SimpleNamespace(mp_physics=8)) == {}
-    assert _nssl_root_flow_only(types.SimpleNamespace()) == {}
+    assert _nssl_root_flow_only(types.SimpleNamespace(mp_physics=0)) == {}
     assert set(_nssl_number_scalars(nml18)) == {"Nc", "Ns", "Ng", "Nh", "Nn"}
     with pytest.raises(NotImplementedError):
         _nssl_number_scalars(types.SimpleNamespace(mp_physics=18, moist_adv_opt=1, scalar_adv_opt=2))
@@ -114,12 +132,13 @@ def test_root_flow_only_routing_of_nssl_extras():
                               **_nssl_root_flow_only(nml18))
 
 
-def test_nssl_with_cumulus_is_refused_pre_jax():
-    """(c) F3: calcnfromcuten (cu_used=1) is not ported -> mp=18 + cu/=0 refused; cu=0 and mp=8+cu=1 accepted."""
+@pytest.mark.parametrize("cu", [0, 1, 2, 3, 5, 6, 16, 93])
+def test_nssl_with_wrf_cumulus_is_accepted(cu):
+    from gpuwrf.io.namelist_check import validate_operational_namelist
+    validate_operational_namelist({"physics": {"mp_physics": [18], "cu_physics": [cu]}})
+
+
+def test_nssl_keeps_wrf_arw_cu4_refusal():
     from gpuwrf.io.namelist_check import NotOperationallyWiredError, validate_operational_namelist
-    with pytest.raises(NotOperationallyWiredError, match="cu_physics"):
-        validate_operational_namelist({"physics": {"mp_physics": [18], "cu_physics": [1]}})
     with pytest.raises(NotOperationallyWiredError):
-        validate_operational_namelist({"physics": {"mp_physics": [18, 18], "cu_physics": [0, 3]}})
-    validate_operational_namelist({"physics": {"mp_physics": [18], "cu_physics": [0]}})
-    validate_operational_namelist({"physics": {"mp_physics": [8], "cu_physics": [1]}})
+        validate_operational_namelist({"physics": {"mp_physics": [18], "cu_physics": [4]}})

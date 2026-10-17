@@ -1,0 +1,231 @@
+{
+  "status": "READY-FOR-CRITIC; COMPLETE legacy22 subset",
+  "time": "2026-10-14T01:34:31.929649+00:00",
+  "source_commit": "3f4583463247621e465941a161182fa5611e07ff",
+  "composed_on_main": "450620309",
+  "reviewed17_commit": "dd719ad10b9894e6a4d64a694eeeff1a6893d6c8",
+  "reviewed17_preserved": true,
+  "normalization": "original22 =>18,2moment1,hail0,CCN1,density1,3moment0",
+  "physical_reference": "Unmodified pristine WRF4.7.1 module SHA29f42e76; exact legacy22 caller flags;17regimes REAL4/8;34 E26 byte-identical pristine/instrumented outputs",
+  "precision": {
+    "scope": "Inherited frozen NSSL tolerances, not a literalREAL4BYTE claim",
+    "fp64": "1e-10*abs(ref)+1e-13*column input/output scale; diagnostics1e-10; precipitation1e-9",
+    "fp32": "Existing dualREAL4/8 band2e-3 plus1e-6 columnmax; inherited number/volume dust mass<1e-10 policy; all mass fields gated; fp32 diagnostics finite",
+    "case15": "Only CN(k13) uses actual original22 QC(k13)\u00b11binary64ULP endpoints; controls preserve legacyzero baselineBYTE. QC roundoff residual bounded by1e-15 inputscale. No threshold widened."
+  },
+  "tests": {
+    "columns": "35PASS116.90s",
+    "staged_interfaces": "216PASS9.80s",
+    "final_composed_interfaces": "214PASS8.96s",
+    "aborted_selection": "MPM22N included redundant numerical tail; ownPID stopped143; no new physical qualification claim"
+  },
+  "mutant": {
+    "killed": true,
+    "scope": "physical no-hail creation guard",
+    "assertion": "AssertionError: ('fp64', 16, 'qg', array([15, 16, 17, 18, 19, 20, 21]), array([0.00323632, 0.003714  , 0.00330873, 0.00238424, 0.00135...6846, 0.00020196]), array([0.00407281, 0.00448669, 0.00394784, 0.00281027, 0.00158778,\n         0.00066654, 0.00023537]))\nassert not np.True_\n +  where np.True_ = <built-in method any of numpy.ndarray object at 0x7d606e0ff0f0>()\n +    where <built-in method any of numpy.ndarray object at 0x7d606e0ff0f0> = array([False, False, False, False, False, False, False, False, False,\\n       False, False, False, False, False, False,...False, False,\\n       False, False, False, False, False, False, False, False, False,\\n       False, False, False, False]).any"
+  },
+  "smoke": {
+    "scope": "CPU real Swiss42x42x44 dt18, two native operational steps FAST0 CENSUS1; no trajectory fidelity claim",
+    "nonfinite": 0,
+    "guards": 0,
+    "wall_s": 361.8,
+    "canonical_jaxpr_sha": "7b45dbaee5d939bf9a220e54e41c2a93bae8f7f6727dc2983b2f209df232a4b0",
+    "final_composed_program_EXACT": true
+  },
+  "bindings": {
+    "native": 22,
+    "actual_daily": {
+      "requested_mp": 22,
+      "bound_mp": 22,
+      "grid": [
+        44,
+        42,
+        42
+      ],
+      "CPU": true,
+      "scope": "actual daily initialization/binding; no executed forecast"
+    }
+  },
+  "restart": "Existing schema: seven active NSSL extras qvolg,Nc,Nr,Ni,Ns,Ng,Nn pickle+NetCDF BYTE; qh/Nh/qvolh/hail_acc absent",
+  "release_identity": "2bf12cb8374d3a84a440e47dea4b77b0c7436108fc2ee2616bba6ec79b17962a",
+  "prior17_identity": "e560962f3b18625765b9ac6ae7819a75d9452edb24f5f55b8c61c3505ef1a395 unchanged precomposition; prior17 numericalsourceBYTE and reviewedSTATUS17 untouched",
+  "admission": "single-domain only; existing NSSL scalar/km2 limits; custom nssl_mp_params refused; original forced flags honored",
+  "init_sensitivity": {
+    "scope": "Original22 REAL4 localcompilerinit INF vs ZERO; no pristine body edits; outputcolumns/scalars only",
+    "source_sha256": "29f42e76fbeca027a3ffb2ac805b148aaa1425c7f99ed1d8f19a90ebc1d015f8",
+    "flags": [
+      "-O2",
+      "-ffree-form",
+      "-ffree-line-length-none",
+      "-cpp",
+      "-finit-real=inf",
+      "-finit-integer=0",
+      "-finit-logical=false",
+      "-ffp-contract=off"
+    ],
+    "rows": [
+      {
+        "case": 1,
+        "changed_fields": []
+      },
+      {
+        "case": 2,
+        "changed_fields": []
+      },
+      {
+        "case": 3,
+        "changed_fields": []
+      },
+      {
+        "case": 4,
+        "changed_fields": []
+      },
+      {
+        "case": 5,
+        "changed_fields": []
+      },
+      {
+        "case": 6,
+        "changed_fields": []
+      },
+      {
+        "case": 7,
+        "changed_fields": []
+      },
+      {
+        "case": 8,
+        "changed_fields": []
+      },
+      {
+        "case": 9,
+        "changed_fields": []
+      },
+      {
+        "case": 10,
+        "changed_fields": []
+      },
+      {
+        "case": 11,
+        "changed_fields": []
+      },
+      {
+        "case": 12,
+        "changed_fields": []
+      },
+      {
+        "case": 13,
+        "changed_fields": []
+      },
+      {
+        "case": 14,
+        "changed_fields": []
+      },
+      {
+        "case": 15,
+        "changed_fields": []
+      },
+      {
+        "case": 16,
+        "changed_fields": []
+      },
+      {
+        "case": 17,
+        "changed_fields": []
+      }
+    ],
+    "changed_cases": 0
+  },
+  "performance_memory": {
+    "scope": "CPU compiled artifacts, same original active40level inputs, dt18,radiiTrue,firstFalse; variants have different physical work, no speedup/fidelity claim",
+    "rows": {
+      "True": {
+        "compile_s": 19.74420344014652,
+        "arguments_B": 3521,
+        "outputs_B": 3432,
+        "temps_B": 98528,
+        "samples_s": [
+          0.001808823086321354,
+          0.0012359600514173508,
+          0.001035328023135662,
+          0.0010186980944126844,
+          0.000910717062652111,
+          0.0008715970907360315,
+          0.000864706002175808,
+          0.0007699360139667988,
+          0.0007406759541481733,
+          0.0007351960521191359,
+          0.0006967650260776281,
+          0.0007029750850051641,
+          0.0006915649864822626,
+          0.0006878150161355734,
+          0.0006546450313180685,
+          0.0006362039130181074,
+          0.0006369350012391806,
+          0.0006429350469261408,
+          0.0008020361419767141,
+          0.00078541599214077
+        ],
+        "warm_median_s": 0.0007553059840574861
+      },
+      "False": {
+        "compile_s": 18.580593447899446,
+        "arguments_B": 3041,
+        "outputs_B": 3432,
+        "temps_B": 78304,
+        "samples_s": [
+          0.0013382299803197384,
+          0.000916206045076251,
+          0.0008749258704483509,
+          0.000783765921369195,
+          0.0007391949184238911,
+          0.0008227359503507614,
+          0.0006480750162154436,
+          0.0006013440433889627,
+          0.0006091741379350424,
+          0.0005761538632214069,
+          0.0005629442166537046,
+          0.0005720548797398806,
+          0.0005484840366989374,
+          0.0005418441724032164,
+          0.0005134539678692818,
+          0.0005134039092808962,
+          0.0005099840927869081,
+          0.0005728940013796091,
+          0.0006111841648817062,
+          0.0006271449383348227
+        ],
+        "warm_median_s": 0.0006052590906620026
+      }
+    },
+    "nohail_persistent_state": "qvolg only; no qh/Nh/qvolh/hail_acc; existing base number fields unchanged",
+    "padding": "Canonical NA18 stack retains three zero dummy hail slots; loop traffic may survive compiler DCE; GPU unmeasured",
+    "GPU": "launches/traffic/peak/readiness UNMEASURED"
+  },
+  "archive": "48assets originalarchive loaded;34fixture manifest SHAverified; later initializer script/receipt added as plain tracked files",
+  "GPU": "NOT RUN; launches/traffic/VRAM/readiness/E41 and full coupledforecastD6 pending; CPU experimental qualification only",
+  "artifacts": {
+    "MPM22G-columns.xml": "c1b91510ec561d234d251ac5ad9e9ceff6b145d425c4fef002f07573fac5cdb4",
+    "MPM22H-interfaces.xml": "93899b3a79e673c8c7476db6ad7cc8836b405f3e04d2cd47d84dcc332620eec8",
+    "MPM22I-real-smoke.json": "6cceb9dd4c138a94083c2db8c2b1fbb06439ba4ab6f7499b1346dbcf5ba70b40",
+    "MPM22J-physical-mutant.json": "28f7ae89d8d606527c22e69229fe33c7b74aca4419e68e99efb5ac264c36ba6a",
+    "MPM22J-physical-mutant.xml": "7a03db9d86639242c4ed029497f35d044db47ac7cd3d927fcd9b8a3cb6cbce79",
+    "MPM22K-release-identity.json": "5d5b5799538dfbf8eed19bc18baaac16136c9254c2247bb5878626c4b4ca1de2",
+    "MPM22L-17-identity.json": "aebeb302b5550f5fcbe0328f8f250131abaac0df652560de66cb573df8016f5a",
+    "MPM22M-cost.json": "f2e50810472e310459b66bb6b77d17196fbbc56ff23e82c0c9940963d52226a9",
+    "MPM22N-composed-interfaces.log": "197a470244b7e4a17c12db083642ba074df6ac167a602d889351fd936e79b79d",
+    "MPM22N2-composed-interfaces.xml": "e8ffb34a68172621fe30534e92e6672143949456ca30c4fa46609b120c64364b",
+    "MPM22O-composed-program.json": "44a468d81dbea19303e8918fa50b73892ee3f539e62b7e8efd523e20829013e7",
+    "MPM22P-composed-release.json": "7280d45cd32046e6dd40622d511324654e10086dc7a9d5a3be1e60693766eb1d",
+    "MPM22Q-daily-binding.json": "f31b36800447836fd9927548cbfdecf61e76ba34dc482275f63311bb7a875b3a",
+    "MPM22R-archive-source.json": "a46ade7f8d7a7f70af2a4b3ef672bc396817fc08627f9e5a4361eba35f66571c",
+    "MPM22S-init-sensitivity.json": "bba7ade0e8b910896d2458309f7f65402d3b6bd49f4d62b2375fe61a2088759f"
+  },
+  "artifact_root": "<USER_HOME>/wrf_gpu2_lanes/s2-mpmore",
+  "remaining": [
+    "mp19",
+    "mp21",
+    "Jensen55",
+    "NTU56",
+    "CAM-MG11"
+  ]
+}

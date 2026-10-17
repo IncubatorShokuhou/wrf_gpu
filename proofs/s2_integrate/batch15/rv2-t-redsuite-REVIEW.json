@@ -1,0 +1,1486 @@
+{
+  "verdict": "MERGE",
+  "created_utc": "2026-10-14T23:37:17.991427+00:00",
+  "base": "d185e9dce56422448ce9170240e6b09567db9fc7",
+  "tip": "4ee280755169dd74a92976530e3c39373fb81fe5",
+  "source_tree": "97b49b49c7f1a158807f16a41d84857c1a0e83c8",
+  "scope": "39 commits=35 tests+4 proofs,51 test files; packaging c18fef722 additionally audited",
+  "packaging_commit": "c18fef72233cf3b62f5c3c8559c71d081a0d50e6",
+  "producer_manifest_sha256": "631d1d7cf098f0bec3a3fe92e934b3e505780d06034fcdcdaca3d57d41203019",
+  "commits": [
+    {
+      "commit": "8356e0efd504fb1d7542dee74c39dc652a64c9e7",
+      "summary": "proof: extend verified batch to 174 passes, 5 skips, 3 inherited xfails",
+      "files": [
+        ".agent/kernel/lanes/t-redsuite.notes.md",
+        "proofs/t_redsuite/README.md",
+        "proofs/t_redsuite/RECEIPTS.json"
+      ],
+      "receipts": [],
+      "tolerance_keywords": [],
+      "added_skip_lines": [],
+      "removed_skip_lines": [],
+      "source_files": 0,
+      "verdict": "MERGE"
+    },
+    {
+      "commit": "0b92840d1e09ae004aba5429c72e86e332fd2467",
+      "summary": "test: keep extended State on selected backend; 2 pass",
+      "files": [
+        "tests/test_m6_state_extension.py"
+      ],
+      "receipts": [
+        "C004c2-M6-FIFO"
+      ],
+      "tolerance_keywords": [
+        {
+          "file": "tests/test_m6_state_extension.py",
+          "old": 0,
+          "new": 0,
+          "removed": {}
+        }
+      ],
+      "added_skip_lines": [],
+      "removed_skip_lines": [],
+      "source_files": 0,
+      "verdict": "MERGE"
+    },
+    {
+      "commit": "cd0b99737a94d37d3d59bdf720efaa824026c614",
+      "summary": "test: use original WRF EOS target for warm bubble; 2 pass",
+      "files": [
+        "tests/test_m6x_pressure_diagnose_wiring.py"
+      ],
+      "receipts": [
+        "C004c2-M6-FIFO"
+      ],
+      "tolerance_keywords": [
+        {
+          "file": "tests/test_m6x_pressure_diagnose_wiring.py",
+          "old": 4,
+          "new": 6,
+          "removed": {}
+        }
+      ],
+      "added_skip_lines": [],
+      "removed_skip_lines": [],
+      "source_files": 0,
+      "verdict": "MERGE"
+    },
+    {
+      "commit": "4db3b5a443261664fa20e4217fb2380339f552d7",
+      "summary": "test: recognize WRF REAL scheme carries; registry retry passes",
+      "files": [
+        "tests/test_m6_precision_matrix.py"
+      ],
+      "receipts": [
+        "C004c3-Jensen-precision"
+      ],
+      "tolerance_keywords": [
+        {
+          "file": "tests/test_m6_precision_matrix.py",
+          "old": 0,
+          "new": 0,
+          "removed": {}
+        }
+      ],
+      "added_skip_lines": [],
+      "removed_skip_lines": [],
+      "source_files": 0,
+      "verdict": "MERGE"
+    },
+    {
+      "commit": "34c2f04230f6cbe5630efdf151afbfb3b265cec3",
+      "summary": "test: use pristine WRF relaxation stencil; 3 pass, 1 inherited xfail",
+      "files": [
+        "tests/test_m7_skill_fix_iter2.py"
+      ],
+      "receipts": [
+        "C004d-M7"
+      ],
+      "tolerance_keywords": [
+        {
+          "file": "tests/test_m7_skill_fix_iter2.py",
+          "old": 0,
+          "new": 0,
+          "removed": {}
+        }
+      ],
+      "added_skip_lines": [],
+      "removed_skip_lines": [],
+      "source_files": 0,
+      "verdict": "MERGE"
+    },
+    {
+      "commit": "d8f7bd35efb3e397970cee8121f16dda845dd95d",
+      "summary": "proof: bind four more repaired reds; 9 pass and 1 inherited xfail",
+      "files": [
+        ".agent/kernel/lanes/t-redsuite.notes.md",
+        "proofs/t_redsuite/BATCH2.json"
+      ],
+      "receipts": [],
+      "tolerance_keywords": [],
+      "added_skip_lines": [],
+      "removed_skip_lines": [],
+      "source_files": 0,
+      "verdict": "MERGE"
+    },
+    {
+      "commit": "bc62dfc899e41d5fbcc777eed202d9df53d069a6",
+      "summary": "test: supply valid WRF acoustic fixtures; 2 caller checks pass",
+      "files": [
+        "tests/test_m7_skill_fix_algorithmic.py"
+      ],
+      "receipts": [
+        "C004d3-pure-eta-callers"
+      ],
+      "tolerance_keywords": [
+        {
+          "file": "tests/test_m7_skill_fix_algorithmic.py",
+          "old": 0,
+          "new": 0,
+          "removed": {}
+        }
+      ],
+      "added_skip_lines": [],
+      "removed_skip_lines": [],
+      "source_files": 0,
+      "verdict": "MERGE"
+    },
+    {
+      "commit": "f4f648012a3117191abd76bc3a992dcf0c36eecc",
+      "summary": "proof: preserve M7 fixture diagnosis and 2 passing callers",
+      "files": [
+        ".agent/kernel/lanes/t-redsuite.notes.md",
+        "proofs/t_redsuite/M7_FIXTURE.json"
+      ],
+      "receipts": [],
+      "tolerance_keywords": [],
+      "added_skip_lines": [],
+      "removed_skip_lines": [],
+      "source_files": 0,
+      "verdict": "MERGE"
+    },
+    {
+      "commit": "4d9b9646e27e89f197254fd7566af9ef18b3cad8",
+      "summary": "test: align graduated admission expectations; 11 checks verified",
+      "files": [
+        "tests/test_namelist_recognition_breadth.py"
+      ],
+      "receipts": [
+        "C004e2-feature-classifier"
+      ],
+      "tolerance_keywords": [
+        {
+          "file": "tests/test_namelist_recognition_breadth.py",
+          "old": 0,
+          "new": 0,
+          "removed": {}
+        }
+      ],
+      "added_skip_lines": [],
+      "removed_skip_lines": [],
+      "source_files": 0,
+      "verdict": "MERGE"
+    },
+    {
+      "commit": "172f6ab2f33fb20a70c125d5b49382ca45867263",
+      "summary": "test: recognize qualified GFS SAS beside Tiedtke; 16 pass",
+      "files": [
+        "tests/test_ntiedtke_jax_parity.py"
+      ],
+      "receipts": [
+        "C005"
+      ],
+      "tolerance_keywords": [
+        {
+          "file": "tests/test_ntiedtke_jax_parity.py",
+          "old": 0,
+          "new": 0,
+          "removed": {}
+        }
+      ],
+      "added_skip_lines": [],
+      "removed_skip_lines": [],
+      "source_files": 0,
+      "verdict": "MERGE"
+    },
+    {
+      "commit": "4c33a3143e87794016d42006b69ea8a858e598f6",
+      "summary": "test: complete RUC and radar selector mocks; 44 pass",
+      "files": [
+        "tests/test_o2_ruccli.py",
+        "tests/test_online_radar_caller.py"
+      ],
+      "receipts": [
+        "C005"
+      ],
+      "tolerance_keywords": [
+        {
+          "file": "tests/test_o2_ruccli.py",
+          "old": 5,
+          "new": 5,
+          "removed": {}
+        },
+        {
+          "file": "tests/test_online_radar_caller.py",
+          "old": 8,
+          "new": 8,
+          "removed": {}
+        }
+      ],
+      "added_skip_lines": [],
+      "removed_skip_lines": [],
+      "source_files": 0,
+      "verdict": "MERGE"
+    },
+    {
+      "commit": "745328b2f1c3aad3e612f9b7498928de609d651b",
+      "summary": "test: align nesting and KF spies with live interfaces; 34 pass",
+      "files": [
+        "tests/test_p0_1a_nesting.py",
+        "tests/test_p0_followups.py",
+        "tests/test_p0_moist_theta_live_path.py"
+      ],
+      "receipts": [
+        "C005"
+      ],
+      "tolerance_keywords": [
+        {
+          "file": "tests/test_p0_1a_nesting.py",
+          "old": 0,
+          "new": 0,
+          "removed": {}
+        },
+        {
+          "file": "tests/test_p0_followups.py",
+          "old": 12,
+          "new": 12,
+          "removed": {}
+        },
+        {
+          "file": "tests/test_p0_moist_theta_live_path.py",
+          "old": 28,
+          "new": 28,
+          "removed": {}
+        }
+      ],
+      "added_skip_lines": [],
+      "removed_skip_lines": [],
+      "source_files": 0,
+      "verdict": "MERGE"
+    },
+    {
+      "commit": "82c8bacfa7c825585bcae25c9ea0a878172cefc7",
+      "summary": "test: update theta restart and aerosol source pins; 17 pass",
+      "files": [
+        "tests/test_p0_option0_output_contract_nojax.py",
+        "tests/test_p0c_closure_source_nojax.py"
+      ],
+      "receipts": [
+        "C005"
+      ],
+      "tolerance_keywords": [
+        {
+          "file": "tests/test_p0_option0_output_contract_nojax.py",
+          "old": 0,
+          "new": 0,
+          "removed": {}
+        },
+        {
+          "file": "tests/test_p0c_closure_source_nojax.py",
+          "old": 2,
+          "new": 2,
+          "removed": {}
+        }
+      ],
+      "added_skip_lines": [],
+      "removed_skip_lines": [],
+      "source_files": 0,
+      "verdict": "MERGE"
+    },
+    {
+      "commit": "f1682f7e9839b93aaa9202477122fb6106d30932",
+      "summary": "test: isolate CUDA sizing metadata on CPU; 46 pass",
+      "files": [
+        "tests/test_parallel_cases.py"
+      ],
+      "receipts": [
+        "C006"
+      ],
+      "tolerance_keywords": [
+        {
+          "file": "tests/test_parallel_cases.py",
+          "old": 1,
+          "new": 1,
+          "removed": {}
+        }
+      ],
+      "added_skip_lines": [],
+      "removed_skip_lines": [],
+      "source_files": 0,
+      "verdict": "MERGE"
+    },
+    {
+      "commit": "547293c600bc22b88773cdfbf876a192c9433bfb",
+      "summary": "test: scope native RK import flags and caches; 49 pass",
+      "files": [
+        "tests/test_portability_kernels.py"
+      ],
+      "receipts": [
+        "C006"
+      ],
+      "tolerance_keywords": [
+        {
+          "file": "tests/test_portability_kernels.py",
+          "old": 0,
+          "new": 0,
+          "removed": {}
+        }
+      ],
+      "added_skip_lines": [],
+      "removed_skip_lines": [],
+      "source_files": 0,
+      "verdict": "MERGE"
+    },
+    {
+      "commit": "ab7bb26ae2da11b82f28fe0ff928cd305de2d84e",
+      "summary": "test: isolate regional stream JIT census; 57 pass",
+      "files": [
+        "tests/test_regional_streams.py"
+      ],
+      "receipts": [
+        "C007"
+      ],
+      "tolerance_keywords": [
+        {
+          "file": "tests/test_regional_streams.py",
+          "old": 2,
+          "new": 2,
+          "removed": {}
+        }
+      ],
+      "added_skip_lines": [],
+      "removed_skip_lines": [],
+      "source_files": 0,
+      "verdict": "MERGE"
+    },
+    {
+      "commit": "85f93a30a94baa0a600f66f53dfd42c77c3f72f5",
+      "summary": "test: pin paired FLG rejection in LW wiring; 13 pass",
+      "files": [
+        "tests/test_rrtm_lw_operational_wiring.py"
+      ],
+      "receipts": [
+        "C008"
+      ],
+      "tolerance_keywords": [
+        {
+          "file": "tests/test_rrtm_lw_operational_wiring.py",
+          "old": 2,
+          "new": 2,
+          "removed": {}
+        }
+      ],
+      "added_skip_lines": [],
+      "removed_skip_lines": [],
+      "source_files": 0,
+      "verdict": "MERGE"
+    },
+    {
+      "commit": "d414501fdd01dcb6104c0fb9efe1a446b3f44c13",
+      "summary": "test: report recorded DFI qualification scope; 37 pass",
+      "files": [
+        "tests/test_s1_dfi12.py"
+      ],
+      "receipts": [
+        "C009"
+      ],
+      "tolerance_keywords": [
+        {
+          "file": "tests/test_s1_dfi12.py",
+          "old": 0,
+          "new": 0,
+          "removed": {}
+        }
+      ],
+      "added_skip_lines": [],
+      "removed_skip_lines": [],
+      "source_files": 0,
+      "verdict": "MERGE"
+    },
+    {
+      "commit": "a53dc1da66774df71114b7a36560565ea502d8a8",
+      "summary": "test: recognize declared SBU fp64 adapter island; 3 pass, 19 skip",
+      "files": [
+        "tests/test_sbu_ylin_savepoint_parity.py"
+      ],
+      "receipts": [
+        "C009"
+      ],
+      "tolerance_keywords": [
+        {
+          "file": "tests/test_sbu_ylin_savepoint_parity.py",
+          "old": 0,
+          "new": 0,
+          "removed": {}
+        }
+      ],
+      "added_skip_lines": [],
+      "removed_skip_lines": [],
+      "source_files": 0,
+      "verdict": "MERGE"
+    },
+    {
+      "commit": "d8bd775505a62151908abb76166c7a6597bace84",
+      "summary": "test: give stochastic binding mock real CU default; 27 pass",
+      "files": [
+        "tests/test_stochastic_binding.py"
+      ],
+      "receipts": [
+        "C009"
+      ],
+      "tolerance_keywords": [
+        {
+          "file": "tests/test_stochastic_binding.py",
+          "old": 0,
+          "new": 0,
+          "removed": {}
+        }
+      ],
+      "added_skip_lines": [],
+      "removed_skip_lines": [],
+      "source_files": 0,
+      "verdict": "MERGE"
+    },
+    {
+      "commit": "ae30256a073b22942f3dd84142a84635dc92c045",
+      "summary": "test: seed preceding restart schema in tslist mock; 36 pass",
+      "files": [
+        "tests/test_tslist.py"
+      ],
+      "receipts": [
+        "C010"
+      ],
+      "tolerance_keywords": [
+        {
+          "file": "tests/test_tslist.py",
+          "old": 17,
+          "new": 17,
+          "removed": {}
+        }
+      ],
+      "added_skip_lines": [],
+      "removed_skip_lines": [],
+      "source_files": 0,
+      "verdict": "MERGE"
+    },
+    {
+      "commit": "40e95284c7daa4bec35df26ebe111dad5249a0e4",
+      "summary": "test: recognize experimental SSiB land selection; 42 pass, 1 skip",
+      "files": [
+        "tests/test_v013_t3_surface_lsm_wiring.py",
+        "tests/test_v014_noahmp_nested_pipeline.py"
+      ],
+      "receipts": [
+        "C010"
+      ],
+      "tolerance_keywords": [
+        {
+          "file": "tests/test_v013_t3_surface_lsm_wiring.py",
+          "old": 0,
+          "new": 0,
+          "removed": {}
+        },
+        {
+          "file": "tests/test_v014_noahmp_nested_pipeline.py",
+          "old": 0,
+          "new": 0,
+          "removed": {}
+        }
+      ],
+      "added_skip_lines": [],
+      "removed_skip_lines": [],
+      "source_files": 0,
+      "verdict": "MERGE"
+    },
+    {
+      "commit": "5f356639623b280a2974f704a50155e3d71dc255",
+      "summary": "test: preserve append-only State and edge mock contracts; 35 pass",
+      "files": [
+        "tests/test_v016_thompson_aero_threading.py",
+        "tests/test_v017_edge_only_boundary.py"
+      ],
+      "receipts": [
+        "C010"
+      ],
+      "tolerance_keywords": [
+        {
+          "file": "tests/test_v016_thompson_aero_threading.py",
+          "old": 5,
+          "new": 5,
+          "removed": {}
+        },
+        {
+          "file": "tests/test_v017_edge_only_boundary.py",
+          "old": 0,
+          "new": 0,
+          "removed": {}
+        }
+      ],
+      "added_skip_lines": [],
+      "removed_skip_lines": [],
+      "source_files": 0,
+      "verdict": "MERGE"
+    },
+    {
+      "commit": "4973d4505f2b9db9bfe95121ac1f6f8f649f3749",
+      "summary": "test: mark inactive ice categories in PSFC mock; strict integral passes",
+      "files": [
+        "tests/test_v014_psfc_moist_hydrostatic.py"
+      ],
+      "receipts": [
+        "C010b-inactive-ice"
+      ],
+      "tolerance_keywords": [
+        {
+          "file": "tests/test_v014_psfc_moist_hydrostatic.py",
+          "old": 4,
+          "new": 4,
+          "removed": {}
+        }
+      ],
+      "added_skip_lines": [],
+      "removed_skip_lines": [],
+      "source_files": 0,
+      "verdict": "MERGE"
+    },
+    {
+      "commit": "f3fa483fb53fc5f502e59e5b1a18c8b828af8647",
+      "summary": "test: preserve frozen State prefixes and active leaves; 12 pass",
+      "files": [
+        "tests/test_v017_qh_hail_state.py",
+        "tests/test_v018_conditional_state_leaves.py"
+      ],
+      "receipts": [
+        "C011"
+      ],
+      "tolerance_keywords": [
+        {
+          "file": "tests/test_v017_qh_hail_state.py",
+          "old": 0,
+          "new": 0,
+          "removed": {}
+        },
+        {
+          "file": "tests/test_v018_conditional_state_leaves.py",
+          "old": 0,
+          "new": 0,
+          "removed": {}
+        }
+      ],
+      "added_skip_lines": [],
+      "removed_skip_lines": [
+        "-        pytest.skip(f\"GPU-required test on a CPU-only run: {exc}\")"
+      ],
+      "source_files": 0,
+      "verdict": "MERGE"
+    },
+    {
+      "commit": "33f46be4b0473bd4b3ff8e634cf655a1c20ab147",
+      "summary": "test: reflect recorded scheme graduations; 21 pass, 6 historical skips",
+      "files": [
+        "tests/test_v018_cu_family_status.py",
+        "tests/test_v018_lsm_architecture_boundary.py",
+        "tests/test_v018_ra_tail_oracle.py"
+      ],
+      "receipts": [
+        "C011"
+      ],
+      "tolerance_keywords": [
+        {
+          "file": "tests/test_v018_cu_family_status.py",
+          "old": 0,
+          "new": 0,
+          "removed": {}
+        },
+        {
+          "file": "tests/test_v018_lsm_architecture_boundary.py",
+          "old": 0,
+          "new": 0,
+          "removed": {}
+        },
+        {
+          "file": "tests/test_v018_ra_tail_oracle.py",
+          "old": 0,
+          "new": 0,
+          "removed": {}
+        }
+      ],
+      "added_skip_lines": [],
+      "removed_skip_lines": [],
+      "source_files": 0,
+      "verdict": "MERGE"
+    },
+    {
+      "commit": "d438812e15ef92988bb3ce9f05c711e9d89757bd",
+      "summary": "test: complete operational and partial NetCDF mocks; 49 pass",
+      "files": [
+        "tests/test_v022_g3city_urban_lake.py",
+        "tests/test_v025_s2_nested_topography.py",
+        "tests/test_v040_urban_lcz.py"
+      ],
+      "receipts": [
+        "C011"
+      ],
+      "tolerance_keywords": [
+        {
+          "file": "tests/test_v022_g3city_urban_lake.py",
+          "old": 0,
+          "new": 0,
+          "removed": {}
+        },
+        {
+          "file": "tests/test_v025_s2_nested_topography.py",
+          "old": 0,
+          "new": 0,
+          "removed": {}
+        },
+        {
+          "file": "tests/test_v040_urban_lcz.py",
+          "old": 6,
+          "new": 6,
+          "removed": {}
+        }
+      ],
+      "added_skip_lines": [],
+      "removed_skip_lines": [],
+      "source_files": 0,
+      "verdict": "MERGE"
+    },
+    {
+      "commit": "ffa3ce383c226e02fd59be02629805a29b4bd78b",
+      "summary": "test: bind historical ancestry to original private authority; 19 pass, 2 skips",
+      "files": [
+        "tests/test_v0234_gpt_postfix_sp2.py",
+        "tests/test_v0234_late_ni_thompson_sedimentation_rca.py",
+        "tests/test_v0234_s1_residual_gpu_arm.py"
+      ],
+      "receipts": [
+        "C011"
+      ],
+      "tolerance_keywords": [
+        {
+          "file": "tests/test_v0234_gpt_postfix_sp2.py",
+          "old": 0,
+          "new": 0,
+          "removed": {}
+        },
+        {
+          "file": "tests/test_v0234_late_ni_thompson_sedimentation_rca.py",
+          "old": 1,
+          "new": 1,
+          "removed": {}
+        },
+        {
+          "file": "tests/test_v0234_s1_residual_gpu_arm.py",
+          "old": 0,
+          "new": 0,
+          "removed": {}
+        }
+      ],
+      "added_skip_lines": [],
+      "removed_skip_lines": [],
+      "source_files": 0,
+      "verdict": "MERGE"
+    },
+    {
+      "commit": "417cdd9ab4ccf242c4bb3387ba7b9b5b24af1c9f",
+      "summary": "test: pin dynamic scalar selector with Thompson identity; 5 pass",
+      "files": [
+        "tests/test_v0234_theta_unlimited_source_repair.py"
+      ],
+      "receipts": [
+        "C011"
+      ],
+      "tolerance_keywords": [
+        {
+          "file": "tests/test_v0234_theta_unlimited_source_repair.py",
+          "old": 0,
+          "new": 0,
+          "removed": {}
+        }
+      ],
+      "added_skip_lines": [],
+      "removed_skip_lines": [],
+      "source_files": 0,
+      "verdict": "MERGE"
+    },
+    {
+      "commit": "35a39ce0f3f4a844a798582cc04c8a1e8c845855",
+      "summary": "test: locate the unique urban holder by identity; 15 pass",
+      "files": [
+        "tests/test_v040_urban_slucm_wiring.py"
+      ],
+      "receipts": [
+        "C012"
+      ],
+      "tolerance_keywords": [
+        {
+          "file": "tests/test_v040_urban_slucm_wiring.py",
+          "old": 2,
+          "new": 2,
+          "removed": {}
+        }
+      ],
+      "added_skip_lines": [],
+      "removed_skip_lines": [],
+      "source_files": 0,
+      "verdict": "MERGE"
+    },
+    {
+      "commit": "98666ca654fe5a5de8200d932a58f0452f4c6672",
+      "summary": "test: preserve MP radii prefix and startup context; 13 pass",
+      "files": [
+        "tests/v025/b_column/test_mp_re.py",
+        "tests/v025/b_column/test_mp_re_restart.py"
+      ],
+      "receipts": [
+        "C012"
+      ],
+      "tolerance_keywords": [
+        {
+          "file": "tests/v025/b_column/test_mp_re.py",
+          "old": 2,
+          "new": 2,
+          "removed": {}
+        },
+        {
+          "file": "tests/v025/b_column/test_mp_re_restart.py",
+          "old": 0,
+          "new": 0,
+          "removed": {}
+        }
+      ],
+      "added_skip_lines": [],
+      "removed_skip_lines": [],
+      "source_files": 0,
+      "verdict": "MERGE"
+    },
+    {
+      "commit": "060d263a4c435c933dc43c709447872e6afa7c2b",
+      "summary": "test: complete inactive ice context in PG spy; exact mu check passes",
+      "files": [
+        "tests/v025/b_diff/test_pg_buoy_mu2_wiring.py"
+      ],
+      "receipts": [
+        "C012b-PG-inactive-ice"
+      ],
+      "tolerance_keywords": [
+        {
+          "file": "tests/v025/b_diff/test_pg_buoy_mu2_wiring.py",
+          "old": 0,
+          "new": 0,
+          "removed": {}
+        }
+      ],
+      "added_skip_lines": [],
+      "removed_skip_lines": [],
+      "source_files": 0,
+      "verdict": "MERGE"
+    },
+    {
+      "commit": "74fb3252c643db10e19d25e99c03739dba89abb8",
+      "summary": "test: narrow albedo deletion to its real seed; 15 oracle checks pass",
+      "files": [
+        "tests/v025/b_noahmp/test_albedo_hold_oracle.py"
+      ],
+      "receipts": [
+        "C013"
+      ],
+      "tolerance_keywords": [
+        {
+          "file": "tests/v025/b_noahmp/test_albedo_hold_oracle.py",
+          "old": 0,
+          "new": 0,
+          "removed": {}
+        }
+      ],
+      "added_skip_lines": [],
+      "removed_skip_lines": [],
+      "source_files": 0,
+      "verdict": "MERGE"
+    },
+    {
+      "commit": "cd28e2d1cf456b4b404060f5a48498e0a11a733b",
+      "summary": "test: pin original B39 carry independently of later leaves; 7 pass",
+      "files": [
+        "tests/v025/b_phys/test_b39_surface_carry.py"
+      ],
+      "receipts": [
+        "C014"
+      ],
+      "tolerance_keywords": [
+        {
+          "file": "tests/v025/b_phys/test_b39_surface_carry.py",
+          "old": 4,
+          "new": 4,
+          "removed": {}
+        }
+      ],
+      "added_skip_lines": [],
+      "removed_skip_lines": [],
+      "source_files": 0,
+      "verdict": "MERGE"
+    },
+    {
+      "commit": "b5b826f9ba4273160295bd138488ffab348d789d",
+      "summary": "test: complete cloud and radiation cadence mocks; 13 pass",
+      "files": [
+        "tests/v025/b_phys/test_held_cloud_fraction.py",
+        "tests/v025/cadence/test_radiation_driver.py"
+      ],
+      "receipts": [
+        "C014"
+      ],
+      "tolerance_keywords": [
+        {
+          "file": "tests/v025/b_phys/test_held_cloud_fraction.py",
+          "old": 0,
+          "new": 0,
+          "removed": {}
+        },
+        {
+          "file": "tests/v025/cadence/test_radiation_driver.py",
+          "old": 0,
+          "new": 0,
+          "removed": {}
+        }
+      ],
+      "added_skip_lines": [],
+      "removed_skip_lines": [],
+      "source_files": 0,
+      "verdict": "MERGE"
+    },
+    {
+      "commit": "b4af113b28239b9c53d0565184987c3d08cb49b0",
+      "summary": "test: honor CPU McICA fallback with exact draws; 4 pass",
+      "files": [
+        "tests/v025/b_phys/test_mcica_kiss_lanes.py"
+      ],
+      "receipts": [
+        "C014"
+      ],
+      "tolerance_keywords": [
+        {
+          "file": "tests/v025/b_phys/test_mcica_kiss_lanes.py",
+          "old": 0,
+          "new": 0,
+          "removed": {}
+        }
+      ],
+      "added_skip_lines": [],
+      "removed_skip_lines": [],
+      "source_files": 0,
+      "verdict": "MERGE"
+    },
+    {
+      "commit": "f5f2271194c254580a8e10d15a192ebfdf90aec6",
+      "summary": "test: pin held WSPD bytes and one surface producer; 48 pass",
+      "files": [
+        "tests/v025/b_phys/test_mynn_sfc_wspd.py"
+      ],
+      "receipts": [
+        "C014"
+      ],
+      "tolerance_keywords": [
+        {
+          "file": "tests/v025/b_phys/test_mynn_sfc_wspd.py",
+          "old": 20,
+          "new": 20,
+          "removed": {}
+        }
+      ],
+      "added_skip_lines": [],
+      "removed_skip_lines": [],
+      "source_files": 0,
+      "verdict": "MERGE"
+    },
+    {
+      "commit": "a9f7b978f9ff8dbc87ce80bd2823e3e8211ca8d5",
+      "summary": "test: target current typed Thompson mutation sites; 31 oracle checks pass",
+      "files": [
+        "tests/v025/b_thompson/test_drizzle_real_wrf_oracle.py",
+        "tests/v025/b_thompson/test_graupel_wrf_oracle.py"
+      ],
+      "receipts": [
+        "C014"
+      ],
+      "tolerance_keywords": [
+        {
+          "file": "tests/v025/b_thompson/test_drizzle_real_wrf_oracle.py",
+          "old": 0,
+          "new": 0,
+          "removed": {}
+        },
+        {
+          "file": "tests/v025/b_thompson/test_graupel_wrf_oracle.py",
+          "old": 0,
+          "new": 0,
+          "removed": {}
+        }
+      ],
+      "added_skip_lines": [],
+      "removed_skip_lines": [],
+      "source_files": 0,
+      "verdict": "MERGE"
+    },
+    {
+      "commit": "4ee280755169dd74a92976530e3c39373fb81fe5",
+      "summary": "proof: preserve kept repair inventory and open hail counterexample",
+      "files": [
+        ".agent/kernel/lanes/t-redsuite.notes.md",
+        "proofs/t_redsuite/KEPT_INVENTORY.json"
+      ],
+      "receipts": [],
+      "tolerance_keywords": [],
+      "added_skip_lines": [],
+      "removed_skip_lines": [],
+      "source_files": 0,
+      "verdict": "MERGE"
+    }
+  ],
+  "producer_receipt_audit": {
+    "arms": [
+      {
+        "arm": "C004c2-M6-FIFO",
+        "command_sha256": "b95a04d53fd33067685dc1996408263f428b080315156e02a18503af7d6cc8e9",
+        "xml_sha256": "18a023ce1830b723ae89123ffd4fad495f1e195cc138ba5cad051dba5e647012",
+        "source_identical": true,
+        "outcomes": {
+          "passed": 5,
+          "failed": 1
+        }
+      },
+      {
+        "arm": "C004c3-Jensen-precision",
+        "command_sha256": "4c07b7966412571b22378db1f5484f6fb3a851650dea0d0dc92e43d787fffb19",
+        "xml_sha256": "2411ddf86c541565b10d4f5643737bea4aab93e3162ee9775e73a01e924d5e85",
+        "source_identical": true,
+        "outcomes": {
+          "passed": 1
+        }
+      },
+      {
+        "arm": "C004d-M7",
+        "command_sha256": "5d3fb50cf1a598b7f38891bcdc794d8f15adc2518b35fa12603f18ceda2e2e03",
+        "xml_sha256": "ca4b62e81770271fa6363b0149adc16562f78dcf62d7bea2dc8dfed192bd3fdf",
+        "source_identical": true,
+        "outcomes": {
+          "failed": 1,
+          "passed": 5,
+          "xfailed": 2
+        }
+      },
+      {
+        "arm": "C004d2-acoustic-enabled",
+        "command_sha256": "a56fba7651ed2ab78161f6dd5d8b4b303e62e59e2777d15eeaea03e2ca9e10eb",
+        "xml_sha256": "4f5767c81fbaa6c18dc84dba80587b870de6675619afd78c6fa6b30aebb0a626",
+        "source_identical": true,
+        "outcomes": {
+          "failed": 1
+        }
+      },
+      {
+        "arm": "C004d3-pure-eta-callers",
+        "command_sha256": "fc21c9baead30734273eb9c49dbfea8b6e2759dbf2268b76d10bdcecdbc27fac",
+        "xml_sha256": "882589066167be4a27c0f9a13b6d88f9c4c0ca190813048e4dd9b9192012995e",
+        "source_identical": true,
+        "outcomes": {
+          "passed": 2
+        }
+      },
+      {
+        "arm": "C004e-catalog",
+        "command_sha256": "9d5a31d26787daef19d7ec4fa386b119f7bbc537433a3f5f8cb17890e3119c01",
+        "xml_sha256": "0bc96770da4135d77ddeba68aac5928375821edb5d85a20a7e1f1cc3bda04fe3",
+        "source_identical": true,
+        "outcomes": {
+          "passed": 10,
+          "failed": 1
+        }
+      },
+      {
+        "arm": "C004e2-feature-classifier",
+        "command_sha256": "b5817cc8e60e3c9415f69ecb633c30fbaffe5897620642fbd9afdc871ed9321b",
+        "xml_sha256": "bcd35ede2d57123f357c0b73a977a3c89c18d004741c0a341ac92a60556a01a0",
+        "source_identical": true,
+        "outcomes": {
+          "passed": 1
+        }
+      },
+      {
+        "arm": "C005",
+        "command_sha256": "a821cd9ccb65214c2d94eabdaee35bed7b77457cd72412b588d5b661fab75630",
+        "xml_sha256": "d37390c457b469de411a3afff2c8a9ade63708f8caf32c2d6031e18c26154c1d",
+        "source_identical": true,
+        "outcomes": {
+          "passed": 111
+        }
+      },
+      {
+        "arm": "C006",
+        "command_sha256": "17fec0dce1589e7ddb3b30ee82ab69cd6daa2b10862935d583f34ff20a5674b2",
+        "xml_sha256": "cf66014b403c37cf4224c2db9063351e6b052ea8502609d7429b73462c697cb7",
+        "source_identical": true,
+        "outcomes": {
+          "passed": 95
+        }
+      },
+      {
+        "arm": "C007",
+        "command_sha256": "f2af28d0db56f4062dc706391ab1aff6dcd3a7bd96e6bfc4b9067ad72bac4b05",
+        "xml_sha256": "f4939f9044e21cb9929dc26c3e6b2655583968fcca7c68dea19fb93a33be25b7",
+        "source_identical": true,
+        "outcomes": {
+          "passed": 57
+        }
+      },
+      {
+        "arm": "C008",
+        "command_sha256": "4ddd11957fca9616c14a8308a8ccc2a063ff9a21296557b788de3d9f4c969aab",
+        "xml_sha256": "9c52e801e81306f576f1418311c57bb076850493d157296d7e26c72834b03252",
+        "source_identical": true,
+        "outcomes": {
+          "passed": 13
+        }
+      },
+      {
+        "arm": "C009",
+        "command_sha256": "04e19085b66e6f64051e20fc8178e266ed86a2c924269c024c38bdbe14371a71",
+        "xml_sha256": "3727d988627209ea8469831c3d0a0f61fcf6b28239548a2175eca271bf74da16",
+        "source_identical": true,
+        "outcomes": {
+          "passed": 67,
+          "skipped": 19
+        }
+      },
+      {
+        "arm": "C010",
+        "command_sha256": "313a07aaaab2d8d6d84354e79df1825a5638473ddd30689861b55f98dc44b175",
+        "xml_sha256": "4048e0be5046a61895c821ccd9e5285d2f2e56eea6319e383ff7b4e6bb121f07",
+        "source_identical": true,
+        "outcomes": {
+          "passed": 114,
+          "skipped": 1,
+          "failed": 1
+        }
+      },
+      {
+        "arm": "C010b-inactive-ice",
+        "command_sha256": "70fd3b9bca50cd313cf4812bb541cb7bf5343ae46cc0a62093273fa6f206ca73",
+        "xml_sha256": "74264778dba30bb2545a73dd7ba85b988b63b2da37ebb1c2d6a30cb1cdaedb71",
+        "source_identical": true,
+        "outcomes": {
+          "passed": 1
+        }
+      },
+      {
+        "arm": "C011",
+        "command_sha256": "44901be0e6b2cff9524b837ad55f07797a2ed5b57f37512d1d25c0ef90f92fca",
+        "xml_sha256": "253bb7a21018776804ca16d7ba50b9381fe304ffe1b0c4b47aeb24fc25bc2892",
+        "source_identical": true,
+        "outcomes": {
+          "passed": 106,
+          "skipped": 8
+        }
+      },
+      {
+        "arm": "C012",
+        "command_sha256": "e6c54cc7bf0c881435a3353d4e05595307f10a0c71627ddd918263f879f76c3d",
+        "xml_sha256": "22b6230e549e4bb4f7aeec0e8b15368e082cd6028da995b518008b63cb5639fa",
+        "source_identical": true,
+        "outcomes": {
+          "passed": 29,
+          "failed": 1
+        }
+      },
+      {
+        "arm": "C012b-PG-inactive-ice",
+        "command_sha256": "4567834ba3073497779f0540d9a8beb397226bdaa32206e3907dfc6ebd610459",
+        "xml_sha256": "bcc2ec4336e2b97b4921be8a51fc2b07a9b5012c0122f2585b39f2a94532e281",
+        "source_identical": true,
+        "outcomes": {
+          "passed": 1
+        }
+      },
+      {
+        "arm": "C013",
+        "command_sha256": "85c966fe0b01dc8c53e13d41e2e94f6f24a604e2da35081bc8f855222e3ac6da",
+        "xml_sha256": "7014984d6bb284598a70b7144f300435052ec42711f1fb6393e25f4fdd53537d",
+        "source_identical": true,
+        "outcomes": {
+          "passed": 15
+        }
+      },
+      {
+        "arm": "C014",
+        "command_sha256": "46914affa7875870b6a08df22dcbc67b9e69e94b6492f50e831615a132696358",
+        "xml_sha256": "0e39165881112fa49e5ff0d267a7a5723f71a6274a9f8ac4b7dac838e806a3c5",
+        "source_identical": true,
+        "outcomes": {
+          "passed": 119
+        }
+      }
+    ],
+    "selected": {
+      "passed": 721,
+      "xfailed": 1,
+      "skipped": 28
+    },
+    "files": 51
+  },
+  "test_files": [
+    {
+      "file": "tests/test_m6_precision_matrix.py",
+      "sha256": "c1dae7ac5b3ceedd0cf31c042dbdcd42faac4e86bec07bfc550aa25c82fa3ab0"
+    },
+    {
+      "file": "tests/test_m6_state_extension.py",
+      "sha256": "d1c92213212308790fdc9fb067df91201bd6661cfabb2b3bcdc5738f4459563d"
+    },
+    {
+      "file": "tests/test_m6x_pressure_diagnose_wiring.py",
+      "sha256": "88ad9ffa565a9804d6a1a9a6cd2a34487cb5c4e512c1a34ab544e78f00c18ee6"
+    },
+    {
+      "file": "tests/test_m7_skill_fix_algorithmic.py",
+      "sha256": "3d8718247b33a40d4840ef0e09296d80a2ead454dade91d6585f982926a3dbae"
+    },
+    {
+      "file": "tests/test_m7_skill_fix_iter2.py",
+      "sha256": "23e689be487c2afdc801c4fd2d8ccae238dd385fce1e8b7944055dd6c057a88c"
+    },
+    {
+      "file": "tests/test_namelist_recognition_breadth.py",
+      "sha256": "0d1f33ecc089cc8ee2c39eb0a3f2bbb1a29868e45e17dc57fcc7b55a1b8eee7d"
+    },
+    {
+      "file": "tests/test_ntiedtke_jax_parity.py",
+      "sha256": "9da60b80f327b48515ec7e12cb0dd03e2553420e0bbaec7172cf31dda988387b"
+    },
+    {
+      "file": "tests/test_o2_ruccli.py",
+      "sha256": "023d87fa364e432df61c284be90890226edaf4e828515e023ee5905369973a6f"
+    },
+    {
+      "file": "tests/test_online_radar_caller.py",
+      "sha256": "8f6ab4ca765a1c7898eccb1d3fe8ad204c4b74ba420951141908cbab1a68c370"
+    },
+    {
+      "file": "tests/test_p0_1a_nesting.py",
+      "sha256": "fc53c5550d8e119e5faabb7f9050a77434d817f29ac01673af9eca902dfb95b5"
+    },
+    {
+      "file": "tests/test_p0_followups.py",
+      "sha256": "b60dedcbc3b4f1aeb2ded877b9e5e3e44ec95a93cc903731fb1bcf30c2e33eb0"
+    },
+    {
+      "file": "tests/test_p0_moist_theta_live_path.py",
+      "sha256": "27cf5cfb45d15563899a88c790185b994acd7a7e94678eb502d25e0c20da98a5"
+    },
+    {
+      "file": "tests/test_p0_option0_output_contract_nojax.py",
+      "sha256": "a0ac151990e084935688c0805ccb88466bb7782f09bafbc0e6e821ccc9945737"
+    },
+    {
+      "file": "tests/test_p0c_closure_source_nojax.py",
+      "sha256": "d010c653f5b842554c2084a09d870ccab0c5b84a2eeb0d72dc4959973e698ce8"
+    },
+    {
+      "file": "tests/test_parallel_cases.py",
+      "sha256": "05828e177eddc03d88930090cb4d1b2fdce1fbee05dd87b1df500e58f9cc84b8"
+    },
+    {
+      "file": "tests/test_portability_kernels.py",
+      "sha256": "bff3b27238969240a36e079b129f84b0ce52aa6ece39a57535395c6cb38e6de6"
+    },
+    {
+      "file": "tests/test_regional_streams.py",
+      "sha256": "da862e9c0442d939361a8d2192ac848c3d89ea68b308d5b96b3b4328bf11cf94"
+    },
+    {
+      "file": "tests/test_rrtm_lw_operational_wiring.py",
+      "sha256": "060f905dab3aacce43e70b0c1c017b480721428778f33f3f4a61c55c0efd41ff"
+    },
+    {
+      "file": "tests/test_s1_dfi12.py",
+      "sha256": "84b3d082a997aa809a77d8e353f8cebaf523d91ea81045b1e10312054a34ed18"
+    },
+    {
+      "file": "tests/test_sbu_ylin_savepoint_parity.py",
+      "sha256": "cced69698d54a31d189414ca2ab4ab8fd7668a598f967a9e2eeee6a0a0669f05"
+    },
+    {
+      "file": "tests/test_stochastic_binding.py",
+      "sha256": "a0dff8d5d5ab0cb6fb2db4d6d8692a92ae40ca4066cf7bb447c3fc13c528adbe"
+    },
+    {
+      "file": "tests/test_tslist.py",
+      "sha256": "740273141bc9be1f56023a720d30beb2c5bda4bb72b2e3f2d251d1b63b170b47"
+    },
+    {
+      "file": "tests/test_v013_t3_surface_lsm_wiring.py",
+      "sha256": "9bde841285dbe19a07e26a9579bb75721919d7c6f0b335d36d0ffaa775d29a15"
+    },
+    {
+      "file": "tests/test_v014_noahmp_nested_pipeline.py",
+      "sha256": "6c9d30b8e7a0ee5cf9cde16b37d069fe40f9108439a567e55e0962b31d49b861"
+    },
+    {
+      "file": "tests/test_v014_psfc_moist_hydrostatic.py",
+      "sha256": "7a280ffc25d1bc3c5bf6e241c8fb576d52b564df747c5545cd9943b32555742c"
+    },
+    {
+      "file": "tests/test_v016_thompson_aero_threading.py",
+      "sha256": "fc281a9c22e28f993514eea11a4fc17597d4858e8b49c19d0d45b8aa51562ec4"
+    },
+    {
+      "file": "tests/test_v017_edge_only_boundary.py",
+      "sha256": "d84b7b71701d9649b23acd697b3b5960ddc17ceb1e8d153d2477ccbbc9ecb596"
+    },
+    {
+      "file": "tests/test_v017_qh_hail_state.py",
+      "sha256": "ed60183bce98aafbff325d3caadcf72f9e3a03995ec1af197ad89aafde8c91a4"
+    },
+    {
+      "file": "tests/test_v018_conditional_state_leaves.py",
+      "sha256": "2e799f650f553bbd3729e41e69fe4982cbaf8437248b5b485f4d3fa9378ce9de"
+    },
+    {
+      "file": "tests/test_v018_cu_family_status.py",
+      "sha256": "95e82e1c0443b24fae85e167662915f709b9594a39e4d1da785096e5ba360b71"
+    },
+    {
+      "file": "tests/test_v018_lsm_architecture_boundary.py",
+      "sha256": "6a0944454a3ae280ba6fdb3a93e4ac6825892135bcaa7495e01cccaced8671bc"
+    },
+    {
+      "file": "tests/test_v018_ra_tail_oracle.py",
+      "sha256": "4cd3c4750e2e549aec58798e46e3c2cf76656a0bb36fd11bb9efeb6fec69fa8a"
+    },
+    {
+      "file": "tests/test_v022_g3city_urban_lake.py",
+      "sha256": "eace0f5915b103d7d40648b8ca14519718de74ccce3293cbaa2f8da818a2bf96"
+    },
+    {
+      "file": "tests/test_v0234_gpt_postfix_sp2.py",
+      "sha256": "5930e792accf6493f5058981d248e4c48b5da0e9ceac5f2d702a9b50947120f8"
+    },
+    {
+      "file": "tests/test_v0234_late_ni_thompson_sedimentation_rca.py",
+      "sha256": "33b2be7e81b3151168f4e825992979eef06227b6cf6f548ae681b4608201f68d"
+    },
+    {
+      "file": "tests/test_v0234_s1_residual_gpu_arm.py",
+      "sha256": "7cbbdb1da3fac010e94b6db8c8fec49e99f8f15e52c19dee9e7a51bcdf25be0e"
+    },
+    {
+      "file": "tests/test_v0234_theta_unlimited_source_repair.py",
+      "sha256": "7f8418074641d04f00f13dd9e3f4e034bf403272472d8dae9f8d0cc4b8dc1a52"
+    },
+    {
+      "file": "tests/test_v025_s2_nested_topography.py",
+      "sha256": "d1c68d2a2605d76733184873ded9f88c818216e5a95cdf9c28c1e5f3e4a6974c"
+    },
+    {
+      "file": "tests/test_v040_urban_lcz.py",
+      "sha256": "f548ba7db1d5fcf4e65cf4f9cfde8cee96e957877bed1900222b2378470262b0"
+    },
+    {
+      "file": "tests/test_v040_urban_slucm_wiring.py",
+      "sha256": "17061af0fb19763b57d435528304ba9dfa12211f6d90bec131319098f504a7ee"
+    },
+    {
+      "file": "tests/v025/b_column/test_mp_re.py",
+      "sha256": "72d15d7919c8aace11d8623b1813c9d239ff710c419174d155121e181c719f4a"
+    },
+    {
+      "file": "tests/v025/b_column/test_mp_re_restart.py",
+      "sha256": "4cc588088f624d985bf2c7539b6315600c047fc14842520559597939420108cd"
+    },
+    {
+      "file": "tests/v025/b_diff/test_pg_buoy_mu2_wiring.py",
+      "sha256": "138757955e30fcf5674172b27b26b3d7b0a479c98636dd2c429ea179270919d3"
+    },
+    {
+      "file": "tests/v025/b_noahmp/test_albedo_hold_oracle.py",
+      "sha256": "01e14a9a8a6eab2e06b2d2883e2076b431402f8b0f2e0d568ca1fe13c6a343b0"
+    },
+    {
+      "file": "tests/v025/b_phys/test_b39_surface_carry.py",
+      "sha256": "3d6e81825f1dcba412b8d1b029ed226d62b8d09ec3c9ded4b82b6a8811a513ab"
+    },
+    {
+      "file": "tests/v025/b_phys/test_held_cloud_fraction.py",
+      "sha256": "6f7fedf671fe97a3da54371449fa65f5e79780560e14f8dfd13c0af84c05acad"
+    },
+    {
+      "file": "tests/v025/b_phys/test_mcica_kiss_lanes.py",
+      "sha256": "969e87b66db19ffb696f700e4619ae5cd93e68fec1ec9fe29e10d239794dac81"
+    },
+    {
+      "file": "tests/v025/b_phys/test_mynn_sfc_wspd.py",
+      "sha256": "6d9619208bdcc600c0fdf51785e537ba4ce0c73f95dd5fccd7873db8e5d1950c"
+    },
+    {
+      "file": "tests/v025/b_thompson/test_drizzle_real_wrf_oracle.py",
+      "sha256": "196c4f3dec85c3a93a2a838a5d03cd893a7626bcb17fa8420fb8277edc801ff1"
+    },
+    {
+      "file": "tests/v025/b_thompson/test_graupel_wrf_oracle.py",
+      "sha256": "92601c59fb2e930d054449f41082252dc2b42e54e5446c464f38393f1f8903c1"
+    },
+    {
+      "file": "tests/v025/cadence/test_radiation_driver.py",
+      "sha256": "ef7cbc70eff2f68ce28ff232c402a34b491786ad3c290d2071170657c16c8427"
+    }
+  ],
+  "runs": [
+    {
+      "arm": "R01",
+      "rc": 0,
+      "outcomes": {
+        "passed": 60,
+        "xfailed": 2
+      },
+      "failures": [],
+      "max_rss_kib": 3165880,
+      "xml_sha256": "e32b4320b0520397e9becbdcad3c67cba3a4d5b273cb75a8d4a8146aa8032884",
+      "log_sha256": "9de9401bb84ad8f7c098403105e4904d1a6c860b854b2830889235fe552e0325",
+      "source": "4ee280755169dd74a92976530e3c39373fb81fe5",
+      "memory_cap": "6GiB/noSwap",
+      "mutant": false
+    },
+    {
+      "arm": "R02",
+      "rc": 1,
+      "outcomes": {
+        "failed": 4
+      },
+      "failures": [
+        {
+          "name": "test_nonhydrostatic_carry_preserves_recurrence_pressure_perturbation",
+          "type": null,
+          "message": "AssertionError: \nNot equal to tolerance rtol=0, atol=1e-09\n\nMismatched elements: 163840 / 163840 (100%)\nFirst 5 mismatches are at indices:\n [0, 0, 0]: 1.000950589260297 (ACTUAL), 0.0009505892602968976 (DESIRED)\n [0, 0, 1]: 1.000950589260297 (ACTUAL), 0.0009505892602968976 (DESIRED)\n [0, 0, 2]: 1.000950589260297 (ACTUAL), 0.0009505892602968976 (DESIRED)\n [0, 0, 3]: 1.000950589260297 (ACTUAL), 0.0009505892602968976 (DESIRED)\n [0, 0, 4]: 1.000950589260297 (ACTUAL), 0.0009505892602968976 (DESIRED)\nMax absolute difference among violations: 1.\nMax relative difference among violations: 61049.68211811\n ACTUAL: array([[[1.000951, 1.000951, 1.000951, ..., 1.000951, 1.000951,\n         1.000951],\n        [1.000951, 1.000951, 1.000951, ..., 1.000951, 1.000951,...\n DESIRED: array([[[ 0.000951,  0.000951,  0.000951, ...,  0.000951,  0.000951,\n          0.000951],\n        [ 0.000951,  0.000951,  0.000951, ...,  0.000951,  0.000951,...",
+          "assertion": true
+        },
+        {
+          "name": "test_lateral_boundary_apply_uses_strip_matching_relax_offset",
+          "type": null,
+          "message": "assert 0.20000004768371582 < 1e-06\n +  where 0.20000004768371582 = abs((2.200000047683716 - 2.0))\n +    where 2.200000047683716 = float(Array(2.2, dtype=float32))",
+          "assertion": true
+        },
+        {
+          "name": "test_real_sfclay_noah_mynn_handoff_and_pristine_bc[False]",
+          "type": null,
+          "message": "assert b'\\xb8\\xf7\\x8...G~\\xddQ\\xf7!@' == b\"\\xb8\\xf7\\x8...\\xa3\\xee\\x1f@\"\n  \n  At index 6 diff: b'\\x1c' != b'\\x18'\n  Use -v to get more diff",
+          "assertion": true
+        },
+        {
+          "name": "test_real_sfclay_noah_mynn_handoff_and_pristine_bc[True]",
+          "type": null,
+          "message": "AssertionError: assert b'8X\\xe7@K?\\x...\\x8f\\xba\\x0fA' == b'8X\\xc7@K?\\x...|_A\\x1eu\\xff@'\n  \n  At index 2 diff: b'\\xe7' != b'\\xc7'\n  Use -v to get more diff",
+          "assertion": true
+        }
+      ],
+      "max_rss_kib": 1429856,
+      "xml_sha256": "ad9c6507384345b36e819d724a131abe8223f90569a8b294389e8ffc10d23b69",
+      "log_sha256": "310b191b04af29b506be3b351bfba54549b20ad449287808ff6845146a1c35c5",
+      "source": "4ee280755169dd74a92976530e3c39373fb81fe5",
+      "memory_cap": "6GiB/noSwap",
+      "mutant": true
+    },
+    {
+      "arm": "R03",
+      "rc": 0,
+      "outcomes": {
+        "passed": 108
+      },
+      "failures": [],
+      "max_rss_kib": 1662300,
+      "xml_sha256": "58d3634eb0d422c88bd8a71d31f3ae80c1a32bc08c9b758b845460374e9e4ea7",
+      "log_sha256": "e937acd50f30489eadc8189a9506cf8daee8aaab073c9fcb78fa71a8e58d370d",
+      "source": "4ee280755169dd74a92976530e3c39373fb81fe5",
+      "memory_cap": "6GiB/noSwap",
+      "mutant": false
+    },
+    {
+      "arm": "R04",
+      "rc": 0,
+      "outcomes": {
+        "passed": 154,
+        "skipped": 7
+      },
+      "failures": [],
+      "max_rss_kib": 5592680,
+      "xml_sha256": "5ca102a3ca1c8055cdcbe70b07ebbae1a5d3b8579696f5ef86d3d70a4b531699",
+      "log_sha256": "ce46d7553235eae4c051b514cf8e01a5d8918307a081cf30bf706730ede8e6bc",
+      "source": "4ee280755169dd74a92976530e3c39373fb81fe5",
+      "memory_cap": "6GiB/noSwap",
+      "mutant": false
+    }
+  ],
+  "own_execution_outcomes": {
+    "passed": 322,
+    "xfailed": 2,
+    "skipped": 7
+  },
+  "own_unique_outcomes": {
+    "passed": 320,
+    "xfailed": 2,
+    "skipped": 7
+  },
+  "fixture_teardown_observations": 49,
+  "max_rss_kib": 5592680,
+  "production_impact": "No production/src/data/config edits. No changed production launch/traffic/allocations/arithmetic/compile graph; test-only cache clearing may recompile fixtures. No GPU speed/fidelity claim.",
+  "exclusions": [
+    "13 dirty files and all later commits excluded",
+    "C015/C015b excluded",
+    "Diagnostic D01/D02 are captures, not numerical passes",
+    "D03 active-hail product failure is open and outside test-repair batch",
+    "New-main composition, full remaining suite, heavy MP28/40 remain pending"
+  ],
+  "artifacts": {
+    "AUDIT.json": "a517dec211a504a2a6cceebeca4bc0d6e3dfd57dc9d9de1cf64eaac1f7660fe8",
+    "RECEIPT_AUDIT.json": "08a218c792c7b724b516e4c551e97d3379c04d21ff96e6ee55b373a60068d173",
+    "DEPENDENCIES.json": "b3a6c286c66b9694553fd83168a878ea522ffc7d6e045a586e27dee9fc19a97d",
+    "TREE_DEPENDENCIES.json": "e3f6ab0a64198937970fa7bb7f75e0d1a91c3362b4f8c8d9b2aacbac730125c2",
+    "PRISTINE_REFERENCES.json": "1ba6d5fc1ac9e6d27527f1d932c2bf92da5fc77568e71dd87f72ecc9100c983e",
+    "STATIC_REVIEW.md": "f6e7353373795f14d7577f27b766b5a201d96055fd6f4e4a850804d21aef3004",
+    "critic_mutants.py": "18b0c5dedc7bf66a81dbc576187161a83c8a5b26b904c8f2059dcb9f65064780",
+    "isolation.py": "e7fe380f02d315a78d07361fec5c9ec03e7384ac7a18cc0c4636f88a7292a24d",
+    "audit.py": "9b377761f6937f19460a4add64693e99a20e3f85b1b2c7b8a34c7078520472e0",
+    "receipts.py": "9a1a602ccd758aa412cad35e9fef7f380fff763787d199b15690b81590777f40",
+    "ISOLATION.jsonl": "5ca37437265b75bb5f3cfc96ade609cb0dc59443e3302293f3c2c71dfe52d4c1",
+    "run.sh": "897e7538f3a7f0391d31aa17098367fbb93dabbb46eaa5ccf53ea61717b7b667",
+    "chain.sh": "f2d86b622ee37e3d5e7db1000da3c500d9204b27397ab0059108a394aba8843f",
+    "finish.py": "6a0ce26a21a7120dae9af83a6a64fcd7c9ecc08cff9503a4122c02b41f4d9273",
+    "R01.json": "a9ede5122c0c5cef14e8a011ffdb2d15b86664b6fa2d5a119d922ad228161175",
+    "R01.log": "9de9401bb84ad8f7c098403105e4904d1a6c860b854b2830889235fe552e0325",
+    "R01.xml": "e32b4320b0520397e9becbdcad3c67cba3a4d5b273cb75a8d4a8146aa8032884",
+    "R01.rc": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+    "R02.json": "4c011077dc738d5367d4cece37f864bc09c395f85a387fd7f5c3bf763462a358",
+    "R02.log": "310b191b04af29b506be3b351bfba54549b20ad449287808ff6845146a1c35c5",
+    "R02.xml": "ad9c6507384345b36e819d724a131abe8223f90569a8b294389e8ffc10d23b69",
+    "R02.rc": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865",
+    "R03.json": "91c1ac72b0c7962f118a68a6496f07f2f8997708e3363dbbfd4ee29afc4f218c",
+    "R03.log": "e937acd50f30489eadc8189a9506cf8daee8aaab073c9fcb78fa71a8e58d370d",
+    "R03.xml": "58d3634eb0d422c88bd8a71d31f3ae80c1a32bc08c9b758b845460374e9e4ea7",
+    "R03.rc": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+    "R04.json": "4f014320de7adab49464aebbbc09e0682bffcb438086240b22142d7b80224b22",
+    "R04.log": "ce46d7553235eae4c051b514cf8e01a5d8918307a081cf30bf706730ede8e6bc",
+    "R04.xml": "5ca102a3ca1c8055cdcbe70b07ebbae1a5d3b8579696f5ef86d3d70a4b531699",
+    "R04.rc": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+  }
+}

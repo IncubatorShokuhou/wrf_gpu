@@ -1,0 +1,30 @@
+{
+  "candidate": "c9de2b0b9f",
+  "parent": "673cf0823",
+  "changed_paths": [
+    "tests/test_aot_cheap_key.py"
+  ],
+  "exact_call_controls": {
+    "exact_call": [],
+    "argument_read": [
+      "gpuwrf/probe.py::X"
+    ],
+    "condition_read": [
+      "gpuwrf/probe.py::<If@3>"
+    ],
+    "neighbor_read": [
+      "gpuwrf/probe.py::Y"
+    ],
+    "unrelated_same_name": [
+      "gpuwrf/probe.py::X"
+    ]
+  },
+  "old_allowlist_control": [
+    "gpuwrf/probe.py::X"
+  ],
+  "blanket_mutant": {
+    "result": "KILLED",
+    "failure": "AssertionError",
+    "setup_errors": 0
+  }
+}

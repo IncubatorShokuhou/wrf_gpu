@@ -8,9 +8,11 @@ format for files from other producers.
 from __future__ import annotations
 
 from dataclasses import dataclass
+from collections.abc import Mapping
 import hashlib
 import hmac
 import json
+import math
 import os
 from pathlib import Path
 import pickle
@@ -51,6 +53,47 @@ def _host(tree):
     return jax.tree.map(lambda x: np.asarray(x) if isinstance(x, (jax.Array, np.ndarray)) else x, tree)
 
 
+def _diagnostic_restart_config(namelist):
+    """Host-only selections/cadences, bound to the native per-domain identity."""
+    from gpuwrf.diagnostics.online import configuration
+    from gpuwrf.diagnostics.precipitation import configured_interval
+    return {**configuration(namelist), "prec_acc_dt": configured_interval(namelist)}
+
+
+def _grid_fdda_restart_config(namelist):
+    from gpuwrf.assimilation.fdda_grid import GridFddaInputs
+    from gpuwrf.assimilation.fdda_spectral import SpectralFddaInputs
+    inputs = getattr(namelist, "data_assimilation", None)
+    return isinstance(inputs, GridFddaInputs) and not isinstance(inputs, SpectralFddaInputs)
+
+
+def _urban_bep_restart_config(namelist):
+    """Effective BEP(2)/BEP+BEM(3) selection and domain bound to the native identity (E78)."""
+    grid = namelist.grid
+    return {"sf_urban_physics": int(getattr(namelist, "sf_urban_physics", 0) or 0),
+            "domain_shape": [int(grid.nz), int(grid.ny), int(grid.nx)]}
+
+
+def _validate_urban_bep_snapshot(payload, configs, names, name, modern):
+    """Same BEP/BEM admission (incl. the BEM QGR_URB3D leaf) on save, readback and public read."""
+    group = payload["extra_fields"].get("urban_bep")
+    if configs is None:
+        if modern or group is not None:
+            raise ValueError("restart BEP/BEM selection/domain binding missing (E78)")
+        return
+    if not isinstance(configs, Mapping) or set(configs) != set(names):
+        raise ValueError("restart BEP/BEM configuration domains differ (E78)")
+    config = configs[name]
+    shape = config.get("domain_shape") if isinstance(config, Mapping) else None
+    option = config.get("sf_urban_physics") if isinstance(config, Mapping) else None
+    if (type(option) is not int or not isinstance(shape, (list, tuple)) or len(shape) != 3
+            or any(type(n) is not int or n <= 0 for n in shape)
+            or tuple(shape) != np.shape(payload["state_fields"]["theta"])):
+        raise ValueError("restart BEP/BEM bound selection/domain shape differs (E78)")
+    from gpuwrf.io.restart_schema import validate_urban_bep
+    validate_urban_bep(group, {"sf_urban_physics": option}, grid_shape=tuple(shape[1:]), nz=shape[0])
+
+
 def nested_identity(config, bundles, run_start):
     """Bind inputs, output stream, model source, configuration and AOT policy.
 
@@ -65,21 +108,110 @@ def nested_identity(config, bundles, run_start):
         source_hash.update(str(path.relative_to(source)).encode())
         source_hash.update(path.read_bytes())
     inputs = {}
-    for pattern in ("wrfinput*", "wrfbdy*", "namelist*"):
+    for pattern in ("wrfinput*", "wrfbdy*", "namelist*", "gpuwrf.streams.json", "windturbines*.txt", "wind-turbine-*.tbl"):
         for path in sorted(Path(config.input_dir).glob(pattern)):
             if path.is_file():
                 inputs[path.name] = _hash_file(path)
     from gpuwrf.physics.rrtmg_mp_re import mp_re_config
-    return {
+    from gpuwrf.diagnostics.solar_config import configuration as solar_configuration
+    from gpuwrf.io.pbl_epsilon_schema import epsilon_pbl_config
+    from gpuwrf.io.noahmp_options import restart_configuration
+    from gpuwrf.io.noahmp_options import irrigation_configuration
+    from gpuwrf.io.windfarm_schema import configuration as windfarm_configuration
+    from gpuwrf.io.urban_schema import configuration as urban_configuration
+    urban_sources={}
+    for name,bundle in bundles.items():
+        source=getattr(getattr(bundle.namelist,"urban_bundle",None),"_hourly_source",None)
+        if source is not None:
+            path,digest=source
+            if _hash_file(Path(path))!=digest:
+                raise ValueError("hourly urban AHE changed after initialization")
+            urban_sources[name]={"path":path,"sha256":digest}
+    from gpuwrf.tracers.restart import configuration as tracer_configuration
+    from gpuwrf.io.noahmp_mmf import configuration as mmf_configuration
+    from gpuwrf.assimilation.fdda_surface import SurfaceGridFddaInputs
+    identity = {
         "source_sha256": source_hash.hexdigest(), "inputs": inputs,
         "input_dir": str(Path(config.input_dir).resolve()),
         "output_dir": str(Path(config.output_dir).resolve()),
         "run_start": run_start.isoformat(),
         "feedback": config.feedback, "emit_initial_history": config.emit_initial_history,
         "namelists": {name: canonical_digest(bundle.namelist) for name, bundle in bundles.items()},
+        "online_diagnostics_config": {
+            name: _diagnostic_restart_config(bundle.namelist) for name, bundle in bundles.items()
+        },
+        "solar_interpolation_config": {
+            name: solar_configuration(bundle.namelist) for name, bundle in bundles.items()
+        },
+        "noahmp_mmf_config": {name: mmf_configuration(bundle.namelist) for name, bundle in bundles.items()},
+        "sst_skin_config": {name: int(bundle.namelist.sst_skin) for name, bundle in bundles.items()},
+        "noahmp_irrigation_config": {name:irrigation_configuration(bundle.namelist) for name,bundle in bundles.items()},
+        "noahmp_options_config": {name:restart_configuration(bundle.namelist) for name,bundle in bundles.items()},
         "mp_re_config": {name: mp_re_config(bundle.namelist) for name, bundle in bundles.items()},
+        "temf_config": {
+            name: {
+                "bl_pbl_physics": int(bundle.namelist.bl_pbl_physics),
+                "sf_sfclay_physics": int(bundle.namelist.sf_sfclay_physics),
+                "domain_shape": [int(bundle.namelist.grid.nz), int(bundle.namelist.grid.ny), int(bundle.namelist.grid.nx)],
+            }
+            for name, bundle in bundles.items()
+        },
+        "epsilon_pbl_config": {
+            name: {
+                **epsilon_pbl_config(bundle.namelist),
+                "sf_sfclay_physics": int(bundle.namelist.sf_sfclay_physics),
+                "domain_shape": [int(bundle.namelist.grid.nz), int(bundle.namelist.grid.ny), int(bundle.namelist.grid.nx)],
+            }
+            for name, bundle in bundles.items()
+        },
         "aot_environment": version_fingerprint_hash(), "trace_environment": global_trace_env_hash(),
+        "grid_fdda_config": {name: _grid_fdda_restart_config(bundle.namelist) for name, bundle in bundles.items()},
+        "windfarm_config": {name: windfarm_configuration(bundle.namelist) for name,bundle in bundles.items()},
+        "urban_inputs_config": {
+            name: urban_configuration(bundle.namelist) for name,bundle in bundles.items()
+        },
+        "urban_bep_config": {name: _urban_bep_restart_config(bundle.namelist) for name, bundle in bundles.items()},
+        **({"urban_ahe_sources":urban_sources} if urban_sources else {}),
+        "tracer_config": {name: tracer_configuration(bundle.namelist) for name, bundle in bundles.items()},
+        "ssib_active": {name: getattr(bundle.namelist,'sf_surface_physics',None)==8 for name,bundle in bundles.items()},
+        "surface_fdda_config": {
+            name: {'records':len(bundle.namelist.data_assimilation.surface_steps),
+                   'shape':[bundle.namelist.grid.nz,bundle.namelist.grid.ny,bundle.namelist.grid.nx]}
+            if isinstance(getattr(bundle.namelist,'data_assimilation',None),SurfaceGridFddaInputs) else None
+            for name,bundle in bundles.items()
+        },
     }
+    if any(int(bundle.namelist.bl_pbl_physics) in (2,4) for bundle in bundles.values()):
+        identity['qnse_config']={name:{key:int(getattr(bundle.namelist,key)) for key in
+            ('bl_pbl_physics','sf_sfclay_physics','mfshconv')} for name,bundle in bundles.items()}
+    identity["sas_config"] = {
+        name: {"cu_physics": int(bundle.namelist.cu_physics),
+               "osas_domain_id": int(bundle.namelist.osas_domain_id),
+               "domain_shape": [int(bundle.namelist.grid.nz),int(bundle.namelist.grid.ny),int(bundle.namelist.grid.nx)]}
+        for name,bundle in bundles.items()
+    }
+    identity["glacier_config"] = {
+        name: {"required": bool(getattr(getattr(bundle.namelist,'noahmp_static',None),'glacier',None) is not None),
+               "shape": [int(bundle.namelist.grid.ny),int(bundle.namelist.grid.nx)]}
+        for name,bundle in bundles.items()}
+    # Manifests and history-journal owners use JSON. Canonicalize here so
+    # resolved tuples (irrigation, BATS tables) have the same list form before
+    # publication and after readback; keep all reader comparisons exact.
+    return json.loads(json.dumps(identity, allow_nan=False))
+
+
+def _validate_qnse_restart_groups(carries,identity,*,serialized=False):
+    from gpuwrf.io.restart_schema import QNSE_SCHEMA_VERSION,validate_qnse
+    configurations=identity.get('qnse_config',{})
+    for name,carry in carries.items():
+        group=carry.get('extra_fields',{}).get('qnse') if serialized else getattr(carry,'qnse',None)
+        version=carry.get('qnse_schema_version') if serialized else QNSE_SCHEMA_VERSION
+        history=carry.get('extra_fields',{}).get('history_diagnostics') if serialized else getattr(carry,'history_diagnostics',None)
+        shape=carry['state_fields']['theta'].shape if serialized else carry.state.theta.shape
+        # TEMF's existing all-domain binding also authenticates MYJSFC; the
+        # QNSE-specific configuration is only emitted when QNSE is selected.
+        surface_config=configurations.get(name,identity.get('temf_config',{}).get(name,{}))
+        validate_qnse(group,surface_config,version,history=history,expected_shape=shape)
 
 
 def drain_checkpoint_output(output_pipeline, async_writer):
@@ -242,26 +374,303 @@ def _validate_snapshot(snapshot, manifest) -> None:
     from gpuwrf.io.restart import (_CARRY_SCRATCH_FIELDS, _V1_UNSUPPORTED_CARRY_FIELDS,
                                   _validate_state_field_order, _validate_radiation_diagnostics_schema,
                                   _validate_gwdo_diagnostics_schema)
+    from gpuwrf.io.restart_schema import validate_temf
+    from types import SimpleNamespace
+    temf_config = manifest["identity"].get("temf_config")
+    if temf_config is not None or "namelists" in manifest["identity"]:
+        if not isinstance(temf_config, dict) or set(temf_config) != set(names):
+            raise ValueError("restart TEMF domain/selection binding missing (E78)")
+    epsilon_config = manifest["identity"].get("epsilon_pbl_config")
+    if epsilon_config is not None or "namelists" in manifest["identity"]:
+        if not isinstance(epsilon_config, dict) or set(epsilon_config) != set(names):
+            raise ValueError("restart EEPS/KEPS domain/selection binding missing (E78)")
+    sas_config = manifest["identity"].get("sas_config")
+    if sas_config is not None or "namelists" in manifest["identity"]:
+        if not isinstance(sas_config, dict) or set(sas_config) != set(names):
+            raise ValueError("restart SAS domain/selection binding missing (E78)")
     expected = tuple(f.name for f in fields(OperationalCarry))
+    configs = manifest["identity"].get("online_diagnostics_config")
+    solar_configs = manifest["identity"].get("solar_interpolation_config")
+    surface_fdda_config = manifest['identity'].get('surface_fdda_config')
+    if surface_fdda_config is None and 'namelists' in manifest['identity']:
+        raise ValueError('restart lacks per-domain surface FDDA configuration (E78)')
+    if surface_fdda_config is not None and (not isinstance(surface_fdda_config,dict)
+            or set(surface_fdda_config)!=set(names)
+            or any(v is not None and (not isinstance(v,dict) or set(v)!= {'records','shape'}
+                or type(v['records']) is not int or v['records']<1) for v in surface_fdda_config.values())):
+        raise ValueError('restart surface FDDA domain/selection binding invalid (E78)')
+    grid_fdda_config = manifest["identity"].get("grid_fdda_config")
+    if grid_fdda_config is not None and (not isinstance(grid_fdda_config, Mapping) or set(grid_fdda_config) != set(names)
+                                        or any(type(v) is not bool for v in grid_fdda_config.values())):
+        raise ValueError("restart grid FDDA selection binding differs (E78)")
+    windfarm_configs = manifest['identity'].get('windfarm_config')
+    if windfarm_configs is None and 'namelists' in manifest['identity']:
+        raise ValueError('restart lacks per-domain Fitch configuration (E78)')
+    if windfarm_configs is not None and (not isinstance(windfarm_configs,Mapping) or set(windfarm_configs)!=set(names)):
+        raise ValueError('restart Fitch configuration domains differ (E78)')
+    urban_configs = manifest["identity"].get("urban_inputs_config")
+    if urban_configs is None and "namelists" in manifest["identity"]:
+        raise ValueError("restart lacks per-domain urban input configuration (E78)")
+    if urban_configs is not None and (not isinstance(urban_configs,Mapping) or set(urban_configs)!=set(names)):
+        raise ValueError("restart urban input configuration domains differ (E78)")
+    urban_bep_configs = manifest["identity"].get("urban_bep_config")
+    tracer_configs = manifest["identity"].get("tracer_config")
+    if tracer_configs is None and manifest.get("tracer_config_required"):
+        raise ValueError("tracer restart lacks per-domain configuration")
+    if tracer_configs is not None and (not isinstance(tracer_configs, Mapping) or set(tracer_configs) != set(names)):
+        raise ValueError("tracer restart configuration domains differ")
+    skin_configs = manifest["identity"].get("sst_skin_config")
+    irrigation_configs=manifest["identity"].get("noahmp_irrigation_config")
+    noahmp_configs=manifest["identity"].get("noahmp_options_config")
+    if noahmp_configs is not None and (not isinstance(noahmp_configs,Mapping) or set(noahmp_configs)!=set(names)):
+        raise ValueError("restart Noah-MP option configuration domains differ (E78)")
+    # Digests cannot recover selectors. Native identities must carry the
+    # explicit configuration even when an active group was deleted entirely.
+    if configs is None and "namelists" in manifest["identity"]:
+        raise ValueError("restart lacks per-domain online diagnostic configuration (E78)")
+    if configs is not None and (not isinstance(configs, Mapping) or set(configs) != set(names)):
+        raise ValueError("restart online diagnostic configuration domains differ (E78)")
+    if solar_configs is None and "namelists" in manifest["identity"]:
+        raise ValueError("restart lacks per-domain Solar configuration (E78)")
+    if solar_configs is not None and (not isinstance(solar_configs, Mapping) or set(solar_configs) != set(names)):
+        raise ValueError("restart Solar configuration domains differ (E78)")
+    ssib_selection=manifest['identity'].get('ssib_active')
+    if 'namelists' in manifest['identity'] and ssib_selection is None:
+        raise ValueError('SSiB restart selection binding missing (E78)')
+    if ssib_selection is not None and (not isinstance(ssib_selection,dict) or set(ssib_selection)!=set(names)
+            or any(type(value) is not bool for value in ssib_selection.values())):
+        raise ValueError('SSiB restart domain selection mismatch (E78)')
     for name, payload in snapshot["carries"].items():
-        _validate_radiation_diagnostics_schema(payload)
+        from gpuwrf.io.glacier_schema import validate as validate_glacier
+        glacier_configs=manifest['identity'].get('glacier_config')
+        glacier_config={} if glacier_configs is None else glacier_configs.get(name,{})
+        if glacier_configs is not None and (set(glacier_configs)!=set(names) or set(glacier_config)!={'required','shape'}):
+            raise ValueError('restart glacier domain/selection binding differs (E78)')
+        validate_glacier(payload.get('noahmp_land_fields'),payload.get('noahmp_land_field_order') or (),
+            payload.get('glacier_schema_version'),active=glacier_config.get('required',False),shape=glacier_config.get('shape'))
+        from gpuwrf.io.feedback_restart import validate_payload
+        feedback_configs=manifest['identity'].get('feedback_schema')
+        if feedback_configs is not None and (
+                not isinstance(feedback_configs,dict) or set(feedback_configs)!=set(names)):
+            raise ValueError('two-way restart domain/selection schema binding differs (E78)')
+        feedback_required=(feedback_configs is not None or
+                           (len(names)>1 and manifest['identity'].get('feedback') is True))
+        selected=manifest['identity'].get('feedback')
+        if ((selected is False or (selected is True and len(names)==1))
+                and (feedback_configs is not None or payload.get('feedback_schema') is not None)):
+            raise ValueError('two-way restart active groups disagree with effective feedback selection (E78)')
+        validate_payload(payload,required=feedback_required,
+                         expected=None if feedback_configs is None else feedback_configs[name])
+        from gpuwrf.io.windfarm_schema import validate_restart as validate_windfarm
+        validate_windfarm(payload['extra_fields'].get('windfarm_power'),None if windfarm_configs is None else windfarm_configs[name],
+                          payload['state_fields']['t_skin'].shape)
+        from gpuwrf.io.urban_schema import validate_urban_inputs
+        validate_urban_inputs(payload["extra_fields"].get("urban_slucm"),
+            None if urban_configs is None else urban_configs[name],
+            payload.get("urban_inputs_schema_version"),payload["state_fields"]["t_skin"].shape)
+        _validate_urban_bep_snapshot(payload, urban_bep_configs, names, name, "namelists" in manifest["identity"])
+        from gpuwrf.tracers.restart import validate_restart as validate_tracer_restart
+        validate_tracer_restart(payload["state_fields"], payload["extra_fields"].get("tracer_tendencies"),
+            None if tracer_configs is None else tracer_configs[name], payload.get("tracer_schema_version"),
+            payload["state_fields"]["qv"].shape)
+        from gpuwrf.assimilation.fdda_surface import validate_surface_restart,SurfaceGridFddaCarry
+        surface_group=payload['extra_fields'].get('fdda')
+        if isinstance(surface_group,SurfaceGridFddaCarry) and surface_fdda_config is None:
+            raise ValueError('restart surface FDDA selection binding missing (E78)')
+        validate_surface_restart(surface_group,None,
+            required=surface_fdda_config is not None and surface_fdda_config[name] is not None)
+        if isinstance(surface_group,SurfaceGridFddaCarry):
+            config=surface_fdda_config[name]
+            if config is None or tuple(config['shape'])!=np.shape(payload['state_fields']['theta']):
+                raise ValueError('restart surface FDDA bound domain/selection differs (E78)')
+            if np.shape(surface_group.t_old)!=tuple(config['shape']) or int(surface_group.surface_cursor)>=config['records']:
+                raise ValueError('restart surface FDDA domain/cursor differs from binding (E78)')
+        from gpuwrf.io.noahmp_carbon import validate_restart as validate_carbon
+        from gpuwrf.io.noahmp_options import NoahMPOptions,validate_option_restart
+        from types import SimpleNamespace
+        cfg=None if noahmp_configs is None else noahmp_configs[name]
+        validate_option_restart(cfg)
+        saved_namelist=SimpleNamespace(noahmp_options=None if cfg is None else NoahMPOptions(**cfg))
+        validate_carbon(payload["extra_fields"].get("noahmp_carbon"),saved_namelist,
+                        payload.get("noahmp_carbon_schema_version"),payload["state_fields"]["t_skin"].shape)
+        from gpuwrf.io.noahmp_groundwater import validate_restart as validate_groundwater
+        validate_groundwater(payload["extra_fields"].get("noahmp_groundwater"),saved_namelist,
+                            payload.get("noahmp_groundwater_schema_version"),payload["state_fields"]["t_skin"].shape)
+        from gpuwrf.io.noahmp_hydrology import validate_tile_restart
+        validate_tile_restart(payload['extra_fields'].get('noahmp_tile_drain'),saved_namelist,
+            payload.get('noahmp_tile_drain_schema_version'),payload['state_fields']['t_skin'].shape)
+        from gpuwrf.coupling.sst_skin_hook import validate_restart as validate_skin
+        skin = payload["extra_fields"].get("sst_skin")
+        if skin_configs is not None and (not isinstance(skin_configs, Mapping) or set(skin_configs) != set(names)):
+            raise ValueError("restart SST skin configuration domains differ (E78)")
+        validate_skin(skin, 0 if skin_configs is None else skin_configs[name], payload.get("sst_skin_schema_version"),
+                      payload["state_fields"]["t_skin"].shape)
+        from gpuwrf.io.noahmp_irrigation import validate_restart as validate_irrigation
+        if irrigation_configs is not None and (not isinstance(irrigation_configs,Mapping) or set(irrigation_configs)!=set(names)):
+            raise ValueError("restart irrigation configuration domains differ (E78)")
+        validate_irrigation(payload["extra_fields"].get("noahmp_irrigation"),
+            (0,0) if irrigation_configs is None else irrigation_configs[name],payload.get("noahmp_irrigation_schema_version"),
+            payload["state_fields"]["t_skin"].shape)
+        _validate_diagnostic_snapshot(payload, None if configs is None else configs[name])
+        from gpuwrf.io.restart_schema import validate_ssib
+        extra=payload['extra_fields']
+        validate_ssib(extra.get('ssib_land'),extra.get('ssib_rad'),None,
+            payload.get('ssib_schema_version'),payload['state_fields']['t_skin'].shape,
+            active=False if ssib_selection is None else ssib_selection[name],
+            driver_fields=dict(wspd=payload["state_fields"].get("sfc_wspd"),history=extra.get("history_diagnostics"),precipitation=extra.get("noahmp_precipitation")))
+        from gpuwrf.diagnostics.solar_config import validate_restart as validate_solar_restart
+        validate_solar_restart(payload["extra_fields"].get("solar_interpolation"),
+            None if solar_configs is None else solar_configs[name],
+            payload.get("solar_interpolation_schema_version"), payload["state_fields"]["t_skin"].shape)
+        # Existing authenticated radius selection already carries both RA
+        # selectors. It also detects loss of the entire Goddard group/marker.
+        _validate_radiation_diagnostics_schema(payload,namelist=manifest['identity'].get('mp_re_config',{}).get(name))
         _validate_gwdo_diagnostics_schema(payload)
-        if tuple(payload.get("carry_field_order", ())) != expected:
+        from gpuwrf.io.noahmp_mmf import validate_restart as validate_mmf
+        mmf_configs = manifest['identity'].get('noahmp_mmf_config')
+        if mmf_configs is None and payload['extra_fields'].get('noahmp_mmf') is not None:
+            raise ValueError('MMF restart lacks authenticated domain selection (E78)')
+        if mmf_configs is not None and (not isinstance(mmf_configs, Mapping) or set(mmf_configs) != set(names)):
+            raise ValueError('MMF restart domain selection differs (E78)')
+        validate_mmf(payload['extra_fields'].get('noahmp_mmf'),
+                     None if mmf_configs is None else mmf_configs[name],
+                     payload.get('noahmp_mmf_schema_version'), payload['state_fields']['t_skin'].shape)
+        from gpuwrf.io.noahmp_mmf import validate_land as validate_mmf_land
+        validate_mmf_land(payload['extra_fields'].get('noahmp_mmf'),payload.get('noahmp_land_fields'),
+                          payload['state_fields']['t_skin'].shape)
+        recorded = tuple(payload.get('carry_field_order', ()))
+        compatible = tuple(n for n in expected if n != 'noahmp_mmf' or n in recorded)
+        if recorded != compatible:
             raise ValueError("restart carry schema differs from executable")
         order = tuple(payload["state_field_order"])
         _validate_state_field_order(order, namelist=manifest["identity"].get("mp_re_config", {}).get(name))
         if set(payload["state_fields"]) != set(order):
             raise ValueError("restart State schema differs from receipt")
+        mp_config=manifest["identity"].get("mp_re_config", {}).get(name)
+        from gpuwrf.io.restart_schema import physics_option,validate_held_state
+        if physics_option(mp_config,'mp_physics',8) in (9,50,51,52,53,55):
+            validate_held_state(payload['state_fields'],mp_config)
         if tuple(payload["scratch_field_order"]) != _CARRY_SCRATCH_FIELDS or set(payload["scratch_fields"]) != set(_CARRY_SCRATCH_FIELDS):
             raise ValueError("restart scratch schema differs from executable")
-        if set(payload["extra_fields"]) != set(_V1_UNSUPPORTED_CARRY_FIELDS):
+        expected_extra = set(_V1_UNSUPPORTED_CARRY_FIELDS)
+        if 'noahmp_mmf' not in recorded:
+            expected_extra.remove('noahmp_mmf')
+        if set(payload["extra_fields"]) != expected_extra:
             raise ValueError("restart optional carry schema differs from executable")
-        trees = (payload["state_fields"], payload["scratch_fields"], payload["extra_fields"],
+        group = payload["extra_fields"].get("temf")
+        if temf_config is None:
+            # Legacy unbound default stores remain readable. An active group
+            # needs explicit authenticated selection/domain configuration.
+            if group is not None:
+                raise ValueError("restart TEMF domain/selection binding missing (E78)")
+            temf_namelist = SimpleNamespace(bl_pbl_physics=0)
+        else:
+            config = temf_config[name]
+            if (not isinstance(config, dict)
+                    or set(config) != {"bl_pbl_physics", "sf_sfclay_physics", "domain_shape"}):
+                raise ValueError("restart TEMF domain/selection binding invalid (E78)")
+            shape = config["domain_shape"]
+            if (not isinstance(shape, (list, tuple)) or len(shape) != 3
+                    or any(type(n) is not int or n <= 0 for n in shape)
+                    or tuple(shape) != np.shape(payload["state_fields"]["theta"])):
+                raise ValueError("restart TEMF bound domain shape differs (E78)")
+            pbl, surface = config["bl_pbl_physics"], config["sf_sfclay_physics"]
+            if (type(pbl) is not int or type(surface) is not int
+                    or (pbl == 10) != (surface == 10) or (group is not None and pbl != 10)):
+                raise ValueError("restart TEMF bound physics pair differs (E78)")
+            nz, ny, nx = shape
+            temf_namelist = SimpleNamespace(bl_pbl_physics=pbl, grid=SimpleNamespace(nz=nz, ny=ny, nx=nx))
+        # _carry_to_payload already materialized these leaves on the host.
+        # Use the same admission on save, verified readback, and public read,
+        # before pickle publication or any _restore_carry device allocations.
+        validate_temf(group, temf_namelist, payload.get("temf_schema_version"))
+        _validate_epsilon_snapshot(payload, None if epsilon_config is None else epsilon_config[name])
+        if sas_config is not None:
+            from gpuwrf.io.restart_schema import validate_sas_held
+            config=sas_config[name]
+            if not isinstance(config,dict) or set(config)!={"cu_physics","osas_domain_id","domain_shape"}:
+                raise ValueError("restart SAS selection binding invalid (E78)")
+            shape=config['domain_shape']
+            if tuple(shape)!=np.shape(payload['state_fields']['theta']):
+                raise ValueError("restart SAS bound domain differs (E78)")
+            nz,ny,nx=shape
+            sas_namelist=SimpleNamespace(cu_physics=config['cu_physics'],osas_domain_id=config['osas_domain_id'],
+                                        grid=SimpleNamespace(nz=nz,ny=ny,nx=nx))
+            validate_sas_held(payload['extra_fields'].get('cumulus_tendencies'),sas_namelist,
+                              payload['extra_fields'].get('osas_rng_key'), payload['extra_fields'].get('cumulus_carry'))
+        from gpuwrf.io.cu_forcing_schema import validate as validate_cu_forcing
+        # Legacy unbound stores stay readable; a populated group needs the bound selector (E78).
+        validate_cu_forcing(payload['extra_fields'].get('cu_forcing'),
+            {'cu_physics':0 if sas_config is None else sas_config[name]['cu_physics']},
+            np.shape(payload['state_fields']['theta']),payload.get('cu_forcing_schema_version'))
+        # TEMF finiteness was checked with its complete shape/dtype contract.
+        extra_fields = {key: value for key, value in payload["extra_fields"].items() if key != "temf"}
+        trees = (payload["state_fields"], payload["scratch_fields"], extra_fields,
                  payload.get("noahmp_land_fields"), payload.get("noahmp_rad"))
         for leaf in jax.tree.leaves(trees):
             value = np.asarray(leaf)
             if value.dtype.kind in "fc" and not np.isfinite(value).all():
                 raise ValueError("restart contains a nonfinite carry leaf")
+        from gpuwrf.io.restart_schema import validate_grid_fdda
+        validate_grid_fdda(payload["extra_fields"].get("fdda"),
+                           {"fdda": {"grid_fdda": int(grid_fdda_config[name]) if grid_fdda_config else 0}})
+
+
+def _validate_epsilon_snapshot(payload, config):
+    """Authenticate active EEPS/KEPS State leaves before device restoration."""
+    from gpuwrf.io.pbl_epsilon_schema import validate_epsilon_state,validate_epsilon_history
+    if config is None:
+        # Legacy default checkpoints are readable; populated epsilon leaves
+        # require the explicit selection, including when every leaf was lost.
+        config = {"bl_pbl_physics": 0}
+    else:
+        keys = {"bl_pbl_physics", "sf_sfclay_physics", "domain_shape", "boundary_config"}
+        if not isinstance(config, dict) or set(config) != keys:
+            raise ValueError("restart EEPS/KEPS domain/selection binding invalid (E78)")
+        shape = config["domain_shape"]
+        if (not isinstance(shape, (list, tuple)) or len(shape) != 3
+                or any(type(n) is not int or n <= 0 for n in shape)
+                or tuple(shape) != np.shape(payload["state_fields"]["qv"])):
+            raise ValueError("restart EEPS/KEPS bound domain shape differs (E78)")
+        bl, sf = config["bl_pbl_physics"], config["sf_sfclay_physics"]
+        if type(bl) is not int or type(sf) is not int or (bl in (16, 17) and sf != 1):
+            raise ValueError("restart EEPS/KEPS bound physics pair differs (E78)")
+        boundary = config["boundary_config"]
+        if (not isinstance(boundary, dict)
+                or set(boundary) != {"nested_frozen_wrf_boundary_bundle", "have_bcs_scalar"}
+                or type(boundary["nested_frozen_wrf_boundary_bundle"]) is not bool
+                or (boundary["have_bcs_scalar"] is not None and type(boundary["have_bcs_scalar"]) is not bool)):
+            raise ValueError("restart EEPS/KEPS boundary binding invalid (E78)")
+    validate_epsilon_state(payload["state_fields"], config, payload.get("epsilon_pbl_schema_version"))
+    validate_epsilon_history(payload['extra_fields'].get('history_diagnostics'),config,
+                             payload['state_fields']['t_skin'].shape)
+
+
+def _validate_diagnostic_snapshot(payload, config):
+    """E78 before publication or device restoration, including absent groups."""
+    from gpuwrf.diagnostics.online import validate_restart
+    from gpuwrf.diagnostics.precipitation import validate_restart_buckets
+    extra = payload["extra_fields"]
+    buckets = extra.get("precipitation_buckets")
+    nwp, radar = extra.get("nwp_diagnostics"), extra.get("radar_reflectivity")
+    if config is None:
+        if any(value is not None for value in (buckets, nwp, radar)):
+            raise ValueError("restart lacks per-domain online diagnostic configuration (E78)")
+        config = {"prec_acc_dt": 0., "nwp_diagnostics": 0, "do_radar_ref": 0,
+                  "history_interval": 60.}
+    required = {"prec_acc_dt", "nwp_diagnostics", "do_radar_ref", "history_interval"}
+    if not isinstance(config, dict) or set(config) != required:
+        raise ValueError("restart online diagnostic configuration is incomplete (E78)")
+    if (config["nwp_diagnostics"] not in (0, 1) or config["do_radar_ref"] not in (0, 1)
+            or not math.isfinite(config["prec_acc_dt"]) or config["prec_acc_dt"] < 0
+            or not math.isfinite(config["history_interval"]) or config["history_interval"] <= 0):
+        raise ValueError("restart online diagnostic configuration is invalid (E78)")
+    if (buckets is not None) != (config["prec_acc_dt"] > 0):
+        raise ValueError("restart precipitation carry and selection disagree (E78)")
+    state = payload["state_fields"]
+    validate_restart_buckets(buckets, config["prec_acc_dt"],
+                             payload.get("precipitation_buckets_schema_version"), state["t_skin"].shape)
+    validate_restart(nwp, radar, config, payload.get("online_diagnostics_schema_version"), state["qv"].shape)
 
 
 @dataclass(frozen=True)
@@ -289,6 +698,7 @@ class RestartStore:
         with payload_path.open("rb") as stream:
             snapshot = pickle.load(stream)
         _validate_snapshot(snapshot, manifest)
+        _validate_qnse_restart_groups(snapshot['carries'],manifest['identity'],serialized=True)
         if device:
             snapshot["carries"] = {name: _restore_carry(value) for name, value in snapshot["carries"].items()}
         return snapshot, manifest
@@ -312,6 +722,7 @@ class RestartStore:
         raise ValueError("no verified restart generation for this run")
 
     def save(self, carries, own_steps, dt_s, identity, *, driver_state=None):
+        _validate_qnse_restart_groups(carries,identity)
         self.root.mkdir(parents=True, exist_ok=True)
         if set(carries) != set(own_steps) or set(carries) != set(dt_s):
             raise ValueError("checkpoint domains/counters/timesteps do not match")
@@ -324,6 +735,7 @@ class RestartStore:
             "format": FORMAT, "identity": identity, "domains": list(carries),
             "own_steps": dict(own_steps), "dt_s": dict(dt_s),
             "created_ns": time.time_ns(),
+            "tracer_config_required": "tracer_config" in identity,
         }
         _validate_snapshot(snapshot, manifest)
         # Serialize once: exact size is available before writing, including all

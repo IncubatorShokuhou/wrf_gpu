@@ -1,0 +1,428 @@
+[
+ {
+  "fix": "MP11 CAM-MG GPU refusal (cammg_config) \u2014 SUPERSEDED by batch45 mp11 lift",
+  "batch": 38,
+  "lane": "t-mp11gate",
+  "class": "admission",
+  "commits": [
+   "e0e54811b",
+   "e0952523d (shared)"
+  ],
+  "changed": [
+   "io/cammg_config.py:selection_errors/validate_input_dir/bootstrap_refusal",
+   "io/namelist_check.py:_cammg_admission_failures",
+   "io/namelist_binding.py:bind_namelist_options",
+   "integration/nested_pipeline.py:_admit_cammg_inputs/_load_domains",
+   "__init__.py bootstrap"
+  ],
+  "reach": "mp_physics==11 on a non-CPU backend (admission before model work)",
+  "caller_sites": [
+   "src/gpuwrf/integration/nested_pipeline.py:execute_nested_pipeline -> _admit_cammg_inputs (target_backend()!='cpu')",
+   "src/gpuwrf/io/namelist_binding.py:bind_namelist_options validate_cammg"
+  ],
+  "affected": [
+   "c89"
+  ],
+  "numeric_change": "refusal-only",
+  "notes": "batch45 (t-cammgws 3ec98090e1) lifts the mp11 refusal; c89 is covered by that fix, not by this one."
+ },
+ {
+  "fix": "KM3 km_opt=3 GPU refusal (km3_config)",
+  "batch": 38,
+  "lane": "t-mp11gate",
+  "class": "admission",
+  "commits": [
+   "e0952523d"
+  ],
+  "changed": [
+   "io/km3_config.py:selection_errors",
+   "io/namelist_check.py:_km3_admission_failures",
+   "io/cammg_config.py:_gpu_selection_errors"
+  ],
+  "reach": "km_opt==3 on a non-CPU backend (refused before model work; retained BYTE in batch45)",
+  "caller_sites": [
+   "src/gpuwrf/io/cammg_config.py:_gpu_selection_errors (km3_errors) via validate_input_dir/bootstrap_refusal",
+   "src/gpuwrf/io/namelist_check.py:validate_operational_namelist _km3_admission_failures"
+  ],
+  "affected": [
+   "c48"
+  ],
+  "numeric_change": "refusal-only",
+  "notes": "c48 namelist km_opt=3 (status OWNER_EXCLUDED_KM3_NO_COUPLED_REFERENCE): expected outcome is refusal, no GPU forecast."
+ },
+ {
+  "fix": "ACM2 PBL mixes QC3D/QI3D, returns RQC/RQIBLTEN (t-wsmdz)",
+  "batch": 38,
+  "lane": "t-wsmdz",
+  "class": "A",
+  "commits": [
+   "5131ddffb"
+  ],
+  "changed": [
+   "physics/pbl_acm2.py:_acm2_column_traceable/acm2_columns/step_acm2_column",
+   "coupling/scan_adapters.py:acm2_pbl_adapter"
+  ],
+  "reach": "bl_pbl_physics==7",
+  "caller_sites": [
+   "src/gpuwrf/coupling/scan_adapters.py:2005 acm2_pbl_adapter (PBL dispatch bl_opt==7)"
+  ],
+  "affected": [
+   "c05"
+  ],
+  "numeric_change": "yes",
+  "notes": "c05 already GPU-D6 PASS on 061d53020 (t-wsmdz); final rerun on 04cb09f816 still needed because later batches touch c05 (F1/F2/F7/phyprep)."
+ },
+ {
+  "fix": "F1 land precipitation for every MP (public RAINNCV/SNOWNCV/GRAUPELNCV/HAILNCV slots; seed mp!=0)",
+  "batch": 39,
+  "lane": "t-calleraudit",
+  "class": "A",
+  "commits": [
+   "052f16d2b"
+  ],
+  "changed": [
+   "runtime/operational_mode.py:_initial_carry_for_run seed (now _land_precipitation_seed)",
+   "runtime/operational_mode.py:_apply_post_rk_microphysics return_precipitation (generic/NSSL/Milbrandt/Thompson-aero)",
+   "coupling/scan_adapters.py:_mp_public_precipitation + 15 MP adapters return_precipitation",
+   "coupling/physics_couplers.py:thompson_aero_adapter"
+  ],
+  "reach": "land precipitation consumer Noah-MP (sf4)/RUC (sf3)/SSiB (sf8) with run_physics and mp_physics NOT in {0,5,7,8,15,38} (those were already seeded before F1; mp0 seeded only after batch44)",
+  "caller_sites": [
+   "src/gpuwrf/runtime/operational_mode.py:_initial_carry_for_run -> _land_precipitation_seed (use_noahmp|explicit RUC|explicit SSiB)",
+   "src/gpuwrf/runtime/operational_mode.py:_apply_post_rk_microphysics(return_precipitation=True) when carry.noahmp_precipitation is not None"
+  ],
+  "affected": [
+   "c02",
+   "c03",
+   "c04",
+   "c05",
+   "c06",
+   "c07",
+   "c08",
+   "c09",
+   "c10",
+   "c11",
+   "c12",
+   "c13",
+   "c14",
+   "c15",
+   "c16",
+   "c17",
+   "c18",
+   "c19",
+   "c20",
+   "c21",
+   "c22",
+   "c23",
+   "c24",
+   "c25",
+   "c61",
+   "c87",
+   "c88",
+   "c89"
+  ],
+  "numeric_change": "yes",
+  "notes": "mp28 (Thompson-aero) and mp55/56/11 included: before F1 they were unseeded (dry land). Mp8 composites unchanged by F1 (BYTE, default IDs exact)."
+ },
+ {
+  "fix": "YSU (bl1) QC3D/QI3D mixing, top-down cloud mixing, in-cloud Ri, CTOPO, this-step RTHRATEN; SSiB/urban-BEP YSU callers (F6/rv-t-ysuqc)",
+  "batch": 40,
+  "lane": "t-ysuqc (F6)",
+  "class": "A",
+  "commits": [
+   "70914e2ad3",
+   "4bc9325fdb",
+   "12b06cfeb3 (merge 5e6a43634c)"
+  ],
+  "changed": [
+   "physics/pbl_ysu.py:_ysu_column_traceable",
+   "coupling/scan_adapters.py:ysu_pbl_adapter/_apply_ysu_cloud_rates",
+   "coupling/ssib_surface_hook.py:ssib_ysu_step",
+   "coupling/urban_pbl_hook.py",
+   "physics/urban_bep_pbl.py:ysu urban columns",
+   "runtime/operational_mode.py:_physics_step_forcing early_rthraten/_legacy_radiation_refresh (bl==1)",
+   "io/namelist_binding.py ysu_topdown_pblmix"
+  ],
+  "reach": "bl_pbl_physics==1 (generic, SSiB sf8 and BEP/BEM urban YSU paths)",
+  "caller_sites": [
+   "src/gpuwrf/runtime/operational_mode.py:9764 early_rthraten when bl_pbl_physics==1 and radiation_diagnostics is None",
+   "src/gpuwrf/runtime/operational_mode.py:9936 ssib_ysu_step (explicit SSiB + bl1)",
+   "src/gpuwrf/coupling/scan_adapters.py:1952 ysu_pbl_adapter"
+  ],
+  "affected": [
+   "c02",
+   "c34",
+   "c40",
+   "c56",
+   "c59",
+   "c85"
+  ],
+  "numeric_change": "yes",
+  "notes": "c34 is an INPUT_HEADER_REFUSAL_CONTROL (urban2+bl1)."
+ },
+ {
+  "fix": "MRF (bl99) QC3D/QI3D mixing + RQC/RQIBLTEN, MRF2D UST rebuild; F_QI gate",
+  "batch": 40,
+  "lane": "F6 (t-cfix-pblmix/t-ysuqc)",
+  "class": "A",
+  "commits": [
+   "2da0bc6f37",
+   "625299d3fa (F_QI gate)",
+   "402271c915 (merge 361759469)"
+  ],
+  "changed": [
+   "physics/bl_mrf.py",
+   "coupling/scan_adapters.py:mrf_pbl_adapter",
+   "runtime/operational_mode.py:_pbl_f_qi"
+  ],
+  "reach": "bl_pbl_physics==99",
+  "caller_sites": [
+   "src/gpuwrf/runtime/operational_mode.py:9955/9972/9982 f_qi=_pbl_f_qi(mp) if bl_opt in (3,99)",
+   "src/gpuwrf/coupling/scan_adapters.py:2085 mrf_pbl_adapter"
+  ],
+  "affected": [
+   "c09"
+  ],
+  "numeric_change": "yes",
+  "notes": ""
+ },
+ {
+  "fix": "GFS (bl3) QC3D/QI3D tracers + RQC/RQIBLTEN, PBLFLG KPBL<=1 off-by-one; F_QI gate",
+  "batch": 40,
+  "lane": "F6",
+  "class": "A",
+  "commits": [
+   "69ae945617",
+   "625299d3fa"
+  ],
+  "changed": [
+   "physics/bl_gfs.py",
+   "coupling/scan_adapters.py:gfs_pbl_adapter",
+   "runtime/operational_mode.py:_pbl_f_qi"
+  ],
+  "reach": "bl_pbl_physics==3 (F_QI off for mp 0/1/3)",
+  "caller_sites": [
+   "src/gpuwrf/coupling/scan_adapters.py:2127 gfs_pbl_adapter",
+   "src/gpuwrf/runtime/operational_mode.py:_pbl_f_qi"
+  ],
+  "affected": [
+   "c04",
+   "c25"
+  ],
+  "numeric_change": "yes",
+  "notes": "c25 is a WRF_PAIRING_REFUSAL_CONTROL (mp97+bl3+sf91)."
+ },
+ {
+  "fix": "MYJ (bl2) QCI species + RQC/RQIBLTEN into moist_tendf; F_QI gate",
+  "batch": 40,
+  "lane": "F6",
+  "class": "A",
+  "commits": [
+   "625299d3fa"
+  ],
+  "changed": [
+   "physics/bl_myj.py",
+   "physics/myj_adapters.py",
+   "runtime/operational_mode.py:myj branch pbl_moist_raw qc/qi"
+  ],
+  "reach": "bl_pbl_physics==2",
+  "caller_sites": [
+   "src/gpuwrf/runtime/operational_mode.py:9839-9852 myj_pbl_adapter(... f_qi=_pbl_f_qi(mp))"
+  ],
+  "affected": [
+   "c03"
+  ],
+  "numeric_change": "yes",
+  "notes": ""
+ },
+ {
+  "fix": "ClassD Morrison mp10/40 REFL_10CM (refl10cm_hm, t_exit) under do_radar_ref=1; dual precip+radar adapter return",
+  "batch": 40,
+  "lane": "t-classd",
+  "class": "diagnostic-only",
+  "commits": [
+   "7f7ca82de6",
+   "e934790288",
+   "4c910db585"
+  ],
+  "changed": [
+   "diagnostics/morrison_radar.py",
+   "diagnostics/online.py:radar_from_context",
+   "runtime/operational_mode.py:_apply_post_rk_microphysics mp10/40 return_radar_context",
+   "physics/microphysics_morrison(_aero).py t_exit (radar=True only)",
+   "runtime/aot_baked_tables.py morrison_radar key"
+  ],
+  "reach": "mp_physics in {10,40} AND do_radar_ref==1 (none of the composites set do_radar_ref for mp10/40); the precip half is F1",
+  "caller_sites": [
+   "src/gpuwrf/runtime/operational_mode.py:_apply_post_rk_microphysics elif mp_opt in (10,40) and return_radar_context",
+   "src/gpuwrf/diagnostics/online.py:radar_from_context mp in (10,40)"
+  ],
+  "affected": [],
+  "numeric_change": "history-only",
+  "notes": "do_radar_ref=1 only in c41/c46/c90 (all mp8). Morrison precipitation side channel for c08/c20 is counted under F1."
+ },
+ {
+  "fix": "ClassD NSSL one-moment mp19/21 REFL_10CM (radardd02 ipconc=0), radar forced on like check_a_mundo",
+  "batch": 40,
+  "lane": "t-classd",
+  "class": "diagnostic-only",
+  "commits": [
+   "eb1ec60e65",
+   "05c1b1775c"
+  ],
+  "changed": [
+   "physics/nssl2mom/diagnostics.py:radardd02_one_moment",
+   "physics/nssl2mom/driver.py",
+   "diagnostics/online.py:_radar_setting/before_rk",
+   "runtime/operational_mode.py:_initial_carry_for_run radar carry for mp 19/21"
+  ],
+  "reach": "mp_physics in {19,21} (radar allocated unconditionally, like WRF check_a_mundo)",
+  "caller_sites": [
+   "src/gpuwrf/diagnostics/online.py:23 _radar_setting mp in (9,17,18,19,21,22,50-53,55)",
+   "src/gpuwrf/runtime/operational_mode.py:_initial_carry_for_run radar leaf mp in (9,18,19,21,22,50-53)"
+  ],
+  "affected": [
+   "c14",
+   "c15"
+  ],
+  "numeric_change": "history-only",
+  "notes": "REFL_10CM history field only; prognostics unchanged."
+ },
+ {
+  "fix": "ClassD WRF-constant history QNBCA/TAOD5502D (mp28/38), MSKF_REFL_10CM (mp40) + mp28 nonzero-QNBCA input refusal",
+  "batch": 40,
+  "lane": "t-classd",
+  "class": "diagnostic-only",
+  "commits": [
+   "50def0e200"
+  ],
+  "changed": [
+   "io/producer_history.py:inactive_names",
+   "io/microphysics_history.py:WRF_CONSTANT_FIELDS",
+   "nesting/scalar_initialization.py mp in (28,38)"
+  ],
+  "reach": "mp_physics in {28,38,40} (history constants; mp28/38 also refuse nonzero QNBCA input at load)",
+  "caller_sites": [
+   "src/gpuwrf/io/producer_history.py:inactive_names mp in (28,38) / mp==40 and do_radar_ref==0",
+   "src/gpuwrf/nesting/scalar_initialization.py:initialize_extra_scalar_fields mp in (28,38) and read_input"
+  ],
+  "affected": [
+   "c19",
+   "c20",
+   "c65"
+  ],
+  "numeric_change": "history-only",
+  "notes": "Fields are +0 in WRF; inventory/history check only."
+ },
+ {
+  "fix": "ClassD BEP+BEM green-roof/PV history (QGR_URB4D held, TGR/DRAINGR/EP_PV zero) + BEP/BEM native-restart binding (E78)",
+  "batch": 40,
+  "lane": "t-classd",
+  "class": "diagnostic-only",
+  "commits": [
+   "50def0e200",
+   "a7def3b99f"
+  ],
+  "changed": [
+   "coupling/urban_multilayer_hook.py:green_roof carry",
+   "integration/nested_pipeline.py:_load_urban_multilayer smois / writer QGR_URB4D",
+   "io/producer_history.py URBAN_FIELDS",
+   "io/restart_schema.py:validate_urban_bep",
+   "runtime/restart_store.py:_urban_bep_restart_config"
+  ],
+  "reach": "sf_urban_physics==3 (history + carry); restart binding for sf_urban_physics in {2,3} only on checkpoint/restart arms",
+  "caller_sites": [
+   "src/gpuwrf/integration/nested_pipeline.py:_load_urban_multilayer initial_multilayer_carry(smois=...)",
+   "src/gpuwrf/io/producer_history.py:add_fields sf_urban_physics==3"
+  ],
+  "affected": [
+   "c35",
+   "c57"
+  ],
+  "numeric_change": "history-only",
+  "notes": "c35 is an INPUT_HEADER_REFUSAL_CONTROL; BEP(2) cases c34/c56 reach only the restart binding (no restart arm in the composites)."
+ },
+ {
+  "fix": "phyprep series 1 (F4/F5/F15/F16): legacy PBL view = WRF phy_prep (dry T/theta, p_hyd/p_hyd_w/PSFC, total rho, g=9.81, theta_m Euler-rate conversion)",
+  "batch": 41,
+  "lane": "t-cfix-phyprep",
+  "class": "A",
+  "commits": [
+   "abb6100577",
+   "5b09a6e2fc",
+   "7c65eaa362 (merge cd518dc813)"
+  ],
+  "changed": [
+   "coupling/wrf_phy_prep.py (new)",
+   "coupling/scan_adapters.py:_pbl_surface_forcing (+grid now passed by boulac/mrf/gfs/shinhong)"
+  ],
+  "reach": "bl_pbl_physics in {1,3,7,8,11,12,99} (every _pbl_surface_forcing caller: YSU, GFS, ACM2, BouLac incl. urban BEP, Shin-Hong, GBM, MRF)",
+  "caller_sites": [
+   "src/gpuwrf/coupling/scan_adapters.py:1786 _pbl_surface_forcing; callers 1980 ysu, 2009 acm2, 2049 boulac, 2096 mrf, 2139 gfs, 2198 shinhong, 2270 gbm"
+  ],
+  "affected": [
+   "c02",
+   "c04",
+   "c05",
+   "c06",
+   "c07",
+   "c08",
+   "c09",
+   "c25",
+   "c34",
+   "c35",
+   "c40",
+   "c56",
+   "c57",
+   "c59",
+   "c85"
+  ],
+  "numeric_change": "yes",
+  "notes": "MYNN (bl5), QNSE(4), CAM-UW(9), TEMF(10), EEPS(16), KEPS(17) do not use this view."
+ },
+ {
+  "fix": "phyprep series 1: legacy cumulus phy_prep staging (BMJ/GF/NTiedtke/Tiedtke) + dry RTHCUTEN -> theta_m (BMJ/GF/NTiedtke)",
+  "batch": 41,
+  "lane": "t-cfix-phyprep",
+  "class": "A",
+  "commits": [
+   "5b09a6e2fc"
+  ],
+  "changed": [
+   "coupling/scan_adapters.py:_wrf_cumulus_prep, tiedtke_adapter, ntiedtke_adapter, gf_adapter, bmj_adapter"
+  ],
+  "reach": "cu_physics in {2,3,6,16}",
+  "caller_sites": [
+   "src/gpuwrf/coupling/scan_adapters.py:1081 tiedtke, 1236 ntiedtke, 1430 gf, 1693 bmj (_wrf_cumulus_prep)"
+  ],
+  "affected": [
+   "c03",
+   "c04",
+   "c06",
+   "c07"
+  ],
+  "numeric_change": "yes",
+  "notes": "Grell G3/GD (5/93) not touched here (batch56 F7)."
+ },
+ {
+  "fix": "phyprep series 1: MYJ PBL + MYJ (Janjic) surface layer phy_prep geometry, moist-form RTHBLTEN",
+  "batch": 41,
+  "lane": "t-cfix-phyprep",
+  "class": "A",
+  "commits": [
+   "b1226cb97c"
+  ],
+  "changed": [
+   "physics/myj_adapters.py:_myj_geometry, janjic_sfclay_adapter, myj_pbl_adapter"
+  ],
+  "reach": "bl_pbl_physics==2 or sf_sfclay_physics==2",
+  "caller_sites": [
+   "src/gpuwrf/physics/myj_adapters.py:janjic_sfclay_adapter/myj_pbl_adapter -> _myj_geometry(state, grid.metrics)"
+  ],
+  "affected": [
+   "c03"
+  ],
+  "numeric_change": "yes",
+  "notes": ""
+ }
+]

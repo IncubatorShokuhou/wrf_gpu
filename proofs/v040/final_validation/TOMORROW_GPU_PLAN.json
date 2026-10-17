@@ -1,0 +1,2599 @@
+{
+  "schema": "v-prep-next-window-v1",
+  "prepared_utc": "2026-10-14T21:07:32.187950+00:00",
+  "inventoried_main": "a050b46ae1a8348c22a5316093580f0ce885a249",
+  "status": "H01actualGPU17/main627 since05:52:45 c07/c12/c45; H02queuedaftervrunpair24/26; c13new627ownCPUfullD6PASS; C42needswarm+CLATclassAhostrecheck",
+  "nightly_gate": {
+    "exact_issue": "20261014_12z",
+    "verdict": "DONE",
+    "earliest_utc": "2026-10-14T23:34:40+00:00",
+    "hard_stop_utc": "2026-10-15T19:15:00Z",
+    "planned_last_release_utc": "2026-10-15T19:10:00Z",
+    "path": "<DATA_ROOT>/alisios/state/nightly_9nest/LAST_RUN.json"
+  },
+  "cpu_rules": "Until2026-10-15T19:15Z aggregate15G limit lifted;4officialRAMslots,12Gsingletons allowed via --max12G. Oneheavyjob/lane; QUIET/JAXcpu/timeout; CPU0-3/8/9/12/13/+16. At19:15 GPUfree+aggregate<=15G restored.",
+  "gpu_admission": "Fresh clean detached FINAL composed main snapshot/data/wrf_pristine; only CLI-admitted original-reference-complete cases; corrected native-CUDA preflight on final source (reuse source-identical completed preflights); actualGPU assertion/target/flags/inputs; official lease/lock. Ordinary cache keys only, no forged cross-driver AOT reuse.",
+  "memory_rules": "4officialRAMslots; ordinaryGPUcohorts4 onlyfreeVRAM>=27696MiB and free-g checked, aggregate40G/noSwap scope. CPUheavyoneJAXworker6-12G; lightWRF measured238MiB can overlap. Aggregate15G restored19:15.",
+  "fixes": {
+    "theta": {
+      "reviewed_commit": "7c1d87146",
+      "meaning": "Temperature handoff; Lin1612 ancestry included",
+      "merged_on_inventoried_main": true
+    },
+    "nssl_ni": {
+      "reviewed_commit": "b53563750",
+      "meaning": "Original Registry Ni membership",
+      "merged_on_inventoried_main": true
+    },
+    "c01_history": {
+      "reviewed_commit": "03d3f2375",
+      "meaning": "No-physics original surface history",
+      "merged_on_inventoried_main": true
+    },
+    "sf1": {
+      "reviewed_commit": "170b15cac",
+      "meaning": "Reviewed SF1 neutral mapping plus GBM UST writeback",
+      "merged_on_inventoried_main": true
+    },
+    "groundwater": {
+      "reviewed_commit": "6908324fd",
+      "meaning": "TypedNdArray TIMEAN lowering c62/c63",
+      "merged_on_inventoried_main": true
+    },
+    "writer": {
+      "reviewed_commit": "035652316",
+      "meaning": "Reviewed schema/NSSL17/18/22 radar carry",
+      "merged_on_inventoried_main": true
+    },
+    "cuplus": {
+      "reviewed_commit": "314b178ac",
+      "meaning": "Cu10/11 shared roll fix; ALSO require final cu7 padding/literal-controls fix",
+      "merged_on_inventoried_main": false
+    },
+    "ssib_mpre": {
+      "reviewed_commit": "653e4b68d",
+      "meaning": "Mixed-radiation resolved MP_RE predicate",
+      "merged_on_inventoried_main": true
+    }
+  },
+  "first_peer_slot": "t-p3fix <=60s compile-free native P3 replay if manager coordinates; no v-prep duplicate.",
+  "first_release_slot": {
+    "case": "WN3-smoke",
+    "hours": 24,
+    "domains": 3,
+    "gpu_hold_cap_s": 1800,
+    "priority": "Before bulk optional coverage; original75-frame reference already sealed",
+    "byte_regression": "Retain strict first12 historical full-file SHA check as SEPARATE regression. Host-only header changes may invalidate full-file bytes; do not label that a model regression or silently waive it. Full originalCPU D6/schema are separate.",
+    "cold_setup": "If actual compile+24h cannot complete within30min, keep measured readiness/partial proof, do not repeat identical cold runs. Separate setup/restart segmentation requires manager-scheduled plan, never a silent60min arm."
+  },
+  "priority_batches": [
+    {
+      "id": "B01",
+      "cases": [
+        "c03",
+        "c04",
+        "c26",
+        "c39"
+      ],
+      "parallel": 4,
+      "gpu_hold_cap_s": 1800,
+      "child_cap_s": 1770,
+      "purpose": "Close theta/Lin rain misses, give QNSE a full cap, check slab+LW31",
+      "required_fixes": [
+        "theta",
+        "writer"
+      ],
+      "status": "DONE c03/c04/c39 D6PASS25; c26cap124/lead0 compiler readinessBLOCKED"
+    },
+    {
+      "id": "B02",
+      "cases": [
+        "c05",
+        "c06",
+        "c09",
+        "c10"
+      ],
+      "parallel": 4,
+      "gpu_hold_cap_s": 1800,
+      "child_cap_s": 1770,
+      "purpose": "Four distinct MP/SF1 coupled repairs",
+      "required_fixes": [
+        "theta",
+        "sf1"
+      ],
+      "status": "DONE c05/c06 RAINNCFAIL10/11; c09D6PASS; c10cap24/25frames"
+    },
+    {
+      "id": "B03",
+      "cases": [
+        "c07",
+        "c11",
+        "c62",
+        "c40"
+      ],
+      "parallel": 4,
+      "gpu_hold_cap_s": 1800,
+      "child_cap_s": 1770,
+      "purpose": "New MP14/16, Ferrier5 lowering fix and authentic SSiB mixed radiation",
+      "required_fixes": [
+        "theta",
+        "sf1",
+        "groundwater",
+        "ssib_mpre"
+      ],
+      "status": "DONE fullD6PASS4; c07 provisionalqh"
+    },
+    {
+      "id": "B04",
+      "cases": [
+        "c16",
+        "c29",
+        "c30",
+        "c31"
+      ],
+      "parallel": 4,
+      "gpu_hold_cap_s": 1800,
+      "child_cap_s": 1770,
+      "purpose": "NSSL17/22 finalradargraph plus newly admitted NTU56/CAMMG11; c13newproducerreuse separately",
+      "required_fixes": [
+        "writer",
+        "nssl_ni"
+      ],
+      "status": "DONE16/30/31PASS; c29 warm completionPASS25 separately/E41FAIL"
+    },
+    {
+      "id": "B05",
+      "cases": [
+        "c29",
+        "c45",
+        "c89"
+      ],
+      "parallel": 3,
+      "gpu_hold_cap_s": 1800,
+      "child_cap_s": 1770,
+      "purpose": "Nonhail Goddard5/CAMMG11/diffusion/surface7; c89onlyafterCPUrefCOMPLETE",
+      "required_fixes": [
+        "cuplus",
+        "writer"
+      ],
+      "status": "DONE c29PASS25;45partial3/E41PASS now6hONLY pendingGodperf;89RAINNCFAIL4/15paired"
+    },
+    {
+      "id": "B06",
+      "cases": [
+        "c37",
+        "c38",
+        "c43",
+        "c46"
+      ],
+      "parallel": 4,
+      "gpu_hold_cap_s": 1800,
+      "child_cap_s": 1770,
+      "purpose": "Diffusion5/TKE2, surface7, K1 stochastic/tracers/turbines/streams",
+      "required_fixes": [],
+      "status": "DONE fullD6PASS4/100frames; only43E41PASS"
+    },
+    {
+      "id": "B07",
+      "cases": [
+        "c33",
+        "c36",
+        "c71",
+        "c72"
+      ],
+      "parallel": 4,
+      "gpu_hold_cap_s": 1800,
+      "child_cap_s": 1770,
+      "purpose": "RUC, urban1 and accepted official-soil sprinkler/flood Madrid cases",
+      "required_fixes": [],
+      "status": "DONE fullD6PASS4/100frames andallE41PASS"
+    },
+    {
+      "id": "B08",
+      "cases": [
+        "c68",
+        "c69",
+        "c70",
+        "c86"
+      ],
+      "parallel": 4,
+      "gpu_hold_cap_s": 1800,
+      "child_cap_s": 1770,
+      "purpose": "Noah carbon7/8/9, VIC8 infiltration1/2/3 and repacked option bundle",
+      "required_fixes": [
+        "groundwater"
+      ],
+      "status": "DONE all4 full25D6/E41PASS/100frames/0bounded/NF0/cacheclean"
+    },
+    {
+      "id": "B09",
+      "cases": [
+        "c77",
+        "c78",
+        "c79"
+      ],
+      "parallel": 3,
+      "gpu_hold_cap_s": 1800,
+      "child_cap_s": 1770,
+      "purpose": "Surface/grid/spectral FDDA and observation nudging/monotonic transport",
+      "required_fixes": [],
+      "status": "DONE79full25D6/E41PASS;77/78startupTypeError beforemodel, no executable/cacheclean; wait hostfix"
+    },
+    {
+      "id": "B10",
+      "cases": [
+        "c49",
+        "c50",
+        "c51"
+      ],
+      "parallel": 3,
+      "gpu_hold_cap_s": 1800,
+      "child_cap_s": 1770,
+      "purpose": "DFL/DFI2/DFI3 phase coverage; DFL retains natural24 frames",
+      "required_fixes": [
+        "writer"
+      ],
+      "status": "NOT_RUN; bind final composed main and preflight first"
+    },
+    {
+      "id": "B11",
+      "cases": [
+        "c83",
+        "c47",
+        "c02"
+      ],
+      "parallel": 3,
+      "gpu_hold_cap_s": 1800,
+      "child_cap_s": 1770,
+      "purpose": "Explicit micro-irrigation, real eight-lake cells and active-MMF groundwater",
+      "required_fixes": [
+        "groundwater"
+      ],
+      "status": "NOT_RUN; bind final composed main and preflight first"
+    },
+    {
+      "id": "B12",
+      "cases": [
+        "c57",
+        "c27",
+        "c10"
+      ],
+      "parallel": 3,
+      "gpu_hold_cap_s": 1800,
+      "child_cap_s": 1770,
+      "purpose": "YSU/SF1 confirmation, urban2/3 and EEPS10; c02 may use exact producer reuse",
+      "required_fixes": [
+        "sf1"
+      ],
+      "status": "REPACKED; qhaffected8 formtwofuturecohorts aftermerge",
+      "fill_partial_case_if_ready": "c10"
+    },
+    {
+      "id": "B13",
+      "cases": [
+        "c55",
+        "c73",
+        "c56"
+      ],
+      "parallel": 3,
+      "gpu_hold_cap_s": 1800,
+      "child_cap_s": 1770,
+      "purpose": "Safely repack fourthmembers after actual4processheadroom refusal",
+      "status": "55/73already staged;56stagebeforearm"
+    }
+  ],
+  "standalone_batches": [
+    {
+      "id": "S01",
+      "cases": [
+        "c42"
+      ],
+      "parallel": 1,
+      "gpu_hold_cap_s": 1800,
+      "child_cap_s": 1770,
+      "purpose": "Two-way feedback1/smooth2 WN3 composite; original50-frame reference",
+      "required_fixes": [],
+      "status": "COLDcap124/3framesperdomain/E41PASS7. d01FAILonlystaticCLAT3.433e-5; existingproducerBYTE25CPU, classAretentionfollowup. Cache1.720GB preserved foroneboundedwarmcompletion after627priority."
+    },
+    {
+      "id": "S02",
+      "cases": [
+        "c28"
+      ],
+      "parallel": 1,
+      "gpu_hold_cap_s": 1800,
+      "child_cap_s": 1770,
+      "purpose": "Larger CAM3/3 radiation, alone",
+      "required_fixes": [],
+      "status": "NOT_RUN; bind final composed main and preflight first"
+    },
+    {
+      "id": "S03",
+      "cases": [
+        "c65"
+      ],
+      "parallel": 1,
+      "gpu_hold_cap_s": 1800,
+      "child_cap_s": 1770,
+      "purpose": "Thompson-hail38, alone; old lower was REBOOT_INTERRUPTION, not compile failure",
+      "required_fixes": [],
+      "status": "NOT_RUN; bind final composed main and preflight first"
+    },
+    {
+      "id": "S04",
+      "cases": [
+        "c60"
+      ],
+      "parallel": 1,
+      "gpu_hold_cap_s": 1800,
+      "child_cap_s": 1770,
+      "purpose": "Authentic Atlantic SST-update/skin/GWD/topography root, alone",
+      "required_fixes": [],
+      "status": "NOT_RUN; bind final composed main and preflight first"
+    },
+    {
+      "id": "S05",
+      "cases": [
+        "c84"
+      ],
+      "parallel": 1,
+      "gpu_hold_cap_s": 1800,
+      "child_cap_s": 1770,
+      "purpose": "Authentic original OML1, alone",
+      "required_fixes": [],
+      "status": "NOT_RUN; bind final composed main and preflight first"
+    },
+    {
+      "id": "S06",
+      "cases": [
+        "c85"
+      ],
+      "parallel": 1,
+      "gpu_hold_cap_s": 1800,
+      "child_cap_s": 1770,
+      "purpose": "Authentic original OML2/SF1, alone",
+      "required_fixes": [
+        "sf1"
+      ],
+      "status": "NOT_RUN; bind final composed main and preflight first"
+    }
+  ],
+  "conditional_carry_forward": {
+    "c00": "Release Swiss: prove selected program/const/input/work identity; writer-only schema check. Full rerun only if program changed.",
+    "c01": "Host-only c01 fix plus five-soil writer gate: reuse matched original CPU/input and actual corrected producer; no duplicate model run if program identical.",
+    "c15": "Completed25, bounded0miss/NF0, E41FAIL atafc; same disclosed one-moment radar limitation. Preserve unless selected program changes.",
+    "c19": "MP28 boundedPASS; QNBCA/TAOD disclosed, static emissions writer retention pending. v-run owns final-program check/re-run decision.",
+    "c20": "MP40 boundedPASS; inactive fields require exact CPU-frame constant proof. v-run owns final-program check; no fabricated producers.",
+    "c61": "FullD6PASS25 on theta-fixed00eb, E41 disclosed; no redundant theta re-run.",
+    "c08": "Accepted TCN57 correctedMorrison10 actual25/0bounded/NF0; INCOMPLETE onlyEXCH_TKE/E41FAIL408B. OwnCPUreceipt+manifestBYTE/inputexact. Reuse at8236; writer-only closure pending; no knownNaN remains on correctedsource.",
+    "c02": "PAID5c0e full25D6PASS reused with current429selectede44canon/workBYTE+exactinputs/CPUmanifests; E41FAIL disclosed, noGPUrerun.",
+    "c26": "PAID4dba/full25D6PASS reused oncurrent429: selected63e8173canon+197initialleaves+61closedconstants+workBYTE; E41FAIL7232/2952B/F2OPEN, noGPUrerun."
+  },
+  "held_for_owner_fix": {
+    "c21": "ExistingpaidGPU +ZEROoriginalCPU25/0bounded reused; missingactive ice/radar retainedINCOMPLETE. Later27ABI differs frompaid program; noGPUqueued pending manager changed-program disposition.",
+    "c22": "ExistingpaidGPU +ZEROoriginalCPU25/0bounded reused; missingactive ice/radar retainedINCOMPLETE. Later27ABI differs frompaid program; noGPUqueued pending manager changed-program disposition.",
+    "c23": "ExistingpaidGPU +ZEROoriginalCPU25/0bounded reused; missingactive ice/radar retainedINCOMPLETE. Later27ABI differs frompaid program; noGPUqueued pending manager changed-program disposition.",
+    "c24": "P3 MP53 deferred; require family compile/fidelity fix before GPU.",
+    "c87": "Jensen55 healthy-host cold compile exceeded1800s/no steppingELF. Require readiness/compiler fix before another full GPU arm.",
+    "c12": "QH-mass affected; provisional priorGPUevidence, require finalmerged-source full24h D6+E41. OriginalCPUreference staysvalid.",
+    "c14": "QH-mass affected; provisional priorGPUevidence, require finalmerged-source full24h D6+E41. OriginalCPUreference staysvalid.",
+    "c64": "QH-mass affected; provisional priorGPUevidence, require finalmerged-source full24h D6+E41. OriginalCPUreference staysvalid.",
+    "c88": "QH-mass affected; provisional priorGPUevidence, require finalmerged-source full24h D6+E41. OriginalCPUreference staysvalid.",
+    "c45": "Manager04:23six-hourONLY; checkpoint tools ready/scorercontrol7PASS. HOLDoldslow source until t-godperfBYTEtilefix reviewed/merged.",
+    "c89": "t-rainnc attribution first; preserve allCPU/GPUframes, no unchangedretry",
+    "c77": "ActualnativeCLIparser yieldsmax_dom[1];wrfsfdda.py30 int(list) TypeError beforemodel;77referencevalid, no unchangedGPUrepeat",
+    "c78": "Same surfaceFDDAhostadmissionTypeError as77; no unchangedGPUrepeat",
+    "c42": "OnlystaticCLATwriterFAIL in3partialframes; existing_input_point_overrides BYTE25CPU. Numerical24hwarmcompletionneeded afterpriority; no CLATwaiver.",
+    "c05": "t-rainnc attribution first; preserve allCPU/GPUframes, no unchangedretry",
+    "c06": "t-rainnc attribution first; preserve allCPU/GPUframes, no unchangedretry"
+  },
+  "case_evidence": {
+    "c00": {
+      "options": {
+        "mp_physics": 8,
+        "cu_physics": 0,
+        "bl_pbl_physics": 5,
+        "sf_sfclay_physics": 5,
+        "sf_surface_physics": 4,
+        "ra_lw_physics": 4,
+        "ra_sw_physics": 4
+      },
+      "features": [],
+      "reference": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c00/cpu_run.json",
+        "sha256": "f09ff3a6de0b04ade0ff0e472c061d03c801de460bb123080ab2fa7f5eb1eae3"
+      },
+      "matched_inputs": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c00/inputs.json",
+        "sha256": "020e10b933e2373f739a20d98286a4761f953f3d5272e292423268c9e1ce659c"
+      },
+      "lower_receipt": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/t-lowersweep/resume_20261014T2105/c00/receipt.json",
+        "sha256": "5bd839583e03ccc9ae2982a1f7450195435607d5634e5c5ef39bfc2fe295d3f2"
+      },
+      "lower_status": "OK",
+      "lower_source": "2a7fcfef1b10e49762e422c295c54279a4bc9e27",
+      "compile_status": "NOT_ATTEMPTED",
+      "selected_final_model_reuse": "GPU13_PREFLIGHT_REUSE.json"
+    },
+    "c01": {
+      "options": {
+        "mp_physics": 0,
+        "cu_physics": 0,
+        "bl_pbl_physics": 0,
+        "sf_sfclay_physics": 0,
+        "sf_surface_physics": 0,
+        "ra_lw_physics": 0,
+        "ra_sw_physics": 0
+      },
+      "features": [],
+      "reference": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c01/cpu_run.json",
+        "sha256": "ea7e19c8691d90e2aa9abc91615cb6b8fd729eed1964ca5fe7803911098efe1f"
+      },
+      "matched_inputs": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c01/inputs.json",
+        "sha256": "7b41d400e33e87b8aff7bfb983563e0d562b52f4fe9da9f464ec86b61e0334e5"
+      },
+      "lower_receipt": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/t-lowersweep/resume_20261014T2105/c01/receipt.json",
+        "sha256": "86cee29ff54fabb79b94f439aa00dfd1812ad0aa26ea338d65111a624e5c7f3d"
+      },
+      "lower_status": "OK",
+      "lower_source": "2a7fcfef1b10e49762e422c295c54279a4bc9e27",
+      "compile_status": "OK",
+      "selected_final_model_reuse": "GPU13_PREFLIGHT_REUSE.json"
+    },
+    "c02": {
+      "options": {
+        "mp_physics": 1,
+        "cu_physics": 1,
+        "bl_pbl_physics": 1,
+        "sf_sfclay_physics": 1,
+        "sf_surface_physics": 4,
+        "ra_lw_physics": 1,
+        "ra_sw_physics": 1
+      },
+      "features": [],
+      "reference": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c02/cpu_run.json",
+        "sha256": "9a83c3e05ac997aec20a4b8fd61eaeb9ccf8fb6cfa8813902c5f573e1f1eef65"
+      },
+      "matched_inputs": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c02/inputs.json",
+        "sha256": "56484a17776ad989ad1190674e4127fa243cbd38aaa482cfa8434ae33934b201"
+      },
+      "lower_receipt": null,
+      "lower_status": "OK",
+      "lower_source": "12268e5f27a08e99c265690bf77a0bb6ebcd2550",
+      "compile_status": "NOT_ATTEMPTED",
+      "selected_final_model_reuse": "GPU13_PREFLIGHT_REUSE.json"
+    },
+    "c03": {
+      "options": {
+        "mp_physics": 2,
+        "cu_physics": 2,
+        "bl_pbl_physics": 2,
+        "sf_sfclay_physics": 2,
+        "sf_surface_physics": 4,
+        "ra_lw_physics": 4,
+        "ra_sw_physics": 2
+      },
+      "features": [],
+      "reference": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c03/cpu_run.json",
+        "sha256": "695dd6c9185b46deb4cf34be2704bbc645dea0a9fa04354f35cb4384e82157a1"
+      },
+      "matched_inputs": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c03/inputs.json",
+        "sha256": "07391fc32bebbab92911462caf516339fdc4dd4dce8826740048a175de377a35"
+      },
+      "lower_receipt": null,
+      "lower_status": "OK",
+      "lower_source": "12268e5f27a08e99c265690bf77a0bb6ebcd2550",
+      "compile_status": "NOT_ATTEMPTED",
+      "selected_final_model_reuse": "GPU13_PREFLIGHT_REUSE.json"
+    },
+    "c04": {
+      "options": {
+        "mp_physics": 3,
+        "cu_physics": 3,
+        "bl_pbl_physics": 3,
+        "sf_sfclay_physics": 3,
+        "sf_surface_physics": 4,
+        "ra_lw_physics": 4,
+        "ra_sw_physics": 1
+      },
+      "features": [],
+      "reference": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c04/cpu_run.json",
+        "sha256": "b8cdeb86d2454cd72cd6591ef5c760da9aceed46d79cc462d2e12b42aec6a750"
+      },
+      "matched_inputs": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c04/inputs.json",
+        "sha256": "cf63b7bf5fa0775c66fb5c1edc96e891298ee83a9e09fdd3b52b20a08d9aaecb"
+      },
+      "lower_receipt": null,
+      "lower_status": "OK",
+      "lower_source": "2a7fcfef1b10e49762e422c295c54279a4bc9e27",
+      "compile_status": "NOT_ATTEMPTED",
+      "selected_final_model_reuse": "GPU13_PREFLIGHT_REUSE.json"
+    },
+    "c05": {
+      "options": {
+        "mp_physics": 4,
+        "cu_physics": 5,
+        "bl_pbl_physics": 7,
+        "sf_sfclay_physics": 1,
+        "sf_surface_physics": 4,
+        "ra_lw_physics": 4,
+        "ra_sw_physics": 4
+      },
+      "features": [],
+      "reference": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c05/cpu_run.json",
+        "sha256": "96d1e8a5f76a0ce69366573040d48e2b64b1d7fad5e849e5f234d6c32c4350a1"
+      },
+      "matched_inputs": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c05/inputs.json",
+        "sha256": "056d23c02d01478bec33ba99a796328d91c551b876f535c23fc366a3524fd909"
+      },
+      "lower_receipt": null,
+      "lower_status": "OK",
+      "lower_source": "12268e5f27a08e99c265690bf77a0bb6ebcd2550",
+      "compile_status": "NOT_ATTEMPTED",
+      "selected_final_model_reuse": "GPU13_PREFLIGHT_REUSE.json"
+    },
+    "c06": {
+      "options": {
+        "mp_physics": 6,
+        "cu_physics": 6,
+        "bl_pbl_physics": 8,
+        "sf_sfclay_physics": 1,
+        "sf_surface_physics": 4,
+        "ra_lw_physics": 4,
+        "ra_sw_physics": 4
+      },
+      "features": [],
+      "reference": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c06/cpu_run.json",
+        "sha256": "c5692f01c13c3907d0e929fb37aa5160b707d1fff8ce88a9de56c555f150d48a"
+      },
+      "matched_inputs": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c06/inputs.json",
+        "sha256": "3e37e977e40662209a5ab2055ddcae309111acc067f76708b9fbeb8907782755"
+      },
+      "lower_receipt": null,
+      "lower_status": "OK",
+      "lower_source": "12268e5f27a08e99c265690bf77a0bb6ebcd2550",
+      "compile_status": "NOT_ATTEMPTED",
+      "selected_final_model_reuse": "GPU13_PREFLIGHT_REUSE.json"
+    },
+    "c07": {
+      "options": {
+        "mp_physics": 9,
+        "cu_physics": 16,
+        "bl_pbl_physics": 11,
+        "sf_sfclay_physics": 1,
+        "sf_surface_physics": 4,
+        "ra_lw_physics": 4,
+        "ra_sw_physics": 4
+      },
+      "features": [],
+      "reference": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c07/cpu_run.json",
+        "sha256": "4840de3b21b68f1c4ae9bb4f4c8db2954aa9965c1682e7a5a092344a39041d25"
+      },
+      "matched_inputs": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c07/inputs.json",
+        "sha256": "955eddd9d752fa019894cfb538ab369717ceb56387922fa3f628917e9cf5de34"
+      },
+      "lower_receipt": null,
+      "lower_status": "OK",
+      "lower_source": "12268e5f27a08e99c265690bf77a0bb6ebcd2550",
+      "compile_status": "NOT_ATTEMPTED",
+      "selected_final_model_reuse": "GPU13_PREFLIGHT_REUSE.json"
+    },
+    "c08": {
+      "options": {
+        "mp_physics": 10,
+        "cu_physics": 14,
+        "bl_pbl_physics": 12,
+        "sf_sfclay_physics": 1,
+        "sf_surface_physics": 4,
+        "ra_lw_physics": 4,
+        "ra_sw_physics": 4
+      },
+      "features": [],
+      "reference": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c08/cpu_run.json",
+        "sha256": "5cb409768022f27d2380def717514162f75f25d885c5982c797c73f311e15cfd"
+      },
+      "matched_inputs": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c08/inputs.json",
+        "sha256": "2f5b0867e52a29f9805a836e748c2cdef4f232a074207b59a1b47d857c64ed66"
+      },
+      "lower_receipt": null,
+      "lower_status": "OK",
+      "lower_source": "12268e5f27a08e99c265690bf77a0bb6ebcd2550",
+      "compile_status": "NOT_ATTEMPTED",
+      "selected_final_model_reuse": "GPU13_PREFLIGHT_REUSE.json"
+    },
+    "c09": {
+      "options": {
+        "mp_physics": 13,
+        "cu_physics": 94,
+        "bl_pbl_physics": 99,
+        "sf_sfclay_physics": 1,
+        "sf_surface_physics": 4,
+        "ra_lw_physics": 4,
+        "ra_sw_physics": 4
+      },
+      "features": [],
+      "reference": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c09/cpu_run.json",
+        "sha256": "fc75fc0db013b8f78905d242a43298867dae0058ee7271493dd554aad3269572"
+      },
+      "matched_inputs": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c09/inputs.json",
+        "sha256": "7b5ab3fa134f2628747f4d157b4131d7e83523b7294cc28a3aa2ba04723f886d"
+      },
+      "lower_receipt": null,
+      "lower_status": "OK",
+      "lower_source": "12268e5f27a08e99c265690bf77a0bb6ebcd2550",
+      "compile_status": "NOT_ATTEMPTED",
+      "selected_final_model_reuse": "GPU13_PREFLIGHT_REUSE.json"
+    },
+    "c10": {
+      "options": {
+        "mp_physics": 14,
+        "cu_physics": 95,
+        "bl_pbl_physics": 16,
+        "sf_sfclay_physics": 1,
+        "sf_surface_physics": 4,
+        "ra_lw_physics": 4,
+        "ra_sw_physics": 4
+      },
+      "features": [],
+      "reference": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c10/cpu_run.json",
+        "sha256": "dff3dc90138d83ec91dcf6f944ab6d82a156c4044d8618bb9b51ac47b0542d4b"
+      },
+      "matched_inputs": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c10/inputs.json",
+        "sha256": "00f3f85d79891dcdb57f58eb5cd1bf9364a40c19a75a928e324f20641219a534"
+      },
+      "lower_receipt": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/t-lowersweep/sweep/c10/receipt.json",
+        "sha256": "a32d59b7a9a970a3c518ffa0fd43e77a03cc17b1c50f79a4ea2245ddf57b86e3"
+      },
+      "lower_status": "OK",
+      "lower_source": "12268e5f27a08e99c265690bf77a0bb6ebcd2550",
+      "compile_status": "NOT_ATTEMPTED",
+      "selected_final_model_reuse": "GPU13_PREFLIGHT_REUSE.json"
+    },
+    "c11": {
+      "options": {
+        "mp_physics": 16,
+        "cu_physics": 96,
+        "bl_pbl_physics": 17,
+        "sf_sfclay_physics": 1,
+        "sf_surface_physics": 4,
+        "ra_lw_physics": 4,
+        "ra_sw_physics": 4
+      },
+      "features": [],
+      "reference": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c11/cpu_run.json",
+        "sha256": "e593b5e6cd9466d8f4e127c8d2a4c285b25a146757f55850f827b17c4422db52"
+      },
+      "matched_inputs": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c11/inputs.json",
+        "sha256": "89ecfd14ad954711e8199393d91ddbbbdfa9f7e4545af4b4026309d081237cb3"
+      },
+      "lower_receipt": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/t-lowersweep/sweep/c11/receipt.json",
+        "sha256": "69bbf3b866e2e53e8e6fb6e682f6b5839c2bf610a996a4f87ceba358ceef81ec"
+      },
+      "lower_status": "OK",
+      "lower_source": "12268e5f27a08e99c265690bf77a0bb6ebcd2550",
+      "compile_status": "NOT_ATTEMPTED",
+      "selected_final_model_reuse": "GPU13_PREFLIGHT_REUSE.json"
+    },
+    "c12": {
+      "options": {
+        "mp_physics": 17,
+        "cu_physics": 0,
+        "bl_pbl_physics": 5,
+        "sf_sfclay_physics": 5,
+        "sf_surface_physics": 4,
+        "ra_lw_physics": 4,
+        "ra_sw_physics": 4
+      },
+      "features": [],
+      "reference": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c12/cpu_run.json",
+        "sha256": "36aa1d3b36e83f4332685308efbc0b0c057129a3caa6b9b79d93c23c90e19a14"
+      },
+      "matched_inputs": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c12/inputs.json",
+        "sha256": "1ffadbf41a98af55fda42b01d7eb90cf52fdc1e880c42dcee38bfc5d9f0a7ae0"
+      },
+      "lower_receipt": null,
+      "lower_status": "OK",
+      "lower_source": "12268e5f27a08e99c265690bf77a0bb6ebcd2550",
+      "compile_status": "NOT_ATTEMPTED",
+      "selected_final_model_reuse": "GPU13_PREFLIGHT_REUSE.json"
+    },
+    "c13": {
+      "options": {
+        "mp_physics": 18,
+        "cu_physics": 5,
+        "bl_pbl_physics": 5,
+        "sf_sfclay_physics": 5,
+        "sf_surface_physics": 4,
+        "ra_lw_physics": 4,
+        "ra_sw_physics": 4
+      },
+      "features": [],
+      "reference": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c13/cpu_run.json",
+        "sha256": "f2536cdfb466099bdc61174dbfafeafb6a5a36b8b4208cad09d7207d03f5c7f4"
+      },
+      "matched_inputs": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c13/inputs.json",
+        "sha256": "8bc20bc414b74dd934dffdfb2be6a44aaa6b977202341422cbfdfdfa731b02a2"
+      },
+      "lower_receipt": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/t-lowersweep/sweep/c13/receipt.json",
+        "sha256": "c625527bae6bb8fc597ede8f471233734c16ec4d32de08892a9ec9c18bb1bb0b"
+      },
+      "lower_status": "OK",
+      "lower_source": "12268e5f27a08e99c265690bf77a0bb6ebcd2550",
+      "compile_status": "NOT_ATTEMPTED",
+      "selected_final_model_reuse": "GPU13_PREFLIGHT_REUSE.json"
+    },
+    "c14": {
+      "options": {
+        "mp_physics": 19,
+        "cu_physics": 99,
+        "bl_pbl_physics": 5,
+        "sf_sfclay_physics": 5,
+        "sf_surface_physics": 4,
+        "ra_lw_physics": 4,
+        "ra_sw_physics": 4
+      },
+      "features": [],
+      "reference": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c14/cpu_run.json",
+        "sha256": "c446bb4f57ee496fd4930b37a7139540ebaf959ce780824064f9fdf30c1eaa79"
+      },
+      "matched_inputs": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c14/inputs.json",
+        "sha256": "23226eb07ed06b5a673768268cd598d14b2af4b43aa35763beaa55da5d06417e"
+      },
+      "lower_receipt": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/t-lowersweep/sweep/c14/receipt.json",
+        "sha256": "0c0bb3cfeb0debdf284a1f15ae1ef19fe8175a4855e03b1a02378462c10c18fb"
+      },
+      "lower_status": "OK",
+      "lower_source": "12268e5f27a08e99c265690bf77a0bb6ebcd2550",
+      "compile_status": "NOT_ATTEMPTED",
+      "selected_final_model_reuse": "GPU13_PREFLIGHT_REUSE.json"
+    },
+    "c15": {
+      "options": {
+        "mp_physics": 21,
+        "cu_physics": 0,
+        "bl_pbl_physics": 5,
+        "sf_sfclay_physics": 5,
+        "sf_surface_physics": 4,
+        "ra_lw_physics": 4,
+        "ra_sw_physics": 4
+      },
+      "features": [],
+      "reference": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c15/cpu_run.json",
+        "sha256": "d70970b9401c4fe9f25577c4cff2570f52fa8aab439dfd54eab93ac9d3d1ded7"
+      },
+      "matched_inputs": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c15/inputs.json",
+        "sha256": "6c7029407700c25a815cac62234ff973e748bf21813b5534fef9302be083b999"
+      },
+      "lower_receipt": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/t-lowersweep/sweep/c15/receipt.json",
+        "sha256": "8cbc9de1d2c43afa4c203bd342e78f740a43e57c5eff95b3d928a5fb22c486af"
+      },
+      "lower_status": "OK",
+      "lower_source": "12268e5f27a08e99c265690bf77a0bb6ebcd2550",
+      "compile_status": "NOT_ATTEMPTED",
+      "selected_final_model_reuse": "GPU13_PREFLIGHT_REUSE.json"
+    },
+    "c16": {
+      "options": {
+        "mp_physics": 22,
+        "cu_physics": 0,
+        "bl_pbl_physics": 5,
+        "sf_sfclay_physics": 5,
+        "sf_surface_physics": 4,
+        "ra_lw_physics": 4,
+        "ra_sw_physics": 4
+      },
+      "features": [],
+      "reference": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c16/cpu_run.json",
+        "sha256": "d5a779064660d0566c9a6a67464325ff78ddc2ad9e00cecefe9d75ddaa7200f4"
+      },
+      "matched_inputs": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c16/inputs.json",
+        "sha256": "1d83571f67b2c1b50fafbbdd29e3b7aefecb2333ca0cb2b0c264156531dffc2e"
+      },
+      "lower_receipt": null,
+      "lower_status": "OK",
+      "lower_source": "12268e5f27a08e99c265690bf77a0bb6ebcd2550",
+      "compile_status": "NOT_ATTEMPTED",
+      "selected_final_model_reuse": "GPU13_PREFLIGHT_REUSE.json"
+    },
+    "c17": {
+      "options": {
+        "mp_physics": 24,
+        "cu_physics": 93,
+        "bl_pbl_physics": 5,
+        "sf_sfclay_physics": 5,
+        "sf_surface_physics": 4,
+        "ra_lw_physics": 4,
+        "ra_sw_physics": 4
+      },
+      "features": [],
+      "reference": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c17/cpu_run.json",
+        "sha256": "72c99394f8f9e8fb038de29e650f1b01a40b3d0afdca4c38d463067b0ff7ed02"
+      },
+      "matched_inputs": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c17/inputs.json",
+        "sha256": "d1e0a2c65d6538bad9171b55d653d99222cf9abe359e79878906117ca66fd4e9"
+      },
+      "lower_receipt": null,
+      "lower_status": "OK",
+      "lower_source": "12268e5f27a08e99c265690bf77a0bb6ebcd2550",
+      "compile_status": "NOT_ATTEMPTED",
+      "selected_final_model_reuse": "GPU13_PREFLIGHT_REUSE.json"
+    },
+    "c18": {
+      "options": {
+        "mp_physics": 26,
+        "cu_physics": 0,
+        "bl_pbl_physics": 5,
+        "sf_sfclay_physics": 5,
+        "sf_surface_physics": 4,
+        "ra_lw_physics": 4,
+        "ra_sw_physics": 4
+      },
+      "features": [],
+      "reference": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c18/cpu_run.json",
+        "sha256": "5ee483f7978f14b566c55ace6d6460679b9ca5ff1eff3f9505c8eae001844fc8"
+      },
+      "matched_inputs": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c18/inputs.json",
+        "sha256": "204a294041df9530882073e99e8b857d7f7eb2f749e913271c7bbf71f3721161"
+      },
+      "lower_receipt": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/t-lowersweep/sweep/c18/receipt.json",
+        "sha256": "1ed13a4e7e902de3e12a078433321a037f13cbeb448fd7a61b454fdcb013e2f4"
+      },
+      "lower_status": "OK",
+      "lower_source": "2a7fcfef1b10e49762e422c295c54279a4bc9e27",
+      "compile_status": "NOT_ATTEMPTED",
+      "selected_final_model_reuse": "GPU13_PREFLIGHT_REUSE.json"
+    },
+    "c19": {
+      "options": {
+        "mp_physics": 28,
+        "cu_physics": 0,
+        "bl_pbl_physics": 5,
+        "sf_sfclay_physics": 5,
+        "sf_surface_physics": 4,
+        "ra_lw_physics": 4,
+        "ra_sw_physics": 4
+      },
+      "features": [],
+      "reference": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c19/cpu_run.json",
+        "sha256": "806e7f576b9ac44e1c9579ff8e38f0ab7a270b06b9402dfbc677ad1c69ab826d"
+      },
+      "matched_inputs": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c19/inputs.json",
+        "sha256": "550954d4ddd85c7dcb6a8e456b7a12c9366ef1adfd68a1f033fa8b287be78d1b"
+      },
+      "lower_receipt": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/t-lowersweep/sweep/c19/receipt.json",
+        "sha256": "ba503093071285e6df306752628a792b98e7f02cba95c4bc9f05a4b24b27264b"
+      },
+      "lower_status": "OK",
+      "lower_source": "2a7fcfef1b10e49762e422c295c54279a4bc9e27",
+      "compile_status": "NOT_ATTEMPTED",
+      "selected_final_model_reuse": "GPU13_PREFLIGHT_REUSE.json"
+    },
+    "c20": {
+      "options": {
+        "mp_physics": 40,
+        "cu_physics": 0,
+        "bl_pbl_physics": 5,
+        "sf_sfclay_physics": 5,
+        "sf_surface_physics": 4,
+        "ra_lw_physics": 4,
+        "ra_sw_physics": 4
+      },
+      "features": [],
+      "reference": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c20/cpu_run.json",
+        "sha256": "d36242545a0d677cc4d13afe86403f8c85a144779e4379cb73dcbf2e55f04259"
+      },
+      "matched_inputs": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c20/inputs.json",
+        "sha256": "ee1e7a5af4bc9d2a22bfc665da2243cb85e87dae1282d24ee1651fdbdff04f19"
+      },
+      "lower_receipt": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/t-lowersweep/sweep/c20/receipt.json",
+        "sha256": "6dda7e377d6dbebe6c16d62bbb5a4d517bddd0db8faa5f8e60ef440a4a7869ca"
+      },
+      "lower_status": "OK",
+      "lower_source": "2a7fcfef1b10e49762e422c295c54279a4bc9e27",
+      "compile_status": "NOT_ATTEMPTED",
+      "selected_final_model_reuse": "GPU13_PREFLIGHT_REUSE.json"
+    },
+    "c21": {
+      "options": {
+        "mp_physics": 50,
+        "cu_physics": 0,
+        "bl_pbl_physics": 5,
+        "sf_sfclay_physics": 5,
+        "sf_surface_physics": 4,
+        "ra_lw_physics": 4,
+        "ra_sw_physics": 4
+      },
+      "features": [],
+      "reference": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c21/cpu_run.json",
+        "sha256": "367dbc77c8ab2f63cf0a504fbba49aa13c14bd8bd2207b15b3bac80bf20bc3fb"
+      },
+      "matched_inputs": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c21/inputs.json",
+        "sha256": "fc76f05e0daaf74c7cad1df684c3570d083c44d63dba46d98b513d9f65cbadc5"
+      },
+      "lower_receipt": null,
+      "lower_status": "OK",
+      "lower_source": "12268e5f27a08e99c265690bf77a0bb6ebcd2550",
+      "compile_status": "NOT_ATTEMPTED",
+      "selected_final_model_reuse": "GPU13_PREFLIGHT_REUSE.json"
+    },
+    "c22": {
+      "options": {
+        "mp_physics": 51,
+        "cu_physics": 0,
+        "bl_pbl_physics": 5,
+        "sf_sfclay_physics": 5,
+        "sf_surface_physics": 4,
+        "ra_lw_physics": 4,
+        "ra_sw_physics": 4
+      },
+      "features": [],
+      "reference": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c22/cpu_run.json",
+        "sha256": "c06f324a16b5a259ec0683a2199d3871f399949b0ffbffdfc066f96efea37395"
+      },
+      "matched_inputs": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c22/inputs.json",
+        "sha256": "f568bc7c539f70a3f0a1ffbdae135b8eb1afae3cc9f2bc28ec5152e79757d1b0"
+      },
+      "lower_receipt": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/t-lowersweep/sweep/c22/receipt.json",
+        "sha256": "175b8c0de53eda7607940cb712a2b7e74226cdd5d4b6c623beed122ee1c5db7d"
+      },
+      "lower_status": "OK",
+      "lower_source": "12268e5f27a08e99c265690bf77a0bb6ebcd2550",
+      "compile_status": "NOT_ATTEMPTED",
+      "selected_final_model_reuse": "GPU13_PREFLIGHT_REUSE.json"
+    },
+    "c23": {
+      "options": {
+        "mp_physics": 52,
+        "cu_physics": 0,
+        "bl_pbl_physics": 5,
+        "sf_sfclay_physics": 5,
+        "sf_surface_physics": 4,
+        "ra_lw_physics": 4,
+        "ra_sw_physics": 4
+      },
+      "features": [],
+      "reference": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c23/cpu_run.json",
+        "sha256": "d3ef6eed9fec36341e78498d5748090af20ff55bf80790bed03750cc9194c3d8"
+      },
+      "matched_inputs": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c23/inputs.json",
+        "sha256": "ccccb4dd2e710f6c11131d19316b4290204420b163227430cdd73077663ebcbd"
+      },
+      "lower_receipt": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/t-lowersweep/sweep/c23/receipt.json",
+        "sha256": "8ed696ed39521235a90812313f75d6e2e7cf6c30c5984f02a536d96263682ccb"
+      },
+      "lower_status": "OK",
+      "lower_source": "2a7fcfef1b10e49762e422c295c54279a4bc9e27",
+      "compile_status": "NOT_ATTEMPTED",
+      "selected_final_model_reuse": "GPU13_PREFLIGHT_REUSE.json"
+    },
+    "c24": {
+      "options": {
+        "mp_physics": 53,
+        "cu_physics": 0,
+        "bl_pbl_physics": 5,
+        "sf_sfclay_physics": 5,
+        "sf_surface_physics": 4,
+        "ra_lw_physics": 4,
+        "ra_sw_physics": 4
+      },
+      "features": [],
+      "reference": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c24/cpu_run.json",
+        "sha256": "593237c6ece466f789c5de8b7a4886369b85d5f4baa3a6b78876c0f2597b83eb"
+      },
+      "matched_inputs": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c24/inputs.json",
+        "sha256": "995e3115947a30efa44901cd44d503bee3cbca94c5db1b32174be30bab907a0a"
+      },
+      "lower_receipt": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/t-lowersweep/sweep/c24/receipt.json",
+        "sha256": "b1bae2f594ad139b0d96dbabb8af542d0fffb6da3d4791a5074e7271fbf0c889"
+      },
+      "lower_status": "OK",
+      "lower_source": "2a7fcfef1b10e49762e422c295c54279a4bc9e27",
+      "compile_status": "NOT_ATTEMPTED",
+      "selected_final_model_reuse": "GPU13_PREFLIGHT_REUSE.json"
+    },
+    "c26": {
+      "options": {
+        "mp_physics": 8,
+        "cu_physics": 0,
+        "bl_pbl_physics": 4,
+        "sf_sfclay_physics": 4,
+        "sf_surface_physics": 4,
+        "ra_lw_physics": 4,
+        "ra_sw_physics": 4
+      },
+      "features": [],
+      "reference": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c26/cpu_run.json",
+        "sha256": "c3d57e628c4ab823859edabcd752e8be48f86ecc901d0e2ef02e7a8a231c302a"
+      },
+      "matched_inputs": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c26/inputs.json",
+        "sha256": "4c734f4ace0084b564191a830b92314a9d289a09f1306f0561354e78e6b4de9d"
+      },
+      "lower_receipt": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/t-lowersweep/sweep/c26/receipt.json",
+        "sha256": "3244dac5c8868b2b4f21e928dfc885c2649d0150c0223ac5748b8bb80c5d6eac"
+      },
+      "lower_status": "OK",
+      "lower_source": "12268e5f27a08e99c265690bf77a0bb6ebcd2550",
+      "compile_status": "NOT_ATTEMPTED",
+      "selected_final_model_reuse": "GPU13_PREFLIGHT_REUSE.json"
+    },
+    "c27": {
+      "options": {
+        "mp_physics": 8,
+        "cu_physics": 0,
+        "bl_pbl_physics": 10,
+        "sf_sfclay_physics": 10,
+        "sf_surface_physics": 4,
+        "ra_lw_physics": 4,
+        "ra_sw_physics": 4
+      },
+      "features": [],
+      "reference": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c27/cpu_run.json",
+        "sha256": "e38589a4dabf5fc63d0bb8bc62a5f3e776628a7bf8dc27ae3d1efacddb2c1464"
+      },
+      "matched_inputs": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c27/inputs.json",
+        "sha256": "892d127a3ffcb185420f3c8f126238ebea5255cb235d7beb7944c29f540b3e67"
+      },
+      "lower_receipt": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/t-lowersweep/sweep/c27/receipt.json",
+        "sha256": "9273f179d13128b8d0e559c6a106f72f9e860119922895c4e665fe594f579ad0"
+      },
+      "lower_status": "OK",
+      "lower_source": "2a7fcfef1b10e49762e422c295c54279a4bc9e27",
+      "compile_status": "NOT_ATTEMPTED",
+      "selected_final_model_reuse": "GPU13_PREFLIGHT_REUSE.json"
+    },
+    "c28": {
+      "options": {
+        "mp_physics": 8,
+        "cu_physics": 0,
+        "bl_pbl_physics": 9,
+        "sf_sfclay_physics": 5,
+        "sf_surface_physics": 4,
+        "ra_lw_physics": 3,
+        "ra_sw_physics": 3
+      },
+      "features": [],
+      "reference": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c28/cpu_run.json",
+        "sha256": "bc530f101f8076bfa1db60a450c04e2bab9daf24c48268f0995c358f44f986d4"
+      },
+      "matched_inputs": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c28/inputs.json",
+        "sha256": "3e8bcb6a421cdbbcdc45459723ec364e36f2a60c8aed4eb13ab4ae7d58952316"
+      },
+      "lower_receipt": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/t-lowersweep/sweep/c28/receipt.json",
+        "sha256": "eff7fd20196f2296ca43cd38621eee77fd382953c14fb87e2354e01415e7f2a3"
+      },
+      "lower_status": "OK",
+      "lower_source": "2a7fcfef1b10e49762e422c295c54279a4bc9e27",
+      "compile_status": "NOT_ATTEMPTED",
+      "selected_final_model_reuse": "GPU13_PREFLIGHT_REUSE.json"
+    },
+    "c29": {
+      "options": {
+        "mp_physics": 8,
+        "cu_physics": 7,
+        "bl_pbl_physics": 9,
+        "sf_sfclay_physics": 5,
+        "sf_surface_physics": 4,
+        "ra_lw_physics": 4,
+        "ra_sw_physics": 4
+      },
+      "features": [],
+      "reference": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c29/cpu_run.json",
+        "sha256": "8f49169598ee61839e9c5add7f89c2844768a3615b70ad88486ef7209021e1be"
+      },
+      "matched_inputs": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c29/inputs.json",
+        "sha256": "ef6c4a1889764c5f5cdff06ad332962c5d64948f0a34ac4c54bf83dd4d5a8c09"
+      },
+      "lower_receipt": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/t-lowersweep/sweep/c29/receipt.json",
+        "sha256": "3addef4f0041c275becd0044deeaa27ae00b9fbf83f53bf17d40e15f8ccc62af"
+      },
+      "lower_status": "OK",
+      "lower_source": "dfbd526f48c16337ecb9729f00a74faaa7200644",
+      "compile_status": "NOT_ATTEMPTED",
+      "selected_final_model_reuse": "GPU13_PREFLIGHT_REUSE.json"
+    },
+    "c30": {
+      "options": {
+        "mp_physics": 8,
+        "cu_physics": 10,
+        "bl_pbl_physics": 5,
+        "sf_sfclay_physics": 5,
+        "sf_surface_physics": 4,
+        "ra_lw_physics": 4,
+        "ra_sw_physics": 4
+      },
+      "features": [],
+      "reference": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c30/cpu_run.json",
+        "sha256": "f79530f67eb4eb46a1950acaf1a1eb04baa8d5a87ebecd334a04ac0c75616224"
+      },
+      "matched_inputs": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c30/inputs.json",
+        "sha256": "3d2b5d935ce9cc054a9a9c0ba0ccabad1cbd1918328b9303f4496fb57cde1c68"
+      },
+      "lower_receipt": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/t-lowersweep/sweep/c30/receipt.json",
+        "sha256": "0126fde1885fd8540da027c16fba407d0062a893813641f35c1c35f4937c6943"
+      },
+      "lower_status": "OK",
+      "lower_source": "dfbd526f48c16337ecb9729f00a74faaa7200644",
+      "compile_status": "NOT_ATTEMPTED",
+      "selected_final_model_reuse": "GPU13_PREFLIGHT_REUSE.json"
+    },
+    "c31": {
+      "options": {
+        "mp_physics": 8,
+        "cu_physics": 11,
+        "bl_pbl_physics": 5,
+        "sf_sfclay_physics": 5,
+        "sf_surface_physics": 4,
+        "ra_lw_physics": 4,
+        "ra_sw_physics": 4
+      },
+      "features": [],
+      "reference": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c31/cpu_run.json",
+        "sha256": "301808f9c1fa71169629ed521bf2eca84a431f3b4f3c5c1989972eaa811839c6"
+      },
+      "matched_inputs": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c31/inputs.json",
+        "sha256": "9422ca4b51d8166839345e8427d7191bd67c2a4ee0ab98ef0444ab6d8272950e"
+      },
+      "lower_receipt": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/t-lowersweep/sweep/c31/receipt.json",
+        "sha256": "3124c8c943e72e26129ceb9d3f9979ed3a30d98d260b9058086916b298b511d7"
+      },
+      "lower_status": "OK",
+      "lower_source": "dfbd526f48c16337ecb9729f00a74faaa7200644",
+      "compile_status": "NOT_ATTEMPTED",
+      "selected_final_model_reuse": "GPU13_PREFLIGHT_REUSE.json"
+    },
+    "c33": {
+      "options": {
+        "mp_physics": 8,
+        "cu_physics": 0,
+        "bl_pbl_physics": 5,
+        "sf_sfclay_physics": 5,
+        "sf_surface_physics": 3,
+        "ra_lw_physics": 4,
+        "ra_sw_physics": 4
+      },
+      "features": [],
+      "reference": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c33/cpu_run.json",
+        "sha256": "dd07d4fd1a867cc4be5860d188e335b885d01f6a1ddb3760f95003f7c67d948e"
+      },
+      "matched_inputs": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c33/inputs.json",
+        "sha256": "5de26aad89a4e1422214bcd79a8da2f1792d7b931aa0c1dfce01b9496877bfb1"
+      },
+      "lower_receipt": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/t-lowersweep/sweep/c33/receipt.json",
+        "sha256": "b2356d3188eb4708a01fcfdad52555994a2758dc68cbd1988ca99f2f25db54b5"
+      },
+      "lower_status": "OK",
+      "lower_source": "2a7fcfef1b10e49762e422c295c54279a4bc9e27",
+      "compile_status": "NOT_ATTEMPTED",
+      "selected_final_model_reuse": "GPU13_PREFLIGHT_REUSE.json"
+    },
+    "c36": {
+      "options": {
+        "mp_physics": 8,
+        "cu_physics": 1,
+        "bl_pbl_physics": 5,
+        "sf_sfclay_physics": 5,
+        "sf_surface_physics": 4,
+        "ra_lw_physics": 4,
+        "ra_sw_physics": 4
+      },
+      "features": [],
+      "reference": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c36/cpu_run.json",
+        "sha256": "876f2ccf9d6e8cc5dad9ed6ab411368c05a809e00cd87bcd11e6cb9003572027"
+      },
+      "matched_inputs": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c36/inputs.json",
+        "sha256": "b6849ac2d6860fe1f47cc83fc15df131fd2924bdf79fae19cb6d32d38f90b487"
+      },
+      "lower_receipt": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/t-lowersweep/sweep/c36/receipt.json",
+        "sha256": "0465a44e640564b0928d628b698e518a00ff5085c796ea3f348f7a4b4f8e84e3"
+      },
+      "lower_status": "OK",
+      "lower_source": "2a7fcfef1b10e49762e422c295c54279a4bc9e27",
+      "compile_status": "NOT_ATTEMPTED",
+      "selected_final_model_reuse": "GPU13_PREFLIGHT_REUSE.json"
+    },
+    "c37": {
+      "options": {
+        "mp_physics": 8,
+        "cu_physics": 0,
+        "bl_pbl_physics": 0,
+        "sf_sfclay_physics": 5,
+        "sf_surface_physics": 4,
+        "ra_lw_physics": 4,
+        "ra_sw_physics": 4
+      },
+      "features": [],
+      "reference": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c37/cpu_run.json",
+        "sha256": "0ef9cdaed09ec7466e4964227e128e9779722fdecc277b06d4820d37ef5a658f"
+      },
+      "matched_inputs": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c37/inputs.json",
+        "sha256": "a6db4cd4c8e6a6941e9794b6594f3329f038bb4ee97bc6414d398b3dd23d12cc"
+      },
+      "lower_receipt": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/t-lowersweep/sweep/c37/receipt.json",
+        "sha256": "24dbee7e03c07e0946d19338108d9eb577c589058a12b4ec2f2992d895fa0f76"
+      },
+      "lower_status": "OK",
+      "lower_source": "2a7fcfef1b10e49762e422c295c54279a4bc9e27",
+      "compile_status": "NOT_ATTEMPTED",
+      "selected_final_model_reuse": "GPU13_PREFLIGHT_REUSE.json"
+    },
+    "c38": {
+      "options": {
+        "mp_physics": 8,
+        "cu_physics": 0,
+        "bl_pbl_physics": 0,
+        "sf_sfclay_physics": 5,
+        "sf_surface_physics": 4,
+        "ra_lw_physics": 4,
+        "ra_sw_physics": 4
+      },
+      "features": [],
+      "reference": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c38/cpu_run.json",
+        "sha256": "00ba38b17ef214d20beed02d4f370e3e3de97e37de167e2f4266e7585005cbc4"
+      },
+      "matched_inputs": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c38/inputs.json",
+        "sha256": "8f6f1c4edaf6aced20a57fa5ee530effea52f23acf7d02440b6e7c0b632c2104"
+      },
+      "lower_receipt": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/t-lowersweep/sweep/c38/receipt.json",
+        "sha256": "9b78fb07b824e5c4db7b90ac5c89df89e135cf6df4f69f44f4c6b03b5985f555"
+      },
+      "lower_status": "OK",
+      "lower_source": "2a7fcfef1b10e49762e422c295c54279a4bc9e27",
+      "compile_status": "NOT_ATTEMPTED",
+      "selected_final_model_reuse": "GPU13_PREFLIGHT_REUSE.json"
+    },
+    "c39": {
+      "options": {
+        "mp_physics": 0,
+        "cu_physics": 0,
+        "bl_pbl_physics": 0,
+        "sf_sfclay_physics": 0,
+        "sf_surface_physics": 0,
+        "ra_lw_physics": 31,
+        "ra_sw_physics": 0
+      },
+      "features": [],
+      "reference": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c39/cpu_run.json",
+        "sha256": "460f9943e5e6443cba32395e54ca0d998e997c2415bf41a79de94d43723f4c27"
+      },
+      "matched_inputs": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c39/inputs.json",
+        "sha256": "ad67e5622f7b26a1d093f58b4cbcc17dd589cf2cc87d08398cbe1743f82e5234"
+      },
+      "lower_receipt": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/t-lowersweep/sweep/c39/receipt.json",
+        "sha256": "7b07ba6e40af8fa55f2d7100735a67d855b8959eb7f9777be93191fbd1f6330c"
+      },
+      "lower_status": "OK",
+      "lower_source": "2a7fcfef1b10e49762e422c295c54279a4bc9e27",
+      "compile_status": "OK",
+      "selected_final_model_reuse": "GPU13_PREFLIGHT_REUSE.json"
+    },
+    "c40": {
+      "options": {
+        "mp_physics": 8,
+        "cu_physics": 0,
+        "bl_pbl_physics": 1,
+        "sf_sfclay_physics": 1,
+        "sf_surface_physics": 8,
+        "ra_lw_physics": 4,
+        "ra_sw_physics": 1
+      },
+      "features": [],
+      "reference": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c40/cpu_run.json",
+        "sha256": "5554f31e2402be7f3a59b6f08e7dfebe50d6b8476397cc380fc40678cd897b08"
+      },
+      "matched_inputs": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c40/inputs.json",
+        "sha256": "f010953870027d23a86c5589121795e2dc2984bce34c4119c6c009603e16e095"
+      },
+      "lower_receipt": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/t-lowersweep/sweep/c40/receipt.json",
+        "sha256": "ccf1d85278b95a90b7f46b3586958f1ead880b4aef7bbe1697fcdfffbeacc23a"
+      },
+      "lower_status": "OK",
+      "lower_source": "e996f0b1a7759734bc4ee14af94222e0d99d9d1c",
+      "compile_status": "NOT_ATTEMPTED",
+      "selected_final_model_reuse": "GPU13_PREFLIGHT_REUSE.json"
+    },
+    "c42": {
+      "options": {
+        "mp_physics": 8,
+        "cu_physics": 0,
+        "bl_pbl_physics": 5,
+        "sf_sfclay_physics": 5,
+        "sf_surface_physics": 4,
+        "ra_lw_physics": 4,
+        "ra_sw_physics": 4
+      },
+      "features": [
+        "live-two-way-feedback"
+      ],
+      "reference": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c42/cpu_run.json",
+        "sha256": "22f4c607672e06a247df8c01cf73747f4e86e5a4e0c5399bca013c6894e91028"
+      },
+      "matched_inputs": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c42/inputs.json",
+        "sha256": "8d918f56ffe45bde435a0d5706ee2af5f29609a31041103c663168dd6a15a434"
+      },
+      "lower_receipt": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/t-lowersweep/sweep/c42/receipt.json",
+        "sha256": "2ee1810fb13420ba0c5f0de5ed01b9bb50db8c995397dae4d3c445f736869d09"
+      },
+      "lower_status": "OK",
+      "lower_source": "2a7fcfef1b10e49762e422c295c54279a4bc9e27",
+      "compile_status": "NOT_ATTEMPTED",
+      "selected_final_model_reuse": "GPU13_PREFLIGHT_REUSE.json"
+    },
+    "c43": {
+      "options": {
+        "mp_physics": 8,
+        "cu_physics": 0,
+        "bl_pbl_physics": 0,
+        "sf_sfclay_physics": 7,
+        "sf_surface_physics": 4,
+        "ra_lw_physics": 4,
+        "ra_sw_physics": 4
+      },
+      "features": [
+        "Pleim-Xiu-surface-layer-with-native-NoahMP"
+      ],
+      "reference": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c43/cpu_run.json",
+        "sha256": "13e701c64969dc87f4e40196d26d6a1a66bcef1973e7f1161756774aa59e1f3b"
+      },
+      "matched_inputs": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c43/inputs.json",
+        "sha256": "19b1495a6c95de59eff7cac8a227eec10230051a0eb327398f91cfd6ec614724"
+      },
+      "lower_receipt": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/t-lowersweep/sweep/c43/receipt.json",
+        "sha256": "c17a54c2ce2caf93d7b13d56db790cc3562d52c47f776662ff600eac4d759fa8"
+      },
+      "lower_status": "OK",
+      "lower_source": "2a7fcfef1b10e49762e422c295c54279a4bc9e27",
+      "compile_status": "NOT_ATTEMPTED",
+      "selected_final_model_reuse": "GPU13_PREFLIGHT_REUSE.json"
+    },
+    "c45": {
+      "options": {
+        "mp_physics": 8,
+        "cu_physics": 0,
+        "bl_pbl_physics": 5,
+        "sf_sfclay_physics": 5,
+        "sf_surface_physics": 4,
+        "ra_lw_physics": 5,
+        "ra_sw_physics": 5
+      },
+      "features": [
+        "Goddard5-compiler-zero-reference"
+      ],
+      "reference": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c45/cpu_run.json",
+        "sha256": "ae1097320c66242f55c62bb89f74e4a60a97e6948758ab52d7771bcbb5291871"
+      },
+      "matched_inputs": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c45/inputs.json",
+        "sha256": "f431c218f28f65cad01811e1ece07c64db37e99c017092a280b4c8a8b70f55d1"
+      },
+      "lower_receipt": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/t-lowersweep/sweep/c45/receipt.json",
+        "sha256": "0a251d1f1be87487b3f6cb624ff09f44fc5cce0f5e0767a9f0f9eaa3fa258710"
+      },
+      "lower_status": "OK",
+      "lower_source": "2a7fcfef1b10e49762e422c295c54279a4bc9e27",
+      "compile_status": "NOT_ATTEMPTED",
+      "selected_final_model_reuse": "GPU13_PREFLIGHT_REUSE.json"
+    },
+    "c46": {
+      "options": {
+        "mp_physics": 8,
+        "cu_physics": 1,
+        "bl_pbl_physics": 5,
+        "sf_sfclay_physics": 5,
+        "sf_surface_physics": 4,
+        "ra_lw_physics": 4,
+        "ra_sw_physics": 4
+      },
+      "features": [
+        "tslist",
+        "nwp_diagnostics",
+        "prec_acc_dt=60",
+        "regional_streams",
+        "WRF-tracer_opt=2",
+        "Fitch-two-declared-turbines",
+        "SKEBS/SPPT/SPP-PBL/RAND",
+        "resolved-Gaussian15km",
+        "SPP-master+conv+LSM-original-no-op-consumers",
+        "SKEBS-alias-stoch_force_opt1"
+      ],
+      "reference": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c46/cpu_run.json",
+        "sha256": "8ed7b6e015a6bd6756e2464b078897e242836ef896da080335cbf81822723476"
+      },
+      "matched_inputs": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c46/inputs.json",
+        "sha256": "069b7001b8b2297fce5efe7773da9c8fd08f258582232bb7b74ec77c6ec98b3b"
+      },
+      "lower_receipt": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/t-lowersweep/sweep/c46/receipt.json",
+        "sha256": "b75e191483fb32fe7910374f36e8bf8fc5dc3a458e36289e777e2285b952c48a"
+      },
+      "lower_status": "OK",
+      "lower_source": "2a7fcfef1b10e49762e422c295c54279a4bc9e27",
+      "compile_status": "NOT_ATTEMPTED",
+      "selected_final_model_reuse": "GPU13_PREFLIGHT_REUSE.json"
+    },
+    "c47": {
+      "options": {
+        "mp_physics": 8,
+        "cu_physics": 0,
+        "bl_pbl_physics": 5,
+        "sf_sfclay_physics": 5,
+        "sf_surface_physics": 4,
+        "ra_lw_physics": 4,
+        "ra_sw_physics": 4
+      },
+      "features": [
+        "MMF5-authentic-active-groundwater",
+        "opt_inf1"
+      ],
+      "reference": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c47/cpu_run.json",
+        "sha256": "0eed2b2f9f314584568356d1674e0d39ccf6bdd2c2924927fcd349cd0bb62248"
+      },
+      "matched_inputs": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c47/inputs.json",
+        "sha256": "c329aea74a722ebc83c24b339a6a6c3cd7083fcf49f9bc5533c38c29101e26b9"
+      },
+      "lower_receipt": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/t-lowersweep/sweep/c47/receipt.json",
+        "sha256": "bb56e2d1bd46f5e25cd03490755895b351c12e09e0b9f9016a72455b36905376"
+      },
+      "lower_status": "OK",
+      "lower_source": "2a7fcfef1b10e49762e422c295c54279a4bc9e27",
+      "compile_status": "NOT_ATTEMPTED",
+      "selected_final_model_reuse": "GPU13_PREFLIGHT_REUSE.json"
+    },
+    "c49": {
+      "options": {
+        "mp_physics": 8,
+        "cu_physics": 0,
+        "bl_pbl_physics": 5,
+        "sf_sfclay_physics": 5,
+        "sf_surface_physics": 4,
+        "ra_lw_physics": 4,
+        "ra_sw_physics": 4
+      },
+      "features": [
+        "DFI1-original-phase-windows;clock-inventory-required"
+      ],
+      "reference": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c49/cpu_run.json",
+        "sha256": "950f1e926772ea51ce19c2a84b823f43207a63ed0de393968dee99b6e278adac"
+      },
+      "matched_inputs": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c49/inputs.json",
+        "sha256": "5fa24541807c8cd4f517334d92cccaff7e53fa7be8e2418c6ef6a2b9cc2a3604"
+      },
+      "lower_receipt": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/t-lowersweep/sweep/c49/receipt.json",
+        "sha256": "698708d9becf08f02586d558fa00b736d602bc6a199c5fb816eaa37ef6886900"
+      },
+      "lower_status": "OK",
+      "lower_source": "2a7fcfef1b10e49762e422c295c54279a4bc9e27",
+      "compile_status": "NOT_ATTEMPTED",
+      "selected_final_model_reuse": "GPU13_PREFLIGHT_REUSE.json"
+    },
+    "c50": {
+      "options": {
+        "mp_physics": 8,
+        "cu_physics": 0,
+        "bl_pbl_physics": 5,
+        "sf_sfclay_physics": 5,
+        "sf_surface_physics": 4,
+        "ra_lw_physics": 4,
+        "ra_sw_physics": 4
+      },
+      "features": [
+        "DFI2-original-phase-windows;clock-inventory-required"
+      ],
+      "reference": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c50/cpu_run.json",
+        "sha256": "b174511bdffc29cff201b148a60958a94747b22582bf29c40b5c64a0a24bcb86"
+      },
+      "matched_inputs": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c50/inputs.json",
+        "sha256": "614eb1a77c85a0609effcf3a43ac0b9906d970f75c696d469c959ed4b4ac1c8e"
+      },
+      "lower_receipt": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/t-lowersweep/sweep/c50/receipt.json",
+        "sha256": "77d0c4729989d666399a36c83f900b1a90fc1e541d25c40a565af9d331da2b2c"
+      },
+      "lower_status": "OK",
+      "lower_source": "2a7fcfef1b10e49762e422c295c54279a4bc9e27",
+      "compile_status": "NOT_ATTEMPTED",
+      "selected_final_model_reuse": "GPU13_PREFLIGHT_REUSE.json"
+    },
+    "c51": {
+      "options": {
+        "mp_physics": 8,
+        "cu_physics": 0,
+        "bl_pbl_physics": 5,
+        "sf_sfclay_physics": 5,
+        "sf_surface_physics": 4,
+        "ra_lw_physics": 4,
+        "ra_sw_physics": 4
+      },
+      "features": [
+        "DFI3-original-phase-windows;clock-inventory-required"
+      ],
+      "reference": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c51/cpu_run.json",
+        "sha256": "16172a954c7948c6e8b5fc2bf58cab2cd1d808f835cb4dff8de20c05dbc297bd"
+      },
+      "matched_inputs": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c51/inputs.json",
+        "sha256": "4f230b2541e66597718e1287c53afeb4fe2d4d636695fcf6e0444914ce59b227"
+      },
+      "lower_receipt": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/t-lowersweep/sweep/c51/receipt.json",
+        "sha256": "cad4342ff329c47339fe2cb707bc3f110b643165ae8d21416c29c9486da8c529"
+      },
+      "lower_status": "OK",
+      "lower_source": "2a7fcfef1b10e49762e422c295c54279a4bc9e27",
+      "compile_status": "NOT_ATTEMPTED",
+      "selected_final_model_reuse": "GPU13_PREFLIGHT_REUSE.json"
+    },
+    "c55": {
+      "options": {
+        "mp_physics": 8,
+        "cu_physics": 0,
+        "bl_pbl_physics": 5,
+        "sf_sfclay_physics": 5,
+        "sf_surface_physics": 4,
+        "ra_lw_physics": 4,
+        "ra_sw_physics": 4
+      },
+      "features": [
+        "observation-nudging1",
+        "monotonic-advection2",
+        "diff0/km1-not-constantK"
+      ],
+      "reference": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c55/cpu_run.json",
+        "sha256": "7a335ef6c28cd4575d5fa0b061f93417f3be546fd85db39fc2b1278fd83f1bac"
+      },
+      "matched_inputs": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c55/inputs.json",
+        "sha256": "1f38a5ccd4d38f43c059a11c7b5a284c06d04cb526fc747fb53e056baaf91573"
+      },
+      "lower_receipt": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/t-lowersweep/sweep/c55/receipt.json",
+        "sha256": "f1350b31a76a4d7d9f8b70ba654ccd54ee27e24f84b3962c3ccb636959a00919"
+      },
+      "lower_status": "OK",
+      "lower_source": "2a7fcfef1b10e49762e422c295c54279a4bc9e27",
+      "compile_status": "NOT_ATTEMPTED",
+      "selected_final_model_reuse": "GPU13_PREFLIGHT_REUSE.json"
+    },
+    "c56": {
+      "options": {
+        "mp_physics": 8,
+        "cu_physics": 0,
+        "bl_pbl_physics": 1,
+        "sf_sfclay_physics": 1,
+        "sf_surface_physics": 4,
+        "ra_lw_physics": 4,
+        "ra_sw_physics": 4
+      },
+      "features": [
+        "BEP/BEM2-authentic-original-real",
+        "actual-urban-geography"
+      ],
+      "reference": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c56/cpu_run.json",
+        "sha256": "03e3c8fdd79096ec99fb61e861deb3cbec34fa9ddf010aed0914bc4457428c00"
+      },
+      "matched_inputs": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c56/inputs.json",
+        "sha256": "55629b981529308cd846ec3c8f02a06e54db45518a170872d87f2e6e45a8d835"
+      },
+      "lower_receipt": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/t-lowersweep/sweep/c56/receipt.json",
+        "sha256": "5ff164aab158153ff4f26efc13f3a0f77cf428603b430dae80766a980183ec71"
+      },
+      "lower_status": "OK",
+      "lower_source": "12268e5f27a08e99c265690bf77a0bb6ebcd2550",
+      "compile_status": "NOT_ATTEMPTED",
+      "selected_final_model_reuse": "GPU13_PREFLIGHT_REUSE.json"
+    },
+    "c57": {
+      "options": {
+        "mp_physics": 8,
+        "cu_physics": 0,
+        "bl_pbl_physics": 8,
+        "sf_sfclay_physics": 1,
+        "sf_surface_physics": 4,
+        "ra_lw_physics": 4,
+        "ra_sw_physics": 4
+      },
+      "features": [
+        "BEP/BEM3-authentic-original-real",
+        "actual-urban-geography"
+      ],
+      "reference": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c57/cpu_run.json",
+        "sha256": "01bb719db8776277f2b0c9e30863696bff4bcbb26ec45d1186c467aac2ac0620"
+      },
+      "matched_inputs": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c57/inputs.json",
+        "sha256": "14bf9b2bf60e05e61c69c94f96d356051f73dd64be796341f615a3c726239618"
+      },
+      "lower_receipt": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/t-lowersweep/sweep/c57/receipt.json",
+        "sha256": "e8e62b282caaf3571f297993b5f11e162577b5a984ac4b2d0c4329305f654f3f"
+      },
+      "lower_status": "OK",
+      "lower_source": "12268e5f27a08e99c265690bf77a0bb6ebcd2550",
+      "compile_status": "NOT_ATTEMPTED",
+      "selected_final_model_reuse": "GPU13_PREFLIGHT_REUSE.json"
+    },
+    "c60": {
+      "options": {
+        "mp_physics": 8,
+        "cu_physics": 0,
+        "bl_pbl_physics": 5,
+        "sf_sfclay_physics": 5,
+        "sf_surface_physics": 4,
+        "ra_lw_physics": 4,
+        "ra_sw_physics": 4
+      },
+      "features": [
+        "sst_update1",
+        "slope1+topo1",
+        "GWDO1",
+        "authentic-wrflowinp",
+        "Noah-SSTskin1-on-active-Atlantic-water"
+      ],
+      "reference": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c60/cpu_run.json",
+        "sha256": "cbccba6cdc09042753d5e85b4e48df514ec690a9a667003e46e9fd011642236d"
+      },
+      "matched_inputs": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c60/inputs.json",
+        "sha256": "08c6000404ed1f7891d89a47c6ea949b041c6286230e214ba95f3476ca8276d8"
+      },
+      "lower_receipt": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/t-lowersweep/sweep/c60/receipt.json",
+        "sha256": "582ee0708b2009c633dca2b1442f29d8888b09a7848146baa15fef7f544e4012"
+      },
+      "lower_status": "OK",
+      "lower_source": "2a7fcfef1b10e49762e422c295c54279a4bc9e27",
+      "compile_status": "NOT_ATTEMPTED",
+      "selected_final_model_reuse": "GPU13_PREFLIGHT_REUSE.json"
+    },
+    "c61": {
+      "options": {
+        "mp_physics": 97,
+        "cu_physics": 0,
+        "bl_pbl_physics": 0,
+        "sf_sfclay_physics": 91,
+        "sf_surface_physics": 4,
+        "ra_lw_physics": 4,
+        "ra_sw_physics": 4
+      },
+      "features": [
+        "MP97-GCE3ice",
+        "sfclay91",
+        "WRF-valid-PBL0-pair",
+        "Noah-dveg6+Xinanjiang7"
+      ],
+      "reference": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c61/cpu_run.json",
+        "sha256": "67b91191fc171d426775cd7f61cad4bfb04b14bd186261eabf146b362dff1f04"
+      },
+      "matched_inputs": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c61/inputs.json",
+        "sha256": "15fd06b512444f06a1b2fd09d3b0c9c3da71aa76243aa495de0e319daf441aac"
+      },
+      "lower_receipt": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/t-lowersweep/sweep/c61/receipt.json",
+        "sha256": "827742e2c10f9892d90a490f06be4b2116066c28f12527363ec64bd528d748c0"
+      },
+      "lower_status": "OK",
+      "lower_source": "12268e5f27a08e99c265690bf77a0bb6ebcd2550",
+      "compile_status": "NOT_ATTEMPTED",
+      "selected_final_model_reuse": "GPU13_PREFLIGHT_REUSE.json"
+    },
+    "c62": {
+      "options": {
+        "mp_physics": 5,
+        "cu_physics": 0,
+        "bl_pbl_physics": 5,
+        "sf_sfclay_physics": 5,
+        "sf_surface_physics": 4,
+        "ra_lw_physics": 4,
+        "ra_sw_physics": 4
+      },
+      "features": [
+        "primary-MP5",
+        "Noah-MP:{\"dveg\":1,\"opt_run\":1,\"opt_crs\":2,\"opt_btr\":2,\"opt_sfc\":2,\"opt_frz\":2,\"opt_inf\":2,\"opt_rad\":1,\"opt_alb\":1,\"opt_snf\":2,\"opt_tbot\":1,\"opt_stc\":2,\"opt_rsf\":2,\"opt_gla\":2}"
+      ],
+      "reference": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c62/cpu_run.json",
+        "sha256": "2c88099deef1f7d11b689d4494c0ff14d984ac423483064a1ea06b37996e13e6"
+      },
+      "matched_inputs": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c62/inputs.json",
+        "sha256": "77a247cd4523af47effdbae5f2c6308ae78ece279680afe07ea7880408437ff0"
+      },
+      "lower_receipt": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/t-lowersweep/sweep/c62/receipt.json",
+        "sha256": "cd61cb9944081df75ebc40548db7d5b32915fb65f43eabd4e4aeb8eab98ba01c"
+      },
+      "lower_status": "OK",
+      "lower_source": "12268e5f27a08e99c265690bf77a0bb6ebcd2550",
+      "compile_status": "NOT_ATTEMPTED",
+      "selected_final_model_reuse": "GPU13_PREFLIGHT_REUSE.json"
+    },
+    "c64": {
+      "options": {
+        "mp_physics": 7,
+        "cu_physics": 0,
+        "bl_pbl_physics": 5,
+        "sf_sfclay_physics": 5,
+        "sf_surface_physics": 4,
+        "ra_lw_physics": 4,
+        "ra_sw_physics": 4
+      },
+      "features": [
+        "primary-MP7",
+        "Noah-MP:{\"dveg\":3,\"opt_run\":4,\"opt_snf\":4,\"opt_rsf\":4}"
+      ],
+      "reference": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c64/cpu_run.json",
+        "sha256": "aa63abc17b3e49f523acf284fd61b25df898e602041487e0ece956e76c86784e"
+      },
+      "matched_inputs": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c64/inputs.json",
+        "sha256": "3e141c37b18f6def130b113ed8b96c3cd794abfcd829a0f3facab5312165ce39"
+      },
+      "lower_receipt": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/t-lowersweep/sweep/c64/receipt.json",
+        "sha256": "799b3e4e798a1cfb1757c5f793d97955c44695d3e17d6a0888091adf88dcc9bc"
+      },
+      "lower_status": "OK",
+      "lower_source": "2a7fcfef1b10e49762e422c295c54279a4bc9e27",
+      "compile_status": "NOT_ATTEMPTED",
+      "selected_final_model_reuse": "GPU13_PREFLIGHT_REUSE.json"
+    },
+    "c65": {
+      "options": {
+        "mp_physics": 38,
+        "cu_physics": 0,
+        "bl_pbl_physics": 5,
+        "sf_sfclay_physics": 5,
+        "sf_surface_physics": 4,
+        "ra_lw_physics": 4,
+        "ra_sw_physics": 4
+      },
+      "features": [
+        "primary-MP38",
+        "Noah-MP:{\"dveg\":5,\"opt_run\":6}"
+      ],
+      "reference": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c65/cpu_run.json",
+        "sha256": "a95c79b698648ea9b647372cd4045c6e6794e8a4b308f9b06c3bc4a9598869b0"
+      },
+      "matched_inputs": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c65/inputs.json",
+        "sha256": "fac704db044b81fee8d0a3225b5069b47e11c2e3adb0f64e200bf09e861a6eb7"
+      },
+      "lower_receipt": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/t-lowersweep/resume_20261014T2051/c65/receipt.json",
+        "sha256": "820eee31479b24692f3799f4be1b27c40e9fab1f706bfa6519dd39336d9d31ca"
+      },
+      "lower_status": "OK",
+      "lower_source": "f4fd9de7786e1276aef45a52c00526f25f19b0c3",
+      "compile_status": "NOT_ATTEMPTED",
+      "selected_final_model_reuse": "GPU13_PREFLIGHT_REUSE.json"
+    },
+    "c68": {
+      "options": {
+        "mp_physics": 8,
+        "cu_physics": 0,
+        "bl_pbl_physics": 5,
+        "sf_sfclay_physics": 5,
+        "sf_surface_physics": 4,
+        "ra_lw_physics": 4,
+        "ra_sw_physics": 4
+      },
+      "features": [
+        "Noah-carbon-DVEG7",
+        "dynamicVIC8-infiltration1-compiler-zero"
+      ],
+      "reference": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c68/cpu_run.json",
+        "sha256": "d76c2db21f56a8d8fc1ba92738d4e3839a8504e606eb0ed2610b196815bb040e"
+      },
+      "matched_inputs": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c68/inputs.json",
+        "sha256": "0e0db2c4b72be83350a50412e4060c4a63a2ee4cf01ea9f4d4733f0a41919eb8"
+      },
+      "lower_receipt": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/t-lowersweep/resume_20261014T2051/c68/receipt.json",
+        "sha256": "efcc4030dd11a32a6b66c87901b8bf6aec23ce162f40b68cd9a21ed60e5fd172"
+      },
+      "lower_status": "OK",
+      "lower_source": "2a7fcfef1b10e49762e422c295c54279a4bc9e27",
+      "compile_status": "NOT_ATTEMPTED",
+      "selected_final_model_reuse": "GPU13_PREFLIGHT_REUSE.json"
+    },
+    "c69": {
+      "options": {
+        "mp_physics": 8,
+        "cu_physics": 0,
+        "bl_pbl_physics": 5,
+        "sf_sfclay_physics": 5,
+        "sf_surface_physics": 4,
+        "ra_lw_physics": 4,
+        "ra_sw_physics": 4
+      },
+      "features": [
+        "Noah-carbon-DVEG8",
+        "dynamicVIC8-infiltration2-compiler-zero"
+      ],
+      "reference": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c69/cpu_run.json",
+        "sha256": "d0bbb3a9f851d4afd5f02ecd4ce7c5141cbb7c9ec3e0d795a85de86c5afbb4c7"
+      },
+      "matched_inputs": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c69/inputs.json",
+        "sha256": "4348398fd5b239bd98a5b1fcb434db937b7047919acdea298718f2388bcdc4b2"
+      },
+      "lower_receipt": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/t-lowersweep/resume_20261014T2051/c69/receipt.json",
+        "sha256": "ce08984f77d068ee413dd67986a79088d0b19afb29d9e4a306bf1fc8598796b0"
+      },
+      "lower_status": "OK",
+      "lower_source": "2a7fcfef1b10e49762e422c295c54279a4bc9e27",
+      "compile_status": "NOT_ATTEMPTED",
+      "selected_final_model_reuse": "GPU13_PREFLIGHT_REUSE.json"
+    },
+    "c70": {
+      "options": {
+        "mp_physics": 8,
+        "cu_physics": 0,
+        "bl_pbl_physics": 5,
+        "sf_sfclay_physics": 5,
+        "sf_surface_physics": 4,
+        "ra_lw_physics": 4,
+        "ra_sw_physics": 4
+      },
+      "features": [
+        "Noah-carbon-DVEG9",
+        "dynamicVIC8-infiltration3-compiler-zero"
+      ],
+      "reference": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c70/cpu_run.json",
+        "sha256": "acf0d3ec73d9c7931748396db9e506543c8e828237f42afbaff9d57ed6bc3b25"
+      },
+      "matched_inputs": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c70/inputs.json",
+        "sha256": "0ce0151ece25348bca9e8e3fb9327a4a705996732e6a87e88b2606c2bb9c3d24"
+      },
+      "lower_receipt": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/t-lowersweep/resume_20261014T2105/c70/receipt.json",
+        "sha256": "b4497f02328f02674004099edc72d560906233077847fb0a97577f1b7eb67fcd"
+      },
+      "lower_status": "OK",
+      "lower_source": "2a7fcfef1b10e49762e422c295c54279a4bc9e27",
+      "compile_status": "NOT_ATTEMPTED",
+      "selected_final_model_reuse": "GPU13_PREFLIGHT_REUSE.json"
+    },
+    "c77": {
+      "options": {
+        "mp_physics": 8,
+        "cu_physics": 0,
+        "bl_pbl_physics": 5,
+        "sf_sfclay_physics": 5,
+        "sf_surface_physics": 4,
+        "ra_lw_physics": 4,
+        "ra_sw_physics": 4
+      },
+      "features": [
+        "gridFDDA1+surfaceFDDA1",
+        "solar-swint1",
+        "original-CPU-replay-analyses",
+        "corrected-original-WRF-TITLE+FieldType104-ingestion"
+      ],
+      "reference": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c77/cpu_run.json",
+        "sha256": "d2e43e66dadfa56dcbebf205dda6187b5db0ba582d57be1d8a6ae352a32e1912"
+      },
+      "matched_inputs": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c77/inputs.json",
+        "sha256": "305d078039b887c11d4c6da7ce740248df597ec7fb856f02bdb7a254cad08550"
+      },
+      "lower_receipt": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/t-lowersweep/resume_20261014T2105/c77/receipt.json",
+        "sha256": "595086bef95004358dd6add7e7d1ca3fa9a0cce4824030c49bf0b81aebedd4bd"
+      },
+      "lower_status": "OK",
+      "lower_source": "2a7fcfef1b10e49762e422c295c54279a4bc9e27",
+      "compile_status": "NOT_ATTEMPTED",
+      "selected_final_model_reuse": "GPU13_PREFLIGHT_REUSE.json"
+    },
+    "c78": {
+      "options": {
+        "mp_physics": 8,
+        "cu_physics": 0,
+        "bl_pbl_physics": 5,
+        "sf_sfclay_physics": 5,
+        "sf_surface_physics": 4,
+        "ra_lw_physics": 4,
+        "ra_sw_physics": 4
+      },
+      "features": [
+        "gridFDDA1+surfaceFDDA2",
+        "solar-swint1",
+        "original-CPU-replay-analyses",
+        "corrected-original-WRF-TITLE+FieldType104-ingestion"
+      ],
+      "reference": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c78/cpu_run.json",
+        "sha256": "0e0cf107fd9513293184cd84a73d3e48b179d9df278089a75e95fff58bdaf01c"
+      },
+      "matched_inputs": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c78/inputs.json",
+        "sha256": "24b3266ed6c205c63517c8cd746e3d27bd16cb75b072db6e730cd76bd97cbd05"
+      },
+      "lower_receipt": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/t-lowersweep/resume_20261014T2105/c78/receipt.json",
+        "sha256": "9d0ee25ff294a8eca53a3a20ce7e9ba46c2bb91f8d2c5bb09c4ccdc3e83c2530"
+      },
+      "lower_status": "OK",
+      "lower_source": "2a7fcfef1b10e49762e422c295c54279a4bc9e27",
+      "compile_status": "NOT_ATTEMPTED",
+      "selected_final_model_reuse": "GPU13_PREFLIGHT_REUSE.json"
+    },
+    "c79": {
+      "options": {
+        "mp_physics": 8,
+        "cu_physics": 0,
+        "bl_pbl_physics": 5,
+        "sf_sfclay_physics": 5,
+        "sf_surface_physics": 4,
+        "ra_lw_physics": 4,
+        "ra_sw_physics": 4
+      },
+      "features": [
+        "spectralFDDA2",
+        "diffusion-off",
+        "damping-off",
+        "standard-scalar-advection0",
+        "corrected-original-WRF-TITLE+FieldType104-ingestion"
+      ],
+      "reference": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c79/cpu_run.json",
+        "sha256": "8839158e7452769da6c1e197cb0cc961a66c0b7b1b1821bf07f6f92077a3a9ff"
+      },
+      "matched_inputs": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c79/inputs.json",
+        "sha256": "1621da1fc814913553bac51e636553e55e655b8f7b9851968d2bf145a77ac1d8"
+      },
+      "lower_receipt": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/t-lowersweep/resume_20261014T2105/c79/receipt.json",
+        "sha256": "3f18fbe1412e2730543b46e35401566c530058f04bed7790b71fc8d167526b01"
+      },
+      "lower_status": "OK",
+      "lower_source": "2a7fcfef1b10e49762e422c295c54279a4bc9e27",
+      "compile_status": "NOT_ATTEMPTED",
+      "selected_final_model_reuse": "GPU13_PREFLIGHT_REUSE.json"
+    },
+    "c71": {
+      "options": {
+        "mp_physics": 8,
+        "cu_physics": 1,
+        "bl_pbl_physics": 5,
+        "sf_sfclay_physics": 5,
+        "sf_surface_physics": 4,
+        "ra_lw_physics": 4,
+        "ra_sw_physics": 4
+      },
+      "features": [
+        "Noah-soil2",
+        "explicit-irrigation-trigger1-method1"
+      ],
+      "reference": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c71/cpu_run.json",
+        "sha256": "415338e2abb3a507ddaad6a2868dd03536225c1fa14daa3d4d7cb3b5fa3e3bf1"
+      },
+      "matched_inputs": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c71/inputs.json",
+        "sha256": "d5c4f0cfd28c18f100ce8b2153850cc5c014794d1d0312a8b38f10372eda99d8"
+      },
+      "lower_receipt": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/t-lowersweep/resume_20261014T2105/c71/receipt.json",
+        "sha256": "d2d0edcc5a04a730e08ff797efa02de7bb6e620a2cafa9e12dc956341b3113dd"
+      },
+      "lower_status": "OK",
+      "lower_source": "2a7fcfef1b10e49762e422c295c54279a4bc9e27",
+      "compile_status": "NOT_ATTEMPTED",
+      "selected_final_model_reuse": "GPU13_PREFLIGHT_REUSE.json"
+    },
+    "c72": {
+      "options": {
+        "mp_physics": 8,
+        "cu_physics": 1,
+        "bl_pbl_physics": 5,
+        "sf_sfclay_physics": 5,
+        "sf_surface_physics": 4,
+        "ra_lw_physics": 4,
+        "ra_sw_physics": 4
+      },
+      "features": [
+        "Noah-soil3",
+        "explicit-irrigation-trigger2-method2"
+      ],
+      "reference": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c72/cpu_run.json",
+        "sha256": "c546f397e87d70018b0995f6883b3998e61692eb55b1af8023875716cad7406f"
+      },
+      "matched_inputs": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c72/inputs.json",
+        "sha256": "f6bbd4a4206a132d10cbaa6291b9e4c9abef2d32a18af3888f6e06ab74c8e8f1"
+      },
+      "lower_receipt": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/t-lowersweep/resume_20261014T2105/c72/receipt.json",
+        "sha256": "d01215004374dd0162aada7ae6579d5718f1a7d0c79651c835b1869a2bfaa8fc"
+      },
+      "lower_status": "OK",
+      "lower_source": "2a7fcfef1b10e49762e422c295c54279a4bc9e27",
+      "compile_status": "NOT_ATTEMPTED",
+      "selected_final_model_reuse": "GPU13_PREFLIGHT_REUSE.json"
+    },
+    "c73": {
+      "options": {
+        "mp_physics": 8,
+        "cu_physics": 1,
+        "bl_pbl_physics": 5,
+        "sf_sfclay_physics": 5,
+        "sf_surface_physics": 4,
+        "ra_lw_physics": 4,
+        "ra_sw_physics": 4
+      },
+      "features": [
+        "Noah-soil3",
+        "explicit-irrigation-trigger3-method3",
+        "icefree-snow5"
+      ],
+      "reference": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c73/cpu_run.json",
+        "sha256": "0167d15f8b6a1ed8fcf94f62f63772e88b65fcaf7c8b8ba60f1d1c947e5b6831"
+      },
+      "matched_inputs": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c73/inputs.json",
+        "sha256": "51860deb672ed2c4f66aae5884eefc19c6e8bd51aed958a19bf31de5d12c5304"
+      },
+      "lower_receipt": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/t-lowersweep/resume_20261014T2105/c73/receipt.json",
+        "sha256": "8ff95e348de29049f92e5477b590a655f1c6434541012b9f06137b3d1faddb3c"
+      },
+      "lower_status": "OK",
+      "lower_source": "2a7fcfef1b10e49762e422c295c54279a4bc9e27",
+      "compile_status": "NOT_ATTEMPTED",
+      "selected_final_model_reuse": "GPU13_PREFLIGHT_REUSE.json"
+    },
+    "c83": {
+      "options": {
+        "mp_physics": 8,
+        "cu_physics": 0,
+        "bl_pbl_physics": 5,
+        "sf_sfclay_physics": 5,
+        "sf_surface_physics": 4,
+        "ra_lw_physics": 4,
+        "ra_sw_physics": 4
+      },
+      "features": [
+        "Lake1-eight-genuine-NCAR-lake-cells",
+        "explicit-WRF-default-depth50m"
+      ],
+      "reference": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c83/cpu_run.json",
+        "sha256": "65e1532c83ba691d772a48500da9ebc5e24a82742d75fccb49ce62af4965d058"
+      },
+      "matched_inputs": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c83/inputs.json",
+        "sha256": "3c0e458bf04a61e2c51fc4347bf61e272033f0d4fe7dbf06a1a7671cb1e6a433"
+      },
+      "lower_receipt": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/t-lowersweep/resume_20261014T2105/c83/receipt.json",
+        "sha256": "da0e35761dd82ea3062c0219aa8fce7b0e3cb7d57f32665201d388f7ff2ff461"
+      },
+      "lower_status": "OK",
+      "lower_source": "2a7fcfef1b10e49762e422c295c54279a4bc9e27",
+      "compile_status": "NOT_ATTEMPTED",
+      "selected_final_model_reuse": "GPU13_PREFLIGHT_REUSE.json"
+    },
+    "c84": {
+      "options": {
+        "mp_physics": 8,
+        "cu_physics": 0,
+        "bl_pbl_physics": 5,
+        "sf_sfclay_physics": 5,
+        "sf_surface_physics": 4,
+        "ra_lw_physics": 4,
+        "ra_sw_physics": 4
+      },
+      "features": [
+        "OML1",
+        "hurricane-flux1"
+      ],
+      "reference": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c84/cpu_run.json",
+        "sha256": "fd4d2977057453f8c329e4340498957fa6e109f8eabdd4b9e7354a0bb2d90b63"
+      },
+      "matched_inputs": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c84/inputs.json",
+        "sha256": "2b2d97a43b0dd5e52a78c2329a156f528780ae397a5065b1b1adb456188f6847"
+      },
+      "lower_receipt": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/t-lowersweep/resume_20261014T2105/c84/receipt.json",
+        "sha256": "a31c0bd4175f0c5fd18d0291371339891e1e8250652d02270a0ae87915e946c2"
+      },
+      "lower_status": "OK",
+      "lower_source": "2a7fcfef1b10e49762e422c295c54279a4bc9e27",
+      "compile_status": "NOT_ATTEMPTED",
+      "selected_final_model_reuse": "GPU13_PREFLIGHT_REUSE.json"
+    },
+    "c85": {
+      "options": {
+        "mp_physics": 8,
+        "cu_physics": 0,
+        "bl_pbl_physics": 1,
+        "sf_sfclay_physics": 1,
+        "sf_surface_physics": 4,
+        "ra_lw_physics": 4,
+        "ra_sw_physics": 4
+      },
+      "features": [
+        "OML1",
+        "hurricane-flux2"
+      ],
+      "reference": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c85/cpu_run.json",
+        "sha256": "996296c2021e36bb65cfe7be21a098d6c37bc4320ef98cf2012795da20ad7078"
+      },
+      "matched_inputs": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c85/inputs.json",
+        "sha256": "21bd3cc1d04679d42ce4792dadc52fc9037a443d63c56b3a6c1cfae1001e6411"
+      },
+      "lower_receipt": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/t-lowersweep/resume_20261014T2105/c85/receipt.json",
+        "sha256": "3a355d4ef0492ceb1cd9b0660953daeeb5a732a0ce68cc528777f257fad993af"
+      },
+      "lower_status": "OK",
+      "lower_source": "12268e5f27a08e99c265690bf77a0bb6ebcd2550",
+      "compile_status": "NOT_ATTEMPTED",
+      "selected_final_model_reuse": "GPU13_PREFLIGHT_REUSE.json"
+    },
+    "c86": {
+      "options": {
+        "mp_physics": 8,
+        "cu_physics": 0,
+        "bl_pbl_physics": 5,
+        "sf_sfclay_physics": 5,
+        "sf_surface_physics": 4,
+        "ra_lw_physics": 4,
+        "ra_sw_physics": 4
+      },
+      "features": [
+        "Noah-options-repacked-from-owner-excluded-MP15",
+        "dveg2/run2/btr3/rad2/snf3/stc3/rsf3"
+      ],
+      "reference": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c86/cpu_run.json",
+        "sha256": "fcb2132f1ad9ed467c03a6b6e035ed8e7e20d918b6339b5cf94a454f64690901"
+      },
+      "matched_inputs": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c86/inputs.json",
+        "sha256": "9fcdeda1fa956a9e0b67e43df0f461c38f4483438ce4ad74868db682f2751898"
+      },
+      "lower_receipt": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/t-lowersweep/resume_20261014T2105/c86/receipt.json",
+        "sha256": "ee8c162d1fcc0ed63674343d90d3e1b8de28f1d687e5c73f67d65dddb4f19581"
+      },
+      "lower_status": "OK",
+      "lower_source": "12268e5f27a08e99c265690bf77a0bb6ebcd2550",
+      "compile_status": "NOT_ATTEMPTED",
+      "selected_final_model_reuse": "GPU13_PREFLIGHT_REUSE.json"
+    },
+    "c87": {
+      "options": {
+        "mp_physics": 55,
+        "cu_physics": 0,
+        "bl_pbl_physics": 5,
+        "sf_sfclay_physics": 5,
+        "sf_surface_physics": 4,
+        "ra_lw_physics": 4,
+        "ra_sw_physics": 4
+      },
+      "features": [
+        "primary-MP55-Jensen-admitted-batch6"
+      ],
+      "reference": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c87/cpu_run.json",
+        "sha256": "bfb92ba261257dea3e2ae3cd1c6a5615202748839befda0d1f61ea3d5ad7f7c5"
+      },
+      "matched_inputs": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c87/inputs.json",
+        "sha256": "70330ace4423a3ebbfc64c3922c06bacf1fa71b63d3ca225f0dfbfa4430043b5"
+      },
+      "lower_receipt": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/t-lowersweep/resume_20261014T2105/c87/receipt.json",
+        "sha256": "37c8466f8101a981c071fe41bcdd9dc3ec5c5afa4d9deae7330da6f7ef23ae62"
+      },
+      "lower_status": "OK",
+      "lower_source": "2a7fcfef1b10e49762e422c295c54279a4bc9e27",
+      "compile_status": "NOT_ATTEMPTED",
+      "selected_final_model_reuse": "GPU13_PREFLIGHT_REUSE.json"
+    }
+  },
+  "coverage_accounting": {
+    "active_original_reference_targets": 69,
+    "complete_original_references": 69,
+    "pending_new_references": [],
+    "execution_partition_counts": {
+      "completed_in_current_window": 10,
+      "numerical_failure_owner_triage": 2,
+      "active": 3,
+      "partial_needs_completion": 1,
+      "conditional_carries": 7,
+      "held": 14,
+      "remaining_cohorts": 32
+    },
+    "unassigned": 0,
+    "duplicate_assignments": 0,
+    "note": "Historical batch receipts are retained separately; execution_groups partitions every active case exactly once."
+  },
+  "budget_minutes": {
+    "ready_or_conditional_cohort_caps": 570,
+    "held_if_fixed_two_extra_cohorts": 60,
+    "prior_inferred_remaining_range": [
+      365,
+      626
+    ],
+    "range_note": "[I]9remainingordinarycohorts270 +6standalone180 +newMPpair30=480 capminutes; reference/producerreuse may reduce; heldfixes/foreignqueues additional. NoS1claim.",
+    "remaining_after_B03_inferred_range": [
+      400,
+      540
+    ],
+    "remaining_ready_caps_after_B03": 480,
+    "qh_mass_final_reruns_extra_caps": 60,
+    "remaining_vprep_inferred_range": [
+      420,
+      600
+    ],
+    "remaining_ready_nonhail_caps": 390,
+    "qh_final_caps": 60,
+    "conditional_Cu7_warm_and_c10_completion_caps": 60,
+    "conditional_compiler_or_rain_repairs_caps": 90,
+    "peer_queue_estimate_inferred": 110
+  },
+  "exclusions": "c63 MP15 stays owner-excluded even after groundwater lowering fix; c48 km3 excluded; no API-only LSM1/2/7 GPU runs; crop/tile/maps still geographically pending; no fabricated diagnostic values.",
+  "latest_sweep_refresh_utc": "2026-10-14T23:43:58.354923+00:00",
+  "resumed_sweep_receipts_used": 17,
+  "reference_policy": {
+    "authority": "MAILBOX 2026-10-14T22:51:14Z",
+    "all_MYNN_inventory": "MYNN_REFERENCES.json",
+    "zero_build": "9a67a93dd891115c095f64a95ce8f50e7ff0942ef1abf4185faf20bd7065742a",
+    "D6_bounds": "unchanged",
+    "original_outputs": "preserved",
+    "numerical_fail_MYNN": "zero-init original reference of record; disclose original-vs-zero spread",
+    "zero_reference_owner": "t-p3fix c21/c22/c23/c24",
+    "passing_repeat_checks": "v-prep c00 and c17; two original24h runs each; separate zero ref if non-repeatable"
+  },
+  "gpu_order": [
+    "H02actualsince06:37:39 c14/c64/c88",
+    "W02queuedsource17 c07warm/c17cu93cold/c55cold",
+    "C42standaloneSOURCE16warm+reviewedhostCLATrecheck",
+    "remainingordinaryB10/B11/B12/B13repack/standalones/P3final27/Jensenowner"
+  ],
+  "final_snapshot": "<DATA_ROOT>/wrf_gpu2/scratch/v-prep/gpu17-tree",
+  "final_snapshot_commit": "20ca3505084ff3203436711b9be53f8b2cc19894",
+  "native_lower_certificate": "GPU13_PREFLIGHT_REUSE.json",
+  "updated_utc": "2026-10-15T07:25:37.593513+00:00",
+  "model_main": "627a033284dc457a9949c2a32f2c111d0227e6df",
+  "execution_groups": {
+    "completed_in_current_window": [
+      "c03",
+      "c04",
+      "c09",
+      "c11",
+      "c16",
+      "c29",
+      "c30",
+      "c31",
+      "c33",
+      "c36",
+      "c37",
+      "c38",
+      "c39",
+      "c40",
+      "c43",
+      "c46",
+      "c62",
+      "c68",
+      "c69",
+      "c70",
+      "c71",
+      "c72",
+      "c79",
+      "c86",
+      "c90"
+    ],
+    "numerical_failure_owner_triage": [
+      "c05",
+      "c06",
+      "c89"
+    ],
+    "active": [
+      "c14",
+      "c64",
+      "c88"
+    ],
+    "partial_needs_completion": [
+      "c10"
+    ],
+    "conditional_carries": [
+      "c00",
+      "c01",
+      "c08",
+      "c15",
+      "c19",
+      "c20",
+      "c61"
+    ],
+    "held": [
+      "c07",
+      "c12",
+      "c14",
+      "c17",
+      "c21",
+      "c22",
+      "c23",
+      "c24",
+      "c64",
+      "c77",
+      "c78",
+      "c87",
+      "c88"
+    ],
+    "remaining_cohorts": [
+      "c49",
+      "c50",
+      "c51",
+      "c83",
+      "c47",
+      "c57",
+      "c27",
+      "c10",
+      "c55",
+      "c73",
+      "c56",
+      "c28",
+      "c65",
+      "c60",
+      "c84",
+      "c85"
+    ],
+    "god5": "c45 6hONLY helduntilreviewedcheapfixmain"
+  },
+  "qh_mass_rerun": {
+    "authority": "MAILBOX manager2026-10-15T02:20:17Z",
+    "cases": [
+      "c07",
+      "c12",
+      "c13",
+      "c14",
+      "c17",
+      "c18",
+      "c64",
+      "c88"
+    ],
+    "status": "Merged627; new-source science verified case by case, E41/F2 remain separate",
+    "cpu_references": "unchanged original CPU-WRF references remain authoritative",
+    "required": "full24h D6 +actualE41 on final changed source; original GPU attempts preserved",
+    "potential_producer_reuse": "c13/c17/c18 only after exact NEW v-run final-source input/work/program proof plus ownCPU D6; otherwise own arm",
+    "science_verified_on_final_source": [
+      "c07",
+      "c12",
+      "c13",
+      "c17",
+      "c18",
+      "c64"
+    ],
+    "science_scope": "Freshmergedqhmasssource/originalCPUfullD6PASS+actualE41audit completed; E41FAIL/F2OPEN remain failures/open, never wholequalificationPASS.",
+    "peer_new_reuse": {
+      "c13": "Round4actual627: ownoriginal25/372D6PASS+actualPINsSHAverified; E41FAIL/F2OPEN separate",
+      "c18": "New627mp26 exactwork+ownCPUfull25D6PASS/paidPINsSHA"
+    },
+    "peer_reuse_rejected_c17": "cu93 own vscu0 peer; no defaultwaiver, ownrerunW02"
+  },
+  "next_mixed_cohort": {
+    "cases": [
+      "c29",
+      "c45",
+      "c89"
+    ],
+    "source_by_case": {
+      "c29": "746860560975d9f9dec756caa0b98683ef89abae",
+      "c45": "dd619e480",
+      "c89": "dd619e480"
+    },
+    "purpose": "Cu7 normalcache same-source completion afterpartial24; twofresh nonhail programs",
+    "parallel": 3,
+    "cohort_cap_s": 1800,
+    "child_cap_s": 1770,
+    "order": "Afteractualapprovedt-p3fixc23 holder acquired02:51",
+    "ram_cap": "40G noSwap",
+    "status": "ACTUALACTIVE02:58:44Z; cap<=03:28:44Z",
+    "Cu7_AOT_real_load_wall_s": 2.087174,
+    "Cu7_paid_hlo": "5fbb9862530829e908db0d0bb6311a060a89974abd34edf015730f041cd4b838"
+  },
+  "god5_six_hour_scope": {
+    "utc": "2026-10-15T06:33:31.041506+00:00",
+    "case": "c45",
+    "authority": "Manager2026-10-15T05:09:12Z: full24if<=30minelse6h",
+    "actual_source_commit": "20ca3505084ff3203436711b9be53f8b2cc19894",
+    "model_main": "627a033284dc457a9949c2a32f2c111d0227e6df",
+    "accepted_gate_hours": 6,
+    "accepted_D6": "PASS",
+    "accepted_frames": 7,
+    "original_CPU_fields": 346,
+    "bounded_misses": 0,
+    "raw_nonfinite": 0,
+    "manifest_sha256": "9df4fab8514523286f07b127eb8bf57a7545459c4448fef721ac44c0ecc351dc",
+    "scoped_score": "<DATA_ROOT>/wrf_gpu2/scratch/v-prep/arms/c45/accepted-prefix6-source627/D6_d01.json",
+    "scoped_score_sha256": "4dc2a75480b1cc579edeb2836ad1a2c2b1dcd20a5b0925c646a23affe7fd3a74",
+    "original_full25frame_reference_preserved": true,
+    "attempted_hours": 24,
+    "attempt_rc": 124,
+    "attempt_cap_s": 1770,
+    "full24_status": "INCOMPLETE",
+    "actual_observed_frames": 24,
+    "observed_bounded_misses": 0,
+    "observed_raw_nonfinite": 0,
+    "actual_E41": "PASS",
+    "native_PINS": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c45/e41/PIN_MAP.json",
+    "cache_remaining": false,
+    "F2": "OPEN; no negativeevent justification inferred",
+    "performance": "Wholecappedsharedcohort attempt, notS1/isolatedwarmbenchmark. Old25xestimate ispre-tile-fixhistorical; no current25xclaim.",
+    "scope": "Complete6hfunctionalqualification only; preserve original24hINCOMPLETE andall24capturedframes unchanged. No secondGod24hGPUarm."
+  },
+  "budget_minutes_current": {
+    "as_of_utc": "2026-10-15T04:41:34.947652+00:00",
+    "remaining_calendar_to_1910": 868.4,
+    "vprep_GPU_minutes_inferred": [
+      420,
+      510
+    ],
+    "assumptions": "B08-B12<=150;6standalones<=180;qh2cohorts60;P3/finalGod5/conditionalrepairs30-120. Peer demand additional/unknown. Compiler26/87 and numerical05/06/89 require owner fixes, no unchanged repeats."
+  },
+  "memory_fallback": {
+    "actual_free_mib": 27647,
+    "required_four_mib": 27696,
+    "decision": "3processcohorts; retain>=1GiB eachheadroom; no loweredrule"
+  },
+  "active_K1_reference": "c90 originalreal TR17 inputs +sameprogram/initialcarry paidc46GPUreuse; fullD6PASS25, TR17REPORT_ONLYmax.000994",
+  "cpu_consumer": {
+    "pid": 1936655,
+    "session": 22582,
+    "tools": "<DATA_ROOT>/wrf_gpu2/scratch/v-prep/VP163-tools",
+    "source": "<DATA_ROOT>/wrf_gpu2/scratch/v-prep/gpu17-tree",
+    "scorer_sha256": "4c025af8382c9626e7f7e0de1e888a91bd0270376f5c837431d1000c70c2c21d"
+  },
+  "snapshot_dependencies": {
+    "GPU16": "Keep SAMEsource forC42warmcachecompletion; originalCPUconsumersdone, oldPID1538639terminated143.",
+    "GPU17": "H01queued/aftervrunpair; H02staged; newCPUconsumer1936655source17."
+  },
+  "warm_completions_after_priority": [
+    "c07sameSOURCE17/64MBvalidcache",
+    "c42sameSOURCE16/1.72GBvalidcache plusclassAhostCLATrecheck"
+  ]
+}

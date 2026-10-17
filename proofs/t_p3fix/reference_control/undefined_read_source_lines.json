@@ -1,0 +1,16 @@
+{
+  "source": "<USER_HOME>/src/wrf_pristine/WRF/phys/MYNN-EDMF/module_bl_mynnedmf.F90",
+  "private_build_source": "<USER_HOME>/wrf_gpu2_lanes/t-p3fix/TP26_zero/WRF/phys/MYNN-EDMF/module_bl_mynnedmf.F90",
+  "source_sha256": "6e4a7d5b35ce46f01591f2c1d58e545380d546e654b4a59ee1bcf99cfbce2d72",
+  "original_private_BYTE": true,
+  "lines": {
+    "473": " real(kind_phys) :: psig_bl,psig_shcu,rmol",
+    "719": "            &ust, rmol,                     &",
+    "879": "    rmol = -karman*gtr*fltv/max(ust**3,1.0e-6_kind_phys)",
+    "1842": "           IF ( rmol .GT. 0.0 ) THEN",
+    "1843": "              els  = karman*zwk/(one+cns*MIN( zwk*rmol, zmax ))",
+    "1845": "              els  = karman*zwk*( one - alp4* zwk*rmol)**0.2",
+    "1990": "         IF ( rmol .GT. 0.0 ) THEN"
+  },
+  "scope": "original localRMOL declaration/cold use/firstassignment/conditional; line map acceptedTP31b actualPC"
+}

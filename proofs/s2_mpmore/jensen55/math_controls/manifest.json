@@ -1,0 +1,98 @@
+{
+  "source_sha256": "4cefa1a2f28c2bc36061100bd4bef10371643ccf1e80da43be96f8ba31843326",
+  "caller_sha256": "4a162a9f30cdc82ea701f6d12531534026250339d6d1acfeb10dc2e0fc2d97d4",
+  "rows": [
+    {
+      "mode": "fp32",
+      "contraction": "noFMA",
+      "input_sha256": "0f727505d3f4c6e93236ab6a8441919dc92bb728ba4c55cd95b8e9d2107a9aa9",
+      "sha256": "35ad76e38188a0e83addb13ddd0f6953b23fe1f883fa1abede45429bb03d8f9a",
+      "FMA_opcode_rows": 0,
+      "module_object_sha256": "b3126cab63a151c8f6a838ba9997a7b4ef6551cd319fb251f2065266cfc3e607",
+      "flags": [
+        "-O2",
+        "-ffree-form",
+        "-ffree-line-length-none",
+        "-cpp",
+        "-finit-real=zero",
+        "-finit-integer=0",
+        "-finit-logical=false",
+        "-fconvert=big-endian",
+        "-frecord-marker=4",
+        "-mfma",
+        "-ffp-contract=off"
+      ],
+      "noFMA_baseline_BYTE": true
+    },
+    {
+      "mode": "fp32",
+      "contraction": "FMA",
+      "input_sha256": "0f727505d3f4c6e93236ab6a8441919dc92bb728ba4c55cd95b8e9d2107a9aa9",
+      "sha256": "345117ddd0a34e3a9e3eddac900b80ad4a90c54eccacdf46ccfa0b3e7f24fd5a",
+      "FMA_opcode_rows": 210,
+      "module_object_sha256": "4e89b5d9b96f603e8eeb91457bbd6cdb3ab7ea5ad8fb09a269513b7fe12697f3",
+      "flags": [
+        "-O2",
+        "-ffree-form",
+        "-ffree-line-length-none",
+        "-cpp",
+        "-finit-real=zero",
+        "-finit-integer=0",
+        "-finit-logical=false",
+        "-fconvert=big-endian",
+        "-frecord-marker=4",
+        "-mfma",
+        "-ffp-contract=fast"
+      ],
+      "noFMA_baseline_BYTE": false
+    },
+    {
+      "mode": "fp64",
+      "contraction": "noFMA",
+      "input_sha256": "c9c75bb30f06928618a5a94d2a73773ea75b19cd0130b1a15f9876b78dcef945",
+      "sha256": "d4815256da6aa9f841de538d43b76d60e90364a240d69aca1e6b164c87898f4e",
+      "FMA_opcode_rows": 0,
+      "module_object_sha256": "924934ff28fdb61ebf3cd40d795557b7c07fbfe84bfcf51f7de4f69e48516b33",
+      "flags": [
+        "-O2",
+        "-ffree-form",
+        "-ffree-line-length-none",
+        "-cpp",
+        "-finit-real=zero",
+        "-finit-integer=0",
+        "-finit-logical=false",
+        "-fconvert=big-endian",
+        "-frecord-marker=4",
+        "-mfma",
+        "-ffp-contract=off",
+        "-fdefault-real-8",
+        "-fdefault-double-8"
+      ],
+      "noFMA_baseline_BYTE": true
+    },
+    {
+      "mode": "fp64",
+      "contraction": "FMA",
+      "input_sha256": "c9c75bb30f06928618a5a94d2a73773ea75b19cd0130b1a15f9876b78dcef945",
+      "sha256": "6a0226ed4be2828ea4cf8d5b05705b4ae8b12dc50d8f51e749478861fb43c452",
+      "FMA_opcode_rows": 210,
+      "module_object_sha256": "0da56d8be98330ae0a398dd8716262fa7342d94b7072c991f28450673ba217cd",
+      "flags": [
+        "-O2",
+        "-ffree-form",
+        "-ffree-line-length-none",
+        "-cpp",
+        "-finit-real=zero",
+        "-finit-integer=0",
+        "-finit-logical=false",
+        "-fconvert=big-endian",
+        "-frecord-marker=4",
+        "-mfma",
+        "-ffp-contract=fast",
+        "-fdefault-real-8",
+        "-fdefault-double-8"
+      ],
+      "noFMA_baseline_BYTE": false
+    }
+  ]
+}

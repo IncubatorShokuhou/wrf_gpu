@@ -1,0 +1,292 @@
+{
+  "lane": "t-qhmass",
+  "status": "READY-FOR-CRITIC",
+  "qualification": "CPU source/operator/caller gates only",
+  "model_commit": "f03eabde46ba17170e42e7aff13c09a6a059cd49",
+  "src_tree": "706daa62ece1b60c27e04eb63479bee036edb9cc",
+  "base_main": "26fe7b936d91019955aaaee6410d71087ab887f5",
+  "original_counterexample": {
+    "before_Pa": 95000,
+    "after_Pa": 95090,
+    "deficit_closed_Pa": 90,
+    "absolute_tolerance_Pa": 1e-09,
+    "reference": "Original WRF all-moist hydrostatic equation, original D03 bounds"
+  },
+  "focused_tests": {
+    "passed": 8,
+    "reference": "Pristine calc_cq and phy_prep bodies; literal REAL4 pressure and explicit CUDA-RN semantics"
+  },
+  "shared_tests": {
+    "passed": 344,
+    "failures": 1,
+    "new_failures": 0,
+    "setup_errors": 0,
+    "inherited_failure": "test_v013_operational_smoke.py::test_pbl_operational_runs_and_mixes[11] qke-mutation assertion",
+    "parent_control": "Restore only five pre-fix bodies in same tree: identical genuine assertion; parent.xml"
+  },
+  "deletion_mutant": {
+    "genuine_numeric_assertions": 3,
+    "setup_errors": 0,
+    "sites": [
+      "history PSFC",
+      "physics pressure",
+      "actual acoustic pg_buoy_w caller"
+    ]
+  },
+  "coupled_callers": [
+    {
+      "requested_mp": 38,
+      "resolved_mp": 38,
+      "steps": 2,
+      "pristine_loading_observations": 15,
+      "nonfinite": 0,
+      "guards": 0,
+      "CPU_process_peak_RSS_KiB": 5327652,
+      "input_scope": "Unmodified real Swiss inputs",
+      "receipt": "receipts/thompson38_two_steps.json",
+      "active_hail_interior_carry_BYTE": null
+    },
+    {
+      "requested_mp": 17,
+      "resolved_mp": 18,
+      "steps": 2,
+      "pristine_loading_observations": 15,
+      "nonfinite": 0,
+      "guards": 0,
+      "CPU_process_peak_RSS_KiB": 4538748,
+      "input_scope": "Controlled original CPU-WRF hail/number input on the real Swiss grid",
+      "receipt": "receipts/nssl17_18_active_two_steps.json",
+      "active_hail_interior_carry_BYTE": true
+    },
+    {
+      "requested_mp": 22,
+      "resolved_mp": 22,
+      "steps": 2,
+      "pristine_loading_observations": 15,
+      "nonfinite": 0,
+      "guards": 0,
+      "CPU_process_peak_RSS_KiB": 4512988,
+      "input_scope": "Unmodified real Swiss inputs",
+      "receipt": "receipts/nssl22_two_steps.json",
+      "active_hail_interior_carry_BYTE": null
+    }
+  ],
+  "canonical_programs": {
+    "scope": "CPU canonical jaxpr, native facade at trace time; regression evidence only",
+    "Swiss": "f672a5739cb96e388b6b7a40ef80337bf81bdc14ef15268f3476e09d79fe055d",
+    "PROD_d01": "6fc715a2bd630934c4cf0f94427df19a527cbf429011c9ba5efe4d712744d27b",
+    "NSSL17": "5529c899e8b2aafe3e183ded04f0bc9a356969a1910e76386aedfa5359af4f8f",
+    "NSSL18": "5529c899e8b2aafe3e183ded04f0bc9a356969a1910e76386aedfa5359af4f8f",
+    "NSSL17_18_BYTE": true,
+    "NSSL22_parent_BYTE": true,
+    "Thompson38_parent_BYTE": true,
+    "final_composed_source": "8715966b4808f3b83e78d7013c2d158d9d7e4dde",
+    "final_composed_receipts": [
+      "receipts/final_swiss_programs.json",
+      "receipts/final_prod_program.json"
+    ]
+  },
+  "performance_memory": {
+    "default_canonical_programs_BYTE": true,
+    "native_hydrostatic_Pallas_calls": 1,
+    "native_hydrostatic_runtime_f64_arithmetic": 0,
+    "native_6_7_8_species_kernel_jaxpr_parent_BYTE": true,
+    "native_9_species_frontend": "PASS",
+    "native_hydrostatic_source_blob": "3a6f63861cab2dc4c86daff0c0ef624b007e4bc8",
+    "active_hail_cost_inferred": "One additional hail load/add per cell at each affected reduction; existing State buffer, no packed native moisture sum or new persistent carry",
+    "CPU_coupled_process_RSS_GiB_max": 5.080844879150391,
+    "GPU_execution": false,
+    "GPU_timing_peak_memory_device_ops_E41": "UNKNOWN; composed GPU executable qualification pending",
+    "timing_scope": "CPU validation walls include interpretation/compile/cache release; not forecast benchmarks"
+  },
+  "GPU_composites_to_rerun": [
+    {
+      "id": "c07",
+      "mp": 9,
+      "status": "ADMITTED"
+    },
+    {
+      "id": "c12",
+      "mp": 17,
+      "status": "ADMITTED"
+    },
+    {
+      "id": "c13",
+      "mp": 18,
+      "status": "ADMITTED"
+    },
+    {
+      "id": "c14",
+      "mp": 19,
+      "status": "ADMITTED"
+    },
+    {
+      "id": "c17",
+      "mp": 24,
+      "status": "ADMITTED"
+    },
+    {
+      "id": "c18",
+      "mp": 26,
+      "status": "ADMITTED"
+    },
+    {
+      "id": "c64",
+      "mp": 7,
+      "status": "ADMITTED"
+    },
+    {
+      "id": "c88",
+      "mp": 56,
+      "status": "ADMITTED"
+    }
+  ],
+  "sources": {
+    "pristine_WRF_commit": "f52c197ed39d12e087d02c50f412d90d418f6186",
+    "pristine_file_sha256": "bd177b6b5ba7949cf9e694d7ad654fd9ae2f07d39d85802f0716c5318889a815",
+    "no_new_external_baked_inputs": true,
+    "new_helper_and_registry_reach_AOT_source_key": true
+  },
+  "audit": {
+    "experiments": "MAIN .agent/kernel/EXPERIMENTS.tsv QH01-QH20, including all setup failures/discards",
+    "source_admission": "QH18 live-route rejected; QH19 notes-only bootstrap correction disclosed with exact src/data/runner identity; no numerical source mutation",
+    "final_rebase": "Final P3 radar/common host relay merge: five owned operators, helper and data BYTE unchanged; target membership truth tables unchanged. All final default/17/18/22/38 canonical programs measured EXACT again (QH22). Completed numerical caller results carried forward."
+  },
+  "open_followups": [
+    "Eight affected composites need changed-source GPU/full D6 and compiled resource qualification",
+    "Inherited ShinHong shared assertion remains for its owner",
+    "Source-only direct writer fallback PSFC omits qh/qi2/qi3; outside owned three model sites, manager notified, no writer edit",
+    "Global release/F2/station/24-72h gates are not closed by these CPU checks"
+  ],
+  "receipts": [
+    {
+      "file": "receipts/shared_first.xml",
+      "sha256": "aed3a9906d535e3b3ea61e79ee91186cfb12d5e63df3f3ee1b18d4ac8f206b21",
+      "bytes": 11286
+    },
+    {
+      "file": "receipts/shared_remaining.xml",
+      "sha256": "2f0bbfca20b6eff779fa2357a1647f224a5226fa7b618af46812b86cc839a254",
+      "bytes": 38945
+    },
+    {
+      "file": "receipts/inherited_parent.xml",
+      "sha256": "4d57886efa2941dc99a453227a58197d2af776883de5996f432e6ef354fa7396",
+      "bytes": 5051
+    },
+    {
+      "file": "receipts/deletion_mutant.xml",
+      "sha256": "ae173ca64773cd041d1e35d391c55fc66fdf7525a1724864d57326c233af9f34",
+      "bytes": 11580
+    },
+    {
+      "file": "receipts/oracle_provenance.json",
+      "sha256": "70e00a1fcae6e0782632b51c49fc2f0379266e7978eb23d90483a290f9a11299",
+      "bytes": 841
+    },
+    {
+      "file": "receipts/thompson38_two_steps.json",
+      "sha256": "ec4ca501ec19369da9b96b53fed494b2dde687f9f610cb3b3173ba1dc1310f00",
+      "bytes": 12563
+    },
+    {
+      "file": "receipts/nssl17_18_active_two_steps.json",
+      "sha256": "0034ec846e0bb981e8950981d5a90cebce770c0ca171adc14ba1d2c9baa2137a",
+      "bytes": 18568
+    },
+    {
+      "file": "receipts/nssl22_two_steps.json",
+      "sha256": "cc853dcff73adce2c452302f1a11a10bbf15283cc89932d8d44ba0e036642c2a",
+      "bytes": 12931
+    },
+    {
+      "file": "receipts/swiss_programs.json",
+      "sha256": "7a07cd42322aae7757f28f32493b128844e9a5a0c7fe8f361ea0875e8537f573",
+      "bytes": 5070
+    },
+    {
+      "file": "receipts/prod_program.json",
+      "sha256": "4b0f7f45adc53555bf4fa9e9671872c009f06d839598eff5184e53a8a999c38b",
+      "bytes": 1318
+    },
+    {
+      "file": "receipts/no_hail_parent_programs.json",
+      "sha256": "279e3513300a94d20abb693d56ebcaf7f7a5d4cf45b44fa9b4795d282445e83c",
+      "bytes": 2300
+    },
+    {
+      "file": "receipts/native_frontend.json",
+      "sha256": "1c34aea2c57ad2a34279262106db5bd1a679a2908bf766c08ed4fb6dbca2e6ec",
+      "bytes": 1162
+    },
+    {
+      "file": "receipts/static_transfer_check.json",
+      "sha256": "1150f123209f96c52a8de1830efaf1a957e177dcb4a804ac18501f991995e896",
+      "bytes": 35
+    },
+    {
+      "file": "receipts/source_key_scope.json",
+      "sha256": "2ee373439a0a30fe77454ab765e4145e34db3c15c0f96e4303f462d92161f45b",
+      "bytes": 216
+    },
+    {
+      "file": "receipts/actual_cli_inputs.json",
+      "sha256": "e5764d1db9edd358abfba4830810ac78433b98b4a8007f9b14b674c795b0b61b",
+      "bytes": 4194
+    },
+    {
+      "file": "receipts/hail_source.json",
+      "sha256": "316b3e75589c6c8ffd0467c8f621c57d6d6d722cb36dc58d8d530d6625622236",
+      "bytes": 477
+    },
+    {
+      "file": "receipts/hail_census.json",
+      "sha256": "9386539ef20148d89c2995364d1f1df685f46fa093ea90e00144b0ace049a164",
+      "bytes": 3350
+    },
+    {
+      "file": "receipts/final_rebase_scope.json",
+      "sha256": "261abae098641a62cba451c8bc7100363e064f77d1883112c7a05389da769553",
+      "bytes": 673
+    },
+    {
+      "file": "receipts/parent_function_identity.json",
+      "sha256": "16cf5d5872a533b331bee537c0334378bf54aa3ff69eb8d877518b1cf37ab8bc",
+      "bytes": 1337
+    },
+    {
+      "file": "receipts/notes_only_source_seal.json",
+      "sha256": "60c8b4f08afcee23bb97f5ae789aaf5fc17dc2dfd1e27fea6b40d32c36d75906",
+      "bytes": 318
+    },
+    {
+      "file": "receipts/active_interior_scope.json",
+      "sha256": "9a0e4cf3f328cbe5e50e783ff6db360b601062649f3c5e879684bb9c0acafbf2",
+      "bytes": 596
+    },
+    {
+      "file": "receipts/final_composition.json",
+      "sha256": "69e3a941adef4f52942d265f4f821b7e5738029993cbd1ea91d05ac4e5b1ad5e",
+      "bytes": 1291
+    },
+    {
+      "file": "receipts/final_swiss_programs.json",
+      "sha256": "e66fad6d8302fe4c4ccc9c189764f49dbcf82aed53d14c00d1cf65f1e75cc110",
+      "bytes": 5070
+    },
+    {
+      "file": "receipts/final_prod_program.json",
+      "sha256": "cddd9d6ac6b454fcf04339cafc4ddd91fe41d316af8ac1358a4985cfba6ddff6",
+      "bytes": 1318
+    }
+  ],
+  "cleanup": {
+    "snapshot_removed": true,
+    "disposable_cache_dirs": "NONE; TMPDIR and pytest/build libraries removed",
+    "temporary_case_views_and_hail_copy_removed": true,
+    "primary_WRF_inputs_references_untouched": true,
+    "remaining_lane_artifacts_KiB": 944
+  },
+  "current_candidate_src_tree": "b3e73a82625a54b5b4f60288d42237ac7137936d",
+  "current_candidate_model_commit": "8715966b4808f3b83e78d7013c2d158d9d7e4dde"
+}

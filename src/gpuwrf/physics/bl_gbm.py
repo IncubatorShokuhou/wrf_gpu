@@ -146,97 +146,6 @@ def _n2(thlx: jax.Array, exnerfl: jax.Array, epop: jax.Array, qwx: jax.Array,
     return ns, rcldb
 
 
-def _pblhgt_simple(zq: jax.Array, nsquar: jax.Array, tke: jax.Array) -> tuple[jax.Array, jax.Array, jax.Array, jax.Array, jax.Array]:
-    """Bottom-connected GBM PBL-height/mixing-length path.
-
-    The staged WRF GBM oracle exercises either a bottom-connected unstable layer
-    or the stable first-interface fallback.  This routine keeps that path
-    traceable and records the convective-layer top for the MY diffusivity special
-    case.
-    """
-
-    n = tke.shape[0] - 1
-    kidx = jnp.arange(n + 1, dtype=jnp.int32)
-    stable = nsquar > 0.0
-    b_stable = jnp.minimum(RSTBL * jnp.sqrt(jnp.maximum(tke, 0.0) / jnp.maximum(nsquar, 1.0e-30)),
-                           KARMAN * zq[: n + 1])
-    bbls = jnp.where(stable, b_stable, 0.0)
-    conv = nsquar <= 0.0
-    connected = jnp.cumprod(conv[1 : n + 1][::-1].astype(jnp.int32))[::-1].astype(bool)
-    has_surface_layer = conv[n]
-    any_connected = jnp.any(connected)
-    top_k = jnp.argmax(connected).astype(jnp.int32) + 1
-    top_k = jnp.where(jnp.logical_and(has_surface_layer, any_connected), top_k, n)
-    pbl_index = jnp.minimum(jnp.maximum(top_k - 1, 0), n - 1)
-    pblx = zq[pbl_index]
-    kpbl = (n - pbl_index).astype(jnp.int32)
-    blinf = XFR * (zq[jnp.maximum(pbl_index - 1, 0)] - zq[n + 1])
-    in_bottom_layer = jnp.logical_and(kidx >= pbl_index, has_surface_layer)
-    b_conv = jnp.minimum(KARMAN * zq[: n + 1], blinf)
-    bbls = jnp.where(in_bottom_layer, b_conv, bbls)
-    iconv = has_surface_layer.astype(jnp.int32)
-    return bbls, pblx, pbl_index, iconv, kpbl
-
-
-def _my(bbls: jax.Array, nsquar: jax.Array, tke: jax.Array, top_k: jax.Array,
-        iconv: jax.Array, thlx: jax.Array, thx: jax.Array, qwx: jax.Array,
-        rcldb: jax.Array, rexnerhl: jax.Array) -> tuple[jax.Array, jax.Array, jax.Array]:
-    n = thlx.shape[0]
-    sm = jnp.ones(n + 1, dtype=thlx.dtype)
-    sh = jnp.ones(n + 1, dtype=thlx.dtype)
-    kzm = jnp.zeros(n + 1, dtype=thlx.dtype)
-    kth = jnp.zeros(n + 1, dtype=thlx.dtype)
-    kethl = jnp.zeros(n, dtype=thlx.dtype)
-    a1 = 0.92
-    b1 = 16.6
-    c1 = 0.08
-    a2 = 0.74
-    b2 = 10.1
-    a1ob1 = a1 / b1
-
-    def body(j, carry):
-        sm, sh, kzm, kth, kethl = carry
-        k = n - 1 - j  # k = n-1 .. 1, matching Fortran K=kte..2
-        gh = -bbls[k] * bbls[k] * nsquar[k] / (2.0 * tke[k] + 1.0e-9)
-        gh = jnp.clip(gh, -0.28, 0.0233)
-        sm_k = a1 * (
-            1.0 - 3.0 * c1 - 6.0 * a1ob1
-            - 3.0 * a2 * gh * ((b2 - 3.0 * a2) * (1.0 - 6.0 * a1ob1) - 3.0 * c1 * (b2 + 6.0 * a1))
-        ) / ((1.0 - 3.0 * a2 * gh * (6.0 * a1 + b2)) * (1.0 - 9.0 * a1 * a2 * gh))
-        sh_k = a2 * (1.0 - 6.0 * a1ob1) / (1.0 - 3.0 * a2 * gh * (6.0 * a1 + b2))
-        q = jnp.sqrt(jnp.maximum(2.0 * tke[k], 0.0))
-        kzm_k = jnp.minimum(bbls[k] * q * sm_k, KMAX)
-        kth_k = jnp.minimum(bbls[k] * q * sh_k, KMAX)
-        kethl_k = jnp.minimum(NUK * jnp.sqrt(jnp.maximum(kzm_k * kzm[k + 1], 0.0)), KMAX)
-        sm = sm.at[k].set(sm_k)
-        sh = sh.at[k].set(sh_k)
-        kzm = kzm.at[k].set(kzm_k)
-        kth = kth.at[k].set(kth_k)
-        kethl = kethl.at[k].set(kethl_k)
-        return sm, sh, kzm, kth, kethl
-
-    sm, sh, kzm, kth, kethl = jax.lax.fori_loop(0, n - 1, body, (sm, sh, kzm, kth, kethl))
-
-    k = top_k
-    active_top = jnp.logical_and(iconv > 0, jnp.logical_and(k < n, nsquar[k] >= N2MIN))
-    delthvl = (
-        thlx[jnp.maximum(k - 2, 0)] + thx[jnp.maximum(k - 2, 0)] * EP1 * qwx[jnp.maximum(k - 2, 0)]
-        - (thlx[k] + thx[k] * EP1 * qwx[k])
-    )
-    elambda = (XLV / CP) * rcldb[k] * rexnerhl[k] / jnp.maximum(delthvl, 0.1)
-    biga = AONE * (1.0 + ATWO * 0.8 * elambda)
-    kth_top = jnp.minimum(kth[k], biga * jnp.sqrt(jnp.maximum(tke[k], 0.0) ** 3) / nsquar[k] / jnp.maximum(bbls[k], bbls[k + 1]))
-    kzm_top = jnp.minimum(kzm[k], kth_top / sh[k + 1] * sm[k + 1])
-    kethl = kethl.at[k].set(jnp.where(active_top, NUK * kzm[k + 1], kethl[k]))
-    kethl = kethl.at[jnp.maximum(k - 1, 0)].set(jnp.where(jnp.logical_and(active_top, k >= 2), 0.0, kethl[jnp.maximum(k - 1, 0)]))
-    kth = kth.at[k].set(jnp.where(active_top, kth_top, kth[k]))
-    kzm = kzm.at[k].set(jnp.where(active_top, kzm_top, kzm[k]))
-
-    kethl = kethl.at[0].set(kethl[1])
-    kethl = kethl.at[n - 1].set(NUK * 0.5 * kzm[n - 1])
-    return kzm, kth, kethl
-
-
 def _scalar_update(thlx: jax.Array, qwx: jax.Array, qcx: jax.Array, exnerhl: jax.Array,
                    preshl: jax.Array) -> tuple[jax.Array, jax.Array, jax.Array]:
     n = thlx.shape[0]
@@ -268,12 +177,225 @@ def _scalar_update(thlx: jax.Array, qwx: jax.Array, qcx: jax.Array, exnerhl: jax
     return jax.lax.fori_loop(0, n, body, (jnp.zeros_like(thlx), jnp.zeros_like(qwx), jnp.zeros_like(qcx)))
 
 
+
+# --------------------------------------------------------------------------- #
+# t-cfix-pblmix F17: WRF pblhgt (module_bl_gbmpbl.F:865-1050) and multi-layer
+# MY top treatment (:1133-1210), Fortran-indexed (1-based, top-down).  Inputs
+# are padded with a leading dummy so array[k] is the Fortran element k.
+# --------------------------------------------------------------------------- #
+_UP, _RAD, _DOWN, _NEXT, _START, _DONE, _ACC = range(7)
+
+
+def _pad1(x: jax.Array) -> jax.Array:
+    return jnp.concatenate([jnp.zeros((1,), x.dtype), x])
+
+
+def _shift_down_from(arr: jax.Array, first: jax.Array) -> jax.Array:
+    """arr(itemp) = arr(itemp+1) for itemp >= first (Fortran merge compaction)."""
+    idx = jnp.arange(arr.shape[0])
+    nxt = jnp.concatenate([arr[1:], arr[-1:]])
+    return jnp.where(idx >= first, nxt, arr)
+
+
+def _pblhgt_wrf(zq, nsquar, tke, presfl, rhoxfl, rcldb, exnerfl,
+                rttenx, thvx, thlx, thx, qwx, rexnerhl, qcx, *, xlvocp):
+    """Literal WRF ``pblhgt``; returns (bbls, pblx, ktop, iconv) in port top-down
+    0-based convention (bbls length n+1, ktop Fortran-1-based layer tops)."""
+    n = thlx.shape[0]
+    dt = zq.dtype
+    c = lambda v: jnp.asarray(v, dt)  # noqa: E731
+    fz, fn, ft, fp, fr, fc, fe = (_pad1(a) for a in (zq, nsquar, tke, presfl, rhoxfl, rcldb, exnerfl))
+    frt, fthv, fthl, fth, fqw, frex, fqc = (_pad1(a) for a in (rttenx, thvx, thlx, thx, qwx, rexnerhl, qcx))
+    L = n + 3
+    ival = lambda v: jnp.asarray(v, jnp.int32)  # noqa: E731
+
+    # Find noncontiguous convectively unstable layers (:897-910).
+    def find(k, carry):
+        iconv, istabl, ktop, kbot, bbls = carry
+        unstable = fn[k] <= c(0.0)
+        new = unstable & (istabl == 1)
+        iconv = jnp.where(new, iconv + 1, iconv)
+        ktop = jnp.where(new, ktop.at[iconv].set(k), ktop)
+        kbot = jnp.where(unstable, kbot.at[iconv].set(k), kbot)
+        stab = jnp.minimum(c(RSTBL) * jnp.sqrt(ft[k] / jnp.where(unstable, c(1.0), fn[k])), c(KARMAN) * fz[k])
+        bbls = jnp.where(unstable, bbls, bbls.at[k].set(stab))
+        return iconv, jnp.where(unstable, 0, 1).astype(jnp.int32), ktop, kbot, bbls
+
+    zeros_i = jnp.zeros((L,), jnp.int32)
+    iconv, _, ktop, kbot, bbls = jax.lax.fori_loop(
+        2, n + 2, find, (ival(0), ival(1), zeros_i, zeros_i, jnp.zeros((n + 2,), dt)))
+    ktop_save = ktop
+    kidx = jnp.arange(n + 2)
+
+    def start(s):  # label 2745 layer setup (:913-920); the n2*l2/TKE sums run in ACC
+        ilay, ktop, kbot = s["ilay"], s["ktop"], s["kbot"]
+        blinf = c(XFR) * (fz[ktop[ilay] - 1] - fz[kbot[ilay] + 1])
+        inside = (kidx >= ktop[ilay]) & (kidx <= kbot[ilay])
+        bbls = jnp.where(inside, jnp.minimum(blinf, c(KARMAN) * fz[: n + 2]), s["bbls"])
+        return dict(s, bbls=bbls, blinf=blinf, nlev=kbot[ilay] - ktop[ilay] + 1, rnnll=c(0.0),
+                    tkeavg=c(0.0), k=ktop[ilay], phase=ival(_ACC))
+
+    def acc(s):  # :921-924 one level per iteration, in WRF's sequential order
+        k, ilay = s["k"], s["ilay"]
+        done = k > s["kbot"][ilay]
+        kk = jnp.minimum(k, n + 1)
+        rn = s["rnnll"] + fn[kk] * s["bbls"][kk] * s["bbls"][kk]
+        ta = s["tkeavg"] + ft[kk] / s["nlev"].astype(dt)
+        return dict(s, rnnll=jnp.where(done, s["rnnll"], rn), tkeavg=jnp.where(done, s["tkeavg"], ta),
+                    k=jnp.where(done, s["ktop"][ilay] - 1, k + 1), phase=jnp.where(done, ival(_UP), ival(_ACC)))
+
+    def merge(s, keep_layer, ibeg):
+        """ktop(keep)=ktop_save(keep); kbot(keep)=kbot(keep+1); iconv-=1; compact; goto 2745."""
+        ktop = s["ktop"].at[keep_layer].set(s["ktop_save"][keep_layer])
+        kbot = s["kbot"].at[keep_layer].set(s["kbot"][keep_layer + 1])
+        first = keep_layer + 1
+        return dict(s, ktop=_shift_down_from(ktop, first), kbot=_shift_down_from(kbot, first),
+                    ktop_save=_shift_down_from(s["ktop_save"], first), iconv=s["iconv"] - 1,
+                    ibeg=ibeg, ilay=ibeg, phase=ival(_START))
+
+    def up(s):  # :936-967
+        k, ilay = s["k"], s["ilay"]
+        done = k < 2
+        ktop = s["ktop"].at[ilay].set(k)
+        b = jnp.minimum(c(KARMAN) * fz[k], s["blinf"])
+        trn = fn[k] * b * b
+        stop = trn * s["nlev"].astype(dt) >= c(-0.5) * s["rnnll"]
+        s1 = dict(s, ktop=ktop, bbls=s["bbls"].at[k].set(b))
+        merged = (~stop) & (ilay > 1) & (ktop[ilay] == s["kbot"][jnp.maximum(ilay - 1, 0)])
+        go_on = dict(s1, rnnll=s["rnnll"] + trn, nlev=s["nlev"] + 1, k=k - 1)
+        out_merge = merge(s1, ilay - 1, ilay - 1)
+        out = jax.tree_util.tree_map(lambda a, b_: jnp.where(stop, a, b_), dict(s1, phase=ival(_RAD)),
+                                     jax.tree_util.tree_map(lambda a, b_: jnp.where(merged, a, b_), out_merge, go_on))
+        return jax.tree_util.tree_map(lambda a, b_: jnp.where(done, a, b_), dict(s, phase=ival(_RAD)), out)
+
+    def rad(s):  # :969-985
+        k = s["ktop"][s["ilay"]]
+        radnnll = jnp.where(fqc[k] > c(1e-8),
+                            frt[k] * (fp[k + 1] - fp[k]) / (fr[k] * fthv[k] * fe[k]), c(0.0))
+        km2 = jnp.maximum(k - 2, 0)
+        delthvl = (fthl[km2] + fth[km2] * c(EP1) * fqw[km2]) - (fthl[k] + fth[k] * c(EP1) * fqw[k])
+        elambda = c(xlvocp) * fc[k] * frex[k] / jnp.maximum(delthvl, c(0.1))
+        biga = c(AONE) * (c(1.0) + c(ATWO) * (c(0.8) * elambda))
+        entnnll = jnp.where(k >= 3, biga * jnp.sqrt(s["tkeavg"] ** 3) / s["bbls"][k], c(0.0))
+        tkeavg = s["tkeavg"]
+        safe = jnp.where(tkeavg > c(0.0), tkeavg, c(1.0))
+        add = jnp.minimum(c(0.0), s["bbls"][k] / jnp.sqrt(safe) * (radnnll + entnnll))
+        rnnll = jnp.where(tkeavg > c(0.0), s["rnnll"] + add, s["rnnll"])
+        return dict(s, rnnll=rnnll, k=s["kbot"][s["ilay"]] + 1, phase=ival(_DOWN))
+
+    def down(s):  # :987-1007
+        k, ilay = s["k"], s["ilay"]
+        done = k > n + 1
+        kk = jnp.minimum(k, n + 1)
+        tb = jnp.minimum(c(KARMAN) * fz[kk], s["blinf"])
+        trn = fn[kk] * tb * tb
+        stop = trn * s["nlev"].astype(dt) >= c(-0.5) * s["rnnll"]
+        kbot = s["kbot"].at[ilay].set(kk)
+        s1 = dict(s, kbot=kbot)
+        merged = (~stop) & (ilay < s["iconv"]) & (kbot[ilay] == s["ktop"][jnp.minimum(ilay + 1, L - 1)])
+        go_on = dict(s1, rnnll=s["rnnll"] + trn, bbls=s["bbls"].at[kk].set(tb), nlev=s["nlev"] + 1, k=k + 1)
+        out_merge = merge(s1, ilay, s["ibeg"])
+        out = jax.tree_util.tree_map(lambda a, b_: jnp.where(merged, a, b_), out_merge, go_on)
+        out = jax.tree_util.tree_map(lambda a, b_: jnp.where(stop, a, b_), dict(s, phase=ival(_NEXT)), out)
+        return jax.tree_util.tree_map(lambda a, b_: jnp.where(done, a, b_), dict(s, phase=ival(_NEXT)), out)
+
+    def nxt(s):
+        ilay = s["ilay"] + 1
+        return dict(s, ilay=ilay, phase=jnp.where(ilay > s["iconv"], ival(_DONE), ival(_START)))
+
+    def body(s):
+        return jax.lax.switch(s["phase"], (up, rad, down, nxt, start, lambda s_: s_, acc), s)
+
+    state = dict(phase=jnp.where(iconv >= 1, ival(_START), ival(_DONE)), ilay=ival(1), ibeg=ival(1), k=ival(0),
+                 iconv=iconv, ktop=ktop, kbot=kbot, ktop_save=ktop_save, bbls=bbls,
+                 rnnll=c(0.0), tkeavg=c(0.0), nlev=ival(0), blinf=c(0.0))
+    state = jax.lax.while_loop(lambda s: s["phase"] != _DONE, body, state)
+    iconv, ktop, kbot, bbls = state["iconv"], state["ktop"], state["kbot"], state["bbls"]
+
+    def final(ilay, bbls):  # :1010-1016
+        on = ilay <= iconv
+        blinf = c(XFR) * (fz[ktop[ilay] - 1] - fz[kbot[ilay] + 1])
+        inside = on & (kidx >= ktop[ilay]) & (kidx <= kbot[ilay])
+        return jnp.where(inside, jnp.minimum(c(KARMAN) * fz[: n + 2], blinf), bbls)
+
+    bbls = jax.lax.fori_loop(1, L - 1, final, bbls)
+    # kmix2dx (:1024-1048); kpbl2dx enters uninitialized (GBM2D) -> 0 under the
+    # compiler-defined-init policy; it only feeds KPBL, not the mixing height.
+    last = jnp.maximum(iconv, 1)
+    bottom_connected = (iconv > 0) & (kbot[last] == n + 1)
+    kmix = jnp.where(bottom_connected, ktop[last], ival(n))
+    kpbl = jnp.where(iconv > 0,
+                     jnp.where(bottom_connected, jnp.where(iconv > 1, ktop[jnp.maximum(iconv - 1, 0)], kmix),
+                               ktop[last]),
+                     kmix)
+    return bbls[1:], fz[kmix], ktop, iconv, kpbl
+
+
+def _my_wrf(bbls, nsquar, tke, ktop, iconv, thlx, thx, qwx, rcldb, rexnerhl, *, xlvocp):
+    """WRF ``my`` (module_bl_gbmpbl.F:1133-1210) incl. the per-layer top treatment.
+
+    Port top-down 0-based arrays (index = Fortran K-1); ``ktop`` holds Fortran
+    layer-top indices (``_pblhgt_wrf``)."""
+    n = thlx.shape[0]
+    dt = thlx.dtype
+    c = lambda v: jnp.asarray(v, dt)  # noqa: E731
+    a1, b1, c1, a2, b2 = 0.92, 16.6, 0.08, 0.74, 10.1
+    a1ob1 = a1 / b1
+    sm = jnp.ones(n + 1, dtype=dt)
+    sh = jnp.ones(n + 1, dtype=dt)
+    kzm = jnp.zeros(n + 1, dtype=dt)
+    kth = jnp.zeros(n + 1, dtype=dt)
+    kethl = jnp.zeros(n, dtype=dt)
+
+    def body(j, carry):
+        sm, sh, kzm, kth, kethl = carry
+        k = n - 1 - j  # Fortran K=kte..2
+        gh = -bbls[k] * bbls[k] * nsquar[k] / (2.0 * tke[k] + 1.0e-9)
+        gh = jnp.clip(gh, -0.28, 0.0233)
+        sm_k = a1 * (
+            1.0 - 3.0 * c1 - 6.0 * a1ob1
+            - 3.0 * a2 * gh * ((b2 - 3.0 * a2) * (1.0 - 6.0 * a1ob1) - 3.0 * c1 * (b2 + 6.0 * a1))
+        ) / ((1.0 - 3.0 * a2 * gh * (6.0 * a1 + b2)) * (1.0 - 9.0 * a1 * a2 * gh))
+        sh_k = a2 * (1.0 - 6.0 * a1ob1) / (1.0 - 3.0 * a2 * gh * (6.0 * a1 + b2))
+        q = jnp.sqrt(jnp.maximum(2.0 * tke[k], 0.0))
+        kzm_k = jnp.minimum(bbls[k] * q * sm_k, KMAX)
+        kth_k = jnp.minimum(bbls[k] * q * sh_k, KMAX)
+        kethl_k = jnp.minimum(NUK * jnp.sqrt(jnp.maximum(kzm_k * kzm[k + 1], 0.0)), KMAX)
+        return (sm.at[k].set(sm_k), sh.at[k].set(sh_k), kzm.at[k].set(kzm_k), kth.at[k].set(kth_k),
+                kethl.at[k].set(kethl_k))
+
+    sm, sh, kzm, kth, kethl = jax.lax.fori_loop(0, n - 1, body, (sm, sh, kzm, kth, kethl))
+
+    def top(ilay, carry):  # :1188-1203
+        kzm, kth, kethl = carry
+        kf = ktop[ilay]                      # Fortran index
+        k = jnp.clip(kf - 1, 0, n - 1)       # port index
+        on = (ilay <= iconv) & (nsquar[k] >= c(N2MIN))
+        deep = on & (kf >= 3)
+        kethl = jnp.where(on, kethl.at[k].set(NUK * kzm[k + 1]), kethl)
+        kethl = jnp.where(deep, kethl.at[jnp.maximum(k - 1, 0)].set(c(0.0)), kethl)
+        km2 = jnp.maximum(k - 2, 0)
+        delthvl = (thlx[km2] + thx[km2] * c(EP1) * qwx[km2]) - (thlx[k] + thx[k] * c(EP1) * qwx[k])
+        elambda = c(xlvocp) * rcldb[k] * rexnerhl[k] / jnp.maximum(delthvl, c(0.1))
+        biga = c(AONE) * (c(1.0) + c(ATWO) * (c(0.8) * elambda))
+        kth_top = jnp.minimum(kth[k], biga * jnp.sqrt(tke[k] ** 3) / jnp.where(deep, nsquar[k], c(1.0))
+                              / jnp.maximum(bbls[k], bbls[k + 1]))
+        kth = jnp.where(deep, kth.at[k].set(kth_top), kth)
+        kzm = jnp.where(deep, kzm.at[k].set(jnp.minimum(kzm[k], kth[k] / sh[k + 1] * sm[k + 1])), kzm)
+        return kzm, kth, kethl
+
+    kzm, kth, kethl = jax.lax.fori_loop(1, ktop.shape[0], top, (kzm, kth, kethl))
+    kethl = kethl.at[0].set(kethl[1])
+    kethl = kethl.at[n - 1].set(NUK * 0.5 * kzm[n - 1])
+    return kzm, kth, kethl
+
+
 def _gbm2d(u: jax.Array, v: jax.Array, t: jax.Array, qv: jax.Array, qc: jax.Array,
            p: jax.Array, pii: jax.Array, dz: jax.Array, tke_in: jax.Array, *,
            psfc: jax.Array, znt: jax.Array, ust: jax.Array, hfx: jax.Array,
            qfx: jax.Array, tsk: jax.Array, gz1oz0: jax.Array, wspd: jax.Array,
            br: jax.Array, psim: jax.Array, psih: jax.Array, dt: float,
-           xland: jax.Array) -> dict[str, jax.Array]:
+           xland: jax.Array, rthraten: jax.Array | None = None) -> dict[str, jax.Array]:
     del znt, ust, br, psih
     n = u.shape[0]
     rdt = 1.0 / dt
@@ -370,11 +492,17 @@ def _gbm2d(u: jax.Array, v: jax.Array, t: jax.Array, qv: jax.Array, qc: jax.Arra
     tke = jnp.concatenate([tke_in[::-1], jnp.zeros(1, dtype=u.dtype)])
     nsquar, rcldb = _n2(thlx, exnerfl, epop, qwx, rdza, rexnerfl)
     nsquar = nsquar.at[n].set(G / thvx[n - 1] * dthv / za[n - 1])
-    bbls, pblx, top_k, iconv, kpbl = _pblhgt_simple(zq, nsquar, tke)
+    # gbmpbl.F:243 t2dten_ra = RTHRATEN*PI3D (driver RTHRATEN=grid%rthraten), flipped top-down.
+    rttenx = jnp.zeros_like(thlx) if rthraten is None else (rthraten * pii)[::-1]
+    bbls, pblx, ktop, iconv, kpbl2dx = _pblhgt_wrf(
+        zq, nsquar, tke, presfl, rhoxfl, rcldb, exnerfl, rttenx, thvx, thlx, thx, qwx, rexnerhl, qcx,
+        xlvocp=xlvocp)
+    kpbl = (n + 1 - kpbl2dx).astype(jnp.int32)  # kpbl1d = kte+1-kpbl2dx (:836)
 
     def scalar_pass(_, carry):
         nsquar, rcldb, kzm, kth, kethl, uimp1, uimp2 = carry
-        kzm, kth, kethl = _my(bbls, nsquar, tke, top_k, iconv, thlx, thx, qwx, rcldb, rexnerhl)
+        kzm, kth, kethl = _my_wrf(bbls, nsquar, tke, ktop, iconv, thlx, thx, qwx, rcldb, rexnerhl,
+                                  xlvocp=xlvocp)
         a = jnp.zeros(n, dtype=u.dtype)
         b = jnp.zeros(n, dtype=u.dtype)
         c = jnp.zeros(n, dtype=u.dtype)
@@ -458,13 +586,14 @@ def _gbm2d(u: jax.Array, v: jax.Array, t: jax.Array, qv: jax.Array, qc: jax.Arra
         return bouyan.at[k].set(-kth[k] * nsquar[k]), shear.at[k].set(kzm[k] * svs[k])
 
     bouyan, shear = jax.lax.fori_loop(1, n, prod_body, (bouyan, shear))
-    ktop = top_k
-    rad = jnp.where(
-        jnp.logical_and(iconv > 0, jnp.logical_and(qcx[ktop] > 1.0e-8, ktop > 0)),
-        0.0,  # RTHRATEN is zero in the staged/current operational path.
-        0.0,
-    )
-    bouyan = bouyan.at[ktop].add(rad)
+    def cloud_top(ilay, bouyan):  # gbmpbl.F:756-761, every convective layer top
+        kf = ktop[ilay]
+        k = jnp.clip(kf - 1, 0, n - 1)
+        on = (ilay <= iconv) & (qcx[k] > 1.0e-8) & (kf > 1)
+        rad = rttenx[k] * (presfl[k + 1] - presfl[k]) * rrhoxfl[k] * rexnerfl[k] / thvx[k]
+        return jnp.where(on, bouyan.at[k].add(-rad), bouyan)
+
+    bouyan = jax.lax.fori_loop(1, ktop.shape[0], cloud_top, bouyan)
 
     tke = tke.at[0].set(0.0)
     bbls = bbls.at[0].set(0.0)
@@ -529,16 +658,16 @@ def gbm_column(u: jax.Array, v: jax.Array, t: jax.Array, qv: jax.Array, qc: jax.
                psfc: jax.Array, znt: jax.Array, ust: jax.Array, hfx: jax.Array,
                qfx: jax.Array, tsk: jax.Array, gz1oz0: jax.Array, wspd: jax.Array,
                br: jax.Array, psim: jax.Array, psih: jax.Array, dt: float,
-               xland: jax.Array) -> dict[str, jax.Array]:
+               xland: jax.Array, rthraten: jax.Array | None = None) -> dict[str, jax.Array]:
     first = _gbm2d(
         u, v, t, qv, qc, p, pii, dz, tke,
         psfc=psfc, znt=znt, ust=ust, hfx=hfx, qfx=qfx, tsk=tsk,
-        gz1oz0=gz1oz0, wspd=wspd, br=br, psim=psim, psih=psih, dt=dt, xland=xland,
+        gz1oz0=gz1oz0, wspd=wspd, br=br, psim=psim, psih=psih, dt=dt, xland=xland, rthraten=rthraten,
     )
     second = _gbm2d(
         u, v, t, qv, qc, p, pii, dz, first["tke"],
         psfc=psfc, znt=znt, ust=first["ust"], hfx=hfx, qfx=qfx, tsk=tsk,
-        gz1oz0=gz1oz0, wspd=wspd, br=br, psim=psim, psih=psih, dt=dt, xland=xland,
+        gz1oz0=gz1oz0, wspd=wspd, br=br, psim=psim, psih=psih, dt=dt, xland=xland, rthraten=rthraten,
     )
     out = dict(second)
     out["rublten"] = 0.5 * (first["rublten"] + second["rublten"])
@@ -548,21 +677,21 @@ def gbm_column(u: jax.Array, v: jax.Array, t: jax.Array, qv: jax.Array, qc: jax.
 
 
 def gbm_columns(u, v, t, qv, qc, p, pii, dz, tke, *, psfc, znt, ust, hfx, qfx,
-                tsk, gz1oz0, wspd, br, psim, psih, dt=60.0, xland):
-    """Batched GBM PBL kernel over leading column axis."""
+                tsk, gz1oz0, wspd, br, psim, psih, dt=60.0, xland, rthraten=None):
+    """Batched GBM PBL kernel over leading column axis (``rthraten``: held RTHRATEN columns)."""
 
     def one(u_, v_, t_, qv_, qc_, p_, pii_, dz_, tke_,
-            psfc_, znt_, ust_, hfx_, qfx_, tsk_, gz_, wspd_, br_, psim_, psih_, xland_):
+            psfc_, znt_, ust_, hfx_, qfx_, tsk_, gz_, wspd_, br_, psim_, psih_, xland_, rad_):
         return gbm_column(
             u_, v_, t_, qv_, qc_, p_, pii_, dz_, tke_,
             psfc=psfc_, znt=znt_, ust=ust_, hfx=hfx_, qfx=qfx_, tsk=tsk_,
             gz1oz0=gz_, wspd=wspd_, br=br_, psim=psim_, psih=psih_,
-            dt=dt, xland=xland_,
+            dt=dt, xland=xland_, rthraten=rad_,
         )
 
     raw = jax.vmap(one)(
         u, v, t, qv, qc, p, pii, dz, tke,
-        psfc, znt, ust, hfx, qfx, tsk, gz1oz0, wspd, br, psim, psih, xland,
+        psfc, znt, ust, hfx, qfx, tsk, gz1oz0, wspd, br, psim, psih, xland, rthraten,
     )
     return {
         "u": raw["rublten"],

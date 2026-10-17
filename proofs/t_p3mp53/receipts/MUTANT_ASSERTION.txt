@@ -1,0 +1,23 @@
+[with_ram_slot] t-p3mp53 got slot 2 (MemoryMax=6G, no swap)
+F                                                                        [100%]
+=================================== FAILURES ===================================
+_____________ test_predicate_singleton_reshape_is_scoped_and_exact _____________
+
+    def test_predicate_singleton_reshape_is_scoped_and_exact():
+        import numpy as np
+        values = np.array([True, False, True])
+        control = jax.make_jaxpr(lambda x: _expand(x, 2))(values)
+        token = MP53_PREDICATE_RESHAPE.set(True)
+        try:
+            program = jax.make_jaxpr(lambda x: _expand(x, 2))(values)
+            np.testing.assert_array_equal(_expand(values, 2), values[:, None, None])
+>           assert [e.primitive.name for e in program.jaxpr.eqns] == ['reshape']
+E           AssertionError: assert ['broadcast_in_dim'] == ['reshape']
+E             
+E             At index 0 diff: 'broadcast_in_dim' != 'reshape'
+E             Use -v to get more diff
+
+tests/test_p3_mp53_compile.py:21: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_p3_mp53_compile.py::test_predicate_singleton_reshape_is_scoped_and_exact
+1 failed, 4 deselected in 0.17s

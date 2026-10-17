@@ -1,0 +1,62 @@
+{
+  "verdict": "MERGE",
+  "scope": "33d0bf38d only; closes compiler guard FIX for60675e705 when applied",
+  "commit": "33d0bf38dc55ed4a18e4651eaa0a897352b4164d",
+  "created_utc": "2026-10-15T06:39:16.906153+00:00",
+  "healthy": {
+    "arm": "R08",
+    "returncode": 0,
+    "counts": {
+      "passed": 10
+    },
+    "failures": [],
+    "skips": [],
+    "assertion_failures": 0,
+    "max_rss_kib": 183396,
+    "source": "33d0bf38dc55ed4a18e4651eaa0a897352b4164d"
+  },
+  "old_guard_mutant": {
+    "arm": "R09",
+    "returncode": 1,
+    "counts": {
+      "failed": 3
+    },
+    "failures": [
+      {
+        "node": "test_compiler_fix::test_real_original_wrf_build_with_configured_compiler[WRF_PRISTINE_FC]",
+        "message": "AssertionError: available WRF_PRISTINE_FC compiler incorrectly skipped: Original WRF RRTMG harness requires an available Fortran compiler\nassert False",
+        "assertion": true
+      },
+      {
+        "node": "test_compiler_fix::test_real_original_wrf_build_with_configured_compiler[WRF_ENV]",
+        "message": "AssertionError: available WRF_ENV compiler incorrectly skipped: Original WRF RRTMG harness requires an available Fortran compiler\nassert False",
+        "assertion": true
+      },
+      {
+        "node": "test_compiler_fix::test_real_original_wrf_build_with_configured_compiler[GPUWRF_WRF_ENV]",
+        "message": "AssertionError: available GPUWRF_WRF_ENV compiler incorrectly skipped: Original WRF RRTMG harness requires an available Fortran compiler\nassert False",
+        "assertion": true
+      }
+    ],
+    "skips": [],
+    "assertion_failures": 3,
+    "max_rss_kib": 181240,
+    "source": "33d0bf38dc55ed4a18e4651eaa0a897352b4164d"
+  },
+  "static": {
+    "commit": "33d0bf38dc55ed4a18e4651eaa0a897352b4164d",
+    "paths": [
+      "tests/test_m5_rrtmg_harness.py"
+    ],
+    "production_diff": [],
+    "assert_count": 8,
+    "assert_AST_exact": true,
+    "skip_calls_exact": true,
+    "entire_build_and_assertion_tail_AST_exact": true,
+    "builder_blob_before": "740426aad3e46370d846781e7c3b85a5ed6febaf",
+    "builder_blob_after": "740426aad3e46370d846781e7c3b85a5ed6febaf"
+  },
+  "previous_verdict": "proofs/rv4_t_redsuite/VERDICT.md remains immutable; all other reviewed batch evidence carried forward",
+  "performance": "Only test compiler availability lookup changed; production source and builder bytes unchanged. No model launches/temps/compile change. Own CPU review RSS peak183396KiB/noSwap, no GPU/performance qualification.",
+  "limitations": "Full CPU suite/release status remains incomplete; only this changed guard was re-reviewed."
+}

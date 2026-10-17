@@ -1,0 +1,36 @@
+{
+  "source": "2248dc315a7849285bad02e23955002c9610aa14",
+  "name": "RS03-mutant",
+  "rc": 1,
+  "wall_s": 0.675031922000926,
+  "command": [
+    "<USER_HOME>/miniconda3/bin/python",
+    "-m",
+    "pytest",
+    "-q",
+    "-p",
+    "no:cacheprovider",
+    "-p",
+    "old_body",
+    "<USER_HOME>/wrf_gpu2_lanes/rv-vprep-sfdda/review_tests.py",
+    "--deselect=<USER_HOME>/wrf_gpu2_lanes/rv-vprep-sfdda/review_tests.py::test_invalid_lists",
+    "-k",
+    "actual_native_cli",
+    "--basetemp",
+    "<USER_HOME>/wrf_gpu2_lanes/rv-vprep-sfdda/pytest/RS03-mutant",
+    "--junitxml",
+    "<USER_HOME>/wrf_gpu2_lanes/rv-vprep-sfdda/RS03-mutant.xml"
+  ],
+  "cache": "NONE",
+  "platform": "cpu",
+  "cores": "16-19 nice19",
+  "RAM": "official slot6G Swap0",
+  "log_sha256": "cc89f70f27688447e5bf5cedaafd41d39210bf2eca66a2aec6840bb01ae111d6",
+  "counts": {
+    "tests": 70,
+    "failures": 2,
+    "errors": 0,
+    "skipped": 0
+  },
+  "assertions": 2
+}

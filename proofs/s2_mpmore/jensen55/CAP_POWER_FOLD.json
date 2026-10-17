@@ -1,0 +1,59 @@
+{
+  "source": "program probe\nimplicit none\nreal,parameter :: lammaxr=1./20.e-6,lamminr=1./2800.e-6\nreal :: v(4)\nv=[lamminr,lammaxr,lamminr**4,lammaxr**4]\nopen(99,file='output.bin',access='stream',form='unformatted',status='replace')\nwrite(99) v\nclose(99)\nend program\n",
+  "source_sha256": "210722771ca914f95f7721988cd2244a8cd2d8e3dcb023137482951a18dcb5b2",
+  "scope": "IdenticaloriginalLAMRcapparameterfourthpowers;compilerconstantpropagationcontrol",
+  "modes": {
+    "fp32": {
+      "original": [
+        357.14288330078125,
+        50000.0,
+        16269267968.0,
+        6.250000125255483e+18
+      ],
+      "multiply_chain": [
+        357.14288330078125,
+        50000.0,
+        16269267968.0,
+        6.250000125255483e+18
+      ],
+      "one_round_folded": [
+        357.14288330078125,
+        50000.0,
+        16269267968.0,
+        6.250000125255483e+18
+      ],
+      "BYTE_one_round": true,
+      "flags": [
+        "-O2",
+        "-ffp-contract=off"
+      ]
+    },
+    "fp64": {
+      "original": [
+        357.14285714285717,
+        49999.99999999999,
+        16269262807.163687,
+        6.249999999999996e+18
+      ],
+      "multiply_chain": [
+        357.14285714285717,
+        49999.99999999999,
+        16269262807.163687,
+        6.249999999999995e+18
+      ],
+      "one_round_folded": [
+        357.14285714285717,
+        49999.99999999999,
+        16269262807.163687,
+        6.249999999999996e+18
+      ],
+      "BYTE_one_round": true,
+      "flags": [
+        "-O2",
+        "-ffp-contract=off",
+        "-fdefault-real-8",
+        "-fdefault-double-8"
+      ]
+    }
+  }
+}

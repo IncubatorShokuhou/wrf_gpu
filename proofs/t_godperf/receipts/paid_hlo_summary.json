@@ -1,0 +1,2398 @@
+{
+  "scope": "static optimized HLO from actual paid c45 JIT; not runtime counts/roofline",
+  "pin": "<DATA_ROOT>/wrf_gpu2/scratch/v-prep/arms/c45/attempts/before_original_PIN_replay0344/e41/pins/0_jit__advance_chunk_fori-57b5d5870c1ddc5ed32d4a85138c6af35deeb13aab4d4b5015fbc3c6aec3fe9d-cache",
+  "pin_sha256": "61a092e8b9bda86d6ab95b20a6b412ba809670ee6b871db227929ddedcbd36fd",
+  "optimized_hlo_sha256": "404362fe1bc87cf608e96761bcd64ec6e5264a869b4140809f5f510f29f97483",
+  "optimized_hlo_bytes": 29764308,
+  "computations": 4501,
+  "by_source": {
+    "ALL": {
+      "instructions": 81825,
+      "compute_instructions": 52757,
+      "result_f64_compute": 3417,
+      "result_f32_compute": 30376,
+      "opcodes": {
+        "parameter": 13170,
+        "compare": 3374,
+        "constant": 9553,
+        "broadcast": 6262,
+        "select": 2943,
+        "bitcast": 7775,
+        "xor": 8,
+        "subtract": 1216,
+        "shift-right-logical": 6,
+        "add": 4325,
+        "gather": 480,
+        "tuple": 617,
+        "get-tuple-element": 5728,
+        "fusion": 3647,
+        "copy": 393,
+        "iota": 710,
+        "concatenate": 771,
+        "convert": 1157,
+        "dynamic-slice": 607,
+        "multiply": 5133,
+        "dynamic-update-slice": 1388,
+        "and": 1080,
+        "reduce": 799,
+        "negate": 198,
+        "exponential": 65,
+        "power": 154,
+        "pad": 324,
+        "transpose": 1517,
+        "while": 66,
+        "slice": 5142,
+        "or": 363,
+        "clamp": 194,
+        "divide": 940,
+        "log": 80,
+        "conditional": 11,
+        "minimum": 197,
+        "ceil": 17,
+        "floor": 28,
+        "maximum": 534,
+        "sign": 43,
+        "remainder": 12,
+        "sqrt": 73,
+        "abs": 56,
+        "reverse": 36,
+        "cosine": 7,
+        "sine": 8,
+        "asin": 1,
+        "custom-call": 140,
+        "tanh": 12,
+        "is-finite": 93,
+        "reduce-window": 36,
+        "atan2": 21,
+        "scatter": 218,
+        "not": 94,
+        "shift-right-arithmetic": 3
+      },
+      "computations": {
+        "region_0.2563.clone": 7834,
+        "fused_select.32": 674,
+        "fused_clamp_maximum_multiply_reduce_select": 555,
+        "fused_add_broadcast_clamp_divide_gather_maximum_minimum_multiply_power_reduce_select_sqrt": 541,
+        "fused_broadcast_clamp_compare_divide_log_maximum_multiply_select": 483,
+        "fused_add_reduce_select": 454,
+        "main.2565": 445,
+        "fused_or_select": 420,
+        "fused_divide_minimum_multiply_select": 379,
+        "fused_add.125": 364,
+        "fused_add.123": 349,
+        "fused_transpose.164": 346,
+        "fused_select.28": 340,
+        "fused_multiply_transpose.3": 340,
+        "fused_add.122": 338,
+        "fused_transpose.339": 320,
+        "fused_add.124": 310,
+        "fused_add_maximum_pad_select": 307,
+        "fused_multiply.43": 300,
+        "fused_multiply.25": 300
+      }
+    },
+    "ra_goddard_lw.py": {
+      "instructions": 5205,
+      "compute_instructions": 4063,
+      "result_f64_compute": 2401,
+      "result_f32_compute": 6,
+      "opcodes": {
+        "broadcast": 478,
+        "constant": 840,
+        "compare": 380,
+        "add": 538,
+        "select": 330,
+        "dynamic-slice": 222,
+        "multiply": 516,
+        "convert": 145,
+        "dynamic-update-slice": 50,
+        "bitcast": 438,
+        "concatenate": 68,
+        "iota": 18,
+        "and": 40,
+        "reduce": 34,
+        "fusion": 311,
+        "copy": 16,
+        "negate": 34,
+        "exponential": 36,
+        "power": 14,
+        "pad": 26,
+        "transpose": 6,
+        "parameter": 18,
+        "get-tuple-element": 270,
+        "while": 44,
+        "slice": 161,
+        "subtract": 52,
+        "or": 8,
+        "clamp": 12,
+        "divide": 18,
+        "log": 8,
+        "tuple": 14,
+        "conditional": 8,
+        "minimum": 8,
+        "ceil": 4,
+        "floor": 4,
+        "gather": 28,
+        "maximum": 8
+      },
+      "computations": {
+        "fused_multiply.43": 267,
+        "fused_multiply.25": 267,
+        "region_454.615": 111,
+        "region_359.491": 111,
+        "fused_transpose.18": 98,
+        "fused_transpose.11": 98,
+        "fused_concatenate.23": 72,
+        "fused_transpose.19": 72,
+        "fused_concatenate.17": 72,
+        "fused_transpose.12": 72,
+        "fused_dynamic_update_slice.61": 54,
+        "fused_dynamic_update_slice.23": 54,
+        "fused_dynamic_update_slice.68": 50,
+        "region_413.626.clone.clone.sunk.clone": 50,
+        "fused_dynamic_update_slice.66": 50,
+        "region_318.504.clone.clone.sunk.clone": 50,
+        "fused_dynamic_update_slice.37": 47,
+        "fused_clamp_multiply.1": 47,
+        "fused_dynamic_update_slice.15": 47,
+        "fused_clamp_multiply": 47
+      }
+    },
+    "ra_goddard_sw.py": {
+      "instructions": 1457,
+      "compute_instructions": 1252,
+      "result_f64_compute": 640,
+      "result_f32_compute": 15,
+      "opcodes": {
+        "broadcast": 124,
+        "bitcast": 73,
+        "constant": 160,
+        "compare": 128,
+        "select": 117,
+        "add": 156,
+        "convert": 49,
+        "dynamic-slice": 58,
+        "dynamic-update-slice": 13,
+        "multiply": 167,
+        "subtract": 74,
+        "divide": 23,
+        "concatenate": 24,
+        "iota": 13,
+        "and": 18,
+        "reduce": 11,
+        "copy": 1,
+        "fusion": 60,
+        "pad": 6,
+        "slice": 25,
+        "minimum": 11,
+        "sign": 5,
+        "remainder": 10,
+        "maximum": 31,
+        "clamp": 6,
+        "negate": 5,
+        "sqrt": 2,
+        "abs": 2,
+        "exponential": 4,
+        "get-tuple-element": 45,
+        "while": 7,
+        "gather": 9,
+        "transpose": 3,
+        "power": 1,
+        "log": 6,
+        "ceil": 5,
+        "floor": 5
+      },
+      "computations": {
+        "fused_add_maximum_pad_select": 285,
+        "fused_add.101": 127,
+        "fused_dynamic_update_slice.33": 81,
+        "fused_concatenate.13": 77,
+        "fused_add.36": 70,
+        "fused_dynamic_update_slice.32": 65,
+        "fused_dynamic_update_slice.28": 49,
+        "region_402.691.clone": 48,
+        "fused_add_clamp_convert_maximum_multiply_reduce_subtract": 30,
+        "fused_dynamic_update_slice.31": 28,
+        "region_493.656.clone.clone.sunk.clone": 28,
+        "fused_multiply.48": 28,
+        "fused_negate_select_slice": 27,
+        "fused_add_clamp_multiply.1": 26,
+        "fused_reduce.19": 24,
+        "fused_dynamic_update_slice.29": 23,
+        "fused_dynamic_update_slice.30": 23,
+        "fused_reduce.16": 20,
+        "fused_reduce.18": 20,
+        "fused_reduce.15": 18
+      }
+    },
+    "ra_goddard_common.py": {
+      "instructions": 888,
+      "compute_instructions": 797,
+      "result_f64_compute": 0,
+      "result_f32_compute": 376,
+      "opcodes": {
+        "compare": 90,
+        "constant": 50,
+        "broadcast": 134,
+        "select": 86,
+        "subtract": 32,
+        "shift-right-logical": 6,
+        "add": 90,
+        "gather": 36,
+        "bitcast": 56,
+        "parameter": 8,
+        "fusion": 55,
+        "get-tuple-element": 33,
+        "concatenate": 18,
+        "convert": 30,
+        "dynamic-slice": 6,
+        "clamp": 8,
+        "divide": 8,
+        "iota": 4,
+        "transpose": 19,
+        "multiply": 57,
+        "maximum": 4,
+        "slice": 18,
+        "minimum": 2,
+        "abs": 2,
+        "ceil": 2,
+        "floor": 2,
+        "sign": 2,
+        "negate": 10,
+        "and": 12,
+        "while": 8
+      },
+      "computations": {
+        "fused_add.95": 126,
+        "fused_add.100": 125,
+        "fused_multiply.45": 55,
+        "fused_add_clamp_convert_maximum_multiply_reduce_subtract": 52,
+        "fused_add_convert_divide_maximum_multiply_reduce_subtract": 52,
+        "fused_multiply.46": 35,
+        "fused_multiply.27": 35,
+        "fused_multiply.28": 35,
+        "region_402.691.clone": 30,
+        "fused_select": 23,
+        "fused_select.2": 23,
+        "fused_select.1": 22,
+        "fused_select.7": 22,
+        "region_301.514.clone": 22,
+        "fused_divide.2": 21,
+        "fused_divide": 21,
+        "fused_add.11": 9,
+        "fused_add.12": 9,
+        "fused_add.13": 9,
+        "fused_add.15": 9
+      }
+    },
+    "goddard_radiation.py": {
+      "instructions": 597,
+      "compute_instructions": 416,
+      "result_f64_compute": 22,
+      "result_f32_compute": 263,
+      "opcodes": {
+        "constant": 69,
+        "convert": 9,
+        "compare": 22,
+        "add": 20,
+        "select": 31,
+        "bitcast": 57,
+        "concatenate": 6,
+        "slice": 38,
+        "dynamic-slice": 2,
+        "fusion": 37,
+        "reverse": 35,
+        "multiply": 39,
+        "minimum": 5,
+        "gather": 2,
+        "broadcast": 51,
+        "maximum": 10,
+        "divide": 10,
+        "dynamic-update-slice": 5,
+        "abs": 1,
+        "iota": 5,
+        "reduce": 9,
+        "subtract": 7,
+        "negate": 8,
+        "get-tuple-element": 109,
+        "while": 2,
+        "or": 2,
+        "parameter": 2,
+        "conditional": 2,
+        "power": 1,
+        "tuple": 1
+      },
+      "computations": {
+        "region_299.693": 80,
+        "region_301.514.clone": 43,
+        "region_402.691.clone": 41,
+        "fused_divide_reduce": 40,
+        "fused_negate_select_slice": 39,
+        "fused_add_convert_divide_maximum_multiply_reduce_subtract": 36,
+        "region_0.2563.clone": 28,
+        "fused_add_clamp_convert_maximum_multiply_reduce_subtract": 18,
+        "fused_add.9": 16,
+        "fused_add.80": 16,
+        "fused_divide.1": 15,
+        "fused_broadcast_negate_select_slice": 15,
+        "fused_select.13": 13,
+        "fused_select.11": 13,
+        "fused_reduce.37": 8,
+        "fused_reduce.33": 8,
+        "fused_multiply.45": 7,
+        "fused_multiply.46": 7,
+        "fused_add.101": 7,
+        "fused_reduce.36": 7
+      }
+    }
+  },
+  "goddard_loops": [
+    {
+      "parent": "region_345.443.clone",
+      "name": "while.3015",
+      "body": "region_347.432.clone.clone.sunk.clone.clone.clone",
+      "condition": "region_349.433.clone.clone.clone.clone",
+      "body_opcodes": {
+        "parameter": 1,
+        "get-tuple-element": 2,
+        "copy": 1,
+        "constant": 1,
+        "fusion": 3,
+        "tuple": 1
+      },
+      "body_launch_sites": [
+        "copy.3626",
+        "loop_multiply_fusion.9",
+        "loop_add_fusion.43",
+        "loop_dynamic_update_slice_fusion.49"
+      ],
+      "sources": [
+        [
+          "/gpuwrf/physics/ra_goddard_lw.py",
+          "_powers",
+          38
+        ]
+      ],
+      "instruction": "  %while.3015 = (s64[], f64[128,44,6]{2,1,0}) while(%tuple.11154), condition=%region_349.433.clone.clone.clone.clone, body=%region_347.432.clone.clone.sunk.clone.clone.clone, metadata={op_name=\"jit(_advance_chunk_fori)/while/body/cond/branch_1_fun/jit(solve_goddard_columns)/while/body/closed_call/cond/branch_0_fun/vmap()/while/body/closed_call/cond/branch_1_fun/while\" stack_frame_id=68}, backend_config={\"known_trip_count\":{\"n\":\"5\"},\"known_init_step\":{\"init\":\"0\",\"step\":\"1\"},\"known_induction_variable\":{\"tuple_index\":\"0\"},\"dynamic_variable_tuple_indices\":[]}"
+    },
+    {
+      "parent": "region_345.443.clone",
+      "name": "while.3013",
+      "body": "region_347.432.clone.clone.sunk.clone.clone.5",
+      "condition": "region_349.433.clone.clone.clone.7",
+      "body_opcodes": {
+        "parameter": 1,
+        "get-tuple-element": 2,
+        "copy": 1,
+        "constant": 1,
+        "fusion": 3,
+        "tuple": 1
+      },
+      "body_launch_sites": [
+        "copy.3619",
+        "loop_multiply_fusion.10",
+        "loop_add_fusion.44",
+        "loop_dynamic_update_slice_fusion.50"
+      ],
+      "sources": [
+        [
+          "/gpuwrf/physics/ra_goddard_lw.py",
+          "_powers",
+          38
+        ]
+      ],
+      "instruction": "  %while.3013 = (s64[], f64[128,44,6]{2,1,0}) while(%tuple.11151), condition=%region_349.433.clone.clone.clone.7, body=%region_347.432.clone.clone.sunk.clone.clone.5, metadata={op_name=\"jit(_advance_chunk_fori)/while/body/cond/branch_1_fun/jit(solve_goddard_columns)/while/body/closed_call/cond/branch_0_fun/vmap()/while/body/closed_call/cond/branch_1_fun/while\" stack_frame_id=64}, backend_config={\"known_trip_count\":{\"n\":\"5\"},\"known_init_step\":{\"init\":\"0\",\"step\":\"1\"},\"known_induction_variable\":{\"tuple_index\":\"0\"},\"dynamic_variable_tuple_indices\":[]}"
+    },
+    {
+      "parent": "region_454.615",
+      "name": "while.2828",
+      "body": "region_370.467.clone.clone.sunk.clone.clone.1",
+      "condition": "region_371.468.clone.clone.clone.1",
+      "body_opcodes": {
+        "parameter": 1,
+        "get-tuple-element": 4,
+        "copy": 1,
+        "fusion": 2,
+        "tuple": 1
+      },
+      "body_launch_sites": [
+        "copy.3647",
+        "loop_add_fusion.76",
+        "loop_add_fusion.75"
+      ],
+      "sources": [
+        [
+          "/gpuwrf/physics/ra_goddard_lw.py",
+          "_weighted",
+          22
+        ]
+      ],
+      "instruction": "  %while.2828 = (s64[], f64[128]{0}, f64[128,4]{1,0}, f64[4]{0}) while(%tuple.11163), condition=%region_371.468.clone.clone.clone.1, body=%region_370.467.clone.clone.sunk.clone.clone.1, metadata={op_name=\"jit(_advance_chunk_fori)/while/body/cond/branch_1_fun/jit(solve_goddard_columns)/while/body/closed_call/cond/branch_1_fun/vmap()/while/body/closed_call/while/body/closed_call/while/body/while\" stack_frame_id=203}, backend_config={\"known_trip_count\":{\"n\":\"3\"},\"known_init_step\":{\"init\":\"0\",\"step\":\"1\"},\"known_induction_variable\":{\"tuple_index\":\"0\"},\"dynamic_variable_tuple_indices\":[]}"
+    },
+    {
+      "parent": "region_454.615",
+      "name": "while.2829",
+      "body": "region_370.467.clone.clone.sunk.clone.clone.2",
+      "condition": "region_371.468.clone.clone.clone.2",
+      "body_opcodes": {
+        "parameter": 1,
+        "get-tuple-element": 4,
+        "copy": 1,
+        "fusion": 2,
+        "tuple": 1
+      },
+      "body_launch_sites": [
+        "copy.3641",
+        "loop_add_fusion.78",
+        "loop_add_fusion.77"
+      ],
+      "sources": [
+        [
+          "/gpuwrf/physics/ra_goddard_lw.py",
+          "_weighted",
+          22
+        ]
+      ],
+      "instruction": "  %while.2829 = (s64[], f64[128]{0}, f64[128,4]{1,0}, f64[4]{0}) while(%tuple.11160), condition=%region_371.468.clone.clone.clone.2, body=%region_370.467.clone.clone.sunk.clone.clone.2, metadata={op_name=\"jit(_advance_chunk_fori)/while/body/cond/branch_1_fun/jit(solve_goddard_columns)/while/body/closed_call/cond/branch_1_fun/vmap()/while/body/closed_call/while/body/closed_call/while/body/while\" stack_frame_id=207}, backend_config={\"known_trip_count\":{\"n\":\"3\"},\"known_init_step\":{\"init\":\"0\",\"step\":\"1\"},\"known_induction_variable\":{\"tuple_index\":\"0\"},\"dynamic_variable_tuple_indices\":[]}"
+    },
+    {
+      "parent": "region_454.615",
+      "name": "while.2830",
+      "body": "region_360.445.clone.clone.sunk.clone.clone.10",
+      "condition": "region_361.446.clone.clone.clone.10",
+      "body_opcodes": {
+        "parameter": 1,
+        "get-tuple-element": 4,
+        "copy": 1,
+        "fusion": 2,
+        "tuple": 1
+      },
+      "body_launch_sites": [
+        "copy.3635",
+        "loop_add_fusion.66",
+        "loop_add_fusion.65"
+      ],
+      "sources": [
+        [
+          "/gpuwrf/physics/ra_goddard_lw.py",
+          "_weighted",
+          22
+        ]
+      ],
+      "instruction": "  %while.2830 = (s64[], f64[128]{0}, f64[128,6]{1,0}, f64[6]{0}) while(%tuple.11157), condition=%region_361.446.clone.clone.clone.10, body=%region_360.445.clone.clone.sunk.clone.clone.10, metadata={op_name=\"jit(_advance_chunk_fori)/while/body/cond/branch_1_fun/jit(solve_goddard_columns)/while/body/closed_call/cond/branch_1_fun/vmap()/while/body/closed_call/while/body/closed_call/while/body/while\" stack_frame_id=211}, backend_config={\"known_trip_count\":{\"n\":\"5\"},\"known_init_step\":{\"init\":\"0\",\"step\":\"1\"},\"known_induction_variable\":{\"tuple_index\":\"0\"},\"dynamic_variable_tuple_indices\":[]}"
+    },
+    {
+      "parent": "region_454.615",
+      "name": "while.2823",
+      "body": "region_360.445.clone.clone.sunk.clone.clone.6",
+      "condition": "region_361.446.clone.clone.clone.6",
+      "body_opcodes": {
+        "parameter": 1,
+        "get-tuple-element": 4,
+        "copy": 1,
+        "fusion": 2,
+        "tuple": 1
+      },
+      "body_launch_sites": [
+        "copy.3659",
+        "loop_add_fusion.58",
+        "loop_add_fusion.57"
+      ],
+      "sources": [
+        [
+          "/gpuwrf/physics/ra_goddard_lw.py",
+          "_weighted",
+          22
+        ]
+      ],
+      "instruction": "  %while.2823 = (s64[], f64[128]{0}, f64[128,6]{1,0}, f64[6]{0}) while(%tuple.11169), condition=%region_361.446.clone.clone.clone.6, body=%region_360.445.clone.clone.sunk.clone.clone.6, metadata={op_name=\"jit(_advance_chunk_fori)/while/body/cond/branch_1_fun/jit(solve_goddard_columns)/while/body/closed_call/cond/branch_1_fun/vmap()/while/body/closed_call/while/body/closed_call/while/body/while\" stack_frame_id=183}, backend_config={\"known_trip_count\":{\"n\":\"5\"},\"known_init_step\":{\"init\":\"0\",\"step\":\"1\"},\"known_induction_variable\":{\"tuple_index\":\"0\"},\"dynamic_variable_tuple_indices\":[]}"
+    },
+    {
+      "parent": "region_454.615",
+      "name": "while.2826",
+      "body": "region_360.445.clone.clone.sunk.clone.clone.9",
+      "condition": "region_361.446.clone.clone.clone.9",
+      "body_opcodes": {
+        "parameter": 1,
+        "get-tuple-element": 4,
+        "copy": 1,
+        "fusion": 2,
+        "tuple": 1
+      },
+      "body_launch_sites": [
+        "copy.3665",
+        "loop_add_fusion.64",
+        "loop_add_fusion.63"
+      ],
+      "sources": [
+        [
+          "/gpuwrf/physics/ra_goddard_lw.py",
+          "_weighted",
+          22
+        ]
+      ],
+      "instruction": "  %while.2826 = (s64[], f64[128]{0}, f64[128,6]{1,0}, f64[6]{0}) while(%tuple.11172), condition=%region_361.446.clone.clone.clone.9, body=%region_360.445.clone.clone.sunk.clone.clone.9, metadata={op_name=\"jit(_advance_chunk_fori)/while/body/cond/branch_1_fun/jit(solve_goddard_columns)/while/body/closed_call/cond/branch_1_fun/vmap()/while/body/closed_call/while/body/closed_call/while/body/while\" stack_frame_id=195}, backend_config={\"known_trip_count\":{\"n\":\"5\"},\"known_init_step\":{\"init\":\"0\",\"step\":\"1\"},\"known_induction_variable\":{\"tuple_index\":\"0\"},\"dynamic_variable_tuple_indices\":[]}"
+    },
+    {
+      "parent": "region_454.615",
+      "name": "while.2824",
+      "body": "region_360.445.clone.clone.sunk.clone.clone.7",
+      "condition": "region_361.446.clone.clone.clone.7",
+      "body_opcodes": {
+        "parameter": 1,
+        "get-tuple-element": 4,
+        "copy": 1,
+        "fusion": 2,
+        "tuple": 1
+      },
+      "body_launch_sites": [
+        "copy.3677",
+        "loop_add_fusion.60",
+        "loop_add_fusion.59"
+      ],
+      "sources": [
+        [
+          "/gpuwrf/physics/ra_goddard_lw.py",
+          "_weighted",
+          22
+        ]
+      ],
+      "instruction": "  %while.2824 = (s64[], f64[128]{0}, f64[128,6]{1,0}, f64[6]{0}) while(%tuple.11178), condition=%region_361.446.clone.clone.clone.7, body=%region_360.445.clone.clone.sunk.clone.clone.7, metadata={op_name=\"jit(_advance_chunk_fori)/while/body/cond/branch_1_fun/jit(solve_goddard_columns)/while/body/closed_call/cond/branch_1_fun/vmap()/while/body/closed_call/while/body/closed_call/while/body/while\" stack_frame_id=187}, backend_config={\"known_trip_count\":{\"n\":\"5\"},\"known_init_step\":{\"init\":\"0\",\"step\":\"1\"},\"known_induction_variable\":{\"tuple_index\":\"0\"},\"dynamic_variable_tuple_indices\":[]}"
+    },
+    {
+      "parent": "region_454.615",
+      "name": "while.2825",
+      "body": "region_360.445.clone.clone.sunk.clone.clone.8",
+      "condition": "region_361.446.clone.clone.clone.8",
+      "body_opcodes": {
+        "parameter": 1,
+        "get-tuple-element": 4,
+        "copy": 1,
+        "fusion": 2,
+        "tuple": 1
+      },
+      "body_launch_sites": [
+        "copy.3671",
+        "loop_add_fusion.62",
+        "loop_add_fusion.61"
+      ],
+      "sources": [
+        [
+          "/gpuwrf/physics/ra_goddard_lw.py",
+          "_weighted",
+          22
+        ]
+      ],
+      "instruction": "  %while.2825 = (s64[], f64[128]{0}, f64[128,6]{1,0}, f64[6]{0}) while(%tuple.11175), condition=%region_361.446.clone.clone.clone.8, body=%region_360.445.clone.clone.sunk.clone.clone.8, metadata={op_name=\"jit(_advance_chunk_fori)/while/body/cond/branch_1_fun/jit(solve_goddard_columns)/while/body/closed_call/cond/branch_1_fun/vmap()/while/body/closed_call/while/body/closed_call/while/body/while\" stack_frame_id=191}, backend_config={\"known_trip_count\":{\"n\":\"5\"},\"known_init_step\":{\"init\":\"0\",\"step\":\"1\"},\"known_induction_variable\":{\"tuple_index\":\"0\"},\"dynamic_variable_tuple_indices\":[]}"
+    },
+    {
+      "parent": "region_454.615",
+      "name": "while.2832",
+      "body": "region_360.445.clone.clone.sunk.clone.clone.12",
+      "condition": "region_361.446.clone.clone.clone.12",
+      "body_opcodes": {
+        "parameter": 1,
+        "get-tuple-element": 4,
+        "copy": 1,
+        "fusion": 2,
+        "tuple": 1
+      },
+      "body_launch_sites": [
+        "copy.3683",
+        "loop_add_fusion.70",
+        "loop_add_fusion.69"
+      ],
+      "sources": [
+        [
+          "/gpuwrf/physics/ra_goddard_lw.py",
+          "_weighted",
+          22
+        ]
+      ],
+      "instruction": "  %while.2832 = (s64[], f64[128]{0}, f64[128,6]{1,0}, f64[6]{0}) while(%tuple.11181), condition=%region_361.446.clone.clone.clone.12, body=%region_360.445.clone.clone.sunk.clone.clone.12, metadata={op_name=\"jit(_advance_chunk_fori)/while/body/cond/branch_1_fun/jit(solve_goddard_columns)/while/body/closed_call/cond/branch_1_fun/vmap()/while/body/closed_call/while/body/closed_call/while/body/while\" stack_frame_id=219}, backend_config={\"known_trip_count\":{\"n\":\"5\"},\"known_init_step\":{\"init\":\"0\",\"step\":\"1\"},\"known_induction_variable\":{\"tuple_index\":\"0\"},\"dynamic_variable_tuple_indices\":[]}"
+    },
+    {
+      "parent": "region_454.615",
+      "name": "while.2831",
+      "body": "region_360.445.clone.clone.sunk.clone.clone.11",
+      "condition": "region_361.446.clone.clone.clone.11",
+      "body_opcodes": {
+        "parameter": 1,
+        "get-tuple-element": 4,
+        "copy": 1,
+        "fusion": 2,
+        "tuple": 1
+      },
+      "body_launch_sites": [
+        "copy.3689",
+        "loop_add_fusion.68",
+        "loop_add_fusion.67"
+      ],
+      "sources": [
+        [
+          "/gpuwrf/physics/ra_goddard_lw.py",
+          "_weighted",
+          22
+        ]
+      ],
+      "instruction": "  %while.2831 = (s64[], f64[128]{0}, f64[128,6]{1,0}, f64[6]{0}) while(%tuple.11184), condition=%region_361.446.clone.clone.clone.11, body=%region_360.445.clone.clone.sunk.clone.clone.11, metadata={op_name=\"jit(_advance_chunk_fori)/while/body/cond/branch_1_fun/jit(solve_goddard_columns)/while/body/closed_call/cond/branch_1_fun/vmap()/while/body/closed_call/while/body/closed_call/while/body/while\" stack_frame_id=215}, backend_config={\"known_trip_count\":{\"n\":\"5\"},\"known_init_step\":{\"init\":\"0\",\"step\":\"1\"},\"known_induction_variable\":{\"tuple_index\":\"0\"},\"dynamic_variable_tuple_indices\":[]}"
+    },
+    {
+      "parent": "region_454.615",
+      "name": "while.2827",
+      "body": "region_368.459.clone.clone.sunk.clone.clone",
+      "condition": "region_369.460.clone.clone.clone",
+      "body_opcodes": {
+        "parameter": 1,
+        "get-tuple-element": 4,
+        "copy": 1,
+        "fusion": 2,
+        "tuple": 1
+      },
+      "body_launch_sites": [
+        "copy.3653",
+        "loop_add_fusion.72",
+        "loop_add_fusion.71"
+      ],
+      "sources": [
+        [
+          "/gpuwrf/physics/ra_goddard_lw.py",
+          "_weighted",
+          22
+        ]
+      ],
+      "instruction": "  %while.2827 = (s64[], f64[128]{0}, f64[128,12]{1,0}, f64[12]{0}) while(%tuple.11166), condition=%region_369.460.clone.clone.clone, body=%region_368.459.clone.clone.sunk.clone.clone, metadata={op_name=\"jit(_advance_chunk_fori)/while/body/cond/branch_1_fun/jit(solve_goddard_columns)/while/body/closed_call/cond/branch_1_fun/vmap()/while/body/closed_call/while/body/closed_call/while/body/while\" stack_frame_id=199}, backend_config={\"known_trip_count\":{\"n\":\"11\"},\"known_init_step\":{\"init\":\"0\",\"step\":\"1\"},\"known_induction_variable\":{\"tuple_index\":\"0\"},\"dynamic_variable_tuple_indices\":[]}"
+    },
+    {
+      "parent": "region_453.619.clone.clone.sunk.clone",
+      "name": "while.2949",
+      "body": "region_454.615",
+      "condition": "region_390.492.clone",
+      "body_opcodes": {
+        "constant": 1,
+        "copy": 10,
+        "parameter": 1,
+        "get-tuple-element": 66,
+        "fusion": 25,
+        "bitcast": 19,
+        "tuple": 13,
+        "while": 10,
+        "conditional": 1
+      },
+      "body_launch_sites": [
+        "copy.6526",
+        "copy.3657",
+        "copy.3687",
+        "copy.3675",
+        "copy.3669",
+        "copy.3681",
+        "copy.3663",
+        "copy.3645",
+        "copy.3639",
+        "copy.3651",
+        "loop_compare_fusion.70",
+        "loop_multiply_fusion.37",
+        "loop_dynamic_slice_fusion.35",
+        "loop_dynamic_slice_fusion.34",
+        "loop_dynamic_slice_fusion.36",
+        "wrapped_slice.2",
+        "wrapped_slice.3",
+        "wrapped_slice.4",
+        "loop_clamp_multiply_fusion.1",
+        "loop_multiply_fusion.39",
+        "loop_multiply_fusion.30",
+        "loop_multiply_fusion.35",
+        "loop_multiply_fusion.32",
+        "loop_multiply_fusion.41",
+        "loop_multiply_fusion.33",
+        "loop_multiply_fusion.40",
+        "loop_multiply_fusion.36",
+        "loop_multiply_fusion.38",
+        "loop_multiply_fusion.31",
+        "loop_multiply_fusion.42",
+        "loop_slice_fusion.2",
+        "input_concatenate_fusion.18",
+        "loop_multiply_fusion.43",
+        "loop_multiply_fusion.34",
+        "loop_add_fusion.96"
+      ],
+      "sources": [
+        [
+          "/gpuwrf/physics/ra_goddard_lw.py",
+          "solve_lw_column.<locals>.band.<locals>.upper",
+          227
+        ]
+      ],
+      "instruction": "  %while.2949 = (s64[], f64[128,45]{1,0}, f64[128,45]{1,0}, f64[128,45]{1,0}, f64[128,6]{1,0}, /*index=5*/f64[128,3]{1,0}, f64[128,6,2]{1,0,2}, f64[128,4]{1,0}, f64[128,4]{1,0}, f64[128,6]{1,0}, /*index=10*/f64[128,3]{1,0}, f64[128]{0}, f64[], f64[128]{0}, f64[128,44,6]{2,0,1}, /*index=15*/f64[128,44,3]{2,0,1}, f64[128,44,6,2]{2,0,3,1}, f64[128,44,4]{2,0,1}, f64[128,44,4]{2,0,1}, f64[128,44,6]{2,0,1}, /*index=20*/f64[128,44,3]{2,0,1}, s64[], f64[6,9]{1,0}, f64[6,3]{1,0}, f64[2,6]{1,0}, /*index=25*/f64[128,45]{1,0}, s64[], f64[128,45]{1,0}, f64[128,45]{1,0}, f64[26,21]{1,0}, /*index=30*/f64[26,21]{1,0}, f64[26,21]{1,0}, f64[2,4]{1,0}, f64[4]{0}, f64[2,6]{1,0}, /*index=35*/f64[6]{0}, f64[6]{0}, f64[44]{0}, f64[128,44]{1,0}, f64[128,45]{1,0}, /*index=40*/f64[128,45]{1,0}, f64[128,46]{1,0}) while(%tuple.11189), condition=%region_390.492.clone, body=%region_454.615, metadata={op_name=\"jit(_advance_chunk_fori)/while/body/cond/branch_1_fun/jit(solve_goddard_columns)/while/body/closed_call/cond/branch_1_fun/vmap()/while/body/closed_call/while/body/closed_call/while\" stack_frame_id=178}, backend_config={\"known_induction_variable\":{\"tuple_index\":\"0\"},\"dynamic_variable_tuple_indices\":[]}"
+    },
+    {
+      "parent": "region_413.626.clone.clone.sunk.clone",
+      "name": "while.2945",
+      "body": "region_332.413.clone.clone.sunk.clone.clone",
+      "condition": "region_334.414.clone.clone.clone.1",
+      "body_opcodes": {
+        "parameter": 1,
+        "get-tuple-element": 2,
+        "copy": 1,
+        "constant": 1,
+        "fusion": 3,
+        "tuple": 1
+      },
+      "body_launch_sites": [
+        "copy.3756",
+        "loop_multiply_fusion.11",
+        "loop_add_fusion.86",
+        "loop_dynamic_update_slice_fusion.62"
+      ],
+      "sources": [
+        [
+          "/gpuwrf/physics/ra_goddard_lw.py",
+          "_powers",
+          38
+        ]
+      ],
+      "instruction": "  %while.2945 = (s64[], f64[128,44,4]{2,1,0}) while(%tuple.11198), condition=%region_334.414.clone.clone.clone.1, body=%region_332.413.clone.clone.sunk.clone.clone, metadata={op_name=\"jit(_advance_chunk_fori)/while/body/cond/branch_1_fun/jit(solve_goddard_columns)/while/body/closed_call/cond/branch_1_fun/vmap()/while/body/closed_call/while\" stack_frame_id=681}, backend_config={\"known_trip_count\":{\"n\":\"3\"},\"known_init_step\":{\"init\":\"0\",\"step\":\"1\"},\"known_induction_variable\":{\"tuple_index\":\"0\"},\"dynamic_variable_tuple_indices\":[]}"
+    },
+    {
+      "parent": "region_413.626.clone.clone.sunk.clone",
+      "name": "while.2946",
+      "body": "region_337.419.clone.clone.sunk.clone.clone",
+      "condition": "region_334.414.clone.clone.clone.2",
+      "body_opcodes": {
+        "parameter": 1,
+        "get-tuple-element": 2,
+        "copy": 1,
+        "constant": 1,
+        "fusion": 3,
+        "tuple": 1
+      },
+      "body_launch_sites": [
+        "copy.3777",
+        "loop_dynamic_slice_fusion.29",
+        "loop_add_fusion.87",
+        "loop_dynamic_update_slice_fusion.63"
+      ],
+      "sources": [
+        [
+          "/gpuwrf/physics/ra_goddard_lw.py",
+          "_powers",
+          38
+        ]
+      ],
+      "instruction": "  %while.2946 = (s64[], f64[128,44,4]{2,1,0}) while(%tuple.11206), condition=%region_334.414.clone.clone.clone.2, body=%region_337.419.clone.clone.sunk.clone.clone, metadata={op_name=\"jit(_advance_chunk_fori)/while/body/cond/branch_1_fun/jit(solve_goddard_columns)/while/body/closed_call/cond/branch_1_fun/vmap()/while/body/closed_call/while\" stack_frame_id=686}, backend_config={\"known_trip_count\":{\"n\":\"3\"},\"known_init_step\":{\"init\":\"0\",\"step\":\"1\"},\"known_induction_variable\":{\"tuple_index\":\"0\"},\"dynamic_variable_tuple_indices\":[]}"
+    },
+    {
+      "parent": "region_413.626.clone.clone.sunk.clone",
+      "name": "while.2943",
+      "body": "region_347.432.clone.clone.sunk.clone.clone.3",
+      "condition": "region_349.433.clone.clone.clone.4",
+      "body_opcodes": {
+        "parameter": 1,
+        "get-tuple-element": 2,
+        "copy": 1,
+        "constant": 1,
+        "fusion": 3,
+        "tuple": 1
+      },
+      "body_launch_sites": [
+        "copy.3750",
+        "loop_multiply_fusion.7",
+        "loop_add_fusion.41",
+        "loop_dynamic_update_slice_fusion.47"
+      ],
+      "sources": [
+        [
+          "/gpuwrf/physics/ra_goddard_lw.py",
+          "_powers",
+          38
+        ]
+      ],
+      "instruction": "  %while.2943 = (s64[], f64[128,44,6]{2,1,0}) while(%tuple.11195), condition=%region_349.433.clone.clone.clone.4, body=%region_347.432.clone.clone.sunk.clone.clone.3, metadata={op_name=\"jit(_advance_chunk_fori)/while/body/cond/branch_1_fun/jit(solve_goddard_columns)/while/body/closed_call/cond/branch_1_fun/vmap()/while/body/closed_call/while\" stack_frame_id=671}, backend_config={\"known_trip_count\":{\"n\":\"5\"},\"known_init_step\":{\"init\":\"0\",\"step\":\"1\"},\"known_induction_variable\":{\"tuple_index\":\"0\"},\"dynamic_variable_tuple_indices\":[]}"
+    },
+    {
+      "parent": "region_413.626.clone.clone.sunk.clone",
+      "name": "while.2944",
+      "body": "region_347.432.clone.clone.sunk.clone.clone.4",
+      "condition": "region_349.433.clone.clone.clone.5",
+      "body_opcodes": {
+        "parameter": 1,
+        "get-tuple-element": 2,
+        "copy": 1,
+        "constant": 1,
+        "fusion": 3,
+        "tuple": 1
+      },
+      "body_launch_sites": [
+        "copy.3744",
+        "loop_multiply_fusion.8",
+        "loop_add_fusion.42",
+        "loop_dynamic_update_slice_fusion.48"
+      ],
+      "sources": [
+        [
+          "/gpuwrf/physics/ra_goddard_lw.py",
+          "_powers",
+          38
+        ]
+      ],
+      "instruction": "  %while.2944 = (s64[], f64[128,44,6]{2,1,0}) while(%tuple.11192), condition=%region_349.433.clone.clone.clone.5, body=%region_347.432.clone.clone.sunk.clone.clone.4, metadata={op_name=\"jit(_advance_chunk_fori)/while/body/cond/branch_1_fun/jit(solve_goddard_columns)/while/body/closed_call/cond/branch_1_fun/vmap()/while/body/closed_call/while\" stack_frame_id=676}, backend_config={\"known_trip_count\":{\"n\":\"5\"},\"known_init_step\":{\"init\":\"0\",\"step\":\"1\"},\"known_induction_variable\":{\"tuple_index\":\"0\"},\"dynamic_variable_tuple_indices\":[]}"
+    },
+    {
+      "parent": "region_413.626.clone.clone.sunk.clone",
+      "name": "while.2947",
+      "body": "region_341.425.clone.clone.sunk.clone.clone",
+      "condition": "region_349.433.clone.clone.clone.6",
+      "body_opcodes": {
+        "parameter": 1,
+        "get-tuple-element": 2,
+        "copy": 1,
+        "constant": 1,
+        "fusion": 3,
+        "tuple": 1
+      },
+      "body_launch_sites": [
+        "copy.3783",
+        "loop_dynamic_slice_fusion.30",
+        "loop_add_fusion.88",
+        "loop_dynamic_update_slice_fusion.64"
+      ],
+      "sources": [
+        [
+          "/gpuwrf/physics/ra_goddard_lw.py",
+          "_powers",
+          38
+        ]
+      ],
+      "instruction": "  %while.2947 = (s64[], f64[128,44,6]{2,1,0}) while(%tuple.11209), condition=%region_349.433.clone.clone.clone.6, body=%region_341.425.clone.clone.sunk.clone.clone, metadata={op_name=\"jit(_advance_chunk_fori)/while/body/cond/branch_1_fun/jit(solve_goddard_columns)/while/body/closed_call/cond/branch_1_fun/vmap()/while/body/closed_call/while\" stack_frame_id=691}, backend_config={\"known_trip_count\":{\"n\":\"5\"},\"known_init_step\":{\"init\":\"0\",\"step\":\"1\"},\"known_induction_variable\":{\"tuple_index\":\"0\"},\"dynamic_variable_tuple_indices\":[]}"
+    },
+    {
+      "parent": "region_413.626.clone.clone.sunk.clone",
+      "name": "while.2942",
+      "body": "region_320.397.clone.clone.sunk.clone.clone",
+      "condition": "region_322.398.clone.clone.clone",
+      "body_opcodes": {
+        "parameter": 1,
+        "get-tuple-element": 4,
+        "copy": 1,
+        "constant": 1,
+        "fusion": 3,
+        "tuple": 1
+      },
+      "body_launch_sites": [
+        "copy.3763",
+        "loop_select_fusion.9",
+        "loop_add_fusion.85",
+        "loop_dynamic_update_slice_fusion.61"
+      ],
+      "sources": [
+        [
+          "/gpuwrf/physics/ra_goddard_lw.py",
+          "_layer_exponents",
+          54
+        ]
+      ],
+      "instruction": "  %while.2942 = (s64[], f64[128,44,6]{2,1,0}, s64[], s32[9]{0}) while(%tuple.11201), condition=%region_322.398.clone.clone.clone, body=%region_320.397.clone.clone.sunk.clone.clone, metadata={op_name=\"jit(_advance_chunk_fori)/while/body/cond/branch_1_fun/jit(solve_goddard_columns)/while/body/closed_call/cond/branch_1_fun/vmap()/while/body/closed_call/while\" stack_frame_id=666}, backend_config={\"known_trip_count\":{\"n\":\"5\"},\"known_init_step\":{\"init\":\"0\",\"step\":\"1\"},\"known_induction_variable\":{\"tuple_index\":\"0\"},\"dynamic_variable_tuple_indices\":[]}"
+    },
+    {
+      "parent": "region_413.626.clone.clone.sunk.clone",
+      "name": "while.2951",
+      "body": "region_453.619.clone.clone.sunk.clone",
+      "condition": "region_392.496.clone.clone.clone",
+      "body_opcodes": {
+        "constant": 1,
+        "copy": 7,
+        "parameter": 1,
+        "get-tuple-element": 36,
+        "fusion": 8,
+        "tuple": 2,
+        "while": 1
+      },
+      "body_launch_sites": [
+        "copy.6540",
+        "copy.3792",
+        "input_reduce_fusion.34",
+        "loop_add_fusion.97",
+        "copy.3699",
+        "loop_broadcast_fusion.20",
+        "copy.3712",
+        "loop_broadcast_fusion.17",
+        "copy.3709",
+        "loop_broadcast_fusion.19",
+        "copy.3707",
+        "loop_broadcast_fusion.16",
+        "copy.3708",
+        "loop_broadcast_fusion.18",
+        "loop_dynamic_update_slice_fusion.67"
+      ],
+      "sources": [
+        [
+          "/gpuwrf/physics/ra_goddard_lw.py",
+          "solve_lw_column.<locals>.band",
+          229
+        ]
+      ],
+      "instruction": "  %while.2951 = (s64[], f64[128,45]{1,0}, f64[128,45]{1,0}, f64[128,45]{1,0}, f64[128,45]{1,0}, /*index=5*/f64[128,44,6]{2,0,1}, f64[128,44,3]{2,0,1}, f64[128,44,6,2]{2,0,3,1}, f64[128,44,4]{2,0,1}, f64[128,44,4]{2,0,1}, /*index=10*/f64[128,44,6]{2,0,1}, f64[128,44,3]{2,0,1}, s64[], f64[6,9]{1,0}, f64[6,3]{1,0}, /*index=15*/f64[2,6]{1,0}, f64[128,45]{1,0}, f64[128,45]{1,0}, f64[128,45]{1,0}, f64[26,21]{1,0}, /*index=20*/f64[26,21]{1,0}, f64[26,21]{1,0}, f64[2,4]{1,0}, f64[4]{0}, f64[2,6]{1,0}, /*index=25*/f64[6]{0}, f64[6]{0}, f64[44]{0}, f64[128,44]{1,0}, f64[128,45]{1,0}, /*index=30*/f64[128,45]{1,0}, f64[128,46]{1,0}) while(%tuple.11212), condition=%region_392.496.clone.clone.clone, body=%region_453.619.clone.clone.sunk.clone, metadata={op_name=\"jit(_advance_chunk_fori)/while/body/cond/branch_1_fun/jit(solve_goddard_columns)/while/body/closed_call/cond/branch_1_fun/vmap()/while/body/closed_call/while\" stack_frame_id=176}, backend_config={\"known_trip_count\":{\"n\":\"44\"},\"known_init_step\":{\"init\":\"0\",\"step\":\"1\"},\"known_induction_variable\":{\"tuple_index\":\"0\"},\"dynamic_variable_tuple_indices\":[]}"
+    },
+    {
+      "parent": "region_493.656.clone.clone.sunk.clone",
+      "name": "while.2953",
+      "body": "region_504.651.clone.clone.sunk.clone",
+      "condition": "region_507.652.clone.clone",
+      "body_opcodes": {
+        "parameter": 1,
+        "get-tuple-element": 8,
+        "fusion": 6,
+        "tuple": 1
+      },
+      "body_launch_sites": [
+        "input_reduce_fusion.16",
+        "loop_dynamic_slice_fusion.14",
+        "loop_multiply_fusion.3",
+        "loop_dynamic_update_slice_fusion.31",
+        "loop_dynamic_update_slice_fusion.30",
+        "loop_add_fusion.35"
+      ],
+      "sources": [
+        [
+          "/gpuwrf/physics/ra_goddard_sw.py",
+          "twostream_overcast",
+          64
+        ]
+      ],
+      "instruction": "  %while.2953 = (s64[], f64[128,45]{1,0}, f64[128,45]{1,0}, f64[128,44]{1,0}, f64[128,44]{1,0}, /*index=5*/f64[128,44]{1,0}, f64[128,44]{1,0}, f64[128,44]{1,0}) while(%tuple.11146), condition=%region_507.652.clone.clone, body=%region_504.651.clone.clone.sunk.clone, metadata={op_name=\"jit(_advance_chunk_fori)/while/body/cond/branch_1_fun/jit(solve_goddard_columns)/while/body/closed_call/cond/branch_1_fun/vmap()/while/body/closed_call/while\" stack_frame_id=719}, backend_config={\"known_trip_count\":{\"n\":\"44\"},\"known_init_step\":{\"init\":\"0\",\"step\":\"1\"},\"known_induction_variable\":{\"tuple_index\":\"0\"},\"dynamic_variable_tuple_indices\":[]}"
+    },
+    {
+      "parent": "region_493.656.clone.clone.sunk.clone",
+      "name": "while.2952",
+      "body": "region_497.644.clone.clone.sunk.clone",
+      "condition": "region_501.645.clone.clone",
+      "body_opcodes": {
+        "parameter": 1,
+        "get-tuple-element": 10,
+        "copy": 1,
+        "fusion": 8,
+        "tuple": 1
+      },
+      "body_launch_sites": [
+        "copy.3571",
+        "loop_dynamic_slice_fusion.13",
+        "loop_dynamic_slice_fusion.12",
+        "loop_add_fusion.34",
+        "input_reduce_fusion.15",
+        "loop_multiply_fusion.2",
+        "loop_dynamic_update_slice_fusion.28",
+        "loop_dynamic_update_slice_fusion.29",
+        "loop_dynamic_update_slice_fusion.27"
+      ],
+      "sources": [
+        [
+          "/gpuwrf/physics/ra_goddard_sw.py",
+          "twostream_overcast",
+          55
+        ]
+      ],
+      "instruction": "  %while.2952 = (s64[], f64[128,44]{1,0}, f64[128,44]{1,0}, f64[128,44]{1,0}, f64[128,44]{1,0}, /*index=5*/f64[128,44]{1,0}, f64[128,44]{1,0}, s32[128]{0}, f64[128,44]{1,0}, f64[128,44]{1,0}) while(%tuple.11143), condition=%region_501.645.clone.clone, body=%region_497.644.clone.clone.sunk.clone, metadata={op_name=\"jit(_advance_chunk_fori)/while/body/cond/branch_1_fun/jit(solve_goddard_columns)/while/body/closed_call/cond/branch_1_fun/vmap()/while/body/closed_call/while\" stack_frame_id=716}, backend_config={\"known_trip_count\":{\"n\":\"43\"},\"known_init_step\":{\"init\":\"0\",\"step\":\"1\"},\"known_induction_variable\":{\"tuple_index\":\"0\"},\"dynamic_variable_tuple_indices\":[]}"
+    },
+    {
+      "parent": "region_402.691.clone",
+      "name": "while.2958",
+      "body": "region_304.358",
+      "condition": "region_305.359",
+      "body_opcodes": {
+        "parameter": 1,
+        "get-tuple-element": 7,
+        "fusion": 2,
+        "copy": 2,
+        "tuple": 1
+      },
+      "body_launch_sites": [
+        "loop_add_fusion",
+        "loop_select_fusion",
+        "copy.3812",
+        "copy.3811"
+      ],
+      "sources": [
+        [
+          "/gpuwrf/physics/ra_goddard_common.py",
+          "ozone_interp",
+          73
+        ]
+      ],
+      "instruction": "  %while.2958 = (s64[], u32[128,44]{1,0}, u32[128,44]{1,0}, f32[128,33]{1,0}, f32[128,44]{1,0}) while(%tuple.11217), condition=%region_305.359, body=%region_304.358, metadata={op_name=\"jit(_advance_chunk_fori)/while/body/cond/branch_1_fun/jit(solve_goddard_columns)/while/body/closed_call/cond/branch_1_fun/vmap(jit(searchsorted))/jit(_searchsorted_scan_impl)/vmap(jit(_searchsorted_scan_impl))/while\" stack_frame_id=2519}, backend_config={\"known_trip_count\":{\"n\":\"6\"},\"known_init_step\":{\"init\":\"0\",\"step\":\"1\"},\"known_induction_variable\":{\"tuple_index\":\"0\"},\"dynamic_variable_tuple_indices\":[]}"
+    },
+    {
+      "parent": "region_402.691.clone",
+      "name": "while.2955",
+      "body": "region_306.368.clone",
+      "condition": "region_307.369.clone",
+      "body_opcodes": {
+        "parameter": 1,
+        "get-tuple-element": 7,
+        "fusion": 2,
+        "copy": 2,
+        "tuple": 1
+      },
+      "body_launch_sites": [
+        "loop_add_fusion.1",
+        "loop_select_fusion.1",
+        "copy.3821",
+        "copy.3820"
+      ],
+      "sources": [
+        [
+          "/gpuwrf/physics/ra_goddard_common.py",
+          "opt_cloud",
+          94
+        ]
+      ],
+      "instruction": "  %while.2955 = (s64[], u32[128,44,6]{2,1,0}, u32[128,44,6]{2,1,0}, f32[109]{0}, f32[128,44,6]{2,1,0}) while(%tuple.11220), condition=%region_307.369.clone, body=%region_306.368.clone, metadata={op_name=\"jit(_advance_chunk_fori)/while/body/cond/branch_1_fun/jit(solve_goddard_columns)/while/body/closed_call/cond/branch_1_fun/vmap(jit(searchsorted))/jit(_searchsorted_scan_impl)/vmap(jit(_searchsorted_scan_impl))/while\" stack_frame_id=2517}, backend_config={\"known_trip_count\":{\"n\":\"7\"},\"known_init_step\":{\"init\":\"0\",\"step\":\"1\"},\"known_induction_variable\":{\"tuple_index\":\"0\"},\"dynamic_variable_tuple_indices\":[]}"
+    },
+    {
+      "parent": "region_402.691.clone",
+      "name": "while.2980",
+      "body": "region_511.660.clone.clone.sunk.clone.clone.1",
+      "condition": "region_513.661.clone.clone.clone.1",
+      "body_opcodes": {
+        "parameter": 1,
+        "get-tuple-element": 3,
+        "copy": 1,
+        "fusion": 4,
+        "tuple": 1
+      },
+      "body_launch_sites": [
+        "copy.3848",
+        "loop_dynamic_slice_fusion.27",
+        "loop_add_fusion.83",
+        "input_reduce_fusion.28",
+        "loop_dynamic_update_slice_fusion.59"
+      ],
+      "sources": [
+        [
+          "/gpuwrf/physics/ra_goddard_sw.py",
+          "_accumulate",
+          77
+        ]
+      ],
+      "instruction": "  %while.2980 = (s64[], f64[128,45]{1,0}, f64[128,44]{1,0}) while(%tuple.11229), condition=%region_513.661.clone.clone.clone.1, body=%region_511.660.clone.clone.sunk.clone.clone.1, metadata={op_name=\"jit(_advance_chunk_fori)/while/body/cond/branch_1_fun/jit(solve_goddard_columns)/while/body/closed_call/cond/branch_1_fun/vmap()/while\" stack_frame_id=2538}, backend_config={\"known_trip_count\":{\"n\":\"44\"},\"known_init_step\":{\"init\":\"0\",\"step\":\"1\"},\"known_induction_variable\":{\"tuple_index\":\"0\"},\"dynamic_variable_tuple_indices\":[]}"
+    },
+    {
+      "parent": "region_402.691.clone",
+      "name": "while.2976",
+      "body": "region_511.660.clone.clone.sunk.clone",
+      "condition": "region_513.661.clone.clone",
+      "body_opcodes": {
+        "parameter": 1,
+        "get-tuple-element": 3,
+        "copy": 1,
+        "fusion": 4,
+        "tuple": 1
+      },
+      "body_launch_sites": [
+        "copy.3860",
+        "loop_dynamic_slice_fusion.9",
+        "loop_add_fusion.29",
+        "input_reduce_fusion.14",
+        "loop_dynamic_update_slice_fusion.22"
+      ],
+      "sources": [
+        [
+          "/gpuwrf/physics/ra_goddard_sw.py",
+          "_accumulate",
+          77
+        ]
+      ],
+      "instruction": "  %while.2976 = (s64[], f64[128,45]{1,0}, f64[128,44]{1,0}) while(%tuple.11235), condition=%region_513.661.clone.clone, body=%region_511.660.clone.clone.sunk.clone, metadata={op_name=\"jit(_advance_chunk_fori)/while/body/cond/branch_1_fun/jit(solve_goddard_columns)/while/body/closed_call/cond/branch_1_fun/vmap()/while\" stack_frame_id=733}, backend_config={\"known_trip_count\":{\"n\":\"44\"},\"known_init_step\":{\"init\":\"0\",\"step\":\"1\"},\"known_induction_variable\":{\"tuple_index\":\"0\"},\"dynamic_variable_tuple_indices\":[]}"
+    },
+    {
+      "parent": "region_402.691.clone",
+      "name": "while.2978",
+      "body": "region_511.660.clone.clone.sunk.clone.clone",
+      "condition": "region_513.661.clone.clone.clone",
+      "body_opcodes": {
+        "parameter": 1,
+        "get-tuple-element": 3,
+        "copy": 1,
+        "fusion": 4,
+        "tuple": 1
+      },
+      "body_launch_sites": [
+        "copy.3854",
+        "loop_dynamic_slice_fusion.26",
+        "loop_add_fusion.82",
+        "input_reduce_fusion.27",
+        "loop_dynamic_update_slice_fusion.58"
+      ],
+      "sources": [
+        [
+          "/gpuwrf/physics/ra_goddard_sw.py",
+          "_accumulate",
+          77
+        ]
+      ],
+      "instruction": "  %while.2978 = (s64[], f64[128,45]{1,0}, f64[128,44]{1,0}) while(%tuple.11232), condition=%region_513.661.clone.clone.clone, body=%region_511.660.clone.clone.sunk.clone.clone, metadata={op_name=\"jit(_advance_chunk_fori)/while/body/cond/branch_1_fun/jit(solve_goddard_columns)/while/body/closed_call/cond/branch_1_fun/vmap()/while\" stack_frame_id=2533}, backend_config={\"known_trip_count\":{\"n\":\"44\"},\"known_init_step\":{\"init\":\"0\",\"step\":\"1\"},\"known_induction_variable\":{\"tuple_index\":\"0\"},\"dynamic_variable_tuple_indices\":[]}"
+    },
+    {
+      "parent": "region_402.691.clone",
+      "name": "while.2983",
+      "body": "region_511.660.clone.clone.sunk.clone.clone.2",
+      "condition": "region_513.661.clone.clone.clone.2",
+      "body_opcodes": {
+        "parameter": 1,
+        "get-tuple-element": 3,
+        "copy": 1,
+        "fusion": 4,
+        "tuple": 1
+      },
+      "body_launch_sites": [
+        "copy.3866",
+        "loop_dynamic_slice_fusion.28",
+        "loop_add_fusion.84",
+        "input_reduce_fusion.29",
+        "loop_dynamic_update_slice_fusion.60"
+      ],
+      "sources": [
+        [
+          "/gpuwrf/physics/ra_goddard_sw.py",
+          "_accumulate",
+          77
+        ]
+      ],
+      "instruction": "  %while.2983 = (s64[], f64[128,45]{1,0}, f64[128,44]{1,0}) while(%tuple.11238), condition=%region_513.661.clone.clone.clone.2, body=%region_511.660.clone.clone.sunk.clone.clone.2, metadata={op_name=\"jit(_advance_chunk_fori)/while/body/cond/branch_1_fun/jit(solve_goddard_columns)/while/body/closed_call/cond/branch_1_fun/vmap()/while\" stack_frame_id=2543}, backend_config={\"known_trip_count\":{\"n\":\"44\"},\"known_init_step\":{\"init\":\"0\",\"step\":\"1\"},\"known_induction_variable\":{\"tuple_index\":\"0\"},\"dynamic_variable_tuple_indices\":[]}"
+    },
+    {
+      "parent": "region_402.691.clone",
+      "name": "while.2965",
+      "body": "region_313.387.clone.clone.sunk.clone",
+      "condition": "region_317.388.clone.clone",
+      "body_opcodes": {
+        "parameter": 1,
+        "get-tuple-element": 7,
+        "copy": 1,
+        "fusion": 8,
+        "tuple": 1
+      },
+      "body_launch_sites": [
+        "copy.3880",
+        "loop_dynamic_slice_fusion.6",
+        "loop_dynamic_slice_fusion.8",
+        "loop_dynamic_slice_fusion.7",
+        "loop_add_fusion.28",
+        "input_reduce_fusion.13",
+        "loop_dynamic_update_slice_fusion.20",
+        "loop_dynamic_update_slice_fusion.21",
+        "loop_dynamic_update_slice_fusion.19"
+      ],
+      "sources": [
+        [
+          "/gpuwrf/physics/ra_goddard_lw.py",
+          "solve_lw_column",
+          145
+        ]
+      ],
+      "instruction": "  %while.2965 = (s64[], f64[128,45]{1,0}, f64[128,45]{1,0}, f64[128,45]{1,0}, f64[128,44]{1,0}, /*index=5*/f64[128,44]{1,0}, f64[128,44]{1,0}) while(%tuple.11244), condition=%region_317.388.clone.clone, body=%region_313.387.clone.clone.sunk.clone, metadata={op_name=\"jit(_advance_chunk_fori)/while/body/cond/branch_1_fun/jit(solve_goddard_columns)/while/body/closed_call/cond/branch_1_fun/vmap()/while\" stack_frame_id=2528}, backend_config={\"known_trip_count\":{\"n\":\"44\"},\"known_init_step\":{\"init\":\"0\",\"step\":\"1\"},\"known_induction_variable\":{\"tuple_index\":\"0\"},\"dynamic_variable_tuple_indices\":[]}"
+    },
+    {
+      "parent": "region_402.691.clone",
+      "name": "while.3009",
+      "body": "region_406.520.clone.clone.clone.clone.sunk.clone",
+      "condition": "region_407.521.clone.clone.clone.clone",
+      "body_opcodes": {
+        "parameter": 1,
+        "get-tuple-element": 3,
+        "fusion": 2,
+        "tuple": 1
+      },
+      "body_launch_sites": [
+        "loop_add_fusion.15",
+        "loop_add_fusion.16"
+      ],
+      "sources": [
+        [
+          "/gpuwrf/physics/ra_goddard_common.py",
+          "opt_cloud",
+          112
+        ]
+      ],
+      "instruction": "  %while.3009 = (s64[], f32[128,44,10]{2,1,0}, f32[128,44,6,10]{3,1,0,2}) while(%tuple.11241), condition=%region_407.521.clone.clone.clone.clone, body=%region_406.520.clone.clone.clone.clone.sunk.clone, metadata={op_name=\"jit(_advance_chunk_fori)/while/body/cond/branch_1_fun/jit(solve_goddard_columns)/while/body/closed_call/cond/branch_1_fun/vmap()/while\" stack_frame_id=2552}, backend_config={\"known_trip_count\":{\"n\":\"6\"},\"known_init_step\":{\"init\":\"0\",\"step\":\"1\"},\"known_induction_variable\":{\"tuple_index\":\"0\"},\"dynamic_variable_tuple_indices\":[]}"
+    },
+    {
+      "parent": "region_402.691.clone",
+      "name": "while.2969",
+      "body": "region_413.626.clone.clone.sunk.clone",
+      "condition": "region_397.505.clone.clone",
+      "body_opcodes": {
+        "fusion": 27,
+        "constant": 1,
+        "copy": 10,
+        "parameter": 1,
+        "get-tuple-element": 65,
+        "bitcast": 9,
+        "tuple": 12,
+        "while": 7,
+        "conditional": 2
+      },
+      "body_launch_sites": [
+        "input_reduce_fusion.35",
+        "copy.6530",
+        "copy.3781",
+        "copy.3754",
+        "copy.3742",
+        "copy.3748",
+        "copy.3761",
+        "copy.3775",
+        "loop_compare_fusion.72",
+        "loop_minimum_fusion.2",
+        "loop_compare_fusion.71",
+        "loop_broadcast_fusion.23",
+        "loop_multiply_fusion.44",
+        "loop_select_fusion.12",
+        "loop_broadcast_fusion.21",
+        "copy.3789",
+        "copy.3788",
+        "copy.3790",
+        "input_concatenate_fusion.23",
+        "input_concatenate_fusion.21",
+        "loop_broadcast_fusion.22",
+        "input_concatenate_fusion.22",
+        "loop_exponential_fusion.1",
+        "input_concatenate_fusion.19",
+        "loop_transpose_fusion.12",
+        "wrapped_transpose.18",
+        "wrapped_slice.1",
+        "loop_dynamic_update_slice_fusion.68",
+        "loop_transpose_fusion.11",
+        "input_concatenate_fusion.20",
+        "wrapped_transpose.19",
+        "wrapped_transpose.17",
+        "loop_transpose_fusion.10",
+        "loop_transpose_fusion.8",
+        "loop_transpose_fusion.9",
+        "loop_add_fusion.99",
+        "loop_add_fusion.98"
+      ],
+      "sources": [
+        [
+          "/gpuwrf/physics/ra_goddard_lw.py",
+          "solve_lw_column",
+          241
+        ]
+      ],
+      "instruction": "  %while.2969 = (s64[], f64[128,45]{1,0}, f64[128,45]{1,0}, f64[128,45]{1,0}, f64[6,10]{1,0}, /*index=5*/f64[128,44]{1,0}, f64[128]{0}, f64[128,10]{1,0}, f64[128,44]{1,0}, f64[128]{0}, /*index=10*/f64[128,44,10]{1,0,2}, f64[128,44]{1,0}, f64[128,44]{1,0}, f64[9]{0}, f64[128,44]{1,0}, /*index=15*/f64[9]{0}, f64[9]{0}, f64[128,44]{1,0}, f64[9]{0}, s32[9]{0}, /*index=20*/f64[128,44]{1,0}, f64[9]{0}, f64[128,44]{1,0}, f64[128,44]{1,0}, f64[128,44]{1,0}, /*index=25*/f64[3,2,3]{2,1,0}, f64[128,44,3]{2,0,1}, f64[6,9]{1,0}, f64[6,3]{1,0}, f64[2,6]{1,0}, /*index=30*/f64[128,45]{1,0}, f64[128,45]{1,0}, f64[128,45]{1,0}, f64[26,21]{1,0}, f64[26,21]{1,0}, /*index=35*/f64[26,21]{1,0}, f64[2,4]{1,0}, f64[4]{0}, f64[2,6]{1,0}, f64[6]{0}, /*index=40*/f64[6]{0}) while(%tuple.11247), condition=%region_397.505.clone.clone, body=%region_413.626.clone.clone.sunk.clone, metadata={op_name=\"jit(_advance_chunk_fori)/while/body/cond/branch_1_fun/jit(solve_goddard_columns)/while/body/closed_call/cond/branch_1_fun/vmap()/while\" stack_frame_id=170}, backend_config={\"known_trip_count\":{\"n\":\"10\"},\"known_init_step\":{\"init\":\"0\",\"step\":\"1\"},\"known_induction_variable\":{\"tuple_index\":\"0\"},\"dynamic_variable_tuple_indices\":[]}"
+    },
+    {
+      "parent": "region_402.691.clone",
+      "name": "while.2960",
+      "body": "region_404.517.clone.clone.sunk.clone",
+      "condition": "region_405.518.clone.clone",
+      "body_opcodes": {
+        "parameter": 1,
+        "get-tuple-element": 7,
+        "fusion": 4,
+        "tuple": 1
+      },
+      "body_launch_sites": [
+        "loop_add_fusion.11",
+        "loop_add_fusion.12",
+        "loop_add_fusion.13",
+        "loop_add_fusion.14"
+      ],
+      "sources": [
+        [
+          "/gpuwrf/physics/ra_goddard_common.py",
+          "opt_cloud",
+          112
+        ]
+      ],
+      "instruction": "  %while.2960 = (s64[], f32[128,44,11]{2,1,0}, f32[128,44,11]{2,1,0}, f32[128,44,11]{2,1,0}, f32[128,44,6,11]{3,1,0,2}, /*index=5*/f32[128,44,6,11]{3,1,0,2}, f32[128,44,6,11]{3,1,0,2}) while(%tuple.11223), condition=%region_405.518.clone.clone, body=%region_404.517.clone.clone.sunk.clone, metadata={op_name=\"jit(_advance_chunk_fori)/while/body/cond/branch_1_fun/jit(solve_goddard_columns)/while/body/closed_call/cond/branch_1_fun/vmap()/while\" stack_frame_id=653}, backend_config={\"known_trip_count\":{\"n\":\"6\"},\"known_init_step\":{\"init\":\"0\",\"step\":\"1\"},\"known_induction_variable\":{\"tuple_index\":\"0\"},\"dynamic_variable_tuple_indices\":[]}"
+    },
+    {
+      "parent": "region_402.691.clone",
+      "name": "while.2985",
+      "body": "region_399.510.clone.clone.sunk.clone",
+      "condition": "region_400.511.clone.clone",
+      "body_opcodes": {
+        "parameter": 1,
+        "get-tuple-element": 3,
+        "fusion": 2,
+        "tuple": 1
+      },
+      "body_launch_sites": [
+        "loop_add_fusion.9",
+        "loop_add_fusion.10"
+      ],
+      "sources": [
+        [
+          "/gpuwrf/coupling/goddard_radiation.py",
+          "goddard_column",
+          109
+        ]
+      ],
+      "instruction": "  %while.2985 = (s64[], f32[128]{0}, f32[128,44,11]{2,1,0}) while(%tuple.11250), condition=%region_400.511.clone.clone, body=%region_399.510.clone.clone.sunk.clone, metadata={op_name=\"jit(_advance_chunk_fori)/while/body/cond/branch_1_fun/jit(solve_goddard_columns)/while/body/closed_call/cond/branch_1_fun/vmap()/while\" stack_frame_id=2547}, backend_config={\"known_trip_count\":{\"n\":\"44\"},\"known_init_step\":{\"init\":\"0\",\"step\":\"1\"},\"known_induction_variable\":{\"tuple_index\":\"0\"},\"dynamic_variable_tuple_indices\":[]}"
+    },
+    {
+      "parent": "region_402.691.clone",
+      "name": "while.2973",
+      "body": "region_493.656.clone.clone.sunk.clone",
+      "condition": "region_510.657.clone.clone",
+      "body_opcodes": {
+        "fusion": 12,
+        "constant": 1,
+        "copy": 3,
+        "parameter": 1,
+        "get-tuple-element": 33,
+        "tuple": 3,
+        "while": 2
+      },
+      "body_launch_sites": [
+        "input_reduce_fusion.17",
+        "copy.6531",
+        "copy.3580",
+        "input_reduce_fusion.18",
+        "input_reduce_fusion.19",
+        "loop_dynamic_slice_fusion.16",
+        "loop_pad_fusion",
+        "copy.3582",
+        "loop_add_maximum_pad_select_fusion",
+        "loop_dynamic_update_slice_fusion.32",
+        "loop_dynamic_slice_fusion.15",
+        "loop_dynamic_update_slice_fusion.33",
+        "loop_add_fusion.36",
+        "input_concatenate_fusion.11",
+        "loop_add_fusion.37"
+      ],
+      "sources": [
+        [
+          "/gpuwrf/physics/ra_goddard_sw.py",
+          "solve_sw_column",
+          131
+        ]
+      ],
+      "instruction": "  %while.2973 = (s64[], f64[128,45]{1,0}, f64[128,45]{1,0}, f64[128,4]{1,0}, f64[128,8]{1,0}, /*index=5*/f64[128,3]{1,0}, f64[128,44]{1,0}, f64[128,8]{1,0}, f64[128,44]{1,0}, f64[128,8]{1,0}, /*index=10*/f64[128,44]{1,0}, f64[128,10]{1,0}, f64[128,44,11]{1,0,2}, f64[128,44,11]{1,0,2}, f64[128,44,11]{1,0,2}, /*index=15*/f64[128]{0}, s32[128]{0}, f64[128]{0}, f64[128,8]{1,0}, f64[128,3,10]{2,1,0}) while(%tuple.11226), condition=%region_510.657.clone.clone, body=%region_493.656.clone.clone.sunk.clone, metadata={op_name=\"jit(_advance_chunk_fori)/while/body/cond/branch_1_fun/jit(solve_goddard_columns)/while/body/closed_call/cond/branch_1_fun/vmap()/while\" stack_frame_id=710}, backend_config={\"known_trip_count\":{\"n\":\"38\"},\"known_init_step\":{\"init\":\"0\",\"step\":\"1\"},\"known_induction_variable\":{\"tuple_index\":\"0\"},\"dynamic_variable_tuple_indices\":[]}"
+    },
+    {
+      "parent": "region_345.443",
+      "name": "while.2783",
+      "body": "region_347.432.clone.clone.sunk.clone.clone",
+      "condition": "region_349.433.clone.clone.clone",
+      "body_opcodes": {
+        "parameter": 1,
+        "get-tuple-element": 2,
+        "copy": 1,
+        "constant": 1,
+        "fusion": 3,
+        "tuple": 1
+      },
+      "body_launch_sites": [
+        "copy.3915",
+        "loop_multiply_fusion.4",
+        "loop_add_fusion.38",
+        "loop_dynamic_update_slice_fusion.40"
+      ],
+      "sources": [
+        [
+          "/gpuwrf/physics/ra_goddard_lw.py",
+          "_powers",
+          38
+        ]
+      ],
+      "instruction": "  %while.2783 = (s64[], f64[128,44,6]{2,1,0}) while(%tuple.11256), condition=%region_349.433.clone.clone.clone, body=%region_347.432.clone.clone.sunk.clone.clone, metadata={op_name=\"jit(_advance_chunk_fori)/while/body/cond/branch_1_fun/jit(solve_goddard_columns)/while/body/closed_call/cond/branch_0_fun/vmap()/while/body/closed_call/cond/branch_1_fun/while\" stack_frame_id=68}, backend_config={\"known_trip_count\":{\"n\":\"5\"},\"known_init_step\":{\"init\":\"0\",\"step\":\"1\"},\"known_induction_variable\":{\"tuple_index\":\"0\"},\"dynamic_variable_tuple_indices\":[]}"
+    },
+    {
+      "parent": "region_345.443",
+      "name": "while.2782",
+      "body": "region_347.432.clone.clone.sunk.clone",
+      "condition": "region_349.433.clone.clone",
+      "body_opcodes": {
+        "parameter": 1,
+        "get-tuple-element": 2,
+        "copy": 1,
+        "constant": 1,
+        "fusion": 3,
+        "tuple": 1
+      },
+      "body_launch_sites": [
+        "copy.3908",
+        "loop_multiply_fusion",
+        "loop_add_fusion.27",
+        "loop_dynamic_update_slice_fusion.18"
+      ],
+      "sources": [
+        [
+          "/gpuwrf/physics/ra_goddard_lw.py",
+          "_powers",
+          38
+        ]
+      ],
+      "instruction": "  %while.2782 = (s64[], f64[128,44,6]{2,1,0}) while(%tuple.11253), condition=%region_349.433.clone.clone, body=%region_347.432.clone.clone.sunk.clone, metadata={op_name=\"jit(_advance_chunk_fori)/while/body/cond/branch_1_fun/jit(solve_goddard_columns)/while/body/closed_call/cond/branch_0_fun/vmap()/while/body/closed_call/cond/branch_1_fun/while\" stack_frame_id=64}, backend_config={\"known_trip_count\":{\"n\":\"5\"},\"known_init_step\":{\"init\":\"0\",\"step\":\"1\"},\"known_induction_variable\":{\"tuple_index\":\"0\"},\"dynamic_variable_tuple_indices\":[]}"
+    },
+    {
+      "parent": "region_359.491",
+      "name": "while.2789",
+      "body": "region_370.467.clone.clone.sunk.clone",
+      "condition": "region_371.468.clone.clone",
+      "body_opcodes": {
+        "parameter": 1,
+        "get-tuple-element": 4,
+        "copy": 1,
+        "fusion": 2,
+        "tuple": 1
+      },
+      "body_launch_sites": [
+        "copy.3936",
+        "loop_add_fusion.8",
+        "loop_add_fusion.7"
+      ],
+      "sources": [
+        [
+          "/gpuwrf/physics/ra_goddard_lw.py",
+          "_weighted",
+          22
+        ]
+      ],
+      "instruction": "  %while.2789 = (s64[], f64[128]{0}, f64[128,4]{1,0}, f64[4]{0}) while(%tuple.11265), condition=%region_371.468.clone.clone, body=%region_370.467.clone.clone.sunk.clone, metadata={op_name=\"jit(_advance_chunk_fori)/while/body/cond/branch_1_fun/jit(solve_goddard_columns)/while/body/closed_call/cond/branch_0_fun/vmap()/while/body/closed_call/while/body/closed_call/while/body/while\" stack_frame_id=114}, backend_config={\"known_trip_count\":{\"n\":\"3\"},\"known_init_step\":{\"init\":\"0\",\"step\":\"1\"},\"known_induction_variable\":{\"tuple_index\":\"0\"},\"dynamic_variable_tuple_indices\":[]}"
+    },
+    {
+      "parent": "region_359.491",
+      "name": "while.2790",
+      "body": "region_370.467.clone.clone.sunk.clone.clone",
+      "condition": "region_371.468.clone.clone.clone",
+      "body_opcodes": {
+        "parameter": 1,
+        "get-tuple-element": 4,
+        "copy": 1,
+        "fusion": 2,
+        "tuple": 1
+      },
+      "body_launch_sites": [
+        "copy.3930",
+        "loop_add_fusion.74",
+        "loop_add_fusion.73"
+      ],
+      "sources": [
+        [
+          "/gpuwrf/physics/ra_goddard_lw.py",
+          "_weighted",
+          22
+        ]
+      ],
+      "instruction": "  %while.2790 = (s64[], f64[128]{0}, f64[128,4]{1,0}, f64[4]{0}) while(%tuple.11262), condition=%region_371.468.clone.clone.clone, body=%region_370.467.clone.clone.sunk.clone.clone, metadata={op_name=\"jit(_advance_chunk_fori)/while/body/cond/branch_1_fun/jit(solve_goddard_columns)/while/body/closed_call/cond/branch_0_fun/vmap()/while/body/closed_call/while/body/closed_call/while/body/while\" stack_frame_id=118}, backend_config={\"known_trip_count\":{\"n\":\"3\"},\"known_init_step\":{\"init\":\"0\",\"step\":\"1\"},\"known_induction_variable\":{\"tuple_index\":\"0\"},\"dynamic_variable_tuple_indices\":[]}"
+    },
+    {
+      "parent": "region_359.491",
+      "name": "while.2791",
+      "body": "region_360.445.clone.clone.sunk.clone.clone.3",
+      "condition": "region_361.446.clone.clone.clone.3",
+      "body_opcodes": {
+        "parameter": 1,
+        "get-tuple-element": 4,
+        "copy": 1,
+        "fusion": 2,
+        "tuple": 1
+      },
+      "body_launch_sites": [
+        "copy.3924",
+        "loop_add_fusion.52",
+        "loop_add_fusion.51"
+      ],
+      "sources": [
+        [
+          "/gpuwrf/physics/ra_goddard_lw.py",
+          "_weighted",
+          22
+        ]
+      ],
+      "instruction": "  %while.2791 = (s64[], f64[128]{0}, f64[128,6]{1,0}, f64[6]{0}) while(%tuple.11259), condition=%region_361.446.clone.clone.clone.3, body=%region_360.445.clone.clone.sunk.clone.clone.3, metadata={op_name=\"jit(_advance_chunk_fori)/while/body/cond/branch_1_fun/jit(solve_goddard_columns)/while/body/closed_call/cond/branch_0_fun/vmap()/while/body/closed_call/while/body/closed_call/while/body/while\" stack_frame_id=122}, backend_config={\"known_trip_count\":{\"n\":\"5\"},\"known_init_step\":{\"init\":\"0\",\"step\":\"1\"},\"known_induction_variable\":{\"tuple_index\":\"0\"},\"dynamic_variable_tuple_indices\":[]}"
+    },
+    {
+      "parent": "region_359.491",
+      "name": "while.2784",
+      "body": "region_360.445.clone.clone.sunk.clone",
+      "condition": "region_361.446.clone.clone",
+      "body_opcodes": {
+        "parameter": 1,
+        "get-tuple-element": 4,
+        "copy": 1,
+        "fusion": 2,
+        "tuple": 1
+      },
+      "body_launch_sites": [
+        "copy.3948",
+        "loop_add_fusion.4",
+        "loop_add_fusion.3"
+      ],
+      "sources": [
+        [
+          "/gpuwrf/physics/ra_goddard_lw.py",
+          "_weighted",
+          22
+        ]
+      ],
+      "instruction": "  %while.2784 = (s64[], f64[128]{0}, f64[128,6]{1,0}, f64[6]{0}) while(%tuple.11271), condition=%region_361.446.clone.clone, body=%region_360.445.clone.clone.sunk.clone, metadata={op_name=\"jit(_advance_chunk_fori)/while/body/cond/branch_1_fun/jit(solve_goddard_columns)/while/body/closed_call/cond/branch_0_fun/vmap()/while/body/closed_call/while/body/closed_call/while/body/while\" stack_frame_id=94}, backend_config={\"known_trip_count\":{\"n\":\"5\"},\"known_init_step\":{\"init\":\"0\",\"step\":\"1\"},\"known_induction_variable\":{\"tuple_index\":\"0\"},\"dynamic_variable_tuple_indices\":[]}"
+    },
+    {
+      "parent": "region_359.491",
+      "name": "while.2787",
+      "body": "region_360.445.clone.clone.sunk.clone.clone.2",
+      "condition": "region_361.446.clone.clone.clone.2",
+      "body_opcodes": {
+        "parameter": 1,
+        "get-tuple-element": 4,
+        "copy": 1,
+        "fusion": 2,
+        "tuple": 1
+      },
+      "body_launch_sites": [
+        "copy.3954",
+        "loop_add_fusion.50",
+        "loop_add_fusion.49"
+      ],
+      "sources": [
+        [
+          "/gpuwrf/physics/ra_goddard_lw.py",
+          "_weighted",
+          22
+        ]
+      ],
+      "instruction": "  %while.2787 = (s64[], f64[128]{0}, f64[128,6]{1,0}, f64[6]{0}) while(%tuple.11274), condition=%region_361.446.clone.clone.clone.2, body=%region_360.445.clone.clone.sunk.clone.clone.2, metadata={op_name=\"jit(_advance_chunk_fori)/while/body/cond/branch_1_fun/jit(solve_goddard_columns)/while/body/closed_call/cond/branch_0_fun/vmap()/while/body/closed_call/while/body/closed_call/while/body/while\" stack_frame_id=106}, backend_config={\"known_trip_count\":{\"n\":\"5\"},\"known_init_step\":{\"init\":\"0\",\"step\":\"1\"},\"known_induction_variable\":{\"tuple_index\":\"0\"},\"dynamic_variable_tuple_indices\":[]}"
+    },
+    {
+      "parent": "region_359.491",
+      "name": "while.2785",
+      "body": "region_360.445.clone.clone.sunk.clone.clone",
+      "condition": "region_361.446.clone.clone.clone",
+      "body_opcodes": {
+        "parameter": 1,
+        "get-tuple-element": 4,
+        "copy": 1,
+        "fusion": 2,
+        "tuple": 1
+      },
+      "body_launch_sites": [
+        "copy.3966",
+        "loop_add_fusion.46",
+        "loop_add_fusion.45"
+      ],
+      "sources": [
+        [
+          "/gpuwrf/physics/ra_goddard_lw.py",
+          "_weighted",
+          22
+        ]
+      ],
+      "instruction": "  %while.2785 = (s64[], f64[128]{0}, f64[128,6]{1,0}, f64[6]{0}) while(%tuple.11280), condition=%region_361.446.clone.clone.clone, body=%region_360.445.clone.clone.sunk.clone.clone, metadata={op_name=\"jit(_advance_chunk_fori)/while/body/cond/branch_1_fun/jit(solve_goddard_columns)/while/body/closed_call/cond/branch_0_fun/vmap()/while/body/closed_call/while/body/closed_call/while/body/while\" stack_frame_id=98}, backend_config={\"known_trip_count\":{\"n\":\"5\"},\"known_init_step\":{\"init\":\"0\",\"step\":\"1\"},\"known_induction_variable\":{\"tuple_index\":\"0\"},\"dynamic_variable_tuple_indices\":[]}"
+    },
+    {
+      "parent": "region_359.491",
+      "name": "while.2786",
+      "body": "region_360.445.clone.clone.sunk.clone.clone.1",
+      "condition": "region_361.446.clone.clone.clone.1",
+      "body_opcodes": {
+        "parameter": 1,
+        "get-tuple-element": 4,
+        "copy": 1,
+        "fusion": 2,
+        "tuple": 1
+      },
+      "body_launch_sites": [
+        "copy.3960",
+        "loop_add_fusion.48",
+        "loop_add_fusion.47"
+      ],
+      "sources": [
+        [
+          "/gpuwrf/physics/ra_goddard_lw.py",
+          "_weighted",
+          22
+        ]
+      ],
+      "instruction": "  %while.2786 = (s64[], f64[128]{0}, f64[128,6]{1,0}, f64[6]{0}) while(%tuple.11277), condition=%region_361.446.clone.clone.clone.1, body=%region_360.445.clone.clone.sunk.clone.clone.1, metadata={op_name=\"jit(_advance_chunk_fori)/while/body/cond/branch_1_fun/jit(solve_goddard_columns)/while/body/closed_call/cond/branch_0_fun/vmap()/while/body/closed_call/while/body/closed_call/while/body/while\" stack_frame_id=102}, backend_config={\"known_trip_count\":{\"n\":\"5\"},\"known_init_step\":{\"init\":\"0\",\"step\":\"1\"},\"known_induction_variable\":{\"tuple_index\":\"0\"},\"dynamic_variable_tuple_indices\":[]}"
+    },
+    {
+      "parent": "region_359.491",
+      "name": "while.2793",
+      "body": "region_360.445.clone.clone.sunk.clone.clone.5",
+      "condition": "region_361.446.clone.clone.clone.5",
+      "body_opcodes": {
+        "parameter": 1,
+        "get-tuple-element": 4,
+        "copy": 1,
+        "fusion": 2,
+        "tuple": 1
+      },
+      "body_launch_sites": [
+        "copy.3972",
+        "loop_add_fusion.56",
+        "loop_add_fusion.55"
+      ],
+      "sources": [
+        [
+          "/gpuwrf/physics/ra_goddard_lw.py",
+          "_weighted",
+          22
+        ]
+      ],
+      "instruction": "  %while.2793 = (s64[], f64[128]{0}, f64[128,6]{1,0}, f64[6]{0}) while(%tuple.11283), condition=%region_361.446.clone.clone.clone.5, body=%region_360.445.clone.clone.sunk.clone.clone.5, metadata={op_name=\"jit(_advance_chunk_fori)/while/body/cond/branch_1_fun/jit(solve_goddard_columns)/while/body/closed_call/cond/branch_0_fun/vmap()/while/body/closed_call/while/body/closed_call/while/body/while\" stack_frame_id=130}, backend_config={\"known_trip_count\":{\"n\":\"5\"},\"known_init_step\":{\"init\":\"0\",\"step\":\"1\"},\"known_induction_variable\":{\"tuple_index\":\"0\"},\"dynamic_variable_tuple_indices\":[]}"
+    },
+    {
+      "parent": "region_359.491",
+      "name": "while.2792",
+      "body": "region_360.445.clone.clone.sunk.clone.clone.4",
+      "condition": "region_361.446.clone.clone.clone.4",
+      "body_opcodes": {
+        "parameter": 1,
+        "get-tuple-element": 4,
+        "copy": 1,
+        "fusion": 2,
+        "tuple": 1
+      },
+      "body_launch_sites": [
+        "copy.3978",
+        "loop_add_fusion.54",
+        "loop_add_fusion.53"
+      ],
+      "sources": [
+        [
+          "/gpuwrf/physics/ra_goddard_lw.py",
+          "_weighted",
+          22
+        ]
+      ],
+      "instruction": "  %while.2792 = (s64[], f64[128]{0}, f64[128,6]{1,0}, f64[6]{0}) while(%tuple.11286), condition=%region_361.446.clone.clone.clone.4, body=%region_360.445.clone.clone.sunk.clone.clone.4, metadata={op_name=\"jit(_advance_chunk_fori)/while/body/cond/branch_1_fun/jit(solve_goddard_columns)/while/body/closed_call/cond/branch_0_fun/vmap()/while/body/closed_call/while/body/closed_call/while/body/while\" stack_frame_id=126}, backend_config={\"known_trip_count\":{\"n\":\"5\"},\"known_init_step\":{\"init\":\"0\",\"step\":\"1\"},\"known_induction_variable\":{\"tuple_index\":\"0\"},\"dynamic_variable_tuple_indices\":[]}"
+    },
+    {
+      "parent": "region_359.491",
+      "name": "while.2788",
+      "body": "region_368.459.clone.clone.sunk.clone",
+      "condition": "region_369.460.clone.clone",
+      "body_opcodes": {
+        "parameter": 1,
+        "get-tuple-element": 4,
+        "copy": 1,
+        "fusion": 2,
+        "tuple": 1
+      },
+      "body_launch_sites": [
+        "copy.3942",
+        "loop_add_fusion.6",
+        "loop_add_fusion.5"
+      ],
+      "sources": [
+        [
+          "/gpuwrf/physics/ra_goddard_lw.py",
+          "_weighted",
+          22
+        ]
+      ],
+      "instruction": "  %while.2788 = (s64[], f64[128]{0}, f64[128,12]{1,0}, f64[12]{0}) while(%tuple.11268), condition=%region_369.460.clone.clone, body=%region_368.459.clone.clone.sunk.clone, metadata={op_name=\"jit(_advance_chunk_fori)/while/body/cond/branch_1_fun/jit(solve_goddard_columns)/while/body/closed_call/cond/branch_0_fun/vmap()/while/body/closed_call/while/body/closed_call/while/body/while\" stack_frame_id=110}, backend_config={\"known_trip_count\":{\"n\":\"11\"},\"known_init_step\":{\"init\":\"0\",\"step\":\"1\"},\"known_induction_variable\":{\"tuple_index\":\"0\"},\"dynamic_variable_tuple_indices\":[]}"
+    },
+    {
+      "parent": "region_358.495.clone.clone.sunk.clone",
+      "name": "while.2939",
+      "body": "region_359.491",
+      "condition": "region_390.492",
+      "body_opcodes": {
+        "constant": 1,
+        "copy": 13,
+        "parameter": 1,
+        "get-tuple-element": 66,
+        "fusion": 25,
+        "bitcast": 19,
+        "tuple": 13,
+        "while": 10,
+        "conditional": 1
+      },
+      "body_launch_sites": [
+        "copy.6525",
+        "copy.3946",
+        "copy.3976",
+        "copy.3964",
+        "copy.3958",
+        "copy.3970",
+        "copy.3952",
+        "copy.3934",
+        "copy.3928",
+        "copy.3940",
+        "loop_compare_fusion.67",
+        "loop_multiply_fusion.19",
+        "loop_dynamic_slice_fusion.32",
+        "loop_dynamic_slice_fusion.31",
+        "loop_dynamic_slice_fusion.33",
+        "wrapped_slice.6",
+        "wrapped_slice.7",
+        "wrapped_slice.8",
+        "loop_clamp_multiply_fusion",
+        "loop_multiply_fusion.21",
+        "loop_multiply_fusion.12",
+        "loop_multiply_fusion.17",
+        "loop_multiply_fusion.14",
+        "loop_multiply_fusion.23",
+        "loop_multiply_fusion.15",
+        "loop_multiply_fusion.22",
+        "loop_multiply_fusion.18",
+        "loop_multiply_fusion.20",
+        "loop_multiply_fusion.13",
+        "loop_multiply_fusion.24",
+        "loop_slice_fusion",
+        "input_concatenate_fusion.12",
+        "loop_multiply_fusion.25",
+        "loop_multiply_fusion.16",
+        "loop_add_fusion.91",
+        "copy.4017",
+        "copy.4018",
+        "copy.4019"
+      ],
+      "sources": [
+        [
+          "/gpuwrf/physics/ra_goddard_lw.py",
+          "solve_lw_column.<locals>.band.<locals>.upper",
+          227
+        ]
+      ],
+      "instruction": "  %while.2939 = (s64[], f64[128,45]{1,0}, f64[128,45]{1,0}, f64[128,45]{1,0}, f64[128,6]{1,0}, /*index=5*/f64[128,3]{1,0}, f64[128,6,2]{1,0,2}, f64[128,4]{1,0}, f64[128,4]{1,0}, f64[128,6]{1,0}, /*index=10*/f64[128,3]{1,0}, f64[128]{0}, f64[], f64[128]{0}, f64[128,44,6]{2,0,1}, /*index=15*/f64[128,44,3]{2,0,1}, f64[128,44,6,2]{2,0,3,1}, f64[128,44,4]{2,0,1}, f64[128,44,4]{2,0,1}, f64[128,44,6]{2,0,1}, /*index=20*/f64[128,44,3]{2,0,1}, s64[], f64[6,9]{1,0}, f64[6,3]{1,0}, f64[2,6]{1,0}, /*index=25*/f64[128,45]{1,0}, s64[], f64[128,45]{1,0}, f64[128,45]{1,0}, f64[26,21]{1,0}, /*index=30*/f64[26,21]{1,0}, f64[26,21]{1,0}, f64[2,4]{1,0}, f64[4]{0}, f64[2,6]{1,0}, /*index=35*/f64[6]{0}, f64[6]{0}, f64[44]{0}, f64[128,44]{1,0}, f64[128,45]{1,0}, /*index=40*/f64[128,45]{1,0}, f64[128,46]{1,0}) while(%tuple.11291), condition=%region_390.492, body=%region_359.491, metadata={op_name=\"jit(_advance_chunk_fori)/while/body/cond/branch_1_fun/jit(solve_goddard_columns)/while/body/closed_call/cond/branch_0_fun/vmap()/while/body/closed_call/while/body/closed_call/while\" stack_frame_id=75}, backend_config={\"known_induction_variable\":{\"tuple_index\":\"0\"},\"dynamic_variable_tuple_indices\":[]}"
+    },
+    {
+      "parent": "region_318.504.clone.clone.sunk.clone",
+      "name": "while.2935",
+      "body": "region_332.413.clone.clone.sunk.clone",
+      "condition": "region_334.414.clone.clone",
+      "body_opcodes": {
+        "parameter": 1,
+        "get-tuple-element": 2,
+        "copy": 1,
+        "constant": 1,
+        "fusion": 3,
+        "tuple": 1
+      },
+      "body_launch_sites": [
+        "copy.4045",
+        "loop_multiply_fusion.1",
+        "loop_add_fusion.31",
+        "loop_dynamic_update_slice_fusion.24"
+      ],
+      "sources": [
+        [
+          "/gpuwrf/physics/ra_goddard_lw.py",
+          "_powers",
+          38
+        ]
+      ],
+      "instruction": "  %while.2935 = (s64[], f64[128,44,4]{2,1,0}) while(%tuple.11300), condition=%region_334.414.clone.clone, body=%region_332.413.clone.clone.sunk.clone, metadata={op_name=\"jit(_advance_chunk_fori)/while/body/cond/branch_1_fun/jit(solve_goddard_columns)/while/body/closed_call/cond/branch_0_fun/vmap()/while/body/closed_call/while\" stack_frame_id=614}, backend_config={\"known_trip_count\":{\"n\":\"3\"},\"known_init_step\":{\"init\":\"0\",\"step\":\"1\"},\"known_induction_variable\":{\"tuple_index\":\"0\"},\"dynamic_variable_tuple_indices\":[]}"
+    },
+    {
+      "parent": "region_318.504.clone.clone.sunk.clone",
+      "name": "while.2936",
+      "body": "region_337.419.clone.clone.sunk.clone",
+      "condition": "region_334.414.clone.clone.clone",
+      "body_opcodes": {
+        "parameter": 1,
+        "get-tuple-element": 2,
+        "copy": 1,
+        "constant": 1,
+        "fusion": 3,
+        "tuple": 1
+      },
+      "body_launch_sites": [
+        "copy.4066",
+        "loop_dynamic_slice_fusion.10",
+        "loop_add_fusion.32",
+        "loop_dynamic_update_slice_fusion.25"
+      ],
+      "sources": [
+        [
+          "/gpuwrf/physics/ra_goddard_lw.py",
+          "_powers",
+          38
+        ]
+      ],
+      "instruction": "  %while.2936 = (s64[], f64[128,44,4]{2,1,0}) while(%tuple.11308), condition=%region_334.414.clone.clone.clone, body=%region_337.419.clone.clone.sunk.clone, metadata={op_name=\"jit(_advance_chunk_fori)/while/body/cond/branch_1_fun/jit(solve_goddard_columns)/while/body/closed_call/cond/branch_0_fun/vmap()/while/body/closed_call/while\" stack_frame_id=619}, backend_config={\"known_trip_count\":{\"n\":\"3\"},\"known_init_step\":{\"init\":\"0\",\"step\":\"1\"},\"known_induction_variable\":{\"tuple_index\":\"0\"},\"dynamic_variable_tuple_indices\":[]}"
+    },
+    {
+      "parent": "region_318.504.clone.clone.sunk.clone",
+      "name": "while.2933",
+      "body": "region_347.432.clone.clone.sunk.clone.clone.1",
+      "condition": "region_349.433.clone.clone.clone.1",
+      "body_opcodes": {
+        "parameter": 1,
+        "get-tuple-element": 2,
+        "copy": 1,
+        "constant": 1,
+        "fusion": 3,
+        "tuple": 1
+      },
+      "body_launch_sites": [
+        "copy.4039",
+        "loop_multiply_fusion.5",
+        "loop_add_fusion.39",
+        "loop_dynamic_update_slice_fusion.45"
+      ],
+      "sources": [
+        [
+          "/gpuwrf/physics/ra_goddard_lw.py",
+          "_powers",
+          38
+        ]
+      ],
+      "instruction": "  %while.2933 = (s64[], f64[128,44,6]{2,1,0}) while(%tuple.11297), condition=%region_349.433.clone.clone.clone.1, body=%region_347.432.clone.clone.sunk.clone.clone.1, metadata={op_name=\"jit(_advance_chunk_fori)/while/body/cond/branch_1_fun/jit(solve_goddard_columns)/while/body/closed_call/cond/branch_0_fun/vmap()/while/body/closed_call/while\" stack_frame_id=604}, backend_config={\"known_trip_count\":{\"n\":\"5\"},\"known_init_step\":{\"init\":\"0\",\"step\":\"1\"},\"known_induction_variable\":{\"tuple_index\":\"0\"},\"dynamic_variable_tuple_indices\":[]}"
+    },
+    {
+      "parent": "region_318.504.clone.clone.sunk.clone",
+      "name": "while.2934",
+      "body": "region_347.432.clone.clone.sunk.clone.clone.2",
+      "condition": "region_349.433.clone.clone.clone.2",
+      "body_opcodes": {
+        "parameter": 1,
+        "get-tuple-element": 2,
+        "copy": 1,
+        "constant": 1,
+        "fusion": 3,
+        "tuple": 1
+      },
+      "body_launch_sites": [
+        "copy.4033",
+        "loop_multiply_fusion.6",
+        "loop_add_fusion.40",
+        "loop_dynamic_update_slice_fusion.46"
+      ],
+      "sources": [
+        [
+          "/gpuwrf/physics/ra_goddard_lw.py",
+          "_powers",
+          38
+        ]
+      ],
+      "instruction": "  %while.2934 = (s64[], f64[128,44,6]{2,1,0}) while(%tuple.11294), condition=%region_349.433.clone.clone.clone.2, body=%region_347.432.clone.clone.sunk.clone.clone.2, metadata={op_name=\"jit(_advance_chunk_fori)/while/body/cond/branch_1_fun/jit(solve_goddard_columns)/while/body/closed_call/cond/branch_0_fun/vmap()/while/body/closed_call/while\" stack_frame_id=609}, backend_config={\"known_trip_count\":{\"n\":\"5\"},\"known_init_step\":{\"init\":\"0\",\"step\":\"1\"},\"known_induction_variable\":{\"tuple_index\":\"0\"},\"dynamic_variable_tuple_indices\":[]}"
+    },
+    {
+      "parent": "region_318.504.clone.clone.sunk.clone",
+      "name": "while.2937",
+      "body": "region_341.425.clone.clone.sunk.clone",
+      "condition": "region_349.433.clone.clone.clone.3",
+      "body_opcodes": {
+        "parameter": 1,
+        "get-tuple-element": 2,
+        "copy": 1,
+        "constant": 1,
+        "fusion": 3,
+        "tuple": 1
+      },
+      "body_launch_sites": [
+        "copy.4072",
+        "loop_dynamic_slice_fusion.11",
+        "loop_add_fusion.33",
+        "loop_dynamic_update_slice_fusion.26"
+      ],
+      "sources": [
+        [
+          "/gpuwrf/physics/ra_goddard_lw.py",
+          "_powers",
+          38
+        ]
+      ],
+      "instruction": "  %while.2937 = (s64[], f64[128,44,6]{2,1,0}) while(%tuple.11311), condition=%region_349.433.clone.clone.clone.3, body=%region_341.425.clone.clone.sunk.clone, metadata={op_name=\"jit(_advance_chunk_fori)/while/body/cond/branch_1_fun/jit(solve_goddard_columns)/while/body/closed_call/cond/branch_0_fun/vmap()/while/body/closed_call/while\" stack_frame_id=624}, backend_config={\"known_trip_count\":{\"n\":\"5\"},\"known_init_step\":{\"init\":\"0\",\"step\":\"1\"},\"known_induction_variable\":{\"tuple_index\":\"0\"},\"dynamic_variable_tuple_indices\":[]}"
+    },
+    {
+      "parent": "region_318.504.clone.clone.sunk.clone",
+      "name": "while.2932",
+      "body": "region_320.397.clone.clone.sunk.clone",
+      "condition": "region_322.398.clone.clone",
+      "body_opcodes": {
+        "parameter": 1,
+        "get-tuple-element": 4,
+        "copy": 1,
+        "constant": 1,
+        "fusion": 3,
+        "tuple": 1
+      },
+      "body_launch_sites": [
+        "copy.4052",
+        "loop_select_fusion.8",
+        "loop_add_fusion.30",
+        "loop_dynamic_update_slice_fusion.23"
+      ],
+      "sources": [
+        [
+          "/gpuwrf/physics/ra_goddard_lw.py",
+          "_layer_exponents",
+          54
+        ]
+      ],
+      "instruction": "  %while.2932 = (s64[], f64[128,44,6]{2,1,0}, s64[], s32[9]{0}) while(%tuple.11303), condition=%region_322.398.clone.clone, body=%region_320.397.clone.clone.sunk.clone, metadata={op_name=\"jit(_advance_chunk_fori)/while/body/cond/branch_1_fun/jit(solve_goddard_columns)/while/body/closed_call/cond/branch_0_fun/vmap()/while/body/closed_call/while\" stack_frame_id=599}, backend_config={\"known_trip_count\":{\"n\":\"5\"},\"known_init_step\":{\"init\":\"0\",\"step\":\"1\"},\"known_induction_variable\":{\"tuple_index\":\"0\"},\"dynamic_variable_tuple_indices\":[]}"
+    },
+    {
+      "parent": "region_318.504.clone.clone.sunk.clone",
+      "name": "while.2941",
+      "body": "region_358.495.clone.clone.sunk.clone",
+      "condition": "region_392.496.clone.clone",
+      "body_opcodes": {
+        "constant": 1,
+        "copy": 7,
+        "parameter": 1,
+        "get-tuple-element": 36,
+        "fusion": 8,
+        "tuple": 2,
+        "while": 1
+      },
+      "body_launch_sites": [
+        "copy.6539",
+        "copy.4081",
+        "input_reduce_fusion.30",
+        "loop_add_fusion.92",
+        "copy.3988",
+        "loop_broadcast_fusion.4",
+        "copy.4001",
+        "loop_broadcast_fusion.1",
+        "copy.3998",
+        "loop_broadcast_fusion.3",
+        "copy.3996",
+        "loop_broadcast_fusion",
+        "copy.3997",
+        "loop_broadcast_fusion.2",
+        "loop_dynamic_update_slice_fusion.65"
+      ],
+      "sources": [
+        [
+          "/gpuwrf/physics/ra_goddard_lw.py",
+          "solve_lw_column.<locals>.band",
+          229
+        ]
+      ],
+      "instruction": "  %while.2941 = (s64[], f64[128,45]{1,0}, f64[128,45]{1,0}, f64[128,45]{1,0}, f64[128,45]{1,0}, /*index=5*/f64[128,44,6]{2,0,1}, f64[128,44,3]{2,0,1}, f64[128,44,6,2]{2,0,3,1}, f64[128,44,4]{2,0,1}, f64[128,44,4]{2,0,1}, /*index=10*/f64[128,44,6]{2,0,1}, f64[128,44,3]{2,0,1}, s64[], f64[6,9]{1,0}, f64[6,3]{1,0}, /*index=15*/f64[2,6]{1,0}, f64[128,45]{1,0}, f64[128,45]{1,0}, f64[128,45]{1,0}, f64[26,21]{1,0}, /*index=20*/f64[26,21]{1,0}, f64[26,21]{1,0}, f64[2,4]{1,0}, f64[4]{0}, f64[2,6]{1,0}, /*index=25*/f64[6]{0}, f64[6]{0}, f64[44]{0}, f64[128,44]{1,0}, f64[128,45]{1,0}, /*index=30*/f64[128,45]{1,0}, f64[128,46]{1,0}) while(%tuple.11314), condition=%region_392.496.clone.clone, body=%region_358.495.clone.clone.sunk.clone, metadata={op_name=\"jit(_advance_chunk_fori)/while/body/cond/branch_1_fun/jit(solve_goddard_columns)/while/body/closed_call/cond/branch_0_fun/vmap()/while/body/closed_call/while\" stack_frame_id=73}, backend_config={\"known_trip_count\":{\"n\":\"44\"},\"known_init_step\":{\"init\":\"0\",\"step\":\"1\"},\"known_induction_variable\":{\"tuple_index\":\"0\"},\"dynamic_variable_tuple_indices\":[]}"
+    },
+    {
+      "parent": "region_301.514.clone",
+      "name": "while.2993",
+      "body": "region_304.358.clone.1",
+      "condition": "region_305.359.clone.1",
+      "body_opcodes": {
+        "parameter": 1,
+        "get-tuple-element": 7,
+        "fusion": 2,
+        "copy": 2,
+        "tuple": 1
+      },
+      "body_launch_sites": [
+        "loop_add_fusion.19",
+        "loop_select_fusion.2",
+        "copy.4101",
+        "copy.4100"
+      ],
+      "sources": [
+        [
+          "/gpuwrf/physics/ra_goddard_common.py",
+          "ozone_interp",
+          73
+        ]
+      ],
+      "instruction": "  %while.2993 = (s64[], u32[128,44]{1,0}, u32[128,44]{1,0}, f32[128,33]{1,0}, f32[128,44]{1,0}) while(%tuple.11319), condition=%region_305.359.clone.1, body=%region_304.358.clone.1, metadata={op_name=\"jit(_advance_chunk_fori)/while/body/cond/branch_1_fun/jit(solve_goddard_columns)/while/body/closed_call/cond/branch_0_fun/vmap(jit(searchsorted))/jit(_searchsorted_scan_impl)/vmap(jit(_searchsorted_scan_impl))/while\" stack_frame_id=48}, backend_config={\"known_trip_count\":{\"n\":\"6\"},\"known_init_step\":{\"init\":\"0\",\"step\":\"1\"},\"known_induction_variable\":{\"tuple_index\":\"0\"},\"dynamic_variable_tuple_indices\":[]}"
+    },
+    {
+      "parent": "region_301.514.clone",
+      "name": "while.2990",
+      "body": "region_306.368.clone.clone",
+      "condition": "region_307.369.clone.clone",
+      "body_opcodes": {
+        "parameter": 1,
+        "get-tuple-element": 7,
+        "fusion": 2,
+        "copy": 2,
+        "tuple": 1
+      },
+      "body_launch_sites": [
+        "loop_add_fusion.26",
+        "loop_select_fusion.7",
+        "copy.4110",
+        "copy.4109"
+      ],
+      "sources": [
+        [
+          "/gpuwrf/physics/ra_goddard_common.py",
+          "opt_cloud",
+          94
+        ]
+      ],
+      "instruction": "  %while.2990 = (s64[], u32[128,44,6]{2,1,0}, u32[128,44,6]{2,1,0}, f32[109]{0}, f32[128,44,6]{2,1,0}) while(%tuple.11322), condition=%region_307.369.clone.clone, body=%region_306.368.clone.clone, metadata={op_name=\"jit(_advance_chunk_fori)/while/body/cond/branch_1_fun/jit(solve_goddard_columns)/while/body/closed_call/cond/branch_0_fun/vmap(jit(searchsorted))/jit(_searchsorted_scan_impl)/vmap(jit(_searchsorted_scan_impl))/while\" stack_frame_id=354}, backend_config={\"known_trip_count\":{\"n\":\"7\"},\"known_init_step\":{\"init\":\"0\",\"step\":\"1\"},\"known_induction_variable\":{\"tuple_index\":\"0\"},\"dynamic_variable_tuple_indices\":[]}"
+    },
+    {
+      "parent": "region_301.514.clone",
+      "name": "while.2997",
+      "body": "region_313.387.clone.clone.sunk.clone.clone",
+      "condition": "region_317.388.clone.clone.clone",
+      "body_opcodes": {
+        "parameter": 1,
+        "get-tuple-element": 7,
+        "copy": 1,
+        "fusion": 8,
+        "tuple": 1
+      },
+      "body_launch_sites": [
+        "copy.4121",
+        "loop_dynamic_slice_fusion.23",
+        "loop_dynamic_slice_fusion.25",
+        "loop_dynamic_slice_fusion.24",
+        "loop_add_fusion.79",
+        "input_reduce_fusion.26",
+        "loop_dynamic_update_slice_fusion.56",
+        "loop_dynamic_update_slice_fusion.57",
+        "loop_dynamic_update_slice_fusion.55"
+      ],
+      "sources": [
+        [
+          "/gpuwrf/physics/ra_goddard_lw.py",
+          "solve_lw_column",
+          145
+        ]
+      ],
+      "instruction": "  %while.2997 = (s64[], f64[128,45]{1,0}, f64[128,45]{1,0}, f64[128,45]{1,0}, f64[128,44]{1,0}, /*index=5*/f64[128,44]{1,0}, f64[128,44]{1,0}) while(%tuple.11328), condition=%region_317.388.clone.clone.clone, body=%region_313.387.clone.clone.sunk.clone.clone, metadata={op_name=\"jit(_advance_chunk_fori)/while/body/cond/branch_1_fun/jit(solve_goddard_columns)/while/body/closed_call/cond/branch_0_fun/vmap()/while\" stack_frame_id=586}, backend_config={\"known_trip_count\":{\"n\":\"44\"},\"known_init_step\":{\"init\":\"0\",\"step\":\"1\"},\"known_induction_variable\":{\"tuple_index\":\"0\"},\"dynamic_variable_tuple_indices\":[]}"
+    },
+    {
+      "parent": "region_301.514.clone",
+      "name": "while.3011",
+      "body": "region_406.520.clone.clone.clone.clone.sunk.clone.clone",
+      "condition": "region_407.521.clone.clone.clone.clone.clone",
+      "body_opcodes": {
+        "parameter": 1,
+        "get-tuple-element": 3,
+        "fusion": 2,
+        "tuple": 1
+      },
+      "body_launch_sites": [
+        "loop_add_fusion.89",
+        "loop_add_fusion.90"
+      ],
+      "sources": [
+        [
+          "/gpuwrf/physics/ra_goddard_common.py",
+          "opt_cloud",
+          112
+        ]
+      ],
+      "instruction": "  %while.3011 = (s64[], f32[128,44,10]{2,1,0}, f32[128,44,6,10]{3,1,0,2}) while(%tuple.11325), condition=%region_407.521.clone.clone.clone.clone.clone, body=%region_406.520.clone.clone.clone.clone.sunk.clone.clone, metadata={op_name=\"jit(_advance_chunk_fori)/while/body/cond/branch_1_fun/jit(solve_goddard_columns)/while/body/closed_call/cond/branch_0_fun/vmap()/while\" stack_frame_id=2602}, backend_config={\"known_trip_count\":{\"n\":\"6\"},\"known_init_step\":{\"init\":\"0\",\"step\":\"1\"},\"known_induction_variable\":{\"tuple_index\":\"0\"},\"dynamic_variable_tuple_indices\":[]}"
+    },
+    {
+      "parent": "region_301.514.clone",
+      "name": "while.3001",
+      "body": "region_318.504.clone.clone.sunk.clone",
+      "condition": "region_397.505.clone.clone.clone",
+      "body_opcodes": {
+        "fusion": 27,
+        "constant": 1,
+        "copy": 10,
+        "parameter": 1,
+        "get-tuple-element": 65,
+        "bitcast": 9,
+        "tuple": 12,
+        "while": 7,
+        "conditional": 2
+      },
+      "body_launch_sites": [
+        "input_reduce_fusion.31",
+        "copy.6529",
+        "copy.4070",
+        "copy.4043",
+        "copy.4031",
+        "copy.4037",
+        "copy.4050",
+        "copy.4064",
+        "loop_compare_fusion.69",
+        "loop_minimum_fusion",
+        "loop_compare_fusion.68",
+        "loop_broadcast_fusion.7",
+        "loop_multiply_fusion.26",
+        "loop_select_fusion.10",
+        "loop_broadcast_fusion.5",
+        "copy.4078",
+        "copy.4077",
+        "copy.4079",
+        "input_concatenate_fusion.17",
+        "input_concatenate_fusion.15",
+        "loop_broadcast_fusion.6",
+        "input_concatenate_fusion.16",
+        "loop_exponential_fusion",
+        "input_concatenate_fusion.13",
+        "loop_transpose_fusion.6",
+        "wrapped_transpose.24",
+        "wrapped_slice.5",
+        "loop_dynamic_update_slice_fusion.66",
+        "loop_transpose_fusion.5",
+        "input_concatenate_fusion.14",
+        "wrapped_transpose.25",
+        "wrapped_transpose.23",
+        "loop_transpose_fusion.4",
+        "loop_transpose_fusion.2",
+        "loop_transpose_fusion.3",
+        "loop_add_fusion.94",
+        "loop_add_fusion.93"
+      ],
+      "sources": [
+        [
+          "/gpuwrf/physics/ra_goddard_lw.py",
+          "solve_lw_column",
+          241
+        ]
+      ],
+      "instruction": "  %while.3001 = (s64[], f64[128,45]{1,0}, f64[128,45]{1,0}, f64[128,45]{1,0}, f64[6,10]{1,0}, /*index=5*/f64[128,44]{1,0}, f64[128]{0}, f64[128,10]{1,0}, f64[128,44]{1,0}, f64[128]{0}, /*index=10*/f64[128,44,10]{1,0,2}, f64[128,44]{1,0}, f64[128,44]{1,0}, f64[9]{0}, f64[128,44]{1,0}, /*index=15*/f64[9]{0}, f64[9]{0}, f64[128,44]{1,0}, f64[9]{0}, s32[9]{0}, /*index=20*/f64[128,44]{1,0}, f64[9]{0}, f64[128,44]{1,0}, f64[128,44]{1,0}, f64[128,44]{1,0}, /*index=25*/f64[3,2,3]{2,1,0}, f64[128,44,3]{2,0,1}, f64[6,9]{1,0}, f64[6,3]{1,0}, f64[2,6]{1,0}, /*index=30*/f64[128,45]{1,0}, f64[128,45]{1,0}, f64[128,45]{1,0}, f64[26,21]{1,0}, f64[26,21]{1,0}, /*index=35*/f64[26,21]{1,0}, f64[2,4]{1,0}, f64[4]{0}, f64[2,6]{1,0}, f64[6]{0}, /*index=40*/f64[6]{0}) while(%tuple.11331), condition=%region_397.505.clone.clone.clone, body=%region_318.504.clone.clone.sunk.clone, metadata={op_name=\"jit(_advance_chunk_fori)/while/body/cond/branch_1_fun/jit(solve_goddard_columns)/while/body/closed_call/cond/branch_0_fun/vmap()/while\" stack_frame_id=54}, backend_config={\"known_trip_count\":{\"n\":\"10\"},\"known_init_step\":{\"init\":\"0\",\"step\":\"1\"},\"known_induction_variable\":{\"tuple_index\":\"0\"},\"dynamic_variable_tuple_indices\":[]}"
+    },
+    {
+      "parent": "region_301.514.clone",
+      "name": "while.3010",
+      "body": "region_308.376.clone.clone.clone.clone.sunk.clone",
+      "condition": "region_309.377.clone.clone.clone.clone",
+      "body_opcodes": {
+        "parameter": 1,
+        "get-tuple-element": 3,
+        "fusion": 2,
+        "tuple": 1
+      },
+      "body_launch_sites": [
+        "loop_add_fusion.17",
+        "loop_add_fusion.18"
+      ],
+      "sources": [
+        [
+          "/gpuwrf/physics/ra_goddard_common.py",
+          "opt_cloud",
+          112
+        ]
+      ],
+      "instruction": "  %while.3010 = (s64[], f32[128,44,11]{2,1,0}, f32[128,44,6,11]{3,1,0,2}) while(%tuple.11334), condition=%region_309.377.clone.clone.clone.clone, body=%region_308.376.clone.clone.clone.clone.sunk.clone, metadata={op_name=\"jit(_advance_chunk_fori)/while/body/cond/branch_1_fun/jit(solve_goddard_columns)/while/body/closed_call/cond/branch_0_fun/vmap()/while\" stack_frame_id=2597}, backend_config={\"known_trip_count\":{\"n\":\"6\"},\"known_init_step\":{\"init\":\"0\",\"step\":\"1\"},\"known_induction_variable\":{\"tuple_index\":\"0\"},\"dynamic_variable_tuple_indices\":[]}"
+    },
+    {
+      "parent": "region_301.514.clone",
+      "name": "while.3005",
+      "body": "region_399.510.clone.clone.sunk.clone.clone",
+      "condition": "region_400.511.clone.clone.clone",
+      "body_opcodes": {
+        "parameter": 1,
+        "get-tuple-element": 3,
+        "fusion": 2,
+        "tuple": 1
+      },
+      "body_launch_sites": [
+        "loop_add_fusion.80",
+        "loop_add_fusion.81"
+      ],
+      "sources": [
+        [
+          "/gpuwrf/coupling/goddard_radiation.py",
+          "goddard_column",
+          109
+        ]
+      ],
+      "instruction": "  %while.3005 = (s64[], f32[128]{0}, f32[128,44,11]{2,1,0}) while(%tuple.11337), condition=%region_400.511.clone.clone.clone, body=%region_399.510.clone.clone.sunk.clone.clone, metadata={op_name=\"jit(_advance_chunk_fori)/while/body/cond/branch_1_fun/jit(solve_goddard_columns)/while/body/closed_call/cond/branch_0_fun/vmap()/while\" stack_frame_id=643}, backend_config={\"known_trip_count\":{\"n\":\"44\"},\"known_init_step\":{\"init\":\"0\",\"step\":\"1\"},\"known_induction_variable\":{\"tuple_index\":\"0\"},\"dynamic_variable_tuple_indices\":[]}"
+    }
+  ],
+  "largest_goddard_fusions": [
+    {
+      "parent": "region_493.656.clone.clone.sunk.clone",
+      "name": "loop_add_maximum_pad_select_fusion",
+      "body": "fused_add_maximum_pad_select",
+      "instructions": 307,
+      "kind": "kLoop"
+    },
+    {
+      "parent": "region_454.615",
+      "name": "loop_multiply_fusion.43",
+      "body": "fused_multiply.43",
+      "instructions": 300,
+      "kind": "kLoop"
+    },
+    {
+      "parent": "region_359.491",
+      "name": "loop_multiply_fusion.25",
+      "body": "fused_multiply.25",
+      "instructions": 300,
+      "kind": "kLoop"
+    },
+    {
+      "parent": "region_402.691.clone",
+      "name": "loop_add_fusion.101",
+      "body": "fused_add.101",
+      "instructions": 233,
+      "kind": "kLoop"
+    },
+    {
+      "parent": "region_402.691.clone",
+      "name": "input_add_clamp_convert_maximum_multiply_reduce_subtract_fusion",
+      "body": "fused_add_clamp_convert_maximum_multiply_reduce_subtract",
+      "instructions": 226,
+      "kind": "kInput"
+    },
+    {
+      "parent": "region_301.514.clone",
+      "name": "input_add_convert_divide_maximum_multiply_reduce_subtract_fusion",
+      "body": "fused_add_convert_divide_maximum_multiply_reduce_subtract",
+      "instructions": 194,
+      "kind": "kInput"
+    },
+    {
+      "parent": "region_402.691.clone",
+      "name": "loop_add_fusion.100",
+      "body": "fused_add.100",
+      "instructions": 158,
+      "kind": "kLoop"
+    },
+    {
+      "parent": "region_301.514.clone",
+      "name": "loop_add_fusion.95",
+      "body": "fused_add.95",
+      "instructions": 158,
+      "kind": "kLoop"
+    },
+    {
+      "parent": "region_493.656.clone.clone.sunk.clone",
+      "name": "loop_dynamic_update_slice_fusion.33",
+      "body": "fused_dynamic_update_slice.33",
+      "instructions": 94,
+      "kind": "kLoop"
+    },
+    {
+      "parent": "region_402.691.clone",
+      "name": "loop_multiply_fusion.45",
+      "body": "fused_multiply.45",
+      "instructions": 91,
+      "kind": "kInput"
+    },
+    {
+      "parent": "region_493.656.clone.clone.sunk.clone",
+      "name": "input_concatenate_fusion.11",
+      "body": "fused_concatenate.13",
+      "instructions": 87,
+      "kind": "kInput"
+    },
+    {
+      "parent": "region_402.691.clone",
+      "name": "loop_negate_select_slice_fusion",
+      "body": "fused_negate_select_slice",
+      "instructions": 87,
+      "kind": "kLoop"
+    },
+    {
+      "parent": "region_493.656.clone.clone.sunk.clone",
+      "name": "loop_add_fusion.36",
+      "body": "fused_add.36",
+      "instructions": 80,
+      "kind": "kLoop"
+    },
+    {
+      "parent": "region_413.626.clone.clone.sunk.clone",
+      "name": "input_concatenate_fusion.21",
+      "body": "fused_concatenate.23",
+      "instructions": 77,
+      "kind": "kInput"
+    },
+    {
+      "parent": "region_318.504.clone.clone.sunk.clone",
+      "name": "input_concatenate_fusion.15",
+      "body": "fused_concatenate.17",
+      "instructions": 77,
+      "kind": "kInput"
+    },
+    {
+      "parent": "region_493.656.clone.clone.sunk.clone",
+      "name": "loop_dynamic_update_slice_fusion.32",
+      "body": "fused_dynamic_update_slice.32",
+      "instructions": 73,
+      "kind": "kLoop"
+    },
+    {
+      "parent": "region_402.691.clone",
+      "name": "input_divide_reduce_fusion",
+      "body": "fused_divide_reduce",
+      "instructions": 69,
+      "kind": "kInput"
+    },
+    {
+      "parent": "region_402.691.clone",
+      "name": "loop_multiply_fusion.46",
+      "body": "fused_multiply.46",
+      "instructions": 68,
+      "kind": "kInput"
+    },
+    {
+      "parent": "region_301.514.clone",
+      "name": "loop_multiply_fusion.28",
+      "body": "fused_multiply.28",
+      "instructions": 68,
+      "kind": "kInput"
+    },
+    {
+      "parent": "region_301.514.clone",
+      "name": "loop_multiply_fusion.27",
+      "body": "fused_multiply.27",
+      "instructions": 68,
+      "kind": "kInput"
+    },
+    {
+      "parent": "region_497.644.clone.clone.sunk.clone",
+      "name": "loop_dynamic_update_slice_fusion.28",
+      "body": "fused_dynamic_update_slice.28",
+      "instructions": 65,
+      "kind": "kLoop"
+    },
+    {
+      "parent": "region_320.397.clone.clone.sunk.clone.clone",
+      "name": "loop_dynamic_update_slice_fusion.61",
+      "body": "fused_dynamic_update_slice.61",
+      "instructions": 62,
+      "kind": "kInput"
+    },
+    {
+      "parent": "region_320.397.clone.clone.sunk.clone",
+      "name": "loop_dynamic_update_slice_fusion.23",
+      "body": "fused_dynamic_update_slice.23",
+      "instructions": 62,
+      "kind": "kInput"
+    },
+    {
+      "parent": "region_384.486.clone",
+      "name": "loop_dynamic_update_slice_fusion.37",
+      "body": "fused_dynamic_update_slice.37",
+      "instructions": 58,
+      "kind": "kLoop"
+    },
+    {
+      "parent": "region_384.486",
+      "name": "loop_dynamic_update_slice_fusion.15",
+      "body": "fused_dynamic_update_slice.15",
+      "instructions": 58,
+      "kind": "kLoop"
+    },
+    {
+      "parent": "region_413.626.clone.clone.sunk.clone",
+      "name": "loop_dynamic_update_slice_fusion.68",
+      "body": "fused_dynamic_update_slice.68",
+      "instructions": 57,
+      "kind": "kLoop"
+    },
+    {
+      "parent": "region_318.504.clone.clone.sunk.clone",
+      "name": "loop_dynamic_update_slice_fusion.66",
+      "body": "fused_dynamic_update_slice.66",
+      "instructions": 57,
+      "kind": "kLoop"
+    },
+    {
+      "parent": "region_384.486.clone",
+      "name": "loop_dynamic_update_slice_fusion.36",
+      "body": "fused_dynamic_update_slice.36",
+      "instructions": 55,
+      "kind": "kLoop"
+    },
+    {
+      "parent": "region_384.486",
+      "name": "loop_dynamic_update_slice_fusion.14",
+      "body": "fused_dynamic_update_slice.14",
+      "instructions": 55,
+      "kind": "kLoop"
+    },
+    {
+      "parent": "region_454.615",
+      "name": "loop_clamp_multiply_fusion.1",
+      "body": "fused_clamp_multiply.1",
+      "instructions": 52,
+      "kind": "kLoop"
+    }
+  ],
+  "wall_s": 1.7332666680013062,
+  "peak_rss_KiB": 389104
+}

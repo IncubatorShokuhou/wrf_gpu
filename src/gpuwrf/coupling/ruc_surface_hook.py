@@ -25,14 +25,13 @@ Known coupling simplifications (documented, not hidden):
 * GSW: with the native RRTMG driver the held WRF ``GSW = SWDOWN - SWUP`` (net, radiation
   albedo) is used as in WRF; on the legacy surface-only refresh the held DOWNWARD
   shortwave is converted with the step-start RUC albedo (``GSWIN`` then equals SOLDN).
-* RUC ALBEDO/EMISS are carried and written to history but not yet fed back into the
-  port's radiation surface albedo/emissivity.
+* Radiation reads the step-start RUC ALBEDO/EMISS through the retained land
+  surface interface, so a held radiation interval uses the previous call's values.
 * sea ice (``XICE >= xice_threshold`` on land) and lake-model points fail closed
   (``unsupported``), as does ``sf_sfclay_physics`` other than MYNN-SL, an MP other than Thompson
   (the precipitation carry) and the MYJ PBL (LSMRUC myj path).
-* WRF calls ``SFCDIAGS_RUCLSM`` after LSMRUC (module_surface_driver.F:3608-3620: RUC 2-m T2/Q2/TH2,
-  and it recomputes CHS2/CQS2); that routine is NOT ported -- the 2-m history fields of a RUC run come
-  from the generic surface-layer diagnostics path, not WRF's RUC formulas (station T2 is affected).
+* WRF ``SFCDIAGS_RUCLSM`` runs after LSMRUC; its 2-m values are held in the
+  operational HistoryDiagnostics carry and passed to the history writer.
 """
 
 from __future__ import annotations
@@ -68,6 +67,16 @@ class RucRadiation(NamedTuple):
 
     gsw: jax.Array
     glw: jax.Array  # downward longwave at the ground (W m-2)
+
+
+class RucRadiationSurface(NamedTuple):
+    """Array views of RUC's radiation inputs; no copies or extra carry leaves."""
+    albedo: Any
+    emiss: Any
+
+
+def ruc_radiation_surface(land):
+    return RucRadiationSurface(land.alb, land.emiss)
 
 
 def ruc_net_radiation(soldn, glw, alb):
@@ -132,7 +141,7 @@ def _state_surface(state, name, value):
 
 def ruc_surface_step(state: Any, land: RucLandState, static: RucStaticBundle, dt: float,
                      grid: Any = None, *, radiation: Any = None, precipitation: Any = None,
-                     first_timestep: Any = False):
+                     first_timestep: Any = False, history: bool = False, spp_pattern=None):
     """MYNN surface layer + LSMRUC over all columns; returns ``(state', land')``."""
 
     from gpuwrf.coupling.physics_couplers import _surface_column_view, _temperature_from_theta
@@ -153,7 +162,8 @@ def ruc_surface_step(state: Any, land: RucLandState, static: RucStaticBundle, dt
 
     # ---- 1. MYNN surface layer on the RUC-written TSK/QSFC/MAVAIL/ZNT/SNOWH
     view = _surface_column_view(state, grid)
-    diag, flhc, flqc = surface_layer_with_exchange(view, first_timestep=first_timestep, snowh=land.snowh)
+    diag, flhc, flqc = surface_layer_with_exchange(view, first_timestep=first_timestep, snowh=land.snowh,
+        **({} if spp_pattern is None else {"spp_pattern": spp_pattern}))
     flux = diag.fluxes
     shape = jnp.shape(state.t_skin)
 
@@ -186,9 +196,10 @@ def ruc_surface_step(state: Any, land: RucLandState, static: RucStaticBundle, dt
         extra["landusef"] = _flat(jnp.asarray(static.landusef, dt_))
     if cfg.mosaic_soil == 1:
         extra["soilctop"] = _flat(jnp.asarray(static.soilctop, dt_))
-    # The ktau=1 block is applied once at carry seeding (initial_ruc_land), so every
-    # scan step is a ktau>1 call (restart-safe, no traced first-step flag).
-    out = lsmruc_step(st, forcing, static_f, cfg, static.tables, 2, **extra)
+    # Use the real first-step atmospheric forcing for WRF's ktau=1 block.
+    # A continued scan/restart has a global step >1 and does not reset snow/runoff.
+    out = lsmruc_step(st, forcing, static_f, cfg, static.tables,
+                      jnp.where(first_timestep, 1, 2), **extra)
     new = {k: _unflat(out[k], shape) for k in STATE_SCALARS + STATE_PROFILES}
     next_land = RucLandState(**new)
 
@@ -236,7 +247,25 @@ def ruc_surface_step(state: Any, land: RucLandState, static: RucStaticBundle, dt
             updates[name] = blend(name, value[0], value[1])
         else:
             updates[name] = _state_surface(state, name, value)
-    return state.replace(**updates), next_land
+    state_out = state.replace(**updates)
+    if history:
+        from gpuwrf.physics.ruc_diagnostics import sfcdiags_ruclsm
+
+        # surface_driver:3685 uses the POST-LSMRUC MAVAIL, with the exchange
+        # coefficients and atmospheric inputs from this step's surface layer.
+        rho = jnp.asarray(rho1, dt_)
+        cqs = jnp.asarray(flqc, dt_) / (jnp.asarray(state_out.mavail, dt_) * rho)
+        psfc = view.psfc if view.psfc is not None else p1
+        fields = sfcdiags_ruclsm(
+            hfx=state_out.hfx, qfx=state_out.qfx, tsk=jnp.asarray(state_out.t_skin, dt_),
+            qsfc=state_out.qsfc, cqs=cqs, cqs2=diag.cqs2, chs2=diag.chs2,
+            t1=t1, qv1=qv1, rho1=rho, p1=p1, psfc=psfc, cp=cfg.cp, rovcp=cfg.rovcp,
+        )
+        # SFCDIAGS is called on water columns too; no land-only blend here.
+        fields.update(u10=diag.u10, v10=diag.v10, psfc=psfc,
+                      lh=jnp.where(is_land, new["lh"], diag.lh), hfx=state_out.hfx)
+        return state_out, next_land, fields
+    return state_out, next_land
 
 
 #: WRF Registry.EM_COMMON history ('h') fields RUC owns -> RucLandState attribute
@@ -257,18 +286,32 @@ RUC_RESTART_ONLY_FIELDS: dict[str, str] = {
 }
 
 
-def ruc_history_fields(land: RucLandState) -> dict:
+def ruc_history_fields(land: RucLandState, static: RucStaticBundle | None = None) -> dict:
     """WRF-named history fields of the RUC carry; soil fields as ``(nzs, ny, nx)``.
 
     Units follow WRF LSMRUC: SNOW/CANWAT kg m-2, SNOWH m, SFROFF/UDROFF/ACRUNOFF/ACSNOM/
-    SNOWFALLAC mm (accumulated since ktau=1), RHOSNF kg m-3.  Not yet consumed by the
-    nested-pipeline writer (sf=3 runs through the explicit-bundle scan API, like sf=1/7).
+    SNOWFALLAC mm (accumulated since ktau=1), RHOSNF kg m-3. Called only at output
+    boundaries; one batched transfer materializes only the written land fields.
     """
 
+    values = jax.device_get({name: getattr(land, attr) for name, attr in RUC_HISTORY_FIELDS.items()})
     out = {}
-    for wrf_name, attr in RUC_HISTORY_FIELDS.items():
-        a = np.asarray(getattr(land, attr))
+    for wrf_name, value in values.items():
+        a = np.asarray(value)
         out[wrf_name] = np.moveaxis(a, -1, 0) if a.ndim == 3 else a
+    if static is not None:
+        zs = np.asarray(static.cfg.zs, np.float32)
+        # Literal init_soil_depth_3, including its first two thicknesses.
+        half = np.zeros_like(zs)
+        half[1] = (zs[1] + zs[0]) * np.float32(.5)
+        dzs = np.zeros_like(zs)
+        dzs[0] = half[1] - half[0]
+        for k in range(1, len(zs) - 1):
+            half[k] = (zs[k + 1] + zs[k]) * np.float32(.5)
+            dzs[k] = half[k] - half[k - 1]
+        half[-1] = zs[-1]
+        dzs[-1] = half[-1] - half[-2]
+        out.update(ZS=zs, DZS=dzs)
     return out
 
 
@@ -362,7 +405,7 @@ def initial_ruc_land(*, cfg: RucConfig, tables: RucTables, ivgtyp, isltyp, xland
 
 def build_ruc_bundles(fields, *, mminlu: str, iswater: int, isice: int, dt: float, zs,
                       p1, frpcpn: bool = True, dtype: str = "float32", mosaic_lu: int = 0,
-                      mosaic_soil: int = 0, run_dir=None):
+                      mosaic_soil: int = 0, run_dir=None, tables=None):
     """RucStaticBundle + seeded RucLandState from wrfinput-style 2-D/3-D fields.
 
     ``fields`` maps WRF names to arrays: IVGTYP, ISLTYP, XLAND, SEAICE (XICE), TMN,
@@ -373,7 +416,8 @@ def build_ruc_bundles(fields, *, mminlu: str, iswater: int, isice: int, dt: floa
 
     from gpuwrf.physics.ruclsm import load_ruc_tables, mminlu_to_ruc
 
-    tables = load_ruc_tables(mminlu_to_ruc(mminlu), run_dir)
+    if tables is None:
+        tables = load_ruc_tables(mminlu_to_ruc(mminlu), run_dir)
     cfg = RucConfig(dt=float(dt), zs=tuple(float(z) for z in zs), dtype=dtype, frpcpn=bool(frpcpn),
                     iswater=int(iswater), isice=int(isice), mosaic_lu=int(mosaic_lu),
                     mosaic_soil=int(mosaic_soil))
@@ -422,6 +466,7 @@ __all__ = [
     "initial_ruc_land",
     "ruc_net_radiation",
     "ruc_precipitation_forcing",
+    "ruc_radiation_surface",
     "ruc_surface_step",
     "ruc_unsupported_mask",
 ]

@@ -1,0 +1,224 @@
+{
+  "24": {
+    "source_rev": "3e70f3b4bc3f5c3eec53c5e4910e0f1d482a8ee3",
+    "flags": {
+      "JAX_PLATFORMS": "cuda",
+      "GPUWRF_FAST_DEFAULTS": null,
+      "GPUWRF_CENSUS": "1",
+      "GPUWRF_STRICT_GUARDS": null,
+      "GPUWRF_AOT_SLIM_MODULE": "0",
+      "GPUWRF_RRTMG_MP_RE": "1"
+    },
+    "gate": "FAIL",
+    "max_stack_B": 3864,
+    "nonleaf_over1k": [
+      [],
+      []
+    ],
+    "transpose_over500": [
+      [],
+      []
+    ],
+    "wall_s": 548.1339096010197,
+    "peak_sampled_vram_mib": 3334,
+    "scope": "cold, shared CPU/IO; not an S1 warm benchmark",
+    "receipt_sha256": {
+      "<USER_HOME>/wrf_gpu2_lanes/s1-gpuqual/mp24/gpu_run.json": "9a6c368b72418a653893de28ed068fd71092b2a5b6289b5bf288b657d709757d",
+      "<USER_HOME>/wrf_gpu2_lanes/s1-gpuqual/mp24/e41/wave_gate.json": "5f28062035dbf080c57d4d32e6afabb472906c8ccd96a278b575d6323dc2a3bd",
+      "<USER_HOME>/wrf_gpu2_lanes/s1-gpuqual/mp24/grid_gate.json": "40f5b201af8c5e0a2cf2db29c9e849247d9a31db0dd03da5b84f4fdf84a40c8b"
+    },
+    "matched_24h_science": {
+      "verdict": "FAIL",
+      "coverage_complete": false,
+      "paired_frames": 25,
+      "cpu_field_count": 361,
+      "bounded_field_count": 62,
+      "first_failure": {
+        "field": "RAINNC",
+        "lead_h": 12,
+        "checks": [
+          {
+            "metric": "rmse",
+            "value": 1.3609149273119476,
+            "limit": 1.0
+          }
+        ],
+        "rmse": 1.3609149273119476,
+        "max_abs": 11.003435134887695
+      },
+      "manifest_sha256": "9df4fab8514523286f07b127eb8bf57a7545459c4448fef721ac44c0ecc351dc",
+      "raw_gpu_nonfinite": [],
+      "missing_original_cpu_fields": [
+        "QHAIL"
+      ]
+    }
+  },
+  "28": {
+    "source_rev": "3e70f3b4bc3f5c3eec53c5e4910e0f1d482a8ee3",
+    "flags": {
+      "JAX_PLATFORMS": "cuda",
+      "GPUWRF_FAST_DEFAULTS": null,
+      "GPUWRF_CENSUS": "1",
+      "GPUWRF_STRICT_GUARDS": null,
+      "GPUWRF_AOT_SLIM_MODULE": "0",
+      "GPUWRF_RRTMG_MP_RE": "1"
+    },
+    "gate": "FAIL",
+    "max_stack_B": 928,
+    "nonleaf_over1k": [
+      [],
+      []
+    ],
+    "transpose_over500": [
+      [
+        [
+          "input_add_maximum_select_transpose_fusion",
+          833
+        ],
+        [
+          "input_add_divide_maximum_minimum_multiply_reduce_select_sqrt_subtract_fusion",
+          1026
+        ],
+        [
+          "input_add_and_compare_convert_divide_maximum_minimum_select_sqrt_subtract_transpose_fusion",
+          1510
+        ]
+      ],
+      [
+        [
+          "input_add_maximum_select_transpose_fusion",
+          833
+        ],
+        [
+          "input_add_divide_maximum_minimum_multiply_reduce_select_sqrt_subtract_fusion",
+          1026
+        ],
+        [
+          "input_add_and_compare_convert_divide_maximum_minimum_select_sqrt_subtract_transpose_fusion",
+          1510
+        ]
+      ]
+    ],
+    "wall_s": 449.6399777869228,
+    "peak_sampled_vram_mib": 2868,
+    "scope": "cold, shared CPU/IO; not an S1 warm benchmark",
+    "receipt_sha256": {
+      "<USER_HOME>/wrf_gpu2_lanes/s1-gpuqual/mp28/gpu_run.json": "c736974e11b0754a36f51cf1270039ef3187863b031a258294d050967a3e76bc",
+      "<USER_HOME>/wrf_gpu2_lanes/s1-gpuqual/mp28/e41/wave_gate.json": "f709075486ea7aaa1fb84f1a1b626486d071747b13819aead61918c797a9ae9c",
+      "<USER_HOME>/wrf_gpu2_lanes/s1-gpuqual/mp28/grid_gate.json": "abbb1f67f261e447997da137d1ad94b94ef629c0c8edf8daf95ea21356f1ad6e"
+    },
+    "matched_24h_science": {
+      "verdict": "INCOMPLETE",
+      "coverage_complete": false,
+      "paired_frames": 25,
+      "cpu_field_count": 369,
+      "bounded_field_count": 62,
+      "first_failure": null,
+      "manifest_sha256": "9df4fab8514523286f07b127eb8bf57a7545459c4448fef721ac44c0ecc351dc",
+      "raw_gpu_nonfinite": [],
+      "missing_original_cpu_fields": [
+        "QNBCA",
+        "QNCLOUD",
+        "QNIFA",
+        "QNIFA2D",
+        "QNWFA",
+        "QNWFA2D",
+        "TAOD5502D"
+      ]
+    }
+  },
+  "40": {
+    "source_rev": "3e70f3b4bc3f5c3eec53c5e4910e0f1d482a8ee3",
+    "flags": {
+      "JAX_PLATFORMS": "cuda",
+      "GPUWRF_FAST_DEFAULTS": null,
+      "GPUWRF_CENSUS": "1",
+      "GPUWRF_STRICT_GUARDS": null,
+      "GPUWRF_AOT_SLIM_MODULE": "0",
+      "GPUWRF_RRTMG_MP_RE": "0"
+    },
+    "gate": "FAIL",
+    "max_stack_B": 16,
+    "nonleaf_over1k": [
+      [],
+      []
+    ],
+    "transpose_over500": [
+      [
+        [
+          "loop_add_and_compare_divide_power_select_subtract_fusion",
+          819
+        ],
+        [
+          "loop_and_divide_minimum_multiply_or_select_fusion",
+          2226
+        ],
+        [
+          "input_select_transpose_fusion.1",
+          595
+        ]
+      ],
+      [
+        [
+          "loop_add_and_compare_divide_power_select_subtract_fusion",
+          819
+        ],
+        [
+          "loop_and_divide_minimum_multiply_or_select_fusion",
+          2226
+        ],
+        [
+          "input_select_transpose_fusion.1",
+          595
+        ]
+      ]
+    ],
+    "wall_s": 501.86245529400185,
+    "peak_sampled_vram_mib": 2618,
+    "scope": "cold, shared CPU/IO; not an S1 warm benchmark",
+    "receipt_sha256": {
+      "<USER_HOME>/wrf_gpu2_lanes/s1-gpuqual/mp40/gpu_run.json": "c0807337857b641084395ddd8b952034bbf96d04ecd899fc4abbd542fed6c6bc",
+      "<USER_HOME>/wrf_gpu2_lanes/s1-gpuqual/mp40/e41/wave_gate.json": "655a33b68a22270edaaacd7c16fb35bdf33c917842118cb7607a4f9992cab94c",
+      "<USER_HOME>/wrf_gpu2_lanes/s1-gpuqual/mp40/grid_gate.json": "fb025e726ccca98e74544ebca3e7cd7a5729064f39d41cd828f91820521d01d6"
+    },
+    "matched_24h_science": {
+      "verdict": "FAIL",
+      "coverage_complete": false,
+      "paired_frames": 25,
+      "cpu_field_count": 377,
+      "bounded_field_count": 62,
+      "first_failure": {
+        "field": "RAINNC",
+        "lead_h": 13,
+        "checks": [
+          {
+            "metric": "rmse",
+            "value": 1.9030315053463862,
+            "limit": 1.0
+          }
+        ],
+        "rmse": 1.9030315053463862,
+        "max_abs": 12.914145469665527
+      },
+      "manifest_sha256": "9df4fab8514523286f07b127eb8bf57a7545459c4448fef721ac44c0ecc351dc",
+      "raw_gpu_nonfinite": [],
+      "missing_original_cpu_fields": [
+        "CCN1_GS",
+        "CCN2_GS",
+        "CCN3_GS",
+        "CCN4_GS",
+        "CCN5_GS",
+        "CCN6_GS",
+        "CCN7_GS",
+        "EFCG",
+        "EFIG",
+        "EFSG",
+        "MSKF_REFL_10CM",
+        "QNCLOUD",
+        "QNGRAUPEL",
+        "QNSNOW",
+        "WACT"
+      ]
+    }
+  }
+}

@@ -1,0 +1,296 @@
+{
+  "status": "READY_FOR_CRITIC_COMPLETE_BEP_BEM_CPU_QUALIFIED",
+  "utc": "2026-10-13T22:13:49Z",
+  "branch": "lane/s1-bepbem",
+  "model_commit": "82217ce5b1c91bb3bd1acbe545c027760ca42458",
+  "base_main": "85ab27cb3",
+  "model_source_tree_sha": "b5dd41f339c27979b60611af9b75baf65ee9c5e4",
+  "scope": {
+    "sf_urban_physics": [
+      2,
+      3
+    ],
+    "land": "Noah-MP4",
+    "PBL": [
+      1,
+      8
+    ],
+    "surface_layer": 1,
+    "radiation": "RRTMG4/4",
+    "morphology": "default URBPARM.TBL UTYPE2; ordinary roofs",
+    "pipelines": "native single-domain/nested bind and evolve urban state; legacy daily CPU-history replay explicitly refused"
+  },
+  "refusals": [
+    "MYJ2 requires absent module_bl_myjurb",
+    "other PBL pairs",
+    "LCZ/WUDAPT flag and categories",
+    "NUDAPT morphology",
+    "PV and green roof",
+    "other land/radiation pairs"
+  ],
+  "scientific_gate_arms": {
+    "BEP27_fp64": {
+      "violations": 0,
+      "raw_violations_retained": 0,
+      "field_step_checks": 210
+    },
+    "BEP27_fp32": {
+      "violations": 0,
+      "raw_violations_retained": 39,
+      "field_step_checks": 210
+    },
+    "BEM03_fp64_ac_on": {
+      "violations": 0,
+      "raw_violations_retained": 0,
+      "field_step_checks": 348
+    },
+    "BEM03_fp64_ac_off": {
+      "violations": 0,
+      "raw_violations_retained": 0,
+      "field_step_checks": 348
+    },
+    "BEM03_fp32_ac_on": {
+      "violations": 0,
+      "raw_violations_retained": 458,
+      "field_step_checks": 348
+    },
+    "BEM03_fp32_ac_off": {
+      "violations": 0,
+      "raw_violations_retained": 468,
+      "field_step_checks": 348
+    },
+    "PBL07_ysu_fp64": {
+      "violations": 0,
+      "raw_violations_retained": 0,
+      "fields_including_all_original_diagnostics": 10
+    },
+    "PBL07_ysu_fp32": {
+      "violations": 0,
+      "raw_violations_retained": 5,
+      "fields_including_all_original_diagnostics": 10
+    },
+    "PBL07_boulac_fp64": {
+      "violations": 0,
+      "raw_violations_retained": 0,
+      "fields_including_all_original_diagnostics": 14
+    },
+    "PBL07_boulac_fp32": {
+      "violations": 0,
+      "raw_violations_retained": 26,
+      "fields_including_all_original_diagnostics": 14
+    }
+  },
+  "conditioned_R4_gate": {
+    "packet": "ROUND01.json/.npz",
+    "approval": "ROUND01_APPROVAL.json",
+    "budget_sha256": "f48ed21712ba377ac0fcaa5487371ddf232c1ba5b35ce41a0d30d040d10687e0",
+    "candidate_results_read_by_generator": false,
+    "state_geometry_REAL8_D6_limits": "UNCHANGED",
+    "raw_failure_counts_retained": true,
+    "reproduction": "roundoff_budget.py + WRF_flux_operands.json + BEP26.npz + tracked full/PBL savepoints + hashed pristine URBPARM.TBL"
+  },
+  "independent_truth": "unmodified pristine CPU-WRF physical modules and verbatim Noah-MP caller; REAL4 + REAL8 diagnostics, 6 regimes x6stepsdt6; 48 active helper regimes; PBL6regimes32levelsdt60; constructed vertical extensions disclosed",
+  "wrf_source_commit": "f52c197ed39d12e087d02c50f412d90d418f6186",
+  "consumers": {
+    "unique_passed": 318,
+    "WIRE04_FAST1_passed_reused": 310,
+    "WIRE05_canonical_FAST0_closures_passed": 8,
+    "remaining_failures": 0,
+    "reused_numerical_pytest_nodes": 2,
+    "reused_node_evidence": "BEP27/BEM03; exact unchanged numerical sources",
+    "scope": "own helpers/init/history/actualSF1/admission/restart;8sharedconsumerfiles(v013 structural node);NetCDFprocesslock;heldphysics;lake/spectral/obs/stream restart",
+    "restart": "4 full urban pickle/NetCDF roundtrips and 12 missing-state/radiation/SF1 rejections; shared carry groups retained"
+  },
+  "coupled_CPU_smoke": {
+    "BEP": {
+      "executed_receipt": "SMOKE06.json",
+      "steps": 3,
+      "urban_columns": 31,
+      "shape": [
+        44,
+        42,
+        42
+      ],
+      "dt_s": 50,
+      "radt_min": 10,
+      "guards": 0,
+      "nonfinite": 0,
+      "logical_urban_carry_bytes": 170924,
+      "cold_setup_plus_3_steps_s": 608.0768392039463,
+      "wall_s": 654.6455085689668,
+      "final_composition_reuse": "full productionjaxpr + all initial dynamic input bytes exact",
+      "program_sha256": "4f8f36b2f6844442d41b6656f92319a7d9e011e02a3f4eb9d853641353e466e6",
+      "initial_carry_sha256": "7014feaf3d4b1d78357e67997fa77ed34b0562a81291443814f1740c2c70a115",
+      "initial_dynamic_leaves": 223,
+      "crop_used": false,
+      "platform": "CPU Pallas interpretation/REAL instruction emulation of native CUDA target; no GPU execution, not portable-backend qualification",
+      "activity_metric_max_change": "mixed-unit state leaves; activity only, not a temperature metric"
+    },
+    "BEM": {
+      "executed_receipt": "SMOKE05.json",
+      "steps": 3,
+      "urban_columns": 31,
+      "shape": [
+        44,
+        42,
+        42
+      ],
+      "dt_s": 50,
+      "radt_min": 10,
+      "guards": 0,
+      "nonfinite": 0,
+      "logical_urban_carry_bytes": 291948,
+      "cold_setup_plus_3_steps_s": 325.31966180098243,
+      "wall_s": 366.6273636529222,
+      "final_composition_reuse": "full productionjaxpr + all initial dynamic input bytes exact",
+      "program_sha256": "0a8f5df2d9ede9e4814c6ea1c4be2d528dd7ea808478e084cd96a42f1768833f",
+      "initial_carry_sha256": "18f7738667b37d5247d2e4637f0e5bf1ccfdbb1a57265900b2ab42a0657f7d88",
+      "initial_dynamic_leaves": 234,
+      "crop_used": false,
+      "platform": "CPU Pallas interpretation/REAL instruction emulation of native CUDA target; no GPU execution, not portable-backend qualification",
+      "activity_metric_max_change": "mixed-unit state leaves; activity only, not a temperature metric"
+    }
+  },
+  "default_program_regression_only": {
+    "release": "2bf12cb8374d3a84a440e47dea4b77b0c7436108fc2ee2616bba6ec79b17962a",
+    "bl_pbl_physics=1,sf_sfclay_physics=1,sf_urban_physics=0": "77bcd7dc9e4032930d72eea94a2b2e06b5bf4bb7d2801853febf27a1142010fe",
+    "bl_pbl_physics=8,sf_sfclay_physics=1,sf_urban_physics=0": "a6377d3f2eba9ef9eec1159c9516dee83f37573ece64c100416ab120f825185e",
+    "bl_pbl_physics=1,sf_sfclay_physics=1,sf_urban_physics=1": "1880b28d2a262561a93be33e0f8b352de8d786c4284db553777936c786dd23f6",
+    "bl_pbl_physics=8,sf_sfclay_physics=1,sf_urban_physics=1": "967ff71a3c0651da6d206f00791fbd0f5caf031b161059ec3189ce7c54bc799f"
+  },
+  "genuine_mutants": {
+    "MUT_PBL01": {
+      "numerical_assertions": 2,
+      "setup_errors": 0,
+      "mutant": "zero actual urban a_u/a_v/b_u/b_v/a_q/b_q at PBL entry",
+      "violations": {
+        "ysu": 340,
+        "boulac": 307
+      }
+    },
+    "MUT_AC02": {
+      "status": "KILLED",
+      "numerical_assertions": 1,
+      "setup_errors": 0,
+      "message": "complete driver differs from pristine WRF (numerical gate)",
+      "original_sha256": "6513254b235a6104b503d9284a150e17e0d0abdc93507a07a390bdaf59443c10",
+      "mutant_sha256": "6d0961e80744850c7384309a7aac33b7b866c8d6f3e02c28404f1001f279f402",
+      "deleted_source": "result.sensible_ventilation[...,k]-result.sensible_exhaust[...,k]",
+      "replacement": "result.sensible_ventilation[...,k]",
+      "active_heat_source_gate": {
+        "step": 1,
+        "field": "B_T_BEP",
+        "max_abs": 0.0005284387723106812,
+        "max_ratio": 26420893.13706962,
+        "raw_violations": 8,
+        "violations": 8
+      },
+      "AC_off_unchanged_violations": 0
+    }
+  },
+  "assets": {
+    "clean_archive": "ARCHIVE02:8NPZ+24PBLJSON+budget/generator/operandseals; assets unchanged",
+    "sha256": {
+      "savepoints/components_fp32.npz": "ea57bf216da742656e9dabaa52c449324b7bbbd37df0ef2dc8df5875920033f7",
+      "savepoints/components_fp64.npz": "b02a3015738b8acb9a4ea8cbbc8b625f6d8d25060239bc8c35e8cd8ce4ff8bb8",
+      "savepoints/manifest.json": "61bb73e553b859ef370330df3c095460aad6345b5aa225598578c0a4e764b9df",
+      "savepoints/pbl/boulac_fp32_1.json": "3ad2f22462258849d130441f7344e2703f46cef000f3667fcba736b3c54a9840",
+      "savepoints/pbl/boulac_fp32_2.json": "4fddb2b7632a6dbd10e65c3ec7ae84f4b6737fe4216535e5c16e5dd334896123",
+      "savepoints/pbl/boulac_fp32_3.json": "e791f7aad4cc737eb564f2b8f42d1ba8aea9da7cde3636228e05aacc2a686b0e",
+      "savepoints/pbl/boulac_fp32_4.json": "85a663a1e444454e836bb00c3bfc88cb8704b62c8b37fb87da87fe65b402396e",
+      "savepoints/pbl/boulac_fp32_5.json": "2f06b273ed9e88b503da47855f77c46c99ce87e7d6c74b9ca92f2fd125de33f2",
+      "savepoints/pbl/boulac_fp32_6.json": "320cd20beba8ba7eae829b1531f0240e57ee06a953ce0144945305c831f1a65b",
+      "savepoints/pbl/boulac_fp64_1.json": "d72249d92c19a362f1d6438c642216da6681836f1031b0fcaae40110b81cd500",
+      "savepoints/pbl/boulac_fp64_2.json": "b2623b54fea385ff0d27efd5498fa64236c9bef1737b1cf4cc9b957c0456b4ba",
+      "savepoints/pbl/boulac_fp64_3.json": "731d25c70ce7abf9cca39a3741eae4f6c7bd06f9d2d21ffdd2ab7baf0e6399e3",
+      "savepoints/pbl/boulac_fp64_4.json": "f2d3160ca9eb6eed3dea5dcbc8a5647e5c297fe9442fa0ec7307a158026b9bcb",
+      "savepoints/pbl/boulac_fp64_5.json": "85ab1b3e199648fe028bb96f5f6f5a5c733970ec8c1d122f2ccd4f62ab1330e9",
+      "savepoints/pbl/boulac_fp64_6.json": "c255ae2be3376128af3b05f002fe63a53f7f6aa79503611931ded789cbec6bc6",
+      "savepoints/pbl/manifest.json": "2e4832cb433cad2e9f776d8576cc9a976a5169c6dcfead991e1744a2751afc41",
+      "savepoints/pbl/ysu_fp32_1.json": "fb930a46f799bf411d7d98a3efc8c235efe6a54f47b47d166b2528fc87304d79",
+      "savepoints/pbl/ysu_fp32_2.json": "b33c423a91973abee92be76fa6c40037a0e42c1c0dd1671346c20b62e6de2dad",
+      "savepoints/pbl/ysu_fp32_3.json": "4723d9d46465813250f7a7e2d04dfba8be9191bc86b7c1faf0629ef4a703c1b1",
+      "savepoints/pbl/ysu_fp32_4.json": "d8968ca16f4cf9f08b2f84470aa3ce4d3ebb8efea517285a8cc12092bb1d2cf8",
+      "savepoints/pbl/ysu_fp32_5.json": "10736a81cf3688a2d681dd3ba1ebe911b28b2011813b59a490dabccf2148a27f",
+      "savepoints/pbl/ysu_fp32_6.json": "2e2bc4520477f379216d1b78a0e69495d145a656de44d9189fb7aa3964c3be65",
+      "savepoints/pbl/ysu_fp64_1.json": "6fdaface1c7f4ac923d7f1ff22d5970dc456fe8f8818f750fd8f97349c95b71e",
+      "savepoints/pbl/ysu_fp64_2.json": "5346f7bc5a80b1e7f14ecccc93cd749d6c979105c8d1e9bbb971d7b289b38125",
+      "savepoints/pbl/ysu_fp64_3.json": "9b6d3627e4898ac1e8fd780647c3c1299c07e3b0dd3cd982ff98445261a0e07d",
+      "savepoints/pbl/ysu_fp64_4.json": "10751c868296206a08d604b5b3470db7d29707a03a8976371b3d14460ec02939",
+      "savepoints/pbl/ysu_fp64_5.json": "4ac34fb1f054f7e18e30f6f7ea518efba6735719ecb9fad3e151bec2bae196fd",
+      "savepoints/pbl/ysu_fp64_6.json": "a82c1f491d15b47fb2fe732260038ebb4aa2a401463710e3419685854b5ef158",
+      "savepoints/urban2_fp32_ac_on.npz": "63241ce3e1b0dc05a8e14883a87926bbafe2c6dd167ff7c9a2691f38f9e4a9e3",
+      "savepoints/urban2_fp64_ac_on.npz": "a1dd337b05e42103fc5e5f6db1dbba7409ec19d4ac09f0ec305f08e242b86df1",
+      "savepoints/urban3_fp32_ac_off.npz": "7e1533605acc1c9ee7dfb263a4048093bef08866c7735945e120e871026eda23",
+      "savepoints/urban3_fp32_ac_on.npz": "ad0d46066541e40a5c4c8528965a4881bcbf1e8e5a4f8bfa37242e2645260190",
+      "savepoints/urban3_fp64_ac_off.npz": "247c801f3fd209940895976e871d5a6d6d97a2f79b0e94fcd7c6a2453b8c3462",
+      "savepoints/urban3_fp64_ac_on.npz": "ad0f2da1de457393f221c9c0d60c2012101d425bd9cfb8a6b9fe115fbb9b7985"
+    }
+  },
+  "source_sha256": {
+    "src/gpuwrf/coupling/physics_couplers.py": "8f477892b6aa91e2bc72843f64bdd43f0d04fdf2e1df87dcc42672a7d2afa411",
+    "src/gpuwrf/coupling/scan_adapters.py": "0773f3bf4c4e25fb77bb0dfee9086be4b624f42c95c195c61e15e123efac833a",
+    "src/gpuwrf/coupling/urban_multilayer_hook.py": "297c749807f774e3cb1a8d1e536cf0ab0c9bb9b85130f8fb9e39728dc0b39c34",
+    "src/gpuwrf/coupling/urban_pbl_hook.py": "5986ef8e4971c97e3c9648f557cea4d6c297f2f0ead99078d6a45d4e5eecae53",
+    "src/gpuwrf/coupling/urban_surface_layer.py": "3a0219d1a5245317502cbe3b6b2760f90cb6360ca3d10c2911e8775e5fbbbf2c",
+    "src/gpuwrf/integration/daily_pipeline.py": "476f6c6b65be59b55358ba1cf546a0efa0af3d653f244591c062a34c8f5e76c7",
+    "src/gpuwrf/integration/nested_pipeline.py": "2db5cb706b80dc415ba707cbb9fceabb8f5e57bd74da68b603baef3e6ae6cc00",
+    "src/gpuwrf/io/namelist_binding.py": "85dd41722796093af0cfa104d93d2838e1e2f392f64958dc05c49f3d464da36c",
+    "src/gpuwrf/io/restart.py": "ea8f86fd5263d81de6d5373ce1d924cb9ebf4d99a2c6875f8aa4d132f7f2a458",
+    "src/gpuwrf/io/restart_schema.py": "aedfaeffab7bd7512cf2b8f59a1762c0e28bca8b89a0cc9f786b84febed29ca0",
+    "src/gpuwrf/io/scheme_catalog.py": "8074fbc946952afc2f9990029bdead3828023aa551dc472f41275961a9a9b19e",
+    "src/gpuwrf/io/wrfrst_netcdf.py": "eb26e231e68bb49ea668e631653114ec17020bcd4b167764ac24d44fba8dfbf2",
+    "src/gpuwrf/nesting/moving_driver.py": "95a4ac363157267ed26e3fcb23b0907aeb5dd666c7568060f8e6c447fe2958f3",
+    "src/gpuwrf/physics/noahmp_coupler.py": "ff0bbcdd60a3f43fd4cce568ed31d32706bcf95e7fc35543042ec249b0ee3276",
+    "src/gpuwrf/physics/pbl_boulac.py": "2c2565e91d3224b11d3518da017c9a2057334268e7c5e2de2e374d2cdec79b25",
+    "src/gpuwrf/physics/pbl_ysu.py": "e1e6f33cb3a36968f5561c8ead93215e8cc2b33dab8105cae7ec1f0b7680c00d",
+    "src/gpuwrf/physics/sfclay_revised_mm5.py": "164ac7d0de533d6092c96b85aee4b90daf2f3857eb46a8dcccfe0f6e78c35ba2",
+    "src/gpuwrf/physics/urban_bem_building.py": "e835e1e67c3add01865017614abf51b80ba141acf4ad5cb42e4bf7af18076d9b",
+    "src/gpuwrf/physics/urban_bem_model.py": "b2f58d5b565a241c190096070a62daa130a881bb1b3b442ac178ff68e576c676",
+    "src/gpuwrf/physics/urban_bem_static.py": "69f9f8379992751b1c7f03cfca1613c9fb1c37b8b4cb6f698001e78dc2e9a7a8",
+    "src/gpuwrf/physics/urban_bep_bem.py": "ba901adb0fbdf118747d9445670a36c19f82455835505b7aeb32bd28d611dfca",
+    "src/gpuwrf/physics/urban_bep_blend.py": "f1ea8de2ff459f5d83e9423b1cc146eea158c35f6ffafdbab492d34f4dd9d03e",
+    "src/gpuwrf/physics/urban_bep_components.py": "c9d95060abef7d73445ef21c569d09d1d546ccbfb15ecdfda98a70f4fdc2ff25",
+    "src/gpuwrf/physics/urban_bep_model.py": "7cc26d6b86b151de818119e8d18368e19f0b826bb4e5ef3e584453613a699c3b",
+    "src/gpuwrf/physics/urban_bep_pbl.py": "86008ac1ea7458e6cbd32936a18e75c7ffd7efd83ff89c3732eb5ddb0f9cd756",
+    "src/gpuwrf/physics/urban_bep_static.py": "a85240f80342f3844a661edf4d4bc2eda5c72a0b983bd4e0a1d50a1a55607c50",
+    "src/gpuwrf/runtime/operational_mode.py": "06669496eee02005dbc70eb6290357379160925837ec4902f8b4c87f1e12adf8",
+    "src/gpuwrf/runtime/operational_state.py": "2031c1598a725669e5bb1da46d5df674da1caef1712b4985f4761454ec8e3b62"
+  },
+  "source_binding": "FINAL_SOURCE_BINDING.json",
+  "performance_and_memory": {
+    "default_work": "all5complete production programs SHA-exact; no added default arithmetic or device leaves",
+    "BEM_independent_floor_batching": "58/58step1outputfields BYTE; 6 pristine columns, full Registry-shape CPU artifact",
+    "CPU_temporary_bytes_before_after": [
+      701505,
+      686529
+    ],
+    "CPU_warm_7call_median_ms_before_after": [
+      0.924867,
+      0.776556
+    ],
+    "CPU_compile_s_before_after": [
+      38.768,
+      37.961
+    ],
+    "compile_interpretation": "noise; no compile improvement claim",
+    "optimized_HLO_text_chars_before_after": [
+      9465807,
+      8311642
+    ],
+    "HLO_text_is_not_operation_count": true,
+    "GPU_launches_E41_peakVRAM_readiness_runtime": "UNMEASURED; wave forbids GPU",
+    "extra_live_storage": "urban columns/types/levels compact; six held full-grid SF1 REAL32 arrays; full rural PBL temporarily computes urban columns redundantly to avoid ten full-domain source arrays"
+  },
+  "qualification_pending": [
+    "GPU execution/E41/launch/peakVRAM/readiness/performance",
+    "long coupled forecast D6/drift/station validation",
+    "moving nests (no qualification claim)"
+  ],
+  "historical_partial": {
+    "path": "qualification_partial.json",
+    "sha256": "5c2a9f6cc842574e8bbe5273e159731f9b40ebf1757b4da49d835cdb38d0ac8b",
+    "status": "verified 11-helper partial; superseded by this full feature packet"
+  },
+  "cache": "NONE GPUWRF_JAX_CACHE=0; disposable snapshots and pytest scratch removed after final arms"
+}

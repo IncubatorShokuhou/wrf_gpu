@@ -1,0 +1,51 @@
+{
+  "schema": "s1-nestspec-F1-correction-v1",
+  "status": "FIXED",
+  "created_utc": "2026-10-13T15:36:48.902600+00:00",
+  "reviewed_commit": "80306f1ac5b99d549100a2eaec1142f4d37095d8",
+  "critic_verdict": {
+    "path": "<USER_HOME>/wrf_gpu2_lanes/rv-s1-nestspec/VERDICT.md",
+    "sha256": "4c0aafb49de03ae0b7a5e0c6d4199b608a0476057f74db7dc8216841d7b7464a"
+  },
+  "prior_packet_sha256": "60d9df4c3855d211add8d76ba20c793736293be19e828b08c2414ffe1bfdcc14",
+  "fix_commit": "83ea31520bc0fae72019f2504a209f1bd6e79be7",
+  "rebased_baseline": "b8746fb9f6bd9d65054331709c0d9cb82006d1ad",
+  "main_base": "f5d627cbfbf812bc1749127367ea901f59b9c7f0",
+  "scope": "F1 only: reuse restart_schema.physics_option for grouped/flat Mapping/object MP selection and preserve live-child predicate; schema boundary groups accept Mapping.",
+  "source_changes": {
+    "src/gpuwrf/nesting/scalar_species.py": "3035923f3ad551c84028ddbbed0d193e48b6a4174ed44e1dc2b5abeab9b08782"
+  },
+  "regression_test_sha256": "9af4b0640387ee34f9329b6de537a2f905ba299d94c79cef5b885d9aa7169e4c",
+  "unchanged_numerical_selection_AST": [
+    "_EXTRA_BOUNDARY_SPECIES",
+    "extra_boundary_species"
+  ],
+  "passed": {
+    "affected_host_restart_checks": 62,
+    "wall_s": 33.78,
+    "new_regressions": 10,
+    "independent_missing_record_refusals": 72,
+    "public_forms_refused": [
+      "flat_dict",
+      "physics_dict"
+    ],
+    "genuine_mutant_assertion_failures": 3,
+    "mutant_setup_errors": 0
+  },
+  "replay": "Exact critic probe bodies; reversible output-path-only substitutions; original five critic files/receipts hashes preserved.",
+  "validation_reuse": "No completed numerical, forecast or identity gate repeated, as required by manager/critic. F1 diff touches one host-schema helper and its regression tests only relative to rebased baseline.",
+  "performance_memory": "One shared host option lookup; no timestep routine, State/carry layout or array creation added. Invalid restores refuse before device reconstruction. GPU timings/readiness/cache-key effects remain unmeasured.",
+  "admission": "Existing nested refusals and s1-mpfix scientific dependencies remain unchanged.",
+  "artifacts": {
+    "<USER_HOME>/wrf_gpu2_lanes/s1-nestspec/ns30_restart.log": "e4a6f6579d11b0ab0245c634c890391538680a9f0ba3d595b48f3540d49cc860",
+    "<USER_HOME>/wrf_gpu2_lanes/s1-nestspec/ns31_schema.json": "2f1bd40157cbeeaefdcfab263607b2ee896ff59e8da13cae48c70e0422359d65",
+    "<USER_HOME>/wrf_gpu2_lanes/s1-nestspec/ns31_public_restart.json": "59076d2f4ec5eeb6f018b6aeceba49c84c3e7c3ace7f0397ae5d889261320e12",
+    "<USER_HOME>/wrf_gpu2_lanes/s1-nestspec/ns31_replay.json": "f0d96a5d9f97ea4bf8a32890332f9de0c435fd88278f5ca02a7d106bcb4d9ff6",
+    "<USER_HOME>/wrf_gpu2_lanes/s1-nestspec/ns31_critic_probes.log": "44bb7105e8605dca16d78a29a332f4e3fe2987e9aae887ab3eb6467427706551",
+    "<USER_HOME>/wrf_gpu2_lanes/s1-nestspec/ns32_mutant.log": "489c4d65757a2f1b3682590c93c9cef4327c68a214b9be581e51ce000fe79015",
+    "<USER_HOME>/wrf_gpu2_lanes/s1-nestspec/ns32_mutant.xml": "8529a7cd7094ba2003a9c2e70d6f46aa5337e54146dcf3263c0278f639590f0f",
+    "<USER_HOME>/wrf_gpu2_lanes/s1-nestspec/ns32_mutant_verdict.json": "fb39a935ef9a38453e21be03d47aaca3c9bac0342aca379e8366827d55103fed",
+    "<USER_HOME>/wrf_gpu2_lanes/s1-nestspec/ns32_mapping_mutant.py": "0a844263ff578c564eae295918f22331b3f7ea480f86068646cf1cd864346f1f"
+  },
+  "cleanup": "Snapshot/pytest/import cache removed; no GPU used."
+}

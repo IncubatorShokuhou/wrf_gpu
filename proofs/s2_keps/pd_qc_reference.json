@@ -1,0 +1,134 @@
+{
+  "scope": "Existing pristine WRF PD and RK oracles on actual captured QC operands.\n\nUse the previously registered C05 PD gate: ring>=1 max error bounded by\nmax(8*WRF FMA/no-FMA spread,1e-5*max|reference|), RMS by\nmax(8*spread RMS,1e-6*max|reference|). A QC event is source-justified here only\nwhen unchanged WRF also returns negative PD tendency AND negative RK QC at\nthe same interior source point, and the candidate lies within WRF's own\npointwise FMA/no-FMA interval. This is not a forecast/D6 qualification.\n",
+  "source_tree": "<USER_HOME>/wrf_gpu2_lanes/s2-keps/FINAL/snapshot",
+  "source_commit": "7ee49b2a9da2f535eb7f97fa77dd0136b6286283",
+  "point": [
+    15,
+    40,
+    8
+  ],
+  "array_sha256": "8e5dc7191af64cb2a6c0a768084941c3edb35baef1dee6d2c476c93c7a86a150",
+  "observed_guards": {
+    "dynamics.qc": {
+      "out_of_range": 1,
+      "repaired": 1
+    }
+  },
+  "candidate_pd_tendency": -6.396682124483199e-28,
+  "candidate_qc": -1.2946662032075212e-31,
+  "references": {
+    "off": {
+      "pd_tendency": 1.0097418984975843e-28,
+      "qc": 2.0436820053081876e-32,
+      "pd_manifest": {
+        "source": "<USER_HOME>/src/wrf_pristine/WRF/dyn_em/module_advect_em.F",
+        "routine_sha256": "04f6c26625f02dea9e85c1a51f8f21c606648aa5136a4eb7cd16f1e17958c05d",
+        "compile": [
+          "<USER_HOME>/miniconda3/envs/wrfbuild/bin/gfortran",
+          "-O2",
+          "-march=native",
+          "-ffp-contract=off",
+          "-fPIC",
+          "-shared",
+          "-fcheck=bounds",
+          "-ffree-line-length-none",
+          "-J",
+          "<USER_HOME>/wrf_gpu2_lanes/s2-keps/KE71_build/pd_off",
+          "<USER_HOME>/wrf_gpu2_lanes/s2-keps/KE71_build/pd_off/pd_original.f90",
+          "-o",
+          "<USER_HOME>/wrf_gpu2_lanes/s2-keps/KE71_build/pd_off/pd.so"
+        ],
+        "scope": "pristine full advect_scalar_pd; root specified, h5/v3, time_step1, tenddec false; all REAL4",
+        "caller": "mut=full current dry mass; mub=base; muold=old perturbation; memories include 4 edge-repeated halo cells; full physical tile",
+        "dimensions": "WRF i,k,j; ids/its1,ide nx+1,ite nx; analog y; k1..nz+1, ktf nz"
+      },
+      "rk_manifest": {
+        "source": "<USER_HOME>/src/wrf_pristine/WRF/dyn_em/module_em.F",
+        "routine_sha256": "124eb6c5cb22ccbdb2d471a226cda6fe55a399c67ae43720b08c34919eac0ecb",
+        "compile": [
+          "<USER_HOME>/miniconda3/envs/wrfbuild/bin/gfortran",
+          "-O2",
+          "-march=native",
+          "-ffp-contract=off",
+          "-fPIC",
+          "-shared",
+          "-fcheck=bounds",
+          "-ffree-line-length-none",
+          "-J",
+          "<USER_HOME>/wrf_gpu2_lanes/s2-keps/KE71_build/rk_off",
+          "<USER_HOME>/wrf_gpu2_lanes/s2-keps/KE71_build/rk_off/update_original.f90",
+          "-o",
+          "<USER_HOME>/wrf_gpu2_lanes/s2-keps/KE71_build/rk_off/update.so"
+        ],
+        "scope": "pristine full rk_update_scalar; specified root, rk_ord 3, tenddec false, all REAL4",
+        "caller": "solve_em other_scalar_advance: scalar_1=old, mu_old=mu_1, mu_new=mu_2 (perturbations), mu_base=mub"
+      }
+    },
+    "fast": {
+      "pd_tendency": -2.3577142897516183e-28,
+      "qc": -4.771931365980172e-32,
+      "pd_manifest": {
+        "source": "<USER_HOME>/src/wrf_pristine/WRF/dyn_em/module_advect_em.F",
+        "routine_sha256": "04f6c26625f02dea9e85c1a51f8f21c606648aa5136a4eb7cd16f1e17958c05d",
+        "compile": [
+          "<USER_HOME>/miniconda3/envs/wrfbuild/bin/gfortran",
+          "-O2",
+          "-march=native",
+          "-ffp-contract=fast",
+          "-fPIC",
+          "-shared",
+          "-fcheck=bounds",
+          "-ffree-line-length-none",
+          "-J",
+          "<USER_HOME>/wrf_gpu2_lanes/s2-keps/KE71_build/pd_fast",
+          "<USER_HOME>/wrf_gpu2_lanes/s2-keps/KE71_build/pd_fast/pd_original.f90",
+          "-o",
+          "<USER_HOME>/wrf_gpu2_lanes/s2-keps/KE71_build/pd_fast/pd.so"
+        ],
+        "scope": "pristine full advect_scalar_pd; root specified, h5/v3, time_step1, tenddec false; all REAL4",
+        "caller": "mut=full current dry mass; mub=base; muold=old perturbation; memories include 4 edge-repeated halo cells; full physical tile",
+        "dimensions": "WRF i,k,j; ids/its1,ide nx+1,ite nx; analog y; k1..nz+1, ktf nz"
+      },
+      "rk_manifest": {
+        "source": "<USER_HOME>/src/wrf_pristine/WRF/dyn_em/module_em.F",
+        "routine_sha256": "124eb6c5cb22ccbdb2d471a226cda6fe55a399c67ae43720b08c34919eac0ecb",
+        "compile": [
+          "<USER_HOME>/miniconda3/envs/wrfbuild/bin/gfortran",
+          "-O2",
+          "-march=native",
+          "-ffp-contract=fast",
+          "-fPIC",
+          "-shared",
+          "-fcheck=bounds",
+          "-ffree-line-length-none",
+          "-J",
+          "<USER_HOME>/wrf_gpu2_lanes/s2-keps/KE71_build/rk_fast",
+          "<USER_HOME>/wrf_gpu2_lanes/s2-keps/KE71_build/rk_fast/update_original.f90",
+          "-o",
+          "<USER_HOME>/wrf_gpu2_lanes/s2-keps/KE71_build/rk_fast/update.so"
+        ],
+        "scope": "pristine full rk_update_scalar; specified root, rk_ord 3, tenddec false, all REAL4",
+        "caller": "solve_em other_scalar_advance: scalar_1=old, mu_old=mu_1, mu_new=mu_2 (perturbations), mu_base=mub"
+      }
+    }
+  },
+  "frozen_pd_gate": {
+    "max_error": 1.1641532182693481e-10,
+    "max_bound": 8.099814876914025e-09,
+    "rms_error": 7.498125487379919e-13,
+    "rms_bound": 8.099814876914024e-10,
+    "passed": true
+  },
+  "wrf_reproduces_negative": true,
+  "inside_wrf_compiler_interval": false,
+  "status": "OPEN",
+  "original_receipt_sha256": "5e98997c63019c66cd07099bbed6be3605d4bfa02d5fc68209a9adde03d626f4",
+  "numerical_run_commit": "7ee49b2a9",
+  "fixture_sha256": "a2ab1671243ec00593f73971360bb3db16d8eedff0a8b8919e9dbdff9eb80a20",
+  "qualification_status": "EXPERIMENTAL_C05_PASS_WITH_DISCLOSED_POINT_INTERVAL_EXCESS",
+  "point_compiler_spread_ratios": {
+    "pd_tendency": 2.199412140483261,
+    "qc": 2.199412322965991
+  },
+  "deviation": "Strict 1x point-compiler interval remains OPEN; 2.20x spread is within the frozen C05 8x envelope. Small absolute FMA-dependent QC deviation disclosed; full-forecast D6 decides, per standing policy. No model clamp added."
+}

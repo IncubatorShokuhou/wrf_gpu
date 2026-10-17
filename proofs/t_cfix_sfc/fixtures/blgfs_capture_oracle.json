@@ -1,0 +1,98 @@
+{
+ "stage": [
+  "u1",
+  "v1",
+  "t1",
+  "q1",
+  "q1c",
+  "q1i",
+  "prsl",
+  "prslk",
+  "del",
+  "phil",
+  "prsi",
+  "phii"
+ ],
+ "scal": [
+  "psk",
+  "rbsoil",
+  "fm",
+  "fh",
+  "tsea",
+  "heat",
+  "evap",
+  "stress",
+  "spd1",
+  "deltim"
+ ],
+ "mout": [
+  "du",
+  "dv",
+  "tau",
+  "rtg1",
+  "rtg2",
+  "rtg3"
+ ],
+ "mdiag": [
+  "hpbl",
+  "kpbl"
+ ],
+ "cases": {
+  "real_q1": [
+   "real",
+   1
+  ],
+  "real_q0": [
+   "real",
+   0
+  ],
+  "caller": [
+   "caller",
+   0
+  ]
+ },
+ "receipts": {
+  "real_q1": {
+   "capture_eq_unmodified": true,
+   "capture_eq_frozen": true,
+   "columns": 42,
+   "levels": 44,
+   "has_qi": 1,
+   "dt": 18.0
+  },
+  "real_q0": {
+   "capture_eq_unmodified": true,
+   "capture_eq_frozen": true,
+   "columns": 42,
+   "levels": 44,
+   "has_qi": 0,
+   "dt": 18.0
+  },
+  "caller": {
+   "capture_eq_unmodified": true,
+   "capture_eq_frozen": true,
+   "columns": 9,
+   "levels": 12,
+   "has_qi": 0,
+   "dt": 20.0
+  }
+ },
+ "source_fixture_sha256": "53b571b208249568eeb96e88338e872657c3128bcd8adc13048a4bcff4a18c40",
+ "npz_sha256": "762c8f5effebe224ef9c29f333b43aeaa3135cb192c5a0435a443d2d918d1aa3",
+ "builds": {
+  "pbl3/zero": "189c1c3873d2c042b905c0568340c6452c660739245ba38ebe12e04db7d6875f",
+  "pbl3cap/zero": "c2c1ea342ab194dee02b1da0c12db0cd78abfce84491ad262631b8845958725c"
+ },
+ "generated": {
+  "module_bl_gfs_capture.F": {
+   "sha256": "6b944e8945edd5a55f1d200966dfbb915e08a6dfc5993bb6740437a591f61b35",
+   "base_sha256": "a3898642ee386d60a74af2ef45867e6b5f7df518eef9543ae91586d00372b71c",
+   "inserted": [
+    "CALL BLGFS_CAPTURE_IN(IM,KX,NTRAC,U1,V1,T1,Q1,PSK,RBSOIL,FM,FH,TSEA,HEAT,EVAP,STRESS,SPD1,PRSI,DEL,PRSL,PRSLK,PHII,PHIL,DELTIM)",
+    "CALL BLGFS_CAPTURE_OUT(IM,KX,NTRAC,DV,DU,TAU,RTG,KPBL,HPBL)"
+   ]
+  }
+ },
+ "compiler": "GNU Fortran (conda-forge gcc 14.3.0-19) 14.3.0",
+ "wrapper_sha256": "2d6d64d1bce44427272b50ffb037afc4083c05c7345d406d4a21f997e7921bad"
+}

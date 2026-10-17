@@ -1,0 +1,72 @@
+{
+  "source": "<USER_HOME>/src/wrf_pristine/WRF/phys/module_bl_keps.F",
+  "source_sha256": "a79058405affcd293740b15137002e788d168a5eba51586d14cee41342ffc204",
+  "staged_sha256": "a79058405affcd293740b15137002e788d168a5eba51586d14cee41342ffc204",
+  "compiler": "GNU Fortran (conda-forge gcc 14.3.0-19) 14.3.0",
+  "flags": [
+    "-ffree-form",
+    "-ffree-line-length-none",
+    "-O0",
+    "-g",
+    "-fcheck=all",
+    "-finit-real=snan",
+    "-ffpe-trap=invalid,zero,overflow"
+  ],
+  "build": {
+    "command": [
+      "<USER_HOME>/miniconda3/envs/wrfbuild/bin/gfortran",
+      "-ffree-form",
+      "-ffree-line-length-none",
+      "-O0",
+      "-g",
+      "-fcheck=all",
+      "-finit-real=snan",
+      "-ffpe-trap=invalid,zero,overflow",
+      "-c",
+      "<USER_HOME>/wrf_gpu2_lanes/s2-keps/KE02/build/module_bl_keps.F",
+      "-o",
+      "keps.o"
+    ],
+    "returncode": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  "probes": {
+    "get_pblh_ttke": {
+      "command": [
+        "<USER_HOME>/wrf_gpu2_lanes/s2-keps/KE02/build/get_pblh_ttke"
+      ],
+      "returncode": -8,
+      "stdout": "",
+      "stderr": "\nProgram received signal SIGFPE: Floating-point exception - erroneous arithmetic operation.\n\nBacktrace for this error:\n#0  0x7c1ec9845caf in ???\n\tat ./signal/../sysdeps/unix/sysv/linux/x86_64/libc_sigaction.c:0\n#1  0x56b52c6d3080 in __module_bl_keps_MOD_get_pblh\n\tat <USER_HOME>/wrf_gpu2_lanes/s2-keps/KE02/build/module_bl_keps.F:822\n#2  0x56b52c6c7a4a in probe\n\tat <USER_HOME>/wrf_gpu2_lanes/s2-keps/KE02/build/get_pblh_ttke.f90:16\n#3  0x56b52c6c7b3e in main\n\tat <USER_HOME>/wrf_gpu2_lanes/s2-keps/KE02/build/get_pblh_ttke.f90:3\n"
+    },
+    "surface_radsum": {
+      "command": [
+        "<USER_HOME>/wrf_gpu2_lanes/s2-keps/KE02/build/surface_radsum"
+      ],
+      "returncode": -8,
+      "stdout": "",
+      "stderr": "\nProgram received signal SIGFPE: Floating-point exception - erroneous arithmetic operation.\n\nBacktrace for this error:\n#0  0x706623245caf in ???\n\tat ./signal/../sysdeps/unix/sysv/linux/x86_64/libc_sigaction.c:0\n#1  0x61d2fb9c6364 in __module_bl_keps_MOD_surface_bl_pra_ri\n\tat <USER_HOME>/wrf_gpu2_lanes/s2-keps/KE02/build/module_bl_keps.F:1068\n#2  0x61d2fb9c29c7 in probe\n\tat <USER_HOME>/wrf_gpu2_lanes/s2-keps/KE02/build/surface_radsum.f90:18\n#3  0x61d2fb9c2afd in main\n\tat <USER_HOME>/wrf_gpu2_lanes/s2-keps/KE02/build/surface_radsum.f90:3\n"
+    },
+    "nsquare_top_gradient": {
+      "command": [
+        "<USER_HOME>/wrf_gpu2_lanes/s2-keps/KE02/build/nsquare_top_gradient"
+      ],
+      "returncode": 0,
+      "stdout": " TOP_GRADIENT  -98765.0000     TOP_NSQUARE   0.00000000    \n",
+      "stderr": ""
+    },
+    "eeps_radsum": {
+      "command": [
+        "<USER_HOME>/wrf_gpu2_lanes/s2-keps/KE02/build/eeps_radsum"
+      ],
+      "returncode": -8,
+      "stdout": "",
+      "stderr": "\nProgram received signal SIGFPE: Floating-point exception - erroneous arithmetic operation.\n\nBacktrace for this error:\n#0  0x743ab9c45caf in ???\n\tat ./signal/../sysdeps/unix/sysv/linux/x86_64/libc_sigaction.c:0\n#1  0x5f9861c987e5 in __module_bl_eeps_MOD_eeps2d\n\tat <USER_HOME>/wrf_gpu2_lanes/s2-keps/KE02/build/module_bl_eepsilon.F:748\n#2  0x5f9861c7b551 in probe\n\tat <USER_HOME>/wrf_gpu2_lanes/s2-keps/KE02/build/eeps_radsum.f90:26\n#3  0x5f9861c7b744 in main\n\tat <USER_HOME>/wrf_gpu2_lanes/s2-keps/KE02/build/eeps_radsum.f90:2\n"
+    }
+  },
+  "additional_sources": {
+    "share/module_model_constants.F": "5b80377fecdc18a5f0ad38d3b6c15cfc86ad5d76701adbbbb08a08698d0f7062",
+    "phys/module_bl_eepsilon.F": "b1ea6db55866af15cb3c6962b1a15fa512eda803078f7304e6a133462d7e12de"
+  }
+}

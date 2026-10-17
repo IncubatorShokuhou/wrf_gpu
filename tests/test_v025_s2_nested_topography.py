@@ -146,6 +146,8 @@ def _load_with_inert_state(
     class FakeState:
         p_total = ph_total = mu_total = object()
         t_skin = jnp.zeros((2, 2), dtype=jnp.float32)
+        theta = jnp.full((3, 2, 2), 300.0, dtype=jnp.float32)
+        tracers = None
 
         def __init__(self, domain):
             self.domain = domain

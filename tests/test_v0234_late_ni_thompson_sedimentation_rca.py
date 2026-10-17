@@ -50,6 +50,18 @@ def test_source_authority_proves_balance_order_and_nstep_discrepancy(tmp_path: P
         f"{module.EXPECTED_MODEL_COMMIT}:src/gpuwrf/physics/thompson_column.py",
     ]))
     monkeypatch.setattr(module, "PORT_SOURCE", port)
+    # Run the historical RCA's ancestry check in a real Git view of private
+    # FINAL-b. The curated public release has a different ancestry; neither the
+    # archived source/tree hash nor the RCA's ancestry assertion is weakened.
+    view = tmp_path / "historical.git"
+    subprocess.run(["git", "init", "--bare", "--quiet", str(view)], check=True)
+    objects = Path(subprocess.check_output(
+        ["git", "-C", str(ROOT), "rev-parse", "--git-path", "objects"], text=True).strip())
+    if not objects.is_absolute():
+        objects = ROOT / objects
+    (view / "objects/info/alternates").write_text(str(objects.resolve()) + "\n")
+    (view / "HEAD").write_text("dead7d0042a3398eba2a0dac8d809938fa16df05\n")
+    monkeypatch.setattr(module, "ROOT", view)
     authority = module.source_authority()
     assert all(authority["assertions"].values())
     assert authority["accepted_src_gpuwrf_tree"] == (

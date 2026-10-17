@@ -49,7 +49,7 @@ sections below.
 | 5 | **Land surface** `sf_surface_physics` | 🟡2 + 🔴2 = 4 | Wire RUC 3, SSiB 8 (oracles exist); CLM4 5 / CTSM 6 = architecture boundary (needs the CLM/CTSM column model) | A / D | M / XL |
 | 6 | **Longwave radiation** `ra_lw_physics` | 🟡4 + 🔴2 | Wire CAM 3, Goddard 5, FLG 7, GFDL 99 (oracles exist); RRTMG-K 14 / fast-RRTMG 24 build-gated in WRF too (low prio) | A | M–L |
 | 7 | **Shortwave radiation** `ra_sw_physics` | 🟡4 + 🔴2 | Same as longwave (CAM/Goddard/FLG/GFDL wire; 14/24 build-gated) | A | M–L |
-| 8 | **Dynamics — 3-D closures** | 🔴 `km_opt=2/3/5` | Port **3-D TKE** (km_opt=2), **3-D Smagorinsky** (km_opt=3), **SMS-3DTKE** (km_opt=5) — self-contained dycore, no tables | B | M each |
+| 8 | **Dynamics — 3-D closures** | 🟡 `km_opt=2` CPU-qualified (v0.4 development), `3` GPU-smoked; 🔴 `5` | Qualify **3-D TKE** and **3-D Smagorinsky** in GPU forecasts; port **SMS-3DTKE** — self-contained dycore, no tables | B | M each |
 | 9 | **Nesting** | two-way / moving / global / adaptive-Δt | Prove two-way 24 h equivalence (KI-11); validate the moving-nest driver; global/periodic BC; CFL adaptive-Δt | B / D | M–XL |
 | 10 | **Data assimilation** | DFI, FDDA (grid/obs/surface), spectral nudging | Port the nudging tendencies + DFI integrator (only lateral-BC relaxation exists today) | D | L–XL |
 | 11 | **Coupled subsystems** | Chem, Fire, Hydro, urban (UCM/BEP/BEM), lake, ocean, wind-farm, stochastic, SST-update | Scope decisions per subsystem; urban BEP/BEM + lake are 🟡 (v0.23 oracles); several plausibly **v1.0** | D | XL |
@@ -124,7 +124,7 @@ Regenerate with `python -m gpuwrf.cli namelist-support` (add `--json` for machin
 | `5` | Ferrier (new Eta), HRW | 🔴 fail-closed | stage a WRF single-column oracle, then port + wire a JAX kernel |
 | `7` | Goddard 4-ice | 🔴 fail-closed | stage a WRF single-column oracle, then port + wire a JAX kernel |
 | `9` | Milbrandt-Yau 2-moment | 🔴 fail-closed | stage a WRF single-column oracle, then port + wire a JAX kernel |
-| `11` | CAM 5.1 microphysics | 🔴 fail-closed | stage a WRF single-column oracle, then port + wire a JAX kernel |
+| `11` | CAM Morrison–Gettelman | CPU-oracle-qualified; GPU/coupled-forecast qualification pending | [48 original public/native CPU calls, modal activation, held Registry state](CAMMGMP.md); native GPU/E41 and forecast D6 pending |
 | `17` | NSSL (legacy) | 🔴 fail-closed | stage a WRF single-column oracle, then port + wire a JAX kernel |
 | `18` | NSSL 2-moment 4-ice w/ predicted CCN | 🟡 reference-only | wire a scan JAX kernel (WRF oracle already staged) |
 | `19` | NSSL (legacy) | 🔴 fail-closed | stage a WRF single-column oracle, then port + wire a JAX kernel |
@@ -141,19 +141,19 @@ Regenerate with `python -m gpuwrf.cli namelist-support` (add `--json` for machin
 | `52` | P3 2-ice + double-moment cloud water | 🔴 fail-closed | stage a WRF single-column oracle, then port + wire a JAX kernel |
 | `53` | P3 1-ice 3-moment + double-moment cloud water | 🔴 fail-closed | stage a WRF single-column oracle, then port + wire a JAX kernel |
 | `55` | Jensen-ISHMAEL | 🔴 fail-closed | stage a WRF single-column oracle, then port + wire a JAX kernel |
-| `56` | NTU multi-moment | 🔴 fail-closed | stage a WRF single-column oracle, then port + wire a JAX kernel |
+| `56` | NTU multi-moment | 🟡 experimental CPU-oracle | Complete 28-prognostic source port, CCNTY1..4, transport/history/restart; literal REAL4/REAL8 BYTE. Native per-column lowering; GPU/E41 and coupled forecast gates pending; [limits](NTU.md) |
 | `95` | Ferrier (old Eta) | 🔴 fail-closed | stage a WRF single-column oracle, then port + wire a JAX kernel |
 | `96` | Madwrf | 🔴 fail-closed | stage a WRF single-column oracle, then port + wire a JAX kernel |
 
-#### Cumulus — `cu_physics` (8 reference-only, 3 fail-closed)
+#### Cumulus — `cu_physics` (8 historical reference endpoints, 3 cuplus CPU-qualified)
 
 | Code | Scheme | Status | To close |
 |---|---|---|---|
 | `4` | Scale-aware GFS SAS | 🟡 reference-only | wire a scan JAX kernel (WRF oracle already staged) |
 | `5` | Grell 3D ensemble | 🟡 reference-only | wire a scan JAX kernel (WRF oracle already staged) |
-| `7` | Zhang-McFarlane (CAM5) | 🔴 fail-closed | stage a WRF single-column oracle, then port + wire a JAX kernel |
-| `10` | Modified Kain-Fritsch (PDF trigger) | 🔴 fail-closed | stage a WRF single-column oracle, then port + wire a JAX kernel |
-| `11` | Multi-scale Kain-Fritsch (MSKF) | 🔴 fail-closed | stage a WRF single-column oracle, then port + wire a JAX kernel |
+| `7` | Zhang-McFarlane (CAM5) | 🟡 experimental CPU-oracle-qualified | dedicated original caller/RK/restart; qualified pairings and pending GPU/D6 in [cuplus](CUMULUS_CUPLUS.md) |
+| `10` | KF-CuP (PDF trigger) | 🟡 experimental CPU-oracle-qualified | dedicated PDF ensemble and radiation mediation; GPU/D6 pending, see [cuplus](CUMULUS_CUPLUS.md) |
+| `11` | Multi-scale Kain-Fritsch (MSKF) | 🟡 experimental CPU-oracle-qualified | original CMT on; documented calm singularity and compiler deviations; GPU/D6 pending, see [cuplus](CUMULUS_CUPLUS.md) |
 | `14` | KIM Simplified Arakawa-Schubert (KSAS) | 🟡 reference-only | wire a scan JAX kernel (WRF oracle already staged) |
 | `93` | Grell-Devenyi ensemble | 🟡 reference-only | wire a scan JAX kernel (WRF oracle already staged) |
 | `94` | 2015 GFS SAS (HWRF) | 🟡 reference-only | wire a scan JAX kernel (WRF oracle already staged) |
@@ -223,7 +223,7 @@ switch to constant-K `diff_opt=2`/`km_opt=1`):
 
 | Option | Closure | Status | To close |
 |---|---|---|---|
-| `km_opt=2` | 3-D TKE (prognostic TKE sub-grid mixing) | 🔴 fail-closed | port the 3-D TKE closure + its prognostic TKE equation; oracle vs WRF `module_em` diffusion |
+| `km_opt=2` | 3-D TKE (prognostic TKE sub-grid mixing) | 🟡 experimental, CPU-oracle-qualified (v0.4 development) | Literal WRF diffusion + separate REAL TKE carry, three RK stages, advection, restart and history wired; release fp32 Swiss CPU smoke finite/zero guards. GPU/coupled-forecast qualification pending |
 | `km_opt=3` | 3-D Smagorinsky | 🔴 fail-closed | extend the 2-D Smagorinsky kernel to the full 3-D deformation tensor |
 | `km_opt=5` | SMS-3DTKE (scale-aware 3-D TKE / LES-PBL) | 🔴 fail-closed | port the SMS-3DTKE scheme (couples sub-grid TKE with the PBL) |
 
@@ -245,11 +245,11 @@ non-RK3 `rk_order`, and higher `w_damping` variants — each a bounded dycore ta
 
 | Capability | Switch | Status | To close |
 |---|---|---|---|
-| Digital-filter init (DFI) | `dfi_opt` | ⚫ out-of-scope | port the DFI launcher/back-forward integrator |
-| Grid / analysis nudging (FDDA) | `grid_fdda` | ⚫ out-of-scope | port the nudging tendency terms |
-| Observation nudging | `obs_nudge_opt` | ⚫ out-of-scope | obs ingest + nudging |
+| Digital-filter init (DFI) | `dfi_opt` | 🟡 DFL/DDFI/TDFI (`dfi_opt=1/2/3`) single-domain, CPU-oracle-qualified (o2-dfi, s1-dfi12) | GPU qualification; nested DFI; `dfi_savehydmeteors=1` |
+| Grid / analysis nudging (FDDA) | `grid_fdda=1` | 🟡 implemented, CPU-oracle-qualified (v0.4.0 lane o2-fdda); GPU/coupled-forecast qualification pending | GPU smoke + nudged hindcast vs CPU-WRF |
+| Observation nudging | `obs_nudge_opt=1` | 🟡 root domain, MYNN PBL/SFCLAY; CPU-oracle-qualified reader/error/profile/source chain, resident cadence and restart | GPU/coupled-forecast qualification pending; other PBL/SFCLAY and rotated latitude/longitude maps |
 | Surface analysis nudging | `grid_sfdda` | ⚫ out-of-scope | surface FDDA |
-| Spectral nudging | `spec_nudging` | ⚫ out-of-scope | spectral filter + nudging |
+| Spectral nudging | `grid_fdda=2` | 🟡 implemented, CPU-oracle-qualified (v0.4.0 lane s1-specnudge); GPU/coupled-forecast qualification pending | [Spectral FDDA](spectral_nudging.md); GPU smoke + nudged hindcast vs CPU-WRF |
 
 Today only **lateral-boundary relaxation** is implemented (the operational forcing path).
 
@@ -260,8 +260,8 @@ plausibly **v1.0** boundaries). All fail closed with a named reason and a disabl
 
 | Subsystem | Switch(es) | Note |
 |---|---|---|
-| Urban canopy — single-layer UCM | `sf_urban_physics=1` | fail-closed |
-| Urban canopy — BEP / BEM | `sf_urban_physics=2/3` | 🟡 reference-only (v0.23 oracle staged) |
+| Urban canopy — single-layer UCM + LCZ/NUDAPT/AHE | `sf_urban_physics=1`, `use_wudapt_lcz=1`, `distributed_ahe_opt=1/2` | ✅ implemented v0.4.0 with Noah-MP; LCZ51–61 and zero-initialized pristine NUDAPT caller; CPU-oracle-qualified, GPU/coupled qualification pending; [input definitions and limits](urban_lcz.md) |
+| Urban canopy — BEP / BEM | `sf_urban_physics=2/3` | ✅ implemented v0.4.0 with Noah-MP4, YSU1/BouLac8, SF1 and RRTMG4/4; [CPU-oracle-qualified full driver and urban PBL](../proofs/v040/urban_bep_bem/README.md), restart and CPU coupled smoke; GPU/coupled-forecast qualification pending; MYJURB/LCZ/NUDAPT/PV/green roofs refused |
 | Lake model | `sf_lake_physics=1` | 🟡 reference-only (v0.23 oracle staged) |
 | WRF-Chem (coupled chemistry/aerosols) | `chem_opt` | large coupled subsystem |
 | WRF-Fire (SFIRE) | `ifire` | coupled fire-spread |

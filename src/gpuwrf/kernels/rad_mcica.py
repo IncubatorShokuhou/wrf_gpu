@@ -16,7 +16,7 @@ import jax
 import jax.numpy as jnp
 import numpy as np
 from jax import lax
-
+from gpuwrf.backends.platform import cuda_native as pl_cuda_native
 _LEGACY_FP64 = os.environ.get("GPUWRF_MCICA_LEGACY_FP64", "0") == "1"
 
 
@@ -111,12 +111,12 @@ def _kiss_lane_tables(first: int, ng: int, nlay: int):
 
 def _kiss_lane_kernel(s1_ref, s2_ref, s3_ref, s4_ref, a_ref, c_ref, x_ref, p3_ref, p4_ref, out_ref,
                       *, ncol, ng, nlay):
-    from jax.experimental import pallas as pl
+    from gpuwrf.backends import pallas as pl
     from jax.experimental.pallas import triton as pt
 
     lane = pl.program_id(0) * _KISS_BLOCK + jnp.arange(_KISS_BLOCK, dtype=jnp.int32)
     valid = lane < ncol * ng
-    col = jnp.minimum(lane // ng, ncol - 1)
+    col = jnp.minimum(lane // ng, ncol - 1) if pl.cuda_native() else lane // ng
     g = lane % ng
     u32 = jnp.uint32
     s1, s2, s3, s4 = s1_ref[col], s2_ref[col], s3_ref[col], s4_ref[col]
@@ -154,7 +154,7 @@ def _kiss_lane_kernel(s1_ref, s2_ref, s3_ref, s4_ref, a_ref, c_ref, x_ref, p3_re
 
 def kiss_random_lanes(seeds, *, first: int, ng: int, nlay: int):
     """``(..., nlay, ng)`` REAL McICA uniforms; equals the jump-ahead stream draw-for-draw."""
-    from jax.experimental import pallas as pl
+    from gpuwrf.backends import pallas as pl
 
     s1 = seeds[0]
     leading = s1.shape
@@ -176,7 +176,7 @@ def _random_values(p, *, first, ng, legacy_fp64, sw=False):
     nlay = p.shape[-1]
     # CPU runs the bitwise-equal jump-ahead stream: the lane kernel's CPU interpret mode aliases the
     # masked tail lanes onto (last column, g < tail) and returns NaN there when ncol*ng % 128 != 0.
-    if kiss_kernel_enabled() and not legacy_fp64 and jax.default_backend() != "cpu":
+    if kiss_kernel_enabled() and not legacy_fp64 and pl_cuda_native():
         return kiss_random_lanes(_pressure_seeds(p), first=first, ng=ng, nlay=nlay)
     if sw and legacy_fp64:
         # Retain the exact legacy SW seeding graph. Its explicit fp64 floor/

@@ -1,0 +1,50 @@
+{
+  "case": "c08",
+  "source_commit": "612fe5a5f8dcd540548fca00edc952fd7a673fdb",
+  "physical_backend": "cpu",
+  "lowering_platform": "cuda",
+  "gpu_executed": false,
+  "scope": "native CUDA lowering / optional AUTOTUNE0 deviceless prescreen, not fidelity or speed",
+  "lower": "INIT_FAIL",
+  "compile": "NOT_ATTEMPTED",
+  "programs": [],
+  "cache": "private per-arm scratch directories; managed GPUWRF cache off; cleaned by supervisor",
+  "target_sha256": "f46c185780fdbd4aab62ef20293385bb8de31a71bd260e9ce62cbfc21f196a23",
+  "harness_sha256": "b9465a8a7ca8bf18db08b25e2a6f2cb8a929620768c49e8ecea1af85f1ba5bce",
+  "environment": {
+    "GPUWRF_TMPDIR": "<DATA_ROOT>/wrf_gpu2/scratch/s2-integrate/batch15-tmp",
+    "TMPDIR": "<DATA_ROOT>/wrf_gpu2/scratch/s2-integrate/batch15-tmp",
+    "JAX_COMPILATION_CACHE_DIR": "<DATA_ROOT>/wrf_gpu2/scratch/s2-integrate/batch15-cache/jax",
+    "TRITON_CACHE_DIR": "<DATA_ROOT>/wrf_gpu2/scratch/s2-integrate/batch15-cache/triton",
+    "GPUWRF_JAX_CACHE": "0",
+    "CUDA_VISIBLE_DEVICES": "",
+    "GPUWRF_SCRATCH": "<DATA_ROOT>/wrf_gpu2/scratch/s2-integrate/batch15-tmp",
+    "JAX_PLATFORMS": "cpu",
+    "GPUWRF_FAST_DEFAULTS": "1",
+    "GPUWRF_CENSUS": "1",
+    "GPUWRF_CENSUS_SLIM": "0",
+    "GPUWRF_AOT_SLIM_MODULE": "0",
+    "GPUWRF_RRTMG_MP_RE": "1"
+  },
+  "pid": 1004171,
+  "boot_id": "e04fa13e-ccf1-4b7a-90fd-973467d8ec61",
+  "cgroup": "0::/user.slice/user-1000.slice/user@1000.service/app.slice/run-p1004167-i976697.scope",
+  "systemd_scope": "run-p1004167-i976697.scope",
+  "wall_s": 13.886506324999573,
+  "peak_rss_KiB": 2237748,
+  "matrix_status": "ADMITTED",
+  "input_sha256": {
+    "namelist.input": "93238842ee599a49f0ba69168c63e77c33192bd05f765884052449506195a99e",
+    "wrfbdy_d01": "f3e556670e4768326997bdfa1dd8b0f77eb6d5da07d9c4dbf900bf8ff9e30230",
+    "wrfinput_d01": "a5d696550d1dc6713e2e340b8c2fba83811d43f4a94a65ca95266035860e2781"
+  },
+  "phase": "CPU_loader_initialization",
+  "jax_version": "0.10.0",
+  "jax_enable_x64_before_native_trace": true,
+  "jax_use_simplified_jaxpr_constants": false,
+  "exception": "NameError(\"name 'np' is not defined\")",
+  "traceback": "Traceback (most recent call last):\n  File \"<USER_HOME>/wrf_gpu2_lanes/s2-integrate/lower_batch15.py\", line 99, in <module>\n    initial=np.asarray(carries[names[0]].state.qke)\n            ^^\nNameError: name 'np' is not defined. Did you mean: 'p'?\n",
+  "physical_devices_at_exit": [
+    "cpu"
+  ]
+}

@@ -4,7 +4,10 @@ from pathlib import Path
 
 import jax.numpy as jnp
 
-from gpuwrf.contracts.precision import MYNN_DIAGNOSTIC_LEAVES, SURFACE_LAYER_CARRY_LEAVES, STATE_FIELD_ORDER
+from gpuwrf.contracts.precision import (
+    MP_RE_DIAGNOSTIC_LEAVES, MYNN_DIAGNOSTIC_LEAVES,
+    SURFACE_LAYER_CARRY_LEAVES, STATE_FIELD_ORDER,
+)
 from gpuwrf.runtime.operational_mode import _enforce_operational_precision
 from test_mynn_held_diagnostics import fixture
 
@@ -17,6 +20,7 @@ def _preflight_low(state, *, mynn=MYNN_DIAGNOSTIC_LEAVES):
     assert len(expressions) == 1
     namespace = {'state': state, 'jnp': jnp, 'STATE_FIELD_ORDER': STATE_FIELD_ORDER,
                  'SURFACE_LAYER_CARRY_LEAVES': SURFACE_LAYER_CARRY_LEAVES,
+                 'MP_RE_DIAGNOSTIC_LEAVES': MP_RE_DIAGNOSTIC_LEAVES,
                  'MYNN_DIAGNOSTIC_LEAVES': mynn}
     return eval(compile(ast.Expression(expressions[0]), str(path), 'eval'), namespace)
 

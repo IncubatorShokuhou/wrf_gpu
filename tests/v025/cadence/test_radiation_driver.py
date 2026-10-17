@@ -25,7 +25,9 @@ def test_one_driver_solve_holds_heating_and_fluxes_with_separate_solar_clock(mon
     nml = SimpleNamespace(
         radiation_interval_s=1800., dt_s=54., radiation_cadence_steps=33,
         time_utc=None, grid=grid, radiation_static=None, topo_shading=0,
-        slope_rad=0, topo_shadow_length_m=25000.)
+        slope_rad=0, topo_shadow_length_m=25000., boundary_config=None,
+        ra_sw_physics=4, ra_lw_physics=4, mp_physics=8, cu_physics=0,
+        bl_pbl_physics=5, sf_surface_physics=0, sf_urban_physics=0)
     seen = []
     def solve(state, grid, **kwargs):
         assert kwargs["_with_diagnostics"] is True

@@ -27,6 +27,7 @@ import sys
 from pathlib import Path
 
 import pytest
+from _historical_artifacts import require_historical
 
 
 REPO = Path(__file__).resolve().parents[2]
@@ -41,6 +42,7 @@ import m0_window_parent as window_parent  # noqa: E402
 
 @pytest.fixture(scope="module")
 def frozen_h1_git(tmp_path_factory):
+    require_historical(window_parent.FAST_RUN_DIR / "namelist.input")
     # H1's synthetic output uses the terminal session's original tree pin.
     archived = tmp_path_factory.mktemp("m0-h1-source") / "repository.git"
     subprocess.run(
@@ -346,7 +348,18 @@ def test_h2_event_fixture_is_byte_identical_to_the_committed_hash():
 # --------------------------------------------------------------------------- #
 # H3 - the exact stable launch packet                                          #
 # --------------------------------------------------------------------------- #
-def test_h3_packet_binds_the_authorized_integration_line():
+def test_h3_packet_binds_the_authorized_integration_line(tmp_path, monkeypatch):
+    # This retained M0 packet predates public-history curation. Use a real Git
+    # view of private FINAL-b, which descends from the frozen authorized head.
+    view = tmp_path / "historical.git"
+    subprocess.run(["git", "init", "--bare", "--quiet", str(view)], check=True)
+    objects = Path(subprocess.check_output(
+        ["git", "-C", str(REPO), "rev-parse", "--git-path", "objects"], text=True).strip())
+    if not objects.is_absolute():
+        objects = REPO / objects
+    (view / "objects/info/alternates").write_text(str(objects.resolve()) + "\n")
+    (view / "HEAD").write_text("dead7d0042a3398eba2a0dac8d809938fa16df05\n")
+    monkeypatch.setenv("GIT_DIR", str(view))
     packet = readiness.build_packet()
     binding = readiness.packet_binding(packet)
     assert binding["status"] == "PASS", json.dumps(binding, indent=2, default=str)

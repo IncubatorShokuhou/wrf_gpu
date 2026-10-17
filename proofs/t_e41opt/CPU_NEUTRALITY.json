@@ -1,0 +1,105 @@
+{
+  "successful_caller_screens": [
+    {
+      "receipt_path": "<USER_HOME>/wrf_gpu2_lanes/t-e41opt/EO12_mp24/receipt.json",
+      "receipt_sha256": "84e18a03873d62249a58ee50eccf58e757d35cb7ac46921769c04c9e584e77cd",
+      "source": "e4f65fb0708ce16b8d4104ff10bccdb804f0b434",
+      "scheme": 24,
+      "dt_s": 18.0,
+      "platform": "cpu",
+      "cache": "NONE",
+      "scope": "Two actual MP_SCAN_ADAPTERS caller steps: original vs output-only firewall.\n\nThis is regression/neutrality evidence, not an independent WRF fidelity gate.\nThe retained original-CPU-WRF D6 receipts remain the fidelity evidence.\n",
+      "variant": "output-only barrier on public MP run dict",
+      "arms": {
+        "original": [
+          {
+            "step": 1,
+            "wall_s": 5.392778433859348,
+            "leaves": 82,
+            "sha256": "2190ce1e1d3d1f9f4a63f74305f2b69ce9fbf1bbcb19ec88315d662e820b1733"
+          },
+          {
+            "step": 2,
+            "wall_s": 0.08375749201513827,
+            "leaves": 82,
+            "sha256": "f85cbe71aa93b2c485c514a7ac8ffe3313b2bab5afe45a5ca09b895e994e305e"
+          }
+        ],
+        "firewall": [
+          {
+            "step": 1,
+            "wall_s": 5.0497373240068555,
+            "leaves": 82,
+            "sha256": "2190ce1e1d3d1f9f4a63f74305f2b69ce9fbf1bbcb19ec88315d662e820b1733"
+          },
+          {
+            "step": 2,
+            "wall_s": 0.17041808599606156,
+            "leaves": 82,
+            "sha256": "f85cbe71aa93b2c485c514a7ac8ffe3313b2bab5afe45a5ca09b895e994e305e"
+          }
+        ]
+      },
+      "caller": "MP_SCAN_ADAPTERS[scheme], including production fp64 island and State replacements",
+      "dynamics_and_other_physics": false,
+      "donation": false,
+      "verdict": "PASS",
+      "differing_leaves": [],
+      "byte_equal_leaves": 164
+    },
+    {
+      "receipt_path": "<USER_HOME>/wrf_gpu2_lanes/t-e41opt/EO14_mp26/receipt.json",
+      "receipt_sha256": "3c9e52d750876ab5b26d68fef46f27ef6321efaefaa27e83519a76a435310dc0",
+      "source": "e4f65fb0708ce16b8d4104ff10bccdb804f0b434",
+      "scheme": 26,
+      "dt_s": 18.0,
+      "platform": "cpu",
+      "cache": "NONE",
+      "scope": "Two actual MP_SCAN_ADAPTERS caller steps: original vs output-only firewall.\n\nThis is regression/neutrality evidence, not an independent WRF fidelity gate.\nThe retained original-CPU-WRF D6 receipts remain the fidelity evidence.\n",
+      "variant": "output-only barrier on public MP run dict",
+      "arms": {
+        "original": [
+          {
+            "step": 1,
+            "wall_s": 7.189933283021674,
+            "leaves": 79,
+            "sha256": "81b946a7a1d8f46bfa3b6e41daa5a6467eaabab723b3c5b63a101514b8ddb4aa"
+          },
+          {
+            "step": 2,
+            "wall_s": 0.17540069320239127,
+            "leaves": 79,
+            "sha256": "0ae571c1f7987c4328f2c3d5767217abaf4612af94dd3c23ba9420b171e28a42"
+          }
+        ],
+        "firewall": [
+          {
+            "step": 1,
+            "wall_s": 6.245180769823492,
+            "leaves": 79,
+            "sha256": "81b946a7a1d8f46bfa3b6e41daa5a6467eaabab723b3c5b63a101514b8ddb4aa"
+          },
+          {
+            "step": 2,
+            "wall_s": 0.28645559889264405,
+            "leaves": 79,
+            "sha256": "0ae571c1f7987c4328f2c3d5767217abaf4612af94dd3c23ba9420b171e28a42"
+          }
+        ]
+      },
+      "caller": "MP_SCAN_ADAPTERS[scheme], including production fp64 island and State replacements",
+      "dynamics_and_other_physics": false,
+      "donation": false,
+      "verdict": "PASS",
+      "differing_leaves": [],
+      "byte_equal_leaves": 158
+    }
+  ],
+  "failed_whole_root_setup": {
+    "path": "<USER_HOME>/wrf_gpu2_lanes/t-e41opt/EO03_mp24.log",
+    "sha256": "733038f615f031937b730f7173bd83a3b71860d1e3e552bd6d4c8a703df30223",
+    "verdict": "INVALID_SETUP_DONATED_INPUT_REUSE",
+    "candidate_executed": false
+  },
+  "scope": "CPU regression only; public firewall not shipped; native efficacy unknown"
+}

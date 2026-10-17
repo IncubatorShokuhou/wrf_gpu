@@ -1,0 +1,14 @@
+fixture_id: sms3dtke-full-wrf-v1
+source: unmodified WRF v4.7.1 complete SMS first_rk_step_part2 operator
+source_commit: staged pristine library identified by hashes
+scenario: Swiss12x10x44 grey-zone; specified/periodic; mixed/convective/zeroTKE; active graupel and Ni/Nr structured profiles
+created_utc: 2026-10-13
+generation: proofs/s1_km5/build.sh sms_full_driver; python proofs/s1_km5/full_oracle.py EXE OUT WORK
+variables:
+  - {name: coupled_tendencies, units: field*Pa s-1, shape: [k,j,i], dtype: float32, absolute_tolerance: 32eps32*maxabs(entry_field)*maxabs(mass)/dt, relative_tolerance: 32eps32}
+  - {name: surface_updates, units: variable, shape: [j,i], dtype: float32, absolute_tolerance: 32eps32*maxabs(reference), relative_tolerance: 32eps32}
+files:
+  - {path: data/fixtures/sms3dtke-full-wrf-v1.npz, sha256: 8202cac4c90b03e63e0a10df84c0963a20a0796d836b50bc70280a6fc01ce6e4}
+  - {path: proofs/s1_km5/sms_full_driver.F90, sha256: afb68dd3e5508c513ed153775e043ef931a78e8a89ad21026f108a501539d8d6}
+wrf_library_sha256: 4886a500d7bbcbdc7cff40ed3baab72b6a014b4dd9879bf25bc7c24522dfadbe
+license_notes: compact numerical NCAR WRF component fixture; no full wrfout redistributed

@@ -195,7 +195,7 @@ def fake_dev(temp=4, fail=False):
         return SimpleNamespace(get_compiled_memory_stats=lambda: SimpleNamespace(
             **dict(STATS, temp_size_in_bytes=temp), generated_code_size_in_bytes=9))
 
-    return SimpleNamespace(platform="gpu", client=SimpleNamespace(deserialize_executable=deserialize)), calls
+    return SimpleNamespace(platform="gpu", device_kind="NVIDIA synthetic CUDA device", client=SimpleNamespace(deserialize_executable=deserialize)), calls
 
 
 def test_slim_retained_module_reloads_and_fails_open(monkeypatch):
@@ -238,7 +238,7 @@ def test_serialize_slims_compiled_thunk_exports(monkeypatch, env, slimmed):
 
     monkeypatch.setattr(ax, "_slim_retained_module", slim)
     status = {}
-    blob, meta = ax.serialize(fake_compiled(b"legacy"), dev=SimpleNamespace(platform="gpu"),
+    blob, meta = ax.serialize(fake_compiled(b"legacy"), dev=SimpleNamespace(platform="gpu", device_kind="NVIDIA synthetic CUDA device"),
                               hlo_sha256="h", status=status)
     assert (calls == [thunks]) is slimmed
     assert meta.retained_module == ("slim" if slimmed else "full")
@@ -252,7 +252,7 @@ def test_rich_request_refuses_slim_blob(monkeypatch):
     meta = SimpleNamespace(executable_format=ax.GPU_THUNK_FORMAT, trace_metadata="rich",
                            retained_module="slim")
     with pytest.raises(RuntimeError, match="slimmed"):
-        ax.load(blob, meta, SimpleNamespace(platform="gpu"))
+        ax.load(blob, meta, SimpleNamespace(platform="gpu", device_kind="NVIDIA synthetic CUDA device"))
 
 
 def test_old_metas_unpickle_without_the_field():
@@ -269,7 +269,7 @@ def test_old_metas_unpickle_without_the_field():
 
 def test_slim_opt_out_never_changes_keys_and_module_is_outside_the_closure(monkeypatch):
     from pathlib import Path
-    dev = SimpleNamespace(platform="gpu", client=None)
+    dev = SimpleNamespace(platform="gpu", device_kind="NVIDIA synthetic CUDA device", client=None)
     monkeypatch.delenv("GPUWRF_AOT_SLIM_MODULE", raising=False)
     before = (keys.exec_env_hash(dev), keys.global_trace_env_hash(), ax.target_fingerprint(dev))
     monkeypatch.setenv("GPUWRF_AOT_SLIM_MODULE", "0")
@@ -292,15 +292,16 @@ def test_export_compile_options_request_direct_thunks_only_with_slim(monkeypatch
         monkeypatch.delenv(name, raising=False)
     for name, value in env.items():
         monkeypatch.setenv(name, value)
-    monkeypatch.setattr(jax, "default_backend", lambda: "gpu")
+    from gpuwrf.backends import platform as backend_platform
+    monkeypatch.setattr(backend_platform, "runtime_backend", lambda: "cuda")
     options = ax.export_compile_options()
     assert options == ({"xla_gpu_experimental_aot_compiled_thunks": True} if expected else None)
-    monkeypatch.setattr(jax, "default_backend", lambda: "cpu")
+    monkeypatch.setattr(backend_platform, "runtime_backend", lambda: "cpu")
     assert ax.export_compile_options() is None
 
 
 def test_direct_thunks_opt_out_never_changes_keys(monkeypatch):
-    dev = SimpleNamespace(platform="gpu", client=None)
+    dev = SimpleNamespace(platform="gpu", device_kind="NVIDIA synthetic CUDA device", client=None)
     monkeypatch.delenv("GPUWRF_AOT_DIRECT_THUNKS", raising=False)
     before = (keys.exec_env_hash(dev), keys.global_trace_env_hash(), ax.target_fingerprint(dev))
     monkeypatch.setenv("GPUWRF_AOT_DIRECT_THUNKS", "0")

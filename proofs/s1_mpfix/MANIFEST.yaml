@@ -1,0 +1,18 @@
+fixture_id: s1-mpfix-pristine-nc-and-radius-callers
+source: pristine WRF phys/module_mp_morr_two_moment_aero.F, module_mp_thompson.F, module_physics_init.F, module_radiation_driver.F, module_ra_rrtmg_lw.F and module_ra_rrtmg_sw.F
+source_commit: source SHA256 seals in fixtures/manifest.json and fixtures/radius_manifest.json; no claim that the instrumented local WRF tree is an upstream git revision
+scenario: mp40 aercu_opt=0 dry/active 40-level columns; mp18/24/28 use_mp_re=1 RRTMG4/4 flags; variable-Nc Thompson-aero radius producer; land/ocean RRTMG caller fallbacks
+created_utc: 2026-10-13
+variables:
+  NC_OUT: {units: '#/kg', shape: '[40]', dtype: REAL4 or REAL8, absolute_tolerance: 0, relative_tolerance: '0 dry; 2e-6 REAL4 active; 1e-12 REAL8 active'}
+  radii: {units: m, shape: '[3,12]', dtype: REAL4, absolute_tolerance: 0, relative_tolerance: 2e-6}
+  mediated_radii: {units: um, shape: '[2,8,3]', dtype: REAL4, absolute_tolerance: 0, relative_tolerance: 0}
+  has_req: {units: dimensionless, shape: '[12,3]', dtype: INTEGER, absolute_tolerance: 0, relative_tolerance: 0}
+files:
+  - fixtures/dry_fp32_8.json through dry_fp64_12.json (five cases, two builds)
+  - fixtures/thompson_aero_radii.json
+  - fixtures/radiation_mediation.json
+  - fixtures/manifest.json
+  - fixtures/radius_manifest.json
+  - fixtures/full_radiation_driver.json (18 full original driver calls, real WN3 columns31/78/114, flags0/1; flux1W/m2+5%, heating1e-4K/s+5%)
+license_notes: small derived numerical fixtures and source-hash metadata; no large WRF output or pristine module copy committed

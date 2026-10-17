@@ -1,0 +1,12 @@
+// Handwritten E41 parser fixture, built with ptxas 13.1, sm_120. No GPU used.
+.version 8.8
+.target sm_120
+.address_size 64
+.visible .entry e41_fixture(.param .u64 out) {
+    .reg .b64 %rd;
+    .reg .b32 %r;
+    ld.param.u64 %rd, [out];
+    mov.u32 %r, 1;
+    st.global.u32 [%rd], %r;
+    ret;
+}

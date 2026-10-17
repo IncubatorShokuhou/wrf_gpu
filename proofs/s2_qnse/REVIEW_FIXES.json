@@ -1,0 +1,77 @@
+{
+  "schema": 1,
+  "status": "FIXED: both solecritic required items addressed",
+  "original_critic": {
+    "path": "<USER_HOME>/wrf_gpu2_lanes/rv-s2-qnse/VERDICT.md",
+    "sha256": "0b8fc6d0ed1348e46a8010b6fb16da6ed98e4655b03b824d1b1c855d6945df62",
+    "verdict": "MERGE-WITH-FIXES",
+    "reviewed_commit": "f61bc9074f763e9169c60d77847f1359e84f6b32"
+  },
+  "candidate_model": "9bdcd389b",
+  "rebased_main": "3675eddf8",
+  "fixes": {
+    "unqualified_land_callers": "QNSE+sf_surface_physics1/2/7 refused for MF0 andMF1",
+    "api": "runtime.operational_mode._resolve_operational_suite; explicit integer/string selector handling",
+    "namelist": "io.namelist_check.validate_supported_namelist including domain broadcasting",
+    "both_loaders": "io.namelist_binding.bound_options refuses actualdaily/nested binding; honour report also reports restriction",
+    "supported_controls": "noLSM0 andNoahMP4 retained for MF0/1",
+    "documentation": "both catalog entries, supportmatrix and QNSE README state caller scope",
+    "EOF": "extra surface-file EOFblank removed; candidate versusmain git diff --check PASS"
+  },
+  "new_regressions": {
+    "count": 36,
+    "api_refusals": 12,
+    "namelist_refusals": 6,
+    "actual_daily_nested_loader_refusals": 12,
+    "supported_API_namelist_honour_controls": 4,
+    "domain_broadcasting": 2
+  },
+  "tests": {
+    "final": "352PASS43.22s zeroFAIL/ERROR/SKIP",
+    "artifact": "<USER_HOME>/wrf_gpu2_lanes/s2-qnse/Q42/host.xml",
+    "scope": "QNSEcoupling,E78 all4formats,tests/contracts,legacyv018failclosed,dispatch,CLI,catalog,implementednotes,binding,M7,namelistcheck,NetCDFlock,operationalroutecensus",
+    "earlier": "Q41 340PASS12FAIL: actualloader guards absent before bound_options fix; genuineDIDNOTRAISE assertions zero setup errors"
+  },
+  "source_reuse": {
+    "reviewed_source": "f61bc9074",
+    "candidate": "4704a3b17",
+    "files": {
+      "src/gpuwrf/physics/pbl_qnse.py": {
+        "ast_equal": true,
+        "bytes_equal_after_eof_whitespace": true,
+        "sha256": "81b767fef61627649f9f5114a93c33f93476ca0ef8d565c2ab6bbd704a3d1db3"
+      },
+      "src/gpuwrf/physics/sfclay_qnse.py": {
+        "ast_equal": true,
+        "bytes_equal_after_eof_whitespace": true,
+        "sha256": "ff0a05bf5bc0b73523d9942b7e028ef0f3c73e7366b6ebcb964fe28f33e65afb"
+      },
+      "src/gpuwrf/physics/qnse_edmf.py": {
+        "ast_equal": true,
+        "bytes_equal_after_eof_whitespace": true,
+        "sha256": "8767555c3400bd73e2019cfd4eee8c9eeac4d152cdc229280f96d0a71166577e"
+      },
+      "src/gpuwrf/physics/_qnse_levels.py": {
+        "ast_equal": true,
+        "bytes_equal_after_eof_whitespace": true,
+        "sha256": "8b57590c5d15a4ef16f768bb7dbc2b97fbc4ec39f522527dc4b04b672aad2861"
+      },
+      "src/gpuwrf/kernels/phys_qnse_columns.py": {
+        "ast_equal": true,
+        "bytes_equal_after_eof_whitespace": true,
+        "sha256": "63589287ecd352140b9e3de7e9fa350b43cc28b1a1ba38a6cf37675736f8a276"
+      },
+      "src/gpuwrf/coupling/qnse_adapter.py": {
+        "ast_equal": true,
+        "bytes_equal_after_eof_whitespace": true,
+        "sha256": "c596f376c0a62e622b09ff26a696a57836255e12dff9f8c4f2b7653d68408a7c"
+      }
+    },
+    "numerical_validation": "Carry forward solecritic originalWRF/45BYTE/30bounds/MF130-136/coupled evidence perVERDICT; hostadmission+EOFonly changes",
+    "device_cost_delta": "zero timestep launches/retainedarrays/traffic/sync/compileprogram change on accepted configurations"
+  },
+  "numerical_evidence": "Reuse originalsolecritic 447tests/pristine28755BYTE/45literalBYTE/30independentenclosures/MFraw130-136/coupled/release2bf; no additionalphysicsvalidation requested or performed forhostadmission/EOFdelta",
+  "performance_memory": "Host scalar checks only; zero added timestep kernels, transfers,retainedarrays,synchronization; six numerical/kernel/coupling bodies exactAST andrstripbytes; GPU andD6 pending asbefore",
+  "cache": "NONE GPUWRF_JAX_CACHE0",
+  "gpu_executed": false
+}

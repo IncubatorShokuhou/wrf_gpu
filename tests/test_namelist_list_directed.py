@@ -34,10 +34,28 @@ end program
 '''
 
 
+def _gfortran():
+    """Resolve the oracle compiler like the other pristine oracles (FC, known paths, PATH).
+
+    gfortran is external tooling (E129): the compiler is not on PATH in every environment. Resolve
+    FC first, then the known wrf-build locations, then PATH; if none exist the Fortran oracle is
+    skipped with an explicit reason rather than erroring the whole module.
+    """
+    for candidate in (
+        os.environ.get('FC'),
+        '<USER_HOME>/miniconda3/envs/wrfbuild/bin/gfortran',
+        '<DATA_ROOT>/canairy_meteo/artifacts/envs/wrf-build/bin/x86_64-conda-linux-gnu-gfortran',
+    ):
+        if candidate and Path(candidate).exists():
+            return candidate
+    return shutil.which('gfortran')
+
+
 @pytest.fixture(scope='module')
 def reader(tmp_path_factory):
-    compiler = os.environ.get('FC') or shutil.which('gfortran')
-    assert compiler and Path(compiler).exists(), 'Fortran namelist oracle compiler required'
+    compiler = _gfortran()
+    if compiler is None:
+        pytest.skip('Fortran namelist oracle compiler unavailable (set FC=/path/to/gfortran)')
     root = tmp_path_factory.mktemp('namelist-fortran')
     source = root/'reader.f90'
     source.write_text(FORTRAN)

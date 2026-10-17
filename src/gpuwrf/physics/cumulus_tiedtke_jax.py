@@ -450,7 +450,10 @@ def _cuasc_jax(klev, ptenh, pqenh, puen, pven, pten, pqen, pqsen, pgeo, pgeoh,
     zmfuu = jnp.where(LMFDUDV, pmfub * puu[klev], 0.0)
     zmfuv = jnp.where(LMFDUDV, pmfub * pvu[klev], 0.0)
 
-    # ktype 1 zoentr seed at kcbot
+    # 3.1 (module_cu_tiedtke.F:1633-1649): ldcum is reset for EVERY column -- the ascent re-confirms
+    # convection by finding a cloud top, and CUBASMC may start mid-level convection (ktype 3) in any
+    # column; zbuoy starts at the cloud-base buoyancy for ktype 1 (0 otherwise) and accumulates below.
+    ldcum = jnp.bool_(False)
     ikb = kcbot
     zbuoy0 = G * ((ptu[ikb] - ptenh[ikb]) / ptenh[ikb] + 0.608 * (pqu[ikb] - pqenh[ikb]))
     do_seed = (ktype == 1) & (zbuoy0 > 0.0) & (ikb > 1)
@@ -461,7 +464,7 @@ def _cuasc_jax(klev, ptenh, pqenh, puen, pven, pten, pqen, pqsen, pgeo, pgeoh,
     seed_val = jnp.minimum(jnp.maximum(seed_val, 0.0), 1.0e-3)
     zoentr = zoentr.at[ikb - 1].set(jnp.where(do_seed, seed_val, zoentr[ikb - 1]))
 
-    zbuoy_acc = jnp.float64(0.0)
+    zbuoy_acc = jnp.where(ktype == 1, zbuoy0, jnp.float64(0.0))
 
     # main ascent sweep jk = klevm1 .. 2 descending
     def asc_body(idx, carry):
@@ -1017,7 +1020,7 @@ def _cududv_jax(klev, ktopm2, ktype, kcbot, paph, ldcum, puen, pven,
 # CUMASTRN master.
 # ----------------------------------------------------------------------------
 def _cumastr_new_jax(pu, pv, pt, pqv, pqc, pqi, pqvf, pqvbl, poz, pomg, pap, paph,
-                     evap, lndj, sig1, dt, klev):
+                     evap, lndj, sig1, dt, klev, own_icum_mask=True):
     klevm1 = klev - 1
     ztmst = dt
     pqhfl = evap
@@ -1120,7 +1123,8 @@ def _cumastr_new_jax(pu, pv, pt, pqv, pqc, pqi, pqvf, pqvbl, poz, pomg, pap, pap
         ihmin, zhmin = carry
         jk = klev - idx  # klev .. 1 descending
         valid = jk >= 1
-        llo1 = ldcum & (ktype == 1) & (ihmin0 == kcbot)
+        # module_cu_tiedtke.F:906 tests the CURRENT ihmin: the search stops at the first hit.
+        llo1 = ldcum & (ktype == 1) & (ihmin == kcbot)
         active = valid & llo1 & (jk < kcbot) & (jk >= ictop0)
         zro = RD * ztenh[jk] / (G * paph[jk])
         zdz = (paph[jk] - paph[jk - 1]) * zro
@@ -1154,7 +1158,11 @@ def _cumastr_new_jax(pu, pv, pt, pqv, pqc, pqi, pqvf, pqvbl, poz, pomg, pap, pap
     pmfu = asc1["pmfu"]; zmfus = asc1["pmfus"]; zmfuq = asc1["pmfuq"]; zmful = asc1["pmful"]
     zlude = asc1["plude"]; zdmfup = asc1["pdmfup"]; ilab = asc1["klab"]; zmfub = asc1["pmfub"]
 
-    cum_active = icum != 0
+    # module_cu_tiedtke.F:959 ``if(icum.eq.0) return``: icum counts the convective columns of the
+    # whole tile row after the first ascent.  own_icum_mask=False leaves the row decision to the caller
+    # (tiedtke_adapter: any() over the x-row); the second pass then runs for every column, like WRF.
+    icum1 = icum != 0
+    cum_active = icum1 if own_icum_mask else jnp.bool_(True)
 
     zpbmpt = paph[kcbot] - paph[kctop]
     ictop0 = jnp.where(ldcum, kctop, ictop0)
@@ -1318,7 +1326,7 @@ def _cumastr_new_jax(pu, pv, pt, pqv, pqc, pqi, pqvf, pqvbl, poz, pomg, pap, pap
 
     return {
         "pu": pu_out, "pv": pv_out, "pt": pt_out, "pqv": pqv_out,
-        "pqc": pqc_out, "pqi": pqi_out, "zprecc": zprecc, "ktype": ktype_out,
+        "pqc": pqc_out, "pqi": pqi_out, "zprecc": zprecc, "ktype": ktype_out, "icum1": icum1,
     }
 
 
@@ -1327,12 +1335,15 @@ def _cumastr_new_jax(pu, pv, pt, pqv, pqc, pqi, pqvf, pqvbl, poz, pomg, pap, pap
 # NumPy reference cumulus_tiedtke.tiedtke_column.
 # ----------------------------------------------------------------------------
 def tiedtke_column_jax(T, QV, QC, QI, P, P8W, DZ, RHO, PI, U, V, W,
-                       QVFTEN, QVPBLTEN, QFX, XLAND, ZNU, dt, *, stepcu=5):
+                       QVFTEN, QVPBLTEN, QFX, XLAND, ZNU, dt, *, stepcu=5, own_icum_mask=True):
     """One WRF modified-Tiedtke column (GPU-batchable, fully jit/vmap-traceable).
 
     Inputs are bottom-up WRF/JAX columns of length KLEV (P8W and W are KLEV+1).
     Returns a dict of bottom-up tendency columns + RAINCV/PRATEC/KTYPE, identical
-    in meaning to ``cumulus_tiedtke.tiedtke_column``.
+    in meaning to ``cumulus_tiedtke.tiedtke_column``.  ``own_icum_mask=False``: the outputs are
+    NOT zeroed by this column's own first-ascent ``icum`` (WRF's early return is a tile-row
+    decision, module_cu_tiedtke.F:959); ``ICUM1`` reports this column's flag for the caller's
+    row reduction.
     """
 
     T = jnp.asarray(T, jnp.float64)
@@ -1394,7 +1405,7 @@ def tiedtke_column_jax(T, QV, QC, QI, P, P8W, DZ, RHO, PI, U, V, W,
     qfx = jnp.asarray(QFX, jnp.float64)
 
     out = _cumastr_new_jax(pu, pv, pt, pqv, pqc, pqi, pqvf, pqvbl, poz, pomg, pap, paph,
-                           qfx, lndj, sig1, delt, klev)
+                           qfx, lndj, sig1, delt, klev, own_icum_mask=own_icum_mask)
 
     # back to bottom-up tendencies
     T0 = T; QV0 = QV; QC0 = QC; QI0 = QI; U0 = U; V0 = V; PI0 = PI
@@ -1411,7 +1422,7 @@ def tiedtke_column_jax(T, QV, QC, QI, P, P8W, DZ, RHO, PI, U, V, W,
     return {
         "RTHCUTEN": rth, "RQVCUTEN": rqv, "RQCCUTEN": rqc, "RQRCUTEN": zeros,
         "RQICUTEN": rqi, "RQSCUTEN": zeros, "RUCUTEN": ru, "RVCUTEN": rv,
-        "RAINCV": raincv, "PRATEC": pratec, "KTYPE": out["ktype"],
+        "RAINCV": raincv, "PRATEC": pratec, "KTYPE": out["ktype"], "ICUM1": out["icum1"],
     }
 
 

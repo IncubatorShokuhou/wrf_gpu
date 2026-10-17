@@ -1,0 +1,247 @@
+{
+  "status": "Four additional verified test-only corrections; separate from frozen critic batch; full suite INCOMPLETE",
+  "base": "c62e5dd78",
+  "tip": "1a534d8e5210f6b85595d9a5cc2bc81ced484293",
+  "commits": [
+    {
+      "commit": "20fb4b0dbae94a4b48448cab636d40445591a2d5",
+      "summary": "proof: close heavy resource gates; SMS 5 pass, peak 12.525 GiB",
+      "files": [
+        ".agent/kernel/lanes/t-redsuite.notes.md",
+        "proofs/t_redsuite/RESOURCE_GATES_20261015.json"
+      ]
+    },
+    {
+      "commit": "6f9b3404f2f8eb3594fa9e6b49a198d8cd43c1c9",
+      "summary": "test: isolate conservation proof output; 2 pass, snapshot clean",
+      "files": [
+        ".agent/kernel/lanes/t-redsuite.notes.md",
+        "tests/test_conservation_budget.py"
+      ]
+    },
+    {
+      "commit": "60675e705f03d3091485339cba9fda7d3fcbcb7a",
+      "summary": "test: preserve RRTMG references and verify real fallback; 15 pass",
+      "files": [
+        ".agent/kernel/lanes/t-redsuite.notes.md",
+        "tests/conftest.py",
+        "tests/test_m5_rrtmg_harness.py",
+        "tests/test_m5_rrtmg_intermediate_oracles.py"
+      ]
+    },
+    {
+      "commit": "1b8c640176e85252aca404d8d6f5c6a34f9d6104",
+      "summary": "test: trace real pre-sanitize tap shape contract; 3 pass, 1.012 GiB",
+      "files": [
+        ".agent/kernel/lanes/t-redsuite.notes.md",
+        "tests/test_m6_tier2_coupled.py"
+      ]
+    },
+    {
+      "commit": "1a534d8e5210f6b85595d9a5cc2bc81ced484293",
+      "summary": "test: isolate schema dry-run output; 2 pass, historical proof intact",
+      "files": [
+        ".agent/kernel/lanes/t-redsuite.notes.md",
+        "tests/test_m6b0r_savepoint_hdf5.py"
+      ]
+    }
+  ],
+  "selected_outcomes": {
+    "passed": 22,
+    "xpassed": 1
+  },
+  "selected_cases": [
+    {
+      "classname": "tests.test_conservation_budget",
+      "name": "test_budget_terms_use_wrf_mass_area_units_and_precip_evap",
+      "outcome": "passed",
+      "arm": "C037b-conservation-private-proof"
+    },
+    {
+      "classname": "tests.test_conservation_budget",
+      "name": "test_budget_closure_closed_water_and_lbc_dry_mass_proof",
+      "outcome": "passed",
+      "arm": "C037b-conservation-private-proof"
+    },
+    {
+      "classname": "tests.test_m5_rrtmg_column_shapes",
+      "name": "test_rrtmg_sw_step_preserves_column_shapes_and_fp64_dtype",
+      "outcome": "passed",
+      "arm": "C046b-private-real-RRTMG"
+    },
+    {
+      "classname": "tests.test_m5_rrtmg_column_shapes",
+      "name": "test_rrtmg_lw_step_preserves_column_shapes_and_fp64_dtype",
+      "outcome": "passed",
+      "arm": "C046b-private-real-RRTMG"
+    },
+    {
+      "classname": "tests.test_m5_rrtmg_column_shapes",
+      "name": "test_rrtmg_hlo_diff_artifacts_are_raw_diffs_when_present",
+      "outcome": "passed",
+      "arm": "C046b-private-real-RRTMG"
+    },
+    {
+      "classname": "tests.test_m5_rrtmg_gate",
+      "name": "test_rrtmg_gate_reports_honest_fallback_with_raw_launches",
+      "outcome": "passed",
+      "arm": "C046b-private-real-RRTMG"
+    },
+    {
+      "classname": "tests.test_m5_rrtmg_harness",
+      "name": "test_rrtmg_fixture_generation_records_linked_harness_binary",
+      "outcome": "passed",
+      "arm": "C046c-pristine-object-positive"
+    },
+    {
+      "classname": "tests.test_m5_rrtmg_intermediate_oracles",
+      "name": "test_rrtmg_intermediate_oracle_fixture_shapes_and_budget",
+      "outcome": "passed",
+      "arm": "C046b-private-real-RRTMG"
+    },
+    {
+      "classname": "tests.test_m5_rrtmg_intermediate_oracles",
+      "name": "test_rrtmg_intermediate_validation_helpers_report_pass_and_fail",
+      "outcome": "passed",
+      "arm": "C046b-private-real-RRTMG"
+    },
+    {
+      "classname": "tests.test_m5_rrtmg_intermediate_oracles",
+      "name": "test_rrtmg_intermediate_artifacts_are_written_honestly",
+      "outcome": "passed",
+      "arm": "C046b-private-real-RRTMG"
+    },
+    {
+      "classname": "tests.test_m5_rrtmg_tables",
+      "name": "test_rrtmg_table_asset_loads_with_wrf_band_counts",
+      "outcome": "passed",
+      "arm": "C046b-private-real-RRTMG"
+    },
+    {
+      "classname": "tests.test_m5_rrtmg_tier1",
+      "name": "test_rrtmg_sw_tier1_records_strict_pass_result",
+      "outcome": "xpassed",
+      "arm": "C046b-private-real-RRTMG"
+    },
+    {
+      "classname": "tests.test_m5_rrtmg_tier1",
+      "name": "test_rrtmg_lw_tier1_records_strict_parity_result",
+      "outcome": "passed",
+      "arm": "C046b-private-real-RRTMG"
+    },
+    {
+      "classname": "tests.test_m5_rrtmg_tier2",
+      "name": "test_rrtmg_tier2_invariants_pass",
+      "outcome": "passed",
+      "arm": "C046b-private-real-RRTMG"
+    },
+    {
+      "classname": "tests.test_m5_rrtmg_transfer_solver",
+      "name": "test_sw_delta_scaling_matches_joseph_wiscombe_formula",
+      "outcome": "passed",
+      "arm": "C046b-private-real-RRTMG"
+    },
+    {
+      "classname": "tests.test_m5_rrtmg_transfer_solver",
+      "name": "test_sw_reftra_transparent_layer_is_identity",
+      "outcome": "passed",
+      "arm": "C046b-private-real-RRTMG"
+    },
+    {
+      "classname": "tests.test_m5_rrtmg_transfer_solver",
+      "name": "test_sw_kernel_no_longer_uses_fabricated_log_tau_curve",
+      "outcome": "passed",
+      "arm": "C046b-private-real-RRTMG"
+    },
+    {
+      "classname": "tests.test_m5_rrtmg_transfer_solver",
+      "name": "test_lw_diffusivity_angles_match_rrtmg_bounds",
+      "outcome": "passed",
+      "arm": "C046b-private-real-RRTMG"
+    },
+    {
+      "classname": "tests.test_m6_tier2_coupled",
+      "name": "test_tier2_kernels_pass_on_unchanged_physical_state",
+      "outcome": "passed",
+      "arm": "C048c-tap-shape-contract"
+    },
+    {
+      "classname": "tests.test_m6_tier2_coupled",
+      "name": "test_boundary_flux_closure_uses_pre_boundary_tendency_snapshot",
+      "outcome": "passed",
+      "arm": "C048c-tap-shape-contract"
+    },
+    {
+      "classname": "tests.test_m6_tier2_coupled",
+      "name": "test_forecast_segment_pre_sanitize_tap_returns_one_state_per_step",
+      "outcome": "passed",
+      "arm": "C048c-tap-shape-contract"
+    },
+    {
+      "classname": "tests.test_m6b0r_savepoint_hdf5",
+      "name": "test_m6b0r_synthetic_dryrun_passes",
+      "outcome": "passed",
+      "arm": "C049b-private-schema-probe"
+    },
+    {
+      "classname": "tests.test_m6b0r_savepoint_hdf5",
+      "name": "test_tolerance_ladder_has_required_calc_coef_fields",
+      "outcome": "passed",
+      "arm": "C049b-private-schema-probe"
+    }
+  ],
+  "receipts": [
+    {
+      "arm": "C037b-conservation-private-proof",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C037b-conservation-private-proof",
+      "source": "1197f79df779682d48b7b96423d65184cdc66298",
+      "xml_sha256": "e01be1241d933d67c3e8d8a760d350a55e72c5a93a02382a7c78d22384e19823",
+      "command_sha256": "fe5325f413dcf7c0fefab9ac8169aba37aaa30aea47ad280ac16d5022f76cef3"
+    },
+    {
+      "arm": "C046b-private-real-RRTMG",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C046b-private-real-RRTMG",
+      "source": "86eeee9df2c6e6994822a1e2a4f595f9ce1ad169",
+      "xml_sha256": "d2d4c5627c5957a799d2bfa78eb80bf7568ca13add31557fc027f24be3769181",
+      "command_sha256": "775bfabf909ebb99e41d55f8e92139af8d077fee73fc1dcc6935567eb7a6ce9f"
+    },
+    {
+      "arm": "C046c-pristine-object-positive",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C046c-pristine-object-positive",
+      "source": "69607f353e81bd1243b279564e45b3f13ea9aac6",
+      "xml_sha256": "32233b5e5035454f54b8ea493f306f72c9aeddfd408f5fe870d126ab3f023e79",
+      "command_sha256": "3c88e872626aedfce8326218c00e4b0eef2f347e947b24da91b81c594c4ef365"
+    },
+    {
+      "arm": "C048c-tap-shape-contract",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C048c-tap-shape-contract",
+      "source": "09e1f90e7dad56e3da331c506ac10077169e7b07",
+      "xml_sha256": "49f3993ba99ec6b3c2ceb7820226a267b4e2161241f3ec954a929298bb1d3e42",
+      "command_sha256": "1191e589e3cd0f0f4170951b2d1d48193a62c52ae537a39df6d3725cc28f2265"
+    },
+    {
+      "arm": "C049b-private-schema-probe",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C049b-private-schema-probe",
+      "source": "caff6ed2c137a48b9a2375c2fde04d7ae4ad7a0c",
+      "xml_sha256": "3098933d03d1a2107fd7e5fcce514962b1f61d2f32fc0f818f161b8d7105b240",
+      "command_sha256": "ce41ad95c18878177f40a42a267d12cac2b84083d55be62fc0dc632192b5b613"
+    }
+  ],
+  "kept_file_sha256": {
+    "tests/conftest.py": "4026d1693db78796fc73280b292489f5a1794ee2982890ad23f5c9089cd18155",
+    "tests/test_conservation_budget.py": "7e630134137110bb3366dee2a6a2c8e002a6fa645b1ac4afa831b69912770377",
+    "tests/test_m5_rrtmg_harness.py": "ff7fb646521f2fbd17ae614d9e1cfa572a0cb1a456c3439b75debbd28492439b",
+    "tests/test_m5_rrtmg_intermediate_oracles.py": "1c92952b8e8bbb6f7de6d1cbf59752c175410bd68ec84fb68c79dc33b1019002",
+    "tests/test_m6_tier2_coupled.py": "6f795b5876d568220b679dd8c7a2741a1532b0a5f0c3867b9e121de865ebc78b",
+    "tests/test_m6b0r_savepoint_hdf5.py": "dfd29fad0fdf95954b9062b8daaf24dfbdfa9e128e1ecc01891fa62069d8ed20"
+  },
+  "production_diff": [],
+  "disclosures": [
+    "C048 debug tap test is explicitly a real-driver TRACE/STRUCTURAL gate, not coupled-runtime/numerical fidelity. Every original shape assert retained, all tap leaves checked; actual numerical invariant tests unchanged. Original6G/12G compile OOM receipts retained.",
+    "C046 old unconditional harness xfail removed only after --runxfail real private-build1PASS; all other conftest AST and CPU guards unchanged.",
+    "Legacy CPU-order-dependent SW1W/m2 quarantine remains;1XPASS disclosed, bound unchanged.",
+    "Generated historical proof/fixture writes captured privately and exact originals restored; retained reference files never committed as replacements.",
+    "Old/new immutable source receipts remain separate; final composed-source/full plan pending; supplemental active-hail product counterexample open."
+  ],
+  "performance": "Zero own production source changes; no added model launches/traffic/allocations. Test trace gate reduces >12GiB compiler failure to1.012GiB without claiming numerical runtime coverage; pure SMS operator original bounds PASS once at24G/HWM12.525GiB, permission spent."
+}

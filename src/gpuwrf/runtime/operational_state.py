@@ -149,7 +149,71 @@ class OperationalCarry:
     # ra_lw_physics=3 CAM held absorptivities (WRF state abstot_3d/absnxt_3d/emstot_3d, REAL, flat columns, a
     # physics.ra_cam.CamHeld) recomputed only every cam_abs_freq_s; None for every other LW scheme.
     cam_abs: Any = field(default=None)
+    # grid_fdda=1 analysis nudging (lane o2-fdda): the auxinput10 analysis pair + held R*NDGDTEN
+    # (WRF restart fields fdda3d / RUNDGDTEN..RQVNDGDTEN; assimilation.fdda_grid.GridFddaCarry).
+    # None unless the domain selects grid_fdda=1, so every other configuration keeps its carry.
+    fdda: Any = field(default=None)
+    # --- v0.4.0 single-layer urban canopy model (sf_urban_physics=1, lane o2-urban) ---
+    # ``urban_slucm`` is the coupling.urban_slucm_hook.UrbanCarry (WRF TR/TB/TG/TC/QC/UC/
+    # XXX*/TRL/TBL/TGL/DREL*/FLXHUM* urban state + C{M,H}{R,C}_SFCDIF + FRC_URB2D/UTYPE),
+    # REAL; ``None`` unless an explicit sf_urban_physics=1 Noah-MP run seeds it. Appended LAST.
+    urban_slucm: Any = field(default=None)
+    # WRF lake snow/water/soil and held surface diagnostics, compact lake tiles.
+    lake: Any = field(default=None)
+    # Opt-in WRF tslist station samples; None has no device leaves or step work.
+    timeseries: Any = field(default=None)
+    # QNSE surface INOUT memory, MF condensate and interface exchange (WRF REAL).
+    # obs_nudge_opt=1 rolling VAROBS/RKO frame + held SAVWT; None has no leaves.
+    obs: Any = field(default=None)
+    # Opt-in compact regional windows and completed frames; no leaves when OFF.
+    regional_streams: Any = field(default=None)
+    # WRF prec_acc_dt: three REAL surface buckets, absent when disabled.
+    precipitation_buckets: Any = field(default=None)
+    # nwp_diagnostics=1 resident maxima/UH; do_radar_ref=1 held REFL_10CM.
+    nwp_diagnostics: Any = field(default=None)
+    radar_reflectivity: Any = field(default=None)
+    # WRF swint_opt=1: seven interpolation parameters and five held REAL fluxes.
+    solar_interpolation: Any = field(default=None)
+    # WRF TEMF (bl=10/sfclay=10), resident REAL Registry profiles + surface holds.
+    temf: Any = field(default=None)
+    # Compact BEP/BEM building/material state and Noah-MP multilayer PBL sources.
+    urban_bep: Any = field(default=None)
+    # Original WRF stochastic spectra, RNG seed words and held patterns; absent
+    # unless explicitly selected in &stoch. No default device leaves/work.
+    stochastic: Any = field(default=None)
+    # Opt-in WRF up-feedback diagnostics whose forcing/history aliases differ.
+    # Packed REAL mass planes; None preserves the released carry leaves.
+    feedback_history: Any = field(default=None)
+    # windfarm_opt=1: last PBL-call POWER (W); QKE lives on State.
+    windfarm_power: Any = field(default=None)
+    # WRF tracer_tend: held uncoupled PBL rates, absent when tracers are off.
+    tracer_tendencies: Any = field(default=None)
+    # OML1D Registry fields and MYNN hurricane nongusty friction velocity (REAL).
+    ocean: Any = field(default=None)
+    hurricane_ustm: Any = field(default=None)
+    ssib_land: Any = field(default=None)
+    ssib_rad: Any = field(default=None)
+    qnse: Any = field(default=None)
+    # cu=95 fixed-seed/domain uint32[2] keys; counters derive from persisted clock.
+    osas_rng_key: Any = field(default=None)
+    # cu=7/10/11: complete uncoupled WRF driver outputs and W0AVG lifetime.
+    cuplus: Any = field(default=None)
+    # opt_run=5: complete REAL groundwater/river/recharge and immutable MMF geometry.
+    noahmp_mmf: Any = field(default=None)
+    # GFDL ETARA native cloud counters/interval convection and held LW/SW rates.
+    gfdl_radiation: Any = field(default=None)
+    sst_skin: Any = field(default=None)  # WRF SST, SSTSK and DTW, absent when sst_skin=0
+    noahmp_irrigation: Any = field(default=None)  # WRF irrigation event amounts/counters/accumulators
+    noahmp_carbon: Any = field(default=None)  # six WRF dynamic vegetation carbon pools
+    noahmp_groundwater: Any = field(default=None)  # opt_run1 positive-depth ZWT/WA/WT
+    noahmp_tile_drain: Any = field(default=None)  # exact accumulated QTDRAIN [mm]
+    # WRF RTHFTEN/RQVFTEN (cu 3/5/6/16/93): last-RK-stage theta/qv advection, decoupled by the
+    # end-of-step mass and made dry in phy_prep_part2; uncoupled REAL (theta, qv) pair held for the
+    # next cumulus call. None for every other scheme (no leaves, no work).
+    cu_forcing: Any = field(default=None)
 
+
+    # SSiB WRF soil/canopy + complete multilayer snow and held radiation.
 
     def replace(self, **updates) -> "OperationalCarry":
         values = {name: getattr(self, name) for name in self.__dataclass_fields__}
@@ -157,7 +221,14 @@ class OperationalCarry:
         return type(self)(**values)
 
     def tree_flatten(self):
-        return tuple(getattr(self, name) for name in self.__dataclass_fields__), None
+        values = tuple(getattr(self, name) for name in self.__dataclass_fields__)
+        # Drop only trailing inactive appended groups, preserving the main prefix.
+        for name in ('cu_forcing','noahmp_tile_drain','noahmp_groundwater','noahmp_carbon',
+                     'noahmp_irrigation','sst_skin','gfdl_radiation','noahmp_mmf'):
+            if getattr(self,name) is not None:
+                break
+            values = values[:-1]
+        return values, None
 
     @classmethod
     def tree_unflatten(cls, aux, children):
@@ -183,6 +254,9 @@ class HistoryDiagnostics(NamedTuple):
     lh: Any
     psfc: Any
     hfx: Any = None
+    # MYJSFC/QNSESFC equivalent-roughness winds; None adds no other-scheme leaves.
+    u10e: Any = None
+    v10e: Any = None
 
     def write(self, values: dict[str, Any]) -> "HistoryDiagnostics":
         """Return the container with ``values`` cast to the seeded leaf dtype/shape."""
@@ -192,7 +266,9 @@ class HistoryDiagnostics(NamedTuple):
                 return None
             return jnp.asarray(new, dtype=old.dtype).reshape(old.shape)
 
-        return HistoryDiagnostics(*(put(getattr(self, name), values[name]) for name in self._fields))
+        return HistoryDiagnostics(*(put(getattr(self, name),
+            values.get(name, getattr(self, name)) if name in ('u10e', 'v10e') else values[name])
+            for name in self._fields))
 
 
 def history_instep_diag_enabled() -> bool:
@@ -201,12 +277,15 @@ def history_instep_diag_enabled() -> bool:
     return os.environ.get("GPUWRF_HISTORY_INSTEP_DIAG", "0").strip().lower() in {"1", "true", "yes", "on"}
 
 
-def seed_history_diagnostics(state: State) -> HistoryDiagnostics:
+def seed_history_diagnostics(state: State, *, myjsfc: bool = False,
+                             qnsesfc: bool = False) -> HistoryDiagnostics:
     """Zero WRF REAL container shaped like ``state.t_skin`` (filled by the first step)."""
 
     zero = jnp.zeros(jnp.shape(state.t_skin), dtype=jnp.float32)
     hfx = None if "hfx" in getattr(type(state), "__slots__", ()) else zero
-    return HistoryDiagnostics(t2=zero, q2=zero, u10=zero, v10=zero, lh=zero, psfc=zero, hfx=hfx)
+    return HistoryDiagnostics(t2=zero, q2=zero, u10=zero, v10=zero, lh=zero, psfc=zero, hfx=hfx,
+                              u10e=zero if myjsfc or qnsesfc else None,
+                              v10e=zero if myjsfc or qnsesfc else None)
 
 
 def _base_mu(state: State, base_state: BaseState | None = None) -> jax.Array:
@@ -232,6 +311,7 @@ def initial_operational_carry(
     base_state: BaseState | None = None,
     ruc_land: Any = None,
     ruc_rad: Any = None,
+    noahmp_mmf: Any = None,
 ) -> OperationalCarry:
     """Build promoted carry from the initialized operational ``State``.
 
@@ -291,6 +371,7 @@ def initial_operational_carry(
         px_rad=px_rad,
         ruc_land=ruc_land,
         ruc_rad=ruc_rad,
+        noahmp_mmf=noahmp_mmf,
     )
 
 

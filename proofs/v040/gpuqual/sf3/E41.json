@@ -1,0 +1,133 @@
+{
+ "cache": "<USER_HOME>/wrf_gpu2_lanes/s1-gpuqual/sf3_madrid_main/cache/jax",
+ "entries": [
+  {
+   "entry": "jit__advance_chunk_fori-7e935173ebd4dfeb5f5e1ea02f9a5c5b164f05cada74186f76d4fdaf12c10320-cache",
+   "path": "<USER_HOME>/wrf_gpu2_lanes/s1-gpuqual/sf3_madrid_main/cache/jax/jit__advance_chunk_fori-7e935173ebd4dfeb5f5e1ea02f9a5c5b164f05cada74186f76d4fdaf12c10320-cache",
+   "source_kind": "jax_cache",
+   "program": null,
+   "aliases": [],
+   "format": "xla-gpu-legacy-v1",
+   "blob_sha256": "8c32359269d50c2fe0d95f530eb2f167e0465291bfe40a1e55bd3eccc5753aa9",
+   "elfs": [
+    {
+     "elf": 0,
+     "sha256": "b2a48918013027093508e56158549f4ba70a5ca058070cb55883fd4b3369179f",
+     "kernels": 2321,
+     "max_stack_B": 16,
+     "stack_over256": [],
+     "root_callers_over1k": [
+      [
+       "thompson_full_column",
+       19296,
+       67
+      ],
+      [
+       "mynn_tridiag2_real",
+       2224,
+       87
+      ],
+      [
+       "input_add_reduce_select_fusion",
+       1344,
+       4
+      ],
+      [
+       "loop_add_divide_select_fusion",
+       1008,
+       1
+      ],
+      [
+       "loop_select_fusion_36",
+       3832,
+       10
+      ],
+      [
+       "loop_or_select_fusion",
+       2224,
+       6
+      ]
+     ],
+     "nonleaf_over1k": [],
+     "callgraph_unknown": []
+    }
+   ],
+   "kinput_transpose_over500": [],
+   "kinput_transpose_status": "MEASURED_RICH_JIT_HLO"
+  },
+  {
+   "entry": "beeb539b477e3c962e9f1d33ad7cdcb97936de86ab214026e6439f0374bd78e5.xlaexec",
+   "path": "<USER_HOME>/wrf_gpu2_lanes/s1-gpuqual/sf3_madrid_main/cache/jax/aot/0.3.4-jax0.10.0-jaxlib0.10.0-cuda_sm120/d01/beeb539b477e3c962e9f1d33ad7cdcb97936de86ab214026e6439f0374bd78e5.xlaexec",
+   "source_kind": "aot",
+   "program": "d01",
+   "aliases": [
+    "<USER_HOME>/wrf_gpu2_lanes/s1-gpuqual/sf3_madrid_main/cache/jax/aot/0.3.4-jax0.10.0-jaxlib0.10.0-cuda_sm120/d01/k_60e6eae9196832d417c763ce4eaf5464f955d7e77069c2d36bb086ce07151484.xlaexec"
+   ],
+   "format": "xla-gpu-thunks-riegeli-v1",
+   "blob_sha256": "c6817f7425ce9f80e5ff8b98870333c5514ba65d3f8e1232ff9f7ac90791635a",
+   "elfs": [
+    {
+     "elf": 0,
+     "sha256": "b2a48918013027093508e56158549f4ba70a5ca058070cb55883fd4b3369179f",
+     "kernels": 2321,
+     "max_stack_B": 16,
+     "stack_over256": [],
+     "root_callers_over1k": [
+      [
+       "thompson_full_column",
+       19296,
+       67
+      ],
+      [
+       "mynn_tridiag2_real",
+       2224,
+       87
+      ],
+      [
+       "input_add_reduce_select_fusion",
+       1344,
+       4
+      ],
+      [
+       "loop_add_divide_select_fusion",
+       1008,
+       1
+      ],
+      [
+       "loop_select_fusion_36",
+       3832,
+       10
+      ],
+      [
+       "loop_or_select_fusion",
+       2224,
+       6
+      ]
+     ],
+     "nonleaf_over1k": [],
+     "callgraph_unknown": []
+    }
+   ],
+   "kinput_transpose_over500": [],
+   "kinput_transpose_status": "MEASURED_RICH_AOT_HLO"
+  }
+ ],
+ "n_entries": 2,
+ "e41_gate": "PASS",
+ "hard_stack_gate": "PASS",
+ "conservative_flags": false,
+ "coverage": {
+  "status": "PASS",
+  "aot_programs": [
+   "d01"
+  ],
+  "required_run_programs": [
+   "d01"
+  ],
+  "run_proofs": [
+   "<USER_HOME>/wrf_gpu2_lanes/s1-gpuqual/sf3_madrid_main/gpu/proofs/nested_pipeline_run.json"
+  ],
+  "n_discovered": 2,
+  "n_scanned": 2
+ }
+}

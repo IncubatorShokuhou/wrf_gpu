@@ -1,0 +1,38 @@
+{
+  "utc": "2026-10-15T04:45:44.146659+00:00",
+  "source_commit": "dd619e480913e797e6d82facc90c354e78b6c7ab",
+  "case_ids": [
+    "c46",
+    "c90"
+  ],
+  "resolved_differences": [
+    "/bundles/d01/grid/terrain/source_path",
+    "/bundles/d01/namelist/grid/terrain/source_path"
+  ],
+  "resolved_identical": false,
+  "wall_s": 56.30704541200248,
+  "peak_rss_KiB": 2825060,
+  "physical_backend": "cpu",
+  "GPU_executed": false,
+  "scope": "All carry/bundle/state/namelist/grid/metrics/clock/ts/stream numerical operands identical on same model source; only2 terrain provenance source_path strings differ, explicitly metadata-only per production helper. No new compiled-artifact hash or GPU fidelity claim; originalactiveCPU scoring pending.",
+  "raw_full_identity": false,
+  "computation_inputs_BYTE_identical": true,
+  "narrow_metadata_exceptions": [
+    {
+      "field": "grid/terrain/source_path",
+      "old": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c46/input/wrfinput_d01",
+      "new": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c90/input/wrfinput_d01"
+    },
+    {
+      "field": "namelist/terrain/source_path",
+      "old": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c46/input/wrfinput_d01",
+      "new": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c90/input/wrfinput_d01"
+    }
+  ],
+  "production_path_equivalence_helper": "def _terrain_provenance_equivalent(left: Any, right: Any) -> bool:\n    \"\"\"True when two TerrainProvenance records match ignoring PATH metadata.\n\n    ``source_path`` embeds the per-lane input directory (lane00/lane01/...) and\n    ``sha256`` labels the manifest it came from; neither is read by any kernel.\n    Every other provenance field (shape, units, transform, max elevation,\n    coastline check) and the terrain DATA itself (compared by the grid digest)\n    must match.\n    \"\"\"\n\n    if left is right:\n        return True\n    if left is None or right is None:\n        return left is None and right is None\n    for field in (\n        \"shape\",\n        \"units\",\n        \"projection_transform\",\n        \"max_elevation_m\",\n        \"coastline_sanity_check_passed\",\n    ):\n        if getattr(left, field, None) != getattr(right, field, None):\n            return False\n    return True",
+  "production_path_equivalence_source_sha256": "433092b806d7a91249620523ab062d3b0a33fb4c67d4dc6417cb03035affe6c0",
+  "resolved_record_sha256": {
+    "c46": "68166ea20ffe0db48ac805104d95338baa473124ec27e816dc7ed956b656669a",
+    "c90": "680ec3b5117e07f2c09900c9025e3a50d4dcc010e04899d54443a6cb6b711d6e"
+  }
+}

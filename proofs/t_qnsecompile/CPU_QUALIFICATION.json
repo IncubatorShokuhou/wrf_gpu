@@ -1,0 +1,52 @@
+{
+  "scope": "QNSE native compile fix, CPU gate complete; actual c26 GPU queued",
+  "cpu_gate": "PASS",
+  "gpu_gate": "PENDING",
+  "baseline_each_timeout_s": 90,
+  "compile_s": {
+    "sfc": 0.9381222310003068,
+    "pbl": 12.970100987000478,
+    "mf": 38.99103117499908
+  },
+  "cpu_byte": {
+    "fields": 72,
+    "values": 7380,
+    "regimes_per_driver": 15
+  },
+  "native_peak_rss_kib": 1146208,
+  "default_ids": {
+    "swiss": "f672a5739cb96e388b6b7a40ef80337bf81bdc14ef15268f3476e09d79fe055d",
+    "prod": "6fc715a2bd630934c4cf0f94427df19a527cbf429011c9ba5efe4d712744d27b"
+  },
+  "tests": {
+    "source": "3bf756cfe",
+    "tests": 10,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "xml_path": "<USER_HOME>/wrf_gpu2_lanes/t-qnsecompile/QC04/tests.xml",
+    "xml_sha256": "9df4e8cb68669015971c70f500a6c6c8a17d2f2f6ec25f88fb4e93091a4583a9"
+  },
+  "receipts": {
+    "BASELINE_NATIVE.json": "79209cf6209d17ad145a2fbd73f1e4f3a934d521452d42b3d126fcc8adcc0ed8",
+    "CANDIDATE_NATIVE.json": "28f012979f67298603dca6fae20ffbac2d51f158c13b7ee0321b9d746096a9c9",
+    "CPU_BYTE.json": "fcf9b3a08b7947fa3d171e00867f32b0d5d43a59d21f05177f58cf114840f0dd",
+    "PHYSICS_SOURCE_BYTE.json": "095f69238ccb084f096000cdc939da144be091fc8bbcdf0f5c5725da906c3eb5",
+    "DEFAULT_IDS.json": "85ae2ac7b87cdbaf3dd04fd676dc647af9f3f51e019e9a8e2bd092edee003039",
+    "DELETION.json": "fcdd47e3e9c923c2e9de20d5f330331a4176cfe6519233e8edca68a724ec90f0",
+    "TESTS.json": "4707102cfe827eac56903824c4b34fe1c9f1210ac060af40f49e43cbe01505b5",
+    "SOURCE_REUSE.json": "7971dde8a58b2f27ad6352f1e918e73dff8d9adbd4379b568a04a42494cc6bf7"
+  },
+  "performance_memory": {
+    "new_launches": 0,
+    "new_global_intermediate_arrays": 0,
+    "new_host_device_transfers": 0,
+    "native_stack_bytes": {
+      "sfc": 0,
+      "pbl": 9608,
+      "mf": 2584
+    },
+    "disclosure": "PBL/MF unrolled column spills exceed default E41 stack cap; opt-in disclosure policy applies. Actual GPU runtime/VRAM/native E41 pending. Typed output atomic exchanges add traffic. No prior completed native QNSE runtime baseline."
+  },
+  "scientific_reuse": "Original QNSE equations/adapter byte-exact; original pristine oracle evidence retained. CPU interpreter equality is regression only. GPU vs original CPU-WRF full24h D6 pending."
+}

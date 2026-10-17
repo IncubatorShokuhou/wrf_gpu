@@ -18,9 +18,12 @@ unchanged.  New:
   * R2 (MANAGER_P0L3B7C_REAL_CRITIC_DECISION.md): the fp64 arm is the shipped force_fp64 carry -- State(**fields)
     casts Nc/nwfa/nifa to the ADR-007 fp32 gate, so the float64 inputs are re-applied with State.replace(_cast=False)
     and the product's _enforce_operational_precision(force_fp64=True) upcasts any remaining leaf; every
-    STATE_FIELD_ORDER leaf except B39's WRF-REAL surface-layer carry must then be float64.  The production arm is the ADR-007 fp32-gated MEASUREMENT carry
+    STATE_FIELD_ORDER leaf except the WRF-REAL surface/MYNN/radius diagnostics must then be float64. The production arm is the ADR-007 fp32-gated MEASUREMENT carry
     (DEFAULT_DTYPES), not the shipped force_fp64 default.  The dtype vector theta/qv/qc/Nc/nwfa/nifa/p_total entering
     the adapter must equal p0l3b7c_verify.STATE_DTYPES[arm] (else refusal 2) and is recorded for the verifier.
+  * E199: this column solve consumes the frozen original driver's surface emissions as held State inputs.
+    Verify their actual adapter consumption/preservation; startup geometry is independently checked against
+    the original CPU-WRF frame-zero file in test_mp28_emission_frame0.py.
 Usage: python3 p0l3b7c_runner.py --compare-module P --compare-sha256 S --manifest M --manifest-sha256 S --column C
          --npz port_column_C.npz --wrf-output OUTPUT_C.txt --tolerances MP28 --tolerances-sha256 S
          --gate2-tolerances G2 --gate2-tolerances-sha256 S --state-dtype production|fp64 --out RESULT.json --repo SNAP
@@ -167,7 +170,7 @@ def run_port(npz, repo, state_dtype, cmp, want_dtypes):
     from gpuwrf.contracts.state import State, _state_field_shapes
     from gpuwrf.coupling import physics_couplers as pc
     from gpuwrf.physics import thompson_aero_column as aero
-    from gpuwrf.contracts.precision import SURFACE_LAYER_CARRY_LEAVES, MYNN_DIAGNOSTIC_LEAVES
+    from gpuwrf.contracts.precision import SURFACE_LAYER_CARRY_LEAVES, MYNN_DIAGNOSTIC_LEAVES, MP_RE_DIAGNOSTIC_LEAVES
     from gpuwrf.runtime.operational_mode import STATE_FIELD_ORDER, _enforce_operational_precision
 
     nz = int(npz["qv"].shape[0])
@@ -203,24 +206,33 @@ def run_port(npz, repo, state_dtype, cmp, want_dtypes):
     fields = {name: jnp.zeros(shape, dtype=dt_of(name)) for name, shape in shapes.items()}
     fields.update({name: jnp.asarray(arr, dtype=dt_of(name)) for name, arr in values.items()})
     state = State(**fields).ensure_conditional_leaves(mp_physics=28)
+    # These are column-driver inputs, already checked against the frozen WRF
+    # echo in check_same_inputs. This is not a thompson_init/start_em case.
+    state = state.replace(nwfa2d=jnp.asarray([[npz["nwfa2d"]]], dtype=dt_of("nwfa2d")),
+                          nifa2d=jnp.asarray([[npz["nifa2d"]]], dtype=dt_of("nifa2d")), _cast=False)
     if state_dtype == "fp64":             # R2: the shipped force_fp64 carry, no constructor fp32 gate on Nc/nwfa/nifa
         redo = {n: jnp.asarray(arr, dtype=jnp.float64) for n, arr in values.items()
                 if getattr(state, n).dtype != jnp.float64}
         if redo:
             state = state.replace(_cast=False, **redo)
         state = _enforce_operational_precision(state, force_fp64=True)
-        # WRF REAL surface and MYNN diagnostics stay REAL even in the fp64 arm.
-        low = [f for f in STATE_FIELD_ORDER if f not in (*SURFACE_LAYER_CARRY_LEAVES, *MYNN_DIAGNOSTIC_LEAVES)
+        # WRF REAL diagnostics stay REAL even in the fp64 arm. Radius leaves
+        # are initialized by ensure_conditional_leaves and never feed this solve.
+        low = [f for f in STATE_FIELD_ORDER if f not in (*SURFACE_LAYER_CARRY_LEAVES, *MYNN_DIAGNOSTIC_LEAVES, *MP_RE_DIAGNOSTIC_LEAVES)
                and getattr(state, f, None) is not None and getattr(state, f).dtype != jnp.float64]
         if low:
             raise Refuse(f"fp64 arm: leaves not float64 after force_fp64: {low}")
+        bad_radii = [f for f in MP_RE_DIAGNOSTIC_LEAVES
+                     if getattr(state, f, None) is not None and getattr(state, f).dtype != jnp.float32]
+        if bad_radii:
+            raise Refuse(f"fp64 arm: WRF REAL radii not float32: {bad_radii}")
     dtypes = {name: str(getattr(state, name).dtype) for name in ("theta", "qv", "qc", "Nc", "nwfa", "nifa", "p_total")}
     if dtypes != want_dtypes:
         raise Refuse(f"state dtype vector {dtypes} != the {state_dtype} arm's {want_dtypes}")
     dt = float(npz["dt"])
-    nwfa2d_port = float(np.asarray(pc._aerosol_surface_emission_columns(state, grid)[0]).reshape(-1)[0])
-    if np.float32(nwfa2d_port) != np.float32(npz["nwfa2d"]):
-        raise Refuse(f"port nwfa2d {nwfa2d_port!r} does not round to the driver's {float(npz['nwfa2d'])!r}")
+    nwfa2d_port = float(npz["nwfa2d"])
+    nifa2d_port = float(npz["nifa2d"])
+    expected_emissions = tuple(np.asarray([[npz[n]]], np.float32) for n in ("nwfa2d", "nifa2d"))
 
     kernel = pc.step_thompson_aero_column_with_precip
     if kernel is not aero.step_thompson_aero_column_with_precip:
@@ -231,19 +243,31 @@ def run_port(npz, repo, state_dtype, cmp, want_dtypes):
 
     def fixed_arm():
         seen = {}
+        emit = pc.apply_surface_aerosol_emission
 
         def spy(column, dt_, debug=False):
             out, precip = kernel(column, dt_, debug=debug)
             seen["T_in"], seen["T_out"] = np.asarray(column.T, np.float64), np.asarray(out.T, np.float64)
             return out, precip
 
+        def emission_spy(column, water, dust, dt_):
+            for actual, expected in zip((water, dust), expected_emissions):
+                np.testing.assert_array_equal(np.asarray(actual), expected)
+            seen["emission_calls"] = seen.get("emission_calls", 0) + 1
+            return emit(column, water, dust, dt_)
+
         pc.step_thompson_aero_column_with_precip = spy
+        pc.apply_surface_aerosol_emission = emission_spy
         try:
             nxt = pc.thompson_aero_adapter(state, dt, grid)
         finally:
             pc.step_thompson_aero_column_with_precip = kernel
+            pc.apply_surface_aerosol_emission = emit
         if "T_in" not in seen:
             raise Refuse("fixed arm did not reach the aero Thompson kernel")
+        assert seen.get("emission_calls") == 1, "adapter did not consume held original-driver emissions"
+        for name, expected in zip(("nwfa2d", "nifa2d"), expected_emissions):
+            np.testing.assert_array_equal(np.asarray(getattr(nxt, name)), expected)
         T_in, T_out = flat(seen["T_in"]), flat(seen["T_out"])
         return {"T": T_out, "qv": flat(nxt.qv), "qc": flat(nxt.qc), "dT": T_out - T_in, "dtheta_dry": (T_out - T_in) / pi_port,
                 "theta_m": flat(nxt.theta), "nc": flat(nxt.Nc), "nwfa": flat(nxt.nwfa), "T_in": T_in}
@@ -266,7 +290,8 @@ def run_port(npz, repo, state_dtype, cmp, want_dtypes):
     mods = {"aero": aero, "pc": pc}
     code = {Path(m.__file__).name: sha256_file(m.__file__) for m in (pc, aero)}
     return fixed, kd, fixed_arm, mods, jax, jnp, {"state_dtypes": dtypes, "port_code_sha256": code,
-                                                  "port_nwfa2d": nwfa2d_port}
+                                                  "port_nwfa2d": nwfa2d_port, "port_nifa2d": nifa2d_port,
+                                                  "emission_source": "frozen original-driver held inputs; consumption/preservation checked"}
 
 
 def run(a):

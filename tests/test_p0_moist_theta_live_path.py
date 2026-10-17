@@ -227,7 +227,7 @@ def test_kf_gets_dry_temperature_and_recouples_theta_m(monkeypatch):
     state = _state(grid, 0.012)
     rth, rqv = 2.0e-3, -3.0e-6
 
-    def spy(T0, QV0, P0_, DZQ, RHOE, w0a, U0, V0, dt, dx, *, w=None, nca=None, stepcu=5, cudt=0.0):
+    def spy(T0, QV0, P0_, DZQ, RHOE, w0a, U0, V0, dt, dx, *, w=None, nca=None, stepcu=5, cudt=0.0, pi_phy=None):
         z = jnp.zeros_like(T0)
         tend = {"theta": z + rth, "qv": z + rqv, "qc": T0, "qr": RHOE, "qi": z, "qs": z}
         return SimpleNamespace(
@@ -264,7 +264,7 @@ def test_kf_qv_zero_is_bitwise_identity_of_the_old_update(monkeypatch):
     state = _state(grid, 0.0)
     rth = 2.0e-3
 
-    def spy(T0, QV0, P0_, DZQ, RHOE, w0a, U0, V0, dt, dx, *, w=None, nca=None, stepcu=5, cudt=0.0):
+    def spy(T0, QV0, P0_, DZQ, RHOE, w0a, U0, V0, dt, dx, *, w=None, nca=None, stepcu=5, cudt=0.0, pi_phy=None):
         z = jnp.zeros_like(T0)
         tend = {"theta": z + rth, "qv": z, "qc": z, "qr": z, "qi": z, "qs": z}
         return SimpleNamespace(

@@ -1,7 +1,7 @@
 """Independent literal contract for the LW12 fused-glue default (b-diff #15).
 
 GPUWRF_DYN_GLUE_FUSED = "momuvn_rhsph_uvn_pin": the rhs_ph REAL stencil kernel (PROD branch: order >= 4,
-specified, non-hydrostatic, rigid lid) plus the fused large-step u/v PGF + Coriolis + curvature kernel
+specified, non-hydrostatic, either lid setting) plus the fused large-step u/v PGF + Coriolis + curvature kernel
 on nested-child domains only (the root keeps XLA), with row-major pinned operands (BD72), plus (v0.3.2,
 BD82 on the P2 layout pin) the fused u and v momentum-advection stencils on nested children only (w and
 the root keep XLA). The value is pinned literally, it must parse to exactly those dispatch parts, and
@@ -50,7 +50,9 @@ def test_lw12_glue_default_dispatches_rhsph_and_nested_only_pinned_uv(monkeypatc
     x = jnp.zeros((2, 3, 4), jnp.float32)
     # PROD rhs_ph call: h_sca_adv_order 5, specified/nested, non-hydrostatic, gw, rigid lid.
     assert rhs_ph._rhs_ph_fused(5, True, True, True, True, x, x)
-    assert not rhs_ph._rhs_ph_fused(5, True, True, True, False, x, x)
+    # v0.3.3 wired WRF's open-top branch into the same qualified stencil.
+    assert rhs_ph._rhs_ph_fused(5, True, True, True, False, x, x)
+    assert not rhs_ph._rhs_ph_fused(5, True, True, False, False, x, x)
 
 
 @pytest.mark.parametrize("optout", ["0", ""])

@@ -72,6 +72,43 @@ def _set(an, il, val):
 
 
 # ------------------------------------------------------------------------------- calcnfromq
+def calcnfromcuten(an, dn, mass, C, prec):
+    """WRF driver call to ``calcnfromcuten`` (3119–3136, 5669–5862).
+
+    ``mass`` contains dtp*Q*CUTEN in kg/kg; ``an`` numbers are already density
+    scaled (#/m3). Only rain/snow numbers change. The pristine routine tests
+    ancuten(lnc/lni), not ancuten(lc/li), for cloud/ice: the driver initializes
+    those NUMBER slots to zero and only fills MASS slots. Preserve that no-op.
+    No full NA-sized ancuten temporary is needed for this caller specialization.
+    """
+    R, nR = prec.R, prec.nR
+    an = jnp.asarray(an, R)
+    dnD = jnp.asarray(dn, R).astype(F64)
+    pi = nR(C.pi)
+    g0 = nR(6) * nR(5) * nR(4) / (nR(3) * nR(2) * nR(1))
+    g1r = ((nR(C.rnu) + nR(2)) / (nR(C.rnu) + nR(1)) if C.imurain == 3
+           else _g1_alpha(C.alphar, nR))
+    g1s = (nR(C.snu) + nR(2)) / (nR(C.snu) + nR(1))
+    for name, il, number, xn0, density, g1 in (
+        ("qr", LR, LNR, nR(8e6), nR(1000), g1r),
+        ("qs", LS, LNS, nR(3e6), nR(100), g1s),
+    ):
+        if name not in mass:
+            continue
+        qR = jnp.asarray(mass[name], R)
+        active = qR > nR(C.qxmin[il])
+        # DOUBLE q/laminv1/n1/nrx, REAL parameter zfac. Inactive negative
+        # tendencies must not introduce NaNs into speculative power evaluation.
+        q = jnp.where(active, qR, nR(0)).astype(F64)
+        zfac = nR(1) / (pi * density * xn0)
+        laminv1 = (dnD * q * np.float64(zfac)) ** np.float64(.25)
+        n1 = laminv1 * np.float64(xn0)
+        nrx = n1 * np.float64(g1) / np.float64(g0)
+        updated = (an[number].astype(F64) + nrx).astype(R)
+        an = _set(an, number, jnp.where(active, updated, an[number]))
+    return an
+
+
 def calcnfromq(an, dn, C, prec):
     """``calcnfromq`` for the driver's cold-start call (S0 -> S1).
 
@@ -214,6 +251,8 @@ def smallvalues(an, t0, dn, wn, t77, dtp, C, prec, flag_qndrop=False):
 
     ``wn`` is unused by the default configuration (kept for the Fortran signature).
     """
+    if C.ipconc == 0:
+        return _smallvalues_one_moment(an,dn,t77,C,prec)
     del wn
     R, nR = prec.R, prec.nR
     an = jnp.asarray(an, R)
@@ -278,3 +317,33 @@ def smallvalues(an, t0, dn, wn, t77, dtp, C, prec, flag_qndrop=False):
         fac = jnp.exp(-jnp.asarray(dtp, R) / nR(C.ccntimeconst))
         an = an.at[LCCNA].set(jnp.where(decay, an[LCCNA] * fac, an[LCCNA]))
     return an, t0
+
+
+def _smallvalues_one_moment(an,dn,t77,C,prec):
+    """Pristine12054..12608 with ln(:)==0 and only19 graupel volume.
+
+    No number-zero removal, intercept limiter or activated-CCN restoration
+    executes in this original configuration.
+    """
+    R=prec.R;r=lambda x:jnp.asarray(x,R)
+    an=jnp.asarray(an,R);dn=jnp.asarray(dn,R)
+    t0=an[LT]*jnp.asarray(t77,R)
+    species=(LHL,LH,LS,LR,LI,LC) if C.variant==19 else (LH,LS,LR,LI,LC)
+    for il in species:
+        q=an[il]
+        rm=q<=r(C.qxmin[il]) if il in (LI,LC) else q<r(C.qxmin[il])
+        an=an.at[LV].set(jnp.where(rm,an[LV]+q,an[LV]))
+        an=an.at[il].set(jnp.where(rm,r(0.),q))
+        if il==LH and C.variant==19:
+            volume=an[LVH]
+            positive=volume>0.
+            density=jnp.where(positive,dn*q/jnp.where(positive,volume,r(1.)),r(C.rho_qh))
+            volume=jnp.where(~positive,dn*q/density,volume)
+            low=density<r(C.xdnmn[LH])
+            density=jnp.maximum(r(C.xdnmn[LH]),density)
+            volume=jnp.where(low,dn*q/density,volume)
+            high=density>r(C.xdnmx[LH])
+            density=jnp.minimum(r(C.xdnmx[LH]),density)
+            volume=jnp.where(high,dn*q/density,volume)
+            an=an.at[LVH].set(jnp.where(rm,r(0.),volume))
+    return an,t0

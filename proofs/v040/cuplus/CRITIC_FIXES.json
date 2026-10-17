@@ -1,0 +1,175 @@
+{
+  "utc": "2026-10-14T05:20:52.237900+00:00",
+  "decision": "FIXED: both critic conditions closed",
+  "reviewed_commit": "3e7c7bd0b6f9b32e999e0e8b17462d36e9fd6325",
+  "verdict_path": "<USER_HOME>/wrf_gpu2_lanes/rv-s2-cuplus/VERDICT.md",
+  "verdict_sha256": "2e1baee58677100397000c21d8c2dff79250fcd8af587ff0833770b40a6c5c58",
+  "measured_fix_commit": "7fb7214ce17998ad05c2c143aaf7d3fceb4760db",
+  "main_base": "6101f8acf895268ec7ee73822242bc46f0b6168a",
+  "p1": {
+    "status": "CLOSED",
+    "host_activation": "cu_physics7/10/11 selects existing complete-carry stepper",
+    "actual_dispatch_cases": 5,
+    "actual_lifecycle_cases": 8,
+    "sticky_entropy_cases": 4,
+    "work": "all4CU/PBL/SF/LSM profiles;2h/dt18;hourly andaux15;checkpointstep200;globalsteps1..400;nonzerorates/clouds/NCA/W0AVG;oneinitialization",
+    "checkpoint": "real native full-carry codec; all leaves dtype/shape/bytes identical; actual daily continuation",
+    "default": "CU0 keeps State-only route; two legacy daily default tests restored with safe ocean-selector lookup"
+  },
+  "p2": {
+    "status": "CLOSED",
+    "historical_component_doc": "explicitly historical with link to current qualification",
+    "corrected_headers": [
+      "phys_kfcup_column.py",
+      "phys_kfcup_cps.py",
+      "phys_mskf_cmt.py"
+    ],
+    "production_EOF": "phys_mskf_column.py extra EOF blank removed",
+    "whitespace_reference_exceptions": [
+      "proofs/v040/cuplus/mskf_timescale/original_timescale.f90",
+      "proofs/v040/cuplus/CAMUW_CUMULUS_SEAM.patch"
+    ],
+    "immutable_receipts": "all24 original receipt hashes preserved; original QUALIFICATION/FINAL_GATE not rewritten"
+  },
+  "validation": {
+    "tests": {
+      "FX01-daily": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/s2-cuplus/FX01-daily.xml",
+        "sha256": "db215aedf56dbcd9e14d679f90e92133c15c56b7ba5eb318691f295dcc90f776",
+        "passed": 181,
+        "failures": 2,
+        "errors": 0,
+        "skipped": 1
+      },
+      "FX04-affected": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/s2-cuplus/FX04-affected.xml",
+        "sha256": "cf33e3eb9b98db2c41f0afea9ddcb1b3e12d603da5a165d1d26b040f4fed9ebc",
+        "passed": 39,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      }
+    },
+    "unique_passing_checks": 199,
+    "owned_daily_cases": 17,
+    "deletion_mutant": {
+      "source": "7fb7214ce",
+      "function": "daily_pipeline._run_forecast_sequence",
+      "removed": " or cuplus_active",
+      "source_sha256": "a53dca1d872721dafa358cec8ffd7dc84c3d0572748f613f902fa7127251e616",
+      "failures": 4,
+      "errors": 0,
+      "assertions_only": true,
+      "pytest_exit": 1,
+      "files_modified": false,
+      "scope": "actual host-selection deletion; CU0 control retained"
+    },
+    "release_identity": "2bf12cb8374d3a84a440e47dea4b77b0c7436108fc2ee2616bba6ec79b17962a",
+    "release_trace_wall_s": 40.2,
+    "source_bound_reuse": {
+      "source": "7fb7214ce17998ad05c2c143aaf7d3fceb4760db",
+      "reference": "3e7c7bd0b",
+      "executable_bodies": [
+        {
+          "path": "src/gpuwrf/coupling/cuplus.py",
+          "reviewed_sha256": "9198b29aec050d117c093861709530c27c7df837a4dae286abd19d1a2df45238",
+          "final_sha256": "9198b29aec050d117c093861709530c27c7df837a4dae286abd19d1a2df45238",
+          "byte_identical": true,
+          "executable_AST_identical": true
+        },
+        {
+          "path": "src/gpuwrf/kernels/phys_kf_column.py",
+          "reviewed_sha256": "933fdf22b8a337def02b4b6fe8ef66c768a570f1edc35868f011e6a8577d8111",
+          "final_sha256": "933fdf22b8a337def02b4b6fe8ef66c768a570f1edc35868f011e6a8577d8111",
+          "byte_identical": true,
+          "executable_AST_identical": true
+        },
+        {
+          "path": "src/gpuwrf/kernels/phys_kfcup_cps.py",
+          "reviewed_sha256": "80d18aa4bcf2b2aa812931efe466bf910b63a01f3f8b2110f3756aeef2bcb661",
+          "final_sha256": "66af721df0b737fa4455e003d6079dc537744f440a3637205bf43f5662a10056",
+          "byte_identical": false,
+          "executable_AST_identical": true
+        },
+        {
+          "path": "src/gpuwrf/kernels/phys_cuplus_driver.py",
+          "reviewed_sha256": "8ca0fa1e3aabe9cf51e2251eb316558471ecbcd299fb69d3958f119daed85303",
+          "final_sha256": "8ca0fa1e3aabe9cf51e2251eb316558471ecbcd299fb69d3958f119daed85303",
+          "byte_identical": true,
+          "executable_AST_identical": true
+        },
+        {
+          "path": "src/gpuwrf/kernels/phys_kfcup_column.py",
+          "reviewed_sha256": "64fc2fd3db17345c71f00b86f54634a34b1fc5d60b0f6db1f21e632e62529db9",
+          "final_sha256": "3379acea8089a0aff8e2ac92a6abb804a30ad0cdd7a9fe9d01839f4348967e09",
+          "byte_identical": false,
+          "executable_AST_identical": true
+        },
+        {
+          "path": "src/gpuwrf/kernels/phys_mskf_cmt.py",
+          "reviewed_sha256": "a97d208d70164d8daf6f6042bdb1003867c01cd9523f99953a183c13602e86d0",
+          "final_sha256": "db98269088948fa647339813ba24a9556608f233c14aded7289312ef4992376e",
+          "byte_identical": false,
+          "executable_AST_identical": true
+        },
+        {
+          "path": "src/gpuwrf/kernels/phys_mskf_column.py",
+          "reviewed_sha256": "de1a7e224681263e95ba71aed659cd8821704f06168848504c686adb6d764091",
+          "final_sha256": "d4f57f40efb4de0b131cc104b72b8cfeac7540b370602ba93b5ae30309b43200",
+          "byte_identical": false,
+          "executable_AST_identical": true
+        },
+        {
+          "path": "src/gpuwrf/kernels/phys_camzm_column.py",
+          "reviewed_sha256": "c7e232097875fcfd05a28b8274460bedc9d97a5f63b5cf8cf73e4fabb6bd4522",
+          "final_sha256": "c7e232097875fcfd05a28b8274460bedc9d97a5f63b5cf8cf73e4fabb6bd4522",
+          "byte_identical": true,
+          "executable_AST_identical": true
+        },
+        {
+          "path": "src/gpuwrf/physics/cumulus_kfcup_support.py",
+          "reviewed_sha256": "b3630589e57ba9a31d83ebface4386f3eedeb4be6a7aff23280afef2e462a7b8",
+          "final_sha256": "b3630589e57ba9a31d83ebface4386f3eedeb4be6a7aff23280afef2e462a7b8",
+          "byte_identical": true,
+          "executable_AST_identical": true
+        },
+        {
+          "path": "src/gpuwrf/physics/cumulus_mskf_support.py",
+          "reviewed_sha256": "4069171cb99b9f323a877522a6b1b240a8f0a4c99234812e1176cb2ca0dd2045",
+          "final_sha256": "4069171cb99b9f323a877522a6b1b240a8f0a4c99234812e1176cb2ca0dd2045",
+          "byte_identical": true,
+          "executable_AST_identical": true
+        },
+        {
+          "path": "src/gpuwrf/physics/cumulus_kfcup_tables.py",
+          "reviewed_sha256": "8c52b1baee756c060421c4d6273880633150ab0f066984041d20e90ad4d36aa1",
+          "final_sha256": "8c52b1baee756c060421c4d6273880633150ab0f066984041d20e90ad4d36aa1",
+          "byte_identical": true,
+          "executable_AST_identical": true
+        }
+      ],
+      "immutable_receipts_verified": 24,
+      "numerical_evidence_reused": true,
+      "scope": "P1 host activation; P2 docstrings/production EOF only; no unchanged column/coupled scientific rerun"
+    },
+    "scientific_model_reruns": 0,
+    "gpu_executed": false
+  },
+  "performance": "Existing full-carry stepper, no new physics solve/kernel implementation/in-step host transfer. One initialization measured across all daily segments. Existing numerical CPU cost/memory receipts reused; GPU limits remain pending.",
+  "retained_failures": "FX01 two pre-existing main dictionary/ocean selector failures closed FX04; FX02/FX03 snapshot setup race0tests retried FX04/FX05; no failure hidden",
+  "artifact_receipts": {
+    "FX05-release.json": {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/s2-cuplus/FX05-release.json",
+      "sha256": "9c453a2282c80d5f9771bbeb83f4eca3c8386cab625da4c2226bef0f7ece1a14"
+    },
+    "FX06-source-reuse.json": {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/s2-cuplus/FX06-source-reuse.json",
+      "sha256": "b09f1c73de0bc196b9eb03caab562293afb8b7515e723898b3113f1bf1b5fa2d"
+    },
+    "FX07-daily-mutant.json": {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/s2-cuplus/FX07-daily-mutant.json",
+      "sha256": "0e5b16ff266b6067b1574deb85b33a562893a4375de36f67b439b6846426bd97"
+    }
+  },
+  "cache": "NONE GPUWRF_JAX_CACHE=0;pytest/snapshot cleaned"
+}

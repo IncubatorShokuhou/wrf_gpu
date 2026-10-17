@@ -1,0 +1,41 @@
+{
+  "scope": "READY-FOR-CRITIC: refusal + pristine evidence only; no GECROS implementation/qualification",
+  "manager_decision": "2026-10-14: keep opt_crop=2 REFUSED; precise upstream reason in catalog and doctor; evidence link; stop after READY",
+  "source_identity": {
+    "measured_snapshot": "2effaafb39a3bd7ba55c47328d5691f7cc052fac",
+    "composition_main": "046e7bd49a9e13730fce499de816503ae0a695aa",
+    "changed_src": [
+      "src/gpuwrf/io/scheme_catalog.py"
+    ],
+    "only_new_opt_crop_control_and_reason": true,
+    "other_catalog_ast_identical": true,
+    "model_runtime_src_byte_identical_to_main": true,
+    "release_identity_reused": "2bf12cb8 from main t-mainfix TM07_final_gate.json + proofs/t_mprain/COMPOSITION.json; no new trace needed",
+    "numerical_shared_evidence_reused": "t-mainfix 282 contracted/shared checks (80 final+202 exact-source reuse), manager merged dfccdf1ad; unchanged model paths vs composed main",
+    "source_sha256": "93e4c6acfd269a4cf96473afc36caad0a3bbb44a5bddab911c1a396abe6d5896"
+  },
+  "final_cpu_tests": {
+    "passed": 249,
+    "failures": 0,
+    "errors": 0,
+    "seconds": 16.366,
+    "artifact": "<USER_HOME>/wrf_gpu2_lanes/s2-gecros/GC03_gate.xml"
+  },
+  "deletion_mutant": {
+    "killed_by_assertion": 1,
+    "setup_errors": 0,
+    "seconds": 0.077,
+    "artifact": "<USER_HOME>/wrf_gpu2_lanes/s2-gecros/GC03_mutant_guarded.xml",
+    "initial_unaccepted_attempt": "GC03_mutant.log: cpu_guard setup refusal; not counted as mutant kill"
+  },
+  "pristine_evidence": "GC01_summary.json + UPSTREAM_WRF_BUGS.md; no numerical rerun",
+  "doctor_output": "<USER_HOME>/wrf_gpu2_lanes/s2-gecros/GC03_refusal.json",
+  "raw_artifact_sha256": {
+    "GC03_gate.xml": "6247a1e8bac0888fd02c090c5e410ad8457613d4f0d9357119e172cfae145964",
+    "GC03_mutant_guarded.xml": "00c3c4f3c83991f88ff6e42a441ab6b68caedf00b68bfff23d2654dfc264e4a4",
+    "GC03_source_identity.json": "6d5185ffbc0a2eb8770aae56ed6ddd1564fd6538c1530eb4f80fe6c091969a79",
+    "GC03_refusal.json": "0d182583721a6175e8257a8f1ece7dc0414d88d57203f45f8e089c566e1f555f"
+  },
+  "performance_memory": "Host-only catalog entry + reason; zero added model/device operations, buffers, transfers, synchronization or compilation; no GPU arm",
+  "cache": "NONE (GPUWRF_JAX_CACHE=0); detached snapshot/pytest removed after final evidence extraction"
+}

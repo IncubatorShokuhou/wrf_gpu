@@ -1,0 +1,49 @@
+{
+  "schema": "wrf-goddard-public-wrapper-real4-v1",
+  "source_sha256": "0917531726cbed5a128e05c45e70ee292c209dbcd1ae2bad17db6e46b8d3a5ad",
+  "driver_sha256": "75b4bfa0449bb55049c46e87af01712c520dd51975ff3b9a9f83a50eb41458d2",
+  "command": [
+    "<USER_HOME>/miniconda3/envs/wrfbuild/bin/gfortran",
+    "-O2",
+    "-ffree-form",
+    "-ffree-line-length-none",
+    "-cpp",
+    "-DRWORDSIZE=4",
+    "-DNO_IEEE_MODULE",
+    "-fcheck=bounds",
+    "-ffpe-summary=none",
+    "-fallow-argument-mismatch",
+    "-std=legacy",
+    "-finit-real=zero",
+    "-finit-integer=0",
+    "-finit-logical=false",
+    "-fconvert=big-endian",
+    "-frecord-marker=4",
+    "stubs.f90",
+    "module_checkerror.F",
+    "module_ra_goddard.F",
+    "driver.f90",
+    "-o",
+    "wrapper"
+  ],
+  "reference_policy": "manager-approved -finit-real=zero for upstream taux; otherwise original bytes",
+  "source_changes": "NONE; exact public goddardrad caller; LUT initialized via public init_goddardrad",
+  "cache": "NONE",
+  "affinity": [
+    0,
+    1,
+    2,
+    3,
+    16,
+    17,
+    18,
+    19
+  ],
+  "tolerance": {
+    "rate_rtol": 5e-06,
+    "rate_atol": 1e-10,
+    "flux_rtol": 1e-06,
+    "flux_atol": 0.0005
+  },
+  "savepoint_sha256": "fc32969934e07610759f999683f89eca1ab6aab9fb31a6e4f62b7fa089ec87ae"
+}

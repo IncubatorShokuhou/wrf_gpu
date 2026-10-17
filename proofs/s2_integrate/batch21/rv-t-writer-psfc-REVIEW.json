@@ -1,0 +1,236 @@
+{
+  "verdict": "MERGE",
+  "review_head": "b43c721e7dccd9b6dd96385c45fe158f8b41ee55",
+  "base": "9d1cad3515fa28b9ebae9bf7b16e2600dc20b3c8",
+  "source_tree": "c830026e15e01d76d531e93709b2d920ac7f9f98",
+  "changed_product": [
+    "src/gpuwrf/io/wrfout_writer.py"
+  ],
+  "modified_functions": [
+    "_build_output_fields",
+    "_build_subset_output_fields",
+    "_expand_requested_source_names"
+  ],
+  "added_functions": [
+    "_moist_hydrostatic_psfc"
+  ],
+  "unchanged_functions": 57,
+  "pressure_and_reduction_ast_identical": true,
+  "all_other_product_byte_identical": true,
+  "sealed_producer_hashes": 20,
+  "gzip_mutant_transport_byte_identical": true,
+  "pristine_REAL4_provenance_verified": true,
+  "healthy": {
+    "tests": 98,
+    "pass": 95,
+    "fail": 0,
+    "skip": 3,
+    "errors": 0,
+    "failed_nodes": []
+  },
+  "mutant": {
+    "tests": 8,
+    "pass": 4,
+    "fail": 4,
+    "skip": 0,
+    "errors": 0,
+    "failed_nodes": [
+      "test_direct_writer_all_masses_match_original[optional1-state-full]",
+      "test_direct_writer_all_masses_match_original[optional1-state-psfc_only]",
+      "test_direct_writer_all_masses_match_original[optional1-wrf_alias-full]",
+      "test_direct_writer_all_masses_match_original[optional1-wrf_alias-psfc_only]"
+    ]
+  },
+  "qualification": "CPU writer seam; no new GPU/full-forecast qualification",
+  "receipts": [
+    {
+      "path": "receipts/key_tests.xml.gz",
+      "sha256": "1b68ffd3f21545e7f36cb7b6ae86a3af69e8574d1e92ea32e3ef77277650b4ae",
+      "raw_sha256": "0d67e859a9472e7f9a3b270419d53febd0b6c194e03c2a7839ed8c972df7fb0b"
+    },
+    {
+      "path": "receipts/key_tests.log.gz",
+      "sha256": "eb548b968d59a5bbf8fd8ad78604c155b59c65465330487c9d9232651b307861",
+      "raw_sha256": "4a00dbe3aeae81ba4c98d4502f565f4f351ab2957565c2c9127add8ea1de30f9"
+    },
+    {
+      "path": "receipts/oracle_provenance.json",
+      "sha256": "70e00a1fcae6e0782632b51c49fc2f0379266e7978eb23d90483a290f9a11299",
+      "raw_sha256": "70e00a1fcae6e0782632b51c49fc2f0379266e7978eb23d90483a290f9a11299"
+    },
+    {
+      "path": "receipts/deletion_mutant.xml.gz",
+      "sha256": "7c29cbf9b387b6a7aee13d59b3b6cd5035b143bb1f05e64ac60ba4d5c5c98ad4",
+      "raw_sha256": "38272154e42ca1dc1a46541779090918253250ebbf4aceb77d2ba69a1309f8ec"
+    },
+    {
+      "path": "receipts/deletion_mutant.log.gz",
+      "sha256": "f24a8f2171b42d7e72fcc714da47eb7b45a066eecc24c84b1198eb6e47cdf125",
+      "raw_sha256": "3e6d175884ee24e2726d90a4a599de513cf5b64855c28ea269f81634fb193194"
+    },
+    {
+      "path": "receipts/swiss_release.json",
+      "sha256": "d2f23b15dd2b61ebf672ce551bd51b85e99292356e84395b2e6bb549d2eda476",
+      "raw_sha256": "d2f23b15dd2b61ebf672ce551bd51b85e99292356e84395b2e6bb549d2eda476"
+    },
+    {
+      "path": "receipts/swiss_release.log.gz",
+      "sha256": "c2fcd2462d9d2711d11eab7a08585ce56da2e34721603940b1d5df638c903a41",
+      "raw_sha256": "af19351163446cfb713c51a11cf3536fa5ec9122d2b8014e9706f3af9a92e070"
+    },
+    {
+      "path": "receipts/prod_release.json",
+      "sha256": "9265598b151c3082cf16d897c608d3b9d602be0fa326886a61ce57829fab9969",
+      "raw_sha256": "9265598b151c3082cf16d897c608d3b9d602be0fa326886a61ce57829fab9969"
+    },
+    {
+      "path": "receipts/prod_release.log.gz",
+      "sha256": "7898a275f7273c750e1cfd787a92361b23a17ca68c71e2824950111db5c492c7",
+      "raw_sha256": "4b10921599b3e00eed350b5a6713c22481024b93a65f694e0ba1490548f7a997"
+    },
+    {
+      "path": "receipts/host_bench.json",
+      "sha256": "b0b85ffd9a1a77700717e1a531633265056e4752a723bdd37a45ab141af741b9",
+      "raw_sha256": "b0b85ffd9a1a77700717e1a531633265056e4752a723bdd37a45ab141af741b9"
+    },
+    {
+      "path": "receipts/host_bench.log.gz",
+      "sha256": "cebb621bb33ab185e8be6f135cf2b13c27024a0bd881edf6782cfc3deb8e44d7",
+      "raw_sha256": "29d54e12ebb73cc272902feb554cb593e372b2caa82d3710a7a630fe4058bee4"
+    },
+    {
+      "path": "receipts/source_receipt_audit.json",
+      "sha256": "f590186c3b0507adaa93c18a67982c8bdf47540f766b292f68e718eb41331bee",
+      "raw_sha256": "f590186c3b0507adaa93c18a67982c8bdf47540f766b292f68e718eb41331bee"
+    },
+    {
+      "path": "receipts/source_receipt_audit.log.gz",
+      "sha256": "d3c10684457981435deacfdd92458442100086bfb78cba827c9a553a40b60d03",
+      "raw_sha256": "f590186c3b0507adaa93c18a67982c8bdf47540f766b292f68e718eb41331bee"
+    }
+  ],
+  "cache": "NONE",
+  "gpu_executed": false,
+  "performance": {
+    "kind": "host-only controlled writer timing; not forecast/GPU fidelity",
+    "parent": "b9852764fbca3d3c9cb22d3bfc5d703432bcbdbe",
+    "shape": [
+      44,
+      117,
+      267
+    ],
+    "repeats": 7,
+    "cache": "NONE",
+    "arms": {
+      "parent_full_no_hail": {
+        "seconds": [
+          0.011367382001481019,
+          0.011225620997720398,
+          0.010999529000400798,
+          0.01085364699974889,
+          0.011313781000353629,
+          0.011168940000061411,
+          0.011171420999744441
+        ],
+        "median_seconds": 0.011171420999744441,
+        "python_numpy_peak_bytes": 80738324
+      },
+      "candidate_full_no_hail": {
+        "seconds": [
+          0.011224469999433495,
+          0.011917456999071874,
+          0.01131401100064977,
+          0.01084945799811976,
+          0.01093852799749584,
+          0.011206560997379711,
+          0.011428241999965394
+        ],
+        "median_seconds": 0.011224469999433495,
+        "python_numpy_peak_bytes": 61179796
+      },
+      "parent_subset_no_hail": {
+        "seconds": [
+          0.0021081070008222014,
+          0.0020328859973233193,
+          0.0020486569992499426,
+          0.0018494249998184387,
+          0.0019460049988992978,
+          0.0018415650010865647,
+          0.001902296000480419
+        ],
+        "median_seconds": 0.0019460049988992978,
+        "python_numpy_peak_bytes": 34370636
+      },
+      "candidate_subset_no_hail": {
+        "seconds": [
+          0.006127730001026066,
+          0.006048688999726437,
+          0.006211549996805843,
+          0.006100818998675095,
+          0.006162800000311108,
+          0.0061616499988303985,
+          0.006197169997903984
+        ],
+        "median_seconds": 0.0061616499988303985,
+        "python_numpy_peak_bytes": 55681348
+      },
+      "parent_full_hail": {
+        "seconds": [
+          0.011273061001702445,
+          0.011416851997637423,
+          0.012067417999787722,
+          0.012154018000728684,
+          0.01181012500092038,
+          0.011701784998876974,
+          0.011136350000015227
+        ],
+        "median_seconds": 0.011701784998876974,
+        "python_numpy_peak_bytes": 80738212
+      },
+      "candidate_full_hail": {
+        "seconds": [
+          0.01104303900137893,
+          0.011715795000782236,
+          0.011377771999832476,
+          0.011473172999103554,
+          0.011177550000866177,
+          0.011392042000807123,
+          0.011817645998235093
+        ],
+        "median_seconds": 0.011392042000807123,
+        "python_numpy_peak_bytes": 61179660
+      },
+      "parent_subset_hail": {
+        "seconds": [
+          0.0022829590016044676,
+          0.00196594499720959,
+          0.0020033470027556177,
+          0.0019719159972737543,
+          0.0020667759999923874,
+          0.002098816999932751,
+          0.0020215069998812396
+        ],
+        "median_seconds": 0.0020215069998812396,
+        "python_numpy_peak_bytes": 34370548
+      },
+      "candidate_subset_hail": {
+        "seconds": [
+          0.0059695080017263535,
+          0.005929218001256231,
+          0.005866966999747092,
+          0.005823776999022812,
+          0.005996159001369961,
+          0.005945337998127798,
+          0.0059225779987173155
+        ],
+        "median_seconds": 0.005929218001256231,
+        "python_numpy_peak_bytes": 55681292
+      }
+    },
+    "no_hail_full_fields_byte_equal": 55
+  },
+  "default_programs": {
+    "swiss": "f672a5739cb96e388b6b7a40ef80337bf81bdc14ef15268f3476e09d79fe055d",
+    "prod": "6fc715a2bd630934c4cf0f94427df19a527cbf429011c9ba5efe4d712744d27b"
+  }
+}

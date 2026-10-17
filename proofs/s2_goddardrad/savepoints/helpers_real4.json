@@ -1,0 +1,106 @@
+{
+  "source_sha256": "0917531726cbed5a128e05c45e70ee292c209dbcd1ae2bad17db6e46b8d3a5ad",
+  "shim_sha256": "88dfadc7e63de4fdf49233d52e089d0b611428b83d519ad96a1c48029e22142f",
+  "driver_sha256": "22264cb742bebf3bd1128fd24389333da593b37e268455653c87d0537f4292fa",
+  "command": [
+    "<USER_HOME>/miniconda3/envs/wrfbuild/bin/gfortran",
+    "-O2",
+    "-ffree-form",
+    "-ffree-line-length-none",
+    "-cpp",
+    "-DRWORDSIZE=4",
+    "-DNO_IEEE_MODULE",
+    "-fcheck=bounds",
+    "-ffpe-summary=none",
+    "-fallow-argument-mismatch",
+    "-std=legacy",
+    "-fconvert=big-endian",
+    "-frecord-marker=4",
+    "stubs.f90",
+    "module_checkerror.F",
+    "module_ra_goddard.F",
+    "driver.f90",
+    "-o",
+    "helpers"
+  ],
+  "equator_returncode": 2,
+  "affinity": [
+    0,
+    1,
+    2,
+    3,
+    16,
+    17,
+    18,
+    19
+  ],
+  "physics_changes": "none; visibility-only shim",
+  "cache": "none; no JAX; lane-private Fortran build",
+  "schema": "wrf-goddard-helpers-real4-v1",
+  "savepoint_sha256": "37214e43ecc8b9a88d582c5d13db2d57f747dd9f64502ef44896b7b170d4d414",
+  "raw_sha256": "7be0c526888d8ad6e67fc1d65d014076992f5ce7898d75f7a4bc6da3af9dc15d",
+  "shapes": {
+    "dz": [
+      16,
+      8
+    ],
+    "q": [
+      16,
+      8,
+      6
+    ],
+    "re": [
+      16,
+      8,
+      6
+    ],
+    "sw": [
+      16,
+      8,
+      11,
+      3
+    ],
+    "lw": [
+      16,
+      8,
+      10,
+      3
+    ],
+    "latitude": [
+      7
+    ],
+    "day": [
+      4
+    ],
+    "climate": [
+      7,
+      4,
+      33,
+      6
+    ],
+    "pressure": [
+      8
+    ],
+    "ozone": [
+      7,
+      4,
+      8
+    ]
+  },
+  "active_species_counts": [
+    80,
+    80,
+    80,
+    80,
+    80,
+    80
+  ],
+  "tolerances": {
+    "optics_rtol": 4e-06,
+    "optics_atol": 1e-10,
+    "climate_rtol": 5e-07,
+    "climate_atol": 1e-12,
+    "ozone_rtol": 1e-06,
+    "ozone_atol": 1e-14
+  }
+}

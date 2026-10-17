@@ -534,7 +534,7 @@ def _native_full_lateral(state, lead_seconds, dt_s, config, **fields):
     return state.replace(**updates)
 
 
-def flow_dep_bdy(field, u, v, config: BoundaryConfig = DEFAULT_BOUNDARY_CONFIG):
+def flow_dep_bdy(field, u, v, config: BoundaryConfig = DEFAULT_BOUNDARY_CONFIG, *, inflow_value=0.0):
     """Pristine ``share/module_bc.F`` ``flow_dep_bdy`` on the ``spec_zone`` rows.
 
     Outflow (edge-face normal velocity pointing out of the domain) copies the
@@ -547,7 +547,7 @@ def flow_dep_bdy(field, u, v, config: BoundaryConfig = DEFAULT_BOUNDARY_CONFIG):
 
     nz, ny, nx = field.shape
     spec = int(config.spec_zone)
-    zero = jnp.zeros((), field.dtype)
+    zero = jnp.zeros((), field.dtype) if inflow_value == 0.0 else jnp.asarray(inflow_value, field.dtype)
     i = jnp.arange(nx)
     j = jnp.arange(ny)
     i_inner = jnp.clip(i, spec, nx - 1 - spec)
@@ -566,6 +566,15 @@ def flow_dep_bdy(field, u, v, config: BoundaryConfig = DEFAULT_BOUNDARY_CONFIG):
         east = jnp.where(u[:nz, :ny, nx - b] > 0, field[:, :, nx - 1 - spec][:, j_inner], zero)
         out = out.at[:, :, nx - 1 - b].set(jnp.where(rows, east, out[:, :, nx - 1 - b]))
     return out
+
+
+def flow_dep_bdy_qnn(field, u, v, config: BoundaryConfig = DEFAULT_BOUNDARY_CONFIG, *, ccn_conc=1.0e8):
+    """WRF module_bc.F QNN boundary: CCN inflow, interior-copy outflow.
+
+    The pristine routine differs from flow_dep_bdy only in the inflow value
+    on nonperiodic specified domains (solve_em.F:2983-2991).
+    """
+    return flow_dep_bdy(field, u, v, config, inflow_value=float(ccn_conc))
 
 
 def interpolate_boundary_leaf(boundary, lead_seconds, cadence_s: float = 3600.0):
@@ -1433,6 +1442,18 @@ NESTED_BOUNDARY_SCALAR_SPECIES = (
 )
 
 
+def nested_boundary_scalar_species(state: State) -> tuple[str, ...]:
+    """Keep the released order, appending only materialized extra records."""
+    from gpuwrf.contracts.state import EXTRA_SCALAR_BOUNDARY_SPECIES
+
+    extra = tuple(name for name in EXTRA_SCALAR_BOUNDARY_SPECIES
+                  if getattr(state, f"{name}_bdy", None) is not None)
+    for name in extra:
+        if getattr(state, name, None) is None:
+            raise ValueError(f"live-child boundary record {name}_bdy has no prognostic field")
+    return NESTED_BOUNDARY_SCALAR_SPECIES + extra
+
+
 def boundary_tendency_leaf(boundary, lead_seconds, cadence_s: float):
     """Return WRF's retained ``*_bdy_tend`` for the active record interval.
 
@@ -1536,7 +1557,7 @@ def specified_boundary_tendency(
 
 
 def _scalar_couple_kernel(field, mu, c1, c2, out, *, nz, ny, nx, interpret):
-    from jax.experimental import pallas as pl
+    from gpuwrf.backends import pallas as pl
     from jax.experimental.pallas import triton as pt
 
     i = pl.program_id(0) * 256 + jnp.arange(256, dtype=jnp.int32)
@@ -1545,7 +1566,7 @@ def _scalar_couple_kernel(field, mu, c1, c2, out, *, nz, ny, nx, interpret):
     load = lambda ref, idx: pt.load(ref.at[idx], mask=valid, other=jnp.float32(0))
 
     def rn(op, a, b):
-        if interpret:
+        if interpret or not pl.cuda_native():
             # CPU-only prescreen: binary64 exactly represents the REAL4
             # multiply before its explicit round. reduce_precision pins that
             # round: XLA's excess-precision rewrite would otherwise drop the
@@ -1575,7 +1596,7 @@ def couple_scalar_real4(field, mu_total, metrics: DycoreMetrics):
 @jax.jit
 def _couple_scalar_real4_arrays(field, mu_total, c1h, c2h):
     from functools import partial
-    from jax.experimental import pallas as pl
+    from gpuwrf.backends import pallas as pl
     from jax.experimental.pallas import triton as pt
 
     field, mu, c1, c2 = (
@@ -1639,6 +1660,8 @@ def nested_scalar_boundary_tendencies(
     metrics: DycoreMetrics,
     dt_full: float,
     config: BoundaryConfig,
+    *,
+    species: tuple[str, ...] | None = None,
 ) -> tuple[jax.Array, ...]:
     """Build/freeze pristine-WRF nested scalar boundary tendencies at RK1.
 
@@ -1660,7 +1683,7 @@ def nested_scalar_boundary_tendencies(
     nz, ny, nx = (int(value) for value in reference.qv.shape)
     cadence = float(config.update_cadence_s)
     tendencies: list[jax.Array] = []
-    for name in NESTED_BOUNDARY_SCALAR_SPECIES:
+    for name in nested_boundary_scalar_species(reference) if species is None else species:
         field = getattr(reference, name)
         boundary = getattr(reference, f"{name}_bdy", None)
         if boundary is None:
@@ -1728,7 +1751,11 @@ def nested_scalar_boundary_tendencies(
 # GPUWRF_ROOT_SCALAR_BDY_RK1 (default off) selects this cadence in place of the
 # released end-of-step value pass (relax + spec + flow_dep after microphysics).
 
-_ROOT_RK1_SCALAR_SPECIES = NESTED_BOUNDARY_SCALAR_SPECIES
+_ROOT_RK1_SCALAR_SPECIES = NESTED_BOUNDARY_SCALAR_SPECIES+('pek_adv','pep_adv','tke_adv','diss_adv','tpe_adv')
+
+
+# Thompson-aerosol QNWFA/QNIFA (WRF scalar P_QNWFA/P_QNIFA): aer_init_opt branch, not have_bcs_scalar.
+_ROOT_FLOW_AEROSOL_NUMBERS = frozenset(("nwfa", "nifa"))
 
 
 def root_scalar_bdy_rk1_enabled() -> bool:
@@ -1742,24 +1769,40 @@ def root_scalar_rk1_split(config: BoundaryConfig, species, *, flow_only=()) -> t
     without boundary records to WRF's flow_dep_bdy branch, which is what WRF does when
     have_bcs_moist (qh) / have_bcs_scalar (scalar-array members) is .false.; a run whose
     wrfbdy claims those boundary records fails closed.
+
+    Array membership decides the flag, as in solve_em: ``qh`` is a ``moist`` member
+    (have_bcs_moist, :2426), every other extra a ``scalar`` member (have_bcs_scalar,
+    :2993-3021) -- except the Thompson-aerosol numbers QNWFA/QNIFA (mp=28), which take
+    flow_dep_bdy whenever aer_init_opt == 0 regardless of have_bcs_scalar (:2993-2995
+    truth-table rows 3/4).  aer_init_opt > 0 (use_aero_icbc) is refused pre-JAX
+    (scheme_catalog), so here it is always 0.
     """
 
     relaxed: list[str] = []
     flow: list[str] = []
     for name in species:
+        if name == "Nn" and name in flow_only:
+            # P_QNN precedes have_bcs_scalar in solve_em (2983): prescribed
+            # CCN inflow applies even when other scalar boundary records exist.
+            flow.append(name)
+            continue
+        if name in flow_only and name in _ROOT_FLOW_AEROSOL_NUMBERS:
+            flow.append(name)
+            continue
         if name in flow_only:
-            have = config.have_bcs_moist if name == "qh" else config.have_bcs_scalar
+            have = config.have_bcs_moist if name in ("qh", "qi2", "qi3") else config.have_bcs_scalar
             if have is None or bool(have):
                 raise NotImplementedError(
                     f"{name!r} has no lateral boundary records in this port; it needs "
-                    f"have_bcs_{'moist' if name == 'qh' else 'scalar'}=.false. (flow_dep_bdy)")
+                    f"have_bcs_{'moist' if name in ('qh', 'qi2', 'qi3') else 'scalar'}=.false. (flow_dep_bdy)")
             flow.append(name)
             continue
         if name not in _ROOT_RK1_SCALAR_SPECIES:
             # QNWFA/QNIFA/QNBCA, ntu3m, ... have their own WRF boundary branches.
             raise NotImplementedError(
                 f"GPUWRF_ROOT_SCALAR_BDY_RK1 covers {_ROOT_RK1_SCALAR_SPECIES}; {name!r} is not represented")
-        have = config.have_bcs_scalar if name in ("Ni", "Nr") else config.have_bcs_moist
+        have = (config.have_bcs_scalar
+                if name in ("Ni","Nr","pek_adv","pep_adv","tke_adv","diss_adv","tpe_adv") else config.have_bcs_moist)
         if have is None:
             raise ValueError("GPUWRF_ROOT_SCALAR_BDY_RK1 needs the root's explicit have_bcs_moist/have_bcs_scalar")
         (relaxed if (name == "qv" or bool(have)) else flow).append(name)
@@ -2476,12 +2519,13 @@ def nested_scalar_spec_final(state: State, lead_seconds, metrics: DycoreMetrics 
     """
 
     from gpuwrf.kernels.dyn_ring_relax_fp32 import ring_spec_final
+    from gpuwrf.contracts.state import EXTRA_SCALAR_BOUNDARY_SPECIES
 
     if metrics is None:
         raise ValueError("GPUWRF_NEST_SCALAR_SPEC_FINAL needs the dycore metrics")
     spec = int(config.spec_zone)
     names = tuple(
-        name for name in NESTED_BOUNDARY_SCALAR_SPECIES
+        name for name in (*NESTED_BOUNDARY_SCALAR_SPECIES, *EXTRA_SCALAR_BOUNDARY_SPECIES)
         if getattr(state, name, None) is not None and getattr(state, f"{name}_bdy", None) is not None
     )
     if spec <= 0 or not names:

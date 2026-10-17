@@ -1,0 +1,185 @@
+{
+ "results": [
+  {
+   "mutant": "M1 topdown branch off",
+   "killed": true,
+   "failures": 1,
+   "errors": 0,
+   "messages": [
+    "AssertionError: (4, 'u', [0, 1, 2, 3, 4, 5, ...])\nassert not np.True_\n +  where np.True_ = <built-in method any of numpy.ndarray object at 0x79e552050030>()\n + "
+   ]
+  },
+  {
+   "mutant": "M2 cloud-top entrainment off",
+   "killed": true,
+   "failures": 1,
+   "errors": 0,
+   "messages": [
+    "AssertionError: (4, 'u', [1, 2, 3, 4, 5, 6])\nassert not np.True_\n +  where np.True_ = <built-in method any of numpy.ndarray object at 0x795f5cb3d8f0>()\n +    wh"
+   ]
+  },
+  {
+   "mutant": "M3 RQCBLTEN dropped",
+   "killed": true,
+   "failures": 1,
+   "errors": 0,
+   "messages": [
+    "AssertionError: (0, 'qc', [3, 4, 5, 6, 7, 8, ...])\nassert not np.True_\n +  where np.True_ = <built-in method any of numpy.ndarray object at 0x7905705fbf30>()\n +"
+   ]
+  },
+  {
+   "mutant": "M4 in-cloud Ri dropped",
+   "killed": true,
+   "failures": 1,
+   "errors": 0,
+   "messages": [
+    "AssertionError: (0, 'u', [10, 11, 12, 14])\nassert not np.True_\n +  where np.True_ = <built-in method any of numpy.ndarray object at 0x7cd06431d830>()\n +    wher"
+   ]
+  },
+  {
+   "mutant": "M5 thlix without cloud water",
+   "killed": true,
+   "failures": 1,
+   "errors": 0,
+   "messages": [
+    "AssertionError: (4, 'u', [0, 1, 2, 3, 4, 5, ...])\nassert not np.True_\n +  where np.True_ = <built-in method any of numpy.ndarray object at 0x783351d45650>()\n + "
+   ]
+  },
+  {
+   "mutant": "M6 RTHBLTEN not via TTEND/PI",
+   "killed": true,
+   "failures": 1,
+   "errors": 0,
+   "messages": [
+    "AssertionError: (2, 'theta', np.float32(1.1368684e-13))\nassert False\n +  where False = <function array_equal at 0x7ec4d50ab130>(array([-2.7550591e-04, -1.576741"
+   ]
+  },
+  {
+   "mutant": "M7 ctopo/vconv diagonal as 1+fric",
+   "killed": true,
+   "failures": 1,
+   "errors": 0,
+   "messages": [
+    "AssertionError: (0, 'u', np.float32(1.3271347e-08))\nassert False\n +  where False = <function array_equal at 0x7e333c57a470>(array([ 3.01257777e-03,  3.93411843e"
+   ]
+  },
+  {
+   "mutant": "M8 get_pblh safeguard overwrite dropped",
+   "killed": true,
+   "failures": 1,
+   "errors": 0,
+   "messages": [
+    "AssertionError: (np.float32(3464.2603), np.float32(45.137627))\nassert np.float32(3419.1226) <= ((4 * 1.1920928955078125e-07) * np.float32(45.137627))\n +  where "
+   ],
+   "note": "rerun after retargeting: M8 -> literal get_pblh test (no real column reaches the kte-1 safeguard); M13 -> explicit assert (first run failed by KeyError, not counted)"
+  },
+  {
+   "mutant": "M9 tridiag division form",
+   "killed": true,
+   "failures": 1,
+   "errors": 0,
+   "messages": [
+    "AssertionError: (0, 'u', np.float32(1.0596705e-07))\nassert False\n +  where False = <function array_equal at 0x7a1c8b9825f0>(array([ 3.01259104e-03,  3.93411843e"
+   ]
+  },
+  {
+   "mutant": "M10 xkzm(kpbl-1)=0 cloud rule dropped",
+   "killed": true,
+   "failures": 1,
+   "errors": 0,
+   "messages": [
+    "AssertionError: (10, 'u', [5])\nassert not np.True_\n +  where np.True_ = <built-in method any of numpy.ndarray object at 0x747b56b79b90>()\n +    where <built-in "
+   ]
+  },
+  {
+   "mutant": "M11 adapter qc not passed",
+   "killed": true,
+   "failures": 1,
+   "errors": 0,
+   "messages": [
+    "AssertionError: \nArrays are not equal\n\nMismatched elements: 4 / 32 (12.5%)\nMismatch at indices:\n [3]: 0.0 (ACTUAL), 0.00019999999494757503 (DESIRED)\n [4]: 0.0 ("
+   ]
+  },
+  {
+   "mutant": "M12 adapter cloud rates not applied",
+   "killed": true,
+   "failures": 1,
+   "errors": 0,
+   "messages": [
+    "AssertionError: \nArrays are not equal\n\nMismatched elements: 13 / 32 (40.6%)\nFirst 5 mismatches are at indices:\n [0]: 0.0 (ACTUAL), 9.190131322611705e-07 (DESIRE"
+   ]
+  },
+  {
+   "mutant": "M13 operational rthraten not passed",
+   "killed": true,
+   "failures": 1,
+   "errors": 0,
+   "messages": [
+    "AssertionError: ['_with_sources', 'surface_forcing', 'ysu_topdown_pblmix']\nassert None is not None\n +  where None = <built-in method get of dict object at 0x70f"
+   ],
+   "note": "rerun after retargeting: M8 -> literal get_pblh test (no real column reaches the kte-1 safeguard); M13 -> explicit assert (first run failed by KeyError, not counted)"
+  },
+  {
+   "mutant": "M14 EP1 python double",
+   "killed": true,
+   "failures": 1,
+   "errors": 0,
+   "messages": [
+    "AssertionError: (24, 'qv', np.float32(1.2931878e-11))\nassert False\n +  where False = <function array_equal at 0x7c2dc0f768b0>(array([-1.3214432e-07, -2.1808470e"
+   ]
+  },
+  {
+   "mutant": "M15 YSU early radiation refresh removed",
+   "killed": true,
+   "failures": 1,
+   "errors": 0,
+   "messages": [
+    "AssertionError: ['pbl', 'radiation', 'radiation']\nassert ['pbl', 'radi..., 'radiation'] == ['radiation',...ation', 'pbl']\n  \n  At index 0 diff: 'pbl' != 'radiat"
+   ]
+  },
+  {
+   "mutant": "M16 YSU radiation input is post-surface state",
+   "killed": true,
+   "failures": 1,
+   "errors": 0,
+   "messages": [
+    "AssertionError: \nArrays are not equal\nustar\nMismatched elements: 9 / 9 (100%)\nFirst 5 mismatches are at indices:\n [0, 0]: 0.4541744887828827 (ACTUAL), 0.3 (DESI"
+   ]
+  },
+  {
+   "mutant": "M17 radiation solved twice",
+   "killed": true,
+   "failures": 1,
+   "errors": 0,
+   "messages": [
+    "AssertionError: ['radiation', 'radiation', 'pbl', 'radiation', 'radiation']\nassert ['radiation',..., 'radiation'] == ['radiation',...ation', 'pbl']\n  \n  Left co"
+   ]
+  },
+  {
+   "mutant": "M18 SSiB raw RK seam removed",
+   "killed": true,
+   "failures": 1,
+   "errors": 0,
+   "messages": [
+    "AssertionError: \nArrays are not equal\nu\nMismatched elements: 24 / 48 (50%)\nFirst 5 mismatches are at indices:\n [0, 0, 1]: 0.018000001087784767 (ACTUAL), 0.0 (DE"
+   ],
+   "note": "first attempt INVALID: pytest basetemp parent missing (setup FileNotFoundError, E202); rerun genuine"
+  },
+  {
+   "mutant": "M19 SSiB publishes theta_m instead of dry RTHBLTEN",
+   "killed": true,
+   "failures": 1,
+   "errors": 0,
+   "messages": [
+    "AssertionError: \nArrays are not equal\ntheta\nMismatched elements: 36 / 36 (100%)\nFirst 5 mismatches are at indices:\n [0, 0, 0]: 0.0004930035211145878 (ACTUAL), 0"
+   ],
+   "note": "first attempt INVALID: pytest basetemp parent missing (setup FileNotFoundError, E202); rerun genuine"
+  }
+ ],
+ "all_killed": true,
+ "runs": [
+  "first full run 14 mutants",
+  "rerun M8 M13",
+  "rv-t-ysuqc FIX round: M15-M19"
+ ]
+}

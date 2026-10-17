@@ -1,0 +1,33 @@
+fixture_id: s1-spectral-fdda-pristine-operator-and-callers-v1
+source: pristine WRF module_fdda_spnudging.F plus unchanged FFTPACK5; original CPU-WRF Swiss RD11 fields
+source_commit: f52c197ed39d12e087d02c50f412d90d418f6186
+scenario: 40 REAL32/precision-promoted REAL64 cases; 336 calls; two odd/even sheets; ten physical/driver regimes
+variables:
+  u_v: {layout: C-grid staggered, input_units: m/s, tendency_units: m/s^2}
+  t: {layout: mass, input_units: dry potential temperature minus 300 K, tendency_units: K/s}
+  ph: {layout: w-staggered, input_units: perturbation geopotential m^2/s^2, tendency_units: m^2/s^3}
+  q: {layout: mass, input_units: kg/kg, tendency_units: kg/kg/s}
+  pblh_ht_z_at_w: {units: m}
+  c1h_c1f: {units: dimensionless}
+  c2h_c2f_mu2_mub_muts: {units: Pa}
+  clocks: {units: seconds; integer itimestep one-based}
+  coupled_rates: {units: uncoupled units times Pa for UV/T/Q; PH unchanged as pristine caller}
+  decoupled_rates: {units: pristine spectral exit keeps Q coupled and divides PH by full-level mass}
+precision:
+  r4: original WRF REAL32 plus FFTPACK explicit REAL4; only native WRF clock island DOUBLE
+  r8: diagnostic compiler promotion -fdefault-real-8 -fdefault-double-8 -freal-4-real-8
+tolerances:
+  standalone: 8*eps*(ceil(log2(nx+1))+ceil(log2(ny+1))+2)*(abs(reference)+3*g*max_original_operand)
+  caller_chain: 128*eps*max(max_abs_reference,3*g*max_original_operand*caller_mass_scale)
+  theta_operand: include 300 K cancellation scale
+  structural_zero: exact for removed spectrum and past-end calls
+  identity: exact dtype, shapes and asset SHA256
+  freeze_source: tests in c1cf2a771 (standalone) and 8ae607af4 (caller chain); specified before their first comparison
+files:
+  checksums_and_options: savepoints/MANIFEST.json
+  arrays: savepoints/swiss_*.npz
+  original_source_checksums: savepoints/MANIFEST.json sources_sha256
+  generator: oracle/make_savepoints.py
+  pristine_wrapper: oracle/spectral_oracle.F90
+  build: oracle/build.sh
+license_notes: Upstream WRF/FFTPACK licenses apply to reference code; arrays are internal scientific model diagnostics, with no station truth values.

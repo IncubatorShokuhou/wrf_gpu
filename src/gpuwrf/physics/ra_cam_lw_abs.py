@@ -24,9 +24,11 @@ WRF quirks reproduced on purpose:
 
 from __future__ import annotations
 
+import jax
 import jax.numpy as jnp
 import numpy as np
 
+from gpuwrf.kernels.layout_pin import row_major
 from gpuwrf.physics.ra_cam_common import (
     COEFH,
     COEFJ,
@@ -134,18 +136,29 @@ _ER_ORDER = ((1, 1), (1, 0), (0, 1), (0, 0))
 def _interp32(flat, ip, wp, wp1, itp, w3, iu, wu, wu1, ite, irh):
     """sum_{32} tab(ip.., itp.., iu.., ite.., irh..) * wXY_ZR * wu..  accumulated left to right like the Fortran."""
 
-    wpv, wuv = (wp, wp1), (wu, wu1)
-    acc = None
-    for x, y in _PT_ORDER:
+    # Match the column/level/sub-layer order at the loop boundary. Otherwise
+    # layout assignment creates kn-major views and merges their transposes
+    # with unrelated gas producers into a spilling mixed-layout fusion.
+    ip, wp, wp1, itp, iu, wu, wu1, ite, irh = tuple(
+        row_major(x) for x in (ip, wp, wp1, itp, iu, wu, wu1, ite, irh))
+    weights = row_major(jnp.stack([w3[(y, z, r)] for y in (0, 1) for z in (0, 1) for r in (0, 1)]))
+
+    def term(n):
+        # The same Fortran order: (ip,itp), (ip,itp1), (ip1,itp),
+        # (ip1,itp1), each with (iu,iu1) and the four (ite,irh) corners.
+        x, y = 1 - n // 16, 1 - (n // 8) % 2
+        uu, z, r = 1 - (n // 4) % 2, 1 - (n // 2) % 2, 1 - n % 2
         bpt = (ip + (1 - x)) * N_TP + (itp + (1 - y))
-        wxy = {(z, r): wpv[x] * w3[(y, z, r)] for z, r in _ER_ORDER}    # wXY_ZR
-        for uu in _U_ORDER:
-            bptu = bpt * N_U + (iu + (1 - uu))
-            for z, r in _ER_ORDER:
-                idx = (bptu * N_TE + (ite + (1 - z))) * N_RH + (irh + (1 - r))
-                term = jnp.take(flat, idx, mode="clip") * wxy[(z, r)] * wuv[uu]
-                acc = term if acc is None else acc + term
-    return acc
+        weight = jax.lax.dynamic_index_in_dim(weights, y * 4 + z * 2 + r, keepdims=False)
+        wxy = jnp.where(x == 0, wp, wp1) * weight
+        bptu = bpt * N_U + (iu + (1 - uu))
+        idx = (bptu * N_TE + (ite + (1 - z))) * N_RH + (irh + (1 - r))
+        return jnp.take(flat, idx, mode="clip") * wxy * jnp.where(uu == 0, wu, wu1)
+
+    # Start at term 0, rather than adding it to zero; retain every subsequent
+    # left-to-right addition while avoiding 32 simultaneously live gathers.
+    acc = jax.lax.fori_loop(1, 32, lambda n, acc: acc + term(n), term(0))
+    return jax.lax.optimization_barrier(acc)
 
 
 def _fa(ib, te1, te2, te3, te4, te5):
@@ -172,7 +185,10 @@ def _h2o_weights(t_p, t_e, rh_path):
     itp, wtp, wtp1 = _cell((t_p - MIN_TP_H2O) / DTP_H2O, N_TP)
     ite, wte, wte1 = _cell((t_e - MIN_TE_H2O) / DTE_H2O, N_TE)
     irh, wrh, wrh1 = _cell((rh_path - MIN_RH_H2O) / DRH_H2O, N_RH)
-    return itp, ite, irh, _wtrh(wtp, wtp1, wte, wte1, wrh, wrh1)
+    # Keep completed interpolation weights out of the later trace-gas fusion.
+    # The native program otherwise merges these 11 outputs with unrelated gas
+    # terms into a 28-output, mixed-layout producer (STACK 1488 B).
+    return jax.lax.optimization_barrier((itp, ite, irh, _wtrh(wtp, wtp1, wte, wte1, wrh, wrh1)))
 
 
 def _esat_qsat(t_p, pnew_mks, est):
@@ -187,14 +203,22 @@ def _esat_qsat(t_p, pnew_mks, est):
 def _h2o_overlap_tw(tt, pnew, w1_base, ds2c, duptyp):
     """trcab/trcabn h2o transmission tw(:,l), l = 1..6 (aerosol factors == 1 dropped)."""
 
-    tw = []
-    for l in range(6):
-        psi1 = jnp.exp(_ABP[l] * tt + _BBP[l] * tt * tt)
-        phi1 = jnp.exp(_AB[l] * tt + _BB[l] * tt * tt)
+    tt, pnew, w1_base, ds2c, duptyp = tuple(row_major(x) for x in (tt, pnew, w1_base, ds2c, duptyp))
+    coefficients = jnp.asarray((_ABP, _BBP, _AB, _BB, _G1, _G2, _G3, _G4), F64).T
+
+    def band(_, values):
+        abp, bbp, ab, bb, g1, g2, g3, g4 = values
+        psi1 = jnp.exp(abp * tt + bbp * tt * tt)
+        phi1 = jnp.exp(ab * tt + bb * tt * tt)
         p1 = pnew * (psi1 / phi1) / CONST.sslp
         w1 = w1_base * phi1
-        tw.append(jnp.exp(-_G1[l] * p1 * (jnp.sqrt(1.0 + _G2[l] * (w1 / p1)) - 1.0) - _G3[l] * ds2c - _G4[l] * duptyp))
-    return tw
+        transmission = jnp.exp(-g1 * p1 * (jnp.sqrt(1.0 + g2 * (w1 / p1)) - 1.0) - g3 * ds2c - g4 * duptyp)
+        return None, transmission
+
+    # One band body, with the original REAL-rounded r8 coefficients and
+    # expressions. A six-output unrolled fusion spills even behind a fence.
+    _, tw = jax.lax.scan(band, None, coefficients)
+    return [tw[l] for l in range(6)]
 
 
 # -------------------------------------------------------------------------------------------------------------------- #
@@ -320,8 +344,11 @@ def _trcabn(dgas, tbar, bpl, winpl, pinpl, tco2, th2o, to3, dw, up2, pnew, uinpl
     du23 = dgas["uco223"] * winpl
     aco22 = (lit(3.8443) * sqti * jnp.log(1.0 + _func(du21, dbetc1) + _func(du22, dbetc1) + _func(du23, dbetc2))
              * tw[3] * tcfc3 * tcfc6 * bpl(1))
-    return (acfc1 + acfc2 + acfc3 + acfc4 + acfc5 + acfc6 + acfc7 + acfc8 + an2o1 + an2o2 + an2o3 + ach4
-            + aco21 + aco22)
+    # The completed CFC sum is a scalar-field boundary: the otherwise fused
+    # 14-term nearest-layer expression still spills 360 B after layout repair.
+    # Retain the original left-to-right additions across this boundary.
+    cfc = jax.lax.optimization_barrier(acfc1 + acfc2 + acfc3 + acfc4 + acfc5 + acfc6 + acfc7 + acfc8)
+    return jax.lax.optimization_barrier(cfc + an2o1 + an2o2 + an2o3 + ach4 + aco21 + aco22)
 
 
 # -------------------------------------------------------------------------------------------------------------------- #

@@ -43,6 +43,15 @@ def _clock_base(start):
 
 def _step_clock(monkeypatch, start, dt, step):
     """Run the real step function to the Noah-MP call; return the clock it receives."""
+    from dataclasses import MISSING
+    from gpuwrf.runtime.operational_state import OperationalCarry
+
+    def contract_default(contract, name):
+        field = contract.__dataclass_fields__.get(name)
+        if field is not None and field.default is not MISSING:
+            return field.default
+        raise AttributeError(name)
+
     shape = (2, 3)
     z = jnp.zeros(shape)
 
@@ -50,10 +59,21 @@ def _step_clock(monkeypatch, start, dt, step):
         def replace(self, **kw):
             return Box(**{**vars(self), **kw})
 
-    state = Box(t_skin=z + 290.0, xland=z + 1.0)
-    carry = Box(state=state, noahmp_land=Box(t_skin=state.t_skin, tslb=jnp.zeros((4, *shape))),
+    class Carry(Box):
+        def __getattr__(self, name):
+            return contract_default(OperationalCarry, name)
+
+        def replace(self, **kw):
+            return Carry(**{**vars(self), **kw})
+
+    class Namelist(SimpleNamespace):
+        def __getattr__(self, name):
+            return contract_default(op.OperationalNamelist, name)
+
+    state = Box(t_skin=z + 290.0, xland=z + 1.0, theta=jnp.full((1, *shape), 300.0))
+    carry = Carry(state=state, noahmp_land=Box(t_skin=state.t_skin, tslb=jnp.zeros((4, *shape))),
                 radiation_diagnostics=True, rthraten=None, census=None)
-    namelist = SimpleNamespace(lower_boundary=None, noahmp_static=None, dt_s=dt, boundary_config=None, run_physics=True,
+    namelist = Namelist(lower_boundary=None, noahmp_static=None, dt_s=dt, boundary_config=None, run_physics=True,
                                rad_rk_tendf=0, mp_physics=0, sf_sfclay_physics=5, cu_physics=0, use_noahmp=True,
                                radiation_interval_s=1800., radiation_cadence_steps=int(1800 / dt), grid=None,
                                time_utc=start, radiation_static=None, topo_shading=0, slope_rad=0,

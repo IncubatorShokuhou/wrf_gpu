@@ -1,0 +1,87 @@
+{
+ "case": "v-prep c08 (mp10, cu14, Noah-MP) rerun with do_radar_ref=1 from a PRIVATE alias-free stage (proofs/t_classd/stage_c08_radar_cpu.py); the sealed reference is only read",
+ "reference": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c08",
+ "inputs": {
+  "namelist.input": {
+   "original_sealed_sha256": "93238842ee599a49f0ba69168c63e77c33192bd05f765884052449506195a99e",
+   "used_sha256": "782aa4c7e14b2c3204e8815a194514b7f1a68015ca4bc148dc8511c38a69ac5a",
+   "staged_as_regular_file": true,
+   "measured_sha256": "782aa4c7e14b2c3204e8815a194514b7f1a68015ca4bc148dc8511c38a69ac5a"
+  },
+  "wrfinput_d01": {
+   "original_sealed_sha256": "a5d696550d1dc6713e2e340b8c2fba83811d43f4a94a65ca95266035860e2781",
+   "used_sha256": "a5d696550d1dc6713e2e340b8c2fba83811d43f4a94a65ca95266035860e2781",
+   "staged_as_regular_file": true,
+   "measured_sha256": "a5d696550d1dc6713e2e340b8c2fba83811d43f4a94a65ca95266035860e2781"
+  },
+  "wrfbdy_d01": {
+   "original_sealed_sha256": "f3e556670e4768326997bdfa1dd8b0f77eb6d5da07d9c4dbf900bf8ff9e30230",
+   "used_sha256": "f3e556670e4768326997bdfa1dd8b0f77eb6d5da07d9c4dbf900bf8ff9e30230",
+   "staged_as_regular_file": true,
+   "measured_sha256": "f3e556670e4768326997bdfa1dd8b0f77eb6d5da07d9c4dbf900bf8ff9e30230"
+  }
+ },
+ "namelist_diff": "private copy only: inserted \" do_radar_ref = 1,\" after &physics; everything else byte-identical to the sealed original (93238842...)",
+ "executable": {
+  "original": "<USER_HOME>/src/wrf_pristine/WRF/main/wrf.exe",
+  "original_sha256": "52f914cb38e0899d8a1da54bd52f3e08d81ba0f6a7015d3159e48393f5226bd6",
+  "private_sha256": "f7c04f362fe90fb48306d97c8bbfe47ebb9f55c9aa588ebf9602ed3b5513938c",
+  "patches": [
+   {
+    "offset": 42405936,
+    "old": "<DATA_ROOT>/wrf_gpu2/wrf_truth/em_quarter_ss_center_dump.txt",
+    "new": "<USER_HOME>/wrf_gpu2_lanes/t-classd/c08r2/d0"
+   },
+   {
+    "offset": 42405872,
+    "old": "<DATA_ROOT>/wrf_gpu2/wrf_truth/em_grav2d_x_touchdown_dump.txt",
+    "new": "<USER_HOME>/wrf_gpu2_lanes/t-classd/c08r2/d1"
+   }
+  ],
+  "build_flags": "-O2 -ftree-vectorize -funroll-loops (configure.wrf FCOPTIM), 0 vfmadd instructions",
+  "note": "private copy; only the two diagnostic OPEN path literals redirected into the lane dir, NUL padded; arithmetic bytes unchanged (E104)"
+ },
+ "table_links_into_pristine_only": 83,
+ "run": {
+  "cores": "18",
+  "nice": 19,
+  "serial": true,
+  "rc": 0,
+  "success": "d01 2023-01-16_00:00:00 wrf: SUCCESS COMPLETE WRF",
+  "frames": 25
+ },
+ "wrfout_sha256": {
+  "wrfout_d01_2023-01-15_00:00:00": "9b512487f22ddd73f59f5d7f3177816fa3d68c7171944e66cbe0c64f09c04630",
+  "wrfout_d01_2023-01-15_01:00:00": "1a9c4804a0ce688e93ef4dbb1f3d3ad1bc3cc4a2c387c958cb88718090a08cc6",
+  "wrfout_d01_2023-01-15_02:00:00": "3bb1086436c306c0bc7a260de606f433425188f12c10d9699ab7dd28c1cac49e",
+  "wrfout_d01_2023-01-15_03:00:00": "43ac6e6906b92ef239c5acd3121eef5e0066365d736cde5f506ffca8384d6d5b",
+  "wrfout_d01_2023-01-15_04:00:00": "b21ff85dbd0b0b39f827e9dc62576d58b5a0c97d22508538072bd8237b4b9b41",
+  "wrfout_d01_2023-01-15_05:00:00": "4ac84b11b45004f4628585d665d8be9e4409bd3fa8f908b055b00399e03d194b",
+  "wrfout_d01_2023-01-15_06:00:00": "7d1f57ad677ccee7007b5a7281a47cb9a2f683a0056750300ed409e0d1dc77eb",
+  "wrfout_d01_2023-01-15_07:00:00": "4fa993d89b63045a66d067ff54c365b78f41e8f7639071e29ed41c772e1c862c",
+  "wrfout_d01_2023-01-15_08:00:00": "8dfcf63007e0ff1ea6139e6eac7822d49e0db500e3f3a466bcd1f3fc335cd0fb",
+  "wrfout_d01_2023-01-15_09:00:00": "22b1f4827a1a7eb1386dcf84264321f4baa7cf1ffb082b3542e4d2564dcda3f4",
+  "wrfout_d01_2023-01-15_10:00:00": "f2f4816ce082af1c9147603fbc20090eef06aa7e09e7c655ff3319fde6f4309b",
+  "wrfout_d01_2023-01-15_11:00:00": "f3482ebc6656f0da5a0e1d8165ed0a1ed1f985b02da708519e50669515998f88",
+  "wrfout_d01_2023-01-15_12:00:00": "068baee6b25b12fa2964379757c21cd84569b9e6cbd6a39797c1ef2f8afcd890",
+  "wrfout_d01_2023-01-15_13:00:00": "0a6713e42014b7d6adbb583bc2ea49913d9fd212bc644dd9d592276ea58b5952",
+  "wrfout_d01_2023-01-15_14:00:00": "35f31b4ad05eab37a19b7c0acc438dd278f02c099ee78a4f4f7191a79827fe08",
+  "wrfout_d01_2023-01-15_15:00:00": "e9eb9b2f232f11275dd698581c998ce6c5656d57813e071d10544d782aa613fe",
+  "wrfout_d01_2023-01-15_16:00:00": "618077898a47dc186ff1d66ef208c93150eba34aa85cfbe8d1475ae2a636d483",
+  "wrfout_d01_2023-01-15_17:00:00": "8f625fa94be8d53fd03f5f60bb19e611c7120d080740bc0caecf0635a57c4bbb",
+  "wrfout_d01_2023-01-15_18:00:00": "2c66e072bf68ca10664aa49a1f36f6b3aa5c0ed0aa0c7fdbf9f38ea4066faed6",
+  "wrfout_d01_2023-01-15_19:00:00": "97c51ec7bdf8eee2cffcde53cb028c36421a02362ff124af25517f53f812ded4",
+  "wrfout_d01_2023-01-15_20:00:00": "4ec7a3763194038e7008bd730c27a45fbcadc981018038c319ebdd801bc24780",
+  "wrfout_d01_2023-01-15_21:00:00": "2b7ef3d6e54e8ba68f83a4cf2b54f4346111a3675ca3a1773d261de4aef60627",
+  "wrfout_d01_2023-01-15_22:00:00": "984f6a7ef10893f785cf4fd5443c1eba3ae44ca8afba626ddb6f94a1f9d6f924",
+  "wrfout_d01_2023-01-15_23:00:00": "184ac6b8718a2ef1ed3555aebdc77413d97f07c0c9cf4e98d2dcbd8de26fc893",
+  "wrfout_d01_2023-01-16_00:00:00": "3f5b7626c43f79172dcdfcedf97d4f83f126fc5dbb9e744a2c279791534f6180"
+ },
+ "previous_run": {
+  "status": "SUPERSEDED",
+  "what_happened": "the first rerun (lane dir c08r) copied v-prep/c08/cpu with cp -P, which reproduced the namelist.input symlink into the sealed input dir; the radar line was written THROUGH it into v-prep/c08/input/namelist.input (93238842... -> 782aa4c7...) ~14:40Z, restored by its owner 17:30Z (incident preserved in v-prep). Its receipt listed 782aa4c7 as \"original\": wrong.",
+  "used_bytes": "identical to this run (namelist 782aa4c7..., wrfinput/wrfbdy sealed SHAs)",
+  "wrfout_byte_identical_to_this_run": true,
+  "frames_identical": 25
+ }
+}

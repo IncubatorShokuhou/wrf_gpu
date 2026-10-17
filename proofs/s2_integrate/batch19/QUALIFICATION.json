@@ -1,0 +1,294 @@
+{
+  "verdict": "READY-FOR-MERGE",
+  "scope": "Approved P3 radar output retention + common all-producer carry relay; composed source/CPU gate only,27-output GPU/fullD6/E41/performance still pending",
+  "UTC": "2026-10-15T04:29:20.191525+00:00",
+  "lane": "s2-integrate",
+  "base_main": "1c949130bacd323b1b52f9aec78a05b04316a2da",
+  "approved_head": "35e66b76b6fa2ee05ff4f7399ebffc49d12941eb",
+  "merged": "93f59aa1ad03984df951dfeb0a38995cf27eed5a",
+  "source_audit": {
+    "UTC": "2026-10-15T04:29:20.191525+00:00",
+    "status": "PASS",
+    "initial": "6e1f051800d6ab80eabf1aa005bed2233810fb8a",
+    "main": "1c949130bacd323b1b52f9aec78a05b04316a2da",
+    "before_merge": "8b93a0e597b5f9a519f951795bf6f91678175c00",
+    "incoming": "35e66b76b6fa2ee05ff4f7399ebffc49d12941eb",
+    "merged": "93f59aa1ad03984df951dfeb0a38995cf27eed5a",
+    "conflicts": 0,
+    "AST_files": [
+      "proofs/t_writer_p3_radar/delete_retention.py",
+      "proofs/t_writer_p3_radar/revert_daily_overlay.py",
+      "src/gpuwrf/diagnostics/online.py",
+      "src/gpuwrf/integration/daily_pipeline.py",
+      "src/gpuwrf/integration/nested_pipeline.py",
+      "src/gpuwrf/physics/milbrandt2mom/restart.py",
+      "src/gpuwrf/physics/p3/adapter.py",
+      "src/gpuwrf/runtime/checkpoint.py",
+      "src/gpuwrf/runtime/operational_mode.py",
+      "tests/test_daily_held_radar_routes.py",
+      "tests/test_ice_diagnostics.py",
+      "tests/test_p3_radar_retention.py",
+      "tests/test_p3_state_transport_restart.py"
+    ],
+    "whole_src_tests_data_scripts_pyproject_BYTE_reviewed": {
+      "src": "50525aa33e62506dce978af6f3608396b595fbea",
+      "tests": "64be1b7371a8c759030eb76f4c1d8eef319d1543",
+      "data": "a91a7fbcc850486e65e257c0d0f185a18c6e58c2",
+      "scripts": "b531b6dd46f40527b34c67a2ecb0ba8849629aae",
+      "pyproject.toml": "6c5fdcd3ddc730c8c75c556379abb8d1162ed8c3"
+    },
+    "kernel_state_precision_BYTE_main": true,
+    "all8_P3_math_SHA_unchanged": true,
+    "producer_packet_and_raw_SHA_fresh": {
+      "base": {
+        "packet_files": 10,
+        "raw_receipts": 11
+      },
+      "fix": {
+        "packet_files": 12,
+        "raw_receipts": 8
+      }
+    },
+    "original_ready_seal_SHA_fresh": 14,
+    "same_critic_R2_source_and_loader_reuse": {
+      "source": "35e66b76b6fa2ee05ff4f7399ebffc49d12941eb",
+      "only_product_file": "src/gpuwrf/integration/daily_pipeline.py",
+      "only_changed_product_function": "_surface_diagnostics_for_output",
+      "all_other_product_source_BYTE": true,
+      "other_daily_module_AST_BYTE": true,
+      "numerical_test_tail_AST_BYTE": true,
+      "original_reference_bytes_and_bound_BYTE": true,
+      "archive_files": 8,
+      "archived_changed_loader_and_fixed_bound_assertions": "PASS",
+      "archive_negative_control": "1 genuine hash assertion on corrupted archived FMA bytes",
+      "sealed_packet_files": 12,
+      "sealed_raw_receipts": 8,
+      "producer_actual_archive_three_steps": "1PASS0ERROR, 3 original WRF steps, tracked inputs/hash checks",
+      "no_repeated_numerical_model_or_default_identity": true,
+      "performance": "same radar object/host dict only; no device math, copy or sync; newly published routes add required output traffic"
+    },
+    "scope": "No new numerical/forecast/native compile/default identity run; exact entire composed model/input/test trees and explicit same-critic source-bound paid evidence."
+  },
+  "integrator_numerical_edits": false,
+  "fresh_numerical_executions": 0,
+  "paid_CPU_checks_reused": {
+    "prior_independent_unique_PASS": 461,
+    "prior_independent_inherited_allocation_count_FAIL": 4,
+    "same_critic_changed_daily_routes_PASS": 25,
+    "actual_route_combinations": 13,
+    "real_prior_helper_mutant": {
+      "genuine_ASSERT": 10,
+      "healthy_controls": 3,
+      "ERROR": 0
+    },
+    "same_critic_corrupt_FMA_control": "1 genuine hash ASSERT",
+    "actual_clean_git_archive_three_original_steps": "1PASS/0ERROR, unchanged accepted WRF contraction policy",
+    "original_CPU_frame_BYTE_relay": 50,
+    "note": "Counts overlap; never summed. Four proven-inherited allocation-count failures and unrelated broad-smoke6G OOM limits remain disclosed/unwaived."
+  },
+  "default_identities_reused": {
+    "Swiss": "f672a5739cb96e388b6b7a40ef80337bf81bdc14ef15268f3476e09d79fe055d",
+    "PROD": "6fc715a2bd630934c4cf0f94427df19a527cbf429011c9ba5efe4d712744d27b"
+  },
+  "source_bound_original_native27_CPU": {
+    "source": "61245093027cbd1981fb0214b4ac06ee43223f32",
+    "scope": "CPU native operational MP52 compile; not actual GPU/E41/forecast",
+    "target_sha256": "f46c185780fdbd4aab62ef20293385bb8de31a71bd260e9ce62cbfc21f196a23",
+    "arch": 120,
+    "num_warps": 4,
+    "inputs": [
+      "qv",
+      "qc",
+      "qr",
+      "qi",
+      "ni",
+      "nr",
+      "nc",
+      "qir",
+      "bir",
+      "th_old",
+      "qv_old",
+      "th",
+      "p",
+      "dz",
+      "qi2",
+      "ni2",
+      "qir2",
+      "bir2"
+    ],
+    "outputs": [
+      "qv",
+      "qc",
+      "qr",
+      "qi",
+      "ni",
+      "nr",
+      "qir",
+      "bir",
+      "th_old",
+      "qv_old",
+      "re_cloud",
+      "re_ice",
+      "nc",
+      "qi2",
+      "ni2",
+      "qir2",
+      "bir2",
+      "di",
+      "rhoi",
+      "vm",
+      "di2",
+      "rhoi2",
+      "vm2",
+      "th",
+      "rainncv",
+      "snowncv",
+      "ze"
+    ],
+    "stages": {
+      "ttgir": 42.07710875900011,
+      "llir": 2.9398518950001744,
+      "ptx": 0.4501669250021223,
+      "cubin": 0.9875430360007158
+    },
+    "lower_s": 3.1128265820007073,
+    "ttir_bytes": 4392290,
+    "ttir_sha256": "dcab4116b8d0b9cf462ed96502934a2e361352af95910b90ba5836e8e616480d",
+    "compiler_params": "CompilerParams(num_warps=4, num_stages=None)",
+    "compile_s": 47.022937460998946,
+    "status": "COMPILED",
+    "cubin_sha256": "c8f811badbabff746621ae48a8c061ba7288da35952c15ace6607a97e77d75df",
+    "cubin_bytes": 1607440,
+    "shared_bytes": 1024,
+    "peak_rss_kib": 1071808,
+    "native_resources": [
+      {
+        "kernel": "p3_mp52_column",
+        "regs": 255,
+        "stack": 104,
+        "shared": 1024,
+        "local": 0,
+        "sass": 21784,
+        "calls": 11,
+        "callees": 1,
+        "stl": 25,
+        "callee_rows": [
+          {
+            "function": "p3_mp52_column",
+            "target_pc": 346640,
+            "instructions": 103,
+            "nested_calls": 0
+          }
+        ],
+        "nonleaf_over1k": [],
+        "callgraph_unknown": [],
+        "callgraph_status": "PASS"
+      }
+    ]
+  },
+  "original_strict_radar_residuals_disclosed": {
+    "1": {
+      "finite": true,
+      "max_abs": 0.04854774475097656,
+      "bad": 0,
+      "strict_bad": 10,
+      "n": 96,
+      "rtol": 0.0,
+      "atol": 0.0003
+    },
+    "2": {
+      "finite": true,
+      "max_abs": 0.009449005126953125,
+      "bad": 0,
+      "strict_bad": 13,
+      "n": 96,
+      "rtol": 0.0,
+      "atol": 0.0003
+    },
+    "3": {
+      "finite": true,
+      "max_abs": 0.013309478759765625,
+      "bad": 0,
+      "strict_bad": 13,
+      "n": 96,
+      "rtol": 0.0,
+      "atol": 0.0003
+    }
+  },
+  "WRF_contraction_reference": {
+    "provenance": "Original pristine WRF P348: same frozen P305 operands, REAL4 GNU Fortran14.3, contraction off versus fast. Copies BYTE original accepted and independently reviewed source; no regenerated data/bound.",
+    "accepted_qualification": "proofs/s2_p3/qualification.json:gates.WRF_contraction_init_control",
+    "files": {
+      "literal_mp52.npz": "f80ade544d275c60c80f39c2a06f6d36201565c3d3839619fcb01b4435ec7587",
+      "fma_mp52.npz": "11dded515566d9c55f499af25b7176aff28f930e6850f4c93574c251e599d2ff",
+      "report.json": "95c531fceb9c6a808a1c887791fa76f1158e67e25f91128d9bed9627e32557b3"
+    },
+    "strict_atol_dBZ": 0.0003,
+    "registered_WRF_contraction_max_dBZ": 4.766279220581055
+  },
+  "performance_memory": {
+    "resident_c23_radar_bytes": 310464,
+    "additional_native_output": 1,
+    "native_ABI": "26\u219227; GPU compiled executable changed, old26 E41 cannot transfer",
+    "host_overlay": "Same radar object, host dictionary update; no helper arraycopy/devicework/sync. Newly included routes incur required radar publication transfer/IO.",
+    "remaining_device_costs": "Retained ze may no longer DCE; additional output, mask, temporaries/launches, register/stack/VRAM/compile-readiness/runtime cost require actual GPU evidence. No free-cost or speed claim."
+  },
+  "pending": [
+    "Actual27-outputGPU/E41/fullc23D6/VRAM/runtime qualification; oldc23 26-output inventory remainsINCOMPLETE, not relabeledPASS.",
+    "Strictze0.0003dBZ36/288 excess/max0.0485477 retained; registered originalWRFcontractionbound4.766279220581055 unchanged.",
+    "Four proven-inherited allocation-count failures and unrelated broad-smoke6G OOMs remain unwaived.",
+    "All prior F2negativephase/extraP3speciescoverage/ZERO-WRF-MYNNUB/experimental and MP50FMA disclosures unchanged."
+  ],
+  "cleanup": {
+    "new_snapshots": 0,
+    "new_compile_caches": 0,
+    "new_pytest_temp_dirs": 0,
+    "own_model_jobs": 0,
+    "cache": "NONE",
+    "GPU_requested": false
+  },
+  "proof_files": {
+    "rv-t-writer-p3radar-VERDICT.md": "f5c45a4b029d1b6ff324109b39d56c4f52754546e9519b4637348b0c0d5e17a7",
+    "rv-t-writer-p3radar-SUMMARY.json": "0e27b799a295fc08a218c0e52cd532da88152570afb6f4d7af32ee076a55dcf2",
+    "rv-t-writer-p3radar-audit.json": "3a44bc0fc4707add3dee96445729b0447256f1c0a31d44e483e5788b9a7aa8ec",
+    "rv-t-writer-p3radar-source_checks.json": "8ebb8a876088c110e4fcba4cffdf7543b794fd82a75a9f9b5fee20e4153b97d6",
+    "rv-t-writer-p3radar-shared_host.json": "89d0c4c0532f26d4576fab3681baf1f75d0ccfe1fa08d0bce99e40b24ee72d8c",
+    "rv-t-writer-p3radar-shared_host.xml.gz": "898431a872d2f90b3b7f288e37cbac3fda72adcfce45cb86587b8af4df9ea5e1",
+    "rv-t-writer-p3radar-focused.json": "0cec7a847202f545d3e586bc2e308e00c9d99b813d5267a131949ee848429da5",
+    "rv-t-writer-p3radar-focused.xml.gz": "f17b8f99b60216f4b7bf36dfef93a7917fb105fefe574751ed98a65055dcabdf",
+    "rv-t-writer-p3radar-swiss_identity.json": "3a98ef23bb95c531a8c8ad231005caa67593e9a29339232c36e9ef56f2d58e25",
+    "rv-t-writer-p3radar-prod_identity.json": "9a0afc511b86e33014d401a28c247d1bfd84072507da37fdf12c9a6f06f9a802",
+    "rv-t-writer-p3radar-cleanup.json": "15adf93ddf9609e404a9bdf0da5481e16a33c7d3c651dcb0996812bd257849b4",
+    "rv-t-writer-p3radar-R2-VERDICT.md": "aca1f399ce88aca3b6ba7c6f3190262ea9c3be6165abc31792cf35d04937c11b",
+    "rv-t-writer-p3radar-R2-audit.json": "1d8ad19fcb5f7b81dbc9bf2ccea40f44a027114393c2ef4007a8269035e5ec4a",
+    "rv-t-writer-p3radar-R2-routes.json": "7369ad4e11fd6aed996f6ce7d08924f13972d145235a2198c1e9ba26a0ebe2e4",
+    "rv-t-writer-p3radar-R2-routes.xml.gz": "df9fa11f225539c55e34bd7a9603274a05340098b2a181dff4c3385631daa538",
+    "rv-t-writer-p3radar-R2-mutant.json": "24c5df384470d21ef2f4261ba140fd322aab02dc24b01264ea5055a945fcfeb4",
+    "rv-t-writer-p3radar-R2-mutant.xml.gz": "f00b291efc39f3211d994d6bda6369d0974f5e27e7abf9b07928fe5006199f7d",
+    "rv-t-writer-p3radar-R2-cleanup.json": "7f738de6b5892628cb17a45bc7f6c8781087daaff37c5a68eadb7effddfea9f9",
+    "integrate_batch19.py": "1c183c25fbfdb84bbe0c338c2422ef126071631251d914831844113f8a885da2",
+    "SOURCE_AUDIT.json": "6b77feb253da88ad36ad95da32048a6b93fc0e7d0ba750fdd1e2c59232d7d23e"
+  },
+  "uncompressed_sha256": {
+    "rv-t-writer-p3radar-VERDICT.md": "f5c45a4b029d1b6ff324109b39d56c4f52754546e9519b4637348b0c0d5e17a7",
+    "rv-t-writer-p3radar-SUMMARY.json": "0e27b799a295fc08a218c0e52cd532da88152570afb6f4d7af32ee076a55dcf2",
+    "rv-t-writer-p3radar-audit.json": "3a44bc0fc4707add3dee96445729b0447256f1c0a31d44e483e5788b9a7aa8ec",
+    "rv-t-writer-p3radar-source_checks.json": "8ebb8a876088c110e4fcba4cffdf7543b794fd82a75a9f9b5fee20e4153b97d6",
+    "rv-t-writer-p3radar-shared_host.json": "89d0c4c0532f26d4576fab3681baf1f75d0ccfe1fa08d0bce99e40b24ee72d8c",
+    "rv-t-writer-p3radar-shared_host.xml": "a9d48392d9390dad89f242ae0c365d3095b02017fa9b640a17690b335561dfb1",
+    "rv-t-writer-p3radar-focused.json": "0cec7a847202f545d3e586bc2e308e00c9d99b813d5267a131949ee848429da5",
+    "rv-t-writer-p3radar-focused.xml": "46bda932c3de4b0ac5cc8c019f682f3333911cd0fb3a26ec414e5a452e546575",
+    "rv-t-writer-p3radar-swiss_identity.json": "3a98ef23bb95c531a8c8ad231005caa67593e9a29339232c36e9ef56f2d58e25",
+    "rv-t-writer-p3radar-prod_identity.json": "9a0afc511b86e33014d401a28c247d1bfd84072507da37fdf12c9a6f06f9a802",
+    "rv-t-writer-p3radar-cleanup.json": "15adf93ddf9609e404a9bdf0da5481e16a33c7d3c651dcb0996812bd257849b4",
+    "rv-t-writer-p3radar-R2-VERDICT.md": "aca1f399ce88aca3b6ba7c6f3190262ea9c3be6165abc31792cf35d04937c11b",
+    "rv-t-writer-p3radar-R2-audit.json": "1d8ad19fcb5f7b81dbc9bf2ccea40f44a027114393c2ef4007a8269035e5ec4a",
+    "rv-t-writer-p3radar-R2-routes.json": "7369ad4e11fd6aed996f6ce7d08924f13972d145235a2198c1e9ba26a0ebe2e4",
+    "rv-t-writer-p3radar-R2-routes.xml": "2072cb3d88b537e1702edf0cd7ac6d51fd71ba5abdd226077199a8744d33efc4",
+    "rv-t-writer-p3radar-R2-mutant.json": "24c5df384470d21ef2f4261ba140fd322aab02dc24b01264ea5055a945fcfeb4",
+    "rv-t-writer-p3radar-R2-mutant.xml": "8de38f9088bdc6d5450683ed20cc092f1b9dbbddb553e3fc4f84225f39fb3fa8",
+    "rv-t-writer-p3radar-R2-cleanup.json": "7f738de6b5892628cb17a45bc7f6c8781087daaff37c5a68eadb7effddfea9f9",
+    "integrate_batch19.py": "1c183c25fbfdb84bbe0c338c2422ef126071631251d914831844113f8a885da2",
+    "SOURCE_AUDIT.json": "6b77feb253da88ad36ad95da32048a6b93fc0e7d0ba750fdd1e2c59232d7d23e"
+  }
+}

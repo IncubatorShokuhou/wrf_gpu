@@ -4,7 +4,11 @@ import pytest
 from gpuwrf import _fast_defaults as defaults
 
 EXPECTED = {
-    'GPUWRF_LAYOUT_PIN': '1',
+    # v0.3.2 registered GPUWRF_LAYOUT_PIN=1 (P2 nested-only row-major layout pins, a7d27236c).
+    # v0.3.3 final source (6e38cbf17) extended the pin to the root step and set the mode to
+    # 'ac_carry_cols_cum' (root-pin / e41-class: pinned root programs keep the land/surface family
+    # clean vs >500-instr surface fusions). Pin tracks the CURRENT registered selection.
+    'GPUWRF_LAYOUT_PIN': 'ac_carry_cols_cum',
 }
 
 

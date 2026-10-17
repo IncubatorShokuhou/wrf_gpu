@@ -1,0 +1,687 @@
+{
+  "verdict": "READY-FOR-MERGE",
+  "scope": "Composed source/CPU/frontend integration gate; not full-suite or release GPU qualification",
+  "UTC": "2026-10-14T22:28:40.288012+00:00",
+  "lane": "s2-integrate",
+  "base_main": "12268e5f2",
+  "latest_main": "df7d4e46dbd235a6af9eb87a735ca6a6283ee845",
+  "measured_candidate": "dfbd526f48c16337ecb9729f00a74faaa7200644",
+  "head_before_seal": "c17dcbe44cfad9c5573ae95f5a5869911bd76c25",
+  "manager_RAM_hook_only_sync": [
+    "scripts/with_ram_slot.sh"
+  ],
+  "merged_test_repair_commits": [
+    "9a958cb46",
+    "984f5070c",
+    "1c5561af4",
+    "873cac346",
+    "50873bfc5",
+    "1b6cf9f93",
+    "6122c751b",
+    "b0d618512",
+    "d185e9dce"
+  ],
+  "already_merged": "de2e7089e",
+  "disclosure_commit": "29d0b8ef85d1cd842e1736b77f51e443e8d94d6d",
+  "CuPlus_repackaged": "67ac51418233a228936c69f317fe2eeae7bbf340",
+  "integration_conflicts": 0,
+  "integrator_numerical_edits": false,
+  "source_disclosure_audit": {
+    "UTC": "2026-10-14T21:40:37.352040+00:00",
+    "status": "PASS",
+    "candidate": "dfbd526f48c16337ecb9729f00a74faaa7200644",
+    "reviewed_test_files_SHA_exact": [
+      "tests/test_s2_ssib_wiring.py",
+      "tests/v025/b_rad/test_mcica_maxrand_re01.py",
+      "tests/test_canary_wrf_fixture.py",
+      "tests/test_bench_summary.py",
+      "tests/test_cdudhia_sw_operational_wiring.py",
+      "tests/test_lw12_glue_default.py",
+      "tests/test_history_instep_diag.py",
+      "tests/test_lower_boundary_order.py",
+      "tests/v040/cuplus/test_rk_caller.py",
+      "tests/test_m3_edge_cases.py",
+      "tests/test_m3_state.py",
+      "tests/_legacy_fp64_state.py",
+      "tests/test_m4_tester_adversarial_attempt2.py",
+      "tests/test_m4_tier2_invariants.py",
+      "tests/test_m4_tier3_convergence.py"
+    ],
+    "critic_receipts_SHA_exact": 18,
+    "source_changes_ONLY_six_reviewed_CuPlus_files": [
+      "src/gpuwrf/kernels/phys_camzm_column.py",
+      "src/gpuwrf/kernels/phys_cuplus_driver.py",
+      "src/gpuwrf/kernels/phys_kfcup_column.py",
+      "src/gpuwrf/kernels/phys_kfcup_cps.py",
+      "src/gpuwrf/kernels/phys_mskf_column.py",
+      "src/gpuwrf/physics/cumulus_kfcup_support.py"
+    ],
+    "source_BYTE_repacked_and_reviewed": true,
+    "original_CuPlus_packet_SHA_exact": 25,
+    "CuPlus_finite_BYTE_values_reused": 38752,
+    "prior_data_scripts_integration_packets_BYTE": true,
+    "disclosure_packet_SHA_exact": 5,
+    "prior17records_maps_BYTE": true,
+    "active_receipts": 20,
+    "flagged_fusions": 62,
+    "nonleaf_callees": 3,
+    "new_external_small_receipt_SHA_joins": [
+      {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c61/e41/wave_gate.json",
+        "sha256": "ebcc12681650e9b11ff2a9aec2b1c368f1ec40f6c0fc11ad874dd2c179bfdb29"
+      },
+      {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c61/gpu_run.json",
+        "sha256": "793395f3cd460bb52ad4e9ba73b8e94a6b6fda88b37ed5f064a291345d6b8bbc"
+      },
+      {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c61/input/namelist.input",
+        "sha256": "2703e0628da932c4bb22e1d52584088af85c95f6ff2276ae1808ee2222b11ee4"
+      },
+      {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c61/D6_d01.json",
+        "sha256": "f9401d8dd5131a0f19833462ee3ceaff446c6acc337c53e7dd588fc353958476"
+      },
+      {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c61/inputs.json",
+        "sha256": "15fd06b512444f06a1b2fd09d3b0c9c3da71aa76243aa495de0e319daf441aac"
+      },
+      {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c61/e41/cubin_scan_b79201439509_e0.json",
+        "sha256": "f1c3e87a59baa2e0b6be10cc542ed1f23d14e04984358895b9a72c5023ebc54c"
+      },
+      {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c61/e41/cubin_scan_5312003cfb26_e0.json",
+        "sha256": "f1c3e87a59baa2e0b6be10cc542ed1f23d14e04984358895b9a72c5023ebc54c"
+      },
+      {
+        "path": "<DATA_ROOT>/wrf_gpu2/scratch/t-e41opt/EO39_c61/source_map.json",
+        "sha256": "d40d581267c52cc569bf605526ee6b312d780a954d72105320ffc5b6395103ab"
+      },
+      {
+        "path": "<DATA_ROOT>/wrf_gpu2/scratch/t-c02nan/TCN24_c08/e41/wave_gate.json",
+        "sha256": "932ea149c9d856fdbe8cda200a53a28f0d5fab4ce8b6b1eae56970fabfd2eb54"
+      },
+      {
+        "path": "<DATA_ROOT>/wrf_gpu2/scratch/t-c02nan/TCN24_c08/receipt.json",
+        "sha256": "696903804b56b8a156559b4013a08d2201ec17602d05d8807eca6be4ac4f4c3d"
+      },
+      {
+        "path": "<DATA_ROOT>/wrf_gpu2/scratch/t-c02nan/TCN24_c08/input/namelist.input",
+        "sha256": "93238842ee599a49f0ba69168c63e77c33192bd05f765884052449506195a99e"
+      },
+      {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/t-c02nan/TCN24/gpu.log",
+        "sha256": "67fa415466a0b2a6bd2512ad2d4b8a52ea75d3deba991a6850c0d069b1f2caee"
+      },
+      {
+        "path": "<DATA_ROOT>/wrf_gpu2/scratch/t-c02nan/TCN24_c08/e41/cubin_scan_4903bc4d62cd_e0.json",
+        "sha256": "a0584ae1446c03b856c1724c7e5ee8702a71bf7f8d1097887c35d9210af4a14f"
+      },
+      {
+        "path": "<DATA_ROOT>/wrf_gpu2/scratch/t-c02nan/TCN24_c08/e41/cubin_scan_fd2d91624774_e0.json",
+        "sha256": "a0584ae1446c03b856c1724c7e5ee8702a71bf7f8d1097887c35d9210af4a14f"
+      },
+      {
+        "path": "<DATA_ROOT>/wrf_gpu2/scratch/t-c02nan/TCN24_c08/e41/attribution/source_map.json",
+        "sha256": "75fbb9a423f571969cdf749a2f20313c6e8594411300cbd52f58d179a16ef16a"
+      },
+      {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c15/e41/wave_gate.json",
+        "sha256": "af6081b9af4e65fe1e4955165a8e221dcc5eaae5dc74e464610fa543a20fe8ce"
+      },
+      {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c15/gpu_run.json",
+        "sha256": "ba525675d0109b1e8fc82adcd0e76e89ec99c0b8648442cef3a222f5d87ffb87"
+      },
+      {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c15/input/namelist.input",
+        "sha256": "61d740265e341e702ab43c927fcabffa2606800e1ce1758f31263b5e744a6909"
+      },
+      {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c15/D6_d01.json",
+        "sha256": "e41dca8293fe13326b763bd22c5e6c77ed5ea9df728c943db1cc1d0350cde4b2"
+      },
+      {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c15/inputs.json",
+        "sha256": "6c7029407700c25a815cac62234ff973e748bf21813b5534fef9302be083b999"
+      },
+      {
+        "path": "<DATA_ROOT>/wrf_gpu2/scratch/t-e41opt/EO40_c15/mapper_receipt.json",
+        "sha256": "330d3e33b39fa5b9c715d24f15fef343a1b6b79b58c14c414fd521715db5c386"
+      },
+      {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c15/e41/cubin_scan_ee86cd9c0837_e0.json",
+        "sha256": "d3883224349b3059c96c6970df1e13934f52b9715d9b4534de3d4502fc1e9434"
+      },
+      {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c15/e41/cubin_scan_54b1d4dec1e5_e0.json",
+        "sha256": "d3883224349b3059c96c6970df1e13934f52b9715d9b4534de3d4502fc1e9434"
+      },
+      {
+        "path": "<DATA_ROOT>/wrf_gpu2/scratch/t-e41opt/EO40_c15/source_map.json",
+        "sha256": "f42d6860beebc6746e6225c052cf4c9ea1d31b1bda81b66db5420c2cbfb41c1e"
+      }
+    ],
+    "disclosure_scopes": {
+      "c61": "original full25D6PASS/kInput527FAIL/STACK8",
+      "c08-short": "NFstep200/sim3600,lead0only/D6NOT_RUN/STACK408+6kInputFAIL",
+      "c15": "25frames/boundedPASS/NF0/coverageINCOMPLETE2radar;STACK5920+3nonleafFAIL"
+    },
+    "performance": "Test/disclosure changes add no runtime work. CuPlus original CPU memory deltas retained; GPU timing/VRAM/E41/D6 pending. No new carry/host transfers inferred; no speed claim.",
+    "GPU_runs": 0,
+    "cache": "NONE"
+  },
+  "sanity": {
+    "fresh_pass_executions": 327,
+    "fresh_unique_PASS": 325,
+    "prior_unique_PASS": 542,
+    "combined_unique_PASS": 863,
+    "explicit_SKIP": 5,
+    "inherited_XFAIL": 3,
+    "FAIL": 0,
+    "ERROR": 0,
+    "XPASS": 0,
+    "per_arm_counts": {
+      "R01": {
+        "SKIP": 5,
+        "PASS": 61
+      },
+      "R02a": {
+        "PASS": 6
+      },
+      "R03": {
+        "PASS": 75,
+        "XFAIL": 3
+      },
+      "R07": {
+        "PASS": 37
+      },
+      "CuPlus": {
+        "PASS": 148
+      }
+    },
+    "per_arm_duration_s": {
+      "R01": 41.935628178000115,
+      "R02a": 87.38696071999948,
+      "R03": 11.771419624999908,
+      "R07": 111.79171847399994,
+      "CuPlus": 26.724595874000443
+    },
+    "note": "PASS is a distinct-node union; skips and unchanged inherited xfails excluded. Repaired 8 MYJ nodes paid by R03 are deselected from CuPlus, not repeated."
+  },
+  "default_identities_fresh": {
+    "Swiss": {
+      "edits": {},
+      "bound": {
+        "mp_physics": 8,
+        "bl_pbl_physics": 5,
+        "sf_sfclay_physics": 5,
+        "ra_lw_physics": 4,
+        "ra_sw_physics": 4,
+        "cu_physics": 0,
+        "sf_surface_physics": 4,
+        "use_noahmp": true,
+        "sf_urban_physics": 0,
+        "diff_opt": 1,
+        "km_opt": 4,
+        "epssm": 0.5,
+        "damp_opt": 3,
+        "zdamp": 5000.0,
+        "dampcoef": 0.2,
+        "w_damping": 1,
+        "diff_6th_opt": 2,
+        "diff_6th_factor": 0.12,
+        "moist_adv_opt": 1,
+        "scalar_adv_opt": 1,
+        "topo_shadow_length_m": 25000.0,
+        "cumulus_cadence_steps": 1,
+        "radiation_cadence_steps": 33
+      },
+      "load_s": 25.0,
+      "sha": "f672a5739cb96e388b6b7a40ef80337bf81bdc14ef15268f3476e09d79fe055d",
+      "chars": 14504210,
+      "trace_s": 13.5,
+      "wall_s": 38.9
+    },
+    "PROD": {
+      "edits": {},
+      "bound": {
+        "mp_physics": 8,
+        "bl_pbl_physics": 5,
+        "sf_sfclay_physics": 5,
+        "ra_lw_physics": 4,
+        "ra_sw_physics": 4,
+        "cu_physics": 1,
+        "sf_surface_physics": 4,
+        "use_noahmp": true,
+        "sf_urban_physics": 0,
+        "diff_opt": 1,
+        "km_opt": 4,
+        "epssm": 0.5,
+        "damp_opt": 3,
+        "zdamp": 5000.0,
+        "dampcoef": 0.2,
+        "w_damping": 1,
+        "diff_6th_opt": 2,
+        "diff_6th_factor": 0.12,
+        "moist_adv_opt": 1,
+        "scalar_adv_opt": 1,
+        "topo_shadow_length_m": 25000.0,
+        "cumulus_cadence_steps": 6,
+        "radiation_cadence_steps": 33
+      },
+      "load_s": 29.3,
+      "sha": "6fc715a2bd630934c4cf0f94427df19a527cbf429011c9ba5efe4d712744d27b",
+      "chars": 14708888,
+      "trace_s": 14.7,
+      "wall_s": 73.0
+    }
+  },
+  "actual_c29_c30_c31_frontends": {
+    "c29": {
+      "case": "c29",
+      "source_commit": "dfbd526f48c16337ecb9729f00a74faaa7200644",
+      "physical_backend": "cpu",
+      "lowering_platform": "cuda",
+      "gpu_executed": false,
+      "scope": "native CUDA lowering / optional AUTOTUNE0 deviceless prescreen, not fidelity or speed",
+      "lower": "OK",
+      "compile": "NOT_ATTEMPTED",
+      "programs": [
+        {
+          "name": "d01",
+          "lower": "OK",
+          "lower_s": 23.39856704399972,
+          "static_kwargs": {
+            "n_steps": 200,
+            "cadence": 33
+          },
+          "stablehlo_bytes": 263394391,
+          "stablehlo_sha256": "ee47931db9fd3ff1a1019303501ef483e15bf66b3aa5aaa770ac70f447d22f67",
+          "triton_custom_calls": 139,
+          "compile": "NOT_ATTEMPTED",
+          "stack": "UNKNOWN"
+        }
+      ],
+      "cache": "private per-arm scratch directories; managed GPUWRF cache off; cleaned by supervisor",
+      "target_sha256": "f46c185780fdbd4aab62ef20293385bb8de31a71bd260e9ce62cbfc21f196a23",
+      "harness_sha256": "4536a51e5e51bebc6b0b382937730f58adc3cc1e49eb84c09aa260d99eae9914",
+      "environment": {
+        "GPUWRF_TMPDIR": "<DATA_ROOT>/wrf_gpu2/scratch/s2-integrate/batch13-tmp",
+        "GPUWRF_CENSUS_SLIM": "0",
+        "TMPDIR": "<DATA_ROOT>/wrf_gpu2/scratch/s2-integrate/batch13-tmp",
+        "GPUWRF_CENSUS": "1",
+        "JAX_COMPILATION_CACHE_DIR": "<DATA_ROOT>/wrf_gpu2/scratch/s2-integrate/batch13-cache/jax",
+        "TRITON_CACHE_DIR": "<DATA_ROOT>/wrf_gpu2/scratch/s2-integrate/batch13-cache/triton",
+        "GPUWRF_JAX_CACHE": "0",
+        "CUDA_VISIBLE_DEVICES": "",
+        "GPUWRF_SCRATCH": "<DATA_ROOT>/wrf_gpu2/scratch/s2-integrate/batch13-tmp",
+        "GPUWRF_AOT_SLIM_MODULE": "0",
+        "JAX_PLATFORMS": "cpu",
+        "GPUWRF_FAST_DEFAULTS": "1",
+        "GPUWRF_RRTMG_MP_RE": "1"
+      },
+      "pid": 396411,
+      "boot_id": "e04fa13e-ccf1-4b7a-90fd-973467d8ec61",
+      "cgroup": "0::/user.slice/user-1000.slice/user@1000.service/app.slice/run-p396407-i391767.scope",
+      "systemd_scope": "run-p396407-i391767.scope",
+      "wall_s": 44.636303562999274,
+      "peak_rss_KiB": 3147908,
+      "matrix_status": "ADMITTED",
+      "input_sha256": {
+        "namelist.input": "aca487132e50b8505ddcdd15529c2c2e16b441d579a8ba759e7f646eaca99995",
+        "wrfbdy_d01": "f3e556670e4768326997bdfa1dd8b0f77eb6d5da07d9c4dbf900bf8ff9e30230",
+        "wrfinput_d01": "a5d696550d1dc6713e2e340b8c2fba83811d43f4a94a65ca95266035860e2781"
+      },
+      "phase": "serialize_full_IR",
+      "jax_version": "0.10.0",
+      "jax_enable_x64_before_native_trace": true,
+      "dfi_prepass": "INACTIVE",
+      "init_s": 19.060595595999985,
+      "native_trace": {
+        "facade": true,
+        "capability_resolver": "cuda",
+        "mcica_native": true,
+        "python_backend": "gpu",
+        "pallas_interpret": false,
+        "product_tridiagonal": true,
+        "virtual_target": "NVIDIA GeForce RTX 5090_0(process=0,(0))"
+      },
+      "traced_pallas_calls": 141,
+      "traced_interpreted_pallas_calls": 0,
+      "physical_devices_at_exit": [
+        "cpu"
+      ],
+      "full_HLO_BYTE_reviewed": true
+    },
+    "c30": {
+      "case": "c30",
+      "source_commit": "dfbd526f48c16337ecb9729f00a74faaa7200644",
+      "physical_backend": "cpu",
+      "lowering_platform": "cuda",
+      "gpu_executed": false,
+      "scope": "native CUDA lowering / optional AUTOTUNE0 deviceless prescreen, not fidelity or speed",
+      "lower": "OK",
+      "compile": "NOT_ATTEMPTED",
+      "programs": [
+        {
+          "name": "d01",
+          "lower": "OK",
+          "lower_s": 25.557916055000533,
+          "static_kwargs": {
+            "n_steps": 200,
+            "cadence": 33
+          },
+          "stablehlo_bytes": 264119959,
+          "stablehlo_sha256": "58fde7c9c43c34acbffbe11dfdfc353524af6a3bfc9039c19b6ebe6815e8742f",
+          "triton_custom_calls": 160,
+          "compile": "NOT_ATTEMPTED",
+          "stack": "UNKNOWN"
+        }
+      ],
+      "cache": "private per-arm scratch directories; managed GPUWRF cache off; cleaned by supervisor",
+      "target_sha256": "f46c185780fdbd4aab62ef20293385bb8de31a71bd260e9ce62cbfc21f196a23",
+      "harness_sha256": "4536a51e5e51bebc6b0b382937730f58adc3cc1e49eb84c09aa260d99eae9914",
+      "environment": {
+        "GPUWRF_TMPDIR": "<DATA_ROOT>/wrf_gpu2/scratch/s2-integrate/batch13-tmp",
+        "GPUWRF_CENSUS_SLIM": "0",
+        "TMPDIR": "<DATA_ROOT>/wrf_gpu2/scratch/s2-integrate/batch13-tmp",
+        "GPUWRF_CENSUS": "1",
+        "JAX_COMPILATION_CACHE_DIR": "<DATA_ROOT>/wrf_gpu2/scratch/s2-integrate/batch13-cache/jax",
+        "TRITON_CACHE_DIR": "<DATA_ROOT>/wrf_gpu2/scratch/s2-integrate/batch13-cache/triton",
+        "GPUWRF_JAX_CACHE": "0",
+        "CUDA_VISIBLE_DEVICES": "",
+        "GPUWRF_SCRATCH": "<DATA_ROOT>/wrf_gpu2/scratch/s2-integrate/batch13-tmp",
+        "GPUWRF_AOT_SLIM_MODULE": "0",
+        "JAX_PLATFORMS": "cpu",
+        "GPUWRF_FAST_DEFAULTS": "1",
+        "GPUWRF_RRTMG_MP_RE": "1"
+      },
+      "pid": 398551,
+      "boot_id": "e04fa13e-ccf1-4b7a-90fd-973467d8ec61",
+      "cgroup": "0::/user.slice/user-1000.slice/user@1000.service/app.slice/run-p398547-i391778.scope",
+      "systemd_scope": "run-p398547-i391778.scope",
+      "wall_s": 48.89791561899983,
+      "peak_rss_KiB": 3171832,
+      "matrix_status": "ADMITTED",
+      "input_sha256": {
+        "namelist.input": "4e68c293b210ad4c6b6fe39d84ab71a0a6fae79ce690e48e101a5d55bed64f1b",
+        "wrfbdy_d01": "f3e556670e4768326997bdfa1dd8b0f77eb6d5da07d9c4dbf900bf8ff9e30230",
+        "wrfinput_d01": "a5d696550d1dc6713e2e340b8c2fba83811d43f4a94a65ca95266035860e2781"
+      },
+      "phase": "serialize_full_IR",
+      "jax_version": "0.10.0",
+      "jax_enable_x64_before_native_trace": true,
+      "dfi_prepass": "INACTIVE",
+      "init_s": 21.037406682999972,
+      "native_trace": {
+        "facade": true,
+        "capability_resolver": "cuda",
+        "mcica_native": true,
+        "python_backend": "gpu",
+        "pallas_interpret": false,
+        "product_tridiagonal": true,
+        "virtual_target": "NVIDIA GeForce RTX 5090_0(process=0,(0))"
+      },
+      "traced_pallas_calls": 162,
+      "traced_interpreted_pallas_calls": 0,
+      "physical_devices_at_exit": [
+        "cpu"
+      ],
+      "full_HLO_BYTE_reviewed": true
+    },
+    "c31": {
+      "case": "c31",
+      "source_commit": "dfbd526f48c16337ecb9729f00a74faaa7200644",
+      "physical_backend": "cpu",
+      "lowering_platform": "cuda",
+      "gpu_executed": false,
+      "scope": "native CUDA lowering / optional AUTOTUNE0 deviceless prescreen, not fidelity or speed",
+      "lower": "OK",
+      "compile": "NOT_ATTEMPTED",
+      "programs": [
+        {
+          "name": "d01",
+          "lower": "OK",
+          "lower_s": 28.34872385200015,
+          "static_kwargs": {
+            "n_steps": 200,
+            "cadence": 33
+          },
+          "stablehlo_bytes": 263934281,
+          "stablehlo_sha256": "adafa5ee428d27d385640ffbba3862e2c4bfeb61f7bc17cc527caad289005b2c",
+          "triton_custom_calls": 160,
+          "compile": "NOT_ATTEMPTED",
+          "stack": "UNKNOWN"
+        }
+      ],
+      "cache": "private per-arm scratch directories; managed GPUWRF cache off; cleaned by supervisor",
+      "target_sha256": "f46c185780fdbd4aab62ef20293385bb8de31a71bd260e9ce62cbfc21f196a23",
+      "harness_sha256": "4536a51e5e51bebc6b0b382937730f58adc3cc1e49eb84c09aa260d99eae9914",
+      "environment": {
+        "GPUWRF_TMPDIR": "<DATA_ROOT>/wrf_gpu2/scratch/s2-integrate/batch13-tmp",
+        "GPUWRF_CENSUS_SLIM": "0",
+        "TMPDIR": "<DATA_ROOT>/wrf_gpu2/scratch/s2-integrate/batch13-tmp",
+        "GPUWRF_CENSUS": "1",
+        "JAX_COMPILATION_CACHE_DIR": "<DATA_ROOT>/wrf_gpu2/scratch/s2-integrate/batch13-cache/jax",
+        "TRITON_CACHE_DIR": "<DATA_ROOT>/wrf_gpu2/scratch/s2-integrate/batch13-cache/triton",
+        "GPUWRF_JAX_CACHE": "0",
+        "CUDA_VISIBLE_DEVICES": "",
+        "GPUWRF_SCRATCH": "<DATA_ROOT>/wrf_gpu2/scratch/s2-integrate/batch13-tmp",
+        "GPUWRF_AOT_SLIM_MODULE": "0",
+        "JAX_PLATFORMS": "cpu",
+        "GPUWRF_FAST_DEFAULTS": "1",
+        "GPUWRF_RRTMG_MP_RE": "1"
+      },
+      "pid": 403105,
+      "boot_id": "e04fa13e-ccf1-4b7a-90fd-973467d8ec61",
+      "cgroup": "0::/user.slice/user-1000.slice/user@1000.service/app.slice/run-p403103-i443359.scope",
+      "systemd_scope": "run-p403103-i443359.scope",
+      "wall_s": 50.14428092599974,
+      "peak_rss_KiB": 3139256,
+      "matrix_status": "ADMITTED",
+      "input_sha256": {
+        "namelist.input": "a71a8c1c731d196c0acf6748ac753f738c1fcb40d8bca3fe901a56f0ae98e2c3",
+        "wrfbdy_d01": "f3e556670e4768326997bdfa1dd8b0f77eb6d5da07d9c4dbf900bf8ff9e30230",
+        "wrfinput_d01": "a5d696550d1dc6713e2e340b8c2fba83811d43f4a94a65ca95266035860e2781"
+      },
+      "phase": "serialize_full_IR",
+      "jax_version": "0.10.0",
+      "jax_enable_x64_before_native_trace": true,
+      "dfi_prepass": "INACTIVE",
+      "init_s": 18.70308133800063,
+      "native_trace": {
+        "facade": true,
+        "capability_resolver": "cuda",
+        "mcica_native": true,
+        "python_backend": "gpu",
+        "pallas_interpret": false,
+        "product_tridiagonal": true,
+        "virtual_target": "NVIDIA GeForce RTX 5090_0(process=0,(0))"
+      },
+      "traced_pallas_calls": 162,
+      "traced_interpreted_pallas_calls": 0,
+      "physical_devices_at_exit": [
+        "cpu"
+      ],
+      "full_HLO_BYTE_reviewed": true
+    }
+  },
+  "precision_scope": "Independent before/fp64-opt-in/after checks and exact descriptor/x64 restoration, followed by default dtype/device consumers in the same process.",
+  "reviewed_science_reused": {
+    "CuPlus_finite_BYTE_values": 38752,
+    "two_call_active_bank_rows": 52,
+    "original_CuPlus_packet_SHA": 25,
+    "genuine_original_source_mutants": 3,
+    "test_repair_mutants": "2 product AssertionErrors +1 present-wrong external-file assertion retained from sole critic; no rerun.",
+    "reason": "All six native source files, the original packet and literal proof compatibility edits match reviewed final source; packaging correction is BYTE. Numerical oracles unchanged."
+  },
+  "disclosure": {
+    "source_selector_receipts": 20,
+    "flagged_fusions": 62,
+    "nonleaf_callees": 3,
+    "prior17records_maps_BYTE": true,
+    "small_producer_SHA_joins": 24,
+    "all_failures_retained": true,
+    "firewalls_NOT_ADMITTED": true
+  },
+  "raw_XML_policy": "Two exact .gitattributes whitespace exceptions preserve approved ZP23 and ZP25 raw XML and original hashes; no source/test tolerance adjustment.",
+  "performance_memory": {
+    "test_docs": "No forecast launches, carry, allocations, transfers or compile work added.",
+    "CuPlus": "CPU argument/output sizes unchanged; original component temporary measurements retained in original qualification. New final CPU frontend resources recorded. GPU operations/timing/VRAM/native compilation/E41/forecast D6 UNKNOWN/pending.",
+    "defaults": "Fresh native-facade program identities EXACT; no default arithmetic or carry change.",
+    "resource": "FIFO slots/MemoryMax6G/Swap0/CPU24,25nice19, fresh bounded processes, one lane CPU job; NO GPU until NightlyDONE."
+  },
+  "cleanup": {
+    "UTC": "2026-10-14T22:27:38.853421+00:00",
+    "snapshot_removed": "<DATA_ROOT>/wrf_gpu2/scratch/s2-integrate/batch13-tree",
+    "scratch_removed": [
+      "<DATA_ROOT>/wrf_gpu2/scratch/s2-integrate/pytest",
+      "<DATA_ROOT>/wrf_gpu2/scratch/s2-integrate/batch13-tmp",
+      "<DATA_ROOT>/wrf_gpu2/scratch/s2-integrate/batch13-cache",
+      "<DATA_ROOT>/wrf_gpu2/scratch/s2-integrate/batch13-c29-lower",
+      "<DATA_ROOT>/wrf_gpu2/scratch/s2-integrate/batch13-c30-lower",
+      "<DATA_ROOT>/wrf_gpu2/scratch/s2-integrate/batch13-c31-lower"
+    ],
+    "all_owned_scratch_absent": true,
+    "GPU_E41_consumers": "NONE; allfrontendsCPUonlycompileNOT_ATTEMPTED",
+    "GPU_jobs": "NONE started",
+    "cache": "NONE retained"
+  },
+  "open_risks": [
+    "All prior F2/E41/D6 limits and failures/incomplete scopes retained.",
+    "Original C61 D6PASS and C08-short failed/C15 incomplete scopes apply to their recorded sources, not this tree.",
+    "Native frontends are CPU compile-only lowering, no GPU execution/compiled cubin/E41 or forecast/speed claim.",
+    "Producer full-suite and release-owner gates are outside this integration gate."
+  ],
+  "proof_files": {
+    "SI133-batch13-merge.json": "023af0c5a8385375925ed19892ff9846119261d72d92152ea2989c95a556c558",
+    "SI134-batch13-merge.json": "df07e8a763210c2ad99a7e088c7a509feaaf9e4af281b61e81a26428fd0313f1",
+    "SI135-batch13-merge.json": "904a479a7de3400e5ecce6f9ecc9d5729da29a08496a27c01c958ea637a58a6e",
+    "SI136-batch13-merge.json": "b7012c7d09606354c0d14cdc43e3960231fd44f8184404a37a7096bcfd85c73b",
+    "SI137-batch13-merge.json": "f4163febe284c83a751478d6001ccef29c6a6fe7d0ef462f2e7003d47e65b01a",
+    "SI138-batch13-merge.json": "dedda95b4efdda9c4d01f067af6a96216352ba5efe3746ad3a8cedf210cc87ef",
+    "SI139-batch13-merge.json": "5de853589fef1f0ba5ca039c302602b31cf162d5bca5e4c32b5b16774b43f63d",
+    "SI140-batch13-merge.json": "12d11ec4b0118ebd8137b8957d11af20fa9f15d1281a47cef747761cb435355d",
+    "SI141-batch13-merge.json": "f1665593e8a939f5e23735465f561d68b315a55089a71350d2e265ce409a0acd",
+    "SI142-batch13-merge.json": "35eed37436a2eb4df4dfe170bcf340b929b42a54eb375c99a05054645fae1bd9",
+    "SI143-source-disclosure-audit.json": "2026dba7326819c955a416faada4b3994f9d96902fe07a9aedf6f4725b395252",
+    "SI143-source-disclosure-audit.log.gz": "e4fec3fd2429b7565d9bb5a2c0f6e7a269f711c24e1188852965ebf11788cfed",
+    "SI144-snapshot.log.gz": "852ff625f529fd7e24fd4e2210528156a6114659951b5a3877fe9e7ae49c1b13",
+    "SI145-CuPlus-run.json": "9d83252eafb7b5efc7f96a38378becbf22c366b19a6304f0b1e4e2e2dccc1bfe",
+    "SI145-CuPlus.json": "21f752c5669694465ce6ff2d9c156714f7e99aa1df6873f3d0ac448e70822bf5",
+    "SI145-CuPlus.log.gz": "deb25c887c279539a66e8af9409568de48b52eeea5ccc2d7f3bb0e5ce7000878",
+    "SI145-CuPlus.xml.gz": "692b997fb98e47fd32bdea32cf6db3ad0be1021e76b294cccad88804f7d18759",
+    "SI145-R01-run.json": "0b4d6d7721f5b3a6bc18b095ea4af2bbd2506c5eb9b20d1dda42fbb7f63552b3",
+    "SI145-R01.json": "39efa52d5dd14fddf1376809a7b68f8327e6d4f768282ac198a523c64e305788",
+    "SI145-R01.log.gz": "940c148028bfe5150777acd4aa856f9515980379e64e85e48d9ecf2bc2166967",
+    "SI145-R01.xml.gz": "33c4fe0200d5709dc8ced9229dfdef132c9eaa45983ccbd9a2375197b44a1f38",
+    "SI145-R02a-run.json": "cf4f15a2553f2bba913d690fc59d50439df69a85297412c49539f53512ef31b8",
+    "SI145-R02a.json": "498c8c7ec907b5bda91c415fe2653166406ace6d4b4f3f4556c86f8ed5fc38a8",
+    "SI145-R02a.log.gz": "7e101dff111a1a7db7e7287c6e64fb4fd4afc4a119d240ee3602158d38f4e453",
+    "SI145-R02a.xml.gz": "0dd4c74d459a099e9860a18dae71759a6cd310623802e907c1d5c128b82fe2bb",
+    "SI145-R03-run.json": "d777ac4e8bfccdbe8bc97fdc68edad39a381a16efdd19ac9a5aebe628a772fcc",
+    "SI145-R03.json": "31aec0fd097561e19db6374ef8270abf138c5dfcbf469ef4c4f8dbca9e57e0ba",
+    "SI145-R03.log.gz": "3f14522d64bb459930b0ada5256bb985e771956d23630197037799507c52a06c",
+    "SI145-R03.xml.gz": "b01094399cd326bee50260e7b111730cd082a55a66e4807a5a5014d7b9f74071",
+    "SI145-R07-run.json": "786ca8e3b164fbb37d3b2667a5ff67e2648f9d5483b9008b9ab528630a0cc6a4",
+    "SI145-R07.json": "28cfdd0916830f071b8a09032a5bdad00fa28c880514ebe4c22b2eebaa0e5168",
+    "SI145-R07.log.gz": "9d72dd3986d429bed13d3439ab5e25a9cdbb6326c6c36be36bf9fd94e3c4c47a",
+    "SI145-R07.xml.gz": "f0f2082eb9621304f28af53e4bb7e7f909e6d78013a7672aed8e980930f94dd7",
+    "SI146-zmpow-merge.json": "9bdf092fe40eace70e5b50a8aaf0c00debf31f4b3129512a2af2461184e2d401",
+    "SI147-final-snapshot.log.gz": "f54a276a715aed47ca920acac02e32681e87444422c0f6cc104b081db164804a",
+    "SI148-PROD-run.json": "88f54d98dfb0f57a33454333438e3a540b084c9748631f10fa2fba4979f445fd",
+    "SI148-PROD.json": "aad8c6baac763a908fa5764de35bb45a4ac14469ea79d94e9086fb5a8b43b8c1",
+    "SI148-PROD.log.gz": "06dfe0c640c2e10697cdd0631a3e59f464dbab3fe4b423bb5e15acf7cf398285",
+    "SI148-Swiss-run.json": "542477703e527e217666e3357eaf7964fb68dd1f9b0dac4a0073f469afca5a3b",
+    "SI148-Swiss.json": "f6a9b0812a3d01a22cb61e42eaeaa25540f7a95fe59d63ecc758ed04c0cc47ea",
+    "SI148-Swiss.log.gz": "4125a25e8f746dcea4274727329f1b36fbc854b6d9a76131a6dfc9b491bbdf4b",
+    "SI149-c29-run.json": "9eb2c8c4a693d85f2e6004f4386f6cf90a23e9bbb094a6186be8e7c5a587f052",
+    "SI149-c29.json": "9c8100d9af41c317ccd1fa878d2f0f725f6573279c950c1036a100a5cd2a3679",
+    "SI149-c29.log.gz": "3bacc1da3323ac727ebf9298d1a1c96e9d83c6d1a00f417943dbdeacdba1fa06",
+    "SI149-c30-run.json": "08affbc32d1c1fc9f331b3610219f7345233e1f219a5d3480744cb58c70b6f4e",
+    "SI149-c30.json": "321c427b3e490351964c5bbbaff0f28878faaa359a7dd600113aefb16c81a631",
+    "SI149-c30.log.gz": "6885ddc71967e74496b21132c121a0676e77c6e5a30b0782a448467cf052bc0d",
+    "SI149-c31-run.json": "38af390022611807da41814c0e5b15eeab09b98671feaa59f54099f4b900c8be",
+    "SI149-c31.json": "dfd15635d3167530953e48e18ec5aa892cce25e4c61740582f62499819ef4938",
+    "SI149-c31.log.gz": "882907dcd27cef3878ea9a9ad557ba5ae0dd0acdf901d21cdf65e128b710b4f3",
+    "SI151-cleanup.json": "d78329133e967df2fc03a7fb51ab50b3bb51417fb10640b8a266538c4e2070b4",
+    "run_batch13_suite.py": "fdfdcf47776ceaa18a8aad34f67f3cbae9dccf350038232579d0383b1a0a713e",
+    "run_batch13_arms.py": "792c133b5c1892ed9915607f1c77cf1bcb6e6685ec480627f80ac1508b64087a",
+    "audit_batch13.py": "6077c379f84114b44215d68942db1b4c61ea715b7661c27b709e7e913f21390b",
+    "seal_batch13.py": "3d5126760e385eed20841e11c41202d56e930d81c78ac6e99c7d664d824e2756",
+    "run_batch13_identity.py": "062872d79bb099f1146eb57a76bad96af649e9eb6390e3e9958331b255a85944",
+    "lower_batch13.py": "4536a51e5e51bebc6b0b382937730f58adc3cc1e49eb84c09aa260d99eae9914",
+    "test_precision_scope_batch13.py": "a9f84e4cbfd813156055c66f898fe0d37412ef535df85cd1f95eb6fe043ae315",
+    "rv-t-redsuite-VERDICT.md": "b2122460d25ecfcc395ab34efad97568cb28446a8d0cecb7ef8694bce6502019",
+    "rv-t-redsuite-REVIEW.json": "70a947d7b826a14ca587480d3696634e3416b904f52f2fdf6d34cf682c57d08f",
+    "rv-t-zmpow2-VERDICT.md": "082aee9af3a41a143656afc28f0e0d7a02927b22b006be99d38c3b0195aede27",
+    "rv-t-zmpow2-REVIEW_SUMMARY.json": "1b316574c778c42377bc1a8bb544315fcd6bfa9dbe4513a8f4d2764fdad4142e",
+    "PASS_NODES.json": "4dd41fbc2a6e799fd0e16f45d332e7bfcb570926c7c435c0739c5a1c018864b3"
+  },
+  "uncompressed_sha256": {
+    "SI133-batch13-merge.json": "023af0c5a8385375925ed19892ff9846119261d72d92152ea2989c95a556c558",
+    "SI134-batch13-merge.json": "df07e8a763210c2ad99a7e088c7a509feaaf9e4af281b61e81a26428fd0313f1",
+    "SI135-batch13-merge.json": "904a479a7de3400e5ecce6f9ecc9d5729da29a08496a27c01c958ea637a58a6e",
+    "SI136-batch13-merge.json": "b7012c7d09606354c0d14cdc43e3960231fd44f8184404a37a7096bcfd85c73b",
+    "SI137-batch13-merge.json": "f4163febe284c83a751478d6001ccef29c6a6fe7d0ef462f2e7003d47e65b01a",
+    "SI138-batch13-merge.json": "dedda95b4efdda9c4d01f067af6a96216352ba5efe3746ad3a8cedf210cc87ef",
+    "SI139-batch13-merge.json": "5de853589fef1f0ba5ca039c302602b31cf162d5bca5e4c32b5b16774b43f63d",
+    "SI140-batch13-merge.json": "12d11ec4b0118ebd8137b8957d11af20fa9f15d1281a47cef747761cb435355d",
+    "SI141-batch13-merge.json": "f1665593e8a939f5e23735465f561d68b315a55089a71350d2e265ce409a0acd",
+    "SI142-batch13-merge.json": "35eed37436a2eb4df4dfe170bcf340b929b42a54eb375c99a05054645fae1bd9",
+    "SI143-source-disclosure-audit.json": "2026dba7326819c955a416faada4b3994f9d96902fe07a9aedf6f4725b395252",
+    "SI143-source-disclosure-audit.log": "da9456fd79e218f45bb9777ce88ed0dcd4d4af14fb2fc4c48f0bc4eac3fb148d",
+    "SI144-snapshot.log": "ed7e72cc075c9b42ae4b5af4b633349e15996d5fa3c380c28db620365ab8a1c5",
+    "SI145-CuPlus-run.json": "9d83252eafb7b5efc7f96a38378becbf22c366b19a6304f0b1e4e2e2dccc1bfe",
+    "SI145-CuPlus.json": "21f752c5669694465ce6ff2d9c156714f7e99aa1df6873f3d0ac448e70822bf5",
+    "SI145-CuPlus.log": "5a1095a831c9ba6b21d8186c81e7f1a9e251a85db0ec4767b2cca80895039d1a",
+    "SI145-CuPlus.xml": "cb48f5fd075cfe24949f9a46c6c261b61c2a23f75d515339750aaf9ffd7684aa",
+    "SI145-R01-run.json": "0b4d6d7721f5b3a6bc18b095ea4af2bbd2506c5eb9b20d1dda42fbb7f63552b3",
+    "SI145-R01.json": "39efa52d5dd14fddf1376809a7b68f8327e6d4f768282ac198a523c64e305788",
+    "SI145-R01.log": "8d221f990bce2480ee6e780aec95315234bdbf650bbb61a30050958f7c341bf6",
+    "SI145-R01.xml": "852d371be12b370a3618b587182a20ecb627abb8617709b1c3b21d21a100d19c",
+    "SI145-R02a-run.json": "cf4f15a2553f2bba913d690fc59d50439df69a85297412c49539f53512ef31b8",
+    "SI145-R02a.json": "498c8c7ec907b5bda91c415fe2653166406ace6d4b4f3f4556c86f8ed5fc38a8",
+    "SI145-R02a.log": "ba61f59bc5415186393ced0f95c2c067c6932882b064dc9f7966431db8e73a7f",
+    "SI145-R02a.xml": "f72afa014a1d5a3594d8905e5035d74d05eadebff846667e0f91184db4d94e9e",
+    "SI145-R03-run.json": "d777ac4e8bfccdbe8bc97fdc68edad39a381a16efdd19ac9a5aebe628a772fcc",
+    "SI145-R03.json": "31aec0fd097561e19db6374ef8270abf138c5dfcbf469ef4c4f8dbca9e57e0ba",
+    "SI145-R03.log": "3b670365ed0d93c959cbbadfb0c555f4ba8de3fa4e01e0146827d029fb615fe8",
+    "SI145-R03.xml": "c23112f7181912805b9768979e7ffb2a078706d221038872b049bb51b9114b09",
+    "SI145-R07-run.json": "786ca8e3b164fbb37d3b2667a5ff67e2648f9d5483b9008b9ab528630a0cc6a4",
+    "SI145-R07.json": "28cfdd0916830f071b8a09032a5bdad00fa28c880514ebe4c22b2eebaa0e5168",
+    "SI145-R07.log": "234b8cadad818140b0f76725f1e37083481b1d876e10d0a05a31538e2c580eb6",
+    "SI145-R07.xml": "e1123aa224569b110cca8c47bf71f4e46a579b5b3ef3e7c78f91c91c3c6f1287",
+    "SI146-zmpow-merge.json": "9bdf092fe40eace70e5b50a8aaf0c00debf31f4b3129512a2af2461184e2d401",
+    "SI147-final-snapshot.log": "be5693348f6cc31a4ecab5d512bc6d2641e052c40163523a50f05003da0f537b",
+    "SI148-PROD-run.json": "88f54d98dfb0f57a33454333438e3a540b084c9748631f10fa2fba4979f445fd",
+    "SI148-PROD.json": "aad8c6baac763a908fa5764de35bb45a4ac14469ea79d94e9086fb5a8b43b8c1",
+    "SI148-PROD.log": "afb11ab1e54bbc41dd3c6652e5d5882ad220c00e21eeb0f0fc962fe7203b42b1",
+    "SI148-Swiss-run.json": "542477703e527e217666e3357eaf7964fb68dd1f9b0dac4a0073f469afca5a3b",
+    "SI148-Swiss.json": "f6a9b0812a3d01a22cb61e42eaeaa25540f7a95fe59d63ecc758ed04c0cc47ea",
+    "SI148-Swiss.log": "4924b418931edccf1e982be46e3230a43bcd47b7651bf5321d96f7d39388012a",
+    "SI149-c29-run.json": "9eb2c8c4a693d85f2e6004f4386f6cf90a23e9bbb094a6186be8e7c5a587f052",
+    "SI149-c29.json": "9c8100d9af41c317ccd1fa878d2f0f725f6573279c950c1036a100a5cd2a3679",
+    "SI149-c29.log": "76e6a7896da8f10d42e28bf0b393e5d4f7d6f867d449cc0098e9af81af0231db",
+    "SI149-c30-run.json": "08affbc32d1c1fc9f331b3610219f7345233e1f219a5d3480744cb58c70b6f4e",
+    "SI149-c30.json": "321c427b3e490351964c5bbbaff0f28878faaa359a7dd600113aefb16c81a631",
+    "SI149-c30.log": "eaed92f8468ae3868d9f9255fb322ad6d8891f7f38c759e5a672c1d5c691d030",
+    "SI149-c31-run.json": "38af390022611807da41814c0e5b15eeab09b98671feaa59f54099f4b900c8be",
+    "SI149-c31.json": "dfd15635d3167530953e48e18ec5aa892cce25e4c61740582f62499819ef4938",
+    "SI149-c31.log": "ef049a58c2b88e1a342e149020e0cad126932a9c5a09a54d264fedb87e1d19d3",
+    "SI151-cleanup.json": "d78329133e967df2fc03a7fb51ab50b3bb51417fb10640b8a266538c4e2070b4",
+    "run_batch13_suite.py": "fdfdcf47776ceaa18a8aad34f67f3cbae9dccf350038232579d0383b1a0a713e",
+    "run_batch13_arms.py": "792c133b5c1892ed9915607f1c77cf1bcb6e6685ec480627f80ac1508b64087a",
+    "audit_batch13.py": "6077c379f84114b44215d68942db1b4c61ea715b7661c27b709e7e913f21390b",
+    "seal_batch13.py": "3d5126760e385eed20841e11c41202d56e930d81c78ac6e99c7d664d824e2756",
+    "run_batch13_identity.py": "062872d79bb099f1146eb57a76bad96af649e9eb6390e3e9958331b255a85944",
+    "lower_batch13.py": "4536a51e5e51bebc6b0b382937730f58adc3cc1e49eb84c09aa260d99eae9914",
+    "test_precision_scope_batch13.py": "a9f84e4cbfd813156055c66f898fe0d37412ef535df85cd1f95eb6fe043ae315",
+    "rv-t-redsuite-VERDICT.md": "b2122460d25ecfcc395ab34efad97568cb28446a8d0cecb7ef8694bce6502019",
+    "rv-t-redsuite-REVIEW.json": "70a947d7b826a14ca587480d3696634e3416b904f52f2fdf6d34cf682c57d08f",
+    "rv-t-zmpow2-VERDICT.md": "082aee9af3a41a143656afc28f0e0d7a02927b22b006be99d38c3b0195aede27",
+    "rv-t-zmpow2-REVIEW_SUMMARY.json": "1b316574c778c42377bc1a8bb544315fcd6bfa9dbe4513a8f4d2764fdad4142e"
+  }
+}

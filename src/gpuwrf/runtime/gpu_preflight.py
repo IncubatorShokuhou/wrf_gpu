@@ -420,6 +420,11 @@ def run_nested_gpu_preflight(
 
     env = os.environ if environ is None else environ
     err = sys.stderr if stderr is None else stderr
+    from gpuwrf.backends.platform import target_backend
+    backend = target_backend(env)
+    if backend != "cuda":
+        return {"schema": "GpuwrfNestedGpuPreflight", "skipped": True,
+                "backend": backend, "reason": "non-CUDA backend"}
     force = bool(force or force_gpu_run_enabled(env))
     lock_required, lock_policy = gpu_lock_required(env, lock_file=lock_file)
     lock = dict(gpu_lock_status(env, holder_file=holder_file, lock_file=lock_file),
@@ -510,10 +515,195 @@ def run_nested_gpu_preflight(
     return payload
 
 
+# --- CUDA architecture gate ------------------------------------------------------------------
+# The release fast paths are Pallas/Triton kernels; XLA compiles Triton only for compute
+# capability >= 8.0 (measured on a GTX 1080 Ti, cc 6.1: ``FAILED_PRECONDITION: Triton support is
+# only enabled for Ampere GPUs (compute capability 8.0) and up``), and the legacy defaults still
+# contain Pallas kernels. Refuse such a GPU before any model work instead of failing deep inside
+# an XLA compile. Pure Python on the run's control path: no traced program changes.
+MIN_CUDA_COMPUTE_CAPABILITY: tuple[int, int] = (8, 0)
+UNSUPPORTED_GPU_ENV = "GPUWRF_ALLOW_UNSUPPORTED_GPU"
+UNSUPPORTED_GPU_EXIT_CODE = 69  # sysexits EX_UNAVAILABLE: the hardware cannot run this program
+NVIDIA_SMI_TIMEOUT_S = 15.0  # architecture query budget; a timeout is recorded as "unknown", never refused
+
+
+class UnsupportedGpuError(GpuPreflightError):
+    """Raised when the selected CUDA GPU is older than :data:`MIN_CUDA_COMPUTE_CAPABILITY`."""
+
+
+def parse_compute_capability(value: object) -> tuple[int, int] | None:
+    """``"6.1"``/``"12.0"``/``(8, 6)`` -> ``(major, minor)``; anything unreadable -> ``None``."""
+
+    if isinstance(value, (tuple, list)) and len(value) == 2:
+        try:
+            return int(value[0]), int(value[1])
+        except (TypeError, ValueError):
+            return None
+    text = str(value or "").strip()
+    major, _, minor = text.partition(".")
+    if not major.isdigit() or (minor and not minor.isdigit()):
+        return None
+    return int(major), int(minor or 0)
+
+
+def unsupported_gpu_opted_in(environ: Mapping[str, str] | None = None) -> bool:
+    return env_bool(UNSUPPORTED_GPU_ENV, False, environ)
+
+
+def unsupported_gpu_message(name: str, capability: tuple[int, int]) -> str:
+    gpu = name.strip() or "the selected NVIDIA GPU"
+    return (
+        f"unsupported GPU: {gpu} has CUDA compute capability {capability[0]}.{capability[1]}; gpuwrf "
+        "requires compute capability >= 8.0 (NVIDIA Ampere sm_80 or newer). Its fast paths are "
+        "Pallas/Triton kernels and XLA compiles Triton only for sm_80+, so this run would fail later "
+        "inside the XLA compile (FAILED_PRECONDITION). Alternatives: run on an sm_80+ NVIDIA GPU, or use "
+        "the portable CPU path `JAX_PLATFORMS=cpu gpuwrf run ...` (much slower; see docs/portability.md). "
+        f"To start on this GPU anyway (unsupported, slow, expected to fail where Triton is needed), set "
+        f"{UNSUPPORTED_GPU_ENV}=1."
+    )
+
+
+def check_cuda_architecture(
+    *,
+    name: str,
+    compute_capability: object,
+    environ: Mapping[str, str] | None = None,
+    stderr: TextIO | None = None,
+    source: str = "",
+) -> dict[str, object]:
+    """Gate one CUDA device by compute capability; raise :class:`UnsupportedGpuError` below sm_80.
+
+    An unreadable capability is reported as ``unknown`` and not refused (the compile would then
+    give the authoritative answer). With ``GPUWRF_ALLOW_UNSUPPORTED_GPU=1`` an old GPU is admitted
+    with a loud 'unsupported, slow' warning.
+    """
+
+    env = os.environ if environ is None else environ
+    capability = parse_compute_capability(compute_capability)
+    minimum = MIN_CUDA_COMPUTE_CAPABILITY
+    payload: dict[str, object] = {
+        "schema": "GpuwrfCudaArchitecture",
+        "name": str(name),
+        "compute_capability": (f"{capability[0]}.{capability[1]}" if capability else None),
+        "minimum_compute_capability": f"{minimum[0]}.{minimum[1]}",
+        "source": source,
+        "opt_in_env": UNSUPPORTED_GPU_ENV,
+    }
+    if capability is None:
+        payload["status"] = "unknown"
+        return payload
+    if capability >= minimum:
+        payload["status"] = "supported"
+        return payload
+    if unsupported_gpu_opted_in(env):
+        payload["status"] = "unsupported_opt_in"
+        err = sys.stderr if stderr is None else stderr
+        gpu = str(name).strip() or "the selected NVIDIA GPU"
+        print(f"gpuwrf: WARNING: UNSUPPORTED, SLOW: {gpu} (compute capability {capability[0]}.{capability[1]} "
+              f"< {minimum[0]}.{minimum[1]}) admitted only because {UNSUPPORTED_GPU_ENV}=1; no support, "
+              "performance or fidelity claim, and the default Pallas/Triton kernels will still fail.", file=err)
+        return payload
+    payload["status"] = "unsupported"
+    raise UnsupportedGpuError(unsupported_gpu_message(str(name), capability), payload)
+
+
+def query_nvidia_smi_compute_capability(environ: Mapping[str, str] | None = None) -> tuple[str, str]:
+    """``(name, compute_cap)`` of the CUDA-visible GPU JAX will use first (backend-dark)."""
+
+    env = os.environ if environ is None else environ
+    exe = shutil.which("nvidia-smi")
+    if exe is None:
+        raise RuntimeError("nvidia-smi not found on PATH")
+    try:
+        proc = subprocess.run(
+            [exe, "--query-gpu=index,uuid,compute_cap,name", "--format=csv,noheader,nounits"],
+            check=False, capture_output=True, text=True, timeout=NVIDIA_SMI_TIMEOUT_S,
+        )
+    except subprocess.TimeoutExpired as exc:
+        # A hung driver/nvidia-smi must not hang the run start: the caller records "unknown".
+        raise RuntimeError(f"nvidia-smi timed out after {NVIDIA_SMI_TIMEOUT_S:g} s") from exc
+    if proc.returncode != 0:
+        err = (proc.stderr or proc.stdout).strip()
+        raise RuntimeError(f"nvidia-smi failed with rc={proc.returncode}: {err}")
+    rows = [line.strip() for line in proc.stdout.splitlines() if line.strip()]
+    return select_nvidia_smi_compute_capability(rows, env)
+
+
+def select_nvidia_smi_compute_capability(
+    rows: Sequence[str], environ: Mapping[str, str] | None = None
+) -> tuple[str, str]:
+    """Select ``index, uuid, compute_cap, name`` rows like :func:`select_nvidia_smi_snapshot`."""
+
+    env = os.environ if environ is None else environ
+    parsed = []
+    for row in rows:
+        parts = [part.strip() for part in row.split(",", 3)]
+        if len(parts) == 4:
+            parsed.append(parts)
+    if not parsed:
+        raise RuntimeError("nvidia-smi returned no GPU rows")
+    target = str(_first_target_device_token(env))
+    for index, uuid, capability, name in parsed:
+        if index == target or uuid == target or bool(uuid and uuid.startswith(target)):
+            return name, capability
+    raise RuntimeError(f"CUDA_VISIBLE_DEVICES selects GPU {target!r}, which nvidia-smi does not list")
+
+
+def run_gpu_architecture_preflight(
+    *,
+    environ: Mapping[str, str] | None = None,
+    query: Callable[[Mapping[str, str]], tuple[str, str]] | None = None,
+    stderr: TextIO | None = None,
+) -> dict[str, object]:
+    """CLI gate before any model work: refuse a CUDA GPU below sm_80 (see :func:`check_cuda_architecture`).
+
+    Backend-dark (``nvidia-smi``, no JAX init), skipped for non-CUDA targets. A failed query is
+    recorded as ``unknown``; the device-level check in ``contracts.state`` still applies.
+    """
+
+    env = os.environ if environ is None else environ
+    from gpuwrf.backends.platform import target_backend
+    backend = target_backend(env)
+    if backend != "cuda":
+        return {"schema": "GpuwrfCudaArchitecture", "status": "skipped", "backend": backend}
+    try:
+        name, capability = (query or query_nvidia_smi_compute_capability)(env)
+    except Exception as exc:  # noqa: BLE001 - recorded, not fatal (no capability evidence)
+        return {"schema": "GpuwrfCudaArchitecture", "status": "unknown", "source": "nvidia-smi",
+                "error": f"{type(exc).__name__}: {exc}"}
+    return check_cuda_architecture(name=name, compute_capability=capability, environ=env,
+                                   stderr=stderr, source="nvidia-smi")
+
+
+def check_jax_device_architecture(device, environ: Mapping[str, str] | None = None,
+                                  stderr: TextIO | None = None) -> dict[str, object]:
+    """Device-level gate for programmatic runs (state allocation): CUDA devices only."""
+
+    from gpuwrf.backends.platform import device_backend
+    if device_backend(device) != "cuda":
+        return {"schema": "GpuwrfCudaArchitecture", "status": "skipped", "platform": str(device.platform)}
+    return check_cuda_architecture(name=str(getattr(device, "device_kind", "")),
+                                   compute_capability=getattr(device, "compute_capability", None),
+                                   environ=environ, stderr=stderr, source="jax-device")
+
+
 __all__ = [
     "DEFAULT_MIN_FREE_VRAM_GIB",
     "DEFAULT_MIN_FREE_VRAM_FRACTION",
     "GpuPreflightError",
+    "MIN_CUDA_COMPUTE_CAPABILITY",
+    "NVIDIA_SMI_TIMEOUT_S",
+    "UNSUPPORTED_GPU_ENV",
+    "UNSUPPORTED_GPU_EXIT_CODE",
+    "UnsupportedGpuError",
+    "check_cuda_architecture",
+    "check_jax_device_architecture",
+    "parse_compute_capability",
+    "query_nvidia_smi_compute_capability",
+    "run_gpu_architecture_preflight",
+    "select_nvidia_smi_compute_capability",
+    "unsupported_gpu_message",
+    "unsupported_gpu_opted_in",
     "VramSnapshot",
     "VramThreshold",
     "env_bool",

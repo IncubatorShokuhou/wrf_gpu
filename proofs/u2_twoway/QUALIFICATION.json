@@ -1,0 +1,2447 @@
+{
+  "lane": "u2-twoway",
+  "model": "GPT Sol codex_2",
+  "created_utc": "2026-10-13T22:51:09.454575+00:00",
+  "verdict": "FIXED_AFTER_MERGE_WITH_FIXES_CRITIC",
+  "candidate_model_commit": "5cd4e58a254add98630e876e86f3bc59607064d7",
+  "contract": "Wave S2 complete feature: implemented, pristine oracle qualified, both pipeline controls, bounded admission, exact restart and CPU coupled smoke; GPU24h plan only",
+  "admission": {
+    "domains": [
+      "d01",
+      "d02"
+    ],
+    "batch": 1,
+    "ratio": "odd integer greater than 1",
+    "feedback": "explicit namelist1 or CLI override; omitted OFF",
+    "smooth_option": [
+      0,
+      1,
+      2
+    ],
+    "default_smooth_option": 2,
+    "spec_zone": "nonnegative integer; operators qualified 1/2",
+    "physics": "mp8 MYNN5 MYNN-SL5 Noah4 RRTMG4/4 cu0/1; hypso2; sst0; urban/lake/nudging/advected MYNN TKE inactive",
+    "composition_refusals": [
+      "swint_opt",
+      "prec_acc_dt",
+      "do_radar_ref",
+      "nwp_diagnostics"
+    ],
+    "Noah_scope": "existing loader admits DVEG4/OPT_RUN3; no new dynamic vegetation scope"
+  },
+  "field_dispositions": {
+    "ordered_REAL_average_plus_selected_smoother": [
+      "U",
+      "V",
+      "W",
+      "T(perturbation then +300)",
+      "PH",
+      "MU",
+      "PB",
+      "PHB",
+      "MUB",
+      "ALB",
+      "QVAPOR",
+      "QCLOUD",
+      "QRAIN",
+      "QICE",
+      "QSNOW",
+      "QGRAUP",
+      "QNICE",
+      "QNRAIN",
+      "other represented advected scalar leaves"
+    ],
+    "unsmoothed_REAL_average": [
+      "H_DIABATIC",
+      "RAINC",
+      "RAINNC",
+      "SNOWNC",
+      "GRAUPELNC",
+      "HAILNC",
+      "T2",
+      "Q2",
+      "U10",
+      "V10",
+      "PSFC",
+      "TH2",
+      "16 up-fed instantaneous radiation fluxes",
+      "Registry-selected energy accumulators"
+    ],
+    "WRF_point_copy": [
+      "TSLB",
+      "SMOIS",
+      "SH2O",
+      "ISNOW",
+      "TSNO",
+      "SNICE",
+      "SNLIQ",
+      "ZSNSO",
+      "SNOWH",
+      "SNOW",
+      "SNEQVO",
+      "ALBOLD",
+      "TV",
+      "TG",
+      "TAH",
+      "EAH",
+      "CANLIQ",
+      "CANICE",
+      "FWET",
+      "XSAI",
+      "CM",
+      "CH",
+      "TSK",
+      "XLAND",
+      "LU_INDEX",
+      "Registry-selected static land/carbon pools"
+    ],
+    "held_by_original_Registry": [
+      "P(perturbation)",
+      "QKE(nonadvected)",
+      "RTHRATEN",
+      "SWDOWN/GLW physical forcing distinct from SWDNB/LWDNB history",
+      "HFX/LH",
+      "KF W0AVG/NCA",
+      "Noah precipitation input rates RAINNCV/RAINCV",
+      "Noah LAI/TAUSS/SMCWTD/QSFC/ZNT/ALBEDO/EMISS/runoff when no up flag"
+    ],
+    "initialization": [
+      "med_nest_initial feedback before child start; parent start_domain press_adjust=False",
+      "raw child input MU/W; adjusted T/QV",
+      "HGT area average plus selected smoother",
+      "all represented map/Coriolis/rotation metrics use WRF point copy, including U/V staggering",
+      "parent terrain/base/land roughness/mavail/Noah-MP/GWDO/radiation setup refreshed before compile",
+      "168 old output overrides BYTE;11 staggered coordinate/map outputs newly completed",
+      "static DVEG4 pools resident and ordinary feedback applied through packed history",
+      "Final resident feedback_history overlays lead-zero output after raw input diagnostics; active original Fortran writer witness and genuine old-writer mutation qualified"
+    ],
+    "selection_basis": "561 factual up-field rows generated from pristine Registry.EM_COMMON + registry.noahmp; this all-package inventory is not an active field census",
+    "forcing_history_aliases": "Up-fed radiation history remains resident until next actual radiation call; sums consume held up-fed history; physical SWDOWN/GLW forcing stays separate",
+    "CPU_coupled_reported_fields": {
+      "U": {
+        "classifications": [
+          "PASS"
+        ],
+        "max_abs": 0.07752561569213867,
+        "max_rmse": 0.0017708853267030186
+      },
+      "V": {
+        "classifications": [
+          "PASS"
+        ],
+        "max_abs": 0.10071182250976562,
+        "max_rmse": 0.002617629668160863
+      },
+      "W": {
+        "classifications": [
+          "PASS"
+        ],
+        "max_abs": 0.4994162321090698,
+        "max_rmse": 0.0066895219959227205
+      },
+      "P": {
+        "classifications": [
+          "REPORT_ONLY"
+        ],
+        "max_abs": 281.02099609375,
+        "max_rmse": 3.52421883713554
+      },
+      "PH": {
+        "classifications": [
+          "REPORT_ONLY"
+        ],
+        "max_abs": 63.88671875,
+        "max_rmse": 0.6380334881228444
+      },
+      "MU": {
+        "classifications": [
+          "REPORT_ONLY"
+        ],
+        "max_abs": 1.3671875,
+        "max_rmse": 0.2575396595545484
+      },
+      "QVAPOR": {
+        "classifications": [
+          "PASS"
+        ],
+        "max_abs": 9.749084711074829e-06,
+        "max_rmse": 1.7329220902232883e-07
+      },
+      "QCLOUD": {
+        "classifications": [
+          "PASS"
+        ],
+        "max_abs": 0.0,
+        "max_rmse": 0.0
+      },
+      "QRAIN": {
+        "classifications": [
+          "PASS"
+        ],
+        "max_abs": 0.0,
+        "max_rmse": 0.0
+      },
+      "QICE": {
+        "classifications": [
+          "PASS"
+        ],
+        "max_abs": 0.0,
+        "max_rmse": 0.0
+      },
+      "QSNOW": {
+        "classifications": [
+          "PASS"
+        ],
+        "max_abs": 0.0,
+        "max_rmse": 0.0
+      },
+      "QGRAUP": {
+        "classifications": [
+          "PASS"
+        ],
+        "max_abs": 0.0,
+        "max_rmse": 0.0
+      },
+      "QNICE": {
+        "classifications": [
+          "PASS"
+        ],
+        "max_abs": 0.0,
+        "max_rmse": 0.0
+      },
+      "QNRAIN": {
+        "classifications": [
+          "PASS"
+        ],
+        "max_abs": 0.0,
+        "max_rmse": 0.0
+      },
+      "QKE": {
+        "classifications": [
+          "REPORT_ONLY"
+        ],
+        "max_abs": 25.000001907348633,
+        "max_rmse": 0.8955565507359162
+      },
+      "RAINC": {
+        "classifications": [
+          "REPORT_ONLY"
+        ],
+        "max_abs": 0.0,
+        "max_rmse": 0.0
+      },
+      "RAINNC": {
+        "classifications": [
+          "PASS"
+        ],
+        "max_abs": 0.0,
+        "max_rmse": 0.0
+      },
+      "SNOWNC": {
+        "classifications": [
+          "REPORT_ONLY"
+        ],
+        "max_abs": 0.0,
+        "max_rmse": 0.0
+      },
+      "GRAUPELNC": {
+        "classifications": [
+          "REPORT_ONLY"
+        ],
+        "max_abs": 0.0,
+        "max_rmse": 0.0
+      },
+      "T": {
+        "classifications": [
+          "PASS"
+        ],
+        "max_abs": 2.74139404296875,
+        "max_rmse": 0.19164883924770487
+      },
+      "HGT": {
+        "classifications": [
+          "PASS"
+        ],
+        "max_abs": 0.0001220703125,
+        "max_rmse": 1.3744507616717752e-06
+      },
+      "TSK": {
+        "classifications": [
+          "REPORT_ONLY"
+        ],
+        "max_abs": 0.179229736328125,
+        "max_rmse": 0.037732057843058074
+      },
+      "T2": {
+        "classifications": [
+          "PASS"
+        ],
+        "max_abs": 0.0985107421875,
+        "max_rmse": 0.018835808146285868
+      },
+      "Q2": {
+        "classifications": [
+          "REPORT_ONLY"
+        ],
+        "max_abs": 0.0,
+        "max_rmse": 0.0
+      },
+      "U10": {
+        "classifications": [
+          "PASS"
+        ],
+        "max_abs": 0.05698847770690918,
+        "max_rmse": 0.006368608441596347
+      },
+      "V10": {
+        "classifications": [
+          "PASS"
+        ],
+        "max_abs": 0.06118965148925781,
+        "max_rmse": 0.007300920856772027
+      },
+      "PSFC": {
+        "classifications": [
+          "PASS"
+        ],
+        "max_abs": 1.40625,
+        "max_rmse": 0.1793188384592034
+      },
+      "MAPFAC_MX": {
+        "classifications": [
+          "PASS"
+        ],
+        "max_abs": 0.0,
+        "max_rmse": 0.0
+      },
+      "MAPFAC_MY": {
+        "classifications": [
+          "PASS"
+        ],
+        "max_abs": 0.0,
+        "max_rmse": 0.0
+      },
+      "MAPFAC_UX": {
+        "classifications": [
+          "PASS"
+        ],
+        "max_abs": 0.0,
+        "max_rmse": 0.0
+      },
+      "MAPFAC_UY": {
+        "classifications": [
+          "PASS"
+        ],
+        "max_abs": 0.0,
+        "max_rmse": 0.0
+      },
+      "MAPFAC_VX": {
+        "classifications": [
+          "PASS"
+        ],
+        "max_abs": 0.0,
+        "max_rmse": 0.0
+      },
+      "MAPFAC_VY": {
+        "classifications": [
+          "PASS"
+        ],
+        "max_abs": 0.0,
+        "max_rmse": 0.0
+      },
+      "F": {
+        "classifications": [
+          "PASS"
+        ],
+        "max_abs": 0.0,
+        "max_rmse": 0.0
+      },
+      "E": {
+        "classifications": [
+          "PASS"
+        ],
+        "max_abs": 0.0,
+        "max_rmse": 0.0
+      },
+      "SINALPHA": {
+        "classifications": [
+          "PASS"
+        ],
+        "max_abs": 0.0,
+        "max_rmse": 0.0
+      },
+      "COSALPHA": {
+        "classifications": [
+          "PASS"
+        ],
+        "max_abs": 0.0,
+        "max_rmse": 0.0
+      },
+      "ISLTYP": {
+        "classifications": [
+          "REPORT_ONLY"
+        ],
+        "max_abs": 0.0,
+        "max_rmse": 0.0
+      },
+      "IVGTYP": {
+        "classifications": [
+          "REPORT_ONLY"
+        ],
+        "max_abs": 0.0,
+        "max_rmse": 0.0
+      },
+      "VEGFRA": {
+        "classifications": [
+          "REPORT_ONLY"
+        ],
+        "max_abs": 0.0,
+        "max_rmse": 0.0
+      },
+      "SHDMAX": {
+        "classifications": [
+          "REPORT_ONLY"
+        ],
+        "max_abs": 0.0,
+        "max_rmse": 0.0
+      },
+      "SHDMIN": {
+        "classifications": [
+          "REPORT_ONLY"
+        ],
+        "max_abs": 0.0,
+        "max_rmse": 0.0
+      },
+      "SHDAVG": {
+        "classifications": [
+          "REPORT_ONLY"
+        ],
+        "max_abs": 0.0,
+        "max_rmse": 0.0
+      },
+      "SNOALB": {
+        "classifications": [
+          "REPORT_ONLY"
+        ],
+        "max_abs": 0.0,
+        "max_rmse": 0.0
+      },
+      "TMN": {
+        "classifications": [
+          "REPORT_ONLY"
+        ],
+        "max_abs": 0.0,
+        "max_rmse": 0.0
+      },
+      "VAR": {
+        "classifications": [
+          "REPORT_ONLY"
+        ],
+        "max_abs": 0.0,
+        "max_rmse": 0.0
+      },
+      "CON": {
+        "classifications": [
+          "REPORT_ONLY"
+        ],
+        "max_abs": 0.0,
+        "max_rmse": 0.0
+      },
+      "VAR_SSO": {
+        "classifications": [
+          "REPORT_ONLY"
+        ],
+        "max_abs": 0.0,
+        "max_rmse": 0.0
+      },
+      "OA1": {
+        "classifications": [
+          "REPORT_ONLY"
+        ],
+        "max_abs": 0.0,
+        "max_rmse": 0.0
+      },
+      "OA2": {
+        "classifications": [
+          "REPORT_ONLY"
+        ],
+        "max_abs": 0.0,
+        "max_rmse": 0.0
+      },
+      "OA3": {
+        "classifications": [
+          "REPORT_ONLY"
+        ],
+        "max_abs": 0.0,
+        "max_rmse": 0.0
+      },
+      "OA4": {
+        "classifications": [
+          "REPORT_ONLY"
+        ],
+        "max_abs": 0.0,
+        "max_rmse": 0.0
+      },
+      "OL1": {
+        "classifications": [
+          "REPORT_ONLY"
+        ],
+        "max_abs": 0.0,
+        "max_rmse": 0.0
+      },
+      "OL2": {
+        "classifications": [
+          "REPORT_ONLY"
+        ],
+        "max_abs": 0.0,
+        "max_rmse": 0.0
+      },
+      "OL3": {
+        "classifications": [
+          "REPORT_ONLY"
+        ],
+        "max_abs": 0.0,
+        "max_rmse": 0.0
+      },
+      "OL4": {
+        "classifications": [
+          "REPORT_ONLY"
+        ],
+        "max_abs": 0.0,
+        "max_rmse": 0.0
+      },
+      "CHSTAR": {
+        "classifications": [
+          "REPORT_ONLY"
+        ],
+        "max_abs": 0.0,
+        "max_rmse": 0.0
+      },
+      "WA": {
+        "classifications": [
+          "REPORT_ONLY"
+        ],
+        "max_abs": 0.0,
+        "max_rmse": 0.0
+      },
+      "WT": {
+        "classifications": [
+          "REPORT_ONLY"
+        ],
+        "max_abs": 0.0,
+        "max_rmse": 0.0
+      },
+      "ZWT": {
+        "classifications": [
+          "REPORT_ONLY"
+        ],
+        "max_abs": 0.0,
+        "max_rmse": 0.0
+      },
+      "GRAIN": {
+        "classifications": [
+          "REPORT_ONLY"
+        ],
+        "max_abs": 0.0,
+        "max_rmse": 0.0
+      },
+      "ALBBCK": {
+        "classifications": [
+          "REPORT_ONLY"
+        ],
+        "max_abs": 0.0,
+        "max_rmse": 0.0
+      },
+      "LANDMASK": {
+        "classifications": [
+          "PASS"
+        ],
+        "max_abs": 0.0,
+        "max_rmse": 0.0
+      },
+      "LAI": {
+        "classifications": [
+          "REPORT_ONLY"
+        ],
+        "max_abs": 2.9802322387695312e-08,
+        "max_rmse": 6.786287338177097e-09
+      },
+      "SNOWC": {
+        "classifications": [
+          "REPORT_ONLY"
+        ],
+        "max_abs": 0.0,
+        "max_rmse": 0.0
+      },
+      "ALBEDO": {
+        "classifications": [
+          "REPORT_ONLY"
+        ],
+        "max_abs": 0.0,
+        "max_rmse": 0.0
+      },
+      "EMISS": {
+        "classifications": [
+          "REPORT_ONLY"
+        ],
+        "max_abs": 5.960464477539063e-08,
+        "max_rmse": 1.3693222157250069e-08
+      },
+      "LFMASS": {
+        "classifications": [
+          "REPORT_ONLY"
+        ],
+        "max_abs": 0.0,
+        "max_rmse": 0.0
+      },
+      "STMASS": {
+        "classifications": [
+          "REPORT_ONLY"
+        ],
+        "max_abs": 0.0,
+        "max_rmse": 0.0
+      },
+      "RTMASS": {
+        "classifications": [
+          "REPORT_ONLY"
+        ],
+        "max_abs": 0.0,
+        "max_rmse": 0.0
+      },
+      "WOOD": {
+        "classifications": [
+          "REPORT_ONLY"
+        ],
+        "max_abs": 0.0,
+        "max_rmse": 0.0
+      },
+      "STBLCP": {
+        "classifications": [
+          "REPORT_ONLY"
+        ],
+        "max_abs": 0.0,
+        "max_rmse": 0.0
+      },
+      "FASTCP": {
+        "classifications": [
+          "REPORT_ONLY"
+        ],
+        "max_abs": 0.0,
+        "max_rmse": 0.0
+      },
+      "SMCWTD": {
+        "classifications": [
+          "REPORT_ONLY"
+        ],
+        "max_abs": 0.0,
+        "max_rmse": 0.0
+      },
+      "TSLB": {
+        "classifications": [
+          "REPORT_ONLY"
+        ],
+        "max_abs": 0.001251220703125,
+        "max_rmse": 0.00014517917900569127
+      },
+      "SMOIS": {
+        "classifications": [
+          "REPORT_ONLY"
+        ],
+        "max_abs": 6.705522537231445e-08,
+        "max_rmse": 2.1863501347177985e-09
+      },
+      "SH2O": {
+        "classifications": [
+          "REPORT_ONLY"
+        ],
+        "max_abs": 6.705522537231445e-08,
+        "max_rmse": 2.1863501347177985e-09
+      },
+      "TSNO": {
+        "classifications": [
+          "REPORT_ONLY"
+        ],
+        "max_abs": 0.0,
+        "max_rmse": 0.0
+      },
+      "SNICE": {
+        "classifications": [
+          "REPORT_ONLY"
+        ],
+        "max_abs": 0.0,
+        "max_rmse": 0.0
+      },
+      "SNLIQ": {
+        "classifications": [
+          "REPORT_ONLY"
+        ],
+        "max_abs": 0.0,
+        "max_rmse": 0.0
+      },
+      "ZSNSO": {
+        "classifications": [
+          "REPORT_ONLY"
+        ],
+        "max_abs": 0.0,
+        "max_rmse": 0.0
+      },
+      "ISNOW": {
+        "classifications": [
+          "REPORT_ONLY"
+        ],
+        "max_abs": 0.0,
+        "max_rmse": 0.0
+      },
+      "SNOW": {
+        "classifications": [
+          "REPORT_ONLY"
+        ],
+        "max_abs": 0.0,
+        "max_rmse": 0.0
+      },
+      "SNOWH": {
+        "classifications": [
+          "REPORT_ONLY"
+        ],
+        "max_abs": 0.0,
+        "max_rmse": 0.0
+      },
+      "SNEQVO": {
+        "classifications": [
+          "REPORT_ONLY"
+        ],
+        "max_abs": 0.0,
+        "max_rmse": 0.0
+      },
+      "TV": {
+        "classifications": [
+          "REPORT_ONLY"
+        ],
+        "max_abs": 0.205535888671875,
+        "max_rmse": 0.01900380897849202
+      },
+      "TG": {
+        "classifications": [
+          "REPORT_ONLY"
+        ],
+        "max_abs": 0.179229736328125,
+        "max_rmse": 0.03952853688591893
+      },
+      "TAH": {
+        "classifications": [
+          "REPORT_ONLY"
+        ],
+        "max_abs": 0.20623779296875,
+        "max_rmse": 0.017834759604817327
+      },
+      "EAH": {
+        "classifications": [
+          "REPORT_ONLY"
+        ],
+        "max_abs": 1.11737060546875,
+        "max_rmse": 0.042528573595873316
+      },
+      "CANLIQ": {
+        "classifications": [
+          "REPORT_ONLY"
+        ],
+        "max_abs": 0.0,
+        "max_rmse": 0.0
+      },
+      "CANICE": {
+        "classifications": [
+          "REPORT_ONLY"
+        ],
+        "max_abs": 0.0,
+        "max_rmse": 0.0
+      },
+      "FWET": {
+        "classifications": [
+          "REPORT_ONLY"
+        ],
+        "max_abs": 0.0,
+        "max_rmse": 0.0
+      },
+      "XSAI": {
+        "classifications": [
+          "REPORT_ONLY"
+        ],
+        "max_abs": 0.0,
+        "max_rmse": 0.0
+      },
+      "CM": {
+        "classifications": [
+          "REPORT_ONLY"
+        ],
+        "max_abs": 0.00040044670458883047,
+        "max_rmse": 9.159354568963686e-05
+      },
+      "CH": {
+        "classifications": [
+          "REPORT_ONLY"
+        ],
+        "max_abs": 0.0017693694680929184,
+        "max_rmse": 0.00012597329056291472
+      },
+      "ALBOLD": {
+        "classifications": [
+          "REPORT_ONLY"
+        ],
+        "max_abs": 0.0,
+        "max_rmse": 0.0
+      },
+      "TAUSS": {
+        "classifications": [
+          "REPORT_ONLY"
+        ],
+        "max_abs": 0.0,
+        "max_rmse": 0.0
+      },
+      "CANWAT": {
+        "classifications": [
+          "REPORT_ONLY"
+        ],
+        "max_abs": 0.0,
+        "max_rmse": 0.0
+      },
+      "SFROFF": {
+        "classifications": [
+          "REPORT_ONLY"
+        ],
+        "max_abs": 1.5986323376182554e-11,
+        "max_rmse": 1.1785568410339195e-12
+      },
+      "UDROFF": {
+        "classifications": [
+          "REPORT_ONLY"
+        ],
+        "max_abs": 1.862645149230957e-09,
+        "max_rmse": 3.090070440122328e-11
+      },
+      "SAV": {
+        "classifications": [
+          "REPORT_ONLY"
+        ],
+        "max_abs": 0.0,
+        "max_rmse": 0.0
+      },
+      "SAG": {
+        "classifications": [
+          "REPORT_ONLY"
+        ],
+        "max_abs": 0.0,
+        "max_rmse": 0.0
+      },
+      "FSA": {
+        "classifications": [
+          "REPORT_ONLY"
+        ],
+        "max_abs": 0.0,
+        "max_rmse": 0.0
+      },
+      "FIRA": {
+        "classifications": [
+          "REPORT_ONLY"
+        ],
+        "max_abs": 2.1228866577148438,
+        "max_rmse": 0.7784747920290743
+      },
+      "FVEG": {
+        "classifications": [
+          "REPORT_ONLY"
+        ],
+        "max_abs": 0.0,
+        "max_rmse": 0.0
+      },
+      "ECAN": {
+        "classifications": [
+          "REPORT_ONLY"
+        ],
+        "max_abs": 0.0,
+        "max_rmse": 0.0
+      },
+      "ETRAN": {
+        "classifications": [
+          "REPORT_ONLY"
+        ],
+        "max_abs": 1.4256045233196346e-09,
+        "max_rmse": 1.3765490589064182e-10
+      },
+      "EDIR": {
+        "classifications": [
+          "REPORT_ONLY"
+        ],
+        "max_abs": 1.2877521271548176e-08,
+        "max_rmse": 1.7460929468496233e-09
+      },
+      "GRDFLX": {
+        "classifications": [
+          "REPORT_ONLY"
+        ],
+        "max_abs": 2.545337677001953,
+        "max_rmse": 0.40496307004730253
+      },
+      "TRAD": {
+        "classifications": [
+          "REPORT_ONLY"
+        ],
+        "max_abs": 0.179229736328125,
+        "max_rmse": 0.037732057843058074
+      },
+      "CANHS": {
+        "classifications": [
+          "MISSING_REFERENCE"
+        ],
+        "max_abs": 0.0,
+        "max_rmse": 0.0
+      },
+      "SOILENERGY": {
+        "classifications": [
+          "REPORT_ONLY"
+        ],
+        "max_abs": 0.234375,
+        "max_rmse": 0.04343932922723812
+      },
+      "SNOWENERGY": {
+        "classifications": [
+          "REPORT_ONLY"
+        ],
+        "max_abs": 0.0,
+        "max_rmse": 0.0
+      },
+      "CHV": {
+        "classifications": [
+          "REPORT_ONLY"
+        ],
+        "max_abs": 0.004812847822904587,
+        "max_rmse": 0.00021992844209860034
+      },
+      "CHB": {
+        "classifications": [
+          "REPORT_ONLY"
+        ],
+        "max_abs": 0.00036595016717910767,
+        "max_rmse": 3.653194494372272e-05
+      },
+      "TR": {
+        "classifications": [
+          "REPORT_ONLY"
+        ],
+        "max_abs": 0.0035788416862487793,
+        "max_rmse": 0.00033929472259045857
+      },
+      "EVB": {
+        "classifications": [
+          "REPORT_ONLY"
+        ],
+        "max_abs": 0.0366852730512619,
+        "max_rmse": 0.00548156454443673
+      },
+      "EVC": {
+        "classifications": [
+          "REPORT_ONLY"
+        ],
+        "max_abs": 0.0,
+        "max_rmse": 0.0
+      },
+      "EVG": {
+        "classifications": [
+          "REPORT_ONLY"
+        ],
+        "max_abs": 0.025094926357269287,
+        "max_rmse": 0.0027536973503145654
+      },
+      "IRB": {
+        "classifications": [
+          "REPORT_ONLY"
+        ],
+        "max_abs": 2.1158599853515625,
+        "max_rmse": 0.7096983897129355
+      },
+      "IRC": {
+        "classifications": [
+          "REPORT_ONLY"
+        ],
+        "max_abs": 1.2278671264648438,
+        "max_rmse": 0.2314633844893472
+      },
+      "IRG": {
+        "classifications": [
+          "REPORT_ONLY"
+        ],
+        "max_abs": 1.0857315063476562,
+        "max_rmse": 0.2888456851446691
+      },
+      "SHB": {
+        "classifications": [
+          "REPORT_ONLY"
+        ],
+        "max_abs": 1.4339141845703125,
+        "max_rmse": 0.2541719735783158
+      },
+      "SHC": {
+        "classifications": [
+          "REPORT_ONLY"
+        ],
+        "max_abs": 7.072303771972656,
+        "max_rmse": 0.2939294006470594
+      },
+      "SHG": {
+        "classifications": [
+          "REPORT_ONLY"
+        ],
+        "max_abs": 1.1245603561401367,
+        "max_rmse": 0.1765384353869423
+      },
+      "GHB": {
+        "classifications": [
+          "REPORT_ONLY"
+        ],
+        "max_abs": 2.545337677001953,
+        "max_rmse": 0.4845342198274256
+      },
+      "GHV": {
+        "classifications": [
+          "REPORT_ONLY"
+        ],
+        "max_abs": 1.68731689453125,
+        "max_rmse": 0.21226818107856157
+      },
+      "CHLEAF": {
+        "classifications": [
+          "REPORT_ONLY"
+        ],
+        "max_abs": 0.0017747879028320312,
+        "max_rmse": 7.533515192530572e-05
+      },
+      "CHUC": {
+        "classifications": [
+          "REPORT_ONLY"
+        ],
+        "max_abs": 0.0012028752826154232,
+        "max_rmse": 6.031249356827124e-05
+      },
+      "CHV2": {
+        "classifications": [
+          "REPORT_ONLY"
+        ],
+        "max_abs": 0.01064043864607811,
+        "max_rmse": 0.000509622712315563
+      },
+      "CHB2": {
+        "classifications": [
+          "REPORT_ONLY"
+        ],
+        "max_abs": 0.0011279061436653137,
+        "max_rmse": 6.856012087243858e-05
+      },
+      "RSSUN": {
+        "classifications": [
+          "REPORT_ONLY"
+        ],
+        "max_abs": 0.60546875,
+        "max_rmse": 0.06229335389958511
+      },
+      "RSSHA": {
+        "classifications": [
+          "REPORT_ONLY"
+        ],
+        "max_abs": 0.60546875,
+        "max_rmse": 0.06229335389958511
+      },
+      "APAR": {
+        "classifications": [
+          "REPORT_ONLY"
+        ],
+        "max_abs": 0.0,
+        "max_rmse": 0.0
+      },
+      "PSN": {
+        "classifications": [
+          "REPORT_ONLY"
+        ],
+        "max_abs": 0.0,
+        "max_rmse": 0.0
+      },
+      "PAH": {
+        "classifications": [
+          "MISSING_REFERENCE"
+        ],
+        "max_abs": 0.0,
+        "max_rmse": 0.0
+      },
+      "PAHV": {
+        "classifications": [
+          "MISSING_REFERENCE"
+        ],
+        "max_abs": 0.0,
+        "max_rmse": 0.0
+      },
+      "PAHG": {
+        "classifications": [
+          "MISSING_REFERENCE"
+        ],
+        "max_abs": 0.0,
+        "max_rmse": 0.0
+      },
+      "PAHB": {
+        "classifications": [
+          "MISSING_REFERENCE"
+        ],
+        "max_abs": 0.0,
+        "max_rmse": 0.0
+      },
+      "FORCTLSM": {
+        "classifications": [
+          "REPORT_ONLY"
+        ],
+        "max_abs": 0.0084228515625,
+        "max_rmse": 0.001036377731940011
+      },
+      "FORCQLSM": {
+        "classifications": [
+          "REPORT_ONLY"
+        ],
+        "max_abs": 2.1031592041254044e-06,
+        "max_rmse": 2.2874081599895623e-07
+      },
+      "FORCPLSM": {
+        "classifications": [
+          "REPORT_ONLY"
+        ],
+        "max_abs": 0.953125,
+        "max_rmse": 0.08228361654887534
+      },
+      "FORCZLSM": {
+        "classifications": [
+          "REPORT_ONLY"
+        ],
+        "max_abs": 0.0009899139404296875,
+        "max_rmse": 0.00014535610516903374
+      },
+      "FORCWLSM": {
+        "classifications": [
+          "REPORT_ONLY"
+        ],
+        "max_abs": 0.05143260955810547,
+        "max_rmse": 0.005055900986273402
+      },
+      "T2V": {
+        "classifications": [
+          "REPORT_ONLY"
+        ],
+        "max_abs": 0.17645263671875,
+        "max_rmse": 0.015014094113044961
+      },
+      "T2B": {
+        "classifications": [
+          "REPORT_ONLY"
+        ],
+        "max_abs": 0.10504150390625,
+        "max_rmse": 0.02110304768178344
+      },
+      "Q2V": {
+        "classifications": [
+          "REPORT_ONLY"
+        ],
+        "max_abs": 7.723923772573471e-06,
+        "max_rmse": 2.649196599018383e-07
+      },
+      "Q2B": {
+        "classifications": [
+          "REPORT_ONLY"
+        ],
+        "max_abs": 1.1335592716932297e-05,
+        "max_rmse": 7.831376341478099e-07
+      },
+      "RUNSF": {
+        "classifications": [
+          "REPORT_ONLY"
+        ],
+        "max_abs": 7.993605777301127e-12,
+        "max_rmse": 3.700392129240344e-13
+      },
+      "RUNSB": {
+        "classifications": [
+          "REPORT_ONLY"
+        ],
+        "max_abs": 5.820766091346741e-11,
+        "max_rmse": 6.366657009747378e-13
+      },
+      "TGV": {
+        "classifications": [
+          "REPORT_ONLY"
+        ],
+        "max_abs": 0.195037841796875,
+        "max_rmse": 0.026631309368205645
+      },
+      "TGB": {
+        "classifications": [
+          "REPORT_ONLY"
+        ],
+        "max_abs": 0.179229736328125,
+        "max_rmse": 0.04677859876096958
+      },
+      "SNOM_INCREMENT": {
+        "classifications": [
+          "MISSING_REFERENCE"
+        ],
+        "max_abs": 0.0,
+        "max_rmse": 0.0
+      },
+      "QSNOWXY": {
+        "classifications": [
+          "REPORT_ONLY"
+        ],
+        "max_abs": 0.0,
+        "max_rmse": 0.0
+      },
+      "QRAINXY": {
+        "classifications": [
+          "REPORT_ONLY"
+        ],
+        "max_abs": 0.0,
+        "max_rmse": 0.0
+      },
+      "SWDNB": {
+        "classifications": [
+          "REPORT_ONLY"
+        ],
+        "max_abs": 0.0,
+        "max_rmse": 0.0
+      },
+      "SWUPB": {
+        "classifications": [
+          "REPORT_ONLY"
+        ],
+        "max_abs": 0.0,
+        "max_rmse": 0.0
+      },
+      "SWDNT": {
+        "classifications": [
+          "REPORT_ONLY"
+        ],
+        "max_abs": 0.0,
+        "max_rmse": 0.0
+      },
+      "SWUPT": {
+        "classifications": [
+          "REPORT_ONLY"
+        ],
+        "max_abs": 0.0,
+        "max_rmse": 0.0
+      },
+      "LWDNB": {
+        "classifications": [
+          "REPORT_ONLY"
+        ],
+        "max_abs": 2.355865478515625,
+        "max_rmse": 2.2332050669530923
+      },
+      "LWUPB": {
+        "classifications": [
+          "REPORT_ONLY"
+        ],
+        "max_abs": 8.670318603515625,
+        "max_rmse": 2.645891296544213
+      },
+      "LWDNT": {
+        "classifications": [
+          "REPORT_ONLY"
+        ],
+        "max_abs": 0.0,
+        "max_rmse": 0.0
+      },
+      "LWUPT": {
+        "classifications": [
+          "REPORT_ONLY"
+        ],
+        "max_abs": 9.72320556640625,
+        "max_rmse": 4.889480221143758
+      },
+      "SWDNBC": {
+        "classifications": [
+          "REPORT_ONLY"
+        ],
+        "max_abs": 0.0,
+        "max_rmse": 0.0
+      },
+      "SWUPBC": {
+        "classifications": [
+          "REPORT_ONLY"
+        ],
+        "max_abs": 0.0,
+        "max_rmse": 0.0
+      },
+      "SWDNTC": {
+        "classifications": [
+          "REPORT_ONLY"
+        ],
+        "max_abs": 0.0,
+        "max_rmse": 0.0
+      },
+      "SWUPTC": {
+        "classifications": [
+          "REPORT_ONLY"
+        ],
+        "max_abs": 0.0,
+        "max_rmse": 0.0
+      },
+      "LWDNBC": {
+        "classifications": [
+          "REPORT_ONLY"
+        ],
+        "max_abs": 2.355865478515625,
+        "max_rmse": 2.2332050669530923
+      },
+      "LWUPBC": {
+        "classifications": [
+          "REPORT_ONLY"
+        ],
+        "max_abs": 8.670318603515625,
+        "max_rmse": 2.645891296544213
+      },
+      "LWDNTC": {
+        "classifications": [
+          "REPORT_ONLY"
+        ],
+        "max_abs": 0.0,
+        "max_rmse": 0.0
+      },
+      "LWUPTC": {
+        "classifications": [
+          "REPORT_ONLY"
+        ],
+        "max_abs": 9.72320556640625,
+        "max_rmse": 4.889480221143758
+      },
+      "TH2": {
+        "classifications": [
+          "REPORT_ONLY"
+        ],
+        "max_abs": 0.09912109375,
+        "max_rmse": 0.019231981920591754
+      },
+      "ACSWDNB": {
+        "classifications": [
+          "REPORT_ONLY"
+        ],
+        "max_abs": 0.0,
+        "max_rmse": 0.0
+      },
+      "ACSWUPB": {
+        "classifications": [
+          "REPORT_ONLY"
+        ],
+        "max_abs": 0.0,
+        "max_rmse": 0.0
+      },
+      "ACSWDNT": {
+        "classifications": [
+          "REPORT_ONLY"
+        ],
+        "max_abs": 0.0,
+        "max_rmse": 0.0
+      },
+      "ACSWUPT": {
+        "classifications": [
+          "REPORT_ONLY"
+        ],
+        "max_abs": 0.0,
+        "max_rmse": 0.0
+      },
+      "ACLWDNB": {
+        "classifications": [
+          "REPORT_ONLY"
+        ],
+        "max_abs": 254.43359375,
+        "max_rmse": 241.18605111167201
+      },
+      "ACLWUPB": {
+        "classifications": [
+          "REPORT_ONLY"
+        ],
+        "max_abs": 936.390625,
+        "max_rmse": 285.75625934680335
+      },
+      "ACLWDNT": {
+        "classifications": [
+          "REPORT_ONLY"
+        ],
+        "max_abs": 0.0,
+        "max_rmse": 0.0
+      },
+      "ACLWUPT": {
+        "classifications": [
+          "REPORT_ONLY"
+        ],
+        "max_abs": 1050.10546875,
+        "max_rmse": 528.0638266265398
+      },
+      "ACSWDNBC": {
+        "classifications": [
+          "REPORT_ONLY"
+        ],
+        "max_abs": 0.0,
+        "max_rmse": 0.0
+      },
+      "ACSWUPBC": {
+        "classifications": [
+          "REPORT_ONLY"
+        ],
+        "max_abs": 0.0,
+        "max_rmse": 0.0
+      },
+      "ACSWDNTC": {
+        "classifications": [
+          "REPORT_ONLY"
+        ],
+        "max_abs": 0.0,
+        "max_rmse": 0.0
+      },
+      "ACSWUPTC": {
+        "classifications": [
+          "REPORT_ONLY"
+        ],
+        "max_abs": 0.0,
+        "max_rmse": 0.0
+      },
+      "ACLWDNBC": {
+        "classifications": [
+          "REPORT_ONLY"
+        ],
+        "max_abs": 254.43359375,
+        "max_rmse": 241.18605111167201
+      },
+      "ACLWUPBC": {
+        "classifications": [
+          "REPORT_ONLY"
+        ],
+        "max_abs": 936.390625,
+        "max_rmse": 285.75625934680335
+      },
+      "ACLWDNTC": {
+        "classifications": [
+          "REPORT_ONLY"
+        ],
+        "max_abs": 0.0,
+        "max_rmse": 0.0
+      },
+      "ACLWUPTC": {
+        "classifications": [
+          "REPORT_ONLY"
+        ],
+        "max_abs": 1050.10546875,
+        "max_rmse": 528.0638266265398
+      },
+      "ACHFX": {
+        "classifications": [
+          "REPORT_ONLY"
+        ],
+        "max_abs": 232.9697265625,
+        "max_rmse": 26.17756708869947
+      },
+      "ACLHF": {
+        "classifications": [
+          "REPORT_ONLY"
+        ],
+        "max_abs": 11.013671875,
+        "max_rmse": 1.6894872476127278
+      },
+      "ACGRDFLX": {
+        "classifications": [
+          "REPORT_ONLY"
+        ],
+        "max_abs": 247.00830078125,
+        "max_rmse": 43.19021459604664
+      },
+      "ACSNOM": {
+        "classifications": [
+          "REPORT_ONLY"
+        ],
+        "max_abs": 0.0,
+        "max_rmse": 0.0
+      },
+      "PB": {
+        "classifications": [
+          "PASS"
+        ],
+        "max_abs": 0.0,
+        "max_rmse": 0.0
+      },
+      "PHB": {
+        "classifications": [
+          "PASS"
+        ],
+        "max_abs": 0.00390625,
+        "max_rmse": 1.4630087077777366e-05
+      },
+      "MUB": {
+        "classifications": [
+          "PASS"
+        ],
+        "max_abs": 0.0,
+        "max_rmse": 0.0
+      },
+      "H_DIABATIC": {
+        "classifications": [
+          "MISSING_REFERENCE"
+        ],
+        "max_abs": 0.0,
+        "max_rmse": 0.0
+      },
+      "BGAP": {
+        "classifications": [
+          "REPORT_ONLY"
+        ],
+        "max_abs": 0.0,
+        "max_rmse": 0.0
+      },
+      "WGAP": {
+        "classifications": [
+          "REPORT_ONLY"
+        ],
+        "max_abs": 0.0,
+        "max_rmse": 0.0
+      },
+      "GDD": {
+        "classifications": [
+          "REPORT_ONLY"
+        ],
+        "max_abs": 0.0,
+        "max_rmse": 0.0
+      },
+      "GPP": {
+        "classifications": [
+          "REPORT_ONLY"
+        ],
+        "max_abs": 0.0,
+        "max_rmse": 0.0
+      },
+      "NPP": {
+        "classifications": [
+          "REPORT_ONLY"
+        ],
+        "max_abs": 0.0,
+        "max_rmse": 0.0
+      },
+      "NEE": {
+        "classifications": [
+          "REPORT_ONLY"
+        ],
+        "max_abs": 0.0,
+        "max_rmse": 0.0
+      },
+      "WSLAKE": {
+        "classifications": [
+          "REPORT_ONLY"
+        ],
+        "max_abs": 0.0,
+        "max_rmse": 0.0
+      }
+    }
+  },
+  "operators": {
+    "fixtures": {
+      "feedback": {
+        "arrays": 315,
+        "cases": 63,
+        "sha256": "0048d92a50694b45e2fdb1ec596cf89973210350fb31d0a71299c080550a62df",
+        "all_finite": true
+      },
+      "point_feedback": {
+        "arrays": 144,
+        "cases": 48,
+        "sha256": "81ddab61d85bb2ac9f7c9c8986d20ad2bdadad7ade1edb58c7ba80ea455d489e",
+        "all_finite": true
+      },
+      "alb_eos": {
+        "arrays": 108,
+        "cases": 6,
+        "sha256": "5577405695137e84a2d74f780a2f2c80d1d4afc7e95292b61f43ac9c9ccecbf9",
+        "all_finite": true
+      }
+    },
+    "area_epochs": 3,
+    "point_types": [
+      "REAL32",
+      "INTEGER32"
+    ],
+    "staggerings": [
+      "mass",
+      "U",
+      "V",
+      "vertically staggered W/PH represented as layered mass horizontal geometry"
+    ],
+    "CPU_EOS": "6 original calc_p_rho_phi cases, both hypsometric branches/all smooth options; supplied ALB byte equality under explicit RN and original system logf; pressure<=0.0625Pa; no GPU libdevice claim",
+    "mutations": "option2->sm121 kills2numericassertions with2controls; drop independent ALB kills1numericassertion with1control; no setup errors"
+  },
+  "coupled_CPU": {
+    "reference": "original CPU-WRF4.7.1 dump-free copied canonical executable; real WN3 Tenerife input crop, never GPU/JAX truth",
+    "reference_plan": {
+      "created_utc": "2026-10-13T20:57:30.630298+00:00",
+      "source_case": "<DATA_ROOT>/server/work/src/alisios/wrf_gen/wg_20260227_18z_a1/run/run",
+      "case": "<USER_HOME>/wrf_gpu2_lanes/u2-twoway/cpu-crop",
+      "mp_physics": 8,
+      "domains": 2,
+      "geometry": "original120x70 parent +real36x30 Tenerife childcrop,44levels,ratio3,start46/26",
+      "parent_dt_s": 54,
+      "child_dt_s": 18,
+      "parent_steps": 2,
+      "child_steps": 6,
+      "duration_s": 108,
+      "reference": "original CPU-WRF v4.7.1 canonical RD11 executable, lane copy; no shared dump strings",
+      "executable_sha256": "1d0f5779fff143361e470e37f89c734497ed5a7bb55d0c53b7e3fccc569dd49b",
+      "input_files": {
+        "wrfinput_d01": {
+          "source": "<USER_HOME>/wrf_gpu2_lanes/u2-twoway/cpu-reference/wrfinput_d01",
+          "sha256": "b7f75a6bad092cdacd2a2d4b47a4c28994b6727b372f23b1f22bb424a83987d8"
+        },
+        "wrfinput_d02": {
+          "source": "<USER_HOME>/wrf_gpu2_lanes/u2-twoway/cpu-reference/wrfinput_d02",
+          "sha256": "230953f60655a98304ddfc648f92f5aeb1a81740df6b4d23fd1f751c98e8a4d7"
+        },
+        "wrfbdy_d01": {
+          "source": "<USER_HOME>/wrf_gpu2_lanes/u2-twoway/cpu-reference/wrfbdy_d01",
+          "sha256": "c683a23ebe5946995b71c75f0b86b0b07badfc010cf3762b2149fa91cd344b37"
+        }
+      },
+      "namelist_sha256": "af22a2a9a36387ac2a57865f626d4d9fe7a6e66ed1c7e492f40b0a97973184cf",
+      "cache": "NONE",
+      "execution": "CPU12,13,28,29nice19 MPI1 OMP1 timeout600; noGPU",
+      "gate": {
+        "core": "unchanged frozen D6 manifest, separately boundary rings0..4/interior>=5",
+        "extra_mass": {
+          "atol": 1.5e-05,
+          "rtol": 0,
+          "basis": "frozen Gate2 mass-field absolute bound"
+        },
+        "extra_numbers": {
+          "atol": 1.0,
+          "rtol": 0.0005,
+          "basis": "predeclared Gate2 cloud-number bound, applied pointwise"
+        },
+        "extra_volumes": {
+          "atol": 1e-14,
+          "rtol": 0.0005,
+          "basis": "predeclared volume absolute floor and same relative number-density bound"
+        },
+        "finite": "all raw arrays required finite; no clamps/masking/threshold revision"
+      },
+      "feedback": 1,
+      "smooth_option": 2,
+      "crop": {
+        "child_original": "wrfinput_d02",
+        "x0": 90,
+        "y0": 30,
+        "nx": 36,
+        "ny": 30,
+        "max_hgt_m": 2777.056640625
+      },
+      "thompson_setup_tables": {
+        "qr_acr_qg_V4.dat": {
+          "source": "<DATA_ROOT>/server/work/src/alisios/wrf_gen/wg_20260227_18z_a1/run/run/qr_acr_qg_V4.dat",
+          "sha256": "441bd8361b4df2ac6c6007fc7aceb333372496722a50adc94897422905dbfff8"
+        },
+        "qr_acr_qsV2.dat": {
+          "source": "<DATA_ROOT>/server/work/src/alisios/wrf_gen/wg_20260227_18z_a1/run/run/qr_acr_qsV2.dat",
+          "sha256": "910fb31d5bc53b9b89ba5238b50efd4806a5877c859570b8d5ef3badc3f942c0"
+        },
+        "freezeH2O.dat": {
+          "source": "<DATA_ROOT>/server/work/src/alisios/wrf_gen/wg_20260227_18z_a1/run/run/freezeH2O.dat",
+          "sha256": "05497b0ed3f8dee78c9db25374f3e7f3da891580b15974453b608631433cce46"
+        }
+      },
+      "scope": "real-input child crop for intermediate CPU qualification, not full-case/release validation",
+      "metadata_type_fix": "WRF expects NC_INT, not NC_INT64, for grid/start attributes; values unchanged"
+    },
+    "manifest_sha256": "9df4fab8514523286f07b127eb8bf57a7545459c4448fef721ac44c0ecc351dc",
+    "steps": {
+      "d01": 2,
+      "d02": 6
+    },
+    "frames": [
+      {
+        "domain": "d01",
+        "step": 0,
+        "reported_fields": 196,
+        "classification_counts": {
+          "PASS": 32,
+          "REPORT_ONLY": 157,
+          "MISSING_REFERENCE": 7
+        },
+        "nonfinite": 0,
+        "guard_total": 0
+      },
+      {
+        "domain": "d02",
+        "step": 0,
+        "reported_fields": 196,
+        "classification_counts": {
+          "PASS": 32,
+          "REPORT_ONLY": 157,
+          "MISSING_REFERENCE": 7
+        },
+        "nonfinite": 0,
+        "guard_total": 0
+      },
+      {
+        "domain": "d02",
+        "step": 1,
+        "reported_fields": 201,
+        "classification_counts": {
+          "PASS": 31,
+          "REPORT_ONLY": 163,
+          "MISSING_REFERENCE": 7
+        },
+        "nonfinite": 0,
+        "guard_total": 0
+      },
+      {
+        "domain": "d02",
+        "step": 2,
+        "reported_fields": 201,
+        "classification_counts": {
+          "PASS": 31,
+          "REPORT_ONLY": 163,
+          "MISSING_REFERENCE": 7
+        },
+        "nonfinite": 0,
+        "guard_total": 0
+      },
+      {
+        "domain": "d02",
+        "step": 3,
+        "reported_fields": 201,
+        "classification_counts": {
+          "PASS": 31,
+          "REPORT_ONLY": 163,
+          "MISSING_REFERENCE": 7
+        },
+        "nonfinite": 0,
+        "guard_total": 0
+      },
+      {
+        "domain": "d01",
+        "step": 1,
+        "reported_fields": 201,
+        "classification_counts": {
+          "PASS": 31,
+          "REPORT_ONLY": 163,
+          "MISSING_REFERENCE": 7
+        },
+        "nonfinite": 0,
+        "guard_total": 0
+      },
+      {
+        "domain": "d02",
+        "step": 4,
+        "reported_fields": 201,
+        "classification_counts": {
+          "PASS": 31,
+          "REPORT_ONLY": 163,
+          "MISSING_REFERENCE": 7
+        },
+        "nonfinite": 0,
+        "guard_total": 0
+      },
+      {
+        "domain": "d02",
+        "step": 5,
+        "reported_fields": 201,
+        "classification_counts": {
+          "PASS": 31,
+          "REPORT_ONLY": 163,
+          "MISSING_REFERENCE": 7
+        },
+        "nonfinite": 0,
+        "guard_total": 0
+      },
+      {
+        "domain": "d02",
+        "step": 6,
+        "reported_fields": 201,
+        "classification_counts": {
+          "PASS": 31,
+          "REPORT_ONLY": 163,
+          "MISSING_REFERENCE": 7
+        },
+        "nonfinite": 0,
+        "guard_total": 0
+      },
+      {
+        "domain": "d01",
+        "step": 2,
+        "reported_fields": 201,
+        "classification_counts": {
+          "PASS": 31,
+          "REPORT_ONLY": 163,
+          "MISSING_REFERENCE": 7
+        },
+        "nonfinite": 0,
+        "guard_total": 0
+      }
+    ],
+    "registered_field_frame_gates": 312,
+    "nonfinite_values": 0,
+    "pre_mask_guard_total": 0,
+    "load_s": 444.02624375303276,
+    "cold_total_s": 3592.2515192821156,
+    "process_exit": "GNU timeout124 during teardown after COMPLETE report at3592.251519s; timeout3600; no numerical rerun",
+    "harness": "real CPU; Pallas interpretation + explicit RN32 PTX arithmetic emulation + pure-JAX Thomas replacement, not product GPU solver performance",
+    "oracle_history_visible_to_model": false,
+    "raw_verdict_preserved": "INCOMPLETE_STATIC_AUX_SCOPE is historical hardcoded harness label; this field-disposition packet separately closes implementation scope without relabelling raw science",
+    "same_work": "resolved input/executable/namelist hashes, dt54/18, feedback1/smooth2, 2/6 steps, all10frames; GPU0, FAST1 CENSUS1; per-family execution counters not retained, no measured claim for them"
+  },
+  "scientific_reuse": {
+    "writer_only": {
+      "baseline": "4605ba5e2",
+      "candidate": "71722393f1b80a7d33e816097919b2702c8ce2d5",
+      "backend": "cpu",
+      "cache": "NONE",
+      "common_overrides_byte_identical": {
+        "ALBOLD": "c84915d58f2cde58af67d9d2d689c93f08b991e0d041e77444a8d5162e2942a5",
+        "APAR": "c84915d58f2cde58af67d9d2d689c93f08b991e0d041e77444a8d5162e2942a5",
+        "BGAP": "c84915d58f2cde58af67d9d2d689c93f08b991e0d041e77444a8d5162e2942a5",
+        "CANHS": "c84915d58f2cde58af67d9d2d689c93f08b991e0d041e77444a8d5162e2942a5",
+        "CANICE": "c84915d58f2cde58af67d9d2d689c93f08b991e0d041e77444a8d5162e2942a5",
+        "CANLIQ": "c84915d58f2cde58af67d9d2d689c93f08b991e0d041e77444a8d5162e2942a5",
+        "CANWAT": "c84915d58f2cde58af67d9d2d689c93f08b991e0d041e77444a8d5162e2942a5",
+        "CH": "c84915d58f2cde58af67d9d2d689c93f08b991e0d041e77444a8d5162e2942a5",
+        "CHB": "c84915d58f2cde58af67d9d2d689c93f08b991e0d041e77444a8d5162e2942a5",
+        "CHB2": "c84915d58f2cde58af67d9d2d689c93f08b991e0d041e77444a8d5162e2942a5",
+        "CHLEAF": "c84915d58f2cde58af67d9d2d689c93f08b991e0d041e77444a8d5162e2942a5",
+        "CHSTAR": "c84915d58f2cde58af67d9d2d689c93f08b991e0d041e77444a8d5162e2942a5",
+        "CHUC": "c84915d58f2cde58af67d9d2d689c93f08b991e0d041e77444a8d5162e2942a5",
+        "CHV": "c84915d58f2cde58af67d9d2d689c93f08b991e0d041e77444a8d5162e2942a5",
+        "CHV2": "c84915d58f2cde58af67d9d2d689c93f08b991e0d041e77444a8d5162e2942a5",
+        "CLAT": "a7d4da29a9a1925e71fd7d789674b0540baf5ecc378bb9fbc10f12c0f15011b6",
+        "CM": "c84915d58f2cde58af67d9d2d689c93f08b991e0d041e77444a8d5162e2942a5",
+        "COSALPHA": "7a5cdfb00733452b318fcdb5cc232398adc856935dbc0e99a8e6b3c06cc44cae",
+        "CROPTYPE": "1555f42a09f06e9170a576a3a15745eb4810c03f74b9594e181ef0d9bdfb6e72",
+        "E": "fc2fbacd313b094dbda5c42b9a1efec823b9c4ac66178f19cf95c3b836d041e8",
+        "EAH": "c84915d58f2cde58af67d9d2d689c93f08b991e0d041e77444a8d5162e2942a5",
+        "ECAN": "c84915d58f2cde58af67d9d2d689c93f08b991e0d041e77444a8d5162e2942a5",
+        "EDIR": "c84915d58f2cde58af67d9d2d689c93f08b991e0d041e77444a8d5162e2942a5",
+        "EQZWT": "c84915d58f2cde58af67d9d2d689c93f08b991e0d041e77444a8d5162e2942a5",
+        "ETRAN": "c84915d58f2cde58af67d9d2d689c93f08b991e0d041e77444a8d5162e2942a5",
+        "EVB": "c84915d58f2cde58af67d9d2d689c93f08b991e0d041e77444a8d5162e2942a5",
+        "EVC": "c84915d58f2cde58af67d9d2d689c93f08b991e0d041e77444a8d5162e2942a5",
+        "EVG": "c84915d58f2cde58af67d9d2d689c93f08b991e0d041e77444a8d5162e2942a5",
+        "F": "61b99c1a16de0fe2fffe3872571f9d0d61e67419fd949068d3b24a1afdfac0f7",
+        "FASTCP": "c84915d58f2cde58af67d9d2d689c93f08b991e0d041e77444a8d5162e2942a5",
+        "FDEPTH": "c84915d58f2cde58af67d9d2d689c93f08b991e0d041e77444a8d5162e2942a5",
+        "FIFRACT": "c84915d58f2cde58af67d9d2d689c93f08b991e0d041e77444a8d5162e2942a5",
+        "FIRA": "c84915d58f2cde58af67d9d2d689c93f08b991e0d041e77444a8d5162e2942a5",
+        "FORCPLSM": "c84915d58f2cde58af67d9d2d689c93f08b991e0d041e77444a8d5162e2942a5",
+        "FORCQLSM": "c84915d58f2cde58af67d9d2d689c93f08b991e0d041e77444a8d5162e2942a5",
+        "FORCTLSM": "c84915d58f2cde58af67d9d2d689c93f08b991e0d041e77444a8d5162e2942a5",
+        "FORCWLSM": "c84915d58f2cde58af67d9d2d689c93f08b991e0d041e77444a8d5162e2942a5",
+        "FORCZLSM": "c84915d58f2cde58af67d9d2d689c93f08b991e0d041e77444a8d5162e2942a5",
+        "FPICE": "c84915d58f2cde58af67d9d2d689c93f08b991e0d041e77444a8d5162e2942a5",
+        "FRC_URB2D": "c84915d58f2cde58af67d9d2d689c93f08b991e0d041e77444a8d5162e2942a5",
+        "FSA": "c84915d58f2cde58af67d9d2d689c93f08b991e0d041e77444a8d5162e2942a5",
+        "FVEG": "c84915d58f2cde58af67d9d2d689c93f08b991e0d041e77444a8d5162e2942a5",
+        "FWET": "c84915d58f2cde58af67d9d2d689c93f08b991e0d041e77444a8d5162e2942a5",
+        "GDD": "c84915d58f2cde58af67d9d2d689c93f08b991e0d041e77444a8d5162e2942a5",
+        "GHB": "c84915d58f2cde58af67d9d2d689c93f08b991e0d041e77444a8d5162e2942a5",
+        "GHV": "c84915d58f2cde58af67d9d2d689c93f08b991e0d041e77444a8d5162e2942a5",
+        "GPP": "c84915d58f2cde58af67d9d2d689c93f08b991e0d041e77444a8d5162e2942a5",
+        "GRAIN": "c84915d58f2cde58af67d9d2d689c93f08b991e0d041e77444a8d5162e2942a5",
+        "HARVEST": "c84915d58f2cde58af67d9d2d689c93f08b991e0d041e77444a8d5162e2942a5",
+        "IRB": "c84915d58f2cde58af67d9d2d689c93f08b991e0d041e77444a8d5162e2942a5",
+        "IRC": "c84915d58f2cde58af67d9d2d689c93f08b991e0d041e77444a8d5162e2942a5",
+        "IRELOSS": "c84915d58f2cde58af67d9d2d689c93f08b991e0d041e77444a8d5162e2942a5",
+        "IRFIVOL": "c84915d58f2cde58af67d9d2d689c93f08b991e0d041e77444a8d5162e2942a5",
+        "IRFRACT": "c84915d58f2cde58af67d9d2d689c93f08b991e0d041e77444a8d5162e2942a5",
+        "IRG": "c84915d58f2cde58af67d9d2d689c93f08b991e0d041e77444a8d5162e2942a5",
+        "IRMIVOL": "c84915d58f2cde58af67d9d2d689c93f08b991e0d041e77444a8d5162e2942a5",
+        "IRNUMFI": "c84915d58f2cde58af67d9d2d689c93f08b991e0d041e77444a8d5162e2942a5",
+        "IRNUMMI": "c84915d58f2cde58af67d9d2d689c93f08b991e0d041e77444a8d5162e2942a5",
+        "IRNUMSI": "c84915d58f2cde58af67d9d2d689c93f08b991e0d041e77444a8d5162e2942a5",
+        "IRRSPLH": "c84915d58f2cde58af67d9d2d689c93f08b991e0d041e77444a8d5162e2942a5",
+        "IRSIVOL": "c84915d58f2cde58af67d9d2d689c93f08b991e0d041e77444a8d5162e2942a5",
+        "ISLTYP": "a11bc1acddba5b336e815279f4c2069c22537c7630d45fd1b1d5c47cc76afd9f",
+        "ISNOW": "c84915d58f2cde58af67d9d2d689c93f08b991e0d041e77444a8d5162e2942a5",
+        "IVGTYP": "78c5b6d15241a1bb9c37b9ab3a932c212a4de02528cc93043d717a262bfa4c29",
+        "LANDMASK": "530908a34a631e1a73cee6cfee8c5b989a9487d706651b56225659ed0e22a21c",
+        "LFMASS": "c84915d58f2cde58af67d9d2d689c93f08b991e0d041e77444a8d5162e2942a5",
+        "LU_INDEX": "760bce511340deb85707b7a1310e4af492295ef092f973c34c53d45a6555079d",
+        "MAPFAC_M": "266b35b5917ddcca98d85cc68e63a8ad054b062563f6d6fa1a69636982ec5d8b",
+        "MAPFAC_MX": "266b35b5917ddcca98d85cc68e63a8ad054b062563f6d6fa1a69636982ec5d8b",
+        "MAPFAC_MY": "266b35b5917ddcca98d85cc68e63a8ad054b062563f6d6fa1a69636982ec5d8b",
+        "MIFRACT": "c84915d58f2cde58af67d9d2d689c93f08b991e0d041e77444a8d5162e2942a5",
+        "NEE": "c84915d58f2cde58af67d9d2d689c93f08b991e0d041e77444a8d5162e2942a5",
+        "NPP": "c84915d58f2cde58af67d9d2d689c93f08b991e0d041e77444a8d5162e2942a5",
+        "PAH": "c84915d58f2cde58af67d9d2d689c93f08b991e0d041e77444a8d5162e2942a5",
+        "PAHB": "c84915d58f2cde58af67d9d2d689c93f08b991e0d041e77444a8d5162e2942a5",
+        "PAHG": "c84915d58f2cde58af67d9d2d689c93f08b991e0d041e77444a8d5162e2942a5",
+        "PAHV": "c84915d58f2cde58af67d9d2d689c93f08b991e0d041e77444a8d5162e2942a5",
+        "PLANTING": "c84915d58f2cde58af67d9d2d689c93f08b991e0d041e77444a8d5162e2942a5",
+        "PONDING": "c84915d58f2cde58af67d9d2d689c93f08b991e0d041e77444a8d5162e2942a5",
+        "PSFC": "e3ec8d2b84c397be790b18139c37f0b0339774a3c2232d3b0f7a692258a049c9",
+        "PSN": "c84915d58f2cde58af67d9d2d689c93f08b991e0d041e77444a8d5162e2942a5",
+        "Q2": "d3c219b1aba51a3001a1e088fce2dfc4586059baf78008b3b783c4ce7cfd3e81",
+        "Q2B": "c84915d58f2cde58af67d9d2d689c93f08b991e0d041e77444a8d5162e2942a5",
+        "Q2V": "c84915d58f2cde58af67d9d2d689c93f08b991e0d041e77444a8d5162e2942a5",
+        "QDEWC": "c84915d58f2cde58af67d9d2d689c93f08b991e0d041e77444a8d5162e2942a5",
+        "QDRIPR": "c84915d58f2cde58af67d9d2d689c93f08b991e0d041e77444a8d5162e2942a5",
+        "QDRIPS": "c84915d58f2cde58af67d9d2d689c93f08b991e0d041e77444a8d5162e2942a5",
+        "QEVAC": "c84915d58f2cde58af67d9d2d689c93f08b991e0d041e77444a8d5162e2942a5",
+        "QFROC": "c84915d58f2cde58af67d9d2d689c93f08b991e0d041e77444a8d5162e2942a5",
+        "QFRZC": "c84915d58f2cde58af67d9d2d689c93f08b991e0d041e77444a8d5162e2942a5",
+        "QIN": "c84915d58f2cde58af67d9d2d689c93f08b991e0d041e77444a8d5162e2942a5",
+        "QINTR": "c84915d58f2cde58af67d9d2d689c93f08b991e0d041e77444a8d5162e2942a5",
+        "QINTS": "c84915d58f2cde58af67d9d2d689c93f08b991e0d041e77444a8d5162e2942a5",
+        "QMELT": "c84915d58f2cde58af67d9d2d689c93f08b991e0d041e77444a8d5162e2942a5",
+        "QMELTC": "c84915d58f2cde58af67d9d2d689c93f08b991e0d041e77444a8d5162e2942a5",
+        "QRAINXY": "c84915d58f2cde58af67d9d2d689c93f08b991e0d041e77444a8d5162e2942a5",
+        "QSNBOT": "c84915d58f2cde58af67d9d2d689c93f08b991e0d041e77444a8d5162e2942a5",
+        "QSNFRO": "c84915d58f2cde58af67d9d2d689c93f08b991e0d041e77444a8d5162e2942a5",
+        "QSNOWXY": "c84915d58f2cde58af67d9d2d689c93f08b991e0d041e77444a8d5162e2942a5",
+        "QSNSUB": "c84915d58f2cde58af67d9d2d689c93f08b991e0d041e77444a8d5162e2942a5",
+        "QSUBC": "c84915d58f2cde58af67d9d2d689c93f08b991e0d041e77444a8d5162e2942a5",
+        "QTDRAIN": "c84915d58f2cde58af67d9d2d689c93f08b991e0d041e77444a8d5162e2942a5",
+        "QTHROR": "c84915d58f2cde58af67d9d2d689c93f08b991e0d041e77444a8d5162e2942a5",
+        "QTHROS": "c84915d58f2cde58af67d9d2d689c93f08b991e0d041e77444a8d5162e2942a5",
+        "RAINLSM": "c84915d58f2cde58af67d9d2d689c93f08b991e0d041e77444a8d5162e2942a5",
+        "RECHCLIM": "c84915d58f2cde58af67d9d2d689c93f08b991e0d041e77444a8d5162e2942a5",
+        "RIVERBED": "c84915d58f2cde58af67d9d2d689c93f08b991e0d041e77444a8d5162e2942a5",
+        "RSSHA": "c84915d58f2cde58af67d9d2d689c93f08b991e0d041e77444a8d5162e2942a5",
+        "RSSUN": "c84915d58f2cde58af67d9d2d689c93f08b991e0d041e77444a8d5162e2942a5",
+        "RTMASS": "c84915d58f2cde58af67d9d2d689c93f08b991e0d041e77444a8d5162e2942a5",
+        "RUNSB": "c84915d58f2cde58af67d9d2d689c93f08b991e0d041e77444a8d5162e2942a5",
+        "RUNSF": "c84915d58f2cde58af67d9d2d689c93f08b991e0d041e77444a8d5162e2942a5",
+        "SAG": "c84915d58f2cde58af67d9d2d689c93f08b991e0d041e77444a8d5162e2942a5",
+        "SAV": "c84915d58f2cde58af67d9d2d689c93f08b991e0d041e77444a8d5162e2942a5",
+        "SEAICE": "c84915d58f2cde58af67d9d2d689c93f08b991e0d041e77444a8d5162e2942a5",
+        "SEASON_GDD": "c84915d58f2cde58af67d9d2d689c93f08b991e0d041e77444a8d5162e2942a5",
+        "SH2O": "19ac10deb3ca3aa30560b95c98bf7c05f00dec1ccc559c3401dd26c292f4c765",
+        "SHB": "c84915d58f2cde58af67d9d2d689c93f08b991e0d041e77444a8d5162e2942a5",
+        "SHC": "c84915d58f2cde58af67d9d2d689c93f08b991e0d041e77444a8d5162e2942a5",
+        "SHDAVG": "e4251ec416b40fc016c9e79ab7abd03ff4b2ec0d2000e1c18da0d18641d8013c",
+        "SHDMAX": "b8c6fcf757b7754e67bfb632f5ac09acee68eed189f3c17f9d061c922c3ba82d",
+        "SHDMIN": "68e773e01c024381477494cb7f22c943178966c8ce2a681c667919e09f51dc33",
+        "SHG": "c84915d58f2cde58af67d9d2d689c93f08b991e0d041e77444a8d5162e2942a5",
+        "SIFRACT": "c84915d58f2cde58af67d9d2d689c93f08b991e0d041e77444a8d5162e2942a5",
+        "SINALPHA": "e66d39f3e47d61bd1d2c7ad10f18563603ba256ddac353b02eb17f4f2261e41c",
+        "SMOIS": "690e6c65d70c3b5b3ca84dfcdeecc85b86d3204554b407d76c075a20cbb3c1f5",
+        "SNEQVO": "c84915d58f2cde58af67d9d2d689c93f08b991e0d041e77444a8d5162e2942a5",
+        "SNICE": "bbc16188639544a2331242891d7b0a4cadbcb280baaca31e7abb73373083ace6",
+        "SNLIQ": "bbc16188639544a2331242891d7b0a4cadbcb280baaca31e7abb73373083ace6",
+        "SNOW": "c84915d58f2cde58af67d9d2d689c93f08b991e0d041e77444a8d5162e2942a5",
+        "SNOWC": "c84915d58f2cde58af67d9d2d689c93f08b991e0d041e77444a8d5162e2942a5",
+        "SNOWH": "c84915d58f2cde58af67d9d2d689c93f08b991e0d041e77444a8d5162e2942a5",
+        "SNOWLSM": "c84915d58f2cde58af67d9d2d689c93f08b991e0d041e77444a8d5162e2942a5",
+        "SOILCL1": "c84915d58f2cde58af67d9d2d689c93f08b991e0d041e77444a8d5162e2942a5",
+        "SOILCL2": "c84915d58f2cde58af67d9d2d689c93f08b991e0d041e77444a8d5162e2942a5",
+        "SOILCL3": "c84915d58f2cde58af67d9d2d689c93f08b991e0d041e77444a8d5162e2942a5",
+        "SOILCL4": "c84915d58f2cde58af67d9d2d689c93f08b991e0d041e77444a8d5162e2942a5",
+        "SOILCOMP": "e03f1f2de3a0ea07b30025efd9231aa4c8dfe7206207f8aa07398359fc34c04d",
+        "STBLCP": "c84915d58f2cde58af67d9d2d689c93f08b991e0d041e77444a8d5162e2942a5",
+        "STMASS": "c84915d58f2cde58af67d9d2d689c93f08b991e0d041e77444a8d5162e2942a5",
+        "T2": "b57da59268bffafbbca4a7e51b8826935c9d4f505eb43dfb3cbd716438153d57",
+        "T2B": "c84915d58f2cde58af67d9d2d689c93f08b991e0d041e77444a8d5162e2942a5",
+        "T2V": "c84915d58f2cde58af67d9d2d689c93f08b991e0d041e77444a8d5162e2942a5",
+        "TAH": "c84915d58f2cde58af67d9d2d689c93f08b991e0d041e77444a8d5162e2942a5",
+        "TD_FRACTION": "c84915d58f2cde58af67d9d2d689c93f08b991e0d041e77444a8d5162e2942a5",
+        "TG": "c84915d58f2cde58af67d9d2d689c93f08b991e0d041e77444a8d5162e2942a5",
+        "TGB": "c84915d58f2cde58af67d9d2d689c93f08b991e0d041e77444a8d5162e2942a5",
+        "TGV": "c84915d58f2cde58af67d9d2d689c93f08b991e0d041e77444a8d5162e2942a5",
+        "TH2": "37c02b0c5832d589f390d8cc8588f420766c48b281b843229399c8c5418900b0",
+        "TMN": "f2225c91a4ef11f4222682272346e59c6fc465f30f94065ca22a6e0799d0b451",
+        "TR": "c84915d58f2cde58af67d9d2d689c93f08b991e0d041e77444a8d5162e2942a5",
+        "TRAD": "c84915d58f2cde58af67d9d2d689c93f08b991e0d041e77444a8d5162e2942a5",
+        "TSK": "cfe7fb60a229e80a39a4d749b80252c22ccf8a8af6d33d2c77b4ecfa7a3de532",
+        "TSLB": "e7d2948a8f70fcf4973806b90aa55531bf57d38b3c46e8ae3db677baed8c5dc7",
+        "TSNO": "bbc16188639544a2331242891d7b0a4cadbcb280baaca31e7abb73373083ace6",
+        "TV": "c84915d58f2cde58af67d9d2d689c93f08b991e0d041e77444a8d5162e2942a5",
+        "U10": "025357a74c02ff9349b784f133f2a3f934ed2ffc76913a5d337a313a003d8e60",
+        "V10": "aee8a4546cb05da8453765f35ded37979538a04d4ed9efa7660e08a413899494",
+        "VEGFRA": "37bd002da57d0ffda7ac0e83a6d534805cc06a46365265b0f9cf7ce2d8600467",
+        "WA": "c84915d58f2cde58af67d9d2d689c93f08b991e0d041e77444a8d5162e2942a5",
+        "WGAP": "c84915d58f2cde58af67d9d2d689c93f08b991e0d041e77444a8d5162e2942a5",
+        "WOOD": "c84915d58f2cde58af67d9d2d689c93f08b991e0d041e77444a8d5162e2942a5",
+        "WSLAKE": "c84915d58f2cde58af67d9d2d689c93f08b991e0d041e77444a8d5162e2942a5",
+        "WT": "c84915d58f2cde58af67d9d2d689c93f08b991e0d041e77444a8d5162e2942a5",
+        "XLAND": "43ec48d0c1c1aca7d371a59982986d37e85a0a07626c0706913193416f9ccd06",
+        "XSAI": "c84915d58f2cde58af67d9d2d689c93f08b991e0d041e77444a8d5162e2942a5",
+        "ZSNSO": "d3b6aef9c245bbed46f856548f35da7139c9bee5ef7101b8ea325523ace8b149",
+        "ZWT": "c84915d58f2cde58af67d9d2d689c93f08b991e0d041e77444a8d5162e2942a5"
+      },
+      "added_writer_fields": [
+        "MAPFAC_U",
+        "MAPFAC_UX",
+        "MAPFAC_UY",
+        "MAPFAC_V",
+        "MAPFAC_VX",
+        "MAPFAC_VY",
+        "MF_VX_INV",
+        "XLAT_U",
+        "XLAT_V",
+        "XLONG_U",
+        "XLONG_V"
+      ],
+      "parent_initialization_body_AST_identical": true,
+      "physics_readers_exclude_added_names": [
+        "land_state.py",
+        "noahmp_land_init.py",
+        "land_history.py",
+        "gwdo_static.py"
+      ],
+      "source_delta": [
+        "src/gpuwrf/io/nesting_options.py",
+        "src/gpuwrf/nesting/initial_feedback.py"
+      ],
+      "admission_proof": "TB40-prejax-ratio-proof.json",
+      "scientific_reuse": "TB37 original-WRF trajectories retained: added staggered output coordinates/maps are not read through field_overrides by physics; live metrics already use unchanged separate feedback",
+      "verdict": "PASS"
+    },
+    "preJAX_ratio_guard": "TB40 AST+actual ratio3 passing unchanged inputs",
+    "post_main_composition": {
+      "verdict": "PASS",
+      "source_before": "71722393f1b80a7d33e816097919b2702c8ce2d5",
+      "source_after": "3b0efce53ea5c6fdfdc1c25be0451e1c2fc1968b",
+      "seed_sha256": "bb8b0ae6ea9cc1c07d957e8a7885c5f5345a1dc68a8bb740633b18f4c2dd8ddd",
+      "four_programs_with_constants_and_input_signatures_EXACT": {
+        "d01_initial": {
+          "sha256": "01897afc3a88984de35d17e9663e7bd5ddb3000cd74ce4e5438336c4aca50e40",
+          "chars": 14367932,
+          "constants": 758,
+          "inputs": 188
+        },
+        "d01_ordinary": {
+          "sha256": "01897afc3a88984de35d17e9663e7bd5ddb3000cd74ce4e5438336c4aca50e40",
+          "chars": 14367932,
+          "constants": 758,
+          "inputs": 188
+        },
+        "d02_initial": {
+          "sha256": "1803005e3957bf5d7ad6a012a002134e48fcd67bd3962c605b86de39b930e17e",
+          "chars": 14366076,
+          "constants": 733,
+          "inputs": 185
+        },
+        "d02_ordinary": {
+          "sha256": "1803005e3957bf5d7ad6a012a002134e48fcd67bd3962c605b86de39b930e17e",
+          "chars": 14366076,
+          "constants": 733,
+          "inputs": 185
+        }
+      },
+      "feedback_and_initializer_source_BYTE": [
+        "src/gpuwrf/nesting/initial_feedback.py",
+        "src/gpuwrf/coupling/boundary_feedback.py",
+        "src/gpuwrf/coupling/feedback_aux.py",
+        "src/gpuwrf/coupling/feedback_registry.py"
+      ],
+      "x64_enabled": true,
+      "before_wall_s": 129.90423590387218,
+      "after_wall_s": 242.3171276000794,
+      "reference": "TB37 originalCPUWRF numerical trajectories; this is regression/program identity only, not new fidelity truth",
+      "initialization": "717 staged source operands preserved168overrides BYTE byTB46; main initialization changes guarded absent optional diagnostics; actual seed shares exact input bytes",
+      "CPU_shim": "same coupled_gate Pallas/RN32/Thomas and resolved measured environment",
+      "cache": "NONE;202MB seed removed immediately after identity"
+    },
+    "initialization": {
+      "verdict": "PASS",
+      "before": "71722393f",
+      "after": "3b0efce53ea5c6fdfdc1c25be0451e1c2fc1968b",
+      "actual_case_admitted": true,
+      "actual_case_new_options": {
+        "prec_acc_dt": 0,
+        "nwp_diagnostics": 0,
+        "do_radar_ref": 0,
+        "swint_opt": 0
+      },
+      "actual_PBL": [
+        5,
+        5,
+        5
+      ],
+      "nested_load_domains_AST_identical": true,
+      "initial_carry_body_AST_identical_after_pruning_four_proven_inactive_new_branches": [
+        "int(namelist.bl_pbl_physics) == 10",
+        "float(namelist.prec_acc_dt) != 0.0",
+        "namelist.nwp_diagnostics or namelist.do_radar_ref",
+        "namelist.swint_opt"
+      ],
+      "existing_RUC_precondition_simplifies_identically": true,
+      "cache": "NONE",
+      "JAX_imported": false
+    },
+    "output_only_successor": {
+      "verdict": "PASS",
+      "source_before": "3b0efce53",
+      "source_after": "5cd4e58a254add98630e876e86f3bc59607064d7",
+      "backend": "cpu",
+      "cache": "NONE",
+      "execution": "direct calls of four parameterized test functions with actual pytest MonkeyPatch; no pytest basetemp conflict",
+      "positives": [
+        {
+          "feedback": false,
+          "step": 0,
+          "verdict": "PASS"
+        },
+        {
+          "feedback": false,
+          "step": 1,
+          "verdict": "PASS"
+        },
+        {
+          "feedback": true,
+          "step": 0,
+          "verdict": "PASS"
+        },
+        {
+          "feedback": true,
+          "step": 1,
+          "verdict": "PASS"
+        }
+      ],
+      "old_writer_mutant": [
+        {
+          "step": 0,
+          "result": "GENUINE_NUMERIC_ASSERTION_KILL"
+        },
+        {
+          "step": 1,
+          "result": "POSITIVE_CONTROL_PASS"
+        }
+      ],
+      "wall_s": 0.6534293449949473,
+      "fixture": "verbatim original WRF active copy_fcn fixture0, actual p/o arrays",
+      "only_source_change": [
+        "src/gpuwrf/integration/nested_pipeline.py"
+      ],
+      "loader_AST_identical": true,
+      "writer_AST_identical_except_removing_step_positive_precondition": true,
+      "scientific_reuse": "No initialization/hot-step arithmetic, carry or defaults changed. TB37 + TB48 and official TB50/51 retained; changed output callback directly qualified against original Fortran bytes.",
+      "script_sha256": "e8993f4bf2bb99bf3dbc8b848dcf75e540913b4f9ed5390d160cb1d65b6de679"
+    }
+  },
+  "pipeline_and_restart": {
+    "controls": "daily + nested bind feedback/smooth/spec-zone and honour; explicit False override; single-domain records controls without feedback",
+    "initial_scope": "B1 d01+d02 only; deeper hierarchies refused before JAX",
+    "restart": "optional BaseState.alb and OperationalCarry.feedback_history; both pickle and NetCDF byte-preserve all carry leaves; active feedback resume refuses missing groups; upstream optional groups preserved"
+  },
+  "performance_memory": {
+    "CPU_packed_41_field_measurement": {
+      "backend": "cpu",
+      "no_gpu_claim": true,
+      "names": [
+        "TH2",
+        "SWDNB",
+        "SWUPB",
+        "SWDNT",
+        "SWUPT",
+        "LWDNB",
+        "LWUPB",
+        "LWDNT",
+        "LWUPT",
+        "SWDNBC",
+        "SWUPBC",
+        "SWDNTC",
+        "SWUPTC",
+        "LWDNBC",
+        "LWUPBC",
+        "LWDNTC",
+        "LWUPTC",
+        "WA",
+        "WT",
+        "ZWT",
+        "LFMASS",
+        "STMASS",
+        "RTMASS",
+        "WOOD",
+        "STBLCP",
+        "FASTCP",
+        "IVGTYP",
+        "ISLTYP",
+        "VAR",
+        "CON",
+        "OA1",
+        "OA2",
+        "OA3",
+        "OA4",
+        "OL1",
+        "OL2",
+        "OL3",
+        "OL4",
+        "SHDMAX",
+        "SHDMIN",
+        "SHDAVG"
+      ],
+      "fields": 41,
+      "cold_compile_s": 1.6669291439466178,
+      "source_bits_equal": true,
+      "times": {
+        "fused_api_s": 0.00010704488959163427,
+        "sequential_api_s": 0.01356565251480788
+      },
+      "speedup": 126.72863288064951,
+      "memory": {
+        "argument_size_in_bytes": 253120,
+        "output_size_in_bytes": 72160,
+        "temp_size_in_bytes": 83392
+      },
+      "geometry": "22x20 parent,36x30 child,REAL32,3:1,spec_zone1;weights dynamic;all named active operands nonuniform",
+      "cache": "NONE GPUWRF_JAX_CACHE=0"
+    },
+    "default_OFF": "no new carry leaves or feedback launches; final frozen Swiss/PROD identity required",
+    "opt_in": "leaf-local JIT retains sequential State dispatch; packed auxiliary groups fused; 4 option2 directional sweeps versus2 foroption1; no host/device transfer inserted in timestep",
+    "GPU_launches_traffic_VRAM_compile_readiness": "UNMEASURED; coupled feedback disables fused cascade, already existing limitation; GPU24h plan includes these measurements",
+    "initial_output_fix": "One extra initial-frame dictionary overlay, reusing existing packed carry; no changed timestep arithmetic/kernel or persistent allocation. GPU output materialization cost unmeasured."
+  },
+  "limits": [
+    "Short CPU coupled smoke is not full24h/release or station-RMSE qualification",
+    "Only smooth2 full short forecast executed; 0/1/2 operators independently qualified and admitted",
+    "Coupled196/201 fields include157/163 REPORT_ONLY and7 MISSING_REFERENCE; do not claim every output is independently gated",
+    "Initial parent P max0.1875Pa,PH max63.886719m2/s2,QKE max25.000002; child P0.0390625Pa,PH0.00048828,QKE25.000002; no frozen D6 bounds for these diagnostics",
+    "GPU libdevice/E41/executable timing and memory remain unmeasured; no GPU executed",
+    "KI-11 full24h remains open; GPU_24H_PLAN.md prepared, unrun"
+  ],
+  "artifacts": {
+    "TB31b-reference-receipt.json": {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/u2-twoway/TB31b-reference-receipt.json",
+      "sha256": "183cc68b70778969a93ba27603ded309f18e2e65889e29ab1c5428c53f845d8f"
+    },
+    "TB37-composed-crop-coupled.json": {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/u2-twoway/TB37-composed-crop-coupled.json",
+      "sha256": "6ac0bfe2a9aac1e43ffa8e4c890d561c4fd44ac0b3aaf51d094d17a2b4735c86"
+    },
+    "TB37-composed-crop-coupled.log": {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/u2-twoway/TB37-composed-crop-coupled.log",
+      "sha256": "5a12f4c3eba1d3a3e13f0208ec053a0633ab9df47a27dbdb5fe022d7c17d2ca9"
+    },
+    "TB37-core-repin.log": {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/u2-twoway/TB37-core-repin.log",
+      "sha256": "cdb299454e625e0571b524c53aff88dc796bb0d0d31130c228601af9c766feaf"
+    },
+    "TB38-composed-shared-consumers.log": {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/u2-twoway/TB38-composed-shared-consumers.log",
+      "sha256": "4b1811867eab6077fc05cd5c13a6b331af03363a04180612139712748ec76601"
+    },
+    "TB39-clean-assets.json": {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/u2-twoway/TB39-clean-assets.json",
+      "sha256": "77382ff8b3d02f746ec25ee5085b298176f926cf1c77c20c58c4b967fcc87d8e"
+    },
+    "TB40-prejax-ratio-proof.json": {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/u2-twoway/TB40-prejax-ratio-proof.json",
+      "sha256": "33af3c54a20ba61a5a208bf163669c868ca6b584195a748192cc1acb61549739"
+    },
+    "TB41-Swiss-composed-final.json": {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/u2-twoway/TB41-Swiss-composed-final.json",
+      "sha256": "fe2dd4fd9d41013ba5cb6f3806d866b6fc935a0cfbe9526c4237c85834b5e76b"
+    },
+    "TB42-alb-mutant.py": {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/u2-twoway/TB42-alb-mutant.py",
+      "sha256": "0c0eb599112a832dddedbfdf35b73e76188b43802e02f251001645e8d8920f0d"
+    },
+    "TB42-alb-mutant.log": {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/u2-twoway/TB42-alb-mutant.log",
+      "sha256": "962f97837db540820a2d818ab17a09d4a3db5e915737e7ee1ddd7010cf11f716"
+    },
+    "TB43-PROD-composed-final.json": {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/u2-twoway/TB43-PROD-composed-final.json",
+      "sha256": "889cd284f75bf4a422cac6121bdf0fcdfcb8e82c36845bd6084d4e134bb617ab"
+    },
+    "TB44-cpu-stack.log": {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/u2-twoway/TB44-cpu-stack.log",
+      "sha256": "af38f5a281bad7ecfc6a408a262f3b3df2d4aa63b395bb9440722f7afe086844"
+    },
+    "TB45-staggered-writer-statics.log": {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/u2-twoway/TB45-staggered-writer-statics.log",
+      "sha256": "8dd21e1deaf87a51aa34dad747bc837454d747ace502755ffbc8d080b8f6bc7a"
+    },
+    "TB46-static-reuse.json": {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/u2-twoway/TB46-static-reuse.json",
+      "sha256": "611d6c567dcefa63187062d18096c8ed253d13cca8468f8e4e7b90e8ba9ed34c"
+    },
+    "TB34-packed-aux.json": {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/u2-twoway/TB34-packed-aux.json",
+      "sha256": "b2ae5f9464555512f099cd44c49619b8a1d8433304be82dd48a2955413aa356c"
+    },
+    "TB47-coupled-before-rebase.json": {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/u2-twoway/TB47-coupled-before-rebase.json",
+      "sha256": "2fcf7021e416669093f4eb4ea11f0d7cd2f43fac2171a11c81945d2f0fba9fb7"
+    },
+    "TB48-coupled-after-rebase.json": {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/u2-twoway/TB48-coupled-after-rebase.json",
+      "sha256": "16b935f848fdacd9d60e81e70de425b4063aa5fdbf91157a8332c84f52564d49"
+    },
+    "TB48-composition-proof.json": {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/u2-twoway/TB48-composition-proof.json",
+      "sha256": "34c08473c1a55ef5ba88e69c650a07c135b69aa58b05ba94dc53fa708779483a"
+    },
+    "TB48-initialization-proof.json": {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/u2-twoway/TB48-initialization-proof.json",
+      "sha256": "4bf314af0c86e152749d9cc3eea1ffe22865eb55a520b42dca55cccd475d8a90"
+    },
+    "TB50-official-Swiss.json": {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/u2-twoway/TB50-official-Swiss.json",
+      "sha256": "8f0efa8cf952de8c124f492abec74f14b3bc13c51ab53ebed4543b97a2bd464b"
+    },
+    "TB51-official-PROD.json": {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/u2-twoway/TB51-official-PROD.json",
+      "sha256": "967b46bf65fa4a36a9d3596688cc434b68fd60ca77c17f056d9b697c0daf373e"
+    },
+    "TB52-writer-receipt.json": {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/u2-twoway/TB52-writer-receipt.json",
+      "sha256": "44c14ebd621c7232f77345b08309fa92eef25be0d725b4e1b786a8ce477406eb"
+    },
+    "TB52-writer-receipt.py": {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/u2-twoway/TB52-writer-receipt.py",
+      "sha256": "e8993f4bf2bb99bf3dbc8b848dcf75e540913b4f9ed5390d160cb1d65b6de679"
+    },
+    "TB52-writer-receipt.log": {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/u2-twoway/TB52-writer-receipt.log",
+      "sha256": "44c14ebd621c7232f77345b08309fa92eef25be0d725b4e1b786a8ce477406eb"
+    },
+    "TB49-final-composed-consumers.log": {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/u2-twoway/TB49-final-composed-consumers.log",
+      "sha256": "c611cf5440c3e9034e3694eed2c6045c7bf6dc2ce3b6eb9644c6aefd8754c181"
+    },
+    "TB49-core-repin.json": {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/u2-twoway/TB49-core-repin.json",
+      "sha256": "e6f3962aac27ec5f70e86972cb52feabc7aa961af9fd12954e47270317232b9d"
+    },
+    "TB53-final-collection.log": {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/u2-twoway/TB53-final-collection.log",
+      "sha256": "82299a79fbb1aaaffa3019a766799ca6cb78f1627dff12e659fa38a35a7b0040"
+    }
+  },
+  "release_identity": {
+    "Swiss": {
+      "src": "<USER_HOME>/wrf_gpu2_lanes/u2-twoway/final-snapshot",
+      "om": "<USER_HOME>/wrf_gpu2_lanes/u2-twoway/final-snapshot/src/gpuwrf/runtime/operational_mode.py",
+      "case": "<USER_HOME>/wrf_gpu2_lanes/release-docs/RD11/cpu",
+      "exec_steps": 0,
+      "interpret_exec": false,
+      "fast_defaults": "1",
+      "arms": {
+        "release": {
+          "edits": {},
+          "bound": {
+            "mp_physics": 8,
+            "bl_pbl_physics": 5,
+            "sf_sfclay_physics": 5,
+            "ra_lw_physics": 4,
+            "ra_sw_physics": 4,
+            "cu_physics": 0,
+            "sf_surface_physics": 4,
+            "use_noahmp": true,
+            "sf_urban_physics": 0,
+            "diff_opt": 1,
+            "km_opt": 4,
+            "epssm": 0.5,
+            "damp_opt": 3,
+            "zdamp": 5000.0,
+            "dampcoef": 0.2,
+            "w_damping": 1,
+            "diff_6th_opt": 2,
+            "diff_6th_factor": 0.12,
+            "moist_adv_opt": 1,
+            "scalar_adv_opt": 1,
+            "topo_shadow_length_m": 25000.0,
+            "cumulus_cadence_steps": 1,
+            "radiation_cadence_steps": 33
+          },
+          "load_s": 108.8,
+          "sha": "2bf12cb8374d3a84a440e47dea4b77b0c7436108fc2ee2616bba6ec79b17962a",
+          "chars": 13405317,
+          "trace_s": 40.2,
+          "wall_s": 150.4
+        }
+      },
+      "port_probe": {
+        "upstream_probe_sha256": "2ad93f4295db8b01e546071f8ce773d3aad2a279deb4aa09ce452826ca72041c",
+        "platform": "cpu",
+        "native_facade_at_trace": true,
+        "gpu_executed": false
+      }
+    },
+    "PROD": {
+      "src": "<USER_HOME>/wrf_gpu2_lanes/u2-twoway/final-snapshot",
+      "om": "<USER_HOME>/wrf_gpu2_lanes/u2-twoway/final-snapshot/src/gpuwrf/runtime/operational_mode.py",
+      "case": "<DATA_ROOT>/wrf_gpu2/v025/s0_case_20260725",
+      "exec_steps": 0,
+      "interpret_exec": false,
+      "fast_defaults": "1",
+      "arms": {
+        "release": {
+          "edits": {},
+          "bound": {
+            "mp_physics": 8,
+            "bl_pbl_physics": 5,
+            "sf_sfclay_physics": 5,
+            "ra_lw_physics": 4,
+            "ra_sw_physics": 4,
+            "cu_physics": 1,
+            "sf_surface_physics": 4,
+            "use_noahmp": true,
+            "sf_urban_physics": 0,
+            "diff_opt": 1,
+            "km_opt": 4,
+            "epssm": 0.5,
+            "damp_opt": 3,
+            "zdamp": 5000.0,
+            "dampcoef": 0.2,
+            "w_damping": 1,
+            "diff_6th_opt": 2,
+            "diff_6th_factor": 0.12,
+            "moist_adv_opt": 1,
+            "scalar_adv_opt": 1,
+            "topo_shadow_length_m": 25000.0,
+            "cumulus_cadence_steps": 6,
+            "radiation_cadence_steps": 33
+          },
+          "load_s": 130.4,
+          "sha": "6fc715a2bd630934c4cf0f94427df19a527cbf429011c9ba5efe4d712744d27b",
+          "chars": 14708888,
+          "trace_s": 77.2,
+          "wall_s": 236.4
+        }
+      },
+      "port_probe": {
+        "upstream_probe_sha256": "2ad93f4295db8b01e546071f8ce773d3aad2a279deb4aa09ce452826ca72041c",
+        "platform": "cpu",
+        "native_facade_at_trace": true,
+        "gpu_executed": false
+      }
+    }
+  },
+  "completed_utc": "2026-10-13T23:13:33.799850+00:00",
+  "test_results": {
+    "final_composed_pytest": {
+      "candidate": "3b0efce53",
+      "passed": 456,
+      "failed": 0,
+      "skipped": 0,
+      "warnings": 5,
+      "wall_s": 1361.26,
+      "process_exit": 0,
+      "CPU": "core1 then8 nice19; allowed by finalOwner plan; repin receipt retained",
+      "scope": "14 targeted files including all8required shared consumers, NetCDF lock and affected area/point/EOS/aux/legacyfeedback/restart tests"
+    },
+    "output_only_successor": {
+      "candidate": "5cd4e58a2",
+      "direct_parameterized_test_function_calls_passed": 4,
+      "old_writer_genuine_numeric_mutant_kills": 1,
+      "positive_control_passed": 1,
+      "setup_errors_final": 0,
+      "receipt": "TB52-writer-receipt.json"
+    },
+    "source_program_reuse": "TB48 actual programs/constants/shapes exact + initial-loader specialization; TB52 only output precondition changed; no obsolete forecast or shared test repeat"
+  },
+  "cleanup": {
+    "JAX_cache": "disabled all arms",
+    "seed": "deleted202MB immediately after last dependent trace",
+    "snapshots": "all lane disposable snapshots removed after last dependent arm",
+    "pytest": "removed after final test process exit",
+    "reference_cases": "original full/cropped WN3 CPU-WRF inputs/executable/wrfout retained for independent critic; paid temporary Thompson tables removed",
+    "GPU_executed": false
+  },
+  "critic_fixes_receipt": "proofs/u2_twoway/RESTART_FIXES.json",
+  "critic_fixes_summary": "Allthreeconditionsclosed: completeactive schemas beforedevice restoration, effectivechildfeedbackguard, fullrevieweddiffwhitespace. Accepted scientific evidence retained with host-onlysourceproof."
+}

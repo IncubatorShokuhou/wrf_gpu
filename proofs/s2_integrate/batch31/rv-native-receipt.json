@@ -1,0 +1,95 @@
+{
+  "source": "f552e5fb2d1cca53ce513cbd2ef66b1c69eb3ac2",
+  "scope": "CPU native operational MP53 compile; not actual GPU/E41/forecast",
+  "target_sha256": "b753abdddbace1e913de3767a1afbdfeba2b272e77f2be93658c766968e4960f",
+  "arch": 120,
+  "num_warps": 4,
+  "inputs": [
+    "qv",
+    "qc",
+    "qr",
+    "qi",
+    "ni",
+    "nr",
+    "nc",
+    "qir",
+    "bir",
+    "th_old",
+    "qv_old",
+    "th",
+    "p",
+    "dz",
+    "qzi"
+  ],
+  "outputs": [
+    "qv",
+    "qc",
+    "qr",
+    "qi",
+    "ni",
+    "nr",
+    "qir",
+    "bir",
+    "th_old",
+    "qv_old",
+    "re_cloud",
+    "re_ice",
+    "nc",
+    "qzi",
+    "di",
+    "rhoi",
+    "vm",
+    "th",
+    "rainncv",
+    "snowncv",
+    "ze"
+  ],
+  "stages": {
+    "ttir": 0.19311598400236107,
+    "ttgir": 6.007914358000562,
+    "llir": 1.2217655519998516,
+    "ptx": 0.4022070669961977,
+    "cubin": 1.043561928003328
+  },
+  "lower_s": 2.3984533920011017,
+  "ttir_bytes": 3711166,
+  "ttir_sha256": "232b77679d3a28843f09682627f24befe812d45f562c638842f5afd34f1ff26d",
+  "compiler_params": "CompilerParams(num_warps=4, num_stages=None)",
+  "optimized_ttir_sha256": "a186dfffb229f46b132fcf1d66355f908dc32d7f409a920ee8b2317454e35bc2",
+  "compile_s": 9.003607826001826,
+  "status": "COMPILED",
+  "cubin_sha256": "c13f760c05b1b089ef3e96daec535733db94ee39a562de8efd65795dc6dabdae",
+  "cubin_bytes": 1577784,
+  "shared_bytes": 256,
+  "peak_rss_kib": 958688,
+  "native_resources": [
+    {
+      "kernel": "p3_mp53_column",
+      "regs": 255,
+      "stack": 48,
+      "shared": 1024,
+      "local": 0,
+      "sass": 20064,
+      "calls": 11,
+      "callees": 2,
+      "stl": 11,
+      "callee_rows": [
+        {
+          "function": "p3_mp53_column",
+          "target_pc": 318752,
+          "instructions": 24,
+          "nested_calls": 0
+        },
+        {
+          "function": "p3_mp53_column",
+          "target_pc": 319136,
+          "instructions": 102,
+          "nested_calls": 0
+        }
+      ],
+      "nonleaf_over1k": [],
+      "callgraph_unknown": [],
+      "callgraph_status": "PASS"
+    }
+  ]
+}

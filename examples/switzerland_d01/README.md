@@ -1,10 +1,23 @@
-# Switzerland 3 km demo — v0.3.3
+# Switzerland 3 km demo — v0.4.0 candidate
 
 This bundled Alpine forecast contains one **42×42×44 domain at 3 km**, initialized
 on **2023-01-15 00Z**, with a full 24-hour boundary window. It uses Thompson,
 RRTMG, Noah-MP and MYNN; cumulus is off. The final v0.3.3 comparison below
 uses source `be0dd543` and original CPU-WRF RD11. Earlier measurements are
 source-dated historical evidence, not relabelled as this final run.
+
+## v0.4.0 glacier program
+
+The v0.4.0 candidate implements Noah-MP glacier runtime and the corrected
+F20/C5′ default path. Its frozen Swiss program identity is **3356e249**;
+PROD d01 is **196aed9f**. The C5′ Swiss24h original-CPU D6/inventory/NF0 and
+actual E41 gate pass. Full hashes and immutable source/receipt bindings are
+in the [default qualification](../../docs/release/SUPPORT_MATRIX_v0.4.0.md#frozen-defaults-and-results-so-far).
+All66 registered scientific scopes now pass (65full24h plus c45accepted6h).
+The pre-F20 f672a573/6fc715a2 receipts remain historical. No new Swiss S1
+benchmark is inferred. [Current quickstart](../../docs/release/USER_GUIDE_v0.4.0.md).
+
+The plots and measurements below remain explicitly historical v0.3.3 evidence.
 
 ## Final v0.3.3 comparison
 
@@ -35,7 +48,7 @@ not only file presence. Standard NetCDF/xarray tools can read the history.
 
 The reference is original Fortran WRF v4 on four MPI ranks/four physical
 Ryzen 9 9950X cores, with matched input files and runtime tables. This is not
-an older GPU forecast used as truth. The new frozen-source run passes D6 on
+an older GPU forecast used as truth. The historical frozen-source run passes D6 on
 **all 25 frames**, with **zero bounded-field failures**. Full-frame strict
 integrity also passes 25/25: no missing CPU variables, degenerate fields or
 CPU-header gaps. The larger two-domain winter examples are separate cases.
@@ -47,8 +60,8 @@ CPU-header gaps. The larger two-domain winter examples are separate cases.
 These are lead-time plots, not a spatial map. The [final Swiss gallery](../../docs/release/evidence/v033/final_w3/SWISS24/index.html)
 contains all variables, the hourly heatmap and source-bound numerical data.
 Every native cell is included without masks. Agreement is tolerance-based,
-not bitwise identity; it does not establish every glacier process. The dedicated
-Noah-MP glacier runtime remains unported.
+not bitwise identity; it does not establish every glacier process. The dedicated glacier runtime was unported in that historical source; the
+v0.4 candidate and its separate evidence are described above.
 
 ## Benchmark provenance
 

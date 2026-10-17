@@ -42,9 +42,9 @@ def _proof_module():
 def test_f2_bundle_oracle_gate_report_is_honest() -> None:
     report = _proof_module().build_report()
     assert report["gate_pass"] is True
-    # v0.3.4: NSSL mp=18 graduated (lane o1-nssl) but mp=40 is demoted under the release defaults (o1-nlbind),
-    # so the F2 bundle is not fully landed.
-    assert report["full_bundle_landed"] is False
+    # v0.3.4: NSSL mp=18 graduated (lane o1-nssl); mp=40 was demoted under the release defaults (o1-nlbind)
+    # and is IMPLEMENTED again in v0.4.0 (o2-rootbdy: root Ns/Ng/Nc flow_dep_bdy) -> the F2 bundle is landed.
+    assert report["full_bundle_landed"] is True
 
     schemes = report["schemes"]
     # v0.23 F2: cu16 graduated -- faithful fp64 kernel (machine precision vs
@@ -74,9 +74,9 @@ def test_f2_bundle_oracle_gate_report_is_honest() -> None:
     assert nssl["oracle"]["all_finite"] is True
     # v0.3.4 O1: Morrison-aerosol graduated (aercu_opt=0 scan-wired).
     entry = schemes["morrison_aero"]
-    # v0.3.4: scan-wired, refused by gpuwrf run under the release defaults (o1-nlbind probe)
-    assert entry["coverage"] == "scan_wired_cli_refused"
-    assert entry["catalog_status"] == "reference_only"
+    # v0.4.0 (o2-rootbdy): CLI-runnable again (root Ns/Ng/Nc take WRF flow_dep_bdy)
+    assert entry["coverage"] == "implemented_scan_wired"
+    assert entry["catalog_status"] == "implemented"
     assert entry["scan_wired"] is True
     assert entry["oracle"]["file_count"] == 12
     assert entry["oracle"]["all_finite"] is True
@@ -91,9 +91,9 @@ def test_f2_catalog_and_scan_path_statuses() -> None:
     # boundary species take WRF's flow_dep_bdy (root_scalar_rk1_split flow_only), so it is CLI-runnable.
     assert classify_scheme("mp_physics", 18).status is SupportStatus.IMPLEMENTED
     assert 18 in _SCAN_WIRED_OPTIONS["mp_physics"] and "mp_physics=18" not in _SCAN_UNWIRED_REASON
-    # v0.3.4 O1: mp=40 scan-wired (aercu_opt=0, tests/test_v034_*) but refused by the CLI
-    # under the release defaults (root boundary has no Ns/Ng/Nc record, o1-nlbind probe).
-    assert classify_scheme("mp_physics", 40).status is SupportStatus.REFERENCE_ONLY
+    # v0.3.4 O1: mp=40 scan-wired (aercu_opt=0, tests/test_v034_*); v0.4.0 o2-rootbdy: its root
+    # Ns/Ng/Nc take WRF flow_dep_bdy, so the CLI runs it (single domains) -> IMPLEMENTED.
+    assert classify_scheme("mp_physics", 40).status is SupportStatus.IMPLEMENTED
 
     assert 16 in _SCAN_WIRED_OPTIONS["cu_physics"]
     assert "cu_physics=16" not in _SCAN_UNWIRED_REASON
@@ -117,5 +117,4 @@ def test_f2_namelist_gate_accepts_only_reference_or_operational_paths() -> None:
     validate_namelist({"physics": {"mp_physics": [18]}})
     validate_operational_namelist({"physics": {"mp_physics": [18]}})  # v0.3.4 NSSL port (o1-nssl)
     validate_namelist({"physics": {"mp_physics": [40]}})
-    with pytest.raises(NotOperationallyWiredError):  # v0.3.4 CLI demotion (o1-nlbind)
-        validate_operational_namelist({"physics": {"mp_physics": [40]}})
+    validate_operational_namelist({"physics": {"mp_physics": [40]}})  # v0.4.0 o2-rootbdy (single domains)

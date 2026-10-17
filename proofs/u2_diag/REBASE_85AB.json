@@ -1,0 +1,211 @@
+{
+  "schema_version": 1,
+  "lane": "u2-diag",
+  "main_base": "85ab27cb3fadbe16e5895a7ee28f588c34ca13fa",
+  "model_commit": "e195d2d92ecbd4c41d3df16257df8e9f43fedcb9",
+  "accepted_phase1": "82f69152d",
+  "previous_phase1_rebase_handoff": "4b21dd8f6",
+  "main_carry_order_exact_prefix": [
+    "state",
+    "t_2ave",
+    "ww",
+    "mudf",
+    "muave",
+    "muts",
+    "ph_tend",
+    "u_save",
+    "v_save",
+    "w_save",
+    "t_save",
+    "ph_save",
+    "mu_save",
+    "ww_save",
+    "rthraten",
+    "noahmp_land",
+    "noahmp_rad",
+    "cumulus_carry",
+    "noahclassic_land",
+    "noahclassic_rad",
+    "slab_land",
+    "slab_rad",
+    "px_land",
+    "px_rad",
+    "base_state",
+    "radiation_diagnostics",
+    "cumulus_tendencies",
+    "census",
+    "h_diabatic",
+    "history_diagnostics",
+    "land_history",
+    "energy_accumulators",
+    "noahmp_precipitation",
+    "o3rad",
+    "camuw_pbl",
+    "ruc_land",
+    "ruc_rad",
+    "cam_abs",
+    "fdda",
+    "urban_slucm",
+    "lake",
+    "timeseries",
+    "obs",
+    "regional_streams"
+  ],
+  "appended_diagnostic_groups": [
+    "precipitation_buckets",
+    "nwp_diagnostics",
+    "radar_reflectivity",
+    "solar_interpolation"
+  ],
+  "main_netcdf_optional_and_late_orders_exact_prefix": true,
+  "pickle_regional_streams_schema_payload_and_expected_extra_removal_retained": true,
+  "main_ownership_guard_ast_exact": true,
+  "numerical_producers": [
+    {
+      "path": "src/gpuwrf/diagnostics/precipitation.py",
+      "byte_identical": true,
+      "arithmetic_source_exact_after_main_owned_import_normalization": true,
+      "sha256": "dcaac076f1038bad8a5ea4c2a5068c959bb5c90f8401fca9b963373918f28b28"
+    },
+    {
+      "path": "src/gpuwrf/diagnostics/nwp.py",
+      "byte_identical": true,
+      "arithmetic_source_exact_after_main_owned_import_normalization": true,
+      "sha256": "0838e871ee8e4e1f8c043f30e7a07f466965108d9ce7e2e1d558c6834bd8583a"
+    },
+    {
+      "path": "src/gpuwrf/diagnostics/online.py",
+      "byte_identical": true,
+      "arithmetic_source_exact_after_main_owned_import_normalization": true,
+      "sha256": "617033eaef66f062b2030d5455621b83858d351de550d70a60e3bd67c573f506"
+    },
+    {
+      "path": "src/gpuwrf/diagnostics/thompson_radar.py",
+      "byte_identical": true,
+      "arithmetic_source_exact_after_main_owned_import_normalization": true,
+      "sha256": "04f7b57df13c68941af840175af43124b2ba2f8d4cc0098043e98c9f963548e6"
+    },
+    {
+      "path": "src/gpuwrf/physics/thompson_column.py",
+      "byte_identical": true,
+      "arithmetic_source_exact_after_main_owned_import_normalization": true,
+      "sha256": "16c486ccbe314a0a958f9a0c62b7f2db579861482ac6ff3a4e89d4ecf0dc2837"
+    },
+    {
+      "path": "src/gpuwrf/kernels/phys_thompson_full.py",
+      "byte_identical": false,
+      "arithmetic_source_exact_after_main_owned_import_normalization": true,
+      "sha256": "e7c09c3edd7c7c1e8c576ac18b2e3def4998ab1bfa96734fbbefba854a1ad595"
+    },
+    {
+      "path": "src/gpuwrf/kernels/phys_thompson_prep.py",
+      "byte_identical": false,
+      "arithmetic_source_exact_after_main_owned_import_normalization": true,
+      "sha256": "665cc88cdfdf96b0c149c70bf21ca5c326ae33f0ac00a621287c15c2be5dfcb1"
+    }
+  ],
+  "source_files": {
+    "src/gpuwrf/coupling/physics_couplers.py": "475381e9aa3f0516467f7ec7d1cf5309002558bf6297f4b340539fb266ec6028",
+    "src/gpuwrf/diagnostics/nwp.py": "0838e871ee8e4e1f8c043f30e7a07f466965108d9ce7e2e1d558c6834bd8583a",
+    "src/gpuwrf/diagnostics/online.py": "617033eaef66f062b2030d5455621b83858d351de550d70a60e3bd67c573f506",
+    "src/gpuwrf/diagnostics/precipitation.py": "dcaac076f1038bad8a5ea4c2a5068c959bb5c90f8401fca9b963373918f28b28",
+    "src/gpuwrf/diagnostics/solar.py": "aa448e926d89fe287e21e278ab8dc8f8ffa82c42cb00674afeb26c2061ddcebe",
+    "src/gpuwrf/diagnostics/solar_config.py": "c48ebb72eee3c0f0deb70fa242566fbc92679e998a10404afc761f5837cbc864",
+    "src/gpuwrf/diagnostics/thompson_radar.py": "04f7b57df13c68941af840175af43124b2ba2f8d4cc0098043e98c9f963548e6",
+    "src/gpuwrf/integration/daily_pipeline.py": "4e6682976de04fa89caf2a79bb7cac4eab85f41db1d558b47d176a3fcca316c2",
+    "src/gpuwrf/integration/nested_pipeline.py": "e700b13a55a5cc1b1346b6df465e3c7accc8ab1522889eee90a0c9a9955ee288",
+    "src/gpuwrf/io/namelist_binding.py": "33f3aeec1560900d4c358d5050a1282f1ed152b51db2a32d90340033d04e50a8",
+    "src/gpuwrf/io/namelist_check.py": "8395916102b6fbcf7ac04424995252f538a966c69a4236d1345a891b2ae94ac4",
+    "src/gpuwrf/io/restart.py": "ba9b647d4b6ec31e374320edeb1094d60e172dbecfee2a57250f2f87f48eda30",
+    "src/gpuwrf/io/scheme_catalog.py": "f51e65a07f3d4d7d52d794e279fa6d63df1ae452f1a5ba18d6da3021e8ad807c",
+    "src/gpuwrf/io/wrfout_writer.py": "721715f3b7881e06119f13579215be6001d56fe92f7bf1dd31c9b224128107e8",
+    "src/gpuwrf/io/wrfrst_netcdf.py": "fc32240dc8e7459e85b00465cc5eaf1e0cb10ef3122143c87514443fd0d69424",
+    "src/gpuwrf/kernels/phys_thompson_full.py": "e7c09c3edd7c7c1e8c576ac18b2e3def4998ab1bfa96734fbbefba854a1ad595",
+    "src/gpuwrf/kernels/phys_thompson_prep.py": "665cc88cdfdf96b0c149c70bf21ca5c326ae33f0ac00a621287c15c2be5dfcb1",
+    "src/gpuwrf/physics/thompson_column.py": "16c486ccbe314a0a958f9a0c62b7f2db579861482ac6ff3a4e89d4ecf0dc2837",
+    "src/gpuwrf/runtime/operational_mode.py": "667341a6ffa0f6da6e6670ce62ebfb195a33203d3d2f4964a12c0589bb7d9446",
+    "src/gpuwrf/runtime/operational_state.py": "20c8414f97ddd8bb2d92eec2f4618a3e329c84b6074bfc40802d812ed403957b",
+    "src/gpuwrf/runtime/restart_store.py": "a677d18070b0d701303d23de058ad7f2ba9d2af7bdde427437c35a50ee55497b"
+  },
+  "checks": {
+    "UD47": {
+      "passed": 449,
+      "obsolete_fixture_failure": 1,
+      "deselected_unchanged_math": 3,
+      "wall_s": 84.43
+    },
+    "UD47b": {
+      "passed": 1,
+      "wall_s": 6.32,
+      "change": "Only obsolete swint1refusal fixture becomes FARMS2; allproductsource identical"
+    },
+    "coverage_unique": {
+      "manager_requested_affected": 196,
+      "solar": 250,
+      "regional_restart": 4,
+      "total": 450
+    },
+    "off_identity": {
+      "Swiss": {
+        "mode": "identity",
+        "source": "<USER_HOME>/wrf_gpu2_lanes/u2-diag/rebase2_candidate",
+        "backend": "cpu",
+        "cache": "disabled",
+        "affinity": [
+          29
+        ],
+        "case": "<USER_HOME>/wrf_gpu2_lanes/release-docs/RD11/cpu",
+        "load_s": 83.6741094600875,
+        "prec_acc_dt": 0.0,
+        "nwp_diagnostics": 0,
+        "do_radar_ref": 0,
+        "swint_opt": 0,
+        "scope": "CPU trace of native default program; portable facade native only while tracing; no GPU execution",
+        "sha256": "2bf12cb8374d3a84a440e47dea4b77b0c7436108fc2ee2616bba6ec79b17962a",
+        "trace_s": 33.58430787897669
+      },
+      "PROD": {
+        "mode": "identity",
+        "source": "<USER_HOME>/wrf_gpu2_lanes/u2-diag/rebase2_candidate",
+        "backend": "cpu",
+        "cache": "disabled",
+        "affinity": [
+          29
+        ],
+        "case": "<DATA_ROOT>/wrf_gpu2/v025/s0_case_20260725",
+        "load_s": 101.66717178886756,
+        "prec_acc_dt": 0.0,
+        "nwp_diagnostics": 0,
+        "do_radar_ref": 0,
+        "swint_opt": 0,
+        "scope": "CPU trace of native default program; portable facade native only while tracing; no GPU execution",
+        "sha256": "6fc715a2bd630934c4cf0f94427df19a527cbf429011c9ba5efe4d712744d27b",
+        "trace_s": 39.86702520493418
+      }
+    }
+  },
+  "scope": {
+    "phase1": "Accepted critic82f rebase-only integration",
+    "solar": "Source/caller/history/3restart/operator qualification staged; separate coupled/daylight handoff still pending"
+  },
+  "performance": {
+    "own_default_arrays_added": 0,
+    "own_default_timestep_arithmetic_added": 0,
+    "no_per_step_host_transfers_added": true,
+    "solar_on_persistent_bytes_per_surface_cell": 48,
+    "gpu_time_launches_peak": "UNKNOWN"
+  },
+  "cleanup": {
+    "pytest_removed": true,
+    "persistent_caches": "NONE",
+    "snapshot_removed": true
+  },
+  "receipt_files": {
+    "<USER_HOME>/wrf_gpu2_lanes/u2-diag/UD47-rebase2-composed.log": "561149be71905c43d0e71688325a5fa389b69df1f94f5c752aac78e404012c3c",
+    "<USER_HOME>/wrf_gpu2_lanes/u2-diag/UD47b-rebase2-farms-refusal.log": "55de899ad8acb5c7ef42aa898b1d1ad07a5db1a753d083c2ddbfcd42161e620f",
+    "<USER_HOME>/wrf_gpu2_lanes/u2-diag/UD48-rebase2-swiss-off.json": "7e52bdea1765b1e27ac9f4272baf806b9196f31ef6315ba72bd333e3a89c328d",
+    "<USER_HOME>/wrf_gpu2_lanes/u2-diag/UD48-rebase2-swiss-off.log": "2f8ec3409169cf093c72158f7134c63d03d104eeaae76a3b8eb8ee5f2e7e73e4",
+    "<USER_HOME>/wrf_gpu2_lanes/u2-diag/UD49-rebase2-prod-off.json": "908bf1aa88f5fba35c4a7191d75271c81a09f21395874114dac6575debcc5cd2",
+    "<USER_HOME>/wrf_gpu2_lanes/u2-diag/UD49-rebase2-prod-off.log": "502a520f6496575ce4c38caf33d3835bf7439d557c769508f721334aae9419e0"
+  }
+}

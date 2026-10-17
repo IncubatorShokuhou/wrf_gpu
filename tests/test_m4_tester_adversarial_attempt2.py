@@ -18,6 +18,8 @@ import numpy as np
 import pytest
 import yaml
 
+from _legacy_fp64_state import legacy_fp64_state
+
 from gpuwrf.dynamics.advection import (
     advect_mass_scalar,
     compute_advection_tendencies,
@@ -44,6 +46,12 @@ def _zero_velocity_state(grid):
     """Helper: state with all velocities zero and constants elsewhere."""
 
     state, tendencies = density_current_state(grid)
+    # This algebraic RK test has a frozen 1e-12 bound and originally used f64
+    # storage. State defaults are now WRF REAL32; request the test's dtype
+    # explicitly instead of rounding a 300 K subtraction in REAL32.
+    widen = lambda x: x.astype(jnp.float64) if jnp.issubdtype(x.dtype, jnp.floating) else x
+    state, tendencies = jax.tree.map(widen, (state, tendencies))
+    assert state.theta.dtype == jnp.float64
     state = state.replace(
         u=jnp.zeros_like(state.u),
         v=jnp.zeros_like(state.v),
@@ -198,7 +206,7 @@ def test_tier3_source_uses_public_run_and_not_centered_helper():
     assert "advect_mass_scalar(" not in src  # don't bypass through a private kernel
 
 
-def test_tier3_convergence_record_observed_order_meets_expected_minus_half():
+def test_tier3_convergence_record_observed_order_meets_expected_minus_half(legacy_fp64_state):
     """Re-run convergence; observed_order must be >= expected - 0.5."""
 
     record = convergence_record()

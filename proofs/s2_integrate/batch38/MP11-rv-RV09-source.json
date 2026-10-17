@@ -1,0 +1,22 @@
+{
+  "target": "e5436d3aa259077fe9a1e4fd3b3a4f8ad3432fbb",
+  "baseline": "3eb77d4b4",
+  "changed_src": [
+    "src/gpuwrf/integration/daily_pipeline.py",
+    "src/gpuwrf/integration/nested_pipeline.py",
+    "src/gpuwrf/io/cammg_config.py"
+  ],
+  "pipeline_checks": {
+    "src/gpuwrf/integration/daily_pipeline.py": {
+      "equal_after_removing_only_host_admission": true,
+      "canonical_sha256": "f290d48ba962d5ab0cdc107e416c2ea82c5a2fa34c1a299312e0b65db79e4501"
+    },
+    "src/gpuwrf/integration/nested_pipeline.py": {
+      "equal_after_removing_only_host_admission": true,
+      "canonical_sha256": "ef2eabddc5d4bb58a5e9178dd071af99e2bb4b49709dd76d87fbc3ba980dc6be"
+    }
+  },
+  "cpu_input_admission_returns_before_read_or_array_work": true,
+  "default_programs": "Reuse independent RV04/RV05: only host admission, CPU guards no-op; model tree otherwise BYTE",
+  "performance": "No launches/temps/transfers/model compile change. Non-CPU safe cases incur extra host parse per guarded entry; no speed claim."
+}

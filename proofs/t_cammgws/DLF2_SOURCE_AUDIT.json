@@ -1,0 +1,123 @@
+{
+ "pristine": "<USER_HOME>/src/wrf_pristine/WRF",
+ "site_count": 20,
+ "files": {
+  "Registry/Registry.EM_COMMON": "6f3ee02175b76487c5c6c046ff2fb4c5d41980b86c0f06eb2e09e34dacc9623a",
+  "Registry/registry.cam": "19c143d4aed9e52f003fbeda865b5bd2a40172085d897c45213c7318793725da",
+  "dyn_em/module_first_rk_step_part1.F": "8c666fe88c46b04e297fe7b7289f55ec74fa133287b234a02f10e05cbbd11841",
+  "dyn_em/solve_em.F": "de58116cf306e40e60f9c9bb1aa74ed5090fbe8631e122ec73e77487ef55e271",
+  "phys/module_microphysics_driver.F": "68acf025323b643ae976b89f40691675557cb9787fdc558fee6cb77472a6e518",
+  "phys/module_mp_cammgmp_driver.F": "39d666c592cfced2e25449f5e50e69d7d8a972cd765bd39d0fcdfab3b2ab9361",
+  "phys/module_shallowcu_driver.F": "068cf22b8c93cfac74a6223a72d61f4a2f890bc44e212da5d2c2a131c5ae271a",
+  "phys/module_shcu_camuwshcu_driver.F": "8754b99cd940feec32ad85a3a24f38d0a20e98b0a3d557e47d93cd2c8e42d97e"
+ },
+ "sites": [
+  {
+   "file": "Registry/Registry.EM_COMMON",
+   "line": 3031,
+   "text": "package   cammgmpscheme   mp_physics==11               -             moist:qv,qc,qi,qr,qs;scalar:qnc,qni,qnr,qns;state:rh_old_mp,lcd_old_mp,cldfra_old_mp,cldfra_mp,cldfra_mp_all,cldfra_conv,cldfrai,cl"
+  },
+  {
+   "file": "Registry/Registry.EM_COMMON",
+   "line": 3229,
+   "text": "package   camuwshcuscheme shcu_physics==2            -             state:shfrc3d,dlf,dlf2,cmfmc,cmfmc2,qtflx_cu,slflx_cu,uflx_cu,vflx_cu,qtten_cu,slten_cu,uten_cu,vten_cu,qvten_cu,qlten_cu,qiten_cu,cb"
+  },
+  {
+   "file": "Registry/registry.cam",
+   "line": 73,
+   "text": "state  real   dlf2     ikj    misc      1    -   rh     \"DLF2\"         \"dq/dt due to export of cloud water into environment by shallow convection\"  \"kg/kg/s\""
+  },
+  {
+   "file": "dyn_em/module_first_rk_step_part1.F",
+   "line": 1607,
+   "text": "&             ,DLF2=grid%dlf2                                        & ! Required for CAMMGMP microphysics scheme"
+  },
+  {
+   "file": "dyn_em/solve_em.F",
+   "line": 3878,
+   "text": "&        ,DLF=grid%dlf,DLF2=grid%dlf2,T_PHY=grid%t_phy,P_HYD=grid%p_hyd  &"
+  },
+  {
+   "file": "phys/module_microphysics_driver.F",
+   "line": 34,
+   "text": ",dlf,dlf2,t_phy,p_hyd,p8w_hyd,tke_pbl,pblh         &"
+  },
+  {
+   "file": "phys/module_microphysics_driver.F",
+   "line": 528,
+   "text": "dlf2, &    !dq/dt due to export of cloud water into env by shal conv (kg/kg/s)"
+  },
+  {
+   "file": "phys/module_microphysics_driver.F",
+   "line": 3029,
+   "text": ",DLF3D=dlf,DLF2_3D=dlf2,RLIQ2D=rliq,Z_SEA_LEVEL=z            &"
+  },
+  {
+   "file": "phys/module_mp_cammgmp_driver.F",
+   "line": 100,
+   "text": ", dlf3d, dlf2_3d, rliq2d, z_sea_level     &"
+  },
+  {
+   "file": "phys/module_mp_cammgmp_driver.F",
+   "line": 184,
+   "text": "real, dimension( ims:ime, kms:kme, jms:jme ), intent(in)    :: dlf2_3d     !dq/dt due to export of cloud water into environment by shallow convection(kg/kg/s)"
+  },
+  {
+   "file": "phys/module_mp_cammgmp_driver.F",
+   "line": 344,
+   "text": "real(r8)   :: dlf2(pcols,kte)          ! Detrained water from shallow convection scheme"
+  },
+  {
+   "file": "phys/module_mp_cammgmp_driver.F",
+   "line": 758,
+   "text": "dlf2(1,kflip)        = 0.0_r8"
+  },
+  {
+   "file": "phys/module_mp_cammgmp_driver.F",
+   "line": 766,
+   "text": "dlf2(1,kflip)      = dlf2_3d(iw,kw,jw)        !PMA QC detrained from shallow"
+  },
+  {
+   "file": "phys/module_mp_cammgmp_driver.F",
+   "line": 844,
+   "text": "dlf2(:,:)     = 0._r8"
+  },
+  {
+   "file": "phys/module_shallowcu_driver.F",
+   "line": 42,
+   "text": ",dlf, rliq, rliq2,dlf2  &"
+  },
+  {
+   "file": "phys/module_shallowcu_driver.F",
+   "line": 363,
+   "text": "dlf2                                             ! Required by CAMMGMP Microphysics"
+  },
+  {
+   "file": "phys/module_shallowcu_driver.F",
+   "line": 545,
+   "text": ",CMFSL=cmfsl, CMFLQ=cmflq, DLF=dlf,DLF2=dlf2                  & !DLF2 is required by CAMMGMP microphysics"
+  },
+  {
+   "file": "phys/module_shcu_camuwshcu_driver.F",
+   "line": 46,
+   "text": ",cmfsl, cmflq, dlf, dlf2, evapcsh_inout          &"
+  },
+  {
+   "file": "phys/module_shcu_camuwshcu_driver.F",
+   "line": 158,
+   "text": "dlf2           ! Required by CAMMGMP Microphysics"
+  },
+  {
+   "file": "phys/module_shcu_camuwshcu_driver.F",
+   "line": 400,
+   "text": "dlf2(i,k,j)         = qc2(1,kflip)"
+  }
+ ],
+ "classification": {
+  "registry": "Registry/registry.cam:73 state real dlf2 ikj misc io rh \"DLF2\" kg/kg/s; allocated by cammgmpscheme (Registry.EM_COMMON:3031, mp_physics==11) and camuwshcuscheme (:3229, shcu_physics==2)",
+  "initial_value": "allocation sets grid%dlf2=initial_data_value (inc/allocs_25.F); get_initial_data_value returns 0. (frame/wrf_num_bytes_between.c, NAN_VALUE disabled); io rh: not read from wrfinput",
+  "only_writer": "phys/module_shcu_camuwshcu_driver.F:400 dlf2(i,k,j)=qc2(1,kflip); called only from phys/module_shallowcu_driver.F (IF (shcu_physics .eq. 0) return; SELECT CASE(shcu_physics) CASE (CAMUWSHCUSCHEME) -> camuwshcu_driver(...,DLF2=dlf2,...) :545)",
+  "readers": "phys/module_mp_cammgmp_driver.F:184 dlf2_3d intent(in); :344 local real(r8) dlf2 (:758/:766/:844 assign the LOCAL copy, never the grid array); phys/module_microphysics_driver.F passes DLF2_3D=dlf2; dyn_em/solve_em.F and module_first_rk_step_part1.F pass grid%dlf2 through",
+  "port": "gpuwrf refuses shcu_physics!=0 (io/namelist_binding.py), so no admitted configuration runs the writer"
+ }
+}

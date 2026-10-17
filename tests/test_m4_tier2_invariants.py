@@ -8,8 +8,10 @@ from gpuwrf.dynamics.step import run
 from gpuwrf.profiling.transfer_audit import block_until_ready
 import jax.numpy as jnp
 
+from _legacy_fp64_state import legacy_fp64_state
 
-def test_tier2_small_grid_invariants_pass():
+
+def test_tier2_small_grid_invariants_pass(legacy_fp64_state):
     record = invariant_record(make_ideal_grid(4, 6, 6), n_steps=5, dt=1.0, n_acoustic=1)
     assert record["pass"] is True
     assert record["qv_positivity_violations"] == 0

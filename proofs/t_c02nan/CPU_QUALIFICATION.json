@@ -1,0 +1,277 @@
+{
+  "source_tree": "7676b2d42523c56a173f831863a1c84678180012",
+  "scope": "CPU operator/wiring and source-composition evidence only; actualGPU/D6/E41 arms pending5c0e7c11e",
+  "default_native_facade_programs": {
+    "swiss": "f672a5739cb96e388b6b7a40ef80337bf81bdc14ef15268f3476e09d79fe055d",
+    "prod": "6fc715a2bd630934c4cf0f94427df19a527cbf429011c9ba5efe4d712744d27b"
+  },
+  "actual_case_native_traces": {
+    "c02": {
+      "sha": "e44c1240577ea30b0c58b86e66b3c35821aebb1c1299cf7a267da1941e0e1125",
+      "chars": 16569564,
+      "bound": {
+        "mp_physics": 1,
+        "bl_pbl_physics": 1,
+        "sf_sfclay_physics": 1,
+        "ra_lw_physics": 1,
+        "ra_sw_physics": 1,
+        "cu_physics": 1,
+        "sf_surface_physics": 4,
+        "use_noahmp": true,
+        "sf_urban_physics": 0,
+        "diff_opt": 1,
+        "km_opt": 4,
+        "epssm": 0.5,
+        "damp_opt": 3,
+        "zdamp": 5000.0,
+        "dampcoef": 0.2,
+        "w_damping": 1,
+        "diff_6th_opt": 2,
+        "diff_6th_factor": 0.12,
+        "moist_adv_opt": 1,
+        "scalar_adv_opt": 1,
+        "topo_shadow_length_m": 25000.0,
+        "cumulus_cadence_steps": 1,
+        "radiation_cadence_steps": 33
+      },
+      "load_s": 26.6,
+      "trace_s": 14.0
+    },
+    "c08": {
+      "sha": "894f919f7c718a7f79c1e8f7f53d23c966f6bce60157c001346658ef18ed6202",
+      "chars": 16202178,
+      "bound": {
+        "mp_physics": 10,
+        "bl_pbl_physics": 12,
+        "sf_sfclay_physics": 1,
+        "ra_lw_physics": 4,
+        "ra_sw_physics": 4,
+        "cu_physics": 14,
+        "sf_surface_physics": 4,
+        "use_noahmp": true,
+        "sf_urban_physics": 0,
+        "diff_opt": 1,
+        "km_opt": 4,
+        "epssm": 0.5,
+        "damp_opt": 3,
+        "zdamp": 5000.0,
+        "dampcoef": 0.2,
+        "w_damping": 1,
+        "diff_6th_opt": 2,
+        "diff_6th_factor": 0.12,
+        "moist_adv_opt": 1,
+        "scalar_adv_opt": 1,
+        "topo_shadow_length_m": 25000.0,
+        "cumulus_cadence_steps": 1,
+        "radiation_cadence_steps": 33
+      },
+      "load_s": 26.3,
+      "trace_s": 14.7
+    },
+    "c07": {
+      "sha": "e51113ec3096fcd4ac625ffda0ef6846ec8bf9b09d581f48aaa866ddeee306c6",
+      "chars": 17647886,
+      "bound": {
+        "mp_physics": 9,
+        "bl_pbl_physics": 11,
+        "sf_sfclay_physics": 1,
+        "ra_lw_physics": 4,
+        "ra_sw_physics": 4,
+        "cu_physics": 16,
+        "sf_surface_physics": 4,
+        "use_noahmp": true,
+        "sf_urban_physics": 0,
+        "diff_opt": 1,
+        "km_opt": 4,
+        "epssm": 0.5,
+        "damp_opt": 3,
+        "zdamp": 5000.0,
+        "dampcoef": 0.2,
+        "w_damping": 1,
+        "diff_6th_opt": 2,
+        "diff_6th_factor": 0.12,
+        "moist_adv_opt": 1,
+        "scalar_adv_opt": 1,
+        "topo_shadow_length_m": 25000.0,
+        "cumulus_cadence_steps": 1,
+        "radiation_cadence_steps": 33
+      },
+      "load_s": 26.4,
+      "trace_s": 15.8
+    }
+  },
+  "gbm_control": {
+    "verdict": "FAIL",
+    "rows": [
+      {
+        "index": 0,
+        "defined_init_byte_equal": true,
+        "undefined_kpbl": {
+          "zero": 1.0,
+          "snan": -732.0
+        },
+        "failures": {
+          "kzm": {
+            "outside": 1,
+            "max_excess": 4.656612873077393e-10
+          },
+          "kth": {
+            "outside": 1,
+            "max_excess": 4.656612873077393e-10
+          }
+        }
+      },
+      {
+        "index": 881,
+        "defined_init_byte_equal": true,
+        "undefined_kpbl": {
+          "zero": 1.0,
+          "snan": -732.0
+        },
+        "failures": {
+          "kzm": {
+            "outside": 2,
+            "max_excess": 9.313225746154785e-10
+          },
+          "kth": {
+            "outside": 2,
+            "max_excess": 1.862645149230957e-09
+          },
+          "kethl": {
+            "outside": 3,
+            "max_excess": 7.450580596923828e-09
+          }
+        }
+      },
+      {
+        "index": 1431,
+        "defined_init_byte_equal": true,
+        "undefined_kpbl": {
+          "zero": 1.0,
+          "snan": -732.0
+        },
+        "failures": {
+          "kethl": {
+            "outside": 1,
+            "max_excess": 1.862645149230957e-09
+          }
+        }
+      },
+      {
+        "index": 1739,
+        "defined_init_byte_equal": true,
+        "undefined_kpbl": {
+          "zero": 1.0,
+          "snan": -732.0
+        },
+        "failures": {
+          "kzm": {
+            "outside": 2,
+            "max_excess": 6.05359673500061e-08
+          },
+          "kth": {
+            "outside": 2,
+            "max_excess": 6.426125764846802e-08
+          },
+          "kethl": {
+            "outside": 2,
+            "max_excess": 2.1979212760925293e-07
+          },
+          "el_pbl": {
+            "outside": 2,
+            "max_excess": 3.0517578125e-05
+          }
+        }
+      }
+    ],
+    "original_runs": 6552,
+    "source": "unchangedpristineGBM+constants;REAL4O2nofma/O2mfmafast;SNAN/int-777init",
+    "strict_old_gate": "FAIL retained;33outsideelements",
+    "compiler_gate": "FAIL retained;18outsideelements,allprimaryrates/TKE/PBLHinband",
+    "gate_policy": "No tolerancefit/waiver;fullfrozenD6 remainsrequired",
+    "outside_elements": 18
+  },
+  "receipts": {
+    "TCN19_dependency_seal.json": {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-c02nan/TCN19_dependency_seal.json",
+      "sha256": "e8ddbe8f16f373cac8d4bbf3f549415075f2c112f30bf66813bcb2b96846d514"
+    },
+    "TCN19_swiss_identity.json": {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-c02nan/TCN19_swiss_identity.json",
+      "sha256": "20c0024c9b525ef87a7477fd8be4d607722d579f29510c7ba7c0e49aabd4b581"
+    },
+    "TCN19_prod_identity.json": {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-c02nan/TCN19_prod_identity.json",
+      "sha256": "d4ebd846c1d5f5184a55656b5969660e1f3a4d7f42f3ede63a838c5919ad7630"
+    },
+    "TCN19_c02_trace.json": {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-c02nan/TCN19_c02_trace.json",
+      "sha256": "fb28d3831001e0cc7050b112b6cab8518a85a16e6542bd6d1b38215d23367384"
+    },
+    "TCN19_c08_trace.json": {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-c02nan/TCN19_c08_trace.json",
+      "sha256": "e1f1c5f34f6a3631baec387d0ccb982c0c485cabb6d986f22238d63d07a779e0"
+    },
+    "TCN19_c07_trace.json": {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-c02nan/TCN19_c07_trace.json",
+      "sha256": "7e00398ab6edf780e16409e4dd938ed906a1f4c66c1eb77a5960a4ae17e40f40"
+    },
+    "TCN18_mutant.xml": {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-c02nan/TCN18_mutant.xml",
+      "sha256": "84d04d6115e0110eb9a3918d4ea3d2c1c28de334eed98ac32d5eb85cf4ae35f9"
+    },
+    "TCN16/input_ulp_gate.json": {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-c02nan/TCN16/input_ulp_gate.json",
+      "sha256": "8b01b27a9b954f1e3eead739f5e450e3c6eb52036e445f3255ae108465ba3ae3"
+    },
+    "TCN17/summary.json": {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-c02nan/TCN17/summary.json",
+      "sha256": "73f251835eea68455df024641dc12a0b116a0e6e824fe2be4c2d481c875f4671"
+    },
+    "TCN17/compiler_gate.json": {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-c02nan/TCN17/compiler_gate.json",
+      "sha256": "95f29db00b80e07fda538aaaf28ca59bc055da33d8a825eb6612769134b4f120"
+    },
+    "TCN22_scope_seal.json": {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/t-c02nan/TCN22_scope_seal.json",
+      "sha256": "d0ded0703f42a1a9ba4393eb3fe83cd7d3cfe8382ace01f83082eeb48c85a23c"
+    }
+  },
+  "all_pbl_audit": {
+    "YSU1/ShinHong11": "FM/FHH, module_pbl_driver.F1227/1313",
+    "GBM12/GFS3/MRF99": "rawPSIM/PSIH,GBMdriver2110/GBM539",
+    "ACM2/BouLac": "selectedStateHFX/QFX/UST+REALprofiles;noresistanceargument",
+    "MYNN5": "selectedStatekinematicfluxes,_surface_fluxes_from_state2145;alreadyreadsState",
+    "CAMUW9": "selectedStateHFX/QFX/UST,scan_adapters1903;alreadyreadsState",
+    "EEPS16/KEPS17": "existingqualifiedepsilon_surface_stepunchangedarithmetic",
+    "MYJ2/QNSE4/TEMF10": "mandatorysurfacepairs2/4/10,invalidSF1",
+    "SSIBYSU": "existingSSIBfm/fhhhandoffssib_surface_hook170",
+    "BEP/BEMYSU": "resistancealiasesaddedwhilerawSFCdiagnosticspreserved",
+    "hurricaneSF1": "preservesselectedoutFM/FH/rawpsi optionalhandoff;defaultSF5unchanged"
+  },
+  "performance": {
+    "measured_default_program": "BYTE exactSwiss/PROD;defaultcostunchanged",
+    "selectedSF1": "[I]onepaidSFCsolve replacesduplicateMYNNsurfacecalculations;dictviewsDCEunusedleaves;nohoststeptransfer",
+    "selected_cost": "[U]actualnewGPUwall/VRAMpending;noS1claim",
+    "baseline_c02_cold_failed_wall_s": 658.9295353179332,
+    "baseline_c02_sample_peak_MiB": 5392,
+    "baseline_scope": "13hourNFfailure,notmatched24hbenchmark"
+  },
+  "gate": "NOT_READY until scientific GPU/D6 results andactualE41 disposition",
+  "historical_measured_source_commit": "8939cf836",
+  "source_commit": "5c0e7c11e",
+  "approved_base": "e45892a4e",
+  "composition": "COMPOSITION.json;onlysevenownedsourcefiles;393oldunownedancestrypathsrestored inprivatecleanrecompose; historical model programs unchanged for c02/c08/c07 and default Swiss/PROD",
+  "cpu_suite": {
+    "tests": 440,
+    "passed": 432,
+    "failures": 8,
+    "errors": 0,
+    "wall_s": 1043.02,
+    "source": "8939cf836",
+    "failure_reason": "eight identical baseline tracert_opt mock errors, TCN14controlled",
+    "own_SF1_defs": "BYTEf274d8d00;newsource selectedprogramidentitychecks pending",
+    "reuse": "sevenownedSF1/PBLfunctions BYTE, all3selectednativeprograms BYTE, protectedmain source retained;no repeatednumericalqualification"
+  },
+  "resume_policy": "managerMAILBOX16:26Z GPU RESUME; freshofficiallocktimeouts;v-runmp28\u2192t-c02c02/c08\u2192v-prep;hard19:15Z, ownarmsend<=19:10Z; no timingacrosssuspend"
+}

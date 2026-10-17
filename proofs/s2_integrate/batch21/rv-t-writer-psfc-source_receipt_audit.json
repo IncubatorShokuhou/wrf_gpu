@@ -1,0 +1,44 @@
+{
+  "verdict": "PASS",
+  "review_head": "b43c721e7dccd9b6dd96385c45fe158f8b41ee55",
+  "base": "9d1cad3515fa28b9ebae9bf7b16e2600dc20b3c8",
+  "source_tree": "c830026e15e01d76d531e93709b2d920ac7f9f98",
+  "changed_product": [
+    "src/gpuwrf/io/wrfout_writer.py"
+  ],
+  "modified_functions": [
+    "_build_output_fields",
+    "_build_subset_output_fields",
+    "_expand_requested_source_names"
+  ],
+  "added_functions": [
+    "_moist_hydrostatic_psfc"
+  ],
+  "unchanged_functions": 57,
+  "pressure_and_reduction_ast_identical": true,
+  "all_other_product_byte_identical": true,
+  "sealed_producer_hashes": 20,
+  "gzip_mutant_transport_byte_identical": true,
+  "pristine_REAL4_provenance_verified": true,
+  "healthy": {
+    "tests": 98,
+    "pass": 95,
+    "fail": 0,
+    "skip": 3,
+    "errors": 0,
+    "failed_nodes": []
+  },
+  "mutant": {
+    "tests": 8,
+    "pass": 4,
+    "fail": 4,
+    "skip": 0,
+    "errors": 0,
+    "failed_nodes": [
+      "test_direct_writer_all_masses_match_original[optional1-state-full]",
+      "test_direct_writer_all_masses_match_original[optional1-state-psfc_only]",
+      "test_direct_writer_all_masses_match_original[optional1-wrf_alias-full]",
+      "test_direct_writer_all_masses_match_original[optional1-wrf_alias-psfc_only]"
+    ]
+  }
+}

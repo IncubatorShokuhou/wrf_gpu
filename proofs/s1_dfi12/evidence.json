@@ -1,0 +1,319 @@
+{
+  "schema": "gpuwrf.s1-dfi12.cpu-qualification.v1",
+  "utc": "2026-10-13T15:57:56.346720+00:00",
+  "lane": "s1-dfi12",
+  "candidate_commit": "fabb53569ca4e698d2f1c76465231e24347a8190",
+  "candidate_src_tree": "34fcdb077cbe125a93252219490e6ec94f09a2a5",
+  "main_base": "407c6268bb627fa4154b12635553420009b26a03",
+  "status": "READY-FOR-CRITIC; experimental CPU prepass qualification",
+  "scope": "Single-domain native DFL/DDFI. Original CPU-WRF is numerical truth. No GPU or whole coupled-forecast qualification.",
+  "oracle_manifest": {
+    "path": "<USER_HOME>/wrf_gpu2_lanes/s1-dfi12/oracle_manifest.json",
+    "sha256": "9e4c93cfc57dbd26990a7c11de27ee97f23fa637257c4cc2ea607595b7311001"
+  },
+  "comparisons": {
+    "DF12-E2": {
+      "primary_passed": 26,
+      "primary_total": 26,
+      "numeric_fields_finite": 320,
+      "exact_fields": 213,
+      "missing": 0,
+      "source_commit": "0411cb9c43a1fc2b941a462144ddcf4b8fc534e4",
+      "dfi_opt": 1,
+      "steps": [
+        0,
+        60
+      ],
+      "cpu_wall_s": 608.6,
+      "backend": "cpu",
+      "source_backend_provenance": "measured harness CPU assertion and MAIN EXPERIMENTS E2 row; early E2 report omits source/backend slots",
+      "comparison": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/s1-dfi12/DF12-E2/compare.json",
+        "sha256": "714cb78e6807b36d989152b623a0fab79812056e6ac2ce15246ab13cfb6cceb8"
+      },
+      "run": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/s1-dfi12/DF12-E2/report.json",
+        "sha256": "da5bad2af1438089d9fad0d6a3d51662e291ab08ce744e4c135c66e859d08535"
+      },
+      "inputs": {
+        "port": {
+          "path": "<USER_HOME>/wrf_gpu2_lanes/s1-dfi12/DF12-E2/work/fst_input/wrfinput_d01",
+          "sha256": "aa7c6bae3630811aeef86776c115a354106e7d802f83a2218b4e54e2658f2f5b"
+        },
+        "oracle": {
+          "path": "<USER_HOME>/wrf_gpu2_lanes/s1-dfi12/oracle/opt1/wrfinput_initialized_d01",
+          "sha256": "8e1c05aea75c4d1ef58ebcec163e3abdb2727fee1f5e797021f31cd74f16b748"
+        },
+        "raw": {
+          "path": "<USER_HOME>/wrf_gpu2_lanes/s1-dfi12/oracle/opt1/wrfinput_d01",
+          "sha256": "a5d696550d1dc6713e2e340b8c2fba83811d43f4a94a65ca95266035860e2781"
+        }
+      }
+    },
+    "DF12-E3": {
+      "primary_passed": 26,
+      "primary_total": 26,
+      "numeric_fields_finite": 320,
+      "exact_fields": 214,
+      "missing": 0,
+      "source_commit": "87d539114a99f3f0a387e625d8b629c5f9d9306d",
+      "dfi_opt": 2,
+      "steps": [
+        60,
+        90
+      ],
+      "cpu_wall_s": 711.7,
+      "backend": "cpu",
+      "source_backend_provenance": "run report",
+      "comparison": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/s1-dfi12/DF12-E3/compare.json",
+        "sha256": "194116172e0c28db712b3662d150683a217bf9fe92ad71d2a28035f92dbb486f"
+      },
+      "run": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/s1-dfi12/DF12-E3/report.json",
+        "sha256": "ce0bb269ab7264f86dc2b297a43ccd982b652b46e86855422c5ab994152fd5e7"
+      },
+      "inputs": {
+        "port": {
+          "path": "<USER_HOME>/wrf_gpu2_lanes/s1-dfi12/DF12-E3/work/fst_input/wrfinput_d01",
+          "sha256": "dd1f2f54eac81c49989c4d59a409df0b354b319cb96859681136e2acea33b072"
+        },
+        "oracle": {
+          "path": "<USER_HOME>/wrf_gpu2_lanes/s1-dfi12/oracle/opt2/wrfinput_initialized_d01",
+          "sha256": "1801c81857165b31245509d5fe9ae40b5f6da517d5f5527d8a37e7d9b64ac2e1"
+        },
+        "raw": {
+          "path": "<USER_HOME>/wrf_gpu2_lanes/s1-dfi12/oracle/opt2/wrfinput_d01",
+          "sha256": "a5d696550d1dc6713e2e340b8c2fba83811d43f4a94a65ca95266035860e2781"
+        }
+      }
+    },
+    "DF12-short-dfl-default": {
+      "primary_passed": 26,
+      "primary_total": 26,
+      "numeric_fields_finite": 320,
+      "exact_fields": 216,
+      "missing": 0,
+      "source_commit": "588dcb089c80cfbc0d719b371049f1896d99a115",
+      "dfi_opt": 1,
+      "steps": [
+        0,
+        2
+      ],
+      "cpu_wall_s": 537.6,
+      "backend": "cpu",
+      "source_backend_provenance": "run report",
+      "comparison": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/s1-dfi12/DF12-short-dfl-default/compare.json",
+        "sha256": "f7e1691deba7b34eded327cfe7bdd51e055cbf00ad11ee201fcab8b42daec28e"
+      },
+      "run": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/s1-dfi12/DF12-short-dfl-default/report.json",
+        "sha256": "c103e78febec7da7d758a4087f7702d0ba47862551529074a3c63564d8e831ca"
+      },
+      "inputs": {
+        "port": {
+          "path": "<USER_HOME>/wrf_gpu2_lanes/s1-dfi12/DF12-short-dfl-default/work/fst_input/wrfinput_d01",
+          "sha256": "c78a3ac56c00b607f2af09f804abfe51c91cde60ac68d94c38e915394a5cfd4f"
+        },
+        "oracle": {
+          "path": "<USER_HOME>/wrf_gpu2_lanes/s1-dfi12/oracle/dfl-default-short/wrfinput_initialized_d01",
+          "sha256": "ca12aec17427650597631cc8283e199b1d1f5fc011dd9409cd05eb2d31742321"
+        },
+        "raw": {
+          "path": "<USER_HOME>/wrf_gpu2_lanes/s1-dfi12/oracle/dfl-default-short/wrfinput_d01",
+          "sha256": "a5d696550d1dc6713e2e340b8c2fba83811d43f4a94a65ca95266035860e2781"
+        }
+      }
+    },
+    "DF12-short-dfl-endonly": {
+      "primary_passed": 26,
+      "primary_total": 26,
+      "numeric_fields_finite": 320,
+      "exact_fields": 216,
+      "missing": 0,
+      "source_commit": "588dcb089c80cfbc0d719b371049f1896d99a115",
+      "dfi_opt": 1,
+      "steps": [
+        0,
+        2
+      ],
+      "cpu_wall_s": 296.8,
+      "backend": "cpu",
+      "source_backend_provenance": "run report",
+      "comparison": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/s1-dfi12/DF12-short-dfl-endonly/compare.json",
+        "sha256": "f923cbb11ed609b858268cd828af3400f69a7f8b51004c9912bd0316e7fcdb7c"
+      },
+      "run": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/s1-dfi12/DF12-short-dfl-endonly/report.json",
+        "sha256": "076a5588b827ec8ba1ac70efceb44f9174c868b5ad6b15e941cf7e5fcce603d8"
+      },
+      "inputs": {
+        "port": {
+          "path": "<USER_HOME>/wrf_gpu2_lanes/s1-dfi12/DF12-short-dfl-endonly/work/fst_input/wrfinput_d01",
+          "sha256": "a7699f7a9666bf025cd04e8fa311a08930f39a22dc4e45c66daff13945a7e1d5"
+        },
+        "oracle": {
+          "path": "<USER_HOME>/wrf_gpu2_lanes/s1-dfi12/oracle/dfl-endonly-short/wrfinput_initialized_d01",
+          "sha256": "f322db1b78bf27224245ea75fce3d2b56df516bf35097153c2be50de8eaf883a"
+        },
+        "raw": {
+          "path": "<USER_HOME>/wrf_gpu2_lanes/s1-dfi12/oracle/dfl-endonly-short/wrfinput_d01",
+          "sha256": "a5d696550d1dc6713e2e340b8c2fba83811d43f4a94a65ca95266035860e2781"
+        }
+      }
+    },
+    "DF12-short-ddfi": {
+      "primary_passed": 26,
+      "primary_total": 26,
+      "numeric_fields_finite": 320,
+      "exact_fields": 216,
+      "missing": 0,
+      "source_commit": "588dcb089c80cfbc0d719b371049f1896d99a115",
+      "dfi_opt": 2,
+      "steps": [
+        2,
+        4
+      ],
+      "cpu_wall_s": 537.3,
+      "backend": "cpu",
+      "source_backend_provenance": "run report",
+      "comparison": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/s1-dfi12/DF12-short-ddfi/compare.json",
+        "sha256": "bc5864a2f336ce433ae0fc7ca0c0e41de94e328e01a8d15494e5930e37c78dca"
+      },
+      "run": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/s1-dfi12/DF12-short-ddfi/report.json",
+        "sha256": "f34478ebafb3abb99da5e3970c3c22a5aa3657c3454639927672acda35be881d"
+      },
+      "inputs": {
+        "port": {
+          "path": "<USER_HOME>/wrf_gpu2_lanes/s1-dfi12/DF12-short-ddfi/work/fst_input/wrfinput_d01",
+          "sha256": "b2f5b714e19a6971f7b0dba452b1bf7b08166334c55c7fc7a9e1ba029e4f627d"
+        },
+        "oracle": {
+          "path": "<USER_HOME>/wrf_gpu2_lanes/s1-dfi12/oracle/ddfi-short/wrfinput_initialized_d01",
+          "sha256": "b9830b8955c215d927405fab0faa07c8ed4246e67deb5447c0c82574ef5330e2"
+        },
+        "raw": {
+          "path": "<USER_HOME>/wrf_gpu2_lanes/s1-dfi12/oracle/ddfi-short/wrfinput_d01",
+          "sha256": "a5d696550d1dc6713e2e340b8c2fba83811d43f4a94a65ca95266035860e2781"
+        }
+      }
+    }
+  },
+  "gates": {
+    "primary": {
+      "passed": 130,
+      "total": 130
+    },
+    "numeric_inventory": {
+      "finite": 1600,
+      "missing": 0
+    },
+    "default_release_jaxpr": "2bf12cb8374d3a84a440e47dea4b77b0c7436108fc2ee2616bba6ec79b17962a",
+    "composed_phase_programs_exact": 3,
+    "composed_seed_arrays_exact": 641,
+    "phase_packet": {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/s1-dfi12/DF12-COMPOSED-FINAL.json",
+      "sha256": "410bfe12d33b18d8f52a3a9dc10b5c49613582bb505566fcf5782394c9a64d21"
+    },
+    "source_reuse": {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/s1-dfi12/DF12-SOURCE-REUSE-LATEST.json",
+      "sha256": "98af59038dc68dac6ab99048a43624f10874fb7ea5b7cd88761869348701f4b7"
+    },
+    "existing_filter_proof": "o2-dfi 64/64 bitwise Fortran coefficients; filter/shared TDFI source exact",
+    "previous_owned_and_old_archive_tests": {
+      "passed": 82,
+      "wall_s": 44.97,
+      "receipt": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/s1-dfi12/DF12-FINAL-UNIT.log",
+        "sha256": "ff9fe93cf8c6aef028c6bc7ed1b005cb8096d9a935f5e1bca1e3507c5c811aa2"
+      }
+    },
+    "final_affected_and_netcdf_lock_tests": {
+      "tests": 220,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "receipt": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/s1-dfi12/DF12-FINAL-COMPOSITION.xml",
+        "sha256": "337da1286f32fa8bbbd052117e29996088593ca083552c500d66344bb35ddae1"
+      }
+    },
+    "clean_git_archive_tests": {
+      "tests": 12,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "receipt": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/s1-dfi12/DF12-ARCHIVE.xml",
+        "sha256": "8340beb27c897c113bc658f91bd45f671af687c38830339ac75665b9832327e3"
+      }
+    },
+    "shared_consumers": {
+      "passed": 250,
+      "warnings": 5,
+      "wall_s": 2001.93,
+      "receipt": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/s1-dfi12/DF12-SHARED.log",
+        "sha256": "73a22d1902c52c75115d6a7880c0e28129d0a122060f98dadec4a3ed6932a70e"
+      },
+      "watchdog": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/s1-dfi12/DF12-SHARED-WATCHDOG.json",
+        "sha256": "585ebaa5c290b327f9c181f88abaf17f779516baab242690c8b58b2a13e58389"
+      },
+      "controller_exit": 124,
+      "test_body_complete": true,
+      "exit_zero_claim": false,
+      "detail": "Bounded own watchdog extension; pytest body complete, child exited naturally after long cleanup; original monitor resumed pending timer. No SIGTERM sent."
+    },
+    "genuine_numerical_mutants": {
+      "ENDPOINT": {
+        "tests": 1,
+        "failures": 1,
+        "errors": 0,
+        "skipped": 0,
+        "receipt": {
+          "path": "<USER_HOME>/wrf_gpu2_lanes/s1-dfi12/DF12-MUT-ENDPOINT.xml",
+          "sha256": "3f921c6c3f421c1cfae05551318f365c5f1e10223e360c58ec6f758314c146b9"
+        }
+      },
+      "LAUNCH": {
+        "tests": 3,
+        "failures": 1,
+        "errors": 0,
+        "skipped": 0,
+        "receipt": {
+          "path": "<USER_HOME>/wrf_gpu2_lanes/s1-dfi12/DF12-MUT-LAUNCH.xml",
+          "sha256": "ac43808da145a76fa94e0948f444ad601c1d0223f8d6cd2917106b4107a303c5"
+        }
+      }
+    },
+    "actual_operational_loader_and_marker_mutant": {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/s1-dfi12/DF12-LOADER-FINAL.json",
+      "sha256": "ccf05bc38b55fbe534b966ed17b311aeabfc7e9ea9680f74f9a0f1c58dfad12b"
+    },
+    "independent_wrf_clock_witness": {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/s1-dfi12/DF12-WRF-CLOCK-WITNESS.json",
+      "sha256": "1cc6662a4bfae2b21d9cdcc3c920b4d4b98c351b88cc73b550d6d70ae0117353"
+    }
+  },
+  "precision": "fp32 operational carry. CPU release kernels interpreted with established cpu_safe/inline-PTX shim; WRF DOUBLE islands retained.",
+  "performance_memory": {
+    "default_path": "Exact release program and full phase input identities; no new forecast carry fields or scan kernels.",
+    "opt_in_prepass": "DFL removes backward stage; DDFI removes backward accumulator/reset; retained forward-filter helper and host scheduling.",
+    "boundary_storage": "DFL gcd re-anchoring can expand host/device boundary records; Swiss 1h six records at540s, capped4096.",
+    "ddfi_cpu_peak_rss_kib": 9231408,
+    "sequential_short_suite_cpu_peak_rss_kib": 12434500,
+    "gpu_memory_compile_transfer_cost": "Unqualified; no GPU used."
+  },
+  "known_nonprimary_differences": [
+    "T retains different forward-stage diagnostic semantics (RMSE .287/.403 K).",
+    "QKE cold start vs WRF held initial output; WRF reinitializes at first forecast step.",
+    "SNOW RMSE .000604/.000763 kg m-2; AC*/runoff sums and TAUSS not transferred by wrfinput adapter.",
+    "Complete 320-field reports include other nonprimary diagnostics/fill sentinels; not all-field byte parity."
+  ],
+  "cleanup": "No persistent JAX cache. Disposable snapshots, pytest scratch and archive removed after last dependent checks; original CPU-WRF references and compact receipts retained for critic."
+}

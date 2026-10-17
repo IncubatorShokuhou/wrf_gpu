@@ -1,0 +1,70 @@
+{
+  "utc": "2026-10-15T11:43:59.221363+00:00",
+  "case": "c88",
+  "actual_warm_GPU": {
+    "source": "584d396dd4d0eff95a5319d58ac46a7b06b271a4",
+    "timeout_s": 1770,
+    "frames": 1,
+    "D6": "INCOMPLETE",
+    "E41": "FAIL",
+    "full_AOT": false,
+    "same_unoptimized_HLO_prefix_old_new": "86df7887ae0b",
+    "scope": "Actual restored persistent JIT did not establish full readiness; no completed coupled forecast or S1 claim"
+  },
+  "CPU_only_compiler_profile": {
+    "source": "584d396dd4d0eff95a5319d58ac46a7b06b271a4",
+    "physical_backend": "cpu",
+    "virtual_target": "CUDA SM120, AUTOTUNE0; not actual GPU compilation cost",
+    "IR_bytes": 50668699,
+    "static_kwargs": {
+      "n_steps": 200,
+      "cadence": 33
+    },
+    "sampled_stacks": 681,
+    "sample_errors": 112,
+    "Coalesce_inclusive_samples": 401,
+    "Coalesce_inclusive_fraction": 0.5888399412628488,
+    "top_compiler_frames": [
+      [
+        "xla::gpu::CompileTritonToLLVM (xla_cuda13/xla_cuda_plugin.so)",
+        413
+      ],
+      [
+        "mlir::triton::gpu::buildCoalescedEncoding (xla_cuda13/xla_cuda_plugin.so)",
+        402
+      ],
+      [
+        "mlir::triton::gpu::CoalescePass::runOnOperation (xla_cuda13/xla_cuda_plugin.so)",
+        401
+      ],
+      [
+        "mlir::triton::gpu::CoalescePass::runOnOperation()::{lambda(mlir::Operation*)#1}::operator() const (xla_cuda13/xla_cuda_plugin.so)",
+        401
+      ],
+      [
+        "mlir::getSlice (xla_cuda13/xla_cuda_plugin.so)",
+        400
+      ]
+    ],
+    "raw_profile": {
+      "path": "<DATA_ROOT>/wrf_gpu2/scratch/v-prep/native21-c88-phase/native-profile.txt",
+      "sha256": "88f7891f1a7ff46ef9aaa651140cafba4d7ffe38938a7dedf2db8e3af8bbf91e"
+    },
+    "receipt": {
+      "path": "<DATA_ROOT>/wrf_gpu2/scratch/v-prep/native21-c88-phase/out/receipt.json",
+      "sha256": "1b539d08fdb4ddaf880c9162bf5ecf922163e0a4e6ea3a552ae5364ae8272c48"
+    },
+    "status": "INCOMPLETE at bounded sample; no executable produced"
+  },
+  "actual_older_NTU_kernel": {
+    "source": "20ca3505084ff3203436711b9be53f8b2cc19894",
+    "kernel": "ntu_mp56_column",
+    "REG": 255,
+    "STACK_B": 3496,
+    "SASS_instructions": 332832,
+    "scope": "Actual old scanned JIT PIN; no full AOT/run proof. Source/input selected identity separately sealed."
+  },
+  "cleanup": "Both warm-arm caches/tmp and five CPU-probe caches deleted after consumers; original/partial outputs+PINs/profile kept",
+  "next": "Compiler owner for Jensen55/NTU56; no unchanged GPU cold/warm repeat",
+  "F2": "OPEN"
+}

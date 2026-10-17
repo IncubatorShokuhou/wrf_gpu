@@ -1168,9 +1168,14 @@ def _acm2_column_traceable(
     v_tend = (momentum_new[1] - v) * rdt
     theta_tend = (scalar_new[0] - theta) * rdt
     qv_tend = (scalar_new[1] - qv) * rdt
+    # ACMPBL also returns RQCBLTEN/RQIBLTEN (module_bl_acm.F; pbl_driver.F:1595),
+    # as the reference _acm2_numpy does. Appended to keep the 13-value prefix.
+    qc_tend = (scalar_new[2] - qc) * rdt
+    qi_tend = (scalar_new[3] - qi) * rdt
     return (
         u_tend, v_tend, theta_tend, qv_tend,
         exch_h, exch_m, pblh, kpbl.astype(jnp.int32), regime, noconv, rmol, fsacm_h, fsacm_m,
+        qc_tend, qi_tend,
     )
 
 
@@ -1203,9 +1208,10 @@ def acm2_columns(
         u, v, theta, temperature, qv, qc, qi, density, dz,
         pblh_initial, ust, hfx, qfx, wspd, mut, xtime_b,
     )
-    (u_t, v_t, th_t, qv_t, exch_h, exch_m, pblh, kpbl, regime, noconv, rmol, fsacm_h, fsacm_m) = out
+    (u_t, v_t, th_t, qv_t, exch_h, exch_m, pblh, kpbl, regime, noconv, rmol, fsacm_h, fsacm_m,
+     qc_t, qi_t) = out
     return {
-        "u": u_t, "v": v_t, "theta": th_t, "qv": qv_t,
+        "u": u_t, "v": v_t, "theta": th_t, "qv": qv_t, "qc": qc_t, "qi": qi_t,
         "exch_h": exch_h, "exch_m": exch_m,
         "pblh": pblh, "kpbl": kpbl, "regime": regime, "noconv": noconv,
         "rmol": rmol, "fsacm_h": fsacm_h, "fsacm_m": fsacm_m,
@@ -1276,7 +1282,8 @@ def step_acm2_column(
         cpd=jnp.asarray(cpd, jnp.float64),
         ep1=jnp.asarray(ep1, jnp.float64),
     )
-    (u_t, v_t, th_t, qv_t, exch_h, exch_m, pblh, kpbl, regime, noconv, rmol, fsacm_h, fsacm_m) = out
+    (u_t, v_t, th_t, qv_t, exch_h, exch_m, pblh, kpbl, regime, noconv, rmol, fsacm_h, fsacm_m,
+     qc_t, qi_t) = out
 
     tendencies = {
         "u": u_t,

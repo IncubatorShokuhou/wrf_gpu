@@ -1,8 +1,8 @@
 """fid-q2 RE03 G5: the held nest ``o3rad`` survives a restart (WRF Registry o3rad IO 'r'; CPU).
 
 The product RestartStore serializes every OperationalCarry field (io.restart v2+ extra_fields), so the
-forced nest ozone resumes exactly.  The WRF-NetCDF carry writer has no O3RAD variable yet: it must refuse a
-populated o3rad loudly instead of dropping it.  A run/resume flag mismatch is refused by the restart identity
+forced nest ozone resumes exactly. The shipped WRF-NetCDF carry writer also
+preserves populated o3rad exactly. A run/resume flag mismatch is refused by the restart identity
 (GPUWRF_NEST_O3_FROM_PARENT is part of the trace-environment hash).
 """
 import os
@@ -16,7 +16,9 @@ from gpuwrf.contracts.grid import GridSpec
 from gpuwrf.contracts.precision import DEFAULT_DTYPES
 from gpuwrf.contracts.state import State, _state_field_shapes
 from gpuwrf.io.restart import _CARRY_FIELD_ORDER, read_restart, write_restart
-from gpuwrf.io.wrfrst_netcdf import UNSUPPORTED_CARRY_FIELDS, write_wrfrst_carry
+from gpuwrf.io.wrfrst_netcdf import (
+    OPTIONAL_CARRY_FIELDS, UNSUPPORTED_CARRY_FIELDS, read_wrfrst_carry, write_wrfrst_carry,
+)
 from gpuwrf.nesting.nest_o3 import NEST_O3_FROM_PARENT_ENV
 from gpuwrf.runtime.operational_mode import OperationalNamelist
 from gpuwrf.runtime.operational_state import initial_operational_carry
@@ -49,12 +51,20 @@ def test_pickle_restart_roundtrips_o3rad_bitwise(carry_with_o3, tmp_path):
     assert read_restart(path)[0].o3rad is None
 
 
-def test_netcdf_carry_writer_refuses_populated_o3rad(carry_with_o3, tmp_path):
-    grid, _namelist, carry = carry_with_o3
-    assert "o3rad" in UNSUPPORTED_CARRY_FIELDS
-    with pytest.raises(ValueError, match="o3rad"):
-        write_wrfrst_carry(carry, grid, {}, tmp_path / "carry.nc", valid_time="2026-07-25_18:00:54",
-                           run_start="2026-07-25_18:00:00", step_index=1)
+def test_netcdf_carry_writer_roundtrips_populated_o3rad(carry_with_o3, tmp_path):
+    grid, namelist, carry = carry_with_o3
+    assert "o3rad" not in UNSUPPORTED_CARRY_FIELDS and "o3rad" in OPTIONAL_CARRY_FIELDS
+    path = tmp_path / "carry.nc"
+    write_wrfrst_carry(carry, grid, namelist, path, valid_time="2026-07-25_18:00:54",
+                       run_start="2026-07-25_18:00:00", step_index=1)
+    restored = read_wrfrst_carry(path, namelist=namelist)[0]
+    got = np.asarray(restored.o3rad)
+    assert got.dtype == np.float32 and got.shape == carry.o3rad.shape
+    assert got.tobytes() == np.asarray(carry.o3rad).tobytes()
+    path = tmp_path / "absent.nc"
+    write_wrfrst_carry(carry.replace(o3rad=None), grid, namelist, path,
+                       valid_time="2026-07-25_18:00:54", run_start="2026-07-25_18:00:00", step_index=1)
+    assert read_wrfrst_carry(path, namelist=namelist)[0].o3rad is None
 
 
 def test_restart_identity_splits_on_the_flag(monkeypatch):

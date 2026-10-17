@@ -1,0 +1,75 @@
+{
+  "utc": "2026-10-15T00:02:39.782323+00:00",
+  "candidate_main": "5abde3224a50e5f67674bb1865aa0cc6d1ff1937",
+  "base_native_source": "f4fd9de7786e1276aef45a52c00526f25f19b0c3",
+  "scope": "Batch14 reviewed writer/profile delta. Core source trees BYTE; first cohort selects neither new RIMI(MP13), EXCH_TKE(BL12), MP28 emission initialization nor Goddard5 history. rimi/exch_tke remain None and add no array operands. Existing first-cohort native lowers reused; actual GPU compile/E41/fullD6 will qualify new realization. This is selected-source evidence, not a whole gpuwrf tree BYTE claim.",
+  "first_cohort": {
+    "c03": {
+      "mp_physics": 2,
+      "cu_physics": 2,
+      "bl_pbl_physics": 2,
+      "sf_sfclay_physics": 2,
+      "sf_surface_physics": 4,
+      "ra_lw_physics": 4,
+      "ra_sw_physics": 2
+    },
+    "c04": {
+      "mp_physics": 3,
+      "cu_physics": 3,
+      "bl_pbl_physics": 3,
+      "sf_sfclay_physics": 3,
+      "sf_surface_physics": 4,
+      "ra_lw_physics": 4,
+      "ra_sw_physics": 1
+    },
+    "c26": {
+      "mp_physics": 8,
+      "cu_physics": 0,
+      "bl_pbl_physics": 4,
+      "sf_sfclay_physics": 4,
+      "sf_surface_physics": 4,
+      "ra_lw_physics": 4,
+      "ra_sw_physics": 4
+    },
+    "c39": {
+      "mp_physics": 0,
+      "cu_physics": 0,
+      "bl_pbl_physics": 0,
+      "sf_sfclay_physics": 0,
+      "sf_surface_physics": 0,
+      "ra_lw_physics": 31,
+      "ra_sw_physics": 0
+    }
+  },
+  "unchanged_core_trees": {
+    "physics": "b1a82be668f67143dec6d4df421dff907e0b08af",
+    "kernels": "c6bed332218d7acfdf292647bb941532bdd655be",
+    "dynamics": "596463f9a7983a1c5242a1e48dba4adc08009f3a"
+  },
+  "changed_src_files": [
+    "src/gpuwrf/contracts/precision.py",
+    "src/gpuwrf/contracts/state.py",
+    "src/gpuwrf/coupling/goddard_radiation.py",
+    "src/gpuwrf/coupling/physics_couplers.py",
+    "src/gpuwrf/coupling/scan_adapters.py",
+    "src/gpuwrf/integration/nested_pipeline.py",
+    "src/gpuwrf/io/microphysics_history.py",
+    "src/gpuwrf/io/producer_history.py",
+    "src/gpuwrf/io/restart.py",
+    "src/gpuwrf/io/restart_schema.py",
+    "src/gpuwrf/io/wrfout_writer.py",
+    "src/gpuwrf/io/wrfrst_netcdf.py",
+    "src/gpuwrf/nesting/scalar_initialization.py",
+    "src/gpuwrf/runtime/checkpoint.py",
+    "src/gpuwrf/runtime/operational_mode.py"
+  ],
+  "reviewed_batch14_packet": "proofs/s2_integrate/batch14/QUALIFICATION.json",
+  "batch14_default_IDs": "FULLSwissf672a573 and PROD6fc715a2 exact per source-bound integration packet",
+  "affected_future_prescreen": [
+    "c09(MP13 RIMI)",
+    "c08(BL12 EXCH_TKE; hold for scientific fix)",
+    "c19(MP28 source changed; v-run owns final decision)",
+    "c45(Goddard5 history)"
+  ],
+  "GPU_executed": false
+}

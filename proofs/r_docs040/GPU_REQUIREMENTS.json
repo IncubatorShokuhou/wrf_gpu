@@ -1,0 +1,36 @@
+{
+  "schema": "r-docs040-gpu-requirement-evidence-v1",
+  "captured_utc": "2026-10-15T20:52:42.169153+00:00",
+  "policy": {
+    "minimum_vendor": "NVIDIA",
+    "minimum_architecture": "Ampere",
+    "minimum_compute_capability": "8.0",
+    "backend": "Pallas/Triton release fast path",
+    "unsupported_architectures": [
+      "Pascal",
+      "Turing"
+    ],
+    "scope": "Backend prerequisite; not a per-GPU forecast, VRAM or performance qualification. Turing exclusion follows the minimum, not a measured Turing run."
+  },
+  "source_receipt": {
+    "producer": "wz1080",
+    "artifact": "deliverable1/DELIVERABLE_1.md",
+    "sha256": "820d36b5f7be33faea033278f39166fd17399e252b88ead87be65b30da3fcf43",
+    "original_bytes": 3619
+  },
+  "measured_debug_experiment": {
+    "source_commit": "a0e061fd9",
+    "gpu": "GTX 1080 Ti",
+    "compute_capability": "6.1",
+    "host_cpu": "Ryzen 5 5500, six cores",
+    "case": "Swiss d01, bundled inputs, three forecast hours",
+    "program": "Legacy GPUWRF_FAST_DEFAULTS=0 plus box-only Pallas interpretation shim; CUDA12 plugin/JAX0.10.0",
+    "release_fast_path": "Refused by Triton: Ampere compute capability8.0+ required; got6.1",
+    "legacy_gpu_warm_whole_s_per_forecast_hour": 33.16,
+    "original_cpu_wrf_6rank_whole_s_per_forecast_hour": 9.61,
+    "reported_gpu_slower_factor": 3.45,
+    "legacy_gpu_3h_frozen_bounded_D6": "PASS;0boundedfailures/62boundedfields,361fieldscompared",
+    "clock": "wrfout modification times from process start, includes initialization/output",
+    "label": "[M] debug-box result only; not release S1, not24h qualification, not supported fallback, not a Turing test"
+  }
+}

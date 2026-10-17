@@ -1,0 +1,56 @@
+{
+  "scope": "45-second interrupt stack from CPU compile of exact captured whole-program MP52 native kernel; no GPU/whole-program compile completion",
+  "utc": "2026-10-14T23:57:49.376549+00:00",
+  "target_sha256": "f46c185780fdbd4aab62ef20293385bb8de31a71bd260e9ce62cbfc21f196a23",
+  "triton_version": "3.6.0",
+  "triton_module": "<USER_HOME>/.local/lib/python3.13/site-packages/triton/__init__.py",
+  "libtriton": "<USER_HOME>/.local/lib/python3.13/site-packages/triton/_C/libtriton.so",
+  "libtriton_sha256": "23dd9f5e3808ba6e244278640f61c48bd46a2b14eb5ed3e33f8af6bad5bba72c",
+  "decoded_TTIR": {
+    "scope": "actual TP12 MP52 customcall decoded by matching JAX dialect; no passes/compile/execute",
+    "parent": {
+      "source": "56709096052b237e3cbdf97111d37fc1c75b1fec",
+      "mp": 52,
+      "case": "<USER_HOME>/wrf_gpu2_lanes/v-prep/c23/input",
+      "target_sha256": "f46c185780fdbd4aab62ef20293385bb8de31a71bd260e9ce62cbfc21f196a23",
+      "init_s": 23.579501393949613,
+      "physical_backend": "cpu",
+      "scope": "same-source full real Swiss MP52 CUDA lower/options capture; native compile autotune0 prescreen pending",
+      "work": {
+        "dt": 18.0,
+        "cadence": 33,
+        "steps": 200,
+        "CENSUS": "1"
+      },
+      "lower_s": 31.619945116108283,
+      "MLIR_chars": 56711415,
+      "MLIR_sha256": "645705498fdcd0aa293f695caa7612ac34559625377898510611619dc6e9faf8",
+      "options_sha256": "dca59c5f61045e6a952558290b556d9dfc85c14357e5c600c253b466e1e5ba2c",
+      "status": "CAPTURED"
+    },
+    "kernels": [
+      {
+        "bytecode_bytes": 937406,
+        "bytecode_sha256": "a4bea638b1cb415ffd0e2d74dfe07669f92bf91889efa0e29efcb38c1209c286",
+        "custom_call_without_ir": "      %38723:20 = stablehlo.custom_call @__gpu$xla.gpu.triton(%38705, %38706, %38707, %38708, %38709, %38710, %38711, %38712, %38713, %38714, %38715, %38716, %38717, %38718, %38719, %38720, %38721, %38722, %iterArg_647, %iterArg_648, %iterArg_649, %iterArg_650, %iterArg_651, %iterArg_652, %iterArg_653, %iterArg_654, %iterArg_655, %iterArg_656, %iterArg_657, %iterArg_658, %cst_9895, %4) {backend_config = \"\", mhlo.backend_config = {debug = false, grid_x = 1764 : i32, grid_y = 1 : i32, grid_z = 1 : i32, ir = \"<SEALED_BYTECODE>\", name = \"p3_mp52_column\", num_stages = 3 : i32, num_warps = 2 : i32}, operand_layouts = [dense<[1, 0]> : tensor<2xindex>, dense<[1, 0]> : tensor<2xindex>, dense<[1, 0]> : tensor<2xindex>, dense<[1, 0]> : tensor<2xindex>, dense<[1, 0]> : tensor<2xindex>, dense<[1, 0]> : tensor<2xindex>, dense<[1, 0]> : tensor<2xindex>, dense<[1, 0]> : tensor<2xindex>, dense<[1, 0]> : tensor<2xindex>, dense<[1, 0]> : tensor<2xindex>, dense<[1, 0]> : tensor<2xindex>, dense<[1, 0]> : tensor<2xindex>, dense<[1, 0]> : tensor<2xindex>, dense<[1, 0]> : tensor<2xindex>, dense<[1, 0]> : tensor<2xindex>, dense<[1, 0]> : tensor<2xindex>, dense<[1, 0]> : tensor<2xindex>, dense<[1, 0]> : tensor<2xindex>, dense<[3, 2, 1, 0]> : tensor<4xindex>, dense<[4, 3, 2, 1, 0]> : tensor<5xindex>, dense<0> : tensor<1xindex>, dense<[1, 0]> : tensor<2xindex>, dense<[1, 0]> : tensor<2xindex>, dense<[1, 0]> : tensor<2xindex>, dense<[5, 4, 3, 2, 1, 0]> : tensor<6xindex>, dense<[5, 4, 3, 2, 1, 0]> : tensor<6xindex>, dense<0> : tensor<1xindex>, dense<0> : tensor<1xindex>, dense<0> : tensor<1xindex>, dense<0> : tensor<1xindex>, dense<> : tensor<0xindex>, dense<> : tensor<0xindex>], result_layouts = [dense<[1, 0]> : tensor<2xindex>, dense<[1, 0]> : tensor<2xindex>, dense<[1, 0]> : tensor<2xindex>, dense<[1, 0]> : tensor<2xindex>, dense<[1, 0]> : tensor<2xindex>, dense<[1, 0]> : tensor<2xindex>, dense<[1, 0]> : tensor<2xindex>, dense<[1, 0]> : tensor<2xindex>, dense<[1, 0]> : tensor<2xindex>, dense<[1, 0]> : tensor<2xindex>, dense<[1, 0]> : tensor<2xindex>, dense<[1, 0]> : tensor<2xindex>, dense<[1, 0]> : tensor<2xindex>, dense<[1, 0]> : tensor<2xindex>, dense<[1, 0]> : tensor<2xindex>, dense<[1, 0]> : tensor<2xindex>, dense<[1, 0]> : tensor<2xindex>, dense<[1, 0]> : tensor<2xindex>, dense<0> : tensor<1xindex>, dense<0> : tensor<1xindex>]} : (tensor<1764x44xf32>, tensor<1764x44xf32>, tensor<1764x44xf32>, tensor<1764x44xf32>, tensor<1764x44xf32>, tensor<1764x44xf32>, tensor<1764x44xf32>, tensor<1764x44xf32>, tensor<1764x44xf32>, tensor<1764x44xf32>, tensor<1764x44xf32>, tensor<1764x44xf32>, tensor<1764x44xf32>, tensor<1764x44xf32>, tensor<1764x44xf32>, tensor<1764x44xf32>, tensor<1764x44xf32>, tensor<1764x44xf32>, tensor<5x4x50x14xf32>, tensor<5x4x50x30x2xf32>, tensor<150xf32>, tensor<300x10xf32>, tensor<300x10xf32>, tensor<300x10xf32>, tensor<25x4x5x25x4x5xf32>, tensor<25x4x5x25x4x5xf32>, tensor<35xf32>, tensor<65xf32>, tensor<65xf32>, tensor<75xf32>, tensor<f32>, tensor<i32>) -> (tensor<1764x44xf32>, tensor<1764x44xf32>, tensor<1764x44xf32>, tensor<1764x44xf32>, tensor<1764x44xf32>, tensor<1764x44xf32>, tensor<1764x44xf32>, tensor<1764x44xf32>, tensor<1764x44xf32>, tensor<1764x44xf32>, tensor<1764x44xf32>, tensor<1764x44xf32>, tensor<1764x44xf32>, tensor<1764x44xf32>, tensor<1764x44xf32>, tensor<1764x44xf32>, tensor<1764x44xf32>, tensor<1764x44xf32>, tensor<1764xf32>, tensor<1764xf32>) loc(#loc74858)\n"
+      }
+    ],
+    "cache": "NONE",
+    "GPU_execution": false,
+    "decode_s": 0.12090216800061171,
+    "TTIR_bytes": 3827016,
+    "TTIR_sha256": "3a20a1a03d7dc03c717eb8bb61805e2f79442ebaffbed436b991876cf12c7051"
+  },
+  "gdb_log_sha256": "6af80e1050f8d1381d7f2a79ed5d7a4ab44dcbcac4c8ba6858296a4ec20344f9",
+  "sample_seconds": 45,
+  "stack": [
+    "getForwardSliceImpl (35 recursive frames in sampled stack)",
+    "mlir::getForwardSlice",
+    "mlir::getSlice",
+    "mlir::triton::gpu::buildCoalescedEncoding /project/lib/Dialect/TritonGPU/Transforms/CoalesceUtils.cpp:44",
+    "CoalescePass::runOnOperation Coalesce.cpp:101/86"
+  ],
+  "completed_cubin": false,
+  "GPU_execution": false,
+  "cache": "TP24/{tmp,triton,cuda}; delete after this sealed sample"
+}

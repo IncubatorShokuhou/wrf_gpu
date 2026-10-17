@@ -11,7 +11,7 @@ from types import SimpleNamespace
 
 import jax
 import jax.numpy as jnp
-from jax.experimental import pallas as pl
+from gpuwrf.backends import pallas as pl
 from jax.experimental.pallas import triton as pt
 
 _LAND = ("tg", "tv", "fwet", "smois", "sneqv", "sneqvo", "snowh", "tauss", "albold")
@@ -25,7 +25,7 @@ _EXTRAS = ("fsun", "laisun", "laisha", "tauss", "albold", "vai")
 _NINPUTS = len(_LAND) + len(_FORCE) + len(_PHEN) + len(_PARAMS) + 1
 
 
-def _kernel(*refs, shape, block):
+def _kernel(*refs, shape, block, opt_alb=2, bats=None,opt_rad=3):
     from gpuwrf.physics.noahmp.energy_radiation import TwoStreamParams, _radiation_twostream_impl
     flat = pl.program_id(0) * block + jnp.arange(block, dtype=jnp.int32)
     valid = flat < prod(shape)
@@ -64,13 +64,18 @@ def _kernel(*refs, shape, block):
     params = TwoStreamParams(**group(_PARAMS, "params"))
     # A real runtime scalar operand, not a captured Python float.
     dt = refs[offset][()]
-    rad, extras = _radiation_twostream_impl(land, forcing, None, phen, params, dt, _tile_bands=True)
-    outputs = (*rad, *(extras[name] for name in _EXTRAS))
-    for ref, value in zip(refs[_NINPUTS:], outputs):
+    rad_kw={"opt_rad":opt_rad} if opt_rad!=3 else {}
+    if opt_rad==1:rad_kw["geometry"]=tuple(point(ref) for ref in refs[_NINPUTS:_NINPUTS+3])
+    rad, extras = _radiation_twostream_impl(land, forcing, None, phen, params, dt, _tile_bands=True,
+                                          **({"opt_alb": opt_alb, "bats": bats} if opt_alb != 2 else {}),**rad_kw)
+    extra_names=_EXTRAS+(("bgap","wgap") if opt_rad==1 else ())
+    outputs = (*rad, *(extras[name] for name in extra_names))
+    for ref, value in zip(refs[_NINPUTS+(3 if opt_rad==1 else 0):], outputs):
         pt.store(ref.at[coords], value, mask=valid)
 
 
-def radiation_native(land_state, forcing, static, phen, params, dt, *, interpret=False, block=128):
+def radiation_native(land_state, forcing, static, phen, params, dt, *, interpret=False, block=128,
+                     opt_alb=2, bats=None,opt_rad=3,geometry=None):
     """Same public result; per-point equations with no new full-grid temporaries."""
     from gpuwrf.physics.noahmp.energy_radiation import (
         _OMEGAS_DEF, _BETADS_DEF, _BETAIS_DEF, _SWEMX_DEF, _MFSNO_DEF, _SCFFAC_DEF,
@@ -90,10 +95,15 @@ def radiation_native(land_state, forcing, static, phen, params, dt, *, interpret
                 value = defaults[name]
             values.append(jnp.asarray(value, jnp.float32))
     values.append(jnp.reshape(jnp.asarray(dt, jnp.float32), ()))
+    if opt_rad==1:
+        if geometry is None:raise ValueError("opt_rad=1 requires canopy geometry")
+        values.extend(jnp.asarray(value,jnp.float32) for value in geometry)
     result = pl.pallas_call(
-        partial(_kernel, shape=shape, block=block),
-        out_shape=tuple(jax.ShapeDtypeStruct(shape, jnp.float32) for _ in range(14)),
+        partial(_kernel, shape=shape, block=block,
+                **({"opt_alb": opt_alb, "bats": bats} if opt_alb != 2 else {}),
+                **({"opt_rad":opt_rad} if opt_rad!=3 else {})),
+        out_shape=tuple(jax.ShapeDtypeStruct(shape, jnp.float32) for _ in range(16 if opt_rad==1 else 14)),
         grid=((prod(shape) + block - 1) // block,), name="b_noahmp_radiation_real",
         interpret=interpret, compiler_params=pt.CompilerParams(num_warps=4),
     )(*values)
-    return NoahMPRadInputs(*result[:8]), dict(zip(_EXTRAS, result[8:]))
+    return NoahMPRadInputs(*result[:8]), dict(zip(_EXTRAS+(("bgap","wgap") if opt_rad==1 else ()), result[8:]))

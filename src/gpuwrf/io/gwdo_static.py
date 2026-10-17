@@ -65,6 +65,7 @@ def load_gwdo_statics(
     *,
     grid: GridSpec,
     metrics: DycoreMetrics | None = None,
+    field_overrides=None,
 ) -> tuple[GWDOStatics | None, dict[str, Any]]:
     """Build the per-run GWDO sub-grid orography statics for one Gen2 domain.
 
@@ -84,6 +85,10 @@ def load_gwdo_statics(
     fields: dict[str, Any] = {}
     sources: dict[str, str | None] = {}
     for name in GWDO_STATIC_FIELDS:
+        if field_overrides is not None and name in field_overrides:
+            fields[name]=field_overrides[name]
+            sources[name]='WRF initial feedback input override'
+            continue
         arr, src = _load_static_xy(run, domain, name)
         fields[name] = arr
         sources[name] = src

@@ -1,0 +1,101 @@
+{
+  "candidate": "112d1b66ca493f488adff0179e57160ccac5f2a3",
+  "model_fix": "37984ffb7",
+  "original_source": "d2782882bdc88accdeed764c66aa0f19b5b2e935",
+  "status": "FULL24H_D6_E41_PASS_READY_FOR_CRITIC",
+  "CPU_equation_AST_after_pure_divide_inlining_BYTE": true,
+  "CPU_equation_AST_sha256": "7214e4b037ea5ea26359b13de07e251dacb9e5258efb0cbe6302a9ba5975af5f",
+  "original_oracle": {
+    "input_vectors_BYTE": 14,
+    "defined_output_groups_BYTE": 31,
+    "nonfinite": 0,
+    "source": "pristineWRF4.7.1 unchangedbody79b782f6832ce45c0a13f463841d1820cabc4de0049ac60b5c2a23d24389cb8b",
+    "artifact": "<DATA_ROOT>/wrf_gpu2/scratch/t-c02nan/TCN41_ssi_oracle/oracle_comparison.json"
+  },
+  "diagnostic": {
+    "input": "actualC64CPUpostRKcolumn drytheta+1float32ULP atlevel26",
+    "exact_saturation_bits": 935481906,
+    "quotient_error_ULP": 2,
+    "first_nonfinite_WRF_lines": [
+      4063,
+      4064,
+      4065
+    ],
+    "matches_native_failure_fields": [
+      "theta",
+      "qv",
+      "qs",
+      "qg",
+      "qh",
+      "re_ice_gsfc",
+      "acphysd",
+      "phys_tot"
+    ],
+    "QI": "finite",
+    "actual_native_division_value": "Original native threshold column fails nine fields at26; changing only SSI division removes them. Native internal SSI value not directly tapped."
+  },
+  "CPU_checks": {
+    "source_commit": "112d1b66ca493f488adff0179e57160ccac5f2a3",
+    "checks": 2,
+    "original_defined_outputs_BYTE": 31,
+    "quotient_error_control": "actualsamepristinecolumn, +2ULPSSIquotient at26 selects0/0; NOTGPUdeletiontest",
+    "GPU_executed": false,
+    "peak_RSS_KiB": 743132
+  },
+  "CUDA_frontend": {
+    "platform": "cpu",
+    "GPU_executed": false,
+    "source_commit": "112d1b66ca493f488adff0179e57160ccac5f2a3",
+    "actual_column": "real c64 CPU postRK column(k26,y13,x8), drytheta atlevel26 advanced onefloat32ULP; independentpristinecounterexample, notactualGPUpreMPbyteclaim",
+    "cuda_frontend": "PASS",
+    "target": "cuda/sm120",
+    "IEEE_division_calls": 1,
+    "fp64_types": 0,
+    "IR_characters": 1522296,
+    "IR_sha256": "d62daa9019aacfca2e111c2a319ea5f0a422a98365ac324f6e02f18ec3f6af7c",
+    "seconds": 0.9043780049996712,
+    "peak_RSS_KiB": 747976,
+    "scope": "deviceless real-column native CUDA frontend only; no compiled SASS/GPU/D6/E41 or causal closure"
+  },
+  "performance": {
+    "source_contract": "one existing Goddard program/grid/outputs; no new persistent arrays, launches or transfers added",
+    "native_SASS_registers_stack_timing": "MEASURED native two-column comparison TCN52; actual full-forecast resources pending",
+    "old_native": {
+      "SASS": 13976,
+      "stack_B": 16,
+      "ELF_sha256": "843d8cbf641436a745898e5712d6670f9f69c43e2cf861684b79cd28fefd7125"
+    }
+  },
+  "next": "postNightlyDONE actualold/newMP7component+pristinecolumns; finalcomposedC64full24D6/E41; C08CPU36stepfirstoperatormeasurementrunningseparately",
+  "actual_GPU_caller_HLO": {
+    "source": "actualC64AOT5eb",
+    "native_TH_operand": "get-tuple-element index3 of input_transpose_fusion.298 / fused_transpose.303",
+    "dry_theta_arithmetic": "f32 theta_m / (f32(1)+f32(461.6/287)*f32(qv))",
+    "producer_f64_statements": 0,
+    "artifact": "<DATA_ROOT>/wrf_gpu2/scratch/t-c02nan/TCN49_actual_g4_hlo/receipt_final.json",
+    "conclusion": "No caller precision repair justified; native SSI division remains candidate"
+  },
+  "native_GPU_component": {
+    "source": "112d1b66c",
+    "original_source": "d2782882b",
+    "original_NaN_fields": 9,
+    "candidate_all38_finite": true,
+    "WRF_TH_BYTE_both_columns": true,
+    "max_qv_error": 1.4551915228366852e-11,
+    "max_qi_error": 1.3528733688872308e-11,
+    "E41_both": "PASS",
+    "stack_B": 0,
+    "regs_original": 166,
+    "regs_candidate": 163,
+    "shared_B": 1024,
+    "local_B": 0,
+    "root_SASS_original": 14016,
+    "root_SASS_candidate": 14192,
+    "precise_division_callee_SASS": 108,
+    "warm_original_median_s": 9.427670001969091e-05,
+    "warm_candidate_median_s": 9.420969990969752e-05,
+    "timing_scope": "two columns; host+device; validation shared; NOT S1/whole-domain performance",
+    "artifact": "<DATA_ROOT>/wrf_gpu2/scratch/t-c02nan/TCN52_native_g4/native_comparison.json"
+  },
+  "final_GPU_qualification": "proofs/t_c02nan/NAN_REPAIRS_QUALIFICATION.json"
+}

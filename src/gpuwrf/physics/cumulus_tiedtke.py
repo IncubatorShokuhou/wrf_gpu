@@ -403,9 +403,12 @@ def _cuasc_new(klev: int, ptenh, pqenh, puen, pven, pten, pqen, pqsen, pgeo, pge
         zmfuu = pmfub * puu[klev]
         zmfuv = pmfub * pvu[klev]
 
+    # 3.1 (module_cu_tiedtke.F:1633-1649): ldcum reset for every column; zbuoy = cloud-base buoyancy (ktype 1).
+    ldcum = False
     if ktype == 1:
         ikb = kcbot
         zbuoy0 = G * ((ptu[ikb] - ptenh[ikb]) / ptenh[ikb] + 0.608 * (pqu[ikb] - pqenh[ikb]))
+        zbuoy_acc = zbuoy0
         if zbuoy0 > 0.0 and ikb > 1:
             zdz = (pgeo[ikb - 1] - pgeo[ikb]) * ZRG
             zdrodz = -np.log(pten[ikb - 1] / pten[ikb]) / zdz - G / (RD * ptenh[ikb])

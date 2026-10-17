@@ -43,6 +43,7 @@ from gpuwrf.coupling.physics_couplers import (
     _output_dtype,
     _temperature_from_theta,
 )
+from gpuwrf.coupling.wrf_phy_prep import wrf_phy_prep
 from gpuwrf.physics.lsm_pleim_xiu import (
     PleimXiuStatic,
     ntsps_substeps,
@@ -146,6 +147,20 @@ def _rmol_from_handles(state, theta1, qv1) -> jax.Array:
     return jnp.clip(rmol, -1000.0, 1000.0)
 
 
+def pleim_xiu_precipitation(precipitation: Any):
+    """WRF PX precipitation rate (m/s) from the held previous-step carry.
+
+    module_sf_pxlsm.F:482 ``PRECIP = MAX(1.0E-3*RAINBL(i,j)/DTBL, 0.0)`` with RAINBL =
+    RAINCV+RAINNCV of the previous step (module_surface_driver.F:1568, bldt=0), i.e. 1e-3 x
+    (PRCPCONV+PRCPNONC) of the carry (<= 3 ULP association, disclosed).
+    """
+    if precipitation is None:
+        raise ValueError("Pleim-Xiu needs the held previous-step precipitation carry (E78); "
+                         "the checkpoint or caller predates it")
+    rate = jnp.asarray(precipitation.prcpconv, jnp.float32) + jnp.asarray(precipitation.prcpnonc, jnp.float32)
+    return jnp.maximum(jnp.float32(1.0e-3) * rate, jnp.float32(0.0))
+
+
 def pleim_xiu_surface_step(
     state: Any,
     land_state: PleimXiuLandState,
@@ -153,6 +168,8 @@ def pleim_xiu_surface_step(
     dt: float,
     *,
     radiation: Any = None,
+    precipitation: Any = None,
+    grid: Any = None,
 ) -> tuple[Any, PleimXiuLandState]:
     """Run the PX LSM over land and write land flux handles back into State.
 
@@ -171,24 +188,26 @@ def pleim_xiu_surface_step(
     rad = _held_rad(radiation, grid_shape)
 
     # --- per-column forcing from the resident State (mirrors the WRF driver) ---
-    ta1_2d = _temperature_from_theta(state.theta, state.p)[0]
-    theta1_2d = jnp.asarray(state.theta[0], dtype=jnp.float64)
+    # pxlsm.F:472/485 TA1=T3D(1)=t_phy, THETA1=TH3D(1)=th_phy (dry), PSFC=p_hyd_w(1) (phy_prep staging).
+    prep = wrf_phy_prep(state, getattr(grid, "metrics", None))
+    ta1_2d = jnp.asarray(prep["t_phy"][0], dtype=jnp.float64)
+    theta1_2d = jnp.asarray(prep["th_phy"][0], dtype=jnp.float64)
     qv1_2d = jnp.maximum(jnp.asarray(state.qv[0], dtype=jnp.float64), 0.0)
-    # Surface pressure proxy = lowest model level, converted Pa -> cb (PSFC/1000).
-    psurf_cb_2d = jnp.maximum(jnp.asarray(state.p[0], dtype=jnp.float64), 1.0) / 1000.0
+    # PSFC Pa -> cb (PSFC/1000).
+    psurf_cb_2d = jnp.maximum(jnp.asarray(state.p[0] if prep["psfc"] is None else prep["psfc"],
+                                          dtype=jnp.float64), 1.0) / 1000.0
     dens1_2d = jnp.maximum(jnp.asarray(state.rhosfc, dtype=jnp.float64), 1.0e-6)
     ust_2d = jnp.asarray(state.ustar, dtype=jnp.float64)
-    z1_2d = _reference_height(state)
+    z1_2d = 0.5 * jnp.maximum(jnp.asarray(prep["dz8w"][0], dtype=jnp.float64), 1.0)
     cpair_2d = CPD * (1.0 + 0.84 * qv1_2d)
     rmol_2d = _rmol_from_handles(state, theta1_2d, qv1_2d)
     xland_2d = _surface_2d(getattr(state, "xland", jnp.ones_like(ta1_2d)))
     # ifland: 1 = land, 2 = water (WRF convention). isnow from snow fraction.
     ifland_2d = jnp.where(xland_2d < 1.5, 1.0, 2.0)
     isnow_2d = jnp.where(jnp.asarray(static.ifsnow) > 0, _surface_2d(static.params.snow_fra), 0.0)
-    # No precip coupling in this seam (like Noah-classic prcp=0); qst12 ~ 0 (the
-    # 2-level moisture-gradient diagnostic only feeds QA2, a diagnostic output).
+    # qst12 ~ 0 (the 2-level moisture-gradient diagnostic only feeds QA2, a diagnostic output).
     zero2d = jnp.zeros_like(ta1_2d)
-    precip_2d = zero2d
+    precip_2d = jnp.asarray(pleim_xiu_precipitation(precipitation), dtype=jnp.float64)
     qst12_2d = zero2d
 
     p = static.params
@@ -274,7 +293,7 @@ def initial_pleim_xiu_land(state: Any, static: PleimXiuStaticBundle) -> PleimXiu
         grdflx=zero,
         canwat=zero,
         capg=zero,
-        ta2=jnp.asarray(_temperature_from_theta(state.theta, state.p)[0], dtype=jnp.float64),
+        ta2=jnp.asarray(wrf_phy_prep(state)["t_phy"][0], dtype=jnp.float64),
         qa2=jnp.asarray(state.qv[0], dtype=jnp.float64),
     )
 

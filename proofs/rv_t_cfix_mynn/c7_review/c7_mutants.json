@@ -1,0 +1,46 @@
+{
+ "M7_host_predicate_cond": {
+  "file": "coupling/physics_couplers.py",
+  "failed": [
+   "test_limit_view_is_branch_free_and_forms_kts_operands_only"
+  ],
+  "summary": "1 failed, 30 deselected",
+  "setup_errors": 0,
+  "assertion": true,
+  "killed": true,
+  "tail": "_COLUMNS\", \"1\")\n        monkeypatch.setenv(\"GPUWRF_MYNN_PHY_EXNER\", \"1\")\n        state, _ = _extreme_noahmp_step(monkeypatch)\n        grid = smoke._land_grid()\n        handles = tuple(jnp.asarray(f, jnp.float32) for f in (state.theta_flux, state.qv_flux, state.fltv))\n        jaxpr = jax.make_jaxpr(lambda st, *h: C._mynn_driver_limited_handles(st, grid, *h))(state, *handles)  # E140\n    \n        def eqns(j):  # every equation, nested jit bodies included (jnp.where is a pjit)\n            for e in j.eqns:\n                yield e\n                for v in e.params.values():\n                    for sub in (v if isinstance(v, (tuple, list)) else (v,)):\n                        sub = getattr(sub, \"jaxpr\", sub)\n                        if hasattr(sub, \"eqns\"):\n                            yield from eqns(sub)\n    \n        every = list(eqns(jaxpr.jaxpr))\n        names = {e.primitive.name for e in every}\n>       assert not {\"cond\", \"while\", \"transpose\"} & names, names\nE       AssertionError: {'add', 'broadcast_in_dim', 'cond', 'convert_element_type', 'div', 'gt', ...}\nE       assert not ({'cond', 'transpose', 'while'} & {'add', 'broadcast_in_dim', 'cond', 'convert_element_type', 'div', 'gt', ...})\n\ntests/v025/t_cfix_mynn/test_f20_mynn_caller.py:499: AssertionError\n=========================== short test summary info ============================\nFAILED tests/v025/t_cfix_mynn/test_f20_mynn_caller.py::test_limit_view_is_branch_free_and_forms_kts_operands_only\n1 failed, 30 deselected in 11.54s\n"
+ },
+ "M8_full_column_rho": {
+  "file": "coupling/physics_couplers.py",
+  "failed": [
+   "test_limit_view_is_branch_free_and_forms_kts_operands_only"
+  ],
+  "summary": "1 failed, 30 deselected",
+  "setup_errors": 0,
+  "assertion": true,
+  "killed": true,
+  "tail": "r(sub, \"eqns\"):\n                            yield from eqns(sub)\n    \n        every = list(eqns(jaxpr.jaxpr))\n        names = {e.primitive.name for e in every}\n        assert not {\"cond\", \"while\", \"transpose\"} & names, names\n        assert {\"pow\", \"div\", \"log\", \"select_n\"} <= names, names  # the re-formation is really traced (E114)\n        ncol = int(np.prod(handles[0].shape))\n        slicing = {\"slice\", \"dynamic_slice\", \"squeeze\", \"gather\", \"convert_element_type\"}\n        sizes = [(e.primitive.name, v.aval.shape) for e in every for v in e.outvars\n                 if e.primitive.name not in {\"pjit\", \"closed_call\"}\n                 and int(np.prod(v.aval.shape)) > (2 if e.primitive.name in slicing else 1) * ncol]\n>       assert not sizes, sizes\nE       AssertionError: [('convert_element_type', (13, 2, 3)), ('convert_element_type', (12, 2, 3)), ('convert_element_type', (13,)), ('convert_element_type', (13,)), ('broadcast_in_dim', (12, 1, 1)), ('mul', (12, 2, 3)), ...]\nE       assert not [('convert_element_type', (13, 2, 3)), ('convert_element_type', (12, 2, 3)), ('convert_element_type', (13,)), ('convert_element_type', (13,)), ('broadcast_in_dim', (12, 1, 1)), ('mul', (12, 2, 3)), ...]\n\ntests/v025/t_cfix_mynn/test_f20_mynn_caller.py:506: AssertionError\n=========================== short test summary info ============================\nFAILED tests/v025/t_cfix_mynn/test_f20_mynn_caller.py::test_limit_view_is_branch_free_and_forms_kts_operands_only\n1 failed, 30 deselected in 11.71s\n"
+ },
+ "M9_full_column_exner": {
+  "file": "coupling/physics_couplers.py",
+  "failed": [
+   "test_limit_view_is_branch_free_and_forms_kts_operands_only"
+  ],
+  "summary": "1 failed, 30 deselected",
+  "setup_errors": 0,
+  "assertion": true,
+  "killed": true,
+  "tail": "j.eqns:\n                yield e\n                for v in e.params.values():\n                    for sub in (v if isinstance(v, (tuple, list)) else (v,)):\n                        sub = getattr(sub, \"jaxpr\", sub)\n                        if hasattr(sub, \"eqns\"):\n                            yield from eqns(sub)\n    \n        every = list(eqns(jaxpr.jaxpr))\n        names = {e.primitive.name for e in every}\n        assert not {\"cond\", \"while\", \"transpose\"} & names, names\n        assert {\"pow\", \"div\", \"log\", \"select_n\"} <= names, names  # the re-formation is really traced (E114)\n        ncol = int(np.prod(handles[0].shape))\n        slicing = {\"slice\", \"dynamic_slice\", \"squeeze\", \"gather\", \"convert_element_type\"}\n        sizes = [(e.primitive.name, v.aval.shape) for e in every for v in e.outvars\n                 if e.primitive.name not in {\"pjit\", \"closed_call\"}\n                 and int(np.prod(v.aval.shape)) > (2 if e.primitive.name in slicing else 1) * ncol]\n>       assert not sizes, sizes\nE       AssertionError: [('convert_element_type', (12, 2, 3)), ('div', (12, 2, 3)), ('pow', (12, 2, 3))]\nE       assert not [('convert_element_type', (12, 2, 3)), ('div', (12, 2, 3)), ('pow', (12, 2, 3))]\n\ntests/v025/t_cfix_mynn/test_f20_mynn_caller.py:506: AssertionError\n=========================== short test summary info ============================\nFAILED tests/v025/t_cfix_mynn/test_f20_mynn_caller.py::test_limit_view_is_branch_free_and_forms_kts_operands_only\n1 failed, 30 deselected in 10.59s\n"
+ },
+ "M10_kts_wrong_faces": {
+  "file": "coupling/physics_couplers.py",
+  "failed": [
+   "test_mynn_view_alone_applies_the_driver_limits"
+  ],
+  "summary": "1 failed, 30 deselected",
+  "setup_errors": 0,
+  "assertion": true,
+  "killed": true,
+  "tail": "ew(state, grid)\n        hfx1 = np.clip(f32(state.hfx), -600.0, 1200.0)\n        qfx1 = np.clip(f32(state.qfx), -3e-4, 9e-4)\n        expect = mynn_driver_surface_fluxes(\n            jnp.asarray(hfx1), jnp.asarray(qfx1), jnp.asarray(column.rho[..., 0], jnp.float32),\n            jnp.maximum(jnp.asarray(column.qv[..., 0], jnp.float32), 0.0), jnp.asarray(state.t_skin, jnp.float32),\n            jnp.asarray(column.p[..., 0], jnp.float32), exner=jnp.asarray(column.exner[..., 0], jnp.float32))\n        for g, e in zip(got, (expect.flt, expect.flqv, expect.fltv)):\n            assert np.isfinite(np.asarray(e)).all()\n>           assert np.array_equal(_bits(g[BEYOND]), _bits(np.asarray(e)[BEYOND]))\nE           assert False\nE            +  where False = <function array_equal at 0x7fa0f2185eb0>(array([1054857792, 3193952832], dtype=uint32), array([1054859376, 3193954416], dtype=uint32))\nE            +    where <function array_equal at 0x7fa0f2185eb0> = np.array_equal\nE            +    and   array([1054857792, 3193952832], dtype=uint32) = _bits(array([ 0.437212, -0.218606], dtype=float32))\nE            +    and   array([1054859376, 3193954416], dtype=uint32) = _bits(array([ 0.4372592, -0.2186296], dtype=float32))\n\ntests/v025/t_cfix_mynn/test_f20_mynn_caller.py:447: AssertionError\n=========================== short test summary info ============================\nFAILED tests/v025/t_cfix_mynn/test_f20_mynn_caller.py::test_mynn_view_alone_applies_the_driver_limits\n1 failed, 30 deselected in 11.49s\n"
+ }
+}

@@ -1,0 +1,48 @@
+{
+  "utc": "2026-10-14T05:33:31.663809+00:00",
+  "status": "FIXED rebased onto approved glacier identity; prior critic P1/P2 fixes retained",
+  "measured_source_commit": "a287a6d7773c6dfa4304344ddacdcae698645454",
+  "main_base": "2f7a4cd6ef46417b057af8de3812adad75437c5b",
+  "approved_glacier_commit": "0821ebc0a",
+  "identities": {
+    "Swiss": {
+      "sha256": "f672a5739cb96e388b6b7a40ef80337bf81bdc14ef15268f3476e09d79fe055d",
+      "wall_s": 50.6,
+      "receipt": "receipts/PG02-Swiss.json",
+      "receipt_sha256": "533acc893262cd46817ef3e92682c00274b25e4489ac805d00679535ede00559"
+    },
+    "PROD": {
+      "sha256": "6fc715a2bd630934c4cf0f94427df19a527cbf429011c9ba5efe4d712744d27b",
+      "wall_s": 55.9,
+      "receipt": "receipts/PG02-PROD.json",
+      "receipt_sha256": "f8b00fff112b5f48a85d05edd7f38b6991a789fd4d58413525965b1fb6d47c48"
+    }
+  },
+  "composition_tests": {
+    "passed": 179,
+    "failures": 0,
+    "errors": 0,
+    "skipped": [
+      {
+        "name": "test_release_namelists_are_fully_honoured[path0]",
+        "reason": "<DATA_ROOT>/wrf_gpu2/scratch/s2-cuplus/post-glacier-snapshot/examples/switzerland_d01/namelist.input not mounted"
+      }
+    ],
+    "wall_s": 21.25,
+    "artifact": "<USER_HOME>/wrf_gpu2_lanes/s2-cuplus/PG01-composition.xml",
+    "sha256": "2847d1a370c76256a818ad1429858b6e710bee6f7c354b037ddd771aa3a5a9c7"
+  },
+  "reuse": {
+    "cuplus_kernel_helper_files_BYTE": 11,
+    "fixed_reference": "b3a41eff4",
+    "immutable_receipt_hashes_preserved": 24,
+    "main_carry_prefix_preserved": true,
+    "appended_carry": "cuplus",
+    "scientific_column_reruns": 0,
+    "coupled_receipts": "prior native CPU coupled receipts retained as pre-glacier evidence; this update checks identity and host/restart composition"
+  },
+  "performance": "No new CuPlus physics arithmetic, kernels or memory layout; approved main glacier change retained. GPU/forecast D6/releaseF2 limits unchanged.",
+  "historical": "2bf12cb8 receipts remain immutable pre-glacier records; POST_GLACIER_IDENTITY.json supersedes only the current release identity",
+  "cache": "NONE GPUWRF_JAX_CACHE=0; disposable snapshot/pytest removed after arm",
+  "gpu_executed": false
+}

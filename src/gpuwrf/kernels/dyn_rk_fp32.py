@@ -9,7 +9,7 @@ from functools import partial
 
 import jax
 import jax.numpy as jnp
-from jax.experimental import pallas as pl
+from gpuwrf.backends import pallas as pl
 from jax.experimental.pallas import triton as pt
 
 from gpuwrf.contracts.state import BaseState
@@ -30,7 +30,8 @@ def real_metrics(metrics):
 def real_base(base):
     if base is None:
         return None
-    return BaseState(**{n:jnp.asarray(getattr(base,n),jnp.float32) for n in BaseState.__slots__})
+    return BaseState(**{n:jnp.asarray(getattr(base,n),jnp.float32) if getattr(base,n,None) is not None else None
+                       for n in BaseState.__slots__})
 
 
 def inverse_density_fp32(theta,pressure):
@@ -55,6 +56,8 @@ def _diagnose_pressure_reference(state,base,metrics,*,hypsometric_opt=1):
             half=metrics.c3h[:,None,None]*column+metrics.c4h[:,None,None]+ptop
             return dph/half/jnp.log(lower/upper)
         alb=alpha(dphb,base.mub[None])
+        if base.alb is not None:
+            alb=base.alb
         ph=state.ph_perturbation
         # Literal calc_p_rho_phi association; adding full geopotentials first
         # loses a different set of binary32 bits over terrain.
@@ -62,6 +65,8 @@ def _diagnose_pressure_reference(state,base,metrics,*,hypsometric_opt=1):
         al=alpha(total,muts[None])-alb
     else:
         alb=-dphb/(metrics.dnw[:,None,None]*(c1*base.mub[None]+c2))
+        if base.alb is not None:
+            alb=base.alb
         al=-(alb*c1*state.mu_perturbation[None]+metrics.rdnw[:,None,None]*
              (state.ph_perturbation[1:]-state.ph_perturbation[:-1]))/(c1*muts[None]+c2)
     alt=al+alb
@@ -70,7 +75,7 @@ def _diagnose_pressure_reference(state,base,metrics,*,hypsometric_opt=1):
     return pressure,al,alt
 
 
-def _eos(theta,ph,phb,pb,mu,mub,c1,c2,dnw,rdnw,c3h,c4h,c3f,c4f,ptop,
+def _eos(theta,ph,phb,pb,mu,mub,c1,c2,dnw,rdnw,c3h,c4h,c3f,c4f,ptop,alb_ref,
          pressure_out,al_out,alt_out,*,nz,ny,nx,option,block,interpret):
     idx=pl.program_id(0)*block+jnp.arange(block,dtype=jnp.int32)
     x,y,k=idx%nx,idx//nx%ny,idx//(nx*ny)
@@ -91,14 +96,20 @@ def _eos(theta,ph,phb,pb,mu,mub,c1,c2,dnw,rdnw,c3h,c4h,c3f,c4f,ptop,
             half=rn("add",rn("add",rn("mul",vload(c3h),column),vload(c4h)),top)
             return rn("div",rn("div",dph,half),jnp.log(rn("div",lower,upper)))
         alb=alpha(dbase,base)
+        if alb_ref is not None:
+            alb=fload(alb_ref)
         dph=rn("sub",fload(ph,1),fload(ph))
         dph=rn("sub",rn("add",dph,fload(phb,1)),fload(phb))
         al=rn("sub",alpha(dph,total),alb)
     else:
         mass_base=rn("add",rn("mul",vload(c1),base),vload(c2))
         alb=rn("div",-dbase,rn("mul",vload(dnw),mass_base))
+        if alb_ref is not None:
+            alb=fload(alb_ref)
         mass_total=rn("add",rn("mul",vload(c1),total),vload(c2))
         term=rn("mul",rn("mul",alb,vload(c1)),perturb)
+        if alb_ref is not None:
+            term=rn("mul",alb,rn("mul",vload(c1),perturb))
         term=rn("add",term,rn("mul",vload(rdnw),rn("sub",fload(ph,1),fload(ph))))
         al=rn("mul",rn("div",-jnp.ones_like(term),mass_total),term)
     alt=rn("add",al,alb)
@@ -121,8 +132,8 @@ def diagnose_pressure_fp32(state,base,metrics,*,hypsometric_opt=1):
     nz,ny,nx=state.theta.shape
     arrays=(state.theta,state.ph_perturbation,base.phb,base.pb,state.mu_perturbation,base.mub,
             metrics.c1h,metrics.c2h,metrics.dnw,metrics.rdnw,metrics.c3h,metrics.c4h,
-            metrics.c3f,metrics.c4f,jnp.reshape(metrics.p_top,()))
-    if any(a.dtype!=jnp.float32 for a in arrays):raise TypeError("native EOS requires WRF REAL")
+            metrics.c3f,metrics.c4f,jnp.reshape(metrics.p_top,()),base.alb)
+    if any(a is not None and a.dtype!=jnp.float32 for a in arrays):raise TypeError("native EOS requires WRF REAL")
     kernel=partial(_eos,nz=nz,ny=ny,nx=nx,option=hypsometric_opt,block=256,interpret=_EOS_INTERPRET)
     shape=jax.ShapeDtypeStruct(state.theta.shape,jnp.float32)
     return pl.pallas_call(kernel,out_shape=(shape,shape,shape),
@@ -131,7 +142,7 @@ def diagnose_pressure_fp32(state,base,metrics,*,hypsometric_opt=1):
 
 
 def _rn(op,a,b,*,interpret):
-    if interpret:
+    if interpret or not pl.cuda_native():
         return {"add":lambda:a+b,"sub":lambda:a-b,"mul":lambda:a*b,
                 "div":lambda:a/b}[op]()
     return pt.elementwise_inline_asm(op+".rn.f32 $0, $1, $2;",args=[a,b],

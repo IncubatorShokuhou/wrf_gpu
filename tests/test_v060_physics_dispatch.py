@@ -75,11 +75,11 @@ def test_every_accepted_option_routes() -> None:
     # Tier-3; bl_pbl_physics=3 (GFS) became OPERATIONAL in v0.17; land_surface=3
     # (RUC) + 7 (Pleim-Xiu) + 8 (SSiB) became accepted REFERENCE-ONLY in v0.17
     # (registry-accepted but no dispatch entry -> scheme_entry still raises).
-    # Remaining genuinely out-of-matrix: bl_pbl_physics=4 (QNSE-EDMF),
-    # surface_layer=4 (QNSE), land_surface=5 (CLM4). (cumulus=14 KSAS is
+    # QNSE bl=4/sf=4 is now routed. land_surface=5 (CLM4) remains outside
+    # the dispatch matrix. (cumulus=14 KSAS is
     # registry-accepted reference-only -> no dispatch entry, so it still raises;
     # cumulus=5 Grell-3D graduated to a routed entry in v0.3.4.)
-    [("microphysics", 5), ("pbl", 4), ("surface_layer", 4), ("cumulus", 14), ("land_surface", 5)],
+    [("microphysics", 95), ("cumulus", 999), ("land_surface", 5)],
 )
 def test_fail_closed_on_out_of_matrix(fam: str, opt: int) -> None:
     with pytest.raises(UnsupportedSchemeSelection):
@@ -103,18 +103,10 @@ def test_cumulus_gpu_readiness_flags() -> None:
     # v0.3.4: Grell-3D (cu=5) and Grell-Devenyi (cu=93) line-faithful JAX ports;
     # scale-aware SAS (cu=4) is scan-wired for the programmatic API (the CLI refuses
     # it pre-JAX like WRF ARW check_a_mundo, tested in tests/test_cli.py).
-    for cu in (1, 2, 3, 4, 5, 6, 16, 93):
+    for cu in (1, 2, 3, 4, 5, 6, 14, 16, 93, 94, 95, 96, 99):
         suite = resolve_physics_suite({"cu_physics": cu})
         assert suite.gpu_gate_ready is True
         assert suite.cumulus.gpu_runnable is True
-    # Reference-only cumulus options (v0.17 SAS-family 94/95/96,
-    # previous Kain-Fritsch cu=99) are accepted
-    # at dispatch but fail-closed from the GPU gate until their distinct WRF source
-    # paths pass parity.
-    for cu in (94, 95, 96, 99):
-        suite = resolve_physics_suite({"cu_physics": cu})
-        assert suite.gpu_gate_ready is False
-        assert suite.cumulus.gpu_runnable is False
 
 
 def test_camuw_is_gpu_runnable_with_a_wrf_flux_producer() -> None:

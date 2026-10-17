@@ -1,0 +1,292 @@
+{
+  "source_commit": "f52c197ed39d12e087d02c50f412d90d418f6186",
+  "source_files": {
+    "<USER_HOME>/src/wrf_pristine/WRF/phys/module_sf_gecros.F": "ad2864562e95678a25276df82ef96395cca61c3a1bd0ab48ddfb8402902cf2f6",
+    "<USER_HOME>/src/wrf_pristine/WRF/phys/noahmp/drivers/wrf/module_sf_noahmpdrv.F": "29f16622740d7388a17ff9ba6c2f4640487e44f3f26b8c4bdd47aad42e0a4572"
+  },
+  "extracted_initializer_sha256": "62c302cdcc31ae17547997a351db2746013ab12b581fd35ebce7e5f97a4126db",
+  "caller_initialization_sha256": "f63415747a545071797466615a13b2e2e4788be4eae6443fb5abf91453d347d3",
+  "driver_sha256": "8346f045fbb227a8eac51d824f44dd3c3c2e48d6fc224b1b5d22462585e4f288",
+  "compiler": "GNU Fortran (conda-forge gcc 14.3.0-19) 14.3.0",
+  "compile_commands": [
+    [
+      "<USER_HOME>/miniconda3/envs/wrfbuild/bin/gfortran",
+      "-O0",
+      "-ffree-form",
+      "-ffree-line-length-none",
+      "-ffp-contract=off",
+      "-finit-real=zero",
+      "-finit-integer=0",
+      "-finit-logical=false",
+      "-fcheck=all",
+      "reference.f90",
+      "driver.f90",
+      "-o",
+      "probe.exe"
+    ],
+    [
+      "<USER_HOME>/miniconda3/envs/wrfbuild/bin/gfortran",
+      "-O2",
+      "-ffree-form",
+      "-ffree-line-length-none",
+      "-ffp-contract=off",
+      "-finit-real=zero",
+      "-finit-integer=0",
+      "-finit-logical=false",
+      "-fcheck=all",
+      "reference.f90",
+      "driver.f90",
+      "-o",
+      "probe.exe"
+    ]
+  ],
+  "traps": "off, matching production; fcheck=all",
+  "cache": "NONE; no JAX/GPU",
+  "parameters": [
+    "ygo",
+    "cfo",
+    "lncmin",
+    "clvi",
+    "crti",
+    "nlvi",
+    "nrti",
+    "hti",
+    "rdi"
+  ],
+  "modes": {
+    "0": "pristine caller, compiler zero initialization",
+    "1": "wrapper-only all-one sensitivity",
+    "2": "wrapper-only locally-derived parameters, NOT pristine"
+  },
+  "regimes": {
+    "0": "initialized active seedling",
+    "1": "vegetative",
+    "2": "grain fill",
+    "3": "cold/night seedling"
+  },
+  "all_pristine_globals_zero": true,
+  "pristine_nonfinite_columns": 8,
+  "diagnostic_derived_nonfinite_columns": 0,
+  "status": "BLOCKED; no implementation/admission change",
+  "measured_snapshot": "7846b84f0",
+  "raw_receipt": "<USER_HOME>/wrf_gpu2_lanes/s2-gecros/GC01/result.json",
+  "raw_sha256": "f85354ff5e1fbff83272d940753368a2bd8e70fefcab919187c93df34c3330de",
+  "pristine_target_files_clean": true,
+  "lsm_source_sha256": "74b475600ad1c999fe43299bcaf4d3e5eaf59b9f861c47fdbff4d69739e3a45b",
+  "source_tree_sha256_proof": [
+    "52c8e3422aaa3a5a5c29ce6e6c72798c1817164d",
+    "52c8e3422aaa3a5a5c29ce6e6c72798c1817164d"
+  ],
+  "no_runtime_source_changes": true,
+  "no_jax_or_gpu": true,
+  "rows": [
+    {
+      "optimization": "-O0",
+      "mode": 0,
+      "regime": 0,
+      "nonfinite_state_slots": [
+        45
+      ],
+      "nonfinite_flux_names": [],
+      "stderr": ""
+    },
+    {
+      "optimization": "-O0",
+      "mode": 0,
+      "regime": 1,
+      "nonfinite_state_slots": [
+        45
+      ],
+      "nonfinite_flux_names": [],
+      "stderr": ""
+    },
+    {
+      "optimization": "-O0",
+      "mode": 0,
+      "regime": 2,
+      "nonfinite_state_slots": [
+        45
+      ],
+      "nonfinite_flux_names": [],
+      "stderr": ""
+    },
+    {
+      "optimization": "-O0",
+      "mode": 0,
+      "regime": 3,
+      "nonfinite_state_slots": [
+        45
+      ],
+      "nonfinite_flux_names": [],
+      "stderr": ""
+    },
+    {
+      "optimization": "-O0",
+      "mode": 1,
+      "regime": 0,
+      "nonfinite_state_slots": [],
+      "nonfinite_flux_names": [],
+      "stderr": ""
+    },
+    {
+      "optimization": "-O0",
+      "mode": 1,
+      "regime": 1,
+      "nonfinite_state_slots": [],
+      "nonfinite_flux_names": [],
+      "stderr": ""
+    },
+    {
+      "optimization": "-O0",
+      "mode": 1,
+      "regime": 2,
+      "nonfinite_state_slots": [],
+      "nonfinite_flux_names": [],
+      "stderr": ""
+    },
+    {
+      "optimization": "-O0",
+      "mode": 1,
+      "regime": 3,
+      "nonfinite_state_slots": [],
+      "nonfinite_flux_names": [],
+      "stderr": ""
+    },
+    {
+      "optimization": "-O0",
+      "mode": 2,
+      "regime": 0,
+      "nonfinite_state_slots": [],
+      "nonfinite_flux_names": [],
+      "stderr": ""
+    },
+    {
+      "optimization": "-O0",
+      "mode": 2,
+      "regime": 1,
+      "nonfinite_state_slots": [],
+      "nonfinite_flux_names": [],
+      "stderr": ""
+    },
+    {
+      "optimization": "-O0",
+      "mode": 2,
+      "regime": 2,
+      "nonfinite_state_slots": [],
+      "nonfinite_flux_names": [],
+      "stderr": ""
+    },
+    {
+      "optimization": "-O0",
+      "mode": 2,
+      "regime": 3,
+      "nonfinite_state_slots": [],
+      "nonfinite_flux_names": [],
+      "stderr": ""
+    },
+    {
+      "optimization": "-O2",
+      "mode": 0,
+      "regime": 0,
+      "nonfinite_state_slots": [
+        45
+      ],
+      "nonfinite_flux_names": [],
+      "stderr": ""
+    },
+    {
+      "optimization": "-O2",
+      "mode": 0,
+      "regime": 1,
+      "nonfinite_state_slots": [
+        45
+      ],
+      "nonfinite_flux_names": [],
+      "stderr": ""
+    },
+    {
+      "optimization": "-O2",
+      "mode": 0,
+      "regime": 2,
+      "nonfinite_state_slots": [
+        45
+      ],
+      "nonfinite_flux_names": [],
+      "stderr": ""
+    },
+    {
+      "optimization": "-O2",
+      "mode": 0,
+      "regime": 3,
+      "nonfinite_state_slots": [
+        45
+      ],
+      "nonfinite_flux_names": [],
+      "stderr": ""
+    },
+    {
+      "optimization": "-O2",
+      "mode": 1,
+      "regime": 0,
+      "nonfinite_state_slots": [],
+      "nonfinite_flux_names": [],
+      "stderr": ""
+    },
+    {
+      "optimization": "-O2",
+      "mode": 1,
+      "regime": 1,
+      "nonfinite_state_slots": [],
+      "nonfinite_flux_names": [],
+      "stderr": ""
+    },
+    {
+      "optimization": "-O2",
+      "mode": 1,
+      "regime": 2,
+      "nonfinite_state_slots": [],
+      "nonfinite_flux_names": [],
+      "stderr": ""
+    },
+    {
+      "optimization": "-O2",
+      "mode": 1,
+      "regime": 3,
+      "nonfinite_state_slots": [],
+      "nonfinite_flux_names": [],
+      "stderr": ""
+    },
+    {
+      "optimization": "-O2",
+      "mode": 2,
+      "regime": 0,
+      "nonfinite_state_slots": [],
+      "nonfinite_flux_names": [],
+      "stderr": ""
+    },
+    {
+      "optimization": "-O2",
+      "mode": 2,
+      "regime": 1,
+      "nonfinite_state_slots": [],
+      "nonfinite_flux_names": [],
+      "stderr": ""
+    },
+    {
+      "optimization": "-O2",
+      "mode": 2,
+      "regime": 2,
+      "nonfinite_state_slots": [],
+      "nonfinite_flux_names": [],
+      "stderr": ""
+    },
+    {
+      "optimization": "-O2",
+      "mode": 2,
+      "regime": 3,
+      "nonfinite_state_slots": [],
+      "nonfinite_flux_names": [],
+      "stderr": ""
+    }
+  ]
+}

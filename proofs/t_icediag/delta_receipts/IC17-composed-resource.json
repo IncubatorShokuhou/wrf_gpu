@@ -1,0 +1,26 @@
+{
+  "command": [
+    "python",
+    "-m",
+    "pytest",
+    "-q",
+    "-p",
+    "no:cacheprovider",
+    "--basetemp",
+    "<USER_HOME>/wrf_gpu2_lanes/t-icediag/pytest",
+    "--junitxml",
+    "<USER_HOME>/wrf_gpu2_lanes/t-icediag/IC17-composed.xml",
+    "tests/test_ice_diagnostics.py",
+    "tests/test_ice_diagnostics_cpu_files.py",
+    "tests/test_m7_restart_checkpoint_roundtrip.py",
+    "tests/test_v0110_wrfrst_netcdf.py",
+    "tests/test_writer_held_volume_fields.py",
+    "tests/test_writer_producer_fields.py"
+  ],
+  "child_rc": 0,
+  "early_resource_stop": false,
+  "sampled_cgroup_peak_B": 2187722752,
+  "stop_threshold_GiB": 4.75,
+  "cgroup": "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice/run-p792174-i812306.scope",
+  "wall_s": 20.38523572899976
+}

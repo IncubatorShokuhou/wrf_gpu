@@ -1,0 +1,42 @@
+{
+  "sources": {
+    "phys/module_mp_thompson.F": "fabf19e2a9073cff886e882b187080bfdf089d3fd40c0fce1d19bc93b1e5e802",
+    "phys/module_mp_radar.F": "ca069a12cc149313456fa8ee08a827e0f542768b66ff6c1ece95a40ab208fb88"
+  },
+  "calc_refl10cm_sha256": "93caef82c352c192f823962621b0dfc7de04220bea910bec4b89d20ad6f01923",
+  "compiler": "GNU Fortran (conda-forge gcc 14.3.0-19) 14.3.0",
+  "command": [
+    "<USER_HOME>/miniconda3/envs/wrfbuild/bin/gfortran",
+    "-cpp",
+    "-ffree-form",
+    "-ffree-line-length-none",
+    "-O2",
+    "-fno-fast-math",
+    "-ffp-contract=off",
+    "stub.f90",
+    "radar.F90",
+    "thompson.F90",
+    "driver.f90",
+    "-o",
+    "oracle"
+  ],
+  "scope": "verbatim calc_refl10cm + radar module; same REAL constants; initialization of used moments only; no model stepping",
+  "reference_files": [
+    {
+      "file": "<USER_HOME>/wrf_gpu2_lanes/u2-diag/cpu_reference_3h/wrfout_d01_2023-01-15_01:00:00",
+      "sha256": "1c0d61f4756caf2238dc45a4d0306bf4ab4566eebf8dcb0833b4ba1c2b02f2bc"
+    },
+    {
+      "file": "<USER_HOME>/wrf_gpu2_lanes/u2-diag/cpu_reference_3h/wrfout_d01_2023-01-15_02:00:00",
+      "sha256": "4c7c28a9dde597c5077eefd515e906ada95d2999eb37a93ad217fcc190877317"
+    },
+    {
+      "file": "<USER_HOME>/wrf_gpu2_lanes/u2-diag/cpu_reference_3h/wrfout_d01_2023-01-15_03:00:00",
+      "sha256": "d1ab058a9e5fa660e86e4f0b8b03e084d05bf7da3632bf0fe0ec2cf129f0edbf"
+    }
+  ],
+  "constructed_columns": 16,
+  "real_field_columns": 24,
+  "fixture_sha256": "ae66d2670ae46d9c514b0ca60a9d89d477255610b5d3eaa24c307610f6d91177",
+  "note": "Real history fields plus constructed active regimes; reference is pristine operator, not port. Missing history ng is zero only in radar-inactive graupel columns."
+}

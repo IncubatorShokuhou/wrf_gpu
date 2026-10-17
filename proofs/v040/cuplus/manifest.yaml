@@ -1,0 +1,66 @@
+fixture_id: v040-kfcup-components-real32
+source: pristine WRF 4.7.1 module_cu_kfcup.F and module_radiation_driver.F
+source_commit: see fixtures.json source_commit and source_sha256 (original constants included)
+scenario: constructed component-boundary inputs; 11 JFD, 15 cloud, 1 thermodynamic and 18 radiation cases
+created_utc: 2026-10-13T16:58:00Z
+precision: default WRF REAL32; no DOUBLE islands in qualified components
+variables:
+  - name: cldfra, cldfra_cup, lnterms
+    units: dimensionless
+    shape: [case_mass_levels]
+    dtype: float32
+    absolute_tolerance: 1e-10 (cloud); 0 (radiation)
+    relative_tolerance: 7.62939453125e-6 (cloud); 0 (radiation)
+  - name: qc
+    units: kg/kg
+    shape: [case_mass_levels]
+    dtype: float32
+    absolute_tolerance: 0
+    relative_tolerance: 0
+  - name: taucloud, tactive, tstar
+    units: s
+    shape: []
+    dtype: float32
+    absolute_tolerance: 1e-10
+    relative_tolerance: 7.62939453125e-6
+  - name: lnint
+    units: dimensionless
+    shape: []
+    dtype: float32
+    absolute_tolerance: 1e-10
+    relative_tolerance: 7.62939453125e-6
+  - name: jfd
+    units: dimensionless
+    shape: [num_bins, num_bins]
+    dtype: float32
+    absolute_tolerance: 1e-12
+    relative_tolerance: 3.814697265625e-6
+  - name: th_perturb, sigma_ez
+    units: K
+    shape: see case output in fixtures.json
+    dtype: float32
+    absolute_tolerance: 1e-12
+    relative_tolerance: 3.814697265625e-6
+  - name: r_perturb, sigma_sfc, rs, rsi
+    units: kg/kg
+    shape: see case output in fixtures.json
+    dtype: float32
+    absolute_tolerance: 1e-12
+    relative_tolerance: 3.814697265625e-6
+  - name: slope_sfc, slope_ez
+    units: K per kg/kg
+    shape: []
+    dtype: float32
+    absolute_tolerance: 1e-12
+    relative_tolerance: 3.814697265625e-6
+  - name: cp
+    units: J/kg/K
+    shape: [thermodynamic_samples]
+    dtype: float32
+    absolute_tolerance: 1e-12
+    relative_tolerance: 3.814697265625e-6
+files:
+  - fixtures.json (tracked; checksum in fixtures.sha256)
+  - oracle_components.F90 (driver; original procedures extracted verbatim by generate.py)
+license_notes: fixtures computed from original WRF; retain WRF source attribution; no full WRF outputs included
+scope: partial component qualification; cu_physics=7/10/11 remain refused; no GPU or coupled-forecast claim

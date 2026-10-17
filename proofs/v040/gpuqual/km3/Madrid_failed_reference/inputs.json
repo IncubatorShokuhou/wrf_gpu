@@ -1,0 +1,84 @@
+{
+  "schema": "gpuqual-input-v1",
+  "config": "km3_madrid",
+  "hours": 24,
+  "case": "Madrid GFS 20261013_00z; original WPS/real.exe",
+  "dt_s": 50,
+  "history_minutes": 60,
+  "plan": {
+    "schema": "GpuwrfRegionPlan",
+    "schema_version": 1,
+    "bbox": [
+      -4.65,
+      39.69,
+      -2.75,
+      41.14
+    ],
+    "domain_bbox": [
+      -5.932801113460195,
+      38.69762021048073,
+      -1.4671988865398058,
+      42.097254972258504
+    ],
+    "resolution_km": 9.0,
+    "nx": 42,
+    "ny": 42,
+    "e_we": 43,
+    "e_sn": 43,
+    "e_vert": 45,
+    "dx_m": 9000.0,
+    "time_step": 50,
+    "map_proj": "mercator",
+    "truelat1": 40.415,
+    "ref_lat": 40.418906239961025,
+    "ref_lon": -3.7,
+    "start": "2026-10-13_00:00:00",
+    "end": "2026-10-14_00:00:00",
+    "hours": 24,
+    "boundary_hours": [
+      0,
+      3,
+      6,
+      9,
+      12,
+      15,
+      18,
+      21,
+      24
+    ],
+    "vram_gib": 12,
+    "memory_estimate_gib": 1.2072268500241812,
+    "memory_label": "I",
+    "gpu_qualified": false,
+    "cu_physics": 1,
+    "source": "gfs"
+  },
+  "edits": {
+    "diff_opt": 2,
+    "km_opt": 3
+  },
+  "activation": {
+    "config": "km3_madrid",
+    "urban_points": 31,
+    "soil_levels": 4,
+    "ZS": [
+      0.05000000074505806,
+      0.25,
+      0.7000000476837158,
+      1.5
+    ],
+    "landuse": "MODIFIED_IGBP_MODIS_NOAH",
+    "lake_points": 0,
+    "seaice_points": 0,
+    "shape": [
+      42,
+      42
+    ]
+  },
+  "input_sha256": {
+    "namelist.input": "705719f27faefffe7a47850e0c5321833f2f0691402ab8d81d1c7e6723d76745",
+    "wrfinput_d01": "3b2a89e63040bb108ba49e3e5f2c1bb24de0790011977b3c0a83b1e5305b7b48",
+    "wrfbdy_d01": "0f888de11c777c6c5c26372ace5a15b20993ca27c393b5dfabe6842600498463"
+  },
+  "onboarding_manifest": "<USER_HOME>/wrf_gpu2_lanes/s1-gpuqual/km3_madrid/input/onboarding.json"
+}

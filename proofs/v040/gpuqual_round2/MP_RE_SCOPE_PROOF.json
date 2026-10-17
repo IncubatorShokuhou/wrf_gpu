@@ -1,0 +1,49 @@
+{
+  "source": "<USER_HOME>/wrf_gpu2_lanes/v-run/snapshot/src/gpuwrf/physics/rrtmg_mp_re.py",
+  "sha256": "cdece2533c8c57903050962c7305a4c361aa163c4acf5a28059e7bacffea4b4d",
+  "original_AST_functions_executed": true,
+  "results": [
+    {
+      "flag": 0,
+      "mp": 8,
+      "active": false
+    },
+    {
+      "flag": 0,
+      "mp": 16,
+      "active": false
+    },
+    {
+      "flag": 0,
+      "mp": 26,
+      "active": false
+    },
+    {
+      "flag": 0,
+      "mp": 40,
+      "active": false
+    },
+    {
+      "flag": 1,
+      "mp": 8,
+      "active": true
+    },
+    {
+      "flag": 1,
+      "mp": 16,
+      "active": false
+    },
+    {
+      "flag": 1,
+      "mp": 26,
+      "active": false
+    },
+    {
+      "flag": 1,
+      "mp": 40,
+      "active": false
+    }
+  ],
+  "reads": "_MP_RE used only by mp_re_active, unused mp_re_enabled, and aot key metadata; rg src confirms mp_re_enabled has no production caller",
+  "meaning": "MP16/26/40 flag value cannot select radii arithmetic; existing MP16 physical validation reused. MP8 RE0 is different from release RE1; requires new actual GPU arm. No native-byte equality asserted."
+}

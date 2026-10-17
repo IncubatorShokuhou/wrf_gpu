@@ -69,10 +69,15 @@ def _check_config(C):
                 icfn=2, ihrn=0, iferwisventr=2, ihmlt=2, imltshddmr=1, ibinhmlr=0, ibinhlmlr=0,
                 ivhmltsoak=1, lhlw=0, lhwlg=0, eqtset=1, iqvsopt=1, icond=1, irimdenopt=1,
                 iehr0c=0, iehlr0c=0, iqhacrmlr=1, iqhlacrmlr=1, iqhacwshr=1, iqhlacwshr=1, lis=0)
+    if C.ipconc == 0:
+        want.update(ipconc=0,lhl=8 if C.variant==19 else 0)
     bad = {k: getattr(C, k) for k, v in want.items() if getattr(C, k) != v}
     if bad or C.mixedphase or C.lwsm6 or float(C.rimdenvwgt) != 0.0 or float(C.snowmeltdia) > 0.0:
         raise NotImplementedError(f"gs_part_b ported for the WRF-default mp=18 configuration only: {bad}")
-    if C.lvol[LS] > 1 or not (C.lvol[LH] > 1 and C.lvol[LHL] > 1):
+    if C.ipconc == 0:
+        if bool(C.lvol[LH]>1)!=(C.variant==19) or C.lvol[LS]>1 or C.lvol[LHL]>1:
+            raise NotImplementedError('one-moment NSSL volume configuration')
+    elif C.lvol[LS] > 1 or not (C.lvol[LH] > 1 and C.lvol[LHL] > 1):
         raise NotImplementedError("gs_part_b expects graupel+hail volume, no snow volume")
 
 
@@ -80,6 +85,7 @@ def gs_part_b(G, C, prec, dtp):
     """Run gs lines 16327-19695 on the gathered points in ``G``; returns a new dict."""
     _check_config(C)
     R = prec.R
+    one_moment = C.ipconc == 0
     G = dict(G)
 
     def r(x):
@@ -128,6 +134,10 @@ def gs_part_b(G, C, prec, dtp):
         + (alpha[LR] + 6.) * (alpha[LR] + 5.) * (alpha[LR] + 4.) * xv[LR] ** 2
         / ((alpha[LR] + 3.) * (alpha[LR] + 2.) * (alpha[LR] + 1.)))  # imurain == 1
     qracw = W(rwrad.astype(F64) > G["rh"], W(rwrad > rwradmn, q_big, q_small), zero)
+    if one_moment:
+        vt=r(C.ar)*xdia[(LC,1)]**r(C.br)*G['rhovt']
+        qracw=.25*pi*G['erw']*(qx[LC]-qcwresv)*cx[LR]*mx(0.,vtxbar[(LR,1)]-vt)*(gf3*xdia[(LR,2)]+2.*gf2*xdia[(LR,1)]*xdia[(LC,1)]+gf1*xdia[(LC,2)])
+        qracw=W(qx[LR]>r(1.e-7),qracw,zero)
     on_racw = (qx[LR] > qxmin[LR]) & (G["erw"] > 0.0)
     qracw = W(on_racw, mn(qracw, G["qcmxd"]), zero)
     out["qracw"] = qracw
@@ -137,9 +147,16 @@ def gs_part_b(G, C, prec, dtp):
     tmp = G["eri"] * aa2 * cx[LR] * cx[LI] * ((cinu + 2.) * xv[LI] / (cinu + 1.) + xv[LR])
     qraci = W(on, mn(qxmxd[LI], tmp * xmas[LI] * rhoinv), zero)
     craci = W(on, mn(cxmxd[LI], tmp), zero)
+    if one_moment:
+        qraci=W(on,mn(.25*pi*G['eri']*qx[LI]*cx[LR]*jnp.abs(vtxbar[(LR,1)]-vtxbar[(LI,1)])*(gf3*xdia[(LR,2)]+2.*gf2*xdia[(LR,1)]*xdia[(LI,1)]+gf1*xdia[(LI,2)]),G['qimxd']),zero)
+        craci=zero
     qraci = W(on & (temg > 268.15), zero, qraci)
     out["qraci"], out["craci"] = qraci, craci
     out["qracs"] = zero  # ipconc >= 3: the qracs (ipconc < 3) block is dead
+    if one_moment:
+        gf4,gf5,gf6=r(G['gf4']),r(G['gf5']),r(G['gf6'])
+        rate=(.25*pi/gf4)*G['ers']*qx[LS]*cx[LR]*jnp.abs(vtxbar[(LR,1)]-vtxbar[(LS,1)])*(gf6*gf1*xdia[(LS,2)]+2.*gf5*gf2*xdia[(LS,1)]*xdia[(LR,1)]+gf4*gf3*xdia[(LR,2)])
+        out['qracs']=W(G['ers']>0.,mn(rate,G['qsmxd']),zero)
 
     # ---------------------------------------------------------------- snow collects cloud (16507)
     # ipconc >= 4; lvol(ls) = 0 -> no snow rime volume (vsacw stays 0)
@@ -148,6 +165,11 @@ def gs_part_b(G, C, prec, dtp):
     out["qsacw"] = W(on, mn(qxmxd[LC], tmp * xmas[LC] * rhoinv), zero)
     out["csacw"] = W(on, mn(cxmxd[LC], tmp), zero)
     out["vsacw"] = zero
+    if one_moment:
+        rate=.25*pi*G['esw']*cx[LS]*qx[LC]*jnp.abs(vtxbar[(LS,1)]-vtxbar[(LC,1)])*(da0[LS]*xdia[(LS,3)]**2+dab1(LS,LC)*xdia[(LS,3)]*xdia[(LC,3)]+G['da1lc']*xdia[(LC,3)]**2)
+        rate=W(on,mn(rate,qxmxd[LS]),zero)  # Literal original16554 snow depletion bound.
+        out['qsacw']=rate
+        out['csacw']=W(on,rho0*rate/xmas[LC],zero)
 
     # ---------------------------------------------------------------- snow collects ice (16565)
     on = G["esi"] > 0.0  # ipelec = 0
@@ -155,12 +177,19 @@ def gs_part_b(G, C, prec, dtp):
     out["qsaci"] = W(on, mn(qxmxd[LI], G["esi"] * tmp * xmas[LI] * rhoinv), zero)
     out["csaci0"] = W(on, tmp, zero)
     out["csaci"] = W(on, mn(cxmxd[LI], G["esi"] * tmp), zero)
+    if one_moment:
+        rate=.25*pi*G['esi']*qx[LI]*cx[LS]*jnp.abs(vtxbar[(LS,1)]-vtxbar[(LI,1)])*(gf3*xdia[(LS,2)]+2.*gf2*xdia[(LS,1)]*xdia[(LI,1)]+gf1*xdia[(LI,2)])
+        out['qsaci']=W(on,mn(rate,G['qimxd']),zero)
+        out['csaci0']=out['csaci']=zero
 
     # ---------------------------------------------------------------- snow collects rain (16606)
     # ipconc >= 3: the IF(ipconc >= 3) branch is empty -> qsacr = qsacrs = csacr = 0
     out["qsacr"] = zero
     out["qsacrs"] = zero
     out["csacr"] = zero
+    if one_moment:
+        rate=(.25*pi/gf4)*G['esr']*qx[LR]*cx[LS]*jnp.abs(vtxbar[(LR,1)]-vtxbar[(LS,1)])*(gf6*gf1*xdia[(LR,2)]+2.*gf5*gf2*xdia[(LR,1)]*xdia[(LS,1)]+gf4*gf3*xdia[(LS,2)])
+        out['qsacr']=W(G['esr']>0.,mn(rate,G['qrmxd']),zero)
 
     # ---------------------------------------------------------------- graupel collects cloud (16646)
     vt = jnp.abs(vtxbar[(LH, 1)] - vtxbar[(LC, 1)])
@@ -169,6 +198,9 @@ def gs_part_b(G, C, prec, dtp):
         + G["dab1lh"][(LH, LC)] * xdia[(LH, 3)] * xdia[(LC, 3)]
         + G["da1lc"] * xdia[(LC, 3)] ** 2)
     qhacw = mn(qhacw, 0.5 * qx[LC] * dtpinv)
+    if one_moment:
+        rate=.25*pi*G['ehw']*(qx[LC]-qcwresv)*cx[LH]*jnp.abs(vtxbar[(LH,1)]-vtxbar[(LC,1)])*(gf3*xdia[(LH,2)]+2.*gf2*xdia[(LH,1)]*xdia[(LC,1)]+gf1*xdia[(LC,2)])
+        qhacw=mn(rate,.5*(qx[LC]-qcwresv)*dtpinv)
     on_hw = G["ehw"] > 0.0
     qhacw = W(on_hw, qhacw, zero)
     qhacwmlr = qhacw  # iqhacwshr = 1: qhacw kept for T > 0C
@@ -179,6 +211,9 @@ def gs_part_b(G, C, prec, dtp):
     rd = mn(mx(rimc3, rd), rimc4)
     rimdn[LH] = W(on_hw, W(cold, rd, r(1000.)), rimdn[LH])
     vhacw = W(on_hw, rho0 * qhacw / rimdn[LH], zero)
+    if one_moment and C.variant==21:
+        rimdn[LH]=G['rimdn'][LH]
+        vhacw=zero
     out["qhacw"], out["qhacwmlr"], out["vhacw"] = qhacw, qhacwmlr, vhacw
     out["vhsoak"] = zero
     out["zhacw"] = zero
@@ -192,6 +227,10 @@ def gs_part_b(G, C, prec, dtp):
     on = G["ehi"] > 0.0
     out["qhaci0"] = W(on, qhaci0, zero)
     out["qhaci"] = W(on, mn(G["ehi"] * qhaci0, G["qimxd"]), zero)
+    if one_moment:
+        rate=.25*pi*G['ehi']*G['ehiclsn']*qx[LI]*cx[LH]*jnp.abs(vtxbar[(LH,1)]-vtxbar[(LI,1)])*(gf3*xdia[(LH,2)]+2.*gf2*xdia[(LH,1)]*xdia[(LI,1)]+gf1*xdia[(LI,2)])
+        out['qhaci']=W(on,mn(rate,G['qimxd']),zero)
+        out['qhaci0']=zero
 
     # ---------------------------------------------------------------- graupel collects snow (16810)
     vt = vt_hl(LH, LS)
@@ -201,6 +240,10 @@ def gs_part_b(G, C, prec, dtp):
     on = G["ehs"] > 0.0
     out["qhacs0"] = W(on, qhacs0, zero)
     out["qhacs"] = W(on, mn(G["ehs"] * qhacs0, G["qsmxd"]), zero)
+    if one_moment:
+        rate=(.25*pi/gf4)*G['ehs']*G['ehsclsn']*qx[LS]*cx[LH]*jnp.abs(vtxbar[(LH,1)]-vtxbar[(LS,1)])*(gf6*gf1*xdia[(LS,2)]+2.*gf5*gf2*xdia[(LS,1)]*xdia[(LH,1)]+gf4*gf3*xdia[(LH,2)])
+        out['qhacs']=W(on,mn(rate,G['qsmxd']),zero)
+        out['qhacs0']=zero
 
     # ---------------------------------------------------------------- graupel collects rain (16839)
     raindn[LH] = W(temg > tfr, r(1000.0), raindn[LH])
@@ -210,6 +253,9 @@ def gs_part_b(G, C, prec, dtp):
         G["da0lh"] * xdia[(LH, 3)] ** 2 + G["dab1lh"][(LH, LR)] * xdia[(LH, 3)] * xdia[(LR, 3)]
         + G["da1lr"] * xdia[(LR, 3)] ** 2)
     qhacr = mn(qhacr, qxmxd[LR])
+    if one_moment:
+        rate=(.25*pi/gf4)*G['ehr']*qx[LR]*cx[LH]*jnp.abs(vtxbar[(LH,1)]-vtxbar[(LR,1)])*(gf6*gf1*xdia[(LR,2)]+2.*gf5*gf2*xdia[(LR,1)]*xdia[(LH,1)]+gf4*gf3*xdia[(LH,2)])
+        qhacr=mn(rate,G['qrmxd'])
     qhacrmlr = qhacr  # iqhacrmlr >= 1
     warm = temg > tfr  # iehr0c = 0
     chacr = 0.25 * pi * G["ehr"] * cx[LH] * cx[LR] * vt * (
@@ -223,6 +269,12 @@ def gs_part_b(G, C, prec, dtp):
     # on line 16935, which is dead) -- ported literally
     raindn[LH] = W(on, W(cold, mn(mx(rimc3, rimdn[LH]), rimc4), r(1000.)), raindn[LH])
     vhacr = W(on, rho0 * qhacr / raindn[LH], zero)
+    if one_moment:
+        qhacrmlr=W(on & warm,qhacrmlr,zero)
+        chacr=zero
+        if C.variant==21:
+            raindn[LH]=W(warm,r(1000.),G['raindn'][LH])
+            vhacr=zero
     out["qhacr"], out["qhacrmlr"], out["vhacr"], out["chacr"] = qhacr, qhacrmlr, vhacr, chacr
     out["zhacr"] = zero
 
@@ -243,6 +295,10 @@ def gs_part_b(G, C, prec, dtp):
     rd = mn(mx(mx(r(C.hldnmn), rimc3), rd), rimc4)  # Max(hldnmn, rimc3, rimdn) left to right
     rimdn[LHL] = W(on_hlw, W(cold, rd, r(1000.)), rimdn[LHL])
     vhlacw = W(on_hlw, rho0 * qhlacw / rimdn[LHL], zero)
+    if one_moment:
+        # Legacy19 has hail mass but no lvol(lhl); original17004 guard.
+        rimdn[LHL]=G['rimdn'][LHL]
+        vhlacw=zero
     out["qhlacw"], out["qhlacwmlr"], out["vhlacw"] = qhlacw, qhlacwmlr, vhlacw
     out["vhlsoak"] = zero
 
@@ -320,6 +376,11 @@ def gs_part_b(G, C, prec, dtp):
                      + gf4 * gf3 * xdia[(LI, 2)]), G["qrmxd"])
     qiacr = W(onA, qiacr, qiacr_sm)
     ciacr = W(onA, ciacr, zero)
+    if one_moment:
+        # Original17294 ELSE belongs to the outer iacr/eri/temperature IF;
+        # its true branch skips all ipconc>=3 work for one-moment.
+        qiacr=W(onA,zero,qiacr_sm)
+        ciacr=zero
     ciacrf = ciacr  # iacr == 2
     # nsplinter = 0 >= 0
     csplinter = r(float(C.nsplinter)) * ciacr
@@ -334,6 +395,8 @@ def gs_part_b(G, C, prec, dtp):
     qiacrf = (frach * qiacr.astype(F64)).astype(R)
     ciacrf = (frach * ciacrf.astype(F64)).astype(R)
     viacrf = rho0 * qiacrf / r(C.rhofrz)  # lvol(lh) > 1
+    if one_moment and C.variant==21:
+        viacrf=zero
     out.update(qiacr=qiacr, qiacrf=qiacrf, qiacrs=qiacrs, ciacrs=ciacrs, ciacr=ciacr, ciacrf=ciacrf,
                viacrf=viacrf, csplinter=csplinter, qsplinter=qsplinter, csplinter2=zero, qsplinter2=zero)
 
@@ -441,6 +504,22 @@ def gs_part_b(G, C, prec, dtp):
     out["crcnw"] = W(act, crcnw, zero)
     out["cautn"] = W(on, cautn, jnp.zeros_like(cautn))
     out["zrcnw"] = zero
+    if one_moment:
+        # Original17986 Berry/Ferrier autoconversion, ircnw=5.
+        if C.ircnw != 5:
+            raise NotImplementedError('one-moment NSSL ircnw must be original default5')
+        qcrit=(pi/6.)*(cx[LC]*r(C.cwdiap)**3)*xdn[LC]/rho0
+        qdiff=mx(qx[LC]-qcrit,0.)
+        on=(qdiff>0.) & (cx[LC]>1.)
+        arg=r(1.2e-4)+r(1.596e-12)*cx[LC]*r(1.e-3)/(r(C.cwdisp)*rho0*W(on,qdiff,1.))
+        rate=r(1.e-3)*rho0*qdiff**2/arg
+        out['qrcnw']=W(on,mn(qxmxd[LC],mx(rate,0.)),zero)
+        # Skipped number/reflectivity blocks retain compiler-defined zeros.
+        for key in ('crcnw','cautn','zrcnw','cracw','cracr','ec0','csacs','ciacw',
+                    'chacw','chaci','chaci0','chacs','chacs0','chlacw','chlaci',
+                    'chlaci0','chlacs','chlacs0','qhlaci','qhlaci0','qhlacs',
+                    'qhlacs0','qhlacr','qhlacrmlr','chlacr','vhlacr'):
+            out[key]=zero
 
     # ---------------------------------------------------------------- Bigg freezing of rain (18049)
     out.update(_bigg_rain(G, C, R, out, dtp, dtpinv, qxmin))
@@ -456,6 +535,12 @@ def gs_part_b(G, C, prec, dtp):
         out[k] = zero
     for k in ("qscnvi", "cscnvi", "cscnvis"):  # ipconc >= 4 with the .false. guard -> nothing
         out[k] = zero
+    if one_moment:
+        on=(temg<tfr) & (qx[LI]>qxmin[LI])
+        rate=mn(r(.001)*G['eii']*mx(qx[LI]-r(1.e-3),0.),qxmxd[LI])
+        out['qscnvi']=W(on,rate,zero)
+        out['cscnvi']=W(on,rate*rho0/xmas[LI],zero)
+        out['cscnvis']=r(.5)*out['cscnvi']
 
     # ---------------------------------------------------------------- ventilation (18748)
     out.update(_ventilation(G, C, R, qxmin, r))
@@ -520,6 +605,12 @@ def _bigg_rain(G, C, R, out, dtp, dtpinv, qxmin):
     res = {k: zero for k in ("qrfrz", "qrfrzs", "qrfrzf", "vrfrzf", "crfrz", "crfrzs", "crfrzf",
                              "zrfrz", "zrfrzs", "zrfrzf", "qwcnr")}
     on = (qx[LR] > qxmin[LR]) & (temcg < -5.)  # ibiggopt = 2 > 0
+    if C.ipconc == 0:
+        rate=mn(r(20.)*r(C.pi)**2*G['brz']*(G['xdn'][LR]/rho0)*cx[LR]*xdia[(LR,1)]**6*(jnp.exp(jnp.maximum(-G['arz']*temcg,0.))-1.),G['qrmxd'])
+        res['qrfrz']=res['qrfrzf']=W(on,rate,zero)
+        # Original18383 is nested inside ELSEIF(ipconc>=3), as confirmed
+        # by the original G2 boundary: one-moment vrfrzf remains zero.
+        return res
     volt = jnp.exp(16.2 + 1.0 * temcg) * 1.0e-6
     dbigg = jnp.power(6. / r(C.pi) * volt, r(1.) / r(3.))
     dig = on & (dbigg < 8.e-3)
@@ -580,6 +671,13 @@ def _bigg_droplets(G, C, R, dtpinv, qxmin):
     qx, cx, alpha, xv, xdia, temg, temcg = G["qx"], G["cx"], G["alpha"], G["xv"], G["xdia"], G["temg"], G["temcg"]
     rhoinv = G["rhoinv"]
     zero = jnp.zeros_like(temg)
+    if C.ipconc == 0:
+        on=(temg<268.15)&(qx[LC]>qxmin[LC])&(cx[LC]>r(C.cxmin))
+        rho0=G['rho0']
+        rate=(2.*G['brz']/(G['xdn'][LC]*cx[LC]))*(jnp.exp(jnp.maximum(-G['arz']*temcg,0.))-1.)*rho0*qx[LC]**2
+        qwfrz=W(on,jnp.minimum(jnp.maximum(rate,0.),G['qcmxd']),zero)
+        cwfrz=W(on,qwfrz*rho0/G['xmas'][LI],zero)
+        return dict(qwfrz=qwfrz,cwfrz=cwfrz,qwfrzc=qwfrz,cwfrzc=cwfrz,qwfrzp=zero,cwfrzp=zero)
     on = (temg < 268.15) & (qx[LC] > qxmin[LC]) & (cx[LC] > r(C.cxmin)) & (xdia[(LC, 3)] > 0.e-6)
     volt = jnp.exp(16.2 + 1.0 * temcg) * 1.0e-6
     xvs = W(on, xv[LC], 1.0)
@@ -621,8 +719,12 @@ def _contact_freezing(G, C, R, dtpinv, qxmin):
     ctfzth = fn1 * fn2 * fnft / rho0
     ctfzdi = fn1 * fn2 * r(C.rw) * temg / (G["felv"] * rho0)
     cwctfz = jnp.maximum(ctfzbd + ctfzth + ctfzdi, 0.)
-    cwctfz = jnp.minimum(cwctfz * dtpinv, G["ccmxd"])  # ipconc >= 2
-    qwctfz = xmas[LC] * cwctfz / rho0
+    if C.ipconc == 0:
+        qwctfz=G['cimasn']*cwctfz/(r(G['dtp'])*rho0)
+        qwctfz=jnp.minimum(jnp.maximum(qwctfz,0.),G['qcmxd'])
+    else:
+        cwctfz = jnp.minimum(cwctfz * dtpinv, G["ccmxd"])  # ipconc >= 2
+        qwctfz = xmas[LC] * cwctfz / rho0
     cwctfz = W(on, cwctfz, zero)
     qwctfz = W(on, qwctfz, zero)
     return dict(ccia=W(on, ccia, zero), cwctfz=cwctfz, qwctfz=qwctfz, cwctfzc=cwctfz, qwctfzc=qwctfz,
@@ -648,9 +750,20 @@ def _ventilation(G, C, R, qxmin, r):
     ar, br = r(C.ar), r(C.br)
     x = 1. + alpha[LR]
     rwvent = (0.78 * x + 0.308 * G["ventrxn"] * fvent * jnp.sqrt((ar * G["rhovt"])) * (xdia[(LR, 1)] ** ((1.0 + br) / 2.0)))
+    if C.ipconc == 0:
+        # Original18786 integer truncation of REAL gamma-table indices.
+        idx=int(C.R(100.)*C.R((C.R(5.)+C.R(C.br))/C.R(2.)))
+        ra=(r(.78).astype(F64)*jnp.asarray(C.gmoi[200],F64)).astype(R)
+        rb=(r(.308).astype(F64)*jnp.asarray(C.gmoi[idx],F64)).astype(R)
+        rwvent=ra+rb*fvent*jnp.sqrt(ar*G['rhovt'])*xdia[(LR,1)]**((1.+br)/2.)
     rwvent = W(qx[LR] > qxmin[LR], rwvent, zero)
     # snow: ipconc >= 4
     swvent = 0.65 + 0.44 * fvent * jnp.sqrt(vtxbar[(LS, 1)] * xdia[(LS, 1)])
+    if C.ipconc == 0:
+        idx=int(C.R(100.)*C.R((C.R(5.)+C.R(.42))/C.R(2.)))
+        sa=(r(.78).astype(F64)*jnp.asarray(C.gmoi[200],F64)).astype(R)
+        sb=(r(.308).astype(F64)*jnp.asarray(C.gmoi[idx],F64)).astype(R)
+        swvent=sa+sb*fvent*jnp.sqrt(r(G['cs'])*G['rhovt'])*xdia[(LS,1)]**((1.+r(G['ds']))/2.)
     swvent = W(qx[LS] > qxmin[LS], swvent, zero)
     # graupel / hail (Ferrier 1994 B.36 unless alpha == 0)
     gmoi = jnp.asarray(C.gmoi, F64)
@@ -755,6 +868,11 @@ def _melting(G, C, R, out, dtp, dtpinv, qxmin, r):
     chlmlrr = W(onl, W((xv[LHL] > 0.0) & (chlmlr < 0.0), cr, chlmlr), zero)
     res.update(qsmlr=qsmlr, qhmlr=qhmlr, qhlmlr=qhlmlr, chmlr=chmlr, chlmlr=chlmlr, cimlr=cimlr,
                csmlr=csmlr, csmlrr=csmlrr, chmlrr=chmlrr, chlmlrr=chlmlrr, vhsoak=vhsoak, vhlsoak=vhlsoak)
+    if C.ipconc == 0:
+        for key in ('chmlr','chlmlr','cimlr','csmlr','csmlrr','chmlrr','chlmlrr','vhlsoak'):
+            res[key]=zero
+        if C.variant==21:
+            res['vhsoak']=zero
     return res
 
 

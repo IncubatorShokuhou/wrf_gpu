@@ -1,7 +1,29 @@
 """CPU test for scripts/bench_summary.py on a synthetic harness receipt (no GPU)."""
 import importlib.util
 import json
+import os
 from pathlib import Path
+
+import pytest
+
+
+@pytest.fixture(autouse=True)
+def _shell_arm_telemetry_is_cpu_local(request, tmp_path, monkeypatch):
+    """Shell lifecycle unit tests must not query the shared GPU/host NVML."""
+    if not request.node.name.startswith("test_run_arm_"):
+        return
+    bindir = tmp_path / "bin"
+    bindir.mkdir()
+    smi = bindir / "nvidia-smi"
+    smi.write_text(
+        '#!/bin/sh\n'
+        'case "$*" in\n'
+        '  "--query-gpu=memory.free --format=csv,noheader,nounits") printf "32768\\n" ;;\n'
+        '  *) echo "unexpected GPU telemetry query: $*" >&2; exit 2 ;;\n'
+        'esac\n'
+    )
+    smi.chmod(0o755)
+    monkeypatch.setenv("PATH", str(bindir) + os.pathsep + os.environ["PATH"])
 
 SPEC = importlib.util.spec_from_file_location("bench_summary", Path(__file__).parents[1] / "scripts/bench_summary.py")
 bs = importlib.util.module_from_spec(SPEC)

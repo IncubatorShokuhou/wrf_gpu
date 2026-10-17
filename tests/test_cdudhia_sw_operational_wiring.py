@@ -189,14 +189,12 @@ def test_ra_sw1_rthraten_equals_dudhia_sw_plus_rrtmg_lw() -> None:
     assert np.max(np.abs(sw)) > 0.0  # SW is actually active at local noon
 
 
-def test_unwired_ra_sw_value_fails_closed() -> None:
+def test_unpaired_flg_ra_sw_value_fails_closed() -> None:
     grid = _grid()
-    # ra_sw=5 (new Goddard) is recognized but NOT scan-wired (no GPU radiation-slot
-    # adapter); ra_sw=2 (GSFC/Chou-Suarez) is now scan-wired, so it no longer
-    # belongs here.
-    nml = _namelist(grid, ra_sw_physics=5)  # (3 = CAM is scan-wired since v0.3.4)
-    with pytest.raises(UnsupportedSchemeSelection):
-        _resolve_operational_suite(nml)
+    # FLG is now experimental CPU-only, qualified only as a paired 7/7 suite.
+    # Its mixed 4/7 selection must still fail at namelist admission.
+    with pytest.raises(ValueError, match="requires paired ra_lw_physics=ra_sw_physics=7 or 99"):
+        _resolve_operational_suite(_namelist(grid, ra_sw_physics=7))
 
 
 def test_wired_ra_sw_values_resolve_ok() -> None:

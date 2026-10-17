@@ -1,0 +1,246 @@
+{
+  "platform": "cpu",
+  "mode": 1,
+  "load_s": 187.29696752503514,
+  "steps": [
+    {
+      "step": 1,
+      "wall_s": 708.9682001399342,
+      "nonfinite": 0,
+      "held_absmax": [
+        0.001379122314111862,
+        0.0009473814287432709,
+        0.002617569235900939,
+        4.662622970805327e-07
+      ],
+      "guards": null,
+      "scores": {
+        "U": {
+          "rmse": 0.005803013796554317,
+          "max_abs": 0.09458715674915835,
+          "frozen_limits": {
+            "gate": "hard_release_gate",
+            "kind": "column_staggered",
+            "units": "m s-1",
+            "rmse": 1.8,
+            "finite_pair_fraction_min": 1.0,
+            "rationale": "Predeclared operational limit for 3D zonal wind.",
+            "risk": "Stagger-aware shape equality is mandatory; do not crop or unstagger silently."
+          }
+        },
+        "V": {
+          "rmse": 0.0034804183285511024,
+          "max_abs": 0.10614450277232779,
+          "frozen_limits": {
+            "gate": "hard_release_gate",
+            "kind": "column_staggered",
+            "units": "m s-1",
+            "rmse": 1.8,
+            "finite_pair_fraction_min": 1.0,
+            "rationale": "Predeclared operational limit for 3D meridional wind.",
+            "risk": "KI-9 showed V drift much faster than U in old failed runs; a breach should remain a hard failure."
+          }
+        },
+        "W": {
+          "rmse": 0.006468222059036756,
+          "max_abs": 0.13988185698515387,
+          "frozen_limits": {
+            "gate": "hard_release_gate",
+            "kind": "column_staggered",
+            "units": "m s-1",
+            "rmse": 0.3,
+            "finite_pair_fraction_min": 1.0,
+            "rationale": "Predeclared operational limit for small-magnitude, noisy 3D vertical velocity.",
+            "risk": "Small RMSE can coexist with localized acoustic artifacts; inspect p99/max and vertical worst index."
+          }
+        },
+        "QVAPOR": {
+          "rmse": 4.2668393226417e-07,
+          "max_abs": 4.0190336769620714e-05,
+          "frozen_limits": {
+            "gate": "hard_release_gate",
+            "kind": "column_moisture",
+            "units": "kg kg-1",
+            "rmse": 0.001,
+            "finite_pair_fraction_min": 1.0,
+            "rationale": "Predeclared operational limit for 3D water-vapor mixing ratio.",
+            "risk": "Moisture can compensate in station metrics; require grid atlas inventory and hydrometeor report-only review."
+          }
+        },
+        "P": {
+          "rmse": 0.7863339380589555,
+          "max_abs": 23.304260340012434,
+          "frozen_limits": {
+            "gate": "critical_report_only",
+            "kind": "column_pressure",
+            "units": "Pa",
+            "report_only_reason": "Mandatory core inventory field, but no frozen v0.14 all-cell RMSE/max_abs envelope was found in the reviewed references."
+          }
+        },
+        "PH": {
+          "rmse": 0.06717885719011912,
+          "max_abs": 1.0027153686075962,
+          "frozen_limits": {
+            "gate": "critical_report_only",
+            "kind": "column_geopotential",
+            "units": "m2 s-2",
+            "report_only_reason": "Mandatory core inventory field, but no frozen v0.14 all-cell RMSE/max_abs envelope was found in the reviewed references."
+          }
+        },
+        "T": {
+          "rmse": 0.0013376166057616139,
+          "max_abs": 0.12335614129227679,
+          "frozen_limits": {
+            "gate": "hard_release_gate",
+            "kind": "column",
+            "units": "K",
+            "rmse": 1.5,
+            "finite_pair_fraction_min": 1.0,
+            "rationale": "Predeclared operational limit for 3D perturbation potential temperature, theta minus 300 K.",
+            "risk": "Temperature drift may be coupled to dynamics or physics; pooled pass is not a bitwise or operator-parity claim."
+          }
+        }
+      },
+      "held_rate_scores": {
+        "RUNDGDTEN": {
+          "rmse": 1.593940560969112e-05,
+          "max_abs": 0.0010263276053592563
+        },
+        "RVNDGDTEN": {
+          "rmse": 1.109219295147511e-05,
+          "max_abs": 0.0004456095048226416
+        },
+        "RTHNDGDTEN": {
+          "rmse": 6.455182125383637e-05,
+          "max_abs": 0.0023695093113929033
+        },
+        "RQVNDGDTEN": {
+          "rmse": 6.037188676204701e-09,
+          "max_abs": 2.90594613261419e-07
+        }
+      }
+    },
+    {
+      "step": 2,
+      "wall_s": 1.1098568530287594,
+      "nonfinite": 0,
+      "held_absmax": [
+        0.0013797370375117923,
+        0.00094722864468286,
+        0.0026175944806494243,
+        4.662662640568565e-07
+      ],
+      "guards": null,
+      "scores": {
+        "U": {
+          "rmse": 0.007969683677336395,
+          "max_abs": 0.10817969038073916,
+          "frozen_limits": {
+            "gate": "hard_release_gate",
+            "kind": "column_staggered",
+            "units": "m s-1",
+            "rmse": 1.8,
+            "finite_pair_fraction_min": 1.0,
+            "rationale": "Predeclared operational limit for 3D zonal wind.",
+            "risk": "Stagger-aware shape equality is mandatory; do not crop or unstagger silently."
+          }
+        },
+        "V": {
+          "rmse": 0.0047456061207629295,
+          "max_abs": 0.123712603730461,
+          "frozen_limits": {
+            "gate": "hard_release_gate",
+            "kind": "column_staggered",
+            "units": "m s-1",
+            "rmse": 1.8,
+            "finite_pair_fraction_min": 1.0,
+            "rationale": "Predeclared operational limit for 3D meridional wind.",
+            "risk": "KI-9 showed V drift much faster than U in old failed runs; a breach should remain a hard failure."
+          }
+        },
+        "W": {
+          "rmse": 0.006664189769503106,
+          "max_abs": 0.14629282060163146,
+          "frozen_limits": {
+            "gate": "hard_release_gate",
+            "kind": "column_staggered",
+            "units": "m s-1",
+            "rmse": 0.3,
+            "finite_pair_fraction_min": 1.0,
+            "rationale": "Predeclared operational limit for small-magnitude, noisy 3D vertical velocity.",
+            "risk": "Small RMSE can coexist with localized acoustic artifacts; inspect p99/max and vertical worst index."
+          }
+        },
+        "QVAPOR": {
+          "rmse": 5.806731226179687e-07,
+          "max_abs": 4.2673599010943294e-05,
+          "frozen_limits": {
+            "gate": "hard_release_gate",
+            "kind": "column_moisture",
+            "units": "kg kg-1",
+            "rmse": 0.001,
+            "finite_pair_fraction_min": 1.0,
+            "rationale": "Predeclared operational limit for 3D water-vapor mixing ratio.",
+            "risk": "Moisture can compensate in station metrics; require grid atlas inventory and hydrometeor report-only review."
+          }
+        },
+        "P": {
+          "rmse": 0.7669431605915246,
+          "max_abs": 14.121514283695888,
+          "frozen_limits": {
+            "gate": "critical_report_only",
+            "kind": "column_pressure",
+            "units": "Pa",
+            "report_only_reason": "Mandatory core inventory field, but no frozen v0.14 all-cell RMSE/max_abs envelope was found in the reviewed references."
+          }
+        },
+        "PH": {
+          "rmse": 0.12561536796238953,
+          "max_abs": 1.91514062020849,
+          "frozen_limits": {
+            "gate": "critical_report_only",
+            "kind": "column_geopotential",
+            "units": "m2 s-2",
+            "report_only_reason": "Mandatory core inventory field, but no frozen v0.14 all-cell RMSE/max_abs envelope was found in the reviewed references."
+          }
+        },
+        "T": {
+          "rmse": 0.0022479903975447966,
+          "max_abs": 0.15405296222809284,
+          "frozen_limits": {
+            "gate": "hard_release_gate",
+            "kind": "column",
+            "units": "K",
+            "rmse": 1.5,
+            "finite_pair_fraction_min": 1.0,
+            "rationale": "Predeclared operational limit for 3D perturbation potential temperature, theta minus 300 K.",
+            "risk": "Temperature drift may be coupled to dynamics or physics; pooled pass is not a bitwise or operator-parity claim."
+          }
+        }
+      },
+      "held_rate_scores": {
+        "RUNDGDTEN": {
+          "rmse": 1.5940726080456853e-05,
+          "max_abs": 0.0010261632269248366
+        },
+        "RVNDGDTEN": {
+          "rmse": 1.1092072441066876e-05,
+          "max_abs": 0.00044553831685334444
+        },
+        "RTHNDGDTEN": {
+          "rmse": 6.455660787748599e-05,
+          "max_abs": 0.0023700904566794634
+        },
+        "RQVNDGDTEN": {
+          "rmse": 6.037320758651137e-09,
+          "max_abs": 2.9059614803372824e-07
+        }
+      }
+    }
+  ],
+  "configuration": "SurfaceFddaOptions(guv=0.0003, gt=0.0003, gq=0.0003, interval_m=60, end_h=1, end_h_sfc=1, stepfg=3, fgdtzero=0, if_no_pbl_nudging_uv=0, if_no_pbl_nudging_t=0, if_no_pbl_nudging_q=0, if_zfac_uv=0, k_zfac_uv=0, if_zfac_t=0, k_zfac_t=0, if_zfac_q=0, k_zfac_q=0, if_ramping=0, dtramp_min=0.0, surface_code=1, interval_m_sfc=60, guv_sfc=0.0003, gt_sfc=0.0003, gq_sfc=0.0003, rinblw=100.0, dx_m=3000.0)",
+  "gpu_qualified": false,
+  "restart_exact_leaves": 184,
+  "wall_s": 1148.6096451841295,
+  "hard_field_failures": []
+}

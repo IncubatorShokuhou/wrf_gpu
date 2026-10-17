@@ -1,0 +1,66 @@
+{
+  "utc": "2026-10-15T08:46:35.917773+00:00",
+  "classification": "b: mocked committed initial carry bypassed real mandatory MYJSFC U10E/V10E seeding",
+  "before": {
+    "arm": "C161",
+    "passed": 105,
+    "failed": 2
+  },
+  "after": {
+    "arm": "C161b-CuPlus-MYJSFC-history-seed",
+    "passed": 2,
+    "failed": 0,
+    "skipped": 0,
+    "peak_rss_gib": 0.9850807189941406,
+    "swap_kib": 0
+  },
+  "source": {
+    "parent": "eecb6ad447faed76858b387f2402610191ccd20b",
+    "main": "53c0a96fb",
+    "candidate": "852defa03cc623be84fec7a8d61101ac364561bf",
+    "test_only_file": "tests/v040/cuplus/test_daily_lifecycle.py",
+    "all_original_assert_check_ASTs_unchanged": 16,
+    "production_seed_rule": "operational_mode.py:7886-7892; operational_state.py:277-284"
+  },
+  "change": "Mock seed uses real seed_history_diagnostics(state,myjsfc=True) for MYJSFC only; production initial-carry rule at operational_mode.py:7886-7892/operational_state.py:277-284 unchanged",
+  "all_original_assert_check_ASTs_unchanged": 16,
+  "performance": "test fixture only; required small history leaves in mocked carry, no product/kernel/arithmetic change; lifecycle/codec test, not physics validation",
+  "receipts": {
+    "C161": {
+      "command.json": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C161/command.json",
+        "sha256": "db8ab9ff46f983af5f2391b09a6a8579bc595a1bca4de0a00c5631a0958a9079"
+      },
+      "pytest.xml": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C161/pytest.xml",
+        "sha256": "5627ee487b69331a6af57b89bc2f133ba105af1320909d04f93fcd69b42c7127"
+      },
+      "result.json": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C161/result.json",
+        "sha256": "ad67ffb3ea5ea4b9e5366e8b07c6045dad4c4cbafad7d35a07a9408ae37c0182"
+      },
+      "memory_summary.json": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C161/memory_summary.json",
+        "sha256": "16bccf8b678764a8c0af734564f78fb21e8bd09d5c2f0c538d59d7b54b99dd0c"
+      }
+    },
+    "C161b-CuPlus-MYJSFC-history-seed": {
+      "command.json": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C161b-CuPlus-MYJSFC-history-seed/command.json",
+        "sha256": "ba5f7ccc02a8bab1cb4762ebcd3d75650b44e1687507949e1caa945984e977f1"
+      },
+      "pytest.xml": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C161b-CuPlus-MYJSFC-history-seed/pytest.xml",
+        "sha256": "f6730ba5a81ae1e240dc0263cafae02e8723b23ed9416d45af6c8288d7b7d037"
+      },
+      "result.json": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C161b-CuPlus-MYJSFC-history-seed/result.json",
+        "sha256": "bb43fe67f0c0296a1db491e36a11ab21f8dcf29efbf7e1f8333bfb05d8b4b87f"
+      },
+      "memory_summary.json": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/t-redsuite/RS03/C161b-CuPlus-MYJSFC-history-seed/memory_summary.json",
+        "sha256": "cd11853b1e9908904a69c81a6d68a73a74631daafb1c587b156edd1d1473920d"
+      }
+    }
+  }
+}

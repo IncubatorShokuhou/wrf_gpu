@@ -1,0 +1,58 @@
+{
+  "utc": "2026-10-15T04:34:57.148131+00:00",
+  "authority": "Manager2026-10-15T05:09:12Z supersedes6h-only decision",
+  "case": "c45",
+  "gate_hours": 6,
+  "expected_frames": 7,
+  "source": "<DATA_ROOT>/wrf_gpu2/scratch/v-prep/gpu17-tree",
+  "checkpoint_interval_steps": 200,
+  "arm_cap_s": 1770,
+  "cohort_cap_s": 1800,
+  "cache": "<DATA_ROOT>/wrf_gpu2/scratch/v-prep/arms/c45/six-hour/cache",
+  "cache_retention": "Explicit dependent checkpoint arms only; E41/PIN audit before final cleanup",
+  "cpu_reference": "Original25frame CPU receipt and entire manifest SHA verified before first7 selection",
+  "unchanged_D6_manifest_sha256": "9df4fab8514523286f07b127eb8bf57a7545459c4448fef721ac44c0ecc351dc",
+  "status": "QUEUED_GPU17_H01_FULL24_CAP_WITH_ACCEPTED6H_FALLBACK",
+  "GPU_minutes_estimate": [
+    60,
+    90
+  ],
+  "tools": {
+    "god5_segment_inside.sh": "f2467804e42d5fbf97246cee55264c6f1a22c4cd9c5a87c835b40cac6017ec42",
+    "score_with_handles.py": "3bfe46f14f974380737b0ba0f1efe77a590f1451faf62a8aa86563f2eaee0b21",
+    "score.py": "cb237ccb3a59d4221635200cbec5351e6e4798168e92917433603275011b4a69",
+    "god5_segment.py": "3bd40620047d0a393035f9c5186563555774763f6cf8ea21d72245df59c22538"
+  },
+  "scoring_tools": {
+    "score_with_handles.py": "3bfe46f14f974380737b0ba0f1efe77a590f1451faf62a8aa86563f2eaee0b21",
+    "score.py": "8dd394c5608b86022ca298ed105455e924f2ac88119c609ce823589e8a1d6004"
+  },
+  "six_hour_window_control": {
+    "utc": "2026-10-15T04:36:09.434972+00:00",
+    "domain": "d01",
+    "scope": "Frozen D6 with read-only handles reused; no model/tolerance change",
+    "scorer_sha256": "8dd394c5608b86022ca298ed105455e924f2ac88119c609ce823589e8a1d6004",
+    "manifest_sha256": "9df4fab8514523286f07b127eb8bf57a7545459c4448fef721ac44c0ecc351dc",
+    "verdict": "PASS",
+    "paired_frames": 7,
+    "bounded_misses": 0,
+    "nonfinite": 0,
+    "wall_s": 4.8468461070006015,
+    "handles": 14,
+    "all_handles_closed": true,
+    "cache": "256KiB NetCDF per-variable cache; per-domain handles closed",
+    "GPU_executed": false
+  },
+  "cancelled_old_source_cache": {
+    "utc": "2026-10-15T05:04:17.350471+00:00",
+    "deleted_exact_path": "<DATA_ROOT>/wrf_gpu2/scratch/v-prep/arms/c45/six-hour/cache",
+    "files": 1210,
+    "bytes": 505346776,
+    "sha_verified_before_cleanup": true,
+    "reason": "Reviewedt-godperf literalfix8741 nowMERGE; cancelunusedslow-source6h dependency. All actual originalc45PINs/proofs retained. Final6h changedsource usesfreshcache; no oldkey/meta reuse."
+  },
+  "next_cache": "Fresh valid normalcache on composednewsource only",
+  "attempt_hours": 24,
+  "accepted_fallback_hours": 6,
+  "checkpoint_note": "Standardfull24h arm within1770s. Ifincompletebutfirst7framesavailable, scoreexplicit6hwindow againstfulloriginalmanifest; retain24hINCOMPLETE. Preparedcheckpoint6htoolingonlyneededifless7frames."
+}

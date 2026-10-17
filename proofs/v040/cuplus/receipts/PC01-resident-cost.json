@@ -1,0 +1,45 @@
+{
+  "scope": "CPU artifact cost for the actual resident CuP caller, not GPU timing.",
+  "platform": "cpu",
+  "gpu_executed": false,
+  "source": "<DATA_ROOT>/wrf_gpu2/scratch/s2-cuplus/clean-archive",
+  "fixture_sha256": "9a0ec62aa23e7228fc2fd4c0e7d731759d75e82454249ebcfe7e288ad2fa3473",
+  "compile_s": 16.192289906088263,
+  "stable_f64_tokens": 48,
+  "optimized_f64_tokens": 0,
+  "timing": {
+    "fresh": {
+      "median_ms": 6.906999973580241,
+      "samples_ms": [
+        6.89136004075408,
+        6.909850984811783,
+        6.929181050509214,
+        6.906999973580241,
+        6.630259100347757
+      ]
+    },
+    "held": {
+      "median_ms": 0.44443318620324135,
+      "samples_ms": [
+        0.8529960177838802,
+        0.5335640162229538,
+        0.44443318620324135,
+        0.4285129252821207,
+        0.43553300201892853
+      ]
+    }
+  },
+  "memory": {
+    "argument_size_in_bytes": 5224,
+    "output_size_in_bytes": 3384,
+    "temp_size_in_bytes": 72464,
+    "alias_size_in_bytes": 0
+  },
+  "source_sha256": {
+    "src/gpuwrf/kernels/phys_cuplus_driver.py": "8ca0fa1e3aabe9cf51e2251eb316558471ecbcd299fb69d3958f119daed85303",
+    "src/gpuwrf/kernels/phys_kfcup_column.py": "64fc2fd3db17345c71f00b86f54634a34b1fc5d60b0f6db1f21e632e62529db9",
+    "src/gpuwrf/kernels/phys_kfcup_cps.py": "80d18aa4bcf2b2aa812931efe466bf910b63a01f3f8b2110f3756aeef2bcb661"
+  },
+  "execution": "one per-column Pallas program; resident NCA skips fresh solve inside program; CPU interpretation only",
+  "caveats": "No GPU launch count, STACK, VRAM or GPU speed claim. Compile includes interpreted CPU control flow."
+}

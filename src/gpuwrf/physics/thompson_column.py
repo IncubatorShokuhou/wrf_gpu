@@ -520,7 +520,7 @@ def _clamp_rain_number(qr, Nr, rho):
     return number.astype(jnp.float32) if _native_real_enabled() else number
 
 
-def _rain_distribution(qr, Nr, rho):
+def _rain_distribution(qr, Nr, rho, *, hail_mode=None):
     """Encapsulates WRF rain slope/intercept equations from lines 2210-2215.
 
     ``Nr`` is the WRF working rain number, mvd-clamped to [D0r*0.75, 2.5 mm] so the
@@ -529,6 +529,30 @@ def _rain_distribution(qr, Nr, rho):
     this helper, so the clamp is applied consistently with WRF.
     """
 
+    if hail_mode is not None:
+        # Original :1877-1903 / :3236-3255 retain working nr in volume
+        # units. Do not divide/re-multiply it through a per-kg clamp.
+        f = np.float32
+        active = qr > f(R1)
+        rr = jnp.where(active, qr*rho, f(R1))
+        nr = jnp.where(active, jnp.maximum(f(R2), Nr*rho), f(R2))
+        factor = f(3.) + f(.672)
+        if hail_mode == "entry":
+            missing_lam = (factor / f(1.e-3)).astype(jnp.float64)
+            missing_nr = (f(CRG2)*f(ORG3)*rr*missing_lam**f(3.)/f(_am_r())).astype(jnp.float32)
+            nr = jnp.where(active & (nr <= f(R2)), missing_nr, nr)
+        lamr = ((f(_am_r())*f(CRG3)*f(ORG2)*nr/rr)**f(OBMR)).astype(jnp.float64)
+        mvd = (factor/lamr).astype(jnp.float32)
+        clipped = jnp.minimum(f(2.5e-3), jnp.maximum(f(D0R)*f(.75), mvd))
+        edge_lam = (factor/clipped).astype(jnp.float64)
+        edge_nr = (f(CRG2)*f(ORG3)*rr*edge_lam**f(3.)/f(_am_r())).astype(jnp.float32)
+        nr = jnp.where(active & (clipped != mvd), edge_nr, nr)
+        # Original :2145-2150 recomputes slopes from the bounded nr.
+        lamr = ((f(_am_r())*f(CRG3)*f(ORG2)*nr/rr)**f(OBMR)).astype(jnp.float64)
+        ilamr = f(1.)/lamr
+        mvd = (factor/lamr).astype(jnp.float32)
+        n0_r = (nr*f(ORG2)).astype(jnp.float64)*lamr**f(CRE2)
+        return rr, nr, lamr, ilamr, mvd, n0_r, active
     Nr = _clamp_rain_number(qr, Nr, rho)
     rr = jnp.maximum(qr * rho, R1)
     nr = jnp.maximum(Nr * rho, R2)
@@ -559,13 +583,17 @@ def _cloud_distribution(qc, rho):
     return rc, lamc, xdc, mvd_c, qc > R1
 
 
-def _ice_distribution(qi, Ni, rho):
+def _ice_distribution(qi, Ni, rho, *, wrf_hail=False):
     """Encapsulates WRF cloud-ice particle diameter terms from lines 2711-2715."""
 
     ri = jnp.maximum(qi * rho, R1)
     ni = jnp.maximum(Ni * rho, R2)
     lami_missing = CIE2 / 5.0e-6
+    if wrf_hail:
+        lami_missing = jnp.asarray(lami_missing, jnp.float64)
     ni_missing = jnp.minimum(999.0e3, OIG2 * ri / _am_i() * _dpow(lami_missing, 3.0))
+    if wrf_hail:
+        ni_missing = ni_missing.astype(jnp.float32)
     ni = jnp.where((qi > R1) & (ni <= R2), ni_missing, ni)
     lami = (_am_i() * 6.0 * OIG1 * ni / ri) ** OBMI
     if _native_real_enabled():
@@ -574,9 +602,18 @@ def _ice_distribution(qi, Ni, rho):
     if _native_real_enabled():
         xdi_raw = xdi_raw.astype(jnp.float32)
     lami_small = CIE2 / 5.0e-6
+    if wrf_hail:
+        lami_small = jnp.asarray(lami_small, jnp.float64)
     ni_small = jnp.minimum(999.0e3, OIG2 * ri / _am_i() * _dpow(lami_small, 3.0))
     lami_large = CIE2 / 300.0e-6
+    if wrf_hail:
+        lami_large = jnp.asarray(lami_large, jnp.float64)
     ni_large = OIG2 * ri / _am_i() * _dpow(lami_large, 3.0)
+    if wrf_hail:
+        # Original :1855-1871: REAL division -> DOUBLE lami/power ->
+        # REAL ni. Both assignment sites matter to the next source rates.
+        ni_small = ni_small.astype(jnp.float32)
+        ni_large = ni_large.astype(jnp.float32)
     ni = jnp.where((qi > R1) & (xdi_raw < 5.0e-6), ni_small, ni)
     ni = jnp.where((qi > R1) & (xdi_raw > 300.0e-6), ni_large, ni)
     lami = (_am_i() * 6.0 * OIG1 * ni / ri) ** OBMI
@@ -685,7 +722,7 @@ def _take_qrfz(table, idx_r, idx_r1, idx_tc):
     return jnp.take(jnp.ravel(table), base[..., None] + offsets)
 
 
-def _snow_moment(order, smo2, tempc, tables: ThompsonTableBundle):
+def _snow_moment(order, smo2, tempc, tables: ThompsonTableBundle, *, wrf_hail=False):
     """Evaluates the Field et al. snow-moment polynomial used by WRF."""
 
     if _native_real_enabled():
@@ -718,15 +755,29 @@ def _snow_moment(order, smo2, tempc, tables: ThompsonTableBundle):
         + sb[8] * tc2 * tempc
         + sb[9] * order2 * order
     )
+    if wrf_hail:
+        # Original :2028-2126 accumulates coefficient-first REAL products.
+        # Factoring tc2/order2 changes those rounding points.
+        loga = (sa[0] + sa[1]*tempc + sa[2]*order + sa[3]*tempc*order
+                + sa[4]*tempc*tempc + sa[5]*order*order
+                + sa[6]*tempc*tempc*order + sa[7]*tempc*order*order
+                + sa[8]*tempc*tempc*tempc + sa[9]*order*order*order)
+        b = (sb[0] + sb[1]*tempc + sb[2]*order + sb[3]*tempc*order
+             + sb[4]*tempc*tempc + sb[5]*order*order
+             + sb[6]*tempc*tempc*order + sb[7]*tempc*order*order
+             + sb[8]*tempc*tempc*tempc + sb[9]*order*order*order)
     return 10.0**loga * smo2**b
 
 
-def _snow_moments(qs, rho, tempc, tables: ThompsonTableBundle = THOMPSON_TABLES):
+def _snow_moments(qs, rho, tempc, tables: ThompsonTableBundle = THOMPSON_TABLES, *, wrf_hail=False):
     """Provides WRF snow moment inputs from module_mp_thompson.F.pre:2093-2191."""
 
     rs = jnp.maximum(qs * rho, R1)
     tc0 = jnp.minimum(-0.1, tempc)
     smob = rs / AM_S
+    if wrf_hail:
+        rs = jnp.where(qs > R1, qs*rho, np.float32(R1))
+        smob = rs * (np.float32(1.) / np.float32(AM_S))
     smo2 = smob
     smo0 = _snow_moment(0.0, smo2, tc0, tables)
     smo1 = _snow_moment(1.0, smo2, tc0, tables)
@@ -734,7 +785,14 @@ def _snow_moments(qs, rho, tempc, tables: ThompsonTableBundle = THOMPSON_TABLES)
     smoc = _snow_moment(order_c, smo2, tc0, tables)
     order_f = tables.cse[15].astype(smo2.dtype) if _native_real_enabled() else tables.cse[15]
     smof = _snow_moment(order_f, smo2, tc0, tables)
+    if wrf_hail:
+        smo0 = _snow_moment(0.0, smo2, tc0, tables, wrf_hail=True)
+        smo1 = _snow_moment(1.0, smo2, tc0, tables, wrf_hail=True)
+        smoc = _snow_moment(order_c, smo2, tc0, tables, wrf_hail=True)
+        smof = _snow_moment(order_f, smo2, tc0, tables, wrf_hail=True)
     xds = jnp.where(qs > R1, smoc / jnp.maximum(smob, R1), 0.0)
+    if wrf_hail:
+        xds = jnp.where(qs > R1, smoc/smob, 0.0)
     c_snow = C_SQRD + (tempc + 1.5) * (C_CUBE - C_SQRD) / (-30.0 + 1.5)
     c_snow = jnp.maximum(C_SQRD, jnp.minimum(c_snow, C_CUBE))
     return rs, xds, smo0, smo1, smof, c_snow, qs > R1
@@ -2118,7 +2176,7 @@ def _fill_down(vt, active):
 
 
 def _fall_speeds(state: ThompsonColumnState, vts_boost=None, *, fill_down=None,
-                 tables=THOMPSON_TABLES):
+                 tables=THOMPSON_TABLES, working=None):
     """Mass/number terminal fall speeds per species (m/s), WRF formulas.
 
     Rain:    module_mp_thompson.F:3616-3628 (vtrk mass, vtnrk number).
@@ -2133,14 +2191,14 @@ def _fall_speeds(state: ThompsonColumnState, vts_boost=None, *, fill_down=None,
 
     fill = _fill_down if fill_down is None else fill_down
     rho = state.rho
-    rhof = _rho_correction(rho)
+    rhof = _rho_correction(rho) if working is None else working["rhof"]
 
-    act_r = state.qr > R1
-    rr = jnp.maximum(state.qr * rho, R1)
+    act_r = state.qr > R1 if working is None else working["rr"] > R1
+    rr = jnp.maximum(state.qr * rho, R1) if working is None else working["rr"]
     # WRF computes the rain fall speeds from the mvd-clamped working number
     # ``nr(k)`` rebuilt at module_mp_thompson.F:3240-3250, NOT from the raw
     # prognostic Nr; the same clamp the rate-stage slopes use (_rain_distribution).
-    nr = jnp.maximum(_clamp_rain_number(state.qr, state.Nr, rho) * rho, R2)
+    nr = jnp.maximum(_clamp_rain_number(state.qr, state.Nr, rho) * rho, R2) if working is None else working["nr"]
     lamr = (_am_r() * CRG3 * ORG2 * nr / rr) ** OBMR
     if _native_real_enabled():
         lamr = lamr.astype(jnp.float64)
@@ -2149,13 +2207,13 @@ def _fall_speeds(state: ThompsonColumnState, vts_boost=None, *, fill_down=None,
     vt_r_mass = fill(jnp.where(act_r, vt_r_mass, 0.0), act_r)
     vt_r_num = fill(jnp.where(act_r, vt_r_num, 0.0), act_r)
 
-    act_i = state.qi > R1
-    ri = jnp.maximum(state.qi * rho, R1)
+    act_i = state.qi > R1 if working is None else working["ri"] > R1
+    ri = jnp.maximum(state.qi * rho, R1) if working is None else working["ri"]
     # WRF forms the ice fall speeds from the SIZE-BALANCED working number
     # ``ni(k)`` built at module_mp_thompson.F:3226-3234 out of the tendencies
     # that line 3033-3055 already re-balanced into the 5-300 um band -- NOT from
     # the raw prognostic Ni.  Same working-number discipline as rain above.
-    ni = jnp.maximum(_balance_ice_number(state.qi, state.Ni, rho) * rho, R2)
+    ni = jnp.maximum(_balance_ice_number(state.qi, state.Ni, rho) * rho, R2) if working is None else working["ni"]
     # cig(2) = Gamma(bm_i+mu_i+1) = Gamma(4) = 6 (WRF module_mp_thompson.F:695).
     lami = (_am_i() * 6.0 * OIG1 * ni / ri) ** OBMI
     if _native_real_enabled():
@@ -2166,9 +2224,12 @@ def _fall_speeds(state: ThompsonColumnState, vts_boost=None, *, fill_down=None,
     vt_i_mass = fill(jnp.where(act_i, vt_i_mass, 0.0), act_i)
     vt_i_num = fill(jnp.where(act_i, vt_i_num, 0.0), act_i)
 
-    act_s = state.qs > R1
+    act_s = state.qs > R1 if working is None else working["rs"] > R1
     tempc = state.T - 273.15
-    _rs2, xds, _smo0, _smo1, _smof, _csnow, _act_s = _snow_moments(state.qs, rho, tempc, tables)
+    if working is None:
+        _rs2, xds, _smo0, _smo1, _smof, _csnow, _act_s = _snow_moments(state.qs, rho, tempc, tables)
+    else:
+        _rs2, xds, _smo0, _smo1, _smof, _csnow, _act_s = working["snow_moments"]
     vts_raw = _snow_terminal_velocity_wrf(rhof, xds, act_s)
     if vts_boost is not None and _mixed_phase_wrf_enabled():
         vts_raw = _wrf_snow_speed(vts_raw, vts_boost, _rs2, rr, vt_r_mass)
@@ -2411,7 +2472,8 @@ def _cloud_sed_rho_stages(rho_pre_cond, qr_pre_cond, state):
     return rho_pre_cond, jnp.where(any_l_qr, rho_o, rho_pre_cond), rho_o
 
 
-def _sedimentation(state: ThompsonColumnState, dt: float, vts_boost=None, cloud_sed_on=None, cloud_rho=None):
+def _sedimentation(state: ThompsonColumnState, dt: float, vts_boost=None, cloud_sed_on=None, cloud_rho=None,
+                   return_radar_context=False):
     """Faithful WRF sedimentation of rain/ice/snow/graupel + cloud water; precip mm.
 
     WRF module_mp_thompson.F:3784-3939.  Advects the four precipitating channels
@@ -2442,6 +2504,9 @@ def _sedimentation(state: ThompsonColumnState, dt: float, vts_boost=None, cloud_
         # affect the four fall-speed channels. Its P0 gates/density stages stay
         # in the retained helper; the column kernel also performs final finish.
         qc, cloudw = _sed_cloud_water(state, dt, cloud_sed_on, cloud_rho)
+        if return_radar_context:
+            out, precip, ng = sediment_and_finish(state.replace(qc=qc), dt, vts_boost, return_radar_context=True)
+            return out, {**precip, "cloudw": cloudw}, ng
         out, precip = sediment_and_finish(state.replace(qc=qc), dt, vts_boost)
         return out, {**precip, "cloudw": cloudw}
 
@@ -2519,7 +2584,8 @@ def _debug_checks(state: ThompsonColumnState, debug: bool) -> ThompsonColumnStat
     return state.replace(qv=qv, qc=qc, qr=qr, qi=qi, qs=qs, qg=qg, Ni=Ni, Nr=Nr, T=T, p=p, rho=rho)
 
 
-def _thompson_source_sink_body(state: ThompsonColumnState, dt: float, debug: bool, *, sediment: bool, raw_vapor=False):
+def _thompson_source_sink_body(state: ThompsonColumnState, dt: float, debug: bool, *, sediment: bool, raw_vapor=False,
+                              return_radar_context=False):
     """Shared Thompson column body; optionally runs sedimentation.
 
     WRF order (module_mp_thompson.F): stage rates/tendencies (2157-3247),
@@ -2544,6 +2610,8 @@ def _thompson_source_sink_body(state: ThompsonColumnState, dt: float, debug: boo
         if _implicit_sed_nsub():
             raise ValueError("full column kernel implements WRF explicit sedimentation")
         from gpuwrf.kernels.phys_thompson_full import full_column
+        if return_radar_context:
+            return full_column(state, dt, return_radar_context=True)
         return full_column(state, dt)
 
     work = _work_dtype()
@@ -2622,11 +2690,18 @@ def _thompson_source_sink_body(state: ThompsonColumnState, dt: float, debug: boo
     state = _real_state(state)
     if sediment:
         cloud_rho = _cloud_sed_rho_stages(rho_pre_cond, qr_pre_cond, state)   # WRF density stages (K5, D2)
-        state, precip = _sedimentation(state, dt, vts_boost=vts_boost, cloud_sed_on=cloud_sed_on, cloud_rho=cloud_rho)
+        if return_radar_context and _sed_prep_fused_enabled():
+            state, precip, radar_ng = _sedimentation(state, dt, vts_boost=vts_boost, cloud_sed_on=cloud_sed_on,
+                                                      cloud_rho=cloud_rho, return_radar_context=True)
+        else:
+            state, precip = _sedimentation(state, dt, vts_boost=vts_boost, cloud_sed_on=cloud_sed_on, cloud_rho=cloud_rho)
     else:
         zero = jnp.zeros(state.qv.shape[:-1], dtype=state.qv.dtype)
         precip = {"rain": zero, "snow": zero, "graupel": zero, "ice": zero}
     if not (sediment and _sed_prep_fused_enabled()):
+        if return_radar_context:
+            from gpuwrf.diagnostics.thompson_radar import final_graupel_number
+            radar_ng = final_graupel_number(state.qg, state.Ng, state.rho)
         state = _instant_melt_freeze(state, dt)
         state = _real_state(state)
         state = _finish(state)
@@ -2642,6 +2717,8 @@ def _thompson_source_sink_body(state: ThompsonColumnState, dt: float, debug: boo
     # keep it fp64 regardless of work dtype so the per-step sum does not lose a
     # digit before it reaches the fp64-locked rain/snow/graupel/ice accumulators.
     precip = {k: jnp.asarray(v).astype(jnp.float64) for k, v in precip.items()}
+    if return_radar_context:
+        return _debug_checks(state, debug), precip, (state.qv, radar_ng)
     return _debug_checks(state, debug), precip
 
 
@@ -2664,7 +2741,7 @@ def step_thompson_column(state: ThompsonColumnState, dt: float, *, debug: bool =
     return _step_thompson_column_impl(state, dt, debug)
 
 
-def _step_thompson_column_full_impl(state: ThompsonColumnState, dt: float, debug: bool):
+def _step_thompson_column_full_impl(state: ThompsonColumnState, dt: float, debug: bool, return_radar_context=False):
     """Full WRF mp_gt_driver column body including sedimentation + precip."""
 
     if os.environ.get("GPUWRF_THOMPSON_COLUMN_LAYOUT", "0") == "1":
@@ -2673,14 +2750,18 @@ def _step_thompson_column_full_impl(state: ThompsonColumnState, dt: float, debug
         shape = state.qv.shape
         flat = state.replace(**{key: jnp.reshape(getattr(state, key), (-1, shape[-1]))
                                 for key in ThompsonColumnState.__slots__})
-        out, precip = _thompson_source_sink_body(flat, dt, debug, sediment=True)
+        result = _thompson_source_sink_body(flat, dt, debug, sediment=True, return_radar_context=return_radar_context)
+        out, precip = result[:2]
         out = out.replace(**{key: jnp.reshape(getattr(out, key), shape)
                              for key in ThompsonColumnState.__slots__})
-        return out, {key: jnp.reshape(value, shape[:-1]) for key, value in precip.items()}
-    return _thompson_source_sink_body(state, dt, debug, sediment=True)
+        ppt = {key: jnp.reshape(value, shape[:-1]) for key, value in precip.items()}
+        if return_radar_context:
+            return out, ppt, tuple(jnp.reshape(value, shape) for value in result[2])
+        return out, ppt
+    return _thompson_source_sink_body(state, dt, debug, sediment=True, return_radar_context=return_radar_context)
 
 
-def _maybe_tiled_thompson_full(state: ThompsonColumnState, dt: float, debug: bool):
+def _maybe_tiled_thompson_full(state: ThompsonColumnState, dt: float, debug: bool, return_radar_context=False):
     """Runs the full Thompson step over fixed-size leading-column tiles.
 
     The production column view (`_thompson_column_from_state`) is laid out
@@ -2716,7 +2797,7 @@ def _maybe_tiled_thompson_full(state: ThompsonColumnState, dt: float, debug: boo
         and ncol > _MP_COLUMN_TILE_COLS
     )
     if not tiling_active:
-        return _step_thompson_column_full_impl(state, dt, debug)
+        return _step_thompson_column_full_impl(state, dt, debug, return_radar_context)
 
     # Flatten the leading horizontal axes of every per-column leaf to a single
     # column axis so the generic column tiler can scan over fixed-size tiles;
@@ -2736,7 +2817,7 @@ def _maybe_tiled_thompson_full(state: ThompsonColumnState, dt: float, debug: boo
 
     flat_state = jax.tree_util.tree_map(_flatten_leaf, state)
     tiled = column_tiling.tiled_column_apply(
-        lambda tile: _step_thompson_column_full_impl(tile, dt, debug),
+        lambda tile: _step_thompson_column_full_impl(tile, dt, debug, return_radar_context),
         flat_state,
         ncol=ncol,
         tile_cols=int(_MP_COLUMN_TILE_COLS),
@@ -2744,8 +2825,9 @@ def _maybe_tiled_thompson_full(state: ThompsonColumnState, dt: float, debug: boo
     return jax.tree_util.tree_map(_restore_leaf, tiled)
 
 
-@partial(jax.jit, static_argnames=("dt", "debug"))
-def step_thompson_column_with_precip(state: ThompsonColumnState, dt: float, *, debug: bool = False):
+@partial(jax.jit, static_argnames=("dt", "debug", "return_radar_context"))
+def step_thompson_column_with_precip(state: ThompsonColumnState, dt: float, *, debug: bool = False,
+                                    return_radar_context=False):
     """Advances one full Thompson column step; returns ``(State, precip-dict-mm)``.
 
     This is the operational coupling entry: it runs the source/sink processes
@@ -2755,7 +2837,7 @@ def step_thompson_column_with_precip(state: ThompsonColumnState, dt: float, *, d
     value-identical; see :func:`_maybe_tiled_thompson_full`).
     """
 
-    return _maybe_tiled_thompson_full(state, dt, debug)
+    return _maybe_tiled_thompson_full(state, dt, debug, return_radar_context)
 
 
 # ---------------------------------------------------------------------------
@@ -2867,7 +2949,7 @@ def _wrf_subl_prefactor(state, ssati, diffu, tcond, qvsi):
     return t1_subl, rvs
 
 
-def _wrf_warm_rain_rates(state, dt, tables, odts):
+def _wrf_warm_rain_rates(state, dt, tables, odts, *, wrf_hail=False):
     """prr_wau/pnr_wau/prr_rcw/pnr_rcr (:2157-2207) from the entry column; prr_rcw = MIN(rc*odts, .) (:2205)."""
     rc, lamc, xdc, mvd_c, active_cloud = _cloud_distribution(state.qc, state.rho)
     rr, nr, lamr, _ilamr, mvd_r, n0_r, active_rain = _rain_distribution(state.qr, state.Nr, state.rho)
@@ -2878,6 +2960,17 @@ def _wrf_warm_rain_rates(state, dt, tables, odts):
     zeta = 0.027 * rc * (0.5 * (zeta1_raw + jnp.abs(zeta1_raw)))
     taud_raw = 0.5 * dc_b - 7.5
     tau = 3.72 / jnp.maximum(rc * (0.5 * (taud_raw + jnp.abs(taud_raw)) + R1), R1)
+    if wrf_hail:
+        # Original :2181-2192 keeps each coefficient-first REAL product
+        # and places R1 inside taud, before multiplication by rc.
+        active_auto = (rc > 0.01e-3) & active_cloud
+        dc_inner = xdc*xdc*xdc*dc_g*dc_g*dc_g - xdc*xdc*xdc*xdc*xdc*xdc
+        dc_b = jnp.where(active_auto, dc_inner, 0.) ** (np.float32(1.) / np.float32(6.))
+        zeta1_raw = 6.25e-6*xdc*dc_b*dc_b*dc_b - 0.4
+        zeta = 0.027*rc*(0.5*(zeta1_raw+jnp.abs(zeta1_raw)))
+        taud_raw = 0.5*dc_b-7.5
+        taud = 0.5*(taud_raw+jnp.abs(taud_raw)) + np.float32(R1)
+        tau = 3.72/(rc*taud)
     prr_wau = jnp.where((rc > 0.01e-3) & active_cloud, jnp.minimum(rc * odts, zeta / tau), 0.0).astype(jnp.float64)
     pnr_wau = prr_wau / _wrf("PNR_WAU_DEN", AM_R * NU_C_MP8 * 10.0 * D0R**3)
     idx_r_eff = jnp.clip(jnp.floor(N_EFRW_R * jnp.log(jnp.maximum(mvd_r, DR_FIRST) / DR_FIRST)
@@ -2958,7 +3051,8 @@ def _wrf_mixed_phase_activity(state):
     return l_qc | l_qr, ice | (cold & (l_qc | l_qr)) | nuc
 
 
-def _wrf_mixed_phase_sources(state, dt, tables, cold_tables, *, warm_rates=True, cold_rates=True, vapor=None):
+def _wrf_mixed_phase_sources(state, dt, tables, cold_tables, *, warm_rates=True, cold_rates=True, vapor=None,
+                             hail_context=None):
     """WRF single-pass source stage on the entry column; returns (state, prr_gml > 0 proxy, vts_boost).
 
     warm_rates/cold_rates=False (EARLY_EXIT kernel branches, see _wrf_mixed_phase_activity) skip rate families that
@@ -2991,8 +3085,13 @@ def _wrf_mixed_phase_sources(state, dt, tables, cold_tables, *, warm_rates=True,
     warm = ~cold
 
     if warm_rates or cold_rates:
-        rc, _lamc, _xdc, mvd_c, l_qc = _cloud_distribution(state.qc, rho)
+        if hail_context is None:
+            rc, _lamc, _xdc, mvd_c, l_qc = _cloud_distribution(state.qc, rho)
+        else:
+            rc, _lamc, _xdc, mvd_c, l_qc = hail_context.cloud
         rr, nr, lamr, _ilamr, mvd_r, n0_r, active_rain = _rain_distribution(state.qr, state.Nr, rho)
+        if hail_context is not None:
+            rr, nr, lamr, _ilamr, mvd_r, n0_r, active_rain = hail_context.rain
     else:  # dry column: rc/rr only reach the limiters, masked by l_qc/l_qr (both False)
         rc, l_qc, rr = jnp.maximum(state.qc * rho, R1), state.qc > R1, jnp.maximum(state.qr * rho, R1)
     l_qr = state.qr > R1
@@ -3001,24 +3100,46 @@ def _wrf_mixed_phase_sources(state, dt, tables, cold_tables, *, warm_rates=True,
 
     # ---- warm rain (:2157-2207) ----
     if warm_rates:
-        prr_wau, pnr_wau, prr_rcw, pnr_rcr = _wrf_warm_rain_rates(state, dt, tables, odts)
+        if hail_context is None:
+            prr_wau, pnr_wau, prr_rcw, pnr_rcr = _wrf_warm_rain_rates(state, dt, tables, odts)
+        else:
+            prr_wau, pnr_wau, prr_rcw, pnr_rcr = hail_context.warm_rates(state, dt, tables, odts)
     else:  # no cloud/rain > R1 in the column: every warm rate is exactly 0 (EARLY_EXIT kernel branch)
         prr_wau = pnr_wau = prr_rcw = zero64
         pnr_rcr = jnp.zeros_like(temp)
 
     if cold_rates:
-        ri, ni, _lami, ilami, xdi, xmi, l_qi = _ice_distribution(state.qi, state.Ni, rho)
+        if hail_context is None:
+            ri, ni, _lami, ilami, xdi, xmi, l_qi = _ice_distribution(state.qi, state.Ni, rho)
+        else:
+            ri, ni, _lami, ilami, xdi, xmi, l_qi = _ice_distribution(state.qi, state.Ni, rho, wrf_hail=True)
         rs, xds, smo0, smo1, smof, c_snow, l_qs = _snow_moments(state.qs, rho, tempc, tables)
-        rg, ng, lamg, ilamg, n0_g, l_qg = _graupel_distribution(state.qg, state.Ng, rho)
+        if hail_context is not None:
+            rs, xds, smo0, smo1, smof, c_snow, l_qs = _snow_moments(state.qs, rho, tempc, tables, wrf_hail=True)
+        if hail_context is None:
+            rg, ng, lamg, ilamg, n0_g, l_qg = _graupel_distribution(state.qg, state.Ng, rho)
+        else:
+            rg, ng, lamg, ilamg, n0_g, l_qg = hail_context.graupel_distribution()
         # twet only enters snow/graupel processes (riming Ef_gw, rcs/rcg branch, melt, :2946 re-balance), all gated by
         # L_qs/L_qg: the Newton solve runs only there (WRF solves every subsaturated k <= k_melting; same values used).
         twet = _wrf_twet(temp, p, qv, qvs, _wrf_melting_band(tempc) & (l_qs | l_qg))
         smoe = _snow_moment(tables.cse[12], jnp.maximum(state.qs * rho, R1) / AM_S, jnp.minimum(-0.1, tempc), tables)
-        _av_g, _bv_g, cgg63, t1_qg_qc, cge9, t2_subl_qg, t2_melt_qg, cge11 = _graupel_constants()
+        if hail_context is not None:
+            smoe = _snow_moment(tables.cse[12], rs * (np.float32(1.) / np.float32(AM_S)),
+                               jnp.minimum(-0.1, tempc), tables, wrf_hail=True)
+        if hail_context is None:
+            _av_g, _bv_g, cgg63, t1_qg_qc, cge9, t2_subl_qg, t2_melt_qg, cge11 = _graupel_constants()
+        else:
+            ctx = hail_context
+            _av_g, _bv_g, cgg63 = ctx.av, ctx.bv, ctx.cgg6 * np.float32(1. / 6.)
+            t1_qg_qc, cge9, t2_subl_qg, t2_melt_qg, cge11 = ctx.t1_qg_qc, ctx.cge9, ctx.t2_subl, ctx.t2_melt, ctx.cge11
 
         # ---- rain-snow / rain-graupel (:2484-2547) ----
-        prr_rcs, prs_rcs, prg_rcs, pnr_rcs, png_rcs, prr_rcg, prg_rcg, pnr_rcg, png_rcg = (
-            _wrf_rain_snow_graupel_rates(state, dt, cold_tables, twet, odts))
+        if hail_context is None:
+            prr_rcs, prs_rcs, prg_rcs, pnr_rcs, png_rcs, prr_rcg, prg_rcg, pnr_rcg, png_rcg = (
+                _wrf_rain_snow_graupel_rates(state, dt, cold_tables, twet, odts))
+        else:
+            prr_rcs, prs_rcs, prg_rcs, pnr_rcs, png_rcs, prr_rcg, prg_rcg, pnr_rcg, png_rcg = hail_context.rain_collection(state, dt, twet, odts)
 
         # ---- riming: snow / graupel collecting cloud water, all temperatures (:2403-2440) ----
         xds_pos = NBS_EFSW * jnp.log(jnp.maximum(xds, DS_FIRST) / DS_FIRST) / math.log(DS_LAST / DS_FIRST)
@@ -3028,12 +3149,21 @@ def _wrf_mixed_phase_sources(state, dt, tables, cold_tables, *, warm_rates=True,
         scw_gate = l_qs & l_qc & (mvd_c > D0C) & (xds > D0S)
         prs_scw = jnp.where(scw_gate, jnp.minimum(rc * odts, rhof * _wrf("T1_QS_QC", T1_QS_QC) * ef_sw * rc * smoe), 0.0).astype(f64)
         xdg = (4.0 * ilamg).astype(jnp.float32)
-        vtg = (_times_cgg63(rhof * _av_g, cgg63) * ilamg**_bv_g).astype(jnp.float32)
+        if hail_context is None:
+            vtg = (_times_cgg63(rhof * _av_g, cgg63) * ilamg**_bv_g).astype(jnp.float32)
+        else:
+            vtg = (rhof * _av_g * hail_context.cgg6 * np.float32(1. / 6.) * ilamg**_bv_g).astype(jnp.float32)
         stoke_g = mvd_c * mvd_c * vtg * RHO_W_RIME / (9.0 * jnp.maximum(visco, R1) * jnp.maximum(xdg, R1))
         ef_gw = jnp.where(stoke_g >= 0.4, jnp.where(stoke_g > 10.0, 0.77, 0.55 * jnp.log10(jnp.maximum(2.51 * stoke_g, R1))), 0.0)
         ef_gw = jnp.where(twet > T_0, ef_gw * 0.1, ef_gw)                                    # :2431 twet
         gcw_gate = l_qg & (rg >= 1.0e-6) & l_qc & (mvd_c > D0C)
         prg_gcw = jnp.where(gcw_gate, rhof * t1_qg_qc * ef_gw * rc * n0_g * ilamg**cge9, 0.0)
+        if hail_context is not None:
+            nc = hail_context.nc
+            pnc_scw = jnp.where(scw_gate, jnp.minimum((nc * odts).astype(f64),
+                (rhof * _wrf("T1_QS_QC", T1_QS_QC) * ef_sw * nc * smoe).astype(f64)), 0.)
+            pnc_gcw = jnp.where(gcw_gate, jnp.minimum((nc * odts).astype(f64),
+                rhof * t1_qg_qc * ef_gw * nc * n0_g * ilamg**cge9), 0.)
 
         # ---- cold block (:2554-2780) ----
         rate_max64 = rate_max.astype(f64)
@@ -3058,6 +3188,9 @@ def _wrf_mixed_phase_sources(state, dt, tables, cold_tables, *, warm_rates=True,
         pni_inu = (0.5 * (xnc - xni + jnp.abs(xnc - xni)) * odts).astype(f64)
         pri_inu = jnp.where(nuc, jnp.minimum(rate_max64, XM0I * pni_inu), 0.0)
         pni_inu = jnp.where(nuc, pri_inu / XM0I, 0.0)
+        if hail_context is not None:
+            pri_rfz, prg_rfz, pni_rfz, pnr_rfz, pri_wfz, pni_wfz, pri_inu, pni_inu, pri_iha, pni_iha = hail_context.freezing(
+                state, dt, rc, rr, nr, ni, smo0, qvs, qvsi, ssatw, ssati, rate_max, idx_r, idx_r1, idx_tc)
 
         t1_subl, rvs = _wrf_subl_prefactor(state, ssati, diffu, tcond, qvsi)
         oxmi = 1.0 / xmi
@@ -3135,6 +3268,24 @@ def _wrf_mixed_phase_sources(state, dt, tables, cold_tables, *, warm_rates=True,
         prg_gde_w = jnp.maximum((-rg * odts).astype(f64), gde_base)
         prg_gde = jnp.where(cold, prg_gde_c, jnp.where(gde_w, prg_gde_w, 0.0))
         png_gde = jnp.where(cold, png_gde_c, jnp.where(gde_w, prg_gde_w * ng / rg, 0.0))
+        if hail_context is not None:
+            # WRF computes these DOUBLE volume/number legs before the mass
+            # limiters. Only the gde/ihm contribution uses post-limiter mass.
+            rho_i = np.float32(890.)
+            rime_ri_g = jnp.clip(-np.float32(1.) * (mvd_c * np.float32(.5e6)) * vtg / jnp.minimum(np.float32(-.1), tempc), np.float32(.1), np.float32(10.))
+            rime_density_g = (np.float32(.051) + np.float32(.114) * rime_ri_g - np.float32(.0055) * rime_ri_g * rime_ri_g) * np.float32(1000.)
+            pbg_gcw = jnp.where(twet < T_0, prg_gcw / rime_density_g, 0.)
+            pbg_scw = jnp.where(riming_dom & (rime_dens >= 150.), prg_scw / (np.float32(.5) * (rime_dens + jnp.clip(np.float32(.13) / xds, np.float32(50.), np.float32(790.)))), 0.)
+            pbg_rcg = prg_rcg / jnp.where(twet < T_0, rho_i, hail_context.density)
+            melt_fraction = jnp.maximum(np.float32(.05), jnp.minimum(prr_gml * dtf / rg, np.float64(1.))).astype(jnp.float32)
+            pbg_gml = prr_gml / jnp.maximum(jnp.minimum(melt_fraction * hail_context.density, np.float32(1000.)), np.float32(50.))
+            volume_rates = (pbg_scw, prg_rfz / rho_i, pbg_gcw, prg_rci / rho_i, prg_rcs / rho_i, pbg_rcg, zero64, pbg_gml)
+            aerosol_rates = hail_context.aerosol_tendencies(
+                state, dt, rc=rc, rr=rr, lamr=lamr, mvd_r=mvd_r, n0_r=n0_r, mvd_c=mvd_c,
+                rg=rg, ilamg=ilamg, n0_g=n0_g, rs=rs, xds=xds, smoe=smoe, rhof=rhof, visco=visco,
+                prr_wau=prr_wau, prr_rcw=prr_rcw, prs_scw=prs_scw, prg_gcw=prg_gcw,
+                pni_wfz=pni_wfz, pni_inu=pni_inu, pni_iha=pni_iha,
+                pnc_scw=pnc_scw, pnc_gcw=pnc_gcw)
     else:  # no ice/snow/graupel > R1, no cold cloud/rain, no nucleation (_wrf_mixed_phase_activity): all 0, twet = T
         ri, l_qi = jnp.maximum(state.qi * rho, R1), state.qi > R1
         rs, l_qs = jnp.maximum(state.qs * rho, R1), state.qs > R1
@@ -3146,6 +3297,16 @@ def _wrf_mixed_phase_sources(state, dt, tables, cold_tables, *, warm_rates=True,
         prg_rfz = prg_scw = pri_ide = pri_ihm = pri_inu = pri_rci = pri_rfz = pri_wfz = zero64
         prr_gml = prr_rcg = prr_rci = prr_rcs = prr_sml = prs_iau = prs_ide = prs_ihm = zero64
         prs_rcs = prs_sci = prs_scw = prs_sde = zero64
+        if hail_context is not None:
+            pri_iha = pni_iha = zero64
+            volume_rates = (zero64,) * 8
+            # Warm-only/dry mp38 still has warm rain/cloud aerosol sinks.
+            aerosol_rates = hail_context.aerosol_tendencies(
+                state, dt, rc=rc, rr=rr, lamr=lamr, mvd_r=mvd_r, n0_r=n0_r, mvd_c=mvd_c,
+                rg=jnp.maximum(state.qg * rho, R1), ilamg=hail_context.g.ilamg, n0_g=hail_context.g.n0g,
+                rs=jnp.maximum(state.qs * rho, R1), xds=jnp.ones_like(temp), smoe=jnp.zeros_like(temp), rhof=rhof, visco=visco,
+                prr_wau=prr_wau, prr_rcw=prr_rcw, prs_scw=zero64, prg_gcw=zero64,
+                pni_wfz=zero64, pni_inu=zero64, pni_iha=zero64, pnc_scw=zero64, pnc_gcw=zero64)
     if dtf > 120.0:                                                                       # :2840-2844, warm block
         prr_rcw = jnp.where(warm, prr_rcw + prs_scw + prg_gcw, prr_rcw)
         prs_scw, prg_gcw = jnp.where(warm, 0.0, prs_scw), jnp.where(warm, 0.0, prg_gcw)
@@ -3153,9 +3314,13 @@ def _wrf_mixed_phase_sources(state, dt, tables, cold_tables, *, warm_rates=True,
     # ---- conservation limiters (:2853-2955; REAL sump/ratio) ----
     real = jnp.float32
     sump = (pri_inu + pri_ide + prs_ide + prs_sde + prg_gde).astype(real)
+    if hail_context is not None:
+        sump = (pri_inu + pri_ide + prs_ide + prs_sde + prg_gde + pri_iha).astype(real)
     lim = ((sump > EPS) & (sump > rate_max)) | ((sump < -EPS) & (sump < rate_max))
     ratio = rate_max / jnp.where(lim, sump, 1.0)
     pri_inu, pri_ide, pni_ide, prs_ide, prs_sde, prg_gde = _wrf_scale(lim, ratio, pri_inu, pri_ide, pni_ide, prs_ide, prs_sde, prg_gde)
+    if hail_context is not None:
+        pri_iha = jnp.where(lim, pri_iha * ratio, pri_iha)
     sump = (-prr_wau - pri_wfz - prr_rcw - prs_scw - prg_scw - prg_gcw).astype(real)
     lim = (sump < -rc * odts) & l_qc
     ratio = -rc * odts / jnp.where(lim, sump, 1.0)
@@ -3198,6 +3363,18 @@ def _wrf_mixed_phase_sources(state, dt, tables, cold_tables, *, warm_rates=True,
     qsten = ten(prs_iau + prs_sde + prs_sci + prs_scw + prs_rcs + prs_ide - prs_ihm - prr_sml)
     qgten = ten(prg_scw + prg_rfz + prg_gde + prg_rcg + prg_gcw + prg_rci + prg_rcs - prg_ihm - prr_gml)
     ngten = ten(png_scw + pnr_rfz - png_rcg + pnr_rci + png_rcs + png_gde - pnr_gml)
+    if hail_context is not None:
+        # These additions are inside WRF's same source/tendency pass; the
+        # extra ice is not sent through the rates a second time.
+        qvten = ten(-pri_inu - pri_iha - pri_ide - prs_ide - prs_sde - prg_gde)
+        qiten = ten(pri_inu + pri_iha + pri_ihm + pri_wfz + pri_rfz + pri_ide - prs_iau - prs_sci - pri_rci)
+        niten = ten(pni_inu + pni_iha + pni_ihm + pni_wfz + pni_rfz + pni_ide - pni_iau - pni_sci - pni_rci)
+        ncten, nwfaten, nifaten = aerosol_rates
+        from gpuwrf.physics.thompson_hail import volume_tendency
+        qbten = volume_tendency(pbg_scw=volume_rates[0], pbg_rfz=volume_rates[1], pbg_gcw=volume_rates[2],
+            pbg_rci=volume_rates[3], pbg_rcs=volume_rates[4], pbg_rcg=volume_rates[5],
+            pbg_sml=volume_rates[6], pbg_gml=volume_rates[7], prg_gde=prg_gde, prg_ihm=prg_ihm,
+            index=hail_context.g.index, rho=rho)
     ni1d, nr1d, ng1d = state.Ni, state.Nr, state.Ng          # input per-kg numbers (mp8 ng1d: entry diagnostic)
 
     if cold_rates:
@@ -3207,6 +3384,14 @@ def _wrf_mixed_phase_sources(state, dt, tables, cold_tables, *, warm_rates=True,
         xdi_t = ((3.0 + 0.0 + 1.0) * (1.0 / lami)).astype(real)                          # REAL xDi
         ni_small = jnp.minimum(999.0e3, OIG2 * xri / _am_i() * _dpow(CIE2 / 5.0e-6, 3.0))
         ni_large = OIG2 * xri / _am_i() * _dpow(CIE2 / 300.0e-6, 3.0)
+        if hail_context is not None:
+            # Original :3043-3048 assigns the REAL edge division to DOUBLE
+            # lami, then the DOUBLE number reconstruction to REAL xni before
+            # subtracting the original number in the REAL tendency update.
+            small_edge = jnp.asarray(CIE2 / np.float32(5.e-6), f64)
+            large_edge = jnp.asarray(CIE2 / np.float32(300.e-6), f64)
+            ni_small = jnp.minimum(jnp.asarray(999.e3, f64), OIG2 * xri / _am_i() * _dpow(small_edge, 3.)).astype(real)
+            ni_large = (OIG2 * xri / _am_i() * _dpow(large_edge, 3.)).astype(real)
         niten = jnp.where(xri > R1, jnp.where(xdi_t < 5.0e-6, ((ni_small - ni1d * rho) * odts * orho).astype(real),
                           jnp.where(xdi_t > 300.0e-6, ((ni_large - ni1d * rho) * odts * orho).astype(real), niten)),
                           -ni1d * odts)
@@ -3230,9 +3415,10 @@ def _wrf_mixed_phase_sources(state, dt, tables, cold_tables, *, warm_rates=True,
     if cold_rates:
         xrg = jnp.maximum(R1, (state.qg + qgten * dtf) * rho)                                # :3074-3129
         xng = jnp.maximum(R2, (ng1d + ngten * dtf) * rho)
-        mvd_t = ((3.0 + 0.672) / ((AM_G_MP8 * CRG3 * ORG2 * xng / xrg) ** OBMG).astype(f64)).astype(real)
+        amg_work = AM_G_MP8 if hail_context is None else hail_context.amg
+        mvd_t = ((3.0 + 0.672) / ((amg_work * CRG3 * ORG2 * xng / xrg) ** OBMG).astype(f64)).astype(real)
         mvd_c_g = jnp.minimum(25.4e-3, jnp.maximum(D0R, mvd_t))
-        xng_c = (ORG3 * xrg * _dpow(((3.0 + 0.672) / mvd_c_g).astype(f64), 3.0) / AM_G_MP8).astype(real)
+        xng_c = (ORG3 * xrg * _dpow(((3.0 + 0.672) / mvd_c_g).astype(f64), 3.0) / amg_work).astype(real)
         ngten = jnp.where(xrg > R1, jnp.where(mvd_c_g != mvd_t, ((xng_c - ng1d * rho) * odts * orho).astype(real), ngten),
                           -ng1d * odts)
         qgten = jnp.where(xrg > R1, qgten, -state.qg * odts)
@@ -3245,7 +3431,16 @@ def _wrf_mixed_phase_sources(state, dt, tables, cold_tables, *, warm_rates=True,
         (LSUB * ocp * (pri_inu + pri_ide + prs_ide + prs_sde + prg_gde)
          + lfus2 * ocp * (pri_wfz + pri_rfz + prg_rfz + prs_scw + prg_scw + prg_gcw + prg_rcs + prs_rcs + prr_rci + prg_rcg)) * orho,
         (LFUS * ocp * (-prr_sml - prr_gml - prr_rcg - prr_rcs) + LSUB * ocp * (prs_sde + prg_gde)) * orho).astype(real)
+    if hail_context is not None:
+        tten = jnp.where(cold,
+            (LSUB * ocp * (pri_inu + pri_ide + prs_ide + prs_sde + prg_gde + pri_iha)
+             + lfus2 * ocp * (pri_wfz + pri_rfz + prg_rfz + prs_scw + prg_scw + prg_gcw + prg_rcs + prs_rcs + prr_rci + prg_rcg)) * orho,
+            (LFUS * ocp * (-prr_sml - prr_gml - prr_rcg - prr_rcs) + LSUB * ocp * (prs_sde + prg_gde)) * orho).astype(real)
 
+    if hail_context is not None:
+        # WRF :3192 reconstructs from raw qv1d. Rates above use working qv;
+        # preclipping the prognostic baseline loses subfloor/negative vapor.
+        qv = hail_context.raw_qv
     new_t = temp + dtf * tten
     new_qv = jnp.maximum(1.0e-10, qv + dtf * qvten)
     if vapor is not None:
@@ -3257,6 +3452,18 @@ def _wrf_mixed_phase_sources(state, dt, tables, cold_tables, *, warm_rates=True,
         qv=new_qv, qc=state.qc + qcten * dtf, qr=state.qr + qrten * dtf, qi=state.qi + qiten * dtf,
         qs=state.qs + qsten * dtf, qg=state.qg + qgten * dtf, Ni=ni1d + niten * dtf, Nr=nr1d + nrten * dtf,
         Ng=ng1d + ngten * dtf, T=new_t, rho=density_from_pressure_temperature(p, new_t, new_qv))
+    if hail_context is not None:
+        out = out.replace(Nc=state.Nc + ncten * dtf, nwfa=state.nwfa + nwfaten * dtf,
+                          nifa=state.nifa + nifaten * dtf,
+                          qvolg=jnp.where(xrg > R1, hail_context.g.qvolg + qbten * dtf, 0.))
+        out, ncten = hail_context.balance_cloud_number(out, rc, rho, ncten, dt)
+        qbten = jnp.where(xrg > R1, qbten, -hail_context.g.qvolg * odts).astype(real)
+        # Carry the same raw qv1d through saturation, evaporation and the
+        # final :3974 writeback, not only this first source reconstruction.
+        hail_context.baseline = state.replace(qv=hail_context.raw_qv, qvolg=hail_context.g.qvolg)
+        hail_context.tendencies = dict(qv=qvten, qc=qcten, qr=qrten, qi=qiten, qs=qsten,
+            qg=qgten, Ni=niten, Nr=nrten, Ng=ngten, T=tten, Nc=ncten,
+            nwfa=nwfaten, nifa=nifaten, qvolg=qbten)
     # Melting snow (prr_sml > 0) falls at the snow/rain blend instead of vts*vts_boost (:3721-3726); the sign
     # carries that to _fall_speeds (vts_boost >= 1 everywhere else).
     vts_boost = jnp.where(prr_sml > 0.0, -1.0, vts_boost).astype(jnp.float32)

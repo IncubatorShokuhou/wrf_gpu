@@ -1,0 +1,218 @@
+{
+  "schema": "mp28-emission-E199-delta-v1",
+  "parent_packet_sha256": "caf2ddc29fe2c01ad34132811482f33dd6a2742280b6c5c488bee39c818dc4e7",
+  "same_critic": "rv-t-writer-mp28",
+  "FIX_verdict_sha256": "f1d76367687b11b7d872e7ee4f8a866c74bb32b89c534ccafb852d8b9a02bcaf",
+  "registered_gate": "Six original L3b production and six fp64 PASS at unchanged bounds, actual held-input consumption/preservation; realseeddeletion1ASSERT0ERROR; originalstartupCPUgate retained",
+  "results": {
+    "l3b": [
+      {
+        "column": "A1_kept",
+        "state_dtype": "production",
+        "verdict": "PASS",
+        "port_nwfa2d": 53290.4140625,
+        "port_nifa2d": 0.0,
+        "emission_source": "frozen original-driver held inputs; consumption/preservation checked"
+      },
+      {
+        "column": "A1_kept",
+        "state_dtype": "fp64",
+        "verdict": "PASS",
+        "port_nwfa2d": 53290.4140625,
+        "port_nifa2d": 0.0,
+        "emission_source": "frozen original-driver held inputs; consumption/preservation checked"
+      },
+      {
+        "column": "A2_full_evap",
+        "state_dtype": "production",
+        "verdict": "PASS",
+        "port_nwfa2d": 53290.4140625,
+        "port_nifa2d": 0.0,
+        "emission_source": "frozen original-driver held inputs; consumption/preservation checked"
+      },
+      {
+        "column": "A2_full_evap",
+        "state_dtype": "fp64",
+        "verdict": "PASS",
+        "port_nwfa2d": 53290.4140625,
+        "port_nifa2d": 0.0,
+        "emission_source": "frozen original-driver held inputs; consumption/preservation checked"
+      },
+      {
+        "column": "A3_mixed",
+        "state_dtype": "production",
+        "verdict": "PASS",
+        "port_nwfa2d": 53290.4140625,
+        "port_nifa2d": 0.0,
+        "emission_source": "frozen original-driver held inputs; consumption/preservation checked"
+      },
+      {
+        "column": "A3_mixed",
+        "state_dtype": "fp64",
+        "verdict": "PASS",
+        "port_nwfa2d": 53290.4140625,
+        "port_nifa2d": 0.0,
+        "emission_source": "frozen original-driver held inputs; consumption/preservation checked"
+      },
+      {
+        "column": "A5_band_w",
+        "state_dtype": "production",
+        "verdict": "PASS",
+        "port_nwfa2d": 53290.4140625,
+        "port_nifa2d": 0.0,
+        "emission_source": "frozen original-driver held inputs; consumption/preservation checked"
+      },
+      {
+        "column": "A5_band_w",
+        "state_dtype": "fp64",
+        "verdict": "PASS",
+        "port_nwfa2d": 53290.4140625,
+        "port_nifa2d": 0.0,
+        "emission_source": "frozen original-driver held inputs; consumption/preservation checked"
+      },
+      {
+        "column": "A6a_k6b_rh090",
+        "state_dtype": "production",
+        "verdict": "PASS",
+        "port_nwfa2d": 53290.4140625,
+        "port_nifa2d": 0.0,
+        "emission_source": "frozen original-driver held inputs; consumption/preservation checked"
+      },
+      {
+        "column": "A6a_k6b_rh090",
+        "state_dtype": "fp64",
+        "verdict": "PASS",
+        "port_nwfa2d": 53290.4140625,
+        "port_nifa2d": 0.0,
+        "emission_source": "frozen original-driver held inputs; consumption/preservation checked"
+      },
+      {
+        "column": "A6b_k6b_rh095",
+        "state_dtype": "production",
+        "verdict": "PASS",
+        "port_nwfa2d": 53290.4140625,
+        "port_nifa2d": 0.0,
+        "emission_source": "frozen original-driver held inputs; consumption/preservation checked"
+      },
+      {
+        "column": "A6b_k6b_rh095",
+        "state_dtype": "fp64",
+        "verdict": "PASS",
+        "port_nwfa2d": 53290.4140625,
+        "port_nifa2d": 0.0,
+        "emission_source": "frozen original-driver held inputs; consumption/preservation checked"
+      }
+    ],
+    "fp64_healthy": {
+      "source": "83b855d21d7656e8b8917cdf6ac4a4535b4909b8",
+      "kind": "healthy_retry",
+      "rc": 0,
+      "wall_s": 9.434385865999502,
+      "command": [
+        "<USER_HOME>/miniconda3/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "-p",
+        "no:cacheprovider",
+        "--basetemp",
+        "<USER_HOME>/wrf_gpu2_lanes/t-writer/pytest/TWE09-healthy_retry",
+        "--junitxml",
+        "<USER_HOME>/wrf_gpu2_lanes/t-writer/TWE09/healthy_retry.xml",
+        "tests/v025/b_thompson/test_frozen_emission_threading.py"
+      ],
+      "cache": "NONE; GPUWRF_JAX_CACHE=0",
+      "scope": "CPU6GSwap0 officialRAMslot; no GPU",
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "genuine_assertion": false
+    },
+    "threading_mutant": {
+      "source": "83b855d21d7656e8b8917cdf6ac4a4535b4909b8",
+      "kind": "mutant",
+      "rc": 1,
+      "wall_s": 6.632495173998905,
+      "command": [
+        "<USER_HOME>/miniconda3/bin/python",
+        "-m",
+        "pytest",
+        "-p",
+        "delete_l3b_held_inputs",
+        "-q",
+        "-p",
+        "no:cacheprovider",
+        "--basetemp",
+        "<USER_HOME>/wrf_gpu2_lanes/t-writer/pytest/TWE09-mutant",
+        "--junitxml",
+        "<USER_HOME>/wrf_gpu2_lanes/t-writer/TWE09/mutant.xml",
+        "tests/v025/b_thompson/test_frozen_emission_threading.py"
+      ],
+      "cache": "NONE; GPUWRF_JAX_CACHE=0",
+      "scope": "CPU6GSwap0 officialRAMslot; no GPU",
+      "tests": 1,
+      "failures": 1,
+      "errors": 0,
+      "skipped": 0,
+      "genuine_assertion": true
+    },
+    "frozen_files_BYTE": 20,
+    "l3b_wall_s": 200.44434496999747,
+    "l3b_peak_rss_kib": 3440604,
+    "fp64_peak_rss_kib": 2541760,
+    "mutant_peak_rss_kib": 2522908
+  },
+  "failed_harness_receipts": [
+    "TWE07-l3b inheritedfp64radiussetup refusal afterA1productionPASS",
+    "TWE09-healthy missingpytestparent beforemodel; retryonlyafterparentcreation"
+  ],
+  "source_reuse": "E199_SOURCE_REUSE.json; all numerical column code/input/decision AST unchanged by final two observerdowncast removals; selectedproductrepair/kernel/frame0proof unchanged from reviewedcc5",
+  "resource_scope": "One ownCPUjob at a time, officialRAMslot6GSwap0, cores12,13,28,29nice19, JAXcpu/QUIET/timeout; nocache/noGPU. Test caller change adds no product runtime/storage.",
+  "open_limits": [
+    "Old defective GPUemission not relabelledPASS",
+    "Affected fullGPU/E41/performance pending",
+    "Separate3Daerosol massgeometry issue remains disclosed/unfixed",
+    "QNBCA/TAOD5502D uncomputed"
+  ],
+  "raw_receipts": {
+    "<USER_HOME>/wrf_gpu2_lanes/t-writer/TWE08/l3b/A1_kept_production.json": "848bb74e31fd37d04c711c0bc9bda5f6e4437ede7f6924a1278b50576c774c61",
+    "<USER_HOME>/wrf_gpu2_lanes/t-writer/TWE08/l3b/A1_kept_fp64.json": "93c42ecd6b842122ac43a3645ee4b877856e108665ea21241f47f4a7ece5d1ab",
+    "<USER_HOME>/wrf_gpu2_lanes/t-writer/TWE08/l3b/A2_full_evap_production.json": "f6e95b72af847848cc53999cea6ffdc1c99676d3ee3812fc8d35ca443b820f48",
+    "<USER_HOME>/wrf_gpu2_lanes/t-writer/TWE08/l3b/A2_full_evap_fp64.json": "2250c7c7392441857d24fadd58dd658cbfcc25796acca4851357beb19482b225",
+    "<USER_HOME>/wrf_gpu2_lanes/t-writer/TWE08/l3b/A3_mixed_production.json": "3cfdcd4e7d1580cf2fc46d4da4d4a8109fcff9f64ebff42e69e10fcac105f62d",
+    "<USER_HOME>/wrf_gpu2_lanes/t-writer/TWE08/l3b/A3_mixed_fp64.json": "559a7a3299896556e27ca542a99d68a2c259863b515833d7718999e09ffcaa20",
+    "<USER_HOME>/wrf_gpu2_lanes/t-writer/TWE08/l3b/A5_band_w_production.json": "f8d197dbb0750e09ad11aafe16740bcaad9dcba7d885cf63abbf249c7b42a031",
+    "<USER_HOME>/wrf_gpu2_lanes/t-writer/TWE08/l3b/A5_band_w_fp64.json": "782b19a9bd1b6987cc8f508e5c8a495b9791c2edb052bb44ff7107539bcd8fa9",
+    "<USER_HOME>/wrf_gpu2_lanes/t-writer/TWE08/l3b/A6a_k6b_rh090_production.json": "eba0157860dbc50ee9704f3a2a1f0bc51bfdd6c2ad0dc6288559b743b039f2e7",
+    "<USER_HOME>/wrf_gpu2_lanes/t-writer/TWE08/l3b/A6a_k6b_rh090_fp64.json": "c64ce8b49b29680352b70415db485367de201d782beeb9b2f3a03fecfb6e679a",
+    "<USER_HOME>/wrf_gpu2_lanes/t-writer/TWE08/l3b/A6b_k6b_rh095_production.json": "28087739f74529e13aa07bd59e2faa01ce5d76ccf93a53f0f05def75ae94ddce",
+    "<USER_HOME>/wrf_gpu2_lanes/t-writer/TWE08/l3b/A6b_k6b_rh095_fp64.json": "671c1575b0da58a44c8f892a57a85e73401e3b7169ac75f7b340f7485e2c2ec8",
+    "<USER_HOME>/wrf_gpu2_lanes/t-writer/TWE07/l3b.log": "07cdee56371a2e69d83965005e2c201910a1563ced59df8d23ed72e45c194c22",
+    "<USER_HOME>/wrf_gpu2_lanes/t-writer/TWE07/l3b.json": "345eb06f7d3e9a1d5868a2e08f61dbe9f36d10e903c8972cbad42265ddc7b011",
+    "<USER_HOME>/wrf_gpu2_lanes/t-writer/TWE08/l3b.log": "585f9c723eec3e8f0bd7dc1cb9d5cbdcec395f366c95be13200b1d08d4074a47",
+    "<USER_HOME>/wrf_gpu2_lanes/t-writer/TWE08/l3b.json": "23791619dafe27f11df02445a25f90124775653612970453b7f3c25e99fcc18c",
+    "<USER_HOME>/wrf_gpu2_lanes/t-writer/TWE08/l3b/summary.json": "55600c0b84faef7644c7973d59fb124b280c6964ee5a1142062e4b5385e23d0d",
+    "<USER_HOME>/wrf_gpu2_lanes/t-writer/TWE09/healthy.log": "b6078622e7909297d9cc4bdab266661bd7a35efa120908cb647307b603e70be5",
+    "<USER_HOME>/wrf_gpu2_lanes/t-writer/TWE09/healthy.xml": "d9c7f0d0881e0bf43fd0b1e3a01a13c2c63a871e3547b3ec23a992a9f34dff79",
+    "<USER_HOME>/wrf_gpu2_lanes/t-writer/TWE09/healthy_retry.log": "ed6991b4ffeb54a91834eab5068e754b4178b553c1a56b6531edaae1256d1d4e",
+    "<USER_HOME>/wrf_gpu2_lanes/t-writer/TWE09/healthy_retry.xml": "a1032e868b6b7708df9cde573127aeb94a1af0bd9e6db983f1b0ac8129a91bb7",
+    "<USER_HOME>/wrf_gpu2_lanes/t-writer/TWE09/mutant.log": "8659b4198278a1462bb648a16d0a34aeb40fa6c47c92df161917efd225c9f38d",
+    "<USER_HOME>/wrf_gpu2_lanes/t-writer/TWE09/mutant.xml": "3ab7d7f6383570fe41fa3e243db32316d18c9ff09d33ea3551df9e3e6f10ea17",
+    "<USER_HOME>/wrf_gpu2_lanes/t-writer/TWE09/mutant_source.json": "6a760b27844b6c5a21851a71978096be4fef29abc06c765c03f641a819d1a8df",
+    "<USER_HOME>/wrf_gpu2_lanes/t-writer/TWE09/fp64_threading_result.json": "d9610acef98f2e33372059a05e5663acae21a4489e7e665469a08054e393da7b",
+    "<USER_HOME>/wrf_gpu2_lanes/t-writer/TWE07-run.py": "ecee2c5135963d453683d0e315adc10d092a9a5352673f3624044f366c91b8ff",
+    "<USER_HOME>/wrf_gpu2_lanes/t-writer/TWE08-run.py": "668da05812a32857bae8884708cd789e421bab52a789b31a6dc332111469b495",
+    "<USER_HOME>/wrf_gpu2_lanes/t-writer/TWE09-run.py": "3a452f7cb084d153fd494a61f88189bd81db1f050572e68f469815bae5ee5b02"
+  },
+  "packet_files": {
+    "E199_SOURCE_REUSE.json": "5d3726dc3bd9bf412603471491efdf9f1359c29dde7557ca41add860d73f1afb",
+    "E199_README.md": "5bfb0511a6e2739a10cbe3efc0cf10d367885b95143f989e441cfbb6e98d5572",
+    "L3B_FROZEN_INPUTS.json": "073a8eed9811f26860e7acf52fa42694bc7c1ff13423a4406b7bc29b600dcb5a",
+    "E199_L3B.json": "23791619dafe27f11df02445a25f90124775653612970453b7f3c25e99fcc18c",
+    "E199_FP64.json": "e6a193efd3da8129916385eb17b26ee66a4ccea161cd7784f66ba79d9e1d6dae",
+    "E199_MUTANT.json": "18fca2aa97a8010e4a3c651c67a49d63913ba88c47b503b1c6ea05208385e802",
+    "E199_MUTANT_SOURCE.json": "6a760b27844b6c5a21851a71978096be4fef29abc06c765c03f641a819d1a8df",
+    "delete_l3b_held_inputs.py": "d50459655f837b4787c6e12392110b40bb46ffeacf65388880b88f3e77861eef"
+  }
+}

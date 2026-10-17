@@ -1,0 +1,51 @@
+{
+  "schema": "wrf-goddard-lwrad-native-v1",
+  "source_sha256": "0917531726cbed5a128e05c45e70ee292c209dbcd1ae2bad17db6e46b8d3a5ad",
+  "shim_sha256": "681aee63e9df9c7822625aae6e09b9a5e6320b5005daad0ed3c54722c76a4ba0",
+  "driver_sha256": "58a5432fa15ae7e38435344b8c3662e325c21bc5d948d9c55dc31ac7e3d2b24a",
+  "command": [
+    "<USER_HOME>/miniconda3/envs/wrfbuild/bin/gfortran",
+    "-O2",
+    "-ffree-form",
+    "-ffree-line-length-none",
+    "-cpp",
+    "-DRWORDSIZE=4",
+    "-DNO_IEEE_MODULE",
+    "-fcheck=bounds",
+    "-ffpe-summary=none",
+    "-fallow-argument-mismatch",
+    "-std=legacy",
+    "stubs.f90",
+    "module_checkerror.F",
+    "module_ra_goddard.F",
+    "driver.f90",
+    "-o",
+    "lw"
+  ],
+  "precision": "original default REAL4; explicit fp_kind REAL8; output REAL4",
+  "constants": "module_model_constants: g=REAL4(9.81), cp=7*287/2=1004.5",
+  "affinity": [
+    0,
+    1,
+    2,
+    3,
+    16,
+    17,
+    18,
+    19
+  ],
+  "cache": "NONE",
+  "physics_changes": "visibility only",
+  "tolerance": {
+    "rtol": 5e-07,
+    "atol": 3e-05
+  },
+  "savepoint_sha256": {
+    "lw_case_3.json": "1296a19254edf7fb176db4040e7be0724e5f9534e7d0f79e42affcc4ac5d0901",
+    "lw_case_2.json": "557f94dc8f77fc9e446c9bd3a6a7542f013b2caef648fc5c75230f686d8aab7f",
+    "lw_case_4.json": "5bcbe90603d64aefaad56e22763f88c953e6a413113674c56825f23a6e14e80e",
+    "lw_case_5.json": "259d8b6106c0d0c99c3e515eca1757520ba6c29fd907631cebd076299e51110f",
+    "lw_case_1.json": "05b3369adcd8282cdad050d14605a7c9fd09f8ded88046b767b20e29287d0f13",
+    "lw_case_6.json": "d0b9fe7493c090f8a86cf44bd248d6677729f2c943b3ee35ac2f3fea16d0d91e"
+  }
+}

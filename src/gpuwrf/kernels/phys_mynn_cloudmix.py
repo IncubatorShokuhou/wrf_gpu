@@ -7,7 +7,7 @@ import os
 import jax
 from jax import lax
 import jax.numpy as jnp
-from jax.experimental import pallas as pl
+from gpuwrf.backends import pallas as pl
 
 
 def cloudmix_enabled():
@@ -99,6 +99,11 @@ def apply_mean_cloudmix(state,turb,dt,flux,wind,rhosfc,mf,diss_heat=None):
         from gpuwrf.kernels.phys_mynn_ni import mix_ice_number
         # WRF applies the number floor before the final moisture_check.
         ni2=mix_ice_number(state.ni,sqi,sqi2,state,turb,dt,mf)
+    passive2=None
+    if state.passive:
+        from gpuwrf.kernels.phys_mynn_numbers import mix_passive_numbers
+        # QNC/QNWFA/QNIFA (mynn_tendencies :4549-4735): floors use sqc/sqc2 before moisture_check.
+        passive2=mix_passive_numbers(state.passive,sqc,sqc2,state,turb,dt,mf)
     qflux=jnp.maximum(flux.qv_flux,jnp.minimum(.9*sqv[...,0]-1e-8,0)/(dt/state.dz[...,0]))
     bottom=dt/state.dz[...,0]*rhosfc*qflux/jnp.maximum(state.rho[...,0],1e-4)
     vq=interfaces if mf is None else mf['s_awqv']
@@ -113,4 +118,6 @@ def apply_mean_cloudmix(state,turb,dt,flux,wind,rhosfc,mf,diss_heat=None):
     result=(u,v,theta,qv,qc,qi)
     if ni2 is not None:
         result=result+(ni2,)
+    if passive2 is not None:
+        result=result+(passive2,)
     return result

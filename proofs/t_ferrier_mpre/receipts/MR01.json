@@ -1,0 +1,52 @@
+{
+  "case": "c40",
+  "source_commit": "d85aad784b5cec081506f9e68f4aca2c940b364d",
+  "physical_backend": "cpu",
+  "lowering_platform": "cuda",
+  "gpu_executed": false,
+  "scope": "native CUDA lowering / optional AUTOTUNE0 deviceless prescreen, not fidelity or speed",
+  "lower": "FAIL",
+  "compile": "NOT_ATTEMPTED",
+  "programs": [],
+  "cache": "NONE; GPUWRF_JAX_CACHE=0",
+  "target_sha256": "f46c185780fdbd4aab62ef20293385bb8de31a71bd260e9ce62cbfc21f196a23",
+  "harness_sha256": "0b2db04ef80417d4739b97c104e2fb573b5f7e36826446f4a535a71fb31a27af",
+  "environment": {
+    "JAX_PLATFORMS": "cpu",
+    "CUDA_VISIBLE_DEVICES": "",
+    "GPUWRF_JAX_CACHE": "0",
+    "GPUWRF_FAST_DEFAULTS": "1",
+    "GPUWRF_CENSUS": "1",
+    "GPUWRF_CENSUS_SLIM": "0",
+    "GPUWRF_AOT_SLIM_MODULE": "0",
+    "GPUWRF_RRTMG_MP_RE": "1",
+    "GPUWRF_SCRATCH": "<USER_HOME>/wrf_gpu2_lanes/t-ferrier-mpre/MR01_scratch",
+    "GPUWRF_TMPDIR": "<USER_HOME>/wrf_gpu2_lanes/t-ferrier-mpre/MR01_scratch"
+  },
+  "wall_s": 15.56095003685914,
+  "peak_rss_KiB": 1562732,
+  "matrix_status": "ADMITTED",
+  "input_sha256": {
+    "namelist.input": "c65eac590d38007c94695984b18842efaf52f9a5b373aa476048cef4119b2531",
+    "wrfbdy_d01": "6e221d03b8611c38dd44ee3e231927730a50a5acf4d9afb2839365bee448a621",
+    "wrfinput_d01": "5d7cb92333e3a23cdd2e000a8163eb33a2285c32da48fb3e87f330c4a36979a1"
+  },
+  "jax_version": "0.10.0",
+  "jax_enable_x64_before_native_trace": true,
+  "dfi_prepass": "INACTIVE",
+  "init_s": 12.346591123146936,
+  "native_trace": {
+    "facade": true,
+    "capability_resolver": "cuda",
+    "mcica_native": true,
+    "python_backend": "gpu",
+    "pallas_interpret": false,
+    "product_tridiagonal": true,
+    "virtual_target": "NVIDIA GeForce RTX 5090_0(process=0,(0))"
+  },
+  "exception": "ValueError('MP_RE requires held microphysics radii seeded before radiation')",
+  "traceback": "Traceback (most recent call last):\n  File \"<USER_HOME>/wrf_gpu2_lanes/t-ferrier-mpre/source/proofs/t_ferrier_mpre/lower_case.py\", line 155, in <module>\n    lowered = fn.trace(*jax.tree.map(abstract,args),**kw).lower(lowering_platforms=('cuda',))\n              ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"<USER_HOME>/wrf_gpu2_lanes/t-ferrier-mpre/source/src/gpuwrf/runtime/operational_mode.py\", line 10962, in _advance_chunk_fori\n    return jax.lax.fori_loop(\n           ~~~~~~~~~~~~~~~~~^\n        jnp.asarray(0, dtype=jnp.int32),\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n    ...<2 lines>...\n        carry,\n        ^^^^^^\n    )\n    ^\n  File \"<USER_HOME>/wrf_gpu2_lanes/t-ferrier-mpre/source/src/gpuwrf/runtime/operational_mode.py\", line 10954, in body\n    return _layout_pin(\"carry\", _physics_boundary_step(\n                                ~~~~~~~~~~~~~~~~~~~~~~^\n        _layout_pin(\"carry\", scan_carry), namelist, step_index, run_radiation=run_radiation,\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n        debug=False, clock_base=clock_base,\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n    ))\n    ^\n  File \"<USER_HOME>/wrf_gpu2_lanes/t-ferrier-mpre/source/src/gpuwrf/runtime/operational_mode.py\", line 10445, in _physics_boundary_step\n    next_carry, _diagnostics = _physics_boundary_step_with_limiter_diagnostics(\n                               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^\n        carry,\n        ^^^^^^\n    ...<4 lines>...\n        clock_base=clock_base,\n        ^^^^^^^^^^^^^^^^^^^^^^\n    )\n    ^\n  File \"<USER_HOME>/wrf_gpu2_lanes/t-ferrier-mpre/source/src/gpuwrf/runtime/operational_mode.py\", line 10119, in _physics_boundary_step_with_limiter_diagnostics\n    physics_forcing = _physics_step_forcing(\n        carry,\n    ...<5 lines>...\n        lower_fields=lower_fields,\n    )\n  File \"<USER_HOME>/wrf_gpu2_lanes/t-ferrier-mpre/source/src/gpuwrf/runtime/operational_mode.py\", line 8825, in _physics_step_forcing\n    next_carry = _refresh_rrtmg_driver(\n        next_carry, namelist, lead_seconds, run_radiation, clock_base, **solar_kwargs\n    )\n  File \"<USER_HOME>/wrf_gpu2_lanes/t-ferrier-mpre/source/src/gpuwrf/runtime/operational_mode.py\", line 8140, in _refresh_rrtmg_driver\n    refreshed = jax.lax.cond(run_radiation, refresh, lambda _u: held, None)\n  File \"<USER_HOME>/wrf_gpu2_lanes/t-ferrier-mpre/source/src/gpuwrf/runtime/operational_mode.py\", line 8088, in refresh\n    radiation_result=ssib_radiation(carry.state,carry.ssib_land,namelist.ssib_static,namelist,\n        lead_seconds,_rad_clock_base(clock_base),o3_kwargs.get('ozone_vmr_override'))\n  File \"<USER_HOME>/wrf_gpu2_lanes/t-ferrier-mpre/source/src/gpuwrf/coupling/ssib_surface_hook.py\", line 215, in ssib_radiation\n    sw_input,lw_input,albedo,emiss,_geometry,_topo=_rrtmg_column_inputs(\n                                                   ~~~~~~~~~~~~~~~~~~~~^\n        state,namelist.grid,time_utc=namelist.time_utc,lead_seconds=lead_seconds,clock_base=clock_base,\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n        radiation_static=namelist.radiation_static,land_state=ssib_radiation_surface(land,static),\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n        use_mp_re=int(namelist.use_mp_re),ozone_vmr_override=ozone,use_sgs_cloud=False,force_real=True)\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"<USER_HOME>/wrf_gpu2_lanes/t-ferrier-mpre/source/src/gpuwrf/coupling/physics_couplers.py\", line 1302, in _rrtmg_column_inputs\n    return _rrtmg_real_tree(_rrtmg_column_inputs_impl(\n                            ~~~~~~~~~~~~~~~~~~~~~~~~~^\n        _rrtmg_real_tree(state), _rrtmg_real_tree(grid), **kwargs))\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"<USER_HOME>/wrf_gpu2_lanes/t-ferrier-mpre/source/src/gpuwrf/coupling/physics_couplers.py\", line 1511, in _rrtmg_column_inputs_impl\n    raise ValueError(\"MP_RE requires held microphysics radii seeded before radiation\")\nValueError: MP_RE requires held microphysics radii seeded before radiation\n--------------------\nFor simplicity, JAX has removed its internal frames from the traceback of the following exception. Set JAX_TRACEBACK_FILTERING=off to include these.\n",
+  "physical_devices_at_exit": [
+    "cpu"
+  ]
+}

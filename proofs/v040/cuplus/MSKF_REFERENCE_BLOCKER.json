@@ -1,0 +1,312 @@
+{
+  "status": "BLOCKED: finite pristine MSKF oracle unavailable for admitted calm convection regime",
+  "created_utc": "2026-10-13T18:08:27.202911+00:00",
+  "objective": "Full cu11/cu10/cu7 implementation+pristine oracle+wiring+restart+coupled smoke; NO partial READY",
+  "source_commit": "8fac4e1f6",
+  "original_sources_sha256": {
+    "module_cam_shr_kind_mod.F": "369bad7e4b528953dc4047ad38bf0b0d88120190f75541667be635c55edf1783",
+    "module_cam_error_function.F": "49fa938132d5d49da279a387315bca8ff23c5de332b939a1065e95a063371bf0",
+    "module_cu_mskf.F": "4bca54b294def08ffc98ef69a30650c943e2c394f34802e75e50c7f1a2896fcb"
+  },
+  "compiled_print_only_sources_sha256": {
+    "module_cam_shr_kind_mod.F": "369bad7e4b528953dc4047ad38bf0b0d88120190f75541667be635c55edf1783",
+    "module_cam_error_function.F": "49fa938132d5d49da279a387315bca8ff23c5de332b939a1065e95a063371bf0",
+    "module_cu_mskf.F": "3bc480689c52aa592a532ef81d7c10736afed62e8af576784e1ad20fff1b5513"
+  },
+  "configure_wrf_sha256": "c1bd80d6d4db6c703a7af29479c75e8e6d2d9acda79c6fb928585c858f4c8aba",
+  "original_source_preserved": true,
+  "caller": {
+    "entry": "MSKF_CPS -> MSKF_eta_PARA -> MSKF_CMT",
+    "grid": "5x5 horizontal array with 3x3 active tile;40 mass levels plus staggered W top",
+    "dt_s": 54,
+    "dx_m": 9000,
+    "cudt_minutes": 0,
+    "stepcu": 5,
+    "ktau": 100,
+    "trigger": 1,
+    "aercu_opt": 0,
+    "CMT": "ON (original default)",
+    "WRF_REAL_constants": "original values from existing source-bound KF sounding builder; source sha recorded in driver audit"
+  },
+  "finite_scan": {
+    "measured_source": "d841495d2 original source / 8fac4e1f6 print-only audit",
+    "original_model_source_modified": false,
+    "print_only_numeric_outputs_byte_identical": true,
+    "cases": [
+      {
+        "file": "plain-w0-1.stdout",
+        "returncode": 0,
+        "stdout_BYTE_under_print_only": true,
+        "stdout_sha256": "041c0f86980e860d2bad6d3f8de9901304bdc215be6e2cd8718f221ba43a765b",
+        "finite_reference": false,
+        "nonfinite_fields": {
+          "RTHCUTEN": {
+            "nan": 38,
+            "positive_inf": 1,
+            "negative_inf": 1
+          },
+          "RQVCUTEN": {
+            "nan": 40,
+            "positive_inf": 0,
+            "negative_inf": 0
+          },
+          "RQCCUTEN": {
+            "nan": 40,
+            "positive_inf": 0,
+            "negative_inf": 0
+          },
+          "RQRCUTEN": {
+            "nan": 40,
+            "positive_inf": 0,
+            "negative_inf": 0
+          },
+          "RQICUTEN": {
+            "nan": 40,
+            "positive_inf": 0,
+            "negative_inf": 0
+          },
+          "RQSCUTEN": {
+            "nan": 40,
+            "positive_inf": 0,
+            "negative_inf": 0
+          }
+        },
+        "nonfinite_scalars": {},
+        "RAINCV": 20.11104774475098,
+        "NCA": 0.0,
+        "TIMEC": 0.0
+      },
+      {
+        "file": "plain-w0-2.stdout",
+        "returncode": 0,
+        "stdout_BYTE_under_print_only": true,
+        "stdout_sha256": "b290dab7d8060e695c82d8218e3af8510dbc689d92356e50411b24c5d73dab9c",
+        "finite_reference": false,
+        "nonfinite_fields": {
+          "RTHCUTEN": {
+            "nan": 40,
+            "positive_inf": 0,
+            "negative_inf": 0
+          },
+          "RQVCUTEN": {
+            "nan": 40,
+            "positive_inf": 0,
+            "negative_inf": 0
+          },
+          "RQCCUTEN": {
+            "nan": 40,
+            "positive_inf": 0,
+            "negative_inf": 0
+          },
+          "RQRCUTEN": {
+            "nan": 40,
+            "positive_inf": 0,
+            "negative_inf": 0
+          },
+          "RQICUTEN": {
+            "nan": 40,
+            "positive_inf": 0,
+            "negative_inf": 0
+          },
+          "RQSCUTEN": {
+            "nan": 40,
+            "positive_inf": 0,
+            "negative_inf": 0
+          },
+          "RUCUTEN": {
+            "nan": 2,
+            "positive_inf": 0,
+            "negative_inf": 0
+          },
+          "RVCUTEN": {
+            "nan": 2,
+            "positive_inf": 0,
+            "negative_inf": 0
+          }
+        },
+        "nonfinite_scalars": {
+          "RAINCV": "NaN",
+          "PRATEC": "NaN"
+        },
+        "RAINCV": "NaN",
+        "NCA": 0.0,
+        "TIMEC": 0.0
+      },
+      {
+        "file": "plain-w0-3.stdout",
+        "returncode": 0,
+        "stdout_BYTE_under_print_only": true,
+        "stdout_sha256": "ffe47ca6843e5704ba519c94d374c2f830f4f5c409a6cdeb3396eddc9ffa15c6",
+        "finite_reference": true,
+        "nonfinite_fields": {},
+        "nonfinite_scalars": {},
+        "RAINCV": 0.03450838103890419,
+        "NCA": 2376.0,
+        "TIMEC": 7668.0
+      },
+      {
+        "file": "plain-w0-4.stdout",
+        "returncode": 0,
+        "stdout_BYTE_under_print_only": true,
+        "stdout_sha256": "00fa5300dee80f7cf5d80b96ef6142ada1ff66821b4546c2d38381258d465148",
+        "finite_reference": true,
+        "nonfinite_fields": {},
+        "nonfinite_scalars": {},
+        "RAINCV": 0.0,
+        "NCA": 0.0,
+        "TIMEC": 11610.0
+      },
+      {
+        "file": "plain-w2-1.stdout",
+        "returncode": 0,
+        "stdout_BYTE_under_print_only": true,
+        "stdout_sha256": "806761c3d1bf61566d685863d7f533e10fcc21875625943fbac8d1106fb26a15",
+        "finite_reference": true,
+        "nonfinite_fields": {},
+        "nonfinite_scalars": {},
+        "RAINCV": 0.02325581386685371,
+        "NCA": 4482.0,
+        "TIMEC": 7722.0
+      },
+      {
+        "file": "plain-w2-2.stdout",
+        "returncode": 0,
+        "stdout_BYTE_under_print_only": true,
+        "stdout_sha256": "49801a805587bca5daaf72a62f455e6bdfc5e4ed84f743bc0925d712686356c3",
+        "finite_reference": true,
+        "nonfinite_fields": {},
+        "nonfinite_scalars": {},
+        "RAINCV": 0.0,
+        "NCA": 0.0,
+        "TIMEC": 15606.0
+      },
+      {
+        "file": "plain-w2-3.stdout",
+        "returncode": 0,
+        "stdout_BYTE_under_print_only": true,
+        "stdout_sha256": "36f904a1d46cc3a53b4381ddd429251f31cf55eeb6b5c1cb067445062fe2c10e",
+        "finite_reference": true,
+        "nonfinite_fields": {},
+        "nonfinite_scalars": {},
+        "RAINCV": 0.03450838103890419,
+        "NCA": 1566.0,
+        "TIMEC": 7668.0
+      },
+      {
+        "file": "plain-w2-4.stdout",
+        "returncode": 0,
+        "stdout_BYTE_under_print_only": true,
+        "stdout_sha256": "e1a503a7f9e6566f5624ebda3ad4722b2f42d8e31a85930401de6691805af458",
+        "finite_reference": true,
+        "nonfinite_fields": {},
+        "nonfinite_scalars": {},
+        "RAINCV": 0.0,
+        "NCA": 0.0,
+        "TIMEC": 11610.0
+      }
+    ]
+  },
+  "observed_chain": {
+    "original_source_lines": "module_cu_mskf.F:5564-5571,5615-5619",
+    "calm_wind": "VCONV0 -> DX/VCONV Infinity -> NINT(Infinity/DT) observed0 -> TIMEC0 -> nonfinite tendencies",
+    "case1": "238 NaN +2Inf across6 tendency fields (40levels each)",
+    "case2": "246 NaN including tendencies,momentum,RAINCV,PRATEC",
+    "control": "same4soundings +2m/s horizontal wind:4/4 all printed fields finite; control does not replace failing primary cases"
+  },
+  "additional_diagnostics": {
+    "O0_and_production_O2_bounds": "MSKF_CMT:7847 evaluates MC(ILEV+1) in compound logical test; all checked cases abort (false-guard evaluation)",
+    "poisoned_no_bounds": {
+      "returncodes": [
+        {
+          "wind": 0.0,
+          "case": 1,
+          "rc": -8
+        },
+        {
+          "wind": 0.0,
+          "case": 2,
+          "rc": -8
+        },
+        {
+          "wind": 0.0,
+          "case": 3,
+          "rc": 0
+        },
+        {
+          "wind": 0.0,
+          "case": 4,
+          "rc": -8
+        },
+        {
+          "wind": 2.0,
+          "case": 1,
+          "rc": 0
+        },
+        {
+          "wind": 2.0,
+          "case": 2,
+          "rc": -8
+        },
+        {
+          "wind": 2.0,
+          "case": 3,
+          "rc": 0
+        },
+        {
+          "wind": 2.0,
+          "case": 4,
+          "rc": -8
+        }
+      ],
+      "DER_raw_samples": [
+        {
+          "case": 4,
+          "background_wind": 0.0,
+          "i": 2,
+          "j": 2,
+          "kq": 7,
+          "ltop": 6,
+          "lfs": 1,
+          "der_bits": "7FA00000",
+          "dz_value": 419.2508544921875,
+          "dx_squared_value": 81000000.0
+        },
+        {
+          "case": 2,
+          "background_wind": 2.0,
+          "i": 2,
+          "j": 2,
+          "kq": 6,
+          "ltop": 5,
+          "lfs": 1,
+          "der_bits": "7FA00000",
+          "dz_value": 405.6849365234375,
+          "dx_squared_value": 81000000.0
+        },
+        {
+          "case": 4,
+          "background_wind": 2.0,
+          "i": 2,
+          "j": 2,
+          "kq": 7,
+          "ltop": 6,
+          "lfs": 1,
+          "der_bits": "7FA00000",
+          "dz_value": 419.2508544921875,
+          "dx_squared_value": 81000000.0
+        }
+      ],
+      "interpretation": "DER(KQ) above LTOP retains sNaN when no-downdraft branch zeros only1:LTOP; read in CMT prep original:6797. Effect on final physical outputs not proven; primary blocker is actual calm-case output NaN."
+    }
+  },
+  "gate_conflict": "Finite candidate and reference required before parity (E200). A literal NaN match violates F2; adding a wind clamp or altering the pristine reference needs an explicit scientific reference-policy decision. No threshold/input-substitution/reference change performed.",
+  "required_manager_decision": "Approve a source correction/reference treatment for original calm-wind singularity (and disposition of CMT dead reads), or an explicit supported-regime policy; do not declare full feature qualified from the wind2 control.",
+  "progress_foundation": "CuP helper/radiation component packet retained (45original records,256checks,2mutants,3archive checks,release2bf); this is progress only, not READY. Fullcu7/10/11 remain refused.",
+  "performance_memory": "No production imports/wiring/carry changed; default runtime overhead0. Original Fortran setup23.0/141.6s CPU under contention; no GPU claim; diagnostics only.",
+  "artifacts": {
+    "full_caller": "<USER_HOME>/wrf_gpu2_lanes/s2-cuplus/MS05-full-caller.json",
+    "print_identity": "<USER_HOME>/wrf_gpu2_lanes/s2-cuplus/MS05-print-only-identity.json",
+    "raw_outputs": "<USER_HOME>/wrf_gpu2_lanes/s2-cuplus/MS05-outputs",
+    "original_uninstrumented_baseline": "<USER_HOME>/wrf_gpu2_lanes/s2-cuplus/MS04-outputs"
+  }
+}

@@ -2,14 +2,15 @@
 
 from __future__ import annotations
 
-from gpuwrf._x64_config import configure_jax_x64
+from gpuwrf import _OFFLINE_COMMAND
 
 from typing import TYPE_CHECKING
 
-from jax import config
+if not _OFFLINE_COMMAND:
+    from jax import config
+    from gpuwrf._x64_config import configure_jax_x64
 
-
-configure_jax_x64()
+    configure_jax_x64()
 
 if TYPE_CHECKING:
     from .grid import BCMetadata, GridSpec, Projection, TerrainProvenance, VerticalCoord

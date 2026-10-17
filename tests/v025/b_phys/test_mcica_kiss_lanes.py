@@ -7,6 +7,7 @@ import numpy as np
 import pytest
 
 from gpuwrf.kernels import rad_mcica as M
+from gpuwrf.backends.platform import target_backend
 
 
 def _pressures(seed, shape):
@@ -25,8 +26,11 @@ def test_kiss_lanes_equal_jump_ahead_stream(monkeypatch, first, ng, shape):
     real = M.kiss_random_lanes
     monkeypatch.setattr(M, "kiss_random_lanes", lambda *a, **k: calls.append(1) or real(*a, **k))
     got = np.asarray(jax.jit(lambda q: M._random_values(q, first=first, ng=ng, legacy_fp64=False))(p))
-    assert calls == [1]
+    # Native CUDA uses lanes; CPU deliberately retains the exact jump-ahead
+    # fallback because interpreted masked tail lanes can alias (RE01/E200).
+    assert calls == ([1] if target_backend() == "cuda" else [])
     assert got.dtype == ref.dtype == np.float32 and got.shape == ref.shape == shape + (ng,)
+    assert np.isfinite(ref).all() and np.isfinite(got).all()
     np.testing.assert_array_equal(got, ref)
 
 

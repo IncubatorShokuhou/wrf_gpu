@@ -67,26 +67,72 @@ DYNAMICS_KEYS: dict[str, type] = {
     "mix_isotropic": int,
     "mix_upper_bound": float,
     "tke_upper_bound": float,
+    # o2-moistadv: <= v0.3.4 both pipelines bound an OMITTED moist/scalar_adv_opt
+    # as 0 (and 0 then skipped moisture transport); the Registry default is 1.
+    "moist_adv_opt": int,
+    "scalar_adv_opt": int,
+    "tracer_opt": int,
+    "tracer_adv_opt": int,
+    "tracer_mix2_off": bool,
+    "tracer_mix6_off": bool,
 }
 
 #: &physics knobs bound like the &dynamics ones (omitted -> WRF Registry default):
 #: cam_abs_freq_s = CAM LW absorptivity/emissivity refresh interval (ra_lw_physics=3,
 #: module_radiation_driver.F; o1-camrad OperationalNamelist.cam_abs_freq_s).
 PHYSICS_KNOBS: dict[str, type] = {
+    "mfshconv": int,
+    'cu_rad_feedback': bool,
+    'icloud': int,
+    'cu_diag': int,
+    'kfeta_trigger': int,
+    'shcu_aerosols_opt': int,
+    'shallowcu_forced_ra': bool,
     "cam_abs_freq_s": float,
+    "ccn_conc": float,
+    "ccnty": int,
+    "accum_mode": float, "aitken_mode": float, "coarse_mode": float,
+    "shcu_physics": int,
+    "shinhong_tke_diag": int,
+    # YSU top-down cloud mixing (module_pbl_driver.F:1234; Registry default 1).
+    "ysu_topdown_pblmix": int,
+    "lakedepth_default": float,
+    "lake_min_elev": float,
+    "use_lakedepth": int,
+    "prec_acc_dt": float,
+    "do_radar_ref": int,
+    "swint_opt": int,
+    "windfarm_opt": int,
+    "windfarm_ij": int,
+    "windfarm_tke_factor": float,
+    "tracer_pblmix": int,
+    "sf_ocean_physics": int,
+    "oml_hml0": float,
+    "oml_gamma": float,
+    "oml_relaxation_time": float,
+    "isftcflx": int,
+    "sas_pgcon": float,
+    "nsas_dx_factor": int,
+    "sst_skin": int,
 }
 
 #: Namelist keys bound onto a differently named OperationalNamelist field.
 RENAMED_KEYS: dict[str, tuple[str, type]] = {
+    'numbins': ('cup_num_bins',int),
+    'thbinsize': ('cup_th_bin_size',float),
+    'rbinsize': ('cup_r_bin_size',float),
+    'mindeepfreq': ('cup_min_deep_freq',float),
+    'minshallowfreq': ('cup_min_shallow_freq',float),
     "shadlen": ("topo_shadow_length_m", float),
 }
 
 #: Keys bound elsewhere in the pipelines (before this module) or consumed by the
 #: input/init readers.  ``validate_operational_namelist`` restricts their values.
 _PIPELINE_BOUND_KEYS: frozenset[str] = frozenset({
+    "gpuwrf_tracer_file",
     # nested_pipeline._load_domains / daily_pipeline._build_real_case
     "radt", "cudt", "use_mp_re", "gwd_opt", "topo_shading", "slope_rad",
-    "diff_opt", "km_opt", "h_sca_adv_order", "moist_adv_opt", "scalar_adv_opt",
+    "diff_opt", "km_opt", "h_sca_adv_order",
     "time_step_sound", "top_lid", "sf_surface_physics",
     # io.lower_boundary (auxinput4) and the init readers
     "sst_update", "use_theta_m",
@@ -95,7 +141,8 @@ _PIPELINE_BOUND_KEYS: frozenset[str] = frozenset({
     # CLI apply_cldovrlp (McICA overlap flag)
     "cldovrlp",
     # nested_pipeline full-history guard (refuses positive values with Noah-MP)
-    "bucket_mm", "bucket_j", "noahmp_acc_dt",
+    "bucket_mm", "bucket_j", "noahmp_acc_dt", "opt_gla",
+    "use_wudapt_lcz", "distributed_ahe_opt", "urban_ahe_file",
 })
 
 #: Keys whose effect reaches the forecast only through the prepared inputs
@@ -115,11 +162,16 @@ _INPUT_ONLY_KEYS: frozenset[str] = frozenset({
     "noahmp_output",
 })
 
-#: Output-only diagnostics the history writer does not produce: the forecast is
-#: unchanged, the requested fields are missing -> warning, not refusal.
+#: &dynamics keys of the digital filter initialization (gpuwrf.dfi, lane o2-dfi):
+#: ``moist_adv_dfi_opt`` is bound by the DDFI/TDFI backward stage (values the port does not
+#: reproduce are refused by gpuwrf.dfi.control.dfi_refusals); ``diff_opt_dfi``/``km_opt_dfi``
+#: are overwritten by WRF's DDFI/TDFI backward init. DFL skips that init and consumes them
+#: directly (Registry defaults 0/1); driver12 binds them and dfi_refusals checks their scope.
+_DFI_KEYS: frozenset[str] = frozenset({"moist_adv_dfi_opt", "diff_opt_dfi", "km_opt_dfi"})
+
+#: Requested diagnostics without a qualified online producer must be refused.
+#: A warning would let an explicit request succeed with missing history fields.
 _OUTPUT_ONLY_KEYS: dict[str, str] = {
-    "do_radar_ref": "REFL_10CM radar reflectivity is not written",
-    "prec_acc_dt": "PREC_ACC_C/PREC_ACC_NC bucket accumulations are not written",
 }
 
 #: Options that are exact only on ice-free domains (the port has no sea-ice
@@ -153,7 +205,7 @@ EQUAL_OR_ZERO_ON_ALL_DOMAINS: tuple[str, ...] = ("bl_pbl_physics", "cu_physics",
 #: coupling.physics_dispatch._PBL_REQUIRES_REVISED_MM5_SFCLAY (that module pulls in
 #: the coupling package; tests/test_namelist_binding.py pins the two equal), so the
 #: CLI refuses the pairing before load instead of after it.
-PBL_REQUIRES_REVISED_MM5_SFCLAY: frozenset[int] = frozenset({1, 7, 8, 11, 12, 99})
+PBL_REQUIRES_REVISED_MM5_SFCLAY: frozenset[int] = frozenset({1, 7, 8, 11, 12, 16, 17, 99})
 
 #: WRF share/module_check_a_mundo.F:671-684 makes cu_physics=4 FATAL for ARW ("should not be
 #: used for ARW; cu_physics = 95 is suggested"), so no CPU-WRF reference can exist.  The CLI
@@ -165,18 +217,20 @@ CU4_ARW_REFUSAL = (
 
 #: (diff_opt, km_opt) pairs the CLI runs (operational_mode explicit-diffusion
 #: seam): diff_opt=0 (any km_opt but 2/5), 2-D Smagorinsky (1, 4) and 3-D
-#: Smagorinsky (2, 3); the 3-D TKE/SMS closures (2, 2/5) are refused below.  Constant-K (km_opt=1) runs only through the
+#: Smagorinsky (2, 3), LES TKE (2, 2), and SMS-3DTKE (2, 5).
+#: Constant-K (km_opt=1) runs only through the
 #: programmatic const_nu_m2_s path, which the CLI does not bind to khdif/kvdif;
 #: every other pair would silently run without explicit diffusion (v0.3.4 probe:
 #: diff_opt=2/km_opt=1/khdif=100 traced the diff_opt=0 program).
-DIFFUSION_PAIRS: frozenset[tuple[int, int]] = frozenset({(1, 4), (2, 3)})
+DIFFUSION_PAIRS: frozenset[tuple[int, int]] = frozenset({(1, 4), (2, 2), (2, 3), (2, 5)})
 
 #: km_opt codes refused for v0.3.4 (manager decision on rel034 18:08Z): unqualified
 #: v022 scaffolds that produce NaN under the release REAL carry.
-KM_OPT_REFUSED: dict[int, str] = {
-    2: "prognostic 3-D TKE",
-    5: "SMS-3DTKE",
-}
+KM_OPT_REFUSED: dict[int, str] = {}
+
+# LES adapter currently carries six bulk moist species plus Thompson QNI/QNR.
+# These schemes need additional number/aerosol/hail scalar diffusion channels.
+KM2_UNWIRED_MP = frozenset({9, 10, 14, 16, 17, 18, 19, 22, 24, 26, 28, 40})
 
 #: Port spellings of WRF Registry keys.  WRF's namelist name is ``rk_ord``
 #: (Registry.EM_COMMON: ``rconfig integer rk_ord ... "rk_order"`` -- the quoted
@@ -192,9 +246,9 @@ FIXED_KEYS: dict[str, tuple[Any, str]] = {
 #: &domains keys the operational step consumes and the port fixes.
 _FIXED_DOMAINS_KEYS: dict[str, Any] = {"hypsometric_opt": 2}
 
-#: Land options the native/nested CLI pipeline can build (Noah-MP or none);
+#: Land options the native/nested CLI pipeline can build (bulk, RUC, Noah-MP);
 #: nested_pipeline._domain_sf_surface_physics refuses the rest at load time.
-NATIVE_LAND_OPTIONS: tuple[int, ...] = (0, 4)
+NATIVE_LAND_OPTIONS: tuple[int, ...] = (0, 3, 4, 8)
 
 #: Replay-mode (CPU-history compatibility harness) substitutions, reported as
 #: loud warnings: the replay driver integrates at its fixed 10 s step with 10
@@ -224,6 +278,8 @@ class NamelistNotHonouredError(ValueError):
 
 
 def _group_of(key: str) -> str:
+    if key == "gpuwrf_tracer_file":
+        return "dynamics"
     entry = WRF_REGISTRY_DEFAULTS.get(key)
     return entry[0] if entry else "physics"
 
@@ -265,7 +321,16 @@ def namelist_value(wrf_namelist: Mapping[str, Any], key: str, domain: str) -> An
 def bound_options(wrf_namelist: Mapping[str, Any], domain: str) -> dict[str, Any]:
     """Explicit scheme + dynamics values of ``domain`` to bind (absent keys omitted)."""
 
+    pbl = namelist_value(wrf_namelist,'bl_pbl_physics',domain)
+    lsm = namelist_value(wrf_namelist,'sf_surface_physics',domain)
+    if pbl is not None and int(pbl)==4 and lsm is not None and int(lsm) in (1,2,7):
+        raise NamelistNotHonouredError([f'QNSE land coupling with sf_surface_physics={lsm} ({domain}) is not qualified; select no LSM (0) or Noah-MP (4)'])
+    ccnty = namelist_value(wrf_namelist, "ccnty", domain)
+    if ccnty is not None and int(ccnty) not in (1, 2, 3, 4):
+        raise NamelistNotHonouredError(["NTU ccnty must be 1, 2, 3 or 4"])
     out: dict[str, Any] = {}
+    from gpuwrf.io.noahmp_options import selected_options
+    out["noahmp_options"] = selected_options(wrf_namelist)
     for key in SCHEME_KEYS:
         value = namelist_value(wrf_namelist, key, domain)
         if value is not None:
@@ -277,12 +342,26 @@ def bound_options(wrf_namelist: Mapping[str, Any], domain: str) -> dict[str, Any
         # and diff_6th_opt 0 differ from the values the pipelines used to hard-wire).
         out[key] = cast(WRF_REGISTRY_DEFAULTS[key][3] if value is None else value)
     for key, cast in PHYSICS_KNOBS.items():
-        value = namelist_value(wrf_namelist, key, domain)
+        if key == 'windfarm_opt':
+            from gpuwrf.io.windfarm import windfarm_option
+            value = windfarm_option(wrf_namelist,domain)
+        else:
+            value = namelist_value(wrf_namelist, key, domain)
         out[key] = cast(WRF_REGISTRY_DEFAULTS[key][3] if value is None else value)
     for key, (field, cast) in RENAMED_KEYS.items():
         value = namelist_value(wrf_namelist, key, domain)
         if value is not None:
             out[field] = cast(value)
+    nwp=_raw_value(wrf_namelist,"time_control","nwp_diagnostics",0)
+    history=_raw_value(wrf_namelist,"time_control","history_interval",_domain_index("history_interval",domain))
+    out["nwp_diagnostics"]=0 if nwp is None else int(nwp)
+    # WRF check_a_mundo forces the global radar selector for NWP diagnostics.
+    if out["nwp_diagnostics"]==1:
+        out["do_radar_ref"]=1
+    out["diagnostic_history_interval"]=60. if history is None else float(history)
+    # WRF check_a_mundo: this switch is reset outside QNSE, even if supplied.
+    if out.get('bl_pbl_physics',5) != 4:
+        out['mfshconv'] = 0
     return out
 
 
@@ -294,8 +373,19 @@ def bind_namelist_options(namelist, wrf_namelist: Mapping[str, Any], domain: str
     keys a pipeline binds itself.
     """
 
+    from gpuwrf.io.flg_gfdl_config import validate_selection
+    validate_selection(wrf_namelist)
+    from gpuwrf.io.cammg_config import validate_selection as validate_cammg
+    validate_cammg(wrf_namelist)
     updates = {k: v for k, v in bound_options(wrf_namelist, domain).items() if k not in skip}
+    if int(updates.get("cu_physics", namelist.cu_physics)) == 95:
+        updates["osas_domain_id"] = int(domain.removeprefix("d"))
     changed = {k: v for k, v in updates.items() if getattr(namelist, k) != v}
+    if wrf_namelist.get("stoch"):
+        from gpuwrf.io.stochastic_config import bind_stochastic
+        stochastic = bind_stochastic(wrf_namelist,domain)
+        if stochastic is not None:
+            changed["stochastic_config"] = stochastic
     return replace(namelist, **changed) if changed else namelist
 
 
@@ -320,8 +410,112 @@ def namelist_honour_report(
 
     errors: list[str] = []
     warnings: list[str] = []
+    for domain in domains:
+        ccnty=namelist_value(wrf_namelist,'ccnty',domain)
+        if ccnty is not None and int(ccnty) not in (1,2,3,4):
+            errors.append(f'{domain}: NTU ccnty must be 1, 2, 3 or 4')
+        cu=namelist_value(wrf_namelist,'cu_physics',domain)
+        cloud=namelist_value(wrf_namelist,'icloud',domain)
+        trigger=namelist_value(wrf_namelist,'kfeta_trigger',domain)
+        aerosol=namelist_value(wrf_namelist,'shcu_aerosols_opt',domain)
+        feedback=namelist_value(wrf_namelist,'cu_rad_feedback',domain)
+        if cloud not in (None,1) and cu!=11:
+            errors.append(f'{domain}: icloud={cloud} is unqualified; only original icloud=1 is bound')
+        if trigger not in (None,1) and cu in (1,11):
+            errors.append(f'{domain}: kfeta_trigger={trigger} horizontal trigger 2 is unported')
+        if aerosol not in (None,0):
+            errors.append(f'{domain}: shcu_aerosols_opt>0 needs unported aerosol/chemistry inputs')
+        if feedback and cu!=11:
+            errors.append(f'{domain}: cu_rad_feedback=True additional Grell cloud diagnostics are unqualified')
+    from gpuwrf.io.noahmp_mmf import selected as mmf_selected, refusals as mmf_refusals
+    mmf = mmf_selected(wrf_namelist)
+    errors.extend(mmf_refusals(wrf_namelist, domains))
+    if wrf_namelist.get("nssl_mp_params") and any(
+        namelist_value(wrf_namelist, "mp_physics", d) in (17, 18, 19, 21, 22) for d in domains
+    ):
+        # Pristine nssl_2mom_init reads this separate group before building
+        # its tables. The qualified port freezes the default table parameters.
+        errors.append("&nssl_mp_params: NSSL mp_physics=17/18/19/21/22 supports the WRF-default "
+                      "internal parameters only; custom internal namelist values are not bound")
+    from gpuwrf.io.noahmp_options import option_refusals, SUPPORTED
+    errors.extend(option_refusals(wrf_namelist, replay=replay))
+    solar = namelist_value(wrf_namelist, "swint_opt", domains[0]) if domains else None
+    if solar not in (None, 0, 1):
+        errors.append("&physics swint_opt: supports only 0/1")
+    if solar == 1:
+        from gpuwrf.io.namelist_check import _solar_admission_failures
+        errors.extend(f"&physics swint_opt: {failure.implemented}"
+                      for failure in _solar_admission_failures(wrf_namelist))
+        if replay:
+            errors.append("Solar interpolation requires native full-carry mode, not CPU-history replay")
+    nwp = _raw_value(wrf_namelist, "time_control", "nwp_diagnostics", 0)
+    if nwp is not None and int(nwp) not in (0,1):
+        errors.append("&time_control nwp_diagnostics: supports only 0/1")
+    for domain in domains:
+        from gpuwrf.io.windfarm import windfarm_errors
+        errors.extend(windfarm_errors(wrf_namelist,domain))
+        radar=namelist_value(wrf_namelist,"do_radar_ref",domain)
+        mp=namelist_value(wrf_namelist,"mp_physics",domain)
+        if replay and mp==9:
+            errors.append("Milbrandt mp_physics=9 requires native mode for mandatory radar; CPU-history replay is unsupported")
+        if radar is not None and int(radar) not in (0,1):
+            errors.append("&physics do_radar_ref: supports only 0/1")
+        if (nwp and int(nwp)==1) or (radar and int(radar)==1):
+            if replay:
+                errors.append("online NWP/radar diagnostics require native mode, not CPU-history replay")
+            if mp not in (None,8,9,10,17,18,19,21,22,40) or (mp in (9,10,17,18,19,21,22,40) and nwp and int(nwp)==1):
+                errors.append("online NWP/radar diagnostics require mp_physics=8 (radar-only also admits "
+                              "mp_physics=9/10/17/18/19/21/22/40)")
+            if _raw_value(wrf_namelist,"domains","use_adaptive_time_step",_domain_index("use_adaptive_time_step",domain)):
+                errors.append("online NWP/radar diagnostics require fixed time_step")
+            if nwp and (wrf_namelist.get("bdy_control") or {}).get("periodic_x",False):
+                errors.append("nwp_diagnostics helicity requires a specified/nested nonperiodic domain")
+    for key in ("afwa_diag_opt", "afwa_severe_opt", "afwa_radar_opt"):
+        if any(_raw_value(wrf_namelist, "afwa", key, i) not in (None, 0) for i in range(len(domains))):
+            errors.append(f"&afwa {key}: AFWA diagnostics are not implemented; REFD is a separate AFWA radar product and severe gusts use WSPD10MAX, not AFWA_GUST")
+    if wrf_namelist.get("stoch"):
+        from gpuwrf.io.stochastic_config import stochastic_refusals
+        errors.extend(stochastic_refusals(wrf_namelist,domains))
+    from gpuwrf.io.nesting_options import resolve_nesting_options
+    try:
+        resolve_nesting_options(wrf_namelist)
+    except ValueError as exc:
+        errors.append(str(exc))
+    for domain in domains:
+        shcu=namelist_value(wrf_namelist,"shcu_physics",domain)
+        if shcu not in (None,0):
+            errors.append(f"{domain}: shcu_physics={shcu} has no operational shallow-convection producer; CAM-MG itself does not require it")
     honoured = (set(SCHEME_KEYS) | set(DYNAMICS_KEYS) | set(PHYSICS_KNOBS) | set(RENAMED_KEYS)
-                | _PIPELINE_BOUND_KEYS | _INPUT_ONLY_KEYS)
+                | _PIPELINE_BOUND_KEYS | _INPUT_ONLY_KEYS | _DFI_KEYS | set(SUPPORTED))
+    import math
+    for domain in domains:
+        interval = namelist_value(wrf_namelist, "prec_acc_dt", domain)
+        if interval is not None:
+            interval = float(interval)
+            if not math.isfinite(interval) or interval < 0.0:
+                errors.append(f"&physics prec_acc_dt={interval}: must be finite and nonnegative")
+            elif interval > 0.0:
+                if replay:
+                    errors.append("prec_acc_dt is not supported by the CPU-history replay clock; use native mode")
+                mp = namelist_value(wrf_namelist, "mp_physics", domain)
+                cu = namelist_value(wrf_namelist, "cu_physics", domain)
+                if mp not in (None, 8) or cu not in (None, 0, 1):
+                    errors.append("prec_acc_dt requires mp_physics=8 and cu_physics=0/1 (raw step amounts)")
+    for domain in domains:
+        tracer_opt = namelist_value(wrf_namelist, "tracer_opt", domain)
+        tracer_file = namelist_value(wrf_namelist, "gpuwrf_tracer_file", domain)
+        if tracer_opt not in (None, 0, 2):
+            errors.append("tracer_opt: non-Chem WRF supports only 0/2; 1/3/4 require WRF-Chem")
+        for key, choices in (("tracer_adv_opt", (0, 1, 2)), ("tracer_pblmix", (0, 1))):
+            value = namelist_value(wrf_namelist, key, domain)
+            if value is not None and value not in choices:
+                errors.append(f"{key}: supports only {choices}")
+        if tracer_opt == 2 or tracer_file:
+            bldt = namelist_value(wrf_namelist, "bldt", domain)
+            if bldt not in (None, 0, 0.0):
+                errors.append("passive tracers currently require bldt=0 (PBL every step)")
+    from gpuwrf.io.noahmp_glacier_options import glacier_refusals
+    errors.extend(glacier_refusals(wrf_namelist))
     for group in ("physics", "dynamics", "noah_mp"):
         for key in sorted((wrf_namelist.get(group) or {})):
             spelled = str(key).lower()
@@ -334,7 +528,12 @@ def namelist_honour_report(
                     errors.append(f"&{group} {spelled}={bad[0]!r}: {why}")
                 continue
             values = [namelist_value(wrf_namelist, key_l, d) for d in domains]
+            if mmf and ((group == "noah_mp" and key_l in ("opt_run", "opt_inf"))
+                        or (group == "physics" and key_l == "wtddt")):
+                continue  # Both loaders initialize/seed the complete MMF group.
             if replay and key_l in _REPLAY_HARNESS_KEYS:
+                if key_l == "sf_surface_physics" and all(v in (3,8) for v in values):
+                    continue  # RUC uses its full-carry stepper on the daily path.
                 runs, why = _REPLAY_HARNESS_KEYS[key_l]
                 bad = sorted({v for v in values if v is not None and not _same(v, runs)}, key=str)
                 if bad:
@@ -346,7 +545,7 @@ def namelist_honour_report(
                               and int(v) not in NATIVE_LAND_OPTIONS})
                 if bad:
                     errors.append(f"&physics sf_surface_physics={bad}: the native/nested CLI "
-                                  "pipeline builds only 0 (no LSM) or 4 (Noah-MP); slab (1), "
+                                  "pipeline builds only 0 (no LSM), 3 (RUC), 4 (Noah-MP) or 8 (SSiB); slab (1), "
                                   "Noah-classic (2) and Pleim-Xiu (7) need explicit static/land "
                                   "bundles that only the programmatic API can supply")
                 continue
@@ -364,10 +563,24 @@ def namelist_honour_report(
             if key_l in _OUTPUT_ONLY_KEYS:
                 entry = WRF_REGISTRY_DEFAULTS.get(key_l)
                 if any(v is not None and entry and not _same(v, entry[3]) for v in values):
-                    warnings.append(f"&{group} {key_l}: output-only option not honoured -- "
-                                    f"{_OUTPUT_ONLY_KEYS[key_l]} (forecast unchanged)")
+                    errors.append(f"&{group} {key_l}: requested diagnostic not honoured -- "
+                                  f"{_OUTPUT_ONLY_KEYS[key_l]}")
                 continue
             if key_l in honoured:
+                continue
+            # WRF check_a_mundo.F:3395-3440 overrides legacy flags except CCN
+            # for19. Original19 keeps explicit CCN0; this qualified variant
+            # carries default CCN1, so refuse that unbound configuration.
+            if key_l in {"nssl_2moment_on", "nssl_hail_on", "nssl_ccn_on", "nssl_density_on"} and all(
+                namelist_value(wrf_namelist, "mp_physics", d) in (17, 19, 21, 22) for d in domains
+            ):
+                if key_l == "nssl_ccn_on" and any(
+                    namelist_value(wrf_namelist, "mp_physics", d) == 19
+                    and namelist_value(wrf_namelist, key_l, d) not in (-1, 1)
+                    for d in domains
+                ):
+                    errors.append("&physics nssl_ccn_on: mp_physics=19 currently supports "
+                                  "the WRF default CCN1 only; explicit CCN0 is not bound")
                 continue
             entry = WRF_REGISTRY_DEFAULTS.get(key_l)
             if entry is None or entry[0] != group:
@@ -383,6 +596,17 @@ def namelist_honour_report(
                               f"which runs the WRF Registry default {entry[3]!r}")
                 if entry[1] == "1":
                     break
+    radiation_on = any(namelist_value(wrf_namelist, k, d) not in (0, "0")
+                       for k in ("ra_lw_physics", "ra_sw_physics") for d in domains)
+    no_radt = [d for d in domains if namelist_value(wrf_namelist, "radt", d) is None]
+    if radiation_on and no_radt:
+        # o2-moistadv omitted-key audit: <= v0.3.4 an omitted radt silently ran a 30 min cadence;
+        # WRF's Registry default radt=0 means STEPRA = max(nint(0),1) = radiation EVERY step
+        # (phys/module_physics_init.F:2150), which the port does not run (explicit radt=0 is refused)
+        # -> loud warning, like omitted scheme keys (refusing would reject minimal namelists).
+        warnings.append(f"&physics radt omitted ({', '.join(no_radt)}): WRF's default radt=0 calls radiation "
+                        "EVERY step; the port does not run that and uses its driver cadence instead "
+                        "(native/nested 30 min) -- set radt explicitly (minutes, e.g. the dx-in-km rule)")
     omitted = [k for k in ("mp_physics", "bl_pbl_physics", "sf_sfclay_physics", "ra_lw_physics",
                            "ra_sw_physics") if namelist_value(wrf_namelist, k, domains[0]) is None]
     if omitted:
@@ -403,6 +627,48 @@ def namelist_honour_report(
                         + (" (or 0)" if key in EQUAL_OR_ZERO_ON_ALL_DOMAINS else ""))
                 errors.append(f"{key}={vals}: {rule} (share/module_check_a_mundo.F); "
                               "set one value for all domains")
+    for domain in domains:
+        urb = namelist_value(wrf_namelist, "sf_urban_physics", domain)
+        if urb is not None and int(urb) in (2,3):
+            lsm = namelist_value(wrf_namelist, "sf_surface_physics", domain)
+            pbl = namelist_value(wrf_namelist, "bl_pbl_physics", domain)
+            lcz = namelist_value(wrf_namelist, "use_wudapt_lcz", domain)
+            if lcz is not None and int(lcz)!=0:
+                errors.append(f'BEP/BEM ({domain}): use_wudapt_lcz (LCZ) requires grouped per-type geometry/carries/PBL sources; use default UTYPE=2')
+            if replay:
+                errors.append(f'sf_urban_physics={urb} ({domain}): {_REPLAY_LABEL} cannot evolve BEP/BEM urban carry; use native/nested')
+            if lsm is None or int(lsm)!=4:
+                errors.append(f'sf_urban_physics={urb} ({domain}) requires sf_surface_physics=4 Noah-MP in this port')
+            if pbl is not None and int(pbl)==2:
+                errors.append(f'BEP/BEM+MYJ ({domain}) requires the absent module_bl_myjurb (MYJURB)')
+            elif pbl is None or int(pbl) not in (1,8):
+                errors.append(f'BEP/BEM ({domain}): WRF allows YSU1/MYJ2/BouLac8; the port admits YSU1 or BouLac8')
+            for key in ('ra_sw_physics','ra_lw_physics'):
+                value=namelist_value(wrf_namelist,key,domain)
+                if value is None or int(value)!=4:
+                    errors.append(f'BEP/BEM ({domain}) requires RRTMG4/4 held direct/diffuse radiation in this port')
+        for key, allowed in (("use_wudapt_lcz",(0,1)),("distributed_ahe_opt",(0,1,2))):
+            value = namelist_value(wrf_namelist,key,domains[0])
+            if value is not None and (value not in allowed or (value and (replay or urb != 1))):
+                errors.append(f"{key}={value} ({domain}): requires native sf_urban_physics=1; allowed {allowed}")
+        ahe_file = _raw_value(wrf_namelist,"physics","urban_ahe_file",_domain_index("sf_urban_physics",domain))
+        if ahe_file and (replay or urb != 1 or namelist_value(wrf_namelist,"distributed_ahe_opt",domains[0]) not in (1,2)):
+            errors.append(f"urban_ahe_file ({domain}): requires native urban and distributed_ahe_opt=1/2")
+        if namelist_value(wrf_namelist,"distributed_ahe_opt",domains[0]) == 1:
+            pbl = namelist_value(wrf_namelist,"bl_pbl_physics",domain)
+            if pbl not in (None,5):
+                errors.append(f"distributed_ahe_opt=1 ({domain}): requires WRF source-tendency MYNN PBL (bl_pbl_physics=5)")
+        if urb is None or int(urb) != 1:
+            continue
+        lsm = namelist_value(wrf_namelist, "sf_surface_physics", domain)
+        if replay:
+            errors.append(f"sf_urban_physics=1 ({domain}): {_REPLAY_LABEL} replays CPU land fields and "
+                          "does not run the single-layer urban canopy model; use the native/nested pipeline")
+        elif lsm is None or int(lsm) != 4:
+            errors.append(f"sf_urban_physics=1 with sf_surface_physics={lsm} ({domain}): the port couples "
+                          "the single-layer urban canopy model only to Noah-MP (sf_surface_physics=4)")
+        if replay:
+            break
     cu4 = [d for d in domains if namelist_value(wrf_namelist, "cu_physics", d) is not None
            and int(namelist_value(wrf_namelist, "cu_physics", d)) == 4]
     if cu4:
@@ -413,11 +679,71 @@ def namelist_honour_report(
         sfc = namelist_value(wrf_namelist, "sf_sfclay_physics", domain)
         pbl = 5 if pbl is None else int(pbl)  # omitted keys keep the pipeline's MYNN / MYNN-SL
         sfc = 5 if sfc is None else int(sfc)
+        if (pbl == 10) != (sfc == 10):
+            errors.append(f'TEMF requires bl_pbl_physics=10 and sf_sfclay_physics=10 together ({domain}; WRF check_a_mundo)')
+        if pbl == 10:
+            lsm = namelist_value(wrf_namelist,'sf_surface_physics',domain)
+            if lsm is not None and int(lsm) not in (0,4):
+                errors.append(f'TEMF requires qualified no-LSM/Noah-MP coupling (sf_surface_physics=0/4; {domain})')
+        if pbl == 4:
+            lsm = namelist_value(wrf_namelist,'sf_surface_physics',domain)
+            if lsm is not None and int(lsm) in (1,2,7):
+                errors.append(f'QNSE land coupling with sf_surface_physics={lsm} ({domain}) is not qualified; select no LSM (0) or Noah-MP (4)')
+        if pbl in (16,17) and namelist_value(wrf_namelist,'bldt',domain) not in (None,0,0.0):
+            errors.append(f'bl_pbl_physics={pbl} ({domain}) currently requires bldt=0; held off-cadence epsilon tendencies are not qualified')
+        if pbl in (16,17):
+            lsm=namelist_value(wrf_namelist,'sf_surface_physics',domain)
+            if lsm is not None and int(lsm) not in (0,4):
+                errors.append(f'bl_pbl_physics={pbl} requires qualified no-LSM/Noah-MP coupling (sf_surface_physics=0/4; {domain})')
+        if pbl == 3 and sfc != 3:
+            errors.append(f"bl_pbl_physics=3 with sf_sfclay_physics={sfc} ({domain}): WRF BL_GFS requires the "
+                          "GFS surface layer (sf_sfclay_physics=3; module_physics_init.F:3743 is fatal otherwise)")
         if pbl in PBL_REQUIRES_REVISED_MM5_SFCLAY and sfc != 1:
             errors.append(f"bl_pbl_physics={pbl} with sf_sfclay_physics={sfc} ({domain}): the port "
                           "runs this PBL only on the revised-MM5 surface layer (sf_sfclay_physics=1); "
                           "it would substitute revised-MM5 surface forcing")
             break
+    for domain in domains:
+        from gpuwrf.io.ocean_options import validate_options as validate_ocean_options
+        cfg={key:namelist_value(wrf_namelist,key,domain) for key in ('sf_ocean_physics','oml_hml0','oml_gamma','oml_relaxation_time','isftcflx')}
+        try:
+            validate_ocean_options(cfg,sfclay=namelist_value(wrf_namelist,'sf_sfclay_physics',domain),
+                sst_update=bool(namelist_value(wrf_namelist,'sst_update',domain)),
+                noahmp=namelist_value(wrf_namelist,'sf_surface_physics',domain) in (None,4),
+                lake=namelist_value(wrf_namelist,'sf_lake_physics',domain) or 0,
+                lsm=namelist_value(wrf_namelist,'sf_surface_physics',domain),
+                urban=namelist_value(wrf_namelist,'sf_urban_physics',domain) or 0,
+                pbl=namelist_value(wrf_namelist,'bl_pbl_physics',domain))
+        except ValueError as exc:
+            errors.append(str(exc))
+        if namelist_value(wrf_namelist,'sf_lake_physics',domain) == 1:
+            for key,default in (('sf_surface_physics',4),('mp_physics',8),('bl_pbl_physics',5),('sf_sfclay_physics',5)):
+                value=namelist_value(wrf_namelist,key,domain)
+                if value is not None and int(value) != default:
+                    errors.append(f'sf_lake_physics=1 ({domain}) currently requires {key}={default}; got {value}')
+            depthflag=namelist_value(wrf_namelist,'use_lakedepth',domain)
+            if depthflag is not None and int(depthflag) not in (0,1):
+                errors.append(f'use_lakedepth ({domain}) must be0 or1')
+            if namelist_value(wrf_namelist,'sst_update',domain) not in (None,0):
+                errors.append(f'sf_lake_physics=1 ({domain}) with sst_update is not wired; set sst_update=0')
+            if int(wrf_namelist.get('dfi_control',{}).get('dfi_opt',0)):
+                errors.append(f'sf_lake_physics=1 ({domain}) with DFI is not qualified; set dfi_opt=0')
+    for domain in domains:
+        if namelist_value(wrf_namelist,"sf_surface_physics",domain)!=8: continue
+        for key,want,default in (("mp_physics",8,8),("sf_sfclay_physics",1,5),("bl_pbl_physics",1,5),
+            ("ra_sw_physics",1,4),("ra_lw_physics",4,4),("num_soil_layers",3,4),
+            ("sf_lake_physics",0,0),("sf_urban_physics",0,0),("fractional_seaice",1,0),("usemonalb",0,0)):
+            raw=namelist_value(wrf_namelist,key,domain); actual=default if raw is None else int(raw)
+            if actual!=want: errors.append(f"SSiB ({domain}) requires {key}={want}; got {actual}; spectral SW=3/4 and sea-ice tiles are not coupled")
+    for domain in domains:
+        if namelist_value(wrf_namelist, "sf_surface_physics", domain) != 3:
+            continue
+        for key, allowed, default in (("mp_physics", (8,), 8), ("sf_sfclay_physics", (5,), 5),
+                                       ("sf_lake_physics", (0,), 0), ("num_soil_layers", (6, 9), 4)):
+            value = namelist_value(wrf_namelist, key, domain)
+            value = default if value is None else int(value)
+            if value not in allowed:
+                errors.append(f"sf_surface_physics=3 ({domain}): RUC requires {key} in {allowed}; got {value}")
     for domain in domains:
         diff = namelist_value(wrf_namelist, "diff_opt", domain)
         km = namelist_value(wrf_namelist, "km_opt", domain)
@@ -431,10 +757,36 @@ def namelist_honour_report(
                           "unqualified v022 scaffold that gives NaN under the release REAL carry; use "
                           "diff_opt=1/km_opt=4 (2-D Smagorinsky) or diff_opt=2/km_opt=3 (3-D Smagorinsky)")
             break
+        if km in (2, 5) and diff != 2:
+            errors.append(f"km_opt={km} ({domain}) requires diff_opt=2 for the prognostic LES TKE path")
+            break
+        if km == 5:
+            pbl = int(namelist_value(wrf_namelist, "bl_pbl_physics", domain) or 0)
+            sf = int(namelist_value(wrf_namelist, "sf_sfclay_physics", domain) or 0)
+            land = int(namelist_value(wrf_namelist, "sf_surface_physics", domain) or 0)
+            cu = int(namelist_value(wrf_namelist, "cu_physics", domain) or 0)
+            if pbl != 0:
+                errors.append(f"km_opt=5 ({domain}) requires bl_pbl_physics=0 (WRF SMS-3DTKE pairing)")
+            if sf not in (0, 1, 5, 91):
+                errors.append(f"km_opt=5 ({domain}) requires sf_sfclay_physics in 0/1/5/91 (WRF)")
+            elif sf in (1, 91):
+                errors.append(f"km_opt=5 with sf_sfclay_physics={sf} ({domain}): SMS BR/RMOL/WSPD/USTM "
+                              "caller is qualified for 0 or 5 only; MM5 surface caller qualification pending")
+            if cu == 11:
+                errors.append(f"km_opt=5 ({domain}) cannot work with cu_physics=11 (WRF)")
+            if land not in (0,4) or (sf==0 and land!=0):
+                errors.append(f"km_opt=5 ({domain}): SMS land caller is qualified for sf_surface_physics=0/4; "
+                              "surface layer 0 requires land 0 (other land callers not qualified)")
+        if km in (2, 5):
+            mp = namelist_value(wrf_namelist, "mp_physics", domain)
+            if mp in KM2_UNWIRED_MP:
+                errors.append(f"km_opt={km} with mp_physics={mp} ({domain}): extra scalar diffusion "
+                              "is not wired; the LES adapter covers bulk moisture and Thompson QNI/QNR")
+                break
         if diff != 0 and (diff, km) not in DIFFUSION_PAIRS:
             errors.append(f"diff_opt={diff}, km_opt={km} ({domain}): the operational step has no such "
                           "diffusion path and would run WITHOUT explicit diffusion; supported: diff_opt=0, "
-                          "1/4 (2-D Smagorinsky), 2/3 (3-D Smagorinsky); constant-K km_opt=1 is not CLI-bound")
+                          "1/4 (2-D Smagorinsky), 2/2 (3-D TKE), 2/3 (3-D Smagorinsky), 2/5 (SMS-3DTKE); constant-K km_opt=1 is not CLI-bound")
             break
     if not replay and "sf_surface_physics" not in (wrf_namelist.get("physics") or {}):
         land = sorted({int(v) for v in (namelist_value(wrf_namelist, "sf_surface_physics", d)
@@ -447,6 +799,10 @@ def namelist_honour_report(
         values = raw if isinstance(raw, (list, tuple)) else ([] if raw is None else [raw])
         if any(not _same(v, fixed) for v in values[:1]):
             errors.append(f"&domains {key}={values[0]!r}: the GPU port runs {key}={fixed} only")
+    # grid_fdda=1 (lane o2-fdda): WRF-fatal / unported &fdda selections, bound in both pipelines.
+    from gpuwrf.io.fdda_namelist import fdda_namelist_errors, fdda_namelist_warnings
+    errors.extend(fdda_namelist_errors(wrf_namelist, domains))
+    warnings.extend(fdda_namelist_warnings(wrf_namelist, domains))
     if replay:
         tc = (wrf_namelist.get("domains") or {}).get("time_step")
         if tc is not None and not _same(tc, 10):

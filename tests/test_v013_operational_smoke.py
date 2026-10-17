@@ -114,9 +114,9 @@ OPERATIONAL_SF_SURFACE = (2, 4)  # Noah-classic (explicit hook) + Noah-MP (use_n
 # Minimal idealized grid + state builders (the validated b2 C-grid pattern: a
 # deep, moist, windy column that gives every scheme something to act on).
 # ============================================================================
-def _grid(nz: int = 24, ny: int = 4, nx: int = 4) -> GridSpec:
+def _grid(nz: int = 24, ny: int = 4, nx: int = 4, dx_m: float = 3000.0) -> GridSpec:
     eta = jnp.linspace(1.0, 0.0, nz + 1, dtype=jnp.float64)
-    projection = Projection("lambert", 28.3, -16.4, 3000.0, 3000.0, nx, ny)
+    projection = Projection("lambert", 28.3, -16.4, dx_m, dx_m, nx, ny)
     terrain_meta = TerrainProvenance(
         source_path="v013-op-smoke", sha256="v013-op-smoke", shape=(ny, nx), units="m",
         projection_transform="native-wrf-lambert", max_elevation_m=0.0,
@@ -234,6 +234,45 @@ def _convective_state(grid: GridSpec, *, dz_m: float = 400.0, seed: int = 5) -> 
     return State(**fields)
 
 
+def _wrf_convective_case(grid: GridSpec, *, seed: int = 5) -> tuple[GridSpec, State]:
+    """Hydrostatically self-consistent version of ``_convective_state`` for callers staged like WRF phy_prep.
+
+    The legacy cumulus callers pass WRF's ``P=p_hyd``/``P8W=p_hyd_w`` (from MU and the hybrid
+    coefficients) and dry ``th_phy``. ``DycoreMetrics.flat`` sets ``c1h=eta`` (WRF's terrain-following
+    coordinate has ``c1=1, c2=0``), so its hydrostatic surface pressure is ~560 hPa, and
+    ``_convective_state`` stores a dry theta in the theta_m leaf. Here: sigma metrics (c1=1, c2=0),
+    p = p_hyd from MU, heights from the hypsometric equation, theta_m = theta*(1+Rv/Rd*qv); same
+    conditionally-unstable, near-saturated profile (dry theta 298 K + 3.5 K/km, qv 18 g/kg below 2 km).
+    """
+
+    nz, ny, nx = grid.nz, grid.ny, grid.nx
+    metrics = dataclasses.replace(grid.metrics, c1h=jnp.ones((nz,)), c2h=jnp.zeros((nz,)),
+                                  c1f=jnp.ones((nz + 1,)), c2f=jnp.zeros((nz + 1,)))
+    grid = dataclasses.replace(grid, metrics=metrics)
+    base = _convective_state(grid, seed=seed)
+    eta = np.asarray(grid.metrics.c3f, np.float64)
+    p_top = float(np.asarray(grid.metrics.p_top))
+    mu = 1.0e5 - p_top
+    p_face_dry = p_top + mu * eta  # first guess for the level heights
+    z_est = 287.0 * 285.0 / 9.81 * np.log(1.0e5 / (0.5 * (p_face_dry[:-1] + p_face_dry[1:])))
+    rng = np.random.default_rng(seed)
+    qv = np.clip(np.where(z_est < 2000.0, 0.018, 0.016 * np.exp(-(z_est - 2000.0) / 3000.0))[:, None, None]
+                 + 3.0e-4 * rng.standard_normal((nz, ny, nx)), 1.0e-6, None)
+    qc = np.clip(np.where(z_est < 3000.0, 3.0e-4, 0.0)[:, None, None] + 2.0e-5 * rng.standard_normal((nz, ny, nx)), 0.0, None)
+    faces = [np.full((ny, nx), p_top)]
+    for k in range(nz - 1, -1, -1):  # phy_prep :4950-4957 (dnw < 0)
+        faces.append(faces[-1] - (1.0 + qv[k] + qc[k]) * mu * float(grid.metrics.dnw[k]))
+    pw = np.stack(faces[::-1])
+    p = 0.5 * (pw[:-1] + pw[1:])
+    theta = (298.0 + 0.0035 * z_est)[:, None, None] + 0.2 * rng.standard_normal((nz, ny, nx))
+    tv = theta * (p / 1.0e5) ** (287.0 / 1004.5) * (1.0 + 0.608 * qv)
+    zw = np.concatenate([np.zeros((1, ny, nx)), np.cumsum(287.0 * tv / 9.81 * np.log(pw[:-1] / pw[1:]), axis=0)])
+    f64 = lambda a: jnp.asarray(a, jnp.float64)
+    state = base.replace(theta=f64(theta * (1.0 + (461.6 / 287.0) * qv)), qv=f64(qv), qc=f64(qc), p=f64(p),
+                         ph=f64(9.81 * zw), mu=f64(np.full((ny, nx), mu)))
+    return grid, state
+
+
 def _namelist(grid: GridSpec, *, dt_s: float = 20.0, **over) -> OperationalNamelist:
     """Build a CPU operational namelist (from_grid's Tendencies.zeros is GPU-only)."""
 
@@ -280,20 +319,36 @@ def test_operational_set_is_consistent_with_adapter_tables() -> None:
     from gpuwrf.runtime import operational_mode
     from gpuwrf.runtime.operational_state import OperationalCarry
 
-    explicit_pbl = {DEFAULT_BL_PBL_PHYSICS, 2}
+    explicit_pbl = {DEFAULT_BL_PBL_PHYSICS, 2, 16, 17}
     if 9 in OPERATIONAL_BL:
         assert 9 not in PBL_SCAN_ADAPTERS
         assert callable(camuw_pbl_adapter)
         assert "camuw_pbl" in {f.name for f in dataclasses.fields(OperationalCarry)}
         assert "camuw_pbl_adapter(" in inspect.getsource(operational_mode)
         explicit_pbl |= {9}
+    if 10 in OPERATIONAL_BL:
+        from gpuwrf.coupling.temf import pbl_step,surface_step
+        assert callable(pbl_step) and callable(surface_step)
+        assert 'temf' in {f.name for f in dataclasses.fields(OperationalCarry)}
+        assert 'pbl_step(next_state,' in inspect.getsource(operational_mode)
+        explicit_pbl |= {10}
+    if 4 in OPERATIONAL_BL:
+        from gpuwrf.coupling.qnse_adapter import qnse_pbl_step,qnse_surface_step
+        assert callable(qnse_pbl_step) and callable(qnse_surface_step)
+        assert 'qnse' in {f.name for f in dataclasses.fields(OperationalCarry)}
+        assert 'qnse_pbl_step(' in inspect.getsource(operational_mode)
+        explicit_pbl |= {4}
     assert set(PBL_SCAN_ADAPTERS) | explicit_pbl >= set(OPERATIONAL_BL)
     assert set(PBL_SCAN_ADAPTERS) <= set(OPERATIONAL_BL)
     # surface layer: sf=5 MYNN-sfclay (default) + sf=2 Janjic are routed explicitly.
-    assert set(SFCLAY_SCAN_ADAPTERS) | {5, 2} >= set(OPERATIONAL_SF_SFCLAY)
+    assert set(SFCLAY_SCAN_ADAPTERS) | {5, 2, 4, 10} >= set(OPERATIONAL_SF_SFCLAY)
     assert set(SFCLAY_SCAN_ADAPTERS) <= set(OPERATIONAL_SF_SFCLAY)
-    # cumulus: every wired cumulus option has an adapter.
-    assert set(CU_SCAN_ADAPTERS) == set(OPERATIONAL_CU)
+    # Resident cuplus uses an explicit raw-RK route, like the resident PBLs.
+    from gpuwrf.coupling.cuplus import driver as cuplus_driver
+    assert callable(cuplus_driver)
+    assert 'cuplus' in {f.name for f in dataclasses.fields(OperationalCarry)}
+    assert 'cuplus.driver(before,' in inspect.getsource(operational_mode)
+    assert set(CU_SCAN_ADAPTERS) | {7,10,11} == set(OPERATIONAL_CU)
     assert set(CU_STATELESS_SCAN_ADAPTERS) <= set(CU_SCAN_ADAPTERS)
 
 
@@ -314,6 +369,8 @@ _MP_DISPATCH_GAP: set[int] = set()
 def test_microphysics_operational_runs_and_mutates(mp: int) -> None:
     grid = _grid()
     state = _base_state(grid)
+    if mp in (50,51,52,53,55,56,11):
+        state = state.ensure_conditional_leaves(mp_physics=mp)
     nml = _namelist(grid, mp_physics=mp, bl_pbl_physics=0, sf_sfclay_physics=0, cu_physics=0)
 
     if mp in _MP_DISPATCH_GAP:
@@ -333,7 +390,18 @@ def test_microphysics_operational_runs_and_mutates(mp: int) -> None:
     if _microphysics_wrf_order_enabled():
         # WRF order (solve_em.F:3809): MP is the post-RK call, never entry physics.
         assert not _changed(after.qv, state.qv), f"mp={mp} still ran in entry physics"
-        after = _apply_post_rk_microphysics(after, nml)
+        if mp == 56:
+            # Preserve every real microstep in the unchanged JAX body. CPU
+            # opt0 avoids the measured opt3 LLVM timeout; no NumPy arithmetic.
+            import importlib.util
+            from pathlib import Path
+            path=Path(__file__).resolve().parents[1]/'proofs/s2_ntu/cpu_executor.py'
+            spec=importlib.util.spec_from_file_location('ntu_cpu_executor',path)
+            helper=importlib.util.module_from_spec(spec);spec.loader.exec_module(helper)
+            with helper.CompiledCPUExecutor():
+                after = _apply_post_rk_microphysics(after, nml)
+        else:
+            after = _apply_post_rk_microphysics(after, nml)
     assert _all_finite(after), f"mp={mp} produced a non-finite field"
     # microphysics condenses/evaporates -> moisture must change (not a no-op).
     assert _changed(after.qv, state.qv), f"mp={mp} did not mutate qv (silent no-op)"
@@ -346,8 +414,8 @@ def test_microphysics_operational_runs_and_mutates(mp: int) -> None:
 # ============================================================================
 # bl=9 CAM-UW (v0.3.4) consumes surface-driver HFX/QFX/UST -> paired with sf=5 (fail-closed otherwise);
 # its TKE is WRF's diagnosed TKE_PBL (eddy_scheme='diag_TKE', OperationalCarry.camuw_pbl), not State.qke.
-_PBL_SFCLAY_PAIR = {1: 1, 2: 2, 3: 1, 5: 5, 7: 1, 8: 1, 9: 5, 11: 1, 12: 1, 99: 1}
-_PBL_TKE_SCHEMES = {2, 5, 8, 11, 12}  # also carry a prognostic TKE (qke) update
+_PBL_SFCLAY_PAIR = {1: 1, 2: 2, 3: 3, 4: 4, 5: 5, 7: 1, 8: 1, 9: 5, 10: 10, 11: 1, 12: 1, 16: 1, 17: 1, 99: 1}
+_PBL_TKE_SCHEMES = {2, 4, 5, 8, 11, 12}  # Shin-Hong TKE updates only in diag=1.
 
 
 @pytest.mark.parametrize("bl", OPERATIONAL_BL)
@@ -355,20 +423,72 @@ def test_pbl_operational_runs_and_mixes(bl: int) -> None:
     grid = _grid()
     state = _base_state(grid)
     sf = _PBL_SFCLAY_PAIR[bl]
+    if bl == 11:
+        # Registry.EM_COMMON:1119 declares REAL QKE; use its REAL4 caller input,
+        # rather than the legacy all-fp64 smoke fixture, for exact hold bytes.
+        state = state.replace(_cast=False, qke=state.qke.astype(jnp.float32))
     nml = _namelist(
         grid, mp_physics=0, bl_pbl_physics=bl, sf_sfclay_physics=sf, cu_physics=0, use_noahmp=False
     )
+    if bl in (16,17):
+        from gpuwrf.coupling.epsilon_pbl import seed_epsilon_pbl_state
+        state=seed_epsilon_pbl_state(state,bl)
+        nml=dataclasses.replace(nml,rad_rk_tendf=1,use_flux_advection=True)
     _resolve_operational_suite(nml)
-    carry = initial_operational_carry(state)
+    if bl in (2,4,10,16,17):  # resident surface/PBL memory (MYJSFC/QNSE/TEMF/EEPS) is seeded at init
+        from gpuwrf.runtime.operational_mode import _initial_carry_for_run
+        carry = _initial_carry_for_run(state,nml)
+    else:
+        carry = initial_operational_carry(state)
     forcing = _physics_step_forcing(carry, nml, 0.0, run_radiation=False)
+    if bl == 17:
+        # Original KEPS :212-237 initializes on calls 1 AND 2, returning zero
+        # tendencies. Exercise its third call before asserting active mixing.
+        for step in (2,3):
+            carry=forcing.carry.replace(state=forcing.state)
+            forcing=_physics_step_forcing(carry,nml,(step-1)*nml.dt_s,run_radiation=False)
     after = forcing.state
     assert _all_finite(after), f"bl={bl} produced a non-finite field"
     # PBL mixes momentum: u or v must change (mp is off, so this is the PBL).
-    assert _changed(after.u, state.u) or _changed(after.v, state.v), (
-        f"bl={bl} did not mutate u/v (silent no-op)"
-    )
-    if bl in _PBL_TKE_SCHEMES:
+    if bl in (16,17):
+        assert np.any(np.asarray(forcing.dry_tendencies.ru_tendf)) or np.any(np.asarray(forcing.dry_tendencies.rv_tendf))
+        assert int(after.epsilon_pbl_step)==(3 if bl==17 else 1)
+    else:
+        assert _changed(after.u, state.u) or _changed(after.v, state.v), (
+            f"bl={bl} did not mutate u/v (silent no-op)"
+        )
+    if bl == 11:
+        # Registry.EM_COMMON:2475 defaults shinhong_tke_diag to 0.
+        # Original module_bl_shinhong.F:1478 gates the TKE calculation;
+        # its only TKE write is :1603, inside that diag=1 block through :1608.
+        assert nml.shinhong_tke_diag == 0
+        assert after.qke.dtype == state.qke.dtype
+        assert np.asarray(after.qke).tobytes() == np.asarray(state.qke).tobytes()
+    elif bl in _PBL_TKE_SCHEMES:
         assert _changed(after.qke, state.qke), f"bl={bl} (TKE scheme) did not update qke"
+    if bl == 4:
+        # Mandatory QNSE pair: cover the surface handles in the SAME coupled
+        # call. Recompiling the identical bl=4/sf=4 configuration separately
+        # took hundreds of CPU seconds in the measured shared smoke.
+        assert _changed(after.ustar,state.ustar) or _changed(after.theta_flux,state.theta_flux)
+
+
+def test_shinhong_diag1_operational_updates_tke() -> None:
+    """Actual diag=1 caller mutates TKE; functional coverage, not oracle parity."""
+    grid = _grid()
+    state = _base_state(grid)
+    state = state.replace(_cast=False, qke=state.qke.astype(jnp.float32))
+    nml = _namelist(grid, mp_physics=0, bl_pbl_physics=11,
+                    sf_sfclay_physics=1, cu_physics=0, use_noahmp=False,
+                    shinhong_tke_diag=1)
+    _resolve_operational_suite(nml)
+    carry = initial_operational_carry(state)
+    after = _physics_step_forcing(carry, nml, 0.0, run_radiation=False).state
+    assert nml.shinhong_tke_diag == 1
+    assert _all_finite(after), "Shin-Hong diag=1 produced a non-finite field"
+    assert _changed(after.u, state.u) or _changed(after.v, state.v)
+    # Original module_bl_shinhong.F:1478,1603: this mode computes/writes TKE.
+    assert _changed(after.qke, state.qke), "Shin-Hong diag=1 did not update qke"
 
 
 # ============================================================================
@@ -376,7 +496,7 @@ def test_pbl_operational_runs_and_mixes(bl: int) -> None:
 #    kinematic surface-flux handles (ustar / theta_flux). mp/PBL/cumulus disabled.
 #    sf=2 (Janjic) is mandatorily paired with bl=2 (MYJ); covered as a pair.
 # ============================================================================
-_SFCLAY_PARAM = tuple(o for o in OPERATIONAL_SF_SFCLAY if o != 2)
+_SFCLAY_PARAM = tuple(o for o in OPERATIONAL_SF_SFCLAY if o not in (2,4))
 
 
 @pytest.mark.parametrize("sf", _SFCLAY_PARAM)
@@ -384,10 +504,14 @@ def test_sfclay_operational_runs_and_writes_fluxes(sf: int) -> None:
     grid = _grid()
     state = _base_state(grid)
     nml = _namelist(
-        grid, mp_physics=0, bl_pbl_physics=0, sf_sfclay_physics=sf, cu_physics=0, use_noahmp=False
+        grid, mp_physics=0, bl_pbl_physics=sf if sf in (4,10) else 0, sf_sfclay_physics=sf, cu_physics=0, use_noahmp=False
     )
     _resolve_operational_suite(nml)
-    carry = initial_operational_carry(state)
+    if sf in (4,10):
+        from gpuwrf.runtime.operational_mode import _initial_carry_for_run
+        carry = _initial_carry_for_run(state,nml)
+    else:
+        carry = initial_operational_carry(state)
     forcing = _physics_step_forcing(carry, nml, 0.0, run_radiation=False)
     after = forcing.state
     assert _all_finite(after), f"sf={sf} produced a non-finite field"
@@ -408,7 +532,8 @@ def test_myj_pair_operational_runs_and_mutates() -> None:
     )
     suite = _resolve_operational_suite(nml)
     assert suite.pbl.option == 2 and suite.surface_layer.option == 2
-    carry = initial_operational_carry(state)
+    from gpuwrf.runtime.operational_mode import _initial_carry_for_run
+    carry = _initial_carry_for_run(state, nml)  # seeds the resident MYJSFC memory
     forcing = _physics_step_forcing(carry, nml, 0.0, run_radiation=False)
     after = forcing.state
     assert _all_finite(after), "MYJ pair produced a non-finite field"
@@ -440,20 +565,46 @@ def test_myj_pairing_fails_closed_when_unpaired(bl: int, sf: int) -> None:
 # cu=5/93 (Grell-3D / Grell-Devenyi) act only >= 4 points from the boundary
 # (WRF ibegc/iendc), so the 4x4 smoke grid has no active column: they get their
 # own 12x12 coupled smoke in tests/test_v034_grell_cumulus_wiring.py.
+# cu=3 (Grell-Freitas) has the same lateral band (module_cu_gf_wrfdrv.F:264-277) and is
+# scale-aware: at 3 km its updraft area fraction caps at frh_thresh, so a saturated cloud
+# base shuts deep GF off (module_cu_gf_deep.F:462-471, :663 ierr=231 -- WRF's own rule, which
+# the port reproduces). It runs below on a 12x12 grid (4x4 interior columns) at dx = 9 km.
 # cu=4 (scale-aware SAS) reads WRF phy_prep p_hyd from mu_total + metrics; on this idealized
 # column pristine WRF itself rejects every column at the 200 hPa cloud-depth (cthk) filter
 # (verified with the proofs/v034/scalesas oracle), so its trigger/cadence test lives in
 # tests/test_v034_scalesas_wiring.py on an oracle-active column.
-_CU_TRIGGERING = tuple(o for o in OPERATIONAL_CU if o not in (4, 6, 16, 5, 93))
+# CuPlus requires its actual PBL/surface producers and Thompson/RRTMG profile;
+# MP=0/PBL=0 below is intentionally unsupported. Its original active-column RK
+# gates are tests/v040/cuplus/test_rk_caller.py, and the coupled receipts use
+# the real 44-level Swiss domain with each admitted producer pairing.
+_CU_TRIGGERING = tuple(o for o in OPERATIONAL_CU if o not in (4, 6, 16, 5, 93, 7, 10, 11))
+
+
+@pytest.mark.parametrize('cu',[7,10,11])
+def test_cuplus_refuses_missing_physics_producers(cu):
+    grid=_grid()
+    nml=_namelist(grid,mp_physics=0,bl_pbl_physics=0,sf_sfclay_physics=0,cu_physics=cu)
+    with pytest.raises(UnsupportedSchemeSelection,match='cuplus'):
+        _resolve_operational_suite(nml)
 
 
 @pytest.mark.parametrize("cu", _CU_TRIGGERING)
 def test_cumulus_operational_triggers_and_rains(cu: int) -> None:
-    grid = _grid()
-    state = _convective_state(grid)
-    nml = _namelist(grid, dt_s=300.0, mp_physics=0, bl_pbl_physics=0, sf_sfclay_physics=0, cu_physics=cu)
+    if cu in (14, 94, 95, 96, 99):
+        from test_v040_sas94 import _active_setup
+        grid,state,nml = _active_setup(cu)
+    else:
+        grid, state = _wrf_convective_case(_grid(ny=12, nx=12, dx_m=9000.0) if cu == 3 else _grid())
+        # GF's closure reads the surface-driver HFX/QFX; sf=0 has none (module_surface_driver.F:1490
+        # returns before any surface call), so GF gets the revised-MM5 surface layer.
+        nml = _namelist(grid, dt_s=300.0, mp_physics=0, bl_pbl_physics=0, sf_sfclay_physics=1 if cu == 3 else 0,
+                        cu_physics=cu)
     _resolve_operational_suite(nml)
-    carry = initial_operational_carry(state)
+    from gpuwrf.runtime.operational_mode import _initial_carry_for_run
+    carry = _initial_carry_for_run(state, nml) if cu in (14,94,95,96,99) else initial_operational_carry(state)
+    from gpuwrf.coupling.cu_forcing import cu_forcing_required, initial_cu_forcing
+    if cu_forcing_required(cu):  # t-cfix-cu: WRF's held RTHFTEN/RQVFTEN (zero at itimestep 1)
+        carry = carry.replace(cu_forcing=initial_cu_forcing(state.theta))
     forcing = _physics_step_forcing(carry, nml, 0.0, run_radiation=False)
     after = forcing.state
     assert _all_finite(after), f"cu={cu} produced a non-finite field"
@@ -467,8 +618,7 @@ def test_cumulus_tiedtke_operational_triggers_with_real_qvften() -> None:
     RQVFTEN forcing from the flux-form qv-advection diagnostic, not a synthetic
     direct kernel injection."""
 
-    grid = _grid()
-    state = _convective_state(grid)
+    grid, state = _wrf_convective_case(_grid())
     nml = _namelist(
         grid,
         dt_s=900.0,
@@ -480,8 +630,12 @@ def test_cumulus_tiedtke_operational_triggers_with_real_qvften() -> None:
         moist_adv_opt=2,
     )
     _resolve_operational_suite(nml)
-    carry = initial_operational_carry(state)
-    forcing = _physics_step_forcing(carry, nml, 0.0, run_radiation=False)
+    # WRF hands the scheme the PREVIOUS step's held RQVFTEN (t-cfix-cu F14): seed it from the
+    # flux-form qv-advection diagnostic and run itimestep 2 (WRF zeroes the forcing at step 1).
+    from gpuwrf.runtime.operational_mode import _tiedtke_qvften_from_flux_advection
+    qvften = _tiedtke_qvften_from_flux_advection(state, nml).astype(state.theta.dtype)
+    carry = initial_operational_carry(state).replace(cu_forcing=(jnp.zeros_like(state.theta), qvften))
+    forcing = _physics_step_forcing(carry, nml, float(nml.dt_s), run_radiation=False)
     after = forcing.state
     assert _all_finite(after), "cu=6 produced a non-finite field"
     assert _maxabs(after.rainc_acc) > 0.0, "cu=6 did not trigger (no convective precip)"
@@ -494,8 +648,7 @@ def test_cumulus_ntiedtke_operational_triggers_with_real_forcing() -> None:
     PBL increment) and RTHFTEN (accumulated physics theta forcing) -- the
     machine-precision-proven kernel driven end-to-end, no synthetic injection."""
 
-    grid = _grid()
-    state = _convective_state(grid)
+    grid, state = _wrf_convective_case(_grid())
     nml = _namelist(
         grid,
         dt_s=900.0,
@@ -507,8 +660,12 @@ def test_cumulus_ntiedtke_operational_triggers_with_real_forcing() -> None:
         moist_adv_opt=2,
     )
     _resolve_operational_suite(nml)
-    carry = initial_operational_carry(state)
-    forcing = _physics_step_forcing(carry, nml, 0.0, run_radiation=False)
+    # WRF hands the scheme the PREVIOUS step's held RQVFTEN (t-cfix-cu F14): seed it from the
+    # flux-form qv-advection diagnostic and run itimestep 2 (WRF zeroes the forcing at step 1).
+    from gpuwrf.runtime.operational_mode import _tiedtke_qvften_from_flux_advection
+    qvften = _tiedtke_qvften_from_flux_advection(state, nml).astype(state.theta.dtype)
+    carry = initial_operational_carry(state).replace(cu_forcing=(jnp.zeros_like(state.theta), qvften))
+    forcing = _physics_step_forcing(carry, nml, float(nml.dt_s), run_radiation=False)
     after = forcing.state
     assert _all_finite(after), "cu=16 produced a non-finite field"
     assert _maxabs(after.rainc_acc) > 0.0, "cu=16 did not trigger (no convective precip)"
@@ -554,15 +711,35 @@ def test_cumulus_tiedtke_requires_qvften_source() -> None:
 #    NONZERO radiative heating rate (RTHRATEN). mp/PBL/sfclay/cumulus disabled so
 #    the held RTHRATEN is purely the selected SW+LW pair.
 # ============================================================================
+def _goddard_radiation_smoke(grid, state):
+    """Option 5 is a paired LW/SW driver with MP8 radii and real grid geometry."""
+    from gpuwrf.coupling.physics_couplers import RRTMGRadiationStatic
+    from gpuwrf.runtime.operational_mode import _initial_carry_for_run
+    z=jnp.zeros((grid.ny,grid.nx),jnp.float32)
+    static=RRTMGRadiationStatic(jnp.full_like(z,28.3),jnp.full_like(z,-16.4),z,z,z,z,jnp.ones_like(z))
+    nml=_namelist(grid,mp_physics=8,bl_pbl_physics=0,sf_sfclay_physics=0,cu_physics=0,
+                  ra_lw_physics=5,ra_sw_physics=5,use_mp_re=1,radiation_static=static)
+    return nml,_initial_carry_for_run(state,nml)
+
+
 @pytest.mark.parametrize("ra_sw", OPERATIONAL_RA_SW)
 def test_ra_sw_operational_runs_and_heats(ra_sw: int) -> None:
     grid = _grid()
+    if ra_sw in (7,99):
+        # CPU-only legacy schemes require a paired MP8/Noah-MP caller. Their
+        # actual qualified three-step Swiss runs are FG66/69, not this MP0
+        # independent-half harness. Removing the admission guard fails here.
+        with pytest.raises(ValueError,match='requires paired'):
+            _namelist(grid,mp_physics=0,bl_pbl_physics=0,sf_sfclay_physics=0,
+                      cu_physics=0,ra_sw_physics=ra_sw)
+        return
     state = _base_state(grid)
     nml = _namelist(
         grid, mp_physics=0, bl_pbl_physics=0, sf_sfclay_physics=0, cu_physics=0, ra_sw_physics=ra_sw
     )
+    if ra_sw==5:nml,carry=_goddard_radiation_smoke(grid,state)
+    else:carry=initial_operational_carry(state)
     _resolve_operational_suite(nml)
-    carry = initial_operational_carry(state)
     forcing = _physics_step_forcing(carry, nml, 0.0, run_radiation=True)
     rth = np.asarray(forcing.carry.rthraten)
     assert np.all(np.isfinite(rth)), f"ra_sw={ra_sw} produced a non-finite RTHRATEN"
@@ -572,6 +749,11 @@ def test_ra_sw_operational_runs_and_heats(ra_sw: int) -> None:
 @pytest.mark.parametrize("ra_lw", OPERATIONAL_RA_LW)
 def test_ra_lw_operational_runs_and_cools(ra_lw: int) -> None:
     grid = _grid()
+    if ra_lw in (7,99):
+        with pytest.raises(ValueError,match='requires paired'):
+            _namelist(grid,mp_physics=0,bl_pbl_physics=0,sf_sfclay_physics=0,
+                      cu_physics=0,ra_lw_physics=ra_lw)
+        return
     state = _base_state(grid)
     # Held-Suarez (ra_lw=31) is a COMBINED idealized LW+SW scheme: WRF makes the
     # single HSRAD call and NO separate shortwave call, so the operational suite
@@ -582,8 +764,9 @@ def test_ra_lw_operational_runs_and_cools(ra_lw: int) -> None:
         grid, mp_physics=0, bl_pbl_physics=0, sf_sfclay_physics=0, cu_physics=0,
         ra_lw_physics=ra_lw, **sw_over,
     )
+    if ra_lw==5:nml,carry=_goddard_radiation_smoke(grid,state)
+    else:carry=initial_operational_carry(state)
     _resolve_operational_suite(nml)
-    carry = initial_operational_carry(state)
     forcing = _physics_step_forcing(carry, nml, 0.0, run_radiation=True)
     rth = np.asarray(forcing.carry.rthraten)
     assert np.all(np.isfinite(rth)), f"ra_lw={ra_lw} produced a non-finite RTHRATEN"
@@ -778,7 +961,10 @@ def test_sf_surface_noahclassic_operational_runs_and_advances_land() -> None:
         cosz=jnp.ones((ny, nx), dtype=jnp.float64),
     )
 
-    state_out, land_out = noahclassic_surface_step(state, land, static, 90.0, radiation=rad)
+    from gpuwrf.runtime.noahmp_precipitation import seed_precipitation
+    # WRF previous-step RAINBL/SR carry (module_surface_driver.F:1568, noahdrv.F:835/:859).
+    held = seed_precipitation(state, with_sr=True)
+    state_out, land_out = noahclassic_surface_step(state, land, static, 90.0, radiation=rad, precipitation=held)
     assert _all_finite(state_out), "Noah-classic step produced a non-finite State field"
     for leaf in jax.tree_util.tree_leaves(land_out):
         assert np.all(np.isfinite(np.asarray(leaf))), "Noah-classic land carry has a non-finite leaf"
@@ -939,7 +1125,10 @@ def test_sf_surface_pleim_xiu_operational_runs_and_advances_land() -> None:
     rad = PleimXiuRadiation(gsw=tile(600.0), glw=tile(350.0))  # daytime down-radiation
 
     # dt=180 s -> the kernel resolves the PX sub-step count statically.
-    state_out, land_out = pleim_xiu_surface_step(state, land, static, 180.0, radiation=rad)
+    from gpuwrf.runtime.noahmp_precipitation import seed_precipitation
+    # WRF previous-step RAINBL carry (module_surface_driver.F:1568, pxlsm.F:482).
+    state_out, land_out = pleim_xiu_surface_step(state, land, static, 180.0, radiation=rad,
+                                                 precipitation=seed_precipitation(state))
 
     assert _all_finite(state_out), "Pleim-Xiu step produced a non-finite State field"
     for leaf in jax.tree_util.tree_leaves(land_out):

@@ -79,6 +79,7 @@ compiles normally -- never wrong, only slower.
 from __future__ import annotations
 
 import ast
+from collections.abc import Mapping
 import dataclasses
 import functools
 import hashlib
@@ -86,6 +87,7 @@ import importlib
 import os
 import re
 import struct
+import types
 from pathlib import Path
 from typing import Any
 
@@ -133,7 +135,8 @@ __all__ = [
 #     content identity and geometry remain load-bearing key inputs.
 # v4 (2026-10-03, WN3 per-case recompiles): also canonicalizes the input path
 #   inside real-case ``DycoreMetrics.provenance`` (prefix and nz/eta kept).
-KEY_SCHEMA = "GPUWRF-AOTKEY-v4"
+# v5: bound defaults/closures, keyword static metadata, and external tables.
+KEY_SCHEMA = "GPUWRF-AOTKEY-v5"
 
 
 # --------------------------------------------------------------------------- #
@@ -175,6 +178,23 @@ def _walk(h: "hashlib._Hash", obj: Any, depth: int) -> None:
     if isinstance(obj, (bytes, bytearray)):
         _upd(h, b"y", bytes(obj))
         return
+    if isinstance(obj, Path) and obj.is_file():
+        with obj.open("rb") as source:
+            _upd(h, b"asset-content", hashlib.file_digest(source, "sha256").digest())
+        return
+    if isinstance(obj, Path):
+        # A registered runtime table that is not downloaded yet (gpuwrf.assets): key its
+        # pinned SHA-256, which equals the content digest above once it is present.
+        from gpuwrf.assets import pinned_sha256
+
+        pinned = pinned_sha256(obj)
+        if pinned is not None:
+            _upd(h, b"asset-content", bytes.fromhex(pinned))
+            return
+    if type(obj).__name__ == "LazyTable" and type(obj).__module__ == "gpuwrf.assets":
+        # Table bundle not loaded at import: key its loaded content, identical to the eager bundle.
+        _walk(h, obj.resolve(), depth)
+        return
 
     cls_name = type(obj).__name__
 
@@ -192,6 +212,25 @@ def _walk(h: "hashlib._Hash", obj: Any, depth: int) -> None:
         _walk(h, tuple(getattr(obj, "co_consts", ())), depth + 1)
         return
 
+    if isinstance(obj, types.ModuleType):
+        _upd(h, b"module", obj.__name__.encode())
+        return
+    if isinstance(obj, types.FunctionType):
+        _upd(h, b"fn", (obj.__module__ + ":" + obj.__qualname__).encode())
+        _walk(h, obj.__code__, depth + 1)
+        _walk(h, obj.__defaults__, depth + 1)
+        _walk(h, obj.__kwdefaults__, depth + 1)
+        for name, cell in zip(obj.__code__.co_freevars, obj.__closure__ or ()):
+            _upd(h, b"freevar", name.encode())
+            _walk(h, cell.cell_contents, depth + 1)
+        return
+    if isinstance(obj, functools.partial):
+        _upd(h, b"partial")
+        _walk(h, obj.func, depth + 1)
+        _walk(h, obj.args, depth + 1)
+        _walk(h, obj.keywords, depth + 1)
+        return
+
     # The two project sentinels MUST be handled before the generic paths so the
     # key has the correct (in)variance: date-blind clock aux -> fixed sentinel;
     # _StaticHolder -> CONTENT of the wrapped value (NOT its id()-based hash).
@@ -199,9 +238,26 @@ def _walk(h: "hashlib._Hash", obj: Any, depth: int) -> None:
         # #114: date-blind. Two namelists differing only in date MUST share a key.
         _upd(h, b"DATECLOCK")
         return
-    if cls_name == "_StaticHolder":
+    if any(base.__name__ == "_StaticHolder" and
+           base.__module__ == "gpuwrf.runtime.operational_mode"
+           for base in type(obj).__mro__):
         _upd(h, b"H")
         _walk(h, getattr(obj, "value", None), depth + 1)
+        return
+    if cls_name == "_UrbanBundleHolder":
+        _upd(h, b"HU")
+        _walk(h, getattr(obj, "value", None), depth + 1)
+        return
+
+    # Fused cascades close over whole namelists. Their nominally traced children
+    # become constants there, while _DateClockAux must retain its date-blind
+    # semantics. A dataclass field walk would accidentally key the dead date.
+    if (type(obj).__module__ == "gpuwrf.runtime.operational_mode" and
+            cls_name == "OperationalNamelist"):
+        _upd(h, b"closed-namelist")
+        children, aux = obj.tree_flatten()
+        _walk(h, aux, depth + 1)
+        _walk(h, children, depth + 1)
         return
 
     # Array-like (jax.Array, numpy ndarray, ShapeDtypeStruct-with-data). Content
@@ -217,11 +273,13 @@ def _walk(h: "hashlib._Hash", obj: Any, depth: int) -> None:
         try:
             host = np.ascontiguousarray(np.asarray(obj))
             _upd(h, b"bytes", host.tobytes())
-        except Exception:  # noqa: BLE001 - abstract leaf: shape+dtype is enough
+        except Exception:
+            if not isinstance(obj, jax.ShapeDtypeStruct):
+                raise  # A baked value must not silently weaken to shape/dtype.
             _upd(h, b"abstract")
         return
 
-    if isinstance(obj, dict):
+    if isinstance(obj, Mapping):
         _upd(h, b"d")
         for k in sorted(obj.keys(), key=lambda x: repr(x)):
             _walk(h, k, depth + 1)
@@ -595,6 +653,10 @@ IMPORT_TIME_ENV_CONSTANTS: tuple[tuple[str, str], ...] = (
     ("gpuwrf.runtime.operational_mode", "_CARRY_DONATE"),
     ("gpuwrf.runtime.operational_mode", "_HISTORY_SWDOWN_HORIZONTAL"),
     ("gpuwrf.kernels.layout_pin", "PARTS"),
+    ("gpuwrf.coupling.cam_radiation", "CAM_TILE_COLS"),
+    # Reached through host input-preparation imports after the feature wave.
+    # Also capture the resolved writer precision flag (live env can normalize).
+    ("gpuwrf.io.wrfout_writer", "_WRITER_RVOVRD_REAL"),
     ("gpuwrf.dynamics.core.w_surface_reset", "ENABLED"),
     ("gpuwrf.dynamics.core.acoustic", "_SPEC_W_WORK_COPY"),
     ("gpuwrf.dynamics.core.advance_w", "W_DAMP_STAGE"),
@@ -750,6 +812,18 @@ def fn_identity_hash(fn: Any) -> str:
             payload["code"] = canonical_digest(code)
         except Exception:  # noqa: BLE001
             pass
+    # The same code object can close over different tables or bind a different
+    # default array. Source identity alone cannot distinguish those programs.
+    # Let unsupported/cyclic captures refuse the cheap key through cheap_key's
+    # fail-open boundary rather than silently omitting a determinant.
+    payload["bound_values"] = canonical_digest((
+        getattr(target, "__defaults__", None),
+        getattr(target, "__kwdefaults__", None),
+        tuple((name, cell.cell_contents) for name, cell in zip(
+            getattr(code, "co_freevars", ()), getattr(target, "__closure__", None) or ())),
+        (target.args, target.keywords, target.func)
+        if isinstance(target, functools.partial) else None,
+    ))
     return canonical_digest(payload)
 
 
@@ -926,10 +1000,14 @@ def carry_aval_hash(args: tuple[Any, ...], kwargs: dict[str, Any]) -> str:
 
     # Structure fingerprint of the NON-namelist args (carry, start, clock_base,
     # ...) + the kwargs keys. args[1] is the namelist (owned by comp 3).
-    non_namelist_args = tuple(a for i, a in enumerate(args) if i != 1)
+    non_namelist_args = tuple(
+        a for a in args
+        if not (type(a).__module__ == "gpuwrf.runtime.operational_mode" and
+                type(a).__name__ == "OperationalNamelist")
+    )
     structure = {
         "args": _structure_fingerprint(non_namelist_args),
-        "kwarg_keys": tuple(sorted(kwargs.keys())),
+        "kwargs": _structure_fingerprint(kwargs),
         "n_leaves": len(flat),
     }
     payload = {
@@ -967,6 +1045,14 @@ PROCESS_INFRA_ENV: frozenset[str] = frozenset(
         "GPUWRF_MIN_FREE_VRAM_GIB",
         "GPUWRF_MIN_FREE_VRAM_FRACTION",
         "GPUWRF_REQUIRE_GPU_LOCK",
+        # Pre-Ampere admission override (runtime/gpu_preflight.py, contracts/state.py
+        # allocation guard); read only on the run's control path.
+        "GPUWRF_ALLOW_UNSUPPORTED_GPU",
+        # Pinned runtime-table cache/mirror/offline (gpuwrf.assets): table CONTENT is
+        # keyed by SHA-256, never by where it is stored or fetched from.
+        "GPUWRF_TABLES_DIR",
+        "GPUWRF_TABLES_URL",
+        "GPUWRF_TABLES_OFFLINE",
     }
 )
 
@@ -1116,6 +1202,8 @@ def program_key(
     * ``global_trace_env_hash``    -- HLO-branching GPUWRF_* trace-time env;
     * ``module_const_env_hash``    -- RESOLVED import-time env constants (P1-5).
     """
+    from gpuwrf.runtime.aot_baked_tables import baked_table_hash
+
     return canonical_digest(
         (
             KEY_SCHEMA,
@@ -1127,6 +1215,7 @@ def program_key(
             carry_aval_hash(args, kwargs),
             global_trace_env_hash(),
             module_const_env_hash(),
+            baked_table_hash(fn, namelist),
         )
     )
 

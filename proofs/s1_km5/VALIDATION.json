@@ -1,0 +1,381 @@
+{
+ "status": "READY_FOR_CRITIC",
+ "source_commit": "78bb8ca5e93e005141618c18abc1f2694377fab9",
+ "scope": {
+  "diff_opt": 2,
+  "km_opt": 5,
+  "bl_pbl_physics": 0,
+  "sf_sfclay_physics": [
+   0,
+   5
+  ],
+  "refused_mm5_callers": [
+   1,
+   91
+  ],
+  "GPU": false,
+  "sf_surface_physics": [
+   0,
+   4
+  ],
+  "sfclay0_requires_land0": true,
+  "max_dom": 1
+ },
+ "component_reuse": {
+  "passed": 36,
+  "seconds": 14.7,
+  "genuine_mutants": 3,
+  "proof": {
+   "baseline": "76d086d7d",
+   "path": "src/gpuwrf/dynamics/sms3dtke.py",
+   "only_added_helper": "common_gradient",
+   "old_module_byte_exact_after_removing_new_helper": true,
+   "sha256": "123c7d31cd031cfa770c805fb95fe6c8892953a66c12529b0223b875cfd0def8"
+  }
+ },
+ "full_operator": {
+  "experiment": "K5-64",
+  "regimes_passed": 3,
+  "tendency_channels": 13,
+  "surface_updates": 4,
+  "registered_bound": "rtol32eps32;atol32eps32*maxabs(entry)*maxabs(mass)/dt; surface/upstream strict32eps32 unchanged",
+  "fixture_reproduction": "BYTE K5-23"
+ },
+ "caller_gates": {
+  "passed": 13,
+  "experiments": [
+   "K5-24 11PASS2FAIL",
+   "K5-25 2PASS148.08s"
+  ],
+  "fixes": [
+   "independent full-carry restart SMS required/optional order",
+   "preserve SMS updates across RK origin reset"
+  ],
+  "final_composed": {
+   "experiment": "K5-48",
+   "passed": 4,
+   "source": "fed51dce0",
+   "contracts": [
+    "REAL cold seed and held preservation",
+    "pickle and NetCDF exact +missing each active leaf E78",
+    "one full source bundle and all three RK stages",
+    "surface0 actual physics skips MYNN"
+   ]
+  },
+  "runtime_checkpoint": {
+   "experiment": "K5-50",
+   "passed": 1,
+   "active_fields": 7,
+   "exact_dtype_and_bytes": true,
+   "missing_each_read_write_E78": true,
+   "rejected_write_preserves_previous": true
+  }
+ },
+ "native_preflight": {
+  "backend": "CPU",
+  "GPU_execution": false,
+  "target": "cuda/sm120",
+  "native_calls": 16,
+  "results": [
+   {
+    "name": "sms_heights",
+    "IR_characters": 115679,
+    "lowering_s": 0.04533004993572831,
+    "f64": false
+   },
+   {
+    "name": "sms_free_atmos",
+    "IR_characters": 37282,
+    "lowering_s": 0.02043137908913195,
+    "f64": false
+   },
+   {
+    "name": "sms_nonlocal_flux",
+    "IR_characters": 840060,
+    "lowering_s": 0.22509882086887956,
+    "f64": false
+   },
+   {
+    "name": "sms_meso_length",
+    "IR_characters": 1153637,
+    "lowering_s": 0.3025486699771136,
+    "f64": false
+   },
+   {
+    "name": "sms_tridiag_real",
+    "IR_characters": 420610,
+    "lowering_s": 0.14276627404615283,
+    "f64": false
+   },
+   {
+    "name": "sms_tridiag_real",
+    "IR_characters": 420610,
+    "lowering_s": 0.12944457191042602,
+    "f64": false
+   },
+   {
+    "name": "sms_tridiag_real",
+    "IR_characters": 410893,
+    "lowering_s": 0.12713452405296266,
+    "f64": false
+   },
+   {
+    "name": "sms_tridiag_real",
+    "IR_characters": 420610,
+    "lowering_s": 0.11229118797928095,
+    "f64": false
+   },
+   {
+    "name": "sms_tridiag_real",
+    "IR_characters": 420610,
+    "lowering_s": 0.12559536192566156,
+    "f64": false
+   },
+   {
+    "name": "sms_tridiag_real",
+    "IR_characters": 420610,
+    "lowering_s": 0.10929975612089038,
+    "f64": false
+   },
+   {
+    "name": "sms_tridiag_real",
+    "IR_characters": 420610,
+    "lowering_s": 0.10787272383458912,
+    "f64": false
+   },
+   {
+    "name": "sms_tridiag_real",
+    "IR_characters": 420610,
+    "lowering_s": 0.11719157686457038,
+    "f64": false
+   },
+   {
+    "name": "sms_tridiag_real",
+    "IR_characters": 420610,
+    "lowering_s": 0.10662104398943484,
+    "f64": false
+   },
+   {
+    "name": "sms_tridiag_real",
+    "IR_characters": 420610,
+    "lowering_s": 0.13001554599031806,
+    "f64": false
+   },
+   {
+    "name": "sms_tridiag_real",
+    "IR_characters": 420610,
+    "lowering_s": 0.11054715514183044,
+    "f64": false
+   },
+   {
+    "name": "sms_tridiag_real",
+    "IR_characters": 420610,
+    "lowering_s": 0.11112481914460659,
+    "f64": false
+   }
+  ]
+ },
+ "pending": [],
+ "GPU_qualification_pending": [
+  "coupled forecast fidelity",
+  "walltime/launches/traffic/peakmemory",
+  "SASS/cubin/stack",
+  "readiness"
+ ],
+ "cache": "NONE GPUWRF_JAX_CACHE=0; private pristine oracle build removed after last fixture execution",
+ "nine_stages": {
+  "experiment": "K5-64",
+  "own_steps": 3,
+  "RK_stages": 9,
+  "max_TKE_error": 5.602836608886719e-06,
+  "bound": "unchanged32eps32 relative+globalmaxref",
+  "forcing": "frozen real Swiss horizontal wind/mass/moisture/surface, evolving TKE/gamma, zero eta transport"
+ },
+ "rebase": {
+  "main": "de636d89842588825b41b5a5d7d36a3a84f905b2",
+  "source_reuse": "K5-62 six numerical modules BYTE82b9fa974",
+  "model_tree": "a7d43d3fe3a9d3794ff2a8e184140881ba740e7c",
+  "model_whole_tree_BYTE": true,
+  "source_exception": "Current main urban/history integration changes shared callers; no whole-model BYTE claim. Six SMS numerical modules unchanged.",
+  "numerical_reuse": "RESUME_COMPOSITION.json: all six SMS numerical modules BYTE936f9d766; new urban/history callers tested by current shared run",
+  "model_whole_tree_BYTE_reference": "a1ecf3870 current measured composition, not preurban source"
+ },
+ "compiled_full_operator": {
+  "experiment": "K5-64",
+  "passed": 1
+ },
+ "coupled_cpu": {
+  "experiment": "K5-63",
+  "receipt": "COUPLED_F2.json",
+  "source": "d5eb28995",
+  "steps": 3,
+  "wall_s": 472.2,
+  "nonfinite": 0,
+  "leaves": 189,
+  "raw_events": "15postRKqcnegative/3outerringafterMP",
+  "post_rk_minimum": -1.0379390923132004e-11,
+  "surviving_minimum": -7.88769548808188e-14,
+  "applied_guard_water": 0,
+  "disable_guards": true,
+  "gate": "PASS CPU coupled graduation with manager-accepted F2 disclosure; full F2 waiver FALSE",
+  "resolved": {
+   "diff_opt": 2,
+   "km_opt": 5,
+   "bl_pbl_physics": 0,
+   "mp_physics": 8,
+   "cu_physics": 0,
+   "sf_sfclay_physics": 5,
+   "sf_surface_physics": 4,
+   "dt_s": 18.0,
+   "radiation_cadence_steps": 33
+  },
+  "matched_release_control": {
+   "experiment": "K5-75",
+   "receipt": "MATCHED_CONTROL.json",
+   "steps": 3,
+   "wall_s": 238.6,
+   "nonfinite": 0,
+   "leaves": 182,
+   "post_rk_QC_negative_count": 4,
+   "surviving_ring0_QC_negative_count": 1,
+   "post_rk_minimum": -6.286283142188617e-18,
+   "surviving_minimum": -3.742363506556675e-37,
+   "actual_guard_water": 0,
+   "same_inputs_steps_precision_policy": true,
+   "original_NL_and_exact_four_SMS_edits_verified": true,
+   "standing_policy_main": "192b35d4f",
+   "guard_counts_match": false,
+   "physics_fidelity_claim": false
+  },
+  "raw_zero_candidate_assertion": "FAIL; stricterthan standing matchedguardpolicy",
+  "terminal_guard_standing_policy": "PASS K5-78: same QCfield,count3,ring0class,minindex",
+  "paired_KM2_control": {
+   "experiment": "K5-78",
+   "receipt": "PAIRED_KM2_CONTROL.json",
+   "steps": 3,
+   "wall_s": 233.8,
+   "nonfinite": 0,
+   "leaves": 183,
+   "terminal_QC_negative_count": 3,
+   "terminal_guard_field_count_location_class_match": true,
+   "post_rk_QC_negative_count": 14,
+   "post_rk_interior_count": 11,
+   "SMS_post_rk_QC_negative_count": 15,
+   "SMS_post_rk_interior_count": 12,
+   "post_rk_minimum": -2.830937307490844e-12,
+   "terminal_minimum": -2.625401151091101e-14,
+   "applied_guard_water": 0,
+   "only_resolved_change": "km_opt2->5",
+   "physics_fidelity_claim": false
+  },
+  "F2_disposition": "F2_DISPOSITION.json",
+  "raw_post_RK_disposition": "Manager accepts15vs14 visits/interior12vs11 under different turbulence closure as same round-off class; minima explicitly disclosed."
+ },
+ "archive": {
+  "experiment": "K5-36",
+  "status": "PASS",
+  "files": 14,
+  "seconds": 0.145335875,
+  "JAX_imported": false
+ },
+ "release_default": {
+  "experiment": "K5-83",
+  "source": "a1ecf3870",
+  "sha256": "2bf12cb8374d3a84a440e47dea4b77b0c7436108fc2ee2616bba6ec79b17962a",
+  "characters": 13405317,
+  "seconds": 47.7,
+  "execution_steps": 0,
+  "GPU": false,
+  "official_probe": "proofs/s1_port/release_identity.py"
+ },
+ "shared_consumers": {
+  "final_composed_host_restart_and_SMS_seams": {
+   "experiment": "K5-70",
+   "source_commit": "d5eb28995",
+   "passed": 259,
+   "failures": 0,
+   "errors": 0,
+   "seconds": 170.3,
+   "host_restart_shared_files": 11,
+   "SMS_seam_tests": 5,
+   "NetCDF_lock_tests": 3,
+   "cache": "NONE; tmp_shared/pytest/pytest_cache CLEANED",
+   "artifacts": [
+    "<USER_HOME>/wrf_gpu2_lanes/s1-km5/K5-70-final-shared.xml",
+    "<USER_HOME>/wrf_gpu2_lanes/s1-km5/K5-70-final-shared.log"
+   ]
+  },
+  "v013_receipts": {
+   "K5-42": "45 earlier prefix pass markers, source470d18c80",
+   "K5-53": "3SW suffixPASS source9fb51bfb6",
+   "K5-57": "9remaining tail assertionsPASS source6eecaf813",
+   "K5-68": "tableconsistency andnewTEMF2optionsPASS finalD5",
+   "K5-69": "changedMP14/28/40PASS finalD5"
+  },
+  "earlier_shared_union": "312passes on earlier source splits; superseded host/restart byK70",
+  "final_catalog_composition": {
+   "experiment": "K5-77",
+   "passed": 121,
+   "seconds": 7.24,
+   "selected": "implemented_notes,scheme_catalog_fail_closed,namelist_binding"
+  },
+  "final_composed": {
+   "experiment": "K5-82",
+   "source_commit": "a1ecf3870",
+   "main_base": "0bac9f30d",
+   "passed": 362,
+   "failed": 0,
+   "errors": 0,
+   "skipped": 0,
+   "seconds": 464.21,
+   "scope": "all8required shared consumerfiles inclfullv013,NetCDFlock,threeadditionalrestartreaderfiles,changedMPhistoryinventory,5SMSseams,trackedassets",
+   "numerical_source_reuse": "RESUME_COMPOSITION.json sixSMSmodules BYTE936f9d766",
+   "F2_decision": "F2_DISPOSITION.json accepted with disclosure, no full F2 waiver",
+   "artifacts": [
+    "<USER_HOME>/wrf_gpu2_lanes/s1-km5/K5-82-composed-shared.xml",
+    "<USER_HOME>/wrf_gpu2_lanes/s1-km5/K5-82-composed-shared.log"
+   ],
+   "execution": "CPU0-3,16-19 nice19 FAST0CENSUS0x641; CPUguard+Thomashelper beforepytest; timeout1800+30; no GPU",
+   "cache": "NONE; tmp_resume_shared/pytest/pytest_cache removed"
+  }
+ },
+ "upstream": {
+  "strict_cases_passed": 3,
+  "seven_fields_per_case": true,
+  "real_mixed": "K5-64 PASS",
+  "zero_tke_stable": "K5-64 PASS",
+  "periodic_convective": "K5-60 PASS, numeric modules BYTE final viaK62",
+  "correction": "explicit REAL meso gradient; no bound change"
+ },
+ "native_diagnostic_preparation": {
+  "harness": "smoke.py K5_NATIVE_GPU=1",
+  "GPU_execution": false,
+  "admission": "unlocked branch refuses before importing JAX; syntax checked",
+  "census_required": true,
+  "requirements": "COUPLED_BLOCKER.md"
+ },
+ "legacy_callers": {
+  "experiment": "K5-53",
+  "passed": 2,
+  "fixture_correction": "K5-52: eta pressure coefficients remove192rho0; independent WRF density maxdiff2.0573e-7"
+ },
+ "full_implicit_mutant": {
+  "experiment": "K5-58",
+  "genuine_numeric_assertion_kills": 1,
+  "setup_errors": 0,
+  "seconds": 192.0,
+  "change": "actual Thomas solve returns unsolved RHS"
+ },
+ "measured_model_commit": "d5eb28995",
+ "model_source_byte_exact": "SOURCE_SEAL.json: finalcurrentcode/tests/data BYTE measured a1ec; scientificSMS6reusefrom936f9 viaRESUME_COMPOSITION",
+ "cleanup": "Verified ownJAX0; privateoraclebuilds/caches/temps/detachedsnapshot removed; raw receipts/referencefixtures retained.",
+ "upstream_scope": {
+  "current_branch_base": "de636d89842588825b41b5a5d7d36a3a84f905b2",
+  "measured_composed_snapshot": "a1ecf3870",
+  "urban_history_composed": true,
+  "kernel_only_final_rebase": true,
+  "source_trees_BYTE_measured": true,
+  "shared": "K5-82 362PASS",
+  "identity": "K5-83 full2bf exact"
+ }
+}

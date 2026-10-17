@@ -463,9 +463,14 @@ def _bottom_up_from_top(work: jax.Array, n: int) -> jax.Array:
 def myjpbl_column_traceable(
     *, u, v, temperature, theta, qv, qc, p_mid, p_int, exner, dz, tke,
     tsk, xland, ustar, akhs, akms, chklowq, elflx, thz0, qz0, uz0, vz0, qsfc,
-    ct=0.0, snow=0.0, sice=0.0, dt=60.0, stepbl=1, ht=0.0,
+    ct=0.0, snow=0.0, sice=0.0, dt=60.0, stepbl=1, ht=0.0, qi=None,
 ) -> dict:
     """Single MYJ PBL column, fully ``jit``/``vmap``-traceable (pure ``jnp``).
+
+    ``qi`` is MYJPBL's optional QCI (module_pbl_driver.F:1448 always passes
+    QCI=qi_curr, so flQI=.TRUE.: CWM=QCW+QCI, species 4 = QCI, RQIBLTEN,
+    module_bl_myjpbl.F:264-273,331-332,505-509,610-616,646-647). ``None`` keeps
+    QCI=0 (MP without an ice slot: WRF's dummy moist slot).
 
     Mirrors ``physics.pbl_myj.myjpbl_column`` line-for-line. All profile inputs
     are bottom-up length-``n`` arrays; ``n`` must be a static Python int at trace
@@ -490,9 +495,11 @@ def myjpbl_column_traceable(
     th_top = _one_based_top_down(th_b, n)
     qv_top_mix = _one_based_top_down(qv_b, n)
     qc_top = _one_based_top_down(qc_b, n)
+    qi_b = jnp.zeros_like(qc_b) if qi is None else f(qi)
+    qi_top = _one_based_top_down(qi_b, n)
     p_top = _one_based_top_down(p_b, n)
     z = _one_based_interfaces(dz_b, f(ht), n)
-    cwm = qc_top
+    cwm = qc_top + qi_top  # CWM=QCW; IF (flQI) CWM=CWM+QCI (myjpbl.F:331-332)
     q2 = _one_based_top_down(2.0 * tke_b, n)
 
     idx = jnp.arange(n + 2)
@@ -534,7 +541,7 @@ def myjpbl_column_traceable(
     species = species.at[1].set(the)
     species = species.at[2].set(q_top)
     species = species.at[3].set(qc_top)
-    # row 4 (qci) stays zero
+    species = species.at[4].set(qi_top)  # NSP=4: QCI (myjpbl.F:505-509)
 
     akh_dens = jnp.zeros(n + 2, dtype=jnp.float64)
     rho_kp1 = jnp.concatenate([rho_top[1:], rho_top[-1:]])
@@ -570,7 +577,8 @@ def myjpbl_column_traceable(
     the_new = species[1]
     q_new = species[2]
     qc_new = species[3]
-    cwm_new = qc_new
+    qi_new = species[4]
+    cwm_new = qc_new + qi_new  # myjpbl.F:610-616
 
     # tendencies (bottom-up): k_b=1..n -> kflip = n+1-k_b
     thnew = the_new[kflip_full] + cwm_new[kflip_full] * C.ELOCP / exner_b
@@ -579,6 +587,8 @@ def myjpbl_column_traceable(
     dqdt = (q_new[kflip_full] - qold) * rdtturbl
     rthblten = dtdt
     rqvblten = dqdt / (1.0 - q_new[kflip_full]) ** 2
+    rqcblten = (qc_new[kflip_full] - qc_b) * rdtturbl  # myjpbl.F:646
+    rqiblten = (qi_new[kflip_full] - qi_b) * rdtturbl  # myjpbl.F:647
 
     akm_dens = jnp.zeros(n + 2, dtype=jnp.float64)
     akm_dens = akm_dens.at[1:n].set(akm[1:n] * 0.5 * (rho_top[1:n] + rho_kp1[1:n]))
@@ -599,6 +609,8 @@ def myjpbl_column_traceable(
         "RVBLTEN": rvb,
         "RTHBLTEN": rthblten,
         "RQVBLTEN": rqvblten,
+        "RQCBLTEN": rqcblten,
+        "RQIBLTEN": rqiblten,
         "PBLH": pblh,
         "KPBL": kpbl,
         "MIXHT": mixht,
@@ -613,7 +625,7 @@ def myjpbl_column_traceable(
 def myj_columns(
     u, v, temperature, theta, qv, qc, p_mid, p_int, exner, dz, tke,
     *, tsk, xland, ustar, akhs, akms, chklowq, elflx, thz0, qz0, uz0, vz0, qsfc,
-    ct=0.0, snow=0.0, sice=0.0, dt=60.0, stepbl=1, ht=0.0,
+    ct=0.0, snow=0.0, sice=0.0, dt=60.0, stepbl=1, ht=0.0, qi=None,
 ) -> dict:
     """``jax.vmap``-batched MYJ PBL over ``(ncol, nz)`` columns.
 
@@ -627,14 +639,14 @@ def myj_columns(
 
     def _one(u_c, v_c, t_c, th_c, qv_c, qc_c, pmid_c, pint_c, ex_c, dz_c, tke_c,
              tsk_c, xland_c, ust_c, akhs_c, akms_c, chk_c, elflx_c, thz0_c,
-             qz0_c, uz0_c, vz0_c, qsfc_c, ct_c, snow_c, sice_c, ht_c):
+             qz0_c, uz0_c, vz0_c, qsfc_c, ct_c, snow_c, sice_c, ht_c, qi_c):
         return myjpbl_column_traceable(
             u=u_c, v=v_c, temperature=t_c, theta=th_c, qv=qv_c, qc=qc_c,
             p_mid=pmid_c, p_int=pint_c, exner=ex_c, dz=dz_c, tke=tke_c,
             tsk=tsk_c, xland=xland_c, ustar=ust_c, akhs=akhs_c, akms=akms_c,
             chklowq=chk_c, elflx=elflx_c, thz0=thz0_c, qz0=qz0_c, uz0=uz0_c,
             vz0=vz0_c, qsfc=qsfc_c, ct=ct_c, snow=snow_c, sice=sice_c,
-            dt=dt, stepbl=stepbl, ht=ht_c,
+            dt=dt, stepbl=stepbl, ht=ht_c, qi=qi_c,
         )
 
     return jax.vmap(_one)(
@@ -647,6 +659,7 @@ def myj_columns(
         f1(tsk), f1(xland), f1(ustar), f1(akhs), f1(akms), f1(chklowq),
         f1(elflx), f1(thz0), f1(qz0), f1(uz0), f1(vz0), f1(qsfc),
         f1(ct), f1(snow), f1(sice), f1(ht),
+        None if qi is None else jnp.asarray(qi, jnp.float64),
     )
 
 

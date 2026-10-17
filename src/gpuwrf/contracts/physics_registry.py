@@ -38,10 +38,13 @@ WRF Registry lines verified against
 * MYNN(5): ``scalar:qke_adv;state:qke,tke_pbl,sh3d,sm3d,tsq,qsq,cov,el_pbl``.
 * BouLac(8): ``state:qke`` reused as the prognostic TKE storage plus PBLH/K
   diagnostics (frozen-contract extension, 2026-06-04).
-* QNSE(4), TEMF(10), EEPS(16), and KEPS(17): v0.18 reference-only PBL
+* QNSE(4): v0.18 reference-only PBL
   endpoints with fp64 pristine-WRF oracle savepoints staged under
   ``proofs/v018/savepoints_fp64``; accepted for isolated oracle comparison and
   fail-closed in the operational scan until traceable JAX kernels land.
+* EEPS(16)/KEPS(17): experimental REAL4 CPU-oracle-qualified kernels and
+  Registry scalar transport, with material compiler-initialization sensitivity
+  disclosed in proofs/s2_keps; GPU/coupled-forecast qualification pending.
 * CAM-UW(9): v0.3.4 faithful r8 port of the CAM5 vertical-diffusion stack
   (``physics/bl_camuw.py``), parity-gated against ``proofs/v034/camuw_oracle``
   (the v023 F3 oracle never initialised WRF's saturation table and is superseded).
@@ -87,10 +90,11 @@ class SchemeOption:
     owner_family: str
 
 
-ACCEPTED_MP_PHYSICS: tuple[int, ...] = (0, 1, 2, 3, 4, 6, 8, 10, 13, 14, 16, 18, 24, 26, 28, 40, 97)
+ACCEPTED_MP_PHYSICS: tuple[int, ...] = (0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 13, 14, 15, 16, 17, 18, 19, 21, 22, 24, 26, 28, 38, 40, 50, 51, 52, 53, 55, 56, 97, 11)
+
 ACCEPTED_BL_PBL_PHYSICS: tuple[int, ...] = (0, 1, 2, 3, 4, 5, 7, 8, 9, 10, 11, 12, 16, 17, 99)
-ACCEPTED_SF_SFCLAY_PHYSICS: tuple[int, ...] = (0, 1, 2, 3, 5, 7, 91)
-ACCEPTED_CU_PHYSICS: tuple[int, ...] = (0, 1, 2, 3, 4, 5, 6, 14, 16, 93, 94, 95, 96, 99)
+ACCEPTED_SF_SFCLAY_PHYSICS: tuple[int, ...] = (0, 1, 2, 3, 4, 5, 7, 10, 91)
+ACCEPTED_CU_PHYSICS: tuple[int, ...] = (0, 1, 2, 3, 4, 5, 6, 7, 10, 11, 14, 16, 93, 94, 95, 96, 99)
 ACCEPTED_SF_SURFACE_PHYSICS: tuple[int, ...] = (0, 1, 2, 3, 4, 7, 8)
 # ra_sw=3/5/7/99 (CAM/Goddard-new/FLG/GFDL-Eta) are v0.18 reference-only:
 # accepted so real-WRF oracle work can select their exact WRF radiation-driver
@@ -112,7 +116,7 @@ ACCEPTED_RA_SW_PHYSICS: tuple[int, ...] = (0, 1, 2, 3, 4, 5, 7, 99)
 # proven against the unmodified WRF source at fp64 (proofs/v017/
 # held_suarez_lw_savepoint_parity.json) and scan-wired via held_suarez_theta_tendency.
 ACCEPTED_RA_LW_PHYSICS: tuple[int, ...] = (0, 1, 3, 4, 5, 7, 31, 99)
-ACCEPTED_SF_URBAN_PHYSICS: tuple[int, ...] = (0, 2, 3)
+ACCEPTED_SF_URBAN_PHYSICS: tuple[int, ...] = (0, 1, 2, 3)
 ACCEPTED_SF_LAKE_PHYSICS: tuple[int, ...] = (0, 1)
 
 ACCEPTED_NAMELIST_OPTIONS: Mapping[str, tuple[int, ...]] = {
@@ -133,15 +137,24 @@ MP_SCHEMES: Mapping[int, SchemeOption] = {
     2: SchemeOption("mp_physics", 2, "Purdue-Lin", "linscheme", "accepted", "microphysics"),
     3: SchemeOption("mp_physics", 3, "WSM3 simple ice", "wsm3scheme", "accepted", "microphysics"),
     4: SchemeOption("mp_physics", 4, "WSM5", "wsm5scheme", "accepted", "microphysics"),
+    5: SchemeOption("mp_physics", 5, "Ferrier-Aligo", "fer_mp_hires", "accepted", "microphysics"),
+    15: SchemeOption("mp_physics", 15, "Ferrier-Aligo advected rime", "fer_mp_hires_advect", "accepted", "microphysics"),
     6: SchemeOption("mp_physics", 6, "WSM6", "wsm6scheme", "accepted", "microphysics"),
+    7: SchemeOption("mp_physics", 7, "Goddard 4-ice NUWRF", "nuwrf4icescheme", "accepted", "microphysics"),
     8: SchemeOption("mp_physics", 8, "Thompson", "thompson", "implemented", "microphysics"),
+    9: SchemeOption("mp_physics", 9, "Milbrandt-Yau two-moment", "milbrandt2mom", "implemented", "microphysics"),
     10: SchemeOption("mp_physics", 10, "Morrison two-moment", "morr_two_moment", "accepted", "microphysics"),
+    11: SchemeOption("mp_physics", 11, "CAM Morrison-Gettelman", "cammgmp", "implemented", "microphysics"),
     13: SchemeOption("mp_physics", 13, "SBU-YLin", "sbu_ylinscheme", "implemented", "microphysics"),
     14: SchemeOption("mp_physics", 14, "WDM5", "wdm5scheme", "accepted", "microphysics"),
     # v0.23 F2: Morrison-aerosol is REFERENCE-ONLY (oracles at proofs/v022/f2_oracles/
     # morrison_aero). NSSL 2-moment (18) is scan-wired since v0.3.4 (physics.nssl2mom,
     # oracle proofs/v034/f2_oracles/nssl_2mom; CPU-oracle-qualified, root domains only).
+    17: SchemeOption("mp_physics", 17, "NSSL legacy alias of 18 (WRF 4.7.1)", "nssl_2mom", "accepted", "microphysics"),
     18: SchemeOption("mp_physics", 18, "NSSL 2-moment", "nssl_2mom", "accepted", "microphysics"),
+    19: SchemeOption("mp_physics", 19, "NSSL 1-moment with hail and graupel density", "nssl_2mom", "accepted", "microphysics"),
+    21: SchemeOption("mp_physics", 21, "NSSL 1-moment without hail", "nssl_2mom", "accepted", "microphysics"),
+    22: SchemeOption("mp_physics", 22, "NSSL 2-moment without hail", "nssl_2mom", "accepted", "microphysics"),
     16: SchemeOption("mp_physics", 16, "WDM6", "wdm6scheme", "accepted", "microphysics"),
     # v0.17: WSM6 single-moment + a separate precipitating HAIL class (qh). GPU
     # scan-wired (coupling.scan_adapters.wsm7_adapter), savepoint-parity-proven
@@ -157,7 +170,14 @@ MP_SCHEMES: Mapping[int, SchemeOption] = {
     # (proofs/v016/thompson_aero_savepoint_parity.json) and wired through
     # coupling.physics_couplers.thompson_aero_adapter (mirrors mp=8).
     28: SchemeOption("mp_physics", 28, "Thompson aerosol-aware", "thompson_aero", "implemented", "microphysics"),
+    38: SchemeOption("mp_physics", 38, "Thompson variable-density hail and aerosols", "thompsongh", "accepted", "microphysics"),
     40: SchemeOption("mp_physics", 40, "Morrison aerosol-aware", "morr_tm_aero", "accepted", "microphysics"),
+    50: SchemeOption("mp_physics", 50, "P3 one-category", "p3_1category", "implemented", "microphysics"),
+    51: SchemeOption("mp_physics", 51, "P3 one-category cloud number", "p3_1category_nc", "implemented", "microphysics"),
+    52: SchemeOption("mp_physics", 52, "P3 two-category", "p3_2category", "implemented", "microphysics"),
+    53: SchemeOption("mp_physics", 53, "P3 one-category three-moment", "p3_1cat_3mom", "implemented", "microphysics"),
+    56: SchemeOption("mp_physics", 56, "NTU multi-moment aerosols/ice", "ntu", "implemented", "microphysics"),
+    55: SchemeOption("mp_physics", 55, "Jensen-ISHMAEL three ice habits", "jensen_ishmael", "implemented", "microphysics"),
     # Goddard GCE (97): v0.17 single-moment 3-ice graupel scheme, faithful
     # column port of phys/module_mp_gsfcgce.F:gsfcgce (ihail=0/ice2=0/itaobraun=1/
     # new_ice_sat=2). Uses ONLY the existing moist substrate (qv,qc,qr,qi,qs,qg)
@@ -182,34 +202,31 @@ PBL_SCHEMES: Mapping[int, SchemeOption] = {
     # the operational PBL slot (PBL_SCAN_ADAPTERS[3]); savepoint-parity-proven
     # against the unmodified WRF source at fp64 (proofs/v017/gfs_oracle.py, ~1e-13).
     3: SchemeOption("bl_pbl_physics", 3, "GFS", "gfsscheme", "implemented", "pbl"),
-    # QNSE(4): v0.18 reference-only endpoint. A fp64 pristine-WRF single-column
-    # oracle is staged (phys/module_bl_qnsepbl.F; proofs/v018/qnse_pbl4_reference_oracle.json),
-    # but no traceable JAX column kernel is scan-wired.
-    4: SchemeOption("bl_pbl_physics", 4, "QNSE-EDMF", "qnsepblscheme", "accepted", "pbl"),
+    # QNSE(4): paired native REAL columns; see proofs/s2_qnse for qualification.
+    4: SchemeOption("bl_pbl_physics", 4, "QNSE-EDMF", "qnsepblscheme", "implemented", "pbl"),
     5: SchemeOption("bl_pbl_physics", 5, "MYNN", "mynnpblscheme", "implemented", "pbl"),
     7: SchemeOption("bl_pbl_physics", 7, "ACM2", "acmpblscheme", "implemented", "pbl"),
     8: SchemeOption("bl_pbl_physics", 8, "BouLac", "boulacscheme", "accepted", "pbl"),
     # CAM-UW(9): v0.3.4 faithful r8 port, parity-gated against the fixed pristine-WRF
     # oracle proofs/v034/camuw_oracle (CPU-oracle-qualified; GPU qualification pending).
     9: SchemeOption("bl_pbl_physics", 9, "CAM-UW", "camuwpblscheme", "implemented", "pbl"),
-    # TEMF(10): v0.18 reference-only endpoint. A fp64 pristine-WRF single-column
-    # oracle is staged (phys/module_bl_temf.F; proofs/v018/temf_pbl10_reference_oracle.json),
-    # but no traceable JAX column kernel is scan-wired.
-    10: SchemeOption("bl_pbl_physics", 10, "TEMF", "temfpblscheme", "accepted", "pbl"),
+    # TEMF(10): paired REAL PBL/surface port, CPU-oracle-qualified; GPU/forecast pending.
+    10: SchemeOption("bl_pbl_physics", 10, "TEMF", "temfpblscheme", "implemented", "pbl"),
     # Shin-Hong(11): v0.18 scale-aware (grid-size-dependent) YSU-family PBL
     # (phys/module_bl_shinhong.F), scan-wired via coupling.scan_adapters.
-    # Dynamics path is parity-gated against the v090 host reference; TKE/EL are
-    # non-driving diagnostics with explicit residuals vs that PARTIAL reference
-    # (TKE rel ~=0.285, EL rel ~=0.013; refine after a pristine-WRF TKE oracle).
+    # Pristine-WRF public-call oracle (proofs/t_shinhong): op-by-op REAL4 kernel
+    # BYTE on TKE/EL/EXCH_H and u/v/theta/qv/qc/qi rates (36 columns x 3 modes,
+    # qc/qi subnormal flush only); caller passes QC3D/QI3D/CORF like WRF.
+    # Registry diag=0 holds cold REAL4 TKE=.005; mode1 diagnoses TKE (CAM-MG).
+    # CPU-oracle-qualified; GPU/coupled-forecast qualification pending.
     11: SchemeOption("bl_pbl_physics", 11, "Shin-Hong", "shinhongscheme", "implemented", "pbl"),
     # GBM(12): v0.18 JAX/vmap port of the Grenier-Bretherton-McCaa moist
     # prognostic-TKE PBL (phys/module_bl_gbmpbl.F), scan-wired via
     # coupling.scan_adapters.gbm_pbl_adapter and parity-gated against the fp64
     # pristine-WRF oracle (proofs/v018/gbm_pbl12_jax_parity.json).
     12: SchemeOption("bl_pbl_physics", 12, "GBM TKE", "gbmpblscheme", "implemented", "pbl"),
-    # EEPS/KEPS(16/17): v0.18 reference-only epsilon/k-epsilon endpoints. Their
-    # fp64 pristine-WRF single-column oracles are staged under proofs/v018, but no
-    # traceable JAX kernels are scan-wired.
+    # EEPS/KEPS(16/17): experimental REAL4 kernels and Registry transport.
+    # Original WRF 4.7.1 zero-init references: proofs/s2_keps/full_zero.json.
     16: SchemeOption("bl_pbl_physics", 16, "EEPS epsilon", "eepsscheme", "accepted", "pbl"),
     17: SchemeOption("bl_pbl_physics", 17, "KEPS k-epsilon", "kepsscheme", "accepted", "pbl"),
     # MRF(99): v0.13 jit/vmap-traceable port of phys/module_bl_mrf.F, scan-wired
@@ -223,8 +240,10 @@ SFCLAY_SCHEMES: Mapping[int, SchemeOption] = {
     1: SchemeOption("sf_sfclay_physics", 1, "sfclayrev", "sfclayscheme", "accepted", "surface_layer"),
     2: SchemeOption("sf_sfclay_physics", 2, "Janjic Eta surface layer", "myjsfcscheme", "accepted", "surface_layer"),
     3: SchemeOption("sf_sfclay_physics", 3, "NCEP GFS surface layer", "gfssfcscheme", "implemented", "surface_layer"),
+    4: SchemeOption("sf_sfclay_physics", 4, "QNSE surface layer", "qnsesfcscheme", "implemented", "surface_layer"),
     5: SchemeOption("sf_sfclay_physics", 5, "MYNN surface layer", "mynnsfclayscheme", "implemented", "surface_layer"),
     7: SchemeOption("sf_sfclay_physics", 7, "Pleim-Xiu surface layer", "pxsfclayscheme", "accepted", "surface_layer"),
+    10: SchemeOption("sf_sfclay_physics", 10, "TEMF surface layer", "temfsfcscheme", "implemented", "surface_layer"),
     91: SchemeOption("sf_sfclay_physics", 91, "old MM5 surface layer", "sfclayscheme_old", "implemented", "surface_layer"),
 }
 
@@ -245,6 +264,9 @@ CU_SCHEMES: Mapping[int, SchemeOption] = {
     # (CU_SCAN_ADAPTERS[5]); CPU-oracle-qualified (proofs/v034), GPU pending.
     5: SchemeOption("cu_physics", 5, "Grell-3D ensemble", "g3scheme", "implemented", "cumulus"),
     6: SchemeOption("cu_physics", 6, "Tiedtke", "tiedtkescheme", "accepted", "cumulus"),
+    7: SchemeOption('cu_physics',7,'CAM Zhang-McFarlane','camzmscheme','implemented','cumulus'),
+    10: SchemeOption('cu_physics',10,'KF-CuP','kfcupscheme','implemented','cumulus'),
+    11: SchemeOption('cu_physics',11,'MSKF','mskfscheme','implemented','cumulus'),
     # KIM Simplified Arakawa-Schubert (14): v0.13 Tier-3 reference-only with a
     # nontrivial fp64 pristine-WRF oracle staged; JAX kernel remains carry-over.
     14: SchemeOption("cu_physics", 14, "KIM Simplified Arakawa-Schubert", "ksasscheme", "accepted", "cumulus"),
@@ -298,7 +320,7 @@ RA_SW_SCHEMES: Mapping[int, SchemeOption] = {
     2: SchemeOption("ra_sw_physics", 2, "GSFC (Chou-Suarez) shortwave", "gsfcswscheme", "implemented", "radiation"),
     3: SchemeOption("ra_sw_physics", 3, "CAM shortwave", "camscheme", "accepted", "radiation"),
     4: SchemeOption("ra_sw_physics", 4, "RRTMG shortwave", "rrtmg_swscheme", "accepted", "radiation"),
-    5: SchemeOption("ra_sw_physics", 5, "Goddard shortwave (new)", "goddard_swscheme", "accepted", "radiation"),
+    5: SchemeOption("ra_sw_physics", 5, "Goddard shortwave (new)", "goddard_swscheme", "implemented", "radiation"),
     7: SchemeOption("ra_sw_physics", 7, "FLG (UCLA) shortwave", "flgscheme", "accepted", "radiation"),
     99: SchemeOption("ra_sw_physics", 99, "GFDL (Eta) shortwave", "gfdl_swscheme", "accepted", "radiation"),
 }
@@ -313,7 +335,7 @@ RA_LW_SCHEMES: Mapping[int, SchemeOption] = {
     # (proofs/v013/oracle/radiation_lw), but the traceable JAX column kernel is a
     # documented carry-over, so it is "accepted" (selectable for a reference
     # comparison) and fail-closes in the operational scan.
-    5: SchemeOption("ra_lw_physics", 5, "GSFC/Goddard NUWRF longwave", "goddardlwscheme", "accepted", "radiation"),
+    5: SchemeOption("ra_lw_physics", 5, "GSFC/Goddard NUWRF longwave", "goddardlwscheme", "implemented", "radiation"),
     7: SchemeOption("ra_lw_physics", 7, "FLG (UCLA) longwave", "flgscheme", "accepted", "radiation"),
     # Held-Suarez idealized radiation (31): v0.17 GPU-op no-kernel-change endpoint
     # port of phys/module_ra_hs.F:HSRAD (Newtonian relaxation toward an analytic
@@ -339,6 +361,8 @@ MOIST_SPECIES_ADDITIVE: tuple[str, ...] = ("qh",)
 MOIST_SPECIES_ALL: tuple[str, ...] = MOIST_SPECIES + MOIST_SPECIES_ADDITIVE
 
 MOIST_WRFOUT_NAME: Mapping[str, str] = {
+    "qi2": "QICE2",
+    "qi3": "QICE3",
     "qv": "QVAPOR",
     "qc": "QCLOUD",
     "qr": "QRAIN",
@@ -350,25 +374,41 @@ MOIST_WRFOUT_NAME: Mapping[str, str] = {
 }
 
 MP_MOIST_MEMBERS: Mapping[int, tuple[str, ...]] = {
+    56: ("qv", "qc", "qr", "qi", "qs", "qg", "qh"),
+    55: ('qv','qc','qr','qi','qi2','qi3'),
+    50: ('qv', 'qc', 'qr', 'qi'),
+    51: ('qv', 'qc', 'qr', 'qi'),
+    52: ('qv', 'qc', 'qr', 'qi', 'qi2'),
+    53: ('qv', 'qc', 'qr', 'qi'),
     0: ("qv",),
     1: ("qv", "qc", "qr"),
     2: ("qv", "qc", "qr", "qi", "qs", "qg"),
     3: ("qv", "qc", "qr"),
     4: ("qv", "qc", "qr", "qi", "qs"),
+    5: ("qv", "qc", "qr", "qi"),
+    15: ("qv", "qc", "qr", "qi"),
     6: ("qv", "qc", "qr", "qi", "qs", "qg"),
+    7: ("qv", "qc", "qr", "qi", "qs", "qg", "qh"),
     8: ("qv", "qc", "qr", "qi", "qs", "qg"),
+    9: ("qv", "qc", "qr", "qi", "qs", "qg", "qh"),
     10: ("qv", "qc", "qr", "qi", "qs", "qg"),
+    11: ("qv", "qc", "qr", "qi", "qs"),
     13: ("qv", "qc", "qr", "qi", "qs"),
     14: ("qv", "qc", "qr", "qi", "qs"),
     16: ("qv", "qc", "qr", "qi", "qs", "qg"),
     # v0.23 F2: NSSL 2-moment: WRF moist qg carries NSSL graupel (QH) and WRF
     # qh carries NSSL hail (QHL); Registry package nssl_2mom.
+    17: ("qv", "qc", "qr", "qi", "qs", "qg", "qh"),
     18: ("qv", "qc", "qr", "qi", "qs", "qg", "qh"),
+    19: ("qv", "qc", "qr", "qi", "qs", "qg", "qh"),
+    21: ("qv", "qc", "qr", "qi", "qs", "qg"),
+    22: ("qv", "qc", "qr", "qi", "qs", "qg"),
     # v0.17 WSM7 = WSM6 six-class + a separate precipitating hail class (qh).
     24: ("qv", "qc", "qr", "qi", "qs", "qg", "qh"),
     # v0.17 WDM7 = WDM6 six-class + a separate precipitating hail class (qh).
     26: ("qv", "qc", "qr", "qi", "qs", "qg", "qh"),
     28: ("qv", "qc", "qr", "qi", "qs", "qg"),
+    38: ("qv", "qc", "qr", "qi", "qs", "qg"),
     # v0.23 F2: Morrison-aerosol = base Morrison six-class moist set.
     40: ("qv", "qc", "qr", "qi", "qs", "qg"),
     97: ("qv", "qc", "qr", "qi", "qs", "qg"),
@@ -386,6 +426,8 @@ NUMBER_SPECIES_ADDITIVE: tuple[str, ...] = ("Nc", "Nn", "Nh", "nwfa", "nifa")
 NUMBER_SPECIES: tuple[str, ...] = NUMBER_SPECIES_EXISTING + NUMBER_SPECIES_ADDITIVE
 
 NUMBER_REGISTRY_MEMBER: Mapping[str, str] = {
+    "Ni3": "qni3",
+    "Ni2": "qni2",
     "Ni": "qni",
     "Nr": "qnr",
     "Ns": "qns",
@@ -400,6 +442,8 @@ NUMBER_REGISTRY_MEMBER: Mapping[str, str] = {
 }
 
 NUMBER_WRFOUT_NAME: Mapping[str, str] = {
+    "Ni2": "QNICE2",
+    "Ni3": "QNICE3",
     "Ni": "QNICE",
     "Nr": "QNRAIN",
     "Ns": "QNSNOW",
@@ -431,21 +475,36 @@ VOLUME_WRFOUT_NAME: Mapping[str, str] = {
 }
 
 MP_NUMBER_MEMBERS: Mapping[int, tuple[str, ...]] = {
+    56: ("Nc", "Nr", "Ni", "Ns", "Ng", "Nh"),
+    55: ('Ni','Nr','Ni2','Ni3'),
+    50: ('Ni', 'Nr'),
+    51: ('Ni', 'Nr', 'Nc'),
+    52: ('Ni', 'Nr', 'Nc', 'Ni2'),
+    53: ('Ni', 'Nr', 'Nc'),
     0: (),
     1: (),
     2: (),
     3: (),
     4: (),
+    5: (),
+    15: (),
     6: (),
+    7: (),
     8: ("Ni", "Nr"),
+    9: ("Nc", "Nr", "Ni", "Ns", "Ng", "Nh"),
     10: ("Ni", "Ns", "Nr", "Ng"),
+    11: ("Nc", "Ni", "Nr", "Ns"),
     13: (),
     14: ("Nn", "Nc", "Nr"),
     16: ("Nn", "Nc", "Nr"),
     # v0.23 F2: NSSL 2-moment Registry scalar package nssl2mconc =
     # qnn(CCN)/qndrop/qnr/qni/qns/qng/qnh; the qvolg/qvolh graupel/hail volume
     # scalars have NO State substrate yet (part of why mp=18 stays scan-unwired).
+    17: ("Nn", "Nc", "Nr", "Ni", "Ns", "Ng", "Nh"),
     18: ("Nn", "Nc", "Nr", "Ni", "Ns", "Ng", "Nh"),
+    19: ("Nn",),  # Registry nssl_ccn_opt; one-moment driver holds CN.
+    21: (),
+    22: ("Nn", "Nc", "Nr", "Ni", "Ns", "Ng"),
     # v0.17 WSM7 is single-moment (no prognostic number concentrations).
     24: (),
     # v0.17 WDM7 = WDM6 double-moment warm rain (Nn CCN, Nc, Nr); hail is
@@ -453,6 +512,7 @@ MP_NUMBER_MEMBERS: Mapping[int, tuple[str, ...]] = {
     26: ("Nn", "Nc", "Nr"),
     # WRF Registry package thompsonaero: scalar:qnc,qnr,qni,qnwfa,qnifa.
     28: ("Ni", "Nr", "Nc", "nwfa", "nifa"),
+    38: ("Ni", "Nr", "Ng", "Nc", "nwfa", "nifa"),
     # Morrison-aerosol (Registry morr_tm_aero scalar qnc,qni,qns,qnr,qng) =
     # base Morrison numbers + droplet number Nc. v0.3.4 O1 scan-wires the WRF
     # stand-alone point aercu_opt=0 (Nc = constant NDCNST output); the
@@ -718,6 +778,11 @@ FIELD_SPECS: tuple[RegistryFieldSpec, ...] = (
     ),
 )
 
+from gpuwrf.contracts.cammg_fields import STATE_FIELDS as CAMMG_STATE_FIELDS, HISTORY_NAMES as CAMMG_HISTORY_NAMES, INTERFACE_FIELDS as CAMMG_INTERFACE_FIELDS, SURFACE_FIELDS as CAMMG_SURFACE_FIELDS
+FIELD_SPECS += tuple(_field(n,CAMMG_HISTORY_NAMES.get(n,n.upper()),n,"microphysics_carry",
+    "interface_3d" if n in CAMMG_INTERFACE_FIELDS else "surface_2d" if n in CAMMG_SURFACE_FIELDS else "mass_3d",
+    "State",("mp11",),restart_required=True,wrfout_required=n in CAMMG_HISTORY_NAMES) for n in CAMMG_STATE_FIELDS)
+
 FIELD_SPECS_BY_LEAF: Mapping[str, RegistryFieldSpec] = {spec.leaf: spec for spec in FIELD_SPECS}
 
 
@@ -732,6 +797,9 @@ CUMULUS_TENDENCY_MEMBERS: Mapping[int, tuple[str, ...]] = {
     4: ("rthcuten", "rqvcuten", "rqccuten", "rqicuten", "rucuten", "rvcuten"),
     5: ("rthcuten", "rqvcuten", "rqccuten", "rqicuten", "rucuten", "rvcuten"),
     6: ("rthcuten", "rqvcuten", "rqrcuten", "rqccuten", "rqscuten", "rqicuten"),
+    7: ('rucuten','rvcuten','rthcuten','rqvcuten','rqccuten','rqicuten','rqcncuten','rqincuten'),
+    10: ('rthcuten','rqvcuten','rqrcuten','rqccuten','rqscuten','rqicuten'),
+    11: ('rucuten','rvcuten','rthcuten','rqvcuten','rqrcuten','rqccuten','rqscuten','rqicuten'),
     14: ("rthcuten", "rqvcuten", "rqccuten", "rqicuten", "rucuten", "rvcuten"),
     16: ("rthcuten", "rqvcuten", "rqrcuten", "rqccuten", "rqscuten", "rqicuten"),
     93: ("rthcuten", "rqvcuten", "rqccuten", "rqicuten"),
@@ -761,6 +829,9 @@ CUMULUS_CARRY_MEMBERS: Mapping[int, tuple[str, ...]] = {
     4: (),
     5: (),
     6: (),
+    7: ('cuplus',),  # complete resident CuPlusCarry group, including held diagnostics/events
+    10: ('cuplus',),
+    11: ('cuplus',),
     14: (),
     16: (),
     93: (),
@@ -775,9 +846,9 @@ PBL_CARRY_MEMBERS: Mapping[int, tuple[str, ...]] = {
     1: (),
     2: ("tke_pbl", "el_pbl"),
     3: (),  # GFS is a nonlocal-K scheme: no prognostic PBL carry (like YSU/MRF)
-    # QNSE(4) carries the EDKF mass-flux/updraft state documented by the WRF
-    # Registry. REFERENCE-ONLY: the carry list documents the state a future JAX
-    # kernel must thread; the operational scan fail-closes this option.
+    # QNSE(4) WRF Registry members, including optional updraft diagnostics.
+    # Operational persistent memory is QnseCarry; TKE/EL map to State qke/el_pbl.
+    # Full updraft profiles are available through the column diagnostic API.
     4: (
         "tke_pbl", "el_pbl", "massflux_EDKF", "entr_EDKF", "detr_EDKF",
         "thl_up", "thv_up", "rv_up", "rt_up", "rc_up", "u_up", "v_up",
@@ -791,7 +862,7 @@ PBL_CARRY_MEMBERS: Mapping[int, tuple[str, ...]] = {
     # the carry a future faithful port must thread.
     9: ("tke_pbl", "kvm3d", "kvh3d", "tauresx", "tauresy"),
     # TEMF(10) carries the total-energy / mass-flux diagnostic state emitted by
-    # phys/module_bl_temf.F. REFERENCE-ONLY in v0.18.
+    # phys/module_bl_temf.F; stored in OperationalCarry.temf's Registry mappings.
     10: (
         "te_temf", "kh_temf", "km_temf", "shf_temf", "qf_temf", "uw_temf",
         "vw_temf", "wupd_temf", "mf_temf", "thup_temf", "qlup_temf",
@@ -805,9 +876,8 @@ PBL_CARRY_MEMBERS: Mapping[int, tuple[str, ...]] = {
     # GBM(12) carries the TKE exchange coefficient + mixing length + TKE
     # (WRF Registry: state:exch_tke,el_pbl,tke_pbl).
     12: ("exch_tke", "tke_pbl", "el_pbl"),
-    # EEPS/KEPS reference-only carry from the WRF Registry. The ``*_adv`` members
-    # are Registry scalar fields and are listed here so future kernels preserve
-    # restart/nest ownership explicitly.
+    # EEPS/KEPS carry from the WRF Registry. The ``*_adv`` members are transported
+    # scalar fields; the versioned epsilon-PBL restart preserves all carries.
     16: ("pek_pbl", "pep_pbl", "pek_adv", "pep_adv"),
     17: (
         "tke_pbl", "diss_pbl", "tpe_pbl", "pr_pbl", "wu_tur", "wv_tur",
@@ -850,12 +920,8 @@ LAND_CARRY_MEMBERS: Mapping[int, tuple[str, ...]] = {
     # Pleim-Xiu carries the 2-layer ISBA land state (TG/T2 soil temperatures,
     # WG/W2 soil moisture, WR canopy water; physics.lsm_pleim_xiu).
     7: ("tg", "t2", "wg", "w2", "wr"),
-    # SSiB carries the SiB biophysical land state (TC canopy temperature, TGS soil
-    # surface temperature, TD deep soil temperature, WWW1/WWW2/WWW3 3-layer soil
-    # moisture, CAPAC canopy interception/snow). REFERENCE-ONLY: the carry member
-    # list documents the state the future JAX port must thread, but the operational
-    # scan fail-closes SSiB (physics.lsm_ssib; oracle staged).
-    8: ("tc", "tgs", "td", "www1", "www2", "www3", "capac"),
+    # Complete REAL/INTEGER SSIB INOUT + accumulated evaporation; 48 snow leaves.
+    8: ('www1', 'www2', 'www3', 'tc', 'tgs', 'td', 'snoa', 'roff', 'snob', 'salb11', 'salb12', 'salb21', 'salb22', 'xhsflx', 'elaten', 'ghtflx', 'xhlflx', 'tgeff', 'ustar', 'rib', 'fm', 'fh', 'cm', 'xlhf', 'xshf', 'xghf', 'xegs', 'xeci', 'xect', 'xegi', 'xegt', 'xsdn', 'xsup', 'xldn', 'xlup', 'xwat', 'xhcx', 'xhgx', 'xzlt', 'xvcf', 'xxz0', 'xveg', 'xdd', 'isnow', 'swe', 'snowden', 'snowdepth', 'tkair', 'dzo1', 'wo1', 'tssn1', 'tssno1', 'bwo1', 'bto1', 'cto1', 'fio1', 'flo1', 'bio1', 'blo1', 'ho1', 'dzo2', 'wo2', 'tssn2', 'tssno2', 'bwo2', 'bto2', 'cto2', 'fio2', 'flo2', 'bio2', 'blo2', 'ho2', 'dzo3', 'wo3', 'tssn3', 'tssno3', 'bwo3', 'bto3', 'cto3', 'fio3', 'flo3', 'bio3', 'blo3', 'ho3', 'dzo4', 'wo4', 'tssn4', 'tssno4', 'bwo4', 'bto4', 'cto4', 'fio4', 'flo4', 'bio4', 'blo4', 'ho4', 'q2m', 'ta', 'bedo', 'uv10', 'sfcevp'),
 }
 
 NOAH_CLASSIC_NUM_SOIL_LAYERS = 4
@@ -905,7 +971,22 @@ def number_species_for_mp(mp_physics: int) -> tuple[str, ...]:
 def state_leaves_for_mp(mp_physics: int) -> tuple[str, ...]:
     """Return State leaves an MP option may read/write."""
 
-    return (*moist_species_for_mp(mp_physics), *number_species_for_mp(mp_physics))
+    leaves=(*moist_species_for_mp(mp_physics), *number_species_for_mp(mp_physics))
+    if int(mp_physics)==56:
+        from gpuwrf.physics.ntu.registry import input_variables
+        return tuple(dict.fromkeys((*leaves,*input_variables())))
+    if int(mp_physics)==55:
+        from gpuwrf.physics.jensen_ishmael.registry import input_variables
+        return tuple(dict.fromkeys((*leaves,*input_variables(), 're_cloud','re_ice')))
+    if int(mp_physics) == 11:
+        from gpuwrf.contracts.cammg_fields import STATE_FIELDS
+        return (*leaves, *STATE_FIELDS)
+    if int(mp_physics) == 38:
+        return (*leaves, "qvolg")
+    if int(mp_physics) in (50,51,52,53):
+        from gpuwrf.physics.p3.registry import input_variables
+        return tuple(dict.fromkeys((*leaves,*input_variables(int(mp_physics)), 're_cloud','re_ice')))
+    return leaves
 
 
 def wrfout_names_for_mp(mp_physics: int) -> tuple[str, ...]:
@@ -914,10 +995,33 @@ def wrfout_names_for_mp(mp_physics: int) -> tuple[str, ...]:
     leaves = state_leaves_for_mp(mp_physics)
     names: list[str] = []
     for leaf in leaves:
+        if int(mp_physics)==56:
+            from gpuwrf.physics.ntu.registry import input_variables
+            mapping=input_variables()
+            if leaf in mapping:
+                names.append(mapping[leaf]);continue
+        if int(mp_physics)==55:
+            from gpuwrf.physics.jensen_ishmael.registry import input_variables
+            mapping=input_variables()
+            if leaf in mapping:
+                names.append(mapping[leaf]);continue
+        if int(mp_physics) == 11:
+            from gpuwrf.contracts.cammg_fields import HISTORY_NAMES
+            if leaf in HISTORY_NAMES:
+                names.append(HISTORY_NAMES[leaf])
+                continue
+        if int(mp_physics) in (50,51,52,53):
+            from gpuwrf.physics.p3.registry import input_variables
+            mapping=input_variables(int(mp_physics))
+            if leaf in mapping and not leaf.startswith('mp_'):
+                names.append(mapping[leaf])
+                continue
         if leaf in MOIST_WRFOUT_NAME:
             names.append(MOIST_WRFOUT_NAME[leaf])
         elif leaf in NUMBER_WRFOUT_NAME:
             names.append(NUMBER_WRFOUT_NAME[leaf])
+        elif leaf in VOLUME_WRFOUT_NAME:
+            names.append(VOLUME_WRFOUT_NAME[leaf])
     return tuple(names)
 
 
@@ -999,11 +1103,11 @@ def assert_registry_consistent() -> None:
             # v0.17: hail schemes (WSM7 mp=24, WDM7 mp=26) carry the additive qh
             # moist member, so membership is validated against MOIST_SPECIES_ALL
             # (core six + hail), not just the frozen core.
-            assert leaf in MOIST_SPECIES_ALL, f"mp={opt} moist member {leaf!r} not in MOIST_SPECIES_ALL"
+            assert leaf in (*MOIST_SPECIES_ALL, 'qi2','qi3'), f"mp={opt} moist member {leaf!r} not in MOIST_SPECIES_ALL"
             assert leaf in MOIST_WRFOUT_NAME, f"moist {leaf!r} missing wrfout name"
     for opt, members in MP_NUMBER_MEMBERS.items():
         for leaf in members:
-            assert leaf in NUMBER_SPECIES, f"mp={opt} number member {leaf!r} not in NUMBER_SPECIES"
+            assert leaf in (*NUMBER_SPECIES, 'Ni2','Ni3'), f"mp={opt} number member {leaf!r} not in NUMBER_SPECIES"
             assert leaf in NUMBER_REGISTRY_MEMBER, f"number {leaf!r} missing Registry scalar member"
             assert leaf in NUMBER_WRFOUT_NAME, f"number {leaf!r} missing wrfout name"
     for leaf in ACCUMULATORS:

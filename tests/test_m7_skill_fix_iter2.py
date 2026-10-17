@@ -84,7 +84,11 @@ def test_lateral_boundary_apply_uses_strip_matching_relax_offset():
     )
 
     assert float(out.u[0, 4, 0]) == 10.0
-    assert abs(float(out.u[0, 4, 1]) - 2.2) < 1.0e-6
+    # WRF share/module_bc.F:1371-1388 reads the original field for every
+    # fls term; the spec-zone hard set must not leak into the relax stencil.
+    # lbc_fcx_gcx gives dt*fcx=.1 and dt*gcx=.02 at this first relax row.
+    wrf_relaxed = 0.1 * 20.0 - 0.02 * (20.0 + 20.0 + 10.0 + 30.0 - 4.0 * 20.0)
+    assert abs(float(out.u[0, 4, 1]) - wrf_relaxed) < 1.0e-6
 
 
 def _write_land_wrfout(path: Path, *, tsk: float, sst: float, smois: float) -> None:

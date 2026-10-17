@@ -1,0 +1,73 @@
+{
+  "scope": "CPU-oracle-qualified spectral grid_fdda=2; GPU and full coupled-forecast qualification pending",
+  "scientific_reference": "original CPU-WRF / unmodified pristine WRF + FFTPACK5; no GPU-port baseline used as fidelity truth",
+  "core_gate": {
+    "source": "e2f3abf1e, numerical blobs unchanged through composed eb59bd019",
+    "full_caller_cases": 40,
+    "calls": 336,
+    "final_affected_checks_passed": 50,
+    "log": "<USER_HOME>/wrf_gpu2_lanes/s1-specnudge/sn12_final.log",
+    "frozen_bound": "proofs/s1_specnudge/manifest.yaml"
+  },
+  "shared_consumers": {
+    "initial_selection": 265,
+    "completed_before_timeout": 46,
+    "remaining_passed": 218,
+    "obsolete_spectral_refusal_fixed_and_passed": 1,
+    "composed_restart_checks_passed": 12,
+    "no_failed_product_gate_remains": true
+  },
+  "mutant": {
+    "change": "delete horizontal filter",
+    "genuine_numerical_assertions": 1,
+    "setup_errors": 0,
+    "log": "<USER_HOME>/wrf_gpu2_lanes/s1-specnudge/sn14_mutant.log"
+  },
+  "archive": {
+    "checks_passed": 1,
+    "tracked_only": true,
+    "initial_missing_common_asset_setup_error_retained": true,
+    "log": "<USER_HOME>/wrf_gpu2_lanes/s1-specnudge/sn15_archive2.log"
+  },
+  "short_cpu_run": {
+    "steps": 3,
+    "dt_s": 18,
+    "nonfinite": 0,
+    "guard_events": 0,
+    "legacy_FP64_harness": true,
+    "Thomas_solver_harness_same_in_both_arms": true,
+    "original_analysis_used_10_fields_byte_equal": true,
+    "source_original_exe_sha256": "1d0f5779fff143361e470e37f89c734497ed5a7bb55d0c53b7e3fccc569dd49b",
+    "full_release_gate": false,
+    "control_cold_inclusive_exec_s": 1031.7,
+    "spectral_cold_inclusive_exec_s": 925.4
+  },
+  "program_identity": {
+    "release": "2bf12cb8374d3a84a440e47dea4b77b0c7436108fc2ee2616bba6ec79b17962a",
+    "legacy_control": "3b9e3c5662099c9e3d46cc8b0b7404c5b34bcdb61b2d509b2ca051b19dde4e60",
+    "legacy_spectral": "a365cc4f32815005600869bb45db904d13f3860a347b545389341af03e77d1ab",
+    "composed_programs_exact": true,
+    "numerical_owned_files_byte_equal": {
+      "src/gpuwrf/assimilation/fdda_spectral.py": true,
+      "src/gpuwrf/coupling/fdda_spectral_rk.py": true,
+      "src/gpuwrf/coupling/fdda_rk.py": true,
+      "src/gpuwrf/io/fdda_namelist.py": true,
+      "src/gpuwrf/io/wrffdda.py": true
+    },
+    "release_spectral_REAL32_trace": "78d1846280a1664b6711fcec0bacf031facf24ffdd05fc01f4a97d91de8198ae",
+    "release_spectral_PH_carry_dtypes": {
+      "ph_old": "float32",
+      "ph_new": "float32",
+      "rphndgdten": "float32"
+    }
+  },
+  "GPU": "NOT RUN; wallclock, device launches/transfers, peak VRAM, cubin/E41 and long forecast fidelity UNKNOWN",
+  "lessons": [
+    "WRF supports spectral QV despite old lane-contract parenthetical",
+    "Original WRF SUCCESS with missing FieldType104 leaves analyses zero; initial SN08 spectral reference retracted",
+    "Packed WRF fdda3d uses mass footprint for U/V/PH; only unused public-layout slots are padded",
+    "Original PH is not mass-coupled on entry; original spectral Q stays coupled at exit; both preserved",
+    "REAL8 diagnostic must promote explicit FFTPACK REAL4 kinds; original REAL4 is the scientific truth"
+  ],
+  "composed_source": "eb59bd019 on mainf5d627cbf; later changes docs/receipts only"
+}

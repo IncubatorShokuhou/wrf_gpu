@@ -1,0 +1,83 @@
+{
+  "wrapper_sha256": "db4b2c22ae891b5838b37e78df85df885ea7a4452e24937adb90cebb628a9f3f",
+  "compile": [
+    "<USER_HOME>/miniconda3/envs/wrfbuild/bin/gfortran",
+    "-O2",
+    "-ffree-line-length-none",
+    "-fconvert=big-endian",
+    "-I<USER_HOME>/src/wrf_pristine/WRF/phys",
+    "<USER_HOME>/wrf_gpu2_lanes/b-phys/BP122/driver.f90",
+    "<USER_HOME>/wrf_gpu2_lanes/b-phys/BP122/stub.f90",
+    "<USER_HOME>/src/wrf_pristine/WRF/phys/module_ra_rrtmg_sw.o",
+    "<USER_HOME>/src/wrf_pristine/WRF/phys/module_ra_rrtmg_lw.o",
+    "<USER_HOME>/src/wrf_pristine/WRF/phys/module_ra_clWRF_support.o",
+    "-lm",
+    "-o",
+    "<USER_HOME>/wrf_gpu2_lanes/b-phys/BP122/oracle.exe"
+  ],
+  "objects": {
+    "module_ra_rrtmg_sw.o": "4be4db0d24273a8da16086b540b36273ea2e790752f990eafdf6a850bef24109",
+    "module_ra_rrtmg_lw.o": "97b0b8cb1ef30e0aa5bdab5b64cb33c0a42aafe129a592d37d6479e3be24ae7a",
+    "module_ra_clWRF_support.o": "a5a3d41ba2a9137002e86007f6dd84182b3370379060c4ddb00e3ae51649daf9"
+  },
+  "thin_caller": "OriginalSW/LW/CLWRFsupport objects, serial IO stubs only; no read_CAMgases stub; original dated-reader initialized correctly, REAL8gasoutputs; clear+allskyselected separately. PORT-view references, PREFIX vsCORE smallCPUroundoff differences disclosed.",
+  "wrapper_total_sha256": "4b8069ad812b56dd32b142cee31eae8ece3f7dca599591c827a533153cea5680",
+  "fixture_sha256": "d5c586ea3971baef66d7d043515cd41029bbf44526edb37120ed27883aee81a8",
+  "input_scope": "Original CPU-WRF N36 hydrated PORT-view 8 landcols/d03+d02, plus 2overcastlandd03 and2seaScd02. Exact originalSW solver references atJulian59.5 GHG1 SSP245; PREFIX_CORE_IDENTITY tracks eager/JIT smallinputdifferences.",
+  "selection": [
+    {
+      "dom": "d03",
+      "selection": "CF>=.9 positiveLWP smallest/largest;d02SEA,d03ALL (no d03SEA>=.9 exists)",
+      "coordinates": [
+        [
+          66,
+          78
+        ],
+        [
+          74,
+          77
+        ]
+      ],
+      "lwp_kgm2": [
+        0.00010115809709532186,
+        0.17433026432991028
+      ],
+      "cloudmax": [
+        1.0,
+        0.9850330948829651
+      ],
+      "xland": [
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "dom": "d02",
+      "selection": "CF>=.9 positiveLWP smallest/largest;d02SEA,d03ALL (no d03SEA>=.9 exists)",
+      "coordinates": [
+        [
+          6,
+          250
+        ],
+        [
+          15,
+          181
+        ]
+      ],
+      "lwp_kgm2": [
+        0.21808740496635437,
+        9.791574484552257e-07
+      ],
+      "cloudmax": [
+        0.9912606477737427,
+        0.9936736822128296
+      ],
+      "xland": [
+        2.0,
+        2.0
+      ]
+    }
+  ],
+  "clear_reference": "PIFM_PROBE original refs; allsky_reference=ALLSKY_PROBE andTHICK_ALLSKY original refs",
+  "flux_bounds": "abs.02+2e-5rel all4fluxes; clearSFC signedmean.05; frozenlegacyfullcloud manifest1+5% unchanged and tighternew diagnosticpassed"
+}

@@ -1,0 +1,35 @@
+{
+  "status": "READY-FOR-CRITIC",
+  "critic": "rv-t-heavytests",
+  "request": "MANAGER FIX: visible heavy skip reason + output assertion",
+  "source": "8e8b677cd187d27376ac6340665b9653f15bde7e",
+  "results": "5PASS1explicitSKIP; both default and -m heavy subprocess outputs assert full resource/optin reason; opt-in sentinel assertions still execute",
+  "skip_reason": "heavy CPU test needs ~17 GiB; run with --run-heavy in a 24G RAM slot",
+  "max_rss_kib": 70492,
+  "process_wall_s": 2.58,
+  "swap": 0,
+  "cap": "official6G/noSwap",
+  "work": "JAXcpu GPUWRF_JAX_CACHE0 FAST0 x64 XLA_cpu_multi_thread_eigen=false CPU2,3NI19 timeout120",
+  "numerical_reuse": {
+    "source": "2d3a593a5",
+    "test_files_BYTE_unchanged": [
+      "tests/dynamics/test_sms3dtke_full.py",
+      "tests/v025/b_column/test_kf_rk.py",
+      "tests/v025/b_core/prod_inputs.py",
+      "tests/test_v0234_b2_bounded_terminal_gate.py"
+    ],
+    "src_scripts_data_BYTE_unchanged": true,
+    "authority": "critic FIX explicitly says no numerical repeat needed"
+  },
+  "receipts_sha256": {
+    "review-fix.log": "bb3460deb332833ccef7cbe03fbb549993e60d4cae659ce92977cbc99db3722b",
+    "review-fix.time": "b7895a85758650fa80b4b6b3ebdd15786273183bdab07b1f1128da61d106b305",
+    "review-fix.xml": "690b988340d2c0bb96f1da7f89b004765a47ac55aa325820e8e8761c127ad157"
+  },
+  "post_rebase_reuse": {
+    "delivery": "8d8de9189a33b7646870ce68fc915f6af372e11f",
+    "main": "643afb1d485c227bc2a43ade10ced016b96c79c1",
+    "consulted_codepaths_BYTE_identical_to": "37e3bc947",
+    "base_changes": "four kernel lane/critic contracts only; no SRC/tests/scripts/data/pyproject changes"
+  }
+}
