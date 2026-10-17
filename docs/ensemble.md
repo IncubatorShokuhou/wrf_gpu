@@ -5,9 +5,11 @@ verification use NumPy, the existing NetCDF reader lock and the merged
 `gpuwrf verify` extraction/observation adapters. They run on CPU and never step
 the forecast model. CLI products, verification and preparation are tested with
 JAX imports blocked. The launch action delegates memory admission, multi-GPU
-placement (M1), checkpoint stores and retries to `scripts/run_parallel_cases.sh`.
-Actual GPU ensemble qualification is pending. CPU tests use explicitly fake
-members and analytic fields; those tests are not WRF forecast fidelity evidence.
+placement, checkpoint stores and retries to `scripts/run_parallel_cases.sh`.
+The ensemble tools are tested on the CPU; running many members on one GPU uses
+the same forecast program as single runs. Real multi-GPU scaling has not been
+measured. CPU tests use explicitly fake members and analytic fields; those
+tests are not WRF forecast fidelity evidence.
 
 ## Inventory and gridded products
 
@@ -134,8 +136,8 @@ runs WPS/real.exe. It hashes inputs once, symlinks the shared wrfinput/wrfbdy an
 optional top-level forcing/table files, copies a private namelist per member,
 and writes member manifests and `plan.json`. The merged `gpuwrf manifest` API
 records source-case input/source/environment provenance once per original case
-in `source_manifests/`; physics members share that receipt and separately record
-their selected copied namelist/configuration. The source-case receipt describes
+in `source_manifests/`; physics members share that record and separately record
+their selected copied namelist/configuration. The source-case record describes
 preparation, while the scheduler records each actual run's environment. Preserve the original inputs while
 the plan is in use. Source histories, restart outputs and logs are not linked.
 Each member gets its own run/output/checkpoint directory from the scheduler.
@@ -161,31 +163,27 @@ Every wrfinput initialization must agree with its namelist. Delayed nest starts
 are refused; root dt must divide the requested hours exactly (dt=54 s needs
 multiples of 3 h). Root boundary Times must be ordered and cover the full run.
 Preparation does not certify a selected physics scheme: the model's existing
-namelist binding/honour and scientific gates remain authoritative. Lagged
+namelist checks and the scheme's validation status still apply. Lagged
 plans record the common forecast window; products still use actual emitted
 valid times through `--alignment intersection`.
 
-Launch requires the source checkout with the existing scheduler. On the shared
-development host use its official lease/lock for admission dry-runs too:
+Launch requires a source checkout, which contains the scheduler
+(`scripts/run_parallel_cases.sh`):
 
 ```bash
-# Only within a manager-granted GPU window on this host:
-source <USER_HOME>/wrf_gpu2_lanes/driver_bridge_59591/bridge.env
-scripts/with_gpu_lock.sh --label u1-ens -- timeout 1800 \
-  gpuwrf ens launch --plan physics-ensemble/plan.json
+gpuwrf ens launch --plan physics-ensemble/plan.json
 ```
 
-The scheduler preserves caller CUDA/JAX settings, assigns one GPU per member,
-admit cases by VRAM and host RAM, and records placement/measurements in its
-receipts. `--checkpoint-interval-steps` and `--retry-failed` on preparation are
-delegated to its existing isolation/recovery logic. The official GPU lock
-descriptor is preserved through launch. The command does not spawn any agents.
-For offline work pin `JAX_PLATFORMS=cpu`; for actual GPU launch supply the
-approved GPU environment through the lock wrapper. No hardware throughput or
-fidelity claim follows from fake-member CPU qualification.
+The scheduler preserves the caller's CUDA/JAX settings, assigns one GPU per
+member, admits cases by VRAM and host RAM, and records placement and
+measurements in its run records. `--checkpoint-interval-steps` and
+`--retry-failed` on preparation are passed to its existing isolation/recovery
+logic. For offline work set `JAX_PLATFORMS=cpu`; for a GPU launch, run the
+command in your normal GPU environment. The CPU tests with fake members make no
+hardware throughput or fidelity claim.
 
 After a run, create the product inventory from the chosen domain's actual
 wrfout files under each `runs/member-*/wrfout`. Batch runs are independent cases;
 only combine them into ensemble products if valid times/grid/meaning actually
-match. The scheduler's per-member receipts and this tool's input manifests
+match. The scheduler's per-member run records and this tool's input manifests
 provide complementary provenance.

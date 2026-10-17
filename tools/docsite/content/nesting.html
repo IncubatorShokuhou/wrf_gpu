@@ -1,11 +1,11 @@
 <h1>Nesting</h1>
 
-<p class="lead">wrf_gpu runs <strong>one-way live nesting</strong> — validated on the three-domain Tenerife release gate in v0.3.0 and
-through <code>d01&nbsp;→&nbsp;…&nbsp;→&nbsp;d09</code> on the v0.23.4 one-hour fixture — entirely on the GPU. The parent domain advances and
-<strong>builds each child's lateral boundary live</strong> during the run, so you do
-<strong>not</strong> need a pre-supplied <code>wrfbdy_d02</code>. The child's initial condition comes
-from its own <code>wrfinput_d0N</code>; only <code>wrfbdy_d01</code> forces the root. There is no
-CPU-WRF <code>wrfout</code> dependency.</p>
+<p class="lead">wrf_gpu runs <strong>fixed nested domains together on the GPU</strong>. The parent
+domain builds each child's lateral boundary live during the run, so you do <strong>not</strong> need a
+<code>wrfbdy_d02</code>: each child starts from its own <code>wrfinput_d0N</code>, and only
+<code>wrfbdy_d01</code> forces the outer domain. The default physics are validated on nested forecasts:
+24-hour comparisons with the original CPU-WRF on three-domain Tenerife (9/3/1 km) and two-domain Canary
+Islands (9/3 km) cases, and 72-hour runs in earlier releases.</p>
 
 <h2 id="how-it-works">How live nesting works</h2>
 <p>The nested driver is a standalone recursion faithful to WRF's <code>module_integrate</code>
@@ -28,7 +28,7 @@ matches WRF's usual configuration where <code>parent_time_step_ratio</code> equa
 <code>--max-dom&nbsp;N&nbsp;&gt;&nbsp;1</code> all domains <code>d01..dN</code> run together as the live-nested
 forecast.</p>
 
-<pre><code>python -m gpuwrf.cli run --input-dir my_case --output-dir runs/nested \
+<pre><code>gpuwrf run --input-dir my_case --output-dir runs/nested \
     --max-dom 3 --hours 24 --scratch-dir /fast/nvme/gpuwrf_scratch</code></pre>
 
 <div class="admon note">
@@ -43,9 +43,9 @@ forecast.</p>
 
 
 <h2 id="gwd">Gravity-wave drag on nests</h2>
-<p>Orographic gravity-wave drag (<code>gwd_opt=1</code>) is <strong>default-ON on the nested 1&nbsp;km
-path</strong>. Set <code>GPUWRF_GWD_NESTED=0</code> to force it off for a memory-tighter config. See
-<a href="dynamics.html#gwd">Dynamical Core</a>.</p>
+<p>Orographic gravity-wave drag (<code>gwd_opt=1</code>) is used on every domain that requests it in the
+namelist. Set <code>GPUWRF_GWD_NESTED=0</code> to switch it off on nests to save memory. See
+<a href="dynamics.html#gwd">dynamical core</a>.</p>
 
 <h2 id="restart">Restart</h2>
 <p>Nested runs (<code>max_dom &gt; 1</code>), like native single-domain d01 runs, write verified, rotating
@@ -54,20 +54,28 @@ all domains are captured at one synchronized time) and resume in the same output
 <code>--resume-checkpoint GEN</code>. The namelist <code>restart</code>/<code>restart_interval</code> settings do
 not provide crash recovery. See <a href="running.html#restart">Running</a>.</p>
 
-<h2 id="two-way">Opt-in two-way feedback</h2>
-<p>Two-way nesting is <strong>opt-in</strong> via the <code>--feedback</code> flag (nested runs only).
-After each child finishes its sub-cycle, its interior is fed back onto the overlapping parent cells
-using WRF's <strong><code>copy_fcn</code> area-average</strong> plus the
-<strong><code>sm121</code> feedback-zone smoother</strong>. The default is off (one-way nesting, the
-validated wiring).</p>
-
-<div class="admon warn"><div class="admon-title">Source-specific two-way qualification</div><p>The current registered c42/5c15881ede has full24h original-CPU scientific D6 PASS, complete inventory and50 paired domain-frames, with E41FAIL disclosed. The raw historical CLAT failure is preserved. This is not arbitrary nested-scheme qualification. Source and tags are published; GitHub release assets await owner authentication; see the <a href="release/SUPPORT_MATRIX_v0.4.0.md">matrix</a>.</p></div>
-<h2 id="moving-nests">Moving nests are refused</h2><p>Moving and vortex-following configurations are outside this release's operational scope. Historical experimental driver fixtures do not authorize production support.</p>
-<h2 id="single-domain-evidence">Nested not validated</h2><p>Where a single-domain-only option remains admitted for nesting, explicitly report <strong>nested not validated</strong>. This includes advanced surface/PBL/cumulus paths without matched evidence; actual refusals still apply.</p>
+<h2 id="two-way">Two-way nesting</h2>
+<p>Two-way nesting is off by default. Turn it on with <code>feedback=1</code> in the namelist or with
+<code>gpuwrf run --feedback</code>. After each child finishes its sub-steps, its interior is fed back onto
+the overlapping parent cells with WRF's area average, followed by the smoother selected with
+<code>smooth_option</code> (0, 1 or 2).</p>
+<div class="admon warn"><div class="admon-title">Status: validated on one set-up</div><p>Two-way nesting
+passed a 24-hour comparison with the original CPU-WRF on one two-domain configuration (Thompson, MYNN,
+Noah-MP, RRTMG, no cumulus, <code>smooth_option=2</code>). It runs only with the default physics
+(Kain-Fritsch cumulus or none), an odd <code>parent_grid_ratio</code> and without nudging, lakes, urban
+models, SST updates or online diagnostics; other set-ups stop with a message. Its
+compiled GPU code exceeds our code-quality limits for speed and robustness; it runs correctly, but its
+speed has not been measured.</p></div>
+<h2 id="moving-nests">Moving nests are not supported</h2>
+<p>Moving and vortex-following nests stop with a message. Use fixed nests.</p>
+<h2 id="single-domain-evidence">Options inside nests</h2>
+<p>The default physics are validated inside nests. Most other options were checked in single-domain
+forecasts only: they run inside nests but are not validated there. A few are refused in nested runs:
+the RUC land model, the single-layer urban model, the 3-D TKE turbulence options (<code>km_opt=2/5</code>),
+digital filter initialization and splitting a domain across GPUs; <code>gpuwrf doctor</code> and <code>gpuwrf run</code> name them before the forecast starts.</p>
 <div class="admon note">
   <div class="admon-title">See also</div>
-  <p><a href="running.html">Running the Model</a> for the full <code>gpuwrf run</code> command,
-  <a href="dynamics.html">Dynamical Core</a> for the sub-cycling and lateral-boundary numerics, and
-  <a href="performance.html">Performance</a> for the nested-run compile, VRAM, and throughput
-  behavior.</p>
+  <p><a href="running.html">Running the model</a> for the <code>gpuwrf run</code> options,
+  <a href="dynamics.html">dynamical core</a> for sub-cycling and lateral boundaries, and
+  <a href="performance.html">performance</a> for compile time, memory and speed of nested runs.</p>
 </div>

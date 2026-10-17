@@ -4,6 +4,11 @@ Some physics schemes read large lookup tables (Thompson cold collection, hail mp
 Tables larger than 10 MiB are not inside the Python wheel. They are published as assets of the matching GitHub
 release and pinned by SHA-256 in `src/gpuwrf/assets_manifest.json`.
 
+**Note (v0.4.0):** Large microphysics lookup tables, including the Thompson tables of the default physics, are
+downloaded on first use from the GitHub release. The upload of the v0.4.0 tables is still pending; until it is done,
+runs that need them stop with an "asset unavailable" message, and `python -m gpuwrf.assets fetch` cannot download
+them either.
+
 - **Where they come from:** neither the wheel nor the public git repository contains them. `gpuwrf run`
   downloads the tables of the selected microphysics scheme once before the model starts, from
   `https://github.com/wrf-gpu/wrf_gpu/releases/download/v<version>/<asset>`, checks the SHA-256 and stores them in

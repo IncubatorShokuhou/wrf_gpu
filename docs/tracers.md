@@ -1,17 +1,18 @@
 # Passive tracers
 
+**Status in v0.4.0: Validated 24 h.** Passed a 24-hour comparison with the original CPU WRF in the v0.4.0 release check, in one tested single-domain configuration. Other combinations and nested domains are not validated. Its compiled GPU code exceeds the project's code-quality limits for speed and robustness; it runs correctly, but its speed has not been measured. The tracer concentrations themselves have no acceptance limit; WRF-Chem and two-way tracer feedback are not supported.
+
 Passive tracers follow resolved scalar transport and generic WRF PBL diffusion.
 They do not change the meteorological state. This feature is opt-in and does not
 require WRF-Chem. It is not a chemistry, aerosol microphysics, or pollen biology
-model. GPU and coupled-forecast qualification must be reported separately from
-host-input validation and CPU component checks.
+model.
 
-The original CPU-WRF three-step comparison reaches maximum absolute tracer
-error `1.3697e-4`, above its fixed `1e-4` gate: **FAIL-explained**. Matched pristine
-PD operators are exact at the worst positions; TR31 attributes the remaining
-trajectory difference to shared acoustic/dynamics inputs. Tracer acceptance uses
-operator checks and mass conservation. Coupled qualification remains subject to
-the final composite D6 validation. See the
+In a short three-step CPU comparison with the original CPU WRF, the largest
+absolute tracer error was `1.3697e-4`, above that test's fixed `1e-4` limit. The
+positive-definite transport operators match the original WRF code exactly at the
+worst positions; the remaining difference comes from shared acoustic and
+dynamics inputs. Tracer checks therefore rely on operator comparisons and mass
+conservation. See the
 [qualification evidence](../proofs/u2_tracers/QUALIFICATION.json).
 
 WRF `tracer_opt = 2` supplies eight dimensionless WRF test fields. These use the

@@ -1,11 +1,15 @@
-# Known issues — v0.4.0 draft and v0.3.4 history
+# Known issues — v0.4.0 (released 17 October 2026)
 
 **Default path frozen — 2026-10-16 11:59:18Z.** Main `5c15881ede`
 (`403240f257` adds proof only) carries the caller-audit repairs and device-only
 C5′ MYNN default. Release identities are Swiss **3356e249** and PROD d01
 **196aed9f**. F20 plus C5′ original-CPU 24h default gates are closed; the
-FINAL composite checkpoint is **66/66 accepted-scope scientific D6 PASS (65 full24h + c45 accepted6h)** at00:26Z on17October.
-Final publication follows final review and the release chain. Historical f672a573/6fc715a2 receipts remain pre-F20 baseline evidence.
+FINAL composite checkpoint is **66/66 accepted-scope scientific D6 PASS (65 full24h + c45 accepted6h)** at 00:26Z on 17 October.
+Source code and tags are published. Large microphysics lookup tables, including the Thompson tables of the default
+physics, are downloaded automatically on first use from the
+[v0.4.0 GitHub release](https://github.com/wrf-gpu/wrf_gpu/releases/tag/v0.4.0) and checked against pinned SHA-256 sums.
+See [runtime tables](docs/runtime-tables.md).
+Historical f672a573/6fc715a2 receipts remain pre-F20 baseline evidence.
 
 
 ## Current frozen default and composite checkpoint
@@ -40,12 +44,12 @@ the successful run used a48GiB host-memory cap, not a measured requirement.
 
 ## v0.4.0 draft qualification limits
 
-**DRAFT.** These limits apply to the development candidate and the exact
-source-specific receipts below. Final release approval is **TBD-VALIDATION**.
+These limits apply to the v0.4.0 release and the exact source-specific
+receipts below.
 The [support matrix](docs/release/SUPPORT_MATRIX_v0.4.0.md),
 [historical frozen snapshot](proofs/r_docs040/EVIDENCE_SNAPSHOT.json) and
 [post-merge reconciliation](proofs/r_docs040/RECONCILIATION.json) distinguish
-bounded D6 results, field coverage, E41 resources and pending final-source work.
+bounded D6 results, field coverage, E41 resources and items that are not yet validated.
 The v0.3.4 statements retained below are dated historical records.
 
 ### E41 and incomplete forecast coverage

@@ -42,15 +42,17 @@ SITE = [
         ("ai-quickstart","Quickstart with an AI Agent", "Quickstart with an AI Agent",
          "Clone the repo, open an AI coding agent, and say 'here is my input, get it running' — the repo ships an operator skill the agent auto-loads."),
         ("running",      "Running the Model",           "Running the Model",
-         "The gpuwrf run command reference: replay vs native-init, single-domain and nested forecasts, restart, and two-way nesting."),
+         "Run a forecast with gpuwrf run: the bundled case, your own case, nests, checkpoints and restart, GPU memory."),
+        ("tools",        "Tools & Commands",            "Tools and Commands",
+         "Every gpuwrf command: region set-up, case checks, weather products, station verification, ensembles, export, cycling and several GPUs."),
         ("input-data",   "Input Data & Initialization", "Input Data & Initialization",
          "Prepared wrfinput/wrfbdy inputs, optional wrflowinp SST forcing, namelist controls and verified restart."),
     ]),
     ("Configuration", [
         ("namelist",     "Namelist Compatibility",      "Namelist Compatibility",
-         "Which WRF namelist options run, which fail closed with a named reason, and the scheme-triage classification."),
+         "How your WRF namelist is checked, the status of each model feature (nudging, DFI, urban, lake, ocean, wind farms, tracers, diagnostics) and what is not supported."),
         ("physics",      "Physics Options",             "Physics Options",
-         "The GPU-operational physics menu — microphysics, cumulus, PBL, surface layer, radiation, land surface — with option numbers and status."),
+         "Every WRF physics option code (microphysics, cumulus, PBL, surface layer, land, radiation) and Noah-MP option, with its v0.4.0 status."),
         ("environment",  "Environment Variables",       "Environment Variables",
          "Reference for the GPUWRF_* environment variables: paths, output, performance and precision modes, caching, nesting, and debugging."),
         ("output",       "Output Files",                "Output Files",
@@ -60,19 +62,19 @@ SITE = [
         ("dynamics",     "Dynamical Core",              "Dynamical Core",
          "The nonhydrostatic split-explicit ARW dynamical core: RK3, WRF-derived acoustic substeps, default fp32 with DOUBLE islands, diffusion and boundaries."),
         ("nesting",      "Nesting",                     "Nesting",
-         "One-way live nesting, domain ratios and sub-cycling, opt-in two-way feedback, moving nests, and gravity-wave drag on nests."),
+         "Fixed nests run together on the GPU: one-way nesting, sub-cycling, two-way feedback, restart and what is not supported."),
     ]),
     ("Performance & validation", [
         ("performance",  "Performance & GPU Modes",     "Performance & GPU Modes",
          "Cold compile and warm-start cache, the batched-ensemble throughput mode, optional fp32, VRAM, the scaling law and energy."),
-        ("validation",   "Validation & WRF Identity",   "Validation & WRF Identity",
-         "How wrf_gpu is validated against WRF as an oracle: original CPU-WRF hourly comparisons, frozen metrics, predictability context and source-specific validated scope."),
+        ("validation",   "Validation against WRF",      "Validation against WRF",
+         "How wrf_gpu is checked against the original CPU-WRF: same inputs, every hourly field, limits fixed in advance, and the results of each release."),
         ("limitations",  "Boundaries & Known Issues",   "Boundaries & Known Issues",
-         "What wrf_gpu does and does not claim: the forecast-skill gate, the terrain ceiling, out-of-scope schemes, and the known-issues list."),
+         "What v0.4.0 does not cover yet: untested combinations, nests, experimental features, unsupported WRF components and known numerical issues."),
     ]),
     ("Reference", [
         ("version-history", "Version History",          "Version History",
-         "Release-by-release history of wrf_gpu from the fp64 kernel line through the v0.3.0 fused-fp32 GPU release."),
+         "Release-by-release history of wrf_gpu, from the first GPU kernels to v0.4.0."),
         ("credits",      "Credits, License & Citation", "Credits, License & Citation",
          "Credit to the WRF/NCAR/UCAR team, the AI authorship of this rewrite, licensing notes, and how to cite the project."),
         ("glossary",     "Glossary",                    "Glossary",
@@ -199,11 +201,49 @@ def add_headerlinks(content):
     return re.sub(r'<(h[23])([^>]*)>(.*?)</\1>', repl, content, flags=re.S)
 
 
+GITHUB_BLOB = "https://github.com/wrf-gpu/wrf_gpu/blob/main/"
+_HREF = re.compile(r'href="([^"]*)"')
+
+
+def page_anchors(content):
+    return set(re.findall(r'\bid="([^"]+)"', content))
+
+
+def rewrite_links(content, pid, repo, anchors, problems):
+    """Pages serves docs/ as plain files (.nojekyll): a .md target arrives as raw text and a
+    path outside docs/ is a 404. Point those at the rendered GitHub page instead, and record
+    every link whose target file or in-guide anchor does not exist."""
+    def repl(m):
+        url = m.group(1)
+        if not url or url.startswith(("#", "/", "mailto:")) or re.match(r"[a-z][a-z0-9+.-]*://", url, re.I):
+            if url.startswith("#") and url[1:] and url[1:] not in anchors[pid]:
+                problems.append(f"{pid}: missing anchor {url}")
+            return m.group(0)
+        path, _, frag = url.partition("#")
+        target = os.path.normpath(os.path.join("docs", path))
+        if "/" not in path and path.endswith(".html") and path[:-5] in anchors:  # another guide page
+            if frag and frag not in anchors[Path(path).stem]:
+                problems.append(f"{pid}: missing anchor {url}")
+            return m.group(0)
+        if not (repo / target).exists():
+            problems.append(f"{pid}: missing target {url}")
+            return m.group(0)
+        if target.startswith("docs" + os.sep) and not path.endswith(".md"):
+            return m.group(0)  # served by Pages as is (evidence galleries, images)
+        return f'href="{GITHUB_BLOB}{Path(target).as_posix()}{"#" + frag if frag else ""}"'
+    return _HREF.sub(repl, content)
+
+
 def build(out_dir: Path):
     root = Path(__file__).resolve().parent
     template = (root / "template.html").read_text()
     content_dir = root / "content"
     assets_src = root / "assets"
+    repo = root.parents[1]
+    fragments = {pid: (content_dir / f"{pid}.html").read_text()
+                 for pid in IDS if (content_dir / f"{pid}.html").exists()}
+    anchors = {pid: page_anchors(c) for pid, c in fragments.items()}
+    problems = []
 
     out_dir.mkdir(parents=True, exist_ok=True)
     assets_out = out_dir / "_assets"
@@ -222,7 +262,7 @@ def build(out_dir: Path):
             content = f"<h1>{html.escape(title)}</h1><p><em>Content pending.</em></p>"
             subnav = []
         else:
-            content = frag_path.read_text()
+            content = rewrite_links(fragments[pid], pid, repo, anchors, problems)
             ex = SectionExtractor()
             ex.feed(content)
             ex.close()
@@ -285,6 +325,8 @@ def build(out_dir: Path):
     print(f"Search index: {len(search_index)} entries")
     if missing:
         print(f"WARNING: {len(missing)} pages have no content fragment yet: {', '.join(missing)}")
+    if problems:
+        raise SystemExit("broken guide links:\n  " + "\n  ".join(problems))
 
 
 def main():

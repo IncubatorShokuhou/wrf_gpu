@@ -1,8 +1,11 @@
 # WRF lake model
 
+**Status in v0.4.0: Validated 24 h.** Passed a 24-hour comparison with the original CPU WRF in the v0.4.0 release check, in one tested single-domain configuration. Other combinations and nested domains are not validated. Its compiled GPU code exceeds the project's code-quality limits for speed and robustness; it runs correctly, but its speed has not been measured.
+
 `sf_lake_physics=1` opts into the WRF lake model with Noah-MP, Thompson (`mp_physics=8`),
-MYNN (`bl_pbl_physics=5`) and MYNN surface layer (`sf_sfclay_physics=5`). The model is
-**CPU-oracle-qualified; GPU/coupled-forecast qualification pending**. The default
+MYNN (`bl_pbl_physics=5`) and MYNN surface layer (`sf_sfclay_physics=5`). The lake
+code is also checked on the CPU against the original WRF routines. The tested
+24-hour configuration used real lake cells with WRF's default lake depth. The default
 `sf_lake_physics=0` keeps the released program unchanged.
 
 The port implements `lakeini` and the full `Lake`/`LakeMain` timestep from
@@ -32,8 +35,8 @@ Lake-free domains retain current Noah-MP GRDFLX/ALBEDO history without running
 LakeMain or constructing lake atmosphere inputs.
 
 Auxinput4 `sst_update`, DFI and other LSM/microphysics/PBL partners combined
-with lake physics are refused. Each nested domain binds its own bundle.
-GPU compilation, cubin checks, memory/launch counts and timing are pending.
+with lake physics are refused. Each nested domain binds its own bundle; nested lake runs are not validated.
+GPU memory use, launch counts and speed have not been measured.
 
 The [fixtures](../proofs/s1_lake/fixtures/manifest.json) come from the full original
 WRF `Lake` wrapper after `lakeini`, retaining REAL32 forcing rounding and the
@@ -53,8 +56,8 @@ A real Swiss 42×42×44 CLI case with two explicitly synthetic lake mask/depth
 and water-category tiles completed three full CPU RK/physics steps. Meteorology
 and geometry were retained. Lake state stayed finite REAL32 and evolved; the
 actual Noah-MP kernel received 1×1762 non-lake columns. Pickle and NetCDF retained
-every lake leaf exactly. This is a CPU smoke, not a coupled forecast comparison
-against original WRF, and not GPU qualification.
+every lake leaf exactly. This short CPU test is separate from the 24-hour GPU
+forecast comparison.
 One further diagnostic step from that exact saved restart reported zero
 pre-repair guard events and zero negative/nonfinite/above-cap moisture visits.
 
@@ -62,7 +65,7 @@ Three standalone DOUBLE helpers (Combo, MoninObukIni, Tridiagonal) match origina
 WRF at frozen `2e-14` relative tolerance. The separate DOUBLE QSat cold-limit
 diagnostic has `1.09e-11` relative CPU-JIT FMA contraction error (eager meets
 `2e-14`); barriers/fast-math switches did not remove it. The full timestep is
-qualified at WRF's saved REAL32 interface and unchanged trajectory bounds;
+checked at WRF's saved REAL32 interface and unchanged trajectory bounds;
 no DOUBLE-exact QSat claim is made.
 
 `OperationalCarry.lake` stores 22 compact arrays, held surface outputs and the
@@ -70,20 +73,19 @@ pre-correction energy residual, plus two packed full-grid GRDFLX/ALBEDO planes.
 All leaves are float32. Standard lake history/restart fields have 10 water/soil
 property levels, 15 snow/soil levels and 16 interfaces; exact compact leaves are
 also saved in the native extension. Active restarts reject missing/old schemas,
-missing fields, wrong shapes/dtypes or nonfinite data (E78). Inactive old files
+missing fields, wrong shapes/dtypes or nonfinite data. Inactive old files
 accept the absent group. Output expands the carry without a lake re-solve.
 
 Default configurations add no device work/storage. Lake payload costs 808 bytes
 per column before diagnostics; two Swiss lake tiles use 15,808 bytes including
-held fields/background. Noah-MP gather/scatter traffic is opt-in. GPU resources
-remain unmeasured; CPU component/smoke timings are not GPU/S1 speed claims.
-The two-column CPU Lake executable compiled in 111.02 s on shared core 12;
+held fields/background. Noah-MP gather/scatter traffic is opt-in. GPU resource use
+has not been measured; the CPU timings below are not GPU speed claims.
+The two-column CPU Lake executable compiled in 111.02 s on one shared CPU core;
 eight warm calls had a 0.722 ms median, 18,049 bytes of compiler-reported
 temporary storage and 1,960 bytes of compiled output. These component values
 exclude the Noah-MP partition and full forecast work.
 
-Regenerate references with `proofs/s1_lake/generate.py` and `generate_helpers.py`
-using lane-owned `--out`, CPU-only environment, assigned affinity, timeout and
-QUIET check. Private builds clean up after use; small fixtures are tracked and
-archive-tested. `coupled_smoke.py` records the synthetic edits and original/
+Regenerate references with `proofs/s1_lake/generate.py` and `generate_helpers.py`,
+using your own `--out` directory and a CPU-only environment. Private builds clean
+up after use; small fixtures are tracked in the repository. `coupled_smoke.py` records the synthetic edits and original/
 modified input checksums.

@@ -1,5 +1,7 @@
 # WRF station time series
 
+**Status in v0.4.0: Experimental.** It runs, but has not yet passed a 24-hour comparison with the original CPU WRF.
+
 Place a WRF `tslist` in the input run directory passed to `gpuwrf run`. This
 opts a fresh native single-case forecast into station output. Without that
 file, the compiled forecast program has no station sampler or station buffer.
@@ -62,7 +64,7 @@ sampling does not rerun surface physics or radiation. NaN/Inf batches fail
 before file append.
 
 The initial implementation supports Noah-MP with held in-step surface and
-radiation diagnostics, fresh native B=1 runs, and static nests. Checkpoint/
+radiation diagnostics, fresh native single-case (B=1) runs, and static nests. Checkpoint/
 resume, homogeneous batching and CPU-history replay with a tslist are refused.
 Buffered tslist carries are also refused by restart serialization. WRF
 restart-style file replacement/append and moving-station relocation are not
@@ -75,13 +77,13 @@ Original CPU-WRF Swiss evidence is tracked under `proofs/u2_tslist/oracle`:
 four completed steps, two stations, eight files each; LAT/LON and I/J with
 unstaggered profiles. All five condensate species are additionally exercised
 by a verbatim pristine `calc_p8w`/CLW source oracle on real Swiss pressure and
-height columns. A short real GPU arm also qualifies buffer flushing, executable
-resources and matched observer cost; receipts are in
-`proofs/u2_tslist/receipts/qualification.json`. Long coupled-forecast fidelity
-remains pending.
+height columns. A short GPU run also checks buffer flushing, compiled-program
+resources and the extra cost of sampling; the records are in
+`proofs/u2_tslist/receipts/qualification.json`. Long-forecast fidelity has not
+been checked.
 
-Offline extensions select surface variables and output intervals without
-altering the WRF raw stream:
+The offline `gpuwrf tslist-export` tool runs on the CPU. It selects surface
+variables and output intervals without altering the WRF raw stream:
 
 ```bash
 gpuwrf tslist-export --input ctr.d01.TS --output ctr.csv \
@@ -97,8 +99,8 @@ positive interval alarm (dt=18, interval=60 keeps t=72,126,…). Filtering uses
 the WRF file's rounded hours. No interpolation or missing sample is invented.
 CSV column names identify variables; the table above defines their units.
 NetCDF includes units and time origin. Export initializes no JAX backend and refuses an
-existing destination. `station-csv` uses the u1 station tool's canonical CSV
-schema and validator, and can be passed directly to `gpuwrf verify --model`.
+existing destination. `station-csv` uses the station verification tool's
+canonical CSV schema and validator, and can be passed directly to `gpuwrf verify --model`.
 It requires the station UID from your station metadata table. It converts T2
 to °C and earth U10/V10 to speed plus meteorological direction (and retains
 components). Calm samples omit undefined direction. This schema supports

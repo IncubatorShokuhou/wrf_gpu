@@ -1,11 +1,12 @@
 # Station observation nudging
 
-`obs_nudge_opt=1` selects WRF station nudging on the root domain. The current
-qualified path uses MYNN PBL and surface layer (`bl_pbl_physics=5`,
+**Status in v0.4.0: Validated 24 h.** Passed a 24-hour comparison with the original CPU WRF in the v0.4.0 release check, in one tested single-domain configuration. Other combinations and nested domains are not validated. Its compiled GPU code exceeds the project's code-quality limits for speed and robustness; it runs correctly, but its speed has not been measured.
+
+`obs_nudge_opt=1` selects WRF station nudging on the root domain. The supported
+path uses MYNN PBL and surface layer (`bl_pbl_physics=5`,
 `sf_sfclay_physics=5`), Lambert conformal, polar stereographic or Mercator maps.
 Single-level surface/upper-air reports and multi-level soundings share the
-original WRF error calculation and spreading rules. GPU and long coupled
-forecast qualification remain pending.
+original WRF error calculation and spreading rules.
 
 Place `OBS_DOMAIN101` beside `wrfinput_d01` and the namelist. This is the
 **processed WRF observation-nudging file**, produced by WRF OBSGRID/little_r

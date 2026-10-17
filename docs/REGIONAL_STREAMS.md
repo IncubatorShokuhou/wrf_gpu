@@ -1,8 +1,11 @@
-# Regional output streams (development v0.4)
+# Regional output streams
+
+**Status in v0.4.0: Experimental.** It runs, but has not yet passed a 24-hour comparison with the original CPU WRF.
 
 Put `gpuwrf.streams.json` beside `namelist.input` for a native `gpuwrf run`.
 The feature is opt-in. Hourly full-domain history keeps its normal cadence.
-Check a file before a forecast with `gpuwrf stream-check --input gpuwrf.streams.json --dt 18`.
+Check a file before a forecast with `gpuwrf stream-check --input gpuwrf.streams.json --dt 18`
+(runs on the CPU, offline).
 
 ```json
 {
@@ -81,7 +84,7 @@ interval can reuse the compiled program; restart still binds the exact stream
 file and checks selected coordinates. Changed shapes or variable/statistic
 selections require a new executable. Buffer flushes preserve committed placement.
 
-Native B=1 single-domain/nested runs and operational checkpoint/resume are
+Native single-case (B=1) single-domain/nested runs and operational checkpoint/resume are
 supported. Checkpoints preserve partial windows and authenticate already
 published chunks. Resume verifies committed files, removes only authenticated
 later chunks, and refuses foreign/corrupt collisions or configuration changes.
@@ -90,6 +93,6 @@ importing a generic carry does not recover its output journal. Homogeneous
 batching and CPU-history replay are refused. WRF tslist can coexist on fresh
 runs; tslist's own restart restriction still applies.
 
-Qualification receipts are in `proofs/u2_streams/`; see the lane handoff for
-measured scope. A component comparison with original CPU-WRF auxhist fields
-qualifies sampling/window arithmetic, not a long coupled forecast or station RMSE.
+Qualification records are in `proofs/u2_streams/`. A component comparison
+with original CPU-WRF auxhist fields checks the sampling and window arithmetic,
+not a long coupled forecast or station RMSE.

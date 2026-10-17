@@ -1,0 +1,116 @@
+<h1>Tools and commands</h1>
+<p class="lead">Everything runs through one program, <code>gpuwrf</code>. Only the forecast itself needs
+the GPU. The other commands work offline on the CPU with files you already have, and the ones that read
+history files accept CPU-WRF <code>wrfout</code> files as well as wrf_gpu output.</p>
+<h2 id="all-commands">All commands</h2>
+<p><code>gpuwrf &lt;command&gt; --help</code> shows every option of a command. The tools are tested on
+the CPU; they never change forecast results, and a statistics or calibration tool is not by itself a
+claim of better forecast skill.</p>
+<div class="table-scroll"><table><thead><tr><th>Command</th><th>What it does</th><th>Runs on</th><th>Guide</th></tr></thead><tbody>
+<tr><td><code>quickstart</code></td><td>Sets up a forecast for your own region from open NOAA GFS data, using the original WPS and <code>real.exe</code>, and can start the forecast. <span class="pill optin">Experimental</span></td><td>CPU; GPU with <code>--run</code></td><td><a href="onboarding.md">region guide</a></td></tr>
+<tr><td><code>run</code></td><td>Runs a forecast (single domain or fixed nests), with checkpoints and resume.</td><td>GPU</td><td><a href="running.html">running</a></td></tr>
+<tr><td><code>doctor</code></td><td>Checks a case before you run it: inputs, options, time step and GPU memory.</td><td>CPU</td><td><a href="doctor.md">doctor guide</a></td></tr>
+<tr><td><code>namelist-support</code></td><td>Lists every physics option code the program knows and whether it accepts it.</td><td>CPU</td><td><a href="physics.html">physics</a></td></tr>
+<tr><td><code>manifest</code>, <code>reproduce</code></td><td>Records checksums of a case's inputs, source and environment, and checks them again later. <code>reproduce</code> never starts a forecast.</td><td>CPU</td><td><a href="doctor.md">doctor guide</a></td></tr>
+<tr><td><code>post</code></td><td>Derived products: wind, cloud, precipitation, snow, thermal comfort, instability, helicity, freezing level, synthetic radar and application products for wind energy, solar, icing, frost, visibility and fire weather.</td><td>CPU</td><td><a href="post.md">products</a>, <a href="post_apps.md">applications</a>, <a href="radar.md">radar</a></td></tr>
+<tr><td><code>verify</code></td><td>Compares forecasts with station observations from a CSV file, or downloads METAR or ISD-Lite reports when asked.</td><td>CPU</td><td><a href="station_verification.md">station verification</a></td></tr>
+<tr><td><code>calibrate fit</code>, <code>calibrate apply</code></td><td>Station bias correction or simple linear MOS, trained on past dates only.</td><td>CPU</td><td><a href="regional_optimization.md">optimisation guide</a></td></tr>
+<tr><td><code>perturb</code></td><td>Creates ensemble member cases with perturbed winds in the initial and boundary conditions (<code>--ic-only</code>: initial conditions only).</td><td>CPU</td><td><a href="stochastic.md">perturbations</a></td></tr>
+<tr><td><code>ens prepare</code>, <code>ens launch</code>, <code>ens products</code>, <code>ens verify</code></td><td>Plans and launches ensemble members, then computes ensemble statistics and probabilistic scores.</td><td>CPU; GPU for <code>launch</code></td><td><a href="ensemble.md">ensemble guide</a></td></tr>
+<tr><td><code>optimize identity</code>, <code>plan</code>, <code>run</code>, <code>score</code></td><td>Chooses between physics configurations for your region with a study that keeps test dates separate from training dates.</td><td>CPU; GPU for <code>run</code></td><td><a href="regional_optimization.md">optimisation guide</a></td></tr>
+<tr><td><code>export</code></td><td>Writes CF-NetCDF, Zarr or GRIB2 subsets: surface fields, pressure levels, regions.</td><td>CPU</td><td><a href="export.md">export guide</a></td></tr>
+<tr><td><code>tslist-export</code></td><td>Converts WRF station time-series files (<code>*.TS</code>) to CSV or NetCDF.</td><td>CPU</td><td><a href="TSLIST.md">tslist guide</a></td></tr>
+<tr><td><code>stream-check</code></td><td>Checks a regional output stream file (<code>gpuwrf.streams.json</code>) before a run.</td><td>CPU</td><td><a href="REGIONAL_STREAMS.md">streams guide</a></td></tr>
+<tr><td><code>cycle</code></td><td>Carries soil and snow state from a previous forecast into a new <code>wrfinput</code>.</td><td>CPU</td><td><a href="cycling.md">cycling guide</a></td></tr>
+<tr><td><code>python -m gpuwrf.assets</code></td><td>Lists, downloads or verifies the large physics tables (<code>list</code>, <code>fetch</code>, <code>verify</code>).</td><td>CPU</td><td><a href="runtime-tables.md">runtime tables</a></td></tr>
+<tr><td><code>scripts/run_parallel_cases.sh</code></td><td>Runs several forecasts side by side on one GPU or across several GPUs.</td><td>GPU</td><td><a href="#several-forecasts">below</a></td></tr>
+</tbody></table></div>
+<h2 id="region">Set up a forecast for your region</h2>
+<pre><code class="language-bash">gpuwrf quickstart --profiles     # how large a grid fits on a 12-32 GB GPU
+gpuwrf quickstart --bbox -17 28 -16 28.6 --resolution-km 9 \
+  --date 2026-10-12T00 --hours 3 --case-dir work/tenerife --run</code></pre>
+<p>Without <code>--prepare</code> or <code>--run</code> the command only prints a plan. <code>--prepare</code>
+downloads the GFS data and runs WPS and <code>real.exe</code>; <code>--run</code> also starts the GPU
+forecast. Use a recent GFS cycle as the date. The <a href="onboarding.md">region guide</a> covers the
+container that builds WPS and WRF for you, the geography data and each step. Region set-up is
+<span class="pill optin">Experimental</span>: its preparation steps are tested on three areas, but GPU
+forecasts for new regions have not yet been compared with CPU-WRF, and the grid sizes from
+<code>--profiles</code> are estimates.</p>
+<h2 id="check">Check a case before running</h2>
+<pre><code class="language-bash">gpuwrf doctor /path/to/case
+gpuwrf manifest /path/to/case --output runs/case_manifest.json
+gpuwrf reproduce runs/case_manifest.json --case-dir /path/to/case</code></pre>
+<p><code>doctor</code> reports missing inputs, refused options, the time-step stability margin (CFL) and an
+estimate of GPU memory. <code>manifest</code> and <code>reproduce</code> let you prove later that a
+forecast used exactly these inputs.</p>
+<h2 id="products">Weather products</h2>
+<pre><code class="language-bash">gpuwrf post --list-products
+gpuwrf post --input runs/my_case/wrfout_d01_* --output runs/products.nc \
+  --product wind10,precip,cloud --rolling-hours 3 6</code></pre>
+<p>Each product writes CF-annotated NetCDF variables. Thermodynamic products (thermal, instability,
+helicity) need the optional MetPy package and helicity needs <code>--storm-u/--storm-v</code>; the solar
+product needs <code>pip install 'gpuwrf[apps]'</code>. <code>--product radar</code> computes reflectivity, composite reflectivity, echo
+tops and vertically integrated liquid from the history fields.</p>
+<h2 id="verification">Station verification and calibration</h2>
+<pre><code class="language-bash">gpuwrf verify --stations stations.csv --obs observations.csv \
+  --model runs/my_case/wrfout_d01_* --output-dir runs/verification
+gpuwrf calibrate fit --stations stations.csv --obs past-obs.csv \
+  --forecasts past-forecasts.csv --method bias --output station-model.json
+gpuwrf calibrate apply --model station-model.json \
+  --forecasts future-forecasts.csv --output corrected-stations.csv</code></pre>
+<p><code>verify</code> downloads observations only with <code>--fetch-observations metar</code> or
+<code>isd-lite</code>; with <code>--obs</code> it stays offline. The
+<a href="station_verification.md">station verification guide</a> explains station heights, wind
+heights, land-aware sampling and precipitation intervals.</p>
+<h2 id="ensembles">Ensembles</h2>
+<pre><code class="language-bash">gpuwrf perturb --case CASE --output runs/wind-members \
+  --members 5 --seed 451 --wind-std 0.05
+gpuwrf ens prepare --mode batch --cases runs/wind-members/member-* \
+  --output-dir runs/member_plan --hours 24
+gpuwrf ens launch --plan runs/member_plan/plan.json
+gpuwrf ens products --members members.json --variable T2 --output runs/ensemble_T2.nc</code></pre>
+<p><code>ens prepare</code> also builds physics ensembles (<code>--mode physics</code>, one case with several
+namelists) and lagged ensembles (<code>--mode lagged</code>). <code>ens launch</code> checks GPU and host
+memory and runs as many members side by side as fit. <code>ens verify</code> gives probabilities,
+scores and reliability against station observations. Stochastic physics inside the model
+(<code>skebs</code>, <code>sppt</code>, <code>spp</code>) is a namelist feature and is
+<span class="pill optin">Experimental</span>; see the <a href="ensemble.md">ensemble guide</a>.</p>
+<h2 id="optimise">Choose physics for your region</h2>
+<pre><code class="language-bash">gpuwrf optimize plan --study study.json --output runs/study_plan.json
+gpuwrf optimize run --study study.json --output runs/regional-study
+gpuwrf optimize score --study study.json --forecasts forecasts.json --output runs/selection.json</code></pre>
+<p>A study lists candidate physics configurations (only ones the program accepts), training dates and
+held-out test dates. <code>optimize identity</code> prints the model version the study is bound to.
+The <a href="regional_optimization.md">optimisation guide</a> describes the study file.</p>
+<h2 id="export">Export and station files</h2>
+<pre><code class="language-bash">gpuwrf export --input runs/my_case/wrfout_d01_* --output runs/surface.nc \
+  --format netcdf --variables T2 PSFC U10 V10
+gpuwrf tslist-export --input runs/my_case/STATION.d01.TS --output station.csv</code></pre>
+<p><code>export</code> also writes pressure levels (<code>--pressure-levels</code>), regional cut-outs
+(<code>--region</code>), Zarr and GRIB2 on an explicit grid (<code>pip install 'gpuwrf[export]'</code>).
+<code>--raw</code> keeps the native WRF dimensions and attributes.</p>
+<h2 id="cycling">Soil and snow cycling</h2>
+<pre><code class="language-bash">gpuwrf cycle --source previous_cycle/wrfout_at_new_init \
+  --wrfinput new_case/wrfinput_d01 --output new_case/wrfinput_cycled_d01</code></pre>
+<p>The source history must be valid at the new start time and on the same grid. The command writes a new
+file and never overwrites the template. Cycling is not data assimilation and is different from restarting
+a stopped forecast; see the <a href="cycling.md">cycling guide</a>.</p>
+<h2 id="several-forecasts">Several forecasts and several GPUs</h2>
+<pre><code class="language-bash">scripts/run_parallel_cases.sh --out-root runs/batch CASE_A CASE_B CASE_C -- \
+  --domains-from-namelist --hours 24
+scripts/run_parallel_cases.sh --gpus all --out-root runs/ens MEMBER_01 MEMBER_02 -- \
+  --domains-from-namelist --hours 24</code></pre>
+<p>Independent forecasts can share one GPU; the launcher starts as many as fit in memory, and one failed
+case never stops the others. With <code>--gpus</code> each forecast runs on one GPU of several. A single
+very large domain can also be split across GPUs with <code>gpuwrf run --decompose 2x1</code>.
+<span class="pill optin">Experimental</span>: both multi-GPU paths are tested on simulated devices only;
+no run on real multi-GPU hardware has been measured yet. See
+<a href="MULTI_GPU.md">several GPUs</a>.</p>
+<h2 id="tables">Runtime tables</h2>
+<pre><code class="language-bash">python -m gpuwrf.assets list      # every table and where it is found
+python -m gpuwrf.assets fetch --all
+python -m gpuwrf.assets verify</code></pre>
+<p>Large microphysics lookup tables, including the Thompson tables of the default physics, are
+downloaded on first use from the GitHub release and checked against pinned checksums. The upload of the
+v0.4.0 tables is still pending; until it is done, runs that need them stop with an "asset unavailable"
+message. <a href="runtime-tables.md">Runtime tables</a> explains the cache and offline use.</p>

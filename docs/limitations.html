@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Boundaries &amp; Known Issues — wrf_gpu User's Guide</title>
-  <meta name="description" content="What wrf_gpu does and does not claim: the forecast-skill gate, the terrain ceiling, out-of-scope schemes, and the known-issues list.">
+  <meta name="description" content="What v0.4.0 does not cover yet: untested combinations, nests, experimental features, unsupported WRF components and known numerical issues.">
   <meta name="color-scheme" content="light dark">
   <link rel="icon" type="image/svg+xml" href="_assets/logo.svg">
   <link rel="stylesheet" href="_assets/style.css">
@@ -40,6 +40,7 @@
 <a class="" href="quickstart.html">Quickstart</a>
 <a class="" href="ai-quickstart.html">Quickstart with an AI Agent</a>
 <a class="" href="running.html">Running the Model</a>
+<a class="" href="tools.html">Tools &amp; Commands</a>
 <a class="" href="input-data.html">Input Data &amp; Initialization</a>
 <div class="group-title">Configuration</div>
 <a class="" href="namelist.html">Namelist Compatibility</a>
@@ -51,14 +52,16 @@
 <a class="" href="nesting.html">Nesting</a>
 <div class="group-title">Performance &amp; validation</div>
 <a class="" href="performance.html">Performance &amp; GPU Modes</a>
-<a class="" href="validation.html">Validation &amp; WRF Identity</a>
+<a class="" href="validation.html">Validation against WRF</a>
 <a class="active" href="limitations.html">Boundaries &amp; Known Issues</a>
 <div class="subnav">
-<a href="limitations.html#gates">Separate the gates</a>
-<a href="limitations.html#current">Current qualification limits</a>
-<a href="limitations.html#inputs">Input and nesting boundaries</a>
+<a href="limitations.html#gates">What the validation covers</a>
+<a href="limitations.html#current">Experimental and partly validated</a>
+<a href="limitations.html#inputs">Nests and inputs</a>
+<a href="limitations.html#numerics">Known numerical issues</a>
 <a href="limitations.html#performance">Performance and hardware</a>
-<a href="limitations.html#history">Historical science records</a>
+<a href="limitations.html#release-files">Release files</a>
+<a href="limitations.html#history">Earlier releases</a>
 </div>
 <div class="group-title">Reference</div>
 <a class="" href="version-history.html">Version History</a>
@@ -70,21 +73,81 @@
       <main>
         <div class="breadcrumb"><a href="index.html">User's Guide</a> › Performance &amp; validation › Boundaries &amp; Known Issues</div>
         <h1>Boundaries and known issues</h1>
-<p class="lead">v0.4.0 source and tags are released. Default source/identities and F20/C5′ gates are frozen. FINAL00:26Z17October:66/66 accepted-scope scientific D6PASS (65full24h + c45accepted6h); Scientific validation is complete. The old c11 cold-cap failure remains historical; the reviewed batch65 source now has full24h D6/inventory/NF0 PASS with E41 disclosed.</p>
-<h2 id="gates">Separate the gates<a class="headerlink" href="#gates" aria-label="Permalink">¶</a></h2>
-<p>Bounded D6 applies only to fields with frozen limits. REPORT_ONLY fields have no invented tolerance; missing fields make full coverage incomplete. E41 resources, F2 pre-mask events, restart and station skill are separate. Default WN3/PROD/Swiss F20 must pass E41. Opt-in composites require strict D6, complete inventory and NF0, with raw E41 FAIL disclosed as perf/robustness limits. F2 remains separate. Finite history does not justify intermediate negatives or repairs.</p>
-<h2 id="current">Current qualification limits<a class="headerlink" href="#current" aria-label="Permalink">¶</a></h2>
-<p>km3 is GPU-refused; CAM-MG11 uses stock Triton3.6.x with c89 scientific PASS/native E41 UNKNOWN. The paid c05 ACM2 successor passes source-specific D6; Jensen/NTU writers are merged; c87 scientific PASS/E41FAIL; c88 full24h scientific PASS/E41FAIL; c11 full24h PASS/E41-disclosed. Goddard5/5 has an accepted6h gate and a24h attempt missing its final frame. <a href="../KNOWN_ISSUES.md#c11-resolved-compiler-stall-and-residual-resources">c11 host compile/RAM note</a>. The <a href="release/E41_LEDGER_v0.4.0.md">complete provisional E41 inventory</a> retains resource failures on exact executables.</p>
-<p>Original MYNN cold-start undefined initialization, P3/Jensen/WDM5 precision residuals and NTU source-diffusion negatives remain disclosed. Class-D producers are merged and the66 registered accepted scientific scopes are complete (65 full24h plus c45 accepted6h). Active green-roof/PV/aerosol branches remain refused; other unqualified regimes retain their recorded limits. GitHub release assets await owner authentication; remote runtime-table fetches fail until upload. Read the <a href="release/RELEASE_NOTES_v0.4.0.md">release notes</a> and <a href="release/SUPPORT_MATRIX_v0.4.0.md">support matrix</a>.</p>
-<h2 id="inputs">Input and nesting boundaries<a class="headerlink" href="#inputs" aria-label="Permalink">¶</a></h2>
-<p>Surface mosaic is refused. Crop/tile/map-selected irrigation needs valid geography; synthetic maps do not supply scientific truth. Options with only single-domain evidence are <strong>nested not validated</strong> where admitted. Actual refused combinations remain refused. Moving/vortex-following nests and unsupported chemistry/fire/hydrology/DA paths remain outside this release.</p>
+<p class="lead">What wrf_gpu v0.4.0 does not cover yet, in plain words. The full technical record is in
+the repository's <a href="https://github.com/wrf-gpu/wrf_gpu/blob/main/KNOWN_ISSUES.md">known issues</a> and the
+<a href="https://github.com/wrf-gpu/wrf_gpu/blob/main/docs/release/SUPPORT_MATRIX_v0.4.0.md">support matrix</a>.</p>
+<h2 id="gates">What the validation covers<a class="headerlink" href="#gates" aria-label="Permalink">¶</a></h2>
+<ul>
+<li>wrf_gpu is compared with the <strong>original CPU-WRF</strong> run from the same inputs, not with
+observations. The results are close to WRF, not bit-identical; small differences grow with forecast
+time, as between two CPU-WRF builds. No better or worse forecast skill than WRF is claimed.</li>
+<li>Each option and feature marked validated was checked in <strong>one configuration</strong>: 65
+configurations over 24 hours and Goddard radiation over six hours, mostly in single-domain forecasts. The
+default physics are the most tested. Experimental, CPU-only and Python-API-only options are outside these
+checks, and other combinations are not validated.</li>
+<li>Fixed acceptance limits exist for the main fields (for example 2 m temperature, surface pressure,
+winds and accumulated rain). The other output fields are compared and reported, but have no limit.</li>
+</ul>
+<h2 id="current">Experimental and partly validated<a class="headerlink" href="#current" aria-label="Permalink">¶</a></h2>
+<ul>
+<li><strong>Goddard radiation</strong> (<code>ra_lw/ra_sw_physics=5</code>) is validated over six hours, not 24.</li>
+<li><strong>Ferrier-Aligo microphysics</strong> (<code>mp_physics=15</code>) runs but has no reference:
+the original WRF crashes on the test case.</li>
+<li><strong>Experimental features:</strong> stochastic physics, online diagnostics, station time series,
+regional output streams, LCZ urban land use, the 3-D TKE turbulence options, most non-default Noah-MP
+options and Zhang-McFarlane cumulus. See the <a href="namelist.html#features">namelist page</a>.</li>
+<li><strong>Region set-up</strong> (<code>gpuwrf quickstart</code>) is tested on three areas, but GPU
+forecasts for new regions have not been compared with CPU-WRF.</li>
+<li><strong>Several GPUs:</strong> tested on simulated devices only; real multi-GPU speed is not measured.</li>
+<li><strong>FLG and GFDL radiation</strong> run on the CPU only.</li>
+<li>Many validated schemes compile to GPU code that exceeds our code-quality limits for speed and
+robustness (marked <sup>1</sup> on the <a href="physics.html">physics page</a>). They run correctly, but
+their speed is not measured and may be lower than with the default physics.</li>
+</ul>
+<h2 id="inputs">Nests and inputs<a class="headerlink" href="#inputs" aria-label="Permalink">¶</a></h2>
+<ul>
+<li>Options outside the default physics are not validated inside nested domains. RUC land, the
+single-layer urban model, the 3-D TKE options and digital filter initialization are refused in nested
+runs. Moving nests are not supported.</li>
+<li>Crop, irrigation, tile drainage and groundwater options need real geography from WPS; a missing
+field is refused, never filled with zeros.</li>
+<li>WRF-Chem, WRF-Fire, WRF-Hydro, wave coupling, data assimilation and adaptive time stepping are not
+part of wrf_gpu. The full list is on the <a href="namelist.html#not-supported">namelist page</a>.</li>
+</ul>
+<h2 id="numerics">Known numerical issues<a class="headerlink" href="#numerics" aria-label="Permalink">¶</a></h2>
+<ul>
+<li>Some schemes briefly produce tiny negative amounts of water or particle numbers inside a time step,
+before the same clean-up WRF applies. These events are counted and reported, not hidden; the output
+contains no NaN or infinite values.</li>
+<li>The original WRF MYNN scheme reads one variable before setting it on a cold start (an upstream WRF
+bug). Where it matters, the comparisons use a WRF build in which this variable starts at zero; see the
+<a href="https://github.com/wrf-gpu/wrf_gpu/blob/main/proofs/t_p3fix/UPSTREAM_WRF_BUGS.md">upstream WRF note</a>.</li>
+<li>P3, Jensen-ISHMAEL, WDM5 and NTU microphysics show small known differences from WRF's own arithmetic
+(rounding, diagnostics, small undershoots); their forecasts still pass the limits. The known issues
+describe each one.</li>
+<li>Free-running open boundaries on wide domains (about 160 columns or more) can become unstable after
+roughly 14 hours; the normal boundary relaxation avoids this.</li>
+</ul>
 <h2 id="performance">Performance and hardware<a class="headerlink" href="#performance" aria-label="Permalink">¶</a></h2>
-<p>Historical speed/energy figures keep their measured version, hardware and clock definitions. Shared cold qualification time is not warm S1. Real multi-GPU scaling and new hardware extrapolations are not qualified measurements. The <a href="performance.html">performance page</a> retains dated evidence.</p>
-<h2 id="history">Historical science records<a class="headerlink" href="#history" aria-label="Permalink">¶</a></h2>
-<p>The <a href="validation.html">v0.3.3 galleries</a> retain raw rain/wind/cirrus failures and accepted source-specific annexes. They are not relabelled as new v0.4 observations. See the repository's <a href="https://github.com/wrf-gpu/wrf_gpu/blob/main/KNOWN_ISSUES.md">full issue record</a>.</p>
+<ul>
+<li>The speed and energy figures were measured with v0.3.2 on one RTX 5090. v0.4.0 has no new
+whole-forecast benchmark.</li>
+<li>Only the RTX 5090 is tested. An NVIDIA Ampere or newer GPU is required; older cards (Pascal, Turing)
+are not supported.</li>
+<li>The first run of a new grid or physics selection compiles the model, which takes minutes and more
+host memory than the forecast itself.</li>
+</ul>
+<h2 id="release-files">Release files<a class="headerlink" href="#release-files" aria-label="Permalink">¶</a></h2>
+<p>Large microphysics lookup tables, including the Thompson tables of the default physics, are
+downloaded on first use from the GitHub release. The upload of the v0.4.0 tables is still pending; until
+it is done, runs that need them stop with an "asset unavailable" message. See
+<a href="https://github.com/wrf-gpu/wrf_gpu/blob/main/docs/runtime-tables.md">runtime tables</a>.</p>
+<h2 id="history">Earlier releases<a class="headerlink" href="#history" aria-label="Permalink">¶</a></h2>
+<p>The <a href="validation.html">validation page</a> keeps the 72-hour comparisons of v0.3.3, including
+the fields that went over their limits late in those forecasts.</p>
 
         <nav class="page-nav">
-<a class="prev" href="validation.html"><span class="pn-dir">← Previous</span><span class="pn-title">Validation &amp; WRF Identity</span></a>
+<a class="prev" href="validation.html"><span class="pn-dir">← Previous</span><span class="pn-title">Validation against WRF</span></a>
 <a class="next" href="version-history.html"><span class="pn-dir">Next →</span><span class="pn-title">Version History</span></a>
 </nav>
       </main>

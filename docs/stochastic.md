@@ -1,5 +1,7 @@
 # Stochastic physics and input perturbations
 
+**Status in v0.4.0: Experimental.** The stochastic physics options (`&stoch`) run, but have not yet passed a 24-hour comparison with the original CPU WRF. `gpuwrf perturb` runs on the CPU, offline.
+
 `gpuwrf perturb` prepares offline ensemble member inputs. It currently supports
 **spatially uniform fractional wind perturbations** of U and V. Temperature,
 moisture, pressure and spatially varying balanced perturbations are not implemented.
@@ -88,7 +90,7 @@ no-op. No generic tendency multiplier is substituted for either parameterization
 The native profile requires physics and WRF RK source coupling. SPPT currently
 requires PBL 0/5 and cumulus 0/1; GWDO requires MYNN. SPP with GSL GWDO=3 is
 refused. Values other than 0/1, unknown controls, nonfinite parameters and
-unqualified multi-perturbation/boundary extensions fail closed before execution.
+unsupported multi-perturbation/boundary extensions fail closed before execution.
 Registry INTEGER controls require signed INTEGER4 values, including vertical
 modes and spectral bounds; fractions, quoted numbers and logical values are
 refused. Custom `kminforct`, `lminforct`, `kmaxforct`, `lmaxforct` bounds are
@@ -101,7 +103,7 @@ may need explicitly smaller Gaussian length scales to resolve their spectrum.
 
 ## Reproducibility and qualification
 
-This is **CPU-oracle-qualified; GPU/coupled-forecast qualification pending**.
+The stochastic physics is checked on the CPU against the original WRF code.
 The RNG profile matches GNU Fortran 14.3's eight-word `RANDOM_SEED` state and
 xoshiro256** REAL4 stream, including original WRF signed INTEGER4 overflow,
 seed/member/date mixing and Gaussian rejection. WRF RNG is compiler-defined;
@@ -115,15 +117,15 @@ the RNG recurrence; no floating-point64 stochastic carry is introduced. The
 FFT follows original unnormalized FFTPACK5 ordering. The vertical imaginary
 assignment deliberately reads the already-updated real coefficient, as WRF does.
 
-Original CPU-WRF three-step histories and restart seeds qualify all eight fields
+Original CPU-WRF three-step histories and restart seeds check all eight fields
 with vertical structure off/on. Seven independent 1,000-step original-WRF
-trajectories qualify amplitude and spectra, including 5,600 exact seed words.
+trajectories check amplitude and spectra, including 5,600 exact seed words.
 MYNN signed land/water/snow surface, active plume-limiter, real drizzle-cloud and
-diffusivity-height regimes have separate original-source gates. SKEBS/SPPT
+diffusivity-height regimes have separate checks against the original source. SKEBS/SPPT
 C-grid tendency adapters use the original source expressions and split mass,
-including WRF's initialized high-side mass ghost. These component gates and
-short CPU coupled smoke do not establish full forecast drift, station skill or
-GPU numerical/performance qualification.
+including WRF's initialized high-side mass ghost. These component checks and
+short CPU coupled runs do not establish full forecast drift, station skill, or
+GPU accuracy and speed.
 
 Children receive Registry-staggered parent SINT fields through the existing
 nest forcing path. They hold no Fourier plans and advance no independent RNG.
@@ -133,17 +135,19 @@ checkpoints remain usable. Active history adds eight native pattern fields and s
 pre-cap counters, and fills the six native seed arrays from the live streams.
 The existing OFF output schema is retained.
 
-OFF introduces no device leaves or step work; full Swiss and PROD release
-program identities are checked with `proofs/s1_port/release_identity.py`.
+With stochastic physics off, there is no extra device state or step work; the
+default forecast programs are checked to be unchanged with
+`proofs/s1_port/release_identity.py`.
 ON uses one serial-stream device kernel per produced innovation plane, FFTs and
 fused pointwise forcing. There are no per-draw launches or timestep host round
 trips. Vertical-constant fields are stored with one level; children retain only
 fields. RNG serialization and FFT workspace are explicit performance risks;
-actual GPU timings, peak memory and E41 qualification remain pending. CPU
+GPU timings, peak memory and the code-quality scan of the compiled GPU code
+have not been done. CPU
 compiler preflight lowers the RNG and both changed MYNN plume variants to
 Triton GPU IR without floating-point64 operations; it does not execute a GPU.
 
-Reproduce component gates with `tests/test_stochastic_*.py`. Original arithmetic
+Reproduce the component checks with `tests/test_stochastic_*.py`. Original arithmetic
 fixtures and compiler/source hashes are tracked in `tests/fixtures/u2_stoch_real4.*`;
 build recipes and the actual CPU-WRF reference staging are in `proofs/u2_stoch/`.
 Temporary originals are copied privately, preserving executable `.text` bytes.

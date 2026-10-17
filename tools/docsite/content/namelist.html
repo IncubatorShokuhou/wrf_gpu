@@ -1,18 +1,152 @@
 <h1>Namelist compatibility</h1>
-<p class="lead">Use prepared WRF inputs and preserve the requested physics. The CLI binds admitted selections or refuses them with a named reason. Released v0.4.0 has frozen defaults and66 accepted registered scientific scopes (65 full24h plus c45 accepted6h); source and tags are published, while GitHub release assets await owner authentication.</p>
-<h2 id="status">Admission is separate from qualification</h2>
-<p>The <a href="release/SUPPORT_MATRIX_v0.4.0.md">per-option matrix</a> distinguishes default, source-specific full24h bounded D6, experimental/E41/short/CPU-only and refused paths. A machine catalog entry or successful preflight is not an arbitrary-combination fidelity guarantee. See <a href="physics.html">physics</a> for selection scope.</p>
-<h2 id="refusals">GPU and input refusals</h2>
-<p>Smagorinsky <code>km_opt=3</code> is GPU-refused. CAM-MG11 requires stock Triton3.6.x; its merged route retains native E41 FAIL and c89 scientific PASS/native E41 UNKNOWN. Historical GPU failures remain disclosed; CPU/reference paths are separate. <code>sf_surface_mosaic=1</code> is refused. Crop, irrigation and groundwater branches need geographically valid maps. Unsupported pairings and keys set away from an unbound WRF default fail loudly.</p>
+<p class="lead">wrf_gpu reads your WRF <code>namelist.input</code> as it is. Every option it understands is
+used exactly as requested; an option it cannot honour stops the run with a message that names it.
+Nothing is silently replaced by a default.</p>
+<a id="status"></a>
+<h2 id="how-checked">How your namelist is checked</h2>
+<p><code>gpuwrf run</code> checks the namelist before any GPU work. A refused selection, a missing
+pairing or a missing input gives a short message naming the setting to change. You can run the same
+checks in advance:</p>
+<pre><code class="language-bash">gpuwrf doctor /path/to/case          # inputs, options, time step (CFL) and GPU memory
+gpuwrf run --input-dir /path/to/case --output-dir runs/check --dry-run
+gpuwrf namelist-support               # every physics code the program knows</code></pre>
+<p>Being accepted is not the same as being validated. This page and the
+<a href="physics.html">physics options</a> page give the status of each option in v0.4.0, using the
+same words: <span class="pill op">Default</span>, <span class="pill op">Validated 24 h</span>,
+<span class="pill optin">Experimental</span>, <span class="pill ref">CPU only</span> and
+<span class="pill closed">Not supported</span>
+(<a href="physics.html#status-words">what they mean</a>).</p>
+<a id="new-controls"></a>
+<h2 id="features">Model features</h2>
+<p>Each "Validated 24 h" feature passed a 24-hour comparison with the original CPU-WRF in one tested
+configuration; other combinations and nested domains are not validated. A note <sup>1</sup> means the
+compiled GPU code exceeds our code-quality limits for speed and robustness (it runs correctly; its
+speed is not measured).</p>
+<div class="table-scroll"><table><thead><tr><th>Feature</th><th>Namelist settings</th><th>Status</th><th>Guide</th></tr></thead><tbody>
+<tr><td>Analysis (grid) nudging</td><td><code>grid_fdda=1</code> with <code>wrffdda</code> input</td><td><span class="pill op">Validated 24 h</span></td><td><a href="#grid-fdda">below</a></td></tr>
+<tr><td>Spectral nudging</td><td><code>grid_fdda=2</code></td><td><span class="pill op">Validated 24 h</span></td><td><a href="spectral_nudging.md">spectral nudging</a></td></tr>
+<tr><td>Surface analysis nudging</td><td><code>grid_sfdda=1/2</code></td><td><span class="pill op">Validated 24 h</span></td><td><a href="surface_nudging.md">surface nudging</a></td></tr>
+<tr><td>Observation nudging</td><td><code>obs_nudge_opt=1</code></td><td><span class="pill op">Validated 24 h</span><sup>1</sup></td><td><a href="OBSERVATION_NUDGING.md">observation nudging</a></td></tr>
+<tr><td>Digital filter initialization</td><td><code>dfi_opt=1/2/3</code> (single domain)</td><td><span class="pill op">Validated 24 h</span></td><td><a href="#dfi">below</a></td></tr>
+<tr><td>Single-layer urban canopy</td><td><code>sf_urban_physics=1</code> (single domain)</td><td><span class="pill op">Validated 24 h</span></td><td><a href="urban_lcz.md">urban guide</a></td></tr>
+<tr><td>LCZ land use, urban morphology, anthropogenic heat</td><td><code>use_wudapt_lcz=1</code>, <code>distributed_ahe_opt</code> (with <code>sf_urban_physics=1</code>)</td><td><span class="pill optin">Experimental</span></td><td><a href="urban_lcz.md">urban guide</a></td></tr>
+<tr><td>Multi-layer urban (BEP, BEP+BEM)</td><td><code>sf_urban_physics=2/3</code></td><td><span class="pill op">Validated 24 h</span><sup>1</sup></td><td><a href="URBAN_BEP_BEM.md">BEP/BEM guide</a></td></tr>
+<tr><td>Lake model</td><td><code>sf_lake_physics=1</code></td><td><span class="pill op">Validated 24 h</span><sup>1</sup></td><td><a href="lake-model.md">lake guide</a></td></tr>
+<tr><td>Ocean mixed layer</td><td><code>sf_ocean_physics=1</code></td><td><span class="pill op">Validated 24 h</span></td><td><a href="ocean-mixed-layer.md">ocean guide</a></td></tr>
+<tr><td>Hurricane surface fluxes</td><td><code>isftcflx=1/2</code></td><td><span class="pill op">Validated 24 h</span><sup>1</sup></td><td><a href="ocean-mixed-layer.md">ocean guide</a></td></tr>
+<tr><td>SST updates from <code>wrflowinp</code></td><td><code>sst_update=1</code></td><td><span class="pill op">Validated 24 h</span></td><td><a href="input-data.html#sst-forcing">input data</a></td></tr>
+<tr><td>Slope radiation and terrain shading</td><td><code>slope_rad=1</code>, <code>topo_shading=1</code></td><td><span class="pill op">Validated 24 h</span></td><td><a href="input-data.html#native-cadence">input data</a></td></tr>
+<tr><td>Wind farms (Fitch)</td><td><code>windfarm_opt=1</code></td><td><span class="pill op">Validated 24 h</span><sup>1</sup></td><td><a href="wind-farms.md">wind-farm guide</a></td></tr>
+<tr><td>Passive tracers</td><td><code>tracer_opt=2</code></td><td><span class="pill op">Validated 24 h</span><sup>1</sup></td><td><a href="tracers.md">tracer guide</a></td></tr>
+<tr><td>Two-way nesting</td><td><code>feedback=1</code>, <code>smooth_option</code></td><td><span class="pill op">Validated 24 h</span><sup>1</sup> on one two-domain set-up; default physics only</td><td><a href="nesting.html#two-way">nesting</a></td></tr>
+<tr><td>Noah-MP options</td><td><code>&amp;noah_mp</code> selectors</td><td>Defaults validated; others mostly <span class="pill optin">Experimental</span></td><td><a href="physics.html#noah-mp-options">physics</a></td></tr>
+<tr><td>Stochastic physics and perturbations</td><td><code>skebs</code>, <code>sppt</code>, <code>spp</code>, <code>spp_conv/pbl/lsm</code>, <code>rand_perturb</code>, <code>stoch_force_opt</code></td><td><span class="pill optin">Experimental</span></td><td><a href="stochastic.md">stochastic guide</a></td></tr>
+<tr><td>Online diagnostics</td><td><code>prec_acc_dt</code>, <code>nwp_diagnostics=1</code>, <code>do_radar_ref=1</code>, WRF-Solar diagnostics</td><td><span class="pill optin">Experimental</span></td><td><a href="ONLINE_DIAGNOSTICS.md">diagnostics guide</a></td></tr>
+<tr><td>Station time series</td><td>a <code>tslist</code> file in the case directory</td><td><span class="pill optin">Experimental</span></td><td><a href="TSLIST.md">tslist guide</a></td></tr>
+<tr><td>Regional output streams</td><td><code>gpuwrf.streams.json</code> next to the namelist</td><td><span class="pill optin">Experimental</span></td><td><a href="REGIONAL_STREAMS.md">streams guide</a></td></tr>
+</tbody></table></div>
+<h2 id="grid-fdda">Analysis nudging (grid FDDA)</h2>
+<p>With <code>grid_fdda=1</code>, WRF's analysis nudging relaxes wind, temperature and water vapour
+towards gridded analyses during the forecast. wrf_gpu ports WRF's routine and reads the same input file.
+<span class="pill op">Validated 24 h</span> in single-domain forecasts; nested domains are not validated.</p>
+<p><strong>Input.</strong> Run <code>real.exe</code> with the same <code>&amp;fdda</code> settings; it
+writes <code>wrffdda_d01</code> (named by <code>gfdda_inname</code>, NetCDF only). Put the file in the case
+directory next to <code>wrfinput_d01</code> and <code>wrfbdy_d01</code>; each domain with
+<code>grid_fdda=1</code> needs its own <code>wrffdda_d0N</code>. The file must hold one record per
+analysis time from the start to the end of nudging; a missing or short file, record times off the
+analysis interval, wrong grid sizes or invalid values stop the run before the forecast.</p>
+<p>As written by <code>real.exe</code>, each record holds a pair of analyses: <code>*_NDG_OLD</code> at the
+record's time and <code>*_NDG_NEW</code> at the next analysis time. Between them the nudging target is
+interpolated linearly in time.</p>
+<div class="table-scroll"><table><thead><tr><th>Fields (OLD and NEW)</th><th>Grid</th><th>Content</th></tr></thead><tbody>
+<tr><td><code>U_NDG_OLD</code>, <code>U_NDG_NEW</code></td><td>levels × south_north × west_east_stag</td><td>x-wind, m/s</td></tr>
+<tr><td><code>V_NDG_OLD</code>, <code>V_NDG_NEW</code></td><td>levels × south_north_stag × west_east</td><td>y-wind, m/s</td></tr>
+<tr><td><code>T_NDG_OLD</code>, <code>T_NDG_NEW</code></td><td>levels × south_north × west_east</td><td>dry potential temperature minus 300 K, K</td></tr>
+<tr><td><code>Q_NDG_OLD</code>, <code>Q_NDG_NEW</code></td><td>levels × south_north × west_east</td><td>water vapour mixing ratio, kg/kg</td></tr>
+<tr><td><code>PH_NDG_OLD</code>, <code>PH_NDG_NEW</code></td><td>staggered levels × south_north × west_east</td><td>geopotential perturbation; needed only for spectral nudging (<code>grid_fdda=2</code>)</td></tr>
+</tbody></table></div>
+<p>The nudging coefficients <code>guv</code>, <code>gt</code> and <code>gq</code> are in s<sup>-1</sup>.</p>
+<pre><code>&amp;fdda
+ grid_fdda            = 1,
+ gfdda_inname         = "wrffdda_d&lt;domain&gt;",
+ gfdda_interval_m     = 360,      ! analysis interval, minutes
+ gfdda_end_h          = 24,       ! stop nudging after this many hours
+ io_form_gfdda        = 2,
+ fgdt                 = 0,        ! minutes between nudging updates (0 = every step)
+ if_no_pbl_nudging_uv = 0, if_no_pbl_nudging_t = 1, if_no_pbl_nudging_q = 1,
+ if_zfac_uv = 0, k_zfac_uv = 10, if_zfac_t = 0, k_zfac_t = 10, if_zfac_q = 0, k_zfac_q = 10,
+ guv = 0.0003, gt = 0.0003, gq = 0.0003,
+ if_ramping           = 0,
+ dtramp_min           = 60.0,
+/</code></pre>
+<p><strong>Timing.</strong> As in WRF, analyses are read every <code>gfdda_interval_m</code> minutes from
+the start time and the nudging terms are updated every <code>fgdt</code> minutes (0 means every time step).
+When nudging ends depends on the ramp:</p>
+<ul>
+<li><code>if_ramping=0</code>: full strength until <code>gfdda_end_h</code>, then off.</li>
+<li><code>if_ramping=1</code> with a positive <code>dtramp_min</code>: the ramp starts at
+<code>gfdda_end_h</code> and <strong>extends</strong> nudging beyond it, falling linearly to zero over
+<code>dtramp_min</code> minutes while the target is held at the most recent analysis. With
+<code>gfdda_end_h=24</code> and <code>dtramp_min=60</code>, nudging is at half strength at 24.5 h and
+ends at 25 h.</li>
+<li><code>if_ramping=1</code> with a negative <code>dtramp_min</code>: the ramp ends at
+<code>gfdda_end_h</code>. With <code>gfdda_end_h=24</code> and <code>dtramp_min=-60</code>, nudging falls
+from full strength at 23 h to zero at 24 h.</li>
+</ul>
+<p><strong>What is nudged.</strong> The horizontal wind, potential temperature and water vapour; surface
+pressure and the air mass are not nudged. The nudging heat flux <code>HFX_FDDA</code> is written to the
+history files.</p>
+<p><strong>Restrictions.</strong> As in WRF, nudging starts at the model start (<code>gfdda_begin_*</code>
+must be 0) and times are given in <code>gfdda_end_h</code> and <code>gfdda_interval_m</code>. Switching
+off nudging inside the boundary layer (<code>if_no_pbl_nudging_*=1</code>) needs the MYNN boundary layer
+(<code>bl_pbl_physics=5</code>). Grid nudging cannot be combined with digital filter initialization or
+two-way nesting, Pleim-Xiu soil nudging (<code>pxlsm_soil_nudge</code>) is not supported, and an
+<code>&amp;fdda</code> key the program does not know stops the run instead of being ignored. The history
+files lack WRF's global attributes <code>FGDT</code>, <code>GUV</code>, <code>GT</code>, <code>GQ</code>,
+<code>IF_RAMPING</code> and <code>DTRAMP_MIN</code>; the forecast itself is unaffected.</p>
+<p><strong>Restart.</strong> The nudging state is part of the checkpoints, so a resumed run continues
+nudging where it stopped. Checkpoints from versions without this state are refused.</p>
+<p>Spectral nudging (<code>grid_fdda=2</code>) reads the same file
+(<a href="spectral_nudging.md">spectral nudging guide</a>); surface nudging (<code>grid_sfdda</code>)
+adds a surface analysis file (<a href="surface_nudging.md">surface nudging guide</a>); observation
+nudging can run alongside (<a href="OBSERVATION_NUDGING.md">observation nudging guide</a>).</p>
 <h2 id="dfi">Digital filter initialization</h2>
-<p>Single-domain native cases implement <code>dfi_opt=1/2/3</code> (DFL/DDFI/TDFI) with documented filter, forcing, land and window restrictions. DFL keeps its natural shifted timestamps. Nested DFI is refused. Zero/omission skips filtering; a resumed run does not filter again. See the <a href="release/UPGRADE_v0.4.0.md">upgrade guide</a>.</p>
-<h2 id="new-controls">Optional model controls</h2>
-<p>Analysis/observation/spectral/surface nudging, stochastic forcing, turbines, tracers, diagnostics, urban/lake/ocean options and two-way feedback have admitted opt-in paths. Supply required forcing/configuration and check exact restrictions. These are not blanket out-of-scope features, nor universally qualified ones.</p>
-<h2 id="nested">Nested not validated</h2>
-<p>For options with only single-domain evidence, explicitly report <strong>nested not validated</strong> where admission allows nesting. Existing refused combinations still fail. A finite nest smoke does not establish matched original-CPU fidelity.</p>
-<h2 id="upgrade">Version and upgrade</h2>
-<p>v0.3.3 and earlier could silently execute default schemes for non-default requests. Re-run affected forecasts using the intended admitted scheme. Keep the versioned v0.3.4 record unchanged; use <a href="release/SUPPORT_MATRIX_v0.4.0.md">v0.4 status</a> and <a href="release/UPGRADE_v0.4.0.md">restart/schema guidance</a> for this release.</p>
-<h2 id="preflight">Inspect the installed interface</h2>
-<pre><code>python -m gpuwrf.cli namelist-support --help
-python -m gpuwrf.cli run --help</code></pre>
-<p>Original CPU-WRF or pristine WRF supplies fidelity truth. Older GPU output is regression evidence; source-changing merges need their affected gates before tag.</p>
+<p>Single-domain cases support <code>dfi_opt=1/2/3</code> (DFL, DDFI and TDFI) with WRF's filter and
+window settings. DFL keeps its natural shifted timestamps, as in WRF. Nested DFI is not supported.
+With <code>dfi_opt=0</code> or no setting nothing is filtered, and a resumed run does not filter again.
+The <a href="release/UPGRADE_v0.4.0.md">upgrade notes</a> list the remaining restrictions.</p>
+<h2 id="turbulence">Turbulence, diffusion and advection</h2>
+<div class="table-scroll"><table><thead><tr><th>Setting</th><th>Status</th></tr></thead><tbody>
+<tr><td><code>diff_opt=1</code> with <code>km_opt=4</code> (2-D Smagorinsky, WRF's real-data default)</td><td><span class="pill op">Default</span></td></tr>
+<tr><td><code>diff_opt=0</code> (no explicit horizontal diffusion)</td><td>Runs as requested; not separately validated</td></tr>
+<tr><td><code>diff_opt=2</code> with <code>km_opt=2</code> (3-D TKE) or <code>km_opt=5</code> (SMS-3DTKE)</td><td><span class="pill optin">Experimental</span>: passed 24-hour comparisons; restrictions on extra scalars, nests and PBL pairing apply</td></tr>
+<tr><td><code>diff_opt=2</code> with <code>km_opt=1</code> (constant K)</td><td><span class="pill oos">Python API only</span></td></tr>
+<tr><td><code>km_opt=3</code> (3-D Smagorinsky)</td><td><span class="pill closed">Not supported</span> on the GPU</td></tr>
+<tr><td><code>moist_adv_opt</code>, <code>scalar_adv_opt</code> = 0/1/2</td><td>Used as requested; the default suite's values are validated, other values are not separately validated</td></tr>
+</tbody></table></div>
+<p><code>gpuwrf run</code> refuses any other <code>diff_opt</code>/<code>km_opt</code> pair rather than
+running without diffusion.</p>
+<p>The <a href="dynamics.html">dynamical core</a> page explains the numerics.</p>
+<a id="refusals"></a><a id="nested"></a>
+<h2 id="not-supported">Not supported in v0.4.0</h2>
+<ul>
+<li>Moving and vortex-following nests; adaptive time stepping.</li>
+<li>WRF-Chem, WRF-Fire, WRF-Hydro, wave coupling and WRFDA data assimilation.</li>
+<li><code>km_opt=3</code> on the GPU; constant-K diffusion (<code>km_opt=1</code>) from the command line; surface mosaic (<code>sf_surface_mosaic=1</code>); the PWP ocean
+model (<code>sf_ocean_physics=2</code>); green roofs and photovoltaic panels in the urban models;
+LCZ land use with BEP/BEM; two-way tracer feedback.</li>
+<li>Two-way nesting with anything other than the default physics, with nudging, lakes, urban models or SST
+updates, or with an even <code>parent_grid_ratio</code>.</li>
+<li>In nested runs: digital filter initialization, the RUC land model, the single-layer urban model and
+<code>km_opt=2/5</code>.</li>
+<li>The physics codes marked <span class="pill closed">Not supported</span> on the
+<a href="physics.html">physics page</a>.</li>
+</ul>
+<p>Options that have only single-domain evidence still run inside nests, but are not validated there.
+The <a href="release/SUPPORT_MATRIX_v0.4.0.md">support matrix</a> lists the exact tested
+configurations and the evidence for each row.</p>
+<h2 id="upgrade">Coming from v0.3</h2>
+<p>v0.3.3 and earlier could silently run the default schemes when a different scheme was requested.
+If you ran non-default physics with those versions, run the forecasts again. Checkpoints from earlier
+versions may not resume; see the <a href="release/UPGRADE_v0.4.0.md">upgrade notes</a>.</p>
+<a id="preflight"></a>

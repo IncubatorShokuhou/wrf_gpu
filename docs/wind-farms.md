@@ -1,5 +1,7 @@
 # Fitch wind farms
 
+**Status in v0.4.0: Validated 24 h.** Passed a 24-hour comparison with the original CPU WRF in the v0.4.0 release check, in one tested single-domain configuration. Other combinations and nested domains are not validated. Its compiled GPU code exceeds the project's code-quality limits for speed and robustness; it runs correctly, but its speed has not been measured.
+
 Select `windfarm_opt=1` in `&physics` with MYNN `bl_pbl_physics=5`,
 `sf_sfclay_physics=5` and `bldt=0`. The native and CPU-history pipelines load
 turbines separately for each domain. `windfarm_opt=0` keeps the release program
@@ -59,7 +61,5 @@ normalization and future flow and is **not** a stability bound. Reduce dt and
 inspect farm density when the advice warns; no additional physical clamp is
 applied by the solver.
 
-CPU-oracle-qualified against pristine `phys/module_wind_fitch.F` computational
-routines; GPU/coupled-forecast qualification pending. Fixtures and source seals:
-`proofs/u2_windfarm/`. CPU coupled smoke is integration evidence only, not a
-CPU-WRF coupled forecast fidelity claim.
+The computational routines are also checked on the CPU against the original
+`phys/module_wind_fitch.F`. Fixtures and source checksums: `proofs/u2_windfarm/`.

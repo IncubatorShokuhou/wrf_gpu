@@ -1,16 +1,18 @@
 # WRF online diagnostics
 
+**Status in v0.4.0: Experimental.** It runs, but has not yet passed a 24-hour comparison with the original CPU WRF.
+
 `&physics prec_acc_dt = 60.,` enables the three WRF interval accumulations in
-the native forecast pipeline. This implementation is qualified against an
-extracted pristine-WRF REAL operator; coupled CPU-WRF history comparison and
-GPU qualification remain required. It currently supports Thompson
+the native forecast pipeline. This implementation is checked against an
+extracted original WRF REAL operator; it has not yet been compared with original
+CPU-WRF history output in a full forecast. It currently supports Thompson
 `mp_physics=8` with `cu_physics=0` or WRF-coupled KF (`cu_physics=1`). Other
 pairings and the CPU-history replay pipeline refuse the option.
 
 `&time_control nwp_diagnostics=1` enables WRF NWP maxima and mean fields;
 `&physics do_radar_ref=1` enables Thompson radar reflectivity. These are
-opt-in, CPU-oracle-qualified features; native GPU and coupled-forecast
-qualification are pending. NWP currently supports complete specified/nested
+opt-in features, checked on the CPU against the original WRF code. NWP currently
+supports complete specified/nested
 nonperiodic domains with at least three levels and a 3×3 horizontal grid.
 Radar and NWP require `mp_physics=8`, WRF-order microphysics, fixed positive
 time steps and the native pipeline. AFWA remains refused.
@@ -50,15 +52,14 @@ branch; the port retains that operation order.
 
 Three fp32 surface arrays live in `OperationalCarry.precipitation_buckets` and
 are saved exactly in both restart formats. Missing active buckets, older
-bucket schema, wrong precision or wrong surface dimensions cause an E78
-refusal. Disabled runs have no bucket arrays. History output supports the
+bucket schema, wrong precision or wrong surface dimensions are refused. Disabled runs have no bucket arrays. History output supports the
 usual full and subset streams, rejects non-finite bucket values, and performs
 no bucket recomputation. There are no bucket host reads inside the timestep.
 
-The default released program is subject to the existing Swiss/PROD jaxpr
-identity gate. ON costs must be reported separately: resident storage is
-`12 * ny * nx` bytes per domain, plus compiled temporary storage. GPU kernel
-launches, peak VRAM and whole-forecast timing require an actual locked GPU arm.
+With the option off, the default forecast program is unchanged. When it is on,
+resident storage is `12 * ny * nx` bytes per domain, plus compiled temporary
+storage. GPU kernel launches, peak GPU memory and whole-forecast timing have not
+been measured.
 
 ## NWP and radar fields
 
@@ -102,12 +103,12 @@ eta interfaces in [0.5, 0.8], and samples bottom-level reflectivity for
 NWP adds ten REAL surface carry fields (40 bytes per horizontal cell), and
 radar adds one REAL volume (4 bytes per mass cell). The radar context adds two
 temporary REAL volumes and extends the lifetime of existing MP outputs.
-There are no per-step host reads. CPU operator costs, which do not establish
-GPU cost, are recorded in the lane receipts: 42×42 bottom radar 3.26 ms,
+There are no per-step host reads. CPU operator costs, which do not describe
+GPU cost, are recorded in the qualification records: 42×42 bottom radar 3.26 ms,
 full-column 133.37 ms. The bottom-only specialization reduced the measured
 40-column CPU cost by 25.48× while retaining exact bottom oracle values.
 Both restart formats preserve every held leaf and refuse missing active
-groups, wrong precision/shapes, or incompatible saved cadence (E78).
+groups, wrong precision/shapes, or incompatible saved cadence.
 The native CLI's synchronized checkpoints apply these same guards before
 publication and restoration, binding the selections and cadences per domain.
 History metadata, including descriptions and coordinates, matches the
@@ -118,7 +119,7 @@ original CPU-WRF output exactly.
 This pristine WRF Registry has no `AFWA_GUST` variable. AFWA's severe package
 enhances `WSPD10MAX` using precipitation and winds near 1 km AGL; selecting
 `afwa_diag_opt=1` alone does not request that severe diagnostic. No AFWA gust
-qualification is claimed here.
+support is claimed here.
 
 ## WRF-Solar surface interpolation
 
@@ -148,16 +149,17 @@ History writes these carried surface fields without another radiation solve.
 The carry contains twelve REAL surface arrays, or `48*ny*nx` logical bytes
 when enabled and zero array leaves when disabled. Both standalone restart
 formats and native synchronized checkpoints preserve all twelve leaves and
-validate their schema, precision, surface shape, selections and clocks (E78).
+validate their schema, precision, surface shape, selections and clocks.
 The nominal radiation interval and integer cadence are stored independently:
 `radt=10`, `dt=18` uses a 600-second nominal interval and a 33-step cadence.
 
-The interpolation operator is CPU-oracle-qualified; GPU and coupled-forecast
-qualification remain pending. The isolated 42×42 CPU operator measured
+The interpolation operator is checked on the CPU against the original WRF code.
+The isolated 42×42 CPU operator measured
 49.77 µs on held steps and 73.88 µs on radiation steps, with 44,676 temporary
 bytes. Those numbers exclude solar geometry, RRTMG, Noah-MP and whole-forecast
-overhead; actual GPU launches, peak memory and compile/readiness are pending.
+overhead; GPU launches, peak memory and compile time have not been measured.
 
 Reproducible oracle/probe tools and the small operator fixture are in
-`proofs/u2_diag/`. The original CPU-WRF Swiss run is a private, hash-verified
-executable copy with lane-local outputs; no reference inputs are modified.
+`proofs/u2_diag/`. The original CPU-WRF Swiss run used a private, checksum-verified
+copy of the executable with its own output directory; no reference inputs are
+modified.

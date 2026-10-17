@@ -1,5 +1,7 @@
 # Surface analysis nudging
 
+**Status in v0.4.0: Validated 24 h.** Passed a 24-hour comparison with the original CPU WRF in the v0.4.0 release check, in one tested single-domain configuration. Other combinations and nested domains are not validated.
+
 `grid_sfdda=1` selects WRF PSU surface analysis nudging. `grid_sfdda=2`
 selects its FASDAS atmospheric branch. Both require `grid_fdda=1`,
 `bl_pbl_physics=5`, `sf_sfclay_physics=5`, and Noah-MP
@@ -7,9 +9,9 @@ selects its FASDAS atmospheric branch. Both require `grid_fdda=1`,
 (`grid_fdda=2`). Observation nudging may coexist using its independently
 validated settings and input stream.
 
-These options are CPU-oracle-qualified; GPU/coupled-forecast qualification
-pending. Short CPU stepping and exact restart checks are smoke evidence,
-not a full hindcast validation.
+Both options are also checked on the CPU against WRF's own routines, including
+short stepping and exact restart checks. These short checks are not a full
+hindcast validation.
 
 ```fortran
 &fdda
@@ -55,7 +57,7 @@ FASDAS with classic Noah (`sf_surface_physics=2`) is refused because its
 indirect soil/skin nudging kernel is not ported. Pristine WRF Noah-MP does
 not consume those indirect FASDAS fluxes; mode 2 with Noah-MP follows that
 behavior. `pxlsm_soil_nudge` remains refused because the PX land-model path
-is not qualified here. `HFX_FDDA` is exported as the held three-dimensional WRF heat-nudging diagnostic.
+is not validated here. `HFX_FDDA` is exported as the held three-dimensional WRF heat-nudging diagnostic.
 History-only `SDA_HFX/SDA_QFX`, `QNORM` and `HFX_BOTH/QFX_BOTH` are not exported.
 
 Evidence and reproducible tools: `proofs/s2_sfdda/`.

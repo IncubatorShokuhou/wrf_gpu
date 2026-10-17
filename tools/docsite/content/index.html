@@ -10,7 +10,7 @@ your GPU, and use familiar NetCDF tools to read the history files.</p>
 <div class="card-grid">
 <a class="card" href="installation.html"><div class="card-title">1. Install</div><div class="card-desc">Check Python, CUDA JAX, your NVIDIA GPU and WRF runtime tables.</div></a>
 <a class="card" href="quickstart.html"><div class="card-title">2. Run your first forecast</div><div class="card-desc">Try the bundled 3 km Alpine case, then inspect its output.</div></a>
-<a class="card" href="running.html"><div class="card-title">3. Configure your case</div><div class="card-desc">Select the duration, fixed nests, physics and output directory.</div></a>
+<a class="card" href="onboarding.md"><div class="card-title">3. Forecast your region</div><div class="card-desc">Set up a case from open GFS data with <code>gpuwrf quickstart</code> (experimental).</div></a>
 <a class="card" href="output.html"><div class="card-title">4. Read your results</div><div class="card-desc">WRF history, full output, cadence and checkpoint files.</div></a>
 </div>
 <p>Prefer help from an AI coding assistant? Follow the <a href="ai-quickstart.html">AI quickstart</a>.
@@ -19,23 +19,24 @@ The repository's operator runbook uses the same public commands.</p>
 <p>Bring <code>namelist.input</code>, <code>wrfinput_d0*</code> and <code>wrfbdy_d01</code>.
 Keep your preprocessing and downstream analysis. For fixed nests, use
 <code>--domains-from-namelist</code>. The <a href="input-data.html">input guide</a>
-explains preparation and <a href="running.html">running the model</a> shows the commands.</p>
+explains preparation and <a href="running.html">running the model</a> shows the commands. Products,
+station verification, ensembles and export are on <a href="tools.html">tools and commands</a>.</p>
 <h2 id="what-it-is-not">Choose your configuration</h2>
 <p>Check the <a href="physics.html">physics menu</a>, <a href="namelist.html">namelist compatibility</a>
 and <a href="nesting.html">nesting guide</a> for your case. Options have explicit support
-status and unsupported selections stop with a named reason. Technical boundaries and
-current source-specific findings are on the <a href="limitations.html">limitations page</a>.</p>
+status and unsupported selections stop with a named reason. What is not covered yet is on the
+<a href="limitations.html">limitations page</a>.</p>
 <h2 id="scope-at-a-glance">See the evidence and plan your workload</h2>
 <p>Original Fortran CPU-WRF comparisons cover selected regional forecasts through 24 and
-72 hours. <a href="validation.html">Validation</a> links every retained hourly error plot,
-its source and frozen limits; it distinguishes accepted scope from source-dated development findings.
-Universal observational-skill equivalence is not claimed.</p>
+72 hours. <a href="validation.html">Validation</a> explains the method, the fixed limits and the
+results, with every hourly error plot. These comparisons test agreement with WRF, not forecast skill
+against observations.</p>
 <p>Measured regional workloads show substantial speed gains on one RTX 5090. See
 <a href="performance.html">performance and energy</a> for the exact hardware, cases,
-clock definitions and dated receipts. Independent forecasts can share the card.</p>
+clock definitions and measured numbers. Independent forecasts can share the card.</p>
 <p>Read <a href="concepts.html">how the rewrite works</a> or the
 <a href="version-history.html">release history</a> when you want more detail.
 This independent implementation is not affiliated with UCAR/NCAR; see
 <a href="credits.html">credits and licensing</a>.</p>
 
-<h2 id="v040">What's new in v0.4.0</h2><p>Released 17 October 2026. More than 80 WRF 4.7.1 physics options now run on the GPU, together with nudging (FDDA), digital-filter initialization, two-way nesting, stochastic physics, ensembles and forecast tools such as products, station verification and export. New and experimental: <code>gpuwrf quickstart</code> sets up a forecast for your own region from open GFS data (see the <a href="onboarding.md">region guide</a>). Every physics option was compared with original CPU-WRF in at least one 24-hour forecast (Goddard radiation: six hours), and 66 configurations stayed within the fixed acceptance limits. Read the <a href="release/RELEASE_NOTES_v0.4.0.md">release notes</a>, the <a href="release/SUPPORT_MATRIX_v0.4.0.md">support matrix</a> for the status of each option and the <a href="release/VALIDATION_v0.4.0.md">validation details</a>. The large microphysics lookup tables for v0.4.0 are not yet attached to the GitHub release; until they are, runs that need them stop with an &ldquo;asset unavailable&rdquo; message.</p>
+<h2 id="v040">What's new in v0.4.0</h2><p>Released 17 October 2026. More than 80 WRF 4.7.1 physics options now run on the GPU and passed a comparison with the original CPU-WRF, together with nudging (FDDA), digital-filter initialization, two-way nesting, stochastic physics, ensembles and forecast tools such as products, station verification and export. New and experimental: <code>gpuwrf quickstart</code> sets up a forecast for your own region from open GFS data (see the <a href="onboarding.md">region guide</a>). The comparisons ran 66 configurations over 24 hours (Goddard radiation: six hours), all within the fixed acceptance limits. Read the <a href="release/RELEASE_NOTES_v0.4.0.md">release notes</a>, the <a href="physics.html">physics</a> and <a href="namelist.html">namelist</a> pages for the status of each option and the <a href="release/VALIDATION_v0.4.0.md">validation details</a>. The large microphysics lookup tables for v0.4.0 are not yet attached to the GitHub release; until they are, runs that need them stop with an &ldquo;asset unavailable&rdquo; message.</p>

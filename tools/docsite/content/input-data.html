@@ -9,7 +9,7 @@ history is present.</p>
 <div class="admon note">
   <div class="admon-title">Usage parity with WRF</div>
   <p>If you already run WRF, the biggest change is that wrf_gpu replaces
-  <code>wrf.exe</code> with a single command, <code>python -m gpuwrf.cli run</code>.
+  <code>wrf.exe</code> with a single command, <code>gpuwrf run</code>.
   You keep your WRF real-data case directory and <code>namelist.input</code>; the
   supported namelist matrix runs as-is, and anything unsupported fails closed with a
   named reason.</p>
@@ -29,8 +29,7 @@ loop</strong>; the forecast state is advanced by wrf_gpu on the GPU.</p>
 ├── namelist.input        # standard WRF v4 ARW namelist (bring your own)
 ├── wrfinput_d01          # initial state (one per domain you run)
 ├── wrfinput_d02
-├── wrfbdy_d01            # lateral boundaries for the outer domain
-└── met_em.d0*.*.nc       # met_em-stage forcing (metgrid output)</code></pre>
+└── wrfbdy_d01            # lateral boundaries for the outer domain</code></pre>
 
 <p>You produce these with any standard WRF preprocessing chain (WPS +
 <code>real.exe</code>) or use a bundled case that already contains them. For a
@@ -46,8 +45,8 @@ loop</strong>; the forecast state is advanced by wrf_gpu on the GPU.</p>
 CPU-WRF <code>wrfout</code> history files (≥&nbsp;2 <code>wrfout_&lt;domain&gt;</code>
 files), <code>run</code> auto-detects <strong>replay mode</strong>: it takes the
 initial state and boundaries from that existing CPU-WRF history rather than building
-them natively. This is the validated skill-comparison harness — coupled-skill
-validation against CPU-WRF is run through it, not from a from-scratch native init.</p>
+them natively. It is an older comparison path; the release validation instead runs standalone forecasts
+from the same <code>wrfinput</code> and <code>wrfbdy</code> files as CPU-WRF.</p>
 
 <div class="table-scroll">
 <table>
@@ -111,5 +110,6 @@ SEAICE and skin/lake coupling remain refused.</p>
 <h2 id="native-cadence">Native cadence and controls</h2><p>Native runs bind per-domain
 <code>radt</code> and <code>cudt</code> to integer step cadence; requested <code>topo_shading</code>,
 <code>slope_rad</code>, <code>moist_adv_opt</code> and <code>scalar_adv_opt</code> reach the
-corresponding controls. This includes the native single-root route. Source binding and
-supported dispatch are separate from complete numerical validation.</p>
+corresponding controls, in single-domain and nested runs. <code>slope_rad=1</code> and
+<code>topo_shading=1</code> passed a 24-hour comparison with CPU-WRF together with <code>sst_update=1</code>; for the
+advection options see the <a href="namelist.html#turbulence">namelist page</a>.</p>

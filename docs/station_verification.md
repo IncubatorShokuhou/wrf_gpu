@@ -34,12 +34,14 @@ station_uid,lat,lon,elevation_m,landmask,wind_height_m,roughness_m
 example:station,28.4,-16.3,120,1,10,0.03
 ```
 
-`station_uid` is a stable string, like ALISIOS's `source:native_id`. Latitude and
+`station_uid` is a stable string, for example `source:native_id` as used by an
+operational Canary Islands forecast system (its export format is selected with
+`--obs-format alisios`, see below). Latitude and
 longitude are geographic degrees; elevation is metres above mean sea level.
 Land mask is 1 for land, 0 for water. Wind height and roughness are metres above
 the local surface. Optional defaults (recorded in the report) are land=1,
 wind height=10 m and roughness=0.03 m. Supply observed site metadata when known.
-ALISIOS station exports may use `station_id`, `altitude_m` and
+Station exports from that system may use `station_id`, `altitude_m` and
 `altitude_verified_m`; verified altitude takes precedence, as in its skill engine.
 
 ## Canonical observation/forecast CSV
@@ -71,7 +73,7 @@ duplicate keys, negative speeds/rates, and NaN/Inf are rejected. Optional
 `qc_flag` excludes nonzero flags before observations are ingested; exclusions are
 counted. Missing variables are absent rows, not NaN placeholders.
 
-Forecast CSVs also accept ALISIOS's `prediction_value`, `prediction_u_ms`,
+Forecast CSVs also accept that system's `prediction_value`, `prediction_u_ms`,
 `prediction_v_ms` and `prediction_dir_deg` (expanded into direction rows).
 If components are supplied, both must be finite on every wind
 row. A CSV must select one source and one issue. Scalar speed and mean-vector
@@ -82,7 +84,7 @@ station CSV producer.
 If the optional `issue_time` column is present, every row must declare the same
 non-missing, nonempty issue. Omitting that column is supported for canonical CSVs.
 
-## ALISIOS observations (read-only exports)
+## Observations from the Canary Islands forecast system (read-only exports)
 
 ```bash
 gpuwrf verify --stations alisios_stations.csv --obs obsdb_export.csv \
@@ -91,8 +93,8 @@ gpuwrf verify --stations alisios_stations.csv --obs obsdb_export.csv \
 ```
 
 Export `station_id` (or `station_uid`), `ts_utc`, `variable`, `value`, `qc_flag`
-from the approved ObsDB authority; this tool never connects to or modifies the
-live ALISIOS database. Native variables supported are `t2_c`, `wind_speed_ms`,
+from that system's observation database (ObsDB); this tool never connects to or
+modifies the live database. Native variables supported are `t2_c`, `wind_speed_ms`,
 `wind_dir_deg`, `wind_gust_ms`, `precip_rate_mmh` and `precip_mm`.
 Other variables and nonzero QC flags are excluded and counted. Duplicate native
 station/timestamp/variable measurements are ambiguous and rejected.
@@ -102,8 +104,8 @@ aggregation. A valid aggregate cannot hide an invalid native measurement.
 
 Within the UTC hour beginning at `h`, temperature/speed use arithmetic means,
 direction uses the unweighted circular mean, and gust uses the maximum, following
-ALISIOS `skill/engine.py::_observations`. Undefined opposing direction means are
-reported as unavailable. Temperature/speed/direction keep the ALISIOS hour-start
+that system's skill engine. Undefined opposing direction means are
+reported as unavailable. Temperature/speed/direction keep that system's hour-start
 label `h`. **Gust is converted to an explicit `[h,h+1h]` window ending at `h+1h`**;
 this avoids matching an hourly maximum with a point history sample at `h`.
 Precipitation requires `--obs-precip-hours`: rates/accumulations are declared to
@@ -137,7 +139,7 @@ Inf is refused. Metric speed/gust are converted from km/h to m/s. Provider rain
 and gust windows are hourly and end at the record time. Downloaded canonical
 `observations.csv` and provider metadata are retained for reproducibility.
 Provider availability and measurement conventions remain the operator's concern;
-no live-download qualification is claimed by the offline test suite.
+the offline test suite does not test live downloads.
 
 ## Sampling and corrections
 
@@ -158,7 +160,7 @@ Unsupported projection/rotation metadata is refused. Use `--wind-frame earth`
 only for inputs already rotated to east/north. Scalar speed is computed before
 rotation (stored fp32 rotation fields need not have exactly unit norm) and interpolated as
 `interp(hypot(u,v))`; components are interpolated independently. This matches
-ALISIOS `_sample_wind_rows`, and retains sub-grid variance that would be lost in
+that system's wind sampling and retains sub-grid variance that would be lost in
 `hypot(interp(u),interp(v))`. Direction is `atan2(-u_earth,-v_earth)` modulo 360.
 An exactly cancelled/negligible mean vector has undefined direction and is
 excluded from direction rows with a reported count, while its valid speed and
@@ -196,7 +198,7 @@ MAE = mean(abs(error)), RMSE = sqrt(mean(error²)). Vector wind RMSE is
 `sqrt(mean((uf-uo)² + (vf-vo)²))`, without division by two. Direction errors wrap
 to `[-180,180)` and report bias/MAE/RMSE plus **median absolute circular error**.
 Direction requires observed and **every forecast** speed strictly above 4 m/s,
-as in ALISIOS `_direction_stats`; the same eligible rows are used for both arms.
+as in that system's skill engine; the same eligible rows are used for both arms.
 Vector wind has its own reported N when direction truth is unavailable.
 
 Rain events use inclusive `rate >= threshold` in mm/h (defaults 0.1, 1, 5).
@@ -210,11 +212,12 @@ Scores use rate thresholds, not mixed 1 h/3 h accumulation thresholds.
 Comparison reports give candidate-minus-baseline RMSE and its ratio on exact
 common support; a zero baseline RMSE has no defined ratio. Aggregate scores are
 pooled station/time pairs, not normalized multi-variable skill-ladder scores.
-This tool does not reproduce ALISIOS publication eligibility, HQ evidence floors,
-date-block confidence intervals or issue-date weighting. Correlated station-hours
+This tool does not reproduce that system's publication eligibility rules,
+minimum evidence requirements, date-block confidence intervals or issue-date
+weighting. Correlated station-hours
 are not independent cases; small descriptive improvements do not prove superiority.
-Formal adoption still uses the project's real-station skill process.
+Formal adoption of a configuration still needs a full real-station skill evaluation.
 
 Tests use committed hand-computed score values, analytic interpolation fields,
 the NCAR rotation formula, unit/window/QC failure cases and an actual subprocess
-CLI. GPU forecasts are outside this K0 lane's qualification.
+CLI. The tests do not cover GPU forecasts.

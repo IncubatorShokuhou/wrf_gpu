@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Validation &amp; WRF Identity — wrf_gpu User's Guide</title>
-  <meta name="description" content="How wrf_gpu is validated against WRF as an oracle: original CPU-WRF hourly comparisons, frozen metrics, predictability context and source-specific validated scope.">
+  <title>Validation against WRF — wrf_gpu User's Guide</title>
+  <meta name="description" content="How wrf_gpu is checked against the original CPU-WRF: same inputs, every hourly field, limits fixed in advance, and the results of each release.">
   <meta name="color-scheme" content="light dark">
   <link rel="icon" type="image/svg+xml" href="_assets/logo.svg">
   <link rel="stylesheet" href="_assets/style.css">
@@ -40,6 +40,7 @@
 <a class="" href="quickstart.html">Quickstart</a>
 <a class="" href="ai-quickstart.html">Quickstart with an AI Agent</a>
 <a class="" href="running.html">Running the Model</a>
+<a class="" href="tools.html">Tools &amp; Commands</a>
 <a class="" href="input-data.html">Input Data &amp; Initialization</a>
 <div class="group-title">Configuration</div>
 <a class="" href="namelist.html">Namelist Compatibility</a>
@@ -51,11 +52,11 @@
 <a class="" href="nesting.html">Nesting</a>
 <div class="group-title">Performance &amp; validation</div>
 <a class="" href="performance.html">Performance &amp; GPU Modes</a>
-<a class="active" href="validation.html">Validation &amp; WRF Identity</a>
+<a class="active" href="validation.html">Validation against WRF</a>
 <div class="subnav">
-<a href="validation.html#v040">v0.4.0 frozen default evidence</a>
-<a href="validation.html#final-wave">v0.3.3 validation</a>
-<a href="validation.html#method">All cells, declared metrics, frozen limits</a>
+<a href="validation.html#method">How the checks work</a>
+<a href="validation.html#v040-results">v0.4.0 results</a>
+<a href="validation.html#v033-72h">v0.3.3: 72-hour forecasts</a>
 <a href="validation.html#result">Earlier result: v0.3.0 release gate</a>
 <a href="validation.html#rainnc">The v0.18 red field — RAINNC — in plain terms</a>
 <a href="validation.html#skill-gate">The open credibility gate — 24–72 h forecast skill</a>
@@ -71,64 +72,74 @@
     </aside>
     <div class="content-wrap">
       <main>
-        <div class="breadcrumb"><a href="index.html">User's Guide</a> › Performance &amp; validation › Validation &amp; WRF Identity</div>
-        <h1>Validation and original-WRF comparisons</h1>
-<h2 id="v040">v0.4.0 frozen default evidence<a class="headerlink" href="#v040" aria-label="Permalink">¶</a></h2><p>In plain words: for v0.4.0, 66 physics configurations were each run as a 24-hour forecast (one radiation scheme: six hours) and compared hour by hour with original CPU-WRF; all stayed within the fixed acceptance limits. The <a href="release/VALIDATION_v0.4.0.md">validation details page</a> explains the short labels used below.</p><p>Defaults frozen on5c15881ede (proof-only403240f257): Swiss3356e249 / PROD196aed9f. F20 five-case24h D6 plus C5′ Swiss/PROD/WN3-0227 D6/E413/3 are closed; host-transfer counts equal F20. Matched nsys −1.4% is not S1/ABAB. The00:26Z17October <a href="release/FINAL_COMPOSITES_v0.4.0.md">FINAL table</a> records66/66 accepted-scope scientific D6PASS (65full24h + c45accepted6h), with exact measured sources. See the <a href="release/FIXES_v0.4.0.md">class-A/default repairs</a> and <a href="release/SUPPORT_MATRIX_v0.4.0.md">matrix</a>. Earlier f672a573/6fc715a2 and plots below remain historical.</p>
-<h2 id="final-wave">v0.3.3 validation<a class="headerlink" href="#final-wave" aria-label="Permalink">¶</a></h2><p>All eight original-CPU scoring readers are closed. The manager accepts the disclosed deviations under the Owner rule; raw failed checks remain failed. </p><p>Seven 72-hour forecasts and Swiss 24 h; every original-CPU paired hour and native cell. Spatial bands are distributions, not confidence intervals. Initial-condition members include their IC difference; 0115 grey spread is an older GPU IC pair, not a CPU pair.</p><p><a href="release/evidence/v033/final_w3/index.html">All final identity plots and exact source/reference manifests</a> · <a href="release/TECHNICAL_VALIDATION_APPENDIX_v0.3.3.md">Technical appendix and raw-failure disclosures</a></p><table><thead><tr><th>Comparison</th><th>Strict24 raw</th><th>Full D6 raw</th><th>Disposition</th></tr></thead><tbody><tr><td>Tenerife 0115 primary</td><td>FAIL</td><td>FAIL</td><td>61 floor-limited rows; one real V10 miss. Rain and cirrus lifetime differences disclosed (L4/L6/L7).</td></tr><tr><td>Tenerife 0227 primary</td><td>PASS</td><td>FAIL</td><td>All eight breaches pass the frozen CPU-pair spread annex (L5).</td></tr><tr><td>Tenerife 0408 primary</td><td>PASS</td><td>PASS</td><td>D6 passes; trace graupel integrity miss disclosed (L1).</td></tr><tr><td>0227 IC member</td><td>PASS</td><td>FAIL</td><td>All six breaches pass the frozen CPU-pair spread annex; integrity annex passes.</td></tr><tr><td>0115 IC member</td><td>FAIL</td><td>FAIL</td><td>54 floor-limited rows; strict rain FAIL retained. Integrity annex passes; IC difference included.</td></tr><tr><td>0115 same-IC replica</td><td>PASS</td><td>FAIL</td><td>Eight floor-limited rows, two real V10 misses (h42/h44). Cirrus lifetime integrity FAIL disclosed; same-IC fresh-compile replica.</td></tr><tr><td>Storm Monica</td><td>PASS</td><td>PASS</td><td>D6 and all-frame integrity pass.</td></tr><tr><td>Shipped Swiss</td><td>PASS</td><td>PASS</td><td>D6 and all-frame integrity pass; 25 frames on one domain.</td></tr></tbody></table><p>0227 stations: raw DAMAGE, classification CLEAR. 0115: raw DAMAGE, classification SYSTEMATIC; wind-speed RMSE about 1.8% higher, temperature/humidity/wind direction better. The manager accepts this disclosed coastal-wind difference; CLEAR is not renamed PASS. Actual WN/Mon execution uses 7a; the exact native-byte bridge binds those programs to final be0. Swiss executes be0 directly.</p><h2>Earlier source-dated validation records</h2>
-<p>Selected regional cases have original-CPU comparisons through 24 and 72 hours.
-Historical pre-release checkpoint: all eight W3 arms completed, but that checkpoint remained held: strict0115 rain,
-0408 rain/graupel and replicated0115 station WS10 A/B failures remain. Earlier BASE,
-pre-W2 and W2 results keep their measured source and member-level qualifications.</p>
-<p><a href="release/evidence/v033/current_w3/index.html">Current eight-arm identity plots</a>
-(1,485 paired domain-hours): six executed CF arms with an explicit b6 source bridge,
-plus actual b6 Monica72/Swiss24. Original CPU-WRF is fidelity truth; Monica/Swiss
-D6 and integrity pass, 0227 stations CLEAR. These findings do not establish release acceptance.</p>
-<div class="card-grid"><a class="card" href="release/evidence/v033/index.html"><div class="card-title">Every retained identity gallery</div><div class="card-desc">Hourly heatmaps, RMSE/bias, spatial bands, pairs and cross-case summaries.</div></a>
-<a class="card" href="https://github.com/wrf-gpu/wrf_gpu/blob/main/docs/release/V0.3.3.md"><div class="card-title">Rules, receipts and current release scope</div><div class="card-desc">Frozen D6/floor/integrity rules, station qualifications and source hashes.</div></a></div>
-<div class="admon measured">
-  <div class="admon-title">v0.3.2 — matched timing and original-WRF validation</div>
-  <p>RTX 5090 (sm_120, CUDA 13), Ryzen 9 9950X: cached Canary 24-hour
-  whole-run rate <strong>3.305 s/forecast hour</strong> under host contention.
-  The matched v0.3.1 reference was 3.669: <strong>9.9% less wall time</strong>;
-  this is not a quiet-host absolute benchmark. Four concurrent three-nest
-  Tenerife cases × 24 h measured <strong>5.507 s/case-hour</strong> aggregate
-  (<strong>22.4×</strong> CPU-WRF 3×4 cores), including init/load and without
-  compression; the all-four-running steady window was 4.857 (25.4×).</p>
-  <p>PROD is bitwise versus v0.3.1; WN3 d01 is bitwise and children differ
-  at round-off level, passing all three original-CPU D6 gates. d03 worst PSFC
-  RMSE is <strong>8.66 Pa versus 4.49 Pa</strong> in v0.3.1 (limit 120 Pa).
-  Registered raw-integrity exceptions remain disclosed. Swiss measurements
-  remain v0.3.1; longer-lead studies remain v0.3.0. Ensemble and giant-domain
-  scaling figures are inferred best-case scenarios.
-  <a href="https://github.com/wrf-gpu/wrf_gpu/blob/main/docs/release/V0.3.2.md">Evidence, clocks and limitations</a>.</p>
-</div>
-
-
-<p class="lead">wrf_gpu is validated by a reproducible, CPU-only identity-proof system that compares a
-GPU <code>wrfout</code> against a CPU-WRF <code>wrfout</code> from the same initialization, over
-<strong>all grid cells, all forecast leads, and all core prognostic variables</strong>, against a
-<strong>frozen tolerance manifest</strong> that is read before comparison and never tuned. WRF is
-the oracle; this is the project's primary fidelity gate.</p>
-
-<h2 id="method">All cells, declared metrics, frozen limits<a class="headerlink" href="#method" aria-label="Permalink">¶</a></h2>
-<p>All native grid cells enter each field/lead statistic. Passing means every declared
-metric, such as domain RMSE or static max_abs, meets its frozen limit. An RMSE threshold
-does not bound every individual cell. Complete domains/hours and finite operands are
-required before a verdict; no masking is used to hide a failure.</p>
-<p>Original CPU-WRF is fidelity truth. CPU twins and explicitly labelled GPU IC pairs
-provide empirical predictability context, not confidence intervals. Strict 24-hour D6
-and the separately frozen 72-hour floor annex retain raw failures. Original-WRF
-comparisons establish the tested numerical scope; universal observational-skill
-equivalence is not claimed.</p>
-
+        <div class="breadcrumb"><a href="index.html">User's Guide</a> › Performance &amp; validation › Validation against WRF</div>
+        <h1>Validation against the original WRF</h1>
+<p class="lead">Every release of wrf_gpu is checked against the original Fortran WRF: both models run
+from the same inputs, and every hourly output field is compared over the whole grid with limits that
+were fixed before the comparison. The reference is always CPU-WRF, never an older version of this
+project.</p>
+<h2 id="method">How the checks work<a class="headerlink" href="#method" aria-label="Permalink">¶</a></h2>
+<p>For each test case we run CPU-WRF and wrf_gpu from identical <code>wrfinput</code> and
+<code>wrfbdy</code> files and compare each output field at each forecast hour over all grid cells. A
+field passes when its root-mean-square difference stays within its limit at every hour. The limits
+were fixed in advance and are never loosened afterwards:</p>
+<div class="table-scroll"><table><thead><tr><th>Field</th><th>Limit (RMSE)</th></tr></thead><tbody>
+<tr><td>2 m temperature (T2), air temperature (T)</td><td>1.5 K</td></tr>
+<tr><td>10 m wind (U10, V10)</td><td>1.5 m/s</td></tr>
+<tr><td>Wind on model levels (U, V)</td><td>1.8 m/s</td></tr>
+<tr><td>Vertical wind (W)</td><td>0.30 m/s</td></tr>
+<tr><td>Surface pressure (PSFC)</td><td>120 Pa</td></tr>
+<tr><td>Accumulated rain (RAINNC)</td><td>1 mm</td></tr>
+<tr><td>Water vapour mixing ratio (QVAPOR)</td><td>0.001 kg/kg</td></tr>
+<tr><td>Grid, terrain and other static fields</td><td>exact match</td></tr>
+</tbody></table></div>
+<p>About 60 fields have such limits; the other output fields are compared and reported without one. A
+run must also be complete, with every expected field and hour present and no NaN or infinite values.
+Nothing is masked to hide a failure.</p>
+<p>Results are close to WRF, not bit-identical. GPUs round floating-point arithmetic differently, and
+weather is chaotic, so tiny differences grow with forecast length. That is why the limits are
+statistical and why long runs are compared with the spread between two CPU-WRF runs started from
+slightly different conditions. These comparisons test agreement with WRF; they do not claim better or
+worse forecast skill against observations.</p>
+<a id="v040"></a>
+<h2 id="v040-results">v0.4.0 results<a class="headerlink" href="#v040-results" aria-label="Permalink">¶</a></h2>
+<figure style="margin:1.2rem 0;"><picture>
+<source media="(prefers-color-scheme: dark)" srcset="release/v040_figures/readme_validation_dark.png">
+<img src="release/v040_figures/readme_validation.png" alt="Hourly differences between wrf_gpu and CPU-WRF over a 24-hour, three-domain Tenerife forecast for ten fields, all far below the dotted acceptance limits" style="max-width:100%;height:auto;border:1px solid var(--border);border-radius:8px;"></picture>
+<figcaption style="font-size:.82rem;color:var(--fg-soft);margin-top:.4rem;">24-hour Tenerife forecast with
+three nested domains (9/3/1 km), default physics: the largest hourly difference stays below a quarter of
+its limit for every field; for 2 m temperature it is at most 0.09 K.</figcaption></figure>
+<ul>
+<li><strong>Default physics:</strong> passed 24-hour comparisons on five real cases: three Tenerife
+three-domain cases, a two-domain Canary Islands case and the Swiss Alps example.</li>
+<li><strong>66 physics configurations:</strong> each passed its comparison, 65 over 24 hours and one
+(Goddard radiation) over six hours. Together they cover every option marked validated on the
+<a href="physics.html">physics</a> and <a href="namelist.html">namelist</a> pages.</li>
+<li><strong>Real bugs found:</strong> the comparisons caught errors in how several schemes were called.
+For example, an error in how the Tiedtke cumulus scheme was called made the accumulated-rain difference
+peak at 1.1 mm; after the fix it peaks at 0.03 mm.</li>
+</ul>
+<p>The <a href="https://github.com/wrf-gpu/wrf_gpu/blob/main/docs/release/VALIDATION_v0.4.0.md">v0.4.0 validation report</a> has the method in detail, the
+<a href="https://github.com/wrf-gpu/wrf_gpu/blob/main/docs/release/FINAL_COMPOSITES_v0.4.0.md">table of all 66 configurations</a> and the
+<a href="https://github.com/wrf-gpu/wrf_gpu/blob/main/docs/release/FIXES_v0.4.0.md">list of fixes</a>, each with its evidence.</p>
+<a id="final-wave"></a>
+<h2 id="v033-72h">v0.3.3: 72-hour forecasts<a class="headerlink" href="#v033-72h" aria-label="Permalink">¶</a></h2>
+<p>v0.3.3 was compared over 72 hours: six Tenerife runs from three dates (including runs with slightly
+different starting conditions and a repeat compile) and a winter-storm case, plus the 24-hour Swiss
+case. Most fields stayed within their limits for all 72 hours. Accumulated rain and some wind and
+cloud-ice fields went over their limits late in some runs; most of these late differences are about as
+large as those between two CPU-WRF runs started from slightly different conditions, which points to the
+chaotic growth of tiny differences. Every hour of every run is plotted, failures included.</p>
+<div class="card-grid"><a class="card" href="release/evidence/v033/final_w3/index.html"><div class="card-title">All 72-hour comparison plots</div><div class="card-desc">Hourly error curves, bias, spatial spread and cross-case summaries for every v0.3.3 run.</div></a>
+<a class="card" href="https://github.com/wrf-gpu/wrf_gpu/blob/main/docs/release/TECHNICAL_VALIDATION_APPENDIX_v0.3.3.md"><div class="card-title">Technical appendix</div><div class="card-desc">Every field that exceeded a limit, with the rules used to judge it.</div></a></div>
 <h2 id="result">Earlier result: v0.3.0 release gate<a class="headerlink" href="#result" aria-label="Permalink">¶</a></h2>
 <div class="admon measured">
   <div class="admon-title">v0.3.0 release gate — six Tenerife cases</div>
-  <p>The release gate covers <strong>6 Tenerife cases × 3 domains × 24&nbsp;h</strong>: 375 output fields compared with original CPU-WRF, 62 of them with frozen per-variable limits (D6), <strong>0 bound failures</strong>, all compared values finite. Beyond 24&nbsp;h, a complete six-case comparison on an earlier internal build of v0.3.0 (identical
+  <p>The release gate covers <strong>6 Tenerife cases × 3 domains × 24&nbsp;h</strong>: 375 output fields compared with original CPU-WRF, 62 of them with fixed per-variable limits, <strong>0 bound failures</strong>, all compared values finite. Beyond 24&nbsp;h, a complete six-case comparison on an earlier internal build of v0.3.0 (identical
 except the Noah-MP albedo/snow-aging fix) exceeds those limits for some 1&nbsp;km wind/rain fields in two
 of the six 72&nbsp;h cases; every affected frame is listed in the <a href="https://github.com/wrf-gpu/wrf_gpu/blob/main/docs/release/VALIDATION.md">validation report</a>. Output integrity: a strict check flags a few trace-level fields (ice/snow
   traces, canopy dew onset, one known writer field); every exception is listed in the validation
-  report. Station verification is done separately by the ALISIOS forecasting project.</p>
+  report. Station verification is done separately by an operational forecasting project in the Canary Islands.</p>
 </div>
 <h3 id="result-history">Earlier releases<a class="headerlink" href="#result-history" aria-label="Permalink">¶</a></h3>
 <div class="admon measured">
@@ -179,7 +190,7 @@ passes) — are all within tolerance. It is drawn red and carried, not painted g
 <div class="admon honest">
   <div class="admon-title">Not claimed closed</div>
   <p>v0.3.0 closes its 24-hour six-case Tenerife release gate; v0.23.4 closed two specific frozen
-  scopes: the 24-hour SP2 real-case chain and the one-hour all-physics nine-nest acceptance fixture. The broader <strong>seasonal and
+  scopes: a 24-hour real-case chain and the one-hour all-physics nine-nest acceptance fixture. The broader <strong>seasonal and
   configuration-independent 24 h/72 h forecast-<em>skill</em> equivalence (T2/U10/V10) vs
   CPU-WRF remains open</strong>. See
   <a href="limitations.html">Boundaries</a>.</p>

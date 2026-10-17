@@ -46,6 +46,7 @@
 <a class="" href="quickstart.html">Quickstart</a>
 <a class="" href="ai-quickstart.html">Quickstart with an AI Agent</a>
 <a class="" href="running.html">Running the Model</a>
+<a class="" href="tools.html">Tools &amp; Commands</a>
 <a class="" href="input-data.html">Input Data &amp; Initialization</a>
 <div class="group-title">Configuration</div>
 <a class="" href="namelist.html">Namelist Compatibility</a>
@@ -57,7 +58,7 @@
 <a class="" href="nesting.html">Nesting</a>
 <div class="group-title">Performance &amp; validation</div>
 <a class="" href="performance.html">Performance &amp; GPU Modes</a>
-<a class="" href="validation.html">Validation &amp; WRF Identity</a>
+<a class="" href="validation.html">Validation against WRF</a>
 <a class="" href="limitations.html">Boundaries &amp; Known Issues</a>
 <div class="group-title">Reference</div>
 <a class="" href="version-history.html">Version History</a>
@@ -78,7 +79,7 @@ before a run.</p>
 
 <div class="admon note">
   <div class="admon-title">The short version</div>
-  <p><code>pip install --upgrade "jax[cuda13]"</code>, then <code>pip install -e .</code>
+  <p><code>pip install "jax[cuda13]==0.10.*"</code>, then <code>pip install -e .</code>
   (or <code>pip install -e ".[cuda]"</code>), then <code>python -c "import jax;
   print(jax.devices())"</code> to confirm a CUDA device. Set
   <code>GPUWRF_WRF_ROOT</code> before running any case that selects Noah-MP or
@@ -88,17 +89,21 @@ before a run.</p>
 
 <h2 id="gpu-and-vram">GPU and host memory<a class="headerlink" href="#gpu-and-vram" aria-label="Permalink">¶</a></h2>
 <p><strong>Minimum: NVIDIA Ampere, compute capability 8.0</strong>, for the
-Pallas/Triton fast path. Pascal and Turing are unsupported. A GTX 1080 Ti legacy
-interpreted debug run passed bounded D6 over 3h but was 3.45 times slower than
-six-core original CPU-WRF; it is not a supported fallback or release benchmark.
-<a href="release/SUPPORT_MATRIX_v0.4.0.md#gpu-requirements">Hardware scope and receipt</a>.</p>
-<p>The measured reference is RTX 5090 (sm_120, CUDA 13) with Ryzen 9 9950X.
-Other recent NVIDIA hardware is untested. Capacity depends on geometry, physics,
-source, allocator and compilation phase. Use a verified case-sized plan and observed
-host/GPU peaks, not a universal 26 GiB GPU or 36 GB host rule.</p>
-<p>Free-VRAM precedence is explicit GiB override, then C-auto pool budget plus
-outside-pool headroom, then conservative cold fallback. Explicit allocator settings
-win. See <a href="running.html#vram-preflight">memory admission</a>.</p>
+GPU kernels. Older cards (Pascal, Turing) are not supported: on a GTX 1080 Ti only a slow debug
+path ran, about 3.5 times slower than CPU-WRF on six CPU cores.
+<a href="https://github.com/wrf-gpu/wrf_gpu/blob/main/docs/release/SUPPORT_MATRIX_v0.4.0.md#gpu-requirements">Hardware requirements</a>.</p>
+<p>The tested card is an RTX 5090 (CUDA 13) with a Ryzen 9 9950X host; other NVIDIA GPUs are
+untested. How much memory a forecast needs depends on the grid, the physics and the number of nests:
+<code>gpuwrf doctor</code> estimates it for a case and <code>gpuwrf quickstart --profiles</code> gives
+rough grid sizes for 12 to 32 GB cards. Compiling a new set-up needs more host memory than running it.
+See <a href="running.html#memory">GPU memory</a>.</p>
+<div class="admon note"><div class="admon-title">Release tables pending</div>
+<p>Large microphysics lookup tables, including the Thompson tables of the default physics, are
+downloaded on first use from the GitHub release. The upload of the v0.4.0 tables is still pending; until
+it is done, runs that need them stop with an "asset unavailable" message. See
+<a href="https://github.com/wrf-gpu/wrf_gpu/blob/main/docs/runtime-tables.md">runtime tables</a>.</p></div>
+<p>Prefer a container? The <a href="https://github.com/wrf-gpu/wrf_gpu/blob/main/docs/onboarding.md#install-the-container">onboarding container</a>
+builds wrf_gpu together with the original WPS and WRF tools for region set-up.</p>
 <h2 id="install">Full install<a class="headerlink" href="#install" aria-label="Permalink">¶</a></h2>
 
 <p>Use an isolated environment. <strong>Python&nbsp;3.11</strong> is the reference
@@ -112,8 +117,8 @@ cd wrf_gpu
 python -m venv .venv &amp;&amp; . .venv/bin/activate
 # or:  conda create -n wrfgpu python=3.11 &amp;&amp; conda activate wrfgpu
 
-# 1. GPU build of JAX (CUDA 13 wheels):
-pip install --upgrade "jax[cuda13]"
+# 1. GPU build of JAX (CUDA 13 wheels, tested with JAX 0.10):
+pip install "jax[cuda13]==0.10.*"
 
 # 2. wrf_gpu itself (pulls numpy, netCDF4, xarray, PyYAML, zarr, ...):
 pip install -e .
@@ -147,7 +152,7 @@ git clone --depth 1 --no-checkout \
 git sparse-checkout init --cone
 # In cone mode the root files (pyproject.toml, README.md, LICENSE, ...) come
 # automatically; add the source package and the vendored runtime data tables
-# (the Thompson/RRTMG tables are loaded at import -- `src` alone is not enough):
+# (small physics tables such as RRTMG live there -- `src` alone is not enough):
 git sparse-checkout set src data/fixtures
 git checkout
 
@@ -158,10 +163,10 @@ pip install -e ".[cuda]"          # GPU execution (CUDA 13 jaxlib)
 
 # Verify:
 python -c "import gpuwrf; print('wrf_gpu', gpuwrf.__version__)"
-python -m gpuwrf.cli run --help   # the CLI is the entrypoint</code></pre>
+gpuwrf run --help                # the command-line entry point</code></pre>
 
-<p>The <code>data/fixtures/</code> tables (~147&nbsp;MiB) are required at import, so
-the sparse checkout must include them alongside <code>src</code>.</p>
+<p>The <code>data/fixtures/</code> tables (about 32&nbsp;MiB) are required, so the sparse checkout must
+include them alongside <code>src</code>. Larger tables are downloaded on first use.</p>
 
 <h2 id="prerequisite-env">Prerequisite environment variables<a class="headerlink" href="#prerequisite-env" aria-label="Permalink">¶</a></h2>
 

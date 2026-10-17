@@ -48,6 +48,7 @@
 <a class="" href="quickstart.html">Quickstart</a>
 <a class="" href="ai-quickstart.html">Quickstart with an AI Agent</a>
 <a class="" href="running.html">Running the Model</a>
+<a class="" href="tools.html">Tools &amp; Commands</a>
 <a class="" href="input-data.html">Input Data &amp; Initialization</a>
 <div class="group-title">Configuration</div>
 <a class="" href="namelist.html">Namelist Compatibility</a>
@@ -59,7 +60,7 @@
 <a class="" href="nesting.html">Nesting</a>
 <div class="group-title">Performance &amp; validation</div>
 <a class="" href="performance.html">Performance &amp; GPU Modes</a>
-<a class="" href="validation.html">Validation &amp; WRF Identity</a>
+<a class="" href="validation.html">Validation against WRF</a>
 <a class="" href="limitations.html">Boundaries &amp; Known Issues</a>
 <div class="group-title">Reference</div>
 <a class="" href="version-history.html">Version History</a>
@@ -91,7 +92,7 @@ shared source.</p>
   dynamics/thermodynamics fields <strong>cell-for-cell identical</strong> to CPU-WRF v4; this is
   fixture-backed evidence, not universal control/configuration parity. The broader forecast-<em>skill</em>
   equivalence over 24–72&nbsp;h is a separate, still-open gate. The guide never blurs those two.
-  See <a href="validation.html">Validation &amp; WRF Identity</a>.</p>
+  See <a href="validation.html">Validation against WRF</a>.</p>
 </div>
 
 <h2 id="gpu-native">GPU-native architecture<a class="headerlink" href="#gpu-native" aria-label="Permalink">¶</a></h2>
@@ -124,7 +125,7 @@ public CLI keeps the WRF real-data artifacts (<code>wrfinput_*</code> and
 <code>wrfbdy_d01</code>) plus your <code>namelist.input</code>, and replaces
 <code>wrf.exe</code> with GPU integration. It does <strong>not</strong> need CPU-WRF
 <code>wrfout</code> history files for a standalone forecast.</p>
-<p>The single entrypoint <code>python -m gpuwrf.cli run</code> auto-detects the case:</p>
+<p>The single entry point <code>gpuwrf run</code> auto-detects the case:</p>
 <div class="table-scroll">
 <table>
 <thead><tr><th>Input directory contains…</th><th>Mode</th><th>Meaning</th></tr></thead>

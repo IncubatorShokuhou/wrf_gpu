@@ -40,6 +40,7 @@
 <a class="" href="quickstart.html">Quickstart</a>
 <a class="" href="ai-quickstart.html">Quickstart with an AI Agent</a>
 <a class="" href="running.html">Running the Model</a>
+<a class="" href="tools.html">Tools &amp; Commands</a>
 <a class="active" href="input-data.html">Input Data &amp; Initialization</a>
 <div class="subnav">
 <a href="input-data.html#native-init">Standalone native-init inputs</a>
@@ -60,7 +61,7 @@
 <a class="" href="nesting.html">Nesting</a>
 <div class="group-title">Performance &amp; validation</div>
 <a class="" href="performance.html">Performance &amp; GPU Modes</a>
-<a class="" href="validation.html">Validation &amp; WRF Identity</a>
+<a class="" href="validation.html">Validation against WRF</a>
 <a class="" href="limitations.html">Boundaries &amp; Known Issues</a>
 <div class="group-title">Reference</div>
 <a class="" href="version-history.html">Version History</a>
@@ -82,7 +83,7 @@ history is present.</p>
 <div class="admon note">
   <div class="admon-title">Usage parity with WRF</div>
   <p>If you already run WRF, the biggest change is that wrf_gpu replaces
-  <code>wrf.exe</code> with a single command, <code>python -m gpuwrf.cli run</code>.
+  <code>wrf.exe</code> with a single command, <code>gpuwrf run</code>.
   You keep your WRF real-data case directory and <code>namelist.input</code>; the
   supported namelist matrix runs as-is, and anything unsupported fails closed with a
   named reason.</p>
@@ -102,8 +103,7 @@ loop</strong>; the forecast state is advanced by wrf_gpu on the GPU.</p>
 ├── namelist.input        # standard WRF v4 ARW namelist (bring your own)
 ├── wrfinput_d01          # initial state (one per domain you run)
 ├── wrfinput_d02
-├── wrfbdy_d01            # lateral boundaries for the outer domain
-└── met_em.d0*.*.nc       # met_em-stage forcing (metgrid output)</code></pre>
+└── wrfbdy_d01            # lateral boundaries for the outer domain</code></pre>
 
 <p>You produce these with any standard WRF preprocessing chain (WPS +
 <code>real.exe</code>) or use a bundled case that already contains them. For a
@@ -119,8 +119,8 @@ loop</strong>; the forecast state is advanced by wrf_gpu on the GPU.</p>
 CPU-WRF <code>wrfout</code> history files (≥&nbsp;2 <code>wrfout_&lt;domain&gt;</code>
 files), <code>run</code> auto-detects <strong>replay mode</strong>: it takes the
 initial state and boundaries from that existing CPU-WRF history rather than building
-them natively. This is the validated skill-comparison harness — coupled-skill
-validation against CPU-WRF is run through it, not from a from-scratch native init.</p>
+them natively. It is an older comparison path; the release validation instead runs standalone forecasts
+from the same <code>wrfinput</code> and <code>wrfbdy</code> files as CPU-WRF.</p>
 
 <div class="table-scroll">
 <table>
@@ -184,10 +184,11 @@ SEAICE and skin/lake coupling remain refused.</p>
 <h2 id="native-cadence">Native cadence and controls<a class="headerlink" href="#native-cadence" aria-label="Permalink">¶</a></h2><p>Native runs bind per-domain
 <code>radt</code> and <code>cudt</code> to integer step cadence; requested <code>topo_shading</code>,
 <code>slope_rad</code>, <code>moist_adv_opt</code> and <code>scalar_adv_opt</code> reach the
-corresponding controls. This includes the native single-root route. Source binding and
-supported dispatch are separate from complete numerical validation.</p>
+corresponding controls, in single-domain and nested runs. <code>slope_rad=1</code> and
+<code>topo_shading=1</code> passed a 24-hour comparison with CPU-WRF together with <code>sst_update=1</code>; for the
+advection options see the <a href="namelist.html#turbulence">namelist page</a>.</p>
         <nav class="page-nav">
-<a class="prev" href="running.html"><span class="pn-dir">← Previous</span><span class="pn-title">Running the Model</span></a>
+<a class="prev" href="tools.html"><span class="pn-dir">← Previous</span><span class="pn-title">Tools &amp; Commands</span></a>
 <a class="next" href="namelist.html"><span class="pn-dir">Next →</span><span class="pn-title">Namelist Compatibility</span></a>
 </nav>
       </main>

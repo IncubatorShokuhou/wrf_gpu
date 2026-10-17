@@ -15,7 +15,7 @@ initializing CUDA, or changing inputs. JSON goes to stdout. Doctor/reproduce
 return 0 for PASS, 1 for failed checks, and 2 for invalid arguments/files. A
 doctor PASS means its listed checks passed, with any warnings still applicable;
 it is neither scientific validation nor a guarantee that a forecast will run.
-Manifest creation records unsupported selections too and does not qualify them.
+Manifest creation records unsupported selections too and does not validate them.
 `--output` creates a new file and refuses to overwrite an existing file.
 
 Doctor checks each declared domain's mass/staggered dimensions against the
@@ -57,14 +57,16 @@ slope 0.5 and physical vertical CFL 1 trigger advice, not admission limits.
 These conventions follow the [WRF Users' Guide](https://www2.mmm.ucar.edu/wrf/users/docs/user_guide_v4/v4.2/users_guide_chap5.html)
 and the [WRF output definitions](https://github.com/wrf-model/Users_Guide/blob/main/output_variables.rst).
 
-VRAM is an **inferred planning estimate**, not a measured result for the inspected
-case or a memory admission gate. Calibration is recorded in kernel FINDINGS
-A26/A38/A58: PROD has `(120×70+267×117)×44` cells, 4.00 GB live and a 5.61 GB
-C-auto budget; WN3 has roughly 963 MiB outside the pool. Doctor scales PROD live
-and planning bytes linearly with cells, adding the WN3 external allowance.
-It reports GiB (2³⁰ bytes). Different physics, grids, output and allocator
-reservations can change actual use substantially. A26's 4.74 GiB PID peak and
-A38's 6,264 MiB WN3 PID peak illustrate the configuration dependence.
+VRAM is an **estimate for planning**, not a measured result for the inspected
+case or a memory admission limit. It is calibrated on two measured cases. A
+two-domain 9/3 km Canary Islands case has `(120×70+267×117)×44` cells, 4.00 GB
+of live GPU memory and a 5.61 GB automatic memory-pool budget. A three-domain
+9/3/1 km Tenerife case needs roughly 963 MiB outside the memory pool. Doctor
+scales the two-domain case's live and planning bytes linearly with cells and
+adds the three-domain allowance outside the pool. It reports GiB (2³⁰ bytes).
+Different physics, grids, output and allocator reservations can change actual
+use substantially: measured per-process peaks of 4.74 GiB (two-domain case) and
+6,264 MiB (three-domain case) in other configurations show this dependence.
 
 Offline budgets share conservation diagnostic units/constants and use pristine
 WRF pressure-coordinate definitions for NumPy history-file reductions.
@@ -89,7 +91,7 @@ values are retained. Records must have the same geometry, vertical coefficients
 and field set. Outputs are instantaneous storage/accumulator totals (kg), plus
 first-to-last changes at the supplied history times. With no lateral flux and
 integrated evaporation observations, **closure is UNKNOWN**; these changes
-are not conservation residuals or fidelity gates.
+are not conservation residuals or fidelity checks.
 
 A manifest streams SHA256 over wrfinput, wrfbdy, wrflowinp, the selected
 namelist and case-local parameter tables (including Noah-MP MPTABLE.TBL).
@@ -111,4 +113,4 @@ or GPU/driver determinism guarantees. Unknown schema versions are refused.
 
 The tools add no timestep kernels, device launches, host/device transfers or
 compile work. Numeric scans hold one variable record at a time; hashes use
-1 MiB blocks. The forecast executable is unchanged (K0).
+1 MiB blocks. The forecast program is unchanged.

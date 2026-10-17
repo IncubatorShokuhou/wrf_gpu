@@ -1,7 +1,8 @@
 # Jensen-ISHMAEL (mp_physics=55)
 
-Experimental, single-domain option. CPU-oracle-qualified; GPU and D6 coupled
-forecast qualification are pending. NTU and CAM-MG are separate ports.
+**Status in v0.4.0: Validated 24 h.** Passed a 24-hour comparison with the original CPU WRF in the v0.4.0 release check, in one tested single-domain configuration. Other combinations and nested domains are not validated. Its compiled GPU code exceeds the project's code-quality limits for speed and robustness; it runs correctly, but its speed has not been measured.
+
+Single-domain option. NTU and CAM-MG are separate ports.
 
 The reference is the unchanged WRF 4.7.1 `module_mp_jensen_ishmael.F`, called
 through its original public wrapper. The literal REAL4/REAL8 port matches all
@@ -11,16 +12,16 @@ transfers, compared with zero on the first step. The compiler-defined zero
 initialization reference and alternate initialization give identical public
 outputs. See `proofs/s2_mpmore/jensen55/UPSTREAM_WRF_BUGS.md`.
 
-The compiled arithmetic has disclosed rounding deviations outside independent
-original input-ULP/FMA controls. These are experimental deviations, not strict
-enclosure passes; D6 versus CPU-WRF decides forecast qualification. The prior
-native interpreter probe reports 335 values outside the independent enclosure:
-maximum temperature excess over its bound is 6.104e-5 K (maximum baseline
+The compiled arithmetic has known rounding deviations that fall outside the
+spread produced by small input-rounding and fused multiply-add changes in the
+original WRF code. They do not pass the strict column limits; the 24-hour
+forecast comparison with the original CPU WRF is the deciding check. An earlier
+interpreted probe of the GPU kernel reported 335 values outside that spread:
+maximum temperature excess over its limit is 6.104e-5 K (maximum baseline
 difference at these values is 1.526e-4 K), and maximum mass excess is
-6.87e-9 kg/kg. The final composed receipt records the affected values,
-baseline differences and independent bounds separately. No general tolerance is
-increased. GPU execution, resource/E41 qualification and performance remain
-unmeasured.
+6.87e-9 kg/kg. The evidence lists the affected values, baseline differences and
+limits separately. No general tolerance was increased. GPU speed has not been
+measured.
 
 The State carries vapor, cloud, rain, three ice masses and numbers, rain number,
 and six ice volume/aspect moments. All three masses use the moisture transport
@@ -36,7 +37,7 @@ snow/graupel, droplet and CCN slots are omitted. Cloud and ice radii mediate
 RRTMG as in WRF (`has_reqc=1`, `has_reqi=1`, `has_reqs=0`); summed ice mass
 uses the snow optics channel with its held ice radius. Fall speeds, diameters,
 densities and aspect ratios are held from the original per-habit scheme
-outputs, restarted with an E78 missing-field guard, and emitted as
+outputs, restarted with a missing-field check, and emitted as
 `V_ICE*`, `D_ICE*`, `RHO_ICE*` and `PHI_ICE*`. See
 [ice diagnostics](physics/ice_diagnostics.md). Ice type and radar diagnostics
 remain omitted.
@@ -47,17 +48,16 @@ host work is added to the timestep. Only State replacements and precipitation
 are stored, including the held ice diagnostics. The retained JAX loops serve
 the CPU reference route. WRF's gammln is the sole permitted DOUBLE island;
 retaining diagnostics may keep arithmetic that the older output projection
-eliminated. Actual GPU cost and resource qualification remain pending. Other
+eliminated. GPU cost has not been measured. Other
 arithmetic and optional carry are REAL4.
 
 The 44,468,557-byte packaged LUT archive contains 51,737,636 raw host array
-bytes. The actual cached arrays, caller maps and defaults enter the AOT key;
-changed-value regressions reject old executables. Typed REAL8 tables are
-reference-only transient promotions, never a stale second cache. Asset memory
-and host key cost are separate from unmeasured GPU peak memory.
+bytes. The actual cached arrays, caller maps and defaults enter the compiled-program
+cache key; changed values reject old executables. Typed REAL8 tables are
+reference-only temporary promotions, never a stale second cache. These host-side
+numbers do not describe GPU peak memory, which has not been measured.
 
 The final selected-table key probe measured 53.14 ms for its first hash and
-48.49 ms for the warm median; this host work occurs outside timesteps. The
-actual Swiss two-step CPU smoke is finite with zero census guard events;
-both native and daily loaders bind 55. Default program identities remain
-Swiss `f672a573…` (approved glacier fix) and PROD d01 `6fc715a2…`.
+48.49 ms for the warm median; this host work occurs outside timesteps. A
+two-step CPU test on a Swiss case is finite with zero guard events; both native
+and daily loaders accept 55. The default forecast program is unchanged.

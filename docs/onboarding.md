@@ -1,15 +1,16 @@
 # Forecast for a region
 
+**Status in v0.4.0: Experimental.** Case planning and preparation run on the CPU and are tested there; the GPU forecast itself has the normal support status of the selected physics.
+
 `gpuwrf quickstart` turns a bounding box, grid spacing, UTC cycle and duration
 into a single-domain WRF case. It uses original WPS 4.6.0 and WRF 4.7.1
 `real.exe`, followed by the existing `gpuwrf run` command. Planning and
 preprocessing use the CPU. Forecast execution needs an NVIDIA GPU and remains
 subject to the normal CLI support, memory and scientific checks.
 
-This onboarding path is experimental. CPU preprocessing qualification and
-GPU forecast qualification are separate. New regions and the Mercator
-projection are not covered by the released Alpine/Tenerife fidelity results.
-Automatic nests and complete ECMWF forcing preparation are future work.
+New regions and the Mercator projection are not covered by the released
+Alpine/Tenerife validation results. Automatic nests and complete ECMWF forcing
+preparation are future work.
 
 ## Install the container
 
@@ -33,19 +34,18 @@ It does not publish an image. Debian package updates and transitive Python
 dependencies can change; keep the built image digest for exact reuse.
 The Python base image itself is pinned by digest.
 
-To build just the CPU tools, use `--target preprocessing`. On this shared
-development host, follow the kernel's QUIET check, CPU grant and GPU lock:
+To build just the CPU tools, use `--target preprocessing`. On a shared
+machine you can limit the build's CPU and memory use with the classic builder
+(adjust the core list to your machine):
 
 ```bash
-if [ -e /tmp/wrf_gpu2_quiet ]; then echo QUIET; exit 3; fi
-JAX_PLATFORMS=cpu DOCKER_BUILDKIT=0 taskset -c 28 nice -n 19 timeout 3600 \
-  docker build --cpuset-cpus=28 --cpu-shares=64 --memory=4g \
+DOCKER_BUILDKIT=0 docker build --cpuset-cpus=0-3 --cpu-shares=64 --memory=4g \
   -f containers/onboarding/Dockerfile -t wrfgpu-onboarding:local .
 ```
 
-The Dockerfile's compiler and installer commands run at nice 19; the container
-CPU mask matters because affinity of the Docker client does not constrain
-daemon-launched build containers. On other machines choose appropriate cores.
+The Dockerfile's compiler and installer commands run at nice 19. Use the
+container CPU mask: the CPU affinity of the Docker client (for example
+`taskset`) does not constrain build containers started by the Docker daemon.
 
 ## Geography
 
@@ -82,7 +82,7 @@ docker run --rm -e JAX_PLATFORMS=cpu wrfgpu-onboarding:local quickstart \
 
 Replace the date with a recent **available** GFS cycle. Dates are UTC,
 formatted `YYYY-MM-DDTHH`; cycles are 00/06/12/18. The historical date above
-identifies the CPU qualification experiment, not a permanently hosted case.
+identifies the CPU test run, not a permanently hosted case.
 NOMADS is a rolling service; an expired or not-yet-published cycle fails with
 the server error. There is no silent fallback to another initialization.
 
@@ -157,12 +157,8 @@ docker run --rm --gpus all \
 
 For one command, use `--run` instead of `--prepare`, remove the
 `-e JAX_PLATFORMS=cpu` setting, and give the container `--gpus all`. The final
-forecast calls the public CLI in the same process, retaining an inherited GPU
-lock descriptor on hosts where it is required. Preserve the case path between
-prepare and run. On the project development host, the entire GPU command must
-use `scripts/with_gpu_lock.sh` with a manager lease; a container does not
-inherit the lock proof automatically. The separate CPU preparation command is
-the recommended path there. This wave permits **no GPU execution**.
+forecast calls the public CLI in the same process. Keep the same case path
+between prepare and run.
 
 Without Docker, install `pip install -e '.[onboard]'`, set `WPS_ROOT` to the
 WPS source tree with its executable links, `GPUWRF_WRF_ROOT` to WRF 4.7.1,
@@ -179,13 +175,13 @@ gpuwrf quickstart --bbox 7 46 8 47 --resolution-km 9 --date 2026-10-12T00 --hour
 gpuwrf quickstart --bbox 150 -34 151 -33 --resolution-km 9 --date 2026-10-12T00 --hours 3
 ```
 
-CPU qualification at the specified 2026-10-12 00Z cycle reached original
+A CPU test at the 2026-10-12 00Z cycle reached original
 `real.exe` and the public CLI dry run for all three areas. Each generated
 40×40×44 mass grids, 34 metgrid levels and both required forcing times (0/3 h).
 Total GRIB transfers were 1.51/1.97/1.73 MB for Tenerife/Alps/Sydney; peak
 process RSS was 247–250 MiB. All floating input fields were finite and the
 requested area, start time and boundary records passed. These are CPU
-preprocessing receipts, with GPU forecast qualification pending.
+preparation results; GPU forecasts for these areas were not part of this test.
 
 ## ECMWF IFS and AIFS
 
@@ -197,23 +193,25 @@ gpuwrf quickstart --bbox -17 28 -16 28.6 --date 2026-10-12T00 --hours 3 \
 ```
 
 This reads the ECMWF index, reports available and missing parameters, hashes
-that index, and exits nonzero while preprocessing is unqualified. `--source
+that index, and exits nonzero because automatic ECMWF preparation is not
+supported yet. `--source
 ifs` checks IFS. A local WPS-compatible GRIB2 file can instead be examined
 with `--audit-grib FILE`. Its audit currently checks GFS-style four-layer
 soil encodings; it is not a general ECMWF local-table decoder.
 
 At the checked 2026-10-12 00Z cycle, IFS provides all four soil temperature
 and moisture layers (`sot`/`vsw`, level type `sol`), but its current GRIB2
-Vtable/caller path is not qualified. AIFS provides only layers 1/2 and lacks
+Vtable/caller path is not validated. AIFS provides only layers 1/2 and lacks
 layers 3/4 of both fields and `sd` (snow water equivalent). Recheck another
-cycle instead of assuming this inventory remains unchanged. ALISIOS's read-only
-`Vtable.AIFS_PURE` maps two soil layers; a Vtable cannot create missing data.
+cycle instead of assuming this inventory remains unchanged. A
+`Vtable.AIFS_PURE` used by an operational Canary Islands forecast system maps
+only two soil layers; a Vtable cannot create missing data.
 An actual IFS layer-4 GRIB probe uses soil code `2/3/18`, level type `151`
 and CCSDS packing; the [bundled WPS 4.6 ECMWF Vtable](https://github.com/wrf-model/WPS/blob/v4.6.0/ungrib/Variable_Tables/Vtable.ECMWF)
 expects a different deep-soil code and level encoding. Its existence does
 not demonstrate compatibility with the current open-data GRIB2 files.
 Automatic IFS/AIFS preparation therefore fails closed. Supplying complete,
-coherent forcing and qualifying its Vtable/caller is required before enabling
+coherent forcing and validating its Vtable/caller is required before enabling
 that path. No credentialed ECMWF access is required for the inventory.
 
 The [ECMWF access specification](https://confluence.ecmwf.int/spaces/DAC/pages/272310539/ECMWF+open+data+real-time+forecasts+from+IFS+and+AIFS)
@@ -224,20 +222,21 @@ retrieve selected fields for a separately prepared, complete source case.
 
 ## Consumer GPU planning profiles
 
-These are **[I] inferred planning ceilings, not measured maximum grids**.
-`gpuwrf quickstart --profiles` emits the precise values. The only baseline
-behind this calculation is FINDINGS A58: PROD's 120×70 + 267×117 mass grids,
-44 mass levels, 4.00 GB JAX live peak on the measured release predecessor.
+These are **estimated planning limits, not measured maximum grids**.
+`gpuwrf quickstart --profiles` prints the precise values. The only measurement
+behind this estimate is a two-domain 9/3 km Canary Islands case (120×70 and
+267×117 mass grids, 44 mass levels) with a 4.00 GB peak of live GPU memory on
+an earlier development version.
 It does not measure a single Mercator domain or these GPUs. Cold compilation,
 radiation transients, desktop VRAM, host RAM and allocator fallback can limit
 the actual runnable size. The normal CLI memory admission is retained.
 
-| VRAM | Approximate square mass grid at 44 levels [I] | Status |
+| VRAM | Approximate square mass grid at 44 levels (estimate) | Status |
 |---|---|---|
-| 12 GiB | 276×276 | GPU measurement pending |
-| 16 GiB | 332×332 | GPU measurement pending |
-| 24 GiB | 422×422 | GPU measurement pending |
-| 32 GiB | 496×496 | GPU measurement pending |
+| 12 GiB | 276×276 | Estimate, not measured |
+| 16 GiB | 332×332 | Estimate, not measured |
+| 24 GiB | 422×422 | Estimate, not measured |
+| 32 GiB | 496×496 | Estimate, not measured |
 
 Do not interpret this table as a forecast speed or fidelity guarantee.
 The [WRF WPS guide](https://www2.mmm.ucar.edu/wrf/users/wrf_users_guide/build/html/wps.html)

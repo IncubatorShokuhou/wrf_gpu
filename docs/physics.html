@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Physics Options — wrf_gpu User's Guide</title>
-  <meta name="description" content="The GPU-operational physics menu — microphysics, cumulus, PBL, surface layer, radiation, land surface — with option numbers and status.">
+  <meta name="description" content="Every WRF physics option code (microphysics, cumulus, PBL, surface layer, land, radiation) and Noah-MP option, with its v0.4.0 status.">
   <meta name="color-scheme" content="light dark">
   <link rel="icon" type="image/svg+xml" href="_assets/logo.svg">
   <link rel="stylesheet" href="_assets/style.css">
@@ -40,15 +40,25 @@
 <a class="" href="quickstart.html">Quickstart</a>
 <a class="" href="ai-quickstart.html">Quickstart with an AI Agent</a>
 <a class="" href="running.html">Running the Model</a>
+<a class="" href="tools.html">Tools &amp; Commands</a>
 <a class="" href="input-data.html">Input Data &amp; Initialization</a>
 <div class="group-title">Configuration</div>
 <a class="" href="namelist.html">Namelist Compatibility</a>
 <a class="active" href="physics.html">Physics Options</a>
 <div class="subnav">
-<a href="physics.html#matrix">Choose an exact combination</a>
-<a href="physics.html#experimental">Read the resource and science limits</a>
-<a href="physics.html#nested-scope">Nested not validated</a>
-<a href="physics.html#previous-releases">Historical release scope</a>
+<a href="physics.html#status-words">What the status words mean</a>
+<a href="physics.html#how-checked">How the options were checked</a>
+<a href="physics.html#pairings">Schemes that must be paired</a>
+<a href="physics.html#mp-physics">Microphysics mp_physics</a>
+<a href="physics.html#cu-physics">Cumulus cu_physics</a>
+<a href="physics.html#bl-pbl-physics">Planetary boundary layer bl_pbl_physics</a>
+<a href="physics.html#sf-sfclay-physics">Surface layer sf_sfclay_physics</a>
+<a href="physics.html#sf-surface-physics">Land surface sf_surface_physics</a>
+<a href="physics.html#ra-lw-physics">Longwave radiation ra_lw_physics</a>
+<a href="physics.html#ra-sw-physics">Shortwave radiation ra_sw_physics</a>
+<a href="physics.html#noah-mp-options">Noah-MP options</a>
+<a href="physics.html#surface-features">Lakes, cities, ocean and other surface options</a>
+<a href="physics.html#earlier-releases">Earlier releases</a>
 </div>
 <a class="" href="environment.html">Environment Variables</a>
 <a class="" href="output.html">Output Files</a>
@@ -57,7 +67,7 @@
 <a class="" href="nesting.html">Nesting</a>
 <div class="group-title">Performance &amp; validation</div>
 <a class="" href="performance.html">Performance &amp; GPU Modes</a>
-<a class="" href="validation.html">Validation &amp; WRF Identity</a>
+<a class="" href="validation.html">Validation against WRF</a>
 <a class="" href="limitations.html">Boundaries &amp; Known Issues</a>
 <div class="group-title">Reference</div>
 <a class="" href="version-history.html">Version History</a>
@@ -69,23 +79,222 @@
       <main>
         <div class="breadcrumb"><a href="index.html">User's Guide</a> › Configuration › Physics Options</div>
         <h1>Physics options</h1>
-<p class="lead">Released v0.4.0 expands the WRF 4.7.1 scheme menu. Implementation, backend admission and scientific qualification are separate. Defaults and identities are frozen with F20/C5′ gates closed; the00:26Z17October registered FINAL checkpoint is66/66 accepted-scope scientific D6PASS (65full24h + c45accepted6h).</p>
-<a id="scheme-triage"></a>
-<h2 id="matrix">Choose an exact combination<a class="headerlink" href="#matrix" aria-label="Permalink">¶</a></h2>
-<p>The <a href="release/SUPPORT_MATRIX_v0.4.0.md">per-code support matrix</a> covers microphysics, cumulus, PBL, surface layer, land and radiation. Each qualified row identifies its measured source and companion settings. Unbounded fields remain REPORT_ONLY; missing CPU fields make coverage incomplete.</p>
-<div class="table-scroll"><table><thead><tr><th>Area</th><th>Release scope</th></tr></thead><tbody>
-<tr><td>Default suite</td><td>Thompson, RRTMG, MYNN surface/PBL and Noah-MP; KF on suitable outer domains. Swiss f672a573 and PROD d01 6fc715a2 are pre-F20 baselines; final hashes require re-pinning after default-changing fixes.</td></tr>
-<tr><td>Microphysics</td><td>NSSL variants, Milbrandt, Ferrier, Goddard, hail, aerosol-aware, P3, Jensen and NTU paths with exact transport/history/input restrictions. CAM-MG11 uses merged stock Triton3.6.x, with native E41 FAIL disclosed and c89 scientific PASS/native E41 UNKNOWN.</td></tr>
-<tr><td>PBL/cumulus</td><td>QNSE/TEMF paired schemes, EEPS/KEPS, SAS-family and other admitted options. The paid c05 ACM2 successor passes source-specific D6; its source-specific limits remain explicit.</td></tr>
-<tr><td>Radiation</td><td>RRTMG and admitted alternatives. Goddard5/5 has an accepted6h scope; its24h attempt lacks the last frame. FLG7/GFDL99 are experimental CPU-only.</td></tr>
-<tr><td>Surface</td><td>Glacier runtime, RUC/SSiB, urban/lake/ocean and supported Noah-MP options. Map-dependent branches require valid geography. Surface mosaic is refused.</td></tr>
+<p class="lead">wrf_gpu v0.4.0 runs most WRF 4.7.1 physics schemes on the GPU. This page lists every
+option code of the seven physics selectors with its status in this release. The codes are the same
+numbers you put in the <code>&amp;physics</code> section of a WRF <code>namelist.input</code>.</p>
+<a id="scheme-triage"></a><a id="matrix"></a><a id="experimental"></a>
+<h2 id="status-words">What the status words mean<a class="headerlink" href="#status-words" aria-label="Permalink">¶</a></h2>
+<div class="table-scroll"><table><thead><tr><th>Status</th><th>Meaning</th></tr></thead><tbody>
+<tr><td><span class="pill op">Default</span></td><td>Part of the default physics suite (Thompson, MYNN boundary layer and surface layer, Noah-MP, RRTMG, with Kain-Fritsch cumulus on outer domains). This suite has the most testing: 24-hour comparisons with the original CPU-WRF on five real cases, including nested Canary Islands forecasts, and 72-hour runs in earlier releases.</td></tr>
+<tr><td><span class="pill op">Validated 24 h</span></td><td>Runs on the GPU and passed a 24-hour comparison with the original CPU-WRF, started from the same input and judged against limits fixed in advance.</td></tr>
+<tr><td><span class="pill ref">Validated 6 h</span></td><td>As above, but the accepted comparison covers six forecast hours.</td></tr>
+<tr><td><span class="pill optin">Experimental</span></td><td>Runs on the GPU but is outside the validated set: either it has no passing comparison, or it passed one outside the release test set. Its note says which.</td></tr>
+<tr><td><span class="pill ref">CPU only</span></td><td>Implemented and checked on the CPU; a GPU run refuses it.</td></tr>
+<tr><td><span class="pill oos">Python API only</span></td><td>Usable from Python with extra land inputs; <code>gpuwrf run</code> refuses it.</td></tr>
+<tr><td><span class="pill closed">Not supported</span></td><td><code>gpuwrf run</code> stops before the forecast with a message that names the option.</td></tr>
 </tbody></table></div>
-<h2 id="experimental">Read the resource and science limits<a class="headerlink" href="#experimental" aria-label="Permalink">¶</a></h2>
-<p>The <a href="release/E41_LEDGER_v0.4.0.md">complete provisional E41 ledger</a> lists every FAIL at its source. Finite output and bounded D6 do not clear F2 negatives. Jensen/NTU writers are merged; c87 scientific PASS/E41FAIL; c88 full24h scientific PASS/E41FAIL; c11 full24h PASS/E41-disclosed; NTU has an actual E41FAIL, not an unattempted scan. See <a href="limitations.html">known limits</a> and the <a href="release/RELEASE_NOTES_v0.4.0.md">release notes</a>.</p>
-<h2 id="nested-scope">Nested not validated<a class="headerlink" href="#nested-scope" aria-label="Permalink">¶</a></h2>
-<p>Where the CLI admits an option with only single-domain evidence, report <strong>nested not validated</strong>. This applies to advanced urban/lake/ocean/SSiB and PBL/cumulus paths without matched nested evidence. Actual pairing/nested refusals remain authoritative; selecting an option does not qualify it.</p>
-<h2 id="previous-releases">Historical release scope<a class="headerlink" href="#previous-releases" aria-label="Permalink">¶</a></h2>
-<p><a href="release/SUPPORT_MATRIX_v0.3.4.md">The versioned v0.3.4 matrix</a> retains its dated scope. It must not be used as the v0.4 qualification inventory.</p>
+<p>Notes used in the tables:</p>
+<ol>
+<li>Passed the comparison, but its compiled GPU code exceeds our code-quality limits for speed and
+robustness (for example large per-thread memory use). It runs correctly; its speed has not been
+measured and may be lower than with the default physics. The
+<a href="https://github.com/wrf-gpu/wrf_gpu/blob/main/docs/release/E41_LEDGER_v0.4.0.md">resource list</a> names each case.</li>
+<li>Needs the Triton 3.6 compiler (<code>pip install "triton==3.6.*"</code>). The code-quality scan of
+its compiled GPU code could not be completed.</li>
+<li>Runs, but cannot be validated: the original WRF crashes on the test case at its first output.
+Use it with <code>cu_physics=0</code>.</li>
+<li>Passed a 24-hour comparison outside the release test set, and has the code-quality issue of note 1.</li>
+</ol>
+<h2 id="how-checked">How the options were checked<a class="headerlink" href="#how-checked" aria-label="Permalink">¶</a></h2>
+<p>The release check ran 66 configurations, each a scheme with a fixed set of companion schemes,
+compared hour by hour with the original CPU-WRF: 65 over 24 hours and the Goddard radiation pair over six
+hours. They are mostly single-domain forecasts; two-way nesting was checked on a two-domain case. Every option marked <span class="pill op">Validated 24 h</span> or
+<span class="pill op">Default</span> passed in one of them, and Goddard radiation is marked
+<span class="pill ref">Validated 6 h</span>. Options marked Experimental, CPU only, Python API only or
+Not supported are outside this check; their notes and status say why. Most configurations (51 of 66)
+used the bundled Swiss Alps case; options that need special surfaces, such as lakes, cities, open sea or
+wind farms, used cases that contain them. The
+<a href="validation.html">validation page</a> explains the method and the limits.</p>
+<div class="admon note"><div class="admon-title">What a pass does and does not cover</div>
+<p>A pass covers the tested configuration. It does not test every combination of schemes, and options
+outside the default suite have not been validated inside nested domains. The RUC land model
+(<code>sf_surface_physics=3</code>) is refused in nested runs. The
+<a href="https://github.com/wrf-gpu/wrf_gpu/blob/main/docs/release/SUPPORT_MATRIX_v0.4.0.md">support matrix</a> records the exact configuration and
+companion settings behind each row.</p></div>
+<h2 id="pairings">Schemes that must be paired<a class="headerlink" href="#pairings" aria-label="Permalink">¶</a></h2>
+<p>As in WRF, some schemes only work together. <code>gpuwrf run</code> and <code>gpuwrf doctor</code>
+check this before the forecast and name the setting to change. The most common pairings:</p>
+<ul>
+<li>QNSE: <code>bl_pbl_physics=4</code> with <code>sf_sfclay_physics=4</code>.</li>
+<li>TEMF: <code>bl_pbl_physics=10</code> with <code>sf_sfclay_physics=10</code>, without a land model or with Noah-MP.</li>
+<li>EEPS and KEPS (<code>bl_pbl_physics=16/17</code>): <code>sf_sfclay_physics=1</code>, without a land model or with Noah-MP.</li>
+<li>Goddard radiation: <code>ra_lw_physics=5</code> and <code>ra_sw_physics=5</code> together, with Thompson microphysics and <code>use_mp_re=1</code>.</li>
+<li>Ferrier microphysics (<code>mp_physics=5/15</code>): <code>cu_physics=0</code>.</li>
+<li>Grell-family and Tiedtke cumulus: <code>cudt=0</code>, so the scheme runs every step.</li>
+</ul>
+<h2 id="mp-physics">Microphysics <code>mp_physics</code><a class="headerlink" href="#mp-physics" aria-label="Permalink">¶</a></h2>
+<div class="table-scroll"><table><thead><tr><th>Code</th><th>Scheme</th><th>Status</th></tr></thead><tbody>
+<tr><td>0</td><td>no microphysics</td><td><span class="pill op">Validated 24 h</span></td></tr>
+<tr><td>1</td><td>Kessler warm-rain</td><td><span class="pill op">Validated 24 h</span><sup>1</sup></td></tr>
+<tr><td>2</td><td>Lin et al. (Purdue-Lin)</td><td><span class="pill op">Validated 24 h</span><sup>1</sup></td></tr>
+<tr><td>3</td><td>WSM3 simple-ice</td><td><span class="pill op">Validated 24 h</span></td></tr>
+<tr><td>4</td><td>WSM5</td><td><span class="pill op">Validated 24 h</span><sup>1</sup></td></tr>
+<tr><td>5</td><td>Ferrier (new Eta), HRW</td><td><span class="pill op">Validated 24 h</span></td></tr>
+<tr><td>6</td><td>WSM6 graupel</td><td><span class="pill op">Validated 24 h</span><sup>1</sup></td></tr>
+<tr><td>7</td><td>Goddard 4-ice</td><td><span class="pill op">Validated 24 h</span></td></tr>
+<tr><td>8</td><td>Thompson</td><td><span class="pill op">Default</span></td></tr>
+<tr><td>9</td><td>Milbrandt-Yau 2-moment</td><td><span class="pill op">Validated 24 h</span><sup>1</sup></td></tr>
+<tr><td>10</td><td>Morrison 2-moment</td><td><span class="pill op">Validated 24 h</span><sup>1</sup></td></tr>
+<tr><td>11</td><td>CAM 5.1 microphysics</td><td><span class="pill op">Validated 24 h</span><sup>2</sup></td></tr>
+<tr><td>13</td><td>SBU-YLin</td><td><span class="pill op">Validated 24 h</span><sup>1</sup></td></tr>
+<tr><td>14</td><td>WDM5</td><td><span class="pill op">Validated 24 h</span><sup>1</sup></td></tr>
+<tr><td>15</td><td>Ferrier-Aligo advected rime</td><td><span class="pill optin">Experimental</span><sup>3</sup></td></tr>
+<tr><td>16</td><td>WDM6</td><td><span class="pill op">Validated 24 h</span><sup>1</sup></td></tr>
+<tr><td>17</td><td>NSSL (legacy)</td><td><span class="pill op">Validated 24 h</span><sup>1</sup></td></tr>
+<tr><td>18</td><td>NSSL 2-moment 4-ice w/ predicted CCN</td><td><span class="pill op">Validated 24 h</span><sup>1</sup></td></tr>
+<tr><td>19</td><td>NSSL one-moment with hail</td><td><span class="pill op">Validated 24 h</span><sup>1</sup></td></tr>
+<tr><td>21</td><td>NSSL one-moment without hail</td><td><span class="pill op">Validated 24 h</span><sup>1</sup></td></tr>
+<tr><td>22</td><td>NSSL two-moment without hail</td><td><span class="pill op">Validated 24 h</span><sup>1</sup></td></tr>
+<tr><td>24</td><td>WSM7 (separate hail/graupel)</td><td><span class="pill op">Validated 24 h</span></td></tr>
+<tr><td>26</td><td>WDM7 (separate hail/graupel)</td><td><span class="pill op">Validated 24 h</span><sup>1</sup></td></tr>
+<tr><td>27</td><td>UDM 7-class</td><td><span class="pill closed">Not supported</span></td></tr>
+<tr><td>28</td><td>aerosol-aware Thompson (water/ice-friendly)</td><td><span class="pill op">Validated 24 h</span><sup>1</sup></td></tr>
+<tr><td>29</td><td>RCON (Thompson aerosol-aware, liquid-phase mods)</td><td><span class="pill closed">Not supported</span></td></tr>
+<tr><td>30</td><td>HUJI spectral-bin (fast)</td><td><span class="pill closed">Not supported</span></td></tr>
+<tr><td>32</td><td>HUJI spectral-bin (full)</td><td><span class="pill closed">Not supported</span></td></tr>
+<tr><td>38</td><td>Thompson w/ 2-moment graupel/hail</td><td><span class="pill op">Validated 24 h</span><sup>1</sup></td></tr>
+<tr><td>40</td><td>Morrison 2-moment w/ CESM-NCSU RCP4.5 aerosol</td><td><span class="pill op">Validated 24 h</span><sup>1</sup></td></tr>
+<tr><td>50</td><td>P3 1-ice, 1-moment cloud water</td><td><span class="pill op">Validated 24 h</span></td></tr>
+<tr><td>51</td><td>P3 1-ice + double-moment cloud water</td><td><span class="pill op">Validated 24 h</span></td></tr>
+<tr><td>52</td><td>P3 2-ice + double-moment cloud water</td><td><span class="pill op">Validated 24 h</span></td></tr>
+<tr><td>53</td><td>P3 1-ice 3-moment + double-moment cloud water</td><td><span class="pill op">Validated 24 h</span></td></tr>
+<tr><td>55</td><td>Jensen-ISHMAEL</td><td><span class="pill op">Validated 24 h</span><sup>1</sup></td></tr>
+<tr><td>56</td><td>NTU multi-moment</td><td><span class="pill op">Validated 24 h</span><sup>1</sup></td></tr>
+<tr><td>95</td><td>Ferrier (old Eta)</td><td><span class="pill closed">Not supported</span></td></tr>
+<tr><td>96</td><td>Madwrf</td><td><span class="pill closed">Not supported</span></td></tr>
+<tr><td>97</td><td>Goddard GCE</td><td><span class="pill op">Validated 24 h</span><sup>1</sup></td></tr>
+</tbody></table></div>
+<h2 id="cu-physics">Cumulus <code>cu_physics</code><a class="headerlink" href="#cu-physics" aria-label="Permalink">¶</a></h2>
+<div class="table-scroll"><table><thead><tr><th>Code</th><th>Scheme</th><th>Status</th></tr></thead><tbody>
+<tr><td>0</td><td>no cumulus</td><td><span class="pill op">Validated 24 h</span></td></tr>
+<tr><td>1</td><td>Kain-Fritsch (new Eta)</td><td><span class="pill op">Default</span></td></tr>
+<tr><td>2</td><td>Betts-Miller-Janjic (BMJ)</td><td><span class="pill op">Validated 24 h</span><sup>1</sup></td></tr>
+<tr><td>3</td><td>Grell-Freitas ensemble</td><td><span class="pill op">Validated 24 h</span></td></tr>
+<tr><td>4</td><td>Scale-aware GFS SAS</td><td><span class="pill closed">Not supported</span></td></tr>
+<tr><td>5</td><td>Grell 3D ensemble</td><td><span class="pill op">Validated 24 h</span><sup>1</sup></td></tr>
+<tr><td>6</td><td>Modified Tiedtke</td><td><span class="pill op">Validated 24 h</span><sup>1</sup></td></tr>
+<tr><td>7</td><td>Zhang-McFarlane (CAM5)</td><td><span class="pill optin">Experimental</span><sup>4</sup></td></tr>
+<tr><td>10</td><td>Modified Kain-Fritsch (PDF trigger)</td><td><span class="pill op">Validated 24 h</span></td></tr>
+<tr><td>11</td><td>Multi-scale Kain-Fritsch (MSKF)</td><td><span class="pill op">Validated 24 h</span></td></tr>
+<tr><td>14</td><td>KIM Simplified Arakawa-Schubert (KSAS)</td><td><span class="pill op">Validated 24 h</span><sup>1</sup></td></tr>
+<tr><td>16</td><td>New Tiedtke</td><td><span class="pill op">Validated 24 h</span><sup>1</sup></td></tr>
+<tr><td>93</td><td>Grell-Devenyi ensemble</td><td><span class="pill op">Validated 24 h</span></td></tr>
+<tr><td>94</td><td>2015 GFS SAS (HWRF)</td><td><span class="pill op">Validated 24 h</span><sup>1</sup></td></tr>
+<tr><td>95</td><td>previous GFS SAS (HWRF)</td><td><span class="pill op">Validated 24 h</span><sup>1</sup></td></tr>
+<tr><td>96</td><td>previous new GFS SAS (YSU)</td><td><span class="pill op">Validated 24 h</span><sup>1</sup></td></tr>
+<tr><td>99</td><td>previous Kain-Fritsch</td><td><span class="pill op">Validated 24 h</span><sup>1</sup></td></tr>
+</tbody></table></div>
+<h2 id="bl-pbl-physics">Planetary boundary layer <code>bl_pbl_physics</code><a class="headerlink" href="#bl-pbl-physics" aria-label="Permalink">¶</a></h2>
+<div class="table-scroll"><table><thead><tr><th>Code</th><th>Scheme</th><th>Status</th></tr></thead><tbody>
+<tr><td>0</td><td>no boundary-layer</td><td><span class="pill op">Validated 24 h</span></td></tr>
+<tr><td>1</td><td>YSU</td><td><span class="pill op">Validated 24 h</span><sup>1</sup></td></tr>
+<tr><td>2</td><td>Mellor-Yamada-Janjic (MYJ) TKE</td><td><span class="pill op">Validated 24 h</span><sup>1</sup></td></tr>
+<tr><td>3</td><td>Hybrid EDMF GFS (ACM-GFS)</td><td><span class="pill op">Validated 24 h</span></td></tr>
+<tr><td>4</td><td>QNSE-EDMF (Quasi-Normal Scale Elimination)</td><td><span class="pill op">Validated 24 h</span><sup>1</sup></td></tr>
+<tr><td>5</td><td>MYNN TKE</td><td><span class="pill op">Default</span></td></tr>
+<tr><td>7</td><td>ACM2 (Pleim)</td><td><span class="pill op">Validated 24 h</span><sup>1</sup></td></tr>
+<tr><td>8</td><td>Bougeault-Lacarrere (BouLac)</td><td><span class="pill op">Validated 24 h</span><sup>1</sup></td></tr>
+<tr><td>9</td><td>UW (CAM5)</td><td><span class="pill op">Validated 24 h</span></td></tr>
+<tr><td>10</td><td>TEMF (Total Energy Mass Flux)</td><td><span class="pill op">Validated 24 h</span><sup>1</sup></td></tr>
+<tr><td>11</td><td>Shin-Hong scale-aware</td><td><span class="pill op">Validated 24 h</span><sup>1</sup></td></tr>
+<tr><td>12</td><td>Grenier-Bretherton-McCaa</td><td><span class="pill op">Validated 24 h</span><sup>1</sup></td></tr>
+<tr><td>16</td><td>TKE + TKE-dissipation (epsilon)</td><td><span class="pill op">Validated 24 h</span><sup>1</sup></td></tr>
+<tr><td>17</td><td>TKE + TKE-dissipation + TPE</td><td><span class="pill op">Validated 24 h</span><sup>1</sup></td></tr>
+<tr><td>99</td><td>MRF</td><td><span class="pill op">Validated 24 h</span><sup>1</sup></td></tr>
+</tbody></table></div>
+<h2 id="sf-sfclay-physics">Surface layer <code>sf_sfclay_physics</code><a class="headerlink" href="#sf-sfclay-physics" aria-label="Permalink">¶</a></h2>
+<div class="table-scroll"><table><thead><tr><th>Code</th><th>Scheme</th><th>Status</th></tr></thead><tbody>
+<tr><td>0</td><td>no surface-layer</td><td><span class="pill op">Validated 24 h</span></td></tr>
+<tr><td>1</td><td>revised MM5 Monin-Obukhov</td><td><span class="pill op">Validated 24 h</span><sup>1</sup></td></tr>
+<tr><td>2</td><td>Monin-Obukhov (Janjic Eta)</td><td><span class="pill op">Validated 24 h</span><sup>1</sup></td></tr>
+<tr><td>3</td><td>NCEP GFS surface layer</td><td><span class="pill op">Validated 24 h</span></td></tr>
+<tr><td>4</td><td>QNSE surface layer</td><td><span class="pill op">Validated 24 h</span><sup>1</sup></td></tr>
+<tr><td>5</td><td>MYNN surface layer</td><td><span class="pill op">Default</span></td></tr>
+<tr><td>7</td><td>Pleim-Xiu surface layer</td><td><span class="pill op">Validated 24 h</span></td></tr>
+<tr><td>10</td><td>TEMF surface layer</td><td><span class="pill op">Validated 24 h</span><sup>1</sup></td></tr>
+<tr><td>91</td><td>old MM5 surface layer</td><td><span class="pill op">Validated 24 h</span><sup>1</sup></td></tr>
+</tbody></table></div>
+<h2 id="sf-surface-physics">Land surface <code>sf_surface_physics</code><a class="headerlink" href="#sf-surface-physics" aria-label="Permalink">¶</a></h2>
+<div class="table-scroll"><table><thead><tr><th>Code</th><th>Scheme</th><th>Status</th></tr></thead><tbody>
+<tr><td>0</td><td>no surface temp prediction</td><td><span class="pill op">Validated 24 h</span></td></tr>
+<tr><td>1</td><td>thermal diffusion (5-layer slab)</td><td><span class="pill oos">Python API only</span></td></tr>
+<tr><td>2</td><td>Unified Noah LSM</td><td><span class="pill oos">Python API only</span></td></tr>
+<tr><td>3</td><td>RUC LSM</td><td><span class="pill op">Validated 24 h</span></td></tr>
+<tr><td>4</td><td>Noah-MP LSM</td><td><span class="pill op">Default</span></td></tr>
+<tr><td>5</td><td>CLM4 (Community Land Model v4)</td><td><span class="pill closed">Not supported</span></td></tr>
+<tr><td>6</td><td>CTSM (Community Terrestrial Systems Model)</td><td><span class="pill closed">Not supported</span></td></tr>
+<tr><td>7</td><td>Pleim-Xiu LSM</td><td><span class="pill oos">Python API only</span></td></tr>
+<tr><td>8</td><td>SSiB (Simplified Simple Biosphere)</td><td><span class="pill op">Validated 24 h</span><sup>1</sup></td></tr>
+</tbody></table></div>
+<h2 id="ra-lw-physics">Longwave radiation <code>ra_lw_physics</code><a class="headerlink" href="#ra-lw-physics" aria-label="Permalink">¶</a></h2>
+<div class="table-scroll"><table><thead><tr><th>Code</th><th>Scheme</th><th>Status</th></tr></thead><tbody>
+<tr><td>0</td><td>no longwave radiation</td><td><span class="pill op">Validated 24 h</span></td></tr>
+<tr><td>1</td><td>RRTM</td><td><span class="pill op">Validated 24 h</span><sup>1</sup></td></tr>
+<tr><td>3</td><td>CAM</td><td><span class="pill op">Validated 24 h</span></td></tr>
+<tr><td>4</td><td>RRTMG</td><td><span class="pill op">Default</span></td></tr>
+<tr><td>5</td><td>Goddard longwave</td><td><span class="pill ref">Validated 6 h</span></td></tr>
+<tr><td>7</td><td>FLG (UCLA)</td><td><span class="pill ref">CPU only</span></td></tr>
+<tr><td>14</td><td>RRTMG-K (KIAPS)</td><td><span class="pill closed">Not supported</span></td></tr>
+<tr><td>24</td><td>fast RRTMG (GPU/MIC)</td><td><span class="pill closed">Not supported</span></td></tr>
+<tr><td>31</td><td>Earth Held-Suarez forcing</td><td><span class="pill op">Validated 24 h</span></td></tr>
+<tr><td>99</td><td>GFDL (Eta) longwave (semi-supported)</td><td><span class="pill ref">CPU only</span></td></tr>
+</tbody></table></div>
+<h2 id="ra-sw-physics">Shortwave radiation <code>ra_sw_physics</code><a class="headerlink" href="#ra-sw-physics" aria-label="Permalink">¶</a></h2>
+<div class="table-scroll"><table><thead><tr><th>Code</th><th>Scheme</th><th>Status</th></tr></thead><tbody>
+<tr><td>0</td><td>no shortwave radiation</td><td><span class="pill op">Validated 24 h</span></td></tr>
+<tr><td>1</td><td>Dudhia</td><td><span class="pill op">Validated 24 h</span><sup>1</sup></td></tr>
+<tr><td>2</td><td>Goddard shortwave</td><td><span class="pill op">Validated 24 h</span><sup>1</sup></td></tr>
+<tr><td>3</td><td>CAM</td><td><span class="pill op">Validated 24 h</span></td></tr>
+<tr><td>4</td><td>RRTMG</td><td><span class="pill op">Default</span></td></tr>
+<tr><td>5</td><td>Goddard shortwave (new)</td><td><span class="pill ref">Validated 6 h</span></td></tr>
+<tr><td>7</td><td>FLG (UCLA)</td><td><span class="pill ref">CPU only</span></td></tr>
+<tr><td>14</td><td>RRTMG-K (KIAPS)</td><td><span class="pill closed">Not supported</span></td></tr>
+<tr><td>24</td><td>fast RRTMG (GPU/MIC)</td><td><span class="pill closed">Not supported</span></td></tr>
+<tr><td>99</td><td>GFDL (Eta) (semi-supported)</td><td><span class="pill ref">CPU only</span></td></tr>
+</tbody></table></div>
+<h2 id="noah-mp-options">Noah-MP options<a class="headerlink" href="#noah-mp-options" aria-label="Permalink">¶</a></h2>
+<p>With <code>sf_surface_physics=4</code>, the Noah-MP selectors of the <code>&amp;noah_mp</code>
+namelist are read and checked. The default values are validated as part of the default suite. Of the
+other values, <code>dveg=7/8/9</code>, <code>opt_run=8</code> and <code>opt_infdv=1/2/3</code> passed
+24-hour comparisons; the rest are <span class="pill optin">Experimental</span>.</p>
+<div class="table-scroll"><table><thead><tr><th>Selector</th><th>Default</th><th>Accepted values</th></tr></thead><tbody>
+<tr><td><code>dveg</code></td><td>4</td><td>1–9</td></tr>
+<tr><td><code>opt_crs</code>, <code>opt_sfc</code>, <code>opt_frz</code>, <code>opt_inf</code>, <code>opt_gla</code></td><td>1</td><td>1, 2</td></tr>
+<tr><td><code>opt_btr</code>, <code>opt_stc</code>, <code>opt_soil</code></td><td>1</td><td>1–3</td></tr>
+<tr><td><code>opt_run</code></td><td>3</td><td>1–8</td></tr>
+<tr><td><code>opt_rad</code></td><td>3</td><td>1–3</td></tr>
+<tr><td><code>opt_alb</code></td><td>2</td><td>1, 2</td></tr>
+<tr><td><code>opt_snf</code></td><td>1</td><td>1–5</td></tr>
+<tr><td><code>opt_tbot</code></td><td>2</td><td>1, 2</td></tr>
+<tr><td><code>opt_rsf</code></td><td>1</td><td>1–4</td></tr>
+<tr><td><code>opt_pedo</code></td><td>1</td><td>1 only</td></tr>
+<tr><td><code>opt_crop</code></td><td>0</td><td>0, 1</td></tr>
+<tr><td><code>opt_irr</code>, <code>opt_irrm</code>, <code>opt_infdv</code></td><td>0</td><td>0–3</td></tr>
+<tr><td><code>opt_tdrn</code></td><td>0</td><td>0–2</td></tr>
+</tbody></table></div>
+<p>Crop, irrigation, tile drainage and groundwater options need the matching geography from WPS
+(for example the groundwater fields for <code>opt_run=5</code>) and the original <code>MPTABLE.TBL</code>
+parameters. Surface mosaic (<code>sf_surface_mosaic=1</code>) is not supported. The
+<a href="https://github.com/wrf-gpu/wrf_gpu/blob/main/docs/noahmp-options.md">Noah-MP options guide</a> lists the inputs for each branch.</p>
+<h2 id="surface-features">Lakes, cities, ocean and other surface options<a class="headerlink" href="#surface-features" aria-label="Permalink">¶</a></h2>
+<p>The lake model, urban canopy models, the ocean mixed layer, SST updates and terrain-aware
+radiation are namelist features rather than physics selectors. Their status is on the
+<a href="namelist.html#features">namelist page</a>.</p>
+<a id="nested-scope"></a><a id="previous-releases"></a>
+<h2 id="earlier-releases">Earlier releases<a class="headerlink" href="#earlier-releases" aria-label="Permalink">¶</a></h2>
+<p>v0.3.4 and earlier ran a much smaller set of schemes; v0.3.3 and older could silently run the
+default schemes when a different one was requested. The
+<a href="https://github.com/wrf-gpu/wrf_gpu/blob/main/docs/release/SUPPORT_MATRIX_v0.3.4.md">v0.3.4 support matrix</a> keeps that release's record.</p>
 
         <nav class="page-nav">
 <a class="prev" href="namelist.html"><span class="pn-dir">← Previous</span><span class="pn-title">Namelist Compatibility</span></a>

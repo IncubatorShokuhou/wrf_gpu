@@ -64,7 +64,7 @@ window. No interpolation in time is used to manufacture a missing window edge.
 | `wind-height` | east/north components and speed m/s, direction degrees; `bulk_wind_shear` m/s; `wind_veer` degrees | Destagger U/V by adjacent arithmetic means, rotate to earth, linearly interpolate **components** in AGL height. U10/V10 anchor at 10 m; lowest model mass height must exceed 10 m. One or more increasing requested heights; no extrapolation in any column. With two or more heights, shear is the vector difference magnitude between the lowest/highest requested heights; veer is signed clockwise upper-minus-lower direction in [-180,180), missing if either endpoint is calm. A single height emits winds alone. Height is a CF coordinate in m AGL. No logarithmic/power-law wind profile is assumed. |
 | `cloud` | `cloud_cover_low/mid/high/total`, fraction 0–1 | Uses model **CLDFRA**, not an RH proxy. Low: p≥680 hPa; mid: 440≤p<680 hPa; high: p<440 hPa. Within each layer and for the full column, contiguous levels with CLDFRA>0 overlap maximally (block maximum); blocks separated by a clear level overlap randomly: `1-product(1-block_max)`. Empty pressure layers give 0 and a `cloud_layer_*_sampled=0` flag. No extrapolation below terrain or above model top. Total is computed from the full profile, not by randomly combining the three layer totals. This declared maximum-random convention follows the RRTMG overlap concept; it does not claim to reproduce a particular radiation call or UPP/wrf-python cloud diagnostic. |
 | `precip` | `precipitation_accumulated`, mm; `precipitation_interval`, mm; `precipitation_rate`, mm/h; `precipitation_rolling_*h`, mm | Total liquid equivalent = RAINNC+RAINC+RAINSH if RAINSH exists. Positive BUCKET_MM or `--bucket-mm` reconstructs RAINNC/RAINC using `residual + bucket_mm*I_RAIN*`. Required counters must exist and be nonnegative integers; nonzero counters with unknown/disabled bucket size are refused. RAINSH has no WRF rain bucket. Each interval is the cumulative difference over its actual timestamps; rate = amount / elapsed hours. Rolling totals subtract the exact endpoint accumulations, including irregularly spaced intermediate files; a missing exact start timestamp yields missing + valid=0. Negative accumulations or decreases are refused; the tool cannot infer a restart reset. Accumulated origin is inherited from the model, not the first supplied file. |
-| `precip-type` | `grid_scale_precipitation_phase`, category | **Limited composition diagnostic**, qualified for Thompson MP_PHYSICS=8: 0 none, 1 liquid, 2 solid, 3 mixed over the previous history interval. Solid water equivalent = ΔSNOWNC+ΔGRAUPELNC+ΔHAILNC (hail may be absent for mp=8), total = ΔRAINNC. Uses separate per-field reset checks. Solid fraction ≥1−1e−5 counts as solid; zero counts liquid; others mixed. Rejects solid amount above total by >1e−5 mm. Excludes deep/shallow convective precipitation. It cannot distinguish snow from graupel as a dominant weather type, or rain from freezing rain. Other schemes and thermodynamic precipitation type are deferred. |
+| `precip-type` | `grid_scale_precipitation_phase`, category | **Limited composition diagnostic**, qualified for Thompson MP_PHYSICS=8: 0 none, 1 liquid, 2 solid, 3 mixed over the previous history interval. Solid water equivalent = ΔSNOWNC+ΔGRAUPELNC+ΔHAILNC (hail may be absent for mp=8), total = ΔRAINNC. Uses separate per-field reset checks. Solid fraction ≥1−1e−5 counts as solid; zero counts liquid; others mixed. Rejects solid amount above total by >1e−5 mm. Excludes deep/shallow convective precipitation. It cannot distinguish snow from graupel as a dominant weather type, or rain from freezing rain. Other schemes and thermodynamic precipitation type are not supported yet. |
 | `snow` | `snow_depth`, m; `snow_water_equivalent`, kg/m²; `snowfall_interval_water_equivalent`, mm | SNOWH and SNOW are instantaneous surface storage. Snowfall is ΔSNOWNC over the preceding history interval, water equivalent, **not snow depth** and not storage change. SNOWNC represents grid-scale snow/ice; the Thompson reference excludes graupel/hail. Other schemes inherit their own SNOWNC definition. No fixed snow-to-liquid ratio is used. |
 | `thermal` | wet bulb, heat index and apparent temperature, K | Wet bulb: MetPy `wet_bulb_temperature` (Normand). Heat index: NWS/WPC Steadman fallback, Rothfusz regression and humidity corrections; shade/light-wind assumptions, not a solar heat-load model. Apparent temperature: MetPy `apparent_temperature`, wind-chill/heat-index piecewise, with T2/Q2 and 10 m speed, `face_level_winds=False`, `mask_undefined=False`. Surface RH must be in [0,1]; supersaturation is refused rather than clipped. These are instantaneous outdoor diagnostics. |
 | `instability` | `surface_based_cape/cin`, J/kg; `lcl_pressure/lfc_pressure`, Pa; `lcl/lfc_height_agl`, m; `lifted_index`, K | MetPy surface-based parcel at PSFC/T2/Q2 plus every model mass level. CAPE/CIN use MetPy's default bottom-LFC/top-EL integration; CIN is signed (≤0). This differs from wrf-python's most-unstable 500 m mixed parcel `cape_2d`. LCL via MetPy `lcl`; LFC via `lfc(which='bottom')`; missing if no LFC exists. Heights interpolate z in log pressure and are missing outside model vertical coverage. LI is environment-minus-parcel temperature at 500 hPa; missing when 500 hPa is outside the sounding. A 2 m surface sample is treated as z=0/PSFC for the parcel. No subgrid lifting or entrainment is modelled. |
@@ -79,8 +79,8 @@ guesses from the projection or from the file's origin. Historical surface-only
 GPU files can therefore safely yield `wind-speed10` while directional/profile
 products are refused.
 
-UTCI is **deferred**: mean radiant temperature, a declared radiation geometry
-and independent implementation qualification are not available here. Solar
+UTCI is **not available yet**: mean radiant temperature, a declared radiation
+geometry and an independently checked implementation are not available here. Solar
 geometry/clearness and energy/agricultural products belong to application
 extensions and are not implied by the core names above.
 
@@ -107,15 +107,15 @@ by their registry entries are read by the CLI.
 ## Evidence and cost
 
 Tracked fixtures in `tests/fixtures/post/` are **unmodified field crops** from
-the real Swiss RD11 CPU-WRF 42×42×44 case (three irregularly spaced times) and
+a real Swiss CPU-WRF 42×42×44 case (three irregularly spaced times) and
 historical GPU surface history (two times). `manifest.json` records original
 and extracted-file SHA256 values and exact crops. The extractor in
 `proofs/u1_post/generate_fixtures.py` reads references without modifying them.
 Tests use independent equations, published worked cases and upstream MetPy,
 including active clouds/precipitation, rain buckets, rotation/destaggering,
 irregular windows, missing levels, reset refusal and NaN/±Inf in every consumed
-field. The GPU fixture qualifies surface wind speed and missing-input refusals;
-**no full-profile GPU history qualification or GPU forecast is claimed**.
+field. The GPU fixture checks surface wind speed and missing-input refusals;
+**no full-profile GPU history check or GPU forecast is claimed**.
 The CPU crop was selected from a whole-grid census for nonzero precipitation
 and nonsupersaturated surface conditions. Separate unmodified supersaturated
 surface crops exercise the documented thermal-index refusal; those cells were
@@ -127,7 +127,7 @@ parser adds only the post subcommand's argument registration and defers the post
 package import until this command is selected; its small parser startup overhead
 has not been benchmarked separately.
 The inherited top-level gpuwrf package configures JAX on import; post code does
-not import JAX or initialize its backend. This wave's commands/tests pin
+not import JAX or initialize its backend. The documented commands and the tests set
 `JAX_PLATFORMS=cpu`. CLI memory scales with the selected input fields across all
 supplied times plus product arrays; split long histories into overlapping
 windows to bound memory. NumPy products vectorize over columns; MetPy
@@ -135,13 +135,13 @@ parcel/wet-bulb/SRH calls run on CPU and can be expensive on large grids. No GPU
 performance claim follows from these offline checks.
 
 Measured CPU cost on the tracked three-time 2×2×44 crop (MetPy 1.7.1,
-core 29, nice 19; includes selected-field reads and NetCDF writing): wind/cloud/
+one CPU core at low priority; includes selected-field reads and NetCDF writing): wind/cloud/
 precipitation/snow products took 1.589 s wall / 1.480 s CPU, and thermal/parcel/
 SRH/freezing products took 0.872 s wall / 0.663 s CPU. Peak process RSS was
 481,924 KiB (~471 MiB), dominated by interpreter/library overhead at this tiny
 size; this is not a full-domain memory estimate. JAX's backend remained
 uninitialized. The reproducible driver is `proofs/u1_post/benchmark.py`;
-the lane's `bench.json` records source identity, array bytes, options and costs.
+its `bench.json` output records source identity, array bytes, options and costs.
 
 ## References
 

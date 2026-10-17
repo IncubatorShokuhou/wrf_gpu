@@ -40,6 +40,7 @@
 <a class="" href="quickstart.html">Quickstart</a>
 <a class="" href="ai-quickstart.html">Quickstart with an AI Agent</a>
 <a class="" href="running.html">Running the Model</a>
+<a class="" href="tools.html">Tools &amp; Commands</a>
 <a class="" href="input-data.html">Input Data &amp; Initialization</a>
 <div class="group-title">Configuration</div>
 <a class="" href="namelist.html">Namelist Compatibility</a>
@@ -52,16 +53,17 @@
 <div class="group-title">Performance &amp; validation</div>
 <a class="active" href="performance.html">Performance &amp; GPU Modes</a>
 <div class="subnav">
-<a href="performance.html#default-path-perf">Large regional forecasts on one card</a>
+<a href="performance.html#default-path-perf">One regional forecast</a>
+<a href="performance.html#several-cases">Several forecasts on one GPU</a>
+<a href="performance.html#scaling-energy">Energy</a>
+<a href="performance.html#larger-gpus">Larger GPUs (estimates)</a>
 <a href="performance.html#cold-compile">The first run compiles</a>
 <a href="performance.html#warm-cache">Reuse compatible executables</a>
-<a href="performance.html#batched-ensemble">Independent cases sharing one GPU</a>
-<a href="performance.html#batched-ensemble-distinct-init">Different dates or members</a>
+<a href="performance.html#batched-ensemble-distinct-init">Running several cases</a>
 <a href="performance.html#fp32">Precision with original-WRF evidence</a>
-<a href="performance.html#vram">C-auto and measured memory</a>
-<a href="performance.html#scaling-energy">Measured board energy and inferred scenarios</a>
+<a href="performance.html#vram">GPU memory checks</a>
 </div>
-<a class="" href="validation.html">Validation &amp; WRF Identity</a>
+<a class="" href="validation.html">Validation against WRF</a>
 <a class="" href="limitations.html">Boundaries &amp; Known Issues</a>
 <div class="group-title">Reference</div>
 <a class="" href="version-history.html">Version History</a>
@@ -72,69 +74,70 @@
     <div class="content-wrap">
       <main>
         <div class="breadcrumb"><a href="index.html">User's Guide</a> › Performance &amp; validation › Performance &amp; GPU Modes</div>
-        <h1>Performance, memory and energy</h1><p>Whole-run speed and energy figures below retain their measured v0.3.2 windows; the v0.3.3 science wave is not a new quiet-host throughput benchmark. The v0.3.3 small-grid stability firewall adds about 12% kernels and 8% ordinary-root time on grids of ≤4096 horizontal columns only. Large WN3/Monica programs are byte-identical across that firewall delta.</p>
-<p>Use the measured hardware, workload and clock behind each number. This page keeps
-v0.3.2 benchmarks dated; completed v0.3.3 trajectory and compiled-program evidence is linked on the validation page. Older timings are not relabelled as new W3 measurements.</p>
-<h2 id="default-path-perf">Large regional forecasts on one card<a class="headerlink" href="#default-path-perf" aria-label="Permalink">¶</a></h2>
-<p>[M] RTX 5090 (sm_120, CUDA 13), Ryzen 9 9950X: a cached 24-hour Canary
-9/3 km two-domain run takes <strong>79.319 seconds total, 3.305 s/forecast hour</strong>,
-including startup and output. The twelve-core original CPU-WRF main-loop reference
-is 92.3 s/hour: a <strong>27.9× clock ratio</strong>. CPU and GPU windows are explicitly
-different. The host was contended; this is a conservative measured absolute result,
-not a quiet-host or universal speed claim.</p>
-<p>The matched v0.3.1 GPU run took 88.060 seconds, 3.669 s/hour; B/A=0.901,
-9.9% lower whole-run wall [M]. The v0.3.2 steady-segment median is 2.625 s/hour,
-and initialization/pre-step work is 15.008 seconds. Small grids can remain
-launch-limited; that does not negate the measured regional single-card gain.</p>
-<p><a href="https://github.com/wrf-gpu/wrf_gpu/blob/main/docs/release/V0.3.2.md">Exact source, geometry, clocks and receipts</a>.</p>
+        <h1>Performance, memory and energy</h1>
+<p class="lead">All speed and energy numbers on this page were measured with v0.3.2 on one
+<strong>NVIDIA RTX 5090</strong> with an <strong>AMD Ryzen 9 9950X</strong> host. Later releases added
+WRF corrections and many physics options but have not been re-benchmarked end to end yet; other GPUs and
+hosts have not been measured.</p>
+<p>GPU times are the complete process: start-up, loading of compiled programs, the forecast and writing
+every output file. The CPU-WRF reference counts only WRF's main loop. In the charts, [M] marks measured
+values and [I] estimates.</p>
+<h2 id="default-path-perf">One regional forecast<a class="headerlink" href="#default-path-perf" aria-label="Permalink">¶</a></h2>
+<figure style="margin:1.2rem 0;"><picture><source media="(prefers-color-scheme: dark)" srcset="release/img/v032_speed_dark.png"><img src="release/img/v032_speed.png" alt="Canary 9/3 km, 24-hour forecast: 92.3 s per forecast hour on 12-core CPU-WRF versus 3.3 s on one RTX 5090" style="max-width:100%;height:auto;"></picture></figure>
+<p>A 24-hour, two-domain Canary Islands forecast (9/3 km), with compiled programs already cached, took
+<strong>79.3 seconds in total, 3.3 s per forecast hour</strong>. Original CPU-WRF on twelve cores needs
+92.3 s per forecast hour for its main loop alone: about <strong>28 times</strong> longer. The host was
+busy with other work during the run, so this is a conservative number. Steady stepping alone took
+2.6 s per forecast hour, and start-up about 15 seconds.</p>
+<p><a href="https://github.com/wrf-gpu/wrf_gpu/blob/main/docs/release/V0.3.2.md">Measurement report: exact
+cases, clocks and raw timings</a>.</p>
+<a id="batched-ensemble"></a>
+<h2 id="several-cases">Several forecasts on one GPU<a class="headerlink" href="#several-cases" aria-label="Permalink">¶</a></h2>
+<figure style="margin:1.2rem 0;"><picture><source media="(prefers-color-scheme: dark)" srcset="release/img/v032_parallel_dark.png"><img src="release/img/v032_parallel.png" alt="Four Tenerife forecasts on one RTX 5090: 5.5 s per case-forecast-hour versus 123.4 s for CPU-WRF on 3 x 4 cores" style="max-width:100%;height:auto;"></picture></figure>
+<p>Four three-domain Tenerife forecasts (9/3/1 km, 24 hours each) shared one GPU and averaged
+<strong>5.5 s per case-hour</strong>, 22 times the throughput of CPU-WRF running three cases on four
+cores each (123.4 s per case-hour). While all four were running, the rate was 4.9 s per case-hour.
+Running more cases at once raises total throughput but can make each single forecast take longer.</p>
+<h2 id="scaling-energy">Energy<a class="headerlink" href="#scaling-energy" aria-label="Permalink">¶</a></h2>
+<figure style="margin:1.2rem 0;"><picture><source media="(prefers-color-scheme: dark)" srcset="release/img/v032_energy_dark.png"><img src="release/img/v032_energy.png" alt="Energy per case-forecast-hour: about 6.9 Wh for CPU-WRF versus 0.78 Wh for the RTX 5090 run" style="max-width:100%;height:auto;"></picture></figure>
+<p>For the same four forecasts the GPU board used 0.68 Wh per case-hour, measured from timestamped power
+samples; adding an estimated 67 W host share gives about 0.78 Wh. The twelve-core CPU-WRF run is estimated
+at about 6.9 Wh per case-hour, assuming 200 W. No whole-machine power meter was used, so these are board
+and estimated host figures, not wall-socket measurements.</p>
+<h2 id="larger-gpus">Larger GPUs (estimates)<a class="headerlink" href="#larger-gpus" aria-label="Permalink">¶</a></h2>
+<p>The <a href="https://github.com/wrf-gpu/wrf_gpu/blob/main/docs/release/V032_BEST_CASE_SCALING.md">scaling method</a> extrapolates the measured RTX 5090
+rates to H100, B200 and B300 cards from their memory bandwidth and capacity. These are best-case
+estimates: no forecast has been run on those cards. Runs across several GPUs are possible but
+experimental, and their speed has not been measured (<a href="tools.html#several-forecasts">several
+GPUs</a>).</p>
 <h2 id="cold-compile">The first run compiles<a class="headerlink" href="#cold-compile" aria-label="Permalink">¶</a></h2>
-<p>A new source, geometry or target can spend minutes compiling before integration.
-Cold setup is a separate cost from a warm forecast. Run a new geometry/version
-alone once before attempting concurrent cold builds. No quiet-host W3 compile
-or warm-readiness number is inferred from the old benchmark.</p>
+<p>The first run of a new grid, physics selection or version compiles the model for your GPU, which
+can take several minutes and more host memory than the forecast itself. Compile a new set-up once on
+its own before starting several such forecasts in parallel.</p>
 <h2 id="warm-cache">Reuse compatible executables<a class="headerlink" href="#warm-cache" aria-label="Permalink">¶</a></h2>
-<p>Later compatible runs reuse caches. Native nested AOT prefetch defaults ON;
-OFF loads at first dispatch. Compatibility includes target and effective controls.
-A copied cache can safely refuse a fingerprint mismatch even when pin-file contents
-match: path-bearing XLA flags are part of the target binding. Refusal is not a
-forecast failure or permission to bypass compatibility checks.</p>
-<h2 id="batched-ensemble">Independent cases sharing one GPU<a class="headerlink" href="#batched-ensemble" aria-label="Permalink">¶</a></h2>
-<p>[M] Four three-nest Tenerife cases × 24 h measured <strong>5.507 s/case-hour</strong>
-aggregate, 22.4× the CPU-WRF 3×4-core main-loop throughput reference (123.4 s/case-hour).
-The all-four-running steady window measured 4.857 s/case-hour, 25.4×. Whole-run
-clocks include init/load and output, without compression. The FIFO tail is not
-the steady-window throughput number. Greater aggregate throughput can increase
-one case's latency.</p>
-<h2 id="batched-ensemble-distinct-init">Different dates or members<a class="headerlink" href="#batched-ensemble-distinct-init" aria-label="Permalink">¶</a></h2>
+<p>Later runs with the same grid, physics and version load the compiled program from the cache and
+start within seconds to a minute. A cache is only reused when it matches exactly; a cache copied from a
+different set-up is refused and the model compiles again, which is safe.</p>
+<h2 id="batched-ensemble-distinct-init">Running several cases<a class="headerlink" href="#batched-ensemble-distinct-init" aria-label="Permalink">¶</a></h2>
 <pre><code>scripts/run_parallel_cases.sh --out-root runs/batch CASE_A CASE_B -- \
   --domains-from-namelist --hours 24</code></pre>
-<p>The launcher checks both GPU and host memory, admits cases and queues the rest.
-v0.3.2 observed 5,032 MiB warm GPU allocation/case and about 5.6 GB host high-water;
-these are workload-specific values, not universal sizing constants.</p>
+<p>The launcher checks GPU and host memory, starts as many cases as fit and queues the rest. In the
+v0.3.2 benchmark each Tenerife case used about 5 GB of GPU memory and 5.6 GB of host memory; other grids
+and physics need different amounts.</p>
 <h2 id="fp32">Precision with original-WRF evidence<a class="headerlink" href="#fp32" aria-label="Permalink">¶</a></h2>
-<p>Validated fp32 hot paths and carry are defaults on GPU, with WRF DOUBLE islands
-retained. Original-CPU comparisons cover selected regional 24/72-hour cases.
-An opt-out or different scheme combination needs its own scope; older f64 fallback
-still has the historical Eddington shortwave choice, while W3 REFTRA corrects the
-active REAL path. See <a href="validation.html">validation</a>.</p>
-<h2 id="vram">C-auto and measured memory<a class="headerlink" href="#vram" aria-label="Permalink">¶</a></h2>
-<p>Preflight priority is explicit <code>GPUWRF_MIN_FREE_VRAM_GIB</code>, then a
-verified geometry/settings C-auto plan, then cold fallback
-<code>max(24 GiB, 0.50 × total VRAM)</code>. A reserved pool needs outside-pool
-headroom; an unreserved pool also needs its budget. Explicit allocator settings
-win. Cold compilation and warm forecasts have different host peaks.</p>
-<h2 id="scaling-energy">Measured board energy and inferred scenarios<a class="headerlink" href="#scaling-energy" aria-label="Permalink">¶</a></h2>
-<p>[M] The v0.3.2 four-case sweep integrated timestamped board-power samples to
-0.678 Wh/case-hour. Adding an assumed 67 W host share gives 0.780 Wh [I]. The
-twelve-core CPU reference uses approximately 200 W, maintainer measurement; its
-energy is 6.86 Wh/case-hour [I]. This accounting is not measured whole-machine
-efficiency. Four-core Swiss CPU energy is unknown.</p>
-<p>Existing ensemble/giant-domain scenarios on H100/B200/B300 are inferred,
-not data-centre GPU runs. Distributed multi-GPU forecasts are not implemented.
-See the <a href="https://github.com/wrf-gpu/wrf_gpu/blob/main/docs/release/V0.3.2.md">methods, assumptions and uncertainty</a>.</p>
+<p>Like WRF's standard build, wrf_gpu computes in single precision and uses double precision only
+where WRF does. This matters on consumer GPUs, which compute double precision up to 64 times more
+slowly. The comparisons with CPU-WRF on the <a href="validation.html">validation page</a> use this default
+precision.</p>
+<h2 id="vram">GPU memory checks<a class="headerlink" href="#vram" aria-label="Permalink">¶</a></h2>
+<p>Before a forecast starts, the free GPU memory is compared with what the run needs: first an explicit
+<code>GPUWRF_MIN_FREE_VRAM_GIB</code> if you set one, then a plan measured for this grid and settings,
+and otherwise a cautious default of <code>max(24 GiB, 0.50 × total VRAM)</code>. Explicit JAX
+allocator settings always win. See <a href="environment.html">environment variables</a>.</p>
+
         <nav class="page-nav">
 <a class="prev" href="nesting.html"><span class="pn-dir">← Previous</span><span class="pn-title">Nesting</span></a>
-<a class="next" href="validation.html"><span class="pn-dir">Next →</span><span class="pn-title">Validation &amp; WRF Identity</span></a>
+<a class="next" href="validation.html"><span class="pn-dir">Next →</span><span class="pn-title">Validation against WRF</span></a>
 </nav>
       </main>
       <footer class="site-foot">

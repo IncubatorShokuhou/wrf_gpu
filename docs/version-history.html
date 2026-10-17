@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Version History — wrf_gpu User's Guide</title>
-  <meta name="description" content="Release-by-release history of wrf_gpu from the fp64 kernel line through the v0.3.0 fused-fp32 GPU release.">
+  <meta name="description" content="Release-by-release history of wrf_gpu, from the first GPU kernels to v0.4.0.">
   <meta name="color-scheme" content="light dark">
   <link rel="icon" type="image/svg+xml" href="_assets/logo.svg">
   <link rel="stylesheet" href="_assets/style.css">
@@ -40,6 +40,7 @@
 <a class="" href="quickstart.html">Quickstart</a>
 <a class="" href="ai-quickstart.html">Quickstart with an AI Agent</a>
 <a class="" href="running.html">Running the Model</a>
+<a class="" href="tools.html">Tools &amp; Commands</a>
 <a class="" href="input-data.html">Input Data &amp; Initialization</a>
 <div class="group-title">Configuration</div>
 <a class="" href="namelist.html">Namelist Compatibility</a>
@@ -51,14 +52,15 @@
 <a class="" href="nesting.html">Nesting</a>
 <div class="group-title">Performance &amp; validation</div>
 <a class="" href="performance.html">Performance &amp; GPU Modes</a>
-<a class="" href="validation.html">Validation &amp; WRF Identity</a>
+<a class="" href="validation.html">Validation against WRF</a>
 <a class="" href="limitations.html">Boundaries &amp; Known Issues</a>
 <div class="group-title">Reference</div>
 <a class="active" href="version-history.html">Version History</a>
 <div class="subnav">
-<a href="version-history.html#v040">v0.4.0 released — 2026-10-17</a>
-<a href="version-history.html#v034">v0.3.4 (2026-10-10)</a>
-<a href="version-history.html#v033">v0.3.3 (2026-10-09)</a>
+<a href="version-history.html#v040">v0.4.0 — 17 October 2026</a>
+<a href="version-history.html#v034">v0.3.4 — 10 October 2026</a>
+<a href="version-history.html#v033">v0.3.3 — 9 October 2026</a>
+<a href="version-history.html#earlier">Earlier releases</a>
 <a href="version-history.html#current">v0.3.2 — layout and startup (2026-10-05)</a>
 <a href="version-history.html#v031">v0.3.1 — WRF-order fixes and performance (2026-10-05)</a>
 <a href="version-history.html#v030">v0.3.0 — fused fp32 GPU kernels by default (historical)</a>
@@ -68,7 +70,6 @@
 <a href="version-history.html#v021">v0.21 line — stability + compile-cache speed</a>
 <a href="version-history.html#v020">v0.20 line — correctness, capability, fp32</a>
 <a href="version-history.html#v018-earlier">v0.19 and earlier — foundation</a>
-<a href="version-history.html#v034-plan">Future v0.3.4 roadmap</a>
 </div>
 <a class="" href="credits.html">Credits, License &amp; Citation</a>
 <a class="" href="glossary.html">Glossary</a>
@@ -78,26 +79,54 @@
       <main>
         <div class="breadcrumb"><a href="index.html">User's Guide</a> › Reference › Version History</div>
         <h1>Version history and release notes</h1>
-<h2 id="v040">v0.4.0 released — 2026-10-17<a class="headerlink" href="#v040" aria-label="Permalink">¶</a></h2><p>Source and annotated tags are published; GitHub release assets await owner authentication. Expanded physics/tools and caller-audit repairs through batches38–65. Default identities frozen: Swiss3356e249 / PROD196aed9f, F20/C5′ gates closed. FINAL00:26Z17October:66/66 accepted-scope scientific D6PASS (65full24h + c45accepted6h). Ampere/sm_80 minimum; km3 and mosaic refused; CAM-MG needs stock Triton3.6.x with native E41 scope disclosed. <a href="release/RELEASE_NOTES_v0.4.0.md">Release notes</a> · <a href="release/FINAL_COMPOSITES_v0.4.0.md">FINAL rows</a> · <a href="release/SUPPORT_MATRIX_v0.4.0.md">Matrix</a> · <a href="release/UPGRADE_v0.4.0.md">Upgrade</a>.</p>
-<p>v0.3.4: fix release — <code>gpuwrf run</code> binds or refuses every namelist physics option (≤0.3.3 silently ran the default suite for non-default schemes; re-run those). Experimental opt-in schemes; default program and its v0.3.3 validation unchanged. <a href="release/RELEASE_NOTES_v0.3.4.md">Release notes</a> · <a href="release/SUPPORT_MATRIX_v0.3.4.md">Support matrix</a>.</p><h2 id="v034">v0.3.4 (2026-10-10)<a class="headerlink" href="#v034" aria-label="Permalink">¶</a></h2><p>Fix release. The default compiled program is unchanged; the first run recompiles once because the cache is version-keyed.</p><p>v0.3.3: faster native Noah-MP radiation, corrected GPU layouts, Thompson snow fall speeds and small-grid stability barriers. <a href="release/RELEASE_NOTES_v0.3.3.md">Release notes and disclosures</a> · <a href="release/evidence/v033/final_w3/index.html">Final original-CPU plots</a>.</p><h2 id="v033">v0.3.3 (2026-10-09)<a class="headerlink" href="#v033" aria-label="Permalink">¶</a></h2><p>All eight final original-CPU comparisons are complete. Raw failed checks and accepted disclosures are linked from validation; earlier source labels remain historical.</p><h2>Earlier published releases</h2>
+<h2 id="v040">v0.4.0 — 17 October 2026<a class="headerlink" href="#v040" aria-label="Permalink">¶</a></h2>
+<p>The feature release. More than 80 WRF 4.7.1 physics options run on the GPU (microphysics, cumulus,
+boundary layer, surface layer, land and radiation), together with analysis, spectral, surface and
+observation nudging, digital filter initialization, two-way nesting, lake, urban and ocean models, wind
+farms, passive tracers and stochastic physics. New tools set up a forecast for your own region from open
+GFS data, compute weather and application products, verify against stations, run ensembles, export to
+NetCDF, Zarr or GRIB2, choose physics for a region and cycle land and snow state.</p>
+<p>66 configurations passed 24-hour comparisons with the original CPU-WRF (Goddard radiation: six
+hours), and the default physics passed on five real cases. These comparisons also found and fixed many
+errors in how WRF schemes were called. An NVIDIA Ampere or newer GPU is required. The large microphysics
+lookup tables are not yet uploaded to the GitHub release.
+<a href="https://github.com/wrf-gpu/wrf_gpu/blob/main/docs/release/RELEASE_NOTES_v0.4.0.md">Release notes</a> ·
+<a href="https://github.com/wrf-gpu/wrf_gpu/blob/main/docs/release/VALIDATION_v0.4.0.md">Validation report</a> ·
+<a href="https://github.com/wrf-gpu/wrf_gpu/blob/main/docs/release/SUPPORT_MATRIX_v0.4.0.md">Support matrix</a> ·
+<a href="https://github.com/wrf-gpu/wrf_gpu/blob/main/docs/release/UPGRADE_v0.4.0.md">Upgrade notes</a>.</p>
+<h2 id="v034">v0.3.4 — 10 October 2026<a class="headerlink" href="#v034" aria-label="Permalink">¶</a></h2>
+<p>Fix release. <code>gpuwrf run</code> now uses or refuses every namelist physics option; v0.3.3 and
+earlier silently ran the default schemes when a different one was requested, so re-run such forecasts.
+Several schemes became available as experimental options. The default compiled program is unchanged; the
+first run recompiles once because the cache is tied to the version.
+<a href="https://github.com/wrf-gpu/wrf_gpu/blob/main/docs/release/RELEASE_NOTES_v0.3.4.md">Release notes</a> ·
+<a href="https://github.com/wrf-gpu/wrf_gpu/blob/main/docs/release/SUPPORT_MATRIX_v0.3.4.md">Support matrix</a>.</p>
+<h2 id="v033">v0.3.3 — 9 October 2026<a class="headerlink" href="#v033" aria-label="Permalink">¶</a></h2>
+<p>Faster native Noah-MP radiation, corrected GPU memory layouts, Thompson snow fall speeds and
+stability safeguards for small grids. Seven 72-hour forecasts and the 24-hour Swiss case were compared
+with the original CPU-WRF; fields that went over their limits late in long runs are shown on the
+<a href="validation.html#v033-72h">validation page</a>.
+<a href="https://github.com/wrf-gpu/wrf_gpu/blob/main/docs/release/RELEASE_NOTES_v0.3.3.md">Release notes</a> ·
+<a href="release/evidence/v033/final_w3/index.html">72-hour comparison plots</a>.</p>
+<h2 id="earlier">Earlier releases<a class="headerlink" href="#earlier" aria-label="Permalink">¶</a></h2>
 
 <h2 id="current">v0.3.2 — layout and startup (2026-10-05)<a class="headerlink" href="#current" aria-label="Permalink">¶</a></h2>
 <p>Stable nested layout pin, accepted momentum fusion, lazy dormant-scheme
 initialization and path-independent auxiliary caches. Matched 24-hour wall time
 falls 9.9% (3.669 to 3.305 s/hour under contention). N=4 × 24 h aggregate is
 5.507 s/case-hour, 22.4× the CPU-WRF 3×4-core rate, including init/load and
-without compression. PROD remains bitwise; WN3 children pass original-CPU
-limits with round-off differences (d03 PSFC 8.66 versus 4.49 Pa, limit 120 Pa).
+without compression. The two-domain Canary case is bit-identical to v0.3.1; the inner Tenerife domains
+differ at rounding level and pass the limits (innermost surface pressure 8.66 Pa versus 4.49 Pa, limit 120 Pa).
 <a href="https://github.com/wrf-gpu/wrf_gpu/blob/main/docs/release/V0.3.2.md">Measurements and independent release verdict</a>.</p>
 
 <h2 id="v031">v0.3.1 — WRF-order fixes and performance (2026-10-05)<a class="headerlink" href="#v031" aria-label="Permalink">¶</a></h2>
 <p>Open-top and per-record boundary-mass fixes, WRF edge-wind order, Andreas snow
 surface exchange, nested initial-state blending, thin-snow/ground-precipitation and
-warm-ice corrections, water/glacier history parity. A1-SL and Noah-MP column kernels
-are defaults; warm admission and three-nest C-auto are repaired.</p>
+warm-ice corrections, water/glacier history parity. the blocked acoustic vertical-velocity solver and Noah-MP column kernels
+are defaults; warm admission and three-nest memory planning are repaired.</p>
 <p>Measured Canary 24-hour rate: 3.604 s/forecast hour (RTX 5090, AMD Ryzen 9 9950X),
-versus v0.3.0 4.126. Original CPU-WRF twelve-core reference: 92.3 s/hour. Swiss January
-D6 and direct RC3 strict integrity pass all 25 frames in each domain. <a href="https://github.com/wrf-gpu/wrf_gpu/blob/main/docs/release/V0.3.1.md">Evidence, clocks and limits</a>.</p>
+versus v0.3.0 4.126. Original CPU-WRF twelve-core reference: 92.3 s/hour. The Swiss January
+comparison and strict output checks pass all 25 frames in each domain. <a href="https://github.com/wrf-gpu/wrf_gpu/blob/main/docs/release/V0.3.1.md">Evidence, clocks and limits</a>.</p>
 
 
 <p class="lead">A release-by-release summary. <code>stability &gt; identity</code> is the top
@@ -118,7 +147,7 @@ rebaseline, as v0.23.4 and v0.3.0 do. Full per-release notes live in the
 <table>
 <thead><tr><th>Version</th><th>Highlights</th><th>Default numerics</th></tr></thead>
 <tbody>
-<tr><td><strong>v0.3.0</strong></td><td><strong>GPU rewrite of the hot path:</strong> fused fp32 dynamics, acoustics and column-physics kernels are on by default; WRF's DOUBLE precision islands stay double. On an RTX 5090: two-domain Canary 22.4× faster than CPU-WRF on 12 cores; four three-domain Tenerife forecasts on one GPU 12.75× CPU-WRF's throughput. WRF-order fixes to snow, water and albedo updates; full WRF history by default. Release gate: 6 Tenerife cases × 3 domains × 24&nbsp;h, 0 D6 bound failures.</td><td><strong>Changed</strong> (fp32 default + WRF-order fixes; revalidated against CPU-WRF)</td></tr>
+<tr><td><strong>v0.3.0</strong></td><td><strong>GPU rewrite of the hot path:</strong> fused fp32 dynamics, acoustics and column-physics kernels are on by default; WRF's DOUBLE precision islands stay double. On an RTX 5090: two-domain Canary 22.4× faster than CPU-WRF on 12 cores; four three-domain Tenerife forecasts on one GPU 12.75× CPU-WRF's throughput. WRF-order fixes to snow, water and albedo updates; full WRF history by default. Release gate: 6 Tenerife cases × 3 domains × 24&nbsp;h, 0 limit failures.</td><td><strong>Changed</strong> (fp32 default + WRF-order fixes; revalidated against CPU-WRF)</td></tr>
 </tbody>
 </table>
 </div>
@@ -128,7 +157,7 @@ rebaseline, as v0.23.4 and v0.3.0 do. Full per-release notes live in the
 <table>
 <thead><tr><th>Version</th><th>Highlights</th><th>Default numerics</th></tr></thead>
 <tbody>
-<tr><td><strong>v0.23.4</strong></td><td><strong>Correctness-complete; d03 performance regression measured, root-caused, investigation closed.</strong> Closes the SP2 mass-flux seam, S2 boundary retention, V/V10 moist/scalar ordering, and Thompson late-Ni balance in one linear chain. The one-hour all-physics d01-d09 replay lands 27/27 outputs, all 177,497,511 numeric values finite, and 9 × 102 fields within the frozen gates. Dispatch-level scalar batching is validated for <strong>2-domain (d01+d02): no measured regression (0.960–1.018×)</strong>. <strong>3-domain/9-domain configurations using d03 carry a real 51.67% regression</strong> vs v0.23.3. Every quick-fix candidate (barrier, scan/map, register-pressure/fusion-disable, B1/B2/B3 scheduling, roll substitution) was falsified or rejected with evidence; a Nsight Compute hardware measurement confirmed the kernel is occupancy/latency-bound, not bandwidth-bound (DRAM 20.3% of peak, occupancy 15.6%), identifying concurrent sibling-domain scheduling as the mapped next lever (design-scoped, unimplemented). Ships as a known, understood limitation. Fixed 30-minute nested radiation cadence remains disclosed.</td><td>Intentional WRF-fidelity corrections; d01/d02 performance-neutral, d03 correct but slower; rebaseline ice-sensitive trajectories</td></tr>
+<tr><td><strong>v0.23.4</strong></td><td><strong>Correctness-complete; d03 performance regression measured, root-caused, investigation closed.</strong> Closes the mass-flux seam, boundary retention, V/V10 moist/scalar ordering, and Thompson late-Ni balance in one linear chain. The one-hour all-physics d01-d09 replay lands 27/27 outputs, all 177,497,511 numeric values finite, and 9 × 102 fields within the frozen gates. Dispatch-level scalar batching is validated for <strong>2-domain (d01+d02): no measured regression (0.960–1.018×)</strong>. <strong>3-domain/9-domain configurations using d03 carry a real 51.67% regression</strong> vs v0.23.3. Every quick-fix candidate (barrier, scan/map, register-pressure/fusion-disable, scheduling, roll substitution) was falsified or rejected with evidence; a Nsight Compute hardware measurement confirmed the kernel is occupancy/latency-bound, not bandwidth-bound (DRAM 20.3% of peak, occupancy 15.6%), identifying concurrent sibling-domain scheduling as the mapped next lever (design-scoped, unimplemented). Ships as a known, understood limitation. Fixed 30-minute nested radiation cadence remains disclosed.</td><td>Intentional WRF-fidelity corrections; d01/d02 performance-neutral, d03 correct but slower; rebaseline ice-sensitive trajectories</td></tr>
 </tbody>
 </table>
 </div>
@@ -141,7 +170,7 @@ rebaseline, as v0.23.4 and v0.3.0 do. Full per-release notes live in the
 <tr><td><strong>v0.23.3</strong></td><td><strong><code>cuda_async</code> preflight reliability fix.</strong> A verified lock-held allocator pool is advisory rather than a false low-VRAM failure; unlocked checks still fail closed.</td><td>No dynamics/physics change</td></tr>
 <tr><td><strong>v0.23.2</strong></td><td><strong>Batched-ensemble distinct-init CLI ergonomics.</strong> <code>GPUWRF_BATCH_INPUT_DIRS</code> now accepts a <strong>comma</strong>-separated list of the B distinct-day input dirs (the old <code>:</code>-only separator still works), with an actionable count-mismatch error. Fixes an operational fallback where a natural comma list parsed as one dir. Documents the <a href="performance.html#batched-ensemble-distinct-init">distinct-init contract</a> (nested one-way, exactly B same-geometry dirs). No dynamics/physics change; the batched math is unchanged.</td><td>Numerically identical to v0.23.1</td></tr>
 <tr><td><strong>v0.23.1</strong></td><td><strong>Usability &amp; AI-native onboarding.</strong> A full HTML <a href="index.html">User's Guide</a>; an <a href="ai-quickstart.html">AI operator skill</a> (<code>AI_OPERATOR.md</code> + a Claude Code skill) so an agent can run a case for you; and WRF-parity CLI ergonomics — forecast length and root domain now default from <code>namelist.input</code> when the flags are omitted, plus a <code>namelist-support</code> subcommand and a <code>--dry-run</code> preflight. No dycore/physics change.</td><td>Numerically identical to v0.23.0</td></tr>
-<tr><td>v0.23.0</td><td>Opt-in <a href="performance.html#batched-ensemble">batched ensemble</a> (<code>GPUWRF_BATCH_ENSEMBLE=B</code>) fills the launch-bound small-grid GPU (Tenerife 3/1 km reaches ~97 % of the large-grid ceiling at B=4). Value-preserving default-path work reductions (P0 radiation flux-slice, P3 flat-2-dom fusion). Extended physics — New-Tiedtke cumulus + Morrison-aerosol ported; NSSL / CAM-UW / urban / lake reference-only; moving nests opt-in. fp32 foundation laid (separate milestone).</td><td>Numerically equivalent to v0.22.2</td></tr>
+<tr><td>v0.23.0</td><td>Opt-in <a href="performance.html#batched-ensemble">batched ensemble</a> (<code>GPUWRF_BATCH_ENSEMBLE=B</code>) fills the launch-bound small-grid GPU (Tenerife 3/1 km reaches ~97 % of the large-grid ceiling at B=4). Value-preserving default-path work reductions (radiation flux slicing, flat two-domain fusion). Extended physics — New-Tiedtke cumulus + Morrison-aerosol ported; NSSL / CAM-UW / urban / lake reference-only; moving nests opt-in. fp32 foundation laid (separate milestone).</td><td>Numerically equivalent to v0.22.2</td></tr>
 </tbody>
 </table>
 </div>
@@ -199,8 +228,6 @@ rebaseline, as v0.23.4 and v0.3.0 do. Full per-release notes live in the
 <p style="margin-top:1.4rem;">The complete, unabridged notes for every release are in the
 <a href="https://github.com/wrf-gpu/wrf_gpu/tree/main/release_notes">release_notes/</a> folder and
 <code>CHANGELOG.md</code> of the repository.</p>
-
-<h2 id="v034-plan">Future v0.3.4 roadmap<a class="headerlink" href="#v034-plan" aria-label="Permalink">¶</a></h2><p>Standalone restart, actual cluster interfaces qualified through simulation, grid FDDA first, then RUC/NSSL and further schemes. Chem/Fire are separate program tracks. This is a future plan, not current support or v0.3.3 closure; real-cluster performance is unmeasured. <a href="https://github.com/wrf-gpu/wrf_gpu/blob/main/docs/release/V0.3.4_ROADMAP.md">Ordered public roadmap and qualifications</a>.</p>
 
         <nav class="page-nav">
 <a class="prev" href="limitations.html"><span class="pn-dir">← Previous</span><span class="pn-title">Boundaries &amp; Known Issues</span></a>

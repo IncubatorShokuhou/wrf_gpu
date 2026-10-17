@@ -5,8 +5,8 @@
 statistics (MOS). Offline planning, scoring and calibration use NumPy/pandas and
 the merged station verifier. They add no model kernels, transfers, temporary
 device arrays or compilation. Model execution delegates to the existing
-ensemble/batch scheduler. This implementation is CPU tested; the small GPU
-workflow demonstration remains pending. It does not certify regional forecast
+ensemble/batch scheduler. This implementation is tested on the CPU; the full
+workflow has not yet been demonstrated end to end on a GPU. It does not certify regional forecast
 improvement or promote a scheme to release status.
 
 ## Study and admission
@@ -45,7 +45,7 @@ Example study (paths resolve relative to its JSON):
 
 An admission is an **operator-supplied qualification decision**, not an
 optimizer-generated scientific verdict. Obtain the source binding with
-`JAX_PLATFORMS=cpu gpuwrf optimize identity`. Each receipt supplies the exact
+`JAX_PLATFORMS=cpu gpuwrf optimize identity`. Each admission file supplies the exact
 seven physics selections (scalars broadcast to all domains, or explicit lists),
 domain count, version, source SHA256 and existing GPU evidence identities:
 
@@ -71,7 +71,8 @@ mean a coupled forecast passed. CPU-oracle-only and generic catalog
 `IMPLEMENTED` status cannot grant admission. Source/version/domain drift or
 changed evidence refuses the study. The tool checks identities and the current
 operational catalog, pairing, binding and nested restrictions; it cannot
-authenticate the scientific content or authority of an arbitrary local receipt.
+authenticate the scientific content or authority of an arbitrary local admission
+file.
 The operator must bind evidence for the actual configuration, input regimes and
 other unchanged case settings, including dynamics, cadence and land options.
 
@@ -79,8 +80,8 @@ By default the admitted configurations form the search. An optional
 `search_space` maps **all seven** physics keys to lists of candidate options;
 their Cartesian product is generated and intersected with admissions before
 WRF validation. A list-valued per-domain option must be nested inside the
-options list, e.g. `"cu_physics": [[1, 0, 0], [5, 0, 0]]`. No unqualified option
-is automatically run. At most 4096 combinations are generated.
+options list, e.g. `"cu_physics": [[1, 0, 0], [5, 0, 0]]`. No option without an
+admission is run automatically. At most 4096 combinations are generated.
 
 ## Planning, existing forecasts and execution
 
@@ -91,7 +92,7 @@ JAX_PLATFORMS=cpu gpuwrf optimize score --study study.json \
 ```
 
 The plan reports stable `p-...` configuration IDs, rounds, rejected pairings,
-qualification provenance and the required budget. Existing forecast inventory:
+admission provenance and the required budget. Existing forecast inventory:
 
 ```json
 {"schema": "gpuwrf.optimize.forecasts.v1", "forecasts": {
@@ -112,18 +113,15 @@ does not attest that externally supplied forecasts ran the labelled physics.
 The `run` workflow prepares and records its actual private namelists instead.
 
 ```bash
-# On this development host only inside a manager-granted daytime GPU window:
-source <USER_HOME>/wrf_gpu2_lanes/driver_bridge_59591/bridge.env
-scripts/with_gpu_lock.sh --label u2-optim -- timeout 1800 \
-  gpuwrf optimize run --study study.json --output regional-study --max-parallel 1
+gpuwrf optimize run --study study.json --output regional-study --max-parallel 1
 ```
 
-No GPU work is required to plan or score. For execution use the approved GPU
-environment, not `JAX_PLATFORMS=cpu`. The existing launcher controls GPU/RAM
-admission and lock-descriptor inheritance. A round submits a candidate's new
+No GPU work is required to plan or score. For execution use your normal GPU
+environment, not `JAX_PLATFORMS=cpu`. The existing launcher controls GPU and RAM
+admission. A round submits a candidate's new
 dates as a batch; independent dates can run in parallel, candidates are processed
 sequentially. Outputs, source manifests, selected namelists, budget charges and
-launcher receipts remain under the new output directory. Failed batches stop
+launcher records remain under the new output directory. Failed batches stop
 without publishing a recommendation. Existing destinations are refused.
 
 The compute budget is integer **case-hours**, not a guaranteed wall time or GPU
@@ -170,7 +168,7 @@ result includes a reproducible 400-replicate UTC date-block bootstrap 95%
 interval (seed 0). All stations of a date are resampled together. This interval
 describes the selected configuration on supplied test dates; correlated days,
 few dates, station selection and repeated studies can understate uncertainty.
-It is not proof of improvement against CPU-WRF or a release gate.
+It is not proof of improvement against CPU-WRF or a release check.
 
 ## Station calibration
 
@@ -199,7 +197,7 @@ refit all historical pairs after the validation scores are computed.
 Every exported station/variable must have at least one chronological held-out
 pair. Fitting refuses the complete model if a group lacks that evidence, even
 when other stations have validation scores. Application also checks per-group
-held-out support, refusing unqualified groups in previously saved models.
+held-out support, refusing groups without that support in previously saved models.
 
 Speed, rainfall rate and solar predictions apply the documented statistical
 constraint `max(0,a+b*x)`; affected counts are reported. This is a station product

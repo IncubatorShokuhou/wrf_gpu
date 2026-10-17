@@ -40,6 +40,7 @@
 <a class="" href="quickstart.html">Quickstart</a>
 <a class="" href="ai-quickstart.html">Quickstart with an AI Agent</a>
 <a class="" href="running.html">Running the Model</a>
+<a class="" href="tools.html">Tools &amp; Commands</a>
 <a class="" href="input-data.html">Input Data &amp; Initialization</a>
 <div class="group-title">Configuration</div>
 <a class="" href="namelist.html">Namelist Compatibility</a>
@@ -59,7 +60,7 @@
 <a class="" href="nesting.html">Nesting</a>
 <div class="group-title">Performance &amp; validation</div>
 <a class="" href="performance.html">Performance &amp; GPU Modes</a>
-<a class="" href="validation.html">Validation &amp; WRF Identity</a>
+<a class="" href="validation.html">Validation against WRF</a>
 <a class="" href="limitations.html">Boundaries &amp; Known Issues</a>
 <div class="group-title">Reference</div>
 <a class="" href="version-history.html">Version History</a>
@@ -73,12 +74,10 @@
         <h1>Dynamical Core</h1>
 
 <p class="lead">wrf_gpu integrates a <strong>nonhydrostatic, split-explicit ARW dynamical core</strong> on
-the GPU — the same architecture as WRF's Advanced Research WRF core, re-implemented in JAX and
-validated cell-for-cell against CPU-WRF as the oracle. Sealed identity fixtures prove their
-dynamics/thermodynamics fields cell-for-cell identical to CPU-WRF v4; this is not a universal
-control/configuration claim, and the path-specific gaps below remain open. The priority order is
-<strong>stability&nbsp;&gt;&nbsp;identity&nbsp;&gt;&nbsp;speed&nbsp;&gt;&nbsp;memory</strong>, with no
-masking, clamping, or <code>nan_to_num</code> on the result path.</p>
+the GPU: the same equations and numerical methods as WRF's Advanced Research WRF core, rewritten in JAX.
+Each release is compared hour by hour with the original CPU-WRF from the same inputs; results are close
+to WRF but not bit-identical (see <a href="validation.html">validation</a>). The result path has no
+hidden clamping or <code>nan_to_num</code> repairs.</p>
 
 <h2 id="time-integration">Time integration: RK3 + acoustic sub-stepping<a class="headerlink" href="#time-integration" aria-label="Permalink">¶</a></h2>
 <p>The core uses WRF's split-explicit time scheme. A third-order <strong>Runge-Kutta (RK3) large
@@ -88,10 +87,9 @@ stage. Only <code>rk_order=3</code> is supported.</p>
 <p>Native single-root and live-nested runs honor <code>time_step_sound</code>. Zero or omission derives WRF automatic sound steps from dt/grid spacing (4 on the tracked grid). The legacy CPU-history replay driver has a separate historical default of 10; it is not the native default.</p>
 
 <h2 id="advection">Per-domain advection controls<a class="headerlink" href="#advection" aria-label="Permalink">¶</a></h2>
-<p>Both native and compatibility replay builders bind requested
-<code>moist_adv_opt</code> and <code>scalar_adv_opt</code>. Native single-root uses
-the same operational builder as fixed live nests. Inspect the effective values and
-the supported scheme combination; a control binding is not universal fidelity.</p>
+<p>The requested <code>moist_adv_opt</code> and <code>scalar_adv_opt</code> are used for each domain,
+in native runs and in replay runs. The values of the default suite are validated; other values run as
+requested but are not separately validated (<a href="namelist.html#turbulence">namelist page</a>).</p>
 <h2 id="precision">Precision: WRF's single precision by default<a class="headerlink" href="#precision" aria-label="Permalink">¶</a></h2>
 <p>Since v0.3.0 the dynamical core runs WRF's own single precision (fp32) by default, with double
 precision only where WRF itself uses it — as in WRF's standard single-precision build. The fp32 path
@@ -106,23 +104,23 @@ is checked against original CPU-WRF on the 24&nbsp;h release gate. <code>GPUWRF_
 </div>
 
 <h2 id="diffusion">Horizontal diffusion<a class="headerlink" href="#diffusion" aria-label="Permalink">¶</a></h2>
-<p>The port implements and operationally wires two horizontal-diffusion closures; the 3-D closures
-fail closed with a transition recipe:</p>
+<p>The diffusion settings are used exactly as requested. <code>gpuwrf run</code> refuses a
+<code>diff_opt</code>/<code>km_opt</code> pair it cannot run, instead of running without diffusion.</p>
 <div class="table-scroll">
 <table>
 <thead><tr><th>Closure</th><th>Setting</th><th>Status</th></tr></thead>
 <tbody>
-<tr><td>Constant-K</td><td><code>diff_opt=2</code>, <code>km_opt=1</code> (or <code>diff_opt=0</code>)</td><td><span class="pill op">Operational</span></td></tr>
-<tr><td>2-D Smagorinsky (horizontal)</td><td><code>diff_opt=1</code>, <code>km_opt=4</code></td><td><span class="pill op">Operational</span> — WRF's recommended real-data default; includes terrain-slope and map-factor deformation terms (WRF-formula parity)</td></tr>
-<tr><td>3-D TKE / 3-D Smagorinsky / SMS-3DTKE</td><td><code>km_opt=2 / 3 / 5</code></td><td><span class="pill closed">Fail-closed</span> — not implemented</td></tr>
+<tr><td>2-D Smagorinsky (horizontal)</td><td><code>diff_opt=1</code>, <code>km_opt=4</code></td><td><span class="pill op">Default</span> — WRF's recommended real-data setting, including the terrain-slope and map-factor deformation terms</td></tr>
+<tr><td>No explicit horizontal diffusion</td><td><code>diff_opt=0</code></td><td>Runs as requested; not separately validated</td></tr>
+<tr><td>3-D TKE</td><td><code>diff_opt=2</code>, <code>km_opt=2</code></td><td><span class="pill optin">Experimental</span> — passed a 24-hour comparison; not with every microphysics scheme or inside nests</td></tr>
+<tr><td>SMS-3DTKE</td><td><code>diff_opt=2</code>, <code>km_opt=5</code></td><td><span class="pill optin">Experimental</span> — passed a 24-hour comparison; needs <code>bl_pbl_physics=0</code> and no or Noah-MP land</td></tr>
+<tr><td>Constant K</td><td><code>diff_opt=2</code>, <code>km_opt=1</code></td><td><span class="pill oos">Python API only</span></td></tr>
+<tr><td>3-D Smagorinsky</td><td><code>diff_opt=2</code>, <code>km_opt=3</code></td><td><span class="pill closed">Not supported</span> on the GPU</td></tr>
 </tbody>
 </table>
 </div>
-<p>If your namelist uses a 3-D closure (<code>km_opt=2/3/5</code>), switch to
-<strong>constant-K <code>diff_opt=2</code> / <code>km_opt=1</code></strong> (vertical mixing then comes
-from the PBL scheme). Other numerics knobs: <code>diff_6th_opt</code> 0/2 (2 = monotonic 6th-order
-filter, no up-gradient flux), <code>damp_opt</code> 0/3 (3 = upper-level <em>w</em>-Rayleigh damping),
-and <code>w_damping</code> 0/1.</p>
+<p>Other numerics settings: <code>diff_6th_opt</code> 0/2 (2 = WRF's monotonic sixth-order filter),
+<code>damp_opt</code> 0/3 (3 = upper-level Rayleigh damping of <em>w</em>) and <code>w_damping</code> 0/1.</p>
 
 <h2 id="gwd">Gravity-wave drag<a class="headerlink" href="#gwd" aria-label="Permalink">¶</a></h2>
 <p>Orographic gravity-wave drag with flow blocking (<code>gwd_opt=1</code>) is wired and
@@ -136,7 +134,7 @@ tendencies (<code>wrfbdy</code> for the root; the parent supplies each nested ch
 see <a href="nesting.html">Nesting</a>). This is the validated operational path.</p>
 
 <div class="admon warn">
-  <div class="admon-title">Free-running open boundaries can go unstable (KI-7)</div>
+  <div class="admon-title">Free-running open boundaries can go unstable</div>
   <p>Running <strong>free (no lateral-boundary relaxation)</strong> on <strong>wide domains
   (nx&nbsp;≈&nbsp;160+)</strong> can go non-finite beyond approximately forecast hour&nbsp;<strong>14</strong>.
   The validated operational path uses boundary forcing; keep boundary relaxation on for wide-domain

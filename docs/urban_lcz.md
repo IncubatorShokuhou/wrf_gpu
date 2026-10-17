@@ -1,5 +1,7 @@
 # LCZ, urban morphology and anthropogenic heat
 
+**Status in v0.4.0:** The single-layer urban model (`sf_urban_physics=1`) is **validated 24 h**: it passed a 24-hour comparison with the original CPU WRF in the v0.4.0 release check, in one tested single-domain configuration. Other combinations and nested domains are not validated. LCZ land use (`use_wudapt_lcz=1`), NUDAPT morphology and anthropogenic heat are **experimental**: checked against WRF's urban code, not yet in a full 24-hour forecast comparison. LCZ with BEP/BEM (`sf_urban_physics=2/3`) is not supported.
+
 These options extend the opt-in single-layer canopy model with Noah-MP:
 
 ```fortran
@@ -11,9 +13,9 @@ These options extend the opt-in single-layer canopy model with Noah-MP:
 /
 ```
 
-LCZ with BEP/BEM (`sf_urban_physics=2/3`) remains refused: its new multilayer
-bundle currently has one type-2 geometry/carry. Mixed LCZ requires per-type
-grouped geometry, prognostic carries and PBL sources; that is a separate port.
+LCZ with BEP/BEM (`sf_urban_physics=2/3`) is not supported: the multi-layer
+model currently has only one urban type (type 2). Mixed LCZ types would need
+per-type geometry, prognostic state and PBL sources; that is separate work.
 
 WRF 4.7.1 uses **LCZ land categories 51–61**, mapped to urban types 1–11
 and `URBPARM_LCZ.TBL`. An ordinary ISURBAN cell becomes type 5 with LCZ
@@ -21,7 +23,7 @@ enabled. Older 31–41 LCZ data must be regenerated with the matching WPS/real.e
 custom and NLCD category numbers are not automatically converted. Provide a
 consistent `NUM_LAND_CAT` and the WRF tables. The daily CPU-history replay
 pipeline refuses these options; use the native single-domain/nested loader.
-WRF also refuses LCZ tables when the domain's maximum urban type is at most3
+WRF also refuses LCZ tables when the domain's maximum urban type is at most 3
 (module_physics_init.F:3353). The loader preserves that upstream consistency
 check; supply a properly prepared LCZ case rather than relabelling old classes.
 
@@ -33,14 +35,15 @@ prepared wrfinput `LP_URB2D`, `MH_URB2D`, `STDH_URB2D`, `HGT_URB2D`,
 91,92,93,94,95 and 96–99 respectively. Heights are metres, plan and frontal
 area indices are dimensionless. WRF enables morphology only where area-weighted
 height HGT and mean height MH are positive; otherwise category geometry applies.
-NUDAPT LF(1) is an experimental deterministic convention with **one-cell
-zero-init parity only**, as described in [upstream behavior](UPSTREAM_WRF_BUGS.md).
-WRF reuses undefined U10/V10 locals across tile cells; compiler initialization
-does not reset them per cell. In the sealed two-cell pristine diagnostic,
-identical cells differ by HFX 6.273636 W/m2, U10 0.992088 m/s and TSK 0.301880 K.
-First-cell results are BYTE with the one-cell fixture; an isotropic LF control
-has zero differences. Coupled original CPU-WRF/D6 qualification remains
-pending. LCZ without morphology is unaffected. Invalid geometry or a first model
+NUDAPT LF(1) is an experimental deterministic convention that matches WRF
+**only for a single zero-initialized cell**, as described in
+[upstream behavior](UPSTREAM_WRF_BUGS.md). WRF reuses undefined U10/V10 locals
+across tile cells; compiler initialization does not reset them per cell. In a
+two-cell diagnostic run of the original WRF code, identical cells differ by
+HFX 6.273636 W/m2, U10 0.992088 m/s and TSK 0.301880 K. First-cell results are
+bit-identical to the one-cell reference; an isotropic LF control has zero
+differences. A full forecast comparison with the original CPU WRF has not been
+done for this option. LCZ without morphology is unaffected. Invalid geometry or a first model
 level too close to the canopy fails before stepping. Distributed drag, green
 roofs, irrigation and CH_SCHEME=1 remain refused.
 WRF's actual NetCDF names for LP, HGT and LB are `BUILD_AREA_FRACTION`,
@@ -74,20 +77,21 @@ these exact inputs, and missing feature inputs are refused.
 The four REAL clock anchors ride the device carry too; forecast dates do not
 enter the static urban bundle or force a new coupled-model compilation.
 
-The opt-out release program is unchanged. Qualification evidence uses a
-pristine WRF one-cell column oracle with all eleven LCZ types, active morphology,
-diurnal heat, and REAL4/REAL8 tolerances. GPU forecast qualification and
-GPU timing/memory measurements remain pending.
+With these options off, the release program is unchanged. The evidence is a
+one-cell column comparison with the original WRF code covering all eleven LCZ
+types, active morphology, diurnal heat, and single/double precision tolerances.
+These options have not been run in a GPU forecast comparison, and their GPU speed
+and memory use have not been measured.
 
 
-Measured CPU interpretation costs on the 42×42×44 Swiss city patch (12 urban
-cells, eight allowed logical CPUs at nice19) were0.478–0.580 s per warm control step on the final composed tree;
-committed restart steps took0.487–0.523 s. These include CPU Pallas interpretation and
-RN32 emulation and do not estimate GPU speed. Geometry's 99 sky-view iterations
+Measured CPU costs on a 42×42×44 Swiss city patch (12 urban cells, eight
+logical CPUs) were 0.478–0.580 s per warm step; restart steps took
+0.487–0.523 s. These CPU runs emulate the GPU kernels and do not estimate GPU
+speed. Geometry's 99 sky-view iterations
 run once on the host during loading. Nine REAL32 morphology grids, optional
 longitude and four REAL32 clock anchors remain in the device carry. Measured
-inputs occupy2,102,704 bytes with monthly AHE, or77,632 bytes with the two-record
+inputs occupy 2,102,704 bytes with monthly AHE, or 77,632 bytes with the two-record
 hourly stream; longer hourly files scale linearly with record count. No per-step
-file reads or host transfers were added. GPU launch count, peak VRAM, cold
-compilation and cached executable readiness for these opt-ins remain unmeasured.
-Existing table-only SLUCM GPU qualification does not cover the new inputs.
+file reads or host transfers were added. GPU launch count, peak GPU memory and compile time
+for these options have not been measured. The 24-hour validation of the
+table-only single-layer model does not cover these inputs.
