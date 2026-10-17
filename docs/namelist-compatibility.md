@@ -589,7 +589,7 @@ To run an existing real-data WRF `namelist.input` on the port today:
 * [`KNOWN_ISSUES.md`](KNOWN_ISSUES.md) — the open issues and deferred
   carry-overs (24 h skill gap, scheme long-tail, VRAM limits).
 
-## Grid analysis nudging (`grid_fdda=1`, v0.4.0 candidate, lane o2-fdda)
+## Grid analysis nudging (`grid_fdda=1`, historical v0.4.0 development lane o2-fdda)
 
 `grid_fdda=1` runs WRF's PSU grid analysis nudging (`phys/module_fdda_psufddagd.F` `fddagd`) toward the
 real.exe analysis file `wrffdda_d0N` (auxinput10, `gfdda_inname`, NetCDF `io_form_gfdda=2`) in both CLI

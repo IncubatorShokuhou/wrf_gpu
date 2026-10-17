@@ -1,4 +1,4 @@
-# v0.4.0 E41 opt-in ledger inventory (release candidate)
+# v0.4.0 E41 opt-in ledger inventory
 
 ## Source-bound opt-in E41 disclosure (00:26Z final)
 

@@ -1,21 +1,21 @@
-# Scheme support matrix — v0.4.0 (release candidate)
+# Scheme support matrix — v0.4.0
 
 **Default path frozen — 2026-10-16 11:59:18Z.** Main `5c15881ede`
 (`403240f257` adds proof only) carries the caller-audit repairs and device-only
 C5′ MYNN default. Release identities are Swiss **3356e249** and PROD d01
 **196aed9f**. F20 plus C5′ original-CPU 24h default gates are closed; the
 FINAL composite checkpoint is **66/66 accepted-scope scientific D6 PASS (65 full24h + c45 accepted6h)** at00:26Z on17October.
-Final publication follows final review and the release chain. Historical f672a573/6fc715a2 receipts remain pre-F20 baseline evidence.
+Source and tags are published; GitHub release assets await owner authentication. Historical f672a573/6fc715a2 receipts remain pre-F20 baseline evidence.
 
 
-**Release candidate — all66 registered accepted scientific scopes are complete;
-package review and publication approval remain pending.**
+**Released v0.4.0 — all66 registered accepted scientific scopes are complete;
+source and tags are published; GitHub release assets await owner authentication.**
 
 Current identities/default closure and registered-source composite results
 are below. The [release checkpoint](../../proofs/r_docs040/RELEASE_CHECKPOINT.json)
 seals the producer files and exact input/report SHA bindings. Older
 [evidence](../../proofs/r_docs040/EVIDENCE_SNAPSHOT.json) is historical;
-the final ledger is complete; package review and publication follow separately.
+the final ledger is complete; source and tags are published, with GitHub release assets awaiting owner authentication.
 
 ## GPU requirements
 
@@ -340,4 +340,4 @@ classes above. [Usage and input schemas](USER_GUIDE_v0.4.0.md).
 - Original MYNN rmol cold-start undefined read: use the admitted compiler-ZERO original reference where designated, disclose raw-original spread, retain frozen bounds. [Source/reference evidence](../../proofs/t_p3fix/UPSTREAM_WRF_BUGS.md).
 - P3 native strict/FMA residuals, Jensen diagnostic residuals, WDM5 number-kind spread and NTU source-diffusion undershoots stay visible. [Known issues](../../KNOWN_ISSUES.md#v040-draft-qualification-limits).
 - The nine formerly omitted class-D fields now have merged WRF-defined producers or held constants; unsupported active branches are refused. Missing fields would still make coverage INCOMPLETE. [Producer evidence](../../KNOWN_ISSUES.md#v040-history-fields-without-a-producer).
-- The66 registered scientific scopes are complete. Station skill, new warm S1, portability/real multi-GPU performance and unrun optional regimes remain unqualified; package review/publication follow separately. No every-combination or later-source PASS is inferred from these rows. [Snapshot scope](../../proofs/r_docs040/EVIDENCE_SNAPSHOT.json).
+- The66 registered scientific scopes are complete. Station skill, new warm S1, portability/real multi-GPU performance and unrun optional regimes remain unqualified; source and tags are published; GitHub release assets await owner authentication. No every-combination or later-source PASS is inferred from these rows. [Snapshot scope](../../proofs/r_docs040/EVIDENCE_SNAPSHOT.json).

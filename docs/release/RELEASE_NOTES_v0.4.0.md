@@ -1,16 +1,38 @@
-# v0.4.0 — expanded physics and forecast tools (release candidate)
+# v0.4.0 — expanded physics and forecast tools
+
+**Release date: 2026-10-17.**
 
 **Default path frozen — 2026-10-16 11:59:18Z.** Main `5c15881ede`
 (`403240f257` adds proof only) carries the caller-audit repairs and device-only
 C5′ MYNN default. Release identities are Swiss **3356e249** and PROD d01
 **196aed9f**. F20 plus C5′ original-CPU 24h default gates are closed; the
 FINAL composite checkpoint is **66/66 accepted-scope scientific D6 PASS (65 full24h + c45 accepted6h)** at00:26Z on17October.
-Final publication follows final review and the release chain. Historical f672a573/6fc715a2 receipts remain pre-F20 baseline evidence.
+Source and annotated tags are published. Historical f672a573/6fc715a2 receipts remain pre-F20 baseline evidence.
 
 
-**Release candidate — not yet published.** Defaults and their identities are
-frozen; only all66 registered scientific scopes now pass.
+**Released source — assets awaiting owner authentication.** Defaults and their
+identities are frozen; all66 registered scientific scopes pass.
 The numbers below are a sealed00:26Z checkpoint; c11 now has a changed-source full24h PASS.
+
+## Published source and asset distribution
+
+- Private annotated `v0.4.0` tag object:
+  `485deb27d1ee3520b2e86a3fa8360b5e3e144281` →
+  `7bb5ae669b2e4b863d6bafdd659a03fea026004f`.
+- Public annotated `v0.4.0` tag object:
+  `4d91b7dff2fdabb6cde15232b002df9c8c786b74` →
+  [`99a9e8e6571c361a7230cac8ba14dbeda16b62eb`](https://github.com/wrf-gpu/wrf_gpu/tree/99a9e8e6571c361a7230cac8ba14dbeda16b62eb).
+- The prepared [GitHub release v0.4.0](https://github.com/wrf-gpu/wrf_gpu/releases/tag/v0.4.0)
+  distribution contains **20 assets plus `SHA256SUMS`**, whose SHA-256 is
+  `95a772ffb1ad23ca38ee2370945293210f3b3586ef3dbfe7c32314d227190b4d`.
+
+**The GitHub release object and asset upload are blocked on owner
+authentication.** The source and tags above are already published; the assets
+are prepared and checksum-verified but are not yet downloadable from that
+release. Runtime tables larger than the repository limit are fetched from
+`releases/download/v0.4.0`; public remote-table fetches fail until the owner
+creates the release and uploads its assets. A matching prefilled local table
+cache remains usable. No credentials are included in the source or these notes.
 
 ## New physics and model capabilities
 
@@ -180,9 +202,9 @@ are separate checks. All numbers below are measured [M] from the cited receipts.
 
 Registered scientific validation is complete:66 accepted scopes,67 domain
 inventories and1656 paired frames. Station campaigns and unrun optional
-workflow regimes remain unqualified; package review and release mechanics
-follow separately.
-This draft makes no v0.4 speedup, warm S1, roofline or energy claim. Shared cold
+workflow regimes remain unqualified; GitHub release-object creation and asset
+upload await owner authentication.
+This release makes no v0.4 speedup, warm S1, roofline or energy claim. Shared cold
 qualification walls are not S1 benchmarks. [Qualification scope](../../proofs/r_docs040/EVIDENCE_SNAPSHOT.json).
 
 ## Limits and upgrade
@@ -196,9 +218,11 @@ checkpoints or selecting new options.
 
 **Pre-F20 baseline identities:** Swiss f672a573 / PROD d01 6fc715a2.
 The frozen replacements are Swiss3356e249 / PROD196aed9f (full hashes above).
-These identify source programs; the release tag/publication remains pending.
+These identify source programs; the published source commits and tag objects
+are recorded above.
 The prior Swiss2bf12cb8 is historical.
 [Identity/source binding](../../proofs/r_docs040/EVIDENCE_SNAPSHOT.json).
 
-**Frozen program identities: Swiss3356e249 / PROD196aed9f.** No tag, public commit or release date is
-assigned by this draft. Finalization belongs to the manager.
+**Frozen program identities: Swiss3356e249 / PROD196aed9f.** Documentation
+follow-ups use plain fast-forward commits; the published v0.4.0 tag targets
+remain unchanged.

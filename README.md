@@ -9,13 +9,16 @@ reads prepared WRF inputs, advances the forecast on the GPU, and writes WRF
 NetCDF history and authenticated restart state. Existing WPS/real preparation,
 namelists and downstream analysis remain useful.
 
-**v0.4.0 release candidate:** default programs are frozen as Swiss
+**v0.4.0 — released 2026-10-17:** default programs are frozen as Swiss
 `3356e249` and PROD d01 `196aed9f`. **All 66 registered configurations pass
 their accepted scientific scope**: 65 full 24-hour cases plus Goddard radiation
 c45's accepted six-hour case. The [source-bound ledger](docs/release/FINAL_COMPOSITES_v0.4.0.md)
 records every option tuple, clock and raw result. E41 resource failures,
-c89's native-scan uncertainty and F2 limits stay disclosed. Publication
-follows final review and the release chain.
+c89's native-scan uncertainty and F2 limits stay disclosed. Source and tags are
+published. **GitHub release assets await owner authentication:** remote
+runtime-table downloads fail until the release object and assets are uploaded.
+See the [release record](release_notes/RELEASE_NOTES_v0.4.0.md) for tag targets
+and the prepared asset checksum.
 
 The project is independent of UCAR/NCAR. WRF option support and forecast
 qualification belong to the exact configurations in the support matrix.

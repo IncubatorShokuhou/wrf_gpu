@@ -14,8 +14,8 @@ c11's changed-source b823c8ca87 full24h run now passes25frames; the earlier
 Current c11 E41FAIL is disclosed with its exact executable sites.
 
 Manager00:26:54Z declared registered composite validation complete. Default
-identities3356e249/196aed9f remain frozen. Final documentation review,
-version/wheel/curation and compile-bundle release steps are separate.
+identities3356e249/196aed9f remain frozen. Source and tags are published;
+GitHub release-object creation and asset upload await owner authentication.
 Final scope totals:67 domain inventories and1656 paired frames. c49 DFL
 retains its natural24frames across24h; no synthetic25th frame or retiming.
 [Canonical final ledger](../../proofs/r_docs040/FINAL_RELEASE_LEDGER.json).

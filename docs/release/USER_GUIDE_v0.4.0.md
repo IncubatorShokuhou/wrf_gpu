@@ -1,7 +1,7 @@
 # v0.4.0 quickstart and command guide
 
-Use the guide matching your installed release. This is the v0.4.0 release
-candidate guide: frozen defaults are qualified, and all 66 registered configurations now pass their accepted scientific
+Use the guide matching your installed release. This is the v0.4.0 released
+guide: frozen defaults are qualified, and all 66 registered configurations now pass their accepted scientific
 scope (65 full 24-hour + c45 accepted six-hour). See the [support matrix](SUPPORT_MATRIX_v0.4.0.md),
 [66-case ledger](FINAL_COMPOSITES_v0.4.0.md) and
 [upgrade note](UPGRADE_v0.4.0.md) before changing an existing operational setup.
@@ -30,7 +30,8 @@ gpuwrf namelist-support --json
 Run these commands from the cloned repository. `GPUWRF_WRF_ROOT` supplies the
 original WRF runtime/source tables needed by selected options. Large packaged
 physics tables use pinned, content-verified assets fetched on first selected
-use. Their cache root is `GPUWRF_TABLES_DIR` or the default user cache. For an
+use. GitHub release assets currently await owner authentication; remote
+runtime-table fetches fail until upload. Their cache root is `GPUWRF_TABLES_DIR` or the default user cache. For an
 offline installation, prefill the matching pinned assets and set
 `GPUWRF_TABLES_OFFLINE=1`; a missing or mismatched asset stops the run. CAM-MG
 `mp_physics=11` additionally requires `triton==3.6.*`. Optional product tools

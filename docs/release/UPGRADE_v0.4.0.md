@@ -1,6 +1,6 @@
-# Upgrading to v0.4.0 (release candidate)
+# Upgrading to v0.4.0
 
-**Release candidate — defaults frozen; all66 registered scientific scopes pass.**
+**Released v0.4.0 — defaults frozen; all66 registered scientific scopes pass.**
 The00:26Z final checkpoint is66/66 accepted-scope scientific D6 PASS (65 full24h + c45 accepted6h); see the
 [registered-source table](FINAL_COMPOSITES_v0.4.0.md).
 Use the [support matrix](SUPPORT_MATRIX_v0.4.0.md) and its
@@ -92,7 +92,7 @@ corrected accumulated precipitation and authenticated active checkpoint schemas.
 Cache/program keys include selected physics constants and configuration.
 Expect a cold setup when identity changes; do not force old cache keys or
 infer byte-exact output from identical source alone. Actual compile/readiness,
-peak VRAM and warm S1 on the final candidate remain separate gates.
+peak VRAM and warm S1 for the released workload remain separate measurements.
 [Source/cache qualification record](../../proofs/r_docs040/EVIDENCE_SNAPSHOT.json).
 
 CPU test memory varies substantially. Use the measured heavy CI tier rather
@@ -105,7 +105,7 @@ bound as `heavy_tests` in the [evidence snapshot](../../proofs/r_docs040/EVIDENC
 
 Before adopting a new configuration, review its D6 coverage, REPORT_ONLY
 fields, E41 and F2 disclosures, then evaluate the variables and station skill
-your application needs. Final accepted-scope scientific validation is complete; package review and publication approval follow the release chain.
+your application needs. Final accepted-scope scientific validation is complete; source and tags are published, while GitHub release assets await owner authentication.
 
 ## Diagnostic producers and resource disclosures
 

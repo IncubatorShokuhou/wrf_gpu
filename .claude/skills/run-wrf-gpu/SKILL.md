@@ -6,8 +6,8 @@ description: Run or set up an existing WRF forecast case with wrf_gpu, including
 # Run wrf_gpu for an end user
 
 Read [AI_OPERATOR.md](../../../AI_OPERATOR.md) first. It is the authoritative
-runbook. This skill follows the **v0.4.0 candidate** documentation; use the
-installed release's matching guide and do not call a candidate published.
+runbook. This skill follows the **released v0.4.0** documentation; use the
+installed release's matching guide.
 Explain installs, cold compilation and long integrations, then report actual
 source, inputs, resolved options and output paths.
 
@@ -70,6 +70,6 @@ truth; older GPU output is regression evidence. Report failed/incomplete gates
 plainly. The frozen default identities are Swiss3356e249/PROD196aed9f.
 The final ledger records66 accepted scientific scopes (65full24h+c45sixhour),
 with E41 33PASS/32FAIL-disclosed/1UNKNOWN(c89). This is scientific validation;
-package approval and publication remain manager-owned. Consult the
+source and tags are published; GitHub release assets await owner authentication. Consult the
 [complete user guide](../../../docs/release/USER_GUIDE_v0.4.0.md) and
 [final source/receipt ledger](../../../proofs/r_docs040/FINAL_RELEASE_LEDGER.json).

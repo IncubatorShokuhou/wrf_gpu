@@ -9,8 +9,8 @@
 <a id="vram-preflight"></a>
 <a id="examples"></a>
 <a id="v040-tools"></a>
-<p>Use the guide matching your installed release. This is the v0.4.0 release
-candidate guide: frozen defaults are qualified, and all 66 registered configurations now pass their accepted scientific
+<p>Use the guide matching your installed release. This is the v0.4.0 released
+guide: frozen defaults are qualified, and all 66 registered configurations now pass their accepted scientific
 scope (65 full 24-hour + c45 accepted six-hour). See the <a href="release/SUPPORT_MATRIX_v0.4.0.md">support matrix</a>,
 <a href="release/FINAL_COMPOSITES_v0.4.0.md">66-case ledger</a> and
 <a href="release/UPGRADE_v0.4.0.md">upgrade note</a> before changing an existing operational setup.</p>
@@ -33,7 +33,8 @@ gpuwrf namelist-support --json
 <p>Run these commands from the cloned repository. <code>GPUWRF_WRF_ROOT</code> supplies the
 original WRF runtime/source tables needed by selected options. Large packaged
 physics tables use pinned, content-verified assets fetched on first selected
-use. Their cache root is <code>GPUWRF_TABLES_DIR</code> or the default user cache. For an
+use. GitHub release assets currently await owner authentication; remote
+runtime-table fetches fail until upload. Their cache root is <code>GPUWRF_TABLES_DIR</code> or the default user cache. For an
 offline installation, prefill the matching pinned assets and set
 <code>GPUWRF_TABLES_OFFLINE=1</code>; a missing or mismatched asset stops the run. CAM-MG
 <code>mp_physics=11</code> additionally requires <code>triton==3.6.*</code>. Optional product tools

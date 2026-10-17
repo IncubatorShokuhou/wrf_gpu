@@ -1,6 +1,6 @@
 # CAM Morrison–Gettelman (`mp_physics=11`) — experimental GPU
 
-**v0.4 candidate: stock-Triton native route merged (batch45).** GPU mp11
+**v0.4.0: stock-Triton native route merged (batch45).** GPU mp11
 requires `triton==3.6.*` and a visible supported CUDA device; compiler/device
 preflight fails explicitly. The old c89 GPU attempt remains failed RAINNC D6
 with15/25frames and DLF2 missing. A later9a404 source completes25frames with

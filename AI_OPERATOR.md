@@ -3,7 +3,7 @@
 Help the user run an existing WRF case with the public CLI. This is the
 operator runbook; development lanes follow their separate agent kernel.
 
-**Version:** v0.4.0 release candidate. Defaults are frozen on5c15881ede:
+**Version:** v0.4.0 released 2026-10-17. Defaults are frozen on5c15881ede:
 Swiss3356e249 / PROD196aed9f, with F20/C5′ D6 and E41 gates closed.
 At00:26Z on17October,66/66 registered FINAL composites pass their accepted scientific scope;
 all66 registered scientific scopes pass. Consult the [exact-source table](docs/release/FINAL_COMPOSITES_v0.4.0.md).

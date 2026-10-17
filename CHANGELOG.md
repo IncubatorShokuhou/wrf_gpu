@@ -7,7 +7,7 @@ WRF v4 GPU port — see `PROJECT_PLAN.md`).
 
 The format is loosely based on [Keep a Changelog](https://keepachangelog.com/).
 
-## [0.4.0] — 2026-10-17 (release candidate)
+## [0.4.0] — 2026-10-17
 
 - Expanded WRF4.7.1 physics menu and optional DFI/nudging/urban/lake/ocean,
   stochastic, turbine, tracer, diagnostic and nesting workflows; exact
@@ -27,7 +27,7 @@ The format is loosely based on [Keep a Changelog](https://keepachangelog.com/).
 - FINAL ledger00:26Z17October:66/66 accepted-scope scientific D6 PASS (65 full24h + c45 accepted6h). Source-bound E41
   failures/unknown scans remain disclosed; no new S1/energy claim.
   [Fixes](docs/release/FIXES_v0.4.0.md) · [FINAL rows](docs/release/FINAL_COMPOSITES_v0.4.0.md).
-- [Release draft](release_notes/RELEASE_NOTES_v0.4.0.md) ·
+- [Release notes](release_notes/RELEASE_NOTES_v0.4.0.md) ·
   [Support matrix](docs/release/SUPPORT_MATRIX_v0.4.0.md) ·
   [Upgrade](docs/release/UPGRADE_v0.4.0.md) ·
   [Source/receipt inventory](proofs/r_docs040/EVIDENCE_SNAPSHOT.json).

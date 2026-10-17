@@ -1,9 +1,10 @@
 # Release notes
 
-**v0.4.0 candidate — DRAFT.** Final totals and approval are TBD-VALIDATION
-after all caller-audit class-A/F20 fixes and GPU validation (new freeze TBD).
+**v0.4.0 released — 2026-10-17.** Source and tags are published. The GitHub
+release object and prepared asset uploads await owner authentication; remote
+runtime-table fetches fail until the assets are uploaded.
 
-- [v0.4.0 release draft](RELEASE_NOTES_v0.4.0.md)
+- [v0.4.0 release notes](RELEASE_NOTES_v0.4.0.md)
 - [v0.4.0 per-option matrix](../docs/release/SUPPORT_MATRIX_v0.4.0.md)
 - [v0.4.0 upgrade](../docs/release/UPGRADE_v0.4.0.md)
 
