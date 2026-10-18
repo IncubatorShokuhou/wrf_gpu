@@ -51,13 +51,15 @@ def clone(function, **replacements):
 class HailContext:
     """Per-call arrays; shared Thompson mass/thermal equations remain in tc."""
 
-    def __init__(self, state, tables, cold_tables, *, raw_qv):
+    def __init__(self, state, tables, cold_tables, *, raw_qv, operands=None):
         self.state = state
         # Original qv1d is distinct from the private floored working qv;
         # every cumulative REAL reconstruction retains this incoming array.
         self.raw_qv = raw_qv
         self.tables = tables
-        self.aero = real_tables()
+        # ``operands`` (tables.ThompsonHailTables): the same DOUBLE values as
+        # traced program operands; None bakes them from the host loaders.
+        self.aero = real_tables(operands)
         # The distribution coefficients are REAL in original WRF, while the
         # freezing/collision table values are explicit DOUBLE.
         coeff = self.aero._replace(**{name: getattr(self.aero, name).astype(jnp.float32)
@@ -76,8 +78,12 @@ class HailContext:
         self.nwfa = jnp.maximum(np.float32(11.1e6), jnp.minimum(np.float32(9999.e6), state.nwfa * state.rho))
         self.nifa = jnp.maximum(np.float32(5000.), jnp.minimum(np.float32(9999.e6), state.nifa * state.rho))
         self.g = entry_distribution(state.qg, state.Ng, state.qvolg, state.rho)
-        hail_tables = {name: jnp.asarray(value, jnp.float64) for name, value in collision_tables().items()}
-        self.cold_tables = SimpleNamespace(**{**{name: getattr(cold_tables, name) for name in cold_tables._fields}, **hail_tables})
+        if operands is None:
+            hail_tables = {name: jnp.asarray(value, jnp.float64) for name, value in collision_tables().items()}
+            cold = {name: getattr(cold_tables, name) for name in cold_tables._fields}
+        else:
+            hail_tables, cold = dict(operands.collision), dict(operands.cold)
+        self.cold_tables = SimpleNamespace(**{**cold, **hail_tables})
         self.hail_table_ids = {id(a) for a in hail_tables.values()}
         av = jnp.asarray((45.9173813,67.0867386,98.0158463,122.353378,143.204224,161.794724,178.762115,194.488785,209.225876), jnp.float32)
         self.av = av[self.g.index]

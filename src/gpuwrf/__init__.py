@@ -4,12 +4,14 @@
 # version-keys its cache dir by ``gpuwrf.__version__`` (B1), so the attribute
 # must already exist when ``configure_compilation_cache()`` runs at import. (It
 # is re-exported via ``__all__`` at the foot of the module.)
-__version__ = "0.4.0"
+__version__ = "0.4.1"
 
 # Offline entry points must work without loading JAX or configuring a backend.
 import sys as _sys
 
 _OFFLINE_COMMAND = len(_sys.argv) > 1 and _sys.argv[1] in {"doctor", "manifest", "reproduce", "ens", "export", "optimize", "calibrate", "stream-check", "perturb", "cycle"}
+# `gpuwrf da check|analyse` are host-only; `da cycle|members` run forecasts in-process and need the full bootstrap.
+_OFFLINE_COMMAND = _OFFLINE_COMMAND or _sys.argv[1:3] in (["da", "check"], ["da", "analyse"])
 
 # Defaults are pure environment setup, also needed by offline support reporting.
 from gpuwrf._fast_defaults import apply_fast_path_defaults as _apply_fast_path_defaults

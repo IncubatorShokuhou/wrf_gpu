@@ -24,10 +24,12 @@ def urban_pbl_forcing(state,grid,surface_layer):
         u10=flat(surface_layer.u10),v10=flat(surface_layer.v10))
 
 
-def _ysu_cloud_kwargs(qc,qi,rthraten,ysu_kwargs):
-    """module_pbl_driver.F:1208-1251 QC3D/QI3D, RTHRATEN, YSU_TOPDOWN_PBLMIX."""
+def _ysu_cloud_kwargs(qc,qi,rthraten,ysu_kwargs,index=None):
+    """module_pbl_driver.F:1208-1251 QC3D/QI3D, RTHRATEN, YSU_TOPDOWN_PBLMIX, CTOPO/CTOPO2."""
+    from gpuwrf.coupling.scan_adapters import _topo_wind_column_kwargs
     ysu_kwargs=ysu_kwargs or {}
-    return dict(qc=qc,qi=qi,rthraten=rthraten,ysu_topdown_pblmix=int(ysu_kwargs.get('ysu_topdown_pblmix',1)))
+    return dict(qc=qc,qi=qi,rthraten=rthraten,ysu_topdown_pblmix=int(ysu_kwargs.get('ysu_topdown_pblmix',1)),
+                **_topo_wind_column_kwargs(ysu_kwargs.get('topo_wind_ctopo'),index))
 
 
 def urban_pbl_full_columns(f,dt,scheme,ysu_kwargs=None):
@@ -61,7 +63,7 @@ def replace_urban_tendencies(state,forcing,out,*,dt,grid,bundle,carry,scheme,ysu
             qfx=jnp.asarray(state.qfx,dtype).reshape(-1)[idx],wspd=take('wspd'),br=take('br'),psim=take('psim'),psih=take('psih'),
             dt=dt,xland=take('xland'),u10=take('u10'),v10=take('v10'),urban=carry.sources,sf_urban_physics=bundle.option,
             **_ysu_cloud_kwargs(cols(state.qc),cols(state.qi),
-                None if (ysu_kwargs or {}).get('rthraten') is None else cols(ysu_kwargs['rthraten']),ysu_kwargs))
+                None if (ysu_kwargs or {}).get('rthraten') is None else cols(ysu_kwargs['rthraten']),ysu_kwargs,idx))
     else:
         urb=boulac_columns(take('u_cols'),take('v_cols'),th,cols(state.qv),cols(state.qc),
             take('rho_cols'),take('dz_cols'),jnp.maximum(cols(state.qke),1.e-4),

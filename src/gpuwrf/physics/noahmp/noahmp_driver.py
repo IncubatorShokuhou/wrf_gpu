@@ -213,9 +213,16 @@ def noah_mp_step(
         raise ValueError("Noah-MP opt_run=1 requires its ZWT/WA/WT groundwater state (E78)")
     if (options is not None and options.opt_tdrn!=0)!=(tile_drain is not None):
         raise ValueError('Noah-MP tile drainage requires its accumulated QTDRAIN state (E78)')
+    # Track P (gpuwrf.surface_params): traced monthly LAIM/SAIM ride the energy bundle so every
+    # tile router subsets them with it; PHENOLOGY reads them, ENERGY never sees them.
+    lai_tables = {k: getattr(energy_params, k, None) for k in ("laim", "saim")}
+    lai_tables = {k: v for k, v in lai_tables.items() if v is not None}
+    if lai_tables:
+        energy_params = energy_params._replace(laim=None, saim=None)
     phen = noahmp_phenology_table(land_state, forcing, static,
                                  **({"dveg":options.dveg} if options is not None else {}),
-                                 **({"crop":(carbon[0].croptype,carbon[1].pgs)} if crop_active else {}))
+                                 **({"crop":(carbon[0].croptype,carbon[1].pgs)} if crop_active else {}),
+                                 **lai_tables)
     land_state = land_state.replace(lai=phen.lai, sai=phen.sai)
 
     # FICEOLD = start-of-step snow-layer ice fraction (module_sf_noahmpdrv.F:1027-1028), taken

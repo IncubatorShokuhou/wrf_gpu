@@ -1,0 +1,85 @@
+{
+ "baseline": {
+  "rc": 0,
+  "summary": "8 passed in 2.85s"
+ },
+ "mutants": {
+  "M1_seed_no_int4_wrap": {
+   "rc": 1,
+   "summary": "1 failed in 1.63s",
+   "killed": true,
+   "assertion": true,
+   "unexpected_exceptions": [],
+   "signature": [
+    "assert (4293483647, ...47, -224, ...) == (-1483649, -2...49, -224, ...)",
+    "",
+    "At index 0 diff: 4293483647 != -1483649"
+   ]
+  },
+  "M2_same_nens_every_member": {
+   "rc": 1,
+   "summary": "2 failed in 1.69s",
+   "killed": true,
+   "assertion": true,
+   "unexpected_exceptions": [],
+   "signature": [
+    "assert [11, 11, 11] == [11, 12, 13]",
+    "",
+    "At index 1 diff: 11 != 12"
+   ]
+  },
+  "M7_no_seed_collision_guard": {
+   "rc": 1,
+   "summary": "1 failed in 1.03s",
+   "killed": true,
+   "assertion": true,
+   "unexpected_exceptions": [],
+   "signature": [
+    "Failed: DID NOT RAISE <class 'ValueError'>"
+   ]
+  },
+  "M3_no_model_stochastic_admission": {
+   "rc": 1,
+   "summary": "1 failed in 1.05s",
+   "killed": true,
+   "assertion": true,
+   "unexpected_exceptions": [],
+   "signature": [
+    "Failed: DID NOT RAISE <class 'ValueError'>"
+   ]
+  },
+  "M4_no_spectral_setup_check": {
+   "rc": 1,
+   "summary": "1 failed in 1.18s",
+   "killed": true,
+   "assertion": true,
+   "unexpected_exceptions": [],
+   "signature": [
+    "Failed: DID NOT RAISE <class 'ValueError'>"
+   ]
+  },
+  "M5_drop_row_extra_keys": {
+   "rc": 1,
+   "summary": "1 failed in 0.94s",
+   "killed": true,
+   "assertion": true,
+   "unexpected_exceptions": [],
+   "signature": [
+    "AssertionError: ('P05', {'bl_pbl_physics': 5, 'cu_physics': 93, 'mp_physics': 24, 'ra_lw_physics': 4, ...})",
+    "assert False",
+    "+  where False = all(<generator object test_multiphysics_rows_only_physics_changes.<locals>.<genexpr> at 0x73c7ae953a00>)"
+   ]
+  },
+  "M6_no_spp_mynn_guard": {
+   "rc": 1,
+   "summary": "1 failed in 1.10s",
+   "killed": true,
+   "assertion": true,
+   "unexpected_exceptions": [],
+   "signature": [
+    "Failed: DID NOT RAISE <class 'ValueError'>"
+   ]
+  }
+ },
+ "all_killed": true
+}

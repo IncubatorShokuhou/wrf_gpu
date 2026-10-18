@@ -97,7 +97,7 @@ def _sedimentation(state, dt, vts_boost, cloud_sed_on, cloud_rho, aerosol_tables
     return out, {"rain": rain, "snow": snow, "ice": ice, "graupel": graupel, "cloudw": cloudw}
 
 
-def _body(state, dt):
+def _body(state, dt, hail_tables=None):
     raw = _real(state)
     active, skipped = aero._no_micro_column_skip(raw)
     skipped = skipped.replace(Ng=jnp.where(raw.qg > tc.R1, raw.Ng, 0.), qvolg=jnp.where(raw.qg > tc.R1, raw.qvolg, 0.))
@@ -108,7 +108,10 @@ def _body(state, dt):
     # clamping the baseline first changes the threshold stress witness.
     state = state.replace(Ni=raw.Ni)
     state = state.replace(rho=tc.density_from_pressure_temperature(state.p, state.T, state.qv))
-    ctx = HailContext(state, tc.THOMPSON_TABLES, tc._mixed_phase_cold_tables(), raw_qv=raw.qv)
+    # Bound operands (tables.ThompsonHailTables) replace every baked DOUBLE
+    # collision/freezing/rain-snow table; None keeps the baked host loaders.
+    cold = tc._mixed_phase_cold_tables() if hail_tables is None else None
+    ctx = HailContext(state, tc.THOMPSON_TABLES, cold, raw_qv=raw.qv, operands=hail_tables)
     state = state.replace(qvolg=ctx.g.qvolg)
     state, graupel_melt, vts_boost = tc._wrf_mixed_phase_sources(state, dt, tc.THOMPSON_TABLES, ctx.cold_tables, hail_context=ctx)
     baseline, tendencies = ctx.baseline, ctx.tendencies
@@ -161,6 +164,6 @@ def _body(state, dt):
 
 
 @partial(jax.jit, static_argnames=("dt",))
-def step_thompson_hail_column_with_precip(state, dt: float):
+def step_thompson_hail_column_with_precip(state, dt: float, hail_tables=None):
     """True aerosol/hail option; original full-caller qualification pending."""
-    return _body(state, dt)
+    return _body(state, dt, hail_tables)

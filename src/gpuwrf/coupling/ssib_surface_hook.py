@@ -153,10 +153,10 @@ def ssib_surface_inputs(physics):
 
 
 def ssib_ysu_step(state,land,static,grid,dt,*,physics,surface_diagnostics,history,rthraten=None,ysu_topdown_pblmix=1,
-                  _with_sources=False):
+                  _with_sources=False,topo_wind_ctopo=None):
     """Original YSU caller operands; consume actual SSiB HFX/QFX/UST/BR."""
     from gpuwrf.physics.pbl_ysu import ysu_columns
-    from gpuwrf.coupling.scan_adapters import _apply_pbl_increment,_apply_ysu_cloud_rates
+    from gpuwrf.coupling.scan_adapters import _apply_pbl_increment,_apply_ysu_cloud_rates,_topo_wind_column_kwargs
     from gpuwrf.coupling.physics_couplers import _theta_m_tendency_from_dry
     nz,ny,nx=state.theta.shape;ncol=ny*nx
     cols=lambda x:jnp.moveaxis(jnp.asarray(x,jnp.float32),0,-1).reshape(ncol,-1)
@@ -171,7 +171,7 @@ def ssib_ysu_step(state,land,static,grid,dt,*,physics,surface_diagnostics,histor
             psim=flat(surface_diagnostics['fm']),psih=flat(surface_diagnostics['fh']),dt=float(dt),
             xland=flat(static.xland),u10=flat(history['u10']),v10=flat(history['v10']),
             qc=cols(state.qc),qi=cols(state.qi),rthraten=None if rthraten is None else cols(rthraten),
-            ysu_topdown_pblmix=int(ysu_topdown_pblmix))
+            ysu_topdown_pblmix=int(ysu_topdown_pblmix),**_topo_wind_column_kwargs(topo_wind_ctopo))
         raw=dict(result)  # original dry/A-grid YSU rates for the once-RK source seam
         result['theta']=_theta_m_tendency_from_dry(result['theta'],result['qv'],cols(state.theta),cols(state.qv),jnp.float32)
     updated=_apply_pbl_increment(state,dt,result,ny=ny,nx=nx,nz=nz)

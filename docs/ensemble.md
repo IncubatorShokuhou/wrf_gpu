@@ -187,3 +187,99 @@ wrfout files under each `runs/member-*/wrfout`. Batch runs are independent cases
 only combine them into ensemble products if valid times/grid/meaning actually
 match. The scheduler's per-member run records and this tool's input manifests
 provide complementary provenance.
+
+## Stochastic and multiphysics presets
+
+Two presets generate the member namelists for you from one prepared case. Each
+member is a copy of the case's `namelist.input` with surgical edits: only the
+preset's lines change, every other byte is kept, and the re-parsed member must
+differ from the source only in `&stoch` (stochastic) or `&physics` (+`&stoch`
+with `--schemes`) (multiphysics). Inputs are shared exactly as in `--mode physics`;
+the generated namelists are kept in `preset_namelists/` and each
+`member_manifest.json` records the member's preset settings.
+
+```bash
+# 10 members with WRF SKEBS + SPPT (default schemes); nens = 1..10.
+JAX_PLATFORMS=cpu gpuwrf ens prepare --mode stochastic --case prepared/control \
+  --members 10 --lengthscale-km 15 --hours 24 --output-dir stoch-ensemble
+
+# SKEBS + SPPT + SPP (MYNN) members, numbered from nens 21.
+JAX_PLATFORMS=cpu gpuwrf ens prepare --mode stochastic --case prepared/control \
+  --members 10 --schemes skebs,sppt,spp --lengthscale-km 15 --nens-start 21 \
+  --hours 24 --output-dir stoch-spp
+
+# The first 7 rows of the qualified physics table, or explicit rows plus SKEBS.
+JAX_PLATFORMS=cpu gpuwrf ens prepare --mode multiphysics --case prepared/control \
+  --members 7 --hours 24 --output-dir physics-ensemble
+JAX_PLATFORMS=cpu gpuwrf ens prepare --mode multiphysics --case prepared/control \
+  --physics-rows P00,P02,P04,P07 --schemes skebs --hours 24 --output-dir physics-skebs
+```
+
+**Stochastic members** follow WRF's ensemble convention: all members keep the
+same `iseed_*` values and get a distinct `nens` (`--nens-start`, then +1 per
+member). WRF's `rand_seed` mixes `iseed`, `nens` and the start date into each
+pattern's random stream, so members are reproducible and different. Preparation
+computes every member's seed words with the same WRF/GNU Fortran recipe the
+model uses and refuses the plan if any two streams (across members and schemes)
+would coincide; the words are written to the member manifest. The switches are
+written for every domain (`skebs = 1, 1, ...`); nests receive the parent pattern
+as in WRF. Existing `&stoch` tuning keys of the case (amplitudes, time scales)
+are kept; a case that already sets stochastic switches or `nens` is refused.
+
+Valid schemes are `skebs`, `sppt` and `spp` (default `skebs,sppt`). The model's
+own pre-run stochastic admission is applied to every member before anything is
+written: SPPT needs PBL 0/5 and cumulus 0/1, SPP with GSL GWDO (`gwd_opt=3`) is
+refused. The preset additionally refuses SPP without MYNN (`bl_pbl_physics=5`):
+in WRF 4.7.1 the convection and land-surface SPP consumers are upstream no-ops,
+so those members would be unperturbed. Every active pattern is also run through
+the model's own d01 spectral setup, which refuses a Gaussian length scale the
+grid cannot resolve. Original CPU-WRF 4.7.1 does not refuse: on the 126 km Swiss
+domain the 700 km SPP-PBL and 500 km RAND defaults gave NaN spectral
+coefficients and a constant clipped pattern (`PATTERN_SPP_PBL` = 0.3 everywhere).
+On that grid the limit lies between 200 and 250 km; the 9 km WN3/PROD d01 grids
+resolve all defaults. Use `--lengthscale-km` to set every active Gaussian
+pattern (WRF defaults 150 km SPPT, 150/700/50 km SPP conv/PBL/LSM). See
+[stochastic.md](stochastic.md) for what each scheme does and how it is
+qualified.
+
+**Multiphysics members** take rows of this table. Every row is a complete
+`&physics` edit of a composite that passed the frozen D6 manifest against
+original CPU-WRF over 24 h on GPU in the v0.4.0 final validation (Swiss d01,
+3 km, Noah-MP, otherwise the default namelist; v-prep case id given). E41 FAIL
+rows are D6-PASS but carry the disclosed opt-in cubin-gate flags. A case with a
+land model other than Noah-MP is accepted and every member is labelled
+`UNQUALIFIED combination` in its manifest.
+
+| row | mp | cu | pbl | sfclay | lw | sw | extra | evidence | E41 |
+|---|---|---|---|---|---|---|---|---|---|
+| P00 | 8 Thompson | 0 | 5 MYNN | 5 | 4 RRTMG | 4 RRTMG | | c00 | PASS |
+| P01 | 3 WSM3 | 3 Grell-Freitas | 3 GFS | 3 | 4 | 1 Dudhia | | c04 | PASS |
+| P02 | 8 | 10 KF-CuP | 5 | 5 | 4 | 4 | | c30 | PASS |
+| P03 | 8 | 11 multiscale KF | 5 | 5 | 4 | 4 | | c31 | PASS |
+| P04 | 8 | 0 | 9 CAM UW | 5 | 3 CAM | 3 CAM | | c28 | PASS |
+| P05 | 24 WSM7 | 93 Grell-Devenyi | 5 | 5 | 4 | 4 | use_mp_re=1 | c17 | PASS |
+| P06 | 50 P3 | 0 | 5 | 5 | 4 | 4 | use_mp_re=1 | c21 | PASS |
+| P07 | 1 Kessler | 1 KF | 1 YSU | 1 | 1 RRTM | 1 Dudhia | | c02 | FAIL |
+| P08 | 4 WSM5 | 5 Grell-3D | 7 ACM2 | 1 | 4 | 4 | | c05 | FAIL |
+| P09 | 6 WSM6 | 6 Tiedtke | 8 BouLac | 1 | 4 | 4 | | c06 | FAIL |
+| P10 | 2 Lin | 2 BMJ | 2 MYJ | 2 | 4 | 2 Goddard | | c03 | FAIL |
+| P11 | 9 Milbrandt | 16 New Tiedtke | 11 Shin-Hong | 1 | 4 | 4 | use_mp_re=1 | c07 | FAIL |
+
+Without `--physics-rows`, `--members N` takes the first N rows (E41-PASS rows
+first). A row qualified on the Swiss case is not automatically qualified for a
+different region or resolution, and cumulus rows at convection-permitting grid
+spacing are a modelling choice for you to make. `--schemes skebs` adds SKEBS with
+distinct `nens` to every row (Berner et al. 2011 combined both); SPPT/SPP with
+rows that do not satisfy their physics requirements are refused.
+
+Neither preset claims calibrated spread or probabilistic skill: verify the
+members with `gpuwrf ens verify` against stations. Berner et al. (2011)
+compared exactly these two representations of model uncertainty in a WRF
+mesoscale ensemble and found the stochastic and multiphysics ensembles both
+better than a control without model-error representation, with the combination
+best on several measures. Reference: Berner, J., S.-Y. Ha, J. P. Hacker,
+A. Fournier and C. Snyder, 2011: Model uncertainty in a mesoscale ensemble
+prediction system: stochastic versus multiphysics representations. *Mon. Wea.
+Rev.*, **139**, 1972–1995. SKEBS: Shutts, G., 2005: A kinetic energy backscatter
+algorithm for use in ensemble prediction systems. *Q. J. R. Meteorol. Soc.*,
+**131**, 3079–3102.

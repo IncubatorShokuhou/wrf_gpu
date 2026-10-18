@@ -4,6 +4,7 @@
 |---|---|---|
 | Goddard radiation, LW/SW 5 | Cloudy fast-overcast SW reads undefined `taux` (`module_ra_goddard.F:5315`) | Original oracle uses compiler-defined zero initialization; port mirrors zero only at that read. Sensitivity is material; option 5 is experimental. |
 | Goddard radiation, LW/SW 5 | Exact-equator climatology reads profile 11 outside the 10-profile table (`:2491`) | Exact-equator input is refused before forecasting. |
+| Stochastic SPPT/SPP/RAND Gaussian patterns | A length scale far above the domain size underflows the REAL normalization `ZGAMMAN` (`dyn_em/module_stoch.F:739-768`); coefficients become NaN and the clipped pattern is the constant +cutoff | The port's spectral setup refuses the configuration at initialization; `gpuwrf ens prepare` refuses it before writing members. |
 
 [Source hashes, reproduction and measured sensitivity](../proofs/s2_goddardrad/UPSTREAM_WRF_BUGS.md).
 
@@ -61,3 +62,22 @@ unchanged. Retained [multi-cell diagnostic and reproduction sources](../proofs/v
 [result](../proofs/v040/urban_lcz/evidence/multicell/RV03-multicell-final.json)
 and [seal](../proofs/v040/urban_lcz/evidence/multicell/SEAL.json) preserve the
 anisotropic savepoints, isotropic control, verbatim caller and source hashes.
+
+## Stochastic Gaussian patterns collapse to a constant for unresolved length scales
+
+Pristine WRF 4.7.1 `dyn_em/module_stoch.F` (`SETUP_RAND_PERTURB`, lines 739-768)
+normalizes Gaussian SPPT/SPP/RAND spectra by `ZGAMMAN`, a REAL sum of
+`exp(-4 pi^2 L^2 rho^2)` over the resolved wavenumbers. When the length scale `L`
+is far larger than the domain, every term underflows, `ZGAMMAN = 0`, the
+amplitude constant is infinite and the spectral coefficients become NaN. WRF
+does not stop: the clip `MAX(MIN(pattern, thresh), -thresh)` (for example line
+1341) turns NaN into `+thresh`, a constant, systematic perturbation. Measured on
+the original CPU-WRF 24 h Swiss run with the Registry defaults (v0.4.0
+validation case c41, 43x43 at 3 km): `SPFORCC3`/`SPFORCS3` are NaN in all 1,849
+cells of every frame, `PATTERN_SPP_PBL` is 0.3 everywhere (700 km default,
+cutoff 2 x 0.15) and `RAND_PERT` is 0.09 everywhere (500 km default); the 150 km
+SPPT pattern `RSTOCH` is normal. The port's REAL32 setup raises "WRF spectral
+band has no finite nonzero normalization" at stochastic initialization instead
+of running a constant pattern. On that grid the limit lies between 200 and
+250 km; the 9 km WN3/PROD d01 grids resolve all Registry defaults. Use a
+smaller `lengthscale_*` for small domains (see [stochastic.md](stochastic.md)).

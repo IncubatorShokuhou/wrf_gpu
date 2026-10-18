@@ -211,6 +211,13 @@ class OperationalCarry:
     # end-of-step mass and made dry in phy_prep_part2; uncoupled REAL (theta, qv) pair held for the
     # next cumulus call. None for every other scheme (no leaves, no work).
     cu_forcing: Any = field(default=None)
+    # WRF aer_opt=1 held aerod (per-layer AOD of the six Tegen types, REAL (6, z, y, x)) on NESTED runs: the
+    # root refreshes it at its radiation calls, every nest receives the parent's field at each force-down
+    # (Registry aerod df=(p2c), nesting/nest_aerosol.py).  None otherwise (no leaves).
+    aerod: Any = field(default=None)
+    # WRF aer_opt=3 (mp28) TAOD5502D, REAL (y, x): column 550 nm AOD of gt_aod at the last radiation call (history
+    # 'h' field, held between calls).  None otherwise (no leaves).
+    taod5502d: Any = field(default=None)
 
 
     # SSiB WRF soil/canopy + complete multilayer snow and held radiation.
@@ -223,7 +230,7 @@ class OperationalCarry:
     def tree_flatten(self):
         values = tuple(getattr(self, name) for name in self.__dataclass_fields__)
         # Drop only trailing inactive appended groups, preserving the main prefix.
-        for name in ('cu_forcing','noahmp_tile_drain','noahmp_groundwater','noahmp_carbon',
+        for name in ('taod5502d','aerod','cu_forcing','noahmp_tile_drain','noahmp_groundwater','noahmp_carbon',
                      'noahmp_irrigation','sst_skin','gfdl_radiation','noahmp_mmf'):
             if getattr(self,name) is not None:
                 break

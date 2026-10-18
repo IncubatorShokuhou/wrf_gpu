@@ -1,0 +1,330 @@
+{
+  "scope": "Completed CPU CompileOnly compiler evidence only; final numerical/default gates recorded separately; no GPU execution or runtime/fidelity claim",
+  "baseline": "47c50d376bcb3d127a174c3b1382244d81281028",
+  "candidate_model_src_tree": "58d8d3291ae2ae015480f75f1d3967181ba27e39",
+  "sampler_interval_s": 1.0,
+  "compiler": "captured RTX5090 target, sm_120a, AUTOTUNE0; shared CPU load, not isolated benchmark",
+  "cases": {
+    "c10": {
+      "before": {
+        "source_commit": "47c50d376bcb3d127a174c3b1382244d81281028",
+        "inputs": {
+          "namelist.input": "1d5f69832ff625e48c019540a80d523cfdb0362606efb9f2b5349abecf60fde0",
+          "wrfbdy_d01": "f3e556670e4768326997bdfa1dd8b0f77eb6d5da07d9c4dbf900bf8ff9e30230",
+          "wrfinput_d01": "a5d696550d1dc6713e2e340b8c2fba83811d43f4a94a65ca95266035860e2781"
+        },
+        "static_work": {
+          "n_steps": 200,
+          "cadence": 33
+        },
+        "compile_s": 224.3569273900066,
+        "ptxas_sampled_span_s": 13.241725992003921,
+        "ptxas_sampled_peak_rss_KiB": 710216,
+        "compiled_memory": {
+          "argument_size_in_bytes": 44225812,
+          "output_size_in_bytes": 41802592,
+          "alias_size_in_bytes": 41800984,
+          "temp_size_in_bytes": 223180448
+        },
+        "hlo_fusions": 3843,
+        "kinput_transpose_over500": [
+          {
+            "fusion": "input_add_and_maximum_select_transpose_fusion",
+            "kind": "kInput",
+            "parent": "region_0.2828",
+            "call_line": 184864,
+            "comp": "fused_add_and_maximum_select_transpose",
+            "comp_lines": [
+              139373,
+              140249
+            ],
+            "n_instr": 875,
+            "n_transpose": 1,
+            "n_params": 23
+          }
+        ],
+        "native_kernel_definitions": 2587,
+        "max_stack_B": 536,
+        "stack_over256": [
+          [
+            "input_add_and_maximum_select_transpose_fusion",
+            280
+          ],
+          [
+            "input_and_divide_multiply_reduce_fusion",
+            536
+          ],
+          [
+            "loop_maximum_minimum_select_subtract_fusion",
+            400
+          ]
+        ],
+        "nonleaf_over1k": [],
+        "callgraph_unknown": [],
+        "cpu_e41": "FAIL",
+        "native_elf_sha256": [
+          "b4768f24cefda5da601f83f2f2a17e115ef628638e3ed4f544b6527334d70346"
+        ],
+        "optimized_hlo_sha256": "3bddf60da600e68a8f080a24a2bab8f541881abcc59f22fa036d33d2808b6321"
+      },
+      "after": {
+        "source_commit": "a06135cdc7f996e3be510f0d6ea1998f8226b7cd",
+        "inputs": {
+          "namelist.input": "1d5f69832ff625e48c019540a80d523cfdb0362606efb9f2b5349abecf60fde0",
+          "wrfbdy_d01": "f3e556670e4768326997bdfa1dd8b0f77eb6d5da07d9c4dbf900bf8ff9e30230",
+          "wrfinput_d01": "a5d696550d1dc6713e2e340b8c2fba83811d43f4a94a65ca95266035860e2781"
+        },
+        "static_work": {
+          "n_steps": 200,
+          "cadence": 33
+        },
+        "compile_s": 222.3634005950007,
+        "ptxas_sampled_span_s": 13.278589716996066,
+        "ptxas_sampled_peak_rss_KiB": 620800,
+        "compiled_memory": {
+          "argument_size_in_bytes": 44225812,
+          "output_size_in_bytes": 41802592,
+          "alias_size_in_bytes": 41800984,
+          "temp_size_in_bytes": 223180448
+        },
+        "hlo_fusions": 3839,
+        "kinput_transpose_over500": [],
+        "native_kernel_definitions": 2589,
+        "max_stack_B": 536,
+        "stack_over256": [
+          [
+            "input_and_divide_multiply_reduce_fusion",
+            536
+          ],
+          [
+            "loop_maximum_minimum_select_subtract_fusion",
+            400
+          ]
+        ],
+        "nonleaf_over1k": [],
+        "callgraph_unknown": [],
+        "cpu_e41": "FAIL",
+        "native_elf_sha256": [
+          "5235dad4c014a92a2009d14ce6065cadd4965bd084e54c2aeb962639363126dc"
+        ],
+        "optimized_hlo_sha256": "dbd3b86c3e0d03aa0c6e5b34027265350a37446fb7b8b70708f2fa7c585de231"
+      }
+    },
+    "c18": {
+      "before": {
+        "source_commit": "47c50d376bcb3d127a174c3b1382244d81281028",
+        "inputs": {
+          "namelist.input": "3e300a78757829bcb3d0a1c923398253b6d8ac40d35cd15d21534cef8aad2d8c",
+          "wrfbdy_d01": "f3e556670e4768326997bdfa1dd8b0f77eb6d5da07d9c4dbf900bf8ff9e30230",
+          "wrfinput_d01": "a5d696550d1dc6713e2e340b8c2fba83811d43f4a94a65ca95266035860e2781"
+        },
+        "static_work": {
+          "n_steps": 200,
+          "cadence": 33
+        },
+        "compile_s": 273.5974953440018,
+        "ptxas_sampled_span_s": 22.067219582007965,
+        "ptxas_sampled_peak_rss_KiB": 723132,
+        "compiled_memory": {
+          "argument_size_in_bytes": 40810696,
+          "output_size_in_bytes": 38387372,
+          "alias_size_in_bytes": 38385868,
+          "temp_size_in_bytes": 224576528
+        },
+        "hlo_fusions": 3940,
+        "kinput_transpose_over500": [
+          {
+            "fusion": "input_and_compare_multiply_select_transpose_fusion",
+            "kind": "kInput",
+            "parent": "region_0.2737",
+            "call_line": 189412,
+            "comp": "fused_and_compare_multiply_select_transpose",
+            "comp_lines": [
+              141647,
+              142859
+            ],
+            "n_instr": 1211,
+            "n_transpose": 2,
+            "n_params": 38
+          },
+          {
+            "fusion": "input_compare_minimum_select_transpose_fusion",
+            "kind": "kInput",
+            "parent": "region_0.2737",
+            "call_line": 189460,
+            "comp": "fused_compare_minimum_select_transpose",
+            "comp_lines": [
+              139634,
+              140253
+            ],
+            "n_instr": 618,
+            "n_transpose": 5,
+            "n_params": 71
+          }
+        ],
+        "native_kernel_definitions": 2676,
+        "max_stack_B": 904,
+        "stack_over256": [
+          [
+            "input_compare_minimum_select_transpose_fusion",
+            360
+          ],
+          [
+            "input_and_compare_multiply_select_transpose_fusion",
+            904
+          ]
+        ],
+        "nonleaf_over1k": [],
+        "callgraph_unknown": [],
+        "cpu_e41": "FAIL",
+        "native_elf_sha256": [
+          "32ea45adb7c32601ca7136173b61c0ce37e237625498f9ad835c220699511626"
+        ],
+        "optimized_hlo_sha256": "8ef47cda580a29fa6ca9367b1d5765bb12adb255c59e94ecbe4dc01459e8f52d"
+      },
+      "after": {
+        "source_commit": "ef390014125b5b8586f8e0e690416d792a631720",
+        "inputs": {
+          "namelist.input": "3e300a78757829bcb3d0a1c923398253b6d8ac40d35cd15d21534cef8aad2d8c",
+          "wrfbdy_d01": "f3e556670e4768326997bdfa1dd8b0f77eb6d5da07d9c4dbf900bf8ff9e30230",
+          "wrfinput_d01": "a5d696550d1dc6713e2e340b8c2fba83811d43f4a94a65ca95266035860e2781"
+        },
+        "static_work": {
+          "n_steps": 200,
+          "cadence": 33
+        },
+        "compile_s": 373.4659046360175,
+        "ptxas_sampled_span_s": 24.24722795598791,
+        "ptxas_sampled_peak_rss_KiB": 699284,
+        "compiled_memory": {
+          "argument_size_in_bytes": 40810696,
+          "output_size_in_bytes": 38387372,
+          "alias_size_in_bytes": 38385868,
+          "temp_size_in_bytes": 224576528
+        },
+        "hlo_fusions": 3941,
+        "kinput_transpose_over500": [
+          {
+            "fusion": "input_compare_minimum_select_transpose_fusion",
+            "kind": "kInput",
+            "parent": "region_0.2737",
+            "call_line": 189475,
+            "comp": "fused_compare_minimum_select_transpose",
+            "comp_lines": [
+              139650,
+              140276
+            ],
+            "n_instr": 625,
+            "n_transpose": 5,
+            "n_params": 71
+          }
+        ],
+        "native_kernel_definitions": 2677,
+        "max_stack_B": 368,
+        "stack_over256": [
+          [
+            "input_compare_minimum_select_transpose_fusion",
+            368
+          ]
+        ],
+        "nonleaf_over1k": [],
+        "callgraph_unknown": [],
+        "cpu_e41": "FAIL",
+        "native_elf_sha256": [
+          "46c7e6b064a1e7bc46224f770c6015adb6df9c7fe30a6634bc32cf9629441738"
+        ],
+        "optimized_hlo_sha256": "cba5ff9da4237b5d96790ad4ec6f41646621839f52b9881a8e7a967a5cfef509"
+      }
+    }
+  },
+  "artifacts": {
+    "<USER_HOME>/wrf_gpu2_lanes/w41-wdm57/before-c10/receipt.json": {
+      "sha256": "7c110035f23f56e288d5ef6b44a5c5de82421aba58bc9d40ab3a47e1483e92c8",
+      "bytes": 4169
+    },
+    "<USER_HOME>/wrf_gpu2_lanes/w41-wdm57/before-c10/summary.json": {
+      "sha256": "494c68c1c854f86fb0c535d26849e5a2ad999ddf11bd0efd9ed1f8fabcf71ab9",
+      "bytes": 127075
+    },
+    "<USER_HOME>/wrf_gpu2_lanes/w41-wdm57/before-c10/e41/wave_gate.json": {
+      "sha256": "abc7ff8f1e70d57660776b9cee7269442238b38a5d5b640f67938c15cc85c101",
+      "bytes": 4405
+    },
+    "<USER_HOME>/wrf_gpu2_lanes/w41-wdm57/before-c10/optimized.hlo.gz": {
+      "sha256": "8bc74495921e1faa596ab07add67d6d470e6ea63ea75a1e482c103de5dc98c91",
+      "bytes": 4907684
+    },
+    "<USER_HOME>/wrf_gpu2_lanes/w41-wdm57/after-c10/receipt.json": {
+      "sha256": "8b7741696f963d575a79b2438d54fe1d88c91c7a1cb92bc24a5633a6293eb49c",
+      "bytes": 4159
+    },
+    "<USER_HOME>/wrf_gpu2_lanes/w41-wdm57/after-c10/summary.json": {
+      "sha256": "7bb8de0c0f0891732494612b33098db504cdfa4a381a0fdb9b96d0db030a9008",
+      "bytes": 100014
+    },
+    "<USER_HOME>/wrf_gpu2_lanes/w41-wdm57/after-c10/e41/wave_gate.json": {
+      "sha256": "4be07ee31e6eee822d7ea2488d4ccf8033b819fbe2e1bacf6b63ac7db705ecca",
+      "bytes": 4161
+    },
+    "<USER_HOME>/wrf_gpu2_lanes/w41-wdm57/after-c10/optimized.hlo.gz": {
+      "sha256": "fd37c471e235f79ac0daffd1781ca9c33216396f44b8504ef6e2145e58d46aa9",
+      "bytes": 4907027
+    },
+    "<USER_HOME>/wrf_gpu2_lanes/w41-wdm57/before-c18/receipt.json": {
+      "sha256": "39386bfa5754f916d70f121dc2d9103772975d4a70a3b35492a2bfa6a064bf6f",
+      "bytes": 4167
+    },
+    "<USER_HOME>/wrf_gpu2_lanes/w41-wdm57/before-c18/summary.json": {
+      "sha256": "ddc0f34ef194def8310bd60a36a06e98ea4c816c882e39de98940fc782288805",
+      "bytes": 191647
+    },
+    "<USER_HOME>/wrf_gpu2_lanes/w41-wdm57/before-c18/e41/wave_gate.json": {
+      "sha256": "62e40abb14bc2eb0ec0355ec1993d945287e15fd950dbc740239f969231dbbb7",
+      "bytes": 3630
+    },
+    "<USER_HOME>/wrf_gpu2_lanes/w41-wdm57/before-c18/optimized.hlo.gz": {
+      "sha256": "0ed27dc0e699f2b2a23c202e50abd56006c3f422bce9152813b8bc1c250d13a3",
+      "bytes": 5122401
+    },
+    "<USER_HOME>/wrf_gpu2_lanes/w41-wdm57/after-c18/receipt.json": {
+      "sha256": "b65bc5b6bc52a354e03cdaabdfe7c09aecc8fa44660edd3dd5ba80549844719a",
+      "bytes": 4161
+    },
+    "<USER_HOME>/wrf_gpu2_lanes/w41-wdm57/after-c18/summary.json": {
+      "sha256": "0cd92f6a934f2f5b1fd93bbe38b0b20c1def137494a19419f12bcfa7cda70d02",
+      "bytes": 191734
+    },
+    "<USER_HOME>/wrf_gpu2_lanes/w41-wdm57/after-c18/e41/wave_gate.json": {
+      "sha256": "3cc993269aab69db6fdca3217646ea55256000daac7756f73168a77dcc457d38",
+      "bytes": 3445
+    },
+    "<USER_HOME>/wrf_gpu2_lanes/w41-wdm57/after-c18/optimized.hlo.gz": {
+      "sha256": "d71acf1f8b7892d4a45fbf8b12eeaecadf245e1ceb9d16212f8fb4386211f711",
+      "bytes": 5122488
+    },
+    "<USER_HOME>/wrf_gpu2_lanes/w41-wdm57/source_proof.json": {
+      "sha256": "86814fc0864ee84f84718629961bac00c2807ea97ee1dc302f644f9d4b295a1b",
+      "bytes": 646
+    },
+    "<USER_HOME>/wrf_gpu2_lanes/w41-wdm57/c10-remaining-stack-proof.json": {
+      "sha256": "40656d42378f82a6eba587ed91ab46ed40921193d25dbf5c890d644b44f8d306",
+      "bytes": 792
+    },
+    "<USER_HOME>/wrf_gpu2_lanes/w41-wdm57/c10-comparison.json": {
+      "sha256": "4b3720d2dc6947019deda04de9eccf275483ffa14a8ca10a0fb2f75309a602f8",
+      "bytes": 1283
+    },
+    "<USER_HOME>/wrf_gpu2_lanes/w41-wdm57/c18-comparison.json": {
+      "sha256": "c4d7fb934b5a9e3a42f0a66f493e6afab4332693ea0d136ce27ad083703de9dc",
+      "bytes": 1466
+    },
+    "<USER_HOME>/wrf_gpu2_lanes/w41-wdm57/c10-canonical.json": {
+      "sha256": "165c054b4535badd7a88a388dcdfad1c0209ed0fbd32c831c7f0c458e2a1818d",
+      "bytes": 13618
+    },
+    "<USER_HOME>/wrf_gpu2_lanes/w41-wdm57/c18-canonical.json": {
+      "sha256": "4595b833e1fc4d2af75258d199e931bb78a94af75617e5a62c11e526729c04ff",
+      "bytes": 1191
+    }
+  }
+}

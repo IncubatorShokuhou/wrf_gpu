@@ -9,6 +9,7 @@ import os
 import pickle
 import shutil
 import signal
+import stat
 import subprocess
 import sys
 import tarfile
@@ -743,6 +744,146 @@ def test_verify_binds_the_published_readme_bytes(toy_repo, tmp_path, monkeypatch
     (pub / "README.md").write_bytes(readme + b"Also ships an unapproved claim.\n")  # public-only tamper, source unchanged
     bad = verify.readme_check(pub, "HEAD", "HEAD~1", "0.4.0", None, approved)
     assert bad["source_sha256"] == approved and bad["approved_match"] is False and not bad["published_is_source"]
+
+
+def _attachments_tool():
+    spec = importlib.util.spec_from_file_location("_release_attachments_t", ROOT / "tools/release_attachments.py")
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+def _attach(repo, rel, data, tag):
+    """Commit ``rel`` with ``data``, then replace it by its provenance index (the B17 move)."""
+    (repo / rel).parent.mkdir(parents=True, exist_ok=True)
+    (repo / rel).write_bytes(data)
+    _git(repo, "add", rel)
+    _git(repo, "-c", "user.name=t", "-c", "user.email=t@t", "commit", "-q", "-m", f"add {rel}")
+    blob = _git(repo, "rev-parse", f"HEAD:{rel}").strip()
+    _git(repo, "rm", "-q", rel)
+    asset = "attachment-" + rel.replace("/", "-")
+    info = dict(schema="gpuwrf-release-attachment-v1", path=rel, asset=asset, release_tag=tag, bytes=len(data),
+                sha256=hashlib.sha256(data).hexdigest(), git_blob=blob, public_commits=[])
+    (repo / rel).parent.mkdir(parents=True, exist_ok=True)  # git rm dropped the emptied directory
+    (repo / (rel + ".attachment.json")).write_text(json.dumps(info))
+    _git(repo, "add", rel + ".attachment.json")
+    _git(repo, "-c", "user.name=t", "-c", "user.email=t@t", "commit", "-q", "-m", f"attach {rel}")
+    return repo / (rel + ".attachment.json"), info
+
+
+def test_release_attachment_staging_sources_and_refusals(toy_repo, tmp_path, monkeypatch):
+    ra = _attachments_tool()
+    data = b"A" * 5000
+    index, info = _attach(toy_repo, "proofs/a/big.json", data, "v9.9.9")
+    monkeypatch.setenv("GPUWRF_TABLES_DIR", str(tmp_path / "cache"))
+    monkeypatch.setenv("GPUWRF_TABLES_OFFLINE", "1")
+    staged = ra.stage(index, root=toy_repo)  # 1. from the checkout's git history (offline)
+    assert staged == tmp_path / "cache" / info["sha256"] / info["asset"] and staged.read_bytes() == data
+    assert stat.S_IMODE(staged.stat().st_mode) == 0o444 and not (toy_repo / "proofs/a/big.json").exists()
+    nogit = tmp_path / "nogit"
+    (nogit / "proofs/a").mkdir(parents=True)
+    copy = nogit / "proofs/a" / index.name
+    shutil.copy(index, copy)
+    assert ra.stage(copy, root=nogit) == staged  # 2. a later stage is a verified cache hit
+    staged.chmod(0o644)
+    staged.write_bytes(b"B" * 5000)  # same size, other bytes
+    with pytest.raises(ra.AttachmentUnavailable, match="does not match the pin"):
+        ra.stage(copy, root=nogit)
+    assert staged.read_bytes() == b"B" * 5000  # left for the operator, never silently replaced
+    monkeypatch.setenv("GPUWRF_TABLES_DIR", str(tmp_path / "cache2"))
+    with pytest.raises(ra.AttachmentUnavailable, match="GPUWRF_TABLES_OFFLINE is set") as exc:
+        ra.stage(copy, root=nogit)
+    assert info["sha256"] in str(exc.value) and "Fix:" in str(exc.value)
+    assert not (tmp_path / "cache2").exists() or not any((tmp_path / "cache2").rglob("*"))  # nothing half-staged
+    srv = tmp_path / "srv"
+    srv.mkdir()
+    monkeypatch.delenv("GPUWRF_TABLES_OFFLINE")
+    monkeypatch.setenv("GPUWRF_ATTACHMENTS_URL", f"file://{srv}/{{tag}}/{{asset}}")
+    (srv / "v9.9.9").mkdir()
+    (srv / "v9.9.9" / info["asset"]).write_bytes(data[:-1] + b"X")  # 3. a download with wrong bytes is refused
+    with pytest.raises(ra.AttachmentUnavailable, match="got 5000 B sha256"):
+        ra.stage(copy, root=nogit)
+    assert not any((tmp_path / "cache2").rglob("*"))
+    (srv / "v9.9.9" / info["asset"]).write_bytes(data)
+    assert ra.stage(copy, root=nogit).read_bytes() == data  # ... the right bytes are staged
+    bad = dict(info, sha256="z" * 64)
+    (nogit / "proofs/a/big.json.attachment.json").chmod(0o644)
+    (nogit / "proofs/a/big.json.attachment.json").write_text(json.dumps(bad))
+    with pytest.raises(ValueError, match="sha256"):
+        ra.load(nogit / "proofs/a/big.json.attachment.json")
+    with pytest.raises(ValueError, match="index must sit at"):
+        ra.check(info, "proofs/b/big.json.attachment.json")
+
+
+def test_curate_exports_release_attachments_and_verify_gates_them(toy_repo, tmp_path):
+    data = b"P" * 7000
+    index, info = _attach(toy_repo, "proofs/a/big.json", data, "v9.9.9")
+    attached = curate.release_attachments("HEAD")
+    assert list(attached) == ["proofs/a/big.json"] and attached["proofs/a/big.json"]["git_blob"] == info["git_blob"]
+    out = tmp_path / "assets"
+    rows = curate.export_release_assets("HEAD", curate.remote_assets("HEAD"), out, attached, "9.9.9")
+    assert set(rows) == {"scheme-big.npz", info["asset"]} and (out / info["asset"]).read_bytes() == data
+    assert f"{info['sha256']}  {info['asset']}\n" in (out / "SHA256SUMS").read_text()
+    staging = tmp_path / "staging"  # an older public base still carries the file: curate drops it, keeps the index
+    (staging / "proofs/a").mkdir(parents=True)
+    (staging / "proofs/a/big.json").write_bytes(data)
+    shutil.copy(index, staging / "proofs/a" / index.name)
+    assert curate.drop_attached(staging, attached) == ["proofs/a/big.json"]
+    assert sorted(p.name for p in (staging / "proofs/a").iterdir()) == [index.name]
+    other = curate.export_release_assets("HEAD", curate.remote_assets("HEAD"), tmp_path / "a2", attached, "9.9.8")
+    assert set(other) == {"scheme-big.npz"}  # attached to another release: not re-exported
+    pub = tmp_path / "pub"
+    (pub / "proofs/a").mkdir(parents=True)
+    shutil.copy(index, pub / "proofs/a" / index.name)
+    good = verify.attachments_check(pub, out, "9.9.9")
+    assert good["indexes"] == 1 and good["this_release"] == [info["asset"]]
+    assert not (good["invalid"] or good["in_tree"] or good["missing"] or good["bad"])
+    shutil.copy(toy_repo / curate.ASSETS_MANIFEST, tmp_path / "manifest.json")
+    (pub / "src/gpuwrf").mkdir(parents=True)
+    shutil.copy(tmp_path / "manifest.json", pub / curate.ASSETS_MANIFEST)
+    assert not verify.release_assets(pub, out, good["this_release"])["unexpected"]
+    assert verify.release_assets(pub, out)["unexpected"] == [info["asset"]]
+    (pub / "proofs/a/big.json").write_bytes(data)  # the attached file back in the tree
+    assert verify.attachments_check(pub, out, "9.9.9")["in_tree"] == ["proofs/a/big.json"]
+    (pub / "proofs/a/big.json").unlink()
+    (out / info["asset"]).write_bytes(data[:-1] + b"Q")
+    assert verify.attachments_check(pub, out, "9.9.9")["bad"] == [info["asset"]]
+    (out / info["asset"]).unlink()
+    assert verify.attachments_check(pub, out, "9.9.9")["missing"] == [info["asset"]]
+    assert verify.attachments_check(pub, None, "9.9.9")["missing"] == [info["asset"]]
+    (pub / "proofs/a" / index.name).write_text(json.dumps(dict(info, git_blob="nope")))
+    assert verify.attachments_check(pub, out, "9.9.9")["invalid"]
+    with pytest.raises(AssertionError, match="differs from its attachment pin"):
+        curate.export_release_assets("HEAD", {}, tmp_path / "a3",
+                                     {"proofs/a/big.json": dict(info, sha256="0" * 64)}, "9.9.9")
+
+
+def test_no_file_above_10_mib_may_stay_in_the_public_tree(tmp_path):
+    big, limit = tmp_path / "proofs/big.json", tmp_path / "tests/limit.bin"
+    big.parent.mkdir(parents=True)
+    limit.parent.mkdir(parents=True)
+    with open(big, "wb") as fh:
+        fh.truncate(verify.MAX_NEW_BLOB + 1)
+    with open(limit, "wb") as fh:
+        fh.truncate(verify.MAX_NEW_BLOB)
+    assert verify.oversized_tree(tmp_path, [big, limit]) == [("proofs/big.json", verify.MAX_NEW_BLOB + 1)]
+
+
+def test_repository_attachments_are_indexed_and_out_of_the_tree():
+    ra = _attachments_tool()
+    found = {ra.load(p)["path"]: ra.load(p) for p in ra.indexes(ROOT)}
+    assert set(found) >= {"proofs/v015/finalgates/canary_l2_d02/atlas_grid_delta_summary.json",
+                          "proofs/v015/finalgates/switzerland_d01/atlas_grid_delta_summary.json",
+                          "tests/v025/restart/fixtures/shadow_dtype_native_cpu.pkl.gz"}
+    tracked = set(_git(ROOT, "ls-files").split("\n"))
+    for path, info in found.items():
+        assert path not in tracked and path + ra.SUFFIX in tracked
+        assert info["bytes"] > 10 * 1024 * 1024  # only > 10 MiB files are attachments
+        have = subprocess.run(["git", "cat-file", "-e", info["git_blob"]], cwd=ROOT).returncode == 0
+        if have:  # the pinned blob of the published history matches the pin
+            blob = subprocess.run(["git", "cat-file", "blob", info["git_blob"]], cwd=ROOT, capture_output=True,
+                                  check=True).stdout
+            assert len(blob) == info["bytes"] and hashlib.sha256(blob).hexdigest() == info["sha256"]
 
 
 # --- public README plain-language gate (lane w41-readme, Owner 2026-10-17) ---------------------------------------

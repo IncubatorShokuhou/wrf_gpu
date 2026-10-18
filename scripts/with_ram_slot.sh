@@ -17,12 +17,14 @@ while [[ $# -gt 0 ]]; do
 done
 [[ $# -gt 0 ]] || { echo "with_ram_slot: no command" >&2; exit 2; }
 DIR=/tmp/wrf_gpu2_ram_slots; Q=$DIR/queue; mkdir -p "$Q"
-# Slot count: manager-controlled file (default 2); falls back to 1 slot while MemAvailable < 40 GiB (ALISIOS headroom).
+# Slot count: manager-controlled file (default 2), capped by memory: at most floor((MemAvailable - 16 GiB) / 6 GiB) slots, min 1
+# (16 GiB stays free for ALISIOS/OS; manager 2026-10-17: the old fixed 40 GiB -> 1 slot rule serialised the whole wave). slots=0 stays 0.
 slots_now() {
   local n avail_kb
   n=$(cat "$DIR/slots" 2>/dev/null || echo "${WRF_GPU2_RAM_SLOTS:-2}"); [[ $n =~ ^[0-9]+$ ]] || n=2
   avail_kb=$(awk '/MemAvailable/{print $2}' /proc/meminfo)
-  (( avail_kb < 40*1024*1024 && n > 1 )) && n=1
+  local cap=$(( (avail_kb/1048576 - 16) / 6 )); (( cap < 1 )) && cap=1
+  (( n > cap )) && n=$cap
   echo "$n"
 }
 TICKET="$Q/$(date +%s%N)-$$"

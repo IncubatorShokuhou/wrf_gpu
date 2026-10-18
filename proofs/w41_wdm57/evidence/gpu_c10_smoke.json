@@ -1,0 +1,96 @@
+{
+  "case": "c10",
+  "scope": "actual GPU segment smoke, not WRF fidelity/S1",
+  "harness_sha256": "b138d2131393549036f0c98977531554c3521e007500b8b1d940de56344ebd0b",
+  "source_commit": "4474617f2585ef9d577fc360a7688e2de1efcd15",
+  "source_tree": "777343ef82caa9c68dfc1603f32dfb99686a1107",
+  "cache": "<USER_HOME>/wrf_gpu2_lanes/w41-wdm57/replay-c10",
+  "native_replay": true,
+  "work": "n_steps200/radiation33/FAST1CENSUS1SLIM0AOTSLIM0MPRE1/AUTOTUNE0",
+  "phase": "PASS",
+  "wall_s": 194.4316486409807,
+  "input_sha256": {
+    "namelist.input": "1d5f69832ff625e48c019540a80d523cfdb0362606efb9f2b5349abecf60fde0",
+    "wrfbdy_d01": "f3e556670e4768326997bdfa1dd8b0f77eb6d5da07d9c4dbf900bf8ff9e30230",
+    "wrfinput_d01": "a5d696550d1dc6713e2e340b8c2fba83811d43f4a94a65ca95266035860e2781"
+  },
+  "platform": "gpu",
+  "device": "cuda:0",
+  "production_unalias_admission": true,
+  "compile_s": 0.0,
+  "lower_and_native_load_s": 148.21474023500923,
+  "native_replayed_from": "<USER_HOME>/wrf_gpu2_lanes/w41-wdm57/replay-c10/d01.xlaexec",
+  "root_backend_compile": false,
+  "e41_reuse_native_sha256": "84e0ae8489786261ef35e23f912340231ca4903bd726680d39ba440d68b46a9d",
+  "native_sha256": "84e0ae8489786261ef35e23f912340231ca4903bd726680d39ba440d68b46a9d",
+  "memory": {
+    "argument_size_in_bytes": 44225812,
+    "output_size_in_bytes": 41802592,
+    "alias_size_in_bytes": 41800984,
+    "temp_size_in_bytes": 233218976
+  },
+  "segment_s": 16.622907596989535,
+  "premask_nonfinite": 0,
+  "f2_event_counts": {
+    "negative": 335483,
+    "nonfinite": 0,
+    "above_moisture_cap": 0
+  },
+  "actual_work": {
+    "steps": 200,
+    "acoustic_trips": 1400,
+    "kf_calls": 0,
+    "radiation_tendency_calls": 7,
+    "radiation_surface_calls": 0,
+    "native_mass_guard_events": 0,
+    "radiation_init_calls": 1,
+    "radiation_output_calls": 0,
+    "output_writes": 0
+  },
+  "nonfinite": 0,
+  "state_leaves": 201,
+  "gpu_lock_s": 197,
+  "total_lane_gpu_lock_s": 1263,
+  "total_lane_gpu_minutes": 21.05,
+  "gpu_budget_minutes": 25,
+  "setup_to_execute_s": 177.76778680298594,
+  "initialization_and_admission_s": 29.49369765497977,
+  "negative_interior_visits": 271667,
+  "F2_qualification": "OPEN: nonzero negative events, no original-WRF comparison",
+  "F2_recorded_fields": [
+    "Nc",
+    "Ng",
+    "Nh",
+    "Ni",
+    "Nn",
+    "Nr",
+    "Ns",
+    "nifa",
+    "nwfa",
+    "qc",
+    "qg",
+    "qi",
+    "qr",
+    "qs",
+    "qv"
+  ],
+  "cubin_gate_reused": "Exact native SHA identity to gpu_c10_cubin.json, full1/1 scan; overallFAIL residual536/400B",
+  "forecast_qualification": "Completed200-step finite smoke only, not F1/24h/S1/R1/S3 qualification",
+  "artifacts": {
+    "gpu-c10-replay2/receipt.json": {
+      "sha256": "d8c0abe355120add446b4da4e90f871e170d1a0cbbea77e0de075c2218a430ba"
+    },
+    "gpu-c10-replay2/census.json": {
+      "sha256": "485519187cc54431acecfab690515559b41a69b47dac72cf4d49f199d626df1f"
+    },
+    "gpu-c10-replay2/f2_negative_summary.json": {
+      "sha256": "26680fe736d45cfe80bc1e835ca3e2af4c5d16b613731084c3a0a0d7ac2ba8cc"
+    },
+    "gpu-c10-replay2.log": {
+      "sha256": "a60c2f4a0f19b01d00a136dbb0016769fde0fa4b614d93f0c2a3b0373555be79"
+    },
+    "gpu-c10-replay2/progress_stacks.log": {
+      "sha256": "da01271726b0f4ff5141b42281737bcb5d47a5d2c128ccd1af3cd4cbcee7bf3e"
+    }
+  }
+}

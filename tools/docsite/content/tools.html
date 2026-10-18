@@ -17,7 +17,10 @@ claim of better forecast skill.</p>
 <tr><td><code>calibrate fit</code>, <code>calibrate apply</code></td><td>Station bias correction or simple linear MOS, trained on past dates only.</td><td>CPU</td><td><a href="regional_optimization.md">optimisation guide</a></td></tr>
 <tr><td><code>perturb</code></td><td>Creates ensemble member cases with perturbed winds in the initial and boundary conditions (<code>--ic-only</code>: initial conditions only).</td><td>CPU</td><td><a href="stochastic.md">perturbations</a></td></tr>
 <tr><td><code>ens prepare</code>, <code>ens launch</code>, <code>ens products</code>, <code>ens verify</code></td><td>Plans and launches ensemble members, then computes ensemble statistics and probabilistic scores.</td><td>CPU; GPU for <code>launch</code></td><td><a href="ensemble.md">ensemble guide</a></td></tr>
-<tr><td><code>optimize identity</code>, <code>plan</code>, <code>run</code>, <code>score</code></td><td>Chooses between physics configurations for your region with a study that keeps test dates separate from training dates.</td><td>CPU; GPU for <code>run</code></td><td><a href="regional_optimization.md">optimisation guide</a></td></tr>
+<tr><td><code>optimize identity</code>, <code>released</code>, <code>plan</code>, <code>run</code>, <code>score</code></td><td>Chooses between released physics configurations for your region with a study that keeps test dates separate from training dates; <code>run</code> can pause and resume (v0.4.1).</td><td>CPU; GPU for <code>run</code></td><td><a href="regional_optimization.md">optimisation guide</a></td></tr>
+<tr><td><code>da check</code>, <code>da analyse</code>, <code>da cycle</code>, <code>da members</code></td><td>New in v0.4.1: ensemble data assimilation (LETKF) for the outer domain, and forecast/analysis cycles with all members in one process. <span class="pill optin">Experimental</span></td><td>CPU analysis; GPU for the member forecasts</td><td><a href="#data-assimilation">below</a></td></tr>
+<tr><td><code>surface-params basis</code>, <code>expand</code>, <code>eki</code>, <code>osse</code></td><td>New in v0.4.1: Noah-MP surface-parameter sets for <code>run --surface-controls</code>, changed without recompiling. <span class="pill optin">Experimental</span></td><td>CPU; GPU for <code>run</code></td><td><a href="#surface-parameters">below</a></td></tr>
+<tr><td><code>aot-key</code></td><td>New in v0.4.1: prints the cache key of every compiled program of a nested case and, for two cases, which programs they share, so you can see whether a compile cache or bundle prepared on one case serves another. Needs no GPU and compiles nothing.</td><td>CPU</td><td><a href="#compiled-programs">below</a></td></tr>
 <tr><td><code>export</code></td><td>Writes CF-NetCDF, Zarr or GRIB2 subsets: surface fields, pressure levels, regions.</td><td>CPU</td><td><a href="export.md">export guide</a></td></tr>
 <tr><td><code>tslist-export</code></td><td>Converts WRF station time-series files (<code>*.TS</code>) to CSV or NetCDF.</td><td>CPU</td><td><a href="TSLIST.md">tslist guide</a></td></tr>
 <tr><td><code>stream-check</code></td><td>Checks a regional output stream file (<code>gpuwrf.streams.json</code>) before a run.</td><td>CPU</td><td><a href="REGIONAL_STREAMS.md">streams guide</a></td></tr>
@@ -72,16 +75,78 @@ gpuwrf ens products --members members.json --variable T2 --output runs/ensemble_
 <p><code>ens prepare</code> also builds physics ensembles (<code>--mode physics</code>, one case with several
 namelists) and lagged ensembles (<code>--mode lagged</code>). <code>ens launch</code> checks GPU and host
 memory and runs as many members side by side as fit. <code>ens verify</code> gives probabilities,
-scores and reliability against station observations. Stochastic physics inside the model
-(<code>skebs</code>, <code>sppt</code>, <code>spp</code>) is a namelist feature and is
-<span class="pill optin">Experimental</span>; see the <a href="ensemble.md">ensemble guide</a>.</p>
+scores and reliability against station observations.</p>
+<p>Two presets write the member namelists for you from one case:</p>
+<pre><code class="language-bash">gpuwrf ens prepare --mode stochastic --case CASE --members 10 \
+  --schemes skebs,sppt --lengthscale-km 15 --hours 24 --output-dir runs/stoch
+gpuwrf ens prepare --mode multiphysics --case CASE --members 7 \
+  --hours 24 --output-dir runs/physics</code></pre>
+<p><code>--mode stochastic</code> turns on WRF's stochastic physics (<code>skebs</code>, <code>sppt</code>,
+<code>spp</code>) with the same <code>iseed_*</code> and a different <code>nens</code> per member, as in
+WRF, and refuses combinations that would not perturb anything. <code>--mode multiphysics</code> takes rows
+of a table of physics combinations that passed the 24-hour comparison with CPU-WRF in v0.4.0;
+<code>--schemes skebs</code> adds SKEBS on top. Stochastic physics is
+<span class="pill optin">Experimental</span>: single-domain 24-hour runs pass the comparison with CPU-WRF using the same seeds
+(v0.4.1); nested runs are not checked yet. See the <a href="ensemble.md">ensemble guide</a> and the
+<a href="stochastic.md">stochastic guide</a>.</p>
 <h2 id="optimise">Choose physics for your region</h2>
-<pre><code class="language-bash">gpuwrf optimize plan --study study.json --output runs/study_plan.json
-gpuwrf optimize run --study study.json --output runs/regional-study
+<pre><code class="language-bash">gpuwrf optimize released --max-dom 1 --e41 PASS   # configurations a study may use
+gpuwrf optimize plan --study study.json --output runs/study_plan.json
+gpuwrf optimize run --study study.json --output runs/regional-study --chunk-minutes 60
+gpuwrf optimize run --study study.json --output runs/regional-study --resume
 gpuwrf optimize score --study study.json --forecasts forecasts.json --output runs/selection.json</code></pre>
-<p>A study lists candidate physics configurations (only ones the program accepts), training dates and
-held-out test dates. <code>optimize identity</code> prints the model version the study is bound to.
+<p>A study lists candidate physics configurations, training dates and held-out test dates. Only the 47
+complete physics sets that passed the v0.4.0 comparisons with CPU-WRF can be used;
+<code>optimize released</code> lists them (<code>--e41 PASS</code> keeps those without a code-quality note).
+New in v0.4.1, <code>optimize run</code> runs the forecasts on the GPU, as many at once as GPU and host
+memory allow, and can stop after a time budget (<code>--chunk-minutes</code>, exit code 3) and continue
+with <code>--resume</code>. Host memory, about 6–6.5 GB for each member that compiles, is usually the
+first limit. The result is a held-out comparison for your dates, not a validated choice of scheme.
+<code>optimize identity</code> prints the model version the study is bound to.
 The <a href="regional_optimization.md">optimisation guide</a> describes the study file.</p>
+<h2 id="data-assimilation">Ensemble data assimilation (new in v0.4.1)</h2>
+<pre><code class="language-bash">gpuwrf da check   --config da.json            # validates and lists every input
+gpuwrf da analyse --config da.json --out analysis_00z
+gpuwrf da cycle   --config cycle.json --out runs/da_cycle --dry-run</code></pre>
+<p><code>gpuwrf da</code> combines an ensemble of forecasts valid at the analysis time with radiosonde,
+surface-station or table observations and writes an analysis <code>wrfinput_d01</code> (LETKF for wind,
+temperature and water vapour; the dry column mass is held fixed). The analysis runs on the CPU.
+<code>da cycle</code> runs forecast/analysis windows with all members of a window in one process on one
+compiled program; on the GPU each further member then takes seconds instead of a fresh start.
+<span class="pill optin">Experimental</span>, outer domain only, no cloud or radiance observations.
+Better forecasts are not established, and the optional ensemble settings give too much spread in their
+test (prior spread about 2.3–2.6 times the actual error). See the
+<a href="da.md">data-assimilation guide</a>, <a href="da_ensemble.md">ensemble options</a> and
+<a href="da-cycle.md">cycling in one process</a>.</p>
+<h2 id="surface-parameters">Noah-MP surface parameters without recompiling (new in v0.4.1)</h2>
+<pre><code class="language-bash">JAX_PLATFORMS=cpu gpuwrf surface-params basis --input-dir CASE --output basis.npz
+gpuwrf surface-params expand --basis basis.npz --output rough.npz \
+    --class z0mvt:2=1.25 --set albdry=0.95      # entries without a prefix are d01
+gpuwrf run --input-dir CASE --output-dir OUT --surface-controls rough.npz</code></pre>
+<p><code>gpuwrf run</code> without domain options runs d01 only, so this control file holds d01 entries
+only. For a nested case, prefix entries with their domain (<code>--set d02:albdry=0.95</code>) and run all
+domains with <code>--domains-from-namelist</code>; a control for a domain outside the run is refused.</p>
+<p>Eleven Noah-MP parameters (roughness, emissivity, soil albedo, leaf and stem reflectance, leaf and stem
+area, maximum vegetation fraction and two photosynthesis parameters) become runtime inputs of the compiled program, so every parameter set on one
+grid reuses it. Each control gives the same result as editing <code>MPTABLE.TBL</code> the same way; in a
+Swiss Alps 24-hour test with eight edited parameters, the GPU forecast changed like CPU-WRF with the same
+table edit (median response amplitudes within 1.5 %; patterns closest for surface properties and wind,
+looser for skin and 2 m temperature).
+<span class="pill optin">Experimental</span>: Noah-MP only; a resume with different controls is refused;
+the ensemble Kalman inversion tools (<code>eki</code>, <code>osse</code>) are checked on synthetic twin
+experiments only. See <a href="surface_params.md">surface parameters</a>.</p>
+<h2 id="compiled-programs">Check compiled-program reuse (new in v0.4.1)</h2>
+<pre><code class="language-bash">gpuwrf aot-key --input-dir /path/to/case_a \
+  --compare-input-dir /path/to/case_b --json keys.json</code></pre>
+<p><code>aot-key</code> loads a nested case on the CPU and prints the cache key of every compiled step
+program it would use: the outer domain, each nest, and inner domains compiled together with their nests.
+With a second case it prints <code>SHARED</code> or <code>NOT SHARED</code> per program and names the part
+of the key that differs. Shared programs are loaded from a cache or bundle prepared on the other case; the
+others are compiled. It compiles nothing and runs no forecast step; comparing two Tenerife three-domain
+cases takes about 6 minutes. Exit code 3 means a key could not be computed (shown as
+<code>UNAVAILABLE</code>, never as shared). Nested cases only; the keys carry the CPU target, so compare
+cases with each other, not with the file names in a GPU cache. In v0.4.1 every forecast date of one grid
+shares its programs, so a nested grid compiles once instead of once per date.</p>
 <h2 id="export">Export and station files</h2>
 <pre><code class="language-bash">gpuwrf export --input runs/my_case/wrfout_d01_* --output runs/surface.nc \
   --format netcdf --variables T2 PSFC U10 V10
@@ -111,6 +176,5 @@ no run on real multi-GPU hardware has been measured yet. See
 python -m gpuwrf.assets fetch --all
 python -m gpuwrf.assets verify</code></pre>
 <p>Large microphysics lookup tables, including the Thompson tables of the default physics, are
-downloaded on first use from the GitHub release and checked against pinned checksums. The upload of the
-v0.4.0 tables is still pending; until it is done, runs that need them stop with an "asset unavailable"
-message. <a href="runtime-tables.md">Runtime tables</a> explains the cache and offline use.</p>
+downloaded on first use from the GitHub release and checked against pinned checksums.
+<a href="runtime-tables.md">Runtime tables</a> explains the cache and offline use.</p>

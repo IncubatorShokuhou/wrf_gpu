@@ -26,6 +26,7 @@ def _load(name: str):
 
 
 pc = _load("parallel_cases")
+GPU_CASES = "gpu_cases_in_this_test"
 
 FAKE_CLI = r'''
 import json, os, signal, sys, time, pathlib
@@ -54,6 +55,9 @@ def fake(tmp_path, monkeypatch):
         (tmp_path / "cases" / name).mkdir(parents=True)
         cases.append(str(tmp_path / "cases" / name))
     monkeypatch.setenv("GPUWRF_GPU_LOCK_HELD", "1")
+    # The cases model GPU members (VRAM admission, lock policy); JAX_PLATFORMS=cpu would make them CPU-only cases.
+    # A platform name JAX cannot initialise keeps any accidental backend start loud instead of touching the GPU.
+    monkeypatch.setenv("JAX_PLATFORMS", GPU_CASES)
     monkeypatch.setattr(pc, "vram_by_pid", lambda: {})
     for key in pc.EXPLICIT_ALLOCATOR_ENV:
         monkeypatch.delenv(key, raising=False)
@@ -169,6 +173,13 @@ def test_refusals(fake, monkeypatch):
     dev_lock.touch()
     monkeypatch.setattr(pc, "DEV_LOCK_FILE", dev_lock)
     assert pc.main([*base, *cases], sizer=sizer, gpu=gpu) == 2           # dev lock infra present, lock not held
+    monkeypatch.setenv("JAX_PLATFORMS", "cpu")                           # CPU-only cases never create a CUDA client
+    assert pc.main([*base, *cases], sizer=sizer, gpu=gpu) == 0
+    run = json.loads((tmp / "out" / "parallel_run.json").read_text())
+    assert run["gpu_lock"]["required"] is False and "CPU-only" in run["gpu_lock"]["policy"]
+    assert run["vram_capacity_bytes"] == 1 << 62                         # no VRAM admission for CPU cases
+    shutil.rmtree(tmp / "out")
+    monkeypatch.setenv("JAX_PLATFORMS", GPU_CASES)
     with pytest.raises(SystemExit):
         pc.main([*base, *cases, "--", "--output-dir", "x"], sizer=sizer, gpu=gpu)
     with pytest.raises(SystemExit):

@@ -2462,6 +2462,11 @@ def _build_replay_case(
             p_perturbation=np.asarray(jax.device_get(p_perturbation)),
         )
         _debug("load_wrfbdy_boundary_leaves complete (standalone)")
+        # Cast to the State dtypes on the HOST (the same round-to-nearest cast
+        # State.replace would issue on the device), so no device op sees the
+        # wrfbdy record count (integration/record_windows.py).
+        from gpuwrf.integration.record_windows import host_cast_to_state
+        boundary_leaves = host_cast_to_state(state, boundary_leaves)
 
     # WDM7's hail mass is conditional in State.zeros; preserve supplied native
     # input instead of letting later leaf materialization silently zero it.

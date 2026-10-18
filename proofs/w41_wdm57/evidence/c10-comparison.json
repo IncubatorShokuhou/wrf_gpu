@@ -1,0 +1,56 @@
+{
+  "case": "c10",
+  "same_inputs_and_work": true,
+  "scope": "CPU CompileOnly sm_120a AUTOTUNE0 prescreen; no GPU speed/fidelity claim",
+  "source_commit": {
+    "before": "47c50d376bcb3d127a174c3b1382244d81281028",
+    "after": "a06135cdc7f996e3be510f0d6ea1998f8226b7cd"
+  },
+  "n_fusions": {
+    "before": 3843,
+    "after": 3839
+  },
+  "ptxas_sampled_span_s": {
+    "before": 13.241725992003921,
+    "after": 13.278589716996066
+  },
+  "ptxas_peak_rss_KiB": {
+    "before": 710216,
+    "after": 620800
+  },
+  "e41_cpu_prescreen": {
+    "before": "FAIL",
+    "after": "FAIL"
+  },
+  "compile_s": {
+    "before": 224.3569273900066,
+    "after": 222.3634005950007
+  },
+  "memory": {
+    "before": {
+      "argument_size_in_bytes": 44225812,
+      "output_size_in_bytes": 41802592,
+      "alias_size_in_bytes": 41800984,
+      "temp_size_in_bytes": 223180448
+    },
+    "after": {
+      "argument_size_in_bytes": 44225812,
+      "output_size_in_bytes": 41802592,
+      "alias_size_in_bytes": 41800984,
+      "temp_size_in_bytes": 223180448
+    }
+  },
+  "kinput_transpose_over500": {
+    "before": [
+      [
+        "input_add_and_maximum_select_transpose_fusion",
+        875
+      ]
+    ],
+    "after": []
+  },
+  "wdm_max_transpose_instr": {
+    "before": 875,
+    "after": 327
+  }
+}

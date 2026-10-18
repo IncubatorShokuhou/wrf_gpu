@@ -34,8 +34,10 @@ def register_parser(subparsers):
     verification.add_argument("--wind-frame", choices=["grid", "earth"], default="grid")
     verification.add_argument("--gust-variable")
     verification.add_argument("--gust-window-hours", type=float)
-    prep = actions.add_parser("prepare", help="prepare shared-input physics, lagged or multi-date member plans")
-    prep.add_argument("--mode", choices=["physics", "lagged", "batch"], required=True)
+    prep = actions.add_parser("prepare", help="prepare shared-input physics, lagged, multi-date or preset member plans")
+    prep.add_argument("--mode", choices=["physics", "lagged", "batch", "stochastic", "multiphysics"], required=True,
+                      help="stochastic: N members with WRF SKEBS/SPPT[/SPP] and distinct nens; multiphysics: N rows "
+                           "of the qualified physics table (docs/ensemble.md)")
     prep.add_argument("--case", type=Path)
     prep.add_argument("--namelists", type=Path, nargs="+")
     prep.add_argument("--cases", type=Path, nargs="+")
@@ -47,6 +49,13 @@ def register_parser(subparsers):
     prep.add_argument("--pool-gib", type=float)
     prep.add_argument("--checkpoint-interval-steps", type=int, default=0)
     prep.add_argument("--retry-failed", type=int, default=0)
+    prep.add_argument("--members", type=int, help="preset member count")
+    prep.add_argument("--schemes", type=lambda v: tuple(x.strip().lower() for x in v.split(",") if x.strip()),
+                      help="comma list of skebs,sppt,spp (stochastic default skebs,sppt; multiphysics default none)")
+    prep.add_argument("--lengthscale-km", type=float, help="Gaussian SPPT/SPP pattern length scale for every active pattern")
+    prep.add_argument("--nens-start", type=int, default=1, help="WRF nens of the first member (then +1 per member)")
+    prep.add_argument("--physics-rows", type=lambda v: tuple(x.strip().upper() for x in v.split(",") if x.strip()),
+                      help="multiphysics table rows, e.g. P00,P02,P05 (default: the first --members rows)")
     run = actions.add_parser("launch", help="launch a prepared plan through scripts/run_parallel_cases.sh")
     run.add_argument("--plan", type=Path, required=True)
     run.add_argument("--dry-run", action="store_true", help="scheduler admission preview (GPU metadata queried under lock)")
@@ -73,7 +82,9 @@ def command(args):
             from .workflows import prepare
             plan = prepare(args.mode, args.output_dir, case=args.case, namelists=args.namelists, cases=args.cases,
                 hours=args.hours, gpus=args.gpus, max_parallel=args.max_parallel, max_per_gpu=args.max_per_gpu,
-                pool_gib=args.pool_gib, checkpoint_interval_steps=args.checkpoint_interval_steps, retry_failed=args.retry_failed)
+                pool_gib=args.pool_gib, checkpoint_interval_steps=args.checkpoint_interval_steps, retry_failed=args.retry_failed,
+                members=args.members, schemes=args.schemes, lengthscale_km=args.lengthscale_km,
+                nens_start=args.nens_start, physics_rows=args.physics_rows)
             result = {"mode": plan["mode"], "members": len(plan["members"]), "plan": str(args.output_dir/"plan.json")}
         else:
             from .workflows import launch

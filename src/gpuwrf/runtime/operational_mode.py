@@ -88,6 +88,8 @@ from gpuwrf.coupling.physics_couplers import (
     rrtmg_lw_theta_tendency,
     rrtmg_radiation_diagnostics,
     rrtmg_sw_theta_tendency,
+    rrtmg_aerosol_columns,
+    rrtmg_thompson_taod5502d,
     rrtmg_ozone_columns,
     rrtmg_theta_tendency,
     surface_adapter,
@@ -463,6 +465,43 @@ def _noahmp_case_memo(static, holder: _StaticHolder) -> None:
     if len(_NOAHMP_CASE_SPLIT_MEMO) >= 512:
         _NOAHMP_CASE_SPLIT_MEMO.clear()  # safe: interning keeps holders equal after a miss
     _NOAHMP_CASE_SPLIT_MEMO[id(static)] = (static, holder)
+
+
+class _RecordWindowsAux:
+    """Namelist-aux carrier of the host record-window owner (integration/record_windows.py).
+
+    Rides in the aux so a pytree round trip of the namelist (device_put, tree_map,
+    unflatten) keeps the owner, and build_clock_base keeps passing the windows a
+    windowed carry needs. Never read by traced code; equal to any other holder with
+    a constant hash/repr, so treedefs and cheap keys name the windowed layout, not
+    one run's records.
+    """
+
+    __slots__ = ("value",)
+
+    def __init__(self, value):
+        self.value = value
+
+    def __eq__(self, other):
+        return isinstance(other, _RecordWindowsAux)
+
+    def __hash__(self):
+        return hash("_RecordWindowsAux")
+
+    def __repr__(self):
+        return "_RecordWindowsAux()"
+
+    def __reduce__(self):
+        # A pickled treedef (the AOT executable meta's in_tree) carries no owner: it
+        # holds one run's host records and a device sharding. AOT loads match calls by
+        # leaf count/avals and return carries only, so nothing reads it after a load.
+        return (_RecordWindowsAux, (None,))
+
+    def __copy__(self):
+        return self
+
+    def __deepcopy__(self, memo):
+        return self
 
 
 class _DateClockAux:
@@ -1304,6 +1343,27 @@ class OperationalNamelist:
     noahmp_irrigation_static: object = None
     noahmp_carbon_static: object = None
     noahmp_groundwater_initial: object = None
+    # WRF topo_wind 1/2 start_em CTOPO/CTOPO2 (io.topo_wind_static.TopoWindStatic), read by
+    # YSU/Shin-Hong only. Traced child when set; None keeps every released treedef exact.
+    topo_wind_static: object = None
+    # Track P traced surface controls {name: field} (gpuwrf.surface_params); values ride the
+    # traced clock base, the aux keeps a content-blind signature. None = released program.
+    surface_controls: object = None
+    # WRF aer_opt (single-entry &physics key, Registry default 0). aer_opt=1: Tegen aerosol climatology in
+    # RRTMG SW (physics/wrf_tegen_aerosol.py); ``tegen_aerosol`` is the domain-1 aerosol_in static
+    # (TegenAerosolStatic, traced child), None on nests (they get the parent's aerod, nesting/nest_aerosol.py).
+    # aer_opt=0 adds neither an aux entry nor a child, so the released treedef is unchanged.
+    aer_opt: int = 0
+    tegen_aerosol: object = None
+    # Host owner of the record windows (integration/record_windows.py): the root's
+    # full wrfbdy stacks and every domain's full auxinput4 records. Rides in the aux
+    # as a non-keying _RecordWindowsAux (never traced, never content-hashed);
+    # build_clock_base reads the active windows from it.
+    record_windows: object = dataclasses.field(default=None, compare=False, repr=False)
+    # mp_physics=38: original DOUBLE Thompson-hail collision/freezing/rain-snow tables
+    # (physics/thompson_hail/tables.ThompsonHailTables) bound once as device-resident traced
+    # operands instead of ~0.96 GB baked f64 HLO constants. None adds neither child nor aux.
+    thompson_hail_tables: object = None
 
     # GFDL host-initialized CO2 grid key; absent from released default treedef.
 
@@ -1658,10 +1718,50 @@ class OperationalNamelist:
         if self.noahmp_groundwater_initial is not None:
             children += (self.noahmp_groundwater_initial,)
             aux += (("noahmp_groundwater",),)
+        if self.topo_wind_static is not None:
+            children += (self.topo_wind_static,)
+            aux += (("topo_wind",),)
+        if self.surface_controls is not None:  # last in, first out of tree_unflatten
+            from gpuwrf.surface_params.controls import controls_aux
+            aux += (controls_aux(self.surface_controls),)
+        if int(self.aer_opt) != 0 or self.tegen_aerosol is not None:
+            have_static = self.tegen_aerosol is not None
+            if have_static:
+                children += (self.tegen_aerosol,)
+            aux += (("aer_opt", int(self.aer_opt), have_static),)
+        if self.record_windows is not None:
+            aux += (_RecordWindowsAux(self.record_windows),)
+        if self.thompson_hail_tables is not None:  # last in, first out of tree_unflatten
+            children += (self.thompson_hail_tables,)
+            aux += (("thompson_hail_tables",),)
         return children, aux
 
     @classmethod
     def tree_unflatten(cls, aux, children):
+        thompson_hail_tables = None
+        if aux and isinstance(aux[-1], tuple) and aux[-1] and aux[-1][0] == "thompson_hail_tables":
+            thompson_hail_tables = children[-1]
+            children = children[:-1]
+            aux = aux[:-1]
+        record_windows = None
+        if aux and isinstance(aux[-1], _RecordWindowsAux):
+            record_windows = aux[-1].value
+            aux = aux[:-1]
+        aer_opt, tegen_aerosol = 0, None
+        if aux and isinstance(aux[-1], tuple) and aux[-1][0] == "aer_opt":
+            _, aer_opt, have_static = aux[-1]
+            if have_static:
+                tegen_aerosol = children[-1]
+                children = children[:-1]
+            aux = aux[:-1]
+        surface_controls=None
+        if aux and type(aux[-1]).__name__=="SurfaceControlsAux":
+            surface_controls=aux[-1].value
+            aux=aux[:-1]
+        topo_wind_static=None
+        if aux and aux[-1]==("topo_wind",):
+            topo_wind_static=children[-1]
+            children,aux=children[:-1],aux[:-1]
         noahmp_groundwater_initial=None
         if aux and aux[-1]==("noahmp_groundwater",):
             noahmp_groundwater_initial=children[-1]
@@ -1948,6 +2048,11 @@ class OperationalNamelist:
             noahmp_irrigation_static=noahmp_irrigation_static,
             noahmp_carbon_static=noahmp_carbon_static,
             noahmp_groundwater_initial=noahmp_groundwater_initial,
+            topo_wind_static=topo_wind_static,
+            surface_controls=surface_controls,
+            aer_opt=aer_opt, tegen_aerosol=tegen_aerosol,
+            record_windows=record_windows,
+            thompson_hail_tables=thompson_hail_tables,
             mp_physics=mp_physics,
             ferrier_gid=ferrier_gid,
             bl_pbl_physics=bl_pbl_physics,
@@ -2029,6 +2134,34 @@ def _steps_for_hours(hours: float, dt_s: float) -> int:
     if abs(raw - rounded) > 1.0e-9:
         raise ValueError(f"forecast length {hours}h is not an integer number of dt={dt_s}s steps")
     return rounded
+
+
+def _topo_wind_ctopo(namelist, lead_seconds):
+    """start_em CTOPO/CTOPO2 the PBL sees this own step (``TopoWindStatic``).
+
+    With two-way feedback onto the domain WRF's first step uses the domain's own
+    start_domain value and every later step the fed-back one (Registry ``u``)."""
+
+    static = namelist.topo_wind_static
+    if static.ctopo_first is None:
+        return static.ctopo, static.ctopo2
+    first = jnp.rint(jnp.asarray(lead_seconds) / float(namelist.dt_s)) == 0
+    pick = lambda rest, own: None if rest is None else jnp.where(first, own, rest)  # noqa: E731
+    return pick(static.ctopo, static.ctopo_first), pick(static.ctopo2, static.ctopo2_first)
+
+
+def _publish_topo_wind_u10(carry, rates, ctopo2):
+    """YSU/Shin-Hong overwrite U10/V10 with the CTOPO2 blend (bl_ysu.F90:1405-1408,
+    module_bl_shinhong.F:1471-1472); cells with CTOPO2 = 1 keep the surface value."""
+
+    history = getattr(carry, "history_diagnostics", None)
+    if history is None or rates is None or "u10" not in rates:
+        raise ValueError("topo_wind CTOPO2 10 m wind blend needs the in-step history diagnostics "
+                         "(GPUWRF_HISTORY_INSTEP_DIAG=1) and a YSU/Shin-Hong PBL returning U10/V10")
+    blend = jnp.asarray(ctopo2) != 1.0
+    put = lambda old, new: jnp.where(blend, jnp.asarray(new).reshape(old.shape).astype(old.dtype), old)  # noqa: E731
+    return carry.replace(history_diagnostics=history._replace(
+        u10=put(history.u10, rates["u10"]), v10=put(history.v10, rates["v10"])))
 
 
 def _base_state_from_totals(state: State) -> BaseState:
@@ -6978,6 +7111,9 @@ class _ClockBase(NamedTuple):
     noahmp_shdmax: jax.Array | None = None
     ghg_clock: CLWRFGasClock | None = None
     lower_boundary: object = None
+    surface_controls: object = None  # Track P {name: field}, traced per domain/lane
+    # Root lateral record window int32[(base, last)] (coupling.boundary_records).
+    bdy_window: jax.Array | None = None
 
 
 def build_clock_base(
@@ -7005,7 +7141,7 @@ def build_clock_base(
         ghg_clock = CLWRFGasClock(
             *(jnp.asarray(leaf) for leaf in clwrf_gas_clock(namelist.time_utc))
         )
-    return _ClockBase(
+    clock = _ClockBase(
         rad_julian=rad_julian,
         rad_minute=rad_minute,
         noahmp_julian=jnp.asarray(float(namelist.noahmp_julian), dtype=jnp.float64),
@@ -7015,7 +7151,10 @@ def build_clock_base(
         noahmp_shdmax=None if noahmp_static_arrays is None else noahmp_static_arrays[2],
         ghg_clock=ghg_clock,
         lower_boundary=getattr(namelist, "lower_boundary", None),
+        surface_controls=getattr(namelist, "surface_controls", None),
     )
+    records = getattr(namelist, "record_windows", None)
+    return clock if records is None else records.clock_base(clock)
 
 
 def _lane_noahmp_static(namelist: "OperationalNamelist", clock_base) -> Any:
@@ -7067,6 +7206,16 @@ def _rad_clock_base(clock_base):
 
 def _rrtmg_pbl_cloud_kwargs(namelist):
     """WRF check_a_mundo disables icloud_bl for non-MYNN PBL selections."""
+    icloud = int(getattr(namelist, "icloud", 1))
+    if icloud != 1:
+        # radiation_driver.F:1446-1506: icloud=2/3 replace the whole icloud=1 block,
+        # including the icloud_bl MYNN merge (MYNN keeps its own SGS cloud chain).
+        from gpuwrf.io.namelist_binding import icloud_refusals
+        errors = icloud_refusals(icloud, mp_physics=namelist.mp_physics, cu_physics=namelist.cu_physics,
+                                 ra_lw_physics=namelist.ra_lw_physics, ra_sw_physics=namelist.ra_sw_physics)
+        if errors:
+            raise ValueError("; ".join(errors))
+        return {"use_mynn_sgs_cloud": False, "cloud_mp_physics": int(namelist.mp_physics), "icloud": icloud}
     return {} if int(namelist.bl_pbl_physics) == DEFAULT_BL_PBL_PHYSICS else {
         "use_mynn_sgs_cloud": False, "cloud_mp_physics": int(namelist.mp_physics)}
 
@@ -7126,6 +7275,10 @@ def noahmp_initial_rad(
         use_mp_re=int(mp_re_active(namelist)),
         mp_physics=int(namelist.mp_physics),
         **({'with_urban': True} if int(namelist.sf_urban_physics) in (2, 3) else {}),
+        # aer_opt=1 root: the t=0 seed sees the same Tegen aerosol as its radiation calls (nests: forced later).
+        **({'tegen_aerosol': namelist.tegen_aerosol} if int(getattr(namelist, 'aer_opt', 0) or 0) == 1
+           and namelist.tegen_aerosol is not None else {}),
+        **({'thompson_aerosol': True} if int(getattr(namelist, 'aer_opt', 0) or 0) == 3 else {}),
 
         **_rrtmg_pbl_cloud_kwargs(namelist),
     )
@@ -7250,7 +7403,7 @@ _SCAN_UNWIRED_REASON = {
     "sf_surface_physics=8": "SSiB requires explicit prepared three-layer ssib_static/ssib_land, revised-MM5/YSU, mp8, SW1/LW4; see proofs/s2_ssib",
     "sf_urban_physics=1": "single-layer UCM (physics/urban_slucm.py, CPU-oracle-qualified vs proofs/v040/urban_slucm) runs only with sf_surface_physics=4 Noah-MP and the UrbanBundle + urban_slucm carry the CLI pipelines seed from URBPARM.TBL/wrfinput",
     "sf_urban_physics=2": "BEP requires Noah-MP4, seeded UrbanMultilayerBundle + urban_bep carry, YSU1/BouLac8, revised-MM5 SF1 and RRTMG4/4 held radiation; MYJ2 requires absent MYJURB",
-    "sf_urban_physics=3": "BEP+BEM requires Noah-MP4, seeded UrbanMultilayerBundle + urban_bep carry, YSU1/BouLac8, revised-MM5 SF1 and RRTMG4/4 held radiation; MYJ2 requires absent MYJURB; PV/green roof and LCZ/NUDAPT refused",
+    "sf_urban_physics=3": "BEP+BEM requires Noah-MP4, seeded UrbanMultilayerBundle + urban_bep carry, YSU1/BouLac8, revised-MM5 SF1 and RRTMG4/4 held radiation; MYJ2 requires absent MYJURB; LCZ/NUDAPT refused; rooftop PV/green roofs from URBPARM.TBL (GR_FRAC_ROOF without GR_FLAG=1 refused)",
     "sf_lake_physics=1": "WRF Lake requires the lake_bundle seeded from wrfinput by both CLI pipelines, Noah-MP/Thompson/MYNN and complete lake carry (E78); GPU/coupled-forecast qualification pending",
     # Remaining reference-only SW selections; CAM3 and paired Goddard5 are wired.
     # Paired Goddard5 is admitted by its explicit caller contract above.
@@ -7557,6 +7710,17 @@ def _initial_carry_for_run(state: State, namelist: OperationalNamelist) -> Opera
         if state.cam_tke_pbl is not None:
             updates['cam_tke_pbl'] = state.cam_tke_pbl.at[:-1].set(tke.astype(jnp.float32))
         state = state.replace(**updates)
+    elif int(namelist.bl_pbl_physics) in (2, 8, 9):
+        # .not.restart cold seeds of the shared TKE_PBL on kts:ktf, replacing the
+        # loader's MYNN cold-start QKE: myjpblinit TKE_MYJ=EPSQ2=.2 (module_bl_myjpbl.F
+        # :1725; State.qke holds q2=2*TKE), boulacinit .0001 (module_bl_boulac.F:944),
+        # camuwpblinit epsq2=.2 (module_bl_camuwpbl_driver.F:1065, its carry below).
+        tke = {2: jnp.float32(.2), 8: jnp.float32(.0001), 9: jnp.float32(.2)}[int(namelist.bl_pbl_physics)]
+        updates = {} if int(namelist.bl_pbl_physics) == 9 else dict(
+            qke=jnp.full_like(state.qke, (2 if int(namelist.bl_pbl_physics) == 2 else 1) * tke))
+        if state.cam_tke_pbl is not None:
+            updates['cam_tke_pbl'] = state.cam_tke_pbl.at[:-1].set(tke)
+        state = state.replace(**updates)
     if _explicit_ssib(namelist):
         static=namelist.ssib_static
         if static.initial_mavail is not None and static.initial_znt is not None:
@@ -7840,7 +8004,9 @@ def _initial_carry_for_run(state: State, namelist: OperationalNamelist) -> Opera
     if int(namelist.bl_pbl_physics) == 9:
         # CAM-UW KVM3D/KVH3D/TAURES carry; zeros == WRF itimestep=1 initialisation.
         from gpuwrf.physics.bl_camuw import initial_camuw_carry
-        result = result.replace(camuw_pbl=initial_camuw_carry(enforced))
+        camuw = initial_camuw_carry(enforced)
+        # camuwpblinit tke_pbl=epsq2 on kts:ktf; the step never reads it (history only).
+        result = result.replace(camuw_pbl=camuw._replace(tke_pbl=camuw.tke_pbl.at[:-1].set(jnp.float32(.2))))
     if int(namelist.bl_pbl_physics) == 10:
         from gpuwrf.coupling.temf import initial_temf_carry
         from gpuwrf.runtime.operational_state import seed_history_diagnostics
@@ -7978,6 +8144,9 @@ def _initial_carry_for_run(state: State, namelist: OperationalNamelist) -> Opera
     if cu_forcing_required(cu_opt):
         # WRF RTHFTEN/RQVFTEN (zero at itimestep 1), in the final carry theta dtype.
         result = result.replace(cu_forcing=initial_cu_forcing(result.state.theta))
+    if int(getattr(namelist, "aer_opt", 0) or 0) == 3:
+        # WRF aer_opt=3 TAOD5502D (REAL): allocation zero until the first radiation call (t=0 history = 0).
+        result = result.replace(taod5502d=jnp.zeros(result.state.theta.shape[1:], jnp.float32))
     return _protect_initial_carry_seeds(result, namelist)
 
 
@@ -8196,6 +8365,22 @@ def _refresh_rrtmg_driver(carry, namelist, lead_seconds, run_radiation, clock_ba
     # o3rad from the CAM climatology at its own radiation call (WRF o3input=2 runs on id 1 only).
     held_o3 = getattr(carry, "o3rad", None)
     nest_o3 = held_o3 is not None and not bool(getattr(namelist.boundary_config, "force_geopotential", True))
+    # WRF aer_opt=1 (physics/wrf_tegen_aerosol.py, nesting/nest_aerosol.py): domain 1 computes aerod at its
+    # radiation call (held in carry.aerod on nested runs); a nest radiates with the parent's force-down aerod.
+    aer_on = int(getattr(namelist, "aer_opt", 0) or 0) == 1
+    # WRF aer_opt=3 (mp28, single domains): gt_aod + calc_aerosol_rrtmg_sw at every radiation call
+    # (physics/wrf_aer_opt3.py); the column AOD TAOD5502D is held in carry.taod5502d for history.
+    aer3_on = int(getattr(namelist, "aer_opt", 0) or 0) == 3
+    held_taod = getattr(carry, "taod5502d", None) if aer3_on else None
+    held_aer = getattr(carry, "aerod", None) if aer_on else None
+    nest_aer = held_aer is not None and not bool(getattr(namelist.boundary_config, "force_geopotential", True))
+    if aer_on and not nest_aer and namelist.tegen_aerosol is None:
+        raise ValueError("aer_opt=1 root domain without its aerosol_in static (OperationalNamelist.tegen_aerosol)")
+    if aer3_on and int(namelist.mp_physics) != 28:
+        raise ValueError("aer_opt=3 needs mp_physics=28 (WRF F_QNWFA); other schemes run without aerosol")
+    if aer3_on and held_taod is None:
+        raise ValueError("aer_opt=3 carry without its held TAOD5502D (seeded by _initial_carry_for_run; a checkpoint "
+                         "written before aer_opt=3 cannot resume an aer_opt=3 run)")
     land_for_rad = carry.noahmp_land
     if getattr(carry,'lake',None) is not None:
         from gpuwrf.coupling.lake_surface_hook import lake_radiation_land
@@ -8214,6 +8399,29 @@ def _refresh_rrtmg_driver(carry, namelist, lead_seconds, run_radiation, clock_ba
 
     def refresh(_unused):
         o3_kwargs, new_o3 = {}, held_o3
+        aer_kwargs, new_aer = {}, held_aer
+        if aer_on:
+            if nest_aer:
+                aer_kwargs["aerosol_ecaer_override"] = jnp.transpose(held_aer, (2, 3, 1, 0))
+            elif held_aer is not None:
+                aer_columns = rrtmg_aerosol_columns(
+                    carry.state, namelist.grid, tegen_aerosol=namelist.tegen_aerosol, time_utc=namelist.time_utc,
+                    lead_seconds=lead_seconds, clock_base=_rad_clock_base(clock_base),
+                    radiation_static=namelist.radiation_static, land_state=land_for_rad,
+                )
+                new_aer = jnp.transpose(aer_columns, (3, 2, 0, 1)).astype(held_aer.dtype)
+                aer_kwargs["aerosol_ecaer_override"] = aer_columns
+            else:
+                aer_kwargs["tegen_aerosol"] = namelist.tegen_aerosol
+        new_taod = held_taod
+        if aer3_on:
+            aer_kwargs["thompson_aerosol"] = True
+            if held_taod is not None:
+                new_taod = rrtmg_thompson_taod5502d(
+                    carry.state, namelist.grid, time_utc=namelist.time_utc, lead_seconds=lead_seconds,
+                    clock_base=_rad_clock_base(clock_base), radiation_static=namelist.radiation_static,
+                    land_state=land_for_rad,
+                ).astype(held_taod.dtype)
         if held_o3 is not None:
             if nest_o3:
                 o3_columns = jnp.moveaxis(held_o3, 0, -1)
@@ -8228,6 +8436,8 @@ def _refresh_rrtmg_driver(carry, namelist, lead_seconds, run_radiation, clock_ba
             if o3_columns is not None:
                 o3_kwargs["ozone_vmr_override"] = o3_columns
         if _explicit_ssib(namelist):
+            if aer_on or aer3_on:
+                raise NotImplementedError("aer_opt=1 is not wired into the SSiB radiation call")
             from gpuwrf.coupling.ssib_surface_hook import ssib_radiation
             radiation_result=ssib_radiation(carry.state,carry.ssib_land,namelist.ssib_static,namelist,
                 lead_seconds,_rad_clock_base(clock_base),o3_kwargs.get('ozone_vmr_override'))
@@ -8247,6 +8457,7 @@ def _refresh_rrtmg_driver(carry, namelist, lead_seconds, run_radiation, clock_ba
                 **solar_kwargs,
                 **({'with_urban': True} if int(namelist.sf_urban_physics) in (2, 3) else {}),
                 **o3_kwargs,
+                **aer_kwargs,
                 **_rrtmg_pbl_cloud_kwargs(namelist),
                 **cuplus_kwargs,
             )
@@ -8269,12 +8480,20 @@ def _refresh_rrtmg_driver(carry, namelist, lead_seconds, run_radiation, clock_ba
         out = (rate, diag, count_work(carry.census, "radiation_tendency_calls"))
         if held_o3 is not None:
             out = out + (new_o3,)
+        if held_aer is not None:
+            out = out + (new_aer,)
+        if held_taod is not None:
+            out = out + (new_taod,)
         if solar is not None:out=out+(parameters,)
         return out+(new_cup,) if cu_opt==10 else out
 
     held = (carry.rthraten, carry.radiation_diagnostics, carry.census)
     if held_o3 is not None:
         held = held + (held_o3,)
+    if held_aer is not None:
+        held = held + (held_aer,)
+    if held_taod is not None:
+        held = held + (held_taod,)
     if solar is not None:
         held = held + (solar.parameters,)
     if cu_opt==10:held=held+(carry.cuplus.held['CLDFRA_CUP'],)
@@ -8289,6 +8508,12 @@ def _refresh_rrtmg_driver(carry, namelist, lead_seconds, run_radiation, clock_ba
     if solar is not None:
         from gpuwrf.diagnostics.solar import SolarCarry
         carry = carry.replace(solar_interpolation=SolarCarry(refreshed[-1], solar.fluxes))
+        refreshed = refreshed[:-1]
+    if held_taod is not None:
+        carry = carry.replace(taod5502d=refreshed[-1])
+        refreshed = refreshed[:-1]
+    if held_aer is not None:
+        carry = carry.replace(aerod=refreshed[-1])
         refreshed = refreshed[:-1]
     if held_o3 is None:
         rate, diag, census = refreshed
@@ -8339,6 +8564,8 @@ def _refresh_noahmp_rad(state, namelist, lead_seconds, run_radiation, held_rad, 
 
     from gpuwrf.diagnostics.census import count_work
 
+    if int(getattr(namelist, "aer_opt", 0) or 0) != 0:
+        raise NotImplementedError("aer_opt=1/3 need the RRTMG driver refresh; the legacy surface refresh has no aerosol")
     radt_seconds = float(namelist.dt_s) * int(namelist.radiation_cadence_steps)
     rad_lead_seconds = jnp.maximum(
         jnp.asarray(lead_seconds, dtype=jnp.float64) - 0.5 * radt_seconds, 0.0
@@ -8663,7 +8890,9 @@ def _apply_post_rk_microphysics(state: State, namelist: OperationalNamelist, *, 
     elif mp_opt == 38:
         from gpuwrf.coupling.thompson_hail_adapter import thompson_hail_adapter
         updated, precip = thompson_hail_adapter(state, float(namelist.dt_s), namelist.grid,
-                                               return_precipitation=True)
+                                               return_precipitation=True,
+            **({"hail_tables": namelist.thompson_hail_tables}
+               if namelist.thompson_hail_tables is not None else {}))
     elif mp_opt == DEFAULT_MP_PHYSICS:
         if return_radar_context:
             updated,precip,radar_context=thompson_adapter(state,float(namelist.dt_s),return_radar_context=True)
@@ -9253,6 +9482,11 @@ def _physics_step_forcing(
         clock = _noahmp_clock(namelist, clock_base, lead_seconds)
         radiation = _NoahMPRadiation(*next_carry_rad)
         ep, rp = _noahmp_params(namelist)
+        noah_static = _lane_noahmp_static(namelist, clock_base)
+        from gpuwrf.surface_params.controls import apply_surface_controls, traced_controls
+        surface_controls = traced_controls(namelist, clock_base)
+        if surface_controls is not None:  # Track P: traced table values (default off)
+            noah_static, ep, rp = apply_surface_controls(noah_static, ep, rp, surface_controls)
         history = getattr(next_carry, "history_diagnostics", None)
         land_history = getattr(next_carry, "land_history", None)
         urban_carry = getattr(next_carry, "urban_slucm", None)
@@ -9285,7 +9519,7 @@ def _physics_step_forcing(
                              "resume from a restart that contains it); refusing to drop the urban canopy")
         next_state, next_land, *history_fields = noahmp_surface_step(
             next_state, (carry.noahmp_land if lower_fields is None else next_carry.noahmp_land),
-            _lane_noahmp_static(namelist, clock_base),
+            noah_static,
             float(namelist.dt_s), radiation=radiation, clock=clock,
             energy_params=ep, rad_params=rp, first_timestep=first_timestep,
             **({'surface_diagnostics':epsilon_noah_surface} if epsilon_noah_surface is not None else {}),
@@ -9736,6 +9970,9 @@ def _physics_step_forcing(
             from gpuwrf.coupling.cam_radiation import initial_cam_held
 
             held_value = (carry.rthraten, carry.cam_abs if carry.cam_abs is not None else initial_cam_held(next_state))
+        if next_carry.radiation_diagnostics is None and int(getattr(namelist, "aer_opt", 0) or 0) != 0:
+            raise NotImplementedError("aer_opt=1/3 need the RRTMG driver refresh (radiation_diagnostics seeded); "
+                                      "the legacy RTHRATEN refresh has no aerosol")
         if next_carry.radiation_diagnostics is None and getattr(next_carry, "o3rad", None) is not None:
             raise NotImplementedError(
                 "GPUWRF_NEST_O3_FROM_PARENT needs the RRTMG driver refresh (radiation_diagnostics seeded); "
@@ -9804,6 +10041,10 @@ def _physics_step_forcing(
     # and threads the TKE carry via qke. Defined in physics.myj_adapters.
     bl_opt = int(namelist.bl_pbl_physics)
     next_state, next_carry = _small_grid_firewall((next_state, next_carry), next_state.theta.shape[-2:]); pbl_entry_state = next_state
+    # topo_wind CTOPO/CTOPO2 reach only YSU and Shin-Hong (module_pbl_driver.F:1232/1317).
+    topo_kw = ({'topo_wind_ctopo': _topo_wind_ctopo(namelist, lead_seconds)}
+               if namelist.topo_wind_static is not None and bl_opt in (1, 11) else {})
+    topo_pbl_rates = None
     if int(namelist.sf_urban_physics) in (2, 3):
         if bl_opt not in (1, 8):
             raise ValueError('BEP/BEM requires YSU1 or BouLac8; MYJ2 requires the missing module_bl_myjurb')
@@ -9812,9 +10053,10 @@ def _physics_step_forcing(
         from gpuwrf.coupling.scan_adapters import ysu_pbl_adapter, boulac_pbl_adapter
         urban_adapter = ysu_pbl_adapter if bl_opt == 1 else boulac_pbl_adapter
         next_state, urban_rates = urban_adapter(next_state, float(namelist.dt_s), namelist.grid,
-            urban=(namelist.urban_bundle, next_carry.urban_bep), _with_sources=True,
+            urban=(namelist.urban_bundle, next_carry.urban_bep), _with_sources=True, **topo_kw,
             **({'rthraten':next_carry.rthraten,'ysu_topdown_pblmix':int(namelist.ysu_topdown_pblmix)}
                if bl_opt == 1 else {}))
+        topo_pbl_rates = urban_rates
         nz, ny, nx = next_state.theta.shape
         back_rate = lambda value: jnp.moveaxis(value.reshape(ny, nx, nz), -1, 0)
         rthblten, rqvblten, rublten, rvblten = (
@@ -9940,7 +10182,8 @@ def _physics_step_forcing(
         from gpuwrf.coupling.ssib_surface_hook import ssib_ysu_step
         next_state,pbl_rates=ssib_ysu_step(next_state,next_carry.ssib_land,namelist.ssib_static,namelist.grid,
             float(namelist.dt_s),physics=ssib_physics,surface_diagnostics=ssib_water_history,history=ssib_history,
-            rthraten=next_carry.rthraten,ysu_topdown_pblmix=int(namelist.ysu_topdown_pblmix),_with_sources=True)
+            rthraten=next_carry.rthraten,ysu_topdown_pblmix=int(namelist.ysu_topdown_pblmix),_with_sources=True,**topo_kw)
+        topo_pbl_rates = pbl_rates
         if source_leaf_mode and _phys_tend_rk_wrf_enabled():
             # Same once-RK seam as the generic SF1 branch (physics_addtendc.F:309,316).
             next_state, rthblten, rqvblten, rublten, rvblten, pbl_moist_raw = _raw_pbl_sources(
@@ -9952,7 +10195,7 @@ def _physics_step_forcing(
             next_state, pbl_rates = PBL_SCAN_ADAPTERS[bl_opt](
                 next_state, float(namelist.dt_s), namelist.grid,
                 surface_forcing=(sf1_surface_forcing if sf1_surface_forcing is not None
-                                 else selected_surface_forcing), _with_sources=True,
+                                 else selected_surface_forcing), _with_sources=True, **topo_kw,
                 **({'shinhong_tke_diag':int(namelist.shinhong_tke_diag)} if bl_opt==11 else {}),
                 # module_pbl_driver.F:1208-1251: RTHRATEN + YSU_TOPDOWN_PBLMIX.
                 **({'rthraten':next_carry.rthraten,'ysu_topdown_pblmix':int(namelist.ysu_topdown_pblmix)}
@@ -9963,6 +10206,7 @@ def _physics_step_forcing(
                 # Original pbl_driver.F:1593 calls ACMPBL(XTIME=itimestep).
                 **({'xtime':1+jnp.rint(jnp.asarray(lead_seconds)/float(namelist.dt_s)).astype(jnp.int32)}
                    if bl_opt==7 else {}))
+        topo_pbl_rates = pbl_rates
         if source_leaf_mode and _phys_tend_rk_wrf_enabled():
             next_state, rthblten, rqvblten, rublten, rvblten, pbl_moist_raw = _raw_pbl_sources(
                 next_state, pbl_entry_state, pbl_rates)
@@ -9970,23 +10214,27 @@ def _physics_step_forcing(
         # F9: a PBL without the sf1 handoff (e.g. GFS with sf 3/91) still publishes WRF rates;
         # couple them into the RK like the sf1 branch above instead of an Euler state increment.
         next_state, pbl_rates = PBL_SCAN_ADAPTERS[bl_opt](next_state, float(namelist.dt_s), namelist.grid,
-            _with_sources=True,
+            _with_sources=True, **topo_kw,
             **({'shinhong_tke_diag':int(namelist.shinhong_tke_diag)} if bl_opt==11 else {}),
             **({'rthraten':next_carry.rthraten,'ysu_topdown_pblmix':int(namelist.ysu_topdown_pblmix)}
                if bl_opt==1 else {}),
             **({'f_qi':_pbl_f_qi(mp_opt)} if bl_opt in (3,99) else {}),
             **({'xtime':1+jnp.rint(jnp.asarray(lead_seconds)/float(namelist.dt_s)).astype(jnp.int32)}
                if bl_opt==7 else {}))
+        topo_pbl_rates = pbl_rates
         next_state, rthblten, rqvblten, rublten, rvblten, pbl_moist_raw = _raw_pbl_sources(
             next_state, pbl_entry_state, pbl_rates)
     elif bl_opt in PBL_SCAN_ADAPTERS:
         next_state = PBL_SCAN_ADAPTERS[bl_opt](next_state, float(namelist.dt_s), namelist.grid,
+            **topo_kw, **({'_with_sources': True} if topo_kw else {}),
             **({'shinhong_tke_diag':int(namelist.shinhong_tke_diag)} if bl_opt==11 else {}),
             **({'rthraten':next_carry.rthraten,'ysu_topdown_pblmix':int(namelist.ysu_topdown_pblmix)}
                if bl_opt==1 else {}),
             **({'f_qi':_pbl_f_qi(mp_opt)} if bl_opt in (3,99) else {}),
             **({'xtime':1+jnp.rint(jnp.asarray(lead_seconds)/float(namelist.dt_s)).astype(jnp.int32)}
                if bl_opt==7 else {}))
+        if topo_kw:
+            next_state, topo_pbl_rates = next_state
     elif bl_opt == DEFAULT_BL_PBL_PHYSICS:
         if source_leaf_mode:
             mynn = mynn_adapter_with_source_leaves(
@@ -10068,6 +10316,8 @@ def _physics_step_forcing(
                 first_timestep=first_timestep,
                 **({"passive_scalars": _pbl_mynn_number_scalars(mp_opt)} if _pbl_mynn_number_scalars(mp_opt) else {}),
             )
+    if topo_kw and topo_kw['topo_wind_ctopo'][1] is not None:
+        next_carry = _publish_topo_wind_u10(next_carry, topo_pbl_rates, topo_kw['topo_wind_ctopo'][1])
     if namelist.windfarm_opt:
         from gpuwrf.coupling.windfarm_hook import windfarm_sources
         if rublten is None or rvblten is None:
@@ -10574,7 +10824,19 @@ def _physics_step_forcing(
     return forcing
 
 
-def _physics_boundary_step_with_limiter_diagnostics(
+def _physics_boundary_step_with_limiter_diagnostics(carry, namelist, step_index, *, clock_base=None, **kwargs):
+    """Trace one step with the root record window of ``clock_base`` in scope.
+
+    Every step variant enters here; ``bdy_window`` is None (released full-stack
+    indexing) except on a windowed root (coupling/boundary_records.py).
+    """
+    from gpuwrf.coupling.boundary_records import lateral_window_scope
+
+    with lateral_window_scope(getattr(clock_base, "bdy_window", None)):
+        return _physics_boundary_step_in_window(carry, namelist, step_index, clock_base=clock_base, **kwargs)
+
+
+def _physics_boundary_step_in_window(
     carry: OperationalCarry,
     namelist: OperationalNamelist,
     step_index,
@@ -11367,11 +11629,16 @@ def compute_m9_diagnostics(
             else _NoahMPRadiation(rad.swnorm, rad.glw, rad.coszen)
         )
         ep, rp = _noahmp_params(namelist)
+        noah_static = _lane_noahmp_static(namelist, clock_base)
+        from gpuwrf.surface_params.controls import apply_surface_controls, traced_controls
+        surface_controls = traced_controls(namelist, clock_base)
+        if surface_controls is not None:  # Track P: traced table values (default off)
+            noah_static, ep, rp = apply_surface_controls(noah_static, ep, rp, surface_controls)
         # v0.9.0: route the Noah-MP LSM 2-m T2 over land (the faithful land-T2
         # overwrite WRF performs — module_surface_driver.F:3469-3473), replacing
         # the surface-layer MYNN 2-m value over land. Water keeps surf.t2.
         hfx, lh, tsk, t2 = overlay_noahmp_land_diagnostics(
-            state, noahmp_land, _lane_noahmp_static(namelist, clock_base), surf.hfx, surf.lh, state.t_skin,
+            state, noahmp_land, noah_static, surf.hfx, surf.lh, state.t_skin,
             float(namelist.dt_s), bulk_t2=surf.t2, radiation=radiation, clock=clock,
             energy_params=ep, rad_params=rp,
         )
@@ -11638,6 +11905,17 @@ def _advance_chunk(
     keeps the legacy host-extraction-from-``namelist.time_utc`` behaviour.
     """
 
+    records = getattr(namelist, "record_windows", None)
+    if (records is not None and not records.in_call
+            and not any(isinstance(leaf, jax.core.Tracer) for leaf in jax.tree_util.tree_leaves(carry))):
+        # Host caller of a record-windowed domain (integration/record_windows.py):
+        # refresh the boundary windows per chunk. Traced callers (fused cascades)
+        # and the domain-tree runner prepare before they reach here.
+        return records.advance(
+            lambda chunk_carry, chunk_start, chunk_steps, chunk_clock: _advance_chunk(
+                chunk_carry, namelist, chunk_start, chunk_clock, n_steps=chunk_steps, cadence=cadence),
+            carry, int(start_step), int(n_steps),
+            build_clock_base(namelist) if clock_base is None else clock_base)
     # Every runner reaches the donating jit through here (single-domain loops, tree fallbacks).
     carry = unalias_donated_carry(carry, by_buffer=True)
     mode = _advance_chunk_loop_mode()

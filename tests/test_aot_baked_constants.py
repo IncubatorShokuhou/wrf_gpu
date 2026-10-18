@@ -267,6 +267,9 @@ def test_readonly_mapping_table_values_are_content_hashed():
 # Each actual external reader needs a disposition. A new table loader must not
 # silently enter the traced program without a holder, operand, or table hash.
 _EXTERNAL_READERS = {
+    'physics/cammg/tables.py': 'initialization.npz -> cached host _raw() -> get_globals traced constants; baked_table_hash keys cammg.tables._raw actual values for mp11',
+    'physics/ntu/tables.py': 'data/aerosol_{r4,r8}.npz -> host_tables -> selected_tables; baked_table_hash keys ntu.aot_tables.resolved_bindings across native/portable/init providers, both kinds and all CCNTY banks for mp56',
+    'kernels/_triton_kernel_call.py': 'tree_digest reads installed stock Triton/compiler bytes; baked_table_hash keys stock_compiler_identity for mp11, and stock_compile cache takes the same identity; compiler input, not a physics table',
     'coupling/urban_inputs.py': 'UrbanInputs traced child; content-keyed when closed over; seal IO is host-only',
     'coupling/urban_slucm_hook.py': 'UrbanBundle static holder',
     'physics/noahmp/tables.py': 'NoahMPStatic parameters in static holder',
@@ -282,6 +285,7 @@ _EXTERNAL_READERS = {
         'ra_lw_rrtm','rrtmg_lw','rrtmg_mp_re','rrtmg_tables','surface_layer',
         'sfclay_qnse','thompson_aero_tables','thompson_tables','wrf_cam_ozone',
         'ferrier/saturation','thompson_hail/native','thompson_hail/context')},
+    'physics/wrf_tegen_aerosol.py': 'aer_opt=1: aot_baked_tables keys the Tegen asset loader + module tables (sw4 & aer_opt 1 only); aerodm/pina are traced namelist children; key regression tests/v025/w41_aerosol/test_tegen_wiring.py::test_aot_baked_table_key_names_the_tegen_asset_only_on_aer_opt1',
     'physics/jensen_ishmael/tables.py': 'baked_table_hash actual _host_tables values and _native.configuration for mp55; collision regressions tests/v040/test_jensen_ishmael_table_keys.py',
 }
 

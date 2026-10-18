@@ -60,8 +60,11 @@ def test_dfl_prepass_forecast_uses_restored_diffusion(tmp_path, monkeypatch, dfi
     carry = Carry(state)
     loaded = []
 
-    def load(config, names):
+    windows = []
+
+    def load(config, names, record_windows=True):
         assert names == ('d01',)
+        windows.append(record_windows)
         run = Gen2Run(config.input_dir)
         # Exact native loader group/domain resolver, including the original 1/4 input.
         diff, km = [pipeline._domain_int(run, 'dynamics', key, 'd01', 0)
@@ -82,6 +85,8 @@ def test_dfl_prepass_forecast_uses_restored_diffusion(tmp_path, monkeypatch, dfi
     monkeypatch.setattr(driver12, 'rebase_dfl_boundary', lambda *args, **kwargs: 540)
     cfg = Config(src, tmp_path / 'out', tmp_path / 'proof')
     forecast, report = driver.apply_dfi_prepass(cfg)
+    # DFI edits/shifts the full wrfbdy records itself: its loads keep them (no record windows).
+    assert windows == [False, False]
     load(forecast, ('d01',))
     expected = dfi_diffusion or (0, 1)
     assert loaded == [(1, 4), expected, expected], 'DFL forward/forecast did not restore WRF diffusion'

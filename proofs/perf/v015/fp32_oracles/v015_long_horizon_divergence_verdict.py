@@ -215,16 +215,28 @@ def evaluate_region(region: str, summary_path: Path, envelope_factor: float,
     }
 
 
+def _attached(rel: str) -> Path:
+    """The default summaries are SHA-pinned release attachments since v0.4.1 (tools/release_attachments.py)."""
+    spec = importlib.util.spec_from_file_location("_release_attachments", _ROOT / "tools" / "release_attachments.py")
+    attachments = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(attachments)
+    return attachments.stage(_ROOT / (rel + attachments.SUFFIX), root=_ROOT)
+
+
 def main(argv=None) -> int:
     p = argparse.ArgumentParser(description=__doc__)
-    p.add_argument("--switz-summary", type=Path,
-                   default=_ROOT / "proofs/v015/finalgates/switzerland_d01/atlas_grid_delta_summary.json")
-    p.add_argument("--canary-summary", type=Path,
-                   default=_ROOT / "proofs/v015/finalgates/canary_l2_d02/atlas_grid_delta_summary.json")
+    p.add_argument("--switz-summary", type=Path, default=None,
+                   help="default: the staged attachment proofs/v015/finalgates/switzerland_d01/atlas_grid_delta_summary.json")
+    p.add_argument("--canary-summary", type=Path, default=None,
+                   help="default: the staged attachment proofs/v015/finalgates/canary_l2_d02/atlas_grid_delta_summary.json")
     p.add_argument("--envelope-factor", type=float, default=5.0)
     p.add_argument("--late-slope-tol", type=float, default=0.25)
     p.add_argument("--out", type=Path, default=_ROOT / "proofs/v015/long_horizon_divergence_verdict.json")
     args = p.parse_args(argv)
+    args.switz_summary = args.switz_summary or _attached(
+        "proofs/v015/finalgates/switzerland_d01/atlas_grid_delta_summary.json")
+    args.canary_summary = args.canary_summary or _attached(
+        "proofs/v015/finalgates/canary_l2_d02/atlas_grid_delta_summary.json")
 
     regions = {
         "switzerland_d01_72h": evaluate_region(

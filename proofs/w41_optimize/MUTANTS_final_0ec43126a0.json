@@ -1,0 +1,375 @@
+{
+ "mutants": [
+  {
+   "mutant": "M1 release gate removed",
+   "file": "src/gpuwrf/optimize/released.py",
+   "tests": [
+    "tests/test_optimize.py::test_unreleased_admission_is_refused",
+    "tests/test_optimize.py::test_release_list_binds_the_final_checkpoint"
+   ],
+   "rc": 1,
+   "failed": 2,
+   "setup_errors": 0,
+   "killed_genuinely": true,
+   "failure_lines": [
+    "E           TypeError: 'NoneType' object is not subscriptable",
+    "E       Failed: DID NOT RAISE <class 'ValueError'>"
+   ],
+   "summary": [
+    "2 failed in 7.25s"
+   ]
+  },
+  {
+   "mutant": "M2 one member per launcher batch (no cross-configuration batches)",
+   "file": "src/gpuwrf/optimize/study.py",
+   "tests": [
+    "tests/test_optimize.py::test_run_real_ensemble_preparation_fake_scheduler"
+   ],
+   "rc": 1,
+   "failed": 1,
+   "setup_errors": 0,
+   "killed_genuinely": true,
+   "failure_lines": [
+    "E       assert ([1, 1, 1, 1, 1, 1, ...] == [4, 4, 4, 2]",
+    "E",
+    "E         At index 0 diff: 1 != 4",
+    "E         Left contains 10 more items, first extra item: 1",
+    "E         Use -v to get more diff)"
+   ],
+   "summary": [
+    "1 failed in 7.75s"
+   ]
+  },
+  {
+   "mutant": "M3 resume accepts a changed study",
+   "file": "src/gpuwrf/optimize/study.py",
+   "tests": [
+    "tests/test_optimize.py::test_chunk_pause_and_resume_reproduce_the_uninterrupted_study"
+   ],
+   "rc": 1,
+   "failed": 1,
+   "setup_errors": 0,
+   "killed_genuinely": true,
+   "failure_lines": [
+    "E           ValueError: wrfbdy Times must be ordered and cover the full requested forecast",
+    "E       AssertionError: Regex pattern did not match.",
+    "E         Expected regex: 'same study'",
+    "E         Actual message: 'wrfbdy Times must be ordered and cover the full requested forecast'"
+   ],
+   "summary": [
+    "1 failed in 9.09s"
+   ]
+  },
+  {
+   "mutant": "M4 single-domain pool not passed",
+   "file": "src/gpuwrf/optimize/study.py",
+   "tests": [
+    "tests/test_optimize.py::test_run_real_ensemble_preparation_fake_scheduler"
+   ],
+   "rc": 1,
+   "failed": 1,
+   "setup_errors": 0,
+   "killed_genuinely": true,
+   "failure_lines": [
+    "E       AssertionError: assert [None, None, None, None] == ['1.5', '1.5', '1.5', '1.5']",
+    "E",
+    "E         At index 0 diff: None != '1.5'",
+    "E         Use -v to get more diff"
+   ],
+   "summary": [
+    "1 failed in 7.68s"
+   ]
+  },
+  {
+   "mutant": "M5 driver not pinned to CPU",
+   "file": "src/gpuwrf/optimize/cli.py",
+   "tests": [
+    "tests/test_optimize.py::test_driver_is_cpu_only_and_members_get_the_caller_platform"
+   ],
+   "rc": 1,
+   "failed": 1,
+   "setup_errors": 0,
+   "killed_genuinely": true,
+   "failure_lines": [
+    "E       AssertionError: ^",
+    "E           File \"<USER_HOME>/miniconda3/lib/python3.13/site-packages/jax/_src/lax/lax.py\", line 3491, in full",
+    "E             fill_value = _convert_element_type(fill_value, fill_dtype, weak_type)",
+    "E           File \"<USER_HOME>/miniconda3/lib/python3.13/site-packages/jax/_src/lax/lax.py\", line 1701, in _convert_element_type",
+    "E             return convert_element_type_p.bind(",
+    "E                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~^"
+   ],
+   "summary": [
+    "1 failed in 9.98s"
+   ]
+  },
+  {
+   "mutant": "M6 no salvage on resume",
+   "file": "src/gpuwrf/optimize/study.py",
+   "tests": [
+    "tests/test_optimize.py::test_interrupted_batch_members_are_salvaged_on_resume"
+   ],
+   "rc": 1,
+   "failed": 1,
+   "setup_errors": 0,
+   "killed_genuinely": true,
+   "failure_lines": [
+    "E       assert [4, 4, 4, 2] == [4, 4, 2]",
+    "E",
+    "E         At index 2 diff: 4 != 2",
+    "E         Left contains one more item: 2",
+    "E         Use -v to get more diff"
+   ],
+   "summary": [
+    "1 failed in 9.70s"
+   ]
+  },
+  {
+   "mutant": "M7 CPU cases still need the GPU lock",
+   "file": "scripts/parallel_cases.py",
+   "tests": [
+    "tests/test_parallel_cases.py::test_refusals"
+   ],
+   "rc": 1,
+   "failed": 1,
+   "setup_errors": 0,
+   "killed_genuinely": true,
+   "failure_lines": [
+    "E       AssertionError: assert 2 == 0",
+    "E        +  where 2 = <function main at 0x7d6d4cda1260>(['--out-root', '<USER_HOME>/wrf_gpu2_lanes/w41-optimize/pytest-mutants/test_refusals0/out', '--gpu-log-interval', '0', '--min-mem-available-gb', '0', ...], sizer=<function test_refusals.<locals>.<lambda> at 0x7d6d4cda3ce0>, gpu=<function test_refusals.<locals>.<lambda> at 0x7d6d4cda3ba0>)",
+    "E        +    where <function main at 0x7d6d4cda1260> = pc.main"
+   ],
+   "summary": [
+    "1 failed in 0.31s"
+   ]
+  },
+  {
+   "mutant": "M8 ens.launch ignores the member env",
+   "file": "src/gpuwrf/ens/workflows.py",
+   "tests": [
+    "tests/test_ensemble.py::test_launch_lock_policy_follows_the_member_environment"
+   ],
+   "rc": 1,
+   "failed": 1,
+   "setup_errors": 0,
+   "killed_genuinely": true,
+   "failure_lines": [
+    "E       Failed: DID NOT RAISE <class 'ValueError'>"
+   ],
+   "summary": [
+    "1 failed in 0.74s"
+   ]
+  },
+  {
+   "mutant": "M9 E41 filter ignored",
+   "file": "src/gpuwrf/optimize/released.py",
+   "tests": [
+    "tests/test_optimize.py::test_release_list_binds_the_final_checkpoint",
+    "tests/test_optimize.py::test_configurations_by_released_name_without_admissions"
+   ],
+   "rc": 1,
+   "failed": 2,
+   "setup_errors": 0,
+   "killed_genuinely": true,
+   "failure_lines": [
+    "E       Failed: DID NOT RAISE <class 'ValueError'>",
+    "E           Failed: DID NOT RAISE <class 'ValueError'>"
+   ],
+   "summary": [
+    "2 failed in 9.82s"
+   ]
+  },
+  {
+   "mutant": "M10 failed-batch members dropped",
+   "file": "src/gpuwrf/optimize/study.py",
+   "tests": [
+    "tests/test_optimize.py::test_failed_member_keeps_the_others_and_resume_reruns_only_it"
+   ],
+   "rc": 1,
+   "failed": 1,
+   "setup_errors": 0,
+   "killed_genuinely": true,
+   "failure_lines": [
+    "E       assert (0 == 3)",
+    "E        +  where 0 = len({})"
+   ],
+   "summary": [
+    "1 failed in 7.05s"
+   ]
+  },
+  {
+   "mutant": "M11 host need never measured",
+   "file": "src/gpuwrf/optimize/study.py",
+   "tests": [
+    "tests/test_optimize.py::test_run_real_ensemble_preparation_fake_scheduler"
+   ],
+   "rc": 1,
+   "failed": 1,
+   "setup_errors": 0,
+   "killed_genuinely": true,
+   "failure_lines": [
+    "E       AssertionError: assert [None, None, None, None] == [None, '5.5', '5.5', '5.5']",
+    "E",
+    "E         At index 1 diff: None != '5.5'",
+    "E         Use -v to get more diff"
+   ],
+   "summary": [
+    "1 failed in 7.79s"
+   ]
+  },
+  {
+   "mutant": "M12 no cold-first wave",
+   "file": "src/gpuwrf/optimize/study.py",
+   "tests": [
+    "tests/test_optimize.py::test_cold_first_compiles_each_configuration_once",
+    "tests/test_optimize.py::test_run_real_ensemble_preparation_fake_scheduler"
+   ],
+   "rc": 1,
+   "failed": 2,
+   "setup_errors": 0,
+   "killed_genuinely": true,
+   "failure_lines": [
+    "E       AssertionError: assert [[({'id': 'a'...y_d01': 9}})]] == [[({'id': 'a'..._d01': 13}})]]",
+    "E",
+    "E         At index 0 diff: [({'id': 'a'}, {'id': 'd1', 'records': {'wrfbdy_d01': 13}}), ({'id': 'a'}, {'id': 'd2', 'records': {'wrfbdy_d01': 13}}), ({'id': 'b'}, {'id': 'd1', 'records': {'wrfbdy_d01': 13}}), ({'id': 'b'}, {'id': 'd2', 'records': {'wrfbdy_d01': 13}}), ({'id': 'a'}, {'id': 'd4', 'records': {'wrfbdy_d01': 9}})] != [({'id': 'a'}, {'id': 'd1', 'records': {'wrfbdy_d01': 13}}), ({'id': 'b'}, {'id': 'd1', 'records': {'wrfbdy_d01': 13}}), ({'id': 'a'}, {'id': 'd4', 'records': {'wrfbdy_d01': 9}})]",
+    "E         Right contains one more item: [({'id': 'a'}, {'id': 'd2', 'records': {'wrfbdy...",
+    "E",
+    "E         ...Full output truncated (2 lines hidden), use '-vv' to show"
+   ],
+   "summary": [
+    "2 failed in 7.83s"
+   ]
+  },
+  {
+   "mutant": "M13 warm waves estimated with cold walls",
+   "file": "src/gpuwrf/optimize/study.py",
+   "tests": [
+    "tests/test_optimize.py::test_warm_waves_are_estimated_with_warm_member_walls"
+   ],
+   "rc": 1,
+   "failed": 1,
+   "setup_errors": 0,
+   "killed_genuinely": true,
+   "failure_lines": [
+    "E       assert [1, 1, 1, 1, 1, 1, ...] == [1, 1, 1, 1, 1, 3, ...]",
+    "E",
+    "E         At index 5 diff: 1 != 3",
+    "E         Left contains 6 more items, first extra item: 1",
+    "E         Use -v to get more diff"
+   ],
+   "summary": [
+    "1 failed in 7.95s"
+   ]
+  },
+  {
+   "mutant": "M14 case inputs bound by path only",
+   "file": "src/gpuwrf/optimize/study.py",
+   "tests": [
+    "tests/test_optimize.py::test_resume_refuses_changed_forecast_input_of_completed_members"
+   ],
+   "rc": 1,
+   "failed": 1,
+   "setup_errors": 0,
+   "killed_genuinely": true,
+   "failure_lines": [
+    "E       Failed: DID NOT RAISE <class 'ValueError'>"
+   ],
+   "summary": [
+    "1 failed in 10.00s"
+   ]
+  },
+  {
+   "mutant": "M15 no input check while the study runs",
+   "file": "src/gpuwrf/optimize/study.py",
+   "tests": [
+    "tests/test_optimize.py::test_forecast_input_changed_during_the_run_is_refused"
+   ],
+   "rc": 1,
+   "failed": 1,
+   "setup_errors": 0,
+   "killed_genuinely": true,
+   "failure_lines": [
+    "E       Failed: DID NOT RAISE <class 'ValueError'>"
+   ],
+   "summary": [
+    "1 failed in 7.84s"
+   ]
+  },
+  {
+   "mutant": "M16 budget counts completed members only",
+   "file": "src/gpuwrf/optimize/study.py",
+   "tests": [
+    "tests/test_optimize.py::test_failed_retries_are_charged_against_the_case_hour_budget"
+   ],
+   "rc": 1,
+   "failed": 1,
+   "setup_errors": 0,
+   "killed_genuinely": true,
+   "failure_lines": [
+    "E       Failed: DID NOT RAISE <class 'ValueError'>"
+   ],
+   "summary": [
+    "1 failed in 9.23s"
+   ]
+  },
+  {
+   "mutant": "M17 chunk sized with the requested parallelism",
+   "file": "src/gpuwrf/optimize/study.py",
+   "tests": [
+    "tests/test_optimize.py::test_chunk_size_follows_the_admitted_parallelism"
+   ],
+   "rc": 1,
+   "failed": 1,
+   "setup_errors": 0,
+   "killed_genuinely": true,
+   "failure_lines": [
+    "E       AssertionError: assert ('PAUSED' == 'PAUSED'",
+    "E",
+    "E           PAUSED and 1600.0 <= 600)"
+   ],
+   "summary": [
+    "1 failed in 5.84s"
+   ]
+  },
+  {
+   "mutant": "M18 measured admission limit ignored",
+   "file": "src/gpuwrf/optimize/study.py",
+   "tests": [
+    "tests/test_optimize.py::test_chunk_size_follows_the_admitted_parallelism"
+   ],
+   "rc": 1,
+   "failed": 1,
+   "setup_errors": 0,
+   "killed_genuinely": true,
+   "failure_lines": [
+    "E       AssertionError: assert ('PAUSED' == 'PAUSED'",
+    "E",
+    "E           PAUSED and 2800.0 <= 1800)"
+   ],
+   "summary": [
+    "1 failed in 6.65s"
+   ]
+  },
+  {
+   "mutant": "M19 over-chunk member not run alone",
+   "file": "src/gpuwrf/optimize/study.py",
+   "tests": [
+    "tests/test_optimize.py::test_warm_waves_are_estimated_with_warm_member_walls"
+   ],
+   "rc": 1,
+   "failed": 1,
+   "setup_errors": 0,
+   "killed_genuinely": true,
+   "failure_lines": [
+    "E       AssertionError: assert (['PAUSED', 'H... superiority'] == ['PAUSED', 'P... superiority']",
+    "E",
+    "E         At index 1 diff: 'HELD_OUT_DIAGNOSTIC; no release promotion or guarantee of regional superiority' != 'PAUSED'",
+    "E         Right contains 3 more items, first extra item: 'PAUSED'",
+    "E         Use -v to get more diff)"
+   ],
+   "summary": [
+    "1 failed in 7.60s"
+   ]
+  }
+ ],
+ "all_killed": true
+}

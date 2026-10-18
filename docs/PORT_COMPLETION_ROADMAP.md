@@ -261,7 +261,7 @@ plausibly **v1.0** boundaries). All fail closed with a named reason and a disabl
 | Subsystem | Switch(es) | Note |
 |---|---|---|
 | Urban canopy — single-layer UCM + LCZ/NUDAPT/AHE | `sf_urban_physics=1`, `use_wudapt_lcz=1`, `distributed_ahe_opt=1/2` | ✅ implemented v0.4.0 with Noah-MP; LCZ51–61 and zero-initialized pristine NUDAPT caller; CPU-oracle-qualified, GPU/coupled qualification pending; [input definitions and limits](urban_lcz.md) |
-| Urban canopy — BEP / BEM | `sf_urban_physics=2/3` | ✅ implemented v0.4.0 with Noah-MP4, YSU1/BouLac8, SF1 and RRTMG4/4; [CPU-oracle-qualified full driver and urban PBL](../proofs/v040/urban_bep_bem/README.md), restart and CPU coupled smoke; GPU/coupled-forecast qualification pending; MYJURB/LCZ/NUDAPT/PV/green roofs refused |
+| Urban canopy — BEP / BEM | `sf_urban_physics=2/3` | ✅ implemented v0.4.0 with Noah-MP4, YSU1/BouLac8, SF1 and RRTMG4/4; [CPU-oracle-qualified full driver and urban PBL](../proofs/v040/urban_bep_bem/README.md), restart and CPU coupled smoke; GPU/coupled-forecast qualification pending; MYJURB/LCZ/NUDAPT refused; v0.4.1: rooftop PV and green roofs (BEP+BEM) [pristine-oracle-qualified](../proofs/w41_writergaps/README.md), no coupled-forecast comparison |
 | Lake model | `sf_lake_physics=1` | 🟡 reference-only (v0.23 oracle staged) |
 | WRF-Chem (coupled chemistry/aerosols) | `chem_opt` | large coupled subsystem |
 | WRF-Fire (SFIRE) | `ifire` | coupled fire-spread |

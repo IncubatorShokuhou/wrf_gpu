@@ -628,6 +628,21 @@ def _build_real_case(config: DailyPipelineConfig) -> tuple[DailyCase, Path]:
     # 180 steps and KF every step.  The replay harness's fixed dt/sound steps/land
     # replay are reported by namelist_binding (CLI warnings).
     namelist = bind_namelist_options(namelist, replay.run.namelist, config.domain)
+    topo_wind = int(_domain_namelist_value(replay.run, "physics", "topo_wind", config.domain, 0))
+    if topo_wind:
+        # WRF start_em CTOPO/CTOPO2 (io.topo_wind_static); nested_pipeline does the same per domain.
+        from gpuwrf.io.topo_wind_static import load_topo_wind_static
+        namelist = replace(namelist, topo_wind_static=load_topo_wind_static(
+            replay.run, config.domain, topo_wind=topo_wind, bl_pbl_physics=int(namelist.bl_pbl_physics),
+            grid=replay.grid, xland=state.xland))
+    if int(namelist.aer_opt) == 1:
+        # WRF aer_opt=1 Tegen aerosol_in on this (root) domain's XLAT/XLONG.
+        from gpuwrf.physics.wrf_tegen_aerosol import bind_tegen_aerosol
+        namelist = bind_tegen_aerosol(namelist)
+    if int(namelist.mp_physics) == 38:
+        # mp38 DOUBLE Thompson-hail tables as device-resident traced operands (not baked HLO constants).
+        from gpuwrf.physics.thompson_hail.tables import bind_thompson_hail_tables
+        namelist = bind_thompson_hail_tables(namelist)
     if int(namelist.mp_physics) == 11:
         from gpuwrf.physics.cammg.registry import warn_configuration
         warn_configuration(namelist.cu_physics,namelist.shcu_physics)
@@ -1206,6 +1221,10 @@ def _surface_diagnostics_for_output(
             values = dict(values or {}, REFL_10CM=radar)
             if int(getattr(namelist, "mp_physics", 8)) == 40:
                 values["MSKF_REFL_10CM"] = radar  # aercu_opt=0: no MSKF hydrometeors
+        taod = getattr(carry, "taod5502d", None)
+        if taod is not None:
+            # WRF aer_opt=3 TAOD5502D: held column AOD of the last radiation call (Registry 'h').
+            values = dict(values or {}, TAOD5502D=taod)
         return values
 
     if operational_carry is not None:
@@ -1755,6 +1774,9 @@ def _run_forecast_sequence(
             diagnostics.update(stochastic_history(carry_stepper.carry.stochastic,case.grid.nz,case.grid.ny,case.grid.nx))
         if carry_stepper is not None and getattr(carry_stepper.carry,"windfarm_power",None) is not None:
             diagnostics = dict(diagnostics or {},POWER=carry_stepper.carry.windfarm_power)
+        if carry_stepper is not None and getattr(carry_stepper.carry,"camuw_pbl",None) is not None:
+            # CAM-UW shared TKE_PBL (interfaces, module_bl_camuwpbl_driver.F:743-745), as nested.
+            diagnostics = dict(diagnostics or {},TKE_PBL=carry_stepper.carry.camuw_pbl.tke_pbl)
         prepared = None
         if writer is not None:
             # Pull this hour to host now (synchronous device->host), then write on

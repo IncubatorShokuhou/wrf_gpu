@@ -1,0 +1,121 @@
+{
+ "cache": "<DATA_ROOT>/wrf_gpu2/scratch/w41-optcont/osse1/cache/jax",
+ "entries": [
+  {
+   "entry": "jit__advance_chunk_fori-a94b0ab10a3f2dfe0699bfe473ac16ce7bbb541d2b06ca80da64d6fa4946f95a-cache",
+   "path": "<DATA_ROOT>/wrf_gpu2/scratch/w41-optcont/osse1/cache/jax/jit__advance_chunk_fori-a94b0ab10a3f2dfe0699bfe473ac16ce7bbb541d2b06ca80da64d6fa4946f95a-cache",
+   "source_kind": "jax_cache",
+   "program": null,
+   "aliases": [],
+   "format": "xla-gpu-thunks-riegeli-v1",
+   "blob_sha256": "0a439ba79190c3740821a9e6c888ef6af494ae0dbc79680187661b303bd29a7c",
+   "elfs": [
+    {
+     "elf": 0,
+     "sha256": "c5dcfc63a97998ea8cfb43c9bb61bcdc7d7d53a328f4674f9db29dc1bfc4c1d5",
+     "kernels": 1080,
+     "max_stack_B": 16,
+     "stack_over256": [],
+     "root_callers_over1k": [
+      [
+       "thompson_full_column",
+       19304,
+       67
+      ],
+      [
+       "mynn_tridiag2_real",
+       2224,
+       87
+      ],
+      [
+       "input_add_reduce_select_fusion",
+       1352,
+       4
+      ],
+      [
+       "loop_select_fusion_34",
+       3832,
+       10
+      ],
+      [
+       "loop_or_select_fusion",
+       2224,
+       6
+      ]
+     ],
+     "nonleaf_over1k": [],
+     "callgraph_unknown": []
+    }
+   ],
+   "kinput_transpose_over500": [],
+   "kinput_transpose_status": "MEASURED_RICH_JIT_HLO"
+  },
+  {
+   "entry": "daae6ebe2ccffef35ae9641fd5c73619e6e6f141eee2f2a923a58e59afb18960.xlaexec",
+   "path": "<DATA_ROOT>/wrf_gpu2/scratch/w41-optcont/osse1/cache/jax/aot/0.4.0-jax0.10.0-jaxlib0.10.0-cuda_sm120/d01/daae6ebe2ccffef35ae9641fd5c73619e6e6f141eee2f2a923a58e59afb18960.xlaexec",
+   "source_kind": "aot",
+   "program": "d01",
+   "aliases": [
+    "<DATA_ROOT>/wrf_gpu2/scratch/w41-optcont/osse1/cache/jax/aot/0.4.0-jax0.10.0-jaxlib0.10.0-cuda_sm120/d01/k_f06b510cbd315779e718a97c9fe5f0841f8b54c062b235c58efcf1aa2a39c974.xlaexec"
+   ],
+   "format": "xla-gpu-thunks-riegeli-v1",
+   "blob_sha256": "f5588fa7989ac448dc1aa2a3c21683b3a1d7b42dbf0c907357389876c9922a17",
+   "elfs": [
+    {
+     "elf": 0,
+     "sha256": "c5dcfc63a97998ea8cfb43c9bb61bcdc7d7d53a328f4674f9db29dc1bfc4c1d5",
+     "kernels": 1080,
+     "max_stack_B": 16,
+     "stack_over256": [],
+     "root_callers_over1k": [
+      [
+       "thompson_full_column",
+       19304,
+       67
+      ],
+      [
+       "mynn_tridiag2_real",
+       2224,
+       87
+      ],
+      [
+       "input_add_reduce_select_fusion",
+       1352,
+       4
+      ],
+      [
+       "loop_select_fusion_34",
+       3832,
+       10
+      ],
+      [
+       "loop_or_select_fusion",
+       2224,
+       6
+      ]
+     ],
+     "nonleaf_over1k": [],
+     "callgraph_unknown": []
+    }
+   ],
+   "kinput_transpose_status": "UNKNOWN_AOT_METADATA",
+   "kinput_transpose_over500": null
+  }
+ ],
+ "n_entries": 2,
+ "e41_gate": "INCOMPLETE",
+ "hard_stack_gate": "PASS",
+ "conservative_flags": false,
+ "coverage": {
+  "status": "PASS",
+  "aot_programs": [
+   "d01"
+  ],
+  "required_run_programs": [
+   "d01"
+  ],
+  "run_proofs": [],
+  "n_discovered": 2,
+  "n_scanned": 2
+ }
+}

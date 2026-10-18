@@ -94,17 +94,24 @@ def _device_tree(tree: Any) -> Any:
 
 
 def _hostify_namelist(namelist: Any, grid: Any) -> Any:
+    from gpuwrf.physics.thompson_hail.tables import checkpoint_split
+
+    # mp38 bound tables (~0.97 GB) are stored as a content reference only.
+    namelist, hail_ref = checkpoint_split(namelist)
     host_namelist = _hostify_tree(namelist)
     if is_dataclass(host_namelist) and hasattr(host_namelist, "grid"):
-        return replace(host_namelist, grid=grid)
-    return host_namelist
+        host_namelist = replace(host_namelist, grid=grid)
+    return host_namelist if hail_ref is None else replace(host_namelist, thompson_hail_tables=hail_ref)
 
 
 def _restore_namelist(namelist: Any, grid: Any) -> Any:
+    from gpuwrf.physics.thompson_hail.tables import checkpoint_restore, checkpoint_split
+
+    namelist, hail_ref = checkpoint_split(namelist)
     device_namelist = _device_tree(namelist)
     if is_dataclass(device_namelist) and hasattr(device_namelist, "grid"):
-        return replace(device_namelist, grid=grid)
-    return device_namelist
+        device_namelist = replace(device_namelist, grid=grid)
+    return checkpoint_restore(device_namelist, hail_ref)
 
 
 def _state_to_host_fields(state: State) -> dict[str, np.ndarray]:
@@ -257,6 +264,8 @@ def write_checkpoint(
     payload["noahmp_options"]=restart_configuration(namelist)
     from gpuwrf.io.noahmp_restart_identity import bound_table_identity
     payload["noahmp_bound_tables"]=bound_table_identity(namelist)
+    from gpuwrf.surface_params.controls import restart_controls_digest
+    payload["surface_controls_digest"]=restart_controls_digest(namelist)
     _validate_spectral_fdda_checkpoint(payload)
     from gpuwrf.io.ocean_schema import validate as validate_ocean
     runtime=payload.get("runtime_state")
@@ -367,6 +376,8 @@ def _read_payload(path: str | Path, *, namelist=None) -> dict[str, Any]:
     validate_option_restart(payload.get("noahmp_options"),payload.get("namelist"))
     from gpuwrf.io.noahmp_restart_identity import validate_bound_table_restart
     validate_bound_table_restart(payload.get("noahmp_bound_tables"),payload.get("namelist"))
+    from gpuwrf.surface_params.controls import validate_controls_restart
+    validate_controls_restart(payload.get("surface_controls_digest"),namelist)
     if namelist is not None:
         # Authenticate the requested selectors as well as the saved bundle.
         # Equal table bytes do not imply equal DVEG/RUN/irrigation controls.

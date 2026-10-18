@@ -1,0 +1,308 @@
+{
+ "scope": "deviceless natives executed on GPU; per-leaf bitwise per pair; not fidelity/S1",
+ "source_commit": "2530967e88232907153627c103693d86dcbac0c9",
+ "harness_sha256": "0ad59563ffcf4f85d463895edd084b300f75658fe251db36e27e91cdf8b78c46",
+ "plan": {
+  "runs": {
+   "acm2_split_cold": {
+    "arm": "<USER_HOME>/wrf_gpu2_lanes/w41-physshare/arms/d_v2_acm2_split_cold",
+    "carry": "<USER_HOME>/wrf_gpu2_lanes/w41-physshare/arms/e_v2_acm2_nonsplit_cold",
+    "index": null
+   },
+   "acm2_split_cached": {
+    "arm": "<USER_HOME>/wrf_gpu2_lanes/w41-physshare/arms/c_v2_acm2_split_cached",
+    "carry": "<USER_HOME>/wrf_gpu2_lanes/w41-physshare/arms/e_v2_acm2_nonsplit_cold",
+    "index": null
+   },
+   "acm2_nonsplit": {
+    "arm": "<USER_HOME>/wrf_gpu2_lanes/w41-physshare/arms/e_v2_acm2_nonsplit_cold",
+    "carry": "<USER_HOME>/wrf_gpu2_lanes/w41-physshare/arms/e_v2_acm2_nonsplit_cold",
+    "index": null
+   },
+   "union_idx1_acm2": {
+    "arm": "<USER_HOME>/wrf_gpu2_lanes/w41-physshare/arms/h_o2_union_ysu_acm2_nonsplit_cold",
+    "carry": "<USER_HOME>/wrf_gpu2_lanes/w41-physshare/arms/e_v2_acm2_nonsplit_cold",
+    "index": 1
+   },
+   "ysu_nonsplit": {
+    "arm": "<USER_HOME>/wrf_gpu2_lanes/w41-physshare/arms/a_v1_ysu_nonsplit_cold",
+    "carry": "<USER_HOME>/wrf_gpu2_lanes/w41-physshare/arms/a_v1_ysu_nonsplit_cold",
+    "index": null
+   },
+   "union_idx0_ysu": {
+    "arm": "<USER_HOME>/wrf_gpu2_lanes/w41-physshare/arms/h_o2_union_ysu_acm2_nonsplit_cold",
+    "carry": "<USER_HOME>/wrf_gpu2_lanes/w41-physshare/arms/a_v1_ysu_nonsplit_cold",
+    "index": 0
+   }
+  },
+  "pairs": [
+   [
+    "acm2_split_cold",
+    "acm2_split_cached"
+   ],
+   [
+    "acm2_nonsplit",
+    "acm2_split_cold"
+   ],
+   [
+    "acm2_nonsplit",
+    "union_idx1_acm2"
+   ],
+   [
+    "ysu_nonsplit",
+    "union_idx0_ysu"
+   ]
+  ]
+ },
+ "runs": {
+  "acm2_split_cold": {
+   "arm": "<USER_HOME>/wrf_gpu2_lanes/w41-physshare/arms/d_v2_acm2_split_cold",
+   "carry": "<USER_HOME>/wrf_gpu2_lanes/w41-physshare/arms/e_v2_acm2_nonsplit_cold",
+   "index": null,
+   "gpu_stablehlo_sha256": "4bf65f106a7297a14e58afde9a1b2de1d1d906f309913114fa7a43be455ba2b0",
+   "deviceless_stablehlo_sha256": "b1f5734ffc4d892d5943b240ee218dbb70c65fe8a6a12a1dc21cc13efa68bbd0",
+   "binding": "structural",
+   "native_load_s": 160.9,
+   "memory": {
+    "argument_size_in_bytes": 39554272,
+    "output_size_in_bytes": 37130804,
+    "alias_size_in_bytes": 37129444,
+    "temp_size_in_bytes": 224268120
+   },
+   "kept_arg_bytes": 39554272,
+   "kept_args": 232,
+   "memory_equals_deviceless": true,
+   "segment_s": 1.002,
+   "leaves": 170,
+   "nonfinite": 0,
+   "verdict": "RAN"
+  },
+  "acm2_split_cached": {
+   "arm": "<USER_HOME>/wrf_gpu2_lanes/w41-physshare/arms/c_v2_acm2_split_cached",
+   "carry": "<USER_HOME>/wrf_gpu2_lanes/w41-physshare/arms/e_v2_acm2_nonsplit_cold",
+   "index": null,
+   "gpu_stablehlo_sha256": "4bf65f106a7297a14e58afde9a1b2de1d1d906f309913114fa7a43be455ba2b0",
+   "deviceless_stablehlo_sha256": "b1f5734ffc4d892d5943b240ee218dbb70c65fe8a6a12a1dc21cc13efa68bbd0",
+   "binding": "structural",
+   "native_load_s": 9.6,
+   "memory": {
+    "argument_size_in_bytes": 39554272,
+    "output_size_in_bytes": 37130804,
+    "alias_size_in_bytes": 37129444,
+    "temp_size_in_bytes": 224268120
+   },
+   "kept_arg_bytes": 39554272,
+   "kept_args": 232,
+   "memory_equals_deviceless": true,
+   "segment_s": 1.022,
+   "leaves": 170,
+   "nonfinite": 1453580,
+   "verdict": "RAN"
+  },
+  "acm2_nonsplit": {
+   "arm": "<USER_HOME>/wrf_gpu2_lanes/w41-physshare/arms/e_v2_acm2_nonsplit_cold",
+   "carry": "<USER_HOME>/wrf_gpu2_lanes/w41-physshare/arms/e_v2_acm2_nonsplit_cold",
+   "index": null,
+   "gpu_stablehlo_sha256": "4bf65f106a7297a14e58afde9a1b2de1d1d906f309913114fa7a43be455ba2b0",
+   "deviceless_stablehlo_sha256": "b1f5734ffc4d892d5943b240ee218dbb70c65fe8a6a12a1dc21cc13efa68bbd0",
+   "binding": "structural",
+   "native_load_s": 160.5,
+   "memory": {
+    "argument_size_in_bytes": 39554272,
+    "output_size_in_bytes": 37130804,
+    "alias_size_in_bytes": 37129444,
+    "temp_size_in_bytes": 224268120
+   },
+   "kept_arg_bytes": 39554272,
+   "kept_args": 232,
+   "memory_equals_deviceless": true,
+   "segment_s": 1.147,
+   "leaves": 170,
+   "nonfinite": 0,
+   "verdict": "RAN"
+  },
+  "union_idx1_acm2": {
+   "arm": "<USER_HOME>/wrf_gpu2_lanes/w41-physshare/arms/h_o2_union_ysu_acm2_nonsplit_cold",
+   "carry": "<USER_HOME>/wrf_gpu2_lanes/w41-physshare/arms/e_v2_acm2_nonsplit_cold",
+   "index": 1,
+   "gpu_stablehlo_sha256": "be8e4c08153efe1b18aabb9778cea9ba7606c0d59b52075ce055dde796199402",
+   "deviceless_stablehlo_sha256": "a07a07ae25616d1894486605a8ad7e789cb280e653d76520df57b7ecf097e2fc",
+   "binding": "structural",
+   "native_load_s": 143.9,
+   "memory": {
+    "argument_size_in_bytes": 39554276,
+    "output_size_in_bytes": 37130804,
+    "alias_size_in_bytes": 37129444,
+    "temp_size_in_bytes": 224286296
+   },
+   "kept_arg_bytes": 39554276,
+   "kept_args": 233,
+   "memory_equals_deviceless": true,
+   "segment_s": 1.127,
+   "leaves": 170,
+   "nonfinite": 0,
+   "verdict": "RAN"
+  },
+  "ysu_nonsplit": {
+   "arm": "<USER_HOME>/wrf_gpu2_lanes/w41-physshare/arms/a_v1_ysu_nonsplit_cold",
+   "carry": "<USER_HOME>/wrf_gpu2_lanes/w41-physshare/arms/a_v1_ysu_nonsplit_cold",
+   "index": null,
+   "gpu_stablehlo_sha256": "7e62e47909c405261ccad5571f65f6c82cd06063bf5e9183d5544bc9ff2ff4e1",
+   "deviceless_stablehlo_sha256": "7220fcebb1e5047786f3a547b5faf04c34ca8408ae03015ecb10675859b48595",
+   "binding": "structural",
+   "native_load_s": 115.3,
+   "memory": {
+    "argument_size_in_bytes": 39554272,
+    "output_size_in_bytes": 37130804,
+    "alias_size_in_bytes": 37129444,
+    "temp_size_in_bytes": 224258904
+   },
+   "kept_arg_bytes": 39554272,
+   "kept_args": 232,
+   "memory_equals_deviceless": true,
+   "segment_s": 0.894,
+   "leaves": 170,
+   "nonfinite": 0,
+   "verdict": "RAN"
+  },
+  "union_idx0_ysu": {
+   "arm": "<USER_HOME>/wrf_gpu2_lanes/w41-physshare/arms/h_o2_union_ysu_acm2_nonsplit_cold",
+   "carry": "<USER_HOME>/wrf_gpu2_lanes/w41-physshare/arms/a_v1_ysu_nonsplit_cold",
+   "index": 0,
+   "gpu_stablehlo_sha256": "be8e4c08153efe1b18aabb9778cea9ba7606c0d59b52075ce055dde796199402",
+   "deviceless_stablehlo_sha256": "a07a07ae25616d1894486605a8ad7e789cb280e653d76520df57b7ecf097e2fc",
+   "binding": "structural",
+   "native_load_s": 143.9,
+   "memory": {
+    "argument_size_in_bytes": 39554276,
+    "output_size_in_bytes": 37130804,
+    "alias_size_in_bytes": 37129444,
+    "temp_size_in_bytes": 224286296
+   },
+   "kept_arg_bytes": 39554276,
+   "kept_args": 233,
+   "memory_equals_deviceless": true,
+   "segment_s": 0.95,
+   "leaves": 170,
+   "nonfinite": 0,
+   "verdict": "RAN"
+  }
+ },
+ "pairs": {
+  "acm2_split_cold__vs__acm2_split_cached": {
+   "leaves": 170,
+   "leaf_count_equal": true,
+   "leaves_differing": 97,
+   "verdict": "DIFFERS",
+   "max_abs_diff_by_leaf": {
+    "[<flat index 0>][<flat index 0>]": 11.266440391540527,
+    "[<flat index 0>][<flat index 1>]": 18.261248111724854,
+    "[<flat index 0>][<flat index 2>]": NaN,
+    "[<flat index 0>][<flat index 3>]": NaN,
+    "[<flat index 0>][<flat index 4>]": 0.005490798868821763,
+    "[<flat index 0>][<flat index 5>]": NaN,
+    "[<flat index 0>][<flat index 6>]": NaN,
+    "[<flat index 0>][<flat index 7>]": NaN,
+    "[<flat index 0>][<flat index 8>]": NaN,
+    "[<flat index 0>][<flat index 9>]": 226.328125,
+    "[<flat index 0>][<flat index 10>]": 226.33038330078125,
+    "[<flat index 0>][<flat index 11>]": NaN,
+    "[<flat index 0>][<flat index 12>]": NaN,
+    "[<flat index 0>][<flat index 13>]": NaN,
+    "[<flat index 0>][<flat index 14>]": NaN,
+    "[<flat index 0>][<flat index 15>]": NaN,
+    "[<flat index 0>][<flat index 16>]": NaN,
+    "[<flat index 0>][<flat index 17>]": NaN,
+    "[<flat index 0>][<flat index 21>]": NaN,
+    "[<flat index 0>][<flat index 22>]": NaN,
+    "[<flat index 0>][<flat index 23>]": NaN,
+    "[<flat index 0>][<flat index 24>]": NaN,
+    "[<flat index 0>][<flat index 25>]": NaN,
+    "[<flat index 0>][<flat index 26>]": NaN,
+    "[<flat index 0>][<flat index 27>]": NaN,
+    "[<flat index 0>][<flat index 28>]": NaN,
+    "[<flat index 0>][<flat index 33>]": NaN,
+    "[<flat index 0>][<flat index 34>]": 0.00010693179501686245,
+    "[<flat index 0>][<flat index 71>]": NaN,
+    "[<flat index 0>][<flat index 72>]": NaN,
+    "[<flat index 0>][<flat index 73>]": NaN,
+    "[<flat index 0>][<flat index 74>]": NaN,
+    "[<flat index 0>][<flat index 75>]": NaN,
+    "[<flat index 0>][<flat index 84>]": NaN,
+    "[<flat index 0>][<flat index 85>]": 8.315940249303821e-06,
+    "[<flat index 0>][<flat index 86>]": 0.00010750998353614705,
+    "[<flat index 0>][<flat index 87>]": 6.0732642850780394e-05,
+    "[<flat index 1>]": NaN,
+    "[<flat index 2>]": NaN,
+    "[<flat index 3>]": NaN,
+    "[<flat index 4>]": NaN,
+    "[<flat index 5>]": NaN,
+    "[<flat index 6>]": NaN,
+    "[<flat index 7>]": NaN,
+    "[<flat index 8>]": NaN,
+    "[<flat index 9>]": NaN,
+    "[<flat index 10>]": NaN,
+    "[<flat index 11>]": NaN,
+    "[<flat index 12>]": NaN,
+    "[<flat index 13>]": NaN,
+    "[<flat index 14>]": NaN,
+    "[<flat index 15>][<flat index 0>]": NaN,
+    "[<flat index 15>][<flat index 1>]": 90296.00273522735,
+    "[<flat index 15>][<flat index 2>]": 0.3136582225561142,
+    "[<flat index 15>][<flat index 5>]": NaN,
+    "[<flat index 15>][<flat index 6>]": NaN,
+    "[<flat index 15>][<flat index 7>]": 0.4976215362548828,
+    "[<flat index 15>][<flat index 8>]": 10.027844429016113,
+    "[<flat index 15>][<flat index 9>]": 10.027843475341797,
+    "[<flat index 15>][<flat index 10>]": NaN,
+    "[<flat index 15>][<flat index 11>]": NaN,
+    "[<flat index 15>][<flat index 12>]": 0.00845487043261528,
+    "[<flat index 15>][<flat index 14>]": NaN,
+    "[<flat index 15>][<flat index 15>]": NaN,
+    "[<flat index 15>][<flat index 16>]": NaN,
+    "[<flat index 15>][<flat index 17>]": NaN,
+    "[<flat index 15>][<flat index 18>]": NaN,
+    "[<flat index 15>][<flat index 19>]": NaN,
+    "[<flat index 15>][<flat index 20>]": NaN,
+    "[<flat index 15>][<flat index 23>]": NaN,
+    "[<flat index 15>][<flat index 24>]": 0.9991908575757407,
+    "[<flat index 15>][<flat index 25>]": NaN,
+    "[<flat index 15>][<flat index 26>]": NaN,
+    "[<flat index 15>][<flat index 27>]": NaN,
+    "[<flat index 15>][<flat index 28>]": NaN,
+    "[<flat index 15>][<flat index 30>]": 0.030442082788795233,
+    "[<flat index 15>][<flat index 31>]": 13721.070319944505,
+    "[<flat index 16>][1]": NaN,
+    "[<flat index 25>].surface_emissivity": 0.03951960802078247
+   }
+  },
+  "acm2_nonsplit__vs__acm2_split_cold": {
+   "leaves": 170,
+   "leaf_count_equal": true,
+   "leaves_differing": 0,
+   "verdict": "BITWISE",
+   "max_abs_diff_by_leaf": {}
+  },
+  "acm2_nonsplit__vs__union_idx1_acm2": {
+   "leaves": 170,
+   "leaf_count_equal": true,
+   "leaves_differing": 0,
+   "verdict": "BITWISE",
+   "max_abs_diff_by_leaf": {}
+  },
+  "ysu_nonsplit__vs__union_idx0_ysu": {
+   "leaves": 170,
+   "leaf_count_equal": true,
+   "leaves_differing": 0,
+   "verdict": "BITWISE",
+   "max_abs_diff_by_leaf": {}
+  }
+ },
+ "device": "cuda:0",
+ "case_init_s": [
+  109.3,
+  3.7
+ ],
+ "wall_s": 842.12,
+ "phase": "DONE"
+}

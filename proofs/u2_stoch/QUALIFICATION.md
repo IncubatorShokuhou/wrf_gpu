@@ -60,3 +60,10 @@ profiles) retain exactly the same resolved values. ST79 seals the final main
 rebase to the tested source. Prior numerical/default-program receipts are reused;
 these host-only changes add no timestep launches, device allocations, traffic,
 synchronization or compiled-body work. No forecast was repeated.
+
+## GPU qualification (lane w41-stoch, 2026-10-17)
+
+Swiss d01 24 h GPU arms (SKEBS, SPPT, SPP, all switches, OFF control) against original serial CPU-WRF
+runs of the identical namelists and seeds, frozen D6 + every-frame inventory + all stochastic history
+fields and seed arrays + E41: `proofs/w41_stoch/GPU_QUALIFICATION.md`. The same lane replaced the serial
+RNG kernel by a bitwise-identical parallel stream and fixed the SPP FIELD_* history inventory for cu0.

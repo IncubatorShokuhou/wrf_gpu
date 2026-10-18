@@ -1,0 +1,351 @@
+{
+ "schema": "w41-topowind-gpu-arms-v1",
+ "lane": "w41-topowind",
+ "src_commit_measured": "922e4de092768282232a51778d5a7c7d702e76d6",
+ "note": "lane HEAD src == measured src (7f70be7a2b reverted). D6 = proofs/v040/final_validation/score.py (frozen manifest 9df4fab8). E41 = scripts/wave_cubin_gate.py on each arm cache. Opt-in E41 disclosure rule: manager 2026-10-16T04:36Z.",
+ "arms": {
+  "c02tw1": {
+   "rc": 0,
+   "platform": "gpu",
+   "wall_s": 527.5,
+   "source_commit": "922e4de092768282232a51778d5a7c7d702e76d6",
+   "hours": 24,
+   "input_sha256": {
+    "namelist.input": "dd11c375418c6b4c0f9f6b766f84423c22d3aa1d7893bda6b297890d238707c8",
+    "wrfbdy_d01": "f3e556670e4768326997bdfa1dd8b0f77eb6d5da07d9c4dbf900bf8ff9e30230",
+    "wrfinput_d01": "09e3a68e967c2c93d39acf0565e6280bbe20ea74677b360a0ecf7b86024ad10d"
+   },
+   "gpu_run_sha256": "3dfdf258609b1c076beb9ac688adc0c3372e5ed13ddb34812a9f05f733f7a71a",
+   "e41": {
+    "gate": "FAIL",
+    "hard_stack": "FAIL",
+    "coverage": "PASS",
+    "programs": [
+     {
+      "program": "jit",
+      "kernels": 1267,
+      "max_stack_B": 400,
+      "stack_over256": [
+       [
+        "loop_maximum_minimum_select_subtract_fusion",
+        400
+       ]
+      ],
+      "kinput_over500": 5
+     },
+     {
+      "program": "d01",
+      "kernels": 1267,
+      "max_stack_B": 400,
+      "stack_over256": [
+       [
+        "loop_maximum_minimum_select_subtract_fusion",
+        400
+       ]
+      ],
+      "kinput_over500": 0
+     }
+    ],
+    "wave_gate_sha256": "35f1ec5fa86adebf29f6c0d8e3d63bbe3eb65d6ea6eeda8c9e5fb5012fad04c5"
+   },
+   "d6": {
+    "d01": {
+     "verdict": "PASS",
+     "paired_frames": 25,
+     "failures": 0,
+     "nonfinite": 0,
+     "incomplete": 0,
+     "coverage_complete": true,
+     "worst_lead_rmse": {
+      "T2": 0.47898925442742174,
+      "U10": 0.4639361811975383,
+      "V10": 0.5339255062783508,
+      "PSFC": 3.3350153357794405,
+      "RAINNC": 0.16447479181676142,
+      "T": 0.08408924398288516,
+      "U": 0.2557700567744906,
+      "V": 0.3178096600624168,
+      "W": 0.03237066415325038,
+      "QVAPOR": 1.9036720173623016e-05
+     },
+     "sha256": "21b9ea4294ab0a481d8538c8f5f67b3e5074ec9f702dae520c33be1f466492b2"
+    }
+   }
+  },
+  "c07tw1": {
+   "rc": 0,
+   "platform": "gpu",
+   "wall_s": 1000.6,
+   "source_commit": "922e4de092768282232a51778d5a7c7d702e76d6",
+   "hours": 24,
+   "input_sha256": {
+    "namelist.input": "c6695a5f69874436a356f5d98296faa0125201d5d7ed78099a6b654408ed913e",
+    "wrfbdy_d01": "f3e556670e4768326997bdfa1dd8b0f77eb6d5da07d9c4dbf900bf8ff9e30230",
+    "wrfinput_d01": "09e3a68e967c2c93d39acf0565e6280bbe20ea74677b360a0ecf7b86024ad10d"
+   },
+   "gpu_run_sha256": "832d0e4f0b0951559647365c01e1405c883aa646fe20439c9e79bae4548d1092",
+   "e41": {
+    "gate": "FAIL",
+    "hard_stack": "PASS",
+    "coverage": "PASS",
+    "programs": [
+     {
+      "program": "jit",
+      "kernels": 1501,
+      "max_stack_B": 24,
+      "stack_over256": [],
+      "kinput_over500": 5
+     },
+     {
+      "program": "d01",
+      "kernels": 1501,
+      "max_stack_B": 24,
+      "stack_over256": [],
+      "kinput_over500": 0
+     }
+    ],
+    "wave_gate_sha256": "d031f03e88d22bb8106dc33e88c9d348488a3adc99fb182cc2f079f67a5923c3"
+   },
+   "d6": {
+    "d01": {
+     "verdict": "PASS",
+     "paired_frames": 25,
+     "failures": 0,
+     "nonfinite": 0,
+     "incomplete": 0,
+     "coverage_complete": true,
+     "worst_lead_rmse": {
+      "T2": 0.25750276102432734,
+      "U10": 0.11823708429344687,
+      "V10": 0.1233076251068209,
+      "PSFC": 1.063000765939552,
+      "RAINNC": 0.04282516022492526,
+      "T": 0.026398294488620633,
+      "U": 0.07722577162596127,
+      "V": 0.08287470601812436,
+      "W": 0.010035900978837905,
+      "QVAPOR": 6.318724489765891e-06
+     },
+     "sha256": "a51a1e14041b1d4a6f0db29ceeb1ba1ae8f74e2bf8d3649ec26d0d7ba63ad808"
+    }
+   }
+  },
+  "wn3tw": {
+   "rc": 0,
+   "platform": "gpu",
+   "wall_s": 1325.4,
+   "source_commit": "922e4de092768282232a51778d5a7c7d702e76d6",
+   "hours": 24,
+   "input_sha256": {
+    "namelist.input": "a926eda00dd1d6a8e3ee7064a74e13ea9fa86f49d1be546287f6e805236b828f",
+    "wrfbdy_d01": "c683a23ebe5946995b71c75f0b86b0b07badfc010cf3762b2149fa91cd344b37",
+    "wrfinput_d01": "b7f75a6bad092cdacd2a2d4b47a4c28994b6727b372f23b1f22bb424a83987d8",
+    "wrfinput_d02": "3e1fbe923e831fd486518a3fa2cbd2d31a7d8b605f7c39e89eb260c892573371",
+    "wrfinput_d03": "502f906c1b99b7c4c7506f2a2a6c70e2647c0d8c7f5d0b2358c63ebc60018b7d",
+    "wrflowinp_d01": "480658449a06aff1043122653f7c489fb5cbaa1c18f7b47831df51141fc2e775",
+    "wrflowinp_d02": "fc8059297b9e2da4abaff6d6e1efc4a921cd46bfc5e6dc9d14746b221fc415ba",
+    "wrflowinp_d03": "4a641f46fed940bcfad20772f18b5e072ae9d902de7ac19f8eb017e8b634315b"
+   },
+   "gpu_run_sha256": "de32104fe8a2f5569999e07d699d79f053ff6a56c30acb75fa30a6a5908527ac",
+   "e41": {
+    "gate": "FAIL",
+    "hard_stack": "FAIL",
+    "coverage": "PASS",
+    "programs": [
+     {
+      "program": "jit",
+      "kernels": 1091,
+      "max_stack_B": 88,
+      "stack_over256": [],
+      "kinput_over500": 3
+     },
+     {
+      "program": "jit",
+      "kernels": 1081,
+      "max_stack_B": 496,
+      "stack_over256": [
+       [
+        "loop_add_maximum_minimum_select_slice_subtract_fusion",
+        496
+       ],
+       [
+        "loop_add_maximum_minimum_select_subtract_fusion",
+        496
+       ]
+      ],
+      "kinput_over500": 1
+     },
+     {
+      "program": "d01",
+      "kernels": 1091,
+      "max_stack_B": 88,
+      "stack_over256": [],
+      "kinput_over500": 0
+     },
+     {
+      "program": "fused_d02",
+      "kernels": 1081,
+      "max_stack_B": 496,
+      "stack_over256": [
+       [
+        "loop_add_maximum_minimum_select_slice_subtract_fusion",
+        496
+       ],
+       [
+        "loop_add_maximum_minimum_select_subtract_fusion",
+        496
+       ]
+      ],
+      "kinput_over500": 0
+     }
+    ],
+    "wave_gate_sha256": "065d8b18fa201b9755ffc7c426d308647c8462562f32fca41033e43f591263e9"
+   },
+   "d6": {
+    "d01": {
+     "verdict": "PASS",
+     "paired_frames": 25,
+     "failures": 0,
+     "nonfinite": 0,
+     "incomplete": 0,
+     "coverage_complete": true,
+     "worst_lead_rmse": {
+      "T2": 0.015781978496249186,
+      "U10": 0.03335409068306588,
+      "V10": 0.07886158524588384,
+      "PSFC": 0.5193760327455744,
+      "RAINNC": 0.0054280888945776075,
+      "T": 0.007542924114333976,
+      "U": 0.011263660034248394,
+      "V": 0.02115201406970871,
+      "W": 0.001365320224325421,
+      "QVAPOR": 5.3142674354903624e-06
+     },
+     "sha256": "a96b1df5cd0d0c50b8f240d2733614378d46df7fccc6648a3117d1bc1e464def"
+    },
+    "d02": {
+     "verdict": "PASS",
+     "paired_frames": 25,
+     "failures": 0,
+     "nonfinite": 0,
+     "incomplete": 0,
+     "coverage_complete": true,
+     "worst_lead_rmse": {
+      "T2": 0.015446881541535257,
+      "U10": 0.051341111973361386,
+      "V10": 0.05361193428191161,
+      "PSFC": 0.5102598641811404,
+      "RAINNC": 0.0012408878389218339,
+      "T": 0.015420824519158603,
+      "U": 0.027400175908070704,
+      "V": 0.029198971203548602,
+      "W": 0.00582177155859186,
+      "QVAPOR": 1.587775103851253e-05
+     },
+     "sha256": "4aa93d4b5b302c2bdb704b22da46afa8f0a381f97ffd69cb192fa56a2bee67fc"
+    },
+    "d03": {
+     "verdict": "PASS",
+     "paired_frames": 25,
+     "failures": 0,
+     "nonfinite": 0,
+     "incomplete": 0,
+     "coverage_complete": true,
+     "worst_lead_rmse": {
+      "T2": 0.09204397315142603,
+      "U10": 0.235651868545607,
+      "V10": 0.30011753294817495,
+      "PSFC": 4.038714167951748,
+      "RAINNC": 0.02137007338918367,
+      "T": 0.04632478247660695,
+      "U": 0.17914525338952997,
+      "V": 0.16432330287248165,
+      "W": 0.06049846080879617,
+      "QVAPOR": 4.852338906928104e-05
+     },
+     "sha256": "9ce8b359cc41cfddd5cb39e96181442fe97a5d797822311836b691dec7b40d97"
+    }
+   }
+  },
+  "c02tw0ctl": {
+   "rc": 0,
+   "platform": "gpu",
+   "wall_s": 442.1,
+   "source_commit": "922e4de092768282232a51778d5a7c7d702e76d6",
+   "hours": 1,
+   "input_sha256": {
+    "namelist.input": "f00b423372d0c66350a7b05ab4f637093278e3c21a6acb19950cc118136eaa3b",
+    "wrfbdy_d01": "f3e556670e4768326997bdfa1dd8b0f77eb6d5da07d9c4dbf900bf8ff9e30230",
+    "wrfinput_d01": "09e3a68e967c2c93d39acf0565e6280bbe20ea74677b360a0ecf7b86024ad10d"
+   },
+   "gpu_run_sha256": "7e7836a2bb7938db441ea0f47d4013984c37f0c3ce6a3ca2e83404d2542e9838",
+   "e41": {
+    "gate": "FAIL",
+    "hard_stack": "PASS",
+    "coverage": "PASS",
+    "programs": [
+     {
+      "program": "jit",
+      "kernels": 1295,
+      "max_stack_B": 8,
+      "stack_over256": [],
+      "kinput_over500": 6
+     },
+     {
+      "program": "d01",
+      "kernels": 1295,
+      "max_stack_B": 8,
+      "stack_over256": [],
+      "kinput_over500": 0
+     }
+    ],
+    "wave_gate_sha256": "4c5151bca2179257a39e8ff3d2d8115650d136f11a7c025761e342b0add478cb"
+   }
+  },
+  "c02tw1fix": {
+   "rc": 0,
+   "platform": "gpu",
+   "wall_s": 455.0,
+   "source_commit": "7f70be7a2b8a4a3d25b8ea432967fbe869a2cce8",
+   "hours": 1,
+   "input_sha256": {
+    "namelist.input": "dd11c375418c6b4c0f9f6b766f84423c22d3aa1d7893bda6b297890d238707c8",
+    "wrfbdy_d01": "f3e556670e4768326997bdfa1dd8b0f77eb6d5da07d9c4dbf900bf8ff9e30230",
+    "wrfinput_d01": "09e3a68e967c2c93d39acf0565e6280bbe20ea74677b360a0ecf7b86024ad10d"
+   },
+   "gpu_run_sha256": "c46d094bc88d48ba6a63a73cb4344a459657cfc57d25ae8216424a79fece4cc5",
+   "e41": {
+    "gate": "FAIL",
+    "hard_stack": "FAIL",
+    "coverage": "PASS",
+    "programs": [
+     {
+      "program": "jit",
+      "kernels": 1269,
+      "max_stack_B": 400,
+      "stack_over256": [
+       [
+        "loop_maximum_minimum_select_subtract_fusion",
+        400
+       ]
+      ],
+      "kinput_over500": 5
+     },
+     {
+      "program": "d01",
+      "kernels": 1269,
+      "max_stack_B": 400,
+      "stack_over256": [
+       [
+        "loop_maximum_minimum_select_subtract_fusion",
+        400
+       ]
+      ],
+      "kinput_over500": 0
+     }
+    ],
+    "wave_gate_sha256": "4b9e0d8a7d2540dff155d54c537bfec919f58b102b353f55ba6df887aeaa5272"
+   }
+  }
+ }
+}

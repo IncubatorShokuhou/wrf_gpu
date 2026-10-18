@@ -1,7 +1,7 @@
 """WRF Noah-MP BEP/BEM coupling, stored only on table-defined urban columns.
 
-Default ISURBAN maps to UTYPE=2 in urban_var_init. LCZ/NUDAPT and PV/green
-roofs are refused at load time. Static indices avoid carrying Registry-sized
+Default ISURBAN maps to UTYPE=2 in urban_var_init. LCZ/NUDAPT are refused at load
+time; rooftop PV (PV_FRAC_ROOF>0) and green roofs (GR_FLAG=1) run WRF's branches. Static indices avoid carrying Registry-sized
 building arrays across rural columns or padding inactive building types.
 """
 from dataclasses import dataclass
@@ -37,7 +37,7 @@ class UrbanMultilayerCarry(NamedTuple):
     # BEP+BEM only: WRF QGR_URB3D (history QGR_URB4D, 'rh'), full (ny, nx) grid.
     # urban_var_init seeds every column with SMOIS(top) (module_sf_urban.F:2947);
     # bep_bem resets urban columns to 0 every call and adds green-roof moisture
-    # only under GR_FLAG=1 (module_sf_bep_bem.F:1059,1097-1106), refused at load.
+    # only under GR_FLAG=1 (module_sf_bep_bem.F:1059,1097-1106).
     green_roof: object = None
 
 
@@ -78,11 +78,12 @@ def initial_multilayer_carry(bundle,*,tslb,frc_urb2d,nz,smois=None):
     zero=jnp.zeros_like(t0);tm=jnp.full_like(t0,bundle.material_temperature)
     state=BepState(fill(tm,2,n,10),fill(tm,4,n,10),fill(t0,2,10),fill(zero,4,n),fill(zero,2,n),fill(zero,2))
     if bundle.option==3:
-        from gpuwrf.physics.urban_bem_model import BemState
+        from gpuwrf.physics.urban_bem_model import BemState,initial_extra
         state=BemState(state.roof,fill(tm,nb,4,n,10),state.ground,fill(zero,nb,4,n),state.roof_heat,state.ground_heat,
             fill(t0,nb,floors),fill(zero+.01,nb,floors),fill(t0,nb,4,n),fill(zero,nb,4,n),
             fill(t0,nb,2,floors-1,10),fill(t0,nb,2,10),fill(zero,2,n),fill(zero,2),
-            fill(zero,2,n),fill(zero,2),fill(t0,2,n),{})
+            fill(zero,2,n),fill(zero,2),fill(t0,2,n),
+            initial_extra(bundle.bem,len(idx),smois_top=jnp.asarray(smois,jnp.float32)[0].reshape(-1)[idx],levels=n))
     fraction=jnp.asarray(frc_urb2d,jnp.float32).reshape(-1)[idx]
     fraction=jnp.where((fraction>0)&(fraction<=1),fraction,jnp.float32(bundle.fraction_default))
     zz=fill(zero,nz);ones=jnp.ones_like(zz)
@@ -138,9 +139,32 @@ def apply_urban_multilayer(bundle,carry,*,atmosphere,forcing,nm,ust,dt):
         history=dict(nm.history);history['GRDFLX']=put(history['GRDFLX'],surface.ground);nmout=nmout._replace(history=history)
     step=UrbanMultilayerDiagnostics(idx,profile.theta[:,0],qv[:,0],profile.u[:,0],profile.v[:,0])
     green_roof=carry.green_roof
-    if green_roof is not None:  # bep_bem: qgr_urb3d(ix,iy)=0. on every urban column (GR_FLAG=0)
-        green_roof=put(green_roof,jnp.zeros((len(bundle.indices),),jnp.float32))
+    if green_roof is not None:  # bep_bem: qgr_urb3d(ix,iy)=0. on every urban column, + GR_FLAG=1 sum
+        extra=getattr(result.state,'extra',None) or {}
+        qgr=extra['qgr'] if 'qgr' in extra else jnp.zeros((len(bundle.indices),),jnp.float32)
+        green_roof=put(green_roof,qgr)
     return nmout,put(ust,surface.ust),carry._replace(state=result.state,sources=sources,green_roof=green_roof),step
+
+
+def multilayer_history_fields(bundle,carry):
+    """Full-grid BEP+BEM history producers held by the carry (Registry 'rh').
+
+    QGR_URB4D is the held QGR_URB3D grid. With PV_FRAC_ROOF>0, EP_PV_URB3D is WRF's
+    per-call meso_urb_ac*d_urb*eppv sum on urban columns and urban_var_init's 0 elsewhere;
+    with GR_FLAG=1, TGR_URB4D/DRAINGR_URB3D are bep_bem's per-call sums (0 off urban columns).
+    """
+    fields={}
+    if carry is None:
+        return fields
+    if getattr(carry,'green_roof',None) is not None:
+        fields['QGR_URB4D']=carry.green_roof
+    extra=getattr(carry.state,'extra',None) or {}
+    for key,name in (('ep_pv','EP_PV_URB3D'),('tgr','TGR_URB4D'),('draingr','DRAINGR_URB3D')):
+        if bundle is not None and key in extra:
+            flat=np.zeros(int(np.prod(bundle.shape)),np.float32)
+            flat[np.asarray(bundle.indices,np.int64)]=np.asarray(extra[key],np.float32)
+            fields[name]=flat.reshape(bundle.shape)
+    return fields
 
 
 def multilayer_history_overwrite(t2,q2,u10,v10,step,psfc):

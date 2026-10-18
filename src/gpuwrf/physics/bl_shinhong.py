@@ -739,7 +739,8 @@ def _shinhong_column(u, v, tx, qv, p, pdi, pi, dz, tke_in, qc, qi, *,
     pu1l = _pu(delxy * jnp.maximum(zfacdx, 1.0), hpbl)
     upper_m = jnp.where(in_pbl_face, upper_m * pu1l, upper_m)
     lower_m = jnp.where(in_pbl_face, lower_m * pu1l, lower_m)
-    fric = ctopo * ust * ust / wspd1 * rhox * G / delp[0] * dt2 * (wspd1 / wspd) ** 2
+    # module_bl_shinhong.F:1387 ctopo(i)*ust(i)**2/...: ust**2 first (equal bits at ctopo=1).
+    fric = ctopo * (ust * ust) / wspd1 * rhox * G / delp[0] * dt2 * (wspd1 / wspd) ** 2
     diag_m = _wrf_diag(1.0 + fric, upper_m, lower_m)
     rhs_u = _wrf_rhs(u, u[0], dsdzu, dtodsd, dtodsu, in_pbl_face)
     rhs_v = _wrf_rhs(v, v[0], dsdzv, dtodsd, dtodsu, in_pbl_face)
@@ -787,9 +788,13 @@ def _shinhong_column(u, v, tx, qv, p, pdi, pi, dz, tke_in, qc, qi, *,
 def shinhong_columns(
     u, v, temperature, qv, pressure, pressure_interface, exner, dz, tke,
     *, psfc, znt, ust, hfx, qfx, wspd, br, psim, psih, dt, xland, u10, v10,
-    dx, dy, corf=1.0e-4, ctopo=1.0, shinhong_tke_diag=1, qc=None, qi=None,
+    dx, dy, corf=1.0e-4, ctopo=1.0, shinhong_tke_diag=1, qc=None, qi=None, ctopo2=None,
 ):
-    """Batched Shin-Hong columns over ``(ncol, nz)`` arrays."""
+    """Batched Shin-Hong columns over ``(ncol, nz)`` arrays.
+
+    ``ctopo2`` (topo_wind CTOPO2, ``(ncol,)``) adds the WRF 10 m wind blend
+    (module_bl_shinhong.F:1469-1473) as ``u10``/``v10`` outputs; None (CTOPO2 = 1)
+    leaves U10/V10 to the surface layer, bit-identical to WRF's identity blend."""
 
     ncol = u.shape[0]
     if qc is None:
@@ -818,7 +823,12 @@ def shinhong_columns(
         dx_b, dy_b, corf_b, ctopo_b, diag_b,
     )
     u_t, v_t, th_t, qv_t, exch_h, pblh, kpbl, wstar, delta, tke_out, el_pbl, qc_t, qi_t = out
-    return {
+    blend = {}
+    if ctopo2 is not None:
+        # u10 = ctopo2*u10+(1-ctopo2)*ux(i,1): ux is the PBL entry profile (REAL).
+        c2 = jnp.broadcast_to(jnp.asarray(ctopo2, real), (ncol,))
+        blend = {"u10": c2 * u10 + (1.0 - c2) * u[:, 0], "v10": c2 * v10 + (1.0 - c2) * v[:, 0]}
+    return blend | {
         "u": u_t,
         "v": v_t,
         "theta": th_t,

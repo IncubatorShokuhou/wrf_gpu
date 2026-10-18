@@ -26,6 +26,7 @@ URL_TEMPLATE = "https://github.com/wrf-gpu/wrf_gpu/releases/download/v{version}/
 OUT_OF_PACKAGE = (
     "data/fixtures/rrtmg-tables-v1.npz",          # physics/rrtmg_tables.py (import time, ra=4)
     "data/fixtures/wrf-cam-ozone-v1.npz",         # physics/wrf_cam_ozone.py (ra=3/4)
+    "data/fixtures/wrf-tegen-aerosol-v1.npz",     # physics/wrf_tegen_aerosol.py (aer_opt=1, ra_sw=4)
     "data/fixtures/thompson-tables-v1.npz",       # physics/thompson_tables.py (import time)
     "data/fixtures/thompson-cold-collection-v1.npz",  # physics/thompson_tables.py (import time, default ON)
     "data/fixtures/thompson-mixed-phase-v1.npz",  # physics/thompson_tables.py (mixed-phase default ON)

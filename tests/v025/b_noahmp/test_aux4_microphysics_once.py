@@ -28,7 +28,10 @@ def test_rain01_increment_enters_exactly_once(monkeypatch,domain,order,aux4):
  carry=carry.replace(state=s)
  shape=s.t_skin.shape
  boundary=LowerBoundary(jnp.asarray([0],jnp.int32),jnp.full((1,)+shape,299.),jnp.zeros((1,)+shape),jnp.full((1,)+shape,50.),jnp.zeros((1,)+shape)) if aux4 else None
- nml=replace(nml,lower_boundary=boundary,force_fp64=True)
+ # WRF module_surface_driver.F:1490 returns before the SST_UPDATE block (:1636) when
+ # sf_sfclay_physics=0 (t-cfix-sfc F21), so the aux4 SST reaches TSK only with a surface
+ # layer selected: use the OperationalNamelist/PROD MYNN-SL (the surface adapter is stubbed).
+ nml=replace(nml,lower_boundary=boundary,force_fp64=True,sf_sfclay_physics=5)
  events=[]
  delta_qr=phys["qr"]-entry["qr"];delta_nr=phys["Nr"]-entry["Nr"];delta_qc=phys["qc"]-entry["qc"]
  def mp(state,dt):
@@ -48,4 +51,11 @@ def test_rain01_increment_enters_exactly_once(monkeypatch,domain,order,aux4):
  np.testing.assert_allclose(np.asarray(after.state.Nr),phys["Nr"],rtol=1e-14,atol=0)
  np.testing.assert_allclose(np.asarray(after.state.qc),phys["qc"],rtol=0,atol=1e-16)
  assert events==(["rk","mp"] if order else ["mp","rk"])
- if aux4:np.testing.assert_array_equal(np.asarray(after.state.t_skin),299.)
+ if aux4:
+  assert not np.any(np.asarray(s.t_skin)==299.)  # the SST update is observable
+  np.testing.assert_array_equal(np.asarray(after.state.t_skin),299.)
+  # sf_sfclay_physics=0: WRF skips SST_UPDATE, TSK keeps its value.
+  events.clear()
+  off,_=op._physics_boundary_step_with_limiter_diagnostics(carry,replace(nml,sf_sfclay_physics=0),jnp.int32(1),run_radiation=False)
+  np.testing.assert_array_equal(np.asarray(off.state.t_skin),np.asarray(s.t_skin))
+  np.testing.assert_allclose(np.asarray(off.state.qr),phys["qr"],rtol=0,atol=1e-16)

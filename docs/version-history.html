@@ -22,7 +22,7 @@
         <img src="_assets/logo.svg" alt="wrf_gpu logo">
         <span class="brand-text">
           <span class="brand-name">wrf_gpu</span>
-          <span class="brand-sub">User's Guide · v0.4.0</span>
+          <span class="brand-sub">User's Guide · v0.4.1</span>
         </span>
       </a>
       <div class="search-box">
@@ -57,6 +57,7 @@
 <div class="group-title">Reference</div>
 <a class="active" href="version-history.html">Version History</a>
 <div class="subnav">
+<a href="version-history.html#v041">v0.4.1 — 18 October 2026</a>
 <a href="version-history.html#v040">v0.4.0 — 17 October 2026</a>
 <a href="version-history.html#v034">v0.3.4 — 10 October 2026</a>
 <a href="version-history.html#v033">v0.3.3 — 9 October 2026</a>
@@ -79,6 +80,22 @@
       <main>
         <div class="breadcrumb"><a href="index.html">User's Guide</a> › Reference › Version History</div>
         <h1>Version history and release notes</h1>
+<h2 id="v041">v0.4.1 — 18 October 2026<a class="headerlink" href="#v041" aria-label="Permalink">¶</a></h2>
+<p>Opt-in additions on top of the v0.4.0 default physics (two default-path fixes are listed in the
+release notes): experimental ensemble data
+assimilation (<code>gpuwrf da</code>, LETKF, outer domain only), terrain correction of surface winds
+(<code>topo_wind=1/2</code>), aerosol in RRTMG shortwave (<code>aer_opt=1/3</code>), WRF radiation
+cloud fractions (<code>icloud=2/3</code>), Noah-MP surface parameters without recompiling, regional
+physics studies on the GPU, and stochastic physics checked against CPU-WRF with the same seeds.
+<code>topo_wind</code>, <code>aer_opt</code>, <code>icloud</code> and the stochastic schemes each passed a
+24-hour comparison with the original CPU-WRF in the tested set-ups. Nested runs compile once per grid
+instead of once per forecast date; the new <code>gpuwrf aot-key</code> shows which compiled programs two
+cases share. For v0.3.0 to v0.3.4, a compile cache shared across dates could load another date's nested
+program; on the tested Tenerife grid this changed no output (see the
+<a href="limitations.html#v03-shared-cache">note</a>).
+<a href="https://github.com/wrf-gpu/wrf_gpu/blob/main/docs/release/RELEASE_NOTES_v0.4.1.md">Release notes</a> ·
+<a href="https://github.com/wrf-gpu/wrf_gpu/blob/main/docs/release/SUPPORT_MATRIX_v0.4.1.md">Support matrix</a> ·
+<a href="https://github.com/wrf-gpu/wrf_gpu/blob/main/docs/release/USER_GUIDE_v0.4.1.md">Command guide</a>.</p>
 <h2 id="v040">v0.4.0 — 17 October 2026<a class="headerlink" href="#v040" aria-label="Permalink">¶</a></h2>
 <p>The feature release. More than 80 WRF 4.7.1 physics options run on the GPU (microphysics, cumulus,
 boundary layer, surface layer, land and radiation), together with analysis, spectral, surface and
@@ -89,7 +106,7 @@ NetCDF, Zarr or GRIB2, choose physics for a region and cycle land and snow state
 <p>66 configurations passed 24-hour comparisons with the original CPU-WRF (Goddard radiation: six
 hours), and the default physics passed on five real cases. These comparisons also found and fixed many
 errors in how WRF schemes were called. An NVIDIA Ampere or newer GPU is required. The large microphysics
-lookup tables are not yet uploaded to the GitHub release.
+lookup tables are attached to the GitHub release.
 <a href="https://github.com/wrf-gpu/wrf_gpu/blob/main/docs/release/RELEASE_NOTES_v0.4.0.md">Release notes</a> ·
 <a href="https://github.com/wrf-gpu/wrf_gpu/blob/main/docs/release/VALIDATION_v0.4.0.md">Validation report</a> ·
 <a href="https://github.com/wrf-gpu/wrf_gpu/blob/main/docs/release/SUPPORT_MATRIX_v0.4.0.md">Support matrix</a> ·

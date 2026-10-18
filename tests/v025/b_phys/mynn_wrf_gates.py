@@ -18,7 +18,7 @@ def inputs(root, period, domain, *, selected=True, dtype=None, source_forcing=Fa
             if selected and a.ndim:a=a[idx]
             return jnp.asarray(a,dtype=dtype)
         state=P.MynnPBLColumnState(**{
-            n: None if n in ('exner', 'ni', 'spp_pattern') and 'state_'+n not in f else value('state_'+n)
+            n: None if n in ('exner', 'ni', 'spp_pattern', 'passive') and 'state_'+n not in f else value('state_'+n)
             for n in P.MynnPBLColumnState.__slots__})
         flux=SurfaceFluxes(**{n:value('flux_'+n) for n in SurfaceFluxes._fields if 'flux_'+n in f})
         if source_forcing:

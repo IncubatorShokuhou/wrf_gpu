@@ -338,13 +338,15 @@ OPTIONAL_CARRY_FIELDS: tuple[str, ...] = (
     'noahmp_tile_drain',  # exact accumulated QTDRAIN for opt_tdrn=1/2
     "noahmp_groundwater",  # opt_run1 positive-depth ZWT/WA/WT (distinct from MMF)
     "cu_forcing",  # cu 3/5/6/16/93 held WRF RTHFTEN/RQVFTEN pair
+    "aerod",  # aer_opt=1 nested runs: held REAL Tegen per-layer AOD (6, z, y, x)
+    "taod5502d",  # aer_opt=3 (mp28): held REAL TAOD5502D (y, x)
 )
 PYTREE_CARRY_FIELDS = OPTIONAL_CARRY_FIELDS[5:]
 # Pytree groups appended after the current schema: files written before them
 # carry no manifest entry and resume with the group absent.
 _LATE_PYTREE_CARRY_FIELDS: tuple[str, ...] = ("h_diabatic", "history_diagnostics", "ruc_land", "ruc_rad", "cam_abs", "camuw_pbl",
                                                "fdda", "urban_slucm", "lake", "obs", "regional_streams", "precipitation_buckets", "nwp_diagnostics", "radar_reflectivity", "solar_interpolation", "temf", "urban_bep", "stochastic", "feedback_history", "windfarm_power", "tracer_tendencies", "ocean", "hurricane_ustm", "ssib_land", "ssib_rad", "qnse", "osas_rng_key", "cuplus", "noahmp_mmf", "gfdl_radiation", "sst_skin", "noahmp_irrigation", "noahmp_carbon", "noahmp_groundwater", "noahmp_tile_drain",
-                                               "cu_forcing")
+                                               "cu_forcing", "aerod", "taod5502d")
 
 # ``OperationalCarry`` fields this schema has no variables for.  A populated
 # (non-``None``) unsupported field is REFUSED at write time instead of being
@@ -1254,6 +1256,9 @@ def _write_wrfrst(
             dataset.GPUWRF_NOAHMP_OPTIONS=json.dumps(noahmp_config)
             from gpuwrf.io.noahmp_restart_identity import bound_table_identity
             dataset.GPUWRF_NOAHMP_BOUND_TABLES=bound_table_identity(namelist)
+        from gpuwrf.surface_params.controls import restart_controls_digest
+        if namelist is not None and restart_controls_digest(namelist) is not None:  # Track P (absent = released file)
+            dataset.GPUWRF_SURFACE_CONTROLS_DIGEST=restart_controls_digest(namelist)
 
         for leaf in state.active_field_names():
             _write_exact_state_variable(dataset, leaf, getattr(state, leaf), dimensions)
@@ -1635,9 +1640,14 @@ def _write_optional_carry_variables(
         dataset.GPUWRF_NOAHMP_MMF_CONFIG = json.dumps(config)
     if carry.urban_bep is not None:
         option=3 if hasattr(carry.urban_bep.state,'temperature') else 2
-        validate_urban_bep(carry.urban_bep,{'sf_urban_physics':option},
-            grid_shape=(dimensions['south_north'],dimensions['west_east']),nz=dimensions['bottom_top'])
+        from gpuwrf.io.restart_schema import _bem_extensions,_urban_context
+        live=_bem_extensions(_urban_context(namelist)[0],None) if namelist is not None and option==3 else None
+        selection=validate_urban_bep(carry.urban_bep,{'sf_urban_physics':option},
+            grid_shape=(dimensions['south_north'],dimensions['west_east']),nz=dimensions['bottom_top'],extensions=live)
         dataset.GPUWRF_URBAN_BEP_OPTION=np.int32(option)
+        if selection:
+            # Bound only when active, so PV/green-roof-off restart files keep their attributes.
+            dataset.GPUWRF_URBAN_BEM_EXTENSIONS=json.dumps(list(selection))
     for group in PYTREE_CARRY_FIELDS:
         value = getattr(carry, group)
         if value is None:
@@ -1986,8 +1996,11 @@ def _read_optional_carry_groups(dataset: Dataset, *, namelist=None, feedback_gro
     urban_option=getattr(dataset,'GPUWRF_URBAN_BEP_OPTION',None)
     urban_config=namelist if namelist is not None else {'sf_urban_physics':int(urban_option or 0)}
     urban_grid=(len(dataset.dimensions['south_north']),len(dataset.dimensions['west_east']))
+    saved_extensions=getattr(dataset,'GPUWRF_URBAN_BEM_EXTENSIONS',None)
+    bound_extensions=(json.loads(str(saved_extensions)) if saved_extensions is not None
+                      else [] if urban_option is not None and int(urban_option)==3 else None)
     validate_urban_bep(carry_fields['urban_bep'],urban_config,grid_shape=urban_grid,
-                       nz=len(dataset.dimensions['bottom_top']))
+                       nz=len(dataset.dimensions['bottom_top']),extensions=bound_extensions)
     validate_urban_radiation(carry_fields['radiation_diagnostics'],urban_config,grid_shape=urban_grid)
     from gpuwrf.io.windfarm_schema import validate_restart as validate_wind
     saved_wind = getattr(dataset,'GPUWRF_WINDFARM_CONFIG',None)
@@ -2117,6 +2130,8 @@ def _read_optional_carry_groups(dataset: Dataset, *, namelist=None, feedback_gro
     validate_option_restart(noahmp_config,namelist)
     from gpuwrf.io.noahmp_restart_identity import validate_bound_table_restart
     validate_bound_table_restart(getattr(dataset,'GPUWRF_NOAHMP_BOUND_TABLES',None),namelist)
+    from gpuwrf.surface_params.controls import validate_controls_restart
+    validate_controls_restart(getattr(dataset,'GPUWRF_SURFACE_CONTROLS_DIGEST',None),namelist)
     from gpuwrf.io.noahmp_carbon import validate_restart as validate_carbon
     # Options are encoded even when a caller does not supply a requested namelist.
     from types import SimpleNamespace

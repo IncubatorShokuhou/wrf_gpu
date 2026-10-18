@@ -76,12 +76,17 @@ def _freezing_tables():
     return arrays
 
 
-def real_tables():
+def real_tables(operands=None):
     # Called per trace, never cache a cast tracer in a module global (E206).
+    # ``operands`` (tables.ThompsonHailTables) supplies the DOUBLE freezing
+    # tables as traced program operands instead of baked constants.
     tables = THOMPSON_AERO_TABLES._replace(**{
         name: getattr(THOMPSON_AERO_TABLES, name).astype(np.float32)
         for name in ("ccn_act", "ta_na", "ta_ww", "cce", "ccg", "ocg1", "ocg2")
     }, nic1=THOMPSON_AERO_TABLES.nic1.astype(np.int32))
+    if operands is not None:
+        return tables._replace(**{name:jnp.asarray(value) for name,value in _cloud_coefficients().items()},
+                               qrfz4=operands.qrfz4, qcfz=operands.qcfz)
     return tables._replace(**{name:jnp.asarray(value) for name,value in
         {**_cloud_coefficients(), **_freezing_tables()}.items()})
 

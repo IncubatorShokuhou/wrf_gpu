@@ -64,6 +64,8 @@ def fake(tmp_path, monkeypatch):
         (tmp_path / "cases" / name).mkdir(parents=True)
         cases.append(str(tmp_path / "cases" / name))
     monkeypatch.setenv("GPUWRF_GPU_LOCK_HELD", "1")
+    # GPU cases: JAX_PLATFORMS=cpu (pytest) would make them CPU-only (no VRAM admission); this name cannot init JAX.
+    monkeypatch.setenv("JAX_PLATFORMS", "gpu_cases_in_this_test")
     monkeypatch.delenv("CUDA_VISIBLE_DEVICES", raising=False)
     monkeypatch.delenv("CUDA_DEVICE_ORDER", raising=False)
     monkeypatch.setattr(pc, "vram_by_pid", lambda: {})

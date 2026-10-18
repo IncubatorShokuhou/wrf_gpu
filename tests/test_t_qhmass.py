@@ -1,5 +1,7 @@
 """All-moist WRF loading at history, physics and acoustic caller seams."""
 from pathlib import Path
+import os
+import shutil
 from types import SimpleNamespace
 import sys
 
@@ -20,8 +22,23 @@ sys.path.insert(0, str(ROOT / "proofs/t_qhmass"))
 from wrf_moist_oracle import build_oracle
 
 
+def _require_original_inputs():
+    """Skip, naming what is missing, when the pristine source or a Fortran compiler is unavailable.
+
+    Compiler: $FC, else gfortran on PATH (build_oracle's own order).
+    """
+    source = ROOT / "data/wrf_pristine/WRF/dyn_em/module_big_step_utilities_em.F"
+    if not source.is_file():
+        pytest.skip(f"pristine WRF source unavailable: {source} (link data/wrf_pristine)")
+    compiler = os.environ.get("FC") or shutil.which("gfortran")
+    if not compiler or not (os.path.isfile(compiler) and os.access(compiler, os.X_OK)) and not shutil.which(compiler):
+        pytest.skip(f"Fortran compiler for the pristine WRF oracle unavailable: FC={compiler!r}, "
+                    "no gfortran on PATH (set FC)")
+
+
 @pytest.fixture(scope="module")
 def original(tmp_path_factory):
+    _require_original_inputs()
     return build_oracle(ROOT, tmp_path_factory.mktemp("wrf_moist"))
 
 

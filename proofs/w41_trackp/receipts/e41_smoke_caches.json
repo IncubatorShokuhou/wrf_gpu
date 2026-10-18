@@ -1,0 +1,135 @@
+{
+ "rule": "E41: STACK<=256 B, no non-leaf callee>1k SASS, no kInput transpose fusion>500 optimized HLO; compact AOT blobs carry no kInput metadata, so each AOT blob is linked to the rich JIT cache entry with the SAME native ELF sha256",
+ "caches": {
+  "swiss": {
+   "tool_verdict": "INCOMPLETE",
+   "hard_stack_gate": "PASS",
+   "conservative_flags": false,
+   "coverage": {
+    "status": "PASS",
+    "aot_programs": [
+     "d01"
+    ],
+    "required_run_programs": [
+     "d01"
+    ],
+    "run_proofs": [],
+    "n_discovered": 4,
+    "n_scanned": 4
+   },
+   "executables": [
+    {
+     "kind": "jax_cache",
+     "program": null,
+     "elf_sha256": "c81349337fb5a6bc86b701a64e37e6785937f3aab81e7091a523ae8684328484",
+     "kernels": 1080,
+     "max_stack_B": 16,
+     "nonleaf_over1k": 0,
+     "kinput": "MEASURED_RICH_JIT_HLO",
+     "kinput_over500": [],
+     "kinput_from_identical_jit_elf": []
+    },
+    {
+     "kind": "jax_cache",
+     "program": null,
+     "elf_sha256": "5011cb1bea893f84e5853317fef4c4ea61f5c8bb6d365ae681c2a328ad68a951",
+     "kernels": 1081,
+     "max_stack_B": 16,
+     "nonleaf_over1k": 0,
+     "kinput": "MEASURED_RICH_JIT_HLO",
+     "kinput_over500": [],
+     "kinput_from_identical_jit_elf": []
+    },
+    {
+     "kind": "aot",
+     "program": "d01",
+     "elf_sha256": "5011cb1bea893f84e5853317fef4c4ea61f5c8bb6d365ae681c2a328ad68a951",
+     "kernels": 1081,
+     "max_stack_B": 16,
+     "nonleaf_over1k": 0,
+     "kinput": "UNKNOWN_AOT_METADATA",
+     "kinput_over500": null,
+     "kinput_from_identical_jit_elf": []
+    },
+    {
+     "kind": "aot",
+     "program": "d01",
+     "elf_sha256": "c81349337fb5a6bc86b701a64e37e6785937f3aab81e7091a523ae8684328484",
+     "kernels": 1080,
+     "max_stack_B": 16,
+     "nonleaf_over1k": 0,
+     "kinput": "UNKNOWN_AOT_METADATA",
+     "kinput_over500": null,
+     "kinput_from_identical_jit_elf": []
+    }
+   ],
+   "e41_by_identical_elf": "PASS"
+  },
+  "prod": {
+   "tool_verdict": "INCOMPLETE",
+   "hard_stack_gate": "PASS",
+   "conservative_flags": false,
+   "coverage": {
+    "status": "PASS",
+    "aot_programs": [
+     "d01",
+     "d02"
+    ],
+    "required_run_programs": [
+     "d01",
+     "d02"
+    ],
+    "run_proofs": [],
+    "n_discovered": 4,
+    "n_scanned": 4
+   },
+   "executables": [
+    {
+     "kind": "jax_cache",
+     "program": null,
+     "elf_sha256": "0b8660ad0131dc81335cf39ef4494fe76376e9ddd003ba8e3f8ca17f14fe9979",
+     "kernels": 757,
+     "max_stack_B": 32,
+     "nonleaf_over1k": 0,
+     "kinput": "MEASURED_RICH_JIT_HLO",
+     "kinput_over500": [],
+     "kinput_from_identical_jit_elf": []
+    },
+    {
+     "kind": "jax_cache",
+     "program": null,
+     "elf_sha256": "335d7430c00d11c53fce940cfecedebc53affcf50b2189dd74160c2b31843e7d",
+     "kernels": 1105,
+     "max_stack_B": 32,
+     "nonleaf_over1k": 0,
+     "kinput": "MEASURED_RICH_JIT_HLO",
+     "kinput_over500": [],
+     "kinput_from_identical_jit_elf": []
+    },
+    {
+     "kind": "aot",
+     "program": "d01",
+     "elf_sha256": "335d7430c00d11c53fce940cfecedebc53affcf50b2189dd74160c2b31843e7d",
+     "kernels": 1105,
+     "max_stack_B": 32,
+     "nonleaf_over1k": 0,
+     "kinput": "UNKNOWN_AOT_METADATA",
+     "kinput_over500": null,
+     "kinput_from_identical_jit_elf": []
+    },
+    {
+     "kind": "aot",
+     "program": "d02",
+     "elf_sha256": "0b8660ad0131dc81335cf39ef4494fe76376e9ddd003ba8e3f8ca17f14fe9979",
+     "kernels": 757,
+     "max_stack_B": 32,
+     "nonleaf_over1k": 0,
+     "kinput": "UNKNOWN_AOT_METADATA",
+     "kinput_over500": null,
+     "kinput_from_identical_jit_elf": []
+    }
+   ],
+   "e41_by_identical_elf": "PASS"
+  }
+ }
+}

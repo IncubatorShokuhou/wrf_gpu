@@ -156,6 +156,37 @@ def planned_fraction(plan: dict, total_bytes: int, free_bytes: int) -> str:
     return f"{fraction:.6f}"
 
 
+# &domains/&physics keys real.exe consumes (WRF Registry "real" options). None changes
+# what a wrfinput forecast stores: gpuwrf reads them in its own real-init/onboarding,
+# and p_top_requested at most as the scalar grid top pressure.
+_REAL_EXE_ONLY_KEYS = frozenset((
+    "num_metgrid_levels", "num_metgrid_soil_levels", "p_top_requested", "interp_type", "extrap_type",
+    "t_extrap_type", "use_levels_below_ground", "use_surface", "lagrange_order", "zap_close_levels",
+    "lowest_lev_from_sfc", "force_sfc_in_vinterp", "sfcp_to_sfcp", "smooth_cg_topo", "use_tavg_for_tsk",
+    "aggregate_lu", "rh2qv_wrt_liquid", "rh2qv_method", "interp_theta", "max_dz", "dzbot", "dzstretch_s",
+    "dzstretch_u", "auto_levels_opt", "maxw_horiz_pres_diff", "trop_horiz_pres_diff", "use_maxw_level",
+    "use_trop_level", "surface_input_source"))
+
+
+def _settings_digest(namelist_path: Path, text: str) -> str:
+    """Digest of every load-bearing namelist assignment.
+
+    Dates change data, not storage; neither do the real.exe keys (vertical
+    interpolation of met_em input). Filtering parsed key=value pairs (not lines)
+    keeps a runtime assignment that shares a line with a dropped key. A namelist
+    the host parser refuses is digested whole (nothing dropped, never a collision).
+    """
+    from gpuwrf.io.namelist_parser import parse_namelist  # pure host: allocator stays backend-dark
+    try:
+        groups = parse_namelist(namelist_path)
+    except ValueError:
+        return hashlib.sha256(text.encode()).hexdigest()
+    kept = {group: {key: value for key, value in items.items()
+                    if not key.startswith(("start_", "end_", "run_")) and key not in _REAL_EXE_ONLY_KEYS}
+            for group, items in groups.items()}
+    return hashlib.sha256(json.dumps(kept, sort_keys=True).encode()).hexdigest()
+
+
 def _case_description(args: Any) -> tuple[dict, int]:
     # Header/namelist reads only: no arrays are materialized on a device.
     from gpuwrf.io.netcdf_lock import Dataset
@@ -172,10 +203,7 @@ def _case_description(args: Any) -> tuple[dict, int]:
         with Dataset(directory / f"wrfinput_{name}") as dataset:
             geometry[name] = {"dimensions": {key: len(dim) for key, dim in dataset.dimensions.items()},
                               "dx": float(dataset.DX), "dy": float(dataset.DY)}
-    # Dates change data, not storage. Other case settings remain load-bearing.
-    settings = "\n".join(line for line in text.splitlines() if not re.match(
-        r"\s*(?:start_|end_|run_)[A-Za-z_]+\s*=", line, re.IGNORECASE))
-    return {"domains": geometry, "namelist_settings_sha256": hashlib.sha256(settings.encode()).hexdigest(),
+    return {"domains": geometry, "namelist_settings_sha256": _settings_digest(namelist_path, text),
             "feedback": bool(getattr(args, "feedback", False)),
             "initial_history": bool(getattr(args, "emit_initial_history", False))}, domains
 

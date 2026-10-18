@@ -22,7 +22,7 @@
         <img src="_assets/logo.svg" alt="wrf_gpu logo">
         <span class="brand-text">
           <span class="brand-name">wrf_gpu</span>
-          <span class="brand-sub">User's Guide · v0.4.0</span>
+          <span class="brand-sub">User's Guide · v0.4.1</span>
         </span>
       </a>
       <div class="search-box">
@@ -39,6 +39,7 @@
 <a href="index.html#what-it-is">Already have a WRF case?</a>
 <a href="index.html#what-it-is-not">Choose your configuration</a>
 <a href="index.html#scope-at-a-glance">See the evidence and plan your workload</a>
+<a href="index.html#v041">What&#x27;s new in v0.4.1</a>
 <a href="index.html#v040">What&#x27;s new in v0.4.0</a>
 </div>
 <a class="" href="concepts.html">How wrf_gpu Works</a>
@@ -111,7 +112,8 @@ clock definitions and measured numbers. Independent forecasts can share the card
 This independent implementation is not affiliated with UCAR/NCAR; see
 <a href="credits.html">credits and licensing</a>.</p>
 
-<h2 id="v040">What's new in v0.4.0<a class="headerlink" href="#v040" aria-label="Permalink">¶</a></h2><p>Released 17 October 2026. More than 80 WRF 4.7.1 physics options now run on the GPU and passed a comparison with the original CPU-WRF, together with nudging (FDDA), digital-filter initialization, two-way nesting, stochastic physics, ensembles and forecast tools such as products, station verification and export. New and experimental: <code>gpuwrf quickstart</code> sets up a forecast for your own region from open GFS data (see the <a href="https://github.com/wrf-gpu/wrf_gpu/blob/main/docs/onboarding.md">region guide</a>). The comparisons ran 66 configurations over 24 hours (Goddard radiation: six hours), all within the fixed acceptance limits. Read the <a href="https://github.com/wrf-gpu/wrf_gpu/blob/main/docs/release/RELEASE_NOTES_v0.4.0.md">release notes</a>, the <a href="physics.html">physics</a> and <a href="namelist.html">namelist</a> pages for the status of each option and the <a href="https://github.com/wrf-gpu/wrf_gpu/blob/main/docs/release/VALIDATION_v0.4.0.md">validation details</a>. The large microphysics lookup tables for v0.4.0 are not yet attached to the GitHub release; until they are, runs that need them stop with an &ldquo;asset unavailable&rdquo; message.</p>
+<h2 id="v041">What's new in v0.4.1<a class="headerlink" href="#v041" aria-label="Permalink">¶</a></h2><p>Released 18 October 2026. All new options are opt-in; the default physics is that of v0.4.0 apart from the fixes listed in the release notes. <code>gpuwrf da</code> adds experimental ensemble data assimilation (LETKF) for the outer domain, with forecast/analysis cycling in one process; better forecasts are not yet shown. New namelist options: <code>topo_wind=1/2</code> (terrain correction of surface winds with YSU or Shin-Hong), <code>aer_opt=1/3</code> (aerosol in RRTMG shortwave) and <code>icloud=2/3</code> (WRF radiation cloud fractions). Noah-MP surface parameters can change between runs without recompiling (<code>gpuwrf run --surface-controls</code>), <code>gpuwrf optimize</code> runs regional physics studies on the GPU, and SKEBS, SPPT and SPP passed a single-domain 24-hour comparison with CPU-WRF using the same random seeds. Nested runs now compile once per grid instead of once per forecast date, and <code>gpuwrf aot-key</code> shows on the CPU which compiled programs two cases share. See the <a href="namelist.html#v041-options">new options</a>, the <a href="tools.html#data-assimilation">new tools</a> and the <a href="https://github.com/wrf-gpu/wrf_gpu/blob/main/docs/release/RELEASE_NOTES_v0.4.1.md">release notes</a>.</p>
+<h2 id="v040">What's new in v0.4.0<a class="headerlink" href="#v040" aria-label="Permalink">¶</a></h2><p>Released 17 October 2026. More than 80 WRF 4.7.1 physics options now run on the GPU and passed a comparison with the original CPU-WRF, together with nudging (FDDA), digital-filter initialization, two-way nesting, stochastic physics, ensembles and forecast tools such as products, station verification and export. New and experimental: <code>gpuwrf quickstart</code> sets up a forecast for your own region from open GFS data (see the <a href="https://github.com/wrf-gpu/wrf_gpu/blob/main/docs/onboarding.md">region guide</a>). The comparisons ran 66 configurations over 24 hours (Goddard radiation: six hours), all within the fixed acceptance limits. Read the <a href="https://github.com/wrf-gpu/wrf_gpu/blob/main/docs/release/RELEASE_NOTES_v0.4.0.md">release notes</a>, the <a href="physics.html">physics</a> and <a href="namelist.html">namelist</a> pages for the status of each option and the <a href="https://github.com/wrf-gpu/wrf_gpu/blob/main/docs/release/VALIDATION_v0.4.0.md">validation details</a>. The large microphysics lookup tables are attached to the GitHub release and downloaded on first use.</p>
 
         <nav class="page-nav">
 <span></span>

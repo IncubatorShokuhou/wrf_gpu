@@ -1,0 +1,103 @@
+{
+ "mutants": [
+  {
+   "mutant": "M1 start_em alog -> log10",
+   "file": "src/gpuwrf/io/topo_wind_static.py",
+   "test": "test_start_em_ctopo_is_byte_identical",
+   "rc": 1,
+   "killed": true,
+   "summary": "1 failed, 19 deselected in 0.31s"
+  },
+  {
+   "mutant": "M2 start_em CTOPO also over water",
+   "file": "src/gpuwrf/io/topo_wind_static.py",
+   "test": "test_start_em_ctopo_is_byte_identical",
+   "rc": 1,
+   "killed": true,
+   "summary": "1 failed, 19 deselected in 0.30s"
+  },
+  {
+   "mutant": "M3 start_em CTOPO2 ramp dropped",
+   "file": "src/gpuwrf/io/topo_wind_static.py",
+   "test": "test_start_em_ctopo_is_byte_identical",
+   "rc": 1,
+   "killed": true,
+   "summary": "1 failed, 19 deselected in 0.31s"
+  },
+  {
+   "mutant": "M4 YSU adapter drops CTOPO",
+   "file": "src/gpuwrf/coupling/scan_adapters.py",
+   "test": "test_ysu_adapter_passes_flat_real_ctopo_columns",
+   "rc": 1,
+   "killed": true,
+   "summary": "1 failed, 25 deselected in 14.33s"
+  },
+  {
+   "mutant": "M5 step drops CTOPO on the sf1 PBL branch",
+   "file": "src/gpuwrf/runtime/operational_mode.py",
+   "test": "test_operational_step_hands_start_em_ctopo",
+   "rc": 1,
+   "killed": true,
+   "summary": "1 failed, 24 deselected, 5 warnings in 6.73s"
+  },
+  {
+   "mutant": "M6 step never publishes the CTOPO2 U10/V10 blend",
+   "file": "src/gpuwrf/runtime/operational_mode.py",
+   "test": "test_operational_step_hands_start_em_ctopo",
+   "rc": 1,
+   "killed": true,
+   "summary": "1 failed, 24 deselected, 5 warnings in 8.23s"
+  },
+  {
+   "mutant": "M7 Shin-Hong drag (ctopo*ust)*ust",
+   "file": "src/gpuwrf/physics/bl_shinhong.py",
+   "test": "test_literal_real4_shinhong_with_real_ctopo",
+   "rc": 1,
+   "killed": true,
+   "summary": "1 failed, 25 deselected in 11.32s"
+  },
+  {
+   "mutant": "M8 Shin-Hong CTOPO2 blend toward u10 instead of ux",
+   "file": "src/gpuwrf/physics/bl_shinhong.py",
+   "test": "test_literal_real4_shinhong_with_real_ctopo",
+   "rc": 1,
+   "killed": true,
+   "summary": "1 failed, 25 deselected in 9.73s"
+  },
+  {
+   "mutant": "M9 feedback ignores the grandchild",
+   "file": "src/gpuwrf/io/topo_wind_static.py",
+   "test": "test_two_way_feedback_composes",
+   "rc": 1,
+   "killed": true,
+   "summary": "1 failed, 25 deselected in 0.93s"
+  },
+  {
+   "mutant": "M10 first step uses the fed-back CTOPO",
+   "file": "src/gpuwrf/runtime/operational_mode.py",
+   "test": "test_two_way_feedback_selects_own_ctopo_only_on_the_first_step",
+   "rc": 1,
+   "killed": true,
+   "summary": "1 failed, 25 deselected in 2.81s"
+  },
+  {
+   "mutant": "M11 admission ignores GOT_VAR_SSO",
+   "file": "src/gpuwrf/io/topo_wind_static.py",
+   "test": "test_topo_wind_admission_refuses_like_wrf",
+   "rc": 1,
+   "killed": true,
+   "summary": "1 failed, 25 deselected in 0.32s"
+  },
+  {
+   "mutant": "M12 TOPO_WIND attribute for every option",
+   "file": "src/gpuwrf/io/wrf_history_metadata.py",
+   "test": "test_history_writes_topo_wind_attribute",
+   "rc": 1,
+   "killed": true,
+   "summary": "1 failed, 23 deselected in 0.29s"
+  }
+ ],
+ "all_killed": true,
+ "control_rc": 0,
+ "control_summary": "17 passed, 9 deselected, 9 warnings in 34.40s"
+}

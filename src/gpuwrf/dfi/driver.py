@@ -416,7 +416,7 @@ def run_tdfi(config, *, work_dir: Path, nml: dict | None = None, fst_dir: Path |
     dt = float(ctl.dt_s)
 
     # ---- initial load (WRF wrf_init start_domain + phy_init) and dfi_save_arrays ----
-    _h, bundles, _meta, _run_start, _dt, carries = pipeline._load_domains(config, names)
+    _h, bundles, _meta, _run_start, _dt, carries = pipeline._load_domains(config, names, record_windows=False)
     bundle, carry0 = bundles["d01"], carries["d01"]
     ns = bundle.namelist
     if abs(float(ns.dt_s) - dt) > 1e-9:
@@ -469,7 +469,7 @@ def run_tdfi(config, *, work_dir: Path, nml: dict | None = None, fst_dir: Path |
                                    "start_minute": ctl.fwd_start.minute, "start_second": ctl.fwd_start.second,
                                    "sst_update": 0, "dfi_opt": 0})
     cfg_fwd = dc_replace(config, input_dir=fwd_dir)
-    _h, bundles_f, _meta, run_start_f, _dt, carries_f = pipeline._load_domains(cfg_fwd, names)
+    _h, bundles_f, _meta, run_start_f, _dt, carries_f = pipeline._load_domains(cfg_fwd, names, record_windows=False)
     report["fwd_clock_start"] = str(run_start_f)
     nl_fwd = bundles_f["d01"].namelist
     carry_f = carries_f["d01"]

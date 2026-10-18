@@ -63,6 +63,13 @@ def test_audit_optional_geometry_and_tracer_scaling():
     for name in ("sms_br", "sms_gamu", "sms_ustm", "sfc_wspd"):
         assert shapes[name] == (4, 6)
     assert shapes["epsilon_pbl_step"] == ()
+    # CAM-MG mp=11 Registry leaves (mp11-only since 958ce52667) keep their real staggering.
+    for name in ("cldfra_mp", "lradius", "wsedl3d"):
+        assert shapes[name] == (3, 4, 6)
+    for name in ("cam_kvh3d", "cam_tke_pbl", "cam_turbtype3d", "cam_smaw3d"):
+        assert shapes[name] == (4, 4, 6)
+    for name in ("cam_rainnc", "cam_sr", "cam_fatal", "cam_snowh"):
+        assert shapes[name] == (4, 6)
     for name in ("qh_bdy", "Nc_bdy", "pek_adv_bdy", "qt_bdy", "qrimef_bdy"):
         assert shapes[name] == (1, 4, 5, 3, 7)
     assert shapes["tracers"] == (2, 3, 4, 6)
@@ -75,6 +82,8 @@ def test_audit_optional_geometry_and_tracer_scaling():
     assert two["total_state_bytes"] - one["total_state_bytes"] == 4 * (3*4*6 + 2*4*5*3*6 + 4)
     scalar = next(f for f in two["fields"] if f["name"] == "epsilon_pbl_step")
     assert (scalar["elements"], scalar["bytes"], scalar["dtype"]) == (1, 4, "int32")
+    fatal = next(f for f in two["fields"] if f["name"] == "cam_fatal")
+    assert (fatal["elements"], fatal["bytes"], fatal["dtype"]) == (24, 96, "int32")
 
 
 @pytest.mark.parametrize("count", [0, -1, True, 1.5])

@@ -157,6 +157,10 @@ class NestedPipelineConfig:
     # Controlled end-time extension: a resumed run may continue to a LATER end
     # (``hours``) than the run that wrote the checkpoint only when this is set.
     extend_end_time: bool = False
+    # Track P (gpuwrf.surface_params): traced Noah-MP surface-parameter control file; per-lane files
+    # for B>1 batches (one per batch input dir). None = released program.
+    surface_controls: Path | None = None
+    batch_surface_controls: tuple[Path | None, ...] | None = None
 
 
 def domain_names_for(max_dom: int) -> tuple[str, ...]:
@@ -909,6 +913,7 @@ def _load_domains(
     names: tuple[str, ...],
     *,
     _init_kernel_call=None,
+    record_windows: bool = True,
 ) -> tuple[
     DomainHierarchy,
     dict[str, DomainBundle],
@@ -918,6 +923,11 @@ def _load_domains(
     dict[str, Any],
 ]:
     """Load every domain standalone: d01 LBC from wrfbdy, children IC-only (live LBC).
+
+    ``record_windows`` (default) gives the root's wrfbdy leaves and every aux4
+    stream fixed record windows (integration/record_windows.py), so the step
+    programs do not depend on the input record counts. Callers that edit the
+    boundary records themselves (DFI) or stack lanes (B>1) pass False.
 
     Also returns the per-domain INITIAL ``OperationalCarry`` dict.  The carries are
     built here (with the same ``_initial_carry_for_run`` the domain-tree cold start
@@ -1134,6 +1144,21 @@ def _load_domains(
         # filter/diffusion knobs; <=v0.3.3 silently ran from_grid's defaults.
         # Absent keys keep the values above (release namelists: same program).
         namelist = bind_namelist_options(namelist, run.namelist, name)
+        topo_wind = _domain_physics_int(run, "topo_wind", name, 0)
+        if topo_wind:
+            # WRF start_em CTOPO/CTOPO2 from the resolved domain terrain (io.topo_wind_static).
+            from gpuwrf.io.topo_wind_static import load_topo_wind_static
+            namelist = dataclass_replace(namelist, topo_wind_static=load_topo_wind_static(
+                case.run, name, topo_wind=topo_wind, bl_pbl_physics=int(namelist.bl_pbl_physics),
+                grid=case.grid, xland=state.xland))
+        if int(namelist.aer_opt) == 1 and name == names[0]:
+            # WRF aer_opt=1: aerosol_in runs on domain 1 only (module_physics_init.F:2214).
+            from gpuwrf.physics.wrf_tegen_aerosol import bind_tegen_aerosol
+            namelist = bind_tegen_aerosol(namelist)
+        if int(namelist.mp_physics) == 38:
+            # mp38 DOUBLE Thompson-hail tables as device-resident traced operands (not baked HLO constants).
+            from gpuwrf.physics.thompson_hail.tables import bind_thompson_hail_tables
+            namelist = bind_thompson_hail_tables(namelist)
         if int(namelist.mp_physics) == 11:
             from gpuwrf.physics.cammg.registry import warn_configuration
             warn_configuration(namelist.cu_physics,namelist.shcu_physics)
@@ -1249,6 +1274,15 @@ def _load_domains(
         # prognostic land carry plus the REAL t=0 held surface radiation are seeded
         # NOW so the scan carry pytree is structurally stable from step 1 (mirrors
         # the proven s6b/TOST carry seeding; nocturnal LWDN cold-start mitigation).
+        windows_pending, windows_report = None, None
+        if record_windows and not os.environ.get("GPUWRF_DECOMPOSE"):
+            # Fixed record windows BEFORE the carry exists, so no initialisation
+            # op sees a record-count shape (tile decomposition slices the full
+            # boundary leaves itself).
+            from gpuwrf.integration.record_windows import prepare_record_windows
+            state, namelist, windows_pending, windows_report = prepare_record_windows(
+                state=state, namelist=namelist, dt_s=dt_by_domain[name], root=name == names[0],
+                boundary_meta=case.metadata.get("boundary"))
         carry = _initial_carry_for_run(state, namelist)
         if noahmp_land is not None and mmf_initial is not None:
             namelist = dataclass_replace(namelist, noahmp_mmf_enabled=True,
@@ -1285,6 +1319,10 @@ def _load_domains(
             # WRF o3rad (REAL): the root refreshes it at its radiation calls, every nest receives the parent's
             # field at each force-down before its own first step (nesting/nest_o3.py).
             carry = carry.replace(o3rad=jnp.zeros(carry.state.theta.shape, jnp.float32))
+        if len(names) > 1 and int(namelist.aer_opt) == 1:
+            # WRF aerod (REAL, Registry df=(p2c)): the root refreshes it at its radiation calls, every nest
+            # receives the parent's field at each force-down before its own first step (nesting/nest_aerosol.py).
+            carry = carry.replace(aerod=jnp.zeros((6,) + carry.state.theta.shape, jnp.float32))
         # v0.17 nested compile-CHURN fix.  `_advance_chunk` RETURNS device-committed
         # leaves; if the FIRST nested advance for a domain receives this HOST/
         # uncommitted seed while the SECOND receives the prior chunk's COMMITTED
@@ -1298,7 +1336,12 @@ def _load_domains(
         # `_committed_initial_carry_for_run`.  Pure device placement
         # (`jax.device_put`); leaf VALUES are bit-identical, so wrfout is unchanged.
         carry = _commit_to_operational_device(carry)
+        if windows_pending is not None:
+            namelist, windows_report = windows_pending.finish(carry, namelist)
         initial_carries[name] = carry
+        if getattr(config, "surface_controls", None) is not None:
+            from gpuwrf.surface_params.controls import bind_domain_controls  # noqa: PLC0415
+            namelist = bind_domain_controls(namelist, config.surface_controls, name)
         bundles[name] = DomainBundle(
             name=name, state=state, namelist=namelist, grid=case.grid, metrics=case.metrics
         )
@@ -1314,6 +1357,7 @@ def _load_domains(
             "qke_coldstart": case.metadata.get("qke_coldstart", {}),
             "live_nest_base_init": case.metadata.get("live_nest_base_init", {}),
             "grid": case.metadata.get("grid", {}),
+            "record_windows": windows_report,
             "namelist": {
                 "dt_s": float(namelist.dt_s),
                 "top_lid": bool(namelist.top_lid),
@@ -1357,6 +1401,10 @@ def _load_domains(
             if tracer_names(bundles[edge.parent].namelist) != tracer_names(bundles[edge.child].namelist):
                 raise ValueError("parent/child passive tracers require the same ordered species list")
     if nesting["feedback"] and hierarchy.nests:
+        if getattr(config, "surface_controls", None) is not None:
+            from gpuwrf.surface_params.controls import has_host_controls  # noqa: PLC0415
+            if has_host_controls(config.surface_controls):  # the initial feedback recomputes CTOPO after the bind
+                raise ValueError("host surface controls (ctopo) are not supported with two-way feedback (feedback=1)")
         from gpuwrf.nesting.initial_feedback import initialize_two_way_domains
         meta["initial_feedback"]=initialize_two_way_domains(
             hierarchy,bundles,initial_carries,run,nesting,kernel_call=_init_kernel_call)
@@ -1822,8 +1870,10 @@ def _load_batched_domains(
         resolved_path = Path(path).resolve()
         if resolved_path not in loaded_by_path:
             lane_config = dataclass_replace(config, input_dir=Path(path), batch_input_dirs=None)
-            loaded_by_path[resolved_path] = _load_domains(lane_config, names)
+            loaded_by_path[resolved_path] = _load_domains(lane_config, names, record_windows=False)
         loaded.append(loaded_by_path[resolved_path])
+    if getattr(config, "batch_surface_controls", None) is not None:
+        loaded = _bind_batch_surface_controls(loaded, names, config.batch_surface_controls, batch_size)
 
     ref_hierarchy, ref_bundles, ref_meta, ref_run_start, ref_dt, ref_carries = loaded[0]
     # Tenerife B=4: extract the genuinely per-lane Noah-MP arrays (tbot/shdfac/
@@ -1880,6 +1930,29 @@ def _load_batched_domains(
         tuple(lane[3] for lane in loaded),
         batch_noahmp_arrays,
     )
+
+
+def _bind_batch_surface_controls(loaded, names, sources, batch_size):
+    """Per-lane Track P controls (B>1): every lane carries its own traced fields, same signature."""
+    from gpuwrf.surface_params.controls import bind_domain_controls, signature  # noqa: PLC0415
+
+    if len(sources) != int(batch_size):
+        raise ValueError(f"batch_surface_controls has {len(sources)} entries for B={int(batch_size)}")
+    rebound = []
+    for lane, (hierarchy, bundles, meta, run_start, dt_by_domain, carries) in enumerate(loaded):
+        lane_bundles = dict(bundles)
+        for name in names:
+            namelist = dataclass_replace(bundles[name].namelist, surface_controls=None)
+            if sources[lane] is not None:
+                namelist = bind_domain_controls(namelist, sources[lane], name, allow_host=False)
+            lane_bundles[name] = dataclass_replace(bundles[name], namelist=namelist)
+        rebound.append((hierarchy, lane_bundles, meta, run_start, dt_by_domain, carries))
+    for name in names:
+        sigs = {None if b[1][name].namelist.surface_controls is None else signature(b[1][name].namelist.surface_controls)
+                for b in rebound}
+        if len(sigs) != 1:
+            raise ValueError(f"{name}: batch lanes must all carry surface controls of one signature (or none)")
+    return rebound
 
 
 def _clock_bases_for_batch_domain(
@@ -2231,10 +2304,15 @@ def _noahmp_surface_diagnostics_from_held_radiation(
 
     clock = _noahmp_clock(clock_namelist, clock_base, lead_seconds, output_time=True)
     ep, rp = _noahmp_params(clock_namelist)
+    noah_static = clock_namelist.noahmp_static
+    from gpuwrf.surface_params.controls import apply_surface_controls, traced_controls
+    surface_controls = traced_controls(clock_namelist, clock_base)
+    if surface_controls is not None:  # Track P: traced table values (default off)
+        noah_static, ep, rp = apply_surface_controls(noah_static, ep, rp, surface_controls)
     hfx, lh, tsk, t2 = overlay_noahmp_land_diagnostics(
         state,
         noahmp_land,
-        clock_namelist.noahmp_static,
+        noah_static,
         surf.hfx,
         surf.lh,
         state.t_skin,
@@ -3281,10 +3359,14 @@ class _PerDomainWrfoutWriter:
                 # NSSL radar-only ARW has no REFD_MAX producer. Disclose that
                 # omission rather than make an uncomputed field look complete.
                 # Jensen (55): REFD_MAX only under do_radar_ref=1 (producer_history).
-            green_roof=getattr(getattr(carry,"urban_bep",None),"green_roof",None)
-            if green_roof is not None:
-                # BEP+BEM held QGR_URB3D (history name QGR_URB4D).
-                diagnostics=dict(diagnostics or {},QGR_URB4D=green_roof)
+            if getattr(carry, "taod5502d", None) is not None:
+                # WRF aer_opt=3 TAOD5502D: held column AOD of the last radiation call (Registry 'h').
+                diagnostics = dict(diagnostics or {}, TAOD5502D=carry.taod5502d)
+            from gpuwrf.coupling.urban_multilayer_hook import multilayer_history_fields
+            urban_history=multilayer_history_fields(getattr(namelist,"urban_bundle",None),getattr(carry,"urban_bep",None))
+            if urban_history:
+                # BEP+BEM held QGR_URB3D (history QGR_URB4D); PV/green roofs add EP_PV_URB3D/TGR_URB4D/DRAINGR_URB3D.
+                diagnostics=dict(diagnostics or {},**urban_history)
             rad = getattr(carry, "radiation_diagnostics", None)
             if initial is not None and type(rad).__name__ == 'GoddardRadiationDiagnostics':
                 from gpuwrf.coupling.goddard_radiation import history_fields as goddard_history_fields
@@ -3352,7 +3434,9 @@ class _PerDomainWrfoutWriter:
                 diagnostics.update(getattr(carry, "energy_accumulators", None) or {})
             if getattr(namelist, "lower_boundary", None) is not None:
                 from gpuwrf.io.lower_boundary import lower_boundary_history
-                diagnostics.update(lower_boundary_history(namelist.lower_boundary, own_step))
+                records = getattr(namelist, "record_windows", None)
+                diagnostics.update(records.lower_boundary_history(own_step) if records is not None and records.aux
+                                   else lower_boundary_history(namelist.lower_boundary, own_step))
             if getattr(carry,'ocean',None) is not None:
                 from gpuwrf.coupling.ocean_surface_hook import history as ocean_history
                 diagnostics=dict(diagnostics or {},**ocean_history(carry.ocean))
@@ -3385,6 +3469,10 @@ class _PerDomainWrfoutWriter:
                 diagnostics=dict(diagnostics or {},**{key.upper():getattr(carry.noahmp_groundwater,key) for key in carry.noahmp_groundwater._fields})
             if getattr(carry,'noahmp_tile_drain',None) is not None:
                 diagnostics=dict(diagnostics or {},QTDRAIN=carry.noahmp_tile_drain)
+            if getattr(carry,'camuw_pbl',None) is not None:
+                # CAM-UW writes shared TKE_PBL kts:kte+1 at the interfaces
+                # (module_bl_camuwpbl_driver.F:743-745); the port holds it here.
+                diagnostics=dict(diagnostics or {},TKE_PBL=carry.camuw_pbl.tke_pbl)
         finally:
             perf_timers.stop(
                 "M9-diag", t0, domain=name, own_step=int(own_step)

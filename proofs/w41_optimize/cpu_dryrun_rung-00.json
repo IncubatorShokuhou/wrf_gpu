@@ -1,0 +1,111 @@
+{
+ "schema": "gpuwrf.optimize.rung.v1",
+ "round": 0,
+ "train_dates": 2,
+ "dates": [
+  "d15",
+  "d16"
+ ],
+ "scores": [
+  {
+   "id": "p-c8964de962e8",
+   "loss": 0.07868101033809001,
+   "metrics": [
+    {
+     "variable": "t2",
+     "units": "degC",
+     "n": 8,
+     "stations": 4,
+     "rmse": 0.07868101033809001,
+     "scale": 1.0
+    }
+   ]
+  },
+  {
+   "id": "p-727b941dbde2",
+   "loss": 0.11613638373727547,
+   "metrics": [
+    {
+     "variable": "t2",
+     "units": "degC",
+     "n": 8,
+     "stations": 4,
+     "rmse": 0.11613638373727547,
+     "scale": 1.0
+    }
+   ]
+  }
+ ],
+ "common_rows": 8,
+ "keep": 2,
+ "survivors": [
+  "p-c8964de962e8",
+  "p-727b941dbde2"
+ ],
+ "members": {
+  "p-727b941dbde2|d15": {
+   "batch": "batch-000",
+   "member": "member-000",
+   "rc": 0,
+   "wall_s": 1006.636,
+   "vmhwm_kb": 10345740,
+   "vram_peak_mib": 0,
+   "aot_cache_warm": false,
+   "aot_cold_executables": [
+    "d01"
+   ]
+  },
+  "p-c8964de962e8|d15": {
+   "batch": "batch-001",
+   "member": "member-000",
+   "rc": 0,
+   "wall_s": 1354.803,
+   "vmhwm_kb": 10516096,
+   "vram_peak_mib": 0,
+   "aot_cache_warm": false,
+   "aot_cold_executables": [
+    "d01"
+   ]
+  },
+  "p-727b941dbde2|d16": {
+   "batch": "batch-002",
+   "member": "member-000",
+   "rc": 0,
+   "wall_s": 584.157,
+   "vmhwm_kb": 8346068,
+   "vram_peak_mib": 0,
+   "aot_cache_warm": true,
+   "aot_cold_executables": []
+  },
+  "p-c8964de962e8|d16": {
+   "batch": "batch-003",
+   "member": "member-000",
+   "rc": 0,
+   "wall_s": 485.049,
+   "vmhwm_kb": 8727180,
+   "vram_peak_mib": 0,
+   "aot_cache_warm": true,
+   "aot_cold_executables": []
+  }
+ },
+ "program_groups": {
+  "signatures": [
+   {
+    "records": {
+     "wrfbdy_d01": 8
+    },
+    "cases": [
+     "d15",
+     "d16",
+     "d17",
+     "d18",
+     "d19"
+    ]
+   }
+  ],
+  "record_count_independent": false,
+  "cold_programs_upper_bound": 2,
+  "note": "[I] v0.4.0 step programs take every wrfbdy/wrflowinp record as a traced shape: each distinct record signature is a separate compiled program per configuration; generate all case inputs over the same window length to share programs"
+ },
+ "bundle": null
+}

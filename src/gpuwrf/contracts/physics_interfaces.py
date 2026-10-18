@@ -462,6 +462,9 @@ SCHEME_STEP_SPECS: tuple[PhysicsStepSpec, ...] = (
         reads_state=("u", "v", "theta", "qv", "p", "pb", "ph", "mu", "ustar", "theta_flux", "qv_flux"),
         writes_state=("u", "v", "theta", "qv"),
         diagnostics=("pblh",),
+        notes="topo_wind 1/2: static start_em CTOPO/CTOPO2 (OperationalNamelist.topo_wind_static, "
+        "io/topo_wind_static.py) scale the momentum surface drag; CTOPO2 < 1 blends U10/V10 "
+        "(history) toward the lowest model wind (bl_ysu.F90:1309-1316, 1405-1408).",
     ),
     PhysicsStepSpec(
         family="pbl",
@@ -545,7 +548,9 @@ SCHEME_STEP_SPECS: tuple[PhysicsStepSpec, ...] = (
         "(Shin-Hong 2015), scan-wired via coupling.scan_adapters.shinhong_pbl_adapter "
         "-> PBL_SCAN_ADAPTERS[11]. Consumes revised-MM5 surface forcing (sf_sfclay=1) "
         "and grid dx/dy for pu/pq/pthnl/pthl/ptke partition functions. Follow up by "
-        "refining TKE/EL if a faithful pristine-WRF Shin-Hong TKE oracle is built.",
+        "refining TKE/EL if a faithful pristine-WRF Shin-Hong TKE oracle is built. "
+        "topo_wind 1/2: static start_em CTOPO/CTOPO2 (OperationalNamelist.topo_wind_static) "
+        "scale the surface drag and blend U10/V10 (module_bl_shinhong.F:1387, 1469-1473).",
     ),
     PhysicsStepSpec(
         family="pbl",
@@ -1153,6 +1158,44 @@ SCHEME_STEP_SPECS: tuple[PhysicsStepSpec, ...] = (
         notes="ra_sw_physics=4. Shares the RRTMG column adapter with LW; needs solar geometry "
         "(coszen/declination/equation-of-time) and surface albedo. Held-rate RTHRATEN.",
     ),
+    # aer_opt=1 (v0.4.1 A3): the WRF Tegen climatology variant of RRTMG SW (same held-rate adapter).
+    PhysicsStepSpec(
+        family="radiation",
+        option=4,
+        name="RRTMG shortwave with Tegen aerosol climatology (aer_opt=1)",
+        wrf_slot="first_rk_radiation_driver",
+        owner_module="src/gpuwrf/physics/wrf_tegen_aerosol.py",
+        oracle="Pristine WRF 4.7.1 savepoints: aerosol_in/aer_time_int/aer_p_int + RRTMG_SWRAD aer_opt=1 on 186 real WN3 0227 "
+        "columns x 5 dates (proofs/w41_aerosol/ae01_*); unit chain bitwise",
+        reads_state=("theta", "qv", "qc", "qr", "qi", "qs", "qg", "p", "pb", "ph", "phb"),
+        writes_state=("theta",),
+        reads_carry=("aerod",),
+        writes_carry=("aerod",),
+        diagnostics=("SWDOWN", "GSW", "SWUPB", "SWDDIR", "COSZEN", "RTHRATENSW"),
+        variant="sw_aer_opt1",
+        notes="aer_opt=1 with ra_sw_physics=4: domain-1 aerosol_in at init, aer_time_int + aer_p_int on p_hyd/p_hyd_w "
+        "at each radiation call, iaer=6 band optics; nests radiate with the parent's SINT-forced aerod (carry, "
+        "nested runs only). CPU-oracle-qualified; GPU 24 h WN3 0227 3-nest forecast D6 PASS vs original CPU-WRF.",
+    ),
+    # aer_opt=3 (v0.4.1 A3): Thompson mp28 water/ice-friendly aerosol optics in RRTMG SW (same held-rate adapter).
+    PhysicsStepSpec(
+        family="radiation",
+        option=4,
+        name="RRTMG shortwave with Thompson water/ice-friendly aerosol optics (aer_opt=3)",
+        wrf_slot="first_rk_radiation_driver",
+        owner_module="src/gpuwrf/physics/wrf_aer_opt3.py",
+        oracle="Pristine WRF 4.7.1 savepoints: gt_aod + calc_aerosol_rrtmg_sw + RRTMG_SWRAD aer_opt=3 on 186 real WN3 0227 "
+        "columns with WRF-default QNWFA/QNIFA profiles (proofs/w41_aerosol/ae07_*)",
+        reads_state=("theta", "qv", "qc", "qr", "qi", "qs", "qg", "nwfa", "nifa", "p", "pb", "ph", "phb"),
+        writes_state=("theta",),
+        reads_carry=("taod5502d",),
+        writes_carry=("taod5502d",),
+        diagnostics=("SWDOWN", "GSW", "SWUPB", "SWDDIR", "COSZEN", "RTHRATENSW", "TAOD5502D"),
+        variant="sw_aer_opt3",
+        notes="aer_opt=3 with mp_physics=28 and ra_sw_physics=4 (single domains, wif_input_opt=1): gt_aod on "
+        "p_hyd/t_phy/QV/dz8w/QNWFA/QNIFA at each radiation call, rural-type RH spectral optics, iaer=10; held "
+        "TAOD5502D. CPU-oracle-qualified; GPU 24 h Swiss mp28 forecast D6 PASS vs original CPU-WRF.",
+    ),
     # Classic Dudhia shortwave (ra_sw_physics=1) -- Stephens-1984 broadband
     # SW. Self-contained column kernel (no external table file); reads cloud
     # hydrometeors + qv + solar geometry (coszen) + surface albedo, emits a
@@ -1680,6 +1723,33 @@ SCHEME_STEP_SPECS += (PhysicsStepSpec(family="microphysics",option=11,name="CAM 
     oracle="proofs/s2_cammg: original CAMMGMP savepoints, literal 48calls/all52publicfields BYTE; native compiled 48calls/all27modifiedoutputs within preregistered original FMA/input-ULP enclosure",
     reads_state=("theta","p","ph",*state_leaves_for_mp(11)),writes_state=("theta",*state_leaves_for_mp(11)),
     returns_accumulators=("rain_acc","snow_acc"),notes="CPU-oracle-qualified; GPU/coupled-forecast qualification pending. WRF DOUBLE CAM island, REAL4 public/held carry. No WRF mp11/bl9/ra3 pairing requirement; driver warns/zeros unsupported convection inputs."),)
+
+# Radiation cloud-fraction options (namelist icloud, radiation_driver.F:1446-1506) select the
+# CLDFRA/QC/QI view both RRTMG adapters consume; variant keys them under option 4 like the
+# Noah-MP controls. No carry: held CLDFRA rides in the existing radiation diagnostics.
+SCHEME_STEP_SPECS += tuple(
+    PhysicsStepSpec(
+        family="radiation", option=4, variant=f"icloud={value}", name=name,
+        wrf_slot="first_rk_radiation_driver",
+        owner_module="src/gpuwrf/physics/cloud_fraction.py",
+        oracle=oracle,
+        reads_state=("theta", "qv", "qc", "qi", "qs", "p", "pb", "ph", "phb", "xland"),
+        writes_state=("theta",),
+        diagnostics=("CLDFRA",),
+        notes=notes,
+    )
+    for value, name, oracle, notes in (
+        (3, "WRF icloud=3 cal_cldfra3 radiation cloud fraction",
+         "verbatim pristine cal_cldfra3/find_cloudLayers/adjust_* + Thompson RSLF/RSIF savepoint oracle: "
+         "proofs/w41_icloud/oracle_gate.py on fixtures/icloud3_columns_v1.npz",
+         "icloud=3 replaces cal_cldfra1 and the icloud_bl merge; radiation-only qc/qi. CPU-oracle-qualified; "
+         "GPU-qualified: WN3 0227 3-nest 24 h D6 PASS vs original CPU-WRF (proofs/w41_icloud)."),
+        (2, "WRF icloud=2 cal_cldfra2 radiation cloud fraction",
+         "verbatim pristine cal_cldfra2 savepoint (binary qc+qi>1e-6): tests/v041/test_icloud.py",
+         "icloud=2 replaces cal_cldfra1 and the icloud_bl merge. CPU-oracle-qualified; GPU-qualified: WN3 0227 "
+         "3-nest 24 h D6 PASS vs original CPU-WRF (proofs/w41_icloud2)."),
+    )
+)
 
 SCHEME_STEP_SPECS_BY_KEY: Mapping[tuple[str, int, str], PhysicsStepSpec] = {
     (spec.family, spec.option, spec.variant): spec for spec in SCHEME_STEP_SPECS

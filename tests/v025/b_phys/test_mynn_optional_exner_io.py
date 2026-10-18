@@ -66,6 +66,13 @@ def test_actual_whole_probe_load_and_save_statements(tmp_path, with_exner, with_
     exec(compile(ast.Module([loader], []), str(source), "exec"), namespace)
     got = namespace["state"]
     assert (got.exner is None) == (state.exner is None)
+    # the actual loader reproduces every saved leaf exactly (optional leaves, incl. passive, stay None)
+    for name in state.__slots__:
+        before = getattr(state, name)
+        if before is None:
+            assert getattr(got, name) is None, name
+        else:
+            np.testing.assert_array_equal(np.asarray(getattr(got, name)), np.asarray(before), err_msg=name)
     namespace["result"] = (got, jnp.ones((4,), jnp.float32))
     exec(compile(ast.Module(saves, []), str(source), "exec"), namespace)
     with np.load(tmp_path / "outputs.npz", allow_pickle=False) as output:

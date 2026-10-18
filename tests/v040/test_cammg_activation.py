@@ -76,7 +76,9 @@ def test_radiation_ignores_other_scheme_cammg_fields(monkeypatch, mp):
     clean = C._rrtmg_column_inputs(state, None, **kwargs)
     got = C._rrtmg_column_inputs(contaminated, None, **kwargs)
     _byte_equal(got, clean)
-    if mp in (8, 24, 28, 50, 55):
+    # WRF module_physics_init.F:985-1025: use_mp_re=1 + RRTMG sets has_reqc/i/s for Thompson, WSM3/5/6/7,
+    # WDM5/6/7, P3 and Jensen (t-wsmdz b8ad6b92a4 wired WSM5/WSM6), never for Morrison-aero (40).
+    if mp in (6, 8, 24, 28, 50, 55):
         # A present unrelated radius must not displace this scheme's held producer.
         np.testing.assert_array_equal(got[0].re_cloud, C._to_columns(state.re_cloud))
     else:

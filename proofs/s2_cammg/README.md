@@ -47,7 +47,10 @@ only for `shinhong_tke_diag=1`; Registry default 0 holds its cold REAL4
 surface paths and JIT/static keys, independently of microphysics selection.
 CAM-MG consumes the shared held/diagnosed profile. Nondefault diagnostic-1
 deviation is an accepted, disclosed v0.4.0 caveat (manager decision); the
-investigation is preserved on `lane/s2-cammg-diag-v041` for v0.4.1. The current
+investigation is preserved on `lane/s2-cammg-diag-v041` for v0.4.1.
+(Superseded: lane t-shinhong corrected the kernel and caller before v0.4.0,
+op-by-op BYTE vs original WRF incl. `shinhong_tke_diag=1`, `proofs/t_shinhong/`;
+history TKE_PBL/EL_PBL wiring: `proofs/w41_shinhongtke/`.) The current
 caller resubmission leaves the numerical kernel unchanged. Nonwriters retain their held
 values. New BL5/BL1 producer-to-consumer tests reproduce original C14 step2
 Nc/QNDROP/WSEDL byte values and fail on the old dropped-field route. Additional

@@ -8,6 +8,9 @@ accumulating the g-point fluxes.  The XLA path materialises every one of those
 the layer optics of one launch; only the upward (bottom-up) adding pass is kept per
 g-point (four scratch arrays), the downward pass recomputes the layer values and
 emits g-summed fluxes directly (summation order is the only intended difference).
+The emitted direct flux is WRF's ``ztdbt_nodel`` product (:8577-8600, :8737; RRTMG_SWRAD SWDDIR =
+zbbfddir): the beam through the clear and the clear + UNSCALED (taormc) cloud optical depth, while the
+adding method keeps the delta-scaled transmittance.
 
 Numerics follow ``rrtmg_sw._sw_band_tile_fluxes`` / ``_sw_band_scan_optics_fluxes``
 (REAL entry, float32) term for term; cloud scattering coefficients that depend only
@@ -194,7 +197,7 @@ def _kernel(tau_gas, tau_ray, cloud, incloud, cfac, gmask, sflux, colf, band_ref
         lo, io, so = cfac[6, band], cfac[7, band], cfac[8, band]
         la, ia, sa = cfac[9, band], cfac[10, band], cfac[11, band]
 
-        def layer(k):
+        def layer(k, nodel=False):
             j = nlay - 1 - k            # inputs are bottom-up layers; the solve is top-down
             tg, tr = taus(j)
             c = cloud[rows, j, band, gin]
@@ -206,10 +209,9 @@ def _kernel(tau_gas, tau_ray, cloud, incloud, cfac, gmask, sflux, colf, band_ref
             tcl = dt * tco
             ocl = jnp.clip((one - f) * oco / dt, zero, _c(_ssa_upper()))
             acl = jnp.clip((zero - f) / jnp.maximum(one - f, eps), _c(-0.999999), _c(0.999999)) + jnp.zeros_like(tco)
-            # cloud (cldprmc in-cloud paths x McICA amount)
-            tl = ld * ((incloud[rows, j, 0] * lx) * c)
-            ti = id_ * ((incloud[rows, j, 1] * ix) * c)
-            ts = sd * ((incloud[rows, j, 2] * sx) * c)
+            # cloud (cldprmc in-cloud paths x McICA amount); unscaled tl0/ti0/ts0 = WRF taormc (direct output)
+            tl0, ti0, ts0 = (incloud[rows, j, 0] * lx) * c, (incloud[rows, j, 1] * ix) * c, (incloud[rows, j, 2] * sx) * c
+            tl, ti, ts = ld * tl0, id_ * ti0, sd * ts0
             sl, si, ss = tl * lo, ti * io, ts * so
             tcd = tl + ti + ts
             scd = sl + si + ss
@@ -221,6 +223,8 @@ def _kernel(tau_gas, tau_ray, cloud, incloud, cfac, gmask, sflux, colf, band_ref
             otot = jnp.clip(stot / jnp.maximum(ttot, tiny), zero, _c(_ssa_upper()))
             atot = jnp.where(stot > tiny, (tcl * ocl * acl + tcd * ocd * acd) / jnp.maximum(stot, tiny), zero)
             tcl = jnp.maximum(tcl, tiny) * m
+            if nodel:  # unscaled-cloud beam formed before reftra: one live value, not three depths (80 regs, no spill)
+                bcd0 = _lookup((tcl + (tl0 + ti0 + ts0) * m) / mu_d)
             ocl = ocl * m
             acl = acl * m
             ttot = ttot * m
@@ -239,7 +243,12 @@ def _kernel(tau_gas, tau_ray, cloud, incloud, cfac, gmask, sflux, colf, band_ref
             bcd = _lookup(ttot / mu_d)
             b = jnp.where(m > zero, (w * bcl + cl * bcd) * m, one)
             bc = jnp.where(m > zero, bcl, one)
-            return (r, rd, t, td, b), (rc, rdc, tc, tdc, bc)
+            if not nodel:
+                return (r, rd, t, td, b), (rc, rdc, tc, tdc, bc)
+            # WRF's direct OUTPUT is ztdbt_nodel (spcvmc_sw :8577-8600, :8737): clear + UNSCALED cloud depth.  The
+            # clear delta scaling is the identity here (g = 0, :8603-8609), so its clear part is bcl itself.
+            bn = jnp.where(m > zero, (w * bcl + cl * bcd0) * m, one)
+            return (r, rd, t, td, b, bn), (rc, rdc, tc, tdc, bc)
 
         # Upward adding pass (vrtqdr_sw bottom-up), both streams; surface = albedo.
         su[rows, nlay, points] = alb
@@ -271,31 +280,31 @@ def _kernel(tau_gas, tau_ray, cloud, incloud, cfac, gmask, sflux, colf, band_ref
             fdn = d + (tr_ - d + d * u * df) * refl
             return jnp.sum(fdn * top, axis=1), jnp.sum(fup * top, axis=1)
 
-        def store(k, d, tr_, df, dc, trc, dfc):
+        def store(k, d, tr_, df, dc, trc, dfc, dn):
             lev = nlay - k              # output is bottom-up interfaces
             fdn, fup = emit(k, d, tr_, df, su[rows, k, points], sud[rows, k, points])
             cdn, cup = emit(k, dc, trc, dfc, scu[rows, k, points], scud[rows, k, points])
             put(down, lev, fdn, slot)
             put(up, lev, fup, slot)
-            put(direct, lev, jnp.sum(d * top, axis=1), slot)
+            put(direct, lev, jnp.sum(dn * top, axis=1), slot)
             put(clear_down, lev, cdn, slot)
             put(clear_up, lev, cup, slot)
 
         def transmit(k, carry):
-            d, tr_, df, dc, trc, dfc = carry
-            store(k, d, tr_, df, dc, trc, dfc)
-            (r, rd, t, td, b), (rc, rdc, tc, tdc, bc) = layer(k)
+            d, tr_, df, dc, trc, dfc, dn = carry
+            store(k, d, tr_, df, dc, trc, dfc, dn)
+            (r, rd, t, td, b, bn), (rc, rdc, tc, tdc, bc) = layer(k, nodel=True)
             refl = one / jnp.maximum(one - rd * df, eps)
             ntr = d * t + td * ((tr_ - d) + d * r * df) * refl
             ndf = rd + td * td * df * refl
             reflc = one / jnp.maximum(one - rdc * dfc, eps)
             ntrc = dc * tc + tdc * ((trc - dc) + dc * rc * dfc) * reflc
             ndfc = rdc + tdc * tdc * dfc * reflc
-            return d * b, ntr, ndf, dc * bc, ntrc, ndfc
+            return d * b, ntr, ndf, dc * bc, ntrc, ndfc, dn * bn
 
         ones = jnp.ones((TX, ng), F32)
         zeros = jnp.zeros((TX, ng), F32)
-        final = jax.lax.fori_loop(0, nlay, transmit, (ones, ones, zeros, ones, ones, zeros))
+        final = jax.lax.fori_loop(0, nlay, transmit, (ones, ones, zeros, ones, ones, zeros, ones))
         store(nlay, *final)
 
     jax.lax.cond(jnp.max(mu) > zero, sunlit, dark)
@@ -414,7 +423,7 @@ def _kernel_mp_re(tau_gas, tau_ray, cloud, incloud, cfac, gmask, sflux, colf, ba
         mu_d = jnp.maximum(mu_b, _c(1.0e-6))
         # Band cloud coefficients (caller-formed): ext, delta-scale tau factor, omega, asymmetry.
 
-        def layer(k):
+        def layer(k, nodel=False):
             j = nlay - 1 - k            # inputs are bottom-up layers; the solve is top-down
             def coeff(slot, radius, ice):
                 start, step, length = (5., 3., 46) if ice else (2.5, 1., 58)
@@ -444,10 +453,9 @@ def _kernel_mp_re(tau_gas, tau_ray, cloud, incloud, cfac, gmask, sflux, colf, ba
             tcl = dt * tco
             ocl = jnp.clip((one - f) * oco / dt, zero, _c(_ssa_upper()))
             acl = jnp.clip((zero - f) / jnp.maximum(one - f, eps), _c(-0.999999), _c(0.999999)) + jnp.zeros_like(tco)
-            # cloud (cldprmc in-cloud paths x McICA amount)
-            tl = ld * ((incloud[rows, j, 0] * lx) * c)
-            ti = id_ * ((incloud[rows, j, 1] * ix) * c)
-            ts = sd * ((incloud[rows, j, 2] * sx) * c)
+            # cloud (cldprmc in-cloud paths x McICA amount); unscaled tl0/ti0/ts0 = WRF taormc (direct output)
+            tl0, ti0, ts0 = (incloud[rows, j, 0] * lx) * c, (incloud[rows, j, 1] * ix) * c, (incloud[rows, j, 2] * sx) * c
+            tl, ti, ts = ld * tl0, id_ * ti0, sd * ts0
             sl, si, ss = tl * lo, ti * io, ts * so
             tcd = tl + ti + ts
             scd = sl + si + ss
@@ -459,6 +467,8 @@ def _kernel_mp_re(tau_gas, tau_ray, cloud, incloud, cfac, gmask, sflux, colf, ba
             otot = jnp.clip(stot / jnp.maximum(ttot, tiny), zero, _c(_ssa_upper()))
             atot = jnp.where(stot > tiny, (tcl * ocl * acl + tcd * ocd * acd) / jnp.maximum(stot, tiny), zero)
             tcl = jnp.maximum(tcl, tiny) * m
+            if nodel:  # unscaled-cloud beam formed before reftra: one live value, not three depths (80 regs, no spill)
+                bcd0 = _lookup((tcl + (tl0 + ti0 + ts0) * m) / mu_d)
             ocl = ocl * m
             acl = acl * m
             ttot = ttot * m
@@ -477,7 +487,12 @@ def _kernel_mp_re(tau_gas, tau_ray, cloud, incloud, cfac, gmask, sflux, colf, ba
             bcd = _lookup(ttot / mu_d)
             b = jnp.where(m > zero, (w * bcl + cl * bcd) * m, one)
             bc = jnp.where(m > zero, bcl, one)
-            return (r, rd, t, td, b), (rc, rdc, tc, tdc, bc)
+            if not nodel:
+                return (r, rd, t, td, b), (rc, rdc, tc, tdc, bc)
+            # WRF's direct OUTPUT is ztdbt_nodel (spcvmc_sw :8577-8600, :8737): clear + UNSCALED cloud depth.  The
+            # clear delta scaling is the identity here (g = 0, :8603-8609), so its clear part is bcl itself.
+            bn = jnp.where(m > zero, (w * bcl + cl * bcd0) * m, one)
+            return (r, rd, t, td, b, bn), (rc, rdc, tc, tdc, bc)
 
         # Upward adding pass (vrtqdr_sw bottom-up), both streams; surface = albedo.
         su[rows, nlay, points] = alb
@@ -509,31 +524,31 @@ def _kernel_mp_re(tau_gas, tau_ray, cloud, incloud, cfac, gmask, sflux, colf, ba
             fdn = d + (tr_ - d + d * u * df) * refl
             return jnp.sum(fdn * top, axis=1), jnp.sum(fup * top, axis=1)
 
-        def store(k, d, tr_, df, dc, trc, dfc):
+        def store(k, d, tr_, df, dc, trc, dfc, dn):
             lev = nlay - k              # output is bottom-up interfaces
             fdn, fup = emit(k, d, tr_, df, su[rows, k, points], sud[rows, k, points])
             cdn, cup = emit(k, dc, trc, dfc, scu[rows, k, points], scud[rows, k, points])
             put(down, lev, fdn, slot)
             put(up, lev, fup, slot)
-            put(direct, lev, jnp.sum(d * top, axis=1), slot)
+            put(direct, lev, jnp.sum(dn * top, axis=1), slot)
             put(clear_down, lev, cdn, slot)
             put(clear_up, lev, cup, slot)
 
         def transmit(k, carry):
-            d, tr_, df, dc, trc, dfc = carry
-            store(k, d, tr_, df, dc, trc, dfc)
-            (r, rd, t, td, b), (rc, rdc, tc, tdc, bc) = layer(k)
+            d, tr_, df, dc, trc, dfc, dn = carry
+            store(k, d, tr_, df, dc, trc, dfc, dn)
+            (r, rd, t, td, b, bn), (rc, rdc, tc, tdc, bc) = layer(k, nodel=True)
             refl = one / jnp.maximum(one - rd * df, eps)
             ntr = d * t + td * ((tr_ - d) + d * r * df) * refl
             ndf = rd + td * td * df * refl
             reflc = one / jnp.maximum(one - rdc * dfc, eps)
             ntrc = dc * tc + tdc * ((trc - dc) + dc * rc * dfc) * reflc
             ndfc = rdc + tdc * tdc * dfc * reflc
-            return d * b, ntr, ndf, dc * bc, ntrc, ndfc
+            return d * b, ntr, ndf, dc * bc, ntrc, ndfc, dn * bn
 
         ones = jnp.ones((TX, ng), F32)
         zeros = jnp.zeros((TX, ng), F32)
-        final = jax.lax.fori_loop(0, nlay, transmit, (ones, ones, zeros, ones, ones, zeros))
+        final = jax.lax.fori_loop(0, nlay, transmit, (ones, ones, zeros, ones, ones, zeros, ones))
         store(nlay, *final)
 
     jax.lax.cond(jnp.max(mu) > zero, sunlit, dark)

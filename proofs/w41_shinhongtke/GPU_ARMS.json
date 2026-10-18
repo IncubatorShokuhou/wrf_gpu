@@ -1,0 +1,212 @@
+{
+ "session": {
+  "lock_start": "2026-10-17T23:49:37Z",
+  "lock_end": "2026-10-18T00:36:22Z",
+  "gpu_s": 2805,
+  "commit": "280a0126fec999183954c08ec88ebdfb8c288da0",
+  "cache": "<USER_HOME>/wrf_gpu2_lanes/w41-shinhongtke/cache_w41sht"
+ },
+ "e41": {
+  "verdict": "FAIL",
+  "hard_stack": "FAIL",
+  "conservative_flags": true,
+  "coverage": {
+   "status": "PASS",
+   "aot_programs": [
+    "d01"
+   ],
+   "required_run_programs": [
+    "d01"
+   ],
+   "run_proofs": [],
+   "n_discovered": 8,
+   "n_scanned": 8
+  },
+  "max_stack_per_entry": {
+   "jit__advance_chunk_fori-5d3e55e97e0cc8931d5aca524c5898c0ca6f1f3b328ce8d91ab8bae48f4ccc74-cache": 40,
+   "jit__advance_chunk_fori-6f073534834a50cb8c8e93e1b1201a91df664b5f4e1f0c7ef72f51035826f09f-cache": 16,
+   "jit__advance_chunk_fori-ec0ba7f4fcc40c2f8eeb488aee5a3698fbbd63778f38a9ab2c3db766d549789f-cache": 2456,
+   "jit__advance_chunk_fori-f85eca17fdc14e28a2f19cf9675360b8d7ac67d41a681818b5172ebad12a5e4f-cache": 96,
+   "1d04061603f2a9e5713f4f6a962dabe12030c70a40c3c2b675dd5b02a52e0d39.xlaexec": 40,
+   "2327b79495672cebe2c3a117d6c74bac5f74b0fde3a6cac61e79d0ee311fb66a.xlaexec": 16,
+   "3f0a5f23d6ab0ffd1cc0770de69aa8a7c1ca4765051d03950858586cf575502b.xlaexec": 96,
+   "645cafee824af004f6c12ef9720d2dc223e7d82847a6405fd38295b5cf8ed6a8.xlaexec": 2456
+  },
+  "gate_sha256": "b1952f539dd18469b15fcc6c622ea24a88a097d4608ee8c8e71a6a4dd79faa5e"
+ },
+ "arms": {
+  "c03": {
+   "what": "MYJ bl=2 + MYJSFC, cold TKE seed",
+   "rc": 0,
+   "platform": "gpu",
+   "device": "cuda:0",
+   "wall_s": 888.4236687429948,
+   "source_commit": "280a0126fec999183954c08ec88ebdfb8c288da0",
+   "input_sha256": {
+    "namelist.input": "6aeaff3fd937714c79c261069917d3543d286ff3a2bf548e89c087af1092c661",
+    "wrfbdy_d01": "f3e556670e4768326997bdfa1dd8b0f77eb6d5da07d9c4dbf900bf8ff9e30230",
+    "wrfinput_d01": "a5d696550d1dc6713e2e340b8c2fba83811d43f4a94a65ca95266035860e2781"
+   },
+   "d6": {
+    "paired_frames": "see json",
+    "tolerance_failures": 0,
+    "bounded_fields": 62,
+    "cpu_only": 0,
+    "gpu_only": 37,
+    "json_sha256": "8df5064d692a8551ccfb93e337717b8d3809e433e1dff9190aad9ee71af43a00"
+   },
+   "tke": {
+    "lead0_byte": {
+     "TKE_PBL": true,
+     "EL_PBL": true
+    },
+    "tops_zero": true,
+    "nonfinite": 0,
+    "tke_r": [
+     0.9919769801755473,
+     0.9984795251341955
+    ],
+    "tke_bias": [
+     -0.0018342559494061265,
+     0.000814654966603202
+    ],
+    "el_r": null,
+    "el_gpu_mean": [
+     0.0,
+     0.0
+    ]
+   },
+   "v040_e41_max_stack": 2456
+  },
+  "c06": {
+   "what": "BouLac bl=8, cold TKE seed",
+   "rc": 0,
+   "platform": "gpu",
+   "device": "cuda:0",
+   "wall_s": 521.2026277300029,
+   "source_commit": "280a0126fec999183954c08ec88ebdfb8c288da0",
+   "input_sha256": {
+    "namelist.input": "4d80d9d0eebd49bc8d6ba570d82a3cabd5a5d6e5615cdb1dbf76834085d1fd26",
+    "wrfbdy_d01": "f3e556670e4768326997bdfa1dd8b0f77eb6d5da07d9c4dbf900bf8ff9e30230",
+    "wrfinput_d01": "a5d696550d1dc6713e2e340b8c2fba83811d43f4a94a65ca95266035860e2781"
+   },
+   "d6": {
+    "paired_frames": "see json",
+    "tolerance_failures": 0,
+    "bounded_fields": 62,
+    "cpu_only": 0,
+    "gpu_only": 21,
+    "json_sha256": "b27c3cab69651d47020b5c952d657c1696ba984b091d927783d70fce87f4db86"
+   },
+   "tke": {
+    "lead0_byte": {
+     "TKE_PBL": true,
+     "EL_PBL": true
+    },
+    "tops_zero": true,
+    "nonfinite": 0,
+    "tke_r": [
+     0.9992934293637465,
+     0.9999928285813543
+    ],
+    "tke_bias": [
+     -7.573444902802265e-05,
+     0.0002726439818073803
+    ],
+    "el_r": null,
+    "el_gpu_mean": [
+     0.0,
+     0.0
+    ]
+   },
+   "v040_e41_max_stack": 40
+  },
+  "c07sd1": {
+   "what": "Shin-Hong bl=11 shinhong_tke_diag=1 vs NEW original CPU-WRF",
+   "rc": 0,
+   "platform": "gpu",
+   "device": "cuda:0",
+   "wall_s": 895.0236326720042,
+   "source_commit": "280a0126fec999183954c08ec88ebdfb8c288da0",
+   "input_sha256": {
+    "namelist.input": "7ecbe6dbc97599356f24ca4ecd95d695f7f168298b0118ed506b7ea061bcdf30",
+    "wrfbdy_d01": "f3e556670e4768326997bdfa1dd8b0f77eb6d5da07d9c4dbf900bf8ff9e30230",
+    "wrfinput_d01": "a5d696550d1dc6713e2e340b8c2fba83811d43f4a94a65ca95266035860e2781"
+   },
+   "d6": {
+    "paired_frames": "see json",
+    "tolerance_failures": 0,
+    "bounded_fields": 62,
+    "cpu_only": 0,
+    "gpu_only": 19,
+    "json_sha256": "16ed36a1dd648c145c5f8bf81056ac98fdd4fae2a445b90170a8dfc8f8b6969c"
+   },
+   "tke": {
+    "lead0_byte": {
+     "TKE_PBL": true,
+     "EL_PBL": true
+    },
+    "tops_zero": true,
+    "nonfinite": 0,
+    "tke_r": [
+     0.9926523803971834,
+     0.9996131967483132
+    ],
+    "tke_bias": [
+     -0.0010957819840268347,
+     0.0008015747475233355
+    ],
+    "el_r": [
+     0.9508361649477294,
+     0.9993697602743664
+    ],
+    "el_gpu_mean": [
+     2.777554258013517,
+     5.171942377847866
+    ]
+   },
+   "v040_e41_max_stack": 16
+  },
+  "c28": {
+   "what": "CAM-UW bl=9 (seed history-only), 6 h",
+   "rc": 0,
+   "platform": "gpu",
+   "device": "cuda:0",
+   "wall_s": 479.2804292809742,
+   "source_commit": "280a0126fec999183954c08ec88ebdfb8c288da0",
+   "input_sha256": {
+    "namelist.input": "394fa941659ba76b3284729f5b11e40ccb622a7242313a410df17deba3ee59e6",
+    "wrfbdy_d01": "f3e556670e4768326997bdfa1dd8b0f77eb6d5da07d9c4dbf900bf8ff9e30230",
+    "wrfinput_d01": "a5d696550d1dc6713e2e340b8c2fba83811d43f4a94a65ca95266035860e2781"
+   },
+   "d6": {
+    "paired_frames": "see json",
+    "tolerance_failures": 0,
+    "bounded_fields": 62,
+    "cpu_only": 0,
+    "gpu_only": 20,
+    "json_sha256": "2dd128a6091609dfd1f31286d92614ac13256d436211aac36db842f7b1fb280b"
+   },
+   "tke": {
+    "lead0_byte": {
+     "TKE_PBL": true,
+     "EL_PBL": "absent"
+    },
+    "tops_zero": true,
+    "nonfinite": 0,
+    "tke_r": [
+     0.9776813636714519,
+     0.9954179208001933
+    ],
+    "tke_bias": [
+     -0.0008577279959538874,
+     -7.501910736137356e-05
+    ],
+    "el_r": null,
+    "el_gpu_mean": null
+   },
+   "v040_e41_max_stack": 96
+  }
+ },
+ "reading": "[M GPU, asserted RTX 5090] 4/4 arms rc 0 on the final tree. D6 vs ORIGINAL CPU-WRF (frozen manifest, 62 bounded fields, every frame): 0 tolerance failures, 0 CPU-only variables. TKE_PBL lead 0 BYTE in all four; later leads r>=.97. EL_PBL: Shin-Hong diag=1 live (r reported); MYJ/BouLac still 0 (disclosed); CAM-UW has none in WRF. E41 overall FAIL (conservative kInput flags on JIT entries + c03 MYJ STACK 2456 B) == the v0.4.0 composite values per scheme (pre-existing)."
+}

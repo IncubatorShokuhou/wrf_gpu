@@ -1,12 +1,14 @@
-"""WRF BEM indoor building energy (module_sf_bem.F), ordinary solid roof.
+"""WRF BEM indoor building energy (module_sf_bem.F), solid roof with optional rooftop PV.
 
 Six-surface room radiation plans are static; the changing radiation, material
 temperatures, ventilation, occupants, humidity and AC terms remain on device.
-PV/green-roof extensions are refused by the caller until separately qualified.
+Rooftop PV panels (PV_FRAC_ROOF>0) follow radfluxspv/hsfluxpv; green roofs are
+handled by the caller (urban_bem_model).
 """
 from dataclasses import dataclass
 from typing import NamedTuple
 
+import jax
 import jax.numpy as jnp
 import numpy as np
 
@@ -122,6 +124,64 @@ def wall_temperature(temp,depth,conductivity,capacity,flux_inner,flux_outer,dt):
     return _invert(lower,diag,upper,rhs)
 
 
+def real_literal(value,dtype):
+    """A REAL constant hidden from XLA algebraic rewrites (x/c -> x*(1/c), x**.5 -> sqrt).
+
+    gfortran -O2 keeps IEEE division by a non-power-of-two constant and calls libm
+    powf for real exponents; XLA:CPU pow equals glibc powf when it sees an operand.
+    """
+    return jax.lax.optimization_barrier(jnp.asarray(value,dtype))
+
+
+def _pv_hrad(emissivity,T):
+    """sigma/((1-empv)/empv+1/F12+(1-em)/em), empv=.95, F12=1 (radfluxspv/hsfluxpv)."""
+    em=T(emissivity)
+    return T(5.67e-8)/((T(1)-T(.95))/T(.95)+T(1)/T(1)+(T(1)-em)/em)
+
+
+def roof_radiation_pv(rs,rl,roof_average,pv_temperature,*,albedo,emissivity,pv):
+    """module_sf_bem.F:radfluxspv (:2543-2585), literal REAL operation order."""
+    dtype=roof_average.dtype;T=np.dtype(dtype).type
+    alb=T(albedo);em=T(emissivity);pv=T(pv)
+    return ((T(1)-alb)*(T(1)-pv)*rs+em*(T(1)-pv)*rl
+            +pv*_pv_hrad(em,T)*(pv_temperature**4-roof_average**4)-em*T(5.67e-8)*(T(1)-pv)*roof_average**4)
+
+
+class PvPanel(NamedTuple):
+    temperature: object   # updated tpv [K]
+    sensible: object      # hspv [W m-2]
+    power: object         # eppv [W]
+
+
+def pv_panel_step(tpv,roof_average,tair,u,v,rs,rl,dt,*,emissivity,pv,length,width):
+    """module_sf_bem.F:hsfluxpv (:823-905): PV panel energy balance and production.
+
+    ``tair``/``u``/``v`` are the urban-grid values at the roof level (tair(n+1)).
+    """
+    dtype=tpv.dtype;T=np.dtype(dtype).type;R=lambda x:real_literal(x,dtype)
+    cm=T(2330.)*T(677.)*T(.0003)+T(1200.)*T(1250.)*T(.0005)+T(3000.)*T(500.)*T(.003)
+    hrad=_pv_hrad(emissivity,T)
+    uroof=(u**2+v**2)**R(.5)
+    deltat=tpv-tair
+    hf=T(2.5)*(T(40.)/T(100.)*uroof)**R(.5)
+    third=jnp.abs(deltat)**R(T(1.)/T(3.))
+    hc=T(9.482)*third/R(T(7.238)-T(1))
+    hup=jnp.sqrt(hc**2+hf**2)
+    hc=T(1.810)*third/R(T(1.382)+T(1))
+    hdown=jnp.sqrt(hc**2+hf**2)
+    # module parameter effpv=0.19 (:30); T_amb=25 -> T_amb+273.15 folded in REAL.
+    enerpv=T(.19)*rs*jnp.minimum(T(1),T(1)-T(.005)*(tpv-(T(25)+T(273.15))))
+    sw_d=(T(1)-T(.11))*rs
+    lw_d=T(.79)*rl
+    tpv4=tpv**R(4.)
+    lwpv_out=T(.79)*T(5.67e-8)*tpv4
+    lwupr=hrad*(roof_average**4-tpv4)
+    hspv=(hup+hdown)*(tpv-tair)
+    new=tpv+(sw_d+lw_d-lwpv_out+lwupr-hspv-enerpv)/R(cm)*dt
+    eppv=enerpv*R(pv)*R(length)*R(width)
+    return PvPanel(new,hspv,eppv)
+
+
 class BuildingState(NamedTuple):
     temperature: object      # (...,18)
     humidity: object
@@ -142,11 +202,17 @@ class BuildingResult(NamedTuple):
     wall_ground_flux: object
     roof_ground_flux: object
     indoor_roof_heat: object
+    pv: object = None        # PvPanel when PV_FRAC_ROOF>0
 
 
 def building_step(state,*,levels,geo,params,dt,hour,outdoor_temperature,outdoor_humidity,outdoor_density,
-                  pressure,sw_wall,lw_wall,sw,lw,wall_heat,window_heat,roof_heat,roof_latent,roof_average):
-    """module_sf_bem.F:BEM ordinary solid-roof path, all active floors."""
+                  pressure,sw_wall,lw_wall,sw,lw,wall_heat,window_heat,roof_heat,roof_latent,roof_average,
+                  pv_panel=None,green_roof=None):
+    """module_sf_bem.F:BEM solid-roof path, all active floors.
+
+    ``pv_panel=(tpv, tair, u, v)`` selects WRF's PV_FRAC_ROOF>0 branches: radfluxspv
+    for the roof (:423-428, old tpv) and hsfluxpv after the indoor fluxes (:634-638).
+    """
     dtype=state.temperature.dtype;n=levels
     C=lambda x:jnp.asarray(x,dtype)
     pw=C(geo.window_fraction);ew=C(.9);sigma=C(5.67e-8);area=C(geo.area)
@@ -183,10 +249,26 @@ def building_step(state,*,levels,geo,params,dt,hour,outdoor_temperature,outdoor_
         floor=floor.at[...,:n-1,:].set(updated)
     ground=wall_temperature(ground,params['ground_depth'],params['ground_conductivity'],params['ground_capacity'],
         jnp.zeros_like(hour),inner_heat[...,0,4]+interior[...,0,4],dt)
-    roof_rad=(1.-C(params['roof_albedo']))*sw[...,0]+C(params['roof_emissivity'])*lw-C(params['roof_emissivity'])*sigma*roof_average**4
+    if pv_panel is None:
+        roof_rad=(1.-C(params['roof_albedo']))*sw[...,0]+C(params['roof_emissivity'])*lw-C(params['roof_emissivity'])*sigma*roof_average**4
+        panel=None
+    else:
+        tpv,tair,u_roof,v_roof=pv_panel
+        roof_rad=roof_radiation_pv(sw[...,0],lw,roof_average,tpv,albedo=params['roof_albedo'],
+            emissivity=params['roof_emissivity'],pv=params['pv_frac_roof'])
+        # BEM(...,bw=bs_u(1),bl=bs_u(2),...): eppv=enerpv*pv_frac_roof*bl*bw.
+        panel=pv_panel_step(tpv,roof_average,tair,u_roof,v_roof,sw[...,0],lw,dt,emissivity=params['roof_emissivity'],
+            pv=params['pv_frac_roof'],length=geo.length,width=geo.width)
     roof_ground=roof_heat+roof_rad+roof_latent
-    roof=wall_temperature(roof,params['roof_depth'],params['roof_conductivity'],params['roof_capacity'],
-        inner_heat[...,n-1,5]+interior[...,n-1,5],roof_ground,dt)
+    if green_roof is None:
+        roof=wall_temperature(roof,params['roof_depth'],params['roof_conductivity'],params['roof_capacity'],
+            inner_heat[...,n-1,5]+interior[...,n-1,5],roof_ground,dt)
+    else:
+        # gr_flag=1: wall_gr couples roof layer 5 to the green-roof soil (module_sf_bem.F:735-737).
+        from gpuwrf.physics.urban_green_roof import roof_wall_gr
+        fraction,hfgr=green_roof
+        roof=roof_wall_gr(roof,params['roof_depth'],params['roof_conductivity'],params['roof_capacity'],
+            inner_heat[...,n-1,5]+interior[...,n-1,5],roof_ground,dt,fraction=fraction,hfgr=hfgr)
     temperature=state.temperature;humidity=state.humidity
     sensible=[];latent=[];power=[];svent=[];lvent=[]
     schedule=C(params['equipment_profile']);slot=hour.astype(jnp.int32)
@@ -214,4 +296,4 @@ def building_step(state,*,levels,geo,params,dt,hour,outdoor_temperature,outdoor_
         sensible.append(out_s);latent.append(out_l);power.append(consumption);svent.append(ventilation);lvent.append(moisture)
     result=BuildingState(temperature,humidity,wall,window,floor,ground,roof)
     return BuildingResult(result,jnp.stack(sensible,axis=-1),jnp.stack(latent,axis=-1),jnp.stack(power,axis=-1),
-        jnp.stack(svent,axis=-1),jnp.stack(lvent,axis=-1),jnp.moveaxis(outer_flux,-2,-1),roof_ground,inner_heat[...,n-1,5])
+        jnp.stack(svent,axis=-1),jnp.stack(lvent,axis=-1),jnp.moveaxis(outer_flux,-2,-1),roof_ground,inner_heat[...,n-1,5],panel)

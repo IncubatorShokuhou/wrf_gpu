@@ -12,12 +12,21 @@ from compare_compiled import compare, code_hash
 TYPED='from gpuwrf.kernels._column_memory import load as _load, store as _store\n'
 
 
+FACADE='from gpuwrf.backends import pallas as pl\n'
+STOCK='from jax.experimental import pallas as pl\n'
+
+
 def _measured_source(path,tmp_path):
     # t-ntucompile: Triton-only typed global memory (tests/v040/
     # test_column_typed_memory.py proves identical interpretation). Accept ONLY
     # this exact, reversible substitution of the measured kernel source.
     text=(ROOT/path).read_text()
     if path!='src/gpuwrf/kernels/phys_ntu.py' or TYPED not in text:return ROOT/path
+    # w41-redfix: the portability facade import. On CUDA gpuwrf.backends.pallas returns the
+    # stock pallas_call object; the mp56 program lowered for CUDA is byte-identical with
+    # either import (jaxpr + StableHLO, proofs/w41_redfix/FACADE_IMPORT_CUDA_LOWERING.json).
+    assert text.count(FACADE)==1 and STOCK not in text
+    text=text.replace(FACADE,STOCK)
     assert text.count(TYPED)==1 and 'plt.load(ref.at[col,index]' not in text
     # t-ntucompile G05: 2 warps (no replicated level lanes) gives BITWISE outputs on
     # real c88 GPU columns and is faster; Triton-only, interpretation ignores it.

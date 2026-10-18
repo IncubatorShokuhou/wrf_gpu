@@ -164,9 +164,14 @@ def test_flag_is_cheap_keyed_and_default_off():
 
 def test_reset_follows_the_boundary_pass_and_precedes_precision():
     # WRF order: RK stages -> microphysics -> lateral boundary updates -> set_w_surface (solve_em.F:4818).
+    # Every step variant enters _physics_boundary_step_with_limiter_diagnostics, which only opens the root
+    # record-window scope and returns the step body _physics_boundary_step_in_window: check that body.
     import inspect
     from gpuwrf.runtime import operational_mode as om
-    source = inspect.getsource(om._physics_boundary_step_with_limiter_diagnostics)
+    assert "return _physics_boundary_step_in_window(" in inspect.getsource(
+        om._physics_boundary_step_with_limiter_diagnostics)
+    source = inspect.getsource(om._physics_boundary_step_in_window)
+    assert source.count("_reset_surface_w(") == 1
     reset = source.index("_reset_surface_w(")
     assert source.rindex("apply_lateral_boundaries(") < reset < source.rindex("_enforce_operational_precision(")
     assert source[reset:].startswith("_reset_surface_w(\n            next_state, namelist.grid, namelist.metrics,")

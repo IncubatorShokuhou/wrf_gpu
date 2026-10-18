@@ -27,6 +27,13 @@ def _states():
     return s64, s64.replace(_cast=False, **narrow), set(narrow)
 
 
+# MP codes whose RAW adapter no longer crashes on the REAL32 State (explicit, so any other
+# code that starts or stops tracing fails this test): mp=10 since s1-numbers repaired POLYSVP's
+# strong f64 literals; WSM3/5/6 + WDM5/6/7 since t-wsmdz (b8ad6b92a4, de374a3c00) builds the WRF
+# post-RK DEN/DELZ (moist_physics_prep_em) in the theta dtype instead of f64.
+RAW_REAL32_TRACES = frozenset({3, 4, 6, 10, 14, 16, 26})
+
+
 def _canon(jaxpr) -> str:
     text = re.sub(r"name_and_src_info=[^\]\n]*", "", str(jaxpr))
     return re.sub(r"/[^ \n:]*\.py:\d+(:\d+)?", "", text)
@@ -38,10 +45,10 @@ def test_island_runs_on_real32_state_and_keeps_carry_dtypes(table, code):
     s64, s32, narrow = _states()
     island = getattr(sa, f"{table}_SCAN_ADAPTERS")[code]
     raw = island.__wrapped__
-    if table == "MP" and code == 10:
-        # s1-numbers repaired POLYSVP's strong f64 literals. The raw REAL32
-        # adapter now traces too; retain the previously qualified island until
-        # the REAL column kernel has its own numerical qualification.
+    if table == "MP" and code in RAW_REAL32_TRACES:
+        # The raw REAL32 adapter now traces too (see RAW_REAL32_TRACES); retain the
+        # previously qualified island until the REAL column kernel has its own
+        # numerical qualification.
         raw_out = jax.eval_shape(lambda s: raw(s, 18.0), s32)
         assert all(getattr(raw_out, n).dtype == jnp.float32 for n in narrow)
     else:

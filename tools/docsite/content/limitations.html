@@ -1,7 +1,7 @@
 <h1>Boundaries and known issues</h1>
-<p class="lead">What wrf_gpu v0.4.0 does not cover yet, in plain words. The full technical record is in
+<p class="lead">What wrf_gpu v0.4.1 does not cover yet, in plain words. The full technical record is in
 the repository's <a href="../KNOWN_ISSUES.md">known issues</a> and the
-<a href="release/SUPPORT_MATRIX_v0.4.0.md">support matrix</a>.</p>
+<a href="release/SUPPORT_MATRIX_v0.4.1.md">support matrix</a>.</p>
 <h2 id="gates">What the validation covers</h2>
 <ul>
 <li>wrf_gpu is compared with the <strong>original CPU-WRF</strong> run from the same inputs, not with
@@ -19,7 +19,11 @@ winds and accumulated rain). The other output fields are compared and reported, 
 <li><strong>Goddard radiation</strong> (<code>ra_lw/ra_sw_physics=5</code>) is validated over six hours, not 24.</li>
 <li><strong>Ferrier-Aligo microphysics</strong> (<code>mp_physics=15</code>) runs but has no reference:
 the original WRF crashes on the test case.</li>
-<li><strong>Experimental features:</strong> stochastic physics, online diagnostics, station time series,
+<li><strong>New in v0.4.1, experimental:</strong> <code>topo_wind</code>, <code>aer_opt</code> and
+<code>icloud</code> each passed a 24-hour comparison in the tested set-ups only. Data assimilation (<code>gpuwrf da</code>) works on the outer domain only, has no
+forecast-skill result, and its optional ensemble settings give too much spread. Surface-parameter
+calibration against real stations has not been done yet.</li>
+<li><strong>Experimental features:</strong> stochastic physics (24-hour single-domain comparison passed in v0.4.1), online diagnostics, station time series,
 regional output streams, LCZ urban land use, the 3-D TKE turbulence options, most non-default Noah-MP
 options and Zhang-McFarlane cumulus. See the <a href="namelist.html#features">namelist page</a>.</li>
 <li><strong>Region set-up</strong> (<code>gpuwrf quickstart</code>) is tested on three areas, but GPU
@@ -37,8 +41,9 @@ single-layer urban model, the 3-D TKE options and digital filter initialization 
 runs. Moving nests are not supported.</li>
 <li>Crop, irrigation, tile drainage and groundwater options need real geography from WPS; a missing
 field is refused, never filled with zeros.</li>
-<li>WRF-Chem, WRF-Fire, WRF-Hydro, wave coupling, data assimilation and adaptive time stepping are not
-part of wrf_gpu. The full list is on the <a href="namelist.html#not-supported">namelist page</a>.</li>
+<li>WRF-Chem, WRF-Fire, WRF-Hydro, wave coupling, WRFDA variational data assimilation and adaptive
+time stepping are not part of wrf_gpu; the experimental LETKF (<code>gpuwrf da</code>) covers the outer
+domain only. The full list is on the <a href="namelist.html#not-supported">namelist page</a>.</li>
 </ul>
 <h2 id="numerics">Known numerical issues</h2>
 <ul>
@@ -51,13 +56,30 @@ bug). Where it matters, the comparisons use a WRF build in which this variable s
 <li>P3, Jensen-ISHMAEL, WDM5 and NTU microphysics show small known differences from WRF's own arithmetic
 (rounding, diagnostics, small undershoots); their forecasts still pass the limits. The known issues
 describe each one.</li>
+<li>Fixed in v0.4.1: up to v0.4.0, the default RRTMG shortwave computed the direct-beam surface flux
+(<code>SWDDIR</code>, and <code>SWDDIF</code> derived from it) from a different cloud optical
+depth than WRF; on cloudy daytime columns it differed by up to about 130 W/m². The horizontal total
+surface shortwave and the heating rates were not affected, but with slope radiation or terrain shading
+(<code>slope_rad=1</code>, <code>topo_shading=1</code>) the direct/diffuse split sets the shortwave
+reaching sloping ground, so on cloudy slopes the surface energy budget and the forecast could differ from
+WRF. v0.4.1 follows WRF; forecasts with slope radiation can change against v0.4.0.</li>
+<li id="v03-shared-cache">For users of v0.3.0 to v0.3.4: those versions compiled the deep-soil temperature
+<code>TMN</code> of inner nests into the nested program but left it out of its cache key, so a compile
+cache shared between forecast dates could load another date's nested program without notice. The value
+differs between dates only over water, where it is masked out of the output. On the Tenerife three-domain
+grid, a 24-hour forecast run this way wrote all 72 history files byte-identical to a fresh compile; for
+the nine-domain Canary grid the same follows from identical land values, without an end-to-end run. With
+v0.3.x, set <code>GPUWRF_AOT_VERIFY=1</code> when one cache serves several dates, or upgrade: v0.4.1
+passes these inputs at run time. See the <a href="../KNOWN_ISSUES.md#v030v034-nested-programs-from-a-compile-cache-shared-across-dates">known issues</a>.</li>
 <li>Free-running open boundaries on wide domains (about 160 columns or more) can become unstable after
 roughly 14 hours; the normal boundary relaxation avoids this.</li>
 </ul>
 <h2 id="performance">Performance and hardware</h2>
 <ul>
-<li>The speed and energy figures were measured with v0.3.2 on one RTX 5090. v0.4.0 has no new
-whole-forecast benchmark.</li>
+<li>The speed and energy figures in the README charts were measured with v0.3.2 on one RTX 5090. v0.4.1 takes
+4.4 s per forecast hour for the Canary Islands case (21× the 12-core CPU-WRF) and 6.1 s per case-hour for three
+Tenerife forecasts in parallel (20× CPU-WRF on 3 × 4 cores); energy was not measured again. See the
+<a href="release/RELEASE_NOTES_v0.4.1.md#speed">release notes</a>.</li>
 <li>Only the RTX 5090 is tested. An NVIDIA Ampere or newer GPU is required; older cards (Pascal, Turing)
 are not supported.</li>
 <li>The first run of a new grid or physics selection compiles the model, which takes minutes and more
@@ -65,8 +87,7 @@ host memory than the forecast itself.</li>
 </ul>
 <h2 id="release-files">Release files</h2>
 <p>Large microphysics lookup tables, including the Thompson tables of the default physics, are
-downloaded on first use from the GitHub release. The upload of the v0.4.0 tables is still pending; until
-it is done, runs that need them stop with an "asset unavailable" message. See
+downloaded on first use from the GitHub release and checked against pinned checksums. See
 <a href="runtime-tables.md">runtime tables</a>.</p>
 <h2 id="history">Earlier releases</h2>
 <p>The <a href="validation.html">validation page</a> keeps the 72-hour comparisons of v0.3.3, including

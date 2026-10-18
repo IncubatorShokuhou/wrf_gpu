@@ -570,7 +570,8 @@ def wdm5_adapter(state: State, dt: float, grid=None, *, return_precipitation=Fal
     tend = wdm5_physics_tendency(
         mp(theta_dry), mp(state.qv), mp(state.qc), mp(state.qr),
         mp(state.qi), mp(state.qs),
-        mp(state.Nn), mp(state.Nc), mp(state.Nr),
+        # Same column-major Nn seam as WDM6 (c11); isolate its transpose.
+        _small_grid_firewall(mp(state.Nn), (ny, nx)), mp(state.Nc), mp(state.Nr),
         mp(pii), mp(rho), mp(state.p), mp(dz), float(dt),
     )
     tend.validate_keys()
@@ -651,7 +652,8 @@ def wdm7_adapter(state: State, dt: float, grid=None, *, return_precipitation=Fal
     tend = wdm7_physics_tendency(
         mp(theta_dry), mp(state.qv), mp(state.qc), mp(state.qr),
         mp(state.qi), mp(state.qs), mp(state.qg), mp(state.qh),
-        mp(state.Nn), mp(state.Nc), mp(state.Nr),
+        # Same column-major Nn seam as WDM6 (c11); isolate its transpose.
+        _small_grid_firewall(mp(state.Nn), (ny, nx)), mp(state.Nc), mp(state.Nr),
         mp(pii), mp(rho), mp(state.p), mp(dz), float(dt), slmsk,
     )
     tend.validate_keys()
@@ -1975,15 +1977,28 @@ def _apply_pbl_condensate(result: State, state: State, dt: float, rates: dict, f
 
 
 
+def _topo_wind_column_kwargs(topo_wind_ctopo, index=None):
+    """start_em CTOPO/CTOPO2 ``(ny, nx)`` -> REAL ``(ncol,)`` YSU/Shin-Hong kwargs (none for topo_wind=0)."""
+
+    if topo_wind_ctopo is None:
+        return {}
+    flat = lambda a: jnp.asarray(a, jnp.float32).reshape(-1) if index is None else jnp.asarray(a, jnp.float32).reshape(-1)[index]  # noqa: E731
+    ctopo, ctopo2 = topo_wind_ctopo
+    return {"ctopo": flat(ctopo), **({} if ctopo2 is None else {"ctopo2": flat(ctopo2)})}
+
+
 def ysu_pbl_adapter(state: State, dt: float, grid=None, *, urban=None, _with_sources=False,
-                    surface_forcing=None, rthraten=None, ysu_topdown_pblmix=1) -> State:
+                    surface_forcing=None, rthraten=None, ysu_topdown_pblmix=1, topo_wind_ctopo=None) -> State:
     """bl_pbl=1 YSU PBL ``State -> State`` scan adapter (jit/vmap-traceable kernel).
 
     module_pbl_driver.F:1208-1251: QC3D/QI3D (zero fields without P_QC/P_QI give
     zero rates), RTHRATEN (held radiation theta rate), YSU_TOPDOWN_PBLMIX
-    (Registry default 1), CTOPO/CTOPO2 = 1 (start_em.F:1581, topo_wind=0)."""
+    (Registry default 1), CTOPO/CTOPO2 = 1 (start_em.F:1581, topo_wind=0) unless
+    ``topo_wind_ctopo`` = ``(ctopo, ctopo2 or None)`` ``(ny, nx)`` start_em fields."""
 
     ysu_kwargs = dict(rthraten=rthraten, ysu_topdown_pblmix=int(ysu_topdown_pblmix))
+    if topo_wind_ctopo is not None:
+        ysu_kwargs["topo_wind_ctopo"] = topo_wind_ctopo
     if urban is not None:
         from gpuwrf.coupling.urban_pbl_hook import urban_pbl_forcing,urban_pbl_full_columns,replace_urban_tendencies
         f=urban_pbl_forcing(state,grid,urban[1].surface_layer)
@@ -2018,6 +2033,7 @@ def ysu_pbl_adapter(state: State, dt: float, grid=None, *, urban=None, _with_sou
             qc=real(cols(forcing_state.qc)), qi=real(cols(forcing_state.qi)),
             rthraten=None if rthraten is None else real(cols(rthraten)),
             ysu_topdown_pblmix=int(ysu_topdown_pblmix),
+            **_topo_wind_column_kwargs(topo_wind_ctopo),
         )
     result = _apply_pbl_increment(state, dt, _pbl_state_rates(out,f), ny=f["ny"], nx=f["nx"], nz=f["nz"])
     result = _apply_ysu_cloud_rates(result, state, dt, out, ny=f["ny"], nx=f["nx"], nz=f["nz"])
@@ -2218,8 +2234,10 @@ def gfs_bl_real_double(args, kwargs, dt):
 
 
 def shinhong_pbl_adapter(state: State, dt: float, grid=None, *, shinhong_tke_diag=0,
-                        surface_forcing=None, _with_sources=False) -> State:
-    """bl_pbl=11 Shin-Hong scale-aware PBL ``State -> State`` scan adapter."""
+                        surface_forcing=None, _with_sources=False, topo_wind_ctopo=None) -> State:
+    """bl_pbl=11 Shin-Hong scale-aware PBL ``State -> State`` scan adapter.
+
+    ``topo_wind_ctopo`` = start_em ``(ctopo, ctopo2 or None)`` (module_pbl_driver.F:1317)."""
 
     f = _pbl_surface_forcing(state, grid, surface_forcing=surface_forcing, use_resistances=True)
     dx = 1000.0 if grid is None else float(grid.projection.dx_m)
@@ -2265,6 +2283,7 @@ def shinhong_pbl_adapter(state: State, dt: float, grid=None, *, shinhong_tke_dia
             qc=real(cols(state.qc)),
             qi=real(cols(state.qi)),
             corf=real(corf),
+            **_topo_wind_column_kwargs(topo_wind_ctopo),
         )
     next_state = _apply_pbl_increment(state, dt, _pbl_state_rates(out,f), ny=f["ny"], nx=f["nx"], nz=f["nz"])
 
@@ -2273,8 +2292,13 @@ def shinhong_pbl_adapter(state: State, dt: float, grid=None, *, shinhong_tke_dia
 
     # module_bl_shinhong.F:1478-1612 only writes shared TKE for diag=1.
     tke_out = _back3d(out["tke"]) if int(shinhong_tke_diag)==1 else tke_in
+    # EL_PBL: kts:kte zeroed every call (:673), diag=1 writes k>kts (:1604).
+    # diag=0 keeps the held Registry zero (no other bl=11 writer).
+    el_out = ({'el_pbl': _back3d(out["el_pbl"]).astype(_output_dtype(state, "el_pbl"))}
+              if int(shinhong_tke_diag)==1 else {})
     dt_f = float(dt)
     result = next_state.replace(
+        **el_out,
         qke=tke_out.astype(_output_dtype(state, "qke")),
         # RQCBLTEN/RQIBLTEN (module_bl_shinhong.F:253-256); the RK source path
         # restores the entry qc/qi and couples these raw rates instead.

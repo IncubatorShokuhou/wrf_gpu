@@ -1,0 +1,41 @@
+{
+  "source_commit": "4474617f2585ef9d577fc360a7688e2de1efcd15",
+  "scope": "actual GPU c10 compiled executable; CPU postscan; not completed forecast qualification",
+  "artifact": "<USER_HOME>/wrf_gpu2_lanes/w41-wdm57/gpu-c10/e41/wave_gate.json",
+  "artifact_sha256": "88f22651ce6ae8f31971e2c8a81b18892535c2bbae3701749d0a0aba43da78c9",
+  "coverage": {
+    "status": "PASS",
+    "aot_programs": [
+      "d01"
+    ],
+    "required_run_programs": [
+      "d01"
+    ],
+    "run_proofs": [],
+    "n_discovered": 1,
+    "n_scanned": 1
+  },
+  "gate": "FAIL",
+  "native_blob_sha256": "84e0ae8489786261ef35e23f912340231ca4903bd726680d39ba440d68b46a9d",
+  "kinput_transpose_over500": [],
+  "elfs": [
+    {
+      "elf": 0,
+      "sha256": "48bab98b3316ea6a698798074b1c90f63aa7e919b580f5cb5623b3a3990383f8",
+      "kernels": 2593,
+      "max_stack_B": 536,
+      "stack_over256": [
+        [
+          "input_and_divide_multiply_reduce_fusion",
+          536
+        ],
+        [
+          "loop_maximum_minimum_select_subtract_fusion",
+          400
+        ]
+      ],
+      "nonleaf_over1k": [],
+      "callgraph_unknown": []
+    }
+  ]
+}

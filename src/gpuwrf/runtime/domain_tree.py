@@ -1191,6 +1191,39 @@ class _CheapKeyMemo:
         return key
 
 
+# Process-level registry of BLOB-LOADED advance executables, OFF by default. Several
+# same-geometry forecasts run sequentially in ONE process (DA ensemble members,
+# gpuwrf da) share it. Keys are program addresses ((domain, cheap_key) /
+# (domain, hlo_sha256)); values are loaded AOT calls, which accept any caller whose
+# leaves match the saved contract (aot_executable._check_call_contract). An
+# in-process ``Compiled`` is never shared: it insists on its own input treedef, and
+# the namelist treedef carries per-case metadata (terrain source path, date clock).
+_PROCESS_AOT_MEMO: dict[tuple[str, str], Any] | None = None
+
+
+def set_process_aot_reuse(enabled: bool) -> None:
+    """Share blob-loaded advance executables across DomainTrees built later in this process."""
+    global _PROCESS_AOT_MEMO
+    if not enabled:
+        _PROCESS_AOT_MEMO = None
+    elif _PROCESS_AOT_MEMO is None:
+        _PROCESS_AOT_MEMO = {}
+
+
+class _PublishingLoadedKeys(set):
+    """Loaded-key set of one advance closure that also publishes loaded calls process-wide."""
+
+    def __init__(self, calls: dict, registry: dict):
+        super().__init__()
+        self._calls, self._registry = calls, registry
+
+    def add(self, key) -> None:
+        super().add(key)
+        call = self._calls.get(key)
+        if call is not None and not isinstance(call, jax.stages.Compiled):
+            self._registry[key] = call
+
+
 def _operational_advance_factory(tree: DomainTree) -> AdvanceFn:
     # #91: one traced clock_base per domain namelist (built once, reused every chunk)
     # so each domain's compiled HLO is date-independent (cross-date cache hit).
@@ -1214,6 +1247,14 @@ def _operational_advance_factory(tree: DomainTree) -> AdvanceFn:
     # and keys proven to FAIL verification (fail-closed -> never load again).
     _aot_verified: set[tuple[str, str]] = set()
     _aot_verify_failed: set[tuple[str, str]] = set()
+    if _PROCESS_AOT_MEMO is not None:
+        # Opt-in (set_process_aot_reuse): start from the executables earlier trees of
+        # this process loaded, and publish this tree's loads for the next ones.
+        _aot_loaded_keys = _PublishingLoadedKeys(_aot_calls, _PROCESS_AOT_MEMO)
+        for key, call in _PROCESS_AOT_MEMO.items():
+            _aot_calls[key] = call
+            _aot_attempted.add(key)
+            set.add(_aot_loaded_keys, key)
 
     def _record_aot_status(name: str, status: dict[str, Any]) -> None:
         try:
@@ -1673,17 +1714,28 @@ def _operational_advance_factory(tree: DomainTree) -> AdvanceFn:
             )
 
     def advance(name: str, carry: OperationalCarry, start_step: int, n_steps: int) -> OperationalCarry:
+        # Record windows (integration/record_windows.py): refresh the boundary
+        # windows of this call's step range and split chunks a window cannot hold.
+        records = getattr(tree.domains[name].namelist, "record_windows", None)
+        if records is None:
+            return _advance_windowed(name, carry, start_step, n_steps, _clock_bases[name])
+        return records.advance(
+            lambda chunk_carry, chunk_start, chunk_steps, chunk_clock: _advance_windowed(
+                name, chunk_carry, chunk_start, chunk_steps, chunk_clock),
+            carry, start_step, n_steps, _clock_bases[name])
+
+    def _advance_windowed(name: str, carry: OperationalCarry, start_step: int, n_steps: int,
+                          clock_base) -> OperationalCarry:
         if os.environ.get("GPUWRF_DECOMPOSE"):  # opt-in multi-device domain decomposition (gpuwrf run --decompose)
             from gpuwrf.parallel.cli_runtime import decomposed_advance
 
-            return decomposed_advance(tree, name, carry, start_step, n_steps, _clock_bases[name])
+            return decomposed_advance(tree, name, carry, start_step, n_steps, clock_base)
         carry = unalias_donated_carry(carry)  # GPUWRF_CARRY_DONATE only; identity otherwise
         namelist = tree.domains[name].namelist
         cadence = int(namelist.radiation_cadence_steps)
         if cadence <= 0:
             raise ValueError(f"{name}: radiation_cadence_steps must be positive")
         start = jnp.asarray(int(start_step), dtype=jnp.int32)
-        clock_base = _clock_bases[name]
 
         # Step C (vNext cheap-key manifest): locate the serialized executable for
         # THIS exact per-domain/per-shape variant via a metadata-only cheap_key --
@@ -2008,12 +2060,15 @@ class _FusedAuxNamelist:
     """Namelist-like static carrier for the fused-cascade cheap-key.
 
     ``aot_cheap_key.static_config_hash`` hashes ``tree_flatten()[1]``. The fused
-    jit closes over parent/child namelists and edge geometry rather than taking a
-    single ``OperationalNamelist`` argument, so this synthetic object exposes the
-    complete closure determinant set through the same static-aux channel.
+    jit takes the parent/child namelists as arguments (their traced children are
+    keyed as avals) and closes over edge geometry, so this synthetic object exposes
+    the namelists' static aux and the edge determinants through the static-aux channel.
+    ``table_namelists`` (not part of the aux) lets aot_baked_tables select the
+    bound host tables of those namelists' physics options, as for a namelist argument.
     """
 
     aux: Any
+    table_namelists: tuple = field(default=(), compare=False, repr=False)
 
     def tree_flatten(self):
         return (), self.aux
@@ -2099,7 +2154,8 @@ def _build_fused_aux_namelist(
                 "children": tuple(child_aux),
                 "fused_source": _fused_source_fingerprint(),
             },
-        )
+        ),
+        table_namelists=(parent_namelist, *child_namelists),
     )
 
 
@@ -2112,8 +2168,14 @@ def _fused_cascade_cheap_key(
     child_starts: tuple[int, ...],
     parent_clock_base: Any,
     child_clock_bases: tuple[Any, ...],
+    namelists: tuple[Any, ...] = (),
 ) -> str | None:
-    """Metadata-only AOT key for a fused cascade call; ``None`` means fail-open."""
+    """Metadata-only AOT key for a fused cascade call; ``None`` means fail-open.
+
+    ``namelists`` are the parent and child namelists the fused program takes as
+    trailing jit arguments: their traced children enter the key as avals (like the
+    namelist argument of ``_advance_chunk_fori``), their static aux via ``fused_aux``.
+    """
     try:
         from gpuwrf.runtime import aot_cheap_key as _ck
 
@@ -2126,6 +2188,7 @@ def _fused_cascade_cheap_key(
                 tuple(int(s) for s in child_starts),
                 parent_clock_base,
                 child_clock_bases,
+                *namelists,
             ),
             {},
             fused_aux,
@@ -2278,11 +2341,16 @@ def _build_fused_cascade_program(
     parent_clock_base = build_clock_base(parent_namelist)
     child_clock_bases = tuple(build_clock_base(nl) for nl in child_namelists)
 
+    # The namelists ride as jit ARGUMENTS, like the namelist of _advance_chunk_fori:
+    # closed over, their traced children (Noah-MP TMN/VEGFRA, aux4 records, metrics)
+    # were baked into the fused HLO as constants, so every forecast case compiled
+    # its own fused program (ALISIOS G2 bundle miss, 2026-10-18).
     @jax.jit
-    def fused_jit(parent_carry, child_carries, parent_start, child_starts, parent_cb, child_cbs):
+    def fused_jit(parent_carry, child_carries, parent_start, child_starts, parent_cb, child_cbs,
+                  parent_nl, *child_nls):
         parent_new = _advance_chunk(
             parent_carry,
-            parent_namelist,
+            parent_nl,
             jnp.asarray(parent_start, dtype=jnp.int32),
             parent_cb,
             n_steps=1,
@@ -2291,14 +2359,14 @@ def _build_fused_cascade_program(
         new_children = []
         for idx in range(n_children):
             child_carry = child_carries[idx]
-            if _coupled_forcedown_enabled(child_namelists[idx]):
+            if _coupled_forcedown_enabled(child_nls[idx]):
                 forced_state = build_child_boundary_package(
                     child_carry.state,
                     parent_new.state,
                     child_weights[idx],
                     bdy_width=int(child_bdy_widths[idx]),
-                    parent_metrics=parent_namelist.metrics,
-                    child_metrics=child_namelists[idx].metrics,
+                    parent_metrics=parent_nl.metrics,
+                    child_metrics=child_nls[idx].metrics,
                     coupled_forcedown=True,
                     parent_grid_ratio=int(child_ratios[idx]),
                 )
@@ -2317,7 +2385,7 @@ def _build_fused_cascade_program(
             )
             child_new = _advance_chunk(
                 child_forced,
-                child_namelists[idx],
+                child_nls[idx],
                 jnp.asarray(child_starts[idx], dtype=jnp.int32),
                 child_cbs[idx],
                 n_steps=int(child_ratios[idx]),
@@ -2331,15 +2399,35 @@ def _build_fused_cascade_program(
     verified_keys: set[str] = set()
     verify_failed_keys: set[str] = set()
 
-    def _args(parent_carry, child_carries, parent_start, child_starts):
+    parent_records = getattr(parent_namelist, "record_windows", None)
+    child_records = tuple(getattr(namelist, "record_windows", None) for namelist in child_namelists)
+
+    def _args(parent_carry, child_carries, parent_start, child_starts, clocks=None):
+        parent_cb, child_cbs = (parent_clock_base, child_clock_bases) if clocks is None else clocks
         return (
             parent_carry,
             tuple(child_carries),
             int(parent_start),
             tuple(int(s) for s in child_starts),
-            parent_clock_base,
-            child_clock_bases,
+            parent_cb,
+            child_cbs,
+            parent_namelist,
+            *child_namelists,
         )
+
+    def _prepare_windows(parent_carry, child_carries, parent_start, child_starts):
+        """Record windows of every domain for this one-parent-step cascade."""
+        parent_cb = parent_clock_base
+        if parent_records is not None:
+            parent_carry, parent_cb = parent_records.prepare(parent_carry, parent_cb, int(parent_start), 1)
+        children, child_cbs = [], []
+        for records, child_carry, cb, start, ratio in zip(
+                child_records, child_carries, child_clock_bases, child_starts, child_ratios, strict=True):
+            if records is not None:
+                child_carry, cb = records.prepare(child_carry, cb, int(start), int(ratio))
+            children.append(child_carry)
+            child_cbs.append(cb)
+        return parent_carry, tuple(children), (parent_cb, tuple(child_cbs))
 
     def _lower_fused(args: tuple[Any, ...]) -> tuple[Any | None, str | None, str | None]:
         try:
@@ -2544,9 +2632,19 @@ def _build_fused_cascade_program(
         return True
 
     def fused(parent_carry, child_carries, parent_start, child_starts):
+        if parent_records is None and not any(child_records):
+            return _fused_call(parent_carry, child_carries, parent_start, child_starts, None)
+        parent_carry, child_carries, clocks = _prepare_windows(
+            parent_carry, child_carries, parent_start, child_starts)
+        new_parent, new_children = _fused_call(parent_carry, child_carries, parent_start, child_starts, clocks)
+        if parent_records is not None:
+            parent_records.note(new_parent)
+        return new_parent, new_children
+
+    def _fused_call(parent_carry, child_carries, parent_start, child_starts, clocks):
         # The traced clock bases ride as runtime jit arguments (NOT closed-over
         # constants), keeping the compiled cascade identical for every date.
-        args = _args(parent_carry, child_carries, parent_start, child_starts)
+        args = _args(parent_carry, child_carries, parent_start, child_starts, clocks)
         if not aot_on:
             return fused_jit(*args)
 
@@ -2577,6 +2675,7 @@ def _build_fused_cascade_program(
             tuple(int(s) for s in child_starts),
             parent_clock_base,
             child_clock_bases,
+            (parent_namelist, *child_namelists),
         )
         if ckey is None:
             return fused_jit(*args)

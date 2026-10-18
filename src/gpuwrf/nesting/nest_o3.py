@@ -58,6 +58,10 @@ def force_child_carry_o3rad(child_carry, parent_carry, weights, *, parent_grid_r
     if getattr(child_carry,"stochastic",None) is not None:
         from gpuwrf.nesting.stochastic import force_child_stochastic
         child_carry = force_child_stochastic(child_carry,parent_carry,weights,parent_grid_ratio,batched)
+    if getattr(child_carry, "aerod", None) is not None:
+        from gpuwrf.nesting.nest_aerosol import force_child_carry_aerod
+        child_carry = force_child_carry_aerod(child_carry, parent_carry, weights,
+                                              parent_grid_ratio=parent_grid_ratio, batched=batched)
     child_o3 = getattr(child_carry, "o3rad", None)
     parent_o3 = getattr(parent_carry, "o3rad", None)
     if child_o3 is None or parent_o3 is None:

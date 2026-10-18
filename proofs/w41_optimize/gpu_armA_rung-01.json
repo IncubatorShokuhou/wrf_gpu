@@ -1,0 +1,149 @@
+{
+ "schema": "gpuwrf.optimize.rung.v1",
+ "round": 1,
+ "train_dates": 3,
+ "dates": [
+  "d15",
+  "d16",
+  "d17"
+ ],
+ "scores": [
+  {
+   "id": "p-c8964de962e8",
+   "loss": 0.09512619880586318,
+   "metrics": [
+    {
+     "variable": "t2",
+     "units": "degC",
+     "n": 12,
+     "stations": 4,
+     "rmse": 0.09512619880586318,
+     "scale": 1.0
+    }
+   ]
+  },
+  {
+   "id": "p-727b941dbde2",
+   "loss": 0.13898573842549422,
+   "metrics": [
+    {
+     "variable": "t2",
+     "units": "degC",
+     "n": 12,
+     "stations": 4,
+     "rmse": 0.13898573842549422,
+     "scale": 1.0
+    }
+   ]
+  }
+ ],
+ "common_rows": 12,
+ "keep": 1,
+ "survivors": [
+  "p-c8964de962e8"
+ ],
+ "members": {
+  "p-727b941dbde2|d15": {
+   "batch": "batch-000",
+   "member": "member-000",
+   "rc": 0,
+   "wall_s": 40.52,
+   "vmhwm_kb": 2773644,
+   "vram_peak_mib": 2214,
+   "aot_cache_warm": true,
+   "aot_cold_executables": []
+  },
+  "p-727b941dbde2|d16": {
+   "batch": "batch-000",
+   "member": "member-002",
+   "rc": 0,
+   "wall_s": 48.921,
+   "vmhwm_kb": 2791848,
+   "vram_peak_mib": 2216,
+   "aot_cache_warm": true,
+   "aot_cold_executables": []
+  },
+  "p-c8964de962e8|d15": {
+   "batch": "batch-000",
+   "member": "member-001",
+   "rc": 0,
+   "wall_s": 491.323,
+   "vmhwm_kb": 6022324,
+   "vram_peak_mib": 2216,
+   "aot_cache_warm": false,
+   "aot_cold_executables": [
+    "d01"
+   ]
+  },
+  "p-c8964de962e8|d16": {
+   "batch": "batch-000",
+   "member": "member-003",
+   "rc": 0,
+   "wall_s": 465.787,
+   "vmhwm_kb": 5971212,
+   "vram_peak_mib": 2216,
+   "aot_cache_warm": false,
+   "aot_cold_executables": [
+    "d01"
+   ]
+  },
+  "p-727b941dbde2|d17": {
+   "batch": "batch-001",
+   "member": "member-000",
+   "rc": 0,
+   "wall_s": 39.496,
+   "vmhwm_kb": 3174948,
+   "vram_peak_mib": 2216,
+   "aot_cache_warm": true,
+   "aot_cold_executables": []
+  },
+  "p-c8964de962e8|d17": {
+   "batch": "batch-001",
+   "member": "member-001",
+   "rc": 0,
+   "wall_s": 38.348,
+   "vmhwm_kb": 2785352,
+   "vram_peak_mib": 2216,
+   "aot_cache_warm": true,
+   "aot_cold_executables": []
+  }
+ },
+ "program_groups": {
+  "signatures": [
+   {
+    "records": {
+     "wrfbdy_d01": 8
+    },
+    "cases": [
+     "d15",
+     "d16",
+     "d17",
+     "d18",
+     "d19"
+    ]
+   }
+  ],
+  "record_count_independent": false,
+  "cold_programs_upper_bound": 2,
+  "note": "[I] v0.4.0 step programs take every wrfbdy/wrflowinp record as a traced shape: each distinct record signature is a separate compiled program per configuration; generate all case inputs over the same window length to share programs"
+ },
+ "bundle": {
+  "bundle": "<DATA_ROOT>/wrf_gpu2/release_bundles/v0.4.0",
+  "bundle_json": {
+   "path": "<DATA_ROOT>/wrf_gpu2/release_bundles/v0.4.0/sealed/BUNDLE.json",
+   "sha256": "26ff7727a5eb86e918ced35b86cc231bf89c7a5e46edcee01cfbe87a59b2e6d4",
+   "bytes": 666
+  },
+  "bundle_env": {
+   "path": "<DATA_ROOT>/wrf_gpu2/release_bundles/v0.4.0/bundle.env",
+   "sha256": "284a589ab8b6eff8fdc80b84c6470d3a39e943c4a4e1b20cbad912ad59144913",
+   "bytes": 531
+  },
+  "consumer": {
+   "path": "<USER_HOME>/src/wrf_gpu2_wt/w41-optimize/scripts/release/bundle_consumer.sh",
+   "sha256": "816f5f5be3ebed5d2aeefdbb5f2d5f256599f1fbd0559a880f95730504606681",
+   "bytes": 273
+  },
+  "layer": "<DATA_ROOT>/wrf_gpu2/scratch/w41-optimize/gpusmoke1/A/run/bundle_layer"
+ }
+}

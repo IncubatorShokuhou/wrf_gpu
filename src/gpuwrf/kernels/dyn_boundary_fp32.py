@@ -20,7 +20,41 @@ def _rn(op, a, b, *, interpret):
     return _literal_rn(op, a, b, interpret=interpret)
 
 
-def _interpolate(leaf, lead, cadence, out, *, records, width, nz, side_len):
+def _bracket(ceil_lower, records, window, lanes):
+    """Global WRF record bracket and its slot in ``leaf``.
+
+    Full stacks keep the released ``clip(ceil-1, 0, records-2)``. A root record
+    window (``window`` = 0-d int32 refs ``(base, last)``, last = full stack
+    records-2) clips with the GLOBAL ``last`` so the clock arithmetic is the
+    full-stack one, then reads slot ``lower - base``. A bracket outside the
+    resident window is ``bad``: callers poison it to NaN, never read another
+    record (the host refreshes the window before every call).
+    """
+    if window is None:
+        lower = jnp.clip(ceil_lower, 0, records-2)
+        return lower, lower, None
+    base = jnp.broadcast_to(pt.load(window[0].at[()]), (lanes,))
+    last = jnp.broadcast_to(pt.load(window[1].at[()]), (lanes,))
+    lower = jnp.clip(ceil_lower, 0, last)
+    slot = lower - base
+    bad = (slot < 0) | (slot > records-2)
+    return lower, jnp.clip(slot, 0, records-2), bad
+
+
+def _poison(value, bad):
+    return value if bad is None else jnp.where(bad, jnp.float32(jnp.nan), value)
+
+
+def _window_operands(window):
+    """``(base, last)`` int32 scalars of a record window, or ``()`` for a full stack."""
+    if window is None:
+        return ()
+    window = jnp.asarray(window, jnp.int32)
+    return (window[0], window[1])
+
+
+def _interpolate(leaf, lead, cadence, *refs, records, width, nz, side_len, windowed=False):
+    window, (out,) = (refs[:2], refs[2:]) if windowed else (None, refs)
     i = pl.program_id(0)*BLOCK+jnp.arange(BLOCK, dtype=jnp.int32)
     tang, k = i%side_len, (i//side_len)%nz
     b, side = (i//(side_len*nz))%width, i//(side_len*nz*width)
@@ -31,33 +65,35 @@ def _interpolate(leaf, lead, cadence, out, *, records, width, nz, side_len):
     lead_value = jnp.broadcast_to(pt.load(lead.at[()]).astype(jnp.float32), (BLOCK,))
     cadence_value = jnp.broadcast_to(pt.load(cadence.at[()]), (BLOCK,))
     fraction = _rn('div', lead_value, cadence_value, interpret=_INTERPRET)
-    lower = jnp.clip(jnp.ceil(fraction).astype(jnp.int32)-1, 0, records-2)
+    lower, slot, bad = _bracket(jnp.ceil(fraction).astype(jnp.int32)-1, records, window, BLOCK)
     alpha = jnp.clip(_rn('sub', fraction, lower.astype(jnp.float32), interpret=_INTERPRET),
                      jnp.float32(0), jnp.float32(1))
     dtbc = _rn('mul', alpha, cadence_value, interpret=_INTERPRET)
     # Storage-dtype records are rounded to REAL at load (masked lanes unstored).
-    old = pt.load(leaf.at[lower, side, b, k, tang], mask=valid).astype(jnp.float32)
-    new = pt.load(leaf.at[lower+1, side, b, k, tang], mask=valid).astype(jnp.float32)
+    old = pt.load(leaf.at[slot, side, b, k, tang], mask=valid).astype(jnp.float32)
+    new = pt.load(leaf.at[slot+1, side, b, k, tang], mask=valid).astype(jnp.float32)
     rate = _rn('div', _rn('sub', new, old, interpret=_INTERPRET), cadence_value, interpret=_INTERPRET)
     value = _rn('add', old, _rn('mul', dtbc, rate, interpret=_INTERPRET), interpret=_INTERPRET)
-    pt.store(out.at[side, b, k, tang], value, mask=valid)
+    pt.store(out.at[side, b, k, tang], _poison(value, bad), mask=valid)
 
 
-def interpolate_leaf(leaf, lead, cadence):
+def interpolate_leaf(leaf, lead, cadence, window=None):
     leaf = jnp.asarray(leaf)
-    if leaf.shape[0] == 1:
+    if leaf.shape[0] == 1 and window is None:
         return leaf[0].astype(jnp.float32)
     records, _, width, nz, side_len = leaf.shape
     size = 4*width*nz*side_len
-    return pl.pallas_call(partial(_interpolate, records=records, width=width, nz=nz, side_len=side_len),
+    return pl.pallas_call(partial(_interpolate, records=records, width=width, nz=nz, side_len=side_len,
+                                  **({'windowed': True} if window is not None else {})),
         out_shape=jax.ShapeDtypeStruct(leaf.shape[1:], jnp.float32), grid=((size+BLOCK-1)//BLOCK,),
         interpret=_INTERPRET, name='boundary_leaf_interp_real')(
-            leaf, jnp.asarray(lead), jnp.asarray(cadence, jnp.float32))
+            leaf, jnp.asarray(lead), jnp.asarray(cadence, jnp.float32), *_window_operands(window))
 
 
-def _dry_relax(field, mu, c1, c2, msf, leaf, lead, cadence, fcx, gcx, out,
-               *, nz, ny, nx, mu_ny, mu_nx, records, kind, coupled, spec, relax):
+def _dry_relax(field, mu, c1, c2, msf, leaf, lead, cadence, fcx, gcx, *refs,
+               nz, ny, nx, mu_ny, mu_nx, records, kind, coupled, spec, relax, windowed=False):
     """One boundary stencil; interior tiles only write the zero tendency."""
+    window, (out,) = (refs[:2], refs[2:]) if windowed else (None, refs)
     block = 32
     i32 = jnp.int32
     x = pl.program_id(0)*block+jnp.arange(block, dtype=i32)
@@ -85,13 +121,14 @@ def _dry_relax(field, mu, c1, c2, msf, leaf, lead, cadence, fcx, gcx, out,
         rn = partial(_rn, interpret=_INTERPRET)
         clock = jnp.broadcast_to(pt.load(lead.at[()]).astype(jnp.float32), (block,))
         interval = jnp.broadcast_to(pt.load(cadence.at[()]), (block,))
+        bad = None
         if records > 1:
             fraction = rn('div', clock, interval)
-            lower = jnp.clip(jnp.ceil(fraction).astype(jnp.int32)-1, 0, records-2)
+            lower, slot, bad = _bracket(jnp.ceil(fraction).astype(jnp.int32)-1, records, window, block)
             alpha = jnp.clip(rn('sub', fraction, lower.astype(jnp.float32)), jnp.float32(0), jnp.float32(1))
             dtbc = rn('mul', alpha, interval)
         else:
-            lower = jnp.zeros_like(x)
+            slot = jnp.zeros_like(x)
 
         def residual(gy, gx, width):
             gy, gx = jnp.broadcast_arrays(gy, gx)
@@ -115,7 +152,7 @@ def _dry_relax(field, mu, c1, c2, msf, leaf, lead, cadence, fcx, gcx, out,
                 if kind in ('u', 'v'):
                     value = rn('div', value, scale)
             tang = jnp.where(side < 2, gy, gx)
-            old = load(leaf, (lower, side, width, k, tang))
+            old = load(leaf, (slot, side, width, k, tang))
             if not coupled and kind == 'theta':
                 old = rn('sub', old, jnp.float32(300))
             if not coupled and kind != 'mu':
@@ -123,7 +160,7 @@ def _dry_relax(field, mu, c1, c2, msf, leaf, lead, cadence, fcx, gcx, out,
                 if kind in ('u', 'v'):
                     old = rn('div', old, scale)
             if records > 1:
-                new = load(leaf, (lower+1, side, width, k, tang))
+                new = load(leaf, (slot+1, side, width, k, tang))
                 if not coupled and kind == 'theta':
                     new = rn('sub', new, jnp.float32(300))
                 if not coupled and kind != 'mu':
@@ -147,17 +184,19 @@ def _dry_relax(field, mu, c1, c2, msf, leaf, lead, cadence, fcx, gcx, out,
         value = rn('sub', rn('mul', f, centre), rn('mul', g, lap))
         if kind in ('theta', 'ph', 'w'):
             value = rn('div', value, real(msf, (y, x), active))
-        pt.store(out.at[k, y, x], value, mask=active)
+        pt.store(out.at[k, y, x], _poison(value, bad), mask=active)
 
 
 def dry_relax(field, mu, c1, c2, msf, leaf, lead, cadence, fcx, gcx,
-              *, kind, coupled, spec, relax):
+              *, kind, coupled, spec, relax, window=None):
     arrays = [jnp.asarray(v) for v in (field, mu, c1, c2, msf, leaf, lead)]
     arrays += [jnp.asarray(v, jnp.float32) for v in (cadence, fcx, gcx)]
+    arrays += list(_window_operands(window))
     nz, ny, nx = field.shape
     return pl.pallas_call(partial(_dry_relax, nz=nz, ny=ny, nx=nx,
         mu_ny=mu.shape[0], mu_nx=mu.shape[1], records=leaf.shape[0],
-        kind=kind, coupled=bool(coupled), spec=int(spec), relax=int(relax)),
+        kind=kind, coupled=bool(coupled), spec=int(spec), relax=int(relax),
+        **({'windowed': True} if window is not None else {})),
         out_shape=jax.ShapeDtypeStruct(field.shape, jnp.float32),
         grid=((nx+31)//32, ny, nz), interpret=_INTERPRET,
         compiler_params=pt.CompilerParams(num_warps=1), name='boundary_dry_relax_real')(*arrays)
@@ -190,8 +229,8 @@ def coupled_work_target(leaf, save, mass, msf, *, axis, zone):
         name='boundary_coupled_work_real')(*arrays)
 
 
-def _ring_update(field, leaf, base, lead, cadence, wf, wg, out, *, nz, ny, nx, records, spec, relax,
-                 do_relax, with_base):
+def _ring_update(field, leaf, base, lead, cadence, wf, wg, *refs, nz, ny, nx, records, spec, relax,
+                 do_relax, with_base, windowed=False):
     """End-of-step boundary VALUE update of one field in one launch.
 
     Spec rows (released order: S/N written after W/E, so they own corners) get
@@ -199,6 +238,7 @@ def _ring_update(field, leaf, base, lead, cadence, wf, wg, out, *, nz, ny, nx, r
     ``do_relax`` the relax rows get ``cur + wf*fls0 - wg*lap`` (WRF ownership);
     every other cell is copied. REAL arithmetic, storage dtype kept.
     """
+    window, (out,) = (refs[:2], refs[2:]) if windowed else (None, refs)
     block = 32
     i32 = jnp.int32
     x = pl.program_id(0)*block+jnp.arange(block, dtype=i32)
@@ -228,18 +268,19 @@ def _ring_update(field, leaf, base, lead, cadence, wf, wg, out, *, nz, ny, nx, r
         rn = partial(_rn, interpret=_INTERPRET)
         clock = jnp.broadcast_to(pt.load(lead.at[()]).astype(jnp.float32), (block,))
         interval = jnp.broadcast_to(pt.load(cadence.at[()]), (block,))
+        bad = None
         if records > 1:
             fraction = rn('div', clock, interval)
-            lower = jnp.clip(jnp.ceil(fraction).astype(i32)-1, 0, records-2)
+            lower, slot, bad = _bracket(jnp.ceil(fraction).astype(i32)-1, records, window, block)
             alpha = jnp.clip(rn('sub', fraction, lower.astype(jnp.float32)), jnp.float32(0), jnp.float32(1))
             dtbc = rn('mul', alpha, interval)
         else:
-            lower = jnp.zeros_like(x)
+            slot = jnp.zeros_like(x)
 
         def record(ref, width, tang, mask):
-            old = real(ref, (lower, side, width, k, tang), mask)
+            old = real(ref, (slot, side, width, k, tang), mask)
             if records > 1:
-                new = real(ref, (lower+1, side, width, k, tang), mask)
+                new = real(ref, (slot+1, side, width, k, tang), mask)
                 old = rn('add', old, rn('mul', dtbc, rn('div', rn('sub', new, old), interval)))
             return old
 
@@ -247,7 +288,7 @@ def _ring_update(field, leaf, base, lead, cadence, wf, wg, out, *, nz, ny, nx, r
         value = record(leaf, b, tang0, ring)
         if with_base:
             value = rn('add', record(base, b, tang0, ring), value)
-        pt.store(out.at[k, y, x], value.astype(out.dtype), mask=ring)
+        pt.store(out.at[k, y, x], _poison(value, bad).astype(out.dtype), mask=ring)
         if do_relax:
             def residual(gy, gx, width):
                 tang = jnp.where(side < 2, gy, gx)
@@ -263,17 +304,19 @@ def _ring_update(field, leaf, base, lead, cadence, wf, wg, out, *, nz, ny, nx, r
             cur = real(field, (k, y, x), lane_relax)
             new_value = rn('sub', rn('add', cur, rn('mul', real(wf, (b,), lane_relax), centre)),
                            rn('mul', real(wg, (b,), lane_relax), lap))
-            pt.store(out.at[k, y, x], new_value.astype(out.dtype), mask=lane_relax)
+            pt.store(out.at[k, y, x], _poison(new_value, bad).astype(out.dtype), mask=lane_relax)
 
 
-def ring_update(field, leaf, lead, cadence, wf, wg, *, spec, relax, do_relax, base=None):
+def ring_update(field, leaf, lead, cadence, wf, wg, *, spec, relax, do_relax, base=None, window=None):
     """Fused spec(+relax) boundary value update; ``base`` adds a second record (totals)."""
     field = jnp.asarray(field)
     nz, ny, nx = field.shape
     arrays = [field, jnp.asarray(leaf), jnp.asarray(leaf if base is None else base), jnp.asarray(lead),
               jnp.asarray(cadence, jnp.float32), jnp.asarray(wf, jnp.float32), jnp.asarray(wg, jnp.float32)]
+    arrays += list(_window_operands(window))
     return pl.pallas_call(partial(_ring_update, nz=nz, ny=ny, nx=nx, records=int(jnp.shape(leaf)[0]),
-        spec=int(spec), relax=int(relax), do_relax=bool(do_relax), with_base=base is not None),
+        spec=int(spec), relax=int(relax), do_relax=bool(do_relax), with_base=base is not None,
+        **({'windowed': True} if window is not None else {})),
         out_shape=jax.ShapeDtypeStruct(field.shape, field.dtype), grid=((nx+31)//32, ny, nz),
         interpret=_INTERPRET, compiler_params=pt.CompilerParams(num_warps=1),
         name='boundary_ring_update_real')(*arrays)

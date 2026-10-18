@@ -1,0 +1,70 @@
+{
+ "scope": "CPU replay of the recorded GPU OSSE (26 member histories, no launch) under the critic-FIX code a22d4f27+ vs the GPU-tested handoff 8aecf007fc, same env (taskset 2,18, OPENBLAS_NUM_THREADS=4)",
+ "old_vs_new_replayed_fields_sha256": [
+  "0d2b97ab0c212c08137704eef63b9f2941ef42b5ed5912fe856b784f54104d44",
+  "0d2b97ab0c212c08137704eef63b9f2941ef42b5ed5912fe856b784f54104d44"
+ ],
+ "old_vs_new_bitwise_equal": true,
+ "controls_digest_equal_23_of_23": true,
+ "twin_observations_equal": true,
+ "members_asked": 26,
+ "launches": 0,
+ "vs_recorded_GPU_result": {
+  "non_float_leaves": "equal",
+  "max_rel_float_diff": 1.740186603505809e-13,
+  "at": "twin/abs_log_error/z0_forest",
+  "cause": "host OpenBLAS summation order (1 vs 4 threads already changes the last bits: est z0_forest ...115 vs ...157 vs recorded ...217); bounds clip inactive (max member mult 1.90/1.82 < effective high 4.587/5.0)"
+ },
+ "replayed_twin": "RECOVERED",
+ "replayed_abs_log_error": {
+  "z0_forest": 0.021053696045477854,
+  "z0_shrub": 0.016568903182585026
+ },
+ "replayed_misfit_train": [
+  1.8593260874604307,
+  1.035779913221953
+ ],
+ "replayed_misfit_test": [
+  1.8827313613400418,
+  1.1138558632735691
+ ],
+ "replayed_program": "ONE_PROGRAM",
+ "bounds_now": {
+  "z0_forest": {
+   "bounds": [
+    0.2,
+    4.587155822832253
+   ],
+   "feasible_factors": [
+    0.0,
+    4.587155822832253
+   ],
+   "source": "default"
+  },
+  "z0_shrub": {
+   "bounds": [
+    0.2,
+    5.0
+   ],
+   "feasible_factors": [
+    0.0,
+    83.33333519597852
+   ],
+   "source": "default"
+  }
+ },
+ "recorded_result_sha256": "77231d73f2cf771e25be6d0b391a81ce9dedb360afecb8a9e6c8e6981bdfba69",
+ "verdict": "G1-G5 PRESERVED",
+ "recorded_member_multiplier_range": {
+  "z0_forest": [
+   0.3354,
+   1.9036
+  ],
+  "z0_shrub": [
+   0.5222,
+   1.8188
+  ],
+  "members": 22,
+  "note": "22 non-truth control files (provenance theta); all strictly inside the FIX bounds z0_forest [0.2, 4.5872], z0_shrub [0.2, 5] -> clip inactive in both codes"
+ }
+}

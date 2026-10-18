@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import jax.numpy as jnp
 
+from gpuwrf.contracts import cammg_fields
 from gpuwrf.contracts import precision as precision_contract
 from gpuwrf.contracts.grid import GridSpec
 from gpuwrf.contracts.precision import FP32_GATED, FP64, INT32, PRECISION_MATRIX, SURFACE_LAYER_CARRY_LEAVES
@@ -76,7 +77,8 @@ def test_precision_matrix_gate_flags_match_adr007_boundary_classes():
         "tracer_bdy",
         "tracer_budget",
     }
-    integer_static = {"lu_index", "epsilon_pbl_step"}
+    # cam_fatal is the WRF CAM-MG INTEGER error flag (all other CAM-MG state is WRF REAL).
+    integer_static = {"lu_index", "epsilon_pbl_step", "cam_fatal"}
     # B39: WRF-REAL surface-layer carry, float32 in every configuration (not gated).
     mynn_history = getattr(precision_contract, "MYNN_DIAGNOSTIC_LEAVES", ())
     assert mynn_history in ((), ("el_pbl", "maxmf", "maxwidth", "ztop_plume"))
@@ -87,10 +89,15 @@ def test_precision_matrix_gate_flags_match_adr007_boundary_classes():
     real_locked.update(precision_contract.LES_TKE_LEAVES)
     real_locked.update(precision_contract.EXTRA_SCALAR_BOUNDARY_LEAVES)
     # The v0.4 schemes retain WRF REAL carries and an INTEGER call counter.
+    # Later v0.4 groups (writer profiles rimi/exch_tke, NTU mp state, P3 ice diagnostics, CAM-MG state)
+    # are WRF REAL state too; each group is registered here explicitly, so an unregistered new leaf
+    # still falls into the FP64-locked class below and must be justified.
     for group in ("SMS_CARRY_LEAVES", "P3_STATE_LEAVES", "JENSEN_STATE_LEAVES", "EPSILON_PBL_LEAVES",
                   "FERRIER_CARRY_LEAVES", "GODDARD4ICE_CARRY_LEAVES",
-                  "GODDARD4ICE_HISTORY_LEAVES", "THOMPSON_HAIL_SURFACE_LEAVES"):
+                  "GODDARD4ICE_HISTORY_LEAVES", "THOMPSON_HAIL_SURFACE_LEAVES",
+                  "WRITER_PROFILE_LEAVES", "NTU_STATE_LEAVES", "ICE_DIAGNOSTIC_LEAVES"):
         real_locked.update(getattr(precision_contract, group))
+    real_locked.update(cammg_fields.STATE_FIELDS)
     real_locked.difference_update(integer_static)
     # The matrix also covers derived/legacy p/ph/mu/pgeop aliases.
     assert set(State.__slots__) <= set(PRECISION_MATRIX)

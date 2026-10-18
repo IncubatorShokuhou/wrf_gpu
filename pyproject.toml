@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "gpuwrf"
-version = "0.4.0"
+version = "0.4.1"
 description = "A GPU-native WRF-compatible regional NWP model (JAX dynamical core + physics)"
 readme = "README.md"
 requires-python = ">=3.10"
@@ -67,6 +67,7 @@ where = ["src"]
 "gpuwrf" = ["assets_manifest.json"]
 "gpuwrf.physics" = ["surface_most_tables_v1.npz", "surface_most_tables_wrf_real.npz", "data/kfcup_real_tables.npz", "goddard_tables.npz", "goddard_tables.json", "qnse_surface_tables_v1.npz", "gfs_sas_tables_*.npz", "flg_tables_v1.npz", "gfdleta_tables_v1.npz", "gfdleta_co2_assets/*"]
 "gpuwrf.diagnostics" = ["census_schema.json"]
+"gpuwrf.optimize" = ["released_v0.4.0.json"]
 "gpuwrf.validation" = ["tolerance_ladder.json"]
 "gpuwrf.physics.nssl2mom" = ["data/init_constants.json", "data/one_moment_constants.json"]
 "gpuwrf.physics.ntu" = ["data/*.npz", "data/*.json"]

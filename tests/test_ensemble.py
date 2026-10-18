@@ -519,6 +519,29 @@ def test_launch_preserves_only_validated_official_descriptor(tmp_path, monkeypat
             launch(tmp_path/"prepared/plan.json", launcher=fake)
 
 
+def test_launch_lock_policy_follows_the_member_environment(tmp_path, monkeypatch):
+    from gpuwrf.ens import workflows
+
+    cases = [fake_case(tmp_path, "a"), fake_case(tmp_path, "b", 6)]
+    prepare("batch", tmp_path/"prepared", cases=cases, hours=3)
+    lock = tmp_path/"fake_gpu.lock"
+    lock.write_text("fake lock, no GPU")
+    monkeypatch.setattr(workflows, "GPU_LOCK_FILE", lock)
+    monkeypatch.delenv("GPUWRF_GPU_LOCK_HELD", raising=False)
+    monkeypatch.delenv("GPUWRF_GPU_LOCK_FD", raising=False)
+    calls = []
+    monkeypatch.setattr(subprocess, "run", lambda argv, **kw: calls.append(kw) or type("Result", (), {"returncode": 0})())
+    plan = tmp_path/"prepared/plan.json"
+    # A CPU-only driver (this test process) launching GPU members must still demand the lock.
+    with pytest.raises(ValueError, match="with_gpu_lock"):
+        launch(plan, env={"JAX_PLATFORMS": "cuda"})
+    assert launch(plan, env={"JAX_PLATFORMS": "cpu", "MARK": "members"}) == 0  # CPU members never touch the GPU
+    assert calls[-1]["env"]["MARK"] == "members" and calls[-1]["pass_fds"] == ()
+    with lock.open() as handle:
+        members = {"JAX_PLATFORMS": "cuda", "GPUWRF_GPU_LOCK_HELD": "1", "GPUWRF_GPU_LOCK_FD": str(handle.fileno())}
+        assert launch(plan, env=members) == 0 and calls[-1]["pass_fds"] == (handle.fileno(),)
+
+
 @pytest.mark.parametrize("action", ["products", "verify", "prepare"])
 def test_offline_cli_never_imports_jax(tmp_path, action):
     manifest, stations, obs = station_inputs(tmp_path)

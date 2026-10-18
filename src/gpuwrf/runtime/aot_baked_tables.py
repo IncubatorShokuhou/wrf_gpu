@@ -2,7 +2,7 @@
 
 Namelist holders cover land/urban/RUC tables. These remaining modules bind
 tables in globals/defaults or host-only cached loaders. Select by the effective
-physics options, including namelists closed over by fused cascades. This runs
+physics options, including the namelists of fused cascades. This runs
 only when building a full metadata key; runtime key memos retain that key.
 """
 from __future__ import annotations
@@ -25,6 +25,9 @@ def _namelists(fn, namelist):
         elif isinstance(value, (tuple, list)):
             for child in value:
                 visit(child)
+        elif getattr(value, "table_namelists", None) is not None:
+            # Fused-cascade key carrier: its namelists are jit arguments, not closure cells.
+            visit(value.table_namelists)
     visit(namelist)
     target = getattr(fn, "__wrapped__", fn)
     for cell in getattr(target, "__closure__", None) or ():
@@ -89,8 +92,8 @@ def baked_table_hash(fn, namelist):
             # scalar controls baked in this frozen auxiliary object. Hash the
             # bound values, never a reread of a possibly changed table file.
             # Soil/runoff/tile tables already ride NoahMPStatic's content-keyed
-            # holder; irrigation/carbon/crop maps are traced children (content
-            # keyed by fn_identity_hash when a fused closure bakes them).
+            # holder; irrigation/carbon/crop maps are traced children (call
+            # operands of every step program, fused cascades included).
             land_controls.append(nl.noahmp_options)
         mp, sw, lw = int(nl.mp_physics), int(nl.ra_sw_physics), int(nl.ra_lw_physics)
         if mp in (8, 28):
@@ -113,8 +116,10 @@ def baked_table_hash(fn, namelist):
             modules.update(("goddard4ice.native", "goddard4ice.column",
                             "goddard4ice.equations", "goddard4ice.support"))
         if mp == 38:
+            # The DOUBLE tables reach the step as traced operands (thompson_hail.tables);
+            # their loader values stay keyed below, so a changed table byte still splits keys.
             modules.update(("thompson_tables", "thompson_column", "thompson_aero_tables",
-                            "thompson_hail", "thompson_hail._coefficients"))
+                            "thompson_hail", "thompson_hail._coefficients", "thompson_hail.tables"))
             loaders.update((
                 ("thompson_tables", "load_wrf_cold_collection_tables"),
                 ("thompson_hail.native", "_cloud_coefficients"),
@@ -147,6 +152,13 @@ def baked_table_hash(fn, namelist):
         radiation(sw, lw)
         if 4 in (sw, lw):
             loaders.add(("wrf_cam_ozone", "_load_wrf_cam_ozone_asset"))
+        if sw == 4 and int(getattr(nl, "aer_opt", 0) or 0) == 1:
+            # aer_opt=1: swaerpr band tables are compile constants; aerodm/pina ride as traced children.
+            modules.add("wrf_tegen_aerosol")
+            loaders.add(("wrf_tegen_aerosol", "_load_wrf_tegen_aerosol_asset"))
+        if sw == 4 and int(getattr(nl, "aer_opt", 0) or 0) == 3:
+            # aer_opt=3: gt_aod / SF79 rural spectral tables are compile constants (module-level values).
+            modules.update(("wrf_aer_opt3", "wrf_aer_opt3_tables"))
         if lw == 1:
             modules.add("ra_lw_rrtm")
             loaders.add(("ra_lw_rrtm", "_load_tables"))

@@ -4,6 +4,8 @@ Class B admission: manager 2026-10-14 19:05Z; all-cell/all-25-frame bit proof:
 proofs/t_writer_fields/INACTIVE_CPU_ALL_FRAMES.json. Constants here are WRF
 Registry/reset values in the specified inactive branches, not missing physics.
 """
+from collections.abc import Mapping
+
 import numpy as np
 
 CCN_FIELDS = tuple(f"CCN{i}_GS" for i in range(1, 8)) + ("EFCG", "EFIG", "EFSG", "WACT")
@@ -12,8 +14,8 @@ STOCH_FIELDS = ("FIELD_CONV", "FIELD_PBL", "FIELD_SF")
 PROFILE_FIELDS = ("RIMI", "EXCH_TKE")
 FASDAS_FIELDS = ("HFX_BOTH", "QFX_BOTH")
 # BEP+BEM (sf_urban_physics=3) green-roof/PV history (Registry.EM_COMMON:969-976, 'rh').
-# The port refuses GR_FLAG/GR_FRAC_ROOF/PV_FRAC_ROOF != 0 at load (urban_bem_static.bem_class),
-# so WRF's computation reduces to: urban_var_init EP_PV=TGR=DRAINGR=0 on every column
+# With PV_FRAC_ROOF=0 and GR_FLAG=0 (the URBPARM.TBL default; urban_bem_static.bem_class)
+# WRF's computation reduces to: urban_var_init EP_PV=TGR=DRAINGR=0 on every column
 # (module_sf_urban.F:2935-2949) and bep_bem resets them to 0 on urban columns
 # (module_sf_bep_bem.F:1055-1060); EP_PV then adds meso_urb_ac*d_urb*eppv with
 # eppv = enerpv*pv_frac_roof*bl*bw = +-0 (module_sf_bem.F:903), leaving +0. QGR_URB4D is
@@ -21,6 +23,26 @@ FASDAS_FIELDS = ("HFX_BOTH", "QFX_BOTH")
 # Original CPU proof: c57, every cell of all 25 frames (proofs/t_classd/URBAN_CPU_ALL_FRAMES.json).
 URBAN_ZERO_FIELDS = ("TGR_URB4D", "DRAINGR_URB3D", "EP_PV_URB3D")
 URBAN_FIELDS = ("QGR_URB4D", *URBAN_ZERO_FIELDS)
+# URBPARM.TBL PV_FRAC_ROOF>0 / GR_FLAG=1 run WRF's PV / green-roof branches: these fields are
+# then held producer values (urban_multilayer_hook.multilayer_history_fields), not +0 constants.
+URBAN_PV_FIELDS = ("EP_PV_URB3D",)
+URBAN_GREEN_FIELDS = ("TGR_URB4D", "DRAINGR_URB3D")
+
+
+def _urban_bem_params(namelist):
+    bundle = namelist.get("urban_bundle") if isinstance(namelist, Mapping) else getattr(namelist, "urban_bundle", None)
+    bem = getattr(bundle, "bem", None)
+    return {} if bem is None else bem.params
+
+
+def _urban_active_fields(namelist):
+    params = _urban_bem_params(namelist)
+    active = ()
+    if float(params.get("pv_frac_roof", 0.)) > 0.:
+        active += URBAN_PV_FIELDS
+    if int(params.get("gr_flag", 0)) == 1 and float(params.get("gr_frac_roof", 0.)) > 0.:
+        active += URBAN_GREEN_FIELDS
+    return active
 # CAM-MG (mp_physics=11) DLF2 (Registry/registry.cam:73, io rh, kg/kg/s), allocated by cammgmpscheme
 # (Registry.EM_COMMON:3031). Its only writer is the UW shallow-convection driver
 # (module_shcu_camuwshcu_driver.F:400, reached only under shcu_physics==CAMUWSHCUSCHEME,
@@ -74,9 +96,13 @@ def inactive_names(namelist, lookup):
         # FASDAS_NOAHMP_CPU_ALL_FRAMES.json. c53 reference stays incomplete.
         names.extend(FASDAS_FIELDS)
     if int(lookup(namelist, "sf_urban_physics", 0) or 0) == 3:
-        names.extend(URBAN_ZERO_FIELDS)
+        active = _urban_active_fields(namelist)
+        names.extend(name for name in URBAN_ZERO_FIELDS if name not in active)
     config = lookup(namelist, "stochastic_config")
-    if (config is not None and int(lookup(namelist, "cu_physics", 0)) == 1
+    # SPP allocates FIELD_CONV/PBL/SF; WRF writes field_conv only in the cumulus driver (:753 zero,
+    # GF), field_pbl never, field_sf only in RUC. Original CPU proofs, every cell of all 25 frames:
+    # cu1 v-prep c46 (proofs/t_writer_fields), cu0 w41-stoch st3/st4 (proofs/w41_stoch).
+    if (config is not None and int(lookup(namelist, "cu_physics", 0)) in (0, 1)
             and int(lookup(namelist, "bl_pbl_physics", 5)) == 5
             and lookup(namelist, "sf_surface_physics") == 4):
         for name, pattern in zip(STOCH_FIELDS, config.patterns[4:7], strict=True):
@@ -107,7 +133,7 @@ def add_fields(fields, *, state, namelist, diagnostics, dimensions, requested_na
     if (int(lookup(namelist, "ra_lw_physics", 4)), int(lookup(namelist, "ra_sw_physics", 4))) == (5, 5):
         profiles += tuple(f"RE_{species}_GSFC" for species in ("CLOUD", "ICE", "SNOW", "RAIN", "GRAUPEL", "HAIL"))
     if int(lookup(namelist, "sf_urban_physics", 0) or 0) == 3:
-        profiles += ("QGR_URB4D",)
+        profiles += ("QGR_URB4D",) + _urban_active_fields(namelist)
     for name in profiles:
         if not wanted(name):
             continue

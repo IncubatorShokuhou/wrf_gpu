@@ -28,7 +28,8 @@ def load_case(input_dir: Path, scratch: Path, *, crop: str | None = None, mirror
 
     config = NestedPipelineConfig(Path(input_dir), scratch / "stream", scratch / "proof", hours=1, max_dom=1)
     t0 = time.perf_counter()
-    _h, bundles, _m, run_start, dts, carries = _load_domains(config, ("d01",))
+    # Full boundary stacks: the harness crops/steps the release loop directly.
+    _h, bundles, _m, run_start, dts, carries = _load_domains(config, ("d01",), record_windows=False)
     meta = {"load_s": round(time.perf_counter() - t0, 1), "dt_s": dts["d01"], "run_start": str(run_start)}
     nl, carry = bundles["d01"].namelist, carries["d01"]
     if crop:

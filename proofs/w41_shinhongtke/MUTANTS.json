@@ -1,0 +1,486 @@
+{
+ "controls": {
+  "control_hist": {
+   "passed": 29,
+   "failures": [],
+   "errors": []
+  },
+  "control_dx": {
+   "passed": 4,
+   "failures": [],
+   "errors": []
+  },
+  "control_v040": {
+   "passed": 6,
+   "failures": [],
+   "errors": []
+  }
+ },
+ "killed": 15,
+ "total": 15,
+ "v040_3km_also_kills": {
+  "DX1_pthl_no_pmax_clamp_vs_v040_3km": true,
+  "DX2_pthnl_no_pmax_clamp_vs_v040_3km": true
+ },
+ "hangs_retried": [],
+ "rows": {
+  "control_hist": {
+   "rc": 0,
+   "passed": 29,
+   "failures": [],
+   "errors": []
+  },
+  "control_dx": {
+   "rc": 0,
+   "passed": 4,
+   "failures": [],
+   "errors": []
+  },
+  "control_v040": {
+   "rc": 0,
+   "passed": 6,
+   "failures": [],
+   "errors": []
+  },
+  "M1_writer_hunk_deleted": {
+   "rc": 1,
+   "passed": 17,
+   "failures": [
+    [
+     "test_cold_seed_reaches_history_with_zero_top",
+     "AssertionError: assert b'\\x00\\x00\\x0...0\\x00\\x00\\x00' == b'\\n\\xd7\\xa3;...3;\\n\\xd7\\xa3;'\n  \n  At index 0 diff: b'\\x00' != b'\\n'\n  Use -v to get more diff"
+    ],
+    [
+     "test_diagnosed_tke_and_el_reach_history",
+     "AssertionError: assert (b'\\x00\\x00\\x0...0\\x00\\x00\\x00' == b'\\x02\\xe3\\x8...\\x80\\xee\\xb2>'\n  \n  At index 0 diff: b'\\x00' != b'\\x02'\n  Use -v to get more diff)"
+    ],
+    [
+     "test_cam_shared_profile_is_written_verbatim",
+     "AssertionError: assert b'\\x00\\x00\\x0...0\\x00\\x00\\x00' == b'\\x00\\x00\\x0...\\x00\\x00\\x9e?'\n  \n  At index 6 diff: b'\\x00' != b'\\x80'\n  Use -v to get more diff"
+    ],
+    [
+     "test_nonfinite_held_tke_refused[nan]",
+     "Failed: DID NOT RAISE <class 'ValueError'>"
+    ],
+    [
+     "test_nonfinite_held_tke_refused[inf]",
+     "Failed: DID NOT RAISE <class 'ValueError'>"
+    ],
+    [
+     "test_lead_zero_frame_carries_cold_seed_not_wrfinput_qke",
+     "AssertionError: assert b'\\x00\\x00\\x0...0\\x00\\x00\\x00' == b'\\n\\xd7\\xa3;...3;\\n\\xd7\\xa3;'\n  \n  At index 0 diff: b'\\x00' != b'\\n'\n  Use -v to get more diff"
+    ],
+    [
+     "test_held_qke_convention_reaches_history[2]",
+     "AssertionError: assert b'\\x00\\x00\\x0...0\\x00\\x00\\x00' == b'}\\xb1\\x96?v...ea?\\x7f\\xffa?'\n  \n  At index 0 diff: b'\\x00' != b'}'\n  Use -v to get more diff"
+    ],
+    [
+     "test_held_qke_convention_reaches_history[4]",
+     "assert b'\\x00\\x00\\x0...0\\x00\\x00\\x00' == b\"\\xd8\\xcc\\x8...8\\x8c@__\\xf7?\"\n  \n  At index 0 diff: b'\\x00' != b'\\xd8'\n  Use -v to get more diff"
+    ],
+    [
+     "test_held_qke_convention_reaches_history[8]",
+     "AssertionError: assert b'\\x00\\x00\\x0...0\\x00\\x00\\x00' == b' W<@\\xfb*\\x...4@\\xf7\\\\\\x9b?'\n  \n  At index 0 diff: b'\\x00' != b' '\n  Use -v to get more diff"
+    ],
+    [
+     "test_held_qke_convention_reaches_history[12]",
+     "AssertionError: assert b'\\x00\\x00\\x0...0\\x00\\x00\\x00' == b'\\xccz\\x10@\\...1\\x08A\\x94D<?'\n  \n  At index 0 diff: b'\\x00' != b'\\xcc'\n  Use -v to get more diff"
+    ],
+    [
+     "test_q2_convention_halves_exactly[2]",
+     "AssertionError: assert np.False_\n +  where np.False_ = <function all at 0x72ae6cd6d6b0>(array([[[0., 0., 0., 0., 0.],\\n        [0., 0., 0., 0., 0.],\\n        [0"
+    ],
+    [
+     "test_q2_convention_halves_exactly[4]",
+     "AssertionError: assert np.False_\n +  where np.False_ = <function all at 0x72ae6cd6d6b0>(array([[[0., 0., 0., 0., 0.],\\n        [0., 0., 0., 0., 0.],\\n        [0"
+    ]
+   ],
+   "errors": [],
+   "killed": true,
+   "genuine_failures": [
+    "test_cold_seed_reaches_history_with_zero_top",
+    "test_diagnosed_tke_and_el_reach_history",
+    "test_cam_shared_profile_is_written_verbatim",
+    "test_nonfinite_held_tke_refused[nan]",
+    "test_nonfinite_held_tke_refused[inf]",
+    "test_lead_zero_frame_carries_cold_seed_not_wrfinput_qke",
+    "test_held_qke_convention_reaches_history[2]",
+    "test_held_qke_convention_reaches_history[4]",
+    "test_held_qke_convention_reaches_history[8]",
+    "test_held_qke_convention_reaches_history[12]",
+    "test_q2_convention_halves_exactly[2]",
+    "test_q2_convention_halves_exactly[4]"
+   ]
+  },
+  "M2_top_not_bottom_zero": {
+   "rc": 1,
+   "passed": 20,
+   "failures": [
+    [
+     "test_cold_seed_reaches_history_with_zero_top",
+     "AssertionError: assert b'\\x00\\x00\\x0...3;\\n\\xd7\\xa3;' == b'\\n\\xd7\\xa3;...3;\\n\\xd7\\xa3;'\n  \n  At index 0 diff: b'\\x00' != b'\\n'\n  Use -v to get more diff"
+    ],
+    [
+     "test_diagnosed_tke_and_el_reach_history",
+     "AssertionError: assert (b'\\x00\\x00\\x0...4\\xe6?*]\\xe0>' == b'\\x02\\xe3\\x8...\\x80\\xee\\xb2>'\n  \n  At index 0 diff: b'\\x00' != b'\\x02'\n  Use -v to get more diff)"
+    ],
+    [
+     "test_lead_zero_frame_carries_cold_seed_not_wrfinput_qke",
+     "AssertionError: assert b'\\x00\\x00\\x0...3;\\n\\xd7\\xa3;' == b'\\n\\xd7\\xa3;...3;\\n\\xd7\\xa3;'\n  \n  At index 0 diff: b'\\x00' != b'\\n'\n  Use -v to get more diff"
+    ],
+    [
+     "test_held_qke_convention_reaches_history[2]",
+     "AssertionError: assert b'\\x00\\x00\\x0...Jx@\\x1af\\xfc?' == b'}\\xb1\\x96?v...ea?\\x7f\\xffa?'\n  \n  At index 0 diff: b'\\x00' != b'}'\n  Use -v to get more diff"
+    ],
+    [
+     "test_held_qke_convention_reaches_history[4]",
+     "assert b\"\\x00\\x00\\x0...\\t@\\x94\\xf8y?\" == b\"\\xd8\\xcc\\x8...8\\x8c@__\\xf7?\"\n  \n  At index 0 diff: b'\\x00' != b'\\xd8'\n  Use -v to get more diff"
+    ],
+    [
+     "test_held_qke_convention_reaches_history[8]",
+     "AssertionError: assert b'\\x00\\x00\\x0...f9@@\\xe8\\xee>' == b' W<@\\xfb*\\x...4@\\xf7\\\\\\x9b?'\n  \n  At index 0 diff: b'\\x00' != b' '\n  Use -v to get more diff"
+    ],
+    [
+     "test_held_qke_convention_reaches_history[12]",
+     "AssertionError: assert b'\\x00\\x00\\x0...9b?B\\xd5\\xac@' == b'\\xccz\\x10@\\...1\\x08A\\x94D<?'\n  \n  At index 0 diff: b'\\x00' != b'\\xcc'\n  Use -v to get more diff"
+    ],
+    [
+     "test_q2_convention_halves_exactly[2]",
+     "AssertionError: assert np.False_\n +  where np.False_ = <function all at 0x7939bfd75330>(array([[[0. , 0. , 0. , 0. , 0. ],\\n        [0. , 0. , 0. , 0. , 0. ],\\n"
+    ],
+    [
+     "test_q2_convention_halves_exactly[4]",
+     "AssertionError: assert np.False_\n +  where np.False_ = <function all at 0x7939bfd75330>(array([[[0. , 0. , 0. , 0. , 0. ],\\n        [0. , 0. , 0. , 0. , 0. ],\\n"
+    ]
+   ],
+   "errors": [],
+   "killed": true,
+   "genuine_failures": [
+    "test_cold_seed_reaches_history_with_zero_top",
+    "test_diagnosed_tke_and_el_reach_history",
+    "test_lead_zero_frame_carries_cold_seed_not_wrfinput_qke",
+    "test_held_qke_convention_reaches_history[2]",
+    "test_held_qke_convention_reaches_history[4]",
+    "test_held_qke_convention_reaches_history[8]",
+    "test_held_qke_convention_reaches_history[12]",
+    "test_q2_convention_halves_exactly[2]",
+    "test_q2_convention_halves_exactly[4]"
+   ]
+  },
+  "M3_every_pbl_publishes_qke": {
+   "rc": 1,
+   "passed": 25,
+   "failures": [
+    [
+     "test_other_pbl_keep_their_tke_pbl_source[1]",
+     "assert not np.True_\n +  where np.True_ = <built-in method any of numpy.ndarray object at 0x7b82d1d9a130>()\n +    where <built-in method any of numpy.ndarray obj"
+    ],
+    [
+     "test_other_pbl_keep_their_tke_pbl_source[5]",
+     "assert not np.True_\n +  where np.True_ = <built-in method any of numpy.ndarray object at 0x7b82d1d5b7b0>()\n +    where <built-in method any of numpy.ndarray obj"
+    ],
+    [
+     "test_camuw_carry_tke_reaches_history_through_production_writer",
+     "AssertionError: assert b'\\x00\\x00\\xf...0\\x00\\x00\\x00' == b'\\x1c\\xdcPA\\...\\xff\\x91\\x05A'\n  \n  At index 0 diff: b'\\x00' != b'\\x1c'\n  Use -v to get more diff"
+    ],
+    [
+     "test_camuw_never_takes_state_qke",
+     "assert not np.True_\n +  where np.True_ = <built-in method any of numpy.ndarray object at 0x7b819dfcf2d0>()\n +    where <built-in method any of numpy.ndarray obj"
+    ]
+   ],
+   "errors": [],
+   "killed": true,
+   "genuine_failures": [
+    "test_other_pbl_keep_their_tke_pbl_source[1]",
+    "test_other_pbl_keep_their_tke_pbl_source[5]",
+    "test_camuw_carry_tke_reaches_history_through_production_writer",
+    "test_camuw_never_takes_state_qke"
+   ]
+  },
+  "M4_cam_profile_ignored": {
+   "rc": 1,
+   "passed": 28,
+   "failures": [
+    [
+     "test_cam_shared_profile_is_written_verbatim",
+     "AssertionError: assert b'\\x00\\x00\\xf...0\\x00\\x00\\x00' == b'\\x00\\x00\\x0...\\x00\\x00\\x9e?'\n  \n  At index 2 diff: b'\\xf8' != b'\\x00'\n  Use -v to get more diff"
+    ]
+   ],
+   "errors": [],
+   "killed": true,
+   "genuine_failures": [
+    "test_cam_shared_profile_is_written_verbatim"
+   ]
+  },
+  "M5_nonfinite_accepted": {
+   "rc": 1,
+   "passed": 27,
+   "failures": [
+    [
+     "test_nonfinite_held_tke_refused[nan]",
+     "Failed: DID NOT RAISE <class 'ValueError'>"
+    ],
+    [
+     "test_nonfinite_held_tke_refused[inf]",
+     "Failed: DID NOT RAISE <class 'ValueError'>"
+    ]
+   ],
+   "errors": [],
+   "killed": true,
+   "genuine_failures": [
+    "test_nonfinite_held_tke_refused[nan]",
+    "test_nonfinite_held_tke_refused[inf]"
+   ]
+  },
+  "M6_el_never_published": {
+   "rc": 1,
+   "passed": 27,
+   "failures": [
+    [
+     "test_el_pbl_reaches_post_rk_state[1]",
+     "AssertionError: \nArrays are not equal\n\nMismatched elements: 31 / 32 (96.9%)\nFirst 5 mismatches are at indices:\n [0, 0, 0]: 7.0 (ACTUAL), 1.0 (DESIRED)\n [0, 0, 1"
+    ],
+    [
+     "test_real_kernel_el_matches_adapter_output",
+     "AssertionError: assert b'\\x00\\x00\\x0...0\\x00\\x00\\x00' == b'\\x00\\x00\\x0...6\\x92C{6\\x92C'\n  \n  At index 16 diff: b'\\x00' != b'\\x86'\n  Use -v to get more diff"
+    ]
+   ],
+   "errors": [],
+   "killed": true,
+   "genuine_failures": [
+    "test_el_pbl_reaches_post_rk_state[1]",
+    "test_real_kernel_el_matches_adapter_output"
+   ]
+  },
+  "M7_el_published_shifted": {
+   "rc": 1,
+   "passed": 27,
+   "failures": [
+    [
+     "test_el_pbl_reaches_post_rk_state[1]",
+     "AssertionError: \nArrays are not equal\n\nMismatched elements: 32 / 32 (100%)\nFirst 5 mismatches are at indices:\n [0, 0, 0]: 29.0 (ACTUAL), 1.0 (DESIRED)\n [0, 0, 1"
+    ],
+    [
+     "test_real_kernel_el_matches_adapter_output",
+     "AssertionError: assert b'{6\\x92C{6\\x...7hD\\xd5\\xd7hD' == b'\\x00\\x00\\x0...6\\x92C{6\\x92C'\n  \n  At index 0 diff: b'{' != b'\\x00'\n  Use -v to get more diff"
+    ]
+   ],
+   "errors": [],
+   "killed": true,
+   "genuine_failures": [
+    "test_el_pbl_reaches_post_rk_state[1]",
+    "test_real_kernel_el_matches_adapter_output"
+   ]
+  },
+  "M8_q2_convention_ignored": {
+   "rc": 1,
+   "passed": 25,
+   "failures": [
+    [
+     "test_held_qke_convention_reaches_history[2]",
+     "AssertionError: assert b'}\\xb1\\x16@v...\\x7f\\xff\\xe1?' == b'}\\xb1\\x96?v...ea?\\x7f\\xffa?'\n  \n  At index 2 diff: b'\\x16' != b'\\x96'\n  Use -v to get more diff"
+    ],
+    [
+     "test_held_qke_convention_reaches_history[4]",
+     "assert b'\\xd8\\xcc\\x0...\\x08\\x0cA__w@' == b\"\\xd8\\xcc\\x8...8\\x8c@__\\xf7?\"\n  \n  At index 2 diff: b'\\x07' != b'\\x87'\n  Use -v to get more diff"
+    ],
+    [
+     "test_q2_convention_halves_exactly[2]",
+     "AssertionError: assert np.False_\n +  where np.False_ = <function all at 0x7a1dd19719f0>(array([[[0.4, 0.4, 0.4, 0.4, 0.4],\\n        [0.4, 0.4, 0.4, 0.4, 0.4],\\n"
+    ],
+    [
+     "test_q2_convention_halves_exactly[4]",
+     "AssertionError: assert np.False_\n +  where np.False_ = <function all at 0x7a1dd19719f0>(array([[[0.4, 0.4, 0.4, 0.4, 0.4],\\n        [0.4, 0.4, 0.4, 0.4, 0.4],\\n"
+    ]
+   ],
+   "errors": [],
+   "killed": true,
+   "genuine_failures": [
+    "test_held_qke_convention_reaches_history[2]",
+    "test_held_qke_convention_reaches_history[4]",
+    "test_q2_convention_halves_exactly[2]",
+    "test_q2_convention_halves_exactly[4]"
+   ]
+  },
+  "M9_camuw_carry_not_passed": {
+   "rc": 1,
+   "passed": 28,
+   "failures": [
+    [
+     "test_camuw_carry_tke_reaches_history_through_production_writer",
+     "AssertionError: assert b'\\x00\\x00\\x0...0\\x00\\x00\\x00' == b'\\x1c\\xdcPA\\...\\xff\\x91\\x05A'\n  \n  At index 0 diff: b'\\x00' != b'\\x1c'\n  Use -v to get more diff"
+    ]
+   ],
+   "errors": [],
+   "killed": true,
+   "genuine_failures": [
+    "test_camuw_carry_tke_reaches_history_through_production_writer"
+   ]
+  },
+  "S1_myj_seed_without_q2_factor": {
+   "rc": 1,
+   "passed": 27,
+   "failures": [
+    [
+     "test_wrf_cold_seed_gives_original_lead0_tke_pbl[2-8]",
+     "AssertionError: assert b'\\xcd\\xcc\\xc...\\xcd\\xcc\\xcc=' == b'\\xcd\\xccL>\\...cL>\\xcd\\xccL>'\n  \n  At index 2 diff: b'\\xcc' != b'L'\n  Use -v to get more diff"
+    ],
+    [
+     "test_wrf_cold_seed_gives_original_lead0_tke_pbl[2-11]",
+     "AssertionError: assert b'\\xcd\\xcc\\xc...\\xcd\\xcc\\xcc=' == b'\\xcd\\xccL>\\...cL>\\xcd\\xccL>'\n  \n  At index 2 diff: b'\\xcc' != b'L'\n  Use -v to get more diff"
+    ]
+   ],
+   "errors": [],
+   "killed": true,
+   "genuine_failures": [
+    "test_wrf_cold_seed_gives_original_lead0_tke_pbl[2-8]",
+    "test_wrf_cold_seed_gives_original_lead0_tke_pbl[2-11]"
+   ]
+  },
+  "S2_boulac_seed_dropped": {
+   "rc": 1,
+   "passed": 27,
+   "failures": [
+    [
+     "test_wrf_cold_seed_gives_original_lead0_tke_pbl[8-8]",
+     "AssertionError: assert b'\\x9a\\x99\\x9...e\\x92@uP\\x97@' == b'\\x17\\xb7\\xd...\\x17\\xb7\\xd18'\n  \n  At index 0 diff: b'\\x9a' != b'\\x17'\n  Use -v to get more diff"
+    ],
+    [
+     "test_wrf_cold_seed_gives_original_lead0_tke_pbl[8-11]",
+     "AssertionError: assert b'\\x9a\\x99\\x9...e\\x92@uP\\x97@' == b'\\x17\\xb7\\xd...\\x17\\xb7\\xd18'\n  \n  At index 0 diff: b'\\x9a' != b'\\x17'\n  Use -v to get more diff"
+    ]
+   ],
+   "errors": [],
+   "killed": true,
+   "genuine_failures": [
+    "test_wrf_cold_seed_gives_original_lead0_tke_pbl[8-8]",
+    "test_wrf_cold_seed_gives_original_lead0_tke_pbl[8-11]"
+   ]
+  },
+  "S3_camuw_carry_seed_dropped": {
+   "rc": 1,
+   "passed": 27,
+   "failures": [
+    [
+     "test_wrf_cold_seed_gives_original_lead0_tke_pbl[9-8]",
+     "AssertionError: assert b'\\x00\\x00\\x0...0\\x00\\x00\\x00' == b'\\xcd\\xccL>\\...cL>\\xcd\\xccL>'\n  \n  At index 0 diff: b'\\x00' != b'\\xcd'\n  Use -v to get more diff"
+    ],
+    [
+     "test_wrf_cold_seed_gives_original_lead0_tke_pbl[9-11]",
+     "AssertionError: assert b'\\x00\\x00\\x0...0\\x00\\x00\\x00' == b'\\xcd\\xccL>\\...cL>\\xcd\\xccL>'\n  \n  At index 0 diff: b'\\x00' != b'\\xcd'\n  Use -v to get more diff"
+    ]
+   ],
+   "errors": [],
+   "killed": true,
+   "genuine_failures": [
+    "test_wrf_cold_seed_gives_original_lead0_tke_pbl[9-8]",
+    "test_wrf_cold_seed_gives_original_lead0_tke_pbl[9-11]"
+   ]
+  },
+  "S4_cam_top_memory_overwritten": {
+   "rc": 1,
+   "passed": 26,
+   "failures": [
+    [
+     "test_wrf_cold_seed_gives_original_lead0_tke_pbl[2-11]",
+     "assert np.False_\n +  where np.False_ = <function all at 0x7d061c36d9f0>(array([[0.2, 0.2],\\n       [0.2, 0.2]], dtype=float32) == 73.0)\n +    where <function al"
+    ],
+    [
+     "test_wrf_cold_seed_gives_original_lead0_tke_pbl[8-11]",
+     "assert np.False_\n +  where np.False_ = <function all at 0x7d061c36d9f0>(array([[0.0001, 0.0001],\\n       [0.0001, 0.0001]], dtype=float32) == 73.0)\n +    where "
+    ],
+    [
+     "test_wrf_cold_seed_gives_original_lead0_tke_pbl[9-11]",
+     "assert np.False_\n +  where np.False_ = <function all at 0x7d061c36d9f0>(array([[0.2, 0.2],\\n       [0.2, 0.2]], dtype=float32) == 73.0)\n +    where <function al"
+    ]
+   ],
+   "errors": [],
+   "killed": true,
+   "genuine_failures": [
+    "test_wrf_cold_seed_gives_original_lead0_tke_pbl[2-11]",
+    "test_wrf_cold_seed_gives_original_lead0_tke_pbl[8-11]",
+    "test_wrf_cold_seed_gives_original_lead0_tke_pbl[9-11]"
+   ]
+  },
+  "DX1_pthl_no_pmax_clamp": {
+   "rc": 1,
+   "passed": 2,
+   "failures": [
+    [
+     "test_literal_real4_is_byte_identical_at_1_and_9_km",
+     "AssertionError: row 9 dx 1000 theta: max abs 7.629e-06\nassert b'\\x8e\\xe3\\xa...0\\x00\\x00\\x00' == b'\\x8e\\xe3\\xa...0\\x00\\x00\\x00'\n  \n  At index 2 diff: b'\\xa5' != "
+    ],
+    [
+     "test_compiled_inside_wrf_input_ulp_envelope_at_1_and_9_km",
+     "AssertionError: outside envelope row 9 theta k=0"
+    ]
+   ],
+   "errors": [],
+   "killed": true,
+   "genuine_failures": [
+    "test_literal_real4_is_byte_identical_at_1_and_9_km",
+    "test_compiled_inside_wrf_input_ulp_envelope_at_1_and_9_km"
+   ]
+  },
+  "DX2_pthnl_no_pmax_clamp": {
+   "rc": 1,
+   "passed": 2,
+   "failures": [
+    [
+     "test_literal_real4_is_byte_identical_at_1_and_9_km",
+     "AssertionError: row 12 dx 1000 theta: max abs 8.477e-07\nassert b'\\xab\\xaa\\xb...0\\x00\\x00\\x00' == b'r\\x1c\\xb39\\...0\\x00\\x00\\x00'\n  \n  At index 0 diff: b'\\xab' !="
+    ],
+    [
+     "test_compiled_inside_wrf_input_ulp_envelope_at_1_and_9_km",
+     "AssertionError: outside envelope row 12 theta k=0"
+    ]
+   ],
+   "errors": [],
+   "killed": true,
+   "genuine_failures": [
+    "test_literal_real4_is_byte_identical_at_1_and_9_km",
+    "test_compiled_inside_wrf_input_ulp_envelope_at_1_and_9_km"
+   ]
+  },
+  "DX1_pthl_no_pmax_clamp_vs_v040_3km": {
+   "rc": 1,
+   "passed": 4,
+   "failures": [
+    [
+     "test_literal_real4_shinhong_is_byte_identical_to_pristine_wrf",
+     "AssertionError: row 3 theta: max abs 8.477e-07\nassert b'r\\x1c\\x15:r...x009\\x8ec\\xb5' == b'r\\x1c\\x15:r...x009\\x8ec\\xb5'\n  \n  At index 8 diff: b'\\x1d' != b'\\xab'\n"
+    ],
+    [
+     "test_compiled_shinhong_inside_wrf_input_ulp_envelope",
+     "AssertionError: outside envelope row 4 tke k=3\nassert (4, 'tke', 3) in {(3, 'v', 9), (4, 'v', 9), (5, 'v', 9)}"
+    ]
+   ],
+   "errors": [],
+   "killed": true,
+   "genuine_failures": [
+    "test_literal_real4_shinhong_is_byte_identical_to_pristine_wrf",
+    "test_compiled_shinhong_inside_wrf_input_ulp_envelope"
+   ]
+  },
+  "DX2_pthnl_no_pmax_clamp_vs_v040_3km": {
+   "rc": 1,
+   "passed": 4,
+   "failures": [
+    [
+     "test_literal_real4_shinhong_is_byte_identical_to_pristine_wrf",
+     "AssertionError: row 21 theta: max abs 9.325e-06\nassert b'UU\\xbf\\xbar...0\\x00\\x00\\x00' == b'r\\x1c\\xbe\\x...0\\x00\\x00\\x00'\n  \n  At index 0 diff: b'U' != b'r'\n  Use"
+    ],
+    [
+     "test_compiled_shinhong_inside_wrf_input_ulp_envelope",
+     "AssertionError: outside envelope row 21 theta k=0\nassert (21, 'theta', 0) in {(3, 'v', 9), (4, 'v', 9), (5, 'v', 9)}"
+    ]
+   ],
+   "errors": [],
+   "killed": true,
+   "genuine_failures": [
+    "test_literal_real4_shinhong_is_byte_identical_to_pristine_wrf",
+    "test_compiled_shinhong_inside_wrf_input_ulp_envelope"
+   ]
+  }
+ }
+}

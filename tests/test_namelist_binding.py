@@ -195,6 +195,7 @@ def test_bind_returns_the_same_object_when_nothing_changes(tmp_path):
         prec_acc_dt: float = 0.0
         do_radar_ref: int = 0
         swint_opt: int = 0
+        aer_opt: int = 0
         windfarm_opt: int = 0
         windfarm_ij: int = 0
         windfarm_tke_factor: float = .25

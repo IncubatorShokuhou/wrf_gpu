@@ -83,10 +83,11 @@ def test_later_history_frames_keep_the_surface_path(tmp_path):
     assert calls == [3600.0]
 
 
-@pytest.mark.skipif(not WN3_0227.is_dir(), reason="WN3 CPU-WRF case not mounted")
 @pytest.mark.parametrize("domain", ["d01", "d02", "d03"])
 def test_initial_fields_equal_cpu_wrf_t0_history(domain):
     """Oracle: CPU-WRF's own lead-zero history (WN3 gate case 0227), bitwise."""
+    if not WN3_0227.is_dir():
+        pytest.skip("WN3 CPU-WRF case not mounted")
     with Dataset(WN3_0227 / f"wrfinput_{domain}") as ds:
         ny, nx = len(ds.dimensions["south_north"]), len(ds.dimensions["west_east"])
     writer = object.__new__(pipeline._PerDomainWrfoutWriter)

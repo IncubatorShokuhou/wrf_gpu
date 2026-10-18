@@ -1,0 +1,288 @@
+{
+ "control": {
+  "rc": 0,
+  "tests": 17,
+  "functions": [
+   "test_accumulated_precip_is_refused_until_interval_aware",
+   "test_alisios_inputs_refused_before_any_read",
+   "test_basis_must_match_case_statics_and_runtime_tables",
+   "test_bind_replaces_only_the_traced_child_and_lowers_the_same_program",
+   "test_bounds_must_stay_physically_feasible_and_defaults_are_tightened",
+   "test_cli_refuses_a_protected_study_before_the_schema_dispatch_reads_it",
+   "test_cli_refuses_host_controls_with_checkpoint_or_resume",
+   "test_configuration_must_run_the_basis_case_physics",
+   "test_ctopo_valley_cells_feasible_bounds_and_driver_regression",
+   "test_excess_form_keeps_uncorrected_cells_and_factor_one_is_byte_identical",
+   "test_member_control_files_are_bound_and_refused_when_changed",
+   "test_prepared_members_get_their_own_control_file_through_the_real_scheduler",
+   "test_program_report_flags_a_second_program_or_missing_proof",
+   "test_resume_after_pause_and_interrupt_reproduces_the_study",
+   "test_stations_scorer_runs_from_an_observation_file",
+   "test_twin_recovers_truth_with_one_program_and_cold_first"
+  ],
+  "failures": [],
+  "errors": [],
+  "wall_s": 268.6
+ },
+ "mutants": {
+  "M1_program_key_is_candidate": {
+   "file": "src/gpuwrf/optimize/study.py",
+   "tests": 1,
+   "rc": 1,
+   "functions": [
+    "test_stations_scorer_runs_from_an_observation_file"
+   ],
+   "failures": [
+    "test_stations_scorer_runs_from_an_observation_file"
+   ],
+   "errors": [],
+   "wall_s": 22.2,
+   "killed": true
+  },
+  "M2_members_ignore_theta": {
+   "file": "src/gpuwrf/optimize/continuous.py",
+   "tests": 1,
+   "rc": 1,
+   "functions": [
+    "test_twin_recovers_truth_with_one_program_and_cold_first"
+   ],
+   "failures": [
+    "test_twin_recovers_truth_with_one_program_and_cold_first"
+   ],
+   "errors": [],
+   "wall_s": 24.4,
+   "killed": true
+  },
+  "M3_launcher_drops_per_case_controls": {
+   "file": "scripts/parallel_cases.py",
+   "tests": 1,
+   "rc": 1,
+   "functions": [
+    "test_prepared_members_get_their_own_control_file_through_the_real_scheduler"
+   ],
+   "failures": [
+    "test_prepared_members_get_their_own_control_file_through_the_real_scheduler"
+   ],
+   "errors": [],
+   "wall_s": 7.1,
+   "killed": true
+  },
+  "M4_prepare_does_not_link_controls": {
+   "file": "src/gpuwrf/ens/workflows.py",
+   "tests": 1,
+   "rc": 1,
+   "functions": [
+    "test_prepared_members_get_their_own_control_file_through_the_real_scheduler"
+   ],
+   "failures": [
+    "test_prepared_members_get_their_own_control_file_through_the_real_scheduler"
+   ],
+   "errors": [],
+   "wall_s": 4.2,
+   "killed": true
+  },
+  "M5_ctopo_plain_multiplier": {
+   "file": "src/gpuwrf/surface_params/controls.py",
+   "tests": 1,
+   "rc": 1,
+   "functions": [
+    "test_excess_form_keeps_uncorrected_cells_and_factor_one_is_byte_identical"
+   ],
+   "failures": [
+    "test_excess_form_keeps_uncorrected_cells_and_factor_one_is_byte_identical"
+   ],
+   "errors": [],
+   "wall_s": 5.0,
+   "killed": true
+  },
+  "M6_bind_drops_ctopo": {
+   "file": "src/gpuwrf/surface_params/controls.py",
+   "tests": 1,
+   "rc": 1,
+   "functions": [
+    "test_bind_replaces_only_the_traced_child_and_lowers_the_same_program"
+   ],
+   "failures": [
+    "test_bind_replaces_only_the_traced_child_and_lowers_the_same_program"
+   ],
+   "errors": [],
+   "wall_s": 4.5,
+   "killed": true
+  },
+  "M7_no_static_signature_check": {
+   "file": "src/gpuwrf/optimize/continuous.py",
+   "tests": 1,
+   "rc": 1,
+   "functions": [
+    "test_basis_must_match_case_statics_and_runtime_tables"
+   ],
+   "failures": [
+    "test_basis_must_match_case_statics_and_runtime_tables"
+   ],
+   "errors": [],
+   "wall_s": 6.4,
+   "killed": true
+  },
+  "M8_no_runtime_table_check": {
+   "file": "src/gpuwrf/optimize/continuous.py",
+   "tests": 1,
+   "rc": 1,
+   "functions": [
+    "test_basis_must_match_case_statics_and_runtime_tables"
+   ],
+   "failures": [
+    "test_basis_must_match_case_statics_and_runtime_tables"
+   ],
+   "errors": [],
+   "wall_s": 10.5,
+   "killed": true
+  },
+  "M9_no_protected_input_refusal": {
+   "file": "src/gpuwrf/optimize/continuous.py",
+   "tests": 1,
+   "rc": 1,
+   "functions": [
+    "test_alisios_inputs_refused_before_any_read"
+   ],
+   "failures": [
+    "test_alisios_inputs_refused_before_any_read"
+   ],
+   "errors": [],
+   "wall_s": 5.3,
+   "killed": true
+  },
+  "M10_existing_control_file_not_checked": {
+   "file": "src/gpuwrf/optimize/continuous.py",
+   "tests": 1,
+   "rc": 1,
+   "functions": [
+    "test_member_control_files_are_bound_and_refused_when_changed"
+   ],
+   "failures": [
+    "test_member_control_files_are_bound_and_refused_when_changed"
+   ],
+   "errors": [],
+   "wall_s": 24.5,
+   "killed": true
+  },
+  "M11_cli_allows_host_controls_with_checkpoint": {
+   "file": "src/gpuwrf/cli.py",
+   "tests": 1,
+   "rc": 1,
+   "functions": [
+    "test_cli_refuses_host_controls_with_checkpoint_or_resume"
+   ],
+   "failures": [
+    "test_cli_refuses_host_controls_with_checkpoint_or_resume"
+   ],
+   "errors": [],
+   "wall_s": 1.7,
+   "killed": true
+  },
+  "M12_program_report_always_one": {
+   "file": "src/gpuwrf/optimize/continuous.py",
+   "tests": 1,
+   "rc": 1,
+   "functions": [
+    "test_program_report_flags_a_second_program_or_missing_proof"
+   ],
+   "failures": [
+    "test_program_report_flags_a_second_program_or_missing_proof"
+   ],
+   "errors": [],
+   "wall_s": 3.7,
+   "killed": true
+  },
+  "M14_no_basis_physics_check": {
+   "file": "src/gpuwrf/optimize/continuous.py",
+   "tests": 1,
+   "rc": 1,
+   "functions": [
+    "test_configuration_must_run_the_basis_case_physics"
+   ],
+   "failures": [
+    "test_configuration_must_run_the_basis_case_physics"
+   ],
+   "errors": [],
+   "wall_s": 7.7,
+   "killed": true
+  },
+  "M15_no_ctopo_valley_cap": {
+   "file": "src/gpuwrf/optimize/continuous.py",
+   "tests": 1,
+   "rc": 1,
+   "functions": [
+    "test_ctopo_valley_cells_feasible_bounds_and_driver_regression"
+   ],
+   "failures": [
+    "test_ctopo_valley_cells_feasible_bounds_and_driver_regression"
+   ],
+   "errors": [],
+   "wall_s": 9.3,
+   "killed": true
+  },
+  "M16_default_bounds_not_intersected": {
+   "file": "src/gpuwrf/optimize/continuous.py",
+   "tests": 2,
+   "rc": 1,
+   "functions": [
+    "test_bounds_must_stay_physically_feasible_and_defaults_are_tightened",
+    "test_ctopo_valley_cells_feasible_bounds_and_driver_regression"
+   ],
+   "failures": [
+    "test_bounds_must_stay_physically_feasible_and_defaults_are_tightened",
+    "test_ctopo_valley_cells_feasible_bounds_and_driver_regression"
+   ],
+   "errors": [],
+   "wall_s": 14.7,
+   "killed": true
+  },
+  "M17_precip_not_refused": {
+   "file": "src/gpuwrf/optimize/continuous.py",
+   "tests": 2,
+   "rc": 1,
+   "functions": [
+    "test_accumulated_precip_is_refused_until_interval_aware"
+   ],
+   "failures": [
+    "test_accumulated_precip_is_refused_until_interval_aware[twin]",
+    "test_accumulated_precip_is_refused_until_interval_aware[stations]"
+   ],
+   "errors": [],
+   "wall_s": 12.7,
+   "killed": true
+  },
+  "M18_cli_reads_study_before_refusal": {
+   "file": "src/gpuwrf/optimize/continuous.py",
+   "tests": 1,
+   "rc": 1,
+   "functions": [
+    "test_cli_refuses_a_protected_study_before_the_schema_dispatch_reads_it"
+   ],
+   "failures": [
+    "test_cli_refuses_a_protected_study_before_the_schema_dispatch_reads_it"
+   ],
+   "errors": [],
+   "wall_s": 9.0,
+   "killed": true
+  },
+  "M13_resume_ignores_changed_study": {
+   "file": "src/gpuwrf/optimize/study.py",
+   "tests": 1,
+   "rc": 1,
+   "functions": [
+    "test_resume_after_pause_and_interrupt_reproduces_the_study"
+   ],
+   "failures": [
+    "test_resume_after_pause_and_interrupt_reproduces_the_study"
+   ],
+   "errors": [],
+   "wall_s": 52.9,
+   "killed": true
+  }
+ },
+ "tree_restored": true,
+ "verdict": "ALL_KILLED",
+ "killed": "18/18",
+ "tree_head": "9d0e5eaf6043ce965a5b74ad9dc7798d73d70459"
+}

@@ -114,6 +114,8 @@ PHYSICS_KNOBS: dict[str, type] = {
     "sas_pgcon": float,
     "nsas_dx_factor": int,
     "sst_skin": int,
+    # WRF aer_opt (io/aerosol_options.py admits 0/1/3; 1 = Tegen climatology, 3 = Thompson mp28 aerosol, RRTMG SW).
+    "aer_opt": int,
 }
 
 #: Namelist keys bound onto a differently named OperationalNamelist field.
@@ -131,7 +133,7 @@ RENAMED_KEYS: dict[str, tuple[str, type]] = {
 _PIPELINE_BOUND_KEYS: frozenset[str] = frozenset({
     "gpuwrf_tracer_file",
     # nested_pipeline._load_domains / daily_pipeline._build_real_case
-    "radt", "cudt", "use_mp_re", "gwd_opt", "topo_shading", "slope_rad",
+    "radt", "cudt", "use_mp_re", "gwd_opt", "topo_shading", "slope_rad", "topo_wind",
     "diff_opt", "km_opt", "h_sca_adv_order",
     "time_step_sound", "top_lid", "sf_surface_physics",
     # io.lower_boundary (auxinput4) and the init readers
@@ -397,6 +399,34 @@ def _same(value: Any, default: Any) -> bool:
     return str(value).strip().strip("'\"").lower() == str(default).strip().lower()
 
 
+def icloud_refusals(icloud, *, mp_physics, cu_physics, ra_lw_physics, ra_sw_physics) -> list[str]:
+    """Bound radiation cloud-fraction options (WRF 4.7.1 radiation_driver.F:1446-1506).
+
+    icloud=1 is the default path; icloud=2 (cal_cldfra2) and icloud=3 (cal_cldfra3,
+    CPU-oracle-qualified) replace the whole icloud=1 block incl. the icloud_bl merge.
+    ``None`` arguments mean "omitted" (the port's bound scheme defaults 8/0/4/4).
+    """
+    pick = lambda value, default: default if value is None else int(value)  # noqa: E731
+    icloud = int(icloud)
+    mp, cu = pick(mp_physics, 8), pick(cu_physics, 0)
+    ra = (pick(ra_lw_physics, 4), pick(ra_sw_physics, 4))
+    if icloud == 1 or cu == 11:  # check_a_mundo.F:1392-1396 forces icloud=1 for cu=11
+        return []
+    if icloud not in (2, 3):
+        return [f'icloud={icloud} is unported; bound options are 1 (default), 2 and 3']
+    errors = []
+    if icloud == 3 and mp in (0, 1, 3):
+        # check_a_mundo.F:1900-1915 (Kessler/WSM3); radiation_driver.F:1505 (no QC/QI field)
+        errors.append(f'icloud=3 needs QC and QI fields (WRF refuses mp_physics={mp})')
+    if mp in (5, 11, 50, 51, 52, 53, 55, 85, 95):
+        errors.append(f'icloud={icloud} with mp_physics={mp} (scheme-specific radiation cloud view) is unqualified')
+    if ra != (4, 4):
+        errors.append(f'icloud={icloud} is qualified with RRTMG ra_lw/ra_sw 4/4 only')
+    if cu in (7, 10):
+        errors.append(f'icloud={icloud} with cu_physics={cu} cloud mediation is unqualified')
+    return errors
+
+
 def namelist_honour_report(
     wrf_namelist: Mapping[str, Any], domains: tuple[str, ...], *, replay: bool = False
 ) -> tuple[list[str], list[str]]:
@@ -420,7 +450,10 @@ def namelist_honour_report(
         aerosol=namelist_value(wrf_namelist,'shcu_aerosols_opt',domain)
         feedback=namelist_value(wrf_namelist,'cu_rad_feedback',domain)
         if cloud not in (None,1) and cu!=11:
-            errors.append(f'{domain}: icloud={cloud} is unqualified; only original icloud=1 is bound')
+            errors.extend(f'{domain}: {reason}' for reason in icloud_refusals(
+                cloud, mp_physics=namelist_value(wrf_namelist,'mp_physics',domain),
+                cu_physics=cu, ra_lw_physics=namelist_value(wrf_namelist,'ra_lw_physics',domain),
+                ra_sw_physics=namelist_value(wrf_namelist,'ra_sw_physics',domain)))
         if trigger not in (None,1) and cu in (1,11):
             errors.append(f'{domain}: kfeta_trigger={trigger} horizontal trigger 2 is unported')
         if aerosol not in (None,0):
@@ -439,6 +472,8 @@ def namelist_honour_report(
                       "internal parameters only; custom internal namelist values are not bound")
     from gpuwrf.io.noahmp_options import option_refusals, SUPPORTED
     errors.extend(option_refusals(wrf_namelist, replay=replay))
+    from gpuwrf.io.aerosol_options import aerosol_refusals
+    errors.extend(aerosol_refusals(wrf_namelist, domains))
     solar = namelist_value(wrf_namelist, "swint_opt", domains[0]) if domains else None
     if solar not in (None, 0, 1):
         errors.append("&physics swint_opt: supports only 0/1")

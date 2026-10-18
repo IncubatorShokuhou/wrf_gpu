@@ -36,11 +36,21 @@ RVRD, _dry, _exner_port, _grid, _state, _wrf_phy_prep_rho = (
     _lp.RVRD, _lp._dry, _lp._exner_port, _lp._grid, _lp._state, _lp._wrf_phy_prep_rho)
 
 
+def test_kf_spy_mirrors_the_product_kernel_signature():
+    import inspect
+    from gpuwrf.physics.cumulus_kf import step_kf_column
+    assert inspect.signature(_kf_spy({})).parameters.keys() == inspect.signature(step_kf_column).parameters.keys() - {
+        "T0", "QV0", "P0", "DZQ", "RHOE", "w0avg", "U0", "V0", "dt", "dx"} | {
+        "T0", "QV0", "P0_", "DZQ", "RHOE", "w0a", "U0", "V0", "dt", "dx"}
+
+
 def _kf_spy(record):
     """KF kernel stub.  kf_adapter vmaps the kernel, so inputs are tracers: like gate 1, T0 and RHOE are carried
     out through the qc/qr tendency channels (read back with _kf_channels); only a trace-time flag is recorded."""
-    def spy(T0, QV0, P0_, DZQ, RHOE, w0a, U0, V0, dt, dx, *, w=None, nca=None, stepcu=5, cudt=0.0, pi_phy=None):
+    def spy(T0, QV0, P0_, DZQ, RHOE, w0a, U0, V0, dt, dx, *, w=None, nca=None, stepcu=5, cudt=0.0,
+            adapt_step_flag=False, warm_rain=False, f_qi=True, f_qs=True, pi_phy=None):
         record["called"] = True
+        record["species_flags"] = dict(warm_rain=warm_rain, f_qi=f_qi, f_qs=f_qs)
         z = jnp.zeros_like(T0)
         tend = {"theta": z + 2.0e-3, "qv": z - 3.0e-6, "qc": T0, "qr": RHOE, "qi": z, "qs": z}
         return SimpleNamespace(
@@ -121,6 +131,8 @@ def test_operational_dispatcher_routes_mp8_and_cu1_through_p0_coupling(monkeypat
     T_dry = _dry(state) * _exner_port(state.p)
     np.testing.assert_allclose(seen["mp_T"], np.moveaxis(T_dry, 0, -1), rtol=1e-13, atol=0)   # _to_columns: (ny,nx,nz)
     assert rec.get("called"), "cu=1 was not dispatched to kf_adapter"
+    # t-cfix-cu F11: KF condensate channels follow the mp=8 (Thompson) species: ice + snow, not warm rain.
+    assert rec["species_flags"] == dict(warm_rain=False, f_qi=True, f_qs=True)
     t_kf, rho_kf = _kf_channels(state, forcing.state, 18.0)   # identity Thompson leaves qc/qr untouched
     np.testing.assert_allclose(t_kf, T_dry, rtol=1e-10, atol=0)
     np.testing.assert_allclose(rho_kf, _wrf_phy_prep_rho(state, grid.metrics), rtol=1e-6, atol=0)

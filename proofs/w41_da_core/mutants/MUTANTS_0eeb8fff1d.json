@@ -1,0 +1,632 @@
+{
+ "schema": "w41_da_core.mutants.v1",
+ "control": "CONTROL_PASS",
+ "killed": 41,
+ "total": 41,
+ "results": [
+  {
+   "name": "M00 control: unmutated copy through the overlay",
+   "file": "core.py",
+   "tests": [
+    "tests/da/"
+   ],
+   "status": "CONTROL_PASS",
+   "assertion_failures": [],
+   "n_failures": 0,
+   "errors": [],
+   "pytest_rc": 0
+  },
+  {
+   "name": "M01 letkf transform without symmetric square root",
+   "file": "core.py",
+   "tests": [
+    "tests/da/test_letkf.py"
+   ],
+   "status": "KILLED",
+   "assertion_failures": [
+    "test_inflated_etkf_equals_kalman_with_inflated_covariance[1.0]",
+    "test_inflated_etkf_equals_kalman_with_inflated_covariance[1.7]",
+    "test_analysis_scalar_kalman_gain_single_obs",
+    "test_lorenz96_osse[2]",
+    "test_lorenz96_osse[3]"
+   ],
+   "n_failures": 5,
+   "errors": [],
+   "pytest_rc": 1
+  },
+  {
+   "name": "M02 per-point inflation collapsed to its mean",
+   "file": "core.py",
+   "tests": [
+    "tests/da/test_letkf.py"
+   ],
+   "status": "KILLED",
+   "assertion_failures": [
+    "test_per_point_inflation_constant_is_bitwise_scalar_and_varies_per_point"
+   ],
+   "n_failures": 1,
+   "errors": [],
+   "pytest_rc": 1
+  },
+  {
+   "name": "M03 Gaspari-Cohn inner coefficient",
+   "file": "core.py",
+   "tests": [
+    "tests/da/test_letkf.py",
+    "tests/a1_da/test_letkf_core.py"
+   ],
+   "status": "KILLED",
+   "assertion_failures": [
+    "test_gaspari_cohn_shape"
+   ],
+   "n_failures": 1,
+   "errors": [],
+   "pytest_rc": 1
+  },
+  {
+   "name": "M04 variable localisation factor ignored",
+   "file": "analysis.py",
+   "tests": [
+    "tests/da/test_letkf.py"
+   ],
+   "status": "KILLED",
+   "assertion_failures": [
+    "test_variable_localisation_zero_factor_removes_that_kind_for_that_variable_only"
+   ],
+   "n_failures": 1,
+   "errors": [],
+   "pytest_rc": 1
+  },
+  {
+   "name": "M05 maintenance hook bypassed",
+   "file": "analysis.py",
+   "tests": [
+    "tests/da/test_letkf.py"
+   ],
+   "status": "KILLED",
+   "assertion_failures": [
+    "test_maintenance_hook_receives_every_analysed_name_once"
+   ],
+   "n_failures": 1,
+   "errors": [],
+   "pytest_rc": 1
+  },
+  {
+   "name": "M06 water budget without dry-air mass",
+   "file": "moisture.py",
+   "tests": [
+    "tests/da/test_moisture.py"
+   ],
+   "status": "KILLED",
+   "assertion_failures": [
+    "test_clip_budget_one_cell_hand_value",
+    "test_large_deficit_is_refused_by_the_budget",
+    "test_mean_wrfinput_clip_is_counted_and_budgeted",
+    "test_mean_wrfinput_budget_breach_and_refuse_are_refused_without_rebalance"
+   ],
+   "n_failures": 4,
+   "errors": [],
+   "pytest_rc": 1
+  },
+  {
+   "name": "M07 clip budget never gates",
+   "file": "moisture.py",
+   "tests": [
+    "tests/da/test_moisture.py"
+   ],
+   "status": "KILLED",
+   "assertion_failures": [
+    "test_clip_budget_one_cell_hand_value",
+    "test_nonfinite_is_always_refused",
+    "test_large_deficit_is_refused_by_the_budget",
+    "test_refuse_policy_and_tight_budget_refuse_with_reasons",
+    "test_mean_wrfinput_budget_breach_and_refuse_are_refused_without_rebalance"
+   ],
+   "n_failures": 5,
+   "errors": [],
+   "pytest_rc": 1
+  },
+  {
+   "name": "M08 background negatives treated as analysis negatives",
+   "file": "moisture.py",
+   "tests": [
+    "tests/da/test_moisture.py"
+   ],
+   "status": "KILLED",
+   "assertion_failures": [
+    "test_background_negatives_outside_the_update_are_kept_bitwise"
+   ],
+   "n_failures": 1,
+   "errors": [],
+   "pytest_rc": 1
+  },
+  {
+   "name": "M09 hybrid layer mass sign/levels swapped",
+   "file": "moisture.py",
+   "tests": [
+    "tests/da/test_moisture.py"
+   ],
+   "status": "KILLED",
+   "assertion_failures": [
+    "test_layer_dry_mass_matches_hand_hybrid_pressure",
+    "test_clip_budget_one_cell_hand_value",
+    "test_analysis_clip_is_counted_budgeted_and_admitted",
+    "test_large_deficit_is_refused_by_the_budget",
+    "test_refuse_policy_and_tight_budget_refuse_with_reasons",
+    "test_mean_wrfinput_clip_is_counted_and_budgeted",
+    "test_mean_wrfinput_budget_breach_and_refuse_are_refused_without_rebalance"
+   ],
+   "n_failures": 7,
+   "errors": [],
+   "pytest_rc": 1
+  },
+  {
+   "name": "M10 config accepts unknown keys",
+   "file": "config.py",
+   "tests": [
+    "tests/da/test_config.py"
+   ],
+   "status": "KILLED",
+   "assertion_failures": [
+    "test_invalid_configs_are_refused[<lambda>-unknown key0]",
+    "test_invalid_configs_are_refused[<lambda>-unknown key2]"
+   ],
+   "n_failures": 3,
+   "errors": [],
+   "pytest_rc": 1
+  },
+  {
+   "name": "M11 config accepts naive times",
+   "file": "config.py",
+   "tests": [
+    "tests/da/test_config.py"
+   ],
+   "status": "KILLED",
+   "assertion_failures": [
+    "test_invalid_configs_are_refused[<lambda>-UTC offset]",
+    "test_with_overrides_revalidates"
+   ],
+   "n_failures": 2,
+   "errors": [],
+   "pytest_rc": 1
+  },
+  {
+   "name": "M12 default policy lets ALISIOS data through",
+   "file": "governance.py",
+   "tests": [
+    "tests/da/test_governance.py"
+   ],
+   "status": "KILLED",
+   "assertion_failures": [
+    "test_open_policy_refuses_alisios_paths"
+   ],
+   "n_failures": 1,
+   "errors": [],
+   "pytest_rc": 1
+  },
+  {
+   "name": "M13 ALISIOS issue day not checked for archive frames",
+   "file": "governance.py",
+   "tests": [
+    "tests/da/test_governance.py"
+   ],
+   "status": "KILLED",
+   "assertion_failures": [
+    "test_alisios_policy_drops_deny_days_before_open_and_admits_exact_set"
+   ],
+   "n_failures": 2,
+   "errors": [],
+   "pytest_rc": 1
+  },
+  {
+   "name": "M14 unplanned opens not flagged",
+   "file": "governance.py",
+   "tests": [
+    "tests/da/test_governance.py"
+   ],
+   "status": "KILLED",
+   "assertion_failures": [
+    "test_open_policy_receipt_hashes_and_records_opens"
+   ],
+   "n_failures": 1,
+   "errors": [],
+   "pytest_rc": 1
+  },
+  {
+   "name": "M15 CSV reader takes the latest instead of the earliest tie",
+   "file": "readers.py",
+   "tests": [
+    "tests/da/test_readers.py"
+   ],
+   "status": "KILLED",
+   "assertion_failures": [
+    "test_csv_surface_values_units_window_and_counters"
+   ],
+   "n_failures": 1,
+   "errors": [],
+   "pytest_rc": 1
+  },
+  {
+   "name": "M16 ISD-Lite calm rule dropped",
+   "file": "readers.py",
+   "tests": [
+    "tests/da/test_readers.py"
+   ],
+   "status": "KILLED",
+   "assertion_failures": [
+    "test_csv_surface_values_units_window_and_counters"
+   ],
+   "n_failures": 1,
+   "errors": [],
+   "pytest_rc": 1
+  },
+  {
+   "name": "M18 water budget sees float32 storage rounding",
+   "file": "analysis.py",
+   "tests": [
+    "tests/da/test_moisture.py"
+   ],
+   "status": "KILLED",
+   "assertion_failures": [
+    "test_budget_ignores_float32_storage_rounding"
+   ],
+   "n_failures": 1,
+   "errors": [],
+   "pytest_rc": 1
+  },
+  {
+   "name": "M19 NaN water budget passes the gate",
+   "file": "moisture.py",
+   "tests": [
+    "tests/da/test_moisture.py"
+   ],
+   "status": "KILLED",
+   "assertion_failures": [
+    "test_nonfinite_is_always_refused"
+   ],
+   "n_failures": 1,
+   "errors": [],
+   "pytest_rc": 1
+  },
+  {
+   "name": "M17 mean wrfinput skips the moisture gate",
+   "file": "state_io.py",
+   "tests": [
+    "tests/da/test_moisture.py"
+   ],
+   "status": "KILLED",
+   "assertion_failures": [
+    "test_mean_wrfinput_budget_breach_and_refuse_are_refused_without_rebalance"
+   ],
+   "n_failures": 1,
+   "errors": [],
+   "pytest_rc": 1
+  },
+  {
+   "name": "M20 ALISIOS admission not trimmed to max_members",
+   "file": "api.py",
+   "tests": [
+    "tests/da/test_governance.py"
+   ],
+   "status": "KILLED",
+   "assertion_failures": [
+    "test_max_members_limits_the_admitted_set_after_deny_filtering"
+   ],
+   "n_failures": 1,
+   "errors": [],
+   "pytest_rc": 1
+  },
+  {
+   "name": "M21 facade backend: analysis reads the original ALISIOS paths (no staging)",
+   "file": "api.py",
+   "tests": [
+    "tests/da/test_alisios_facade.py"
+   ],
+   "status": "KILLED",
+   "assertion_failures": [
+    "test_facade_and_fallback_admit_the_same_set_and_give_the_same_analysis"
+   ],
+   "n_failures": 1,
+   "errors": [],
+   "pytest_rc": 1
+  },
+  {
+   "name": "M22 facade stage kept after the session",
+   "file": "governance.py",
+   "tests": [
+    "tests/da/test_alisios_facade.py"
+   ],
+   "status": "KILLED",
+   "assertion_failures": [
+    "test_facade_and_fallback_admit_the_same_set_and_give_the_same_analysis",
+    "test_a_deny_day_appearing_after_planning_is_refused_by_the_session[require]"
+   ],
+   "n_failures": 2,
+   "errors": [],
+   "pytest_rc": 1
+  },
+  {
+   "name": "M23 facade chosen although a role is read outside its planned path",
+   "file": "governance.py",
+   "tests": [
+    "tests/da/test_alisios_facade.py"
+   ],
+   "status": "KILLED",
+   "assertion_failures": [
+    "test_backend_choice_falls_back_with_a_reason_and_require_refuses"
+   ],
+   "n_failures": 1,
+   "errors": [],
+   "pytest_rc": 1
+  },
+  {
+   "name": "M24 read spy records but does not refuse an unlisted ALISIOS path",
+   "file": "alisios_guard.py",
+   "tests": [
+    "tests/da/test_alisios_facade.py",
+    "tests/da/test_governance.py"
+   ],
+   "status": "KILLED",
+   "assertion_failures": [
+    "test_staged_analysis_refuses_every_original_alisios_open",
+    "test_alisios_policy_drops_deny_days_before_open_and_admits_exact_set"
+   ],
+   "n_failures": 2,
+   "errors": [],
+   "pytest_rc": 1
+  },
+  {
+   "name": "M25 template admitted under the issue day, not its start day (critic item 1)",
+   "file": "governance.py",
+   "tests": [
+    "tests/da/test_governance.py",
+    "tests/da/test_alisios_facade.py"
+   ],
+   "status": "KILLED",
+   "assertion_failures": [
+    "test_template_issued_the_day_before_is_admitted_under_its_start_day",
+    "test_template_on_a_deny_start_day_is_refused_before_any_open",
+    "test_facade_and_fallback_admit_the_same_set_and_give_the_same_analysis",
+    "test_facade_admits_a_rollover_template_under_its_start_day"
+   ],
+   "n_failures": 4,
+   "errors": [],
+   "pytest_rc": 1
+  },
+  {
+   "name": "M26 history file covers only its file-name day",
+   "file": "governance.py",
+   "tests": [
+    "tests/da/test_governance.py"
+   ],
+   "status": "KILLED",
+   "assertion_failures": [
+    "test_history_file_coverage_includes_every_frame_it_can_hold",
+    "test_a_deny_day_on_a_later_frame_drops_the_archive_frame_and_refuses_a_control",
+    "test_wrf_registry_defaults_and_unknown_coverage"
+   ],
+   "n_failures": 3,
+   "errors": [],
+   "pytest_rc": 1
+  },
+  {
+   "name": "M27 only issue days are guard-scanned, not the coverage days",
+   "file": "governance.py",
+   "tests": [
+    "tests/da/test_governance.py",
+    "tests/da/test_alisios_facade.py"
+   ],
+   "status": "KILLED",
+   "assertion_failures": [
+    "test_template_on_a_deny_start_day_is_refused_before_any_open",
+    "test_a_deny_day_on_a_later_frame_drops_the_archive_frame_and_refuses_a_control",
+    "test_facade_admits_a_rollover_template_under_its_start_day"
+   ],
+   "n_failures": 5,
+   "errors": [],
+   "pytest_rc": 1
+  },
+  {
+   "name": "M28 run without namelist falls back to the issue day",
+   "file": "governance.py",
+   "tests": [
+    "tests/da/test_governance.py"
+   ],
+   "status": "KILLED",
+   "assertion_failures": [
+    "test_wrf_registry_defaults_and_unknown_coverage"
+   ],
+   "n_failures": 1,
+   "errors": [],
+   "pytest_rc": 1
+  },
+  {
+   "name": "M29 frames_per_outfile default 1 instead of WRF's 10",
+   "file": "governance.py",
+   "tests": [
+    "tests/da/test_governance.py"
+   ],
+   "status": "KILLED",
+   "assertion_failures": [
+    "test_wrf_registry_defaults_and_unknown_coverage"
+   ],
+   "n_failures": 1,
+   "errors": [],
+   "pytest_rc": 1
+  },
+  {
+   "name": "M30 analysis ignores the case boundary width (critic item 2)",
+   "file": "analysis.py",
+   "tests": [
+    "tests/da/test_letkf.py"
+   ],
+   "status": "KILLED",
+   "assertion_failures": [
+    "test_case_boundary_width_binds_the_taper_and_an_explicit_contradiction_is_refused"
+   ],
+   "n_failures": 1,
+   "errors": [],
+   "pytest_rc": 1
+  },
+  {
+   "name": "M31 explicit width contradicting the case is accepted",
+   "file": "analysis.py",
+   "tests": [
+    "tests/da/test_letkf.py",
+    "tests/da/test_api_cli.py"
+   ],
+   "status": "KILLED",
+   "assertion_failures": [
+    "test_case_boundary_width_binds_the_taper_and_an_explicit_contradiction_is_refused",
+    "test_case_boundary_width_binds_analysis_mean_and_member_writer",
+    "test_member_writer_uses_the_case_width_and_refuses_a_contradiction"
+   ],
+   "n_failures": 3,
+   "errors": [],
+   "pytest_rc": 1
+  },
+  {
+   "name": "M32 member writer validates a default-5 zone",
+   "file": "member_cycle.py",
+   "tests": [
+    "tests/da/test_api_cli.py"
+   ],
+   "status": "KILLED",
+   "assertion_failures": [
+    "test_member_writer_uses_the_case_width_and_refuses_a_contradiction"
+   ],
+   "n_failures": 1,
+   "errors": [],
+   "pytest_rc": 1
+  },
+  {
+   "name": "M33 mean writer zone check off",
+   "file": "api.py",
+   "tests": [
+    "tests/da/test_api_cli.py"
+   ],
+   "status": "KILLED",
+   "assertion_failures": [
+    "test_mean_writer_refuses_a_change_in_the_boundary_zone"
+   ],
+   "n_failures": 1,
+   "errors": [],
+   "pytest_rc": 1
+  },
+  {
+   "name": "M34 row role ignored by the API selection: withheld rows calibrate (critic item 3)",
+   "file": "api.py",
+   "tests": [
+    "tests/da/test_api_cli.py"
+   ],
+   "status": "KILLED",
+   "assertion_failures": [
+    "test_role_withheld_rows_never_calibrate_or_update"
+   ],
+   "n_failures": 1,
+   "errors": [],
+   "pytest_rc": 1
+  },
+  {
+   "name": "M35 role-withheld rows lost from verification",
+   "file": "api.py",
+   "tests": [
+    "tests/da/test_api_cli.py"
+   ],
+   "status": "KILLED",
+   "assertion_failures": [
+    "test_role_withheld_rows_never_calibrate_or_update"
+   ],
+   "n_failures": 1,
+   "errors": [],
+   "pytest_rc": 1
+  },
+  {
+   "name": "M36 analysis ignores obs.role",
+   "file": "analysis.py",
+   "tests": [
+    "tests/da/test_letkf.py"
+   ],
+   "status": "KILLED",
+   "assertion_failures": [
+    "test_role_withheld_and_cloud_rows_never_influence_the_analysis"
+   ],
+   "n_failures": 1,
+   "errors": [],
+   "pytest_rc": 1
+  },
+  {
+   "name": "M37 analysis assimilates cloud rows",
+   "file": "analysis.py",
+   "tests": [
+    "tests/da/test_letkf.py"
+   ],
+   "status": "KILLED",
+   "assertion_failures": [
+    "test_role_withheld_and_cloud_rows_never_influence_the_analysis"
+   ],
+   "n_failures": 1,
+   "errors": [],
+   "pytest_rc": 1
+  },
+  {
+   "name": "M38 config accepts cloud assimilation",
+   "file": "config.py",
+   "tests": [
+    "tests/da/test_api_cli.py"
+   ],
+   "status": "KILLED",
+   "assertion_failures": [
+    "test_cloud_assimilation_is_refused_and_cloud_withholding_allowed"
+   ],
+   "n_failures": 1,
+   "errors": [],
+   "pytest_rc": 1
+  },
+  {
+   "name": "M39 supersaturation cap/to_cloud accepted again (critic item 4)",
+   "file": "moisture.py",
+   "tests": [
+    "tests/da/test_moisture.py",
+    "tests/a1_da/test_analysis.py"
+   ],
+   "status": "KILLED",
+   "assertion_failures": [
+    "test_saturation_formula_and_keep_only_supersaturation",
+    "test_supersaturation_cap_and_to_cloud_are_refused[cap]",
+    "test_supersaturation_cap_and_to_cloud_are_refused[to_cloud]"
+   ],
+   "n_failures": 3,
+   "errors": [],
+   "pytest_rc": 1
+  },
+  {
+   "name": "M40 rebalance accepts a changed hydrometeor",
+   "file": "state_io.py",
+   "tests": [
+    "tests/da/test_moisture.py"
+   ],
+   "status": "KILLED",
+   "assertion_failures": [
+    "test_rebalance_refuses_a_hydrometeor_change"
+   ],
+   "n_failures": 1,
+   "errors": [],
+   "pytest_rc": 1
+  },
+  {
+   "name": "M41 namelist without spec_bdy_width treated as unknown (WRF runs its default 5)",
+   "file": "state_io.py",
+   "tests": [
+    "tests/da/test_letkf.py"
+   ],
+   "status": "KILLED",
+   "assertion_failures": [
+    "test_namelist_without_spec_bdy_width_runs_the_wrf_registry_default"
+   ],
+   "n_failures": 1,
+   "errors": [],
+   "pytest_rc": 1
+  }
+ ]
+}

@@ -47,6 +47,7 @@ from gpuwrf.contracts.state import (  # noqa: E402
     State, Tendencies, _state_field_shapes, EXTRA_SCALAR_BOUNDARY_SPECIES,
     SCALAR_BOUNDARY_OPTIONAL_LEAVES,
 )
+from gpuwrf.contracts.cammg_fields import STATE_FIELDS as CAMMG_STATE_FIELDS  # noqa: E402
 from gpuwrf.integration.d02_replay import build_replay_case  # noqa: E402
 from gpuwrf.profiling.transfer_audit import block_until_ready, visible_gpu_name  # noqa: E402
 from gpuwrf.runtime.operational_mode import OperationalNamelist, run_forecast_operational  # noqa: E402
@@ -308,9 +309,12 @@ def field_shapes_for(nz: int, ny: int, nx: int, *, tracer_count: int = 1) -> dic
         raise ValueError("tracer_count must be a positive integer")
     # Conservative capacity envelope: include every optional physics slot and
     # live-nest scalar boundary. A real run allocates only its selected subset.
-    shapes = _state_field_shapes(
-        _grid_namespace(nz, ny, nx), include_all_conditional=True
-    )
+    grid = _grid_namespace(nz, ny, nx)
+    shapes = _state_field_shapes(grid, include_all_conditional=True)
+    # Since 958ce52667 the generic all-conditional envelope keeps the 20 CAM-MG Registry leaves for
+    # mp=11 only; take their geometry from the product contract for that selection.
+    shapes.update({name: shape for name, shape in _state_field_shapes(grid, mp_physics=11).items()
+                   if name in CAMMG_STATE_FIELDS})
     for field in (*SCALAR_BOUNDARY_OPTIONAL_LEAVES,
                   *(f"{name}_bdy" for name in EXTRA_SCALAR_BOUNDARY_SPECIES)):
         shapes[field] = shapes["qv_bdy"]

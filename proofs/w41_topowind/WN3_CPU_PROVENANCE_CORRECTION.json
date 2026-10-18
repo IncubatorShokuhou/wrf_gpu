@@ -1,0 +1,49 @@
+{
+ "schema": "w41-topowind-provenance-correction-v1",
+ "case": "wn3tw",
+ "utc": "2026-10-17",
+ "supersedes_field_only": "PREPARE.json executable.ranks=4 and cpu_run.json executable.ranks=4 (copied from PREPARE) state the PLANNED rank count",
+ "originals_untouched": {
+  "PREPARE.json": "9c72fec693707edd39dbff348d572681758c3622e6daf9a6d177f72a3e6eb880",
+  "cpu_run.json": "509f9896f58b8c86131c6812aac5705a96749672e4914e1a7a1b9b9a178d579d",
+  "CPU_OUTPUTS.json": "5c922011b76e246a2f7d97d616bb20eaae578467a7672880a977fdcc4e971c28"
+ },
+ "actual": {
+  "mpi_ranks": 3,
+  "decomposition": "Ntasks in X            1 , ntasks in Y            3",
+  "cores": [
+   0,
+   1,
+   2
+  ],
+  "rank_launcher": "<DATA_ROOT>/wrf_gpu2/scratch/w41-topowind/cases/wn3tw/rank.sh",
+  "rank_launcher_sha256": "3eef335c1d7fd85e6020b823668631060fdf23462de7115de0aa482275287279",
+  "rsl_out_files": [
+   "rsl.out.0000",
+   "rsl.out.0001",
+   "rsl.out.0002"
+  ],
+  "started_utc": "2026-10-17T09:54:50Z",
+  "executable_sha256": "1d0f5779fff143361e470e37f89c734497ed5a7bb55d0c53b7e3fccc569dd49b",
+  "success_marker": "SUCCESS COMPLETE WRF in cpu/rsl.out.0000",
+  "frames": 75
+ },
+ "first_attempt": {
+  "mpi_ranks": 4,
+  "decomposition": "Ntasks in X            2 , ntasks in Y            2",
+  "cores": [
+   0,
+   1,
+   2,
+   8
+  ],
+  "outcome": "stopped (rank on shared lane core 8 starved by another lane; 59-264 s per d01 step); archived to attempt1/, not used"
+ },
+ "namelist_change": {
+  "prepare_sha256": "9dcaebb535a988dc0f44d647a6df0e7e8adb19c60449d9582c7ed67471c9dcf8",
+  "actual_sha256": "a926eda00dd1d6a8e3ee7064a74e13ea9fa86f49d1be546287f6e805236b828f",
+  "only_difference": "&domains nproc_x/nproc_y 2,2 -> -1,-1 (MPI decomposition only); restoring those two values reproduces the PREPARE sha exactly",
+  "used_by": "the original CPU-WRF reference AND the GPU arm (gpu_run.json input_sha256 namelist.input == actual_sha256)"
+ },
+ "effect": "decomposition only (WRF numerics are decomposition-invariant for this configuration [I]); D6 receipts unchanged"
+}

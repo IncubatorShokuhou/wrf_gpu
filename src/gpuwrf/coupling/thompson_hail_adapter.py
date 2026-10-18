@@ -2,7 +2,7 @@
 import jax.numpy as jnp
 
 
-def thompson_hail_adapter(state, dt, grid=None, *, return_precipitation=False):
+def thompson_hail_adapter(state, dt, grid=None, *, return_precipitation=False, hail_tables=None):
     from gpuwrf.coupling.physics_couplers import (
         P0_PA, R_D_OVER_CP, _dry_theta_view, _to_columns, _from_columns,
         density_from_pressure_temperature,
@@ -31,7 +31,11 @@ def thompson_hail_adapter(state, dt, grid=None, *, return_precipitation=False):
         col(temperature), col(p), col(rho), Ng=col(state.Ng),
         dz=col(dz), w=col(state.w[:-1]), qvolg=col(state.qvolg),
     )
-    out, precip = step_thompson_hail_column_with_precip(column, float(dt))
+    # hail_tables: OperationalNamelist.thompson_hail_tables (device operands); None bakes them.
+    if hail_tables is None:
+        out, precip = step_thompson_hail_column_with_precip(column, float(dt))
+    else:
+        out, precip = step_thompson_hail_column_with_precip(column, float(dt), hail_tables=hail_tables)
     # mp_gt_driver :1320-1321 applies held emissions AFTER column physics.
     out = apply_surface_aerosol_emission(out, state.nwfa2d, state.nifa2d, float(dt))
     # Original wrapper :1299/:1308: REAL left-associated total and last-step SR.

@@ -1285,9 +1285,11 @@ def _rrtmg_column_inputs(
     ozone_vmr_override=None,
     use_mynn_sgs_cloud: bool = True,
     cloud_mp_physics: int = 8,
+    icloud: int = 1,
     use_sgs_cloud=True,
     force_real=False,
     cuplus_clouds=None, shallowcu_forced_ra=False,
+    tegen_aerosol=None, aerosol_ecaer_override=None, thompson_aerosol=False,
 ) -> tuple[RRTMGSWColumnState, RRTMGLWColumnState, object, object, SolarGeometry, RRTMGSWTopographyState | None]:
     """Build SW/LW RRTMG column states and expose shared surface fields."""
 
@@ -1301,8 +1303,17 @@ def _rrtmg_column_inputs(
     if not use_mynn_sgs_cloud:
         kwargs["use_mynn_sgs_cloud"] = False
         kwargs["cloud_mp_physics"] = cloud_mp_physics
+        if int(icloud) != 1:
+            kwargs["icloud"] = int(icloud)
     if cuplus_clouds is not None:
         kwargs.update(cuplus_clouds=cuplus_clouds,shallowcu_forced_ra=shallowcu_forced_ra)
+    # WRF aer_opt=1 (physics/wrf_tegen_aerosol.py): REAL in both entries; absent kwargs keep the released trace.
+    if tegen_aerosol is not None:
+        kwargs["tegen_aerosol"] = tegen_aerosol
+    if aerosol_ecaer_override is not None:
+        kwargs["aerosol_ecaer_override"] = aerosol_ecaer_override
+    if thompson_aerosol:  # WRF aer_opt=3 (physics/wrf_aer_opt3.py)
+        kwargs["thompson_aerosol"] = True
     if not _rrtmg_real_enabled() and not force_real:
         return _rrtmg_column_inputs_impl(state, grid, **kwargs)
     # Keep the CLWRF REAL(8) anchor intact; the radiation-driver clock is REAL.
@@ -1338,8 +1349,10 @@ def _rrtmg_column_inputs_impl(
     ozone_vmr_override=None,
     use_mynn_sgs_cloud: bool = True,
     cloud_mp_physics: int = 8,
+    icloud: int = 1,
     use_sgs_cloud=True,
     cuplus_clouds=None, shallowcu_forced_ra=False,
+    tegen_aerosol=None, aerosol_ecaer_override=None, thompson_aerosol=False,
 ) -> tuple[RRTMGSWColumnState, RRTMGLWColumnState, object, object, SolarGeometry, RRTMGSWTopographyState | None]:
     """Build SW/LW RRTMG column states and expose shared surface fields."""
 
@@ -1390,7 +1403,23 @@ def _rrtmg_column_inputs_impl(
     qs_columns = _to_columns(state.qs)
     qg_columns = _to_columns(state.qg)
     cloud_fraction = _cloud_fraction_columns(state)
-    if not use_mynn_sgs_cloud:
+    if not use_mynn_sgs_cloud and int(icloud) == 3:
+        # radiation_driver.F:1470-1506: icloud=3 replaces the whole icloud=1 block (no
+        # icloud_bl merge). T=t_phy, P=p_hyd, DZ8W from (ph+phb)/g, radiation-only qc/qi.
+        from gpuwrf.physics.cloud_fraction import wrf_cal_cldfra3, wrf_gridkm
+        if grid is None:
+            raise ValueError("icloud=3 needs the domain grid (gridkm from dx/dy)")
+        z_w = jnp.asarray(state.ph, jnp.float32) / jnp.float32(WRF_PHYSICS_G_M_S2)
+        cloud_fraction, qc3, qi3 = wrf_cal_cldfra3(
+            qv_columns, qc_columns, qi_columns, qs_columns, _to_columns(z_w[1:] - z_w[:-1]),
+            sw_p_columns, _to_columns(T), state.xland,
+            wrf_gridkm(float(grid.projection.dx_m), float(grid.projection.dy_m)))
+        qc_columns, qi_columns = qc3.astype(qc_columns.dtype), qi3.astype(qi_columns.dtype)
+    elif not use_mynn_sgs_cloud and int(icloud) == 2:
+        # radiation_driver.F:1446-1453 cal_cldfra2 (F_QC/F_QI from the MP species set).
+        from gpuwrf.physics.cloud_fraction import wrf_cal_cldfra2
+        cloud_fraction = wrf_cal_cldfra2(qc_columns, qi_columns, has_qi=int(cloud_mp_physics) not in (1, 3))
+    elif not use_mynn_sgs_cloud:
         from gpuwrf.physics.cloud_fraction import wrf_resolved_cloud_fraction
         cloud_fraction = wrf_resolved_cloud_fraction(
             qv_columns, qc_columns, qi_columns, qs_columns, _to_columns(T), sw_p_columns,
@@ -1433,7 +1462,7 @@ def _rrtmg_column_inputs_impl(
         cloud_fraction,qc_columns,qi_columns,cup_fraction_update= radiation_merge(
             cloud_fraction,qc_columns,qi_columns,cu_flags,cuplus_clouds,before_pbl=False,
             shallowcu_forced_ra=shallowcu_forced_ra)
-    if int(mp_physics) == 11 and state.cldfra_mp_all is not None:
+    if int(mp_physics) == 11 and state.cldfra_mp_all is not None and int(icloud) == 1:
         # radiation_driver:1433-1444, after the optional BL cloud merge.
         held=_to_columns(state.cldfra_mp_all)
         cloud_fraction=jnp.where(jnp.asarray(lead_seconds)>0,jnp.where(held<.01,0.,held),cloud_fraction)
@@ -1507,6 +1536,35 @@ def _rrtmg_column_inputs_impl(
         # Held o3rad (nesting/nest_o3.py): a nest's radiation uses the parent's force-down field, not its own CAM call.
         ozone_vmr = ozone_vmr_override
 
+    # WRF aer_opt=1: domain 1 runs aer_time_int + aer_p_int on the radiation P/P8W (p_hyd/p_hyd_w) at the
+    # call's JULIAN; nests radiate with the parent's force-down aerod (nesting/nest_aerosol.py).
+    aerosol_ecaer = None
+    if aerosol_ecaer_override is not None:
+        aerosol_ecaer = jnp.asarray(aerosol_ecaer_override, jnp.float32)
+    elif tegen_aerosol is not None:
+        if sw_pressure_interfaces is None:
+            raise ValueError("aer_opt=1 needs the real-grid hydrostatic radiation pressure (grid.metrics)")
+        from gpuwrf.physics.wrf_tegen_aerosol import wrf_tegen_aerod
+        aer_julian, aer_minute = _resolve_clock_parts(time_utc, clock_base)
+        aerosol_ecaer = wrf_tegen_aerod(
+            tegen_aerosol, sw_p_columns, sw_pressure_interfaces,
+            _wrf_solar_julian_real(aer_julian, aer_minute, lead_seconds),
+        )
+    # WRF aer_opt=3 (mp28): gt_aod + calc_aerosol_rrtmg_sw on the radiation p_hyd / t_phy / QV / dz8w and the
+    # Thompson QNWFA/QNIFA at every radiation call (module_radiation_driver.F:1652-1694, :2374-2392).
+    aerosol_bands = None
+    if thompson_aerosol:
+        if getattr(state, "nwfa", None) is None or getattr(state, "nifa", None) is None:
+            raise ValueError("aer_opt=3 needs the mp_physics=28 water/ice-friendly aerosols (State.nwfa/nifa)")
+        from gpuwrf.physics.wrf_aer_opt3 import wrf_aer_opt3_band_optics
+        # Value-neutral barriers on both sides keep the column/kernel layout transposes out of the ~700-op
+        # elementwise optics fusion (E41: it otherwise became a kInput transpose fusion of 720 HLO ops, AE10).
+        operands = jax.lax.optimization_barrier(
+            (sw_p_columns, _to_columns(T), qv_columns, _to_columns(state.nwfa), _to_columns(state.nifa), dz))
+        tau_a, ssa_a, asy_a, _taod = wrf_aer_opt3_band_optics(*operands)
+        tau_a, ssa_a, asy_a = jax.lax.optimization_barrier((tau_a, ssa_a, asy_a))
+        aerosol_bands = jnp.stack((tau_a, ssa_a, asy_a), axis=-1)
+
     # WRF Registry defaults GHG_INPUT=1: real-grid dated calls use CLWRF SSP245
     # gases at the radiation call's valid time.  A traced clock carries the gas
     # anchor, so the compiled program reads the gases from operands (v0.25 S3):
@@ -1567,6 +1625,8 @@ def _rrtmg_column_inputs_impl(
         ch4_vmr=None if ghg is None else ghg.ch4_vmr,
         ozone_vmr=ozone_vmr,
         **radii_kwargs,
+        **({} if aerosol_ecaer is None else {"aerosol_ecaer": aerosol_ecaer}),
+        **({} if aerosol_bands is None else {"aerosol_bands": aerosol_bands}),
     )
     lw_state = RRTMGLWColumnState(
         _to_columns(T),
@@ -2995,6 +3055,9 @@ def rrtmg_radiation_diagnostics(
     with_urban: bool = False,
     use_mynn_sgs_cloud: bool = True,
     cloud_mp_physics: int = 8,
+    icloud: int = 1,
+    tegen_aerosol=None,
+    thompson_aerosol=False,
 ) -> RRTMGRadiationDiagnostics:
     """Return surface RRTMG radiation diagnostics without changing State.
 
@@ -3024,7 +3087,9 @@ def rrtmg_radiation_diagnostics(
         land_state=land_state,
         use_mp_re=use_mp_re,
         mp_physics=mp_physics,
-        **({"use_mynn_sgs_cloud": False, "cloud_mp_physics": cloud_mp_physics} if not use_mynn_sgs_cloud else {}),
+        **({"use_mynn_sgs_cloud": False, "cloud_mp_physics": cloud_mp_physics, **({"icloud": icloud} if int(icloud) != 1 else {})} if not use_mynn_sgs_cloud else {}),
+        **({} if tegen_aerosol is None else {"tegen_aerosol": tegen_aerosol}),
+        **({"thompson_aerosol": True} if thompson_aerosol else {}),
     )
     if _m9_flux_slices_only:
         if with_clear_sky:
@@ -3206,6 +3271,61 @@ def rrtmg_ozone_columns(
     return sw_state.ozone_vmr
 
 
+def rrtmg_aerosol_columns(
+    state: State,
+    grid: GridSpec | None = None,
+    *,
+    tegen_aerosol,
+    time_utc=None,
+    lead_seconds=0.0,
+    clock_base=None,
+    radiation_static: RRTMGRadiationStatic | None = None,
+    land_state=None,
+):
+    """Domain-1 WRF aer_opt=1 ``aerod`` columns ``(..., z, 6)`` of an RRTMG driver call (REAL).
+
+    Same column-input path as :func:`rrtmg_theta_tendency`, so the root holds exactly the aerosol its
+    radiation used and hands it to its nests (Registry aerod ``df=(p2c)``, nesting/nest_aerosol.py).
+    """
+
+    sw_state, _lw, _alb, _emis, _geom, _topo = _rrtmg_column_inputs(
+        state, grid, time_utc=time_utc, lead_seconds=lead_seconds, clock_base=clock_base,
+        radiation_static=radiation_static, land_state=land_state, use_mp_re=0, tegen_aerosol=tegen_aerosol,
+    )
+    return sw_state.aerosol_ecaer
+
+
+def rrtmg_thompson_taod5502d(
+    state: State,
+    grid: GridSpec | None = None,
+    *,
+    time_utc=None,
+    lead_seconds=0.0,
+    clock_base=None,
+    radiation_static: RRTMGRadiationStatic | None = None,
+    land_state=None,
+):
+    """WRF aer_opt=3 ``TAOD5502D`` ``(ny, nx)`` REAL: the column sum of ``gt_aod``'s taod5503d of a radiation call.
+
+    Same column-input path (p_hyd / t_phy / QV / dz8w / QNWFA / QNIFA) as :func:`rrtmg_theta_tendency`
+    (module_radiation_driver.F:1683-1692, sum over kts..kte in k order).
+    """
+
+    from gpuwrf.physics.wrf_aer_opt3 import wrf_gt_aod
+
+    sw_state, _lw, _alb, _emis, _geom, _topo = _rrtmg_column_inputs(
+        state, grid, time_utc=time_utc, lead_seconds=lead_seconds, clock_base=clock_base,
+        radiation_static=radiation_static, land_state=land_state, use_mp_re=0,
+    )
+    with jax.enable_x64(False):
+        taod = wrf_gt_aod(sw_state.p, sw_state.T, sw_state.qv, _to_columns(state.nwfa), _to_columns(state.nifa),
+                          sw_state.dz)
+        total = taod[..., 0]
+        for k in range(1, taod.shape[-1]):
+            total = total + taod[..., k]
+    return total
+
+
 class RRTMGSurfaceSolarInputs(NamedTuple):
     """REAL surface fields from the same radiation solve, before interpolation."""
     swddir: object
@@ -3235,7 +3355,9 @@ def rrtmg_theta_tendency(
     with_urban: bool = False,
     use_mynn_sgs_cloud: bool = True,
     cloud_mp_physics: int = 8,
+    icloud: int = 1,
     cuplus_clouds=None, shallowcu_forced_ra=False,
+    tegen_aerosol=None, aerosol_ecaer_override=None, thompson_aerosol=False,
 ) -> "jnp.ndarray":
     """Return the WRF ``RTHRATEN`` radiative potential-temperature tendency (K/s).
 
@@ -3274,7 +3396,10 @@ def rrtmg_theta_tendency(
         mp_physics=mp_physics,
         ozone_vmr_override=ozone_vmr_override,
         **({'cuplus_clouds':cuplus_clouds,'shallowcu_forced_ra':shallowcu_forced_ra} if cuplus_clouds is not None else {}),
-        **({"use_mynn_sgs_cloud": False, "cloud_mp_physics": cloud_mp_physics} if not use_mynn_sgs_cloud else {}),
+        **({"use_mynn_sgs_cloud": False, "cloud_mp_physics": cloud_mp_physics, **({"icloud": icloud} if int(icloud) != 1 else {})} if not use_mynn_sgs_cloud else {}),
+        **({} if tegen_aerosol is None else {"tegen_aerosol": tegen_aerosol}),
+        **({} if aerosol_ecaer_override is None else {"aerosol_ecaer_override": aerosol_ecaer_override}),
+        **({"thompson_aerosol": True} if thompson_aerosol else {}),
     )
     sw_state,lw_state,albedo,emissivity,geometry,topography=column_inputs[:6]
     cuplus_extra=(column_inputs[6],) if cuplus_clouds is not None else ()
@@ -3321,6 +3446,7 @@ def rrtmg_sw_theta_tendency(
     mp_physics: int = 8,
     use_mynn_sgs_cloud: bool = True,
     cloud_mp_physics: int = 8,
+    icloud: int = 1,
 ) -> "jnp.ndarray":
     """Return the RRTMG shortwave-ONLY ``RTHRATEN`` (K/s).
 
@@ -3344,7 +3470,7 @@ def rrtmg_sw_theta_tendency(
         land_state=land_state,
         use_mp_re=use_mp_re,
         mp_physics=mp_physics,
-        **({"use_mynn_sgs_cloud": False, "cloud_mp_physics": cloud_mp_physics} if not use_mynn_sgs_cloud else {}),
+        **({"use_mynn_sgs_cloud": False, "cloud_mp_physics": cloud_mp_physics, **({"icloud": icloud} if int(icloud) != 1 else {})} if not use_mynn_sgs_cloud else {}),
     )
     sw = solve_rrtmg_sw_column(sw_state, debug=False, topography=topography)
     heating_rate_T = _from_columns(sw.heating_rate)  # dT/dt (K/s)
@@ -3630,6 +3756,7 @@ def rrtmg_lw_theta_tendency(
     mp_physics: int = 8,
     use_mynn_sgs_cloud: bool = True,
     cloud_mp_physics: int = 8,
+    icloud: int = 1,
 ) -> "jnp.ndarray":
     """Return the RRTMG longwave-ONLY ``RTHRATEN`` (K/s).
 
@@ -3649,7 +3776,7 @@ def rrtmg_lw_theta_tendency(
         land_state=land_state,
         use_mp_re=use_mp_re,
         mp_physics=mp_physics,
-        **({"use_mynn_sgs_cloud": False, "cloud_mp_physics": cloud_mp_physics} if not use_mynn_sgs_cloud else {}),
+        **({"use_mynn_sgs_cloud": False, "cloud_mp_physics": cloud_mp_physics, **({"icloud": icloud} if int(icloud) != 1 else {})} if not use_mynn_sgs_cloud else {}),
     )
     lw = solve_rrtmg_lw_column(lw_state, debug=False)
     heating_rate_T = _from_columns(lw.heating_rate)  # dT/dt (K/s)

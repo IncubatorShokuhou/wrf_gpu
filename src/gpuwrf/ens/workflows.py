@@ -16,6 +16,9 @@ import subprocess
 from .members import identity
 
 GPU_LOCK_FILE = Path("/tmp/wrf_gpu2_gpu.lock")
+# Track P per-member control file (gpuwrf optimize continuous): linked into the member directory like the forcing,
+# identity-checked at launch, passed by the launcher as that member's --surface-controls.
+SURFACE_CONTROLS_NAME = "surface_controls.npz"
 
 
 def _case(case, namelist, hours):
@@ -76,13 +79,19 @@ def _case(case, namelist, hours):
 
 
 def prepare(mode, output, *, case=None, namelists=None, cases=None, hours=24, gpus=None, max_parallel=64,
-            max_per_gpu=None, pool_gib=None, checkpoint_interval_steps=0, retry_failed=0):
+            max_per_gpu=None, pool_gib=None, checkpoint_interval_steps=0, retry_failed=0,
+            members=None, schemes=None, lengthscale_km=None, nens_start=1, physics_rows=None, single_batch=False,
+            host_gb_per_case=None, surface_controls=None):
     import math
+    import tempfile
     from gpuwrf import __version__
     from gpuwrf.doctor.repro import create_manifest
 
-    if mode not in ("physics", "lagged", "batch"):
-        raise ValueError("mode must be physics, lagged or batch")
+    if mode not in ("physics", "lagged", "batch", "stochastic", "multiphysics"):
+        raise ValueError("mode must be physics, lagged, batch, stochastic or multiphysics")
+    if mode not in ("stochastic", "multiphysics") and (members is not None or schemes is not None or physics_rows
+                                                      or lengthscale_km is not None or nens_start != 1):
+        raise ValueError("--members/--schemes/--lengthscale-km/--nens-start/--physics-rows need a preset mode")
     if isinstance(hours, bool) or not isinstance(hours, int) or hours <= 0:
         raise ValueError("hours must be a positive integer")
     if max_parallel < 1 or (max_per_gpu is not None and max_per_gpu < 1) or checkpoint_interval_steps < 0 or retry_failed < 0:
@@ -92,21 +101,55 @@ def prepare(mode, output, *, case=None, namelists=None, cases=None, hours=24, gp
     if gpus is not None and gpus != "all" and (not gpus or any(not s.strip().isdigit() for s in gpus.split(","))
                                               or len(set(gpus.split(","))) != len(gpus.split(","))):
         raise ValueError("gpus must be all or unique comma-separated device indices")
-    if mode == "physics":
+    preset_info, preset_dir = None, None
+    if mode in ("stochastic", "multiphysics"):
+        from gpuwrf.io.namelist_parser import parse_namelist
+        from .presets import build_members, check_member_config, parse_start
+
+        if case is None or namelists or cases:
+            raise ValueError(f"{mode} preset requires one --case (members are generated from its namelist)")
+        source_namelist = Path(case).resolve(strict=True)/"namelist.input"
+        base_text = source_namelist.read_text(encoding="utf-8")
+        base_config = parse_namelist(source_namelist)
+        built = build_members(mode, base_text, base_config, members=members, schemes=schemes,
+                              lengthscale_km=lengthscale_km, nens_start=nens_start, rows=physics_rows,
+                              start=parse_start(base_config))
+        preset_dir = tempfile.TemporaryDirectory(prefix="gpuwrf-ens-preset-")
+        namelists, preset_info = [], []
+        for index, (text, info) in enumerate(built):
+            path = Path(preset_dir.name)/f"member-{index:03d}.namelist.input"
+            path.write_text(text, encoding="utf-8")
+            check_member_config(mode, base_config, parse_namelist(path),
+                                () if mode == "multiphysics" and not schemes else (schemes or ("preset",)))
+            namelists.append(path)
+            preset_info.append(info)
+    if mode in ("physics", "stochastic", "multiphysics"):
         if case is None or not namelists or len(namelists) < 2 or cases:
             raise ValueError("physics requires one --case and at least two --namelists")
         if len({Path(p).resolve() for p in namelists}) != len(namelists):
             raise ValueError("duplicate physics namelist")
         specs = [_case(case, n, hours) for n in namelists]
-        base = {k: v for k, v in specs[0]["config"].items() if k != "physics"}
-        if any({k: v for k, v in item["config"].items() if k != "physics"} != base for item in specs[1:]):
-            raise ValueError("physics members may change only &physics; geometry/time/dynamics must match")
+        free = {"physics": {"physics"}, "stochastic": {"stoch"}, "multiphysics": {"physics", "stoch"}}[mode]
+        base = {k: v for k, v in specs[0]["config"].items() if k not in free}
+        if any({k: v for k, v in item["config"].items() if k not in free} != base for item in specs[1:]):
+            raise ValueError(f"{mode} members may change only " + "/".join("&"+g for g in sorted(free))
+                             + "; geometry/time/dynamics must match")
     else:
-        if case or namelists or not cases or len(cases) < 2:
+        # single_batch: a scheduler (gpuwrf optimize) may submit one remaining batch member.
+        if case or namelists or not cases or len(cases) < (1 if single_batch and mode == "batch" else 2):
             raise ValueError("lagged/batch requires at least two --cases")
         if len({Path(p).resolve() for p in cases}) != len(cases):
             raise ValueError("duplicate case directory")
         specs = [_case(p, Path(p)/"namelist.input", hours) for p in cases]
+    if surface_controls is not None:
+        # One control file per batch case, all or none (one program signature per batch).
+        if mode != "batch" or len(surface_controls) != len(specs):
+            raise ValueError("surface_controls needs batch mode and one control file per case")
+        for spec, path in zip(specs, surface_controls):
+            path = Path(path).resolve(strict=True)
+            if path.name != SURFACE_CONTROLS_NAME or not path.is_file():
+                raise ValueError(f"member control files must be regular files named {SURFACE_CONTROLS_NAME}")
+            spec["inputs"].append(path)
     specs.sort(key=lambda s: s["issue"])  # stable: physics retains namelist order
     common_start = max(s["issue"] for s in specs)
     common_end = min(s["issue"]+timedelta(hours=hours) for s in specs)
@@ -131,6 +174,17 @@ def prepare(mode, output, *, case=None, namelists=None, cases=None, hours=24, gp
     source_paths = {p for s in specs for p in [*s["inputs"], s["namelist"]]}
     source_ids = {p: known_inputs[p] if p in known_inputs else identity(p) for p in source_paths}
     output.mkdir(parents=True, exist_ok=False)
+    if preset_dir is not None:
+        # Keep the generated namelists with the plan; the temporary copies vanish.
+        (output/"preset_namelists").mkdir()
+        for spec in specs:
+            kept = output/"preset_namelists"/spec["namelist"].name
+            shutil.copyfile(spec["namelist"], kept)
+            if identity(kept)["sha256"] != source_ids[spec["namelist"]]["sha256"]:
+                raise ValueError("generated preset namelist changed during preparation")
+            source_ids[kept] = identity(kept)
+            spec["namelist"] = kept
+        preset_dir.cleanup()
     (output/"source_manifests").mkdir()
     source_receipts = {}
     for index, (case_path, native) in enumerate(native_manifests.items()):
@@ -154,12 +208,18 @@ def prepare(mode, output, *, case=None, namelists=None, cases=None, hours=24, gp
                     "source_manifest": source_receipts[spec["case"]],
                     "prepared_namelist": prepared_namelist, "prepared_config": spec["config"],
                     "inputs": [{"name": p.name, **source_ids[p]} for p in spec["inputs"]]}
+        if preset_info is not None:
+            manifest["preset"] = preset_info[index]
         manifest_path = dest/"member_manifest.json"
         manifest_path.write_text(json.dumps(manifest, indent=2)+"\n")
         members.append({"id": name, "case": str(dest), "manifest": identity(manifest_path), "issue": manifest["issue"]})
     launcher_options = ["--max-parallel", str(max_parallel), "--checkpoint-interval-steps", str(checkpoint_interval_steps),
                         "--retry-failed", str(retry_failed)]
-    for flag, value in (("--gpus", gpus), ("--max-per-gpu", max_per_gpu), ("--pool-gib", pool_gib)):
+    if host_gb_per_case is not None and (not math.isfinite(host_gb_per_case) or host_gb_per_case <= 0):
+        raise ValueError("host_gb_per_case must be finite and positive")
+    for flag, value in (("--gpus", gpus), ("--max-per-gpu", max_per_gpu), ("--pool-gib", pool_gib),
+                        ("--host-gb-per-case", host_gb_per_case),
+                        ("--case-surface-controls", None if surface_controls is None else SURFACE_CONTROLS_NAME)):
         if value is not None:
             launcher_options += [flag, str(value)]
     plan = {"schema": "gpuwrf.ensemble.plan.v1", "mode": mode, "hours": hours, "members": members,
@@ -168,24 +228,46 @@ def prepare(mode, output, *, case=None, namelists=None, cases=None, hours=24, gp
             "common_window": [common_start.isoformat(), common_end.isoformat()] if common_end > common_start else None,
             "product_alignment": "intersection" if mode == "lagged" else "exact",
             "qualification": "CPU workflow qualified; actual GPU ensemble smoke pending"}
+    if single_batch and mode == "batch":
+        plan["min_members"] = 1
+    if preset_info is not None:
+        from .presets import DEFAULT_SCHEMES, MULTIPHYSICS
+        plan["preset"] = {"mode": mode, "schemes": list(schemes or (() if mode == "multiphysics" else DEFAULT_SCHEMES)),
+                          "lengthscale_km": lengthscale_km, "nens_start": nens_start,
+                          "convention": "identical iseed_*, distinct nens per member (WRF rand_seed mixes iseed, nens, start date)",
+                          "members": [{"id": m["id"], **info} for m, info in zip(members, preset_info)]}
+        if mode == "multiphysics":
+            plan["preset"]["table"] = [{"row": r[0], "physics": r[1], "evidence_case": r[2], "e41": r[3]} for r in MULTIPHYSICS]
+        plan["qualification"] = ("CPU workflow qualified; per-scheme/per-row model qualification in docs/stochastic.md "
+                                 "and docs/ensemble.md; ensemble spread/skill/calibration not qualified")
     (output/"plan.json").write_text(json.dumps(plan, indent=2)+"\n")
     return plan
 
 
-def launch(plan_path, *, dry_run=False, launcher=None):
-    """Check original/prepared identities before delegating to the scheduler."""
+def launch(plan_path, *, dry_run=False, launcher=None, env=None):
+    """Check original/prepared identities before delegating to the scheduler.
+
+    ``env`` (default: this process's environment) is the members' environment, e.g. the caller's
+    JAX platform while a CPU-only driver prepares them; the lock policy follows it.
+    """
+    environ = os.environ if env is None else env
     plan = json.loads(Path(plan_path).read_text())
-    if not isinstance(plan, dict) or plan.get("schema") != "gpuwrf.ensemble.plan.v1" or len(plan.get("members", [])) < 2:
+    minimum = 1 if isinstance(plan, dict) and plan.get("mode") == "batch" and plan.get("min_members") == 1 else 2
+    if not isinstance(plan, dict) or plan.get("schema") != "gpuwrf.ensemble.plan.v1" or len(plan.get("members", [])) < minimum:
         raise ValueError("not an ensemble launch plan")
     if plan.get("cli_options") != ["--domains-from-namelist", "--hours", str(plan.get("hours"))]:
         raise ValueError("launch plan CLI options disagree with prepared forecast hours")
-    allowed = {"--gpus", "--max-parallel", "--max-per-gpu", "--pool-gib", "--checkpoint-interval-steps", "--retry-failed"}
+    allowed = {"--gpus", "--max-parallel", "--max-per-gpu", "--pool-gib", "--checkpoint-interval-steps", "--retry-failed",
+               "--host-gb-per-case", "--case-surface-controls"}
     options = plan.get("launcher_options", [])
     if (not isinstance(options, list) or len(options) % 2 or not all(isinstance(x, str) for x in options)
             or any(flag not in allowed for flag in options[::2]) or len(set(options[::2])) != len(options[::2])):
         raise ValueError("invalid ensemble scheduler options")
     if len({member["case"] for member in plan["members"]}) != len(plan["members"]):
         raise ValueError("duplicate prepared member case")
+    controls = dict(zip(options[::2], options[1::2])).get("--case-surface-controls")
+    if controls is not None and controls != SURFACE_CONTROLS_NAME:
+        raise ValueError(f"member control files are named {SURFACE_CONTROLS_NAME}")
     cases, identities = [], {}
     def current_identity(path):
         path = Path(path).resolve(strict=True)
@@ -206,9 +288,12 @@ def launch(plan_path, *, dry_run=False, launcher=None):
         for item in manifest["inputs"]:
             if current_identity(case/item["name"]) != {k: v for k, v in item.items() if k != "name"}:
                 raise ValueError("shared member input changed since preparation")
+        if controls is not None and SURFACE_CONTROLS_NAME not in {item["name"] for item in manifest["inputs"]}:
+            raise ValueError("member has no prepared control file")
         cases.append(str(case))
     if launcher is None:
-        if GPU_LOCK_FILE.exists() and os.environ.get("GPUWRF_GPU_LOCK_HELD") != "1":
+        cpu_only = environ.get("JAX_PLATFORMS", "").strip().lower() == "cpu"  # members never touch the GPU
+        if GPU_LOCK_FILE.exists() and environ.get("GPUWRF_GPU_LOCK_HELD") != "1" and not cpu_only:
             raise ValueError("hold scripts/with_gpu_lock.sh for ensemble launch, including admission dry-run")
         launcher = Path(__file__).resolve().parents[3]/"scripts"/"run_parallel_cases.sh"
     launcher = Path(launcher)
@@ -218,7 +303,7 @@ def launch(plan_path, *, dry_run=False, launcher=None):
     if dry_run:
         command.append("--dry-run")
     command += ["--", *plan["cli_options"]]
-    fd = os.environ.get("GPUWRF_GPU_LOCK_FD", "")
+    fd = environ.get("GPUWRF_GPU_LOCK_FD", "")
     pass_fds = ()
     if fd:
         if not fd.isdigit() or int(fd) <= 2:
@@ -231,4 +316,4 @@ def launch(plan_path, *, dry_run=False, launcher=None):
         pass_fds = (descriptor,)
     # The wrapper preserves the caller's JAX platform for children and keeps
     # its own admission process CPU-only. The official lock is inherited.
-    return subprocess.run(command, pass_fds=pass_fds, check=False).returncode
+    return subprocess.run(command, pass_fds=pass_fds, check=False, env=None if env is None else dict(env)).returncode

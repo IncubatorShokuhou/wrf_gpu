@@ -7,6 +7,53 @@ WRF v4 GPU port — see `PROJECT_PLAN.md`).
 
 The format is loosely based on [Keep a Changelog](https://keepachangelog.com/).
 
+## [0.4.1] — 2026-10-18
+
+- New opt-in options: `topo_wind=1/2` (YSU/Shin-Hong surface-wind terrain correction),
+  `aer_opt=1/3` (Tegen climatology and Thompson aerosol-aware aerosol in RRTMG shortwave),
+  `icloud=2/3` (WRF `cal_cldfra2`/`cal_cldfra3` radiation cloud fraction). 24-hour GPU comparisons
+  with original CPU-WRF pass for `topo_wind=1/2`, `aer_opt=1/3` and `icloud=2/3` in the tested set-ups.
+- New experimental tools: `gpuwrf da` (offline LETKF analysis and one-process ensemble cycling,
+  outer domain only; no skill claim; ensemble options overdispersive), `gpuwrf surface-params`
+  with `gpuwrf run --surface-controls` (Noah-MP parameters without recompiling; EKI scaffold on
+  synthetic tests only), `gpuwrf optimize released` and GPU-run regional studies with pause/resume,
+  `gpuwrf ens prepare --mode stochastic|multiphysics`.
+- Stochastic SKEBS/SPPT/SPP: single-domain 24 h GPU comparison with CPU-WRF using the same seeds;
+  exact parallel random-number generator.
+- WDM5/WDM7 `Nn` small-grid compiler barrier (CPU component outputs byte-identical; GPU 200-step
+  smoke finite; v0.4.0 24 h comparisons not re-run); repository files > 10 MiB
+  moved to SHA-pinned release attachments; sealed compile-bundle consumers.
+- Nested runs: the fused inner-nest program takes its namelists (and with them case data such as
+  Noah-MP `TMN`) as run-time arguments, so one program and one cache key serve every date of a
+  grid (v0.4.0 compiled the nested program again for each date); 3-date regression test; three
+  Tenerife forecast dates share one nested program and pass 24 h comparisons with original
+  CPU-WRF on all domains. Date-blind v0.4.1 compiled bundle (sealed; replayed on three dates, a
+  48-hour input case and the Swiss/Canary cases without compiling).
+- New CPU tool `gpuwrf aot-key`: per-program cache keys of a nested case, and which programs two
+  cases share, without a GPU or a compile.
+- Disclosure for v0.3.0–v0.3.4: a compile cache shared across dates could load another date's
+  nested program; measured on v0.3.3 Tenerife three-domain 24 h: 72/72 history files
+  byte-identical (the baked `TMN` differs only over water, where it is masked); for other grids
+  set `GPUWRF_AOT_VERIFY=1`.
+- CPU test suite: 40 of the 41 tests that already failed on v0.4.0 repaired; the remaining one
+  is the README approval digest, re-sealed on the final README text.
+- Default program: boundary/lower-boundary record counts leave the compiled program (48/72 h
+  inputs reuse the 24 h program; outputs byte-identical); fix of the direct-beam surface
+  shortwave `SWDDIR`/`SWDDIF`, which used the delta-scaled cloud optical depth since the SW port
+  and affected slope radiation on cloudy terrain. Both requalified together: 24 h comparisons
+  with original CPU-WRF pass on the Swiss, Canary and Tenerife cases. New identities Swiss
+  `b977712fe325`, Canary `321aa651067f`.
+- Benchmark (release program, RTX 5090): three Tenerife 24 h forecasts in parallel 6.1 s per
+  case-hour (20× CPU-WRF 3 × 4 cores); Canary Islands 24 h 4.4 s per forecast hour (21× 12-core
+  CPU-WRF); stepping equal to v0.4.0 within 1.7 %, whole run 2.5–3.3 % longer.
+- Real-world release checks RW1–RW4 (warm cache, new date, 72 h Tenerife against CPU-WRF,
+  bundle replay) in the release notes appendix. Not in this release: nested qualification of
+  YSU, Shin-Hong, ACM2 and EEPS (still running at the source freeze).
+- Resuming a v0.4.0 `gpuwrf run` checkpoint is refused (source identity).
+- [Release notes](release_notes/RELEASE_NOTES_v0.4.1.md) ·
+  [Support matrix](docs/release/SUPPORT_MATRIX_v0.4.1.md) ·
+  [Known issues](KNOWN_ISSUES.md).
+
 ## [0.4.0] — 2026-10-17
 
 - Expanded WRF4.7.1 physics menu and optional DFI/nudging/urban/lake/ocean,

@@ -561,8 +561,43 @@ def git_commit_all(path: Path, message: str) -> str:
     return subprocess.check_output(["git", "-C", str(path), "rev-parse", "HEAD"], text=True).strip()
 
 
+# AGENTS.md section 4 lane cores; a manager CORE PLAN loan is declared explicitly (comma list) in
+# WRF_GPU2_CPU_LOAN by the runner. OS/agent cores and cores of a running wrf.exe are never allowed.
+LANE_CPUS = frozenset({8, 9, 12, 13, 24, 25, 28, 29})
+OS_AGENT_CPUS = frozenset({14, 15, 30, 31})
+
+
+def _cpu_list(text: str) -> set[int]:
+    cpus: set[int] = set()
+    for part in text.replace(" ", "").split(","):
+        if part:
+            lo, _, hi = part.partition("-")
+            cpus.update(range(int(lo), int(hi or lo) + 1))
+    return cpus
+
+
+def _running_wrf_exe_cpus() -> set[int]:
+    cpus: set[int] = set()
+    for proc in Path("/proc").iterdir():
+        try:
+            if not proc.name.isdigit() or (proc / "comm").read_text().strip() != "wrf.exe":
+                continue
+            status = (proc / "status").read_text()
+        except OSError:
+            continue
+        line = next(line for line in status.splitlines() if line.startswith("Cpus_allowed_list:"))
+        cpus |= _cpu_list(line.split(":", 1)[1])
+    return cpus
+
+
 def test_suite_is_pinned_to_current_cpu_lane() -> None:
-    assert set(os.sched_getaffinity(0)) <= {8, 9, 12, 13, 24, 25, 28, 29}
+    affinity = set(os.sched_getaffinity(0))
+    loan = _cpu_list(os.environ.get("WRF_GPU2_CPU_LOAN", ""))
+    assert len(affinity) < (os.cpu_count() or 0), "suite must run pinned (taskset), not on every CPU"
+    assert not loan & OS_AGENT_CPUS, f"declared CPU loan includes OS/agent cores {sorted(loan & OS_AGENT_CPUS)}"
+    assert affinity <= LANE_CPUS | loan, f"outside lane cores {sorted(affinity - LANE_CPUS - loan)}"
+    assert not affinity & OS_AGENT_CPUS
+    assert not affinity & _running_wrf_exe_cpus(), "suite shares a core with a running wrf.exe (ALISIOS)"
 
 
 @pytest.mark.parametrize("mode", ["audit", "command", "run"])

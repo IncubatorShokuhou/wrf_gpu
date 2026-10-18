@@ -19,6 +19,7 @@ from gpuwrf.runtime.aot_cheap_key import static_config_hash
 from tests.dynamics.test_diffopt1_smagorinsky_integration import _build_grid, _namelist
 
 ROOT = Path(__file__).resolve().parents[3]
+FC_DEFAULT = '<DATA_ROOT>/canairy_meteo/artifacts/envs/wrf-build/bin/x86_64-conda-linux-gnu-gfortran'
 
 
 def _build(**options):
@@ -72,7 +73,9 @@ end program
 '''
     root=tmp_path_factory.mktemp('lid-fortran')
     (root/'reader.f90').write_text(source)
-    compiler=os.environ['FC']
+    # E129: gfortran is not on PATH here; FC overrides, else the pinned wrf-build compiler (no skip).
+    compiler=os.environ.get('FC') or FC_DEFAULT
+    assert Path(compiler).is_file(), f'Fortran oracle compiler missing: {compiler} (set FC)'
     exe=root/'reader'
     subprocess.run([compiler,str(root/'reader.f90'),'-o',str(exe)],check=True,
                    capture_output=True,text=True,timeout=30)

@@ -328,12 +328,35 @@ runs):
 * **`gwd_opt`** 0/1 (see `GPUWRF_GWD_NESTED` above); 3 not wired.
 * **`slope_rad`** 0/1 and **`topo_shading`** 0/1 (with `shadlen`) are bound per
   domain (RRTMG SW slope radiation / topographic shadowing).
+* **`topo_wind`** 0/1/2 (v0.4.1, per domain): WRF's `start_em` surface-wind
+  correction fields CTOPO/CTOPO2 (1 = Jiménez & Dudhia 2012 from `VAR_SSO` and the
+  terrain Laplacian, 2 = Mass & Ovens from the geogrid `VAR`). As in WRF 4.7.1 they
+  are read only by YSU (`bl_pbl_physics=1`) and Shin-Hong (11): extra surface drag in
+  the momentum solve and, for option 1 in valleys, the CTOPO2 blend of U10/V10 toward
+  the lowest model wind. With MYNN or any other PBL the option changes nothing (WRF
+  behaves the same) and the port warns. `topo_wind=1` refuses a `wrfinput` without
+  `VAR_SSO` (`GOT_VAR_SSO=0`), like WRF's `start_em.F:222`; WPS writes `VAR_SSO` only
+  when the `varsso` dataset named in `GEOGRID.TBL` is present (for `lowres` it is
+  `varsso_10m`). Two-way feedback (`feedback=1`) feeds the nest CTOPO/CTOPO2 back to
+  the parent after its first step, as WRF does (CPU-tested only). Qualification:
+  24 h GPU runs match original CPU-WRF (D6) for `topo_wind=1` on Swiss YSU and
+  Shin-Hong and on the WN3 Tenerife 3/1 km YSU nests, and for `topo_wind=2` only on
+  the WN3 9 km YSU domain. The `topo_wind=1` YSU programs carry an E41 stack flag
+  (400–496 B in the surface-layer kernel), disclosed in the support matrix.
 * **MYNN-EDMF sub-options** gated to the WRF default sub-config that the port runs:
   `bl_mynn_edmf=1`, `edmf_mom=1`, `edmf_tke=0`, `mixscalars=1`, `mixqt=0`,
   `edmf_dd=0`, `mixlength=1`, `icloud_bl=1` (the MYNN sub-grid clouds feed RRTMG).
   `icloud_bl=0`, `bl_mynn_mixlength=0/2` and `bl_mynn_tkeadvect=.true.` are not
   bound and fail closed (≤ v0.3.3 wrongly accepted `icloud_bl=0`/`mixlength=2` and
   refused `icloud_bl=1`).
+* **`icloud`** 1 (default), 2 (`cal_cldfra2`) and 3 (`cal_cldfra3`, experimental) are bound;
+  2/3 replace WRF's whole `icloud=1` block including the `icloud_bl` merge, RRTMG 4/4 only,
+  `icloud=3` refuses `mp_physics=0/1/3`; `icloud=0` is not bound. See
+  [radiation-cloud-fraction.md](radiation-cloud-fraction.md).
+* **`aer_opt`** 0 (default), 1 (Tegen climatology) and 3 (Thompson `mp_physics=28` aerosol) are bound
+  (v0.4.1, one value for all domains): RRTMG shortwave (`ra_sw_physics=4`) on every domain; `aer_opt=3`
+  also needs `mp_physics=28`, a single domain and `wif_input_opt=1`; `aer_opt=2` is refused. Longwave
+  carries no aerosol. See [AEROSOL.md](AEROSOL.md).
 * **`radt`** and **`cudt`** are bound per domain (radiation cadence; KF STEPCU).
   An **omitted `radt`** warns: WRF's default `radt = 0` calls radiation every step,
   the port runs its driver cadence (30 min native/nested) — set `radt` explicitly.

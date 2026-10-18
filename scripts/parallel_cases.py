@@ -57,6 +57,7 @@ CLI_REFUSED = {"--input-dir": "set per case by the launcher", "--output-dir": "s
                "--checkpoint-reserve-bytes": _NO_RESTART, "--resume-checkpoint": _NO_RESTART,
                "--extend-run": _NO_RESTART,
                "--decompose": "domain decomposition spans several GPUs per case; run it alone with the CLI",
+               "--surface-controls": "per-case control file; use the launcher's --case-surface-controls NAME",
                "-h": "not a case option", "--help": "not a case option"}
 
 
@@ -530,6 +531,9 @@ def parse(argv: list[str]) -> tuple[argparse.Namespace, list[str]]:
                     help="every case checkpoints into its own OUT/<name>/checkpoint every N root steps (CLI restart store)")
     ap.add_argument("--retry-failed", type=int, default=0, help="re-run a failed case up to K times (resume from its own "
                     "checkpoint when one exists); other cases are never stopped by a failure")
+    ap.add_argument("--case-surface-controls", default=None, metavar="NAME",
+                    help="Track P: every case directory holds its own control file NAME, passed as that case's "
+                    "--surface-controls (gpuwrf optimize continuous members); a case without it is refused")
     ap.add_argument("--dry-run", action="store_true", help="print the admission plan as JSON and exit")
     ap.add_argument("--cli-json", default=None, help=argparse.SUPPRESS)  # tests: replace the product CLI command
     a = ap.parse_args(own)
@@ -539,6 +543,13 @@ def parse(argv: list[str]) -> tuple[argparse.Namespace, list[str]]:
         cli_args = check_cli_args(cli_args)
     except ValueError as exc:
         ap.error(str(exc))
+    name = a.case_surface_controls
+    if name is not None:
+        if name in ("", ".", "..") or name != Path(name).name:
+            ap.error("--case-surface-controls takes a plain file name inside each case directory")
+        missing = [str(d) for d in a.cases if not (d / name).is_file()]
+        if missing:
+            ap.error(f"--case-surface-controls {name}: no such file in {missing}")
     return a, cli_args
 
 
@@ -553,6 +564,9 @@ def main(argv: list[str] | None = None, sizer=None, gpu=None, vram=None, devices
         def gpu_lock_required(_env, lock_file):
             return True, "this gpuwrf version always requires the GPU lock"
     lock_required, lock_policy = gpu_lock_required(env, lock_file=DEV_LOCK_FILE)
+    cpu_only = env.get("JAX_PLATFORMS", "").strip().lower() == "cpu"  # CPU-only cases never create a CUDA client
+    if cpu_only:
+        lock_required, lock_policy = False, "CPU-only cases (JAX_PLATFORMS=cpu)"
     if not a.dry_run and lock_required and env.get("GPUWRF_GPU_LOCK_HELD") != "1" and not forced:
         print(f"run_parallel_cases: this machine requires the GPU lock ({lock_policy}); hold it for the whole batch:\n"
               "  scripts/with_gpu_lock.sh --label <name> -- scripts/run_parallel_cases.sh ...\n"
@@ -585,6 +599,8 @@ def main(argv: list[str] | None = None, sizer=None, gpu=None, vram=None, devices
         totals = {None: gpu()}
     total, free = totals[dev_items[0][0]]
     capacity = {k: f - int(a.vram_margin_gib * GIB) for k, (_t, f) in totals.items()}
+    if cpu_only:  # no GPU memory is held: only host RAM and --max-parallel admit CPU cases
+        capacity = {k: 1 << 62 for k in capacity}
     vram_capacity = capacity[dev_items[0][0]]
     pool_env: dict = {}
     if a.pool_gib is not None:
@@ -732,6 +748,8 @@ def main(argv: list[str] | None = None, sizer=None, gpu=None, vram=None, devices
                                if k.startswith(("GPUWRF_", "JAX_", "XLA_", "OMP_", "CUDA_", "TF_")) and "TOKEN" not in k)
                 c.t0 = time.time()
                 c.argv = [*cli, "--input-dir", str(c.case_dir), "--output-dir", str(c.out / "wrfout"), *cli_args]
+                if a.case_surface_controls is not None:
+                    c.argv += ["--surface-controls", str(c.case_dir / a.case_surface_controls)]
                 if a.checkpoint_interval_steps > 0:
                     c.argv += ["--checkpoint-dir", str(c.out / "checkpoint"),
                                "--checkpoint-interval-steps", str(a.checkpoint_interval_steps)]

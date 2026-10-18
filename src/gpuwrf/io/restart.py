@@ -145,17 +145,24 @@ def _device_tree(tree: Any) -> Any:
 def _hostify_namelist(namelist: Any, grid: Any) -> Any:
     """Host-copy the namelist pytree, re-pinning ``grid`` by reference (matches
     ``runtime.checkpoint`` so a namelist carrying a grid handle round-trips)."""
+    from gpuwrf.physics.thompson_hail.tables import checkpoint_split
+
+    # mp38 bound tables (~0.97 GB) are stored as a content reference only.
+    namelist, hail_ref = checkpoint_split(namelist)
     host = _hostify_tree(namelist)
     if is_dataclass(host) and hasattr(host, "grid"):
-        return replace(host, grid=grid)
-    return host
+        host = replace(host, grid=grid)
+    return host if hail_ref is None else replace(host, thompson_hail_tables=hail_ref)
 
 
 def _restore_namelist(namelist: Any, grid: Any) -> Any:
+    from gpuwrf.physics.thompson_hail.tables import checkpoint_restore, checkpoint_split
+
+    namelist, hail_ref = checkpoint_split(namelist)
     device = _device_tree(namelist)
     if is_dataclass(device) and hasattr(device, "grid"):
-        return replace(device, grid=grid)
-    return device
+        device = replace(device, grid=grid)
+    return checkpoint_restore(device, hail_ref)
 
 
 def _state_fields(state: State) -> dict[str, np.ndarray]:
@@ -400,6 +407,8 @@ def write_restart(
     payload["noahmp_options"]=restart_configuration(namelist)
     from gpuwrf.io.noahmp_restart_identity import bound_table_identity
     payload["noahmp_bound_tables"]=bound_table_identity(namelist)
+    from gpuwrf.surface_params.controls import restart_controls_digest
+    payload["surface_controls_digest"]=restart_controls_digest(namelist)
     payload["carry"]["solar_interpolation_config"] = solar_config
     from gpuwrf.io.glacier_schema import validate as validate_glacier
     validate_glacier(payload['carry'].get('noahmp_land_fields'),payload['carry'].get('noahmp_land_field_order') or (),
@@ -576,6 +585,8 @@ def _read_payload(path: str | Path, *, namelist=None, feedback_schema=None) -> d
         from gpuwrf.io.noahmp_restart_identity import validate_bound_table_restart
         validate_bound_table_restart(payload.get("noahmp_bound_tables"),payload.get("namelist"))
         if namelist is not None:validate_bound_table_restart(payload.get("noahmp_bound_tables"),namelist)
+        from gpuwrf.surface_params.controls import validate_controls_restart
+        validate_controls_restart(payload.get("surface_controls_digest"),namelist)
         from gpuwrf.io.noahmp_options import irrigation_configuration
         from gpuwrf.io.noahmp_irrigation import validate_restart as validate_irrigation
         group=carry.get("extra_fields",{}).get("noahmp_irrigation")
@@ -588,7 +599,7 @@ def _read_payload(path: str | Path, *, namelist=None, feedback_schema=None) -> d
         recorded_carry = tuple(carry.get("carry_field_order", ()))
         # Only the newly appended, inactive group can be absent in older files.
         expected_carry = tuple(name for name in _CARRY_FIELD_ORDER
-                               if name not in ("camuw_pbl","lake","obs","regional_streams", "precipitation_buckets", "nwp_diagnostics", "radar_reflectivity", "solar_interpolation", "temf", "urban_bep", "feedback_history", "windfarm_power", "tracer_tendencies", "ocean", "hurricane_ustm", "qnse", "osas_rng_key", "cuplus", "noahmp_mmf", "gfdl_radiation", "sst_skin", "noahmp_irrigation", "noahmp_carbon", "noahmp_groundwater", "noahmp_tile_drain", "cu_forcing") or name in recorded_carry)
+                               if name not in ("camuw_pbl","lake","obs","regional_streams", "precipitation_buckets", "nwp_diagnostics", "radar_reflectivity", "solar_interpolation", "temf", "urban_bep", "feedback_history", "windfarm_power", "tracer_tendencies", "ocean", "hurricane_ustm", "qnse", "osas_rng_key", "cuplus", "noahmp_mmf", "gfdl_radiation", "sst_skin", "noahmp_irrigation", "noahmp_carbon", "noahmp_groundwater", "noahmp_tile_drain", "cu_forcing", "aerod", "taod5502d") or name in recorded_carry)
         if recorded_carry != expected_carry:
             raise ValueError("restart OperationalCarry field order does not match current schema")
         expected_extra = set(_V1_UNSUPPORTED_CARRY_FIELDS)
@@ -602,7 +613,7 @@ def _read_payload(path: str | Path, *, namelist=None, feedback_schema=None) -> d
             expected_extra.remove('regional_streams')
         if "precipitation_buckets" not in recorded_carry:
             expected_extra.remove("precipitation_buckets")
-        for group in ("nwp_diagnostics","radar_reflectivity","solar_interpolation","windfarm_power", "tracer_tendencies", 'sst_skin', 'noahmp_irrigation', 'noahmp_carbon', 'noahmp_groundwater', 'noahmp_tile_drain', 'cu_forcing'):
+        for group in ("nwp_diagnostics","radar_reflectivity","solar_interpolation","windfarm_power", "tracer_tendencies", 'sst_skin', 'noahmp_irrigation', 'noahmp_carbon', 'noahmp_groundwater', 'noahmp_tile_drain', 'cu_forcing', 'aerod', 'taod5502d'):
             if group not in recorded_carry:
                 expected_extra.remove(group)
         if 'temf' not in recorded_carry:

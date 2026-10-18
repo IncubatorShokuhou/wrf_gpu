@@ -1,0 +1,60 @@
+{
+ "scope": "mp56 NTU + mp11 CAM-MG Pallas column kernels lowered for CUDA (lowering_platforms=('cuda',)) in a JAX_PLATFORMS=cpu process (E115), facade held at its CUDA dispatch (cuda_native->True), CAM-MG stock-Triton route with one faked sm_120 device, stock-Triton TTIR temp names pinned (tempfile candidate names) so the embedded PTX/DWARF is comparable; same worktree path, line-aligned (1-line import change per file)",
+ "tool": "<USER_HOME>/wrf_gpu2_lanes/w41-redfix/tools/facade_lower_probe.py",
+ "tool_sha256": "b44fa05c05e1af26526ce6f73685a099bcfe9fa25697237a8061ed14b8188dd2",
+ "before": {
+  "source_files": {
+   "src/gpuwrf/kernels/phys_ntu.py": "410e11cdd5bf4e9097ffab3fb99831ebf0dbfcaf0ccc2811816ee304de0a33f1",
+   "src/gpuwrf/kernels/phys_cammg.py": "5c0819c695339fe7c32175b3cd1df0aa927def1b51c15789d4086fa4df0b4f52",
+   "src/gpuwrf/backends/pallas.py": "89fa14fee883f31d95f61446cd047f82cf7bfaa4182f31edc018b20cdfcb7a7a"
+  },
+  "mp56_ntu": {
+   "jaxpr_canon_sha": "2ca0cb7661fe530e79f5b276bad6d040bc7107b63090c3a9cf89ad4b71e5e723",
+   "stablehlo_raw_sha": "cc4510e9c092e0b907792b11d744404484f3897f2f24da34e840f299467a7d1e",
+   "stablehlo_stripped_sha": "cc4510e9c092e0b907792b11d744404484f3897f2f24da34e840f299467a7d1e",
+   "chars": 5234968,
+   "kernel_custom_calls": 1,
+   "pallas_eqns": 1
+  },
+  "mp11_cammg": {
+   "jaxpr_canon_sha": "98b368d8182165326323a92a201fe8cc898af1ad3c849c27234755553e1250a8",
+   "stablehlo_raw_sha": "5b32b5146d8980a61a8e5d8b9f1f27939fd7a4b5fb7debf0677850e5ffb1cb8f",
+   "stablehlo_stripped_sha": "5b32b5146d8980a61a8e5d8b9f1f27939fd7a4b5fb7debf0677850e5ffb1cb8f",
+   "chars": 4352952,
+   "kernel_custom_calls": 1,
+   "pallas_eqns": 1
+  }
+ },
+ "after": {
+  "source_files": {
+   "src/gpuwrf/kernels/phys_ntu.py": "833ed84ab5c6ff4536875b1bae397d673166171950a05080738d707f08155970",
+   "src/gpuwrf/kernels/phys_cammg.py": "504131ce7599d20bfc63bedf61765be978df24066a7278dc9de190663f56ab75",
+   "src/gpuwrf/backends/pallas.py": "89fa14fee883f31d95f61446cd047f82cf7bfaa4182f31edc018b20cdfcb7a7a"
+  },
+  "mp56_ntu": {
+   "jaxpr_canon_sha": "2ca0cb7661fe530e79f5b276bad6d040bc7107b63090c3a9cf89ad4b71e5e723",
+   "stablehlo_raw_sha": "cc4510e9c092e0b907792b11d744404484f3897f2f24da34e840f299467a7d1e",
+   "stablehlo_stripped_sha": "cc4510e9c092e0b907792b11d744404484f3897f2f24da34e840f299467a7d1e",
+   "chars": 5234968,
+   "kernel_custom_calls": 1,
+   "pallas_eqns": 1
+  },
+  "mp11_cammg": {
+   "jaxpr_canon_sha": "98b368d8182165326323a92a201fe8cc898af1ad3c849c27234755553e1250a8",
+   "stablehlo_raw_sha": "5b32b5146d8980a61a8e5d8b9f1f27939fd7a4b5fb7debf0677850e5ffb1cb8f",
+   "stablehlo_stripped_sha": "5b32b5146d8980a61a8e5d8b9f1f27939fd7a4b5fb7debf0677850e5ffb1cb8f",
+   "chars": 4352952,
+   "kernel_custom_calls": 1,
+   "pallas_eqns": 1
+  }
+ },
+ "jaxpr_byte_identical": {
+  "mp56_ntu": true,
+  "mp11_cammg": true
+ },
+ "stablehlo_byte_identical": {
+  "mp56_ntu": true,
+  "mp11_cammg": true
+ },
+ "note": "Without pinning the temp names two runs of the SAME source already differ only in the random tmp*.ttir name inside the PTX .loc/DWARF bytes (observed on the first unpinned pair; residual diff = that name only). AOT keys: mp11 key changes (stock_compiler_identity hashes phys_cammg.py) and both schemes' source hashes change -> cache-only, programs identical."
+}

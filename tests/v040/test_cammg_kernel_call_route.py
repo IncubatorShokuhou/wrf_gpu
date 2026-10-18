@@ -70,8 +70,13 @@ def test_route_refuses_without_cuda_device(monkeypatch):
         _lowered(route.KernelCallCompilerParams(num_warps=4),none,monkeypatch)
 
 
-def test_cammg_column_selects_kernel_call_route():
+def test_cammg_column_selects_kernel_call_route(monkeypatch):
+    import gpuwrf.backends.pallas as facade
     from gpuwrf.kernels import phys_cammg
+    # The kernel imports the portability facade: hold it at its CUDA dispatch (the stock
+    # pallas_call object, as on a CUDA host); on CPU it would interpret and drop compiler_params.
+    monkeypatch.setattr(facade,'cuda_native',lambda:True)
+    assert phys_cammg.pl is facade
     with np.load(__import__('pathlib').Path(__file__).resolve().parents[2]/'proofs/s2_cammg/fixtures/public.npz') as z:
         fields={k.split('_input_',1)[1]:jnp.asarray(z[k]).reshape((1,) if k.split('_input_',1)[1] in phys_cammg.SURFACE_FIELDS else (1,25))
                 for k in z.files if k.startswith('c01_s1_input_')}

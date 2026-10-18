@@ -133,6 +133,12 @@ def wrf_history_global_attributes(
     attrs['ICLOUD_CU'] = np.int32(2 if cu == 11 or (feedback and cu == 1)
                                  else 1 if feedback and cu in (3, 5, 93) else 0)
     attrs['SKEBS_ON'] = np.int32(bool(domain_value('stoch', 'skebs', 0)))
+    # output_wrf.F:733-735 writes TOPO_WIND (after DIFF_6TH_FACTOR) only for topo_wind == 1.
+    attrs.pop('TOPO_WIND', None)
+    if int(domain_value('physics', 'topo_wind', 0)) == 1:
+        items = list(attrs.items())
+        at = next((k + 1 for k, (name, _) in enumerate(items) if name == 'DIFF_6TH_FACTOR'), len(items))
+        attrs = dict(items[:at] + [('TOPO_WIND', np.int32(1))] + items[at:])
     attrs.update(NTASKS_X=np.int32(1), NTASKS_Y=np.int32(1), NTASKS_TOTAL=np.int32(1))
     attrs["DT"] = np.float32(dt_s)
     return attrs

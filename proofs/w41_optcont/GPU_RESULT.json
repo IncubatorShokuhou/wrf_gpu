@@ -1,0 +1,425 @@
+{
+  "schema": "gpuwrf.optimize.continuous.result.v1",
+  "region": "swiss-d01-OSSE-SYNTHETIC-DATES",
+  "configuration": "p-727b941dbde2",
+  "parameters": [
+    {
+      "name": "z0_forest",
+      "control": "z0mvt",
+      "classes": [
+        1,
+        4,
+        5
+      ],
+      "domains": [
+        "d01"
+      ]
+    },
+    {
+      "name": "z0_shrub",
+      "control": "z0mvt",
+      "classes": [
+        7
+      ],
+      "domains": [
+        "d01"
+      ]
+    }
+  ],
+  "estimate_multipliers": {
+    "z0_forest": 1.6340430219128217,
+    "z0_shrub": 0.7116948501010402
+  },
+  "posterior_sd_log": {
+    "z0_forest": 0.018250696315483074,
+    "z0_shrub": 0.015329732707547549
+  },
+  "ensemble_final_multipliers": [
+    [
+      1.6333052843039229,
+      0.7119888887741678
+    ],
+    [
+      1.5874851051629393,
+      0.7268792640060688
+    ],
+    [
+      1.6256254740107607,
+      0.7210105619761196
+    ],
+    [
+      1.6259917822666732,
+      0.7063007254833117
+    ],
+    [
+      1.6503363436729361,
+      0.700340587956174
+    ],
+    [
+      1.645991513858776,
+      0.7048983277720141
+    ],
+    [
+      1.6847712869936307,
+      0.7058693486287505
+    ],
+    [
+      1.668890738263886,
+      0.6957844563642276
+    ],
+    [
+      1.6240314809452865,
+      0.7267389153992382
+    ],
+    [
+      1.5964511787878033,
+      0.7178905196813006
+    ]
+  ],
+  "iterations": [
+    {
+      "iteration": 0,
+      "members": [
+        "i00m000",
+        "i00m001",
+        "i00m002",
+        "i00m003",
+        "i00m004",
+        "i00m005",
+        "i00m006",
+        "i00m007",
+        "i00m008",
+        "i00m009"
+      ],
+      "theta_mean": [
+        -0.033802384700247774,
+        0.09223394125363041
+      ],
+      "theta_std": [
+        0.5767168080507664,
+        0.3229648926905147
+      ],
+      "normalised_misfit": 1.9539813647788282,
+      "prediction_spread": 0.19573836931987787,
+      "observations": 1014
+    },
+    {
+      "iteration": 1,
+      "members": [
+        "i01m000",
+        "i01m001",
+        "i01m002",
+        "i01m003",
+        "i01m004",
+        "i01m005",
+        "i01m006",
+        "i01m007",
+        "i01m008",
+        "i01m009"
+      ],
+      "theta_mean": [
+        0.49263663825605575,
+        -0.3506766507331974
+      ],
+      "theta_std": [
+        0.02941544087483883,
+        0.044138913725507635
+      ],
+      "normalised_misfit": 1.0364512632653882,
+      "prediction_spread": 0.028731778376957836,
+      "observations": 1014
+    }
+  ],
+  "evaluation": {
+    "train": {
+      "prior": {
+        "normalised_misfit": 1.8593260874604307,
+        "observations": 1014,
+        "rmse_t2": 0.33826435404056615,
+        "bias_t2": -0.059889517880156784,
+        "rmse_wind": 0.469314311020233,
+        "bias_wind": 0.07234200140467716
+      },
+      "posterior": {
+        "normalised_misfit": 1.035779913221953,
+        "observations": 1014,
+        "rmse_t2": 0.3112841977065919,
+        "bias_t2": 0.006521968864018517,
+        "rmse_wind": 0.2992365830544704,
+        "bias_wind": -0.029972928364457804
+      }
+    },
+    "test": {
+      "prior": {
+        "normalised_misfit": 1.8827313613400418,
+        "observations": 1014,
+        "rmse_t2": 0.34731212212249835,
+        "bias_t2": -0.05742424591595292,
+        "rmse_wind": 0.4671893993531685,
+        "bias_wind": 0.09243864926251874
+      },
+      "posterior": {
+        "normalised_misfit": 1.1138558632735691,
+        "observations": 1014,
+        "rmse_t2": 0.3180176738189348,
+        "bias_t2": 0.003744176444439087,
+        "rmse_wind": 0.3152123324491541,
+        "bias_wind": -0.012118799802478354
+      }
+    }
+  },
+  "controls": {
+    "prior": {
+      "path": "<DATA_ROOT>/wrf_gpu2/scratch/w41-optcont/osse1/run/controls/prior.npz",
+      "sha256": "b84870d14a21b5f5df35d8a1810f5effc43df965aca2885fdb062e7265d87f02",
+      "bytes": 7938
+    },
+    "posterior": {
+      "path": "<DATA_ROOT>/wrf_gpu2/scratch/w41-optcont/osse1/run/controls/posterior.npz",
+      "sha256": "9de4470a2726c385c0a1f8e67b88ffe115d9d06dddd2b2d21fa1aa66c89bc765",
+      "bytes": 7975
+    }
+  },
+  "program": {
+    "members": 26,
+    "cheap_keys": {
+      "d01": [
+        "f06b510cbd315779e718a97c9fe5f0841f8b54c062b235c58efcf1aa2a39c974"
+      ]
+    },
+    "members_without_proof": [],
+    "cold_or_unknown_members": [
+      "truth|d15"
+    ],
+    "warm_members": 25,
+    "verdict": "ONE_PROGRAM",
+    "rule": "ONE_PROGRAM = every member's run proof names the same AOT cheap key per domain; cold members should be only the first wave (one per record signature)"
+  },
+  "scorer": {
+    "kind": "twin",
+    "variables": [
+      "t2",
+      "wind"
+    ],
+    "sigma": {
+      "t2": 0.3,
+      "wind": 0.3
+    },
+    "noise_seed": 17,
+    "tolerance_log": 0.2
+  },
+  "budget_case_hours": 90,
+  "planned_case_hours": 78,
+  "evaluated_case_hours": 78,
+  "model_sha256": "94a93fb104f852708e878e3fe11cdd18a6f98db85c26327195e1e5611fb0d543",
+  "train_cases": [
+    "d15"
+  ],
+  "test_cases": [
+    "d16"
+  ],
+  "status": "HELD_OUT_DIAGNOSTIC; EXPERIMENTAL continuous calibration, no release promotion",
+  "twin": {
+    "truth_multipliers": {
+      "z0_forest": 1.6,
+      "z0_shrub": 0.7
+    },
+    "abs_log_error": {
+      "z0_forest": 0.021053696045481518,
+      "z0_shrub": 0.016568903182584582
+    },
+    "tolerance_log": 0.2,
+    "verdict": "RECOVERED",
+    "observations": {
+      "path": "<DATA_ROOT>/wrf_gpu2/scratch/w41-optcont/osse1/run/twin/observations.csv",
+      "sha256": "d6e75e958101fc779155bffc029f9e25f3d2bfa8204592b7c967f0074111aa96",
+      "bytes": 100793
+    }
+  },
+  "scheduled_case_hours": 78,
+  "bundle": null,
+  "members": {
+    "truth|d15": {
+      "batch": "batch-000",
+      "member": "member-000",
+      "wall_s": 379.548,
+      "vmhwm_kb": 5981216,
+      "vram_peak_mib": 2212
+    },
+    "truth|d16": {
+      "batch": "batch-001",
+      "member": "member-000",
+      "wall_s": 23.17,
+      "vmhwm_kb": 2818224,
+      "vram_peak_mib": 2214
+    },
+    "i00m000|d15": {
+      "batch": "batch-002",
+      "member": "member-000",
+      "wall_s": 44.499,
+      "vmhwm_kb": 2796476,
+      "vram_peak_mib": 2214
+    },
+    "i00m001|d15": {
+      "batch": "batch-002",
+      "member": "member-001",
+      "wall_s": 43.488,
+      "vmhwm_kb": 2814760,
+      "vram_peak_mib": 2214
+    },
+    "i00m002|d15": {
+      "batch": "batch-002",
+      "member": "member-002",
+      "wall_s": 42.391,
+      "vmhwm_kb": 2799956,
+      "vram_peak_mib": 2214
+    },
+    "i00m003|d15": {
+      "batch": "batch-002",
+      "member": "member-003",
+      "wall_s": 43.486,
+      "vmhwm_kb": 2819664,
+      "vram_peak_mib": 2214
+    },
+    "i00m004|d15": {
+      "batch": "batch-002",
+      "member": "member-004",
+      "wall_s": 45.454,
+      "vmhwm_kb": 2819364,
+      "vram_peak_mib": 2214
+    },
+    "i00m005|d15": {
+      "batch": "batch-002",
+      "member": "member-005",
+      "wall_s": 48.517,
+      "vmhwm_kb": 2820172,
+      "vram_peak_mib": 2214
+    },
+    "i00m006|d15": {
+      "batch": "batch-002",
+      "member": "member-006",
+      "wall_s": 48.514,
+      "vmhwm_kb": 2819540,
+      "vram_peak_mib": 2214
+    },
+    "i00m007|d15": {
+      "batch": "batch-002",
+      "member": "member-007",
+      "wall_s": 47.508,
+      "vmhwm_kb": 2812444,
+      "vram_peak_mib": 2214
+    },
+    "i00m008|d15": {
+      "batch": "batch-002",
+      "member": "member-008",
+      "wall_s": 31.242,
+      "vmhwm_kb": 2816612,
+      "vram_peak_mib": 2214
+    },
+    "i00m009|d15": {
+      "batch": "batch-002",
+      "member": "member-009",
+      "wall_s": 30.213,
+      "vmhwm_kb": 2886160,
+      "vram_peak_mib": 2082
+    },
+    "i01m000|d15": {
+      "batch": "batch-003",
+      "member": "member-000",
+      "wall_s": 40.415,
+      "vmhwm_kb": 2812956,
+      "vram_peak_mib": 2214
+    },
+    "i01m001|d15": {
+      "batch": "batch-003",
+      "member": "member-001",
+      "wall_s": 40.413,
+      "vmhwm_kb": 2819680,
+      "vram_peak_mib": 2214
+    },
+    "i01m002|d15": {
+      "batch": "batch-003",
+      "member": "member-002",
+      "wall_s": 38.367,
+      "vmhwm_kb": 2795816,
+      "vram_peak_mib": 2214
+    },
+    "i01m003|d15": {
+      "batch": "batch-003",
+      "member": "member-003",
+      "wall_s": 39.404,
+      "vmhwm_kb": 2812268,
+      "vram_peak_mib": 2214
+    },
+    "i01m004|d15": {
+      "batch": "batch-003",
+      "member": "member-004",
+      "wall_s": 35.303,
+      "vmhwm_kb": 2813728,
+      "vram_peak_mib": 2214
+    },
+    "i01m005|d15": {
+      "batch": "batch-003",
+      "member": "member-005",
+      "wall_s": 39.321,
+      "vmhwm_kb": 2800636,
+      "vram_peak_mib": 2214
+    },
+    "i01m006|d15": {
+      "batch": "batch-003",
+      "member": "member-006",
+      "wall_s": 38.318,
+      "vmhwm_kb": 2801364,
+      "vram_peak_mib": 2214
+    },
+    "i01m007|d15": {
+      "batch": "batch-003",
+      "member": "member-007",
+      "wall_s": 38.317,
+      "vmhwm_kb": 2802964,
+      "vram_peak_mib": 2214
+    },
+    "i01m008|d15": {
+      "batch": "batch-003",
+      "member": "member-008",
+      "wall_s": 27.154,
+      "vmhwm_kb": 2811504,
+      "vram_peak_mib": 2076
+    },
+    "i01m009|d15": {
+      "batch": "batch-003",
+      "member": "member-009",
+      "wall_s": 26.159,
+      "vmhwm_kb": 2811440,
+      "vram_peak_mib": 2214
+    },
+    "prior|d15": {
+      "batch": "batch-004",
+      "member": "member-000",
+      "wall_s": 38.362,
+      "vmhwm_kb": 2819048,
+      "vram_peak_mib": 2214
+    },
+    "prior|d16": {
+      "batch": "batch-004",
+      "member": "member-002",
+      "wall_s": 38.361,
+      "vmhwm_kb": 2803044,
+      "vram_peak_mib": 2214
+    },
+    "posterior|d15": {
+      "batch": "batch-004",
+      "member": "member-001",
+      "wall_s": 36.327,
+      "vmhwm_kb": 2819296,
+      "vram_peak_mib": 2214
+    },
+    "posterior|d16": {
+      "batch": "batch-004",
+      "member": "member-003",
+      "wall_s": 38.36,
+      "vmhwm_kb": 2801336,
+      "vram_peak_mib": 2214
+    }
+  }
+}

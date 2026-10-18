@@ -118,10 +118,10 @@ def test_infrared_transport_literal(data,band):
 # not an unmodified candidate failure (clean critic run:89PASS/17XFAIL/0FAIL).
 # Separate compiled-regression tests below remain hard failures for every band.
 IR_DIAGNOSTICS=[pytest.param(b,marks=pytest.mark.xfail(strict=True,raises=AssertionError,
-    reason=f'IR band {b}: disclosed strict compiler excess (RV01/FG80); D6 pending'))
+    reason=f'IR band {b}: disclosed strict compiler excess (RV01/FG80); per-band disposition proofs/s2_flggfdl/receipts/FG93_flg_compiler_disposition.json#/by_band/{b}; D6 pending'))
     if b in {7,*range(9,19)} else b for b in range(7,19)]
 SW_DIAGNOSTICS=[pytest.param(b,marks=pytest.mark.xfail(strict=True,raises=AssertionError,
-    reason=f'SW band {b}: disclosed strict compiler excess (RV01/FG80); D6 pending')) for b in range(1,7)]
+    reason=f'SW band {b}: disclosed strict compiler excess (RV01/FG80); per-band disposition proofs/s2_flggfdl/receipts/FG93_flg_compiler_disposition.json#/by_band/{b}; D6 pending')) for b in range(1,7)]
 
 @pytest.mark.parametrize('band',IR_DIAGNOSTICS)
 def test_infrared_transport_compiled(data,band):

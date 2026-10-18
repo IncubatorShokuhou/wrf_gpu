@@ -47,7 +47,7 @@ def test_shinhong_mode_reaches_actual_pbl_and_post_rk_cammg(mp, sf, diag, monkey
         zero = jnp.zeros((4, 8), jnp.float32)
         return dict(u=zero, v=zero, theta=zero, qv=zero, qc=zero, qi=zero,
                     tke=cols(energy) if shinhong_tke_diag == 1 else args[8],
-                    exch_h=cols(energy+10))
+                    exch_h=cols(energy+10), el_pbl=zero)  # kernel return set (bl_shinhong.py)
     monkeypatch.setattr(scan, 'shinhong_columns', producer)
     monkeypatch.setattr(op, 'surface_adapter', lambda s, *a, **kw: s)
     if sf == 1:

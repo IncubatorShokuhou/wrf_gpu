@@ -1,0 +1,65 @@
+{
+  "asset": {
+    "arrays": {
+      "aerodin": {
+        "dtype": "<f4",
+        "payload_sha256": "06a584a9e1d281fb7b87a6283d546ff93b0b246e5e845a273860710ead2dad63",
+        "shape": [
+          6,
+          12,
+          46,
+          12,
+          72
+        ]
+      },
+      "latitude_deg": {
+        "dtype": "<f4",
+        "payload_sha256": "c96eaa8b8271c8fa0fb6cf93767e887503a3ebefb1ff447d3aeabc3f878c74a3",
+        "shape": [
+          46
+        ]
+      },
+      "longitude_deg": {
+        "dtype": "<f4",
+        "payload_sha256": "74cfb86fb380b72a87e0d65649466823e073fc9e2df986aa63e0ee5d68c1e29b",
+        "shape": [
+          72
+        ]
+      },
+      "pressure_hpa": {
+        "dtype": "<f4",
+        "payload_sha256": "d4d69e1a354b283da718c6a032dd756d213668a96c47a057dfd96c5220b0c5a1",
+        "shape": [
+          12
+        ]
+      }
+    },
+    "path": "<USER_HOME>/src/wrf_gpu2_wt/w41-aerosol/data/fixtures/wrf-tegen-aerosol-v1.npz",
+    "sha256": "47cf804c1f4d5b6273d1897221b5a40a67637f055fd38a5f78d5be471cdf6df1"
+  },
+  "description": "WRF v4.7.1 run/aerosol*.formatted (aer_opt=1 Tegen/ECMWF 6-type AOD per Pa, 12 months x 12 pressure levels x 46 lat x 72 lon); float32 values = gfortran list-directed REAL reads",
+  "gfortran_read_check": {
+    "bitwise": true,
+    "path": "<USER_HOME>/wrf_gpu2_lanes/w41-aerosol/asset/tegen_gfortran.bin",
+    "sha256": "590594b57b2e292ddd665a3cf6ba034960d7d3ab9c00baf0f147eaebb90406c0"
+  },
+  "schema": "wrf-tegen-aerosol-v1",
+  "wrf_sources": {
+    "aod_per_pa": {
+      "path": "<USER_HOME>/src/wrf_pristine/WRF/run/aerosol.formatted",
+      "sha256": "5551eeccf5b4aa80e6ed8ae94e73c4ce8a4306a32aae9b3cc954cfa9c2c2d6aa"
+    },
+    "latitude": {
+      "path": "<USER_HOME>/src/wrf_pristine/WRF/run/aerosol_lat.formatted",
+      "sha256": "16121ba61f026c57ba18200988ae786609304f52959d24db86d50d8411473a1a"
+    },
+    "longitude": {
+      "path": "<USER_HOME>/src/wrf_pristine/WRF/run/aerosol_lon.formatted",
+      "sha256": "8201ebcba7199b5b737edf4f9f2a75d36ef4afa27fbdcffa9029dadcf8e61376"
+    },
+    "pressure": {
+      "path": "<USER_HOME>/src/wrf_pristine/WRF/run/aerosol_plev.formatted",
+      "sha256": "3992b2acecbf604430cdb1975497d617cca3e314ee0ae3624f03e5a7f788fc96"
+    }
+  }
+}

@@ -1,0 +1,87 @@
+{
+ "scope": "CPU, analytic fake launcher (log-linear T2/wind response to z0), NOT the WRF model",
+ "truth": {
+  "z0_forest": 1.6,
+  "z0_low": 0.7
+ },
+ "estimate": {
+  "z0_forest": 1.6037982169705502,
+  "z0_low": 0.6961109657394504
+ },
+ "posterior_sd_log": {
+  "z0_forest": 0.011845275826590423,
+  "z0_low": 0.005419963557254778
+ },
+ "abs_log_error": {
+  "z0_forest": 0.0023710723914449616,
+  "z0_low": 0.00557125388346702
+ },
+ "verdict": "RECOVERED",
+ "misfit_history": [
+  20.39929137363167,
+  1.1833371243009858,
+  1.1795180481151883
+ ],
+ "evaluation": {
+  "train": {
+   "prior": {
+    "normalised_misfit": 47.94394380196971,
+    "observations": 72,
+    "rmse_t2": 0.3196233132223093,
+    "bias_t2": 0.07237743494810196,
+    "rmse_wind": 0.370891704753075,
+    "bias_wind": -0.0713127763676374
+   },
+   "posterior": {
+    "normalised_misfit": 1.1793498376298013,
+    "observations": 72,
+    "rmse_t2": 0.05452193347555688,
+    "bias_t2": 0.005146059136864833,
+    "rmse_wind": 0.05407502157406834,
+    "bias_wind": 0.004322521419993706
+   }
+  },
+  "test": {
+   "prior": {
+    "normalised_misfit": 47.88613024651357,
+    "observations": 36,
+    "rmse_t2": 0.3244774807679701,
+    "bias_t2": 0.05378287857732881,
+    "rmse_wind": 0.3662581271549335,
+    "bias_wind": -0.06398364367531212
+   },
+   "posterior": {
+    "normalised_misfit": 0.8628521742229139,
+    "observations": 36,
+    "rmse_t2": 0.04471462638140919,
+    "bias_t2": -0.013448497233908322,
+    "rmse_wind": 0.04811302379486822,
+    "bias_wind": 0.011651654112319006
+   }
+  }
+ },
+ "program": {
+  "members": 57,
+  "cheap_keys": {
+   "d01": [
+    "481b0ce830c1b487"
+   ]
+  },
+  "members_without_proof": [],
+  "cold_or_unknown_members": [
+   "truth|c1"
+  ],
+  "warm_members": 56,
+  "verdict": "ONE_PROGRAM",
+  "rule": "ONE_PROGRAM = every member's run proof names the same AOT cheap key per domain; cold members should be only the first wave (one per record signature)"
+ },
+ "batch_sizes": [
+  1,
+  2,
+  16,
+  16,
+  16,
+  6
+ ],
+ "scheduled_case_hours": 171
+}

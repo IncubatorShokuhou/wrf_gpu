@@ -7,7 +7,7 @@ CPU qualification against pristine WRF 4.7.1 and original CPU-WRF composite outp
 | --- | --- | --- | --- |
 | `REFL_10CM` | NSSL one-moment `mp_physics=19/21` | `nssl2mom.diagnostics.radardd02_one_moment` (radardd02 `ipconc=0` branches), held with the NSSL `makediag` lifetime like mp=18 | Pristine S5->S6 column fixtures (s2-mpmore, 17 cases x 2 variants): fp32 BYTE 680/680 levels each, fp64 <= 2.7e-16 rel. Original CPU-WRF c14/c15 history recompute, 25 frames: 7.6e-6 dBZ with WRF's dry microphysics density (`REFL_CPU_HISTORY_*_dry.json`) |
 | `QGR_URB4D` | BEP+BEM `sf_urban_physics=3` | Held `QGR_URB3D` in `UrbanMultilayerCarry.green_roof`: Noah-MP SMOIS top layer at init, 0 on BEP/BEM columns after each call; restart E78 | c57 every cell of all 25 frames BYTE (`URBAN_CPU_ALL_FRAMES.json`) |
-| `TGR_URB4D`, `DRAINGR_URB3D`, `EP_PV_URB3D` | BEP+BEM | WRF's +0 (init + per-call reset; PV power `pv_frac_roof`-weighted); green roof/PV refused at load | same proof, +0 bits |
+| `TGR_URB4D`, `DRAINGR_URB3D`, `EP_PV_URB3D` | BEP+BEM | WRF's +0 (init + per-call reset; PV power `pv_frac_roof`-weighted); green roof/PV refused at load in v0.4.0 (v0.4.1 ports both branches: [proofs/w41_writergaps](../w41_writergaps/README.md)) | same proof, +0 bits |
 | `QNBCA` | `mp_physics=28/38` | WRF's +0 (`mp_gt_driver` zeroes NBCA unless `wif_input_opt=2`); nonzero QNBCA input refused (mp28 now, mp38 before) | c19/c65 all frames +0 (`CONSTANT_CPU_ALL_FRAMES.json`) |
 | `TAOD5502D` | `mp_physics=28/38` | WRF's +0 (assigned only under `aer_opt=3`, refused) | c19/c65 all frames +0 |
 | `MSKF_REFL_10CM` | `mp_physics=40`, `do_radar_ref=0` | WRF's +0 (assigned only under `do_radar_ref=1`) | c20 all frames +0 |

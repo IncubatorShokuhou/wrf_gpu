@@ -214,13 +214,16 @@ _SW_ARRAY_FIELDS: tuple[str, ...] = (
     "temperature_interfaces",
     "ozone_vmr",
     "re_cloud", "re_ice", "re_snow", "xland",
+    "aerosol_ecaer", "aerosol_bands",
 )
 _SW_GAS_FIELDS: tuple[str, ...] = ("co2_vmr", "n2o_vmr", "ch4_vmr")
 _SW_STATIC_FIELDS: tuple[str, ...] = ("cammg_radii",)
 # Append new optional leaves after the existing gas leaves: OFF argument paths
 # and the original column ABI remain identical.
 _SW_MP_RE_FIELDS = ("re_cloud", "re_ice", "re_snow", "xland")
-_SW_CHILD_FIELDS: tuple[str, ...] = tuple(n for n in _SW_ARRAY_FIELDS if n not in _SW_MP_RE_FIELDS) + _SW_GAS_FIELDS + _SW_MP_RE_FIELDS
+_SW_AEROSOL_FIELDS = ("aerosol_ecaer", "aerosol_bands")  # aer_opt=1 / 3, appended last (None adds no leaf)
+_SW_CHILD_FIELDS: tuple[str, ...] = (tuple(n for n in _SW_ARRAY_FIELDS if n not in _SW_MP_RE_FIELDS + _SW_AEROSOL_FIELDS)
+                                     + _SW_GAS_FIELDS + _SW_MP_RE_FIELDS + _SW_AEROSOL_FIELDS)
 # Non-array scalars, in the historical aux order, for equality and hashing.
 _SW_SCALAR_FIELDS: tuple[str, ...] = _SW_STATIC_FIELDS + _SW_GAS_FIELDS
 
@@ -266,6 +269,7 @@ class RRTMGSWColumnState:
         "co2_vmr",
         "n2o_vmr",
         "ch4_vmr",
+        "aerosol_ecaer", "aerosol_bands",
     )
 
     def __init__(
@@ -290,6 +294,8 @@ class RRTMGSWColumnState:
         ch4_vmr: float | None = None,
         ozone_vmr=None,
         re_cloud=None, re_ice=None, re_snow=None, xland=None, cammg_radii=False,
+        aerosol_ecaer=None,
+        aerosol_bands=None,
     ) -> None:
         self.cammg_radii = bool(cammg_radii)
         self.T = T
@@ -345,6 +351,20 @@ class RRTMGSWColumnState:
             if any(tuple(v.shape) != tuple(p.shape) for v in radii):
                 raise ValueError("MP effective radii must have the column-layer shape")
         self.re_cloud, self.re_ice, self.re_snow, self.xland = re_cloud, re_ice, re_snow, xland
+        # WRF aer_opt=1: per-layer AOD of the six ECMWF/Tegen types (RRTMG_SWRAD ecaer, rrtmg_sw iaer=6),
+        # shape p.shape + (6,).  None = WRF aer_opt=0 (no aerosol) and contributes no leaf.
+        if aerosol_ecaer is not None and tuple(aerosol_ecaer.shape) != tuple(p.shape) + (6,):
+            raise ValueError(f"aerosol_ecaer must have shape {tuple(p.shape) + (6,)}, got {tuple(aerosol_ecaer.shape)}")
+        self.aerosol_ecaer = aerosol_ecaer
+        # WRF aer_opt=3 (iaer=10): per-layer, per-band aerosol (tau, ssa, asy) stacked on the last axis,
+        # shape p.shape + (14, 3) (physics/wrf_aer_opt3.py).  None contributes no leaf.
+        if aerosol_bands is not None:
+            if aerosol_ecaer is not None:
+                raise ValueError("aerosol_ecaer (aer_opt=1) and aerosol_bands (aer_opt=3) are exclusive")
+            if tuple(aerosol_bands.shape) != tuple(p.shape) + (14, 3):
+                raise ValueError(f"aerosol_bands must have shape {tuple(p.shape) + (14, 3)}, "
+                                 f"got {tuple(aerosol_bands.shape)}")
+        self.aerosol_bands = aerosol_bands
         gases = (co2_vmr, n2o_vmr, ch4_vmr)
         if any(value is None for value in gases) and not all(
             value is None for value in gases
@@ -729,6 +749,10 @@ def _flatten_sw_state(state: RRTMGSWColumnState, leading_shape: tuple[int, ...],
         re_ice=None if state.re_ice is None else _flatten_layer_field(state.re_ice, leading_shape, ncol),
         re_snow=None if state.re_snow is None else _flatten_layer_field(state.re_snow, leading_shape, ncol),
         xland=None if state.xland is None else _flatten_surface_field(state.xland, leading_shape, ncol),
+        aerosol_ecaer=(None if state.aerosol_ecaer is None
+                       else _flatten_layer_field(state.aerosol_ecaer, leading_shape, ncol)),
+        aerosol_bands=(None if state.aerosol_bands is None
+                       else _flatten_layer_field(state.aerosol_bands, leading_shape, ncol)),
     )
 
 
@@ -768,6 +792,10 @@ def _pad_sw_state(state: RRTMGSWColumnState, ncol: int, padded_ncol: int) -> RRT
         re_ice=None if state.re_ice is None else _pad_leading_columns(state.re_ice, ncol, padded_ncol),
         re_snow=None if state.re_snow is None else _pad_leading_columns(state.re_snow, ncol, padded_ncol),
         xland=None if state.xland is None else _pad_leading_columns(state.xland, ncol, padded_ncol),
+        aerosol_ecaer=(None if state.aerosol_ecaer is None
+                       else _pad_leading_columns(state.aerosol_ecaer, ncol, padded_ncol)),
+        aerosol_bands=(None if state.aerosol_bands is None
+                       else _pad_leading_columns(state.aerosol_bands, ncol, padded_ncol)),
     )
 
 
@@ -813,6 +841,10 @@ def _slice_sw_state(state: RRTMGSWColumnState, start, tile_cols: int, padded_nco
         re_ice=None if state.re_ice is None else _slice_leading_columns(state.re_ice, start, tile_cols, padded_ncol),
         re_snow=None if state.re_snow is None else _slice_leading_columns(state.re_snow, start, tile_cols, padded_ncol),
         xland=None if state.xland is None else _slice_leading_columns(state.xland, start, tile_cols, padded_ncol),
+        aerosol_ecaer=(None if state.aerosol_ecaer is None
+                       else _slice_leading_columns(state.aerosol_ecaer, start, tile_cols, padded_ncol)),
+        aerosol_bands=(None if state.aerosol_bands is None
+                       else _slice_leading_columns(state.aerosol_bands, start, tile_cols, padded_ncol)),
     )
 
 
@@ -2120,8 +2152,13 @@ def _sw_band_tile_fluxes(
     source_scale,
     partial_dtype,
     with_clear_sky: bool = False,
+    direct_taus=None,
 ):
     """Two-stream solve + (band, g-point) reduction for one band tile.
+
+    ``direct_taus``: the UNSCALED clear and clear+cloud optical depths of WRF's ``ztdbt_nodel``
+    direct-flux output (module_ra_rrtmg_sw.F:8577-8600, :8737), passed by every model path; None
+    emits the adding method's delta-scaled transmittance instead (not WRF's SWDDIR).
 
     Operates on a band slice ``[..., nlev, tile_bands, gpoint]`` of the SW
     optics.  The Eddington reflectance/transmittance and the vertical-quadrature
@@ -2173,6 +2210,13 @@ def _sw_band_tile_fluxes(
     direct_trans = ((1.0 - cloud_top_down) * direct_clear + cloud_top_down * direct_cloud) * active_top_down
     direct_trans = jnp.where(active_top_down > 0.0, direct_trans, 1.0).astype(pref_lay.dtype)
     down_top_down, up_top_down, direct_top_down = _vertical_quadrature(pref, prefd, ptra, ptrad, direct_trans)
+    if direct_taus is not None:
+        nodel_clear = _sw_transmittance_lookup((jnp.flip(direct_taus[0], axis=-3) / mu0).astype(pref_lay.dtype))
+        nodel_cloud = _sw_transmittance_lookup((jnp.flip(direct_taus[1], axis=-3) / mu0).astype(pref_lay.dtype))
+        nodel = ((1.0 - cloud_top_down) * nodel_clear + cloud_top_down * nodel_cloud) * active_top_down
+        nodel = jnp.where(active_top_down > 0.0, nodel, 1.0).astype(pref_lay.dtype)
+        direct_top_down = jnp.concatenate(
+            (jnp.ones_like(nodel[..., :1, :, :]), jnp.cumprod(nodel, axis=-3)), axis=-3)
     top_flux_band = (coszen[..., None, None] * source_scale[..., None, None] * sfluxzen).astype(down_top_down.dtype)
     down_band = jnp.flip(down_top_down * top_flux_band[..., None, :, :], axis=-3)
     up_band = jnp.flip(up_top_down * top_flux_band[..., None, :, :], axis=-3)
@@ -2245,8 +2289,11 @@ def _sw_band_scan_fluxes(
     out_dtype,
     chunk: int,
     with_clear_sky: bool = False,
+    direct_taus=None,
 ):
     """Accumulates the band-tiled two-stream fluxes via a sequential ``lax.scan``.
+
+    ``direct_taus``: full-band unscaled direct optical depths (see :func:`_sw_band_tile_fluxes`).
 
     ``lax.scan`` runs the ``n_tiles`` tiles SEQUENTIALLY with a carry
     dependency, which is what forces XLA to free each tile's
@@ -2295,6 +2342,7 @@ def _sw_band_scan_fluxes(
             source_scale,
             out_dtype,
             with_clear_sky,
+            direct_taus=None if direct_taus is None else tuple(_band_slice(t, start, band_axis) for t in direct_taus),
         )
         return tuple(acc + part for acc, part in zip(carry, tile)), None
 
@@ -2425,8 +2473,12 @@ def _sw_band_scan_optics_fluxes(
     chunk: int,
     with_clear_sky: bool = False,
     mp_radii=None,
+    aerosol=None,
 ):
     """Builds the SW optics per band-tile INSIDE the two-stream band scan.
+
+    ``aerosol`` (WRF aer_opt=1): ``(ztaua, zomga, zasya)`` each ``(..., nlev, 14)`` from
+    :func:`gpuwrf.physics.wrf_tegen_aerosol.ecaer_band_optics`; None = no aerosol (released program).
 
     Same numerics as the upfront-construction path: the per-band taumol is the
     shared `_sw_taumol_band` (resolved by `lax.switch` over the traced band
@@ -2511,9 +2563,17 @@ def _sw_band_scan_optics_fluxes(
             cloud_coeffs = jnp.asarray(np.stack([np.pad(raw[n], ((0,0),(0,64-raw[n].shape[1]))) for n in names]), jnp.float32)
             incloud = jnp.concatenate((incloud, jnp.stack([mp_radii.liquid_um, mp_radii.ice_um, mp_radii.snow_um], axis=-1)), axis=-1)
 
+        if aerosol is not None:
+            from gpuwrf.kernels import rad_sw_band_sums_aer
+            aer = jnp.stack([jnp.asarray(a, jnp.float32) for a in aerosol], axis=-1)  # (..., nlev, 14, 3)
+            sums_one = lambda *a: rad_sw_band_sums_aer.sw_band_flux_sums_aer(*a, aer)  # noqa: E731
+            sums_all = lambda *a: rad_sw_band_sums_aer.sw_allband_flux_sums_aer(*a, aer)  # noqa: E731
+        else:
+            sums_one, sums_all = rad_sw_band_sums.sw_band_flux_sums, rad_sw_band_sums.sw_allband_flux_sums
+
         if band_sums == 2:
             tau_all, ray_all = _sw_taumol(coef, tables)
-            parts = rad_sw_band_sums.sw_allband_flux_sums(
+            parts = sums_all(
                 tau_all, ray_all, cloud_amount, incloud, cloud_coeffs, gpoint_mask,
                 sfluxzen, coszen, surface_albedo, source_scale)
             parts = parts if with_clear_sky else parts[:3]
@@ -2524,7 +2584,7 @@ def _sw_band_scan_optics_fluxes(
             accumulated = init
             for band in range(n_bands):
                 tau_b, ray_b = _sw_taumol_band(band, coef, tables)
-                parts = rad_sw_band_sums.sw_band_flux_sums(
+                parts = sums_one(
                     tau_b, ray_b, cloud_amount, incloud, cloud_coeffs, gpoint_mask,
                     sfluxzen, coszen, surface_albedo, source_scale, jnp.int32(band))
                 parts = parts if with_clear_sky else parts[:3]
@@ -2533,7 +2593,7 @@ def _sw_band_scan_optics_fluxes(
 
         def sums_body(carry, band):
             tau_b, ray_b = lax.switch(band, taumol_branches)
-            parts = rad_sw_band_sums.sw_band_flux_sums(
+            parts = sums_one(
                 tau_b, ray_b, cloud_amount, incloud, cloud_coeffs, gpoint_mask,
                 sfluxzen, coszen, surface_albedo, source_scale, band)
             parts = parts if with_clear_sky else parts[:3]
@@ -2577,9 +2637,13 @@ def _sw_band_scan_optics_fluxes(
 
         # ---- clear (gas + Rayleigh) optics + delta-scaling (WRF :8330-8360).
         tau_clear_orig = tau_gas + tau_rayleigh
-        omega_clear_orig = jnp.clip(tau_rayleigh / jnp.maximum(tau_clear_orig, MIN_OPTICAL_DEPTH), 0.0, _sw_ssa_upper())
-        asymmetry_clear_orig = jnp.zeros_like(tau_clear_orig)
-        tau_clear, omega_clear, asymmetry_clear = _delta_scale(tau_clear_orig, omega_clear_orig, asymmetry_clear_orig)
+        if aerosol is None:
+            omega_clear_orig = jnp.clip(tau_rayleigh / jnp.maximum(tau_clear_orig, MIN_OPTICAL_DEPTH), 0.0, _sw_ssa_upper())
+            asymmetry_clear_orig = jnp.zeros_like(tau_clear_orig)
+            tau_clear, omega_clear, asymmetry_clear = _delta_scale(tau_clear_orig, omega_clear_orig, asymmetry_clear_orig)
+        else:
+            tau_clear_orig, tau_clear, omega_clear, asymmetry_clear = _sw_clear_aerosol_optics(
+                tau_gas, tau_rayleigh, *(_slice_band_axis(a, start, a.ndim - 1)[..., None] for a in aerosol))
 
         tau_liquid_orig = liquid_incloud * liquid_coeff_t * cloud_amount_t
         tau_ice_orig = ice_incloud * ice_coeff_t * cloud_amount_t
@@ -2613,6 +2677,10 @@ def _sw_band_scan_optics_fluxes(
         tau_total_cloud = tau_total_cloud * mask_t
         omega_total_cloud = omega_total_cloud * mask_t
         asymmetry_total_cloud = asymmetry_total_cloud * mask_t
+        # WRF's direct OUTPUT (ztdbt_nodel) uses the UNSCALED cloud depth; without aerosol the clear delta
+        # scaling is the identity (g = 0), so the clear depth is the adding method's own.
+        nodel_clear = tau_clear if aerosol is None else tau_clear_orig * mask_t
+        direct_taus = (nodel_clear, nodel_clear + (tau_liquid_orig + tau_ice_orig + tau_snow_orig) * mask_t)
 
         tile = _sw_band_tile_fluxes(
             tau_clear,
@@ -2629,6 +2697,7 @@ def _sw_band_scan_optics_fluxes(
             source_scale,
             out_dtype,
             with_clear_sky,
+            direct_taus=direct_taus,
         )
         return tuple(acc + part for acc, part in zip(carry, tile)), None
 
@@ -2638,6 +2707,26 @@ def _sw_band_scan_optics_fluxes(
         return flux_down_model, flux_up_model, direct_down_model, clear_down, clear_up
     flux_down_model, flux_up_model, direct_down_model = accumulated
     return flux_down_model, flux_up_model, direct_down_model
+
+
+def _sw_clear_aerosol_optics(tau_gas, tau_rayleigh, ztaua, zomga, zasya):
+    """WRF ``spcvmc_sw`` clear-sky optics with aerosol (module_ra_rrtmg_sw.F:8555-8558) and their delta
+    scaling (:8603-8609), literal REAL order.  Returns ``(unscaled tau, tau, omega, asymmetry)``."""
+
+    dtype = tau_gas.dtype
+    ta, wa, ga = (jnp.asarray(a, dtype) for a in (ztaua, zomga, zasya))
+    tiny = jnp.asarray(MIN_OPTICAL_DEPTH, dtype)
+    one = jnp.asarray(1.0, dtype)
+    tco = (tau_gas + tau_rayleigh) + ta
+    sc = tau_rayleigh + ta * wa
+    gc = ((ga * wa) * ta) / jnp.maximum(sc, tiny)
+    oc = sc / jnp.maximum(tco, tiny)
+    f = gc * gc
+    wf = oc * f
+    tau = (one - wf) * tco
+    omega = (oc - wf) / jnp.maximum(one - wf, 1.0e-12)
+    asymmetry = (gc - f) / jnp.maximum(one - f, 1.0e-12)
+    return tco, tau, omega, asymmetry
 
 
 def _shortwave_impl(
@@ -2717,6 +2806,24 @@ def _shortwave_impl(
     # (~7e-5 rel) — a real numerical drift, not VRAM chunking.
     source_scale = _solar_source_scale(state, cloud_dtype)
     chunk = _sw_chunk_bands(_SW_NBANDS)
+    aerosol = None
+    if state.aerosol_ecaer is not None:
+        # WRF aer_opt=1: RRTMG_SWRAD ecaer (top extra layer 0, :11455) -> rrtmg_sw iaer=6 band optics.
+        from gpuwrf.physics.wrf_tegen_aerosol import ecaer_band_optics
+        ecaer = jnp.asarray(state.aerosol_ecaer, jnp.float32)
+        ecaer_ext = jnp.concatenate((ecaer, jnp.zeros_like(ecaer[..., -1:, :])), axis=-2)
+        aerosol = ecaer_band_optics(ecaer_ext)
+        if not _SW_TAUMOL_CHUNK:
+            raise NotImplementedError("aer_opt=1 aerosol optics require the chunked SW optics path")
+    elif state.aerosol_bands is not None:
+        # WRF aer_opt=3: RRTMG_SWRAD tauaer/ssaaer/asmaer (iaer=10, :11334-11350); the extra top layer keeps
+        # the initial tau 0 / ssa 1 / asy 0.
+        bands = jnp.asarray(state.aerosol_bands, jnp.float32)
+        top = jnp.broadcast_to(jnp.asarray([0.0, 1.0, 0.0], jnp.float32), bands[..., -1:, :, :].shape)
+        ext = jnp.concatenate((bands, top), axis=-3)
+        aerosol = (ext[..., 0], ext[..., 1], ext[..., 2])
+        if not _SW_TAUMOL_CHUNK:
+            raise NotImplementedError("aer_opt=3 aerosol optics require the chunked SW optics path")
 
     if _SW_TAUMOL_CHUNK:
         # Build each band-tile's taumol + delta-scaled optics INSIDE the
@@ -2739,6 +2846,7 @@ def _shortwave_impl(
             chunk,
             with_clear_sky,
             mp_radii=mp_radii,
+            **({} if aerosol is None else {"aerosol": aerosol}),
         )
         if with_clear_sky:
             flux_down_model, flux_up_model, direct_down_model, clear_flux_down, clear_flux_up = scan_out
@@ -2833,6 +2941,8 @@ def _shortwave_impl(
     tau_total_cloud = tau_total_cloud * mask
     omega_total_cloud = omega_total_cloud * mask
     asymmetry_total_cloud = asymmetry_total_cloud * mask
+    # WRF's direct OUTPUT (ztdbt_nodel): clear + UNSCALED cloud depth (clear delta scaling is the identity, g = 0).
+    direct_taus = (tau_clear, tau_clear + (tau_liquid_orig + tau_ice_orig + tau_snow_orig) * mask)
 
     # Two-stream + vertical quadrature + g-point reduction, TILED over the band
     # axis (axis=-2 of the optics).  Bands never couple in `_reftra_eddington`
@@ -2869,6 +2979,7 @@ def _shortwave_impl(
         out_dtype,
         chunk,
         with_clear_sky,
+        direct_taus=direct_taus,
     )
     if with_clear_sky:
         flux_down_model, flux_up_model, direct_down_model, clear_flux_down, clear_flux_up = scan_out
@@ -2962,6 +3073,8 @@ def compute_rrtmg_sw_intermediates(
 ) -> RRTMGSWIntermediateState:
     """Returns JAX SW state compared to WRF `setcoef_sw`/`taumol_sw`/`spcvmc_sw` oracles."""
 
+    if state.aerosol_ecaer is not None or state.aerosol_bands is not None:
+        raise NotImplementedError("compute_rrtmg_sw_intermediates has no aer_opt=1/3 aerosol optics")
     state = _clip_state(state)
     co2_vmr, n2o_vmr, ch4_vmr = _sw_gas_vmr(state)
     _original_interfaces, pressure_interfaces, p_ext, t_ext = _sw_extended_profiles(

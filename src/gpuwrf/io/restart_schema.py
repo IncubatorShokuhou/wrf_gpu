@@ -451,8 +451,28 @@ def _urban_context(namelist,grid_shape=None,nz=None):
     return bundle,grid_shape,nz
 
 
-def validate_urban_bep(group,namelist,*,grid_shape=None,nz=None):
-    """Never resume BEP/BEM by silently reinitializing building temperatures."""
+def _bem_extensions(bundle,bound):
+    """PV/green-roof selection: the live URBPARM bundle, cross-checked with a bound checkpoint selection."""
+    if bound is not None:
+        if (not isinstance(bound,(list,tuple)) or any(type(x) is not str for x in bound)
+                or tuple(bound)!=tuple(sorted(set(bound))) or not set(bound)<={'green_roof','pv'}):
+            raise ValueError('restart BEP/BEM bound PV/green-roof selection invalid (E78)')
+        bound=tuple(bound)
+    if bundle is None or getattr(bundle,'bem',None) is None:
+        return bound
+    from gpuwrf.physics.urban_bem_model import extensions
+    live=extensions(bundle.bem)
+    if bound is not None and bound!=live:
+        raise ValueError('restart BEP/BEM PV/green-roof selection differs from the URBPARM selection (E78)')
+    return live
+
+
+def validate_urban_bep(group,namelist,*,grid_shape=None,nz=None,extensions=None):
+    """Never resume BEP/BEM by silently reinitializing building temperatures.
+
+    ``extensions`` is a checkpoint's bound BEM PV/green-roof selection; returns the resolved selection
+    (BEP+BEM) so writers can bind it.
+    """
     option=physics_option(namelist,'sf_urban_physics')
     if option not in (2,3) and group is None:return
     from gpuwrf.coupling.urban_multilayer_hook import UrbanMultilayerCarry
@@ -496,7 +516,10 @@ def validate_urban_bep(group,namelist,*,grid_shape=None,nz=None):
         raise ValueError('restart BEP/BEM urban levels differ from geometry (E78)')
     shapes=dict(roof=(count,2,levels,10),ground=(count,2,10),
         roof_heat=(count,2,levels),ground_heat=(count,2))
+    selection=None
     if option==2:
+        if extensions:
+            raise ValueError('restart BEP/BEM: BEP has no PV/green-roof state; bound selection differs (E78)')
         shapes.update(wall=(count,4,levels,10),wall_heat=(count,4,levels))
     else:
         room=_urban_real(group.state.temperature,'state.temperature')
@@ -513,10 +536,17 @@ def validate_urban_bep(group,namelist,*,grid_shape=None,nz=None):
             roof_latent=(count,2,levels),ground_latent=(count,2),pv_temperature=(count,2,levels))
         if not isinstance(group.state.extra,Mapping):
             raise ValueError('restart BEP/BEM disabled extra state mapping missing (E78)')
-        for name,value in group.state.extra.items():
-            extra=_urban_real(value,'state.extra.'+str(name))
-            if extra.ndim<1 or extra.shape[0]!=count:
-                raise ValueError('restart BEP/BEM extra state column axis differs (E78)')
+        from gpuwrf.physics.urban_bem_model import extra_shapes
+        selection=_bem_extensions(bundle,extensions)
+        keys=set(group.state.extra)
+        if selection is None:
+            # Unbound legacy read: the key set itself must be one complete PV/green-roof selection.
+            selection=next((s for s in ((),('pv',),('green_roof',),('green_roof','pv'))
+                            if set(extra_shapes(s,count,levels))==keys),None)
+        if selection is None or keys!=set(extra_shapes(selection,count,levels)):
+            raise ValueError('restart BEP/BEM PV/green-roof state differs from the selection (E78)')
+        for name,shape in extra_shapes(selection,count,levels).items():
+            _urban_real(group.state.extra[name],'state.extra.'+name,shape)
     for name,shape in shapes.items():_urban_real(getattr(group.state,name),'state.'+name,shape)
     first=_urban_real(group.sources.a_u,'sources.a_u')
     if first.ndim!=2 or first.shape[1]<1:
@@ -535,6 +565,7 @@ def validate_urban_bep(group,namelist,*,grid_shape=None,nz=None):
         raise ValueError('restart BEP/BEM surface grid shape invalid (E78)')
     for name in group.surface_layer._fields:
         _urban_real(getattr(group.surface_layer,name),'surface-layer diagnostics.'+name,tuple(grid_shape))
+    return selection
 
 
 def validate_urban_radiation(rad,namelist,*,grid_shape=None):

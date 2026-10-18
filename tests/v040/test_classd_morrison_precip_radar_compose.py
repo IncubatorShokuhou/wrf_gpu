@@ -64,7 +64,9 @@ def _case(mp, radar, monkeypatch):
     nl = dataclasses.replace(
         f._namelist(grid), dt_s=DT, mp_physics=mp, do_radar_ref=int(radar), diagnostic_history_interval=1.0,
         use_noahmp=True, run_physics=True, run_boundary=False, disable_guards=True,
-        ra_sw_physics=0, ra_lw_physics=0, bl_pbl_physics=0, cu_physics=0, sf_sfclay_physics=0)
+        # sf_sfclay_physics=5 (MYNN-SL, solved inside the stubbed Noah-MP call): WRF surface_driver.F:1490
+        # returns before EVERY land call when sf_sfclay_physics=0 (t-cfix-sfc F21), so 0 cannot feed Noah-MP.
+        ra_sw_physics=0, ra_lw_physics=0, bl_pbl_physics=0, cu_physics=0, sf_sfclay_physics=5)
     carry = op._initial_carry_for_run(state, nl)
     # The daily/nested pipelines seed the land carry after this call; the solver is stubbed,
     # so its history products (land_history/energy sums/surface history) are not exercised.

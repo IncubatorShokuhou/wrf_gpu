@@ -566,10 +566,12 @@ def test_fused_cascade_uses_loaded_aot_blob(monkeypatch):
     child = _FusedCarry(jnp.asarray([2.0], dtype=jnp.float64))
     seen = {}
 
-    def fake_aot_call(parent_carry, child_carries, parent_start, child_starts, parent_cb, child_cbs):
+    def fake_aot_call(parent_carry, child_carries, parent_start, child_starts, parent_cb, child_cbs, *namelists):
         seen["called"] = True
         seen["parent_start"] = int(parent_start)
         seen["child_starts"] = tuple(int(v) for v in child_starts)
+        # The fused program takes the namelists as trailing arguments (case leaves traced).
+        assert namelists == (parent_nl, child_nl)
         del parent_cb, child_cbs
         return parent_carry.replace(state=parent_carry.state + 10), child_carries
 

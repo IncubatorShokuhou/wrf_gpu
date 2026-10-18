@@ -28,7 +28,6 @@ regression a future worker could miss without these tests catching it.
 
 from __future__ import annotations
 
-import importlib.util
 import json
 import math
 from dataclasses import fields as dc_fields
@@ -67,6 +66,20 @@ def test_driver_script_committed():
     )
 
 
+def _operational_module():
+    """The product operational_mode module, asserted to be THIS tree's file.
+
+    An unregistered ``exec_module`` copy breaks dataclass string-annotation
+    resolution on Python 3.13 (``sys.modules[cls.__module__]`` is None) unless
+    another test imported the module first; import it normally instead.
+    """
+    import importlib
+
+    module = importlib.import_module("gpuwrf.runtime.operational_mode")
+    assert Path(module.__file__).resolve() == OPERATIONAL_PY.resolve(), module.__file__
+    return module
+
+
 def test_operational_mode_exposes_disable_guards():
     """OperationalNamelist must expose a ``disable_guards: bool`` field default False.
 
@@ -74,13 +87,8 @@ def test_operational_mode_exposes_disable_guards():
     so the field MUST default to False.  This is the most important
     safety property of the entire sprint.
     """
-    spec = importlib.util.spec_from_file_location(
-        "gpuwrf.runtime.operational_mode", OPERATIONAL_PY
-    )
-    assert spec is not None and spec.loader is not None
-    module = importlib.util.module_from_spec(spec)
     pytest.importorskip("jax")
-    spec.loader.exec_module(module)
+    module = _operational_module()
 
     namelist_cls = module.OperationalNamelist
     field_names = {f.name for f in dc_fields(namelist_cls)}
@@ -325,13 +333,7 @@ def test_disable_guards_is_jax_static_argnums_compatible():
     bloat the cache.
     """
     pytest.importorskip("jax")
-    spec = importlib.util.spec_from_file_location(
-        "gpuwrf.runtime.operational_mode", OPERATIONAL_PY
-    )
-    if spec is None or spec.loader is None:
-        pytest.skip("operational_mode.py not loadable")
-    module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
+    module = _operational_module()
     namelist_cls = module.OperationalNamelist
     field = next(
         (f for f in dc_fields(namelist_cls) if f.name == "disable_guards"),

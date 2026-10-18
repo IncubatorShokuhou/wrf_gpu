@@ -1,8 +1,16 @@
 # Release notes
 
-**v0.4.0 released — 2026-10-17.** Source and tags are published. The GitHub
-release object and prepared asset uploads await owner authentication; remote
-runtime-table fetches fail until the assets are uploaded.
+**v0.4.1 released — 2026-10-18** adds opt-in data assimilation, terrain-corrected surface
+winds, shortwave aerosol, radiation cloud-fraction options, Noah-MP surface-parameter controls,
+GPU regional optimisation and validated stochastic physics. The default physics is that of
+v0.4.0 apart from the fixes listed in the release notes.
+
+- [v0.4.1 release notes](RELEASE_NOTES_v0.4.1.md)
+- [v0.4.1 per-option matrix](../docs/release/SUPPORT_MATRIX_v0.4.1.md)
+- [v0.4.1 command guide](../docs/release/USER_GUIDE_v0.4.1.md)
+
+**v0.4.0 released — 2026-10-17.** Source, tags and the GitHub release with its runtime-table
+assets are published.
 
 - [v0.4.0 release notes](RELEASE_NOTES_v0.4.0.md)
 - [v0.4.0 per-option matrix](../docs/release/SUPPORT_MATRIX_v0.4.0.md)

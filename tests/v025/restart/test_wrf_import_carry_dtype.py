@@ -1,6 +1,7 @@
 """CPU-WRF import ABI against actual native X4 carry subsets (not fidelity)."""
 import gzip
 import hashlib
+import importlib.util
 import json
 import pickle
 from pathlib import Path
@@ -16,7 +17,21 @@ from gpuwrf.runtime.operational_mode import OperationalNamelist
 from gpuwrf.runtime.restart_store import RestartStore
 from gpuwrf.validation.wrf_restart_hydration import hydrate_wrfrst, load_restart_templates
 
-FIXTURE = Path(__file__).with_name('fixtures') / 'shadow_dtype_native_cpu.pkl.gz'
+FIXTURES = Path(__file__).with_name('fixtures')
+RECEIPT = FIXTURES / 'shadow_dtype_native_cpu.json'
+# > 10 MiB: a SHA-pinned release attachment since v0.4.1 (provenance index beside the receipt), staged on first use
+ATTACHMENT = FIXTURES / 'shadow_dtype_native_cpu.pkl.gz.attachment.json'
+
+
+def staged_fixture():
+    root = Path(__file__).resolve().parents[3]
+    spec = importlib.util.spec_from_file_location('_release_attachments', root / 'tools' / 'release_attachments.py')
+    attachments = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(attachments)
+    try:
+        return attachments.stage(ATTACHMENT, root=root)
+    except attachments.AttachmentUnavailable as exc:
+        pytest.skip(f'restart fixture not staged (offline and not in this clone\'s git history): {exc}')
 
 
 @pytest.fixture(autouse=True)
@@ -38,9 +53,10 @@ def assert_all_leaves(expected, actual, *, exact=False):
 
 @pytest.fixture
 def real_records():
-    receipt = json.loads(FIXTURE.with_suffix('').with_suffix('.json').read_text())
-    assert hashlib.sha256(FIXTURE.read_bytes()).hexdigest() == receipt['fixture_sha256']
-    with gzip.open(FIXTURE, 'rb') as stream:
+    fixture = staged_fixture()
+    receipt = json.loads(RECEIPT.read_text())
+    assert hashlib.sha256(fixture.read_bytes()).hexdigest() == receipt['fixture_sha256']
+    with gzip.open(fixture, 'rb') as stream:
         records = pickle.load(stream)  # Trusted repository fixture, not external input.
     assert set(records) == {'d01', 'd02', 'd03'}
     return records
@@ -57,7 +73,9 @@ def namelist_for(cpu):
 def capture_import_seeds(monkeypatch, records):
     # Exercise the real saved-radiation hook. Geometry/model stepping is outside
     # this ABI gate; the loader returns the real native reference with that seed.
-    def loader(_config, names):
+    def loader(_config, names, record_windows=True):
+        # WRF-restart hydration maps whole-stack boundary leaves: no record windows.
+        assert record_windows is False
         result = {}
         for name in names:
             native, cpu, _grid = records[name]

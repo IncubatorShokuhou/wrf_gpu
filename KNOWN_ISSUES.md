@@ -1,4 +1,89 @@
-# Known issues — v0.4.0 (released 17 October 2026)
+# Known issues — v0.4.1 (released 18 October 2026) and v0.4.0 (released 17 October 2026)
+
+**v0.4.1 (18 October 2026).** All v0.4.1 additions are opt-in. The new items found or
+added in v0.4.1 are listed first; everything from "Current frozen default" on is the v0.4.0
+record and still applies. Per-option status: [v0.4.1 support matrix](docs/release/SUPPORT_MATRIX_v0.4.1.md).
+
+## v0.4.1 direct-beam surface shortwave (SWDDIR)
+
+**Fixed in v0.4.1; affects v0.4.0 and every earlier release** (the **default** physics, since the
+RRTMG shortwave port). Found during the v0.4.1 aerosol work.
+Up to v0.4.0 the RRTMG shortwave path wrote the direct-beam surface flux `SWDDIR` (and `SWDDIF`,
+derived from it) from the delta-scaled cloud optical depth. WRF writes the unscaled product
+(`ztdbt_nodel`, `phys/module_ra_rrtmg_sw.F` 8577–8600 and 8737). A pristine `RRTMG_SWRAD` oracle on
+186 real Tenerife columns (27 February 2026) gives v0.4.0 `SWDDIR` differences of 31–129 W/m² on
+cloudy daytime columns and 0.27 W/m² on clear columns. The horizontal total surface shortwave
+(`SWDOWN`/`GSW`) and the atmospheric heating rates are not affected. **Forecast impact:** with
+`slope_rad=1` or `topo_shading=1` the direct/diffuse split sets the slope-adjusted surface
+shortwave, so on cloudy sloping terrain the surface energy budget, and through it the forecast,
+can differ from WRF; `swint_opt` also uses the split. An estimate on 81 real cloudy Tenerife
+columns with a slope sweep gives errors of the slope-adjusted shortwave up to 31–102 W/m² on
+10–30° slopes, depending on season and slope direction [estimate, not a paired run]. The Canary
+Islands and Tenerife comparisons of v0.4.0, which run with slope radiation, passed their field
+limits with this difference present.
+
+**v0.4.1:** `SWDDIR` agrees with the pristine oracle within 0.32 W/m² on 293 real Tenerife and
+Swiss columns. The fix changes the default program; together with the boundary-record change it
+passed 24-hour comparisons with the original CPU-WRF on the Swiss, Canary Islands and Tenerife
+cases. Forecasts with slope radiation can therefore change against v0.4.0. The clear-sky
+`SWDDIRC`/`SWDDNIC` outputs are not written.
+
+## v0.3.0–v0.3.4: nested programs from a compile cache shared across dates
+
+In v0.3.0 to v0.3.4 the fused program of an inner domain and its nests contained the Noah-MP
+deep-soil temperature `TMN` as a compiled constant, but its cache key ignored it. A compile cache
+shared between forecast dates could therefore load another date's nested program without notice
+(`GPUWRF_AOT_VERIFY` is off by default). v0.4.0 keys each date separately (it recompiles instead);
+v0.4.1 passes `TMN` at run time, so the question does not arise.
+
+Measured on v0.3.3: `TMN` is the only consumed date-dependent constant; it differs between dates
+only over water (`real.exe` sets it to the day's SST), where it feeds a placeholder soil column that
+is masked out of every atmosphere-facing output. Land `TMN` was identical in all 90 checked pairs of
+ten Tenerife three-domain forecasts and all 48 pairs of four nine-domain Canary forecasts. On the
+Tenerife three-domain grid, a 24 h forecast issued on 7 July 2026 that loaded the 27 February
+program wrote all 72 history files byte-identical to a fresh compile. The nine-domain result is
+inferred from the identical land values and code path, not run end to end. Restart checkpoints from
+such a run carry the other date's water soil temperatures (never in wrfout).
+
+For a grid whose land `TMN` changes with the date, or to be safe with any v0.3.x shared cache, set
+`GPUWRF_AOT_VERIFY=1` (a mismatching nested program is quarantined and recompiled, about 6 minutes on
+v0.3.3), or upgrade. [Impact record](proofs/w41_v033impact/IMPACT.json).
+
+## v0.4.1 opt-in features: limits
+
+- **Data assimilation (`gpuwrf da`)**: outer domain (d01) only; dry column mass not analysed; no
+  cloud or radiance assimilation; `supersaturation: keep` only. Forecast skill is not established.
+  The optional ensemble settings are overdispersive in their registered twin experiment (prior
+  spread 2.59/2.32/2.53 × the actual error at 06/09/12 UTC; required 0.5–2.0); with default
+  settings the spread decays by 28–76 % per 6 h. The GPU cycle loop has run zero-update arms only;
+  the analysis step runs on the CPU. [Guide](docs/da.md), [ensemble options](docs/da_ensemble.md).
+- **`topo_wind`**: acts only with YSU or Shin-Hong, as in WRF. `topo_wind=1` needs `VAR_SSO` in
+  `wrfinput` (WPS `varsso` data). `topo_wind=2` is validated on one 9 km domain only; two-way
+  feedback of the correction fields is CPU-tested only. The `topo_wind=1` YSU program exceeds the
+  per-thread stack limit (400–496 B); runtime cost not measured.
+- **`aer_opt`**: RRTMG shortwave only; `aer_opt=3` needs `mp_physics=28` on a single domain;
+  `aer_opt=2` is refused. `aer_opt=3` inherits three oversized fusions of the Thompson mp28 code;
+  the `aer_opt=1` code-quality scan is incomplete (measured on a re-compile).
+- **`icloud=2`**: one 24-hour comparison with CPU-WRF (Tenerife three domains); other
+  configurations are not compared. `icloud=0` is not bound.
+- **Surface-parameter controls (`--surface-controls`)**: Noah-MP only; no calibration against real
+  stations yet (the EKI tools are checked on a synthetic twin only); batched members are API-only
+  and a batched lane is not bitwise equal to its solo run.
+- **`gpuwrf optimize`**: a held-out diagnostic, not a skill result; host memory (6–6.5 GB per
+  member that compiles) is the first limit.
+- **Stochastic physics**: validated on one single-domain case; nested domains, GPU restart and
+  ensemble spread/skill are not checked. WRF's default length scales give NaN patterns on small
+  domains ([upstream issues](docs/UPSTREAM_WRF_BUGS.md)).
+- **FLG radiation (`ra_lw/ra_sw_physics=7`, experimental, CPU-only)**: the 17 strict original-WRF
+  band-bound tests are xfailed (strict), pre-existing since v0.4.0; each cites the per-band disposition
+  in [FG93](proofs/s2_flggfdl/receipts/FG93_flg_compiler_disposition.json) (max band error
+  0.0014 W/m²; 10 bands outside the native-compiler envelope, not independently source-bounded). They
+  are known limitations, not passes.
+- **WDM5/WDM7 (`mp_physics=14/26`)**: the v0.4.1 compiler barrier leaves residual stack use above
+  the limit (536/400 B and 368 B); WDM7's hail mixing ratio is not covered by the in-step negative
+  value census.
+
+## v0.4.0 record
 
 **Default path frozen — 2026-10-16 11:59:18Z.** Main `5c15881ede`
 (`403240f257` adds proof only) carries the caller-audit repairs and device-only
@@ -10,7 +95,6 @@ physics, are downloaded automatically on first use from the
 [v0.4.0 GitHub release](https://github.com/wrf-gpu/wrf_gpu/releases/tag/v0.4.0) and checked against pinned SHA-256 sums.
 See [runtime tables](docs/runtime-tables.md).
 Historical f672a573/6fc715a2 receipts remain pre-F20 baseline evidence.
-
 
 ## Current frozen default and composite checkpoint
 
@@ -261,6 +345,16 @@ deviation is explicitly disclosed; full coupled GPU qualification remains
 - The earlier Shin-Hong diagnostic deviation has a later caller/kernel
   correction with source44b7b226b c07 full24h D6/coverage PASS and E41FAIL;
   final-source identity and the disclosed native quantum residual remain separate.
+  History `TKE_PBL` was written as 0 for Shin-Hong, MYJ, QNSE, BouLac, CAM-UW
+  and GBM (original WRF writes each scheme's shared TKE array; unbounded
+  REPORT_ONLY field, so D6 never flagged it), and Shin-Hong `EL_PBL` stayed 0
+  for `shinhong_tke_diag=1`. v0.4.1 writes the held arrays (host-only) and
+  seeds MYJ/BouLac/CAM-UW with their original cold-start TKE instead of the
+  MYNN profile (initial data change for MYJ/BouLac). `EL_PBL` of MYJ, BouLac
+  and GBM is still not written (needs a step-program change). GPU 24 h re-runs
+  (MYJ, BouLac, Shin-Hong `shinhong_tke_diag=1`) and a 6 h CAM-UW run pass D6
+  against original CPU-WRF; lead-0 `TKE_PBL` is byte-identical.
+  [Measurement and fix](proofs/w41_shinhongtke/README.md).
   GBM mixing diagnostics retain small strict residuals. Their investigation
   is separate from finite output or bounded forecast comparisons.
   [CAM-MG/PBL caller audit](proofs/s2_cammg/README.md),
@@ -300,19 +394,19 @@ Coupled 24 h GPU qualification against CPU-WRF is pending.
 <a id="v040-history-fields-without-a-producer"></a>
 ## v0.4.0 history producers and WRF-constant fields
 
-The nine CPU-WRF history fields previously omitted here are now written. For the
-configurations the port admits, WRF itself writes the values below; the WRF branches
-that would make them vary remain unported and are **refused at load**, never run
-silently. Original CPU-WRF proofs cover every cell of all 25 frames
-([proofs/t_classd](proofs/t_classd/)).
+The nine CPU-WRF history fields previously omitted here are now written. Every
+admitted configuration writes the value WRF computes; no field is "not computed"
+in an admitted branch. Only the WRF branches named in the last column remain
+unported and are **refused at load**, never run silently. Original CPU-WRF proofs
+cover every cell of all 25 frames ([proofs/t_classd](proofs/t_classd/)).
 
-| Fields | Configuration | Value written (WRF source) | Still refused |
+| Fields | Configuration | Value written (WRF source) | Refused branch (fields it would change) |
 | --- | --- | --- | --- |
-| `QGR_URB4D` | BEP+BEM `sf_urban_physics=3`; c57 | Held `QGR_URB3D`: Noah-MP-initialized top-layer `SMOIS` (`urban_var_init`), reset to 0 on BEP/BEM columns every call | Green roofs (`GR_FLAG`/`GR_FRAC_ROOF`) |
-| `TGR_URB4D`, `DRAINGR_URB3D`, `EP_PV_URB3D` | BEP+BEM; c57 | +0: initialized and reset to 0; PV power is `pv_frac_roof`-weighted | Green roofs, photovoltaic roofs (`PV_FRAC_ROOF`) |
-| `QNBCA` | Thompson aerosol-aware `mp_physics=28/38`; c19/c65 | +0: `mp_gt_driver` zeroes black carbon unless `wif_input_opt=2`; nonzero `QNBCA` input is refused | `wif_input_opt=2` black-carbon aerosol |
-| `TAOD5502D` | `mp_physics=28/38`; c19/c65 | +0: assigned only under `aer_opt=3` with RRTMG SW | `aer_opt=3` aerosol-radiation coupling |
-| `MSKF_REFL_10CM` | Morrison aerosol `mp_physics=40`; c20 | +0 with `do_radar_ref=0` (WRF assigns it only under `do_radar_ref=1`). With `do_radar_ref=1` it equals the computed `REFL_10CM`: its MSKF cumulus hydrometeor arrays exist only for `aercu_opt>0` and are unallocated in WRF otherwise ([upstream note](proofs/t_classd/UPSTREAM_WRF_BUGS.md)) | `aercu_opt>0` (MSKF + CESM aerosol) |
+| `QGR_URB4D`, `TGR_URB4D`, `DRAINGR_URB3D` | BEP+BEM `sf_urban_physics=3`; c57 | Without green roofs: held `QGR_URB3D` = Noah-MP top-layer `SMOIS` (`urban_var_init`), reset to 0 on BEP/BEM columns every call; `TGR`/`DRAINGR` +0. With `GR_FLAG=1` (v0.4.1): WRF's per-call green-roof sums from the ported soil/vegetation model ([proofs/w41_writergaps](proofs/w41_writergaps/README.md)) | `GR_FRAC_ROOF>0` with `GR_FLAG=0`, `GR_FLAG=1` without a class fraction, `GR_TYPE` other than 1/2 (all three fields) |
+| `EP_PV_URB3D` | BEP+BEM; c57 | +0 without PV; with `PV_FRAC_ROOF>0` (v0.4.1): WRF's panel production sum (`hsfluxpv`) | none |
+| `QNBCA` | Thompson aerosol-aware `mp_physics=28/38`; c19/c65 | +0: `mp_gt_driver` zeroes black carbon unless `wif_input_opt=2`; nonzero `QNBCA` input is refused | `wif_input_opt=2` black-carbon aerosol (`QNBCA`) |
+| `TAOD5502D` | `mp_physics=28/38`; c19/c65 | +0 unless `aer_opt=3` with RRTMG SW; under `aer_opt=3` (v0.4.1) the computed column AOD ([aerosol guide](docs/AEROSOL.md)) | none |
+| `MSKF_REFL_10CM` | Morrison aerosol `mp_physics=40`; c20 | +0 with `do_radar_ref=0` (WRF assigns it only under `do_radar_ref=1`). With `do_radar_ref=1` it equals the computed `REFL_10CM`: its MSKF cumulus hydrometeor arrays exist only for `aercu_opt>0` and are unallocated in WRF otherwise ([upstream note](proofs/t_classd/UPSTREAM_WRF_BUGS.md)) | `aercu_opt>0`, MSKF + CESM aerosol (`MSKF_REFL_10CM`) |
 
 One-moment NSSL (`mp_physics=19/21`) `REFL_10CM` is computed with WRF's one-moment
 `radardd02` branch (byte-exact against pristine WRF REAL4 column output). Morrison

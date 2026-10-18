@@ -114,7 +114,10 @@ def apply_lower_boundary_fields(carry, fields):
     """Surface-driver phase: radiation has already consumed the previous TSK."""
     state = carry.state
     sst = fields["SST"].astype(state.t_skin.dtype)
-    water = (state.xland > 1.5) & (sst > 250.0) & (sst < 350.0)
+    # Written as NOT outside the range so a NaN SST (a record window's sentinel,
+    # integration/record_windows.py) reaches the water skin loudly; finite SST
+    # selects exactly as 250 < SST < 350.
+    water = (state.xland > 1.5) & ~((sst <= 250.0) | (sst >= 350.0))
     tsk = jnp.where(water, sst, state.t_skin)
     state = state.replace(t_skin=tsk)
     land = carry.noahmp_land

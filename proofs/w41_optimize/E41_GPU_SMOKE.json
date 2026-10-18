@@ -1,0 +1,127 @@
+{
+ "note": "scripts/wave_cubin_gate.py run unchanged via proofs/w41_optimize/e41_gate_slowhost.py (cuobjdump timeout 180 -> 1200 s only). Tool verdict INCOMPLETE because AOT compact metadata cannot show kInput sizes (E201); every AOT ELF below is byte-identical to a rich-JIT ELF whose optimized HLO was measured. Reported, not relabelled.",
+ "arms": {
+  "B_wn3_d01_cu0_cu1": {
+   "tool_verdict": "INCOMPLETE",
+   "hard_stack_gate": "PASS",
+   "conservative_flags": false,
+   "coverage": {
+    "status": "PASS",
+    "aot_programs": [
+     "d01"
+    ],
+    "required_run_programs": [
+     "d01"
+    ],
+    "run_proofs": [],
+    "n_discovered": 4,
+    "n_scanned": 4
+   },
+   "entries": [
+    {
+     "kind": "jax_cache",
+     "entry": "jit__advance_chunk_fori-5978c9c041cafe1e0f4837e89d39c1218f2f80b1cadad3de96c69669b34b1c17-cache",
+     "elf_sha256": [
+      "c94ee8406af36548b2a867f07540949c5d6d1c66f8a372b65bdeb02d4902b1cf"
+     ],
+     "max_stack_B": [
+      152
+     ],
+     "nonleaf_over1k": 0,
+     "kinput_transpose_status": "MEASURED_RICH_JIT_HLO",
+     "kinput_transpose_over500": [],
+     "aot_elf_equals_measured_jit_elf": null
+    },
+    {
+     "kind": "jax_cache",
+     "entry": "jit__advance_chunk_fori-e99c48cd189130eddb745796d484f1a219a54ac2eeb4b44412ae99dfb5148fd3-cache",
+     "elf_sha256": [
+      "369d5fa3d31687c9adae6d386191cc0ae0eed125fb5111c66e3bba92276c14ff"
+     ],
+     "max_stack_B": [
+      32
+     ],
+     "nonleaf_over1k": 0,
+     "kinput_transpose_status": "MEASURED_RICH_JIT_HLO",
+     "kinput_transpose_over500": [],
+     "aot_elf_equals_measured_jit_elf": null
+    },
+    {
+     "kind": "aot",
+     "entry": "36441846876af287f608dff24a0239fe24484ad801989984bc179e60a01cdee3.xlaexec",
+     "elf_sha256": [
+      "369d5fa3d31687c9adae6d386191cc0ae0eed125fb5111c66e3bba92276c14ff"
+     ],
+     "max_stack_B": [
+      32
+     ],
+     "nonleaf_over1k": 0,
+     "kinput_transpose_status": "UNKNOWN_AOT_METADATA",
+     "kinput_transpose_over500": null,
+     "aot_elf_equals_measured_jit_elf": true
+    },
+    {
+     "kind": "aot",
+     "entry": "82e405e9297b1da60bdc2ba32a5a092fc82f11116ee9288ffa48e4fc75e7e5b5.xlaexec",
+     "elf_sha256": [
+      "c94ee8406af36548b2a867f07540949c5d6d1c66f8a372b65bdeb02d4902b1cf"
+     ],
+     "max_stack_B": [
+      152
+     ],
+     "nonleaf_over1k": 0,
+     "kinput_transpose_status": "UNKNOWN_AOT_METADATA",
+     "kinput_transpose_over500": null,
+     "aot_elf_equals_measured_jit_elf": true
+    }
+   ]
+  },
+  "A_swiss_c36_layer": {
+   "tool_verdict": "INCOMPLETE",
+   "hard_stack_gate": "PASS",
+   "conservative_flags": false,
+   "coverage": {
+    "status": "PASS",
+    "aot_programs": [
+     "d01"
+    ],
+    "required_run_programs": [
+     "d01"
+    ],
+    "run_proofs": [],
+    "n_discovered": 2,
+    "n_scanned": 2
+   },
+   "entries": [
+    {
+     "kind": "jax_cache",
+     "entry": "jit__advance_chunk_fori-0a6fb8f6b92917631aa4249bd1ea71b2ff78d25df6a156cf002615396c19d1db-cache",
+     "elf_sha256": [
+      "5ca1152be8dcaa4364aa61f7d40ea2ae65ae6de07362865f7193fdae91274e79"
+     ],
+     "max_stack_B": [
+      16
+     ],
+     "nonleaf_over1k": 0,
+     "kinput_transpose_status": "MEASURED_RICH_JIT_HLO",
+     "kinput_transpose_over500": [],
+     "aot_elf_equals_measured_jit_elf": null
+    },
+    {
+     "kind": "aot",
+     "entry": "7ffc8167905385c233e31513976a97f37b8364a2ec53ec369abf0efcbd3bff5b.xlaexec",
+     "elf_sha256": [
+      "5ca1152be8dcaa4364aa61f7d40ea2ae65ae6de07362865f7193fdae91274e79"
+     ],
+     "max_stack_B": [
+      16
+     ],
+     "nonleaf_over1k": 0,
+     "kinput_transpose_status": "UNKNOWN_AOT_METADATA",
+     "kinput_transpose_over500": null,
+     "aot_elf_equals_measured_jit_elf": true
+    }
+   ]
+  }
+ }
+}

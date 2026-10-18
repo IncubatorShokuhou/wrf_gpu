@@ -55,6 +55,7 @@ import jax.numpy as jnp
 
 from gpuwrf.contracts.grid import DycoreMetrics
 from gpuwrf.contracts.state import State
+from gpuwrf.coupling.boundary_records import active_window, window_bracket
 
 
 SIDES = ("W", "E", "S", "N")
@@ -210,7 +211,8 @@ def _native_ring_update(field, boundary, lead_seconds, dt_s, config, *, do_relax
                if do_relax else [(0.0, 0.0)] * int(config.spec_bdy_width))
     return ring_update(field, boundary, lead_seconds, config.update_cadence_s,
                        [f for f, _ in weights], [g for _, g in weights],
-                       spec=config.spec_zone, relax=config.relax_zone, do_relax=do_relax, base=base)
+                       spec=config.spec_zone, relax=config.relax_zone, do_relax=do_relax, base=base,
+                       window=active_window())
 
 
 def _apply_3d_spec_only_wrf_owned(field, boundary, lead_seconds, config: BoundaryConfig):
@@ -585,13 +587,21 @@ def interpolate_boundary_leaf(boundary, lead_seconds, cadence_s: float = 3600.0)
     ``field_bdy + dtbc*field_bdy_tend`` linear-in-time forcing.
     """
 
+    window = active_window()
     if _NATIVE_BOUNDARY_FP32:
         # Storage-dtype leaf and clock; the kernel rounds to REAL at load.
         from gpuwrf.kernels.dyn_boundary_fp32 import interpolate_leaf
-        return interpolate_leaf(boundary, lead_seconds, cadence_s)
+        return interpolate_leaf(boundary, lead_seconds, cadence_s, window)
     max_index = int(boundary.shape[0]) - 1
     clock_dtype = jnp.float64
     lead_index = jnp.asarray(lead_seconds, dtype=clock_dtype) / float(cadence_s)
+    if window is not None:
+        lower, lower_slot, upper_slot = window_bracket(
+            jnp.floor(lead_index).astype(jnp.int32), max_index + 1, window, upper_clip=True)
+        alpha = jnp.clip(lead_index - lower.astype(clock_dtype), 0.0, 1.0)
+        lower_values = jnp.take(boundary, lower_slot, axis=0)
+        upper_values = jnp.take(boundary, upper_slot, axis=0)
+        return (lower_values * (1.0 - alpha) + upper_values * alpha).astype(boundary.dtype)
     lower = jnp.clip(jnp.floor(lead_index).astype(jnp.int32), 0, max_index)
     upper = jnp.clip(lower + 1, 0, max_index)
     alpha = jnp.clip(lead_index - lower.astype(clock_dtype), 0.0, 1.0)
@@ -1471,6 +1481,14 @@ def boundary_tendency_leaf(boundary, lead_seconds, cadence_s: float):
     if nrec < 2:
         return jnp.zeros_like(boundary[0])
     lead_index = jnp.asarray(lead_seconds, dtype=jnp.float32 if _NATIVE_BOUNDARY_FP32 else jnp.float64) / float(cadence_s)
+    window = active_window()
+    if window is not None:
+        _lower, lower_slot, upper_slot = window_bracket(
+            jnp.ceil(lead_index).astype(jnp.int32) - 1, nrec, window)
+        return (
+            (jnp.take(boundary, upper_slot, axis=0) - jnp.take(boundary, lower_slot, axis=0))
+            / jnp.asarray(float(cadence_s), dtype=boundary.dtype)
+        ).astype(boundary.dtype)
     lower = jnp.clip(
         jnp.ceil(lead_index).astype(jnp.int32) - 1,
         0,
@@ -1624,14 +1642,20 @@ def _scalar_record_value_rate_real4(boundary, lead_seconds, cadence_s):
     # WRF grid%dtbc is REAL (only the model clock curr_secs_r8 is REAL(8)).
     lead = jnp.asarray(lead_seconds).astype(jnp.float32)
     cadence = jnp.float32(cadence_s)
-    if nrec == 2:
+    window = active_window()
+    if window is not None:
+        lower, lower_slot, upper_slot = window_bracket(
+            jnp.ceil(lead / cadence).astype(jnp.int32) - 1, nrec, window)
+    elif nrec == 2:
         # Live-nest records hold exactly one force-down interval.
-        lower = 0
+        lower = lower_slot = 0
+        upper_slot = lower + 1
     else:
-        lower = jnp.clip(jnp.ceil(lead / cadence).astype(jnp.int32) - 1, 0, nrec - 2)
-    value = jnp.take(records, lower, axis=0)
+        lower = lower_slot = jnp.clip(jnp.ceil(lead / cadence).astype(jnp.int32) - 1, 0, nrec - 2)
+        upper_slot = lower + 1
+    value = jnp.take(records, lower_slot, axis=0)
     difference = jax.lax.optimization_barrier(
-        jnp.take(records, lower + 1, axis=0) - value
+        jnp.take(records, upper_slot, axis=0) - value
     )
     # share/interp_fcn.F::bdy_interp1 declares rdt REAL*8; the subtraction
     # remains REAL and assignment rounds the retained tendency back to REAL.
@@ -1841,9 +1865,15 @@ def _root_record_value_rate_real4(records, lead_seconds, cadence_s):
         return records[0], jnp.zeros_like(records[0])
     lead = jnp.asarray(lead_seconds).astype(jnp.float32)
     cadence = jnp.float32(cadence_s)
-    lower = jnp.clip(jnp.ceil(lead / cadence).astype(jnp.int32) - 1, 0, nrec - 2)
-    value = jnp.take(records, lower, axis=0)
-    difference = jax.lax.optimization_barrier(jnp.take(records, lower + 1, axis=0) - value)
+    window = active_window()
+    if window is not None:
+        lower, lower_slot, upper_slot = window_bracket(
+            jnp.ceil(lead / cadence).astype(jnp.int32) - 1, nrec, window)
+    else:
+        lower = lower_slot = jnp.clip(jnp.ceil(lead / cadence).astype(jnp.int32) - 1, 0, nrec - 2)
+        upper_slot = lower + 1
+    value = jnp.take(records, lower_slot, axis=0)
+    difference = jax.lax.optimization_barrier(jnp.take(records, upper_slot, axis=0) - value)
     rate = difference / cadence
     dtbc = jnp.clip(lead - lower.astype(jnp.float32) * cadence, jnp.float32(0.0), cadence)
     increment = jax.lax.optimization_barrier(dtbc * rate)
@@ -2041,11 +2071,11 @@ def _native_dry_relax(reference, lead, metrics, dt, config, *, include_w, couple
         result[output] = dry_relax(field, reference.mu_total, c1, c2, msf, leaf,
             lead, config.update_cadence_s, fcx, gcx,
             kind='ph' if name == 'ph_perturbation' else name, coupled=coupled,
-            spec=config.spec_zone, relax=config.relax_zone)
+            spec=config.spec_zone, relax=config.relax_zone, window=active_window())
     result['mu'] = dry_relax(reference.mu_perturbation[None], reference.mu_total,
         metrics.c1h, metrics.c2h, metrics.msfty, reference.mu_bdy,
         lead, config.update_cadence_s, fcx, gcx, kind='mu', coupled=True,
-        spec=config.spec_zone, relax=config.relax_zone)[0]
+        spec=config.spec_zone, relax=config.relax_zone, window=active_window())[0]
     return SpecifiedRelaxTendencies(ru=result['ru'], rv=result['rv'], t=result['t'], ph=result['ph'],
                                    mu=result['mu'], w=result.get('w'))
 

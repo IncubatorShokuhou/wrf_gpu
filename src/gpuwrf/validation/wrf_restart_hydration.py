@@ -167,7 +167,7 @@ def load_restart_templates(config, restarts):
     original = pipeline.noahmp_initial_rad
     pipeline.noahmp_initial_rad = saved_radiation
     try:
-        return pipeline._load_domains(config, tuple(restarts))
+        return pipeline._load_domains(config, tuple(restarts), record_windows=False)
     finally:
         pipeline.noahmp_initial_rad = original
 

@@ -223,7 +223,7 @@ def run_dfi12(config, *, work_dir: Path, nml=None, fst_dir: Path | None = None):
         forecast_s = math.ceil(forecast_s / ctl.dt_s) * ctl.dt_s
     report["forecast_offset_s"] = offset
     report["forecast_hours"] = forecast_s / 3600
-    _h, bundles, _meta, _start, _dt, carries = pipeline._load_domains(config, ("d01",))
+    _h, bundles, _meta, _start, _dt, carries = pipeline._load_domains(config, ("d01",), record_windows=False)
     bundle, carry0 = bundles["d01"], carries["d01"]
     ns, state0 = bundle.namelist, carry0.state
     if abs(ns.dt_s - ctl.dt_s) > 1e-9:
@@ -244,7 +244,8 @@ def run_dfi12(config, *, work_dir: Path, nml=None, fst_dir: Path | None = None):
     write_stage = _write_dfl_stage_dir if ctl.dfi_opt == DFI_DFL else d._write_stage_dir
     fwd_dir = write_stage(src, work_dir / "fwd_input", fields=fields, when=ctl.fwd_start,
                                 namelist_edits=edits)
-    _h, bundles_f, _meta, start_f, _dt, carries_f = pipeline._load_domains(replace(config, input_dir=fwd_dir), ("d01",))
+    _h, bundles_f, _meta, start_f, _dt, carries_f = pipeline._load_domains(replace(config, input_dir=fwd_dir), ("d01",),
+                                                                          record_windows=False)
     report["fwd_clock_start"] = str(start_f)
     carry_f = carries_f["d01"]
     shifted = d._shifted_boundary(state0, shift_s=-ctl.n_bck * ctl.dt_s,

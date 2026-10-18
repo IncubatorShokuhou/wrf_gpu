@@ -48,9 +48,16 @@ def bem_class(bep,category,dtype):
     def value(name):
         a=raw[name]
         return T(a[category] if len(a)>1 else a[0])
-    for key in ['PV_FRAC_ROOF','GR_FRAC_ROOF','GR_FLAG']:
-        if key in raw and np.any(raw[key]!=0):
-            raise NotImplementedError('BEP+BEM requires '+key+'=0; PV/green-roof extension is not qualified')
+    gr_flag=int(raw['GR_FLAG'][0]) if 'GR_FLAG' in raw else 0
+    gr_fraction=value('GR_FRAC_ROOF') if 'GR_FRAC_ROOF' in raw else T(0)
+    if gr_flag==0 and 'GR_FRAC_ROOF' in raw and np.any(raw['GR_FRAC_ROOF']!=0):
+        # WRF then blends tr_av/sfr_avb/upward_rad with a never-initialized TRV (trv1D=0).
+        raise NotImplementedError('BEP+BEM GR_FRAC_ROOF>0 requires GR_FLAG=1')
+    if gr_flag not in (0,1):
+        raise NotImplementedError('BEP+BEM GR_FLAG must be 0 or 1')
+    if gr_flag==1 and not gr_fraction>0:
+        # GR_FLAG=1 with no green fraction for the selected class: degenerate WRF branch, not qualified.
+        raise NotImplementedError('BEP+BEM GR_FLAG=1 requires GR_FRAC_ROOF>0 for the urban class')
     if bep.nd!=2:raise NotImplementedError('WRF BEM building has four walls and requires two street directions')
     levels=tuple(i for i in range(1,bep.n) if bep.ss[i]>0.)
     probability=np.asarray([bep.ss[i] for i in levels],dtype)
@@ -74,6 +81,13 @@ def bem_class(bep,category,dtype):
         'occupants':value('PERFLO'),'beta':value('BETA'),'ac_switch':int(value('SW_COND')),
         'time_on':value('TIME_ON'),'time_off':value('TIME_OFF'),'target_temperature':value('TARGTEMP'),
         'temperature_gap':value('GAPTEMP'),'target_humidity':value('TARGHUM'),'humidity_gap':value('GAPHUM'),
-        'cop':value('COP'),'building_ac_fraction':value('BLDAC_FRC'),'cooled_fraction':value('COOLED_FRC')}
+        'cop':value('COP'),'building_ac_fraction':value('BLDAC_FRC'),'cooled_fraction':value('COOLED_FRC'),
+        # PV_FRAC_ROOF_TBL (module_sf_urban.F urban_param_init) -> pv_frac_roof_u(iurb); 0 keeps WRF's PV-free branches.
+        'pv_frac_roof':value('PV_FRAC_ROOF') if 'PV_FRAC_ROOF' in raw else T(0),
+        # green roofs (module_sf_bep_bem.F roof_temp_veg/flux_flat_roof, BEM wall_gr).
+        'gr_flag':gr_flag,'gr_frac_roof':gr_fraction,
+        'gr_type':int(raw['GR_TYPE'][0]) if 'GR_TYPE' in raw else 2,
+        'irho':tuple(int(x) for x in raw['IRHO']) if 'IRHO' in raw else (0,)*24,
+        'tblend':value('TBLEND')}
     room=room_geometry(bep.building[0],bep.building[1],pw,aw,dtype)
     return BemClass(bep,category,levels,probability,pw,aw,room,params,long,short)

@@ -247,6 +247,10 @@ def build_parser() -> argparse.ArgumentParser:
     run.add_argument("--checkpoint-max-generations", type=int, default=2, help="Maximum retained generations; at least 2 are needed to publish safe successors (default 2).")
     run.add_argument("--checkpoint-reserve-bytes", type=int, default=10 * 1024**3, help="Minimum free filesystem bytes after a checkpoint (default 10 GiB).")
     run.add_argument("--resume-checkpoint", type=Path, default=None, help="Verified generation to resume in the same output stream (native single-domain d01 or nested).")
+    run.add_argument("--surface-controls", type=Path, default=None, metavar="CONTROLS.npz",
+                     help="EXPERIMENTAL (Track P): Noah-MP surface-parameter fields (z0mvt, eg, albedo, LAI, ...) "
+                     "from `gpuwrf surface-params expand`, read as traced inputs (no recompile per parameter set). "
+                     "Default off.")
     run.add_argument("--extend-run", action="store_true", help="With --resume-checkpoint: continue to a LATER forecast end (--hours) than the run that wrote the checkpoint (WRF restart with a longer run length). Without it a changed end time is refused.")
     run.add_argument(
         "--dry-run",
@@ -366,6 +370,12 @@ def build_parser() -> argparse.ArgumentParser:
 
     from gpuwrf.cycling.cli import register as register_cycle
     register_cycle(subparsers)
+    from gpuwrf.assimilation.letkf.cli import register as register_da
+    register_da(subparsers)
+    from gpuwrf.surface_params.cli import register as register_surface_params
+    register_surface_params(subparsers)
+    from gpuwrf.runtime.aot_key_cli import register as register_aot_key
+    register_aot_key(subparsers)
 
     return parser
 
@@ -1032,6 +1042,30 @@ def _cmd_run(args: argparse.Namespace) -> int:
         run_metadata["decompose"] = str(decompose)
     elif os.environ.get("GPUWRF_DECOMPOSE"):
         return _fail("GPUWRF_DECOMPOSE is set in the environment; use --decompose (or unset it)")
+    # Track P surface controls ride the native driver's traced clock base; other paths refuse, never ignore.
+    surface_controls = getattr(args, "surface_controls", None)
+    if surface_controls is not None:
+        if decompose or not (max_dom > 1 or native_single):
+            return _fail("--surface-controls needs the native driver (nested or native single-domain d01 from "
+                         "wrfinput/wrfbdy); --decompose and CPU-WRF replay runs are not supported")
+        try:
+            from gpuwrf.surface_params.controls import load_controls
+
+            _sc_fields, _sc_manifest = load_controls(surface_controls)
+        except (OSError, ValueError, KeyError) as exc:
+            return _fail(f"--surface-controls: {exc}")
+        unused = sorted(set(_sc_manifest["domains"]) - {f"d{i:02d}" for i in range(1, int(max_dom) + 1)})
+        if unused:
+            return _fail(f"--surface-controls: entries for domains outside this run: {unused}")
+        run_metadata["surface_controls"] = {"path": str(Path(surface_controls).resolve()),
+                                            "domains": {d: e["digest"] for d, e in _sc_manifest["domains"].items()}}
+        from gpuwrf.surface_params.controls import HOST_CONTROLS
+
+        _sc_host = sorted({n for e in _sc_manifest["domains"].values() for n in e["names"] if n in HOST_CONTROLS})
+        if _sc_host and (getattr(args, "checkpoint_dir", None) is not None
+                         or getattr(args, "resume_checkpoint", None) is not None):
+            # The restart digests cover the traced controls only; a host control would resume unchecked.
+            return _fail(f"--surface-controls host controls {_sc_host} cannot be combined with checkpoint/resume (v0.4.1)")
     # Checkpoint/resume lives in the shared native driver (nested or native
     # single-root d01). The CPU-WRF replay / non-d01 single-domain compatibility
     # path has no restart store, so it refuses the flags instead of ignoring them.
@@ -1238,6 +1272,7 @@ def _cmd_run(args: argparse.Namespace) -> int:
             checkpoint_reserve_bytes=getattr(args, "checkpoint_reserve_bytes", 10 * 1024**3),
             resume_checkpoint=getattr(args, "resume_checkpoint", None),
             extend_end_time=bool(getattr(args, "extend_run", False)),
+            surface_controls=getattr(args, "surface_controls", None),
         )
         if nested_config.feedback:
             print(

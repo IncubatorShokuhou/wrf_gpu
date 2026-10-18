@@ -1,0 +1,1294 @@
+{
+  "schema": "gpuwrf.optimize.result.v1",
+  "region": "swiss-d01-SYNTHETIC-DATES",
+  "objective": "T2",
+  "recommended": {
+    "id": "p-c8964de962e8",
+    "physics": {
+      "bl_pbl_physics": [
+        5
+      ],
+      "cu_physics": [
+        1
+      ],
+      "mp_physics": [
+        8
+      ],
+      "ra_lw_physics": [
+        4
+      ],
+      "ra_sw_physics": [
+        4
+      ],
+      "sf_sfclay_physics": [
+        5
+      ],
+      "sf_surface_physics": [
+        4
+      ]
+    },
+    "admission": null,
+    "status": "RELEASED_v0.4.0",
+    "release": {
+      "release": "v0.4.0",
+      "best_E41": "PASS",
+      "qualified_by": [
+        {
+          "run": "c36",
+          "geography": "Madrid-urban",
+          "D6": "PASS",
+          "E41": "PASS",
+          "gate_hours": 24
+        },
+        {
+          "run": "c71",
+          "geography": "Madrid-official-NCAR-soil+IRFRACT",
+          "D6": "PASS",
+          "E41": "PASS",
+          "gate_hours": 24
+        },
+        {
+          "run": "c72",
+          "geography": "Madrid-official-NCAR-soil+IRFRACT",
+          "D6": "PASS",
+          "E41": "PASS",
+          "gate_hours": 24
+        },
+        {
+          "run": "c73",
+          "geography": "Madrid-official-NCAR-soil+IRFRACT",
+          "D6": "PASS",
+          "E41": "PASS",
+          "gate_hours": 24
+        },
+        {
+          "run": "c46",
+          "geography": "Swiss",
+          "D6": "PASS",
+          "E41": "FAIL",
+          "gate_hours": 24
+        },
+        {
+          "run": "c90",
+          "geography": "Swiss",
+          "D6": "PASS",
+          "E41": "FAIL",
+          "gate_hours": 24
+        }
+      ]
+    },
+    "warnings": {
+      "d15": [],
+      "d16": [],
+      "d17": [],
+      "d18": [],
+      "d19": []
+    },
+    "context": {
+      "d15": {
+        "run": "c36",
+        "geography": "Madrid-urban",
+        "E41": "PASS",
+        "differences": {
+          "physics.sf_urban_physics": {
+            "case": 0,
+            "qualified_run": 1
+          }
+        }
+      },
+      "d16": {
+        "run": "c36",
+        "geography": "Madrid-urban",
+        "E41": "PASS",
+        "differences": {
+          "physics.sf_urban_physics": {
+            "case": 0,
+            "qualified_run": 1
+          }
+        }
+      },
+      "d17": {
+        "run": "c36",
+        "geography": "Madrid-urban",
+        "E41": "PASS",
+        "differences": {
+          "physics.sf_urban_physics": {
+            "case": 0,
+            "qualified_run": 1
+          }
+        }
+      },
+      "d18": {
+        "run": "c36",
+        "geography": "Madrid-urban",
+        "E41": "PASS",
+        "differences": {
+          "physics.sf_urban_physics": {
+            "case": 0,
+            "qualified_run": 1
+          }
+        }
+      },
+      "d19": {
+        "run": "c36",
+        "geography": "Madrid-urban",
+        "E41": "PASS",
+        "differences": {
+          "physics.sf_urban_physics": {
+            "case": 0,
+            "qualified_run": 1
+          }
+        }
+      }
+    }
+  },
+  "rounds": [
+    {
+      "round": 0,
+      "train_dates": 2,
+      "dates": [
+        "d15",
+        "d16"
+      ],
+      "scores": [
+        {
+          "id": "p-c8964de962e8",
+          "loss": 0.10333854952870357,
+          "metrics": [
+            {
+              "variable": "t2",
+              "units": "degC",
+              "n": 8,
+              "stations": 4,
+              "rmse": 0.10333854952870357,
+              "scale": 1.0
+            }
+          ]
+        },
+        {
+          "id": "p-727b941dbde2",
+          "loss": 0.1327319290870086,
+          "metrics": [
+            {
+              "variable": "t2",
+              "units": "degC",
+              "n": 8,
+              "stations": 4,
+              "rmse": 0.1327319290870086,
+              "scale": 1.0
+            }
+          ]
+        }
+      ],
+      "common_rows": 8,
+      "keep": 2,
+      "survivors": [
+        "p-c8964de962e8",
+        "p-727b941dbde2"
+      ]
+    },
+    {
+      "round": 1,
+      "train_dates": 3,
+      "dates": [
+        "d15",
+        "d16",
+        "d17"
+      ],
+      "scores": [
+        {
+          "id": "p-c8964de962e8",
+          "loss": 0.09512619880586318,
+          "metrics": [
+            {
+              "variable": "t2",
+              "units": "degC",
+              "n": 12,
+              "stations": 4,
+              "rmse": 0.09512619880586318,
+              "scale": 1.0
+            }
+          ]
+        },
+        {
+          "id": "p-727b941dbde2",
+          "loss": 0.13898573842549422,
+          "metrics": [
+            {
+              "variable": "t2",
+              "units": "degC",
+              "n": 12,
+              "stations": 4,
+              "rmse": 0.13898573842549422,
+              "scale": 1.0
+            }
+          ]
+        }
+      ],
+      "common_rows": 12,
+      "keep": 1,
+      "survivors": [
+        "p-c8964de962e8"
+      ]
+    }
+  ],
+  "held_out": {
+    "loss": 0.09493237496708011,
+    "metrics": [
+      {
+        "variable": "t2",
+        "units": "degC",
+        "n": 8,
+        "stations": 4,
+        "rmse": 0.09493237496708011,
+        "scale": 1.0
+      }
+    ],
+    "uncertainty": {
+      "method": "UTC date-block bootstrap; correlated dates can understate uncertainty",
+      "interval95": [
+        0.08674941782548165,
+        0.1024638967672058
+      ],
+      "dates": 2,
+      "repetitions": 400,
+      "seed": 0
+    }
+  },
+  "budget_case_hours": 24,
+  "planned_case_hours": 24,
+  "evaluated_case_hours": 24,
+  "test_start": "2023-01-18T00:00:00+00:00",
+  "train_cases": [
+    "d15",
+    "d16",
+    "d17"
+  ],
+  "test_cases": [
+    "d18",
+    "d19"
+  ],
+  "model_sha256": "2043cb5e7696cc4852959a848026c9d406479dd58466ae59266f1c19582aae23",
+  "provenance": [
+    {
+      "path": "<DATA_ROOT>/wrf_gpu2/scratch/w41-optimize/gpusmoke1/A/study.json",
+      "sha256": "d92dffd2a63af82352622935dbc4cf178b3f26ae5b0161844520eacbed1ccd59",
+      "bytes": 999
+    },
+    {
+      "path": "<DATA_ROOT>/wrf_gpu2/scratch/w41-optimize/gpusmoke1/A/stations.csv",
+      "sha256": "e827c356ed406714e57a99f6f11c23a0c5c4686ffbf86472c8d38be44fd5b0ee",
+      "bytes": 256
+    },
+    {
+      "path": "<DATA_ROOT>/wrf_gpu2/scratch/w41-optimize/gpusmoke1/A/observations.csv",
+      "sha256": "fdeea94f617fbe44bca9b97918280928e3a26d3ce00173787e3295c39d4c7a41",
+      "bytes": 963
+    },
+    {
+      "path": "<DATA_ROOT>/wrf_gpu2/scratch/w41-optimize/gpusmoke1/A/cases/2023-01-15/namelist.input",
+      "sha256": "98eb3e0457b53a510931401ad1575e980a716da4588f8cbca4be95fd92846039",
+      "bytes": 3701
+    },
+    {
+      "path": "<DATA_ROOT>/wrf_gpu2/scratch/w41-optimize/gpusmoke1/A/cases/2023-01-16/namelist.input",
+      "sha256": "f7e32d967d6855e0d2a0791f0c5277a4c88314947189e909164333d787dffc4b",
+      "bytes": 3701
+    },
+    {
+      "path": "<DATA_ROOT>/wrf_gpu2/scratch/w41-optimize/gpusmoke1/A/cases/2023-01-17/namelist.input",
+      "sha256": "d48f6d322445faf33887f17173dd6640901c7671257ac9cb3ac003d32f772143",
+      "bytes": 3701
+    },
+    {
+      "path": "<DATA_ROOT>/wrf_gpu2/scratch/w41-optimize/gpusmoke1/A/cases/2023-01-18/namelist.input",
+      "sha256": "ff996ae7c3b47c56810da6611d47d87b9a37933aa81992c57f84317c368009c2",
+      "bytes": 3701
+    },
+    {
+      "path": "<DATA_ROOT>/wrf_gpu2/scratch/w41-optimize/gpusmoke1/A/cases/2023-01-19/namelist.input",
+      "sha256": "89ce1faa068c0a71e9f1c9fcb1b2161c42fba9b112391415e047f1a0ecd41925",
+      "bytes": 3701
+    },
+    {
+      "path": "<USER_HOME>/src/wrf_gpu2_wt/w41-optimize/src/gpuwrf/optimize/released_v0.4.0.json",
+      "sha256": "c40a0ef8f1fded78da897b78fe524a5d845287c2c251f5b593309e3918feb96b",
+      "bytes": 81482
+    },
+    {
+      "candidate": "p-727b941dbde2",
+      "case": "d15",
+      "extraction": {
+        "files": [
+          "<DATA_ROOT>/wrf_gpu2/scratch/w41-optimize/gpusmoke1/A/run/batch-000/runs/member-000/wrfout/wrfout_d01_2023-01-15_00:00:00",
+          "<DATA_ROOT>/wrf_gpu2/scratch/w41-optimize/gpusmoke1/A/run/batch-000/runs/member-000/wrfout/wrfout_d01_2023-01-15_01:00:00",
+          "<DATA_ROOT>/wrf_gpu2/scratch/w41-optimize/gpusmoke1/A/run/batch-000/runs/member-000/wrfout/wrfout_d01_2023-01-15_02:00:00",
+          "<DATA_ROOT>/wrf_gpu2/scratch/w41-optimize/gpusmoke1/A/run/batch-000/runs/member-000/wrfout/wrfout_d01_2023-01-15_03:00:00"
+        ],
+        "frames": 4,
+        "method": "nearest",
+        "land_aware": false,
+        "lapse_rate_K_per_m": 0.0,
+        "wind_height": "as-is",
+        "non_10m_stations": 0,
+        "wind_frame": "grid",
+        "gust_variable": null,
+        "gust_hours": null,
+        "rain_resets": "refused",
+        "sampling": [
+          {
+            "station_uid": "s0",
+            "flat_nodes": [
+              387,
+              388,
+              429,
+              430
+            ],
+            "weights": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          },
+          {
+            "station_uid": "s1",
+            "flat_nodes": [
+              491,
+              492,
+              533,
+              534
+            ],
+            "weights": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          },
+          {
+            "station_uid": "s2",
+            "flat_nodes": [
+              1229,
+              1230,
+              1271,
+              1272
+            ],
+            "weights": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          },
+          {
+            "station_uid": "s3",
+            "flat_nodes": [
+              1247,
+              1248,
+              1289,
+              1290
+            ],
+            "weights": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          }
+        ],
+        "undefined_vector_direction_excluded": 0
+      },
+      "inputs": [
+        {
+          "path": "<DATA_ROOT>/wrf_gpu2/scratch/w41-optimize/gpusmoke1/A/run/batch-000/runs/member-000/wrfout/wrfout_d01_2023-01-15_00:00:00",
+          "sha256": "a8832b131120e87987cc738b063eac101956871e2dc17e04c5987eb3b431fe63",
+          "bytes": 12308032
+        },
+        {
+          "path": "<DATA_ROOT>/wrf_gpu2/scratch/w41-optimize/gpusmoke1/A/run/batch-000/runs/member-000/wrfout/wrfout_d01_2023-01-15_01:00:00",
+          "sha256": "e27004d1a7d2844d199a02c4be8f6a466c927ad21f6941ba660e7d5ad38c15e0",
+          "bytes": 12308032
+        },
+        {
+          "path": "<DATA_ROOT>/wrf_gpu2/scratch/w41-optimize/gpusmoke1/A/run/batch-000/runs/member-000/wrfout/wrfout_d01_2023-01-15_02:00:00",
+          "sha256": "ec77de97cbddcfb82bb6f6db5e7a1ff28c147111086284c21a12e2bb6e40cf35",
+          "bytes": 12308032
+        },
+        {
+          "path": "<DATA_ROOT>/wrf_gpu2/scratch/w41-optimize/gpusmoke1/A/run/batch-000/runs/member-000/wrfout/wrfout_d01_2023-01-15_03:00:00",
+          "sha256": "773fc8613ce896d6d9711eeacfc6e5cebc26409ad5940297d0739ed66739a420",
+          "bytes": 12308032
+        },
+        {
+          "path": "<DATA_ROOT>/wrf_gpu2/scratch/w41-optimize/gpusmoke1/A/run/batch-000/plan.json",
+          "sha256": "289008a3570117c51b5a132b41d6ff71360d9edb7fd5e29cc2b5c75291ed87d3",
+          "bytes": 2393
+        }
+      ]
+    },
+    {
+      "candidate": "p-727b941dbde2",
+      "case": "d16",
+      "extraction": {
+        "files": [
+          "<DATA_ROOT>/wrf_gpu2/scratch/w41-optimize/gpusmoke1/A/run/batch-000/runs/member-002/wrfout/wrfout_d01_2023-01-16_00:00:00",
+          "<DATA_ROOT>/wrf_gpu2/scratch/w41-optimize/gpusmoke1/A/run/batch-000/runs/member-002/wrfout/wrfout_d01_2023-01-16_01:00:00",
+          "<DATA_ROOT>/wrf_gpu2/scratch/w41-optimize/gpusmoke1/A/run/batch-000/runs/member-002/wrfout/wrfout_d01_2023-01-16_02:00:00",
+          "<DATA_ROOT>/wrf_gpu2/scratch/w41-optimize/gpusmoke1/A/run/batch-000/runs/member-002/wrfout/wrfout_d01_2023-01-16_03:00:00"
+        ],
+        "frames": 4,
+        "method": "nearest",
+        "land_aware": false,
+        "lapse_rate_K_per_m": 0.0,
+        "wind_height": "as-is",
+        "non_10m_stations": 0,
+        "wind_frame": "grid",
+        "gust_variable": null,
+        "gust_hours": null,
+        "rain_resets": "refused",
+        "sampling": [
+          {
+            "station_uid": "s0",
+            "flat_nodes": [
+              387,
+              388,
+              429,
+              430
+            ],
+            "weights": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          },
+          {
+            "station_uid": "s1",
+            "flat_nodes": [
+              491,
+              492,
+              533,
+              534
+            ],
+            "weights": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          },
+          {
+            "station_uid": "s2",
+            "flat_nodes": [
+              1229,
+              1230,
+              1271,
+              1272
+            ],
+            "weights": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          },
+          {
+            "station_uid": "s3",
+            "flat_nodes": [
+              1247,
+              1248,
+              1289,
+              1290
+            ],
+            "weights": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          }
+        ],
+        "undefined_vector_direction_excluded": 0
+      },
+      "inputs": [
+        {
+          "path": "<DATA_ROOT>/wrf_gpu2/scratch/w41-optimize/gpusmoke1/A/run/batch-000/runs/member-002/wrfout/wrfout_d01_2023-01-16_00:00:00",
+          "sha256": "90dc4cca2e0f3c5bbc36538648008d07a56717bef0ebec15a19108a08cd14dc4",
+          "bytes": 12308032
+        },
+        {
+          "path": "<DATA_ROOT>/wrf_gpu2/scratch/w41-optimize/gpusmoke1/A/run/batch-000/runs/member-002/wrfout/wrfout_d01_2023-01-16_01:00:00",
+          "sha256": "8595d7ffce9c599a627083f5125f81b10bf8692fb82ce0b9747c55e72a066dd7",
+          "bytes": 12308032
+        },
+        {
+          "path": "<DATA_ROOT>/wrf_gpu2/scratch/w41-optimize/gpusmoke1/A/run/batch-000/runs/member-002/wrfout/wrfout_d01_2023-01-16_02:00:00",
+          "sha256": "cedbac9f6fe55be2d5238bf172498050906fa4cd657a22e90083936ab30da834",
+          "bytes": 12308032
+        },
+        {
+          "path": "<DATA_ROOT>/wrf_gpu2/scratch/w41-optimize/gpusmoke1/A/run/batch-000/runs/member-002/wrfout/wrfout_d01_2023-01-16_03:00:00",
+          "sha256": "ef8b8523868ff2a34982b7ad13ea0e27edd2e76d87358dc04c2c2b78a078fc5d",
+          "bytes": 12308032
+        },
+        {
+          "path": "<DATA_ROOT>/wrf_gpu2/scratch/w41-optimize/gpusmoke1/A/run/batch-000/plan.json",
+          "sha256": "289008a3570117c51b5a132b41d6ff71360d9edb7fd5e29cc2b5c75291ed87d3",
+          "bytes": 2393
+        }
+      ]
+    },
+    {
+      "candidate": "p-c8964de962e8",
+      "case": "d15",
+      "extraction": {
+        "files": [
+          "<DATA_ROOT>/wrf_gpu2/scratch/w41-optimize/gpusmoke1/A/run/batch-000/runs/member-001/wrfout/wrfout_d01_2023-01-15_00:00:00",
+          "<DATA_ROOT>/wrf_gpu2/scratch/w41-optimize/gpusmoke1/A/run/batch-000/runs/member-001/wrfout/wrfout_d01_2023-01-15_01:00:00",
+          "<DATA_ROOT>/wrf_gpu2/scratch/w41-optimize/gpusmoke1/A/run/batch-000/runs/member-001/wrfout/wrfout_d01_2023-01-15_02:00:00",
+          "<DATA_ROOT>/wrf_gpu2/scratch/w41-optimize/gpusmoke1/A/run/batch-000/runs/member-001/wrfout/wrfout_d01_2023-01-15_03:00:00"
+        ],
+        "frames": 4,
+        "method": "nearest",
+        "land_aware": false,
+        "lapse_rate_K_per_m": 0.0,
+        "wind_height": "as-is",
+        "non_10m_stations": 0,
+        "wind_frame": "grid",
+        "gust_variable": null,
+        "gust_hours": null,
+        "rain_resets": "refused",
+        "sampling": [
+          {
+            "station_uid": "s0",
+            "flat_nodes": [
+              387,
+              388,
+              429,
+              430
+            ],
+            "weights": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          },
+          {
+            "station_uid": "s1",
+            "flat_nodes": [
+              491,
+              492,
+              533,
+              534
+            ],
+            "weights": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          },
+          {
+            "station_uid": "s2",
+            "flat_nodes": [
+              1229,
+              1230,
+              1271,
+              1272
+            ],
+            "weights": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          },
+          {
+            "station_uid": "s3",
+            "flat_nodes": [
+              1247,
+              1248,
+              1289,
+              1290
+            ],
+            "weights": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          }
+        ],
+        "undefined_vector_direction_excluded": 0
+      },
+      "inputs": [
+        {
+          "path": "<DATA_ROOT>/wrf_gpu2/scratch/w41-optimize/gpusmoke1/A/run/batch-000/runs/member-001/wrfout/wrfout_d01_2023-01-15_00:00:00",
+          "sha256": "1aad499f9d70603523a6f7d7b566ce436f41145b89a7c4e7818a8503aafac427",
+          "bytes": 12308032
+        },
+        {
+          "path": "<DATA_ROOT>/wrf_gpu2/scratch/w41-optimize/gpusmoke1/A/run/batch-000/runs/member-001/wrfout/wrfout_d01_2023-01-15_01:00:00",
+          "sha256": "d6decfc68eea10eaf5c781f47dd112dad32ee3dbb118eb4cc5007ae0d8e55158",
+          "bytes": 12308032
+        },
+        {
+          "path": "<DATA_ROOT>/wrf_gpu2/scratch/w41-optimize/gpusmoke1/A/run/batch-000/runs/member-001/wrfout/wrfout_d01_2023-01-15_02:00:00",
+          "sha256": "93d622631ea7ff1eb52a7c049cda14ed31407a07217935b8001f0c9255765bd7",
+          "bytes": 12308032
+        },
+        {
+          "path": "<DATA_ROOT>/wrf_gpu2/scratch/w41-optimize/gpusmoke1/A/run/batch-000/runs/member-001/wrfout/wrfout_d01_2023-01-15_03:00:00",
+          "sha256": "ebb9d0f5dfe31435e246adf0556c1ede8ed2ce995768a81a4ec3e23b2a66b1e7",
+          "bytes": 12308032
+        },
+        {
+          "path": "<DATA_ROOT>/wrf_gpu2/scratch/w41-optimize/gpusmoke1/A/run/batch-000/plan.json",
+          "sha256": "289008a3570117c51b5a132b41d6ff71360d9edb7fd5e29cc2b5c75291ed87d3",
+          "bytes": 2393
+        }
+      ]
+    },
+    {
+      "candidate": "p-c8964de962e8",
+      "case": "d16",
+      "extraction": {
+        "files": [
+          "<DATA_ROOT>/wrf_gpu2/scratch/w41-optimize/gpusmoke1/A/run/batch-000/runs/member-003/wrfout/wrfout_d01_2023-01-16_00:00:00",
+          "<DATA_ROOT>/wrf_gpu2/scratch/w41-optimize/gpusmoke1/A/run/batch-000/runs/member-003/wrfout/wrfout_d01_2023-01-16_01:00:00",
+          "<DATA_ROOT>/wrf_gpu2/scratch/w41-optimize/gpusmoke1/A/run/batch-000/runs/member-003/wrfout/wrfout_d01_2023-01-16_02:00:00",
+          "<DATA_ROOT>/wrf_gpu2/scratch/w41-optimize/gpusmoke1/A/run/batch-000/runs/member-003/wrfout/wrfout_d01_2023-01-16_03:00:00"
+        ],
+        "frames": 4,
+        "method": "nearest",
+        "land_aware": false,
+        "lapse_rate_K_per_m": 0.0,
+        "wind_height": "as-is",
+        "non_10m_stations": 0,
+        "wind_frame": "grid",
+        "gust_variable": null,
+        "gust_hours": null,
+        "rain_resets": "refused",
+        "sampling": [
+          {
+            "station_uid": "s0",
+            "flat_nodes": [
+              387,
+              388,
+              429,
+              430
+            ],
+            "weights": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          },
+          {
+            "station_uid": "s1",
+            "flat_nodes": [
+              491,
+              492,
+              533,
+              534
+            ],
+            "weights": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          },
+          {
+            "station_uid": "s2",
+            "flat_nodes": [
+              1229,
+              1230,
+              1271,
+              1272
+            ],
+            "weights": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          },
+          {
+            "station_uid": "s3",
+            "flat_nodes": [
+              1247,
+              1248,
+              1289,
+              1290
+            ],
+            "weights": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          }
+        ],
+        "undefined_vector_direction_excluded": 0
+      },
+      "inputs": [
+        {
+          "path": "<DATA_ROOT>/wrf_gpu2/scratch/w41-optimize/gpusmoke1/A/run/batch-000/runs/member-003/wrfout/wrfout_d01_2023-01-16_00:00:00",
+          "sha256": "41d009276b362f2adf58bf623036ec30f9c33f2648bffb75cebed02d0e6d752e",
+          "bytes": 12308032
+        },
+        {
+          "path": "<DATA_ROOT>/wrf_gpu2/scratch/w41-optimize/gpusmoke1/A/run/batch-000/runs/member-003/wrfout/wrfout_d01_2023-01-16_01:00:00",
+          "sha256": "2c9aef8757f3d6f7ead70d35581976a41f2f9b0cf57c1f5a5b34dfef97b015cc",
+          "bytes": 12308032
+        },
+        {
+          "path": "<DATA_ROOT>/wrf_gpu2/scratch/w41-optimize/gpusmoke1/A/run/batch-000/runs/member-003/wrfout/wrfout_d01_2023-01-16_02:00:00",
+          "sha256": "d8d24dea42584ba8c00ed1a2900f37d1238f91841a6a31ec52d8197ef6ea9700",
+          "bytes": 12308032
+        },
+        {
+          "path": "<DATA_ROOT>/wrf_gpu2/scratch/w41-optimize/gpusmoke1/A/run/batch-000/runs/member-003/wrfout/wrfout_d01_2023-01-16_03:00:00",
+          "sha256": "593b8d47f8b688396e9ebbd1a10628f11062c0337d087d06a27b6051fa477157",
+          "bytes": 12308032
+        },
+        {
+          "path": "<DATA_ROOT>/wrf_gpu2/scratch/w41-optimize/gpusmoke1/A/run/batch-000/plan.json",
+          "sha256": "289008a3570117c51b5a132b41d6ff71360d9edb7fd5e29cc2b5c75291ed87d3",
+          "bytes": 2393
+        }
+      ]
+    },
+    {
+      "candidate": "p-727b941dbde2",
+      "case": "d17",
+      "extraction": {
+        "files": [
+          "<DATA_ROOT>/wrf_gpu2/scratch/w41-optimize/gpusmoke1/A/run/batch-001/runs/member-000/wrfout/wrfout_d01_2023-01-17_00:00:00",
+          "<DATA_ROOT>/wrf_gpu2/scratch/w41-optimize/gpusmoke1/A/run/batch-001/runs/member-000/wrfout/wrfout_d01_2023-01-17_01:00:00",
+          "<DATA_ROOT>/wrf_gpu2/scratch/w41-optimize/gpusmoke1/A/run/batch-001/runs/member-000/wrfout/wrfout_d01_2023-01-17_02:00:00",
+          "<DATA_ROOT>/wrf_gpu2/scratch/w41-optimize/gpusmoke1/A/run/batch-001/runs/member-000/wrfout/wrfout_d01_2023-01-17_03:00:00"
+        ],
+        "frames": 4,
+        "method": "nearest",
+        "land_aware": false,
+        "lapse_rate_K_per_m": 0.0,
+        "wind_height": "as-is",
+        "non_10m_stations": 0,
+        "wind_frame": "grid",
+        "gust_variable": null,
+        "gust_hours": null,
+        "rain_resets": "refused",
+        "sampling": [
+          {
+            "station_uid": "s0",
+            "flat_nodes": [
+              387,
+              388,
+              429,
+              430
+            ],
+            "weights": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          },
+          {
+            "station_uid": "s1",
+            "flat_nodes": [
+              491,
+              492,
+              533,
+              534
+            ],
+            "weights": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          },
+          {
+            "station_uid": "s2",
+            "flat_nodes": [
+              1229,
+              1230,
+              1271,
+              1272
+            ],
+            "weights": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          },
+          {
+            "station_uid": "s3",
+            "flat_nodes": [
+              1247,
+              1248,
+              1289,
+              1290
+            ],
+            "weights": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          }
+        ],
+        "undefined_vector_direction_excluded": 0
+      },
+      "inputs": [
+        {
+          "path": "<DATA_ROOT>/wrf_gpu2/scratch/w41-optimize/gpusmoke1/A/run/batch-001/runs/member-000/wrfout/wrfout_d01_2023-01-17_00:00:00",
+          "sha256": "061f4feae19d1537417aa69d25352f13773b6ceaf6075ee3796f4ff284eda98f",
+          "bytes": 12308032
+        },
+        {
+          "path": "<DATA_ROOT>/wrf_gpu2/scratch/w41-optimize/gpusmoke1/A/run/batch-001/runs/member-000/wrfout/wrfout_d01_2023-01-17_01:00:00",
+          "sha256": "7a52bf408a024c785e33f45af483ef9a148e6251936b128687639e51aa382b7c",
+          "bytes": 12308032
+        },
+        {
+          "path": "<DATA_ROOT>/wrf_gpu2/scratch/w41-optimize/gpusmoke1/A/run/batch-001/runs/member-000/wrfout/wrfout_d01_2023-01-17_02:00:00",
+          "sha256": "5e17d84fa0da024f743d904d81a2e0ed43cdacb4627fd1a5de96d8238f5b1cae",
+          "bytes": 12308032
+        },
+        {
+          "path": "<DATA_ROOT>/wrf_gpu2/scratch/w41-optimize/gpusmoke1/A/run/batch-001/runs/member-000/wrfout/wrfout_d01_2023-01-17_03:00:00",
+          "sha256": "a459be4059e6a5cd639dc067c9e55db5656e19fef87f363213f15943e232ae1e",
+          "bytes": 12308032
+        },
+        {
+          "path": "<DATA_ROOT>/wrf_gpu2/scratch/w41-optimize/gpusmoke1/A/run/batch-001/plan.json",
+          "sha256": "943afca97391c1bfab9265c1d52985c1a2b794a17e34d0939632d48372c76d35",
+          "bytes": 1571
+        }
+      ]
+    },
+    {
+      "candidate": "p-c8964de962e8",
+      "case": "d17",
+      "extraction": {
+        "files": [
+          "<DATA_ROOT>/wrf_gpu2/scratch/w41-optimize/gpusmoke1/A/run/batch-001/runs/member-001/wrfout/wrfout_d01_2023-01-17_00:00:00",
+          "<DATA_ROOT>/wrf_gpu2/scratch/w41-optimize/gpusmoke1/A/run/batch-001/runs/member-001/wrfout/wrfout_d01_2023-01-17_01:00:00",
+          "<DATA_ROOT>/wrf_gpu2/scratch/w41-optimize/gpusmoke1/A/run/batch-001/runs/member-001/wrfout/wrfout_d01_2023-01-17_02:00:00",
+          "<DATA_ROOT>/wrf_gpu2/scratch/w41-optimize/gpusmoke1/A/run/batch-001/runs/member-001/wrfout/wrfout_d01_2023-01-17_03:00:00"
+        ],
+        "frames": 4,
+        "method": "nearest",
+        "land_aware": false,
+        "lapse_rate_K_per_m": 0.0,
+        "wind_height": "as-is",
+        "non_10m_stations": 0,
+        "wind_frame": "grid",
+        "gust_variable": null,
+        "gust_hours": null,
+        "rain_resets": "refused",
+        "sampling": [
+          {
+            "station_uid": "s0",
+            "flat_nodes": [
+              387,
+              388,
+              429,
+              430
+            ],
+            "weights": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          },
+          {
+            "station_uid": "s1",
+            "flat_nodes": [
+              491,
+              492,
+              533,
+              534
+            ],
+            "weights": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          },
+          {
+            "station_uid": "s2",
+            "flat_nodes": [
+              1229,
+              1230,
+              1271,
+              1272
+            ],
+            "weights": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          },
+          {
+            "station_uid": "s3",
+            "flat_nodes": [
+              1247,
+              1248,
+              1289,
+              1290
+            ],
+            "weights": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          }
+        ],
+        "undefined_vector_direction_excluded": 0
+      },
+      "inputs": [
+        {
+          "path": "<DATA_ROOT>/wrf_gpu2/scratch/w41-optimize/gpusmoke1/A/run/batch-001/runs/member-001/wrfout/wrfout_d01_2023-01-17_00:00:00",
+          "sha256": "461ab422e04ee6df82303fb15c67be5c9bb8db0654bcb9949810ca1c62e21cba",
+          "bytes": 12308032
+        },
+        {
+          "path": "<DATA_ROOT>/wrf_gpu2/scratch/w41-optimize/gpusmoke1/A/run/batch-001/runs/member-001/wrfout/wrfout_d01_2023-01-17_01:00:00",
+          "sha256": "3944c2637479dc889ecd7b60fe4b005159110d947cfc6bb0fe4fd6e6ed6d49eb",
+          "bytes": 12308032
+        },
+        {
+          "path": "<DATA_ROOT>/wrf_gpu2/scratch/w41-optimize/gpusmoke1/A/run/batch-001/runs/member-001/wrfout/wrfout_d01_2023-01-17_02:00:00",
+          "sha256": "784628728d7fb781f305a3969195c85d7ea62bdd201ebd3e3b74e1e1c84904ab",
+          "bytes": 12308032
+        },
+        {
+          "path": "<DATA_ROOT>/wrf_gpu2/scratch/w41-optimize/gpusmoke1/A/run/batch-001/runs/member-001/wrfout/wrfout_d01_2023-01-17_03:00:00",
+          "sha256": "766cf17864d79450dc1c80e84551bcb3336d3677d4ce44ff805d3ede47ac92a8",
+          "bytes": 12308032
+        },
+        {
+          "path": "<DATA_ROOT>/wrf_gpu2/scratch/w41-optimize/gpusmoke1/A/run/batch-001/plan.json",
+          "sha256": "943afca97391c1bfab9265c1d52985c1a2b794a17e34d0939632d48372c76d35",
+          "bytes": 1571
+        }
+      ]
+    },
+    {
+      "candidate": "p-c8964de962e8",
+      "case": "d18",
+      "extraction": {
+        "files": [
+          "<DATA_ROOT>/wrf_gpu2/scratch/w41-optimize/gpusmoke1/A/run/batch-002/runs/member-000/wrfout/wrfout_d01_2023-01-18_00:00:00",
+          "<DATA_ROOT>/wrf_gpu2/scratch/w41-optimize/gpusmoke1/A/run/batch-002/runs/member-000/wrfout/wrfout_d01_2023-01-18_01:00:00",
+          "<DATA_ROOT>/wrf_gpu2/scratch/w41-optimize/gpusmoke1/A/run/batch-002/runs/member-000/wrfout/wrfout_d01_2023-01-18_02:00:00",
+          "<DATA_ROOT>/wrf_gpu2/scratch/w41-optimize/gpusmoke1/A/run/batch-002/runs/member-000/wrfout/wrfout_d01_2023-01-18_03:00:00"
+        ],
+        "frames": 4,
+        "method": "nearest",
+        "land_aware": false,
+        "lapse_rate_K_per_m": 0.0,
+        "wind_height": "as-is",
+        "non_10m_stations": 0,
+        "wind_frame": "grid",
+        "gust_variable": null,
+        "gust_hours": null,
+        "rain_resets": "refused",
+        "sampling": [
+          {
+            "station_uid": "s0",
+            "flat_nodes": [
+              387,
+              388,
+              429,
+              430
+            ],
+            "weights": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          },
+          {
+            "station_uid": "s1",
+            "flat_nodes": [
+              491,
+              492,
+              533,
+              534
+            ],
+            "weights": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          },
+          {
+            "station_uid": "s2",
+            "flat_nodes": [
+              1229,
+              1230,
+              1271,
+              1272
+            ],
+            "weights": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          },
+          {
+            "station_uid": "s3",
+            "flat_nodes": [
+              1247,
+              1248,
+              1289,
+              1290
+            ],
+            "weights": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          }
+        ],
+        "undefined_vector_direction_excluded": 0
+      },
+      "inputs": [
+        {
+          "path": "<DATA_ROOT>/wrf_gpu2/scratch/w41-optimize/gpusmoke1/A/run/batch-002/runs/member-000/wrfout/wrfout_d01_2023-01-18_00:00:00",
+          "sha256": "b4cb18f20312fbdf70911b0948794f48ba7ee0e964ffc91181c7e8dab71f8f59",
+          "bytes": 12308032
+        },
+        {
+          "path": "<DATA_ROOT>/wrf_gpu2/scratch/w41-optimize/gpusmoke1/A/run/batch-002/runs/member-000/wrfout/wrfout_d01_2023-01-18_01:00:00",
+          "sha256": "605d6e8e6fe814675264979da809bb3f839100ea51292d60cceaf40f0482271d",
+          "bytes": 12308032
+        },
+        {
+          "path": "<DATA_ROOT>/wrf_gpu2/scratch/w41-optimize/gpusmoke1/A/run/batch-002/runs/member-000/wrfout/wrfout_d01_2023-01-18_02:00:00",
+          "sha256": "df63ad5e90daa96f77dcd7fd669b97d0233309da9b341b1f58989574751144c3",
+          "bytes": 12308032
+        },
+        {
+          "path": "<DATA_ROOT>/wrf_gpu2/scratch/w41-optimize/gpusmoke1/A/run/batch-002/runs/member-000/wrfout/wrfout_d01_2023-01-18_03:00:00",
+          "sha256": "20b1a67ca0e9a17cb6683ad33df03c850e54afb2c9127814e2f414de121d2045",
+          "bytes": 12308032
+        },
+        {
+          "path": "<DATA_ROOT>/wrf_gpu2/scratch/w41-optimize/gpusmoke1/A/run/batch-002/plan.json",
+          "sha256": "bf1ecf15efc1f6d75edcc8e2342fa947f13d225293cacb3c27761d647cbdf7a7",
+          "bytes": 1505
+        }
+      ]
+    },
+    {
+      "candidate": "p-c8964de962e8",
+      "case": "d19",
+      "extraction": {
+        "files": [
+          "<DATA_ROOT>/wrf_gpu2/scratch/w41-optimize/gpusmoke1/A/run/batch-002/runs/member-001/wrfout/wrfout_d01_2023-01-19_00:00:00",
+          "<DATA_ROOT>/wrf_gpu2/scratch/w41-optimize/gpusmoke1/A/run/batch-002/runs/member-001/wrfout/wrfout_d01_2023-01-19_01:00:00",
+          "<DATA_ROOT>/wrf_gpu2/scratch/w41-optimize/gpusmoke1/A/run/batch-002/runs/member-001/wrfout/wrfout_d01_2023-01-19_02:00:00",
+          "<DATA_ROOT>/wrf_gpu2/scratch/w41-optimize/gpusmoke1/A/run/batch-002/runs/member-001/wrfout/wrfout_d01_2023-01-19_03:00:00"
+        ],
+        "frames": 4,
+        "method": "nearest",
+        "land_aware": false,
+        "lapse_rate_K_per_m": 0.0,
+        "wind_height": "as-is",
+        "non_10m_stations": 0,
+        "wind_frame": "grid",
+        "gust_variable": null,
+        "gust_hours": null,
+        "rain_resets": "refused",
+        "sampling": [
+          {
+            "station_uid": "s0",
+            "flat_nodes": [
+              387,
+              388,
+              429,
+              430
+            ],
+            "weights": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          },
+          {
+            "station_uid": "s1",
+            "flat_nodes": [
+              491,
+              492,
+              533,
+              534
+            ],
+            "weights": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          },
+          {
+            "station_uid": "s2",
+            "flat_nodes": [
+              1229,
+              1230,
+              1271,
+              1272
+            ],
+            "weights": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          },
+          {
+            "station_uid": "s3",
+            "flat_nodes": [
+              1247,
+              1248,
+              1289,
+              1290
+            ],
+            "weights": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          }
+        ],
+        "undefined_vector_direction_excluded": 0
+      },
+      "inputs": [
+        {
+          "path": "<DATA_ROOT>/wrf_gpu2/scratch/w41-optimize/gpusmoke1/A/run/batch-002/runs/member-001/wrfout/wrfout_d01_2023-01-19_00:00:00",
+          "sha256": "b620361d53ae356c38bef26af09289d1c88ef30744987fc359e5bd68b7c65c51",
+          "bytes": 12308032
+        },
+        {
+          "path": "<DATA_ROOT>/wrf_gpu2/scratch/w41-optimize/gpusmoke1/A/run/batch-002/runs/member-001/wrfout/wrfout_d01_2023-01-19_01:00:00",
+          "sha256": "fe141aafc9481af41cd53908b0dd2981fbd9a6ce6a9195821b0eea290dbb5c9b",
+          "bytes": 12308032
+        },
+        {
+          "path": "<DATA_ROOT>/wrf_gpu2/scratch/w41-optimize/gpusmoke1/A/run/batch-002/runs/member-001/wrfout/wrfout_d01_2023-01-19_02:00:00",
+          "sha256": "019384e31389c1bbb70d0e27e1d9fce87f418de8c96186977fcba7ed6dc7e6cb",
+          "bytes": 12308032
+        },
+        {
+          "path": "<DATA_ROOT>/wrf_gpu2/scratch/w41-optimize/gpusmoke1/A/run/batch-002/runs/member-001/wrfout/wrfout_d01_2023-01-19_03:00:00",
+          "sha256": "8defc594508e2be26fcfb90f2e967672e7b9d3be56ab64f41fd381f2bc31435c",
+          "bytes": 12308032
+        },
+        {
+          "path": "<DATA_ROOT>/wrf_gpu2/scratch/w41-optimize/gpusmoke1/A/run/batch-002/plan.json",
+          "sha256": "bf1ecf15efc1f6d75edcc8e2342fa947f13d225293cacb3c27761d647cbdf7a7",
+          "bytes": 1505
+        }
+      ]
+    }
+  ],
+  "status": "HELD_OUT_DIAGNOSTIC; no release promotion or guarantee of regional superiority",
+  "scheduled_case_hours": 24,
+  "bundle": {
+    "bundle": "<DATA_ROOT>/wrf_gpu2/release_bundles/v0.4.0",
+    "bundle_json": {
+      "path": "<DATA_ROOT>/wrf_gpu2/release_bundles/v0.4.0/sealed/BUNDLE.json",
+      "sha256": "26ff7727a5eb86e918ced35b86cc231bf89c7a5e46edcee01cfbe87a59b2e6d4",
+      "bytes": 666
+    },
+    "bundle_env": {
+      "path": "<DATA_ROOT>/wrf_gpu2/release_bundles/v0.4.0/bundle.env",
+      "sha256": "284a589ab8b6eff8fdc80b84c6470d3a39e943c4a4e1b20cbad912ad59144913",
+      "bytes": 531
+    },
+    "consumer": {
+      "path": "<USER_HOME>/src/wrf_gpu2_wt/w41-optimize/scripts/release/bundle_consumer.sh",
+      "sha256": "816f5f5be3ebed5d2aeefdbb5f2d5f256599f1fbd0559a880f95730504606681",
+      "bytes": 273
+    },
+    "layer": "<DATA_ROOT>/wrf_gpu2/scratch/w41-optimize/gpusmoke1/A/run/bundle_layer"
+  },
+  "members": {
+    "p-727b941dbde2|d15": {
+      "batch": "batch-000",
+      "member": "member-000",
+      "wall_s": 40.52,
+      "vmhwm_kb": 2773644,
+      "vram_peak_mib": 2214
+    },
+    "p-727b941dbde2|d16": {
+      "batch": "batch-000",
+      "member": "member-002",
+      "wall_s": 48.921,
+      "vmhwm_kb": 2791848,
+      "vram_peak_mib": 2216
+    },
+    "p-c8964de962e8|d15": {
+      "batch": "batch-000",
+      "member": "member-001",
+      "wall_s": 491.323,
+      "vmhwm_kb": 6022324,
+      "vram_peak_mib": 2216
+    },
+    "p-c8964de962e8|d16": {
+      "batch": "batch-000",
+      "member": "member-003",
+      "wall_s": 465.787,
+      "vmhwm_kb": 5971212,
+      "vram_peak_mib": 2216
+    },
+    "p-727b941dbde2|d17": {
+      "batch": "batch-001",
+      "member": "member-000",
+      "wall_s": 39.496,
+      "vmhwm_kb": 3174948,
+      "vram_peak_mib": 2216
+    },
+    "p-c8964de962e8|d17": {
+      "batch": "batch-001",
+      "member": "member-001",
+      "wall_s": 38.348,
+      "vmhwm_kb": 2785352,
+      "vram_peak_mib": 2216
+    },
+    "p-c8964de962e8|d18": {
+      "batch": "batch-002",
+      "member": "member-000",
+      "wall_s": 39.318,
+      "vmhwm_kb": 3181448,
+      "vram_peak_mib": 2216
+    },
+    "p-c8964de962e8|d19": {
+      "batch": "batch-002",
+      "member": "member-001",
+      "wall_s": 39.407,
+      "vmhwm_kb": 3182376,
+      "vram_peak_mib": 2216
+    }
+  }
+}

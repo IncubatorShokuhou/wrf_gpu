@@ -91,7 +91,7 @@ def noahmp_phenology_table(
     land_state: NoahMPLandState,
     forcing: NoahMPForcing,
     static: NoahMPStatic,
-    *, dveg: int = 4,crop=None,
+    *, dveg: int = 4,crop=None,laim=None,saim=None,
 ) -> NoahMPPhenology:
     """Table phenology for dveg=4 (croptype == 0). See module docstring.
 
@@ -102,8 +102,11 @@ def noahmp_phenology_table(
 
     if dveg not in range(1,10):
         raise ValueError("Noah-MP dveg must be 1..9")
+    tables={k:v for k,v in (("laim",laim),("saim",saim)) if v is not None}  # Track P traced (12,ny,nx)
+    if tables and dveg not in (1,3,4):
+        raise ValueError("Track P LAIM/SAIM controls need table phenology (dveg 1/3/4)")
     if crop is not None:
-        base=noahmp_phenology_table(land_state,forcing,static,dveg=dveg)
+        base=noahmp_phenology_table(land_state,forcing,static,dveg=dveg,**tables)
         return _crop_phenology(land_state,static,base,*crop)
     if dveg in (2,5,6,7,8,9):
         return _input_lai_phenology(land_state,forcing,static,dveg)
@@ -139,8 +142,8 @@ def noahmp_phenology_table(
             return a[idx]                       # (ny, nx)
         return a                                # already per-column or scalar
 
-    laim = _gather_monthly(p.laim)                            # (12, ...) monthly LAI
-    saim = _gather_monthly(p.saim)                            # (12, ...) monthly SAI
+    laim = _gather_monthly(p.laim) if laim is None else jnp.asarray(laim, dtype=real_dtype())  # (12, ...) monthly LAI
+    saim = _gather_monthly(p.saim) if saim is None else jnp.asarray(saim, dtype=real_dtype())  # (12, ...) monthly SAI
     hvt = _gather_scalar(p.hvt)                               # canopy top [m]
     hvb = _gather_scalar(p.hvb)                               # canopy bottom [m]
     # FVEG source for dveg=4 = SHDMAX (annual-max green-veg fraction), a per-column

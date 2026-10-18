@@ -70,8 +70,15 @@ def _grid_fdda_restart_config(namelist):
 def _urban_bep_restart_config(namelist):
     """Effective BEP(2)/BEP+BEM(3) selection and domain bound to the native identity (E78)."""
     grid = namelist.grid
-    return {"sf_urban_physics": int(getattr(namelist, "sf_urban_physics", 0) or 0),
-            "domain_shape": [int(grid.nz), int(grid.ny), int(grid.nx)]}
+    config = {"sf_urban_physics": int(getattr(namelist, "sf_urban_physics", 0) or 0),
+              "domain_shape": [int(grid.nz), int(grid.ny), int(grid.nx)]}
+    bem = getattr(getattr(namelist, "urban_bundle", None), "bem", None)
+    if config["sf_urban_physics"] == 3 and bem is not None:
+        from gpuwrf.physics.urban_bem_model import extensions
+        # Only active PV/green-roof selections are bound; PV/GR-off identities stay unchanged.
+        if extensions(bem):
+            config["bem_extensions"] = list(extensions(bem))
+    return config
 
 
 def _validate_urban_bep_snapshot(payload, configs, names, name, modern):
@@ -90,8 +97,11 @@ def _validate_urban_bep_snapshot(payload, configs, names, name, modern):
             or any(type(n) is not int or n <= 0 for n in shape)
             or tuple(shape) != np.shape(payload["state_fields"]["theta"])):
         raise ValueError("restart BEP/BEM bound selection/domain shape differs (E78)")
+    if set(config) - {"sf_urban_physics", "domain_shape", "bem_extensions"}:
+        raise ValueError("restart BEP/BEM bound configuration has unknown keys (E78)")
     from gpuwrf.io.restart_schema import validate_urban_bep
-    validate_urban_bep(group, {"sf_urban_physics": option}, grid_shape=tuple(shape[1:]), nz=shape[0])
+    validate_urban_bep(group, {"sf_urban_physics": option}, grid_shape=tuple(shape[1:]), nz=shape[0],
+                       extensions=config.get("bem_extensions", [] if option == 3 else None))
 
 
 def nested_identity(config, bundles, run_start):
@@ -194,6 +204,12 @@ def nested_identity(config, bundles, run_start):
         name: {"required": bool(getattr(getattr(bundle.namelist,'noahmp_static',None),'glacier',None) is not None),
                "shape": [int(bundle.namelist.grid.ny),int(bundle.namelist.grid.nx)]}
         for name,bundle in bundles.items()}
+    from gpuwrf.surface_params.controls import controls_digest
+    surface_controls = {name: controls_digest(getattr(bundle.namelist, "surface_controls", None))
+                        for name, bundle in bundles.items()}
+    if any(digest is not None for digest in surface_controls.values()):
+        # Track P: the traced parameter VALUES are not in the (content-blind) namelist digest.
+        identity["surface_controls"] = surface_controls
     # Manifests and history-journal owners use JSON. Canonicalize here so
     # resolved tuples (irrigation, BATS tables) have the same list form before
     # publication and after readback; keep all reader comparisons exact.

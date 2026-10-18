@@ -1,0 +1,73 @@
+{
+ "scope": "SYNTHETIC dates (2023-01-16 = relabelled copy of the 2023-01-15 Swiss d01 input); OSSE smoke",
+ "source_inputs": {
+  "namelist.input": "98eb3e0457b53a510931401ad1575e980a716da4588f8cbca4be95fd92846039",
+  "wrfinput_d01": "a5d696550d1dc6713e2e340b8c2fba83811d43f4a94a65ca95266035860e2781",
+  "wrfbdy_d01": "f3e556670e4768326997bdfa1dd8b0f77eb6d5da07d9c4dbf900bf8ff9e30230"
+ },
+ "cases": {
+  "d15": {
+   "namelist.input": "98eb3e0457b53a510931401ad1575e980a716da4588f8cbca4be95fd92846039",
+   "wrfinput_d01": "a5d696550d1dc6713e2e340b8c2fba83811d43f4a94a65ca95266035860e2781",
+   "wrfbdy_d01": "f3e556670e4768326997bdfa1dd8b0f77eb6d5da07d9c4dbf900bf8ff9e30230"
+  },
+  "d16": {
+   "namelist.input": "f7e32d967d6855e0d2a0791f0c5277a4c88314947189e909164333d787dffc4b",
+   "wrfinput_d01": "bdbad00d156f58246a73969828eec00a414f90096059791bebf2e27269319a75",
+   "wrfbdy_d01": "870a2d200c042226cab7120c37c7552292725cd09006f961991006b04b7e4701"
+  }
+ },
+ "ivgtyp_counts": {
+  "1": 28,
+  "4": 1,
+  "5": 899,
+  "7": 782,
+  "10": 20,
+  "12": 12,
+  "15": 22
+ },
+ "stations": 169,
+ "gates": {
+  "lane": "w41-optcont",
+  "registered_utc": "2026-10-17T22:40:00Z",
+  "registered_before": "any GPU run of the continuous mode (none existed at registration)",
+  "osse": {
+   "case": "Swiss d01 2023-01-15 00 UTC (train) + byte copy relabelled 2023-01-16 (held-out; same initial state, SYNTHETIC date)",
+   "hours": 3,
+   "budget_case_hours": 90,
+   "eki": {
+    "members": 10,
+    "iterations": 2,
+    "seed": 20261017
+   },
+   "sigma": {
+    "t2": 0.3,
+    "wind": 0.3
+   },
+   "truth": {
+    "z0_forest": 1.6,
+    "z0_shrub": 0.7
+   },
+   "noise_seed": 17,
+   "tolerance_log": 0.2,
+   "planned_case_hours": 78
+  },
+  "gates": {
+   "G1_recovery": "twin verdict RECOVERED: every parameter |ln(estimate/truth)| <= tolerance_log 0.2 (about +-22 %)",
+   "G2_misfit": "posterior normalised misfit < prior normalised misfit on the training AND the held-out case",
+   "G3_one_program": "program verdict ONE_PROGRAM (one AOT cheap key for d01 over every member) AND cold_or_unknown_members == ['truth|d15'] (the first member) AND every other member aot_cache_warm with 0 cold executables",
+   "G4_budget": "scheduled case-hours == planned 78 (no retry needed); GPU wall <= 20 min including the one cold compile (pause instead of overrun)",
+   "G5_device": "every member run proof names the RTX 5090 (GPU), no CPU member",
+   "G6_default_identity": "release identities Swiss 3356e249 / PROD 196aed9f EXACT on the candidate tree (proofs/s1_port/release_identity.py)",
+   "G7_cpu": "tests/w41_optcont PASS; every registered mutant genuinely killed (assertion failure, 0 setup errors)"
+  },
+  "not_claimed": "regional skill, real-station calibration (pilot phase C, alisios_guard), identifiability on other cases",
+  "amendments": [
+   {
+    "utc": "2026-10-17T22:47:00Z",
+    "before_any_gpu_run": true,
+    "change": "budget_case_hours 78 -> 90 (slack for 4 member retries after an interruption); G4 compares scheduled with planned 78 (unchanged gate)"
+   }
+  ]
+ }
+}

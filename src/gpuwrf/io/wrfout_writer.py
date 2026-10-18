@@ -1485,6 +1485,34 @@ def _epsilon_history_fields(state,bl,shape,*,requested_names=None):
         fields[name]=value
     return fields
 
+
+# PBLs whose WRF shared tke_pbl (Registry.EM_COMMON:1230, Z, rh) the port holds
+# in State.qke, with the factor from that leaf to WRF's TKE: MYJ/QNSE keep
+# q2 = 2*TKE (myj_adapters.py:266, qnse_adapter.py:145; WRF TKE_MYJ=0.5*Q2K,
+# module_bl_myjpbl.F:462, module_bl_qnsepbl.F); BouLac (TKE=tke_pbl,
+# pbl_driver.F:2012), Shin-Hong and GBM (:2099) keep the TKE itself. CAM-UW
+# (bl=9) holds it in its carry; the nested writer passes that as a diagnostic.
+_QKE_TO_TKE_PBL = {2: 0.5, 4: 0.5, 8: 1.0, 11: 1.0, 12: 1.0}
+
+
+def _pbl_tke_history(fields,state,shape,bl):
+    """History TKE_PBL = the PBL's held shared array; the unused Z top keeps the
+    allocation zero (each scheme writes kts:kte). Only the stream's existing slot
+    is filled. Shin-Hong: shinhonginit seeds EPSQ2L/2 before lead-zero history
+    (module_bl_shinhong.F:2270-2277), diag=1 rewrites it (:1601-1603); under
+    CAM-MG its State.cam_tke_pbl (incl. top memory) is the shared array."""
+    if "TKE_PBL" not in fields:
+        return
+    source=_lookup(state,"cam_tke_pbl",None) if bl == 11 else None
+    if source is None:
+        held=_lookup(state,"qke",None)
+        if held is None: raise ValueError(f"bl={bl} TKE_PBL history missing held qke")
+        source=np.zeros((shape[0]+1,*shape[1:]),dtype=np.float32)
+        source[:-1]=np.float32(_QKE_TO_TKE_PBL[bl])*np.asarray(held,dtype=np.float32)
+    value=_coerce_array("TKE_PBL",source,(shape[0]+1,*shape[1:]),dtype=np.float32)
+    if not np.isfinite(value).all(): raise ValueError(f"bl={bl} TKE_PBL history nonfinite")
+    fields["TKE_PBL"]=value
+
 # Generic full-stream placeholders had blank units for active land/AC fields.
 # These definitions are the real WRF inventory, independent of output values.
 from gpuwrf.io.land_history_metadata import LAND_HISTORY_METADATA
@@ -2075,6 +2103,8 @@ def prepare_wrfout_payload(
                 state,_lookup(namelist,'bl_pbl_physics'),(nz,ny,nx),
                 requested_names=requested_names,
             ))
+        if _lookup(namelist,'bl_pbl_physics') in _QKE_TO_TKE_PBL:
+            _pbl_tke_history(fields,state,(nz,ny,nx),int(_lookup(namelist,'bl_pbl_physics')))
         if tracer_names:
             from gpuwrf.tracers.history import history_fields
             fields.update(history_fields(state, namelist, requested_names, selection=tracer_history))

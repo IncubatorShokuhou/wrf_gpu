@@ -1,0 +1,30 @@
+# w41-topowind CPU consumer runs (2026-10-17), JAX_PLATFORMS=cpu, RAM slots 12G
+light group A: 57 passed (max RSS 0.76 GB); light group B: 182 passed, 2 skipped (1.04 GB) [before 10:00Z]
+batch1 rc=137
+batch2 rc=0 82 passed, 118 warnings in 246.44s (0:04:06)
+batch3 rc=0 216 passed, 23 warnings in 196.78s (0:03:16)
+DONE (batch4 NOT run: consumers.sh/mutants.sh reaped by the harness under host memory pressure ~13:1xZ, restart pending approval)
+b1 test_v041_topo_wind rc=0 23 passed, 3 deselected, 9 warnings in 58.11s maxrss_kb=3102636 wall=62.70
+b1 test_v013_operational_smoke rc=143
+b1 test_m7_restart_checkpoint_roundtrip rc=0 3 passed in 3.77s maxrss_kb=874832 wall=5.63
+B1SPLIT_DONE
+ops opsmoke_chunk_00 rc=0 18 passed, 532 warnings in 155.69s (0:02:35) maxrss_kb=3066440 wall=161.05
+ops opsmoke_chunk_01 rc=143
+ops opsmoke_chunk_02 rc=0 19 passed, 99 warnings in 241.65s (0:04:01) maxrss_kb=4728320 wall=249.04
+ops opsmoke_chunk_03 rc=0 18 passed, 10 warnings in 117.85s (0:01:57) maxrss_kb=3009472 wall=123.16
+ops opsmoke_chunk_04 rc=0 19 passed in 319.79s (0:05:19) maxrss_kb=5787448 wall=331.57
+OPS_DONE
+single test_microphysics_operational_runs_and_mutates_56_ rc=0 1 passed in 226.55s (0:03:46) maxrss_kb=6835720 wall=228.59
+single test_microphysics_operational_runs_and_mutates_97_ rc=0 1 passed in 6.83s maxrss_kb=1069748 wall=8.45
+single test_microphysics_operational_runs_and_mutates_11_ rc=0 1 passed in 45.11s maxrss_kb=3195288 wall=46.59
+single test_pbl_operational_runs_and_mixes_1_ rc=0 1 passed, 8 warnings in 14.91s maxrss_kb=1447936 wall=16.95
+single test_pbl_operational_runs_and_mixes_2_ rc=0 1 passed in 19.31s maxrss_kb=1547652 wall=21.54
+single test_pbl_operational_runs_and_mixes_3_ rc=0 1 passed, 7 warnings in 13.03s maxrss_kb=1320924 wall=15.05
+single test_pbl_operational_runs_and_mixes_4_ rc=0 1 passed in 21.70s maxrss_kb=1417060 wall=23.72
+SINGLE_DONE
+batch4 rc=0 151 passed, 6 warnings in 187.22s (0:03:07) batch4 maxrss_kb=2516012 wall=190.06
+ysu WN3 oracle subset: 3 passed (ysu_retest.log)
+operational smoke total: 93/93 (one process OOMs >12G on CPU by accumulation; chunks/singles each pass)
+batch4 (urban multilayer/boundaries, writer composite schema, writer CLAT feedback): see 'batch4 rc=0' line above
+mutants: 12/12 killed by genuine assertions, unmutated sandbox control 17 passed (proofs/w41_topowind/MUTANTS.json);
+  earlier attempts were harness setup refusals (rc4 conftest/cpu_guard, missing data/ + proofs/), not counted (E202)

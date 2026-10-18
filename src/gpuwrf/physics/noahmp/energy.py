@@ -134,6 +134,10 @@ class EnergyParams(NamedTuple):
     vcmx25: jnp.ndarray
     c3psn: jnp.ndarray
     nroot_cell: jnp.ndarray | None = None
+    # --- Track P traced controls (gpuwrf.surface_params): per-column monthly LAIM/SAIM
+    # (12, ny, nx) for PHENOLOGY; None = the table gather (released program).
+    laim: jnp.ndarray | None = None
+    saim: jnp.ndarray | None = None
 
 
 # ----------------------------------------------------------------------------------

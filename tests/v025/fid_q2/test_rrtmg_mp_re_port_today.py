@@ -4,6 +4,8 @@ Pins the oracle's model of the current port on the real 0227 operands and the si
 Thompson radii, has_reqc/i/s = 1, cldovrlp = 2).  When GPUWRF_RRTMG_MP_RE (+ maximum-random McICA) land, the owner
 adds the flag-ON arm: no column outside the frozen bounds vs A (and MP_RE alone == arm E); this OFF arm must keep
 holding with the flags explicitly OFF.  CPU legacy column solvers (tests/conftest: CPU pytest = legacy unless set).
+SWDDIR is WRF's unscaled-cloud ztdbt_nodel beam (w41-swddir); before that fix the legacy (delta-scaled) beam put 31
+cloudy columns outside arm D (up to 181 W/m2, proofs/w41_swddir/legacy_arm_d.py).
 """
 from datetime import datetime
 
@@ -23,6 +25,7 @@ RRSW_SCON = 1368.22  # module_ra_rrtmg_sw.F rrsw_scon: solvar = solcon / rrsw_sc
 def _port_today(fx):
     ncol, nz = fx["in_t"].shape
     out = {"glw": np.zeros(ncol), "olr": np.zeros(ncol), "swdnb": np.zeros(ncol), "swupt": np.zeros(ncol),
+           "swddir": np.zeros(ncol),
            "lwup": np.zeros((ncol, nz + 2)), "lwdn": np.zeros((ncol, nz + 2)), "swup": np.zeros((ncol, nz + 2)),
            "swdn": np.zeros((ncol, nz + 2)), "hlw": np.zeros((ncol, nz)), "hsw": np.zeros((ncol, nz))}
     hours = fx["in_tau"].astype(int)
@@ -45,7 +48,8 @@ def _port_today(fx):
         n = idx.size
         pi = fx["in_pi"][idx].astype(np.float64)
         for key, value in (("glw", lw.surface_down), ("olr", lw.toa_up), ("lwup", lw.flux_up), ("lwdn", lw.flux_down),
-                           ("swdnb", sw.surface_down), ("swupt", sw.toa_up), ("swup", sw.flux_up), ("swdn", sw.flux_down)):
+                           ("swdnb", sw.surface_down), ("swupt", sw.toa_up), ("swup", sw.flux_up), ("swdn", sw.flux_down),
+                           ("swddir", sw.surface_direct)):
             out[key][idx] = np.asarray(value)[:n]
         # port heating_rate is dT/dt; WRF RTHRATENLW/SW = dT/dt / pi_phy (module_ra_rrtmg_lw.F TTEN1D/PI3D)
         out["hlw"][idx] = np.asarray(lw.heating_rate)[:n] / pi

@@ -1,0 +1,469 @@
+{
+ "start_em": "<USER_HOME>/src/wrf_pristine/WRF/dyn_em/start_em.F",
+ "start_em_sha256": "4b6c98a06fb2b2c4472af73415099e311502747dc5543d9e9b1323497d83ddb4",
+ "lines": [
+  1535,
+  1628
+ ],
+ "block_sha256": "0ad1f4b9eaf1284a6184eae5b60d2f7ea398c11b4ba6b9a495852cff166e9708",
+ "compiler": "<USER_HOME>/miniconda3/envs/wrfbuild/bin/gfortran",
+ "variants": {
+  "wrf_fcoptim": {
+   "flags": [
+    "-O2",
+    "-ftree-vectorize",
+    "-funroll-loops"
+   ],
+   "sha256": "6ae9b88d5098a33f719026017cb415f75caa47e9873991561f12e137538f7614",
+   "fma_instructions": 0,
+   "logf_calls": 7
+  },
+  "O0_nocontract": {
+   "flags": [
+    "-O0",
+    "-ffp-contract=off"
+   ],
+   "sha256": "d4f84345b29f57ec79c9b47b962a9143ac5f6679d8c6656e57eced28694d7874",
+   "fma_instructions": 0,
+   "logf_calls": 1
+  },
+  "fma": {
+   "flags": [
+    "-O2",
+    "-mfma",
+    "-ffp-contract=fast"
+   ],
+   "sha256": "98a191475b9e85a8dce7080b42388111f6d49e2a1d1fd0c7b3c1f973f72a1091",
+   "fma_instructions": 3,
+   "logf_calls": 1
+  }
+ },
+ "cases": {
+  "wn3_d01": {
+   "provenance": {
+    "wrfinput": "<DATA_ROOT>/server/work/src/alisios/wrf_gen/wg_20260227_18z_a1/run/run/wrfinput_d01",
+    "ht_source": "<DATA_ROOT>/server/work/src/alisios/wrf_gen/wg_20260227_18z_a1/run/run/wrfout_d01_2026-02-28_00:00:00",
+    "var_sso_geo_em": "<DATA_ROOT>/wrf_gpu2/scratch/w41-topowind/geogrid_wn3/geo_em.d01.nc",
+    "wrfinput_sha256": "b7f75a6bad092cdacd2a2d4b47a4c28994b6727b372f23b1f22bb424a83987d8",
+    "geo_em_sha256": "f3fe98118071d5eabfea034e137b22a38d2fc4bbcd8b5e3a51134561764eb916"
+   },
+   "shape": [
+    70,
+    120
+   ],
+   "runs": {
+    "tw1": {
+     "wrf_fcoptim": {
+      "ctopo_byte_equal": true,
+      "ctopo2_byte_equal": true,
+      "ctopo_max_abs": 0.0,
+      "ctopo2_max_abs": 0.0
+     },
+     "O0_nocontract": {
+      "ctopo_byte_equal": true,
+      "ctopo2_byte_equal": true,
+      "ctopo_max_abs": 0.0,
+      "ctopo2_max_abs": 0.0
+     },
+     "fma": {
+      "ctopo_byte_equal": false,
+      "ctopo2_byte_equal": true,
+      "ctopo_max_abs": 2.384185791015625e-07,
+      "ctopo2_max_abs": 0.0
+     },
+     "census": {
+      "cells": 8400,
+      "land": 1354,
+      "water": 7046,
+      "land_sigma_le_e": 0,
+      "land_log": 1354,
+      "lap_keep": 8188,
+      "lap_blend": 112,
+      "lap_ramp": 30,
+      "lap_zero": 70,
+      "ctopo_min": 0.0,
+      "ctopo_max": 6.329028129577637,
+      "ctopo2_lt1": 100
+     }
+    },
+    "tw2": {
+     "wrf_fcoptim": {
+      "ctopo_byte_equal": true,
+      "ctopo2_byte_equal": true,
+      "ctopo_max_abs": 0.0,
+      "ctopo2_max_abs": 0.0
+     },
+     "O0_nocontract": {
+      "ctopo_byte_equal": true,
+      "ctopo2_byte_equal": true,
+      "ctopo_max_abs": 0.0,
+      "ctopo2_max_abs": 0.0
+     },
+     "fma": {
+      "ctopo_byte_equal": true,
+      "ctopo2_byte_equal": true,
+      "ctopo_max_abs": 0.0,
+      "ctopo2_max_abs": 0.0
+     },
+     "census": {
+      "cells": 8400,
+      "land": 1354,
+      "water": 7046,
+      "land_capped": 28,
+      "land_uncapped": 1326,
+      "ctopo_min": 1.0,
+      "ctopo_max": 2.4806251525878906
+     }
+    }
+   }
+  },
+  "wn3_d02": {
+   "provenance": {
+    "wrfinput": "<DATA_ROOT>/server/work/src/alisios/wrf_gen/wg_20260227_18z_a1/run/run/wrfinput_d02",
+    "ht_source": "<DATA_ROOT>/server/work/src/alisios/wrf_gen/wg_20260227_18z_a1/run/run/wrfout_d02_2026-02-28_00:00:00",
+    "var_sso_geo_em": "<DATA_ROOT>/wrf_gpu2/scratch/w41-topowind/geogrid_wn3/geo_em.d02.nc",
+    "wrfinput_sha256": "6914cb70242ac62bb9a430426caa0bcd344483e996339886b8a5465754a08f3f",
+    "geo_em_sha256": "b9278b6fdc1abe95b454e282ac5d9d23644f8617d8d45a53c1752ec93924f733"
+   },
+   "shape": [
+    117,
+    267
+   ],
+   "runs": {
+    "tw1": {
+     "wrf_fcoptim": {
+      "ctopo_byte_equal": true,
+      "ctopo2_byte_equal": true,
+      "ctopo_max_abs": 0.0,
+      "ctopo2_max_abs": 0.0
+     },
+     "O0_nocontract": {
+      "ctopo_byte_equal": true,
+      "ctopo2_byte_equal": true,
+      "ctopo_max_abs": 0.0,
+      "ctopo2_max_abs": 0.0
+     },
+     "fma": {
+      "ctopo_byte_equal": false,
+      "ctopo2_byte_equal": true,
+      "ctopo_max_abs": 4.76837158203125e-07,
+      "ctopo2_max_abs": 0.0
+     },
+     "census": {
+      "cells": 31239,
+      "land": 1573,
+      "water": 29666,
+      "land_sigma_le_e": 0,
+      "land_log": 1573,
+      "lap_keep": 30819,
+      "lap_blend": 103,
+      "lap_ramp": 42,
+      "lap_zero": 275,
+      "ctopo_min": 0.0,
+      "ctopo_max": 6.385448932647705,
+      "ctopo2_lt1": 317
+     }
+    },
+    "tw2": {
+     "wrf_fcoptim": {
+      "ctopo_byte_equal": true,
+      "ctopo2_byte_equal": true,
+      "ctopo_max_abs": 0.0,
+      "ctopo2_max_abs": 0.0
+     },
+     "O0_nocontract": {
+      "ctopo_byte_equal": true,
+      "ctopo2_byte_equal": true,
+      "ctopo_max_abs": 0.0,
+      "ctopo2_max_abs": 0.0
+     },
+     "fma": {
+      "ctopo_byte_equal": true,
+      "ctopo2_byte_equal": true,
+      "ctopo_max_abs": 0.0,
+      "ctopo2_max_abs": 0.0
+     },
+     "census": {
+      "cells": 31239,
+      "land": 1573,
+      "water": 29666,
+      "land_capped": 282,
+      "land_uncapped": 1291,
+      "ctopo_min": 1.0,
+      "ctopo_max": 2.4806251525878906
+     }
+    }
+   }
+  },
+  "wn3_d03": {
+   "provenance": {
+    "wrfinput": "<DATA_ROOT>/server/work/src/alisios/wrf_gen/wg_20260227_18z_a1/run/run/wrfinput_d03",
+    "ht_source": "<DATA_ROOT>/server/work/src/alisios/wrf_gen/wg_20260227_18z_a1/run/run/wrfout_d03_2026-02-28_00:00:00",
+    "var_sso_geo_em": "<DATA_ROOT>/wrf_gpu2/scratch/w41-topowind/geogrid_wn3/geo_em.d03.nc",
+    "wrfinput_sha256": "342f93f97ad0e746dd40ecbbe947b85c749176aa7e08b882ad59cb01eef5d907",
+    "geo_em_sha256": "9d3336b27c9905632b848e6663e5f5813582806760a804bd64e270618322fb28"
+   },
+   "shape": [
+    93,
+    111
+   ],
+   "runs": {
+    "tw1": {
+     "wrf_fcoptim": {
+      "ctopo_byte_equal": true,
+      "ctopo2_byte_equal": true,
+      "ctopo_max_abs": 0.0,
+      "ctopo2_max_abs": 0.0
+     },
+     "O0_nocontract": {
+      "ctopo_byte_equal": true,
+      "ctopo2_byte_equal": true,
+      "ctopo_max_abs": 0.0,
+      "ctopo2_max_abs": 0.0
+     },
+     "fma": {
+      "ctopo_byte_equal": false,
+      "ctopo2_byte_equal": true,
+      "ctopo_max_abs": 4.76837158203125e-07,
+      "ctopo2_max_abs": 0.0
+     },
+     "census": {
+      "cells": 10323,
+      "land": 2034,
+      "water": 8289,
+      "land_sigma_le_e": 0,
+      "land_log": 2034,
+      "lap_keep": 9714,
+      "lap_blend": 217,
+      "lap_ramp": 114,
+      "lap_zero": 278,
+      "ctopo_min": 0.0,
+      "ctopo_max": 6.431849956512451,
+      "ctopo2_lt1": 392
+     }
+    },
+    "tw1_periodic": {
+     "wrf_fcoptim": {
+      "ctopo_byte_equal": true,
+      "ctopo2_byte_equal": true,
+      "ctopo_max_abs": 0.0,
+      "ctopo2_max_abs": 0.0
+     },
+     "O0_nocontract": {
+      "ctopo_byte_equal": true,
+      "ctopo2_byte_equal": true,
+      "ctopo_max_abs": 0.0,
+      "ctopo2_max_abs": 0.0
+     },
+     "fma": {
+      "ctopo_byte_equal": false,
+      "ctopo2_byte_equal": true,
+      "ctopo_max_abs": 4.76837158203125e-07,
+      "ctopo2_max_abs": 0.0
+     },
+     "census": {
+      "cells": 10323,
+      "land": 2034,
+      "water": 8289,
+      "land_sigma_le_e": 0,
+      "land_log": 2034,
+      "lap_keep": 9709,
+      "lap_blend": 217,
+      "lap_ramp": 119,
+      "lap_zero": 278,
+      "ctopo_min": 0.0,
+      "ctopo_max": 6.431849956512451,
+      "ctopo2_lt1": 397
+     }
+    },
+    "tw2": {
+     "wrf_fcoptim": {
+      "ctopo_byte_equal": true,
+      "ctopo2_byte_equal": true,
+      "ctopo_max_abs": 0.0,
+      "ctopo2_max_abs": 0.0
+     },
+     "O0_nocontract": {
+      "ctopo_byte_equal": true,
+      "ctopo2_byte_equal": true,
+      "ctopo_max_abs": 0.0,
+      "ctopo2_max_abs": 0.0
+     },
+     "fma": {
+      "ctopo_byte_equal": true,
+      "ctopo2_byte_equal": true,
+      "ctopo_max_abs": 0.0,
+      "ctopo2_max_abs": 0.0
+     },
+     "census": {
+      "cells": 10323,
+      "land": 2034,
+      "water": 8289,
+      "land_capped": 2034,
+      "land_uncapped": 0,
+      "ctopo_min": 1.0,
+      "ctopo_max": 2.4806251525878906
+     }
+    },
+    "tw2_periodic": {
+     "wrf_fcoptim": {
+      "ctopo_byte_equal": true,
+      "ctopo2_byte_equal": true,
+      "ctopo_max_abs": 0.0,
+      "ctopo2_max_abs": 0.0
+     },
+     "O0_nocontract": {
+      "ctopo_byte_equal": true,
+      "ctopo2_byte_equal": true,
+      "ctopo_max_abs": 0.0,
+      "ctopo2_max_abs": 0.0
+     },
+     "fma": {
+      "ctopo_byte_equal": true,
+      "ctopo2_byte_equal": true,
+      "ctopo_max_abs": 0.0,
+      "ctopo2_max_abs": 0.0
+     },
+     "census": {
+      "cells": 10323,
+      "land": 2034,
+      "water": 8289,
+      "land_capped": 2034,
+      "land_uncapped": 0,
+      "ctopo_min": 1.0,
+      "ctopo_max": 2.4806251525878906
+     }
+    }
+   }
+  },
+  "swiss_d01": {
+   "provenance": {
+    "wrfinput": "<USER_HOME>/wrf_gpu2_lanes/release-docs/RD11/cpu/wrfinput_d01",
+    "ht_source": "<USER_HOME>/wrf_gpu2_lanes/release-docs/RD11/cpu/wrfinput_d01",
+    "var_sso_geo_em": "<DATA_ROOT>/wrf_gpu2/scratch/w41-topowind/geogrid_swiss/geo_em.d01.nc",
+    "wrfinput_sha256": "a5d696550d1dc6713e2e340b8c2fba83811d43f4a94a65ca95266035860e2781",
+    "geo_em_sha256": "256d880589ee1305f477b95748979512fec72ca8fa11b4d0c38bd3c6cadc1a2a"
+   },
+   "shape": [
+    42,
+    42
+   ],
+   "runs": {
+    "tw1": {
+     "wrf_fcoptim": {
+      "ctopo_byte_equal": true,
+      "ctopo2_byte_equal": true,
+      "ctopo_max_abs": 0.0,
+      "ctopo2_max_abs": 0.0
+     },
+     "O0_nocontract": {
+      "ctopo_byte_equal": true,
+      "ctopo2_byte_equal": true,
+      "ctopo_max_abs": 0.0,
+      "ctopo2_max_abs": 0.0
+     },
+     "fma": {
+      "ctopo_byte_equal": false,
+      "ctopo2_byte_equal": true,
+      "ctopo_max_abs": 4.76837158203125e-07,
+      "ctopo2_max_abs": 0.0
+     },
+     "census": {
+      "cells": 1764,
+      "land": 1764,
+      "water": 0,
+      "land_sigma_le_e": 0,
+      "land_log": 1764,
+      "lap_keep": 1101,
+      "lap_blend": 185,
+      "lap_ramp": 165,
+      "lap_zero": 313,
+      "ctopo_min": 0.0,
+      "ctopo_max": 6.612427711486816,
+      "ctopo2_lt1": 478
+     }
+    },
+    "tw2": {
+     "wrf_fcoptim": {
+      "ctopo_byte_equal": true,
+      "ctopo2_byte_equal": true,
+      "ctopo_max_abs": 0.0,
+      "ctopo2_max_abs": 0.0
+     },
+     "O0_nocontract": {
+      "ctopo_byte_equal": true,
+      "ctopo2_byte_equal": true,
+      "ctopo_max_abs": 0.0,
+      "ctopo2_max_abs": 0.0
+     },
+     "fma": {
+      "ctopo_byte_equal": true,
+      "ctopo2_byte_equal": true,
+      "ctopo_max_abs": 0.0,
+      "ctopo2_max_abs": 0.0
+     },
+     "census": {
+      "cells": 1764,
+      "land": 1764,
+      "water": 0,
+      "land_capped": 1764,
+      "land_uncapped": 0,
+      "ctopo_min": 2.4806251525878906,
+      "ctopo_max": 2.4806251525878906
+     }
+    }
+   }
+  },
+  "wn3_d03_sigma_small": {
+   "provenance": {
+    "wrfinput": "<DATA_ROOT>/server/work/src/alisios/wrf_gen/wg_20260227_18z_a1/run/run/wrfinput_d03",
+    "ht_source": "<DATA_ROOT>/server/work/src/alisios/wrf_gen/wg_20260227_18z_a1/run/run/wrfout_d03_2026-02-28_00:00:00",
+    "var_sso_geo_em": "<DATA_ROOT>/wrf_gpu2/scratch/w41-topowind/geogrid_wn3/geo_em.d03.nc",
+    "wrfinput_sha256": "342f93f97ad0e746dd40ecbbe947b85c749176aa7e08b882ad59cb01eef5d907",
+    "geo_em_sha256": "9d3336b27c9905632b848e6663e5f5813582806760a804bd64e270618322fb28",
+    "var_sso_scale": 3e-05
+   },
+   "shape": [
+    93,
+    111
+   ],
+   "runs": {
+    "tw1": {
+     "wrf_fcoptim": {
+      "ctopo_byte_equal": true,
+      "ctopo2_byte_equal": true,
+      "ctopo_max_abs": 0.0,
+      "ctopo2_max_abs": 0.0
+     },
+     "O0_nocontract": {
+      "ctopo_byte_equal": true,
+      "ctopo2_byte_equal": true,
+      "ctopo_max_abs": 0.0,
+      "ctopo2_max_abs": 0.0
+     },
+     "fma": {
+      "ctopo_byte_equal": false,
+      "ctopo2_byte_equal": true,
+      "ctopo_max_abs": 1.1920928955078125e-07,
+      "ctopo2_max_abs": 0.0
+     },
+     "census": {
+      "cells": 10323,
+      "land": 2034,
+      "water": 8289,
+      "land_sigma_le_e": 1307,
+      "land_log": 727,
+      "lap_keep": 9714,
+      "lap_blend": 217,
+      "lap_ramp": 114,
+      "lap_zero": 278,
+      "ctopo_min": 0.0,
+      "ctopo_max": 1.2246935367584229,
+      "ctopo2_lt1": 392
+     }
+    }
+   }
+  }
+ },
+ "PASS_byte_exact_wrf_and_O0": true
+}

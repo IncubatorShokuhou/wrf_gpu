@@ -435,7 +435,13 @@ def test_multilayer_surface_adapter_does_not_read_slucm_ahe_fields(monkeypatch,o
     from gpuwrf.coupling import urban_surface_layer as sf
     state,land,static,rad,clock,_,_,_= _adapter_case()
     diag=surface_layer_with_diagnostics(state,snowh=land.snowh,with_chs=True)
-    monkeypatch.setattr(sf,'revised_surface_layer',lambda state:diag)
+    # 5c0e7c11ed: the multilayer path asks the revised-MM5 layer for its PSIM/PSIH (PBL resistances) too.
+    psim,psih=jnp.full_like(diag.br,1.25),jnp.full_like(diag.br,-0.75)
+    calls=[]
+    def revised(state,*,return_pbl_resistances=False):
+        calls.append(return_pbl_resistances)
+        return (diag,(psim,psih)) if return_pbl_resistances else diag
+    monkeypatch.setattr(sf,'revised_surface_layer',revised)
     carry=namedtuple('Carry',['surface_layer'])(None)
     # The actual multilayer bundle has no SLUCM ahe_opt/requires_inputs fields.
     bundle=SimpleNamespace(option=option,indices=np.array([0]))
@@ -444,6 +450,11 @@ def test_multilayer_surface_adapter_does_not_read_slucm_ahe_fields(monkeypatch,o
         lambda bundle,carry,**kw:(kw['nm'],kw['ust'],carry,None))
     out=noahmp_surface_adapter(state,land,static,radiation=rad,clock=clock,dt=6.,
         history=True,land_history=True,urban=(bundle,carry,(profile,)))
-    assert out[-1].surface_layer is not None
+    assert calls==[True]
+    held=out[-1].surface_layer
+    assert held is not None
+    # the held handoff carries the revised-MM5 BR/PSIM/PSIH, not a recomputed or default layer
+    for got,want in ((held.br,diag.br),(held.psim,psim),(held.psih,psih)):
+        assert np.asarray(got).tobytes()==np.asarray(want).tobytes()
     assert 'accumulator_hfx' not in out[3]
     assert np.isfinite(np.asarray(out[3]['hfx'])).all()

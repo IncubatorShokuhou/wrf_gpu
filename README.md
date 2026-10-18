@@ -1,6 +1,6 @@
 # wrf_gpu
 
-[![Version](https://img.shields.io/badge/version-v0.4.0-2ea44f)](release_notes/RELEASE_NOTES_v0.4.0.md)
+[![Version](https://img.shields.io/badge/version-v0.4.1-2ea44f)](release_notes/RELEASE_NOTES_v0.4.1.md)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
 [![Docs](https://img.shields.io/badge/docs-user%20guide-informational)](https://wrf-gpu.github.io/wrf_gpu/)
 [![Python](https://img.shields.io/badge/python-3.11%2B-blue)](pyproject.toml)
@@ -15,15 +15,15 @@ forecasting: faster turnaround, more forecasts per workstation and less energy
 per forecast hour.
 
 On one RTX 5090, a 24-hour forecast for the Canary Islands with two nested
-domains (9 and 3 km) finishes in **79 seconds**, start-up and output included.
-The main loop of the original WRF needs about **37 minutes** for the same
-forecast on 12 CPU cores (measured with v0.3.2).
+domains (9 and 3 km) finishes in about **100 seconds** with v0.4.1, start-up
+and output included (79 seconds with v0.3.2). The main loop of the original
+WRF needs **37 minutes** on 12 CPU cores.
 
 [First forecast](#your-first-forecast-in-three-steps) ·
 [User guide](https://wrf-gpu.github.io/wrf_gpu/) ·
-[Supported options](docs/release/SUPPORT_MATRIX_v0.4.0.md) ·
+[Supported options](docs/release/SUPPORT_MATRIX_v0.4.1.md) ·
 [Validation](docs/release/VALIDATION_v0.4.0.md) ·
-[Release notes](release_notes/RELEASE_NOTES_v0.4.0.md)
+[Release notes](release_notes/RELEASE_NOTES_v0.4.1.md)
 
 `wrf_gpu` is an independent project, not WRF itself, and is not affiliated
 with or endorsed by UCAR/NCAR.
@@ -54,15 +54,15 @@ have not yet been compared with CPU-WRF.
 
 ## Why wrf_gpu
 
-- **Fast.** 28× the speed of 12-core CPU-WRF on the Canary Islands case. Four
-  independent forecasts sharing one card reach 22× the throughput of the same
-  12 cores.
+- **Fast.** 21× the speed of 12-core CPU-WRF on the Canary Islands case
+  (28× with v0.3.2). Three forecasts sharing one card reach 20× the
+  throughput of those 12 cores.
 - **Faithful to WRF.** Every release is compared field by field with the
   original Fortran WRF run from the same inputs, against limits fixed in
   advance.
 - **Fits your WRF workflow.** Same inputs, same namelist, same output format.
   Fixed nests, checkpoint and restart are supported.
-- **Broad physics.** v0.4.0 runs more than 80 WRF physics options on the GPU,
+- **Broad physics.** More than 80 WRF physics options run on the GPU,
   including the common operational suites.
 - **Many forecasts per card.** A memory-aware launcher runs ensembles and
   independent cases side by side on one GPU.
@@ -94,9 +94,9 @@ meter was used.
 
 <picture><source media="(prefers-color-scheme: dark)" srcset="docs/release/img/v032_energy_dark.png"><img src="docs/release/img/v032_energy.png" alt="Energy per case-forecast-hour: about 6.9 Wh for CPU-WRF versus 0.78 Wh for the RTX 5090 run"></picture>
 
-These benchmarks were measured with v0.3.2. Later releases added WRF
-corrections and many physics options but have not been re-benchmarked end to
-end yet; a fresh benchmark of the current release is planned. Other GPUs and
+These benchmarks were measured with v0.3.2. v0.4.1 takes 4.4 s (21×), and 6.1 s
+for three forecasts (20×):
+[details](release_notes/RELEASE_NOTES_v0.4.1.md#speed). Other GPUs and
 hosts have not been measured. Timing windows, power sampling and raw numbers
 are in the [v0.3.2 measurement report](docs/release/V0.3.2.md).
 
@@ -117,11 +117,34 @@ assumption, reserve and anchor.
 
 </details>
 
-## What's new in v0.4.0
+## What's new in v0.4.1
 
-Released 17 October 2026. The physics menu now covers most of the WRF 4.7.1
-schemes people use, and the model gained the forecast features and tools
-needed around it.
+Released 18 October 2026. All new options are opt-in; the default
+physics is that of v0.4.0 apart from the fixes listed in the release notes.
+
+- **Data assimilation (experimental).** `gpuwrf da` combines an ensemble of
+  short forecasts with radiosonde and station observations into a new starting
+  state for the outer domain, and can cycle forecasts and analyses. Better
+  forecasts are not yet shown.
+- **Terrain winds.** `topo_wind=1/2` adds WRF's sub-grid terrain drag and
+  valley wind correction for the YSU and Shin-Hong boundary layers.
+- **Aerosol and clouds in radiation.** `aer_opt=1/3` feeds aerosol to RRTMG
+  shortwave; `icloud=3` is WRF's scale-aware cloud fraction for radiation.
+- **Tuning without recompiling.** Noah-MP surface parameters such as roughness
+  and albedo can change between runs while the compiled program is reused.
+- **Physics choice and ensembles.** `gpuwrf optimize` compares the released
+  physics sets for your region on the GPU. SKEBS, SPPT and SPP stay within the
+  comparison limits against CPU-WRF run with the same random seeds.
+- **Nested runs compile once per grid.** v0.4.0 compiled the inner nests again
+  for every new forecast date (about 14 minutes on a Tenerife three-domain
+  case); now one compiled program serves all dates of a grid. `gpuwrf aot-key`
+  shows on the CPU which compiled programs two cases share. If you share a
+  compile cache across dates with v0.3.x, read the note in the
+  [release notes](release_notes/RELEASE_NOTES_v0.4.1.md#note-for-users-of-v030-to-v034-nested-runs-with-a-shared-compile-cache).
+
+The new radiation, terrain-wind and stochastic options each passed a 24-hour
+comparison with CPU-WRF in the set-ups tested, so they remain experimental
+elsewhere. The physics on the GPU:
 
 | Physics | Options running on the GPU | Default |
 |---|---|---|
@@ -130,24 +153,14 @@ needed around it.
 | Boundary layer | 14: YSU, MYJ, MYNN, ACM2, QNSE, BouLac, Shin–Hong, TEMF, UW and more | MYNN |
 | Surface layer | 8 | MYNN |
 | Land and water | Noah-MP with its main options, RUC, SSiB; lake, urban canopy and ocean mixed-layer models | Noah-MP |
-| Radiation | RRTMG, RRTM, CAM, Goddard, Dudhia | RRTMG |
+| Radiation | RRTMG (with aerosol and scale-aware cloud fraction), RRTM, CAM, Goddard, Dudhia | RRTMG |
 
-- **Forecast features:** digital-filter initialization; analysis, observation,
-  spectral and surface nudging (FDDA); two-way nesting; stochastic
-  perturbations; wind-farm drag; passive tracers; SST updates and slope
-  radiation.
-- **Ensembles and many cases:** prepare and launch member plans; run
-  independent cases in parallel within the GPU and host memory budget.
-- **Tools:** forecast set-up for any region from open GFS data, forecast and
-  application products, station verification, export to NetCDF, Zarr or GRIB2,
-  a case doctor and land/snow cycling.
-
-Every physics option in the table ran in at least one 24-hour GPU forecast
-compared with CPU-WRF (Goddard radiation: six hours). That does not cover
-every combination or every option inside nested domains, and many
-non-default options are not yet tuned for speed.
-The [support matrix](docs/release/SUPPORT_MATRIX_v0.4.0.md) gives the status
-of each option. Unsupported choices stop before the run with a clear reason.
+Every option in the table ran in at least one 24-hour GPU forecast compared
+with CPU-WRF (Goddard radiation: six hours). Not every combination or option
+inside nested domains is covered, and many non-default options are not yet
+tuned for speed. The
+[support matrix](docs/release/SUPPORT_MATRIX_v0.4.1.md) gives the status of
+each option. Unsupported choices stop before the run with a clear reason.
 
 ## How we check it against WRF
 
@@ -170,6 +183,12 @@ the default physics passed on five real cases over the Canary Islands and the
 Swiss Alps. The comparisons also found real bugs: an error in how the Tiedtke
 cumulus scheme was called made the accumulated-rain difference peak at 1.1 mm;
 after the fix it peaks at 0.03 mm.
+
+From v0.4.1 on, every release is also
+[checked the way operational users run it](release_notes/RELEASE_NOTES_v0.4.1.md#appendix-real-world-release-checks):
+from a warm compile cache, on a new forecast date with longer input files, as
+a 72-hour three-domain forecast compared with CPU-WRF, and from the release
+bundle on several dates.
 
 Results are close to WRF, not bit-identical. GPUs round floating-point
 arithmetic differently, and weather is chaotic, so small differences grow
@@ -195,11 +214,9 @@ pip install -e .
 export GPUWRF_WRF_ROOT=/path/to/WRF   # directory with WRF's run/ tables
 ```
 
-> [!NOTE]
-> Large microphysics lookup tables, including the Thompson tables the
-> quickstart needs, are downloaded on first use from the GitHub release. The
-> upload of the v0.4.0 tables is still pending; until it is done, runs that
-> need them stop with an "asset unavailable" message.
+Large microphysics lookup tables, including the Thompson tables the
+quickstart needs, are downloaded on first use from the GitHub release and
+checked against pinned checksums.
 
 The [installation guide](https://wrf-gpu.github.io/wrf_gpu/installation.html)
 covers optional dependencies and offline table caches.
@@ -244,7 +261,7 @@ scripts/run_parallel_cases.sh --out-root runs/batch CASE_A CASE_B CASE_C -- \
 ```
 
 Long runs can write checkpoints and resume after an interruption, for single
-and nested domains. The [command guide](docs/release/USER_GUIDE_v0.4.0.md)
+and nested domains. The [command guide](docs/release/USER_GUIDE_v0.4.1.md)
 covers checkpoint and restart, ensembles, products, station verification and
 the other tools. If you work with an AI coding assistant, point it at
 [AI_OPERATOR.md](AI_OPERATOR.md).
@@ -285,11 +302,11 @@ shows the largest parts of a time step.
 
 | Version | Highlights |
 |---|---|
+| v0.4.1 | Experimental data assimilation, terrain-corrected winds, shortwave aerosol, scale-aware radiation clouds, Noah-MP tuning without recompiling, regional physics choice on the GPU |
 | v0.4.0 | More than 80 WRF 4.7.1 physics options, nudging, two-way nesting, stochastic physics, ensembles and forecast tools; 66 configurations checked against CPU-WRF |
 | v0.3.4 | Every namelist physics option is applied or refused; single-domain restart |
 | v0.3.3 | WRF-order fixes in turbulence, convection, radiation and snow; 72-hour comparisons |
 | v0.3.2 | 10% faster whole runs; the benchmarks above |
-| v0.3.0 | Single-precision GPU kernels by default, full WRF history output |
 
 Older versions and every change are in the [changelog](CHANGELOG.md) and the
 [release notes](release_notes/README.md).
@@ -303,7 +320,7 @@ If you use `wrf_gpu` in your work, please cite the software and WRF itself:
   title   = {wrf_gpu: a GPU rewrite of the WRF ARW model in JAX},
   author  = {{wrf_gpu contributors}},
   year    = {2026},
-  version = {0.4.0},
+  version = {0.4.1},
   url     = {https://github.com/wrf-gpu/wrf_gpu}
 }
 ```

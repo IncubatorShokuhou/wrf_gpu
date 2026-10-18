@@ -61,6 +61,189 @@ if os.environ.get("JAX_PLATFORMS") == "cpu":
 
 import pytest
 
+# Install before importing test modules: fixtures are not the only possible
+# readers. Keep the real roots fixed when guard unit tests use private roots.
+import sys
+import re
+import subprocess
+from functools import wraps
+from pathlib import Path
+import netCDF4
+from gpuwrf.assimilation.letkf import alisios_guard as _alisios_guard
+
+_ALISIOS_ROOTS = tuple(_alisios_guard.DATA_ROOTS)
+_ALISIOS_REFERENCE_ROOTS = _ALISIOS_ROOTS
+_ALISIOS_SKIP = "ALISIOS data needs alisios_guard.guarded_session"
+
+
+def _check_alisios_access(path, *, dir_fd=None, metadata=False):
+    if not isinstance(path, (str, bytes, os.PathLike, int)):
+        return
+    resolved = _alisios_guard.resolve_path(path, dir_fd=dir_fd)
+    if not any(resolved == root or root in resolved.parents for root in _ALISIOS_ROOTS):
+        return resolved
+    if _alisios_guard.in_guard_setup():
+        return  # scan/admit reads guard metadata before admission, never payload
+    session = _alisios_guard.admitted_session()
+    if session is None:
+        pytest.skip(_ALISIOS_SKIP, allow_module_level=True)
+    if str(resolved) not in session.allowed:
+        if metadata and any(resolved in Path(p).parents for p in session.allowed):
+            return resolved  # resolve/stat parents of the admitted files
+        session.check(resolved, "pytest_open")  # retain the guard's unlisted-path refusal
+        # Unit tests can replace the guard's roots. That must never weaken the
+        # suite's frozen real roots if a synthetic session ignores this path.
+        pytest.skip(_ALISIOS_SKIP, allow_module_level=True)
+    return resolved
+
+
+def _alisios_open_audit(event, args):
+    # CPython emits "open" for both builtins.open and os.open. Directory
+    # discovery is guarded too, before a fixture can enumerate ALISIOS inputs.
+    if event == "open":
+        _check_alisios_access(_alisios_guard.audit_open_path(args[0]))
+    elif event in ("os.listdir", "os.scandir", "os.chdir"):
+        _check_alisios_access(args[0] if args[0] is not None else ".")
+
+
+sys.addaudithook(_alisios_open_audit)
+
+# These APIs do not emit usable CPython audit events. The resolver's own
+# metadata calls use a context-local bypass; payload opens never use it.
+def _metadata_gate(original):
+    @wraps(original)
+    def checked(path, *args, **kwargs):
+        if not _alisios_guard.resolving_path():
+            _check_alisios_access(path, dir_fd=kwargs.get("dir_fd"), metadata=True)
+        return original(path, *args, **kwargs)
+    return checked
+
+
+for _name in ("stat", "lstat", "fstat", "access", "readlink"):
+    setattr(os, _name, _metadata_gate(getattr(os, _name)))
+
+_os_open = os.open
+
+
+@wraps(_os_open)
+def _checked_os_open(path, *args, **kwargs):
+    _check_alisios_access(path, dir_fd=kwargs.get("dir_fd"))
+    with _alisios_guard.audited_os_open(path, dir_fd=kwargs.get("dir_fd")):
+        return _os_open(path, *args, **kwargs)
+
+
+os.open = _checked_os_open
+
+# netCDF's C opens emit no Python audit event. Preserve class/isinstance
+# semantics (xarray tests isinstance(manager, netCDF4.Dataset)) and the actual
+# Dataset objects, rather than replacing Dataset with a plain function.
+_NetCDFDataset = netCDF4.Dataset
+
+
+class _GuardedDatasetMeta(type):
+    # guarded_session can retain this class proxy: it already records opens,
+    # including aliases cached by a test module before the session began.
+    _alisios_read_spy = True
+
+    def __call__(cls, filename, *args, **kwargs):
+        _check_alisios_access(filename)
+        session = _alisios_guard.admitted_session()
+        if session is not None:
+            session.check(filename, "netcdf_open")
+        return _NetCDFDataset(filename, *args, **kwargs)
+
+    def __instancecheck__(cls, instance):
+        return isinstance(instance, _NetCDFDataset)
+
+    def __subclasscheck__(cls, subclass):
+        return subclass is cls or issubclass(subclass, _NetCDFDataset)
+
+    def __getattr__(cls, name):
+        return getattr(_NetCDFDataset, name)
+
+
+netCDF4.Dataset = _GuardedDatasetMeta("Dataset", (), {"__module__": "netCDF4"})
+netCDF4._netCDF4.Dataset = netCDF4.Dataset
+
+
+def _file_path(value):
+    if isinstance(value, (str, bytes, os.PathLike, int)):
+        return value
+    try:
+        return value.fileno()
+    except (AttributeError, OSError, ValueError, TypeError):
+        return None
+
+
+# HDF5 also opens in C. Gate the public constructors without replacing their
+# classes, and record at the actual h5f open/create boundary exactly once.
+try:
+    import h5py
+except ImportError:
+    pass
+else:
+    _h5_init = h5py.File.__init__
+
+    @wraps(_h5_init)
+    def _checked_h5_init(self, name, *args, **kwargs):
+        path = h5py.h5f.get_name(name) if isinstance(name, h5py._objects.ObjectID) else _file_path(name)
+        _check_alisios_access(path)
+        return _h5_init(self, name, *args, **kwargs)
+
+    h5py.File.__init__ = _checked_h5_init
+
+    def _h5_native_gate(original):
+        @wraps(original)
+        def checked(name, *args, **kwargs):
+            _check_alisios_access(name)
+            session = _alisios_guard.admitted_session()
+            if session is not None:
+                session.check(name, "hdf5_open")
+            return original(name, *args, **kwargs)
+        return checked
+
+    for _name in ("open", "create"):
+        setattr(h5py.h5f, _name, _h5_native_gate(getattr(h5py.h5f, _name)))
+
+try:
+    import h5netcdf
+except ImportError:
+    pass
+else:
+    _h5netcdf_init = h5netcdf.File.__init__
+
+    @wraps(_h5netcdf_init)
+    def _checked_h5netcdf_init(self, path, *args, **kwargs):
+        self._closed = True  # close/__del__ must also be safe if admission skips construction
+        _check_alisios_access(_file_path(path))
+        return _h5netcdf_init(self, path, *args, **kwargs)
+
+    h5netcdf.File.__init__ = _checked_h5netcdf_init
+
+
+def pytest_report_collectionfinish(config, start_path, items):
+    """Report source references; they are an inventory, not admission evidence."""
+    affected = {}
+    for item in items:
+        path = Path(item.path)
+        if path not in affected:
+            text = path.read_text(encoding="utf-8")
+            affected[path] = [any(str(root) in text for root in _ALISIOS_REFERENCE_ROOTS), 0]
+        affected[path][1] += 1
+    rows = [(path, count) for path, (protected, count) in affected.items() if protected]
+    count = sum(n for _, n in rows)
+    # Include helpers and frozen JSON provenance, even without collected items.
+    found = subprocess.run(["git", "-C", str(config.rootpath), "grep", "-l", "-I", "-E",
+                            "|".join(re.escape(str(p)) for p in _ALISIOS_REFERENCE_ROOTS),
+                            "--", "tests"], capture_output=True, text=True, timeout=30)
+    inventory = {os.path.relpath(path, config.rootpath): n for path, n in rows}
+    if found.returncode in (0, 1):
+        for path in found.stdout.splitlines():
+            inventory.setdefault(path, 0)
+    return [f"ALISIOS source references: {count} tests in {len(rows)} files; "
+            f"{len(inventory)} source/helper/fixture files; unadmitted access skips",
+            *(f"  {path} ({n} collected tests)" for path, n in sorted(inventory.items()))]
+
 
 @pytest.fixture
 def cpu_pallas_interpret(monkeypatch):
@@ -153,9 +336,8 @@ def pytest_runtest_makereport(item, call):
 #             scout snapshot, boundary re-pin, paper-audit corpus)
 _PREEXISTING_CPU_XFAILS: dict[str, str] = {
     # --- ENV: external harness / data / trace not present on a plain CPU box ---
-    "evals/agentos/test_skill_metadata.py::test_all_skills_have_metadata_and_evals":
-        "ENV: a skill dir (.agent/skills/locking-gpu) ships without evals.json; "
-        "agentos metadata corpus incomplete on this checkout. Pre-existing on v0.17.",
+    # (evals/agentos skill-metadata entry removed: main fd60a94301 added the missing evals.json,
+    # so that test is a binding gate again; w41-redfix.)
     "tests/test_m5_mynn_harness.py::test_mynn_fixture_generation_records_harness_binary":
         "ENV: requires building/linking the single-column WRF MYNN Fortran harness "
         "(scripts/wrf_mynn_harness_build.sh); not built on this box. Pre-existing on v0.17.",

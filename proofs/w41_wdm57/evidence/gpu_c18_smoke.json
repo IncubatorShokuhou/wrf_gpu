@@ -1,0 +1,96 @@
+{
+  "case": "c18",
+  "scope": "actual GPU segment smoke, not WRF fidelity/S1",
+  "harness_sha256": "be9798ce07ad2ab2768f1ad9be62c6aaee9ea6e5dade78325a732c601b4de86e",
+  "source_commit": "4474617f2585ef9d577fc360a7688e2de1efcd15",
+  "source_tree": "777343ef82caa9c68dfc1603f32dfb99686a1107",
+  "cache": "<USER_HOME>/wrf_gpu2_lanes/w41-wdm57/gpu-c18/cache",
+  "native_replay": false,
+  "work": "n_steps200/radiation33/FAST1CENSUS1SLIM0AOTSLIM0MPRE1/AUTOTUNE0",
+  "phase": "PASS",
+  "wall_s": 412.3244207010139,
+  "input_sha256": {
+    "namelist.input": "3e300a78757829bcb3d0a1c923398253b6d8ac40d35cd15d21534cef8aad2d8c",
+    "wrfbdy_d01": "f3e556670e4768326997bdfa1dd8b0f77eb6d5da07d9c4dbf900bf8ff9e30230",
+    "wrfinput_d01": "a5d696550d1dc6713e2e340b8c2fba83811d43f4a94a65ca95266035860e2781"
+  },
+  "platform": "gpu",
+  "device": "cuda:0",
+  "production_unalias_admission": true,
+  "compile_s": 299.7194359690184,
+  "native_sha256": "842d1dd65a31eea35b355830786bc40e9051b13d1a4d08e22b552d7c4dd14ace",
+  "memory": {
+    "argument_size_in_bytes": 40810696,
+    "output_size_in_bytes": 38387372,
+    "alias_size_in_bytes": 38385868,
+    "temp_size_in_bytes": 224576528
+  },
+  "segment_s": 15.031595568027114,
+  "premask_nonfinite": 0,
+  "f2_event_counts": {
+    "negative": 589874,
+    "nonfinite": 0,
+    "above_moisture_cap": 0
+  },
+  "actual_work": {
+    "steps": 200,
+    "acoustic_trips": 1400,
+    "kf_calls": 0,
+    "radiation_tendency_calls": 7,
+    "radiation_surface_calls": 0,
+    "native_mass_guard_events": 0,
+    "radiation_init_calls": 1,
+    "radiation_output_calls": 0,
+    "output_writes": 0
+  },
+  "nonfinite": 0,
+  "state_leaves": 188,
+  "negative_interior_visits": 475669,
+  "F2_qualification": "OPEN: negative events not justified by this smoke",
+  "gpu_lock_s": 417,
+  "cubin_gate": "FAIL; completed actual GPU native scan; see gpu_c18_cubin.json",
+  "artifacts": {
+    "gpu-c18/receipt.json": {
+      "sha256": "5a667423728e463d1bc7faa66167fa6d047be35bee3b8972fe6d65191541e4dd"
+    },
+    "gpu-c18/census.json": {
+      "sha256": "99ed919ea2bf4bd5b7332564de248dd20ffdeaac930a8440771f18a7fa3184c7"
+    },
+    "gpu-c18/f2_negative_summary.json": {
+      "sha256": "d6ee4f402dd6d71cd6f18fd402fa2b77f46470c23c2304a1df707181eec884c8"
+    },
+    "gpu-c18.log": {
+      "sha256": "b142d6df1273b7a639c5e5c679abaa09b56bc6ec1b94827b073da3396e41c9eb"
+    }
+  },
+  "F2_coverage": {
+    "recorded_fields": [
+      "Nc",
+      "Ng",
+      "Nh",
+      "Ni",
+      "Nn",
+      "Nr",
+      "Ns",
+      "nifa",
+      "nwfa",
+      "qc",
+      "qg",
+      "qi",
+      "qr",
+      "qs",
+      "qv"
+    ],
+    "phases": [
+      "post_rk",
+      "pre_boundary_guard",
+      "pre_dynamics_guard",
+      "step_entry"
+    ],
+    "qh_active_in_WDM7_State": true,
+    "qh_pre_mask_record_present": false,
+    "nonfinite_zero_scope": "observed guards and census fields; no hail pre-mask coverage claim",
+    "qualification": "OPEN: negative visits and missing qh pre-mask coverage; final all-leaf finite is separate"
+  },
+  "native_cache_cleaned_after_scan": true
+}

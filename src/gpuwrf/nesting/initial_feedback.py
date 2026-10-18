@@ -55,6 +55,7 @@ def initialize_two_way_domains(hierarchy,bundles,carries,run,nesting,*,kernel_ca
     from gpuwrf.runtime.operational_state import history_instep_diag_enabled,seed_history_diagnostics
 
     reports={}
+    topo_weights={}
     for edge in hierarchy.nests:
         parent,child=edge.parent,edge.child
         pb,cb=bundles[parent],bundles[child]
@@ -71,6 +72,7 @@ def initialize_two_way_domains(hierarchy,bundles,carries,run,nesting,*,kernel_ca
         weights=build_state_feedback_weights(parent_grid_ratio=edge.parent_grid_ratio,
             i_parent_start=edge.i_parent_start,j_parent_start=edge.j_parent_start,
             parent_grid=pb.grid,child_grid=cb.grid,spec_zone=nesting["spec_zone"],smooth_option=nesting["smooth_option"])
+        topo_weights[(parent,child)]=weights.mass
         # med_nest_initial calls feedback before start_domain(child): MU/W
         # still have their input values, while T/QV already passed adjust_tempqv.
         with Dataset(run.path/f"wrfinput_{child}") as ds:
@@ -142,9 +144,12 @@ def initialize_two_way_domains(hierarchy,bundles,carries,run,nesting,*,kernel_ca
         carries[child]=cc
         bundles[parent]=replace(pb,state=new.state,namelist=nl,grid=grid,metrics=m,
             writer_static_overrides=overrides)
+        if "XLAND" in overrides:
+            topo_weights[("xland",parent)]=overrides["XLAND"]
         reports[parent]={"child":child,"source":"mediation_integrate.F med_nest_initial: feedback then start_domain(parent)",
                          "static_override_fields":sorted(overrides),"static_updates_before_steps":True,
                          "radiation_refresh_calls":int(land is not None)}
+    _two_way_topo_wind(hierarchy,bundles,carries,run,topo_weights)
     from gpuwrf.coupling.feedback_aux import seed_feedback_history
     for domain,carry in carries.items():
         if carry.history_diagnostics is None:
@@ -152,3 +157,31 @@ def initialize_two_way_domains(hierarchy,bundles,carries,run,nesting,*,kernel_ca
         carries[domain]=carry.replace(feedback_history=seed_feedback_history(
             run.path,domain,bundles[domain],carry))
     return reports
+
+
+def _two_way_topo_wind(hierarchy,bundles,carries,run,topo_weights):
+    """Registry ctopo/ctopo2 'u' feedback (io.topo_wind_static.feedback_topo_wind_statics).
+
+    start_domain(parent) after med_nest_feedback recomputes CTOPO/CTOPO2 from the fed-back
+    HGT/XLAND (VAR_SSO/VAR are not fed back); each parent step's feedback then writes the
+    child CTOPO/CTOPO2 over the nest. No-op unless some domain sets topo_wind."""
+    from gpuwrf.integration.nested_pipeline import _domain_physics_int
+    from gpuwrf.io.topo_wind_static import domain_ctopo_fields,feedback_topo_wind_statics
+    names=list(bundles)
+    option={d:_domain_physics_int(run,"topo_wind",d,0) for d in names}
+    if not any(option.values()):
+        return
+    own={d:domain_ctopo_fields(run,d,topo_wind=option[d],ht=bundles[d].grid.terrain_height,
+                               xland=topo_weights.get(("xland",d),carries[d].state.xland)) for d in names}
+    depth=lambda d:0 if hierarchy.parent(d) is None else 1+depth(hierarchy.parent(d))
+    edges=sorted(((e.parent,e.child) for e in hierarchy.nests),key=lambda e:-depth(e[1]))
+    statics=feedback_topo_wind_statics(own,{d:int(bundles[d].namelist.bl_pbl_physics) for d in names},
+                                       edges,{e:topo_weights[e] for e in edges})
+    from gpuwrf.integration.d02_replay import wrf_nest_opens_with_parent_start
+    opens_at_start=lambda d:hierarchy.parent(d) is None or (
+        wrf_nest_opens_with_parent_start(run,hierarchy.parent(d),d) and opens_at_start(hierarchy.parent(d)))
+    for d in names:
+        if statics[d] is not None and statics[d].ctopo_first is not None and not opens_at_start(d):
+            # operational_mode._topo_wind_ctopo keys the own-value first step on lead 0.
+            raise NotImplementedError(f"{d}: topo_wind CTOPO feedback onto a nest opened after the run start")
+        bundles[d]=replace(bundles[d],namelist=replace(bundles[d].namelist,topo_wind_static=statics[d]))

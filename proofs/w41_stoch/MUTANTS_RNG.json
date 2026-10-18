@@ -1,0 +1,48 @@
+{
+ "baseline": {
+  "rc": 0,
+  "summary": "7 passed in 23.24s"
+ },
+ "mutants": {
+  "R1_lane_start_off_by_one_proposal": {
+   "rc": 1,
+   "summary": "1 failed in 1.42s",
+   "killed": true,
+   "signature": [
+    "E           AssertionError: 1",
+    "E           assert (292440330885...2578967074876) == (105037825067...6028261365721)",
+    "E             "
+   ]
+  },
+  "R2_resume_drops_last_proposal": {
+   "rc": 1,
+   "summary": "5 failed in 17.27s",
+   "killed": true,
+   "signature": [
+    "E           assert False",
+    "E            +  where False = <function array_equal at 0x75c66ed855f0>(array([   88083812,  -888130499,   126319040,  1943745012,  1554982489,\\n        -215909621, -1712873067,  -141604553], dtype=int32), array([ -889867479,   -11740805,  2026958740,   275437481, -1770830927,\\n       -1200468697, -1434121527,   958795576], dtype=int32))",
+    "E            +    where <function array_equal at 0x75c66ed855f0> = np.array_equal"
+   ]
+  },
+  "R3_compaction_ignores_acceptance": {
+   "rc": 1,
+   "summary": "4 failed, 1 passed in 111.41s (0:01:51)",
+   "killed": true,
+   "signature": [
+    "E           assert False",
+    "E            +  where False = <function array_equal at 0x736d34f85db0>(array([[1060415343, 1050648424, 3195791796, ..., 1053360483, 3219074756,\\n        3202268737],\\n       [1053664125, 3211...  [3212536197, 3199265702, 1061598797, ..., 1050012145, 3214400579,\\n        3213576635]], shape=(43, 43), dtype=uint32), array([[1060415343, 1050648424, 3195791796, ..., 3214217207, 1073778058,\\n        3199430496],\\n       [1059994354,     ...  [1055065341, 3208493913, 3183495092, ..., 2147483648, 1044582114,\\n        2147483648]], shape=(43, 43), dtype=uint32))",
+    "E            +    where <function array_equal at 0x736d34f85db0> = np.array_equal"
+   ]
+  },
+  "R4_fallback_condition_inverted": {
+   "rc": 1,
+   "summary": "1 failed in 109.81s (0:01:49)",
+   "killed": true,
+   "signature": [
+    "E           assert False",
+    "E            +  where False = all(<generator object test_chained_calls_and_fallback_are_bitwise.<locals>.<genexpr> at 0x70944e9f3100>)"
+   ]
+  }
+ },
+ "all_killed": true
+}

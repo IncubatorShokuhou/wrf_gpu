@@ -843,6 +843,14 @@ _RECOGNIZED_CONTROLS: tuple[RecognizedControl, ...] = (
     ),
     # --- PBL / cloud sub-options ------------------------------------------ #
     RecognizedControl(
+        "icloud", "radiation-cloud-fraction",
+        frozenset({1, 2, 3}),
+        "recognized; the port binds WRF icloud=1 (default, cal_cldfra1 + icloud_bl merge), "
+        "icloud=2 (cal_cldfra2) and icloud=3 (cal_cldfra3). icloud=0 (RRTMG cloud-free path) "
+        "is not bound.",
+        "Use icloud=1 (WRF default), 2 or 3.",
+    ),
+    RecognizedControl(
         "icloud_bl", "PBL-cloud-coupling",
         frozenset({1}),
         # v0.3.4 (o1-nlbind): the v0.15 MYNN SGS-cloud chain feeds CLDFRA_BL/QC_BL/
@@ -1040,6 +1048,8 @@ _IMPLEMENTED_CONTROLS: Mapping[str, frozenset[int]] = {
     "topo_shading": frozenset({0, 1}),
     "tracer_opt": frozenset({0, 2}),
     "mfshconv": frozenset({0,1}),
+    "topo_wind": frozenset({0, 1, 2}),
+    "aer_opt": frozenset({0, 1, 3}),
 }
 _IMPLEMENTED_CONTROL_REASON: Mapping[str, tuple[str, str, str]] = {
     "swint_opt": (
@@ -1078,8 +1088,22 @@ _IMPLEMENTED_CONTROL_REASON: Mapping[str, tuple[str, str, str]] = {
         "WRF-Chem tracer modes 1/3/4 are not implemented.",
         "Use tracer_opt=0/2; custom tracers use gpuwrf_tracer_file.",
     ),
+    "topo_wind": (
+        "topographic surface-wind correction (CTOPO/CTOPO2)",
+        "CPU-oracle-qualified; GPU/coupled-forecast qualification pending. start_em CTOPO/CTOPO2 byte-exact "
+        "vs pristine WRF 4.7.1; they reach only YSU (bl=1) and Shin-Hong (bl=11) like WRF, so other PBLs "
+        "run unchanged (warning). topo_wind=1 refuses wrfinput without VAR_SSO (GOT_VAR_SSO=0), "
+        "topo_wind=2 needs the geogrid VAR field.",
+        "Use topo_wind=0, or 1 with WPS varsso data, or 2, with bl_pbl_physics=1 or 11.",
+    ),
     "mfshconv": ('QNSE shallow mass flux','ARW MFSHCONVPBL precedes QNSEPBL for mfshconv=1; WRF resets it to 0 outside bl=4.',
                  'Use mfshconv=0 or 1 with the mandatory bl=4/sf=4 pair.'),
+    "aer_opt": (
+        "radiation aerosol option",
+        "Only aer_opt=1 (Tegen climatology) and aer_opt=3 (Thompson mp28 water/ice-friendly aerosols) in RRTMG SW "
+        "(ra_sw_physics=4) are wired; aer_opt=2 (aer_type/AOD550 inputs) is not ported.",
+        "Use aer_opt=0, aer_opt=1 with ra_sw_physics=4, or aer_opt=3 with mp_physics=28 and ra_sw_physics=4.",
+    ),
 }
 IMPLEMENTED_CONTROL_KEYS: frozenset[str] = frozenset(_IMPLEMENTED_CONTROLS)
 
@@ -1233,6 +1257,17 @@ def _coerce_number(value: object) -> float | None:
 
 # Honest per-scheme qualification notes for IMPLEMENTED options (default reason otherwise).
 _IMPLEMENTED_NOTES: Mapping[tuple[str, int], str] = {
+    ("icloud", 3): "GPU-qualified (v0.4.1: WN3 0227 3-nest 24 h D6 PASS 3/3 vs original CPU-WRF icloud=3, E41 PASS). WRF 4.7.1 "
+    "radiation_driver icloud=3 (G. Thompson cal_cldfra3 + find_cloudLayers/adjust_*): scale-aware RH "
+    "cloud fraction with radiation-only fake condensate; replaces the icloud=1 block incl. the icloud_bl "
+    "MYNN merge exactly as WRF (MYNN keeps its own SGS chain). History CLDFRA = radiation input fraction. "
+    "Literal REAL4 BYTE vs verbatim pristine on 640 real columns; compiled path within WRF FMA/input-ULP "
+    "envelope, XLA log10 small-condensate branch <=15 ulp disclosed. RRTMG 4/4 only; mp 0/1/3/5/11/P3 "
+    "refused. proofs/w41_icloud.",
+    ("icloud", 2): "GPU-qualified (v0.4.1: WN3 0227 3-nest 24 h D6 PASS 3/3 vs original CPU-WRF icloud=2, E41 PASS). WRF 4.7.1 "
+    "radiation_driver icloud=2 (cal_cldfra2: binary qc+qi > 1e-6), replaces the icloud=1 block incl. the icloud_bl "
+    "MYNN merge exactly as WRF. History CLDFRA = radiation input fraction (binary). Literal BYTE vs pristine "
+    "cal_cldfra2. RRTMG 4/4 only. proofs/w41_icloud, proofs/w41_icloud2.",
     ("mp_physics",11): "CPU-oracle-qualified; GPU/coupled-forecast qualification pending. Experimental original nonchem CAM-MG/macrophysics/modal activation, REAL4 seam and held carry with WRF DOUBLE internal island. All48 original public calls literal BYTE; native CPU artifact within independently frozen WRF FMA/input-ULP bounds. No mandatory mp11/bl9/ra3 pairing in WRF; cu!=7 and shcu!=2 warn and zero their convection operands. Native CUDA column compiled by stock Triton 3.6 (pip triton==3.6.*, required for GPU mp11) and launched via jaxlib triton_kernel_call (XLA's bundled Triton miscompiles it to zero precipitation); GPU admitted again (see KNOWN_ISSUES.md#cam-mg-gpu-precipitation); GPU frozen pristine controls and an active 44-level column match the CPU literal; native E41 STACK 1240 B/255 regs disclosed; coupled D6 pending. Standalone shallow convection remains unported.",
     **{('cu_physics',option):'Experimental CPU-oracle-qualified MSKF/KF-CuP/CAM-ZM family; GPU/coupled-forecast/E41 qualification pending. '
        'Dedicated pristine WRF REAL/DOUBLE bodies, actual surface/PBL producers, resident cadence and full restart carry, '
@@ -1291,6 +1326,20 @@ _IMPLEMENTED_NOTES: Mapping[tuple[str, int], str] = {
 
     ('bl_pbl_physics', 16): 'EXPERIMENTAL: CPU-oracle-qualified against unchanged WRF 4.7.1 REAL32 with compiler-defined zero initialization and FP traps off (30 carried cases per scheme); GPU/coupled-forecast qualification pending. Upstream undefined reads (KEPS ttke GET_PBLH:822, radsum:1068, top dtmdz; EEPS radsum:748) materially affect outputs under alternate initialization. This port explicitly mirrors zero semantics. Requires sf_sfclay_physics=1; transports Registry epsilon/TKE scalars and requires versioned restart carry. See docs/EEPS_KEPS.md and proofs/s2_keps/initialization_sensitivity.json.',
     ('bl_pbl_physics', 17): 'EXPERIMENTAL: CPU-oracle-qualified against unchanged WRF 4.7.1 REAL32 with compiler-defined zero initialization and FP traps off (30 carried cases per scheme); GPU/coupled-forecast qualification pending. Upstream undefined reads (KEPS ttke GET_PBLH:822, radsum:1068, top dtmdz; EEPS radsum:748) materially affect outputs under alternate initialization. This port explicitly mirrors zero semantics. Requires sf_sfclay_physics=1; transports Registry epsilon/TKE scalars and requires versioned restart carry. See docs/EEPS_KEPS.md and proofs/s2_keps/initialization_sensitivity.json.',
+    ("aer_opt", 1): "WRF Tegen/ECMWF six-type monthly aerosol climatology in RRTMG SW (aerosol_in on domain 1, "
+        "aer_time_int/aer_p_int at each radiation call, iaer=6 band optics; nests get the parent's aerod by SINT "
+        "force-down like WRF Registry df=(p2c)). CPU-oracle-qualified; GPU 24 h WN3 0227 3-nest forecast matches "
+        "original CPU-WRF (frozen D6 PASS on d01-d03, every field and frame). "
+        "Requires ra_sw_physics=4; LW has no aerosol (as WRF without Chem). The aer_opt=1 SW path also emits WRF's "
+        "unscaled (ztdbt_nodel) direct beam. See docs/AEROSOL.md and proofs/w41_aerosol/.",
+    ("aer_opt", 3): "WRF Thompson water/ice-friendly aerosol optics in RRTMG SW (gt_aod on QNWFA/QNIFA + "
+        "calc_aerosol_rrtmg_sw rural-type RH spectral tables at each radiation call, iaer=10; held TAOD5502D). "
+        "CPU-oracle-qualified; GPU 24 h Swiss mp28 forecast matches original CPU-WRF (frozen D6 PASS, every field "
+        "and frame). E41 on that run (A3c): FAIL on the conservative kInput rule, three optimized-HLO kInput "
+        "transpose fusions of 658/879/1370 instructions, all from pre-existing Thompson mp28 source families (not "
+        "byte-identical kernels; the v0.4.0 mp28 aer_opt=0 run had two, 741/1439); STACK max 16 B, no non-leaf "
+        "callee >1k SASS; the aerosol code adds no flagged fusion. Requires mp_physics=28 (single domains, "
+        "wif_input_opt=1) and ra_sw_physics=4. See docs/AEROSOL.md and proofs/w41_aerosol/.",
     ("swint_opt", 1): "WRF-Solar REAL surface interpolation, refreshed parameters only at radiation calls, "
         "surface fluxes each own step, held atmospheric heating/COSZEN, twelve REAL restart leaves. "
         "CPU-oracle-qualified; GPU/coupled-forecast qualification pending.",
@@ -1411,11 +1460,18 @@ _IMPLEMENTED_NOTES: Mapping[tuple[str, int], str] = {
     ("sf_urban_physics", 3): "Operationally wired into the scan: WRF BEP+BEM including indoor radiation, "
     "wall/window/floor/roof diffusion, occupants/equipment, ventilation, HVAC and moisture regulation, "
     "Noah-MP blend and YSU1/BouLac8 urban PBL tendencies. Requires Noah-MP4, revised-MM5 SF1 and RRTMG4/4; "
-    "MYJ2 needs absent module_bl_myjurb and is refused. Default URBPARM.TBL UTYPE=2 only; LCZ/NUDAPT/PV/green "
-    "roof refused; LCZ needs grouped per-type geometry/carries/PBL sources. Compact REAL32 state and held SF1/radiation are restart-complete. CPU-oracle-qualified "
+    "MYJ2 needs absent module_bl_myjurb and is refused. Default URBPARM.TBL UTYPE=2 only; LCZ/NUDAPT "
+    "refused; LCZ needs grouped per-type geometry/carries/PBL sources. Rooftop PV (PV_FRAC_ROOF>0: radfluxspv/hsfluxpv, "
+    "EP_PV_URB3D) and green roofs (GR_FLAG=1, GR_TYPE 1/2, class GR_FRAC_ROOF>0: roof_temp_veg/soil_moist/"
+    "flux_flat_roof/wall_gr, irrigation IRHO, QGR/TGR/DRAINGR) are CPU-oracle-qualified (proofs/w41_writergaps: REAL8 "
+    "0 violations on every field/step; REAL4 history producers inside WRF's REAL4-vs-REAL8 envelope, green-roof fluxes "
+    "frozen caps); GR_FLAG=0 with GR_FRAC_ROOF>0 and GR_FLAG=1 without a class fraction stay refused. "
+    "Compact REAL32 state and held SF1/radiation are restart-complete. CPU-oracle-qualified "
     "against pristine WRF REAL4/REAL8 full caller, AC on/off and PBL savepoints (proofs/v040/urban_bep_bem); "
     "conditioned REAL4 quantities use approved independent ROUND01 operands, state/REAL8/D6 gates unchanged. "
-    "Authentic Madrid CPU coupled smoke; GPU/coupled-forecast qualification pending. GPU E41/launch cost unmeasured.",
+    "Authentic Madrid CPU coupled smoke. GPU: base BEP+BEM composite c57 E41 FAIL (disclosed); PV 0.3 + green roof 1.0 "
+    "Madrid 9 h smoke finite with all fields written and E41 FAIL of the same class (STACK 976 B); incremental PV/green-roof "
+    "launch/runtime/memory cost unknown (no matched PV/GR-off GPU control); coupled-forecast fidelity vs CPU-WRF pending.",
     ("sf_urban_physics", 1): "Operationally wired into the GPU scan (single-layer urban canopy model SLUCM, v0.4.0 lane o2-urban): "
     "faithful port of phys/module_sf_urban.F (urban_param_init/urban_var_init/urban) coupled exactly like "
     "WRF's noahmp_urban (Noah-MP runs urban cells as NATURAL with FVGMAX 0.96; FRC_URB2D blend of "
@@ -1504,6 +1560,31 @@ _IMPLEMENTED_NOTES: Mapping[tuple[str, int], str] = {
         "MYNN=5/5, windturbines[-ij].txt and wind-turbine-N.tbl required. POWER/QKE restart retained. "
         "CPU-oracle-qualified; GPU/coupled-forecast qualification pending. Literal REAL4 path BYTE; "
         "small compiled per-value contraction deviations disclosed in proofs/u2_windfarm/UPSTREAM_WRF_BUGS.md.",
+    ("topo_wind", 1): "GPU-qualified vs CPU-WRF 24 h (release defaults, D6 every hourly frame, all CPU fields "
+    "inventoried) on Swiss 3 km YSU+sfclay1 and Swiss 3 km Shin-Hong, and WN3 0227 d02/d03 YSU+sfclay1 (3/1 km "
+    "one-way nests, feedback=0); proofs/w41_topowind/GPU_ARMS.json. E41 robustness flag (opt-in disclosure): "
+    "overall E41 FAIL on every arm; STACK 400 B (Swiss YSU loop_maximum_minimum_select_subtract_fusion) and "
+    "496 B (WN3 fused d02/d03, two loop_add_maximum_minimum_select_*subtract_fusion) in the revised-MM5 surface "
+    "layer that topo_wind=1 re-fuses (same-source topo_wind=0 control 8 B; moving the YSU CTOPO2 blend out of "
+    "the column did not change it and was reverted); Shin-Hong STACK 24 B; kInput transpose >500 HLO: Swiss YSU "
+    "input_add_clamp_convert_divide_gather_select_transpose_fusion 570, loop_select_fusion.16/.17/.18 "
+    "549/661/659, loop_broadcast_transpose_fusion 586; Shin-Hong input_subtract_transpose_fusion.1/.2 625/538, "
+    "input_select_transpose_fusion.5 534, input_add_divide_multiply_select_subtract_transpose_fusion 725, "
+    "input_concatenate_multiply_transpose_fusion 615; WN3 fused d02/d03 loop_add_divide_select_slice_fusion 926. "
+    "Runtime cost unmeasured. Two-way CTOPO/CTOPO2 feedback (feedback=1) is CPU-tested only. "
+    "WRF start_em CTOPO/CTOPO2 (Jimenez-Dudhia: VAR_SSO + terrain Laplacian) byte-exact vs pristine WRF 4.7.1; "
+    "like WRF only YSU (bl=1) and Shin-Hong (bl=11) read them (momentum surface drag + CTOPO2 10 m wind blend "
+    "into U10/V10); any other PBL runs unchanged with a warning. Refuses wrfinput without VAR_SSO "
+    "(GOT_VAR_SSO=0, WRF start_em.F:222). Static fields recomputed at every init/resume.",
+    ("topo_wind", 2): "GPU-qualified vs CPU-WRF 24 h only on WN3 0227 d01 YSU+sfclay1 9 km (release defaults, D6 "
+    "every hourly frame, all CPU fields inventoried; proofs/w41_topowind/GPU_ARMS.json) plus pristine YSU oracle "
+    "columns with real topo_wind=2 CTOPO; no Shin-Hong or other-domain topo_wind=2 forecast arm. E41 robustness "
+    "flag (opt-in disclosure): overall E41 FAIL; STACK 88 B (PASS); kInput transpose >500 HLO: "
+    "input_add_log_multiply_select_subtract_transpose_fusion 532, input_select_subtract_transpose_fusion 723, "
+    "input_add_and_clamp_maximum_select_transpose_fusion 651. Runtime cost unmeasured. WRF start_em CTOPO "
+    "(Mass-Ovens from the geogrid VAR; CTOPO2 stays 1) byte-exact vs pristine WRF 4.7.1; like WRF only YSU "
+    "(bl=1) and Shin-Hong (bl=11) read it; any other PBL runs unchanged with a warning. Static fields "
+    "recomputed at every init/resume.",
     ("tracer_opt", 2): "Non-Chem passive tracer operators are CPU-oracle-qualified; "
     "GPU/coupled-forecast qualification pending. Opt-in root and one-way nested transport "
     "(feedback=0), PBL mixing, custom sources/removal, history and full restart. "
@@ -1616,7 +1697,8 @@ _IMPLEMENTED_NOTES: Mapping[tuple[str, int], str] = {
     "Single domains, wif_input_opt=1/aer_init_opt=0 and zero black carbon; original volume/number/aerosol transport, "
     "held emissions/SR/REAL accumulated totals and strict restart retained; no effective-radius flags. "
     "JAX composition reuses shared Thompson equations, not a fused native column kernel. "
-    "Original tables occupy 929643480 bytes plus possible retained legacy table buffers. "
+    "Original DOUBLE collision/freezing/rain-snow tables (973 MB) ride as device-resident traced operands "
+    "(OperationalNamelist.thompson_hail_tables), not baked HLO constants; the AOT key still hashes their bytes. "
     "Actual GPU E41/timing/VRAM remain unmeasured.",
     ('ra_lw_physics', 7): "EXPERIMENTAL CPU-ONLY FLG, paired 7/7. CPU-oracle-qualified; GPU/coupled-forecast qualification pending. "
     "GPU refused before JAX: native GPU column kernel pending (v0.4.x). Qualified caller: MP8, cu0, Noah-MP4, supplied WRF statics; "
