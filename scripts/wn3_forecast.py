@@ -28,17 +28,14 @@ harness.REC["schema"] = "wrf_gpu2.v025.wn3.nested_harness.v1"
 harness.REC["cpu_affinity"] = sorted(os.sched_getaffinity(0))
 harness.REC["omp_num_threads"] = os.environ.get("OMP_NUM_THREADS")
 
-from gpuwrf import cli
-from gpuwrf.integration import nested_pipeline as pipeline
-from gpuwrf.coupling import physics_couplers as pc
+from gpuwrf import cli  # backend-dark; the harness launch phase runs the CLI pool step with it
 
-load_domains = pipeline._load_domains
-column_inputs = pc._rrtmg_column_inputs
 harness.REC["radiation_consumer_flags"] = []
+_orig = {}
 
 
 def observed_load(*args, **kwargs):
-    result = load_domains(*args, **kwargs)
+    result = _orig["load_domains"](*args, **kwargs)
     harness.REC["terrain_radiation"] = {}
     harness.REC["runtime_namelist"] = {}
     for name, bundle in result[1].items():
@@ -59,12 +56,19 @@ def observed_load(*args, **kwargs):
 def observed_inputs(state, grid=None, **kwargs):
     harness.REC["radiation_consumer_flags"].append({"shape": state.t_skin.shape,
         "topo_shading": int(kwargs.get("topo_shading", 0)), "slope_rad": int(kwargs.get("slope_rad", 0))})
-    return column_inputs(state, grid, **kwargs)
+    return _orig["column_inputs"](state, grid, **kwargs)
 
 
-pipeline._load_domains = observed_load
-pc._rrtmg_column_inputs = observed_inputs
+def install_observers():
+    # nested_pipeline / physics_couplers initialize JAX at import: measured process only (w42-harness)
+    from gpuwrf.integration import nested_pipeline as pipeline
+    from gpuwrf.coupling import physics_couplers as pc
+    _orig["load_domains"], _orig["column_inputs"] = pipeline._load_domains, pc._rrtmg_column_inputs
+    pipeline._load_domains = observed_load
+    pc._rrtmg_column_inputs = observed_inputs
 
+
+harness.MEASURED_HOOKS.append(install_observers)
 original = cli.main
 
 

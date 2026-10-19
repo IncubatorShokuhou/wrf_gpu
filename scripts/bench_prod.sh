@@ -26,6 +26,8 @@
 #   --xla-flags '<flags>'  XLA_FLAGS exported for every arm AFTER s0_env.sh (which unsets it); recorded in
 #               bench.json + the receipt env. e.g. '--xla_gpu_autotune_level=0'.
 #   --print-src  print resolved repo/rev/snapshot/tree/cache + DIRTY and exit (no GPU/lock, no run)
+# Allocator: warm arms must run the product C-auto pool (the cold arm, or a first warm run, records the plan);
+#   BENCH_ALLOW_DEMAND_ALLOC=1 accepts demand/explicit pools in the headline (allocator A/Bs; disclosed in bench.json).
 # Cache: one private dir per cache identity (src tree), $BENCH_ROOT/cache/<src_tree12>; path printed.
 # Guard: missing launch paths, a dirty src/gpuwrf, or a snapshot identity that moves mid-run all abort.
 # GPU-arm wall caps (AGENTS.md): warm/nsys arms 1800 s, cold arm 3000 s (cold compile exempt; raise
@@ -46,7 +48,7 @@ while [[ $# -gt 0 ]]; do
     --xla-flags) XLA_FLAGS_OPT="$2"; shift 2;; --quiet-label) QUIET_LABEL="$2"; shift 2;;
     --warm2-env) WARM2_ENV="$2"; shift 2;; --warm1-env) WARM1_ENV="$2"; shift 2;; --single-lock) SINGLE_LOCK=1; shift;;
     --arm-env) ARM_ENV["${2%%:*}"]="${2#*:}"; shift 2;; --print-src) PRINT_SRC=1; shift;;
-    -h|--help) sed -n 2,33p "$0"; exit 0;; *) echo "bench_prod: unknown arg $1" >&2; exit 2;;
+    -h|--help) sed -n 2,34p "$0"; exit 0;; *) echo "bench_prod: unknown arg $1" >&2; exit 2;;
   esac
 done
 [[ -n "$TAG" ]] || TAG="bench_$(date -u +%Y%m%dT%H%M%SZ)"
@@ -180,6 +182,7 @@ SUMARGS=()
 for a in "${ARMLIST[@]}"; do SUMARGS+=("$a=$S/$a/run/receipt.json"); done
 [[ $NSYS == 1 ]] && SUMARGS+=(--nsys "$S/nsys/prof.nsys-rep")
 verify_src || exit $?
+[[ "${BENCH_ALLOW_DEMAND_ALLOC:-0}" == 1 ]] && SUMARGS+=(--allow-demand-alloc)
 nice -n 19 "$PY" "$HERE/bench_summary.py" --out "$S/bench.json" --tag "$TAG" --cache "$CACHE" \
   --src "$SRC_REPO" --src-rev "$SRC_REV" --src-tree "$SRC_TREE" "--xla-flags=$XLA_FLAGS_OPT" "${SUMARGS[@]}"
 SUMRC=$?

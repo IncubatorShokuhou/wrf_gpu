@@ -22,7 +22,7 @@
         <img src="_assets/logo.svg" alt="wrf_gpu logo">
         <span class="brand-text">
           <span class="brand-name">wrf_gpu</span>
-          <span class="brand-sub">User's Guide · v0.4.1</span>
+          <span class="brand-sub">User's Guide · v0.4.2</span>
         </span>
       </a>
       <div class="search-box">
@@ -81,7 +81,7 @@
         <h1>Physics options</h1>
 <p class="lead">wrf_gpu runs most WRF 4.7.1 physics schemes on the GPU. This page lists every
 option code of the seven physics selectors with its status; the selector statuses are those of
-v0.4.0, unchanged in v0.4.1. The codes are the same
+v0.4.0, unchanged in v0.4.1 and v0.4.2. The codes are the same
 numbers you put in the <code>&amp;physics</code> section of a WRF <code>namelist.input</code>.</p>
 <a id="scheme-triage"></a><a id="matrix"></a><a id="experimental"></a>
 <h2 id="status-words">What the status words mean<a class="headerlink" href="#status-words" aria-label="Permalink">¶</a></h2>
@@ -118,9 +118,10 @@ wind farms, used cases that contain them. The
 <a href="validation.html">validation page</a> explains the method and the limits.</p>
 <div class="admon note"><div class="admon-title">What a pass does and does not cover</div>
 <p>A pass covers the tested configuration. It does not test every combination of schemes, and options
-outside the default suite have not been validated inside nested domains. The RUC land model
+outside the default suite have not been validated inside nested domains, except the YSU, Shin-Hong, ACM2
+and EEPS boundary layers (v0.4.2, see below). The RUC land model
 (<code>sf_surface_physics=3</code>) is refused in nested runs. The
-<a href="https://github.com/wrf-gpu/wrf_gpu/blob/main/docs/release/SUPPORT_MATRIX_v0.4.1.md">support matrix</a> records the exact configuration and
+<a href="https://github.com/wrf-gpu/wrf_gpu/blob/main/docs/release/SUPPORT_MATRIX_v0.4.2.md">support matrix</a> records the exact configuration and
 companion settings behind each row.</p></div>
 <h2 id="pairings">Schemes that must be paired<a class="headerlink" href="#pairings" aria-label="Permalink">¶</a></h2>
 <p>As in WRF, some schemes only work together. <code>gpuwrf run</code> and <code>gpuwrf doctor</code>
@@ -213,6 +214,8 @@ check this before the forecast and name the setting to change. The most common p
 <tr><td>17</td><td>TKE + TKE-dissipation + TPE</td><td><span class="pill op">Validated 24 h</span><sup>1</sup></td></tr>
 <tr><td>99</td><td>MRF</td><td><span class="pill op">Validated 24 h</span><sup>1</sup></td></tr>
 </tbody></table></div>
+<p>YSU, ACM2, Shin-Hong and EEPS (codes 1, 7, 11 and 16, with <code>sf_sfclay_physics=1</code>) are also validated
+inside nested domains since v0.4.2 (<a href="nesting.html#single-domain-evidence">Options inside nests</a>).</p>
 <h2 id="sf-sfclay-physics">Surface layer <code>sf_sfclay_physics</code><a class="headerlink" href="#sf-sfclay-physics" aria-label="Permalink">¶</a></h2>
 <div class="table-scroll"><table><thead><tr><th>Code</th><th>Scheme</th><th>Status</th></tr></thead><tbody>
 <tr><td>0</td><td>no surface-layer</td><td><span class="pill op">Validated 24 h</span></td></tr>
@@ -266,7 +269,9 @@ check this before the forecast and name the setting to change. The most common p
 <p>New in v0.4.1, RRTMG (<code>ra_lw_physics=4</code>, <code>ra_sw_physics=4</code>) can take aerosol in the
 shortwave (<code>aer_opt=1/3</code>) and WRF's other radiation cloud fractions (<code>icloud=2/3</code>);
 the YSU and Shin-Hong boundary layers can use WRF's terrain correction of surface winds
-(<code>topo_wind=1/2</code>). Their status is on the <a href="namelist.html#v041-options">namelist page</a>.</p>
+(<code>topo_wind=1/2</code>). Their status is on the <a href="namelist.html#v041-options">namelist page</a>.
+New in v0.4.2, <code>icloud=0</code> runs RRTMG without clouds (<a href="namelist.html#icloud">namelist page</a>);
+WDM6 (<code>mp_physics=16</code>) runs about three times faster with identical output.</p>
 <h2 id="noah-mp-options">Noah-MP options<a class="headerlink" href="#noah-mp-options" aria-label="Permalink">¶</a></h2>
 <p>With <code>sf_surface_physics=4</code>, the Noah-MP selectors of the <code>&amp;noah_mp</code>
 namelist are read and checked. The default values are validated as part of the default suite. Of the

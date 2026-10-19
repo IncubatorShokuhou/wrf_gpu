@@ -1,0 +1,71 @@
+{
+ "bundle_a": "<DATA_ROOT>/wrf_gpu2/release_bundles/v0.4.2",
+ "bundle_b": "<DATA_ROOT>/wrf_gpu2/release_bundles/v0.4.1",
+ "dir": "jax/xla_gpu_per_fusion_autotune_cache_dir",
+ "a_entries": 1227,
+ "b_entries": 1212,
+ "common_fingerprints": 1212,
+ "identical_choice": 857,
+ "different_choice": 355,
+ "only_a": [
+  "4B3DhzuBl-wBetZ5mgGEEFbvfT6eMKM0o-lmRO8zBLM.textproto",
+  "6qJZ9YGPgqvKkHK2kQWWvkRfMA-PNgmT_Eg4-0DAc_s.textproto",
+  "HNB3wHJTS1tdj3KbG56d0NoMYpgW-jBVT2H3RY45bso.textproto",
+  "ILGAyrXeapUI_VcobM1v8DL4arwS8DWk4VTfTwolio4.textproto",
+  "JbBuwHHy1tRCokkZ_tg3Hv_fyYXLyG-PyFbiFkyMAFY.textproto",
+  "K2gSXMhyP5lp0C3pe2npzRDTRGJBOiRtg13Oh_OBPtA.textproto",
+  "OaMEz5BUS15Xr59-IUyiXe7ZBN5W5a8IL6EhmyqovcI.textproto",
+  "ZKOmDsqqzv7-NaGpU2FQeMkiOcox004lPbRoxY4GTug.textproto",
+  "ab_MkzSL3D-edyqhetVdU--qv9AFjMAXRpcCXZj9vnM.textproto",
+  "fMcjzxfdshMk26Qw7EDF5vY_mvkxs9KKt1lHFW5pztg.textproto",
+  "nL4eKT4fPSdUMHdzRedWfKJYJaP9sl0WnXGWoZRC1S8.textproto",
+  "nONbT1rp0Vtvxq2iSlz1mtCHx1AVETR9ljPTwpZ_XgM.textproto",
+  "pXDm4-057oLs8JUFWVbZNvEcERw8sBjVKqp-7ngTujc.textproto",
+  "x2ZVJfmbl_Yk5hJSYxVBApsjXory-OzgRDYsavNhMb4.textproto",
+  "xz8ncBUfDGwqQzblpcMxpmj44WhyHM7VzBjGs3fuml4.textproto"
+ ],
+ "only_b": [],
+ "different_choice_by_emitter": {
+  "NATIVE_EMITTER -> NATIVE_EMITTER": 121,
+  "BLOCK_LEVEL_EMITTER -> NATIVE_EMITTER": 104,
+  "NATIVE_EMITTER -> BLOCK_LEVEL_EMITTER": 86,
+  "BLOCK_LEVEL_EMITTER -> BLOCK_LEVEL_EMITTER": 44
+ },
+ "examples": [
+  {
+   "fingerprint": "-CPra9bL1eQEuxw2O_2pv0_G8TDDqDrq0tSfFlcAJ6g.textproto",
+   "a": "other {\n  name: \"BLOCK_LEVEL_EMITTER\"\n  config {\n    type_url: \"type.googleapis.com/xla.gpu.BlockLevelFusionConfig\"\n    value: \"\\020\\004\\032\\005\\n\\003x\\002\\020 \\001(\\0010\\001\"\n  }\n}\n",
+   "b": "other {\n  name: \"NATIVE_EMITTER\"\n  config {\n    type_url: \"type.googleapis.com/xla.gpu.NativeEmitterBackendConfig\"\n  }\n}\n"
+  },
+  {
+   "fingerprint": "-UHENmI9W7oSo_YHvMieuwXtrL9M50u6DcpJD63_Lbw.textproto",
+   "a": "other {\n  name: \"NATIVE_EMITTER\"\n  config {\n    type_url: \"type.googleapis.com/xla.gpu.NativeEmitterBackendConfig\"\n  }\n}\n",
+   "b": "other {\n  name: \"BLOCK_LEVEL_EMITTER\"\n  config {\n    type_url: \"type.googleapis.com/xla.gpu.BlockLevelFusionConfig\"\n    value: \"\\020\\001\\032\\005\\n\\003\\020\\001\\020 \\001(\\0010\\001\"\n  }\n}\n"
+  },
+  {
+   "fingerprint": "-eQpFHfkgl5gjVCXFVHtEhQ7z3AReBWc0bU9vkjwqIs.textproto",
+   "a": "other {\n  name: \"BLOCK_LEVEL_EMITTER\"\n  config {\n    type_url: \"type.googleapis.com/xla.gpu.BlockLevelFusionConfig\"\n    value: \"\\020\\002\\032\\000 \\001(\\0010\\001\"\n  }\n}\n",
+   "b": "other {\n  name: \"BLOCK_LEVEL_EMITTER\"\n  config {\n    type_url: \"type.googleapis.com/xla.gpu.BlockLevelFusionConfig\"\n    value: \"\\020\\002\\032\\000 \\001(\\001\"\n  }\n}\n"
+  },
+  {
+   "fingerprint": "-m5HmSu2abASTytAWoKTs66iJyKTTuXx_TPYWvKEwMw.textproto",
+   "a": "other {\n  name: \"NATIVE_EMITTER\"\n  config {\n    type_url: \"type.googleapis.com/xla.gpu.NativeEmitterBackendConfig\"\n    value: \"\\010\\001\\020\\010\"\n  }\n}\n",
+   "b": "other {\n  name: \"NATIVE_EMITTER\"\n  config {\n    type_url: \"type.googleapis.com/xla.gpu.NativeEmitterBackendConfig\"\n    value: \"\\010\\001\\020\\004\"\n  }\n}\n"
+  },
+  {
+   "fingerprint": "-w0a3Im_ELULNBwvNEg0-8NHdNfRujhnn0Ji2EeB5lU.textproto",
+   "a": "other {\n  name: \"NATIVE_EMITTER\"\n  config {\n    type_url: \"type.googleapis.com/xla.gpu.NativeEmitterBackendConfig\"\n  }\n}\n",
+   "b": "other {\n  name: \"BLOCK_LEVEL_EMITTER\"\n  config {\n    type_url: \"type.googleapis.com/xla.gpu.BlockLevelFusionConfig\"\n    value: \"\\020\\002\\032\\005\\n\\003\\004\\020\\020 \\001(\\001\"\n  }\n}\n"
+  }
+ ],
+ "a_dir_sha256": "b646b435f1fd3cdf2718acf76561f0d89f5d81f427744b3555b2f53f7ae1dc6c",
+ "b_dir_sha256": "9bc70bc7c7ac9a1b229eb727de8df2dc434b1afd943e23139dd59ae367093a92",
+ "vardiff": {
+  "file": "<USER_HOME>/wrf_gpu2_lanes/w42-bundle042/VARDIFF_N1_vs_O1.json",
+  "sha256": "11b82c5f568d343e511a097d5ab6b6b06a7bae0df6e0688acd938fbf5b558567",
+  "common_files": 75,
+  "differing_variables": 143,
+  "global_attrs_differ": [],
+  "structure_diff": []
+ }
+}

@@ -165,7 +165,12 @@ def test_both_pipeline_binding_and_honour(bl,replay):
     assert bound.bl_pbl_physics==bl
     assert resolve_physics_suite(bound).pbl.option==bl
     note=_IMPLEMENTED_NOTES[('bl_pbl_physics',bl)]
-    assert 'EXPERIMENTAL' in note and 'materially' in note and 'GPU/coupled-forecast qualification pending' in note
+    assert 'EXPERIMENTAL' in note and 'materially' in note
+    # EEPS is nested-qualified (v0.4.2, proofs/w41_nestqual; tests/v042/test_nestqual_notes.py); KEPS stays pending
+    if bl==16:
+        assert 'Nested-qualified' in note and 'qualification pending' not in note
+    else:
+        assert 'GPU/coupled-forecast qualification pending' in note
     raw['physics']['sf_sfclay_physics']=[5]
     errors,_=namelist_honour_report(raw,('d01',),replay=replay)
     assert any('revised-MM5' in e for e in errors)

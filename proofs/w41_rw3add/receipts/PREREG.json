@@ -1,0 +1,71 @@
+{
+ "schema": "w41-rw3add.prereg.v1",
+ "registered_utc": "2026-10-18T21:51:33Z",
+ "authority": "manager GO(b) MAILBOX 2026-10-18T21:49:23Z on w41-rw3add decision request 21:48:58Z; contract kernel 081f17f070",
+ "tools_commit": "63e38a583f",
+ "tools_frozen_dir": "<USER_HOME>/wrf_gpu2_lanes/w41-rw3add/tools_63e38a583f",
+ "tools_sha256": {
+  "accept.py": "ff53b5e6696e18ac07877ff177132b9965eed18428007989ec24583eb747212a",
+  "arm.sh": "080584d5b675d699d44380c2d65cd552b3b1aefa5f70a49ee00b13c53d5ae9b2",
+  "attrib2.sh": "d583a56c748a82ee5b720e05ce3ee41e0e0473f2cee518ba261f7c6ebd2c0bae",
+  "attrib_detail.py": "fe904739001a1fcd86658d45aae4754086379b76f52f4b40d872a674549ad1ed",
+  "core_watch.py": "a4938233c75e87f01be8c8163017837af2ad8126e068603c5212d205ec97c3e9",
+  "cores_free.py": "eef4261e9e918e4ae5209ebeb77891d91ed93833f310b27496199e4f8c13d07a",
+  "disk_watch.py": "411a56ca5361395cd75997479e4c1ab7b51b2c8360312a319fbc9778d19f6775",
+  "rw3.sh": "d361718aee63e08f444b62e4e1174825db4b16910f8dcb37da2de002fcd5e010",
+  "sched_watch.py": "2360e3ababa9a94e52ceea063ef685e4124e8c58080c09a6113ea4b21f74ed04",
+  "stage_0227.py": "60d8ca5952c284a2abe3309814186f06ab3ccf94e31396642e61b17fd6d291e6"
+ },
+ "case": {
+  "name": "WN3 0227 3-nest (wg_20260227_18z_a1)",
+  "dir": "<DATA_ROOT>/wrf_gpu2/scratch/w41-rw3add/cases/wn3_0227",
+  "stage_receipt": "<USER_HOME>/wrf_gpu2_lanes/w41-rw3add/stage0227_receipt/facade_stage.json",
+  "cli_args": "--domains-from-namelist --emit-initial-history --hours H"
+ },
+ "arms": {
+  "N": "v0.4.1 sealed bundle <DATA_ROOT>/wrf_gpu2/release_bundles/v0.4.1 (bundle.env, read-only via P/tools/bundle_consumer.sh, fresh layer)",
+  "O": "v0.4.0 sealed bundle <DATA_ROOT>/wrf_gpu2/release_bundles/v0.4.0 (same consumer; v0.4.0 ships none of its own)",
+  "order": "N1 O1 N2 O2 N3 O3 N4 O4 N5 O5 (24 h warm) then N72 O72 (72 h) if the window holds both",
+  "session": "ONE with_gpu_lock session, window end 2026-10-19T07:35:00Z (lease hard end 07:45Z)"
+ },
+ "abort_rules": {
+  "watcher": "core_watch.py (frozen a4938233) 1 s on cores 3,13,19,29, own session tree excluded, kernel threads disclosed only",
+  "rule_P": "one foreign process > 100 % of one core on the gated cores for > 10 s cumulative within the arm -> abort",
+  "rule_A": "sum of foreign on-core shares > 200 % for > 10 s cumulative -> abort",
+  "repeat": "aborted arm kept as <slot>.abortedK, slot repeated with fresh dir + layer, max 3 tries per slot",
+  "pre_gate": "quiet stretch: 60 s of core_watch with the same thresholds at 3 s limits, rolling, max 2700 s per slot, then start (BUSY_START disclosed)",
+  "hold": "manager HOLD/STOP line to w41-rw3add stops before the next arm"
+ },
+ "bundle_checks": "compile_bundle.py check BUNDLE_OK missing=0 changed=0 new=0 on the arm's bundle before AND after every arm, else stop the session",
+ "acceptance": "accept.py: rc 0 + CUDA device; BUNDLE_CONSUMER rc=0 compiled_new=0 + both checks OK; watcher present/healthy; final within_rule, no ABORT; continuous coverage t0..t_end",
+ "disclosure_per_arm": [
+  "foreign agg mean / p90 (core_watch.jsonl)",
+  "seconds over the contract 20 % process / 50 % aggregate rules (never-aborting shadow watcher, core_watch_strict_summary.json) + strict_rules_would_pass",
+  "arm cgroup cpu.pressure some total (s)",
+  "CLI main-thread runqueue-wait share (sched_watch)",
+  "<DATA_ROOT> await (disk_watch; > 50 ms = DISCLOSED)",
+  "involuntary context switches, user CPU, RSS, per-PID VRAM peak",
+  "pre-gate disposition",
+  "wrfout SHA-256 per arm (N==N, O==O, vs bundle041 B1/B7 72 h lists)"
+ ],
+ "metrics": {
+  "primary": "whole-run s/fc-h = last original wrfout mtime minus process t0, / H (E162)",
+  "secondary": [
+   "forecast-only wall (receipt)",
+   "d03 hourly publication cadence mean leads 2..H"
+  ]
+ },
+ "verdict_rule": {
+  "basis": "counted 24 h arms; pooled N/O = mean(N) / mean(O) of the primary metric; spread S = max(A/A over O, B/B over N) with A/A = max/min - 1 over counted arms of one kind",
+  "PASS": "pooled N/O + S <= 1.10",
+  "REAL_REGRESSION": "pooled N/O - S > 1.10 -> name suspects, no fix",
+  "INCONCLUSIVE": "otherwise, or fewer than 2 counted arms of either kind",
+  "pairs": "per-pair N_i/O_i reported; 72 h pair reported as a single pair (no spread of its own; read against S)",
+  "strict": "arms whose shadow watcher would also pass the contract 20/50 % rules are reported separately (subset B/A when >= 1 per kind)"
+ },
+ "budgets": {
+  "24h": "arm.sh 330 s, scope RuntimeMaxSec 420 s, MemoryMax 20G",
+  "72h": "arm.sh 760 s, RuntimeMaxSec 860 s"
+ },
+ "env": "AT_RULE_P_PCT=100 AT_RULE_A_PCT=200 AT_SLOTS='N1:N:24 O1:O:24 N2:N:24 O2:O:24 N3:N:24 O3:O:24 N4:N:24 O4:O:24 N5:N:24 O5:O:24 N72:N:72 O72:O:72' AT_WINDOW_END_UTC=2026-10-19T07:35:00Z"
+}

@@ -8,6 +8,8 @@ Per-segment decomposition (all s per forecast hour of segment k, window = [t_sta
   output_compile_s  backend_compile events falling inside output calls [M]
   stepping_s    period - output (stepping, radiation, force, host)   [M by subtraction]
   host_idle_est_s  period - (advance + force + output host time): time outside every instrumented call [I]
+Allocator: every warm arm must attest the product CLI C-auto pool (receipt `allocator.mode == "c_auto"`, w42-harness);
+demand/explicit pools or receipts without the attestation reject the headline unless --allow-demand-alloc (disclosed).
 """
 from __future__ import annotations
 
@@ -80,6 +82,8 @@ def arm_summary(path: Path) -> dict:
         "vram_peak_mib_nvidia_smi": (rec.get("derived") or {}).get("vram_peak_mib"),
         "jax_memory_stats": rec.get("jax_memory_stats"), "host_vmhwm_kb": rec.get("host_vmhwm_kb"),
         "errors": rec.get("errors"), "env": rec.get("env"),
+        "allocator": rec.get("allocator"), "pre_exec": rec.get("pre_exec"),
+        "launch_wall_utc": rec.get("launch_wall_utc"), "t0_wall_utc": rec.get("t0_wall_utc"),
     }
 
 
@@ -141,6 +145,8 @@ def main(argv=None) -> int:
     ap.add_argument("--src-rev", default="", help="measured source revision (commit); recorded in bench.json")
     ap.add_argument("--xla-flags", default="", help="XLA_FLAGS exported for every arm; recorded in bench.json")
     ap.add_argument("--nsys")
+    ap.add_argument("--allow-demand-alloc", action="store_true",
+                    help="accept warm arms without the C-auto pool (e.g. a VRAM/allocator A/B); recorded in bench.json")
     ap.add_argument("arms", nargs="+", help="name=receipt.json (cold, warm1, warm2, ...)")
     a = ap.parse_args(argv)
     arms = {n: arm_summary(Path(p)) for n, p in (x.split("=", 1) for x in a.arms)}
@@ -159,12 +165,16 @@ def main(argv=None) -> int:
         reasons.append("a warm arm has no warm (seg2+) segment")
     if any(v["rc"] != 0 for v in arms.values()):
         reasons.append("a non-warm arm has rc != 0")
+    pools = {k: (v["allocator"] or {}).get("mode", "unattested") for k, v in arms.items() if k.startswith("warm")}
+    if not a.allow_demand_alloc and any(m != "c_auto" for m in pools.values()):
+        reasons.append(f"warm arm(s) not on the product C-auto pool: {pools} (--allow-demand-alloc to accept)")
     headline_ok = not reasons
     res = {
         "schema": "wrf_gpu2.bench.v1", "tag": a.tag, "ok": headline_ok, "case": "PROD ALISIOS 20260725_18z d01+d02",
         "headline_valid": headline_ok, "reject_reasons": reasons,
         "tree": {"git_head": first["git_head"], "src_tree": first["src_tree"]},
         "cache_dir": a.cache, "arms": arms, "xla_flags": a.xla_flags or None,
+        "warm_allocator_modes": pools, "allow_demand_alloc": bool(a.allow_demand_alloc),
         "src": {"path": a.src or None, "rev": a.src_rev or None,
                 "tree_hash": a.src_tree or first["src_tree"]},
         "s1_warm_s_per_fc_h": (round(sum(w["s_per_fc_h_seg2plus"] for w in warm) / len(warm), 3)

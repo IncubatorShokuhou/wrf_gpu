@@ -647,6 +647,7 @@ IMPORT_TIME_ENV_CONSTANTS: tuple[tuple[str, str], ...] = (
     ("gpuwrf.physics.rrtmg_sw", "_FUSED_QUADRATURE"),
     ("gpuwrf.physics.rrtmg_sw", "_SW_COLUMN_TILE_COLS"),
     ("gpuwrf.physics.rrtmg_sw", "_SW_COLUMN_TILE_COLS_EXPLICIT"),
+    ("gpuwrf.physics.rrtmg_sw", "_SWDDIR_V040_SPLIT"),
     ("gpuwrf.physics.thompson_column", "NSED_MAX"),
     ("gpuwrf.physics.thompson_column", "_MP_COLUMN_TILING"),
     ("gpuwrf.physics.thompson_column", "_MP_COLUMN_TILE_COLS"),

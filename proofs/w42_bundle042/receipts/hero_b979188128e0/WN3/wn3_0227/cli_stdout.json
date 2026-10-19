@@ -1,0 +1,1647 @@
+{
+  "all_domains_finite": true,
+  "all_outputs_present": true,
+  "batch_ensemble": {
+    "batch_size": 1,
+    "enabled": false,
+    "input_dirs": [
+      "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/cases/wn3_0227"
+    ],
+    "run_starts_utc": [
+      "2026-02-28T00:00:00+00:00"
+    ]
+  },
+  "carry_overs": [
+    "Two-way feedback is OFF (one-way nesting); matches the v0.11.0 validated wiring.",
+    "In-loop nested w relaxation is OFF (deferred to a longer stability gate).",
+    "No TOST/ensemble equivalence or CPU-speedup baseline is claimed by a standalone smoke."
+  ],
+  "cpu_affinity": [
+    3,
+    13,
+    19,
+    29
+  ],
+  "device": "cuda:0",
+  "domains": [
+    "d01",
+    "d02",
+    "d03"
+  ],
+  "effective_domain": "d01",
+  "effective_hours": 24,
+  "effective_max_dom": 3,
+  "feedback": false,
+  "gpu_architecture": {
+    "compute_capability": "12.0",
+    "minimum_compute_capability": "8.0",
+    "name": "NVIDIA GeForce RTX 5090",
+    "opt_in_env": "GPUWRF_ALLOW_UNSUPPORTED_GPU",
+    "schema": "GpuwrfCudaArchitecture",
+    "source": "nvidia-smi",
+    "status": "supported"
+  },
+  "gpu_preflight": {
+    "action": "Run nested GPU forecasts through `scripts/with_gpu_lock.sh --label <name> -- <cmd>`; set GPUWRF_MIN_FREE_VRAM_GIB for an explicit GiB threshold override or GPUWRF_MIN_FREE_VRAM_FRACTION to tune the card-relative threshold; set GPUWRF_FORCE_GPU_RUN=1 or pass --force-gpu-run only for a deliberate override.",
+    "forced": false,
+    "lock": {
+      "fd": "9",
+      "holder": "holder=w42-bundle042 pid=369335 since=2026-10-19T15:58:48Z token=gpuwrf-lock-369335-6061-1792425528590857421 cmd=env H_END_UTC=2026-10-19T18:15:00Z bash <USER_HOME>/wrf_gpu2_lanes/w42-bundle042/tools_hero_d8f4e6a8edda/hero_session.sh",
+      "holder_file": "/tmp/wrf_gpu2_gpu.lock.holder",
+      "lock_file": "/tmp/wrf_gpu2_gpu.lock",
+      "ok": true,
+      "policy": "dev GPU lock infrastructure present (/tmp/wrf_gpu2_gpu.lock)",
+      "reason": "",
+      "required": true,
+      "token_present": true
+    },
+    "min_free_vram_fraction": 0.0,
+    "min_free_vram_gib": 5.1743301609531045,
+    "schema": "GpuwrfNestedGpuPreflight",
+    "schema_version": 1,
+    "status": "PASS",
+    "vram": {
+      "free_gib": 27.028,
+      "free_mib": 27677,
+      "index": "0",
+      "name": "NVIDIA GeForce RTX 5090",
+      "ok": true,
+      "total_gib": 31.843,
+      "total_mib": 32607,
+      "used_gib": 4.325,
+      "used_mib": 4429,
+      "uuid": "GPU-cec852c8-a76b-e606-d152-2f2a16e0c6b5"
+    },
+    "vram_threshold": {
+      "absolute_floor_gib": 5.174,
+      "fraction": 0.0,
+      "min_free_gib": 5.174,
+      "source": "C-auto plan: outside-pool headroom + pool budget"
+    }
+  },
+  "hierarchy": {
+    "edges": [
+      {
+        "child": "d02",
+        "feedback": false,
+        "i_parent_start": 16,
+        "j_parent_start": 16,
+        "parent": "d01",
+        "parent_grid_ratio": 3
+      },
+      {
+        "child": "d03",
+        "feedback": false,
+        "i_parent_start": 92,
+        "j_parent_start": 36,
+        "parent": "d02",
+        "parent_grid_ratio": 3
+      }
+    ],
+    "event_counts": {
+      "advance": 11200,
+      "force": 6400,
+      "output": 72
+    },
+    "force_counts": {
+      "d01->d02": 1600,
+      "d02->d03": 4800
+    },
+    "observed_own_steps": {
+      "d01": 1600,
+      "d02": 4800,
+      "d03": 14400
+    },
+    "order": [
+      "d01",
+      "d02",
+      "d03"
+    ],
+    "output_cadence_steps": {
+      "d01": 67,
+      "d02": 200,
+      "d03": 600
+    },
+    "persistent_state_bytes": {
+      "d01": 86765920,
+      "d02": 228176284,
+      "d03": 78917644
+    }
+  },
+  "hours": 24,
+  "init_mode": "standalone_native_init_nested",
+  "initial_history_output": {
+    "domain_count": 3,
+    "enabled": true,
+    "own_step": 0,
+    "uses_existing_authenticated_writer": true
+  },
+  "input_dir": "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/cases/wn3_0227",
+  "max_dom": 3,
+  "metadata": {
+    "aot_prefetch": {
+      "domains": {
+        "d01": {
+          "address": "cheap_key",
+          "blob_path": "<DATA_ROOT>/wrf_gpu2/release_bundles/v0.4.2/jax/aot/0.4.2-jax0.10.0-jaxlib0.10.0-cuda_sm120/d01/k_a166230735d936f60d7aa6d50747ab93ab76f482da6b463ae1c7b67d6112c580.xlaexec",
+          "cheap_key": "a166230735d936f60d7aa6d50747ab93ab76f482da6b463ae1c7b67d6112c580",
+          "error": null,
+          "hlo_sha256": null,
+          "loaded": true,
+          "meta_hlo_sha256": "65430340b6e82aefc91e000f375a8d97b23704624b6e89ce21132bebf846a81b",
+          "meta_path": "<DATA_ROOT>/wrf_gpu2/release_bundles/v0.4.2/jax/aot/0.4.2-jax0.10.0-jaxlib0.10.0-cuda_sm120/d01/k_a166230735d936f60d7aa6d50747ab93ab76f482da6b463ae1c7b67d6112c580.meta",
+          "name": "d01",
+          "prefetch_blob_identity": [
+            222,
+            125581103,
+            105854834,
+            1792420359210283976,
+            1792420359744841287
+          ],
+          "prefetch_load_s": 0.8588539490010589,
+          "source": "aot_blob"
+        },
+        "d02": {
+          "address": "cheap_key",
+          "blob_path": "<DATA_ROOT>/wrf_gpu2/release_bundles/v0.4.2/jax/aot/0.4.2-jax0.10.0-jaxlib0.10.0-cuda_sm120/d02/k_23cabda73aa193a893e4294d13b7e2e0c6ac98a95b6944010daf826e62e529e3.xlaexec",
+          "cheap_key": "23cabda73aa193a893e4294d13b7e2e0c6ac98a95b6944010daf826e62e529e3",
+          "error": null,
+          "hlo_sha256": null,
+          "loaded": true,
+          "meta_hlo_sha256": "4e8d00fa090ded2ca40ebc7c785a5ddd264b1c96917a7ef656867960d221d554",
+          "meta_path": "<DATA_ROOT>/wrf_gpu2/release_bundles/v0.4.2/jax/aot/0.4.2-jax0.10.0-jaxlib0.10.0-cuda_sm120/d02/k_23cabda73aa193a893e4294d13b7e2e0c6ac98a95b6944010daf826e62e529e3.meta",
+          "name": "d02",
+          "prefetch_blob_identity": [
+            222,
+            125581073,
+            102437754,
+            1792419243299173753,
+            1792419243531889024
+          ],
+          "prefetch_load_s": 0.5897233880241401,
+          "source": "aot_blob"
+        }
+      },
+      "elapsed_s": 45.71992968098493,
+      "enabled": true,
+      "remaining_wait_s": 1.5099998563528061e-05
+    },
+    "domains": {
+      "d01": {
+        "grid": {
+          "dx_m": 9000.0,
+          "dy_m": 9000.0,
+          "mass_shape": [
+            44,
+            70,
+            120
+          ],
+          "wrf_staggered_extent": [
+            45,
+            71,
+            121
+          ]
+        },
+        "ic_source": "wrfinput_d01",
+        "land_surface": {
+          "noahmp_energy_params_loaded": true,
+          "noahmp_julian": 58.0,
+          "noahmp_land_seeded": true,
+          "noahmp_n_land_cells": 1354,
+          "noahmp_rad_params_loaded": true,
+          "noahmp_static_loaded": true,
+          "noahmp_yearlen": 365.0,
+          "provenance": "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/cases/wn3_0227/wrfinput_d01",
+          "sf_surface_physics": 4,
+          "use_noahmp": true
+        },
+        "lbc_source": "wrfbdy native lateral forcing (standalone; no CPU wrfout replay)",
+        "live_nest_base_init": {
+          "enabled": false
+        },
+        "namelist": {
+          "boundary_update_cadence_s": 21600.0,
+          "cu_physics": 1,
+          "cudt_minutes": 5.0,
+          "cumulus_cadence_steps": 6,
+          "dt_s": 54.0,
+          "gwd_opt": 1,
+          "gwdo_statics_loaded": true,
+          "moist_adv_opt": 1,
+          "nested_frozen_wrf_boundary_bundle": false,
+          "radiation_cadence_steps": 33,
+          "radiation_static_loaded": true,
+          "scalar_adv_opt": 1,
+          "slope_rad": 1,
+          "top_lid": false,
+          "topo_shading": 1
+        },
+        "namelist_resolved": {
+          "accum_mode": 1000000000.0,
+          "acoustic_precision_mode": "fp64_default",
+          "acoustic_substeps": 4,
+          "aer_opt": 0,
+          "aitken_mode": 300000000.0,
+          "bl_pbl_physics": 5,
+          "c_k": 0.15,
+          "c_s": 0.25,
+          "cam_abs_freq_s": 21600.0,
+          "ccn_conc": 100000000.0,
+          "ccnty": 2,
+          "coarse_mode": 200000.0,
+          "const_nu_m2_s": 0.0,
+          "cu_diag": 0,
+          "cu_physics": 1,
+          "cu_rad_feedback": false,
+          "cudt_minutes": 5.0,
+          "cumulus_cadence_steps": 6,
+          "cup_min_deep_freq": 1.0,
+          "cup_min_shallow_freq": 1.0,
+          "cup_num_bins": 1,
+          "cup_r_bin_size": 1.0,
+          "cup_th_bin_size": 1.0,
+          "damp_opt": 3,
+          "dampcoef": 0.2,
+          "data_assimilation": null,
+          "diagnostic_history_interval": 60.0,
+          "diff_6th_factor": 0.12,
+          "diff_6th_opt": 2,
+          "diff_opt": 1,
+          "disable_guards": true,
+          "do_radar_ref": 0,
+          "dt_s": 54.0,
+          "epssm": 0.5,
+          "ferrier_gid": 1,
+          "force_fp64": true,
+          "gfdl_grid": null,
+          "gpuwrf_tracer_file": "",
+          "gwd_opt": 1,
+          "h_sca_adv_order": 5,
+          "hypsometric_opt": 2,
+          "icloud": 1,
+          "isftcflx": 0,
+          "kfeta_trigger": 1,
+          "khdif": 0.0,
+          "km_opt": 4,
+          "kvdif": 0.0,
+          "lake_bundle": null,
+          "lake_min_elev": 5.0,
+          "lakedepth_default": 50.0,
+          "mass_shape": [
+            44,
+            70,
+            120
+          ],
+          "mfshconv": 0,
+          "mix_isotropic": 0,
+          "mix_upper_bound": 0.1,
+          "moist_adv_opt": 1,
+          "mp_physics": 8,
+          "noahclassic_land": null,
+          "noahclassic_rad": null,
+          "noahclassic_static": null,
+          "noahmp_carbon_static": null,
+          "noahmp_groundwater_initial": null,
+          "noahmp_irrigation_static": null,
+          "noahmp_julian": 58.0,
+          "noahmp_land": null,
+          "noahmp_mmf_enabled": false,
+          "noahmp_mmf_opt_inf": 1,
+          "noahmp_nroot": 4,
+          "noahmp_options": null,
+          "noahmp_yearlen": 365.0,
+          "nsas_dx_factor": 0,
+          "nwp_diagnostics": 0,
+          "observation_nudging": null,
+          "ocean_initial": null,
+          "oml_gamma": 0.14,
+          "oml_hml0": 50.0,
+          "oml_relaxation_time": 0.0,
+          "osas_domain_id": 1,
+          "prec_acc_dt": 0.0,
+          "px_land": null,
+          "px_rad": null,
+          "px_static": null,
+          "ra_lw_physics": 4,
+          "ra_sw_physics": 4,
+          "rad_rk_tendf": 1,
+          "radiation_cadence_steps": 33,
+          "radiation_interval_s": 1800.0,
+          "rk_order": 3,
+          "ruc_land": null,
+          "ruc_rad": null,
+          "ruc_static": null,
+          "run_boundary": true,
+          "run_physics": true,
+          "sas_pgcon": 0.55,
+          "scalar_adv_opt": 1,
+          "sf_lake_physics": 0,
+          "sf_ocean_physics": 0,
+          "sf_sfclay_physics": 5,
+          "sf_surface_physics": 4,
+          "sf_urban_physics": 0,
+          "shallowcu_forced_ra": false,
+          "shcu_aerosols_opt": 0,
+          "shcu_physics": 0,
+          "shinhong_tke_diag": 0,
+          "slab_land": null,
+          "slab_rad": null,
+          "slab_static": null,
+          "slope_rad": 1,
+          "specified_adv_degrade": true,
+          "specified_bdy_cadence": true,
+          "ssib_land": null,
+          "ssib_rad": null,
+          "ssib_static": null,
+          "sst_skin": 0,
+          "sst_skin_initial": null,
+          "stochastic_config": null,
+          "surface_controls": null,
+          "swint_opt": 0,
+          "tegen_aerosol": null,
+          "thompson_hail_tables": null,
+          "tke_mix2_off": false,
+          "tke_upper_bound": 1000.0,
+          "top_lid": false,
+          "topo_shading": 1,
+          "topo_shadow_length_m": 25000.0,
+          "topo_wind_static": null,
+          "tracer_adv_opt": 1,
+          "tracer_config": null,
+          "tracer_mix2_off": false,
+          "tracer_mix6_off": false,
+          "tracer_opt": 0,
+          "tracer_pblmix": 1,
+          "urban_bundle": null,
+          "use_deformation_momentum_diffusion": false,
+          "use_flux_advection": true,
+          "use_lakedepth": 1,
+          "use_mp_re": 1,
+          "use_noahmp": true,
+          "use_vertical_solver": true,
+          "w_damping": 1,
+          "windfarm": null,
+          "windfarm_ij": 0,
+          "windfarm_opt": 0,
+          "windfarm_tke_factor": 0.25,
+          "ysu_topdown_pblmix": 1,
+          "zdamp": 5000.0
+        },
+        "qke_coldstart": {
+          "note": "parent wrfout carried no real QKE (MAXVAL<0.0002); seeded WRF cold-start background TKE profile",
+          "qke_max": 25.000001907348633,
+          "qke_max_skipped": false,
+          "seeded": true,
+          "wrf_ref": "phys/module_bl_mynnedmf.F:618-691 (mym_initialize INITIALIZE_QKE)"
+        },
+        "record_windows": {
+          "aux4": {
+            "device_bytes_full": 1747252,
+            "device_bytes_window": 537616,
+            "records": 13
+          },
+          "lateral": {
+            "device_bytes_full": 89220560,
+            "device_bytes_window": 27452480,
+            "leaves": 18,
+            "records": 13
+          },
+          "window_records": 4
+        },
+        "standalone_native_init": true,
+        "wrfbdy_path": "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/cases/wn3_0227/wrfbdy_d01",
+        "writer_static_latlon": {
+          "candidate_files": [
+            "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/cases/wn3_0227/wrfinput_d01"
+          ],
+          "domain": "d01",
+          "errors": {},
+          "fields": {
+            "GOT_VAR_SSO": {
+              "dtype": "float32",
+              "finite_fraction": 1.0,
+              "max": 0.0,
+              "min": 0.0,
+              "shape": [],
+              "source_file": "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/cases/wn3_0227/wrfinput_d01"
+            },
+            "T00": {
+              "dtype": "float32",
+              "finite_fraction": 1.0,
+              "max": 290.0,
+              "min": 290.0,
+              "shape": [],
+              "source_file": "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/cases/wn3_0227/wrfinput_d01"
+            },
+            "TLP_STRAT": {
+              "dtype": "float32",
+              "finite_fraction": 1.0,
+              "max": -11.0,
+              "min": -11.0,
+              "shape": [],
+              "source_file": "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/cases/wn3_0227/wrfinput_d01"
+            },
+            "WATER_DEPTH": {
+              "dtype": "float32",
+              "finite_fraction": 1.0,
+              "max": -4.0,
+              "min": -4.0,
+              "shape": [
+                70,
+                120
+              ],
+              "source_file": "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/cases/wn3_0227/wrfinput_d01"
+            },
+            "XLAT": {
+              "dtype": "float32",
+              "finite_fraction": 1.0,
+              "max": 31.32917022705078,
+              "min": 25.61162567138672,
+              "shape": [
+                70,
+                120
+              ],
+              "source_file": "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/cases/wn3_0227/wrfinput_d01"
+            },
+            "XLAT_U": {
+              "dtype": "float32",
+              "finite_fraction": 1.0,
+              "max": 31.329177856445312,
+              "min": 25.60967254638672,
+              "shape": [
+                70,
+                121
+              ],
+              "source_file": "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/cases/wn3_0227/wrfinput_d01"
+            },
+            "XLAT_V": {
+              "dtype": "float32",
+              "finite_fraction": 1.0,
+              "max": 31.369590759277344,
+              "min": 25.571189880371094,
+              "shape": [
+                71,
+                120
+              ],
+              "source_file": "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/cases/wn3_0227/wrfinput_d01"
+            },
+            "XLONG": {
+              "dtype": "float32",
+              "finite_fraction": 1.0,
+              "max": -10.1119384765625,
+              "min": -21.3668212890625,
+              "shape": [
+                70,
+                120
+              ],
+              "source_file": "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/cases/wn3_0227/wrfinput_d01"
+            },
+            "XLONG_U": {
+              "dtype": "float32",
+              "finite_fraction": 1.0,
+              "max": -10.064727783203125,
+              "min": -21.414093017578125,
+              "shape": [
+                70,
+                121
+              ],
+              "source_file": "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/cases/wn3_0227/wrfinput_d01"
+            },
+            "XLONG_V": {
+              "dtype": "float32",
+              "finite_fraction": 1.0,
+              "max": -10.109527587890625,
+              "min": -21.36871337890625,
+              "shape": [
+                71,
+                120
+              ],
+              "source_file": "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/cases/wn3_0227/wrfinput_d01"
+            }
+          },
+          "loaded_fields": [
+            "GOT_VAR_SSO",
+            "T00",
+            "TLP_STRAT",
+            "WATER_DEPTH",
+            "XLAT",
+            "XLAT_U",
+            "XLAT_V",
+            "XLONG",
+            "XLONG_U",
+            "XLONG_V"
+          ],
+          "missing_fields": [],
+          "note": "host-only wrfout diagnostics; not part of State/GridSpec/OperationalNamelist",
+          "status": "loaded"
+        }
+      },
+      "d02": {
+        "grid": {
+          "dx_m": 3000.0,
+          "dy_m": 3000.0,
+          "mass_shape": [
+            44,
+            117,
+            267
+          ],
+          "wrf_staggered_extent": [
+            45,
+            118,
+            268
+          ]
+        },
+        "ic_source": "wrfinput_d02",
+        "land_surface": {
+          "noahmp_energy_params_loaded": true,
+          "noahmp_julian": 58.0,
+          "noahmp_land_seeded": true,
+          "noahmp_n_land_cells": 1573,
+          "noahmp_rad_params_loaded": true,
+          "noahmp_static_loaded": true,
+          "noahmp_yearlen": 365.0,
+          "provenance": "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/cases/wn3_0227/wrfinput_d02",
+          "sf_surface_physics": 4,
+          "use_noahmp": true
+        },
+        "lbc_source": "live parent boundary package (build_child_boundary_package)",
+        "live_nest_base_init": {
+          "base_state_source": "HT/MUB/PHB are independently blended like med_nest_initial; final PB/MUB/PHB are WRF start_domain_em recompute from blended HT",
+          "blend_width": 5,
+          "child_domain": "d02",
+          "cpu_wrfout_dependency": false,
+          "enabled": true,
+          "i_parent_start": 16,
+          "interpolation": "gpuwrf.nesting.interp.sint_to_child_reference (WRF sint.F host reference, init-only)",
+          "j_parent_start": 16,
+          "note": "The host SINT reference runs before OperationalCarry creation. The forecast loop remains device-resident; no CPU-WRF history file is read.",
+          "parent_domain": "d01",
+          "parent_grid_ratio": 3,
+          "pre_start_blended_mub_max_pa": 95000.0,
+          "pre_start_blended_phb_max_m2_s2": 195220.53125,
+          "production_inputs": [
+            "parent native initialized terrain",
+            "wrfinput_d02",
+            "namelist.input"
+          ],
+          "source": "native live-nest parent SINT/TR4 interpolation + WRF blend_terrain pre-start path",
+          "spec_bdy_width": 5,
+          "start_domain_perturb_init": {
+            "cpu_wrfout_dependency": false,
+            "hypsometric_opt": 2,
+            "libm_provider": "glibc-libm-float32",
+            "surfaces": [
+              "start_domain hypsometric AL/ALT + calc_p_rho_phi pressure",
+              "press_adj MU correction",
+              "child-open start_domain(parent) AL/ALT/P from post-press_adj MU",
+              "set_w_surface(fill_w_flag=.true.)"
+            ],
+            "timestep_loop_transfer": false,
+            "use_theta_m_qvf": 1.0,
+            "w_needs_to_be_set": true,
+            "w_surface_input_max_abs": 0.0,
+            "wrf_reference": "dyn_em/start_em.F (AL/ALT + p from calc_p_rho_phi equations; press_adj); dyn_em/module_bc_em.F::set_w_surface"
+          },
+          "theta_qv_adjust": {
+            "final_base_state_unchanged": true,
+            "perturbation_pressure_unchanged": true,
+            "surface": "post_blend_terrain_pre_start_domain (adjust_tempqv current MUB)",
+            "theta_m_conversion_applied": true,
+            "timestep_loop_transfer": false,
+            "use_theta_m": 1,
+            "wrf_reference": "dyn_em/module_initialize_real.F:4918-4928 theta_m; dyn_em/nest_init_utils.F::adjust_tempqv(nest%mub, nest%mub_save, ...)"
+          },
+          "timestep_loop_transfer": false,
+          "transient_adjust_mub": {
+            "blend_width": 5,
+            "child_domain": "d02",
+            "consumer": "dyn_em/nest_init_utils.F::adjust_tempqv current MUB argument",
+            "final_base_state_unchanged": true,
+            "i_parent_start": 16,
+            "interpolation": "gpuwrf.nesting.interp.sint_to_child_reference (WRF sint.F host reference, init-only)",
+            "j_parent_start": 16,
+            "parent_domain": "d01",
+            "parent_grid_ratio": 3,
+            "spec_bdy_width": 5,
+            "surface": "post_blend_terrain_pre_start_domain",
+            "timestep_loop_transfer": false,
+            "wrf_reference": "share/mediation_integrate.F med_nest_initial: copy_3d_field(mub_save,mub); blend_terrain(mub_fine,mub); adjust_tempqv(mub,mub_save,...)"
+          }
+        },
+        "namelist": {
+          "boundary_update_cadence_s": 54.0,
+          "cu_physics": 0,
+          "cudt_minutes": 5.0,
+          "cumulus_cadence_steps": 17,
+          "dt_s": 18.0,
+          "gwd_opt": 0,
+          "gwdo_statics_loaded": false,
+          "moist_adv_opt": 1,
+          "nested_frozen_wrf_boundary_bundle": true,
+          "radiation_cadence_steps": 100,
+          "radiation_static_loaded": true,
+          "scalar_adv_opt": 1,
+          "slope_rad": 1,
+          "top_lid": false,
+          "topo_shading": 1
+        },
+        "namelist_resolved": {
+          "accum_mode": 1000000000.0,
+          "acoustic_precision_mode": "fp64_default",
+          "acoustic_substeps": 4,
+          "aer_opt": 0,
+          "aitken_mode": 300000000.0,
+          "bl_pbl_physics": 5,
+          "c_k": 0.15,
+          "c_s": 0.25,
+          "cam_abs_freq_s": 21600.0,
+          "ccn_conc": 100000000.0,
+          "ccnty": 2,
+          "coarse_mode": 200000.0,
+          "const_nu_m2_s": 0.0,
+          "cu_diag": 0,
+          "cu_physics": 0,
+          "cu_rad_feedback": false,
+          "cudt_minutes": 5.0,
+          "cumulus_cadence_steps": 17,
+          "cup_min_deep_freq": 1.0,
+          "cup_min_shallow_freq": 1.0,
+          "cup_num_bins": 1,
+          "cup_r_bin_size": 1.0,
+          "cup_th_bin_size": 1.0,
+          "damp_opt": 3,
+          "dampcoef": 0.2,
+          "data_assimilation": null,
+          "diagnostic_history_interval": 60.0,
+          "diff_6th_factor": 0.12,
+          "diff_6th_opt": 2,
+          "diff_opt": 1,
+          "disable_guards": true,
+          "do_radar_ref": 0,
+          "dt_s": 18.0,
+          "epssm": 0.5,
+          "ferrier_gid": 1,
+          "force_fp64": true,
+          "gfdl_grid": null,
+          "gpuwrf_tracer_file": "",
+          "gwd_opt": 0,
+          "gwdo_statics": null,
+          "h_sca_adv_order": 5,
+          "hypsometric_opt": 2,
+          "icloud": 1,
+          "isftcflx": 0,
+          "kfeta_trigger": 1,
+          "khdif": 0.0,
+          "km_opt": 4,
+          "kvdif": 0.0,
+          "lake_bundle": null,
+          "lake_min_elev": 5.0,
+          "lakedepth_default": 50.0,
+          "mass_shape": [
+            44,
+            117,
+            267
+          ],
+          "mfshconv": 0,
+          "mix_isotropic": 0,
+          "mix_upper_bound": 0.1,
+          "moist_adv_opt": 1,
+          "mp_physics": 8,
+          "noahclassic_land": null,
+          "noahclassic_rad": null,
+          "noahclassic_static": null,
+          "noahmp_carbon_static": null,
+          "noahmp_groundwater_initial": null,
+          "noahmp_irrigation_static": null,
+          "noahmp_julian": 58.0,
+          "noahmp_land": null,
+          "noahmp_mmf_enabled": false,
+          "noahmp_mmf_opt_inf": 1,
+          "noahmp_nroot": 4,
+          "noahmp_options": null,
+          "noahmp_yearlen": 365.0,
+          "nsas_dx_factor": 0,
+          "nwp_diagnostics": 0,
+          "observation_nudging": null,
+          "ocean_initial": null,
+          "oml_gamma": 0.14,
+          "oml_hml0": 50.0,
+          "oml_relaxation_time": 0.0,
+          "osas_domain_id": 1,
+          "prec_acc_dt": 0.0,
+          "px_land": null,
+          "px_rad": null,
+          "px_static": null,
+          "ra_lw_physics": 4,
+          "ra_sw_physics": 4,
+          "rad_rk_tendf": 1,
+          "radiation_cadence_steps": 100,
+          "radiation_interval_s": 1800.0,
+          "rk_order": 3,
+          "ruc_land": null,
+          "ruc_rad": null,
+          "ruc_static": null,
+          "run_boundary": true,
+          "run_physics": true,
+          "sas_pgcon": 0.55,
+          "scalar_adv_opt": 1,
+          "sf_lake_physics": 0,
+          "sf_ocean_physics": 0,
+          "sf_sfclay_physics": 5,
+          "sf_surface_physics": 4,
+          "sf_urban_physics": 0,
+          "shallowcu_forced_ra": false,
+          "shcu_aerosols_opt": 0,
+          "shcu_physics": 0,
+          "shinhong_tke_diag": 0,
+          "slab_land": null,
+          "slab_rad": null,
+          "slab_static": null,
+          "slope_rad": 1,
+          "specified_adv_degrade": false,
+          "specified_bdy_cadence": false,
+          "ssib_land": null,
+          "ssib_rad": null,
+          "ssib_static": null,
+          "sst_skin": 0,
+          "sst_skin_initial": null,
+          "stochastic_config": null,
+          "surface_controls": null,
+          "swint_opt": 0,
+          "tegen_aerosol": null,
+          "thompson_hail_tables": null,
+          "tke_mix2_off": false,
+          "tke_upper_bound": 1000.0,
+          "top_lid": false,
+          "topo_shading": 1,
+          "topo_shadow_length_m": 25000.0,
+          "topo_wind_static": null,
+          "tracer_adv_opt": 1,
+          "tracer_config": null,
+          "tracer_mix2_off": false,
+          "tracer_mix6_off": false,
+          "tracer_opt": 0,
+          "tracer_pblmix": 1,
+          "urban_bundle": null,
+          "use_deformation_momentum_diffusion": false,
+          "use_flux_advection": true,
+          "use_lakedepth": 1,
+          "use_mp_re": 1,
+          "use_noahmp": true,
+          "use_vertical_solver": true,
+          "w_damping": 1,
+          "windfarm": null,
+          "windfarm_ij": 0,
+          "windfarm_opt": 0,
+          "windfarm_tke_factor": 0.25,
+          "ysu_topdown_pblmix": 1,
+          "zdamp": 5000.0
+        },
+        "qke_coldstart": {
+          "note": "parent wrfout carried no real QKE (MAXVAL<0.0002); seeded WRF cold-start background TKE profile",
+          "qke_max": 25.000001907348633,
+          "qke_max_skipped": false,
+          "seeded": true,
+          "wrf_ref": "phys/module_bl_mynnedmf.F:618-691 (mym_initialize INITIALIZE_QKE)"
+        },
+        "record_windows": {
+          "aux4": {
+            "device_bytes_full": 6497764,
+            "device_bytes_window": 1999312,
+            "records": 13
+          },
+          "window_records": 4
+        },
+        "standalone_native_init": true,
+        "wrfbdy_path": null,
+        "writer_static_latlon": {
+          "candidate_files": [
+            "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/cases/wn3_0227/wrfinput_d02"
+          ],
+          "domain": "d02",
+          "errors": {},
+          "fields": {
+            "GOT_VAR_SSO": {
+              "dtype": "float32",
+              "finite_fraction": 1.0,
+              "max": 0.0,
+              "min": 0.0,
+              "shape": [],
+              "source_file": "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/cases/wn3_0227/wrfinput_d02"
+            },
+            "T00": {
+              "dtype": "float32",
+              "finite_fraction": 1.0,
+              "max": 290.0,
+              "min": 290.0,
+              "shape": [],
+              "source_file": "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/cases/wn3_0227/wrfinput_d02"
+            },
+            "TLP_STRAT": {
+              "dtype": "float32",
+              "finite_fraction": 1.0,
+              "max": -11.0,
+              "min": -11.0,
+              "shape": [],
+              "source_file": "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/cases/wn3_0227/wrfinput_d02"
+            },
+            "WATER_DEPTH": {
+              "dtype": "float32",
+              "finite_fraction": 1.0,
+              "max": -4.0,
+              "min": -4.0,
+              "shape": [
+                117,
+                267
+              ],
+              "source_file": "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/cases/wn3_0227/wrfinput_d02"
+            },
+            "XLAT": {
+              "dtype": "float32",
+              "finite_fraction": 1.0,
+              "max": 30.061752319335938,
+              "min": 26.852840423583984,
+              "shape": [
+                117,
+                267
+              ],
+              "source_file": "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/cases/wn3_0227/wrfinput_d02"
+            },
+            "XLAT_U": {
+              "dtype": "float32",
+              "finite_fraction": 1.0,
+              "max": 30.061752319335938,
+              "min": 26.85234832763672,
+              "shape": [
+                117,
+                268
+              ],
+              "source_file": "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/cases/wn3_0227/wrfinput_d02"
+            },
+            "XLAT_V": {
+              "dtype": "float32",
+              "finite_fraction": 1.0,
+              "max": 30.075237274169922,
+              "min": 26.839351654052734,
+              "shape": [
+                118,
+                267
+              ],
+              "source_file": "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/cases/wn3_0227/wrfinput_d02"
+            },
+            "XLONG": {
+              "dtype": "float32",
+              "finite_fraction": 1.0,
+              "max": -11.64849853515625,
+              "min": -19.938079833984375,
+              "shape": [
+                117,
+                267
+              ],
+              "source_file": "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/cases/wn3_0227/wrfinput_d02"
+            },
+            "XLONG_U": {
+              "dtype": "float32",
+              "finite_fraction": 1.0,
+              "max": -11.6329345703125,
+              "min": -19.953643798828125,
+              "shape": [
+                117,
+                268
+              ],
+              "source_file": "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/cases/wn3_0227/wrfinput_d02"
+            },
+            "XLONG_V": {
+              "dtype": "float32",
+              "finite_fraction": 1.0,
+              "max": -11.64788818359375,
+              "min": -19.938507080078125,
+              "shape": [
+                118,
+                267
+              ],
+              "source_file": "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/cases/wn3_0227/wrfinput_d02"
+            }
+          },
+          "loaded_fields": [
+            "GOT_VAR_SSO",
+            "T00",
+            "TLP_STRAT",
+            "WATER_DEPTH",
+            "XLAT",
+            "XLAT_U",
+            "XLAT_V",
+            "XLONG",
+            "XLONG_U",
+            "XLONG_V"
+          ],
+          "missing_fields": [],
+          "note": "host-only wrfout diagnostics; not part of State/GridSpec/OperationalNamelist",
+          "status": "loaded"
+        }
+      },
+      "d03": {
+        "grid": {
+          "dx_m": 1000.0,
+          "dy_m": 1000.0,
+          "mass_shape": [
+            44,
+            93,
+            111
+          ],
+          "wrf_staggered_extent": [
+            45,
+            94,
+            112
+          ]
+        },
+        "ic_source": "wrfinput_d03",
+        "land_surface": {
+          "noahmp_energy_params_loaded": true,
+          "noahmp_julian": 58.0,
+          "noahmp_land_seeded": true,
+          "noahmp_n_land_cells": 2034,
+          "noahmp_rad_params_loaded": true,
+          "noahmp_static_loaded": true,
+          "noahmp_yearlen": 365.0,
+          "provenance": "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/cases/wn3_0227/wrfinput_d03",
+          "sf_surface_physics": 4,
+          "use_noahmp": true
+        },
+        "lbc_source": "live parent boundary package (build_child_boundary_package)",
+        "live_nest_base_init": {
+          "base_state_source": "HT/MUB/PHB are independently blended like med_nest_initial; final PB/MUB/PHB are WRF start_domain_em recompute from blended HT",
+          "blend_width": 5,
+          "child_domain": "d03",
+          "cpu_wrfout_dependency": false,
+          "enabled": true,
+          "i_parent_start": 92,
+          "interpolation": "gpuwrf.nesting.interp.sint_to_child_reference (WRF sint.F host reference, init-only)",
+          "j_parent_start": 36,
+          "note": "The host SINT reference runs before OperationalCarry creation. The forecast loop remains device-resident; no CPU-WRF history file is read.",
+          "parent_domain": "d02",
+          "parent_grid_ratio": 3,
+          "pre_start_blended_mub_max_pa": 95000.0,
+          "pre_start_blended_phb_max_m2_s2": 195220.53125,
+          "production_inputs": [
+            "parent native initialized terrain",
+            "wrfinput_d03",
+            "namelist.input"
+          ],
+          "source": "native live-nest parent SINT/TR4 interpolation + WRF blend_terrain pre-start path",
+          "spec_bdy_width": 5,
+          "start_domain_perturb_init": {
+            "cpu_wrfout_dependency": false,
+            "hypsometric_opt": 2,
+            "libm_provider": "glibc-libm-float32",
+            "surfaces": [
+              "start_domain hypsometric AL/ALT + calc_p_rho_phi pressure",
+              "press_adj MU correction",
+              "set_w_surface(fill_w_flag=.true.)"
+            ],
+            "timestep_loop_transfer": false,
+            "use_theta_m_qvf": 1.0,
+            "w_needs_to_be_set": true,
+            "w_surface_input_max_abs": 0.0,
+            "wrf_reference": "dyn_em/start_em.F (AL/ALT + p from calc_p_rho_phi equations; press_adj); dyn_em/module_bc_em.F::set_w_surface"
+          },
+          "theta_qv_adjust": {
+            "final_base_state_unchanged": true,
+            "perturbation_pressure_unchanged": true,
+            "surface": "post_blend_terrain_pre_start_domain (adjust_tempqv current MUB)",
+            "theta_m_conversion_applied": true,
+            "timestep_loop_transfer": false,
+            "use_theta_m": 1,
+            "wrf_reference": "dyn_em/module_initialize_real.F:4918-4928 theta_m; dyn_em/nest_init_utils.F::adjust_tempqv(nest%mub, nest%mub_save, ...)"
+          },
+          "timestep_loop_transfer": false,
+          "transient_adjust_mub": {
+            "blend_width": 5,
+            "child_domain": "d03",
+            "consumer": "dyn_em/nest_init_utils.F::adjust_tempqv current MUB argument",
+            "final_base_state_unchanged": true,
+            "i_parent_start": 92,
+            "interpolation": "gpuwrf.nesting.interp.sint_to_child_reference (WRF sint.F host reference, init-only)",
+            "j_parent_start": 36,
+            "parent_domain": "d02",
+            "parent_grid_ratio": 3,
+            "spec_bdy_width": 5,
+            "surface": "post_blend_terrain_pre_start_domain",
+            "timestep_loop_transfer": false,
+            "wrf_reference": "share/mediation_integrate.F med_nest_initial: copy_3d_field(mub_save,mub); blend_terrain(mub_fine,mub); adjust_tempqv(mub,mub_save,...)"
+          }
+        },
+        "namelist": {
+          "boundary_update_cadence_s": 18.0,
+          "cu_physics": 0,
+          "cudt_minutes": 5.0,
+          "cumulus_cadence_steps": 50,
+          "dt_s": 6.0,
+          "gwd_opt": 0,
+          "gwdo_statics_loaded": false,
+          "moist_adv_opt": 1,
+          "nested_frozen_wrf_boundary_bundle": true,
+          "radiation_cadence_steps": 300,
+          "radiation_static_loaded": true,
+          "scalar_adv_opt": 1,
+          "slope_rad": 1,
+          "top_lid": false,
+          "topo_shading": 1
+        },
+        "namelist_resolved": {
+          "accum_mode": 1000000000.0,
+          "acoustic_precision_mode": "fp64_default",
+          "acoustic_substeps": 4,
+          "aer_opt": 0,
+          "aitken_mode": 300000000.0,
+          "bl_pbl_physics": 5,
+          "c_k": 0.15,
+          "c_s": 0.25,
+          "cam_abs_freq_s": 21600.0,
+          "ccn_conc": 100000000.0,
+          "ccnty": 2,
+          "coarse_mode": 200000.0,
+          "const_nu_m2_s": 0.0,
+          "cu_diag": 0,
+          "cu_physics": 0,
+          "cu_rad_feedback": false,
+          "cudt_minutes": 5.0,
+          "cumulus_cadence_steps": 50,
+          "cup_min_deep_freq": 1.0,
+          "cup_min_shallow_freq": 1.0,
+          "cup_num_bins": 1,
+          "cup_r_bin_size": 1.0,
+          "cup_th_bin_size": 1.0,
+          "damp_opt": 3,
+          "dampcoef": 0.2,
+          "data_assimilation": null,
+          "diagnostic_history_interval": 60.0,
+          "diff_6th_factor": 0.12,
+          "diff_6th_opt": 2,
+          "diff_opt": 1,
+          "disable_guards": true,
+          "do_radar_ref": 0,
+          "dt_s": 6.0,
+          "epssm": 0.5,
+          "ferrier_gid": 1,
+          "force_fp64": true,
+          "gfdl_grid": null,
+          "gpuwrf_tracer_file": "",
+          "gwd_opt": 0,
+          "gwdo_statics": null,
+          "h_sca_adv_order": 5,
+          "hypsometric_opt": 2,
+          "icloud": 1,
+          "isftcflx": 0,
+          "kfeta_trigger": 1,
+          "khdif": 0.0,
+          "km_opt": 4,
+          "kvdif": 0.0,
+          "lake_bundle": null,
+          "lake_min_elev": 5.0,
+          "lakedepth_default": 50.0,
+          "mass_shape": [
+            44,
+            93,
+            111
+          ],
+          "mfshconv": 0,
+          "mix_isotropic": 0,
+          "mix_upper_bound": 0.1,
+          "moist_adv_opt": 1,
+          "mp_physics": 8,
+          "noahclassic_land": null,
+          "noahclassic_rad": null,
+          "noahclassic_static": null,
+          "noahmp_carbon_static": null,
+          "noahmp_groundwater_initial": null,
+          "noahmp_irrigation_static": null,
+          "noahmp_julian": 58.0,
+          "noahmp_land": null,
+          "noahmp_mmf_enabled": false,
+          "noahmp_mmf_opt_inf": 1,
+          "noahmp_nroot": 4,
+          "noahmp_options": null,
+          "noahmp_yearlen": 365.0,
+          "nsas_dx_factor": 0,
+          "nwp_diagnostics": 0,
+          "observation_nudging": null,
+          "ocean_initial": null,
+          "oml_gamma": 0.14,
+          "oml_hml0": 50.0,
+          "oml_relaxation_time": 0.0,
+          "osas_domain_id": 1,
+          "prec_acc_dt": 0.0,
+          "px_land": null,
+          "px_rad": null,
+          "px_static": null,
+          "ra_lw_physics": 4,
+          "ra_sw_physics": 4,
+          "rad_rk_tendf": 1,
+          "radiation_cadence_steps": 300,
+          "radiation_interval_s": 1800.0,
+          "rk_order": 3,
+          "ruc_land": null,
+          "ruc_rad": null,
+          "ruc_static": null,
+          "run_boundary": true,
+          "run_physics": true,
+          "sas_pgcon": 0.55,
+          "scalar_adv_opt": 1,
+          "sf_lake_physics": 0,
+          "sf_ocean_physics": 0,
+          "sf_sfclay_physics": 5,
+          "sf_surface_physics": 4,
+          "sf_urban_physics": 0,
+          "shallowcu_forced_ra": false,
+          "shcu_aerosols_opt": 0,
+          "shcu_physics": 0,
+          "shinhong_tke_diag": 0,
+          "slab_land": null,
+          "slab_rad": null,
+          "slab_static": null,
+          "slope_rad": 1,
+          "specified_adv_degrade": false,
+          "specified_bdy_cadence": false,
+          "ssib_land": null,
+          "ssib_rad": null,
+          "ssib_static": null,
+          "sst_skin": 0,
+          "sst_skin_initial": null,
+          "stochastic_config": null,
+          "surface_controls": null,
+          "swint_opt": 0,
+          "tegen_aerosol": null,
+          "thompson_hail_tables": null,
+          "tke_mix2_off": false,
+          "tke_upper_bound": 1000.0,
+          "top_lid": false,
+          "topo_shading": 1,
+          "topo_shadow_length_m": 25000.0,
+          "topo_wind_static": null,
+          "tracer_adv_opt": 1,
+          "tracer_config": null,
+          "tracer_mix2_off": false,
+          "tracer_mix6_off": false,
+          "tracer_opt": 0,
+          "tracer_pblmix": 1,
+          "urban_bundle": null,
+          "use_deformation_momentum_diffusion": false,
+          "use_flux_advection": true,
+          "use_lakedepth": 1,
+          "use_mp_re": 1,
+          "use_noahmp": true,
+          "use_vertical_solver": true,
+          "w_damping": 1,
+          "windfarm": null,
+          "windfarm_ij": 0,
+          "windfarm_opt": 0,
+          "windfarm_tke_factor": 0.25,
+          "ysu_topdown_pblmix": 1,
+          "zdamp": 5000.0
+        },
+        "qke_coldstart": {
+          "note": "parent wrfout carried no real QKE (MAXVAL<0.0002); seeded WRF cold-start background TKE profile",
+          "qke_max": 25.000001907348633,
+          "qke_max_skipped": false,
+          "seeded": true,
+          "wrf_ref": "phys/module_bl_mynnedmf.F:618-691 (mym_initialize INITIALIZE_QKE)"
+        },
+        "record_windows": {
+          "aux4": {
+            "device_bytes_full": 2147236,
+            "device_bytes_window": 660688,
+            "records": 13
+          },
+          "window_records": 4
+        },
+        "standalone_native_init": true,
+        "wrfbdy_path": null,
+        "writer_static_latlon": {
+          "candidate_files": [
+            "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/cases/wn3_0227/wrfinput_d03"
+          ],
+          "domain": "d03",
+          "errors": {},
+          "fields": {
+            "GOT_VAR_SSO": {
+              "dtype": "float32",
+              "finite_fraction": 1.0,
+              "max": 0.0,
+              "min": 0.0,
+              "shape": [],
+              "source_file": "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/cases/wn3_0227/wrfinput_d03"
+            },
+            "T00": {
+              "dtype": "float32",
+              "finite_fraction": 1.0,
+              "max": 290.0,
+              "min": 290.0,
+              "shape": [],
+              "source_file": "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/cases/wn3_0227/wrfinput_d03"
+            },
+            "TLP_STRAT": {
+              "dtype": "float32",
+              "finite_fraction": 1.0,
+              "max": -11.0,
+              "min": -11.0,
+              "shape": [],
+              "source_file": "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/cases/wn3_0227/wrfinput_d03"
+            },
+            "WATER_DEPTH": {
+              "dtype": "float32",
+              "finite_fraction": 1.0,
+              "max": -4.0,
+              "min": -4.0,
+              "shape": [
+                93,
+                111
+              ],
+              "source_file": "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/cases/wn3_0227/wrfinput_d03"
+            },
+            "XLAT": {
+              "dtype": "float32",
+              "finite_fraction": 1.0,
+              "max": 28.694026947021484,
+              "min": 27.864070892333984,
+              "shape": [
+                93,
+                111
+              ],
+              "source_file": "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/cases/wn3_0227/wrfinput_d03"
+            },
+            "XLAT_U": {
+              "dtype": "float32",
+              "finite_fraction": 1.0,
+              "max": 28.694026947021484,
+              "min": 27.864051818847656,
+              "shape": [
+                93,
+                112
+              ],
+              "source_file": "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/cases/wn3_0227/wrfinput_d03"
+            },
+            "XLAT_V": {
+              "dtype": "float32",
+              "finite_fraction": 1.0,
+              "max": 28.698528289794922,
+              "min": 27.859569549560547,
+              "shape": [
+                94,
+                111
+              ],
+              "source_file": "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/cases/wn3_0227/wrfinput_d03"
+            },
+            "XLONG": {
+              "dtype": "float32",
+              "finite_fraction": 1.0,
+              "max": -15.974700927734375,
+              "min": -17.10345458984375,
+              "shape": [
+                93,
+                111
+              ],
+              "source_file": "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/cases/wn3_0227/wrfinput_d03"
+            },
+            "XLONG_U": {
+              "dtype": "float32",
+              "finite_fraction": 1.0,
+              "max": -15.969573974609375,
+              "min": -17.10858154296875,
+              "shape": [
+                93,
+                112
+              ],
+              "source_file": "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/cases/wn3_0227/wrfinput_d03"
+            },
+            "XLONG_V": {
+              "dtype": "float32",
+              "finite_fraction": 1.0,
+              "max": -15.97467041015625,
+              "min": -17.10345458984375,
+              "shape": [
+                94,
+                111
+              ],
+              "source_file": "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/cases/wn3_0227/wrfinput_d03"
+            }
+          },
+          "loaded_fields": [
+            "GOT_VAR_SSO",
+            "T00",
+            "TLP_STRAT",
+            "WATER_DEPTH",
+            "XLAT",
+            "XLAT_U",
+            "XLAT_V",
+            "XLONG",
+            "XLONG_U",
+            "XLONG_V"
+          ],
+          "missing_fields": [],
+          "note": "host-only wrfout diagnostics; not part of State/GridSpec/OperationalNamelist",
+          "status": "loaded"
+        }
+      }
+    },
+    "edges": [
+      {
+        "child": "d02",
+        "feedback": false,
+        "i_parent_start": 16,
+        "j_parent_start": 16,
+        "parent": "d01",
+        "parent_grid_ratio": 3
+      },
+      {
+        "child": "d03",
+        "feedback": false,
+        "i_parent_start": 92,
+        "j_parent_start": 36,
+        "parent": "d02",
+        "parent_grid_ratio": 3
+      }
+    ],
+    "forcedown_warmup": {
+      "edges": [
+        "d01->d02",
+        "d02->d03"
+      ],
+      "error": null,
+      "joined": true,
+      "remaining_wait_s": 1.2290023732930422e-05
+    },
+    "nested_aot": {
+      "cache_hit_count": 1599,
+      "domains": {
+        "d01": {
+          "cache_hit_count": 1599,
+          "cached": true,
+          "cheap_key": "a166230735d936f60d7aa6d50747ab93ab76f482da6b463ae1c7b67d6112c580",
+          "error": null,
+          "keys": {
+            "cheap_key:a166230735d936f60d7aa6d50747ab93ab76f482da6b463ae1c7b67d6112c580": {
+              "cache_hit_count": 1599,
+              "load_attempt_count": 1,
+              "load_attempt_wall_seconds": 0.00034801202127709985,
+              "load_count": 1,
+              "load_wall_seconds": 0.00034801202127709985
+            }
+          },
+          "load_attempt_count": 1,
+          "load_attempt_wall_seconds": 0.00034801202127709985,
+          "load_count": 1,
+          "load_wall_seconds": 0.00034801202127709985,
+          "loaded": true,
+          "name": "d01",
+          "real_load": false,
+          "source": "aot_memory_cache"
+        },
+        "fused/d02": {
+          "address": "cheap_key",
+          "blob_path": "<DATA_ROOT>/wrf_gpu2/release_bundles/v0.4.2/jax/aot/0.4.2-jax0.10.0-jaxlib0.10.0-cuda_sm120/fused_d02/k_ac024b4cb199d70b6ba37466d82250967e0569091d6c5b49d2e101ce960c7cfc.xlaexec",
+          "cheap_key": "ac024b4cb199d70b6ba37466d82250967e0569091d6c5b49d2e101ce960c7cfc",
+          "error": null,
+          "hlo_sha256": "615b46583c77d72e554c3990fb6198b7f6a6e28ba1ec42eaeab208d36499c0e3",
+          "keys": {},
+          "loaded": true,
+          "meta_hlo_sha256": "615b46583c77d72e554c3990fb6198b7f6a6e28ba1ec42eaeab208d36499c0e3",
+          "meta_path": "<DATA_ROOT>/wrf_gpu2/release_bundles/v0.4.2/jax/aot/0.4.2-jax0.10.0-jaxlib0.10.0-cuda_sm120/fused_d02/k_ac024b4cb199d70b6ba37466d82250967e0569091d6c5b49d2e101ce960c7cfc.meta",
+          "name": "fused/d02",
+          "source": "aot_blob"
+        }
+      },
+      "enabled": true,
+      "load_count": 1,
+      "load_wall_seconds": 0.00034801202127709985,
+      "verify": false
+    },
+    "nested_runtime": {
+      "prepared_runtime_reuse": true,
+      "selection_env": "GPUWRF_PREPARED_RUNTIME_REUSE"
+    },
+    "nesting": {
+      "feedback": false,
+      "smooth_option": 0,
+      "spec_zone": 1
+    },
+    "parallel_compile": {
+      "nested_precompile": {
+        "active": false,
+        "attempted": true,
+        "error": null,
+        "report": null,
+        "source": "skip:fused-default",
+        "verify": null,
+        "workers": null
+      }
+    }
+  },
+  "namelist_max_dom": 3,
+  "namelist_path": "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/cases/wn3_0227/namelist.input",
+  "nesting_mode": "one_way",
+  "output_dir": "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/hero/runs/WN3/out/wn3_0227/wrfout",
+  "override_sources": {
+    "domain": "default",
+    "hours": "flag",
+    "max_dom": "namelist"
+  },
+  "per_domain": {
+    "d01": {
+      "dt_s": 54.0,
+      "expected_wrfout_count": 25,
+      "final_state_finite": true,
+      "history_interval_min": 60.0,
+      "own_steps": 1600,
+      "wrfout_count": 25,
+      "wrfout_files": [
+        "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/hero/runs/WN3/out/wn3_0227/wrfout/wrfout_d01_2026-02-28_00:00:00",
+        "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/hero/runs/WN3/out/wn3_0227/wrfout/wrfout_d01_2026-02-28_01:00:18",
+        "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/hero/runs/WN3/out/wn3_0227/wrfout/wrfout_d01_2026-02-28_02:00:36",
+        "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/hero/runs/WN3/out/wn3_0227/wrfout/wrfout_d01_2026-02-28_03:00:00",
+        "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/hero/runs/WN3/out/wn3_0227/wrfout/wrfout_d01_2026-02-28_04:00:18",
+        "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/hero/runs/WN3/out/wn3_0227/wrfout/wrfout_d01_2026-02-28_05:00:36",
+        "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/hero/runs/WN3/out/wn3_0227/wrfout/wrfout_d01_2026-02-28_06:00:00",
+        "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/hero/runs/WN3/out/wn3_0227/wrfout/wrfout_d01_2026-02-28_07:00:18",
+        "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/hero/runs/WN3/out/wn3_0227/wrfout/wrfout_d01_2026-02-28_08:00:36",
+        "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/hero/runs/WN3/out/wn3_0227/wrfout/wrfout_d01_2026-02-28_09:00:00",
+        "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/hero/runs/WN3/out/wn3_0227/wrfout/wrfout_d01_2026-02-28_10:00:18",
+        "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/hero/runs/WN3/out/wn3_0227/wrfout/wrfout_d01_2026-02-28_11:00:36",
+        "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/hero/runs/WN3/out/wn3_0227/wrfout/wrfout_d01_2026-02-28_12:00:00",
+        "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/hero/runs/WN3/out/wn3_0227/wrfout/wrfout_d01_2026-02-28_13:00:18",
+        "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/hero/runs/WN3/out/wn3_0227/wrfout/wrfout_d01_2026-02-28_14:00:36",
+        "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/hero/runs/WN3/out/wn3_0227/wrfout/wrfout_d01_2026-02-28_15:00:00",
+        "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/hero/runs/WN3/out/wn3_0227/wrfout/wrfout_d01_2026-02-28_16:00:18",
+        "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/hero/runs/WN3/out/wn3_0227/wrfout/wrfout_d01_2026-02-28_17:00:36",
+        "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/hero/runs/WN3/out/wn3_0227/wrfout/wrfout_d01_2026-02-28_18:00:00",
+        "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/hero/runs/WN3/out/wn3_0227/wrfout/wrfout_d01_2026-02-28_19:00:18",
+        "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/hero/runs/WN3/out/wn3_0227/wrfout/wrfout_d01_2026-02-28_20:00:36",
+        "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/hero/runs/WN3/out/wn3_0227/wrfout/wrfout_d01_2026-02-28_21:00:00",
+        "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/hero/runs/WN3/out/wn3_0227/wrfout/wrfout_d01_2026-02-28_22:00:18",
+        "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/hero/runs/WN3/out/wn3_0227/wrfout/wrfout_d01_2026-02-28_23:00:36",
+        "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/hero/runs/WN3/out/wn3_0227/wrfout/wrfout_d01_2026-03-01_00:00:00"
+      ]
+    },
+    "d02": {
+      "dt_s": 18.0,
+      "expected_wrfout_count": 25,
+      "final_state_finite": true,
+      "history_interval_min": 60.0,
+      "own_steps": 4800,
+      "wrfout_count": 25,
+      "wrfout_files": [
+        "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/hero/runs/WN3/out/wn3_0227/wrfout/wrfout_d02_2026-02-28_00:00:00",
+        "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/hero/runs/WN3/out/wn3_0227/wrfout/wrfout_d02_2026-02-28_01:00:00",
+        "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/hero/runs/WN3/out/wn3_0227/wrfout/wrfout_d02_2026-02-28_02:00:00",
+        "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/hero/runs/WN3/out/wn3_0227/wrfout/wrfout_d02_2026-02-28_03:00:00",
+        "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/hero/runs/WN3/out/wn3_0227/wrfout/wrfout_d02_2026-02-28_04:00:00",
+        "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/hero/runs/WN3/out/wn3_0227/wrfout/wrfout_d02_2026-02-28_05:00:00",
+        "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/hero/runs/WN3/out/wn3_0227/wrfout/wrfout_d02_2026-02-28_06:00:00",
+        "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/hero/runs/WN3/out/wn3_0227/wrfout/wrfout_d02_2026-02-28_07:00:00",
+        "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/hero/runs/WN3/out/wn3_0227/wrfout/wrfout_d02_2026-02-28_08:00:00",
+        "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/hero/runs/WN3/out/wn3_0227/wrfout/wrfout_d02_2026-02-28_09:00:00",
+        "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/hero/runs/WN3/out/wn3_0227/wrfout/wrfout_d02_2026-02-28_10:00:00",
+        "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/hero/runs/WN3/out/wn3_0227/wrfout/wrfout_d02_2026-02-28_11:00:00",
+        "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/hero/runs/WN3/out/wn3_0227/wrfout/wrfout_d02_2026-02-28_12:00:00",
+        "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/hero/runs/WN3/out/wn3_0227/wrfout/wrfout_d02_2026-02-28_13:00:00",
+        "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/hero/runs/WN3/out/wn3_0227/wrfout/wrfout_d02_2026-02-28_14:00:00",
+        "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/hero/runs/WN3/out/wn3_0227/wrfout/wrfout_d02_2026-02-28_15:00:00",
+        "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/hero/runs/WN3/out/wn3_0227/wrfout/wrfout_d02_2026-02-28_16:00:00",
+        "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/hero/runs/WN3/out/wn3_0227/wrfout/wrfout_d02_2026-02-28_17:00:00",
+        "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/hero/runs/WN3/out/wn3_0227/wrfout/wrfout_d02_2026-02-28_18:00:00",
+        "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/hero/runs/WN3/out/wn3_0227/wrfout/wrfout_d02_2026-02-28_19:00:00",
+        "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/hero/runs/WN3/out/wn3_0227/wrfout/wrfout_d02_2026-02-28_20:00:00",
+        "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/hero/runs/WN3/out/wn3_0227/wrfout/wrfout_d02_2026-02-28_21:00:00",
+        "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/hero/runs/WN3/out/wn3_0227/wrfout/wrfout_d02_2026-02-28_22:00:00",
+        "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/hero/runs/WN3/out/wn3_0227/wrfout/wrfout_d02_2026-02-28_23:00:00",
+        "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/hero/runs/WN3/out/wn3_0227/wrfout/wrfout_d02_2026-03-01_00:00:00"
+      ]
+    },
+    "d03": {
+      "dt_s": 6.0,
+      "expected_wrfout_count": 25,
+      "final_state_finite": true,
+      "history_interval_min": 60.0,
+      "own_steps": 14400,
+      "wrfout_count": 25,
+      "wrfout_files": [
+        "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/hero/runs/WN3/out/wn3_0227/wrfout/wrfout_d03_2026-02-28_00:00:00",
+        "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/hero/runs/WN3/out/wn3_0227/wrfout/wrfout_d03_2026-02-28_01:00:00",
+        "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/hero/runs/WN3/out/wn3_0227/wrfout/wrfout_d03_2026-02-28_02:00:00",
+        "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/hero/runs/WN3/out/wn3_0227/wrfout/wrfout_d03_2026-02-28_03:00:00",
+        "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/hero/runs/WN3/out/wn3_0227/wrfout/wrfout_d03_2026-02-28_04:00:00",
+        "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/hero/runs/WN3/out/wn3_0227/wrfout/wrfout_d03_2026-02-28_05:00:00",
+        "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/hero/runs/WN3/out/wn3_0227/wrfout/wrfout_d03_2026-02-28_06:00:00",
+        "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/hero/runs/WN3/out/wn3_0227/wrfout/wrfout_d03_2026-02-28_07:00:00",
+        "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/hero/runs/WN3/out/wn3_0227/wrfout/wrfout_d03_2026-02-28_08:00:00",
+        "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/hero/runs/WN3/out/wn3_0227/wrfout/wrfout_d03_2026-02-28_09:00:00",
+        "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/hero/runs/WN3/out/wn3_0227/wrfout/wrfout_d03_2026-02-28_10:00:00",
+        "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/hero/runs/WN3/out/wn3_0227/wrfout/wrfout_d03_2026-02-28_11:00:00",
+        "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/hero/runs/WN3/out/wn3_0227/wrfout/wrfout_d03_2026-02-28_12:00:00",
+        "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/hero/runs/WN3/out/wn3_0227/wrfout/wrfout_d03_2026-02-28_13:00:00",
+        "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/hero/runs/WN3/out/wn3_0227/wrfout/wrfout_d03_2026-02-28_14:00:00",
+        "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/hero/runs/WN3/out/wn3_0227/wrfout/wrfout_d03_2026-02-28_15:00:00",
+        "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/hero/runs/WN3/out/wn3_0227/wrfout/wrfout_d03_2026-02-28_16:00:00",
+        "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/hero/runs/WN3/out/wn3_0227/wrfout/wrfout_d03_2026-02-28_17:00:00",
+        "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/hero/runs/WN3/out/wn3_0227/wrfout/wrfout_d03_2026-02-28_18:00:00",
+        "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/hero/runs/WN3/out/wn3_0227/wrfout/wrfout_d03_2026-02-28_19:00:00",
+        "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/hero/runs/WN3/out/wn3_0227/wrfout/wrfout_d03_2026-02-28_20:00:00",
+        "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/hero/runs/WN3/out/wn3_0227/wrfout/wrfout_d03_2026-02-28_21:00:00",
+        "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/hero/runs/WN3/out/wn3_0227/wrfout/wrfout_d03_2026-02-28_22:00:00",
+        "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/hero/runs/WN3/out/wn3_0227/wrfout/wrfout_d03_2026-02-28_23:00:00",
+        "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/hero/runs/WN3/out/wn3_0227/wrfout/wrfout_d03_2026-03-01_00:00:00"
+      ]
+    }
+  },
+  "restart": {
+    "checkpoints": [],
+    "enabled": false
+  },
+  "root_steps": 1600,
+  "run_id": "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/cases/wn3_0227",
+  "run_start_utc": "2026-02-28T00:00:00+00:00",
+  "schema": "M7DailyPipelineRun",
+  "schema_version": 1,
+  "scratch_dir": "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/hero/runs/WN3/out/wn3_0227/wrfout/.scratch",
+  "smooth_option": 0,
+  "verdict": "PIPELINE_GREEN",
+  "wall_clock_forecast_only_s": 390.7669713579817,
+  "wall_clock_total_s": 438.0015478840214,
+  "wrfout_files": [
+    "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/hero/runs/WN3/out/wn3_0227/wrfout/wrfout_d01_2026-02-28_00:00:00",
+    "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/hero/runs/WN3/out/wn3_0227/wrfout/wrfout_d01_2026-02-28_01:00:18",
+    "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/hero/runs/WN3/out/wn3_0227/wrfout/wrfout_d01_2026-02-28_02:00:36",
+    "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/hero/runs/WN3/out/wn3_0227/wrfout/wrfout_d01_2026-02-28_03:00:00",
+    "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/hero/runs/WN3/out/wn3_0227/wrfout/wrfout_d01_2026-02-28_04:00:18",
+    "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/hero/runs/WN3/out/wn3_0227/wrfout/wrfout_d01_2026-02-28_05:00:36",
+    "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/hero/runs/WN3/out/wn3_0227/wrfout/wrfout_d01_2026-02-28_06:00:00",
+    "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/hero/runs/WN3/out/wn3_0227/wrfout/wrfout_d01_2026-02-28_07:00:18",
+    "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/hero/runs/WN3/out/wn3_0227/wrfout/wrfout_d01_2026-02-28_08:00:36",
+    "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/hero/runs/WN3/out/wn3_0227/wrfout/wrfout_d01_2026-02-28_09:00:00",
+    "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/hero/runs/WN3/out/wn3_0227/wrfout/wrfout_d01_2026-02-28_10:00:18",
+    "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/hero/runs/WN3/out/wn3_0227/wrfout/wrfout_d01_2026-02-28_11:00:36",
+    "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/hero/runs/WN3/out/wn3_0227/wrfout/wrfout_d01_2026-02-28_12:00:00",
+    "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/hero/runs/WN3/out/wn3_0227/wrfout/wrfout_d01_2026-02-28_13:00:18",
+    "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/hero/runs/WN3/out/wn3_0227/wrfout/wrfout_d01_2026-02-28_14:00:36",
+    "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/hero/runs/WN3/out/wn3_0227/wrfout/wrfout_d01_2026-02-28_15:00:00",
+    "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/hero/runs/WN3/out/wn3_0227/wrfout/wrfout_d01_2026-02-28_16:00:18",
+    "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/hero/runs/WN3/out/wn3_0227/wrfout/wrfout_d01_2026-02-28_17:00:36",
+    "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/hero/runs/WN3/out/wn3_0227/wrfout/wrfout_d01_2026-02-28_18:00:00",
+    "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/hero/runs/WN3/out/wn3_0227/wrfout/wrfout_d01_2026-02-28_19:00:18",
+    "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/hero/runs/WN3/out/wn3_0227/wrfout/wrfout_d01_2026-02-28_20:00:36",
+    "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/hero/runs/WN3/out/wn3_0227/wrfout/wrfout_d01_2026-02-28_21:00:00",
+    "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/hero/runs/WN3/out/wn3_0227/wrfout/wrfout_d01_2026-02-28_22:00:18",
+    "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/hero/runs/WN3/out/wn3_0227/wrfout/wrfout_d01_2026-02-28_23:00:36",
+    "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/hero/runs/WN3/out/wn3_0227/wrfout/wrfout_d01_2026-03-01_00:00:00",
+    "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/hero/runs/WN3/out/wn3_0227/wrfout/wrfout_d02_2026-02-28_00:00:00",
+    "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/hero/runs/WN3/out/wn3_0227/wrfout/wrfout_d02_2026-02-28_01:00:00",
+    "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/hero/runs/WN3/out/wn3_0227/wrfout/wrfout_d02_2026-02-28_02:00:00",
+    "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/hero/runs/WN3/out/wn3_0227/wrfout/wrfout_d02_2026-02-28_03:00:00",
+    "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/hero/runs/WN3/out/wn3_0227/wrfout/wrfout_d02_2026-02-28_04:00:00",
+    "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/hero/runs/WN3/out/wn3_0227/wrfout/wrfout_d02_2026-02-28_05:00:00",
+    "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/hero/runs/WN3/out/wn3_0227/wrfout/wrfout_d02_2026-02-28_06:00:00",
+    "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/hero/runs/WN3/out/wn3_0227/wrfout/wrfout_d02_2026-02-28_07:00:00",
+    "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/hero/runs/WN3/out/wn3_0227/wrfout/wrfout_d02_2026-02-28_08:00:00",
+    "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/hero/runs/WN3/out/wn3_0227/wrfout/wrfout_d02_2026-02-28_09:00:00",
+    "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/hero/runs/WN3/out/wn3_0227/wrfout/wrfout_d02_2026-02-28_10:00:00",
+    "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/hero/runs/WN3/out/wn3_0227/wrfout/wrfout_d02_2026-02-28_11:00:00",
+    "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/hero/runs/WN3/out/wn3_0227/wrfout/wrfout_d02_2026-02-28_12:00:00",
+    "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/hero/runs/WN3/out/wn3_0227/wrfout/wrfout_d02_2026-02-28_13:00:00",
+    "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/hero/runs/WN3/out/wn3_0227/wrfout/wrfout_d02_2026-02-28_14:00:00",
+    "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/hero/runs/WN3/out/wn3_0227/wrfout/wrfout_d02_2026-02-28_15:00:00",
+    "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/hero/runs/WN3/out/wn3_0227/wrfout/wrfout_d02_2026-02-28_16:00:00",
+    "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/hero/runs/WN3/out/wn3_0227/wrfout/wrfout_d02_2026-02-28_17:00:00",
+    "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/hero/runs/WN3/out/wn3_0227/wrfout/wrfout_d02_2026-02-28_18:00:00",
+    "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/hero/runs/WN3/out/wn3_0227/wrfout/wrfout_d02_2026-02-28_19:00:00",
+    "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/hero/runs/WN3/out/wn3_0227/wrfout/wrfout_d02_2026-02-28_20:00:00",
+    "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/hero/runs/WN3/out/wn3_0227/wrfout/wrfout_d02_2026-02-28_21:00:00",
+    "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/hero/runs/WN3/out/wn3_0227/wrfout/wrfout_d02_2026-02-28_22:00:00",
+    "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/hero/runs/WN3/out/wn3_0227/wrfout/wrfout_d02_2026-02-28_23:00:00",
+    "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/hero/runs/WN3/out/wn3_0227/wrfout/wrfout_d02_2026-03-01_00:00:00",
+    "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/hero/runs/WN3/out/wn3_0227/wrfout/wrfout_d03_2026-02-28_00:00:00",
+    "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/hero/runs/WN3/out/wn3_0227/wrfout/wrfout_d03_2026-02-28_01:00:00",
+    "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/hero/runs/WN3/out/wn3_0227/wrfout/wrfout_d03_2026-02-28_02:00:00",
+    "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/hero/runs/WN3/out/wn3_0227/wrfout/wrfout_d03_2026-02-28_03:00:00",
+    "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/hero/runs/WN3/out/wn3_0227/wrfout/wrfout_d03_2026-02-28_04:00:00",
+    "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/hero/runs/WN3/out/wn3_0227/wrfout/wrfout_d03_2026-02-28_05:00:00",
+    "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/hero/runs/WN3/out/wn3_0227/wrfout/wrfout_d03_2026-02-28_06:00:00",
+    "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/hero/runs/WN3/out/wn3_0227/wrfout/wrfout_d03_2026-02-28_07:00:00",
+    "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/hero/runs/WN3/out/wn3_0227/wrfout/wrfout_d03_2026-02-28_08:00:00",
+    "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/hero/runs/WN3/out/wn3_0227/wrfout/wrfout_d03_2026-02-28_09:00:00",
+    "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/hero/runs/WN3/out/wn3_0227/wrfout/wrfout_d03_2026-02-28_10:00:00",
+    "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/hero/runs/WN3/out/wn3_0227/wrfout/wrfout_d03_2026-02-28_11:00:00",
+    "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/hero/runs/WN3/out/wn3_0227/wrfout/wrfout_d03_2026-02-28_12:00:00",
+    "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/hero/runs/WN3/out/wn3_0227/wrfout/wrfout_d03_2026-02-28_13:00:00",
+    "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/hero/runs/WN3/out/wn3_0227/wrfout/wrfout_d03_2026-02-28_14:00:00",
+    "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/hero/runs/WN3/out/wn3_0227/wrfout/wrfout_d03_2026-02-28_15:00:00",
+    "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/hero/runs/WN3/out/wn3_0227/wrfout/wrfout_d03_2026-02-28_16:00:00",
+    "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/hero/runs/WN3/out/wn3_0227/wrfout/wrfout_d03_2026-02-28_17:00:00",
+    "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/hero/runs/WN3/out/wn3_0227/wrfout/wrfout_d03_2026-02-28_18:00:00",
+    "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/hero/runs/WN3/out/wn3_0227/wrfout/wrfout_d03_2026-02-28_19:00:00",
+    "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/hero/runs/WN3/out/wn3_0227/wrfout/wrfout_d03_2026-02-28_20:00:00",
+    "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/hero/runs/WN3/out/wn3_0227/wrfout/wrfout_d03_2026-02-28_21:00:00",
+    "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/hero/runs/WN3/out/wn3_0227/wrfout/wrfout_d03_2026-02-28_22:00:00",
+    "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/hero/runs/WN3/out/wn3_0227/wrfout/wrfout_d03_2026-02-28_23:00:00",
+    "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/hero/runs/WN3/out/wn3_0227/wrfout/wrfout_d03_2026-03-01_00:00:00"
+  ]
+}

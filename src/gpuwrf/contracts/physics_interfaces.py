@@ -1750,6 +1750,20 @@ SCHEME_STEP_SPECS += tuple(
          "3-nest 24 h D6 PASS vs original CPU-WRF (proofs/w41_icloud2)."),
     )
 )
+# icloud=0: CLDFRA = 0 and RRTMG skips every condensate/radius input (IF ICLOUD .ne. 0), so radiation reads no
+# hydrometeor; microphysics/MYNN clouds evolve unchanged (cloud-radiation decoupling switch).
+SCHEME_STEP_SPECS += (PhysicsStepSpec(
+    family="radiation", option=4, variant="icloud=0", name="WRF icloud=0 cloud-free RRTMG radiation",
+    wrf_slot="first_rk_radiation_driver",
+    owner_module="src/gpuwrf/coupling/physics_couplers.py",
+    oracle="actual pristine radiation_driver ICLOUD=0 vs ICLOUD=1 savepoint on 16 real WN3 columns: "
+           "proofs/w42_icloud0/fixtures/z01_radiation_driver_icloud.json (tests/v041/test_icloud0_oracle.py)",
+    reads_state=("theta", "qv", "p", "pb", "ph", "phb", "xland"),
+    writes_state=("theta",),
+    diagnostics=("CLDFRA",),
+    notes="icloud=0 runs no cloud-fraction branch (no icloud_bl merge); history CLDFRA = 0. CPU-oracle-qualified; "
+          "GPU-qualified: WN3 0227 3-nest 24 h D6 PASS vs original CPU-WRF (proofs/w42_icloud0).",
+),)
 
 SCHEME_STEP_SPECS_BY_KEY: Mapping[tuple[str, int, str], PhysicsStepSpec] = {
     (spec.family, spec.option, spec.variant): spec for spec in SCHEME_STEP_SPECS

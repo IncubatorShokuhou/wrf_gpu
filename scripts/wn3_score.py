@@ -3,9 +3,13 @@ from __future__ import annotations
 
 import argparse
 import json
+import math
+import os
 from pathlib import Path
+import resource
 import subprocess
 import sys
+import time
 
 import numpy as np
 from netCDF4 import Dataset
@@ -35,6 +39,10 @@ REQUIRED_GLOBAL_ATTRS = ("PARENT_ID", "I_PARENT_START", "J_PARENT_START", "PAREN
 OPTIONAL_CPU_VARIABLES: dict[str, str] = {}
 # CPU-WRF global attributes the GPU may omit, each with a documented reason. Empty: the full CPU header is required.
 OPTIONAL_CPU_GLOBALS: dict[str, str] = {}
+# CPU-WRF fields whose REFERENCE values may be non-finite (NaN/±Inf, incl. netCDF fill read as NaN), each with a
+# documented reason; every exempted occurrence is still listed in the summary. Empty: [M] w42-scorer 2026-10-19 counted
+# 0 non-finite reference values over all 374 numeric fields x all leads x d01-d03 of 0227 24 h and 0420 72 h.
+NONFINITE_REFERENCE_EXEMPT: dict[str, str] = {}
 
 
 def output_integrity(cpu, gpu):
@@ -120,10 +128,22 @@ def report_gate_failures(score, expected_frames=25):
             if frame["finite_gpu"] != frame["n"]:
                 failures.append({"kind": "nonfinite_gpu", "field": name,
                     "lead_h": frame["lead_h"], "count": frame["n"] - frame["finite_gpu"]})
+            # E200: the comparator scores finite PAIRS only, so a non-finite reference value would silently drop out.
+            if frame["finite_cpu"] != frame["n"] and name not in NONFINITE_REFERENCE_EXEMPT:
+                failures.append({"kind": "nonfinite_cpu", "field": name,
+                    "lead_h": frame["lead_h"], "count": frame["n"] - frame["finite_cpu"]})
             if frame["tolerance_result"]["pass"] is False:
                 failures.append({"kind": "frame_tolerance", "field": name,
                     "lead_h": frame["lead_h"], "detail": frame["tolerance_result"]["failures"]})
     return failures
+
+
+def reference_nonfinite_exempted(score):
+    """Every non-finite reference occurrence that NONFINITE_REFERENCE_EXEMPT lets through, listed for the summary."""
+    return [{"field": name, "lead_h": frame["lead_h"], "count": frame["n"] - frame["finite_cpu"],
+             "reason": NONFINITE_REFERENCE_EXEMPT[name]}
+            for name, field in sorted(score["field_summaries"].items()) if name in NONFINITE_REFERENCE_EXEMPT
+            for frame in field.get("by_lead", []) if frame["finite_cpu"] != frame["n"]]
 
 
 def early_hour_diagnostics(cpu, gpu):
@@ -153,14 +173,44 @@ def early_hour_diagnostics(cpu, gpu):
             "equivalence_verdict": "by alisios_mgr (R32-01 v2 pinned code)", "fields": rows}
 
 
+def wait_child(proc, timeout):
+    """Popen.wait(timeout) that also returns the child's own peak RSS and CPU time (os.wait4 rusage)."""
+    deadline = time.monotonic() + timeout
+    while True:
+        pid, status, usage = os.wait4(proc.pid, os.WNOHANG)
+        if pid:
+            proc.returncode = os.waitstatus_to_exitcode(status)
+            return proc.returncode, {"rc": proc.returncode, "peak_rss_mib": usage.ru_maxrss // 1024,
+                                     "cpu_s": round(usage.ru_utime + usage.ru_stime, 1)}
+        if time.monotonic() > deadline:
+            raise subprocess.TimeoutExpired(proc.args, timeout)
+        time.sleep(0.5)
+
+
+def report_usage(domain, usage, sequential):
+    print(f"[wn3_score] {domain} compare rc {usage['rc']}: peak RSS {usage['peak_rss_mib']} MiB, CPU {usage['cpu_s']} s "
+          f"({'sequential' if sequential else 'parallel'} domains)", file=sys.stderr, flush=True)
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--cpu-dir", type=Path, required=True)
     parser.add_argument("--gpu-dir", type=Path, required=True)
     parser.add_argument("--out", type=Path, required=True)
     parser.add_argument("--hours", type=int, default=24, help="24 = release gate; shorter only for probes.")
+    parser.add_argument("--domains", nargs="+", default=["d01", "d02", "d03"],
+                        help="Domains to score (WN3: d01 d02 d03; e.g. d01 ... d09 for a 9-nest case).")
+    parser.add_argument("--sequential-domains", action=argparse.BooleanOptionalAction, default=None,
+                        help="Score the domains one after another (default when --hours > 24 or more than three "
+                             "domains) instead of in parallel. "
+                             "Results are identical; memory is one domain compare at a time.")
     args = parser.parse_args()
     frames = args.hours + 1
+    if args.sequential_domains is None:
+        sequential = args.hours > 24 or len(args.domains) > 3
+    else:
+        sequential = args.sequential_domains
+    domain_timeout = 3600 * max(1, math.ceil(frames / 25))
     args.out.mkdir(parents=True, exist_ok=True)
     manifest = json.loads(TOLERANCE.read_text())
     mandatory = set(manifest["score_policy"]["mandatory_presence_fields_for_final_runs"])
@@ -169,12 +219,15 @@ def main():
         "twin_thresholds": twin_thresholds_ref(),
         "training_equivalence": "separate twin gate: frozen thresholds v1 via pinned R32-01 code, verdict by alisios_mgr; "
                                 "binding twins 0227/0502 (0614 validation only); 24 h provisional, 72 h decisive"}
-    jobs = {}
-    for domain in ("d01", "d02", "d03"):
+    files = {}
+    for domain in args.domains:  # every domain's file set is checked before the first compare starts
         cpu = sorted(args.cpu_dir.glob(f"wrfout_{domain}_*"))[:frames]
         gpu = sorted(args.gpu_dir.glob(f"wrfout_{domain}_*"))
         if len(cpu) != frames or {p.name for p in cpu} != {p.name for p in gpu}:
             raise ValueError(f"{domain}: require all {frames} exact CPU filenames, got CPU={len(cpu)}, GPU={len(gpu)}")
+        files[domain] = (cpu, gpu)
+    jobs, usage = {}, {}
+    for domain, (cpu, gpu) in files.items():
         missing = {}
         output_nonfinite = []
         for file in gpu:
@@ -195,7 +248,7 @@ def main():
         # Issue time is18z but actual run begins atf006=00z. Pass the FIRST
         # filename explicitly; inferring from the case path drops the last6h.
         init = cpu[0].name[11:].replace("_", "T") + "Z"
-        # Frozen comparator, one netCDF handle per file (wn3_fast_compare: same JSON, ~5x faster).
+        # Frozen comparator via wn3_fast_compare (one frame pair open at a time, fields in batched passes).
         command = [sys.executable, str(ROOT / "scripts/wn3_fast_compare.py"),
             "--cpu-dir", str(args.cpu_dir), "--gpu-dir", str(args.gpu_dir), "--domain", domain,
             "--init", init, "--min-lead", "0", "--max-lead", str(args.hours),
@@ -203,9 +256,15 @@ def main():
             "--out-json", str(args.out / f"{domain}.json"), "--out-md", str(args.out / f"{domain}.md")]
         log = (args.out / f"{domain}.log").open("w")
         jobs[domain] = (subprocess.Popen(command, stdout=log, stderr=subprocess.STDOUT), log, cpu, gpu, missing, output_nonfinite)
+        if sequential:
+            rc, usage[domain] = wait_child(jobs[domain][0], domain_timeout)
+            report_usage(domain, usage[domain], sequential)
     for domain, (proc, log, cpu, gpu, missing, output_nonfinite) in jobs.items():
         try:
-            rc = proc.wait(timeout=3600)
+            if domain not in usage:
+                rc, usage[domain] = wait_child(proc, domain_timeout)
+                report_usage(domain, usage[domain], sequential)
+            rc = usage[domain]["rc"]
         finally:
             log.close()
         if rc:
@@ -221,9 +280,21 @@ def main():
         result["domains"][domain] = {"pass": ok, "missing_required_fields": missing,
             "policy_failures": policy_failures, "gpu_only_nonfinite": output_nonfinite,
             "pairing": score["pairing"], "summaries": score["summaries"], "output_integrity": integrity}
+        exempted = reference_nonfinite_exempted(score)
+        if exempted:  # listed whenever an exemption was used (absent = every reference value was finite or failed)
+            result["domains"][domain]["reference_nonfinite_exempted"] = exempted
         result["pass"] &= ok
         result["output_integrity_pass"] = result.get("output_integrity_pass", True) and integrity["pass"]
         (args.out / "summary.json").write_text(json.dumps(result, indent=2) + "\n")
+    own = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss // 1024
+    children = [u["peak_rss_mib"] for u in usage.values()]
+    resources = {"domain_mode": "sequential" if sequential else "parallel", "hours": args.hours,
+                 "domain_timeout_s": domain_timeout, "domain_compares": usage, "scorer_process_peak_rss_mib": own,
+                 # sequential: at most the scorer and one compare at a time; parallel: all compares may overlap
+                 "peak_rss_bound_mib": own + (max(children) if sequential else sum(children))}
+    (args.out / "resources.json").write_text(json.dumps(resources, indent=2) + "\n")
+    print(f"[wn3_score] peak RSS: scorer {own} MiB, largest domain compare {max(children)} MiB, "
+          f"bound {resources['peak_rss_bound_mib']} MiB ({resources['domain_mode']} domains)", file=sys.stderr, flush=True)
     print(json.dumps({"pass": result["pass"], "domains": {d: v["pass"] for d, v in result["domains"].items()},
                       "output_integrity_pass": result["output_integrity_pass"],
                       "missing_vs_cpu": {d: sorted(v["output_integrity"]["missing_variables_vs_cpu"]) for d, v in result["domains"].items()},

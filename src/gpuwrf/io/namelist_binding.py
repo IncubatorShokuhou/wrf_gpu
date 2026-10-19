@@ -402,8 +402,9 @@ def _same(value: Any, default: Any) -> bool:
 def icloud_refusals(icloud, *, mp_physics, cu_physics, ra_lw_physics, ra_sw_physics) -> list[str]:
     """Bound radiation cloud-fraction options (WRF 4.7.1 radiation_driver.F:1446-1506).
 
-    icloud=1 is the default path; icloud=2 (cal_cldfra2) and icloud=3 (cal_cldfra3,
-    CPU-oracle-qualified) replace the whole icloud=1 block incl. the icloud_bl merge.
+    icloud=1 is the default path; icloud=2 (cal_cldfra2) and icloud=3 (cal_cldfra3) replace the
+    whole icloud=1 block incl. the icloud_bl merge; icloud=0 runs none of them (CLDFRA = 0 and the
+    RRTMG adapters skip every condensate/radius input: cloud-free radiation, physics unchanged).
     ``None`` arguments mean "omitted" (the port's bound scheme defaults 8/0/4/4).
     """
     pick = lambda value, default: default if value is None else int(value)  # noqa: E731
@@ -412,8 +413,8 @@ def icloud_refusals(icloud, *, mp_physics, cu_physics, ra_lw_physics, ra_sw_phys
     ra = (pick(ra_lw_physics, 4), pick(ra_sw_physics, 4))
     if icloud == 1 or cu == 11:  # check_a_mundo.F:1392-1396 forces icloud=1 for cu=11
         return []
-    if icloud not in (2, 3):
-        return [f'icloud={icloud} is unported; bound options are 1 (default), 2 and 3']
+    if icloud not in (0, 2, 3):
+        return [f'icloud={icloud} is unported; bound options are 0, 1 (default), 2 and 3']
     errors = []
     if icloud == 3 and mp in (0, 1, 3):
         # check_a_mundo.F:1900-1915 (Kessler/WSM3); radiation_driver.F:1505 (no QC/QI field)

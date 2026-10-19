@@ -25,7 +25,7 @@ mkdir -p "$RUN"
 for f in "$BUILD"/run/*; do ln -s "$f" "$RUN/$(basename "$f")"; done
 rm -f "$RUN/namelist.input" "$RUN/wrf.exe" "$RUN"/wrfinput_d0* "$RUN"/wrfbdy_d01 "$RUN"/wrflowinp_d0*
 for f in "$CASE"/input/*; do cp -P "$f" "$RUN/$(basename "$f")"; done
-grep -qiE "^ *icloud *= *[123]," "$RUN/namelist.input" || { echo "namelist icloud missing"; exit 2; }
+grep -qiE "^ *icloud *= *[0123]," "$RUN/namelist.input" || { echo "namelist icloud missing"; exit 2; }
 export LD_LIBRARY_PATH="$WENV/lib:${LD_LIBRARY_PATH:-}" PATH="$WENV/bin:$PATH" OMP_NUM_THREADS=1
 T0=$(date +%s)
 # --bind-to core binds a rank to a whole PHYSICAL core (both SMT siblings, e.g. 0+16), so the ranks

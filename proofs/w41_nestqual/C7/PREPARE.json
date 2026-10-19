@@ -1,0 +1,106 @@
+{
+ "schema": "w41-nestqual.prepare.v1",
+ "case": "20260707_18z_C7",
+ "issue": "20260707_18z",
+ "arm": "C7",
+ "stage_receipt": "<USER_HOME>/wrf_gpu2_lanes/w41-nestqual/guard/stage_20260707_18z/STAGE.json",
+ "stage_receipt_sha256": "2a44a8a398db004ee99d8eed03676cb628344763acfe11e13d4860b6b1d5adb1",
+ "arms_json_sha256": "2d4aeb461b736f853d3cf2c191c67f50a031e48cb487b39914823662c792a320",
+ "gpu_arm_namelist_sha256": "ce2e139c1b4c9cd8545ea2889af27a341e64930621c49d36ce34a070e136df85",
+ "arms_diff_vs_store": [
+  "- sf_sfclay_physics                   = 5, 5, 5,",
+  "+ sf_sfclay_physics                   = 1, 1, 1,",
+  "- bl_pbl_physics                      = 5, 5, 5,",
+  "+ bl_pbl_physics                      = 16, 16, 16,"
+ ],
+ "twin_namelist_sha256": "a5139b1f237fc2bc199d1815aedcd71692c0fc93b711b0b390e5d2f1aef936a6",
+ "twin_namelist_diff_vs_arm": [
+  {
+   "group": "time_control",
+   "old": "run_hours                           = 72,",
+   "new": "run_hours                           = 24,"
+  },
+  {
+   "group": "time_control",
+   "old": "end_day                             = 11, 11, 11,",
+   "new": "end_day                             = 9, 9, 9,"
+  },
+  {
+   "group": "time_control",
+   "old": "restart_interval                    = 180,",
+   "new": "restart_interval                    = 100000,"
+  },
+  {
+   "group": "domains",
+   "old": "nproc_x                             = 2,",
+   "new": "nproc_x                             = -1,"
+  },
+  {
+   "group": "domains",
+   "old": "nproc_y                             = 2,",
+   "new": "nproc_y                             = -1,"
+  }
+ ],
+ "window": {
+  "start": "2026-07-08T00:00:00",
+  "end": "2026-07-09T00:00:00",
+  "hours": 24,
+  "minutes": 0
+ },
+ "inputs": {
+  "wrfinput_d01": {
+   "sha256": "c18bda9d7c01b45540664a8553708a0116fa63c727b3fd184624e801523b32d8",
+   "staged": "<DATA_ROOT>/wrf_gpu2/scratch/w41-nestqual/stage_20260707_18z/payload/root2/state/manager/runs/gpu_input_store_20261004/20260707_18z/wrfinput_d01",
+   "g2_store": "<DATA_ROOT>/alisios/state/manager/runs/gpu_input_store_20261004/20260707_18z/wrfinput_d01",
+   "arms_prefix": "c18bda9d7c01b455"
+  },
+  "wrfinput_d02": {
+   "sha256": "95776130883c24c0f1525b920267a79f019585f122414d67af55c63963d3803d",
+   "staged": "<DATA_ROOT>/wrf_gpu2/scratch/w41-nestqual/stage_20260707_18z/payload/root2/state/manager/runs/gpu_input_store_20261004/20260707_18z/wrfinput_d02",
+   "g2_store": "<DATA_ROOT>/alisios/state/manager/runs/gpu_input_store_20261004/20260707_18z/wrfinput_d02",
+   "arms_prefix": "95776130883c24c0"
+  },
+  "wrfinput_d03": {
+   "sha256": "1651829f766781016e55ce8c65c38231e1eb877129475ffbb5f1a6ddb9fb5d7d",
+   "staged": "<DATA_ROOT>/wrf_gpu2/scratch/w41-nestqual/stage_20260707_18z/payload/root2/state/manager/runs/gpu_input_store_20261004/20260707_18z/wrfinput_d03",
+   "g2_store": "<DATA_ROOT>/alisios/state/manager/runs/gpu_input_store_20261004/20260707_18z/wrfinput_d03",
+   "arms_prefix": "1651829f76678101"
+  },
+  "wrfbdy_d01": {
+   "sha256": "dedb2ee61a00bc4167ab3bf0ce71044ade6088766f2e347fb2cb57c106359518",
+   "staged": "<DATA_ROOT>/wrf_gpu2/scratch/w41-nestqual/stage_20260707_18z/payload/root2/state/manager/runs/gpu_input_store_20261004/20260707_18z/wrfbdy_d01",
+   "g2_store": "<DATA_ROOT>/alisios/state/manager/runs/gpu_input_store_20261004/20260707_18z/wrfbdy_d01",
+   "arms_prefix": "dedb2ee61a00bc41"
+  },
+  "wrflowinp_d01": {
+   "sha256": "8cf825fc1530724799f81758719775b441ebe47056c440021f8cc4ef7701fec5",
+   "staged": "<DATA_ROOT>/wrf_gpu2/scratch/w41-nestqual/stage_20260707_18z/payload/root2/state/manager/runs/gpu_input_store_20261004/20260707_18z/wrflowinp_d01",
+   "g2_store": "<DATA_ROOT>/alisios/state/manager/runs/gpu_input_store_20261004/20260707_18z/wrflowinp_d01",
+   "arms_prefix": "8cf825fc15307247"
+  },
+  "wrflowinp_d02": {
+   "sha256": "fa1429dce70401e52bef60b8ed0252efe78781ee5c9b8aa45b86c6edd88bee56",
+   "staged": "<DATA_ROOT>/wrf_gpu2/scratch/w41-nestqual/stage_20260707_18z/payload/root2/state/manager/runs/gpu_input_store_20261004/20260707_18z/wrflowinp_d02",
+   "g2_store": "<DATA_ROOT>/alisios/state/manager/runs/gpu_input_store_20261004/20260707_18z/wrflowinp_d02",
+   "arms_prefix": "fa1429dce70401e5"
+  },
+  "wrflowinp_d03": {
+   "sha256": "56d27ab3a05d018efc2a611dc665be740dc8a5031fc3b3a8b4d47c5ccf81802c",
+   "staged": "<DATA_ROOT>/wrf_gpu2/scratch/w41-nestqual/stage_20260707_18z/payload/root2/state/manager/runs/gpu_input_store_20261004/20260707_18z/wrflowinp_d03",
+   "g2_store": "<DATA_ROOT>/alisios/state/manager/runs/gpu_input_store_20261004/20260707_18z/wrflowinp_d03",
+   "arms_prefix": "56d27ab3a05d018e"
+  }
+ },
+ "thompson_tables": {
+  "freezeH2O.dat": "05497b0ed3f8dee78c9db25374f3e7f3da891580b15974453b608631433cce46",
+  "qr_acr_qg_V4.dat": "441bd8361b4df2ac6c6007fc7aceb333372496722a50adc94897422905dbfff8",
+  "qr_acr_qsV2.dat": "910fb31d5bc53b9b89ba5238b50efd4806a5877c859570b8d5ef3badc3f942c0"
+ },
+ "executable": {
+  "path": "<DATA_ROOT>/canairy_meteo/artifacts/wrf_src/WRF/install_gen2_dmpar/run/wrf.exe",
+  "sha256": "1d0f5779fff143361e470e37f89c734497ed5a7bb55d0c53b7e3fccc569dd49b",
+  "version": "WRF V4.7.1 dmpar original",
+  "ranks": 3,
+  "note": "WN3 CPU-reference build (D15/D26), v-prep c42; run tables == pristine 4.7.1"
+ }
+}

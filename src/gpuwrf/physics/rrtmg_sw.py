@@ -121,6 +121,11 @@ def _env_bool(name: str, default: bool) -> bool:
 _SW_COLUMN_TILING = _env_bool("GPUWRF_RRTMG_SW_COLUMN_TILING", True)
 _MCICA_JUMPAHEAD = _env_bool("GPUWRF_MCICA_JUMPAHEAD", False)
 _FUSED_QUADRATURE = _env_bool("GPUWRF_RRTMG_SW_FUSED_QUADRATURE", False)
+# Opt-out (default off): GPUWRF_SWDDIR_V040_SPLIT=1 emits the v0.4.0 surface direct beam -- the adding
+# method's delta-scaled transmittance -- instead of WRF's ztdbt_nodel (RRTMG_SWRAD SWDDIR, v0.4.1 fix).
+# It restores the v0.4.0 SWDDIR/SWDDIF split and the slope_rad/topo_shading diffuse fraction on every
+# aer_opt=0 SW path; v0.4.0 had no aer_opt=1/3 path, so that combination is refused.
+_SWDDIR_V040_SPLIT = _env_bool("GPUWRF_SWDDIR_V040_SPLIT", False)
 
 
 def _sw_band_sums_mode():
@@ -2570,6 +2575,8 @@ def _sw_band_scan_optics_fluxes(
             sums_all = lambda *a: rad_sw_band_sums_aer.sw_allband_flux_sums_aer(*a, aer)  # noqa: E731
         else:
             sums_one, sums_all = rad_sw_band_sums.sw_band_flux_sums, rad_sw_band_sums.sw_allband_flux_sums
+            if _SWDDIR_V040_SPLIT:  # opt-out: v0.4.0 delta-scaled direct beam
+                sums_one, sums_all = (partial(f, direct_scaled=True) for f in (sums_one, sums_all))
 
         if band_sums == 2:
             tau_all, ray_all = _sw_taumol(coef, tables)
@@ -2677,10 +2684,13 @@ def _sw_band_scan_optics_fluxes(
         tau_total_cloud = tau_total_cloud * mask_t
         omega_total_cloud = omega_total_cloud * mask_t
         asymmetry_total_cloud = asymmetry_total_cloud * mask_t
-        # WRF's direct OUTPUT (ztdbt_nodel) uses the UNSCALED cloud depth; without aerosol the clear delta
-        # scaling is the identity (g = 0), so the clear depth is the adding method's own.
-        nodel_clear = tau_clear if aerosol is None else tau_clear_orig * mask_t
-        direct_taus = (nodel_clear, nodel_clear + (tau_liquid_orig + tau_ice_orig + tau_snow_orig) * mask_t)
+        if _SWDDIR_V040_SPLIT:  # opt-out: v0.4.0 direct = the adding method's delta-scaled transmittance
+            direct_taus = None
+        else:
+            # WRF's direct OUTPUT (ztdbt_nodel) uses the UNSCALED cloud depth; without aerosol the clear delta
+            # scaling is the identity (g = 0), so the clear depth is the adding method's own.
+            nodel_clear = tau_clear if aerosol is None else tau_clear_orig * mask_t
+            direct_taus = (nodel_clear, nodel_clear + (tau_liquid_orig + tau_ice_orig + tau_snow_orig) * mask_t)
 
         tile = _sw_band_tile_fluxes(
             tau_clear,
@@ -2824,6 +2834,9 @@ def _shortwave_impl(
         aerosol = (ext[..., 0], ext[..., 1], ext[..., 2])
         if not _SW_TAUMOL_CHUNK:
             raise NotImplementedError("aer_opt=3 aerosol optics require the chunked SW optics path")
+    if aerosol is not None and _SWDDIR_V040_SPLIT:
+        raise NotImplementedError("GPUWRF_SWDDIR_V040_SPLIT restores the v0.4.0 aer_opt=0 direct beam; "
+                                  "v0.4.0 had no aer_opt=1/3 path (unset it with aerosol)")
 
     if _SW_TAUMOL_CHUNK:
         # Build each band-tile's taumol + delta-scaled optics INSIDE the
@@ -2941,8 +2954,9 @@ def _shortwave_impl(
     tau_total_cloud = tau_total_cloud * mask
     omega_total_cloud = omega_total_cloud * mask
     asymmetry_total_cloud = asymmetry_total_cloud * mask
-    # WRF's direct OUTPUT (ztdbt_nodel): clear + UNSCALED cloud depth (clear delta scaling is the identity, g = 0).
-    direct_taus = (tau_clear, tau_clear + (tau_liquid_orig + tau_ice_orig + tau_snow_orig) * mask)
+    # WRF's direct OUTPUT (ztdbt_nodel): clear + UNSCALED cloud depth (clear delta scaling is the identity, g = 0);
+    # the GPUWRF_SWDDIR_V040_SPLIT opt-out keeps the v0.4.0 delta-scaled transmittance (None).
+    direct_taus = None if _SWDDIR_V040_SPLIT else (tau_clear, tau_clear + (tau_liquid_orig + tau_ice_orig + tau_snow_orig) * mask)
 
     # Two-stream + vertical quadrature + g-point reduction, TILED over the band
     # axis (axis=-2 of the optics).  Bands never couple in `_reftra_eddington`

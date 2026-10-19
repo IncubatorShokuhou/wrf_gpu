@@ -1,4 +1,77 @@
-# Known issues — v0.4.1 (released 18 October 2026) and v0.4.0 (released 17 October 2026)
+# Known issues — v0.4.2, v0.4.1 (released 18 October 2026) and v0.4.0 (released 17 October 2026)
+
+**v0.4.2 (released 19 October 2026).** v0.4.2 keeps the default model program of v0.4.1; its new items
+are listed first. Everything from "v0.4.1 direct-beam surface shortwave" on is the v0.4.1 and
+v0.4.0 record and still applies. Per-option status: [v0.4.2 support matrix](docs/release/SUPPORT_MATRIX_v0.4.2.md).
+
+## v0.4.2: heavy-rain cells on the 1 km Tenerife domain
+
+**Open, found during the v0.4.1 follow-up; affects v0.4.0, v0.4.1 and v0.4.2 equally.** On the
+72-hour Tenerife forecast issued 20 April 2026 (three domains, default physics with slope
+radiation), the 1 km domain has fewer cells with heavy accumulated rain than CPU-WRF on days 2
+and 3. Two CPU-WRF runs (the second differs only in its MPI decomposition) and four GPU runs
+(v0.4.0 and v0.4.1, two each) were compared with a rule fixed before the second CPU-WRF run:
+
+| 1 km domain | CPU-WRF runs | GPU runs | Verdict |
+| --- | --- | --- | --- |
+| Domain-mean rain, 24 / 48 / 72 h | 2.14–2.15 / 3.30–3.51 / 4.32–4.51 mm | 2.04–2.11 / 3.15–3.29 / 4.12–4.24 mm | Not systematic |
+| Cells ≥ 10 mm, 24 h | 467, 522 | 375–506 | Not systematic |
+| Cells ≥ 10 mm, 48 h | 1144, 1090 | 915–980 | **Systematic** |
+| Cells ≥ 10 mm, 72 h | 1454, 1377 | 1217–1271 | **Systematic** |
+
+"Systematic" means the GPU mean differs from the CPU-WRF mean by more than the two spreads
+together and every GPU run lies below both CPU-WRF runs. The deficit is about 12–15 % (comparing
+means). Cells with at least 25 mm at 72 h: CPU-WRF 106 and 83, GPU 69–97; largest totals CPU-WRF
+62.8 and 59.9 mm, GPU 40.4–58.2 mm. On the 3 km domain the totals agree (72 h domain mean CPU-WRF
+0.309–0.327 mm, GPU 0.325–0.329 mm). The whole ground precipitation is liquid in this case, in
+both models. One day only: the cause is open and will be investigated in the Thompson
+microphysics and sedimentation path under heavy rain, confirmed on a second rain case.
+
+## v0.4.2: the 1 mm accumulated-rain limit and CPU-WRF itself
+
+On the same forecast, the two CPU-WRF runs differ by 1.20, 2.23, 3.31 and 4.20 mm
+(root-mean-square accumulated rain, 1 km domain) at 17, 24, 48 and 72 hours, slightly more than
+a v0.4.0 GPU run against CPU-WRF (1.15, 2.13, 3.16 and 4.00 mm). Two GPU runs of the same code
+differ by 0.85–0.92 times as much as a GPU run differs from CPU-WRF. So original CPU-WRF already exceeds the frozen 1 mm rain limit against itself
+from hour 17 on this day: there the limit measures the growth of tiny differences in convective
+rain, not the faithfulness of the port. The limits stay frozen; such cases are reported with
+the CPU-WRF-against-CPU-WRF difference next to them. From hour 48 every GPU run is closer to the
+second CPU-WRF run than to the first.
+
+## v0.4.2: WDM5/WDM6/WDM7 rain fall-out sub-step cap
+
+Pre-existing since the port, unchanged in v0.4.2. The port limits rain and rain-number
+fall-out to 64 sub-steps per microphysics call; WRF has no limit. The cap can only bind when
+the fall speed of the largest drops times the microphysics time step exceeds about 63.5 lowest
+layer depths (for a 120 s step: layers thinner than about 22 m; 180 s: 34 m) in heavy rain. In
+such a column the port moves rain down more slowly than WRF. On the Swiss Alps WDM6 case WRF
+needs at most 5 sub-steps (6 in the worst case on that grid), so the cap never binds there. Since
+v0.4.2 the loop stops at WRF's own count, so removing the cap is cheap; it changes results only
+in the affected columns and is planned for a later release.
+
+## v0.4.2: two CPU tests that also fail on v0.4.1
+
+`tests/test_v040_urban_slucm_wiring.py::test_catalog_and_validation_accept_slucm` checks for a
+phrase in the catalogue note of the BEP/BEM urban options that the note no longer contains, and
+`tests/a1_da/test_member_driver.py::test_process_aot_reuse_shares_only_blob_loaded_executables`
+inspects an internal function closure that changed. Both fail identically on the v0.4.1 release
+and on v0.4.2; the model code they cover is unchanged. All other CPU tests of the release
+candidate pass or are skipped with a stated reason.
+
+## v0.4.2 opt-in items: limits
+
+- **`icloud=0`**: one 24-hour comparison with CPU-WRF (Tenerife three domains, 27 February 2026).
+  Needs RRTMG longwave and shortwave; same cumulus and microphysics restrictions as `icloud=2/3`.
+  Run both members of a cloud/no-cloud pair from one compile cache or bundle.
+- **`GPUWRF_SWDDIR_V040_SPLIT=1`**: reproduces v0.4.0, not WRF. Refused with `aer_opt=1/3`. Its
+  compiled shortwave kernel is checked byte-identical to v0.4.0 in machine code, but no GPU
+  forecast was run with the switch for this release; it compiles its own programs.
+- **Boundary layers inside nests** (YSU, Shin-Hong, ACM2, EEPS): one forecast date, one domain
+  set-up, revised MM5 surface layer only; the compiled-code quality scan of these nested programs
+  was not run. KEPS and the other boundary layers stay validated on single domains only.
+- **WDM5 and WDM7 speed** after the shared WDM6 change was not measured.
+- **72-hour release check, trace graupel:** on the 1 km Tenerife domain (27 February 2026) v0.4.2 has no graupel at hour 72, where CPU-WRF keeps 3 cells with at most 6.6e-12 kg/kg (none above 1e-9). A second CPU-WRF run trips the same file check at the same hour, and up to hour 70 v0.4.2 carries comparable trace graupel (154 against 217 cells); recorded as an exception, not a defect.
+- **Compiled bundles:** settings not in a compiled bundle (for example `GPUWRF_SWDDIR_V040_SPLIT=1`, other physics or other domains) compile once on first use. The code-quality scan of the bundle programs is incomplete, as in v0.4.1 (compact programs carry no fusion sizes); per-thread stack and coverage pass.
 
 **v0.4.1 (18 October 2026).** All v0.4.1 additions are opt-in. The new items found or
 added in v0.4.1 are listed first; everything from "Current frozen default" on is the v0.4.0
@@ -27,6 +100,13 @@ Swiss columns. The fix changes the default program; together with the boundary-r
 passed 24-hour comparisons with the original CPU-WRF on the Swiss, Canary Islands and Tenerife
 cases. Forecasts with slope radiation can therefore change against v0.4.0. The clear-sky
 `SWDDIRC`/`SWDDNIC` outputs are not written.
+
+**v0.4.2:** the full WRF code path from RRTMG to the slope-adjusted surface flux was traced again
+and matches; a 72-hour Tenerife case where the fixed run looked worse on cloudy slopes was traced
+to where the clouds formed in that run, and a repeat run did not show it (details in the
+[v0.4.2 release notes](release_notes/RELEASE_NOTES_v0.4.2.md#the-shortwave-fix-of-v041-checked-again)).
+The fix stays the default; `GPUWRF_SWDDIR_V040_SPLIT=1` restores the v0.4.0 split for
+continuity comparisons.
 
 ## v0.3.0–v0.3.4: nested programs from a compile cache shared across dates
 
@@ -65,7 +145,7 @@ v0.3.3), or upgrade. [Impact record](proofs/w41_v033impact/IMPACT.json).
   `aer_opt=2` is refused. `aer_opt=3` inherits three oversized fusions of the Thompson mp28 code;
   the `aer_opt=1` code-quality scan is incomplete (measured on a re-compile).
 - **`icloud=2`**: one 24-hour comparison with CPU-WRF (Tenerife three domains); other
-  configurations are not compared. `icloud=0` is not bound.
+  configurations are not compared. `icloud=0` was not bound in v0.4.1 (it is in v0.4.2).
 - **Surface-parameter controls (`--surface-controls`)**: Noah-MP only; no calibration against real
   stations yet (the EKI tools are checked on a synthetic twin only); batched members are API-only
   and a batched lane is not bitwise equal to its solo run.

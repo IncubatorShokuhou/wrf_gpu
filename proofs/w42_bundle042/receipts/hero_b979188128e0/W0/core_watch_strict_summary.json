@@ -1,0 +1,64 @@
+{
+ "utc_start": "2026-10-19T15:59:27.587780+00:00",
+ "utc_end": "2026-10-19T16:00:21.884400+00:00",
+ "cores": [
+  3,
+  13,
+  19,
+  29
+ ],
+ "period_s": 1.0,
+ "samples": 43,
+ "rule_P": {
+  "proc_pct": 20.0,
+  "limit_s": 1000000000.0
+ },
+ "rule_A": {
+  "agg_pct": 50.0,
+  "limit_s": 1000000000.0
+ },
+ "aborted": null,
+ "max_proc_seconds": 5.0,
+ "agg_seconds": 15.1,
+ "agg_max_pct": 87.5,
+ "kthread_seconds_over_proc_pct": 20.2,
+ "kthread_max_pct": 87.7,
+ "core_busy_pct": {
+  "19": 42.7,
+  "29": 21.3,
+  "3": 37.4,
+  "13": 41.9
+ },
+ "within_rule": true,
+ "clean": false,
+ "offenders": [
+  {
+   "pid": 1141826,
+   "s": 5.0,
+   "max_pct": 28.9,
+   "comm": "firefox",
+   "args": "/snap/firefox/9057/usr/lib/firefox/firefox "
+  },
+  {
+   "pid": 1142600,
+   "s": 1.3,
+   "max_pct": 44.2,
+   "comm": "Isolated Web Co",
+   "args": "/snap/firefox/9057/usr/lib/firefox/firefox -contentproc -isForBrowser -prefsHandle 0:36438 -prefMapHandle 1:300458 -jsInitHandle 2:162336 -parentBuildID 2026100"
+  },
+  {
+   "pid": 2616964,
+   "s": 1.3,
+   "max_pct": 26.3,
+   "comm": "chrome",
+   "args": "/opt/google/chrome/chrome "
+  },
+  {
+   "pid": 372399,
+   "s": 1.2,
+   "max_pct": 21.6,
+   "comm": "chrome",
+   "args": "/opt/google/chrome/chrome --type=renderer --crashpad-handler-pid=2616972 --enable-crash-reporter=, --extension-process --change-stack-guard-on-fork=enable --ozo"
+  }
+ ]
+}

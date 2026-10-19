@@ -1,0 +1,10 @@
+CPU follow-up overlap with the HERO arms [M: followup_quiet.log, quiet_pause_sid.log, session.log in this dir]
+The CPU follow-up (lane cores 8,9,12, nice 19; never the GPU-arm cores 3,13,19,29) is paused while a QUIET file exists.
+- W0 (untimed warm-up, QUIET 15:59:27Z): followup_quiet.sh STOPped only the follow-up leader process group; the E41 step
+  (`timeout 3600 python3 scripts/wave_cubin_gate.py`, `timeout` = its own process group 360983) kept running until
+  ~16:00:05Z (~37 s), then I stopped that group by exact PGID; from 16:00:19Z quiet_pause_sid.sh STOPs every group of the
+  follow-up session SID 360946.
+- Timed arms: STOP within <= 1 s of the arm's QUIET file (1 s poll): H1 16:00:42Z -> 16:00:42Z, H2 16:03:09Z -> 16:03:10Z,
+  WN3 16:05:38Z -> 16:05:38Z. The follow-up ran only between arms (16:00:22-16:00:42Z, 16:02:49-16:03:10Z,
+  16:05:16-16:05:38Z) and after 16:13:18Z.
+- The pre-registered labels stand: H1/H2 CLEAN, WN3 DISTURBED (arm-window <DATA_ROOT> await 53.7 ms > 50 ms).

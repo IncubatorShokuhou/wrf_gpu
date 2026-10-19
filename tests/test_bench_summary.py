@@ -41,6 +41,7 @@ def _receipt(period: float) -> dict:
         "advance": [{"d": "d01", "s0": 1, "n": 1, "t": t2 + 1, "host_s": 20.0}],
         "force": [{"t": t2 + 2, "host_s": 1.0}],
         "derived": {"vram_peak_mib": 123}, "env": {},
+        "allocator": {"mode": "c_auto", "mem_fraction": "0.250000", "c_auto_budget_bytes": 6 << 30},
     }
 
 
@@ -400,3 +401,42 @@ def test_run_arm_loads_optional_flags_env(tmp_path):
     r2 = subprocess.run(["bash", str(helper), str(stub), str(tmp_path), str(tmp_path), "", "", "", "--",
                          "bash", "-c", "true"], capture_output=True, text=True, env=env2, timeout=60)
     assert r2.returncode == 2 and "missing flags env" in r2.stderr
+
+
+def _warm_pair(tmp_path, alloc2):
+    a, b = tmp_path / "a.json", tmp_path / "b.json"
+    a.write_text(json.dumps(_receipt(100.0)))
+    r = _receipt(104.0)
+    if alloc2 is None:
+        r.pop("allocator")
+    else:
+        r["allocator"] = alloc2
+    b.write_text(json.dumps(r))
+    return a, b
+
+
+@pytest.mark.parametrize("alloc2", [{"mode": "demand", "preallocate": "false"}, {"mode": "explicit"}, None])
+def test_headline_rejected_without_c_auto_pool(tmp_path, alloc2):
+    # w42-harness: a warm arm on demand/explicit allocation (or a receipt that cannot attest its pool) is not S1
+    a, b = _warm_pair(tmp_path, alloc2)
+    out = tmp_path / "bench.json"
+    rc = bs.main(["--out", str(out), "--tag", "T", f"warm1={a}", f"warm2={b}"])
+    j = json.loads(out.read_text())
+    assert rc == 1 and not j["headline_valid"] and j["s1_warm_s_per_fc_h"] is None
+    assert any("C-auto" in r for r in j["reject_reasons"])
+    assert j["warm_allocator_modes"]["warm2"] == (alloc2 or {}).get("mode", "unattested")
+
+
+def test_allow_demand_alloc_is_recorded(tmp_path):
+    a, b = _warm_pair(tmp_path, {"mode": "demand"})
+    out = tmp_path / "bench.json"
+    rc = bs.main(["--out", str(out), "--tag", "T", "--allow-demand-alloc", f"warm1={a}", f"warm2={b}"])
+    j = json.loads(out.read_text())
+    assert rc == 0 and j["headline_valid"] and j["allow_demand_alloc"] is True
+    assert j["warm_allocator_modes"] == {"warm1": "c_auto", "warm2": "demand"}
+    assert j["arms"]["warm2"]["allocator"]["mode"] == "demand"
+
+
+def test_bench_prod_passes_allow_demand_alloc():
+    text = BENCH.read_text()
+    assert 'BENCH_ALLOW_DEMAND_ALLOC:-0}" == 1 ]] && SUMARGS+=(--allow-demand-alloc)' in text

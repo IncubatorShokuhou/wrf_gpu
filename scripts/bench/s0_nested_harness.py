@@ -12,7 +12,13 @@ Runs the real `gpuwrf.cli run` nested path in-process and adds observation only:
   * 1 s per-process VRAM samples (nvidia-smi --query-compute-apps) when a GPU is present.
 Numerics, executables and scheduling are untouched: every wrapper forwards arguments
 and return values unchanged. XLA_PYTHON_CLIENT_ALLOCATOR must be set by the caller
-(production value cuda_async) so the CLI does not re-exec and drop the wrappers.
+(production value cuda_async).
+
+Allocator (w42-harness): like `gpuwrf.cli run`, the launch process stays backend-dark until
+the CLI's C-auto pool step has read free GPU memory and re-exec'd this script with the chosen
+pool; only the re-exec'd (measured) process touches the device. The receipt attests the pool
+(`allocator`: c_auto / demand / explicit, fraction, budget, JAX bytes_limit) and the launch
+phase (`pre_exec`: backend dark at the NVML probe, free bytes seen, `launch_wall_utc`).
 
 Usage (GPU, inside scripts/with_gpu_lock.sh):
   python s0_nested_harness.py --input-dir DIR --out RUNDIR --hours 3 --tag TAG
@@ -196,6 +202,108 @@ def _derive(rec: dict) -> dict:
     return out
 
 
+LAUNCH_ENV = "_S0_HARNESS_LAUNCH"   # launch-process identity, carried through the CLI re-exec
+# Callables run in the MEASURED process only (after the device assert, before the wrappers): extra
+# observation patches of modules that initialize JAX at import (nested_pipeline, physics_couplers, ...)
+# belong here, never at the importer's module level (that would hold a pool during the C-auto probe).
+MEASURED_HOOKS: list = []
+PRE_EXEC_FILE = "pre_exec.json"
+
+
+class _NoReexec(BaseException):
+    """The CLI allocator step returned without re-exec: this process is the measured one."""
+
+
+def _backend_initialized() -> bool:
+    from jax._src import xla_bridge
+    return bool(xla_bridge.backends_are_initialized())
+
+
+def _pre_exec(cli, cli_argv: list, out: Path) -> int | None:
+    """Run the product CLI up to its allocator re-exec, backend-dark like `gpuwrf.cli run`.
+
+    On an allocator change the CLI replaces this process (os.execvpe of sys.orig_argv, i.e.
+    this script), so nothing after the step runs here. Returns None when the CLI kept this
+    process (explicit operator policy, single domain, non-CUDA target) and the CLI's own rc
+    when it stopped before the allocator step (argument/validation failure).
+    """
+    from gpuwrf.runtime import gpu_allocator
+
+    nonce = f"{os.getpid()}-{T0_NS}"
+    os.environ[LAUNCH_ENV] = json.dumps({"nonce": nonce, "pid": os.getpid(), "wall_utc": T0_WALL})
+    rec = {"nonce": nonce, "pid": os.getpid(), "launch_wall_utc": T0_WALL, "nvml_probe": None}
+
+    def save() -> None:
+        (out / PRE_EXEC_FILE).write_text(json.dumps(rec, indent=1))
+
+    orig_probe = gpu_allocator._pool_device_memory
+    orig_step = cli._maybe_reexec_for_nested_allocator
+
+    def probe():
+        dark = not _backend_initialized()   # the moment C-auto reads free memory
+        total, free = orig_probe()
+        rec["nvml_probe"] = {"t": round(_t(), 4), "backend_dark": dark, "total_bytes": total, "free_bytes": free}
+        save()
+        return total, free
+
+    def step(args):
+        rec["allocator_step"] = {"t": round(_t(), 4), "backend_dark": not _backend_initialized()}
+        save()
+        orig_step(args)   # execs this script on an allocator change
+        rec["reexec"] = False
+        save()
+        raise _NoReexec
+
+    gpu_allocator._pool_device_memory = probe
+    cli._maybe_reexec_for_nested_allocator = step
+    try:
+        with open(out / "cli_stdout.pre_exec.json", "w") as fh, contextlib.redirect_stdout(fh):
+            rc = cli.main(cli_argv)
+    except _NoReexec:
+        return None
+    finally:
+        gpu_allocator._pool_device_memory = orig_probe
+        cli._maybe_reexec_for_nested_allocator = orig_step
+    return int(rc) if rc is not None else 1
+
+
+def _launch_record(out: Path) -> dict | None:
+    """The launch process's record when this process is its re-exec (nonce-matched)."""
+    launch = json.loads(os.environ.get(LAUNCH_ENV) or "null")
+    if not launch:
+        return None
+    try:
+        rec = json.loads((out / PRE_EXEC_FILE).read_text())
+    except (OSError, ValueError) as exc:
+        return {"launch": launch, "error": f"pre_exec record unreadable: {exc!r}"[:300]}
+    if rec.get("nonce") != launch.get("nonce"):
+        return {"launch": launch, "error": f"pre_exec nonce {rec.get('nonce')!r} != launch {launch.get('nonce')!r}"}
+    # execvpe keeps the PID: a re-exec'd measured process has the launch PID and the CLI guard env
+    rec["reexec"] = rec.get("reexec", True) and rec["pid"] == os.getpid() and os.environ.get(
+        "_GPUWRF_NESTED_ALLOC_REEXEC") == "1"
+    rec["pre_exec_s"] = round(T0_WALL - float(launch["wall_utc"]), 4)
+    return rec
+
+
+def _allocator_record(env=os.environ) -> dict:
+    """Pool settings the measured process initializes JAX with (CLI C-auto contract)."""
+    owned = env.get("_GPUWRF_C_AUTO") == "1"
+    budget = env.get("_GPUWRF_C_AUTO_BUDGET")
+    prealloc = env.get("XLA_PYTHON_CLIENT_PREALLOCATE")
+    if owned and budget and prealloc == "true" and env.get("XLA_CLIENT_MEM_FRACTION"):
+        mode = "c_auto"
+    elif owned:
+        mode = "demand"           # CLI found no usable plan / not enough free memory
+    else:
+        mode = "explicit"         # operator allocator policy (or no CLI pool step)
+    return {"mode": mode, "allocator": env.get("XLA_PYTHON_CLIENT_ALLOCATOR"), "preallocate": prealloc,
+            "mem_fraction": env.get("XLA_CLIENT_MEM_FRACTION"),
+            "python_mem_fraction": env.get("XLA_PYTHON_CLIENT_MEM_FRACTION"),
+            "c_auto_budget_bytes": int(budget) if budget else None,
+            "c_auto_headroom_bytes": int(env["_GPUWRF_C_AUTO_HEADROOM"]) if env.get("_GPUWRF_C_AUTO_HEADROOM") else None,
+            "cli_reexec": env.get("_GPUWRF_NESTED_ALLOC_REEXEC") == "1"}
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--input-dir", required=True)
@@ -206,6 +314,8 @@ def main() -> int:
     ap.add_argument("--no-vram", action="store_true")
     ap.add_argument("--profile-segment", type=int, default=0,
                     help="bracket root segment K (and its post-call block) with cudaProfilerStart/Stop")
+    ap.add_argument("--require-c-auto", action="store_true",
+                    help="refuse (rc 4) unless the measured process runs the CLI C-auto pool")
     args = ap.parse_args()
 
     out = Path(args.out)
@@ -215,8 +325,18 @@ def main() -> int:
         print("s0_nested_harness: refuse -- set XLA_PYTHON_CLIENT_ALLOCATOR (production: cuda_async)",
               file=sys.stderr)
         return 2
+    cli_argv = ["run", "--input-dir", args.input_dir, "--output-dir", str(out / "wrfout"),
+                "--scratch-dir", str(out / "scratch"), "--max-dom", "2", "--hours", str(args.hours)]
+    if os.environ.get("_GPUWRF_NESTED_ALLOC_REEXEC") != "1":
+        # launch process: no device touch before the CLI pool step (it reads free GPU memory)
+        from gpuwrf import cli  # noqa: E402
+        rc = _pre_exec(cli, cli_argv, out)
+        if rc is not None:
+            print(f"s0_nested_harness: CLI stopped before its allocator step (rc={rc})", file=sys.stderr)
+            return rc
     REC.update({
         "tag": args.tag, "argv": sys.argv, "pid": os.getpid(), "t0_wall_utc": T0_WALL,
+        "pre_exec": _launch_record(out), "allocator": _allocator_record(),
         "env": {k: v for k, v in os.environ.items()
                 if k.startswith(("GPUWRF_", "JAX_", "XLA_", "CUDA_VISIBLE", "TF_"))},
         "git_head": subprocess.run(["git", "rev-parse", "HEAD"], cwd=REPO, capture_output=True,
@@ -244,6 +364,13 @@ def main() -> int:
 
     signal.signal(signal.SIGTERM, on_term)
     signal.signal(signal.SIGINT, on_term)
+    REC["launch_wall_utc"] = (REC["pre_exec"] or {}).get("launch_wall_utc", T0_WALL)
+    if args.require_c_auto and REC["allocator"]["mode"] != "c_auto":
+        print(f"s0_nested_harness: refuse -- measured process allocator mode is "
+              f"{REC['allocator']['mode']!r}, not 'c_auto' (--require-c-auto): {REC['allocator']}", file=sys.stderr)
+        REC["rc"] = 4
+        dump("refused:allocator")
+        return 4
 
     import jax  # noqa: E402
 
@@ -260,6 +387,8 @@ def main() -> int:
               file=sys.stderr)
         return 3
     REC["t_jax_import"] = round(_t(), 3)
+    for hook in MEASURED_HOOKS:
+        hook()
     _install_monitoring(jax)
     _install_wrappers(jax)
     REC["t_wrappers"] = round(_t(), 3)
@@ -272,8 +401,6 @@ def main() -> int:
 
     from gpuwrf import cli  # noqa: E402
 
-    cli_argv = ["run", "--input-dir", args.input_dir, "--output-dir", str(out / "wrfout"),
-                "--scratch-dir", str(out / "scratch"), "--max-dom", "2", "--hours", str(args.hours)]
     REC["cli_argv"] = cli_argv
     rc = None
     try:
@@ -297,6 +424,12 @@ def main() -> int:
                                         "largest_alloc_size", "pool_bytes", "peak_pool_bytes")}
         except Exception as exc:
             REC["jax_memory_stats"] = {"error": repr(exc)[:300]}
+        REC["allocator"]["jax_bytes_limit"] = (REC.get("jax_memory_stats") or {}).get("bytes_limit")
+        try:
+            from gpuwrf.runtime import gpu_allocator
+            REC["allocator"]["cli_applied_budget_bytes"] = (gpu_allocator._SESSION or {}).get("applied_budget")
+        except Exception as exc:  # observation only
+            REC["allocator"]["cli_applied_budget_bytes"] = repr(exc)[:200]
         dump("completed")
     print(json.dumps({"rc": rc, "receipt": str(out / "receipt.json")}))
     return 0 if rc == 0 else 1

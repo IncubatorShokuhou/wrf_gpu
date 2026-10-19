@@ -1,0 +1,122 @@
+{
+ "src": "<USER_HOME>/src/wrf_gpu2_wt/w42-scorer",
+ "complete": true,
+ "mutants": {
+  "M1_iter_frames_holds_every_handle": {
+   "killed": true,
+   "rc": 1,
+   "summary": "2 failed in 2.28s",
+   "first_E_lines": [
+    "E       AssertionError: at most one frame pair may be open at once, saw 42",
+    "E       assert 42 == 2",
+    "E           AssertionError: peak 42 open, 42 still open after the run",
+    "E           assert (42 <= 2)"
+   ]
+  },
+  "M2_wrapper_back_to_held_handles": {
+   "killed": true,
+   "rc": 1,
+   "summary": "1 failed in 2.58s",
+   "first_E_lines": [
+    "E           AssertionError: peak 6 open, 6 still open after the run",
+    "E           assert (6 <= 2)"
+   ]
+  },
+  "M3_planner_ignores_budget": {
+   "killed": true,
+   "rc": 1,
+   "summary": "1 failed in 0.06s",
+   "first_E_lines": [
+    "E           AssertionError: [(1, 'F1', {'cpu': {'shape': [44, 117, 267]}, 'gpu': {'shape': [44, 117, 267]}}), (2, 'F2', {'cpu': {'shape': [117, 26...7, 267]}, 'gpu': {'shape': [117, 267]}}), (6, 'F6', {'cpu': {'shape': [117, 267]}, 'gpu': {'shape': [117, 267]}}), ...]",
+    "E           assert (1298936308 <= 635026392 or 7 == 1)",
+    "E            +  where 7 = len([(1, 'F1', {'cpu': {'shape': [44, 117, 267]}, 'gpu': {'shape': [44, 117, 267]}}), (2, 'F2', {'cpu': {'shape': [117, 26...7, 267]}, 'gpu': {'shape': [117, 267]}}), (6, 'F6', {'cpu': {'shape': [117, 267]}, 'gpu': {'shape': [117, 267]}}), ...])"
+   ]
+  },
+  "M4_subset_ignores_unpaired_cells": {
+   "killed": true,
+   "rc": 1,
+   "summary": "1 failed, 1 passed in 0.10s",
+   "first_E_lines": [
+    "E               AssertionError: ('land_ocean', 'land')",
+    "E               assert {'bias': -0.0...u': 2058, ...} == {'bias': -0.0...u': 2058, ...}",
+    "E                 ",
+    "E                 Omitting 12 identical items, use -vv to show"
+   ]
+  },
+  "M5_split_accumulators_keep_copies": {
+   "killed": true,
+   "rc": 1,
+   "summary": "1 failed in 0.75s",
+   "first_E_lines": [
+    "E       assert (9360 == ((((4 * 4) * 9) * 13) * 5) and 37440 == 0)"
+   ]
+  },
+  "M6_sequential_default_off": {
+   "killed": true,
+   "rc": 1,
+   "summary": "2 failed, 3 passed in 529.96s (0:08:49)",
+   "first_E_lines": [
+    "E           AssertionError: each domain compare must finish before the next starts",
+    "E           assert [0, 1, 2] == [0, 0, 0]",
+    "E             ",
+    "E             At index 1 diff: 1 != 0"
+   ]
+  },
+  "M6b_ninenest_rule_dropped": {
+   "killed": true,
+   "rc": 1,
+   "summary": "1 failed, 4 passed in 1516.23s (0:25:16)",
+   "first_E_lines": [
+    "E           AssertionError: each domain compare must finish before the next starts",
+    "E           assert [0, 1, 2, 3] == [0, 0, 0, 0]",
+    "E             ",
+    "E             At index 1 diff: 1 != 0"
+   ]
+  },
+  "M7_sequential_does_not_wait": {
+   "killed": true,
+   "rc": 1,
+   "summary": "3 failed, 2 passed in 357.61s (0:05:57)",
+   "first_E_lines": [
+    "E           AssertionError: each domain compare must finish before the next starts",
+    "E           assert [0, 1, 2] == [0, 0, 0]",
+    "E             ",
+    "E             At index 1 diff: 1 != 0"
+   ]
+  },
+  "M8_reference_nonfinite_not_checked": {
+   "killed": true,
+   "rc": 1,
+   "summary": "7 failed, 9 passed in 132.13s (0:02:12)",
+   "first_E_lines": [
+    "E       AssertionError: []",
+    "E       assert [] == [{'count': 1,... 'lead_h': 1}]",
+    "E         ",
+    "E         Right contains one more item: {'count': 1, 'field': 'AUX', 'kind': 'nonfinite_cpu', 'lead_h': 1}"
+   ]
+  },
+  "M9_exemption_applied_silently": {
+   "killed": true,
+   "rc": 1,
+   "summary": "1 failed in 3.05s",
+   "first_E_lines": [
+    "E       AssertionError: assert [] == [{'count': 1,...nted reason'}]",
+    "E         ",
+    "E         Right contains one more item: {'count': 1, 'field': 'AUX', 'lead_h': 1, 'reason': 'test-only documented reason'}",
+    "E         Use -v to get more diff"
+   ]
+  },
+  "M10_exemption_leaks_to_candidate": {
+   "killed": true,
+   "rc": 1,
+   "summary": "1 failed in 0.21s",
+   "first_E_lines": [
+    "E       AssertionError: assert [] == ['nonfinite_gpu']",
+    "E         ",
+    "E         Right contains one more item: 'nonfinite_gpu'",
+    "E         Use -v to get more diff"
+   ]
+  }
+ },
+ "all_killed": true
+}

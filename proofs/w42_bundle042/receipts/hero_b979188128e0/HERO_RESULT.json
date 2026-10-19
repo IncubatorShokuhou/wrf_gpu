@@ -1,0 +1,562 @@
+{
+ "schema": "w42-bundle042.hero.v1",
+ "session_root": "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/hero",
+ "hero_prod": {
+  "HERO_PROD_S_PER_FCH": 4.809,
+  "HERO_PROD_SECONDS": 115.398,
+  "ratio_vs_cpu_wrf_92_3": 19.19,
+  "label": "CLEAN",
+  "arms": [
+   "H1",
+   "H2"
+  ],
+  "basis": "process start (harness launch) -> last original wrfout mtime (E162), whole 24 h run incl. init, stepping, output",
+  "session_clock_s_per_fch": 4.838,
+  "measured_process_t0_s_per_fch": 4.697,
+  "stepping_seg2plus_median_s_per_fch": 3.252,
+  "seg2plus_median_s_per_fch": 3.428,
+  "all_timed_arms": {
+   "H1": {
+    "whole_s_per_fc_h": {
+     "harness_launch": 4.847,
+     "session_launch": 4.875,
+     "measured_process_t0": 4.737
+    },
+    "await_ms": 24.84,
+    "disturbed": false
+   },
+   "H2": {
+    "whole_s_per_fc_h": {
+     "harness_launch": 4.77,
+     "session_launch": 4.802,
+     "measured_process_t0": 4.657
+    },
+    "await_ms": 21.38,
+    "disturbed": false
+   }
+  },
+  "spread_pct_first_two": 1.6
+ },
+ "hero_par3": {
+  "cases": {
+   "wn3_0227": {
+    "n_wrfout": 75,
+    "wall_s": 448.31,
+    "rc": 0,
+    "sizing_source": "c-auto-plan",
+    "plan_key": "f2986d903b1a2bfdefb2b177ef335a5de59dbbfe7296bdbad0e7ebccd7e079fa",
+    "budget_bytes": 4482152881,
+    "allocator": [
+     "gpuwrf: C-auto case pool 4.17 GiB, fraction=0.133142",
+     "gpuwrf: nested run -- re-exec with XLA_PYTHON_CLIENT_ALLOCATOR=cuda_async (GPUWRF_ALLOCATOR=cuda_async (default); stream-ordered pool by default, GPUWRF_ALLOCATOR=platform for the no-fragment cudaMalloc fallback)"
+    ],
+    "aot_cache_warm": true,
+    "aot_cold_executables": [],
+    "vram_peak_mib": 5236,
+    "vmhwm_kb": 6322264,
+    "start_utc": "2026-10-19T16:05:42Z",
+    "c_auto_attested": true
+   },
+   "wn3_0502": {
+    "n_wrfout": 75,
+    "wall_s": 443.68,
+    "rc": 0,
+    "sizing_source": "c-auto-plan",
+    "plan_key": "f2986d903b1a2bfdefb2b177ef335a5de59dbbfe7296bdbad0e7ebccd7e079fa",
+    "budget_bytes": 4482152881,
+    "allocator": [
+     "gpuwrf: C-auto case pool 4.17 GiB, fraction=0.133142",
+     "gpuwrf: nested run -- re-exec with XLA_PYTHON_CLIENT_ALLOCATOR=cuda_async (GPUWRF_ALLOCATOR=cuda_async (default); stream-ordered pool by default, GPUWRF_ALLOCATOR=platform for the no-fragment cudaMalloc fallback)"
+    ],
+    "aot_cache_warm": true,
+    "aot_cold_executables": [],
+    "vram_peak_mib": 5236,
+    "vmhwm_kb": 6182932,
+    "start_utc": "2026-10-19T16:05:42Z",
+    "c_auto_attested": true
+   },
+   "wn3_0614": {
+    "n_wrfout": 75,
+    "wall_s": 443.34,
+    "rc": 0,
+    "sizing_source": "c-auto-plan",
+    "plan_key": "f2986d903b1a2bfdefb2b177ef335a5de59dbbfe7296bdbad0e7ebccd7e079fa",
+    "budget_bytes": 4482152881,
+    "allocator": [
+     "gpuwrf: C-auto case pool 4.17 GiB, fraction=0.133142",
+     "gpuwrf: nested run -- re-exec with XLA_PYTHON_CLIENT_ALLOCATOR=cuda_async (GPUWRF_ALLOCATOR=cuda_async (default); stream-ordered pool by default, GPUWRF_ALLOCATOR=platform for the no-fragment cudaMalloc fallback)"
+    ],
+    "aot_cache_warm": true,
+    "aot_cold_executables": [],
+    "vram_peak_mib": 5236,
+    "vmhwm_kb": 6325236,
+    "start_utc": "2026-10-19T16:05:42Z",
+    "c_auto_attested": true
+   }
+  },
+  "batch_wall_s": 448.31,
+  "case_hours": 72,
+  "HERO_PAR3_S_PER_CASE_H": 6.227,
+  "HERO_PAR3_BATCH_SECONDS": 448.31,
+  "ratio_vs_cpu_wrf_3x4core_123_385": 19.81,
+  "valid_par3": true,
+  "started_together": true,
+  "start_events_t_s": [
+   0.0,
+   0.0,
+   0.0
+  ],
+  "peak_concurrency": 3,
+  "launcher_wall_s": 449.561,
+  "disturbed": true,
+  "label": "DISTURBED",
+  "consumer": "BUNDLE_CONSUMER rc=0 compiled_new=0 aliases_new=0 runtime_new=1569 other_new=0 layer_compiled=0 receipt=<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/hero/layer_wn3/runs/20261019T160538Z_414880.json",
+  "compiled_new": 0,
+  "watch": {
+   "sweep_rule": {
+    "clean": true,
+    "within_rule": true,
+    "max_proc_seconds": 0.0,
+    "agg_seconds": 0.0
+   },
+   "strict_20_50_shadow": {
+    "clean": false,
+    "within_rule": true,
+    "max_proc_seconds": 23.8,
+    "agg_seconds": 46.3
+   },
+   "cli_main_wait_share": 0.0357,
+   "cgroup_psi_some_s": 14.911336
+  },
+  "disk": {
+   "await_ms": 53.74,
+   "seconds": 457,
+   "seconds_over_limit": 68,
+   "max_1s_ms": 1989.0,
+   "limit_ms": 50.0,
+   "disturbed": true
+  }
+ },
+ "arms": {
+  "H1": {
+   "slot": "H1",
+   "hours": 24,
+   "rc": 0,
+   "end_reason": "completed",
+   "valid": true,
+   "src_tree": "0dc759849113b8c204081c9c4f22e698c07e024d",
+   "git_head": "b979188128e0b6038d79a81e02d1dd89f273e969",
+   "device": {
+    "platform": "gpu",
+    "kind": "NVIDIA GeForce RTX 5090",
+    "id": 0,
+    "backend": "gpu"
+   },
+   "c_auto_attested": true,
+   "allocator": {
+    "mode": "c_auto",
+    "allocator": "cuda_async",
+    "preallocate": "true",
+    "mem_fraction": "0.096468",
+    "python_mem_fraction": null,
+    "c_auto_budget_bytes": 3247535443,
+    "c_auto_headroom_bytes": 1073741824,
+    "cli_reexec": true,
+    "jax_bytes_limit": 3247581783,
+    "cli_applied_budget_bytes": 3247535443
+   },
+   "cli_pool_line": [
+    "C-auto case pool 3.02 GiB, fraction=0.096468"
+   ],
+   "nvml_probe_backend_dark": true,
+   "jax_bytes_limit": 3247581783,
+   "c_auto_budget_bytes": 3247535443,
+   "seg_rates_s_per_fc_h": [
+    3.526,
+    3.474,
+    3.268,
+    3.263,
+    3.536,
+    3.613,
+    3.435,
+    3.56,
+    3.493,
+    3.36,
+    3.417,
+    3.848,
+    3.73,
+    3.378,
+    3.453,
+    3.835,
+    3.351,
+    3.349,
+    3.657,
+    3.312,
+    3.29,
+    3.272,
+    5.029
+   ],
+   "seg2plus_median": 3.453,
+   "seg2plus_mean": 3.541,
+   "stepping_seg2plus_median": 3.246,
+   "stepping_s_per_fc_h": 3.282,
+   "output_s_per_fc_h": 0.259,
+   "first_segment_s_per_fc_h": 5.512,
+   "whole_s": {
+    "harness_launch": 116.321,
+    "session_launch": 117.002,
+    "measured_process_t0": 113.698
+   },
+   "whole_s_per_fc_h": {
+    "harness_launch": 4.847,
+    "session_launch": 4.875,
+    "measured_process_t0": 4.737
+   },
+   "jax_peak_bytes": 1995383656,
+   "vram_peak_mib_receipt": 3898,
+   "vram_peak_mib_pid_csv": 3898,
+   "host_vmhwm_kb": 5183996,
+   "consumer": "BUNDLE_CONSUMER rc=0 compiled_new=0 aliases_new=0 runtime_new=1034 other_new=0 layer_compiled=0 receipt=<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/hero/layer/runs/20261019T160042Z_381695.json",
+   "compiled_new": 0,
+   "watch": {
+    "sweep_rule": {
+     "clean": true,
+     "within_rule": true,
+     "max_proc_seconds": 0.0,
+     "agg_seconds": 0.0
+    },
+    "strict_20_50_shadow": {
+     "clean": false,
+     "within_rule": true,
+     "max_proc_seconds": 12.4,
+     "agg_seconds": 18.6
+    },
+    "cli_main_wait_share": 0.0077,
+    "cgroup_psi_some_s": 1.872916
+   },
+   "disk": {
+    "await_ms": 24.84,
+    "seconds": 123,
+    "seconds_over_limit": 8,
+    "max_1s_ms": 79.77,
+    "limit_ms": 50.0,
+    "disturbed": false
+   },
+   "disturbed": false,
+   "wrfout_sha256": {
+    "wrfout_d01_2026-07-26_01:00:18": "a62d4dedb66c1fa9f4362d9110c65fb0920658cad2ea985fafe955de5752f7a4",
+    "wrfout_d01_2026-07-26_02:00:36": "ed932d8cb7b3ca65bf9183ee9a66785657eb36a3a61d1a6bb17c4f9a6de67133",
+    "wrfout_d01_2026-07-26_03:00:00": "1dac1d04cd19c3ab877e3f118f539a1eb8337bc6e0f733b121653e06e17ae977",
+    "wrfout_d01_2026-07-26_04:00:18": "d9576d0fa6ac8b462311846f3b407150a11fb5f6d44dd34b953dfe2483997f1d",
+    "wrfout_d01_2026-07-26_05:00:36": "b934742db70417020f2aa1b755071ed57e7cae2122a7f06ba52a95df60cd1b1d",
+    "wrfout_d01_2026-07-26_06:00:00": "3cfab70bf442f62cbb9922b95230d1c5e5f89552f9a2783adeee55be7d3eb106",
+    "wrfout_d01_2026-07-26_07:00:18": "7afd9d6223d7b1c6993deb66716a4cb42ca08a4c4ea44d05725970902bc92fd8",
+    "wrfout_d01_2026-07-26_08:00:36": "177b19d41b9d707c1f8f8a42a6bd135545289d45d5fad4387ed6e3f103a24c27",
+    "wrfout_d01_2026-07-26_09:00:00": "ba0a958755455e050c99fb01f676dbe47ae8d7169af88552da849ada5065b73e",
+    "wrfout_d01_2026-07-26_10:00:18": "5d068db63177e6eabf36ce2893668d7ee0f9842d1543b1bfb15149ab16396bee",
+    "wrfout_d01_2026-07-26_11:00:36": "b2d3911dcda5cd89f668693282a99caed7d1f0150c02187a660d60f59dcaf35c",
+    "wrfout_d01_2026-07-26_12:00:00": "90857f46882b1a6ec1cbc159dcad45909bdc4194ef4f24cde9d8c65b974e4edc",
+    "wrfout_d01_2026-07-26_13:00:18": "40aba311a2f0262fabdcc572f8ce205b3a01ab7cf56af31d90ff430a6f6b83d4",
+    "wrfout_d01_2026-07-26_14:00:36": "d50ef686ca8af2a0cdefa0b8c685d6b60568a032723714b819db499117421be4",
+    "wrfout_d01_2026-07-26_15:00:00": "5570088fcf1b90e3c677015b3812ddb7dc34094cafdaf4ccf6707cbbba7c4bea",
+    "wrfout_d01_2026-07-26_16:00:18": "84c83b01a8bf9883a1c7d3789fa50f8b800c87ecfe91863ec663bf02ffe553da",
+    "wrfout_d01_2026-07-26_17:00:36": "40878af53e8760612dbc85f19e4dcc80f5f6f28fe506ab0b09be83f575dcfbc6",
+    "wrfout_d01_2026-07-26_18:00:00": "6d807196046c2910cb9fddc0cdfb3f28e12e2972a09b5ffc36d8ff49b593ae3c",
+    "wrfout_d01_2026-07-26_19:00:18": "a552dd5b6620718cc4e84eda6c11560c8e1c5f4f2d437c5cc615a1211f5480a7",
+    "wrfout_d01_2026-07-26_20:00:36": "2a2a974a142d29a956568c87582301b85b5b94e059c573ca934ed8b92bc6029a",
+    "wrfout_d01_2026-07-26_21:00:00": "4aee4f76f8e1f21f645913687148746d0aa30cd89c248568644dc201970d6c36",
+    "wrfout_d01_2026-07-26_22:00:18": "86c15f7016433c6fa3ee2338861975db0f983a67c9d424305dc09bdb15eed1de",
+    "wrfout_d01_2026-07-26_23:00:36": "b7669b6bb94d53ab3b6b11b2a2368fa4b8da7887f4de154831137adedc1e8e80",
+    "wrfout_d01_2026-07-27_00:00:00": "6d064b819d1cc9716638e9b0f9a801a096d6efa1ef0172c07e610222427895ac",
+    "wrfout_d02_2026-07-26_01:00:00": "3407b17c1eb1b9138e39655de5c40aec1e2d38304fd9113fd540abb2e0b6b184",
+    "wrfout_d02_2026-07-26_02:00:00": "e8f23bea65e0a0a7c4c7905d2450251a461c24f4e68ff2c51ffdccb27f7048df",
+    "wrfout_d02_2026-07-26_03:00:00": "d9dcc4cb4403827242e614ce95d18e1f83ca09f9d70e610b9a339ffff60b25a2",
+    "wrfout_d02_2026-07-26_04:00:00": "a4ca650a06e0cff25ffca44817e699925f1886bb1b76b10e07b7c15c0da4a374",
+    "wrfout_d02_2026-07-26_05:00:00": "cb867762710fafaaf4829987de560734a371bfb5dbbea43863d10d68eaab9be8",
+    "wrfout_d02_2026-07-26_06:00:00": "05779052b57d0e1ebcddb258bdfcb300d7fe44747f703514e59e783da7df9b6b",
+    "wrfout_d02_2026-07-26_07:00:00": "6d388b53cafcdcd6f576208725d909875df0718b848718eb788149eeb76ef185",
+    "wrfout_d02_2026-07-26_08:00:00": "63eb4169f69cd7e5c37c24a9ac6559e1eb84abf08f97bc9b676e6b6fab3a6f33",
+    "wrfout_d02_2026-07-26_09:00:00": "749a90d4402b9e0cc4c4944e578a3dfec2390f404183b8c825b0b026ed16bdc9",
+    "wrfout_d02_2026-07-26_10:00:00": "17a82ab2ae473db23cad2a5e0590b3aecd9388b9ed7a65df381f7959850157ff",
+    "wrfout_d02_2026-07-26_11:00:00": "95ddeef89f2dbba7cee93d7b8093bb920f35d74fda4eb038aeae14dc6570f11b",
+    "wrfout_d02_2026-07-26_12:00:00": "3977e72d5901db549399aa7c78c1c011162eacac13594044698673e7cbf26168",
+    "wrfout_d02_2026-07-26_13:00:00": "e99385536fc2e56137bd2a779850a07bdedcf6b578b71ecfa5385ef8d3150463",
+    "wrfout_d02_2026-07-26_14:00:00": "549a806dfb39e6d777b6244baaaf23d9b7c4f656f746046c8cbb38f595ca637e",
+    "wrfout_d02_2026-07-26_15:00:00": "5b0fe7ab4672a6366ab8ef9c170183fff6c3cbbcfd05d7778ae7aabdf50103a1",
+    "wrfout_d02_2026-07-26_16:00:00": "aa629343340abb00f9a4fded7891586a800ee755ffd8cde04cf5a56ec38cede5",
+    "wrfout_d02_2026-07-26_17:00:00": "87c21d6b9dcedc4240ec817f1ddb8e5a6c397f296b21abbcd0f7bb561a45d21f",
+    "wrfout_d02_2026-07-26_18:00:00": "87cf1243fca277ea9f757852f2270298adbe98ccaaeb4a5757f0c21312a9eda0",
+    "wrfout_d02_2026-07-26_19:00:00": "c81433a740de38b83d020116cfc1e701bcfb67522af5a6816b46745b2ac4a06a",
+    "wrfout_d02_2026-07-26_20:00:00": "2f776acba71f5c33048cbbf27b8db27395acc742f7de8c34d05f6fcefcaa9ad4",
+    "wrfout_d02_2026-07-26_21:00:00": "20e485b146ea9b0f45cbedc7a90d6c769acf068b1a41abc1d74366c7be209f48",
+    "wrfout_d02_2026-07-26_22:00:00": "94b669747820f46cdbc50159004c9ad0b3e528a240355acfc131d2ed5fa67176",
+    "wrfout_d02_2026-07-26_23:00:00": "194b880b7222c41a7e9232e36fa502a94a6ae9b1b73140fc4c3d90a485ce4292",
+    "wrfout_d02_2026-07-27_00:00:00": "5ce4aca5d81f65dfacc7cc61970174814df8b580bf0153f0b713fa9f0085fbed"
+   },
+   "n_wrfout": 48
+  },
+  "H2": {
+   "slot": "H2",
+   "hours": 24,
+   "rc": 0,
+   "end_reason": "completed",
+   "valid": true,
+   "src_tree": "0dc759849113b8c204081c9c4f22e698c07e024d",
+   "git_head": "b979188128e0b6038d79a81e02d1dd89f273e969",
+   "device": {
+    "platform": "gpu",
+    "kind": "NVIDIA GeForce RTX 5090",
+    "id": 0,
+    "backend": "gpu"
+   },
+   "c_auto_attested": true,
+   "allocator": {
+    "mode": "c_auto",
+    "allocator": "cuda_async",
+    "preallocate": "true",
+    "mem_fraction": "0.096468",
+    "python_mem_fraction": null,
+    "c_auto_budget_bytes": 3247535443,
+    "c_auto_headroom_bytes": 1073741824,
+    "cli_reexec": true,
+    "jax_bytes_limit": 3247581783,
+    "cli_applied_budget_bytes": 3247535443
+   },
+   "cli_pool_line": [
+    "C-auto case pool 3.02 GiB, fraction=0.096468"
+   ],
+   "nvml_probe_backend_dark": true,
+   "jax_bytes_limit": 3247581783,
+   "c_auto_budget_bytes": 3247535443,
+   "seg_rates_s_per_fc_h": [
+    4.305,
+    3.693,
+    3.39,
+    3.359,
+    3.399,
+    3.388,
+    3.965,
+    3.333,
+    3.406,
+    3.404,
+    3.312,
+    3.47,
+    3.457,
+    3.862,
+    3.907,
+    3.557,
+    3.226,
+    3.418,
+    3.176,
+    3.213,
+    3.204,
+    3.171,
+    4.205
+   ],
+   "seg2plus_median": 3.404,
+   "seg2plus_mean": 3.514,
+   "stepping_seg2plus_median": 3.259,
+   "stepping_s_per_fc_h": 3.27,
+   "output_s_per_fc_h": 0.244,
+   "first_segment_s_per_fc_h": 5.303,
+   "whole_s": {
+    "harness_launch": 114.475,
+    "session_launch": 115.24,
+    "measured_process_t0": 111.769
+   },
+   "whole_s_per_fc_h": {
+    "harness_launch": 4.77,
+    "session_launch": 4.802,
+    "measured_process_t0": 4.657
+   },
+   "jax_peak_bytes": 1995383656,
+   "vram_peak_mib_receipt": 3898,
+   "vram_peak_mib_pid_csv": 3898,
+   "host_vmhwm_kb": 5169912,
+   "consumer": "BUNDLE_CONSUMER rc=0 compiled_new=0 aliases_new=0 runtime_new=1034 other_new=0 layer_compiled=0 receipt=<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/hero/layer/runs/20261019T160310Z_397811.json",
+   "compiled_new": 0,
+   "watch": {
+    "sweep_rule": {
+     "clean": true,
+     "within_rule": true,
+     "max_proc_seconds": 0.0,
+     "agg_seconds": 0.0
+    },
+    "strict_20_50_shadow": {
+     "clean": false,
+     "within_rule": true,
+     "max_proc_seconds": 6.3,
+     "agg_seconds": 20.0
+    },
+    "cli_main_wait_share": 0.0106,
+    "cgroup_psi_some_s": 2.446616
+   },
+   "disk": {
+    "await_ms": 21.38,
+    "seconds": 123,
+    "seconds_over_limit": 6,
+    "max_1s_ms": 80.37,
+    "limit_ms": 50.0,
+    "disturbed": false
+   },
+   "disturbed": false,
+   "wrfout_sha256": {
+    "wrfout_d01_2026-07-26_01:00:18": "a62d4dedb66c1fa9f4362d9110c65fb0920658cad2ea985fafe955de5752f7a4",
+    "wrfout_d01_2026-07-26_02:00:36": "ed932d8cb7b3ca65bf9183ee9a66785657eb36a3a61d1a6bb17c4f9a6de67133",
+    "wrfout_d01_2026-07-26_03:00:00": "1dac1d04cd19c3ab877e3f118f539a1eb8337bc6e0f733b121653e06e17ae977",
+    "wrfout_d01_2026-07-26_04:00:18": "d9576d0fa6ac8b462311846f3b407150a11fb5f6d44dd34b953dfe2483997f1d",
+    "wrfout_d01_2026-07-26_05:00:36": "b934742db70417020f2aa1b755071ed57e7cae2122a7f06ba52a95df60cd1b1d",
+    "wrfout_d01_2026-07-26_06:00:00": "3cfab70bf442f62cbb9922b95230d1c5e5f89552f9a2783adeee55be7d3eb106",
+    "wrfout_d01_2026-07-26_07:00:18": "7afd9d6223d7b1c6993deb66716a4cb42ca08a4c4ea44d05725970902bc92fd8",
+    "wrfout_d01_2026-07-26_08:00:36": "177b19d41b9d707c1f8f8a42a6bd135545289d45d5fad4387ed6e3f103a24c27",
+    "wrfout_d01_2026-07-26_09:00:00": "ba0a958755455e050c99fb01f676dbe47ae8d7169af88552da849ada5065b73e",
+    "wrfout_d01_2026-07-26_10:00:18": "5d068db63177e6eabf36ce2893668d7ee0f9842d1543b1bfb15149ab16396bee",
+    "wrfout_d01_2026-07-26_11:00:36": "b2d3911dcda5cd89f668693282a99caed7d1f0150c02187a660d60f59dcaf35c",
+    "wrfout_d01_2026-07-26_12:00:00": "90857f46882b1a6ec1cbc159dcad45909bdc4194ef4f24cde9d8c65b974e4edc",
+    "wrfout_d01_2026-07-26_13:00:18": "40aba311a2f0262fabdcc572f8ce205b3a01ab7cf56af31d90ff430a6f6b83d4",
+    "wrfout_d01_2026-07-26_14:00:36": "d50ef686ca8af2a0cdefa0b8c685d6b60568a032723714b819db499117421be4",
+    "wrfout_d01_2026-07-26_15:00:00": "5570088fcf1b90e3c677015b3812ddb7dc34094cafdaf4ccf6707cbbba7c4bea",
+    "wrfout_d01_2026-07-26_16:00:18": "84c83b01a8bf9883a1c7d3789fa50f8b800c87ecfe91863ec663bf02ffe553da",
+    "wrfout_d01_2026-07-26_17:00:36": "40878af53e8760612dbc85f19e4dcc80f5f6f28fe506ab0b09be83f575dcfbc6",
+    "wrfout_d01_2026-07-26_18:00:00": "6d807196046c2910cb9fddc0cdfb3f28e12e2972a09b5ffc36d8ff49b593ae3c",
+    "wrfout_d01_2026-07-26_19:00:18": "a552dd5b6620718cc4e84eda6c11560c8e1c5f4f2d437c5cc615a1211f5480a7",
+    "wrfout_d01_2026-07-26_20:00:36": "2a2a974a142d29a956568c87582301b85b5b94e059c573ca934ed8b92bc6029a",
+    "wrfout_d01_2026-07-26_21:00:00": "4aee4f76f8e1f21f645913687148746d0aa30cd89c248568644dc201970d6c36",
+    "wrfout_d01_2026-07-26_22:00:18": "86c15f7016433c6fa3ee2338861975db0f983a67c9d424305dc09bdb15eed1de",
+    "wrfout_d01_2026-07-26_23:00:36": "b7669b6bb94d53ab3b6b11b2a2368fa4b8da7887f4de154831137adedc1e8e80",
+    "wrfout_d01_2026-07-27_00:00:00": "6d064b819d1cc9716638e9b0f9a801a096d6efa1ef0172c07e610222427895ac",
+    "wrfout_d02_2026-07-26_01:00:00": "3407b17c1eb1b9138e39655de5c40aec1e2d38304fd9113fd540abb2e0b6b184",
+    "wrfout_d02_2026-07-26_02:00:00": "e8f23bea65e0a0a7c4c7905d2450251a461c24f4e68ff2c51ffdccb27f7048df",
+    "wrfout_d02_2026-07-26_03:00:00": "d9dcc4cb4403827242e614ce95d18e1f83ca09f9d70e610b9a339ffff60b25a2",
+    "wrfout_d02_2026-07-26_04:00:00": "a4ca650a06e0cff25ffca44817e699925f1886bb1b76b10e07b7c15c0da4a374",
+    "wrfout_d02_2026-07-26_05:00:00": "cb867762710fafaaf4829987de560734a371bfb5dbbea43863d10d68eaab9be8",
+    "wrfout_d02_2026-07-26_06:00:00": "05779052b57d0e1ebcddb258bdfcb300d7fe44747f703514e59e783da7df9b6b",
+    "wrfout_d02_2026-07-26_07:00:00": "6d388b53cafcdcd6f576208725d909875df0718b848718eb788149eeb76ef185",
+    "wrfout_d02_2026-07-26_08:00:00": "63eb4169f69cd7e5c37c24a9ac6559e1eb84abf08f97bc9b676e6b6fab3a6f33",
+    "wrfout_d02_2026-07-26_09:00:00": "749a90d4402b9e0cc4c4944e578a3dfec2390f404183b8c825b0b026ed16bdc9",
+    "wrfout_d02_2026-07-26_10:00:00": "17a82ab2ae473db23cad2a5e0590b3aecd9388b9ed7a65df381f7959850157ff",
+    "wrfout_d02_2026-07-26_11:00:00": "95ddeef89f2dbba7cee93d7b8093bb920f35d74fda4eb038aeae14dc6570f11b",
+    "wrfout_d02_2026-07-26_12:00:00": "3977e72d5901db549399aa7c78c1c011162eacac13594044698673e7cbf26168",
+    "wrfout_d02_2026-07-26_13:00:00": "e99385536fc2e56137bd2a779850a07bdedcf6b578b71ecfa5385ef8d3150463",
+    "wrfout_d02_2026-07-26_14:00:00": "549a806dfb39e6d777b6244baaaf23d9b7c4f656f746046c8cbb38f595ca637e",
+    "wrfout_d02_2026-07-26_15:00:00": "5b0fe7ab4672a6366ab8ef9c170183fff6c3cbbcfd05d7778ae7aabdf50103a1",
+    "wrfout_d02_2026-07-26_16:00:00": "aa629343340abb00f9a4fded7891586a800ee755ffd8cde04cf5a56ec38cede5",
+    "wrfout_d02_2026-07-26_17:00:00": "87c21d6b9dcedc4240ec817f1ddb8e5a6c397f296b21abbcd0f7bb561a45d21f",
+    "wrfout_d02_2026-07-26_18:00:00": "87cf1243fca277ea9f757852f2270298adbe98ccaaeb4a5757f0c21312a9eda0",
+    "wrfout_d02_2026-07-26_19:00:00": "c81433a740de38b83d020116cfc1e701bcfb67522af5a6816b46745b2ac4a06a",
+    "wrfout_d02_2026-07-26_20:00:00": "2f776acba71f5c33048cbbf27b8db27395acc742f7de8c34d05f6fcefcaa9ad4",
+    "wrfout_d02_2026-07-26_21:00:00": "20e485b146ea9b0f45cbedc7a90d6c769acf068b1a41abc1d74366c7be209f48",
+    "wrfout_d02_2026-07-26_22:00:00": "94b669747820f46cdbc50159004c9ad0b3e528a240355acfc131d2ed5fa67176",
+    "wrfout_d02_2026-07-26_23:00:00": "194b880b7222c41a7e9232e36fa502a94a6ae9b1b73140fc4c3d90a485ce4292",
+    "wrfout_d02_2026-07-27_00:00:00": "5ce4aca5d81f65dfacc7cc61970174814df8b580bf0153f0b713fa9f0085fbed"
+   },
+   "n_wrfout": 48
+  },
+  "W0": {
+   "slot": "W0",
+   "hours": 3,
+   "rc": 0,
+   "end_reason": "completed",
+   "valid": true,
+   "src_tree": "0dc759849113b8c204081c9c4f22e698c07e024d",
+   "git_head": "b979188128e0b6038d79a81e02d1dd89f273e969",
+   "device": {
+    "platform": "gpu",
+    "kind": "NVIDIA GeForce RTX 5090",
+    "id": 0,
+    "backend": "gpu"
+   },
+   "c_auto_attested": true,
+   "allocator": {
+    "mode": "c_auto",
+    "allocator": "cuda_async",
+    "preallocate": "true",
+    "mem_fraction": "0.095884",
+    "python_mem_fraction": null,
+    "c_auto_budget_bytes": 3227873035,
+    "c_auto_headroom_bytes": 1073741824,
+    "cli_reexec": true,
+    "jax_bytes_limit": 3227921543,
+    "cli_applied_budget_bytes": 3227873035
+   },
+   "cli_pool_line": [
+    "C-auto case pool 3.01 GiB, fraction=0.095884"
+   ],
+   "nvml_probe_backend_dark": true,
+   "jax_bytes_limit": 3227921543,
+   "c_auto_budget_bytes": 3227873035,
+   "seg_rates_s_per_fc_h": [
+    3.448,
+    5.382
+   ],
+   "seg2plus_median": 4.415,
+   "seg2plus_mean": 4.415,
+   "stepping_seg2plus_median": 4.102,
+   "stepping_s_per_fc_h": 4.102,
+   "output_s_per_fc_h": 0.314,
+   "first_segment_s_per_fc_h": 5.5,
+   "whole_s": {
+    "harness_launch": 43.307,
+    "session_launch": 43.43,
+    "measured_process_t0": 40.75
+   },
+   "whole_s_per_fc_h": {
+    "harness_launch": 14.436,
+    "session_launch": 14.477,
+    "measured_process_t0": 13.583
+   },
+   "jax_peak_bytes": 1995383656,
+   "vram_peak_mib_receipt": 3898,
+   "vram_peak_mib_pid_csv": 3898,
+   "host_vmhwm_kb": 5373816,
+   "consumer": "BUNDLE_CONSUMER rc=0 compiled_new=0 aliases_new=0 runtime_new=1040 other_new=0 layer_compiled=0 receipt=<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/hero/layer/runs/20261019T155927Z_371763.json",
+   "compiled_new": 0,
+   "watch": {
+    "sweep_rule": {
+     "clean": true,
+     "within_rule": true,
+     "max_proc_seconds": 0.0,
+     "agg_seconds": 0.0
+    },
+    "strict_20_50_shadow": {
+     "clean": false,
+     "within_rule": true,
+     "max_proc_seconds": 5.0,
+     "agg_seconds": 15.1
+    },
+    "cli_main_wait_share": 0.0082,
+    "cgroup_psi_some_s": 0.988213
+   },
+   "disk": {
+    "await_ms": 5.55,
+    "seconds": 50,
+    "seconds_over_limit": 1,
+    "max_1s_ms": 64.37,
+    "limit_ms": 50.0,
+    "disturbed": false
+   },
+   "disturbed": false,
+   "wrfout_sha256": {
+    "wrfout_d01_2026-07-26_01:00:18": "a62d4dedb66c1fa9f4362d9110c65fb0920658cad2ea985fafe955de5752f7a4",
+    "wrfout_d01_2026-07-26_02:00:36": "ed932d8cb7b3ca65bf9183ee9a66785657eb36a3a61d1a6bb17c4f9a6de67133",
+    "wrfout_d01_2026-07-26_03:00:00": "1dac1d04cd19c3ab877e3f118f539a1eb8337bc6e0f733b121653e06e17ae977",
+    "wrfout_d02_2026-07-26_01:00:00": "3407b17c1eb1b9138e39655de5c40aec1e2d38304fd9113fd540abb2e0b6b184",
+    "wrfout_d02_2026-07-26_02:00:00": "e8f23bea65e0a0a7c4c7905d2450251a461c24f4e68ff2c51ffdccb27f7048df",
+    "wrfout_d02_2026-07-26_03:00:00": "d9dcc4cb4403827242e614ce95d18e1f83ca09f9d70e610b9a339ffff60b25a2"
+   },
+   "n_wrfout": 6
+  }
+ },
+ "aborted_tries": [],
+ "arm_errors": {},
+ "identity": {
+  "24h_all_arms_byte_identical": true,
+  "W0_3h_equal_bundle_B6_prod_cli": true
+ },
+ "core_gate": [
+  "W0\t2026-10-19T15:59:27Z\tfree\tquiet-stretch 20 s, check 1",
+  "H1\t2026-10-19T16:00:42Z\tfree\tquiet-stretch 20 s, check 1",
+  "H2\t2026-10-19T16:03:09Z\tfree\tquiet-stretch 20 s, check 1",
+  "WN3\t2026-10-19T16:05:38Z\tfree\tquiet-stretch 20 s, check 1"
+ ]
+}

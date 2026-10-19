@@ -1,0 +1,167 @@
+{
+ "what": "RW3 output-integrity adjudication (registered exception) for the v0.4.2 bundle; the frozen RW_VERDICT.json and the scorer summary stay byte-unchanged (E212); detector and thresholds unchanged",
+ "decision": {
+  "mailbox": "<USER_HOME>/src/wrf_gpu2/.agent/kernel/MAILBOX.md",
+  "line": 14429,
+  "text": "2026-10-19T16:49:38Z manager -> w42-bundle042: DECISION output_integrity: d03 QGRAUP@t72 'degenerate' = REGISTERED EXCEPTION, not a defect \u2192 binding integrity PASS with disclosure. Basis [M]: (a) the CPU-WRF field there is trace only (3 cells, max 6.58e-12 kg/kg, 0 cells > 1e-9); (b) precedent MAILBOX 2026-10-06 (lines ~5851-5852): an original CPU-WRF twin (P0227) vs the CPU reference triggers the IDENTICAL flag at the identical frame \u2014 the detector fires on trace graupel even CPU vs CPU; (c) your 73-frame census shows v0.4.2 carries comparable graupel through t70 (154 vs 217 cells, max 3.2e-10 vs 3.7e-10) and only the last trace ends 1 h earlier; D6 binding PASS. No detector/threshold change. Write this adjudication + census path into the verdict/receipts and the tuple's disclosure, then READY-FOR-CRITIC (critic cr-w42-bundle042 is pre-written and dispatched on your READY)."
+ },
+ "scope": {
+  "case": "WN3 20260227_18z_a1 72 h, arm N72 (v0.4.2 sealed bundle, warm replay == A3 cold, 219 files)",
+  "covered": [
+   {
+    "domain": "d03",
+    "field": "QGRAUP",
+    "frame": "wrfout_d03_2026-03-03_00:00:00"
+   }
+  ],
+  "note": "no other field, frame, domain, case or arm; any further finding stays a FAIL"
+ },
+ "raw": {
+  "file": "<USER_HOME>/wrf_gpu2_lanes/w42-bundle042/followup/d6_N72/summary.json",
+  "sha256": "8acfa59df042a8b0789256a3281958147c9f1f31f848e357b71b382af90627fc",
+  "output_integrity_pass": false,
+  "findings": {
+   "d01": {
+    "pass_": true,
+    "degenerate": {},
+    "missing_vs_cpu": {},
+    "globals_missing": [],
+    "globals_by_frame": {}
+   },
+   "d02": {
+    "pass_": true,
+    "degenerate": {},
+    "missing_vs_cpu": {},
+    "globals_missing": [],
+    "globals_by_frame": {}
+   },
+   "d03": {
+    "pass_": false,
+    "degenerate": {
+     "QGRAUP": [
+      {
+       "file": "wrfout_d03_2026-03-03_00:00:00",
+       "gpu_value": 0.0,
+       "cpu_range": [
+        0.0,
+        6.57752064620043e-12
+       ]
+      }
+     ]
+    },
+    "missing_vs_cpu": {},
+    "globals_missing": [],
+    "globals_by_frame": {}
+   }
+  }
+ },
+ "census": {
+  "file": "<USER_HOME>/wrf_gpu2_lanes/w42-bundle042/followup/QGRAUP_D03_CENSUS.json",
+  "sha256": "96e5f97d81b791b16d79f53cb45ca8db2788980d3ce05f37b2b215a8b9973453",
+  "columns": "[min, max, nonzero cells] of d03 QGRAUP (kg/kg)",
+  "N72_v042": {
+   "70": [
+    0.0,
+    3.1763564001252576e-10,
+    154
+   ],
+   "71": [
+    0.0,
+    0.0,
+    0
+   ],
+   "72": [
+    0.0,
+    0.0,
+    0
+   ]
+  },
+  "O72_v041": {
+   "70": [
+    0.0,
+    4.599927730386533e-11,
+    38
+   ],
+   "71": [
+    0.0,
+    2.191421523412007e-11,
+    11
+   ],
+   "72": [
+    0.0,
+    1.2873818764497225e-12,
+    1
+   ]
+  },
+  "CPU_WRF": {
+   "70": [
+    0.0,
+    3.702659012727594e-10,
+    217
+   ],
+   "71": [
+    0.0,
+    1.3128418491215044e-11,
+    9
+   ],
+   "72": [
+    0.0,
+    6.57752064620043e-12,
+    3
+   ]
+  },
+  "frames_with_gpu_constant_cpu_varying": [
+   {
+    "lead": 71,
+    "frame": "2026-03-02_23:00:00",
+    "N72": [
+     0.0,
+     0.0,
+     0
+    ],
+    "O72": [
+     0.0,
+     2.191421523412007e-11,
+     11
+    ],
+    "CPU": [
+     0.0,
+     1.3128418491215044e-11,
+     9
+    ]
+   },
+   {
+    "lead": 72,
+    "frame": "2026-03-03_00:00:00",
+    "N72": [
+     0.0,
+     0.0,
+     0
+    ],
+    "O72": [
+     0.0,
+     1.2873818764497225e-12,
+     1
+    ],
+    "CPU": [
+     0.0,
+     6.57752064620043e-12,
+     3
+    ]
+   }
+  ]
+ },
+ "precedent": {
+  "cpu_vs_cpu": "MAILBOX 2026-10-06T10:42:21Z wn3 (line ~5850): original CPU-WRF twin P0227 vs reference R through the frozen wn3_integrity tool -> the IDENTICAL d03 QGRAUP flag at 2026-03-03_00 (P0227 exactly 0 in every cell); manager 10:42:49Z EXPLAINED-predictability",
+  "doc": "docs/release/evidence/v033/0227_QGRAUP_integrity.md (pin b979188128)",
+  "receipt_sha256": "9767e9d30d0ff6e17e636b99110e7780d369d5dd950f4e1b3ba860346c95068c",
+  "receipt_present": false,
+  "v040": "v0.4.0 B7 in the v0.4.1 gate: identical record (QGRAUP t72 GPU 0 vs CPU [0, 6.57752e-12])",
+  "v041": "v0.4.1 B1: passed by one cell 1.2874e-12 kg/kg"
+ },
+ "binding": {
+  "RW3_integrity_raw": "FAIL",
+  "RW3_integrity_binding": "PASS",
+  "uncovered_findings": []
+ }
+}

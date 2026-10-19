@@ -22,7 +22,7 @@
         <img src="_assets/logo.svg" alt="wrf_gpu logo">
         <span class="brand-text">
           <span class="brand-name">wrf_gpu</span>
-          <span class="brand-sub">User's Guide · v0.4.1</span>
+          <span class="brand-sub">User's Guide · v0.4.2</span>
         </span>
       </a>
       <div class="search-box">
@@ -73,9 +73,9 @@
       <main>
         <div class="breadcrumb"><a href="index.html">User's Guide</a> › Performance &amp; validation › Boundaries &amp; Known Issues</div>
         <h1>Boundaries and known issues</h1>
-<p class="lead">What wrf_gpu v0.4.1 does not cover yet, in plain words. The full technical record is in
+<p class="lead">What wrf_gpu v0.4.2 does not cover yet, in plain words. The full technical record is in
 the repository's <a href="https://github.com/wrf-gpu/wrf_gpu/blob/main/KNOWN_ISSUES.md">known issues</a> and the
-<a href="https://github.com/wrf-gpu/wrf_gpu/blob/main/docs/release/SUPPORT_MATRIX_v0.4.1.md">support matrix</a>.</p>
+<a href="https://github.com/wrf-gpu/wrf_gpu/blob/main/docs/release/SUPPORT_MATRIX_v0.4.2.md">support matrix</a>.</p>
 <h2 id="gates">What the validation covers<a class="headerlink" href="#gates" aria-label="Permalink">¶</a></h2>
 <ul>
 <li>wrf_gpu is compared with the <strong>original CPU-WRF</strong> run from the same inputs, not with
@@ -100,6 +100,9 @@ calibration against real stations has not been done yet.</li>
 <li><strong>Experimental features:</strong> stochastic physics (24-hour single-domain comparison passed in v0.4.1), online diagnostics, station time series,
 regional output streams, LCZ urban land use, the 3-D TKE turbulence options, most non-default Noah-MP
 options and Zhang-McFarlane cumulus. See the <a href="namelist.html#features">namelist page</a>.</li>
+<li><strong>New in v0.4.2, experimental:</strong> <code>icloud=0</code> passed one 24-hour comparison (Tenerife,
+three domains). YSU, Shin-Hong, ACM2 and EEPS are validated inside nests on one forecast date and one
+domain set-up, with the revised MM5 surface layer only.</li>
 <li><strong>Region set-up</strong> (<code>gpuwrf quickstart</code>) is tested on three areas, but GPU
 forecasts for new regions have not been compared with CPU-WRF.</li>
 <li><strong>Several GPUs:</strong> tested on simulated devices only; real multi-GPU speed is not measured.</li>
@@ -136,7 +139,9 @@ depth than WRF; on cloudy daytime columns it differed by up to about 130 W/m². 
 surface shortwave and the heating rates were not affected, but with slope radiation or terrain shading
 (<code>slope_rad=1</code>, <code>topo_shading=1</code>) the direct/diffuse split sets the shortwave
 reaching sloping ground, so on cloudy slopes the surface energy budget and the forecast could differ from
-WRF. v0.4.1 follows WRF; forecasts with slope radiation can change against v0.4.0.</li>
+WRF. v0.4.1 follows WRF; forecasts with slope radiation can change against v0.4.0. v0.4.2 checked the
+fix again against WRF's code path and keeps it; <code>GPUWRF_SWDDIR_V040_SPLIT=1</code> restores the v0.4.0
+split for continuity comparisons only.</li>
 <li id="v03-shared-cache">For users of v0.3.0 to v0.3.4: those versions compiled the deep-soil temperature
 <code>TMN</code> of inner nests into the nested program but left it out of its cache key, so a compile
 cache shared between forecast dates could load another date's nested program without notice. The value
@@ -145,15 +150,25 @@ grid, a 24-hour forecast run this way wrote all 72 history files byte-identical 
 the nine-domain Canary grid the same follows from identical land values, without an end-to-end run. With
 v0.3.x, set <code>GPUWRF_AOT_VERIFY=1</code> when one cache serves several dates, or upgrade: v0.4.1
 passes these inputs at run time. See the <a href="https://github.com/wrf-gpu/wrf_gpu/blob/main/KNOWN_ISSUES.md#v030v034-nested-programs-from-a-compile-cache-shared-across-dates">known issues</a>.</li>
+<li id="v042-findings">Found in v0.4.2 (also in v0.4.0 and v0.4.1): in one 72-hour Tenerife forecast, the 1 km
+domain has about 12–15 % fewer cells with at least 10 mm of rain than CPU-WRF on days 2 and 3, while the
+domain total is not systematically lower. On the same day two CPU-WRF runs that differ only in how the
+grid is split across processors already differ by more than the 1 mm rain limit after 17 hours. The cause
+is being investigated with a second rain case.</li>
+<li>WDM5, WDM6 and WDM7 limit rain fall-out to 64 sub-steps per microphysics call (WRF has no limit). This
+only matters with long microphysics steps over very thin lowest layers in heavy rain; removing it is
+planned.</li>
 <li>Free-running open boundaries on wide domains (about 160 columns or more) can become unstable after
 roughly 14 hours; the normal boundary relaxation avoids this.</li>
 </ul>
 <h2 id="performance">Performance and hardware<a class="headerlink" href="#performance" aria-label="Permalink">¶</a></h2>
 <ul>
-<li>The speed and energy figures in the README charts were measured with v0.3.2 on one RTX 5090. v0.4.1 takes
-4.4 s per forecast hour for the Canary Islands case (21× the 12-core CPU-WRF) and 6.1 s per case-hour for three
-Tenerife forecasts in parallel (20× CPU-WRF on 3 × 4 cores); energy was not measured again. See the
-<a href="https://github.com/wrf-gpu/wrf_gpu/blob/main/docs/release/RELEASE_NOTES_v0.4.1.md#speed">release notes</a>.</li>
+<li>The speed and energy figures in the README charts were measured with v0.3.2 on one RTX 5090. v0.4.2 takes
+4.81 s per forecast hour for the Canary Islands case (19.2× the 12-core CPU-WRF) and
+6.23 s per case-hour for three Tenerife forecasts in parallel (19.8× CPU-WRF on 3 × 4
+cores); energy was not measured again. The v0.4.1 figures (4.4 s, 21×; 6.1 s, 20×) were measured with the
+pre-v0.4.2 benchmark harness, which used on-demand GPU memory allocation. See the
+<a href="https://github.com/wrf-gpu/wrf_gpu/blob/main/docs/release/RELEASE_NOTES_v0.4.2.md#speed">release notes</a>.</li>
 <li>Only the RTX 5090 is tested. An NVIDIA Ampere or newer GPU is required; older cards (Pascal, Turing)
 are not supported.</li>
 <li>The first run of a new grid or physics selection compiles the model, which takes minutes and more

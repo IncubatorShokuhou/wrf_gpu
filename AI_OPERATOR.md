@@ -108,6 +108,12 @@ Use `python -m gpuwrf.cli run --help` for the current controls.
   `GPUWRF_FULL_WRFOUT` alias. `GPUWRF_TRAINING_OUTPUT_SUBSET=1` selects the
   training subset. Counts depend on the actual file/schema; neither 104 nor
   375 is a universal active-physics count.
+- RRTMG SW surface direct beam: the default (since v0.4.1) is WRF's unscaled
+  `ztdbt_nodel` (SWDDIR/SWDDIF, and the diffuse fraction that `slope_rad` /
+  `topo_shading` use). `GPUWRF_SWDDIR_V040_SPLIT=1` is an opt-out that restores
+  the v0.4.0 delta-scaled split bitwise. It is set before the process starts, it
+  compiles a different program (new cache keys), and it is refused with
+  `aer_opt=1/3`. It is not WRF's product; use it only for continuity comparisons.
 - Native single-root history emits initialized lead zero automatically.
   Nested lead zero is opt-in with `--emit-initial-history`.
   Nested `--aot-prefetch` defaults ON; `--no-aot-prefetch` loads at first

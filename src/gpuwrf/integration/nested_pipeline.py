@@ -3381,6 +3381,9 @@ class _PerDomainWrfoutWriter:
                 rad = getattr(carry, "radiation_diagnostics", None)
                 for wrf_name, attr in (
                     ("CLDFRA", "cloud_fraction"),
+                    # WRF history COSZEN = the HELD radiation-call value (calc_coszen at call + radt/2,
+                    # module_radiation_driver.F), not the output instant.
+                    ("COSZEN", "coszen"),
                     ("SWDNBC", "sw_clear_sfc_down"), ("SWUPBC", "sw_clear_sfc_up"),
                     ("SWDNTC", "sw_clear_toa_down"), ("SWUPTC", "sw_clear_toa_up"),
                     ("LWDNBC", "lw_clear_sfc_down"), ("LWUPBC", "lw_clear_sfc_up"),

@@ -1,0 +1,189 @@
+{
+ "what": "v0.4.2 bundle RW1-RW4 real-world gate, binding reading (derived; sources hashed below)",
+ "sources": {
+  "RW_VERDICT.json": "ee1c72d5bf7f88c6a67ecc22f386cb7f2e1f744935cd0a25e520aecd18b4785f",
+  "RW3T_VERDICT.json": "b9c16b6e3b153fe6bd2c4c732ff45c098589fe28b8fda7c095412a6ec789cb56",
+  "RW3T_ACCEPT.json": "841e84d981317585682a9fe0416f4bace4abdc5ed78fa9d61e23461ddeee0557",
+  "FLOOR72_N72.json": "e50461e5af5d82379431afe254a278fd5a929ef7974bb3e423a300c18d54dc87",
+  "d6_N72/summary.json": "8acfa59df042a8b0789256a3281958147c9f1f31f848e357b71b382af90627fc",
+  "QGRAUP_D03_CENSUS.json": "96e5f97d81b791b16d79f53cb45ca8db2788980d3ce05f37b2b215a8b9973453",
+  "INTEGRITY_ADJUDICATION.json": "cc4ae5e9aecae27b1abf3c7d5ce3e0c31841d9592a11663e1c4ed36209d0892a"
+ },
+ "RW1": "PASS",
+ "RW2_RW4": "PASS",
+ "RW3": {
+  "verdict": "PASS",
+  "timing_72h_N72_vs_O72": {
+   "stepping_median_d03_s_per_h (PRIMARY)": {
+    "v042": 6.145,
+    "v041": 6.523,
+    "ratio": 0.9421,
+    "regression_gt_10pct": false
+   },
+   "whole_run_s_per_fch": {
+    "v042": 6.757,
+    "v041": 7.148,
+    "ratio": 0.9453,
+    "regression_gt_10pct": false
+   },
+   "stepping_median_s_per_h": {
+    "v042": 6.101,
+    "v041": 6.515,
+    "ratio": 0.9365,
+    "regression_gt_10pct": false
+   },
+   "startup_lead1_s": {
+    "v042": 43.49,
+    "v041": 43.89,
+    "ratio": 0.9909,
+    "regression_gt_10pct": false
+   },
+   "vram_peak_pid_mib": {
+    "v042": 5236,
+    "v041": 5268,
+    "ratio": 0.9939,
+    "regression_gt_10pct": false
+   },
+   "host_max_rss_gib": {
+    "v042": 5.922,
+    "v041": 5.908,
+    "ratio": 1.0024,
+    "regression_gt_10pct": false
+   },
+   "compile_s_cold_minus_warm": {
+    "v042": 612.2,
+    "v041": 628.4,
+    "ratio": 0.9742,
+    "regression_gt_10pct": false
+   }
+  },
+  "timing_72h_disclosure": {
+   "basis": "O72 = v0.4.1 sealed bundle, same session",
+   "watch_cover": {
+    "N72": {
+     "samples": 480,
+     "wall_s": 488.7,
+     "max_gap_s": 2.0,
+     "watch_cover": false
+    },
+    "O72": {
+     "samples": 491,
+     "wall_s": 517.8,
+     "max_gap_s": 2.0,
+     "watch_cover": false
+    }
+   },
+   "note": "the 72 h arms miss the 24 h accept rule's watch_cover (samples < wall - 5 s); disclosed secondary, RW3T decides"
+  },
+  "rw3t_interleaved_24h": {
+   "verdict": "PASS",
+   "prereg_sha256": "1305af2080d327a7c69e1ba9dff5ed1d575ed70c4615bae0bfe4702154f45f6e",
+   "counted": [
+    "N1",
+    "N2",
+    "N3",
+    "O1",
+    "O3"
+   ],
+   "primary": "d03_step_median",
+   "N": [
+    6.26,
+    5.861,
+    6.341
+   ],
+   "O": [
+    6.632,
+    6.523
+   ],
+   "pooled_N_over_O": 0.9356,
+   "S": 0.0819,
+   "rule": "pooled + S <= 1.10",
+   "not_counted": [
+    "N72",
+    "O2",
+    "O72"
+   ],
+   "rejected_attempts": [
+    "N2.aborted1",
+    "O2.aborted1"
+   ]
+  },
+  "d6_72h_raw": "FAIL",
+  "d6_72h_binding_A3": "PASS",
+  "d6_72h_floor_rows": [
+   {
+    "domain": "d03",
+    "field": "RAINNC",
+    "lead_h": 69,
+    "metric": "rmse",
+    "X": 1.2615074385245384,
+    "limit": 1.0,
+    "C": 1.5094115483094688,
+    "C_over_X": 1.196514187878971,
+    "status": "FLOOR-LIMITED"
+   },
+   {
+    "domain": "d03",
+    "field": "RAINNC",
+    "lead_h": 70,
+    "metric": "rmse",
+    "X": 1.812458038313999,
+    "limit": 1.0,
+    "C": 1.9865712642639377,
+    "C_over_X": 1.096064693509762,
+    "status": "FLOOR-LIMITED"
+   },
+   {
+    "domain": "d03",
+    "field": "RAINNC",
+    "lead_h": 71,
+    "metric": "rmse",
+    "X": 1.9594923693394461,
+    "limit": 1.0,
+    "C": 2.098835538985548,
+    "C_over_X": 1.0711118715369508,
+    "status": "FLOOR-LIMITED"
+   },
+   {
+    "domain": "d03",
+    "field": "RAINNC",
+    "lead_h": 72,
+    "metric": "rmse",
+    "X": 1.9810635049852907,
+    "limit": 1.0,
+    "C": 2.1118578851610086,
+    "C_over_X": 1.0660223056184608,
+    "status": "FLOOR-LIMITED"
+   },
+   {
+    "domain": "d03",
+    "field": "W",
+    "lead_h": 69,
+    "metric": "rmse",
+    "X": 0.3326597249541047,
+    "limit": 0.3,
+    "C": 0.32996136664189546,
+    "C_over_X": 0.9918885332073744,
+    "status": "FLOOR-LIMITED"
+   }
+  ],
+  "integrity_raw": "FAIL",
+  "integrity_binding": "PASS"
+ },
+ "ICLOUD0": "QUALIFIED",
+ "E41": {
+  "default": {
+   "e41_gate": "INCOMPLETE",
+   "hard_stack_gate": "PASS",
+   "conservative_flags": false,
+   "coverage": "PASS",
+   "file": "<DATA_ROOT>/wrf_gpu2/release_bundles/v0.4.2/e41/wave_gate.json"
+  },
+  "icloud0": {
+   "e41_gate": "INCOMPLETE",
+   "hard_stack_gate": "PASS",
+   "conservative_flags": false,
+   "coverage": "PASS"
+  }
+ }
+}

@@ -1,0 +1,45 @@
+{
+ "argv": [
+  "<DATA_ROOT>/wrf_gpu2/worktrees/w42-bundle042/proofs/w42_bundle042/hero/probe_env.py",
+  "--input-dir",
+  "<DATA_ROOT>/wrf_gpu2/v025/s0_case_20260725",
+  "--out",
+  "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/hero_dry2/runs/H1/run",
+  "--hours",
+  "24",
+  "--tag",
+  "w42hero_H1",
+  "--require-c-auto"
+ ],
+ "executable": "<USER_HOME>/miniconda3/bin/python3",
+ "cwd": "<DATA_ROOT>/wrf_gpu2/worktrees/w42-bundle042",
+ "affinity": [
+  8,
+  9,
+  12
+ ],
+ "nice": 19,
+ "env": {
+  "BENCH_ARM_DIR": "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/hero_dry2/runs/H1",
+  "GPUWRF_XLA_AUTOTUNE_CACHE_DIR": "<DATA_ROOT>/wrf_gpu2/release_bundles/v0.4.1/autotune",
+  "CUDA_CACHE_PATH": "<DATA_ROOT>/wrf_gpu2/release_bundles/v0.4.1/cuda",
+  "S0_MIN_FREE_DISK_GB": "8",
+  "GPUWRF_JAX_CACHE_DIR": "<DATA_ROOT>/wrf_gpu2/release_bundles/v0.4.1/jax",
+  "GPUWRF_GPU_LOCK_HELD": "1",
+  "TMPDIR": "<USER_HOME>/wrf_gpu2_lanes/w42-bundle042/s0root/hero_dry2/tmp",
+  "JAX_COMPILATION_CACHE_DIR": "<DATA_ROOT>/wrf_gpu2/release_bundles/v0.4.1/jax",
+  "TRITON_CACHE_DIR": "<DATA_ROOT>/wrf_gpu2/release_bundles/v0.4.1/triton",
+  "PYTHONPATH": "<DATA_ROOT>/wrf_gpu2/release_bundles/v0.4.1/src/src",
+  "XLA_PYTHON_CLIENT_ALLOCATOR": "cuda_async",
+  "JAX_PLATFORMS": "cuda",
+  "BENCH_SRC_REPO": "<DATA_ROOT>/wrf_gpu2/release_bundles/v0.4.1/src",
+  "S0_CPUS": "8,9,12",
+  "BENCH_QUIET_FILE": "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/hero_dry_quiet",
+  "S0_ROOT": "<USER_HOME>/wrf_gpu2_lanes/w42-bundle042/s0root/hero_dry2",
+  "OMP_NUM_THREADS": "4",
+  "LC_ALL": "C",
+  "GPUWRF_BENCH_FLAGS_ENV": "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/hero_dry2/release_env.sh",
+  "S0_MIN_FREE_MIB": "16000"
+ },
+ "note": "filtered to model/runtime env keys (the full env is not committed: E152)"
+}

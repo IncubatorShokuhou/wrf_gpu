@@ -1,0 +1,590 @@
+{
+ "schema": "w41-nestqual.summary.v1",
+ "issue": "20260707_18z",
+ "gpu_engine": [
+  "gpuwrf v0.4.1 129248b4, bundle 24a7b24f"
+ ],
+ "gate": "D6 24 h d01-d03 vs original CPU-WRF 4.7.1 twin (same namelist/inputs), merged bounded scorer scripts/wn3_score.py --sequential-domains, frozen D6 manifest, 0 bounded misses, NF0, every CPU variable on all 25 frames, E184 input + output identity (rd-s6 SHA manifest)",
+ "arms": {
+  "C2": {
+   "scheme": "YSU",
+   "case": "<DATA_ROOT>/wrf_gpu2/scratch/w41-nestqual/cases/20260707_18z_C2",
+   "verdict": "PASS",
+   "input_identity": true,
+   "domains": {
+    "d01": {
+     "verdict": "PASS",
+     "paired_frames": 25,
+     "compared_fields": 368,
+     "bounded_fields": 62,
+     "failures": 0,
+     "nonfinite": 0,
+     "coverage_complete": true,
+     "missing_vs_cpu": [],
+     "worst_ratio": {
+      "field": "V10",
+      "rmse": 0.025159711068894926,
+      "lead_h": 24,
+      "limit": 1.5,
+      "ratio": 0.016773140712596616
+     },
+     "t2_worst": {
+      "rmse": 0.02496756089916707,
+      "lead_h": 24,
+      "limit": 1.5,
+      "ratio": 0.016645040599444712
+     },
+     "report_only_constant_vs_varying": [],
+     "output_integrity_pass": true,
+     "global_attrs_missing": {
+      "vs_cpu": [],
+      "required": []
+     },
+     "d6_json_sha256": "c967add4ba9fdf6aa2a012a022ad4e02b8b7a83f3d1b3b5951cf238eee10cd72"
+    },
+    "d02": {
+     "verdict": "PASS",
+     "paired_frames": 25,
+     "compared_fields": 368,
+     "bounded_fields": 62,
+     "failures": 0,
+     "nonfinite": 0,
+     "coverage_complete": true,
+     "missing_vs_cpu": [],
+     "worst_ratio": {
+      "field": "V10",
+      "rmse": 0.024569958955406916,
+      "lead_h": 24,
+      "limit": 1.5,
+      "ratio": 0.016379972636937943
+     },
+     "t2_worst": {
+      "rmse": 0.014822617936186083,
+      "lead_h": 20,
+      "limit": 1.5,
+      "ratio": 0.009881745290790722
+     },
+     "report_only_constant_vs_varying": [],
+     "output_integrity_pass": true,
+     "global_attrs_missing": {
+      "vs_cpu": [],
+      "required": []
+     },
+     "d6_json_sha256": "b1bcc596ef56882451b7b8fc8d2d05aae0336bcf41f9fb2c7cc0312977fe2c04"
+    },
+    "d03": {
+     "verdict": "PASS",
+     "paired_frames": 25,
+     "compared_fields": 368,
+     "bounded_fields": 62,
+     "failures": 0,
+     "nonfinite": 0,
+     "coverage_complete": true,
+     "missing_vs_cpu": [],
+     "worst_ratio": {
+      "field": "T2",
+      "rmse": 0.03583437949540879,
+      "lead_h": 21,
+      "limit": 1.5,
+      "ratio": 0.023889586330272525
+     },
+     "t2_worst": {
+      "rmse": 0.03583437949540879,
+      "lead_h": 21,
+      "limit": 1.5,
+      "ratio": 0.023889586330272525
+     },
+     "report_only_constant_vs_varying": [],
+     "output_integrity_pass": true,
+     "global_attrs_missing": {
+      "vs_cpu": [],
+      "required": []
+     },
+     "d6_json_sha256": "d553d93f863baf0c3a72dab25b36846e061e601b013c02dcefbae5a1e90007ca"
+    }
+   },
+   "worst": {
+    "domain": "d03",
+    "field": "T2",
+    "rmse": 0.03583437949540879,
+    "lead_h": 21,
+    "limit": 1.5,
+    "ratio": 0.023889586330272525
+   },
+   "over_limit": [],
+   "nest_gate_sha256": "995c208e892126dfe35e3f9febfcd1b69eef8e0931a61b970059343a75969523",
+   "cpu_timing": {
+    "wall_s": 6283.580271244049,
+    "d01_inclusive_step_sum_s": 6278.4885,
+    "d01_steps": 1600,
+    "s_per_sim_hour_d01_inclusive": 261.60368750000004,
+    "s_per_sim_hour_frames": 261.51958614587784,
+    "ranks": 3,
+    "cores": "0,1,2",
+    "scope": "original WRF 4.7.1 dmpar, 3 ranks pinned one per core, nice 19, shared host; not a CPU benchmark"
+   },
+   "gpu": {
+    "run_dir": "<DATA_ROOT>/alisios/scratch/rd-s6-wrf-cloud-attribution/g2/runs/20260707_18z/C2/v041",
+    "arm_rc": "0",
+    "aot_loaded_true": 2,
+    "aot_fallback_missing": 0,
+    "engine": {
+     "source_head": "104c97de98b45b790058d3cdad6e0ff1e88a9f82",
+     "pythonpath": "<DATA_ROOT>/wrf_gpu2/release_bundles/v0.4.1/src/src",
+     "manifest_engine": "gpuwrf v0.4.1 129248b4, bundle 24a7b24f"
+    },
+    "output_manifest": {
+     "path": "<DATA_ROOT>/alisios/state/manager/runs/mgr_wave_20261009/rd-s6-wrf-cloud-attribution/g2/G2_0707_OUTPUTS_MANIFEST_v041.json",
+     "sha256": "cfe5648d3d61ddd770761a0cc1500b836e16f6d665f802472d410845cd344c01",
+     "engine": "gpuwrf v0.4.1 129248b4, bundle 24a7b24f",
+     "status": "DONE_CLEAN",
+     "partial": false,
+     "listed_files": 147,
+     "matched": 75,
+     "mismatched": [],
+     "not_listed": [],
+     "announced_sha256_prefix": "cfe5648d3d61ddd7",
+     "ok": true
+    }
+   }
+  },
+  "C3": {
+   "scheme": "Shin-Hong",
+   "case": "<DATA_ROOT>/wrf_gpu2/scratch/w41-nestqual/cases/20260707_18z_C3",
+   "verdict": "PASS",
+   "input_identity": true,
+   "domains": {
+    "d01": {
+     "verdict": "PASS",
+     "paired_frames": 25,
+     "compared_fields": 370,
+     "bounded_fields": 62,
+     "failures": 0,
+     "nonfinite": 0,
+     "coverage_complete": true,
+     "missing_vs_cpu": [],
+     "worst_ratio": {
+      "field": "T2",
+      "rmse": 0.021379213974435655,
+      "lead_h": 24,
+      "limit": 1.5,
+      "ratio": 0.014252809316290437
+     },
+     "t2_worst": {
+      "rmse": 0.021379213974435655,
+      "lead_h": 24,
+      "limit": 1.5,
+      "ratio": 0.014252809316290437
+     },
+     "report_only_constant_vs_varying": [],
+     "output_integrity_pass": true,
+     "global_attrs_missing": {
+      "vs_cpu": [],
+      "required": []
+     },
+     "d6_json_sha256": "c7c652a4e343a392ecdec86bbaa21546ad2a1b41b1d7fe17fa0e2e7fb26e22e4"
+    },
+    "d02": {
+     "verdict": "PASS",
+     "paired_frames": 25,
+     "compared_fields": 370,
+     "bounded_fields": 62,
+     "failures": 0,
+     "nonfinite": 0,
+     "coverage_complete": true,
+     "missing_vs_cpu": [],
+     "worst_ratio": {
+      "field": "U10",
+      "rmse": 0.023873709572651735,
+      "lead_h": 17,
+      "limit": 1.5,
+      "ratio": 0.015915806381767823
+     },
+     "t2_worst": {
+      "rmse": 0.013331044179095294,
+      "lead_h": 13,
+      "limit": 1.5,
+      "ratio": 0.00888736278606353
+     },
+     "report_only_constant_vs_varying": [],
+     "output_integrity_pass": true,
+     "global_attrs_missing": {
+      "vs_cpu": [],
+      "required": []
+     },
+     "d6_json_sha256": "bd8c5933712ce3149519a778808dc65f2845fc11f7414e2367ef47c04d412175"
+    },
+    "d03": {
+     "verdict": "PASS",
+     "paired_frames": 25,
+     "compared_fields": 370,
+     "bounded_fields": 62,
+     "failures": 0,
+     "nonfinite": 0,
+     "coverage_complete": true,
+     "missing_vs_cpu": [],
+     "worst_ratio": {
+      "field": "V10",
+      "rmse": 0.0889507127795935,
+      "lead_h": 24,
+      "limit": 1.5,
+      "ratio": 0.05930047518639567
+     },
+     "t2_worst": {
+      "rmse": 0.042648630736430396,
+      "lead_h": 23,
+      "limit": 1.5,
+      "ratio": 0.028432420490953597
+     },
+     "report_only_constant_vs_varying": [],
+     "output_integrity_pass": true,
+     "global_attrs_missing": {
+      "vs_cpu": [],
+      "required": []
+     },
+     "d6_json_sha256": "ccebc52f54c209ee1ec39f1870de9a0d2845fef4263f5a49b5859a0f28285478"
+    }
+   },
+   "worst": {
+    "domain": "d03",
+    "field": "V10",
+    "rmse": 0.0889507127795935,
+    "lead_h": 24,
+    "limit": 1.5,
+    "ratio": 0.05930047518639567
+   },
+   "over_limit": [],
+   "nest_gate_sha256": "e7dd2fb51bc837288234384d4bc8c49a90621314c9c9a7a037bcf4ece5084499",
+   "cpu_timing": {
+    "wall_s": 6264.177963018417,
+    "d01_inclusive_step_sum_s": 6260.3706,
+    "d01_steps": 1600,
+    "s_per_sim_hour_d01_inclusive": 260.848775,
+    "s_per_sim_hour_frames": 260.78063227732974,
+    "ranks": 3,
+    "cores": "0,1,2",
+    "scope": "original WRF 4.7.1 dmpar, 3 ranks pinned one per core, nice 19, shared host; not a CPU benchmark"
+   },
+   "gpu": {
+    "run_dir": "<DATA_ROOT>/alisios/scratch/rd-s6-wrf-cloud-attribution/g2/runs/20260707_18z/C3/v041",
+    "arm_rc": "0",
+    "aot_loaded_true": 2,
+    "aot_fallback_missing": 0,
+    "engine": {
+     "source_head": "104c97de98b45b790058d3cdad6e0ff1e88a9f82",
+     "pythonpath": "<DATA_ROOT>/wrf_gpu2/release_bundles/v0.4.1/src/src",
+     "manifest_engine": "gpuwrf v0.4.1 129248b4, bundle 24a7b24f"
+    },
+    "output_manifest": {
+     "path": "<DATA_ROOT>/alisios/state/manager/runs/mgr_wave_20261009/rd-s6-wrf-cloud-attribution/g2/G2_0707_OUTPUTS_MANIFEST_v041.json",
+     "sha256": "cfe5648d3d61ddd770761a0cc1500b836e16f6d665f802472d410845cd344c01",
+     "engine": "gpuwrf v0.4.1 129248b4, bundle 24a7b24f",
+     "status": "DONE_CLEAN",
+     "partial": false,
+     "listed_files": 147,
+     "matched": 75,
+     "mismatched": [],
+     "not_listed": [],
+     "announced_sha256_prefix": "cfe5648d3d61ddd7",
+     "ok": true
+    }
+   }
+  },
+  "C4": {
+   "scheme": "ACM2",
+   "case": "<DATA_ROOT>/wrf_gpu2/scratch/w41-nestqual/cases/20260707_18z_C4",
+   "verdict": "PASS",
+   "input_identity": true,
+   "domains": {
+    "d01": {
+     "verdict": "PASS",
+     "paired_frames": 25,
+     "compared_fields": 368,
+     "bounded_fields": 62,
+     "failures": 0,
+     "nonfinite": 0,
+     "coverage_complete": true,
+     "missing_vs_cpu": [],
+     "worst_ratio": {
+      "field": "V10",
+      "rmse": 0.02603259953981699,
+      "lead_h": 20,
+      "limit": 1.5,
+      "ratio": 0.017355066359877994
+     },
+     "t2_worst": {
+      "rmse": 0.019388336941890263,
+      "lead_h": 24,
+      "limit": 1.5,
+      "ratio": 0.012925557961260175
+     },
+     "report_only_constant_vs_varying": [],
+     "output_integrity_pass": true,
+     "global_attrs_missing": {
+      "vs_cpu": [],
+      "required": []
+     },
+     "d6_json_sha256": "068c89addafb1b41f00c61976b19e8e89a63568a0f482eb72226be9500259812"
+    },
+    "d02": {
+     "verdict": "PASS",
+     "paired_frames": 25,
+     "compared_fields": 368,
+     "bounded_fields": 62,
+     "failures": 0,
+     "nonfinite": 0,
+     "coverage_complete": true,
+     "missing_vs_cpu": [],
+     "worst_ratio": {
+      "field": "V10",
+      "rmse": 0.038600816359252194,
+      "lead_h": 24,
+      "limit": 1.5,
+      "ratio": 0.025733877572834796
+     },
+     "t2_worst": {
+      "rmse": 0.022263704285060255,
+      "lead_h": 20,
+      "limit": 1.5,
+      "ratio": 0.014842469523373503
+     },
+     "report_only_constant_vs_varying": [],
+     "output_integrity_pass": true,
+     "global_attrs_missing": {
+      "vs_cpu": [],
+      "required": []
+     },
+     "d6_json_sha256": "b01d6b4a446374efa7019dc3aed1815906050655f91ddbc9ae6b1c6cb63b6747"
+    },
+    "d03": {
+     "verdict": "PASS",
+     "paired_frames": 25,
+     "compared_fields": 368,
+     "bounded_fields": 62,
+     "failures": 0,
+     "nonfinite": 0,
+     "coverage_complete": true,
+     "missing_vs_cpu": [],
+     "worst_ratio": {
+      "field": "V10",
+      "rmse": 0.10275456381398514,
+      "lead_h": 21,
+      "limit": 1.5,
+      "ratio": 0.06850304254265675
+     },
+     "t2_worst": {
+      "rmse": 0.062202427185468465,
+      "lead_h": 20,
+      "limit": 1.5,
+      "ratio": 0.04146828479031231
+     },
+     "report_only_constant_vs_varying": [],
+     "output_integrity_pass": true,
+     "global_attrs_missing": {
+      "vs_cpu": [],
+      "required": []
+     },
+     "d6_json_sha256": "536ab9b7f68a17fd2800cbe284458a4d0f7aa86d335ab75d4fdd64984293af79"
+    }
+   },
+   "worst": {
+    "domain": "d03",
+    "field": "V10",
+    "rmse": 0.10275456381398514,
+    "lead_h": 21,
+    "limit": 1.5,
+    "ratio": 0.06850304254265675
+   },
+   "over_limit": [],
+   "nest_gate_sha256": "8ca492fdf07baea814ea10a32cf49522d238638a3d932ca125276f5efc4a4eb0",
+   "cpu_timing": {
+    "wall_s": 13135.221224308014,
+    "d01_inclusive_step_sum_s": 13128.51238,
+    "d01_steps": 1600,
+    "s_per_sim_hour_d01_inclusive": 547.0213491666667,
+    "s_per_sim_hour_frames": 546.9535036583742,
+    "ranks": 3,
+    "cores": "0,1,2",
+    "scope": "original WRF 4.7.1 dmpar, 3 ranks pinned one per core, nice 19, shared host; not a CPU benchmark"
+   },
+   "gpu": {
+    "run_dir": "<DATA_ROOT>/alisios/scratch/rd-s6-wrf-cloud-attribution/g2/runs/20260707_18z/C4/v041",
+    "arm_rc": "0",
+    "aot_loaded_true": 2,
+    "aot_fallback_missing": 0,
+    "engine": {
+     "source_head": "104c97de98b45b790058d3cdad6e0ff1e88a9f82",
+     "pythonpath": "<DATA_ROOT>/wrf_gpu2/release_bundles/v0.4.1/src/src",
+     "manifest_engine": "gpuwrf v0.4.1 129248b4, bundle 24a7b24f"
+    },
+    "output_manifest": {
+     "path": "<DATA_ROOT>/alisios/state/manager/runs/mgr_wave_20261009/rd-s6-wrf-cloud-attribution/g2/G2_0707_OUTPUTS_MANIFEST_v041.json",
+     "sha256": "cfe5648d3d61ddd770761a0cc1500b836e16f6d665f802472d410845cd344c01",
+     "engine": "gpuwrf v0.4.1 129248b4, bundle 24a7b24f",
+     "status": "DONE_CLEAN",
+     "partial": false,
+     "listed_files": 147,
+     "matched": 75,
+     "mismatched": [],
+     "not_listed": [],
+     "announced_sha256_prefix": "cfe5648d3d61ddd7",
+     "ok": true
+    }
+   }
+  },
+  "C7": {
+   "scheme": "EEPS",
+   "case": "<DATA_ROOT>/wrf_gpu2/scratch/w41-nestqual/cases/20260707_18z_C7",
+   "verdict": "PASS",
+   "input_identity": true,
+   "domains": {
+    "d01": {
+     "verdict": "PASS",
+     "paired_frames": 25,
+     "compared_fields": 370,
+     "bounded_fields": 62,
+     "failures": 0,
+     "nonfinite": 0,
+     "coverage_complete": true,
+     "missing_vs_cpu": [],
+     "worst_ratio": {
+      "field": "V10",
+      "rmse": 0.020639006546063956,
+      "lead_h": 20,
+      "limit": 1.5,
+      "ratio": 0.013759337697375971
+     },
+     "t2_worst": {
+      "rmse": 0.01363367777859945,
+      "lead_h": 12,
+      "limit": 1.5,
+      "ratio": 0.0090891185190663
+     },
+     "report_only_constant_vs_varying": [],
+     "output_integrity_pass": true,
+     "global_attrs_missing": {
+      "vs_cpu": [],
+      "required": []
+     },
+     "d6_json_sha256": "d1f61bdaf2f151825de4850f8d261d9f082238c13deb9cef66eec28f543eb661"
+    },
+    "d02": {
+     "verdict": "PASS",
+     "paired_frames": 25,
+     "compared_fields": 370,
+     "bounded_fields": 62,
+     "failures": 0,
+     "nonfinite": 0,
+     "coverage_complete": true,
+     "missing_vs_cpu": [],
+     "worst_ratio": {
+      "field": "U10",
+      "rmse": 0.0516458660877782,
+      "lead_h": 11,
+      "limit": 1.5,
+      "ratio": 0.03443057739185213
+     },
+     "t2_worst": {
+      "rmse": 0.03298593951416855,
+      "lead_h": 11,
+      "limit": 1.5,
+      "ratio": 0.02199062634277903
+     },
+     "report_only_constant_vs_varying": [],
+     "output_integrity_pass": true,
+     "global_attrs_missing": {
+      "vs_cpu": [],
+      "required": []
+     },
+     "d6_json_sha256": "05fbd79073ecd10978688ff16c6ddc0514b6c1a7d07c5f1f852363952b3ea8a7"
+    },
+    "d03": {
+     "verdict": "PASS",
+     "paired_frames": 25,
+     "compared_fields": 370,
+     "bounded_fields": 62,
+     "failures": 0,
+     "nonfinite": 0,
+     "coverage_complete": true,
+     "missing_vs_cpu": [],
+     "worst_ratio": {
+      "field": "V10",
+      "rmse": 0.16534613785659633,
+      "lead_h": 21,
+      "limit": 1.5,
+      "ratio": 0.11023075857106422
+     },
+     "t2_worst": {
+      "rmse": 0.06095549885709202,
+      "lead_h": 16,
+      "limit": 1.5,
+      "ratio": 0.04063699923806135
+     },
+     "report_only_constant_vs_varying": [],
+     "output_integrity_pass": true,
+     "global_attrs_missing": {
+      "vs_cpu": [],
+      "required": []
+     },
+     "d6_json_sha256": "ec5898cc262891ea90722e86d84e54eedbf67aaa8b43d6ffeac0dedf160fcfc4"
+    }
+   },
+   "worst": {
+    "domain": "d03",
+    "field": "V10",
+    "rmse": 0.16534613785659633,
+    "lead_h": 21,
+    "limit": 1.5,
+    "ratio": 0.11023075857106422
+   },
+   "over_limit": [],
+   "nest_gate_sha256": "2bc7900748fdbf0ff7774669292bfb4d1a006e5ff4475b369e040de2e6447016",
+   "cpu_timing": {
+    "wall_s": 9079.542687654495,
+    "d01_inclusive_step_sum_s": 9075.79968,
+    "d01_steps": 1600,
+    "s_per_sim_hour_d01_inclusive": 378.15832,
+    "s_per_sim_hour_frames": 378.0916895568371,
+    "ranks": 3,
+    "cores": "8,9,12",
+    "scope": "original WRF 4.7.1 dmpar, 4 ranks pinned one per core, nice 19, shared host; not a CPU benchmark"
+   },
+   "gpu": {
+    "run_dir": "<DATA_ROOT>/alisios/scratch/rd-s6-wrf-cloud-attribution/g2/runs/20260707_18z/C7/v041",
+    "arm_rc": "0",
+    "aot_loaded_true": 2,
+    "aot_fallback_missing": 0,
+    "engine": {
+     "source_head": "104c97de98b45b790058d3cdad6e0ff1e88a9f82",
+     "pythonpath": "<DATA_ROOT>/wrf_gpu2/release_bundles/v0.4.1/src/src",
+     "manifest_engine": "gpuwrf v0.4.1 129248b4, bundle 24a7b24f"
+    },
+    "output_manifest": {
+     "path": "<DATA_ROOT>/alisios/state/manager/runs/mgr_wave_20261009/rd-s6-wrf-cloud-attribution/g2/G2_0707_OUTPUTS_MANIFEST_v041.json",
+     "sha256": "cfe5648d3d61ddd770761a0cc1500b836e16f6d665f802472d410845cd344c01",
+     "engine": "gpuwrf v0.4.1 129248b4, bundle 24a7b24f",
+     "status": "DONE_CLEAN",
+     "partial": false,
+     "listed_files": 147,
+     "matched": 75,
+     "mismatched": [],
+     "not_listed": [],
+     "announced_sha256_prefix": "cfe5648d3d61ddd7",
+     "ok": true
+    }
+   }
+  }
+ },
+ "fill": {
+  "NESTQUAL_YSU": "**PASS** d01\u2013d03: 25 hourly frames per domain, 0 of 62 bounded fields over limit, NF0; highest worst-hour RMSE/limit 0.024 (T2 d03 +21 h); T2 worst-hour RMSE 0.025/0.015/0.036 K",
+  "NESTQUAL_YSU_E41": "Not measured for the nested programs [U] (compiled and run by ALISIOS G2); single-domain program FAIL, disclosed in v0.4.0",
+  "NESTQUAL_SHINHONG": "**PASS** d01\u2013d03: 25 hourly frames per domain, 0 of 62 bounded fields over limit, NF0; highest worst-hour RMSE/limit 0.059 (V10 d03 +24 h); T2 worst-hour RMSE 0.021/0.013/0.043 K",
+  "NESTQUAL_SHINHONG_E41": "Not measured for the nested programs [U] (compiled and run by ALISIOS G2); single-domain program FAIL, disclosed in v0.4.0",
+  "NESTQUAL_ACM2": "**PASS** d01\u2013d03: 25 hourly frames per domain, 0 of 62 bounded fields over limit, NF0; highest worst-hour RMSE/limit 0.069 (V10 d03 +21 h); T2 worst-hour RMSE 0.019/0.022/0.062 K",
+  "NESTQUAL_ACM2_E41": "Not measured for the nested programs [U] (compiled and run by ALISIOS G2); single-domain program FAIL, disclosed in v0.4.0",
+  "NESTQUAL_EEPS": "**PASS** d01\u2013d03: 25 hourly frames per domain, 0 of 62 bounded fields over limit, NF0; highest worst-hour RMSE/limit 0.110 (V10 d03 +21 h); T2 worst-hour RMSE 0.014/0.033/0.061 K",
+  "NESTQUAL_EEPS_E41": "Not measured for the nested programs [U] (compiled and run by ALISIOS G2); single-domain program FAIL, disclosed in v0.4.0",
+  "NESTQUAL_RECEIPT": "[w41-nestqual](../../proofs/w41_nestqual/NESTQUAL_SUMMARY.json)",
+  "NESTQUAL_RESULT": "Nested 24 h comparison vs original CPU-WRF twins (G2 Tenerife 3-nest, issue 20260707_18z, GPU gpuwrf v0.4.1 129248b4, bundle 24a7b24f): YSU, Shin-Hong, ACM2, EEPS pass on d01\u2013d03 and are validated inside nests in this configuration."
+ }
+}

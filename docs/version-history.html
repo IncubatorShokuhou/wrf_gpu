@@ -22,7 +22,7 @@
         <img src="_assets/logo.svg" alt="wrf_gpu logo">
         <span class="brand-text">
           <span class="brand-name">wrf_gpu</span>
-          <span class="brand-sub">User's Guide · v0.4.1</span>
+          <span class="brand-sub">User's Guide · v0.4.2</span>
         </span>
       </a>
       <div class="search-box">
@@ -57,6 +57,7 @@
 <div class="group-title">Reference</div>
 <a class="active" href="version-history.html">Version History</a>
 <div class="subnav">
+<a href="version-history.html#v042">v0.4.2 — 19 October 2026</a>
 <a href="version-history.html#v041">v0.4.1 — 18 October 2026</a>
 <a href="version-history.html#v040">v0.4.0 — 17 October 2026</a>
 <a href="version-history.html#v034">v0.3.4 — 10 October 2026</a>
@@ -80,6 +81,18 @@
       <main>
         <div class="breadcrumb"><a href="index.html">User's Guide</a> › Reference › Version History</div>
         <h1>Version history and release notes</h1>
+<h2 id="v042">v0.4.2 — 19 October 2026<a class="headerlink" href="#v042" aria-label="Permalink">¶</a></h2>
+<p>A follow-up release on the v0.4.1 forecast model. The v0.4.1 direct-beam shortwave fix was checked
+against WRF's code path and stays the default, with an opt-out (<code>GPUWRF_SWDDIR_V040_SPLIT=1</code>) for
+continuity with v0.4.0; history <code>COSZEN</code> now follows WRF; WDM6 microphysics is about three times
+faster with identical output; YSU, Shin-Hong, ACM2 and EEPS are validated inside nested domains; new opt-in
+<code>icloud=0</code> (radiation without clouds). <code>gpuwrf aot-key</code> no longer writes into compile
+caches. A heavy-rain finding on one Tenerife forecast is disclosed. The v0.4.1 release notes now also carry
+a <a href="https://github.com/wrf-gpu/wrf_gpu/blob/main/docs/release/RELEASE_NOTES_v0.4.1.md#addendum-19-october-2026-rw3-speed-measured-again">re-measurement
+of v0.4.1 against v0.4.0 speed</a>.
+<a href="https://github.com/wrf-gpu/wrf_gpu/blob/main/docs/release/RELEASE_NOTES_v0.4.2.md">Release notes</a> ·
+<a href="https://github.com/wrf-gpu/wrf_gpu/blob/main/docs/release/SUPPORT_MATRIX_v0.4.2.md">Support matrix</a> ·
+<a href="https://github.com/wrf-gpu/wrf_gpu/blob/main/docs/release/USER_GUIDE_v0.4.2.md">Command guide</a>.</p>
 <h2 id="v041">v0.4.1 — 18 October 2026<a class="headerlink" href="#v041" aria-label="Permalink">¶</a></h2>
 <p>Opt-in additions on top of the v0.4.0 default physics (two default-path fixes are listed in the
 release notes): experimental ensemble data

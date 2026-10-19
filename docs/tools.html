@@ -22,7 +22,7 @@
         <img src="_assets/logo.svg" alt="wrf_gpu logo">
         <span class="brand-text">
           <span class="brand-name">wrf_gpu</span>
-          <span class="brand-sub">User's Guide · v0.4.1</span>
+          <span class="brand-sub">User's Guide · v0.4.2</span>
         </span>
       </a>
       <div class="search-box">
@@ -101,7 +101,7 @@ claim of better forecast skill.</p>
 <tr><td><code>optimize identity</code>, <code>released</code>, <code>plan</code>, <code>run</code>, <code>score</code></td><td>Chooses between released physics configurations for your region with a study that keeps test dates separate from training dates; <code>run</code> can pause and resume (v0.4.1).</td><td>CPU; GPU for <code>run</code></td><td><a href="https://github.com/wrf-gpu/wrf_gpu/blob/main/docs/regional_optimization.md">optimisation guide</a></td></tr>
 <tr><td><code>da check</code>, <code>da analyse</code>, <code>da cycle</code>, <code>da members</code></td><td>New in v0.4.1: ensemble data assimilation (LETKF) for the outer domain, and forecast/analysis cycles with all members in one process. <span class="pill optin">Experimental</span></td><td>CPU analysis; GPU for the member forecasts</td><td><a href="#data-assimilation">below</a></td></tr>
 <tr><td><code>surface-params basis</code>, <code>expand</code>, <code>eki</code>, <code>osse</code></td><td>New in v0.4.1: Noah-MP surface-parameter sets for <code>run --surface-controls</code>, changed without recompiling. <span class="pill optin">Experimental</span></td><td>CPU; GPU for <code>run</code></td><td><a href="#surface-parameters">below</a></td></tr>
-<tr><td><code>aot-key</code></td><td>New in v0.4.1: prints the cache key of every compiled program of a nested case and, for two cases, which programs they share, so you can see whether a compile cache or bundle prepared on one case serves another. Needs no GPU and compiles nothing.</td><td>CPU</td><td><a href="#compiled-programs">below</a></td></tr>
+<tr><td><code>aot-key</code></td><td>New in v0.4.1: prints the cache key of every compiled program of a nested case and, for two cases, which programs they share, so you can see whether a compile cache or bundle prepared on one case serves another. Needs no GPU and compiles nothing; since v0.4.2 it never writes into a compile cache or bundle.</td><td>CPU</td><td><a href="#compiled-programs">below</a></td></tr>
 <tr><td><code>export</code></td><td>Writes CF-NetCDF, Zarr or GRIB2 subsets: surface fields, pressure levels, regions.</td><td>CPU</td><td><a href="https://github.com/wrf-gpu/wrf_gpu/blob/main/docs/export.md">export guide</a></td></tr>
 <tr><td><code>tslist-export</code></td><td>Converts WRF station time-series files (<code>*.TS</code>) to CSV or NetCDF.</td><td>CPU</td><td><a href="https://github.com/wrf-gpu/wrf_gpu/blob/main/docs/TSLIST.md">tslist guide</a></td></tr>
 <tr><td><code>stream-check</code></td><td>Checks a regional output stream file (<code>gpuwrf.streams.json</code>) before a run.</td><td>CPU</td><td><a href="https://github.com/wrf-gpu/wrf_gpu/blob/main/docs/REGIONAL_STREAMS.md">streams guide</a></td></tr>
@@ -228,6 +228,9 @@ cases takes about 6 minutes. Exit code 3 means a key could not be computed (show
 <code>UNAVAILABLE</code>, never as shared). Nested cases only; the keys carry the CPU target, so compare
 cases with each other, not with the file names in a GPU cache. In v0.4.1 every forecast date of one grid
 shares its programs, so a nested grid compiles once instead of once per date.</p>
+<p>Since v0.4.2, <code>aot-key</code> works in a private temporary cache that is deleted when the command ends
+(also on Ctrl-C), so it never adds files to the compile cache or sealed bundle your settings point to; it
+prints a warning when they point into a sealed bundle. The keys are the same as with v0.4.1.</p>
 <h2 id="export">Export and station files<a class="headerlink" href="#export" aria-label="Permalink">¶</a></h2>
 <pre><code class="language-bash">gpuwrf export --input runs/my_case/wrfout_d01_* --output runs/surface.nc \
   --format netcdf --variables T2 PSFC U10 V10

@@ -1,0 +1,525 @@
+{
+ "schema": "gpuwrf-parallel-case-v1",
+ "name": "wn3_0614",
+ "case_dir": "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/cases/wn3_0614",
+ "output_dir": "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/hero/runs/WN3/out/wn3_0614/wrfout",
+ "source": {
+  "gpuwrf_path": "<DATA_ROOT>/wrf_gpu2/release_bundles/v0.4.2/src/src/gpuwrf",
+  "git_head": "b979188128e0b6038d79a81e02d1dd89f273e969",
+  "src_tree": "0dc759849113b8c204081c9c4f22e698c07e024d",
+  "dirty": false
+ },
+ "command": [
+  "<USER_HOME>/miniconda3/bin/python3",
+  "-m",
+  "gpuwrf.cli",
+  "run",
+  "--input-dir",
+  "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/cases/wn3_0614",
+  "--output-dir",
+  "<DATA_ROOT>/wrf_gpu2/scratch/w42-bundle042/hero/runs/WN3/out/wn3_0614/wrfout",
+  "--domains-from-namelist",
+  "--hours",
+  "24",
+  "--emit-initial-history"
+ ],
+ "sizing": {
+  "plan_key": "f2986d903b1a2bfdefb2b177ef335a5de59dbbfe7296bdbad0e7ebccd7e079fa",
+  "plan_path": "<DATA_ROOT>/wrf_gpu2/release_bundles/v0.4.2/jax/cli_memory_plans/f2986d903b1a2bfdefb2b177ef335a5de59dbbfe7296bdbad0e7ebccd7e079fa.json",
+  "domains": 3,
+  "source": "c-auto-plan",
+  "budget_bytes": 4482152881,
+  "headroom_bytes": 1073741824,
+  "need_bytes": 5555894705
+ },
+ "host_need_kb": 8000000,
+ "host_need_source": "--host-gb-per-case",
+ "host_need_cold_kb": 8000000,
+ "rc": 0,
+ "note": "",
+ "concurrent_at_start": 2,
+ "env": [
+  "CUDA_CACHE_PATH=<DATA_ROOT>/wrf_gpu2/release_bundles/v0.4.2/cuda",
+  "GPUWRF_GPU_LOCK_FD=9",
+  "GPUWRF_GPU_LOCK_FILE=/tmp/wrf_gpu2_gpu.lock",
+  "GPUWRF_GPU_LOCK_HELD=1",
+  "GPUWRF_GPU_LOCK_HOLDER_FILE=/tmp/wrf_gpu2_gpu.lock.holder",
+  "GPUWRF_GPU_LOCK_LABEL=w42-bundle042",
+  "GPUWRF_JAX_CACHE_DIR=<DATA_ROOT>/wrf_gpu2/release_bundles/v0.4.2/jax",
+  "GPUWRF_XLA_AUTOTUNE_CACHE_DIR=<DATA_ROOT>/wrf_gpu2/release_bundles/v0.4.2/autotune",
+  "JAX_COMPILATION_CACHE_DIR=<DATA_ROOT>/wrf_gpu2/release_bundles/v0.4.2/jax",
+  "JAX_PLATFORMS=cuda"
+ ],
+ "attempt": 0,
+ "resumed_from": null,
+ "pid": 415217,
+ "start_utc": "2026-10-19T16:05:42Z",
+ "end_utc": "2026-10-19T16:13:06Z",
+ "wall_s": 443.95,
+ "vmhwm_kb": 6325236,
+ "allocator": [
+  "gpuwrf: C-auto case pool 4.17 GiB, fraction=0.133142",
+  "gpuwrf: nested run -- re-exec with XLA_PYTHON_CLIENT_ALLOCATOR=cuda_async (GPUWRF_ALLOCATOR=cuda_async (default); stream-ordered pool by default, GPUWRF_ALLOCATOR=platform for the no-fragment cudaMalloc fallback)"
+ ],
+ "vram_peak_mib": 5236,
+ "aot_cache_warm": true,
+ "aot_cold_executables": [],
+ "cli_summary": {
+  "effective_hours": 24,
+  "effective_max_dom": 3,
+  "all_domains_finite": true,
+  "all_outputs_present": true
+ },
+ "outputs": [
+  {
+   "d": "d01",
+   "file": "wrfout_d01_2026-06-15_00:00:00",
+   "t_published_s": 47.34,
+   "bytes": 51242624
+  },
+  {
+   "d": "d02",
+   "file": "wrfout_d02_2026-06-15_00:00:00",
+   "t_published_s": 49.341,
+   "bytes": 185209132
+  },
+  {
+   "d": "d03",
+   "file": "wrfout_d03_2026-06-15_00:00:00",
+   "t_published_s": 49.341,
+   "bytes": 62521804
+  },
+  {
+   "d": "d03",
+   "file": "wrfout_d03_2026-06-15_01:00:00",
+   "t_published_s": 58.412,
+   "bytes": 62521804
+  },
+  {
+   "d": "d01",
+   "file": "wrfout_d01_2026-06-15_01:00:18",
+   "t_published_s": 60.413,
+   "bytes": 51242624
+  },
+  {
+   "d": "d02",
+   "file": "wrfout_d02_2026-06-15_01:00:00",
+   "t_published_s": 60.413,
+   "bytes": 185209132
+  },
+  {
+   "d": "d03",
+   "file": "wrfout_d03_2026-06-15_02:00:00",
+   "t_published_s": 74.485,
+   "bytes": 62521804
+  },
+  {
+   "d": "d01",
+   "file": "wrfout_d01_2026-06-15_02:00:36",
+   "t_published_s": 75.489,
+   "bytes": 51242624
+  },
+  {
+   "d": "d02",
+   "file": "wrfout_d02_2026-06-15_02:00:00",
+   "t_published_s": 75.489,
+   "bytes": 185209132
+  },
+  {
+   "d": "d03",
+   "file": "wrfout_d03_2026-06-15_03:00:00",
+   "t_published_s": 89.561,
+   "bytes": 62521804
+  },
+  {
+   "d": "d02",
+   "file": "wrfout_d02_2026-06-15_03:00:00",
+   "t_published_s": 90.562,
+   "bytes": 185209132
+  },
+  {
+   "d": "d01",
+   "file": "wrfout_d01_2026-06-15_03:00:00",
+   "t_published_s": 91.581,
+   "bytes": 51242624
+  },
+  {
+   "d": "d03",
+   "file": "wrfout_d03_2026-06-15_04:00:00",
+   "t_published_s": 105.627,
+   "bytes": 62521804
+  },
+  {
+   "d": "d01",
+   "file": "wrfout_d01_2026-06-15_04:00:18",
+   "t_published_s": 106.646,
+   "bytes": 51242624
+  },
+  {
+   "d": "d02",
+   "file": "wrfout_d02_2026-06-15_04:00:00",
+   "t_published_s": 106.646,
+   "bytes": 185209132
+  },
+  {
+   "d": "d03",
+   "file": "wrfout_d03_2026-06-15_05:00:00",
+   "t_published_s": 120.694,
+   "bytes": 62521804
+  },
+  {
+   "d": "d01",
+   "file": "wrfout_d01_2026-06-15_05:00:36",
+   "t_published_s": 121.723,
+   "bytes": 51242624
+  },
+  {
+   "d": "d02",
+   "file": "wrfout_d02_2026-06-15_05:00:00",
+   "t_published_s": 121.723,
+   "bytes": 185209132
+  },
+  {
+   "d": "d03",
+   "file": "wrfout_d03_2026-06-15_06:00:00",
+   "t_published_s": 136.831,
+   "bytes": 62521804
+  },
+  {
+   "d": "d01",
+   "file": "wrfout_d01_2026-06-15_06:00:00",
+   "t_published_s": 137.832,
+   "bytes": 51242624
+  },
+  {
+   "d": "d02",
+   "file": "wrfout_d02_2026-06-15_06:00:00",
+   "t_published_s": 137.832,
+   "bytes": 185209132
+  },
+  {
+   "d": "d02",
+   "file": "wrfout_d02_2026-06-15_07:00:00",
+   "t_published_s": 153.902,
+   "bytes": 185209132
+  },
+  {
+   "d": "d03",
+   "file": "wrfout_d03_2026-06-15_07:00:00",
+   "t_published_s": 153.902,
+   "bytes": 62521804
+  },
+  {
+   "d": "d01",
+   "file": "wrfout_d01_2026-06-15_07:00:18",
+   "t_published_s": 154.903,
+   "bytes": 51242624
+  },
+  {
+   "d": "d03",
+   "file": "wrfout_d03_2026-06-15_08:00:00",
+   "t_published_s": 169.989,
+   "bytes": 62521804
+  },
+  {
+   "d": "d01",
+   "file": "wrfout_d01_2026-06-15_08:00:36",
+   "t_published_s": 170.99,
+   "bytes": 51242624
+  },
+  {
+   "d": "d02",
+   "file": "wrfout_d02_2026-06-15_08:00:00",
+   "t_published_s": 170.99,
+   "bytes": 185209132
+  },
+  {
+   "d": "d03",
+   "file": "wrfout_d03_2026-06-15_09:00:00",
+   "t_published_s": 187.106,
+   "bytes": 62521804
+  },
+  {
+   "d": "d01",
+   "file": "wrfout_d01_2026-06-15_09:00:00",
+   "t_published_s": 188.107,
+   "bytes": 51242624
+  },
+  {
+   "d": "d02",
+   "file": "wrfout_d02_2026-06-15_09:00:00",
+   "t_published_s": 188.107,
+   "bytes": 185209132
+  },
+  {
+   "d": "d02",
+   "file": "wrfout_d02_2026-06-15_10:00:00",
+   "t_published_s": 204.176,
+   "bytes": 185209132
+  },
+  {
+   "d": "d03",
+   "file": "wrfout_d03_2026-06-15_10:00:00",
+   "t_published_s": 204.176,
+   "bytes": 62521804
+  },
+  {
+   "d": "d01",
+   "file": "wrfout_d01_2026-06-15_10:00:18",
+   "t_published_s": 205.178,
+   "bytes": 51242624
+  },
+  {
+   "d": "d03",
+   "file": "wrfout_d03_2026-06-15_11:00:00",
+   "t_published_s": 220.259,
+   "bytes": 62521804
+  },
+  {
+   "d": "d01",
+   "file": "wrfout_d01_2026-06-15_11:00:36",
+   "t_published_s": 221.26,
+   "bytes": 51242624
+  },
+  {
+   "d": "d02",
+   "file": "wrfout_d02_2026-06-15_11:00:00",
+   "t_published_s": 221.26,
+   "bytes": 185209132
+  },
+  {
+   "d": "d03",
+   "file": "wrfout_d03_2026-06-15_12:00:00",
+   "t_published_s": 239.374,
+   "bytes": 62521804
+  },
+  {
+   "d": "d01",
+   "file": "wrfout_d01_2026-06-15_12:00:00",
+   "t_published_s": 240.375,
+   "bytes": 51242624
+  },
+  {
+   "d": "d02",
+   "file": "wrfout_d02_2026-06-15_12:00:00",
+   "t_published_s": 240.375,
+   "bytes": 185209132
+  },
+  {
+   "d": "d03",
+   "file": "wrfout_d03_2026-06-15_13:00:00",
+   "t_published_s": 253.448,
+   "bytes": 62521804
+  },
+  {
+   "d": "d01",
+   "file": "wrfout_d01_2026-06-15_13:00:18",
+   "t_published_s": 254.448,
+   "bytes": 51242624
+  },
+  {
+   "d": "d02",
+   "file": "wrfout_d02_2026-06-15_13:00:00",
+   "t_published_s": 254.449,
+   "bytes": 185209132
+  },
+  {
+   "d": "d03",
+   "file": "wrfout_d03_2026-06-15_14:00:00",
+   "t_published_s": 269.522,
+   "bytes": 62521804
+  },
+  {
+   "d": "d02",
+   "file": "wrfout_d02_2026-06-15_14:00:00",
+   "t_published_s": 270.523,
+   "bytes": 185209132
+  },
+  {
+   "d": "d01",
+   "file": "wrfout_d01_2026-06-15_14:00:36",
+   "t_published_s": 271.524,
+   "bytes": 51242624
+  },
+  {
+   "d": "d03",
+   "file": "wrfout_d03_2026-06-15_15:00:00",
+   "t_published_s": 286.607,
+   "bytes": 62521804
+  },
+  {
+   "d": "d02",
+   "file": "wrfout_d02_2026-06-15_15:00:00",
+   "t_published_s": 287.629,
+   "bytes": 185209132
+  },
+  {
+   "d": "d01",
+   "file": "wrfout_d01_2026-06-15_15:00:00",
+   "t_published_s": 288.63,
+   "bytes": 51242624
+  },
+  {
+   "d": "d03",
+   "file": "wrfout_d03_2026-06-15_16:00:00",
+   "t_published_s": 303.725,
+   "bytes": 62521804
+  },
+  {
+   "d": "d02",
+   "file": "wrfout_d02_2026-06-15_16:00:00",
+   "t_published_s": 304.726,
+   "bytes": 185209132
+  },
+  {
+   "d": "d01",
+   "file": "wrfout_d01_2026-06-15_16:00:18",
+   "t_published_s": 305.727,
+   "bytes": 51242624
+  },
+  {
+   "d": "d03",
+   "file": "wrfout_d03_2026-06-15_17:00:00",
+   "t_published_s": 320.816,
+   "bytes": 62521804
+  },
+  {
+   "d": "d02",
+   "file": "wrfout_d02_2026-06-15_17:00:00",
+   "t_published_s": 321.817,
+   "bytes": 185209132
+  },
+  {
+   "d": "d01",
+   "file": "wrfout_d01_2026-06-15_17:00:36",
+   "t_published_s": 321.818,
+   "bytes": 51242624
+  },
+  {
+   "d": "d03",
+   "file": "wrfout_d03_2026-06-15_18:00:00",
+   "t_published_s": 336.9,
+   "bytes": 62521804
+  },
+  {
+   "d": "d01",
+   "file": "wrfout_d01_2026-06-15_18:00:00",
+   "t_published_s": 337.917,
+   "bytes": 51242624
+  },
+  {
+   "d": "d02",
+   "file": "wrfout_d02_2026-06-15_18:00:00",
+   "t_published_s": 337.917,
+   "bytes": 185209132
+  },
+  {
+   "d": "d03",
+   "file": "wrfout_d03_2026-06-15_19:00:00",
+   "t_published_s": 352.991,
+   "bytes": 62521804
+  },
+  {
+   "d": "d01",
+   "file": "wrfout_d01_2026-06-15_19:00:18",
+   "t_published_s": 353.992,
+   "bytes": 51242624
+  },
+  {
+   "d": "d02",
+   "file": "wrfout_d02_2026-06-15_19:00:00",
+   "t_published_s": 353.992,
+   "bytes": 185209132
+  },
+  {
+   "d": "d03",
+   "file": "wrfout_d03_2026-06-15_20:00:00",
+   "t_published_s": 370.07,
+   "bytes": 62521804
+  },
+  {
+   "d": "d02",
+   "file": "wrfout_d02_2026-06-15_20:00:00",
+   "t_published_s": 371.071,
+   "bytes": 185209132
+  },
+  {
+   "d": "d01",
+   "file": "wrfout_d01_2026-06-15_20:00:36",
+   "t_published_s": 372.073,
+   "bytes": 51242624
+  },
+  {
+   "d": "d02",
+   "file": "wrfout_d02_2026-06-15_21:00:00",
+   "t_published_s": 387.146,
+   "bytes": 185209132
+  },
+  {
+   "d": "d03",
+   "file": "wrfout_d03_2026-06-15_21:00:00",
+   "t_published_s": 387.146,
+   "bytes": 62521804
+  },
+  {
+   "d": "d01",
+   "file": "wrfout_d01_2026-06-15_21:00:00",
+   "t_published_s": 388.167,
+   "bytes": 51242624
+  },
+  {
+   "d": "d03",
+   "file": "wrfout_d03_2026-06-15_22:00:00",
+   "t_published_s": 403.251,
+   "bytes": 62521804
+  },
+  {
+   "d": "d02",
+   "file": "wrfout_d02_2026-06-15_22:00:00",
+   "t_published_s": 404.252,
+   "bytes": 185209132
+  },
+  {
+   "d": "d01",
+   "file": "wrfout_d01_2026-06-15_22:00:18",
+   "t_published_s": 404.253,
+   "bytes": 51242624
+  },
+  {
+   "d": "d02",
+   "file": "wrfout_d02_2026-06-15_23:00:00",
+   "t_published_s": 420.378,
+   "bytes": 185209132
+  },
+  {
+   "d": "d03",
+   "file": "wrfout_d03_2026-06-15_23:00:00",
+   "t_published_s": 420.378,
+   "bytes": 62521804
+  },
+  {
+   "d": "d01",
+   "file": "wrfout_d01_2026-06-15_23:00:36",
+   "t_published_s": 421.379,
+   "bytes": 51242624
+  },
+  {
+   "d": "d03",
+   "file": "wrfout_d03_2026-06-16_00:00:00",
+   "t_published_s": 438.515,
+   "bytes": 62521804
+  },
+  {
+   "d": "d02",
+   "file": "wrfout_d02_2026-06-16_00:00:00",
+   "t_published_s": 439.722,
+   "bytes": 185209132
+  },
+  {
+   "d": "d01",
+   "file": "wrfout_d01_2026-06-16_00:00:00",
+   "t_published_s": 440.725,
+   "bytes": 51242624
+  }
+ ]
+}

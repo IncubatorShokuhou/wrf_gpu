@@ -1,0 +1,94 @@
+{
+  "utc": "2026-10-19T13:57:25Z",
+  "head": "b979188128e0b6038d79a81e02d1dd89f273e969",
+  "src_tree": "b3e9b92a8ce2f1aa4a96f39b0b03424a3c1ebb42",
+  "files_planned": 19,
+  "files_done": 19,
+  "missing": [],
+  "totals": {
+    "PASS": 504,
+    "FAIL": 1,
+    "XFAIL": 3,
+    "SKIP": 44
+  },
+  "per_dir": {
+    "tests/test_aot_cheap_key.py": {
+      "PASS": 99
+    },
+    "tests/test_optimize.py": {
+      "PASS": 63
+    },
+    "tests/test_aot_key_cli.py": {
+      "PASS": 17
+    },
+    "tests/test_bench_harness_allocator.py": {
+      "PASS": 10
+    },
+    "tests/test_w42_wdm6_fallout_loops.py": {
+      "PASS": 10
+    },
+    "tests/v025/w42_swdfid": {
+      "PASS": 10
+    },
+    "tests/v041": {
+      "PASS": 4
+    },
+    "tests/v042": {
+      "PASS": 5
+    },
+    "tests/test_release_tooling.py": {
+      "PASS": 61,
+      "FAIL": 1
+    },
+    "tests/v040": {
+      "PASS": 14
+    },
+    "tests/test_v040_epsilon_wiring.py": {
+      "PASS": 40
+    },
+    "tests/v025/restart": {
+      "PASS": 33
+    },
+    "tests/test_m3_edge_cases.py": {
+      "PASS": 42,
+      "XFAIL": 3
+    },
+    "tests/test_b1_cache_version_keying.py": {
+      "PASS": 33
+    },
+    "tests/contracts": {
+      "PASS": 15
+    },
+    "tests/test_m2_triton_edge_cases.py": {
+      "PASS": 23,
+      "SKIP": 21
+    },
+    "tests/test_m2_jax_edge_cases.py": {
+      "PASS": 16,
+      "SKIP": 23
+    },
+    "tests/test_docsite_links.py": {
+      "PASS": 2
+    },
+    "tests/v025/compile": {
+      "PASS": 7
+    }
+  },
+  "failing_files": [
+    {
+      "file": "tests/test_release_tooling.py",
+      "rc": 1,
+      "summary": "1 failed, 61 passed in 15.48s",
+      "killed": null,
+      "nodes": [
+        "tests/test_release_tooling.py::test_public_readme_passes_lint_and_matches_the_approved_sha"
+      ],
+      "msgs": {
+        "tests.test_release_tooling::test_public_readme_passes_lint_and_matches_the_approved_sha": "AssertionError: README.md changed after approval: re-review it and update scripts/release/README_APPROVED.sha256\nassert 'a1dcd86c81df...b0b3913002097' == '3831e21ebc3f...01227bc44f650'\n  \n  - 3831e21ebc3f7985f87b8d3357b4dbdc2b76845b8fe7ae3298a01227bc44f650\n  + a1dcd86c81df390e80a7bd672992272570faffc"
+      }
+    }
+  ],
+  "active_s": 1376,
+  "max_rss_mib": 3176,
+  "expected_vs_observed": []
+}

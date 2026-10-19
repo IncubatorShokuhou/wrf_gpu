@@ -7,11 +7,11 @@ JAX, CUDA, or any model code.
 from __future__ import annotations
 
 import argparse
-import contextlib
 import json
 import math
 import os
 import re
+import resource
 import sys
 import time
 from dataclasses import dataclass, field
@@ -316,6 +316,12 @@ class StatsAccumulator:
     sum_cpu_sq: float = 0.0
     sum_gpu_cpu: float = 0.0
     abs_chunks: list[np.ndarray] = field(default_factory=list)
+    # keep_abs=False: no |diff| copy is kept; finish(abs_values=...) then gets the exact values from elsewhere
+    # (spatial-split accumulators read their subset of the overall chunks). record_valid=True: for every kept chunk,
+    # also keep (shape, finite-pair mask or None when every element pairs) so a subset can be cut out of it later.
+    keep_abs: bool = True
+    record_valid: bool = False
+    chunk_valid: list[tuple[tuple[int, ...], np.ndarray | None]] = field(default_factory=list)
 
     def update(self, gpu: np.ndarray, cpu: np.ndarray, mask2d: np.ndarray | None = None) -> None:
         g = np.asarray(gpu, dtype=np.float64)
@@ -354,9 +360,20 @@ class StatsAccumulator:
         self.sum_gpu_sq += float(np.sum(gv * gv, dtype=np.float64))
         self.sum_cpu_sq += float(np.sum(cv * cv, dtype=np.float64))
         self.sum_gpu_cpu += float(np.sum(gv * cv, dtype=np.float64))
-        self.abs_chunks.append(abs_diff.astype(np.float32, copy=False))
+        if self.keep_abs:
+            self.abs_chunks.append(abs_diff.astype(np.float32, copy=False))
+            if self.record_valid:
+                self.chunk_valid.append((g.shape, None if diff.size == g.size else valid))
 
-    def finish(self) -> dict[str, Any]:
+    def subset_abs(self, mask2d: np.ndarray) -> np.ndarray:
+        """The kept |diff| values that lie in the horizontal mask, in the order a mask2d accumulator would keep them."""
+        parts = []
+        for chunk, (shape, valid) in zip(self.abs_chunks, self.chunk_valid, strict=True):
+            mask = broadcast_horizontal_mask(mask2d, shape)
+            parts.append(chunk[mask.ravel() if valid is None else mask[valid]])
+        return np.concatenate(parts) if parts else np.asarray([], dtype=np.float32)
+
+    def finish(self, abs_values: np.ndarray | None = None) -> dict[str, Any]:
         if self.finite_pair == 0:
             return {
                 "n": int(self.n),
@@ -374,7 +391,10 @@ class StatsAccumulator:
                 "element_abs_tolerance": self.element_abs_tolerance,
                 "frac_within_element_abs_tolerance": None,
             }
-        abs_all = np.concatenate(self.abs_chunks) if self.abs_chunks else np.asarray([], dtype=np.float32)
+        if abs_values is not None:
+            abs_all = abs_values
+        else:
+            abs_all = np.concatenate(self.abs_chunks) if self.abs_chunks else np.asarray([], dtype=np.float32)
         return {
             "n": int(self.n),
             "finite_cpu": int(self.finite_cpu),
@@ -682,20 +702,179 @@ def update_worst_cell(current: dict[str, Any] | None, diff: np.ndarray, gpu: np.
     }
 
 
-def compare_time_metadata(name: str, frames: list[tuple[dict[str, Any], Dataset, Dataset]]) -> dict[str, Any]:
-    checks = []
-    all_equal = True
-    for pair, cds, gds in frames:
+class TimeMetadataComparison:
+    """Times/XTIME string equality, fed one paired frame at a time (see compare_time_metadata)."""
+
+    def __init__(self, name: str) -> None:
+        self.name = name
+        self.checks: list[dict[str, Any]] = []
+        self.all_equal = True
+
+    def add(self, pair: dict[str, Any], cds: Dataset, gds: Dataset) -> None:
+        name = self.name
         if name not in cds.variables or name not in gds.variables:
-            checks.append({"lead_h": pair["lead_h"], "status": "MISSING"})
-            all_equal = False
-            continue
+            self.checks.append({"lead_h": pair["lead_h"], "status": "MISSING"})
+            self.all_equal = False
+            return
         cpu = read_string_var(cds, name)
         gpu = read_string_var(gds, name)
         equal = cpu == gpu
-        all_equal = all_equal and equal
-        checks.append({"lead_h": pair["lead_h"], "status": "OK", "cpu": cpu, "gpu": gpu, "equal": bool(equal)})
-    return {"classification": "time_metadata", "all_equal": bool(all_equal), "checks": checks}
+        self.all_equal = self.all_equal and equal
+        self.checks.append({"lead_h": pair["lead_h"], "status": "OK", "cpu": cpu, "gpu": gpu, "equal": bool(equal)})
+
+    def finish(self) -> dict[str, Any]:
+        return {"classification": "time_metadata", "all_equal": bool(self.all_equal), "checks": self.checks}
+
+
+def compare_time_metadata(name: str, frames: list[tuple[dict[str, Any], Dataset, Dataset]]) -> dict[str, Any]:
+    comparison = TimeMetadataComparison(name)
+    for pair, cds, gds in frames:
+        comparison.add(pair, cds, gds)
+    return comparison.finish()
+
+
+class VariableComparison:
+    """Statistics of one numeric field over the paired frames, fed one frame at a time (add) in lead order.
+
+    Frame-incremental so that build_report can stream a batch of fields through ONE open frame pair at a time. The
+    spatial-split accumulators keep no |diff| copy of their own: their exact percentiles are cut out of the overall
+    accumulator's per-lead chunks (same values, same order), so a field holds one float32 |diff| per paired value."""
+
+    def __init__(
+        self,
+        name: str,
+        metadata: dict[str, Any],
+        tolerance_spec: dict[str, float] | None,
+        spatial_masks: dict[str, dict[str, dict[str, np.ndarray]]],
+    ) -> None:
+        self.name = name
+        self.metadata = metadata
+        self.tolerance_spec = tolerance_spec
+        self.spatial_masks = spatial_masks
+        self.element_tol = tolerance_spec.get("element_abs") if tolerance_spec else None
+        self.overall = StatsAccumulator(element_abs_tolerance=self.element_tol, record_valid=True)
+        self.by_lead: list[dict[str, Any]] = []
+        self.missing_leads: list[dict[str, Any]] = []
+        self.incompatible_leads: list[dict[str, Any]] = []
+        self.split_accs: dict[str, dict[str, StatsAccumulator]] = {}
+        self.split_kind: str | None = None
+        self.seen_first = False
+        self.prev_cpu: np.ndarray | None = None
+        self.prev_gpu: np.ndarray | None = None
+        self.cpu_time_invariant = True
+        self.gpu_time_invariant = True
+        self.lead_count = 0
+        self.worst_cell: dict[str, Any] | None = None
+        self.dims_tuple: tuple[str, ...] | None = None
+        self.shape_tuple: tuple[int, ...] | None = None
+
+    def add(self, pair: dict[str, Any], cds: Dataset, gds: Dataset) -> None:
+        name = self.name
+        lead_h = int(pair["lead_h"])
+        if name not in cds.variables or name not in gds.variables:
+            self.missing_leads.append({"lead_h": lead_h, "reason": "missing_in_one_paired_file"})
+            return
+        cpu_var = cds.variables[name]
+        gpu_var = gds.variables[name]
+        cpu_meta = var_metadata(cds, name)
+        gpu_meta = var_metadata(gds, name)
+        ok, reason = compatible_metadata(cpu_meta, gpu_meta)
+        if not ok:
+            self.incompatible_leads.append({"lead_h": lead_h, "reason": reason, "cpu": cpu_meta, "gpu": gpu_meta})
+            return
+        cpu = read_var(cds, name)
+        gpu = read_var(gds, name)
+        if not is_numeric_dtype(cpu_var.dtype) or not is_numeric_dtype(gpu_var.dtype):
+            self.incompatible_leads.append({"lead_h": lead_h, "reason": "non_numeric", "cpu": cpu_meta, "gpu": gpu_meta})
+            return
+
+        if not self.seen_first:
+            self.seen_first = True
+            self.dims_tuple = tuple(cpu_meta["dims"])
+            self.shape_tuple = tuple(cpu_meta["shape"])
+            kind = horizontal_kind(self.dims_tuple)
+            if kind in self.spatial_masks:
+                self.split_kind = kind
+                for split_name, masks in self.spatial_masks[kind].items():
+                    self.split_accs[split_name] = {
+                        label: StatsAccumulator(element_abs_tolerance=self.element_tol, keep_abs=False) for label in masks
+                    }
+        if self.prev_cpu is not None and not arrays_equal_nan(cpu, self.prev_cpu):
+            self.cpu_time_invariant = False
+        if self.prev_gpu is not None and not arrays_equal_nan(gpu, self.prev_gpu):
+            self.gpu_time_invariant = False
+        self.prev_cpu = np.array(cpu, copy=True)
+        self.prev_gpu = np.array(gpu, copy=True)
+        self.lead_count += 1
+
+        lead_acc = StatsAccumulator(element_abs_tolerance=self.element_tol)
+        lead_acc.update(gpu, cpu)
+        lead_stats = lead_acc.finish()
+        lead_stats["lead_h"] = lead_h
+        lead_stats["valid_time_utc"] = pair["valid_time_utc"]
+        lead_stats["tolerance_result"] = apply_tolerance(lead_stats, self.tolerance_spec)
+        self.by_lead.append(lead_stats)
+        self.overall.update(gpu, cpu)
+        diff = np.asarray(gpu, dtype=np.float64) - np.asarray(cpu, dtype=np.float64)
+        self.worst_cell = update_worst_cell(self.worst_cell, diff, gpu, cpu, lead_h)
+
+        if self.split_kind is not None:
+            for split_name, masks in self.spatial_masks[self.split_kind].items():
+                for label, mask in masks.items():
+                    self.split_accs[split_name][label].update(gpu, cpu, mask2d=mask)
+
+    def finish(self) -> dict[str, Any]:
+        name = self.name
+        overall_stats = self.overall.finish()
+        known_static = name in STATIC_FIELD_NAMES
+        observed_time_invariant = bool(self.lead_count > 1 and self.cpu_time_invariant and self.gpu_time_invariant)
+        if name in TIME_METADATA_FIELDS:
+            classification = "time_metadata"
+        elif known_static:
+            classification = "static"
+        elif observed_time_invariant:
+            classification = "time_invariant"
+        else:
+            classification = "dynamic"
+        masks = self.spatial_masks.get(self.split_kind, {}) if self.split_kind is not None else {}
+        split_report = {
+            split_name: {
+                label: acc.finish(abs_values=self.overall.subset_abs(masks[split_name][label]) if acc.finite_pair else None)
+                for label, acc in labels.items()
+            }
+            for split_name, labels in self.split_accs.items()
+        }
+        self.overall = None  # release the |diff| chunks before the caller finishes the next field
+        worst_region = None
+        for split_name, labels in split_report.items():
+            for label, stats in labels.items():
+                rmse = stats.get("rmse")
+                if rmse is None:
+                    continue
+                candidate = {"split": split_name, "label": label, "rmse": rmse, "bias": stats.get("bias"), "finite_pair": stats.get("finite_pair")}
+                if worst_region is None or float(rmse) > float(worst_region["rmse"]):
+                    worst_region = candidate
+        out = {
+            "classification": classification,
+            "known_static_field": bool(known_static),
+            "observed_time_invariant": bool(observed_time_invariant),
+            "cpu_time_invariant_over_compared_leads": bool(self.cpu_time_invariant),
+            "gpu_time_invariant_over_compared_leads": bool(self.gpu_time_invariant),
+            "metadata": self.metadata,
+            "overall": overall_stats,
+            "tolerance_result": apply_tolerance(overall_stats, self.tolerance_spec),
+            "by_lead": self.by_lead,
+            "drift": drift_summary(self.by_lead),
+            "spatial_splits": split_report,
+            "worst_region": worst_region,
+            "worst_cell": self.worst_cell,
+            "missing_leads": self.missing_leads,
+            "incompatible_leads": self.incompatible_leads,
+            "compared_lead_count": int(self.lead_count),
+        }
+        if self.shape_tuple is not None:
+            out["native_shape"] = list(self.shape_tuple)
+        return out
 
 
 def compare_variable(
@@ -705,124 +884,10 @@ def compare_variable(
     tolerance_spec: dict[str, float] | None,
     spatial_masks: dict[str, dict[str, dict[str, np.ndarray]]],
 ) -> dict[str, Any]:
-    element_tol = tolerance_spec.get("element_abs") if tolerance_spec else None
-    overall = StatsAccumulator(element_abs_tolerance=element_tol)
-    by_lead: list[dict[str, Any]] = []
-    missing_leads: list[dict[str, Any]] = []
-    incompatible_leads: list[dict[str, Any]] = []
-    split_accs: dict[str, dict[str, StatsAccumulator]] = {}
-    first_cpu_array: np.ndarray | None = None
-    first_gpu_array: np.ndarray | None = None
-    prev_cpu: np.ndarray | None = None
-    prev_gpu: np.ndarray | None = None
-    cpu_time_invariant = True
-    gpu_time_invariant = True
-    lead_count = 0
-    worst_cell: dict[str, Any] | None = None
-    dims_tuple: tuple[str, ...] | None = None
-    shape_tuple: tuple[int, ...] | None = None
-
+    comparison = VariableComparison(name, metadata, tolerance_spec, spatial_masks)
     for pair, cds, gds in frames:
-        lead_h = int(pair["lead_h"])
-        if name not in cds.variables or name not in gds.variables:
-            missing_leads.append({"lead_h": lead_h, "reason": "missing_in_one_paired_file"})
-            continue
-        cpu_var = cds.variables[name]
-        gpu_var = gds.variables[name]
-        cpu_meta = var_metadata(cds, name)
-        gpu_meta = var_metadata(gds, name)
-        ok, reason = compatible_metadata(cpu_meta, gpu_meta)
-        if not ok:
-            incompatible_leads.append({"lead_h": lead_h, "reason": reason, "cpu": cpu_meta, "gpu": gpu_meta})
-            continue
-        cpu = read_var(cds, name)
-        gpu = read_var(gds, name)
-        if not is_numeric_dtype(cpu_var.dtype) or not is_numeric_dtype(gpu_var.dtype):
-            incompatible_leads.append({"lead_h": lead_h, "reason": "non_numeric", "cpu": cpu_meta, "gpu": gpu_meta})
-            continue
-
-        if first_cpu_array is None:
-            first_cpu_array = np.array(cpu, copy=True)
-            first_gpu_array = np.array(gpu, copy=True)
-            dims_tuple = tuple(cpu_meta["dims"])
-            shape_tuple = tuple(cpu_meta["shape"])
-            kind = horizontal_kind(dims_tuple)
-            if kind in spatial_masks:
-                for split_name, masks in spatial_masks[kind].items():
-                    split_accs[split_name] = {
-                        label: StatsAccumulator(element_abs_tolerance=element_tol) for label in masks
-                    }
-        if prev_cpu is not None and not arrays_equal_nan(cpu, prev_cpu):
-            cpu_time_invariant = False
-        if prev_gpu is not None and not arrays_equal_nan(gpu, prev_gpu):
-            gpu_time_invariant = False
-        prev_cpu = np.array(cpu, copy=True)
-        prev_gpu = np.array(gpu, copy=True)
-        lead_count += 1
-
-        lead_acc = StatsAccumulator(element_abs_tolerance=element_tol)
-        lead_acc.update(gpu, cpu)
-        lead_stats = lead_acc.finish()
-        lead_stats["lead_h"] = lead_h
-        lead_stats["valid_time_utc"] = pair["valid_time_utc"]
-        lead_stats["tolerance_result"] = apply_tolerance(lead_stats, tolerance_spec)
-        by_lead.append(lead_stats)
-        overall.update(gpu, cpu)
-        diff = np.asarray(gpu, dtype=np.float64) - np.asarray(cpu, dtype=np.float64)
-        worst_cell = update_worst_cell(worst_cell, diff, gpu, cpu, lead_h)
-
-        if split_accs and dims_tuple is not None:
-            kind = horizontal_kind(dims_tuple)
-            if kind in spatial_masks:
-                for split_name, masks in spatial_masks[kind].items():
-                    for label, mask in masks.items():
-                        split_accs[split_name][label].update(gpu, cpu, mask2d=mask)
-
-    overall_stats = overall.finish()
-    known_static = name in STATIC_FIELD_NAMES
-    observed_time_invariant = bool(lead_count > 1 and cpu_time_invariant and gpu_time_invariant)
-    if name in TIME_METADATA_FIELDS:
-        classification = "time_metadata"
-    elif known_static:
-        classification = "static"
-    elif observed_time_invariant:
-        classification = "time_invariant"
-    else:
-        classification = "dynamic"
-    split_report = {
-        split_name: {label: acc.finish() for label, acc in labels.items()}
-        for split_name, labels in split_accs.items()
-    }
-    worst_region = None
-    for split_name, labels in split_report.items():
-        for label, stats in labels.items():
-            rmse = stats.get("rmse")
-            if rmse is None:
-                continue
-            candidate = {"split": split_name, "label": label, "rmse": rmse, "bias": stats.get("bias"), "finite_pair": stats.get("finite_pair")}
-            if worst_region is None or float(rmse) > float(worst_region["rmse"]):
-                worst_region = candidate
-    out = {
-        "classification": classification,
-        "known_static_field": bool(known_static),
-        "observed_time_invariant": bool(observed_time_invariant),
-        "cpu_time_invariant_over_compared_leads": bool(cpu_time_invariant),
-        "gpu_time_invariant_over_compared_leads": bool(gpu_time_invariant),
-        "metadata": metadata,
-        "overall": overall_stats,
-        "tolerance_result": apply_tolerance(overall_stats, tolerance_spec),
-        "by_lead": by_lead,
-        "drift": drift_summary(by_lead),
-        "spatial_splits": split_report,
-        "worst_region": worst_region,
-        "worst_cell": worst_cell,
-        "missing_leads": missing_leads,
-        "incompatible_leads": incompatible_leads,
-        "compared_lead_count": int(lead_count),
-    }
-    if shape_tuple is not None:
-        out["native_shape"] = list(shape_tuple)
-    return out
+        comparison.add(pair, cds, gds)
+    return comparison.finish()
 
 
 def build_pairs(cpu_dir: Path, gpu_dir: Path, domain: str, init: str | None, min_lead: int | None, max_lead: int | None) -> tuple[list[dict[str, Any]], dict[str, Any]]:
@@ -1027,59 +1092,112 @@ def write_markdown(report: dict[str, Any], path: Path) -> None:
     path.write_text("\n".join(lines).rstrip() + "\n", encoding="utf-8")
 
 
+# Accumulator memory per pass. The fields of one pass keep one float32 |diff| per paired value until they finish (plus
+# a transient copy of the largest field for its exact percentiles), so a pass holds ~budget + 2x its largest field.
+DEFAULT_FIELD_BATCH_MIB = 1024
+
+
+def iter_frames(pairs: list[dict[str, Any]]):
+    """Yield (pair, cpu_ds, gpu_ds) in lead order with only that frame pair open; it is closed before the next opens."""
+    for pair in pairs:
+        with Dataset(pair["cpu_file"], "r") as cds, Dataset(pair["gpu_file"], "r") as gds:
+            yield pair, cds, gds
+
+
+def field_state_bytes(meta: dict[str, Any] | None, n_frames: int) -> int:
+    """Upper estimate of what one field keeps between frames: float32 |diff| per paired value plus the previous CPU and
+    GPU arrays (time invariance) and slack for float64 values. Times (meta None) keeps a few strings per frame."""
+    if meta is None:
+        return 256 * n_frames
+    n = math.prod(int(x) for x in meta["cpu"]["shape"])
+    return n * (4 * n_frames + 16)
+
+
+def plan_field_batches(entries: list[tuple[int, str, dict[str, Any] | None]], n_frames: int, budget_bytes: int):
+    """Split fields (in order) into passes whose summed field_state_bytes stays within budget_bytes; a field larger
+    than the budget gets a pass of its own."""
+    batches: list[list[tuple[int, str, dict[str, Any] | None]]] = []
+    current: list[tuple[int, str, dict[str, Any] | None]] = []
+    used = 0
+    for entry in entries:
+        need = field_state_bytes(entry[2], n_frames)
+        if current and used + need > budget_bytes:
+            batches.append(current)
+            current, used = [], 0
+        current.append(entry)
+        used += need
+    if current:
+        batches.append(current)
+    return batches
+
+
 def build_report(args: argparse.Namespace) -> dict[str, Any]:
     start = time.perf_counter()
     tolerances, tolerance_meta = load_tolerances(args.tolerance_json)
     pairs, pairing = build_pairs(args.cpu_dir, args.gpu_dir, args.domain, args.init, args.min_lead, args.max_lead)
 
-    # E69: open each wrfout once and keep handles across fields (was: reopen per variable×frame).
-    # Every open goes through the context-manager protocol (ExitStack.enter_context), so a caller that
-    # substitutes `Dataset` with any context-manager factory (scripts/wn3_fast_compare.py held handles)
-    # gets exactly the dataset its __enter__ returns, and __exit__ (close or no-op) runs once at the end.
-    with contextlib.ExitStack() as stack:
-        frames: list[tuple[dict[str, Any], Dataset, Dataset]] = []
-        for pair in pairs:
-            cds = stack.enter_context(Dataset(pair["cpu_file"], "r"))
-            gds = stack.enter_context(Dataset(pair["gpu_file"], "r"))
-            frames.append((pair, cds, gds))
+    # Bounded handles (w42-scorer; was E69 "every wrfout held open for the whole run", ~18 MB native per open + chunk
+    # cache, which OOMed 72 h scores): ONE frame pair is open at a time. One pass builds the inventory, then the fields
+    # stream through in batches sized by --field-batch-mib, each batch in one pass over the frames (lead order inside
+    # every field is unchanged, so every statistic is bit-identical to the field-by-field loop). Every open goes through
+    # the context-manager protocol, so a caller that substitutes `Dataset` with any context-manager factory gets exactly
+    # the dataset its __enter__ returns, and __exit__ runs once per open.
+    inventory = make_inventory(iter_frames(pairs))
+    spatial_masks: dict[str, dict[str, dict[str, np.ndarray]]] = {}
+    split_counts: dict[str, Any] = {}
+    split_warnings: list[str] = []
+    if not args.no_spatial_splits:
+        spatial_masks, split_counts, split_warnings = build_spatial_masks(Path(pairs[0]["cpu_file"]), args.boundary_width)
 
-        inventory = make_inventory(frames)
-        spatial_masks: dict[str, dict[str, dict[str, np.ndarray]]] = {}
-        split_counts: dict[str, Any] = {}
-        split_warnings: list[str] = []
-        if not args.no_spatial_splits:
-            spatial_masks, split_counts, split_warnings = build_spatial_masks(Path(pairs[0]["cpu_file"]), args.boundary_width)
+    non_numeric: list[dict[str, Any]] = []
+    incompatible: list[dict[str, Any]] = []
+    common_names = inventory["common"]
+    if args.vars:
+        requested = set(args.vars)
+        common_names = [name for name in common_names if name in requested]
 
-        field_summaries: dict[str, Any] = {}
-        non_numeric: list[dict[str, Any]] = []
-        incompatible: list[dict[str, Any]] = []
-        common_names = inventory["common"]
-        if args.vars:
-            requested = set(args.vars)
-            common_names = [name for name in common_names if name in requested]
+    entries: list[tuple[int, str, dict[str, Any] | None]] = []  # (index, field, metadata or None for Times)
+    for i, name in enumerate(common_names, start=1):
+        meta = inventory["first_metadata"][name]
+        if name == "Times":
+            entries.append((i, name, None))
+            continue
+        ok, reason = compatible_metadata(meta["cpu"], meta["gpu"])
+        if not ok:
+            item = {"field": name, "reason": reason, "cpu": meta["cpu"], "gpu": meta["gpu"]}
+            if reason == "non_numeric":
+                non_numeric.append(item)
+            else:
+                incompatible.append(item)
+            continue
+        entries.append((i, name, meta))
 
-        for i, name in enumerate(common_names, start=1):
-            meta = inventory["first_metadata"][name]
-            if name == "Times":
-                field_summaries[name] = {
-                    **compare_time_metadata(name, frames),
-                    "metadata": meta,
-                    "compared_lead_count": len(pairs),
-                }
+    budget_mib = getattr(args, "field_batch_mib", None) or DEFAULT_FIELD_BATCH_MIB
+    batches = plan_field_batches(entries, len(pairs), int(budget_mib) << 20)
+    if args.progress:
+        print(f"{len(entries)} fields in {len(batches)} passes over {len(pairs)} frame pairs "
+              f"(field batch budget {budget_mib} MiB, one frame pair open at a time)", file=sys.stderr, flush=True)
+    results: dict[str, Any] = {}
+    for batch in batches:
+        comparisons = {
+            name: TimeMetadataComparison(name) if meta is None
+            else VariableComparison(name, meta, tolerances.get(name), spatial_masks)
+            for _, name, meta in batch
+        }
+        for pair, cds, gds in iter_frames(pairs):
+            for comparison in comparisons.values():
+                comparison.add(pair, cds, gds)
+        for i, name, meta in batch:
+            finished = comparisons.pop(name).finish()  # pop first: the field's |diff| chunks go before the next finish
+            if meta is None:
+                results[name] = {**finished, "metadata": inventory["first_metadata"][name], "compared_lead_count": len(pairs)}
                 continue
-            ok, reason = compatible_metadata(meta["cpu"], meta["gpu"])
-            if not ok:
-                item = {"field": name, "reason": reason, "cpu": meta["cpu"], "gpu": meta["gpu"]}
-                if reason == "non_numeric":
-                    non_numeric.append(item)
-                else:
-                    incompatible.append(item)
-                continue
-            field_summaries[name] = compare_variable(name, frames, meta, tolerances.get(name), spatial_masks)
+            results[name] = finished
             if args.progress and (i % args.progress == 0 or i == len(common_names)):
                 print(f"compared {i}/{len(common_names)} fields: {name}", file=sys.stderr, flush=True)
+    field_summaries: dict[str, Any] = {name: results[name] for _, name, _ in entries}
 
-        summaries = build_summaries(field_summaries, inventory, non_numeric, incompatible, bool(tolerances))
+    summaries = build_summaries(field_summaries, inventory, non_numeric, incompatible, bool(tolerances))
 
     elapsed = time.perf_counter() - start
     report = {
@@ -1135,6 +1253,9 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--boundary-width", type=int, default=5)
     parser.add_argument("--no-spatial-splits", action="store_true", help="Disable LANDMASK/HGT/quadrant/boundary split summaries.")
     parser.add_argument("--progress", type=int, default=0, help="Print a stderr progress line every N common fields.")
+    parser.add_argument("--field-batch-mib", type=int, default=DEFAULT_FIELD_BATCH_MIB,
+                        help="Accumulator budget per pass over the frames (one frame pair is open at a time); smaller = "
+                             "less memory, more passes. Results do not depend on it.")
     parser.add_argument("--out-json", type=Path, required=True)
     parser.add_argument("--out-md", type=Path, required=True)
     args = parser.parse_args(argv)
@@ -1142,6 +1263,9 @@ def main(argv: list[str] | None = None) -> int:
     report = build_report(args)
     write_json(args.out_json, report)
     write_markdown(report, args.out_md)
+    usage = resource.getrusage(resource.RUSAGE_SELF)
+    print(f"[compare_wrfout_grid] {args.domain}: peak RSS {usage.ru_maxrss // 1024} MiB, "
+          f"CPU {usage.ru_utime + usage.ru_stime:.1f} s", file=sys.stderr, flush=True)
     compact = {
         "verdict": report["summaries"]["verdict"],
         "paired_files": report["pairing"]["paired_file_count"],

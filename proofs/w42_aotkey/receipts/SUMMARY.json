@@ -1,0 +1,66 @@
+{
+ "lane": "w42-aotkey",
+ "fix": "64dfe6746f",
+ "tree": "51abb341ac (src 3ceaf2ea2e, diff vs v0.4.1 src = runtime/aot_key_cli.py only)",
+ "A1_wn3_0227_fixed_sealed_bundle_env": {
+  "keys": {
+   "d01": "8fe935bdbbbea307ec2b8febfd9322aee96665404e89fb3e077800dbbaf850bb",
+   "d02": "969063e086064101dc86ea0a2fd2dfc8831a59527ee9d816aa5ce9b6d6312649",
+   "d03": "5c99805eefc0ff2ce8ca2a3c915d60ffa29a32b4fbccd23fed8b6609e01340ff",
+   "fused/d02": "946b6b8ee1fbb142e081ae210060934bb2ad3eee8ca5b8bc1077676c9e4c1391"
+  },
+  "equal_to_v041_records_incl_components": {
+   "k0227_v_0502_h72/case:wn3_0227": true,
+   "k0227_v_0502_h72/compare:wn3_0502": true,
+   "k0227_v_0614_h48/case:wn3_0227": true,
+   "k0227_v_0614_h48/compare:wn3_0614": true,
+   "k0227_v_0227in48_h3/case:wn3_0227": true,
+   "k0227_v_0227in48_h3/compare:wn3_0227_48h": true
+  },
+  "bundle_paths_identical": true,
+  "check_after": true
+ },
+ "A2_A3_wn3_0227_incident_env": {
+  "fixed_eq_v041_incl_components": true,
+  "keys": {
+   "d01": "2783fd326f5a9446a77853365b66147cc2a35c6cb87862e772e1f61b59c1f33a",
+   "d02": "41d4b2293cf55a1785fefbb49dc7273a76e65800513e19d88fb54fd7ab7b91c9",
+   "d03": "dccae7028c985aea3e841e90bd9929c6b22a741e80075226e06afb91daa6ab9e",
+   "fused/d02": "b71988a1d2e34fa2cf2cdb2622d44bbf211b240c51422af83191fa2e492f9ba7"
+  },
+  "differs_from_A1_only_in": [
+   "global_trace_env",
+   "program_key"
+  ],
+  "note": "GPUWRF_XLA_AUTOTUNE_CACHE_DIR is a keyed path (E32): bundle.env shape changes global_trace_env, same for fixed and v0.4.1 tool",
+  "fixed_bundle_paths_identical": true,
+  "fixed_check": true,
+  "v041_tool_new_paths": 3076,
+  "v041_tool_new_by_kind": {
+   "lockfile": 1,
+   "dir": 4,
+   ".meta": 12,
+   ".xlaexec": 12,
+   "last_cheap_key": 2,
+   ".so": 1,
+   "-atime": 1522,
+   "-cache": 1522
+  },
+  "v041_tool_check_new": 1547
+ },
+ "A4_A5_prod": {
+  "fixed_bundle_env_eq_v041_recorded_env_incl_components": true,
+  "keys": {
+   "d01": "0321596dc387cfb437d29a3fcd8054d4db71859c8bf9cdaaef5777021b0c8f00",
+   "d02": "91e42785a14586d6a18c97bc70cb9f56e21197e57bdd073e06a54ba981e165d4",
+   "fused/d01": "55f8bed28828e6a8e486f2f9fae18afbb346159b3e37e1ad01c0de124a38fada"
+  },
+  "bundle_paths_identical": true,
+  "check_after": true
+ },
+ "swiss": "single-domain: aot-key covers nested runs only (max_dom>=2); identity below",
+ "identity": {
+  "swiss": "b977712fe325c953f3ebbf8f83ea1ca0b9260833ef70981e48bd8a49410e142a",
+  "prod": "321aa651067f1d074b25ebe164536bf27fea5dca151a80c2861dcbab8b58f96b"
+ }
+}

@@ -3391,6 +3391,9 @@ def _build_output_fields(
         # outputs (``with_clear_sky=True``). ---
         "SWDNBC", "SWUPBC", "LWDNBC", "LWUPBC",
         "SWDNTC", "SWUPTC", "LWDNTC", "LWUPTC",
+        # WRF history COSZEN is the radiation driver's HELD value (the last call's calc_coszen at
+        # call + radt/2), supplied from the held radiation diagnostics; see _add_derived_diagnostic_fields.
+        "COSZEN",
     }
     if diagnostics is not None:
         # WRF stochastic-perturbation restart seed arrays are 1-D integer state.
@@ -3706,11 +3709,14 @@ def _add_derived_diagnostic_fields(
 
     - ``CLAT`` uses ``XLAT`` as its compatibility fallback. The public payload
       builder preserves a supplied CLAT producer, including initial feedback.
-    - ``COSZEN`` is WRF's ``radconst``/``calc_coszen`` cosine solar zenith angle
-      (module_radiation_driver.F:3594-3666) evaluated from XLAT/XLONG and the
-      forecast clock (``run_start`` + ``lead_hours``). Routed through the exact
-      transcription in ``coupling.physics_couplers._compute_coszen``. Skipped
-      (not fabricated) if the clock is absent.
+    - ``COSZEN``: WRF writes the radiation driver's HELD value (the last radiation
+      call's ``calc_coszen`` at call time + radt/2); the operational writer passes it
+      in from the held radiation diagnostics and it is kept.  Fallback for callers
+      without held radiation: ``radconst``/``calc_coszen``
+      (module_radiation_driver.F:3594-3666) at the output instant from XLAT/XLONG and
+      the forecast clock (``run_start`` + ``lead_hours``) through the exact
+      transcription in ``coupling.physics_couplers._compute_coszen``; 0 at lead zero
+      (history precedes the first radiation call); skipped if the clock is absent.
     - ``SR`` is the WRF surface frozen-precipitation fraction
       = solid_acc / (solid_acc + liquid_acc), built from the State precip
       accumulators (snow+graupel+ice vs rain). Zero where no precip has fallen;
@@ -3722,8 +3728,12 @@ def _add_derived_diagnostic_fields(
     # Compatibility fallback; prepare_wrfout_payload retains supplied CLAT.
     fields["CLAT"] = _coerce_array("CLAT", np.asarray(xlat), shape_xy)
 
-    # WRF lead-zero history precedes the first radiation call.
-    if float(lead_hours) == 0.0:
+    # WRF writes the HELD radiation COSZEN (supplied by the operational diagnostics above); without one
+    # (lead zero: the history precedes the first radiation call -> 0; callers without held radiation) the
+    # fallback below applies.
+    if "COSZEN" in fields:
+        pass
+    elif float(lead_hours) == 0.0:
         fields["COSZEN"] = np.zeros(shape_xy, dtype=np.float32)
     elif run_start is not None:
         try:

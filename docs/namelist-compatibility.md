@@ -349,9 +349,9 @@ runs):
   `icloud_bl=0`, `bl_mynn_mixlength=0/2` and `bl_mynn_tkeadvect=.true.` are not
   bound and fail closed (≤ v0.3.3 wrongly accepted `icloud_bl=0`/`mixlength=2` and
   refused `icloud_bl=1`).
-* **`icloud`** 1 (default), 2 (`cal_cldfra2`) and 3 (`cal_cldfra3`, experimental) are bound;
-  2/3 replace WRF's whole `icloud=1` block including the `icloud_bl` merge, RRTMG 4/4 only,
-  `icloud=3` refuses `mp_physics=0/1/3`; `icloud=0` is not bound. See
+* **`icloud`** 1 (default), 2 (`cal_cldfra2`), 3 (`cal_cldfra3`) and 0 (cloud-free radiation,
+  v0.4.2) are bound, experimental; 0/2/3 replace WRF's whole `icloud=1` block including the
+  `icloud_bl` merge, RRTMG 4/4 only, `icloud=3` refuses `mp_physics=0/1/3`. See
   [radiation-cloud-fraction.md](radiation-cloud-fraction.md).
 * **`aer_opt`** 0 (default), 1 (Tegen climatology) and 3 (Thompson `mp_physics=28` aerosol) are bound
   (v0.4.1, one value for all domains): RRTMG shortwave (`ra_sw_physics=4`) on every domain; `aer_opt=3`

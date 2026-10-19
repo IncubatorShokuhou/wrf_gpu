@@ -69,7 +69,10 @@ speed has not been measured.</p></div>
 <h2 id="moving-nests">Moving nests are not supported</h2>
 <p>Moving and vortex-following nests stop with a message. Use fixed nests.</p>
 <h2 id="single-domain-evidence">Options inside nests</h2>
-<p>The default physics are validated inside nests. Most other options were checked in single-domain
+<p>The default physics are validated inside nests. Since v0.4.2 the YSU, Shin-Hong, ACM2 and EEPS boundary
+layers (<code>bl_pbl_physics=1/11/7/16</code>, with <code>sf_sfclay_physics=1</code>) are validated inside nests too:
+each passed the 24-hour comparison with the original CPU-WRF on all three domains of a Tenerife 9/3/1 km forecast
+(<a href="release/NESTED_PBL_QUALIFICATION_v0.4.2.md">results</a>). Most other options were checked in single-domain
 forecasts only: they run inside nests but are not validated there. A few are refused in nested runs:
 the RUC land model, the single-layer urban model, the 3-D TKE turbulence options (<code>km_opt=2/5</code>),
 digital filter initialization and splitting a domain across GPUs; <code>gpuwrf doctor</code> and <code>gpuwrf run</code> name them before the forecast starts.</p>

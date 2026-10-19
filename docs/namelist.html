@@ -22,7 +22,7 @@
         <img src="_assets/logo.svg" alt="wrf_gpu logo">
         <span class="brand-text">
           <span class="brand-name">wrf_gpu</span>
-          <span class="brand-sub">User's Guide · v0.4.1</span>
+          <span class="brand-sub">User's Guide · v0.4.2</span>
         </span>
       </a>
       <div class="search-box">
@@ -51,7 +51,7 @@
 <a href="namelist.html#v041-options">New options in v0.4.1</a>
 <a href="namelist.html#dfi">Digital filter initialization</a>
 <a href="namelist.html#turbulence">Turbulence, diffusion and advection</a>
-<a href="namelist.html#not-supported">Not supported in v0.4.1</a>
+<a href="namelist.html#not-supported">Not supported in v0.4.2</a>
 <a href="namelist.html#upgrade">Coming from v0.3</a>
 </div>
 <a class="" href="physics.html">Physics Options</a>
@@ -114,7 +114,7 @@ speed is not measured).</p>
 <tr><td>Slope radiation and terrain shading</td><td><code>slope_rad=1</code>, <code>topo_shading=1</code></td><td><span class="pill op">Validated 24 h</span></td><td><a href="input-data.html#native-cadence">input data</a></td></tr>
 <tr><td>Terrain correction of surface winds (v0.4.1)</td><td><code>topo_wind=1/2</code> (with YSU or Shin-Hong)</td><td><span class="pill optin">Experimental</span><sup>1</sup>: passed 24-hour comparisons</td><td><a href="#topo-wind">below</a></td></tr>
 <tr><td>Aerosol in RRTMG shortwave (v0.4.1)</td><td><code>aer_opt=1/3</code></td><td><span class="pill optin">Experimental</span>: passed 24-hour comparisons; <code>aer_opt=3</code><sup>1</sup></td><td><a href="https://github.com/wrf-gpu/wrf_gpu/blob/main/docs/AEROSOL.md">aerosol guide</a></td></tr>
-<tr><td>Radiation cloud fraction (v0.4.1)</td><td><code>icloud=3</code>, <code>icloud=2</code></td><td><span class="pill optin">Experimental</span>: <code>icloud=3</code> and <code>icloud=2</code> each passed a 24-hour comparison</td><td><a href="https://github.com/wrf-gpu/wrf_gpu/blob/main/docs/radiation-cloud-fraction.md">cloud-fraction guide</a></td></tr>
+<tr><td>Radiation cloud fraction (v0.4.1, <code>icloud=0</code> v0.4.2)</td><td><code>icloud=3</code>, <code>icloud=2</code>, <code>icloud=0</code></td><td><span class="pill optin">Experimental</span>: each passed a 24-hour comparison</td><td><a href="https://github.com/wrf-gpu/wrf_gpu/blob/main/docs/radiation-cloud-fraction.md">cloud-fraction guide</a></td></tr>
 <tr><td>Wind farms (Fitch)</td><td><code>windfarm_opt=1</code></td><td><span class="pill op">Validated 24 h</span><sup>1</sup></td><td><a href="https://github.com/wrf-gpu/wrf_gpu/blob/main/docs/wind-farms.md">wind-farm guide</a></td></tr>
 <tr><td>Passive tracers</td><td><code>tracer_opt=2</code></td><td><span class="pill op">Validated 24 h</span><sup>1</sup></td><td><a href="https://github.com/wrf-gpu/wrf_gpu/blob/main/docs/tracers.md">tracer guide</a></td></tr>
 <tr><td>Two-way nesting</td><td><code>feedback=1</code>, <code>smooth_option</code></td><td><span class="pill op">Validated 24 h</span><sup>1</sup> on one two-domain set-up; default physics only</td><td><a href="nesting.html#two-way">nesting</a></td></tr>
@@ -226,10 +226,12 @@ our per-thread memory limit; results are correct, the speed cost is not measured
 <tr><td>1</td><td>default WRF treatment, including MYNN sub-grid clouds (<code>icloud_bl=1</code>)</td><td>default physics</td></tr>
 <tr><td>2</td><td>on/off cloud fraction (<code>cal_cldfra2</code>)</td><td>24 h: Tenerife 9/3/1 km, all three domains</td></tr>
 <tr><td>3</td><td>scale-aware relative-humidity cloud fraction with radiation-only cloud water and ice (<code>cal_cldfra3</code>)</td><td>24 h: Tenerife 9/3/1 km, all three domains</td></tr>
+<tr><td>0</td><td>new in v0.4.2: no clouds in radiation (<code>CLDFRA=0</code>); microphysics, boundary-layer clouds and rain unchanged</td><td>24 h: Tenerife 9/3/1 km, all three domains, against CPU-WRF with <code>icloud=0</code></td></tr>
 </tbody></table></div>
 <p>Options 2 and 3 replace the whole default treatment in WRF's order, and history <code>CLDFRA</code> is
 the cloud fraction radiation saw. Both need RRTMG longwave and shortwave; <code>icloud=3</code> refuses
-<code>mp_physics=0/1/3</code>. <code>icloud=0</code> is not supported. Details in the
+<code>mp_physics=0/1/3</code>. <code>icloud=0</code> turns clouds off for radiation only, as in WRF: pair it with a
+normal run of the same case, from the same compile cache, to separate the radiative effect of clouds. Details in the
 <a href="https://github.com/wrf-gpu/wrf_gpu/blob/main/docs/radiation-cloud-fraction.md">cloud-fraction guide</a>.</p>
 <h2 id="dfi">Digital filter initialization<a class="headerlink" href="#dfi" aria-label="Permalink">¶</a></h2>
 <p>Single-domain cases support <code>dfi_opt=1/2/3</code> (DFL, DDFI and TDFI) with WRF's filter and
@@ -249,11 +251,11 @@ The <a href="https://github.com/wrf-gpu/wrf_gpu/blob/main/docs/release/UPGRADE_v
 running without diffusion.</p>
 <p>The <a href="dynamics.html">dynamical core</a> page explains the numerics.</p>
 <a id="refusals"></a><a id="nested"></a>
-<h2 id="not-supported">Not supported in v0.4.1<a class="headerlink" href="#not-supported" aria-label="Permalink">¶</a></h2>
+<h2 id="not-supported">Not supported in v0.4.2<a class="headerlink" href="#not-supported" aria-label="Permalink">¶</a></h2>
 <ul>
 <li>Moving and vortex-following nests; adaptive time stepping.</li>
 <li>WRF-Chem, WRF-Fire, WRF-Hydro, wave coupling and WRFDA variational data assimilation (the experimental LETKF of <code>gpuwrf da</code> is described on the <a href="tools.html#data-assimilation">tools page</a>).</li>
-<li><code>aer_opt=2</code>, <code>icloud=0</code>.</li>
+<li><code>aer_opt=2</code>.</li>
 <li><code>km_opt=3</code> on the GPU; constant-K diffusion (<code>km_opt=1</code>) from the command line; surface mosaic (<code>sf_surface_mosaic=1</code>); the PWP ocean
 model (<code>sf_ocean_physics=2</code>); BEP+BEM tables that set <code>GR_FRAC_ROOF</code> without <code>GR_FLAG=1</code>;
 LCZ land use with BEP/BEM; two-way tracer feedback.</li>
@@ -265,7 +267,7 @@ updates, or with an even <code>parent_grid_ratio</code>.</li>
 <a href="physics.html">physics page</a>.</li>
 </ul>
 <p>Options that have only single-domain evidence still run inside nests, but are not validated there.
-The <a href="https://github.com/wrf-gpu/wrf_gpu/blob/main/docs/release/SUPPORT_MATRIX_v0.4.1.md">support matrix</a> lists the exact tested
+The <a href="https://github.com/wrf-gpu/wrf_gpu/blob/main/docs/release/SUPPORT_MATRIX_v0.4.2.md">support matrix</a> lists the exact tested
 configurations and the evidence for each row.</p>
 <h2 id="upgrade">Coming from v0.3<a class="headerlink" href="#upgrade" aria-label="Permalink">¶</a></h2>
 <p>v0.3.3 and earlier could silently run the default schemes when a different scheme was requested.

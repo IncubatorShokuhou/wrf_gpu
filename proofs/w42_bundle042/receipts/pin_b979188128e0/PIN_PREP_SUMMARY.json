@@ -1,0 +1,68 @@
+{
+ "pin": "b979188128e0b6038d79a81e02d1dd89f273e969",
+ "src_tree": "b3e9b92a8ce2f1aa4a96f39b0b03424a3c1ebb42",
+ "previous_pin": "8c92c3c5d70d",
+ "src_diff_vs_previous": [
+  "src/gpuwrf/__init__.py (__version__ 0.4.1 -> 0.4.2)"
+ ],
+ "other_diff": "pyproject.toml version, tools/docsite (VERSION + docs merge 8071aaa4a0), README + release docs",
+ "release_identity": {
+  "swiss": [
+   "b977712fe325c953f3ebbf8f83ea1ca0b9260833ef70981e48bd8a49410e142a"
+  ],
+  "prod": [
+   "321aa651067f1d074b25ebe164536bf27fea5dca151a80c2861dcbab8b58f96b"
+  ]
+ },
+ "identity_exact": true,
+ "aotkey_shared": {
+  "k0227_v_0227in48_h3": {
+   "d01": true,
+   "d02": true,
+   "d03": true,
+   "fused/d02": true
+  },
+  "k0227_v_0502_h72": {
+   "d01": true,
+   "d02": true,
+   "d03": true,
+   "fused/d02": true
+  },
+  "k0227_v_0614_h48": {
+   "d01": true,
+   "d02": true,
+   "d03": true,
+   "fused/d02": true
+  },
+  "ki0227_v_ki0502_h3": {
+   "d01": true,
+   "d02": true,
+   "d03": true,
+   "fused/d02": true
+  },
+  "k0227_v_ki0227_h3": {
+   "d01": false,
+   "d02": false,
+   "d03": false,
+   "fused/d02": false
+  }
+ },
+ "rc_delta": {
+  "selection": "manager 13:29:16Z: tests that assert the version string = git grep -l 0.4.1|0.4.2|__version__ in tests (test_*.py) + docsite tests; 19 files (importer delta of gpuwrf/__init__.py = 1005 files not run)",
+  "files": null,
+  "totals": {
+   "PASS": 504,
+   "FAIL": 1,
+   "XFAIL": 3,
+   "SKIP": 44
+  },
+  "failing": [
+   "tests/test_release_tooling.py"
+  ],
+  "classification": "test_release_tooling::test_public_readme_passes_lint_and_matches_the_approved_sha = NEW vs v0.4.1, caused by the docs merge 8071aaa4a0 (w42-relnotes README with HERO_* placeholders; README sha a1dcd86c81df != scripts/release/README_APPROVED.sha256 3831e21ebc3f, which matched at v0.4.1 and at 8c92c3c5d7) -> release README approval step (manager), not version/program related"
+ },
+ "icloud0_arms": true,
+ "trigger_go_phrase": "manager -> w42-bundle042: GPU GO2",
+ "prereg_sha256_prefix": "1305af20",
+ "rehearsal": "first GPU session on 8c92c3c5d7 stopped by manager HOLD 13:28:14Z (version bump before pin); receipts/rehearsal_8c92c3c5d70d"
+}

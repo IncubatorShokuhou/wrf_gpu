@@ -10,7 +10,9 @@ g-point (four scratch arrays), the downward pass recomputes the layer values and
 emits g-summed fluxes directly (summation order is the only intended difference).
 The emitted direct flux is WRF's ``ztdbt_nodel`` product (:8577-8600, :8737; RRTMG_SWRAD SWDDIR =
 zbbfddir): the beam through the clear and the clear + UNSCALED (taormc) cloud optical depth, while the
-adding method keeps the delta-scaled transmittance.
+adding method keeps the delta-scaled transmittance.  ``direct_scaled=True`` (opt-out
+GPUWRF_SWDDIR_V040_SPLIT, see ``rrtmg_sw``) traces the v0.4.0 transmit pass instead: the direct flux is
+the adding method's delta-scaled beam (not WRF's SWDDIR); every other output is unchanged.
 
 Numerics follow ``rrtmg_sw._sw_band_tile_fluxes`` / ``_sw_band_scan_optics_fluxes``
 (REAL entry, float32) term for term; cloud scattering coefficients that depend only
@@ -143,7 +145,8 @@ def _reftra(tau, omega, asymmetry, mu0, active):
 
 
 def _kernel(tau_gas, tau_ray, cloud, incloud, cfac, gmask, sflux, colf, band_ref,
-            down, up, direct, clear_down, clear_up, su, sud, scu, scud, *, nlay, ng, ngin, nbands_loop=None):
+            down, up, direct, clear_down, clear_up, su, sud, scu, scud, *, nlay, ng, ngin, nbands_loop=None,
+            direct_scaled=False):
     """``nbands_loop=None``: one band (``band_ref``), ``tau`` ``(npad, nlay, ngin)``.  Otherwise all
     ``nbands_loop`` bands in one launch (``tau`` ``(npad, nlay, nbands, ngin)``); each band's partial is
     written once to ``out[col, band, lev]`` (no cross-thread read-modify-write) and summed by the caller."""
@@ -210,8 +213,13 @@ def _kernel(tau_gas, tau_ray, cloud, incloud, cfac, gmask, sflux, colf, band_ref
             ocl = jnp.clip((one - f) * oco / dt, zero, _c(_ssa_upper()))
             acl = jnp.clip((zero - f) / jnp.maximum(one - f, eps), _c(-0.999999), _c(0.999999)) + jnp.zeros_like(tco)
             # cloud (cldprmc in-cloud paths x McICA amount); unscaled tl0/ti0/ts0 = WRF taormc (direct output)
-            tl0, ti0, ts0 = (incloud[rows, j, 0] * lx) * c, (incloud[rows, j, 1] * ix) * c, (incloud[rows, j, 2] * sx) * c
-            tl, ti, ts = ld * tl0, id_ * ti0, sd * ts0
+            if direct_scaled:   # v0.4.0 association order (opt-out): identical machine code to the v0.4.0 kernel
+                tl = ld * ((incloud[rows, j, 0] * lx) * c)
+                ti = id_ * ((incloud[rows, j, 1] * ix) * c)
+                ts = sd * ((incloud[rows, j, 2] * sx) * c)
+            else:
+                tl0, ti0, ts0 = (incloud[rows, j, 0] * lx) * c, (incloud[rows, j, 1] * ix) * c, (incloud[rows, j, 2] * sx) * c
+                tl, ti, ts = ld * tl0, id_ * ti0, sd * ts0
             sl, si, ss = tl * lo, ti * io, ts * so
             tcd = tl + ti + ts
             scd = sl + si + ss
@@ -291,27 +299,37 @@ def _kernel(tau_gas, tau_ray, cloud, incloud, cfac, gmask, sflux, colf, band_ref
             put(clear_up, lev, cup, slot)
 
         def transmit(k, carry):
-            d, tr_, df, dc, trc, dfc, dn = carry
-            store(k, d, tr_, df, dc, trc, dfc, dn)
-            (r, rd, t, td, b, bn), (rc, rdc, tc, tdc, bc) = layer(k, nodel=True)
+            if direct_scaled:   # v0.4.0 pass (GPUWRF_SWDDIR_V040_SPLIT): direct = the delta-scaled beam d
+                d, tr_, df, dc, trc, dfc = carry
+                store(k, d, tr_, df, dc, trc, dfc, d)
+                (r, rd, t, td, b), (rc, rdc, tc, tdc, bc) = layer(k)
+            else:
+                d, tr_, df, dc, trc, dfc, dn = carry
+                store(k, d, tr_, df, dc, trc, dfc, dn)
+                (r, rd, t, td, b, bn), (rc, rdc, tc, tdc, bc) = layer(k, nodel=True)
             refl = one / jnp.maximum(one - rd * df, eps)
             ntr = d * t + td * ((tr_ - d) + d * r * df) * refl
             ndf = rd + td * td * df * refl
             reflc = one / jnp.maximum(one - rdc * dfc, eps)
             ntrc = dc * tc + tdc * ((trc - dc) + dc * rc * dfc) * reflc
             ndfc = rdc + tdc * tdc * dfc * reflc
+            if direct_scaled:
+                return d * b, ntr, ndf, dc * bc, ntrc, ndfc
             return d * b, ntr, ndf, dc * bc, ntrc, ndfc, dn * bn
 
         ones = jnp.ones((TX, ng), F32)
         zeros = jnp.zeros((TX, ng), F32)
-        final = jax.lax.fori_loop(0, nlay, transmit, (ones, ones, zeros, ones, ones, zeros, ones))
+        init = (ones, ones, zeros, ones, ones, zeros)
+        final = jax.lax.fori_loop(0, nlay, transmit, init if direct_scaled else init + (ones,))
+        if direct_scaled:
+            final = final + final[:1]
         store(nlay, *final)
 
     jax.lax.cond(jnp.max(mu) > zero, sunlit, dark)
 
 
 def _launch(tau_gas, tau_ray, cloud_amount, incloud, cloud_coeffs, gpoint_mask, sfluxzen,
-            coszen, surface_albedo, source_scale, band, *, all_bands, interpret):
+            coszen, surface_albedo, source_scale, band, *, all_bands, interpret, direct_scaled=False):
     tau_suffix = 3 if all_bands else 2
     leading, nlay, ngin = tau_gas.shape[:-tau_suffix], tau_gas.shape[-tau_suffix], tau_gas.shape[-1]
     ncol = math.prod(leading) if leading else 1
@@ -333,7 +351,8 @@ def _launch(tau_gas, tau_ray, cloud_amount, incloud, cloud_coeffs, gpoint_mask, 
             pack(colf, (3,)), jnp.reshape(jnp.asarray(band, jnp.int32), (1,))]
     flux = jax.ShapeDtypeStruct((npad, nbands, nlay + 1) if all_bands else (npad, nlay + 1), F32)
     scratch = jax.ShapeDtypeStruct((npad, nlay + 1, ng), F32)
-    kernel = partial(_kernel_mp_re if incloud.shape[-1] == 6 else _kernel, nlay=nlay, ng=ng, ngin=ngin, nbands_loop=nbands if all_bands else None)
+    kernel = partial(_kernel_mp_re if incloud.shape[-1] == 6 else _kernel, nlay=nlay, ng=ng, ngin=ngin, nbands_loop=nbands if all_bands else None,
+                     direct_scaled=bool(direct_scaled))
     result = pl.pallas_call(kernel, grid=(npad // TX,),
                             out_shape=[flux] * 5 + [scratch] * 4, interpret=interpret,
                             compiler_params=pt.CompilerParams(num_warps=WARPS),
@@ -351,29 +370,33 @@ def _launch(tau_gas, tau_ray, cloud_amount, incloud, cloud_coeffs, gpoint_mask, 
 
 
 def sw_band_flux_sums(tau_gas, tau_ray, cloud_amount, incloud, cloud_coeffs, gpoint_mask, sfluxzen,
-                      coszen, surface_albedo, source_scale, band, *, interpret=False):
+                      coszen, surface_albedo, source_scale, band, *, interpret=False, direct_scaled=False):
     """One band's g-summed ``(down, up, direct, clear_down, clear_up)`` over ``nlay+1`` interfaces.
 
     ``tau_gas``/``tau_ray``: ``(..., nlay, ng)`` bottom-up; ``cloud_amount``: ``(..., nlay, nbands, ng)``
     McICA; ``incloud``: ``(..., nlay, 3)`` liquid/ice/snow in-cloud paths; ``cloud_coeffs``: ``(12, nbands)``
     rows ext(l,i,s), delta tau factor(l,i,s), omega(l,i,s), asymmetry(l,i,s); ``gpoint_mask``: ``(nbands, ng)``;
     ``sfluxzen``: ``(..., nbands, ng)``; ``coszen``/``surface_albedo``/``source_scale``: ``(...)``; ``band``
-    traced int.  Outputs are float32, bottom-up interfaces.
+    traced int.  Outputs are float32, bottom-up interfaces.  ``direct_scaled``: v0.4.0 delta-scaled direct
+    output instead of WRF's ``ztdbt_nodel`` (opt-out GPUWRF_SWDDIR_V040_SPLIT).
     """
     return _launch(tau_gas, tau_ray, cloud_amount, incloud, cloud_coeffs, gpoint_mask, sfluxzen,
-                   coszen, surface_albedo, source_scale, band, all_bands=False, interpret=interpret)
+                   coszen, surface_albedo, source_scale, band, all_bands=False, interpret=interpret,
+                   direct_scaled=direct_scaled)
 
 
 def sw_allband_flux_sums(tau_gas, tau_ray, cloud_amount, incloud, cloud_coeffs, gpoint_mask, sfluxzen,
-                         coszen, surface_albedo, source_scale, *, interpret=False):
+                         coszen, surface_albedo, source_scale, *, interpret=False, direct_scaled=False):
     """All bands in ONE launch (``tau_gas``/``tau_ray`` ``(..., nlay, nbands, ng)``), summed over bands
     in band order 0..nbands-1 exactly like the band-scan carry; same outputs as :func:`sw_band_flux_sums`."""
     return _launch(tau_gas, tau_ray, cloud_amount, incloud, cloud_coeffs, gpoint_mask, sfluxzen,
-                   coszen, surface_albedo, source_scale, 0, all_bands=True, interpret=interpret)
+                   coszen, surface_albedo, source_scale, 0, all_bands=True, interpret=interpret,
+                   direct_scaled=direct_scaled)
 
 
 def _kernel_mp_re(tau_gas, tau_ray, cloud, incloud, cfac, gmask, sflux, colf, band_ref,
-            down, up, direct, clear_down, clear_up, su, sud, scu, scud, *, nlay, ng, ngin, nbands_loop=None):
+            down, up, direct, clear_down, clear_up, su, sud, scu, scud, *, nlay, ng, ngin, nbands_loop=None,
+            direct_scaled=False):
     """``nbands_loop=None``: one band (``band_ref``), ``tau`` ``(npad, nlay, ngin)``.  Otherwise all
     ``nbands_loop`` bands in one launch (``tau`` ``(npad, nlay, nbands, ngin)``); each band's partial is
     written once to ``out[col, band, lev]`` (no cross-thread read-modify-write) and summed by the caller."""
@@ -454,8 +477,13 @@ def _kernel_mp_re(tau_gas, tau_ray, cloud, incloud, cfac, gmask, sflux, colf, ba
             ocl = jnp.clip((one - f) * oco / dt, zero, _c(_ssa_upper()))
             acl = jnp.clip((zero - f) / jnp.maximum(one - f, eps), _c(-0.999999), _c(0.999999)) + jnp.zeros_like(tco)
             # cloud (cldprmc in-cloud paths x McICA amount); unscaled tl0/ti0/ts0 = WRF taormc (direct output)
-            tl0, ti0, ts0 = (incloud[rows, j, 0] * lx) * c, (incloud[rows, j, 1] * ix) * c, (incloud[rows, j, 2] * sx) * c
-            tl, ti, ts = ld * tl0, id_ * ti0, sd * ts0
+            if direct_scaled:   # v0.4.0 association order (opt-out): identical machine code to the v0.4.0 kernel
+                tl = ld * ((incloud[rows, j, 0] * lx) * c)
+                ti = id_ * ((incloud[rows, j, 1] * ix) * c)
+                ts = sd * ((incloud[rows, j, 2] * sx) * c)
+            else:
+                tl0, ti0, ts0 = (incloud[rows, j, 0] * lx) * c, (incloud[rows, j, 1] * ix) * c, (incloud[rows, j, 2] * sx) * c
+                tl, ti, ts = ld * tl0, id_ * ti0, sd * ts0
             sl, si, ss = tl * lo, ti * io, ts * so
             tcd = tl + ti + ts
             scd = sl + si + ss
@@ -535,20 +563,30 @@ def _kernel_mp_re(tau_gas, tau_ray, cloud, incloud, cfac, gmask, sflux, colf, ba
             put(clear_up, lev, cup, slot)
 
         def transmit(k, carry):
-            d, tr_, df, dc, trc, dfc, dn = carry
-            store(k, d, tr_, df, dc, trc, dfc, dn)
-            (r, rd, t, td, b, bn), (rc, rdc, tc, tdc, bc) = layer(k, nodel=True)
+            if direct_scaled:   # v0.4.0 pass (GPUWRF_SWDDIR_V040_SPLIT): direct = the delta-scaled beam d
+                d, tr_, df, dc, trc, dfc = carry
+                store(k, d, tr_, df, dc, trc, dfc, d)
+                (r, rd, t, td, b), (rc, rdc, tc, tdc, bc) = layer(k)
+            else:
+                d, tr_, df, dc, trc, dfc, dn = carry
+                store(k, d, tr_, df, dc, trc, dfc, dn)
+                (r, rd, t, td, b, bn), (rc, rdc, tc, tdc, bc) = layer(k, nodel=True)
             refl = one / jnp.maximum(one - rd * df, eps)
             ntr = d * t + td * ((tr_ - d) + d * r * df) * refl
             ndf = rd + td * td * df * refl
             reflc = one / jnp.maximum(one - rdc * dfc, eps)
             ntrc = dc * tc + tdc * ((trc - dc) + dc * rc * dfc) * reflc
             ndfc = rdc + tdc * tdc * dfc * reflc
+            if direct_scaled:
+                return d * b, ntr, ndf, dc * bc, ntrc, ndfc
             return d * b, ntr, ndf, dc * bc, ntrc, ndfc, dn * bn
 
         ones = jnp.ones((TX, ng), F32)
         zeros = jnp.zeros((TX, ng), F32)
-        final = jax.lax.fori_loop(0, nlay, transmit, (ones, ones, zeros, ones, ones, zeros, ones))
+        init = (ones, ones, zeros, ones, ones, zeros)
+        final = jax.lax.fori_loop(0, nlay, transmit, init if direct_scaled else init + (ones,))
+        if direct_scaled:
+            final = final + final[:1]
         store(nlay, *final)
 
     jax.lax.cond(jnp.max(mu) > zero, sunlit, dark)

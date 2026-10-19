@@ -126,11 +126,13 @@ def test_icloud_selects_radiation_cloud_policy_and_default_is_untouched():
     grid = _grid()
     assert om._rrtmg_pbl_cloud_kwargs(_namelist(grid, bl_pbl_physics=5)) == {}
     for bl in (5, 9):
-        for icloud in (2, 3):
+        for icloud in (0, 2, 3):
             kwargs = om._rrtmg_pbl_cloud_kwargs(_namelist(grid, bl_pbl_physics=bl, icloud=icloud))
             assert kwargs == {"use_mynn_sgs_cloud": False, "cloud_mp_physics": 8, "icloud": icloud}
     with pytest.raises(ValueError, match="RRTMG"):
         om._rrtmg_pbl_cloud_kwargs(_namelist(grid, icloud=3, ra_lw_physics=1, ra_sw_physics=1))
+    with pytest.raises(ValueError, match="RRTMG"):
+        om._rrtmg_pbl_cloud_kwargs(_namelist(grid, icloud=0, ra_lw_physics=1, ra_sw_physics=1))
 
 
 def test_icloud_option_keys_the_static_program():
@@ -142,8 +144,11 @@ def test_icloud_option_keys_the_static_program():
 
 
 @pytest.mark.parametrize("edits,ok", [
-    ({"icloud": 3}, True), ({"icloud": 2}, True), ({"icloud": 1}, True),
-    ({"icloud": 0}, False), ({"icloud": 3, "mp_physics": 3}, False), ({"icloud": 3, "mp_physics": 1}, False),
+    ({"icloud": 3}, True), ({"icloud": 2}, True), ({"icloud": 1}, True), ({"icloud": 4}, False),
+    ({"icloud": 0}, True), ({"icloud": 0, "mp_physics": 3}, True), ({"icloud": 0, "mp_physics": 0}, True),
+    ({"icloud": 0, "ra_lw_physics": 1, "ra_sw_physics": 1}, False), ({"icloud": 0, "cu_physics": 10}, False),
+    ({"icloud": 0, "mp_physics": 11}, False), ({"icloud": 0, "cu_physics": 1}, True),
+    ({"icloud": 3, "mp_physics": 3}, False), ({"icloud": 3, "mp_physics": 1}, False),
     ({"icloud": 3, "ra_lw_physics": 1, "ra_sw_physics": 1}, False), ({"icloud": 3, "cu_physics": 10}, False),
     ({"icloud": 3, "mp_physics": 11}, False), ({"icloud": 2, "mp_physics": 3}, True),
     ({"icloud": 3, "cu_physics": 11}, True),
@@ -256,8 +261,71 @@ def test_pert_cld3_multi_perturbation_of_icloud3_inputs_is_refused():
 
 def test_icloud_step_specs_are_registered():
     from gpuwrf.contracts.physics_interfaces import scheme_step_spec
-    for value in (3, 2):
+    for value in (3, 2, 0):
         spec = scheme_step_spec("radiation", 4, f"icloud={value}")
-        assert spec.owner_module == "src/gpuwrf/physics/cloud_fraction.py"
+        assert spec.owner_module == ("src/gpuwrf/coupling/physics_couplers.py" if value == 0
+                                     else "src/gpuwrf/physics/cloud_fraction.py")
         assert spec.wrf_slot == "first_rk_radiation_driver" and "CLDFRA" in spec.diagnostics
+    assert not {"qc", "qi", "qs"} & set(scheme_step_spec("radiation", 4, "icloud=0").reads_state)
     assert "proofs/w41_icloud/oracle_gate.py" in scheme_step_spec("radiation", 4, "icloud=3").oracle
+
+
+def test_real_call_path_icloud0_feeds_rrtmg_a_cloud_free_view(data, monkeypatch):
+    """w42-icloud0 (ALISIOS F7): radiation_driver.F:1309-1318 zeroes CLDFRA and runs no icloud branch; RRTMG LW/SW
+    keep QC1D..QG1D = 0 and skip the radius block when ICLOUD = 0 (module_ra_rrtmg_lw.F:12032/:12180,
+    module_ra_rrtmg_sw.F:10633/:10777).  Clouds, BL clouds and MP radii are all present in the state and must not leak."""
+    from gpuwrf.physics import rrtmg_mp_re
+    monkeypatch.setattr(rrtmg_mp_re, "_MP_RE", True)  # release default GPUWRF_RRTMG_MP_RE=1 (import-time, E148)
+    grid, state = _real_column_state(data)
+    radii = {name: jnp.full_like(state.qv, value) for name, value in (("re_cloud", 8e-6), ("re_ice", 40e-6),
+                                                                       ("re_snow", 200e-6))}
+    state = state.replace(cldfra_bl=jnp.full_like(state.qv, .5), qc_bl=jnp.full_like(state.qv, 1e-4),
+                          qi_bl=jnp.full_like(state.qv, 1e-5), qg=jnp.full_like(state.qv, 1e-6), **radii)
+    kwargs = dict(time_utc="2023-01-15T04:00:00Z", lead_seconds=3600., use_mp_re=1, mp_physics=8,
+                  use_mynn_sgs_cloud=False, cloud_mp_physics=8)
+    cloudy = [np.asarray(getattr(state, q)) for q in ("qc", "qi", "qs", "qg")]
+    assert all((q > 0).any() for q in cloudy)
+    one, *_ = pc._rrtmg_column_inputs(state, grid, **kwargs)
+    assert (np.asarray(one.cloud_fraction) > 0).any() and one.re_cloud is not None  # control: clouds + radii visible
+    for icloud0 in pc._rrtmg_column_inputs(state, grid, **kwargs, icloud=0)[:2]:
+        for name in ("cloud_fraction", "qc", "qi", "qs", "qg"):
+            value = np.asarray(getattr(icloud0, name))
+            assert value.shape == np.asarray(getattr(one, name)).shape and not value.any(), name
+        assert icloud0.re_cloud is None and icloud0.re_ice is None and icloud0.re_snow is None
+        np.testing.assert_array_equal(np.asarray(icloud0.qv), np.asarray(one.qv))  # vapour/thermo view unchanged
+        np.testing.assert_array_equal(np.asarray(icloud0.T), np.asarray(one.T))
+    # WSM3 restaging (inside WRF's ICLOUD .ne. 0 block) must not resurrect condensate either.
+    sw3, *_ = pc._rrtmg_column_inputs(state, grid, **{**kwargs, "mp_physics": 3, "cloud_mp_physics": 3}, icloud=0)
+    assert not np.asarray(sw3.qi).any() and not np.asarray(sw3.qs).any()
+
+    class _Flux:
+        def __getattr__(self, name):
+            return jnp.zeros((3, 3))
+
+    diag = pc.rrtmg_radiation_diagnostics(state, grid, **kwargs, icloud=0, _kernel_call=lambda fn, *a, **k: _Flux())
+    assert diag.cloud_fraction.shape == state.qv.shape and not np.asarray(diag.cloud_fraction).any()  # history CLDFRA=0
+
+
+def test_operational_driver_forwards_icloud0(monkeypatch):
+    grid = _grid()
+    nml = _namelist(grid, bl_pbl_physics=5, use_noahmp=False, mp_physics=8, icloud=0)
+    carry = om._initial_carry_for_run(_state(grid), nml)
+    calls = []
+
+    def radiation(*args, **kwargs):
+        calls.append(kwargs)
+        return carry.rthraten, carry.radiation_diagnostics
+
+    monkeypatch.setattr(om, "rrtmg_theta_tendency", radiation)
+    om._refresh_rrtmg_driver(carry, nml, 3600., True, None)
+    assert calls[-1]["icloud"] == 0 and calls[-1]["use_mynn_sgs_cloud"] is False
+    leaves, treedef = jax.tree_util.tree_flatten(nml)
+    assert treedef != jax.tree_util.tree_structure(_namelist(grid)) and treedef != jax.tree_util.tree_structure(
+        _namelist(grid, icloud=2))
+
+
+def test_icloud0_catalog_row_is_recognized_and_implemented():
+    from gpuwrf.io.scheme_catalog import SupportStatus, classify_control
+    support = classify_control("icloud", 0)
+    assert support.status is SupportStatus.IMPLEMENTED and "icloud=0" in support.reason
+    assert classify_control("icloud", 4).status is SupportStatus.RECOGNIZED_FAIL_CLOSED

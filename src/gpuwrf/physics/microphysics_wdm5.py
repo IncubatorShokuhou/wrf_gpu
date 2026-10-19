@@ -269,42 +269,29 @@ def _plm_qmi_qpi(qa, dza, km):
 
 
 def _plm_remap(qa, dza, qmi, qpi, zi, za, km):
+    kk_all = jnp.arange(km)
+
+    def first_hit(hit, start):
+        # WRF's DO WHILE search: first kk in [start, km) with hit(kk), else km
+        # (start >= km returns start unchanged). Same integer result as the
+        # sequential search, without a data-dependent while loop (one host
+        # round trip per trip on GPU, nested in the km-level remap loop).
+        cand = hit & (kk_all >= start)
+        found = jnp.any(cand)
+        kk0 = jnp.where(found, jnp.argmax(cand), km)
+        kk0 = jnp.where(start >= km, start, kk0).astype(jnp.asarray(start).dtype)
+        return kk0, found
+
     def body(k, carry):
         qn, kb, kt = carry
         kb = jnp.maximum(kb - 1, 0)
         kt = jnp.maximum(kt - 1, 0)
         done = zi[k] >= za[km]
 
-        def find_kb(start):
-            def cond(state):
-                kk, found = state
-                return jnp.logical_and(kk < km, jnp.logical_not(found))
-
-            def step(state):
-                kk, found = state
-                hit = zi[k] <= za[kk + 1]
-                return jnp.where(hit, kk, kk + 1), jnp.logical_or(found, hit)
-
-            kk0, _ = jax.lax.while_loop(cond, step, (start, False))
-            return kk0
-
-        kb_new = find_kb(kb)
+        kb_new, _ = first_hit(zi[k] <= za[1:km + 1], kb)
         kt_entry = kt
-
-        def find_kt(start):
-            def cond(state):
-                kk, found = state
-                return jnp.logical_and(kk < km, jnp.logical_not(found))
-
-            def step(state):
-                kk, found = state
-                hit = zi[k + 1] <= za[kk]
-                return jnp.where(hit, kk, kk + 1), jnp.logical_or(found, hit)
-
-            kk0, found = jax.lax.while_loop(cond, step, (start, False))
-            return jnp.where(found, kk0, kt_entry) - 1
-
-        kt_new = find_kt(kt)
+        kk0, found = first_hit(zi[k + 1] <= za[0:km], kt)
+        kt_new = jnp.where(found, kk0, kt_entry) - 1
         kb_c = kb_new
         kt_c = kt_new
 
@@ -1056,8 +1043,20 @@ def _rain_number_fallout(qr, nr, den, denfac, delz, dtcld,
 
     fall1 = jnp.zeros(km, qr.dtype)
     falln = jnp.zeros(km, qr.dtype)
+    # Stop at the column's own mstep (WRF's loop count), capped at 64 as before:
+    # substeps n >= mstep are exact identities (where(do_n, new, old); fall1/falln
+    # add +0.0 to sums that start at +0.0), so ending early is bitwise neutral.
     carry = (qr, nr, fall1, falln, work1_r0, workn_r0)
-    qr, nr, fall1, falln, _w1, _wn = jax.lax.fori_loop(0, 64, substep, carry)
+
+    def active(state):
+        n, _ = state
+        return (n < 64) & (n < mstep_i)
+
+    def advance(state):
+        n, carry = state
+        return n + 1, substep(n, carry)
+
+    _n, (qr, nr, fall1, falln, _w1, _wn) = jax.lax.while_loop(active, advance, (0, carry))
     return qr, nr, fall1, falln
 
 

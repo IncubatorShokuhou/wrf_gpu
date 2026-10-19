@@ -7,6 +7,45 @@ WRF v4 GPU port — see `PROJECT_PLAN.md`).
 
 The format is loosely based on [Keep a Changelog](https://keepachangelog.com/).
 
+## [0.4.2] — 2026-10-19
+
+- Default model program unchanged from v0.4.1 (Swiss `b977712fe325`, Canary `321aa651067f`).
+  History `COSZEN` is now WRF's held radiation-call value (evaluated at call + radt/2) instead of
+  the output-time value: within 2.4e-7 of CPU-WRF (was up to 0.057). New cache keys (writer change);
+  the new compile makes other fields differ from v0.4.1 at round-off level, growing with lead time
+  as between two compiles of one version; fidelity re-checked against CPU-WRF (D6).
+- `SWDDIR` follow-up: the v0.4.1 direct-beam fix was traced against the WRF 4.7.1 caller path
+  (radiation driver, held diffuse fraction, slope/shading adjustment, surface-driver swap) and
+  matches; the 20 April Tenerife slope deficit came from the cloud realisation of that run and was
+  not repeated by a second v0.4.1 run (pre-registered rule inconclusive; land afternoon 2 m
+  temperature residual of 0.01–0.03 K tracked). Fix stays default. New opt-out
+  `GPUWRF_SWDDIR_V040_SPLIT=1` (v0.4.0 split; shortwave kernel machine code identical to v0.4.0;
+  own compiled program; refused with `aer_opt=1/3`).
+- New opt-in `icloud=0` (WRF cloud-free radiation, `CLDFRA=0`, physics unchanged): pristine
+  radiation-driver oracle on 16 real columns; Tenerife 9/3/1 km 24 h comparison with an original
+  CPU-WRF `icloud=0` run passes on all domains.
+- YSU, Shin-Hong, ACM2 and EEPS validated inside nested domains (Tenerife 9/3/1 km, 7 July 2026,
+  `sf_sfclay_physics=1`, 24 h, each against its own CPU-WRF 4.7.1 run; one date).
+- WDM6 (`mp_physics=16`) about 3× faster (rain fall-out loop ends at WRF's sub-step count;
+  remap search without host synchronisation): Swiss Alps WDM6 case 18.3 → 6.0 s per forecast hour
+  of stepping, history byte-identical to v0.4.1; WDM5/WDM7 share the code (not timed).
+- `gpuwrf aot-key` computes keys in a private temporary cache deleted on exit or signal, warns on a
+  sealed-bundle environment; keys equal to v0.4.1.
+- `scripts/wn3_score.py`: one history-file pair open at a time (72 h three-domain score about
+  2.4 GB instead of 15–17 GB, byte-identical results); non-finite CPU-WRF reference values fail
+  the comparison.
+- Benchmark harness: the measured process now uses the production memory pool (the old harness
+  fell back to on-demand allocation); stepping 6 % faster than previously reported; v0.4.1
+  re-baseline disclosed in the release notes.
+- Known issues: heavy-rain cell deficit (≥ 10 mm) on the 1 km Tenerife domain at 48/72 h in one
+  case; CPU-WRF against itself exceeds the 1 mm rain limit from 17 h on that day; WDM fall-out
+  sub-step cap (pre-existing); two CPU tests failing identically on v0.4.1.
+- The v0.4.1 release notes gained an addendum with the clean RW3 speed re-measurement (v0.4.1 not
+  slower than v0.4.0 near the 10 % limit in the counted 24-hour runs).
+- [Release notes](release_notes/RELEASE_NOTES_v0.4.2.md) ·
+  [Support matrix](docs/release/SUPPORT_MATRIX_v0.4.2.md) ·
+  [Known issues](KNOWN_ISSUES.md).
+
 ## [0.4.1] — 2026-10-18
 
 - New opt-in options: `topo_wind=1/2` (YSU/Shin-Hong surface-wind terrain correction),

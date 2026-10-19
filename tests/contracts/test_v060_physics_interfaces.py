@@ -65,6 +65,7 @@ _V018_EXPECTED_SPEC_COUNT = (
     + 2  # v0.4.1 RRTMG radiation cloud-fraction variants icloud=3 / icloud=2 (radiation 4).
     + 1  # v0.4.1 aer_opt=1 Tegen aerosol variant of RRTMG SW (radiation 4, sw_aer_opt1).
     + 1  # v0.4.1 aer_opt=3 Thompson aerosol variant of RRTMG SW (radiation 4, sw_aer_opt3).
+    + 1  # v0.4.2 icloud=0 cloud-free RRTMG radiation variant (radiation 4, icloud=0; ALISIOS F7).
 )
 
 

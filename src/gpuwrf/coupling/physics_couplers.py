@@ -1419,6 +1419,9 @@ def _rrtmg_column_inputs_impl(
         # radiation_driver.F:1446-1453 cal_cldfra2 (F_QC/F_QI from the MP species set).
         from gpuwrf.physics.cloud_fraction import wrf_cal_cldfra2
         cloud_fraction = wrf_cal_cldfra2(qc_columns, qi_columns, has_qi=int(cloud_mp_physics) not in (1, 3))
+    elif not use_mynn_sgs_cloud and int(icloud) == 0:
+        # radiation_driver.F:1309-1318 zeroes CLDFRA; no branch of :1321-1508 runs (no icloud_bl merge).
+        cloud_fraction = jnp.zeros_like(cloud_fraction)
     elif not use_mynn_sgs_cloud:
         from gpuwrf.physics.cloud_fraction import wrf_resolved_cloud_fraction
         cloud_fraction = wrf_resolved_cloud_fraction(
@@ -1466,7 +1469,12 @@ def _rrtmg_column_inputs_impl(
         # radiation_driver:1433-1444, after the optional BL cloud merge.
         held=_to_columns(state.cldfra_mp_all)
         cloud_fraction=jnp.where(jnp.asarray(lead_seconds)>0,jnp.where(held<.01,0.,held),cloud_fraction)
-    if int(mp_physics) == 3:
+    if int(icloud) == 0:
+        # module_ra_rrtmg_lw.F:12032 / module_ra_rrtmg_sw.F:10633 (IF ICLOUD .ne. 0): QC1D..QG1D stay 0,
+        # and the effective-radius block (:12180 / :10777) is skipped -> cloud-free RRTMG columns.
+        cloud_fraction, qc_columns, qi_columns, qs_columns, qg_columns = map(
+            jnp.zeros_like, (cloud_fraction, qc_columns, qi_columns, qs_columns, qg_columns))
+    elif int(mp_physics) == 3:
         # WSM3 carries ice in qc and snow in qr (F_QI=F_QS=.false., warm_rain=.false.):
         # module_ra_rrtmg_lw.F:12075-12083 / module_ra_rrtmg_sw.F:10676-10684 restage
         # them as QI1D/QS1D below 273.15 K; QI1D/QS1D stay 0 elsewhere.
@@ -1591,7 +1599,9 @@ def _rrtmg_column_inputs_impl(
 
     from gpuwrf.physics.p3.radiation import mp_re_active, optical_view
     radii_kwargs = {}
-    if int(mp_physics) == 11:
+    if int(icloud) == 0:
+        pass  # ICLOUD=0 skips the has_reqc/i/s radius block: default optics flags, no MP radii
+    elif int(mp_physics) == 11:
         if state.lradius is None or state.iradius is None:
             raise ValueError("CAM-MG radiation requires held liquid/ice radii seeded before radiation")
         from gpuwrf.physics.cammg.radiation import optical_view

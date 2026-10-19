@@ -844,11 +844,10 @@ _RECOGNIZED_CONTROLS: tuple[RecognizedControl, ...] = (
     # --- PBL / cloud sub-options ------------------------------------------ #
     RecognizedControl(
         "icloud", "radiation-cloud-fraction",
-        frozenset({1, 2, 3}),
+        frozenset({0, 1, 2, 3}),
         "recognized; the port binds WRF icloud=1 (default, cal_cldfra1 + icloud_bl merge), "
-        "icloud=2 (cal_cldfra2) and icloud=3 (cal_cldfra3). icloud=0 (RRTMG cloud-free path) "
-        "is not bound.",
-        "Use icloud=1 (WRF default), 2 or 3.",
+        "icloud=2 (cal_cldfra2), icloud=3 (cal_cldfra3) and icloud=0 (cloud-free RRTMG radiation).",
+        "Use icloud=1 (WRF default), 0, 2 or 3.",
     ),
     RecognizedControl(
         "icloud_bl", "PBL-cloud-coupling",
@@ -1264,6 +1263,12 @@ _IMPLEMENTED_NOTES: Mapping[tuple[str, int], str] = {
     "Literal REAL4 BYTE vs verbatim pristine on 640 real columns; compiled path within WRF FMA/input-ULP "
     "envelope, XLA log10 small-condensate branch <=15 ulp disclosed. RRTMG 4/4 only; mp 0/1/3/5/11/P3 "
     "refused. proofs/w41_icloud.",
+    ("icloud", 0): "GPU-qualified (v0.4.2: WN3 0227 3-nest 24 h D6 PASS 3/3 vs original CPU-WRF icloud=0, E41 PASS). WRF 4.7.1 radiation_driver "
+    "icloud=0: CLDFRA = 0 and no cloud-fraction branch (no icloud_bl merge); RRTMG LW/SW skip every condensate and "
+    "effective-radius input (IF ICLOUD .ne. 0), so radiation is cloud-free while microphysics, MYNN SGS clouds and "
+    "dynamics run unchanged (cloud-radiation decoupling switch). History CLDFRA = 0 like WRF. Port within the frozen "
+    "RRTMG bounds of the pristine radiation_driver on 16 real WN3 columns; with the v0.4.1 SWDDIR fix (inert under "
+    "icloud=0). RRTMG 4/4 only. proofs/w42_icloud0.",
     ("icloud", 2): "GPU-qualified (v0.4.1: WN3 0227 3-nest 24 h D6 PASS 3/3 vs original CPU-WRF icloud=2, E41 PASS). WRF 4.7.1 "
     "radiation_driver icloud=2 (cal_cldfra2: binary qc+qi > 1e-6), replaces the icloud=1 block incl. the icloud_bl "
     "MYNN merge exactly as WRF. History CLDFRA = radiation input fraction (binary). Literal BYTE vs pristine "
@@ -1324,7 +1329,13 @@ _IMPLEMENTED_NOTES: Mapping[tuple[str, int], str] = {
        "validation (docs/physics/ice_diagnostics.md). Ice type and radar diagnostics remain omitted.",
 
 
-    ('bl_pbl_physics', 16): 'EXPERIMENTAL: CPU-oracle-qualified against unchanged WRF 4.7.1 REAL32 with compiler-defined zero initialization and FP traps off (30 carried cases per scheme); GPU/coupled-forecast qualification pending. Upstream undefined reads (KEPS ttke GET_PBLH:822, radsum:1068, top dtmdz; EEPS radsum:748) materially affect outputs under alternate initialization. This port explicitly mirrors zero semantics. Requires sf_sfclay_physics=1; transports Registry epsilon/TKE scalars and requires versioned restart carry. See docs/EEPS_KEPS.md and proofs/s2_keps/initialization_sensitivity.json.',
+    ('bl_pbl_physics', 1): ("YSU. Single domain: v0.4.0 composite c02 24 h D6 PASS vs original CPU-WRF (E41 FAIL disclosed). "
+        "Nested-qualified (v0.4.2): Tenerife WN3 9/3/1 km 3-nest, issue 20260707_18z (ALISIOS G2 arm C2, gpuwrf v0.4.1), with sf_sfclay_physics=1: 24 h D6 PASS on d01-d03 vs an original CPU-WRF 4.7.1 twin with the same namelist and inputs (25 hourly frames per domain, 0 of 62 bounded fields over limit, NF0, every CPU variable present; worst-hour RMSE/limit 0.024, T2 d03). One case and date; E41 of the nested programs not measured. Receipt proofs/w41_nestqual/NESTQUAL_SUMMARY.json."),
+    ('bl_pbl_physics', 7): ("ACM2 (Pleim). Single domain: v0.4.0 composite c05 24 h D6 PASS vs original CPU-WRF (E41 FAIL disclosed). "
+        "Nested-qualified (v0.4.2): Tenerife WN3 9/3/1 km 3-nest, issue 20260707_18z (ALISIOS G2 arm C4, gpuwrf v0.4.1), with sf_sfclay_physics=1: 24 h D6 PASS on d01-d03 vs an original CPU-WRF 4.7.1 twin with the same namelist and inputs (25 hourly frames per domain, 0 of 62 bounded fields over limit, NF0, every CPU variable present; worst-hour RMSE/limit 0.069, V10 d03). One case and date; E41 of the nested programs not measured. Receipt proofs/w41_nestqual/NESTQUAL_SUMMARY.json."),
+    ('bl_pbl_physics', 11): ("Shin-Hong scale-aware. Single domain: v0.4.0 composite c07 24 h D6 PASS vs original CPU-WRF (E41 FAIL disclosed). "
+        "Nested-qualified (v0.4.2): Tenerife WN3 9/3/1 km 3-nest, issue 20260707_18z (ALISIOS G2 arm C3, gpuwrf v0.4.1), with sf_sfclay_physics=1: 24 h D6 PASS on d01-d03 vs an original CPU-WRF 4.7.1 twin with the same namelist and inputs (25 hourly frames per domain, 0 of 62 bounded fields over limit, NF0, every CPU variable present; worst-hour RMSE/limit 0.059, V10 d03). One case and date; E41 of the nested programs not measured. Receipt proofs/w41_nestqual/NESTQUAL_SUMMARY.json."),
+    ('bl_pbl_physics', 16): 'EXPERIMENTAL: CPU-oracle-qualified against unchanged WRF 4.7.1 REAL32 with compiler-defined zero initialization and FP traps off (30 carried cases per scheme). Single domain: v0.4.0 composite c10 24 h D6 PASS vs original CPU-WRF (E41 FAIL disclosed). Nested-qualified (v0.4.2): Tenerife WN3 9/3/1 km 3-nest, issue 20260707_18z (ALISIOS G2 arm C7, gpuwrf v0.4.1), with sf_sfclay_physics=1: 24 h D6 PASS on d01-d03 vs an original CPU-WRF 4.7.1 twin with the same namelist and inputs (25 hourly frames per domain, 0 of 62 bounded fields over limit, NF0, every CPU variable present; worst-hour RMSE/limit 0.110, V10 d03). One case and date; E41 of the nested programs not measured. Receipt proofs/w41_nestqual/NESTQUAL_SUMMARY.json. Upstream undefined reads (KEPS ttke GET_PBLH:822, radsum:1068, top dtmdz; EEPS radsum:748) materially affect outputs under alternate initialization. This port explicitly mirrors zero semantics. Requires sf_sfclay_physics=1; transports Registry epsilon/TKE scalars and requires versioned restart carry. See docs/EEPS_KEPS.md and proofs/s2_keps/initialization_sensitivity.json.',
     ('bl_pbl_physics', 17): 'EXPERIMENTAL: CPU-oracle-qualified against unchanged WRF 4.7.1 REAL32 with compiler-defined zero initialization and FP traps off (30 carried cases per scheme); GPU/coupled-forecast qualification pending. Upstream undefined reads (KEPS ttke GET_PBLH:822, radsum:1068, top dtmdz; EEPS radsum:748) materially affect outputs under alternate initialization. This port explicitly mirrors zero semantics. Requires sf_sfclay_physics=1; transports Registry epsilon/TKE scalars and requires versioned restart carry. See docs/EEPS_KEPS.md and proofs/s2_keps/initialization_sensitivity.json.',
     ("aer_opt", 1): "WRF Tegen/ECMWF six-type monthly aerosol climatology in RRTMG SW (aerosol_in on domain 1, "
         "aer_time_int/aer_p_int at each radiation call, iaer=6 band optics; nests get the parent's aerod by SINT "

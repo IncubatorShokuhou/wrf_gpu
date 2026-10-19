@@ -1,0 +1,87 @@
+{
+ "schema": "gpuwrf-parallel-cases-v1",
+ "start_utc": "2026-10-19T05:34:09Z",
+ "argv": [
+  "<DATA_ROOT>/wrf_gpu2/release_bundles/v0.4.1/src/scripts/parallel_cases.py",
+  "--max-parallel",
+  "3",
+  "--out-root",
+  "<DATA_ROOT>/wrf_gpu2/scratch/w42-harness/s1h/runs/WN3/out",
+  "<DATA_ROOT>/wrf_gpu2/scratch/w42-harness/cases/wn3_0227",
+  "<DATA_ROOT>/wrf_gpu2/scratch/w42-harness/cases/wn3_0502",
+  "<DATA_ROOT>/wrf_gpu2/scratch/w42-harness/cases/wn3_0614",
+  "--",
+  "--domains-from-namelist",
+  "--hours",
+  "24",
+  "--emit-initial-history"
+ ],
+ "cli_args": [
+  "--domains-from-namelist",
+  "--hours",
+  "24",
+  "--emit-initial-history"
+ ],
+ "vram_total_bytes": 33664532480,
+ "vram_free_bytes_at_start": 29421993984,
+ "vram_capacity_bytes": 29421993984,
+ "cpu_affinity": [
+  3,
+  13,
+  19,
+  29
+ ],
+ "events": [
+  {
+   "t_s": 0.0,
+   "start": "wn3_0227",
+   "running": 1
+  },
+  {
+   "t_s": 0.0,
+   "start": "wn3_0502",
+   "running": 2
+  },
+  {
+   "t_s": 0.0,
+   "start": "wn3_0614",
+   "running": 3
+  }
+ ],
+ "checkpoint_interval_steps": 0,
+ "retry_failed": 0,
+ "gpu_lock": {
+  "required": true,
+  "policy": "dev GPU lock infrastructure present (/tmp/wrf_gpu2_gpu.lock)",
+  "held": true
+ },
+ "end_utc": "2026-10-19T05:41:40Z",
+ "wall_s": 451.555,
+ "peak_concurrency": 3,
+ "stop_reason": null,
+ "cases": {
+  "wn3_0502": {
+   "rc": 0,
+   "note": "",
+   "wall_s": 442.786,
+   "vram_peak_mib": 5268,
+   "vmhwm_kb": 6214136
+  },
+  "wn3_0614": {
+   "rc": 0,
+   "note": "",
+   "wall_s": 445.924,
+   "vram_peak_mib": 5268,
+   "vmhwm_kb": 6349464
+  },
+  "wn3_0227": {
+   "rc": 0,
+   "note": "",
+   "wall_s": 449.951,
+   "vram_peak_mib": 5268,
+   "vmhwm_kb": 6217608
+  }
+ },
+ "case_hours": 72,
+ "wall_s_per_case_hour": 6.272
+}

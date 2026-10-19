@@ -1,11 +1,20 @@
 # Release notes
 
+**v0.4.2 — 19 October 2026** keeps the v0.4.1 default model program, confirms the v0.4.1
+shortwave fix against WRF's code path (with an opt-out for v0.4.0 continuity), makes WDM6
+microphysics about three times faster, validates four more boundary layers inside nested
+domains and adds the cloud-free radiation switch `icloud=0`.
+
+- [v0.4.2 release notes](RELEASE_NOTES_v0.4.2.md)
+- [v0.4.2 per-option matrix](../docs/release/SUPPORT_MATRIX_v0.4.2.md)
+- [v0.4.2 command guide](../docs/release/USER_GUIDE_v0.4.2.md)
+
 **v0.4.1 released — 2026-10-18** adds opt-in data assimilation, terrain-corrected surface
 winds, shortwave aerosol, radiation cloud-fraction options, Noah-MP surface-parameter controls,
 GPU regional optimisation and validated stochastic physics. The default physics is that of
 v0.4.0 apart from the fixes listed in the release notes.
 
-- [v0.4.1 release notes](RELEASE_NOTES_v0.4.1.md)
+- [v0.4.1 release notes](RELEASE_NOTES_v0.4.1.md) (with the 19 October RW3 speed addendum)
 - [v0.4.1 per-option matrix](../docs/release/SUPPORT_MATRIX_v0.4.1.md)
 - [v0.4.1 command guide](../docs/release/USER_GUIDE_v0.4.1.md)
 

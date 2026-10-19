@@ -1,6 +1,6 @@
 # EEPS and KEPS PBL
 
-**Status in v0.4.0: Validated 24 h.** Passed a 24-hour comparison with the original CPU WRF in the v0.4.0 release check, in one tested single-domain configuration. Other combinations and nested domains are not validated. Its compiled GPU code exceeds the project's code-quality limits for speed and robustness; it runs correctly, but its speed has not been measured.
+**Status in v0.4.0: Validated 24 h.** Passed a 24-hour comparison with the original CPU WRF in the v0.4.0 release check, in one tested single-domain configuration. **Since v0.4.2, EEPS (`bl_pbl_physics=16`) is also validated inside nested domains:** it passed the 24-hour comparison on all three domains of a Tenerife 9/3/1 km forecast with `sf_sfclay_physics=1` ([details](release/NESTED_PBL_QUALIFICATION_v0.4.2.md)). KEPS inside nests and other combinations are not validated. Its compiled GPU code exceeds the project's code-quality limits for speed and robustness; it runs correctly, but its speed has not been measured.
 
 `bl_pbl_physics=16` selects EEPS; `17` selects KEPS. WRF 4.7.1 has no
 `bl_pbl_physics=6` package: MYNN's third-order closure is option 5 with
