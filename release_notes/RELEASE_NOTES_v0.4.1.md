@@ -453,3 +453,46 @@ check runs the released program on the GPU:
 Receipts: [real-world checks](../proofs/w41_bundle041/receipts/RW_VERDICT.json),
 [benchmark and nested-program runs](../proofs/w41_bdyrec/receipts/b1_RESULT.json),
 [version comparison](../proofs/w41_bdyrec/receipts/s1ab_AB.json).
+
+## Addendum (19 October 2026): RW3 speed, measured again
+
+The RW3 speed cell above says the comparison could not be measured cleanly on release day. We repeated it
+overnight on the same Tenerife forecast (issued 27 February 2026, three domains, 24 hours), running the two
+sealed compiled bundles, v0.4.1 and v0.4.0, alternately: v0.4.1, v0.4.0, v0.4.1, and so on. Nothing compiled in
+any run, both bundles were unchanged before and after every run, and every v0.4.1 run wrote files byte-identical
+to every other v0.4.1 run and to the release-day v0.4.1 run (the same holds for v0.4.0).
+
+The host is shared, so a watcher checked the four CPU cores that feed the GPU once per second. A run was stopped
+and repeated (at most three tries per slot) when another program used more than one full core, or all other
+programs together more than two cores, for more than 10 seconds. In the second session a run also counted only if
+the model's own main thread waited for a CPU less than 1.5 % of its run time, the run's CPU pressure stayed below
+2.5 seconds, and the data disk was not stalled. The rules and the pass rule were written down, with checksums,
+before the first run of each session: pass if the v0.4.1/v0.4.0 ratio plus the largest spread between runs of the
+same version stays at or below 1.10.
+
+| Session | Counted 24 h runs | Seconds per forecast hour, whole run | v0.4.1 / v0.4.0 | Largest same-version spread | Result |
+| --- | --- | --- | --- | --- | --- |
+| 1 (21:52–23:15 UTC) | 3 × v0.4.1, 4 × v0.4.0 | v0.4.1 7.47–7.96, v0.4.0 7.43–7.97 | 1.019 | 7.3 % | **Pass** (1.091 ≤ 1.10) |
+| 2 (23:19–01:57 UTC, stricter rules, heavier host load) | 4 × v0.4.1, 3 × v0.4.0 | v0.4.1 7.41–8.06, v0.4.0 7.20–7.95 | 1.011 | 10.4 % | **Not decided:** the host load changed during the session, which widened the spread between runs of the same version |
+
+In the five pairs where both back-to-back runs counted, v0.4.1 took 0.971 to 1.030 times as long as v0.4.0 for
+the whole run (mean 1.004). For the forecast part alone the ratio was 0.979 to 1.037 (mean 1.016). A 72-hour
+v0.4.1 run took 6.65 seconds per forecast hour, as on release day (6.63). Its v0.4.0 partner does not count: the
+load watcher fell behind and did not cover the whole run, which the pre-registered acceptance rule rejects. During
+that run a system file-indexing job also stalled the data disk (recorded as a disturbance, not an acceptance
+criterion in session 1), so there is no counted 72-hour pair.
+
+**Conclusion:** in these 24-hour runs v0.4.1 was not slower than v0.4.0 by anything near the 10 % limit, and
+they did not reproduce the 7.6 % of the single release-day 72-hour pair. Session 1 passes the pre-registered rule
+narrowly (1.091 against 1.10) and session 2 does not decide it (1.114); in the five counted back-to-back pairs the
+whole runs were within about 3 % of each other, and the forecast part may be 1–2 % slower with v0.4.1, within the
+run-to-run noise of this shared host. These are measurements of the counted 24-hour runs, not a general bound for
+the two versions, and there is no counted 72-hour comparison. In the same 24-hour runs the peak GPU memory per
+process was 5,268 against 5,370 MiB and host memory 6.0 against 5.8 GiB.
+
+Receipts: [session 1 result](../proofs/w41_rw3add/receipts/S1_VERDICT.json),
+[session 2 result](../proofs/w41_rw3add/receipts/S2_VERDICT.json),
+[both sessions and pairs](../proofs/w41_rw3add/receipts/SUMMARY_BOTH.json),
+pre-registered rules [session 1](../proofs/w41_rw3add/receipts/PREREG.json) and
+[session 2](../proofs/w41_rw3add/receipts/PREREG2.json),
+[release-day attempts](../proofs/w41_bundle041/receipts/ATTRIB2b_ACCEPT.json).
