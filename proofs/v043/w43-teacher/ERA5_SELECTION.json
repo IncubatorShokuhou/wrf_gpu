@@ -1,0 +1,180 @@
+{
+ "schema": "w43-teacher.era5_selection.v1",
+ "rule": "TEACHER_PREREG v3 \u00a74 (b6c6c1e5d9): ascending issue UTC; complete = 9 admitted+staged files == INPUT_MANIFEST sha; E-C first exact DANA-proxy label, E-T first exact strong-trade label (distinct)",
+ "regime_artifact": {
+  "path": "<DATA_ROOT>/alisios/state/manager/cross/TO_WRF_GPU2_TEACHER_ERA5_LABELS_20261020.json",
+  "staged": "<DATA_ROOT>/wrf_gpu2/scratch/w43-teacher/stage_labels/root2/state/manager/cross/TO_WRF_GPU2_TEACHER_ERA5_LABELS_20261020.json",
+  "sha256": "4f6082f7810c0106111af9ded4d92dfd66c0ae6a94021630f437f85da7d181f9",
+  "guard_receipt": "analysis/receipts/G09_era5_labels",
+  "note": "label-only artifact issued by alisios_mgr (manager decision option A) replacing the unreadable TRANCHE1.json; labels verbatim from TRANCHE1 selected[].regime"
+ },
+ "label_strings": {
+  "DANA_proxy": "cold_low_DANA_proxy",
+  "strong_trade": "strong_trade"
+ },
+ "all_classes": [
+  "cold_low_DANA_proxy",
+  "continental_calima_proxy",
+  "strong_trade",
+  "transition",
+  "weak_trade"
+ ],
+ "candidates": [
+  {
+   "issue": "20240103_18z",
+   "label": "weak_trade",
+   "complete": true
+  },
+  {
+   "issue": "20240119_18z",
+   "label": "transition",
+   "complete": true
+  },
+  {
+   "issue": "20240129_18z",
+   "label": "weak_trade",
+   "complete": true
+  },
+  {
+   "issue": "20240211_18z",
+   "label": "weak_trade",
+   "complete": true
+  },
+  {
+   "issue": "20240218_18z",
+   "label": "strong_trade",
+   "complete": true
+  },
+  {
+   "issue": "20240224_18z",
+   "label": "strong_trade",
+   "complete": true
+  },
+  {
+   "issue": "20240302_18z",
+   "label": "cold_low_DANA_proxy",
+   "complete": true
+  },
+  {
+   "issue": "20240314_18z",
+   "label": "weak_trade",
+   "complete": true
+  },
+  {
+   "issue": "20240323_18z",
+   "label": "cold_low_DANA_proxy",
+   "complete": true
+  },
+  {
+   "issue": "20240413_18z",
+   "label": "continental_calima_proxy",
+   "complete": true
+  },
+  {
+   "issue": "20240508_18z",
+   "label": "continental_calima_proxy",
+   "complete": true
+  },
+  {
+   "issue": "20240514_18z",
+   "label": "strong_trade",
+   "complete": true
+  },
+  {
+   "issue": "20240609_18z",
+   "label": "weak_trade",
+   "complete": true
+  },
+  {
+   "issue": "20240622_18z",
+   "label": "continental_calima_proxy",
+   "complete": true
+  },
+  {
+   "issue": "20250106_18z",
+   "label": "weak_trade",
+   "complete": true
+  },
+  {
+   "issue": "20250113_18z",
+   "label": "strong_trade",
+   "complete": true
+  },
+  {
+   "issue": "20250122_18z",
+   "label": "cold_low_DANA_proxy",
+   "complete": true
+  },
+  {
+   "issue": "20250131_18z",
+   "label": "strong_trade",
+   "complete": true
+  },
+  {
+   "issue": "20250209_18z",
+   "label": "weak_trade",
+   "complete": true
+  },
+  {
+   "issue": "20250219_18z",
+   "label": "transition",
+   "complete": true
+  },
+  {
+   "issue": "20250302_18z",
+   "label": "cold_low_DANA_proxy",
+   "complete": false
+  },
+  {
+   "issue": "20250325_18z",
+   "label": "strong_trade",
+   "complete": true
+  },
+  {
+   "issue": "20250403_18z",
+   "label": "transition",
+   "complete": true
+  },
+  {
+   "issue": "20250426_18z",
+   "label": "strong_trade",
+   "complete": true
+  },
+  {
+   "issue": "20250502_18z",
+   "label": "transition",
+   "complete": true
+  },
+  {
+   "issue": "20250520_18z",
+   "label": "strong_trade",
+   "complete": true
+  },
+  {
+   "issue": "20250531_18z",
+   "label": "continental_calima_proxy",
+   "complete": true
+  },
+  {
+   "issue": "20250608_18z",
+   "label": "weak_trade",
+   "complete": true
+  }
+ ],
+ "E_C": {
+  "issue": "20240302_18z",
+  "label": "cold_low_DANA_proxy",
+  "input_dir": "<DATA_ROOT>/wrf_gpu2/scratch/w43-teacher/stage_e2/root2/state/manager/runs/mgr_wave_20261009/rd-e2-massdays/era5_inputs/20240302_18z"
+ },
+ "E_T": {
+  "issue": "20240218_18z",
+  "label": "strong_trade",
+  "input_dir": "<DATA_ROOT>/wrf_gpu2/scratch/w43-teacher/stage_e2/root2/state/manager/runs/mgr_wave_20261009/rd-e2-massdays/era5_inputs/20240218_18z"
+ },
+ "completeness_receipt": "analysis/receipts/G08_e2inputs29/COMPLETENESS.json",
+ "disclosures": [
+  "labels are ALISIOS ERA5-derived proxies, not confirmed convection",
+  "procedural: the label file was opened once outside the guard session (json.load of the header/key set to declare its day coverage) before the facade_stage copy; the selection uses only the staged guarded copy",
+  "no forecast/twin value of any case opened before this file was committed"
+ ]
+}

@@ -1,5 +1,6 @@
 """Release history defaults: actual nested selection and emitted NetCDF inventories."""
 from datetime import datetime, timezone
+from types import SimpleNamespace
 
 import numpy as np
 import pytest
@@ -58,7 +59,14 @@ def test_default_full_and_explicit_reduced_retain_identical_common_fields(tmp_pa
             output_cadence_steps={}, dt_by_domain={})
         writer, state = _writer(root, lambda *a, **k: None)
         writer._full_variable_set = selected._full_variable_set
-        result = writer("d01", 0, state)
+        # Capture this synthetic fixture's initial bases before the callback,
+        # and supply the carry required by the native RK history path.
+        base = SimpleNamespace(
+            pb=state.p_total - state.p_perturbation,
+            phb=state.ph_total - state.ph_perturbation,
+            mub=state.mu_total - state.mu_perturbation,
+        )
+        result = writer("d01", 0, SimpleNamespace(state=state, base_state=base))
         with Dataset(result["wrfout"]) as ds:
             snapshots[setting] = {name: np.asarray(var[:]) for name, var in ds.variables.items()}
     full, reduced = snapshots[None], snapshots["0"]

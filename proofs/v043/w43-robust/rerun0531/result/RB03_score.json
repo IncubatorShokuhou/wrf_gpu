@@ -1,0 +1,30 @@
+{
+ "case": "20250531_18z_ERA5_r1",
+ "bundle": "v0.4.2 via bundle_consumer (compiled_new=0)",
+ "run_wall_s": 563.7,
+ "rc": 0,
+ "receipt_wall_total_s": 533.6,
+ "receipt_wall_forecast_only_s": 498.6,
+ "verdict": "PIPELINE_GREEN",
+ "all_domains_finite": true,
+ "frames": {
+  "d01": 73,
+  "d02": 73,
+  "d03": 73
+ },
+ "output_bytes": 21825069880,
+ "nvme3n1_util_pct": {
+  "n_5s_samples": 113,
+  "mean": 20.4,
+  "median": 13.1,
+  "p95": 70.26,
+  "max": 97.8,
+  "frac_gt_50": 0.124
+ },
+ "nvme3n1_write_MBps_mean": 64.1,
+ "nvme3n1_w_await_ms_mean": 22.53,
+ "hibernate_during_run": "none",
+ "gpu_arm_cores": "3 (taskset)",
+ "rule": "wall<=600 AND 73 frames/domain -> ENVIRONMENT; wall>900 with util<50% -> CASE; else INCONCLUSIVE",
+ "outcome": "ENVIRONMENT"
+}

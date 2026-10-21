@@ -1,0 +1,346 @@
+{
+ "args": {
+  "out": "<DATA_ROOT>/wrf_gpu2/worktrees/w43-148fid/analysis/data/sibling_gpu3",
+  "case": "<DATA_ROOT>/wrf_gpu2/v025/s0_case_20260725",
+  "max_dom": "2",
+  "copies": "3",
+  "mode": "release",
+  "phases": "ORD,RAD",
+  "skip_mutant": "True",
+  "skip_isolated": "True",
+  "require_gpu": "True",
+  "lower_only": "False",
+  "reuse_check": "False",
+  "abort_on_recompile": "True",
+  "testbed": "False"
+ },
+ "platform": "gpu",
+ "device": "cuda:0",
+ "env": {
+  "GPUWRF_ACOUSTIC_ALIAS": "1",
+  "GPUWRF_ACOUSTIC_MASS_BLOCK": "1",
+  "GPUWRF_ACOUSTIC_NO_MU_FLOOR": "1",
+  "GPUWRF_ACOUSTIC_UV_MASKED": "1",
+  "GPUWRF_ACOUSTIC_W2PASS": "3",
+  "GPUWRF_ACOUSTIC_W_RECUR_SL": "1",
+  "GPUWRF_BOUNDARY_FP32": "1",
+  "GPUWRF_CARRY_DONATE": "1",
+  "GPUWRF_CARRY_REAL_ALL": "1",
+  "GPUWRF_CENSUS": "0",
+  "GPUWRF_DYN_ADVECTION_FP32": "1",
+  "GPUWRF_DYN_CARRY_FP32": "1",
+  "GPUWRF_DYN_DIFFUSION_FP32": "1",
+  "GPUWRF_DYN_FP32": "1",
+  "GPUWRF_DYN_GLUE_FUSED": "momuvn_rhsph_uvn_pin",
+  "GPUWRF_DYN_PD_FP32": "1",
+  "GPUWRF_DYN_PD_SPECIES_LOOP": "1",
+  "GPUWRF_DYN_REAL_ALL": "1",
+  "GPUWRF_DYN_RK_FP32": "1",
+  "GPUWRF_EDMF_FUSED_PLUME": "1",
+  "GPUWRF_GPU_LOCK_FD": "9",
+  "GPUWRF_GPU_LOCK_FILE": "/tmp/wrf_gpu2_gpu.lock",
+  "GPUWRF_GPU_LOCK_HELD": "1",
+  "GPUWRF_GPU_LOCK_HOLDER_FILE": "/tmp/wrf_gpu2_gpu.lock.holder",
+  "GPUWRF_GPU_LOCK_LABEL": "w43-148fid",
+  "GPUWRF_GPU_LOCK_TOKEN": "gpuwrf-lock-2184475-1324-1792596014092105439",
+  "GPUWRF_GWDO_NATIVE_REAL": "1",
+  "GPUWRF_HISTORY_INSTEP_DIAG": "1",
+  "GPUWRF_HISTORY_SWDOWN_HORIZONTAL": "1",
+  "GPUWRF_JAX_CACHE": "0",
+  "GPUWRF_KF_COLUMN_FP32": "1",
+  "GPUWRF_KF_PHYD_WRF": "1",
+  "GPUWRF_KF_REAL_CONSTANTS": "1",
+  "GPUWRF_KF_RESIDENT_TABLES": "1",
+  "GPUWRF_KF_TEND_RK_WRF": "1",
+  "GPUWRF_LAND_Q2_CAP_POSTLSM": "1",
+  "GPUWRF_LAYOUT_PIN": "ac_carry_cols_cum",
+  "GPUWRF_MCICA_JUMPAHEAD": "1",
+  "GPUWRF_MCICA_KISS_KERNEL": "1",
+  "GPUWRF_MCICA_LEGACY_FP64": "0",
+  "GPUWRF_MYNN_CLOUDMIX": "1",
+  "GPUWRF_MYNN_CONDENSATION_WRF": "1",
+  "GPUWRF_MYNN_DHEAT": "1",
+  "GPUWRF_MYNN_DMP_KTOP_BOUND": "1",
+  "GPUWRF_MYNN_ELB_MF": "1",
+  "GPUWRF_MYNN_ELH_BUDGET": "1",
+  "GPUWRF_MYNN_FLTV_WRF": "1",
+  "GPUWRF_MYNN_FP32_BOULAC": "0",
+  "GPUWRF_MYNN_FP32_COLUMNS": "1",
+  "GPUWRF_MYNN_FP32_PLUME": "1",
+  "GPUWRF_MYNN_PHY_EXNER": "1",
+  "GPUWRF_MYNN_PLUME_CLOUD_BASE": "1",
+  "GPUWRF_MYNN_PLUME_SUMS": "1",
+  "GPUWRF_MYNN_PREDICT_SAW_FLOOR": "1",
+  "GPUWRF_MYNN_PSIG_CLAMP": "1",
+  "GPUWRF_MYNN_PSIQ_FLUX_WRF": "1",
+  "GPUWRF_MYNN_QNI_MIXING": "1",
+  "GPUWRF_MYNN_REAL_CONSTANTS": "1",
+  "GPUWRF_MYNN_RHOSFC_WRF": "1",
+  "GPUWRF_MYNN_SCALE_AWARE": "1",
+  "GPUWRF_MYNN_SFC_PBLH_WRF": "1",
+  "GPUWRF_MYNN_SFC_PSI_REAL": "1",
+  "GPUWRF_MYNN_SFC_WSPD": "1",
+  "GPUWRF_MYNN_SGS_MIXING_RATIO": "1",
+  "GPUWRF_MYNN_SHSM_FLOORS": "1",
+  "GPUWRF_MYNN_SOURCE_PARITY2": "1",
+  "GPUWRF_MYNN_TKEPROD_UP": "1",
+  "GPUWRF_MYNN_TRIDIAG_REAL": "1",
+  "GPUWRF_NESTED_AOT": "0",
+  "GPUWRF_NEST_O3_FROM_PARENT": "1",
+  "GPUWRF_NEST_SCALAR_SPEC_FINAL": "1",
+  "GPUWRF_NOAHMP_COLUMN_KERNELS": "1",
+  "GPUWRF_NOAHMP_ITERATION_BARRIER": "1",
+  "GPUWRF_NOAHMP_JULIAN_ADVANCE": "1",
+  "GPUWRF_NOAHMP_LAYER_LISTS": "1",
+  "GPUWRF_NOAHMP_LAYER_SELECT": "1",
+  "GPUWRF_NOAHMP_NATIVE_REAL": "1",
+  "GPUWRF_NOAH_CANWATER_ELAI": "1",
+  "GPUWRF_NOAH_QSFC_WRF": "1",
+  "GPUWRF_NOAH_URBAN_SOIL_PARAMS": "1",
+  "GPUWRF_PHYS_TEND_RK_WRF": "1",
+  "GPUWRF_PHY_PREP_REAL_CONST": "1",
+  "GPUWRF_ROOT_SCALAR_BDY_RK1": "1",
+  "GPUWRF_RRTMG_COLUMN_TILE_COLS": "4096",
+  "GPUWRF_RRTMG_LW_BAND_SUMS": "1",
+  "GPUWRF_RRTMG_LW_FUSED_TRANSFER": "1",
+  "GPUWRF_RRTMG_MAXRAND": "1",
+  "GPUWRF_RRTMG_MP_RE": "1",
+  "GPUWRF_RRTMG_REAL_CONSTANTS": "1",
+  "GPUWRF_RRTMG_SW_BAND_SUMS": "1",
+  "GPUWRF_RRTMG_SW_FUSED_QUADRATURE": "1",
+  "GPUWRF_RRTMG_SW_REFTRA_WRF": "1",
+  "GPUWRF_SFCLAY_NATIVE_REAL": "1",
+  "GPUWRF_SOLAR_JULIAN_WRF": "1",
+  "GPUWRF_SPEC_RING_SELECT": "1",
+  "GPUWRF_SPEC_W_WORK_COPY": "1",
+  "GPUWRF_THOMPSON_COLUMN_LAYOUT": "1",
+  "GPUWRF_THOMPSON_COLUMN_SED": "1",
+  "GPUWRF_THOMPSON_FP32": "0",
+  "GPUWRF_THOMPSON_FULL_COLUMN": "1",
+  "GPUWRF_THOMPSON_FULL_COLUMN_EARLY_EXIT": "1",
+  "GPUWRF_THOMPSON_IMPLICIT_SED": "0",
+  "GPUWRF_THOMPSON_MIXED_PHASE_WRF": "1",
+  "GPUWRF_THOMPSON_NATIVE_REAL": "1",
+  "GPUWRF_THOMPSON_SED_FP32": "1",
+  "GPUWRF_THOMPSON_SED_PREP_FUSED": "0",
+  "GPUWRF_THOMPSON_WRF_CONSTANTS": "1",
+  "GPUWRF_WRITER_RVOVRD_REAL": "1",
+  "GPUWRF_W_DAMP_STAGE": "1",
+  "GPUWRF_W_SURFACE_RESET": "1",
+  "GPUWRF_XLA_AUTOTUNE_CACHE_DIR": "<DATA_ROOT>/wrf_gpu2/worktrees/w43-148fid/analysis/data/gpu_autotune",
+  "JAX_ENABLE_X64": "true",
+  "JAX_PALLAS_USE_MOSAIC_GPU": "false",
+  "XLA_FLAGS": "--xla_gpu_enable_command_buffer=+CONDITIONAL,+WHILE --xla_enable_command_buffers_during_profiling=true --xla_disable_hlo_passes=fusion-dynamic-memcpy-rewriter"
+ },
+ "timings": {
+  "loaded": 116.3,
+  "built": 116.3,
+  "perturbed": 117.9,
+  "ORD_A": 535.1,
+  "ORD_B": 536.0,
+  "ORD_C": 538.2,
+  "ORD_done": 542.7,
+  "RAD_A": 544.0,
+  "RAD_B": 545.1,
+  "RAD_C": 547.2,
+  "RAD_done": 549.8,
+  "end": 551.3
+ },
+ "jax_devices": [
+  "cuda:0"
+ ],
+ "nvidia_smi_start": "real 2026-10-21T15:20:14Z sys 2026-10-21T15:20:14Z\nREM=3246 real s, inner timeout TSYS=2921 sys s, COPIES=3\nname, memory.used [MiB], memory.total [MiB]\nNVIDIA GeForce RTX 5090, 3034 MiB, 32607 MiB\npid, process_name, used_gpu_memory [MiB]\n9310, /opt/google/chrome/chrome --type=gpu-process --gpu-recent-crash-count=0 --ozone-platform=wayland --render-node-override=/dev/dri/renderD128 --crashpad-handler-pid=9130 --enable-crash-reporter=? --change-stack-guard-on-fork=enable --gpu-preferences=YAAAAAAAAAAgAQAEAAAAAAAAAAAAAGAASAAAAAAAAAABAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAACAAAAAAAAAAAAAAAAAAAAMAAAAAAAAAAwAAAAAAAAAAAAAAAAAAAACAAAAAAAAAAMAAAAAQAAAAAAAAAAAAAACAAAAAAAAAAIAAAAAAAAAA== --shared-files --metrics-shmem-handle=4?i?18312272608804081391?10333062755002981450?262144 --field-trial-handle=3?i?1480284243826983197?10121230962533940146?262144 --variations-seed-version=20261019-090048.513000-production --pseudonymization-salt-handle=7?i?12737407415911591266?49379823354340027?4 --trace-process-track-uuid=3190708988185955192, 159 MiB\n9426, /opt/Signal/signal-desktop --type=gpu-process --ozone-platform=wayland --render-node-override=/dev/dri/renderD128 --enable-crash-reporter=47264743-0c54-4076-ad73-d93c6a058236?no_channel --user-data-dir=<USER_HOME>/.config/Signal --gpu-preferences=YAAAAAAAAAAgAQAEAAAAAAAAAAAAAGAASAAAAAAAAAABAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAACAAAAAAAAAAAAAAAAAAAAMAAAAAAAAAAwAAAAAAAAAAAAAAAAAAAACAAAAAAAAAAMAAAAAQAAAAAAAAAAAAAACAAAAAAAAAAIAAAAAAAAAA== --shared-files --field-trial-handle=3?i?2172563030416938697?15866766600833511975?262144 --enable-features=PdfUseShowSaveFilePicker --disable-features=DropInputEventsWhilePaintHolding?HardwareMediaKeyHandling?LocalNetworkAccessChecks?ScreenAIOCREnabled?SpareRendererForSitePerProcess?TraceSiteInstanceGetProcessCreation --variations-seed-version --pseudonymization-salt-handle=7?i?11718209036299653860?5041978032913761388?4 --trace-process-track-uuid=3190708988185955192, 149 MiB\n31525, /usr/bin/krunner, 81 MiB\n387421, /usr/bin/plasmashell, 914 MiB\n",
+ "compile_counts": {
+  "loaded": {
+   "trace": 1016,
+   "backend_compile": 1047,
+   "fused_trace": 0,
+   "fused_compile": 0,
+   "fused_compile_s": 0.0,
+   "proxy_trace": 0
+  },
+  "built": {
+   "trace": 1016,
+   "backend_compile": 1047,
+   "fused_trace": 0,
+   "fused_compile": 0,
+   "fused_compile_s": 0.0,
+   "proxy_trace": 0
+  },
+  "perturbed": {
+   "trace": 1016,
+   "backend_compile": 1047,
+   "fused_trace": 0,
+   "fused_compile": 0,
+   "fused_compile_s": 0.0,
+   "proxy_trace": 0
+  },
+  "ORD_A": {
+   "trace": 1017,
+   "backend_compile": 1048,
+   "fused_trace": 1,
+   "fused_compile": 1,
+   "fused_compile_s": 366.4,
+   "proxy_trace": 0
+  },
+  "ORD_B": {
+   "trace": 1017,
+   "backend_compile": 1048,
+   "fused_trace": 1,
+   "fused_compile": 1,
+   "fused_compile_s": 366.4,
+   "proxy_trace": 0
+  },
+  "ORD_C": {
+   "trace": 1017,
+   "backend_compile": 1048,
+   "fused_trace": 1,
+   "fused_compile": 1,
+   "fused_compile_s": 366.4,
+   "proxy_trace": 0
+  },
+  "ORD_done": {
+   "trace": 1017,
+   "backend_compile": 1048,
+   "fused_trace": 1,
+   "fused_compile": 1,
+   "fused_compile_s": 366.4,
+   "proxy_trace": 0
+  },
+  "RAD_A": {
+   "trace": 1017,
+   "backend_compile": 1048,
+   "fused_trace": 1,
+   "fused_compile": 1,
+   "fused_compile_s": 366.4,
+   "proxy_trace": 0
+  },
+  "RAD_B": {
+   "trace": 1017,
+   "backend_compile": 1048,
+   "fused_trace": 1,
+   "fused_compile": 1,
+   "fused_compile_s": 366.4,
+   "proxy_trace": 0
+  },
+  "RAD_C": {
+   "trace": 1017,
+   "backend_compile": 1048,
+   "fused_trace": 1,
+   "fused_compile": 1,
+   "fused_compile_s": 366.4,
+   "proxy_trace": 0
+  },
+  "RAD_done": {
+   "trace": 1017,
+   "backend_compile": 1048,
+   "fused_trace": 1,
+   "fused_compile": 1,
+   "fused_compile_s": 366.4,
+   "proxy_trace": 0
+  },
+  "end": {
+   "trace": 1017,
+   "backend_compile": 1048,
+   "fused_trace": 1,
+   "fused_compile": 1,
+   "fused_compile_s": 366.4,
+   "proxy_trace": 0
+  }
+ },
+ "children": [
+  "d02",
+  "d02",
+  "d02"
+ ],
+ "child_shapes": [
+  [
+   44,
+   117,
+   267
+  ],
+  [
+   44,
+   117,
+   267
+  ],
+  [
+   44,
+   117,
+   267
+  ]
+ ],
+ "parent_cadence": 33,
+ "child_cadences": [
+  100,
+  100,
+  100
+ ],
+ "ratios": [
+  3,
+  3,
+  3
+ ],
+ "bdy_widths": [
+  5,
+  5,
+  5
+ ],
+ "peak_rss_gib": 12.81,
+ "perturbation": "all float carry leaves x(1+1e-2 N(0,1)); theta/u/v + N(0,1) K or m/s",
+ "perturb_signature": {
+  "0": {
+   "treedef_equal": true,
+   "n_leaves": 170,
+   "leaves_differing": 0,
+   "by_attribute": {}
+  },
+  "1": {
+   "treedef_equal": true,
+   "n_leaves": 170,
+   "leaves_differing": 0,
+   "by_attribute": {}
+  }
+ },
+ "results": {
+  "ORD": {
+   "parent_start": 2,
+   "child_start": 4,
+   "child_steps": [
+    4,
+    6
+   ],
+   "radiation_step_in_child_steps": false,
+   "radiation_step_in_parent_step": false,
+   "n_leaves_per_child": 170,
+   "gate_checks": 1046,
+   "gate_failures": [],
+   "gate_pass": true,
+   "perturbed_child_leaves_differing_B": 112,
+   "perturbed_child_leaves_differing_C": 112,
+   "child0_leaves_changed_by_step": 82,
+   "child0_step_maxabs_change": 1001215104.0,
+   "child0_radiation_diag_leaves_changed": 0
+  },
+  "RAD": {
+   "parent_start": 34,
+   "child_start": 100,
+   "child_steps": [
+    100,
+    102
+   ],
+   "radiation_step_in_child_steps": true,
+   "radiation_step_in_parent_step": true,
+   "n_leaves_per_child": 170,
+   "gate_checks": 1046,
+   "gate_failures": [],
+   "gate_pass": true,
+   "perturbed_child_leaves_differing_B": 110,
+   "perturbed_child_leaves_differing_C": 110,
+   "child0_leaves_changed_by_step": 94,
+   "child0_step_maxabs_change": 1001205888.0,
+   "child0_radiation_diag_leaves_changed": 8
+  }
+ },
+ "verdict": "PASS"
+}

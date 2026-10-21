@@ -831,6 +831,9 @@ def _maybe_reexec_for_nested_allocator(args: argparse.Namespace) -> None:
 
 
 def _cmd_run(args: argparse.Namespace) -> int:
+    from gpuwrf.runtime.host_suspend import SuspendWatch
+
+    suspend_watch = SuspendWatch()  # host sleep during the run invalidates its timings (E60)
     dry_run = bool(getattr(args, "dry_run", False))
 
     # Domain-count selectors are mutually exclusive (cheap check, pre-anything).
@@ -1293,7 +1296,9 @@ def _cmd_run(args: argparse.Namespace) -> int:
             if cleanup_scratch:
                 shutil.rmtree(scratch_dir, ignore_errors=True)
             return _fail(
-                f"nested forecast failed ({type(exc).__name__}: {exc})", code=1
+                f"nested forecast failed ({type(exc).__name__}: {exc})"
+                + suspend_watch.failure_note(checkpoint_dir=nested_config.checkpoint_dir),
+                code=1,
             )
         finally:
             if cleanup_scratch:
@@ -1304,6 +1309,13 @@ def _cmd_run(args: argparse.Namespace) -> int:
         if gpu_preflight is not None:
             payload["gpu_preflight"] = gpu_preflight
         payload["gpu_architecture"] = gpu_architecture
+        payload["host_suspend"] = suspend_watch.summary()
+        if payload["host_suspend"]["timing_valid"] is False:
+            print(
+                f"gpuwrf: warning: host was suspended for {payload['host_suspend']['suspended_s']:.0f} s "
+                "during this run; its wall timings are not valid.",
+                file=sys.stderr,
+            )
         # Persist the run payload alongside the single-domain pipeline artifact name.
         proof_dir.mkdir(parents=True, exist_ok=True)
         (proof_dir / "nested_pipeline_run.json").write_text(
@@ -1371,6 +1383,7 @@ def _cmd_run(args: argparse.Namespace) -> int:
     payload["scratch_dir"] = str(scratch_dir)
     payload.update(run_metadata)
     payload["gpu_architecture"] = gpu_architecture
+    payload["host_suspend"] = suspend_watch.summary()
 
     verdict = str(payload.get("verdict", "UNKNOWN"))
     exit_code = 0 if verdict == "PIPELINE_GREEN" else 1

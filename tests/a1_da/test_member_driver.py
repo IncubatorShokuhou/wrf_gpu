@@ -5,6 +5,7 @@ in-process == separate-process bitwise proof is proofs/w41_da_cycle (Swiss d01, 
 """
 from __future__ import annotations
 
+import inspect
 import json
 import os
 import shutil
@@ -135,6 +136,9 @@ def test_driver_refuses_a_process_without_the_package_bootstrap(tmp_path, monkey
 
 
 def _memo_of(advance):
+    # Record-window dispatch wraps the AOT implementation; its per-tree memo
+    # belongs to the inner callable, not the public advance closure.
+    advance = inspect.getclosurevars(advance).nonlocals["_advance_windowed"]
     cells = dict(zip(advance.__code__.co_freevars, advance.__closure__))
     return tuple(cells[k].cell_contents for k in ("_aot_calls", "_aot_attempted", "_aot_loaded_keys"))
 

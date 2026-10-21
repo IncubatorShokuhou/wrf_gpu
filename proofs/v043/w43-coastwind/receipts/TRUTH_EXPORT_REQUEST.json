@@ -1,0 +1,12 @@
+{
+ "lane": "w43-coastwind",
+ "refers_to_admission": {
+  "path": "<DATA_ROOT>/alisios/state/manager/cross/TO_WRF_GPU2_ADMISSION_w43-coastwind_20261020T220836.json",
+  "sha256": "46b231cdf5f5c0fa55748ca1ba204577fb483bc03bfa404cdcc018ab209b5ad1",
+  "admission_id": "A-V043-COASTWIND-T1-TRUTH"
+ },
+ "why": "docs/GUARDED_READ.md: mixed ObsDB archives need a manager-admitted trusted export first; the facade does not extract. obs.duckdb snapshot holds days outside the 95 admitted ones, so complete=True coverage cannot be declared -> nothing opened.",
+ "request": "one trusted export file (parquet or csv) per the admission: stations elmedano:ELMEDANO_T1_DESHIELDED, elmedano:ELMEDANO_T2_ONWATER, cabezo:CABEZO_SURF, windguru:14924, wu:elmedano_cabezo_station_wmr928_min5; variables wind_speed_ms, wind_gust_ms, wind_dir_deg; valid days = the 95 admitted days; columns station_id, timestamp_utc, value columns, native averaging period/interval if known; plus a tiny station-metadata export (lat, lon, altitude, meta/exposure/sensor height) for the same 5 stations",
+ "target_location": "anywhere under <DATA_ROOT>/alisios (we read via GuardedRead with Target(export, issues, 95 valid days, complete=True)) or a copy under cross/",
+ "also": "if available: the training table behind config/elmedano/elmedano_correction_model_v1.json is NOT requested (no fit); only the frozen model JSON (already readable as ALISIOS code)"
+}

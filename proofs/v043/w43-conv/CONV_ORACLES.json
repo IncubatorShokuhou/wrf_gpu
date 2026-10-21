@@ -1,0 +1,187 @@
+{
+ "CT03_thompson": {
+  "census": {
+   "n": 586,
+   "max_qr": 0.005034392233937979,
+   "max_qg": 0.004729956388473511,
+   "max_w": 23.425365447998047,
+   "min_w": -5.536460876464844,
+   "cols_qr_ge_3gkg": 112,
+   "cols_qg_ge_2gkg": 68,
+   "cols_wrf_precip_ge_0p1mm": 170,
+   "max_wrf_precip_step_mm": 0.5088170766830444,
+   "cols_with_dqg_wrf": 556
+  },
+  "n_fail": 0,
+  "worst_excess": {
+   "qv": 9.944275734099902e-05,
+   "qc": 0.0,
+   "qr": 0.0030947580538619305,
+   "qi": 0.0,
+   "qs": 0.002809167130351716,
+   "qg": 0.0025040702418430657,
+   "ni": 0.0,
+   "nr": 0.0007991318833554381,
+   "th": 2.901364113326333e-05,
+   "precip": 0.0
+  },
+  "precip_sum_wrf_port": [
+   52.005480532784404,
+   52.006831895608116
+  ]
+ },
+ "CT04_mutants": {
+  "mp_off": 2626,
+  "const_off": 0,
+  "nstep1": 381
+ },
+ "CM01_mynn": {
+  "all_pass": true,
+  "operands": "p_hyd, pi_phy dynamic, hypso2 rho (delta 1)",
+  "max_abs_rth": 2.0345054508652538e-05
+ },
+ "CS01_mynnsl": {
+  "all_pass": true,
+  "operands": "p_hyd, hypso2 rho (delta 1)",
+  "max_rel": {
+   "u10": 4.397784720752002e-06,
+   "v10": 4.39948634341662e-06,
+   "t2": 2.0784783543107225e-07,
+   "hfx": 0.002750223549412991,
+   "br": 0.0015198509160215695
+  }
+ },
+ "CS02_mutants": {
+  "mol0": false,
+  "nopblh": true
+ },
+ "CD01_sixth": {
+  "all_pass": true
+ },
+ "CA01_pd": {
+  "all_pass": true
+ },
+ "CK01_kh": {
+  "all_pass": true
+ },
+ "CK02_nozx_killed": true,
+ "CD02_hdiff": {
+  "all_pass": true
+ },
+ "CW01_acoustic": {
+  "passed": true,
+  "stages": [
+   true,
+   true,
+   true
+  ]
+ },
+ "CW02_epssm_killed": true,
+ "w_damping_cfl_max": 0.567,
+ "verdict": "ALL CPU same-input one-call operator oracles PASS on real #148 convective inputs at the supplied operands, and the Triton GPU arm CG01-08 PASSES all 8 families with full coverage (asserted RTX 5090); no operator mismatch localised; production-adapter operand construction, warm MYNN state and step coupling not validated",
+ "CT03b_finite_controls_all_fail": true,
+ "w_damping": "inactive on sampled hourly states (CFL<=0.567 ours / 0.524 critic); intervening stages not excluded",
+ "OPEN": [
+  "MYNN warm state QSQ/TSQ/COV/SGS cloud/exch/RTHRATEN zero in F20 caller",
+  "cloudy radiation",
+  "Noah-MP under rain",
+  "KF",
+  "nest boundaries",
+  "RK coupling/h_diabatic",
+  "multi-step"
+ ],
+ "GPU_CG01_08": {
+  "real_utc": "2026-10-21T11:35:23Z..11:40:38Z",
+  "snapshot": "ef7bd20477",
+  "manifest_sha256": "7704262395e691590a3815850ceacb8938a97392e391038afd3a3c099f075c5a",
+  "src_tree": "b3e9b92a8c",
+  "device": "NVIDIA GeForce RTX 5090 cuda:0 (asserted in all 8 processes)",
+  "verdicts": {
+   "CG01_thompson": true,
+   "CG02_sixth": true,
+   "CG03_mynn": true,
+   "CG04_pd": true,
+   "CG05_mynnsl": true,
+   "CG06_kh": true,
+   "CG07_hdiff": true,
+   "CG08_acoustic": true,
+   "ALL_PASS": true
+  },
+  "coverage": {
+   "cg01": {
+    "expected_columns": 586,
+    "scored_columns": 586
+   },
+   "cg02_sixth_gpu.json": {
+    "expected_frames": 11,
+    "present": 11,
+    "passing": 11,
+    "missing": []
+   },
+   "cg03_mynn_gpu.json": {
+    "expected_frames": 11,
+    "present": 11,
+    "passing": 11,
+    "missing": []
+   },
+   "cg04_pd_gpu.json": {
+    "expected_frames": 11,
+    "present": 11,
+    "passing": 11,
+    "missing": []
+   },
+   "cg05_mynnsl_gpu.json": {
+    "expected_frames": 11,
+    "present": 11,
+    "passing": 11,
+    "missing": []
+   },
+   "cg06_kh_gpu.json": {
+    "expected_frames": 11,
+    "present": 11,
+    "passing": 11,
+    "missing": []
+   },
+   "cg07_hdiff_gpu.json": {
+    "expected_frames": 11,
+    "present": 11,
+    "passing": 11,
+    "missing": []
+   },
+   "cg08": {
+    "expected_stage_steps": [
+     1,
+     2,
+     4
+    ],
+    "stage_steps": [
+     1,
+     2,
+     4
+    ],
+    "fields_per_step": [
+     14
+    ],
+    "coefficients": [
+     3,
+     3,
+     3
+    ]
+   }
+  },
+  "CG01_worst_excess": {
+   "qv": 0.0,
+   "qc": 0.0,
+   "qr": 0.0030947580538619305,
+   "qi": 0.0,
+   "qs": 0.002809167130351716,
+   "qg": 0.0025040702418430657,
+   "ni": 0.0,
+   "nr": 0.0007843679948424815,
+   "th": 0.0,
+   "precip": 0.0
+  },
+  "CG08_worst_ratio": 0.222,
+  "label": "M"
+ }
+}

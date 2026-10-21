@@ -1,6 +1,14 @@
 # Release notes
 
-**v0.4.2 — 19 October 2026** keeps the v0.4.1 default model program, confirms the v0.4.1
+**v0.4.3 — 21 October 2026** keeps the v0.4.2 forecast model (compiled programs checked against
+v0.4.2), adds a three-nest 72-hour qualification table against CPU-WRF, a status for every item
+an operational user reported, and a host-suspend record in the run receipt.
+
+- [v0.4.3 release notes](RELEASE_NOTES_v0.4.3.md)
+- [v0.4.3 per-option matrix](../docs/release/SUPPORT_MATRIX_v0.4.3.md)
+- [v0.4.3 command guide](../docs/release/USER_GUIDE_v0.4.3.md)
+
+**v0.4.2 released — 19 October 2026** keeps the v0.4.1 default model program, confirms the v0.4.1
 shortwave fix against WRF's code path (with an opt-out for v0.4.0 continuity), makes WDM6
 microphysics about three times faster, validates four more boundary layers inside nested
 domains and adds the cloud-free radiation switch `icloud=0`.

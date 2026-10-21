@@ -1,0 +1,114 @@
+{
+ "lane": "w43-coastwind",
+ "report": "analysis/COASTWIND.md",
+ "A_ENGINE": {
+  "verdict": "NO_EVIDENCE_OF_SYSTEMATIC_COASTAL_PORT_WIND_BIAS_IN_F20 (floor/72h PENDING)",
+  "label": "M",
+  "statistics": "bias + POOLED space-time RMSE + mean-hourly RMSE (labelled) + max abs with lead/cell/day-night: analysis/QA_FIX.json",
+  "key": {
+   "0227_d03_sea_19_55": {
+    "bias": 0.0068,
+    "rmse_pooled": 0.0252,
+    "maxabs": 0.066
+   },
+   "0227_d03_urban_20_55": {
+    "bias": 0.0052,
+    "rmse_pooled": 0.0258,
+    "maxabs": 0.069
+   },
+   "0227_d03_medano_box": {
+    "bias": -0.0013,
+    "rmse_pooled": 0.0752,
+    "rmse_mean_hourly": 0.0433,
+    "maxabs": 0.818
+   },
+   "0227_d03_coast_sea": {
+    "bias": 0.0009,
+    "rmse_pooled": 0.172,
+    "rmse_mean_hourly": 0.1304,
+    "maxabs": 3.947,
+    "at": "tau23 night 28.288N -16.896E NW Teno corner coastal sea cell; event patch 39 cells, largest patch 46; corner-jet/non-convective mechanism = inference [I]"
+   }
+  },
+  "control_cpu_twin_tau1_22": {
+   "d03_coast_sea": {
+    "twin_pooled": 0.121,
+    "twin_max": 3.059,
+    "gpu_pooled": 0.135,
+    "gpu_max": 3.649
+   },
+   "note": "twin differs in decomposition 4x1 vs 2x2 AND restart_interval 180->100000 (IO only); twin max 3.059 at the same cell tau22 (GPU 3.649 at tau22); GPU 3.947 at tau23 is outside the scored twin leads 1-22; GPU/twin pooled ratio 1.0-1.4 on every mask"
+  },
+  "scope_notes": [
+   "'GPU==CPU to 0.01' applies only to aggregate truth statistics",
+   "WT1 v0.3.3 vs WT2 72h pairs differ in moisture init: context only, no engine isolation",
+   "ZNT absent from all 144 paired files",
+   "CPU floor 72h (w43-teacher A3) and matched v0.4.2 72h check PENDING"
+  ],
+  "control_cpu_twin_tau1_24": {
+   "artifact": "analysis/QA_FIX_t24.json",
+   "d03_pooled_twin_vs_gpu": {
+    "coast_sea": [
+     0.138,
+     0.172
+    ],
+    "coast_land": [
+     0.121,
+     0.131
+    ],
+    "open_sea": [
+     0.098,
+     0.12
+    ],
+    "medano_box": [
+     0.052,
+     0.075
+    ],
+    "sea_19_55": [
+     0.049,
+     0.025
+    ],
+    "urban_20_55": [
+     0.041,
+     0.026
+    ]
+   },
+   "maxima": "coast-sea twin 3.059 tau22 / GPU 3.947 tau23 same cell (47,20); open-sea twin 5.583 / GPU 6.233 both tau23 same cell (38,19)",
+   "ratio_gpu_over_twin": "0.5-1.4"
+  }
+ },
+ "B_CONFIG": {
+  "verdict": "CONFIG_WRF_INHERENT_IN_CPU; GPU_V042_MAXDOM_INVARIANT_D01_D03 (not same kind); ALISIOS_V033_DIFFERENCE_CAUSE_UNKNOWN",
+  "label": "M (CPU CW-B01; GPU CW-B02: one date W9N 0316, 0-3 h history frames only) / I (WRF mechanism) / U (v0.3.3 cause)",
+  "evidence": [
+   "CW-B01 CPU-WRF n3==n3b bitwise; n3 vs n9 +1h d01 bitwise, d02 257/375 equal (U10 .018), d03 260/375 (U10 .019) (analysis/maxdom/CPU_MAXDOM_*.json)",
+   "WRF source: module_integrate.F:410-423, mediation_force_domain.F:111-123/191-202, couple_or_uncouple_em.F:274+ (parent in-place couple/uncouple once per child)",
+   "CW-B02 GPU v0.4.2 bundle (bfa2dc90), W9N 20260316_12z, max_dom 3 vs 9, 3 h, inputs d01-d03 sha-identical, namelist diff max_dom only, both rc 0, bundle OK before/after, no hibernation; m3 bundle hit (compiled_new 0), m9 fused-key miss 6894af7f vs m3 ac024b4c, own 9-nest program (compiled_new 4127 = new cache files: 2925 JIT + 1150 autotune + 26 AOT meta + 26 AOT exec; no timing/warm-cache claim): d01/d02/d03 377/377 byte-equal in all 4 frames, 0 missing (analysis/maxdom/GPU_MAXDOM_m3_vs_m9.json; launcher gpu_maxdom_v2.sh sha 8d10f474, commit 0d481f007f)",
+   "context: GPU m3 vs CPU n3 +1h U10 max d01 .134 / d02 .353 / d03 .777 m/s (analysis/maxdom/CPU_n3_vs_GPU_m3.json) - engine difference, not a floor"
+  ],
+  "alisios_consequence": "GPU v0.4.2 9-nest d03 == 3-nest d03 for W9N 0316 over 0-3 h history frames only; other dates, later leads/72 h and general teacher-label poolability NOT qualified by this check; CPU-WRF teachers at different max_dom are different round-off-seeded realizations -> compare/pool at same max_dom or treat as twin floor; v0.3.3 9-vs-3 differences not reproduced on v0.4.2 (cause UNKNOWN; not explained or closed by this check)",
+  "optional": "WRF build calling parent couple/uncouple 6 extra times with max_dom 3 should reproduce CPU max_dom 9 d02 bitwise (mechanism proof, not run)"
+ },
+ "C_PHYSICS_AS_WRF": {
+  "verdict": "NOT_A_BUG as a port conclusion; conditional verification error remains meaningful",
+  "label": "M",
+  "evidence": [
+   "all-hours bias vs T1: sea +1.045, scal-bil ALISIOS +0.677, scal-bil T1 +0.610, vec-bil T1 +0.591 (positive); urban -0.792 (negative)",
+   "obs-selected surf (T1>=15kt 10-18L, n439): sea +0.027, ALISIOS -0.492 (T2 -1.318), urban -2.292",
+   "fcst-selected surf: sea +0.920, ALISIOS +0.447",
+   "per-issue negative all-hours sea->T1: 4/33 (bilinear 8/33, urban 26/33)",
+   "T1 = Cabezo(5 m shielded)+delta fitted to max(Cabezo,WG); T2 = T1*1.08-1.12",
+   "ALISIOS: their figures are surf-day conditioned (Oct episode, no October truth read here)",
+   "negative values also in individual issues: sea cell 4/33, bilinear 8/33, urban 26/33"
+  ],
+  "operators": "analysis/QC_TRUTH_OPS.json (vec-bil vs scal-bil at T1 differ mean -0.019, max 1.46 m/s)",
+  "options_unvalidated": [
+   "score per wind class / forecast-conditioned or full samples",
+   "model point by exposure",
+   "consistent uplift model and truth",
+   "land-use sensitivity needs its own WRF arm; magnitude unknown"
+  ],
+  "engine_note": "aggregate truth statistics GPU vs CPU identical to 0.01 m/s (aggregates only); pointwise GPU-CPU differences up to 3.9 m/s (Q-A)"
+ },
+ "status": "stage 1 MERGE (critic DELTA2 2a9dbc0968) + addendum CW-A04; stage 2 CW-B02 critic FIX 6b9ad8d1 (scope) applied -> READY-FOR-CRITIC DELTA2"
+}

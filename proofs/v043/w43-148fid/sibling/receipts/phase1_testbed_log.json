@@ -1,0 +1,100 @@
+{
+ "args": {
+  "out": "analysis/data/sibling_tb3",
+  "case": "<DATA_ROOT>/wrf_gpu2/v025/s0_case_20260725",
+  "max_dom": "2",
+  "copies": "0",
+  "mode": "legacy",
+  "phases": "ORD",
+  "skip_mutant": "False",
+  "skip_isolated": "False",
+  "require_gpu": "False",
+  "lower_only": "False",
+  "testbed": "True"
+ },
+ "platform": "cpu",
+ "device": "cpu:0",
+ "env": {
+  "GPUWRF_FAST_DEFAULTS": "0",
+  "GPUWRF_JAX_CACHE": "0",
+  "GPUWRF_NESTED_AOT": "0",
+  "JAX_PLATFORMS": "cpu"
+ },
+ "timings": {
+  "loaded": 3.7,
+  "built": 3.7,
+  "ORD_A": 102.2,
+  "ORD_B": 102.7,
+  "ORD_C": 103.3,
+  "ORD_I": 155.0,
+  "ORD_mutant": 271.3,
+  "ORD_done": 271.4,
+  "end": 271.4
+ },
+ "children": [
+  "d02",
+  "d03",
+  "d04"
+ ],
+ "child_shapes": [
+  [
+   8,
+   21,
+   24
+  ],
+  [
+   8,
+   15,
+   18
+  ],
+  [
+   8,
+   27,
+   21
+  ]
+ ],
+ "parent_cadence": 999999,
+ "child_cadences": [
+  999999,
+  999999,
+  999999
+ ],
+ "ratios": [
+  3,
+  3,
+  3
+ ],
+ "bdy_widths": [
+  5,
+  5,
+  5
+ ],
+ "peak_rss_gib": 10.18,
+ "perturbation": "all float carry leaves x(1+1e-2 N(0,1)); theta/u/v + N(0,1) K or m/s",
+ "results": {
+  "ORD": {
+   "parent_start": 2,
+   "child_start": 4,
+   "child_steps": [
+    4,
+    6
+   ],
+   "radiation_step_in_child_steps": false,
+   "radiation_step_in_parent_step": false,
+   "n_leaves_per_child": 104,
+   "gate_checks": 624,
+   "gate_failures": [],
+   "gate_pass": true,
+   "perturbed_child_leaves_differing_B": 38,
+   "perturbed_child_leaves_differing_C": 38,
+   "child0_leaves_changed_by_step": 36,
+   "child0_step_maxabs_change": 94536.84066804987,
+   "child0_radiation_diag_leaves_changed": 0,
+   "A_vs_isolated_identical_leaves": 104,
+   "A_vs_isolated_maxabs": 0.0,
+   "mutant_gate_failures": 75,
+   "mutant_killed": true
+  }
+ },
+ "verdict": "PASS"
+}

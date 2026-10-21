@@ -1,0 +1,56 @@
+{
+ "request": "manager 2026-10-21T16:45Z G-INT trace zeros",
+ "verdict": "PARTIAL (critic cr-w43-conv 2026-10-21T17:36Z): no extra final MP floor found (matches pristine R1=1e-12), onset-compatible, cause OPEN, no engine bug localized",
+ "src_tree": "b3e9b92a8c (=v0.4.2)",
+ "thompson_floor": {
+  "port": "physics/thompson_column.py:999-1033 <=R1=1e-12",
+  "wrf": "module_mp_thompson.F:4007-4060 <=R1"
+ },
+ "census": {
+  "hydrometeor": {
+   "gpu_only": 29,
+   "cpu_only": 24
+  },
+  "rainnc": {
+   "gpu_only": 13,
+   "cpu_only": 1
+  },
+  "canopy_land": {
+   "gpu_only": 35,
+   "cpu_only": 34
+  },
+  "magnitude_filtered": {
+   "gpu_only": 25,
+   "cpu_only": 19
+  },
+  "cases": 7
+ },
+ "gpu_trace_retention": "era5_20240218 v0.4.2 GPU output: thousands of cells/frame with Q* in [1e-12,1e-8]",
+ "canopy_response": {
+  "d02": "159/227 wet",
+  "d03": "948/1225 wet",
+  "rain_1h_mm": [
+   0.001,
+   0.15
+  ]
+ },
+ "items": {
+  "0220_d03_QCLOUD": "1 cell 8.87e-8, onset <=1h apart",
+  "0502_d01_QICE": "east-edge decay tail max1.59e-8",
+  "0502_d01_QGRAUP": "NW-corner onset, GPU from 05-04_13",
+  "era5_d02_canopy": "light-rain placement; d02 mean bias -0.0004 mm"
+ },
+ "artifacts": "analysis/trace_onset/",
+ "verdict_original_8b1a9ce31c": "NOT_A_BUG (no zeroing threshold); onset/decay timing of sparse features",
+ "status_line": "no extra final MP floor found (matches pristine R1=1e-12), onset-compatible, cause OPEN, no engine bug localized",
+ "critic": {
+  "verdict": "PARTIAL",
+  "path": "<USER_HOME>/wrf_gpu2_lanes/cr-w43-conv/TRACE_ZERO_VERDICT.md",
+  "sha256": "61c650bb8340c007ae9e5bb8edde221724aea163623235b71a2dae55840940fc"
+ },
+ "corrections": {
+  "qgraupel_late_tail_0502_d01_05-05_04_cpu_peak": 7.31138e-10,
+  "census_nonfinite": "no explicit finite checks: CPU-zero+NaN diff -> both0, CPU-zero+Inf diff -> GPU_ONLY, CPU NaN/Inf -> both (critic controls); 0502/0220 finite-validated by critic, other 5 cases not",
+  "gint_prereg": "FAIL verdicts unchanged; no annex/threshold change"
+ }
+}

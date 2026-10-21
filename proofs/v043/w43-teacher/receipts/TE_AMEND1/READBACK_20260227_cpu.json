@@ -1,0 +1,78 @@
+{
+  "artifacts": {
+    "METRICS.json": {
+      "bytes": 3991,
+      "sha256_ok": true
+    },
+    "POINTS.parquet": {
+      "bytes": 21337,
+      "sha256_ok": true
+    },
+    "SOURCES.json": {
+      "bytes": 56536,
+      "sha256_ok": true
+    },
+    "d01_crop_sfc.npz": {
+      "bytes": 1251794,
+      "sha256_ok": true
+    },
+    "d02_crop_sfc.npz": {
+      "bytes": 6317691,
+      "sha256_ok": true
+    },
+    "d03_sfc.npz": {
+      "bytes": 46072716,
+      "sha256_ok": true
+    },
+    "points_profile.parquet": {
+      "bytes": 46691955,
+      "sha256_ok": true
+    }
+  },
+  "domains": {
+    "d01": {
+      "allowed_nan_total": 1169,
+      "expected_nan": {
+        "rain_increment": 255,
+        "rain_rate_mm_h": 255,
+        "wind_direction_from_deg": 659
+      },
+      "foreign_nonfinite_total": 0,
+      "frames": 73,
+      "nonfinite": {}
+    },
+    "d02": {
+      "allowed_nan_total": 7882,
+      "expected_nan": {
+        "rain_increment": 1435,
+        "rain_rate_mm_h": 1435,
+        "wind_direction_from_deg": 5012
+      },
+      "foreign_nonfinite_total": 0,
+      "frames": 73,
+      "nonfinite": {}
+    },
+    "d03": {
+      "allowed_nan_total": 74192,
+      "expected_nan": {
+        "rain_increment": 10323,
+        "rain_rate_mm_h": 10323,
+        "wind_direction_from_deg": 53546
+      },
+      "foreign_nonfinite_total": 0,
+      "frames": 73,
+      "nonfinite": {}
+    }
+  },
+  "failures": [],
+  "outdir": "<USER_HOME>/wrf_gpu2_lanes/w43-teacher/te_repro/20260227_cpu",
+  "profile": {
+    "distinct_tau": 73,
+    "nonfinite": {},
+    "row_groups": 73,
+    "rows": 1352252
+  },
+  "rule": "non-finite allowed only: rain_increment/rain_rate_mm_h at frame 0; wind_direction_from_deg where wind_speed < 2 m/s same cell/frame; any other NaN/Inf = FAIL (ALISIOS confirm 2026-10-21)",
+  "status": "PASS",
+  "utc": "2026-10-21T07:15:53.821559+00:00"
+}

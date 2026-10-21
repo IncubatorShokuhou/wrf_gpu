@@ -7,6 +7,20 @@ WRF v4 GPU port — see `PROJECT_PLAN.md`).
 
 The format is loosely based on [Keep a Changelog](https://keepachangelog.com/).
 
+## [0.4.3] — 2026-10-21
+
+- Forecast model unchanged from v0.4.2: model source identical except the version line (519-file compile-key closure,
+  only `__init__.py` differs; Swiss `b977712fe325`, Canary `321aa651067f`). The v0.4.3 compile bundle reuses the v0.4.2
+  kernel tuning results; all 21 compiled programs (optimised HLO, native GPU binary) and all 716 release-check wrfout files
+  are byte-identical to v0.4.2 (bundle `bfa2dc90` -> `d2f4f197`).
+- Run receipts: `host_suspend = {suspended_s, timing_valid}` in `nested_pipeline_run.json`, a warning when the host was
+  suspended during a run, and a resume hint in the failure message (host code only; no compiled program changes).
+- Three-nest 72 h qualification table (Tenerife 9/3/1 km, WN3 and ERA5 forcing) against CPU-WRF runs from the same inputs
+  and a CPU-WRF decomposition twin: 8 forecasts (6 WN3, 2 ERA5); D6 (62 bounded fields) 23 of 24 case-domains PASS + 1 FLOOR-LIMITED (0227 d03, own
+  twin, k = 4/3, strict 0–24 h); 4 qualified, 4 not qualified on file integrity only (GPU exactly 0 where CPU-WRF holds trace amounts; cause open); 10 m wind after hour 40 held.
+- Status of the operational user's fix list: nine-domain differences (#148) inconclusive, heavy-rain cells (#149) open, coastal wind and the 31 May 2025
+  stop not model bugs, host suspend now recorded, requested features deferred (release notes table).
+
 ## [0.4.2] — 2026-10-19
 
 - Default model program unchanged from v0.4.1 (Swiss `b977712fe325`, Canary `321aa651067f`).

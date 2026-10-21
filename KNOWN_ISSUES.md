@@ -1,8 +1,92 @@
-# Known issues — v0.4.2, v0.4.1 (released 18 October 2026) and v0.4.0 (released 17 October 2026)
+# Known issues — v0.4.3, v0.4.2, v0.4.1 (released 18 October 2026) and v0.4.0 (released 17 October 2026)
 
-**v0.4.2 (released 19 October 2026).** v0.4.2 keeps the default model program of v0.4.1; its new items
-are listed first. Everything from "v0.4.1 direct-beam surface shortwave" on is the v0.4.1 and
-v0.4.0 record and still applies. Per-option status: [v0.4.2 support matrix](docs/release/SUPPORT_MATRIX_v0.4.2.md).
+**v0.4.3 (released 21 October 2026).** v0.4.3 keeps the forecast model of v0.4.2 (all 21 compiled programs and every release-check output file are identical); its
+new items are listed first. Everything from "v0.4.2: heavy-rain cells on the 1 km Tenerife domain" on
+is the v0.4.2, v0.4.1 and v0.4.0 record and still applies. Per-option status:
+[v0.4.3 support matrix](docs/release/SUPPORT_MATRIX_v0.4.3.md).
+
+## v0.4.3: nine-domain Tenerife forecast differs from CPU-WRF on the 1 km leaves
+
+**Open, cause not found.** On the first end-to-end nine-domain GPU forecast (issued 18 October 2026,
+12 UTC, seven 1 km domains next to each other inside one 3 km domain), several 1 km domains and the
+3 km domain exceed the frozen limits against CPU-WRF within 24 hours (3 km domain from hour 17, two
+1 km domains from hour 10). The 1 km domain with the same grid as the three-nest Tenerife setup does
+not. The study found no defect in the GPU model (no engine bug localised); the cause is
+**inconclusive**. A defect limited to convection is not ruled out. The frozen-limit failures stay failures.
+Accumulated rain at 72 hours differs in both directions (one 1 km domain 15 % less than CPU-WRF,
+another 14 % more). A GPU check of neighbouring
+nests that share one compiled program (the Canary Islands outer domain with three copies of its inner
+domain, one copy disturbed, over an ordinary and a radiation step) left the parent and the undisturbed
+copies byte-identical to a run without the disturbance, so a disturbance does not leak between such
+neighbours. It covered nests of equal size and one parent step; nests of different sizes were checked
+only on the CPU. Until this is resolved, nine-domain results are not qualified;
+the three-nest qualification in the [v0.4.3 notes](release_notes/RELEASE_NOTES_v0.4.3.md) does not
+cover them.
+
+## v0.4.3: heavy-rain cells — the operators checked so far agree with WRF
+
+The heavy-rain cell deficit on the 1 km Tenerife domain (below) is still open. New in v0.4.3: on
+real convective inputs from the nine-domain case, the microphysics (Thompson), boundary layer and
+surface layer (MYNN), scalar advection, sixth-order filter, horizontal diffusion and the acoustic
+step were each called once with the same inputs as original WRF 4.7.1, on the CPU and with the
+released GPU kernels. All agree within their frozen tolerances (Thompson: surface rain 52.0068 against
+52.0055 mm on 586 columns). These are single calls with given inputs. How the model assembles those
+inputs during a run, the boundary-layer state after many steps, and the coupling over a full time
+step are not covered by this check and remain open.
+
+## v0.4.3: zero output where CPU-WRF has trace amounts
+
+**Open, cause not found; no engine bug localised.** In the three-nest qualification, four of eight
+72-hour forecasts fail the file-integrity part of the check (on the 62 fields with frozen D6 limits all
+three domains of these four forecasts pass): at a
+few hours the GPU field is exactly zero where CPU-WRF holds a trace amount above the frozen allowance.
+
+| Forecast | Where (valid time, UTC) | CPU-WRF |
+| --- | --- | --- |
+| 2 May 2026 | 9 km domain: cloud ice and ice number on 3 May 07:00 (93 and 101 cells), graupel on 4 May 11:00–12:00 and 5 May 04:00 (up to 82 cells), Noah-MP rain on 5 May 08:00 (2 cells); 1 km domain: accumulated rain on 4 May 07:00 | ice up to 1.6e-8 kg/kg, graupel up to 5.6e-6 kg/kg; rain 1.9e-6 mm |
+| 20 February 2026 | 1 km domain: cloud water on 22 February 22:00 (GPU zero over the whole domain) | one cell, 8.9e-8 kg/kg |
+| 18 February 2024 (ERA5) | 9 km domain: first light rain on 19 February 06:00; 1 km domain: cloud water on 19 February 16:00 (GPU zero over the whole domain) and Noah-MP rain on 21 February 10:00 (2 cells); 3 km domain: Noah-MP rain on 21 February 15:00 (1 cell) | rain 0.0059 mm; cloud water up to 9.8e-6 kg/kg; Noah-MP rain up to 1.3e-6 |
+| 2 March 2024 (ERA5) | 3 km domain: canopy water and wet fraction on 4 March 14:00–15:00 (up to 6 cells), after much less light rain on the GPU in those cells in that hour (CPU-WRF 0.055 and 0.117 mm, GPU 0.001 and 0.005 mm) | canopy water up to 4.9e-4 mm |
+
+The microphysics removes only amounts below 1e-12 kg/kg, as WRF does, and GPU history files keep
+many values far below the flagged ones. The reverse case, CPU-WRF exactly zero where the GPU has a
+trace, occurs about as often in the same forecasts. Whether these are differences in when and where
+small amounts first appear is not established. The integrity failures stand; the limits are not changed.
+
+## v0.4.3: coastal 10 m wind near El Médano
+
+**No evidence of a systematic GPU-vs-CPU bias.** A user reported weaker coastal wind than measured near
+El Médano. There is no evidence of a systematic GPU-vs-CPU coastal wind bias in the F20 cases: over three Tenerife cases (24 h) the mean
+GPU minus CPU-WRF difference of 10 m wind speed is at most 0.007 m/s on every coastal, sea and town mask, while
+single cells differ by up to 3.9 m/s. The formal 72-hour CPU-WRF noise floor and a matched v0.4.2 72-hour check
+are pending. Against station
+data the GPU and CPU-WRF statistics agree to 0.01 m/s, and the low bias depends on which model cell
+is compared with the station (sea cell +1.0 m/s, town cell −0.8 m/s); that deficit is not a model bug. Changing the number of
+domains from three to nine leaves the three shared domains byte-identical on the GPU in one check
+(the W9N case of 16 March 2026, hours 0–3; later hours and other dates are not checked); original CPU-WRF changes them at round-off level. Compare only runs with the same number of
+domains.
+
+## v0.4.3: the 31 May 2025 case stopped at hour 58
+
+**Not a model bug.** In a user's batch this 72-hour three-nest case was stopped by the batch
+script's wall-time limit at hour 58 (d03), while the disk was nearly saturated by other writes. On a
+quiet disk the same case ran 72 hours in 564 s with all 73 output times per domain. That rerun is a
+diagnosis, not a 72-hour qualification of this case.
+
+## v0.4.3: a host suspend stops batch scripts, not the model
+
+When the computer hibernates during a run, the GPU is suspended; a batch script that queries the GPU
+can time out and stop the case. v0.4.3 records the suspended time in the run receipt
+(`host_suspend`, see the release notes). Whether a run that continues across a suspend writes
+exactly the same files as an uninterrupted run is not tested; its wall times are not valid.
+
+## v0.4.3: 10 m wind after hour 40
+
+**Held.** In all eight qualification forecasts, the bounded 10 m and 3-D wind fields pass their D6 limits from
+hour 41 to 72 on all three domains, except one value limited by the CPU-WRF noise floor (27 February, 1 km vertical
+wind at hour 69). The operational user keeps wind after hour 40 held
+until they qualify it; on the ERA5 cold-low case the 1 km 10 m wind differs from CPU-WRF 2.5 times as much as two
+CPU-WRF runs differ from each other, still within the limit.
 
 ## v0.4.2: heavy-rain cells on the 1 km Tenerife domain
 

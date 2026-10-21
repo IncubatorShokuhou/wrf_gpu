@@ -1,0 +1,203 @@
+{
+  "artifacts": {
+    "METRICS.json": {
+      "bytes": 3991,
+      "sha256": "692381742d9b9f17adac81a083f58623064f7db9e6665032bd5b42460782d57f"
+    },
+    "POINTS.parquet": {
+      "bytes": 21337,
+      "sha256": "1e6b4ea347d4041224c1627eb0c5b67c06697fa5ee39ce4f6fb24316b11759a9"
+    },
+    "SOURCES.json": {
+      "bytes": 56536,
+      "sha256": "40310a420a7a5d4543dbb104fcb338f4fa0cf83b7985e980efce2066da585322"
+    },
+    "d01_crop_sfc.npz": {
+      "bytes": 1251794,
+      "sha256": "3c91cfd651ea17f4a99a933e61dcc57e04c751f9aada1f2d5a779befcf5bfe35"
+    },
+    "d02_crop_sfc.npz": {
+      "bytes": 6317691,
+      "sha256": "8cd6380940cfdc32eddf65f80a6928b1142de69738bbf4665a89ce677f2c426a"
+    },
+    "d03_sfc.npz": {
+      "bytes": 46072716,
+      "sha256": "5b351f6ddf9d2f8e2c969309dbc76b840932c306a6130a859262079dee093dd1"
+    },
+    "points_profile.parquet": {
+      "bytes": 46691955,
+      "sha256": "ab11489d969fb222ad65513dd106cfed02f7e20a2538d3cb7653a6175f043a28"
+    }
+  },
+  "attempt": 1,
+  "canonical_cache_path": null,
+  "column_mass_formula": "-(C1H*(MU+MUB)+C2H)*DNW/9.81; hybrid native dry mass",
+  "created_utc": "2026-10-21T07:07:59.013645+00:00",
+  "crop": {
+    "d01": [
+      24,
+      39,
+      43,
+      60
+    ],
+    "d02": [
+      33,
+      68,
+      89,
+      130
+    ],
+    "d03": [
+      0,
+      93,
+      0,
+      111
+    ]
+  },
+  "derived_definitions": {
+    "calm_wind_ms": 2.0,
+    "cloud_high_base_m": 6000.0,
+    "cloud_low_top_m": 2000.0,
+    "crop": {
+      "d01": [
+        24,
+        39,
+        43,
+        60
+      ],
+      "d02": [
+        33,
+        68,
+        89,
+        130
+      ],
+      "d03": [
+        0,
+        93,
+        0,
+        111
+      ]
+    },
+    "derived": {
+      "IWP": "f32(sum_k f64(QICE+QSNOW+QGRAUP)*dm) [kg m-2]",
+      "LWP": "f32(sum_k f64(QCLOUD+QRAIN)*dm), dm = column_mass_formula in f64 [kg m-2]",
+      "QCLOUD_negative_column_flag": "uint8(any_k QCLOUD < 0)",
+      "cloud_*_max/_sum": "max / f32(f64 sum) of CLDFRA over levels with z_agl < 2000 m (low), 2000 <= z_agl < 6000 (mid), >= 6000 (high); z_agl = f32(0.5*(zw[k]+zw[k+1])) - HGT, zw = (PH+PHB)/9.81 in f64",
+      "cloud_max": "max over levels of CLDFRA",
+      "profiles": "d03 columns at POINTS grid_y/grid_x (profile_status AVAILABLE), all 44 mass levels; U/V destaggered (mean of faces, f64) and rotated to earth-relative; theta=T+300; pressure=P+PB; T_K=theta*(p/1e5)^(2/7) in f64; z_msl=f32(0.5*(zw[k]+zw[k+1])); z_agl=z_msl(f32)-HGT; one parquet row group per frame, rows point-major then level",
+      "rain_increment": "f32(T[t] - T[t-1]) with T = f64(RAINC) + f64(RAINNC); NaN at tau 0",
+      "rain_negative_flag": "uint8(T[t]-T[t-1] < 0) in f64; 0 at tau 0",
+      "rain_rate_mm_h": "f32((T[t]-T[t-1])*3600/(actual_time_unix_s[t]-actual_time_unix_s[t-1])) in f64; NaN at tau 0",
+      "rain_total": "RAINC + RAINNC (f32)",
+      "rh2_unclipped": "f32(rh_formula in f64), no clipping",
+      "u10_east": "f32(U10*COSALPHA - V10*SINALPHA) computed in f64",
+      "v10_north": "f32(V10*COSALPHA + U10*SINALPHA) computed in f64",
+      "wind_direction_from_deg": "f32 mod(degrees(arctan2(-u10_east, -v10_north)), 360); NaN where wind_speed < 2 m/s",
+      "wind_speed": "f32 hypot(U10, V10) (grid relative == earth relative magnitude)"
+    },
+    "fields": [
+      "XLAT",
+      "XLONG",
+      "HGT",
+      "LANDMASK",
+      "COSALPHA",
+      "SINALPHA",
+      "lead_h",
+      "tau_h",
+      "actual_time_unix_s",
+      "time_offset_seconds",
+      "U10",
+      "V10",
+      "T2",
+      "Q2",
+      "PSFC",
+      "RAINC",
+      "RAINNC",
+      "SWDOWN",
+      "GLW",
+      "HFX",
+      "LH",
+      "PBLH",
+      "u10_east",
+      "v10_north",
+      "wind_speed",
+      "rh2_unclipped",
+      "rain_total",
+      "rain_increment",
+      "cloud_max",
+      "cloud_low_max",
+      "cloud_mid_max",
+      "cloud_high_max",
+      "rain_rate_mm_h",
+      "rain_negative_flag",
+      "wind_direction_from_deg",
+      "cloud_low_sum",
+      "cloud_mid_sum",
+      "cloud_high_sum",
+      "LWP",
+      "IWP",
+      "QCLOUD_negative_column_flag"
+    ],
+    "g": 9.81,
+    "profile_columns": [
+      "phys_id",
+      "role",
+      "issue",
+      "attempt",
+      "valid_utc",
+      "actual_utc",
+      "lead_h",
+      "tau_h",
+      "time_offset_seconds",
+      "level",
+      "grid_y",
+      "grid_x",
+      "T_K",
+      "theta_K",
+      "pressure_Pa",
+      "QV_kg_kg",
+      "U_ms",
+      "V_ms",
+      "QCLOUD_kg_kg",
+      "CLDFRA",
+      "z_msl_m",
+      "z_agl_m"
+    ],
+    "profile_domain": "d03"
+  },
+  "era_scope": null,
+  "extract_config_sha": "3e48cf7074b3316192f98b921c1e8a32fe5a1f703caf5eefe2e1343427b68d12",
+  "format_sha256": null,
+  "inputs": [
+    {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/w43-teacher/te_stage/20260227/root2/state/manager/teacher_extract/20260227_18z_a1/POINTS.parquet",
+      "sha256": "1e6b4ea347d4041224c1627eb0c5b67c06697fa5ee39ce4f6fb24316b11759a9"
+    }
+  ],
+  "issue": "20260227_18z",
+  "label_admission": null,
+  "physics_sha": null,
+  "point_set_sha256": "1e6b4ea347d4041224c1627eb0c5b67c06697fa5ee39ce4f6fb24316b11759a9",
+  "producer_code_sha256": "6d44e799946f17fdb4402a3317e362eea13df7985ab3dbff89977246d9a8e84d",
+  "producer_note": "ALISIOS-only provenance (w20 CPU budget/cpu_lock, case registry, train-fit guard, era tuple, canonical cache path, label admission, format/physics shas) is not reproduced and set to null: this extract was produced by wrf_gpu2 lane w43-teacher analysis/teacher_extract.py (reproduction of ALISIOS teacher_extract.v2 format) with analysis/teacher_extract.py, not by ALISIOS. point_set_sha256 = sha256 of the POINTS.parquet bytes (ALISIOS basis unknown). extract_wall_seconds=50.5 cpu_seconds=34.1.",
+  "producer_sprint": "wrf_gpu2 lane w43-teacher analysis/teacher_extract.py (reproduction of ALISIOS teacher_extract.v2 format)",
+  "profile_temperature_formula": "(T+300)*((P+PB)/100000)^(2/7)",
+  "rh_formula": "100*(Q2*PSFC/(0.622+Q2))/(611.2*exp(17.67*(T2-273.15)/(T2-29.65)))",
+  "schema": "alisios.teacher_extract.v2",
+  "status": "SEALED",
+  "storage_scope": "W43_LOCAL_REPRODUCTION",
+  "surface_units": {
+    "GLW": "W m-2",
+    "HFX": "W m-2",
+    "LH": "W m-2",
+    "PBLH": "m",
+    "PSFC": "Pa",
+    "Q2": "kg kg-1",
+    "RAINC": "mm",
+    "RAINNC": "mm",
+    "SWDOWN": "W m-2",
+    "T2": "K",
+    "U10": "m s-1 grid relative",
+    "V10": "m s-1 grid relative"
+  },
+  "w20": null
+}

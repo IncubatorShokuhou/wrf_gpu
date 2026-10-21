@@ -1,6 +1,6 @@
 # wrf_gpu
 
-[![Version](https://img.shields.io/badge/version-v0.4.2-2ea44f)](release_notes/RELEASE_NOTES_v0.4.2.md)
+[![Version](https://img.shields.io/badge/version-v0.4.3-2ea44f)](release_notes/RELEASE_NOTES_v0.4.3.md)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
 [![Docs](https://img.shields.io/badge/docs-user%20guide-informational)](https://wrf-gpu.github.io/wrf_gpu/)
 [![Python](https://img.shields.io/badge/python-3.11%2B-blue)](pyproject.toml)
@@ -15,15 +15,15 @@ forecasting: faster turnaround, more forecasts per workstation and less energy
 per forecast hour.
 
 On one RTX 5090, a 24-hour forecast for the Canary Islands with two nested
-domains (9 and 3 km) finishes in about **115 seconds** with v0.4.2,
+domains (9 and 3 km) finishes in about **115 seconds** with v0.4.2 and v0.4.3,
 start-up and output included (79 seconds with v0.3.2). The main loop of the original
 WRF needs **37 minutes** on 12 CPU cores.
 
 [First forecast](#your-first-forecast-in-three-steps) ·
 [User guide](https://wrf-gpu.github.io/wrf_gpu/) ·
-[Supported options](docs/release/SUPPORT_MATRIX_v0.4.2.md) ·
+[Supported options](docs/release/SUPPORT_MATRIX_v0.4.3.md) ·
 [Validation](docs/release/VALIDATION_v0.4.0.md) ·
-[Release notes](release_notes/RELEASE_NOTES_v0.4.2.md)
+[Release notes](release_notes/RELEASE_NOTES_v0.4.3.md)
 
 `wrf_gpu` is an independent project, not WRF itself, and is not affiliated
 with or endorsed by UCAR/NCAR.
@@ -94,7 +94,7 @@ meter was used.
 
 <picture><source media="(prefers-color-scheme: dark)" srcset="docs/release/img/v032_energy_dark.png"><img src="docs/release/img/v032_energy.png" alt="Energy per case-forecast-hour: about 6.9 Wh for CPU-WRF versus 0.78 Wh for the RTX 5090 run"></picture>
 
-These charts were measured with v0.3.2. v0.4.2 takes 4.81 s per
+These charts were measured with v0.3.2. v0.4.2 and v0.4.3 take 4.81 s per
 forecast hour (19.2×) and 6.23 s per case-hour for three
 forecasts at once (19.8×): [details](release_notes/RELEASE_NOTES_v0.4.2.md#speed).
 The v0.4.1 figures (4.4 s, 21×; 6.1 s, 20×) were measured with the pre-v0.4.2
@@ -120,22 +120,21 @@ assumption, reserve and anchor.
 
 </details>
 
-## What's new in v0.4.2
+## What's new in v0.4.3
 
-Released 19 October 2026. v0.4.2 keeps the v0.4.1 forecast model and fixes
-what v0.4.1 brought to light.
+Released 21 October 2026. v0.4.3 runs the forecast model of v0.4.2 and
+answers questions from an operational user. We checked the compiled GPU programs, not only the source code: all
+21 are identical to those of v0.4.2, and the release-check forecasts write
+byte-identical files.
 
-- **Shortwave fix confirmed.** The v0.4.1 correction of the direct-beam
-  surface shortwave was checked step by step against WRF's code and stays.
-  `GPUWRF_SWDDIR_V040_SPLIT=1` restores the v0.4.0 behaviour for continuity
-  comparisons. History files now hold WRF's solar zenith angle (`COSZEN`).
-- **Faster WDM6.** WDM6 microphysics runs about three times faster on the
-  Swiss Alps test case, with identical output.
-- **Boundary layers inside nests.** YSU, Shin-Hong, ACM2 and EEPS passed the
-  24-hour comparison with CPU-WRF inside three nested Tenerife domains.
-- **Radiation without clouds.** `icloud=0` lets radiation ignore clouds while
-  they still form and rain, to separate their radiative effect.
-- **Safer tools.** `gpuwrf aot-key` no longer writes into compile caches.
+- **Three-nest qualification.** A table compares 72-hour forecasts on 9, 3 and
+  1 km Tenerife domains with the original CPU-WRF.
+- **Answers to user reports.** Coastal wind near El Médano, a nine-domain set-up,
+  heavy-rain cells and a stopped batch case: the status of each is in the
+  [release notes](release_notes/RELEASE_NOTES_v0.4.3.md) and
+  [known issues](KNOWN_ISSUES.md).
+- **Host suspend is recorded.** If the computer sleeps during a run, the run's
+  summary file says so and marks its wall times as not valid.
 
 The options added in v0.4.1 and v0.4.2 each passed a 24-hour comparison with
 CPU-WRF in the set-ups tested; outside those set-ups they remain experimental. The
@@ -154,7 +153,7 @@ Every option in the table ran in at least one 24-hour GPU forecast compared
 with CPU-WRF (Goddard radiation: six hours). Not every combination or option
 inside nested domains is covered, and many non-default options are not yet
 tuned for speed. The
-[support matrix](docs/release/SUPPORT_MATRIX_v0.4.2.md) gives the status of
+[support matrix](docs/release/SUPPORT_MATRIX_v0.4.3.md) gives the status of
 each option. Unsupported choices stop before the run with a clear reason.
 
 ## How we check it against WRF
@@ -256,7 +255,7 @@ scripts/run_parallel_cases.sh --out-root runs/batch CASE_A CASE_B CASE_C -- \
 ```
 
 Long runs can write checkpoints and resume after an interruption, for single
-and nested domains. The [command guide](docs/release/USER_GUIDE_v0.4.2.md)
+and nested domains. The [command guide](docs/release/USER_GUIDE_v0.4.3.md)
 covers checkpoint and restart, ensembles, products, station verification and
 the other tools. If you work with an AI coding assistant, point it at
 [AI_OPERATOR.md](AI_OPERATOR.md).
@@ -300,6 +299,7 @@ shows the largest parts of a time step.
 
 | Version | Highlights |
 |---|---|
+| v0.4.3 | The v0.4.2 model with identical compiled programs, a three-nest qualification table, answers to user reports, host-suspend detection |
 | v0.4.2 | Shortwave fix confirmed against WRF, faster WDM6, four boundary layers validated inside nests, radiation without clouds |
 | v0.4.1 | Experimental data assimilation, terrain-corrected winds, shortwave aerosol and cloud options, nested runs compiled once per grid ([v0.3.x cache note](release_notes/RELEASE_NOTES_v0.4.1.md#note-for-users-of-v030-to-v034-nested-runs-with-a-shared-compile-cache)) |
 | v0.4.0 | More than 80 WRF 4.7.1 physics options, nudging, two-way nesting, stochastic physics, ensembles and forecast tools; 66 configurations checked against CPU-WRF |
@@ -319,7 +319,7 @@ If you use `wrf_gpu` in your work, please cite the software and WRF itself:
   title   = {wrf_gpu: a GPU rewrite of the WRF ARW model in JAX},
   author  = {{wrf_gpu contributors}},
   year    = {2026},
-  version = {0.4.2},
+  version = {0.4.3},
   url     = {https://github.com/wrf-gpu/wrf_gpu}
 }
 ```

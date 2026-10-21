@@ -1,0 +1,960 @@
+{
+ "doc": "Q-A corrections (critic VERDICT FIX ce84cae260 R1): pooled space-time statistics, extrema with place/time, the 0227\nd03 coastal-sea maximum, and a CPU-vs-CPU twin control at the same leads.\n\nusage: python qa_fix.py OUT.json\nPairs: F20 v0.4.0 GPU vs original CPU-WRF (WN3 0227/0502/0614, d02+d03, leads 1-24, identical inputs).\nControl: w43-twin0227 CPU-WRF 4x1-decomposition twin (read-only, <DATA_ROOT>/wrf_gpu2/scratch/w43-twin0227/C2_4x1/cpu) vs\nthe same original CPU-WRF reference (2x2), 0227 d03/d02, every lead present.\nMasks as qa_pairs.py (coast = within 2 cells of the land/sea edge); points sea (19,55) = ALISIOS T1 point-set pixel,\nurban (20,55). Statistics on WS10 = |(U10,V10)|: mean bias, POOLED space-time RMSE (sqrt of the mean over all cells and\nleads), mean of hourly spatial RMSE (the statistic reported in the first draft, labelled as such), max |diff| with lead,\ncell, day/night. For the largest coastal-sea difference: lat/lon, HGT, distance to coast, local RAINNC/hourly rain, W max,\nspatial extent of |diff| > 1 m/s. No JAX.",
+ "gpu_vs_cpu": {
+  "WN3-0227|d02": {
+   "all": {
+    "n": 749736,
+    "bias": -0.00034324841430567326,
+    "rmse_pooled": 0.0352944011842281,
+    "rmse_mean_hourly": 0.03306021973796666,
+    "maxabs": 3.9700380523738374,
+    "maxabs_at": {
+     "lead": 5,
+     "j": 11,
+     "i": 233,
+     "day": false
+    }
+   },
+   "open_sea": {
+    "n": 683448,
+    "bias": -0.0004956483937189495,
+    "rmse_pooled": 0.026962709027446338,
+    "rmse_mean_hourly": 0.023954322317962535,
+    "maxabs": 0.9925033742818243,
+    "maxabs_at": {
+     "lead": 4,
+     "j": 38,
+     "i": 266,
+     "day": false
+    }
+   },
+   "coast_sea": {
+    "n": 28536,
+    "bias": 0.000702928519407193,
+    "rmse_pooled": 0.030350950731403172,
+    "rmse_mean_hourly": 0.02719247467195843,
+    "maxabs": 0.5780730111579082,
+    "maxabs_at": {
+     "lead": 23,
+     "j": 58,
+     "i": 112,
+     "day": false
+    }
+   },
+   "coast_land": {
+    "n": 19824,
+    "bias": 0.0026407857180217255,
+    "rmse_pooled": 0.07009607290589685,
+    "rmse_mean_hourly": 0.05621458552261619,
+    "maxabs": 3.1543846609462416,
+    "maxabs_at": {
+     "lead": 5,
+     "j": 12,
+     "i": 234,
+     "day": false
+    }
+   },
+   "interior_land": {
+    "n": 17928,
+    "bias": 0.0005017015806941066,
+    "rmse_pooled": 0.13221432832965438,
+    "rmse_mean_hourly": 0.09651242780432441,
+    "maxabs": 3.9700380523738374,
+    "maxabs_at": {
+     "lead": 5,
+     "j": 11,
+     "i": 233,
+     "day": false
+    }
+   }
+  },
+  "WN3-0227|d03": {
+   "all": {
+    "n": 247752,
+    "bias": -0.0008227711147301638,
+    "rmse_pooled": 0.12240088998099845,
+    "rmse_mean_hourly": 0.09206317558484323,
+    "maxabs": 6.232517755636995,
+    "maxabs_at": {
+     "lead": 23,
+     "j": 38,
+     "i": 19,
+     "day": false
+    }
+   },
+   "open_sea": {
+    "n": 184128,
+    "bias": -0.00018620732997796607,
+    "rmse_pooled": 0.11959241452922587,
+    "rmse_mean_hourly": 0.08439446063078641,
+    "maxabs": 6.232517755636995,
+    "maxabs_at": {
+     "lead": 23,
+     "j": 38,
+     "i": 19,
+     "day": false
+    }
+   },
+   "coast_sea": {
+    "n": 14808,
+    "bias": 0.0009286797557831954,
+    "rmse_pooled": 0.17197326676022268,
+    "rmse_mean_hourly": 0.13040508729914752,
+    "maxabs": 3.9473870278636305,
+    "maxabs_at": {
+     "lead": 23,
+     "j": 47,
+     "i": 20,
+     "day": false
+    }
+   },
+   "coast_land": {
+    "n": 13728,
+    "bias": -0.004246483689372924,
+    "rmse_pooled": 0.13086702879508502,
+    "rmse_mean_hourly": 0.10324931751112561,
+    "maxabs": 2.056785436626929,
+    "maxabs_at": {
+     "lead": 22,
+     "j": 71,
+     "i": 69,
+     "day": false
+    }
+   },
+   "interior_land": {
+    "n": 35088,
+    "bias": -0.0035628524765837504,
+    "rmse_pooled": 0.10747548668770962,
+    "rmse_mean_hourly": 0.089758291639996,
+    "maxabs": 2.396272750089961,
+    "maxabs_at": {
+     "lead": 24,
+     "j": 54,
+     "i": 69,
+     "day": false
+    }
+   },
+   "medano_box": {
+    "n": 1176,
+    "bias": -0.0013071252928376245,
+    "rmse_pooled": 0.07523095453201517,
+    "rmse_mean_hourly": 0.04327784185441452,
+    "maxabs": 0.8183180847330624,
+    "maxabs_at": {
+     "lead": 24,
+     "j": 21,
+     "i": 54,
+     "day": false
+    }
+   },
+   "sea_19_55": {
+    "n": 24,
+    "bias": 0.006816320500871849,
+    "rmse_pooled": 0.025159295470932003,
+    "rmse_mean_hourly": 0.01645814509939651,
+    "maxabs": 0.06644877823659279,
+    "maxabs_at": {
+     "lead": 22,
+     "j": 19,
+     "i": 55,
+     "day": false
+    }
+   },
+   "urban_20_55": {
+    "n": 24,
+    "bias": 0.0051912177262965304,
+    "rmse_pooled": 0.025757554825903865,
+    "rmse_mean_hourly": 0.01822929678087315,
+    "maxabs": 0.06940387774675916,
+    "maxabs_at": {
+     "lead": 24,
+     "j": 20,
+     "i": 55,
+     "day": false
+    }
+   }
+  },
+  "WN3-0502|d02": {
+   "all": {
+    "n": 749736,
+    "bias": 0.0020742634212777026,
+    "rmse_pooled": 0.013014558185317014,
+    "rmse_mean_hourly": 0.01184879915198365,
+    "maxabs": 0.8646451203208843,
+    "maxabs_at": {
+     "lead": 3,
+     "j": 1,
+     "i": 233,
+     "day": false
+    }
+   },
+   "open_sea": {
+    "n": 683448,
+    "bias": 0.0021755439528917805,
+    "rmse_pooled": 0.011061973472505404,
+    "rmse_mean_hourly": 0.009927434907041373,
+    "maxabs": 0.691441215643628,
+    "maxabs_at": {
+     "lead": 10,
+     "j": 11,
+     "i": 244,
+     "day": true
+    }
+   },
+   "coast_sea": {
+    "n": 28536,
+    "bias": 0.0010993610375651939,
+    "rmse_pooled": 0.012137592763769675,
+    "rmse_mean_hourly": 0.01079675171023342,
+    "maxabs": 0.41182570825251474,
+    "maxabs_at": {
+     "lead": 12,
+     "j": 8,
+     "i": 238,
+     "day": true
+    }
+   },
+   "coast_land": {
+    "n": 19824,
+    "bias": 0.0007668741748115975,
+    "rmse_pooled": 0.019270687624164947,
+    "rmse_mean_hourly": 0.015109314944512906,
+    "maxabs": 0.5383872671092642,
+    "maxabs_at": {
+     "lead": 3,
+     "j": 2,
+     "i": 211,
+     "day": false
+    }
+   },
+   "interior_land": {
+    "n": 17928,
+    "bias": 0.0012106713905428736,
+    "rmse_pooled": 0.042110676504159464,
+    "rmse_mean_hourly": 0.027031046070162892,
+    "maxabs": 0.8646451203208843,
+    "maxabs_at": {
+     "lead": 3,
+     "j": 1,
+     "i": 233,
+     "day": false
+    }
+   }
+  },
+  "WN3-0502|d03": {
+   "all": {
+    "n": 247752,
+    "bias": -0.0026507026666441062,
+    "rmse_pooled": 0.018528155696127882,
+    "rmse_mean_hourly": 0.017390349479332178,
+    "maxabs": 0.4043368140677037,
+    "maxabs_at": {
+     "lead": 9,
+     "j": 39,
+     "i": 14,
+     "day": true
+    }
+   },
+   "open_sea": {
+    "n": 184128,
+    "bias": -0.0029078012953996034,
+    "rmse_pooled": 0.019471773200574128,
+    "rmse_mean_hourly": 0.018005060658184514,
+    "maxabs": 0.4043368140677037,
+    "maxabs_at": {
+     "lead": 9,
+     "j": 39,
+     "i": 14,
+     "day": true
+    }
+   },
+   "coast_sea": {
+    "n": 14808,
+    "bias": -0.0022004731430045636,
+    "rmse_pooled": 0.022136744613994085,
+    "rmse_mean_hourly": 0.02084510073500186,
+    "maxabs": 0.295298621641507,
+    "maxabs_at": {
+     "lead": 16,
+     "j": 23,
+     "i": 34,
+     "day": true
+    }
+   },
+   "coast_land": {
+    "n": 13728,
+    "bias": -0.002054157180672299,
+    "rmse_pooled": 0.01554334892943274,
+    "rmse_mean_hourly": 0.014635444178506379,
+    "maxabs": 0.24478796573592065,
+    "maxabs_at": {
+     "lead": 10,
+     "j": 15,
+     "i": 40,
+     "day": true
+    }
+   },
+   "interior_land": {
+    "n": 35088,
+    "bias": -0.0017249536613426686,
+    "rmse_pooled": 0.011531968979808575,
+    "rmse_mean_hourly": 0.011022724720572493,
+    "maxabs": 0.3392318218602238,
+    "maxabs_at": {
+     "lead": 24,
+     "j": 36,
+     "i": 61,
+     "day": false
+    }
+   },
+   "medano_box": {
+    "n": 1176,
+    "bias": -0.0004967962608572959,
+    "rmse_pooled": 0.007739759986877435,
+    "rmse_mean_hourly": 0.00715451972880892,
+    "maxabs": 0.03569933740299014,
+    "maxabs_at": {
+     "lead": 5,
+     "j": 23,
+     "i": 54,
+     "day": false
+    }
+   },
+   "sea_19_55": {
+    "n": 24,
+    "bias": -0.00011799307263314167,
+    "rmse_pooled": 0.006825055946612556,
+    "rmse_mean_hourly": 0.005234558294107368,
+    "maxabs": 0.014622772932170847,
+    "maxabs_at": {
+     "lead": 22,
+     "j": 19,
+     "i": 55,
+     "day": false
+    }
+   },
+   "urban_20_55": {
+    "n": 24,
+    "bias": -0.0014637048838604023,
+    "rmse_pooled": 0.005668484869271941,
+    "rmse_mean_hourly": 0.0036384314247945673,
+    "maxabs": 0.019278872989946905,
+    "maxabs_at": {
+     "lead": 2,
+     "j": 20,
+     "i": 55,
+     "day": false
+    }
+   }
+  },
+  "WN3-0614|d02": {
+   "all": {
+    "n": 749736,
+    "bias": 0.00025223171744563253,
+    "rmse_pooled": 0.036805891187983664,
+    "rmse_mean_hourly": 0.032950007987797604,
+    "maxabs": 2.336557947708951,
+    "maxabs_at": {
+     "lead": 5,
+     "j": 4,
+     "i": 266,
+     "day": false
+    }
+   },
+   "open_sea": {
+    "n": 683448,
+    "bias": -1.645294911391959e-05,
+    "rmse_pooled": 0.0343555807418307,
+    "rmse_mean_hourly": 0.03051298649532691,
+    "maxabs": 2.336557947708951,
+    "maxabs_at": {
+     "lead": 5,
+     "j": 4,
+     "i": 266,
+     "day": false
+    }
+   },
+   "coast_sea": {
+    "n": 28536,
+    "bias": 0.00029514742328432187,
+    "rmse_pooled": 0.029438405043350806,
+    "rmse_mean_hourly": 0.02645479642522186,
+    "maxabs": 0.6232595148603997,
+    "maxabs_at": {
+     "lead": 11,
+     "j": 73,
+     "i": 69,
+     "day": true
+    }
+   },
+   "coast_land": {
+    "n": 19824,
+    "bias": 0.004124815348856179,
+    "rmse_pooled": 0.0531797918937215,
+    "rmse_mean_hourly": 0.040685585892380305,
+    "maxabs": 0.946153447886318,
+    "maxabs_at": {
+     "lead": 6,
+     "j": 1,
+     "i": 236,
+     "day": false
+    }
+   },
+   "interior_land": {
+    "n": 17928,
+    "bias": 0.006144537468220802,
+    "rmse_pooled": 0.08455461800742411,
+    "rmse_mean_hourly": 0.053327300903208454,
+    "maxabs": 1.106036195865829,
+    "maxabs_at": {
+     "lead": 24,
+     "j": 13,
+     "i": 230,
+     "day": false
+    }
+   }
+  },
+  "WN3-0614|d03": {
+   "all": {
+    "n": 247752,
+    "bias": 0.003069385355376755,
+    "rmse_pooled": 0.03711508006541794,
+    "rmse_mean_hourly": 0.03456692379785815,
+    "maxabs": 0.9673162380709721,
+    "maxabs_at": {
+     "lead": 23,
+     "j": 9,
+     "i": 12,
+     "day": false
+    }
+   },
+   "open_sea": {
+    "n": 184128,
+    "bias": 0.0032866318344515633,
+    "rmse_pooled": 0.0399978365241652,
+    "rmse_mean_hourly": 0.03688100836175317,
+    "maxabs": 0.9673162380709721,
+    "maxabs_at": {
+     "lead": 23,
+     "j": 9,
+     "i": 12,
+     "day": false
+    }
+   },
+   "coast_sea": {
+    "n": 14808,
+    "bias": 0.004432727110073605,
+    "rmse_pooled": 0.037102695165431056,
+    "rmse_mean_hourly": 0.03427428831836179,
+    "maxabs": 0.31211645066677285,
+    "maxabs_at": {
+     "lead": 9,
+     "j": 57,
+     "i": 21,
+     "day": true
+    }
+   },
+   "coast_land": {
+    "n": 13728,
+    "bias": 0.0028190264628750778,
+    "rmse_pooled": 0.035639812609375876,
+    "rmse_mean_hourly": 0.030989683243976735,
+    "maxabs": 0.6130203661900548,
+    "maxabs_at": {
+     "lead": 24,
+     "j": 79,
+     "i": 90,
+     "day": false
+    }
+   },
+   "interior_land": {
+    "n": 35088,
+    "bias": 0.0014519492653638074,
+    "rmse_pooled": 0.015917898304476978,
+    "rmse_mean_hourly": 0.014693268498702033,
+    "maxabs": 0.4345165529558144,
+    "maxabs_at": {
+     "lead": 24,
+     "j": 30,
+     "i": 35,
+     "day": false
+    }
+   },
+   "medano_box": {
+    "n": 1176,
+    "bias": 0.006886122747322644,
+    "rmse_pooled": 0.012723890795192233,
+    "rmse_mean_hourly": 0.01012997250954334,
+    "maxabs": 0.05432245432958105,
+    "maxabs_at": {
+     "lead": 24,
+     "j": 19,
+     "i": 54,
+     "day": false
+    }
+   },
+   "sea_19_55": {
+    "n": 24,
+    "bias": 0.0070375869496259735,
+    "rmse_pooled": 0.013333650679400018,
+    "rmse_mean_hourly": 0.009672231748770965,
+    "maxabs": 0.04047226048383923,
+    "maxabs_at": {
+     "lead": 24,
+     "j": 19,
+     "i": 55,
+     "day": false
+    }
+   },
+   "urban_20_55": {
+    "n": 24,
+    "bias": 0.006118133346575849,
+    "rmse_pooled": 0.010727579869813464,
+    "rmse_mean_hourly": 0.007800539997676011,
+    "maxabs": 0.03039692593997767,
+    "maxabs_at": {
+     "lead": 24,
+     "j": 20,
+     "i": 55,
+     "day": false
+    }
+   }
+  }
+ },
+ "twin_vs_cpu": {
+  "WN3-0227|d02": {
+   "leads": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22
+   ],
+   "stats": {
+    "all": {
+     "n": 687258,
+     "bias": 0.00019972349268784992,
+     "rmse_pooled": 0.031885988182567604,
+     "rmse_mean_hourly": 0.029129201524072678,
+     "maxabs": 3.1350905350193723,
+     "maxabs_at": {
+      "lead": 8,
+      "j": 13,
+      "i": 233,
+      "day": false
+     }
+    },
+    "open_sea": {
+     "n": 626494,
+     "bias": 0.00012304215443132932,
+     "rmse_pooled": 0.022050506491937114,
+     "rmse_mean_hourly": 0.019261054699682686,
+     "maxabs": 0.7605046904564183,
+     "maxabs_at": {
+      "lead": 4,
+      "j": 38,
+      "i": 266,
+      "day": false
+     }
+    },
+    "coast_sea": {
+     "n": 26158,
+     "bias": -0.00021753122165626144,
+     "rmse_pooled": 0.027350076879784465,
+     "rmse_mean_hourly": 0.023044826171142906,
+     "maxabs": 0.5889114348699849,
+     "maxabs_at": {
+      "lead": 18,
+      "j": 68,
+      "i": 72,
+      "day": true
+     }
+    },
+    "coast_land": {
+     "n": 18172,
+     "bias": -6.269943844388125e-05,
+     "rmse_pooled": 0.04982499914864887,
+     "rmse_mean_hourly": 0.0440942712016231,
+     "maxabs": 2.073712657284629,
+     "maxabs_at": {
+      "lead": 8,
+      "j": 13,
+      "i": 234,
+      "day": false
+     }
+    },
+    "interior_land": {
+     "n": 16434,
+     "bias": 0.004077275923746613,
+     "rmse_pooled": 0.1415869137495138,
+     "rmse_mean_hourly": 0.09448499272874863,
+     "maxabs": 3.1350905350193723,
+     "maxabs_at": {
+      "lead": 8,
+      "j": 13,
+      "i": 233,
+      "day": false
+     }
+    }
+   },
+   "gpu_same_leads": {
+    "all": {
+     "n": 687258,
+     "bias": -0.00032716240037020306,
+     "rmse_pooled": 0.035103375158553066,
+     "rmse_mean_hourly": 0.032680008508926335,
+     "maxabs": 3.9700380523738374,
+     "maxabs_at": {
+      "lead": 5,
+      "j": 11,
+      "i": 233,
+      "day": false
+     }
+    },
+    "open_sea": {
+     "n": 626494,
+     "bias": -0.0004955117803981402,
+     "rmse_pooled": 0.026048593239184063,
+     "rmse_mean_hourly": 0.02291965427738146,
+     "maxabs": 0.9925033742818243,
+     "maxabs_at": {
+      "lead": 4,
+      "j": 38,
+      "i": 266,
+      "day": false
+     }
+    },
+    "coast_sea": {
+     "n": 26158,
+     "bias": 0.0005493211931968022,
+     "rmse_pooled": 0.029885883650561287,
+     "rmse_mean_hourly": 0.026484570313838097,
+     "maxabs": 0.5324607283365994,
+     "maxabs_at": {
+      "lead": 18,
+      "j": 46,
+      "i": 140,
+      "day": true
+     }
+    },
+    "coast_land": {
+     "n": 18172,
+     "bias": 0.0026425643038677053,
+     "rmse_pooled": 0.0714260506908432,
+     "rmse_mean_hourly": 0.05647840727787339,
+     "maxabs": 3.1543846609462416,
+     "maxabs_at": {
+      "lead": 5,
+      "j": 12,
+      "i": 234,
+      "day": false
+     }
+    },
+    "interior_land": {
+     "n": 16434,
+     "bias": 0.0014117292256055484,
+     "rmse_pooled": 0.13638929337250982,
+     "rmse_mean_hourly": 0.09879244923626734,
+     "maxabs": 3.9700380523738374,
+     "maxabs_at": {
+      "lead": 5,
+      "j": 11,
+      "i": 233,
+      "day": false
+     }
+    }
+   }
+  },
+  "WN3-0227|d03": {
+   "leads": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22
+   ],
+   "stats": {
+    "all": {
+     "n": 227106,
+     "bias": -0.0012023347793406016,
+     "rmse_pooled": 0.0837146455616807,
+     "rmse_mean_hourly": 0.06787529331671381,
+     "maxabs": 3.9621568159445077,
+     "maxabs_at": {
+      "lead": 17,
+      "j": 32,
+      "i": 24,
+      "day": true
+     }
+    },
+    "open_sea": {
+     "n": 168784,
+     "bias": -0.0011519743582022216,
+     "rmse_pooled": 0.07571215517612771,
+     "rmse_mean_hourly": 0.0558761806287028,
+     "maxabs": 3.9621568159445077,
+     "maxabs_at": {
+      "lead": 17,
+      "j": 32,
+      "i": 24,
+      "day": true
+     }
+    },
+    "coast_sea": {
+     "n": 13574,
+     "bias": 0.0007983952749681524,
+     "rmse_pooled": 0.12091959071260293,
+     "rmse_mean_hourly": 0.09881468810918372,
+     "maxabs": 3.0594214967876496,
+     "maxabs_at": {
+      "lead": 22,
+      "j": 47,
+      "i": 20,
+      "day": false
+     }
+    },
+    "coast_land": {
+     "n": 12584,
+     "bias": -0.00043361149714921327,
+     "rmse_pooled": 0.10230599168567031,
+     "rmse_mean_hourly": 0.08594715173285426,
+     "maxabs": 1.962520554580427,
+     "maxabs_at": {
+      "lead": 21,
+      "j": 70,
+      "i": 68,
+      "day": false
+     }
+    },
+    "interior_land": {
+     "n": 32164,
+     "bias": -0.0026117228175729025,
+     "rmse_pooled": 0.09558756174025354,
+     "rmse_mean_hourly": 0.08213558669026465,
+     "maxabs": 1.7490771739871058,
+     "maxabs_at": {
+      "lead": 9,
+      "j": 60,
+      "i": 63,
+      "day": true
+     }
+    },
+    "medano_box": {
+     "n": 1078,
+     "bias": 0.003266221991937437,
+     "rmse_pooled": 0.0358354553997805,
+     "rmse_mean_hourly": 0.02761307072932708,
+     "maxabs": 0.1634049024591615,
+     "maxabs_at": {
+      "lead": 19,
+      "j": 22,
+      "i": 56,
+      "day": false
+     }
+    },
+    "sea_19_55": {
+     "n": 22,
+     "bias": 0.006766013286098352,
+     "rmse_pooled": 0.02255445694589013,
+     "rmse_mean_hourly": 0.017058768642521004,
+     "maxabs": 0.05230863120283047,
+     "maxabs_at": {
+      "lead": 17,
+      "j": 19,
+      "i": 55,
+      "day": true
+     }
+    },
+    "urban_20_55": {
+     "n": 22,
+     "bias": 0.008103414107385788,
+     "rmse_pooled": 0.02078029912310927,
+     "rmse_mean_hourly": 0.015110052235164312,
+     "maxabs": 0.055052357939434415,
+     "maxabs_at": {
+      "lead": 19,
+      "j": 20,
+      "i": 55,
+      "day": false
+     }
+    }
+   },
+   "gpu_same_leads": {
+    "all": {
+     "n": 227106,
+     "bias": -0.001470860111435405,
+     "rmse_pooled": 0.09551088491795111,
+     "rmse_mean_hourly": 0.07488544738818814,
+     "maxabs": 4.527091415971327,
+     "maxabs_at": {
+      "lead": 22,
+      "j": 47,
+      "i": 19,
+      "day": false
+     }
+    },
+    "open_sea": {
+     "n": 168784,
+     "bias": -0.0007751995143025762,
+     "rmse_pooled": 0.09009933645585008,
+     "rmse_mean_hourly": 0.06606089131267004,
+     "maxabs": 4.527091415971327,
+     "maxabs_at": {
+      "lead": 22,
+      "j": 47,
+      "i": 19,
+      "day": false
+     }
+    },
+    "coast_sea": {
+     "n": 13574,
+     "bias": -0.002768121966920628,
+     "rmse_pooled": 0.13490031307721498,
+     "rmse_mean_hourly": 0.10739626141019666,
+     "maxabs": 3.648522706677852,
+     "maxabs_at": {
+      "lead": 22,
+      "j": 47,
+      "i": 20,
+      "day": false
+     }
+    },
+    "coast_land": {
+     "n": 12584,
+     "bias": -0.005109567003136838,
+     "rmse_pooled": 0.11080915965348997,
+     "rmse_mean_hourly": 0.08856465111415292,
+     "maxabs": 2.056785436626929,
+     "maxabs_at": {
+      "lead": 22,
+      "j": 71,
+      "i": 69,
+      "day": false
+     }
+    },
+    "interior_land": {
+     "n": 32164,
+     "bias": -0.0031503109967401,
+     "rmse_pooled": 0.09658224050880647,
+     "rmse_mean_hourly": 0.0807250429878795,
+     "maxabs": 1.7380126991695657,
+     "maxabs_at": {
+      "lead": 21,
+      "j": 70,
+      "i": 69,
+      "day": false
+     }
+    },
+    "medano_box": {
+     "n": 1078,
+     "bias": 0.0019778934682486288,
+     "rmse_pooled": 0.041777935428585454,
+     "rmse_mean_hourly": 0.029260886379381693,
+     "maxabs": 0.22443474708848576,
+     "maxabs_at": {
+      "lead": 22,
+      "j": 21,
+      "i": 58,
+      "day": false
+     }
+    },
+    "sea_19_55": {
+     "n": 22,
+     "bias": 0.004669240523005284,
+     "rmse_pooled": 0.02332279587412517,
+     "rmse_mean_hourly": 0.01518759463048673,
+     "maxabs": 0.06644877823659279,
+     "maxabs_at": {
+      "lead": 22,
+      "j": 19,
+      "i": 55,
+      "day": false
+     }
+    },
+    "urban_20_55": {
+     "n": 22,
+     "bias": 0.007432430038504508,
+     "rmse_pooled": 0.02150785511021864,
+     "rmse_mean_hourly": 0.015346345575609988,
+     "maxabs": 0.05384352599733688,
+     "maxabs_at": {
+      "lead": 19,
+      "j": 20,
+      "i": 55,
+      "day": false
+     }
+    }
+   }
+  }
+ },
+ "events": {
+  "gpu_vs_cpu|0227|d03|coast_sea_max": {
+   "file": "wrfout_d03_2026-02-28_23:00:00",
+   "lat": 28.288074493408203,
+   "lon": -16.8963623046875,
+   "hgt": 2.1457180976867676,
+   "ws_ref": 16.033278646295727,
+   "ws_alt": 19.980665674159358,
+   "cells_absdiff_gt1_domain": 155,
+   "n_components_gt1": 11,
+   "rain_1h_ref_max_11x11": 0.08063867688179016,
+   "rain_1h_alt_max_11x11": 0.05079764127731323,
+   "wmax_ref_11x11": 4.3195109367370605,
+   "wmax_alt_11x11": 5.27724027633667,
+   "rmse_outside_11x11": 0.2647983630169768,
+   "event_component_size": 39,
+   "note": "first-run field dist_to_coast_cells removed (min of land/sea EDT is always 0: broken, critic DELTA1); largest component not computed in this run, see QA_FIX_t24.json"
+  },
+  "twin_vs_cpu|0227|d03|coast_sea_max": {
+   "file": "wrfout_d03_2026-02-28_22:00:00",
+   "lat": 28.288074493408203,
+   "lon": -16.8963623046875,
+   "hgt": 2.1457180976867676,
+   "ws_ref": 14.310636415179648,
+   "ws_alt": 17.370057911967297,
+   "cells_absdiff_gt1_domain": 75,
+   "n_components_gt1": 14,
+   "rain_1h_ref_max_11x11": 0.04520443081855774,
+   "rain_1h_alt_max_11x11": 0.05479338765144348,
+   "wmax_ref_11x11": 4.531441688537598,
+   "wmax_alt_11x11": 4.586409091949463,
+   "rmse_outside_11x11": 0.181416815578802,
+   "event_component_size": 17,
+   "note": "first-run field dist_to_coast_cells removed (min of land/sea EDT is always 0: broken, critic DELTA1); largest component not computed in this run, see QA_FIX_t24.json"
+  }
+ }
+}

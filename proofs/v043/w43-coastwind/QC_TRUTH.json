@@ -1,0 +1,1522 @@
+{
+ "doc": "Q-C truth comparison: WRF 10 m wind at El Medano vs admitted observations (A-V043-COASTWIND-T1-TRUTH-EXPORT).\n\nusage: python qc_truth.py OUT.json\nModel series: WT2 CPU-WRF teacher extracts (33 issues, 72 h; scratch WT2_medano_points.npz) and F20 v0.4.0 GPU + original\nCPU-WRF (0227/0502/0614, 24 h; wrfout at <DATA_ROOT>/wrf_gpu2/archive/v040/v-prep/F20_20261016).\nPoints: sea = d03 (19,55) (ALISIOS point-set pixel of T1/Cabezo), urban = (20,55), bil = bilinear at T1 coordinates.\nObs: qc_flag 0, mean of all samples in [t-10 min, t+10 min] around the model valid time t (5-min Cabezo/T1/T2, 10-min WG).\nStats per station x model point: n, mean model, mean obs, bias (model-obs), RMSE; splits by lead block, Cabezo/T1\ndirection sector (30 deg), local surf hours (10-18 Atlantic/Canary) and a common subset where T1, Cabezo and WG all exist.\nValues only go to OUT (aggregates), never logged per sample.",
+ "counts": {
+  "WT2_CPU": 2376,
+  "F20_CPU": 72,
+  "F20_GPU": 72
+ },
+ "overall": {
+  "F20_CPU|T1|sea": {
+   "n": 71,
+   "model": 10.091,
+   "obs": 8.283,
+   "bias": 1.808,
+   "rmse": 3.909,
+   "corr": 0.553
+  },
+  "F20_CPU|T1|urban": {
+   "n": 71,
+   "model": 7.483,
+   "obs": 8.283,
+   "bias": -0.8,
+   "rmse": 2.861,
+   "corr": 0.571
+  },
+  "F20_CPU|T1|bil": {
+   "n": 71,
+   "model": 9.494,
+   "obs": 8.283,
+   "bias": 1.211,
+   "rmse": 3.531,
+   "corr": 0.549
+  },
+  "F20_CPU|T2|sea": {
+   "n": 71,
+   "model": 10.091,
+   "obs": 8.952,
+   "bias": 1.139,
+   "rmse": 3.68,
+   "corr": 0.552
+  },
+  "F20_CPU|T2|urban": {
+   "n": 71,
+   "model": 7.483,
+   "obs": 8.952,
+   "bias": -1.469,
+   "rmse": 3.183,
+   "corr": 0.571
+  },
+  "F20_CPU|T2|bil": {
+   "n": 71,
+   "model": 9.494,
+   "obs": 8.952,
+   "bias": 0.542,
+   "rmse": 3.403,
+   "corr": 0.549
+  },
+  "F20_CPU|CABEZO|sea": {
+   "n": 72,
+   "model": 10.037,
+   "obs": 7.39,
+   "bias": 2.647,
+   "rmse": 4.397,
+   "corr": 0.53
+  },
+  "F20_CPU|CABEZO|urban": {
+   "n": 72,
+   "model": 7.441,
+   "obs": 7.39,
+   "bias": 0.051,
+   "rmse": 2.745,
+   "corr": 0.55
+  },
+  "F20_CPU|CABEZO|bil": {
+   "n": 72,
+   "model": 9.446,
+   "obs": 7.39,
+   "bias": 2.056,
+   "rmse": 3.934,
+   "corr": 0.525
+  },
+  "F20_CPU|WG|sea": {
+   "n": 72,
+   "model": 10.037,
+   "obs": 6.497,
+   "bias": 3.54,
+   "rmse": 5.484,
+   "corr": 0.334
+  },
+  "F20_CPU|WG|urban": {
+   "n": 72,
+   "model": 7.441,
+   "obs": 6.497,
+   "bias": 0.944,
+   "rmse": 3.597,
+   "corr": 0.354
+  },
+  "F20_CPU|WG|bil": {
+   "n": 72,
+   "model": 9.446,
+   "obs": 6.497,
+   "bias": 2.949,
+   "rmse": 5.001,
+   "corr": 0.331
+  },
+  "F20_GPU|T1|sea": {
+   "n": 71,
+   "model": 10.096,
+   "obs": 8.283,
+   "bias": 1.813,
+   "rmse": 3.91,
+   "corr": 0.553
+  },
+  "F20_GPU|T1|urban": {
+   "n": 71,
+   "model": 7.487,
+   "obs": 8.283,
+   "bias": -0.797,
+   "rmse": 2.859,
+   "corr": 0.571
+  },
+  "F20_GPU|T1|bil": {
+   "n": 71,
+   "model": 9.499,
+   "obs": 8.283,
+   "bias": 1.215,
+   "rmse": 3.531,
+   "corr": 0.55
+  },
+  "F20_GPU|T2|sea": {
+   "n": 71,
+   "model": 10.096,
+   "obs": 8.952,
+   "bias": 1.144,
+   "rmse": 3.679,
+   "corr": 0.553
+  },
+  "F20_GPU|T2|urban": {
+   "n": 71,
+   "model": 7.487,
+   "obs": 8.952,
+   "bias": -1.465,
+   "rmse": 3.18,
+   "corr": 0.571
+  },
+  "F20_GPU|T2|bil": {
+   "n": 71,
+   "model": 9.499,
+   "obs": 8.952,
+   "bias": 0.547,
+   "rmse": 3.402,
+   "corr": 0.55
+  },
+  "F20_GPU|CABEZO|sea": {
+   "n": 72,
+   "model": 10.042,
+   "obs": 7.39,
+   "bias": 2.651,
+   "rmse": 4.398,
+   "corr": 0.531
+  },
+  "F20_GPU|CABEZO|urban": {
+   "n": 72,
+   "model": 7.445,
+   "obs": 7.39,
+   "bias": 0.054,
+   "rmse": 2.744,
+   "corr": 0.551
+  },
+  "F20_GPU|CABEZO|bil": {
+   "n": 72,
+   "model": 9.451,
+   "obs": 7.39,
+   "bias": 2.06,
+   "rmse": 3.935,
+   "corr": 0.526
+  },
+  "F20_GPU|WG|sea": {
+   "n": 72,
+   "model": 10.042,
+   "obs": 6.497,
+   "bias": 3.545,
+   "rmse": 5.487,
+   "corr": 0.334
+  },
+  "F20_GPU|WG|urban": {
+   "n": 72,
+   "model": 7.445,
+   "obs": 6.497,
+   "bias": 0.948,
+   "rmse": 3.598,
+   "corr": 0.354
+  },
+  "F20_GPU|WG|bil": {
+   "n": 72,
+   "model": 9.451,
+   "obs": 6.497,
+   "bias": 2.954,
+   "rmse": 5.003,
+   "corr": 0.331
+  },
+  "WT2_CPU|T1|sea": {
+   "n": 2359,
+   "model": 6.906,
+   "obs": 5.86,
+   "bias": 1.045,
+   "rmse": 2.837,
+   "corr": 0.739
+  },
+  "WT2_CPU|T1|urban": {
+   "n": 2359,
+   "model": 5.068,
+   "obs": 5.86,
+   "bias": -0.792,
+   "rmse": 2.397,
+   "corr": 0.759
+  },
+  "WT2_CPU|T1|bil": {
+   "n": 2359,
+   "model": 6.451,
+   "obs": 5.86,
+   "bias": 0.591,
+   "rmse": 2.589,
+   "corr": 0.744
+  },
+  "WT2_CPU|T2|sea": {
+   "n": 2359,
+   "model": 6.906,
+   "obs": 6.352,
+   "bias": 0.554,
+   "rmse": 2.778,
+   "corr": 0.737
+  },
+  "WT2_CPU|T2|urban": {
+   "n": 2359,
+   "model": 5.068,
+   "obs": 6.352,
+   "bias": -1.283,
+   "rmse": 2.746,
+   "corr": 0.758
+  },
+  "WT2_CPU|T2|bil": {
+   "n": 2359,
+   "model": 6.451,
+   "obs": 6.352,
+   "bias": 0.099,
+   "rmse": 2.625,
+   "corr": 0.743
+  },
+  "WT2_CPU|CABEZO|sea": {
+   "n": 2368,
+   "model": 6.898,
+   "obs": 5.128,
+   "bias": 1.77,
+   "rmse": 3.227,
+   "corr": 0.719
+  },
+  "WT2_CPU|CABEZO|urban": {
+   "n": 2368,
+   "model": 5.062,
+   "obs": 5.128,
+   "bias": -0.066,
+   "rmse": 2.269,
+   "corr": 0.742
+  },
+  "WT2_CPU|CABEZO|bil": {
+   "n": 2368,
+   "model": 6.444,
+   "obs": 5.128,
+   "bias": 1.316,
+   "rmse": 2.882,
+   "corr": 0.727
+  },
+  "WT2_CPU|WG|sea": {
+   "n": 2258,
+   "model": 6.873,
+   "obs": 5.017,
+   "bias": 1.856,
+   "rmse": 3.639,
+   "corr": 0.625
+  },
+  "WT2_CPU|WG|urban": {
+   "n": 2258,
+   "model": 5.043,
+   "obs": 5.017,
+   "bias": 0.026,
+   "rmse": 2.631,
+   "corr": 0.659
+  },
+  "WT2_CPU|WG|bil": {
+   "n": 2258,
+   "model": 6.42,
+   "obs": 5.017,
+   "bias": 1.403,
+   "rmse": 3.328,
+   "corr": 0.626
+  }
+ },
+ "by_lead": {
+  "WT2_CPU|T1|sea|1-24": {
+   "n": 786,
+   "model": 7.576,
+   "obs": 6.203,
+   "bias": 1.373,
+   "rmse": 3.12,
+   "corr": 0.767
+  },
+  "WT2_CPU|T1|sea|25-48": {
+   "n": 790,
+   "model": 6.788,
+   "obs": 5.82,
+   "bias": 0.968,
+   "rmse": 2.563,
+   "corr": 0.749
+  },
+  "WT2_CPU|T1|sea|49-72": {
+   "n": 783,
+   "model": 6.351,
+   "obs": 5.558,
+   "bias": 0.793,
+   "rmse": 2.801,
+   "corr": 0.688
+  },
+  "WT2_CPU|T1|bil|1-24": {
+   "n": 786,
+   "model": 7.088,
+   "obs": 6.203,
+   "bias": 0.885,
+   "rmse": 2.794,
+   "corr": 0.773
+  },
+  "WT2_CPU|T1|bil|25-48": {
+   "n": 790,
+   "model": 6.332,
+   "obs": 5.82,
+   "bias": 0.512,
+   "rmse": 2.351,
+   "corr": 0.753
+  },
+  "WT2_CPU|T1|bil|49-72": {
+   "n": 783,
+   "model": 5.932,
+   "obs": 5.558,
+   "bias": 0.374,
+   "rmse": 2.602,
+   "corr": 0.695
+  },
+  "WT2_CPU|T2|sea|1-24": {
+   "n": 786,
+   "model": 7.576,
+   "obs": 6.726,
+   "bias": 0.85,
+   "rmse": 2.984,
+   "corr": 0.766
+  },
+  "WT2_CPU|T2|sea|25-48": {
+   "n": 790,
+   "model": 6.788,
+   "obs": 6.305,
+   "bias": 0.483,
+   "rmse": 2.528,
+   "corr": 0.748
+  },
+  "WT2_CPU|T2|sea|49-72": {
+   "n": 783,
+   "model": 6.351,
+   "obs": 6.022,
+   "bias": 0.329,
+   "rmse": 2.803,
+   "corr": 0.687
+  },
+  "WT2_CPU|T2|bil|1-24": {
+   "n": 786,
+   "model": 7.088,
+   "obs": 6.726,
+   "bias": 0.362,
+   "rmse": 2.755,
+   "corr": 0.771
+  },
+  "WT2_CPU|T2|bil|25-48": {
+   "n": 790,
+   "model": 6.332,
+   "obs": 6.305,
+   "bias": 0.027,
+   "rmse": 2.42,
+   "corr": 0.752
+  },
+  "WT2_CPU|T2|bil|49-72": {
+   "n": 783,
+   "model": 5.932,
+   "obs": 6.022,
+   "bias": -0.091,
+   "rmse": 2.689,
+   "corr": 0.694
+  },
+  "WT2_CPU|CABEZO|sea|1-24": {
+   "n": 792,
+   "model": 7.548,
+   "obs": 5.42,
+   "bias": 2.128,
+   "rmse": 3.6,
+   "corr": 0.745
+  },
+  "WT2_CPU|CABEZO|sea|25-48": {
+   "n": 792,
+   "model": 6.787,
+   "obs": 5.103,
+   "bias": 1.684,
+   "rmse": 2.897,
+   "corr": 0.743
+  },
+  "WT2_CPU|CABEZO|sea|49-72": {
+   "n": 784,
+   "model": 6.354,
+   "obs": 4.858,
+   "bias": 1.496,
+   "rmse": 3.145,
+   "corr": 0.663
+  },
+  "WT2_CPU|CABEZO|bil|1-24": {
+   "n": 792,
+   "model": 7.062,
+   "obs": 5.42,
+   "bias": 1.642,
+   "rmse": 3.188,
+   "corr": 0.752
+  },
+  "WT2_CPU|CABEZO|bil|25-48": {
+   "n": 792,
+   "model": 6.331,
+   "obs": 5.103,
+   "bias": 1.228,
+   "rmse": 2.569,
+   "corr": 0.75
+  },
+  "WT2_CPU|CABEZO|bil|49-72": {
+   "n": 784,
+   "model": 5.935,
+   "obs": 4.858,
+   "bias": 1.077,
+   "rmse": 2.855,
+   "corr": 0.672
+  },
+  "WT2_CPU|WG|sea|1-24": {
+   "n": 729,
+   "model": 7.556,
+   "obs": 5.232,
+   "bias": 2.324,
+   "rmse": 4.033,
+   "corr": 0.663
+  },
+  "WT2_CPU|WG|sea|25-48": {
+   "n": 750,
+   "model": 6.715,
+   "obs": 5.067,
+   "bias": 1.648,
+   "rmse": 3.327,
+   "corr": 0.644
+  },
+  "WT2_CPU|WG|sea|49-72": {
+   "n": 779,
+   "model": 6.385,
+   "obs": 4.768,
+   "bias": 1.617,
+   "rmse": 3.537,
+   "corr": 0.564
+  },
+  "WT2_CPU|WG|bil|1-24": {
+   "n": 729,
+   "model": 7.069,
+   "obs": 5.232,
+   "bias": 1.837,
+   "rmse": 3.638,
+   "corr": 0.667
+  },
+  "WT2_CPU|WG|bil|25-48": {
+   "n": 750,
+   "model": 6.264,
+   "obs": 5.067,
+   "bias": 1.196,
+   "rmse": 3.076,
+   "corr": 0.641
+  },
+  "WT2_CPU|WG|bil|49-72": {
+   "n": 779,
+   "model": 5.963,
+   "obs": 4.768,
+   "bias": 1.195,
+   "rmse": 3.259,
+   "corr": 0.567
+  }
+ },
+ "by_sector": {
+  "WT2_CPU|T1|sea|0": {
+   "n": 231,
+   "model": 4.9,
+   "obs": 3.032,
+   "bias": 1.868,
+   "rmse": 3.589,
+   "corr": 0.153
+  },
+  "WT2_CPU|T1|sea|30": {
+   "n": 506,
+   "model": 8.724,
+   "obs": 6.288,
+   "bias": 2.436,
+   "rmse": 3.635,
+   "corr": 0.677
+  },
+  "WT2_CPU|T1|sea|60": {
+   "n": 898,
+   "model": 8.611,
+   "obs": 8.536,
+   "bias": 0.075,
+   "rmse": 2.326,
+   "corr": 0.757
+  },
+  "WT2_CPU|T1|sea|90": {
+   "n": 137,
+   "model": 3.719,
+   "obs": 4.288,
+   "bias": -0.569,
+   "rmse": 2.223,
+   "corr": 0.396
+  },
+  "WT2_CPU|T1|sea|120": {
+   "n": 69,
+   "model": 3.983,
+   "obs": 3.025,
+   "bias": 0.958,
+   "rmse": 1.984,
+   "corr": 0.229
+  },
+  "WT2_CPU|T1|sea|150": {
+   "n": 23,
+   "model": 3.583,
+   "obs": 3.014,
+   "bias": 0.57,
+   "rmse": 1.683,
+   "corr": 0.389
+  },
+  "WT2_CPU|T1|sea|180": {
+   "n": 26,
+   "model": 4.023,
+   "obs": 2.785,
+   "bias": 1.238,
+   "rmse": 2.221,
+   "corr": 0.359
+  },
+  "WT2_CPU|T1|sea|210": {
+   "n": 113,
+   "model": 4.526,
+   "obs": 3.893,
+   "bias": 0.633,
+   "rmse": 2.126,
+   "corr": 0.513
+  },
+  "WT2_CPU|T1|sea|240": {
+   "n": 52,
+   "model": 5.582,
+   "obs": 5.206,
+   "bias": 0.376,
+   "rmse": 2.752,
+   "corr": 0.57
+  },
+  "WT2_CPU|T1|sea|270": {
+   "n": 111,
+   "model": 4.303,
+   "obs": 2.97,
+   "bias": 1.333,
+   "rmse": 2.252,
+   "corr": 0.769
+  },
+  "WT2_CPU|T1|sea|300": {
+   "n": 89,
+   "model": 3.785,
+   "obs": 1.297,
+   "bias": 2.489,
+   "rmse": 3.219,
+   "corr": 0.234
+  },
+  "WT2_CPU|T1|sea|330": {
+   "n": 14,
+   "model": 6.237,
+   "obs": 1.567,
+   "bias": 4.67,
+   "rmse": 5.471,
+   "corr": 0.689
+  },
+  "WT2_CPU|T1|bil|0": {
+   "n": 231,
+   "model": 4.553,
+   "obs": 3.032,
+   "bias": 1.521,
+   "rmse": 3.334,
+   "corr": 0.162
+  },
+  "WT2_CPU|T1|bil|30": {
+   "n": 506,
+   "model": 8.212,
+   "obs": 6.288,
+   "bias": 1.924,
+   "rmse": 3.193,
+   "corr": 0.676
+  },
+  "WT2_CPU|T1|bil|60": {
+   "n": 898,
+   "model": 8.097,
+   "obs": 8.536,
+   "bias": -0.439,
+   "rmse": 2.216,
+   "corr": 0.762
+  },
+  "WT2_CPU|T1|bil|90": {
+   "n": 137,
+   "model": 3.401,
+   "obs": 4.288,
+   "bias": -0.887,
+   "rmse": 2.223,
+   "corr": 0.415
+  },
+  "WT2_CPU|T1|bil|120": {
+   "n": 69,
+   "model": 3.684,
+   "obs": 3.025,
+   "bias": 0.658,
+   "rmse": 1.704,
+   "corr": 0.234
+  },
+  "WT2_CPU|T1|bil|150": {
+   "n": 23,
+   "model": 3.329,
+   "obs": 3.014,
+   "bias": 0.315,
+   "rmse": 1.44,
+   "corr": 0.413
+  },
+  "WT2_CPU|T1|bil|180": {
+   "n": 26,
+   "model": 3.677,
+   "obs": 2.785,
+   "bias": 0.892,
+   "rmse": 1.947,
+   "corr": 0.334
+  },
+  "WT2_CPU|T1|bil|210": {
+   "n": 113,
+   "model": 4.115,
+   "obs": 3.893,
+   "bias": 0.222,
+   "rmse": 1.905,
+   "corr": 0.514
+  },
+  "WT2_CPU|T1|bil|240": {
+   "n": 52,
+   "model": 4.959,
+   "obs": 5.206,
+   "bias": -0.248,
+   "rmse": 2.565,
+   "corr": 0.555
+  },
+  "WT2_CPU|T1|bil|270": {
+   "n": 111,
+   "model": 3.877,
+   "obs": 2.97,
+   "bias": 0.907,
+   "rmse": 1.951,
+   "corr": 0.777
+  },
+  "WT2_CPU|T1|bil|300": {
+   "n": 89,
+   "model": 3.439,
+   "obs": 1.297,
+   "bias": 2.142,
+   "rmse": 2.86,
+   "corr": 0.259
+  },
+  "WT2_CPU|T1|bil|330": {
+   "n": 14,
+   "model": 5.645,
+   "obs": 1.567,
+   "bias": 4.078,
+   "rmse": 4.868,
+   "corr": 0.683
+  },
+  "WT2_CPU|T2|sea|0": {
+   "n": 231,
+   "model": 4.9,
+   "obs": 3.285,
+   "bias": 1.614,
+   "rmse": 3.587,
+   "corr": 0.153
+  },
+  "WT2_CPU|T2|sea|30": {
+   "n": 506,
+   "model": 8.724,
+   "obs": 6.792,
+   "bias": 1.931,
+   "rmse": 3.328,
+   "corr": 0.677
+  },
+  "WT2_CPU|T2|sea|60": {
+   "n": 898,
+   "model": 8.611,
+   "obs": 9.223,
+   "bias": -0.612,
+   "rmse": 2.419,
+   "corr": 0.757
+  },
+  "WT2_CPU|T2|sea|90": {
+   "n": 137,
+   "model": 3.719,
+   "obs": 4.64,
+   "bias": -0.921,
+   "rmse": 2.429,
+   "corr": 0.395
+  },
+  "WT2_CPU|T2|sea|120": {
+   "n": 69,
+   "model": 3.983,
+   "obs": 3.329,
+   "bias": 0.654,
+   "rmse": 1.867,
+   "corr": 0.227
+  },
+  "WT2_CPU|T2|sea|150": {
+   "n": 23,
+   "model": 3.583,
+   "obs": 3.347,
+   "bias": 0.236,
+   "rmse": 1.618,
+   "corr": 0.387
+  },
+  "WT2_CPU|T2|sea|180": {
+   "n": 26,
+   "model": 4.023,
+   "obs": 3.108,
+   "bias": 0.915,
+   "rmse": 2.071,
+   "corr": 0.362
+  },
+  "WT2_CPU|T2|sea|210": {
+   "n": 113,
+   "model": 4.526,
+   "obs": 4.36,
+   "bias": 0.166,
+   "rmse": 2.075,
+   "corr": 0.513
+  },
+  "WT2_CPU|T2|sea|240": {
+   "n": 52,
+   "model": 5.582,
+   "obs": 5.826,
+   "bias": -0.244,
+   "rmse": 2.798,
+   "corr": 0.57
+  },
+  "WT2_CPU|T2|sea|270": {
+   "n": 111,
+   "model": 4.303,
+   "obs": 3.275,
+   "bias": 1.028,
+   "rmse": 2.166,
+   "corr": 0.771
+  },
+  "WT2_CPU|T2|sea|300": {
+   "n": 89,
+   "model": 3.785,
+   "obs": 1.406,
+   "bias": 2.38,
+   "rmse": 3.14,
+   "corr": 0.236
+  },
+  "WT2_CPU|T2|sea|330": {
+   "n": 14,
+   "model": 6.237,
+   "obs": 1.717,
+   "bias": 4.52,
+   "rmse": 5.309,
+   "corr": 0.694
+  },
+  "WT2_CPU|T2|bil|0": {
+   "n": 231,
+   "model": 4.553,
+   "obs": 3.285,
+   "bias": 1.267,
+   "rmse": 3.358,
+   "corr": 0.162
+  },
+  "WT2_CPU|T2|bil|30": {
+   "n": 506,
+   "model": 8.212,
+   "obs": 6.792,
+   "bias": 1.419,
+   "rmse": 2.938,
+   "corr": 0.676
+  },
+  "WT2_CPU|T2|bil|60": {
+   "n": 898,
+   "model": 8.097,
+   "obs": 9.223,
+   "bias": -1.126,
+   "rmse": 2.474,
+   "corr": 0.762
+  },
+  "WT2_CPU|T2|bil|90": {
+   "n": 137,
+   "model": 3.401,
+   "obs": 4.64,
+   "bias": -1.238,
+   "rmse": 2.476,
+   "corr": 0.414
+  },
+  "WT2_CPU|T2|bil|120": {
+   "n": 69,
+   "model": 3.684,
+   "obs": 3.329,
+   "bias": 0.355,
+   "rmse": 1.625,
+   "corr": 0.232
+  },
+  "WT2_CPU|T2|bil|150": {
+   "n": 23,
+   "model": 3.329,
+   "obs": 3.347,
+   "bias": -0.018,
+   "rmse": 1.427,
+   "corr": 0.411
+  },
+  "WT2_CPU|T2|bil|180": {
+   "n": 26,
+   "model": 3.677,
+   "obs": 3.108,
+   "bias": 0.568,
+   "rmse": 1.842,
+   "corr": 0.338
+  },
+  "WT2_CPU|T2|bil|210": {
+   "n": 113,
+   "model": 4.115,
+   "obs": 4.36,
+   "bias": -0.246,
+   "rmse": 1.958,
+   "corr": 0.514
+  },
+  "WT2_CPU|T2|bil|240": {
+   "n": 52,
+   "model": 4.959,
+   "obs": 5.826,
+   "bias": -0.867,
+   "rmse": 2.781,
+   "corr": 0.554
+  },
+  "WT2_CPU|T2|bil|270": {
+   "n": 111,
+   "model": 3.877,
+   "obs": 3.275,
+   "bias": 0.602,
+   "rmse": 1.936,
+   "corr": 0.778
+  },
+  "WT2_CPU|T2|bil|300": {
+   "n": 89,
+   "model": 3.439,
+   "obs": 1.406,
+   "bias": 2.034,
+   "rmse": 2.784,
+   "corr": 0.261
+  },
+  "WT2_CPU|T2|bil|330": {
+   "n": 14,
+   "model": 5.645,
+   "obs": 1.717,
+   "bias": 3.928,
+   "rmse": 4.711,
+   "corr": 0.689
+  },
+  "WT2_CPU|CABEZO|sea|0": {
+   "n": 235,
+   "model": 4.873,
+   "obs": 3.025,
+   "bias": 1.848,
+   "rmse": 3.851,
+   "corr": 0.119
+  },
+  "WT2_CPU|CABEZO|sea|30": {
+   "n": 506,
+   "model": 8.724,
+   "obs": 5.814,
+   "bias": 2.909,
+   "rmse": 4.001,
+   "corr": 0.664
+  },
+  "WT2_CPU|CABEZO|sea|60": {
+   "n": 898,
+   "model": 8.611,
+   "obs": 7.634,
+   "bias": 0.978,
+   "rmse": 2.681,
+   "corr": 0.715
+  },
+  "WT2_CPU|CABEZO|sea|90": {
+   "n": 137,
+   "model": 3.719,
+   "obs": 3.798,
+   "bias": -0.079,
+   "rmse": 2.152,
+   "corr": 0.427
+  },
+  "WT2_CPU|CABEZO|sea|120": {
+   "n": 69,
+   "model": 3.983,
+   "obs": 2.144,
+   "bias": 1.839,
+   "rmse": 2.571,
+   "corr": 0.166
+  },
+  "WT2_CPU|CABEZO|sea|150": {
+   "n": 23,
+   "model": 3.583,
+   "obs": 1.722,
+   "bias": 1.861,
+   "rmse": 2.411,
+   "corr": 0.438
+  },
+  "WT2_CPU|CABEZO|sea|180": {
+   "n": 26,
+   "model": 4.023,
+   "obs": 1.465,
+   "bias": 2.559,
+   "rmse": 3.165,
+   "corr": 0.33
+  },
+  "WT2_CPU|CABEZO|sea|210": {
+   "n": 113,
+   "model": 4.526,
+   "obs": 2.52,
+   "bias": 2.006,
+   "rmse": 2.875,
+   "corr": 0.472
+  },
+  "WT2_CPU|CABEZO|sea|240": {
+   "n": 52,
+   "model": 5.582,
+   "obs": 2.626,
+   "bias": 2.956,
+   "rmse": 4.094,
+   "corr": 0.532
+  },
+  "WT2_CPU|CABEZO|sea|270": {
+   "n": 111,
+   "model": 4.303,
+   "obs": 1.836,
+   "bias": 2.467,
+   "rmse": 3.164,
+   "corr": 0.692
+  },
+  "WT2_CPU|CABEZO|sea|300": {
+   "n": 89,
+   "model": 3.785,
+   "obs": 1.052,
+   "bias": 2.733,
+   "rmse": 3.418,
+   "corr": 0.199
+  },
+  "WT2_CPU|CABEZO|sea|330": {
+   "n": 14,
+   "model": 6.237,
+   "obs": 1.166,
+   "bias": 5.071,
+   "rmse": 5.902,
+   "corr": 0.767
+  },
+  "WT2_CPU|CABEZO|bil|0": {
+   "n": 235,
+   "model": 4.527,
+   "obs": 3.025,
+   "bias": 1.502,
+   "rmse": 3.62,
+   "corr": 0.125
+  },
+  "WT2_CPU|CABEZO|bil|30": {
+   "n": 506,
+   "model": 8.212,
+   "obs": 5.814,
+   "bias": 2.397,
+   "rmse": 3.523,
+   "corr": 0.662
+  },
+  "WT2_CPU|CABEZO|bil|60": {
+   "n": 898,
+   "model": 8.097,
+   "obs": 7.634,
+   "bias": 0.464,
+   "rmse": 2.387,
+   "corr": 0.721
+  },
+  "WT2_CPU|CABEZO|bil|90": {
+   "n": 137,
+   "model": 3.401,
+   "obs": 3.798,
+   "bias": -0.396,
+   "rmse": 2.085,
+   "corr": 0.446
+  },
+  "WT2_CPU|CABEZO|bil|120": {
+   "n": 69,
+   "model": 3.684,
+   "obs": 2.144,
+   "bias": 1.539,
+   "rmse": 2.246,
+   "corr": 0.169
+  },
+  "WT2_CPU|CABEZO|bil|150": {
+   "n": 23,
+   "model": 3.329,
+   "obs": 1.722,
+   "bias": 1.607,
+   "rmse": 2.097,
+   "corr": 0.463
+  },
+  "WT2_CPU|CABEZO|bil|180": {
+   "n": 26,
+   "model": 3.677,
+   "obs": 1.465,
+   "bias": 2.212,
+   "rmse": 2.819,
+   "corr": 0.301
+  },
+  "WT2_CPU|CABEZO|bil|210": {
+   "n": 113,
+   "model": 4.115,
+   "obs": 2.52,
+   "bias": 1.595,
+   "rmse": 2.475,
+   "corr": 0.474
+  },
+  "WT2_CPU|CABEZO|bil|240": {
+   "n": 52,
+   "model": 4.959,
+   "obs": 2.626,
+   "bias": 2.333,
+   "rmse": 3.464,
+   "corr": 0.519
+  },
+  "WT2_CPU|CABEZO|bil|270": {
+   "n": 111,
+   "model": 3.877,
+   "obs": 1.836,
+   "bias": 2.041,
+   "rmse": 2.741,
+   "corr": 0.699
+  },
+  "WT2_CPU|CABEZO|bil|300": {
+   "n": 89,
+   "model": 3.439,
+   "obs": 1.052,
+   "bias": 2.387,
+   "rmse": 3.05,
+   "corr": 0.235
+  },
+  "WT2_CPU|CABEZO|bil|330": {
+   "n": 14,
+   "model": 5.645,
+   "obs": 1.166,
+   "bias": 4.48,
+   "rmse": 5.285,
+   "corr": 0.765
+  },
+  "WT2_CPU|WG|sea|0": {
+   "n": 225,
+   "model": 4.872,
+   "obs": 2.441,
+   "bias": 2.431,
+   "rmse": 3.734,
+   "corr": 0.165
+  },
+  "WT2_CPU|WG|sea|30": {
+   "n": 474,
+   "model": 8.694,
+   "obs": 3.945,
+   "bias": 4.749,
+   "rmse": 5.604,
+   "corr": 0.624
+  },
+  "WT2_CPU|WG|sea|60": {
+   "n": 856,
+   "model": 8.533,
+   "obs": 7.949,
+   "bias": 0.585,
+   "rmse": 2.784,
+   "corr": 0.662
+  },
+  "WT2_CPU|WG|sea|90": {
+   "n": 125,
+   "model": 3.672,
+   "obs": 4.145,
+   "bias": -0.472,
+   "rmse": 2.186,
+   "corr": 0.34
+  },
+  "WT2_CPU|WG|sea|120": {
+   "n": 57,
+   "model": 4.085,
+   "obs": 3.049,
+   "bias": 1.036,
+   "rmse": 2.182,
+   "corr": 0.219
+  },
+  "WT2_CPU|WG|sea|150": {
+   "n": 21,
+   "model": 3.56,
+   "obs": 2.804,
+   "bias": 0.756,
+   "rmse": 1.713,
+   "corr": 0.49
+  },
+  "WT2_CPU|WG|sea|180": {
+   "n": 26,
+   "model": 4.023,
+   "obs": 2.453,
+   "bias": 1.57,
+   "rmse": 2.533,
+   "corr": 0.303
+  },
+  "WT2_CPU|WG|sea|210": {
+   "n": 107,
+   "model": 4.488,
+   "obs": 3.952,
+   "bias": 0.536,
+   "rmse": 1.898,
+   "corr": 0.668
+  },
+  "WT2_CPU|WG|sea|240": {
+   "n": 50,
+   "model": 5.602,
+   "obs": 5.791,
+   "bias": -0.189,
+   "rmse": 2.277,
+   "corr": 0.773
+  },
+  "WT2_CPU|WG|sea|270": {
+   "n": 111,
+   "model": 4.303,
+   "obs": 2.98,
+   "bias": 1.323,
+   "rmse": 2.299,
+   "corr": 0.755
+  },
+  "WT2_CPU|WG|sea|300": {
+   "n": 89,
+   "model": 3.785,
+   "obs": 1.178,
+   "bias": 2.608,
+   "rmse": 3.287,
+   "corr": 0.286
+  },
+  "WT2_CPU|WG|sea|330": {
+   "n": 14,
+   "model": 6.237,
+   "obs": 1.588,
+   "bias": 4.65,
+   "rmse": 5.451,
+   "corr": 0.659
+  },
+  "WT2_CPU|WG|bil|0": {
+   "n": 225,
+   "model": 4.528,
+   "obs": 2.441,
+   "bias": 2.087,
+   "rmse": 3.438,
+   "corr": 0.17
+  },
+  "WT2_CPU|WG|bil|30": {
+   "n": 474,
+   "model": 8.184,
+   "obs": 3.945,
+   "bias": 4.238,
+   "rmse": 5.076,
+   "corr": 0.615
+  },
+  "WT2_CPU|WG|bil|60": {
+   "n": 856,
+   "model": 8.023,
+   "obs": 7.949,
+   "bias": 0.074,
+   "rmse": 2.582,
+   "corr": 0.666
+  },
+  "WT2_CPU|WG|bil|90": {
+   "n": 125,
+   "model": 3.364,
+   "obs": 4.145,
+   "bias": -0.78,
+   "rmse": 2.162,
+   "corr": 0.358
+  },
+  "WT2_CPU|WG|bil|120": {
+   "n": 57,
+   "model": 3.788,
+   "obs": 3.049,
+   "bias": 0.739,
+   "rmse": 1.916,
+   "corr": 0.211
+  },
+  "WT2_CPU|WG|bil|150": {
+   "n": 21,
+   "model": 3.309,
+   "obs": 2.804,
+   "bias": 0.505,
+   "rmse": 1.471,
+   "corr": 0.494
+  },
+  "WT2_CPU|WG|bil|180": {
+   "n": 26,
+   "model": 3.677,
+   "obs": 2.453,
+   "bias": 1.224,
+   "rmse": 2.251,
+   "corr": 0.281
+  },
+  "WT2_CPU|WG|bil|210": {
+   "n": 107,
+   "model": 4.077,
+   "obs": 3.952,
+   "bias": 0.124,
+   "rmse": 1.742,
+   "corr": 0.664
+  },
+  "WT2_CPU|WG|bil|240": {
+   "n": 50,
+   "model": 4.978,
+   "obs": 5.791,
+   "bias": -0.813,
+   "rmse": 2.416,
+   "corr": 0.754
+  },
+  "WT2_CPU|WG|bil|270": {
+   "n": 111,
+   "model": 3.877,
+   "obs": 2.98,
+   "bias": 0.897,
+   "rmse": 2.027,
+   "corr": 0.756
+  },
+  "WT2_CPU|WG|bil|300": {
+   "n": 89,
+   "model": 3.439,
+   "obs": 1.178,
+   "bias": 2.261,
+   "rmse": 2.945,
+   "corr": 0.255
+  },
+  "WT2_CPU|WG|bil|330": {
+   "n": 14,
+   "model": 5.645,
+   "obs": 1.588,
+   "bias": 4.058,
+   "rmse": 4.883,
+   "corr": 0.63
+  }
+ },
+ "surf_hours": {
+  "WT2_CPU|T1|sea": {
+   "n": 791,
+   "model": 7.718,
+   "obs": 7.545,
+   "bias": 0.174,
+   "rmse": 2.437,
+   "corr": 0.789
+  },
+  "WT2_CPU|T1|bil": {
+   "n": 791,
+   "model": 7.227,
+   "obs": 7.545,
+   "bias": -0.318,
+   "rmse": 2.289,
+   "corr": 0.798
+  },
+  "WT2_CPU|T2|sea": {
+   "n": 791,
+   "model": 7.718,
+   "obs": 8.182,
+   "bias": -0.464,
+   "rmse": 2.5,
+   "corr": 0.79
+  },
+  "WT2_CPU|T2|bil": {
+   "n": 791,
+   "model": 7.227,
+   "obs": 8.182,
+   "bias": -0.955,
+   "rmse": 2.501,
+   "corr": 0.798
+  },
+  "WT2_CPU|CABEZO|sea": {
+   "n": 791,
+   "model": 7.718,
+   "obs": 6.609,
+   "bias": 1.109,
+   "rmse": 2.945,
+   "corr": 0.733
+  },
+  "WT2_CPU|CABEZO|bil": {
+   "n": 791,
+   "model": 7.227,
+   "obs": 6.609,
+   "bias": 0.618,
+   "rmse": 2.638,
+   "corr": 0.744
+  },
+  "WT2_CPU|WG|sea": {
+   "n": 746,
+   "model": 7.74,
+   "obs": 7.277,
+   "bias": 0.464,
+   "rmse": 2.781,
+   "corr": 0.727
+  },
+  "WT2_CPU|WG|bil": {
+   "n": 746,
+   "model": 7.248,
+   "obs": 7.277,
+   "bias": -0.029,
+   "rmse": 2.596,
+   "corr": 0.734
+  }
+ },
+ "common_subset": {
+  "F20_CPU|T1|sea": {
+   "n": 71,
+   "model": 10.091,
+   "obs": 8.283,
+   "bias": 1.808,
+   "rmse": 3.909,
+   "corr": 0.553
+  },
+  "F20_CPU|T1|bil": {
+   "n": 71,
+   "model": 9.494,
+   "obs": 8.283,
+   "bias": 1.211,
+   "rmse": 3.531,
+   "corr": 0.549
+  },
+  "F20_CPU|T2|sea": {
+   "n": 71,
+   "model": 10.091,
+   "obs": 8.952,
+   "bias": 1.139,
+   "rmse": 3.68,
+   "corr": 0.552
+  },
+  "F20_CPU|T2|bil": {
+   "n": 71,
+   "model": 9.494,
+   "obs": 8.952,
+   "bias": 0.542,
+   "rmse": 3.403,
+   "corr": 0.549
+  },
+  "F20_CPU|CABEZO|sea": {
+   "n": 71,
+   "model": 10.091,
+   "obs": 7.463,
+   "bias": 2.629,
+   "rmse": 4.403,
+   "corr": 0.522
+  },
+  "F20_CPU|CABEZO|bil": {
+   "n": 71,
+   "model": 9.494,
+   "obs": 7.463,
+   "bias": 2.032,
+   "rmse": 3.936,
+   "corr": 0.519
+  },
+  "F20_CPU|WG|sea": {
+   "n": 71,
+   "model": 10.091,
+   "obs": 6.577,
+   "bias": 3.514,
+   "rmse": 5.486,
+   "corr": 0.319
+  },
+  "F20_CPU|WG|bil": {
+   "n": 71,
+   "model": 9.494,
+   "obs": 6.577,
+   "bias": 2.917,
+   "rmse": 4.997,
+   "corr": 0.317
+  },
+  "F20_GPU|T1|sea": {
+   "n": 71,
+   "model": 10.096,
+   "obs": 8.283,
+   "bias": 1.813,
+   "rmse": 3.91,
+   "corr": 0.553
+  },
+  "F20_GPU|T1|bil": {
+   "n": 71,
+   "model": 9.499,
+   "obs": 8.283,
+   "bias": 1.215,
+   "rmse": 3.531,
+   "corr": 0.55
+  },
+  "F20_GPU|T2|sea": {
+   "n": 71,
+   "model": 10.096,
+   "obs": 8.952,
+   "bias": 1.144,
+   "rmse": 3.679,
+   "corr": 0.553
+  },
+  "F20_GPU|T2|bil": {
+   "n": 71,
+   "model": 9.499,
+   "obs": 8.952,
+   "bias": 0.547,
+   "rmse": 3.402,
+   "corr": 0.55
+  },
+  "F20_GPU|CABEZO|sea": {
+   "n": 71,
+   "model": 10.096,
+   "obs": 7.463,
+   "bias": 2.633,
+   "rmse": 4.405,
+   "corr": 0.522
+  },
+  "F20_GPU|CABEZO|bil": {
+   "n": 71,
+   "model": 9.499,
+   "obs": 7.463,
+   "bias": 2.036,
+   "rmse": 3.937,
+   "corr": 0.519
+  },
+  "F20_GPU|WG|sea": {
+   "n": 71,
+   "model": 10.096,
+   "obs": 6.577,
+   "bias": 3.519,
+   "rmse": 5.488,
+   "corr": 0.319
+  },
+  "F20_GPU|WG|bil": {
+   "n": 71,
+   "model": 9.499,
+   "obs": 6.577,
+   "bias": 2.922,
+   "rmse": 4.999,
+   "corr": 0.318
+  },
+  "WT2_CPU|T1|sea": {
+   "n": 2241,
+   "model": 6.862,
+   "obs": 5.795,
+   "bias": 1.067,
+   "rmse": 2.859,
+   "corr": 0.734
+  },
+  "WT2_CPU|T1|bil": {
+   "n": 2241,
+   "model": 6.41,
+   "obs": 5.795,
+   "bias": 0.615,
+   "rmse": 2.606,
+   "corr": 0.739
+  },
+  "WT2_CPU|T2|sea": {
+   "n": 2241,
+   "model": 6.862,
+   "obs": 6.281,
+   "bias": 0.581,
+   "rmse": 2.796,
+   "corr": 0.733
+  },
+  "WT2_CPU|T2|bil": {
+   "n": 2241,
+   "model": 6.41,
+   "obs": 6.281,
+   "bias": 0.129,
+   "rmse": 2.636,
+   "corr": 0.738
+  },
+  "WT2_CPU|CABEZO|sea": {
+   "n": 2241,
+   "model": 6.862,
+   "obs": 5.059,
+   "bias": 1.803,
+   "rmse": 3.264,
+   "corr": 0.712
+  },
+  "WT2_CPU|CABEZO|bil": {
+   "n": 2241,
+   "model": 6.41,
+   "obs": 5.059,
+   "bias": 1.351,
+   "rmse": 2.913,
+   "corr": 0.72
+  },
+  "WT2_CPU|WG|sea": {
+   "n": 2241,
+   "model": 6.862,
+   "obs": 5.036,
+   "bias": 1.826,
+   "rmse": 3.612,
+   "corr": 0.628
+  },
+  "WT2_CPU|WG|bil": {
+   "n": 2241,
+   "model": 6.41,
+   "obs": 5.036,
+   "bias": 1.374,
+   "rmse": 3.304,
+   "corr": 0.629
+  }
+ }
+}
