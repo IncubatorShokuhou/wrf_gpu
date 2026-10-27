@@ -25,6 +25,7 @@ import math
 import jax
 import jax.numpy as jnp
 from gpuwrf.backends import pallas as pl
+from gpuwrf.contracts.real_constfold import R4, real_constant
 from jax.experimental.pallas import triton as pt
 
 TX = 8          # 8 columns x 16 g lanes = 128 elements = one per thread at 4 warps
@@ -37,12 +38,16 @@ def _c(x):
     return F32(x)
 
 
+# module_ra_rrtmg_sw.F:1229/:4755 bpade = 1.0_rb/pade, pade = 0.278_rb: a REAL (rb = 4) fold in WRF (w44-constfold).
+_BPADE_REAL = R4(1.0) / R4(0.278)
+
+
 def _lookup(od):
     """`rrtmg_sw._sw_transmittance_lookup` (WRF rrsw_tbl exp lookup + low-tau expansion)."""
     one = _c(1.0)
     tau = jnp.minimum(od, _c(500.0))
     tblint = _c(10000.0)
-    bpade = _c(1.0 / 0.278)
+    bpade = _c(real_constant(_BPADE_REAL, 1.0 / 0.278))
     tblind = tau / (bpade + tau)
     idx = jnp.clip((tblint * tblind + _c(0.5)).astype(jnp.int32), 0, 10000)
     tfn = idx.astype(F32) / tblint

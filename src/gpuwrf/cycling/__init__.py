@@ -1,1 +1,1 @@
-"""Offline soil/snow cycling, with no model or JAX imports."""
+"""Offline soil/snow and opt-in atmospheric cycling, without model imports."""

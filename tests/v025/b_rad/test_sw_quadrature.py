@@ -9,9 +9,10 @@ from gpuwrf.kernels.rad_sw_quadrature import vertical_quadrature
 from gpuwrf.physics import rrtmg_sw as sw
 from gpuwrf.validation.tier1_rrtmg import run_tier1_sw
 from gpuwrf.validation.rrtmg_intermediate_oracles import run_intermediate_validation
+from tests._rrtmg_harness_namelist import harness_cldovrlp1  # noqa: F401  (fixture: the fixtures' WRF cldovrlp=1)
 
 
-def test_fused_sw_full_wrf_oracle(monkeypatch, tmp_path):
+def test_fused_sw_full_wrf_oracle(monkeypatch, tmp_path, harness_cldovrlp1):
     interpret = os.environ.get('B_RAD_PALLAS_INTERPRET', '1') == '1'
     if not interpret:
         assert jax.devices()[0].platform == 'gpu'

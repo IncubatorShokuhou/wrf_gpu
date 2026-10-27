@@ -34,7 +34,7 @@ _SLOTS = (
 _N_SLOTS = len(_SLOTS)
 
 
-def _scalar_stack() -> jax.Array:
+def _scalar_stack(entrainment=None) -> jax.Array:
     """Pack the step-body constants (exact source values) into one fp32 vector."""
 
     import math
@@ -42,7 +42,7 @@ def _scalar_stack() -> jax.Array:
     from gpuwrf.physics import mynn_edmf as _edmf
 
     data = [
-        0.3, 0.0005, 0.33, 0.9, 0.0003, 5.0e-6, 1500.0, 4000.0,
+        0.3, 0.0005, (0.33 if entrainment is None else entrainment), 0.9, 0.0003, 5.0e-6, 1500.0, 4000.0,
         0.15, 0.2, 250.0, 2.0, 1.25, 200.0, 3.0, 0.3333,
         1.0, 0.0, float(_edmf.GRAV),
     ]
@@ -290,7 +290,7 @@ def _edmf_condensation(qt, thl, p, zagl, **kwargs):
 def fused_plume_scan(
     l_per_plume, upa0, upw0, upthl0, upqt0, upqc0, upu0, upv0, *,
     thl, qt1, thv, p, dz, zw, u, v, pblh, active=None,
-    interpret: bool = True, spp_pattern=None,
+    interpret: bool = True, spp_pattern=None, entrainment=None,
 ):
     """Drop-in replacement for ``jax.vmap(plume_scan)(...)`` (mynn_edmf.py:436).
 
@@ -329,7 +329,7 @@ def fused_plume_scan(
         jnp.asarray(pblh, jnp.float32),
         jnp.ones((B,), jnp.float32) if active is None else jnp.asarray(active, jnp.float32),
     )
-    s = _scalar_stack()
+    s = _scalar_stack(**({} if entrainment is None else {"entrainment": entrainment}))
 
     out_shape = jax.ShapeDtypeStruct((nz - 2, n_lanes_pad), jnp.float32)
     inputs = (*lane_args,*env_args,s)
@@ -358,7 +358,7 @@ def plume_sums_enabled() -> bool:
 
 def fused_plume_sums(
     l_per_plume, upa0, upw0, upthl0, upqt0, upqc0, upu0, upv0, *,
-    thl, qt1, thv, p, dz, zw, u, v, pblh, rhoz_dmp, active=None, interpret: bool = True, qni=None, spp_pattern=None,
+    thl, qt1, thv, p, dz, zw, u, v, pblh, rhoz_dmp, active=None, interpret: bool = True, qni=None, spp_pattern=None, entrainment=None,
 ):
     """Plume sweep returning the per-level NUP sums instead of the plume arrays.
 
@@ -397,12 +397,12 @@ def fused_plume_sums(
     sum_shape = jax.ShapeDtypeStruct((nz - 2, b_pad), jnp.float32)
     names = _SUM_NAMES
     if qni is None:
-        inputs = (*lane_args, *env_args, _scalar_stack())
+        inputs = (*lane_args, *env_args, _scalar_stack(**({} if entrainment is None else {"entrainment": entrainment})))
         kernel = lambda *refs: _plume_sums_kernel(*refs, nz=nz, nup=nup)
     else:
         ni0 = (qni[:,0]*dz[:,1]+qni[:,1]*dz[:,0])/(dz[:,0]+dz[:,1])
         ni0 = jnp.broadcast_to(ni0[:,None],(B,nup))
-        inputs = (*lane_args,*env_args,pad_tail(ni0),t(qni),_scalar_stack())
+        inputs = (*lane_args,*env_args,pad_tail(ni0),t(qni),_scalar_stack(**({} if entrainment is None else {"entrainment": entrainment})))
         kernel = lambda *refs: _plume_sums_kernel(*refs[:19],refs[21],*refs[22:],
             nz=nz,nup=nup,ni_init_ref=refs[19],ni_env_ref=refs[20])
         names = names + ('awqni',)
@@ -616,7 +616,7 @@ def _assemble_native(s, rho, thv, dz, fltv, active, UPA, UPW, UPQT, UPQC, UPTHL,
 
 def _dmp_mf_columns_impl(sqw, sqv, sqc, u, v, w, th, thl, thv, tk, qke,
                          p, exner, rho, dz, zw, ust, flt, fltv, flq, flqv,
-                         pblh, ts, dx, xland, dt, psig_shcu=None, cloud_base=None, *, interpret=True, qni=None, spp_pattern=None):
+                         pblh, ts, dx, xland, dt, psig_shcu=None, cloud_base=None, *, interpret=True, qni=None, spp_pattern=None, entrainment=None):
     """Batched ``mynn_edmf.dmp_mf_columns`` with the fused plume kernel.
 
     Identical signature and output dict.  Setup reuses the
@@ -656,6 +656,7 @@ def _dmp_mf_columns_impl(sqw, sqv, sqc, u, v, w, th, thl, thv, tk, qke,
             pblh=pblh, rhoz_dmp=rhoz_dmp, active=setup["active"], interpret=interpret,
             **({} if qni is None else {'qni':qni}),
             **({} if spp_pattern is None else {'spp_pattern':spp_pattern}),
+            **({} if entrainment is None else {"entrainment": entrainment}),
         )
         return _assemble_from_sums(setup, rho, thv, dz, fltv, setup["active"] & first_ok, sums,
             **({} if qni is None else {'qni':qni}))
@@ -666,6 +667,7 @@ def _dmp_mf_columns_impl(sqw, sqv, sqc, u, v, w, th, thl, thv, tk, qke,
         thl=thl, qt1=setup["qt1"], thv=thv, p=p, dz=dz, zw=zw, u=u, v=v,
         pblh=pblh, active=setup["active"], interpret=interpret,
         **({} if spp_pattern is None else {'spp_pattern':spp_pattern}),
+        **({} if entrainment is None else {"entrainment": entrainment}),
     )
 
     # WRF first-level veto + full_up, batched (verbatim mirror of the

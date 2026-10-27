@@ -25,6 +25,17 @@ def finite_close(actual,expected,**kw):
     for name in actual:np.testing.assert_allclose(actual[name],expected[name],err_msg=name,**kw)
 
 
+def with_caller_wspd(state,flux):
+    """Supply the SFCLAY WSPD handle the release-default MYNN caller requires.
+
+    The fixture carries no SFCLAY_mynn WSPD; this wiring probe stops before the
+    implicit bottom boundary (the only WSPD consumer), so the retained legacy
+    wind is used as a neutral placeholder value.
+    """
+    wind=jnp.maximum(jnp.sqrt(state.u[...,0]*state.u[...,0]+state.v[...,0]*state.v[...,0]),jnp.asarray(.2,state.u.dtype))
+    return flux._replace(wspd=wind)
+
+
 def real_columns(h=1):
     row=json.loads((HERE/f'fixtures/mynn_phy_exner_h{h}.json').read_text())
     a={n:jnp.asarray(row[n],jnp.float32) for n in ['p_hyd','p_dyn','pi_phy','theta','qv','qc','qi','qs']}
@@ -91,8 +102,11 @@ def test_real_coupler_keeps_hydro_p_and_supplies_dynamic_pi(monkeypatch,original
     row,a,_=real_columns();B,K=a['p_dyn'].shape
     field=lambda name:jnp.transpose(a[name]).reshape(K,B,1)
     theta=field('theta')*(1+C.WRF_RV_OVER_RD*field('qv'))
+    # el_pbl/Ni: State leaves the release-default MYNN view also reads
+    # (TKEPROD_UP el_prev, QNI_MIXING); zero = the State/Registry seed.
     state=SimpleNamespace(p=field('p_dyn'),theta=theta,qv=field('qv'),qc=field('qc'),qi=field('qi'),qs=field('qs'),
-                          qke=jnp.zeros_like(theta),qsq=jnp.zeros_like(theta))
+                          qke=jnp.zeros_like(theta),qsq=jnp.zeros_like(theta),
+                          el_pbl=jnp.zeros_like(theta),Ni=jnp.zeros_like(theta))
     monkeypatch.setenv('GPUWRF_MYNN_FP32_COLUMNS','1')
     monkeypatch.setattr(C,'_mynn_column_uses_wrf_phy_prep',lambda grid:True)
     monkeypatch.setattr(C,'_wrf_hydrostatic_pressure_from_state',lambda *args,**kw:(field('p_hyd'),jnp.zeros((B,1),jnp.float32)))
@@ -111,6 +125,7 @@ def test_real_coupler_keeps_hydro_p_and_supplies_dynamic_pi(monkeypatch,original
 
 def test_both_actual_whole_callers_forward_independent_pi(monkeypatch):
     row=json.loads(HEAT.read_text())['rows'][0];state,flux=batch(row)
+    flux=with_caller_wspd(state,flux)
     # Wiring regression: distinct supplied pi is observable before the solver.
     pi=P._exner_from_pressure(state.p)+jnp.asarray(.001,state.p.dtype)
     state=state.replace(exner=pi)

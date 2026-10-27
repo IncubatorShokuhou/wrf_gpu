@@ -84,9 +84,11 @@ import dataclasses
 import functools
 import hashlib
 import importlib
+import json
 import os
 import re
 import struct
+import tempfile
 import types
 from pathlib import Path
 from typing import Any
@@ -137,6 +139,10 @@ __all__ = [
 #   inside real-case ``DycoreMetrics.provenance`` (prefix and nz/eta kept).
 # v5: bound defaults/closures, keyword static metadata, and external tables.
 KEY_SCHEMA = "GPUWRF-AOTKEY-v5"
+
+
+class _UnsupportedAbstractMetadata(TypeError):
+    """A descriptor cannot safely participate in this metadata-only key."""
 
 
 # --------------------------------------------------------------------------- #
@@ -260,8 +266,26 @@ def _walk(h: "hashlib._Hash", obj: Any, depth: int) -> None:
         _walk(h, children, depth + 1)
         return
 
-    # Array-like (jax.Array, numpy ndarray, ShapeDtypeStruct-with-data). Content
-    # bytes when materializable, else shape+dtype only (e.g. ShapeDtypeStruct).
+    # An abstract descriptor has NO content bytes. np.asarray(SDS) succeeds as
+    # a zero-dimensional object array; its tobytes() contains a process-local
+    # pointer, not the described array. Keep this typed namespace disjoint from
+    # concrete arrays without invalidating their existing v5 encodings.
+    if isinstance(obj, jax.ShapeDtypeStruct):
+        if (obj.sharding is not None or getattr(obj, "_dll", None) is not None
+                or getattr(obj, "manual_axis_type", None) is not None):
+            # These fields can change lowering/placement. Until their complete
+            # canonical encoding is supported, refuse the cheap key (the caller
+            # lowers normally); never silently collapse them to shape/dtype.
+            raise _UnsupportedAbstractMetadata(
+                "aot cheap_key: unsupported ShapeDtypeStruct placement/axis metadata")
+        _upd(h, b"shape-dtype-struct-v1")
+        _walk(h, (tuple(obj.shape), str(obj.dtype), bool(obj.weak_type),
+                  bool(getattr(obj, "is_ref", False))), depth + 1)
+        return
+
+    # Concrete array-like values (jax.Array / numpy ndarray) remain content-
+    # hashed. Materialization errors must propagate to cheap_key's fail-open
+    # boundary rather than weakening a baked value to shape/dtype.
     shape = getattr(obj, "shape", None)
     dtype = getattr(obj, "dtype", None)
     if shape is not None and dtype is not None and not isinstance(obj, type):
@@ -270,13 +294,8 @@ def _walk(h: "hashlib._Hash", obj: Any, depth: int) -> None:
         _upd(h, b"a")
         _upd(h, b"shape", str(tuple(shape)).encode())
         _upd(h, b"dtype", str(dtype).encode())
-        try:
-            host = np.ascontiguousarray(np.asarray(obj))
-            _upd(h, b"bytes", host.tobytes())
-        except Exception:
-            if not isinstance(obj, jax.ShapeDtypeStruct):
-                raise  # A baked value must not silently weaken to shape/dtype.
-            _upd(h, b"abstract")
+        host = np.ascontiguousarray(np.asarray(obj))
+        _upd(h, b"bytes", host.tobytes())
         return
 
     if isinstance(obj, Mapping):
@@ -443,49 +462,153 @@ def _module_to_source_path(module: str, src_root: Path) -> Path | None:
     return None
 
 
+def _import_nodes(tree: ast.AST):
+    """Visit imports at any statement depth, without traversing expressions.
+
+    Import/ImportFrom are statements: Python expressions (including lambdas
+    and comprehensions) cannot contain them. Retain all other node kinds so
+    except handlers, match cases, and nested function/class bodies are visited.
+    """
+    pending = [tree]
+    while pending:
+        node = pending.pop()
+        if isinstance(node, ast.expr):
+            continue
+        if isinstance(node, (ast.Import, ast.ImportFrom)):
+            yield node
+        else:
+            pending.extend(ast.iter_child_nodes(node))
+
+
+_SOURCE_IMPORT_CACHE_SCHEMA = "gpuwrf-source-imports-v1"
+
+
+def _source_import_cache_dir() -> Path | None:
+    """Share the configured compile-cache root; disabled/read-only is safe."""
+    from gpuwrf.runtime.compile_cache import resolve_cache_dir
+
+    root = resolve_cache_dir()
+    return root / "source-imports-v1" if root is not None else None
+
+
+def _import_cache_payload(data: bytes, filename: str) -> list:
+    """Path-independent AST contribution; resolve relative edges afterwards."""
+    tree = ast.parse(data.decode("utf-8"), filename=filename)
+    return [
+        ["import", 0, None, [alias.name for alias in node.names]]
+        if isinstance(node, ast.Import) else
+        ["from", node.level, node.module, [alias.name for alias in node.names]]
+        for node in _import_nodes(tree)
+    ]
+
+
+def _source_import_specs(data: bytes, filename: str, cache_dir: Path | None) -> list:
+    """Content-addressed import contribution, with fail-safe cache misses.
+
+    Every lookup hashes current source BYTES; stat/mtime/size are never keys.
+    The versioned payload checksum rejects corrupt/partial entries. Atomic
+    replacement permits concurrent writers; any cache I/O error recomputes.
+    This cache never stores the final tree fingerprint or a previously seen
+    path list, so added/removed import edges are rediscovered after an edit.
+    """
+    digest = hashlib.sha256(data).hexdigest()
+    key = hashlib.sha256((_SOURCE_IMPORT_CACHE_SCHEMA + ":" + digest).encode()).hexdigest()
+    path = cache_dir / (key + ".json") if cache_dir is not None else None
+    if path is not None:
+        try:
+            with path.open("rb") as stream:
+                raw = stream.read(4 * 1024 * 1024 + 1)
+            if len(raw) <= 4 * 1024 * 1024:
+                record = json.loads(raw)
+                payload = record["payload"]
+                encoded = json.dumps(payload, separators=(",", ":"), ensure_ascii=True).encode()
+                if (record["sha256"] == hashlib.sha256(encoded).hexdigest()
+                        and payload["schema"] == _SOURCE_IMPORT_CACHE_SCHEMA
+                        and payload["source_sha256"] == digest):
+                    specs = payload["imports"]
+                    if isinstance(specs, list) and all(
+                        isinstance(row, list) and len(row) == 4
+                        and row[0] in ("import", "from")
+                        and type(row[1]) is int and row[1] >= 0
+                        and (row[2] is None or isinstance(row[2], str))
+                        and isinstance(row[3], list) and all(isinstance(n, str) for n in row[3])
+                        for row in specs
+                    ):
+                        return specs
+        except (OSError, ValueError, KeyError, TypeError):
+            pass
+    specs = _import_cache_payload(data, filename)
+    if path is not None:
+        temp = None
+        try:
+            path.parent.mkdir(parents=True, exist_ok=True, mode=0o700)
+            payload = {"schema": _SOURCE_IMPORT_CACHE_SCHEMA, "source_sha256": digest, "imports": specs}
+            encoded = json.dumps(payload, separators=(",", ":"), ensure_ascii=True).encode()
+            record = {"payload": payload, "sha256": hashlib.sha256(encoded).hexdigest()}
+            with tempfile.NamedTemporaryFile(mode="w", encoding="utf-8", dir=path.parent,
+                                             prefix="." + key, suffix=".tmp", delete=False) as stream:
+                temp = Path(stream.name)
+                json.dump(record, stream, separators=(",", ":"), ensure_ascii=True)
+            os.replace(temp, path)
+        except OSError:
+            pass
+        finally:
+            if temp is not None:
+                try:
+                    temp.unlink(missing_ok=True)
+                except OSError:
+                    pass
+    return specs
+
+
 def _gpuwrf_imports_in_file(path: Path, this_module: str) -> set[str]:
     """All ``gpuwrf*`` modules imported by ``path`` (module- AND function-level).
 
-    Walks the FULL AST (``ast.walk``), not just module-level statements, so a
+    Walks every statement depth, including nested blocks, so a
     function-body ``from gpuwrf.x import y`` (lazy import inside a traced callee)
     is included -- those still contribute traced code. Relative imports are
     resolved against ``this_module``'s package. Process-stable (pure AST, no
     execution, no ``id()``/``hash()``)."""
     out: set[str] = set()
     try:
-        tree = ast.parse(path.read_text(encoding="utf-8"), filename=str(path))
+        data = path.read_bytes()
+        try:
+            cache_dir = _source_import_cache_dir()
+        except Exception:  # cache configuration cannot affect the source scope
+            cache_dir = None
+        specs = _source_import_specs(data, str(path), cache_dir)
     except (SyntaxError, OSError, UnicodeDecodeError):
         return out
-    for node in ast.walk(tree):
-        if isinstance(node, ast.Import):
-            for alias in node.names:
-                if alias.name == "gpuwrf" or alias.name.startswith("gpuwrf."):
-                    out.add(alias.name)
-        elif isinstance(node, ast.ImportFrom):
-            if node.level == 0:
-                if node.module and (
-                    node.module == "gpuwrf" or node.module.startswith("gpuwrf.")
+    for kind, level, module, names in specs:
+        if kind == "import":
+            for name in names:
+                if name == "gpuwrf" or name.startswith("gpuwrf."):
+                    out.add(name)
+        elif kind == "from":
+            if level == 0:
+                if module and (
+                    module == "gpuwrf" or module.startswith("gpuwrf.")
                 ):
-                    out.add(node.module)
+                    out.add(module)
                     # `from gpuwrf.pkg import submod` may name a submodule, not an
                     # attribute -> also fold the candidate dotted submodule so the
                     # closure follows package re-exports.
-                    for alias in node.names:
-                        out.add(f"{node.module}.{alias.name}")
+                    for name in names:
+                        out.add(f"{module}.{name}")
             else:
                 # Relative import: drop `level` trailing components of this_module
                 # (a module path; `level==1` -> same package).
                 base_parts = this_module.split(".")
-                trim = node.level
+                trim = level
                 base = ".".join(base_parts[: max(1, len(base_parts) - trim)])
-                if node.module:
-                    out.add(f"{base}.{node.module}")
-                    for alias in node.names:
-                        out.add(f"{base}.{node.module}.{alias.name}")
+                if module:
+                    out.add(f"{base}.{module}")
+                    for name in names:
+                        out.add(f"{base}.{module}.{name}")
                 else:
                     out.add(base)
-                    for alias in node.names:
-                        out.add(f"{base}.{alias.name}")
+                    for name in names:
+                        out.add(f"{base}.{name}")
     return {m for m in out if m == "gpuwrf" or m.startswith("gpuwrf.")}
 
 
@@ -652,6 +775,7 @@ IMPORT_TIME_ENV_CONSTANTS: tuple[tuple[str, str], ...] = (
     ("gpuwrf.physics.thompson_column", "_MP_COLUMN_TILING"),
     ("gpuwrf.physics.thompson_column", "_MP_COLUMN_TILE_COLS"),
     ("gpuwrf.runtime.operational_mode", "_CARRY_DONATE"),
+    ("gpuwrf.runtime.operational_mode", "_STEP_CMDBUF"),
     ("gpuwrf.runtime.operational_mode", "_HISTORY_SWDOWN_HORIZONTAL"),
     ("gpuwrf.kernels.layout_pin", "PARTS"),
     ("gpuwrf.coupling.cam_radiation", "CAM_TILE_COLS"),
@@ -661,6 +785,7 @@ IMPORT_TIME_ENV_CONSTANTS: tuple[tuple[str, str], ...] = (
     ("gpuwrf.dynamics.core.w_surface_reset", "ENABLED"),
     ("gpuwrf.dynamics.core.acoustic", "_SPEC_W_WORK_COPY"),
     ("gpuwrf.dynamics.core.advance_w", "W_DAMP_STAGE"),
+    ("gpuwrf.contracts.real_constfold", "ENABLED"),  # w44-constfold WRF REAL constant folds
 )
 
 def module_const_env_hash() -> str:
@@ -811,6 +936,8 @@ def fn_identity_hash(fn: Any) -> str:
         # this digest is process-stable (PYTHONHASHSEED-independent).
         try:
             payload["code"] = canonical_digest(code)
+        except _UnsupportedAbstractMetadata:
+            raise  # Refusal in a baked code constant must reject the full key.
         except Exception:  # noqa: BLE001
             pass
     # The same code object can close over different tables or bind a different
@@ -859,6 +986,10 @@ def _structure_fingerprint(obj: Any) -> str:
         flat, treedef = jax.tree_util.tree_flatten(obj)
         placeholder = jax.tree_util.tree_unflatten(treedef, [b"\x00LEAF" for _ in flat])
         return canonical_digest(placeholder)
+    except _UnsupportedAbstractMetadata:
+        # A static pytree aux descriptor is a program determinant. Do not turn
+        # its refusal into the coarse leaf-count fallback and alias programs.
+        raise
     except Exception:  # noqa: BLE001
         return canonical_digest(("nleaves-fallback",))
 
@@ -1054,6 +1185,10 @@ PROCESS_INFRA_ENV: frozenset[str] = frozenset(
         "GPUWRF_TABLES_DIR",
         "GPUWRF_TABLES_URL",
         "GPUWRF_TABLES_OFFLINE",
+        # Runner bookkeeping label (scripts/remote/wz1080_run.sh exports the lane
+        # name); no reader in gpuwrf. Keyed, identical runs under two labels never
+        # hit each other's AOT blobs (o5-port, three misses on the 1080 Ti).
+        "GPUWRF_LANE",
     }
 )
 

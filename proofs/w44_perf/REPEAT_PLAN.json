@@ -1,0 +1,13 @@
+{
+  "schema": "w44-perf.repeat-plan.v1",
+  "reason": "Oct23 v032 A/A fails; new complete matched session, no pooling or selective exclusions",
+  "case": "<DATA_ROOT>/wrf_gpu2/v025/s0_case_20260725",
+  "hours": 3,
+  "pool": "cuda_async explicit preallocate=true fraction=0.25",
+  "warmups": [["v032", "R2_W32"], ["v040", "R2_W40"], ["v043", "R2_W43"]],
+  "order": [["v043", "R2_B43_1"], ["v032", "R2_A32_1"], ["v040", "R2_C40_1"], ["v043", "R2_B43_2"], ["v040", "R2_C40_2"], ["v032", "R2_A32_2"], ["v043", "R2_B43_3"]],
+  "groups": {"v032": ["R2_A32_1", "R2_A32_2"], "v040": ["R2_C40_1", "R2_C40_2"], "v043": ["R2_B43_1", "R2_B43_2", "R2_B43_3"]},
+  "aa_metrics": ["official_proxy_s_per_fch", "official_stepping_s_per_fch", "pre_segment_s"],
+  "aa_rule": "Each version: (max-min)/mean <= 5% separately for all three metrics. All measured arms retained. Failure => INCONCLUSIVE; no favorable retry or cross-session substitution.",
+  "scope": "Stepping=official S0 seg2-3 mean excluding output; startup=process receipt t0 to first segment. 3h proxy is not 24h whole-run S1. No new WRF fidelity claim."
+}

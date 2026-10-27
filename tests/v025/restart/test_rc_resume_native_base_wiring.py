@@ -22,7 +22,7 @@ def test_checkpoint_resume_runs_native_base_state_check(initialized, tmp_path, m
 
     monkeypatch.setattr(pipeline, '_require_native_base_state', checked)
     restart_tests.test_production_segment_hooks_resume_clock_and_history(
-        initialized, tmp_path, monkeypatch)
+        initialized, tmp_path, monkeypatch, mode="resume")
     assert len(calls) == 1
     assert calls[0][0] == {'d01', 'd02'}
     assert calls[0][1] is not None

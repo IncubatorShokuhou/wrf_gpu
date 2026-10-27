@@ -68,9 +68,14 @@ def test_actual_surface_producers_pass_independent_pi(monkeypatch,producer):
     state=state._replace(exner=pi) if hasattr(state,'_replace') and 'exner' in state._fields else SimpleNamespace(**state._asdict(),exner=pi) if hasattr(state,'_asdict') else SimpleNamespace(**vars(state),exner=pi)
     monkeypatch.setenv(FLAG,'1');monkeypatch.setenv('GPUWRF_MYNN_FLTV_WRF','1')
     module=SL if producer=='surface' else NC;fn=module.mynn_driver_surface_fluxes;seen=[]
+    # pi_phy reaches the driver at the producer's working precision: WRF REAL
+    # under the native-REAL surface layer / Noah-MP modes, else the legacy f64.
+    work=(jnp.float32 if REAL.native_real_enabled() else jnp.float64) if producer=='surface' else NC.real_dtype()
+    expected=np.asarray(jnp.asarray(pi,work))[...,0]
     def capture(*args,**kw):
         finite(dict(kw));assert 'exner' in kw
-        np.testing.assert_array_equal(np.asarray(kw['exner']),np.asarray(pi)[...,0]);seen.append(1)
+        assert np.asarray(kw['exner']).dtype==np.dtype(work),(np.asarray(kw['exner']).dtype,work)
+        np.testing.assert_array_equal(np.asarray(kw['exner']),expected);seen.append(1)
         return fn(*args,**kw)
     monkeypatch.setattr(module,'mynn_driver_surface_fluxes',capture)
     if producer=='surface':SL.surface_layer_with_diagnostics(state)

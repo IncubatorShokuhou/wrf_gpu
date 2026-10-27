@@ -168,7 +168,7 @@ scripts/run_gpu_lowprio.sh --cores 0-23 \
     --proof-dir "$RUN_ROOT/proofs"
 ```
 
-Detached h1 Canary falsifier (recommended for manager/agent shells that may
+Detached h1 Canary falsifier (recommended for automation or agent shells that may
 exit before the run finishes):
 
 ```bash

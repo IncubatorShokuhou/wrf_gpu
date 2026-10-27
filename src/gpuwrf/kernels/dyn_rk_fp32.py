@@ -143,8 +143,8 @@ def diagnose_pressure_fp32(state,base,metrics,*,hypsometric_opt=1):
 
 def _rn(op,a,b,*,interpret):
     if interpret or not pl.cuda_native():
-        return {"add":lambda:a+b,"sub":lambda:a-b,"mul":lambda:a*b,
-                "div":lambda:a/b}[op]()
+        # Non-CUDA: AMDGCN RN ops on an admitted ROCm tuple, else plain (vendor_ops).
+        return pl.portable_rn(op,a,b,interpret=interpret)
     return pt.elementwise_inline_asm(op+".rn.f32 $0, $1, $2;",args=[a,b],
         constraints="=f,f,f",pack=1,
         result_shape_dtypes=[jax.ShapeDtypeStruct(a.shape,jnp.float32)])[0]

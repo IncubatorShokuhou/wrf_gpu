@@ -1,0 +1,30 @@
+{
+  "target": "cr-w44-raddiag FIX d7928fa170",
+  "repair_commits": [
+    "e09f1c6d6f",
+    "1a4671a69c",
+    "6a6cd596e2"
+  ],
+  "source_commit": "6a6cd596e2",
+  "tests": {
+    "goddard_flg_restart_and_raddiag": "110PASS0FAIL0ERROR9.81s on immutable1a4671a69c",
+    "active_native_binding_negative": "1PASS2.62s on immutable6a6cd596e2"
+  },
+  "behavior": [
+    "Goddard allocates only explicit produced common fields; every unsupported optional field is None BEFORE allocation",
+    "Goddard+FLG/GFDL use one pc.unproduced_optional_radiation_fields helper; foreign planes refused; required fields unchanged",
+    "Native missing legacy mp_re_config stays None rather than inventing RRTMG4/4; active rad_diag still requires explicit selection binding"
+  ],
+  "coverage": [
+    "explicit OFF rad_diag/urban None",
+    "future appended shadow_height_m and arbitrary optional field remain None with no allocation",
+    "all foreign common optional planes rejected in Goddard and codes7/99",
+    "original pickle/NetCDF/native Goddard restart consumers pass",
+    "raddiag4format roundtrips/schema guards unchanged and pass"
+  ],
+  "reuse": "no unchanged RRTMG GPU/oracle repeat; real Goddard solver arithmetic unchanged; metadata-only helper added to pc; old measured RRTMG cases unaffected",
+  "xml_sha256": {
+    "GODDARD_FINAL.xml": "bd0fd56dc3a62c8114145b968f6c84d3709adc0905415983295eabea0b7a33c3",
+    "BINDING_DELTA.xml": "3cff51945536bd114e97838d0733e72f62b32588961308adfb11abf95fc2e727"
+  }
+}

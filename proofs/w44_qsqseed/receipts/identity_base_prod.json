@@ -1,0 +1,2391 @@
+{
+  "tool": "scripts/off_identity_probe.py",
+  "schema": 2,
+  "case": "<DATA_ROOT>/wrf_gpu2/v025/s0_case_20260725",
+  "covered_programs": [
+    "root_d01_step",
+    "forcedown_d01_d02",
+    "child_d02_step"
+  ],
+  "max_dom": 2,
+  "order": "native-first",
+  "gpu_executed": false,
+  "operator_env": {
+    "GPUWRF_ACOUSTIC_ALIAS": "1",
+    "GPUWRF_ACOUSTIC_MASS_BLOCK": "1",
+    "GPUWRF_ACOUSTIC_NO_MU_FLOOR": "1",
+    "GPUWRF_ACOUSTIC_UV_MASKED": "1",
+    "GPUWRF_ACOUSTIC_W2PASS": "3",
+    "GPUWRF_ACOUSTIC_W_RECUR_SL": "1",
+    "GPUWRF_BOUNDARY_FP32": "1",
+    "GPUWRF_CARRY_DONATE": "1",
+    "GPUWRF_CARRY_REAL_ALL": "1",
+    "GPUWRF_CENSUS": "0",
+    "GPUWRF_DYN_ADVECTION_FP32": "1",
+    "GPUWRF_DYN_CARRY_FP32": "1",
+    "GPUWRF_DYN_DIFFUSION_FP32": "1",
+    "GPUWRF_DYN_FP32": "1",
+    "GPUWRF_DYN_GLUE_FUSED": "momuvn_rhsph_uvn_pin",
+    "GPUWRF_DYN_PD_FP32": "1",
+    "GPUWRF_DYN_PD_SPECIES_LOOP": "1",
+    "GPUWRF_DYN_REAL_ALL": "1",
+    "GPUWRF_DYN_RK_FP32": "1",
+    "GPUWRF_EDMF_FUSED_PLUME": "1",
+    "GPUWRF_FAST_DEFAULTS": "1",
+    "GPUWRF_GWDO_NATIVE_REAL": "1",
+    "GPUWRF_HISTORY_INSTEP_DIAG": "1",
+    "GPUWRF_HISTORY_SWDOWN_HORIZONTAL": "1",
+    "GPUWRF_JAX_CACHE": "0",
+    "GPUWRF_KF_COLUMN_FP32": "1",
+    "GPUWRF_KF_PHYD_WRF": "1",
+    "GPUWRF_KF_REAL_CONSTANTS": "1",
+    "GPUWRF_KF_RESIDENT_TABLES": "1",
+    "GPUWRF_KF_TEND_RK_WRF": "1",
+    "GPUWRF_LAND_Q2_CAP_POSTLSM": "1",
+    "GPUWRF_LAYOUT_PIN": "ac_carry_cols_cum",
+    "GPUWRF_MCICA_JUMPAHEAD": "1",
+    "GPUWRF_MCICA_KISS_KERNEL": "1",
+    "GPUWRF_MCICA_LEGACY_FP64": "0",
+    "GPUWRF_MYNN_CLOUDMIX": "1",
+    "GPUWRF_MYNN_CONDENSATION_WRF": "1",
+    "GPUWRF_MYNN_DHEAT": "1",
+    "GPUWRF_MYNN_DMP_KTOP_BOUND": "1",
+    "GPUWRF_MYNN_ELB_MF": "1",
+    "GPUWRF_MYNN_ELH_BUDGET": "1",
+    "GPUWRF_MYNN_FLTV_WRF": "1",
+    "GPUWRF_MYNN_FP32_BOULAC": "0",
+    "GPUWRF_MYNN_FP32_COLUMNS": "1",
+    "GPUWRF_MYNN_FP32_PLUME": "1",
+    "GPUWRF_MYNN_PHY_EXNER": "1",
+    "GPUWRF_MYNN_PLUME_CLOUD_BASE": "1",
+    "GPUWRF_MYNN_PLUME_SUMS": "1",
+    "GPUWRF_MYNN_PREDICT_SAW_FLOOR": "1",
+    "GPUWRF_MYNN_PSIG_CLAMP": "1",
+    "GPUWRF_MYNN_PSIQ_FLUX_WRF": "1",
+    "GPUWRF_MYNN_QNI_MIXING": "1",
+    "GPUWRF_MYNN_REAL_CONSTANTS": "1",
+    "GPUWRF_MYNN_RHOSFC_WRF": "1",
+    "GPUWRF_MYNN_SCALE_AWARE": "1",
+    "GPUWRF_MYNN_SFC_PBLH_WRF": "1",
+    "GPUWRF_MYNN_SFC_PSI_REAL": "1",
+    "GPUWRF_MYNN_SFC_WSPD": "1",
+    "GPUWRF_MYNN_SGS_MIXING_RATIO": "1",
+    "GPUWRF_MYNN_SHSM_FLOORS": "1",
+    "GPUWRF_MYNN_SOURCE_PARITY2": "1",
+    "GPUWRF_MYNN_TKEPROD_UP": "1",
+    "GPUWRF_MYNN_TRIDIAG_REAL": "1",
+    "GPUWRF_NEST_O3_FROM_PARENT": "1",
+    "GPUWRF_NEST_SCALAR_SPEC_FINAL": "1",
+    "GPUWRF_NOAHMP_COLUMN_KERNELS": "1",
+    "GPUWRF_NOAHMP_ITERATION_BARRIER": "1",
+    "GPUWRF_NOAHMP_JULIAN_ADVANCE": "1",
+    "GPUWRF_NOAHMP_LAYER_LISTS": "1",
+    "GPUWRF_NOAHMP_LAYER_SELECT": "1",
+    "GPUWRF_NOAHMP_NATIVE_REAL": "1",
+    "GPUWRF_NOAH_CANWATER_ELAI": "1",
+    "GPUWRF_NOAH_QSFC_WRF": "1",
+    "GPUWRF_NOAH_URBAN_SOIL_PARAMS": "1",
+    "GPUWRF_PHYS_TEND_RK_WRF": "1",
+    "GPUWRF_PHY_PREP_REAL_CONST": "1",
+    "GPUWRF_ROOT_SCALAR_BDY_RK1": "1",
+    "GPUWRF_RRTMG_COLUMN_TILE_COLS": "4096",
+    "GPUWRF_RRTMG_LW_BAND_SUMS": "1",
+    "GPUWRF_RRTMG_LW_FUSED_TRANSFER": "1",
+    "GPUWRF_RRTMG_MAXRAND": "1",
+    "GPUWRF_RRTMG_MP_RE": "1",
+    "GPUWRF_RRTMG_REAL_CONSTANTS": "1",
+    "GPUWRF_RRTMG_SW_BAND_SUMS": "1",
+    "GPUWRF_RRTMG_SW_FUSED_QUADRATURE": "1",
+    "GPUWRF_RRTMG_SW_REFTRA_WRF": "1",
+    "GPUWRF_SFCLAY_NATIVE_REAL": "1",
+    "GPUWRF_SOLAR_JULIAN_WRF": "1",
+    "GPUWRF_SPEC_RING_SELECT": "1",
+    "GPUWRF_SPEC_W_WORK_COPY": "1",
+    "GPUWRF_THOMPSON_COLUMN_LAYOUT": "1",
+    "GPUWRF_THOMPSON_COLUMN_SED": "1",
+    "GPUWRF_THOMPSON_FP32": "0",
+    "GPUWRF_THOMPSON_FULL_COLUMN": "1",
+    "GPUWRF_THOMPSON_FULL_COLUMN_EARLY_EXIT": "1",
+    "GPUWRF_THOMPSON_IMPLICIT_SED": "0",
+    "GPUWRF_THOMPSON_MIXED_PHASE_WRF": "1",
+    "GPUWRF_THOMPSON_NATIVE_REAL": "1",
+    "GPUWRF_THOMPSON_SED_FP32": "1",
+    "GPUWRF_THOMPSON_SED_PREP_FUSED": "0",
+    "GPUWRF_THOMPSON_WRF_CONSTANTS": "1",
+    "GPUWRF_WRITER_RVOVRD_REAL": "1",
+    "GPUWRF_W_DAMP_STAGE": "1",
+    "GPUWRF_W_SURFACE_RESET": "1"
+  },
+  "programs": {
+    "root_d01_step": {
+      "raw_hlo_sha256": "0c50a87db97763765d36f97016e15ea90a3f2a9f25a62a4087da4784f9a66501",
+      "raw_hlo_bytes": 20866012,
+      "raw_hlo_full_sha256": "f28108ebc150669f9775404dcd25768d8a8d129f48c2476f208f373f63ce2994",
+      "raw_hlo_full_bytes": 345881541,
+      "elided_constants": 393,
+      "triton_custom_calls": 149,
+      "pallas": {
+        "pallas_calls": 155,
+        "interpreted": 0,
+        "interpreted_names": {},
+        "native_names": {
+          "phy_prep_hydrostatic_real": 8,
+          "mcica_kiss_lanes": 2,
+          "rrtmg_sw_band_sums": 1,
+          "rrtmg_lw_band_sums": 1,
+          "b_noahmp_radiation_real": 1,
+          "b_core_noah_canopy_flux": 1,
+          "b_core_noah_snowwater": 1,
+          "b_core_noah_soilwater": 1,
+          "<lambda>": 3,
+          "mynn_tridiag2_real": 10,
+          "gwdo_column_fp32": 1,
+          "kf_column_fp32": 1,
+          "b_diff_horizontal_m": 9,
+          "b_diff_horizontal_u": 1,
+          "b_diff_horizontal_v": 1,
+          "b_diff_horizontal_w": 1,
+          "b_diff_sixth_m": 9,
+          "b_diff_sixth_u": 1,
+          "b_diff_sixth_v": 1,
+          "b_diff_sixth_w": 1,
+          "boundary_dry_relax_real": 15,
+          "b_core_scalar_flux_fp32": 3,
+          "b_diff_eos_real": 9,
+          "b_diff_stage_masses": 3,
+          "b_diff_coupled_work_u": 3,
+          "b_diff_coupled_work_v": 3,
+          "b_diff_coupled_work_theta": 3,
+          "b_diff_coupled_work_w": 3,
+          "b_diff_rhs_ph_fp32": 3,
+          "boundary_leaf_interp_real": 21,
+          "b_core_coef_fp32": 3,
+          "b_core_uv_fp32": 3,
+          "b_core_mass_fp32": 3,
+          "b_core_w_p1_fp32": 3,
+          "b_core_w_p2_fp32": 3,
+          "b_core_w_fp32": 3,
+          "b_core_pressure_fp32": 3,
+          "b_core_scalar_flux_fp32_stacked": 2,
+          "boundary_ring_relax_real": 1,
+          "b_core_pd_scale_sl_fp32": 1,
+          "b_core_pd_tend_sl_fp32": 1,
+          "thompson_full_column": 1,
+          "boundary_ring_update_real": 7
+        }
+      },
+      "n_kernel_bodies": 61,
+      "n_pallas_lowerings": 153,
+      "lowerings_by_name": {
+        "<lambda>": 3,
+        "b_core_coef_fp32": 3,
+        "b_core_mass_fp32": 3,
+        "b_core_noah_canopy_flux": 1,
+        "b_core_noah_snowwater": 1,
+        "b_core_noah_soilwater": 1,
+        "b_core_pd_scale_sl_fp32": 1,
+        "b_core_pd_tend_sl_fp32": 1,
+        "b_core_pressure_fp32": 3,
+        "b_core_scalar_flux_fp32": 3,
+        "b_core_scalar_flux_fp32_stacked": 2,
+        "b_core_uv_fp32": 3,
+        "b_core_w_fp32": 3,
+        "b_core_w_p1_fp32": 3,
+        "b_core_w_p2_fp32": 3,
+        "b_diff_coupled_work_theta": 3,
+        "b_diff_coupled_work_u": 3,
+        "b_diff_coupled_work_v": 3,
+        "b_diff_coupled_work_w": 3,
+        "b_diff_eos_real": 7,
+        "b_diff_horizontal_m": 9,
+        "b_diff_horizontal_u": 1,
+        "b_diff_horizontal_v": 1,
+        "b_diff_horizontal_w": 1,
+        "b_diff_rhs_ph_fp32": 3,
+        "b_diff_sixth_m": 9,
+        "b_diff_sixth_u": 1,
+        "b_diff_sixth_v": 1,
+        "b_diff_sixth_w": 1,
+        "b_diff_stage_masses": 3,
+        "b_noahmp_radiation_real": 1,
+        "boundary_dry_relax_real": 15,
+        "boundary_leaf_interp_real": 21,
+        "boundary_ring_relax_real": 1,
+        "boundary_ring_update_real": 7,
+        "gwdo_column_fp32": 1,
+        "kf_column_fp32": 1,
+        "mcica_kiss_lanes": 2,
+        "mynn_tridiag2_real": 10,
+        "phy_prep_hydrostatic_real": 8,
+        "rrtmg_lw_band_sums": 1,
+        "rrtmg_sw_band_sums": 1,
+        "thompson_full_column": 1
+      },
+      "s": 47.7
+    },
+    "forcedown_d01_d02": {
+      "raw_hlo_sha256": "e37821d9e893256e2f8e524f1f216e2fd64872a89223c5768f53d29872542762",
+      "raw_hlo_bytes": 538473,
+      "raw_hlo_full_sha256": "ce38cc341e7934dea22a39371873b02558d4a1d65d3b70702dd0d608badaa644",
+      "raw_hlo_full_bytes": 3062125,
+      "elided_constants": 48,
+      "triton_custom_calls": 7,
+      "pallas": {
+        "pallas_calls": 29,
+        "interpreted": 0,
+        "interpreted_names": {},
+        "native_names": {
+          "nest_sint_sides": 15,
+          "nest_scalar_couple_real4": 14
+        }
+      },
+      "n_kernel_bodies": 7,
+      "n_pallas_lowerings": 7,
+      "lowerings_by_name": {
+        "nest_scalar_couple_real4": 2,
+        "nest_sint_sides": 5
+      },
+      "s": 0.9
+    },
+    "child_d02_step": {
+      "raw_hlo_sha256": "1973ada59fa95999fdcccd3e93d7fa26694768b46a2fddd83ff3e2629115f652",
+      "raw_hlo_bytes": 20333381,
+      "raw_hlo_full_sha256": "cdabf8569bce7d43861d40177003244a0b7d0406214a6cb0785a60f6db698cd8",
+      "raw_hlo_full_bytes": 353264390,
+      "elided_constants": 366,
+      "triton_custom_calls": 134,
+      "pallas": {
+        "pallas_calls": 145,
+        "interpreted": 0,
+        "interpreted_names": {},
+        "native_names": {
+          "phy_prep_hydrostatic_real": 5,
+          "mcica_kiss_lanes": 2,
+          "rrtmg_sw_band_sums": 1,
+          "rrtmg_lw_band_sums": 1,
+          "b_noahmp_radiation_real": 1,
+          "b_core_noah_canopy_flux": 1,
+          "b_core_noah_snowwater": 1,
+          "b_core_noah_soilwater": 1,
+          "<lambda>": 3,
+          "mynn_tridiag2_real": 10,
+          "b_diff_horizontal_m": 9,
+          "b_diff_horizontal_u": 1,
+          "b_diff_horizontal_v": 1,
+          "b_diff_horizontal_w": 1,
+          "b_diff_sixth_m": 17,
+          "b_diff_sixth_u": 1,
+          "b_diff_sixth_v": 1,
+          "b_diff_sixth_w": 1,
+          "boundary_dry_relax_real": 6,
+          "boundary_leaf_interp_real": 1,
+          "boundary_ring_relax_real": 7,
+          "b_diff_advect_u_fp32": 3,
+          "b_diff_advect_v_fp32": 3,
+          "b_core_scalar_flux_fp32": 3,
+          "b_diff_eos_real": 9,
+          "b_diff_large_step_u_fp32": 3,
+          "b_diff_large_step_v_fp32": 3,
+          "b_diff_stage_masses": 3,
+          "b_diff_coupled_work_u": 3,
+          "b_diff_coupled_work_v": 3,
+          "b_diff_coupled_work_theta": 3,
+          "b_diff_coupled_work_w": 3,
+          "b_diff_rhs_ph_fp32": 3,
+          "b_core_coef_fp32": 3,
+          "b_core_uv_fp32": 3,
+          "b_core_mass_fp32": 3,
+          "b_core_w_p1_fp32": 3,
+          "b_core_w_p2_fp32": 3,
+          "b_core_w_fp32": 3,
+          "b_core_pressure_fp32": 3,
+          "b_core_scalar_flux_fp32_stacked": 4,
+          "b_core_pd_scale_sl_fp32": 2,
+          "b_core_pd_tend_sl_fp32": 2,
+          "thompson_full_column": 1,
+          "boundary_spec_final_real": 1
+        }
+      },
+      "n_kernel_bodies": 58,
+      "n_pallas_lowerings": 143,
+      "lowerings_by_name": {
+        "<lambda>": 3,
+        "b_core_coef_fp32": 3,
+        "b_core_mass_fp32": 3,
+        "b_core_noah_canopy_flux": 1,
+        "b_core_noah_snowwater": 1,
+        "b_core_noah_soilwater": 1,
+        "b_core_pd_scale_sl_fp32": 2,
+        "b_core_pd_tend_sl_fp32": 2,
+        "b_core_pressure_fp32": 3,
+        "b_core_scalar_flux_fp32": 3,
+        "b_core_scalar_flux_fp32_stacked": 4,
+        "b_core_uv_fp32": 3,
+        "b_core_w_fp32": 3,
+        "b_core_w_p1_fp32": 3,
+        "b_core_w_p2_fp32": 3,
+        "b_diff_advect_u_fp32": 3,
+        "b_diff_advect_v_fp32": 3,
+        "b_diff_coupled_work_theta": 3,
+        "b_diff_coupled_work_u": 3,
+        "b_diff_coupled_work_v": 3,
+        "b_diff_coupled_work_w": 3,
+        "b_diff_eos_real": 7,
+        "b_diff_horizontal_m": 9,
+        "b_diff_horizontal_u": 1,
+        "b_diff_horizontal_v": 1,
+        "b_diff_horizontal_w": 1,
+        "b_diff_large_step_u_fp32": 3,
+        "b_diff_large_step_v_fp32": 3,
+        "b_diff_rhs_ph_fp32": 3,
+        "b_diff_sixth_m": 17,
+        "b_diff_sixth_u": 1,
+        "b_diff_sixth_v": 1,
+        "b_diff_sixth_w": 1,
+        "b_diff_stage_masses": 3,
+        "b_noahmp_radiation_real": 1,
+        "boundary_dry_relax_real": 6,
+        "boundary_leaf_interp_real": 1,
+        "boundary_ring_relax_real": 7,
+        "boundary_spec_final_real": 1,
+        "mcica_kiss_lanes": 2,
+        "mynn_tridiag2_real": 10,
+        "phy_prep_hydrostatic_real": 5,
+        "rrtmg_lw_band_sums": 1,
+        "rrtmg_sw_band_sums": 1,
+        "thompson_full_column": 1
+      },
+      "s": 40.0
+    }
+  },
+  "kernels": [
+    {
+      "program": "root_d01_step",
+      "func": "phy_prep_hydrostatic_real",
+      "name": "phy_prep_hydrostatic_real",
+      "src": "phy_prep_hydrostatic_real at <USER_HOME>/wrf_gpu2_lanes/w44-qsqseed/identity_alias/src/gpuwrf/kernels/phys_hydrostatic_real.py:19",
+      "platform": "cuda",
+      "ttir_sha16": "f88667813b1d262a",
+      "ttir_loc_sha16": "ac6f556683643fdc",
+      "num_warps": 4,
+      "num_stages": 3,
+      "calls": 4,
+      "grid": [
+        66
+      ]
+    },
+    {
+      "program": "root_d01_step",
+      "func": "mcica_kiss_lanes",
+      "name": "mcica_kiss_lanes",
+      "src": "mcica_kiss_lanes at <USER_HOME>/wrf_gpu2_lanes/w44-qsqseed/identity_alias/src/gpuwrf/kernels/rad_mcica.py:167",
+      "platform": "cuda",
+      "ttir_sha16": "0ec6f0a1cb96f47c",
+      "ttir_loc_sha16": "1a0f0f95bcd93e9e",
+      "num_warps": 4,
+      "num_stages": 3,
+      "calls": 1,
+      "grid": [
+        3584
+      ]
+    },
+    {
+      "program": "root_d01_step",
+      "func": "rrtmg_sw_band_sums",
+      "name": "rrtmg_sw_band_sums",
+      "src": "rrtmg_sw_band_sums at <USER_HOME>/wrf_gpu2_lanes/w44-qsqseed/identity_alias/src/gpuwrf/kernels/rad_sw_band_sums.py:402",
+      "platform": "cuda",
+      "ttir_sha16": "9ac809670a0c7c96",
+      "ttir_loc_sha16": "e5816063255f59b5",
+      "num_warps": 4,
+      "num_stages": 3,
+      "calls": 1,
+      "grid": [
+        512
+      ]
+    },
+    {
+      "program": "root_d01_step",
+      "func": "mcica_kiss_lanes",
+      "name": "mcica_kiss_lanes",
+      "src": "mcica_kiss_lanes at <USER_HOME>/wrf_gpu2_lanes/w44-qsqseed/identity_alias/src/gpuwrf/kernels/rad_mcica.py:167",
+      "platform": "cuda",
+      "ttir_sha16": "361ca10f86ee8136",
+      "ttir_loc_sha16": "991eaecc6b344a52",
+      "num_warps": 4,
+      "num_stages": 3,
+      "calls": 1,
+      "grid": [
+        4480
+      ]
+    },
+    {
+      "program": "root_d01_step",
+      "func": "rrtmg_lw_band_sums",
+      "name": "rrtmg_lw_band_sums",
+      "src": "rrtmg_lw_band_sums at <USER_HOME>/wrf_gpu2_lanes/w44-qsqseed/identity_alias/src/gpuwrf/kernels/rad_lw_transfer.py:396",
+      "platform": "cuda",
+      "ttir_sha16": "96f705bf91bb11ea",
+      "ttir_loc_sha16": "c6ee3accc71c70ad",
+      "num_warps": 4,
+      "num_stages": 3,
+      "calls": 1,
+      "grid": [
+        512
+      ]
+    },
+    {
+      "program": "root_d01_step",
+      "func": "phy_prep_hydrostatic_real",
+      "name": "phy_prep_hydrostatic_real",
+      "src": "phy_prep_hydrostatic_real at <USER_HOME>/wrf_gpu2_lanes/w44-qsqseed/identity_alias/src/gpuwrf/kernels/phys_hydrostatic_real.py:19",
+      "platform": "cuda",
+      "ttir_sha16": "4e89703952358e1d",
+      "ttir_loc_sha16": "2add3424685e69f3",
+      "num_warps": 4,
+      "num_stages": 3,
+      "calls": 4,
+      "grid": [
+        66
+      ]
+    },
+    {
+      "program": "root_d01_step",
+      "func": "b_noahmp_radiation_real",
+      "name": "b_noahmp_radiation_real",
+      "src": "b_noahmp_radiation_real at <USER_HOME>/wrf_gpu2_lanes/w44-qsqseed/identity_alias/src/gpuwrf/kernels/phys_noahmp_radiation.py:28",
+      "platform": "cuda",
+      "ttir_sha16": "1149a3db733a6df8",
+      "ttir_loc_sha16": "1af11a89c126dbdd",
+      "num_warps": 4,
+      "num_stages": 3,
+      "calls": 1,
+      "grid": [
+        66
+      ]
+    },
+    {
+      "program": "root_d01_step",
+      "func": "b_core_noah_canopy_flux",
+      "name": "b_core_noah_canopy_flux",
+      "src": "b_core_noah_canopy_flux at <USER_HOME>/wrf_gpu2_lanes/w44-qsqseed/identity_alias/src/gpuwrf/kernels/phys_noahmp_columns.py:107",
+      "platform": "cuda",
+      "ttir_sha16": "a0a24d36656e325f",
+      "ttir_loc_sha16": "b328d319de03bdbf",
+      "num_warps": 4,
+      "num_stages": 3,
+      "calls": 1,
+      "grid": [
+        66
+      ]
+    },
+    {
+      "program": "root_d01_step",
+      "func": "b_core_noah_snowwater",
+      "name": "b_core_noah_snowwater",
+      "src": "b_core_noah_snowwater at <USER_HOME>/wrf_gpu2_lanes/w44-qsqseed/identity_alias/src/gpuwrf/kernels/phys_noahmp_columns.py:107",
+      "platform": "cuda",
+      "ttir_sha16": "ed51e8cffa131544",
+      "ttir_loc_sha16": "c09bbad452925ff1",
+      "num_warps": 4,
+      "num_stages": 3,
+      "calls": 1,
+      "grid": [
+        66
+      ]
+    },
+    {
+      "program": "root_d01_step",
+      "func": "b_core_noah_soilwater",
+      "name": "b_core_noah_soilwater",
+      "src": "b_core_noah_soilwater at <USER_HOME>/wrf_gpu2_lanes/w44-qsqseed/identity_alias/src/gpuwrf/kernels/phys_noahmp_columns.py:107",
+      "platform": "cuda",
+      "ttir_sha16": "cb82316ad70d8e9f",
+      "ttir_loc_sha16": "7e7ca7a99f553dd7",
+      "num_warps": 4,
+      "num_stages": 3,
+      "calls": 1,
+      "grid": [
+        66
+      ]
+    },
+    {
+      "program": "root_d01_step",
+      "func": "<lambda>",
+      "name": "_lambda_",
+      "src": "<lambda> at <USER_HOME>/wrf_gpu2_lanes/w44-qsqseed/identity_alias/src/gpuwrf/kernels/phys_mynn_plume.py:406",
+      "platform": "cuda",
+      "ttir_sha16": "86aa2a9a97d6363f",
+      "ttir_loc_sha16": "1fc554f6abc6f3f7",
+      "num_warps": 4,
+      "num_stages": 3,
+      "calls": 1,
+      "grid": [
+        525
+      ]
+    },
+    {
+      "program": "root_d01_step",
+      "func": "<lambda>",
+      "name": "_lambda_",
+      "src": "<lambda> at <USER_HOME>/wrf_gpu2_lanes/w44-qsqseed/identity_alias/src/gpuwrf/kernels/phys_mynn_boulac.py:107",
+      "platform": "cuda",
+      "ttir_sha16": "d0010faf96ed0bfa",
+      "ttir_loc_sha16": "ba6155083028b110",
+      "num_warps": 4,
+      "num_stages": 3,
+      "calls": 1,
+      "grid": [
+        2888
+      ]
+    },
+    {
+      "program": "root_d01_step",
+      "func": "mynn_tridiag2_real",
+      "name": "mynn_tridiag2_real",
+      "src": "mynn_tridiag2_real at <USER_HOME>/wrf_gpu2_lanes/w44-qsqseed/identity_alias/src/gpuwrf/kernels/phys_mynn_tridiag.py:31",
+      "platform": "cuda",
+      "ttir_sha16": "1d7242cc64f68532",
+      "ttir_loc_sha16": "debb42530f18671d",
+      "num_warps": 4,
+      "num_stages": 3,
+      "calls": 10,
+      "grid": [
+        66
+      ]
+    },
+    {
+      "program": "root_d01_step",
+      "func": "<lambda>",
+      "name": "_lambda_",
+      "src": "<lambda> at <USER_HOME>/wrf_gpu2_lanes/w44-qsqseed/identity_alias/src/gpuwrf/kernels/phys_mynn_cloudmix.py:59",
+      "platform": "cuda",
+      "ttir_sha16": "d7f9ba89cd8ece42",
+      "ttir_loc_sha16": "e75d849eb67de931",
+      "num_warps": 4,
+      "num_stages": 3,
+      "calls": 1,
+      "grid": [
+        66
+      ]
+    },
+    {
+      "program": "root_d01_step",
+      "func": "gwdo_column_fp32",
+      "name": "gwdo_column_fp32",
+      "src": "gwdo_column_fp32 at <USER_HOME>/wrf_gpu2_lanes/w44-qsqseed/identity_alias/src/gpuwrf/kernels/phys_gwdo_column.py:282",
+      "platform": "cuda",
+      "ttir_sha16": "7b43ba5ed2691d33",
+      "ttir_loc_sha16": "94c89e190afe4eb8",
+      "num_warps": 4,
+      "num_stages": 3,
+      "calls": 1,
+      "grid": [
+        66
+      ]
+    },
+    {
+      "program": "root_d01_step",
+      "func": "kf_column_fp32",
+      "name": "kf_column_fp32",
+      "src": "kf_column_fp32 at <USER_HOME>/wrf_gpu2_lanes/w44-qsqseed/identity_alias/src/gpuwrf/kernels/phys_kf_column.py:1276",
+      "platform": "cuda",
+      "ttir_sha16": "c1051833146c5a05",
+      "ttir_loc_sha16": "66915bc7ec5f6a9e",
+      "num_warps": 4,
+      "num_stages": 3,
+      "calls": 1,
+      "grid": [
+        8400
+      ]
+    },
+    {
+      "program": "root_d01_step",
+      "func": "b_diff_horizontal_m",
+      "name": "b_diff_horizontal_m",
+      "src": "b_diff_horizontal_m at <USER_HOME>/wrf_gpu2_lanes/w44-qsqseed/identity_alias/src/gpuwrf/kernels/dyn_diff_fp32.py:96",
+      "platform": "cuda",
+      "ttir_sha16": "bef5ce0585066c6a",
+      "ttir_loc_sha16": "f2b4da9c0e92c804",
+      "num_warps": 4,
+      "num_stages": 3,
+      "calls": 9,
+      "grid": [
+        1444
+      ]
+    },
+    {
+      "program": "root_d01_step",
+      "func": "b_diff_horizontal_u",
+      "name": "b_diff_horizontal_u",
+      "src": "b_diff_horizontal_u at <USER_HOME>/wrf_gpu2_lanes/w44-qsqseed/identity_alias/src/gpuwrf/kernels/dyn_diff_fp32.py:96",
+      "platform": "cuda",
+      "ttir_sha16": "0e0a75150bef8521",
+      "ttir_loc_sha16": "50f0301ad233c7fd",
+      "num_warps": 4,
+      "num_stages": 3,
+      "calls": 1,
+      "grid": [
+        1456
+      ]
+    },
+    {
+      "program": "root_d01_step",
+      "func": "b_diff_horizontal_v",
+      "name": "b_diff_horizontal_v",
+      "src": "b_diff_horizontal_v at <USER_HOME>/wrf_gpu2_lanes/w44-qsqseed/identity_alias/src/gpuwrf/kernels/dyn_diff_fp32.py:96",
+      "platform": "cuda",
+      "ttir_sha16": "2dd17012fdf93f8b",
+      "ttir_loc_sha16": "73b0d0c7bfc0b62e",
+      "num_warps": 4,
+      "num_stages": 3,
+      "calls": 1,
+      "grid": [
+        1465
+      ]
+    },
+    {
+      "program": "root_d01_step",
+      "func": "b_diff_horizontal_w",
+      "name": "b_diff_horizontal_w",
+      "src": "b_diff_horizontal_w at <USER_HOME>/wrf_gpu2_lanes/w44-qsqseed/identity_alias/src/gpuwrf/kernels/dyn_diff_fp32.py:96",
+      "platform": "cuda",
+      "ttir_sha16": "fe21f8c829c8a1c1",
+      "ttir_loc_sha16": "05dfd0c8b96c769d",
+      "num_warps": 4,
+      "num_stages": 3,
+      "calls": 1,
+      "grid": [
+        1477
+      ]
+    },
+    {
+      "program": "root_d01_step",
+      "func": "b_diff_sixth_m",
+      "name": "b_diff_sixth_m",
+      "src": "b_diff_sixth_m at <USER_HOME>/wrf_gpu2_lanes/w44-qsqseed/identity_alias/src/gpuwrf/kernels/dyn_diff_fp32.py:15",
+      "platform": "cuda",
+      "ttir_sha16": "f01ddac95e70d971",
+      "ttir_loc_sha16": "774f92b91b720db8",
+      "num_warps": 4,
+      "num_stages": 3,
+      "calls": 9,
+      "grid": [
+        1444
+      ]
+    },
+    {
+      "program": "root_d01_step",
+      "func": "b_diff_sixth_u",
+      "name": "b_diff_sixth_u",
+      "src": "b_diff_sixth_u at <USER_HOME>/wrf_gpu2_lanes/w44-qsqseed/identity_alias/src/gpuwrf/kernels/dyn_diff_fp32.py:15",
+      "platform": "cuda",
+      "ttir_sha16": "54c7c0edaebe93c9",
+      "ttir_loc_sha16": "8b50f7af3e1e1a8a",
+      "num_warps": 4,
+      "num_stages": 3,
+      "calls": 1,
+      "grid": [
+        1456
+      ]
+    },
+    {
+      "program": "root_d01_step",
+      "func": "b_diff_sixth_v",
+      "name": "b_diff_sixth_v",
+      "src": "b_diff_sixth_v at <USER_HOME>/wrf_gpu2_lanes/w44-qsqseed/identity_alias/src/gpuwrf/kernels/dyn_diff_fp32.py:15",
+      "platform": "cuda",
+      "ttir_sha16": "363585d0c023b577",
+      "ttir_loc_sha16": "fb20822cf91ffc49",
+      "num_warps": 4,
+      "num_stages": 3,
+      "calls": 1,
+      "grid": [
+        1465
+      ]
+    },
+    {
+      "program": "root_d01_step",
+      "func": "b_diff_sixth_w",
+      "name": "b_diff_sixth_w",
+      "src": "b_diff_sixth_w at <USER_HOME>/wrf_gpu2_lanes/w44-qsqseed/identity_alias/src/gpuwrf/kernels/dyn_diff_fp32.py:15",
+      "platform": "cuda",
+      "ttir_sha16": "d7a8955a6f71ff2d",
+      "ttir_loc_sha16": "fa7a80d6fd860680",
+      "num_warps": 4,
+      "num_stages": 3,
+      "calls": 1,
+      "grid": [
+        1477
+      ]
+    },
+    {
+      "program": "root_d01_step",
+      "func": "boundary_dry_relax_real",
+      "name": "boundary_dry_relax_real",
+      "src": "boundary_dry_relax_real at <USER_HOME>/wrf_gpu2_lanes/w44-qsqseed/identity_alias/src/gpuwrf/kernels/dyn_boundary_fp32.py:93",
+      "platform": "cuda",
+      "ttir_sha16": "2961d30bad961c94",
+      "ttir_loc_sha16": "a0fb91e1650a9222",
+      "num_warps": 1,
+      "num_stages": 3,
+      "calls": 3,
+      "grid": [
+        4,
+        70,
+        44
+      ]
+    },
+    {
+      "program": "root_d01_step",
+      "func": "boundary_dry_relax_real",
+      "name": "boundary_dry_relax_real",
+      "src": "boundary_dry_relax_real at <USER_HOME>/wrf_gpu2_lanes/w44-qsqseed/identity_alias/src/gpuwrf/kernels/dyn_boundary_fp32.py:93",
+      "platform": "cuda",
+      "ttir_sha16": "726ecdff654eb3c5",
+      "ttir_loc_sha16": "8406c19bb105b6a9",
+      "num_warps": 1,
+      "num_stages": 3,
+      "calls": 3,
+      "grid": [
+        4,
+        71,
+        44
+      ]
+    },
+    {
+      "program": "root_d01_step",
+      "func": "boundary_dry_relax_real",
+      "name": "boundary_dry_relax_real",
+      "src": "boundary_dry_relax_real at <USER_HOME>/wrf_gpu2_lanes/w44-qsqseed/identity_alias/src/gpuwrf/kernels/dyn_boundary_fp32.py:93",
+      "platform": "cuda",
+      "ttir_sha16": "bebe322f3ed3a0fb",
+      "ttir_loc_sha16": "c7a77fbbd868fe4a",
+      "num_warps": 1,
+      "num_stages": 3,
+      "calls": 3,
+      "grid": [
+        4,
+        70,
+        44
+      ]
+    },
+    {
+      "program": "root_d01_step",
+      "func": "boundary_dry_relax_real",
+      "name": "boundary_dry_relax_real",
+      "src": "boundary_dry_relax_real at <USER_HOME>/wrf_gpu2_lanes/w44-qsqseed/identity_alias/src/gpuwrf/kernels/dyn_boundary_fp32.py:93",
+      "platform": "cuda",
+      "ttir_sha16": "3bfedc857f6ecdcb",
+      "ttir_loc_sha16": "ff69167e48b53712",
+      "num_warps": 1,
+      "num_stages": 3,
+      "calls": 3,
+      "grid": [
+        4,
+        70,
+        45
+      ]
+    },
+    {
+      "program": "root_d01_step",
+      "func": "boundary_dry_relax_real",
+      "name": "boundary_dry_relax_real",
+      "src": "boundary_dry_relax_real at <USER_HOME>/wrf_gpu2_lanes/w44-qsqseed/identity_alias/src/gpuwrf/kernels/dyn_boundary_fp32.py:93",
+      "platform": "cuda",
+      "ttir_sha16": "7d101736f29f044f",
+      "ttir_loc_sha16": "cf1318fa6226e82c",
+      "num_warps": 1,
+      "num_stages": 3,
+      "calls": 3,
+      "grid": [
+        4,
+        70,
+        1
+      ]
+    },
+    {
+      "program": "root_d01_step",
+      "func": "b_core_scalar_flux_fp32",
+      "name": "b_core_scalar_flux_fp32",
+      "src": "b_core_scalar_flux_fp32 at <USER_HOME>/wrf_gpu2_lanes/w44-qsqseed/identity_alias/src/gpuwrf/kernels/dyn_flux_fp32.py:58",
+      "platform": "cuda",
+      "ttir_sha16": "facb801a39726338",
+      "ttir_loc_sha16": "41acdde4796cc789",
+      "num_warps": 4,
+      "num_stages": 3,
+      "calls": 3,
+      "grid": [
+        1444
+      ]
+    },
+    {
+      "program": "root_d01_step",
+      "func": "b_diff_eos_real",
+      "name": "b_diff_eos_real",
+      "src": "b_diff_eos_real at <USER_HOME>/wrf_gpu2_lanes/w44-qsqseed/identity_alias/src/gpuwrf/kernels/dyn_rk_fp32.py:78",
+      "platform": "cuda",
+      "ttir_sha16": "e5dc9cb56d2e4798",
+      "ttir_loc_sha16": "09b0ba40b1ba8fdc",
+      "num_warps": 4,
+      "num_stages": 3,
+      "calls": 4,
+      "grid": [
+        1444
+      ]
+    },
+    {
+      "program": "root_d01_step",
+      "func": "b_diff_stage_masses",
+      "name": "b_diff_stage_masses",
+      "src": "b_diff_stage_masses at <USER_HOME>/wrf_gpu2_lanes/w44-qsqseed/identity_alias/src/gpuwrf/kernels/dyn_rk_fp32.py:153",
+      "platform": "cuda",
+      "ttir_sha16": "9eb5ab2ccb50e95a",
+      "ttir_loc_sha16": "70cb0fa62c3e74a4",
+      "num_warps": 4,
+      "num_stages": 3,
+      "calls": 1,
+      "grid": [
+        34
+      ]
+    },
+    {
+      "program": "root_d01_step",
+      "func": "b_diff_coupled_work_u",
+      "name": "b_diff_coupled_work_u",
+      "src": "b_diff_coupled_work_u at <USER_HOME>/wrf_gpu2_lanes/w44-qsqseed/identity_alias/src/gpuwrf/kernels/dyn_rk_fp32.py:201",
+      "platform": "cuda",
+      "ttir_sha16": "311306168affb4a9",
+      "ttir_loc_sha16": "800252c7ce772b49",
+      "num_warps": 4,
+      "num_stages": 3,
+      "calls": 3,
+      "grid": [
+        1456
+      ]
+    },
+    {
+      "program": "root_d01_step",
+      "func": "b_diff_coupled_work_v",
+      "name": "b_diff_coupled_work_v",
+      "src": "b_diff_coupled_work_v at <USER_HOME>/wrf_gpu2_lanes/w44-qsqseed/identity_alias/src/gpuwrf/kernels/dyn_rk_fp32.py:201",
+      "platform": "cuda",
+      "ttir_sha16": "68c1e554dc0fba4b",
+      "ttir_loc_sha16": "029445d5fff6d837",
+      "num_warps": 4,
+      "num_stages": 3,
+      "calls": 3,
+      "grid": [
+        1465
+      ]
+    },
+    {
+      "program": "root_d01_step",
+      "func": "b_diff_coupled_work_theta",
+      "name": "b_diff_coupled_work_theta",
+      "src": "b_diff_coupled_work_theta at <USER_HOME>/wrf_gpu2_lanes/w44-qsqseed/identity_alias/src/gpuwrf/kernels/dyn_rk_fp32.py:201",
+      "platform": "cuda",
+      "ttir_sha16": "8df9b5226eba58bc",
+      "ttir_loc_sha16": "4274d6a4b3683a16",
+      "num_warps": 4,
+      "num_stages": 3,
+      "calls": 3,
+      "grid": [
+        1444
+      ]
+    },
+    {
+      "program": "root_d01_step",
+      "func": "b_diff_coupled_work_w",
+      "name": "b_diff_coupled_work_w",
+      "src": "b_diff_coupled_work_w at <USER_HOME>/wrf_gpu2_lanes/w44-qsqseed/identity_alias/src/gpuwrf/kernels/dyn_rk_fp32.py:201",
+      "platform": "cuda",
+      "ttir_sha16": "1c264b3e1c4aabef",
+      "ttir_loc_sha16": "a6859d60dfe1c6c2",
+      "num_warps": 4,
+      "num_stages": 3,
+      "calls": 3,
+      "grid": [
+        1477
+      ]
+    },
+    {
+      "program": "root_d01_step",
+      "func": "b_diff_eos_real",
+      "name": "b_diff_eos_real",
+      "src": "b_diff_eos_real at <USER_HOME>/wrf_gpu2_lanes/w44-qsqseed/identity_alias/src/gpuwrf/kernels/dyn_rk_fp32.py:78",
+      "platform": "cuda",
+      "ttir_sha16": "005a2ffb566e25d1",
+      "ttir_loc_sha16": "68a8fa7cf931c267",
+      "num_warps": 4,
+      "num_stages": 3,
+      "calls": 3,
+      "grid": [
+        1444
+      ]
+    },
+    {
+      "program": "root_d01_step",
+      "func": "b_diff_rhs_ph_fp32",
+      "name": "b_diff_rhs_ph_fp32",
+      "src": "b_diff_rhs_ph_fp32 at <USER_HOME>/wrf_gpu2_lanes/w44-qsqseed/identity_alias/src/gpuwrf/kernels/dyn_rhsph_fp32.py:19",
+      "platform": "cuda",
+      "ttir_sha16": "607ee80ec377c954",
+      "ttir_loc_sha16": "2fb8d0a9f3edfc00",
+      "num_warps": 4,
+      "num_stages": 3,
+      "calls": 3,
+      "grid": [
+        1477
+      ]
+    },
+    {
+      "program": "root_d01_step",
+      "func": "boundary_leaf_interp_real",
+      "name": "boundary_leaf_interp_real",
+      "src": "boundary_leaf_interp_real at <USER_HOME>/wrf_gpu2_lanes/w44-qsqseed/identity_alias/src/gpuwrf/kernels/dyn_boundary_fp32.py:56",
+      "platform": "cuda",
+      "ttir_sha16": "24ffbb02b2677f36",
+      "ttir_loc_sha16": "1b1405ea3d37df87",
+      "num_warps": 4,
+      "num_stages": 3,
+      "calls": 15,
+      "grid": [
+        416
+      ]
+    },
+    {
+      "program": "root_d01_step",
+      "func": "boundary_leaf_interp_real",
+      "name": "boundary_leaf_interp_real",
+      "src": "boundary_leaf_interp_real at <USER_HOME>/wrf_gpu2_lanes/w44-qsqseed/identity_alias/src/gpuwrf/kernels/dyn_boundary_fp32.py:56",
+      "platform": "cuda",
+      "ttir_sha16": "605f7b18e0ad34a9",
+      "ttir_loc_sha16": "dcb06daaeab74551",
+      "num_warps": 4,
+      "num_stages": 3,
+      "calls": 3,
+      "grid": [
+        426
+      ]
+    },
+    {
+      "program": "root_d01_step",
+      "func": "boundary_leaf_interp_real",
+      "name": "boundary_leaf_interp_real",
+      "src": "boundary_leaf_interp_real at <USER_HOME>/wrf_gpu2_lanes/w44-qsqseed/identity_alias/src/gpuwrf/kernels/dyn_boundary_fp32.py:56",
+      "platform": "cuda",
+      "ttir_sha16": "f7cc84c2e7b2809a",
+      "ttir_loc_sha16": "a09de66972749d23",
+      "num_warps": 4,
+      "num_stages": 3,
+      "calls": 3,
+      "grid": [
+        10
+      ]
+    },
+    {
+      "program": "root_d01_step",
+      "func": "b_core_coef_fp32",
+      "name": "b_core_coef_fp32",
+      "src": "b_core_coef_fp32 at <USER_HOME>/wrf_gpu2_lanes/w44-qsqseed/identity_alias/src/gpuwrf/kernels/dyn_acoustic_fp32.py:93",
+      "platform": "cuda",
+      "ttir_sha16": "6c184528b68a08bb",
+      "ttir_loc_sha16": "be09f0be101f1a20",
+      "num_warps": 4,
+      "num_stages": 3,
+      "calls": 3,
+      "grid": [
+        66
+      ]
+    },
+    {
+      "program": "root_d01_step",
+      "func": "b_core_uv_fp32",
+      "name": "b_core_uv_fp32",
+      "src": "b_core_uv_fp32 at <USER_HOME>/wrf_gpu2_lanes/w44-qsqseed/identity_alias/src/gpuwrf/kernels/dyn_acoustic_fp32.py:93",
+      "platform": "cuda",
+      "ttir_sha16": "f4defb7d8320fa05",
+      "ttir_loc_sha16": "46ca3548cf376d15",
+      "num_warps": 4,
+      "num_stages": 3,
+      "calls": 3,
+      "grid": [
+        2929
+      ]
+    },
+    {
+      "program": "root_d01_step",
+      "func": "b_core_mass_fp32",
+      "name": "b_core_mass_fp32",
+      "src": "b_core_mass_fp32 at <USER_HOME>/wrf_gpu2_lanes/w44-qsqseed/identity_alias/src/gpuwrf/kernels/dyn_acoustic_fp32.py:93",
+      "platform": "cuda",
+      "ttir_sha16": "31de12883c7c51ad",
+      "ttir_loc_sha16": "ac09c8597032a45e",
+      "num_warps": 4,
+      "num_stages": 3,
+      "calls": 3,
+      "grid": [
+        66
+      ]
+    },
+    {
+      "program": "root_d01_step",
+      "func": "b_core_w_p1_fp32",
+      "name": "b_core_w_p1_fp32",
+      "src": "b_core_w_p1_fp32 at <USER_HOME>/wrf_gpu2_lanes/w44-qsqseed/identity_alias/src/gpuwrf/kernels/dyn_acoustic_fp32.py:93",
+      "platform": "cuda",
+      "ttir_sha16": "64c5f06f051e24d0",
+      "ttir_loc_sha16": "b37cc8a840264c59",
+      "num_warps": 4,
+      "num_stages": 3,
+      "calls": 3,
+      "grid": [
+        2954
+      ]
+    },
+    {
+      "program": "root_d01_step",
+      "func": "b_core_w_p2_fp32",
+      "name": "b_core_w_p2_fp32",
+      "src": "b_core_w_p2_fp32 at <USER_HOME>/wrf_gpu2_lanes/w44-qsqseed/identity_alias/src/gpuwrf/kernels/dyn_acoustic_fp32.py:93",
+      "platform": "cuda",
+      "ttir_sha16": "2132d8bd767a6bbb",
+      "ttir_loc_sha16": "b0347460aa7d2e34",
+      "num_warps": 4,
+      "num_stages": 3,
+      "calls": 3,
+      "grid": [
+        2954
+      ]
+    },
+    {
+      "program": "root_d01_step",
+      "func": "b_core_w_fp32",
+      "name": "b_core_w_fp32",
+      "src": "b_core_w_fp32 at <USER_HOME>/wrf_gpu2_lanes/w44-qsqseed/identity_alias/src/gpuwrf/kernels/dyn_acoustic_fp32.py:93",
+      "platform": "cuda",
+      "ttir_sha16": "0def3803d55d516a",
+      "ttir_loc_sha16": "536047d3a65c075b",
+      "num_warps": 4,
+      "num_stages": 3,
+      "calls": 3,
+      "grid": [
+        66
+      ]
+    },
+    {
+      "program": "root_d01_step",
+      "func": "b_core_pressure_fp32",
+      "name": "b_core_pressure_fp32",
+      "src": "b_core_pressure_fp32 at <USER_HOME>/wrf_gpu2_lanes/w44-qsqseed/identity_alias/src/gpuwrf/kernels/dyn_acoustic_fp32.py:93",
+      "platform": "cuda",
+      "ttir_sha16": "faf2438ad9f07ecb",
+      "ttir_loc_sha16": "a5a3e18baf1652ed",
+      "num_warps": 4,
+      "num_stages": 3,
+      "calls": 3,
+      "grid": [
+        2888
+      ]
+    },
+    {
+      "program": "root_d01_step",
+      "func": "b_core_scalar_flux_fp32_stacked",
+      "name": "b_core_scalar_flux_fp32_stacked",
+      "src": "b_core_scalar_flux_fp32_stacked at <USER_HOME>/wrf_gpu2_lanes/w44-qsqseed/identity_alias/src/gpuwrf/kernels/dyn_flux_fp32.py:139",
+      "platform": "cuda",
+      "ttir_sha16": "ac2be5a0f30c291c",
+      "ttir_loc_sha16": "7ac058eb2c3d7196",
+      "num_warps": 4,
+      "num_stages": 3,
+      "calls": 2,
+      "grid": [
+        1444
+      ]
+    },
+    {
+      "program": "root_d01_step",
+      "func": "boundary_ring_relax_real",
+      "name": "boundary_ring_relax_real",
+      "src": "boundary_ring_relax_real at <USER_HOME>/wrf_gpu2_lanes/w44-qsqseed/identity_alias/src/gpuwrf/kernels/dyn_ring_relax_fp32.py:36",
+      "platform": "cuda",
+      "ttir_sha16": "7297f2dd2f6ea0e7",
+      "ttir_loc_sha16": "e8a2e9e5a2e354fc",
+      "num_warps": 1,
+      "num_stages": 3,
+      "calls": 1,
+      "grid": [
+        4,
+        70,
+        44
+      ]
+    },
+    {
+      "program": "root_d01_step",
+      "func": "b_diff_stage_masses",
+      "name": "b_diff_stage_masses",
+      "src": "b_diff_stage_masses at <USER_HOME>/wrf_gpu2_lanes/w44-qsqseed/identity_alias/src/gpuwrf/kernels/dyn_rk_fp32.py:153",
+      "platform": "cuda",
+      "ttir_sha16": "39ab874e31e80aa3",
+      "ttir_loc_sha16": "15e7156a3c882f5a",
+      "num_warps": 4,
+      "num_stages": 3,
+      "calls": 2,
+      "grid": [
+        34
+      ]
+    },
+    {
+      "program": "root_d01_step",
+      "func": "b_core_pd_scale_sl_fp32",
+      "name": "b_core_pd_scale_sl_fp32",
+      "src": "b_core_pd_scale_sl_fp32 at <USER_HOME>/wrf_gpu2_lanes/w44-qsqseed/identity_alias/src/gpuwrf/kernels/dyn_pd_fp32.py:327",
+      "platform": "cuda",
+      "ttir_sha16": "110250a5c5aaf9b7",
+      "ttir_loc_sha16": "f8ddf368b7d67750",
+      "num_warps": 4,
+      "num_stages": 3,
+      "calls": 1,
+      "grid": [
+        1444
+      ]
+    },
+    {
+      "program": "root_d01_step",
+      "func": "b_core_pd_tend_sl_fp32",
+      "name": "b_core_pd_tend_sl_fp32",
+      "src": "b_core_pd_tend_sl_fp32 at <USER_HOME>/wrf_gpu2_lanes/w44-qsqseed/identity_alias/src/gpuwrf/kernels/dyn_pd_fp32.py:358",
+      "platform": "cuda",
+      "ttir_sha16": "d851875a394616a0",
+      "ttir_loc_sha16": "ed252b34acccb9c2",
+      "num_warps": 4,
+      "num_stages": 3,
+      "calls": 1,
+      "grid": [
+        1444
+      ]
+    },
+    {
+      "program": "root_d01_step",
+      "func": "thompson_full_column",
+      "name": "thompson_full_column",
+      "src": "thompson_full_column at <USER_HOME>/wrf_gpu2_lanes/w44-qsqseed/identity_alias/src/gpuwrf/kernels/phys_thompson_full.py:320",
+      "platform": "cuda",
+      "ttir_sha16": "22278d3c3932276a",
+      "ttir_loc_sha16": "dc0aa020d5997250",
+      "num_warps": 2,
+      "num_stages": 3,
+      "calls": 1,
+      "grid": [
+        8400
+      ]
+    },
+    {
+      "program": "root_d01_step",
+      "func": "boundary_ring_update_real",
+      "name": "boundary_ring_update_real",
+      "src": "boundary_ring_update_real at <USER_HOME>/wrf_gpu2_lanes/w44-qsqseed/identity_alias/src/gpuwrf/kernels/dyn_boundary_fp32.py:232",
+      "platform": "cuda",
+      "ttir_sha16": "bee3c903c1ebbb00",
+      "ttir_loc_sha16": "ff7d783daeb6a494",
+      "num_warps": 1,
+      "num_stages": 3,
+      "calls": 1,
+      "grid": [
+        4,
+        70,
+        44
+      ]
+    },
+    {
+      "program": "root_d01_step",
+      "func": "boundary_ring_update_real",
+      "name": "boundary_ring_update_real",
+      "src": "boundary_ring_update_real at <USER_HOME>/wrf_gpu2_lanes/w44-qsqseed/identity_alias/src/gpuwrf/kernels/dyn_boundary_fp32.py:232",
+      "platform": "cuda",
+      "ttir_sha16": "4d34049359c69648",
+      "ttir_loc_sha16": "1f343f1480d9dcfa",
+      "num_warps": 1,
+      "num_stages": 3,
+      "calls": 1,
+      "grid": [
+        4,
+        71,
+        44
+      ]
+    },
+    {
+      "program": "root_d01_step",
+      "func": "boundary_ring_update_real",
+      "name": "boundary_ring_update_real",
+      "src": "boundary_ring_update_real at <USER_HOME>/wrf_gpu2_lanes/w44-qsqseed/identity_alias/src/gpuwrf/kernels/dyn_boundary_fp32.py:232",
+      "platform": "cuda",
+      "ttir_sha16": "34b615cce9409216",
+      "ttir_loc_sha16": "ae788a304236ab14",
+      "num_warps": 1,
+      "num_stages": 3,
+      "calls": 1,
+      "grid": [
+        4,
+        70,
+        44
+      ]
+    },
+    {
+      "program": "root_d01_step",
+      "func": "boundary_ring_update_real",
+      "name": "boundary_ring_update_real",
+      "src": "boundary_ring_update_real at <USER_HOME>/wrf_gpu2_lanes/w44-qsqseed/identity_alias/src/gpuwrf/kernels/dyn_boundary_fp32.py:232",
+      "platform": "cuda",
+      "ttir_sha16": "f4f5b86aa6bda719",
+      "ttir_loc_sha16": "57e00268c4c7e604",
+      "num_warps": 1,
+      "num_stages": 3,
+      "calls": 1,
+      "grid": [
+        4,
+        70,
+        1
+      ]
+    },
+    {
+      "program": "root_d01_step",
+      "func": "boundary_ring_update_real",
+      "name": "boundary_ring_update_real",
+      "src": "boundary_ring_update_real at <USER_HOME>/wrf_gpu2_lanes/w44-qsqseed/identity_alias/src/gpuwrf/kernels/dyn_boundary_fp32.py:232",
+      "platform": "cuda",
+      "ttir_sha16": "233c957a0f8b4d24",
+      "ttir_loc_sha16": "da1b576e34e032c1",
+      "num_warps": 1,
+      "num_stages": 3,
+      "calls": 1,
+      "grid": [
+        4,
+        70,
+        45
+      ]
+    },
+    {
+      "program": "root_d01_step",
+      "func": "boundary_ring_update_real",
+      "name": "boundary_ring_update_real",
+      "src": "boundary_ring_update_real at <USER_HOME>/wrf_gpu2_lanes/w44-qsqseed/identity_alias/src/gpuwrf/kernels/dyn_boundary_fp32.py:232",
+      "platform": "cuda",
+      "ttir_sha16": "7c81e72ab20bc972",
+      "ttir_loc_sha16": "6df84dafc289a2de",
+      "num_warps": 1,
+      "num_stages": 3,
+      "calls": 1,
+      "grid": [
+        4,
+        70,
+        45
+      ]
+    },
+    {
+      "program": "root_d01_step",
+      "func": "boundary_ring_update_real",
+      "name": "boundary_ring_update_real",
+      "src": "boundary_ring_update_real at <USER_HOME>/wrf_gpu2_lanes/w44-qsqseed/identity_alias/src/gpuwrf/kernels/dyn_boundary_fp32.py:232",
+      "platform": "cuda",
+      "ttir_sha16": "f7e464aedc1ded66",
+      "ttir_loc_sha16": "e8268aa6f856f7c0",
+      "num_warps": 1,
+      "num_stages": 3,
+      "calls": 1,
+      "grid": [
+        4,
+        70,
+        1
+      ]
+    },
+    {
+      "program": "forcedown_d01_d02",
+      "func": "nest_sint_sides",
+      "name": "nest_sint_sides",
+      "src": "nest_sint_sides at <USER_HOME>/wrf_gpu2_lanes/w44-qsqseed/identity_alias/src/gpuwrf/nesting/sint_kernel.py:77",
+      "platform": "cuda",
+      "ttir_sha16": "25fe0becc5e54e4f",
+      "ttir_loc_sha16": "83aa35901fcc13e8",
+      "num_warps": 4,
+      "num_stages": 3,
+      "calls": 1,
+      "grid": [
+        922
+      ]
+    },
+    {
+      "program": "forcedown_d01_d02",
+      "func": "nest_sint_sides",
+      "name": "nest_sint_sides",
+      "src": "nest_sint_sides at <USER_HOME>/wrf_gpu2_lanes/w44-qsqseed/identity_alias/src/gpuwrf/nesting/sint_kernel.py:77",
+      "platform": "cuda",
+      "ttir_sha16": "c3206b42321680a6",
+      "ttir_loc_sha16": "1fcf17d66a0d559f",
+      "num_warps": 4,
+      "num_stages": 3,
+      "calls": 1,
+      "grid": [
+        943
+      ]
+    },
+    {
+      "program": "forcedown_d01_d02",
+      "func": "nest_sint_sides",
+      "name": "nest_sint_sides",
+      "src": "nest_sint_sides at <USER_HOME>/wrf_gpu2_lanes/w44-qsqseed/identity_alias/src/gpuwrf/nesting/sint_kernel.py:77",
+      "platform": "cuda",
+      "ttir_sha16": "8eb643c5580191fb",
+      "ttir_loc_sha16": "62a58ccf1dbe84e9",
+      "num_warps": 4,
+      "num_stages": 3,
+      "calls": 1,
+      "grid": [
+        922
+      ]
+    },
+    {
+      "program": "forcedown_d01_d02",
+      "func": "nest_sint_sides",
+      "name": "nest_sint_sides",
+      "src": "nest_sint_sides at <USER_HOME>/wrf_gpu2_lanes/w44-qsqseed/identity_alias/src/gpuwrf/nesting/sint_kernel.py:77",
+      "platform": "cuda",
+      "ttir_sha16": "b509de318bfe5a7d",
+      "ttir_loc_sha16": "646fb2eb301a1cc3",
+      "num_warps": 4,
+      "num_stages": 3,
+      "calls": 1,
+      "grid": [
+        922
+      ]
+    },
+    {
+      "program": "forcedown_d01_d02",
+      "func": "nest_sint_sides",
+      "name": "nest_sint_sides",
+      "src": "nest_sint_sides at <USER_HOME>/wrf_gpu2_lanes/w44-qsqseed/identity_alias/src/gpuwrf/nesting/sint_kernel.py:77",
+      "platform": "cuda",
+      "ttir_sha16": "aa5a40fdaeee1e5e",
+      "ttir_loc_sha16": "2ab7f7d7e1a3d144",
+      "num_warps": 4,
+      "num_stages": 3,
+      "calls": 1,
+      "grid": [
+        21
+      ]
+    },
+    {
+      "program": "forcedown_d01_d02",
+      "func": "nest_scalar_couple_real4",
+      "name": "nest_scalar_couple_real4",
+      "src": "nest_scalar_couple_real4 at <USER_HOME>/wrf_gpu2_lanes/w44-qsqseed/identity_alias/src/gpuwrf/coupling/boundary_apply.py:1577",
+      "platform": "cuda",
+      "ttir_sha16": "9224f4319d6857b3",
+      "ttir_loc_sha16": "679a18ca329d4c10",
+      "num_warps": 4,
+      "num_stages": 3,
+      "calls": 1,
+      "grid": [
+        5370
+      ]
+    },
+    {
+      "program": "forcedown_d01_d02",
+      "func": "nest_scalar_couple_real4",
+      "name": "nest_scalar_couple_real4",
+      "src": "nest_scalar_couple_real4 at <USER_HOME>/wrf_gpu2_lanes/w44-qsqseed/identity_alias/src/gpuwrf/coupling/boundary_apply.py:1577",
+      "platform": "cuda",
+      "ttir_sha16": "6d70739123c2a158",
+      "ttir_loc_sha16": "85aa1624b85b8da9",
+      "num_warps": 4,
+      "num_stages": 3,
+      "calls": 1,
+      "grid": [
+        1444
+      ]
+    },
+    {
+      "program": "child_d02_step",
+      "func": "phy_prep_hydrostatic_real",
+      "name": "phy_prep_hydrostatic_real",
+      "src": "phy_prep_hydrostatic_real at <USER_HOME>/wrf_gpu2_lanes/w44-qsqseed/identity_alias/src/gpuwrf/kernels/phys_hydrostatic_real.py:19",
+      "platform": "cuda",
+      "ttir_sha16": "77374bf907cf5cbd",
+      "ttir_loc_sha16": "194fd51447019c94",
+      "num_warps": 4,
+      "num_stages": 3,
+      "calls": 2,
+      "grid": [
+        245
+      ]
+    },
+    {
+      "program": "child_d02_step",
+      "func": "mcica_kiss_lanes",
+      "name": "mcica_kiss_lanes",
+      "src": "mcica_kiss_lanes at <USER_HOME>/wrf_gpu2_lanes/w44-qsqseed/identity_alias/src/gpuwrf/kernels/rad_mcica.py:167",
+      "platform": "cuda",
+      "ttir_sha16": "0ec6f0a1cb96f47c",
+      "ttir_loc_sha16": "1a0f0f95bcd93e9e",
+      "num_warps": 4,
+      "num_stages": 3,
+      "calls": 1,
+      "grid": [
+        3584
+      ]
+    },
+    {
+      "program": "child_d02_step",
+      "func": "rrtmg_sw_band_sums",
+      "name": "rrtmg_sw_band_sums",
+      "src": "rrtmg_sw_band_sums at <USER_HOME>/wrf_gpu2_lanes/w44-qsqseed/identity_alias/src/gpuwrf/kernels/rad_sw_band_sums.py:402",
+      "platform": "cuda",
+      "ttir_sha16": "9ac809670a0c7c96",
+      "ttir_loc_sha16": "e5816063255f59b5",
+      "num_warps": 4,
+      "num_stages": 3,
+      "calls": 1,
+      "grid": [
+        512
+      ]
+    },
+    {
+      "program": "child_d02_step",
+      "func": "mcica_kiss_lanes",
+      "name": "mcica_kiss_lanes",
+      "src": "mcica_kiss_lanes at <USER_HOME>/wrf_gpu2_lanes/w44-qsqseed/identity_alias/src/gpuwrf/kernels/rad_mcica.py:167",
+      "platform": "cuda",
+      "ttir_sha16": "361ca10f86ee8136",
+      "ttir_loc_sha16": "991eaecc6b344a52",
+      "num_warps": 4,
+      "num_stages": 3,
+      "calls": 1,
+      "grid": [
+        4480
+      ]
+    },
+    {
+      "program": "child_d02_step",
+      "func": "rrtmg_lw_band_sums",
+      "name": "rrtmg_lw_band_sums",
+      "src": "rrtmg_lw_band_sums at <USER_HOME>/wrf_gpu2_lanes/w44-qsqseed/identity_alias/src/gpuwrf/kernels/rad_lw_transfer.py:396",
+      "platform": "cuda",
+      "ttir_sha16": "96f705bf91bb11ea",
+      "ttir_loc_sha16": "c6ee3accc71c70ad",
+      "num_warps": 4,
+      "num_stages": 3,
+      "calls": 1,
+      "grid": [
+        512
+      ]
+    },
+    {
+      "program": "child_d02_step",
+      "func": "phy_prep_hydrostatic_real",
+      "name": "phy_prep_hydrostatic_real",
+      "src": "phy_prep_hydrostatic_real at <USER_HOME>/wrf_gpu2_lanes/w44-qsqseed/identity_alias/src/gpuwrf/kernels/phys_hydrostatic_real.py:19",
+      "platform": "cuda",
+      "ttir_sha16": "e74ce2919f1f4391",
+      "ttir_loc_sha16": "2c944b7ad2bdae69",
+      "num_warps": 4,
+      "num_stages": 3,
+      "calls": 3,
+      "grid": [
+        245
+      ]
+    },
+    {
+      "program": "child_d02_step",
+      "func": "b_noahmp_radiation_real",
+      "name": "b_noahmp_radiation_real",
+      "src": "b_noahmp_radiation_real at <USER_HOME>/wrf_gpu2_lanes/w44-qsqseed/identity_alias/src/gpuwrf/kernels/phys_noahmp_radiation.py:28",
+      "platform": "cuda",
+      "ttir_sha16": "529d39df67b76def",
+      "ttir_loc_sha16": "a5d8c806a0ad8674",
+      "num_warps": 4,
+      "num_stages": 3,
+      "calls": 1,
+      "grid": [
+        245
+      ]
+    },
+    {
+      "program": "child_d02_step",
+      "func": "b_core_noah_canopy_flux",
+      "name": "b_core_noah_canopy_flux",
+      "src": "b_core_noah_canopy_flux at <USER_HOME>/wrf_gpu2_lanes/w44-qsqseed/identity_alias/src/gpuwrf/kernels/phys_noahmp_columns.py:107",
+      "platform": "cuda",
+      "ttir_sha16": "dc77ead30a1881a0",
+      "ttir_loc_sha16": "66cead27be8b27b4",
+      "num_warps": 4,
+      "num_stages": 3,
+      "calls": 1,
+      "grid": [
+        245
+      ]
+    },
+    {
+      "program": "child_d02_step",
+      "func": "b_core_noah_snowwater",
+      "name": "b_core_noah_snowwater",
+      "src": "b_core_noah_snowwater at <USER_HOME>/wrf_gpu2_lanes/w44-qsqseed/identity_alias/src/gpuwrf/kernels/phys_noahmp_columns.py:107",
+      "platform": "cuda",
+      "ttir_sha16": "f7b02a96241096dc",
+      "ttir_loc_sha16": "a2c756f9bd717df4",
+      "num_warps": 4,
+      "num_stages": 3,
+      "calls": 1,
+      "grid": [
+        245
+      ]
+    },
+    {
+      "program": "child_d02_step",
+      "func": "b_core_noah_soilwater",
+      "name": "b_core_noah_soilwater",
+      "src": "b_core_noah_soilwater at <USER_HOME>/wrf_gpu2_lanes/w44-qsqseed/identity_alias/src/gpuwrf/kernels/phys_noahmp_columns.py:107",
+      "platform": "cuda",
+      "ttir_sha16": "e1677bd080c58e60",
+      "ttir_loc_sha16": "d7f6da3902c539d1",
+      "num_warps": 4,
+      "num_stages": 3,
+      "calls": 1,
+      "grid": [
+        245
+      ]
+    },
+    {
+      "program": "child_d02_step",
+      "func": "<lambda>",
+      "name": "_lambda_",
+      "src": "<lambda> at <USER_HOME>/wrf_gpu2_lanes/w44-qsqseed/identity_alias/src/gpuwrf/kernels/phys_mynn_plume.py:406",
+      "platform": "cuda",
+      "ttir_sha16": "5a0404bc86a89e93",
+      "ttir_loc_sha16": "9a1792c9387af915",
+      "num_warps": 4,
+      "num_stages": 3,
+      "calls": 1,
+      "grid": [
+        1953
+      ]
+    },
+    {
+      "program": "child_d02_step",
+      "func": "<lambda>",
+      "name": "_lambda_",
+      "src": "<lambda> at <USER_HOME>/wrf_gpu2_lanes/w44-qsqseed/identity_alias/src/gpuwrf/kernels/phys_mynn_boulac.py:107",
+      "platform": "cuda",
+      "ttir_sha16": "cc4d9274a5c9706a",
+      "ttir_loc_sha16": "3395f469d1ab0a06",
+      "num_warps": 4,
+      "num_stages": 3,
+      "calls": 1,
+      "grid": [
+        10739
+      ]
+    },
+    {
+      "program": "child_d02_step",
+      "func": "mynn_tridiag2_real",
+      "name": "mynn_tridiag2_real",
+      "src": "mynn_tridiag2_real at <USER_HOME>/wrf_gpu2_lanes/w44-qsqseed/identity_alias/src/gpuwrf/kernels/phys_mynn_tridiag.py:31",
+      "platform": "cuda",
+      "ttir_sha16": "2c69d9206e985806",
+      "ttir_loc_sha16": "6011b32450acbe0a",
+      "num_warps": 4,
+      "num_stages": 3,
+      "calls": 10,
+      "grid": [
+        245
+      ]
+    },
+    {
+      "program": "child_d02_step",
+      "func": "<lambda>",
+      "name": "_lambda_",
+      "src": "<lambda> at <USER_HOME>/wrf_gpu2_lanes/w44-qsqseed/identity_alias/src/gpuwrf/kernels/phys_mynn_cloudmix.py:59",
+      "platform": "cuda",
+      "ttir_sha16": "c1d971528ce3e030",
+      "ttir_loc_sha16": "e0448af089d547e6",
+      "num_warps": 4,
+      "num_stages": 3,
+      "calls": 1,
+      "grid": [
+        245
+      ]
+    },
+    {
+      "program": "child_d02_step",
+      "func": "b_diff_horizontal_m",
+      "name": "b_diff_horizontal_m",
+      "src": "b_diff_horizontal_m at <USER_HOME>/wrf_gpu2_lanes/w44-qsqseed/identity_alias/src/gpuwrf/kernels/dyn_diff_fp32.py:96",
+      "platform": "cuda",
+      "ttir_sha16": "5f7d62e4f4296196",
+      "ttir_loc_sha16": "3f33461d0cc82a95",
+      "num_warps": 4,
+      "num_stages": 3,
+      "calls": 9,
+      "grid": [
+        5370
+      ]
+    },
+    {
+      "program": "child_d02_step",
+      "func": "b_diff_horizontal_u",
+      "name": "b_diff_horizontal_u",
+      "src": "b_diff_horizontal_u at <USER_HOME>/wrf_gpu2_lanes/w44-qsqseed/identity_alias/src/gpuwrf/kernels/dyn_diff_fp32.py:96",
+      "platform": "cuda",
+      "ttir_sha16": "3a253b71c59eca37",
+      "ttir_loc_sha16": "e6e0cf76adfb1d97",
+      "num_warps": 4,
+      "num_stages": 3,
+      "calls": 1,
+      "grid": [
+        5390
+      ]
+    },
+    {
+      "program": "child_d02_step",
+      "func": "b_diff_horizontal_v",
+      "name": "b_diff_horizontal_v",
+      "src": "b_diff_horizontal_v at <USER_HOME>/wrf_gpu2_lanes/w44-qsqseed/identity_alias/src/gpuwrf/kernels/dyn_diff_fp32.py:96",
+      "platform": "cuda",
+      "ttir_sha16": "069a07ec86aec775",
+      "ttir_loc_sha16": "094f87b54e859ed8",
+      "num_warps": 4,
+      "num_stages": 3,
+      "calls": 1,
+      "grid": [
+        5416
+      ]
+    },
+    {
+      "program": "child_d02_step",
+      "func": "b_diff_horizontal_w",
+      "name": "b_diff_horizontal_w",
+      "src": "b_diff_horizontal_w at <USER_HOME>/wrf_gpu2_lanes/w44-qsqseed/identity_alias/src/gpuwrf/kernels/dyn_diff_fp32.py:96",
+      "platform": "cuda",
+      "ttir_sha16": "9d3d932888058ddd",
+      "ttir_loc_sha16": "f8097ec65eb4b442",
+      "num_warps": 4,
+      "num_stages": 3,
+      "calls": 1,
+      "grid": [
+        5492
+      ]
+    },
+    {
+      "program": "child_d02_step",
+      "func": "b_diff_sixth_m",
+      "name": "b_diff_sixth_m",
+      "src": "b_diff_sixth_m at <USER_HOME>/wrf_gpu2_lanes/w44-qsqseed/identity_alias/src/gpuwrf/kernels/dyn_diff_fp32.py:15",
+      "platform": "cuda",
+      "ttir_sha16": "8066397fcdad693f",
+      "ttir_loc_sha16": "7e3d3bdebf8e1fab",
+      "num_warps": 4,
+      "num_stages": 3,
+      "calls": 17,
+      "grid": [
+        5370
+      ]
+    },
+    {
+      "program": "child_d02_step",
+      "func": "b_diff_sixth_u",
+      "name": "b_diff_sixth_u",
+      "src": "b_diff_sixth_u at <USER_HOME>/wrf_gpu2_lanes/w44-qsqseed/identity_alias/src/gpuwrf/kernels/dyn_diff_fp32.py:15",
+      "platform": "cuda",
+      "ttir_sha16": "ff2c5b1ad1adc1fb",
+      "ttir_loc_sha16": "f43ff6d71039a660",
+      "num_warps": 4,
+      "num_stages": 3,
+      "calls": 1,
+      "grid": [
+        5390
+      ]
+    },
+    {
+      "program": "child_d02_step",
+      "func": "b_diff_sixth_v",
+      "name": "b_diff_sixth_v",
+      "src": "b_diff_sixth_v at <USER_HOME>/wrf_gpu2_lanes/w44-qsqseed/identity_alias/src/gpuwrf/kernels/dyn_diff_fp32.py:15",
+      "platform": "cuda",
+      "ttir_sha16": "5bd7eeca479a907d",
+      "ttir_loc_sha16": "063b1be5cd550f66",
+      "num_warps": 4,
+      "num_stages": 3,
+      "calls": 1,
+      "grid": [
+        5416
+      ]
+    },
+    {
+      "program": "child_d02_step",
+      "func": "b_diff_sixth_w",
+      "name": "b_diff_sixth_w",
+      "src": "b_diff_sixth_w at <USER_HOME>/wrf_gpu2_lanes/w44-qsqseed/identity_alias/src/gpuwrf/kernels/dyn_diff_fp32.py:15",
+      "platform": "cuda",
+      "ttir_sha16": "7888a3ea7685f2f1",
+      "ttir_loc_sha16": "6584024105afaf58",
+      "num_warps": 4,
+      "num_stages": 3,
+      "calls": 1,
+      "grid": [
+        5492
+      ]
+    },
+    {
+      "program": "child_d02_step",
+      "func": "boundary_dry_relax_real",
+      "name": "boundary_dry_relax_real",
+      "src": "boundary_dry_relax_real at <USER_HOME>/wrf_gpu2_lanes/w44-qsqseed/identity_alias/src/gpuwrf/kernels/dyn_boundary_fp32.py:93",
+      "platform": "cuda",
+      "ttir_sha16": "1fee82d8c088b22b",
+      "ttir_loc_sha16": "882ddf70251cfc47",
+      "num_warps": 1,
+      "num_stages": 3,
+      "calls": 1,
+      "grid": [
+        9,
+        117,
+        44
+      ]
+    },
+    {
+      "program": "child_d02_step",
+      "func": "boundary_dry_relax_real",
+      "name": "boundary_dry_relax_real",
+      "src": "boundary_dry_relax_real at <USER_HOME>/wrf_gpu2_lanes/w44-qsqseed/identity_alias/src/gpuwrf/kernels/dyn_boundary_fp32.py:93",
+      "platform": "cuda",
+      "ttir_sha16": "289a9afc0ade93d2",
+      "ttir_loc_sha16": "2f05e40e48970646",
+      "num_warps": 1,
+      "num_stages": 3,
+      "calls": 1,
+      "grid": [
+        9,
+        118,
+        44
+      ]
+    },
+    {
+      "program": "child_d02_step",
+      "func": "boundary_dry_relax_real",
+      "name": "boundary_dry_relax_real",
+      "src": "boundary_dry_relax_real at <USER_HOME>/wrf_gpu2_lanes/w44-qsqseed/identity_alias/src/gpuwrf/kernels/dyn_boundary_fp32.py:93",
+      "platform": "cuda",
+      "ttir_sha16": "1c370891964b6c6e",
+      "ttir_loc_sha16": "6c1e777515ca2003",
+      "num_warps": 1,
+      "num_stages": 3,
+      "calls": 1,
+      "grid": [
+        9,
+        117,
+        44
+      ]
+    },
+    {
+      "program": "child_d02_step",
+      "func": "boundary_dry_relax_real",
+      "name": "boundary_dry_relax_real",
+      "src": "boundary_dry_relax_real at <USER_HOME>/wrf_gpu2_lanes/w44-qsqseed/identity_alias/src/gpuwrf/kernels/dyn_boundary_fp32.py:93",
+      "platform": "cuda",
+      "ttir_sha16": "37961b0ce225e915",
+      "ttir_loc_sha16": "230c3d2513259c30",
+      "num_warps": 1,
+      "num_stages": 3,
+      "calls": 2,
+      "grid": [
+        9,
+        117,
+        45
+      ]
+    },
+    {
+      "program": "child_d02_step",
+      "func": "boundary_dry_relax_real",
+      "name": "boundary_dry_relax_real",
+      "src": "boundary_dry_relax_real at <USER_HOME>/wrf_gpu2_lanes/w44-qsqseed/identity_alias/src/gpuwrf/kernels/dyn_boundary_fp32.py:93",
+      "platform": "cuda",
+      "ttir_sha16": "f91fb579552dae4e",
+      "ttir_loc_sha16": "e9d594919a1c4c64",
+      "num_warps": 1,
+      "num_stages": 3,
+      "calls": 1,
+      "grid": [
+        9,
+        117,
+        1
+      ]
+    },
+    {
+      "program": "child_d02_step",
+      "func": "boundary_leaf_interp_real",
+      "name": "boundary_leaf_interp_real",
+      "src": "boundary_leaf_interp_real at <USER_HOME>/wrf_gpu2_lanes/w44-qsqseed/identity_alias/src/gpuwrf/kernels/dyn_boundary_fp32.py:56",
+      "platform": "cuda",
+      "ttir_sha16": "2412c0e1372df428",
+      "ttir_loc_sha16": "37246bff355b84c1",
+      "num_warps": 4,
+      "num_stages": 3,
+      "calls": 1,
+      "grid": [
+        922
+      ]
+    },
+    {
+      "program": "child_d02_step",
+      "func": "boundary_ring_relax_real",
+      "name": "boundary_ring_relax_real",
+      "src": "boundary_ring_relax_real at <USER_HOME>/wrf_gpu2_lanes/w44-qsqseed/identity_alias/src/gpuwrf/kernels/dyn_ring_relax_fp32.py:36",
+      "platform": "cuda",
+      "ttir_sha16": "5e5e53fe5499329c",
+      "ttir_loc_sha16": "6103b260a6a0cca1",
+      "num_warps": 1,
+      "num_stages": 3,
+      "calls": 7,
+      "grid": [
+        9,
+        117,
+        44
+      ]
+    },
+    {
+      "program": "child_d02_step",
+      "func": "b_diff_advect_u_fp32",
+      "name": "b_diff_advect_u_fp32",
+      "src": "b_diff_advect_u_fp32 at <USER_HOME>/wrf_gpu2_lanes/w44-qsqseed/identity_alias/src/gpuwrf/kernels/dyn_momflux_fp32.py:77",
+      "platform": "cuda",
+      "ttir_sha16": "52a62497bed6486e",
+      "ttir_loc_sha16": "8a27f32007d90b67",
+      "num_warps": 4,
+      "num_stages": 3,
+      "calls": 3,
+      "grid": [
+        5390
+      ]
+    },
+    {
+      "program": "child_d02_step",
+      "func": "b_diff_advect_v_fp32",
+      "name": "b_diff_advect_v_fp32",
+      "src": "b_diff_advect_v_fp32 at <USER_HOME>/wrf_gpu2_lanes/w44-qsqseed/identity_alias/src/gpuwrf/kernels/dyn_momflux_fp32.py:107",
+      "platform": "cuda",
+      "ttir_sha16": "38355b5b4ce3029b",
+      "ttir_loc_sha16": "f68d8e864e8aec39",
+      "num_warps": 4,
+      "num_stages": 3,
+      "calls": 3,
+      "grid": [
+        5416
+      ]
+    },
+    {
+      "program": "child_d02_step",
+      "func": "b_core_scalar_flux_fp32",
+      "name": "b_core_scalar_flux_fp32",
+      "src": "b_core_scalar_flux_fp32 at <USER_HOME>/wrf_gpu2_lanes/w44-qsqseed/identity_alias/src/gpuwrf/kernels/dyn_flux_fp32.py:58",
+      "platform": "cuda",
+      "ttir_sha16": "c557cda287922ab3",
+      "ttir_loc_sha16": "3dfa244a81615aa6",
+      "num_warps": 4,
+      "num_stages": 3,
+      "calls": 3,
+      "grid": [
+        5370
+      ]
+    },
+    {
+      "program": "child_d02_step",
+      "func": "b_diff_eos_real",
+      "name": "b_diff_eos_real",
+      "src": "b_diff_eos_real at <USER_HOME>/wrf_gpu2_lanes/w44-qsqseed/identity_alias/src/gpuwrf/kernels/dyn_rk_fp32.py:78",
+      "platform": "cuda",
+      "ttir_sha16": "c4e6092ec12987c2",
+      "ttir_loc_sha16": "da117362a43654d0",
+      "num_warps": 4,
+      "num_stages": 3,
+      "calls": 4,
+      "grid": [
+        5370
+      ]
+    },
+    {
+      "program": "child_d02_step",
+      "func": "b_diff_large_step_u_fp32",
+      "name": "b_diff_large_step_u_fp32",
+      "src": "b_diff_large_step_u_fp32 at <USER_HOME>/wrf_gpu2_lanes/w44-qsqseed/identity_alias/src/gpuwrf/kernels/dyn_uvtend_fp32.py:37",
+      "platform": "cuda",
+      "ttir_sha16": "53e68cd015a48be0",
+      "ttir_loc_sha16": "7c81655486eb6dc3",
+      "num_warps": 4,
+      "num_stages": 3,
+      "calls": 3,
+      "grid": [
+        5390
+      ]
+    },
+    {
+      "program": "child_d02_step",
+      "func": "b_diff_large_step_v_fp32",
+      "name": "b_diff_large_step_v_fp32",
+      "src": "b_diff_large_step_v_fp32 at <USER_HOME>/wrf_gpu2_lanes/w44-qsqseed/identity_alias/src/gpuwrf/kernels/dyn_uvtend_fp32.py:98",
+      "platform": "cuda",
+      "ttir_sha16": "2584b24cea735023",
+      "ttir_loc_sha16": "c3981dbd7d09494f",
+      "num_warps": 4,
+      "num_stages": 3,
+      "calls": 3,
+      "grid": [
+        5416
+      ]
+    },
+    {
+      "program": "child_d02_step",
+      "func": "b_diff_stage_masses",
+      "name": "b_diff_stage_masses",
+      "src": "b_diff_stage_masses at <USER_HOME>/wrf_gpu2_lanes/w44-qsqseed/identity_alias/src/gpuwrf/kernels/dyn_rk_fp32.py:153",
+      "platform": "cuda",
+      "ttir_sha16": "8a9da3daa163c4ca",
+      "ttir_loc_sha16": "2f5ed2696f0279d2",
+      "num_warps": 4,
+      "num_stages": 3,
+      "calls": 1,
+      "grid": [
+        124
+      ]
+    },
+    {
+      "program": "child_d02_step",
+      "func": "b_diff_coupled_work_u",
+      "name": "b_diff_coupled_work_u",
+      "src": "b_diff_coupled_work_u at <USER_HOME>/wrf_gpu2_lanes/w44-qsqseed/identity_alias/src/gpuwrf/kernels/dyn_rk_fp32.py:201",
+      "platform": "cuda",
+      "ttir_sha16": "4df7b746b56a50b1",
+      "ttir_loc_sha16": "9fff3db3675d15e1",
+      "num_warps": 4,
+      "num_stages": 3,
+      "calls": 3,
+      "grid": [
+        5390
+      ]
+    },
+    {
+      "program": "child_d02_step",
+      "func": "b_diff_coupled_work_v",
+      "name": "b_diff_coupled_work_v",
+      "src": "b_diff_coupled_work_v at <USER_HOME>/wrf_gpu2_lanes/w44-qsqseed/identity_alias/src/gpuwrf/kernels/dyn_rk_fp32.py:201",
+      "platform": "cuda",
+      "ttir_sha16": "efbd83ef6a25974b",
+      "ttir_loc_sha16": "59889a45a69811ef",
+      "num_warps": 4,
+      "num_stages": 3,
+      "calls": 3,
+      "grid": [
+        5416
+      ]
+    },
+    {
+      "program": "child_d02_step",
+      "func": "b_diff_coupled_work_theta",
+      "name": "b_diff_coupled_work_theta",
+      "src": "b_diff_coupled_work_theta at <USER_HOME>/wrf_gpu2_lanes/w44-qsqseed/identity_alias/src/gpuwrf/kernels/dyn_rk_fp32.py:201",
+      "platform": "cuda",
+      "ttir_sha16": "ac6d3ffdb8424810",
+      "ttir_loc_sha16": "01388e2d76427fcd",
+      "num_warps": 4,
+      "num_stages": 3,
+      "calls": 3,
+      "grid": [
+        5370
+      ]
+    },
+    {
+      "program": "child_d02_step",
+      "func": "b_diff_coupled_work_w",
+      "name": "b_diff_coupled_work_w",
+      "src": "b_diff_coupled_work_w at <USER_HOME>/wrf_gpu2_lanes/w44-qsqseed/identity_alias/src/gpuwrf/kernels/dyn_rk_fp32.py:201",
+      "platform": "cuda",
+      "ttir_sha16": "797487aa43e2eb27",
+      "ttir_loc_sha16": "26b3aedefe3702db",
+      "num_warps": 4,
+      "num_stages": 3,
+      "calls": 3,
+      "grid": [
+        5492
+      ]
+    },
+    {
+      "program": "child_d02_step",
+      "func": "b_diff_eos_real",
+      "name": "b_diff_eos_real",
+      "src": "b_diff_eos_real at <USER_HOME>/wrf_gpu2_lanes/w44-qsqseed/identity_alias/src/gpuwrf/kernels/dyn_rk_fp32.py:78",
+      "platform": "cuda",
+      "ttir_sha16": "9711787d1e2c3018",
+      "ttir_loc_sha16": "aed2c3759975f4a5",
+      "num_warps": 4,
+      "num_stages": 3,
+      "calls": 3,
+      "grid": [
+        5370
+      ]
+    },
+    {
+      "program": "child_d02_step",
+      "func": "b_diff_rhs_ph_fp32",
+      "name": "b_diff_rhs_ph_fp32",
+      "src": "b_diff_rhs_ph_fp32 at <USER_HOME>/wrf_gpu2_lanes/w44-qsqseed/identity_alias/src/gpuwrf/kernels/dyn_rhsph_fp32.py:19",
+      "platform": "cuda",
+      "ttir_sha16": "46f31849542416ff",
+      "ttir_loc_sha16": "70ae1d588b48d7f9",
+      "num_warps": 4,
+      "num_stages": 3,
+      "calls": 3,
+      "grid": [
+        5492
+      ]
+    },
+    {
+      "program": "child_d02_step",
+      "func": "b_core_coef_fp32",
+      "name": "b_core_coef_fp32",
+      "src": "b_core_coef_fp32 at <USER_HOME>/wrf_gpu2_lanes/w44-qsqseed/identity_alias/src/gpuwrf/kernels/dyn_acoustic_fp32.py:93",
+      "platform": "cuda",
+      "ttir_sha16": "d39b2739c5bbeb80",
+      "ttir_loc_sha16": "647ba407d1e44fdc",
+      "num_warps": 4,
+      "num_stages": 3,
+      "calls": 3,
+      "grid": [
+        245
+      ]
+    },
+    {
+      "program": "child_d02_step",
+      "func": "b_core_uv_fp32",
+      "name": "b_core_uv_fp32",
+      "src": "b_core_uv_fp32 at <USER_HOME>/wrf_gpu2_lanes/w44-qsqseed/identity_alias/src/gpuwrf/kernels/dyn_acoustic_fp32.py:93",
+      "platform": "cuda",
+      "ttir_sha16": "d09f3d381d9cf202",
+      "ttir_loc_sha16": "ac142abf7ef9eea7",
+      "num_warps": 4,
+      "num_stages": 3,
+      "calls": 3,
+      "grid": [
+        10831
+      ]
+    },
+    {
+      "program": "child_d02_step",
+      "func": "b_core_mass_fp32",
+      "name": "b_core_mass_fp32",
+      "src": "b_core_mass_fp32 at <USER_HOME>/wrf_gpu2_lanes/w44-qsqseed/identity_alias/src/gpuwrf/kernels/dyn_acoustic_fp32.py:93",
+      "platform": "cuda",
+      "ttir_sha16": "30439ac02164f10e",
+      "ttir_loc_sha16": "ea2d877a7ed70f98",
+      "num_warps": 4,
+      "num_stages": 3,
+      "calls": 3,
+      "grid": [
+        245
+      ]
+    },
+    {
+      "program": "child_d02_step",
+      "func": "b_core_w_p1_fp32",
+      "name": "b_core_w_p1_fp32",
+      "src": "b_core_w_p1_fp32 at <USER_HOME>/wrf_gpu2_lanes/w44-qsqseed/identity_alias/src/gpuwrf/kernels/dyn_acoustic_fp32.py:93",
+      "platform": "cuda",
+      "ttir_sha16": "5de61fb2ca20b6d6",
+      "ttir_loc_sha16": "7fdd962068f65216",
+      "num_warps": 4,
+      "num_stages": 3,
+      "calls": 3,
+      "grid": [
+        10983
+      ]
+    },
+    {
+      "program": "child_d02_step",
+      "func": "b_core_w_p2_fp32",
+      "name": "b_core_w_p2_fp32",
+      "src": "b_core_w_p2_fp32 at <USER_HOME>/wrf_gpu2_lanes/w44-qsqseed/identity_alias/src/gpuwrf/kernels/dyn_acoustic_fp32.py:93",
+      "platform": "cuda",
+      "ttir_sha16": "1e33c9a0db9b7c29",
+      "ttir_loc_sha16": "60c09a6c109c7e97",
+      "num_warps": 4,
+      "num_stages": 3,
+      "calls": 3,
+      "grid": [
+        10983
+      ]
+    },
+    {
+      "program": "child_d02_step",
+      "func": "b_core_w_fp32",
+      "name": "b_core_w_fp32",
+      "src": "b_core_w_fp32 at <USER_HOME>/wrf_gpu2_lanes/w44-qsqseed/identity_alias/src/gpuwrf/kernels/dyn_acoustic_fp32.py:93",
+      "platform": "cuda",
+      "ttir_sha16": "98ed1c35aba5e227",
+      "ttir_loc_sha16": "b5b8dd85eb31ef5e",
+      "num_warps": 4,
+      "num_stages": 3,
+      "calls": 3,
+      "grid": [
+        245
+      ]
+    },
+    {
+      "program": "child_d02_step",
+      "func": "b_core_pressure_fp32",
+      "name": "b_core_pressure_fp32",
+      "src": "b_core_pressure_fp32 at <USER_HOME>/wrf_gpu2_lanes/w44-qsqseed/identity_alias/src/gpuwrf/kernels/dyn_acoustic_fp32.py:93",
+      "platform": "cuda",
+      "ttir_sha16": "bd5adf972260cca9",
+      "ttir_loc_sha16": "8ded02ceb0b83600",
+      "num_warps": 4,
+      "num_stages": 3,
+      "calls": 3,
+      "grid": [
+        10739
+      ]
+    },
+    {
+      "program": "child_d02_step",
+      "func": "b_core_scalar_flux_fp32_stacked",
+      "name": "b_core_scalar_flux_fp32_stacked",
+      "src": "b_core_scalar_flux_fp32_stacked at <USER_HOME>/wrf_gpu2_lanes/w44-qsqseed/identity_alias/src/gpuwrf/kernels/dyn_flux_fp32.py:139",
+      "platform": "cuda",
+      "ttir_sha16": "427fed6ada8d5731",
+      "ttir_loc_sha16": "c1811c8030d8c7cc",
+      "num_warps": 4,
+      "num_stages": 3,
+      "calls": 2,
+      "grid": [
+        5370
+      ]
+    },
+    {
+      "program": "child_d02_step",
+      "func": "b_core_scalar_flux_fp32_stacked",
+      "name": "b_core_scalar_flux_fp32_stacked",
+      "src": "b_core_scalar_flux_fp32_stacked at <USER_HOME>/wrf_gpu2_lanes/w44-qsqseed/identity_alias/src/gpuwrf/kernels/dyn_flux_fp32.py:139",
+      "platform": "cuda",
+      "ttir_sha16": "4ac11986827883b3",
+      "ttir_loc_sha16": "1c37345b5aa33c83",
+      "num_warps": 4,
+      "num_stages": 3,
+      "calls": 2,
+      "grid": [
+        5370
+      ]
+    },
+    {
+      "program": "child_d02_step",
+      "func": "b_diff_stage_masses",
+      "name": "b_diff_stage_masses",
+      "src": "b_diff_stage_masses at <USER_HOME>/wrf_gpu2_lanes/w44-qsqseed/identity_alias/src/gpuwrf/kernels/dyn_rk_fp32.py:153",
+      "platform": "cuda",
+      "ttir_sha16": "b4aac3e11d4849ff",
+      "ttir_loc_sha16": "35b2fce6f1e5fb6b",
+      "num_warps": 4,
+      "num_stages": 3,
+      "calls": 2,
+      "grid": [
+        124
+      ]
+    },
+    {
+      "program": "child_d02_step",
+      "func": "b_core_pd_scale_sl_fp32",
+      "name": "b_core_pd_scale_sl_fp32",
+      "src": "b_core_pd_scale_sl_fp32 at <USER_HOME>/wrf_gpu2_lanes/w44-qsqseed/identity_alias/src/gpuwrf/kernels/dyn_pd_fp32.py:327",
+      "platform": "cuda",
+      "ttir_sha16": "5bd4ff9c1868aca8",
+      "ttir_loc_sha16": "b0bf671a33e20ae4",
+      "num_warps": 4,
+      "num_stages": 3,
+      "calls": 1,
+      "grid": [
+        5370
+      ]
+    },
+    {
+      "program": "child_d02_step",
+      "func": "b_core_pd_tend_sl_fp32",
+      "name": "b_core_pd_tend_sl_fp32",
+      "src": "b_core_pd_tend_sl_fp32 at <USER_HOME>/wrf_gpu2_lanes/w44-qsqseed/identity_alias/src/gpuwrf/kernels/dyn_pd_fp32.py:358",
+      "platform": "cuda",
+      "ttir_sha16": "fc6415daa2df3b86",
+      "ttir_loc_sha16": "08d7d69be89add61",
+      "num_warps": 4,
+      "num_stages": 3,
+      "calls": 1,
+      "grid": [
+        5370
+      ]
+    },
+    {
+      "program": "child_d02_step",
+      "func": "b_core_pd_scale_sl_fp32",
+      "name": "b_core_pd_scale_sl_fp32",
+      "src": "b_core_pd_scale_sl_fp32 at <USER_HOME>/wrf_gpu2_lanes/w44-qsqseed/identity_alias/src/gpuwrf/kernels/dyn_pd_fp32.py:327",
+      "platform": "cuda",
+      "ttir_sha16": "f684e019474c1309",
+      "ttir_loc_sha16": "fb95913b23fc1442",
+      "num_warps": 4,
+      "num_stages": 3,
+      "calls": 1,
+      "grid": [
+        5370
+      ]
+    },
+    {
+      "program": "child_d02_step",
+      "func": "b_core_pd_tend_sl_fp32",
+      "name": "b_core_pd_tend_sl_fp32",
+      "src": "b_core_pd_tend_sl_fp32 at <USER_HOME>/wrf_gpu2_lanes/w44-qsqseed/identity_alias/src/gpuwrf/kernels/dyn_pd_fp32.py:358",
+      "platform": "cuda",
+      "ttir_sha16": "abbdf8ed651b1b06",
+      "ttir_loc_sha16": "39b5465d11aabb67",
+      "num_warps": 4,
+      "num_stages": 3,
+      "calls": 1,
+      "grid": [
+        5370
+      ]
+    },
+    {
+      "program": "child_d02_step",
+      "func": "thompson_full_column",
+      "name": "thompson_full_column",
+      "src": "thompson_full_column at <USER_HOME>/wrf_gpu2_lanes/w44-qsqseed/identity_alias/src/gpuwrf/kernels/phys_thompson_full.py:320",
+      "platform": "cuda",
+      "ttir_sha16": "3dabd82734e9822f",
+      "ttir_loc_sha16": "4f428f30c9e96187",
+      "num_warps": 2,
+      "num_stages": 3,
+      "calls": 1,
+      "grid": [
+        31239
+      ]
+    },
+    {
+      "program": "child_d02_step",
+      "func": "boundary_spec_final_real",
+      "name": "boundary_spec_final_real",
+      "src": "boundary_spec_final_real at <USER_HOME>/wrf_gpu2_lanes/w44-qsqseed/identity_alias/src/gpuwrf/kernels/dyn_ring_relax_fp32.py:109",
+      "platform": "cuda",
+      "ttir_sha16": "3b898e1e29da4682",
+      "ttir_loc_sha16": "5fdc3d0588a5b98b",
+      "num_warps": 1,
+      "num_stages": 3,
+      "calls": 1,
+      "grid": [
+        9,
+        117,
+        352
+      ]
+    }
+  ],
+  "provenance": {
+    "alias": "<USER_HOME>/wrf_gpu2_lanes/w44-qsqseed/identity_alias",
+    "realpath": "<USER_HOME>/wrf_gpu2_lanes/w44-topo/snapshot_main700",
+    "git_head": "700a382f8b554b2bfc034fc77734b29a5e4261f3",
+    "git_src_dirty": false,
+    "src_gpuwrf_content_sha256": "028a83657ecba16e1d5cfb9c38ca538c6ffda3ceb02d2d2d963b3f8218c12232",
+    "versions": {
+      "jax": "0.10.0",
+      "jaxlib": "0.10.0",
+      "triton": "3.6.0",
+      "python": "3.13.11"
+    },
+    "program_env": {
+      "JAX_ENABLE_X64": "true",
+      "JAX_PALLAS_USE_MOSAIC_GPU": "false",
+      "JAX_PLATFORMS": "cpu"
+    }
+  },
+  "release_defaults_active": true,
+  "load_s": 227.6,
+  "grid_d01": [
+    44,
+    70,
+    120
+  ],
+  "grid_d02": [
+    44,
+    117,
+    267
+  ],
+  "raw_hlo_sha256": "0c50a87db97763765d36f97016e15ea90a3f2a9f25a62a4087da4784f9a66501",
+  "raw_hlo_full_sha256": "f28108ebc150669f9775404dcd25768d8a8d129f48c2476f208f373f63ce2994",
+  "raw_hlo_bytes": 20866012,
+  "triton_custom_calls": 149,
+  "n_kernel_bodies": 61,
+  "n_pallas_lowerings": 153,
+  "native_pallas": {
+    "pallas_calls": 155,
+    "interpreted": 0,
+    "interpreted_names": {},
+    "native_names": {
+      "phy_prep_hydrostatic_real": 8,
+      "mcica_kiss_lanes": 2,
+      "rrtmg_sw_band_sums": 1,
+      "rrtmg_lw_band_sums": 1,
+      "b_noahmp_radiation_real": 1,
+      "b_core_noah_canopy_flux": 1,
+      "b_core_noah_snowwater": 1,
+      "b_core_noah_soilwater": 1,
+      "<lambda>": 3,
+      "mynn_tridiag2_real": 10,
+      "gwdo_column_fp32": 1,
+      "kf_column_fp32": 1,
+      "b_diff_horizontal_m": 9,
+      "b_diff_horizontal_u": 1,
+      "b_diff_horizontal_v": 1,
+      "b_diff_horizontal_w": 1,
+      "b_diff_sixth_m": 9,
+      "b_diff_sixth_u": 1,
+      "b_diff_sixth_v": 1,
+      "b_diff_sixth_w": 1,
+      "boundary_dry_relax_real": 15,
+      "b_core_scalar_flux_fp32": 3,
+      "b_diff_eos_real": 9,
+      "b_diff_stage_masses": 3,
+      "b_diff_coupled_work_u": 3,
+      "b_diff_coupled_work_v": 3,
+      "b_diff_coupled_work_theta": 3,
+      "b_diff_coupled_work_w": 3,
+      "b_diff_rhs_ph_fp32": 3,
+      "boundary_leaf_interp_real": 21,
+      "b_core_coef_fp32": 3,
+      "b_core_uv_fp32": 3,
+      "b_core_mass_fp32": 3,
+      "b_core_w_p1_fp32": 3,
+      "b_core_w_p2_fp32": 3,
+      "b_core_w_fp32": 3,
+      "b_core_pressure_fp32": 3,
+      "b_core_scalar_flux_fp32_stacked": 2,
+      "boundary_ring_relax_real": 1,
+      "b_core_pd_scale_sl_fp32": 1,
+      "b_core_pd_tend_sl_fp32": 1,
+      "thompson_full_column": 1,
+      "boundary_ring_update_real": 7
+    }
+  },
+  "canon_sha256": "27b249db87c172897faae26eb5b3d3876280c288258b3d19b8864daf2fac4e75",
+  "canon_consts_sha256": "49a1bec75c9689cf903740b74d68a238bf86d51de78cea7910a0b4f80ba47ffe",
+  "canon_chars": 14716813,
+  "canon_s": 15.1,
+  "blind_reasons": [],
+  "verdict": "COMPLETE",
+  "wall_s": 333.9,
+  "qsqseed_intervention": {
+    "helper_first_timestep": false,
+    "wrapper_sha256": "2631d583dff75e515b99529e771ecbafd3fd44abd8a0517c5373caaf4567e692",
+    "scope": "all production work except MYNN first-call initialization"
+  }
+}

@@ -1,0 +1,776 @@
+{
+  "schema": "w44-perf.bench.v1",
+  "headline_valid": false,
+  "case": "<DATA_ROOT>/wrf_gpu2/v025/s0_case_20260725",
+  "scope": "same-session3hproxy; all arms retained, no posthoc subset; no new WRF fidelity claim",
+  "arms": {
+    "A32_1": {
+      "complete": true,
+      "warm_cache_attested": true,
+      "common_pool_attested": true,
+      "receipt": "<USER_HOME>/wrf_gpu2_lanes/w44-perf/gpu/runs/A32_1/run/receipt.json",
+      "receipt_sha256": "0f8739942ffb5975ecccebfac6768022b52f0bcca814f47815811c1b81b8739d",
+      "git_head": "5f682e5ae933d569ebbeb11d78f119ba291f9283",
+      "src_tree": "d6edec59a1b37d43cd7ce37a2b1b1e9608021a7e",
+      "jax_version": "0.10.0",
+      "lock_session_sha256": "2ee5dff1e271ed85434edce02ab4b82dcda8736320da3468c4c9f07c0a3f0bf2",
+      "device": {
+        "platform": "gpu",
+        "kind": "NVIDIA GeForce RTX 5090",
+        "id": 0,
+        "backend": "gpu"
+      },
+      "rc": 0,
+      "allocator": {
+        "mode": "explicit",
+        "allocator": "cuda_async",
+        "preallocate": "true",
+        "mem_fraction": "0.25",
+        "python_mem_fraction": null,
+        "c_auto_budget_bytes": null,
+        "c_auto_headroom_bytes": null,
+        "cli_reexec": false,
+        "jax_bytes_limit": 8416215040,
+        "cli_applied_budget_bytes": null
+      },
+      "segments": [
+        {
+          "k": 1,
+          "root_steps": 67,
+          "period_s": 3.302,
+          "s_per_fc_h": 3.286,
+          "output_s_per_fc_h": 0.401,
+          "output_compile_s_per_fc_h": 0.098,
+          "stepping_s_per_fc_h": 2.885,
+          "compile_total_s_per_fc_h": 0.098,
+          "host_idle_est_s_per_fc_h": 0.046,
+          "n_outputs": 2
+        },
+        {
+          "k": 2,
+          "root_steps": 67,
+          "period_s": 2.961,
+          "s_per_fc_h": 2.947,
+          "output_s_per_fc_h": 0.122,
+          "output_compile_s_per_fc_h": 0.0,
+          "stepping_s_per_fc_h": 2.825,
+          "compile_total_s_per_fc_h": 0.0,
+          "host_idle_est_s_per_fc_h": 0.063,
+          "n_outputs": 2
+        },
+        {
+          "k": 3,
+          "root_steps": 66,
+          "period_s": 3.324,
+          "s_per_fc_h": 3.358,
+          "output_s_per_fc_h": 0.122,
+          "output_compile_s_per_fc_h": 0.0,
+          "stepping_s_per_fc_h": 3.236,
+          "compile_total_s_per_fc_h": 0.055,
+          "host_idle_est_s_per_fc_h": 0.523,
+          "n_outputs": 2
+        }
+      ],
+      "official_proxy_s_per_fch": 3.1525,
+      "official_stepping_s_per_fch": 3.0305,
+      "call_only_proxy_s_per_fch": 2.9184999246193284,
+      "phases": {
+        "pre_segment_s": 15.2021,
+        "segment_span_s": 9.126900000000001,
+        "tail_to_receipt_s": 0.4609999999999985
+      },
+      "whole_3h_s_per_fch": 8.222363154093424,
+      "harness_3h_s_per_fch": 8.216045300165812,
+      "vram_peak_mib": 8802,
+      "host_vmhwm_kb": 4807360,
+      "jax_memory_stats": {
+        "peak_bytes_in_use": 1997118173,
+        "bytes_in_use": 110557168,
+        "bytes_limit": 8416215040,
+        "largest_alloc_size": 612395496,
+        "pool_bytes": null,
+        "peak_pool_bytes": null
+      },
+      "cache_events": {
+        "/jax/compilation_cache/tasks_using_cache": 1,
+        "/jax/compilation_cache/compile_requests_use_cache": 1185,
+        "/jax/compilation_cache/cache_hits": 1185
+      },
+      "errors": [],
+      "scope": "3h iteration case; whole-process rate is not 24h S1. Host-outside-call estimate is not GPU idle."
+    },
+    "A32_2": {
+      "complete": true,
+      "warm_cache_attested": true,
+      "common_pool_attested": true,
+      "receipt": "<USER_HOME>/wrf_gpu2_lanes/w44-perf/gpu/runs/A32_2/run/receipt.json",
+      "receipt_sha256": "39c8c10a51f5d0fb04f93e8bd03ba6aff705784a66b9c6b34434889385a7558e",
+      "git_head": "5f682e5ae933d569ebbeb11d78f119ba291f9283",
+      "src_tree": "d6edec59a1b37d43cd7ce37a2b1b1e9608021a7e",
+      "jax_version": "0.10.0",
+      "lock_session_sha256": "2ee5dff1e271ed85434edce02ab4b82dcda8736320da3468c4c9f07c0a3f0bf2",
+      "device": {
+        "platform": "gpu",
+        "kind": "NVIDIA GeForce RTX 5090",
+        "id": 0,
+        "backend": "gpu"
+      },
+      "rc": 0,
+      "allocator": {
+        "mode": "explicit",
+        "allocator": "cuda_async",
+        "preallocate": "true",
+        "mem_fraction": "0.25",
+        "python_mem_fraction": null,
+        "c_auto_budget_bytes": null,
+        "c_auto_headroom_bytes": null,
+        "cli_reexec": false,
+        "jax_bytes_limit": 8416215040,
+        "cli_applied_budget_bytes": null
+      },
+      "segments": [
+        {
+          "k": 1,
+          "root_steps": 67,
+          "period_s": 3.153,
+          "s_per_fc_h": 3.137,
+          "output_s_per_fc_h": 0.459,
+          "output_compile_s_per_fc_h": 0.066,
+          "stepping_s_per_fc_h": 2.679,
+          "compile_total_s_per_fc_h": 0.066,
+          "host_idle_est_s_per_fc_h": 0.027,
+          "n_outputs": 2
+        },
+        {
+          "k": 2,
+          "root_steps": 67,
+          "period_s": 2.688,
+          "s_per_fc_h": 2.675,
+          "output_s_per_fc_h": 0.087,
+          "output_compile_s_per_fc_h": 0.0,
+          "stepping_s_per_fc_h": 2.588,
+          "compile_total_s_per_fc_h": 0.0,
+          "host_idle_est_s_per_fc_h": 0.032,
+          "n_outputs": 2
+        },
+        {
+          "k": 3,
+          "root_steps": 66,
+          "period_s": 3.023,
+          "s_per_fc_h": 3.053,
+          "output_s_per_fc_h": 0.087,
+          "output_compile_s_per_fc_h": 0.0,
+          "stepping_s_per_fc_h": 2.967,
+          "compile_total_s_per_fc_h": 0.054,
+          "host_idle_est_s_per_fc_h": 0.455,
+          "n_outputs": 2
+        }
+      ],
+      "official_proxy_s_per_fch": 2.864,
+      "official_stepping_s_per_fch": 2.7775,
+      "call_only_proxy_s_per_fch": 2.6486936529473852,
+      "phases": {
+        "pre_segment_s": 12.8862,
+        "segment_span_s": 8.4399,
+        "tail_to_receipt_s": 0.4238999999999997
+      },
+      "whole_3h_s_per_fch": 7.20903754234314,
+      "harness_3h_s_per_fch": 7.202995141347249,
+      "vram_peak_mib": 8802,
+      "host_vmhwm_kb": 4803072,
+      "jax_memory_stats": {
+        "peak_bytes_in_use": 1997118173,
+        "bytes_in_use": 110557168,
+        "bytes_limit": 8416215040,
+        "largest_alloc_size": 612395496,
+        "pool_bytes": null,
+        "peak_pool_bytes": null
+      },
+      "cache_events": {
+        "/jax/compilation_cache/tasks_using_cache": 1,
+        "/jax/compilation_cache/compile_requests_use_cache": 1185,
+        "/jax/compilation_cache/cache_hits": 1185
+      },
+      "errors": [],
+      "scope": "3h iteration case; whole-process rate is not 24h S1. Host-outside-call estimate is not GPU idle."
+    },
+    "C40_1": {
+      "complete": true,
+      "warm_cache_attested": true,
+      "common_pool_attested": true,
+      "receipt": "<USER_HOME>/wrf_gpu2_lanes/w44-perf/gpu/runs/C40_1/run/receipt.json",
+      "receipt_sha256": "ca0daafafffc9348ff55c4437f2599781b75a2790dc358fa610580d512847fd0",
+      "git_head": "7bb5ae669b2e4b863d6bafdd659a03fea026004f",
+      "src_tree": "df562316131ddea393951fb3ba897916cd6300ca",
+      "jax_version": "0.10.0",
+      "lock_session_sha256": "2ee5dff1e271ed85434edce02ab4b82dcda8736320da3468c4c9f07c0a3f0bf2",
+      "device": {
+        "platform": "gpu",
+        "kind": "NVIDIA GeForce RTX 5090",
+        "id": 0,
+        "backend": "gpu"
+      },
+      "rc": 0,
+      "allocator": {
+        "mode": "explicit",
+        "allocator": "cuda_async",
+        "preallocate": "true",
+        "mem_fraction": "0.25",
+        "python_mem_fraction": null,
+        "c_auto_budget_bytes": null,
+        "c_auto_headroom_bytes": null,
+        "cli_reexec": false,
+        "jax_bytes_limit": 8416215040,
+        "cli_applied_budget_bytes": null
+      },
+      "segments": [
+        {
+          "k": 1,
+          "root_steps": 67,
+          "period_s": 4.244,
+          "s_per_fc_h": 4.223,
+          "output_s_per_fc_h": 0.317,
+          "output_compile_s_per_fc_h": 0.066,
+          "stepping_s_per_fc_h": 3.906,
+          "compile_total_s_per_fc_h": 0.066,
+          "host_idle_est_s_per_fc_h": 0.029,
+          "n_outputs": 2
+        },
+        {
+          "k": 2,
+          "root_steps": 67,
+          "period_s": 3.032,
+          "s_per_fc_h": 3.017,
+          "output_s_per_fc_h": 0.097,
+          "output_compile_s_per_fc_h": 0.0,
+          "stepping_s_per_fc_h": 2.919,
+          "compile_total_s_per_fc_h": 0.0,
+          "host_idle_est_s_per_fc_h": 0.03,
+          "n_outputs": 2
+        },
+        {
+          "k": 3,
+          "root_steps": 66,
+          "period_s": 3.447,
+          "s_per_fc_h": 3.482,
+          "output_s_per_fc_h": 0.173,
+          "output_compile_s_per_fc_h": 0.0,
+          "stepping_s_per_fc_h": 3.309,
+          "compile_total_s_per_fc_h": 0.043,
+          "host_idle_est_s_per_fc_h": 0.474,
+          "n_outputs": 2
+        }
+      ],
+      "official_proxy_s_per_fch": 3.2495000000000003,
+      "official_stepping_s_per_fch": 3.114,
+      "call_only_proxy_s_per_fch": 3.0267103874566548,
+      "phases": {
+        "pre_segment_s": 17.8504,
+        "segment_span_s": 10.284499999999998,
+        "tail_to_receipt_s": 0.43810000000000215
+      },
+      "whole_3h_s_per_fch": 9.647965590159098,
+      "harness_3h_s_per_fch": 9.47975985209147,
+      "vram_peak_mib": 8826,
+      "host_vmhwm_kb": 5035444,
+      "jax_memory_stats": {
+        "peak_bytes_in_use": 2123934056,
+        "bytes_in_use": 110579328,
+        "bytes_limit": 8416215040,
+        "largest_alloc_size": 642901760,
+        "pool_bytes": null,
+        "peak_pool_bytes": null
+      },
+      "cache_events": {
+        "/jax/compilation_cache/tasks_using_cache": 1,
+        "/jax/compilation_cache/compile_requests_use_cache": 1136,
+        "/jax/compilation_cache/cache_hits": 1136
+      },
+      "errors": [],
+      "scope": "3h iteration case; whole-process rate is not 24h S1. Host-outside-call estimate is not GPU idle."
+    },
+    "C40_2": {
+      "complete": true,
+      "warm_cache_attested": true,
+      "common_pool_attested": true,
+      "receipt": "<USER_HOME>/wrf_gpu2_lanes/w44-perf/gpu/runs/C40_2/run/receipt.json",
+      "receipt_sha256": "0b775b3893da7a6ca0fad486e54a9111d8faa6c3723f700839db174e25ac1c6b",
+      "git_head": "7bb5ae669b2e4b863d6bafdd659a03fea026004f",
+      "src_tree": "df562316131ddea393951fb3ba897916cd6300ca",
+      "jax_version": "0.10.0",
+      "lock_session_sha256": "2ee5dff1e271ed85434edce02ab4b82dcda8736320da3468c4c9f07c0a3f0bf2",
+      "device": {
+        "platform": "gpu",
+        "kind": "NVIDIA GeForce RTX 5090",
+        "id": 0,
+        "backend": "gpu"
+      },
+      "rc": 0,
+      "allocator": {
+        "mode": "explicit",
+        "allocator": "cuda_async",
+        "preallocate": "true",
+        "mem_fraction": "0.25",
+        "python_mem_fraction": null,
+        "c_auto_budget_bytes": null,
+        "c_auto_headroom_bytes": null,
+        "cli_reexec": false,
+        "jax_bytes_limit": 8416215040,
+        "cli_applied_budget_bytes": null
+      },
+      "segments": [
+        {
+          "k": 1,
+          "root_steps": 67,
+          "period_s": 4.212,
+          "s_per_fc_h": 4.191,
+          "output_s_per_fc_h": 0.303,
+          "output_compile_s_per_fc_h": 0.063,
+          "stepping_s_per_fc_h": 3.888,
+          "compile_total_s_per_fc_h": 0.063,
+          "host_idle_est_s_per_fc_h": 0.028,
+          "n_outputs": 2
+        },
+        {
+          "k": 2,
+          "root_steps": 67,
+          "period_s": 3.021,
+          "s_per_fc_h": 3.006,
+          "output_s_per_fc_h": 0.102,
+          "output_compile_s_per_fc_h": 0.0,
+          "stepping_s_per_fc_h": 2.903,
+          "compile_total_s_per_fc_h": 0.0,
+          "host_idle_est_s_per_fc_h": 0.029,
+          "n_outputs": 2
+        },
+        {
+          "k": 3,
+          "root_steps": 66,
+          "period_s": 3.345,
+          "s_per_fc_h": 3.379,
+          "output_s_per_fc_h": 0.1,
+          "output_compile_s_per_fc_h": 0.0,
+          "stepping_s_per_fc_h": 3.278,
+          "compile_total_s_per_fc_h": 0.042,
+          "host_idle_est_s_per_fc_h": 0.435,
+          "n_outputs": 2
+        }
+      ],
+      "official_proxy_s_per_fch": 3.1925,
+      "official_stepping_s_per_fch": 3.0905,
+      "call_only_proxy_s_per_fch": 2.98805668626564,
+      "phases": {
+        "pre_segment_s": 17.5248,
+        "segment_span_s": 10.1756,
+        "tail_to_receipt_s": 0.40160000000000196
+      },
+      "whole_3h_s_per_fch": 9.474517186482748,
+      "harness_3h_s_per_fch": 9.324660936991373,
+      "vram_peak_mib": 8826,
+      "host_vmhwm_kb": 5035580,
+      "jax_memory_stats": {
+        "peak_bytes_in_use": 2123934056,
+        "bytes_in_use": 110579328,
+        "bytes_limit": 8416215040,
+        "largest_alloc_size": 642901760,
+        "pool_bytes": null,
+        "peak_pool_bytes": null
+      },
+      "cache_events": {
+        "/jax/compilation_cache/tasks_using_cache": 1,
+        "/jax/compilation_cache/compile_requests_use_cache": 1136,
+        "/jax/compilation_cache/cache_hits": 1136
+      },
+      "errors": [],
+      "scope": "3h iteration case; whole-process rate is not 24h S1. Host-outside-call estimate is not GPU idle."
+    },
+    "B43_1": {
+      "complete": true,
+      "warm_cache_attested": true,
+      "common_pool_attested": true,
+      "receipt": "<USER_HOME>/wrf_gpu2_lanes/w44-perf/gpu/runs/B43_1/run/receipt.json",
+      "receipt_sha256": "359264c7f1ef1b53616e107ccd7962d959f34e4cfdb259eb5c173196059f3340",
+      "git_head": "888804310bb6bfc0237177c0d5e5452a29d5abf6",
+      "src_tree": "3e3642f5a261596989c7535a61d1c8b592905ed6",
+      "jax_version": "0.10.0",
+      "lock_session_sha256": "2ee5dff1e271ed85434edce02ab4b82dcda8736320da3468c4c9f07c0a3f0bf2",
+      "device": {
+        "platform": "gpu",
+        "kind": "NVIDIA GeForce RTX 5090",
+        "id": 0,
+        "backend": "gpu"
+      },
+      "rc": 0,
+      "allocator": {
+        "mode": "explicit",
+        "allocator": "cuda_async",
+        "preallocate": "true",
+        "mem_fraction": "0.25",
+        "python_mem_fraction": null,
+        "c_auto_budget_bytes": null,
+        "c_auto_headroom_bytes": null,
+        "cli_reexec": false,
+        "jax_bytes_limit": 8416215040,
+        "cli_applied_budget_bytes": null
+      },
+      "segments": [
+        {
+          "k": 1,
+          "root_steps": 67,
+          "period_s": 4.295,
+          "s_per_fc_h": 4.274,
+          "output_s_per_fc_h": 0.27,
+          "output_compile_s_per_fc_h": 0.069,
+          "stepping_s_per_fc_h": 4.004,
+          "compile_total_s_per_fc_h": 0.069,
+          "host_idle_est_s_per_fc_h": 0.052,
+          "n_outputs": 2
+        },
+        {
+          "k": 2,
+          "root_steps": 67,
+          "period_s": 3.03,
+          "s_per_fc_h": 3.015,
+          "output_s_per_fc_h": 0.089,
+          "output_compile_s_per_fc_h": 0.0,
+          "stepping_s_per_fc_h": 2.927,
+          "compile_total_s_per_fc_h": 0.0,
+          "host_idle_est_s_per_fc_h": 0.056,
+          "n_outputs": 2
+        },
+        {
+          "k": 3,
+          "root_steps": 66,
+          "period_s": 3.45,
+          "s_per_fc_h": 3.485,
+          "output_s_per_fc_h": 0.108,
+          "output_compile_s_per_fc_h": 0.0,
+          "stepping_s_per_fc_h": 3.377,
+          "compile_total_s_per_fc_h": 0.065,
+          "host_idle_est_s_per_fc_h": 0.515,
+          "n_outputs": 2
+        }
+      ],
+      "official_proxy_s_per_fch": 3.25,
+      "official_stepping_s_per_fch": 3.152,
+      "call_only_proxy_s_per_fch": 3.0228825569124096,
+      "phases": {
+        "pre_segment_s": 22.0915,
+        "segment_span_s": 10.328,
+        "tail_to_receipt_s": 0.447499999999998
+      },
+      "whole_3h_s_per_fch": 11.010783751805624,
+      "harness_3h_s_per_fch": 10.902471462885538,
+      "vram_peak_mib": 8826,
+      "host_vmhwm_kb": 4950180,
+      "jax_memory_stats": {
+        "peak_bytes_in_use": 1995383656,
+        "bytes_in_use": 123054840,
+        "bytes_limit": 8416215040,
+        "largest_alloc_size": 642901760,
+        "pool_bytes": null,
+        "peak_pool_bytes": null
+      },
+      "cache_events": {
+        "/jax/compilation_cache/tasks_using_cache": 1,
+        "/jax/compilation_cache/compile_requests_use_cache": 1102,
+        "/jax/compilation_cache/cache_hits": 1102
+      },
+      "errors": [],
+      "scope": "3h iteration case; whole-process rate is not 24h S1. Host-outside-call estimate is not GPU idle."
+    },
+    "B43_2": {
+      "complete": true,
+      "warm_cache_attested": true,
+      "common_pool_attested": true,
+      "receipt": "<USER_HOME>/wrf_gpu2_lanes/w44-perf/gpu/runs/B43_2/run/receipt.json",
+      "receipt_sha256": "7bb912a9aae6db240a33ff254a0ea27bc32f9f80442a3d3310ab415fea273d54",
+      "git_head": "888804310bb6bfc0237177c0d5e5452a29d5abf6",
+      "src_tree": "3e3642f5a261596989c7535a61d1c8b592905ed6",
+      "jax_version": "0.10.0",
+      "lock_session_sha256": "2ee5dff1e271ed85434edce02ab4b82dcda8736320da3468c4c9f07c0a3f0bf2",
+      "device": {
+        "platform": "gpu",
+        "kind": "NVIDIA GeForce RTX 5090",
+        "id": 0,
+        "backend": "gpu"
+      },
+      "rc": 0,
+      "allocator": {
+        "mode": "explicit",
+        "allocator": "cuda_async",
+        "preallocate": "true",
+        "mem_fraction": "0.25",
+        "python_mem_fraction": null,
+        "c_auto_budget_bytes": null,
+        "c_auto_headroom_bytes": null,
+        "cli_reexec": false,
+        "jax_bytes_limit": 8416215040,
+        "cli_applied_budget_bytes": null
+      },
+      "segments": [
+        {
+          "k": 1,
+          "root_steps": 67,
+          "period_s": 4.243,
+          "s_per_fc_h": 4.222,
+          "output_s_per_fc_h": 0.34,
+          "output_compile_s_per_fc_h": 0.047,
+          "stepping_s_per_fc_h": 3.882,
+          "compile_total_s_per_fc_h": 0.047,
+          "host_idle_est_s_per_fc_h": 0.028,
+          "n_outputs": 2
+        },
+        {
+          "k": 2,
+          "root_steps": 67,
+          "period_s": 3.02,
+          "s_per_fc_h": 3.005,
+          "output_s_per_fc_h": 0.08,
+          "output_compile_s_per_fc_h": 0.0,
+          "stepping_s_per_fc_h": 2.926,
+          "compile_total_s_per_fc_h": 0.0,
+          "host_idle_est_s_per_fc_h": 0.032,
+          "n_outputs": 2
+        },
+        {
+          "k": 3,
+          "root_steps": 66,
+          "period_s": 3.372,
+          "s_per_fc_h": 3.406,
+          "output_s_per_fc_h": 0.084,
+          "output_compile_s_per_fc_h": 0.0,
+          "stepping_s_per_fc_h": 3.323,
+          "compile_total_s_per_fc_h": 0.06,
+          "host_idle_est_s_per_fc_h": 0.477,
+          "n_outputs": 2
+        }
+      ],
+      "official_proxy_s_per_fch": 3.2055,
+      "official_stepping_s_per_fch": 3.1245000000000003,
+      "call_only_proxy_s_per_fch": 2.983009950248756,
+      "phases": {
+        "pre_segment_s": 17.1971,
+        "segment_span_s": 10.197200000000002,
+        "tail_to_receipt_s": 0.4386999999999972
+      },
+      "whole_3h_s_per_fch": 9.283000151316324,
+      "harness_3h_s_per_fch": 9.227545181910196,
+      "vram_peak_mib": 8826,
+      "host_vmhwm_kb": 5218736,
+      "jax_memory_stats": {
+        "peak_bytes_in_use": 1995383656,
+        "bytes_in_use": 123054840,
+        "bytes_limit": 8416215040,
+        "largest_alloc_size": 642901760,
+        "pool_bytes": null,
+        "peak_pool_bytes": null
+      },
+      "cache_events": {
+        "/jax/compilation_cache/tasks_using_cache": 1,
+        "/jax/compilation_cache/compile_requests_use_cache": 1102,
+        "/jax/compilation_cache/cache_hits": 1102
+      },
+      "errors": [],
+      "scope": "3h iteration case; whole-process rate is not 24h S1. Host-outside-call estimate is not GPU idle."
+    },
+    "B43_3": {
+      "complete": true,
+      "warm_cache_attested": true,
+      "common_pool_attested": true,
+      "receipt": "<USER_HOME>/wrf_gpu2_lanes/w44-perf/gpu/runs/B43_3/run/receipt.json",
+      "receipt_sha256": "d3d6290468b65005144e44140ab59b4870474387b14e10403262b6d49db18abb",
+      "git_head": "888804310bb6bfc0237177c0d5e5452a29d5abf6",
+      "src_tree": "3e3642f5a261596989c7535a61d1c8b592905ed6",
+      "jax_version": "0.10.0",
+      "lock_session_sha256": "2ee5dff1e271ed85434edce02ab4b82dcda8736320da3468c4c9f07c0a3f0bf2",
+      "device": {
+        "platform": "gpu",
+        "kind": "NVIDIA GeForce RTX 5090",
+        "id": 0,
+        "backend": "gpu"
+      },
+      "rc": 0,
+      "allocator": {
+        "mode": "explicit",
+        "allocator": "cuda_async",
+        "preallocate": "true",
+        "mem_fraction": "0.25",
+        "python_mem_fraction": null,
+        "c_auto_budget_bytes": null,
+        "c_auto_headroom_bytes": null,
+        "cli_reexec": false,
+        "jax_bytes_limit": 8416215040,
+        "cli_applied_budget_bytes": null
+      },
+      "segments": [
+        {
+          "k": 1,
+          "root_steps": 67,
+          "period_s": 4.213,
+          "s_per_fc_h": 4.192,
+          "output_s_per_fc_h": 0.308,
+          "output_compile_s_per_fc_h": 0.047,
+          "stepping_s_per_fc_h": 3.883,
+          "compile_total_s_per_fc_h": 0.047,
+          "host_idle_est_s_per_fc_h": 0.027,
+          "n_outputs": 2
+        },
+        {
+          "k": 2,
+          "root_steps": 67,
+          "period_s": 3.056,
+          "s_per_fc_h": 3.041,
+          "output_s_per_fc_h": 0.129,
+          "output_compile_s_per_fc_h": 0.0,
+          "stepping_s_per_fc_h": 2.912,
+          "compile_total_s_per_fc_h": 0.0,
+          "host_idle_est_s_per_fc_h": 0.029,
+          "n_outputs": 2
+        },
+        {
+          "k": 3,
+          "root_steps": 66,
+          "period_s": 3.368,
+          "s_per_fc_h": 3.402,
+          "output_s_per_fc_h": 0.081,
+          "output_compile_s_per_fc_h": 0.0,
+          "stepping_s_per_fc_h": 3.321,
+          "compile_total_s_per_fc_h": 0.059,
+          "host_idle_est_s_per_fc_h": 0.468,
+          "n_outputs": 2
+        }
+      ],
+      "official_proxy_s_per_fch": 3.2215,
+      "official_stepping_s_per_fch": 3.1165000000000003,
+      "call_only_proxy_s_per_fch": 3.0021867933061976,
+      "phases": {
+        "pre_segment_s": 17.3709,
+        "segment_span_s": 10.205000000000002,
+        "tail_to_receipt_s": 0.4311000000000007
+      },
+      "whole_3h_s_per_fch": 9.325659990310669,
+      "harness_3h_s_per_fch": 9.28745206197103,
+      "vram_peak_mib": 8826,
+      "host_vmhwm_kb": 5221376,
+      "jax_memory_stats": {
+        "peak_bytes_in_use": 1995383656,
+        "bytes_in_use": 110579328,
+        "bytes_limit": 8416215040,
+        "largest_alloc_size": 642901760,
+        "pool_bytes": null,
+        "peak_pool_bytes": null
+      },
+      "cache_events": {
+        "/jax/compilation_cache/tasks_using_cache": 1,
+        "/jax/compilation_cache/compile_requests_use_cache": 1102,
+        "/jax/compilation_cache/cache_hits": 1102
+      },
+      "errors": [],
+      "scope": "3h iteration case; whole-process rate is not 24h S1. Host-outside-call estimate is not GPU idle."
+    }
+  },
+  "groups": {
+    "v032": {
+      "valid_arms": true,
+      "metrics": {
+        "official_proxy_s_per_fch": {
+          "values": [
+            3.1525,
+            2.864
+          ],
+          "mean": 3.00825,
+          "aa_spread_pct": 9.590293359926868,
+          "aa_pass_5pct": false
+        },
+        "official_stepping_s_per_fch": {
+          "values": [
+            3.0305,
+            2.7775
+          ],
+          "mean": 2.904,
+          "aa_spread_pct": 8.712121212121216,
+          "aa_pass_5pct": false
+        },
+        "call_only_proxy_s_per_fch": {
+          "values": [
+            2.9184999246193284,
+            2.6486936529473852
+          ],
+          "mean": 2.783596788783357,
+          "aa_spread_pct": 9.692721042039604,
+          "aa_pass_5pct": false
+        }
+      }
+    },
+    "v040": {
+      "valid_arms": true,
+      "metrics": {
+        "official_proxy_s_per_fch": {
+          "values": [
+            3.2495000000000003,
+            3.1925
+          ],
+          "mean": 3.221,
+          "aa_spread_pct": 1.7696367587705801,
+          "aa_pass_5pct": true
+        },
+        "official_stepping_s_per_fch": {
+          "values": [
+            3.114,
+            3.0905
+          ],
+          "mean": 3.1022499999999997,
+          "aa_spread_pct": 0.7575147070674465,
+          "aa_pass_5pct": true
+        },
+        "call_only_proxy_s_per_fch": {
+          "values": [
+            3.0267103874566548,
+            2.98805668626564
+          ],
+          "mean": 3.0073835368611475,
+          "aa_spread_pct": 1.285293369377093,
+          "aa_pass_5pct": true
+        }
+      }
+    },
+    "v043": {
+      "valid_arms": true,
+      "metrics": {
+        "official_proxy_s_per_fch": {
+          "values": [
+            3.25,
+            3.2055,
+            3.2215
+          ],
+          "mean": 3.2256666666666667,
+          "aa_spread_pct": 1.3795597809238465,
+          "aa_pass_5pct": true
+        },
+        "official_stepping_s_per_fch": {
+          "values": [
+            3.152,
+            3.1245000000000003,
+            3.1165000000000003
+          ],
+          "mean": 3.1310000000000002,
+          "aa_spread_pct": 1.133823059725323,
+          "aa_pass_5pct": true
+        },
+        "call_only_proxy_s_per_fch": {
+          "values": [
+            3.0228825569124096,
+            2.983009950248756,
+            3.0021867933061976
+          ],
+          "mean": 3.002693100155788,
+          "aa_spread_pct": 1.3278948375238462,
+          "aa_pass_5pct": true
+        }
+      }
+    }
+  },
+  "one_session_jax_device": true,
+  "reject_reason": "missing/incomplete arm, warm-cache/pool attestation, or preregistered A/A rule"
+}

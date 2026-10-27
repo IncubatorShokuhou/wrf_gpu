@@ -211,7 +211,8 @@ def build_parser() -> argparse.ArgumentParser:
         "every domain the namelist declares (d01..dN) is run. Mutually exclusive "
         "with --max-dom.",
     )
-    run.add_argument(
+    duration = run.add_mutually_exclusive_group()
+    duration.add_argument(
         "--hours",
         type=int,
         default=None,
@@ -221,6 +222,10 @@ def build_parser() -> argparse.ArgumentParser:
         "DOWN to whole hours but never below 1; if the namelist declares no "
         "positive duration it falls back to 1. An explicit --hours always wins.",
     )
+    duration.add_argument("--minutes", type=float, default=None,
+                         help="Forecast endpoint in minutes since input issue time; must align with root dt.")
+    duration.add_argument("--end-time", default=None, metavar="UTC",
+                         help="Absolute forecast endpoint (ISO UTC); must align with root dt.")
     run.add_argument(
         "--emit-initial-history",
         action="store_true",
@@ -247,10 +252,18 @@ def build_parser() -> argparse.ArgumentParser:
     run.add_argument("--checkpoint-max-generations", type=int, default=2, help="Maximum retained generations; at least 2 are needed to publish safe successors (default 2).")
     run.add_argument("--checkpoint-reserve-bytes", type=int, default=10 * 1024**3, help="Minimum free filesystem bytes after a checkpoint (default 10 GiB).")
     run.add_argument("--resume-checkpoint", type=Path, default=None, help="Verified generation to resume in the same output stream (native single-domain d01 or nested).")
+    run.add_argument("--branch-from", type=Path, default=None, metavar="GENERATION",
+                     help="Fork a verified checkpoint into a new output stream (all nests, B=1).")
+    run.add_argument("--branch-manifest", type=Path, default=None, metavar="JSON",
+                     help="Required with --branch-from: versioned declared state/land/traced-parameter changes.")
     run.add_argument("--surface-controls", type=Path, default=None, metavar="CONTROLS.npz",
                      help="EXPERIMENTAL (Track P): Noah-MP surface-parameter fields (z0mvt, eg, albedo, LAI, ...) "
                      "from `gpuwrf surface-params expand`, read as traced inputs (no recompile per parameter set). "
-                     "Default off.")
+                     "Default off. W2 soil/canopy/snow controls and Jarvis rsmin are unavailable in v0.4.4 "
+                     "(failed GPU qualification; see KNOWN_ISSUES).")
+    run.add_argument("--runtime-parameters", type=Path, default=None, metavar="PARAMETERS.json",
+                     help="EXPERIMENTAL: MYNN closure scalar operands (GPU qualification pending); "
+                     "values can change without recompiling a selected family. Default off.")
     run.add_argument("--extend-run", action="store_true", help="With --resume-checkpoint: continue to a LATER forecast end (--hours) than the run that wrote the checkpoint (WRF restart with a longer run length). Without it a changed end time is refused.")
     run.add_argument(
         "--dry-run",
@@ -370,12 +383,16 @@ def build_parser() -> argparse.ArgumentParser:
 
     from gpuwrf.cycling.cli import register as register_cycle
     register_cycle(subparsers)
+    from gpuwrf.override_cli import register as register_override
+    register_override(subparsers)
     from gpuwrf.assimilation.letkf.cli import register as register_da
     register_da(subparsers)
     from gpuwrf.surface_params.cli import register as register_surface_params
     register_surface_params(subparsers)
     from gpuwrf.runtime.aot_key_cli import register as register_aot_key
     register_aot_key(subparsers)
+    from gpuwrf.runtime.precompile_cli import register as register_precompile
+    register_precompile(subparsers)
 
     return parser
 
@@ -964,7 +981,16 @@ def _cmd_run(args: argparse.Namespace) -> int:
 
     # --- Resolve the forecast length. An explicit --hours wins; otherwise it is
     # computed from the namelist &time_control, falling back to 1 hour. ---------
-    if args.hours is not None:
+    if getattr(args, "minutes", None) is not None or getattr(args, "end_time", None) is not None:
+        from gpuwrf.io.gen2_accessor import parse_namelist
+        from gpuwrf.runtime.run_window import explicit_window
+        try:
+            effective_hours = explicit_window(parse_namelist(namelist), minutes=args.minutes, end_time=args.end_time)
+        except ValueError as exc:
+            return _fail(str(exc))
+        hours_source = "flag"
+        hours_source_phrase = "--minutes override" if args.minutes is not None else "--end-time override"
+    elif args.hours is not None:
         effective_hours = int(args.hours)
         hours_source = "flag"
         hours_source_phrase = "--hours override"
@@ -1062,20 +1088,48 @@ def _cmd_run(args: argparse.Namespace) -> int:
             return _fail(f"--surface-controls: entries for domains outside this run: {unused}")
         run_metadata["surface_controls"] = {"path": str(Path(surface_controls).resolve()),
                                             "domains": {d: e["digest"] for d, e in _sc_manifest["domains"].items()}}
-        from gpuwrf.surface_params.controls import HOST_CONTROLS
-
-        _sc_host = sorted({n for e in _sc_manifest["domains"].values() for n in e["names"] if n in HOST_CONTROLS})
-        if _sc_host and (getattr(args, "checkpoint_dir", None) is not None
-                         or getattr(args, "resume_checkpoint", None) is not None):
-            # The restart digests cover the traced controls only; a host control would resume unchecked.
-            return _fail(f"--surface-controls host controls {_sc_host} cannot be combined with checkpoint/resume (v0.4.1)")
+    runtime_parameters = getattr(args, "runtime_parameters", None)
+    if runtime_parameters is not None:
+        if decompose or not (max_dom > 1 or native_single):
+            return _fail("--runtime-parameters requires the native single-domain/nested driver without decomposition")
+        try:
+            if int(os.environ.get("GPUWRF_BATCH_ENSEMBLE", "1")) != 1:
+                raise ValueError("currently supports B=1 only")
+            from gpuwrf.runtime_parameters import check_wrf_domain_scope, load_parameters
+            _parameter_domains = load_parameters(runtime_parameters)
+            _run_domains = {f"d{i:02d}" for i in range(1, int(max_dom) + 1)}
+            unused = sorted(set(_parameter_domains) - _run_domains)
+            if unused:
+                raise ValueError(f"entries for domains outside this run: {unused}")
+            check_wrf_domain_scope(_parameter_domains, _run_domains)
+        except (OSError, ValueError, KeyError) as exc:
+            return _fail(f"--runtime-parameters: {exc}")
+        run_metadata["runtime_parameters"] = {"path": str(Path(runtime_parameters).resolve()),
+                                               "domains": _parameter_domains}
     # Checkpoint/resume lives in the shared native driver (nested or native
     # single-root d01). The CPU-WRF replay / non-d01 single-domain compatibility
     # path has no restart store, so it refuses the flags instead of ignoring them.
+    branch_from = getattr(args, "branch_from", None)
+    branch_manifest = getattr(args, "branch_manifest", None)
+    if (branch_from is None) != (branch_manifest is None):
+        return _fail("--branch-from and --branch-manifest must be supplied together")
+    if branch_from is not None and getattr(args, "resume_checkpoint", None) is not None:
+        return _fail("--branch-from and --resume-checkpoint are mutually exclusive")
+    if branch_from is not None and decompose:
+        return _fail("--branch-from does not support --decompose; use the native B=1 driver")
+    if (getattr(args, "minutes", None) is not None or getattr(args, "end_time", None) is not None) and max_dom == 1 and not native_single:
+        return _fail("short windows require the native d01 or nested driver")
+    if branch_from is not None:
+        from gpuwrf.runtime.checkpoint_branch import load_manifest, validate_paths
+        try:
+            load_manifest(branch_manifest)
+            validate_paths(branch_from, output_dir, getattr(args, "checkpoint_dir", None))
+        except (OSError, ValueError, KeyError, TypeError) as exc:
+            return _fail(str(exc))
     restart_requested = (getattr(args, "checkpoint_dir", None) is not None
-                         or getattr(args, "resume_checkpoint", None) is not None)
-    if bool(getattr(args, "extend_run", False)) and getattr(args, "resume_checkpoint", None) is None:
-        return _fail("--extend-run requires --resume-checkpoint")
+                         or getattr(args, "resume_checkpoint", None) is not None or branch_from is not None)
+    if bool(getattr(args, "extend_run", False)) and getattr(args, "resume_checkpoint", None) is None and branch_from is None:
+        return _fail("--extend-run requires --resume-checkpoint or --branch-from")
     if restart_requested and max_dom == 1 and not native_single:
         return _fail(
             "checkpoint/resume requires the native driver: a nested run (--max-dom > 1) or a "
@@ -1101,7 +1155,7 @@ def _cmd_run(args: argparse.Namespace) -> int:
         from gpuwrf.io.namelist_check import _coerce_config as _dfi_coerce
 
         _dfi_nml = _dfi_coerce(namelist)
-        _dfi_resume = getattr(args, "resume_checkpoint", None) is not None
+        _dfi_resume = getattr(args, "resume_checkpoint", None) is not None or branch_from is not None
         _dfi_reasons = dfi_refusals(_dfi_nml, max_dom=max_dom, resume=_dfi_resume)
         if (not _dfi_reasons and not _dfi_resume and max_dom == 1 and not native_single
                 and dfi_control_from_namelist(_dfi_nml).active):
@@ -1142,6 +1196,26 @@ def _cmd_run(args: argparse.Namespace) -> int:
     except (ValueError, OSError, TypeError, KeyError) as exc:
         return _fail(f"land-category preflight: {exc}")
 
+    # --- Run-length alignment (FINDINGS E187/E225): the forecast seconds must be an exact multiple of every
+    # domain time step. The nested pipeline refused this only after model init, and --dry-run never ran it.
+    # Same JAX-free check the pipeline uses (integration/run_alignment.py); dry-run AND real runs fail here.
+    if max_dom > 1 or native_single:
+        from gpuwrf.integration.run_alignment import preflight_dt_by_domain, steps_by_domain
+        from gpuwrf.io.gen2_accessor import Gen2Run
+
+        _align_names = tuple(f"d{i:02d}" for i in range(1, max_dom + 1))
+        try:
+            # Root dt always; child chain only when every child grid is readable (else root check only).
+            _align_dt = preflight_dt_by_domain(Gen2Run(input_dir), _align_names)
+        except (OSError, KeyError, AttributeError, ValueError):
+            _align_dt = None  # unreadable case directory: other checks report the inputs
+        if _align_dt is not None:
+            try:
+                steps_by_domain(effective_hours, _align_dt, tuple(_align_dt))
+            except ValueError as exc:
+                return _fail(f"run-length alignment: {exc}; choose a forecast length (--hours/--minutes/--end-time) "
+                             "whose seconds are a multiple of every domain time step")
+
     # --- DRY RUN: print the effective plan as JSON and exit WITHOUT importing
     # the heavy JAX/GPU forecast pipeline or allocating a GPU. -----------------
     if dry_run:
@@ -1172,6 +1246,7 @@ def _cmd_run(args: argparse.Namespace) -> int:
                 "checkpoint_dir": getattr(args, "checkpoint_dir", None),
                 "checkpoint_interval_steps": getattr(args, "checkpoint_interval_steps", 0),
                 "resume_checkpoint": getattr(args, "resume_checkpoint", None),
+                **({"branch_from": branch_from, "branch_manifest": branch_manifest} if branch_from is not None else {}),
                 "extend_run": bool(getattr(args, "extend_run", False)),
             }
         print(json.dumps(plan, indent=2, sort_keys=True, default=str))
@@ -1262,7 +1337,7 @@ def _cmd_run(args: argparse.Namespace) -> int:
             input_dir=input_dir,
             output_dir=output_dir,
             proof_dir=proof_dir,
-            hours=int(effective_hours),
+            hours=effective_hours,
             max_dom=int(max_dom),
             scratch_dir=scratch_dir,
             feedback=_nesting["feedback"],
@@ -1274,8 +1349,11 @@ def _cmd_run(args: argparse.Namespace) -> int:
             checkpoint_max_generations=getattr(args, "checkpoint_max_generations", 2),
             checkpoint_reserve_bytes=getattr(args, "checkpoint_reserve_bytes", 10 * 1024**3),
             resume_checkpoint=getattr(args, "resume_checkpoint", None),
+            branch_from=branch_from,
+            branch_manifest=branch_manifest,
             extend_end_time=bool(getattr(args, "extend_run", False)),
             surface_controls=getattr(args, "surface_controls", None),
+            runtime_parameters=getattr(args, "runtime_parameters", None),
         )
         if nested_config.feedback:
             print(

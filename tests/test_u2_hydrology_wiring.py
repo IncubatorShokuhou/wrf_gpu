@@ -18,7 +18,11 @@ def test_actual_hydrology_binding_and_noah_driver(tmp_path,monkeypatch,run,tdrn)
     from gpuwrf.physics.noahmp.noahmp_driver import noah_mp_step
     from gpuwrf.contracts.grid import GridSpec
     from test_noahmp_checkpoint_v2 import _namelist
-    monkeypatch.setenv('GPUWRF_NOAHMP_NATIVE_REAL','1');monkeypatch.setenv('GPUWRF_NOAHMP_COLUMN_KERNELS','0');jax.clear_caches()
+    # The test pins its own Noah path: native REAL, no column kernels, hence also no layer-select/list
+    # forms (the release default LAYER_SELECT/LISTS would otherwise leak in and form an unshipped
+    # combination that runs >15 min eagerly on CPU; the shipped CK=1 combination takes ~200 s/case).
+    monkeypatch.setenv('GPUWRF_NOAHMP_NATIVE_REAL','1');monkeypatch.setenv('GPUWRF_NOAHMP_COLUMN_KERNELS','0')
+    monkeypatch.setenv('GPUWRF_NOAHMP_LAYER_SELECT','0');jax.clear_caches()
     path=ROOT/'tests/v025/b_noahmp/test_snow_wrf_order_oracle.py'
     spec=importlib.util.spec_from_file_location('hydrology_columns',path);mod=importlib.util.module_from_spec(spec);spec.loader.exec_module(mod)
     columns=json.loads((path.parent/'fixtures/swiss_snow_wrf_order.json').read_text())['columns'][-2:]

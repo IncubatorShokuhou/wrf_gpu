@@ -1,0 +1,192 @@
+[
+ {
+  "id": 1,
+  "assumption": "cuda_native() gates the native Pallas callable",
+  "where": [
+   "backends/pallas.py",
+   "20 cuda_native() call sites"
+  ],
+  "off_cuda_today": "Pallas interpret = sequential while_loop over the grid (hlo_interpreter.py:413-472)",
+  "action": "capability table: native Triton on cuda/rocm",
+  "milestone": "M1"
+ },
+ {
+  "id": 2,
+  "assumption": "PTX inline asm .rn.f32 for WRF-literal REAL ops",
+  "where": [
+   "coupling/boundary_apply.py:1579",
+   "kernels/dyn_rk_fp32.py:148",
+   "nesting/sint_kernel.py:112",
+   "physics/ferrier/native.py",
+   "physics/goddard4ice/native.py",
+   "physics/milbrandt2mom/rounding.py",
+   "physics/p3/qzi.py",
+   "physics/p3/process_support.py"
+  ],
+  "off_cuda_today": "plain jnp (AMD contracts to v_fma, W5P02) or f64+reduce_precision (boundary_apply: no Triton lowering, W5P01)",
+  "action": "vendor_ops.rn: PTX on cuda, AMDGCN v_mul/v_add/v_sub_f32 on hip; '/' on hip already IEEE",
+  "milestone": "M2"
+ },
+ {
+  "id": 3,
+  "assumption": "PTX typed global memory ld/st.global, atom.exch",
+  "where": [
+   "kernels/_column_memory.py",
+   "kernels/_p3_memory.py",
+   "kernels/_qnse_memory.py"
+  ],
+  "off_cuda_today": "interpret (option schemes NTU/Jensen/P3/QNSE only)",
+  "action": "stock Pallas loads on hip (workaround is for an NVIDIA Coalesce-pass hang, E157); retest",
+  "milestone": "M2"
+ },
+ {
+  "id": 4,
+  "assumption": "libdevice __nv_* externs registered cuda-only",
+  "where": [
+   "kernels/_ntu_math.py",
+   "physics/milbrandt2mom/rounding.py"
+  ],
+  "off_cuda_today": "rocm lowering fails (options only)",
+  "action": "add rocm= OCML entries",
+  "milestone": "M2"
+ },
+ {
+  "id": 5,
+  "assumption": "tt.gather custom lowering",
+  "where": [
+   "kernels/phys_thompson_sedimentation.py:31",
+   "kernels/phys_kf_column.py:27",
+   "physics/cammg/_native.py:54"
+  ],
+  "off_cuda_today": "vendor-neutral TTIR op",
+  "action": "keep; census checks AMD compile",
+  "milestone": "M0"
+ },
+ {
+  "id": 6,
+  "assumption": "cuSPARSE gtsv via lax.linalg.tridiagonal_solve",
+  "where": [
+   "physics/tridiagonal_solver.py",
+   "dynamics/vertical_implicit_solver.py"
+  ],
+  "off_cuda_today": "JAX Thomas lax.scan (one kernel per level)",
+  "action": "release path uses Pallas tridiag (MYNN_TRIDIAG_REAL); legacy: allow hip gtsv lowering on rocm",
+  "milestone": "M2"
+ },
+ {
+  "id": 7,
+  "assumption": "XLA command buffers +CONDITIONAL,+WHILE",
+  "where": [
+   "runtime/xla_autotune.py:396-460",
+   "__init__.py:70"
+  ],
+  "off_cuda_today": "flags skipped; [W source via Astra] upstream XLA rocm_command_buffer.cc 65ad34a5303 (2026-10-15) returns Unimplemented for conditional/while nodes -> host-driven control flow on ROCm",
+  "action": "probe on ROCm (hipGraph); W7900 known issue workaround",
+  "milestone": "M1"
+ },
+ {
+  "id": 8,
+  "assumption": "cuda_async allocator, capped prealloc, C-auto pool via nvidia-smi",
+  "where": [
+   "cli.py",
+   "runtime/gpu_allocator.py",
+   "integration/nested_pipeline.py",
+   "physics/mynn_pbl.py",
+   "physics/rrtmg_lw.py"
+  ],
+  "off_cuda_today": "JAX defaults (BFC, 75% prealloc)",
+  "action": "MEM_FRACTION from get_compiled_memory_stats (E34) + PJRT memory_stats()",
+  "milestone": "M1"
+ },
+ {
+  "id": 9,
+  "assumption": "nvidia-smi for cache tag / preflight / VRAM",
+  "where": [
+   "runtime/compile_cache.py",
+   "runtime/gpu_preflight.py",
+   "runtime/gpu_allocator.py",
+   "ens/cli.py"
+  ],
+  "off_cuda_today": "skipped",
+  "action": "PJRT device_kind + memory_stats",
+  "milestone": "M1"
+ },
+ {
+  "id": 10,
+  "assumption": "compiled-thunk AOT export, slim retained module, cubin metadata",
+  "where": [
+   "runtime/aot_executable.py",
+   "runtime/aot_slim_module.py",
+   "runtime/jax_cache_thunks.py"
+  ],
+  "off_cuda_today": "NVIDIA only",
+  "action": "legacy JAX cache on ROCm; measure readiness (R3) [U]",
+  "milestone": "M1/M4"
+ },
+ {
+  "id": 11,
+  "assumption": "ptxas/CUDA_ROOT choice (B48), E41 cubin gate via cuobjdump",
+  "where": [
+   "scripts",
+   "opus-a19/tools/cubin_scan.py",
+   "compile/cold/wave_cubin_gate.py"
+  ],
+  "off_cuda_today": "n/a",
+  "action": "hsaco metadata gate (VGPR spill, scratch, instr) = W5P01 tool",
+  "milestone": "M0"
+ },
+ {
+  "id": 12,
+  "assumption": "global x64; DOUBLE islands; int64 KISS",
+  "where": [
+   "_fast_defaults.py JAX_ENABLE_X64",
+   "kernels/rad_mcica.py",
+   "physics/stochastic_rng.py",
+   "Thompson DOUBLE islands (BD60)"
+  ],
+  "off_cuda_today": "ok on AMD/Intel Max/old NVIDIA; Arc A no fp64 HW; Apple/TPU no f64",
+  "action": "tier policy D1",
+  "milestone": "-"
+ },
+ {
+  "id": 13,
+  "assumption": "launch geometry tuned for 32-lane warps",
+  "where": [
+   "all kernels: num_warps, block 128/256, levels padded to 64"
+  ],
+  "off_cuda_today": "wave64 on CDNA = 2x threads/program",
+  "action": "per-arch geometry table",
+  "milestone": "M3"
+ },
+ {
+  "id": 14,
+  "assumption": "XLA in-graph Triton custom call requires compute capability >= 8.0",
+  "where": [
+   "XLA __gpu$xla.gpu.triton handler",
+   "backends/platform.py device_backend() classifies every NVIDIA device as cuda"
+  ],
+  "off_cuda_today": "[M wz1080 2026-10-15] GTX1080Ti: FAILED_PRECONDITION 'Triton support is only enabled for Ampere GPUs (compute capability 8.0) and up' for every Pallas kernel, also with GPUWRF_FAST_DEFAULTS=0 -> product hard-fails pre-Ampere; interpreter shim > 360 s/fc-h Swiss vs CPU-WRF 9.61",
+  "action": "capability table: cc<8.0 -> A2 (stock Triton); fail-closed message as v0.4.1 candidate",
+  "milestone": "M2b/M5"
+ },
+ {
+  "id": 15,
+  "assumption": "stock-Triton launch route (A2) is CUDA-only",
+  "where": [
+   "kernels/_triton_kernel_call.py:97-170 (CUDABackend, PTX, platform!='cuda' raises)"
+  ],
+  "off_cuda_today": "unusable on ROCm and not wired for old NVIDIA",
+  "action": "generalize to HIPBackend/hsaco (as jax pallas_call_registration.py non-default branch) and any CUDA cc; per-kernel route table",
+  "milestone": "M2b"
+ },
+ {
+  "id": 16,
+  "assumption": "JAX_PALLAS_USE_MOSAIC_GPU=false pinned; Pallas Triton lowering",
+  "where": [
+   "_fast_defaults.py"
+  ],
+  "off_cuda_today": "same on ROCm (Mosaic has no AMD)",
+  "action": "keep; JAX 0.11 deprecates the Pallas Triton backend -> M6 (own jaxpr->TTIR)",
+  "milestone": "M6"
+ }
+]

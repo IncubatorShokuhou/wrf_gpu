@@ -340,13 +340,14 @@ OPTIONAL_CARRY_FIELDS: tuple[str, ...] = (
     "cu_forcing",  # cu 3/5/6/16/93 held WRF RTHFTEN/RQVFTEN pair
     "aerod",  # aer_opt=1 nested runs: held REAL Tegen per-layer AOD (6, z, y, x)
     "taod5502d",  # aer_opt=3 (mp28): held REAL TAOD5502D (y, x)
+    "mynn_budget",  # optional history only, schema 1, exact resident groups
 )
 PYTREE_CARRY_FIELDS = OPTIONAL_CARRY_FIELDS[5:]
 # Pytree groups appended after the current schema: files written before them
 # carry no manifest entry and resume with the group absent.
 _LATE_PYTREE_CARRY_FIELDS: tuple[str, ...] = ("h_diabatic", "history_diagnostics", "ruc_land", "ruc_rad", "cam_abs", "camuw_pbl",
                                                "fdda", "urban_slucm", "lake", "obs", "regional_streams", "precipitation_buckets", "nwp_diagnostics", "radar_reflectivity", "solar_interpolation", "temf", "urban_bep", "stochastic", "feedback_history", "windfarm_power", "tracer_tendencies", "ocean", "hurricane_ustm", "ssib_land", "ssib_rad", "qnse", "osas_rng_key", "cuplus", "noahmp_mmf", "gfdl_radiation", "sst_skin", "noahmp_irrigation", "noahmp_carbon", "noahmp_groundwater", "noahmp_tile_drain",
-                                               "cu_forcing", "aerod", "taod5502d")
+                                               "cu_forcing", "aerod", "taod5502d", "mynn_budget")
 
 # ``OperationalCarry`` fields this schema has no variables for.  A populated
 # (non-``None``) unsupported field is REFUSED at write time instead of being
@@ -851,6 +852,8 @@ def read_wrfrst_carry(path: str | Path, *, namelist=None, feedback_schema=None) 
     target = Path(path)
     with Dataset(target, "r") as dataset:
         _validate_common_schema(dataset, require_carry=True)
+        from gpuwrf.io.restart_schema import validate_cycling_restart
+        validate_cycling_restart(namelist, getattr(dataset, "GPUWRF_CYCLING_SCHEMA_VERSION", None))
         # Read/validate active feedback on the host before State or optional
         # leaves reach jnp.asarray. Reuse these buffers during restoration.
         feedback_groups=_read_feedback_restart_groups(dataset,expected=feedback_schema)
@@ -1038,10 +1041,15 @@ def _write_wrfrst(
         validate_restart_buckets(carry.precipitation_buckets, configured_interval(namelist), 1, carry.state.t_skin.shape)
         from gpuwrf.diagnostics.online import configuration, validate_restart
         validate_restart(carry.nwp_diagnostics,carry.radar_reflectivity,configuration(namelist),1,carry.state.qv.shape)
+    from gpuwrf.diagnostics.mynn_budget import configuration as mynn_configuration,validate_restart as validate_mynn_restart
+    validate_mynn_restart(None if carry is None else carry.mynn_budget,mynn_configuration(namelist),1,state.theta.shape)
     from gpuwrf.io.restart_schema import validate_spectral_fdda
     validate_spectral_fdda(None if carry is None else carry.fdda, namelist)
     from gpuwrf.diagnostics.solar_config import validate_options as solar_options, validate_restart as validate_solar_restart
     solar_config = solar_options(namelist)
+    from gpuwrf.diagnostics.radiation import validate_restart as validate_rad_diag
+    validate_rad_diag(None if carry is None else carry.radiation_diagnostics,
+                      namelist, 1, state.theta.shape)
     validate_solar_restart(None if carry is None else carry.solar_interpolation, solar_config, 1,
                            state.t_skin.shape, requested=namelist)
     from gpuwrf.io.stochastic_schema import validate_stochastic, seed_arrays as stochastic_seeds
@@ -1103,6 +1111,9 @@ def _write_wrfrst(
         _create_restart_dimensions(dataset, dimensions)
         _write_global_attrs(dataset, grid, namelist, dimensions, run_start_dt, valid_dt)
         _write_restart_global_attrs(dataset, state, carry, step_index, seed_arrays,namelist=namelist)
+        if physics_option(namelist, "cycling", 0):
+            from gpuwrf.io.restart_schema import CYCLING_SCHEMA_VERSION
+            dataset.GPUWRF_CYCLING_SCHEMA_VERSION = CYCLING_SCHEMA_VERSION
         if feedback_config is not None:
             dataset.GPUWRF_FEEDBACK_SCHEMA=json.dumps(feedback_config,sort_keys=True)
         from gpuwrf.physics.rrtmg_mp_re import mp_re_config
@@ -1148,8 +1159,16 @@ def _write_wrfrst(
         from gpuwrf.diagnostics.online import configuration
         dataset.GPUWRF_ONLINE_DIAGNOSTICS_CONFIG=json.dumps(configuration(namelist),sort_keys=True)
         dataset.GPUWRF_ONLINE_DIAGNOSTICS_SCHEMA_VERSION=1
+        mynn_config=mynn_configuration(namelist)
+        if mynn_config!=mynn_configuration({}):
+            dataset.GPUWRF_MYNN_BUDGET_CONFIG=json.dumps(mynn_config,sort_keys=True)
+        if carry is not None and carry.mynn_budget is not None:
+            dataset.GPUWRF_MYNN_BUDGET_SCHEMA_VERSION=1
         dataset.GPUWRF_SOLAR_INTERPOLATION_CONFIG=json.dumps(solar_config,sort_keys=True)
         dataset.GPUWRF_SOLAR_INTERPOLATION_SCHEMA_VERSION=1
+        if getattr(namelist, "rad_diag", 0):
+            dataset.GPUWRF_RAD_DIAG_SCHEMA_VERSION = 1
+            dataset.GPUWRF_RAD_DIAG = 1
         if carry is not None and carry.stochastic is not None:
             dataset.GPUWRF_STOCHASTIC_SCHEMA_VERSION = 1
         dataset.GPUWRF_TRACER_CONFIG=json.dumps(tracer_config,sort_keys=True)
@@ -1939,6 +1958,14 @@ def _read_optional_carry_groups(dataset: Dataset, *, namelist=None, feedback_gro
         validate_urban_inputs(carry_fields["urban_slucm"],json.loads(str(saved)),urban_inputs_version,shape)
         if namelist is not None:
             validate_urban_inputs(carry_fields["urban_slucm"],namelist,urban_inputs_version,shape)
+    from gpuwrf.diagnostics.radiation import validate_restart as validate_rad_diag
+    rad_shape = tuple(len(dataset.dimensions[key]) for key in ("bottom_top", "south_north", "west_east"))
+    saved_rad_config = {"rad_diag": int(getattr(dataset, "GPUWRF_RAD_DIAG", 0))}
+    validate_rad_diag(carry_fields["radiation_diagnostics"], saved_rad_config,
+                      getattr(dataset, "GPUWRF_RAD_DIAG_SCHEMA_VERSION", None), rad_shape)
+    if namelist is not None:
+        validate_rad_diag(carry_fields["radiation_diagnostics"], namelist,
+                          getattr(dataset, "GPUWRF_RAD_DIAG_SCHEMA_VERSION", None), rad_shape)
     from gpuwrf.io.cuplus_schema import validate as validate_cuplus
     saved_cuplus=getattr(dataset,'GPUWRF_CUPLUS_CONFIG',None)
     cuplus_shape=tuple(len(dataset.dimensions[key]) for key in ('bottom_top','south_north','west_east'))
@@ -2096,6 +2123,15 @@ def _read_optional_carry_groups(dataset: Dataset, *, namelist=None, feedback_gro
                          diagnostic_version,mass_shape)
         if (requested["nwp_diagnostics"] or requested["do_radar_ref"]) and requested!=diagnostic_config:
             raise ValueError("restart online diagnostic cadence/selection differs (E78)")
+    from gpuwrf.diagnostics.mynn_budget import configuration as mynn_configuration,validate_restart as validate_mynn_restart
+    mynn_raw=getattr(dataset,'GPUWRF_MYNN_BUDGET_CONFIG',None)
+    mynn_config=mynn_configuration({} if mynn_raw is None else json.loads(str(mynn_raw)))
+    mynn_marker=getattr(dataset,'GPUWRF_MYNN_BUDGET_SCHEMA_VERSION',None)
+    validate_mynn_restart(carry_fields['mynn_budget'],mynn_config,mynn_marker,mass_shape)
+    if namelist is not None:
+        requested=mynn_configuration(namelist)
+        validate_mynn_restart(carry_fields['mynn_budget'],requested,mynn_marker,mass_shape)
+        if requested!=mynn_config:raise ValueError('wrfrst MYNN budget/EDMF selection differs (E78)')
     from gpuwrf.diagnostics.solar_config import validate_restart as validate_solar_restart
     solar_raw = getattr(dataset, "GPUWRF_SOLAR_INTERPOLATION_CONFIG", None)
     try:

@@ -21,9 +21,10 @@ class _State:
 def _install_seed(monkeypatch, value=7.0):
     calls = []
 
-    def seed(state, grid):
+    def seed(state, grid, *, return_moments=False):
         calls.append((state, grid))
-        return jnp.full_like(state.qke, value)
+        assert return_moments
+        return tuple(jnp.full_like(state.qke, v) for v in (value, 3., .25))
 
     monkeypatch.setattr(couplers, "mynn_coldstart_qke_from_state", seed)
     return calls

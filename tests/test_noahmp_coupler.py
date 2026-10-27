@@ -34,6 +34,20 @@ from gpuwrf.physics.surface_constants import P0_PA, P608, R_D, R_D_OVER_CP
 from gpuwrf.physics.surface_layer import surface_layer_with_diagnostics
 
 TABLE_DIR = wrf_run_dir()
+
+
+def _expected_mynn_pbl_density(psfc, sfctmp, qv_mixing_ratio):
+    """Literal module_bl_mynnedmf.F90:3960 ``rhosfc = psfc/(R_d*(tk(kts)+p608*qv(kts)))`` in the mode precision.
+
+    WRF MYNN is kind_phys=REAL4 (ccpp_kind_types.F, RWORDSIZE 4): under the release defaults
+    (GPUWRF_MYNN_FP32_COLUMNS=1 + GPUWRF_MYNN_REAL_CONSTANTS) the port evaluates it in REAL with the
+    WRF REAL P608; the legacy mode (FAST_DEFAULTS=0) keeps the fp64 expression. Pinned per mode (E240).
+    """
+    from gpuwrf.physics.mynn_constants import mynn_constant
+    from gpuwrf.physics.mynn_pbl import _env_bool
+    dtype = np.float32 if _env_bool("GPUWRF_MYNN_FP32_COLUMNS", False) else np.float64
+    psfc, sfctmp, qv = (np.asarray(x).astype(dtype) for x in (psfc, sfctmp, qv_mixing_ratio))
+    return psfc / (dtype(R_D) * (sfctmp + dtype(mynn_constant("P608", dtype, P608)) * qv))
 HAVE_TABLES = (TABLE_DIR / "MPTABLE.TBL").exists()
 
 
@@ -138,13 +152,10 @@ def test_mynn_pbl_density_is_the_exact_wrf_mean_solver_expression():
         sfctmp = jnp.asarray([[299.25, 281.75]], dtype=jnp.float64)
         qair = qv_mixing_ratio / (1.0 + qv_mixing_ratio)
 
-    expected = _Forcing.psfc / (
-        R_D * (_Forcing.sfctmp + P608 * qv_mixing_ratio)
-    )
-    np.testing.assert_array_equal(
-        np.asarray(_mynn_pbl_surface_density(_Forcing(), qv_mixing_ratio)),
-        np.asarray(expected),
-    )
+    expected = _expected_mynn_pbl_density(_Forcing.psfc, _Forcing.sfctmp, qv_mixing_ratio)
+    actual = np.asarray(_mynn_pbl_surface_density(_Forcing(), qv_mixing_ratio))
+    assert actual.dtype == expected.dtype
+    np.testing.assert_array_equal(actual, expected)
 
 
 @pytest.mark.skipif(not HAVE_TABLES, reason="pristine WRF MPTABLE not available")
@@ -187,9 +198,8 @@ def test_ocean_path_unchanged_and_land_blend():
     # tendency solver at F:1060, and uses it in the density at F:3960.
     # Noah-MP forcing.qair is specific humidity, a different quantity.
     qv_mixing_ratio = state.qv[..., 0]
-    expected_pbl_density = np.asarray(
-        forcing.psfc / (R_D * (forcing.sfctmp + P608 * qv_mixing_ratio))
-    )
+    expected_pbl_density = _expected_mynn_pbl_density(forcing.psfc, forcing.sfctmp, qv_mixing_ratio)
+    assert np.asarray(blended.rhosfc).dtype == expected_pbl_density.dtype
     np.testing.assert_array_equal(np.asarray(blended.rhosfc), expected_pbl_density)
     assert not np.array_equal(np.asarray(blended.rhosfc), np.asarray(sf_ref.rhosfc))
 

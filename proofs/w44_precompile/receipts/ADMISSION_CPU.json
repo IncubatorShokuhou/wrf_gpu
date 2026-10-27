@@ -1,0 +1,35 @@
+{
+  "scope": "Compare a preserved CPU AOT target against an attested release GPU target.\n\nCPU only. Neither a driver query nor GPU execution; the reference is a sealed\nhistorical target. The same-XLA-flags control isolates the CompileOnly tag.\n",
+  "saved": {
+    "jaxlib_version": "0.10.0",
+    "jax_version": "0.10.0",
+    "device_kind": "NVIDIA GeForce RTX 5090",
+    "platform": "gpu",
+    "compute_capability": "12.0",
+    "cuda_driver": "PJRT C API\nNVIDIA GeForce RTX 5090",
+    "x64": true,
+    "xla_flags": "--xla_gpu_autotune_level=0"
+  },
+  "reference": {
+    "compute_capability": "12.0",
+    "cuda_driver": "PJRT C API\ncuda 13000",
+    "device_kind": "NVIDIA GeForce RTX 5090",
+    "jax_version": "0.10.0",
+    "jaxlib_version": "0.10.0",
+    "platform": "gpu",
+    "x64": true,
+    "xla_flags": "--xla_gpu_enable_command_buffer=+CONDITIONAL,+WHILE --xla_enable_command_buffers_during_profiling=true --xla_disable_hlo_passes=fusion-dynamic-memcpy-rewriter --xla_gpu_per_fusion_autotune_cache_dir=<DATA_ROOT>/wrf_gpu2/release_bundles/v0.4.3/autotune --xla_gpu_force_compilation_parallelism=8"
+  },
+  "reference_manifest_sha256": "1e81d7458f57a4cdb77035ee2190cdcaa1122f8249790d3c2daed41dc1cb2f37",
+  "meta_sha256": "64a5a8c6726812ae46143dd1d8a1fe7d3a0b635d92d2147823e4c38edcf6e03d",
+  "ordinary_fingerprint_matches": false,
+  "same_flags_control_matches": false,
+  "isolated_differences": {
+    "cuda_driver": [
+      "PJRT C API\nNVIDIA GeForce RTX 5090",
+      "PJRT C API\ncuda 13000"
+    ]
+  },
+  "physical_backend": "cpu",
+  "gpu_executed": false
+}

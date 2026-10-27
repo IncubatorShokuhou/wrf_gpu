@@ -1585,10 +1585,10 @@ def _scalar_couple_kernel(field, mu, c1, c2, out, *, nz, ny, nx, interpret):
 
     def rn(op, a, b):
         if interpret or not pl.cuda_native():
-            # CPU-only prescreen: binary64 exactly represents the REAL4
-            # multiply before its explicit round. reduce_precision pins that
-            # round: XLA's excess-precision rewrite would otherwise drop the
-            # f64->f32->f64 trip between chained ops. GPU proof is mandatory.
+            if not interpret and pl.vendor() == "rocm":  # AMDGCN RN ops
+                return pl.amd_rn(op, a, b)
+            # CPU-only prescreen: binary64 exactly represents the REAL4 multiply
+            # before its explicit round; reduce_precision pins it. GPU proof is mandatory.
             a, b = a.astype(jnp.float64), b.astype(jnp.float64)
             exact = a * b if op == "mul" else a + b
             return jax.lax.reduce_precision(
@@ -1784,6 +1784,37 @@ _ROOT_FLOW_AEROSOL_NUMBERS = frozenset(("nwfa", "nifa"))
 
 def root_scalar_bdy_rk1_enabled() -> bool:
     return os.environ.get("GPUWRF_ROOT_SCALAR_BDY_RK1", "0").strip().lower() in {"1", "true", "yes", "on"}
+
+
+ROOT_SPEC_WALK = 3
+
+
+def root_spec_stage_clock_mode() -> int:
+    """GPUWRF_ROOT_SPEC_STAGE_CLOCK (o5-coast): ring-0 boundary clock of a specified root.
+
+    The step clock ``lead_seconds = step_index*dt`` is the END of the step (WRF dtbc after solve_em.F:378).
+    WRF walks the spec zone from t_n by dts_rk*btend after every acoustic substep (spec_bdyupdate), so after
+    substep m of stage k the ring holds the boundary trajectory at t_n + m*dts_k.  The released root pins hold
+    ``lead_seconds + dt_rk`` (mass/theta/ph/tangential) and ``lead_seconds`` (normal u/v) from the first substep
+    on, i.e. one root step ahead.  Values: ``walk`` = exact WRF walk (opt-in, rates in ``coupling.root_spec_walk``;
+    default OFF until the GPU walk arm passes); ``0`` (unset) = released clock; ``1`` = absolute pins at the
+    stage end ``lead_seconds - dt + dt_rk`` and ``2`` = at the stage midpoint ``lead_seconds - dt + dt_rk/2``
+    (diagnostics only).
+    """
+    value = os.environ.get("GPUWRF_ROOT_SPEC_STAGE_CLOCK", "0").strip().lower()
+    if value == "walk":
+        return ROOT_SPEC_WALK
+    if value not in {"0", "1", "2"}:
+        raise ValueError(f"GPUWRF_ROOT_SPEC_STAGE_CLOCK must be walk, 0, 1 or 2, got {value!r}")
+    return int(value)
+
+
+def root_spec_stage_lead(lead_seconds, dt_s: float, dt_rk: float, released):
+    """Root ring-0 pin time for the selected GPUWRF_ROOT_SPEC_STAGE_CLOCK mode (``released`` when 0)."""
+    mode = root_spec_stage_clock_mode()
+    if mode in (0, ROOT_SPEC_WALK):
+        return released
+    return lead_seconds - float(dt_s) + (float(dt_rk) if mode == 1 else 0.5 * float(dt_rk))
 
 
 def root_scalar_rk1_split(config: BoundaryConfig, species, *, flow_only=()) -> tuple[tuple[str, ...], tuple[str, ...]]:

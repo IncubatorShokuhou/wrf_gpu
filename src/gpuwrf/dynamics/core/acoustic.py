@@ -98,6 +98,7 @@ class AcousticCoreConfig:
     w_damping: int = 0
     damp_opt: int = 0
     dampcoef: float = 0.0
+    damping_traced: bool = False  # opt-in scalar operands; native solver only
     zdamp: float = 5000.0
     w_alpha: float = W_ALPHA
     w_crit_cfl: float = W_BETA
@@ -117,6 +118,10 @@ class AcousticCoreConfig:
     # bundle.  It removes the released moving-residual relax rows while keeping
     # WRF-owned ring-0 pins and selects single-owner corner scatters.
     nested_frozen_wrf_boundary_bundle: bool = False
+    # o5-coast: exact WRF spec_bdyupdate walk on a specified ROOT (GPUWRF_ROOT_SPEC_STAGE_CLOCK=walk).
+    # Selects the same pre-substep + dts*tendency ring updates (u/v ring, mu/muts/theta, ph) as the
+    # nested bundle; everything else (relax rows, w zero_grad_bdy) keeps the specified-root path.
+    root_spec_walk: bool = False
     # v0.14 SPECIFIED WRF cadence: apply WRF ``zero_grad_bdy`` to the w work
     # array's spec zone after advance_w every substep (solve_em.F:1601-1607,
     # specified domains copy the nearest interior w into the ring; nested uses
@@ -1102,7 +1107,7 @@ def acoustic_substep_core(
             normal_bdy_relax_strength=cfg.normal_bdy_relax_strength,
             normal_bdy_relax_rows=not (bool(cfg.nested_frozen_wrf_boundary_bundle)
                                        or bool(cfg.specified_relax_tendency)),
-            wrf_single_owner=bool(cfg.nested_frozen_wrf_boundary_bundle),
+            wrf_single_owner=bool(cfg.nested_frozen_wrf_boundary_bundle) or bool(cfg.root_spec_walk),
             spec_zone=int(cfg.spec_zone),
             observe_uv_primitive=True,
         )
@@ -1118,7 +1123,7 @@ def acoustic_substep_core(
             normal_bdy_relax_strength=cfg.normal_bdy_relax_strength,
             normal_bdy_relax_rows=not (bool(cfg.nested_frozen_wrf_boundary_bundle)
                                        or bool(cfg.specified_relax_tendency)),
-            wrf_single_owner=bool(cfg.nested_frozen_wrf_boundary_bundle),
+            wrf_single_owner=bool(cfg.nested_frozen_wrf_boundary_bundle) or bool(cfg.root_spec_walk),
             spec_zone=int(cfg.spec_zone),
         )
     uv_state = _maybe_exchange_sharded_acoustic_halos(uv_state)
@@ -1185,7 +1190,7 @@ def acoustic_substep_core(
     # already mirrors that -- and the spec update then walks the ring along the
     # wrfbdy trajectory).  None targets leave all arrays untouched.
     if state.mu_spec_target is not None:
-        if bool(cfg.nested_frozen_wrf_boundary_bundle):
+        if bool(cfg.nested_frozen_wrf_boundary_bundle) or bool(cfg.root_spec_walk):
             def _pin_ring(field, target):
                 return _pin_spec_ring_wrf_owned(
                     field, target, spec_zone=int(cfg.spec_zone)
@@ -1392,7 +1397,7 @@ def acoustic_substep_core(
     # zone is owned by the ``ph_tend`` path inside advance_w above.  None
     # operands leave idealized / bare-core callers byte-for-byte unchanged.
     if state_for_w.ph_bdy_target is not None and state_for_w.ph_save_for_spec is not None:
-        if bool(cfg.nested_frozen_wrf_boundary_bundle):
+        if bool(cfg.nested_frozen_wrf_boundary_bundle) or bool(cfg.root_spec_walk):
             ph_next = spec_bdyupdate_ph_tendency_inloop(
                 ph_next,
                 state_for_w.ph,

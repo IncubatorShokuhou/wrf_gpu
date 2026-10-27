@@ -1,0 +1,894 @@
+{
+ "scope": "Replay of the pinned XLA b6f37ab CommandBufferConversionPass on a serialized compiled-thunk executable (CPU only).\n\nMirrors command_buffer_conversion_pass.cc @b6f37ab (copy in receipts/): Run() appends a CONVERTIBLE thunk to the pending\nsequence without descending into it; a NON-convertible While/Conditional is descended into (body / every branch);\nFlushCommandBuffer converts a pending sequence only if len >= max(1, min_graph_size). IsConvertible: kernel and D2D copy\n-> FUSION; While -> WHILE enabled and every body+condition thunk convertible; Conditional -> CONDITIONAL enabled and every\nbranch thunk convertible. Thunk proto layout (decoded from the bundle blobs): ThunkProto f1=ThunkInfo, f8=kernel, f13=copy,\nf7=while{f2=condition seq, f3=body seq, f4=trip count}, f6=conditional{f2=branch seqs}; sequences = repeated f1 ThunkProto.\nOutput: static thunk counts captured in command buffers vs left for host launch, per variant. Not a GPU measurement.\n",
+ "programs": {
+  "jit__advance_chunk_fori-13eea92af016f72d23e70f877889ab155d7d": {
+   "top_level": [
+    "copy.3703",
+    "wrapped_transpose",
+    "wrapped_transpose.1",
+    "wrapped_transpose.2",
+    "wrapped_transpose.3",
+    "wrapped_transpose.4",
+    "wrapped_transpose.5",
+    "wrapped_transpose.6",
+    "wrapped_transpose.7",
+    "wrapped_transpose.8",
+    "wrapped_transpose.9",
+    "wrapped_transpose.10",
+    "wrapped_transpose.11",
+    "wrapped_transpose.12",
+    "wrapped_transpose.13",
+    "wrapped_transpose.14",
+    "wrapped_transpose.15",
+    "wrapped_transpose.16",
+    "wrapped_transpose.17",
+    "wrapped_transpose.18",
+    "wrapped_transpose.19",
+    "wrapped_transpose.20",
+    "wrapped_transpose.21",
+    "wrapped_transpose.22",
+    "wrapped_transpose.23",
+    "wrapped_transpose.24",
+    "wrapped_transpose.25",
+    "wrapped_transpose.26",
+    "wrapped_transpose.27",
+    "wrapped_transpose.28",
+    "wrapped_transpose.29",
+    "wrapped_transpose.30",
+    "wrapped_transpose.31",
+    "wrapped_transpose.32",
+    "wrapped_transpose.33",
+    "wrapped_transpose.34",
+    "wrapped_transpose.35",
+    "wrapped_transpose.36",
+    "wrapped_transpose.37",
+    "wrapped_transpose.38",
+    "wrapped_transpose.39",
+    "wrapped_convert",
+    "wrapped_convert.1",
+    "wrapped_transpose.40",
+    "wrapped_transpose.41",
+    "wrapped_transpose.42",
+    "wrapped_transpose.43",
+    "wrapped_transpose.44",
+    "wrapped_transpose.45",
+    "wrapped_transpose.46",
+    "wrapped_transpose.47",
+    "wrapped_transpose.48",
+    "wrapped_transpose.49",
+    "wrapped_transpose.50",
+    "wrapped_transpose.51",
+    "wrapped_transpose.52",
+    "wrapped_transpose.53",
+    "while.793",
+    "input_transpose_fusion.226",
+    "input_transpose_fusion.225",
+    "input_transpose_fusion.224",
+    "input_transpose_fusion.223",
+    "input_transpose_fusion.222",
+    "input_transpose_fusion.221",
+    "input_transpose_fusion.220",
+    "input_transpose_fusion.219",
+    "input_transpose_fusion.218",
+    "input_transpose_fusion.217",
+    "input_transpose_fusion.216",
+    "input_transpose_fusion.215",
+    "input_transpose_fusion.214",
+    "input_transpose_fusion.213",
+    "input_transpose_fusion.212",
+    "input_transpose_fusion.211",
+    "input_transpose_fusion.210",
+    "input_transpose_fusion.209",
+    "input_transpose_fusion.208",
+    "input_transpose_fusion.207",
+    "input_transpose_fusion.206",
+    "input_transpose_fusion.205",
+    "input_transpose_fusion.204",
+    "input_transpose_fusion.203",
+    "input_transpose_fusion.202",
+    "input_transpose_fusion.201",
+    "input_transpose_fusion.200",
+    "input_transpose_fusion.199",
+    "input_transpose_fusion.198",
+    "input_transpose_fusion.197",
+    "input_transpose_fusion.196",
+    "input_transpose_fusion.195",
+    "input_transpose_fusion.194",
+    "input_transpose_fusion.193",
+    "input_transpose_fusion.192",
+    "input_transpose_fusion.191",
+    "input_transpose_fusion.190",
+    "input_transpose_fusion.189",
+    "input_transpose_fusion.188",
+    "input_transpose_fusion.187"
+   ],
+   "leaf_thunks_total": 1280,
+   "all_entries_by_kind_and_named": {
+    "f13|named=True": 137,
+    "f48|named=True": 2,
+    "f6|named=True": 5,
+    "f7|named=True": 10,
+    "f8|named=True": 1143
+   },
+   "STORED (FUSION,CUBLAS,CUBLASLT,CUSTOM_CALL,CUDNN,DYNAMIC_SLICE_FUSION,CONDITIONAL; min 5)": {
+    "command_buffers": 20,
+    "captured_leaf_thunks": 1252,
+    "host_leaf_thunks": 18,
+    "host_seq_items": 18,
+    "host_while": 10,
+    "host_cond": 1,
+    "rejected_short": [
+     [
+      3,
+      [
+       "loop_add_fusion.5",
+       "loop_select_fusion.3",
+       "copy.2530",
+       "copy.2531"
+      ],
+      4
+     ],
+     [
+      3,
+      [
+       "loop_add_fusion.6",
+       "loop_select_fusion.4",
+       "copy.2539",
+       "copy.2540"
+      ],
+      4
+     ],
+     [
+      2,
+      [
+       "loop_and_clamp_select_subtract_fusion",
+       "copy.2532",
+       "loop_broadcast_fusion.7",
+       "loop_broadcast_fusion.9"
+      ],
+      4
+     ],
+     [
+      2,
+      [
+       "loop_add_fusion.7",
+       "loop_or_select_fusion",
+       "copy.2707"
+      ],
+      3
+     ],
+     [
+      1,
+      [
+       "input_transpose_fusion.141",
+       "pallas_call.503"
+      ],
+      2
+     ],
+     [
+      1,
+      [
+       "pallas_call.711"
+      ],
+      1
+     ]
+    ],
+    "buffers": [
+     [
+      1,
+      368,
+      433,
+      [
+       "loop_select_fusion.23",
+       "loop_multiply_select_fusion.2",
+       "loop_select_fusion.21"
+      ]
+     ],
+     [
+      1,
+      143,
+      166,
+      [
+       "loop_add_transpose_fusion",
+       "wrapped_convert.16",
+       "loop_broadcast_fusion.12"
+      ]
+     ],
+     [
+      4,
+      14,
+      104,
+      [
+       "input_concatenate_fusion.1",
+       "loop_concatenate_dynamic_slice_fusion",
+       "input_concatenate_fusion"
+      ]
+     ],
+     [
+      4,
+      10,
+      80,
+      [
+       "loop_clamp_dynamic_slice_fusion",
+       "loop_add_fusion.9",
+       "cond.290"
+      ]
+     ],
+     [
+      1,
+      79,
+      79,
+      [
+       "pallas_call.531",
+       "loop_add_fusion.40",
+       "pallas_call.700"
+      ]
+     ],
+     [
+      0,
+      57,
+      57,
+      [
+       "copy.3703",
+       "wrapped_transpose",
+       "wrapped_transpose.1"
+      ]
+     ],
+     [
+      2,
+      47,
+      47,
+      [
+       "copy.3702",
+       "copy.2541",
+       "loop_broadcast_fusion.4"
+      ]
+     ],
+     [
+      0,
+      40,
+      40,
+      [
+       "input_transpose_fusion.226",
+       "input_transpose_fusion.225",
+       "input_transpose_fusion.224"
+      ]
+     ]
+    ]
+   },
+   "+WHILE, min 5 (v0.3.3+)": {
+    "command_buffers": 5,
+    "captured_leaf_thunks": 1279,
+    "host_leaf_thunks": 0,
+    "host_seq_items": 0,
+    "host_while": 1,
+    "host_cond": 0,
+    "rejected_short": [],
+    "buffers": [
+     [
+      1,
+      410,
+      874,
+      [
+       "loop_multiply_fusion.44",
+       "loop_add_multiply_fusion.3",
+       "loop_compare_fusion.9"
+      ]
+     ],
+     [
+      1,
+      145,
+      197,
+      [
+       "pallas_call.711",
+       "while.817",
+       "loop_add_transpose_fusion"
+      ]
+     ],
+     [
+      1,
+      82,
+      111,
+      [
+       "input_transpose_fusion.141",
+       "pallas_call.503",
+       "while.816"
+      ]
+     ],
+     [
+      0,
+      57,
+      57,
+      [
+       "copy.3703",
+       "wrapped_transpose",
+       "wrapped_transpose.1"
+      ]
+     ],
+     [
+      0,
+      40,
+      40,
+      [
+       "input_transpose_fusion.226",
+       "input_transpose_fusion.225",
+       "input_transpose_fusion.224"
+      ]
+     ]
+    ]
+   },
+   "V1 (+WHILE, min 1)": {
+    "command_buffers": 5,
+    "captured_leaf_thunks": 1279,
+    "host_leaf_thunks": 0,
+    "host_seq_items": 0,
+    "host_while": 1,
+    "host_cond": 0,
+    "rejected_short": [],
+    "buffers": [
+     [
+      1,
+      410,
+      874,
+      [
+       "loop_multiply_fusion.44",
+       "loop_add_multiply_fusion.3",
+       "loop_compare_fusion.9"
+      ]
+     ],
+     [
+      1,
+      145,
+      197,
+      [
+       "pallas_call.711",
+       "while.817",
+       "loop_add_transpose_fusion"
+      ]
+     ],
+     [
+      1,
+      82,
+      111,
+      [
+       "input_transpose_fusion.141",
+       "pallas_call.503",
+       "while.816"
+      ]
+     ],
+     [
+      0,
+      57,
+      57,
+      [
+       "copy.3703",
+       "wrapped_transpose",
+       "wrapped_transpose.1"
+      ]
+     ],
+     [
+      0,
+      40,
+      40,
+      [
+       "input_transpose_fusion.226",
+       "input_transpose_fusion.225",
+       "input_transpose_fusion.224"
+      ]
+     ]
+    ]
+   },
+   "V2 (no WHILE, min 5)": {
+    "command_buffers": 20,
+    "captured_leaf_thunks": 1252,
+    "host_leaf_thunks": 18,
+    "host_seq_items": 18,
+    "host_while": 10,
+    "host_cond": 1,
+    "rejected_short": [
+     [
+      3,
+      [
+       "loop_add_fusion.5",
+       "loop_select_fusion.3",
+       "copy.2530",
+       "copy.2531"
+      ],
+      4
+     ],
+     [
+      3,
+      [
+       "loop_add_fusion.6",
+       "loop_select_fusion.4",
+       "copy.2539",
+       "copy.2540"
+      ],
+      4
+     ],
+     [
+      2,
+      [
+       "loop_and_clamp_select_subtract_fusion",
+       "copy.2532",
+       "loop_broadcast_fusion.7",
+       "loop_broadcast_fusion.9"
+      ],
+      4
+     ],
+     [
+      2,
+      [
+       "loop_add_fusion.7",
+       "loop_or_select_fusion",
+       "copy.2707"
+      ],
+      3
+     ],
+     [
+      1,
+      [
+       "input_transpose_fusion.141",
+       "pallas_call.503"
+      ],
+      2
+     ],
+     [
+      1,
+      [
+       "pallas_call.711"
+      ],
+      1
+     ]
+    ],
+    "buffers": [
+     [
+      1,
+      368,
+      433,
+      [
+       "loop_select_fusion.23",
+       "loop_multiply_select_fusion.2",
+       "loop_select_fusion.21"
+      ]
+     ],
+     [
+      1,
+      143,
+      166,
+      [
+       "loop_add_transpose_fusion",
+       "wrapped_convert.16",
+       "loop_broadcast_fusion.12"
+      ]
+     ],
+     [
+      4,
+      14,
+      104,
+      [
+       "input_concatenate_fusion.1",
+       "loop_concatenate_dynamic_slice_fusion",
+       "input_concatenate_fusion"
+      ]
+     ],
+     [
+      4,
+      10,
+      80,
+      [
+       "loop_clamp_dynamic_slice_fusion",
+       "loop_add_fusion.9",
+       "cond.290"
+      ]
+     ],
+     [
+      1,
+      79,
+      79,
+      [
+       "pallas_call.531",
+       "loop_add_fusion.40",
+       "pallas_call.700"
+      ]
+     ],
+     [
+      0,
+      57,
+      57,
+      [
+       "copy.3703",
+       "wrapped_transpose",
+       "wrapped_transpose.1"
+      ]
+     ],
+     [
+      2,
+      47,
+      47,
+      [
+       "copy.3702",
+       "copy.2541",
+       "loop_broadcast_fusion.4"
+      ]
+     ],
+     [
+      0,
+      40,
+      40,
+      [
+       "input_transpose_fusion.226",
+       "input_transpose_fusion.225",
+       "input_transpose_fusion.224"
+      ]
+     ]
+    ]
+   }
+  },
+  "jit__advance_chunk_fori-89739bd9e551b1f96fbd3736b6b922ca326c": {
+   "top_level": [
+    "wrapped_convert.1",
+    "wrapped_convert",
+    "copy.1547",
+    "while.768"
+   ],
+   "leaf_thunks_total": 1065,
+   "all_entries_by_kind_and_named": {
+    "f13|named=True": 157,
+    "f6|named=True": 4,
+    "f7|named=True": 11,
+    "f8|named=True": 908
+   },
+   "STORED (FUSION,CUBLAS,CUBLASLT,CUSTOM_CALL,CUDNN,DYNAMIC_SLICE_FUSION,CONDITIONAL; min 5)": {
+    "command_buffers": 21,
+    "captured_leaf_thunks": 1034,
+    "host_leaf_thunks": 20,
+    "host_seq_items": 20,
+    "host_while": 11,
+    "host_cond": 2,
+    "rejected_short": [
+     [
+      3,
+      [
+       "loop_add_fusion.5",
+       "loop_select_fusion.1",
+       "copy.469",
+       "copy.468"
+      ],
+      4
+     ],
+     [
+      3,
+      [
+       "loop_add_fusion.6",
+       "loop_select_fusion.2",
+       "copy.477",
+       "copy.478"
+      ],
+      4
+     ],
+     [
+      2,
+      [
+       "loop_add_fusion.7",
+       "loop_or_select_fusion",
+       "copy.643"
+      ],
+      3
+     ],
+     [
+      2,
+      [
+       "input_transpose_fusion"
+      ],
+      1
+     ],
+     [
+      2,
+      [
+       "copy.646"
+      ],
+      1
+     ],
+     [
+      1,
+      [
+       "loop_select_fusion.21",
+       "loop_pad_fusion.12",
+       "loop_add_divide_exponential_maximum_multiply_reduce_select_fusion",
+       "loop_pad_fusion.11"
+      ],
+      4
+     ],
+     [
+      0,
+      [
+       "wrapped_convert.1",
+       "wrapped_convert",
+       "copy.1547"
+      ],
+      3
+     ]
+    ],
+    "buffers": [
+     [
+      1,
+      219,
+      219,
+      [
+       "input_transpose_fusion.18",
+       "loop_maximum_fusion.5",
+       "input_reduce_fusion.10"
+      ]
+     ],
+     [
+      1,
+      136,
+      136,
+      [
+       "copy.1549",
+       "copy.679",
+       "copy.636"
+      ]
+     ],
+     [
+      4,
+      14,
+      104,
+      [
+       "loop_clamp_fusion",
+       "input_concatenate_fusion.1",
+       "input_concatenate_fusion"
+      ]
+     ],
+     [
+      4,
+      10,
+      80,
+      [
+       "loop_clamp_dynamic_slice_fusion",
+       "loop_add_fusion.9",
+       "input_concatenate_fusion.2"
+      ]
+     ],
+     [
+      1,
+      74,
+      74,
+      [
+       "copy.1173",
+       "copy.1174",
+       "copy.1179"
+      ]
+     ],
+     [
+      3,
+      54,
+      54,
+      [
+       "loop_multiply_fusion.33",
+       "loop_dynamic_slice_fusion",
+       "loop_slice_fusion.3"
+      ]
+     ],
+     [
+      1,
+      48,
+      48,
+      [
+       "wrapped_add.16",
+       "loop_divide_fusion.14",
+       "loop_slice_fusion.15"
+      ]
+     ],
+     [
+      1,
+      41,
+      41,
+      [
+       "loop_add_fusion.33",
+       "loop_add_fusion.34",
+       "copy.1077"
+      ]
+     ]
+    ]
+   },
+   "+WHILE, min 5 (v0.3.3+)": {
+    "command_buffers": 0,
+    "captured_leaf_thunks": 0,
+    "host_leaf_thunks": 1065,
+    "host_seq_items": 4,
+    "host_while": 0,
+    "host_cond": 0,
+    "rejected_short": [
+     [
+      0,
+      [
+       "wrapped_convert.1",
+       "wrapped_convert",
+       "copy.1547",
+       "while.768"
+      ],
+      1065
+     ]
+    ],
+    "buffers": []
+   },
+   "V1 (+WHILE, min 1)": {
+    "command_buffers": 1,
+    "captured_leaf_thunks": 1065,
+    "host_leaf_thunks": 0,
+    "host_seq_items": 0,
+    "host_while": 0,
+    "host_cond": 0,
+    "rejected_short": [],
+    "buffers": [
+     [
+      0,
+      4,
+      1065,
+      [
+       "wrapped_convert.1",
+       "wrapped_convert",
+       "copy.1547"
+      ]
+     ]
+    ]
+   },
+   "V2 (no WHILE, min 5)": {
+    "command_buffers": 21,
+    "captured_leaf_thunks": 1034,
+    "host_leaf_thunks": 20,
+    "host_seq_items": 20,
+    "host_while": 11,
+    "host_cond": 2,
+    "rejected_short": [
+     [
+      3,
+      [
+       "loop_add_fusion.5",
+       "loop_select_fusion.1",
+       "copy.469",
+       "copy.468"
+      ],
+      4
+     ],
+     [
+      3,
+      [
+       "loop_add_fusion.6",
+       "loop_select_fusion.2",
+       "copy.477",
+       "copy.478"
+      ],
+      4
+     ],
+     [
+      2,
+      [
+       "loop_add_fusion.7",
+       "loop_or_select_fusion",
+       "copy.643"
+      ],
+      3
+     ],
+     [
+      2,
+      [
+       "input_transpose_fusion"
+      ],
+      1
+     ],
+     [
+      2,
+      [
+       "copy.646"
+      ],
+      1
+     ],
+     [
+      1,
+      [
+       "loop_select_fusion.21",
+       "loop_pad_fusion.12",
+       "loop_add_divide_exponential_maximum_multiply_reduce_select_fusion",
+       "loop_pad_fusion.11"
+      ],
+      4
+     ],
+     [
+      0,
+      [
+       "wrapped_convert.1",
+       "wrapped_convert",
+       "copy.1547"
+      ],
+      3
+     ]
+    ],
+    "buffers": [
+     [
+      1,
+      219,
+      219,
+      [
+       "input_transpose_fusion.18",
+       "loop_maximum_fusion.5",
+       "input_reduce_fusion.10"
+      ]
+     ],
+     [
+      1,
+      136,
+      136,
+      [
+       "copy.1549",
+       "copy.679",
+       "copy.636"
+      ]
+     ],
+     [
+      4,
+      14,
+      104,
+      [
+       "loop_clamp_fusion",
+       "input_concatenate_fusion.1",
+       "input_concatenate_fusion"
+      ]
+     ],
+     [
+      4,
+      10,
+      80,
+      [
+       "loop_clamp_dynamic_slice_fusion",
+       "loop_add_fusion.9",
+       "input_concatenate_fusion.2"
+      ]
+     ],
+     [
+      1,
+      74,
+      74,
+      [
+       "copy.1173",
+       "copy.1174",
+       "copy.1179"
+      ]
+     ],
+     [
+      3,
+      54,
+      54,
+      [
+       "loop_multiply_fusion.33",
+       "loop_dynamic_slice_fusion",
+       "loop_slice_fusion.3"
+      ]
+     ],
+     [
+      1,
+      48,
+      48,
+      [
+       "wrapped_add.16",
+       "loop_divide_fusion.14",
+       "loop_slice_fusion.15"
+      ]
+     ],
+     [
+      1,
+      41,
+      41,
+      [
+       "loop_add_fusion.33",
+       "loop_add_fusion.34",
+       "copy.1077"
+      ]
+     ]
+    ]
+   }
+  }
+ }
+}

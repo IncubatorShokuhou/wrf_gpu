@@ -1,0 +1,38 @@
+{
+  "verdict": "LAUNCH_SMOKE_PASS",
+  "launcher": "<USER_HOME>/wrf_gpu2_lanes/w44-budget/night_launch_v3_cuda.sh",
+  "launcher_sha256": "34096979ec6635a4154f31b9ef7295da6378b9b7b17cd45e19b714d5b638dc76",
+  "receipt": "<USER_HOME>/wrf_gpu2_lanes/w44-budget/P54_launch_smoke/receipts/NIGHT_1792808332126298607_2258926/night_receipt.json",
+  "exact_gpu_child_env": {
+    "JAX_PLATFORMS": "cuda",
+    "GPUWRF_FAST_DEFAULTS": "1",
+    "GPUWRF_MYNN_EDMF": "1",
+    "GPUWRF_NESTED_AOT": "1",
+    "GPUWRF_AOT_KEEP_TRACE_METADATA": "1",
+    "GPUWRF_JAX_CACHE": "1",
+    "GPUWRF_JAX_CACHE_DIR": "<DATA_ROOT>/wrf_gpu2/scratch/w44-budget/night_design_b_cache_42f60b7485/jax",
+    "JAX_COMPILATION_CACHE_DIR": "<DATA_ROOT>/wrf_gpu2/scratch/w44-budget/night_design_b_cache_42f60b7485/jax",
+    "XLA_PYTHON_CLIENT_ALLOCATOR": "cuda_async",
+    "XLA_PYTHON_CLIENT_MEM_FRACTION": ".22"
+  },
+  "model": {
+    "verdict": "LAUNCH_SMOKE_MODEL_REACHED",
+    "actual_platform": "cpu",
+    "gpu_executed": false,
+    "source_commit": "42f60b74854a7f31ec8cff608ee82c38d057d41a",
+    "model": "actual MYNN production caller + diagnostic twin",
+    "shape": [
+      44,
+      1,
+      1
+    ],
+    "history_fields": 21,
+    "compile_first_s": 16.641518533986527,
+    "note": "CPU device substitution; no physical BYTE, GPU E41 or full forecast pass claimed"
+  },
+  "official_gpu_lock_called": false,
+  "gpu_executed": false,
+  "substitution": "GPU lock/NVIDIA/profiler device shims; CPU at device layer; virtual admission clock only",
+  "launcher_rc": 2,
+  "note": "rc2 is expected: actual GPU/full-forecast gate is not claimed by this CPU smoke"
+}

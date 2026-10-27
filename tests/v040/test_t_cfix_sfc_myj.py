@@ -210,6 +210,11 @@ def test_initial_carry_seeds_registry_zero_myj_memory():
 def test_myj_memory_restart_roundtrip_and_refusal(cpu_pallas_interpret, tmp_path, format):
     from test_restart_history_activity import _myj, _write_read
     grid, nml, carry, identity = _myj()
+    # Product initializer seeding (operational_mode._initial_carry_for_run): static-scheme
+    # conditional leaves, incl. the held MP_RE effective radii when mp_re_active(nml).
+    carry = carry.replace(state=carry.state.ensure_conditional_leaves(
+        mp_physics=int(nml.mp_physics), use_mp_re=int(nml.use_mp_re),
+        ra_lw_physics=int(nml.ra_lw_physics), ra_sw_physics=int(nml.ra_sw_physics)))
     assert carry.qnse is not None
     (tmp_path / 'ok').mkdir(); (tmp_path / 'missing').mkdir()
     restored = _write_read(tmp_path / 'ok', format, grid, nml, carry, identity)

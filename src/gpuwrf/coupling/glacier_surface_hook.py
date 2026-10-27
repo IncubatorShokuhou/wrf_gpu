@@ -92,7 +92,7 @@ def route_glacier_step(step,land,forcing,static,dt,*,energy_params,rad_params,hi
     # Each WRF tile executes its own model; glacier columns never enter SFLX.
     if config.natural_indices:
         ns=static.replace(**{name:_gather(getattr(static,name),natural,shape)
-            for name in ('ivgtyp','isltyp','xland','landmask','lakemask','lu_index','tbot','lat','shdmax','shdfac')},glacier=None)
+            for name in ('ivgtyp','isltyp','xland','landmask','lakemask','lu_index','tbot','lat','shdmax','shdfac')},glacier=None,parameters=_column_parameters(static.parameters,natural,shape))
         nl,nm=step(_gather(land,natural,shape),_gather(forcing,natural,shape),ns,dt,
             energy_params=_gather(energy_params,natural,shape),rad_params=_gather(rad_params,natural,shape),
             **({'history':True} if history else {}))
@@ -142,3 +142,19 @@ def route_glacier_step(step,land,forcing,static,dt,*,energy_params,rad_params,hi
         h.update(SOILENERGY=soil,SNOWENERGY=snow)
         nm=nm._replace(history={k:_scatter(nm.history.get(k),a,ice,shape) for k,a in h.items()})
     return result,nm
+
+
+def _column_parameters(parameters, indices, shape):
+    """Subset only fields whose parameter schema permits W2 cell arrays.
+
+    LAIM/SAIM and optical tables can coincidentally have the domain shape.
+    They are category tables, never spatial fields. With ordinary tables this
+    returns the original object, without tracing any array operation.
+    """
+    updates = {}
+    for name in ("smcmax", "dksat", "bexp", "psisat", "hvt", "hvb", "rsmin"):
+        value = getattr(parameters, name, None)
+        rank = 3 if name in ("smcmax", "dksat", "bexp", "psisat") else 2
+        if getattr(value, "ndim", 0) == rank and tuple(value.shape[-2:]) == shape:
+            updates[name] = _gather(value, indices, shape)
+    return parameters._replace(**updates) if updates else parameters

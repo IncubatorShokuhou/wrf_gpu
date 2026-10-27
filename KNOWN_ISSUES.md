@@ -5,6 +5,19 @@ new items are listed first. Everything from "v0.4.2: heavy-rain cells on the 1 k
 is the v0.4.2, v0.4.1 and v0.4.0 record and still applies. Per-option status:
 [v0.4.3 support matrix](docs/release/SUPPORT_MATRIX_v0.4.3.md).
 
+## v0.4.4 planned scope: parameter overrides
+
+Diffusion/damping parameter overrides, including `c_s`, are **not shipped in
+v0.4.4** after failing GPU qualification. They may come in a later release
+after GPU qualification; no date or commitment.
+
+MYNN coefficient overrides ship in v0.4.4 as **experimental**. Component and
+short two-domain GPU root checks passed: default bytes identical, the same
+cached programs with no new native blobs, and compiled-resource checks passed.
+Three-nest D6, station comparisons and 24–72-hour drift are not qualified.
+The shipped default forecast and existing static namelist support are unaffected.
+See [runtime parameter family status and evidence](docs/runtime-parameters.md).
+
 ## v0.4.3: nine-domain Tenerife forecast differs from CPU-WRF on the 1 km leaves
 
 **Open, cause not found.** On the first end-to-end nine-domain GPU forecast (issued 18 October 2026,

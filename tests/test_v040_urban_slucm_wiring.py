@@ -49,7 +49,12 @@ def test_catalog_and_validation_accept_slucm():
     for code in (2, 3):
         support=classify_scheme("sf_urban_physics", code)
         assert support.status is SupportStatus.IMPLEMENTED
-        assert "CPU-oracle-qualified" in support.reason and "qualification pending" in support.reason
+        # BEP/BEM stay CPU-oracle-qualified with the coupled GPU forecast still open; w41-writergaps F3
+        # (5fc019d360) reworded code 3 to "coupled-forecast fidelity vs CPU-WRF pending".
+        assert "CPU-oracle-qualified" in support.reason
+        assert ("qualification pending" in support.reason
+                or "coupled-forecast fidelity vs CPU-WRF pending" in support.reason), support.reason
+        assert "GPU-qualified" not in support.reason, support.reason
 
 
 def _namelist():

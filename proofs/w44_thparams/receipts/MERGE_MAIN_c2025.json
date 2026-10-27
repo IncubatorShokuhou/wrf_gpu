@@ -1,0 +1,56 @@
+{
+ "what": "origin/main c2025fd7ad merged into lane/w44-thparams (manager 02:47Z, w44-params on main)",
+ "merge_commit": "b2ba9acc92",
+ "guard_test_commit": "c4e5e6afd0",
+ "measured_head": "c4e5e6afd005c0263f80679aee8db130510c2b1e",
+ "main": "c2025fd7ad206e7d228d508f0a5bc3c0585ec025",
+ "src_tree": "252e268a36ae44a4e7d2c60aa376816a5ff8ca0c",
+ "main_src_tree": "7497e9b0e3ddc110a019e6d8c68475dc664faa18",
+ "conflicts": {
+  "src/gpuwrf/runtime/operational_mode.py": "OperationalNamelist pytree: thompson_parameters appended before main cycling aux flag; unflatten pops LIFO (cycling, thompson_parameters, mynn_parameters, ...); both OFF = main aux/children",
+  "src/gpuwrf/runtime/runtime_file_readers.json": "union of bindings and groups (thompson_cloud_number_asset + main cycling bindings/groups)"
+ },
+ "guard": "tests/w44_thparams/test_cycling_composition.py 2P; mutants swapped pops 1F, deleted Thompson pop 2F (ValueError in tree_unflatten, test body, 0 setup errors)",
+ "T0_FAST0": "668 passed, 1 skipped, 21 warnings in 959.28s (0:15:59)",
+ "T1_FAST1": "436 passed, 1 skipped, 37 warnings in 497.46s (0:08:17)",
+ "skip_note": "1 skip each = tests/w44_params/test_supervisor RAM-scope control (skips while the shared RAM-slot queue is busy) [I, by elimination]",
+ "release_identity": {
+  "swiss": "b977712fe325c953f3ebbf8f83ea1ca0b9260833ef70981e48bd8a49410e142a",
+  "prod": "321aa651067f1d074b25ebe164536bf27fea5dca151a80c2861dcbab8b58f96b"
+ },
+ "schema2_off_identity_main_vs_merge": {
+  "PROD": {
+   "verdict": "IDENTICAL",
+   "checks_equal": "22/22",
+   "programs": {
+    "root_d01_step": {
+     "raw_hlo_full_sha256": "c1f1f7853249ce15d38a3d3389bb43382517f290c2e71017f18ab0bdba98caa2",
+     "n_pallas_lowerings": 159
+    },
+    "forcedown_d01_d02": {
+     "raw_hlo_full_sha256": "ce38cc341e7934dea22a39371873b02558d4a1d65d3b70702dd0d608badaa644",
+     "n_pallas_lowerings": 7
+    },
+    "child_d02_step": {
+     "raw_hlo_full_sha256": "7f6d21cd7a728e22c0720c7ab7c67d01d758b46d83bc64efca04c02c3c81ded7",
+     "n_pallas_lowerings": 149
+    }
+   },
+   "receipt": "<USER_HOME>/wrf_gpu2_lanes/w44-thparams/MG01/CMP_PROD.json",
+   "receipt_sha256": "b72004dcd1d4581b41ea2eb375ce08c5c062b7cb7028670062325a4790ad370e"
+  },
+  "SWISS": {
+   "verdict": "IDENTICAL",
+   "checks_equal": "10/10",
+   "programs": {
+    "root_d01_step": {
+     "raw_hlo_full_sha256": "df0871edbf7d7e419ea4f929080c6eea1967871e0e17042b672b3e0065bbd9e6",
+     "n_pallas_lowerings": 157
+    }
+   },
+   "receipt": "<USER_HOME>/wrf_gpu2_lanes/w44-thparams/MG01/CMP_SWISS.json",
+   "receipt_sha256": "babca3f6b4758733792e1de7324dd60f91d0c09d36456541e0589f6b81e30b3a"
+  }
+ },
+ "labels": "[M CPU] JAX_PLATFORMS=cpu, cores 24,25,28 nice 19, one RAM slot"
+}

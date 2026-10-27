@@ -203,7 +203,7 @@ def _land_fields(land: Any) -> dict[str, np.ndarray]:
     return {name: _hostify(getattr(land, name)) for name in field_order(land)}
 
 
-def _carry_to_payload(carry: OperationalCarry) -> dict[str, Any]:
+def _carry_to_payload(carry: OperationalCarry, *, mynn_config=None) -> dict[str, Any]:
     """Explicit field-named, host-numpy serialization of the FULL carry."""
     validate_epsilon_history(carry.history_diagnostics,
         {'bl_pbl_physics':16 if carry.state.epsilon_pbl is not None else 0},carry.state.t_skin.shape)
@@ -232,6 +232,12 @@ def _carry_to_payload(carry: OperationalCarry) -> dict[str, Any]:
     payload["extra_fields"] = {
         name: _hostify_tree(getattr(carry, name)) for name in _V1_UNSUPPORTED_CARRY_FIELDS
     }
+    if carry.mynn_budget is not None or mynn_config is not None:
+        from gpuwrf.diagnostics.mynn_budget import configuration,validate_restart
+        config=configuration({}) if mynn_config is None else configuration(mynn_config)
+        validate_restart(carry.mynn_budget,config,1,carry.state.theta.shape)
+        if config!=configuration({}):payload['mynn_budget_config']=config
+        if carry.mynn_budget is not None:payload['mynn_budget_schema_version']=1
     if carry.noahmp_mmf is not None:
         from gpuwrf.io.noahmp_mmf import validate_restart, validate_land
         validate_restart(payload['extra_fields']['noahmp_mmf'], version=1,
@@ -239,6 +245,12 @@ def _carry_to_payload(carry: OperationalCarry) -> dict[str, Any]:
         validate_land(payload['extra_fields']['noahmp_mmf'],payload['noahmp_land_fields'],carry.state.t_skin.shape)
         payload['noahmp_mmf_schema_version'] = 1
     payload["radiation_diagnostics_schema_version"] = RADIATION_DIAGNOSTICS_SCHEMA_VERSION
+    if getattr(carry.radiation_diagnostics, "rad_diag", None) is not None:
+        payload["rad_diag_schema_version"] = 1
+    from gpuwrf.io.topographic_shadow_schema import marker as shadow_marker
+    shadow_version = shadow_marker(carry.radiation_diagnostics)
+    if shadow_version is not None:
+        payload["topographic_shadow_schema_version"] = shadow_version
     from gpuwrf.io.flg_gfdl_schema import marker
     legacy=marker(carry.radiation_diagnostics,carry.gfdl_radiation)
     if legacy is not None:payload['flg_gfdl_schema']=legacy
@@ -283,7 +295,15 @@ def _carry_to_payload(carry: OperationalCarry) -> dict[str, Any]:
     return payload
 
 
-def _validate_radiation_diagnostics_schema(payload: dict[str, Any], *, namelist=None) -> None:
+def _validate_radiation_diagnostics_schema(payload: dict[str, Any], *, namelist=None,
+                                           topographic_shadow_required=None) -> None:
+    from gpuwrf.diagnostics.radiation import validate_restart as validate_rad_diag
+    diagnostics = payload.get("extra_fields", {}).get("radiation_diagnostics")
+    # The carry serializer is also used without a requested namelist. Presence
+    # still requires the schema marker; _read_payload checks the saved selector.
+    config = namelist if namelist is not None else {"rad_diag": int(getattr(diagnostics, "rad_diag", None) is not None)}
+    validate_rad_diag(diagnostics, config, payload.get("rad_diag_schema_version"),
+                      getattr(payload.get("state_fields", {}).get("theta"), "shape", None))
     from gpuwrf.io.flg_gfdl_schema import validate
     extra=payload.get('extra_fields',{})
     validate(extra.get('radiation_diagnostics'),extra.get('gfdl_radiation'),namelist,
@@ -292,6 +312,11 @@ def _validate_radiation_diagnostics_schema(payload: dict[str, Any], *, namelist=
     validate_goddard_radiation(payload.get('extra_fields',{}).get('radiation_diagnostics'),namelist,
                               schema_version=payload.get('goddard_radiation_schema_version'),
                               state_shape=getattr(payload.get('state_fields',{}).get('qv'),'shape',None))
+    from gpuwrf.io.topographic_shadow_schema import validate as validate_shadow
+    validate_shadow(payload.get("extra_fields", {}).get("radiation_diagnostics"),
+        payload.get("topographic_shadow_schema_version"),
+        getattr(payload.get("state_fields", {}).get("t_skin"), "shape", None),
+        namelist=namelist, required=topographic_shadow_required)
     if payload.get("extra_fields", {}).get("radiation_diagnostics") is None:
         return  # Legacy dycore-only restarts have no held radiation to lose.
     if payload.get("radiation_diagnostics_schema_version") != RADIATION_DIAGNOSTICS_SCHEMA_VERSION:
@@ -392,23 +417,31 @@ def write_restart(
     target = Path(path)
     target.parent.mkdir(parents=True, exist_ok=True)
     host_grid = _hostify_tree(grid)
+    from gpuwrf.io.mynn_budget_options import configuration as mynn_configuration
     payload: dict[str, Any] = {
         "format": FORMAT,
         "format_version": FORMAT_VERSION,
         "carry_type": "gpuwrf.runtime.operational_state.OperationalCarry",
-        "carry": _carry_to_payload(carry),
+        "carry": _carry_to_payload(carry,mynn_config=mynn_configuration(namelist)),
         "namelist": _hostify_namelist(namelist, host_grid),
         "grid": host_grid,
         "step_index": int(step_index),
         "noahmp_static": None if noahmp_static is None else _hostify_static(noahmp_static),
         "metadata": dict(extra_metadata) if extra_metadata else {},
     }
+    if physics_option(namelist, "cycling", 0):
+        from gpuwrf.io.restart_schema import CYCLING_SCHEMA_VERSION
+        payload["cycling_schema_version"] = CYCLING_SCHEMA_VERSION
     from gpuwrf.io.noahmp_options import restart_configuration
     payload["noahmp_options"]=restart_configuration(namelist)
     from gpuwrf.io.noahmp_restart_identity import bound_table_identity
     payload["noahmp_bound_tables"]=bound_table_identity(namelist)
     from gpuwrf.surface_params.controls import restart_controls_digest
     payload["surface_controls_digest"]=restart_controls_digest(namelist)
+    from gpuwrf.runtime.restart_parameters import parameter_digests
+    parameters = parameter_digests(namelist)
+    if parameters:
+        payload["runtime_parameter_digests"] = parameters
     payload["carry"]["solar_interpolation_config"] = solar_config
     from gpuwrf.io.glacier_schema import validate as validate_glacier
     validate_glacier(payload['carry'].get('noahmp_land_fields'),payload['carry'].get('noahmp_land_field_order') or (),
@@ -463,6 +496,15 @@ def _read_payload(path: str | Path, *, namelist=None, feedback_schema=None) -> d
             f"unsupported restart version {payload.get('format_version')} in {source}; "
             f"supported {SUPPORTED_FORMAT_VERSIONS}"
         )
+    from gpuwrf.runtime.restart_parameters import validate_parameters
+    validate_parameters(payload.get("runtime_parameter_digests", {}), payload["namelist"])
+    if namelist is not None:
+        validate_parameters(payload.get("runtime_parameter_digests", {}), namelist)
+
+    from gpuwrf.io.restart_schema import validate_cycling_restart
+    validate_cycling_restart(payload["namelist"], payload.get("cycling_schema_version"))
+    if namelist is not None:
+        validate_cycling_restart(namelist, payload.get("cycling_schema_version"))
 
     carry = payload["carry"]
     from gpuwrf.io.noahmp_mmf import validate_restart as validate_mmf
@@ -482,7 +524,9 @@ def _read_payload(path: str | Path, *, namelist=None, feedback_schema=None) -> d
     from gpuwrf.io.windfarm_schema import validate_restart as validate_wind
     validate_wind(carry.get('extra_fields',{}).get('windfarm_power'),carry.get('windfarm_config'),
                   carry['state_fields']['t_skin'].shape,requested=namelist if namelist is not None else payload['namelist'])
-    _validate_radiation_diagnostics_schema(carry)
+    _validate_radiation_diagnostics_schema(carry, namelist=payload.get("namelist"))
+    if namelist is not None:
+        _validate_radiation_diagnostics_schema(carry, namelist=namelist)
     from gpuwrf.io.restart_schema import validate_goddard_radiation
     validate_goddard_radiation(carry.get('extra_fields',{}).get('radiation_diagnostics'),payload['namelist'],
                               carry.get('goddard_radiation_schema_version'))
@@ -532,6 +576,9 @@ def _read_payload(path: str | Path, *, namelist=None, feedback_schema=None) -> d
     validate_restart(carry.get("extra_fields",{}).get("nwp_diagnostics"),
                      carry.get("extra_fields",{}).get("radar_reflectivity"),configuration(payload["namelist"]),
                      carry.get("online_diagnostics_schema_version"),carry["state_fields"]["qv"].shape)
+    from gpuwrf.diagnostics.mynn_budget import validate_payload as validate_mynn_payload
+    validate_mynn_payload(carry,payload['namelist'])
+    if namelist is not None:validate_mynn_payload(carry,namelist)
     from gpuwrf.diagnostics.solar_config import validate_restart as validate_solar_restart
     validate_solar_restart(carry.get("extra_fields", {}).get("solar_interpolation"),
                            carry.get("solar_interpolation_config"),
@@ -599,7 +646,7 @@ def _read_payload(path: str | Path, *, namelist=None, feedback_schema=None) -> d
         recorded_carry = tuple(carry.get("carry_field_order", ()))
         # Only the newly appended, inactive group can be absent in older files.
         expected_carry = tuple(name for name in _CARRY_FIELD_ORDER
-                               if name not in ("camuw_pbl","lake","obs","regional_streams", "precipitation_buckets", "nwp_diagnostics", "radar_reflectivity", "solar_interpolation", "temf", "urban_bep", "feedback_history", "windfarm_power", "tracer_tendencies", "ocean", "hurricane_ustm", "qnse", "osas_rng_key", "cuplus", "noahmp_mmf", "gfdl_radiation", "sst_skin", "noahmp_irrigation", "noahmp_carbon", "noahmp_groundwater", "noahmp_tile_drain", "cu_forcing", "aerod", "taod5502d") or name in recorded_carry)
+                               if name not in ("camuw_pbl","lake","obs","regional_streams", "precipitation_buckets", "nwp_diagnostics", "radar_reflectivity", "solar_interpolation", "temf", "urban_bep", "feedback_history", "windfarm_power", "tracer_tendencies", "ocean", "hurricane_ustm", "qnse", "osas_rng_key", "cuplus", "noahmp_mmf", "gfdl_radiation", "sst_skin", "noahmp_irrigation", "noahmp_carbon", "noahmp_groundwater", "noahmp_tile_drain", "cu_forcing", "aerod", "taod5502d", "mynn_budget") or name in recorded_carry)
         if recorded_carry != expected_carry:
             raise ValueError("restart OperationalCarry field order does not match current schema")
         expected_extra = set(_V1_UNSUPPORTED_CARRY_FIELDS)
@@ -613,7 +660,7 @@ def _read_payload(path: str | Path, *, namelist=None, feedback_schema=None) -> d
             expected_extra.remove('regional_streams')
         if "precipitation_buckets" not in recorded_carry:
             expected_extra.remove("precipitation_buckets")
-        for group in ("nwp_diagnostics","radar_reflectivity","solar_interpolation","windfarm_power", "tracer_tendencies", 'sst_skin', 'noahmp_irrigation', 'noahmp_carbon', 'noahmp_groundwater', 'noahmp_tile_drain', 'cu_forcing', 'aerod', 'taod5502d'):
+        for group in ("nwp_diagnostics","radar_reflectivity","solar_interpolation","windfarm_power", "tracer_tendencies", 'sst_skin', 'noahmp_irrigation', 'noahmp_carbon', 'noahmp_groundwater', 'noahmp_tile_drain', 'cu_forcing', 'aerod', 'taod5502d', 'mynn_budget'):
             if group not in recorded_carry:
                 expected_extra.remove(group)
         if 'temf' not in recorded_carry:
@@ -676,6 +723,8 @@ def _read_payload(path: str | Path, *, namelist=None, feedback_schema=None) -> d
 
 
 def _restore_carry(carry_payload: dict[str, Any]) -> OperationalCarry:
+    from gpuwrf.diagnostics.mynn_budget import validate_payload as validate_mynn_payload
+    validate_mynn_payload(carry_payload)
     from gpuwrf.io.feedback_restart import validate_payload
     validate_payload(carry_payload)
     validate_epsilon_history(carry_payload.get('extra_fields',{}).get('history_diagnostics'),

@@ -1,0 +1,112 @@
+{
+  "source": "<DATA_ROOT>/wrf_gpu2/scratch/w44-e84fix/snapshot",
+  "source_commit": "ff23e3a102b2bda85d1199bcadbcf45c6c75a000",
+  "source_dirty": "",
+  "case": "<USER_HOME>/wrf_gpu2_lanes/o5-perf/mem/swiss_case",
+  "domain": "d01",
+  "physical_backend": "cpu",
+  "lowering_platform": "cuda",
+  "gpu_executed": false,
+  "scope": "deviceless CompileOnly prescreen (autotune 0); actual GPU E41 scan stays authoritative",
+  "target_sha256": "b753abdddbace1e913de3767a1afbdfeba2b272e77f2be93658c766968e4960f",
+  "harness_sha256": "f27cd1ec09a672f90b113f67c04b52f7d932980fc38e3d221f71104fcf96b37e",
+  "phase": "done",
+  "wall_s": 292.83210288699775,
+  "peak_rss_KiB": 4776500,
+  "input_sha256": {
+    "namelist.input": "98eb3e0457b53a510931401ad1575e980a716da4588f8cbca4be95fd92846039",
+    "wrfbdy_d01": "f3e556670e4768326997bdfa1dd8b0f77eb6d5da07d9c4dbf900bf8ff9e30230",
+    "wrfinput_d01": "a5d696550d1dc6713e2e340b8c2fba83811d43f4a94a65ca95266035860e2781"
+  },
+  "gpuwrf_file": "<DATA_ROOT>/wrf_gpu2/scratch/w44-e84fix/snapshot/src/gpuwrf/__init__.py",
+  "static_kwargs": {
+    "n_steps": 200,
+    "cadence": 33
+  },
+  "traced_pallas_calls": 159,
+  "stablehlo_sha256": "660c986ca8b79e8eacf4785f9a60bbbd28df3944fc225bcb925065583e400671",
+  "stablehlo_bytes": 260023874,
+  "raw_full_constant_proto_sha256": "2309c097366daadbed3d29c9263074d7950841dc037e0a587d67fc80beb90f91",
+  "compile_s": 218.9434591629979,
+  "optimized_hlo_sha256": "c28ec020bca52fb9a6241857140145ced5178253c231c34cecb5aac149991516",
+  "optimized_full_constant_proto_sha256": "9eae78044f4fd9fe56839f0b2b343ab1352c0e9c1f96df9af2a296b785e28d63",
+  "memory": {
+    "argument_size_in_bytes": 27359480,
+    "output_size_in_bytes": 24936004,
+    "temp_size_in_bytes": 224182360,
+    "alias_size_in_bytes": 24934644
+  },
+  "cuda_ptx_files": [
+    "<USER_HOME>/wrf_gpu2_lanes/w44-e84fix/E8408_swiss_d01/dump/module_0001.jit__advance_chunk_fori.ptx"
+  ],
+  "n_fusions": 1464,
+  "transpose_fusions": 495,
+  "kinput_transpose_over500": [],
+  "any_transpose_over500": [],
+  "top_transpose": [
+    [
+      389,
+      "kInput",
+      "input_divide_maximum_minimum_multiply_select_transpose_fusion"
+    ],
+    [
+      366,
+      "kLoop",
+      "loop_add_fusion.45"
+    ],
+    [
+      360,
+      "kLoop",
+      "loop_add_fusion.44"
+    ],
+    [
+      348,
+      "kLoop",
+      "loop_add_fusion.42"
+    ],
+    [
+      346,
+      "kInput",
+      "input_transpose_fusion.134"
+    ],
+    [
+      336,
+      "kLoop",
+      "loop_transpose_fusion.7"
+    ],
+    [
+      330,
+      "kLoop",
+      "loop_multiply_transpose_fusion.1"
+    ],
+    [
+      295,
+      "kLoop",
+      "loop_add_fusion.46"
+    ],
+    [
+      280,
+      "kInput",
+      "input_add_transpose_fusion"
+    ],
+    [
+      265,
+      "kLoop",
+      "loop_multiply_fusion.62"
+    ],
+    [
+      249,
+      "kLoop",
+      "loop_multiply_fusion.63"
+    ],
+    [
+      249,
+      "kLoop",
+      "loop_add_fusion.43"
+    ]
+  ],
+  "native_gate": "PASS",
+  "hard_stack_gate": "PASS",
+  "max_stack_B": 16,
+  "kernels": 1081
+}

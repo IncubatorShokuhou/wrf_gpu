@@ -18,10 +18,10 @@ _INTERPRET = False
 def _rn(op, a, b, *, interpret):
     a, b = jnp.broadcast_arrays(a, b)
     if interpret or not pl.cuda_native():
-        # Exact RN32 on the CPU interpreter: binary64 then one rounding is the
-        # correctly rounded binary32 result for + - * / (53 >= 2*24 + 2). The
-        # explicit reduce_precision keeps XLA's excess-precision rewrite from
-        # dropping the f64->f32->f64 round trip between chained operations.
+        if not interpret and pl.vendor() == "rocm":  # AMDGCN RN ops (vendor_ops)
+            return pl.amd_rn(op, a, b)
+        # Exact RN32 on the CPU interpreter: binary64 then one rounding is correct
+        # for + - * / (53 >= 2*24 + 2); reduce_precision pins the f64->f32 trip.
         a64, b64 = a.astype(jnp.float64), b.astype(jnp.float64)
         exact = {'add': a64+b64, 'sub': a64-b64, 'mul': a64*b64, 'div': a64/b64}[op]
         return jax.lax.reduce_precision(exact, exponent_bits=8, mantissa_bits=23).astype(jnp.float32)

@@ -1,0 +1,116 @@
+{
+  "scope": "FINAL composed-source carry; manager MERGE-RC10:25:38",
+  "base": "4b0d75008eee8c09ede3f11ec4ac85f3ef09d60e",
+  "candidate": "7ce3a9276e34e84decf16f772f8f54c800b8ee0c",
+  "changed_files": [
+    {
+      "file": "src/gpuwrf/cli.py",
+      "base_sha256": "434d211ec260974d8f2911ecf761cf5623f75df5a06e1275326d2ebd675bf325",
+      "candidate_sha256": "a224ea68aa4f9597fba21fc540a0a1a4c421104eb13b6d92faa03e6146efa795",
+      "changed_definitions": [
+        "build_parser"
+      ],
+      "added_definitions": [],
+      "removed_definitions": []
+    },
+    {
+      "file": "src/gpuwrf/integration/nested_pipeline.py",
+      "base_sha256": "3a95c1fa8e4f3cd447bc5a1219e1d8846eab7911b430af0401013c044c836c2c",
+      "candidate_sha256": "d9c6fff1e76f0dfd23b238db998729acd7a677d2c44bbd5aec0568aae4a8dbdc",
+      "changed_definitions": [
+        "_bind_batch_surface_controls"
+      ],
+      "added_definitions": [],
+      "removed_definitions": []
+    },
+    {
+      "file": "src/gpuwrf/runtime/operational_mode.py",
+      "base_sha256": "6be5b7f8323d838324298f1eaa9f497b3bf5fce056dfe4a88803b56eae60b94e",
+      "candidate_sha256": "1079fb7deca6c774d5d78efc12994630ed2c099f4d7d041f95618f39f07e8b6c",
+      "changed_definitions": [
+        "OperationalNamelist",
+        "OperationalNamelist.__post_init__"
+      ],
+      "added_definitions": [],
+      "removed_definitions": []
+    },
+    {
+      "file": "src/gpuwrf/surface_params/cli.py",
+      "base_sha256": "3d8b184a9784c9672fda905c6e0b789b501da5cf1a5696feb6c8276b214f2c66",
+      "candidate_sha256": "0be66368f2fa289dcd45185996e4ed3248d874e866484c509bc6ef9d87770b98",
+      "changed_definitions": [
+        "write_basis",
+        "expand_from_basis",
+        "_spec_problem",
+        "member_multipliers",
+        "_write_members",
+        "_eki_init"
+      ],
+      "added_definitions": [],
+      "removed_definitions": []
+    },
+    {
+      "file": "src/gpuwrf/surface_params/controls.py",
+      "base_sha256": "51a1abae797d14bf4a41823f156cd76ed34288b0666d918d50d023523a80b3f6",
+      "candidate_sha256": "4a536a876086b157dc3cd66923305564fe42c3968ffa674769470844425a813e",
+      "changed_definitions": [
+        "controls_aux",
+        "apply_surface_controls",
+        "traced_controls",
+        "expand_controls",
+        "validate_controls",
+        "save_controls",
+        "load_controls",
+        "has_host_controls",
+        "bind_domain_controls"
+      ],
+      "added_definitions": [
+        "refuse_unqualified_controls",
+        "refuse_unqualified_sources"
+      ],
+      "removed_definitions": []
+    },
+    {
+      "file": "src/gpuwrf/surface_params/lsmparams.py",
+      "base_sha256": "e2eee6f50c43929986c9186ad532ff16c9d7823a627f2a5b48b17ef13b114d30",
+      "candidate_sha256": "318002a31ce7deaf5eb8da1c415a7e5232477f86a8bc3c6952376d731a521ec2",
+      "changed_definitions": [
+        "apply"
+      ],
+      "added_definitions": [],
+      "removed_definitions": []
+    }
+  ],
+  "all_dynamics_physics_coupling_kernels_contracts_nesting_domain_tree_aot": "BYTE_IDENTICAL",
+  "operational_hot_functions": "AST_IDENTICAL except host OperationalNamelist constructor guard",
+  "integration_hot_functions": "AST_IDENTICAL except host batch-control admission (B1 skips)",
+  "import_closure": "no operator-module import statements change; new local imports/guards occur in host admission/getter functions; default None/key checks emit no JAX arithmetic",
+  "actual_default_program_evidence": {
+    "source_packet": "<DATA_ROOT>/wrf_gpu2/worktrees/w44-lsmparams/proofs/w44_lsmparams/rc_refusal_7ce3",
+    "HANDOFF_sha256": "9366208fb38250f6b78a00a012e315f53a40c055f0002c285333686f3f9fbce0",
+    "identity_compare_sha256": "16386aa20cd39cef446db6817000af7b8c5863cde29a40c7281ecc13e21d0d2e",
+    "verdict": "IDENTICAL",
+    "checks": 22,
+    "programs": [
+      "root_d01_step",
+      "forcedown_d01_d02",
+      "child_d02_step"
+    ]
+  },
+  "limits": "Module bytes in operational_mode/nested_pipeline DO change. This is function/import-closure and actual native-program identity, not a claim that every imported module is byte-identical. Remaining five-program evidence carried under manager01:55:30 ruling only after final approved source matches this delta.",
+  "composed_commit": "f157ee2a4dd7e6debbab7fe40867e9ef17045a7c",
+  "composed_src": "aa961cb87176f4185aca4d61c99754cae74a2be6",
+  "composed_tests": "e8b6ea6322ba05832bff54df778b4289ab4cc69d",
+  "tree_identity": {
+    "src": {
+      "expected": "aa961cb87176f4185aca4d61c99754cae74a2be6",
+      "actual": "aa961cb87176f4185aca4d61c99754cae74a2be6",
+      "EXACT": true
+    },
+    "tests": {
+      "expected": "e8b6ea6322ba05832bff54df778b4289ab4cc69d",
+      "actual": "e8b6ea6322ba05832bff54df778b4289ab4cc69d",
+      "EXACT": true
+    }
+  }
+}

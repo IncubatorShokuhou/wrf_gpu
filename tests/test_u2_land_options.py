@@ -148,7 +148,12 @@ def test_noahmp_snow_selector_checkpoint_roundtrip(tmp_path):
     nl = replace(_namelist(grid), noahmp_options=NoahMPOptions(1, 4, read_bats_parameters()))
     land = _land()
     path = tmp_path / "snow.pkl"
-    write_checkpoint(_state(grid), nl, grid, 1, path, land_state=land)
+    # Product initializer seeding (operational_mode._initial_carry_for_run): static-scheme
+    # conditional leaves, incl. the held MP_RE effective radii when mp_re_active(nl).
+    state = _state(grid).ensure_conditional_leaves(mp_physics=int(nl.mp_physics), use_mp_re=int(nl.use_mp_re),
+                                                   ra_lw_physics=int(nl.ra_lw_physics),
+                                                   ra_sw_physics=int(nl.ra_sw_physics))
+    write_checkpoint(state, nl, grid, 1, path, land_state=land)
     _, restored, _, _, loaded = read_checkpoint_with_land_state(path)
     assert restored.noahmp_options == nl.noahmp_options
     for name in land.__slots__:

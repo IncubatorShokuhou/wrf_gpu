@@ -1,0 +1,145 @@
+{
+  "source": "<USER_HOME>/wrf_gpu2_lanes/w44-precompile/snapshot",
+  "source_commit": "0fdf00f662707fad0ce141a38472e289dd7fe34a",
+  "source_dirty": "",
+  "case": "<USER_HOME>/wrf_gpu2_lanes/w44-perf/prod_case",
+  "domain": "d01",
+  "physical_backend": "cpu",
+  "lowering_platform": "cuda",
+  "gpu_executed": false,
+  "scope": "deviceless CompileOnly prescreen (autotune 0); actual GPU E41 scan stays authoritative",
+  "target_sha256": "b753abdddbace1e913de3767a1afbdfeba2b272e77f2be93658c766968e4960f",
+  "harness_sha256": "f2f298b390e00ff951fdaf1b9335f41d168c1630f82f16fcbccb2a72a1153080",
+  "environment": {
+    "JAX_PLATFORMS": "cpu",
+    "CUDA_VISIBLE_DEVICES": "",
+    "GPUWRF_JAX_CACHE": "0",
+    "GPUWRF_FAST_DEFAULTS": "1",
+    "GPUWRF_CENSUS_ENABLE": "1",
+    "GPUWRF_SLIM_CARRY": "0",
+    "GPUWRF_AOT_SLIM_MODULE": "0",
+    "GPUWRF_RRTMG_MP_RE": "1",
+    "XLA_FLAGS": "--xla_gpu_autotune_level=0"
+  },
+  "phase": "scan",
+  "wall_s": 370.89512241998455,
+  "peak_rss_KiB": 6415300,
+  "input_sha256": {
+    "namelist.input": "5ef3a96be3324deb712b0e0114288244bcf5f53edb21461fee7374aa766cef4b",
+    "wrfinput_d02": "b3013bbb337adbe20c10331f46b309d288424e54a41e9cc4ba2e8eba53abb16f",
+    "wrfbdy_d01": "296cef912e17dc0dfff4b78103dedfb1329cd184de5bc2cd0d44cc6edf823599",
+    "wrfinput_d01": "1024ddb7d6badc958fb1a4f385117ce5c46d20249b75bcce2ea4261d34f648f0",
+    "SHA256SUMS": "bcdeaaa5eb0ccc05437cf276bd970ed3486f569060d90b09f1410a6fe02b1a60"
+  },
+  "gpuwrf_file": "<USER_HOME>/wrf_gpu2_lanes/w44-precompile/snapshot/src/gpuwrf/__init__.py",
+  "static_kwargs": {
+    "n_steps": 1,
+    "cadence": 33
+  },
+  "traced_pallas_calls": 161,
+  "stablehlo_sha256": "6cc0486b3dea3f4ad5694939851bcbbdc21fd057068185e936be6bb1cdf44d8d",
+  "stablehlo_bytes": 267896242,
+  "compiler_options": {
+    "xla_gpu_autotune_level": 0,
+    "xla_gpu_experimental_aot_compiled_thunks": true
+  },
+  "compile_s": 152.10275848500896,
+  "optimized_hlo_sha256": "66ad8966b6fd3c126aab7331994fe3b60998477f36684ff93b08d9e5b26eed88",
+  "n_fusions": 1375,
+  "transpose_fusions": 557,
+  "kinput_transpose_over500": [],
+  "any_transpose_over500": [],
+  "top_transpose": [
+    [
+      406,
+      "kInput",
+      "input_multiply_power_select_subtract_transpose_fusion"
+    ],
+    [
+      376,
+      "kInput",
+      "input_transpose_fusion.124"
+    ],
+    [
+      352,
+      "kInput",
+      "input_transpose_fusion.125"
+    ],
+    [
+      339,
+      "kInput",
+      "input_add_divide_multiply_transpose_fusion"
+    ],
+    [
+      322,
+      "kInput",
+      "input_maximum_pad_transpose_fusion"
+    ],
+    [
+      312,
+      "kInput",
+      "input_maximum_select_transpose_fusion"
+    ],
+    [
+      312,
+      "kInput",
+      "input_maximum_multiply_transpose_fusion"
+    ],
+    [
+      303,
+      "kLoop",
+      "loop_divide_transpose_fusion"
+    ],
+    [
+      289,
+      "kInput",
+      "input_minimum_multiply_transpose_fusion"
+    ],
+    [
+      285,
+      "kInput",
+      "input_add_clamp_convert_maximum_minimum_power_transpose_fusion"
+    ],
+    [
+      282,
+      "kInput",
+      "input_multiply_transpose_fusion.7"
+    ],
+    [
+      276,
+      "kLoop",
+      "loop_transpose_fusion.10"
+    ]
+  ],
+  "serialization": {
+    "aot_recovery": null,
+    "aot_recovery_reason": null,
+    "aot_recovery_compile_seconds": 0.0,
+    "aot_recovery_seconds": 0.0,
+    "aot_trace_compaction_seconds": 0.09237405500607565,
+    "aot_trace_compaction": {
+      "reason": "unsupported-or-invalid-format"
+    },
+    "aot_compiled_thunks": {
+      "reason": "not-legacy-format",
+      "legacy_bytes": 208759676,
+      "seconds": 9.309966117143631e-06
+    },
+    "aot_trace_metadata": "rich"
+  },
+  "target_fingerprint": {
+    "jaxlib_version": "0.10.0",
+    "jax_version": "0.10.0",
+    "device_kind": "NVIDIA GeForce RTX 5090",
+    "platform": "gpu",
+    "compute_capability": "12.0",
+    "cuda_driver": "PJRT C API\nNVIDIA GeForce RTX 5090",
+    "x64": true,
+    "xla_flags": "--xla_gpu_autotune_level=0"
+  },
+  "executable_format": "xla-gpu-thunks-riegeli-v1",
+  "blob_sha256": "28a2439e2d2944eb936b2b1d837395456663efa72663bfafc7b64bb8177a0064",
+  "blob_bytes": 208759676,
+  "exception": "TypeError(\"cannot pickle 'jaxlib._jax.Device' object\")",
+  "traceback": "Traceback (most recent call last):\n  File \"<USER_HOME>/wrf_gpu2_lanes/w44-precompile/snapshot/proofs/w44_precompile/build_cpu.py\", line 232, in <module>\n    (a.out / 'call.pkl').write_bytes(pickle.dumps((host_args, kw, commitments)))\n                                     ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nTypeError: cannot pickle 'jaxlib._jax.Device' object\n"
+}

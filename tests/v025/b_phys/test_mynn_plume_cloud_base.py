@@ -89,6 +89,11 @@ def test_real_cloud_deck_height_matches_original_loop(monkeypatch,pristine_cloud
 def test_both_actual_mynn_calls_forward_fresh_clouds(monkeypatch):
     monkeypatch.setenv(FLAG,"1");monkeypatch.setattr(P,"_MYNN_SGS_CLOUD",True)
     row=json.loads(FIXTURE.read_text())["rows"][1];state,flux,qc_bl,cf=batch(row)
+    # The release-default MYNN caller requires the SFCLAY WSPD handle. The
+    # fixture carries none and this probe stops at the DMP call, before the
+    # implicit bottom boundary (the only WSPD consumer): the retained legacy
+    # wind serves as a neutral placeholder value.
+    flux=flux._replace(wspd=jnp.maximum(jnp.sqrt(state.u[...,0]*state.u[...,0]+state.v[...,0]*state.v[...,0]),jnp.float32(.2)))
     assert np.any(np.asarray(cf)!=np.asarray(state.cldfra_bl))
     monkeypatch.setattr(P,"mym_condensation_cloudpdf2",lambda **kw:(qc_bl,jnp.zeros_like(qc_bl),cf))
     seen=[]

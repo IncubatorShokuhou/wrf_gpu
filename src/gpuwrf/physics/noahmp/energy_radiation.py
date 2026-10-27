@@ -36,6 +36,7 @@ import jax
 import jax.numpy as jnp
 from jax import lax
 from gpuwrf.physics.noahmp.precision import native_real_enabled, real_tree, real_scalar
+from gpuwrf.contracts.real_constfold import R4, is_host_scalar, real_constant
 
 from gpuwrf.contracts.noahmp_state import NoahMPLandState, NoahMPStatic
 from gpuwrf.physics.noahmp.types import NoahMPForcing, NoahMPPhenology, NoahMPRadInputs
@@ -137,10 +138,22 @@ def snow_age(dt, tg, sneqvo, sneqv, tauss, p: "TwoStreamParams"):
     return tauss_new, fage
 
 
+def _class_alb_arg(dt):
+    """WRF REAL EXP argument -0.01*DT/3600.0 (module_sf_noahmplsm.F:3261), per operation in REAL (w44-constfold).
+
+    Only a host-scalar DT is refolded (the CPU/XLA path); a traced DT (the GPU Noah-MP radiation kernel) already
+    evaluates it in REAL and is returned unchanged. Called inside the EXP so (ALBOLD-0.55) is traced first, as before.
+    """
+    if is_host_scalar(dt):
+        return real_constant((R4(-0.01) * R4(dt)) / R4(3600.0), -0.01 * dt / 3600.0,
+                             jnp.float32 if native_real_enabled() else jnp.float64)
+    return -0.01 * dt / 3600.0
+
+
 def _snowalb_class_value(qsnow, dt, albold, p):
     """The unchanged scalar CLASS albedo statements, without band packaging."""
     swemx = _scalar(p.swemx, _SWEMX_DEF)
-    alb = 0.55 + (albold - 0.55) * jnp.exp(real_scalar(-0.01 * dt / 3600.0))  # WRF REAL EXP
+    alb = 0.55 + (albold - 0.55) * jnp.exp(real_scalar(_class_alb_arg(dt)))  # WRF REAL EXP
     alb = jnp.where(
         qsnow > 0.0,
         alb + jnp.minimum(qsnow, swemx / dt) * (0.84 - alb) / (swemx / dt),

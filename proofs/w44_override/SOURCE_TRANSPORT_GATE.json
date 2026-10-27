@@ -1,0 +1,74 @@
+{
+  "source_admission_tests_passed": true,
+  "release_gates_complete": false,
+  "source_commit": "06497b56cc",
+  "authority": "Manager decision 2026-10-23T21:06:05Z (user/MAIN MAILBOX)",
+  "mode": "verified source storage/totals + finite/schema/geometry; inherited negative moisture/liquid RH extrema reported without edits or waivers",
+  "strict_edits": "negative moisture, RH and balance checks retained; source mismatch remains nonwaivable; false changed masks cannot conceal source edits",
+  "code_sha256": "23aef828426dd4a8851806b285a85769348bdd64f50ee3a5456f55db6070ee53",
+  "tests": {
+    "passed": 134,
+    "failures": 0,
+    "setup_errors": 0,
+    "new_source_cases": 16,
+    "deletion_mutants_killed": 2,
+    "positivity_deletion_assertions": 5,
+    "source_proof_deletion_assertions": 3,
+    "mutant_setup_errors": 0
+  },
+  "source_extrema_fixture": {
+    "QNRAIN_min": -6.19e-29,
+    "QNRAIN_negative_cells": 2,
+    "QNRAIN_outer_ring_negative_cells": 2,
+    "liquid_RH_max": 1.0049,
+    "supersaturated_cells": 2,
+    "waivers": {},
+    "target_and_reference_storage_unchanged": true
+  },
+  "host_cost": {
+    "three_domain_source_checker_s": 0.4996428830199875,
+    "peak_process_rss_kib_including_paired_payloads": 596120,
+    "scope": "paired copies from real-case-shaped existing staged input; excludes payload loading; not actual May source/forecast validation"
+  },
+  "receipts": {
+    "OV18.xml": {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/w44-override/OV18.xml",
+      "sha256": "019babcdf57bab321704edec47a5e9c461281d2dcd0c6dfac3ecd77b160b9129"
+    },
+    "OV19.log": {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/w44-override/OV19.log",
+      "sha256": "2b36ee9dfe3c196144d37cfb4712107d010742ea2211724a63de65c018bda0b5"
+    },
+    "transport_mutants/RESULTS.json": {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/w44-override/transport_mutants/RESULTS.json",
+      "sha256": "49acb9ede24b869b21f31a3aec28197eb9f7ff3989ba2faa27bc3dd643533047"
+    },
+    "OV20.log": {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/w44-override/OV20.log",
+      "sha256": "242391173a513bc7783eb6b1c863c34627aaed82adfd51373ee9d1586d34a038"
+    }
+  },
+  "consumer_followup": "w44-warmstart imports exact shared module and owns necessary native May source admission/timing; no duplicated forecast",
+  "pending": [
+    "consumer native May verification",
+    "existing manager-sequenced GPU/release gates"
+  ],
+  "history": "HOST_GATE.json and DELTA_GATE.json retained unchanged",
+  "independent_review": {
+    "verdict": "MERGE HOST SOURCE-ADMISSION DELTA ONLY",
+    "path": "<USER_HOME>/wrf_gpu2_lanes/cr-w44-override/delta_06497b56cc/VERDICT.md",
+    "sha256": "baef0bea9c5972e1555876831a64f9c47e028e505ad6726ce55682a70f6def40",
+    "producer_tests": 42,
+    "independent_tests": 58,
+    "own_mutant_assertions": [
+      24,
+      16
+    ],
+    "setup_errors": 0
+  },
+  "main_integration": {
+    "commit": "c15f937487",
+    "manager_confirmed": "2026-10-23T21:23:42Z",
+    "post_merge_tests_pass": 155
+  }
+}

@@ -1,0 +1,395 @@
+{
+  "schema": "w44-perf.q3-decision.v1",
+  "begin_utc": "2026-10-24T14:48:09.803409+00:00",
+  "end_utc": "2026-10-24T14:49:49.688804+00:00",
+  "verdict": "NO QUALIFYING PROTOTYPE",
+  "gpu_executed": false,
+  "model_lower_or_compile": false,
+  "prototype_count": 0,
+  "cache": "NONE",
+  "threshold_ms_root": 0.5,
+  "source_selector": "_inactive_source_branches.mixed_phase: warm_any,cold_any=_any(valid & warm),_any(valid & cold_cells); cold first, then warm, then dry",
+  "binding": "Each existing PTX record1 and native record2 belongs to the exact loaded d02 program, prior full executionpayload proof carried forward. No name-based transfer across versions.",
+  "selector_ptx_pair": {
+    "lines": [
+      578,
+      586
+    ],
+    "context": [
+      {
+        "line": 546,
+        "instruction": "selp.f32 \t%r7252, %r685, %r683, %p43;"
+      },
+      {
+        "line": 547,
+        "instruction": "setp.geu.f32 \t%p50, %r7251, 0f00000000;"
+      },
+      {
+        "line": 548,
+        "instruction": "@%p50 bra \t$L__BB731_12;"
+      },
+      {
+        "line": 549,
+        "instruction": "neg.f32 \t%r7252, %r7252;"
+      },
+      {
+        "line": 550,
+        "instruction": "$L__BB731_12:"
+      },
+      {
+        "line": 551,
+        "instruction": "max.f32 \t%r12, %r425, 0f00000000;"
+      },
+      {
+        "line": 552,
+        "instruction": "max.f32 \t%r13, %r426, 0f00000000;"
+      },
+      {
+        "line": 553,
+        "instruction": "mul.rn.f32 \t%r687, %r25, %r7252;"
+      },
+      {
+        "line": 554,
+        "instruction": "mov.b32 \t%r688, 0f43517084;"
+      },
+      {
+        "line": 555,
+        "instruction": "div.full.f32 \t%r689, %r687, %r688;"
+      },
+      {
+        "line": 556,
+        "instruction": "div.full.f32 \t%r690, %r689, %r15;"
+      },
+      {
+        "line": 557,
+        "instruction": "max.f32 \t%r691, %r690, 0f358637BD;"
+      },
+      {
+        "line": 558,
+        "instruction": "selp.f32 \t%r27, %r691, 0f00000000, %p20;"
+      },
+      {
+        "line": 559,
+        "instruction": "setp.lt.f32 \t%p61, %r427, 0f43889333;"
+      },
+      {
+        "line": 560,
+        "instruction": "div.full.f32 \t%r692, %r6, %r17;"
+      },
+      {
+        "line": 561,
+        "instruction": "add.rn.f32 \t%r693, %r692, 0fBF800000;"
+      },
+      {
+        "line": 562,
+        "instruction": "div.full.f32 \t%r28, %r6, %r18;"
+      },
+      {
+        "line": 563,
+        "instruction": "add.rn.f32 \t%r29, %r28, 0fBF800000;"
+      },
+      {
+        "line": 564,
+        "instruction": "setp.ge.f32 \t%p62, %r693, 0f3E4CCCCD;"
+      },
+      {
+        "line": 565,
+        "instruction": "setp.gt.f32 \t%p63, %r29, 0f00000000;"
+      },
+      {
+        "line": 566,
+        "instruction": "setp.lt.f32 \t%p64, %r427, 0f437D2666;"
+      },
+      {
+        "line": 567,
+        "instruction": "and.pred \t%p65, %p64, %p63;"
+      },
+      {
+        "line": 568,
+        "instruction": "or.pred \t%p66, %p62, %p65;"
+      },
+      {
+        "line": 569,
+        "instruction": "or.pred \t%p67, %p1, %p66;"
+      },
+      {
+        "line": 570,
+        "instruction": "and.pred \t%p68, %p61, %p67;"
+      },
+      {
+        "line": 571,
+        "instruction": "or.pred \t%p69, %p19, %p68;"
+      },
+      {
+        "line": 572,
+        "instruction": "or.pred \t%p70, %p18, %p69;"
+      },
+      {
+        "line": 573,
+        "instruction": "or.pred \t%p71, %p20, %p70;"
+      },
+      {
+        "line": 574,
+        "instruction": "and.pred \t%p72, %p1167, %p1;"
+      },
+      {
+        "line": 575,
+        "instruction": "selp.b32 \t%r694, 1, 0, %p72;"
+      },
+      {
+        "line": 576,
+        "instruction": "bar.sync \t0;"
+      },
+      {
+        "line": 577,
+        "instruction": "mov.b32 \t%r695, -1;"
+      },
+      {
+        "line": 578,
+        "instruction": "redux.sync.max.s32 \t%r696, %r694, %r695;"
+      },
+      {
+        "line": 579,
+        "instruction": "st.shared.b32 \t[%rd46], %r696;"
+      },
+      {
+        "line": 580,
+        "instruction": "bar.sync \t0;"
+      },
+      {
+        "line": 581,
+        "instruction": "ld.shared.b32 \t%r30, [%rd47];"
+      },
+      {
+        "line": 582,
+        "instruction": "shfl.sync.bfly.b32 \t%r31, %r30, 1, 31, -1;"
+      },
+      {
+        "line": 583,
+        "instruction": "and.pred \t%p73, %p1167, %p71;"
+      },
+      {
+        "line": 584,
+        "instruction": "selp.b32 \t%r697, 1, 0, %p73;"
+      },
+      {
+        "line": 585,
+        "instruction": "bar.sync \t0;"
+      },
+      {
+        "line": 586,
+        "instruction": "redux.sync.max.s32 \t%r698, %r697, %r695;"
+      },
+      {
+        "line": 587,
+        "instruction": "st.shared.b32 \t[%rd46], %r698;"
+      },
+      {
+        "line": 588,
+        "instruction": "bar.sync \t0;"
+      },
+      {
+        "line": 589,
+        "instruction": "ld.shared.b32 \t%r699, [%rd47];"
+      },
+      {
+        "line": 590,
+        "instruction": "shfl.sync.bfly.b32 \t%r700, %r699, 1, 31, -1;"
+      },
+      {
+        "line": 591,
+        "instruction": "max.s32 \t%r701, %r699, %r700;"
+      },
+      {
+        "line": 592,
+        "instruction": "setp.ne.b32 \t%p74, %r701, 0;"
+      },
+      {
+        "line": 593,
+        "instruction": "add.s64 \t%rd1374, %rd4, 8;"
+      },
+      {
+        "line": 594,
+        "instruction": "add.s64 \t%rd1375, %rd4, 16;"
+      },
+      {
+        "line": 595,
+        "instruction": "add.s64 \t%rd1376, %rd4, 24;"
+      },
+      {
+        "line": 596,
+        "instruction": "add.s64 \t%rd1377, %rd4, 32;"
+      },
+      {
+        "line": 597,
+        "instruction": "add.s64 \t%rd1378, %rd4, 40;"
+      },
+      {
+        "line": 598,
+        "instruction": "add.s64 \t%rd1379, %rd4, 48;"
+      },
+      {
+        "line": 599,
+        "instruction": "add.s64 \t%rd1380, %rd4, 56;"
+      },
+      {
+        "line": 600,
+        "instruction": "add.s64 \t%rd1381, %rd4, 64;"
+      },
+      {
+        "line": 601,
+        "instruction": "add.s64 \t%rd1382, %rd4, 72;"
+      },
+      {
+        "line": 602,
+        "instruction": "add.s64 \t%rd1383, %rd5, 8;"
+      },
+      {
+        "line": 603,
+        "instruction": "add.s64 \t%rd1384, %rd5, 16;"
+      }
+    ],
+    "predicate_dependencies": {
+      "%p72": {
+        "line": 574,
+        "instruction": "and.pred \t%p72, %p1167, %p1;"
+      },
+      "%p1": {
+        "line": 269,
+        "instruction": "or.pred \t%p1, %p16, %p17;"
+      },
+      "%p17": {
+        "line": 268,
+        "instruction": "setp.gt.f32 \t%p17, %r8, 0f2B8CBCCC;"
+      },
+      "%p16": {
+        "line": 267,
+        "instruction": "setp.gt.f32 \t%p16, %r7, 0f2B8CBCCC;"
+      },
+      "%p1167": {
+        "line": 124,
+        "instruction": "setp.lt.u32 \t%p1167, %r2, 44;"
+      },
+      "%p64": {
+        "line": 566,
+        "instruction": "setp.lt.f32 \t%p64, %r427, 0f437D2666;"
+      },
+      "%p61": {
+        "line": 559,
+        "instruction": "setp.lt.f32 \t%p61, %r427, 0f43889333;"
+      },
+      "%p69": {
+        "line": 571,
+        "instruction": "or.pred \t%p69, %p19, %p68;"
+      },
+      "%p68": {
+        "line": 570,
+        "instruction": "and.pred \t%p68, %p61, %p67;"
+      },
+      "%p67": {
+        "line": 569,
+        "instruction": "or.pred \t%p67, %p1, %p66;"
+      },
+      "%p66": {
+        "line": 568,
+        "instruction": "or.pred \t%p66, %p62, %p65;"
+      },
+      "%p65": {
+        "line": 567,
+        "instruction": "and.pred \t%p65, %p64, %p63;"
+      },
+      "%p63": {
+        "line": 565,
+        "instruction": "setp.gt.f32 \t%p63, %r29, 0f00000000;"
+      },
+      "%p62": {
+        "line": 564,
+        "instruction": "setp.ge.f32 \t%p62, %r693, 0f3E4CCCCD;"
+      },
+      "%p19": {
+        "line": 271,
+        "instruction": "setp.gt.f32 \t%p19, %r10, 0f2B8CBCCC;"
+      },
+      "%p73": {
+        "line": 583,
+        "instruction": "and.pred \t%p73, %p1167, %p71;"
+      },
+      "%p71": {
+        "line": 573,
+        "instruction": "or.pred \t%p71, %p20, %p70;"
+      },
+      "%p70": {
+        "line": 572,
+        "instruction": "or.pred \t%p70, %p18, %p69;"
+      },
+      "%p18": {
+        "line": 270,
+        "instruction": "setp.gt.f32 \t%p18, %r9, 0f2B8CBCCC;"
+      },
+      "%p20": {
+        "line": 272,
+        "instruction": "setp.gt.f32 \t%p20, %r11, 0f2B8CBCCC;"
+      },
+      "%p50": {
+        "line": 547,
+        "instruction": "setp.geu.f32 \t%p50, %r7251, 0f00000000;"
+      },
+      "%p43": {
+        "line": 543,
+        "instruction": "setp.gt.f32 \t%p43, %r684, 0f43180000;"
+      }
+    }
+  },
+  "binary_f32_constants": {
+    "43889333": 273.1499938964844,
+    "437D2666": 253.14999389648438,
+    "3E4CCCCD": 0.20000000298023224,
+    "2B8CBCCC": 9.999999960041972e-13
+  },
+  "existing_ptx_counts": [
+    {
+      "version": "v032",
+      "native_record2_sha256": "a47c45f58a281f8eceb64b0dbfce43a2852a288a9143220b3d1b4b2a65354b67",
+      "ptx_sha256": "69ece00b74481a3e66b7c635efdef1d604799d9b29960aa5478406525021f522",
+      "thompson_body_sha256": "7cff6f83bd40f37f522b8f9c13becf31f20ccf3049555a06a995aa9427fe53b1",
+      "body_lines": 11798,
+      "operation_counts": {
+        "redux.sync.max.s32": 15,
+        "bar.sync": 171,
+        "shfl.sync.bfly.b32": 147,
+        "shfl.sync.up.b32": 6
+      }
+    },
+    {
+      "version": "v043",
+      "native_record2_sha256": "4ac86066eb486ffe157c39a16b0460fb08826f23b065f397b6819fa66cb15f2e",
+      "ptx_sha256": "988febf844af8b14c49cf6dc0064ad833e3f5d15c5e0557172faca7f84b1e567",
+      "thompson_body_sha256": "74a50a0b0a89a583594caae21cd92569f240ed8f457eb937fbcae47522dbf854",
+      "body_lines": 11859,
+      "operation_counts": {
+        "redux.sync.max.s32": 11,
+        "bar.sync": 179,
+        "shfl.sync.bfly.b32": 143,
+        "shfl.sync.up.b32": 6
+      }
+    }
+  ],
+  "facts": [
+    "Separate redux.sync.max.s32 instructions at PTX body lines578/586, each shared store/barrier/load/shuffle. Four bar.sync instructions in the local pair sequence.",
+    "Predicate graph matches valid(k<44), cloud/rain>R1, ice/snow/graupel>R1 and cold/nucleation thresholds273.15,253.15,0.2. No PTX source-line debug mapping exists; this is explicit predicate/def-use evidence.",
+    "Combining states into one integer max is logically equivalent (Astra512maskcases alreadyPASS, not rerun).",
+    "Current whole-kernel PTX bar.sync179 vs finalSASS BAR341. These are static code counts at different compiler stages, not dynamic synchronization time."
+  ],
+  "no_go_basis": [
+    "No measured per-selector sync time or net saving>=0.5ms/root. Whole native Thompson version delta2.020324ms/3roots is not attributable to this pair.",
+    "A source max merge may remove one reduction/shared exchange; changed final SASS, spills/peak registers, BYTE and E41 are UNKNOWN without consuming a prototype. Static BAR counts do not establish material benefit.",
+    "Under binding manager budget, do not consume the one Lower/prototype arm for an unqualified candidate with unmeasured net benefit. No separate GPU admission requested."
+  ],
+  "artifacts": {
+    "<USER_HOME>/wrf_gpu2_lanes/w44-perf/Q3_EXISTING_PTX.json": "7cc6399b278f8d28dcaa4c5e6f81d98e93c9967d5adfc4d7baa96fea99a3b46b",
+    "<DATA_ROOT>/wrf_gpu2/release_bundles/v0.4.3/src/src/gpuwrf/kernels/phys_thompson_full.py": "e7c09c3edd7c7c1e8c576ac18b2e3def4998ab1bfa96734fbbefba854a1ad595",
+    "<DATA_ROOT>/wrf_gpu2/release_bundles/v0.4.3/src/src/gpuwrf/physics/thompson_column.py": "57aac49fb214216ad1b68a01e9fdfa48e9141ce1dac36d1f3947720c97c9e1bd",
+    "proofs/w44_perf/q3_existing_ptx_audit.py": "93756e1b654206b860f7baeb5219faf7e97aa76a898220989085b172c807d167"
+  },
+  "post_crash": "Inputs/native hashes and complete output rechecked after resume; previous partial CPU work does not establish any GPU result."
+}

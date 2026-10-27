@@ -17,7 +17,7 @@ assigning the `INTENT(OUT)` arguments U10 and V10. Its Noah-MP caller
 `U10_URB` and `V10_URB`. This affects directional NUDAPT frontal-area inputs;
 the ordinary table-only and LCZ-only paths never execute that block.
 
-The manager authorized a compiler-defined oracle on 2026-10-13, matching the
+The maintainers authorized a compiler-defined oracle on 2026-10-13, matching the
 policy used for the k-epsilon port. We compile the verbatim caller with
 `-finit-real=zero -finit-integer=0 -finit-logical=false` and FP traps off; ATAN2(0,0) selects LF_URB(1). The GPU port mirrors that
 selection for its one-cell zero-init oracle, and prepares geometry once during input loading.
@@ -79,5 +79,5 @@ cutoff 2 x 0.15) and `RAND_PERT` is 0.09 everywhere (500 km default); the 150 km
 SPPT pattern `RSTOCH` is normal. The port's REAL32 setup raises "WRF spectral
 band has no finite nonzero normalization" at stochastic initialization instead
 of running a constant pattern. On that grid the limit lies between 200 and
-250 km; the 9 km WN3/PROD d01 grids resolve all Registry defaults. Use a
+250 km; the 9 km Canary Islands outer grids resolve all Registry defaults. Use a
 smaller `lengthscale_*` for small domains (see [stochastic.md](stochastic.md)).

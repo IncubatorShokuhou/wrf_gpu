@@ -1,12 +1,12 @@
 # AI Operator Runbook for wrf_gpu
 
 Help the user run an existing WRF case with the public CLI. This is the
-operator runbook; development lanes follow their separate agent kernel.
+operator runbook; model development follows separate developer instructions.
 
-**Version:** v0.4.0 released 2026-10-17. Defaults are frozen on5c15881ede:
-Swiss3356e249 / PROD196aed9f, with F20/C5′ D6 and E41 gates closed.
-At00:26Z on17October,66/66 registered FINAL composites pass their accepted scientific scope;
-all66 registered scientific scopes pass. Consult the [exact-source table](docs/release/FINAL_COMPOSITES_v0.4.0.md).
+**Version:** v0.4.0 released 2026-10-17. Defaults are frozen on 5c15881ede:
+Swiss 3356e249 / Canary Islands 9 km domain 196aed9f, with the CPU-WRF field-limit (D6) and compiled-kernel resource checks closed.
+At 00:26Z on 17 October, 66/66 registered FINAL composites pass their accepted scientific scope;
+all 66 registered scientific scopes pass. Consult the [exact-source table](docs/release/FINAL_COMPOSITES_v0.4.0.md).
 Use the installed release's matching guide; do not recommend an unreleased
 checkout as a published release. Read the [support matrix](docs/release/SUPPORT_MATRIX_v0.4.0.md),
 [upgrade note](docs/release/UPGRADE_v0.4.0.md) and [known issues](KNOWN_ISSUES.md).
@@ -42,7 +42,7 @@ forecast; resume never filters. Check [source-specific evidence](docs/release/SU
 
 Smagorinsky `km_opt=3` is GPU-refused. CAM-MG `mp_physics=11` uses the
 merged stock-Triton3.6.x route and requires `pip install "triton==3.6.*"`.
-Its separate offline native STACK1240B failure is disclosed; registered-source c89 D6/inventory/NF0 now passes; native E41 remains UNKNOWN. Historical failures remain failed.
+Its separate offline native-kernel stack failure (1240 B) is disclosed; the registered-source CAM-MG composite now passes the CPU-WRF field limits, the output inventory and the finiteness check; the native compiled-kernel resource check remains unknown. Historical failures remain failed.
 See [CAM-MG scope](docs/CAMMGMP.md).
 
 ## Install and check the GPU
@@ -209,7 +209,7 @@ Product definitions distinguish instantaneous samples from interval totals
 and extrema. A finite smoke, a matching header or an analysis tool does not
 establish station skill. Selected large runtime tables must match the installed
 release's SHA-pinned inventory; follow its asset-fetch instructions rather than
-substituting tables. Final packaging details belong to the release manager.
+substituting tables. Final packaging details belong to the release maintainers.
 
 ## Report the result
 

@@ -42,7 +42,7 @@ decomposed (refused with a message). Options: `,halo=H`, `,k=K` (exchange every 
 
 ## Validation and limits
 - CPU virtual devices (`XLA_FLAGS=--xla_force_host_platform_device_count=P`): the real model step, decomposed
-  against the single-device run (`proofs/o2_multigpu/`): bitwise identical on PROD d01 for halos of 20–25 columns;
+  against the single-device run (`proofs/o2_multigpu/`): bitwise identical on the 9 km Canary Islands domain (120×70) for halos of 20–25 columns;
   a compiled tile program of another width can differ from the full-domain program at floating-point round-off
   (~1e-15 relative, at the domain edge), never near the tile boundaries.
 - Hardware qualification on 2× RTX 4090: `scripts/runpod/RUNBOOK.md` (not yet run).

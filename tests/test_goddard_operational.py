@@ -87,6 +87,54 @@ def test_seeded_radii_and_held_cadence(case,monkeypatch):
     assert int(held.radiation_diagnostics.sw_heating_negative_count)==2
 
 
+def test_off_optional_common_diagnostics_are_absent(case):
+    _grid,nl,carry=case
+    assert nl.rad_diag==0
+    diag=carry.radiation_diagnostics
+    assert diag.rad_diag is None and diag.urban_radiation is None
+    for name in goddard.unproduced_optional_fields():
+        assert getattr(diag,name) is None,name
+    assert diag.cloud_fraction.shape==carry.state.qv.shape
+    for name in goddard._COMMON_SURFACE_FIELDS:
+        value=np.asarray(getattr(diag,name))
+        assert value.shape==carry.state.t_skin.shape and value.dtype==np.float32
+        assert np.isfinite(value).all() and not value.any()
+
+
+@pytest.mark.parametrize('future',['shadow_height_m','future_optional_diagnostic'])
+def test_future_optional_common_fields_are_none_before_allocation(case,monkeypatch,future):
+    from collections import namedtuple
+    from gpuwrf.coupling import physics_couplers as pc
+    _grid,_nl,carry=case
+    base=pc.RRTMGRadiationDiagnostics
+    # A previously future field can become a real optional common field.
+    # Exercise its absence directly rather than constructing a duplicate name.
+    extended=base if future in base._fields else namedtuple(
+        base.__name__,(*base._fields,future),defaults=(*base._field_defaults.values(),None))
+    extra=tuple(name for name in goddard.GoddardRadiationDiagnostics._fields if name not in base._fields)
+    monkeypatch.setattr(pc,'RRTMGRadiationDiagnostics',extended)
+    monkeypatch.setattr(goddard,'GoddardRadiationDiagnostics',namedtuple(
+        'GoddardRadiationDiagnostics',(*extended._fields,*extra),defaults=(None,)))
+    original=jnp.zeros_like;allocations=[]
+    def counted(*args,**kwargs):
+        allocations.append(np.shape(args[0]))
+        return original(*args,**kwargs)
+    monkeypatch.setattr(jnp,'zeros_like',counted)
+    diag=goddard.initial_diagnostics(carry.state)
+    assert future in goddard.unproduced_optional_fields()
+    assert getattr(diag,future) is None and diag.rad_diag is None
+    assert len(allocations)==len(goddard._COMMON_SURFACE_FIELDS)+len(goddard.HISTORY_FIELDS)+1
+
+
+def test_goddard_refuses_every_foreign_optional_plane(case):
+    from gpuwrf.io.restart_schema import validate_goddard_radiation,GODDARD_RADIATION_SCHEMA_VERSION
+    _grid,nl,carry=case
+    for name in goddard.unproduced_optional_fields():
+        group=carry.radiation_diagnostics._replace(**{name:jnp.zeros_like(carry.state.t_skin)})
+        with pytest.raises(ValueError,match='Goddard.*optional.*E78'):
+            validate_goddard_radiation(group,nl,GODDARD_RADIATION_SCHEMA_VERSION)
+
+
 def exact(a,b):
     aa,at=jax.tree.flatten(a);bb,bt=jax.tree.flatten(b)
     assert at==bt

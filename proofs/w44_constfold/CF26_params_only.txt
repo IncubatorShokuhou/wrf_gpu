@@ -1,0 +1,565 @@
+ALISIOS source references: 0 tests in 0 files; 0 source/helper/fixture files; unadmitted access skips
+FFFFFFFF                                                                 [100%]
+=================================== FAILURES ===================================
+___________ test_changed_dampcoef_and_zdamp_keep_original_wrf_bounds ___________
+
+stage = (AcousticCoreState(ww=Array([[[ 0.00000000e+00,  0.00000000e+00,  0.00000000e+00,
+          0.00000000e+00],
+        [...ength=1.0, nested_frozen_wrf_boundary_bundle=False, spec_w_zero_grad=True, spec_zone=1, specified_relax_tendency=True))
+tmp_path = PosixPath('<USER_HOME>/wrf_gpu2_lanes/w44-constfold/pytest/cf26/test_changed_dampcoef_and_zdam0')
+
+    def test_changed_dampcoef_and_zdamp_keep_original_wrf_bounds(stage, tmp_path):
+        oracle = load("params_damping_original_wrf", "tests/v025/b_core/pristine_oracle.py")
+        library = oracle.build(tmp_path / "original")
+        state, cfg = stage
+>       coefficients = jax.jit(lambda s: N.calc_coef_fp32(s, cfg, interpret=True))(state)
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/w44_params/test_damping_pristine.py:96: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/w44_params/test_damping_pristine.py:96: in <lambda>
+    coefficients = jax.jit(lambda s: N.calc_coef_fp32(s, cfg, interpret=True))(state)
+                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/gpuwrf/kernels/dyn_acoustic_fp32.py:386: in calc_coef_fp32
+    _check(state,cfg,apply_boundary_forcing=apply_boundary_forcing)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+state = AcousticCoreState(ww=JitTracer(float32[45,4,4]), ww_1=JitTracer(float32[45,4,4]), u=JitTracer(float32[44,4,5]), u_1=Ji...,4,4]), u_spec_tan_target=JitTracer(float32[44,4,5]), v_spec_tan_target=JitTracer(float32[44,5,4]), w_spec_target=None)
+cfg = AcousticCoreConfig(dt=18.0, dx=9000.0, dy=9000.0, epssm=0.5, top_lid=False, w_damping=1, damp_opt=3, dampcoef=0.2, dam...rength=1.0, nested_frozen_wrf_boundary_bundle=False, spec_w_zero_grad=True, spec_zone=1, specified_relax_tendency=True)
+
+    def _check(state, cfg,*,apply_boundary_forcing=False):
+        if os.environ.get("GPUWRF_ADVANCE_W_SAFE_FLOORS", "0") == "1":
+            raise ValueError("debug advance_w floors are outside the prototype contract")
+        for name, value in state.to_dict().items():
+            if value is not None and jnp.issubdtype(value.dtype, jnp.floating) and value.dtype != jnp.float32:
+                raise TypeError(f"acoustic_fp32 requires fp32 {name}; got {value.dtype}")
+        for name in ("u_work_bdy", "v_work_bdy", "ph_bdy_target", "w_spec_target",
+                     "mu_spec_target", "u_spec_tan_target", "v_spec_tan_target"):
+            if getattr(state, name) is not None and not apply_boundary_forcing:
+>               raise ValueError(f"boundary forcing {name} is outside the phase-1 prototype")
+E               ValueError: boundary forcing u_work_bdy is outside the phase-1 prototype
+E               --------------------
+E               For simplicity, JAX has removed its internal frames from the traceback of the following exception. Set JAX_TRACEBACK_FILTERING=off to include these.
+
+src/gpuwrf/kernels/dyn_acoustic_fp32.py:122: ValueError
+_______ test_each_sixth_order_production_site_forwards_factor[root_uvw] ________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x75f80a12f770>
+real_root = (OperationalCarry(state=<gpuwrf.contracts.state.State object at 0x612874b87530>, t_2ave=Array([[[0., 0., 0., ..., 0., ...trols=None, diffusion_parameters=None, mynn_parameters=None, aer_opt=0, tegen_aerosol=None, thompson_hail_tables=None))
+site = 'root_uvw'
+
+    @pytest.mark.parametrize("site", ["periodic", "nested_scalars", "root_theta", "root_uvw", "root_scalars"])
+    def test_each_sixth_order_production_site_forwards_factor(monkeypatch, real_root, site):
+        carry, nl = real_root
+        target = ("sixth_order_diffusion_tendency" if site == "periodic" else
+                  "wrf_sixth_order_uvw_tendf" if site == "root_uvw" else "wrf_sixth_order_scalar_tendf")
+        original = getattr(O, target)
+    
+        def diffusion(*args, **kwargs):
+            # The root scalar helper runs after the root theta call, with RK1 dt/3.
+            if site == "root_scalars" and kwargs["dt"] != float(nl.dt_s) / nl.rk_order:
+                return original(*args, **kwargs)
+            capture(kwargs.get("diff_6th_factor"), "sixth-order " + site)
+    
+        monkeypatch.setattr(O, target, diffusion)
+    
+        def call(value):
+            selected = replace(nl, diff_6th_opt=2, diffusion_parameters={"diff_6th_factor": value})
+            if site == "periodic":
+                # This internal legacy consumer remains covered even though public
+                # parameter admission correctly refuses periodic sixth-order tuning.
+                O._augment_large_step_tendencies(carry.state, nl.tendencies,
+                    replace(selected, run_boundary=False, use_flux_advection=False), base_state=carry.base_state)
+            elif site == "nested_scalars":
+                O._nested_scalar_sixth_order_tendencies(carry.state, selected)
+            else:
+                O._physics_boundary_step(carry, selected, jnp.int32(0), run_radiation=False)
+    
+>       two_values(call, .12, .24)
+
+tests/w44_params/test_production_callers.py:131: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/w44_params/test_production_callers.py:49: in two_values
+    got = np.asarray(fn(jnp.float32(value)))
+                     ^^^^^^^^^^^^^^^^^^^^^^
+tests/w44_params/test_production_callers.py:42: in probe
+    call(value)
+tests/w44_params/test_production_callers.py:129: in call
+    O._physics_boundary_step(carry, selected, jnp.int32(0), run_radiation=False)
+src/gpuwrf/runtime/operational_mode.py:11340: in _physics_boundary_step
+    next_carry, _diagnostics = _physics_boundary_step_with_limiter_diagnostics(
+src/gpuwrf/runtime/operational_mode.py:10886: in _physics_boundary_step_with_limiter_diagnostics
+    return _physics_boundary_step_in_window(carry, namelist, step_index, clock_base=clock_base, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/gpuwrf/runtime/operational_mode.py:11014: in _physics_boundary_step_in_window
+    rk_result = _rk_scan_step(
+src/gpuwrf/runtime/operational_mode.py:6100: in _rk_scan_step
+    theta_tendf = wrf_sixth_order_scalar_tendf(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+field = JitTracer(float64[44,70,120])
+mu_total = Array([[96676.21875  , 96670.7109375, 96665.0234375, ..., 91262.4765625,
+        91233.1640625, 91227.2421875],
+      ...97195.8515625, 97186.59375  , 97179.0078125, ..., 96120.4375   ,
+        96089.9453125, 96058.4296875]], dtype=float64)
+
+    def wrf_sixth_order_scalar_tendf(
+        field: jax.Array,
+        mu_total: jax.Array,
+        *,
+        c1: jax.Array,
+        c2: jax.Array,
+        msftx: jax.Array,
+        msfty: jax.Array,
+        dt: float,
+        diff_6th_factor: float,
+        monotonic: bool = True,
+        specified_or_nested: bool = False,
+    ) -> jax.Array:
+        """Return pristine WRF's mass-coupled scalar ``t_tendf`` contribution.
+    
+        This is the literal ``name != u/v/w`` branch of
+        ``module_big_step_utilities_em.F::sixth_order_diffusion`` with the canonical
+        ``diff_6th_slopeopt=0``.  Unlike :func:`sixth_order_diffusion_tendency`, this
+        routine preserves the adjacent-face ``c1*mut+c2`` masses and map factors and
+        returns the *coupled* forward tendency.  ``rk_addtend_dry`` divides this
+        result by ``msfty`` before ``advance_mu_t`` consumes it.
+    
+        WRF cannot read a three-cell stencil from outside a specified/nested physical
+        domain.  In that mode its scalar loop is exactly ``ids+3:ide-4`` by
+        ``jds+3:jde-4`` (zero-based rings 3 and deeper); rings 0--2 therefore receive
+        no sixth-order contribution.  The rolls below are only a compact way to form
+        the stencil: the ownership mask guarantees every retained value reads solely
+        from in-domain neighbours, so no wrapped value can enter the result.
+        """
+    
+        if _NATIVE_DIFFUSION_FP32 and specified_or_nested:
+            from gpuwrf.kernels.dyn_diff_fp32 import sixth_order_fp32
+            arrays = [jnp.asarray(a, jnp.float32) for a in
+                      (field, mu_total, c1, c2, msftx, msfty)]
+            return sixth_order_fp32(*arrays, name="m", dt=dt,
+                                    factor=diff_6th_factor, monotonic=monotonic)
+        field = jnp.asarray(field)
+        dtype = field.dtype
+        mut = jnp.asarray(mu_total, dtype=dtype)
+        c1v = jnp.asarray(c1, dtype=dtype)[:, None, None]
+        c2v = jnp.asarray(c2, dtype=dtype)[:, None, None]
+        mass = c1v * mut[None, :, :] + c2v
+        mx = jnp.asarray(msftx, dtype=dtype)[None, :, :]
+        my = jnp.asarray(msfty, dtype=dtype)[None, :, :]
+>       coef = float(diff_6th_factor) * 0.015625 / (2.0 * float(dt))
+               ^^^^^^^^^^^^^^^^^^^^^^
+E       jax.errors.ConcretizationTypeError: Abstract tracer value encountered where concrete value is expected: traced array with shape float32[]
+E       The problem arose with the `float` function. If trying to convert the data type of a value, try using `x.astype(float)` or `jnp.array(x, float)` instead.
+E       The error occurred while tracing the function probe at <DATA_ROOT>/wrf_gpu2/scratch/w44-constfold/params_only/tests/w44_params/test_production_callers.py:39 for jit. This concrete value was not available in Python because it depends on the value of the argument value.
+E       
+E       See https://docs.jax.dev/en/latest/errors.html#jax.errors.ConcretizationTypeError
+E       --------------------
+E       For simplicity, JAX has removed its internal frames from the traceback of the following exception. Set JAX_TRACEBACK_FILTERING=off to include these.
+
+src/gpuwrf/dynamics/explicit_diffusion.py:316: ConcretizationTypeError
+_____ test_each_sixth_order_production_site_forwards_factor[root_scalars] ______
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x75f9359d8490>
+real_root = (OperationalCarry(state=<gpuwrf.contracts.state.State object at 0x612874b87530>, t_2ave=Array([[[0., 0., 0., ..., 0., ...trols=None, diffusion_parameters=None, mynn_parameters=None, aer_opt=0, tegen_aerosol=None, thompson_hail_tables=None))
+site = 'root_scalars'
+
+    @pytest.mark.parametrize("site", ["periodic", "nested_scalars", "root_theta", "root_uvw", "root_scalars"])
+    def test_each_sixth_order_production_site_forwards_factor(monkeypatch, real_root, site):
+        carry, nl = real_root
+        target = ("sixth_order_diffusion_tendency" if site == "periodic" else
+                  "wrf_sixth_order_uvw_tendf" if site == "root_uvw" else "wrf_sixth_order_scalar_tendf")
+        original = getattr(O, target)
+    
+        def diffusion(*args, **kwargs):
+            # The root scalar helper runs after the root theta call, with RK1 dt/3.
+            if site == "root_scalars" and kwargs["dt"] != float(nl.dt_s) / nl.rk_order:
+                return original(*args, **kwargs)
+            capture(kwargs.get("diff_6th_factor"), "sixth-order " + site)
+    
+        monkeypatch.setattr(O, target, diffusion)
+    
+        def call(value):
+            selected = replace(nl, diff_6th_opt=2, diffusion_parameters={"diff_6th_factor": value})
+            if site == "periodic":
+                # This internal legacy consumer remains covered even though public
+                # parameter admission correctly refuses periodic sixth-order tuning.
+                O._augment_large_step_tendencies(carry.state, nl.tendencies,
+                    replace(selected, run_boundary=False, use_flux_advection=False), base_state=carry.base_state)
+            elif site == "nested_scalars":
+                O._nested_scalar_sixth_order_tendencies(carry.state, selected)
+            else:
+                O._physics_boundary_step(carry, selected, jnp.int32(0), run_radiation=False)
+    
+>       two_values(call, .12, .24)
+
+tests/w44_params/test_production_callers.py:131: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/w44_params/test_production_callers.py:49: in two_values
+    got = np.asarray(fn(jnp.float32(value)))
+                     ^^^^^^^^^^^^^^^^^^^^^^
+tests/w44_params/test_production_callers.py:42: in probe
+    call(value)
+tests/w44_params/test_production_callers.py:129: in call
+    O._physics_boundary_step(carry, selected, jnp.int32(0), run_radiation=False)
+src/gpuwrf/runtime/operational_mode.py:11340: in _physics_boundary_step
+    next_carry, _diagnostics = _physics_boundary_step_with_limiter_diagnostics(
+src/gpuwrf/runtime/operational_mode.py:10886: in _physics_boundary_step_with_limiter_diagnostics
+    return _physics_boundary_step_in_window(carry, namelist, step_index, clock_base=clock_base, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/gpuwrf/runtime/operational_mode.py:11014: in _physics_boundary_step_in_window
+    rk_result = _rk_scan_step(
+src/gpuwrf/runtime/operational_mode.py:6100: in _rk_scan_step
+    theta_tendf = wrf_sixth_order_scalar_tendf(
+tests/w44_params/test_production_callers.py:114: in diffusion
+    return original(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+field = JitTracer(float64[44,70,120])
+mu_total = Array([[96676.21875  , 96670.7109375, 96665.0234375, ..., 91262.4765625,
+        91233.1640625, 91227.2421875],
+      ...97195.8515625, 97186.59375  , 97179.0078125, ..., 96120.4375   ,
+        96089.9453125, 96058.4296875]], dtype=float64)
+
+    def wrf_sixth_order_scalar_tendf(
+        field: jax.Array,
+        mu_total: jax.Array,
+        *,
+        c1: jax.Array,
+        c2: jax.Array,
+        msftx: jax.Array,
+        msfty: jax.Array,
+        dt: float,
+        diff_6th_factor: float,
+        monotonic: bool = True,
+        specified_or_nested: bool = False,
+    ) -> jax.Array:
+        """Return pristine WRF's mass-coupled scalar ``t_tendf`` contribution.
+    
+        This is the literal ``name != u/v/w`` branch of
+        ``module_big_step_utilities_em.F::sixth_order_diffusion`` with the canonical
+        ``diff_6th_slopeopt=0``.  Unlike :func:`sixth_order_diffusion_tendency`, this
+        routine preserves the adjacent-face ``c1*mut+c2`` masses and map factors and
+        returns the *coupled* forward tendency.  ``rk_addtend_dry`` divides this
+        result by ``msfty`` before ``advance_mu_t`` consumes it.
+    
+        WRF cannot read a three-cell stencil from outside a specified/nested physical
+        domain.  In that mode its scalar loop is exactly ``ids+3:ide-4`` by
+        ``jds+3:jde-4`` (zero-based rings 3 and deeper); rings 0--2 therefore receive
+        no sixth-order contribution.  The rolls below are only a compact way to form
+        the stencil: the ownership mask guarantees every retained value reads solely
+        from in-domain neighbours, so no wrapped value can enter the result.
+        """
+    
+        if _NATIVE_DIFFUSION_FP32 and specified_or_nested:
+            from gpuwrf.kernels.dyn_diff_fp32 import sixth_order_fp32
+            arrays = [jnp.asarray(a, jnp.float32) for a in
+                      (field, mu_total, c1, c2, msftx, msfty)]
+            return sixth_order_fp32(*arrays, name="m", dt=dt,
+                                    factor=diff_6th_factor, monotonic=monotonic)
+        field = jnp.asarray(field)
+        dtype = field.dtype
+        mut = jnp.asarray(mu_total, dtype=dtype)
+        c1v = jnp.asarray(c1, dtype=dtype)[:, None, None]
+        c2v = jnp.asarray(c2, dtype=dtype)[:, None, None]
+        mass = c1v * mut[None, :, :] + c2v
+        mx = jnp.asarray(msftx, dtype=dtype)[None, :, :]
+        my = jnp.asarray(msfty, dtype=dtype)[None, :, :]
+>       coef = float(diff_6th_factor) * 0.015625 / (2.0 * float(dt))
+               ^^^^^^^^^^^^^^^^^^^^^^
+E       jax.errors.ConcretizationTypeError: Abstract tracer value encountered where concrete value is expected: traced array with shape float32[]
+E       The problem arose with the `float` function. If trying to convert the data type of a value, try using `x.astype(float)` or `jnp.array(x, float)` instead.
+E       The error occurred while tracing the function probe at <DATA_ROOT>/wrf_gpu2/scratch/w44-constfold/params_only/tests/w44_params/test_production_callers.py:39 for jit. This concrete value was not available in Python because it depends on the value of the argument value.
+E       
+E       See https://docs.jax.dev/en/latest/errors.html#jax.errors.ConcretizationTypeError
+E       --------------------
+E       For simplicity, JAX has removed its internal frames from the traceback of the following exception. Set JAX_TRACEBACK_FILTERING=off to include these.
+
+src/gpuwrf/dynamics/explicit_diffusion.py:316: ConcretizationTypeError
+_______ test_operational_mynn_caller_forwards_each_parameter[sqfac-True] _______
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x75f935b2e360>
+source_leaves = True, name = 'sqfac'
+
+    @pytest.mark.parametrize("source_leaves", [False, True])
+    @pytest.mark.parametrize("name", tuple(RP.MYNN))
+    def test_operational_mynn_caller_forwards_each_parameter(monkeypatch, source_leaves, name):
+        helper = load("params_operational_inputs", "tests/test_v013_operational_smoke.py")
+        grid = helper._grid(nz=12, ny=3, nx=3)
+        state = helper._base_state(grid)
+        nl = helper._namelist(grid, dt_s=18., mp_physics=0, cu_physics=0,
+                             bl_pbl_physics=5, sf_sfclay_physics=5,
+                             sf_surface_physics=0, use_noahmp=False,
+                             ra_lw_physics=0, ra_sw_physics=0)
+        carry = O.initial_operational_carry(state)
+        monkeypatch.setattr(O, "_phys_tend_rk_wrf_enabled", lambda: source_leaves)
+    
+        def adapter(*args, **kwargs):
+            value = kwargs.get("sqfac") if name == "sqfac" else kwargs.get("mynn_coefficients", {}).get(name)
+            capture(value, "operational MYNN " + name)
+    
+        entry = "mynn_adapter_with_source_leaves" if source_leaves else "mynn_adapter"
+        monkeypatch.setattr(O, entry, adapter)
+    
+        def call(value):
+            selected = replace(nl, mynn_parameters={name: value})
+            O._physics_step_forcing(carry, selected, 0., run_radiation=False, first_timestep=True)
+    
+        default = RP.MYNN[name][0]
+>       two_values(call, default, default * 1.1)
+
+tests/w44_params/test_production_callers.py:159: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/w44_params/test_production_callers.py:49: in two_values
+    got = np.asarray(fn(jnp.float32(value)))
+                     ^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+value = JitTracer(float32[])
+
+    def probe(value):
+        traces.append(1)
+        try:
+            call(value)
+        except Captured as result:
+            return result.value
+>       raise AssertionError("production consumer was not reached")
+E       AssertionError: production consumer was not reached
+E       --------------------
+E       For simplicity, JAX has removed its internal frames from the traceback of the following exception. Set JAX_TRACEBACK_FILTERING=off to include these.
+
+tests/w44_params/test_production_callers.py:45: AssertionError
+_______ test_operational_mynn_caller_forwards_each_parameter[alp1-True] ________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x75f81aafa650>
+source_leaves = True, name = 'alp1'
+
+    @pytest.mark.parametrize("source_leaves", [False, True])
+    @pytest.mark.parametrize("name", tuple(RP.MYNN))
+    def test_operational_mynn_caller_forwards_each_parameter(monkeypatch, source_leaves, name):
+        helper = load("params_operational_inputs", "tests/test_v013_operational_smoke.py")
+        grid = helper._grid(nz=12, ny=3, nx=3)
+        state = helper._base_state(grid)
+        nl = helper._namelist(grid, dt_s=18., mp_physics=0, cu_physics=0,
+                             bl_pbl_physics=5, sf_sfclay_physics=5,
+                             sf_surface_physics=0, use_noahmp=False,
+                             ra_lw_physics=0, ra_sw_physics=0)
+        carry = O.initial_operational_carry(state)
+        monkeypatch.setattr(O, "_phys_tend_rk_wrf_enabled", lambda: source_leaves)
+    
+        def adapter(*args, **kwargs):
+            value = kwargs.get("sqfac") if name == "sqfac" else kwargs.get("mynn_coefficients", {}).get(name)
+            capture(value, "operational MYNN " + name)
+    
+        entry = "mynn_adapter_with_source_leaves" if source_leaves else "mynn_adapter"
+        monkeypatch.setattr(O, entry, adapter)
+    
+        def call(value):
+            selected = replace(nl, mynn_parameters={name: value})
+            O._physics_step_forcing(carry, selected, 0., run_radiation=False, first_timestep=True)
+    
+        default = RP.MYNN[name][0]
+>       two_values(call, default, default * 1.1)
+
+tests/w44_params/test_production_callers.py:159: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/w44_params/test_production_callers.py:49: in two_values
+    got = np.asarray(fn(jnp.float32(value)))
+                     ^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+value = JitTracer(float32[])
+
+    def probe(value):
+        traces.append(1)
+        try:
+            call(value)
+        except Captured as result:
+            return result.value
+>       raise AssertionError("production consumer was not reached")
+E       AssertionError: production consumer was not reached
+E       --------------------
+E       For simplicity, JAX has removed its internal frames from the traceback of the following exception. Set JAX_TRACEBACK_FILTERING=off to include these.
+
+tests/w44_params/test_production_callers.py:45: AssertionError
+_____ test_operational_mynn_caller_forwards_each_parameter[cphm_unst-True] _____
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x75f81ba50a50>
+source_leaves = True, name = 'cphm_unst'
+
+    @pytest.mark.parametrize("source_leaves", [False, True])
+    @pytest.mark.parametrize("name", tuple(RP.MYNN))
+    def test_operational_mynn_caller_forwards_each_parameter(monkeypatch, source_leaves, name):
+        helper = load("params_operational_inputs", "tests/test_v013_operational_smoke.py")
+        grid = helper._grid(nz=12, ny=3, nx=3)
+        state = helper._base_state(grid)
+        nl = helper._namelist(grid, dt_s=18., mp_physics=0, cu_physics=0,
+                             bl_pbl_physics=5, sf_sfclay_physics=5,
+                             sf_surface_physics=0, use_noahmp=False,
+                             ra_lw_physics=0, ra_sw_physics=0)
+        carry = O.initial_operational_carry(state)
+        monkeypatch.setattr(O, "_phys_tend_rk_wrf_enabled", lambda: source_leaves)
+    
+        def adapter(*args, **kwargs):
+            value = kwargs.get("sqfac") if name == "sqfac" else kwargs.get("mynn_coefficients", {}).get(name)
+            capture(value, "operational MYNN " + name)
+    
+        entry = "mynn_adapter_with_source_leaves" if source_leaves else "mynn_adapter"
+        monkeypatch.setattr(O, entry, adapter)
+    
+        def call(value):
+            selected = replace(nl, mynn_parameters={name: value})
+            O._physics_step_forcing(carry, selected, 0., run_radiation=False, first_timestep=True)
+    
+        default = RP.MYNN[name][0]
+>       two_values(call, default, default * 1.1)
+
+tests/w44_params/test_production_callers.py:159: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/w44_params/test_production_callers.py:49: in two_values
+    got = np.asarray(fn(jnp.float32(value)))
+                     ^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+value = JitTracer(float32[])
+
+    def probe(value):
+        traces.append(1)
+        try:
+            call(value)
+        except Captured as result:
+            return result.value
+>       raise AssertionError("production consumer was not reached")
+E       AssertionError: production consumer was not reached
+E       --------------------
+E       For simplicity, JAX has removed its internal frames from the traceback of the following exception. Set JAX_TRACEBACK_FILTERING=off to include these.
+
+tests/w44_params/test_production_callers.py:45: AssertionError
+_______ test_operational_mynn_caller_forwards_each_parameter[am_st-True] _______
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x75f804517b60>
+source_leaves = True, name = 'am_st'
+
+    @pytest.mark.parametrize("source_leaves", [False, True])
+    @pytest.mark.parametrize("name", tuple(RP.MYNN))
+    def test_operational_mynn_caller_forwards_each_parameter(monkeypatch, source_leaves, name):
+        helper = load("params_operational_inputs", "tests/test_v013_operational_smoke.py")
+        grid = helper._grid(nz=12, ny=3, nx=3)
+        state = helper._base_state(grid)
+        nl = helper._namelist(grid, dt_s=18., mp_physics=0, cu_physics=0,
+                             bl_pbl_physics=5, sf_sfclay_physics=5,
+                             sf_surface_physics=0, use_noahmp=False,
+                             ra_lw_physics=0, ra_sw_physics=0)
+        carry = O.initial_operational_carry(state)
+        monkeypatch.setattr(O, "_phys_tend_rk_wrf_enabled", lambda: source_leaves)
+    
+        def adapter(*args, **kwargs):
+            value = kwargs.get("sqfac") if name == "sqfac" else kwargs.get("mynn_coefficients", {}).get(name)
+            capture(value, "operational MYNN " + name)
+    
+        entry = "mynn_adapter_with_source_leaves" if source_leaves else "mynn_adapter"
+        monkeypatch.setattr(O, entry, adapter)
+    
+        def call(value):
+            selected = replace(nl, mynn_parameters={name: value})
+            O._physics_step_forcing(carry, selected, 0., run_radiation=False, first_timestep=True)
+    
+        default = RP.MYNN[name][0]
+>       two_values(call, default, default * 1.1)
+
+tests/w44_params/test_production_callers.py:159: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/w44_params/test_production_callers.py:49: in two_values
+    got = np.asarray(fn(jnp.float32(value)))
+                     ^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+value = JitTracer(float32[])
+
+    def probe(value):
+        traces.append(1)
+        try:
+            call(value)
+        except Captured as result:
+            return result.value
+>       raise AssertionError("production consumer was not reached")
+E       AssertionError: production consumer was not reached
+E       --------------------
+E       For simplicity, JAX has removed its internal frames from the traceback of the following exception. Set JAX_TRACEBACK_FILTERING=off to include these.
+
+tests/w44_params/test_production_callers.py:45: AssertionError
+____ test_operational_mynn_caller_forwards_each_parameter[entrainment-True] ____
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x75f80a075e50>
+source_leaves = True, name = 'entrainment'
+
+    @pytest.mark.parametrize("source_leaves", [False, True])
+    @pytest.mark.parametrize("name", tuple(RP.MYNN))
+    def test_operational_mynn_caller_forwards_each_parameter(monkeypatch, source_leaves, name):
+        helper = load("params_operational_inputs", "tests/test_v013_operational_smoke.py")
+        grid = helper._grid(nz=12, ny=3, nx=3)
+        state = helper._base_state(grid)
+        nl = helper._namelist(grid, dt_s=18., mp_physics=0, cu_physics=0,
+                             bl_pbl_physics=5, sf_sfclay_physics=5,
+                             sf_surface_physics=0, use_noahmp=False,
+                             ra_lw_physics=0, ra_sw_physics=0)
+        carry = O.initial_operational_carry(state)
+        monkeypatch.setattr(O, "_phys_tend_rk_wrf_enabled", lambda: source_leaves)
+    
+        def adapter(*args, **kwargs):
+            value = kwargs.get("sqfac") if name == "sqfac" else kwargs.get("mynn_coefficients", {}).get(name)
+            capture(value, "operational MYNN " + name)
+    
+        entry = "mynn_adapter_with_source_leaves" if source_leaves else "mynn_adapter"
+        monkeypatch.setattr(O, entry, adapter)
+    
+        def call(value):
+            selected = replace(nl, mynn_parameters={name: value})
+            O._physics_step_forcing(carry, selected, 0., run_radiation=False, first_timestep=True)
+    
+        default = RP.MYNN[name][0]
+>       two_values(call, default, default * 1.1)
+
+tests/w44_params/test_production_callers.py:159: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/w44_params/test_production_callers.py:49: in two_values
+    got = np.asarray(fn(jnp.float32(value)))
+                     ^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+value = JitTracer(float32[])
+
+    def probe(value):
+        traces.append(1)
+        try:
+            call(value)
+        except Captured as result:
+            return result.value
+>       raise AssertionError("production consumer was not reached")
+E       AssertionError: production consumer was not reached
+E       --------------------
+E       For simplicity, JAX has removed its internal frames from the traceback of the following exception. Set JAX_TRACEBACK_FILTERING=off to include these.
+
+tests/w44_params/test_production_callers.py:45: AssertionError
+=============================== warnings summary ===============================
+tests/w44_params/test_production_callers.py::test_operational_mynn_caller_forwards_each_parameter[sqfac-True]
+tests/w44_params/test_production_callers.py::test_operational_mynn_caller_forwards_each_parameter[alp1-True]
+tests/w44_params/test_production_callers.py::test_operational_mynn_caller_forwards_each_parameter[cphm_unst-True]
+tests/w44_params/test_production_callers.py::test_operational_mynn_caller_forwards_each_parameter[am_st-True]
+tests/w44_params/test_production_callers.py::test_operational_mynn_caller_forwards_each_parameter[entrainment-True]
+  <USER_HOME>/miniconda3/lib/python3.13/site-packages/jax/_src/numpy/array_methods.py:125: UserWarning: Explicitly requested dtype float64 requested in astype is not available, and will be truncated to dtype float32. To enable more dtypes, set the jax_enable_x64 configuration option or the JAX_ENABLE_X64 shell environment variable. See https://github.com/jax-ml/jax#current-gotchas for more.
+    return lax_numpy.astype(self, dtype, copy=copy, device=device)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/w44_params/test_damping_pristine.py::test_changed_dampcoef_and_zdamp_keep_original_wrf_bounds
+FAILED tests/w44_params/test_production_callers.py::test_each_sixth_order_production_site_forwards_factor[root_uvw]
+FAILED tests/w44_params/test_production_callers.py::test_each_sixth_order_production_site_forwards_factor[root_scalars]
+FAILED tests/w44_params/test_production_callers.py::test_operational_mynn_caller_forwards_each_parameter[sqfac-True]
+FAILED tests/w44_params/test_production_callers.py::test_operational_mynn_caller_forwards_each_parameter[alp1-True]
+FAILED tests/w44_params/test_production_callers.py::test_operational_mynn_caller_forwards_each_parameter[cphm_unst-True]
+FAILED tests/w44_params/test_production_callers.py::test_operational_mynn_caller_forwards_each_parameter[am_st-True]
+FAILED tests/w44_params/test_production_callers.py::test_operational_mynn_caller_forwards_each_parameter[entrainment-True]
+8 failed, 5 warnings in 453.06s (0:07:33)
+rc=1

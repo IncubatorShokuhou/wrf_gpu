@@ -24,6 +24,17 @@ GoddardRadiationDiagnostics = namedtuple('GoddardRadiationDiagnostics',
 RADIUS_HISTORY=('RE_ICE_GSFC','RE_CLOUD_GSFC','RE_RAIN_GSFC',
                 'RE_SNOW_GSFC','RE_GRAUPEL_GSFC','RE_HAIL_GSFC')
 HISTORY_FIELDS=('COD2D_OUT','CTOP2D_OUT','SWDDIR','SWDDNI','SWDDIF')
+_COMMON_SURFACE_FIELDS=(
+    'surface_albedo','surface_emissivity','coszen','swdown','swnorm','swup',
+    'swup_topographic','glw','glw_up','topographic_correction_factor',
+    'sw_toa_down','sw_toa_up','lw_toa_down','lw_toa_up',
+)
+_PRODUCED_COMMON_FIELDS=frozenset((*_COMMON_SURFACE_FIELDS,'shadow_mask','cloud_fraction'))
+
+
+def unproduced_optional_fields():
+    """Foreign optional common diagnostics are absent, never invented planes."""
+    return pc.unproduced_optional_radiation_fields(_PRODUCED_COMMON_FIELDS)
 
 
 def history_fields(diagnostics,variable_subset=None):
@@ -44,8 +55,12 @@ def history_fields(diagnostics,variable_subset=None):
 
 
 def initial_diagnostics(state):
-    fields={name:None if '_clear_' in name else jnp.zeros_like(state.t_skin,dtype=jnp.float32)
-            for name in pc.RRTMGRadiationDiagnostics._fields}
+    # The common container can grow RRTMG-only optional fields. Allocate only
+    # Goddard's actual producers; unsupported fields remain None before any
+    # device allocation (rad_diag, urban radiation, shadow height, etc.).
+    fields=dict.fromkeys(pc.RRTMGRadiationDiagnostics._fields)
+    fields.update({name:jnp.zeros_like(state.t_skin,dtype=jnp.float32)
+                   for name in _COMMON_SURFACE_FIELDS})
     fields['shadow_mask']=jnp.zeros(state.t_skin.shape,jnp.int32)
     fields['cloud_fraction']=jnp.zeros_like(state.qv,dtype=jnp.float32)
     fields['sw_heating_negative_count']=jnp.uint32(0)

@@ -29,10 +29,12 @@ def validate(diagnostics,gfdl,namelist=None,schema=None,*,state_shape=None):
     def array(name,value,expected,dtype):
         if value is None or np.shape(value)!=expected or np.asarray(value).dtype!=dtype or not np.isfinite(value).all():
             raise ValueError(f'FLG/GFDL restart {name} missing/shape/dtype/nonfinite differs (E78)')
+    from gpuwrf.coupling.physics_couplers import unproduced_optional_radiation_fields
+    absent=unproduced_optional_radiation_fields(('cloud_fraction',))
     for name in diagnostics._fields:
         value=getattr(diagnostics,name)
-        if '_clear_' in name or name=='urban_radiation':
-            if value is not None:raise ValueError('FLG/GFDL restart has foreign clear-sky/urban fields (E78)')
+        if name in absent:
+            if value is not None:raise ValueError(f'FLG/GFDL restart has foreign optional {name} (E78)')
         else:array(name,value,shape if name=='cloud_fraction' else surface,np.int32 if name=='shadow_mask' else np.float32)
     if scheme==7:
         if gfdl is not None:raise ValueError('FLG restart contains GFDL carry (E78)')

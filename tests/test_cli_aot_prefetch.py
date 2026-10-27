@@ -19,7 +19,7 @@ def test_cli_passes_prefetch_default_and_opt_out(tmp_path, monkeypatch, capsys, 
     monkeypatch.setattr(pipeline, "execute_nested_pipeline", execute)
     monkeypatch.setenv("XLA_PYTHON_CLIENT_ALLOCATOR", "cuda_async")
     args = ["run", "--input-dir", str(tmp_path), "--output-dir", str(tmp_path/"out"),
-            "--domains-from-namelist", "--hours", "1", "--force-gpu-run"]
+            "--domains-from-namelist", "--hours", "3", "--force-gpu-run"]  # WN3 root dt 54 s: 3 h = 200 steps (E187)
     if option:
         args.append(option)
     assert cli.main(args) == 0
@@ -32,7 +32,7 @@ def test_nested_dry_run_reports_prefetch_choice(tmp_path, capsys, option, expect
     fixture = Path(__file__).parent / "fixtures/wn3_20260227_cadence.namelist"
     (tmp_path/"namelist.input").write_bytes(fixture.read_bytes())
     args = ["run", "--input-dir", str(tmp_path), "--output-dir", str(tmp_path/"out"),
-            "--domains-from-namelist", "--hours", "1", "--dry-run"]
+            "--domains-from-namelist", "--hours", "3", "--dry-run"]
     if option:
         args.append(option)
     assert cli.main(args) == 0

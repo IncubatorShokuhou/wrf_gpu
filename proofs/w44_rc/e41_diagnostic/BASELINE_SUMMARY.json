@@ -1,0 +1,91 @@
+{
+  "scope": "released actual v043 rich GPU programs vs700a LSM component; no new GPU/model execution",
+  "released_programs": [
+    {
+      "path": "<DATA_ROOT>/wrf_gpu2/release_bundles/v0.4.3/jax/jit__advance_chunk_fori-13c9f753247c668e28e5960c42eb34fc817f44c88bf9cd10f6373b0386490f8c-cache",
+      "status": "RICH",
+      "kinput_count": 446,
+      "max_hlo": 406,
+      "over500": 0,
+      "proto_sha256": "23130fcfb0f229b0b202a51c80100f863e1b7fb997c7b5cdd68c138cfe934ea4"
+    },
+    {
+      "path": "<DATA_ROOT>/wrf_gpu2/release_bundles/v0.4.3/jax/jit__advance_chunk_fori-8d7b967daa72504ff8f434737818cc42d06f652e8db06673c108336cda258cd3-cache",
+      "status": "RICH",
+      "kinput_count": 451,
+      "max_hlo": 406,
+      "over500": 0,
+      "proto_sha256": "a70ada490de7fd5b780e62cb7d75c5d7893c622af069a2b36b78a122eab20701"
+    },
+    {
+      "path": "<DATA_ROOT>/wrf_gpu2/release_bundles/v0.4.3/jax/jit__advance_chunk_fori-b986b63f3c47e21d9b7b33535a98c0cf1e12e184a687978397278ce94d2daf27-cache",
+      "status": "RICH",
+      "kinput_count": 386,
+      "max_hlo": 389,
+      "over500": 0,
+      "proto_sha256": "d70169e498f70529c97c72fc03fee3d9f87d31daf98f906a4e17deab1f983b0c"
+    },
+    {
+      "path": "<DATA_ROOT>/wrf_gpu2/release_bundles/v0.4.3/jax/jit__advance_chunk_fori-e3bbc3ec7def961a146b2683d8316b8a2964c715ccee231a76c2fd1184a69003-cache",
+      "status": "RICH",
+      "kinput_count": 105,
+      "max_hlo": 330,
+      "over500": 0,
+      "proto_sha256": "fd9cf60126ef6a4577ff2b1abfa06a0152cbef322bf963e21edc4d4e63a6fc8e"
+    },
+    {
+      "path": "<DATA_ROOT>/wrf_gpu2/release_bundles/v0.4.3/jax/jit__advance_chunk_fori-eb185ebe44b81dd3e321cb902a77dcb485157ae9db7960200e7e8a452747e59a-cache",
+      "status": "RICH",
+      "kinput_count": 443,
+      "max_hlo": 406,
+      "over500": 0,
+      "proto_sha256": "6f1f7cd2c1d531e58ab5846425bae1393c834f0ee1661c53d2a8648aba1d17d6"
+    },
+    {
+      "path": "<DATA_ROOT>/wrf_gpu2/release_bundles/v0.4.3/jax/jit_fused_jit-14d79aee8adda5cc7de6643e3a7616fe338339040e0d3ed14d5269d13bc09c66-cache",
+      "status": "RICH",
+      "kinput_count": 250,
+      "max_hlo": 408,
+      "over500": 0,
+      "proto_sha256": "b3c604ea2f5815b4f0742ca5d299c3968e1ffcef1aa3f694346394efe855216a"
+    },
+    {
+      "path": "<DATA_ROOT>/wrf_gpu2/release_bundles/v0.4.3/jax/jit_fused_jit-6086949bdfdc817b569684dc35240901cdcc8c0f644b9fe0077a0311c2126546-cache",
+      "status": "RICH",
+      "kinput_count": 243,
+      "max_hlo": 408,
+      "over500": 0,
+      "proto_sha256": "6de21b504c26fd3ae3c31706c0f1f37fa9cbf59d7ee0a0ede6bf414784820fa0"
+    }
+  ],
+  "number_rich": 7,
+  "released_kinput_over500": 0,
+  "largest_released_kinput": 408,
+  "owner_ELF_entries": [
+    {
+      "source_kind": "jax_cache",
+      "program": null,
+      "path": "<DATA_ROOT>/wrf_gpu2/scratch/w44-lsmparams/gpu/v11/cache/lsm/jax/jit_fused_jit-c4cda040ed689328a295cac78486b4db517b77d57c7213bdacee6409ca9d10a9-cache",
+      "blob_sha256": "bb5f4842d0b713bc65ecc966c37a6d53ed75b32ac3f78f2c35f9048d1e4ecebb"
+    },
+    {
+      "source_kind": "aot",
+      "program": "fused_d01",
+      "path": "<DATA_ROOT>/wrf_gpu2/scratch/w44-lsmparams/gpu/v11/cache/lsm/jax/aot/0.4.3-jax0.10.0-jaxlib0.10.0-cuda_sm120/fused_d01/bf13f54d71a0422d255a510fdf059cc439004878fa548dfa4a5dc77b6f385d29.xlaexec",
+      "blob_sha256": "5d23b27cab37b3657329efdfb896f36517512e465365b9d7fdafeeca24d2a3b2"
+    }
+  ],
+  "actual_released_PROD_programs": [
+    "d01",
+    "d02"
+  ],
+  "released_output_cadence": {
+    "d01": 67,
+    "d02": 200
+  },
+  "parent_ratio": 3,
+  "child_cadence_mod_parent_ratio": 2,
+  "source_observation": "LSM root_gpu.py run_operational_domain_tree(...root_steps=1,...max_event_tail=0) omits output/cadences; factory may fuse root. Production pipeline passes writer+cadence; domain_tree.py fused_leaf_outputs_are_parent_ratio_aligned rejects200%3, so PROD uses separate d01/d02 programs.",
+  "classification": "664-body NOT PRESENT in7 released rich programs; not yet proof of a NEW canonical v044 default fusion. Exact700a origin DAG unavailable; component-vs-CLI partition differs.",
+  "GPU_profile_task": "Measure actually executed flagged fusions in canonical RW1; absent664 must be NOT_EXECUTED, never fabricated0time."
+}

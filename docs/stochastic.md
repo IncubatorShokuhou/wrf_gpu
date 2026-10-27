@@ -106,7 +106,7 @@ may need explicitly smaller Gaussian length scales to resolve their spectrum.
 The stochastic physics is checked on the CPU against the original WRF code and,
 for 24-hour single-domain forecasts, on the GPU against original CPU WRF runs with
 the same namelist and seeds (see [GPU check](#gpu-qualification-swiss-d01-24-h)).
-Nested and WN3 runs have not had that GPU check yet.
+Nested runs, including the Tenerife three-nest cases, have not had that GPU check yet.
 The RNG profile matches GNU Fortran 14.3's eight-word `RANDOM_SEED` state and
 xoshiro256** REAL4 stream, including original WRF signed INTEGER4 overflow,
 seed/member/date mixing and Gaussian rejection. WRF RNG is compiler-defined;
@@ -152,7 +152,7 @@ single-thread serial kernel on CPU and GPU (random values and seed words); an
 exact serial fallback covers the case of too few proposals, which has never been
 observed. For one model step (seven chained pattern draws) on an RTX 5090 this
 takes 0.36 ms instead of 4.85 ms on the 43x43 Swiss grid and 0.49 ms instead of
-21.4 ms on a 71x121 PROD/WN3 d01 grid. There are no per-draw launches and no
+21.4 ms on the 71x121 Canary Islands 9 km grid. There are no per-draw launches and no
 host round trips per time step. Vertical-constant fields are stored with one
 level; child domains keep only fields.
 
@@ -173,7 +173,7 @@ cumulus 0/1, SPP without MYNN) and Gaussian length scales that the model's
 spectral setup cannot resolve on the case grid. See
 [ensemble.md](ensemble.md#stochastic-and-multiphysics-presets) for usage, the
 physics table and the Berner et al. (2011) comparison of the two approaches.
-A plan for that comparison on the Canary WN3 cases is in
+A plan for that comparison on the Tenerife three-nest cases is in
 `proofs/w41_stoch/BERNER_PLAN_V050.md`.
 
 ## GPU qualification (Swiss d01, 24 h)
@@ -186,9 +186,9 @@ paired hourly frame (`proofs/v040/final_validation/score.py`: all original
 history fields present on GPU, raw finite audit of both arms), every stochastic
 history field and seed array against CPU-WRF (`proofs/w41_stoch/pattern_compare.py`,
 pre-registered bound `8e-6 + 64 eps` of the field maximum, seeds exact) and the
-E41 cubin gate. Gaussian length scales are 15 km (see the length-scale note).
+compiled-kernel resource check. Gaussian length scales are 15 km (see the length-scale note).
 
-| run | `&stoch` | D6 vs CPU-WRF (fields x hourly frames) | stochastic fields vs CPU-WRF (worst error / field max), seeds | E41 | seconds per forecast hour |
+| run | `&stoch` | D6 vs CPU-WRF (fields x hourly frames) | stochastic fields vs CPU-WRF (worst error / field max), seeds | kernel check | seconds per forecast hour |
 |---|---|---|---|---|---|
 | OFF (reference run of the same case, 2026-10-16) | none | PASS, 362 x 25 | none written | PASS | 0.91 |
 | SKEBS | `skebs=1` | PASS, 365 x 25 | 3 fields, 5.2e-7; seeds exact | PASS | 1.00 |

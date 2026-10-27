@@ -4,6 +4,13 @@
 
 The native `sf_surface_physics=4` path accepts the choices below. Each new choice has a `PhysicsStepSpec`, a check against the original WRF 4.7.1 REAL4 source, an operational consumer and a guarded restart. Most checks are at component and caller level; apart from the 24-hour comparisons named above, the non-default values have not been compared with the original CPU WRF in a full forecast. Short CPU integration and restart runs are separate evidence. Small compiled deviations are documented in the qualification records and `KNOWN_ISSUES.md`; literal operation-order checks match the original WRF references byte for byte.
 
+Each domain's `wrfinput` must declare `MMINLU='MODIFIED_IGBP_MODIS_NOAH'`.
+USGS and unknown or missing `MMINLU` values are refused before land fields are
+read or land arrays are allocated, because the coupled Noah-MP path uses MODIS
+parameters and phenology. `NUM_LAND_CAT` alone does not identify the dataset.
+MODIS inputs containing LCZ classes 51–61 remain accepted under the existing
+urban-option requirements; LCZ classes do not require a different `MMINLU`.
+
 | Control | Admitted choices | Behavior |
 |---|---|---|
 | `dveg` | 1–9 | Prescribed, calculated or maximum vegetation fractions; monthly/input LAI or dynamic carbon according to WRF |

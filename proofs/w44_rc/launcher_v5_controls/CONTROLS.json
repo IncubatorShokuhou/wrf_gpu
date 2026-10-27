@@ -1,0 +1,100 @@
+{
+  "scope": "Actual sealed shell functions/scripts with only process transport localized; no model/JAX/GPU/nsys/raw-data execution",
+  "shell_controls": [
+    {
+      "control": "actual RW3 post with inert Python transport",
+      "injected_child": "none",
+      "child_rc": 0,
+      "observed_post_rc": 0,
+      "defect": false
+    },
+    {
+      "control": "actual RW3 post with inert Python transport",
+      "injected_child": "accept.py",
+      "child_rc": 17,
+      "observed_post_rc": 17,
+      "defect": false
+    },
+    {
+      "control": "actual RW3 post with inert Python transport",
+      "injected_child": "attrib_detail.py",
+      "child_rc": 19,
+      "observed_post_rc": 19,
+      "defect": false
+    },
+    {
+      "control": "actual RW3 post with inert Python transport",
+      "injected_child": "rw3t_verdict.py",
+      "child_rc": 23,
+      "observed_post_rc": 23,
+      "defect": false
+    },
+    {
+      "control": "actual RW3 post with inert Python transport",
+      "injected_child": "disk_watch.py",
+      "child_rc": 29,
+      "observed_post_rc": 29,
+      "defect": false
+    },
+    {
+      "control": "actual receipt+replay_arm functions",
+      "injected_child": "arm_receipt.py",
+      "child_rc": 37,
+      "observed_replay_rc": 37,
+      "defect": false
+    },
+    {
+      "control": "actual session_short final-check tail",
+      "injected_child": "final_check_P",
+      "child_rc": 41,
+      "observed_session_rc": 41,
+      "defect": false
+    },
+    {
+      "control": "actual RW3 run_slot model child rc",
+      "injected_child": "arm_timer.py",
+      "child_rc": 31,
+      "observed_slot_rc": 31,
+      "defect": false
+    }
+  ],
+  "E41_controls": [
+    {
+      "case": "compactAOTunknown",
+      "hard_gate": "PASS",
+      "raw_gate": "INCOMPLETE"
+    },
+    {
+      "case": "nativeStack257",
+      "hard_gate": "FAIL",
+      "raw_gate": "INCOMPLETE"
+    },
+    {
+      "case": "nativeNonleaf1001",
+      "hard_gate": "FAIL",
+      "raw_gate": "INCOMPLETE"
+    },
+    {
+      "case": "unknownCallgraph",
+      "hard_gate": "BLOCKED",
+      "raw_gate": "INCOMPLETE"
+    },
+    {
+      "case": "rawFAILunexplained",
+      "hard_gate": "BLOCKED",
+      "raw_gate": "FAIL"
+    },
+    {
+      "case": "rawFAILkInputDiagnostic",
+      "hard_gate": "PASS",
+      "raw_gate": "FAIL"
+    }
+  ],
+  "source_sha256": {
+    "session_short.sh": "ee35638e065aa26ada78183557d52073de1e5ca4e36f84d1f0a0b2f87eff59df",
+    "session_rw3.sh": "b4e7fc738d298ed25bb899e5a75fca6ab4451436d9169fce517a47ad23666766",
+    "rw3_summary.sh": "12401994b18b2b8a53bec009ef137a650349166630f51f13d0a39cda8f280908",
+    "e41_policy.py": "5901e1b8b87cad1ad24b8dc5d2b6e03c58c009eeb7cbb5307d4aa47c966726da"
+  },
+  "temporary_fixtures": "deleted"
+}

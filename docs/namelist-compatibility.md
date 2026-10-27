@@ -340,8 +340,8 @@ runs):
   `varsso_10m`). Two-way feedback (`feedback=1`) feeds the nest CTOPO/CTOPO2 back to
   the parent after its first step, as WRF does (CPU-tested only). Qualification:
   24 h GPU runs match original CPU-WRF (D6) for `topo_wind=1` on Swiss YSU and
-  Shin-Hong and on the WN3 Tenerife 3/1 km YSU nests, and for `topo_wind=2` only on
-  the WN3 9 km YSU domain. The `topo_wind=1` YSU programs carry an E41 stack flag
+  Shin-Hong and on the Tenerife 3/1 km YSU nests, and for `topo_wind=2` only on
+  the Tenerife 9 km YSU domain. The `topo_wind=1` YSU programs carry a compiled-kernel stack flag
   (400–496 B in the surface-layer kernel), disclosed in the support matrix.
 * **MYNN-EDMF sub-options** gated to the WRF default sub-config that the port runs:
   `bl_mynn_edmf=1`, `edmf_mom=1`, `edmf_tke=0`, `mixscalars=1`, `mixqt=0`,
@@ -360,7 +360,7 @@ runs):
 * **`radt`** and **`cudt`** are bound per domain (radiation cadence; KF STEPCU).
   An **omitted `radt`** warns: WRF's default `radt = 0` calls radiation every step,
   the port runs its driver cadence (30 min native/nested) — set `radt` explicitly.
-  Omitted-key audit (o2-moistadv): every other bound key's omitted value equals the
+  Omitted-key audit: every other bound key's omitted value equals the
   WRF Registry default, except the already-documented substitutions: omitted scheme
   selectors (`mp/bl_pbl/sf_sfclay/ra_lw/ra_sw_physics`) run the release suite with a
   warning, an omitted `sf_surface_physics` runs 0 (WRF -1; `physics_suite` fills it),
@@ -419,9 +419,9 @@ From v0.3.4 (`src/gpuwrf/io/namelist_binding.py`):
 
 <!-- O1NLBIND_MATRIX -->
 
-Measured by tracing the production step (`_advance_chunk_fori`, one step) through the real CLI loader on the Swiss RD11 case with the release defaults (CPU, `proofs/o1_nlbind/probe.py`; raw data `proofs/o1_nlbind/cli_support_matrix.json`). *traces* = the namelist value reaches the bound `OperationalNamelist` and the program builds; it is **not** a forecast or GPU qualification. *refused/crash* rows show what the pipeline did before the v0.3.4 CLI refusals (the CLI now stops these before compute). The `diff_opt=2, km_opt=2/5` rows trace, but executing them under the release defaults gives NaN (rel034, 2026-10-10): the CLI refuses both in v0.3.4.
+Measured by tracing the production step (`_advance_chunk_fori`, one step) through the real CLI loader on the bundled Swiss case with the release defaults (CPU, `proofs/o1_nlbind/probe.py`; raw data `proofs/o1_nlbind/cli_support_matrix.json`). *traces* = the namelist value reaches the bound `OperationalNamelist` and the program builds; it is **not** a forecast or GPU qualification. *refused/crash* rows show what the pipeline did before the v0.3.4 CLI refusals (the CLI now stops these before compute). The `diff_opt=2, km_opt=2/5` rows trace, but executing them under the release defaults gives NaN (rel034, 2026-10-10): the CLI refuses both in v0.3.4.
 
-| namelist edit (Swiss RD11 d01, release defaults) | bound | program changes | result | evidence |
+| namelist edit (bundled Swiss case d01, release defaults) | bound | program changes | result | evidence |
 |---|---|---|---|---|
 | `bl_pbl_physics=1, sf_sfclay_physics=1` | True | True | traces | pre-rebase (main 643416607) |
 | `cu_physics=1` | True | True | traces | pre-rebase (main 643416607) |
@@ -478,21 +478,21 @@ Measured by tracing the production step (`_advance_chunk_fori`, one step) throug
 | `sf_sfclay_physics=91` | True | True | traces | final (main dee37ef2a) |
 | `cu_physics=5` | True | True | traces | rebased 1188aba98 (main b5100f705) |
 | `cu_physics=93` | True | True | traces | rebased 1188aba98 (main b5100f705) |
-| `ra_lw_physics=3, ra_sw_physics=3` | True | True | traces | rebased 2f9004938 (main 14253f8ca, +o1-camrad) |
-| `ra_lw_physics=3, ra_sw_physics=3, cam_abs_freq_s=10800` | True | True | traces | rebased 2f9004938 (main 14253f8ca, +o1-camrad) |
+| `ra_lw_physics=3, ra_sw_physics=3` | True | True | traces | rebased 2f9004938 (main 14253f8ca, +CAM radiation change) |
+| `ra_lw_physics=3, ra_sw_physics=3, cam_abs_freq_s=10800` | True | True | traces | rebased 2f9004938 (main 14253f8ca, +CAM radiation change) |
 
 | release identity | base sha | candidate sha | identical |
 |---|---|---|---|
 | pre-rebase (main 643416607) :: cpu | `2bf12cb8374d` | `2bf12cb8374d` | True |
 | final v1 (candidate c82b9b75b; island arms superseded) :: cpu | `2bf12cb8374d` | `2bf12cb8374d` | True |
 | final (main dee37ef2a) :: cpu | `2bf12cb8374d` | `2bf12cb8374d` | True |
-| final PROD d01 (main dee37ef2a) :: s0_case_20260725 | `6fc715a2bd63` | `6fc715a2bd63` | True |
+| final Canary d01 (main dee37ef2a) :: s0_case_20260725 | `6fc715a2bd63` | `6fc715a2bd63` | True |
 | HEAD e90c1d4f4 (main dee37ef2a) :: cpu | `2bf12cb8374d` | `2bf12cb8374d` | True |
-| HEAD e90c1d4f4 PROD d01 (main dee37ef2a) :: s0_case_20260725 | `6fc715a2bd63` | `6fc715a2bd63` | True |
+| HEAD e90c1d4f4 Canary d01 (main dee37ef2a) :: s0_case_20260725 | `6fc715a2bd63` | `6fc715a2bd63` | True |
 | rebased 1188aba98 (main b5100f705) :: cpu | `2bf12cb8374d` | `2bf12cb8374d` | True |
-| rebased 1188aba98 PROD d01 (main b5100f705) :: s0_case_20260725 | `6fc715a2bd63` | `6fc715a2bd63` | True |
-| rebased 2f9004938 (main 14253f8ca, +o1-camrad) :: cpu | `2bf12cb8374d` | `2bf12cb8374d` | True |
-| rebased 2f9004938 PROD d01 (main 14253f8ca) :: s0_case_20260725 | `6fc715a2bd63` | `6fc715a2bd63` | True |
+| rebased 1188aba98 Canary d01 (main b5100f705) :: s0_case_20260725 | `6fc715a2bd63` | `6fc715a2bd63` | True |
+| rebased 2f9004938 (main 14253f8ca, +CAM radiation change) :: cpu | `2bf12cb8374d` | `2bf12cb8374d` | True |
+| rebased 2f9004938 Canary d01 (main 14253f8ca) :: s0_case_20260725 | `6fc715a2bd63` | `6fc715a2bd63` | True |
 
 ## Opt-in stochastic controls
 
@@ -612,7 +612,7 @@ To run an existing real-data WRF `namelist.input` on the port today:
 * [`KNOWN_ISSUES.md`](KNOWN_ISSUES.md) — the open issues and deferred
   carry-overs (24 h skill gap, scheme long-tail, VRAM limits).
 
-## Grid analysis nudging (`grid_fdda=1`, historical v0.4.0 development lane o2-fdda)
+## Grid analysis nudging (`grid_fdda=1`, added in v0.4.0)
 
 `grid_fdda=1` runs WRF's PSU grid analysis nudging (`phys/module_fdda_psufddagd.F` `fddagd`) toward the
 real.exe analysis file `wrffdda_d0N` (auxinput10, `gfdda_inname`, NetCDF `io_form_gfdda=2`) in both CLI

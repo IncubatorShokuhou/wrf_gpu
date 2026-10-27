@@ -1,0 +1,19 @@
+{
+ "schema": "o5-perf.bisect-plan.v1",
+ "registered_utc": "2026-10-24T16:00Z",
+ "purpose": "Close the version split w44-perf's v0.3.2/v0.4.0/v0.4.3 PROD repeat does not cover: v0.4.1 -> v0.4.2/3 (SWDDIR fix, aot-key private cache, harness C-auto allocator, icloud=0) on BOTH the iteration case and the release-benchmark workload (WN3 par3).",
+ "versions": {"v041": {"bundle": "<DATA_ROOT>/wrf_gpu2/release_bundles/v0.4.1", "pin": "104c97de98"},
+              "v043": {"bundle": "<DATA_ROOT>/wrf_gpu2/release_bundles/v0.4.3", "pin": "888804310b", "note": "native programs identical to v0.4.2 (REL43-ID 21/21)"}},
+ "not_in_this_phase": {"v032/v040": "w44-perf repeatcompare (25 Oct, harness S0 + explicit pool .25)", "v033/v034": "needs snapshot + cold prime (~25 GPU-min); v0.3.4 default program jaxpr-identical to v0.3.3; decision manager/Owner"},
+ "harness": "each version's own product CLI (PROD) / scripts/run_parallel_cases.sh (WN3 par3) inside its sealed bundle consumer (P read-only), release defaults, no GPUWRF_* model flags, no XLA_FLAGS; allocator = each version's own CLI policy (C-auto in v0.4.3; disclosed per arm). This measures what a user runs, not a matched-allocator kernel comparison.",
+ "workloads": {"prod": "<DATA_ROOT>/wrf_gpu2/v025/s0_case_20260725 --domains-from-namelist --hours 3", "wn3_par3": "wn3_0227, wn3_0502, wn3_0614 (w43-release case copies) --domains-from-namelist --emit-initial-history --hours 3, --max-parallel 3"},
+ "order": {"warmups_not_scored": ["P41_W", "P43_W", "W41_W", "W43_W"],
+           "prod": ["P43_1", "P41_1", "P41_2", "P43_2", "P43_3", "P41_3"],
+           "wn3_par3": ["W43_1", "W41_1", "W41_2", "W43_2"]},
+ "metrics": {"prod": ["whole_s_per_fch = (last original wrfout mtime - CLI t0) / 3 (E162)", "steady_s_per_fch = d01 wrfout mtime(h3) - mtime(h1), / 2", "startup_s = first d01 wrfout mtime - t0 minus one steady hour"],
+             "wn3_par3": ["batch_s_per_case_h = parallel_run wall_s / 9", "steady_case_s_per_h = median d01 hourly mtime gap per case"]},
+ "aa_rule": "Per version and metric: (max-min)/mean <= 5 % over its measured arms. Failure => that metric INCONCLUSIVE for that version; no retry, no exclusion, no pooling with other sessions. A version difference is reported only if |diff| > max(5 %, both A/A spreads).",
+ "gpu_cap_s": 2700,
+ "disk": "wrfouts deleted after sha per arm; peak <= 4 GB; launcher refuses <DATA_ROOT> < 365 GiB",
+ "fidelity": "no WRF-fidelity claim (bundles validated at release); wrfout sha recorded for determinism only"
+}

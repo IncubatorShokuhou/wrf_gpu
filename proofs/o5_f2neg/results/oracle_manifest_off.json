@@ -1,0 +1,55 @@
+{
+  "sources": {
+    "dyn_em/module_big_step_utilities_em.F": "bd177b6b5ba7949cf9e694d7ad654fd9ae2f07d39d85802f0716c5318889a815",
+    "dyn_em/module_em.F": "11105cbf8255f30ca6a44cd7429a92cedce1fb91db6ce90fd7217002a72fb7fa",
+    "dyn_em/module_advect_em.F": "58253bdbeb188dd47ed0579fcd2891086be1889b75c0c7d3696c9ad1d213559d",
+    "share/module_bc.F": "61b9235004b2a7799faabaa928276af8a7ef2e4672619c8ad120c857461301ad"
+  },
+  "routine_sha256": {
+    "horizontal_diffusion": "d05fbb06cb8846ca196b4a4a22b1e8322d408cdb3f7170102884f24283461d17",
+    "sixth_order_diffusion": "2300302940f398fc7768e38b1c5fa8db110fca566b875026df8bc3585c613e1a",
+    "rk_update_scalar": "263739307e23fee7f1933074851554c147351741d8ccf59603b367f4fa698387",
+    "rk_update_scalar_pd": "708bd76835cbf77d2ca2e01487e2afbc18699546be894985675cd3b57ceb0880",
+    "advect_scalar_pd": "a2b3247fe9197c301be4dc9be78658c17000cf13e74257ea9229066a0a526764",
+    "flow_dep_bdy": "6b891ba659290da2860f9f6fa128e60d0352b015cad2efb79db24e35752ef7e7"
+  },
+  "driver_sha256": "0bf01e14dce2f29bcc2e5e7c6d9acb0d04c875e425079dfbb763f72f1ba7fd9b",
+  "flags": {
+    "diff_6th_slopeopt": 0,
+    "diff_6th_thresh": "0.",
+    "h_sca_adv_order": 5,
+    "nested": ".false.",
+    "open_xe": ".false.",
+    "open_xs": ".false.",
+    "open_ye": ".false.",
+    "open_ys": ".false.",
+    "periodic_x": ".false.",
+    "periodic_y": ".false.",
+    "polar": ".false.",
+    "rk_ord": 3,
+    "specified": ".false.",
+    "symmetric_xe": ".false.",
+    "symmetric_xs": ".false.",
+    "symmetric_ye": ".false.",
+    "symmetric_ys": ".false.",
+    "v_sca_adv_order": 3
+  },
+  "specified": true,
+  "command": [
+    "<USER_HOME>/miniconda3/envs/wrfbuild/bin/gfortran",
+    "-cpp",
+    "-O2",
+    "-march=native",
+    "-fPIC",
+    "-shared",
+    "-ffree-line-length-none",
+    "-ffp-contract=off",
+    "-fcheck=bounds",
+    "-J",
+    "<USER_HOME>/wrf_gpu2_lanes/o5-f2neg/build",
+    "<USER_HOME>/wrf_gpu2_lanes/o5-f2neg/build/pristine_chain.F90",
+    "-o",
+    "<USER_HOME>/wrf_gpu2_lanes/o5-f2neg/build/chain_off.so"
+  ],
+  "real_kind_bytes": 4
+}

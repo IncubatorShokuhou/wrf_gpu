@@ -598,16 +598,17 @@ def test_gpu_arm_cpu_pinning_does_not_fragment_cheap_key():
         ("GPUWRF_BENCH_FLAGS_ENV", ("scripts/bench/flags_lw9.env", "/abs/flags_lw10b.env", "")),
         ("GPUWRF_MIN_FREE_VRAM_GIB", ("24", "8")),
         ("GPUWRF_MIN_FREE_VRAM_FRACTION", ("0.5", "0.1")),
+        ("GPUWRF_LANE", ("wz", "o5-port", "")),
     ],
 )
 def test_bench_and_preflight_infra_env_does_not_fragment_cheap_key(monkeypatch, name, values):
-    """No traced reader: the bench flag-file path and the preflight VRAM threshold."""
+    """No traced reader: bench flag-file path, preflight VRAM threshold, runner lane label."""
     monkeypatch.delenv(name, raising=False)
     base = ck.global_trace_env_hash()
     for value in values:
         monkeypatch.setenv(name, value)
         assert ck.global_trace_env_hash() == base, f"{name}={value!r} leaked into the cheap key"
-    assert ck.trace_env_is_inert(name)
+    assert ck.trace_env_is_inert(name) and ck.is_process_infra_env(name)
 
 
 def test_trace_env_is_inert_is_the_hash_rule(monkeypatch):

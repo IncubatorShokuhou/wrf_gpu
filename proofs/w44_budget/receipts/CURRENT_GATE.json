@@ -1,0 +1,171 @@
+{
+  "schema": "wrf_gpu2.w44_budget.current_gate.v1",
+  "recorded_real_utc": "2026-10-24T23:55:00Z",
+  "status": "CRITIC_FIX_F1_F2_F3_DONE_RECHECK_PENDING_MINI_V7_READY_GPU_PENDING",
+  "model_pin": "5438aca4b533ba8ed739ce94e90cf14cb98b86d4",
+  "source_tree": "3c12f3118fb49e5477070d0a5f2d28867fe77ba9",
+  "production_and_state_exact_to_main": "aac9e78065 (rebased; budget src hunks byte-identical to pre-rebase 940ae3 model)",
+  "scientific_cpu": {
+    "real_wn3_d03_day_night": true,
+    "edmf": [
+      0,
+      1
+    ],
+    "steps": 2,
+    "physical_byte_fields": 200,
+    "total_fields": 200,
+    "term_step_pass": 168,
+    "term_step_total": 168,
+    "pristine_floor_members": 25,
+    "ent_source_deletion_failing_columns": 25,
+    "ent_genuine_kills": 1,
+    "ent_setup_errors": 0,
+    "term_step_rule": "PBL: 5% colmax + 25-member original floor (P75); others unchanged"
+  },
+  "caller_cpu": {
+    "full_state_source_leaf_byte": 146,
+    "total": 146
+  },
+  "public_cpu": {
+    "structural_pass": 149,
+    "writer_candidate_pass": 34,
+    "writer_main_pass": 33,
+    "existing_missing_reference_skips_each": 3,
+    "default_minimum_variables": 51,
+    "default_full_variables": 375,
+    "all_metadata_and_data_hashes_exact": true,
+    "off_swiss": "b977712f",
+    "off_prod": "321aa651",
+    "root_2step_lower": true,
+    "history_leaves": 21,
+    "twin_in_debug_ir": true
+  },
+  "night": {
+    "path": "<USER_HOME>/wrf_gpu2_lanes/w44-budget/day_launch_v5.sh",
+    "sha256": "87b987aa871f538155f949ec7cfa5fff6b43c3b2547dcd918e8f8e40e8737e28",
+    "cap_min": 75,
+    "gpu_cap_s": 3600,
+    "cpu_cap_s": 720,
+    "launch_smoke": "PASS exact sealed launcher at11:30Z; productCUDAenv beforeCPUdevice substitution; actualMYNN21finite16.627s",
+    "smoke_receipt": "<USER_HOME>/wrf_gpu2_lanes/w44-budget/P59_day_launch_smoke/result.json",
+    "outer_top_group_term": "PASS with actual RAM scope, zero remaining worker/sampler and dummy flock reacquired",
+    "host_admission_controls": 4,
+    "e41_aux_discovery_deletion_kills": 1,
+    "ga_window_only": true,
+    "run_scratch_unique": true,
+    "day_admission_controls": 3,
+    "status": "v5 replacement-window starts twice refused by shared RAM FIFO before GPU/model; v6 candidate unqualified"
+  },
+  "ownership": {
+    "readme": "no final hunk; proposal posted to w44-docs",
+    "mynn_constants": "no additional constants",
+    "params_and_warmstart_composition": "must rebase/qualify final combined source"
+  },
+  "remaining": [
+    "manager-started GPU 2-step day/night BYTE",
+    "3-nest 3 h OFF/ON physical carry and nonbudget history BYTE",
+    "GPU EDMF-off finite/zero controls",
+    "actual native E41",
+    "GPU same-input pristine terms/closure with fresh per-step original floors",
+    "measured GPU ON cost/VRAM/device operations",
+    "one manager-routed critic"
+  ],
+  "cleanup": "Terminal snapshot_p09 and nine retired v1 OFF wrfouts removed:3.404648448GB allocated ROOT freed, no DATA credit; nine file hashes retained. Keep snapshot_p49, paid old CUDA cache/native fixture, small input receipt, mini case and next-dependent CPUcache571.",
+  "cuda_mini_candidate": {
+    "path": "<USER_HOME>/wrf_gpu2_lanes/w44-budget/launch_v7_b4f2dcf149/cuda_mini.sh",
+    "sha256": "275f8b1cd75103373fd096884b8db57cba7634026e0828e46ee89ea1f6ef7be4",
+    "production_sha256": "d10a9c70ca1969025169a3d721ba8a36afdfd62cd44f2403c67ea83887ae631e",
+    "cap_s": 720,
+    "gpu_cap_s": 300,
+    "cpu_cap_s": 360,
+    "status": "CUDA_MINI_READY_POSTED_2026-10-24T21:42:51Z",
+    "expected_gpu_lock_s": "~180 [I]",
+    "scope": "component-only (day EDMF1 OFF+ON, 1 real column); no coupled replay",
+    "cpu_all_phase_result": "P69 PASS",
+    "cache_root": "<USER_HOME>/wrf_gpu2_lanes/w44-budget/cuda_mini_cache_5438aca4b5 (absent before GPU run)",
+    "spill_root": "<USER_HOME>/wrf_gpu2_lanes/w44-budget/cuda_mini_runs"
+  },
+  "reader_registry": {
+    "budget_sites": 3,
+    "inherited_main_sites_reviewed": 49,
+    "requested_pytest": "test_reader_registry_covers_actual_package_and_runtime_extractor",
+    "status": "PASS_1_TEST_19.80S",
+    "tested_head": "485de000aabf89285a03989a9dd9e0d9dc7f143c",
+    "receipt": "P64_READER_COVERAGE.json"
+  },
+  "rebase": {
+    "onto": "aac9e78065",
+    "backup_branch": "archive/w44-budget-before-main-20261024b",
+    "registry": "main 49-site fix bd43e17c95 + own 3 sites only"
+  },
+  "composition_fix": {
+    "commit": "5438aca4b5",
+    "tests": [
+      "test_namelist_binding _NL 4 keys",
+      "test_namelist_recognition_breadth bl_mynn_edmf=2",
+      "test_single_domain_restart capture **kwargs",
+      "test_epsilon_native_restart + test_temf_native_restart malformed **kwargs (hidden, 20 TypeError reproduced)"
+    ],
+    "result": "[M CPU] 8 seam files 437 PASS; tests/v025/restart 250 PASS 4 SKIP"
+  },
+  "off_identity_rebased": {
+    "swiss": "b977712fe325c953f3ebbf8f83ea1ca0b9260833ef70981e48bd8a49410e142a",
+    "prod": "321aa651067f1d074b25ebe164536bf27fea5dca151a80c2861dcbab8b58f96b",
+    "receipts": "<USER_HOME>/wrf_gpu2_lanes/w44-budget/P66_off_identity/",
+    "production_convention": "carried from w44-release composition 4fb491fca8 (contains budget 70fe; budget hunks byte-identical)"
+  },
+  "launchers_v7": {
+    "dir": "<USER_HOME>/wrf_gpu2_lanes/w44-budget/launch_v7_b4f2dcf149",
+    "tools_commit": "b4f2dcf149",
+    "model": "<USER_HOME>/wrf_gpu2_lanes/w44-budget/snapshot_p68",
+    "production": "d10a9c70ca1969025169a3d721ba8a36afdfd62cd44f2403c67ea83887ae631e",
+    "cuda_mini": "275f8b1cd75103373fd096884b8db57cba7634026e0828e46ee89ea1f6ef7be4",
+    "cpu_rehearsal_coupled": "31aceb9e323b8e2829b62d46f2e89e88f9f95f85a45ccdf64d04aadaa8f5499f",
+    "e225": "<USER_HOME>/wrf_gpu2_lanes/w44-budget/P67_launcher_validation/",
+    "mini_cpu_allphase": "<USER_HOME>/wrf_gpu2_lanes/w44-budget/P69_mini_v7b_cpu_all_phases/result.json",
+    "withdrawn": [
+      "v5 87b987aa",
+      "v6 b9ccaae4",
+      "v6 2d23b106"
+    ]
+  },
+  "critic_fix": {
+    "verdict": "cr-w44-budget 6da22cbb74 FIX 21:55Z",
+    "F1": {
+      "preregistered_commit": "49a3636970",
+      "receipt": "proofs/w44_budget/receipts/P75_F1_RESCORE.json",
+      "term_step_pass": 168,
+      "term_step_total": 168,
+      "closure_pass": 8,
+      "controls_killed": 64,
+      "controls_vacuous": 0,
+      "rth_worst_fraction_of_bound": 0.667,
+      "gpu": "sealed launchers unchanged; offline re-score of GPU arrays with twin_oracle at 49a3636970 (pre-registered)"
+    },
+    "F2": {
+      "status": "IDENTICAL",
+      "receipt": "proofs/w44_budget/receipts/P72_SCHEMA2_OFF_IDENTITY.json",
+      "swiss": {
+        "canon": "b977712f",
+        "root_raw_hlo_full": "f8619ec5"
+      },
+      "prod_nested": {
+        "canon": "4647d20c",
+        "d01": "47c10960",
+        "forcedown": "6be23bb3",
+        "d02": "5e5c3f00"
+      }
+    },
+    "F3": {
+      "option": "a",
+      "rule": "bl_mynn_edmf=0 omits MAXMF/MAXWIDTH/ZTOP_PLUME (Registry.EM_COMMON:3190, history only)",
+      "test": "tests/test_w44_mynn_budgets.py::test_edmf_off_omits_wrf_package_mynn_dmp_edmf[full|subset]",
+      "mutant": "omission disabled -> both fail (assertion)",
+      "writer_cpu": {
+        "budget_namelist_pass": 114,
+        "full_stream_files_pass": 157,
+        "data_guard_skips": 48
+      }
+    }
+  }
+}

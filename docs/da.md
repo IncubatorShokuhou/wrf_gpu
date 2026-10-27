@@ -238,13 +238,13 @@ All CPU, all repeatable with `pytest tests/da tests/a1_da`:
   exactly what they claim; moisture budgets checked against hand-computed dry-air
   masses; one negative cell no longer flips admissibility.
 - **Rebalance:** fixed-MU increments against a verbatim real.exe REAL*8 column
-  oracle (relative pressure error 2e-11 in the A1 probe receipt); zero increment
+  oracle (relative pressure error 2e-11 in the development probe receipt); zero increment
   reproduces the background bit for bit.
 - **Switzerland d01 end to end:** synthetic members and observations on the
   shipped case: O−A < O−B, withheld observations stay withheld, the boundary zone
   is unchanged, the written analysis passes the port's own case preflight
   (`gpuwrf run --dry-run`).
-- **Development cases (A1 probe, ALISIOS, three cases, descriptive):** a
+- **Development cases (ALISIOS, three cases, descriptive):** a
   flow-dependent 10-member LETKF lowered pooled 12-hour station mean-squared
   error for T2 by 15 % (90 % interval −21…−8 %), Q2 by 29 % (two cases) and U10
   by 27 %, while V10 rose by 6 % (−1…+12 %); the gain was concentrated in the
@@ -259,7 +259,7 @@ All CPU, all repeatable with `pytest tests/da tests/a1_da`:
 - MU (dry column mass) is not analysed. By default all members share one
   boundary file; the opt-in ensemble options ([da_ensemble.md](da_ensemble.md))
   add per-member perturbed boundary files, adaptive and additive inflation.
-- With the default settings the ensemble loses spread quickly in the A1 cases
+- With the default settings the ensemble loses spread quickly in those development cases
   (28–76 % per 6 h in the interior).
 - **Known limitation of the opt-in ensemble options: too much spread.** In their
   prospectively registered real-model test (Swiss CPU-WRF twin experiment, final

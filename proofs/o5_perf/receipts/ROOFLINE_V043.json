@@ -1,0 +1,2861 @@
+{
+ "schema": "o5-perf.roofline_join.v1",
+ "scope": "Per-kernel static HBM bytes x measured node-trace duration -> per-family bandwidth roofline (S4 bw view).\n\nInputs are existing artifacts only (no JAX, no GPU):\n  * actual rich GPU optimized HLO of the v0.4.3 bundle PROD programs (w44-perf ACTUAL_HLO, bound to native records),\n  * runtime thunk -> HLO instruction -> native symbol bindings (w44-perf ORDINARY_THUNKS),\n  * node-trace kernel rows (w44-perf TRACE_SUMMARY N43 = 3 ordinary roots, R43 = rad/KF window),\n  * family labels per (domain, kernel) from w44-perf FAMILY_TIMES_FINAL joins.\nBytes are a streaming lower bound: every distinct operand byte read once, every output byte written once.\nSlice-aware: a fusion parameter consumed only by (dynamic-)slice/gather counts the slice bytes; a root\ndynamic-update-slice into a parameter counts only the update. Pallas custom calls count full operands+outputs.\nDuration is node-trace time (node tracing inflates small kernels, E185): achieved bandwidth is a lower bound.\n",
+ "peak_bw_Bps": 1792000000000.0,
+ "hlo_bindings": [
+  {
+   "program": "d01",
+   "hlo_sha256": "9e6fe3b1f7121fb2c7511c8c2051014ba4ca5225df53ef89a8df1019bcc163ba",
+   "native_record2_sha256": "b93bb8873562487d2aa6678953f1e786d58d098ccd92ebc4b62a6de7b5a8ef01",
+   "computations": 1544,
+   "symbols_with_bytes": 1107
+  },
+  {
+   "program": "d02",
+   "hlo_sha256": "8e2d866adcf085ea6bf76839ec9e2e86035e97d8219dcc864b9fa2a9de5154cf",
+   "native_record2_sha256": "4ac86066eb486ffe157c39a16b0460fb08826f23b065f397b6819fa66cb15f2e",
+   "computations": 1089,
+   "symbols_with_bytes": 757
+  }
+ ],
+ "arms": {
+  "N43": {
+   "roots": 3,
+   "kernels": 10227,
+   "classes": {
+    "pallas/custom": {
+     "kernels_per_root": 596.0,
+     "ms_per_root": 16.131304,
+     "GB_per_root": 35.01977346,
+     "achieved_TBps": 2.1709201847538178,
+     "excess_over_eff_floor_ms_per_root": 4.538877176888886,
+     "tiny_lt4us_per_root": 68.33333333333333,
+     "tiny_ms_per_root": 0.18844833333333333
+    },
+    "xla-transpose-kInput": {
+     "kernels_per_root": 576.0,
+     "ms_per_root": 6.821480666666666,
+     "GB_per_root": 8.553396095,
+     "achieved_TBps": 1.253891422253292,
+     "excess_over_eff_floor_ms_per_root": 1.6776990639999987,
+     "tiny_lt4us_per_root": 295.6666666666667,
+     "tiny_ms_per_root": 0.6692703333333333
+    },
+    "xla-kLoop": {
+     "kernels_per_root": 1254.0,
+     "ms_per_root": 6.515336333333334,
+     "GB_per_root": 10.470797709000001,
+     "achieved_TBps": 1.6071001055509593,
+     "excess_over_eff_floor_ms_per_root": 0.9543598791111111,
+     "tiny_lt4us_per_root": 905.0,
+     "tiny_ms_per_root": 1.3363446666666665
+    },
+    "xla-kInput": {
+     "kernels_per_root": 544.0,
+     "ms_per_root": 3.903923666666667,
+     "GB_per_root": 9.243232325,
+     "achieved_TBps": 2.36767752503016,
+     "excess_over_eff_floor_ms_per_root": 1.0277917317777778,
+     "tiny_lt4us_per_root": 381.3333333333333,
+     "tiny_ms_per_root": 0.6737866666666666
+    },
+    "xla-transpose-kCustom": {
+     "kernels_per_root": 127.0,
+     "ms_per_root": 0.348991,
+     "GB_per_root": 0.459448728,
+     "achieved_TBps": 1.3165059500101721,
+     "excess_over_eff_floor_ms_per_root": 0.03712665066666668,
+     "tiny_lt4us_per_root": 94.0,
+     "tiny_ms_per_root": 0.147296
+    },
+    "xla-kCustom": {
+     "kernels_per_root": 21.0,
+     "ms_per_root": 0.08028766666666666,
+     "GB_per_root": 0.08463121600000001,
+     "achieved_TBps": 1.0540998326849704,
+     "excess_over_eff_floor_ms_per_root": 0.026855240000000006,
+     "tiny_lt4us_per_root": 17.0,
+     "tiny_ms_per_root": 0.031071666666666668
+    }
+   },
+   "family_class": {
+    "dycore/advection|pallas/custom": {
+     "kernels_per_root": 523.0,
+     "ms_per_root": 12.066267666666667,
+     "GB_per_root": 32.15253218,
+     "TBps": 2.6646626005837817
+    },
+    "mixed|xla-transpose-kInput": {
+     "kernels_per_root": 168.0,
+     "ms_per_root": 4.397509666666667,
+     "GB_per_root": 6.222475181,
+     "TBps": 1.4149997732049708
+    },
+    "dycore/advection|xla-kLoop": {
+     "kernels_per_root": 392.0,
+     "ms_per_root": 3.865323666666667,
+     "GB_per_root": 6.275098767999999,
+     "TBps": 1.6234342345285273
+    },
+    "MYNN|pallas/custom": {
+     "kernels_per_root": 48.0,
+     "ms_per_root": 2.076767333333333,
+     "GB_per_root": 1.513319772,
+     "TBps": 0.7286900885382442
+    },
+    "dycore/advection|xla-kInput": {
+     "kernels_per_root": 67.0,
+     "ms_per_root": 1.9331416666666668,
+     "GB_per_root": 2.2351701040000003,
+     "TBps": 1.1562370945395448
+    },
+    "mixed|xla-kInput": {
+     "kernels_per_root": 346.0,
+     "ms_per_root": 1.7004076666666668,
+     "GB_per_root": 6.717821012999999,
+     "TBps": 3.950712023175619
+    },
+    "Thompson|pallas/custom": {
+     "kernels_per_root": 4.0,
+     "ms_per_root": 1.6446863333333335,
+     "GB_per_root": 1.0271560720000001,
+     "TBps": 0.6245300706781172
+    },
+    "dycore/advection|xla-transpose-kInput": {
+     "kernels_per_root": 141.0,
+     "ms_per_root": 1.3644610000000001,
+     "GB_per_root": 0.867298824,
+     "TBps": 0.6356347480800111
+    },
+    "mixed|xla-kLoop": {
+     "kernels_per_root": 185.0,
+     "ms_per_root": 1.2494736666666666,
+     "GB_per_root": 2.9271642829999998,
+     "TBps": 2.342717866803115
+    },
+    "boundary/nesting|xla-transpose-kInput": {
+     "kernels_per_root": 96.0,
+     "ms_per_root": 0.515769,
+     "GB_per_root": 0.5504194219999999,
+     "TBps": 1.0671820563081535
+    },
+    "glue/other|xla-kLoop": {
+     "kernels_per_root": 167.0,
+     "ms_per_root": 0.46737,
+     "GB_per_root": 0.7368931559999999,
+     "TBps": 1.576680480133513
+    },
+    "surface-layer|xla-kLoop": {
+     "kernels_per_root": 106.0,
+     "ms_per_root": 0.3156056666666667,
+     "GB_per_root": 0.079047134,
+     "TBps": 0.2504617069613241
+    },
+    "boundary/nesting|xla-kInput": {
+     "kernels_per_root": 109.0,
+     "ms_per_root": 0.23360633333333333,
+     "GB_per_root": 0.274833394,
+     "TBps": 1.1764809201805317
+    },
+    "Noah-MP|xla-kLoop": {
+     "kernels_per_root": 137.0,
+     "ms_per_root": 0.1953136666666667,
+     "GB_per_root": 0.21411753600000002,
+     "TBps": 1.0962752359025907
+    },
+    "Noah-MP|pallas/custom": {
+     "kernels_per_root": 16.0,
+     "ms_per_root": 0.17223366666666665,
+     "GB_per_root": 0.168288832,
+     "TBps": 0.9770960303928191
+    },
+    "MYNN|xla-transpose-kInput": {
+     "kernels_per_root": 36.0,
+     "ms_per_root": 0.16925633333333334,
+     "GB_per_root": 0.37936641600000004,
+     "TBps": 2.2413720569786655
+    },
+    "Noah-MP|xla-transpose-kInput": {
+     "kernels_per_root": 44.0,
+     "ms_per_root": 0.12901366666666667,
+     "GB_per_root": 0.025082416,
+     "TBps": 0.19441673621140912
+    },
+    "hydrostatic-prep|pallas/custom": {
+     "kernels_per_root": 4.0,
+     "ms_per_root": 0.12261300000000001,
+     "GB_per_root": 0.1445998,
+     "TBps": 1.179318669309127
+    },
+    "boundary/nesting|xla-kLoop": {
+     "kernels_per_root": 102.0,
+     "ms_per_root": 0.12001099999999999,
+     "GB_per_root": 0.125298367,
+     "TBps": 1.044057353075968
+    },
+    "dycore/advection|xla-transpose-kCustom": {
+     "kernels_per_root": 44.0,
+     "ms_per_root": 0.11000633333333333,
+     "GB_per_root": 0.102491512,
+     "TBps": 0.9316873755753456
+    },
+    "layout|xla-kLoop": {
+     "kernels_per_root": 7.0,
+     "ms_per_root": 0.10057633333333336,
+     "GB_per_root": 0.034703136,
+     "TBps": 0.34504276353946745
+    },
+    "mixed|xla-transpose-kCustom": {
+     "kernels_per_root": 19.0,
+     "ms_per_root": 0.09986166666666667,
+     "GB_per_root": 0.16043036800000002,
+     "TBps": 1.6065260410234157
+    },
+    "surface-layer|xla-transpose-kInput": {
+     "kernels_per_root": 18.0,
+     "ms_per_root": 0.07824,
+     "GB_per_root": 0.00432726,
+     "TBps": 0.05530751533742331
+    },
+    "layout|xla-transpose-kInput": {
+     "kernels_per_root": 26.0,
+     "ms_per_root": 0.07377066666666666,
+     "GB_per_root": 0.099240768,
+     "TBps": 1.3452605552342396
+    },
+    "mixed|xla-kCustom": {
+     "kernels_per_root": 16.0,
+     "ms_per_root": 0.07066666666666667,
+     "GB_per_root": 0.078425856,
+     "TBps": 1.1097998490566037
+    },
+    "MYNN|xla-kLoop": {
+     "kernels_per_root": 23.0,
+     "ms_per_root": 0.062698,
+     "GB_per_root": 0.057877644,
+     "TBps": 0.9231178665986156
+    },
+    "layout|xla-transpose-kCustom": {
+     "kernels_per_root": 12.0,
+     "ms_per_root": 0.055508,
+     "GB_per_root": 0.10248419199999999,
+     "TBps": 1.846295885277798
+    },
+    "RRTMG-sampling|xla-kLoop": {
+     "kernels_per_root": 63.0,
+     "ms_per_root": 0.05026133333333333,
+     "GB_per_root": 1.0080000000000001e-06,
+     "TBps": 2.0055178268251273e-05
+    },
+    "gravity-wave-drag|pallas/custom": {
+     "kernels_per_root": 1.0,
+     "ms_per_root": 0.048736,
+     "GB_per_root": 0.013876804,
+     "TBps": 0.28473415955351283
+    },
+    "glue/other|xla-transpose-kInput": {
+     "kernels_per_root": 23.0,
+     "ms_per_root": 0.04625066666666666,
+     "GB_per_root": 0.097161808,
+     "TBps": 2.1007655673431738
+    },
+    "unattributed|xla-transpose-kInput": {
+     "kernels_per_root": 21.0,
+     "ms_per_root": 0.04091633333333333,
+     "GB_per_root": 0.03912768,
+     "TBps": 0.9562851021189582
+    },
+    "RRTMG-SW|xla-kLoop": {
+     "kernels_per_root": 19.0,
+     "ms_per_root": 0.036458,
+     "GB_per_root": 0.003686672,
+     "TBps": 0.10112107082121893
+    },
+    "MYNN|xla-transpose-kCustom": {
+     "kernels_per_root": 15.0,
+     "ms_per_root": 0.03380266666666667,
+     "GB_per_root": 0.066991584,
+     "TBps": 1.9818431681918587
+    },
+    "unattributed|xla-kLoop": {
+     "kernels_per_root": 38.0,
+     "ms_per_root": 0.032789,
+     "GB_per_root": 0.015297205,
+     "TBps": 0.4665346610143646
+    },
+    "Noah-MP|xla-kInput": {
+     "kernels_per_root": 16.0,
+     "ms_per_root": 0.019178666666666667,
+     "GB_per_root": 0.009377964,
+     "TBps": 0.48897893492769745
+    },
+    "Noah-MP|xla-transpose-kCustom": {
+     "kernels_per_root": 16.0,
+     "ms_per_root": 0.019039,
+     "GB_per_root": 0.0018564,
+     "TBps": 0.09750512106728294
+    },
+    "gravity-wave-drag|xla-kLoop": {
+     "kernels_per_root": 14.0,
+     "ms_per_root": 0.018016,
+     "GB_per_root": 0.001512,
+     "TBps": 0.08392539964476022
+    },
+    "MYNN|xla-kInput": {
+     "kernels_per_root": 4.0,
+     "ms_per_root": 0.014453333333333334,
+     "GB_per_root": 0.0051058499999999995,
+     "TBps": 0.3532645295202952
+    },
+    "boundary/nesting|xla-transpose-kCustom": {
+     "kernels_per_root": 9.0,
+     "ms_per_root": 0.012042666666666667,
+     "GB_per_root": 0.009823792,
+     "TBps": 0.8157488928255093
+    },
+    "unattributed|xla-transpose-kCustom": {
+     "kernels_per_root": 8.0,
+     "ms_per_root": 0.010208,
+     "GB_per_root": 0.00627424,
+     "TBps": 0.6146394984326018
+    },
+    "glue/other|xla-transpose-kCustom": {
+     "kernels_per_root": 3.0,
+     "ms_per_root": 0.007456,
+     "GB_per_root": 0.00896224,
+     "TBps": 1.2020171673819744
+    },
+    "dycore/advection|xla-kCustom": {
+     "kernels_per_root": 2.0,
+     "ms_per_root": 0.00512,
+     "GB_per_root": 0.004705888,
+     "TBps": 0.91911875
+    },
+    "Noah-MP|xla-kCustom": {
+     "kernels_per_root": 3.0,
+     "ms_per_root": 0.004501,
+     "GB_per_root": 0.001499472,
+     "TBps": 0.3331419684514552
+    },
+    "Thompson|xla-transpose-kInput": {
+     "kernels_per_root": 1.0,
+     "ms_per_root": 0.003146666666666667,
+     "GB_per_root": 0.007392,
+     "TBps": 2.3491525423728814
+    },
+    "surface-layer|xla-kInput": {
+     "kernels_per_root": 2.0,
+     "ms_per_root": 0.003136,
+     "GB_per_root": 0.000924,
+     "TBps": 0.29464285714285715
+    },
+    "gravity-wave-drag|xla-transpose-kInput": {
+     "kernels_per_root": 1.0,
+     "ms_per_root": 0.0023253333333333333,
+     "GB_per_root": 0.0046032,
+     "TBps": 1.979587155963303
+    },
+    "KF|xla-kLoop": {
+     "kernels_per_root": 1.0,
+     "ms_per_root": 0.00144,
+     "GB_per_root": 0.0001008,
+     "TBps": 0.07
+    },
+    "surface-layer|xla-transpose-kCustom": {
+     "kernels_per_root": 1.0,
+     "ms_per_root": 0.001066666666666667,
+     "GB_per_root": 0.0001344,
+     "TBps": 0.12599999999999997
+    },
+    "RRTMG-sampling|xla-transpose-kInput": {
+     "kernels_per_root": 1.0,
+     "ms_per_root": 0.0008213333333333333,
+     "GB_per_root": 0.25690112,
+     "TBps": 312.7854545454545
+    }
+   },
+   "kernel_ms_per_root": 34.381835,
+   "bound_ms_per_root": 33.801323333333336,
+   "GB_per_root": 63.83127953299999,
+   "bw_floor_ms_per_root": 35.62013366796873,
+   "tiny_lt4us_kernels_per_root": 1761.3333333333333,
+   "tiny_ms_per_root": 3.0462176666666667,
+   "families": {
+    "dycore/advection": {
+     "kernels_per_root": 1169.0,
+     "ms_per_root": 19.344320333333332,
+     "bound_fraction_of_time": 1.0,
+     "GB_per_root": 41.637297276,
+     "bw_floor_ms_per_root": 23.23509892633929,
+     "achieved_TBps": 2.152430096199985,
+     "pct_of_peak_bw": 120.11328661830275,
+     "excess_over_bw_floor_ms_per_root": 5.927397148065475,
+     "tiny_lt4us_kernels_per_root": 412.3333333333333,
+     "tiny_ms_per_root": 0.7721146666666666
+    },
+    "MYNN": {
+     "kernels_per_root": 126.0,
+     "ms_per_root": 2.356977666666667,
+     "bound_fraction_of_time": 1.0,
+     "GB_per_root": 2.022661266,
+     "bw_floor_ms_per_root": 1.1287172243303558,
+     "achieved_TBps": 0.8581588593754176,
+     "pct_of_peak_bw": 47.888329206217506,
+     "excess_over_bw_floor_ms_per_root": 1.3105577436755973,
+     "tiny_lt4us_kernels_per_root": 45.0,
+     "tiny_ms_per_root": 0.09518866666666666
+    },
+    "Thompson": {
+     "kernels_per_root": 5.0,
+     "ms_per_root": 1.647833,
+     "bound_fraction_of_time": 1.0,
+     "GB_per_root": 1.034548072,
+     "bw_floor_ms_per_root": 0.5773147723214286,
+     "achieved_TBps": 0.6278233728781981,
+     "pct_of_peak_bw": 35.034786432935164,
+     "excess_over_bw_floor_ms_per_root": 1.0714965610119047,
+     "tiny_lt4us_kernels_per_root": 1.0,
+     "tiny_ms_per_root": 0.003146666666666667
+    },
+    "mixed:MYNN+boundary/nesting+layout": {
+     "kernels_per_root": 100.0,
+     "ms_per_root": 1.5910653333333336,
+     "bound_fraction_of_time": 1.0,
+     "GB_per_root": 3.585079626,
+     "bw_floor_ms_per_root": 2.0006024698660703,
+     "achieved_TBps": 2.2532573307276715,
+     "pct_of_peak_bw": 125.7398064022138,
+     "excess_over_bw_floor_ms_per_root": 0.11483288671874999,
+     "tiny_lt4us_kernels_per_root": 20.0,
+     "tiny_ms_per_root": 0.05671366666666666
+    },
+    "boundary/nesting": {
+     "kernels_per_root": 316.0,
+     "ms_per_root": 0.8814289999999999,
+     "bound_fraction_of_time": 1.0,
+     "GB_per_root": 0.960374975,
+     "bw_floor_ms_per_root": 0.5359235351562498,
+     "achieved_TBps": 1.0895658924314946,
+     "pct_of_peak_bw": 60.80166810443609,
+     "excess_over_bw_floor_ms_per_root": 0.4358357194940481,
+     "tiny_lt4us_kernels_per_root": 275.3333333333333,
+     "tiny_ms_per_root": 0.41913566666666663
+    },
+    "mixed:boundary/nesting+dycore/advection": {
+     "kernels_per_root": 222.0,
+     "ms_per_root": 0.863041,
+     "bound_fraction_of_time": 1.0,
+     "GB_per_root": 3.1444890109999997,
+     "bw_floor_ms_per_root": 1.7547371713169617,
+     "achieved_TBps": 3.643498989039918,
+     "pct_of_peak_bw": 203.32025608481686,
+     "excess_over_bw_floor_ms_per_root": 0.26925584616815523,
+     "tiny_lt4us_kernels_per_root": 192.0,
+     "tiny_ms_per_root": 0.3743256666666666
+    },
+    "mixed:MYNN+boundary/nesting": {
+     "kernels_per_root": 145.0,
+     "ms_per_root": 0.8003619999999999,
+     "bound_fraction_of_time": 1.0,
+     "GB_per_root": 2.7362404110000003,
+     "bw_floor_ms_per_root": 1.5269198722098203,
+     "achieved_TBps": 3.4187535277786796,
+     "pct_of_peak_bw": 190.77865668407813,
+     "excess_over_bw_floor_ms_per_root": 0.05419677473958332,
+     "tiny_lt4us_kernels_per_root": 57.666666666666664,
+     "tiny_ms_per_root": 0.12454333333333334
+    },
+    "mixed:boundary/nesting+dycore/advection+layout": {
+     "kernels_per_root": 9.0,
+     "ms_per_root": 0.7363749999999999,
+     "bound_fraction_of_time": 1.0,
+     "GB_per_root": 0.9451247039999999,
+     "bw_floor_ms_per_root": 0.5274133392857143,
+     "achieved_TBps": 1.2834828776099134,
+     "pct_of_peak_bw": 71.6229284380532,
+     "excess_over_bw_floor_ms_per_root": 0.210136005952381,
+     "tiny_lt4us_kernels_per_root": 4.0,
+     "tiny_ms_per_root": 0.005674666666666667
+    },
+    "mixed:MYNN+Noah-MP+boundary/nesting+dycore/advection+layout": {
+     "kernels_per_root": 6.0,
+     "ms_per_root": 0.7194143333333334,
+     "bound_fraction_of_time": 1.0,
+     "GB_per_root": 0.9780681480000001,
+     "bw_floor_ms_per_root": 0.5457969575892858,
+     "achieved_TBps": 1.3595338634250174,
+     "pct_of_peak_bw": 75.86684505719963,
+     "excess_over_bw_floor_ms_per_root": 0.1736173757440476,
+     "tiny_lt4us_kernels_per_root": 0.0,
+     "tiny_ms_per_root": 0.0
+    },
+    "unmatched": {
+     "kernels_per_root": 291.0,
+     "ms_per_root": 0.5805116666666666,
+     "bound_fraction_of_time": 0.0,
+     "GB_per_root": 0.0,
+     "bw_floor_ms_per_root": 0.0,
+     "achieved_TBps": null,
+     "pct_of_peak_bw": null,
+     "excess_over_bw_floor_ms_per_root": 0.0,
+     "tiny_lt4us_kernels_per_root": 0.0,
+     "tiny_ms_per_root": 0.0
+    },
+    "mixed:Thompson+boundary/nesting+layout": {
+     "kernels_per_root": 7.0,
+     "ms_per_root": 0.574998,
+     "bound_fraction_of_time": 1.0,
+     "GB_per_root": 0.935465994,
+     "bw_floor_ms_per_root": 0.5220234341517859,
+     "achieved_TBps": 1.6269030396627466,
+     "pct_of_peak_bw": 90.78699998118006,
+     "excess_over_bw_floor_ms_per_root": 0.07745439620535716,
+     "tiny_lt4us_kernels_per_root": 0.0,
+     "tiny_ms_per_root": 0.0
+    },
+    "mixed:MYNN+boundary/nesting+dycore/advection+layout": {
+     "kernels_per_root": 14.0,
+     "ms_per_root": 0.5446633333333334,
+     "bound_fraction_of_time": 1.0,
+     "GB_per_root": 0.754274209,
+     "bw_floor_ms_per_root": 0.4209119469866071,
+     "achieved_TBps": 1.3848448442156929,
+     "pct_of_peak_bw": 77.27928818167929,
+     "excess_over_bw_floor_ms_per_root": 0.1370081177455357,
+     "tiny_lt4us_kernels_per_root": 0.0,
+     "tiny_ms_per_root": 0.0
+    },
+    "Noah-MP": {
+     "kernels_per_root": 232.0,
+     "ms_per_root": 0.5392796666666667,
+     "bound_fraction_of_time": 1.0,
+     "GB_per_root": 0.42022262000000005,
+     "bw_floor_ms_per_root": 0.2344992299107139,
+     "achieved_TBps": 0.7792294906971583,
+     "pct_of_peak_bw": 43.483788543368206,
+     "excess_over_bw_floor_ms_per_root": 0.3166993119419653,
+     "tiny_lt4us_kernels_per_root": 200.66666666666666,
+     "tiny_ms_per_root": 0.268775
+    },
+    "glue/other": {
+     "kernels_per_root": 193.0,
+     "ms_per_root": 0.5210766666666666,
+     "bound_fraction_of_time": 1.0,
+     "GB_per_root": 0.843017204,
+     "bw_floor_ms_per_root": 0.4704337075892862,
+     "achieved_TBps": 1.6178371781503682,
+     "pct_of_peak_bw": 90.28109253071251,
+     "excess_over_bw_floor_ms_per_root": 0.1675126488095239,
+     "tiny_lt4us_kernels_per_root": 149.66666666666666,
+     "tiny_ms_per_root": 0.20247733333333331
+    },
+    "mixed:dycore/advection+layout": {
+     "kernels_per_root": 36.0,
+     "ms_per_root": 0.403614,
+     "bound_fraction_of_time": 1.0,
+     "GB_per_root": 0.741322688,
+     "bw_floor_ms_per_root": 0.413684535714286,
+     "achieved_TBps": 1.8367120268375228,
+     "pct_of_peak_bw": 102.49509078334391,
+     "excess_over_bw_floor_ms_per_root": 0.0704656636904762,
+     "tiny_lt4us_kernels_per_root": 6.0,
+     "tiny_ms_per_root": 0.015786666666666668
+    },
+    "surface-layer": {
+     "kernels_per_root": 127.0,
+     "ms_per_root": 0.39804833333333334,
+     "bound_fraction_of_time": 1.0,
+     "GB_per_root": 0.08443279399999999,
+     "bw_floor_ms_per_root": 0.04711651450892862,
+     "achieved_TBps": 0.21211693889770505,
+     "pct_of_peak_bw": 11.836882750988005,
+     "excess_over_bw_floor_ms_per_root": 0.35093181882440433,
+     "tiny_lt4us_kernels_per_root": 114.66666666666667,
+     "tiny_ms_per_root": 0.31043233333333337
+    },
+    "layout": {
+     "kernels_per_root": 45.0,
+     "ms_per_root": 0.229855,
+     "bound_fraction_of_time": 1.0,
+     "GB_per_root": 0.236428096,
+     "bw_floor_ms_per_root": 0.13193532142857142,
+     "achieved_TBps": 1.0285967066193904,
+     "pct_of_peak_bw": 57.399369789028476,
+     "excess_over_bw_floor_ms_per_root": 0.10793404761904751,
+     "tiny_lt4us_kernels_per_root": 29.333333333333332,
+     "tiny_ms_per_root": 0.050709333333333335
+    },
+    "mixed:KF+boundary/nesting+dycore/advection": {
+     "kernels_per_root": 35.0,
+     "ms_per_root": 0.15640566666666667,
+     "bound_fraction_of_time": 1.0,
+     "GB_per_root": 0.41071872400000004,
+     "bw_floor_ms_per_root": 0.2291957165178571,
+     "achieved_TBps": 2.625983653618688,
+     "pct_of_peak_bw": 146.53926638497143,
+     "excess_over_bw_floor_ms_per_root": 0.01121429241071429,
+     "tiny_lt4us_kernels_per_root": 26.0,
+     "tiny_ms_per_root": 0.032640333333333334
+    },
+    "mixed:Noah-MP+boundary/nesting+layout+surface-layer": {
+     "kernels_per_root": 13.0,
+     "ms_per_root": 0.15337333333333333,
+     "bound_fraction_of_time": 1.0,
+     "GB_per_root": 0.239828475,
+     "bw_floor_ms_per_root": 0.1338328543526786,
+     "achieved_TBps": 1.563690830652873,
+     "pct_of_peak_bw": 87.2595329605398,
+     "excess_over_bw_floor_ms_per_root": 0.029570833705357152,
+     "tiny_lt4us_kernels_per_root": 1.0,
+     "tiny_ms_per_root": 0.0010559999999999999
+    },
+    "mixed:MYNN+layout": {
+     "kernels_per_root": 25.0,
+     "ms_per_root": 0.144883,
+     "bound_fraction_of_time": 1.0,
+     "GB_per_root": 0.289701336,
+     "bw_floor_ms_per_root": 0.1616636919642858,
+     "achieved_TBps": 1.9995536812462469,
+     "pct_of_peak_bw": 111.58223667668788,
+     "excess_over_bw_floor_ms_per_root": 0.028356030505952385,
+     "tiny_lt4us_kernels_per_root": 12.666666666666666,
+     "tiny_ms_per_root": 0.03612666666666667
+    },
+    "mixed:Noah-MP+surface-layer": {
+     "kernels_per_root": 38.0,
+     "ms_per_root": 0.14484966666666668,
+     "bound_fraction_of_time": 1.0,
+     "GB_per_root": 0.279658687,
+     "bw_floor_ms_per_root": 0.15605953515625,
+     "achieved_TBps": 1.9306822958975858,
+     "pct_of_peak_bw": 107.7389674049992,
+     "excess_over_bw_floor_ms_per_root": 0.0362889611235119,
+     "tiny_lt4us_kernels_per_root": 25.0,
+     "tiny_ms_per_root": 0.062003
+    },
+    "mixed:MYNN+boundary/nesting+layout+surface-layer": {
+     "kernels_per_root": 11.0,
+     "ms_per_root": 0.138197,
+     "bound_fraction_of_time": 1.0,
+     "GB_per_root": 0.38992251299999997,
+     "bw_floor_ms_per_root": 0.2175906880580357,
+     "achieved_TBps": 2.8214976663748126,
+     "pct_of_peak_bw": 157.44964656109445,
+     "excess_over_bw_floor_ms_per_root": 0.0,
+     "tiny_lt4us_kernels_per_root": 0.0,
+     "tiny_ms_per_root": 0.0
+    },
+    "hydrostatic-prep": {
+     "kernels_per_root": 4.0,
+     "ms_per_root": 0.12261300000000001,
+     "bound_fraction_of_time": 1.0,
+     "GB_per_root": 0.1445998,
+     "bw_floor_ms_per_root": 0.08069185267857146,
+     "achieved_TBps": 1.1793186693091269,
+     "pct_of_peak_bw": 65.81019359983966,
+     "excess_over_bw_floor_ms_per_root": 0.04192114732142857,
+     "tiny_lt4us_kernels_per_root": 0.0,
+     "tiny_ms_per_root": 0.0
+    },
+    "mixed:MYNN+Noah-MP+boundary/nesting+layout+surface-layer": {
+     "kernels_per_root": 13.0,
+     "ms_per_root": 0.11782433333333332,
+     "bound_fraction_of_time": 1.0,
+     "GB_per_root": 0.08904491399999999,
+     "bw_floor_ms_per_root": 0.04969024218750001,
+     "achieved_TBps": 0.7557429902708268,
+     "pct_of_peak_bw": 42.17315793922024,
+     "excess_over_bw_floor_ms_per_root": 0.06813409114583331,
+     "tiny_lt4us_kernels_per_root": 0.0,
+     "tiny_ms_per_root": 0.0
+    },
+    "mixed:Thompson+layout": {
+     "kernels_per_root": 7.0,
+     "ms_per_root": 0.115435,
+     "bound_fraction_of_time": 1.0,
+     "GB_per_root": 0.149796453,
+     "bw_floor_ms_per_root": 0.08359177064732143,
+     "achieved_TBps": 1.2976692770823406,
+     "pct_of_peak_bw": 72.41458019432704,
+     "excess_over_bw_floor_ms_per_root": 0.04059912518601191,
+     "tiny_lt4us_kernels_per_root": 0.0,
+     "tiny_ms_per_root": 0.0
+    },
+    "unattributed": {
+     "kernels_per_root": 67.0,
+     "ms_per_root": 0.08391333333333334,
+     "bound_fraction_of_time": 1.0,
+     "GB_per_root": 0.060699125,
+     "bw_floor_ms_per_root": 0.03387227957589285,
+     "achieved_TBps": 0.7233549495511241,
+     "pct_of_peak_bw": 40.365789595486845,
+     "excess_over_bw_floor_ms_per_root": 0.050219053757440485,
+     "tiny_lt4us_kernels_per_root": 67.0,
+     "tiny_ms_per_root": 0.08391333333333334
+    },
+    "gravity-wave-drag": {
+     "kernels_per_root": 16.0,
+     "ms_per_root": 0.06907733333333334,
+     "bound_fraction_of_time": 1.0,
+     "GB_per_root": 0.019992004,
+     "bw_floor_ms_per_root": 0.011156252232142859,
+     "achieved_TBps": 0.2894148201050031,
+     "pct_of_peak_bw": 16.150380586216688,
+     "excess_over_bw_floor_ms_per_root": 0.05816449776785714,
+     "tiny_lt4us_kernels_per_root": 15.0,
+     "tiny_ms_per_root": 0.020341333333333333
+    },
+    "mixed:MYNN+boundary/nesting+surface-layer": {
+     "kernels_per_root": 6.0,
+     "ms_per_root": 0.05575466666666667,
+     "bound_fraction_of_time": 1.0,
+     "GB_per_root": 0.05792358,
+     "bw_floor_ms_per_root": 0.032323426339285706,
+     "achieved_TBps": 1.0389010187488044,
+     "pct_of_peak_bw": 57.97438720696453,
+     "excess_over_bw_floor_ms_per_root": 0.023431240327380958,
+     "tiny_lt4us_kernels_per_root": 2.0,
+     "tiny_ms_per_root": 0.0030080000000000003
+    },
+    "RRTMG-sampling": {
+     "kernels_per_root": 64.0,
+     "ms_per_root": 0.051082666666666665,
+     "bound_fraction_of_time": 1.0,
+     "GB_per_root": 0.256902128,
+     "bw_floor_ms_per_root": 0.14336056249999948,
+     "achieved_TBps": 5.029144811025265,
+     "pct_of_peak_bw": 280.6442416866778,
+     "excess_over_bw_floor_ms_per_root": 0.050260770833333246,
+     "tiny_lt4us_kernels_per_root": 64.0,
+     "tiny_ms_per_root": 0.051082666666666665
+    },
+    "RRTMG-SW": {
+     "kernels_per_root": 19.0,
+     "ms_per_root": 0.036458,
+     "bound_fraction_of_time": 1.0,
+     "GB_per_root": 0.003686672,
+     "bw_floor_ms_per_root": 0.0020572946428571407,
+     "achieved_TBps": 0.10112107082121893,
+     "pct_of_peak_bw": 5.64291689850552,
+     "excess_over_bw_floor_ms_per_root": 0.03440070535714282,
+     "tiny_lt4us_kernels_per_root": 18.0,
+     "tiny_ms_per_root": 0.019476333333333335
+    },
+    "mixed:Noah-MP+layout": {
+     "kernels_per_root": 7.0,
+     "ms_per_root": 0.024618666666666667,
+     "bound_fraction_of_time": 1.0,
+     "GB_per_root": 0.019599059999999998,
+     "bw_floor_ms_per_root": 0.010936975446428571,
+     "achieved_TBps": 0.7961056650779895,
+     "pct_of_peak_bw": 44.42553934586995,
+     "excess_over_bw_floor_ms_per_root": 0.01867922916666667,
+     "tiny_lt4us_kernels_per_root": 3.0,
+     "tiny_ms_per_root": 0.004416
+    },
+    "mixed:boundary/nesting+layout": {
+     "kernels_per_root": 4.0,
+     "ms_per_root": 0.023946666666666668,
+     "bound_fraction_of_time": 1.0,
+     "GB_per_root": 0.036320052,
+     "bw_floor_ms_per_root": 0.020267886160714284,
+     "achieved_TBps": 1.5167059576837416,
+     "pct_of_peak_bw": 84.6376092457445,
+     "excess_over_bw_floor_ms_per_root": 0.0036787805059523833,
+     "tiny_lt4us_kernels_per_root": 1.0,
+     "tiny_ms_per_root": 0.0024853333333333333
+    },
+    "mixed:MYNN+Noah-MP+boundary/nesting+surface-layer": {
+     "kernels_per_root": 3.0,
+     "ms_per_root": 0.023562666666666666,
+     "bound_fraction_of_time": 1.0,
+     "GB_per_root": 0.040110876,
+     "bw_floor_ms_per_root": 0.022383301339285715,
+     "achieved_TBps": 1.7023063037573563,
+     "pct_of_peak_bw": 94.99477141503104,
+     "excess_over_bw_floor_ms_per_root": 0.001179365327380954,
+     "tiny_lt4us_kernels_per_root": 0.0,
+     "tiny_ms_per_root": 0.0
+    },
+    "mixed:Noah-MP+boundary/nesting": {
+     "kernels_per_root": 5.0,
+     "ms_per_root": 0.021354666666666664,
+     "bound_fraction_of_time": 1.0,
+     "GB_per_root": 0.008809077,
+     "bw_floor_ms_per_root": 0.004915779575892857,
+     "achieved_TBps": 0.4125129714035964,
+     "pct_of_peak_bw": 23.019697064932835,
+     "excess_over_bw_floor_ms_per_root": 0.01643888709077381,
+     "tiny_lt4us_kernels_per_root": 4.0,
+     "tiny_ms_per_root": 0.010613333333333334
+    },
+    "mixed:KF+MYNN+Noah-MP+boundary/nesting+dycore/advection+layout": {
+     "kernels_per_root": 1.0,
+     "ms_per_root": 0.018773333333333333,
+     "bound_fraction_of_time": 1.0,
+     "GB_per_root": 0.035482976,
+     "bw_floor_ms_per_root": 0.019800767857142857,
+     "achieved_TBps": 1.8900732954545454,
+     "pct_of_peak_bw": 105.4728401481331,
+     "excess_over_bw_floor_ms_per_root": 0.0,
+     "tiny_lt4us_kernels_per_root": 0.0,
+     "tiny_ms_per_root": 0.0
+    },
+    "mixed:KF+Thompson+boundary/nesting+dycore/advection": {
+     "kernels_per_root": 1.0,
+     "ms_per_root": 0.016181333333333336,
+     "bound_fraction_of_time": 1.0,
+     "GB_per_root": 0.031607072,
+     "bw_floor_ms_per_root": 0.017637875,
+     "achieved_TBps": 1.9533045484508897,
+     "pct_of_peak_bw": 109.00136989123268,
+     "excess_over_bw_floor_ms_per_root": 0.0,
+     "tiny_lt4us_kernels_per_root": 0.0,
+     "tiny_ms_per_root": 0.0
+    },
+    "mixed:MYNN+Noah-MP+boundary/nesting+dycore/advection+gravity-wave-drag+layout": {
+     "kernels_per_root": 1.0,
+     "ms_per_root": 0.01584,
+     "bound_fraction_of_time": 1.0,
+     "GB_per_root": 0.029636608,
+     "bw_floor_ms_per_root": 0.016538285714285717,
+     "achieved_TBps": 1.8709979797979794,
+     "pct_of_peak_bw": 104.40836940836938,
+     "excess_over_bw_floor_ms_per_root": 0.0,
+     "tiny_lt4us_kernels_per_root": 0.0,
+     "tiny_ms_per_root": 0.0
+    },
+    "mixed:Noah-MP+boundary/nesting+surface-layer": {
+     "kernels_per_root": 2.0,
+     "ms_per_root": 0.0152,
+     "bound_fraction_of_time": 1.0,
+     "GB_per_root": 0.0020328,
+     "bw_floor_ms_per_root": 0.001134375,
+     "achieved_TBps": 0.13373684210526315,
+     "pct_of_peak_bw": 7.462993421052631,
+     "excess_over_bw_floor_ms_per_root": 0.014065625,
+     "tiny_lt4us_kernels_per_root": 0.0,
+     "tiny_ms_per_root": 0.0
+    },
+    "mixed:KF+Noah-MP+boundary/nesting+layout+surface-layer": {
+     "kernels_per_root": 1.0,
+     "ms_per_root": 0.015061333333333335,
+     "bound_fraction_of_time": 1.0,
+     "GB_per_root": 0.001302001,
+     "bw_floor_ms_per_root": 0.0007265630580357143,
+     "achieved_TBps": 0.08644659614022662,
+     "pct_of_peak_bw": 4.824028802468003,
+     "excess_over_bw_floor_ms_per_root": 0.01433477027529762,
+     "tiny_lt4us_kernels_per_root": 0.0,
+     "tiny_ms_per_root": 0.0
+    },
+    "mixed:MYNN+dycore/advection+layout": {
+     "kernels_per_root": 1.0,
+     "ms_per_root": 0.013610666666666667,
+     "bound_fraction_of_time": 1.0,
+     "GB_per_root": 0.012072527999999999,
+     "bw_floor_ms_per_root": 0.006736901785714286,
+     "achieved_TBps": 0.8869902037617554,
+     "pct_of_peak_bw": 49.49722119206224,
+     "excess_over_bw_floor_ms_per_root": 0.0068737648809523814,
+     "tiny_lt4us_kernels_per_root": 0.0,
+     "tiny_ms_per_root": 0.0
+    },
+    "mixed:MYNN+Noah-MP+boundary/nesting+dycore/advection+layout+surface-layer": {
+     "kernels_per_root": 1.0,
+     "ms_per_root": 0.010528000000000001,
+     "bound_fraction_of_time": 1.0,
+     "GB_per_root": 0.001008761,
+     "bw_floor_ms_per_root": 0.0005629246651785714,
+     "achieved_TBps": 0.09581696428571428,
+     "pct_of_peak_bw": 5.346928810586734,
+     "excess_over_bw_floor_ms_per_root": 0.00996507533482143,
+     "tiny_lt4us_kernels_per_root": 0.0,
+     "tiny_ms_per_root": 0.0
+    },
+    "mixed:boundary/nesting+dycore/advection+gravity-wave-drag": {
+     "kernels_per_root": 2.0,
+     "ms_per_root": 0.00832,
+     "bound_fraction_of_time": 1.0,
+     "GB_per_root": 0.012163888,
+     "bw_floor_ms_per_root": 0.006787883928571429,
+     "achieved_TBps": 1.462005769230769,
+     "pct_of_peak_bw": 81.58514337225274,
+     "excess_over_bw_floor_ms_per_root": 0.001532116071428572,
+     "tiny_lt4us_kernels_per_root": 1.0,
+     "tiny_ms_per_root": 0.003232
+    },
+    "mixed:layout+surface-layer": {
+     "kernels_per_root": 1.0,
+     "ms_per_root": 0.008053333333333334,
+     "bound_fraction_of_time": 1.0,
+     "GB_per_root": 0.0004032,
+     "bw_floor_ms_per_root": 0.00022500000000000002,
+     "achieved_TBps": 0.05006622516556291,
+     "pct_of_peak_bw": 2.79387417218543,
+     "excess_over_bw_floor_ms_per_root": 0.007828333333333333,
+     "tiny_lt4us_kernels_per_root": 0.0,
+     "tiny_ms_per_root": 0.0
+    },
+    "mixed:MYNN+boundary/nesting+gravity-wave-drag+layout": {
+     "kernels_per_root": 1.0,
+     "ms_per_root": 0.007776000000000001,
+     "bound_fraction_of_time": 1.0,
+     "GB_per_root": 0.0276528,
+     "bw_floor_ms_per_root": 0.015431249999999999,
+     "achieved_TBps": 3.5561728395061727,
+     "pct_of_peak_bw": 198.4471450617284,
+     "excess_over_bw_floor_ms_per_root": 0.0,
+     "tiny_lt4us_kernels_per_root": 0.0,
+     "tiny_ms_per_root": 0.0
+    },
+    "mixed:boundary/nesting+layout+surface-layer": {
+     "kernels_per_root": 9.0,
+     "ms_per_root": 0.007637333333333333,
+     "bound_fraction_of_time": 1.0,
+     "GB_per_root": 0.03975252,
+     "bw_floor_ms_per_root": 0.02218332589285714,
+     "achieved_TBps": 5.205026187150838,
+     "pct_of_peak_bw": 290.4590506222566,
+     "excess_over_bw_floor_ms_per_root": 6.291666666666674e-05,
+     "tiny_lt4us_kernels_per_root": 9.0,
+     "tiny_ms_per_root": 0.007637333333333333
+    },
+    "mixed:Thompson+boundary/nesting": {
+     "kernels_per_root": 1.0,
+     "ms_per_root": 0.007029333333333333,
+     "bound_fraction_of_time": 1.0,
+     "GB_per_root": 0.008878800000000001,
+     "bw_floor_ms_per_root": 0.0049546875,
+     "achieved_TBps": 1.2631069802731412,
+     "pct_of_peak_bw": 70.4858805955994,
+     "excess_over_bw_floor_ms_per_root": 0.0020746458333333333,
+     "tiny_lt4us_kernels_per_root": 0.0,
+     "tiny_ms_per_root": 0.0
+    },
+    "mixed:MYNN+layout+surface-layer": {
+     "kernels_per_root": 1.0,
+     "ms_per_root": 0.0063360000000000005,
+     "bound_fraction_of_time": 1.0,
+     "GB_per_root": 0.000504,
+     "bw_floor_ms_per_root": 0.00028125,
+     "achieved_TBps": 0.07954545454545454,
+     "pct_of_peak_bw": 4.438920454545454,
+     "excess_over_bw_floor_ms_per_root": 0.00605475,
+     "tiny_lt4us_kernels_per_root": 0.0,
+     "tiny_ms_per_root": 0.0
+    },
+    "mixed:MYNN+Noah-MP+layout+surface-layer": {
+     "kernels_per_root": 1.0,
+     "ms_per_root": 0.006112,
+     "bound_fraction_of_time": 1.0,
+     "GB_per_root": 0.000504001,
+     "bw_floor_ms_per_root": 0.0002812505580357143,
+     "achieved_TBps": 0.08246089659685862,
+     "pct_of_peak_bw": 4.6016125333068425,
+     "excess_over_bw_floor_ms_per_root": 0.005830749441964287,
+     "tiny_lt4us_kernels_per_root": 0.0,
+     "tiny_ms_per_root": 0.0
+    },
+    "mixed:Noah-MP+boundary/nesting+dycore/advection+layout+surface-layer": {
+     "kernels_per_root": 3.0,
+     "ms_per_root": 0.005589,
+     "bound_fraction_of_time": 1.0,
+     "GB_per_root": 0.067479408,
+     "bw_floor_ms_per_root": 0.03765591964285713,
+     "achieved_TBps": 12.07361030595813,
+     "pct_of_peak_bw": 673.7505751092707,
+     "excess_over_bw_floor_ms_per_root": 0.0,
+     "tiny_lt4us_kernels_per_root": 3.0,
+     "tiny_ms_per_root": 0.005589
+    },
+    "mixed:KF+dycore/advection": {
+     "kernels_per_root": 1.0,
+     "ms_per_root": 0.0021333333333333334,
+     "bound_fraction_of_time": 1.0,
+     "GB_per_root": 0.0043368,
+     "bw_floor_ms_per_root": 0.0024200892857142854,
+     "achieved_TBps": 2.0328749999999998,
+     "pct_of_peak_bw": 113.44168526785712,
+     "excess_over_bw_floor_ms_per_root": 0.0,
+     "tiny_lt4us_kernels_per_root": 1.0,
+     "tiny_ms_per_root": 0.0021333333333333334
+    },
+    "KF": {
+     "kernels_per_root": 1.0,
+     "ms_per_root": 0.00144,
+     "bound_fraction_of_time": 1.0,
+     "GB_per_root": 0.0001008,
+     "bw_floor_ms_per_root": 5.6250000000000005e-05,
+     "achieved_TBps": 0.07,
+     "pct_of_peak_bw": 3.90625,
+     "excess_over_bw_floor_ms_per_root": 0.0013837500000000002,
+     "tiny_lt4us_kernels_per_root": 1.0,
+     "tiny_ms_per_root": 0.00144
+    }
+   },
+   "heaviest_symbols": [
+    {
+     "domain": "d02",
+     "kernel": "thompson_full_column",
+     "launches_per_root": 3.0,
+     "ms_per_root": 1.5001316666666666,
+     "GB_per_root": 0.861494664,
+     "TBps": 0.5742793670333382,
+     "family": "Thompson"
+    },
+    {
+     "domain": "d02",
+     "kernel": "loop_add_multiply_fusion_3",
+     "launches_per_root": 3.0,
+     "ms_per_root": 1.3270750000000002,
+     "GB_per_root": 0.7426135079999999,
+     "TBps": 0.5595866910310269,
+     "family": "dycore/advection"
+    },
+    {
+     "domain": "d02",
+     "kernel": "b_core_uv_fp32",
+     "launches_per_root": 21.0,
+     "ms_per_root": 1.228277333333333,
+     "GB_per_root": 5.417103888,
+     "TBps": 4.410326349749461,
+     "family": "dycore/advection"
+    },
+    {
+     "domain": "d02",
+     "kernel": "b_core_mass_fp32",
+     "launches_per_root": 21.0,
+     "ms_per_root": 1.155232333333333,
+     "GB_per_root": 5.435257967999999,
+     "TBps": 4.7049046422696525,
+     "family": "dycore/advection"
+    },
+    {
+     "domain": "d02",
+     "kernel": "mynn_tridiag2_real",
+     "launches_per_root": 27.0,
+     "ms_per_root": 1.130206,
+     "GB_per_root": 0.7422386400000001,
+     "TBps": 0.6567286317715533,
+     "family": "MYNN"
+    },
+    {
+     "domain": "d02",
+     "kernel": "loop_add_divide_multiply_fusion",
+     "launches_per_root": 3.0,
+     "ms_per_root": 0.8247813333333333,
+     "GB_per_root": 0.56342766,
+     "TBps": 0.6831236804583357,
+     "family": "dycore/advection"
+    },
+    {
+     "domain": "d02",
+     "kernel": "b_core_w_fp32",
+     "launches_per_root": 21.0,
+     "ms_per_root": 0.7557790000000001,
+     "GB_per_root": 1.424882256,
+     "TBps": 1.8853160196300767,
+     "family": "dycore/advection"
+    },
+    {
+     "domain": "d02",
+     "kernel": "input_add_divide_transpose_fusion",
+     "launches_per_root": 3.0,
+     "ms_per_root": 0.7184336666666667,
+     "GB_per_root": 0.926675832,
+     "TBps": 1.2898558001875375,
+     "family": "mixed:boundary/nesting+dycore/advection+layout"
+    },
+    {
+     "domain": "d02",
+     "kernel": "b_core_pd_tend_sl_fp32__1",
+     "launches_per_root": 3.0,
+     "ms_per_root": 0.538572,
+     "GB_per_root": 0.44779778400000003,
+     "TBps": 0.8314538891735923,
+     "family": "dycore/advection"
+    },
+    {
+     "domain": "d02",
+     "kernel": "input_add_divide_maximum_multiply_subtract_transpose_fusion",
+     "launches_per_root": 3.0,
+     "ms_per_root": 0.5173656666666667,
+     "GB_per_root": 0.631112496,
+     "TBps": 1.219857707346899,
+     "family": "mixed:MYNN+Noah-MP+boundary/nesting+dycore/advection+layout"
+    },
+    {
+     "domain": "d02",
+     "kernel": "boundary_spec_final_real",
+     "launches_per_root": 3.0,
+     "ms_per_root": 0.5152233333333334,
+     "GB_per_root": 0.136857588,
+     "TBps": 0.26562769802092295,
+     "family": "dycore/advection"
+    },
+    {
+     "domain": "d02",
+     "kernel": "b_core_w_p2_fp32",
+     "launches_per_root": 21.0,
+     "ms_per_root": 0.4946473333333333,
+     "GB_per_root": 2.478578172,
+     "TBps": 5.010798613422898,
+     "family": "dycore/advection"
+    },
+    {
+     "domain": "d02",
+     "kernel": "input_select_transpose_fusion",
+     "launches_per_root": 3.0,
+     "ms_per_root": 0.4807686666666666,
+     "GB_per_root": 0.7259318819999999,
+     "TBps": 1.5099400862230343,
+     "family": "mixed:Thompson+boundary/nesting+layout"
+    },
+    {
+     "domain": "d02",
+     "kernel": "boundary_ring_relax_real",
+     "launches_per_root": 21.0,
+     "ms_per_root": 0.4569666666666667,
+     "GB_per_root": 0.27317211599999996,
+     "TBps": 0.597794403676417,
+     "family": "dycore/advection"
+    },
+    {
+     "domain": "d02",
+     "kernel": "_lambda___3",
+     "launches_per_root": 3.0,
+     "ms_per_root": 0.45526466666666665,
+     "GB_per_root": 0.16519747199999998,
+     "TBps": 0.36286029664795716,
+     "family": "MYNN"
+    },
+    {
+     "domain": "d02",
+     "kernel": "b_core_w_p1_fp32",
+     "launches_per_root": 21.0,
+     "ms_per_root": 0.4536389999999999,
+     "GB_per_root": 2.475954096,
+     "TBps": 5.457983321539817,
+     "family": "dycore/advection"
+    },
+    {
+     "domain": "d02",
+     "kernel": "b_diff_horizontal_m",
+     "launches_per_root": 27.0,
+     "ms_per_root": 0.45013233333333336,
+     "GB_per_root": 0.6141169439999999,
+     "TBps": 1.3643031138250454,
+     "family": "dycore/advection"
+    },
+    {
+     "domain": "d02",
+     "kernel": "b_diff_large_step_v_fp32",
+     "launches_per_root": 9.0,
+     "ms_per_root": 0.4364693333333334,
+     "GB_per_root": 0.609197976,
+     "TBps": 1.3957406156064418,
+     "family": "dycore/advection"
+    },
+    {
+     "domain": "d02",
+     "kernel": "b_core_scalar_flux_fp32_stacked",
+     "launches_per_root": 6.0,
+     "ms_per_root": 0.3792426666666667,
+     "GB_per_root": 0.49632839999999995,
+     "TBps": 1.3087356556224334,
+     "family": "dycore/advection"
+    },
+    {
+     "domain": "d02",
+     "kernel": "b_diff_rhs_ph_fp32",
+     "launches_per_root": 9.0,
+     "ms_per_root": 0.37710966666666673,
+     "GB_per_root": 0.359392644,
+     "TBps": 0.9530189113865196,
+     "family": "dycore/advection"
+    },
+    {
+     "domain": "d02",
+     "kernel": "b_diff_large_step_u_fp32",
+     "launches_per_root": 9.0,
+     "ms_per_root": 0.3513276666666667,
+     "GB_per_root": 0.608479776,
+     "TBps": 1.7319438055452505,
+     "family": "dycore/advection"
+    },
+    {
+     "domain": "d02",
+     "kernel": "b_core_pd_scale_sl_fp32__1",
+     "launches_per_root": 3.0,
+     "ms_per_root": 0.3362136666666667,
+     "GB_per_root": 0.348832632,
+     "TBps": 1.0375325770021244,
+     "family": "dycore/advection"
+    },
+    {
+     "domain": "d02",
+     "kernel": "b_core_pressure_fp32",
+     "launches_per_root": 18.0,
+     "ms_per_root": 0.3239370000000001,
+     "GB_per_root": 4.640798664,
+     "TBps": 14.326238324118576,
+     "family": "dycore/advection"
+    },
+    {
+     "domain": "d02",
+     "kernel": "b_core_coef_fp32",
+     "launches_per_root": 9.0,
+     "ms_per_root": 0.29871000000000003,
+     "GB_per_root": 0.253046088,
+     "TBps": 0.8471296173546248,
+     "family": "dycore/advection"
+    },
+    {
+     "domain": "d02",
+     "kernel": "input_add_multiply_select_transpose_fusion",
+     "launches_per_root": 3.0,
+     "ms_per_root": 0.28942066666666666,
+     "GB_per_root": 0.412823385,
+     "TBps": 1.4263783915454091,
+     "family": "mixed:MYNN+boundary/nesting+dycore/advection+layout"
+    },
+    {
+     "domain": "d02",
+     "kernel": "b_diff_sixth_m",
+     "launches_per_root": 27.0,
+     "ms_per_root": 0.2868120000000001,
+     "GB_per_root": 0.30702650400000003,
+     "TBps": 1.0704799799171578,
+     "family": "dycore/advection"
+    },
+    {
+     "domain": "d02",
+     "kernel": "input_maximum_pad_transpose_fusion",
+     "launches_per_root": 3.0,
+     "ms_per_root": 0.27498700000000004,
+     "GB_per_root": 0.40907470500000004,
+     "TBps": 1.487614705422438,
+     "family": "mixed:MYNN+boundary/nesting+layout"
+    },
+    {
+     "domain": "d02",
+     "kernel": "input_clamp_concatenate_maximum_multiply_transpose_fusion",
+     "launches_per_root": 3.0,
+     "ms_per_root": 0.23037866666666665,
+     "GB_per_root": 0.361466469,
+     "TBps": 1.5690101615311605,
+     "family": "mixed:MYNN+boundary/nesting+layout"
+    },
+    {
+     "domain": "d02",
+     "kernel": "b_diff_eos_real__1",
+     "launches_per_root": 12.0,
+     "ms_per_root": 0.22016066666666667,
+     "GB_per_root": 0.467852304,
+     "TBps": 2.125049451764015,
+     "family": "dycore/advection"
+    },
+    {
+     "domain": "d02",
+     "kernel": "loop_or_select_fusion",
+     "launches_per_root": 57.0,
+     "ms_per_root": 0.2125016666666665,
+     "GB_per_root": 0.063234717,
+     "TBps": 0.2975728049191773,
+     "family": "surface-layer"
+    },
+    {
+     "domain": "d02",
+     "kernel": "input_add_transpose_fusion_1",
+     "launches_per_root": 3.0,
+     "ms_per_root": 0.20204866666666665,
+     "GB_per_root": 0.34695565199999995,
+     "TBps": 1.717188525536752,
+     "family": "mixed:MYNN+Noah-MP+boundary/nesting+dycore/advection+layout"
+    },
+    {
+     "domain": "d02",
+     "kernel": "b_diff_advect_v_fp32",
+     "launches_per_root": 9.0,
+     "ms_per_root": 0.18900300000000003,
+     "GB_per_root": 0.25226478,
+     "TBps": 1.3347130997920666,
+     "family": "dycore/advection"
+    },
+    {
+     "domain": "d02",
+     "kernel": "loop_concatenate_fusion_12",
+     "launches_per_root": 3.0,
+     "ms_per_root": 0.18517466666666668,
+     "GB_per_root": 0.36287222399999997,
+     "TBps": 1.9596213160907536,
+     "family": "dycore/advection"
+    },
+    {
+     "domain": "d02",
+     "kernel": "_lambda___2",
+     "launches_per_root": 3.0,
+     "ms_per_root": 0.17971266666666671,
+     "GB_per_root": 0.382427904,
+     "TBps": 2.1279963794056433,
+     "family": "MYNN"
+    },
+    {
+     "domain": "d02",
+     "kernel": "b_core_pd_tend_sl_fp32",
+     "launches_per_root": 3.0,
+     "ms_per_root": 0.177248,
+     "GB_per_root": 0.18389071199999998,
+     "TBps": 1.0374769362700849,
+     "family": "dycore/advection"
+    },
+    {
+     "domain": "d02",
+     "kernel": "b_core_scalar_flux_fp32",
+     "launches_per_root": 9.0,
+     "ms_per_root": 0.17326866666666665,
+     "GB_per_root": 0.24966683999999997,
+     "TBps": 1.4409231905749451,
+     "family": "dycore/advection"
+    },
+    {
+     "domain": "d02",
+     "kernel": "b_core_scalar_flux_fp32_stacked__1",
+     "launches_per_root": 6.0,
+     "ms_per_root": 0.16705100000000006,
+     "GB_per_root": 0.232421328,
+     "TBps": 1.3913195850369044,
+     "family": "dycore/advection"
+    },
+    {
+     "domain": "d02",
+     "kernel": "loop_add_fusion_39",
+     "launches_per_root": 9.0,
+     "ms_per_root": 0.1612036666666667,
+     "GB_per_root": 0.250655292,
+     "TBps": 1.554898205375808,
+     "family": "dycore/advection"
+    },
+    {
+     "domain": "d01",
+     "kernel": "mynn_tridiag2_real",
+     "launches_per_root": 9.0,
+     "ms_per_root": 0.1602776666666667,
+     "GB_per_root": 0.066528,
+     "TBps": 0.415079663833389,
+     "family": "MYNN"
+    },
+    {
+     "domain": "d02",
+     "kernel": "loop_add_divide_maximum_multiply_fusion",
+     "launches_per_root": 3.0,
+     "ms_per_root": 0.15746166666666664,
+     "GB_per_root": 0.265782996,
+     "TBps": 1.6879219026853098,
+     "family": "dycore/advection"
+    }
+   ]
+  },
+  "R43": {
+   "roots": 3,
+   "kernels": 22308,
+   "classes": {
+    "pallas/custom": {
+     "kernels_per_root": 714.6666666666666,
+     "ms_per_root": 25.525032333333332,
+     "GB_per_root": 50.497847046666664,
+     "achieved_TBps": 1.9783656446429314,
+     "excess_over_eff_floor_ms_per_root": 9.840587193777829,
+     "tiny_lt4us_per_root": 66.0,
+     "tiny_ms_per_root": 0.1824
+    },
+    "xla-kLoop": {
+     "kernels_per_root": 4562.666666666667,
+     "ms_per_root": 15.833752333333335,
+     "GB_per_root": 28.540463673333335,
+     "achieved_TBps": 1.8025079003698785,
+     "excess_over_eff_floor_ms_per_root": 1.2923719213333345,
+     "tiny_lt4us_per_root": 3962.6666666666665,
+     "tiny_ms_per_root": 5.813319333333333
+    },
+    "xla-transpose-kInput": {
+     "kernels_per_root": 602.0,
+     "ms_per_root": 7.9617363333333335,
+     "GB_per_root": 10.092700989666666,
+     "achieved_TBps": 1.2676507444000176,
+     "excess_over_eff_floor_ms_per_root": 1.8341783948888875,
+     "tiny_lt4us_per_root": 301.6666666666667,
+     "tiny_ms_per_root": 0.6888993333333334
+    },
+    "xla-kInput": {
+     "kernels_per_root": 884.6666666666666,
+     "ms_per_root": 4.97136,
+     "GB_per_root": 10.435405198,
+     "achieved_TBps": 2.0991047113868233,
+     "excess_over_eff_floor_ms_per_root": 1.1374516079999997,
+     "tiny_lt4us_per_root": 702.3333333333334,
+     "tiny_ms_per_root": 1.2122476666666666
+    },
+    "xla-transpose-kCustom": {
+     "kernels_per_root": 131.0,
+     "ms_per_root": 0.375176,
+     "GB_per_root": 0.5005571013333333,
+     "achieved_TBps": 1.3341927557555209,
+     "excess_over_eff_floor_ms_per_root": 0.03782110666666669,
+     "tiny_lt4us_per_root": 95.0,
+     "tiny_ms_per_root": 0.15061233333333332
+    },
+    "xla-kCustom": {
+     "kernels_per_root": 28.333333333333332,
+     "ms_per_root": 0.134719,
+     "GB_per_root": 0.20607215466666665,
+     "achieved_TBps": 1.5296443312870989,
+     "excess_over_eff_floor_ms_per_root": 0.026615240000000002,
+     "tiny_lt4us_per_root": 21.333333333333332,
+     "tiny_ms_per_root": 0.03850566666666667
+    }
+   },
+   "family_class": {
+    "dycore/advection|pallas/custom": {
+     "kernels_per_root": 523.0,
+     "ms_per_root": 12.475496333333332,
+     "GB_per_root": 32.15253218,
+     "TBps": 2.5772547497041467
+    },
+    "RRTMG-LW|pallas/custom": {
+     "kernels_per_root": 58.666666666666664,
+     "ms_per_root": 7.526361333333334,
+     "GB_per_root": 4.3496992,
+     "TBps": 0.5779285643297133
+    },
+    "RRTMG-LW|xla-kLoop": {
+     "kernels_per_root": 975.3333333333334,
+     "ms_per_root": 4.542300333333333,
+     "GB_per_root": 9.389898321,
+     "TBps": 2.0672121242386656
+    },
+    "mixed|xla-transpose-kInput": {
+     "kernels_per_root": 177.66666666666666,
+     "ms_per_root": 4.474905333333333,
+     "GB_per_root": 6.344634210333333,
+     "TBps": 1.4178253477391998
+    },
+    "dycore/advection|xla-kLoop": {
+     "kernels_per_root": 392.0,
+     "ms_per_root": 3.933791333333333,
+     "GB_per_root": 6.275098767999999,
+     "TBps": 1.5951783499107817
+    },
+    "RRTMG-sampling|xla-kLoop": {
+     "kernels_per_root": 1431.3333333333333,
+     "ms_per_root": 3.154094333333333,
+     "GB_per_root": 5.404876998,
+     "TBps": 1.7136066416529712
+    },
+    "mixed|xla-kInput": {
+     "kernels_per_root": 368.0,
+     "ms_per_root": 2.160998333333333,
+     "GB_per_root": 7.502486283666666,
+     "TBps": 3.471768658004518
+    },
+    "MYNN|pallas/custom": {
+     "kernels_per_root": 48.0,
+     "ms_per_root": 2.090136333333333,
+     "GB_per_root": 1.513319772,
+     "TBps": 0.7240292165949621
+    },
+    "dycore/advection|xla-kInput": {
+     "kernels_per_root": 67.0,
+     "ms_per_root": 1.9776853333333333,
+     "GB_per_root": 2.2351701040000003,
+     "TBps": 1.1301950145085433
+    },
+    "Thompson|pallas/custom": {
+     "kernels_per_root": 4.0,
+     "ms_per_root": 1.9490610000000002,
+     "GB_per_root": 1.0271560720000001,
+     "TBps": 0.5270004745875064
+    },
+    "dycore/advection|xla-transpose-kInput": {
+     "kernels_per_root": 141.0,
+     "ms_per_root": 1.5910330000000001,
+     "GB_per_root": 0.867298824,
+     "TBps": 0.5451168039883523
+    },
+    "RRTMG-SW|xla-kLoop": {
+     "kernels_per_root": 789.0,
+     "ms_per_root": 1.4880129999999998,
+     "GB_per_root": 3.200677301666667,
+     "TBps": 2.1509740181481387
+    },
+    "mixed|xla-kLoop": {
+     "kernels_per_root": 197.66666666666666,
+     "ms_per_root": 1.2649623333333333,
+     "GB_per_root": 2.940043179,
+     "TBps": 2.324214011378995
+    },
+    "RRTMG-sampling|xla-transpose-kInput": {
+     "kernels_per_root": 11.333333333333334,
+     "ms_per_root": 0.8889826666666667,
+     "GB_per_root": 1.6264287573333334,
+     "TBps": 1.8295393356000942
+    },
+    "glue/other|xla-kLoop": {
+     "kernels_per_root": 307.6666666666667,
+     "ms_per_root": 0.5633756666666666,
+     "GB_per_root": 0.795498221,
+     "TBps": 1.4120209090796136
+    },
+    "RRTMG-SW|pallas/custom": {
+     "kernels_per_root": 51.333333333333336,
+     "ms_per_root": 0.5524573333333334,
+     "GB_per_root": 10.308344610666667,
+     "TBps": 18.659078246766565
+    },
+    "boundary/nesting|xla-transpose-kInput": {
+     "kernels_per_root": 99.0,
+     "ms_per_root": 0.4387316666666667,
+     "GB_per_root": 0.562269374,
+     "TBps": 1.2815791900136377
+    },
+    "RRTMG-LW|xla-kInput": {
+     "kernels_per_root": 199.66666666666666,
+     "ms_per_root": 0.4250076666666667,
+     "GB_per_root": 0.23846457466666668,
+     "TBps": 0.5610829953655737
+    },
+    "RRTMG-sampling|pallas/custom": {
+     "kernels_per_root": 7.333333333333333,
+     "ms_per_root": 0.4132906666666667,
+     "GB_per_root": 0.7827932053333333,
+     "TBps": 1.8940500438754968
+    },
+    "surface-layer|xla-kLoop": {
+     "kernels_per_root": 106.0,
+     "ms_per_root": 0.3149983333333333,
+     "GB_per_root": 0.079047134,
+     "TBps": 0.2509446102889433
+    },
+    "boundary/nesting|xla-kLoop": {
+     "kernels_per_root": 143.33333333333334,
+     "ms_per_root": 0.24264233333333332,
+     "GB_per_root": 0.13050582966666666,
+     "TBps": 0.537852681656265
+    },
+    "RRTMG-SW|xla-kInput": {
+     "kernels_per_root": 117.66666666666667,
+     "ms_per_root": 0.20297933333333332,
+     "GB_per_root": 0.1674648506666667,
+     "TBps": 0.8250339968929513
+    },
+    "Noah-MP|xla-kLoop": {
+     "kernels_per_root": 137.0,
+     "ms_per_root": 0.19880266666666668,
+     "GB_per_root": 0.21411753600000002,
+     "TBps": 1.0770355327225656
+    },
+    "Noah-MP|pallas/custom": {
+     "kernels_per_root": 16.0,
+     "ms_per_root": 0.1717753333333333,
+     "GB_per_root": 0.168288832,
+     "TBps": 0.9797031316098935
+    },
+    "MYNN|xla-transpose-kInput": {
+     "kernels_per_root": 36.0,
+     "ms_per_root": 0.16969366666666666,
+     "GB_per_root": 0.37936641600000004,
+     "TBps": 2.235595608557381
+    },
+    "boundary/nesting|xla-kInput": {
+     "kernels_per_root": 109.33333333333333,
+     "ms_per_root": 0.16737733333333335,
+     "GB_per_root": 0.27641151066666664,
+     "TBps": 1.6514273776616508
+    },
+    "KF|pallas/custom": {
+     "kernels_per_root": 0.3333333333333333,
+     "ms_per_root": 0.162251,
+     "GB_per_root": 0.014561630666666667,
+     "TBps": 0.08974755574182387
+    },
+    "hydrostatic-prep|pallas/custom": {
+     "kernels_per_root": 5.0,
+     "ms_per_root": 0.135157,
+     "GB_per_root": 0.16727474,
+     "TBps": 1.2376328270085901
+    },
+    "Noah-MP|xla-transpose-kInput": {
+     "kernels_per_root": 44.0,
+     "ms_per_root": 0.13174433333333332,
+     "GB_per_root": 0.025082416,
+     "TBps": 0.1903870577608651
+    },
+    "dycore/advection|xla-transpose-kCustom": {
+     "kernels_per_root": 44.0,
+     "ms_per_root": 0.10939733333333333,
+     "GB_per_root": 0.102491512,
+     "TBps": 0.9368739518330733
+    },
+    "mixed|xla-transpose-kCustom": {
+     "kernels_per_root": 19.666666666666668,
+     "ms_per_root": 0.10852266666666667,
+     "GB_per_root": 0.16973232000000002,
+     "TBps": 1.5640264399449577
+    },
+    "surface-layer|xla-transpose-kInput": {
+     "kernels_per_root": 18.0,
+     "ms_per_root": 0.08055466666666666,
+     "GB_per_root": 0.00432726,
+     "TBps": 0.05371830309851695
+    },
+    "layout|xla-transpose-kInput": {
+     "kernels_per_root": 27.333333333333332,
+     "ms_per_root": 0.07656533333333333,
+     "GB_per_root": 0.10864842400000001,
+     "TBps": 1.4190289426023963
+    },
+    "mixed|xla-kCustom": {
+     "kernels_per_root": 16.0,
+     "ms_per_root": 0.07103933333333333,
+     "GB_per_root": 0.078425856,
+     "TBps": 1.103977927720793
+    },
+    "layout|xla-transpose-kCustom": {
+     "kernels_per_root": 14.666666666666666,
+     "ms_per_root": 0.07067566666666666,
+     "GB_per_root": 0.13180719999999999,
+     "TBps": 1.8649587080890642
+    },
+    "MYNN|xla-kLoop": {
+     "kernels_per_root": 23.0,
+     "ms_per_root": 0.06199333333333334,
+     "GB_per_root": 0.057877644,
+     "TBps": 0.9336107753521884
+    },
+    "RRTMG-LW|xla-kCustom": {
+     "kernels_per_root": 3.6666666666666665,
+     "ms_per_root": 0.04978133333333334,
+     "GB_per_root": 0.120705024,
+     "TBps": 2.4247045211056353
+    },
+    "gravity-wave-drag|pallas/custom": {
+     "kernels_per_root": 1.0,
+     "ms_per_root": 0.049046,
+     "GB_per_root": 0.013876804,
+     "TBps": 0.28293446968152347
+    },
+    "glue/other|xla-transpose-kInput": {
+     "kernels_per_root": 23.0,
+     "ms_per_root": 0.046474999999999995,
+     "GB_per_root": 0.097161808,
+     "TBps": 2.0906252393760085
+    },
+    "unattributed|xla-transpose-kInput": {
+     "kernels_per_root": 19.0,
+     "ms_per_root": 0.03636266666666667,
+     "GB_per_root": 0.03322816,
+     "TBps": 0.9137987679671458
+    },
+    "MYNN|xla-transpose-kCustom": {
+     "kernels_per_root": 15.0,
+     "ms_per_root": 0.033791999999999996,
+     "GB_per_root": 0.066991584,
+     "TBps": 1.98246875
+    },
+    "unattributed|xla-kLoop": {
+     "kernels_per_root": 38.0,
+     "ms_per_root": 0.03304566666666667,
+     "GB_per_root": 0.015297205,
+     "TBps": 0.46291107255615965
+    },
+    "RRTMG-SW|xla-transpose-kInput": {
+     "kernels_per_root": 3.6666666666666665,
+     "ms_per_root": 0.02114133333333333,
+     "GB_per_root": 0.03226014,
+     "TBps": 1.5259274091826438
+    },
+    "Noah-MP|xla-transpose-kCustom": {
+     "kernels_per_root": 16.0,
+     "ms_per_root": 0.019327,
+     "GB_per_root": 0.0018564,
+     "TBps": 0.09605215501629845
+    },
+    "Noah-MP|xla-kInput": {
+     "kernels_per_root": 16.0,
+     "ms_per_root": 0.019264,
+     "GB_per_root": 0.009377964,
+     "TBps": 0.48681291528239207
+    },
+    "gravity-wave-drag|xla-kLoop": {
+     "kernels_per_root": 14.0,
+     "ms_per_root": 0.018144,
+     "GB_per_root": 0.001512,
+     "TBps": 0.08333333333333333
+    },
+    "layout|xla-kLoop": {
+     "kernels_per_root": 7.0,
+     "ms_per_root": 0.015658333333333333,
+     "GB_per_root": 0.034703136,
+     "TBps": 2.2162726556679084
+    },
+    "boundary/nesting|xla-transpose-kCustom": {
+     "kernels_per_root": 9.333333333333334,
+     "ms_per_root": 0.014016,
+     "GB_per_root": 0.011313392,
+     "TBps": 0.8071769406392695
+    },
+    "MYNN|xla-kInput": {
+     "kernels_per_root": 4.0,
+     "ms_per_root": 0.013834666666666669,
+     "GB_per_root": 0.0051058499999999995,
+     "TBps": 0.36906201811873546
+    },
+    "unattributed|xla-transpose-kCustom": {
+     "kernels_per_root": 8.333333333333334,
+     "ms_per_root": 0.011423999999999998,
+     "GB_per_root": 0.007268053333333333,
+     "TBps": 0.6362091503267974
+    },
+    "glue/other|xla-transpose-kCustom": {
+     "kernels_per_root": 3.0,
+     "ms_per_root": 0.007018666666666666,
+     "GB_per_root": 0.00896224,
+     "TBps": 1.2769148936170214
+    },
+    "dycore/advection|xla-kCustom": {
+     "kernels_per_root": 2.0,
+     "ms_per_root": 0.0050346666666666665,
+     "GB_per_root": 0.004705888,
+     "TBps": 0.9346970338983052
+    },
+    "Noah-MP|xla-kCustom": {
+     "kernels_per_root": 3.0,
+     "ms_per_root": 0.0044796666666666665,
+     "GB_per_root": 0.001499472,
+     "TBps": 0.33472847682119206
+    },
+    "RRTMG-SW|xla-kCustom": {
+     "kernels_per_root": 3.6666666666666665,
+     "ms_per_root": 0.004384,
+     "GB_per_root": 0.0007359146666666667,
+     "TBps": 0.16786374695863748
+    },
+    "Thompson|xla-transpose-kInput": {
+     "kernels_per_root": 1.0,
+     "ms_per_root": 0.0031999999999999997,
+     "GB_per_root": 0.007392,
+     "TBps": 2.31
+    },
+    "surface-layer|xla-kInput": {
+     "kernels_per_root": 2.0,
+     "ms_per_root": 0.003136,
+     "GB_per_root": 0.000924,
+     "TBps": 0.29464285714285715
+    },
+    "gravity-wave-drag|xla-transpose-kInput": {
+     "kernels_per_root": 1.0,
+     "ms_per_root": 0.0023466666666666666,
+     "GB_per_root": 0.0046032,
+     "TBps": 1.961590909090909
+    },
+    "KF|xla-kLoop": {
+     "kernels_per_root": 1.3333333333333333,
+     "ms_per_root": 0.0019306666666666667,
+     "GB_per_root": 0.0013104,
+     "TBps": 0.6787292817679559
+    },
+    "glue/other|xla-kInput": {
+     "kernels_per_root": 1.0,
+     "ms_per_root": 0.0010773333333333334,
+     "GB_per_root": 6.033333333333333e-08,
+     "TBps": 5.6002475247524755e-05
+    },
+    "surface-layer|xla-transpose-kCustom": {
+     "kernels_per_root": 1.0,
+     "ms_per_root": 0.0010026666666666667,
+     "GB_per_root": 0.0001344,
+     "TBps": 0.13404255319148936
+    }
+   },
+   "kernel_ms_per_root": 55.624146333333336,
+   "bound_ms_per_root": 54.801776,
+   "GB_per_root": 100.27304616366666,
+   "bw_floor_ms_per_root": 55.95594093954577,
+   "tiny_lt4us_kernels_per_root": 5149.0,
+   "tiny_ms_per_root": 8.085984333333334,
+   "families": {
+    "dycore/advection": {
+     "kernels_per_root": 1169.0,
+     "ms_per_root": 20.092437999999998,
+     "bound_fraction_of_time": 1.0,
+     "GB_per_root": 41.637297276,
+     "bw_floor_ms_per_root": 23.23509892633929,
+     "achieved_TBps": 2.072286960696357,
+     "pct_of_peak_bw": 115.64101343171637,
+     "excess_over_bw_floor_ms_per_root": 6.5286463973214275,
+     "tiny_lt4us_kernels_per_root": 411.3333333333333,
+     "tiny_ms_per_root": 0.7731073333333334
+    },
+    "RRTMG-LW": {
+     "kernels_per_root": 1237.3333333333333,
+     "ms_per_root": 12.543450666666667,
+     "bound_fraction_of_time": 1.0,
+     "GB_per_root": 14.098767119666666,
+     "bw_floor_ms_per_root": 7.867615580171095,
+     "achieved_TBps": 1.1239943054213257,
+     "pct_of_peak_bw": 62.722896507886475,
+     "excess_over_bw_floor_ms_per_root": 6.115892622209844,
+     "tiny_lt4us_kernels_per_root": 1029.3333333333333,
+     "tiny_ms_per_root": 1.7095989999999999
+    },
+    "RRTMG-sampling": {
+     "kernels_per_root": 1450.0,
+     "ms_per_root": 4.456367666666667,
+     "bound_fraction_of_time": 1.0,
+     "GB_per_root": 7.814098960666667,
+     "bw_floor_ms_per_root": 4.3605462950147045,
+     "achieved_TBps": 1.7534681931914204,
+     "pct_of_peak_bw": 97.8497875664855,
+     "excess_over_bw_floor_ms_per_root": 0.7988328270089508,
+     "tiny_lt4us_kernels_per_root": 1406.6666666666667,
+     "tiny_ms_per_root": 2.184461
+    },
+    "MYNN": {
+     "kernels_per_root": 126.0,
+     "ms_per_root": 2.36945,
+     "bound_fraction_of_time": 1.0,
+     "GB_per_root": 2.022661266,
+     "bw_floor_ms_per_root": 1.1287172243303558,
+     "achieved_TBps": 0.8536416746502352,
+     "pct_of_peak_bw": 47.63625416574973,
+     "excess_over_bw_floor_ms_per_root": 1.318557736235121,
+     "tiny_lt4us_kernels_per_root": 46.0,
+     "tiny_ms_per_root": 0.09863266666666666
+    },
+    "RRTMG-SW": {
+     "kernels_per_root": 965.3333333333334,
+     "ms_per_root": 2.2689749999999997,
+     "bound_fraction_of_time": 1.0,
+     "GB_per_root": 13.709482817666666,
+     "bw_floor_ms_per_root": 7.650381036644215,
+     "achieved_TBps": 6.042148026164531,
+     "pct_of_peak_bw": 337.1734389600743,
+     "excess_over_bw_floor_ms_per_root": 0.4952531315104094,
+     "tiny_lt4us_kernels_per_root": 822.6666666666666,
+     "tiny_ms_per_root": 0.994097
+    },
+    "Thompson": {
+     "kernels_per_root": 5.0,
+     "ms_per_root": 1.952261,
+     "bound_fraction_of_time": 1.0,
+     "GB_per_root": 1.034548072,
+     "bw_floor_ms_per_root": 0.5773147723214286,
+     "achieved_TBps": 0.5299230338566411,
+     "pct_of_peak_bw": 29.57159787146435,
+     "excess_over_bw_floor_ms_per_root": 1.3758712276785712,
+     "tiny_lt4us_kernels_per_root": 1.0,
+     "tiny_ms_per_root": 0.0031999999999999997
+    },
+    "mixed:MYNN+boundary/nesting+layout": {
+     "kernels_per_root": 100.0,
+     "ms_per_root": 1.5938696666666667,
+     "bound_fraction_of_time": 1.0,
+     "GB_per_root": 3.585079626,
+     "bw_floor_ms_per_root": 2.0006024698660703,
+     "achieved_TBps": 2.249292838038409,
+     "pct_of_peak_bw": 125.51857355125051,
+     "excess_over_bw_floor_ms_per_root": 0.1153190533854166,
+     "tiny_lt4us_kernels_per_root": 19.0,
+     "tiny_ms_per_root": 0.05348133333333333
+    },
+    "boundary/nesting": {
+     "kernels_per_root": 361.0,
+     "ms_per_root": 0.8627673333333333,
+     "bound_fraction_of_time": 1.0,
+     "GB_per_root": 0.9805001063333334,
+     "bw_floor_ms_per_root": 0.5471540771949396,
+     "achieved_TBps": 1.1364594699536605,
+     "pct_of_peak_bw": 63.418497207235525,
+     "excess_over_bw_floor_ms_per_root": 0.4065012124255962,
+     "tiny_lt4us_kernels_per_root": 320.0,
+     "tiny_ms_per_root": 0.46969299999999997
+    },
+    "unmatched": {
+     "kernels_per_root": 512.6666666666666,
+     "ms_per_root": 0.8223703333333333,
+     "bound_fraction_of_time": 0.0,
+     "GB_per_root": 0.0,
+     "bw_floor_ms_per_root": 0.0,
+     "achieved_TBps": null,
+     "pct_of_peak_bw": null,
+     "excess_over_bw_floor_ms_per_root": 0.0,
+     "tiny_lt4us_kernels_per_root": 0.0,
+     "tiny_ms_per_root": 0.0
+    },
+    "mixed:MYNN+boundary/nesting": {
+     "kernels_per_root": 145.0,
+     "ms_per_root": 0.8015576666666666,
+     "bound_fraction_of_time": 1.0,
+     "GB_per_root": 2.7362404110000003,
+     "bw_floor_ms_per_root": 1.5269198722098203,
+     "achieved_TBps": 3.41365384524216,
+     "pct_of_peak_bw": 190.49407618538837,
+     "excess_over_bw_floor_ms_per_root": 0.053901898251488084,
+     "tiny_lt4us_kernels_per_root": 58.0,
+     "tiny_ms_per_root": 0.125545
+    },
+    "mixed:boundary/nesting+dycore/advection": {
+     "kernels_per_root": 222.0,
+     "ms_per_root": 0.7927876666666666,
+     "bound_fraction_of_time": 1.0,
+     "GB_per_root": 3.1444890109999997,
+     "bw_floor_ms_per_root": 1.7547371713169617,
+     "achieved_TBps": 3.9663697396066118,
+     "pct_of_peak_bw": 221.33759707626183,
+     "excess_over_bw_floor_ms_per_root": 0.20015938262648855,
+     "tiny_lt4us_kernels_per_root": 192.66666666666666,
+     "tiny_ms_per_root": 0.3777796666666667
+    },
+    "mixed:boundary/nesting+dycore/advection+layout": {
+     "kernels_per_root": 9.0,
+     "ms_per_root": 0.7351693333333333,
+     "bound_fraction_of_time": 1.0,
+     "GB_per_root": 0.9451247039999999,
+     "bw_floor_ms_per_root": 0.5274133392857143,
+     "achieved_TBps": 1.2855877702551972,
+     "pct_of_peak_bw": 71.74038896513377,
+     "excess_over_bw_floor_ms_per_root": 0.20891967261904767,
+     "tiny_lt4us_kernels_per_root": 4.0,
+     "tiny_ms_per_root": 0.005770666666666667
+    },
+    "mixed:MYNN+Noah-MP+boundary/nesting+dycore/advection+layout": {
+     "kernels_per_root": 6.0,
+     "ms_per_root": 0.717016,
+     "bound_fraction_of_time": 1.0,
+     "GB_per_root": 0.9780681480000001,
+     "bw_floor_ms_per_root": 0.5457969575892858,
+     "achieved_TBps": 1.364081342675756,
+     "pct_of_peak_bw": 76.12061064038818,
+     "excess_over_bw_floor_ms_per_root": 0.1712190424107143,
+     "tiny_lt4us_kernels_per_root": 0.0,
+     "tiny_ms_per_root": 0.0
+    },
+    "glue/other": {
+     "kernels_per_root": 334.6666666666667,
+     "ms_per_root": 0.6179466666666666,
+     "bound_fraction_of_time": 1.0,
+     "GB_per_root": 0.9016223293333333,
+     "bw_floor_ms_per_root": 0.503137460565476,
+     "achieved_TBps": 1.4590617248521986,
+     "pct_of_peak_bw": 81.4208551814843,
+     "excess_over_bw_floor_ms_per_root": 0.23558053273809543,
+     "tiny_lt4us_kernels_per_root": 292.3333333333333,
+     "tiny_ms_per_root": 0.32027500000000003
+    },
+    "mixed:Thompson+boundary/nesting+layout": {
+     "kernels_per_root": 7.0,
+     "ms_per_root": 0.5769296666666667,
+     "bound_fraction_of_time": 1.0,
+     "GB_per_root": 0.935465994,
+     "bw_floor_ms_per_root": 0.5220234341517859,
+     "achieved_TBps": 1.621455868970741,
+     "pct_of_peak_bw": 90.4830284023851,
+     "excess_over_bw_floor_ms_per_root": 0.07906572953869047,
+     "tiny_lt4us_kernels_per_root": 0.0,
+     "tiny_ms_per_root": 0.0
+    },
+    "Noah-MP": {
+     "kernels_per_root": 232.0,
+     "ms_per_root": 0.545393,
+     "bound_fraction_of_time": 1.0,
+     "GB_per_root": 0.42022262000000005,
+     "bw_floor_ms_per_root": 0.2344992299107139,
+     "achieved_TBps": 0.7704950741942048,
+     "pct_of_peak_bw": 42.99637690815875,
+     "excess_over_bw_floor_ms_per_root": 0.3214017176339295,
+     "tiny_lt4us_kernels_per_root": 199.0,
+     "tiny_ms_per_root": 0.26658966666666667
+    },
+    "mixed:MYNN+boundary/nesting+dycore/advection+layout": {
+     "kernels_per_root": 14.0,
+     "ms_per_root": 0.5361396666666667,
+     "bound_fraction_of_time": 1.0,
+     "GB_per_root": 0.754274209,
+     "bw_floor_ms_per_root": 0.4209119469866071,
+     "achieved_TBps": 1.4068614129775887,
+     "pct_of_peak_bw": 78.50789134919579,
+     "excess_over_bw_floor_ms_per_root": 0.12837778441220235,
+     "tiny_lt4us_kernels_per_root": 0.0,
+     "tiny_ms_per_root": 0.0
+    },
+    "mixed:RRTMG-LW+RRTMG-sampling": {
+     "kernels_per_root": 11.0,
+     "ms_per_root": 0.49770733333333333,
+     "bound_fraction_of_time": 1.0,
+     "GB_per_root": 0.710911476,
+     "bw_floor_ms_per_root": 0.39671399330357154,
+     "achieved_TBps": 1.4283725161105387,
+     "pct_of_peak_bw": 79.70828772938275,
+     "excess_over_bw_floor_ms_per_root": 0.11943421428571434,
+     "tiny_lt4us_kernels_per_root": 3.3333333333333335,
+     "tiny_ms_per_root": 0.012544
+    },
+    "surface-layer": {
+     "kernels_per_root": 127.0,
+     "ms_per_root": 0.3996916666666666,
+     "bound_fraction_of_time": 1.0,
+     "GB_per_root": 0.08443279399999999,
+     "bw_floor_ms_per_root": 0.04711651450892862,
+     "achieved_TBps": 0.21124481954840188,
+     "pct_of_peak_bw": 11.788215376584926,
+     "excess_over_bw_floor_ms_per_root": 0.35257515215773777,
+     "tiny_lt4us_kernels_per_root": 115.66666666666667,
+     "tiny_ms_per_root": 0.31592633333333336
+    },
+    "mixed:dycore/advection+layout": {
+     "kernels_per_root": 36.0,
+     "ms_per_root": 0.39720533333333335,
+     "bound_fraction_of_time": 1.0,
+     "GB_per_root": 0.741322688,
+     "bw_floor_ms_per_root": 0.413684535714286,
+     "achieved_TBps": 1.8663462591975934,
+     "pct_of_peak_bw": 104.14878678557999,
+     "excess_over_bw_floor_ms_per_root": 0.06668608407738097,
+     "tiny_lt4us_kernels_per_root": 6.666666666666667,
+     "tiny_ms_per_root": 0.018176333333333333
+    },
+    "KF": {
+     "kernels_per_root": 1.6666666666666667,
+     "ms_per_root": 0.1641816666666667,
+     "bound_fraction_of_time": 1.0,
+     "GB_per_root": 0.015872030666666665,
+     "bw_floor_ms_per_root": 0.008857159970238096,
+     "achieved_TBps": 0.09667358718492726,
+     "pct_of_peak_bw": 5.394731427730316,
+     "excess_over_bw_floor_ms_per_root": 0.15551950669642858,
+     "tiny_lt4us_kernels_per_root": 1.3333333333333333,
+     "tiny_ms_per_root": 0.0019306666666666667
+    },
+    "layout": {
+     "kernels_per_root": 49.0,
+     "ms_per_root": 0.16289933333333334,
+     "bound_fraction_of_time": 1.0,
+     "GB_per_root": 0.27515876,
+     "bw_floor_ms_per_root": 0.15354841517857148,
+     "achieved_TBps": 1.6891337390371965,
+     "pct_of_peak_bw": 94.25969525877213,
+     "excess_over_bw_floor_ms_per_root": 0.022267297619047614,
+     "tiny_lt4us_kernels_per_root": 31.333333333333332,
+     "tiny_ms_per_root": 0.05524233333333334
+    },
+    "mixed:KF+boundary/nesting+dycore/advection": {
+     "kernels_per_root": 35.0,
+     "ms_per_root": 0.15730133333333332,
+     "bound_fraction_of_time": 1.0,
+     "GB_per_root": 0.41071872400000004,
+     "bw_floor_ms_per_root": 0.2291957165178571,
+     "achieved_TBps": 2.6110314216450803,
+     "pct_of_peak_bw": 145.70487844001562,
+     "excess_over_bw_floor_ms_per_root": 0.011158174851190484,
+     "tiny_lt4us_kernels_per_root": 26.0,
+     "tiny_ms_per_root": 0.032896
+    },
+    "mixed:Noah-MP+boundary/nesting+layout+surface-layer": {
+     "kernels_per_root": 13.0,
+     "ms_per_root": 0.15616933333333333,
+     "bound_fraction_of_time": 1.0,
+     "GB_per_root": 0.239828475,
+     "bw_floor_ms_per_root": 0.1338328543526786,
+     "achieved_TBps": 1.5356950681738626,
+     "pct_of_peak_bw": 85.697269429345,
+     "excess_over_bw_floor_ms_per_root": 0.03236683370535715,
+     "tiny_lt4us_kernels_per_root": 1.0,
+     "tiny_ms_per_root": 0.000992
+    },
+    "mixed:MYNN+layout": {
+     "kernels_per_root": 25.0,
+     "ms_per_root": 0.14570533333333333,
+     "bound_fraction_of_time": 1.0,
+     "GB_per_root": 0.289701336,
+     "bw_floor_ms_per_root": 0.1616636919642858,
+     "achieved_TBps": 1.9882685785924101,
+     "pct_of_peak_bw": 110.95248764466574,
+     "excess_over_bw_floor_ms_per_root": 0.02873094717261904,
+     "tiny_lt4us_kernels_per_root": 12.666666666666666,
+     "tiny_ms_per_root": 0.03633033333333333
+    },
+    "mixed:Noah-MP+surface-layer": {
+     "kernels_per_root": 38.0,
+     "ms_per_root": 0.14377233333333334,
+     "bound_fraction_of_time": 1.0,
+     "GB_per_root": 0.279658687,
+     "bw_floor_ms_per_root": 0.15605953515625,
+     "achieved_TBps": 1.9451495327102803,
+     "pct_of_peak_bw": 108.54629088785046,
+     "excess_over_bw_floor_ms_per_root": 0.03585619828869046,
+     "tiny_lt4us_kernels_per_root": 25.0,
+     "tiny_ms_per_root": 0.06136266666666667
+    },
+    "mixed:MYNN+boundary/nesting+layout+surface-layer": {
+     "kernels_per_root": 11.0,
+     "ms_per_root": 0.138038,
+     "bound_fraction_of_time": 1.0,
+     "GB_per_root": 0.38992251299999997,
+     "bw_floor_ms_per_root": 0.2175906880580357,
+     "achieved_TBps": 2.824747627464901,
+     "pct_of_peak_bw": 157.63100599692527,
+     "excess_over_bw_floor_ms_per_root": 0.0,
+     "tiny_lt4us_kernels_per_root": 0.0,
+     "tiny_ms_per_root": 0.0
+    },
+    "hydrostatic-prep": {
+     "kernels_per_root": 5.0,
+     "ms_per_root": 0.135157,
+     "bound_fraction_of_time": 1.0,
+     "GB_per_root": 0.16727474,
+     "bw_floor_ms_per_root": 0.09334527901785718,
+     "achieved_TBps": 1.23763282700859,
+     "pct_of_peak_bw": 69.06433186431863,
+     "excess_over_bw_floor_ms_per_root": 0.04278628273809523,
+     "tiny_lt4us_kernels_per_root": 0.0,
+     "tiny_ms_per_root": 0.0
+    },
+    "mixed:MYNN+Noah-MP+boundary/nesting+layout+surface-layer": {
+     "kernels_per_root": 13.0,
+     "ms_per_root": 0.11757866666666666,
+     "bound_fraction_of_time": 1.0,
+     "GB_per_root": 0.08904491399999999,
+     "bw_floor_ms_per_root": 0.04969024218750001,
+     "achieved_TBps": 0.7573220255375125,
+     "pct_of_peak_bw": 42.26127374651298,
+     "excess_over_bw_floor_ms_per_root": 0.06788842447916664,
+     "tiny_lt4us_kernels_per_root": 0.0,
+     "tiny_ms_per_root": 0.0
+    },
+    "mixed:Thompson+layout": {
+     "kernels_per_root": 7.0,
+     "ms_per_root": 0.11554133333333333,
+     "bound_fraction_of_time": 1.0,
+     "GB_per_root": 0.149796453,
+     "bw_floor_ms_per_root": 0.08359177064732143,
+     "achieved_TBps": 1.296475024810746,
+     "pct_of_peak_bw": 72.34793665238537,
+     "excess_over_bw_floor_ms_per_root": 0.03963071447172619,
+     "tiny_lt4us_kernels_per_root": 0.0,
+     "tiny_ms_per_root": 0.0
+    },
+    "unattributed": {
+     "kernels_per_root": 65.33333333333333,
+     "ms_per_root": 0.08083233333333333,
+     "bound_fraction_of_time": 1.0,
+     "GB_per_root": 0.05579341833333334,
+     "bw_floor_ms_per_root": 0.03113472005208333,
+     "achieved_TBps": 0.6902363946770474,
+     "pct_of_peak_bw": 38.51765595296024,
+     "excess_over_bw_floor_ms_per_root": 0.04981161328125,
+     "tiny_lt4us_kernels_per_root": 65.33333333333333,
+     "tiny_ms_per_root": 0.08083233333333333
+    },
+    "gravity-wave-drag": {
+     "kernels_per_root": 16.0,
+     "ms_per_root": 0.06953666666666666,
+     "bound_fraction_of_time": 1.0,
+     "GB_per_root": 0.019992004,
+     "bw_floor_ms_per_root": 0.011156252232142859,
+     "achieved_TBps": 0.2875030535448923,
+     "pct_of_peak_bw": 16.043697184424797,
+     "excess_over_bw_floor_ms_per_root": 0.05860249776785714,
+     "tiny_lt4us_kernels_per_root": 15.0,
+     "tiny_ms_per_root": 0.020490666666666667
+    },
+    "mixed:RRTMG-SW+RRTMG-sampling": {
+     "kernels_per_root": 11.0,
+     "ms_per_root": 0.06482133333333333,
+     "bound_fraction_of_time": 1.0,
+     "GB_per_root": 0.06464188133333333,
+     "bw_floor_ms_per_root": 0.036072478422619056,
+     "achieved_TBps": 0.997231590422906,
+     "pct_of_peak_bw": 55.64908428699252,
+     "excess_over_bw_floor_ms_per_root": 0.028748854910714276,
+     "tiny_lt4us_kernels_per_root": 3.6666666666666665,
+     "tiny_ms_per_root": 0.005610666666666667
+    },
+    "mixed:MYNN+boundary/nesting+surface-layer": {
+     "kernels_per_root": 6.0,
+     "ms_per_root": 0.055755,
+     "bound_fraction_of_time": 1.0,
+     "GB_per_root": 0.05792358,
+     "bw_floor_ms_per_root": 0.032323426339285706,
+     "achieved_TBps": 1.0388948076405702,
+     "pct_of_peak_bw": 57.97404060494253,
+     "excess_over_bw_floor_ms_per_root": 0.02343157366071429,
+     "tiny_lt4us_kernels_per_root": 2.0,
+     "tiny_ms_per_root": 0.0029550000000000006
+    },
+    "mixed:boundary/nesting+layout": {
+     "kernels_per_root": 6.0,
+     "ms_per_root": 0.04233566666666667,
+     "bound_fraction_of_time": 1.0,
+     "GB_per_root": 0.08758672666666667,
+     "bw_floor_ms_per_root": 0.048876521577380955,
+     "achieved_TBps": 2.068863763414615,
+     "pct_of_peak_bw": 115.44998679769057,
+     "excess_over_bw_floor_ms_per_root": 0.005084549851190477,
+     "tiny_lt4us_kernels_per_root": 1.3333333333333333,
+     "tiny_ms_per_root": 0.0034666666666666665
+    },
+    "mixed:RRTMG-SW+boundary/nesting": {
+     "kernels_per_root": 16.0,
+     "ms_per_root": 0.03646766666666667,
+     "bound_fraction_of_time": 1.0,
+     "GB_per_root": 0.06286772133333333,
+     "bw_floor_ms_per_root": 0.03508243377976191,
+     "achieved_TBps": 1.723930458945367,
+     "pct_of_peak_bw": 96.20147650364771,
+     "excess_over_bw_floor_ms_per_root": 0.006514265625000001,
+     "tiny_lt4us_kernels_per_root": 12.333333333333334,
+     "tiny_ms_per_root": 0.015808
+    },
+    "mixed:Noah-MP+layout": {
+     "kernels_per_root": 7.0,
+     "ms_per_root": 0.024778666666666668,
+     "bound_fraction_of_time": 1.0,
+     "GB_per_root": 0.019599059999999998,
+     "bw_floor_ms_per_root": 0.010936975446428571,
+     "achieved_TBps": 0.7909650774860094,
+     "pct_of_peak_bw": 44.13867619899606,
+     "excess_over_bw_floor_ms_per_root": 0.018924562500000002,
+     "tiny_lt4us_kernels_per_root": 3.0,
+     "tiny_ms_per_root": 0.0043306666666666676
+    },
+    "mixed:MYNN+Noah-MP+boundary/nesting+surface-layer": {
+     "kernels_per_root": 3.0,
+     "ms_per_root": 0.024074666666666664,
+     "bound_fraction_of_time": 1.0,
+     "GB_per_root": 0.040110876,
+     "bw_floor_ms_per_root": 0.022383301339285715,
+     "achieved_TBps": 1.6661030682321665,
+     "pct_of_peak_bw": 92.97450157545572,
+     "excess_over_bw_floor_ms_per_root": 0.001691365327380954,
+     "tiny_lt4us_kernels_per_root": 0.0,
+     "tiny_ms_per_root": 0.0
+    },
+    "mixed:Noah-MP+boundary/nesting": {
+     "kernels_per_root": 5.0,
+     "ms_per_root": 0.020501333333333333,
+     "bound_fraction_of_time": 1.0,
+     "GB_per_root": 0.008809077,
+     "bw_floor_ms_per_root": 0.004915779575892857,
+     "achieved_TBps": 0.4296831263007284,
+     "pct_of_peak_bw": 23.977853030174575,
+     "excess_over_bw_floor_ms_per_root": 0.015585553757440479,
+     "tiny_lt4us_kernels_per_root": 4.0,
+     "tiny_ms_per_root": 0.009418666666666667
+    },
+    "mixed:KF+MYNN+Noah-MP+boundary/nesting+dycore/advection+layout": {
+     "kernels_per_root": 1.0,
+     "ms_per_root": 0.018186666666666667,
+     "bound_fraction_of_time": 1.0,
+     "GB_per_root": 0.035482976,
+     "bw_floor_ms_per_root": 0.019800767857142857,
+     "achieved_TBps": 1.9510434017595306,
+     "pct_of_peak_bw": 108.87518983033095,
+     "excess_over_bw_floor_ms_per_root": 0.0,
+     "tiny_lt4us_kernels_per_root": 0.0,
+     "tiny_ms_per_root": 0.0
+    },
+    "mixed:KF+Thompson+boundary/nesting+dycore/advection": {
+     "kernels_per_root": 1.0,
+     "ms_per_root": 0.016554666666666665,
+     "bound_fraction_of_time": 1.0,
+     "GB_per_root": 0.031607072,
+     "bw_floor_ms_per_root": 0.017637875,
+     "achieved_TBps": 1.9092545103092782,
+     "pct_of_peak_bw": 106.54322044136596,
+     "excess_over_bw_floor_ms_per_root": 0.0,
+     "tiny_lt4us_kernels_per_root": 0.0,
+     "tiny_ms_per_root": 0.0
+    },
+    "mixed:Noah-MP+boundary/nesting+surface-layer": {
+     "kernels_per_root": 2.0,
+     "ms_per_root": 0.015755,
+     "bound_fraction_of_time": 1.0,
+     "GB_per_root": 0.0020328,
+     "bw_floor_ms_per_root": 0.001134375,
+     "achieved_TBps": 0.12902570612503966,
+     "pct_of_peak_bw": 7.2000952078705165,
+     "excess_over_bw_floor_ms_per_root": 0.014620625,
+     "tiny_lt4us_kernels_per_root": 0.0,
+     "tiny_ms_per_root": 0.0
+    },
+    "mixed:KF+Noah-MP+boundary/nesting+layout+surface-layer": {
+     "kernels_per_root": 1.0,
+     "ms_per_root": 0.015221333333333335,
+     "bound_fraction_of_time": 1.0,
+     "GB_per_root": 0.001302001,
+     "bw_floor_ms_per_root": 0.0007265630580357143,
+     "achieved_TBps": 0.08553790732305536,
+     "pct_of_peak_bw": 4.7733207211526425,
+     "excess_over_bw_floor_ms_per_root": 0.014494770275297617,
+     "tiny_lt4us_kernels_per_root": 0.0,
+     "tiny_ms_per_root": 0.0
+    },
+    "mixed:MYNN+Noah-MP+boundary/nesting+dycore/advection+gravity-wave-drag+layout": {
+     "kernels_per_root": 1.0,
+     "ms_per_root": 0.014496000000000002,
+     "bound_fraction_of_time": 1.0,
+     "GB_per_root": 0.029636608,
+     "bw_floor_ms_per_root": 0.016538285714285717,
+     "achieved_TBps": 2.0444679911699777,
+     "pct_of_peak_bw": 114.08861557868178,
+     "excess_over_bw_floor_ms_per_root": 0.0,
+     "tiny_lt4us_kernels_per_root": 0.0,
+     "tiny_ms_per_root": 0.0
+    },
+    "mixed:MYNN+dycore/advection+layout": {
+     "kernels_per_root": 1.0,
+     "ms_per_root": 0.013813333333333332,
+     "bound_fraction_of_time": 1.0,
+     "GB_per_root": 0.012072527999999999,
+     "bw_floor_ms_per_root": 0.006736901785714286,
+     "achieved_TBps": 0.8739764478764478,
+     "pct_of_peak_bw": 48.77100713596249,
+     "excess_over_bw_floor_ms_per_root": 0.007076431547619048,
+     "tiny_lt4us_kernels_per_root": 0.0,
+     "tiny_ms_per_root": 0.0
+    },
+    "mixed:MYNN+Noah-MP+boundary/nesting+dycore/advection+layout+surface-layer": {
+     "kernels_per_root": 1.0,
+     "ms_per_root": 0.010730666666666666,
+     "bound_fraction_of_time": 1.0,
+     "GB_per_root": 0.001008761,
+     "bw_floor_ms_per_root": 0.0005629246651785714,
+     "achieved_TBps": 0.09400729995029822,
+     "pct_of_peak_bw": 5.245943077583606,
+     "excess_over_bw_floor_ms_per_root": 0.010167742001488097,
+     "tiny_lt4us_kernels_per_root": 0.0,
+     "tiny_ms_per_root": 0.0
+    },
+    "mixed:layout+surface-layer": {
+     "kernels_per_root": 1.0,
+     "ms_per_root": 0.010197333333333334,
+     "bound_fraction_of_time": 1.0,
+     "GB_per_root": 0.0004032,
+     "bw_floor_ms_per_root": 0.00022500000000000002,
+     "achieved_TBps": 0.03953974895397489,
+     "pct_of_peak_bw": 2.2064592050209204,
+     "excess_over_bw_floor_ms_per_root": 0.009972333333333333,
+     "tiny_lt4us_kernels_per_root": 0.0,
+     "tiny_ms_per_root": 0.0
+    },
+    "mixed:boundary/nesting+layout+surface-layer": {
+     "kernels_per_root": 9.0,
+     "ms_per_root": 0.008757333333333334,
+     "bound_fraction_of_time": 1.0,
+     "GB_per_root": 0.03975252,
+     "bw_floor_ms_per_root": 0.02218332589285714,
+     "achieved_TBps": 4.5393407429963455,
+     "pct_of_peak_bw": 253.31142539042108,
+     "excess_over_bw_floor_ms_per_root": 0.0004604166666666669,
+     "tiny_lt4us_kernels_per_root": 9.0,
+     "tiny_ms_per_root": 0.008757333333333334
+    },
+    "mixed:MYNN+layout+surface-layer": {
+     "kernels_per_root": 1.0,
+     "ms_per_root": 0.008170666666666668,
+     "bound_fraction_of_time": 1.0,
+     "GB_per_root": 0.000504,
+     "bw_floor_ms_per_root": 0.00028125,
+     "achieved_TBps": 0.0616840731070496,
+     "pct_of_peak_bw": 3.442191579634464,
+     "excess_over_bw_floor_ms_per_root": 0.007889416666666668,
+     "tiny_lt4us_kernels_per_root": 0.0,
+     "tiny_ms_per_root": 0.0
+    },
+    "mixed:boundary/nesting+dycore/advection+gravity-wave-drag": {
+     "kernels_per_root": 2.0,
+     "ms_per_root": 0.008106666666666667,
+     "bound_fraction_of_time": 1.0,
+     "GB_per_root": 0.012163888,
+     "bw_floor_ms_per_root": 0.006787883928571429,
+     "achieved_TBps": 1.500479605263158,
+     "pct_of_peak_bw": 83.73212082941728,
+     "excess_over_bw_floor_ms_per_root": 0.0013187827380952385,
+     "tiny_lt4us_kernels_per_root": 1.0,
+     "tiny_ms_per_root": 0.0030933333333333334
+    },
+    "mixed:KF+boundary/nesting": {
+     "kernels_per_root": 2.6666666666666665,
+     "ms_per_root": 0.007989333333333333,
+     "bound_fraction_of_time": 1.0,
+     "GB_per_root": 0.017852746666666666,
+     "bw_floor_ms_per_root": 0.009962470238095237,
+     "achieved_TBps": 2.234572763684913,
+     "pct_of_peak_bw": 124.69714083063131,
+     "excess_over_bw_floor_ms_per_root": 0.0,
+     "tiny_lt4us_kernels_per_root": 2.3333333333333335,
+     "tiny_ms_per_root": 0.0034666666666666665
+    },
+    "mixed:MYNN+boundary/nesting+gravity-wave-drag+layout": {
+     "kernels_per_root": 1.0,
+     "ms_per_root": 0.007882666666666666,
+     "bound_fraction_of_time": 1.0,
+     "GB_per_root": 0.0276528,
+     "bw_floor_ms_per_root": 0.015431249999999999,
+     "achieved_TBps": 3.5080514208389713,
+     "pct_of_peak_bw": 195.761798037889,
+     "excess_over_bw_floor_ms_per_root": 0.0,
+     "tiny_lt4us_kernels_per_root": 0.0,
+     "tiny_ms_per_root": 0.0
+    },
+    "mixed:Thompson+boundary/nesting": {
+     "kernels_per_root": 1.0,
+     "ms_per_root": 0.0068586666666666666,
+     "bound_fraction_of_time": 1.0,
+     "GB_per_root": 0.008878800000000001,
+     "bw_floor_ms_per_root": 0.0049546875,
+     "achieved_TBps": 1.29453732503888,
+     "pct_of_peak_bw": 72.23980608475894,
+     "excess_over_bw_floor_ms_per_root": 0.0019039791666666669,
+     "tiny_lt4us_kernels_per_root": 0.0,
+     "tiny_ms_per_root": 0.0
+    },
+    "mixed:RRTMG-LW+RRTMG-SW+boundary/nesting+layout": {
+     "kernels_per_root": 0.6666666666666666,
+     "ms_per_root": 0.006442666666666669,
+     "bound_fraction_of_time": 1.0,
+     "GB_per_root": 0.009301952,
+     "bw_floor_ms_per_root": 0.005190821428571429,
+     "achieved_TBps": 1.443804635761589,
+     "pct_of_peak_bw": 80.56945512062438,
+     "excess_over_bw_floor_ms_per_root": 0.0012518452380952387,
+     "tiny_lt4us_kernels_per_root": 0.0,
+     "tiny_ms_per_root": 0.0
+    },
+    "mixed:MYNN+Noah-MP+layout+surface-layer": {
+     "kernels_per_root": 1.0,
+     "ms_per_root": 0.006122666666666666,
+     "bound_fraction_of_time": 1.0,
+     "GB_per_root": 0.000504001,
+     "bw_floor_ms_per_root": 0.0002812505580357143,
+     "achieved_TBps": 0.08231723649825783,
+     "pct_of_peak_bw": 4.593595786733138,
+     "excess_over_bw_floor_ms_per_root": 0.005841416108630953,
+     "tiny_lt4us_kernels_per_root": 0.0,
+     "tiny_ms_per_root": 0.0
+    },
+    "mixed:Noah-MP+boundary/nesting+dycore/advection+layout+surface-layer": {
+     "kernels_per_root": 3.0,
+     "ms_per_root": 0.005770666666666667,
+     "bound_fraction_of_time": 1.0,
+     "GB_per_root": 0.067479408,
+     "bw_floor_ms_per_root": 0.03765591964285713,
+     "achieved_TBps": 11.693520332717192,
+     "pct_of_peak_bw": 652.5401971382362,
+     "excess_over_bw_floor_ms_per_root": 0.0,
+     "tiny_lt4us_kernels_per_root": 3.0,
+     "tiny_ms_per_root": 0.005770666666666667
+    },
+    "mixed:RRTMG-SW+layout": {
+     "kernels_per_root": 1.3333333333333333,
+     "ms_per_root": 0.005226333333333333,
+     "bound_fraction_of_time": 1.0,
+     "GB_per_root": 0.0101634,
+     "bw_floor_ms_per_root": 0.0056715401785714286,
+     "achieved_TBps": 1.9446520824032143,
+     "pct_of_peak_bw": 108.51853138410794,
+     "excess_over_bw_floor_ms_per_root": 6.465476190476188e-05,
+     "tiny_lt4us_kernels_per_root": 0.6666666666666666,
+     "tiny_ms_per_root": 0.0014293333333333335
+    },
+    "mixed:KF+dycore/advection": {
+     "kernels_per_root": 1.0,
+     "ms_per_root": 0.0022186666666666665,
+     "bound_fraction_of_time": 1.0,
+     "GB_per_root": 0.0043368,
+     "bw_floor_ms_per_root": 0.0024200892857142854,
+     "achieved_TBps": 1.9546875,
+     "pct_of_peak_bw": 109.07854352678571,
+     "excess_over_bw_floor_ms_per_root": 0.0,
+     "tiny_lt4us_kernels_per_root": 1.0,
+     "tiny_ms_per_root": 0.0022186666666666665
+    },
+    "mixed:RRTMG-LW+boundary/nesting": {
+     "kernels_per_root": 0.3333333333333333,
+     "ms_per_root": 0.0007036666666666667,
+     "bound_fraction_of_time": 1.0,
+     "GB_per_root": 0.001999296,
+     "bw_floor_ms_per_root": 0.0011156785714285715,
+     "achieved_TBps": 2.841254381809569,
+     "pct_of_peak_bw": 158.55214184205184,
+     "excess_over_bw_floor_ms_per_root": 0.0,
+     "tiny_lt4us_kernels_per_root": 0.3333333333333333,
+     "tiny_ms_per_root": 0.0007036666666666667
+    }
+   },
+   "heaviest_symbols": [
+    {
+     "domain": "d02",
+     "kernel": "rrtmg_lw_band_sums",
+     "launches_per_root": 42.666666666666664,
+     "ms_per_root": 5.465173000000001,
+     "GB_per_root": 3.1634176000000003,
+     "TBps": 0.5788321065042221,
+     "family": "RRTMG-LW"
+    },
+    {
+     "domain": "d01",
+     "kernel": "rrtmg_lw_band_sums",
+     "launches_per_root": 16.0,
+     "ms_per_root": 2.061188333333334,
+     "GB_per_root": 1.1862816,
+     "TBps": 0.575532852003658,
+     "family": "RRTMG-LW"
+    },
+    {
+     "domain": "d02",
+     "kernel": "thompson_full_column",
+     "launches_per_root": 3.0,
+     "ms_per_root": 1.795161666666667,
+     "GB_per_root": 0.861494664,
+     "TBps": 0.4798980949719477,
+     "family": "Thompson"
+    },
+    {
+     "domain": "d02",
+     "kernel": "b_core_mass_fp32",
+     "launches_per_root": 21.0,
+     "ms_per_root": 1.4521600000000003,
+     "GB_per_root": 5.435257967999999,
+     "TBps": 3.742878173204054,
+     "family": "dycore/advection"
+    },
+    {
+     "domain": "d02",
+     "kernel": "loop_add_multiply_fusion_3",
+     "launches_per_root": 3.0,
+     "ms_per_root": 1.3699983333333334,
+     "GB_per_root": 0.7426135079999999,
+     "TBps": 0.5420543149079255,
+     "family": "dycore/advection"
+    },
+    {
+     "domain": "d02",
+     "kernel": "b_core_uv_fp32",
+     "launches_per_root": 21.0,
+     "ms_per_root": 1.2100690000000003,
+     "GB_per_root": 5.417103888,
+     "TBps": 4.476690079656613,
+     "family": "dycore/advection"
+    },
+    {
+     "domain": "d02",
+     "kernel": "mynn_tridiag2_real",
+     "launches_per_root": 27.0,
+     "ms_per_root": 1.1303893333333332,
+     "GB_per_root": 0.7422386400000001,
+     "TBps": 0.6566221195764999,
+     "family": "MYNN"
+    },
+    {
+     "domain": "d02",
+     "kernel": "loop_add_divide_multiply_fusion",
+     "launches_per_root": 3.0,
+     "ms_per_root": 0.8188296666666667,
+     "GB_per_root": 0.56342766,
+     "TBps": 0.6880889676281879,
+     "family": "dycore/advection"
+    },
+    {
+     "domain": "d02",
+     "kernel": "input_add_divide_transpose_fusion",
+     "launches_per_root": 3.0,
+     "ms_per_root": 0.7171533333333334,
+     "GB_per_root": 0.926675832,
+     "TBps": 1.2921585788255416,
+     "family": "mixed:boundary/nesting+dycore/advection+layout"
+    },
+    {
+     "domain": "d02",
+     "kernel": "b_core_w_fp32",
+     "launches_per_root": 21.0,
+     "ms_per_root": 0.6926103333333335,
+     "GB_per_root": 1.424882256,
+     "TBps": 2.057263929549612,
+     "family": "dycore/advection"
+    },
+    {
+     "domain": "d02",
+     "kernel": "b_core_w_p2_fp32",
+     "launches_per_root": 21.0,
+     "ms_per_root": 0.5901356666666666,
+     "GB_per_root": 2.478578172,
+     "TBps": 4.200014186568399,
+     "family": "dycore/advection"
+    },
+    {
+     "domain": "d02",
+     "kernel": "b_core_pd_tend_sl_fp32__1",
+     "launches_per_root": 3.0,
+     "ms_per_root": 0.5396603333333333,
+     "GB_per_root": 0.44779778400000003,
+     "TBps": 0.8297770955928451,
+     "family": "dycore/advection"
+    },
+    {
+     "domain": "d02",
+     "kernel": "input_add_divide_maximum_multiply_subtract_transpose_fusion",
+     "launches_per_root": 3.0,
+     "ms_per_root": 0.5160020000000002,
+     "GB_per_root": 0.631112496,
+     "TBps": 1.2230814919322015,
+     "family": "mixed:MYNN+Noah-MP+boundary/nesting+dycore/advection+layout"
+    },
+    {
+     "domain": "d02",
+     "kernel": "boundary_spec_final_real",
+     "launches_per_root": 3.0,
+     "ms_per_root": 0.5154676666666665,
+     "GB_per_root": 0.136857588,
+     "TBps": 0.2655017896369834,
+     "family": "dycore/advection"
+    },
+    {
+     "domain": "d02",
+     "kernel": "loop_select_fusion_1",
+     "launches_per_root": 149.33333333333334,
+     "ms_per_root": 0.49814666666666724,
+     "GB_per_root": 1.030052352,
+     "TBps": 2.067769235298839,
+     "family": "RRTMG-sampling"
+    },
+    {
+     "domain": "d02",
+     "kernel": "input_select_transpose_fusion",
+     "launches_per_root": 3.0,
+     "ms_per_root": 0.48195333333333323,
+     "GB_per_root": 0.7259318819999999,
+     "TBps": 1.5062285739974826,
+     "family": "mixed:Thompson+boundary/nesting+layout"
+    },
+    {
+     "domain": "d02",
+     "kernel": "boundary_ring_relax_real",
+     "launches_per_root": 21.0,
+     "ms_per_root": 0.45692399999999994,
+     "GB_per_root": 0.27317211599999996,
+     "TBps": 0.597850224545001,
+     "family": "dycore/advection"
+    },
+    {
+     "domain": "d02",
+     "kernel": "_lambda___3",
+     "launches_per_root": 3.0,
+     "ms_per_root": 0.45353733333333324,
+     "GB_per_root": 0.16519747199999998,
+     "TBps": 0.36424227920964986,
+     "family": "MYNN"
+    },
+    {
+     "domain": "d02",
+     "kernel": "b_core_w_p1_fp32",
+     "launches_per_root": 21.0,
+     "ms_per_root": 0.45232766666666674,
+     "GB_per_root": 2.475954096,
+     "TBps": 5.473806442674668,
+     "family": "dycore/advection"
+    },
+    {
+     "domain": "d02",
+     "kernel": "b_diff_horizontal_m",
+     "launches_per_root": 27.0,
+     "ms_per_root": 0.44980200000000004,
+     "GB_per_root": 0.6141169439999999,
+     "TBps": 1.3653050542238585,
+     "family": "dycore/advection"
+    },
+    {
+     "domain": "d02",
+     "kernel": "b_diff_large_step_v_fp32",
+     "launches_per_root": 9.0,
+     "ms_per_root": 0.42790466666666666,
+     "GB_per_root": 0.609197976,
+     "TBps": 1.4236768688352701,
+     "family": "dycore/advection"
+    },
+    {
+     "domain": "d02",
+     "kernel": "loop_transpose_fusion",
+     "launches_per_root": 3.0,
+     "ms_per_root": 0.417195,
+     "GB_per_root": 0.7707033600000001,
+     "TBps": 1.8473456297414879,
+     "family": "RRTMG-sampling"
+    },
+    {
+     "domain": "d02",
+     "kernel": "b_core_pressure_fp32",
+     "launches_per_root": 18.0,
+     "ms_per_root": 0.4064546666666668,
+     "GB_per_root": 4.640798664,
+     "TBps": 11.417752198687182,
+     "family": "dycore/advection"
+    },
+    {
+     "domain": "d02",
+     "kernel": "rrtmg_sw_band_sums",
+     "launches_per_root": 37.333333333333336,
+     "ms_per_root": 0.39806733333333305,
+     "GB_per_root": 7.496977898666667,
+     "TBps": 18.833441658948836,
+     "family": "RRTMG-SW"
+    },
+    {
+     "domain": "d02",
+     "kernel": "b_core_scalar_flux_fp32_stacked",
+     "launches_per_root": 6.0,
+     "ms_per_root": 0.38784033333333334,
+     "GB_per_root": 0.49632839999999995,
+     "TBps": 1.2797235288404762,
+     "family": "dycore/advection"
+    },
+    {
+     "domain": "d02",
+     "kernel": "b_diff_rhs_ph_fp32",
+     "launches_per_root": 9.0,
+     "ms_per_root": 0.37913800000000003,
+     "GB_per_root": 0.359392644,
+     "TBps": 0.9479203983773717,
+     "family": "dycore/advection"
+    },
+    {
+     "domain": "d02",
+     "kernel": "loop_select_fusion",
+     "launches_per_root": 117.33333333333333,
+     "ms_per_root": 0.36416099999999924,
+     "GB_per_root": 0.647846144,
+     "TBps": 1.7790102289921255,
+     "family": "RRTMG-sampling"
+    },
+    {
+     "domain": "d02",
+     "kernel": "b_diff_large_step_u_fp32",
+     "launches_per_root": 9.0,
+     "ms_per_root": 0.34893900000000005,
+     "GB_per_root": 0.608479776,
+     "TBps": 1.743799850403652,
+     "family": "dycore/advection"
+    },
+    {
+     "domain": "d02",
+     "kernel": "b_core_pd_scale_sl_fp32__1",
+     "launches_per_root": 3.0,
+     "ms_per_root": 0.33583999999999997,
+     "GB_per_root": 0.348832632,
+     "TBps": 1.0386869699857073,
+     "family": "dycore/advection"
+    },
+    {
+     "domain": "d02",
+     "kernel": "input_concatenate_fusion_3",
+     "launches_per_root": 2.6666666666666665,
+     "ms_per_root": 0.32508833333333337,
+     "GB_per_root": 0.438304768,
+     "TBps": 1.348263604251152,
+     "family": "mixed:RRTMG-LW+RRTMG-sampling"
+    },
+    {
+     "domain": "d02",
+     "kernel": "loop_select_fusion_10",
+     "launches_per_root": 2.6666666666666665,
+     "ms_per_root": 0.31763266666666673,
+     "GB_per_root": 0.5524720639999999,
+     "TBps": 1.7393427124414154,
+     "family": "RRTMG-sampling"
+    },
+    {
+     "domain": "d02",
+     "kernel": "b_core_coef_fp32",
+     "launches_per_root": 9.0,
+     "ms_per_root": 0.3007363333333333,
+     "GB_per_root": 0.253046088,
+     "TBps": 0.8414217370919599,
+     "family": "dycore/advection"
+    },
+    {
+     "domain": "d02",
+     "kernel": "loop_add_fusion",
+     "launches_per_root": 372.3333333333333,
+     "ms_per_root": 0.2907626666666632,
+     "GB_per_root": 5.957333333333334e-06,
+     "TBps": 2.0488645951795976e-05,
+     "family": "RRTMG-sampling"
+    },
+    {
+     "domain": "d02",
+     "kernel": "b_diff_sixth_m",
+     "launches_per_root": 27.0,
+     "ms_per_root": 0.2879646666666667,
+     "GB_per_root": 0.30702650400000003,
+     "TBps": 1.06619505633793,
+     "family": "dycore/advection"
+    },
+    {
+     "domain": "d02",
+     "kernel": "input_add_multiply_select_transpose_fusion",
+     "launches_per_root": 3.0,
+     "ms_per_root": 0.28740333333333334,
+     "GB_per_root": 0.412823385,
+     "TBps": 1.4363903863327958,
+     "family": "mixed:MYNN+boundary/nesting+dycore/advection+layout"
+    },
+    {
+     "domain": "d02",
+     "kernel": "input_maximum_pad_transpose_fusion",
+     "launches_per_root": 3.0,
+     "ms_per_root": 0.2722346666666667,
+     "GB_per_root": 0.40907470500000004,
+     "TBps": 1.5026547133355534,
+     "family": "mixed:MYNN+boundary/nesting+layout"
+    },
+    {
+     "domain": "d01",
+     "kernel": "loop_select_fusion_1",
+     "launches_per_root": 56.0,
+     "ms_per_root": 0.2657710000000002,
+     "GB_per_root": 0.38626963200000003,
+     "TBps": 1.4533927027403282,
+     "family": "RRTMG-sampling"
+    },
+    {
+     "domain": "d02",
+     "kernel": "wrapped_add_10",
+     "launches_per_root": 186.66666666666666,
+     "ms_per_root": 0.2407519999999983,
+     "GB_per_root": 0.42205184,
+     "TBps": 1.753056423207296,
+     "family": "RRTMG-SW"
+    },
+    {
+     "domain": "d02",
+     "kernel": "input_clamp_concatenate_maximum_multiply_transpose_fusion",
+     "launches_per_root": 3.0,
+     "ms_per_root": 0.230966,
+     "GB_per_root": 0.361466469,
+     "TBps": 1.56502025839301,
+     "family": "mixed:MYNN+boundary/nesting+layout"
+    },
+    {
+     "domain": "d02",
+     "kernel": "loop_transpose_fusion_1",
+     "launches_per_root": 2.6666666666666665,
+     "ms_per_root": 0.22447000000000003,
+     "GB_per_root": 0.4306152106666667,
+     "TBps": 1.9183641941759106,
+     "family": "RRTMG-sampling"
+    }
+   ]
+  }
+ }
+}

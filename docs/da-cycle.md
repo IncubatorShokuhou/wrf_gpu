@@ -8,8 +8,8 @@ opt-in and experimental; the default `gpuwrf run` program is unchanged. The anal
 ## Why one process
 
 A separate `gpuwrf run` per member pays a fixed cost every time (Python/JAX imports, the GPU backend, loading
-the step executable, initialisation). On the A1 development case that fixed part was about 84 % of a warm
-6-hour d01 member (A1 study cost model, not in this repository: 21.4 s per member, of which ~17 s fixed). The member driver
+the step executable, initialisation). On the case of the first data-assimilation study, that fixed part was about 84 % of a warm
+6-hour d01 member (that study's cost model, not in this repository: 21.4 s per member, of which ~17 s fixed). The member driver
 runs every member as the *ordinary* CLI forecast (`gpuwrf.cli.main(["run", ...])`) inside one process:
 
 * each member writes exactly the history a separate `gpuwrf run` of its case writes (byte-identical, see
@@ -93,7 +93,7 @@ when there is one). Analyses and case writing are host-only and run in a CPU chi
 
 ### One step program for the whole loop
 
-The wrfbdy record count is currently a program shape (until the w41-bdyrec fix lands). The loop therefore
+The wrfbdy record count is currently a program shape (until the wrfbdy record-count fix lands). The loop therefore
 writes every case with the same `forcing_hours` of forcing records — one window by default, the whole horizon
 (`cycles × window_hours`) when a restart arm exists — so every window, arm and seam shares one compiled step
 program. The source case must cover `t_last + forcing_hours`.
@@ -131,7 +131,7 @@ source per domain, history SHA-256) and the CLI payload.
   changes no cell. On CPU, prime the cache first (one separate run): a cold first member plus a later member
   that loads the exported blob keeps two step executables in memory (12.5 GB for Swiss d01; the primed loop
   peaked at 8.3 GB).
-* GPU arm, PROD d01 (120×70, release defaults, RTX 5090), N=10 x 2 windows x 6 h
+* GPU arm, 9 km Canary Islands domain (120×70, release defaults, RTX 5090), N=10 x 2 windows x 6 h
   (`proofs/w41_da_cycle/gpu_arm.sh`). First session (cold cache): all 10 window-0 members `PIPELINE_GREEN` in
   one process; member 1 took 415 s (step compile), members 2–10 took 11.0–14.1 s each for 6 h (median 11.7 s)
   on the shared executable, with no recompile; host memory stayed at 5.7 GiB over all 28 member runs. A
@@ -141,8 +141,8 @@ source per domain, history SHA-256) and the CLI payload.
   byte-identical to separate fresh processes: window 0 of member m01 (7 frames), the window-1 file-seam case
   (7 frames), and the zero-update restart seam against a continuous 12 h run (6 frames after the seam).
 
-Disk: a member window writes its history (FULL stream, ~90 MB per hourly PROD d01 frame) and, on the restart
-seam, one restart generation per window (~108 MB for PROD d01); N=10 × 2 windows ≈ 12–18 GB. Delete or prune
+Disk: a member window writes its history (FULL stream, ~90 MB per hourly frame of that domain) and, on the restart
+seam, one restart generation per window (~108 MB for that domain); N=10 × 2 windows ≈ 12–18 GB. Delete or prune
 old generations when they are no longer needed.
 
 Why a cold in-process `Compiled` is not shared: it checks its full input treedef, and the namelist treedef

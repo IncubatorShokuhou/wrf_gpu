@@ -1,0 +1,9 @@
+# Proposed CPU-only admission exception (NOT APPROVED, NOT EXECUTED)
+
+The user caps CPU scopes at12GiB and forbids>=16GiB. Common rule E243 permits only device substitution/first-root bounding. Three exact-call full-PROD CPU attempts hit MEMCG12G: original, JAXcache+GC, then measured heap release (malloc_trim). All failures are CPU-admission failures; no GPU/scientific verdict follows.
+
+Retain the same sealed manager-sequencer entry paths, argv, environment gates, source/pin/hash checks, real CLI parser and explicit hours/dt checks, scopes/timers/teardown, phase order, bundle consumer/seal/check and actual retained-GPU E41 scanner. Keep actual Swiss first-root CPU execution. For PROD/WN3 only, allow the predecessor's CPU-only model admission: exact CLI --dry-run and actual native-first full-shape lowering/CompileOnly evidence for all5 canonical programs, without pretending a CPU first-root finished. Those CPU model gates are PLAN_ONLY/NOT_APPLICABLE, never GPU/scientific PASS. Real full-size GPU cold-setup entries remain mandatory fail-fast launch/model smokes; all original CPU-WRF72h/RW1-4/scientific/native gates remain.
+
+For the profile phase, CPU checks can exercise the explicit host NVTX bridge/parser on real Swiss first-root work and mark all GPU timing/source attribution N/A; actual canonical PROD NVTX/time capture remains required in the GPU RW1 profile. No artificial zero-time diagnostic.
+
+This explicitly changes the CPU model-substitution restriction, so manager authorization is required before implementing/running this alternative. It does not change model code/math/flags, fidelity limits, GPU lock, filesystem floor or12GiB CPU cap. The initial implementation is the measured predecessor workflow with transparent CPU-only scope labels; exact delta/seals return to cr-w44-launchers.

@@ -49,8 +49,13 @@ def test_daily_obs_carry_clock_outputs_and_real_checkpoint(monkeypatch, tmp_path
     _output_hooks(monkeypatch)
     grid = GridSpec.canary_3km_template()
     # Nonlinear three-record forcing detects re-windowing with a global clock.
-    boundary = jnp.asarray([0., 10., 40.], jnp.float32)[:, None, None]
-    state = _synthetic_state(grid).replace(u_bdy=boundary)
+    # The leaf keeps the State boundary contract (time, side, bdy_width, z, side_len)
+    # (contracts/state.py boundary_mass) that the native REAL boundary interpolation
+    # (GPUWRF_BOUNDARY_FP32=1, kernels/dyn_boundary_fp32.interpolate_leaf) requires.
+    state = _synthetic_state(grid)
+    boundary = jnp.broadcast_to(jnp.asarray([0., 10., 40.], jnp.float32)[:, None, None, None, None],
+                                (3, *state.u_bdy.shape[1:]))
+    state = state.replace(u_bdy=boundary)
     inputs = replace(_inputs(), options=tuple(sorted(dict(_inputs().options, obs_ionf=137).items())))
     nl = om.OperationalNamelist(grid=grid, tendencies=_synthetic_tendencies(grid), metrics=grid.metrics,
         dt_s=18., radiation_cadence_steps=200, use_mp_re=0, sf_surface_physics=4,

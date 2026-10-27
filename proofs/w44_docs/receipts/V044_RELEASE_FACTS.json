@@ -1,0 +1,796 @@
+{
+  "schema": "w44-docs.release-facts.v1",
+  "candidate": "286e2442a9",
+  "src_tree": "a22dea711202a48d00c86eafa34391ff2cb60fe2",
+  "publication": "RELEASE_DOCS;RW3_PASS_BY_OWNER_APPROVED_MANAGER_DECISION;tag/publish remain manager-owned",
+  "cpu": {
+    "tierA": {
+      "PASS": 4209,
+      "SKIP": 34
+    },
+    "release_defaults": {
+      "PASS": 102,
+      "XFAIL": 1
+    },
+    "registry": {
+      "PASS": 56,
+      "additional_checks": 22
+    },
+    "unresolved_source_failures": 0,
+    "missing_W4_files": "2 NOT_APPLICABLE, not counted as PASS"
+  },
+  "IN": [
+    "1 topo b493f2da40",
+    "5 QSQ seed450a0a6f4e",
+    "6 E84c4b3cee0d2",
+    "7 params-refusalb0bf673088",
+    "8 version0.4.4 four surfaces",
+    "9 LSM-refusal7ce3a9276e",
+    "registrydeltaad27bc3907"
+  ],
+  "OUT": [
+    "2 constfold",
+    "3 root-walk flip",
+    "4 H-CB"
+  ],
+  "identity": [
+    {
+      "case": "swiss",
+      "program": "d01",
+      "verdict": "DIFFERENT",
+      "detail": null,
+      "base_pallas": 157,
+      "candidate_pallas": 157,
+      "base_full_constant_sha256": "f8619ec597fb6afbd53040d280d240ec8c21f2150ce5fee86fbe9d0a312fe762",
+      "candidate_full_constant_sha256": "192c5436b10af1c99696f5b971235fe7c29656e4ff3eb188f17ebedf04ee065d",
+      "checks": {
+        "canon_sha256": true,
+        "canon_consts_sha256": true,
+        "d01.raw_hlo_full_sha256": false,
+        "d01.raw_hlo_sha256": false,
+        "d01.triton_custom_calls": true,
+        "d01.n_kernel_bodies": true,
+        "d01.n_pallas_lowerings": true,
+        "d01.lowerings_by_name": true,
+        "kernels_ttir_sha16": true,
+        "kernels_ttir_loc_sha16": false
+      },
+      "artifact": "<DATA_ROOT>/wrf_gpu2/scratch/w44-rc/native/CMP-swiss-d01.json"
+    },
+    {
+      "case": "prod",
+      "program": "d01",
+      "verdict": "DIFFERENT",
+      "detail": null,
+      "base_pallas": 159,
+      "candidate_pallas": 161,
+      "base_full_constant_sha256": "47c10960663133b05e0eacb864003362cb5185e3a81867249e6210ad0e046252",
+      "candidate_full_constant_sha256": "10423ba3a36c692701ceff92d0cad117ccefbcaff630372436b7985d742c928b",
+      "checks": {
+        "canon_sha256": true,
+        "canon_consts_sha256": true,
+        "d01.raw_hlo_full_sha256": false,
+        "d01.raw_hlo_sha256": false,
+        "d01.triton_custom_calls": false,
+        "d01.n_kernel_bodies": false,
+        "d01.n_pallas_lowerings": false,
+        "d01.lowerings_by_name": false,
+        "kernels_ttir_sha16": false,
+        "kernels_ttir_loc_sha16": false
+      },
+      "artifact": "<DATA_ROOT>/wrf_gpu2/scratch/w44-rc/native/CMP-prod-d01.json"
+    },
+    {
+      "case": "prod",
+      "program": "d02",
+      "verdict": "DIFFERENT",
+      "detail": null,
+      "base_pallas": 149,
+      "candidate_pallas": 151,
+      "base_full_constant_sha256": "5e5c3f0026db288d7244b4cdbeb5044f71b165bd0b1fc2c1391e82c7aa6d7772",
+      "candidate_full_constant_sha256": "f49f24f2d321477fc7105002586b5f6630f7d105ed981f6ab8abb7e7c47a4995",
+      "checks": {
+        "canon_sha256": true,
+        "canon_consts_sha256": true,
+        "d02.raw_hlo_full_sha256": false,
+        "d02.raw_hlo_sha256": false,
+        "d02.triton_custom_calls": false,
+        "d02.n_kernel_bodies": false,
+        "d02.n_pallas_lowerings": false,
+        "d02.lowerings_by_name": false,
+        "kernels_ttir_sha16": false,
+        "kernels_ttir_loc_sha16": false
+      },
+      "artifact": "<DATA_ROOT>/wrf_gpu2/scratch/w44-rc/native/CMP-prod-d02.json"
+    },
+    {
+      "case": "wn3",
+      "program": "d01",
+      "verdict": "DIFFERENT",
+      "detail": null,
+      "base_pallas": 159,
+      "candidate_pallas": 161,
+      "base_full_constant_sha256": "01afa1d54fdbb42cc44dc19b250604e19c1d19229baee1936a464ca41f29c943",
+      "candidate_full_constant_sha256": "160e5dd002e7d348829fb650f7cbeb6fe764fa9a5c586d99d120e898c2e5907c",
+      "checks": {
+        "canon_sha256": true,
+        "canon_consts_sha256": true,
+        "d01.raw_hlo_full_sha256": false,
+        "d01.raw_hlo_sha256": false,
+        "d01.triton_custom_calls": false,
+        "d01.n_kernel_bodies": false,
+        "d01.n_pallas_lowerings": false,
+        "d01.lowerings_by_name": false,
+        "kernels_ttir_sha16": false,
+        "kernels_ttir_loc_sha16": false
+      },
+      "artifact": "<DATA_ROOT>/wrf_gpu2/scratch/w44-rc/native/CMP-wn3-d01.json"
+    },
+    {
+      "case": "wn3",
+      "program": "fused_d02",
+      "verdict": "DIFFERENT",
+      "detail": null,
+      "base_pallas": 303,
+      "candidate_pallas": 307,
+      "base_full_constant_sha256": "15824b9c288577ba9b7165e9b52f5e4eaa9933f86dd6fe5800d6ad5ad686645d",
+      "candidate_full_constant_sha256": "437e6974cbc448c133a2f01774e1ad9fa231f4b2dbb0ad713d95a31108cd7283",
+      "checks": {
+        "canon_sha256": true,
+        "canon_consts_sha256": true,
+        "fused_d02.raw_hlo_full_sha256": false,
+        "fused_d02.raw_hlo_sha256": false,
+        "fused_d02.triton_custom_calls": false,
+        "fused_d02.n_kernel_bodies": false,
+        "fused_d02.n_pallas_lowerings": false,
+        "fused_d02.lowerings_by_name": false,
+        "kernels_ttir_sha16": false,
+        "kernels_ttir_loc_sha16": false
+      },
+      "artifact": "<DATA_ROOT>/wrf_gpu2/scratch/w44-rc/native/CMP-wn3-fused_d02.json"
+    }
+  ],
+  "RW3": {
+    "verdict": "FAIL",
+    "checks": {
+      "coverage": true,
+      "binding72_A3": false,
+      "output_integrity": false,
+      "speed": true,
+      "VRAM": true,
+      "RSS": true,
+      "compile": true
+    },
+    "failed_checks": [
+      "binding72_A3",
+      "output_integrity"
+    ],
+    "reference": "ORIGINAL CPU-WRF W3P0227, 219 exact paired frames, readonly guarded in-place view; no GPU-vs-GPU fidelity claim",
+    "frozen_A3": {
+      "case": "<DATA_ROOT>/wrf_gpu2/scratch/w44-rc/receipts/RW3D_20261027/d6_N72",
+      "scorer": "scripts/wn3_score.py (w42-scorer) summary.json",
+      "rule": "originalA3 C>limit OR C/X>=.75 (frozen); C verbatim from the v0.3.3 W3P 0227 receipt",
+      "C_reference": {
+        "path": "<USER_HOME>/wrf_gpu2_lanes/mass-opus/SCIENCE_G2_W3P0227_ACTUAL_20261009/FLOOR72_FROM_EXISTING_C.json",
+        "sha256": "4491e479ce5e201b5071c735b0842ed88564cc028adc0ece8ec44d574a255be2",
+        "original_source": {
+          "path": "<USER_HOME>/wrf_gpu2_lanes/mass-opus/MO13/medano/d6floor/cpupair_P_vs_R.json",
+          "sha256": "fcd8b975ca1178248bdc34fd9a33904a99843874b5bcc21337e8f721cdfe2380",
+          "scope": "originalCPU_P0227-R wholefield, reusedfixedC asfrozenfor0227case"
+        }
+      },
+      "rows": [
+        {
+          "domain": "d03",
+          "field": "RAINNC",
+          "lead_h": 67,
+          "metric": "rmse",
+          "X": 1.0600553865983122,
+          "limit": 1.0,
+          "C": null,
+          "C_over_X": null,
+          "status": "REAL FAIL"
+        },
+        {
+          "domain": "d03",
+          "field": "RAINNC",
+          "lead_h": 68,
+          "metric": "rmse",
+          "X": 1.1689603752491535,
+          "limit": 1.0,
+          "C": 1.0742462797105208,
+          "C_over_X": 0.9189757860539581,
+          "status": "FLOOR-LIMITED"
+        },
+        {
+          "domain": "d03",
+          "field": "RAINNC",
+          "lead_h": 69,
+          "metric": "rmse",
+          "X": 1.4739492663420994,
+          "limit": 1.0,
+          "C": 1.5094115483094688,
+          "C_over_X": 1.024059364034541,
+          "status": "FLOOR-LIMITED"
+        },
+        {
+          "domain": "d03",
+          "field": "RAINNC",
+          "lead_h": 70,
+          "metric": "rmse",
+          "X": 1.8834847937718464,
+          "limit": 1.0,
+          "C": 1.9865712642639377,
+          "C_over_X": 1.0547317774122569,
+          "status": "FLOOR-LIMITED"
+        },
+        {
+          "domain": "d03",
+          "field": "RAINNC",
+          "lead_h": 71,
+          "metric": "rmse",
+          "X": 2.0335739559911676,
+          "limit": 1.0,
+          "C": 2.098835538985548,
+          "C_over_X": 1.0320920627460395,
+          "status": "FLOOR-LIMITED"
+        },
+        {
+          "domain": "d03",
+          "field": "RAINNC",
+          "lead_h": 72,
+          "metric": "rmse",
+          "X": 2.0496904771134097,
+          "limit": 1.0,
+          "C": 2.1118578851610086,
+          "C_over_X": 1.0303301443519168,
+          "status": "FLOOR-LIMITED"
+        }
+      ],
+      "other_policy_failures": [],
+      "counts": {
+        "FLOOR-LIMITED": 5,
+        "REAL FAIL": 1
+      },
+      "coverage_complete": true,
+      "raw72": "FAIL",
+      "binding72_A3": "FAIL",
+      "output_integrity_pass": false
+    },
+    "timing_memory": {
+      "status": "MEASURED_TIMING_MEMORY_COMPLETE",
+      "rows": [
+        {
+          "name": "N72",
+          "model_pid": 1094959,
+          "model_pid_vram_peak_MiB": 5426,
+          "all_compute_apps_peak_MiB": 5426,
+          "vram_samples": 909,
+          "rss_KiB": 6336060,
+          "rss_GiB": 6.042537689208984,
+          "hours": 72,
+          "process_wall_s": 459.27638053894043,
+          "compiled_new": 0,
+          "finite": true
+        },
+        {
+          "name": "N1",
+          "model_pid": 1396518,
+          "model_pid_vram_peak_MiB": 5234,
+          "all_compute_apps_peak_MiB": 5234,
+          "vram_samples": 331,
+          "rss_KiB": 6340220,
+          "rss_GiB": 6.046504974365234,
+          "hours": 24,
+          "process_wall_s": 169.4,
+          "compiled_new": 0,
+          "finite": true,
+          "d03_step_median": 5.847,
+          "whole_s_per_fch": 6.9988
+        },
+        {
+          "name": "O1",
+          "model_pid": 1533087,
+          "model_pid_vram_peak_MiB": 5268,
+          "all_compute_apps_peak_MiB": 5268,
+          "vram_samples": 340,
+          "rss_KiB": 6461564,
+          "rss_GiB": 6.162227630615234,
+          "hours": 24,
+          "process_wall_s": 174.0,
+          "compiled_new": 0,
+          "finite": true,
+          "d03_step_median": 5.869,
+          "whole_s_per_fch": 7.1751
+        },
+        {
+          "name": "N2",
+          "model_pid": 1678220,
+          "model_pid_vram_peak_MiB": 5234,
+          "all_compute_apps_peak_MiB": 5234,
+          "vram_samples": 347,
+          "rss_KiB": 6337360,
+          "rss_GiB": 6.0437774658203125,
+          "hours": 24,
+          "process_wall_s": 177.5,
+          "compiled_new": 0,
+          "finite": true,
+          "d03_step_median": 6.01,
+          "whole_s_per_fch": 7.3159
+        },
+        {
+          "name": "O2",
+          "model_pid": 1821929,
+          "model_pid_vram_peak_MiB": 5268,
+          "all_compute_apps_peak_MiB": 5268,
+          "vram_samples": 349,
+          "rss_KiB": 6358116,
+          "rss_GiB": 6.063571929931641,
+          "hours": 24,
+          "process_wall_s": 178.1,
+          "compiled_new": 0,
+          "finite": true,
+          "d03_step_median": 6.018,
+          "whole_s_per_fch": 7.3569
+        },
+        {
+          "name": "N3",
+          "model_pid": 1967002,
+          "model_pid_vram_peak_MiB": 5266,
+          "all_compute_apps_peak_MiB": 5266,
+          "vram_samples": 343,
+          "rss_KiB": 6336240,
+          "rss_GiB": 6.0427093505859375,
+          "hours": 24,
+          "process_wall_s": 175.2,
+          "compiled_new": 0,
+          "finite": true,
+          "d03_step_median": 5.876,
+          "whole_s_per_fch": 7.2365
+        },
+        {
+          "name": "O3",
+          "model_pid": 2106600,
+          "model_pid_vram_peak_MiB": 5268,
+          "all_compute_apps_peak_MiB": 5268,
+          "vram_samples": 348,
+          "rss_KiB": 6354892,
+          "rss_GiB": 6.060497283935547,
+          "hours": 24,
+          "process_wall_s": 177.7,
+          "compiled_new": 0,
+          "finite": true,
+          "d03_step_median": 5.874,
+          "whole_s_per_fch": 7.3357
+        }
+      ],
+      "same_session_24h_primary": {
+        "N": [
+          5.847,
+          6.01,
+          5.876
+        ],
+        "O": [
+          5.869,
+          6.018,
+          5.874
+        ],
+        "pooled_N_over_O": 0.9984,
+        "AA_O": 0.0254,
+        "BB_N": 0.0279,
+        "S": 0.0279,
+        "verdict": "PASS"
+      },
+      "same_session_24h_whole_run_disclosed": {
+        "N": [
+          6.9988,
+          7.3159,
+          7.2365
+        ],
+        "O": [
+          7.1751,
+          7.3569,
+          7.3357
+        ],
+        "pooled_N_over_O": 0.9855,
+        "AA_O": 0.0253,
+        "BB_N": 0.0453,
+        "S": 0.0453,
+        "verdict": "PASS"
+      },
+      "pooled_primary_N_s_fch": 5.9110000000000005,
+      "pooled_primary_O_s_fch": 5.920333333333333,
+      "whole_to_last_file_N_s_fch": 7.1837333333333335,
+      "whole_to_last_file_O_s_fch": 7.289233333333334,
+      "N72_process_s_fch": 6.378838618596395,
+      "N72_to_last_file_s_fch": 6.3568,
+      "memory": {
+        "model_pid_vram_peak_MiB": {
+          "N": [
+            5234,
+            5234,
+            5266
+          ],
+          "O": [
+            5268,
+            5268,
+            5268
+          ],
+          "pooled_N_over_O": 0.9955707415844091,
+          "pairs": {
+            "N1/O1": 0.9935459377372817,
+            "N2/O2": 0.9935459377372817,
+            "N3/O3": 0.9996203492786636
+          },
+          "verdict": "PASS"
+        },
+        "rss_KiB": {
+          "N": [
+            6340220,
+            6337360,
+            6336240
+          ],
+          "O": [
+            6461564,
+            6358116,
+            6354892
+          ],
+          "pooled_N_over_O": 0.9916163969657315,
+          "pairs": {
+            "N1/O1": 0.9812206456517338,
+            "N2/O2": 0.9967355109595358,
+            "N3/O3": 0.9970649383183853
+          },
+          "verdict": "PASS"
+        }
+      },
+      "O72": "SKIPPED disk floor; NO same-session72h old-release comparison",
+      "strict_shadow": "no strict20/50subset counted; contract100/200watch passed, disclosed separately",
+      "D6": "COMPLETE; see checks and domains in RW3_VERDICT.json",
+      "source_paths": {
+        "verdict": "<DATA_ROOT>/wrf_gpu2/scratch/w44-rc/receipts/rw3_20261027T094334Z/rw3t/RW3T_VERDICT.json",
+        "detail24": "<DATA_ROOT>/wrf_gpu2/scratch/w44-rc/receipts/rw3_20261027T094334Z/rw3t/RW3T_DETAIL24.json",
+        "run": "<DATA_ROOT>/wrf_gpu2/scratch/w44-rc/runs/rw3_20261027T094334Z_1056334"
+      }
+    },
+    "registered_QGRAUP_exception_requires_manager_decision": true,
+    "limitations": [
+      "SKIPPED disk floor; NO same-session72h old-release comparison",
+      "no strict20/50subset counted; contract100/200watch passed, disclosed separately",
+      "N cold/warm same Oct26 session; v0.4.3 reference CROSS-SESSION/host-loaded; proxy not direct compiler duration"
+    ]
+  },
+  "matched_old_versions": {
+    "source_ref": "lane/w44-perf",
+    "source_path": "proofs/w44_perf/receipts/GPU_BENCH_OCT23.json",
+    "sha256": "0bb888308cc66b1800c84f587ce8d429fd827d22ea1740f6e86ec659a7eb5308",
+    "headline_valid": false,
+    "groups": {
+      "v032": {
+        "valid_arms": true,
+        "metrics": {
+          "official_proxy_s_per_fch": {
+            "values": [
+              3.1525,
+              2.864
+            ],
+            "mean": 3.00825,
+            "aa_spread_pct": 9.590293359926868,
+            "aa_pass_5pct": false
+          },
+          "official_stepping_s_per_fch": {
+            "values": [
+              3.0305,
+              2.7775
+            ],
+            "mean": 2.904,
+            "aa_spread_pct": 8.712121212121216,
+            "aa_pass_5pct": false
+          },
+          "call_only_proxy_s_per_fch": {
+            "values": [
+              2.9184999246193284,
+              2.6486936529473852
+            ],
+            "mean": 2.783596788783357,
+            "aa_spread_pct": 9.692721042039604,
+            "aa_pass_5pct": false
+          }
+        }
+      },
+      "v040": {
+        "valid_arms": true,
+        "metrics": {
+          "official_proxy_s_per_fch": {
+            "values": [
+              3.2495000000000003,
+              3.1925
+            ],
+            "mean": 3.221,
+            "aa_spread_pct": 1.7696367587705801,
+            "aa_pass_5pct": true
+          },
+          "official_stepping_s_per_fch": {
+            "values": [
+              3.114,
+              3.0905
+            ],
+            "mean": 3.1022499999999997,
+            "aa_spread_pct": 0.7575147070674465,
+            "aa_pass_5pct": true
+          },
+          "call_only_proxy_s_per_fch": {
+            "values": [
+              3.0267103874566548,
+              2.98805668626564
+            ],
+            "mean": 3.0073835368611475,
+            "aa_spread_pct": 1.285293369377093,
+            "aa_pass_5pct": true
+          }
+        }
+      },
+      "v043": {
+        "valid_arms": true,
+        "metrics": {
+          "official_proxy_s_per_fch": {
+            "values": [
+              3.25,
+              3.2055,
+              3.2215
+            ],
+            "mean": 3.2256666666666667,
+            "aa_spread_pct": 1.3795597809238465,
+            "aa_pass_5pct": true
+          },
+          "official_stepping_s_per_fch": {
+            "values": [
+              3.152,
+              3.1245000000000003,
+              3.1165000000000003
+            ],
+            "mean": 3.1310000000000002,
+            "aa_spread_pct": 1.133823059725323,
+            "aa_pass_5pct": true
+          },
+          "call_only_proxy_s_per_fch": {
+            "values": [
+              3.0228825569124096,
+              2.983009950248756,
+              3.0021867933061976
+            ],
+            "mean": 3.002693100155788,
+            "aa_spread_pct": 1.3278948375238462,
+            "aa_pass_5pct": true
+          }
+        }
+      }
+    },
+    "scope": "same-session3hproxy; all arms retained, no posthoc subset; no new WRF fidelity claim"
+  },
+  "source_sha256": {
+    "<DATA_ROOT>/wrf_gpu2/worktrees/w44-rc/proofs/w44_rc/FINAL_GATE_TABLE.json": "baca76ad04f3266825de45c207319cef543b3073d3dbcc0efa0af69c0cd291eb",
+    "<DATA_ROOT>/wrf_gpu2/worktrees/w44-rc/proofs/w44_rc/IDENTITY_TABLE.json": "5493f4ef7ea28767303f7139237808cbf0e8c1126a9cddf7bb8dbbb2c00eb538",
+    "<DATA_ROOT>/wrf_gpu2/worktrees/w44-rc/proofs/w44_rc/IDENTITY_ATTRIBUTION.json": "936050b69f712e1539f4ab834b78e3446b7cf83f09dacad92aaee6865b93ed3e",
+    "<DATA_ROOT>/wrf_gpu2/worktrees/w44-rc/proofs/w44_rc/KNOWN_ISSUES_RC.md": "1658d0e62636416ab3aa6537b4bd95d5b9f528d1c2353700693b76e7b0b272ef",
+    "<DATA_ROOT>/wrf_gpu2/scratch/w44-rc/receipts/RW3D_20261027/RW3_VERDICT.json": "eb48f29776044aed00abce7fceb60eaa4f38de036fe6edf38b4defa3862a05f1"
+  },
+  "Thompson_component": {
+    "report_sha256": "9f25df70ecf213b36264217a880a754ffdf3d497cb6e4953e475b99d61165c32",
+    "gate": {
+      "lane": "w44-thparams",
+      "verdict": "PASS",
+      "scope": "registered Nt4 family qualification on frozen source70fa: preservedpristineCPUcolumnoracles +short realGPU root/E41/NVTX/cost. Nofull24/72h/station/RW/globalR1/S3releaseclaim",
+      "supported": [
+        "nt_c",
+        "tno",
+        "ato",
+        "av_c"
+      ],
+      "still_refused": [
+        "av_i",
+        "av_r",
+        "autoconversion_threshold",
+        "autoconversion_rate"
+      ],
+      "shelve_family": false,
+      "shelving_reason": "actualE41PASS/defaultBYTE/noadditionalcopies/minimalworkspace/no clearlargecostregression",
+      "gates": [
+        {
+          "gate": "source/same-work",
+          "verdict": "PASS",
+          "evidence": "f802d07f18/src70fa; PM/night inputSHA, resolvedparameters and schedule identical; allwarmprogramsloaded andno newnative blobs"
+        },
+        {
+          "gate": "original CPU-WRF oracle",
+          "verdict": "PASS_REUSED",
+          "evidence": "Completed phase-A9 changed-value pristineWRF refs/11 tests;9referencehashsets verifiednow;5Thompson/radius corefiles BYTE identicalto reviewed5371711;no redundant numericalrepeat"
+        },
+        {
+          "gate": "GPU default class",
+          "verdict": "PASS",
+          "evidence": "firstroot+ordinaryallcomparedfields BYTE ONdefaultvsOFF;finite checks executed by comparison;regression/defaultidentity, notCPUWRFfidelity"
+        },
+        {
+          "gate": "changed value/no-recompile",
+          "verdict": "PASS",
+          "evidence": "realcloudy/iceGPUmini Nt_c50M changesoutput;sameON/changedAOTkeys+loaded/0newnative;PROD hasnoNt changedsignal (disclosed)"
+        },
+        {
+          "gate": "E41 actual GPU",
+          "verdict": "PASS_REUSED_BYTE_AUTHENTICATED",
+          "evidence": "PM richHLO PASS mini4/maxstack0,prod8/maxstack32;8productionkey/HLOblob+metabindingsSHA reauthenticatednight;no newnativeprograms"
+        },
+        {
+          "gate": "E248 exact paired NVTX labels",
+          "verdict": "PASS",
+          "evidence": "independent safe numeric/exact-name query3OFF+3ON;SDKexplicitNVTXv3; regeneratednumericmetrics exactlyequalretainedresult"
+        },
+        {
+          "gate": "cost/fusion/shelving",
+          "verdict": "PASS_SCOPED",
+          "evidence": {
+            "OFF_kernels": 3409,
+            "ON_kernels": 3416,
+            "added_kernels_per_coupled_root": 7,
+            "OFF_kernel_ms": 33.510818,
+            "ON_kernel_ms": 33.811965,
+            "kernel_ON_over_OFF": 1.0089865606981006,
+            "memcpy_rows_each": 620,
+            "memset_rows_each": 0,
+            "profile_wall_ON_over_OFF": 1.0287486327546822,
+            "interpretation": "no fusion cliff/large clear loss;3profile samples/noA-A;not a speedup or precise subpercent cost claim;PM12sample wallratio0.99915"
+          }
+        },
+        {
+          "gate": "memory consequences",
+          "verdict": "PASS_SCOPED",
+          "evidence": {
+            "argument_delta_B_per_domain": 16,
+            "workspace_delta_B_per_domain": 32,
+            "output_and_alias_delta_B": 0,
+            "combined_JAX_live_peak_B": 2890658196,
+            "allocator_limit_B": 8416215040,
+            "combined_host_VmHWM_KiB": 9768672,
+            "individual_arm_or_ownPID_framebuffer_peak": "NOT_MEASURED;notanR1releaseclaim"
+          }
+        },
+        {
+          "gate": "transfer accounting",
+          "verdict": "DISCLOSED_BASELINE",
+          "evidence": "OFF/ON both24HtoD27452520B+10DtoH10B+586DtoD1233813220B perroot;familyadds0. Root-scopebaselinehastransfers;not claimofnoinside-stepcopies orcadence-weightedwholehourS3"
+        }
+      ],
+      "limitations": [
+        "short PROD2nest root/realcolumn qualification, not full24/72h or station validation",
+        "profile n3/no A-A, no speedup or subpercent slowdown conclusion",
+        "JAX live peak combinedvariants, not ownPID framebuffer VRAM",
+        "HtoD/DtoH root-scope transfers are present in both arms; familyadds0, not a no-transfer/globalS3PASS"
+      ],
+      "extracted": "<DATA_ROOT>/wrf_gpu2/scratch/w44-thparams/NIGHT_RESULT_20261026/EXTRACTED.json",
+      "extracted_sha256": "a71fc8a1d54dd3bc178c16d8d098f89a419d138712fd01ddc5a7514a52319a7a",
+      "raw_manifest": "raw_sha256_before_cleanup in EXTRACTED; no rawprofilingdata in repository",
+      "model_source_tree": "70fa8384672257d3457cf8a9863b34dac0a115b5",
+      "timestamp_utc": "2026-10-26T02:05:09Z"
+    }
+  },
+  "RW1_RW2_RW4": {
+    "reported": "PASS",
+    "authority": "manager release-docs instruction2026-10-27T10:34:01Z",
+    "warm_entry_result": {
+      "session_rc": 0,
+      "post_rc": 0,
+      "own_gpu_pids_left": []
+    },
+    "qualification_scope": "recorded sealed-cache short warm/cross-date/bundle replays; not the RW3 long-run fidelity verdict",
+    "existing_receipt_extract": {
+      "scope": "Docs extraction of existing hash/AOT receipts only; no model, NetCDF reread or new numerical qualification",
+      "RW1_prime_replay_sha256": {
+        "WN3": {
+          "files": 12,
+          "identical": true,
+          "source_manifest_sha256": "046a88ee60f407db6aad5821aaabee0de703f453d2d557677ee12d6f5675818b",
+          "replay_manifest_sha256": "046a88ee60f407db6aad5821aaabee0de703f453d2d557677ee12d6f5675818b"
+        },
+        "Swiss": {
+          "files": 4,
+          "identical": true,
+          "source_manifest_sha256": "68ac84dc23b029b03ba8158e82a1ac8f8324ec3237ad23e6a8d5c3ef1c57d39e",
+          "replay_manifest_sha256": "68ac84dc23b029b03ba8158e82a1ac8f8324ec3237ad23e6a8d5c3ef1c57d39e"
+        },
+        "PROD": {
+          "files": 6,
+          "identical": true,
+          "source_manifest_sha256": "08e3d4826429990389aa0ee4504ad489ba04310ddc3c8d5ca1dfdda8d2874d63",
+          "replay_manifest_sha256": "08e3d4826429990389aa0ee4504ad489ba04310ddc3c8d5ca1dfdda8d2874d63"
+        }
+      },
+      "cross_date_existing_step_AOT_records": {
+        "B1_wn3_0227_3h": {
+          "device": "cuda:0",
+          "all_domains_finite": true,
+          "all_outputs_present": true,
+          "step_aot_keys": {
+            "d01": "k_bf25977b2f5685ccd35a298cde5ea71a9ffe6044302e043fbfe95706938abb1e",
+            "fused/d02": "k_63ef4583c5d9752a5e60521543063b2943e1ff4479ceb1ae2609401c8f26dcbf"
+          },
+          "proof_sha256": "a674cbaa00f8f7ce36b5cf21b2f28dc99e9df13f47bb1c91831b99f8ba1005d9"
+        },
+        "B2_wn3_0502_3h": {
+          "device": "cuda:0",
+          "all_domains_finite": true,
+          "all_outputs_present": true,
+          "step_aot_keys": {
+            "d01": "k_bf25977b2f5685ccd35a298cde5ea71a9ffe6044302e043fbfe95706938abb1e",
+            "fused/d02": "k_63ef4583c5d9752a5e60521543063b2943e1ff4479ceb1ae2609401c8f26dcbf"
+          },
+          "proof_sha256": "dc76ed2e31d7e8ead0081316a28a74f4ce9e29b3c3291f0b073c21bec0692b2a"
+        },
+        "B3_wn3_0614_3h": {
+          "device": "cuda:0",
+          "all_domains_finite": true,
+          "all_outputs_present": true,
+          "step_aot_keys": {
+            "d01": "k_bf25977b2f5685ccd35a298cde5ea71a9ffe6044302e043fbfe95706938abb1e",
+            "fused/d02": "k_63ef4583c5d9752a5e60521543063b2943e1ff4479ceb1ae2609401c8f26dcbf"
+          },
+          "proof_sha256": "6cf5bc908e7c0146ab6cb0726ab9740a48e2449cd03a401d012d076c2423ec60"
+        },
+        "B4_wn3_0227in48h_3h": {
+          "device": "cuda:0",
+          "all_domains_finite": true,
+          "all_outputs_present": true,
+          "step_aot_keys": {
+            "d01": "k_bf25977b2f5685ccd35a298cde5ea71a9ffe6044302e043fbfe95706938abb1e",
+            "fused/d02": "k_63ef4583c5d9752a5e60521543063b2943e1ff4479ceb1ae2609401c8f26dcbf"
+          },
+          "proof_sha256": "ad27e2e99b403eed36fa156d3763314c92c3aa8d803f9ac57b52a02e19195479"
+        },
+        "B8_wn3_0502_icloud0_3h": {
+          "device": "cuda:0",
+          "all_domains_finite": true,
+          "all_outputs_present": true,
+          "step_aot_keys": {
+            "d01": "k_5150ab150bb2a0c6f01e64c2b1314e891cb5d6f58133d4932fadf8d185440e55",
+            "fused/d02": "k_d81cb767b5176bbc7b73f6303e3165d28a4f4b0014b2f3b3b7d43f3e1d90d467"
+          },
+          "proof_sha256": "4ab49b02731a5ec8ffb1a3ad1b96007198bdeccc5f128b8ddd7bfa760024bae8"
+        }
+      },
+      "default_WN3_keys_equal": true,
+      "whole_run_compile_counter_scope": "PASS reported by manager/owner; this extraction checks existing step-load records, not a newly instrumented compiler census"
+    }
+  },
+  "RW3_manager_decision": {
+    "verdict": "PASS",
+    "decision_path": "proofs/w44_docs/receipts/MANAGER_DECISION_RW3_20261027.md",
+    "decision_sha256": "ce9e0c030d38aa15b2497dd4f2021189467aadcf52e1aa6c81fbc6d3ca04b6e6",
+    "approved_utc": "2026-10-27T18:43:27Z",
+    "raw_report_preserved": "Original RW3_VERDICT.json remains FAIL and is not edited",
+    "A3": {
+      "status": "PASS",
+      "REAL_FAIL": 0,
+      "FLOOR_LIMITED": 6,
+      "C67": 0.8905983272943488,
+      "X67": 1.0600553865983122,
+      "C_over_X67": 0.8401432024719517,
+      "rule": "C>limit OR C/X>=0.75, unchanged",
+      "provenance": "same original CPU P0227-vs-R series;6 frozen overlap values byte-exact;independent confirmation;archived metadata recovery not raw rerun"
+    },
+    "QGRAUP": "exact d03t72 GPU0 vsCPUmax6.5775e-12kg/kg;v0.4.2 registered exception class accepted explicitly",
+    "RAINNC_X67_v043": 0.5005482111,
+    "RAINNC_X67_v044": 1.0600553865983122,
+    "causal_scope": "WN3 changed through topo+QSQ+E84;no per-item causal proof",
+    "comparison": "O72 not run (disk);speed/VRAM/RSS only3same-session24hpairs",
+    "rounded_ratios": {
+      "speed": 0.998,
+      "VRAM": 0.996,
+      "RSS": 0.992
+    }
+  },
+  "C67_independent_review": {
+    "source": "<DATA_ROOT>/wrf_gpu2/scratch/cr-w44-rc/rw3_c67_20261027/INDEPENDENT_CHECK.json",
+    "sha256": "08966b57e6bbbfd4c0ae6cf577fd43c9c14460d8b421d149465629793388af9d",
+    "classification": "CONFIRMED and admitted by Owner-approved manager decision18:43:27Z;not raw recomputation"
+  }
+}

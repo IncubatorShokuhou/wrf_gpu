@@ -1,0 +1,21 @@
+--- a/dyn_em/start_em.F
++++ b/dyn_em/start_em.F
+@@ -300,12 +300,17 @@
+ ! Clear the buckets for diagnostics at initial time
+        DO j = jts,min(jte,jde-1)
+        DO i = its, min(ite,ide-1)
++! w44-wrfdebug private fix: prec_acc_nc/snow_acc_nc exist only for package prec_acc
++! (prec_acc_opt==1) and acrunoff only for ruclsmscheme (sf_surface_physics==3); otherwise
++! they are ALLOCATE(1,1) dummies and the unguarded tile loop overruns the heap.
++            IF ( config_flags%prec_acc_opt .EQ. 1 ) THEN
+             grid%prec_acc_nc(i,j) = 0.
+             grid%snow_acc_nc(i,j)  = 0.
++            ENDIF
+             grid%sfcrunoff  (i,j) = 0.
+             grid%udrunoff   (i,j) = 0.
+ ! acsnow, and acrunoff are run-total
+-            grid%acrunoff   (i,j) = 0.
++            IF ( config_flags%sf_surface_physics .EQ. RUCLSMSCHEME ) grid%acrunoff   (i,j) = 0.
+             grid%acsnow     (i,j) = 0.
+        ENDDO
+        ENDDO

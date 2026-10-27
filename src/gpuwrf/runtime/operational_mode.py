@@ -67,6 +67,9 @@ from gpuwrf.coupling.boundary_apply import (
     nested_scalar_boundary_tendencies,
     nested_w_relax_tendency,
     root_scalar_bdy_rk1_enabled,
+    ROOT_SPEC_WALK,
+    root_spec_stage_clock_mode,
+    root_spec_stage_lead,
     root_scalar_boundary_tendencies,
     root_scalar_rk1_split,
     specified_boundary_tendency,
@@ -76,6 +79,7 @@ from gpuwrf.coupling.boundary_apply import (
     tangential_bdy_work_target_v,
     _full_ring_target_from_leaf,
 )
+from gpuwrf.coupling.root_spec_walk import root_walk_rates
 from gpuwrf.coupling.physics_couplers import (
     dudhia_sw_theta_tendency,
     gsfc_sw_theta_tendency,
@@ -231,6 +235,11 @@ from gpuwrf.dynamics.core.small_step_finish import small_step_finish_wrf
 from gpuwrf.dynamics.core.small_step_prep import SmallStepPrepState, small_step_prep_wrf
 from gpuwrf.dynamics.tendencies import add_scaled_tendencies
 from gpuwrf.runtime.operational_state import OperationalCarry, initial_operational_carry
+from gpuwrf.coupling.topographic_shadow import (
+    cold_kwargs as _shadow_cold_kwargs,
+    held_kwargs as _shadow_held_kwargs,
+    seed as _seed_topographic_shadow,
+)
 
 
 configure_jax_x64()
@@ -996,6 +1005,8 @@ class OperationalNamelist:
     dt_s: float = 10.0
     acoustic_substeps: int = 10
     rk_order: int = 3
+    # WRF &time_control lifecycle. False adds no aux entry or device work.
+    cycling: bool = False
     epssm: float = 0.1
     # WRF calc_p_rho_phi specific-volume relation (Registry.EM_COMMON:2285;
     # WRF registry default is 2 = LOG-pressure-thickness).  The dataclass default
@@ -1162,6 +1173,10 @@ class OperationalNamelist:
     # into the operational scan adapter FAILS CLOSED in _resolve_operational_suite.
     mp_physics: int = 8
     bl_pbl_physics: int = 5
+    tke_budget: int = 0
+    bl_mynn_output: int = 0
+    bl_mynn_edmf: int = 1
+    bl_mynn_edmf_mom: int = 1
     sf_sfclay_physics: int = 5
     cu_physics: int = 0
     sf_surface_physics: object = None
@@ -1297,6 +1312,8 @@ class OperationalNamelist:
     do_radar_ref: int = 0
     diagnostic_history_interval: float = 60.0  # WRF &time_control minutes, per domain.
     swint_opt: int = 0  # WRF-Solar surface interpolation; absent on the default path.
+    rad_diag: int = 0  # &gpuwrf: held RRTMG heating and input-condensate history.
+    icloud_bl: int = 1  # WRF: 0 skips the radiation-only MYNN cloud merge.
     stochastic_config: object = None
     windfarm_opt: int = 0
     windfarm_ij: int = 0
@@ -1349,6 +1366,9 @@ class OperationalNamelist:
     # Track P traced surface controls {name: field} (gpuwrf.surface_params); values ride the
     # traced clock base, the aux keeps a content-blind signature. None = released program.
     surface_controls: object = None
+    diffusion_parameters: object = None  # optional traced scalar family (runtime_parameters)
+    mynn_parameters: object = None  # optional traced MYNN closure scalars, separately keyed family
+    thompson_parameters: object = None  # opt-in traced WRF PARAMETER extension
     # WRF aer_opt (single-entry &physics key, Registry default 0). aer_opt=1: Tegen aerosol climatology in
     # RRTMG SW (physics/wrf_tegen_aerosol.py); ``tegen_aerosol`` is the domain-1 aerosol_in static
     # (TegenAerosolStatic, traced child), None on nests (they get the parent's aerod, nesting/nest_aerosol.py).
@@ -1364,10 +1384,16 @@ class OperationalNamelist:
     # (physics/thompson_hail/tables.ThompsonHailTables) bound once as device-resident traced
     # operands instead of ~0.96 GB baked f64 HLO constants. None adds neither child nor aux.
     thompson_hail_tables: object = None
-
-    # GFDL host-initialized CO2 grid key; absent from released default treedef.
-
     def __post_init__(self) -> None:
+        if self.surface_controls is not None: from gpuwrf.surface_params.controls import refuse_unqualified_controls; refuse_unqualified_controls(self.surface_controls)
+        if self.diffusion_parameters is not None or self.mynn_parameters is not None:
+            from gpuwrf.runtime_parameters import refuse_namelist_parameters; refuse_namelist_parameters(self)
+        if self.rad_diag not in (0, 1):
+            raise ValueError("gpuwrf rad_diag supports only 0/1")
+        if self.rad_diag and (int(self.ra_sw_physics), int(self.ra_lw_physics)) != (4, 4):
+            raise ValueError("rad_diag=1 requires RRTMG ra_sw/ra_lw_physics=4/4")
+        if self.icloud_bl not in (0, 1):
+            raise ValueError("icloud_bl supports only 0/1")
         if int(self.cu_physics)==11:
             # Original check_a_mundo.F:1392–1396, including its forced flags.
             object.__setattr__(self,'cu_rad_feedback',True)
@@ -1734,10 +1760,56 @@ class OperationalNamelist:
         if self.thompson_hail_tables is not None:  # last in, first out of tree_unflatten
             children += (self.thompson_hail_tables,)
             aux += (("thompson_hail_tables",),)
+        if self.rad_diag:
+            aux += (("rad_diag", int(self.rad_diag)),)
+        if self.icloud_bl != 1:
+            aux += (("icloud_bl", int(self.icloud_bl)),)
+        if self.diffusion_parameters is not None:
+            children += (self.diffusion_parameters,)
+            aux += (("diffusion_parameters", tuple(sorted(self.diffusion_parameters))),)
+        if self.mynn_parameters is not None:
+            children += (self.mynn_parameters,)
+            aux += (("mynn_parameters", tuple(sorted(self.mynn_parameters))),)
+        if self.thompson_parameters is not None:
+            children += (self.thompson_parameters,)
+            aux += (("thompson_parameters", tuple(sorted(self.thompson_parameters))),)
+        if (self.tke_budget,self.bl_mynn_output,self.bl_mynn_edmf,self.bl_mynn_edmf_mom)!=(0,0,1,1):
+            aux += (("mynn_budget_program",int(self.tke_budget),int(self.bl_mynn_output),
+                     int(self.bl_mynn_edmf),int(self.bl_mynn_edmf_mom)),)
+        if self.cycling:
+            aux += (("cycling", True),)
         return children, aux
 
     @classmethod
     def tree_unflatten(cls, aux, children):
+        cycling = False
+        if aux and isinstance(aux[-1], tuple) and aux[-1] == ("cycling", True):
+            cycling = True
+            aux = aux[:-1]
+        tke_budget,bl_mynn_output,bl_mynn_edmf,bl_mynn_edmf_mom=0,0,1,1
+        if aux and isinstance(aux[-1],tuple) and aux[-1][0]=='mynn_budget_program':
+            _,tke_budget,bl_mynn_output,bl_mynn_edmf,bl_mynn_edmf_mom=aux[-1]
+            aux=aux[:-1]
+        thompson_parameters = None
+        if aux and isinstance(aux[-1], tuple) and aux[-1][0] == "thompson_parameters":
+            thompson_parameters = children[-1]
+            children, aux = children[:-1], aux[:-1]
+        mynn_parameters = None
+        if aux and isinstance(aux[-1], tuple) and aux[-1][0] == "mynn_parameters":
+            mynn_parameters = children[-1]
+            children, aux = children[:-1], aux[:-1]
+        diffusion_parameters = None
+        if aux and isinstance(aux[-1], tuple) and aux[-1][0] == "diffusion_parameters":
+            diffusion_parameters = children[-1]
+            children, aux = children[:-1], aux[:-1]
+        icloud_bl = 1
+        if aux and aux[-1] == ("icloud_bl", 0):
+            icloud_bl = 0
+            aux = aux[:-1]
+        rad_diag = 0
+        if aux and aux[-1] == ("rad_diag", 1):
+            rad_diag = 1
+            aux = aux[:-1]
         thompson_hail_tables = None
         if aux and isinstance(aux[-1], tuple) and aux[-1] and aux[-1][0] == "thompson_hail_tables":
             thompson_hail_tables = children[-1]
@@ -2050,12 +2122,19 @@ class OperationalNamelist:
             noahmp_groundwater_initial=noahmp_groundwater_initial,
             topo_wind_static=topo_wind_static,
             surface_controls=surface_controls,
+            diffusion_parameters=diffusion_parameters,
+            mynn_parameters=mynn_parameters,
+            thompson_parameters=thompson_parameters,
             aer_opt=aer_opt, tegen_aerosol=tegen_aerosol,
             record_windows=record_windows,
             thompson_hail_tables=thompson_hail_tables,
             mp_physics=mp_physics,
             ferrier_gid=ferrier_gid,
             bl_pbl_physics=bl_pbl_physics,
+            tke_budget=tke_budget,
+            bl_mynn_output=bl_mynn_output,
+            bl_mynn_edmf=bl_mynn_edmf,
+            bl_mynn_edmf_mom=bl_mynn_edmf_mom,
             sf_sfclay_physics=sf_sfclay_physics,
             mfshconv=mfshconv,
             cu_physics=cu_physics,
@@ -2110,6 +2189,9 @@ class OperationalNamelist:
             do_radar_ref=do_radar_ref,
             diagnostic_history_interval=diagnostic_history_interval,
             swint_opt=swint_opt,
+            rad_diag=rad_diag,
+            icloud_bl=icloud_bl,
+            cycling=cycling,
             stochastic_config=stochastic_config,
             gfdl_grid=gfdl_grid,
             tracer_opt=tracer_opt, tracer_adv_opt=tracer_adv_opt, tracer_mix2_off=tracer_mix2_off,
@@ -3015,7 +3097,7 @@ def _acoustic_core_state_from_prep(
         # acoustic never applied it and the legacy in-acoustic form used small-step operands.
         rw_tend_stage = _w_damp_rw_tend_wrf(
             rw_tend_stage, ww=prep.ww_save, w=state.w, mut=prep.mut,
-            c1f=glue_metrics.c1f, c2f=glue_metrics.c2f, rdnw=glue_metrics.rdnw, dt=float(namelist.dt_s),
+            c1f=glue_metrics.c1f, c2f=glue_metrics.c2f, rdnw=glue_metrics.rdnw, dt=float(namelist.dt_s), **_w_damping_kwargs(namelist),
         )
 
     # F7J item 1 (PRIME): the large-step geopotential-equation RHS ``rhs_ph`` was
@@ -3081,9 +3163,20 @@ def _acoustic_core_state_from_prep(
     # idealized / replay / bare-core paths on the unmodified PGF advance.
     u_work_bdy = None
     v_work_bdy = None
+    # o5-coast: exact WRF spec_bdyupdate walk on a specified root (GPUWRF_ROOT_SPEC_STAGE_CLOCK=walk):
+    # coupled wrfbdy record tendencies, added to the pre-substep ring like the live-nest walk.
+    walk_rates = None
+    if lead_seconds is not None and _root_spec_walk_active(namelist):
+        walk_rates = root_walk_rates(
+            state, lead_seconds, glue_metrics, namelist.boundary_config,
+            theta_offset=prep.theta_offset, nz=int(state.theta.shape[0]), ny=int(state.theta.shape[1]),
+            nx=int(state.theta.shape[2]), dtype=state.ph_perturbation.dtype,
+        )
     if bool(namelist.run_boundary) and lead_seconds is not None:
         cadence = float(namelist.boundary_config.update_cadence_s)
-        if nested_frozen_bundle:
+        if walk_rates is not None:
+            u_work_bdy, v_work_bdy = walk_rates.u, walk_rates.v
+        elif nested_frozen_bundle:
             u_work_bdy = specified_boundary_tendency(
                 state.u_bdy,
                 lead_seconds,
@@ -3112,8 +3205,10 @@ def _acoustic_core_state_from_prep(
             mass_u_stage = c1h * prep.muus[None, :, :] + c2h
             mass_v_cur = c1h * prep.muv[None, :, :] + c2h
             mass_v_stage = c1h * prep.muvs[None, :, :] + c2h
-            u_bdy_strip = interpolate_boundary_leaf(state.u_bdy, lead_seconds, cadence)
-            v_bdy_strip = interpolate_boundary_leaf(state.v_bdy, lead_seconds, cadence)
+            # WRF spec_bdyupdate walks ring 0 from t_n (GPUWRF_ROOT_SPEC_STAGE_CLOCK; 0 = released clock).
+            lead_normal = root_spec_stage_lead(lead_seconds, namelist.dt_s, prep.dt_rk, lead_seconds)
+            u_bdy_strip = interpolate_boundary_leaf(state.u_bdy, lead_normal, cadence)
+            v_bdy_strip = interpolate_boundary_leaf(state.v_bdy, lead_normal, cadence)
             u_work_bdy = normal_bdy_work_target_u(
                 u_bdy_strip,
                 prep.u_save,
@@ -3276,9 +3371,20 @@ def _acoustic_core_state_from_prep(
                 dtype=dtype_s,
                 config=cfg_b,
             )
+        elif walk_rates is not None:
+            # Exact WRF specified-root ring (solve_em.F:1346-1490 spec_bdyupdate u/v/t/mu/muts after every
+            # acoustic substep, :1587 spec_bdyupdate_ph, zero_grad_bdy w): coupled record tendencies added to
+            # the pre-substep ring; muave is never pinned and the u/v ring covers the tangential sides.
+            mu_spec_target = walk_rates.mu
+            muts_spec_target = walk_rates.mu
+            theta_spec_target = walk_rates.theta
+            ph_bdy_target_full = walk_rates.ph
+            ph_save_for_spec = prep.ph_save
         else:
             # Preserve the released SPECIFIED-domain stage-end program exactly.
-            lead_stage = lead_seconds + float(prep.dt_rk)
+            # lead_seconds is the END of the step (WRF dtbc); GPUWRF_ROOT_SPEC_STAGE_CLOCK selects the pin clock.
+            lead_stage = root_spec_stage_lead(
+                lead_seconds, namelist.dt_s, prep.dt_rk, lead_seconds + float(prep.dt_rk))
             ph_strip_stage = interpolate_boundary_leaf(
                 state.ph_bdy, lead_stage, cadence
             )
@@ -3747,7 +3853,8 @@ def _acoustic_scan(
         spec_work = None
         if acoustic.muts_spec_target is not None:
             spec_work = (acoustic.muts_spec_target - prep.mut
-                         if not _nested_frozen_wrf_boundary_active(namelist)
+                         if not (_nested_frozen_wrf_boundary_active(namelist)
+                                 or _root_spec_walk_active(namelist))
                          else acoustic.mu_spec_target)
         acoustic = acoustic.replace(mu_work=prep.mu_work,mu_work_spec_target=spec_work)
         acoustic = jax.tree_util.tree_map(
@@ -3824,8 +3931,9 @@ def _acoustic_scan(
             # GPUWRF_W_DAMP_STAGE moves w_damp to the stage rw_tend (WRF cadence): no in-acoustic copy.
             w_damping=0 if _W_DAMP_STAGE else int(namelist.w_damping),
             damp_opt=int(namelist.damp_opt),
-            dampcoef=float(namelist.dampcoef),
-            zdamp=float(namelist.zdamp),
+            damping_traced=namelist.diffusion_parameters is not None and any(k in namelist.diffusion_parameters for k in ("dampcoef", "zdamp")),
+            dampcoef=_diffusion_value(namelist, "dampcoef"),
+            zdamp=_diffusion_value(namelist, "zdamp"),
             # WIND-FIX: full model dt so the in-loop normal-momentum relaxation
             # weight is scaled to a per-substep increment.
             dt_full=float(namelist.dt_s),
@@ -3833,6 +3941,8 @@ def _acoustic_scan(
             nested_frozen_wrf_boundary_bundle=_nested_frozen_wrf_boundary_active(
                 namelist
             ),
+            # o5-coast: exact WRF spec_bdyupdate walk on a specified root (rates staged above).
+            root_spec_walk=bool(lead_seconds is not None and _root_spec_walk_active(namelist)),
             periodic_x=periodic_x,
             specified=specified,
             nested=nested,
@@ -4109,6 +4219,16 @@ def _specified_bdy_cadence_active(namelist: OperationalNamelist) -> bool:
         return False
     _per_x, _spec, _nest = _acoustic_lateral_bc_flags(namelist)
     return bool(_spec) and bool(namelist.boundary_config.force_geopotential)
+
+
+def _root_spec_walk_active(namelist: OperationalNamelist) -> bool:
+    """Static gate: exact WRF spec_bdyupdate ring walk on a specified (wrfbdy) root (o5-coast)."""
+
+    return (
+        _specified_bdy_cadence_active(namelist)
+        and not _nested_frozen_wrf_boundary_active(namelist)
+        and root_spec_stage_clock_mode() == ROOT_SPEC_WALK
+    )
 
 
 def _nested_frozen_wrf_boundary_active(namelist: OperationalNamelist) -> bool:
@@ -4508,7 +4628,7 @@ def _diffopt1_dry_forward_tendencies(
         d12,
         dx_m=dx,
         dy_m=dy,
-        c_s=float(namelist.c_s),
+        c_s=_diffusion_value(namelist, "c_s"),
     )
     _, specified, nested = _acoustic_lateral_bc_flags(namelist)
     source_scalar_path = bool(specified or nested)
@@ -4546,7 +4666,7 @@ def _diffopt1_dry_forward_tendencies(
             scalar_d12,
             dx_m=dx,
             dy_m=dy,
-            c_s=float(namelist.c_s),
+            c_s=_diffusion_value(namelist, "c_s"),
             msftx=metrics.msftx,
             msfty=metrics.msfty,
         )
@@ -4866,7 +4986,7 @@ def _augment_large_step_tendencies(
         th_t = namelist.tendencies.theta * mass_h + coupled_tend
 
     if int(namelist.diff_6th_opt) != 0:
-        f = float(namelist.diff_6th_factor)
+        f = _diffusion_value(namelist, "diff_6th_factor")
         dt_diff = float(namelist.dt_s)
         if frozen_diff6_uvw_tendencies is not None:
             # Pristine WRF momentum sixth-order diffusion lives in the RK1-only
@@ -5607,7 +5727,7 @@ def _nested_scalar_sixth_order_tendencies(
             msftx=metrics.msftx,
             msfty=metrics.msfty,
             dt=rk1_dt,
-            diff_6th_factor=float(namelist.diff_6th_factor),
+            diff_6th_factor=_diffusion_value(namelist, "diff_6th_factor"),
             monotonic=(int(namelist.diff_6th_opt) == 2),
             specified_or_nested=True,
         )
@@ -6064,7 +6184,7 @@ def _rk_scan_step(
             msftx=namelist.metrics.msftx,
             msfty=namelist.metrics.msfty,
             dt=float(namelist.dt_s),
-            diff_6th_factor=float(namelist.diff_6th_factor),
+            diff_6th_factor=_diffusion_value(namelist, "diff_6th_factor"),
             monotonic=(int(namelist.diff_6th_opt) == 2),
             specified_or_nested=True,
         )
@@ -6097,7 +6217,7 @@ def _rk_scan_step(
             msftx=namelist.metrics.msftx,
             msfty=namelist.metrics.msfty,
             dt=float(namelist.dt_s),
-            diff_6th_factor=float(namelist.diff_6th_factor),
+            diff_6th_factor=_diffusion_value(namelist, "diff_6th_factor"),
             monotonic=(int(namelist.diff_6th_opt) == 2),
         )
     # Root (specified) counterpart of the child's RK1 scalar sc_tend bundle:
@@ -6155,7 +6275,7 @@ def _rk_scan_step(
                 msftx=namelist.metrics.msftx,
                 msfty=namelist.metrics.msfty,
                 dt=rk1_dt,
-                diff_6th_factor=float(namelist.diff_6th_factor),
+                diff_6th_factor=_diffusion_value(namelist, "diff_6th_factor"),
                 monotonic=(int(namelist.diff_6th_opt) == 2),
                 specified_or_nested=True,
             )
@@ -7216,7 +7336,8 @@ def _rrtmg_pbl_cloud_kwargs(namelist):
         if errors:
             raise ValueError("; ".join(errors))
         return {"use_mynn_sgs_cloud": False, "cloud_mp_physics": int(namelist.mp_physics), "icloud": icloud}
-    return {} if int(namelist.bl_pbl_physics) == DEFAULT_BL_PBL_PHYSICS else {
+    return {} if (int(namelist.bl_pbl_physics) == DEFAULT_BL_PBL_PHYSICS
+                  and int(getattr(namelist, "icloud_bl", 1)) > 0) else {
         "use_mynn_sgs_cloud": False, "cloud_mp_physics": int(namelist.mp_physics)}
 
 
@@ -7269,9 +7390,11 @@ def noahmp_initial_rad(
         topo_shading=int(namelist.topo_shading),
         slope_rad=int(namelist.slope_rad),
         shadow_length_m=float(namelist.topo_shadow_length_m),
+        **_shadow_cold_kwargs(namelist, state),
         land_state=land_state,
         _kernel_call=_kernel_call,
         with_clear_sky=True,
+        **({"with_rad_diag": True} if getattr(namelist, "rad_diag", 0) else {}),
         use_mp_re=int(mp_re_active(namelist)),
         mp_physics=int(namelist.mp_physics),
         **({'with_urban': True} if int(namelist.sf_urban_physics) in (2, 3) else {}),
@@ -7462,6 +7585,18 @@ def _resolve_operational_suite(namelist: OperationalNamelist):
     here (with a scheme-specific reason) rather than being silently ignored.
     """
 
+    if (namelist.tke_budget,namelist.bl_mynn_output,namelist.bl_mynn_edmf,namelist.bl_mynn_edmf_mom)!=(0,0,1,1):
+        from gpuwrf.io.mynn_budget_options import validate_options
+        validate_options(namelist)
+        if (namelist.tke_budget or namelist.bl_mynn_output) and namelist.bl_mynn_edmf:
+            from gpuwrf.coupling.physics_couplers import _MYNN_EDMF
+            if not _MYNN_EDMF:
+                raise ValueError('MYNN budget bl_mynn_edmf=1 conflicts with the legacy module switch physics_couplers._MYNN_EDMF=False; restore it or select bl_mynn_edmf=0')
+        if not namelist.run_physics or int(namelist.rad_rk_tendf)==0:
+            raise ValueError('MYNN budgets/EDMF-off require run_physics and source-leaf coupling (rad_rk_tendf=1)')
+        from gpuwrf.physics.mynn_pbl import _env_bool
+        if not _env_bool('GPUWRF_MYNN_FP32_COLUMNS',False):
+            raise ValueError('MYNN budgets/EDMF-off require native fp32 MYNN columns')
     if 5 in (int(namelist.ra_lw_physics),int(namelist.ra_sw_physics)):
         from gpuwrf.io.goddard_config import validate_selection
         validate_selection(namelist)
@@ -7982,6 +8117,10 @@ def _initial_carry_for_run(state: State, namelist: OperationalNamelist) -> Opera
                             else ("qc", "qi", "qs", "qg")))))
         result = result.replace(radiation_diagnostics=diagnostics._replace(
             cloud_fraction=jnp.zeros(enforced.qv.shape, dtype=cloud_dtype)))
+        if getattr(namelist, "rad_diag", 0):
+            from gpuwrf.diagnostics.radiation import initial
+            result = result.replace(radiation_diagnostics=result.radiation_diagnostics._replace(
+                rad_diag=initial(enforced)))
     if int(namelist.ra_sw_physics) == 5 and int(namelist.ra_lw_physics) == 5:
         from gpuwrf.io.goddard_config import validate_geometry
         from gpuwrf.coupling.goddard_radiation import initial_diagnostics
@@ -7994,6 +8133,7 @@ def _initial_carry_for_run(state: State, namelist: OperationalNamelist) -> Opera
     if native_real_carry:
         from gpuwrf.kernels.dyn_carry_fp32 import real_carry, real_scratch
         result = real_carry(real_scratch(result))
+    result = _seed_topographic_shadow(result, namelist)
     if census_enabled():
         result = result.replace(census=count_work(
             initial_census(), "radiation_init_calls", init_radiation_calls
@@ -8147,6 +8287,9 @@ def _initial_carry_for_run(state: State, namelist: OperationalNamelist) -> Opera
     if int(getattr(namelist, "aer_opt", 0) or 0) == 3:
         # WRF aer_opt=3 TAOD5502D (REAL): allocation zero until the first radiation call (t=0 history = 0).
         result = result.replace(taod5502d=jnp.zeros(result.state.theta.shape[1:], jnp.float32))
+    if namelist.tke_budget or namelist.bl_mynn_output:
+        from gpuwrf.diagnostics.mynn_budget import seed,configuration
+        result=result.replace(mynn_budget=seed(result.state.theta.shape,configuration(namelist)))
     return _protect_initial_carry_seeds(result, namelist)
 
 
@@ -8451,7 +8594,9 @@ def _refresh_rrtmg_driver(carry, namelist, lead_seconds, run_radiation, clock_ba
                 radiation_static=namelist.radiation_static,
                 topo_shading=int(namelist.topo_shading), slope_rad=int(namelist.slope_rad),
                 shadow_length_m=float(namelist.topo_shadow_length_m),
+                **_shadow_held_kwargs(namelist, carry.radiation_diagnostics),
                 land_state=land_for_rad, _with_diagnostics=True, with_clear_sky=True,
+                **({"with_rad_diag": True} if getattr(namelist, "rad_diag", 0) else {}),
                 use_mp_re=int(mp_re_active(namelist)),
                 mp_physics=int(namelist.mp_physics),
                 **solar_kwargs,
@@ -8582,6 +8727,7 @@ def _refresh_noahmp_rad(state, namelist, lead_seconds, run_radiation, held_rad, 
             topo_shading=int(namelist.topo_shading),
             slope_rad=int(namelist.slope_rad),
             shadow_length_m=float(namelist.topo_shadow_length_m),
+            **(_shadow_held_kwargs(namelist, held_diagnostics) if held_diagnostics is not None else {}),
             land_state=land_state,
             use_mp_re=int(mp_re_active(namelist)),
             mp_physics=int(namelist.mp_physics),
@@ -8895,11 +9041,11 @@ def _apply_post_rk_microphysics(state: State, namelist: OperationalNamelist, *, 
                if namelist.thompson_hail_tables is not None else {}))
     elif mp_opt == DEFAULT_MP_PHYSICS:
         if return_radar_context:
-            updated,precip,radar_context=thompson_adapter(state,float(namelist.dt_s),return_radar_context=True)
+            updated,precip,radar_context=_selected_thompson_adapter(namelist, thompson_adapter)(state,float(namelist.dt_s),return_radar_context=True)
         elif return_precipitation:
-            updated, precip = thompson_adapter(state, float(namelist.dt_s), return_precipitation=True)
+            updated, precip = _selected_thompson_adapter(namelist, thompson_adapter)(state, float(namelist.dt_s), return_precipitation=True)
         else:
-            updated = thompson_adapter(state, float(namelist.dt_s))
+            updated = _selected_thompson_adapter(namelist, thompson_adapter)(state, float(namelist.dt_s))
     elif mp_opt == 28:
         if return_precipitation:
             updated, precip = thompson_aero_adapter(state, float(namelist.dt_s), return_precipitation=True)
@@ -9283,7 +9429,7 @@ def _physics_step_forcing(
     # --- microphysics slot ---
     if not _microphysics_wrf_order_enabled() and mp_opt == DEFAULT_MP_PHYSICS:
         next_state = _microphysics_interior_only(
-            next_state, thompson_adapter(next_state, float(namelist.dt_s)), namelist
+            next_state, _selected_thompson_adapter(namelist, thompson_adapter)(next_state, float(namelist.dt_s)), namelist
         )
     elif not _microphysics_wrf_order_enabled() and mp_opt == 28:
         # v0.16 aerosol-aware Thompson: same coupler shape as mp=8 plus the
@@ -10237,15 +10383,31 @@ def _physics_step_forcing(
             next_state, topo_pbl_rates = next_state
     elif bl_opt == DEFAULT_BL_PBL_PHYSICS:
         if source_leaf_mode:
-            mynn = mynn_adapter_with_source_leaves(
-                next_state,
-                float(namelist.dt_s),
-                namelist.grid,
-                first_timestep=first_timestep,
-                **spp_kwargs,
-                **({"mix_tracers": True} if next_state.tracers is not None and namelist.tracer_pblmix else {}),
-                **({"passive_scalars": _pbl_mynn_number_scalars(mp_opt)} if _pbl_mynn_number_scalars(mp_opt) else {}),
-            )
+            if (namelist.tke_budget,namelist.bl_mynn_output,namelist.bl_mynn_edmf)!=(0,0,1):
+                from gpuwrf.coupling.mynn_budget_adapter import mynn_sources_with_history
+                from gpuwrf.io.mynn_budget_options import configuration
+                mynn,mynn_history=mynn_sources_with_history(
+                    next_state,float(namelist.dt_s),namelist.grid,
+                    budget_config=configuration(namelist),first_timestep=first_timestep,
+                    **({"cycling": True} if namelist.cycling else {}),
+                    **_mynn_parameter_kwargs(namelist),
+                    **spp_kwargs,
+                    **({"mix_tracers": True} if next_state.tracers is not None and namelist.tracer_pblmix else {}),
+                    **({"passive_scalars": _pbl_mynn_number_scalars(mp_opt)} if _pbl_mynn_number_scalars(mp_opt) else {}),
+                )
+                if mynn_history is not None:next_carry=next_carry.replace(mynn_budget=mynn_history)
+            else:
+                mynn = mynn_adapter_with_source_leaves(
+                    next_state,
+                    float(namelist.dt_s),
+                    namelist.grid,
+                    first_timestep=first_timestep,
+                    **({"cycling": True} if namelist.cycling else {}),
+                    **_mynn_parameter_kwargs(namelist),
+                    **spp_kwargs,
+                    **({"mix_tracers": True} if next_state.tracers is not None and namelist.tracer_pblmix else {}),
+                    **({"passive_scalars": _pbl_mynn_number_scalars(mp_opt)} if _pbl_mynn_number_scalars(mp_opt) else {}),
+                )
             if next_state.tracers is not None:
                 next_carry = next_carry.replace(tracer_tendencies=(mynn.tracer_tendencies
                     if mynn.tracer_tendencies is not None else jnp.zeros_like(next_state.tracers)))
@@ -10314,6 +10476,8 @@ def _physics_step_forcing(
                 float(namelist.dt_s),
                 namelist.grid,
                 first_timestep=first_timestep,
+                **({"cycling": True} if namelist.cycling else {}),
+                **_mynn_parameter_kwargs(namelist),
                 **({"passive_scalars": _pbl_mynn_number_scalars(mp_opt)} if _pbl_mynn_number_scalars(mp_opt) else {}),
             )
     if topo_kw and topo_kw['topo_wind_ctopo'][1] is not None:
@@ -11822,6 +11986,39 @@ if _CARRY_DONATE:
     _advance_chunk_fori = jax.jit(_advance_chunk_fori.__wrapped__, donate_argnums=(0,))
 
 
+# GPUWRF_STEP_CMDBUF (default off; resolved at import, registered in aot_cheap_key.IMPORT_TIME_ENV_CONSTANTS):
+# XLA command-buffer options for the stepping programs only. The pinned XLA command-buffer conversion
+# pass leaves a top-level thunk sequence shorter than xla_gpu_graph_min_graph_size (5) unconverted and
+# does not descend into a convertible WHILE inside it, so a step program whose top level is
+# [copy, convert, convert, while] (the per-domain leaf child, e.g. PROD d02) runs op by op with a
+# host-driven loop. v1: min graph size 1 (the whole step program becomes one WHILE command buffer, as
+# the root and fused programs already are); v2: capture set without WHILE (loop bodies captured, loops
+# host-driven, as in v0.3.2). Only the runtime command-buffer partition changes; optimized HLO and
+# native code are unchanged.
+# The options are applied ONLY where the AOT path compiles a stepping program (step_compile_options at
+# the domain_tree / aot_precompile lowered.compile sites). Every jit object stays the switch-off object:
+# JAX refuses compiler_options on a jit that is traced inside another jit (pjit_staging_rule), and fused
+# cascades, vmapped lanes, tile drivers and eval_shape/make_jaxpr wrappers trace the step program.
+# Plain-jit fallbacks (no AOT) therefore run without the option.
+_STEP_CMDBUF = os.environ.get("GPUWRF_STEP_CMDBUF", "off").strip().lower()
+_STEP_CMDBUF_OPTIONS = {
+    "off": None,
+    "v1": {"xla_gpu_graph_min_graph_size": 1},
+    "v2": {"xla_gpu_enable_command_buffer":
+           "FUSION,CUBLAS,CUBLASLT,CUSTOM_CALL,CUDNN,DYNAMIC_SLICE_FUSION,CONDITIONAL"},
+}
+if _STEP_CMDBUF not in _STEP_CMDBUF_OPTIONS:
+    raise ValueError(f"GPUWRF_STEP_CMDBUF must be one of {sorted(_STEP_CMDBUF_OPTIONS)}, got {_STEP_CMDBUF!r}")
+STEP_COMPILER_OPTIONS = _STEP_CMDBUF_OPTIONS[_STEP_CMDBUF]
+
+
+def step_compile_options(base: dict[str, Any] | None = None) -> dict[str, Any] | None:
+    """Compile options for an AOT compile of a stepping program: ``base`` plus STEP_COMPILER_OPTIONS (switch on)."""
+    if not STEP_COMPILER_OPTIONS:
+        return base
+    return {**(base or {}), **STEP_COMPILER_OPTIONS}
+
+
 def _donation_buffer_key(leaf: Any) -> Any:
     try:
         return leaf.unsafe_buffer_pointer()
@@ -12833,3 +13030,7 @@ __all__ = [
     "run_forecast_operational_with_limiter_diagnostics",
     "run_forecast_operational_with_m9_diagnostics",
 ]
+
+from gpuwrf.runtime_parameters import diffusion_value as _diffusion_value, w_damping_kwargs as _w_damping_kwargs
+from gpuwrf.runtime_parameters import mynn_kwargs as _mynn_parameter_kwargs
+from gpuwrf.coupling.thompson_runtime_adapter import selected_adapter as _selected_thompson_adapter

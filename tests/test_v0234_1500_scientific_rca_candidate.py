@@ -126,7 +126,7 @@ def test_nested_production_branch_uses_pre_substep_additive_ring_and_not_muave()
     assert "state.muts.astype(muts_new.dtype)" in source
     assert "state.theta_coupled_work.astype(theta_coupled.dtype)" in source
     nested_block = source.split(
-        "if bool(cfg.nested_frozen_wrf_boundary_bundle):", 1
+        "if bool(cfg.nested_frozen_wrf_boundary_bundle) or bool(cfg.root_spec_walk):", 1
     )[1].split("else:", 1)[0]
     assert "muave_new = _pin_ring" not in nested_block
     assert "spec_bdyupdate_ph_tendency_inloop" in source

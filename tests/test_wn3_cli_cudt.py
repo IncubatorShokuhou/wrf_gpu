@@ -49,7 +49,7 @@ def test_wn3_cli_reports_applied_stepcu_per_domain(tmp_path, monkeypatch, capsys
     # separate CLI test concern. Keep this process on the declared CPU backend.
     monkeypatch.setenv('XLA_PYTHON_CLIENT_ALLOCATOR','cuda_async')
     rc = cli.main(['run','--input-dir',str(tmp_path),'--output-dir',str(tmp_path/'out'),
-                   '--domains-from-namelist','--hours','1','--force-gpu-run'])
+                   '--domains-from-namelist','--hours','3','--force-gpu-run'])  # WN3 dt 54 s (E187)
     assert rc==0
     captured = capsys.readouterr()
     payload = json.loads(captured.out)

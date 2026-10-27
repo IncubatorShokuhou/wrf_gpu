@@ -1,0 +1,91 @@
+{
+  "verdict": "LAUNCH_SMOKE_PASS",
+  "entry": "cuda_mini_v7.sh",
+  "source_pin": "86c86274d134533112b3890f3cef254fadaf1cd5",
+  "tool_sha256": {
+    "cuda_mini_v7.sh": "88a032e477c24068ac9ec96670f15d882691a4b32f7644ae98d85fcd984e6028",
+    "night_guard.py": "2114b154caf2f37cdb59f92eda4329a0fa0fd0c06546ee35f05df3cefb004946",
+    "supervise.py": "14e6c5acc51a62b13c3dfb02c49b93a7d21d833f852c8e1b70d313b702648639",
+    "root_gpu.py": "348b15daa85211388fdc5ff8bbe87a46ca3a442c3334aeb224f1d5c9d9ab8b38",
+    "field_table.py": "cf91ae63f1e25e94c200ee963f9cfa978cdc3998e388bd3a875ab41558992df4",
+    "launch_smoke_model.py": "dc657209da344bd53013d9926f883b407948dc719bf3ccf4d322e4be780098ad"
+  },
+  "launcher_rc": 0,
+  "elapsed_s": 1276.826107796005,
+  "children": [
+    {
+      "family": "lsm",
+      "phase": "prime",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/w44-lsmparams/LS72_smoke_v7mini/arms/gpu/v7mini/lsm/prime.json",
+      "default_byte_exact": false,
+      "default_field_table_max_ratio": {
+        "d01": 1.913838173332995e-06
+      },
+      "default_difference_leaves": 19,
+      "changed_difference_leaves": 63,
+      "median_s": null,
+      "alignment_dt_s": {
+        "d01": "18"
+      }
+    },
+    {
+      "family": "lsm",
+      "phase": "measure",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/w44-lsmparams/LS72_smoke_v7mini/arms/gpu/v7mini/lsm/measure.json",
+      "default_byte_exact": false,
+      "default_field_table_max_ratio": {
+        "d01": 1.913838173332995e-06
+      },
+      "default_difference_leaves": 19,
+      "changed_difference_leaves": 63,
+      "median_s": {
+        "off": 1.2859081709975726,
+        "on": 1.2647599960000662
+      },
+      "alignment_dt_s": {
+        "d01": "18"
+      }
+    },
+    {
+      "family": "lsm",
+      "phase": "measure_profile",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/w44-lsmparams/LS72_smoke_v7mini/arms/gpu/v7mini/lsm/measure_profile.json",
+      "default_byte_exact": false,
+      "default_field_table_max_ratio": {
+        "d01": 1.913838173332995e-06
+      },
+      "default_difference_leaves": 19,
+      "changed_difference_leaves": 63,
+      "median_s": {
+        "off": 1.1767912680006702,
+        "on": 1.3101172500028042
+      },
+      "alignment_dt_s": {
+        "d01": "18"
+      }
+    },
+    {
+      "family": "lsm",
+      "phase": "e41",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/w44-lsmparams/LS72_smoke_v7mini/arms/gpu/v7mini/lsm/e41/cpu_smoke_e41.json",
+      "value": {
+        "CPU_smoke_only": true,
+        "native_E41_pass": false,
+        "real_tool_rc": 1,
+        "receipt_files": [],
+        "expected_cpu_cache_refusal": true
+      }
+    }
+  ],
+  "official_gpu_lock_called": false,
+  "gpu_executed": false,
+  "native_qualification": false,
+  "substitutions": [
+    "artifact root only in exact shell",
+    "private device flock",
+    "JAX_PLATFORMS cuda->cpu before JAX import",
+    "nsys shim runs the command unprofiled",
+    "E41 = real tool on CPU cache, verdict recorded, never a native PASS",
+    "timer values scaled for CPU compile (sealed GPU caps unchanged)"
+  ]
+}

@@ -1,0 +1,117 @@
+{
+  "compiler": "<USER_HOME>/miniconda3/envs/wrfbuild/bin/gfortran",
+  "command": [
+    "<USER_HOME>/miniconda3/envs/wrfbuild/bin/gfortran",
+    "-shared",
+    "-fPIC",
+    "-O2",
+    "-ffp-contract=off",
+    "-ffree-form",
+    "-ffree-line-length-none",
+    "<USER_HOME>/wrf_gpu2_lanes/w44-topo/TP03/oracle.F90",
+    "-o",
+    "<USER_HOME>/wrf_gpu2_lanes/w44-topo/TP03/oracle.so"
+  ],
+  "library_sha256": "1f9a366c5f1325c2a5912748e8cd3514166f7e4d4cb5e355c9e0ee5291a8ffaa",
+  "radiation_source_sha256": "4f0177189eb616c9220fe2022186dd6cc310666ca29977557dfe53d4409d733b",
+  "surface_source_sha256": "79c21663f65c7e2183e7fe07076c464eb12ae0c1b942f030d81a54228e2f6e1e",
+  "extracted_source_sha256": "8d9d56e2f3728e98d4354b91d76c967044e76c7fb87273a98c627b91e1e75942",
+  "wrapper_sha256": "6d6b09f033bb36bf1d528382d15db63492305d4c734a0a8ea1f9540965e68aa4",
+  "inputs": {
+    "d02": {
+      "path": "<DATA_ROOT>/wrf_gpu2/scratch/w43-release/cases/wn3_0227/wrfinput_d02",
+      "sha256": "6914cb70242ac62bb9a430426caa0bcd344483e996339886b8a5465754a08f3f"
+    },
+    "d03": {
+      "path": "<DATA_ROOT>/wrf_gpu2/scratch/w43-release/cases/wn3_0227/wrfinput_d03",
+      "sha256": "342f93f97ad0e746dd40ecbbe947b85c749176aa7e08b882ad59cb01eef5d907"
+    }
+  },
+  "tolerances_registered": {
+    "mask": "exact",
+    "height_m": {
+      "atol": 0.01,
+      "rtol": 2e-05
+    },
+    "flux_wm2": {
+      "atol": 0.002,
+      "rtol": 2e-05
+    }
+  },
+  "cases": [
+    {
+      "hour_utc": 7.5,
+      "shape": [
+        93,
+        111
+      ],
+      "shadow_cells": 1243,
+      "no_parent_mutant_mask_misses": 41,
+      "mask_max_error": 0.0,
+      "height_max_error_m": 0.00555419921875,
+      "swnorm_max_error_wm2": 0.0003662109375
+    },
+    {
+      "hour_utc": 8.0,
+      "shape": [
+        93,
+        111
+      ],
+      "shadow_cells": 207,
+      "no_parent_mutant_mask_misses": 41,
+      "mask_max_error": 0.0,
+      "height_max_error_m": 0.0010986328125,
+      "swnorm_max_error_wm2": 0.000244140625
+    },
+    {
+      "hour_utc": 9.0,
+      "shape": [
+        93,
+        111
+      ],
+      "shadow_cells": 44,
+      "no_parent_mutant_mask_misses": 41,
+      "mask_max_error": 0.0,
+      "height_max_error_m": 0.000244140625,
+      "swnorm_max_error_wm2": 0.00018310546875
+    },
+    {
+      "hour_utc": 17.0,
+      "shape": [
+        93,
+        111
+      ],
+      "shadow_cells": 44,
+      "no_parent_mutant_mask_misses": 41,
+      "mask_max_error": 0.0,
+      "height_max_error_m": 0.000244140625,
+      "swnorm_max_error_wm2": 0.00018310546875
+    },
+    {
+      "hour_utc": 18.0,
+      "shape": [
+        93,
+        111
+      ],
+      "shadow_cells": 441,
+      "no_parent_mutant_mask_misses": 41,
+      "mask_max_error": 0.0,
+      "height_max_error_m": 0.0029296875,
+      "swnorm_max_error_wm2": 0.0003662109375
+    },
+    {
+      "hour_utc": 23.0,
+      "shape": [
+        93,
+        111
+      ],
+      "shadow_cells": 0,
+      "no_parent_mutant_mask_misses": 0,
+      "mask_max_error": 0.0,
+      "height_max_error_m": 0.0,
+      "swnorm_max_error_wm2": 0.0
+    }
+  ],
+  "fixture_sha256": "6c6ea715885038580540f0fdac8c21bfc3f6431ef13e210f024f101244712ce7",
+  "status": "PASS"
+}

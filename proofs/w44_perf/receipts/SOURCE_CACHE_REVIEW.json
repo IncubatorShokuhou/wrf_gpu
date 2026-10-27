@@ -1,0 +1,48 @@
+{
+  "schema": "w44-perfplan.verdict.v1",
+  "verdict": "MERGE",
+  "candidate_commit": "2b8c56012ff48e6255b3034664ab4db076681364",
+  "packet_commit": "4a57e488a7",
+  "product_sha256": "4ab3081ae9263471ea2e0355236014144d5a576280296197d554fbc4f785f597",
+  "scope": "H1 source-fingerprint cache; no whole-forecast/release acceptance claim",
+  "blocking_findings": [],
+  "gates": {
+    "byte_and_schema_invalidation": "PASS",
+    "full_tree_legacy_cold_warm_source_and_aot_identity": "PASS",
+    "single_edit_source_and_full_cheap_key_identity": "PASS",
+    "cache_corruption_partial_write_fallback": "PASS",
+    "two_separate_process_writers": "PASS",
+    "relative_context": "PASS",
+    "own_mutants": "2/2 AssertionError kills; 0 setup errors",
+    "own_pytest": "4 passed; 0 failures/errors/skips",
+    "producer_tests": "21 focused + 84 shared passed; 5 shared skips",
+    "trace_source_manifest": "519 files byte-exact; other key algorithms AST exact"
+  },
+  "timing": {
+    "legacy_mean_s": 2.74628756364109,
+    "warm_mean_s": 0.056403552337239184,
+    "actual_resolver_warm_mean_s": 0.05915502901189029,
+    "saved_component_s": 2.689884011303851,
+    "samples_checked": 14,
+    "warm_ast_parses": 0,
+    "scope": "Producer fresh CPU measurements independently recomputed, not a new forecast timing"
+  },
+  "cache_cost": {
+    "entries": 519,
+    "payload_bytes": 314269,
+    "allocated_bytes": 2154496,
+    "scope": "Producer configured-path receipt; grows with unique source byte versions under existing cache root"
+  },
+  "performance_scope": "Reviewed producer fresh-process CPU fingerprint savings; no new GPU/forecast timing or per-iteration gain claimed",
+  "gpu_executed": false,
+  "own_temporary_caches_removed": true,
+  "producer_review_dependencies_complete": true,
+  "evidence": {
+    "VERDICT_2b8c56012f.md": "3f5801b2dad1da49863307b098089ac8edc1d9817d9cccea085256f104e40da9",
+    "PP08_SOURCE_CACHE.json": "431c439d3194543473b72767b4eee14efd1b08faf06e26b5ad582d3c19ae3746",
+    "PP10_SOURCE_PACKET_AUDIT.json": "25301aa68fc722f2c2575e2c0fcff359b89cd5cb63bf6b428b7cf683ef9db86e",
+    "review_source_cache.py": "1941923bc8e1b91bc5fd7bb31c7dbc4f9938b6066873a8f4e7334ff5f2403204",
+    "audit_source_cache_packet.py": "7cf64e4e8a67ceae4fcdf262536ad8b73ab965dfa5e1b4f36545799d6716a659"
+  },
+  "own_xml_sha256": "451a32025c471b01f424293fdb028f6d8209ee96dfed356494e3e516e4857fc0"
+}

@@ -8,7 +8,14 @@ import numpy as np
 import pytest
 
 from gpuwrf.physics.surface_constants import CP_D, P0_PA, R_D_OVER_CP
+from gpuwrf.physics.fp32.surface_layer_real import native_real_enabled
 from gpuwrf.physics.surface_layer import surface_layer_with_diagnostics
+
+
+def _mode_dtype():
+    # Release defaults (GPUWRF_SFCLAY_NATIVE_REAL=1): WRF REAL SFCLAY_mynn (module_sf_mynn.F declares no
+    # DOUBLE), outputs stay REAL; legacy (FAST_DEFAULTS=0): the fp64 kernel. Pinned per mode (E240).
+    return np.float32 if native_real_enabled() else np.float64
 
 
 class SurfaceState:
@@ -56,7 +63,7 @@ def test_surface_layer_returns_fp64_finite_fluxes_and_diagnostics():
         diag.t2,
         diag.q2,
     ):
-        assert value.dtype == jnp.float64
+        assert value.dtype == _mode_dtype()
         assert bool(jnp.all(jnp.isfinite(value)))
         assert value.shape == (2, 1)
 
@@ -86,7 +93,8 @@ def test_sms_ustm_uses_raw_wind_over_water_and_land_ust():
     rows = [[2., 1., 294., .010, 100800., 60., 300., 2., .0015, 1., .4, 0.],
             [6., 2., 292., .008, 95500., 80., 296., 1., .08, .7, .4, 0.]]
     state=_state_from_rows(rows)
-    state.sms_ustm=jnp.asarray([[.07],[.08]],jnp.float64)
+    # The State stores the SMS carry REAL in every mode (contracts/state.py:1150-1152; precision SMS_CARRY_LEAVES).
+    state.sms_ustm=jnp.asarray([[.07],[.08]],jnp.float32)
     state.sms_required=True
     diag=surface_layer_with_diagnostics(state)
     za=np.array([30.,40.])[:,None]
@@ -94,7 +102,10 @@ def test_sms_ustm_uses_raw_wind_over_water_and_land_ust():
     raw=np.sqrt(np.array([5.,40.]))[:,None]
     expected=.5*np.asarray(state.sms_ustm)+.5*.4*np.maximum(raw,.1)/psix
     expected[1]=np.asarray(diag.fluxes.ustar)[1]
-    np.testing.assert_allclose(np.asarray(diag.ustm),expected,rtol=32*np.finfo(np.float64).eps,atol=0)
+    # Same 32-ulp bound in the computing precision of the mode (REAL under release defaults).
+    dtype=_mode_dtype()
+    assert np.asarray(diag.ustm).dtype==dtype
+    np.testing.assert_allclose(np.asarray(diag.ustm),expected,rtol=32*np.finfo(dtype).eps,atol=0)
     assert abs(np.asarray(diag.ustm)[0,0]-np.asarray(diag.fluxes.ustar)[0,0])>.01
 
 

@@ -1,0 +1,54 @@
+{
+  "lane": "w44-lsmparams",
+  "snapshot": "<USER_HOME>/wrf_gpu2_lanes/w44-lsmparams/GPU_v7t",
+  "pin": "86c86274d134533112b3890f3cef254fadaf1cd5",
+  "src_tree": "b60781a9324cb302455d1495c27aed4b3c767afd",
+  "model_head_for_critic": "c4a570d950 = origin/main c2025fd7ad + lsmparams (READY-FOR-MERGE 03:25Z); pin 86c86274d1 adds proofs only (src b60781a9 unchanged)",
+  "ondefault_gate": "receipts/GPU_ONDEFAULT_GATE.json bound 4e-6 (manager 05:16Z), evaluator ondefault_gate.py on prime/measure receipts",
+  "entries": {
+    "cuda_mini": {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/w44-lsmparams/GPU_v7t/proofs/w44_lsmparams/cuda_mini_v7.sh",
+      "sha256": "88a032e477c24068ac9ec96670f15d882691a4b32f7644ae98d85fcd984e6028",
+      "whole_cap_s": 1200,
+      "grid": "Swiss F20 43x43 max_dom 1, family lsm"
+    },
+    "production": {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/w44-lsmparams/GPU_v7t/proofs/w44_lsmparams/gpu_v7.sh",
+      "sha256": "188cc4887631482b7270ebffc4f7d55c74444edca29c43d380f304b939ade2dc",
+      "whole_cap_s": 2370,
+      "grid": "PROD s0_case_20260725 max_dom 2, families lsm jarvis"
+    }
+  },
+  "invocation": "no args; env GA_START_UTC/GA_END_UTC only; manager night_seq direct (no outer RAM scope)",
+  "phase_caps_s": {
+    "prime": 735,
+    "E41_cpu": 190,
+    "measure": 115,
+    "profile": 115
+  },
+  "ram": "GPU children no RAM wrapper; E41 in own systemd scope MemoryMax=12G no swap (no shared ticket); CPU phases cores 24,25,28 nice 19",
+  "alignment": {
+    "PROD": "hours 3, d01 54 s / d02 18 s, interval 21600: ok",
+    "Swiss": "hours 3, d01 18 s, interval 10800: ok",
+    "tool": "o5-coast check_alignment.py sha256 77961823 + root_gpu.py asserts it before model work"
+  },
+  "files_sha256": {
+    "gpu_v7.sh": "188cc4887631482b7270ebffc4f7d55c74444edca29c43d380f304b939ade2dc",
+    "cuda_mini_v7.sh": "88a032e477c24068ac9ec96670f15d882691a4b32f7644ae98d85fcd984e6028",
+    "root_gpu.py": "348b15daa85211388fdc5ff8bbe87a46ca3a442c3334aeb224f1d5c9d9ab8b38",
+    "supervise.py": "14e6c5acc51a62b13c3dfb02c49b93a7d21d833f852c8e1b70d313b702648639",
+    "night_guard.py": "2114b154caf2f37cdb59f92eda4329a0fa0fd0c06546ee35f05df3cefb004946",
+    "profile_metrics.py": "7390a883ccb10a767710d43ae1e83abd06ac3354b5d8eaeb4bedae4a16cfcf39",
+    "launch_smoke_model.py": "dc657209da344bd53013d9926f883b407948dc719bf3ccf4d322e4be780098ad",
+    "launch_smoke_v7.py": "5b68d6c590f4dc2c134c1308801a4165de58d862867e14f8b3c4976bab101bdf",
+    "field_table.py": "cf91ae63f1e25e94c200ee963f9cfa978cdc3998e388bd3a875ab41558992df4",
+    "ondefault_gate.py": "d0b95090c687f0c9e1905d56df387a2b0de7bd111679529f6dcdbf54149c7a88",
+    "receipts/GPU_ONDEFAULT_GATE.json": "5a2fdd648c02b57e64cecf520d9dead9fc40c465b9b0549225350abb21a05c50",
+    "scripts/wave_cubin_gate.py": "4c702dbb571ff8b95e8328c685ca28d985ef9fdf39bf0108b350ef5cc7e132cb",
+    "scripts/with_gpu_lock.sh": "20fa1591ca64b0e9929389238759f2e3b0df143a474035e0fdb6719a7a7d08cd",
+    "scripts/release/bundle_consumer.py": "48cfbf0cf05103d819ec3ac93d950e7da0d7d21b7c7582abacd08e59977192a9"
+  },
+  "smoke_receipts": [
+    "<USER_HOME>/wrf_gpu2_lanes/w44-lsmparams/LS72_smoke_v7mini/report.json"
+  ]
+}

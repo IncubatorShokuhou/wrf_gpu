@@ -204,99 +204,9 @@ _WRF32_T0 = np.float32(300.0)
 _WRF32_G = np.float32(9.81)
 
 
-class _WRFInitLibm32:
-    """float32 ``expf``/``logf``/``powf`` bit-matched to the CPU-WRF build's libm.
-
-    The CPU-WRF truth is gfortran ``-O2`` REAL(4) calling scalar glibc
-    ``expf``/``logf``/``powf`` (math-errno blocks vectorization, no fast-math, no
-    FMA).  NumPy's float32 SIMD ``exp``/``log`` differ from glibc by 1-4 ulp and
-    glibc ``powf(x, 0.5)`` differs from ``sqrtf`` by 1 ulp on rare inputs; those
-    ulps are amplified ~50x by the hypsometric layer-thickness division into
-    ~Pa-level base/perturbation pressure errors (proofs/v014/
-    mythos_kernel_fix_260609.*).  Calling the same libm closes the chain
-    bit-exactly.  Initialization-only host helper; never on the device hot path.
-    Falls back to float64-computed correctly-rounded float32 when libm is not
-    loadable (residual then bounded ~2.3 Pa worst-case instead of ~0.04 Pa).
-    """
-
-    def __init__(self, *, native_arrays: bool = True) -> None:
-        self._native_arrays = native_arrays
-        self._libm = None
-        self.provider = "float64-rounded-fallback"
-        try:
-            import ctypes
-            import ctypes.util
-
-            path = ctypes.util.find_library("m")
-            libm = ctypes.CDLL(path) if path else ctypes.CDLL(None)
-            for name, nargs in (("expf", 1), ("logf", 1), ("powf", 2)):
-                fn = getattr(libm, name)
-                fn.restype = ctypes.c_float
-                fn.argtypes = [ctypes.c_float] * nargs
-            self._ctypes = ctypes
-            self._libm = libm
-            self.provider = "glibc-libm-float32"
-        except Exception:  # pragma: no cover - non-glibc fallback
-            self._libm = None
-
-    def _map1(self, name: str, x: np.ndarray) -> np.ndarray:
-        x32 = np.asarray(x, dtype=np.float32)
-        if self._libm is None:
-            fn64 = np.exp if name == "expf" else np.log
-            return fn64(x32.astype(np.float64)).astype(np.float32)
-        fn = getattr(self._libm, name)
-        c_float = self._ctypes.c_float
-        out = np.empty_like(x32)
-        if self._native_arrays and x32.flags.c_contiguous:
-            from gpuwrf.integration._init_libm_arrays import load
-            native = load()
-            if native is not None:
-                ptr = self._ctypes.POINTER(self._ctypes.c_float)
-                native.map1(self._ctypes.cast(fn,self._ctypes.c_void_p),
-                            x32.ctypes.data_as(ptr),out.ctypes.data_as(ptr),x32.size)
-                return out
-        fi, fo = x32.ravel(), out.ravel()
-        for i in range(fi.size):
-            fo[i] = fn(c_float(float(fi[i])))
-        return out
-
-    def exp(self, x: np.ndarray) -> np.ndarray:
-        return self._map1("expf", x)
-
-    def log(self, x: np.ndarray) -> np.ndarray:
-        return self._map1("logf", x)
-
-    def pow(self, x: np.ndarray, y: np.float32) -> np.ndarray:
-        x32 = np.asarray(x, dtype=np.float32)
-        y32 = np.float32(y)
-        if self._libm is None:
-            return np.power(x32.astype(np.float64), np.float64(y32)).astype(np.float32)
-        c_float = self._ctypes.c_float
-        c_y = c_float(float(y32))
-        out = np.empty_like(x32)
-        if self._native_arrays and x32.flags.c_contiguous:
-            from gpuwrf.integration._init_libm_arrays import load
-            native = load()
-            if native is not None:
-                ptr = self._ctypes.POINTER(c_float)
-                native.map2(self._ctypes.cast(self._libm.powf,self._ctypes.c_void_p),
-                            x32.ctypes.data_as(ptr),c_y,out.ctypes.data_as(ptr),x32.size)
-                return out
-        fi, fo = x32.ravel(), out.ravel()
-        for i in range(fi.size):
-            fo[i] = self._libm.powf(c_float(float(fi[i])), c_y)
-        return out
-
-    def sqrt_via_pow(self, x: np.ndarray) -> np.ndarray:
-        """WRF ``(...)**0.5`` compiles to ``powf(x, 0.5)`` (not ``sqrtss``)."""
-
-        if self._libm is None:
-            # float64 sqrt rounds to the correctly-rounded float32 sqrt.
-            return np.sqrt(np.asarray(x, dtype=np.float32).astype(np.float64)).astype(np.float32)
-        return self.pow(x, np.float32(0.5))
-
-
-_WRF_INIT_LIBM32 = _WRFInitLibm32()
+from gpuwrf.io.wrf_init_math import (
+    _WRFInitLibm32, _WRF_INIT_LIBM32, _wrf_start_domain_t_init_alb32,
+)
 # Replay scratch/output defaults; env-overridable via config.paths
 # (GPUWRF_RUN_ROOT / GPUWRF_TMPDIR) with no hardcoded /home/<name> path so a
 # clean clone writes its scratch under ~/.cache/gpuwrf.
@@ -1136,22 +1046,6 @@ def _wrf_start_domain_base_scalars32(run: Gen2Run, domain: str) -> dict[str, np.
     }
 
 
-def _wrf_start_domain_t_init_alb32(pb: np.ndarray, s: dict[str, np.float32]) -> tuple[np.ndarray, np.ndarray]:
-    """``start_em.F`` reference-profile ``T_INIT``/``ALB`` from REAL(4) ``PB`` (WRF grouping, WRF libm)."""
-
-    m = _WRF_INIT_LIBM32
-    p00, t00, a = s["p00"], s["t00"], s["a"]
-    tiso, a_strat, p_strat = s["tiso"], s["a_strat"], s["p_strat"]
-    # temp = MAX(tiso, t00 + A*LOG(pb/p00)); stratosphere branch when p_strat > 0
-    temp = np.maximum(tiso, (t00 + a * m.log((pb / p00).astype(np.float32))).astype(np.float32))
-    if float(p_strat) > 0.0:
-        strat_temp = (tiso + a_strat * m.log((pb / p_strat).astype(np.float32))).astype(np.float32)
-        temp = np.where(pb < p_strat, strat_temp, temp).astype(np.float32)
-    t_init = (temp * m.pow((p00 / pb).astype(np.float32), _WRF32_RDOCP) - _WRF32_T0).astype(np.float32)
-    alb = (
-        _WRF32_R_D / _WRF32_P1000MB * (t_init + _WRF32_T0) * m.pow((pb / _WRF32_P1000MB).astype(np.float32), _WRF32_CVPM)
-    ).astype(np.float32)
-    return t_init, alb
 
 
 def _wrf_start_domain_base_from_hgt(
@@ -1218,6 +1112,7 @@ def _apply_live_nest_base_init(
     parent_case: ReplayCase,
     child_mub: Any,
     child_phb: Any,
+    blend_from_real: bool = True,
 ) -> tuple[GridSpec, DycoreMetrics, jax.Array, jax.Array, jax.Array, dict[str, Any]]:
     """Apply WRF live-nest terrain/base initialization before timestep ownership."""
 
@@ -1231,6 +1126,16 @@ def _apply_live_nest_base_init(
     ratio = int(child_meta.parent_grid_ratio)
     if ratio <= 1:
         raise ValueError(f"{domain}: live-nest base init requires parent_grid_ratio > 1, got {ratio}")
+    if not blend_from_real:
+        # WRF history/restart sets SAVE_TOPO_FROM_REAL=0. med_nest_initial:739
+        # then retains this resolved terrain; start_domain still rebuilds bases.
+        pb, mub, phb, _t_init, _alb = _wrf_start_domain_base_from_hgt(
+            run, domain, hgt=grid.terrain_height, metrics=metrics)
+        return grid, metrics, pb, phb, mub, {
+            "enabled": True, "source": "WRF native cycling: SAVE_TOPO_FROM_REAL=0, no second blend",
+            "parent_domain": expected_parent, "child_domain": domain, "parent_grid_ratio": ratio,
+            "save_topo_from_real": 0, "timestep_loop_transfer": False,
+        }
 
     spec_bdy_width = _namelist_int_any(run, "spec_bdy_width", 5, domain=domain)
     blend_width = _namelist_int_any(run, "blend_width", 5, domain=domain)
@@ -1489,6 +1394,7 @@ def _wrf_live_nest_adjust_tempqv(
     transient_mub: Any,
     metrics: DycoreMetrics,
     use_theta_m: int,
+    theta_is_prognostic: bool = False,
 ) -> tuple[jax.Array, jax.Array, dict[str, Any]]:
     """WRF live-nest child temperature/moisture adjustment for blended base mass.
 
@@ -1528,7 +1434,7 @@ def _wrf_live_nest_adjust_tempqv(
 
     # module_initialize_real.F:4923-4928: dry -> moist theta_m before halos.
     th_pert = th_full - t0
-    if moist:
+    if moist and not theta_is_prognostic:
         th_pert = (th_pert + t0) * (one + rv_over_rd * qv_in) - t0
 
     # nest_init_utils.F::adjust_tempqv: RH-conserving temp/qv adjust from the
@@ -2191,6 +2097,24 @@ def build_replay_case(
               if standalone is None else bool(standalone))
     scope = run.input_read_scope(domain) if native or not load_lateral_boundaries else nullcontext()
     with scope:
+        cycling = False
+        if (run.namelist.get("time_control") or {}).get("cycling", False):
+            from gpuwrf.io.cycling_init import cycling_enabled, admit_cycling_input
+            cycling = cycling_enabled(run.namelist)
+            if cycling:
+                if not native and load_lateral_boundaries:
+                    raise ValueError("cycling requires native wrfinput initialization, not history replay")
+                dfi = (run.namelist.get("dfi_control") or {}).get("dfi_opt", 0)
+                if isinstance(dfi, (list, tuple)):
+                    dfi = dfi[0] if dfi else 0
+                if int(dfi) != 0:
+                    raise ValueError("cycling currently requires dfi_opt=0")
+                admit_cycling_input(run.wrfinput_file(domain))
+        if native or not load_lateral_boundaries:
+            # Reuse the already-open native input scope; no extra file open.
+            with run._read_dataset(run.wrfinput_file(domain)) as input_ds:
+                if "GPUWRF_ATMOSPHERE_CYCLE" in input_ds.ncattrs() and not cycling:
+                    raise ValueError("atmospherically cycled wrfinput requires &time_control cycling=.true.")
         # Public source boundary (shares the input handle): QNSE on sea-ice input is
         # refused before any model work; a replay IC comes from the first history file.
         from gpuwrf.io.qnse_admission import refuse_qnse_sea_ice
@@ -2202,6 +2126,7 @@ def build_replay_case(
             live_nest_parent=live_nest_parent,
             live_nest_parent_scalar_state=live_nest_parent_scalar_state,
             live_nest_child_opens_at_start=live_nest_child_opens_at_start, _run=run,
+            cycling=cycling,
         )
 
 
@@ -2216,6 +2141,7 @@ def _build_replay_case(
     live_nest_parent_scalar_state: State | None = None,
     live_nest_child_opens_at_start: bool = False,
     _run: Gen2Run | None = None,
+    cycling: bool = False,
 ) -> ReplayCase:
     """Load a Gen2 d02 initial state with WRF perturbation/base splits preserved.
 
@@ -2328,6 +2254,8 @@ def _build_replay_case(
     u_initial = _load_initial(run, domain, "U", 0, use_wrfinput=is_standalone)
     v_initial = _load_initial(run, domain, "V", 0, use_wrfinput=is_standalone)
     w_initial = _load_initial(run, domain, "W", 0, use_wrfinput=is_standalone)
+    if cycling and _wrf_use_theta_m(run, domain) == 1:
+        theta = _load_wrfinput(run, domain, "THM") + P0_THETA_OFFSET_K
     live_nest_base_meta: dict[str, Any] = {"enabled": False}
     if live_nest_parent is not None:
         # ``nest%mub_save`` is the pre-blend child input column mass; capture it
@@ -2337,6 +2265,12 @@ def _build_replay_case(
         # by the ``press_adj`` column-mass correction below.
         child_input_mub = mub
         child_input_terrain = grid.terrain_height
+        blend_from_real = True
+        if cycling:
+            value = np.asarray(jax.device_get(_load_wrfinput(run, domain, "SAVE_TOPO_FROM_REAL")))
+            if value.size != 1 or int(value.reshape(())) not in (0, 1):
+                raise ValueError("cycling requires SAVE_TOPO_FROM_REAL=0/1")
+            blend_from_real = bool(int(value.reshape(())))
         grid, metrics, pb, phb, mub, live_nest_base_meta = _apply_live_nest_base_init(
             run,
             domain=domain,
@@ -2345,6 +2279,7 @@ def _build_replay_case(
             parent_case=live_nest_parent,
             child_mub=child_input_mub,
             child_phb=phb,
+            blend_from_real=blend_from_real,
         )
         _debug(f"live-nest base init complete parent={live_nest_base_meta.get('parent_domain')} child={domain}")
         # WRF ``med_nest_initial`` adjusts the child temperature/moisture to the
@@ -2352,13 +2287,12 @@ def _build_replay_case(
         # the dry->moist ``theta_m`` conversion first when ``use_theta_m=1``). The
         # final ``start_domain`` base state above is intentionally left unchanged.
         parent_mub = live_nest_parent.base_state.mub
-        save_mub_arr, transient_mub_arr, transient_mub_meta = _wrf_live_nest_transient_adjust_mub(
-            run,
-            domain=domain,
-            grid=grid,
-            parent_mub=parent_mub,
-            child_mub=child_input_mub,
-        )
+        if blend_from_real:
+            save_mub_arr, transient_mub_arr, transient_mub_meta = _wrf_live_nest_transient_adjust_mub(
+                run, domain=domain, grid=grid, parent_mub=parent_mub, child_mub=child_input_mub)
+        else:
+            save_mub_arr = transient_mub_arr = child_input_mub
+            transient_mub_meta = {"save_topo_from_real": 0, "blend_skipped": True}
         use_theta_m = _wrf_use_theta_m(run, domain)
         theta, qv_initial, theta_qv_adjust_meta = _wrf_live_nest_adjust_tempqv(
             theta=theta,
@@ -2368,7 +2302,10 @@ def _build_replay_case(
             transient_mub=transient_mub_arr,
             metrics=metrics,
             use_theta_m=use_theta_m,
+            theta_is_prognostic=cycling,
         )
+        if cycling:
+            cycling_prognostic_theta = theta
         if use_theta_m != 1:
             # use_theta_m=0: WRF's prognostic is the adjusted DRY theta.  State.theta is always theta_m, so carry it
             # by the exact change of variables with the ADJUSTED qv before start_domain (whose EOS then uses qvf=1).
@@ -2378,8 +2315,8 @@ def _build_replay_case(
         # ``press_adj`` column-mass correction, and sets the kinematic surface
         # ``W`` -- raw ``wrfinput_<domain>`` perturbation leaves are missing all
         # three (the Step-1 ``P/MU/W`` divergence family).
-        p_perturbation, mu_perturbation, w_initial, perturb_init_meta = (
-            _wrf_live_nest_start_domain_perturb_init(
+        if not cycling:
+            p_perturbation, mu_perturbation, w_initial, perturb_init_meta = _wrf_live_nest_start_domain_perturb_init(
                 run,
                 domain=domain,
                 grid=grid,
@@ -2396,7 +2333,8 @@ def _build_replay_case(
                 base_phb=phb,
                 child_opens_at_start=live_nest_child_opens_at_start,
             )
-        )
+        else:
+            perturb_init_meta = {"cycling": True, "deferred_to_rebalance_cycl": True}
         live_nest_base_meta = {
             **live_nest_base_meta,
             "transient_adjust_mub": transient_mub_meta,
@@ -2425,7 +2363,14 @@ def _build_replay_case(
         # theta against the moist-convention physics/EOS.)  wrfinput ``T`` is DRY under both use_theta_m
         # values, so the recoupling is unconditional: use_theta_m=0 carries WRF's dry prognostic by the exact
         # change of variables theta_m = theta*(1+rvovrd*qv) (P0 option-0 repair; physics decouples it back).
-        theta = theta * (1.0 + _RVOVRD * qv_initial)
+        if cycling:
+            if _wrf_use_theta_m(run, domain) == 1:
+                cycling_prognostic_theta = theta
+            else:
+                cycling_prognostic_theta = theta
+                theta = theta * (1.0 + _RVOVRD * qv_initial)
+        else:
+            theta = theta * (1.0 + _RVOVRD * qv_initial)
         _debug("standalone/replay IC theta dry->moist theta_m applied (both use_theta_m values)")
         # WRF start_em runs set_w_surface(fill_w_flag) for EVERY domain at the
         # start of a simulation whose input surface W is identically ~0
@@ -2434,13 +2379,25 @@ def _build_replay_case(
         dfi_marker = run.path / "gpuwrf_dfi_applied.json"
         dfi_launch = json.loads(dfi_marker.read_text()) if is_standalone and dfi_marker.is_file() else {}
         dfl_launch = dfi_launch.get("dfi_opt") == 1 and dfi_launch.get("dfl_preserve_filtered_w", True)
-        if not dfl_launch:  # DFL launches after simulation start, retaining filtered W even on flat terrain.
+        if not dfl_launch and not cycling:  # Cycling has its own use_input_w-aware source gate below.
             w_root, w_root_set, _w_root_input_max = _wrf_set_w_surface(
                 w_initial, u_initial, v_initial, grid=grid, metrics=metrics,
             )
             if w_root_set:
                 w_initial = jnp.asarray(w_root, dtype=jnp.asarray(w_initial).dtype)
             _debug(f"root/standalone start_em set_w_surface applied={w_root_set}")
+    cycling_meta = None
+    if cycling:
+        from gpuwrf.io.cycling_init import start_domain_cycling
+        p_perturbation, ph_perturbation, mu_perturbation, w_initial, cycling_meta = start_domain_cycling(
+            run, domain, grid=grid, metrics=metrics, pb=pb, phb=phb, mub=mub,
+            mu=mu_perturbation, prognostic_theta=cycling_prognostic_theta, qv=qv_initial,
+            u=u_initial, v=v_initial, w=w_initial,
+            child_input_terrain=child_input_terrain if live_nest_parent is not None else None,
+            child_opens_at_start=live_nest_child_opens_at_start,
+        )
+        if live_nest_parent is not None:
+            live_nest_base_meta["start_domain_perturb_init"] = cycling_meta
     # WRF-faithful base potential temperature ``t0 + t_init``, recovered by
     # inverting the loaded discrete base state (PB/PHB/MUB) so the dycore's
     # recomputed base inverse density ``alb`` matches the discrete ``alb`` the
@@ -2545,7 +2502,11 @@ def _build_replay_case(
     # (which runs away; see proofs/v090/d02replay_qke_*).  No-op when the
     # parent already carries TKE (INITIALIZE_QKE=.FALSE.).
     gbm_coldstart = is_standalone and namelist_value(run.namelist, "bl_pbl_physics", domain) == 12
-    if gbm_coldstart:
+    if cycling:
+        # First-call MYNN must see the supplied per-column QKE maximum before
+        # WRF's cycling zero/cold decision; pre-seeding here destroys that gate.
+        qke_seeded, did_seed_qke = state.qke, False
+    elif gbm_coldstart:
         # GBM stores TKE_PBL directly in this shared turbulence leaf. Its
         # GBMPBLINIT sets every active level to REAL 0.001, independently of
         # the input field (module_bl_gbmpbl.F:1252). MYNN's equilibrium QKE
@@ -2588,6 +2549,7 @@ def _build_replay_case(
         "domain": domain,
         "run_start_label": start_label,
         "standalone_native_init": bool(is_standalone),
+        **({"cycling": cycling_meta} if cycling else {}),
         "initial_condition_source": (
             f"wrfinput_{domain}" if is_standalone else "wrfout history snapshot at t=0"
         ),

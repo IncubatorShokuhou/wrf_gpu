@@ -1,0 +1,101 @@
+{
+  "verdict": "LAUNCH_SMOKE_PASS",
+  "source_pin": "7de4c724d1d9dcc17ba2e502f990d4c2f25441c0",
+  "launcher_sha256": "d08e5979b1bd005af93ce7be15c2d6d760683e3831cbc260cbb8a36e89627bf5",
+  "tool_sha256": {
+    "night40.sh": "d08e5979b1bd005af93ce7be15c2d6d760683e3831cbc260cbb8a36e89627bf5",
+    "night_guard.py": "2114b154caf2f37cdb59f92eda4329a0fa0fd0c06546ee35f05df3cefb004946",
+    "supervise.py": "14e6c5acc51a62b13c3dfb02c49b93a7d21d833f852c8e1b70d313b702648639",
+    "root_gpu.py": "6fafae0eb94f26bb3fc8e936ba794ee2435f03a8093597246db58b50d2c81730",
+    "launch_smoke_model.py": "d403b058be8b3f55a0fe33c84be11a29a77e4770dc7a5758ba507fa037fa35cd"
+  },
+  "launcher_rc": 0,
+  "elapsed_s": 96.14634555298835,
+  "children": [
+    {
+      "family": "lsm",
+      "phase": "prime",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/w44-lsmparams/LS49_launch_smoke/arms/gpu/night40/lsm/launch_smoke_prime.json",
+      "child_wall_s": 29.225563879997935,
+      "model_times_s": {
+        "off_first_s": 12.581784482987132,
+        "on_first_s": 14.163580898020882,
+        "changed_first_s": 0.001199648017063737
+      }
+    },
+    {
+      "family": "lsm",
+      "phase": "measure",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/w44-lsmparams/LS49_launch_smoke/arms/gpu/night40/lsm/launch_smoke_measure.json",
+      "child_wall_s": 9.226501648954581,
+      "model_times_s": {
+        "off_first_s": 4.076599372958299,
+        "on_first_s": 3.4679644979769364,
+        "changed_first_s": 0.0010174569906666875
+      }
+    },
+    {
+      "family": "lsm",
+      "phase": "measure_profile",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/w44-lsmparams/LS49_launch_smoke/arms/gpu/night40/lsm/launch_smoke_measure_profile.json",
+      "child_wall_s": 8.414050113002304,
+      "model_times_s": {
+        "off_first_s": 3.3826991639798507,
+        "on_first_s": 3.3746494359802455,
+        "changed_first_s": 0.0011893580085597932
+      }
+    },
+    {
+      "family": "jarvis",
+      "phase": "prime",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/w44-lsmparams/LS49_launch_smoke/arms/gpu/night40/jarvis/launch_smoke_prime.json",
+      "child_wall_s": 28.560767365968786,
+      "model_times_s": {
+        "off_first_s": 13.715489739028271,
+        "on_first_s": 12.491935284982901,
+        "changed_first_s": 0.0009253059979528189
+      }
+    },
+    {
+      "family": "jarvis",
+      "phase": "measure",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/w44-lsmparams/LS49_launch_smoke/arms/gpu/night40/jarvis/launch_smoke_measure.json",
+      "child_wall_s": 7.541954201995395,
+      "model_times_s": {
+        "off_first_s": 3.1517566349939443,
+        "on_first_s": 2.9556960799964145,
+        "changed_first_s": 0.0008812370360828936
+      }
+    },
+    {
+      "family": "jarvis",
+      "phase": "measure_profile",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/w44-lsmparams/LS49_launch_smoke/arms/gpu/night40/jarvis/launch_smoke_measure_profile.json",
+      "child_wall_s": 7.480219970049802,
+      "model_times_s": {
+        "off_first_s": 3.0906629170058295,
+        "on_first_s": 2.9678982889745384,
+        "changed_first_s": 0.0008664260385558009
+      }
+    }
+  ],
+  "official_gpu_lock_called": false,
+  "gpu_executed": false,
+  "substitutions": [
+    "artifact root only in exact shell",
+    "private device flock",
+    "JAX_PLATFORMS cuda->cpu before JAX import",
+    "CPU mini grid: one real daytime land column",
+    "profiler device shim",
+    "E41 CPU-only marker; native gate remains open"
+  ],
+  "native_qualification": false,
+  "caps_s": {
+    "prime": 735,
+    "warm": 115,
+    "profile": 115,
+    "E41": 190,
+    "whole_payload": 2370
+  },
+  "caps_scope": "measured CPU-mini command phases; full PROD native compile/runtime costs remain unmeasured"
+}

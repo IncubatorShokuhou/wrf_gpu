@@ -14,6 +14,7 @@ import os
 import jax
 import jax.numpy as jnp
 from gpuwrf.backends import pallas as pl
+from gpuwrf.contracts.real_constfold import real_scalar_product
 from jax.experimental.pallas import triton as pt
 
 from gpuwrf.dynamics.core.acoustic import AcousticCoreConfig, AcousticCoreState
@@ -530,6 +531,12 @@ def _w_p2_kernel(r, out, *, nz, ny, nx, block, cfg):
     _store(out["wupd"], (j, y, x), wupd, valid)
 
 
+def _dampmag(dts, dampcoef):
+    """WRF advance_w ``dampmag = dts*config_flags%dampcoef`` (module_small_step_em.F:1284), a REAL product at run
+    time; the Python product is float64 rounded once (w44-constfold)."""
+    return real_scalar_product(dts, dampcoef)
+
+
 def _w_phase(state, coefficients, cfg, *, interpret):
     nz,ny,nx = state.theta.shape
     names = ("w","rw_tend_pg_buoy","ww","ph","ph_1","phb","ph_tend", "cqw", "w_save",
@@ -539,7 +546,7 @@ def _w_phase(state, coefficients, cfg, *, interpret):
     args.update(coefficients)
     values = dict(dts=cfg.dt,epssm=cfg.epssm,t0=300.,g=9.81,rdx=1./cfg.dx,rdy=1./cfg.dy,
                   cf1=state.cf1,cf2=state.cf2,cf3=state.cf3,w_alpha=cfg.w_alpha,
-                  w_crit_cfl=cfg.w_crit_cfl,w_damp_on=1.,dampmag=cfg.dt*cfg.dampcoef,
+                  w_crit_cfl=cfg.w_crit_cfl,w_damp_on=1.,dampmag=_dampmag(cfg.dt, cfg.dampcoef),
                   hdepth=cfg.zdamp,half_pi=.5*math.pi)
     args["s"] = jnp.stack([jnp.asarray(values.get(name,0.),jnp.float32) for name in vi._SLOTS])
     w2pass = os.environ.get("GPUWRF_ACOUSTIC_W2PASS", "0")
@@ -555,7 +562,7 @@ def _w_phase(state, coefficients, cfg, *, interpret):
         mass = ("theta_coupled_work","t_2ave","theta_1","c2a","alt")
         vertical = ("c1f","c2f","c1h","c2h","rdnw","rdn","fnm","fnp")
         columns = ("mut","muts","muave","ht","msftx","msfty")
-        damp3 = cfg.damp_opt==3 and cfg.dampcoef>0 and state.w_save is not None
+        damp3 = cfg.damp_opt==3 and (cfg.damping_traced or cfg.dampcoef>0) and state.w_save is not None
         common = ((*(col(name) for name in face+mass),*(r[name] for name in vertical),
                    *(col(name) for name in columns),
                    _ColumnRef(r["u"],ny,nx,x_offset=1),col("u"),col("v"),
@@ -620,7 +627,7 @@ def _w_phase_split(state, args, cfg, *, nz, ny, nx, interpret):
     args3 = {name: args[name] for name in ("a","alpha","gamma","w_save","ph_1","phb","w","ph",
                                             "c1f","c2f","mut","muts","msfty","s")}
     args3.update(wupd=p2["wupd"], rhs=p1["rhs"])
-    damp3 = cfg.damp_opt==3 and cfg.dampcoef>0 and state.w_save is not None
+    damp3 = cfg.damp_opt==3 and (cfg.damping_traced or cfg.dampcoef>0) and state.w_save is not None
     ring = cfg.specified or cfg.nested
     # GPUWRF_ACOUSTIC_W_RECUR_SL=1: blocked recurrences (each trip of 2 levels issues its loads before
     # its stores, E137); same expressions and level order (default off).
@@ -670,7 +677,7 @@ def _uv_boundaries(before,after,cfg):
     from gpuwrf.coupling.boundary_apply import apply_normal_bdy_work,DEFAULT_BOUNDARY_CONFIG
     u,v=after.u,after.v
     if before.u_work_bdy is not None and before.v_work_bdy is not None:
-        if cfg.nested_frozen_wrf_boundary_bundle:
+        if cfg.nested_frozen_wrf_boundary_bundle or cfg.root_spec_walk:
             u=_pin_spec_ring_wrf_owned(u,before.u+cfg.dt*before.u_work_bdy,spec_zone=cfg.spec_zone)
             v=_pin_spec_ring_wrf_owned(v,before.v+cfg.dt*before.v_work_bdy,spec_zone=cfg.spec_zone)
         else:
@@ -702,7 +709,7 @@ def _mass_boundaries(before,after,cfg):
     from gpuwrf.dynamics.core.acoustic import _pin_spec_ring_wrf_owned
     if before.mu_spec_target is None:return after
     pin=lambda value,target:_pin_spec_ring_wrf_owned(value,target,spec_zone=cfg.spec_zone)
-    if cfg.nested_frozen_wrf_boundary_bundle:
+    if cfg.nested_frozen_wrf_boundary_bundle or cfg.root_spec_walk:
         values=dict(mu=before.mu+cfg.dt*before.mu_spec_target,
                     mu_work=before.mu_work+cfg.dt*before.mu_spec_target,
                     muts=before.muts+cfg.dt*before.muts_spec_target,
@@ -721,7 +728,7 @@ def _w_boundaries(before,after,cfg):
     from gpuwrf.coupling.boundary_apply import DEFAULT_BOUNDARY_CONFIG,spec_bdyupdate_ph_inloop,spec_bdyupdate_ph_tendency_inloop
     w,ph=after.w,after.ph
     if before.ph_bdy_target is not None and before.ph_save_for_spec is not None:
-        if cfg.nested_frozen_wrf_boundary_bundle:
+        if cfg.nested_frozen_wrf_boundary_bundle or cfg.root_spec_walk:
             ph=spec_bdyupdate_ph_tendency_inloop(ph,before.ph,before.ph_bdy_target,
                     before.ph_save_for_spec,before.mu_spec_target,after.muts,before.c1f,
                     before.c2f,cfg.dt,DEFAULT_BOUNDARY_CONFIG,spec_zone=cfg.spec_zone)

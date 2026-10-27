@@ -1,0 +1,168 @@
+{
+  "status": "PASS; READY-FOR-CRITIC DELTA ONLY",
+  "base_main": "76105c5318ac42b4199c7d1d09a4f611fff60b77",
+  "docs_content_commit": "c2f0b2fdcbf09ce152be81f6f1d10c09bf0cf794",
+  "scope": "seven merged-tool pages + entry links + indexed commands; README and unfinished pages excluded",
+  "commands": 22,
+  "links": 48,
+  "history_names": 49,
+  "style": "PASS; no undefined W4/W5/PROD/WN3/manager labels in checked public prose",
+  "search_queries": {
+    "scope": "actual app.js; fresh built index; sidebar top eight",
+    "expected": {
+      "precompile": "tools.html#precompile",
+      "branch": "tools.html#checkpoint-branch",
+      "override": "tools.html#input-overrides",
+      "porosity": "tools.html#soil-porosity",
+      "rad_diag": "tools.html#radiation-diagnostics",
+      "QI_BL": "tools.html#radiation-diagnostics",
+      "icloud_bl": "tools.html#radiation-clouds",
+      "MMINLU": "tools.html#land-use-admission"
+    },
+    "results": {
+      "precompile": [
+        "tools.html#precompile",
+        "tools.html"
+      ],
+      "branch": [
+        "tools.html#checkpoint-branch",
+        "tools.html"
+      ],
+      "override": [
+        "tools.html#input-overrides",
+        "tools.html#regional-tuning",
+        "tools.html",
+        "tools.html#all-commands",
+        "environment.html#memory-and-vram-preflight"
+      ],
+      "porosity": [
+        "tools.html#soil-porosity"
+      ],
+      "rad_diag": [
+        "tools.html#radiation-diagnostics",
+        "namelist.html#icloud",
+        "tools.html#radiation-clouds",
+        "namelist.html#aer-opt",
+        "physics.html#ra-sw-physics",
+        "physics.html#ra-lw-physics",
+        "input-data.html#native-cadence",
+        "physics.html#how-checked"
+      ],
+      "QI_BL": [
+        "tools.html#radiation-diagnostics",
+        "tools.html#radiation-clouds",
+        "physics.html#bl-pbl-physics",
+        "physics.html#pairings",
+        "environment.html",
+        "tools.html#tables",
+        "tools.html#ensembles",
+        "tools.html#data-assimilation"
+      ],
+      "icloud_bl": [
+        "tools.html#radiation-clouds",
+        "namelist.html#icloud",
+        "tools.html#radiation-diagnostics",
+        "physics.html#bl-pbl-physics",
+        "version-history.html#v041",
+        "namelist.html#v041-options",
+        "index.html#v041",
+        "limitations.html#current"
+      ],
+      "MMINLU": [
+        "tools.html#land-use-admission"
+      ]
+    }
+  },
+  "search_negative_control": "genuine AssertionError when branch entry omitted; no setup failure",
+  "page_sha256": {
+    "docs/regional_optimization.md": "116556acdff66f38a15ac51df3b93b6b821a001b3c8d96b1b351a44fc0f74219",
+    "docs/radiation_diagnostics.md": "dfc065a20f2c391a2687f41a6989e0815203208fefc18c77a8dcc8ad0b074056",
+    "docs/radiation_pbl_clouds.md": "fc126d89dbfea2c601722333fc4979c97d55aa2ef1a7b32b0e6d34090bc76cf7",
+    "docs/initial_overrides.md": "2337eff8ba00a86125b6e98ce679315353ee1b180f66c6596d4e1e87d7cbc15d",
+    "docs/noahmp_land_use.md": "972c617955765b5ade586008e42bf89c6c8c87151bfc22db6d612f2d982f1c2b",
+    "docs/soil_porosity.md": "0da6e390eceb1b552c3c4e57a2b999d40376f335c056580544c20237a63e2262",
+    "docs/checkpoint-branching.md": "57d936741de55a0a6549eee583df743c0c4289a513dc0e2f7cc9707e2b3e63bd",
+    "docs/precompile.md": "66399181e83f0c9fb1e86be7b1ac0243de70a2bd7c56dfe77acc470ea7d385ae"
+  },
+  "source_proof_hashes": {
+    "override": {
+      "--spec": true,
+      "--surface-physics": true,
+      "--force-no-effect": true
+    },
+    "precompile": {
+      "--namelist-variants": true,
+      "--execute": true,
+      "--timeout-seconds": true
+    },
+    "run": {
+      "--branch-from": true,
+      "--branch-manifest": true,
+      "--minutes": true,
+      "--end-time": true
+    },
+    "radiation_namelist_binding": {
+      "d01": {
+        "rad_diag": 0,
+        "icloud_bl": 0
+      },
+      "d02": {
+        "rad_diag": 1,
+        "icloud_bl": 0
+      },
+      "d03": {
+        "rad_diag": 1,
+        "icloud_bl": 0
+      }
+    },
+    "lutab_packet_sha256": "25d8e21dc96510cbdcfa21db0fdf27798c20277b3226af77f8b85564f84117b4",
+    "override_packet_sha256": "4948fa164886332c2bf7f745ad63b06057dd18cfaa1a55a51ba03d0827b06587",
+    "raddiag_packet_sha256": "949dcfc760256af9ceb34e554d076f5b93d157318c29b4510b87ac222dcdc4af",
+    "branch_packet_sha256": "e92170d6e8997006a8b4d71dc2e34ac771a06d7f3c2b87fd5db4d1f781f7cf3f",
+    "precompile_packet_sha256": "48d1bafb573859a6bd2d8f970d6c968e9e1bc48d6663b1da37a1102d5643bc8c"
+  },
+  "checks": {
+    "direct_parent_is_main": true,
+    "README_identical_main": true,
+    "no_approval_file_change": true,
+    "runtime_identical_main": true,
+    "builder_and_search_engine_unchanged": true,
+    "no_unfinished_page_dependency": true,
+    "no_excluded_page_diff": true,
+    "example_runner_same_as_reviewed": true
+  },
+  "literal_example_code_unchanged": {
+    "docs/initial_overrides.md": true,
+    "docs/soil_porosity.md": true,
+    "docs/noahmp_land_use.md": true,
+    "docs/precompile.md": true,
+    "docs/radiation_diagnostics.md": true,
+    "docs/checkpoint-branching.md": true
+  },
+  "changed_paths": [
+    ".agent/kernel/lanes/w44-docs.notes.md",
+    "docs/checkpoint-branching.md",
+    "docs/initial_overrides.md",
+    "docs/noahmp_land_use.md",
+    "docs/precompile.md",
+    "docs/radiation_diagnostics.md",
+    "docs/radiation_pbl_clouds.md",
+    "docs/regional_optimization.md",
+    "docs/soil_porosity.md",
+    "proofs/w44_docs/DOCS.md",
+    "proofs/w44_docs/check_search.js",
+    "proofs/w44_docs/merged_examples.py",
+    "proofs/w44_docs/receipts/DOC10.json",
+    "proofs/w44_docs/verify.py",
+    "tools/docsite/content/tools.html"
+  ],
+  "build": {
+    "pages": 20,
+    "search_entries": 186,
+    "builder_SHA256": "2c159aa4986e4ff456e8805b54670523e39021866882871f6d6ee3e1399664a2",
+    "app_SHA256": "3129e5d6cafb577c51650123bf69b94c49a254a00594fa11be7f16d28d22f63f"
+  },
+  "carry_forward": "DOC10 / cr-w44-docs six CPU examples and original technical checks; unchanged runtime/literal examples, no model/GPU/benchmark repeat",
+  "old_history_preserved": "archive/w44-docs-before-crfix-20261024 at a25b4a1f91",
+  "cache": "none; JAX_PLATFORMS=cpu GPUWRF_JAX_CACHE=0 CPU6 nice19 explicit60/90/30s caps"
+}

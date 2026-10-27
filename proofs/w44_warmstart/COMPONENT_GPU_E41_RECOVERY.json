@@ -1,0 +1,137 @@
+{
+  "recovery": {
+    "schema": "w44-warmstart.component-E41-supplement.v1",
+    "verdict": "GPU_ORIGINAL_INIT_PASS",
+    "rc": 0,
+    "source_commit": "0c315f3108eeb08222b79c30468aea24d5ad7669",
+    "original_receipt": "<USER_HOME>/wrf_gpu2_lanes/w44-warmstart/NIGHT_COMPONENT_1792852837962895416/receipt.json",
+    "original_receipt_sha256": "a82c9224404e80539b7c0ebb79626e9d1983ff93cdcd10f3bd6db9f12dfeceee",
+    "cache": "<USER_HOME>/wrf_gpu2_lanes/w44-warmstart/NIGHT_COMPONENT_1792852837962895416/cache/jax",
+    "e41_gate_path": "<USER_HOME>/wrf_gpu2_lanes/w44-warmstart/NIGHT_COMPONENT_1792852837962895416/e41_recovery/wave_gate.json",
+    "e41_gate_sha256": "9233c5674a9b3feb148eeeea4c3a97724c75d0722e5771b0380cea40af172dfb",
+    "scanned_cache_files": {
+      "<USER_HOME>/wrf_gpu2_lanes/w44-warmstart/NIGHT_COMPONENT_1792852837962895416/cache/jax/jit__lambda-567bcc45dc6ecb4815ea7bd91c71c31f8998940d6d536defc9928b0e7eaaea64-cache": "f4798f7581582998c32d7e7ec9eecbafc8ea7c5160e510d5c199e9ce5e3f26dd",
+      "<USER_HOME>/wrf_gpu2_lanes/w44-warmstart/NIGHT_COMPONENT_1792852837962895416/cache/jax/jit__lambda-823218d05095e903c9cba34badb0d8c7425b9fdc5be137e5b1afda673c9ff98c-cache": "960ecb75ad865e095797efa10dbfe986748fb28003f1316ca921938c3c47977a"
+    },
+    "phases": {
+      "gpu": {
+        "pid": 61020,
+        "pgid": 61020,
+        "sid": 61020,
+        "cap_s": 240,
+        "cleanup": {
+          "signalled_pids": [],
+          "live_remaining": []
+        },
+        "elapsed_s": 9.238736155000083,
+        "timed_out": false,
+        "rc": 0
+      },
+      "e41": {
+        "wall_s": 0.96,
+        "max_rss_kib": 176068,
+        "rc": 0,
+        "cores": "24,25,28",
+        "nice": 19,
+        "JAX_PLATFORMS": "cpu",
+        "PYTHONPATH": "<USER_HOME>/wrf_gpu2_lanes/w44-warmstart/WS19_snapshot/src"
+      }
+    },
+    "component": {
+      "passed": true,
+      "records": [
+        {
+          "mode": "cold",
+          "field": "QKE",
+          "passed": true,
+          "metric": 0.0,
+          "max_abs_error": 9.5367431640625e-07
+        },
+        {
+          "mode": "cold",
+          "field": "QSQ",
+          "passed": true,
+          "metric": 0.018198402900578777,
+          "max_abs_error": 6.039613253960852e-13
+        },
+        {
+          "mode": "cold",
+          "field": "EL",
+          "passed": true,
+          "metric": 0.005517006689889636,
+          "max_abs_error": 4.553794860839844e-05
+        },
+        {
+          "mode": "background",
+          "field": "QKE",
+          "passed": true,
+          "metric": 0.0,
+          "max_abs_error": 0.0
+        },
+        {
+          "mode": "background",
+          "field": "QSQ",
+          "passed": true,
+          "metric": 0.0,
+          "max_abs_error": 0.0
+        },
+        {
+          "mode": "background",
+          "field": "EL",
+          "passed": true,
+          "metric": 0.005517006689889636,
+          "max_abs_error": 4.553794860839844e-05
+        }
+      ],
+      "limits": {
+        "QKE_relative_median": 0.0001,
+        "EL_atol": 0.001,
+        "EL_rtol": 0.002,
+        "QSQ_atol": 2e-12,
+        "QSQ_rtol": 0.002
+      },
+      "compile_execute_seconds": [
+        1.2410746990000234,
+        0.9674308300000121
+      ],
+      "eager_diagnostic": false,
+      "oracle": "<USER_HOME>/wrf_gpu2_lanes/w44-warmstart/WS11_mynn",
+      "backend": "gpu",
+      "scope": "CPU original-init component; no GPU/forecast"
+    },
+    "gate_code": "<USER_HOME>/wrf_gpu2_lanes/w44-warmstart/WS19_snapshot/scripts/wave_cubin_gate.py",
+    "gate_code_sha256": "4c702dbb571ff8b95e8328c685ca28d985ef9fdf39bf0108b350ef5cc7e132cb",
+    "cause": "CPU_ENV omitted PYTHONPATH: gpuwrf import failed before scan",
+    "fix": "explicit snapshot/src in every production E41 CPU child",
+    "scope": "original GPU oracle unchanged; failed original receipt retained; same cache re-scanned CPU-only"
+  },
+  "admission_controls": {
+    "passed": true,
+    "controls": [
+      {
+        "control": "actual original GPU plus recovered E41",
+        "passed": true
+      },
+      {
+        "control": "changed_original_receipt",
+        "rejected": true
+      },
+      {
+        "control": "source_mismatch",
+        "rejected": true
+      },
+      {
+        "control": "failed_E41",
+        "rejected": true
+      },
+      {
+        "control": "missing_E41_artifact",
+        "rejected": true
+      }
+    ],
+    "scope": "admission regression/refusal controls only, nophysicsclaim"
+  },
+  "all_phase_smoke": "PENDING RAM admission; two60squeue failures, no incorrect PASS",
+  "v5_forecast_sha256": "f2748f159684d823ace4e64aef063230f7c0020f3de5306abab7eeed1ed7752f",
+  "v5_warm_sha256": "87446d6fb9242b0ed9fbe12047abde52fa38528dee16c0c1754a884233239989"
+}

@@ -1,9 +1,10 @@
 from __future__ import annotations
 
 from gpuwrf.validation.tier1_rrtmg import run_tier1_lw, run_tier1_sw
+from tests._rrtmg_harness_namelist import harness_cldovrlp1  # noqa: F401  (fixture: the fixtures' WRF cldovrlp=1)
 
 
-def test_rrtmg_sw_tier1_records_strict_pass_result():
+def test_rrtmg_sw_tier1_records_strict_pass_result(harness_cldovrlp1):
     record = run_tier1_sw()
     assert record["pass"] is True
     assert record["tolerances_met"] is True
@@ -13,7 +14,7 @@ def test_rrtmg_sw_tier1_records_strict_pass_result():
     assert record["per_field_max_abs_err"]["flux_up"] <= 1.0
 
 
-def test_rrtmg_lw_tier1_records_strict_parity_result():
+def test_rrtmg_lw_tier1_records_strict_parity_result(harness_cldovrlp1):
     record = run_tier1_lw()
     assert record["pass"] is True
     assert record["tolerances_met"] is True

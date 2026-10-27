@@ -1,0 +1,390 @@
+{
+  "schema": "wrf_gpu2.w44_budget.p72_schema2_off_identity.v1",
+  "recorded_real_utc": "2026-10-24T23:52:00Z",
+  "critic": "cr-w44-budget F2",
+  "tools": {
+    "off_identity_probe.py": "b583bba01221f0bf6397fe09d59a7dc4e26fb8bf78ec8e734977449f4c19cb70",
+    "off_identity_compare.py": "c6e073f1606e0968915ecf9c319f8d158ac74e64530fb4ba1cb7b017264810ff"
+  },
+  "tools_origin": "scripts/ on main e3b13982e4",
+  "alias": "<USER_HOME>/wrf_gpu2_lanes/w44-budget/P72_schema2_identity/alias",
+  "order": "native-first",
+  "cases": {
+    "swiss": {
+      "compare_verdict": "IDENTICAL",
+      "compare": {
+        "measured": {
+          "base": {
+            "realpath": "<USER_HOME>/wrf_gpu2_lanes/w44-budget/P72_schema2_identity/base_aac9e78065",
+            "git_head": null,
+            "git_src_dirty": null,
+            "src_gpuwrf_content_sha256": "a3a64f83b351309ff6e31cb590bc241ccb8098f75dc14d91fd16a6bf883bd8ae"
+          },
+          "cand": {
+            "realpath": "<USER_HOME>/wrf_gpu2_lanes/w44-budget/snapshot_p68",
+            "git_head": "5438aca4b533ba8ed739ce94e90cf14cb98b86d4",
+            "git_src_dirty": false,
+            "src_gpuwrf_content_sha256": "7631c44339e83d7a764b6dca2ab48fa60bacd0a25879810faaff4913afd2d025"
+          }
+        },
+        "covered_programs": [
+          "root_d01_step"
+        ],
+        "checks": {
+          "canon_sha256": {
+            "base": "b977712fe325c953f3ebbf8f83ea1ca0b9260833ef70981e48bd8a49410e142a",
+            "cand": "b977712fe325c953f3ebbf8f83ea1ca0b9260833ef70981e48bd8a49410e142a",
+            "equal": true
+          },
+          "canon_consts_sha256": {
+            "base": "126fbcbfd71c9be921068a9b14ecf8a69fc57ce92430884d01aab9cd949bac0a",
+            "cand": "126fbcbfd71c9be921068a9b14ecf8a69fc57ce92430884d01aab9cd949bac0a",
+            "equal": true
+          },
+          "root_d01_step.raw_hlo_full_sha256": {
+            "equal": true,
+            "base": "f8619ec597fb6afbd53040d280d240ec8c21f2150ce5fee86fbe9d0a312fe762",
+            "cand": "f8619ec597fb6afbd53040d280d240ec8c21f2150ce5fee86fbe9d0a312fe762"
+          },
+          "root_d01_step.raw_hlo_sha256": {
+            "equal": true,
+            "base": "09ca28088edff8e470d868e9059b40ea989f2e521f22a77e7288b6895de20305",
+            "cand": "09ca28088edff8e470d868e9059b40ea989f2e521f22a77e7288b6895de20305"
+          },
+          "root_d01_step.triton_custom_calls": {
+            "equal": true,
+            "base": 153,
+            "cand": 153
+          },
+          "root_d01_step.n_kernel_bodies": {
+            "equal": true,
+            "base": 62,
+            "cand": 62
+          },
+          "root_d01_step.n_pallas_lowerings": {
+            "equal": true,
+            "base": 157,
+            "cand": 157
+          },
+          "root_d01_step.lowerings_by_name": {
+            "equal": true
+          },
+          "kernels_ttir_sha16": {
+            "equal": true,
+            "only_base": [],
+            "only_cand": []
+          },
+          "kernels_ttir_loc_sha16": {
+            "equal": true,
+            "only_base": [],
+            "only_cand": []
+          }
+        },
+        "verdict": "IDENTICAL",
+        "base": "<USER_HOME>/wrf_gpu2_lanes/w44-budget/P72_schema2_identity/base_swiss.json",
+        "cand": "<USER_HOME>/wrf_gpu2_lanes/w44-budget/P72_schema2_identity/cand_swiss.json"
+      },
+      "sides": {
+        "base": {
+          "verdict": "COMPLETE",
+          "case": "<USER_HOME>/wrf_gpu2_lanes/release-docs/RD11/cpu",
+          "canon_sha256": "b977712fe325c953f3ebbf8f83ea1ca0b9260833ef70981e48bd8a49410e142a",
+          "canon_consts_sha256": "126fbcbfd71c9be921068a9b14ecf8a69fc57ce92430884d01aab9cd949bac0a",
+          "programs": {
+            "root_d01_step": {
+              "raw_hlo_full_sha256": "f8619ec597fb6afbd53040d280d240ec8c21f2150ce5fee86fbe9d0a312fe762",
+              "raw_hlo_sha256": "09ca28088edff8e470d868e9059b40ea989f2e521f22a77e7288b6895de20305",
+              "n_pallas_lowerings": 157,
+              "n_kernel_bodies": 62,
+              "triton_custom_calls": 153
+            }
+          },
+          "json_sha256": "5f293cfe84fcc9a27975db07638be8e4445627798edfd5c5def402cd3912d48f",
+          "provenance": {
+            "alias": "<USER_HOME>/wrf_gpu2_lanes/w44-budget/P72_schema2_identity/alias",
+            "realpath": "<USER_HOME>/wrf_gpu2_lanes/w44-budget/P72_schema2_identity/base_aac9e78065",
+            "git_head": null,
+            "git_src_dirty": null,
+            "src_gpuwrf_content_sha256": "a3a64f83b351309ff6e31cb590bc241ccb8098f75dc14d91fd16a6bf883bd8ae",
+            "versions": {
+              "jax": "0.10.0",
+              "jaxlib": "0.10.0",
+              "triton": "3.6.0",
+              "python": "3.13.11"
+            },
+            "program_env": {
+              "JAX_ENABLE_X64": "true",
+              "JAX_PALLAS_USE_MOSAIC_GPU": "false",
+              "JAX_PLATFORMS": "cpu"
+            }
+          }
+        },
+        "cand": {
+          "verdict": "COMPLETE",
+          "case": "<USER_HOME>/wrf_gpu2_lanes/release-docs/RD11/cpu",
+          "canon_sha256": "b977712fe325c953f3ebbf8f83ea1ca0b9260833ef70981e48bd8a49410e142a",
+          "canon_consts_sha256": "126fbcbfd71c9be921068a9b14ecf8a69fc57ce92430884d01aab9cd949bac0a",
+          "programs": {
+            "root_d01_step": {
+              "raw_hlo_full_sha256": "f8619ec597fb6afbd53040d280d240ec8c21f2150ce5fee86fbe9d0a312fe762",
+              "raw_hlo_sha256": "09ca28088edff8e470d868e9059b40ea989f2e521f22a77e7288b6895de20305",
+              "n_pallas_lowerings": 157,
+              "n_kernel_bodies": 62,
+              "triton_custom_calls": 153
+            }
+          },
+          "json_sha256": "84285e7bc440a4858acf97dfc243f0c2760f3c54a28a4e05dd86ed5121134169",
+          "provenance": {
+            "alias": "<USER_HOME>/wrf_gpu2_lanes/w44-budget/P72_schema2_identity/alias",
+            "realpath": "<USER_HOME>/wrf_gpu2_lanes/w44-budget/snapshot_p68",
+            "git_head": "5438aca4b533ba8ed739ce94e90cf14cb98b86d4",
+            "git_src_dirty": false,
+            "src_gpuwrf_content_sha256": "7631c44339e83d7a764b6dca2ab48fa60bacd0a25879810faaff4913afd2d025",
+            "versions": {
+              "jax": "0.10.0",
+              "jaxlib": "0.10.0",
+              "triton": "3.6.0",
+              "python": "3.13.11"
+            },
+            "program_env": {
+              "JAX_ENABLE_X64": "true",
+              "JAX_PALLAS_USE_MOSAIC_GPU": "false",
+              "JAX_PLATFORMS": "cpu"
+            }
+          }
+        }
+      }
+    },
+    "prodnested": {
+      "compare_verdict": "IDENTICAL",
+      "compare": {
+        "measured": {
+          "base": {
+            "realpath": "<USER_HOME>/wrf_gpu2_lanes/w44-budget/P72_schema2_identity/base_aac9e78065",
+            "git_head": null,
+            "git_src_dirty": null,
+            "src_gpuwrf_content_sha256": "a3a64f83b351309ff6e31cb590bc241ccb8098f75dc14d91fd16a6bf883bd8ae"
+          },
+          "cand": {
+            "realpath": "<USER_HOME>/wrf_gpu2_lanes/w44-budget/snapshot_p68",
+            "git_head": "5438aca4b533ba8ed739ce94e90cf14cb98b86d4",
+            "git_src_dirty": false,
+            "src_gpuwrf_content_sha256": "7631c44339e83d7a764b6dca2ab48fa60bacd0a25879810faaff4913afd2d025"
+          }
+        },
+        "covered_programs": [
+          "root_d01_step",
+          "forcedown_d01_d02",
+          "child_d02_step"
+        ],
+        "checks": {
+          "canon_sha256": {
+            "base": "4647d20c32a035abfc3373201c627a6bb870b16028ff0829d3fa212c72d668f1",
+            "cand": "4647d20c32a035abfc3373201c627a6bb870b16028ff0829d3fa212c72d668f1",
+            "equal": true
+          },
+          "canon_consts_sha256": {
+            "base": "49a1bec75c9689cf903740b74d68a238bf86d51de78cea7910a0b4f80ba47ffe",
+            "cand": "49a1bec75c9689cf903740b74d68a238bf86d51de78cea7910a0b4f80ba47ffe",
+            "equal": true
+          },
+          "root_d01_step.raw_hlo_full_sha256": {
+            "equal": true,
+            "base": "47c10960663133b05e0eacb864003362cb5185e3a81867249e6210ad0e046252",
+            "cand": "47c10960663133b05e0eacb864003362cb5185e3a81867249e6210ad0e046252"
+          },
+          "root_d01_step.raw_hlo_sha256": {
+            "equal": true,
+            "base": "e29a36601068a1101396529cb3188e24d93d0603389df3343bcaee7e8dcfdcf6",
+            "cand": "e29a36601068a1101396529cb3188e24d93d0603389df3343bcaee7e8dcfdcf6"
+          },
+          "root_d01_step.triton_custom_calls": {
+            "equal": true,
+            "base": 154,
+            "cand": 154
+          },
+          "root_d01_step.n_kernel_bodies": {
+            "equal": true,
+            "base": 61,
+            "cand": 61
+          },
+          "root_d01_step.n_pallas_lowerings": {
+            "equal": true,
+            "base": 159,
+            "cand": 159
+          },
+          "root_d01_step.lowerings_by_name": {
+            "equal": true
+          },
+          "forcedown_d01_d02.raw_hlo_full_sha256": {
+            "equal": true,
+            "base": "6be23bb37aca7ad92894116a07d8132086ceff25deb0a32cda2d64211278a22f",
+            "cand": "6be23bb37aca7ad92894116a07d8132086ceff25deb0a32cda2d64211278a22f"
+          },
+          "forcedown_d01_d02.raw_hlo_sha256": {
+            "equal": true,
+            "base": "171f3e6435a8ae92bf47df4a623a2e22fe7e3738d9d51fd0234053daf41a04b3",
+            "cand": "171f3e6435a8ae92bf47df4a623a2e22fe7e3738d9d51fd0234053daf41a04b3"
+          },
+          "forcedown_d01_d02.triton_custom_calls": {
+            "equal": true,
+            "base": 7,
+            "cand": 7
+          },
+          "forcedown_d01_d02.n_kernel_bodies": {
+            "equal": true,
+            "base": 7,
+            "cand": 7
+          },
+          "forcedown_d01_d02.n_pallas_lowerings": {
+            "equal": true,
+            "base": 7,
+            "cand": 7
+          },
+          "forcedown_d01_d02.lowerings_by_name": {
+            "equal": true
+          },
+          "child_d02_step.raw_hlo_full_sha256": {
+            "equal": true,
+            "base": "5e5c3f0026db288d7244b4cdbeb5044f71b165bd0b1fc2c1391e82c7aa6d7772",
+            "cand": "5e5c3f0026db288d7244b4cdbeb5044f71b165bd0b1fc2c1391e82c7aa6d7772"
+          },
+          "child_d02_step.raw_hlo_sha256": {
+            "equal": true,
+            "base": "ab837481579e947a268c315ba718f5bfd26e192c5b7f2188e98b77dc45463bb0",
+            "cand": "ab837481579e947a268c315ba718f5bfd26e192c5b7f2188e98b77dc45463bb0"
+          },
+          "child_d02_step.triton_custom_calls": {
+            "equal": true,
+            "base": 140,
+            "cand": 140
+          },
+          "child_d02_step.n_kernel_bodies": {
+            "equal": true,
+            "base": 59,
+            "cand": 59
+          },
+          "child_d02_step.n_pallas_lowerings": {
+            "equal": true,
+            "base": 149,
+            "cand": 149
+          },
+          "child_d02_step.lowerings_by_name": {
+            "equal": true
+          },
+          "kernels_ttir_sha16": {
+            "equal": true,
+            "only_base": [],
+            "only_cand": []
+          },
+          "kernels_ttir_loc_sha16": {
+            "equal": true,
+            "only_base": [],
+            "only_cand": []
+          }
+        },
+        "verdict": "IDENTICAL",
+        "base": "<USER_HOME>/wrf_gpu2_lanes/w44-budget/P72_schema2_identity/base_prodnested.json",
+        "cand": "<USER_HOME>/wrf_gpu2_lanes/w44-budget/P72_schema2_identity/cand_prodnested.json"
+      },
+      "sides": {
+        "base": {
+          "verdict": "COMPLETE",
+          "case": "<DATA_ROOT>/wrf_gpu2/v025/s0_case_20260725",
+          "canon_sha256": "4647d20c32a035abfc3373201c627a6bb870b16028ff0829d3fa212c72d668f1",
+          "canon_consts_sha256": "49a1bec75c9689cf903740b74d68a238bf86d51de78cea7910a0b4f80ba47ffe",
+          "programs": {
+            "root_d01_step": {
+              "raw_hlo_full_sha256": "47c10960663133b05e0eacb864003362cb5185e3a81867249e6210ad0e046252",
+              "raw_hlo_sha256": "e29a36601068a1101396529cb3188e24d93d0603389df3343bcaee7e8dcfdcf6",
+              "n_pallas_lowerings": 159,
+              "n_kernel_bodies": 61,
+              "triton_custom_calls": 154
+            },
+            "forcedown_d01_d02": {
+              "raw_hlo_full_sha256": "6be23bb37aca7ad92894116a07d8132086ceff25deb0a32cda2d64211278a22f",
+              "raw_hlo_sha256": "171f3e6435a8ae92bf47df4a623a2e22fe7e3738d9d51fd0234053daf41a04b3",
+              "n_pallas_lowerings": 7,
+              "n_kernel_bodies": 7,
+              "triton_custom_calls": 7
+            },
+            "child_d02_step": {
+              "raw_hlo_full_sha256": "5e5c3f0026db288d7244b4cdbeb5044f71b165bd0b1fc2c1391e82c7aa6d7772",
+              "raw_hlo_sha256": "ab837481579e947a268c315ba718f5bfd26e192c5b7f2188e98b77dc45463bb0",
+              "n_pallas_lowerings": 149,
+              "n_kernel_bodies": 59,
+              "triton_custom_calls": 140
+            }
+          },
+          "json_sha256": "c94b2249c46285108c843542a4ee0d89673b0f64badcf9c64c630c016ffa5f02",
+          "provenance": {
+            "alias": "<USER_HOME>/wrf_gpu2_lanes/w44-budget/P72_schema2_identity/alias",
+            "realpath": "<USER_HOME>/wrf_gpu2_lanes/w44-budget/P72_schema2_identity/base_aac9e78065",
+            "git_head": null,
+            "git_src_dirty": null,
+            "src_gpuwrf_content_sha256": "a3a64f83b351309ff6e31cb590bc241ccb8098f75dc14d91fd16a6bf883bd8ae",
+            "versions": {
+              "jax": "0.10.0",
+              "jaxlib": "0.10.0",
+              "triton": "3.6.0",
+              "python": "3.13.11"
+            },
+            "program_env": {
+              "JAX_ENABLE_X64": "true",
+              "JAX_PALLAS_USE_MOSAIC_GPU": "false",
+              "JAX_PLATFORMS": "cpu"
+            }
+          }
+        },
+        "cand": {
+          "verdict": "COMPLETE",
+          "case": "<DATA_ROOT>/wrf_gpu2/v025/s0_case_20260725",
+          "canon_sha256": "4647d20c32a035abfc3373201c627a6bb870b16028ff0829d3fa212c72d668f1",
+          "canon_consts_sha256": "49a1bec75c9689cf903740b74d68a238bf86d51de78cea7910a0b4f80ba47ffe",
+          "programs": {
+            "root_d01_step": {
+              "raw_hlo_full_sha256": "47c10960663133b05e0eacb864003362cb5185e3a81867249e6210ad0e046252",
+              "raw_hlo_sha256": "e29a36601068a1101396529cb3188e24d93d0603389df3343bcaee7e8dcfdcf6",
+              "n_pallas_lowerings": 159,
+              "n_kernel_bodies": 61,
+              "triton_custom_calls": 154
+            },
+            "forcedown_d01_d02": {
+              "raw_hlo_full_sha256": "6be23bb37aca7ad92894116a07d8132086ceff25deb0a32cda2d64211278a22f",
+              "raw_hlo_sha256": "171f3e6435a8ae92bf47df4a623a2e22fe7e3738d9d51fd0234053daf41a04b3",
+              "n_pallas_lowerings": 7,
+              "n_kernel_bodies": 7,
+              "triton_custom_calls": 7
+            },
+            "child_d02_step": {
+              "raw_hlo_full_sha256": "5e5c3f0026db288d7244b4cdbeb5044f71b165bd0b1fc2c1391e82c7aa6d7772",
+              "raw_hlo_sha256": "ab837481579e947a268c315ba718f5bfd26e192c5b7f2188e98b77dc45463bb0",
+              "n_pallas_lowerings": 149,
+              "n_kernel_bodies": 59,
+              "triton_custom_calls": 140
+            }
+          },
+          "json_sha256": "3d1a5d9c16e1994efaffd4ad9f221bd77351d70648c1b8dec0ff5f75dbeaae97",
+          "provenance": {
+            "alias": "<USER_HOME>/wrf_gpu2_lanes/w44-budget/P72_schema2_identity/alias",
+            "realpath": "<USER_HOME>/wrf_gpu2_lanes/w44-budget/snapshot_p68",
+            "git_head": "5438aca4b533ba8ed739ce94e90cf14cb98b86d4",
+            "git_src_dirty": false,
+            "src_gpuwrf_content_sha256": "7631c44339e83d7a764b6dca2ab48fa60bacd0a25879810faaff4913afd2d025",
+            "versions": {
+              "jax": "0.10.0",
+              "jaxlib": "0.10.0",
+              "triton": "3.6.0",
+              "python": "3.13.11"
+            },
+            "program_env": {
+              "JAX_ENABLE_X64": "true",
+              "JAX_PALLAS_USE_MOSAIC_GPU": "false",
+              "JAX_PLATFORMS": "cpu"
+            }
+          }
+        }
+      }
+    }
+  }
+}

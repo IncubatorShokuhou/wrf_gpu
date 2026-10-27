@@ -1,0 +1,133 @@
+{
+ "plan_version": "v2 (2026-10-17, Astra critique incorporated)",
+ "recommendation": "one kernel source; native Pallas-Triton on qualified capability tuples (A1 in-graph XLA Triton default, A2 stock Triton + triton_kernel_call escape and pre-Ampere route); vendor_ops for rn/extern/gather/typed-mem/geometry/ctrl-flow; interpreter only for cpu/tpu/unknown; conditional on M1 go/no-go",
+ "support_states": [
+  "interp",
+  "codegen",
+  "native-smoke",
+  "component",
+  "qualified"
+ ],
+ "milestones": [
+  {
+   "id": "M0",
+   "ld": 1.5,
+   "deps": [],
+   "content": "census productized (path-filtered), recapture at real WN3/PROD shapes, fresh v0.4 CUDA family profile, exact tuple pin"
+  },
+  {
+   "id": "M2a",
+   "ld": 2,
+   "deps": [
+    "M0"
+   ],
+   "content": "minimal vendor_ops + triton_native split + boundary lowering fix"
+  },
+  {
+   "id": "M1",
+   "ld": 3,
+   "deps": [
+    "M2a"
+   ],
+   "content": "MI300X feasibility go/no-go: archetypes + composed control flow/readiness/memory",
+   "gpu_hours": 15
+  },
+  {
+   "id": "M2b",
+   "ld": 2,
+   "deps": [
+    "M2a"
+   ],
+   "content": "A2 generalized (HIPBackend/hsaco, any CUDA cc), per-kernel route table"
+  },
+  {
+   "id": "M2c",
+   "ld": 1,
+   "deps": [
+    "M1"
+   ],
+   "content": "remaining vendor_ops consumers (MYNN tridiag2, SINT, rad_mcica, option externs/typed memory)"
+  },
+  {
+   "id": "M3",
+   "ld": 3,
+   "deps": [
+    "M1",
+    "M2c"
+   ],
+   "content": "per-arch geometry from measured bottlenecks on MI300X + one RDNA target"
+  },
+  {
+   "id": "M4",
+   "ld": 5,
+   "deps": [
+    "M3"
+   ],
+   "content": "qualification per advertised tuple"
+  },
+  {
+   "id": "M5",
+   "ld": 2,
+   "deps": [
+    "M2b"
+   ],
+   "content": "pre-Ampere A2 feasibility on wz1080 sm_61, then T4/V100"
+  },
+  {
+   "id": "M7",
+   "ld": 1,
+   "deps": [
+    "M4"
+   ],
+   "content": "docs, support matrix, doctor vendor checks"
+  },
+  {
+   "id": "M6",
+   "ld": "6-10 conditional",
+   "deps": [
+    "M4"
+   ],
+   "content": "compatibility spike on a named next JAX"
+  }
+ ],
+ "effort_ld": {
+  "base": 20.5,
+  "reserve_control_flow_readiness": "3-8",
+  "reserve_pre_ampere": "1-4",
+  "envelope": "24.5-32.5",
+  "critical_path_base": 16.5,
+  "M6": "6-10 conditional"
+ },
+ "owner_decisions": [
+  "D1 target tiers",
+  "D2 gate policy",
+  "D3 AMD rounding (AMDGCN asm RN ops)",
+  "D4 hardware access (RDNA) and budget",
+  "D5 exact JAX/plugin/Triton/ROCm tuple pin",
+  "D6 hand kernels / XLA variants per family"
+ ],
+ "critique_disposition": {
+  "1_control_flow_readiness_gate": "accepted",
+  "2_bound_census_claims": "accepted",
+  "3_pre_ampere_route_dependencies": "accepted",
+  "4_precision_overclaims": "accepted",
+  "5_historical_vs_projected": "accepted",
+  "6_support_rental_explicit": "accepted",
+  "7_M6_compat_spike": "accepted",
+  "effort_envelope": "accepted",
+  "missing_alternatives": "accepted; retained Owner approval per hand kernel (D6)",
+  "checklist": "accepted"
+ },
+ "external_sources": {
+  "pallas_triton_deprecation": "https://docs.jax.dev/en/latest/pallas/CHANGELOG.html (JAX 0.11.0)",
+  "rocm_command_buffer_unimplemented": "https://github.com/openxla/xla/blob/65ad34a5303043439047292f11d0e0d78c364f47/xla/stream_executor/rocm/rocm_command_buffer.cc#L104",
+  "jax_rocm_matrix": "https://rocm.docs.amd.com/projects/ai-ecosystem/en/latest/frameworks/jax/install.html",
+  "mi300x_price": [
+   "https://docs.digitalocean.com/products/droplets/details/pricing/",
+   "https://www.runpod.io/gpu-models/mi300x"
+  ],
+  "intel_oneapi_alpha": "https://github.com/Intel-tensorflow/jax/releases/tag/oneapi-jax-v0.11.2-alpha",
+  "mosaic_api": "https://docs.jax.dev/en/latest/jax.experimental.pallas.mosaic_gpu.html",
+  "pascal_witness": "<USER_HOME>/wrf_gpu2_lanes/wz1080/deliverable1/DELIVERABLE_1.md"
+ }
+}

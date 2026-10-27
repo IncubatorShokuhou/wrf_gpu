@@ -207,6 +207,13 @@ def write_checkpoint(
         "noahmp_land_field_order": None,
         "noahmp_format": None,
     }
+    from gpuwrf.io.topographic_shadow_schema import marker as shadow_marker, validate as validate_shadow
+    shadow_diag = getattr(runtime_state, "radiation_diagnostics", None)
+    shadow_version = shadow_marker(shadow_diag)
+    if shadow_version is not None:
+        payload["topographic_shadow_schema_version"] = shadow_version
+    validate_shadow(getattr(payload["runtime_state"], "radiation_diagnostics", None), shadow_version,
+                    state.t_skin.shape, namelist=namelist)
     if epsilon_pbl_active(namelist):
         payload['epsilon_pbl_schema_version']=EPSILON_PBL_SCHEMA_VERSION
     from gpuwrf.tracers.restart import configuration as tracer_configuration
@@ -236,6 +243,10 @@ def write_checkpoint(
     validate_sas_held(getattr(runtime_state, "cumulus_tendencies", None), namelist, getattr(runtime_state, "osas_rng_key", None), getattr(runtime_state, "cumulus_carry", None))
     from gpuwrf.io.flg_gfdl_schema import validate as validate_legacy,marker
     diagnostics=getattr(runtime_state,'radiation_diagnostics',None);gfdl=getattr(runtime_state,'gfdl_radiation',None)
+    from gpuwrf.diagnostics.radiation import validate_restart as validate_rad_diag
+    if getattr(diagnostics, "rad_diag", None) is not None:
+        payload["rad_diag_schema_version"] = 1
+    validate_rad_diag(diagnostics, namelist, payload.get("rad_diag_schema_version"), state.theta.shape)
     legacy=marker(diagnostics,gfdl)
     if legacy is not None:payload['flg_gfdl_schema']=legacy
     validate_legacy(diagnostics,gfdl,namelist,legacy,state_shape=state.qv.shape)
@@ -339,6 +350,19 @@ def _read_payload(path: str | Path, *, namelist=None) -> dict[str, Any]:
     validate_sas_held(getattr(payload.get("runtime_state"), "cumulus_tendencies", None), payload.get("namelist"), getattr(payload.get("runtime_state"), "osas_rng_key", None), getattr(payload.get("runtime_state"), "cumulus_carry", None))
     from gpuwrf.io.flg_gfdl_schema import validate as validate_legacy
     runtime=payload.get('runtime_state')
+    from gpuwrf.diagnostics.radiation import validate_restart as validate_rad_diag
+    for config in (payload.get("namelist"), namelist):
+        if config is not None:
+            validate_rad_diag(getattr(runtime, "radiation_diagnostics", None), config,
+                              payload.get("rad_diag_schema_version"), fields["theta"].shape)
+    from gpuwrf.io.topographic_shadow_schema import validate as validate_shadow
+    validate_shadow(getattr(runtime, "radiation_diagnostics", None),
+                    payload.get("topographic_shadow_schema_version"), fields["t_skin"].shape,
+                    namelist=payload.get("namelist"))
+    if namelist is not None:
+        validate_shadow(getattr(runtime, "radiation_diagnostics", None),
+                        payload.get("topographic_shadow_schema_version"), fields["t_skin"].shape,
+                        namelist=namelist)
     validate_legacy(getattr(runtime,'radiation_diagnostics',None),getattr(runtime,'gfdl_radiation',None),
         payload.get('namelist'),payload.get('flg_gfdl_schema'),state_shape=fields['qv'].shape)
     if namelist is not None:

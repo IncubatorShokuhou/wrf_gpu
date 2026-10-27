@@ -34,6 +34,7 @@ import os
 
 import jax.numpy as jnp
 
+from gpuwrf.contracts.real_constfold import R4, real_constant
 from gpuwrf.physics.mynn_edmf import _qsat_blend
 
 _DMP_KTOP_BOUND = os.environ.get("GPUWRF_MYNN_DMP_KTOP_BOUND", "0") == "1"
@@ -81,12 +82,20 @@ RHMAX = 1.10
 CF_THRESH = 0.5
 
 
+# WRF REAL folds (module_bl_mynnedmf.F90 xl_blend :7688/:7693, mym_condensation q1_rh :3669/:3677), w44-constfold.
+# cpv = 4.*r_v and t0c = svpt0 come from module_model_constants / module_bl_mynnedmf_common (REAL PARAMETERs).
+_CPV_M_CICE_REAL = R4(4.0) * R4(R_V) - R4(CICE)
+_T0C_M_TICE_REAL = R4(T0C) - R4(TICE)
+_ONE_M_RHCRIT_REAL = R4(1.0) - R4(RHCRIT)
+
+
 def xl_blend(t):
     """WRF ``xl_blend(t)``: temperature-blended latent heat (liquid/ice)."""
 
     xlvt = XLV + (CPV - CLIQ) * (t - T0C)
-    xlst = XLS + (CPV - CICE) * (t - T0C)
-    chi = (T0C - t) / (T0C - TICE)
+    dtype = jnp.result_type(t)
+    xlst = XLS + real_constant(_CPV_M_CICE_REAL, CPV - CICE, dtype) * (t - T0C)
+    chi = (T0C - t) / real_constant(_T0C_M_TICE_REAL, T0C - TICE, dtype)
     blended = (1.0 - chi) * xlvt + chi * xlst
     return jnp.where(t >= T0C, xlvt, jnp.where(t <= TICE, xlst, blended))
 
@@ -181,7 +190,7 @@ def mym_condensation_cloudpdf2(
         RHMAX, RHCRIT + wt2_rh * 0.045 * (9.0 + jnp.log10(jnp.maximum(ice_tot, 1.0e-30)))
     )
     rh = jnp.where(has_ice, jnp.maximum(rh, rh_hack_i), rh)
-    q1_rh_i = -3.0 + 3.0 * (rh - RHCRIT) / (1.0 - RHCRIT)
+    q1_rh_i = -3.0 + 3.0 * (rh - RHCRIT) / real_constant(_ONE_M_RHCRIT_REAL, 1.0 - RHCRIT, jnp.result_type(rh))
     q1 = jnp.where(has_ice, jnp.maximum(q1_rh_i, q1), q1)
 
     has_qc = (qc > 1.0e-6) & aloft
@@ -189,7 +198,7 @@ def mym_condensation_cloudpdf2(
         RHMAX, RHCRIT + wt2_rh * 0.08 * (6.0 + jnp.log10(jnp.maximum(qc, 1.0e-30)))
     )
     rh = jnp.where(has_qc, jnp.maximum(rh, rh_hack_c), rh)
-    q1_rh_c = -3.0 + 3.0 * (rh - RHCRIT) / (1.0 - RHCRIT)
+    q1_rh_c = -3.0 + 3.0 * (rh - RHCRIT) / real_constant(_ONE_M_RHCRIT_REAL, 1.0 - RHCRIT, jnp.result_type(rh))
     q1 = jnp.where(has_qc, jnp.maximum(q1_rh_c, q1), q1)
 
     q1k = q1

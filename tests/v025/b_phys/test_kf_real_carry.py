@@ -113,12 +113,20 @@ def test_native_kf_cadence_step_has_no_fp64_arithmetic(native_kf):
     nml = SimpleNamespace(dt_s=54.0, cumulus_cadence_steps=6, cudt_minutes=0.0, grid=grid)
     step = lambda st, cy: op._kf_cadence_step(st, cy, nml, jnp.asarray(6))  # noqa: E731
     found = _f64_arith(jax.make_jaxpr(step)(state, carry).jaxpr, [])
-    # The only fp64 arithmetic left is the RAINC accumulator add: State.rainc_acc is still
-    # FP64-locked (ADR-007); ADR-038 makes the accumulators REAL (b-carry, CARRY_REAL_ALL).
-    # With a REAL accumulator the KF step has no fp64 arithmetic at all.
-    assert [(prim, shape) for prim, shape, _ in found] == [("add", state.rainc_acc.shape)], found
-    line = int(found[0][2].split(":")[1])
-    assert "rainc_acc" in Path(op.__file__).read_text().splitlines()[line - 1], found
+    from gpuwrf.kernels.dyn_carry_fp32 import real_all_enabled
+    if real_all_enabled():
+        # Release defaults (GPUWRF_CARRY_REAL_ALL=1, ADR-038): the accumulators are REAL in the
+        # State itself, so the KF cadence step has no fp64 arithmetic at all (pinned per mode, E240).
+        assert state.rainc_acc.dtype == jnp.float32
+        assert not found, found
+    else:
+        # The only fp64 arithmetic left is the RAINC accumulator add: State.rainc_acc is still
+        # FP64-locked (ADR-007); ADR-038 makes the accumulators REAL (b-carry, CARRY_REAL_ALL).
+        # With a REAL accumulator the KF step has no fp64 arithmetic at all.
+        assert state.rainc_acc.dtype == jnp.float64
+        assert [(prim, shape) for prim, shape, _ in found] == [("add", state.rainc_acc.shape)], found
+        line = int(found[0][2].split(":")[1])
+        assert "rainc_acc" in Path(op.__file__).read_text().splitlines()[line - 1], found
     real_acc = state.replace(_cast=False, rainc_acc=state.rainc_acc.astype(jnp.float32))
     assert not _f64_arith(jax.make_jaxpr(step)(real_acc, carry).jaxpr, [])
     _, out = jax.eval_shape(step, state, carry)

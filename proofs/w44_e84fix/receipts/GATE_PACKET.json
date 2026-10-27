@@ -1,0 +1,931 @@
+{
+  "source_commit": "928f499da905286fb81064e0999c0699646d6263",
+  "source_tree": "70c5830686c69dd8185e2b30580cb22247465d7b",
+  "measured_numeric_source": "cb98b44524",
+  "baseline_source": "8f31d181ba / src70fa838467",
+  "source_scope": {
+    "src/gpuwrf/coupling/physics_couplers.py": {
+      "sha256": "5ebb1ce4b2cdc17576c9ad4d71a44a80ab5ee6fc6dc39e173c62f627992bf9db",
+      "per_file_patch_id": "2e2023a3ec110d97d71349747fe6fd4772e97774",
+      "measured_numerical_reuse": "BYTE identical to measured cb98b44524"
+    },
+    "src/gpuwrf/physics/wrf_cam_ozone.py": {
+      "sha256": "271a5d30aee7aa3ce37607efe51d46983478bb5e85dc886a3cacb787fe2f6c9c",
+      "per_file_patch_id": "6c296bcb742f8a7b08f5b9b72b46cd0d9986c517",
+      "measured_numerical_reuse": "AST identical to measured cb98b44524 except one helper docstring; source locations unchanged"
+    }
+  },
+  "gate1": "PASS manager amendment2026-10-25T18:09:44Z",
+  "gate2": "PASS <=1ULP original-WRF profiles",
+  "gate3": "PASS CUDA CompileOnly only; actual composed RC GPU remains required",
+  "gate4": "PASS14deletion+2semantic genuineASSERT/0setup",
+  "gate5": "PASS scoped source/E41/matched cost disclosure",
+  "physical_backend": "cpu",
+  "GPU_executed": false,
+  "programs": {
+    "Swiss d01": {
+      "candidate_directory": "E8408_swiss_d01",
+      "native_kernels": 1081,
+      "fusions": 1464,
+      "traced_Pallas": 159,
+      "compiled_memory": {
+        "argument_size_in_bytes": 27359480,
+        "output_size_in_bytes": 24936004,
+        "temp_size_in_bytes": 224182360,
+        "alias_size_in_bytes": 24934644
+      },
+      "E41": "PASS",
+      "max_stack_B": 16,
+      "RN_f64_divides": 11,
+      "RN_f64_operand_converts": 10,
+      "RN_f32_result_converts": 11,
+      "RN_f64_divide_elements": 1774,
+      "per_site_kernel_bindings": {
+        "ozone_cyclic1early": {
+          "scalar": [
+            "loop_divide_fusion_15",
+            "loop_select_fusion_12"
+          ],
+          "field": []
+        },
+        "ozone_linear1": {
+          "scalar": [
+            "loop_divide_fusion_16",
+            "loop_select_fusion_12"
+          ],
+          "field": []
+        },
+        "ozone_cyclic2early": {
+          "scalar": [
+            "loop_divide_fusion_10",
+            "loop_select_fusion_12"
+          ],
+          "field": []
+        },
+        "ozone_linear2": {
+          "scalar": [
+            "loop_divide_fusion_9",
+            "loop_select_fusion_12"
+          ],
+          "field": []
+        },
+        "solar_lon15": {
+          "scalar": [],
+          "field": [
+            "loop_divide_fusion_7",
+            "wrapped_convert_4"
+          ]
+        },
+        "solar_midpoint60": {
+          "scalar": [
+            "loop_divide_fusion_8",
+            "wrapped_convert_3"
+          ],
+          "field": []
+        },
+        "solar_solcon365": {
+          "scalar": [
+            "loop_divide_fusion_14",
+            "wrapped_convert_3"
+          ],
+          "field": []
+        },
+        "solar_local60": {
+          "scalar": [
+            "loop_divide_fusion_14",
+            "wrapped_convert_3"
+          ],
+          "field": []
+        },
+        "solar_eot365": {
+          "scalar": [
+            "loop_divide_fusion_14",
+            "wrapped_convert_3"
+          ],
+          "field": []
+        },
+        "solar_day1440": {
+          "scalar": [
+            "loop_divide_fusion_14",
+            "wrapped_convert_3"
+          ],
+          "field": []
+        },
+        "solar_lead60": {
+          "scalar": [
+            "wrapped_convert_2",
+            "wrapped_divide"
+          ],
+          "field": []
+        },
+        "ozone_lead60": {
+          "scalar": [
+            "wrapped_convert_2",
+            "wrapped_divide"
+          ],
+          "field": []
+        }
+      },
+      "full_constant_proto_sha256": "9eae78044f4fd9fe56839f0b2b343ab1352c0e9c1f96df9af2a296b785e28d63",
+      "per_site_scalar_fusions": {
+        "ozone_cyclic1early": {
+          "count": 4,
+          "fusions": [
+            "loop_convert_select_fusion",
+            "loop_divide_fusion.15",
+            "loop_divide_fusion.16",
+            "loop_select_fusion.12"
+          ]
+        },
+        "ozone_linear1": {
+          "count": 3,
+          "fusions": [
+            "loop_convert_fusion.1",
+            "loop_divide_fusion.16",
+            "loop_select_fusion.12"
+          ]
+        },
+        "ozone_cyclic2early": {
+          "count": 2,
+          "fusions": [
+            "loop_divide_fusion.10",
+            "loop_select_fusion.12"
+          ]
+        },
+        "ozone_linear2": {
+          "count": 2,
+          "fusions": [
+            "loop_divide_fusion.9",
+            "loop_select_fusion.12"
+          ]
+        },
+        "solar_midpoint60": {
+          "count": 2,
+          "fusions": [
+            "loop_divide_fusion.8",
+            "wrapped_convert.6"
+          ]
+        },
+        "solar_solcon365": {
+          "count": 2,
+          "fusions": [
+            "loop_divide_fusion.11",
+            "wrapped_convert.8"
+          ]
+        },
+        "solar_local60": {
+          "count": 2,
+          "fusions": [
+            "loop_divide_fusion.12",
+            "wrapped_convert.7"
+          ]
+        },
+        "solar_eot365": {
+          "count": 2,
+          "fusions": [
+            "loop_divide_fusion.13",
+            "wrapped_convert.5"
+          ]
+        },
+        "solar_day1440": {
+          "count": 2,
+          "fusions": [
+            "loop_divide_fusion.14",
+            "wrapped_convert.3"
+          ]
+        },
+        "solar_lead60": {
+          "count": 2,
+          "fusions": [
+            "wrapped_convert.2",
+            "wrapped_divide"
+          ]
+        },
+        "ozone_lead60": {
+          "count": 2,
+          "fusions": [
+            "wrapped_convert.2",
+            "wrapped_divide"
+          ]
+        }
+      },
+      "static_scheduled_kernel_references": 1604,
+      "candidate_compile_s": 218.9434591629979
+    },
+    "PROD d01": {
+      "candidate_directory": "E8404_prod_d01",
+      "native_kernels": 1107,
+      "fusions": 1385,
+      "traced_Pallas": 161,
+      "compiled_memory": {
+        "argument_size_in_bytes": 126913232,
+        "output_size_in_bytes": 114544828,
+        "temp_size_in_bytes": 525257432,
+        "alias_size_in_bytes": 114543364
+      },
+      "E41": "PASS",
+      "max_stack_B": 32,
+      "RN_f64_divides": 11,
+      "RN_f64_operand_converts": 10,
+      "RN_f32_result_converts": 11,
+      "RN_f64_divide_elements": 8410,
+      "per_site_kernel_bindings": {
+        "solar_lon15": {
+          "scalar": [],
+          "field": [
+            "loop_divide_fusion_8",
+            "wrapped_convert_3"
+          ]
+        },
+        "solar_midpoint60": {
+          "scalar": [
+            "loop_divide_fusion_9",
+            "wrapped_convert_5"
+          ],
+          "field": []
+        },
+        "solar_solcon365": {
+          "scalar": [
+            "loop_divide_fusion_13",
+            "wrapped_convert_5"
+          ],
+          "field": []
+        },
+        "solar_local60": {
+          "scalar": [
+            "loop_divide_fusion_13",
+            "wrapped_convert_5"
+          ],
+          "field": []
+        },
+        "solar_eot365": {
+          "scalar": [
+            "loop_divide_fusion_13",
+            "wrapped_convert_5"
+          ],
+          "field": []
+        },
+        "solar_day1440": {
+          "scalar": [
+            "loop_divide_fusion_13",
+            "wrapped_convert_5"
+          ],
+          "field": []
+        },
+        "ozone_linear2": {
+          "scalar": [
+            "loop_divide_fusion_14",
+            "loop_select_fusion_32"
+          ],
+          "field": []
+        },
+        "ozone_cyclic2early": {
+          "scalar": [
+            "loop_divide_fusion_15",
+            "loop_select_fusion_32"
+          ],
+          "field": []
+        },
+        "ozone_cyclic1early": {
+          "scalar": [
+            "loop_divide_fusion_17",
+            "loop_select_fusion_33"
+          ],
+          "field": []
+        },
+        "ozone_linear1": {
+          "scalar": [
+            "loop_divide_fusion_17",
+            "loop_select_fusion_33"
+          ],
+          "field": []
+        },
+        "solar_lead60": {
+          "scalar": [
+            "loop_add_convert_fusion",
+            "wrapped_divide"
+          ],
+          "field": []
+        },
+        "ozone_lead60": {
+          "scalar": [
+            "loop_add_convert_fusion",
+            "wrapped_divide"
+          ],
+          "field": []
+        }
+      },
+      "full_constant_proto_sha256": "e801fe2909e9f9bffabc66bc9c93b846de2f52f8e0d58a3c72c5fecf50e6cb9f",
+      "per_site_scalar_fusions": {
+        "solar_midpoint60": {
+          "count": 2,
+          "fusions": [
+            "loop_divide_fusion.9",
+            "wrapped_convert.7"
+          ]
+        },
+        "solar_solcon365": {
+          "count": 2,
+          "fusions": [
+            "loop_divide_fusion.10",
+            "wrapped_convert.9"
+          ]
+        },
+        "solar_local60": {
+          "count": 2,
+          "fusions": [
+            "loop_divide_fusion.11",
+            "wrapped_convert.8"
+          ]
+        },
+        "solar_eot365": {
+          "count": 2,
+          "fusions": [
+            "loop_divide_fusion.12",
+            "wrapped_convert.6"
+          ]
+        },
+        "solar_day1440": {
+          "count": 2,
+          "fusions": [
+            "loop_divide_fusion.13",
+            "wrapped_convert.5"
+          ]
+        },
+        "ozone_linear2": {
+          "count": 2,
+          "fusions": [
+            "loop_divide_fusion.14",
+            "loop_select_fusion.32"
+          ]
+        },
+        "ozone_cyclic2early": {
+          "count": 2,
+          "fusions": [
+            "loop_divide_fusion.15",
+            "loop_select_fusion.32"
+          ]
+        },
+        "ozone_cyclic1early": {
+          "count": 4,
+          "fusions": [
+            "loop_and_convert_fusion",
+            "loop_divide_fusion.16",
+            "loop_divide_fusion.17",
+            "loop_select_fusion.33"
+          ]
+        },
+        "ozone_linear1": {
+          "count": 3,
+          "fusions": [
+            "loop_convert_fusion.1",
+            "loop_divide_fusion.17",
+            "loop_select_fusion.33"
+          ]
+        },
+        "solar_lead60": {
+          "count": 2,
+          "fusions": [
+            "loop_add_convert_fusion",
+            "wrapped_divide"
+          ]
+        },
+        "ozone_lead60": {
+          "count": 2,
+          "fusions": [
+            "loop_add_convert_fusion",
+            "wrapped_divide"
+          ]
+        }
+      },
+      "static_scheduled_kernel_references": 1516,
+      "candidate_compile_s": 130.38446322298842,
+      "matched_baseline": {
+        "directory": "E8411_base_prod_d01",
+        "native_kernels": 1104,
+        "native_kernel_delta": 3,
+        "native_kernel_delta_pct": 0.2717391304347826,
+        "temp_bytes": 525257176,
+        "temp_delta_bytes": 256,
+        "temp_delta_pct": 4.873802999694763e-05,
+        "fusions": 1375,
+        "fusions_delta": 10,
+        "argument_output_alias_bytes_exact": true,
+        "baseline_compile_s": 183.53999812201073,
+        "same_tool_options_case": true,
+        "baseline_static_kernel_references": 1506,
+        "static_kernel_reference_delta": 10,
+        "launch_cost_scenario_I_us_per_radiation_call": [
+          20,
+          100
+        ],
+        "launch_cost_scenario_assumption": "[I] 2\u201310 us per added static scheduled kernel reference (or unique native kernel if larger), charged once per refresh; scenario, NOT measured GPU time or a bound on field-divide time"
+      }
+    },
+    "PROD d02": {
+      "candidate_directory": "E8406_prod_d02",
+      "native_kernels": 751,
+      "fusions": 932,
+      "traced_Pallas": 151,
+      "compiled_memory": {
+        "argument_size_in_bytes": 346875860,
+        "output_size_in_bytes": 304192092,
+        "temp_size_in_bytes": 642901760,
+        "alias_size_in_bytes": 304190732
+      },
+      "E41": "PASS",
+      "max_stack_B": 32,
+      "RN_f64_divides": 7,
+      "RN_f64_operand_converts": 4,
+      "RN_f32_result_converts": 7,
+      "RN_f64_divide_elements": 31245,
+      "per_site_kernel_bindings": {
+        "solar_lon15": {
+          "scalar": [],
+          "field": [
+            "loop_divide_fusion_8",
+            "wrapped_convert_2"
+          ]
+        },
+        "solar_midpoint60": {
+          "scalar": [
+            "loop_divide_fusion_9",
+            "wrapped_convert_3"
+          ],
+          "field": []
+        },
+        "solar_solcon365": {
+          "scalar": [
+            "loop_divide_fusion_13",
+            "wrapped_convert_3"
+          ],
+          "field": []
+        },
+        "solar_local60": {
+          "scalar": [
+            "loop_divide_fusion_13",
+            "wrapped_convert_3"
+          ],
+          "field": []
+        },
+        "solar_eot365": {
+          "scalar": [
+            "loop_divide_fusion_13",
+            "wrapped_convert_3"
+          ],
+          "field": []
+        },
+        "solar_day1440": {
+          "scalar": [
+            "loop_divide_fusion_13",
+            "wrapped_convert_3"
+          ],
+          "field": []
+        },
+        "solar_lead60": {
+          "scalar": [
+            "wrapped_convert_3",
+            "wrapped_divide"
+          ],
+          "field": []
+        }
+      },
+      "full_constant_proto_sha256": "0f91afd351a0a147f45a7aefa945a04003afb4559b0d240a1d8b800a2600d8b8",
+      "per_site_scalar_fusions": {
+        "solar_midpoint60": {
+          "count": 2,
+          "fusions": [
+            "loop_divide_fusion.9",
+            "wrapped_convert.6"
+          ]
+        },
+        "solar_solcon365": {
+          "count": 2,
+          "fusions": [
+            "loop_divide_fusion.10",
+            "wrapped_convert.8"
+          ]
+        },
+        "solar_local60": {
+          "count": 2,
+          "fusions": [
+            "loop_divide_fusion.11",
+            "wrapped_convert.7"
+          ]
+        },
+        "solar_eot365": {
+          "count": 2,
+          "fusions": [
+            "loop_divide_fusion.12",
+            "wrapped_convert.5"
+          ]
+        },
+        "solar_day1440": {
+          "count": 2,
+          "fusions": [
+            "loop_divide_fusion.13",
+            "wrapped_convert.4"
+          ]
+        },
+        "solar_lead60": {
+          "count": 2,
+          "fusions": [
+            "wrapped_convert.3",
+            "wrapped_divide"
+          ]
+        }
+      },
+      "static_scheduled_kernel_references": 1064,
+      "candidate_compile_s": 133.25307011300174,
+      "matched_baseline": {
+        "directory": "E8412_base_prod_d02",
+        "native_kernels": 753,
+        "native_kernel_delta": -2,
+        "native_kernel_delta_pct": -0.2656042496679947,
+        "temp_bytes": 642901760,
+        "temp_delta_bytes": 0,
+        "temp_delta_pct": 0.0,
+        "fusions": 928,
+        "fusions_delta": 4,
+        "argument_output_alias_bytes_exact": true,
+        "baseline_compile_s": 126.84107362799114,
+        "same_tool_options_case": true,
+        "baseline_static_kernel_references": 1060,
+        "static_kernel_reference_delta": 4,
+        "launch_cost_scenario_I_us_per_radiation_call": [
+          8,
+          40
+        ],
+        "launch_cost_scenario_assumption": "[I] 2\u201310 us per added static scheduled kernel reference (or unique native kernel if larger), charged once per refresh; scenario, NOT measured GPU time or a bound on field-divide time"
+      }
+    },
+    "WN3 d01": {
+      "candidate_directory": "E8409_wn3_d01",
+      "native_kernels": 1111,
+      "fusions": 1394,
+      "traced_Pallas": 161,
+      "compiled_memory": {
+        "argument_size_in_bytes": 127417248,
+        "output_size_in_bytes": 114544828,
+        "temp_size_in_bytes": 525544424,
+        "alias_size_in_bytes": 114543364
+      },
+      "E41": "PASS",
+      "max_stack_B": 32,
+      "RN_f64_divides": 11,
+      "RN_f64_operand_converts": 10,
+      "RN_f32_result_converts": 11,
+      "RN_f64_divide_elements": 8410,
+      "per_site_kernel_bindings": {
+        "solar_lon15": {
+          "scalar": [],
+          "field": [
+            "loop_divide_fusion_8",
+            "wrapped_convert_3"
+          ]
+        },
+        "solar_midpoint60": {
+          "scalar": [
+            "loop_divide_fusion_9",
+            "wrapped_convert_5"
+          ],
+          "field": []
+        },
+        "solar_solcon365": {
+          "scalar": [
+            "loop_divide_fusion_13",
+            "wrapped_convert_5"
+          ],
+          "field": []
+        },
+        "solar_local60": {
+          "scalar": [
+            "loop_divide_fusion_13",
+            "wrapped_convert_5"
+          ],
+          "field": []
+        },
+        "solar_eot365": {
+          "scalar": [
+            "loop_divide_fusion_13",
+            "wrapped_convert_5"
+          ],
+          "field": []
+        },
+        "solar_day1440": {
+          "scalar": [
+            "loop_divide_fusion_13",
+            "wrapped_convert_5"
+          ],
+          "field": []
+        },
+        "ozone_linear2": {
+          "scalar": [
+            "loop_divide_fusion_14",
+            "loop_select_fusion_32"
+          ],
+          "field": []
+        },
+        "ozone_cyclic2early": {
+          "scalar": [
+            "loop_divide_fusion_15",
+            "loop_select_fusion_32"
+          ],
+          "field": []
+        },
+        "ozone_cyclic1early": {
+          "scalar": [
+            "loop_divide_fusion_17",
+            "loop_select_fusion_33"
+          ],
+          "field": []
+        },
+        "ozone_linear1": {
+          "scalar": [
+            "loop_divide_fusion_17",
+            "loop_select_fusion_33"
+          ],
+          "field": []
+        },
+        "solar_lead60": {
+          "scalar": [
+            "loop_add_convert_fusion",
+            "wrapped_divide"
+          ],
+          "field": []
+        },
+        "ozone_lead60": {
+          "scalar": [
+            "loop_add_convert_fusion",
+            "wrapped_divide"
+          ],
+          "field": []
+        }
+      },
+      "full_constant_proto_sha256": "f140eac37882386e09e4531232d5b9035e827b1138f849c4ea09c3cefd469543",
+      "per_site_scalar_fusions": {
+        "solar_midpoint60": {
+          "count": 2,
+          "fusions": [
+            "loop_divide_fusion.9",
+            "wrapped_convert.7"
+          ]
+        },
+        "solar_solcon365": {
+          "count": 2,
+          "fusions": [
+            "loop_divide_fusion.10",
+            "wrapped_convert.9"
+          ]
+        },
+        "solar_local60": {
+          "count": 2,
+          "fusions": [
+            "loop_divide_fusion.11",
+            "wrapped_convert.8"
+          ]
+        },
+        "solar_eot365": {
+          "count": 2,
+          "fusions": [
+            "loop_divide_fusion.12",
+            "wrapped_convert.6"
+          ]
+        },
+        "solar_day1440": {
+          "count": 2,
+          "fusions": [
+            "loop_divide_fusion.13",
+            "wrapped_convert.5"
+          ]
+        },
+        "ozone_linear2": {
+          "count": 2,
+          "fusions": [
+            "loop_divide_fusion.14",
+            "loop_select_fusion.32"
+          ]
+        },
+        "ozone_cyclic2early": {
+          "count": 2,
+          "fusions": [
+            "loop_divide_fusion.15",
+            "loop_select_fusion.32"
+          ]
+        },
+        "ozone_cyclic1early": {
+          "count": 4,
+          "fusions": [
+            "loop_and_convert_fusion",
+            "loop_divide_fusion.16",
+            "loop_divide_fusion.17",
+            "loop_select_fusion.33"
+          ]
+        },
+        "ozone_linear1": {
+          "count": 3,
+          "fusions": [
+            "loop_convert_fusion.1",
+            "loop_divide_fusion.17",
+            "loop_select_fusion.33"
+          ]
+        },
+        "solar_lead60": {
+          "count": 2,
+          "fusions": [
+            "loop_add_convert_fusion",
+            "wrapped_divide"
+          ]
+        },
+        "ozone_lead60": {
+          "count": 2,
+          "fusions": [
+            "loop_add_convert_fusion",
+            "wrapped_divide"
+          ]
+        }
+      },
+      "static_scheduled_kernel_references": 1525,
+      "candidate_compile_s": 179.64651676799986,
+      "matched_baseline": {
+        "directory": "E8413_base_wn3_d01",
+        "native_kernels": 1108,
+        "native_kernel_delta": 3,
+        "native_kernel_delta_pct": 0.27075812274368233,
+        "temp_bytes": 525544168,
+        "temp_delta_bytes": 256,
+        "temp_delta_pct": 4.871141487008186e-05,
+        "fusions": 1384,
+        "fusions_delta": 10,
+        "argument_output_alias_bytes_exact": true,
+        "baseline_compile_s": 190.97934760600037,
+        "same_tool_options_case": true,
+        "baseline_static_kernel_references": 1515,
+        "static_kernel_reference_delta": 10,
+        "launch_cost_scenario_I_us_per_radiation_call": [
+          20,
+          100
+        ],
+        "launch_cost_scenario_assumption": "[I] 2\u201310 us per added static scheduled kernel reference (or unique native kernel if larger), charged once per refresh; scenario, NOT measured GPU time or a bound on field-divide time"
+      }
+    },
+    "WN3 fused d02+d03": {
+      "candidate_directory": "E8410b_wn3_fused_d02",
+      "native_kernels": 1226,
+      "fusions": 1880,
+      "traced_Pallas": 329,
+      "compiled_memory": {
+        "argument_size_in_bytes": 452175896,
+        "output_size_in_bytes": 407400024,
+        "temp_size_in_bytes": 580269472,
+        "alias_size_in_bytes": 0
+      },
+      "E41": "PASS",
+      "max_stack_B": 32,
+      "RN_f64_divides": 14,
+      "RN_f64_operand_converts": 8,
+      "RN_f32_result_converts": 14,
+      "RN_f64_divide_elements": 41574,
+      "per_site_kernel_bindings": {
+        "solar_lon15": {
+          "scalar": [],
+          "field": [
+            "loop_divide_fusion_16",
+            "loop_divide_fusion_23",
+            "wrapped_convert",
+            "wrapped_convert_8"
+          ]
+        },
+        "solar_midpoint60": {
+          "scalar": [
+            "loop_divide_fusion_17",
+            "wrapped_convert_1"
+          ],
+          "field": []
+        },
+        "solar_solcon365": {
+          "scalar": [
+            "loop_divide_fusion_21",
+            "wrapped_convert_1"
+          ],
+          "field": []
+        },
+        "solar_local60": {
+          "scalar": [
+            "loop_divide_fusion_21",
+            "wrapped_convert_1"
+          ],
+          "field": []
+        },
+        "solar_eot365": {
+          "scalar": [
+            "loop_divide_fusion_21",
+            "wrapped_convert_1"
+          ],
+          "field": []
+        },
+        "solar_day1440": {
+          "scalar": [
+            "loop_divide_fusion_21",
+            "wrapped_convert_1"
+          ],
+          "field": []
+        },
+        "solar_lead60": {
+          "scalar": [
+            "wrapped_convert_1",
+            "wrapped_divide"
+          ],
+          "field": []
+        }
+      },
+      "full_constant_proto_sha256": "c85f1ac4307011a92c173ab24b2762b816d5e01d3ccd436c61db8163223504bc",
+      "per_site_scalar_fusions": {
+        "solar_midpoint60": {
+          "count": 4,
+          "fusions": [
+            "loop_divide_fusion.17",
+            "loop_divide_fusion.24",
+            "wrapped_convert.12",
+            "wrapped_convert.4"
+          ]
+        },
+        "solar_solcon365": {
+          "count": 4,
+          "fusions": [
+            "loop_divide_fusion.18",
+            "loop_divide_fusion.25",
+            "wrapped_convert.14",
+            "wrapped_convert.6"
+          ]
+        },
+        "solar_local60": {
+          "count": 4,
+          "fusions": [
+            "loop_divide_fusion.19",
+            "loop_divide_fusion.26",
+            "wrapped_convert.13",
+            "wrapped_convert.5"
+          ]
+        },
+        "solar_eot365": {
+          "count": 4,
+          "fusions": [
+            "loop_divide_fusion.20",
+            "loop_divide_fusion.27",
+            "wrapped_convert.11",
+            "wrapped_convert.3"
+          ]
+        },
+        "solar_day1440": {
+          "count": 4,
+          "fusions": [
+            "loop_divide_fusion.21",
+            "loop_divide_fusion.28",
+            "wrapped_convert.10",
+            "wrapped_convert.2"
+          ]
+        },
+        "solar_lead60": {
+          "count": 4,
+          "fusions": [
+            "wrapped_convert.1",
+            "wrapped_convert.9",
+            "wrapped_divide",
+            "wrapped_divide.1"
+          ]
+        }
+      },
+      "static_scheduled_kernel_references": 2171,
+      "candidate_compile_s": 328.42978179999045,
+      "matched_baseline": {
+        "directory": "E8414_base_wn3_fused_d02",
+        "native_kernels": 1227,
+        "native_kernel_delta": -1,
+        "native_kernel_delta_pct": -0.08149959250203749,
+        "temp_bytes": 580269472,
+        "temp_delta_bytes": 0,
+        "temp_delta_pct": 0.0,
+        "fusions": 1872,
+        "fusions_delta": 8,
+        "argument_output_alias_bytes_exact": true,
+        "baseline_compile_s": 285.1279280919989,
+        "same_tool_options_case": true,
+        "baseline_static_kernel_references": 2163,
+        "static_kernel_reference_delta": 8,
+        "launch_cost_scenario_I_us_per_radiation_call": [
+          16,
+          80
+        ],
+        "launch_cost_scenario_assumption": "[I] 2\u201310 us per added static scheduled kernel reference (or unique native kernel if larger), charged once per refresh; scenario, NOT measured GPU time or a bound on field-divide time"
+      }
+    }
+  },
+  "open_release_evidence": [
+    "Actual composed-RC GPU E41/clock check",
+    "RW1\u2013RW4 including original-CPU-WRF72h",
+    "GPU timing, VRAM and readiness; scenario estimates do not replace measurement"
+  ],
+  "known_issues": "proofs/w44_e84fix/KNOWN_ISSUES_E84.md",
+  "S2_inventory": "proofs/w44_e84fix/S2_ISLANDS.md"
+}

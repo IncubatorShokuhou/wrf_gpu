@@ -1,0 +1,59 @@
+{
+  "source": "w44-params actual GPU NIGHT-RESULT 2026-10-26T02:13:26Z; manager release decision 2026-10-27T00:14:27Z",
+  "owner_evidence_commit": "37f5ef4c9c",
+  "source_pin": "f7b71623f2141dacc8e61a475879da7fef3aad77",
+  "model_src_tree": "70fa8384672257d3457cf8a9863b34dac0a115b5",
+  "owner_gate_sha256": "d4a444ec509faf88af5009863b09aceb97b9f8d3c4ef4e7c6f02336c82484a0d",
+  "verdict": "PASS_D2_MYNN_FAMILY_QUALIFICATION",
+  "scope": "Real PROD 2-domain first-root/default and ordinary nested-root replay; not full wind300/D6/station/RW/S1 qualification",
+  "platform": "gpu",
+  "gpu_executed": true,
+  "default": {
+    "status": "PASS_BYTE",
+    "unequal_leaves": 0,
+    "profile_pass_byte": true
+  },
+  "value_reuse": {
+    "same_on_changed_keys_and_hlo": true,
+    "changed_loaded": true,
+    "new_native_blobs": 0
+  },
+  "actual_program_resource_gate": {
+    "status": "PASS_ACTUAL_FOUR_PROGRAMS",
+    "max_stack_B": 32,
+    "nonleaf_over1k": 0,
+    "kinput_over500": 0
+  },
+  "nvtx_labels": {
+    "PARAMS:off": 3,
+    "PARAMS:on": 3
+  },
+  "warm_cost": {
+    "status": "PASS_NO_CLEAR_SPEED_LOSS",
+    "unprofiled_samples_per_arm": 12,
+    "median_s": {
+      "off": 0.0427419724946958,
+      "on": 0.043087465506687295
+    },
+    "on_over_off": 1.0080832257340104,
+    "sample_min_max_s": {
+      "off": [
+        0.04245830098807346,
+        0.04383536201203242
+      ],
+      "on": [
+        0.04217641799186822,
+        0.044561967995832674
+      ]
+    },
+    "profiled_wall_ratio": 1.0693458950434007,
+    "interpretation": "Added scalar-table pack accounts net+1kernel/domain; no transpose growth or E41 cliff. +0.81% unprofiled/+0.63% summed device-kernel median; overlapping sample ranges/no A/A floor. No speedup claim; profiled wrapper wall +6.93% disclosed, not S1."
+  },
+  "release_limits": [
+    "experimental MYNN only",
+    "no three-nest wind300 or D6 qualification",
+    "no station or 24-72h drift qualification",
+    "no full S1, RW or full-process VRAM qualification"
+  ],
+  "diffusion_damping": "NOT shipped in v0.4.4, including c_s; refused after D1 GPU gate FAIL; may come in a later release after GPU qualification; no date or commitment"
+}

@@ -784,6 +784,13 @@ WRFOUT_VARIABLE_SPECS: dict[str, WrfoutVariableSpec] = {
     ),
     "CLDFRA": _spec("CLDFRA", XYZ, "XYZ", "CLOUD FRACTION", "", coordinates="XLONG XLAT XTIME"),
     "QC_BL": _spec("QC_BL", XYZ, "XYZ", "CLOUD WATER MIXING RATIO IN PBL schemes", "kg kg-1", coordinates="XLONG XLAT XTIME"),
+    "QI_BL": _spec("QI_BL", XYZ, "XYZ", "CLOUD ICE MIXING RATIO IN PBL schemes", "kg kg-1", coordinates="XLONG XLAT XTIME"),
+    "RTHRATLW": _spec("RTHRATLW", XYZ, "XYZ", "UNCOUPLED THETA TENDENCY DUE TO LONG WAVE RADIATION", "K s-1", coordinates="XLONG XLAT XTIME"),
+    "RTHRATSW": _spec("RTHRATSW", XYZ, "XYZ", "UNCOUPLED THETA TENDENCY DUE TO SHORT WAVE RADIATION", "K s-1", coordinates="XLONG XLAT XTIME"),
+    "RTHRATLWC": _spec("RTHRATLWC", XYZ, "XYZ", "UNCOUPLED THETA TEND DUE TO CLEAR SKY LONG WAVE RAD", "K s-1", coordinates="XLONG XLAT XTIME"),
+    "RTHRATSWC": _spec("RTHRATSWC", XYZ, "XYZ", "UNCOUPLED THETA TEND DUE TO CLEAR SKY SHORT WAVE RAD", "K s-1", coordinates="XLONG XLAT XTIME"),
+    **{name: _spec(name, XYZ, "XYZ", f"gpuwrf diagnostic, no WRF equivalent: {species} mixing ratio passed to RRTMG", "kg kg-1", coordinates="XLONG XLAT XTIME")
+       for name, species in (("QC_RAD", "cloud water"), ("QI_RAD", "cloud ice"), ("QS_RAD", "snow"), ("QG_RAD", "graupel"))},
     "CLDFRA_BL": _spec("CLDFRA_BL", XYZ, "XYZ", "CLOUD FRACTION pbl", "", coordinates="XLONG XLAT XTIME"),
     "DTAUX3D": _spec("DTAUX3D", XYZ, "XYZ", "LOCAL U GWDO STRESS", "m s-1", coordinates="XLONG XLAT XTIME"),
     "DTAUY3D": _spec("DTAUY3D", XYZ, "XYZ", "LOCAL V GWDO STRESS", "m s-1", coordinates="XLONG XLAT XTIME"),
@@ -1402,6 +1409,11 @@ for _name,_units,_description in (
     WRFOUT_VARIABLE_SPECS[_name]=_spec(_name,XY,"XY ",_description,_units,coordinates="XLONG XLAT XTIME")
 WRFOUT_VARIABLE_SPECS["REFL_10CM"]=_spec("REFL_10CM",XYZ,"XYZ","Radar reflectivity (lamda = 10 cm)","dBZ",coordinates="XLONG XLAT XTIME")
 
+from gpuwrf.io.mynn_budget_history import METADATA as MYNN_BUDGET_METADATA, inactive_package_history as _inactive_mynn_history
+for _name,(_description,_units,_stagger) in MYNN_BUDGET_METADATA.items():
+    WRFOUT_VARIABLE_SPECS[_name]=_spec(_name,W_XYZ if _stagger=='Z' else XYZ,'XYZ',
+        _description,_units,stagger=_stagger,coordinates='XLONG XLAT XTIME')
+
 for _bucket, _description in (
     ("PREC_ACC_C", "ACCUMULATED CUMULUS PRECIPITATION OVER prec_acc_dt PERIODS OF TIME"),
     ("PREC_ACC_NC", "ACCUMULATED GRID SCALE  PRECIPITATION OVER prec_acc_dt PERIODS OF TIME"),
@@ -1831,6 +1843,8 @@ def _prepare_requested_names(
     if variable_subset is None:
         return None
     requested = set(variable_subset)
+    if "QC_BL" in requested:
+        requested.add("QI_BL")
     if include_mandatory_coords:
         requested.update(MANDATORY_WRFOUT_COORDINATES)
     requested.discard("Times")
@@ -2036,6 +2050,8 @@ def prepare_wrfout_payload(
         variable_subset,
         include_mandatory_coords=include_mandatory_coords,
     )
+    if _lookup(namelist, "rad_diag", 0) and diagnostics is None:
+        raise ValueError("rad_diag=1 requires held radiation history diagnostics")
     tracer_history = None
     if tracer_names:
         from gpuwrf.tracers.history import select_history
@@ -2051,6 +2067,10 @@ def prepare_wrfout_payload(
         requested_names=requested_names,
         tracer_history=tracer_history,
     ):
+        from gpuwrf.io.mynn_budget_history import pack_history as pack_mynn_history
+        mynn_fields=pack_mynn_history(diagnostics,namelist,(nz,ny,nx),requested_names,
+                                      host_value=_host_materialized_value)
+        if mynn_fields:diagnostics=dict(diagnostics or {},**mynn_fields)
         if requested_names is None:
             fields = _build_output_fields(
                 state, grid, namelist, dimensions,
@@ -2092,6 +2112,8 @@ def prepare_wrfout_payload(
                 requested_names=requested_names,
             )
         for name in _MP_UNREPRESENTED_FIELDS.get(int(_lookup(namelist,"mp_physics",0)),()):
+            fields.pop(name,None)
+        for name in _inactive_mynn_history(namelist):
             fields.pop(name,None)
         from gpuwrf.io.producer_history import add_fields as _add_producer_history
         _add_producer_history(fields, state=state, namelist=namelist, diagnostics=diagnostics,
@@ -2164,6 +2186,14 @@ def prepare_wrfout_payload(
         # Apply them after the compatibility builder so a hydrometeor proxy or
         # cold-start turbulence seed cannot replace the requested history leaf.
         if diagnostics is not None:
+            if _lookup(namelist, "rad_diag", 0):
+                from gpuwrf.diagnostics.radiation import HISTORY_NAMES
+                for name in HISTORY_NAMES:
+                    if requested_names is not None and name not in requested_names:
+                        continue
+                    if name not in diagnostics or not np.isfinite(_host_materialized_value(diagnostics[name])).all():
+                        raise ValueError(f"missing/nonfinite rad_diag history field {name}")
+                    fields[name] = _coerce_array(name, diagnostics[name], (nz, ny, nx))
             solar_names = (SOLAR_SURFACE_FIELDS if any(name in diagnostics for name in
                            ("SWDDIR", "SWDDNI", "SWDDIF")) else ())
             for name in (*ONLINE_SURFACE_FIELDS,"REFL_10CM", *solar_names,*GODDARD_SURFACE_FIELDS):
@@ -2171,7 +2201,7 @@ def prepare_wrfout_payload(
                 if value is not None and not np.isfinite(_host_materialized_value(value)).all():
                     kind="precipitation" if name in ONLINE_SURFACE_FIELDS[:3] else "online diagnostic"
                     raise ValueError(f"nonfinite {kind} history field {name}")
-            for name in ("CLDFRA", "QC_BL", "CLDFRA_BL", "QKE", "DTAUX3D", "DTAUY3D", "T", "REFL_10CM", "HFX_FDDA"):
+            for name in ("CLDFRA", "QC_BL", "QI_BL", "CLDFRA_BL", "QKE", "DTAUX3D", "DTAUY3D", "T", "REFL_10CM", "HFX_FDDA"):
                 if (requested_names is None or name in requested_names) and name in diagnostics:
                     if name == "HFX_FDDA" and not np.isfinite(_host_materialized_value(diagnostics[name])).all():
                         raise ValueError("nonfinite FDDA history field HFX_FDDA")
@@ -2245,6 +2275,7 @@ def prepare_wrfout_payload(
                 spec = WRFOUT_VARIABLE_SPECS[name]
                 fields[name] = _coerce_array(name,diagnostics[name],
                     _shape_for_dimensions(spec.dimensions,dimensions),dtype=_numpy_dtype_for_spec(spec))
+    fields.update(mynn_fields)
     return PreparedWrfout(
         target=target,
         dimensions=dimensions,
@@ -2326,6 +2357,8 @@ def write_prepared_wrfout(
     else:
         raise FileExistsError(f"WRFOUT_TARGET_EXISTS:{target}")
     subset = None if variable_subset is None else frozenset(variable_subset)
+    if subset is not None and "QC_BL" in subset:
+        subset = subset | {"QI_BL"}
     if subset is not None and include_mandatory_coords:
         # Self-contained training frame: also emit the coordinate/dimension vars (a
         # coord still absent from the payload is skipped below, never fabricated).
@@ -2360,7 +2393,7 @@ def write_prepared_wrfout(
             else:
                 _write_xtime(dataset, prepared.run_start_dt, prepared.lead_hours)
                 write_order = OPERATIONAL_WRFOUT_VARIABLES
-            write_order = (*write_order, *(name for name in ("U10E", "V10E", "QC_BL", "CLDFRA_BL", *ONLINE_SURFACE_FIELDS, "REFL_10CM", *SOLAR_SURFACE_FIELDS, *GODDARD_SURFACE_FIELDS, *GODDARD_NATIVE_FLUXES,
+            write_order = (*write_order, *(name for name in ("U10E", "V10E", "QC_BL", "QI_BL", "CLDFRA_BL", *ONLINE_SURFACE_FIELDS, "REFL_10CM", *SOLAR_SURFACE_FIELDS, *GODDARD_SURFACE_FIELDS, *GODDARD_NATIVE_FLUXES,
                                          "CWM", "QRIMEF", "F_ICE_PHY", "F_RAIN_PHY", "F_RIMEF_PHY",
                                          "RE_CLOUD_GSFC", "RE_RAIN_GSFC", "RE_ICE_GSFC", "RE_SNOW_GSFC", "RE_GRAUPEL_GSFC", "RE_HAIL_GSFC", "PHYS_TOT", "QNWFA2D", "QNIFA2D")
                                          if name in prepared.fields and name not in write_order))
@@ -2369,6 +2402,10 @@ def write_prepared_wrfout(
                 if name in prepared.fields and name not in write_order))
             write_order = (*write_order, *(name for name in _PRODUCER_HISTORY_FIELDS
                 if name in prepared.fields and name not in write_order))
+            if _lookup(prepared.namelist, "rad_diag", 0):
+                from gpuwrf.diagnostics.radiation import HISTORY_NAMES
+                write_order += tuple(name for name in HISTORY_NAMES
+                                     if name in prepared.fields and name not in write_order)
             if getattr(prepared.namelist, "tracer_opt", 0) or getattr(prepared.namelist, "tracer_config", None) is not None:
                 from gpuwrf.tracers.history import register_specs
                 write_order += tuple(n for n in register_specs(prepared.namelist) if n in prepared.fields and n not in write_order)
@@ -2393,6 +2430,8 @@ def write_prepared_wrfout(
                 write_order = (*write_order, "HFX_FDDA")
             if _lookup(prepared.namelist,'bl_pbl_physics') in (16,17):
                 write_order=(*write_order,*(name for name in _EPSILON_HISTORY if name in prepared.fields and name not in write_order))
+            write_order += tuple(name for name in MYNN_BUDGET_METADATA
+                                 if name in prepared.fields and name not in write_order)
             for name in write_order:
                 if name == "Times":
                     continue

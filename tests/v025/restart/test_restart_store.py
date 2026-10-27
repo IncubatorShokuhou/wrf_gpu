@@ -40,6 +40,13 @@ def initialized():
         census=initial_census()._replace(work=initial_census().work + jnp.uint64(7)),
         slab_rad=(xy, xy), px_rad=(xy, xy),
     )
+    if os.environ.get("GPUWRF_DYN_RK_FP32", "0") == "1":
+        # Product initializer seeding (operational_mode._initial_carry_for_run): native RK (release
+        # default) captures the immutable REAL WRF base PB/PHB/MUB once; the resume/writer seams refuse
+        # a carry without it (nested_pipeline._require_native_base_state). Legacy mode keeps None.
+        from gpuwrf.kernels.dyn_rk_fp32 import real_base
+        from gpuwrf.runtime.operational_mode import _base_state_from_totals
+        carry = carry.replace(base_state=real_base(_base_state_from_totals(state)))
     namelist = OperationalNamelist(grid=grid, tendencies=None, metrics=grid.metrics, dt_s=54, acoustic_substeps=4)
     return grid, namelist, carry
 
@@ -125,6 +132,37 @@ def test_rotation_hash_and_synchronized_domain_set(initialized, tmp_path):
         store.read(generations[-2], expected_identity={"run": "OTHER"})
     with pytest.raises(ValueError, match="synchronized"):
         store.save({"d01": carry, "d02": carry}, {"d01": 1, "d02": 2}, {"d01": 54., "d02": 18.}, {})
+
+
+def test_topographic_values_are_bound_separately_from_static_restart_identity(initialized, tmp_path):
+    from dataclasses import replace
+    from datetime import datetime
+    from gpuwrf.integration.nested_pipeline import NestedPipelineConfig
+    from gpuwrf.io.topo_wind_static import TopoWindStatic
+    from gpuwrf.runtime.restart_store import nested_identity
+    from gpuwrf.runtime.checkpoint_branch import branch_identity
+    _, namelist, _ = initialized
+    topo = TopoWindStatic(jnp.ones((2, 3), jnp.float32), jnp.ones((2, 3), jnp.float32))
+    parent_nl = replace(namelist, topo_wind_static=topo)
+    child_nl = replace(parent_nl, topo_wind_static=topo._replace(ctopo=topo.ctopo * 2))
+    config = NestedPipelineConfig(tmp_path / "inputs", tmp_path / "parent", tmp_path / "proof", 3, 1)
+    def identity(cfg, nl):
+        return nested_identity(cfg, {"d01": SimpleNamespace(namelist=nl)}, datetime(2026, 2, 27))
+    parent = identity(config, parent_nl)
+    child = identity(replace(config, output_dir=tmp_path / "child"), child_nl)
+    assert parent["namelists"] == child["namelists"]
+    assert parent["surface_controls"] != child["surface_controls"]
+    changed_static = identity(config, replace(child_nl, topo_wind_static=topo._replace(ctopo2=topo.ctopo2 * 2)))
+    assert changed_static["namelists"] != parent["namelists"]
+    generation = tmp_path / "generation"
+    generation.mkdir()
+    manifest = {"branch_schema_version": 1, "identity": parent, "domains": ["d01"],
+                "sha256": "payload", "own_steps": {"d01": 67}}
+    (generation / "manifest.json").write_text(json.dumps(manifest))
+    changes = {"schema_version": 1, "parameters": {"surface_controls": child["surface_controls"]}}
+    assert branch_identity(manifest, child, changes, generation)["surface_controls"] == child["surface_controls"]
+    with pytest.raises(ValueError, match="undeclared"):
+        branch_identity(manifest, child, {"schema_version": 1}, generation)
 
 
 @pytest.mark.parametrize("failure", ["reserve", "budget", "partial", "readback"])
@@ -282,7 +320,8 @@ def test_output_seam_receipts(initialized, tmp_path):
         restore_output_receipts(writer, receipts)
 
 
-def test_production_segment_hooks_resume_clock_and_history(initialized, tmp_path, monkeypatch):
+@pytest.mark.parametrize("mode", ["resume", "null-branch", "override-branch"])
+def test_production_segment_hooks_resume_clock_and_history(initialized, tmp_path, monkeypatch, mode):
     """Actual driver orchestration with a stub step/writer; no physics claim."""
     from dataclasses import replace
     import gpuwrf.integration.nested_pipeline as pipeline
@@ -341,13 +380,34 @@ def test_production_segment_hooks_resume_clock_and_history(initialized, tmp_path
         pipeline.execute_nested_pipeline(interrupted_config)
     monkeypatch.setattr(RestartStore, "save", original_save)
     store = RestartStore(interrupted_config.checkpoint_dir, 10**8, 2, 0)
-    resumed = pipeline.execute_nested_pipeline(replace(interrupted_config, resume_checkpoint=store.latest()))
+    if mode == "resume":
+        resume_config = replace(interrupted_config, resume_checkpoint=store.latest())
+    else:
+        import gpuwrf.runtime.checkpoint_consistency as consistency
+        validated = []
+        monkeypatch.setattr(consistency, "checkpoint_validator", lambda *a: lambda *args: validated.append(args[0]))
+        changes = {"schema_version": 1}
+        if mode == "override-branch":
+            changes["domains"] = {name: {"state": {"theta": {"add": .5}}} for name in names}
+            expected = {name: c.replace(state=c.state.replace(theta=c.state.theta + .5)) for name, c in expected.items()}
+        manifest = tmp_path / "branch.json"
+        manifest.write_text(json.dumps(changes))
+        resume_config = replace(interrupted_config, output_dir=tmp_path / "branch-output",
+                                checkpoint_dir=tmp_path / "branch-store", branch_from=store.latest(), branch_manifest=manifest)
+    resumed = pipeline.execute_nested_pipeline(resume_config)
     assert control["verdict"] == resumed["verdict"] == "PIPELINE_GREEN"
     assert resumed["hierarchy"]["observed_own_steps"] == {"d01": 200, "d02": 600}
-    assert all(d["wrfout_count"] == 3 for d in resumed["per_domain"].values())
+    assert all(d["wrfout_count"] == (3 if mode == "resume" else 2) for d in resumed["per_domain"].values())
     for name in names:
         exact(expected[name], final_carries[-1][name])
     assert "resume_to_first_segment_ready_s" in resumed["restart"]
+    if mode != "resume":
+        assert validated == list(names)
+        # A branch's successor must resume using its child identity and its own journal.
+        child = RestartStore(resume_config.checkpoint_dir, 10**8, 2, 0).latest()
+        replay = pipeline.execute_nested_pipeline(replace(resume_config, branch_from=None, branch_manifest=None,
+                                                          resume_checkpoint=child))
+        assert replay["verdict"] == "PIPELINE_GREEN"
 
 
 @pytest.mark.parametrize("crash", ["one", "both", "save", "replay", "intent", "async", "relative", "foreign", "tampered", "receipt"])

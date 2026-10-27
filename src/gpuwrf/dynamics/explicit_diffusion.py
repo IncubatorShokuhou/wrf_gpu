@@ -1462,7 +1462,7 @@ def smag2d_horizontal_km(
 
     dx = float(dx_m)
     dy = float(dy_m)
-    cs = float(c_s)
+    cs = c_s if isinstance(c_s, (jax.Array, jax.core.Tracer)) else float(c_s)
     pr = float(prandtl)
 
     # four-corner average of D12 onto mass cell (i,j): SW + NW(j+1) + SE(i+1) + NE.

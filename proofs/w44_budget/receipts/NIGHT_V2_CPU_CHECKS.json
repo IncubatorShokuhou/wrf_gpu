@@ -1,0 +1,60 @@
+{
+  "schema": "wrf_gpu2.w44_budget.night_v2_cpu.v1",
+  "utc": "2026-10-23T22:43:54Z",
+  "tests_passed": 5,
+  "elapsed_s": 0.286,
+  "launcher": {
+    "path": "<USER_HOME>/wrf_gpu2_lanes/w44-budget/night_launch_v2.sh",
+    "sha256": "ef94812982d60f2dde5631143c768f220cd39dd15df8d789fa93f78328f93299",
+    "cap_minutes": 60
+  },
+  "dependencies": {
+    "<USER_HOME>/wrf_gpu2_lanes/w44-budget/night_tools_v2_d485e554d1/night_probe_v2.py": "049b8bd9711d9e3c1be2f6590a3152f270d029c27cdec3426f3ffcfa0ae6f753",
+    "<USER_HOME>/wrf_gpu2_lanes/w44-budget/night_tools_v2_d485e554d1/night_supervisor_v2.py": "1fcda1a39bc32a5162251b95ca8bc174f01c253e024f2a619e3f534d8d631d75",
+    "<USER_HOME>/wrf_gpu2_lanes/w44-budget/night_tools_5367b7fda6/night_supervisor.py": "e86766677bb962af73233e78a8f6ea03a61ef8ba33a59f17e2f672e6431e60f1"
+  },
+  "dry_plan": {
+    "source": "3fa48d159766101770a787fb9947c0622c7c4456",
+    "input_files": 8,
+    "cache": "<USER_HOME>/wrf_gpu2_lanes/w44-budget/NIGHT_1792792718433431644_987496/cache/jax",
+    "stages": [
+      "prime_off",
+      "prime_on",
+      "replay_off",
+      "replay_on"
+    ],
+    "root_steps_prime": 1,
+    "root_steps_replay": 200,
+    "gpu_started": false
+  },
+  "entrypoint": {
+    "schema": "wrf_gpu2.w44_budget.night.v1",
+    "run": "<USER_HOME>/wrf_gpu2_lanes/w44-budget/NIGHT_1792795333557325607_1258533",
+    "cap_s": 3600,
+    "source_commit": "3fa48d159766101770a787fb9947c0622c7c4456",
+    "launcher_sha256": "e86766677bb962af73233e78a8f6ea03a61ef8ba33a59f17e2f672e6431e60f1",
+    "start_env": "2026-10-23T22:42:08+00:00",
+    "end_env": "2026-10-23T22:44:13+00:00",
+    "gpu_started": false,
+    "phases": {},
+    "verdict": "REFUSED_WINDOW",
+    "rc": 4,
+    "start_real_utc": 1792795333,
+    "remaining_s": 120.0,
+    "elapsed_s": 0.01387028000317514,
+    "protocol_version": 2,
+    "driver_sha256": "049b8bd9711d9e3c1be2f6590a3152f270d029c27cdec3426f3ffcfa0ae6f753",
+    "supervisor_v2_sha256": "1fcda1a39bc32a5162251b95ca8bc174f01c253e024f2a619e3f534d8d631d75",
+    "paid_cache": "<USER_HOME>/wrf_gpu2_lanes/w44-budget/NIGHT_1792792718433431644_987496/cache/jax",
+    "compile_order": [
+      "OFF",
+      "ON"
+    ],
+    "replay_order": [
+      "OFF",
+      "ON"
+    ]
+  },
+  "scope": "CPU controls only; inherited exact process-tree supervisor already has10passed teardown tests; no worker GPU launch",
+  "verdict": "PASS_CPU_LAUNCH_CONTROLS"
+}

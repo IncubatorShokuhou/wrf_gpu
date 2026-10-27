@@ -7,9 +7,9 @@ the cloud fraction `CLDFRA` and the cloud water/ice that RRTMG sees. The port fo
 | `icloud` | WRF routine | What radiation sees | Port status |
 | --- | --- | --- | --- |
 | 1 (default) | `cal_cldfra1` (Xu–Randall), then the `icloud_bl=1` MYNN merge | After the first step `CLDFRA = CLDFRA_BL` (MYNN sub-grid cloud PDF); MYNN `QC_BL/QI_BL` added where resolved cloud is absent | Default suite |
-| 2 | `cal_cldfra2` | Binary: 1 where `qc+qi > 1e-6 kg/kg`, else 0 | CPU-oracle-qualified; one 24 h WN3 3-nest GPU forecast within D6 of original CPU-WRF |
-| 3 | `cal_cldfra3` (G. Thompson) | Scale-aware RH cloud fraction (land/ocean RH thresholds from `dx`, `dy`), plus "fake" radiation-only cloud water/ice in partly cloudy layers, capped at 1 kg/m² per column | CPU-oracle-qualified; one 24 h WN3 3-nest GPU forecast within D6 of original CPU-WRF |
-| 0 | none (`CLDFRA = 0`) | No clouds at all: radiation is computed cloud-free, while microphysics, MYNN clouds and dynamics run unchanged | CPU-oracle-qualified against the pristine radiation driver; one 24 h WN3 3-nest GPU forecast within D6 of original CPU-WRF |
+| 2 | `cal_cldfra2` | Binary: 1 where `qc+qi > 1e-6 kg/kg`, else 0 | CPU-oracle-qualified; one 24 h Tenerife 3-nest GPU forecast within D6 of original CPU-WRF |
+| 3 | `cal_cldfra3` (G. Thompson) | Scale-aware RH cloud fraction (land/ocean RH thresholds from `dx`, `dy`), plus "fake" radiation-only cloud water/ice in partly cloudy layers, capped at 1 kg/m² per column | CPU-oracle-qualified; one 24 h Tenerife 3-nest GPU forecast within D6 of original CPU-WRF |
+| 0 | none (`CLDFRA = 0`) | No clouds at all: radiation is computed cloud-free, while microphysics, MYNN clouds and dynamics run unchanged | CPU-oracle-qualified against the pristine radiation driver; one 24 h Tenerife 3-nest GPU forecast within D6 of original CPU-WRF |
 
 ## What changes with `icloud = 3`
 
@@ -58,8 +58,8 @@ the clouds themselves still form, rain and move as usual. Comparing a normal run
 
 ## Evidence
 
-* `proofs/w41_icloud/oracle_gate.py`: 640 real columns (Swiss winter stratus/ice/snow and WN3
-  0227 Canary trade-inversion Sc/Cu, plus 12 labelled adversarial edits) against the verbatim
+* `proofs/w41_icloud/oracle_gate.py`: 640 real columns (Swiss winter stratus/ice/snow and Tenerife
+  27 February 2026 trade-inversion Sc/Cu, plus 12 labelled adversarial edits) against the verbatim
   WRF 4.7.1 routines. Literal REAL4 port **byte-identical** (cldfra, qc, qi); compiled port
   inside WRF's own FMA-vs-no-FMA spread plus the one-ulp input envelope; every branch of
   `cal_cldfra3`/`find_cloudLayers`/`adjust_*` active (the IWP > 1 kg/m² rescale is reachable
@@ -68,26 +68,26 @@ the clouds themselves still form, rain and move as usual. Comparing a normal run
   glibc's correctly rounded `log10f` by up to 15 ulp of the cloud fraction (≤ 1.2e-7).
   WRF's own cold-temperature saturation polynomial (Thompson `RSIF`) has an FMA spread of up to
   3.8e-4 in cloud fraction, so this is far below WRF's own build-to-build variation.
-* Coupled forecast: WN3 0227 Canary 3-nest (9/3/1 km), 24 h, `icloud = 3`, release defaults, on an
+* Coupled forecast: Tenerife 3-nest (9/3/1 km), 27 February 2026, 24 h, `icloud = 3`, release defaults, on an
   RTX 5090 against an original CPU-WRF 4.7.1 run of the same namelist: frozen D6 manifest PASS on all
   three domains (25 frames, no failures, all fields finite). Worst-hour RMSE on the 1 km domain: T2
   0.09 K, PSFC 2.5 Pa, 10 m wind 0.33 m/s, RAINNC 0.05 mm. `CLDFRA` has no D6 bound; at +24 h the
   cloudy-cell share is 4.04/4.05 % (d01), 3.58/3.60 % (d02), 8.51/8.52 % (d03) CPU/GPU, pattern
-  correlation 0.97-0.99 (`proofs/w41_icloud/cldfra_report.py`). E41 cubin gate PASS (max stack 72 B).
+  correlation 0.97-0.99 (`proofs/w41_icloud/cldfra_report.py`). Compiled-kernel resource check PASS (max stack 72 B).
 * Coupled forecast, `icloud = 2`: the same case and recipe with only `icloud` changed, against an
   original CPU-WRF 4.7.1 `icloud = 2` run: frozen D6 manifest PASS on all three domains (25 frames, no
   failures, all fields finite, all 375 CPU history fields present). Worst-hour RMSE on the 1 km domain:
   T2 0.08 K, PSFC 3.7 Pa, 10 m wind 0.29 m/s, RAINNC 0.03 mm (9/3 km domains: T2 0.010/0.015 K).
   `CLDFRA` is binary in both runs (no value other than 0 or 1 in any frame); at +24 h the cloudy-cell
   share is 0.68/0.67 % (d01), 1.11/1.11 % (d02), 4.10/4.05 % (d03) CPU/GPU, pattern correlation
-  0.93-0.95. E41 cubin gate PASS (max stack 32 B). Measured on the v0.4.1 tree including the SWDDIR
+  0.93-0.95. Compiled-kernel resource check PASS (max stack 32 B). Measured on the v0.4.1 tree including the SWDDIR
   fix; an earlier run on the tree before that fix also passed. `proofs/w41_icloud2/`.
 * Cost: one `cal_cldfra3` call is 0.8-1.1 ms per domain on the GPU (≤ 114 MB scratch), once per
   radiation call (radt = 30 min → about 6 ms per forecast hour for three domains). `cal_cldfra2` is a
   single threshold: about 0.03 ms per call and domain, no scratch memory. No new state is carried, so
   restart files are unchanged.
 * `icloud = 0`, radiation driver check (`proofs/w42_icloud0/`): the unchanged pristine WRF 4.7.1
-  `radiation_driver` with `icloud = 0` and `icloud = 1` on 16 real WN3 0227 columns (thin/thick/land
+  `radiation_driver` with `icloud = 0` and `icloud = 1` on 16 real Tenerife columns of 27 February 2026 (thin/thick/land
   liquid cloud, MYNN-only cloud, clear sky, ice, mixed phase, snow). The port's release radiation
   path with the `icloud = 0` view stays within the frozen RRTMG bounds on every output (worst 0.12 %
   of the bound; surface shortwave within 0.005 W/m², `SWDDIR` within 0.0002 W/m²); the `icloud = 1`
@@ -98,8 +98,8 @@ the clouds themselves still form, rain and move as usual. Comparing a normal run
   original CPU-WRF 4.7.1 `icloud = 0` run: frozen D6 manifest PASS on all three domains (25 frames, no failures,
   all fields finite). Worst-hour RMSE on the 1 km domain: T2 0.07 K, PSFC 2.4 Pa, 10 m wind 0.13 m/s, RAINNC
   0.003 mm (9/3 km domains: T2 0.012/0.011 K). `CLDFRA` is 0 in both runs in every forecast frame while cloud
-  water is present, and surface shortwave/longwave equal their clear-sky values exactly in both runs. E41 cubin
-  gate PASS (max stack 32 B). Measured on a tree with the v0.4.1 SWDDIR fix; the later v0.4.2 merges trace the
+  water is present, and surface shortwave/longwave equal their clear-sky values exactly in both runs. Compiled-kernel
+  resource check PASS (max stack 32 B). Measured on a tree with the v0.4.1 SWDDIR fix; the later v0.4.2 merges trace the
   same `icloud = 0` model program (location-stripped program comparison). `proofs/w42_icloud0/`.
 * Tests: `tests/v041/test_icloud.py`, `tests/v041/test_icloud0_oracle.py`.
 
@@ -107,5 +107,5 @@ the clouds themselves still form, rain and move as usual. Comparing a normal run
 
 | Option | Status / scope | Receipt |
 | --- | --- | --- |
-| `icloud=0` | Experimental (v0.4.2). Cloud-free RRTMG radiation (`CLDFRA = 0`), physics unchanged; port within the frozen RRTMG bounds of the pristine WRF 4.7.1 radiation driver on 16 real WN3 columns; WN3 0227 3-nest 24 h GPU forecast with D6 PASS 3/3 vs an original CPU-WRF `icloud=0` run; E41 PASS. | [Oracle](../proofs/w42_icloud0/), [doc](radiation-cloud-fraction.md) |
-| `icloud=3`, `icloud=2` | Experimental. CPU-oracle-qualified (literal BYTE vs pristine WRF 4.7.1 on 640 real columns); RRTMG 4/4 only; `icloud=3` and `icloud=2`: each a WN3 0227 3-nest 24 h GPU forecast with D6 PASS 3/3 vs an original CPU-WRF run of the same namelist; E41 PASS. | [Oracle gate](../proofs/w41_icloud/), [icloud=2 forecast](../proofs/w41_icloud2/), [doc](radiation-cloud-fraction.md) |
+| `icloud=0` | Experimental (v0.4.2). Cloud-free RRTMG radiation (`CLDFRA = 0`), physics unchanged; port within the frozen RRTMG bounds of the pristine WRF 4.7.1 radiation driver on 16 real Tenerife columns; Tenerife 3-nest (27 February 2026) 24 h GPU forecast with D6 PASS 3/3 vs an original CPU-WRF `icloud=0` run; compiled-kernel resource check PASS. | [Oracle](../proofs/w42_icloud0/), [doc](radiation-cloud-fraction.md) |
+| `icloud=3`, `icloud=2` | Experimental. CPU-oracle-qualified (literal BYTE vs pristine WRF 4.7.1 on 640 real columns); RRTMG 4/4 only; `icloud=3` and `icloud=2`: each a Tenerife 3-nest (27 February 2026) 24 h GPU forecast with D6 PASS 3/3 vs an original CPU-WRF run of the same namelist; compiled-kernel resource check PASS. | [Oracle gate](../proofs/w41_icloud/), [icloud=2 forecast](../proofs/w41_icloud2/), [doc](radiation-cloud-fraction.md) |

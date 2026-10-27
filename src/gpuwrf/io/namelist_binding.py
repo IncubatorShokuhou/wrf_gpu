@@ -81,9 +81,14 @@ DYNAMICS_KEYS: dict[str, type] = {
 #: cam_abs_freq_s = CAM LW absorptivity/emissivity refresh interval (ra_lw_physics=3,
 #: module_radiation_driver.F; o1-camrad OperationalNamelist.cam_abs_freq_s).
 PHYSICS_KNOBS: dict[str, type] = {
+    "tke_budget": int,
+    "bl_mynn_output": int,
+    "bl_mynn_edmf": int,
+    "bl_mynn_edmf_mom": int,
     "mfshconv": int,
     'cu_rad_feedback': bool,
     'icloud': int,
+    'icloud_bl': int,
     'cu_diag': int,
     'kfeta_trigger': int,
     'shcu_aerosols_opt': int,
@@ -120,6 +125,7 @@ PHYSICS_KNOBS: dict[str, type] = {
 
 #: Namelist keys bound onto a differently named OperationalNamelist field.
 RENAMED_KEYS: dict[str, tuple[str, type]] = {
+    "rad_diag": ("rad_diag", int),
     'numbins': ('cup_num_bins',int),
     'thbinsize': ('cup_th_bin_size',float),
     'rbinsize': ('cup_r_bin_size',float),
@@ -280,6 +286,10 @@ class NamelistNotHonouredError(ValueError):
 
 
 def _group_of(key: str) -> str:
+    if key == "rad_diag":
+        return "gpuwrf"
+    if key == "cycling":
+        return "time_control"
     if key == "gpuwrf_tracer_file":
         return "dynamics"
     entry = WRF_REGISTRY_DEFAULTS.get(key)
@@ -287,6 +297,8 @@ def _group_of(key: str) -> str:
 
 
 def _domain_index(key: str, domain: str) -> int:
+    if key == "cycling":
+        return 0
     entry = WRF_REGISTRY_DEFAULTS.get(key)
     if entry is not None and entry[1] == "1":
         return 0  # single-entry WRF key: one value for every domain
@@ -355,6 +367,20 @@ def bound_options(wrf_namelist: Mapping[str, Any], domain: str) -> dict[str, Any
         if value is not None:
             out[field] = cast(value)
     nwp=_raw_value(wrf_namelist,"time_control","nwp_diagnostics",0)
+    cycling = _raw_value(wrf_namelist, "time_control", "cycling", 0)
+    if cycling is not None:
+        raw_cycling = (wrf_namelist.get("time_control") or {}).get("cycling")
+        if isinstance(raw_cycling, (list, tuple)) and len(raw_cycling) != 1:
+            raise NamelistNotHonouredError(["&time_control cycling is one global logical"])
+        if not isinstance(cycling, (bool, int)) or cycling not in (0, 1):
+            raise NamelistNotHonouredError(["&time_control cycling supports logical 0/1 only"])
+        out["cycling"] = bool(cycling)
+        if cycling:
+            dfi = _raw_value(wrf_namelist, "dfi_control", "dfi_opt", 0)
+            if dfi not in (None, 0):
+                raise NamelistNotHonouredError(["cycling currently requires dfi_opt=0; cycling DFI rebalance timing is unqualified"])
+            if out.get("mp_physics", 8) != 8 or out.get("bl_pbl_physics", 5) != 5:
+                raise NamelistNotHonouredError(["cycling is qualified for Thompson mp=8 and MYNN bl=5 only"])
     history=_raw_value(wrf_namelist,"time_control","history_interval",_domain_index("history_interval",domain))
     out["nwp_diagnostics"]=0 if nwp is None else int(nwp)
     # WRF check_a_mundo forces the global radar selector for NWP diagnostics.
@@ -441,6 +467,10 @@ def namelist_honour_report(
 
     errors: list[str] = []
     warnings: list[str] = []
+    from gpuwrf.io.mynn_budget_options import validate_options as validate_mynn_options
+    for index,domain in enumerate(domains):
+        try:validate_mynn_options(wrf_namelist,index)
+        except ValueError as error:errors.append(f'{domain}: {error}')
     for domain in domains:
         ccnty=namelist_value(wrf_namelist,'ccnty',domain)
         if ccnty is not None and int(ccnty) not in (1,2,3,4):
@@ -523,6 +553,15 @@ def namelist_honour_report(
             errors.append(f"{domain}: shcu_physics={shcu} has no operational shallow-convection producer; CAM-MG itself does not require it")
     honoured = (set(SCHEME_KEYS) | set(DYNAMICS_KEYS) | set(PHYSICS_KNOBS) | set(RENAMED_KEYS)
                 | _PIPELINE_BOUND_KEYS | _INPUT_ONLY_KEYS | _DFI_KEYS | set(SUPPORTED))
+    if _raw_value(wrf_namelist, "time_control", "cycling", 0):
+        for domain in domains:
+            try:
+                bound_options(wrf_namelist, domain)
+            except NamelistNotHonouredError as exc:
+                errors.extend(exc.problems)
+        if replay:
+            errors.append("cycling requires native wrfinput initialization, not history replay")
+        honoured.add("use_input_w")
     import math
     for domain in domains:
         interval = namelist_value(wrf_namelist, "prec_acc_dt", domain)
@@ -552,7 +591,17 @@ def namelist_honour_report(
                 errors.append("passive tracers currently require bldt=0 (PBL every step)")
     from gpuwrf.io.noahmp_glacier_options import glacier_refusals
     errors.extend(glacier_refusals(wrf_namelist))
-    for group in ("physics", "dynamics", "noah_mp"):
+    for domain in domains:
+        value = namelist_value(wrf_namelist, "rad_diag", domain)
+        if value is not None:
+            if value not in (0, 1):
+                errors.append(f"&gpuwrf rad_diag ({domain}) supports only 0/1")
+            elif value and any(namelist_value(wrf_namelist, key, domain) not in (None, 4)
+                               for key in ("ra_sw_physics", "ra_lw_physics")):
+                errors.append(f"&gpuwrf rad_diag=1 ({domain}) requires RRTMG4/4")
+            elif value and replay:
+                errors.append("&gpuwrf rad_diag=1 requires the native held-radiation pipeline")
+    for group in ("physics", "dynamics", "noah_mp", "gpuwrf"):
         for key in sorted((wrf_namelist.get(group) or {})):
             spelled = str(key).lower()
             key_l = KEY_ALIASES.get(spelled, spelled)

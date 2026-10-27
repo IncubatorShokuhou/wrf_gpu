@@ -141,12 +141,11 @@ def test_real_wrf_namelist_yields_honest_per_key_verdicts() -> None:
     # NOT appear as a failure -- a naive user with a real WRF namelist must RUN.
     assert "cudt" not in by_key
 
-    # icloud_bl=0 (the port runs WRF's default 1) and the MYNN TKE-advection
-    # logical -- recognized, not wired.
-    assert "icloud_bl" in by_key
+    # V044 binds icloud_bl=0/1; MYNN TKE advection is still unwired.
+    assert "icloud_bl" not in by_key
     assert "bl_mynn_tkeadvect" in by_key
     # Each named reason + the "NOT silently ignored" honesty phrase is present.
-    for key in ("moist_adv_opt", "icloud_bl", "bl_mynn_tkeadvect"):
+    for key in ("moist_adv_opt", "bl_mynn_tkeadvect"):
         for sel in by_key[key]:
             assert sel.outcome == "recognized_control_not_wired"
             assert sel.action.strip(), f"{key} fail-closed without an alternative"
@@ -228,9 +227,9 @@ def test_unsupported_recognized_key_is_rejected_not_silently_accepted() -> None:
         "scalar_adv_opt": 4,
         "h_sca_adv_order": 6,
         "v_sca_adv_order": 5,
-        "icloud_bl": 0,
+        "icloud_bl": 2,  # 0/1 are bound by V044; unsupported values still refuse.
         "bl_mynn_mixlength": 2,
-        "bl_mynn_edmf": 0,
+        "bl_mynn_edmf": 2,  # 0/1 are bound by V044 (w44-budget, WRF Registry 0:off,1:on); others refuse.
         "bl_mynn_mixqt": 1,
         "radt": 0,
         "slope_rad": 2,

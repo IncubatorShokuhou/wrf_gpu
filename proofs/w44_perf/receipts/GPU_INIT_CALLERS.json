@@ -1,0 +1,374 @@
+{
+  "scope": "Observed GPU process, caller diagnostic. Durations may overlap; not an S1 or disjoint wall partition.",
+  "receipt_sha256": "258f110e5b5b412176acabf09fe004b8671573c77d2e28471a18a9838dd3d70b",
+  "pre_segment_s": 18.2742,
+  "pre_segment_mlir_events": 1094,
+  "pre_segment_mlir_duration_sum_s": 4.067431926727295,
+  "top_callers": [
+    {
+      "module": "gpuwrf.kernels.phys_hydrostatic_real",
+      "function": "hydrostatic_profiles",
+      "line": 51,
+      "count": 6,
+      "duration_sum_s": 1.3354265689849854
+    },
+    {
+      "module": "gpuwrf.nesting.boundary_construction",
+      "function": "build_child_boundary_package",
+      "line": 508,
+      "count": 1,
+      "duration_sum_s": 0.2262861728668213
+    },
+    {
+      "module": "gpuwrf.coupling.physics_couplers",
+      "function": "_mynn_coldstart_init_columns_tiled",
+      "line": 2660,
+      "count": 1,
+      "duration_sum_s": 0.10201740264892578
+    },
+    {
+      "module": "gpuwrf.kernels.phys_mynn_boulac",
+      "function": "boulac_length_native",
+      "line": 107,
+      "count": 5,
+      "duration_sum_s": 0.07426285743713379
+    },
+    {
+      "module": "gpuwrf.integration.nested_pipeline",
+      "function": "<lambda>",
+      "line": 406,
+      "count": 29,
+      "duration_sum_s": 0.05996274948120117
+    },
+    {
+      "module": "gpuwrf.contracts.state",
+      "function": "_zeros",
+      "line": 52,
+      "count": 23,
+      "duration_sum_s": 0.044577836990356445
+    },
+    {
+      "module": "gpuwrf.coupling.physics_couplers",
+      "function": "x_interp_shadow",
+      "line": 1054,
+      "count": 18,
+      "duration_sum_s": 0.04049992561340332
+    },
+    {
+      "module": "gpuwrf.kernels.layout_pin",
+      "function": "row_major",
+      "line": 43,
+      "count": 16,
+      "duration_sum_s": 0.03041982650756836
+    },
+    {
+      "module": "gpuwrf.physics.noahmp.precision",
+      "function": "cast",
+      "line": 32,
+      "count": 17,
+      "duration_sum_s": 0.029456138610839844
+    },
+    {
+      "module": "gpuwrf.physics.wrf_cam_ozone",
+      "function": "wrf_cam_ozone_profile",
+      "line": 172,
+      "count": 10,
+      "duration_sum_s": 0.02830958366394043
+    },
+    {
+      "module": "gpuwrf.physics.noah_mp",
+      "function": "_modified_igbp_modis_noah_lookup",
+      "line": 228,
+      "count": 14,
+      "duration_sum_s": 0.027092933654785156
+    },
+    {
+      "module": "gpuwrf.coupling.physics_couplers",
+      "function": "x_interp_shadow",
+      "line": 1050,
+      "count": 10,
+      "duration_sum_s": 0.02417612075805664
+    },
+    {
+      "module": "gpuwrf.contracts.grid",
+      "function": "flat",
+      "line": 220,
+      "count": 7,
+      "duration_sum_s": 0.023151874542236328
+    },
+    {
+      "module": "gpuwrf.kernels.dyn_carry_fp32",
+      "function": "real_state",
+      "line": 67,
+      "count": 11,
+      "duration_sum_s": 0.022345542907714844
+    },
+    {
+      "module": "gpuwrf.io.noahmp_land_init",
+      "function": "_noahmp_init_sh2o",
+      "line": 481,
+      "count": 12,
+      "duration_sum_s": 0.02159714698791504
+    },
+    {
+      "module": "gpuwrf.physics.wrf_cam_ozone",
+      "function": "wrf_cam_ozone_profile",
+      "line": 157,
+      "count": 6,
+      "duration_sum_s": 0.01956772804260254
+    },
+    {
+      "module": "gpuwrf.runtime.operational_mode",
+      "function": "_enforce_operational_precision",
+      "line": 2286,
+      "count": 9,
+      "duration_sum_s": 0.019382715225219727
+    },
+    {
+      "module": "gpuwrf.coupling.physics_couplers",
+      "function": "_wrf_hydrostatic_pressure_profiles_from_state",
+      "line": 1742,
+      "count": 8,
+      "duration_sum_s": 0.01851963996887207
+    },
+    {
+      "module": "gpuwrf.physics.wrf_cam_ozone",
+      "function": "wrf_cam_ozone_profile",
+      "line": 163,
+      "count": 4,
+      "duration_sum_s": 0.018405914306640625
+    },
+    {
+      "module": "gpuwrf.physics.wrf_cam_ozone",
+      "function": "wrf_cam_ozone_profile",
+      "line": 142,
+      "count": 4,
+      "duration_sum_s": 0.017984867095947266
+    },
+    {
+      "module": "gpuwrf.physics.noah_mp",
+      "function": "roughness_from_prescribed_fields",
+      "line": 254,
+      "count": 8,
+      "duration_sum_s": 0.017625808715820312
+    },
+    {
+      "module": "gpuwrf.coupling.physics_couplers",
+      "function": "_wrf_phy_prep_rho_from_state",
+      "line": 1840,
+      "count": 9,
+      "duration_sum_s": 0.01761770248413086
+    },
+    {
+      "module": "gpuwrf.coupling.physics_couplers",
+      "function": "wrf_radiation_slope_aspect_from_terrain",
+      "line": 915,
+      "count": 10,
+      "duration_sum_s": 0.017607927322387695
+    },
+    {
+      "module": "gpuwrf.coupling.physics_couplers",
+      "function": "<lambda>",
+      "line": 1265,
+      "count": 9,
+      "duration_sum_s": 0.017255544662475586
+    },
+    {
+      "module": "gpuwrf.contracts.grid",
+      "function": "flat",
+      "line": 227,
+      "count": 4,
+      "duration_sum_s": 0.016607284545898438
+    },
+    {
+      "module": "gpuwrf.coupling.physics_couplers",
+      "function": "_wrf_phy_prep_temperature_interfaces",
+      "line": 1803,
+      "count": 8,
+      "duration_sum_s": 0.016545534133911133
+    },
+    {
+      "module": "gpuwrf.nesting.nest_o3",
+      "function": "force_child_carry_o3rad",
+      "line": 69,
+      "count": 1,
+      "duration_sum_s": 0.015602827072143555
+    },
+    {
+      "module": "gpuwrf.contracts.grid",
+      "function": "flat",
+      "line": 221,
+      "count": 4,
+      "duration_sum_s": 0.0153350830078125
+    },
+    {
+      "module": "gpuwrf.physics.wrf_cam_ozone",
+      "function": "wrf_cam_ozone_profile",
+      "line": 148,
+      "count": 6,
+      "duration_sum_s": 0.015069007873535156
+    },
+    {
+      "module": "gpuwrf.contracts.state",
+      "function": "replace",
+      "line": 1335,
+      "count": 7,
+      "duration_sum_s": 0.014410257339477539
+    }
+  ],
+  "init_kernel_observations": [
+    {
+      "name": "solve_rrtmg_sw_column",
+      "start": 9.240594612,
+      "end": 12.21758719,
+      "events": [
+        {
+          "kernel": "init_solve_rrtmg_sw_column",
+          "hlo_sha256": null,
+          "cheap_key": "228505d736be4be130f5391aa0c9673bb25b02fe5e6350a20395af1e41619aea",
+          "hit": true,
+          "lower_s": 0.0,
+          "load_s": 2.9769568180199713,
+          "setup_dispatch_s": 2.9769576280377805
+        }
+      ]
+    },
+    {
+      "name": "solve_rrtmg_lw_column",
+      "start": 12.21759473,
+      "end": 12.270577505,
+      "events": [
+        {
+          "kernel": "init_solve_rrtmg_lw_column",
+          "hlo_sha256": null,
+          "cheap_key": "6a2098203fe8aa31b99ab4038314ee88425d95175c636aaba16f6aef36c3120c",
+          "hit": true,
+          "lower_s": 0.0,
+          "load_s": 0.05295769503572956,
+          "setup_dispatch_s": 0.05295806500362232
+        }
+      ]
+    },
+    {
+      "name": "solve_rrtmg_sw_column",
+      "start": 16.753080759,
+      "end": 16.775001072,
+      "events": [
+        {
+          "kernel": "init_solve_rrtmg_sw_column",
+          "hlo_sha256": null,
+          "cheap_key": "4754ae5a4522ca04caedd4a9d1a7ba6a29d9a0a811b234ec2361ce423fbb5e9e",
+          "hit": true,
+          "lower_s": 0.0,
+          "load_s": 0.021892933000344783,
+          "setup_dispatch_s": 0.0218932029674761
+        }
+      ]
+    },
+    {
+      "name": "solve_rrtmg_lw_column",
+      "start": 16.775006462,
+      "end": 16.804990926,
+      "events": [
+        {
+          "kernel": "init_solve_rrtmg_lw_column",
+          "hlo_sha256": null,
+          "cheap_key": "71bd674bb968ab0d035b763c735682a0058c99413036686a7702aa9204caa22a",
+          "hit": true,
+          "lower_s": 0.0,
+          "load_s": 0.029962334025185555,
+          "setup_dispatch_s": 0.02996264398097992
+        }
+      ]
+    }
+  ],
+  "init_load_observations": [
+    {
+      "name": "_load_domain_blob",
+      "start": 3.433314161,
+      "end": 3.704725864,
+      "program": "d02",
+      "cheap_key": "1a08312164095b94e18551bff32139e83ef6a92c09a89068d2fd98d85a0c8f08",
+      "hlo_sha256": null,
+      "status": {
+        "source": "aot_blob",
+        "loaded": true,
+        "hlo_sha256": null
+      }
+    },
+    {
+      "name": "_load_domain_blob",
+      "start": 3.433139039,
+      "end": 3.744947054,
+      "program": "d01",
+      "cheap_key": "dca1274a452949f34482e35790da275ca5a79ba3174502b4473a40a3e6283ac0",
+      "hlo_sha256": null,
+      "status": {
+        "source": "aot_blob",
+        "loaded": true,
+        "hlo_sha256": null
+      }
+    },
+    {
+      "name": "_load_domain_blob",
+      "start": 12.201376809,
+      "end": 12.207273693,
+      "program": "init_solve_rrtmg_sw_column",
+      "cheap_key": "228505d736be4be130f5391aa0c9673bb25b02fe5e6350a20395af1e41619aea",
+      "hlo_sha256": null,
+      "status": {
+        "source": "aot_blob",
+        "loaded": true,
+        "hlo_sha256": null
+      }
+    },
+    {
+      "name": "_load_domain_blob",
+      "start": 12.25242377,
+      "end": 12.260304899,
+      "program": "init_solve_rrtmg_lw_column",
+      "cheap_key": "6a2098203fe8aa31b99ab4038314ee88425d95175c636aaba16f6aef36c3120c",
+      "hlo_sha256": null,
+      "status": {
+        "source": "aot_blob",
+        "loaded": true,
+        "hlo_sha256": null
+      }
+    },
+    {
+      "name": "_load_domain_blob",
+      "start": 16.760105521,
+      "end": 16.76662239,
+      "program": "init_solve_rrtmg_sw_column",
+      "cheap_key": "4754ae5a4522ca04caedd4a9d1a7ba6a29d9a0a811b234ec2361ce423fbb5e9e",
+      "hlo_sha256": null,
+      "status": {
+        "source": "aot_blob",
+        "loaded": true,
+        "hlo_sha256": null
+      }
+    },
+    {
+      "name": "_load_domain_blob",
+      "start": 16.784998917,
+      "end": 16.794694649,
+      "program": "init_solve_rrtmg_lw_column",
+      "cheap_key": "71bd674bb968ab0d035b763c735682a0058c99413036686a7702aa9204caa22a",
+      "hlo_sha256": null,
+      "status": {
+        "source": "aot_blob",
+        "loaded": true,
+        "hlo_sha256": null
+      }
+    },
+    {
+      "name": "_load_domains",
+      "start": 3.4332468,
+      "end": 16.861743299,
+      "program": null,
+      "cheap_key": null,
+      "hlo_sha256": null,
+      "status": {}
+    }
+  ]
+}

@@ -1,0 +1,36 @@
+{
+  "status": "READY-FOR-CRITIC DELTA HOST/BRANCH ONLY",
+  "finding": "CR02 undeclared training subset/compression change admitted by empty manifest",
+  "source_pin": "b02ad28525224b9b905948bf3b07cf72e7041b08",
+  "fix": "Bind resolved output policy in nested_identity; AOT cheap key unchanged",
+  "resolved_policy": [
+    "history domain/variable order/subset/mandatory coordinates/compression/FULL_WRFOUT/interval/initial-frame",
+    "regional stream specifications",
+    "filename format/resolved REAL conversion/base-state/radiation/async writer/materialization queue flags"
+  ],
+  "BR16": {
+    "passed": 77,
+    "failed": 0,
+    "seconds": 20.41,
+    "junit_sha256": "633715b22badb37b596ebccab1cfb790a41c5a29e0b40b3cabcc2e5798dd2744",
+    "log_sha256": "10ba6fa536b05642d9c1ef30fd8ea6c490ff4ce8c0442e12687159032a7196d3",
+    "includes": "unchanged independent critic reproduction + eleven output env regressions + existing restart/training writer consumers"
+  },
+  "BR17": {
+    "mutant": "output-policy",
+    "killed": true,
+    "pytest_rc": 1,
+    "assertion_failures": 11,
+    "setup_errors": 0,
+    "source_sha256": "de3c064e0c1bbe20e63b7c733498171f0d12d52d1177f95bfa76addab3a8b81b",
+    "mutant_sha256": "1d28e230ad6addf062a97e3426fea04ccd58a17d21dff231adcc07102ce54d95",
+    "scope": "CPU structural deletion control; in-memory mutant of immutable source"
+  },
+  "unchanged": {
+    "src/gpuwrf/runtime/aot_cheap_key.py": "866c34413a20d51ae049cc580b76d151a9bb1b337cb18faba6f88a6b39f6c14a",
+    "src/gpuwrf/io/wrfout_writer.py": "4489d3fc64a1a20e0888c242a532848dd3d3415f4ea42ac3d3bbbcc913dcfd3f",
+    "src/gpuwrf/runtime/operational_mode.py": "ea299f7a9b3a6d35767c388a2581fe813abad1a183f4f5522814bd9b1e1d821f"
+  },
+  "carry_forward": "default canonical programs and numerical gates unchanged; no GPU or numerical repeat",
+  "limitations": "GPU/RW gates pending; old V2 GPU request withdrawn; no flag can change output policy through an empty branch manifest"
+}

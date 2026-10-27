@@ -33,6 +33,8 @@ import json, os, signal, sys, time, pathlib
 a = sys.argv
 out = pathlib.Path(a[a.index("--output-dir") + 1]); out.mkdir(parents=True)
 name = pathlib.Path(a[a.index("--input-dir") + 1]).name
+if os.environ.get("FAKE_ARGV_DIR"):
+    (pathlib.Path(os.environ["FAKE_ARGV_DIR"]) / (name + ".json")).write_text(json.dumps(a[1:]))
 if os.environ.get("FAKE_KILL_PARENT_" + name):
     time.sleep(0.5)
     os.kill(os.getppid(), signal.SIGTERM)
@@ -327,6 +329,28 @@ def test_case_option_parser_accepts_exact_forms_and_refuses_the_rest():
         with pytest.raises(ValueError):
             pc.check_cli_args(bad)
 
+
+
+def test_runtime_parameters_reach_every_case_argv_unchanged(fake, monkeypatch):
+    """--runtime-parameters (w44-params, manager 2026-10-24 21:19Z): exactly one value, forwarded byte-identical."""
+    tmp, cases, base = fake
+    seen = tmp / "argv"
+    seen.mkdir()
+    monkeypatch.setenv("FAKE_ARGV_DIR", str(seen))
+    path = str(tmp / "params dir" / "PARAMETERS.json")  # forwarded as given: never resolved, split or rewritten
+    sizer, gpu = (lambda ds, a, e: [{"need_bytes": GIB} for _ in ds]), (lambda: (32 * GIB, 30 * GIB))
+    assert pc.main([*base, *cases, "--", "--runtime-parameters", path, "--hours", "2"], sizer=sizer, gpu=gpu) == 0
+    for name in ("c1", "c2", "c3"):
+        argv = json.loads((seen / f"{name}.json").read_text())
+        assert argv.count("--runtime-parameters") == 1
+        assert argv[argv.index("--runtime-parameters") + 1] == path
+        rec = json.loads((tmp / "out" / name / "receipt.json").read_text())
+        assert rec["command"][-4:-2] == ["--runtime-parameters", path]
+    assert pc.check_cli_args([f"--runtime-parameters={path}"]) == [f"--runtime-parameters={path}"]
+    for bad in (["--runtime-parameters"], ["--runtime-parameters="], ["--runtime-parameters", "--hours", "2"],
+                ["--runtime-parameters", "a.json", "b.json"], ["--runtime-param", "a.json"]):
+        with pytest.raises(ValueError):
+            pc.check_cli_args(bad)
 
 # --- review-s2small Item 18 C2: no started case or helper survives a launcher failure ------------------------------
 

@@ -52,6 +52,7 @@ from gpuwrf.runtime.operational_mode import (
     _initial_carry_for_run,
     _resolve_operational_suite,
     build_clock_base,
+    step_compile_options,
     unalias_donated_carry,
 )
 from gpuwrf.nesting.nest_o3 import force_child_carry_o3rad
@@ -1631,7 +1632,7 @@ def _operational_advance_factory(tree: DomainTree) -> AdvanceFn:
         try:
             from gpuwrf.runtime import aot_executable as _aotx_export
 
-            compiled = lowered.compile(_aotx_export.export_compile_options())
+            compiled = lowered.compile(step_compile_options(_aotx_export.export_compile_options()))
             if hlo_sha256:
                 _aot_attempted.add((name, hlo_sha256))
                 _aot_calls[(name, hlo_sha256)] = compiled
@@ -2536,7 +2537,7 @@ def _build_fused_cascade_program(
         try:
             from gpuwrf.runtime import aot_executable as _aotx_export
 
-            compiled = lowered.compile(_aotx_export.export_compile_options())
+            compiled = lowered.compile(step_compile_options(_aotx_export.export_compile_options()))
             _store_cached_call(sig, compiled, ckey)
             status: dict[str, Any] = {
                 "name": aot_name,

@@ -46,9 +46,14 @@ EXPLICIT_ALLOCATOR_ENV = ("XLA_PYTHON_CLIENT_PREALLOCATE", "XLA_CLIENT_MEM_FRACT
 # Case options after '--' are matched EXACTLY against this allowlist (no prefixes: the product's argparse would expand
 # an abbreviation such as '--output-d' to --output-dir). Value = number of values. Everything else is refused.
 CLI_ALLOWED = {"--domain": 1, "--max-dom": 1, "--hours": 1, "--domains-from-namelist": 0, "--emit-initial-history": 0,
-               "--aot-prefetch": 0, "--no-aot-prefetch": 0, "--feedback": 0, "--score": 0, "--force-gpu-run": 0}
+               "--aot-prefetch": 0, "--no-aot-prefetch": 0, "--feedback": 0, "--score": 0, "--force-gpu-run": 0,
+               # One parameter file forwarded unchanged to every case (parameter studies under one AOT key, manager
+               # 2026-10-24 21:19Z); its qualification is the family status in docs/runtime-parameters.md.
+               "--runtime-parameters": 1}
 _PER_CASE = "per-case path; one shared value would mix the cases"
 _NO_RESTART = "checkpoint/resume is not supported by the launcher (run such a case alone with the CLI)"
+_SINGLE_CASE = ("single-case window/checkpoint-branch feature; run such a case directly with "
+                "`gpuwrf run` (docs/checkpoint-branching.md)")
 CLI_REFUSED = {"--input-dir": "set per case by the launcher", "--output-dir": "set per case by the launcher",
                "--namelist": "each case uses its own namelist.input", "--scratch-dir": _PER_CASE, "--proof-dir": _PER_CASE,
                "--compare-cpu-dir": _PER_CASE, "--dry-run": "use the launcher's own --dry-run",
@@ -58,6 +63,8 @@ CLI_REFUSED = {"--input-dir": "set per case by the launcher", "--output-dir": "s
                "--extend-run": _NO_RESTART,
                "--decompose": "domain decomposition spans several GPUs per case; run it alone with the CLI",
                "--surface-controls": "per-case control file; use the launcher's --case-surface-controls NAME",
+               "--minutes": _SINGLE_CASE, "--end-time": _SINGLE_CASE,
+               "--branch-from": _SINGLE_CASE, "--branch-manifest": _SINGLE_CASE,
                "-h": "not a case option", "--help": "not a case option"}
 
 

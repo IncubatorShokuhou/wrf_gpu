@@ -131,8 +131,8 @@ def test_native_temf_rejects_invalid_carry(temf_case, tmp_path, monkeypatch, ope
     if operation == "save":
         if kind == "missing_marker":
             original = storage._carry_to_payload
-            def malformed(value):
-                payload = original(value)
+            def malformed(value, **kwargs):  # forwards mynn_config (w44-budget)
+                payload = original(value, **kwargs)
                 damage(payload, kind)
                 return payload
             monkeypatch.setattr(storage, "_carry_to_payload", malformed)

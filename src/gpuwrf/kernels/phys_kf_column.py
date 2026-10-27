@@ -12,6 +12,7 @@ import numpy as np
 import jax
 import jax.numpy as jnp
 from gpuwrf.backends import pallas as pl
+from gpuwrf.contracts.real_constfold import R4, real_constant
 from jax.experimental.pallas import triton as plt
 from jax.extend import core
 from jax.interpreters import mlir
@@ -849,7 +850,7 @@ def _column(T0, QV0, P0, DZQ, RHOE, W0A, U0, V0, dt, dx, KX, the0_ref, ttab_ref,
             theted_nd = _get(THETED, KSTART)
             qd_nd = _get(QD, KSTART)
             tz_nd, qss = tpmix2dd(_get(P0p, nd), theted_nd)
-            RHH = 1.0 - 0.2 / 1000.0 * (_get(Z0, KSTART) - _get(Z0, nd))
+            RHH = 1.0 - real_constant(_RHH_SLOPE_REAL, 0.2 / 1000.0) * (_get(Z0, KSTART) - _get(Z0, nd))
             DSSDT = (cliq - bliq * dliq) / ((tz_nd - dliq) * (tz_nd - dliq))
             RL = XLV0 - XLV1 * tz_nd
             DTMP = RL * qss * (1.0 - RHH) / (CP + RL * RHH * qss * DSSDT)
@@ -1239,6 +1240,8 @@ def _column(T0, QV0, P0, DZQ, RHOE, W0A, U0, V0, dt, dx, KX, the0_ref, ttab_ref,
     return kf_eta_para(T0, QV0, P0, DZQ, RHOE, W0A, U0, V0, dt, dx, KX, warm_rain, f_qi, f_qs)
 
 # Source expressions whose right-hand side contains other constants.
+# module_cu_kfeta.F:1743 RHH=1.-0.2/1000.*(Z0(KSTART)-Z0(ND)): 0.2/1000. is a REAL fold in WRF (w44-constfold).
+_RHH_SLOPE_REAL = R4(0.2) / R4(1000.0)
 ALIQ = SVP1 * 1000.0
 BLIQ = SVP2
 CLIQ = SVP2 * SVPT0

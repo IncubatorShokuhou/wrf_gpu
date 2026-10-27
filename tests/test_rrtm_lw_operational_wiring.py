@@ -141,9 +141,21 @@ def test_namelist_ra_lw_pytree_roundtrip() -> None:
     assert jax.tree_util.tree_unflatten(treedef4, leaves4).ra_lw_physics == 4
 
 
+def _product_seeded(state: State, nml: OperationalNamelist) -> State:
+    """Seed the static-scheme conditional leaves exactly as the product initializer does.
+
+    operational_mode._initial_carry_for_run calls State.ensure_conditional_leaves with the
+    namelist's mp_physics/use_mp_re/ra_lw/ra_sw before any step; under GPUWRF_RRTMG_MP_RE=1
+    that seeds the held WRF effective radii RRTMG reads (has_reqc/i/s).
+    """
+    return state.ensure_conditional_leaves(
+        mp_physics=int(nml.mp_physics), use_mp_re=int(nml.use_mp_re),
+        ra_lw_physics=int(nml.ra_lw_physics), ra_sw_physics=int(nml.ra_sw_physics))
+
+
 def _rthraten_from_step(grid: GridSpec, *, ra_sw_physics: int = 4, ra_lw_physics: int = 4) -> np.ndarray:
-    state = _state(grid)
     nml = _namelist(grid, ra_sw_physics=ra_sw_physics, ra_lw_physics=ra_lw_physics)
+    state = _product_seeded(_state(grid), nml)
     carry = initial_operational_carry(state)
     forcing = _physics_step_forcing(carry, nml, 0.0, run_radiation=True)
     return np.asarray(forcing.carry.rthraten)
@@ -187,7 +199,7 @@ def test_default_ra4_ra4_matches_combined_rrtmg() -> None:
     """Default (ra_sw=4, ra_lw=4) dispatch is the byte-unchanged combined RRTMG."""
 
     grid = _grid()
-    state = _state(grid)
+    state = _product_seeded(_state(grid), _namelist(grid, ra_sw_physics=4, ra_lw_physics=4))
     rth_step = _rthraten_from_step(grid, ra_sw_physics=4, ra_lw_physics=4)
     rth_combined = np.asarray(
         rrtmg_theta_tendency(

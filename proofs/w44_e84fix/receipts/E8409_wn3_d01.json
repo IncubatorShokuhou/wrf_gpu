@@ -1,0 +1,117 @@
+{
+  "source": "<DATA_ROOT>/wrf_gpu2/scratch/w44-e84fix/snapshot",
+  "source_commit": "ff23e3a102b2bda85d1199bcadbcf45c6c75a000",
+  "source_dirty": "",
+  "case": "<USER_HOME>/wrf_gpu2_lanes/o5-perf/mem/wn3_case",
+  "domain": "d01",
+  "physical_backend": "cpu",
+  "lowering_platform": "cuda",
+  "gpu_executed": false,
+  "scope": "deviceless CompileOnly prescreen (autotune 0); actual GPU E41 scan stays authoritative",
+  "target_sha256": "b753abdddbace1e913de3767a1afbdfeba2b272e77f2be93658c766968e4960f",
+  "harness_sha256": "f27cd1ec09a672f90b113f67c04b52f7d932980fc38e3d221f71104fcf96b37e",
+  "phase": "done",
+  "wall_s": 444.20959197200136,
+  "peak_rss_KiB": 7306596,
+  "input_sha256": {
+    "namelist.input": "8e77d97f016bbbc5acf83d55fc814d88f77786d22ab27d241b91856e006ee16a",
+    "wrfinput_d02": "6914cb70242ac62bb9a430426caa0bcd344483e996339886b8a5465754a08f3f",
+    "wrfbdy_d01": "c683a23ebe5946995b71c75f0b86b0b07badfc010cf3762b2149fa91cd344b37",
+    "wrfinput_d01": "b7f75a6bad092cdacd2a2d4b47a4c28994b6727b372f23b1f22bb424a83987d8",
+    "wrflowinp_d02": "fc8059297b9e2da4abaff6d6e1efc4a921cd46bfc5e6dc9d14746b221fc415ba",
+    "wrflowinp_d01": "480658449a06aff1043122653f7c489fb5cbaa1c18f7b47831df51141fc2e775",
+    "wrfinput_d03": "342f93f97ad0e746dd40ecbbe947b85c749176aa7e08b882ad59cb01eef5d907",
+    "wrflowinp_d03": "4a641f46fed940bcfad20772f18b5e072ae9d902de7ac19f8eb017e8b634315b"
+  },
+  "gpuwrf_file": "<DATA_ROOT>/wrf_gpu2/scratch/w44-e84fix/snapshot/src/gpuwrf/__init__.py",
+  "static_kwargs": {
+    "n_steps": 1,
+    "cadence": 33
+  },
+  "traced_pallas_calls": 161,
+  "stablehlo_sha256": "567d438ff3c8ac6b321d89abbbaadb5b3d2d06e0f9def8b03c308346f6a6c4a1",
+  "stablehlo_bytes": 267909453,
+  "raw_full_constant_proto_sha256": "39a6efdeb73f9766860d9a448cbfb06c76b6fa4f5b458eaa767ceb90d4e9798f",
+  "compile_s": 179.64651676799986,
+  "optimized_hlo_sha256": "05191c98e06df613710c4f6886886012bdad75e537c3f43641b26a9ad94732e4",
+  "optimized_full_constant_proto_sha256": "f140eac37882386e09e4531232d5b9035e827b1138f849c4ea09c3cefd469543",
+  "memory": {
+    "argument_size_in_bytes": 127417248,
+    "output_size_in_bytes": 114544828,
+    "temp_size_in_bytes": 525544424,
+    "alias_size_in_bytes": 114543364
+  },
+  "cuda_ptx_files": [
+    "<USER_HOME>/wrf_gpu2_lanes/w44-e84fix/E8409_wn3_d01/dump/module_0001.jit__advance_chunk_fori.ptx"
+  ],
+  "n_fusions": 1394,
+  "transpose_fusions": 565,
+  "kinput_transpose_over500": [],
+  "any_transpose_over500": [],
+  "top_transpose": [
+    [
+      406,
+      "kInput",
+      "input_multiply_power_select_subtract_transpose_fusion"
+    ],
+    [
+      376,
+      "kInput",
+      "input_transpose_fusion.125"
+    ],
+    [
+      352,
+      "kInput",
+      "input_transpose_fusion.126"
+    ],
+    [
+      339,
+      "kInput",
+      "input_add_divide_multiply_transpose_fusion"
+    ],
+    [
+      322,
+      "kInput",
+      "input_maximum_pad_transpose_fusion"
+    ],
+    [
+      317,
+      "kInput",
+      "input_maximum_select_transpose_fusion"
+    ],
+    [
+      312,
+      "kInput",
+      "input_maximum_multiply_transpose_fusion"
+    ],
+    [
+      303,
+      "kLoop",
+      "loop_divide_transpose_fusion"
+    ],
+    [
+      289,
+      "kInput",
+      "input_minimum_multiply_transpose_fusion"
+    ],
+    [
+      285,
+      "kInput",
+      "input_add_clamp_convert_maximum_minimum_power_transpose_fusion"
+    ],
+    [
+      282,
+      "kInput",
+      "input_multiply_transpose_fusion.7"
+    ],
+    [
+      276,
+      "kLoop",
+      "loop_transpose_fusion.10"
+    ]
+  ],
+  "native_gate": "PASS",
+  "hard_stack_gate": "PASS",
+  "max_stack_B": 32,
+  "kernels": 1111
+}

@@ -107,7 +107,7 @@ def _sint_sides_kernel(
 
     def rn(op, a, b):
         if interpret or not pl.cuda_native():
-            return {"mul": a * b, "add": a + b, "sub": a - b, "div": a / b}[op]
+            return pl.portable_rn(op, a, b, interpret=interpret)
         mode = div_mode if op == "div" else "rn"
         return pt.elementwise_inline_asm(
             f"{op}.{mode}.{ptx} $0, $1, $2;", args=[a, b],

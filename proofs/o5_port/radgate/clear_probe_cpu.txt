@@ -1,0 +1,42 @@
+[wz1080_run] host=fedora tree=/home/wz/src/o5radgate_062a350 head= mode=cpu label=o5_radgate_clear
+truth keys ['fields', 'flux_tolerance', 'provenance', 'schema', 'units', 'work'] {'schema': 'b-rad.pristine-driver-clear-flux.v1', 'units': 'W/m2', 'flux_tolerance': {'atol': 1.0, 'rtol': 0.05}, 'work': '3 existing tier1 columns;16 layers+top buffer;original WRF RRTMG_LWRAD driver arguments;18 interfaces', 'provenance': {'native_lw_object_sha256': '97b0b8cb1ef30e0aa5bdab5b64cb33c0a42aafe129a592d37d6479e3be24ae7a', 'native_lw_source_sha256': 'c7a5238612aa8a4213c8d3af6708ec6a5248e6701e19758a80e563905d306de3', 'driver_sha256': 'e070ac3ea8b698c6d439243a5b6079841967f176d68646a5e675c6a725fb40c9', 'executable_sha256': 'd5eb11c990a3952b157a4b859377f6c42e416eb733c5b04dbee02b586f4a1aa8', 'harness_base_sha256': 'c935e1d2587f2d78b320c01b0445de9e2070609c1407d863621988a4ddc72c30', 'input_fixture_sha256': '6b1878c6a165ca1c3b3589ec136a6b38c2bebfbc19e8c78aebee9b6ba6ceeabc', 'input_column_sha256': ['ef3d46c6f6f77aed039bd88494d221945495defe2609548909672b48e556ab7c', 'bff68776d036c44bc0f573b3f23030a66f0ec71a029369d5223acff38ba7c284', '515c8525622d819143877a7201b782a07a655ba48b567ffb6dde78d4040ffb21'], 'runtime': 'GFORTRAN_CONVERT_UNIT=big_endian; original pristine RRTMG_SW_DATA/LW_DATA', 'capture': 'After original rrtmg_lwrad call, write lwdnflx(1,k+1,1),lwupflx(1,k+1,1),lwdnflxc(1,k+1,1),lwupflxc(1,k+1,1) for k=0..nz+1. No driver arguments or WRF routines modified.', 'artifact_root': '<USER_HOME>/wrf_gpu2_lanes/b-rad/phase1/clear_oracle'}}
+{
+ "imported_maxrand": true,
+ "backend": "cpu",
+ "maxrand=True": {
+  "flux_down": {
+   "max_abs": 47.98004150390625,
+   "passed": false
+  },
+  "flux_up": {
+   "max_abs": 28.961654663085938,
+   "passed": false
+  },
+  "clear_flux_down": {
+   "max_abs": 0.00048828125,
+   "passed": true
+  },
+  "clear_flux_up": {
+   "max_abs": 0.0001220703125,
+   "passed": true
+  }
+ },
+ "maxrand=False": {
+  "flux_down": {
+   "max_abs": 0.00396728515625,
+   "passed": true
+  },
+  "flux_up": {
+   "max_abs": 0.002685546875,
+   "passed": true
+  },
+  "clear_flux_down": {
+   "max_abs": 0.00048828125,
+   "passed": true
+  },
+  "clear_flux_up": {
+   "max_abs": 0.0001220703125,
+   "passed": true
+  }
+ }
+}

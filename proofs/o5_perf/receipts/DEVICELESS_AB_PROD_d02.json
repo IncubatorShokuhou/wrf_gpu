@@ -1,0 +1,136 @@
+{
+ "source": "<DATA_ROOT>/wrf_gpu2/release_bundles/v0.4.3/src",
+ "source_commit": "888804310bb6bfc0237177c0d5e5452a29d5abf6",
+ "domain": "d02",
+ "static_kwargs": {
+  "n_steps": 3,
+  "cadence": 100
+ },
+ "target_sha256": "b753abdddbace1e913de3767a1afbdfeba2b272e77f2be93658c766968e4960f",
+ "harness_sha256": "8bc600dd998680c14b9df60c21e9caaa666f6ad86c33d6b9eee9f740e2170734",
+ "environment": {
+  "JAX_PLATFORMS": "cpu",
+  "CUDA_VISIBLE_DEVICES": "",
+  "GPUWRF_JAX_CACHE": "0",
+  "XLA_FLAGS": "--xla_gpu_enable_command_buffer=+CONDITIONAL,+WHILE --xla_enable_command_buffers_during_profiling=true --xla_disable_hlo_passes=fusion-dynamic-memcpy-rewriter"
+ },
+ "variants": {
+  "OFF": {
+   "options": {
+    "xla_gpu_autotune_level": "0",
+    "xla_gpu_experimental_aot_compiled_thunks": "True"
+   },
+   "compile_s": 203.65780139399976,
+   "optimized_hlo_sha256": "6e6bab376adff3b261b3400b8518585f7a7ac651bdd92e3b44be694c1e29e65b",
+   "memory": {
+    "argument_size_in_bytes": null,
+    "output_size_in_bytes": null,
+    "alias_size_in_bytes": null,
+    "temp_size_in_bytes": null
+   },
+   "blob_format": "xla-gpu-thunks-riegeli-v1",
+   "records_sha256": {
+    "0": "c383bcdb0896c26fbbd8cacaaaa0c9de3f824ef70204446c652e9f7a4dea8017",
+    "1": "a7131336835532cce348ccbbf330c42bc14c0fbb65f5781f8e6712fc4d6977fa",
+    "2": "9b0fa76ee7e69cdd3e725ee4bba9a227e0bb7b20451b8c024180c8f6615f114a"
+   },
+   "elf_count": 0,
+   "elf_concat_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "debug_208_258_435": {
+    "208": [
+     5
+    ],
+    "258": [
+     "0102080703090506"
+    ],
+    "435": [
+     1
+    ]
+   }
+  },
+  "V1": {
+   "options": {
+    "xla_gpu_autotune_level": "0",
+    "xla_gpu_experimental_aot_compiled_thunks": "True",
+    "xla_gpu_graph_min_graph_size": "1"
+   },
+   "compile_s": 236.58125860499968,
+   "optimized_hlo_sha256": "6e6bab376adff3b261b3400b8518585f7a7ac651bdd92e3b44be694c1e29e65b",
+   "memory": {
+    "argument_size_in_bytes": null,
+    "output_size_in_bytes": null,
+    "alias_size_in_bytes": null,
+    "temp_size_in_bytes": null
+   },
+   "blob_format": "xla-gpu-thunks-riegeli-v1",
+   "records_sha256": {
+    "0": "c383bcdb0896c26fbbd8cacaaaa0c9de3f824ef70204446c652e9f7a4dea8017",
+    "1": "a7131336835532cce348ccbbf330c42bc14c0fbb65f5781f8e6712fc4d6977fa",
+    "2": "9b0fa76ee7e69cdd3e725ee4bba9a227e0bb7b20451b8c024180c8f6615f114a"
+   },
+   "elf_count": 0,
+   "elf_concat_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "debug_208_258_435": {
+    "208": [
+     1
+    ],
+    "258": [
+     "0102080703090506"
+    ],
+    "435": [
+     1
+    ]
+   }
+  },
+  "V2": {
+   "options": {
+    "xla_gpu_autotune_level": "0",
+    "xla_gpu_experimental_aot_compiled_thunks": "True",
+    "xla_gpu_enable_command_buffer": "FUSION,CUBLAS,CUBLASLT,CUSTOM_CALL,CUDNN,DYNAMIC_SLICE_FUSION,CONDITIONAL"
+   },
+   "compile_s": 268.14210420499967,
+   "optimized_hlo_sha256": "6e6bab376adff3b261b3400b8518585f7a7ac651bdd92e3b44be694c1e29e65b",
+   "memory": {
+    "argument_size_in_bytes": null,
+    "output_size_in_bytes": null,
+    "alias_size_in_bytes": null,
+    "temp_size_in_bytes": null
+   },
+   "blob_format": "xla-gpu-thunks-riegeli-v1",
+   "records_sha256": {
+    "0": "c383bcdb0896c26fbbd8cacaaaa0c9de3f824ef70204446c652e9f7a4dea8017",
+    "1": "a7131336835532cce348ccbbf330c42bc14c0fbb65f5781f8e6712fc4d6977fa",
+    "2": "9b0fa76ee7e69cdd3e725ee4bba9a227e0bb7b20451b8c024180c8f6615f114a"
+   },
+   "elf_count": 0,
+   "elf_concat_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "debug_208_258_435": {
+    "208": [
+     5
+    ],
+    "258": [
+     "01020807030905"
+    ],
+    "435": [
+     1
+    ]
+   }
+  }
+ },
+ "identity_vs_OFF": {
+  "V1": {
+   "optimized_hlo_sha256": true,
+   "records_sha256": true,
+   "elf_concat_sha256": true,
+   "memory": true
+  },
+  "V2": {
+   "optimized_hlo_sha256": true,
+   "records_sha256": true,
+   "elf_concat_sha256": true,
+   "memory": true
+  }
+ },
+ "wall_s": 1094.7240137710005,
+ "peak_rss_KiB": 7942444
+}

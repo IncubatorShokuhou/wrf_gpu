@@ -1,0 +1,200 @@
+{
+  "schema": "wrf_gpu2.w44_budget.all_terms_component.v1",
+  "platform": "cpu",
+  "edmf": 1,
+  "case": "wn3_d03_day",
+  "source": "<USER_HOME>/wrf_gpu2_lanes/w44-budget/snapshot_p22",
+  "fixture_sha256": "11b475eb1add56f4871c289c166eb33f45507feff341292fc4abe3f35deb6d55",
+  "reference_sha256": "6b9deb1c5865beff2ccc8300aad68b774822dd4fa421b10414b0911bd04655ee",
+  "scenario_census": {
+    "qc": 6,
+    "qi": 30,
+    "qs": 61,
+    "qni": 30
+  },
+  "tolerance": {
+    "mean_absolute": 0.001,
+    "history_profile_relative": 0.05,
+    "zero_conventions": "exact"
+  },
+  "env": {
+    "XLA_FLAGS": "--xla_cpu_max_isa=AVX",
+    "GPUWRF_MYNN_FP32_PLUME": "1",
+    "GPUWRF_MYNN_FP32_COLUMNS": "1",
+    "GPUWRF_MYNN_FP32_BOULAC": "0",
+    "GPUWRF_MYNN_CLOUDMIX": "1",
+    "GPUWRF_MYNN_PLUME_SUMS": "1",
+    "GPUWRF_MYNN_TRIDIAG_REAL": "1",
+    "GPUWRF_MYNN_SGS_MIXING_RATIO": "1",
+    "GPUWRF_MYNN_SCALE_AWARE": "1",
+    "GPUWRF_MYNN_SFC_WSPD": "1",
+    "GPUWRF_MYNN_FLTV_WRF": "1",
+    "GPUWRF_MYNN_DHEAT": "1",
+    "GPUWRF_MYNN_PSIQ_FLUX_WRF": "1",
+    "GPUWRF_MYNN_DMP_KTOP_BOUND": "1",
+    "GPUWRF_MYNN_ELB_MF": "1",
+    "GPUWRF_MYNN_PHY_EXNER": "1",
+    "GPUWRF_MYNN_PSIG_CLAMP": "1",
+    "GPUWRF_MYNN_QNI_MIXING": "1",
+    "GPUWRF_MYNN_SFC_PBLH_WRF": "1",
+    "GPUWRF_MYNN_REAL_CONSTANTS": "1",
+    "GPUWRF_MYNN_PLUME_CLOUD_BASE": "1",
+    "GPUWRF_MYNN_SHSM_FLOORS": "1",
+    "GPUWRF_MYNN_TKEPROD_UP": "1",
+    "GPUWRF_MYNN_ELH_BUDGET": "1",
+    "GPUWRF_MYNN_RHOSFC_WRF": "1",
+    "GPUWRF_MYNN_CONDENSATION_WRF": "1",
+    "GPUWRF_MYNN_PREDICT_SAW_FLOOR": "1",
+    "GPUWRF_MYNN_SOURCE_PARITY2": "1",
+    "GPUWRF_MYNN_SFC_PSI_REAL": "1"
+  },
+  "arms": {
+    "off": {
+      "compile_first_s": 18.84692109102616,
+      "memory": {
+        "argument_size_in_bytes": 91136,
+        "output_size_in_bytes": 118984,
+        "temp_size_in_bytes": 773560,
+        "alias_size_in_bytes": 0
+      }
+    },
+    "on": {
+      "compile_first_s": 20.62303968600463,
+      "memory": {
+        "argument_size_in_bytes": 91136,
+        "output_size_in_bytes": 203584,
+        "temp_size_in_bytes": 779848,
+        "alias_size_in_bytes": 0
+      }
+    }
+  },
+  "old_fields": {
+    "u": {
+      "byte_equal": true,
+      "max_abs": 0.0,
+      "rms": 0.0
+    },
+    "v": {
+      "byte_equal": true,
+      "max_abs": 0.0,
+      "rms": 0.0
+    },
+    "w": {
+      "byte_equal": true,
+      "max_abs": 0.0,
+      "rms": 0.0
+    },
+    "theta": {
+      "byte_equal": true,
+      "max_abs": 0.0,
+      "rms": 0.0
+    },
+    "qv": {
+      "byte_equal": true,
+      "max_abs": 0.0,
+      "rms": 0.0
+    },
+    "tke": {
+      "byte_equal": true,
+      "max_abs": 0.0,
+      "rms": 0.0
+    },
+    "p": {
+      "byte_equal": true,
+      "max_abs": 0.0,
+      "rms": 0.0
+    },
+    "rho": {
+      "byte_equal": true,
+      "max_abs": 0.0,
+      "rms": 0.0
+    },
+    "dz": {
+      "byte_equal": true,
+      "max_abs": 0.0,
+      "rms": 0.0
+    },
+    "km": {
+      "byte_equal": false,
+      "max_abs": 3.814697265625e-06,
+      "rms": 1.016620237138798e-07
+    },
+    "kh": {
+      "byte_equal": false,
+      "max_abs": 1.1920928955078125e-07,
+      "rms": 3.870620460219837e-09
+    },
+    "el": {
+      "byte_equal": false,
+      "max_abs": 7.62939453125e-06,
+      "rms": 2.033240474277596e-07
+    },
+    "qc": {
+      "byte_equal": true,
+      "max_abs": 0.0,
+      "rms": 0.0
+    },
+    "qi": {
+      "byte_equal": true,
+      "max_abs": 0.0,
+      "rms": 0.0
+    },
+    "qs": {
+      "byte_equal": true,
+      "max_abs": 0.0,
+      "rms": 0.0
+    },
+    "qsq": {
+      "byte_equal": false,
+      "max_abs": 2.7755575615628914e-17,
+      "rms": 1.0043843284575515e-18
+    },
+    "qc_bl": {
+      "byte_equal": false,
+      "max_abs": 3.637978807091713e-12,
+      "rms": 1.7362427020108753e-13
+    },
+    "qi_bl": {
+      "byte_equal": true,
+      "max_abs": 0.0,
+      "rms": 0.0
+    },
+    "cldfra_bl": {
+      "byte_equal": false,
+      "max_abs": 2.980232238769531e-07,
+      "rms": 1.114761327520879e-08
+    },
+    "maxmf": {
+      "byte_equal": false,
+      "max_abs": 7.450580596923828e-09,
+      "rms": 1.7750950858435717e-09
+    },
+    "maxwidth": {
+      "byte_equal": true,
+      "max_abs": 0.0,
+      "rms": 0.0
+    },
+    "ztop_plume": {
+      "byte_equal": true,
+      "max_abs": 0.0,
+      "rms": 0.0
+    },
+    "exner": {
+      "byte_equal": true,
+      "max_abs": 0.0,
+      "rms": 0.0
+    },
+    "ni": {
+      "byte_equal": true,
+      "max_abs": 0.0,
+      "rms": 0.0
+    },
+    "pblh": {
+      "byte_equal": true,
+      "max_abs": 0.0
+    }
+  },
+  "byte_fields": 18,
+  "total_fields": 25,
+  "verdict": "STOP_NONBYTE_COMPONENT"
+}

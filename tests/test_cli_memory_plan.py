@@ -213,7 +213,8 @@ def _case_key(monkeypatch, tmp_path, extra):
 
 @pytest.mark.parametrize("name,value", [("GPUWRF_GPU_ARM_CPUS", "10,11,12,13,26,27,28,29"),
                                         ("GPUWRF_BENCH_FLAGS_ENV", "scripts/bench/flags_lw9.env"),
-                                        ("GPUWRF_MIN_FREE_VRAM_GIB", "8")])
+                                        ("GPUWRF_MIN_FREE_VRAM_GIB", "8"),
+                                        ("GPUWRF_LANE", "wz")])
 def test_process_infra_env_never_changes_case_key(monkeypatch, tmp_path, name, value):
     """Process placement / bench bookkeeping: same programs, same memory, same plan."""
     base = _case_key(monkeypatch, tmp_path, {})

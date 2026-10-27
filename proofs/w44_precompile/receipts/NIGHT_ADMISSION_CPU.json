@@ -1,0 +1,46 @@
+{
+  "tools_commit": "96fadff926",
+  "launcher": "<USER_HOME>/wrf_gpu2_lanes/w44-precompile/admission_tools/proofs/w44_precompile/night_admission.sh",
+  "launcher_sha256": "56f74db15a10c3d7a7f7281da2676d3ebb245f3b9c8fb54069d178df50be691b",
+  "helper_sha256": "6a889ba1bcc9c177f0dd88f78da1b85f09bcad439ff1579eaf4ad6e161737945",
+  "artifact_manifest_sha256": "07f486694dc01e0fd4e437a927622459d5647af5802a36a644c1339f3ed26b22",
+  "cap_minutes": 2,
+  "gpu_started": false,
+  "checks": [
+    {
+      "name": "valid",
+      "rc": 0,
+      "expected": 0,
+      "stdout": "CPU_DRY_PASS no GPU/lock/backend\n",
+      "stderr": ""
+    },
+    {
+      "name": "before",
+      "rc": 4,
+      "expected": 4,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "name": "short",
+      "rc": 6,
+      "expected": 6,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "name": "missing_window",
+      "rc": 1,
+      "expected": 1,
+      "stdout": "",
+      "stderr": "<USER_HOME>/wrf_gpu2_lanes/w44-precompile/admission_tools/proofs/w44_precompile/night_admission.sh: line 11: GA_START_UTC: manager real UTC window required\n"
+    },
+    {
+      "name": "unknown_arg",
+      "rc": 2,
+      "expected": 2,
+      "stdout": "",
+      "stderr": ""
+    }
+  ]
+}

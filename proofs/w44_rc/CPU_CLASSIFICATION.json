@@ -1,0 +1,84 @@
+{
+  "scope": "full final-composition CPU suite once; only setup-blocked/affected checks rerun; source f157 except registry corrections5317",
+  "raw": {
+    "tierA": {
+      "counts": {
+        "PASS": 4206,
+        "SKIP": 34,
+        "FAIL": 3
+      },
+      "selectors": 182,
+      "unavailable": [
+        "tests/test_w44_precompile_lifecycle.py",
+        "tests/test_w44_precompile_qualification.py"
+      ]
+    },
+    "release_defaults": {
+      "counts": {
+        "PASS": 102,
+        "XFAIL": 1
+      },
+      "selectors": 37,
+      "unavailable": []
+    }
+  },
+  "classified_tierA_counts": {
+    "PASS": 4209,
+    "SKIP": 34
+  },
+  "release_defaults_counts": {
+    "PASS": 102,
+    "XFAIL": 1
+  },
+  "resolved_failures": [
+    {
+      "node": "tests.test_aot_key_cli::test_aot_key_leaves_a_sealed_bundle_byte_identical",
+      "raw": "FAIL",
+      "classification": "HARNESS cache-disable reproduced on exact700a; resolved by neutral/enabled private cache on both source trees",
+      "resolution": "<DATA_ROOT>/wrf_gpu2/scratch/w44-rc/classification/candidate_cache_enabled/result.json"
+    },
+    {
+      "node": "tests.test_aot_key_cli::test_without_the_redirect_aot_key_writes_the_bundle",
+      "raw": "FAIL",
+      "classification": "HARNESS cache-disable reproduced on exact700a; resolved by neutral/enabled private cache on both source trees",
+      "resolution": "<DATA_ROOT>/wrf_gpu2/scratch/w44-rc/classification/candidate_cache_enabled/result.json"
+    },
+    {
+      "node": "tests.v025.restart.test_runtime_data_identity::test_reader_registry_covers_actual_package_and_runtime_extractor",
+      "raw": "FAIL",
+      "classification": "NEW item9 reader registry regression; fixed by reviewed metadata-only5317",
+      "resolution": "<DATA_ROOT>/wrf_gpu2/scratch/w44-rc/registry_affected/result.json"
+    }
+  ],
+  "additional_affected_checks": {
+    "PASS": 22
+  },
+  "known_new_unresolved_failures": 0,
+  "unavailable_NOT_PASS": {
+    "scope": "Eligibility audit only; active manifest is unchanged while suite runs",
+    "reason": "inherited W4-only tests never present on base or composed RC; W4 shelved per manager02:01:58",
+    "excluded_NOT_APPLICABLE": [
+      {
+        "selector": "tests/test_w44_precompile_lifecycle.py",
+        "in_final": false,
+        "in_exact_700a": false
+      },
+      {
+        "selector": "tests/test_w44_precompile_qualification.py",
+        "in_final": false,
+        "in_exact_700a": false
+      }
+    ],
+    "shipped_W5_gate": {
+      "path": "<DATA_ROOT>/wrf_gpu2/scratch/w44-rc/tierA/tests__test_precompile_cli.py/result.json",
+      "counts": {
+        "PASS": 15
+      }
+    },
+    "eligible_final_files": 180,
+    "planned_total_with_unavailable_rows": 182
+  },
+  "registry_source": "5317c965410a3b8aed43dd4b5a93955b9d9941d3",
+  "cache_correction_scope": "test harness explicitly disabled persistent compilation cache; test bodies/scanner/tolerances unchanged; physical fidelity not inferred",
+  "identity_native_optimized": "PENDING registry-specific probe/carry proof; no overall RCREADY claim"
+}

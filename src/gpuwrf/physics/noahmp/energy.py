@@ -49,6 +49,7 @@ from gpuwrf.kernels.phys_noahmp_columns import column_call, columns_enabled, in_
 from jax import lax
 import os
 from gpuwrf.physics.noahmp.precision import real_dtype, real_scalar, real_tree
+from gpuwrf.contracts.real_constfold import R4, real_constant
 
 from gpuwrf.contracts.noahmp_state import NSNOW, NSOIL, NoahMPLandState, NoahMPStatic
 from gpuwrf.physics.noahmp.energy_radiation import TwoStreamParams, radiation_twostream
@@ -66,6 +67,10 @@ from gpuwrf.physics.noahmp.types import (
 GRAV = 9.80616
 SB = 5.67e-08
 VKC = 0.40
+# WRF REAL folds of module_sf_noahmplsm.F constant expressions (w44-constfold): VKC*VKC (:4734/:4735) and the
+# RSURF e-1 denominator ( 2.71828 - 1.0 ) (:2185).
+_VKC2_REAL = R4(VKC) * R4(VKC)
+_E_M1_REAL = R4(2.71828) - R4(1.0)
 TFRZ = 273.16
 HSUB = 2.8440e06
 HVAP = 2.5104e06
@@ -349,8 +354,9 @@ def sfcdif1(it, sfctmp, rhoair, h, qair, zlvl, zpd, z0m, z0h, ur,
     chfh = tmpch - fh
     cmfm = jnp.where(jnp.abs(cmfm) <= MPE, MPE, cmfm)
     chfh = jnp.where(jnp.abs(chfh) <= MPE, MPE, chfh)
-    cm = VKC * VKC / (cmfm * cmfm)
-    ch = VKC * VKC / (cmfm * chfh)
+    vkc2 = real_constant(_VKC2_REAL, VKC * VKC, jnp.result_type(cmfm))  # WRF REAL VKC*VKC fold, :4734 (w44-constfold)
+    cm = vkc2 / (cmfm * cmfm)
+    ch = vkc2 / (cmfm * chfh)
     fv = ur * jnp.sqrt(cm)
     result = (cm, ch, fv, moz, mozsgn, fm, fh, fm2, fh2)
     if (os.environ.get("GPUWRF_NOAHMP_NATIVE_REAL", "0") == "1"
@@ -1028,7 +1034,7 @@ def noahmp_energy_canopy(
     bexp1 = p.bexp[0]
     psisat1 = p.psisat[0]
     if options is None or options.opt_rsf==1:
-        l_rsurf = (-zsoil[0]) * (jnp.exp((1.0 - jnp.minimum(1.0, sh2o1 / smcmax1)) ** p.rsurf_exp) - 1.0) / (2.71828 - 1.0)
+        l_rsurf = (-zsoil[0]) * (jnp.exp((1.0 - jnp.minimum(1.0, sh2o1 / smcmax1)) ** p.rsurf_exp) - 1.0) / real_constant(_E_M1_REAL, 2.71828 - 1.0, jnp.result_type(smcmax1))
         d_rsurf = 2.2e-5 * smcmax1 * smcmax1 * (1.0 - p.smcwlt[0] / smcmax1) ** (2.0 + 3.0 / bexp1)
         rsurf = l_rsurf / d_rsurf
     else:

@@ -133,6 +133,8 @@ def initialize_two_way_domains(hierarchy,bundles,carries,run,nesting,*,kernel_ca
         new=_initial_carry_for_run(state,nl).replace(base_state=base,census=pc.census)
         if land is not None:
             surface,full=noahmp_initial_rad(new.state,nl,land_state=land,_with_diagnostics=True,_kernel_call=kernel_call)
+            from gpuwrf.coupling.topographic_shadow import preserve_initial_height
+            full=preserve_initial_height(new.radiation_diagnostics,full)
             new=new.replace(noahmp_land=land,noahmp_rad=surface,
                 radiation_diagnostics=full if new.radiation_diagnostics is not None else None)
             from gpuwrf.diagnostics.census import count_work

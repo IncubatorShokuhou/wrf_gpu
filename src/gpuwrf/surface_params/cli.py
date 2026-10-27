@@ -31,8 +31,8 @@ def register(subparsers):
     expand.add_argument("--output", type=Path, required=True)
     expand.add_argument("--set", action="append", default=[], metavar="[DOM:]NAME=FACTOR",
                         help="uniform multiplier, e.g. z0mvt=1.2 or d02:albsat=0.9 (repeatable)")
-    expand.add_argument("--class", dest="classes", action="append", default=[], metavar="[DOM:]NAME:VEGTYP=FACTOR",
-                        help="per-vegetation-category multiplier, e.g. z0mvt:5=1.5 (repeatable)")
+    expand.add_argument("--class", dest="classes", action="append", default=[], metavar="[DOM:]NAME:CLASS=FACTOR",
+                        help="1-based category: IVGTYP for vegetation, ISLTYP for soil; e.g. z0mvt:5=1.5 (repeatable)")
     expand.set_defaults(func=command)
     eki = actions.add_parser("eki", help="ensemble Kalman inversion scaffold (host fp64)")
     steps = eki.add_subparsers(dest="eki_action", required=True)
@@ -117,30 +117,44 @@ def _basis(args) -> int:
         _h, bundles, _m, _rs, _dt, _c = pipeline._load_domains(cfg, names)
     if refused:  # a reader swallowed the refusal: still no basis from a partly protected read
         raise ProtectedInputError(f"surface-params basis: refused ALISIOS opens during the load: {sorted(set(refused))[:3]}")
-    manifest = write_basis({name: bundles[name].namelist for name in names}, out, input_dir=args.input_dir)
+    manifest = write_basis({name: bundles[name].namelist for name in names}, out, input_dir=args.input_dir,
+                           land_states={name: carry.noahmp_land for name, carry in _c.items()})
     print(json.dumps({"basis": str(out), "domains": {d: sorted(c for c, v in e["controls"].items() if v["active"])
                                                      for d, e in manifest["domains"].items()}}))
     return 0
 
 
-def write_basis(namelists: dict, out: Path, *, input_dir=None) -> dict:
+def write_basis(namelists: dict, out: Path, *, input_dir=None, land_states=None) -> dict:
     """Float64 table basis + consumer dtype/activity per control for every Noah-MP domain."""
     from gpuwrf.surface_params import controls as sc
 
     arrays, manifest = {}, {"schema": BASIS_SCHEMA, "input_dir": None if input_dir is None else
                             str(Path(input_dir).resolve()), "domains": {}}
     for name, nl in namelists.items():
+        if land_states is not None and name in land_states:
+            from gpuwrf.surface_params.lsmparams import validation_namelist
+            nl = validation_namelist(nl, land_states[name])
         noah = bool(getattr(nl, "use_noahmp", False))
         if not noah and sc._topo_reason(nl) is not None:
             continue
         entry = {"controls": {}, "grid_shape": list(sc.grid_shape(nl))}
         if noah:
             arrays[f"{name}/_ivgtyp"] = np.asarray(nl.noahmp_static.ivgtyp, np.int32)
+            arrays[f"{name}/_isltyp"] = np.asarray(nl.noahmp_static.isltyp, np.int32)
+            from gpuwrf.surface_params.lsmparams import active_columns
+            arrays[f"{name}/_w2_active"] = active_columns(nl)
+            entry["soil_class_count"] = len(nl.noahmp_static.parameters.bexp) - 1
+            from gpuwrf.physics.noahmp.noahmp_driver import _urban_soil_on
+            entry["urban_category"] = int(nl.noahmp_static.parameters.isurban) if _urban_soil_on() else None
             for key in ("taul", "taus"):
                 arrays[f"{name}/_{key}"] = np.asarray(getattr(nl.noahmp_rad_params, key), np.float64)
         # Traced controls of a Noah-MP domain (inactive ones listed with the reason); host controls only when active.
-        listed = (sorted(sc.CONTROLS) if noah else []) + [c for c in sorted(sc.HOST_CONTROLS) if sc._topo_reason(nl) is None]
+        listed = (sorted({**sc.CONTROLS, **sc.LSM_CONTROLS}) if noah else []) + [c for c in sorted(sc.HOST_CONTROLS) if sc._topo_reason(nl) is None]
         for control in listed:
+            if control in sc.UNAVAILABLE_SURFACE_CONTROLS:
+                entry["controls"][control] = {"active": False,
+                    "reason": "not available in v0.4.4: failed the GPU qualification; see KNOWN_ISSUES"}
+                continue
             reason = sc._inactive_reason(control, nl)
             if reason:
                 entry["controls"][control] = {"active": False, "reason": reason}
@@ -175,7 +189,9 @@ def expand_from_basis(basis, manifest, multipliers: dict[str, dict[str, object]]
     """{domain: {control: scalar | {VEGTYP: factor} | field}} -> validated fields (NumPy, table-edit exact).
 
     Host controls (ctopo) take a scalar/field factor (or [(None, factor), ...]) of the excess form."""
-    from gpuwrf.surface_params.controls import ALL_CONTROLS, HOST_CONTROLS, _LEADING, _TRANSMITTANCE, excess_scale
+    from gpuwrf.surface_params.controls import ALL_CONTROLS, HOST_CONTROLS, LSM_CONTROLS, _LEADING, _TRANSMITTANCE, excess_scale
+    from gpuwrf.surface_params.controls import refuse_unqualified_controls
+    refuse_unqualified_controls({name for controls in multipliers.values() for name in controls})
 
     out: dict[str, dict[str, np.ndarray]] = {}
     for domain, controls in multipliers.items():
@@ -202,21 +218,33 @@ def expand_from_basis(basis, manifest, multipliers: dict[str, dict[str, object]]
                     raise ValueError(f"{domain}/{name}: values outside [{spec.lower}, {spec.upper}] {spec.units}")
                 out[domain][name] = value
                 continue
-            vt = basis[f"{domain}/_ivgtyp"]
+            axis = "_isltyp" if spec.axis == "soil" else "_ivgtyp"
+            vt = basis[f"{domain}/{axis}"]
             if isinstance(mult, dict):  # {VEGTYP: factor}
                 mult = [((int(cat),), float(factor)) for cat, factor in mult.items()]
             if isinstance(mult, list):  # [(classes | None, factor), ...] multiplied together
                 m2 = np.ones(vt.shape)
                 for classes, factor in mult:
+                    if spec.axis == "soil" and classes is not None and any(
+                            not 1 <= c <= entry["soil_class_count"] for c in classes):
+                        raise ValueError(f"{domain}/{name}: soil class must be 1-based (slot 0 is unused)")
                     m2 = m2 * np.where(np.ones(vt.shape, bool) if classes is None else np.isin(vt, classes),
                                        float(factor), 1.0)
                 field = np.broadcast_to(m2, base.shape)
             else:
                 field = np.broadcast_to(np.asarray(mult, np.float64), base.shape)
             value = (base * field).astype(np.dtype(info["dtype"]))
+            active = basis[f"{domain}/_w2_active"] if name in LSM_CONTROLS else None
+            if active is not None:
+                value = np.where(active, value, base.astype(value.dtype))
+            if name == "smcmax" and entry.get("urban_category") is not None:
+                vegetation = basis[f"{domain}/_ivgtyp"]
+                urban = (vegetation == entry["urban_category"]) | ((vegetation >= 51) & (vegetation <= 61))
+                value = np.where(urban, np.asarray(.45, value.dtype), value)
             if value.shape != tuple(_LEADING[spec.axis]) + tuple(entry["grid_shape"]):
                 raise ValueError(f"{domain}/{name}: shape {value.shape}")
-            if not np.all(np.isfinite(value)) or value.min() < spec.lower or value.max() > spec.upper:
+            checked = value if active is None else value[np.broadcast_to(active, value.shape)]
+            if not np.all(np.isfinite(value)) or checked.size and (checked.min() < spec.lower or checked.max() > spec.upper):
                 raise ValueError(f"{domain}/{name}: values outside [{spec.lower}, {spec.upper}] {spec.units}")
             if name in _TRANSMITTANCE and np.any(value + basis[f"{domain}/_{_TRANSMITTANCE[name]}"] > 1.0):
                 raise ValueError(f"{domain}/{name}: reflectance + transmittance > 1")
@@ -267,6 +295,8 @@ def _expand(args) -> int:
 def _spec_problem(spec_path, obs=None):
     spec = json.loads(Path(spec_path).read_text())
     params = spec["parameters"]
+    from gpuwrf.surface_params.controls import refuse_unqualified_controls
+    refuse_unqualified_controls({q["control"] for q in params})
     from gpuwrf.surface_params import eki
     p = len(params)
     prior_sd = np.array([float(q.get("prior_sd_log", 0.5)) for q in params])
@@ -283,6 +313,8 @@ def _spec_problem(spec_path, obs=None):
 
 def member_multipliers(spec, theta_row):
     """theta (p,) -> {domain: {control: [(classes | None, factor), ...]}} (terms multiply where they overlap)."""
+    from gpuwrf.surface_params.controls import refuse_unqualified_controls
+    refuse_unqualified_controls({q["control"] for q in spec["parameters"]})
     mult: dict[str, dict[str, list]] = {}
     for q, value in zip(spec["parameters"], np.exp(np.asarray(theta_row, np.float64)), strict=True):
         classes = None if q.get("classes", "all") == "all" else tuple(int(c) for c in q["classes"])
@@ -292,7 +324,8 @@ def member_multipliers(spec, theta_row):
 
 
 def _write_members(spec, theta, basis_path, out_dir: Path, iteration: int):
-    from gpuwrf.surface_params.controls import save_controls
+    from gpuwrf.surface_params.controls import save_controls, refuse_unqualified_controls
+    refuse_unqualified_controls({q["control"] for q in spec["parameters"]})
     basis, manifest = load_basis(basis_path)
     paths = []
     for j, row in enumerate(theta):
@@ -315,8 +348,8 @@ def _save_state(out_dir: Path, spec_path, basis_path, state, iteration, paths):
 def _eki_init(args) -> int:
     from gpuwrf.surface_params import eki
     out_dir = Path(args.output_dir)
-    out_dir.mkdir(parents=True, exist_ok=False)
     spec, problem = _spec_problem(args.spec)
+    out_dir.mkdir(parents=True, exist_ok=False)
     state = eki.initial_ensemble(problem, args.members, seed=args.seed)
     paths = _write_members(spec, state.theta, args.basis, out_dir, 0)
     _save_state(out_dir, args.spec, args.basis, state, 0, paths)

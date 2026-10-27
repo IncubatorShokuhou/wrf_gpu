@@ -13,6 +13,7 @@ from jax import config, lax
 import jax.numpy as jnp
 import numpy as np
 
+from gpuwrf.contracts.real_constfold import R4, real_constant
 from gpuwrf.debug.asserts import assert_finite, assert_physical_bounds
 from gpuwrf.physics.mynn_constants import (
     mynn_constant as _typed_mynn_constant,
@@ -79,6 +80,10 @@ configure_jax_x64()
 
 def mynn_constant(name, dtype):
     return _typed_mynn_constant(name, dtype, globals()[name])
+
+
+# WRF REAL fold of (one-c2) in mym_level2 f1/f2 (module_bl_mynnedmf.F90:1555/1557), w44-constfold.
+_ONE_M_C2_REAL = R4(1.0) - R4(C2)
 
 
 def _env_bool(name: str, default: bool) -> bool:
@@ -497,7 +502,7 @@ def _flux_richardson(ri, ri1, ri2, ri3, ri4, rfc):
     return jnp.minimum(ri1 * (ri + ri2 - jnp.sqrt(radicand)), rfc)
 
 
-def _mym_level2(state: MynnPBLColumnState):
+def _mym_level2(state: MynnPBLColumnState, *, thlv_override=None):
     """WRF MYNN `mym_level2`: level-2 gradients and stability functions.
 
     The buoyancy gradient uses the SGS-cloud-aware ``thlv`` (the WRF driver
@@ -506,7 +511,10 @@ def _mym_level2(state: MynnPBLColumnState):
     this reduces EXACTLY to the previous resolved-only form.
     """
 
-    _thv, thlv = _moist_virtual_potential(state, sgs_cloud=True)
+    if thlv_override is None:
+        _thv, thlv = _moist_virtual_potential(state, sgs_cloud=True)
+    else:
+        thlv = thlv_override
     thl = _liquid_potential_temperature(state)
     _sqv, _sqc, _sqi, sqw = _specific_moisture_components(state)
     dzk = _interface_dz(state.dz)[..., 1:]
@@ -520,8 +528,10 @@ def _mym_level2(state: MynnPBLColumnState):
     ri = -gh_i / jnp.maximum(duz, 1.0e-10)
     a2fac = jnp.where(CKMOD == 1.0, 1.0 / (1.0 + jnp.maximum(ri, 0.0)), 1.0)
     rfc = G1 / (G1 + mynn_constant("G2", state.theta.dtype))
-    f1 = B1 * (G1 - mynn_constant("C1", state.theta.dtype)) + 3.0 * mynn_constant("A2", state.theta.dtype) * a2fac * (1.0 - C2) * (1.0 - C5) + 2.0 * mynn_constant("A1", state.theta.dtype) * (3.0 - 2.0 * C2)
-    f2 = B1 * (G1 + mynn_constant("G2", state.theta.dtype)) - 3.0 * mynn_constant("A1", state.theta.dtype) * (1.0 - C2)
+    # (one-c2) is a REAL PARAMETER fold in WRF (module_bl_mynnedmf.F90:1555/1557), w44-constfold.
+    one_m_c2 = real_constant(_ONE_M_C2_REAL, 1.0 - C2, state.theta.dtype)
+    f1 = B1 * (G1 - mynn_constant("C1", state.theta.dtype)) + 3.0 * mynn_constant("A2", state.theta.dtype) * a2fac * one_m_c2 * (1.0 - C5) + 2.0 * mynn_constant("A1", state.theta.dtype) * (3.0 - 2.0 * C2)
+    f2 = B1 * (G1 + mynn_constant("G2", state.theta.dtype)) - 3.0 * mynn_constant("A1", state.theta.dtype) * one_m_c2
     rf1 = B1 * (G1 - mynn_constant("C1", state.theta.dtype)) / f1
     rf2 = B1 * G1 / f2
     smc = mynn_constant("A1", state.theta.dtype) / (mynn_constant("A2", state.theta.dtype) * a2fac) * f1 / f2
@@ -946,7 +956,7 @@ def _boulac_length(zw, dz, qtke, theta):
 
 
 def _mym_length_option1(state: MynnPBLColumnState, qke, dtv, fltv, ustar, dx, xland=1.0,
-                       *, qkw_mf=None):
+                       *, qkw_mf=None, alp1=None):
     """WRF NONLOCAL master length scale (``bl_mynn_mixlength==1``).
 
     Faithful transcription of the ``CASE (1)`` branch of WRF
@@ -976,13 +986,13 @@ def _mym_length_option1(state: MynnPBLColumnState, qke, dtv, fltv, ustar, dx, xl
     psig_bl = _scale_aware_psig_bl(dx, pblh)
     return _mym_length_option1_with(
         state, qke, dtv, fltv, ustar, dx, xland, pblh=pblh, psig_bl=psig_bl, rmol=rmol,
-        qkw_mf=qkw_mf,
+        qkw_mf=qkw_mf, **({} if alp1 is None else {"alp1": alp1}),
     )
 
 
 def _mym_length_option1_with(
     state: MynnPBLColumnState, qke, dtv, fltv, ustar, dx, xland, *, pblh, psig_bl, rmol,
-    qkw_mf=None,
+    qkw_mf=None, alp1=None,
 ):
     """``mym_length`` CASE(1) body with caller-supplied ``zi``/``Psig_bl``/``rmol``.
 
@@ -1046,7 +1056,7 @@ def _mym_length_option1_with(
         1.0, jnp.maximum(0.0, ugrid - 50.0) / 25.0
     )
     elt_max = jnp.where(is_water, elt_max_water, NL_ELT_MAX)
-    elt = jnp.minimum(jnp.maximum(NL_ALP1 * elt_num / elt_den, NL_ELT_MIN), elt_max)
+    elt = jnp.minimum(jnp.maximum((NL_ALP1 if alp1 is None else alp1) * elt_num / elt_den, NL_ELT_MIN), elt_max)
     vsc = (mynn_constant("GTR", state.theta.dtype) * elt * jnp.maximum(fltv, 0.0)) ** (1.0 / 3.0)
 
     # BouLac free-atmosphere length (elBLavg = lb2).
@@ -1099,7 +1109,8 @@ def _mym_length_option1_with(
 
 
 def mynn_coldstart_init_columns(
-    state: MynnPBLColumnState, ustar, dx, xland, rmol_init=None
+    state: MynnPBLColumnState, ustar, dx, xland, rmol_init=None,
+    *, initialize_qke=None, return_moments: bool = False, alp1=None,
 ) -> tuple[jax.Array, jax.Array]:
     """WRF MYNN first-call turbulence-state initialization (cold start).
 
@@ -1134,7 +1145,9 @@ def mynn_coldstart_init_columns(
     ``rmol_init`` overrides the per-column ``rmol`` seen by the iteration's
     ``mym_length`` calls (proof/oracle use only — reproducing an emitted WRF
     stack value); production leaves it ``None`` (0.0).
-    Returns ``(qke, pblh)``.
+    Returns ``(qke, pblh)`` by default. ``return_moments=True`` additionally
+    returns the final ``el`` and ``qsq``; ``initialize_qke`` selects the WRF
+    cycling column branch after the driver's non-restart clear.
     """
 
     ust = jnp.asarray(ustar, dtype=state.theta.dtype)
@@ -1143,14 +1156,33 @@ def mynn_coldstart_init_columns(
         (ust[..., None] * 700.0 - zw) / (jnp.maximum(ust[..., None], 0.01) * 700.0), 0.01
     )
     qke = 5.0 * ust[..., None] * taper
+    if initialize_qke is not None:
+        qke = jnp.where(jnp.asarray(initialize_qke, dtype=bool)[..., None], qke, jnp.zeros_like(qke))
     pblh = _get_pblh(state, qke, xland)
     psig_bl = _scale_aware_psig_bl(dx, pblh)
-    _dtl, _dqw, dtv, gm, gh, sm, sh = _mym_level2(state)
+    if return_moments:
+        # The driver :675-686 constructs resolved-only thlv before init;
+        # snow is explicitly excluded. The ordinary post-condensation level-2
+        # path still includes the SGS-cloud/snow buoyancy field.
+        _thv, init_thlv = _moist_virtual_potential(state)
+        level2 = _mym_level2(state, thlv_override=init_thlv)
+    else:
+        level2 = _mym_level2(state)
+    _dtl, _dqw, dtv, gm, gh, sm, sh = level2
+    if return_moments:
+        # Driver :713 passes SQV (not SQW) as mym_initialize's qw operand.
+        # The ordinary level-2 helper intentionally uses total water. Its
+        # buoyancy/stability outputs are unchanged; init QSQ needs vapor dqw.
+        sqv = _specific_moisture_components(state)[0]
+        vapor_gradient = (sqv[..., 1:] - sqv[..., :-1]) / _interface_dz(state.dz)[..., 1:]
+        init_dqw = jnp.concatenate((jnp.zeros_like(sqv[..., :1]), vapor_gradient), axis=-1)
 
     # mym_initialize preliminary qke (overwrites the driver pre-seed; NO ust
     # floor on the surface value here — WRF uses raw ust^2 at this point).
     qke0 = 1.5 * ust * ust * (B1 * 1.0) ** (2.0 / 3.0)
     qke = jnp.concatenate((qke0[..., None], qke0[..., None] * taper[..., 1:]), axis=-1)
+    if initialize_qke is not None:
+        qke = jnp.where(jnp.asarray(initialize_qke, dtype=bool)[..., None], qke, jnp.zeros_like(qke))
 
     fltv0 = jnp.zeros_like(ust)
     rmol0 = jnp.zeros_like(ust) if rmol_init is None else jnp.asarray(rmol_init, dtype=ust.dtype)
@@ -1159,6 +1191,7 @@ def mynn_coldstart_init_columns(
         qkw, el, _pblh_unused = _mym_length_option1_with(
             state, qke, dtv, fltv0, ust, dx, xland,
             pblh=pblh, psig_bl=psig_bl, rmol=rmol0,
+            **({} if alp1 is None else {"alp1": alp1}),
         )
         pdk = el * qkw * (sm * gm + sh * gh)
         elv = 0.5 * (el[..., 1] + el[..., 0]) / vkz
@@ -1168,8 +1201,22 @@ def mynn_coldstart_init_columns(
         qke = jnp.concatenate(
             (qke_sfc[..., None], tmpq ** (2.0 / 3.0), qke[..., -1:]), axis=-1
         )
+        if initialize_qke is not None:
+            qke = jnp.where(jnp.asarray(initialize_qke, dtype=bool)[..., None], qke, jnp.zeros_like(qke))
+        if return_moments:
+            # Original mym_initialize:1350-1411. Moisture variance is diagnosed
+            # after that pass's QKE update, using the same length/production.
+            pdq = el * qkw * sh * (init_dqw ** 2)
+            safe_qke = jnp.where(qke[..., 1:-1] > 0, qke[..., 1:-1], jnp.ones_like(qke[..., 1:-1]))
+            b2l = jnp.where(qke[..., 1:-1] > 0,
+                            B2 * (b1l / B1) / jnp.sqrt(safe_qke), jnp.zeros_like(safe_qke))
+            qsq_inner = b2l * (pdq[..., 2:] + pdq[..., 1:-1])
+            qsq_top = qsq_inner[..., -1:] if state.theta.shape[-1] > 2 else jnp.zeros_like(ust)[..., None]
+            qsq = jnp.concatenate((jnp.zeros_like(ust)[..., None], qsq_inner, qsq_top), axis=-1)
     qke_kts = 0.5 * (qke[..., 0] + qke[..., 1])
     qke = jnp.concatenate((qke_kts[..., None], qke[..., 1:-1], qke[..., -2:-1]), axis=-1)
+    if return_moments:
+        return qke, pblh, el, qsq
     return qke, pblh
 
 
@@ -1280,7 +1327,7 @@ def _mynn_length_mf_kwargs(state, mf):
 
 
 def _mym_turbulence(state: MynnPBLColumnState, qke, fltv, ustar, dx, xland=1.0,
-                    *, qkw_mf=None, mf_aw=None, tkeprod_up=None):
+                    *, qkw_mf=None, mf_aw=None, tkeprod_up=None, alp1=None):
     """WRF MYNN `mym_turbulence` dry level-2.5 path.
 
     Uses the WRF-default NONLOCAL mixing length (``bl_mynn_mixlength=1``,
@@ -1291,7 +1338,7 @@ def _mym_turbulence(state: MynnPBLColumnState, qke, fltv, ustar, dx, xland=1.0,
 
     dtl, dqw, dtv, gm, gh, sm20_raw, sh20_raw = _mym_level2(state)
     qkw, el, pblh = _mym_length_option1(state, qke, dtv, fltv, ustar, dx, xland,
-                                      qkw_mf=qkw_mf)
+                                      qkw_mf=qkw_mf, **({} if alp1 is None else {"alp1": alp1}))
     dzk = _interface_dz(state.dz)
     elsq = el * el
     q3sq_initial = qkw * qkw
@@ -1448,7 +1495,7 @@ def _wrf_qke_minmax(value):
     return jnp.fmin(jnp.fmax(value, QKEMIN), 150.0)
 
 
-def _phim_puhales(zet):
+def _phim_puhales(zet, *, cphm_unst=None, am_st=None):
     """WRF Puhales-2020 momentum stability function ``phim(zet)`` (default
     ``bl_mynn_stfunc=1``, ``module_bl_mynnedmf.F:7701-7750``).
 
@@ -1456,7 +1503,7 @@ def _phim_puhales(zet):
     Unstable (``zet<0``): Grachev-et-al-2000 convective blend. ``phim`` returns
     ``phi_m`` (the ``-zet`` subtraction is applied by the caller as ``pmz``)."""
 
-    am_st = 6.1
+    am_st = 6.1 if am_st is None else am_st
     bm_st = 2.5
     rbm_st = 1.0 / bm_st
     am_unst = 10.0
@@ -1469,7 +1516,7 @@ def _phim_puhales(zet):
     phi_m_st = 1.0 - zet_s * d2_s
     # ---- unstable branch (zet<0) ----
     zet_u = jnp.minimum(zet, -1.0e-12)  # keep strictly negative for the 1/zet terms
-    dum0 = (1.0 - CPHM_UNST * zet_u) ** 0.25
+    dum0 = (1.0 - (CPHM_UNST if cphm_unst is None else cphm_unst) * zet_u) ** 0.25
     phi_m0 = 1.0 / dum0
     dpsi = (2.0 * jnp.log(0.5 * (1.0 + dum0)) + jnp.log(0.5 * (1.0 + dum0 * dum0))
             - 2.0 * jnp.arctan(dum0) + 1.570796)
@@ -1491,7 +1538,7 @@ def _phim_puhales(zet):
     return jnp.where(zet >= 0.0, phi_m_st, phi_m_unst)
 
 
-def _pmz_surface(fltv, ustar, dz0):
+def _pmz_surface(fltv, ustar, dz0, *, cphm_unst=None, am_st=None):
     """WRF surface non-dimensional shear ``pmz`` for the TKE surface production
     (``module_bl_mynnedmf.F:879-897``, ``bl_mynn_stfunc=1`` default).
 
@@ -1503,7 +1550,8 @@ def _pmz_surface(fltv, ustar, dz0):
 
     rmol = -KARMAN * mynn_constant("GTR", jnp.result_type(fltv, ustar, dz0)) * fltv / jnp.maximum(ustar ** 3, 1.0e-6)
     zet = jnp.clip(0.5 * dz0 * rmol, -20.0, 20.0)
-    return _phim_puhales(zet) - zet
+    return _phim_puhales(zet, **{name: value for name, value in
+        (("cphm_unst", cphm_unst), ("am_st", am_st)) if value is not None}) - zet
 
 
 def _mym_predict_mf_kwargs(mf):
@@ -1520,7 +1568,7 @@ def _apply_predict_saw_floor(kdz, s_aw):
     return jnp.concatenate((kdz[..., :1], interior, kdz[..., -2:]), axis=-1)
 
 
-def _mym_predict_qke(state: MynnPBLColumnState, qke, turb, dt, ustar, flux, *, s_aw=None):
+def _mym_predict_qke(state: MynnPBLColumnState, qke, turb, dt, ustar, flux, *, s_aw=None, sqfac=None, cphm_unst=None, am_st=None):
     """WRF `mym_predict` dry level-2.5 qke equation."""
 
     dz = state.dz
@@ -1528,14 +1576,15 @@ def _mym_predict_qke(state: MynnPBLColumnState, qke, turb, dt, ustar, flux, *, s
     dtz = dt / dz
     rhoinv = 1.0 / jnp.maximum(rho, 1.0e-4)
     qkw_mass = jnp.sqrt(jnp.maximum(qke, 0.0))
-    df3q = SQFAC * turb["dfq"]
+    df3q = (SQFAC if sqfac is None else sqfac) * turb["dfq"]
     kqdz = _rho_interfaces(state, df3q)
     if _env_bool("GPUWRF_MYNN_PREDICT_SAW_FLOOR", False) and s_aw is not None:
         kqdz = _apply_predict_saw_floor(kqdz, s_aw)
     vkz = KARMAN * 0.5 * dz[..., 0]
     # WRF line 3072: pdk1 = 2*ust**3*pmz/vkz. pmz is the surface non-dimensional
     # shear from the (Puhales-2020) stability function; pmz>1 in stable layers.
-    pmz = _pmz_surface(flux.fltv, ustar, dz[..., 0])
+    pmz = _pmz_surface(flux.fltv, ustar, dz[..., 0], **{name: value for name, value in
+        (("cphm_unst", cphm_unst), ("am_st", am_st)) if value is not None})
     pdk1 = 2.0 * ustar * ustar * ustar * pmz / jnp.maximum(vkz, 1.0e-6)
     pdk = jnp.concatenate(((pdk1 - turb["pdk"][..., 1])[..., None], turb["pdk"][..., 1:]), axis=-1)
 
@@ -1848,7 +1897,7 @@ def _retrieve_exchange_coeffs(state: MynnPBLColumnState, turb):
 
 
 def _step_mynn_pbl_impl_with_pblh(state: MynnPBLColumnState, dt: float, debug: bool,
-                                  surface=None, edmf: bool = False, dx: float = 1000.0):
+                                  surface=None, edmf: bool = False, dx: float = 1000.0, sqfac=None):
     """Unjitted implementation; returns the advanced state and the MYNN PBLH.
 
     ``edmf`` activates the MYNN-EDMF mass-flux nonlocal scalar transport (the
@@ -1916,7 +1965,7 @@ def _step_mynn_pbl_impl_with_pblh(state: MynnPBLColumnState, dt: float, debug: b
                            **_mynn_length_mf_kwargs(state, mf),
                            **_mynn_wrf_turbulence_kwargs(state, mf))
     qke_new, _qwt, qdiss, _pdk = _mym_predict_qke(state, qke, turb, dt, flux.ustar, flux,
-                                               **_mym_predict_mf_kwargs(mf))
+                                               **_mym_predict_mf_kwargs(mf), **_sqfac_kwargs(sqfac))
     if sgs_cloud:
         qsq_new = _mym_predict_qsq(
             state, state.qsq, turb, dt, s_aw=mf["s_aw"] if mf is not None else None
@@ -1959,10 +2008,10 @@ def _mynn_plume_diagnostics(state, mf):
 
 
 def _step_mynn_pbl_impl(state: MynnPBLColumnState, dt: float, debug: bool, surface=None,
-                        edmf: bool = False, dx: float = 1000.0) -> MynnPBLColumnState:
+                        edmf: bool = False, dx: float = 1000.0, sqfac=None) -> MynnPBLColumnState:
     """Unjitted implementation shared by production and stripped entry points."""
 
-    next_state, _pblh = _step_mynn_pbl_impl_with_pblh(state, dt, debug, surface, edmf, dx)
+    next_state, _pblh = _step_mynn_pbl_impl_with_pblh(state, dt, debug, surface, edmf, dx, **_sqfac_kwargs(sqfac))
     return next_state
 
 
@@ -2030,7 +2079,7 @@ def _scatter_columns_leaf(carry, tile, start):
 
 
 def _tiled_mynn_step(state: MynnPBLColumnState, dt: float, debug: bool, surface,
-                     edmf: bool, dx: float):
+                     edmf: bool, dx: float, sqfac=None):
     """Runs the MYNN column step over fixed-size leading-column tiles.
 
     Engages only for a flat ``(B, nz)`` batch larger than the tile width; the
@@ -2049,7 +2098,7 @@ def _tiled_mynn_step(state: MynnPBLColumnState, dt: float, debug: bool, surface,
         and int(profile.shape[0]) > _MYNN_COLUMN_TILE_COLS
     )
     if not tiling_active:
-        return _step_mynn_pbl_impl_with_pblh(state, dt, debug, surface, edmf, dx)
+        return _step_mynn_pbl_impl_with_pblh(state, dt, debug, surface, edmf, dx, **_sqfac_kwargs(sqfac))
 
     ncol = int(profile.shape[0])
     tile_cols = int(_MYNN_COLUMN_TILE_COLS)
@@ -2076,7 +2125,7 @@ def _tiled_mynn_step(state: MynnPBLColumnState, dt: float, debug: bool, surface,
             else None
         )
         out_state, out_pblh = _step_mynn_pbl_impl_with_pblh(
-            tile_state, dt, debug, tile_surface, edmf, dx
+            tile_state, dt, debug, tile_surface, edmf, dx, **_sqfac_kwargs(sqfac)
         )
         carry_state, carry_pblh = carry
         next_state = jax.tree_util.tree_map(
@@ -2095,7 +2144,7 @@ def _tiled_mynn_step(state: MynnPBLColumnState, dt: float, debug: bool, surface,
 @partial(jax.jit, static_argnames=("dt", "debug", "edmf", "dx"))
 def step_mynn_pbl_column(
     state: MynnPBLColumnState, dt: float, *, debug: bool = False, surface=None,
-    edmf: bool = False, dx: float = 1000.0,
+    edmf: bool = False, dx: float = 1000.0, sqfac=None, mynn_coefficients=None,
 ) -> MynnPBLColumnState:
     """Advances one fused MYNN2.5 column step.
 
@@ -2108,15 +2157,18 @@ def step_mynn_pbl_column(
     if _env_bool("GPUWRF_MYNN_FP32_COLUMNS", False):
         from gpuwrf.kernels.phys_mynn_columns import step_mynn_columns_native
         return step_mynn_columns_native(state, dt, debug=debug, surface=surface,
-                                        edmf=edmf, dx=dx)[0]
-    next_state, _pblh = _tiled_mynn_step(state, dt, debug, surface, edmf, dx)
+                                        edmf=edmf, dx=dx, **_sqfac_kwargs(sqfac),
+                                        **({} if mynn_coefficients is None else {"mynn_coefficients": mynn_coefficients}))[0]
+    if mynn_coefficients is not None:
+        raise ValueError("runtime MYNN coefficients require native FP32 columns")
+    next_state, _pblh = _tiled_mynn_step(state, dt, debug, surface, edmf, dx, **_sqfac_kwargs(sqfac))
     return next_state
 
 
 @partial(jax.jit, static_argnames=("dt", "debug", "edmf", "dx"))
 def step_mynn_pbl_column_with_pblh(
     state: MynnPBLColumnState, dt: float, *, debug: bool = False, surface=None,
-    edmf: bool = False, dx: float = 1000.0,
+    edmf: bool = False, dx: float = 1000.0, sqfac=None, mynn_coefficients=None,
 ):
     """Advance one MYNN column step and also return the diagnosed PBL height.
 
@@ -2128,8 +2180,11 @@ def step_mynn_pbl_column_with_pblh(
     if _env_bool("GPUWRF_MYNN_FP32_COLUMNS", False):
         from gpuwrf.kernels.phys_mynn_columns import step_mynn_columns_native
         return step_mynn_columns_native(state, dt, debug=debug, surface=surface,
-                                        edmf=edmf, dx=dx)
-    return _tiled_mynn_step(state, dt, debug, surface, edmf, dx)
+                                        edmf=edmf, dx=dx, **_sqfac_kwargs(sqfac),
+                                        **({} if mynn_coefficients is None else {"mynn_coefficients": mynn_coefficients}))
+    if mynn_coefficients is not None:
+        raise ValueError("runtime MYNN coefficients require native FP32 columns")
+    return _tiled_mynn_step(state, dt, debug, surface, edmf, dx, **_sqfac_kwargs(sqfac))
 
 
 @partial(jax.jit, static_argnames=("dt",))
@@ -2175,3 +2230,13 @@ def _edmf_cloud_base_kwargs(state, pblh, qc_bl, cldfra_bl):
     first = jnp.argmax(cloud, axis=-1)
     found_height = jnp.take_along_axis(height, first[..., None], axis=-1)[..., 0]
     return {"cloud_base": jnp.where(jnp.any(cloud, axis=-1), found_height, 9000.0)}
+
+
+def _sqfac_kwargs(sqfac):
+    """Keep OFF call signatures unchanged; SQFAC is a traced scalar when selected."""
+    return {} if sqfac is None else {"sqfac": sqfac}
+
+
+def _mynn_coefficient_kwargs(coefficients, *names):
+    """Select only enabled scalar operands; OFF leaves the original calls intact."""
+    return {} if coefficients is None else {name: coefficients[name] for name in names if name in coefficients}

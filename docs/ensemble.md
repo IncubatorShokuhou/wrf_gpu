@@ -236,7 +236,7 @@ the model's own d01 spectral setup, which refuses a Gaussian length scale the
 grid cannot resolve. Original CPU-WRF 4.7.1 does not refuse: on the 126 km Swiss
 domain the 700 km SPP-PBL and 500 km RAND defaults gave NaN spectral
 coefficients and a constant clipped pattern (`PATTERN_SPP_PBL` = 0.3 everywhere).
-On that grid the limit lies between 200 and 250 km; the 9 km WN3/PROD d01 grids
+On that grid the limit lies between 200 and 250 km; the 9 km Canary Islands outer grids
 resolve all defaults. Use `--lengthscale-km` to set every active Gaussian
 pattern (WRF defaults 150 km SPPT, 150/700/50 km SPP conv/PBL/LSM). See
 [stochastic.md](stochastic.md) for what each scheme does and how it is
@@ -245,12 +245,12 @@ qualified.
 **Multiphysics members** take rows of this table. Every row is a complete
 `&physics` edit of a composite that passed the frozen D6 manifest against
 original CPU-WRF over 24 h on GPU in the v0.4.0 final validation (Swiss d01,
-3 km, Noah-MP, otherwise the default namelist; v-prep case id given). E41 FAIL
-rows are D6-PASS but carry the disclosed opt-in cubin-gate flags. A case with a
+3 km, Noah-MP, otherwise the default namelist; v-prep case id given). Rows marked FAIL in the kernel-check column
+are D6-PASS but carry the disclosed flags of the compiled-kernel resource check. A case with a
 land model other than Noah-MP is accepted and every member is labelled
 `UNQUALIFIED combination` in its manifest.
 
-| row | mp | cu | pbl | sfclay | lw | sw | extra | evidence | E41 |
+| row | mp | cu | pbl | sfclay | lw | sw | extra | evidence | kernel check |
 |---|---|---|---|---|---|---|---|---|---|
 | P00 | 8 Thompson | 0 | 5 MYNN | 5 | 4 RRTMG | 4 RRTMG | | c00 | PASS |
 | P01 | 3 WSM3 | 3 Grell-Freitas | 3 GFS | 3 | 4 | 1 Dudhia | | c04 | PASS |
@@ -265,7 +265,7 @@ land model other than Noah-MP is accepted and every member is labelled
 | P10 | 2 Lin | 2 BMJ | 2 MYJ | 2 | 4 | 2 Goddard | | c03 | FAIL |
 | P11 | 9 Milbrandt | 16 New Tiedtke | 11 Shin-Hong | 1 | 4 | 4 | use_mp_re=1 | c07 | FAIL |
 
-Without `--physics-rows`, `--members N` takes the first N rows (E41-PASS rows
+Without `--physics-rows`, `--members N` takes the first N rows (rows passing the kernel check
 first). A row qualified on the Swiss case is not automatically qualified for a
 different region or resolution, and cumulus rows at convection-permitting grid
 spacing are a modelling choice for you to make. `--schemes skebs` adds SKEBS with

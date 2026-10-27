@@ -1,0 +1,12 @@
+o5-coast deletion-sensitivity mutants (tests/test_o5_root_spec_walk.py, hard-linked tree copies, CPU, 2026-10-24)
+M1_face_mass_cell (across faces -> cell mass)      | 8 passed  | EQUIVALENT for spec_zone=1: the ring holds only the outermost face b=0, whose WRF face mass is the edge cell either way
+M1b_along_faces_unaveraged (S/N u, W/E v faces)    | 4 failed  | assertion_lines=12 setup_errors=0
+M2_theta_leaf_rate (no per-record re-coupling)     | 4 failed  | assertion_lines=12 setup_errors=0
+M3_wiring_removed (operational_mode walk branch)   | 1 failed  | assertion_lines=3  setup_errors=0
+M4_default_removed (FAST_PATH_DEFAULTS walk)       | 1 failed  | assertion_lines=2  setup_errors=0
+M5_kernel_mass_branch (acoustic mass pin branch)   | 1 failed  | assertion_lines=2  setup_errors=0
+M6_msf_dropped (u/v map factor)                    | 4 failed  | assertion_lines=12 setup_errors=0
+--- after critic cr-o5-coast FINDING 18:28Z (production-path numeric tests added, tests/test_o5_root_spec_walk.py 15 tests) ---
+M7_native_mass_increments_zero (critic's mutant: all 4 native mass-walk dt*tendency increments removed) | 4 failed | assertion_lines=11 setup_errors=0
+M8_native_uv_increments_zero (native u/v ring walk without dt*tendency)                                 | 1 failed | assertion_lines=3  setup_errors=0
+M9_native_ph_absolute (root ph back to the absolute spec_bdyupdate_ph_inloop pin)                       | 2 failed | assertion_lines=5  setup_errors=0

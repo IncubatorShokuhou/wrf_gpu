@@ -6,6 +6,12 @@
 <p class="lead">wrf_gpu rewrites WRF v4's ARW dynamics and physics for JAX/XLA/Pallas.
 Start with prepared WRF inputs and a supported namelist, run time integration on
 your GPU, and use familiar NetCDF tools to read the history files.</p>
+<h2 id="v044">v0.4.4: initialization, terrain and regional experiments</h2>
+<p>MYNN initialization, solar/ozone clocks and nested shading are corrected.
+The 72-hour release gate passes by the approved decision, with CPU-twin-floor
+rain exceedances and a registered final-frame graupel-trace exception disclosed.
+<a href="../release_notes/RELEASE_NOTES_v0.4.4.md">Release notes and exact scope</a> ·
+<a href="release/SUPPORT_MATRIX_v0.4.4.md">Support matrix</a>.</p>
 <h2 id="start-here">Get your first forecast running</h2>
 <div class="card-grid">
 <a class="card" href="installation.html"><div class="card-title">1. Install</div><div class="card-desc">Check Python, CUDA JAX, your NVIDIA GPU and WRF runtime tables.</div></a>
@@ -26,6 +32,12 @@ station verification, ensembles and export are on <a href="tools.html">tools and
 and <a href="nesting.html">nesting guide</a> for your case. Options have explicit support
 status and unsupported selections stop with a named reason. What is not covered yet is on the
 <a href="limitations.html">limitations page</a>.</p>
+<p>Diffusion/damping parameter overrides, including <code>c_s</code>, are refused
+in v0.4.4. They may come in a later release after GPU qualification; no date
+or commitment. MYNN overrides are experimental:
+component/short two-domain GPU root checks passed, without three-nest D6,
+station or 24–72-hour qualification. See <a href="runtime-parameters.md">runtime parameter
+family status</a> for the limitations and other families' guides.</p>
 <h2 id="scope-at-a-glance">See the evidence and plan your workload</h2>
 <p>Original Fortran CPU-WRF comparisons cover selected regional forecasts through 24 and
 72 hours. <a href="validation.html">Validation</a> explains the method, the fixed limits and the

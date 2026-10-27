@@ -1,0 +1,77 @@
+{
+  "schema": "wrf_gpu2.w44_budget.coupled_proto.v1",
+  "platform": "cpu",
+  "source_root": "<USER_HOME>/wrf_gpu2_lanes/w44-budget/snapshot_p09",
+  "source_commit": "3fa48d159766101770a787fb9947c0622c7c4456",
+  "source_tree": "ba05f981534d0f7e8e83b65a8436003aeefdb2d4",
+  "input_dir": "<DATA_ROOT>/wrf_gpu2/scratch/w43-release/cases/wn3_0227",
+  "max_dom": 1,
+  "scope": "first real d01 production step; ON/OFF regression identity only, not original-WRF fidelity",
+  "caches": {
+    "GPUWRF_JAX_CACHE": "0",
+    "GPUWRF_JAX_CACHE_DIR": null,
+    "JAX_COMPILATION_CACHE_DIR": null
+  },
+  "arms": {
+    "off": {
+      "lower_s": 52.70266835199436,
+      "raw_hlo_sha256": "48ff47b53721b9dfe5219100ee12417d067071fa70f3f2a8552f780cf21299ae"
+    },
+    "on": {
+      "lower_s": 52.73825182300061,
+      "raw_hlo_sha256": "700e2439176f5bc0f6b5441c431d4fe19b30641b218a26a23f1d1269d9b82f82"
+    }
+  },
+  "input_files": {
+    "namelist.input": {
+      "path": "<DATA_ROOT>/wrf_gpu2/scratch/w43-release/cases/wn3_0227/namelist.input",
+      "bytes": 4237,
+      "sha256": "8e77d97f016bbbc5acf83d55fc814d88f77786d22ab27d241b91856e006ee16a"
+    },
+    "wrfbdy_d01": {
+      "path": "<DATA_ROOT>/wrf_gpu2/scratch/w43-release/cases/wn3_0227/wrfbdy_d01",
+      "bytes": 31056456,
+      "sha256": "c683a23ebe5946995b71c75f0b86b0b07badfc010cf3762b2149fa91cd344b37"
+    },
+    "wrfinput_d01": {
+      "path": "<DATA_ROOT>/wrf_gpu2/scratch/w43-release/cases/wn3_0227/wrfinput_d01",
+      "bytes": 9833001,
+      "sha256": "b7f75a6bad092cdacd2a2d4b47a4c28994b6727b372f23b1f22bb424a83987d8"
+    },
+    "wrfinput_d02": {
+      "path": "<DATA_ROOT>/wrf_gpu2/scratch/w43-release/cases/wn3_0227/wrfinput_d02",
+      "bytes": 27515424,
+      "sha256": "6914cb70242ac62bb9a430426caa0bcd344483e996339886b8a5465754a08f3f"
+    },
+    "wrfinput_d03": {
+      "path": "<DATA_ROOT>/wrf_gpu2/scratch/w43-release/cases/wn3_0227/wrfinput_d03",
+      "bytes": 10765790,
+      "sha256": "342f93f97ad0e746dd40ecbbe947b85c749176aa7e08b882ad59cb01eef5d907"
+    },
+    "wrflowinp_d01": {
+      "path": "<DATA_ROOT>/wrf_gpu2/scratch/w43-release/cases/wn3_0227/wrflowinp_d01",
+      "bytes": 422506,
+      "sha256": "480658449a06aff1043122653f7c489fb5cbaa1c18f7b47831df51141fc2e775"
+    },
+    "wrflowinp_d02": {
+      "path": "<DATA_ROOT>/wrf_gpu2/scratch/w43-release/cases/wn3_0227/wrflowinp_d02",
+      "bytes": 1061134,
+      "sha256": "fc8059297b9e2da4abaff6d6e1efc4a921cd46bfc5e6dc9d14746b221fc415ba"
+    },
+    "wrflowinp_d03": {
+      "path": "<DATA_ROOT>/wrf_gpu2/scratch/w43-release/cases/wn3_0227/wrflowinp_d03",
+      "bytes": 520192,
+      "sha256": "4a641f46fed940bcfad20772f18b5e072ae9d902de7ac19f8eb017e8b634315b"
+    }
+  },
+  "init_s": 25.739853448001668,
+  "dt": 54.0,
+  "shape": [
+    44,
+    70,
+    120
+  ],
+  "cadence": 33,
+  "steps": 1,
+  "verdict": "CPU_LOWER_ONLY"
+}

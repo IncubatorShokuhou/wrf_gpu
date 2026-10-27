@@ -137,7 +137,19 @@ def test_off_output_function_ast_is_exact_and_model_producers_unchanged():
     for source in sorted((ROOT/'src/gpuwrf').rglob('*.py')):
         found=_flag_reads(ast.parse(source.read_text()))
         if found:reads[source.relative_to(ROOT).as_posix()]=found
+    # The only other read is the restart OUTPUT-POLICY identity (b02ad28525): restart_store binds the resolved
+    # writer policy so a resume refuses a changed history stream. It is not a model producer; pin its exact form.
+    identity=reads.pop('src/gpuwrf/runtime/restart_store.py',None)
     assert list(reads)==['src/gpuwrf/runtime/operational_mode.py'] and len(reads[list(reads)[0]])==1,reads
+    assert identity is not None and len(identity)==1,identity
+    store=ast.parse((ROOT/'src/gpuwrf/runtime/restart_store.py').read_text())
+    policy=[n for n in store.body if isinstance(n,ast.FunctionDef) and n.name=='_nested_output_policy']
+    loc=lambda nodes:[(n.lineno,n.col_offset) for n in nodes]
+    assert len(policy)==1 and loc(_flag_reads(policy[0]))==loc(identity)
+    bound=[v for d in ast.walk(policy[0]) if isinstance(d,ast.Dict) for k,v in zip(d.keys,d.values)
+           if isinstance(k,ast.Constant) and k.value=='history_swdown_horizontal']
+    assert [ast.unparse(v) for v in bound]==['bool(operational_mode._HISTORY_SWDOWN_HORIZONTAL)'],bound
+    assert loc([bound[0].args[0]])==loc(identity)
     baseline=subprocess.check_output(['git','show','1e9f09c07:src/gpuwrf/runtime/operational_mode.py'],cwd=ROOT,text=True)
     selectors={}
     for label,tree in (('frozen',ast.parse(baseline)),('current',ast.parse(path.read_text()))):

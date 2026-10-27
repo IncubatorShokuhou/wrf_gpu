@@ -1,0 +1,154 @@
+{
+ "device": "NVIDIA GeForce GTX 1080 Ti",
+ "cc": "6.1",
+ "case": "examples/switzerland_d01",
+ "n_steps": 20,
+ "load_s": 26.0,
+ "first_step_s": 315.4,
+ "profiled_wall_s": 1.85,
+ "device_ms_per_step": 11.251,
+ "family_ms_per_step": {
+  "xla:fusion": 5.96,
+  "pallas:acoustic": 1.309,
+  "xla:other": 0.548,
+  "pallas:lateral bdy": 0.516,
+  "xla:copy/memset": 0.483,
+  "pallas:Thompson": 0.482,
+  "pallas:advection": 0.402,
+  "pallas:diffusion": 0.316,
+  "pallas:PD": 0.312,
+  "pallas:RK/EOS": 0.299,
+  "pallas:MYNN": 0.29,
+  "pallas:Noah-MP": 0.284,
+  "pallas:coupling": 0.051
+ },
+ "top_kernels_ms_per_step": [
+  [
+   "thompson_full_column",
+   1,
+   0.482
+  ],
+  [
+   "memcpy32_post",
+   188,
+   0.426
+  ],
+  [
+   "boundary_dry_relax_real",
+   13,
+   0.356
+  ],
+  [
+   "b_core_scalar_flux_fp32_stacked",
+   2,
+   0.352
+  ],
+  [
+   "mynn_tridiag2_real",
+   9,
+   0.29
+  ],
+  [
+   "b_core_uv_fp32",
+   7,
+   0.275
+  ],
+  [
+   "b_core_mass_fp32",
+   7,
+   0.27
+  ],
+  [
+   "b_core_w_fp32",
+   7,
+   0.251
+  ],
+  [
+   "b_core_pd_tend_sl_fp32",
+   1,
+   0.195
+  ],
+  [
+   "b_core_w_p2_fp32",
+   7,
+   0.172
+  ],
+  [
+   "b_core_coef_fp32",
+   3,
+   0.171
+  ],
+  [
+   "input_transpose_fusion_104",
+   1,
+   0.137
+  ],
+  [
+   "input_transpose_fusion_103",
+   1,
+   0.136
+  ],
+  [
+   "_lambda_",
+   3,
+   0.129
+  ],
+  [
+   "b_core_pd_scale_sl_fp32",
+   1,
+   0.118
+  ],
+  [
+   "b_diff_eos_real",
+   9,
+   0.117
+  ],
+  [
+   "b_diff_horizontal_m",
+   9,
+   0.116
+  ],
+  [
+   "loop_multiply_transpose_fusion",
+   1,
+   0.115
+  ],
+  [
+   "b_core_w_p1_fp32",
+   7,
+   0.115
+  ],
+  [
+   "b_diff_sixth_m",
+   9,
+   0.114
+  ],
+  [
+   "b_diff_rhs_ph_fp32",
+   3,
+   0.098
+  ],
+  [
+   "b_core_noah_canopy_flux",
+   1,
+   0.097
+  ],
+  [
+   "loop_transpose_fusion_7",
+   1,
+   0.093
+  ],
+  [
+   "boundary_leaf_interp_real",
+   21,
+   0.093
+  ],
+  [
+   "input_scatter_fusion_137",
+   36,
+   0.084
+  ]
+ ],
+ "wall_ms_per_step": 92.5,
+ "pallas_kernels_seen": 44
+}

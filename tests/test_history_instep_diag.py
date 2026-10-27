@@ -143,7 +143,12 @@ def test_m9_history_branch_reads_carry_without_resolve(monkeypatch):
         assert getattr(m9, attr) is getattr(history, attr), attr
     assert m9.tsk is state.t_skin
     assert float(np.asarray(m9.pblh)[0, 0]) == 7.0
-    assert float(np.asarray(m9.swdown)[0, 0]) == 2.0  # held Noah-MP SOLDN, unchanged path
+    if op._HISTORY_SWDOWN_HORIZONTAL:
+        # Release default GPUWRF_HISTORY_SWDOWN_HORIZONTAL=1 (W2): WRF surface_driver restores the
+        # horizontal radiation SWDOWN for history (tests/test_history_swdown_horizontal.py); pinned per mode.
+        assert float(np.asarray(m9.swdown)[0, 0]) == 11.0  # _radiation().swdown
+    else:
+        assert float(np.asarray(m9.swdown)[0, 0]) == 2.0  # held Noah-MP SOLDN, unchanged path
 
 
 def test_m9_history_uses_state_hfx_when_container_has_none(monkeypatch):

@@ -1129,11 +1129,11 @@ def _warm_rain_collection(state: ThompsonColumnState, dt: float, tables: Thompso
     dc_b = jnp.maximum(xdc**3 * dc_g**3 - xdc**6, 0.0) ** (1.0 / 6.0)
     zeta1_raw = 6.25e-6 * xdc * dc_b**3 - 0.4
     zeta1 = 0.5 * (zeta1_raw + jnp.abs(zeta1_raw))
-    zeta = 0.027 * rc * zeta1
+    zeta = AU_RT * rc * zeta1
     taud_raw = 0.5 * dc_b - 7.5
     taud = 0.5 * (taud_raw + jnp.abs(taud_raw)) + R1
     tau = 3.72 / jnp.maximum(rc * taud, R1)
-    prr_wau = jnp.where((rc > 0.01e-3) & active_cloud, jnp.minimum(rc / float(dt), zeta / tau), 0.0)
+    prr_wau = jnp.where((rc > AU_THR0) & active_cloud, jnp.minimum(rc / float(dt), zeta / tau), 0.0)
     if _native_real_enabled():
         prr_wau = prr_wau.astype(jnp.float64)  # REAL zeta/tau stored in WRF's DOUBLE prr_wau
     # WRF: pnr_wau = prr_wau / (am_r*nu_c*10.*D0r**3) (module_mp_thompson.F:2191).
@@ -2957,21 +2957,21 @@ def _wrf_warm_rain_rates(state, dt, tables, odts, *, wrf_hail=False):
     dc_g = ((_wrf("DC_G_PREFIX", (CCG3_NU12 * OCG2_NU12) ** OBMR) / lamc) * 1.0e6).astype(jnp.float32)
     dc_b = jnp.maximum(xdc**3 * dc_g**3 - xdc**6, 0.0) ** (1.0 / 6.0)
     zeta1_raw = 6.25e-6 * xdc * dc_b**3 - 0.4
-    zeta = 0.027 * rc * (0.5 * (zeta1_raw + jnp.abs(zeta1_raw)))
+    zeta = AU_RT * rc * (0.5 * (zeta1_raw + jnp.abs(zeta1_raw)))
     taud_raw = 0.5 * dc_b - 7.5
     tau = 3.72 / jnp.maximum(rc * (0.5 * (taud_raw + jnp.abs(taud_raw)) + R1), R1)
     if wrf_hail:
         # Original :2181-2192 keeps each coefficient-first REAL product
         # and places R1 inside taud, before multiplication by rc.
-        active_auto = (rc > 0.01e-3) & active_cloud
+        active_auto = (rc > AU_THR0) & active_cloud
         dc_inner = xdc*xdc*xdc*dc_g*dc_g*dc_g - xdc*xdc*xdc*xdc*xdc*xdc
         dc_b = jnp.where(active_auto, dc_inner, 0.) ** (np.float32(1.) / np.float32(6.))
         zeta1_raw = 6.25e-6*xdc*dc_b*dc_b*dc_b - 0.4
-        zeta = 0.027*rc*(0.5*(zeta1_raw+jnp.abs(zeta1_raw)))
+        zeta = AU_RT*rc*(0.5*(zeta1_raw+jnp.abs(zeta1_raw)))
         taud_raw = 0.5*dc_b-7.5
         taud = 0.5*(taud_raw+jnp.abs(taud_raw)) + np.float32(R1)
         tau = 3.72/(rc*taud)
-    prr_wau = jnp.where((rc > 0.01e-3) & active_cloud, jnp.minimum(rc * odts, zeta / tau), 0.0).astype(jnp.float64)
+    prr_wau = jnp.where((rc > AU_THR0) & active_cloud, jnp.minimum(rc * odts, zeta / tau), 0.0).astype(jnp.float64)
     pnr_wau = prr_wau / _wrf("PNR_WAU_DEN", AM_R * NU_C_MP8 * 10.0 * D0R**3)
     idx_r_eff = jnp.clip(jnp.floor(N_EFRW_R * jnp.log(jnp.maximum(mvd_r, DR_FIRST) / DR_FIRST)
                                    / jnp.log(DR_LAST / DR_FIRST)), 0, N_EFRW_R - 1).astype(jnp.int32)
@@ -3476,3 +3476,11 @@ def _wrf_snow_speed(vts, vts_boost, rs, rr, vtr):
     """Snow mass fall speed (:3721-3726, REAL): SR = rs/(rs+rr) blend with the rain speed where melting."""
     sr = rs / (rs + rr)
     return jnp.where(vts_boost < 0.0, vts * sr + (1.0 - sr) * vtr.astype(vts.dtype), vts * vts_boost)
+
+
+# Original source literals, kept as Python floats so the OFF trace is exact.
+# WRF module_mp_thompson.F:2180/:2186 has literals, not named PARAMETERs.
+# The 7/5-character aliases also preserve exact OFF source-column ranges in
+# native MLIR. Public autoconversion_threshold/rate names map here when ON.
+AU_THR0 = 0.01e-3
+AU_RT = 0.027

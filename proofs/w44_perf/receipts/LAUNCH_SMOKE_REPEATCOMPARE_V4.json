@@ -1,0 +1,357 @@
+{
+  "schema": "w44-perf.launch-smoke.v4",
+  "status": "LAUNCH_SMOKE_PASS",
+  "phase": "repeatcompare",
+  "launcher": {
+    "path": "<USER_HOME>/wrf_gpu2_lanes/w44-perf/day_launch_repeat_v4.sh",
+    "sha256": "ae09c4aee94bdf251615a6c52a8409ae7f00636c284563c2cb38d522e10f3181",
+    "cap_s": 600,
+    "teardown_reserve_s": 60
+  },
+  "tools_commit": "a5178a635c5c43a4452c5f566167ed746b832a99",
+  "tools": "<USER_HOME>/wrf_gpu2_lanes/w44-perf/day_tools_a5178a635c",
+  "exact_launcher_executed": true,
+  "physical_backend": "cpu",
+  "gpu_executed": false,
+  "official_gpu_lock_entered": false,
+  "gpu_forecast_qualified": false,
+  "case": "PROD 3h unchanged for normal execution; CPU smoke1real rain column44lev dt18",
+  "cause_fix": "No prior perf GPU-launch failure (all Oct23 phases rc0). Old --cpu-dry changed child env too early; new smoke captures exact cuda env then substitutes only device/backend/profiler APIs. Unchanged production GPU guard returns3 onCPU after model execution.",
+  "no_date_hour_guard": "GA_START_UTC/GA_END_UTC only; usable day and night",
+  "caps": {
+    "measured_prior_gpu_10_arm_sum_s": 320.99232029914856,
+    "measured_prior_gpu_max_arm_s": 39.28417944908142,
+    "source_receipts": {
+      "W32": {
+        "full_arm_s": 28.112677574157715,
+        "receipt_sha256": "fc4e7802bc6c6449c56ec34155fcb3635344924a81af46cb22af7af282c4c051",
+        "device": "gpu"
+      },
+      "W40": {
+        "full_arm_s": 39.28417944908142,
+        "receipt_sha256": "fe8de45bee7eae16340d338456d7a9c91c284cb44d2798938c5a46f9772cefea",
+        "device": "gpu"
+      },
+      "W43": {
+        "full_arm_s": 36.72440004348755,
+        "receipt_sha256": "a90fd27f66bceed2d0f8ca8cf94a2380f0dcc40cd548da64d15e14977594fcdc",
+        "device": "gpu"
+      },
+      "B43_1": {
+        "full_arm_s": 38.31453561782837,
+        "receipt_sha256": "359264c7f1ef1b53616e107ccd7962d959f34e4cfdb259eb5c173196059f3340",
+        "device": "gpu"
+      },
+      "A32_1": {
+        "full_arm_s": 25.866619110107422,
+        "receipt_sha256": "0f8739942ffb5975ecccebfac6768022b52f0bcca814f47815811c1b81b8739d",
+        "device": "gpu"
+      },
+      "C40_1": {
+        "full_arm_s": 33.042614221572876,
+        "receipt_sha256": "ca0daafafffc9348ff55c4437f2599781b75a2790dc358fa610580d512847fd0",
+        "device": "gpu"
+      },
+      "B43_2": {
+        "full_arm_s": 32.39795470237732,
+        "receipt_sha256": "7bb912a9aae6db240a33ff254a0ea27bc32f9f80442a3d3310ab415fea273d54",
+        "device": "gpu"
+      },
+      "C40_2": {
+        "full_arm_s": 31.917701721191406,
+        "receipt_sha256": "0b775b3893da7a6ca0fad486e54a9111d8faa6c3723f700839db174e25ac1c6b",
+        "device": "gpu"
+      },
+      "A32_2": {
+        "full_arm_s": 22.796414852142334,
+        "receipt_sha256": "39c8c10a51f5d0fb04f93e8bd03ba6aff705784a66b9c6b34434889385a7558e",
+        "device": "gpu"
+      },
+      "B43_3": {
+        "full_arm_s": 32.53522300720215,
+        "receipt_sha256": "d3d6290468b65005144e44140ab59b4870474387b14e10403262b6d49db18abb",
+        "device": "gpu"
+      }
+    },
+    "normal_gpu_arm_cap_s": 180,
+    "phase_cap_s": 600,
+    "teardown_reserve_s": 60,
+    "smoke_coverage": "all3 source/env variants; actual normal10-arm fixed interleave unchanged",
+    "estimated_normal_s": 321
+  },
+  "controls": [
+    {
+      "case": "valid",
+      "rc": 0,
+      "expected": 0
+    },
+    {
+      "case": "before",
+      "rc": 4,
+      "expected": 4
+    },
+    {
+      "case": "short_grace",
+      "rc": 6,
+      "expected": 6
+    },
+    {
+      "case": "exact_grace",
+      "rc": 0,
+      "expected": 0
+    },
+    {
+      "case": "ambient_smoke_cleared",
+      "rc": 0,
+      "expected": 0
+    },
+    {
+      "case": "actual_normal_before_GA",
+      "rc": 4,
+      "expected": 4
+    }
+  ],
+  "children": [
+    {
+      "receipt_path": "<USER_HOME>/wrf_gpu2_lanes/w44-perf/launch_smoke/repeatcompare_1792810338_2410839/runs/R2_W32/run/LAUNCH_SMOKE_MODEL.json",
+      "receipt_sha256": "64bfbfd648bf39d3b19fbdc8308f582dd890a9f4755335deb22c50c065ec8246",
+      "schema": "w44-perf.launch-smoke.child.v1",
+      "product_environment": {
+        "JAX_PLATFORMS": "cuda",
+        "JAX_ENABLE_X64": "true",
+        "GPUWRF_JAX_CACHE": "1",
+        "GPUWRF_JAX_CACHE_DIR": "<USER_HOME>/wrf_gpu2_lanes/w44-perf/gpu/cache_v032/jax",
+        "JAX_COMPILATION_CACHE_DIR": "<USER_HOME>/wrf_gpu2_lanes/w44-perf/gpu/cache_v032/jax",
+        "GPUWRF_XLA_AUTOTUNE_CACHE_DIR": "<USER_HOME>/wrf_gpu2_lanes/w44-perf/gpu/cache_v032/autotune",
+        "TRITON_CACHE_DIR": "<USER_HOME>/wrf_gpu2_lanes/w44-perf/gpu/cache_v032/triton",
+        "CUDA_CACHE_PATH": "<USER_HOME>/wrf_gpu2_lanes/w44-perf/gpu/cache_v032/cuda",
+        "XLA_PYTHON_CLIENT_ALLOCATOR": "cuda_async",
+        "XLA_PYTHON_CLIENT_PREALLOCATE": "true",
+        "XLA_CLIENT_MEM_FRACTION": "0.25",
+        "BENCH_SRC_REPO": "<USER_HOME>/wrf_gpu2_lanes/w44-perf/snap_v032",
+        "PYTHONPATH": "<USER_HOME>/wrf_gpu2_lanes/w44-perf/snap_v032/src",
+        "W44_POOL": "explicit",
+        "W44_CAPTURE_ROOTS": null,
+        "W44_CAPTURE_START": null,
+        "W44_HOST_PROFILE": null,
+        "W44_INIT_OBSERVER": null
+      },
+      "argv": [
+        "<USER_HOME>/wrf_gpu2_lanes/w44-perf/day_tools_a5178a635c/proofs/w44_perf/capture.py",
+        "--input-dir",
+        "<DATA_ROOT>/wrf_gpu2/v025/s0_case_20260725",
+        "--out",
+        "<USER_HOME>/wrf_gpu2_lanes/w44-perf/launch_smoke/repeatcompare_1792810338_2410839/runs/R2_W32/run",
+        "--hours",
+        "3",
+        "--tag",
+        "R2_W32"
+      ],
+      "gpu_executed": false,
+      "model_reached": true,
+      "scope": "CPU launch smoke entered from the actual capture child in product CUDA env.\n\nOnly device/backend/profiler APIs are substituted. Actual immutable-source\nThompson code executes on one real PROD rain column. This is launch coverage,\nnot GPU, forecast, speed, byte-identity or WRF-fidelity qualification.\n",
+      "device_substitution": {
+        "jax_platforms_config": "cpu",
+        "environment_still": "cuda",
+        "physical_devices": [
+          "cpu"
+        ]
+      },
+      "resolved_product_flags": {
+        "GPUWRF_FAST_DEFAULTS": null,
+        "GPUWRF_FP64_DEFAULT": null,
+        "GPUWRF_THOMPSON_FULL_COLUMN": "1",
+        "GPUWRF_THOMPSON_NATIVE_REAL": "1",
+        "GPUWRF_THOMPSON_MIXED_PHASE_WRF": null,
+        "GPUWRF_CARRY_DONATE": "1"
+      },
+      "compile_and_model_s": 2.0184831909718923,
+      "model_function": "gpuwrf.kernels.phys_thompson_full.full_column",
+      "model_file_sha256": "81c18136fd8c6c75a87475a2a1f753be1daecd08984b14c0331270f4365280fb",
+      "fixture_sha256": "8bdfea91751f99da5b0ea39e5287d2c5e26fe9623f140921c263acde2f967471",
+      "fixture_column": 0,
+      "fixture_provenance": "PROD day d02 original CPU-WRF history 2026-07-26_12, real rain column",
+      "input_shape": [
+        1,
+        44
+      ],
+      "dt_s": 18.0,
+      "finite_output_leaves": 20,
+      "physical_backend": "cpu",
+      "profiler_device_boundary_events": [
+        "cudaProfilerStart",
+        "cudaProfilerStop"
+      ],
+      "harness_return_code": 3,
+      "status": "PASS_CPU_LAUNCH_SMOKE",
+      "stdout_sha256": "a00684b98ccfcd8c03b71246522eafecd22d80846816ad6addd4658f81087162"
+    },
+    {
+      "receipt_path": "<USER_HOME>/wrf_gpu2_lanes/w44-perf/launch_smoke/repeatcompare_1792810338_2410839/runs/R2_W40/run/LAUNCH_SMOKE_MODEL.json",
+      "receipt_sha256": "fd1d8f9762726b36202df7a671bea054aa45a63b7bc6411e307a3938517bc08c",
+      "schema": "w44-perf.launch-smoke.child.v1",
+      "product_environment": {
+        "JAX_PLATFORMS": "cuda",
+        "JAX_ENABLE_X64": "true",
+        "GPUWRF_JAX_CACHE": "1",
+        "GPUWRF_JAX_CACHE_DIR": "<DATA_ROOT>/wrf_gpu2/release_bundles/v0.4.0/jax",
+        "JAX_COMPILATION_CACHE_DIR": "<DATA_ROOT>/wrf_gpu2/release_bundles/v0.4.0/jax",
+        "GPUWRF_XLA_AUTOTUNE_CACHE_DIR": "<DATA_ROOT>/wrf_gpu2/release_bundles/v0.4.0/autotune",
+        "TRITON_CACHE_DIR": "<DATA_ROOT>/wrf_gpu2/release_bundles/v0.4.0/triton",
+        "CUDA_CACHE_PATH": "<DATA_ROOT>/wrf_gpu2/release_bundles/v0.4.0/cuda",
+        "XLA_PYTHON_CLIENT_ALLOCATOR": "cuda_async",
+        "XLA_PYTHON_CLIENT_PREALLOCATE": "true",
+        "XLA_CLIENT_MEM_FRACTION": "0.25",
+        "BENCH_SRC_REPO": "<DATA_ROOT>/wrf_gpu2/release_bundles/v0.4.0/src",
+        "PYTHONPATH": "<DATA_ROOT>/wrf_gpu2/release_bundles/v0.4.0/src/src",
+        "W44_POOL": "explicit",
+        "W44_CAPTURE_ROOTS": null,
+        "W44_CAPTURE_START": null,
+        "W44_HOST_PROFILE": null,
+        "W44_INIT_OBSERVER": null
+      },
+      "argv": [
+        "<USER_HOME>/wrf_gpu2_lanes/w44-perf/day_tools_a5178a635c/proofs/w44_perf/capture.py",
+        "--input-dir",
+        "<DATA_ROOT>/wrf_gpu2/v025/s0_case_20260725",
+        "--out",
+        "<USER_HOME>/wrf_gpu2_lanes/w44-perf/launch_smoke/repeatcompare_1792810338_2410839/runs/R2_W40/run",
+        "--hours",
+        "3",
+        "--tag",
+        "R2_W40"
+      ],
+      "gpu_executed": false,
+      "model_reached": true,
+      "scope": "CPU launch smoke entered from the actual capture child in product CUDA env.\n\nOnly device/backend/profiler APIs are substituted. Actual immutable-source\nThompson code executes on one real PROD rain column. This is launch coverage,\nnot GPU, forecast, speed, byte-identity or WRF-fidelity qualification.\n",
+      "device_substitution": {
+        "jax_platforms_config": "cpu",
+        "environment_still": "cuda",
+        "physical_devices": [
+          "cpu"
+        ]
+      },
+      "resolved_product_flags": {
+        "GPUWRF_FAST_DEFAULTS": null,
+        "GPUWRF_FP64_DEFAULT": null,
+        "GPUWRF_THOMPSON_FULL_COLUMN": "1",
+        "GPUWRF_THOMPSON_NATIVE_REAL": "1",
+        "GPUWRF_THOMPSON_MIXED_PHASE_WRF": "1",
+        "GPUWRF_CARRY_DONATE": "1"
+      },
+      "compile_and_model_s": 3.0803247620351613,
+      "model_function": "gpuwrf.kernels.phys_thompson_full.full_column",
+      "model_file_sha256": "e7c09c3edd7c7c1e8c576ac18b2e3def4998ab1bfa96734fbbefba854a1ad595",
+      "fixture_sha256": "8bdfea91751f99da5b0ea39e5287d2c5e26fe9623f140921c263acde2f967471",
+      "fixture_column": 0,
+      "fixture_provenance": "PROD day d02 original CPU-WRF history 2026-07-26_12, real rain column",
+      "input_shape": [
+        1,
+        44
+      ],
+      "dt_s": 18.0,
+      "finite_output_leaves": 20,
+      "physical_backend": "cpu",
+      "profiler_device_boundary_events": [
+        "cudaProfilerStart",
+        "cudaProfilerStop"
+      ],
+      "harness_return_code": 3,
+      "status": "PASS_CPU_LAUNCH_SMOKE",
+      "stdout_sha256": "7b5c22aebe48d9fa5d1d2e233fcb381a43ec1959221460746de2fac7b7e3933c",
+      "real_bundle_consumer": {
+        "rc": 0,
+        "compiled_new": 0,
+        "aliases_new": 0,
+        "runtime_new": 0,
+        "other_new": 0,
+        "bundle_checks_passed": 2
+      }
+    },
+    {
+      "receipt_path": "<USER_HOME>/wrf_gpu2_lanes/w44-perf/launch_smoke/repeatcompare_1792810338_2410839/runs/R2_W43/run/LAUNCH_SMOKE_MODEL.json",
+      "receipt_sha256": "96725a2fc7494c88e570e42bd999ac4d5c2ef24ac4c00ed6505b83c4ec42b1f1",
+      "schema": "w44-perf.launch-smoke.child.v1",
+      "product_environment": {
+        "JAX_PLATFORMS": "cuda",
+        "JAX_ENABLE_X64": "true",
+        "GPUWRF_JAX_CACHE": "1",
+        "GPUWRF_JAX_CACHE_DIR": "<DATA_ROOT>/wrf_gpu2/release_bundles/v0.4.3/jax",
+        "JAX_COMPILATION_CACHE_DIR": "<DATA_ROOT>/wrf_gpu2/release_bundles/v0.4.3/jax",
+        "GPUWRF_XLA_AUTOTUNE_CACHE_DIR": "<DATA_ROOT>/wrf_gpu2/release_bundles/v0.4.3/autotune",
+        "TRITON_CACHE_DIR": "<DATA_ROOT>/wrf_gpu2/release_bundles/v0.4.3/triton",
+        "CUDA_CACHE_PATH": "<DATA_ROOT>/wrf_gpu2/release_bundles/v0.4.3/cuda",
+        "XLA_PYTHON_CLIENT_ALLOCATOR": "cuda_async",
+        "XLA_PYTHON_CLIENT_PREALLOCATE": "true",
+        "XLA_CLIENT_MEM_FRACTION": "0.25",
+        "BENCH_SRC_REPO": "<DATA_ROOT>/wrf_gpu2/release_bundles/v0.4.3/src",
+        "PYTHONPATH": "<DATA_ROOT>/wrf_gpu2/release_bundles/v0.4.3/src/src",
+        "W44_POOL": "explicit",
+        "W44_CAPTURE_ROOTS": null,
+        "W44_CAPTURE_START": null,
+        "W44_HOST_PROFILE": null,
+        "W44_INIT_OBSERVER": null
+      },
+      "argv": [
+        "<USER_HOME>/wrf_gpu2_lanes/w44-perf/day_tools_a5178a635c/proofs/w44_perf/capture.py",
+        "--input-dir",
+        "<DATA_ROOT>/wrf_gpu2/v025/s0_case_20260725",
+        "--out",
+        "<USER_HOME>/wrf_gpu2_lanes/w44-perf/launch_smoke/repeatcompare_1792810338_2410839/runs/R2_W43/run",
+        "--hours",
+        "3",
+        "--tag",
+        "R2_W43"
+      ],
+      "gpu_executed": false,
+      "model_reached": true,
+      "scope": "CPU launch smoke entered from the actual capture child in product CUDA env.\n\nOnly device/backend/profiler APIs are substituted. Actual immutable-source\nThompson code executes on one real PROD rain column. This is launch coverage,\nnot GPU, forecast, speed, byte-identity or WRF-fidelity qualification.\n",
+      "device_substitution": {
+        "jax_platforms_config": "cpu",
+        "environment_still": "cuda",
+        "physical_devices": [
+          "cpu"
+        ]
+      },
+      "resolved_product_flags": {
+        "GPUWRF_FAST_DEFAULTS": null,
+        "GPUWRF_FP64_DEFAULT": null,
+        "GPUWRF_THOMPSON_FULL_COLUMN": "1",
+        "GPUWRF_THOMPSON_NATIVE_REAL": "1",
+        "GPUWRF_THOMPSON_MIXED_PHASE_WRF": "1",
+        "GPUWRF_CARRY_DONATE": "1"
+      },
+      "compile_and_model_s": 3.0692754610208794,
+      "model_function": "gpuwrf.kernels.phys_thompson_full.full_column",
+      "model_file_sha256": "e7c09c3edd7c7c1e8c576ac18b2e3def4998ab1bfa96734fbbefba854a1ad595",
+      "fixture_sha256": "8bdfea91751f99da5b0ea39e5287d2c5e26fe9623f140921c263acde2f967471",
+      "fixture_column": 0,
+      "fixture_provenance": "PROD day d02 original CPU-WRF history 2026-07-26_12, real rain column",
+      "input_shape": [
+        1,
+        44
+      ],
+      "dt_s": 18.0,
+      "finite_output_leaves": 20,
+      "physical_backend": "cpu",
+      "profiler_device_boundary_events": [
+        "cudaProfilerStart",
+        "cudaProfilerStop"
+      ],
+      "harness_return_code": 3,
+      "status": "PASS_CPU_LAUNCH_SMOKE",
+      "stdout_sha256": "d4945f907a0515d9d9f6fedc637548083ddc9744fc2809db58e01ea22f4a4a63",
+      "real_bundle_consumer": {
+        "rc": 0,
+        "compiled_new": 0,
+        "aliases_new": 0,
+        "runtime_new": 0,
+        "other_new": 0,
+        "bundle_checks_passed": 2
+      }
+    }
+  ],
+  "time_utc": "2026-10-24T02:56:39.755324+00:00",
+  "model_import_source_hashes_verified": true,
+  "cleanup": "Disposable private COW layers removed; overlay work/work mode000 restored to owner-access before deletion. Child receipts/stdout hashes retained; paid GPU caches/source unchanged."
+}

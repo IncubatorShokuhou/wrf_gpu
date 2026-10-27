@@ -84,7 +84,7 @@ def _exact(source, target, name, index):
     return b
 
 
-def _grid(source, target, index):
+def _grid(source, target, index, *, allow_terrain_change=False):
     required = ("DX", "DY", "MAP_PROJ", "GRID_ID", "MMINLU", "NUM_LAND_CAT",
                 "ISWATER", "ISICE", "SF_SURFACE_PHYSICS")
     optional = ("CEN_LAT", "CEN_LON", "MOAD_CEN_LAT", "STAND_LON", "TRUELAT1", "TRUELAT2",
@@ -101,6 +101,12 @@ def _grid(source, target, index):
     if int(target.SF_SURFACE_PHYSICS) not in (2, 4):
         raise ValueError("cycling supports Noah (2) and Noah-MP (4) soil/snow state only")
     for name in ("XLAT", "XLONG", "HGT", "LU_INDEX", "IVGTYP", "ISLTYP", "ZS", "DZS"):
+        if name == "HGT" and allow_terrain_change:
+            a, ma = _read(source, name, index)
+            b, mb = _read(target, name, 0)
+            if ma.any() or mb.any() or a.shape != b.shape or _dims(source[name]) != _dims(target[name]):
+                raise ValueError("incompatible atmospheric terrain dimensions/missing values")
+            continue
         _exact(source, target, name, index)
     landmask = _exact(source, target, "LANDMASK", index)
     xland = _exact(source, target, "XLAND", index)
@@ -284,7 +290,7 @@ def validate_columns(ds, index, land, *, noahmp):
         raise ValueError("soil/snow column: SNOW and SNOWH must vanish together")
 
 
-def cycle(source, wrfinput, output):
+def cycle(source, wrfinput, output, *, atmosphere=False, wrfbdy=None, boundary_output=None, nests=(), native_atmosphere=False):
     """Write a new wrfinput, embedding the complete transfer/provenance record.
 
     Existing files are never overwritten. The output is published atomically
@@ -292,6 +298,17 @@ def cycle(source, wrfinput, output):
     Transfers stream one field at a time; admission holds bounded land/snow
     column arrays. No atmosphere arrays are materialized.
     """
+    if atmosphere:
+        from .atmosphere import cycle_atmosphere
+        return cycle_atmosphere(source, wrfinput, output, wrfbdy=wrfbdy,
+                                boundary_output=boundary_output, nests=nests, native=native_atmosphere)
+    if wrfbdy is not None or boundary_output is not None or nests or native_atmosphere:
+        raise ValueError("boundary/nest options require atmosphere=True")
+    return _cycle_land(source, wrfinput, output)
+
+
+def _cycle_land(source, wrfinput, output, *, allow_terrain_change=False):
+    """Internal land transfer; terrain rebasing is admitted by atmosphere.py."""
     source, wrfinput, output = (Path(p).resolve() for p in (source, wrfinput, output))
     if output in (source, wrfinput) or output.exists():
         raise ValueError("output must be a new file, distinct from both inputs")
@@ -305,7 +322,7 @@ def cycle(source, wrfinput, output):
         if len(matches) != 1:
             raise ValueError(f"source must contain exactly one frame at new init time {time}")
         index = matches[0]
-        land = _grid(src, dst, index)
+        land = _grid(src, dst, index, allow_terrain_change=allow_terrain_change)
         names = list(CORE)
         if int(dst.SF_SURFACE_PHYSICS) == 4:
             for dim, size in (("soil_layers_stag", 4), ("snow_layers_stag", 3), ("snso_layers_stag", 7)):

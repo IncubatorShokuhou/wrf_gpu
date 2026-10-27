@@ -119,19 +119,19 @@ SWISS = Path("<DATA_ROOT>/wrf_gpu2/archive/v040/v-prep/F20_20261016/Swiss/input"
 
 
 @pytest.mark.skipif(not (SWISS/"namelist.input").is_file(), reason="local Swiss case not present")
-def test_cli_refuses_host_controls_with_checkpoint_or_resume(tmp_path, capsys):
+def test_cli_allows_authenticated_host_controls_with_checkpoint(tmp_path, capsys):
+    """v0.4.4 (w44-params) lifts the v0.4.1 refusal: the restart identity now hashes the BOUND CTOPO operand
+    (tests/w44_params/test_surface_restart.py refuses a changed CTOPO on resume), so a host control may checkpoint."""
     from gpuwrf.cli import main
     controls = tmp_path/"ctopo.npz"
     sc.save_controls(controls, {"d01": {"ctopo": np.ones((3, 3), np.float32)}})
-    base = ["run", "--input-dir", str(SWISS), "--output-dir", str(tmp_path/"out"), "--hours", "3",
-            "--surface-controls", str(controls), "--dry-run"]
-    assert main([*base, "--checkpoint-dir", str(tmp_path/"ck"), "--checkpoint-interval-steps", "10"]) != 0
-    assert "cannot be combined with checkpoint/resume" in capsys.readouterr().err
     traced = tmp_path/"z0.npz"
     sc.save_controls(traced, {"d01": {"z0mvt": np.ones((3, 3), np.float32)}})
-    base[base.index(str(controls))] = str(traced)
-    main([*base, "--checkpoint-dir", str(tmp_path/"ck2"), "--checkpoint-interval-steps", "10"])
-    assert "cannot be combined with checkpoint/resume" not in capsys.readouterr().err
+    for name, path in (("ctopo", controls), ("z0mvt", traced)):
+        main(["run", "--input-dir", str(SWISS), "--output-dir", str(tmp_path/("out_" + name)), "--hours", "3",
+              "--surface-controls", str(path), "--dry-run",
+              "--checkpoint-dir", str(tmp_path/("ck_" + name)), "--checkpoint-interval-steps", "10"])
+        assert "cannot be combined with checkpoint/resume" not in capsys.readouterr().err, name
 
 
 def test_nested_two_way_feedback_refuses_host_controls():

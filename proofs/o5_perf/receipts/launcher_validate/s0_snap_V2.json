@@ -1,0 +1,81 @@
+{
+ "argv": [
+  "run",
+  "--input-dir",
+  "<DATA_ROOT>/wrf_gpu2/v025/s0_case_20260725",
+  "--output-dir",
+  "<DATA_ROOT>/wrf_gpu2/scratch/o5-perf/validate/s0_snap_V2/run/wrfout",
+  "--scratch-dir",
+  "<DATA_ROOT>/wrf_gpu2/scratch/o5-perf/validate/s0_snap_V2/run/scratch",
+  "--max-dom",
+  "2",
+  "--hours",
+  "3"
+ ],
+ "pythonpath": "<DATA_ROOT>/wrf_gpu2/scratch/o5-perf/snap_cbfix/src",
+ "checks": {
+  "d01": {
+   "dt_s": 54.0,
+   "own_steps": 200,
+   "history_interval_min": 60.0,
+   "history_alarms": 3,
+   "history_cadence_integral": false,
+   "last_alarm_is_last_step": true
+  },
+  "d02": {
+   "dt_s": 18.0,
+   "wrf_dt_s": 18.0,
+   "dt_matches_wrf_parent_time_step_ratio": true,
+   "own_steps": 600,
+   "history_interval_min": 60.0,
+   "history_alarms": 3,
+   "history_cadence_integral": true,
+   "last_alarm_is_last_step": true
+  },
+  "wrfbdy_interval_s": {
+   "value": 21600.0,
+   "multiple_of_root_dt": true
+  }
+ },
+ "dry_run_rc": 0,
+ "dry_run_plan": {
+  "aot_prefetch": true,
+  "compare_cpu_dir": null,
+  "dry_run": true,
+  "effective_domain": "d01",
+  "effective_hours": 3,
+  "effective_max_dom": 2,
+  "feedback": false,
+  "init_mode": "standalone_native_init_nested",
+  "input_dir": "<DATA_ROOT>/wrf_gpu2/v025/s0_case_20260725",
+  "land_category_check": {
+   "checked": [
+    "<DATA_ROOT>/wrf_gpu2/v025/s0_case_20260725/wrfinput_d01",
+    "<DATA_ROOT>/wrf_gpu2/v025/s0_case_20260725/wrfinput_d02"
+   ],
+   "scope": "land categories only; use gpuwrf doctor for complete input validation",
+   "unchecked": [],
+   "warnings": []
+  },
+  "namelist_max_dom": 2,
+  "namelist_path": "<DATA_ROOT>/wrf_gpu2/v025/s0_case_20260725/namelist.input",
+  "output_dir": "<DATA_ROOT>/wrf_gpu2/scratch/o5-perf/validate/s0_snap_V2/run/wrfout",
+  "override_sources": {
+   "domain": "default",
+   "hours": "flag",
+   "max_dom": "flag"
+  },
+  "proof_dir": "<DATA_ROOT>/wrf_gpu2/scratch/o5-perf/validate/s0_snap_V2/run/wrfout/proofs",
+  "run_type": "nested_live",
+  "schema": "GpuwrfRunPlan",
+  "schema_version": 1,
+  "score": false,
+  "scratch_dir": "<DATA_ROOT>/wrf_gpu2/scratch/o5-perf/validate/s0_snap_V2/run/scratch",
+  "smooth_option": 0,
+  "wrf_root_preflight": null
+ },
+ "dry_run_stderr_tail": "gpuwrf: forecast length = 3 h (source: --hours override)\ngpuwrf: domains = d01..d02 (source: flag); --domain is ignored for nested runs\n",
+ "root_steps_integer": true,
+ "alignment_pass": true,
+ "verdict": "PASS"
+}

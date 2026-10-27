@@ -25,8 +25,8 @@ multipliers are therefore bitwise an edit of the table row for that class).
 The fields ride ``_ClockBase.surface_controls`` (a traced argument of every step program: B=1 eager/AOT,
 fused nest cascades and B>1 vmap lanes). The namelist keeps them only in a content-blind aux holder
 (``SurfaceControlsAux``: names/shapes/dtypes), so the compile keys never see the values and the step never
-bakes them. Not controllable here (documented): soil hydraulic parameters (WATER gathers its own soil
-table), canopy height HVT (two consumers), Jarvis RSMIN (opt_crs=2), snow parameters.
+bakes them. The explicit W2 registry below adds soil hydraulics, canopy heights, Jarvis RSMIN and
+snow energy parameters; those names remain separate from the legacy Track P prior set.
 
 HOST controls (``HOST_CONTROLS``) replace the value of a namelist child that is ALREADY a traced pytree leaf
 (no clock-base field, no new program input), at bind time on the host:
@@ -118,6 +118,7 @@ class SurfaceControlsAux:
 
 
 def controls_aux(controls: Mapping[str, Any]) -> SurfaceControlsAux:
+    refuse_unqualified_controls(controls)
     aux = SurfaceControlsAux(signature(controls))
     object.__setattr__(aux, "value", dict(controls))
     return aux
@@ -132,13 +133,19 @@ def signature(controls: Mapping[str, Any]) -> tuple:
 # --------------------------------------------------------------------------- traced use
 def apply_surface_controls(static, energy_params, rad_params, controls):
     """Swap the controlled fields into the Noah-MP bundles (traced; no arithmetic)."""
+    refuse_unqualified_controls(controls)
     if energy_params is None or rad_params is None:
         raise ValueError("surface controls need the pre-built Noah-MP energy/radiation parameter bundles")
-    unknown = sorted(set(controls) - set(CONTROLS))
+    unknown = sorted(set(controls) - set(CONTROLS) - set(LSM_CONTROLS))
     if unknown:
         raise ValueError(f"unknown surface controls {unknown}")
+    if set(controls) & set(LSM_CONTROLS):
+        from gpuwrf.surface_params.lsmparams import apply
+        static, energy_params = apply(static, energy_params, {n: v for n, v in controls.items() if n in LSM_CONTROLS})
     by_bundle: dict[str, dict[str, Any]] = {"energy": {}, "rad": {}, "static": {}}
     for name, value in controls.items():
+        if name in LSM_CONTROLS:
+            continue
         by_bundle[CONTROLS[name].bundle][name] = value
     if by_bundle["energy"]:
         energy_params = energy_params._replace(**by_bundle["energy"])
@@ -152,6 +159,8 @@ def apply_surface_controls(static, energy_params, rad_params, controls):
 def traced_controls(namelist, clock_base):
     """The traced control set of this step (clock base), refusing to bake namelist values."""
     controls = None if clock_base is None else getattr(clock_base, "surface_controls", None)
+    refuse_unqualified_controls(controls)
+    refuse_unqualified_controls(getattr(namelist, "surface_controls", None))
     if controls is None and getattr(namelist, "surface_controls", None) is not None:
         raise ValueError("surface controls must ride the traced clock base (build_clock_base); "
                          "refusing to bake them into the program")
@@ -187,6 +196,9 @@ def _topo_reason(namelist) -> str | None:
 
 
 def _inactive_reason(name: str, namelist) -> str | None:
+    if name in LSM_CONTROLS:
+        from gpuwrf.surface_params.lsmparams import inactive_reason
+        return inactive_reason(name, namelist)
     if name in HOST_CONTROLS:
         return _topo_reason(namelist)
     opt = _options(namelist)
@@ -211,6 +223,9 @@ def expected_shape(name: str, namelist) -> tuple[int, ...]:
 
 def _target(name: str, namelist):
     """The array the released program reads for ``name`` (exact dtype/values)."""
+    if name in LSM_CONTROLS:
+        from gpuwrf.surface_params.lsmparams import target
+        return target(name, namelist)
     if name in HOST_CONTROLS:
         return namelist.topo_wind_static.ctopo
     spec = CONTROLS[name]
@@ -232,6 +247,9 @@ def target_dtype(name: str, namelist) -> np.dtype:
 
 def table_base(name: str, namelist) -> np.ndarray:
     """Float64 field of the ORIGINAL table values per cell (before the consumer's rounding)."""
+    if name in LSM_CONTROLS:
+        from gpuwrf.surface_params.lsmparams import table_base as lsm_base
+        return lsm_base(name, namelist)
     if name in HOST_CONTROLS:
         return np.asarray(namelist.topo_wind_static.ctopo, dtype=np.float64)
     static = namelist.noahmp_static
@@ -262,17 +280,21 @@ def table_base(name: str, namelist) -> np.ndarray:
     raise KeyError(name)
 
 
-def prior_controls(namelist, names=None, *, device: bool = True) -> dict[str, Any]:
+def prior_controls(namelist, names=None, *, device: bool = True, land_state=None) -> dict[str, Any]:
     """Byte copies of the values the released program reads (identity controls)."""
-    return expand_controls(namelist, {name: 1.0 for name in (names or CONTROLS)}, device=device)
+    return expand_controls(namelist, {name: 1.0 for name in (names or CONTROLS)}, device=device, land_state=land_state)
 
 
 def _multiplier_field(name: str, namelist, value) -> np.ndarray:
     shape = expected_shape(name, namelist)
     if isinstance(value, Mapping):  # per vegetation category {VEGTYP: multiplier}
-        vt = np.asarray(namelist.noahmp_static.ivgtyp, dtype=np.int64)
+        vt = np.asarray(namelist.noahmp_static.isltyp if name in LSM_CONTROLS and LSM_CONTROLS[name].axis == "soil"
+                        else namelist.noahmp_static.ivgtyp, dtype=np.int64)
         m2 = np.ones(vt.shape, dtype=np.float64)
         for category, factor in value.items():
+            if name in LSM_CONTROLS and LSM_CONTROLS[name].axis == "soil":
+                if str(category) != str(int(category)) or not 1 <= int(category) < len(namelist.noahmp_static.parameters.bexp):
+                    raise ValueError(f"{name}: soil class must be a 1-based SOILPARM category (slot 0 is unused)")
             m2[vt == int(category)] = float(factor)
         return np.broadcast_to(m2, shape)
     arr = np.asarray(value, dtype=np.float64)
@@ -283,7 +305,7 @@ def _multiplier_field(name: str, namelist, value) -> np.ndarray:
 
 
 def expand_controls(namelist, multipliers: Mapping[str, Any] | None = None, *,
-                    values: Mapping[str, Any] | None = None, device: bool = True) -> dict[str, Any]:
+                    values: Mapping[str, Any] | None = None, device: bool = True, land_state=None) -> dict[str, Any]:
     """Control fields = round_once(table value x float64 multiplier), or explicit ``values``.
 
     ``multipliers[name]`` is a scalar, a ``{VEGTYP: factor}`` mapping, or a field broadcasting to the
@@ -291,6 +313,10 @@ def expand_controls(namelist, multipliers: Mapping[str, Any] | None = None, *,
     exactly (the field really is the table value the consumer reads), then validates the result.
     Host controls (``ctopo``) take a scalar or field factor of the excess form (``excess_scale``).
     """
+    refuse_unqualified_controls({*(multipliers or {}), *(values or {})})
+    if land_state is not None and "smcmax" in {*(multipliers or {}), *(values or {})}:
+        from gpuwrf.surface_params.lsmparams import validation_namelist
+        namelist = validation_namelist(namelist, land_state)
     if any(name not in HOST_CONTROLS for name in [*(multipliers or {}), *(values or {})]):
         _require_noahmp(namelist)
     out: dict[str, np.ndarray] = {}
@@ -312,6 +338,9 @@ def expand_controls(namelist, multipliers: Mapping[str, Any] | None = None, *,
             out[name] = excess_scale(base, np.broadcast_to(np.asarray(mult, np.float64), base.shape)).astype(dtype)
             continue
         out[name] = (base * _multiplier_field(name, namelist, mult)).astype(dtype)
+        if name in LSM_CONTROLS:
+            from gpuwrf.surface_params.lsmparams import scaled_value
+            out[name] = scaled_value(name, namelist, out[name])
     for name, value in (values or {}).items():
         if name in out:
             raise ValueError(f"{name}: given both as multiplier and value")
@@ -325,8 +354,12 @@ def expand_controls(namelist, multipliers: Mapping[str, Any] | None = None, *,
     return {name: out[name] for name in sorted(out)}
 
 
-def validate_controls(controls: Mapping[str, Any], namelist) -> None:
+def validate_controls(controls: Mapping[str, Any], namelist, *, land_state=None) -> None:
     """Fail closed on unknown/inactive controls, shape/dtype mismatch, non-finite or out-of-bound values."""
+    refuse_unqualified_controls(controls)
+    if land_state is not None and "smcmax" in controls:
+        from gpuwrf.surface_params.lsmparams import validation_namelist
+        namelist = validation_namelist(namelist, land_state)
     if not controls:
         raise ValueError("empty surface control set (omit the option instead)")
     if any(name not in HOST_CONTROLS for name in controls):
@@ -345,12 +378,19 @@ def validate_controls(controls: Mapping[str, Any], namelist) -> None:
             raise ValueError(f"{name}: dtype {value.dtype} != consumer dtype {target_dtype(name, namelist)}")
         if not np.all(np.isfinite(value)):
             raise ValueError(f"{name}: non-finite values")
-        if value.min() < spec.lower or value.max() > spec.upper:
+        checked = value
+        if name in LSM_CONTROLS:
+            from gpuwrf.surface_params.lsmparams import range_values
+            checked = range_values(name, namelist, value)
+        if checked.size and (checked.min() < spec.lower or checked.max() > spec.upper):
             raise ValueError(f"{name}: values [{value.min()}, {value.max()}] outside [{spec.lower}, {spec.upper}] {spec.units}")
         if name in _TRANSMITTANCE:
             tau = np.asarray(getattr(namelist.noahmp_rad_params, _TRANSMITTANCE[name]), dtype=np.float64)
             if np.any(value.astype(np.float64) + tau > 1.0):
                 raise ValueError(f"{name}: reflectance + {_TRANSMITTANCE[name]} > 1 (negative absorption)")
+    if set(controls) & set(LSM_CONTROLS):
+        from gpuwrf.surface_params.lsmparams import validate
+        validate(controls, namelist)
 
 
 def controls_digest(controls: Mapping[str, Any] | None) -> str | None:
@@ -366,9 +406,19 @@ def controls_digest(controls: Mapping[str, Any] | None) -> str | None:
 
 
 def restart_controls_digest(namelist) -> str | None:
-    """Digest recorded in restart payloads (None = no controls, also for pre-Track-P payloads)."""
+    """Authenticate the actual surface operands, including host-bound CTOPO.
+
+    CTOPO already rides a traced namelist child rather than ``surface_controls``.
+    Hash that consumer array even when it came from start_em: a resume must also
+    detect adding or removing a host override. Non-topographic runs retain their
+    original digest (including None for a run without controls).
+    """
     get = namelist.get if isinstance(namelist, Mapping) else (lambda key, default=None: getattr(namelist, key, default))
-    return controls_digest(get("surface_controls", None))
+    controls = get("surface_controls", None)
+    topo = get("topo_wind_static", None)
+    if topo is not None:
+        controls = {**(controls or {}), "ctopo": topo.ctopo}
+    return controls_digest(controls)
 
 
 def validate_controls_restart(recorded, namelist) -> None:
@@ -382,6 +432,7 @@ def validate_controls_restart(recorded, namelist) -> None:
 # --------------------------------------------------------------------------- files
 def save_controls(path, controls_by_domain: Mapping[str, Mapping[str, Any]], *, provenance=None) -> dict:
     """Write ``{domain: {name: field}}`` + canonical manifest to one ``.npz`` (atomic)."""
+    refuse_unqualified_controls({name for controls in controls_by_domain.values() for name in controls})
     path = Path(path)
     arrays: dict[str, np.ndarray] = {}
     manifest = {"schema": SCHEMA, "domains": {}, "provenance": provenance or {}}
@@ -415,6 +466,7 @@ def load_controls(path) -> tuple[dict[str, dict[str, np.ndarray]], dict]:
         manifest = json.loads(bytes(data["manifest"]).decode())
         if manifest.get("schema") != SCHEMA:
             raise ValueError(f"{path}: schema {manifest.get('schema')!r} != {SCHEMA!r}")
+        refuse_unqualified_controls({name for entry in manifest["domains"].values() for name in entry["names"]})
         out: dict[str, dict[str, np.ndarray]] = {}
         for domain, entry in manifest["domains"].items():
             out[domain] = {name: np.array(data[f"{domain}/{name}"]) for name in entry["names"]}
@@ -429,21 +481,25 @@ def load_controls(path) -> tuple[dict[str, dict[str, np.ndarray]], dict]:
 def has_host_controls(source) -> bool:
     """True if a control file (or ``{domain: {name: field}}``) carries any host control (``ctopo``)."""
     by_domain = load_controls(source)[0] if not isinstance(source, Mapping) else source
+    refuse_unqualified_controls({name for controls in by_domain.values() for name in controls})
     return any(name in HOST_CONTROLS for controls in by_domain.values() for name in controls)
 
 
-def bind_domain_controls(namelist, source, domain: str, *, allow_host: bool = True):
+def bind_domain_controls(namelist, source, domain: str, *, allow_host: bool = True, land_state=None, cold_start=True):
     """Namelist with the validated controls of ``domain`` (unchanged if the file has none for it).
 
     Traced controls go to ``namelist.surface_controls`` (clock base); host controls replace the value of the
     already traced namelist child (``topo_wind_static.ctopo``), so a host-only set keeps the default program."""
-    import jax.numpy as jnp
-
     by_domain, _manifest = load_controls(source) if not isinstance(source, Mapping) else (source, None)
+    refuse_unqualified_controls({name for controls in by_domain.values() for name in controls})
+    import jax.numpy as jnp
     controls = by_domain.get(domain)
     if not controls:
         return namelist
-    validate_controls(controls, namelist)
+    validate_controls(controls, namelist, land_state=land_state)
+    if cold_start and set(controls) & set(LSM_CONTROLS):
+        from gpuwrf.surface_params.lsmparams import validate_cold_start
+        validate_cold_start(controls, namelist, land_state)
     host = {n: controls[n] for n in controls if n in HOST_CONTROLS}
     traced = {n: controls[n] for n in controls if n not in HOST_CONTROLS}
     if host:
@@ -455,3 +511,46 @@ def bind_domain_controls(namelist, source, domain: str, *, allow_host: bool = Tr
     if traced:
         namelist = dataclasses.replace(namelist, surface_controls={n: jnp.asarray(traced[n]) for n in sorted(traced)})
     return namelist
+
+
+# W2 is explicitly named: legacy prior_controls() and Track P keep their original
+# set. Values use the same clock operands, signature and restart authentication.
+from gpuwrf.surface_params.lsmparams import SPECS as _LSM_SPECS
+LSM_CONTROLS = {name: ControlSpec(*spec) for name, spec in _LSM_SPECS.items()}
+ALL_CONTROLS.update(LSM_CONTROLS)
+_LEADING["soil"] = (4,)
+
+# RC-only v0.4.4 admission policy. The older Track-P and host controls remain
+# available. No environment/CLI/API bypass: retained research tests explicitly
+# scope their own policy fixture, like the runtime-parameter refusal tests.
+UNAVAILABLE_SURFACE_CONTROLS = frozenset(LSM_CONTROLS)
+
+
+def refuse_unqualified_controls(controls):
+    """Reject the complete request before any allocation, binding or file write."""
+    if controls is None:
+        return
+    if isinstance(controls, SurfaceControlsAux):
+        controls = controls.value
+    blocked = sorted(set(controls) & UNAVAILABLE_SURFACE_CONTROLS)
+    if blocked:
+        raise ValueError(f"surface controls {', '.join(blocked)} not available in v0.4.4: "
+                         "failed the GPU qualification; see KNOWN_ISSUES")
+
+
+def refuse_unqualified_sources(sources):
+    """Preflight every batch member before binding any lane; inspect names only."""
+    for source in sources:
+        if source is None:
+            continue
+        if isinstance(source, Mapping):
+            names = {name for controls in source.values() for name in controls}
+        else:
+            with np.load(Path(source), allow_pickle=False) as data:
+                if "manifest" not in data.files:
+                    raise ValueError(f"{source}: not a surface-control file (no manifest)")
+                manifest = json.loads(bytes(data["manifest"]).decode())
+                if manifest.get("schema") != SCHEMA:
+                    raise ValueError(f"{source}: schema {manifest.get('schema')!r} != {SCHEMA!r}")
+                names = {name for entry in manifest["domains"].values() for name in entry["names"]}
+        refuse_unqualified_controls(names)

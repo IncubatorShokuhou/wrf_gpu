@@ -104,6 +104,62 @@ def _validate_urban_bep_snapshot(payload, configs, names, name, modern):
                        extensions=config.get("bem_extensions", [] if option == 3 else None))
 
 
+def _nested_output_policy(config, bundles):
+    """Bind the writer's resolved policy independently of the AOT environment.
+
+    IO-only flags are intentionally absent from the HLO key. They still belong
+    to an authenticated output stream, including an explicitly forked stream.
+    Use the writer's resolvers/constants rather than raw environment spellings.
+    """
+    from dataclasses import asdict
+    from types import SimpleNamespace
+    from gpuwrf.integration import nested_pipeline as pipeline
+    from gpuwrf.io import wrfout_writer as writer
+    from gpuwrf.io.data_inventory import colonfree_output_enabled
+    from gpuwrf.runtime import operational_mode
+    from gpuwrf.streams.config import FILENAME, read_streams
+
+    names = tuple(bundles)
+    subset = pipeline._resolve_training_output_subset()
+    full = pipeline._resolve_full_wrfout_variables()
+    namelist_path = Path(config.input_dir) / "namelist.input"
+    if namelist_path.is_file():
+        from gpuwrf.io.gen2_accessor import parse_namelist
+        namelist = parse_namelist(namelist_path)
+    else:
+        # Structural callers can supply resolved bundles without a case tree.
+        namelist = {"time_control": {"history_interval": [
+            getattr(bundle.namelist, "diagnostic_history_interval", 60.)
+            for bundle in bundles.values()]}}
+    intervals = pipeline._history_interval_minutes_by_domain(SimpleNamespace(namelist=namelist), names)
+    streams_path = Path(config.input_dir) / FILENAME
+    regional = [asdict(spec) for spec in read_streams(streams_path)] if streams_path.is_file() else []
+    asynchronous = pipeline._nested_async_output_from_env()
+    materialization = asynchronous and pipeline._nested_output_pipeline_from_env()
+    return {
+        "schema_version": 1,
+        "history": {
+            "domains": list(names), "interval_minutes": intervals,
+            "emit_initial": bool(config.emit_initial_history),
+            "full_wrfout": full,
+            "variable_order": list(writer.FULL_WRFOUT_VARIABLES if full else writer.OPERATIONAL_WRFOUT_VARIABLES),
+            "variable_subset": None if subset is None else sorted(subset),
+            "mandatory_coordinates": [] if subset is None else sorted(writer.MANDATORY_WRFOUT_COORDINATES),
+            "compression": None if subset is None else dict(writer._SUBSET_STREAM_COMPRESSION),
+        },
+        "regional_streams": regional,
+        "writer": {
+            "format": "NETCDF4", "colonfree_filenames": colonfree_output_enabled(),
+            "rvovrd_real": bool(writer._WRITER_RVOVRD_REAL),
+            "native_base_state": os.environ.get("GPUWRF_DYN_RK_FP32", "0") == "1",
+            "history_swdown_horizontal": bool(operational_mode._HISTORY_SWDOWN_HORIZONTAL),
+            "m9_radiation_from_carry": pipeline._nested_m9_radiation_from_carry_from_env(),
+            "asynchronous": asynchronous, "materialization_pipeline": materialization,
+            "snapshot_queue_depth": pipeline._nested_output_pipeline_depth_from_env() if materialization else None,
+        },
+    }
+
+
 def nested_identity(config, bundles, run_start):
     """Bind inputs, output stream, model source, configuration and AOT policy.
 
@@ -112,6 +168,8 @@ def nested_identity(config, bundles, run_start):
     explicit control (nested_pipeline._restart_end_time) in the same stream.
     """
     from gpuwrf.runtime.aot_cheap_key import canonical_digest, global_trace_env_hash, version_fingerprint_hash
+    from gpuwrf.runtime.restart_parameters import static_namelist
+    from gpuwrf.runtime.runtime_data_identity import runtime_data_identity
     source = Path(__file__).resolve().parents[1]
     source_hash = hashlib.sha256()
     for path in sorted(source.rglob("*.py")):
@@ -123,6 +181,7 @@ def nested_identity(config, bundles, run_start):
             if path.is_file():
                 inputs[path.name] = _hash_file(path)
     from gpuwrf.physics.rrtmg_mp_re import mp_re_config
+    from gpuwrf.io.topographic_shadow_schema import configuration as shadow_configuration
     from gpuwrf.diagnostics.solar_config import configuration as solar_configuration
     from gpuwrf.io.pbl_epsilon_schema import epsilon_pbl_config
     from gpuwrf.io.noahmp_options import restart_configuration
@@ -145,8 +204,10 @@ def nested_identity(config, bundles, run_start):
         "input_dir": str(Path(config.input_dir).resolve()),
         "output_dir": str(Path(config.output_dir).resolve()),
         "run_start": run_start.isoformat(),
+        "output_policy": _nested_output_policy(config, bundles),
+        "runtime_data": runtime_data_identity(bundles),
         "feedback": config.feedback, "emit_initial_history": config.emit_initial_history,
-        "namelists": {name: canonical_digest(bundle.namelist) for name, bundle in bundles.items()},
+        "namelists": {name: canonical_digest(static_namelist(bundle.namelist)) for name, bundle in bundles.items()},
         "online_diagnostics_config": {
             name: _diagnostic_restart_config(bundle.namelist) for name, bundle in bundles.items()
         },
@@ -158,6 +219,9 @@ def nested_identity(config, bundles, run_start):
         "noahmp_irrigation_config": {name:irrigation_configuration(bundle.namelist) for name,bundle in bundles.items()},
         "noahmp_options_config": {name:restart_configuration(bundle.namelist) for name,bundle in bundles.items()},
         "mp_re_config": {name: mp_re_config(bundle.namelist) for name, bundle in bundles.items()},
+        "topographic_shadow_config": {
+            name: shadow_configuration(bundle.namelist)
+            for name, bundle in bundles.items()},
         "temf_config": {
             name: {
                 "bl_pbl_physics": int(bundle.namelist.bl_pbl_physics),
@@ -204,15 +268,25 @@ def nested_identity(config, bundles, run_start):
         name: {"required": bool(getattr(getattr(bundle.namelist,'noahmp_static',None),'glacier',None) is not None),
                "shape": [int(bundle.namelist.grid.ny),int(bundle.namelist.grid.nx)]}
         for name,bundle in bundles.items()}
-    from gpuwrf.surface_params.controls import controls_digest
-    surface_controls = {name: controls_digest(getattr(bundle.namelist, "surface_controls", None))
+    from gpuwrf.surface_params.controls import restart_controls_digest
+    surface_controls = {name: restart_controls_digest(bundle.namelist)
                         for name, bundle in bundles.items()}
     if any(digest is not None for digest in surface_controls.values()):
         # Track P: the traced parameter VALUES are not in the (content-blind) namelist digest.
         identity["surface_controls"] = surface_controls
+    from gpuwrf.runtime.restart_parameters import parameter_digests
+    parameter_values = {name: parameter_digests(bundle.namelist) for name, bundle in bundles.items()}
+    for family in sorted({family for values in parameter_values.values() for family in values}):
+        identity[family] = {name: values.get(family) for name, values in parameter_values.items()}
+    from gpuwrf.io.mynn_budget_options import configuration as mynn_configuration
+    mynn_configs={name:mynn_configuration(bundle.namelist) for name,bundle in bundles.items()}
+    if any(config!=mynn_configuration({}) for config in mynn_configs.values()):
+        identity['mynn_budget_config']=mynn_configs
     # Manifests and history-journal owners use JSON. Canonicalize here so
     # resolved tuples (irrigation, BATS tables) have the same list form before
     # publication and after readback; keep all reader comparisons exact.
+    if any(getattr(bundle.namelist, "rad_diag", 0) for bundle in bundles.values()):
+        identity["rad_diag_config"] = {name: int(bundle.namelist.rad_diag) for name, bundle in bundles.items()}
     return json.loads(json.dumps(identity, allow_nan=False))
 
 
@@ -457,6 +531,12 @@ def _validate_snapshot(snapshot, manifest) -> None:
             or any(type(value) is not bool for value in ssib_selection.values())):
         raise ValueError('SSiB restart domain selection mismatch (E78)')
     for name, payload in snapshot["carries"].items():
+        from gpuwrf.diagnostics.mynn_budget import validate_payload as validate_mynn_payload
+        mynn_configs=manifest['identity'].get('mynn_budget_config')
+        if mynn_configs is not None and (not isinstance(mynn_configs,dict) or set(mynn_configs)!=set(names)):
+            raise ValueError('restart MYNN budget domain selection differs (E78)')
+        requested={} if mynn_configs is None else mynn_configs[name]
+        validate_mynn_payload(payload,requested)
         from gpuwrf.io.glacier_schema import validate as validate_glacier
         glacier_configs=manifest['identity'].get('glacier_config')
         glacier_config={} if glacier_configs is None else glacier_configs.get(name,{})
@@ -540,7 +620,22 @@ def _validate_snapshot(snapshot, manifest) -> None:
             payload.get("solar_interpolation_schema_version"), payload["state_fields"]["t_skin"].shape)
         # Existing authenticated radius selection already carries both RA
         # selectors. It also detects loss of the entire Goddard group/marker.
-        _validate_radiation_diagnostics_schema(payload,namelist=manifest['identity'].get('mp_re_config',{}).get(name))
+        rad_configs = manifest['identity'].get('rad_diag_config')
+        if rad_configs is not None and (not isinstance(rad_configs, Mapping) or set(rad_configs) != set(names)):
+            raise ValueError('restart rad_diag configuration domains differ (E78)')
+        saved_rad_config = manifest['identity'].get('mp_re_config', {}).get(name)
+        # A genuinely absent legacy selector must stay None: Goddard/FLG/GFDL
+        # infer their saved selection from their own authenticated schema.
+        # Passing {} would instead invent the default RRTMG4/4 selection.
+        rad_config = None if saved_rad_config is None else dict(saved_rad_config)
+        if rad_configs is not None:
+            if rad_config is None:
+                rad_config = {}
+            rad_config['rad_diag'] = rad_configs[name]
+        elif getattr(payload['extra_fields'].get('radiation_diagnostics'),'rad_diag',None) is not None:
+            raise ValueError('restart rad_diag configuration is missing (E78)')
+        _validate_radiation_diagnostics_schema(payload, namelist=rad_config,
+            topographic_shadow_required=manifest['identity'].get('topographic_shadow_config',{}).get(name))
         _validate_gwdo_diagnostics_schema(payload)
         from gpuwrf.io.noahmp_mmf import validate_restart as validate_mmf
         mmf_configs = manifest['identity'].get('noahmp_mmf_config')
@@ -555,7 +650,7 @@ def _validate_snapshot(snapshot, manifest) -> None:
         validate_mmf_land(payload['extra_fields'].get('noahmp_mmf'),payload.get('noahmp_land_fields'),
                           payload['state_fields']['t_skin'].shape)
         recorded = tuple(payload.get('carry_field_order', ()))
-        compatible = tuple(n for n in expected if n != 'noahmp_mmf' or n in recorded)
+        compatible = tuple(n for n in expected if n not in ('noahmp_mmf','mynn_budget') or n in recorded)
         if recorded != compatible:
             raise ValueError("restart carry schema differs from executable")
         order = tuple(payload["state_field_order"])
@@ -571,6 +666,7 @@ def _validate_snapshot(snapshot, manifest) -> None:
         expected_extra = set(_V1_UNSUPPORTED_CARRY_FIELDS)
         if 'noahmp_mmf' not in recorded:
             expected_extra.remove('noahmp_mmf')
+        if 'mynn_budget' not in recorded:expected_extra.remove('mynn_budget')
         if set(payload["extra_fields"]) != expected_extra:
             raise ValueError("restart optional carry schema differs from executable")
         group = payload["extra_fields"].get("temf")
@@ -743,12 +839,14 @@ class RestartStore:
         if set(carries) != set(own_steps) or set(carries) != set(dt_s):
             raise ValueError("checkpoint domains/counters/timesteps do not match")
         snapshot = {
-            "carries": {name: _carry_to_payload(carry) for name, carry in carries.items()},
+            "carries": {name: _carry_to_payload(carry,mynn_config=identity.get('mynn_budget_config',{}).get(name))
+                        for name, carry in carries.items()},
             "own_steps": dict(own_steps),
             "driver_state": _host(driver_state or {}),
         }
         manifest = {
             "format": FORMAT, "identity": identity, "domains": list(carries),
+            "branch_schema_version": 1,
             "own_steps": dict(own_steps), "dt_s": dict(dt_s),
             "created_ns": time.time_ns(),
             "tracer_config_required": "tracer_config" in identity,

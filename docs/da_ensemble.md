@@ -13,7 +13,7 @@ engine or against real observations. See *Evidence*.
 
 ## Why these options exist
 
-A development study on three Canary Islands cases (A1 study R3, not in this repository) found that the first
+A development study on three Canary Islands cases (not in this repository) found that the first
 ensemble design lost 40–75 % of its temperature and wind spread over each 6-h forecast, that the surface
 innovations were dominated by a systematic observation-minus-model offset (T2 about −1.9 K, 10-m winds
 +1.3…3.2 m/s) which a single global inflation factor mistook for missing spread, that RTPS 0.8 relaxed the

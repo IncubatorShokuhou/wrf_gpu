@@ -1,0 +1,111 @@
+{
+  "schema": "w44-perf.wn3_sds_gpu.v1",
+  "source_commit": "69d404541f31b90ae3b3451614074e92d5d59fe2",
+  "platform": "gpu",
+  "device": "NVIDIA GeForce RTX 5090",
+  "input_sha256": {
+    "namelist.input": "8e77d97f016bbbc5acf83d55fc814d88f77786d22ab27d241b91856e006ee16a",
+    "wrfbdy_d01": "c683a23ebe5946995b71c75f0b86b0b07badfc010cf3762b2149fa91cd344b37",
+    "wrfinput_d01": "b7f75a6bad092cdacd2a2d4b47a4c28994b6727b372f23b1f22bb424a83987d8",
+    "wrfinput_d02": "6914cb70242ac62bb9a430426caa0bcd344483e996339886b8a5465754a08f3f",
+    "wrfinput_d03": "342f93f97ad0e746dd40ecbbe947b85c749176aa7e08b882ad59cb01eef5d907",
+    "wrflowinp_d01": "480658449a06aff1043122653f7c489fb5cbaa1c18f7b47831df51141fc2e775",
+    "wrflowinp_d02": "fc8059297b9e2da4abaff6d6e1efc4a921cd46bfc5e6dc9d14746b221fc415ba",
+    "wrflowinp_d03": "4a641f46fed940bcfad20772f18b5e072ae9d902de7ac19f8eb017e8b634315b"
+  },
+  "source_key_sha256": "d2af67666d48d49c54cded529072313f0de1a3e5bbeccb32f6e9dd8406868970",
+  "rc": 0,
+  "wall_s": 47.571472840965725,
+  "cache_events": {
+    "/jax/compilation_cache/tasks_using_cache": 1,
+    "/jax/compilation_cache/compile_requests_use_cache": 1660,
+    "/jax/compilation_cache/cache_hits": 1660
+  },
+  "aot_status": {
+    "enabled": true,
+    "verify": false,
+    "domains": {
+      "d01": {
+        "name": "d01",
+        "loaded": true,
+        "source": "aot_memory_cache",
+        "error": null,
+        "cheap_key": "747eb79be8814b24b3b758d4fd820999e4ba6afd794954e4412235de0d200427",
+        "cached": true,
+        "real_load": false
+      },
+      "fused/d02": {
+        "name": "fused/d02",
+        "loaded": true,
+        "source": "aot_blob",
+        "error": null,
+        "blob_path": "<DATA_ROOT>/wrf_gpu2/release_bundles/v0.4.3/jax/aot/0.4.3-jax0.10.0-jaxlib0.10.0-cuda_sm120/fused_d02/k_4a8548d2219ca3d415f940871dc0ae8c5d5f90d71296797239a16b204120dae7.xlaexec",
+        "meta_path": "<DATA_ROOT>/wrf_gpu2/release_bundles/v0.4.3/jax/aot/0.4.3-jax0.10.0-jaxlib0.10.0-cuda_sm120/fused_d02/k_4a8548d2219ca3d415f940871dc0ae8c5d5f90d71296797239a16b204120dae7.meta",
+        "cheap_key": "4a8548d2219ca3d415f940871dc0ae8c5d5f90d71296797239a16b204120dae7",
+        "hlo_sha256": "615b46583c77d72e554c3990fb6198b7f6a6e28ba1ec42eaeab208d36499c0e3",
+        "meta_hlo_sha256": "615b46583c77d72e554c3990fb6198b7f6a6e28ba1ec42eaeab208d36499c0e3",
+        "address": "cheap_key"
+      }
+    },
+    "load_metrics": {
+      "d01": {
+        "load_attempt_count": 1,
+        "load_attempt_wall_seconds": 0.000247581978328526,
+        "load_count": 1,
+        "load_wall_seconds": 0.000247581978328526,
+        "cache_hit_count": 199,
+        "keys": {
+          "cheap_key:747eb79be8814b24b3b758d4fd820999e4ba6afd794954e4412235de0d200427": {
+            "load_attempt_count": 1,
+            "load_attempt_wall_seconds": 0.000247581978328526,
+            "load_count": 1,
+            "load_wall_seconds": 0.000247581978328526,
+            "cache_hit_count": 199
+          }
+        }
+      }
+    }
+  },
+  "wrfout_sha256": {
+    "wrfout_d01_2026-02-28_00:00:00": "3d119181b55d6d34d12af17607cf3bf8b0ad05f39ad25bd083474a62cff4be39",
+    "wrfout_d01_2026-02-28_01:00:18": "0971461f5b06de0787cc4bd74291775f2e985de741b2d6d17b6dbe82a0a07aed",
+    "wrfout_d01_2026-02-28_02:00:36": "321b6b6fa3e9ff811f1a8818a718254b70f003bdd9c1a409ad7dbf08856bd51d",
+    "wrfout_d01_2026-02-28_03:00:00": "efdd1791ff16957bb1d3385e9c742c7f80d4ae7fcd7f93cbdb964b35718a9dd0",
+    "wrfout_d02_2026-02-28_00:00:00": "be7c8314dee79ae10c3f90c973f56ffe4453fe6e65a9bb1459447b1c0ee5b7c7",
+    "wrfout_d02_2026-02-28_01:00:00": "4f4af999b01539aa12d56da1e8b73827673cc4b55e83cd8e0243228830d33d93",
+    "wrfout_d02_2026-02-28_02:00:00": "827b3cd143dc96715c63a6b2156279bd63f9c0564689e14e7be39c6205bf4d32",
+    "wrfout_d02_2026-02-28_03:00:00": "2437fa3a4973f08eb34796696c84b7b01579c5da24d3d0cb10aee0a60efb50d8",
+    "wrfout_d03_2026-02-28_00:00:00": "c2d7fc0d965365b0ab2521bc74edc0597d2f6f73655317b686ca5aeff441e6a4",
+    "wrfout_d03_2026-02-28_01:00:00": "255ef7221c997ea6c279017816d95a8f6e10b2cb488adcdc4fc1aa643915dfd9",
+    "wrfout_d03_2026-02-28_02:00:00": "0eca35b067ed94305f7e9f4ed781d96a468f784fbb6f28b35af00da0b6a4e645",
+    "wrfout_d03_2026-02-28_03:00:00": "d9b1c832468889e4730408e64140227c32a560b1c71f1ce1ce8072f32790159f"
+  },
+  "files_equal_release": {
+    "wrfout_d01_2026-02-28_00:00:00": true,
+    "wrfout_d01_2026-02-28_01:00:18": true,
+    "wrfout_d01_2026-02-28_02:00:36": true,
+    "wrfout_d01_2026-02-28_03:00:00": true,
+    "wrfout_d02_2026-02-28_00:00:00": true,
+    "wrfout_d02_2026-02-28_01:00:00": true,
+    "wrfout_d02_2026-02-28_02:00:00": true,
+    "wrfout_d02_2026-02-28_03:00:00": true,
+    "wrfout_d03_2026-02-28_00:00:00": true,
+    "wrfout_d03_2026-02-28_01:00:00": true,
+    "wrfout_d03_2026-02-28_02:00:00": true,
+    "wrfout_d03_2026-02-28_03:00:00": true
+  },
+  "scope": "regression/cache check only; release GPU outputs are not original CPU-WRF truth",
+  "memory_stats": {
+    "num_allocs": 245018,
+    "bytes_in_use": 111001740,
+    "peak_bytes_in_use": 2910642324,
+    "largest_alloc_size": 576970144,
+    "bytes_limit": 5588366573,
+    "bytes_reserved": 0,
+    "peak_bytes_reserved": 0,
+    "largest_free_block_bytes": 0
+  },
+  "walk_counts": {
+    "nodes": 66641
+  }
+}

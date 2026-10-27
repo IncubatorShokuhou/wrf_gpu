@@ -51,8 +51,36 @@ def _build_state(c):
         ustar=s1(su["ust"]), theta_flux=s1(su["flt"]), qv_flux=s1(su["flqv"]),
         tau_u=s1(0.0), tau_v=s1(0.0),
         rhosfc=s1(su["psfc"] / (287.0 * su["tsk"])), fltv=s1(su["fltv"]),
-        xland=s1(su.get("xland", 1.0)))
+        xland=s1(su.get("xland", 1.0)),
+        # The WSPD/PSFC operands this column's Fortran oracle hands to the WRF
+        # MYNN driver (extract_column.py:120, oracle.f90:229). The release
+        # default surface-WSPD / RHOSFC handoff requires them from the caller
+        # (as the operational coupler supplies them); the legacy path ignores them.
+        wspd=s1(su["wspd"]), psfc=s1(su["psfc"]))
     return st, sfc, su
+
+
+# Model steps over which the MF / condensate signal must exceed the
+# ``np.allclose`` detection threshold. Under the release-default WRF
+# CLOUDMIX=1 scalar solve (mynn_tendencies form, kernels/phys_mynn_cloudmix.py)
+# the ONE-step MF effect on qv is ~1e-8 kg/kg -- the same as the pristine WRF
+# mynn_tendencies on this column (fortran_oracle/oracle_out.txt, level 2:
+# (edonly_Dqv - edmf_Dqv) * delt = 9.3e-9) and below the threshold; the
+# legacy read-only-condensate solve gave 1.9e-7. Two model minutes keep the
+# unchanged threshold meaningful in both modes.
+NSTEPS_SIGNAL = 40
+
+
+def _wrf_cloudmix_form():
+    from gpuwrf.kernels.phys_mynn_cloudmix import cloudmix_enabled
+    return cloudmix_enabled()
+
+
+def _integrate(state, dt, nsteps, **kw):
+    from gpuwrf.physics.mynn_pbl import step_mynn_pbl_column
+    for _ in range(nsteps):
+        state = step_mynn_pbl_column(state, dt, **kw)
+    return state
 
 
 def _dmp_result(column, *, xland=None):
@@ -148,13 +176,19 @@ def test_edmf_changes_qv_solve_and_no_regression_when_off(column):
     qv_off = np.asarray(out_off.qv[0])
     qv_on = np.asarray(out_on.qv[0])
     # MF must change the qv solve somewhere in the PBL.
-    assert not np.allclose(qv_off, qv_on), "edmf=True did not change the qv solve"
+    if not _wrf_cloudmix_form():  # legacy solve: visible after one step
+        assert not np.allclose(qv_off, qv_on), "edmf=True did not change the qv solve"
     # Finite, bounded.
     assert np.all(np.isfinite(qv_on)) and np.all(qv_on >= 0.0)
+    # Both solve forms: the MF signal over NSTEPS_SIGNAL steps (see above).
+    qv_off_n = np.asarray(_integrate(st, dt, NSTEPS_SIGNAL, surface=sfc, edmf=False, dx=1000.0).qv[0])
+    qv_on_n = np.asarray(_integrate(st, dt, NSTEPS_SIGNAL, surface=sfc, edmf=True, dx=1000.0).qv[0])
+    assert not np.allclose(qv_off_n, qv_on_n), "edmf=True did not change the qv solve"
+    assert np.all(np.isfinite(qv_on_n)) and np.all(qv_on_n >= 0.0)
 
     # Regression guard: edmf default is OFF, so the default entry equals edmf=False.
     out_default = step_mynn_pbl_column(st, dt, surface=sfc)
-    assert np.allclose(np.asarray(out_default.qv[0]), qv_off)
+    assert np.array_equal(np.asarray(out_default.qv[0]), qv_off)
 
 
 def test_column_cloud_condensate_enters_mynn_thermodynamics(column):
@@ -170,7 +204,14 @@ def test_column_cloud_condensate_enters_mynn_thermodynamics(column):
     out_clear = step_mynn_pbl_column(st, dt, surface=sfc, edmf=True, dx=1000.0)
     out_cloudy = step_mynn_pbl_column(cloudy, dt, surface=sfc, edmf=True, dx=1000.0)
     assert np.all(np.isfinite(np.asarray(out_cloudy.theta)))
-    assert not np.allclose(np.asarray(out_clear.theta), np.asarray(out_cloudy.theta))
+    if not _wrf_cloudmix_form():  # legacy: condensate read-only, visible after one step
+        assert not np.allclose(np.asarray(out_clear.theta), np.asarray(out_cloudy.theta))
+    # Both forms (WRF CLOUDMIX=1 also mixes the condensate itself, so one step
+    # moves theta by 2.8e-3 K, just under the threshold): NSTEPS_SIGNAL steps.
+    clear_n = _integrate(st, dt, NSTEPS_SIGNAL, surface=sfc, edmf=True, dx=1000.0)
+    cloudy_n = _integrate(cloudy, dt, NSTEPS_SIGNAL, surface=sfc, edmf=True, dx=1000.0)
+    assert np.all(np.isfinite(np.asarray(cloudy_n.theta)))
+    assert not np.allclose(np.asarray(clear_n.theta), np.asarray(cloudy_n.theta))
 
 
 def test_operational_mynn_edmf_is_enabled():

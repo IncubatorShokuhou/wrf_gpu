@@ -1,0 +1,1580 @@
+{
+  "schema": "w44-perf.ordinary-delta.v1",
+  "scope": "Three complete ordinary PROD roots68-70,dt54/18,44lev. Existing N32/N43 node profiles only; no GPU access/compile. Counts are profile snapshots, not causal wall speed or CPU-WRF fidelity validation.",
+  "raw_kernel_counts": [
+    8292,
+    10227
+  ],
+  "kernel_count_delta": 1935,
+  "kernel_count_change_pct": 23.33574529667149,
+  "raw_device_activity_counts": [
+    10554,
+    12033
+  ],
+  "raw_device_activity_delta": 1479,
+  "raw_device_activity_change_pct": 14.013644115974985,
+  "kernel_duration_ms": [
+    93.476049,
+    103.145505
+  ],
+  "by_callback": [
+    {
+      "scope": "d01",
+      "old": [
+        2586,
+        12225824
+      ],
+      "new": [
+        4005,
+        16332540
+      ],
+      "delta": 1419
+    },
+    {
+      "scope": "d02",
+      "old": [
+        5409,
+        80426674
+      ],
+      "new": [
+        5865,
+        85932392
+      ],
+      "delta": 456
+    },
+    {
+      "scope": "nesting/force",
+      "old": [
+        297,
+        823551
+      ],
+      "new": [
+        357,
+        880573
+      ],
+      "delta": 60
+    }
+  ],
+  "by_source_family": [
+    {
+      "family": "dycore/advection",
+      "old_count": 3132,
+      "new_count": 3681,
+      "delta_count": 549,
+      "old_ms": 57.183042,
+      "new_ms": 61.86589,
+      "delta_ms": 4.682848
+    },
+    {
+      "family": "graph helper outside model CUBIN",
+      "old_count": 18,
+      "new_count": 516,
+      "delta_count": 498,
+      "old_ms": 0.037056,
+      "new_ms": 0.860962,
+      "delta_ms": 0.823906
+    },
+    {
+      "family": "Noah-MP",
+      "old_count": 345,
+      "new_count": 723,
+      "delta_count": 378,
+      "old_ms": 1.008694,
+      "new_ms": 1.715663,
+      "delta_ms": 0.706969
+    },
+    {
+      "family": "boundary/nesting",
+      "old_count": 678,
+      "new_count": 894,
+      "delta_count": 216,
+      "old_ms": 1.561719,
+      "new_ms": 2.536767,
+      "delta_ms": 0.975048
+    },
+    {
+      "family": "runtime/glue source",
+      "old_count": 288,
+      "new_count": 414,
+      "delta_count": 126,
+      "old_ms": 1.814962,
+      "new_ms": 1.312529,
+      "delta_ms": -0.502433
+    },
+    {
+      "family": "MYNN",
+      "old_count": 1068,
+      "new_count": 1188,
+      "delta_count": 120,
+      "old_ms": 12.804178,
+      "new_ms": 14.679864,
+      "delta_ms": 1.875686
+    },
+    {
+      "family": "surface-layer",
+      "old_count": 264,
+      "new_count": 351,
+      "delta_count": 87,
+      "old_ms": 0.901697,
+      "new_ms": 1.201953,
+      "delta_ms": 0.300256
+    },
+    {
+      "family": "scalar control",
+      "old_count": 342,
+      "new_count": 426,
+      "delta_count": 84,
+      "old_ms": 0.290972,
+      "new_ms": 0.359594,
+      "delta_ms": 0.068622
+    },
+    {
+      "family": "mixed/shared fusion",
+      "old_count": 1179,
+      "new_count": 1245,
+      "delta_count": 66,
+      "old_ms": 11.037605,
+      "new_ms": 10.470649,
+      "delta_ms": -0.566956
+    },
+    {
+      "family": "nesting/force call scope",
+      "old_count": 297,
+      "new_count": 357,
+      "delta_count": 60,
+      "old_ms": 0.823551,
+      "new_ms": 0.880573,
+      "delta_ms": 0.057022
+    },
+    {
+      "family": "layout-only source",
+      "old_count": 90,
+      "new_count": 117,
+      "delta_count": 27,
+      "old_ms": 0.453824,
+      "new_ms": 0.714365,
+      "delta_ms": 0.260541
+    },
+    {
+      "family": "hydrostatic-prep",
+      "old_count": 0,
+      "new_count": 12,
+      "delta_count": 12,
+      "old_ms": 0.0,
+      "new_ms": 0.367839,
+      "delta_ms": 0.367839
+    },
+    {
+      "family": "unattributed source",
+      "old_count": 138,
+      "new_count": 144,
+      "delta_count": 6,
+      "old_ms": 0.183986,
+      "new_ms": 0.15526,
+      "delta_ms": -0.028726
+    },
+    {
+      "family": "physics preparation/coupling",
+      "old_count": 42,
+      "new_count": 39,
+      "delta_count": -3,
+      "old_ms": 0.156095,
+      "new_ms": 0.07488,
+      "delta_ms": -0.081215
+    },
+    {
+      "family": "gravity-wave-drag",
+      "old_count": 54,
+      "new_count": 48,
+      "delta_count": -6,
+      "old_ms": 0.189952,
+      "new_ms": 0.207232,
+      "delta_ms": 0.01728
+    },
+    {
+      "family": "Thompson",
+      "old_count": 63,
+      "new_count": 51,
+      "delta_count": -12,
+      "old_ms": 4.35854,
+      "new_ms": 5.59358,
+      "delta_ms": 1.23504
+    },
+    {
+      "family": "outside proven RK-loop module",
+      "old_count": 294,
+      "new_count": 21,
+      "delta_count": -273,
+      "old_ms": 0.670176,
+      "new_ms": 0.147905,
+      "delta_ms": -0.522271
+    }
+  ],
+  "by_operation_class": [
+    {
+      "operation_class": "fusion arithmetic",
+      "old": [
+        5367,
+        42975250
+      ],
+      "new": [
+        6693,
+        51565708
+      ],
+      "delta_count": 1326
+    },
+    {
+      "operation_class": "unknown",
+      "old": [
+        609,
+        1530783
+      ],
+      "new": [
+        894,
+        1889440
+      ],
+      "delta_count": 285
+    },
+    {
+      "operation_class": "layout/view",
+      "old": [
+        225,
+        664255
+      ],
+      "new": [
+        378,
+        877588
+      ],
+      "delta_count": 153
+    },
+    {
+      "operation_class": "scalar control",
+      "old": [
+        342,
+        290972
+      ],
+      "new": [
+        426,
+        359594
+      ],
+      "delta_count": 84
+    },
+    {
+      "operation_class": "native Pallas",
+      "old": [
+        1707,
+        47965957
+      ],
+      "new": [
+        1788,
+        48393912
+      ],
+      "delta_count": 81
+    },
+    {
+      "operation_class": "layout/cast",
+      "old": [
+        42,
+        48832
+      ],
+      "new": [
+        48,
+        59263
+      ],
+      "delta_count": 6
+    }
+  ],
+  "native_source_cohorts": [
+    {
+      "files": [
+        "/gpuwrf/kernels/dyn_rhsph_fp32.py"
+      ],
+      "old": [
+        0,
+        0
+      ],
+      "new": [
+        36,
+        1243009
+      ],
+      "delta_count": 36
+    },
+    {
+      "files": [
+        "/gpuwrf/kernels/phys_hydrostatic_real.py"
+      ],
+      "old": [
+        0,
+        0
+      ],
+      "new": [
+        12,
+        367839
+      ],
+      "delta_count": 12
+    },
+    {
+      "files": [
+        "/gpuwrf/kernels/phys_noahmp_radiation.py"
+      ],
+      "old": [
+        0,
+        0
+      ],
+      "new": [
+        12,
+        42784
+      ],
+      "delta_count": 12
+    },
+    {
+      "files": [
+        "/gpuwrf/kernels/dyn_ring_relax_fp32.py"
+      ],
+      "old": [
+        63,
+        1370499
+      ],
+      "new": [
+        75,
+        2934618
+      ],
+      "delta_count": 12
+    },
+    {
+      "files": [
+        "/gpuwrf/kernels/phys_mynn_tridiag.py"
+      ],
+      "old": [
+        96,
+        3433351
+      ],
+      "new": [
+        108,
+        3871451
+      ],
+      "delta_count": 12
+    },
+    {
+      "files": [
+        "/gpuwrf/kernels/phys_mynn_plume.py"
+      ],
+      "old": [
+        12,
+        703075
+      ],
+      "new": [
+        12,
+        593186
+      ],
+      "delta_count": 0
+    },
+    {
+      "files": [
+        "/gpuwrf/kernels/dyn_diff_fp32.py"
+      ],
+      "old": [
+        288,
+        4436069
+      ],
+      "new": [
+        288,
+        3209256
+      ],
+      "delta_count": 0
+    },
+    {
+      "files": [
+        "/gpuwrf/kernels/dyn_rk_fp32.py"
+      ],
+      "old": [
+        264,
+        2996867
+      ],
+      "new": [
+        264,
+        2089211
+      ],
+      "delta_count": 0
+    },
+    {
+      "files": [
+        "/gpuwrf/kernels/phys_gwdo_column.py"
+      ],
+      "old": [
+        3,
+        106688
+      ],
+      "new": [
+        3,
+        146208
+      ],
+      "delta_count": 0
+    },
+    {
+      "files": [
+        "/gpuwrf/kernels/phys_noahmp_columns.py"
+      ],
+      "old": [
+        36,
+        485664
+      ],
+      "new": [
+        36,
+        473917
+      ],
+      "delta_count": 0
+    },
+    {
+      "files": [
+        "/gpuwrf/kernels/dyn_acoustic_fp32.py"
+      ],
+      "old": [
+        528,
+        15300545
+      ],
+      "new": [
+        528,
+        15687855
+      ],
+      "delta_count": 0
+    },
+    {
+      "files": [
+        "/gpuwrf/kernels/phys_thompson_full.py"
+      ],
+      "old": [
+        12,
+        2913735
+      ],
+      "new": [
+        12,
+        4934059
+      ],
+      "delta_count": 0
+    },
+    {
+      "files": [
+        "/gpuwrf/kernels/dyn_uvtend_fp32.py"
+      ],
+      "old": [
+        54,
+        2429959
+      ],
+      "new": [
+        54,
+        2363391
+      ],
+      "delta_count": 0
+    },
+    {
+      "files": [
+        "/gpuwrf/kernels/phys_mynn_boulac.py"
+      ],
+      "old": [
+        12,
+        261248
+      ],
+      "new": [
+        12,
+        260638
+      ],
+      "delta_count": 0
+    },
+    {
+      "files": [
+        "/gpuwrf/kernels/dyn_flux_fp32.py"
+      ],
+      "old": [
+        78,
+        4182474
+      ],
+      "new": [
+        78,
+        2350080
+      ],
+      "delta_count": 0
+    },
+    {
+      "files": [
+        "/gpuwrf/kernels/phys_mynn_cloudmix.py"
+      ],
+      "old": [
+        12,
+        1446563
+      ],
+      "new": [
+        12,
+        1505027
+      ],
+      "delta_count": 0
+    },
+    {
+      "files": [
+        "/gpuwrf/kernels/dyn_pd_fp32.py"
+      ],
+      "old": [
+        42,
+        5486541
+      ],
+      "new": [
+        42,
+        3832423
+      ],
+      "delta_count": 0
+    },
+    {
+      "files": [
+        "/gpuwrf/kernels/dyn_momflux_fp32.py"
+      ],
+      "old": [
+        54,
+        978275
+      ],
+      "new": [
+        54,
+        1036705
+      ],
+      "delta_count": 0
+    },
+    {
+      "files": [
+        "/gpuwrf/kernels/dyn_boundary_fp32.py"
+      ],
+      "old": [
+        153,
+        1434404
+      ],
+      "new": [
+        150,
+        1452255
+      ],
+      "delta_count": -3
+    }
+  ],
+  "copy_lowering_witnesses": {
+    "N32": {
+      "explicit_d01_DtoD_count": 417,
+      "explicit_d01_DtoD_bytes": 238932096,
+      "outside_native_copy_helper_count": 12,
+      "copy_thunk_count": 137,
+      "static_copy_thunk_byte_sum": 73577132,
+      "helper_own_size_grid_witnesses": [
+        {
+          "dimensions": [
+            33,
+            1,
+            1,
+            256,
+            1,
+            1
+          ],
+          "count": 6,
+          "own_serialized_copy_byte_candidates": [
+            33600
+          ]
+        },
+        {
+          "dimensions": [
+            1444,
+            1,
+            1,
+            256,
+            1,
+            1
+          ],
+          "count": 6,
+          "own_serialized_copy_byte_candidates": [
+            1478400
+          ]
+        }
+      ],
+      "copy_activity_count_including_helpers": 429,
+      "inferred_helper_bytes_range": [
+        9072000,
+        9072000
+      ]
+    },
+    "N43": {
+      "explicit_d01_DtoD_count": 6,
+      "explicit_d01_DtoD_bytes": 24,
+      "outside_native_copy_helper_count": 417,
+      "copy_thunk_count": 139,
+      "static_copy_thunk_byte_sum": 71906108,
+      "helper_own_size_grid_witnesses": [
+        {
+          "dimensions": [
+            1,
+            1,
+            1,
+            256,
+            1,
+            1
+          ],
+          "count": 9,
+          "own_serialized_copy_byte_candidates": [
+            4,
+            8
+          ]
+        },
+        {
+          "dimensions": [
+            33,
+            1,
+            1,
+            256,
+            1,
+            1
+          ],
+          "count": 255,
+          "own_serialized_copy_byte_candidates": [
+            33600
+          ]
+        },
+        {
+          "dimensions": [
+            657,
+            1,
+            1,
+            256,
+            1,
+            1
+          ],
+          "count": 3,
+          "own_serialized_copy_byte_candidates": [
+            672000
+          ]
+        },
+        {
+          "dimensions": [
+            1444,
+            1,
+            1,
+            256,
+            1,
+            1
+          ],
+          "count": 87,
+          "own_serialized_copy_byte_candidates": [
+            1478400
+          ]
+        },
+        {
+          "dimensions": [
+            1456,
+            1,
+            1,
+            256,
+            1,
+            1
+          ],
+          "count": 3,
+          "own_serialized_copy_byte_candidates": [
+            1490720
+          ]
+        },
+        {
+          "dimensions": [
+            1465,
+            1,
+            1,
+            256,
+            1,
+            1
+          ],
+          "count": 6,
+          "own_serialized_copy_byte_candidates": [
+            1499520
+          ]
+        },
+        {
+          "dimensions": [
+            1477,
+            1,
+            1,
+            256,
+            1,
+            1
+          ],
+          "count": 54,
+          "own_serialized_copy_byte_candidates": [
+            1512000
+          ]
+        }
+      ],
+      "copy_activity_count_including_helpers": 423,
+      "inferred_helper_bytes_range": [
+        234322116,
+        234322152
+      ]
+    }
+  },
+  "source_commits": {
+    "layout_shield": {
+      "commit": "6e38cbf173a0c99adeaa829a7728a6d380b7f86f",
+      "subject": "v0.3.3: final source (root-pin + small-grid firewall + snow + radiation kernel)"
+    },
+    "rc_defaults": {
+      "commit": "ac278549e61d3dca382c28d267b9aa7c5bb1110f",
+      "subject": "rc: v0.3.3 FINAL RC defaults \u2014 21 merged WRF-fidelity flags ON (+MYNN_QNI_MIXING), PLUME_CLOUD_BASE excluded"
+    },
+    "physics_rk": {
+      "commit": "150628ddf6a8d4f5692ca74c7a8819776731e29f",
+      "subject": "b-diff D2/D3: WRF physics->RK coupling of the PBL moist tendencies (moist_tend/scalar_tend, add_a2a ring rule, rk_update_scalar_pd pre-update) and the held radiation rate, behind GPUWRF_PHYS_TEND_RK_WRF (default off)"
+    },
+    "root_scalar_boundary": {
+      "commit": "0dcd90e126364706cf3b3c8e48b0e7d45cef470b",
+      "subject": "b-diff BD92 (B43): GPUWRF_ROOT_SCALAR_BDY_RK1 \u2014 specified-root moist/scalar lateral forcing in WRF's RK cadence (default off)"
+    },
+    "nest_scalar_final": {
+      "commit": "659482b8d0f0bbea0a49b892b343c4b34961a7eb",
+      "subject": "b-diff BD95: nested moist/scalar spec_bdy_final (GPUWRF_NEST_SCALAR_SPEC_FINAL, default off)"
+    },
+    "qni_mixing": {
+      "commit": "a054d46773c1e798f1db143f5047934e6c6e9ad9",
+      "subject": "MYNN: optional cloud-ice number mixing matches 40 pristine Swiss columns"
+    },
+    "psiq_flux": {
+      "commit": "05a7bac11f38f2d2095b705c8c74be24e6a5ab45",
+      "subject": "BP95: restore WRF PSIQ flux form; 197 checks, 4 source controls"
+    },
+    "real_psi": {
+      "commit": "36fe022a0b5936b24796b45502ed1848819aeb3c",
+      "subject": "fix(sfclay): gate original WRF REAL psi tables and coefficient"
+    },
+    "mynn_caller": {
+      "commit": "f771035c955ac10e3037d0609b1030964c4a8a44",
+      "subject": "t-cfix-mynn: F20 MYNN default path \u2014 WRF bottom-face w for the EDMF taper + driver hfx/qfx limits"
+    },
+    "noah_qsfc": {
+      "commit": "3814b53fc7fb3f6a5aa1b783962f6d9a8218c91b",
+      "subject": "noahmp: GPUWRF_NOAH_QSFC_WRF (default 0) \u2014 land QSFC = BARE_FLUX QSFC as WRF writes grid%QSFC (V033-W2)"
+    },
+    "land_q2": {
+      "commit": "b4b36bcc66408e4cafd4cfae55425c175d8994f5",
+      "subject": "physics: cap land Q2 after Noah-MP overwrite using entry QV"
+    },
+    "w_damp": {
+      "commit": "f3c5967654a88d0939a39a95338495090bbd43c0",
+      "subject": "b-core: GPUWRF_W_DAMP_STAGE (ledger BD85) \u2014 WRF w_damp once per RK stage, default off"
+    },
+    "thompson_mixed": {
+      "commit": "aaf2e85576923119391e87a05a30d9a768d2c879",
+      "subject": "thompson: GPUWRF_THOMPSON_MIXED_PHASE_WRF \u2014 WRF single-pass source stage on the entry column (B55 + mixed-phase (1)-(6))"
+    },
+    "thompson_exits": {
+      "commit": "b7864e05530cbba0f3b98c8f1fe9a062984efefb",
+      "subject": "thompson: mixed-phase single pass gets exact per-column EARLY_EXIT branches (GPUWRF_THOMPSON_MIXED_PHASE_WRF)"
+    }
+  },
+  "largest_bound_dycore_fusion_sites": {
+    "N32": [
+      {
+        "domain": "d02",
+        "callback_scope": "d02",
+        "symbol": "input_add_multiply_transpose_fusion",
+        "dimensions": [
+          2106,
+          1,
+          1,
+          128,
+          1,
+          1
+        ],
+        "label": "dycore/advection",
+        "binding": "same loaded module + exact symbol/grid; all runtime call sites retained",
+        "possible_source_sites": [
+          {
+            "hlo_instruction": "input_add_multiply_transpose_fusion",
+            "source": {
+              "hlo_instruction": "input_add_multiply_transpose_fusion",
+              "family": "dycore/advection",
+              "source_families": [
+                "dycore/advection",
+                "glue/other"
+              ],
+              "sources": {
+                "/gpuwrf/dynamics/flux_advection.py:1253:advect_moisture_scalars": 2,
+                "/gpuwrf/runtime/operational_mode.py:4890:_apply_moisture_large_step": 21,
+                "/gpuwrf/runtime/operational_mode.py:5217:_rk_scan_step.<locals>._child_frozen_scalar.<locals>.<genexpr>": 5,
+                "/gpuwrf/runtime/operational_mode.py:5220:_rk_scan_step.<locals>._child_frozen_scalar.<locals>.<genexpr>": 10,
+                "/gpuwrf/dynamics/flux_advection.py:1257:advect_moisture_scalars.<locals>.<genexpr>": 5,
+                "/gpuwrf/runtime/operational_mode.py:4944:_nested_scalar_stage_tendencies": 11,
+                "/gpuwrf/runtime/operational_mode.py:4955:_nested_scalar_stage_tendencies": 10,
+                "/gpuwrf/runtime/operational_mode.py:4963:_nested_scalar_stage_tendencies": 5,
+                "/gpuwrf/kernels/dyn_acoustic_fp32.py:703:_mass_boundaries": 1,
+                "/gpuwrf/runtime/operational_mode.py:4885:_apply_moisture_large_step": 1,
+                "/gpuwrf/dynamics/acoustic_wrf.py:315:moisture_coupling_factors": 5,
+                "/gpuwrf/runtime/operational_mode.py:4260:_augment_large_step_tendencies": 2,
+                "/gpuwrf/runtime/operational_mode.py:5079:_rk_scan_step": 2,
+                "/gpuwrf/runtime/operational_mode.py:4297:_augment_large_step_tendencies": 1,
+                "/gpuwrf/runtime/operational_mode.py:4379:_augment_large_step_tendencies": 1,
+                "/gpuwrf/dynamics/core/rk_addtend_dry.py:729:rk_addtend_dry": 4,
+                "/gpuwrf/runtime/operational_mode.py:4554:_augment_large_step_tendencies": 1
+              },
+              "operation_class": "fusion arithmetic",
+              "opcodes": [
+                "add",
+                "bitcast",
+                "broadcast",
+                "constant",
+                "divide",
+                "dynamic-update-slice",
+                "multiply",
+                "parameter",
+                "slice",
+                "transpose",
+                "tuple"
+              ],
+              "shape": "(f32[1,44,117,267]{3,2,1,0}, f32[44,117,267]{2,1,0}, f32[44,117,267]{2,1,0}, f32[44,117,267]{2,1,0}, f32[44,117,267]{2,1,0}, /*index=5*/f32[44,117,267]{2,1,0}, f32[44,117,267]{2,1,0}, f32[44,117,267]{2,1,0}, f32[44,117,267]{2,1,0}, f32[44,117,267]{2,1,0}, /*index=10*/f32[44,117,267]{2,1,0}, f32[44,117,267]{2,1,0}, f32[44,117,267]{2,1,0})",
+              "computation": "region_0.805.clone"
+            },
+            "thunk_ancestors": [
+              "while.768"
+            ]
+          }
+        ],
+        "activities": 9,
+        "kernel_ns": 2884132
+      },
+      {
+        "domain": "d02",
+        "callback_scope": "d02",
+        "symbol": "loop_add_divide_multiply_fusion",
+        "dimensions": [
+          2685,
+          1,
+          1,
+          128,
+          1,
+          1
+        ],
+        "label": "dycore/advection",
+        "binding": "same loaded module + exact symbol/grid; all runtime call sites retained",
+        "possible_source_sites": [
+          {
+            "hlo_instruction": "loop_add_divide_multiply_fusion",
+            "source": {
+              "hlo_instruction": "loop_add_divide_multiply_fusion",
+              "family": "dycore/advection",
+              "source_families": [
+                "dycore/advection",
+                "glue/other"
+              ],
+              "sources": {
+                "/gpuwrf/dynamics/core/small_step_finish.py:90:small_step_finish_wrf": 2,
+                "/gpuwrf/dynamics/core/calc_p_rho.py:91:_calc_al_p": 1,
+                "/gpuwrf/dynamics/core/small_step_finish.py:78:small_step_finish_wrf": 3,
+                "/gpuwrf/dynamics/core/calc_p_rho.py:89:_calc_al_p": 1,
+                "/gpuwrf/dynamics/core/small_step_finish.py:84:small_step_finish_wrf": 2,
+                "/gpuwrf/dynamics/core/small_step_finish.py:77:small_step_finish_wrf": 3,
+                "/gpuwrf/dynamics/core/small_step_finish.py:29:_safe_denominator": 6,
+                "/gpuwrf/dynamics/core/small_step_finish.py:89:small_step_finish_wrf": 1,
+                "/gpuwrf/dynamics/flux_advection.py:260:stage_omega_specified": 1,
+                "/gpuwrf/dynamics/flux_advection.py:160:_muv_face": 4,
+                "/gpuwrf/dynamics/flux_advection.py:479:couple_velocities_periodic": 3,
+                "/gpuwrf/dynamics/flux_advection.py:469:couple_velocities_periodic": 1,
+                "/gpuwrf/dynamics/flux_advection.py:481:couple_velocities_periodic": 2,
+                "/gpuwrf/dynamics/explicit_diffusion.py:52:_core_y": 1,
+                "/gpuwrf/dynamics/explicit_diffusion.py:1360:horizontal_deformation_2d": 1,
+                "/gpuwrf/dynamics/flux_advection.py:257:stage_omega_specified": 1,
+                "/gpuwrf/dynamics/flux_advection.py:154:_muu_face": 4,
+                "/gpuwrf/dynamics/flux_advection.py:478:couple_velocities_periodic": 3,
+                "/gpuwrf/dynamics/flux_advection.py:185:_collapse_x_face_periodic": 1,
+                "/gpuwrf/dynamics/flux_advection.py:480:couple_velocities_periodic": 2,
+                "/gpuwrf/dynamics/explicit_diffusion.py:46:_core_x": 1,
+                "/gpuwrf/dynamics/explicit_diffusion.py:1347:horizontal_deformation_2d": 1,
+                "/gpuwrf/runtime/operational_mode.py:4890:_apply_moisture_large_step": 24,
+                "/gpuwrf/runtime/operational_mode.py:5220:_rk_scan_step.<locals>._child_frozen_scalar.<locals>.<genexpr>": 6,
+                "/gpuwrf/dynamics/flux_advection.py:1257:advect_moisture_scalars.<locals>.<genexpr>": 6,
+                "/gpuwrf/runtime/operational_mode.py:4944:_nested_scalar_stage_tendencies": 13,
+                "/gpuwrf/runtime/operational_mode.py:4955:_nested_scalar_stage_tendencies": 12,
+                "/gpuwrf/runtime/operational_mode.py:4963:_nested_scalar_stage_tendencies": 6,
+                "/gpuwrf/runtime/operational_mode.py:4192:_augment_large_step_tendencies": 3,
+                "/gpuwrf/runtime/operational_mode.py:4885:_apply_moisture_large_step": 1,
+                "/gpuwrf/dynamics/acoustic_wrf.py:315:moisture_coupling_factors": 5
+              },
+              "operation_class": "fusion arithmetic",
+              "opcodes": [
+                "abs",
+                "add",
+                "bitcast",
+                "broadcast",
+                "compare",
+                "concatenate",
+                "constant",
+                "divide",
+                "dynamic-update-slice",
+                "multiply",
+                "parameter",
+                "select",
+                "slice",
+                "tuple"
+              ],
+              "shape": "(f32[44,117,267]{2,1,0}, f32[44,117,267]{2,1,0}, f32[44,117,267]{2,1,0}, f32[44,117,267]{2,1,0}, f32[44,117,267]{2,1,0}, /*index=5*/f32[44,117,267]{2,1,0}, f32[44,117,267]{2,1,0}, f32[44,117,267]{2,1,0}, f32[44,117,267]{2,1,0}, f32[44,117,267]{2,1,0}, /*index=10*/f32[44,117,267]{2,1,0})",
+              "computation": "region_0.805.clone"
+            },
+            "thunk_ancestors": [
+              "while.768"
+            ]
+          }
+        ],
+        "activities": 9,
+        "kernel_ns": 2027972
+      },
+      {
+        "domain": "d02",
+        "callback_scope": "d02",
+        "symbol": "input_add_transpose_fusion_3",
+        "dimensions": [
+          1954,
+          1,
+          1,
+          128,
+          1,
+          1
+        ],
+        "label": "dycore/advection",
+        "binding": "same loaded module + exact symbol/grid; all runtime call sites retained",
+        "possible_source_sites": [
+          {
+            "hlo_instruction": "input_add_transpose_fusion.3",
+            "source": {
+              "hlo_instruction": "input_add_transpose_fusion.3",
+              "family": "dycore/advection",
+              "source_families": [
+                "dycore/advection",
+                "glue/other",
+                "layout"
+              ],
+              "sources": {
+                "/gpuwrf/kernels/layout_pin.py:43:row_major": 6,
+                "/gpuwrf/runtime/operational_mode.py:4890:_apply_moisture_large_step": 20,
+                "/gpuwrf/runtime/operational_mode.py:5220:_rk_scan_step.<locals>._child_frozen_scalar.<locals>.<genexpr>": 5,
+                "/gpuwrf/dynamics/flux_advection.py:1198:advect_moisture_scalars.<locals>.<genexpr>": 5,
+                "/gpuwrf/runtime/operational_mode.py:4944:_nested_scalar_stage_tendencies": 11,
+                "/gpuwrf/runtime/operational_mode.py:4955:_nested_scalar_stage_tendencies": 10,
+                "/gpuwrf/runtime/operational_mode.py:4963:_nested_scalar_stage_tendencies": 5,
+                "/gpuwrf/dynamics/core/calc_p_rho.py:91:_calc_al_p": 1,
+                "/gpuwrf/runtime/operational_mode.py:4884:_apply_moisture_large_step": 3,
+                "/gpuwrf/dynamics/core/calc_p_rho.py:89:_calc_al_p": 1,
+                "/gpuwrf/runtime/operational_mode.py:4885:_apply_moisture_large_step": 1,
+                "/gpuwrf/runtime/operational_mode.py:6781:_apply_physics_non_dry_updates": 10
+              },
+              "operation_class": "fusion arithmetic",
+              "opcodes": [
+                "add",
+                "bitcast",
+                "broadcast",
+                "constant",
+                "divide",
+                "dynamic-update-slice",
+                "multiply",
+                "parameter",
+                "slice",
+                "subtract",
+                "transpose",
+                "tuple"
+              ],
+              "shape": "(f32[117,267,44]{2,1,0}, f32[44,117,267]{2,1,0}, f32[117,267,44]{2,1,0}, f32[44,117,267]{2,1,0}, f32[117,267,44]{2,1,0}, /*index=5*/f32[44,117,267]{2,1,0}, f32[117,267,44]{2,1,0}, f32[44,117,267]{2,1,0}, f32[117,267,44]{2,1,0}, f32[44,117,267]{2,1,0})",
+              "computation": "region_0.805.clone"
+            },
+            "thunk_ancestors": [
+              "while.768"
+            ]
+          }
+        ],
+        "activities": 9,
+        "kernel_ns": 806275
+      },
+      {
+        "domain": "d02",
+        "callback_scope": "d02",
+        "symbol": "loop_add_divide_maximum_multiply_fusion",
+        "dimensions": [
+          2685,
+          1,
+          1,
+          128,
+          1,
+          1
+        ],
+        "label": "dycore/advection",
+        "binding": "same loaded module + exact symbol/grid; all runtime call sites retained",
+        "possible_source_sites": [
+          {
+            "hlo_instruction": "loop_add_divide_maximum_multiply_fusion",
+            "source": {
+              "hlo_instruction": "loop_add_divide_maximum_multiply_fusion",
+              "family": "dycore/advection",
+              "source_families": [
+                "dycore/advection",
+                "glue/other"
+              ],
+              "sources": {
+                "/gpuwrf/dynamics/core/calc_p_rho.py:102:_calc_al_p": 8,
+                "/gpuwrf/dynamics/core/small_step_prep.py:363:small_step_prep_wrf": 3,
+                "/gpuwrf/dynamics/core/small_step_prep.py:362:small_step_prep_wrf": 1,
+                "/gpuwrf/dynamics/core/calc_p_rho.py:91:_calc_al_p": 3,
+                "/gpuwrf/dynamics/core/calc_p_rho.py:89:_calc_al_p": 4,
+                "/gpuwrf/dynamics/core/calc_p_rho.py:90:_calc_al_p": 3,
+                "/gpuwrf/dynamics/core/calc_p_rho.py:100:_calc_al_p": 2,
+                "/gpuwrf/dynamics/core/calc_p_rho.py:99:_calc_al_p": 1,
+                "/gpuwrf/dynamics/core/calc_p_rho.py:94:_calc_al_p": 2,
+                "/gpuwrf/dynamics/core/calc_p_rho.py:95:_calc_al_p": 5,
+                "/gpuwrf/dynamics/core/calc_p_rho.py:93:_calc_al_p": 2,
+                "/gpuwrf/runtime/operational_mode.py:4192:_augment_large_step_tendencies": 3,
+                "/gpuwrf/runtime/operational_mode.py:4260:_augment_large_step_tendencies": 2,
+                "/gpuwrf/runtime/operational_mode.py:5079:_rk_scan_step": 2,
+                "/gpuwrf/runtime/operational_mode.py:4297:_augment_large_step_tendencies": 1,
+                "/gpuwrf/runtime/operational_mode.py:4379:_augment_large_step_tendencies": 1,
+                "/gpuwrf/dynamics/core/rk_addtend_dry.py:729:rk_addtend_dry": 4,
+                "/gpuwrf/runtime/operational_mode.py:4554:_augment_large_step_tendencies": 1
+              },
+              "operation_class": "fusion arithmetic",
+              "opcodes": [
+                "abs",
+                "add",
+                "broadcast",
+                "compare",
+                "constant",
+                "divide",
+                "maximum",
+                "multiply",
+                "negate",
+                "parameter",
+                "select",
+                "slice",
+                "subtract",
+                "tuple"
+              ],
+              "shape": "(f32[44,117,267]{2,1,0}, f32[44,117,267]{2,1,0}, f32[44,117,267]{2,1,0}, f32[44,117,267]{2,1,0}, f32[44,117,267]{2,1,0})",
+              "computation": "region_0.805.clone"
+            },
+            "thunk_ancestors": [
+              "while.768"
+            ]
+          }
+        ],
+        "activities": 9,
+        "kernel_ns": 593697
+      }
+    ],
+    "N43": [
+      {
+        "domain": "d02",
+        "callback_scope": "d02",
+        "symbol": "loop_add_multiply_fusion_3",
+        "dimensions": [
+          2685,
+          1,
+          1,
+          128,
+          1,
+          1
+        ],
+        "label": "dycore/advection",
+        "binding": "NVTX exact source instruction + runtime thunk/grid",
+        "possible_source_sites": [
+          {
+            "hlo_instruction": "loop_add_multiply_fusion.3",
+            "source": {
+              "hlo_instruction": "loop_add_multiply_fusion.3",
+              "family": "dycore/advection",
+              "source_families": [
+                "dycore/advection",
+                "glue/other"
+              ],
+              "sources": {
+                "/gpuwrf/dynamics/acoustic_wrf.py:315:moisture_coupling_factors": 6,
+                "/gpuwrf/runtime/operational_mode.py:5725:_apply_moisture_large_step": 21,
+                "/gpuwrf/runtime/operational_mode.py:6217:_rk_scan_step.<locals>._child_frozen_scalar.<locals>.<genexpr>": 5,
+                "/gpuwrf/runtime/operational_mode.py:6220:_rk_scan_step.<locals>._child_frozen_scalar.<locals>.<genexpr>": 10,
+                "/gpuwrf/dynamics/flux_advection.py:1273:advect_moisture_scalars.<locals>.<genexpr>": 5,
+                "/gpuwrf/runtime/operational_mode.py:5781:_nested_scalar_stage_tendencies": 11,
+                "/gpuwrf/runtime/operational_mode.py:5792:_nested_scalar_stage_tendencies": 10,
+                "/gpuwrf/runtime/operational_mode.py:5800:_nested_scalar_stage_tendencies": 5,
+                "/gpuwrf/runtime/operational_mode.py:5970:_with_physics_sc.<locals>.<genexpr>": 2,
+                "/gpuwrf/kernels/dyn_acoustic_fp32.py:709:_mass_boundaries": 1,
+                "/gpuwrf/runtime/operational_mode.py:5714:_apply_moisture_large_step": 1,
+                "/gpuwrf/dynamics/core/rk_addtend_dry.py:739:rk_addtend_dry": 4,
+                "/gpuwrf/runtime/operational_mode.py:6072:_rk_scan_step": 1
+              },
+              "operation_class": "fusion arithmetic",
+              "opcodes": [
+                "add",
+                "bitcast",
+                "broadcast",
+                "constant",
+                "divide",
+                "dynamic-update-slice",
+                "multiply",
+                "parameter",
+                "slice",
+                "transpose",
+                "tuple"
+              ],
+              "shape": "(f32[44,117,267]{2,1,0}, f32[44,117,267]{2,1,0}, f32[44,117,267]{2,1,0}, f32[44,117,267]{2,1,0}, f32[44,117,267]{2,1,0}, /*index=5*/f32[44,117,267]{2,1,0}, f32[44,117,267]{2,1,0}, f32[44,117,267]{2,1,0}, f32[44,117,267]{2,1,0}, f32[44,117,267]{2,1,0}, /*index=10*/f32[44,117,267]{2,1,0}, f32[44,117,267]{2,1,0})",
+              "computation": "region_0.816.clone"
+            },
+            "thunk_ancestors": [
+              "while.793"
+            ]
+          }
+        ],
+        "activities": 9,
+        "kernel_ns": 3981225
+      },
+      {
+        "domain": "d02",
+        "callback_scope": "d02",
+        "symbol": "loop_add_divide_multiply_fusion",
+        "dimensions": [
+          2685,
+          1,
+          1,
+          128,
+          1,
+          1
+        ],
+        "label": "dycore/advection",
+        "binding": "NVTX exact source instruction + runtime thunk/grid",
+        "possible_source_sites": [
+          {
+            "hlo_instruction": "loop_add_divide_multiply_fusion",
+            "source": {
+              "hlo_instruction": "loop_add_divide_multiply_fusion",
+              "family": "dycore/advection",
+              "source_families": [
+                "dycore/advection",
+                "glue/other"
+              ],
+              "sources": {
+                "/gpuwrf/dynamics/core/small_step_finish.py:90:small_step_finish_wrf": 2,
+                "/gpuwrf/dynamics/core/calc_p_rho.py:91:_calc_al_p": 1,
+                "/gpuwrf/dynamics/core/small_step_finish.py:78:small_step_finish_wrf": 3,
+                "/gpuwrf/dynamics/core/calc_p_rho.py:89:_calc_al_p": 1,
+                "/gpuwrf/dynamics/core/small_step_finish.py:84:small_step_finish_wrf": 2,
+                "/gpuwrf/dynamics/core/small_step_finish.py:77:small_step_finish_wrf": 3,
+                "/gpuwrf/dynamics/core/small_step_finish.py:29:_safe_denominator": 6,
+                "/gpuwrf/dynamics/core/small_step_finish.py:89:small_step_finish_wrf": 1,
+                "/gpuwrf/dynamics/flux_advection.py:262:stage_omega_specified": 1,
+                "/gpuwrf/runtime/operational_mode.py:2369:_v_face_average_2d": 1,
+                "/gpuwrf/dynamics/flux_advection.py:162:_muv_face": 3,
+                "/gpuwrf/dynamics/flux_advection.py:481:couple_velocities_periodic": 3,
+                "/gpuwrf/dynamics/flux_advection.py:471:couple_velocities_periodic": 1,
+                "/gpuwrf/dynamics/flux_advection.py:483:couple_velocities_periodic": 2,
+                "/gpuwrf/dynamics/explicit_diffusion.py:52:_core_y": 1,
+                "/gpuwrf/dynamics/explicit_diffusion.py:1360:horizontal_deformation_2d": 1,
+                "/gpuwrf/dynamics/flux_advection.py:259:stage_omega_specified": 1,
+                "/gpuwrf/runtime/operational_mode.py:2362:_u_face_average_2d": 1,
+                "/gpuwrf/dynamics/flux_advection.py:156:_muu_face": 3,
+                "/gpuwrf/dynamics/flux_advection.py:480:couple_velocities_periodic": 3,
+                "/gpuwrf/dynamics/flux_advection.py:187:_collapse_x_face_periodic": 1,
+                "/gpuwrf/dynamics/flux_advection.py:482:couple_velocities_periodic": 2,
+                "/gpuwrf/dynamics/explicit_diffusion.py:46:_core_x": 1,
+                "/gpuwrf/dynamics/explicit_diffusion.py:1347:horizontal_deformation_2d": 1,
+                "/gpuwrf/runtime/operational_mode.py:5725:_apply_moisture_large_step": 20,
+                "/gpuwrf/runtime/operational_mode.py:6220:_rk_scan_step.<locals>._child_frozen_scalar.<locals>.<genexpr>": 5,
+                "/gpuwrf/dynamics/flux_advection.py:1273:advect_moisture_scalars.<locals>.<genexpr>": 5,
+                "/gpuwrf/runtime/operational_mode.py:5781:_nested_scalar_stage_tendencies": 11,
+                "/gpuwrf/runtime/operational_mode.py:5792:_nested_scalar_stage_tendencies": 10,
+                "/gpuwrf/runtime/operational_mode.py:5800:_nested_scalar_stage_tendencies": 5,
+                "/gpuwrf/runtime/operational_mode.py:5970:_with_physics_sc.<locals>.<genexpr>": 2,
+                "/gpuwrf/runtime/operational_mode.py:5713:_apply_moisture_large_step": 3,
+                "/gpuwrf/runtime/operational_mode.py:5714:_apply_moisture_large_step": 1,
+                "/gpuwrf/dynamics/acoustic_wrf.py:315:moisture_coupling_factors": 5
+              },
+              "operation_class": "fusion arithmetic",
+              "opcodes": [
+                "abs",
+                "add",
+                "bitcast",
+                "broadcast",
+                "compare",
+                "concatenate",
+                "constant",
+                "divide",
+                "dynamic-update-slice",
+                "multiply",
+                "parameter",
+                "select",
+                "slice",
+                "tuple"
+              ],
+              "shape": "(f32[44,117,267]{2,1,0}, f32[44,117,267]{2,1,0}, f32[44,117,267]{2,1,0}, f32[44,117,267]{2,1,0}, f32[44,117,267]{2,1,0}, /*index=5*/f32[44,117,267]{2,1,0}, f32[44,117,267]{2,1,0}, f32[44,117,267]{2,1,0}, f32[44,117,267]{2,1,0}, f32[44,117,267]{2,1,0})",
+              "computation": "region_0.816.clone"
+            },
+            "thunk_ancestors": [
+              "while.793"
+            ]
+          }
+        ],
+        "activities": 9,
+        "kernel_ns": 2474344
+      },
+      {
+        "domain": "d02",
+        "callback_scope": "d02",
+        "symbol": "input_add_divide_transpose_fusion",
+        "dimensions": [
+          1954,
+          1,
+          1,
+          128,
+          1,
+          1
+        ],
+        "label": "dycore/advection",
+        "binding": "NVTX exact source instruction + runtime thunk/grid",
+        "possible_source_sites": [
+          {
+            "hlo_instruction": "input_add_divide_transpose_fusion",
+            "source": {
+              "hlo_instruction": "input_add_divide_transpose_fusion",
+              "family": "dycore/advection",
+              "source_families": [
+                "dycore/advection",
+                "glue/other",
+                "layout",
+                "physics preparation/coupling"
+              ],
+              "sources": {
+                "/gpuwrf/kernels/layout_pin.py:43:row_major": 9,
+                "/gpuwrf/dynamics/core/small_step_finish.py:82:small_step_finish_wrf": 5,
+                "/gpuwrf/runtime/operational_mode.py:4799:_augment_large_step_tendencies": 2,
+                "/gpuwrf/dynamics/core/small_step_finish.py:76:small_step_finish_wrf": 3,
+                "/gpuwrf/dynamics/core/small_step_finish.py:75:small_step_finish_wrf": 3,
+                "/gpuwrf/dynamics/core/small_step_finish.py:29:_safe_denominator": 12,
+                "/gpuwrf/runtime/operational_mode.py:8704:_apply_physics_non_dry_updates": 18,
+                "/gpuwrf/coupling/physics_couplers.py:1890:_thompson_column_from_state": 1,
+                "/gpuwrf/dynamics/core/calc_p_rho.py:91:_calc_al_p": 1,
+                "/gpuwrf/dynamics/core/small_step_finish.py:78:small_step_finish_wrf": 3,
+                "/gpuwrf/dynamics/core/calc_p_rho.py:89:_calc_al_p": 1,
+                "/gpuwrf/dynamics/core/small_step_finish.py:88:small_step_finish_wrf": 5,
+                "/gpuwrf/dynamics/core/small_step_finish.py:77:small_step_finish_wrf": 3,
+                "/gpuwrf/dynamics/core/small_step_finish.py:89:small_step_finish_wrf": 1,
+                "/gpuwrf/dynamics/core/small_step_finish.py:90:small_step_finish_wrf": 1,
+                "/gpuwrf/runtime/operational_mode.py:5725:_apply_moisture_large_step": 39,
+                "/gpuwrf/runtime/operational_mode.py:6220:_rk_scan_step.<locals>._child_frozen_scalar.<locals>.<genexpr>": 1,
+                "/gpuwrf/runtime/operational_mode.py:5954:_rk_update_scalar_pd": 4,
+                "/gpuwrf/runtime/operational_mode.py:5957:_rk_update_scalar_pd": 25,
+                "/gpuwrf/dynamics/flux_advection.py:1214:advect_moisture_scalars.<locals>.<genexpr>": 8,
+                "/gpuwrf/runtime/operational_mode.py:5781:_nested_scalar_stage_tendencies": 17,
+                "/gpuwrf/runtime/operational_mode.py:5792:_nested_scalar_stage_tendencies": 16,
+                "/gpuwrf/runtime/operational_mode.py:5713:_apply_moisture_large_step": 3,
+                "/gpuwrf/runtime/operational_mode.py:5714:_apply_moisture_large_step": 1,
+                "/gpuwrf/runtime/operational_mode.py:9011:_source_leaf_dry_tendencies": 1,
+                "/gpuwrf/runtime/operational_mode.py:9134:_decouple_held_rthraten": 1
+              },
+              "operation_class": "fusion arithmetic",
+              "opcodes": [
+                "abs",
+                "add",
+                "bitcast",
+                "broadcast",
+                "compare",
+                "constant",
+                "divide",
+                "multiply",
+                "pad",
+                "parameter",
+                "select",
+                "slice",
+                "subtract",
+                "transpose",
+                "tuple"
+              ],
+              "shape": "(f32[117,267,44]{2,1,0}, f32[44,117,267]{2,1,0}, f32[44,117,267]{2,1,0}, f32[44,117,267]{2,1,0}, f32[117,267,44]{2,1,0}, /*index=5*/f32[44,117,267]{2,1,0}, f32[117,267,44]{2,1,0}, f32[44,117,267]{2,1,0}, f32[117,267,44]{2,1,0}, f32[44,117,267]{2,1,0}, /*index=10*/f32[117,267,44]{2,1,0}, f32[44,117,267]{2,1,0}, f32[117,267,44]{2,1,0}, f32[44,117,267]{2,1,0}, f32[117,267,44]{2,1,0}, /*index=15*/f32[44,117,267]{2,1,0}, f32[117,267,44]{2,1,0}, f32[44,117,267]{2,1,0})",
+              "computation": "region_0.816.clone"
+            },
+            "thunk_ancestors": [
+              "while.793"
+            ]
+          }
+        ],
+        "activities": 9,
+        "kernel_ns": 2155301
+      },
+      {
+        "domain": "d02",
+        "callback_scope": "d02",
+        "symbol": "loop_concatenate_fusion_12",
+        "dimensions": [
+          16108,
+          1,
+          1,
+          128,
+          1,
+          1
+        ],
+        "label": "dycore/advection",
+        "binding": "NVTX exact source instruction + runtime thunk/grid",
+        "possible_source_sites": [
+          {
+            "hlo_instruction": "loop_concatenate_fusion.12",
+            "source": {
+              "hlo_instruction": "loop_concatenate_fusion.12",
+              "family": "dycore/advection",
+              "source_families": [
+                "dycore/advection",
+                "glue/other"
+              ],
+              "sources": {
+                "/gpuwrf/dynamics/flux_advection.py:1200:advect_moisture_scalars": 2,
+                "/gpuwrf/runtime/operational_mode.py:5725:_apply_moisture_large_step": 6,
+                "/gpuwrf/runtime/operational_mode.py:6220:_rk_scan_step.<locals>._child_frozen_scalar.<locals>.<genexpr>": 1,
+                "/gpuwrf/runtime/operational_mode.py:5954:_rk_update_scalar_pd": 3,
+                "/gpuwrf/runtime/operational_mode.py:5957:_rk_update_scalar_pd": 24
+              },
+              "operation_class": "fusion arithmetic",
+              "opcodes": [
+                "add",
+                "bitcast",
+                "broadcast",
+                "concatenate",
+                "constant",
+                "divide",
+                "multiply",
+                "parameter",
+                "transpose"
+              ],
+              "shape": "f32[6,44,117,267]{3,2,1,0}",
+              "computation": "region_0.816.clone"
+            },
+            "thunk_ancestors": [
+              "while.793"
+            ]
+          }
+        ],
+        "activities": 9,
+        "kernel_ns": 555524
+      }
+    ]
+  },
+  "binding": {
+    "N32": {
+      "binding_methods": {
+        "unbound": 294,
+        "NVTX exact source instruction + runtime thunk/grid": 519,
+        "same loaded module + exact symbol/grid; all runtime call sites retained": 7164,
+        "bound graph; absent native ELF symbol": 18,
+        "receipt callback scope": 297
+      },
+      "source_execution_bindings": {
+        "d01": {
+          "arm": "N32",
+          "proof_sha256": "ceda6a3dbf4f81c383554b6d989820cad312a8dc1defbbead52cc021ae098ffd",
+          "cheap_key": "a18ef731990ce27635b24ac9b9c2c2aaaf1bee1be12ae1e6afda653636d4b872",
+          "aot_path": "<USER_HOME>/wrf_gpu2_lanes/w44-perf/gpu/cache_v032/jax/aot/0.3.2-jax0.10.0-jaxlib0.10.0-cuda_sm120/d01/k_a18ef731990ce27635b24ac9b9c2c2aaaf1bee1be12ae1e6afda653636d4b872.xlaexec",
+          "aot_sha256": "bfd3842c4290001fb3c1976992b05c6968fb7b38ee65b6a837edcb656ea41f31",
+          "native_record2_equal": true,
+          "runtime_thunks_field13_equal": true,
+          "records_0_1_2_equal": {
+            "0": true,
+            "1": true,
+            "2": true
+          },
+          "all_rest_fields_except_retained_hlo_equal": true
+        },
+        "d02": {
+          "arm": "N32",
+          "proof_sha256": "ceda6a3dbf4f81c383554b6d989820cad312a8dc1defbbead52cc021ae098ffd",
+          "cheap_key": "6967d0e64f7dd9c46d9082bf8021e0b7322fdc300a66120042ad65a425841d67",
+          "aot_path": "<USER_HOME>/wrf_gpu2_lanes/w44-perf/gpu/cache_v032/jax/aot/0.3.2-jax0.10.0-jaxlib0.10.0-cuda_sm120/d02/k_6967d0e64f7dd9c46d9082bf8021e0b7322fdc300a66120042ad65a425841d67.xlaexec",
+          "aot_sha256": "c06fc1e1783d186c09f6b9b7aba161144c8cf42733f1f46243c1d7917b28078e",
+          "native_record2_equal": true,
+          "runtime_thunks_field13_equal": true,
+          "records_0_1_2_equal": {
+            "0": true,
+            "1": true,
+            "2": true
+          },
+          "all_rest_fields_except_retained_hlo_equal": true
+        }
+      },
+      "helper_count_ns": {
+        "set_case_condition": [
+          6,
+          9888
+        ],
+        "memcpy32_post": [
+          12,
+          27168
+        ]
+      }
+    },
+    "N43": {
+      "binding_methods": {
+        "same loaded module + exact symbol/grid; all runtime call sites retained": 3486,
+        "graph clone creation + source instruction/runtime thunk": 3,
+        "bound graph; absent native ELF symbol": 516,
+        "receipt callback scope": 357,
+        "unbound": 21,
+        "NVTX exact source instruction + runtime thunk/grid": 5844
+      },
+      "source_execution_bindings": {
+        "d01": {
+          "arm": "N43",
+          "proof_sha256": "8f27354cd54b1a16afc9382f444edc962ebf0cdedc70a253f10143b4a587fe31",
+          "cheap_key": "dca1274a452949f34482e35790da275ca5a79ba3174502b4473a40a3e6283ac0",
+          "aot_path": "<DATA_ROOT>/wrf_gpu2/release_bundles/v0.4.3/jax/aot/0.4.3-jax0.10.0-jaxlib0.10.0-cuda_sm120/d01/k_dca1274a452949f34482e35790da275ca5a79ba3174502b4473a40a3e6283ac0.xlaexec",
+          "aot_sha256": "2b490cbe36dbd766e9c444a8486c08efccd74e49bb9e4373485f22756339e27b",
+          "native_record2_equal": true,
+          "runtime_thunks_field13_equal": true,
+          "records_0_1_2_equal": {
+            "0": true,
+            "1": true,
+            "2": true
+          },
+          "all_rest_fields_except_retained_hlo_equal": true
+        },
+        "d02": {
+          "arm": "N43",
+          "proof_sha256": "8f27354cd54b1a16afc9382f444edc962ebf0cdedc70a253f10143b4a587fe31",
+          "cheap_key": "1a08312164095b94e18551bff32139e83ef6a92c09a89068d2fd98d85a0c8f08",
+          "aot_path": "<DATA_ROOT>/wrf_gpu2/release_bundles/v0.4.3/jax/aot/0.4.3-jax0.10.0-jaxlib0.10.0-cuda_sm120/d02/k_1a08312164095b94e18551bff32139e83ef6a92c09a89068d2fd98d85a0c8f08.xlaexec",
+          "aot_sha256": "bdc4ba3971dabbf8e9b47bb638797159a54055e5a32cc6099336135750f70ea0",
+          "native_record2_equal": true,
+          "runtime_thunks_field13_equal": true,
+          "records_0_1_2_equal": {
+            "0": true,
+            "1": true,
+            "2": true
+          },
+          "all_rest_fields_except_retained_hlo_equal": true
+        }
+      },
+      "helper_count_ns": {
+        "set_while_condition": [
+          90,
+          104032
+        ],
+        "memcpy32_post": [
+          417,
+          742626
+        ],
+        "set_case_condition": [
+          9,
+          14304
+        ]
+      }
+    }
+  },
+  "limits": [
+    "294 old/21 new kernel rows outside proven RK-loop module; -273 is not a proven optimization.",
+    "138 old/144 new rows have no source frame; shared fusion time stays whole.",
+    "Commit labels prove intent/activation, not per-commit counterfactual costs; no ablation.",
+    "Earlier FAMILY_TIMES labels missed symbol reuse/small eager executables and are superseded; raw counts unchanged.",
+    "Old wall A/A failed; this is not a23% wall regression or an accepted version speed verdict."
+  ],
+  "artifact_hashes": {
+    "<USER_HOME>/wrf_gpu2_lanes/w44-perf/SOURCE_CENSUS_FINAL/DELTA.json": "0707fff0105237508912ff2513e15366d22832f11a91d4025ea3bd834f09a94a",
+    "<USER_HOME>/wrf_gpu2_lanes/w44-perf/SOURCE_CENSUS_FINAL/N32_witnesses.json": "e532d78132da41cce40ad34d58450bc7d12bcc19e1399db0f7f6c5640f78aa78",
+    "<USER_HOME>/wrf_gpu2_lanes/w44-perf/SOURCE_CENSUS_FINAL/N43_witnesses.json": "0d42ded029ad818705bbd128da0ec1aaa0fbc32bfd1b96564c18015b529eef5c",
+    "<USER_HOME>/wrf_gpu2_lanes/w44-perf/ACTUAL_HLO/INDEX.json": "1c5becc912130e1dd9566cf875b96b24783c26496ee5359d244605bf5c5499c6",
+    "<USER_HOME>/wrf_gpu2_lanes/w44-perf/ORDINARY_THUNKS/INDEX.json": "81c4faa989459e3b77dc26aa88ad7f62a10cd66e67f27a640dde5d4a72bfbe97"
+  },
+  "measured_flag_allowlist": {
+    "N32": {
+      "GPUWRF_LAYOUT_PIN": "1",
+      "GPUWRF_CARRY_DONATE": "1",
+      "GPUWRF_MYNN_QNI_MIXING": null,
+      "GPUWRF_MYNN_PSIQ_FLUX_WRF": null,
+      "GPUWRF_MYNN_SFC_PSI_REAL": null,
+      "GPUWRF_NOAH_QSFC_WRF": null,
+      "GPUWRF_NEST_SCALAR_SPEC_FINAL": null,
+      "GPUWRF_ROOT_SCALAR_BDY_RK1": null,
+      "GPUWRF_PHYS_TEND_RK_WRF": null,
+      "GPUWRF_W_DAMP_STAGE": null,
+      "GPUWRF_THOMPSON_MIXED_PHASE_WRF": null,
+      "GPUWRF_PHY_PREP_REAL_CONST": null
+    },
+    "N43": {
+      "GPUWRF_LAYOUT_PIN": "ac_carry_cols_cum",
+      "GPUWRF_CARRY_DONATE": "1",
+      "GPUWRF_MYNN_QNI_MIXING": "1",
+      "GPUWRF_MYNN_PSIQ_FLUX_WRF": "1",
+      "GPUWRF_MYNN_SFC_PSI_REAL": "1",
+      "GPUWRF_NOAH_QSFC_WRF": "1",
+      "GPUWRF_NEST_SCALAR_SPEC_FINAL": "1",
+      "GPUWRF_ROOT_SCALAR_BDY_RK1": "1",
+      "GPUWRF_PHYS_TEND_RK_WRF": "1",
+      "GPUWRF_W_DAMP_STAGE": "1",
+      "GPUWRF_THOMPSON_MIXED_PHASE_WRF": "1",
+      "GPUWRF_PHY_PREP_REAL_CONST": "1"
+    }
+  },
+  "actual_hlo_e41": {
+    "v032_d01": {
+      "hlo_sha256": "f6eea4a35aedb3bc16955dfbed228906511065c71deeccf5b7784cba057f9cae",
+      "kinput_over500": [
+        [
+          "input_subtract_transpose_fusion",
+          560
+        ],
+        [
+          "input_divide_maximum_multiply_reduce_select_slice_transpose_fusion",
+          621
+        ],
+        [
+          "input_add_and_clamp_divide_maximum_power_select_transpose_fusion",
+          781
+        ],
+        [
+          "input_clamp_compare_log_multiply_select_subtract_transpose_fusion",
+          524
+        ],
+        [
+          "input_transpose_fusion.125",
+          529
+        ],
+        [
+          "input_add_clamp_convert_divide_maximum_minimum_multiply_power_select_transpose_fusion",
+          574
+        ],
+        [
+          "input_add_broadcast_select_transpose_fusion",
+          646
+        ],
+        [
+          "input_add_multiply_select_subtract_transpose_fusion",
+          661
+        ]
+      ]
+    },
+    "v032_d02": {
+      "hlo_sha256": "17b329f5a2ce4826451e8dd54cddc86b177fdbdfe200d1af75cb5a17aec1f7a1",
+      "kinput_over500": [
+        [
+          "loop_slice_subtract_fusion",
+          577
+        ],
+        [
+          "input_multiply_transpose_fusion.1",
+          509
+        ]
+      ]
+    },
+    "v043_d01": {
+      "hlo_sha256": "9e6fe3b1f7121fb2c7511c8c2051014ba4ca5225df53ef89a8df1019bcc163ba",
+      "kinput_over500": []
+    },
+    "v043_d02": {
+      "hlo_sha256": "8e2d866adcf085ea6bf76839ec9e2e86035e97d8219dcc864b9fa2a9de5154cf",
+      "kinput_over500": []
+    }
+  },
+  "unresolved_source": {
+    "N32": {
+      "count": 432,
+      "kernel_ms": 0.854162,
+      "kernel_time_fraction_pct": 0.9137763193221827
+    },
+    "N43": {
+      "count": 165,
+      "kernel_ms": 0.303165,
+      "kernel_time_fraction_pct": 0.293919739885902
+    }
+  }
+}

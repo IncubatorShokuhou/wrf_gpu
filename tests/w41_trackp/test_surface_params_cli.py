@@ -22,7 +22,10 @@ def basis(tmp_path):
 
 def test_basis_expand_matches_model_expansion(basis, tmp_path):
     nl, path, manifest = basis
-    assert all(v["active"] for v in manifest["domains"]["d01"]["controls"].values())
+    listed = manifest["domains"]["d01"]["controls"]
+    assert all(listed[name]["active"] for name in sc.CONTROLS)
+    assert not listed["rsmin"]["active"]  # W2 requires Jarvis opt_crs=2.
+    assert not listed["smcmax"]["active"]  # This legacy fixture has no seeded land state.
     out = tmp_path / "c.npz"
     rc = spc.main_args(["expand", "--basis", str(path), "--output", str(out), "--set", "albsat=1.1",
                         "--class", "z0mvt:5=1.5", "--class", "z0mvt:12=0.6"])

@@ -1,0 +1,156 @@
+{
+ "device": "NVIDIA GeForce GTX 1080 Ti",
+ "cc": "6.1",
+ "case": "/home/wz/o5port/cases/prod_20260725",
+ "n_steps": 20,
+ "load_s": 69.4,
+ "first_step_s": 271.3,
+ "profiled_wall_s": 2.448,
+ "device_ms_per_step": 37.333,
+ "family_ms_per_step": {
+  "xla:fusion": 20.151,
+  "pallas:acoustic": 3.746,
+  "xla:other": 2.169,
+  "pallas:KF": 2.043,
+  "pallas:MYNN": 1.487,
+  "pallas:advection": 1.467,
+  "pallas:Thompson": 1.428,
+  "pallas:PD": 1.235,
+  "pallas:diffusion": 0.965,
+  "pallas:RK/EOS": 0.846,
+  "pallas:lateral bdy": 0.837,
+  "xla:copy/memset": 0.557,
+  "pallas:Noah-MP": 0.293,
+  "pallas:GWDO": 0.065,
+  "pallas:coupling": 0.043
+ },
+ "top_kernels_ms_per_step": [
+  [
+   "kf_column_fp32",
+   0,
+   2.043
+  ],
+  [
+   "input_subtract_transpose_fusion",
+   1,
+   1.774
+  ],
+  [
+   "mynn_tridiag2_real",
+   9,
+   1.487
+  ],
+  [
+   "thompson_full_column",
+   1,
+   1.428
+  ],
+  [
+   "_lambda_",
+   3,
+   1.356
+  ],
+  [
+   "b_core_scalar_flux_fp32_stacked",
+   2,
+   1.323
+  ],
+  [
+   "b_core_uv_fp32",
+   7,
+   0.964
+  ],
+  [
+   "b_core_pd_tend_sl_fp32",
+   1,
+   0.821
+  ],
+  [
+   "b_core_mass_fp32",
+   7,
+   0.724
+  ],
+  [
+   "b_core_w_p2_fp32",
+   7,
+   0.595
+  ],
+  [
+   "boundary_dry_relax_real",
+   13,
+   0.576
+  ],
+  [
+   "b_core_w_fp32",
+   7,
+   0.45
+  ],
+  [
+   "b_core_pd_scale_sl_fp32",
+   1,
+   0.415
+  ],
+  [
+   "input_transpose_fusion_136",
+   1,
+   0.408
+  ],
+  [
+   "b_core_w_p1_fp32",
+   7,
+   0.398
+  ],
+  [
+   "input_divide_subtract_transpose_fusion",
+   1,
+   0.392
+  ],
+  [
+   "input_add_transpose_fusion_2",
+   1,
+   0.391
+  ],
+  [
+   "input_transpose_fusion_273",
+   1,
+   0.371
+  ],
+  [
+   "b_core_coef_fp32",
+   3,
+   0.365
+  ],
+  [
+   "b_diff_horizontal_m",
+   9,
+   0.356
+  ],
+  [
+   "b_diff_sixth_m",
+   9,
+   0.355
+  ],
+  [
+   "loop_transpose_fusion_8",
+   1,
+   0.341
+  ],
+  [
+   "input_transpose_fusion_163",
+   1,
+   0.337
+  ],
+  [
+   "loop_transpose_fusion_10",
+   1,
+   0.333
+  ],
+  [
+   "b_diff_eos_real",
+   9,
+   0.325
+  ]
+ ],
+ "wall_ms_per_step": 122.4,
+ "pallas_kernels_seen": 43
+}

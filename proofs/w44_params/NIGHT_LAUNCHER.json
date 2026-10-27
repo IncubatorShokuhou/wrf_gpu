@@ -1,0 +1,159 @@
+{
+ "status": "CPU_REHEARSAL_PASS_GPU_PENDING",
+ "version": "v3",
+ "snapshot": "<DATA_ROOT>/wrf_gpu2/scratch/w44-params/snapshot_launch_v3",
+ "source_pin": "9eb6cc98ee624060ecc44f7f493f31ba1237c383",
+ "model_src_tree": "9cbdb4f94135e9ac1480393723b7c6bc98c6cc99",
+ "replaces": "NIGHT_LAUNCHER_V2 (fa71118c9e, src 6d399608) - withdrawn",
+ "window_env": [
+  "GA_START_UTC",
+  "GA_END_UTC"
+ ],
+ "optional_env": {
+  "PARAMS_CPU_CORES": "lane cores only, default 8,9,12,24,25,28"
+ },
+ "first_entry_gate": {
+  "file": "<USER_HOME>/wrf_gpu2_lanes/w44-params/gpu_v3/FIRST_ENTRY_PASS.json",
+  "rule": "entry 1 writes it after validate_step PASS; entries 2-10 exit 7 before model work unless it exists for the same tree head with an unchanged, re-validated receipt (manager 2026-10-24 22:37Z)"
+ },
+ "e225": {
+  "tool": "proofs/w44_params/check_alignment.py (o5-coast copy)",
+  "hours": 3,
+  "result": "d01 dt 54, d02 dt 18, interval 21600: ok"
+ },
+ "cpu_stages": "own systemd scopes MemoryMax/no swap, MemAvailable >= 32 GiB, no shared RAM-slot ticket",
+ "e41": "verdict recorded (0 PASS / 2 FAIL|INCOMPLETE in gpu_v3/<family>/e41/wave_gate.json); measurement continues; other exits stop the entry",
+ "cpu_rehearsal": {
+  "log": "<USER_HOME>/wrf_gpu2_lanes/w44-params/R3/rehearse.log",
+  "controls": [
+   "follow-up before first -> rc 7",
+   "tampered first receipt -> rc 7"
+  ],
+  "verdict": "ALL_PASS"
+ },
+ "steps": [
+  {
+   "order": 1,
+   "name": "night_prepare_diffusion_off_d01",
+   "launcher": "<DATA_ROOT>/wrf_gpu2/scratch/w44-params/snapshot_launch_v3/proofs/w44_params/night_prepare_diffusion_off_d01.sh",
+   "sha256": "e66f0fb5867defb5c1278625cd0954a7b66a9fba672dc1154ee750c2fbdd9bf2",
+   "cap_min": 16,
+   "role": "LANE SMOKE (first real entry; later entries refuse without its PASS)",
+   "cpu_rehearsal_log": "<USER_HOME>/wrf_gpu2_lanes/w44-params/R3/diffusion_off_d01_FIRST.log"
+  },
+  {
+   "order": 2,
+   "name": "night_prepare_diffusion_off_d02",
+   "launcher": "<DATA_ROOT>/wrf_gpu2/scratch/w44-params/snapshot_launch_v3/proofs/w44_params/night_prepare_diffusion_off_d02.sh",
+   "sha256": "bcb7be69734a893dea845a6f026b9283ee4f663adb6af5a932abd5d10e0aa27e",
+   "cap_min": 16,
+   "role": "gated on FIRST_ENTRY_PASS.json",
+   "cpu_rehearsal_log": "<USER_HOME>/wrf_gpu2_lanes/w44-params/R3/diffusion_off_d02.log"
+  },
+  {
+   "order": 3,
+   "name": "night_prepare_diffusion_on_d01",
+   "launcher": "<DATA_ROOT>/wrf_gpu2/scratch/w44-params/snapshot_launch_v3/proofs/w44_params/night_prepare_diffusion_on_d01.sh",
+   "sha256": "05a92747433455795b6d5e56ad8ac20635c2513856b83aac772f1d91b2e468fa",
+   "cap_min": 16,
+   "role": "gated on FIRST_ENTRY_PASS.json",
+   "cpu_rehearsal_log": "<USER_HOME>/wrf_gpu2_lanes/w44-params/R3/diffusion_on_d01.log"
+  },
+  {
+   "order": 4,
+   "name": "night_prepare_diffusion_on_d02",
+   "launcher": "<DATA_ROOT>/wrf_gpu2/scratch/w44-params/snapshot_launch_v3/proofs/w44_params/night_prepare_diffusion_on_d02.sh",
+   "sha256": "38b80de12f6d48944a153a3c3cfdd1249f3b69edc59d2aec95e3434fd3182477",
+   "cap_min": 16,
+   "role": "gated on FIRST_ENTRY_PASS.json",
+   "cpu_rehearsal_log": "<USER_HOME>/wrf_gpu2_lanes/w44-params/R3/diffusion_on_d02.log"
+  },
+  {
+   "order": 5,
+   "name": "night_measure_diffusion",
+   "launcher": "<DATA_ROOT>/wrf_gpu2/scratch/w44-params/snapshot_launch_v3/proofs/w44_params/night_measure_diffusion.sh",
+   "sha256": "a679c13c3cc6e5722e81e277c4cd34c966df23e379d6df56d4f0d56f3a0b6cc2",
+   "cap_min": 30,
+   "role": "gated on FIRST_ENTRY_PASS.json",
+   "cpu_rehearsal_log": "<USER_HOME>/wrf_gpu2_lanes/w44-params/R3/diffusion_warm.log"
+  },
+  {
+   "order": 6,
+   "name": "night_prepare_mynn_off_d01",
+   "launcher": "<DATA_ROOT>/wrf_gpu2/scratch/w44-params/snapshot_launch_v3/proofs/w44_params/night_prepare_mynn_off_d01.sh",
+   "sha256": "94750e2fd9306fbbc3b815b3841d1ba353dbcbd5526740d6da8e25edb18634fb",
+   "cap_min": 16,
+   "role": "gated on FIRST_ENTRY_PASS.json",
+   "cpu_rehearsal_log": "<USER_HOME>/wrf_gpu2_lanes/w44-params/R3/mynn_off_d01.log"
+  },
+  {
+   "order": 7,
+   "name": "night_prepare_mynn_off_d02",
+   "launcher": "<DATA_ROOT>/wrf_gpu2/scratch/w44-params/snapshot_launch_v3/proofs/w44_params/night_prepare_mynn_off_d02.sh",
+   "sha256": "68367c458080bf617c7968250ba0deca587f1461d1692da659ef5405862b6b61",
+   "cap_min": 16,
+   "role": "gated on FIRST_ENTRY_PASS.json",
+   "cpu_rehearsal_log": "<USER_HOME>/wrf_gpu2_lanes/w44-params/R3/mynn_off_d02.log"
+  },
+  {
+   "order": 8,
+   "name": "night_prepare_mynn_on_d01",
+   "launcher": "<DATA_ROOT>/wrf_gpu2/scratch/w44-params/snapshot_launch_v3/proofs/w44_params/night_prepare_mynn_on_d01.sh",
+   "sha256": "4ecde1ea44c0bcaf2d926bcd6a00f52b6a511c74520999badda149b7d17e7c0b",
+   "cap_min": 16,
+   "role": "gated on FIRST_ENTRY_PASS.json",
+   "cpu_rehearsal_log": "<USER_HOME>/wrf_gpu2_lanes/w44-params/R3/mynn_on_d01.log"
+  },
+  {
+   "order": 9,
+   "name": "night_prepare_mynn_on_d02",
+   "launcher": "<DATA_ROOT>/wrf_gpu2/scratch/w44-params/snapshot_launch_v3/proofs/w44_params/night_prepare_mynn_on_d02.sh",
+   "sha256": "b588c4afd4cd52e1a8592b9d3ef37f2b4a57afe96bfc77eb9238f6969489d506",
+   "cap_min": 16,
+   "role": "gated on FIRST_ENTRY_PASS.json",
+   "cpu_rehearsal_log": "<USER_HOME>/wrf_gpu2_lanes/w44-params/R3/mynn_on_d02.log"
+  },
+  {
+   "order": 10,
+   "name": "night_measure_mynn",
+   "launcher": "<DATA_ROOT>/wrf_gpu2/scratch/w44-params/snapshot_launch_v3/proofs/w44_params/night_measure_mynn.sh",
+   "sha256": "aefdee6a7211616cf9962848f43531a4f7cd62821d5c35fc18605af73e9ea089",
+   "cap_min": 30,
+   "role": "gated on FIRST_ENTRY_PASS.json",
+   "cpu_rehearsal_log": "<USER_HOME>/wrf_gpu2_lanes/w44-params/R3/mynn_warm.log"
+  }
+ ],
+ "support_files_sha256": {
+  "check_alignment.py": "f846877723119d06088f70335508e5885613753535cbcba44db473b0b5859442",
+  "check_prepared.py": "a669bbfde1af0e1795e50db4f49fea9969952bb42e7a2b2e40445a2b7dfb7ddd",
+  "cold_prepare.py": "8bb4d24bf8e4551c65716d1201407c9c7636e718b1fcf655abd9822bbaffd16b",
+  "entrainment_oracle.py": "63a87af41b9cc87143cf35f6c3cea4cfdc1e9e6a7848a5b2e3e7bafa394c9dac",
+  "family_work.py": "6ca4e407ac4a447768052955f90547f28c736a0197da5eb053bc3b84097790a3",
+  "gpu_environment.sh": "d83db1a4296e8bcf0e9e91d8a939841e06777493629de03d4d89433fe0e5e98c",
+  "gpu_session.sh": "3d13c4db978318bd32b1fe0085fb2dc7feb6626dbbd15e26da0dcea6da184124",
+  "launch_environment.py": "418fd19b85ac0f1ba6c7927f9750fab11d00603e3213f1356fad428f8762b682",
+  "launch_step.sh": "23d1fa98181a6788e20842454aa2c6c914a6eef23cb994f0baef210deb049ec1",
+  "length_oracle.py": "e5c74ecb7d3edfafe2713774b92236b8b254bbc454515ea1b54dbeb3c02ed08c",
+  "mynn_program.py": "e3a4e5d06a81296a382def86f31065dff329b7e66ac543d35002bf35d6a1f808",
+  "mynn_sensitivity.py": "35d34f87e27cb030c826bbed89ead0fc1bffae46cf77b9ee7c54a579ec0d391c",
+  "off_raw.py": "feccf453055f17386c35b47cc11735107d6cebb2c73f0ee686a33043b1a0321e",
+  "phase_journal.py": "9e20a87406e1b255a466c11832dc534ec57db6f188fd055a56871474b4b95ea9",
+  "phim_oracle.py": "c32b604266a903f2a8a2d290bda71cbc15ddee7aa34a24f6d7a63c39519ab567",
+  "prepare_inputs_smoke.py": "1ed7b386f35a56b8f20ff3f00bc8842b711cfe40a522e9a52a4557077819067d",
+  "prepared_inventory.py": "444e79f227ab73d3231d394ae1f75a69433c3ea69f033a1f4de78fe14cf5474e",
+  "product_schedule.py": "df629ec096b9f05ae1ebe593144a9428f0aa53945d3d5e7961f435c669e2d509",
+  "profile_metrics.py": "c44cf2dd6b37f3510a242eb2d82bd34b7f129df5bc088236c8020348981aedf3",
+  "program_metrics.py": "b0ef87d0cf36fc50a5e9e2ae105e82fa062e43512e64687b7f90b52f86a8aa90",
+  "root_gpu.py": "131a889129a47517929590c41f57ef44d9ae11d83f284b0b6740f59d4c4122b8",
+  "scheduler_smoke.py": "003b606177d331e9cfdd272394f50980bcec5239aadaf2a919c4bc986875c331",
+  "smag_oracle.py": "6af705a0f4d8898baebb4aa37965ca999489a46832b5cc0b0a06988a6cfd2cd4",
+  "sqfac_oracle.py": "aceafa4e40f8e80e87577e06e5f57e1a5fbba316e44a9ea5735405cb4f12fb1f",
+  "step_body.sh": "f474d39a69944c8c460e2d1b40f8372fa232db0d97d4cac6d56a25e6acdca53c",
+  "supervise.py": "80c815186178121815a7d9914097f74f1fab099c753b52c2b908e30d9ed9d47d",
+  "test_cycling_alp1.py": "c88185d40cf217d8b1a4d88930efd89706075ae98e2e492fb17e335192f62216",
+  "validate_step.py": "7e3c707732deb7dd62dc66c27c47817f2bfb604b52125d4c8b95dbf25a899a15",
+  "warm_smoke.py": "ad1f955884822c36180f74535251a0722cb4d5aa1e469abe41b7f310e741d6c4",
+  "scripts/wave_cubin_gate.py": "4c702dbb571ff8b95e8328c685ca28d985ef9fdf39bf0108b350ef5cc7e132cb",
+  "scripts/with_gpu_lock.sh": "20fa1591ca64b0e9929389238759f2e3b0df143a474035e0fdb6719a7a7d08cd"
+ }
+}

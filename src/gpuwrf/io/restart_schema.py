@@ -8,6 +8,7 @@ EFFECTIVE_RADIUS_FIELDS = ("re_cloud", "re_ice", "re_snow")
 LAKE_SCHEMA_VERSION = 1
 QNSE_SCHEMA_VERSION = 1
 GODDARD_RADIATION_SCHEMA_VERSION = 2
+CYCLING_SCHEMA_VERSION = 1
 
 
 def history_field_required(field, namelist):
@@ -136,8 +137,28 @@ def validate_lake(group,namelist,schema_version):
 
 def physics_option(namelist, name, default=0):
     if isinstance(namelist, Mapping):
+        if name == "cycling" and "time_control" in namelist:
+            value = (namelist.get("time_control") or {}).get(name, default)
+            if isinstance(value, (list, tuple)):
+                if len(value) != 1:
+                    raise ValueError("restart cycling must be one global logical")
+                value = value[0]
+            if not isinstance(value, (bool, int)) or value not in (0, 1):
+                raise ValueError("restart cycling must be a logical 0/1")
+            return int(value)
         return int(namelist.get("physics", namelist).get(name, default))
     return int(getattr(namelist, name, default))
+
+
+def validate_cycling_restart(namelist, schema_version):
+    """Old checkpoints cannot silently acquire the cycling lifecycle (E78)."""
+    if schema_version not in (None, CYCLING_SCHEMA_VERSION):
+        raise ValueError("restart cycling schema version is unsupported (E78)")
+    if namelist is None:
+        return
+    active = bool(physics_option(namelist, "cycling", 0))
+    if active != (schema_version == CYCLING_SCHEMA_VERSION):
+        raise ValueError("restart cycling lifecycle/schema differs from requested namelist (E78)")
 
 
 def effective_radius_fields(namelist):
@@ -159,7 +180,7 @@ def validate_goddard_radiation(group,namelist=None,schema_version=None,*,state_s
     if namelist is not None and (physics_option(namelist,'ra_lw_physics',4),
                                 physics_option(namelist,'ra_sw_physics',4))!=(5,5):
         raise ValueError('restart Goddard bound radiation selection differs (E78)')
-    from gpuwrf.coupling.goddard_radiation import GoddardRadiationDiagnostics
+    from gpuwrf.coupling.goddard_radiation import GoddardRadiationDiagnostics,unproduced_optional_fields
     import numpy as np
     if schema_version!=GODDARD_RADIATION_SCHEMA_VERSION or not isinstance(group,GoddardRadiationDiagnostics):
         raise ValueError('restart Goddard schema/held radiation missing (E78)')
@@ -171,10 +192,11 @@ def validate_goddard_radiation(group,namelist=None,schema_version=None,*,state_s
                                     or cloud_shape!=(grid.nz,grid.ny,grid.nx)))
             or (state_shape is not None and cloud_shape!=tuple(state_shape))):
         raise ValueError('restart Goddard domain shape mismatch (E78)')
+    absent=unproduced_optional_fields()
     for name in GoddardRadiationDiagnostics._fields:
-        if '_clear_' in name:
+        if name in absent:
             if getattr(group,name) is not None:
-                raise ValueError('restart Goddard unimplemented clear-sky field present (E78)')
+                raise ValueError(f'restart Goddard unimplemented optional {name} present (E78)')
             continue
         value=getattr(group,name)
         if value is None or not np.isfinite(np.asarray(value)).all():

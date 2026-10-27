@@ -287,6 +287,7 @@ _EXTERNAL_READERS = {
         'ferrier/saturation','thompson_hail/native','thompson_hail/context')},
     'physics/wrf_tegen_aerosol.py': 'aer_opt=1: aot_baked_tables keys the Tegen asset loader + module tables (sw4 & aer_opt 1 only); aerodm/pina are traced namelist children; key regression tests/v025/w41_aerosol/test_tegen_wiring.py::test_aot_baked_table_key_names_the_tegen_asset_only_on_aer_opt1',
     'physics/jensen_ishmael/tables.py': 'baked_table_hash actual _host_tables values and _native.configuration for mp55; collision regressions tests/v040/test_jensen_ishmael_table_keys.py',
+    'physics/thompson_nt_c.py': 'runtime nt_c bakes host_tables (bundled thompson-ntc-v1.npz) as constants; the value is a traced child; baked_table_hash keys thompson_nt_c.host_tables only when mp8 thompson_parameters selects nt_c; collision regression tests/w44_thparams/test_nt_c_table_key.py',
 }
 
 

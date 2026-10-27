@@ -1,0 +1,62 @@
+{
+ "schema": "w44-gint.cpu_case.v1",
+ "run_hours": 72,
+ "max_dom": 1,
+ "staged_run_dir": "<DATA_ROOT>/wrf_gpu2/scratch/w44-gint/stage/inputs/root0/wrf_gen/wg_20260502_18z_a1/run/run",
+ "ranks": 4,
+ "nproc": [
+  4,
+  1
+ ],
+ "inputs": {
+  "wrfinput_d01": {
+   "staged": "<DATA_ROOT>/wrf_gpu2/scratch/w44-gint/stage/inputs/root0/wrf_gen/wg_20260502_18z_a1/run/run/wrfinput_d01",
+   "sha256": "6b524cc49813faf3e00281cb8764a1d638792567fd4c183c5a6a6e003cbf330a",
+   "copy_sha256": "6b524cc49813faf3e00281cb8764a1d638792567fd4c183c5a6a6e003cbf330a"
+  },
+  "wrfinput_d02": {
+   "staged": "<DATA_ROOT>/wrf_gpu2/scratch/w44-gint/stage/inputs/root0/wrf_gen/wg_20260502_18z_a1/run/run/wrfinput_d02",
+   "sha256": "92965c8a3cab6f05b77b946a60577c85ef388a834e49d1fe5307fbbd97edfbec",
+   "copy_sha256": "92965c8a3cab6f05b77b946a60577c85ef388a834e49d1fe5307fbbd97edfbec"
+  },
+  "wrfinput_d03": {
+   "staged": "<DATA_ROOT>/wrf_gpu2/scratch/w44-gint/stage/inputs/root0/wrf_gen/wg_20260502_18z_a1/run/run/wrfinput_d03",
+   "sha256": "928dc33da3c24e820ff66e06c7140c52b0d7104f3e33d430af128c5c98ef43b3",
+   "copy_sha256": "928dc33da3c24e820ff66e06c7140c52b0d7104f3e33d430af128c5c98ef43b3"
+  },
+  "wrfbdy_d01": {
+   "staged": "<DATA_ROOT>/wrf_gpu2/scratch/w44-gint/stage/inputs/root0/wrf_gen/wg_20260502_18z_a1/run/run/wrfbdy_d01",
+   "sha256": "e41c953eb36cadc8ea106f4716b35a6f650855e34788631b098f32925b2373a0",
+   "copy_sha256": "e41c953eb36cadc8ea106f4716b35a6f650855e34788631b098f32925b2373a0"
+  },
+  "wrflowinp_d01": {
+   "staged": "<DATA_ROOT>/wrf_gpu2/scratch/w44-gint/stage/inputs/root0/wrf_gen/wg_20260502_18z_a1/run/run/wrflowinp_d01",
+   "sha256": "90f95118c203f211ca9b62868d9f73981770a28bfd76565e4b32077be04fbfdd",
+   "copy_sha256": "90f95118c203f211ca9b62868d9f73981770a28bfd76565e4b32077be04fbfdd"
+  },
+  "wrflowinp_d02": {
+   "staged": "<DATA_ROOT>/wrf_gpu2/scratch/w44-gint/stage/inputs/root0/wrf_gen/wg_20260502_18z_a1/run/run/wrflowinp_d02",
+   "sha256": "3dea69fd35501db061b0aed9e8b32aa4eab342c33562e5f958dfb2cba11dea30",
+   "copy_sha256": "3dea69fd35501db061b0aed9e8b32aa4eab342c33562e5f958dfb2cba11dea30"
+  },
+  "wrflowinp_d03": {
+   "staged": "<DATA_ROOT>/wrf_gpu2/scratch/w44-gint/stage/inputs/root0/wrf_gen/wg_20260502_18z_a1/run/run/wrflowinp_d03",
+   "sha256": "d4b3dac50754a13e2a49f03ccffb5a76da69688a8c1461e502ae590a62512f06",
+   "copy_sha256": "d4b3dac50754a13e2a49f03ccffb5a76da69688a8c1461e502ae590a62512f06"
+  }
+ },
+ "namelist": {
+  "staged_sha256": "8547fe741305c1996291880ea903c1c872b8cd3bc7b73f98d1bb16c1ae4899b3",
+  "case_sha256": "ffcc3fa34a3732ded108449e4f50d5f656d8d617d9065b02fbd6ceb9638178a0",
+  "diff": [
+   "- restart_interval                    = 180,",
+   "+ restart_interval                    = 100000,",
+   "- max_dom                             = 3,",
+   "+ max_dom                             = 1,",
+   "- nproc_x                             = 2,",
+   "- nproc_y                             = 2,",
+   "+ nproc_x                             = 4,",
+   "+ nproc_y                             = 1,"
+  ]
+ }
+}

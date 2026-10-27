@@ -167,6 +167,11 @@ def test_ruc_writer_and_full_restart_keep_soil_and_held_diagnostics(tmp_path, nz
     state = build_neutral_state(grid)
     nml = OperationalNamelist(grid=grid, metrics=grid.metrics, tendencies=None, dt_s=18.,
                               sf_surface_physics=3, ruc_static=static, ruc_land=land)
+    # Product initializer seeding (operational_mode._initial_carry_for_run): static-scheme
+    # conditional leaves, incl. the held MP_RE effective radii when mp_re_active(nml).
+    state = state.ensure_conditional_leaves(mp_physics=int(nml.mp_physics), use_mp_re=int(nml.use_mp_re),
+                                            ra_lw_physics=int(nml.ra_lw_physics),
+                                            ra_sw_physics=int(nml.ra_sw_physics))
     carry = initial_operational_carry(state, ruc_land=land, ruc_rad=RucRadiation(jnp.ones((2, 3)), jnp.ones((2, 3))))
     history = seed_history_diagnostics(state)
     history = history.write({name: np.full((2, 3), i + 1.) for i, name in enumerate(history._fields)})

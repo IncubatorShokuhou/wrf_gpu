@@ -71,16 +71,17 @@ def test_shadow_then_dynamics_cones_add_and_compose_across_exchange_interval():
 
 def test_actual_shadow_operator_ridge_outside_old_halo_is_retained():
     import jax.numpy as jnp
-    from gpuwrf.coupling.physics_couplers import _wrf_topographic_shadow_mask
+    from gpuwrf.physics.topographic_shading import topographic_shadow_from_geometry
 
     terrain = np.zeros((12, 200), np.float64)
     terrain[:, 160] = 10000.0
 
     def shadow(h):
         z = jnp.zeros(h.shape)
-        return np.asarray(_wrf_topographic_shadow_mask(jnp.asarray(h), latitude_deg=z,
+        mask, _ = topographic_shadow_from_geometry(jnp.asarray(h), latitude_deg=z,
             coszen=jnp.full(h.shape, .1), declination_rad=0., hour_angle_rad=-np.pi / 2,
-            sina=z, cosa=jnp.ones(h.shape), dx_m=100., dy_m=100., shadow_length_m=25000.))
+            sina=z, cosa=jnp.ones(h.shape), dx_m=100., dy_m=100., shadow_length_m=25000.)
+        return np.asarray(mask)
 
     full = shadow(terrain)
     old = dc.DecompositionSpec.build(200, 12, 2, 1, 38)

@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "gpuwrf"
-version = "0.4.3"
+version = "0.4.4"
 description = "A GPU-native WRF-compatible regional NWP model (JAX dynamical core + physics)"
 readme = "README.md"
 requires-python = ">=3.10"
@@ -76,6 +76,7 @@ where = ["src"]
 "gpuwrf.physics.ferrier" = ["tables.npz", "tables.json"]
 "gpuwrf.physics.thompson_hail" = ["cloud_coefficients.npz"]
 "gpuwrf.physics.jensen_ishmael" = ["data/manifest.json"]
+"gpuwrf.runtime" = ["runtime_file_readers.json"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests", "evals/agentos"]

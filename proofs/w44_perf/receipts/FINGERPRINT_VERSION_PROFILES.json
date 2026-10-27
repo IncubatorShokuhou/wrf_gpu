@@ -1,0 +1,1670 @@
+{
+  "scope": "CPU diagnostic, one fresh process per version, same core/policy but separate phases; no GPU/S1 headline or variance claim.",
+  "versions": {
+    "v032": {
+      "scope": "CPU-only caller measurement of the first cheap-key source fingerprint.\n\nNo model initialization, lowering, array read, executable load or GPU query.\nProfiles a separate cold function call; cProfile time is diagnostic only.\n",
+      "source": "<USER_HOME>/wrf_gpu2_lanes/w44-perf/snap_v032",
+      "head": "5f682e5ae933d569ebbeb11d78f119ba291f9283",
+      "module_sha256": "f5cf64cedd043d87762737db27aa3d30f15a5ebd61438954a49c12714f7d23ae",
+      "fingerprint": "c26952dfb8e843dcd2fcc944aa80f58cdfdcd495f66cc66f8508309a9bed1a7b",
+      "first_unprofiled_s": 0.730288197984919,
+      "cached_unprofiled_s": 7.799826562404633e-07,
+      "profiled_total_s": 2.3811148159999984,
+      "total_calls": 13408575,
+      "top_cumulative": [
+        {
+          "file": "<USER_HOME>/wrf_gpu2_lanes/w44-perf/snap_v032/src/gpuwrf/runtime/aot_cheap_key.py",
+          "line": 496,
+          "function": "source_fingerprint_hash",
+          "primitive_calls": 1,
+          "calls": 1,
+          "self_s": 3.333e-05,
+          "cumulative_s": 2.3811011360000003
+        },
+        {
+          "file": "<USER_HOME>/wrf_gpu2_lanes/w44-perf/snap_v032/src/gpuwrf/runtime/aot_cheap_key.py",
+          "line": 434,
+          "function": "_trace_reachable_source_files",
+          "primitive_calls": 1,
+          "calls": 1,
+          "self_s": 0.054433362000000006,
+          "cumulative_s": 2.3719953410000003
+        },
+        {
+          "file": "<USER_HOME>/wrf_gpu2_lanes/w44-perf/snap_v032/src/gpuwrf/runtime/aot_cheap_key.py",
+          "line": 388,
+          "function": "_gpuwrf_imports_in_file",
+          "primitive_calls": 182,
+          "calls": 182,
+          "self_s": 0.23742173200000002,
+          "cumulative_s": 2.271013886
+        },
+        {
+          "file": "<USER_HOME>/miniconda3/lib/python3.13/ast.py",
+          "line": 384,
+          "function": "walk",
+          "primitive_calls": 979466,
+          "calls": 979466,
+          "self_s": 0.25156917300000003,
+          "cumulative_s": 1.49194156
+        },
+        {
+          "file": "~",
+          "line": 0,
+          "function": "<method 'extend' of 'collections.deque' objects>",
+          "primitive_calls": 979284,
+          "calls": 979284,
+          "self_s": 0.193971684,
+          "cumulative_s": 1.1817493650000002
+        },
+        {
+          "file": "<USER_HOME>/miniconda3/lib/python3.13/ast.py",
+          "line": 284,
+          "function": "iter_child_nodes",
+          "primitive_calls": 1958386,
+          "calls": 1958386,
+          "self_s": 0.49283873800000005,
+          "cumulative_s": 0.9877776810000001
+        },
+        {
+          "file": "<USER_HOME>/miniconda3/lib/python3.13/ast.py",
+          "line": 30,
+          "function": "parse",
+          "primitive_calls": 182,
+          "calls": 182,
+          "self_s": 0.07349004,
+          "cumulative_s": 0.417513004
+        },
+        {
+          "file": "<USER_HOME>/miniconda3/lib/python3.13/ast.py",
+          "line": 272,
+          "function": "iter_fields",
+          "primitive_calls": 2429331,
+          "calls": 2429331,
+          "self_s": 0.26256844300000004,
+          "cumulative_s": 0.36282085000000003
+        },
+        {
+          "file": "~",
+          "line": 0,
+          "function": "<built-in method builtins.compile>",
+          "primitive_calls": 182,
+          "calls": 182,
+          "self_s": 0.343688261,
+          "cumulative_s": 0.343688261
+        },
+        {
+          "file": "~",
+          "line": 0,
+          "function": "<built-in method builtins.isinstance>",
+          "primitive_calls": 4452494,
+          "calls": 4452494,
+          "self_s": 0.25176263200000004,
+          "cumulative_s": 0.25176263200000004
+        },
+        {
+          "file": "~",
+          "line": 0,
+          "function": "<built-in method builtins.getattr>",
+          "primitive_calls": 1451742,
+          "calls": 1451742,
+          "self_s": 0.10043909000000001,
+          "cumulative_s": 0.10043909000000001
+        },
+        {
+          "file": "~",
+          "line": 0,
+          "function": "<method 'popleft' of 'collections.deque' objects>",
+          "primitive_calls": 979284,
+          "calls": 979284,
+          "self_s": 0.058386081000000006,
+          "cumulative_s": 0.058386081000000006
+        },
+        {
+          "file": "<USER_HOME>/wrf_gpu2_lanes/w44-perf/snap_v032/src/gpuwrf/runtime/aot_cheap_key.py",
+          "line": 373,
+          "function": "_module_to_source_path",
+          "primitive_calls": 1026,
+          "calls": 1026,
+          "self_s": 0.0017899130000000002,
+          "cumulative_s": 0.044890832000000006
+        },
+        {
+          "file": "<USER_HOME>/miniconda3/lib/python3.13/pathlib/_abc.py",
+          "line": 222,
+          "function": "with_suffix",
+          "primitive_calls": 1026,
+          "calls": 1026,
+          "self_s": 0.000792356,
+          "cumulative_s": 0.016213849000000002
+        },
+        {
+          "file": "<USER_HOME>/miniconda3/lib/python3.13/pathlib/_abc.py",
+          "line": 476,
+          "function": "is_file",
+          "primitive_calls": 1873,
+          "calls": 1873,
+          "self_s": 0.001066857,
+          "cumulative_s": 0.014873542000000002
+        },
+        {
+          "file": "<USER_HOME>/miniconda3/lib/python3.13/pathlib/_abc.py",
+          "line": 130,
+          "function": "with_segments",
+          "primitive_calls": 4313,
+          "calls": 4313,
+          "self_s": 0.002176266,
+          "cumulative_s": 0.014182151
+        },
+        {
+          "file": "<USER_HOME>/miniconda3/lib/python3.13/pathlib/_local.py",
+          "line": 510,
+          "function": "stat",
+          "primitive_calls": 1873,
+          "calls": 1873,
+          "self_s": 0.000419714,
+          "cumulative_s": 0.013212228000000001
+        },
+        {
+          "file": "~",
+          "line": 0,
+          "function": "<built-in method posix.stat>",
+          "primitive_calls": 1873,
+          "calls": 1873,
+          "self_s": 0.003402701,
+          "cumulative_s": 0.012792514000000001
+        },
+        {
+          "file": "<USER_HOME>/miniconda3/lib/python3.13/pathlib/_local.py",
+          "line": 498,
+          "function": "__init__",
+          "primitive_calls": 4314,
+          "calls": 4314,
+          "self_s": 0.0017627460000000001,
+          "cumulative_s": 0.010604
+        },
+        {
+          "file": "<USER_HOME>/miniconda3/lib/python3.13/pathlib/_abc.py",
+          "line": 194,
+          "function": "stem",
+          "primitive_calls": 1026,
+          "calls": 1026,
+          "self_s": 0.00042619200000000004,
+          "cumulative_s": 0.01037126
+        },
+        {
+          "file": "<USER_HOME>/miniconda3/lib/python3.13/pathlib/_local.py",
+          "line": 346,
+          "function": "name",
+          "primitive_calls": 1027,
+          "calls": 1027,
+          "self_s": 0.000278071,
+          "cumulative_s": 0.009766645000000001
+        },
+        {
+          "file": "<USER_HOME>/miniconda3/lib/python3.13/pathlib/_local.py",
+          "line": 307,
+          "function": "_tail",
+          "primitive_calls": 3813,
+          "calls": 3813,
+          "self_s": 0.001405013,
+          "cumulative_s": 0.009696025
+        },
+        {
+          "file": "<USER_HOME>/miniconda3/lib/python3.13/pathlib/_local.py",
+          "line": 140,
+          "function": "joinpath",
+          "primitive_calls": 1873,
+          "calls": 1873,
+          "self_s": 0.0006531800000000001,
+          "cumulative_s": 0.009601695
+        },
+        {
+          "file": "<USER_HOME>/miniconda3/lib/python3.13/pathlib/_local.py",
+          "line": 166,
+          "function": "__fspath__",
+          "primitive_calls": 2238,
+          "calls": 2238,
+          "self_s": 0.000604554,
+          "cumulative_s": 0.009524595
+        },
+        {
+          "file": "<USER_HOME>/miniconda3/lib/python3.13/pathlib/_local.py",
+          "line": 227,
+          "function": "__str__",
+          "primitive_calls": 3167,
+          "calls": 3167,
+          "self_s": 0.0010940400000000001,
+          "cumulative_s": 0.008981781000000001
+        },
+        {
+          "file": "<USER_HOME>/wrf_gpu2_lanes/w44-perf/snap_v032/src/gpuwrf/runtime/aot_cheap_key.py",
+          "line": 465,
+          "function": "_source_tree_content_digest",
+          "primitive_calls": 1,
+          "calls": 1,
+          "self_s": 0.00046248100000000005,
+          "cumulative_s": 0.008925164000000001
+        },
+        {
+          "file": "<USER_HOME>/miniconda3/lib/python3.13/pathlib/_local.py",
+          "line": 117,
+          "function": "__init__",
+          "primitive_calls": 4314,
+          "calls": 4314,
+          "self_s": 0.005325214,
+          "cumulative_s": 0.008841254
+        },
+        {
+          "file": "<USER_HOME>/miniconda3/lib/python3.13/pathlib/_local.py",
+          "line": 277,
+          "function": "_raw_path",
+          "primitive_calls": 1875,
+          "calls": 1875,
+          "self_s": 0.001106751,
+          "cumulative_s": 0.007519830000000001
+        },
+        {
+          "file": "<USER_HOME>/miniconda3/lib/python3.13/pathlib/_local.py",
+          "line": 257,
+          "function": "_parse_path",
+          "primitive_calls": 1875,
+          "calls": 1875,
+          "self_s": 0.0037867120000000002,
+          "cumulative_s": 0.007498179000000001
+        },
+        {
+          "file": "<USER_HOME>/miniconda3/lib/python3.13/pathlib/_local.py",
+          "line": 289,
+          "function": "drive",
+          "primitive_calls": 2604,
+          "calls": 2604,
+          "self_s": 0.0007634170000000001,
+          "cumulative_s": 0.007490414000000001
+        },
+        {
+          "file": "<frozen posixpath>",
+          "line": 72,
+          "function": "join",
+          "primitive_calls": 1873,
+          "calls": 1873,
+          "self_s": 0.0037275740000000004,
+          "cumulative_s": 0.006099167
+        },
+        {
+          "file": "<USER_HOME>/miniconda3/lib/python3.13/pathlib/_local.py",
+          "line": 539,
+          "function": "read_text",
+          "primitive_calls": 182,
+          "calls": 182,
+          "self_s": 0.00029617200000000004,
+          "cumulative_s": 0.005706934
+        },
+        {
+          "file": "<USER_HOME>/miniconda3/lib/python3.13/pathlib/_abc.py",
+          "line": 628,
+          "function": "read_text",
+          "primitive_calls": 182,
+          "calls": 182,
+          "self_s": 0.000325594,
+          "cumulative_s": 0.005376292
+        },
+        {
+          "file": "<USER_HOME>/miniconda3/lib/python3.13/pathlib/_local.py",
+          "line": 245,
+          "function": "_from_parsed_parts",
+          "primitive_calls": 1592,
+          "calls": 1592,
+          "self_s": 0.000738169,
+          "cumulative_s": 0.005243382
+        },
+        {
+          "file": "<USER_HOME>/miniconda3/lib/python3.13/pathlib/_local.py",
+          "line": 354,
+          "function": "with_name",
+          "primitive_calls": 1026,
+          "calls": 1026,
+          "self_s": 0.001033409,
+          "cumulative_s": 0.004853821
+        }
+      ],
+      "top_self": [
+        {
+          "file": "<USER_HOME>/miniconda3/lib/python3.13/ast.py",
+          "line": 284,
+          "function": "iter_child_nodes",
+          "primitive_calls": 1958386,
+          "calls": 1958386,
+          "self_s": 0.49283873800000005,
+          "cumulative_s": 0.9877776810000001
+        },
+        {
+          "file": "~",
+          "line": 0,
+          "function": "<built-in method builtins.compile>",
+          "primitive_calls": 182,
+          "calls": 182,
+          "self_s": 0.343688261,
+          "cumulative_s": 0.343688261
+        },
+        {
+          "file": "<USER_HOME>/miniconda3/lib/python3.13/ast.py",
+          "line": 272,
+          "function": "iter_fields",
+          "primitive_calls": 2429331,
+          "calls": 2429331,
+          "self_s": 0.26256844300000004,
+          "cumulative_s": 0.36282085000000003
+        },
+        {
+          "file": "~",
+          "line": 0,
+          "function": "<built-in method builtins.isinstance>",
+          "primitive_calls": 4452494,
+          "calls": 4452494,
+          "self_s": 0.25176263200000004,
+          "cumulative_s": 0.25176263200000004
+        },
+        {
+          "file": "<USER_HOME>/miniconda3/lib/python3.13/ast.py",
+          "line": 384,
+          "function": "walk",
+          "primitive_calls": 979466,
+          "calls": 979466,
+          "self_s": 0.25156917300000003,
+          "cumulative_s": 1.49194156
+        },
+        {
+          "file": "<USER_HOME>/wrf_gpu2_lanes/w44-perf/snap_v032/src/gpuwrf/runtime/aot_cheap_key.py",
+          "line": 388,
+          "function": "_gpuwrf_imports_in_file",
+          "primitive_calls": 182,
+          "calls": 182,
+          "self_s": 0.23742173200000002,
+          "cumulative_s": 2.271013886
+        },
+        {
+          "file": "~",
+          "line": 0,
+          "function": "<method 'extend' of 'collections.deque' objects>",
+          "primitive_calls": 979284,
+          "calls": 979284,
+          "self_s": 0.193971684,
+          "cumulative_s": 1.1817493650000002
+        },
+        {
+          "file": "~",
+          "line": 0,
+          "function": "<built-in method builtins.getattr>",
+          "primitive_calls": 1451742,
+          "calls": 1451742,
+          "self_s": 0.10043909000000001,
+          "cumulative_s": 0.10043909000000001
+        },
+        {
+          "file": "<USER_HOME>/miniconda3/lib/python3.13/ast.py",
+          "line": 30,
+          "function": "parse",
+          "primitive_calls": 182,
+          "calls": 182,
+          "self_s": 0.07349004,
+          "cumulative_s": 0.417513004
+        },
+        {
+          "file": "~",
+          "line": 0,
+          "function": "<method 'popleft' of 'collections.deque' objects>",
+          "primitive_calls": 979284,
+          "calls": 979284,
+          "self_s": 0.058386081000000006,
+          "cumulative_s": 0.058386081000000006
+        },
+        {
+          "file": "<USER_HOME>/wrf_gpu2_lanes/w44-perf/snap_v032/src/gpuwrf/runtime/aot_cheap_key.py",
+          "line": 434,
+          "function": "_trace_reachable_source_files",
+          "primitive_calls": 1,
+          "calls": 1,
+          "self_s": 0.054433362000000006,
+          "cumulative_s": 2.3719953410000003
+        },
+        {
+          "file": "<USER_HOME>/miniconda3/lib/python3.13/pathlib/_local.py",
+          "line": 117,
+          "function": "__init__",
+          "primitive_calls": 4314,
+          "calls": 4314,
+          "self_s": 0.005325214,
+          "cumulative_s": 0.008841254
+        },
+        {
+          "file": "<USER_HOME>/miniconda3/lib/python3.13/pathlib/_local.py",
+          "line": 257,
+          "function": "_parse_path",
+          "primitive_calls": 1875,
+          "calls": 1875,
+          "self_s": 0.0037867120000000002,
+          "cumulative_s": 0.007498179000000001
+        },
+        {
+          "file": "<frozen posixpath>",
+          "line": 72,
+          "function": "join",
+          "primitive_calls": 1873,
+          "calls": 1873,
+          "self_s": 0.0037275740000000004,
+          "cumulative_s": 0.006099167
+        },
+        {
+          "file": "~",
+          "line": 0,
+          "function": "<built-in method posix.stat>",
+          "primitive_calls": 1873,
+          "calls": 1873,
+          "self_s": 0.003402701,
+          "cumulative_s": 0.012792514000000001
+        },
+        {
+          "file": "~",
+          "line": 0,
+          "function": "<built-in method _io.open>",
+          "primitive_calls": 364,
+          "calls": 364,
+          "self_s": 0.002785674,
+          "cumulative_s": 0.0030691480000000003
+        },
+        {
+          "file": "~",
+          "line": 0,
+          "function": "<built-in method sys.intern>",
+          "primitive_calls": 19503,
+          "calls": 19503,
+          "self_s": 0.002637051,
+          "cumulative_s": 0.002637051
+        },
+        {
+          "file": "<USER_HOME>/miniconda3/lib/python3.13/pathlib/_abc.py",
+          "line": 130,
+          "function": "with_segments",
+          "primitive_calls": 4313,
+          "calls": 4313,
+          "self_s": 0.002176266,
+          "cumulative_s": 0.014182151
+        },
+        {
+          "file": "~",
+          "line": 0,
+          "function": "<built-in method _hashlib.openssl_sha256>",
+          "primitive_calls": 184,
+          "calls": 184,
+          "self_s": 0.001917382,
+          "cumulative_s": 0.001917382
+        },
+        {
+          "file": "<USER_HOME>/wrf_gpu2_lanes/w44-perf/snap_v032/src/gpuwrf/runtime/aot_cheap_key.py",
+          "line": 373,
+          "function": "_module_to_source_path",
+          "primitive_calls": 1026,
+          "calls": 1026,
+          "self_s": 0.0017899130000000002,
+          "cumulative_s": 0.044890832000000006
+        },
+        {
+          "file": "<USER_HOME>/miniconda3/lib/python3.13/pathlib/_local.py",
+          "line": 498,
+          "function": "__init__",
+          "primitive_calls": 4314,
+          "calls": 4314,
+          "self_s": 0.0017627460000000001,
+          "cumulative_s": 0.010604
+        },
+        {
+          "file": "<USER_HOME>/miniconda3/lib/python3.13/pathlib/_local.py",
+          "line": 307,
+          "function": "_tail",
+          "primitive_calls": 3813,
+          "calls": 3813,
+          "self_s": 0.001405013,
+          "cumulative_s": 0.009696025
+        },
+        {
+          "file": "~",
+          "line": 0,
+          "function": "<built-in method posix.fspath>",
+          "primitive_calls": 20148,
+          "calls": 20148,
+          "self_s": 0.001259857,
+          "cumulative_s": 0.001274928
+        },
+        {
+          "file": "<USER_HOME>/miniconda3/lib/python3.13/pathlib/_local.py",
+          "line": 277,
+          "function": "_raw_path",
+          "primitive_calls": 1875,
+          "calls": 1875,
+          "self_s": 0.001106751,
+          "cumulative_s": 0.007519830000000001
+        },
+        {
+          "file": "~",
+          "line": 0,
+          "function": "<method 'startswith' of 'str' objects>",
+          "primitive_calls": 12491,
+          "calls": 12491,
+          "self_s": 0.001102115,
+          "cumulative_s": 0.001102115
+        }
+      ]
+    },
+    "v040": {
+      "scope": "CPU-only caller measurement of the first cheap-key source fingerprint.\n\nNo model initialization, lowering, array read, executable load or GPU query.\nProfiles a separate cold function call; cProfile time is diagnostic only.\n",
+      "source": "<DATA_ROOT>/wrf_gpu2/release_bundles/v0.4.0/src",
+      "head": "7bb5ae669b2e4b863d6bafdd659a03fea026004f",
+      "module_sha256": "095dd76b509188a7cc10865d5183a52deac5ddfe7749ccd62b46800eb97f30a3",
+      "fingerprint": "ac80a6152f04fdd9dc4991cff395c595d3a508929e2f99eda34c29de7cab4b93",
+      "first_unprofiled_s": 3.549466222000774,
+      "cached_unprofiled_s": 7.100170478224754e-07,
+      "profiled_total_s": 9.673904452000006,
+      "total_calls": 48236677,
+      "top_cumulative": [
+        {
+          "file": "<DATA_ROOT>/wrf_gpu2/release_bundles/v0.4.0/src/src/gpuwrf/runtime/aot_cheap_key.py",
+          "line": 554,
+          "function": "source_fingerprint_hash",
+          "primitive_calls": 1,
+          "calls": 1,
+          "self_s": 7.215e-05,
+          "cumulative_s": 9.673893672
+        },
+        {
+          "file": "<DATA_ROOT>/wrf_gpu2/release_bundles/v0.4.0/src/src/gpuwrf/runtime/aot_cheap_key.py",
+          "line": 492,
+          "function": "_trace_reachable_source_files",
+          "primitive_calls": 1,
+          "calls": 1,
+          "self_s": 0.248572497,
+          "cumulative_s": 9.650745162
+        },
+        {
+          "file": "<DATA_ROOT>/wrf_gpu2/release_bundles/v0.4.0/src/src/gpuwrf/runtime/aot_cheap_key.py",
+          "line": 446,
+          "function": "_gpuwrf_imports_in_file",
+          "primitive_calls": 510,
+          "calls": 510,
+          "self_s": 0.9164544480000001,
+          "cumulative_s": 9.286911126000001
+        },
+        {
+          "file": "<USER_HOME>/miniconda3/lib/python3.13/ast.py",
+          "line": 384,
+          "function": "walk",
+          "primitive_calls": 3515542,
+          "calls": 3515542,
+          "self_s": 1.014773082,
+          "cumulative_s": 6.00042173
+        },
+        {
+          "file": "~",
+          "line": 0,
+          "function": "<method 'extend' of 'collections.deque' objects>",
+          "primitive_calls": 3515032,
+          "calls": 3515032,
+          "self_s": 0.7559290580000001,
+          "cumulative_s": 4.751707211
+        },
+        {
+          "file": "<USER_HOME>/miniconda3/lib/python3.13/ast.py",
+          "line": 284,
+          "function": "iter_child_nodes",
+          "primitive_calls": 7029554,
+          "calls": 7029554,
+          "self_s": 1.937678484,
+          "cumulative_s": 3.9957774930000003
+        },
+        {
+          "file": "<USER_HOME>/miniconda3/lib/python3.13/ast.py",
+          "line": 30,
+          "function": "parse",
+          "primitive_calls": 510,
+          "calls": 510,
+          "self_s": 0.48112279100000005,
+          "cumulative_s": 1.8924054840000002
+        },
+        {
+          "file": "<USER_HOME>/miniconda3/lib/python3.13/ast.py",
+          "line": 272,
+          "function": "iter_fields",
+          "primitive_calls": 8812496,
+          "calls": 8812496,
+          "self_s": 1.116054833,
+          "cumulative_s": 1.5356833120000002
+        },
+        {
+          "file": "~",
+          "line": 0,
+          "function": "<built-in method builtins.compile>",
+          "primitive_calls": 510,
+          "calls": 510,
+          "self_s": 1.410403914,
+          "cumulative_s": 1.410403914
+        },
+        {
+          "file": "~",
+          "line": 0,
+          "function": "<built-in method builtins.isinstance>",
+          "primitive_calls": 16096965,
+          "calls": 16096965,
+          "self_s": 0.9896333820000001,
+          "cumulative_s": 0.989636672
+        },
+        {
+          "file": "~",
+          "line": 0,
+          "function": "<built-in method builtins.getattr>",
+          "primitive_calls": 5301387,
+          "calls": 5301387,
+          "self_s": 0.420086377,
+          "cumulative_s": 0.420086377
+        },
+        {
+          "file": "~",
+          "line": 0,
+          "function": "<method 'popleft' of 'collections.deque' objects>",
+          "primitive_calls": 3515032,
+          "calls": 3515032,
+          "self_s": 0.233286858,
+          "cumulative_s": 0.233286858
+        },
+        {
+          "file": "<DATA_ROOT>/wrf_gpu2/release_bundles/v0.4.0/src/src/gpuwrf/runtime/aot_cheap_key.py",
+          "line": 431,
+          "function": "_module_to_source_path",
+          "primitive_calls": 2464,
+          "calls": 2464,
+          "self_s": 0.0044205450000000006,
+          "cumulative_s": 0.110367907
+        },
+        {
+          "file": "<USER_HOME>/miniconda3/lib/python3.13/pathlib/_abc.py",
+          "line": 222,
+          "function": "with_suffix",
+          "primitive_calls": 2464,
+          "calls": 2464,
+          "self_s": 0.0019312490000000001,
+          "cumulative_s": 0.040664322
+        },
+        {
+          "file": "<USER_HOME>/miniconda3/lib/python3.13/pathlib/_abc.py",
+          "line": 476,
+          "function": "is_file",
+          "primitive_calls": 4429,
+          "calls": 4429,
+          "self_s": 0.002574242,
+          "cumulative_s": 0.035769719000000005
+        },
+        {
+          "file": "<USER_HOME>/miniconda3/lib/python3.13/pathlib/_abc.py",
+          "line": 130,
+          "function": "with_segments",
+          "primitive_calls": 10525,
+          "calls": 10525,
+          "self_s": 0.005313877000000001,
+          "cumulative_s": 0.034950063
+        },
+        {
+          "file": "<USER_HOME>/miniconda3/lib/python3.13/pathlib/_local.py",
+          "line": 510,
+          "function": "stat",
+          "primitive_calls": 4429,
+          "calls": 4429,
+          "self_s": 0.001030199,
+          "cumulative_s": 0.031771431
+        },
+        {
+          "file": "~",
+          "line": 0,
+          "function": "<built-in method posix.stat>",
+          "primitive_calls": 4429,
+          "calls": 4429,
+          "self_s": 0.007734117,
+          "cumulative_s": 0.030741232
+        },
+        {
+          "file": "<USER_HOME>/miniconda3/lib/python3.13/pathlib/_abc.py",
+          "line": 194,
+          "function": "stem",
+          "primitive_calls": 2464,
+          "calls": 2464,
+          "self_s": 0.0010559150000000002,
+          "cumulative_s": 0.026219133000000002
+        },
+        {
+          "file": "<USER_HOME>/miniconda3/lib/python3.13/pathlib/_local.py",
+          "line": 498,
+          "function": "__init__",
+          "primitive_calls": 10526,
+          "calls": 10526,
+          "self_s": 0.0043034300000000004,
+          "cumulative_s": 0.026217652
+        },
+        {
+          "file": "<USER_HOME>/miniconda3/lib/python3.13/pathlib/_local.py",
+          "line": 346,
+          "function": "name",
+          "primitive_calls": 2465,
+          "calls": 2465,
+          "self_s": 0.0006937180000000001,
+          "cumulative_s": 0.024734427000000003
+        },
+        {
+          "file": "<USER_HOME>/miniconda3/lib/python3.13/pathlib/_local.py",
+          "line": 307,
+          "function": "_tail",
+          "primitive_calls": 9447,
+          "calls": 9447,
+          "self_s": 0.003449339,
+          "cumulative_s": 0.024531881000000002
+        },
+        {
+          "file": "<USER_HOME>/miniconda3/lib/python3.13/pathlib/_local.py",
+          "line": 140,
+          "function": "joinpath",
+          "primitive_calls": 4429,
+          "calls": 4429,
+          "self_s": 0.001653252,
+          "cumulative_s": 0.023750996
+        },
+        {
+          "file": "<USER_HOME>/miniconda3/lib/python3.13/pathlib/_local.py",
+          "line": 166,
+          "function": "__fspath__",
+          "primitive_calls": 5450,
+          "calls": 5450,
+          "self_s": 0.001505264,
+          "cumulative_s": 0.023340641000000002
+        },
+        {
+          "file": "<DATA_ROOT>/wrf_gpu2/release_bundles/v0.4.0/src/src/gpuwrf/runtime/aot_cheap_key.py",
+          "line": 523,
+          "function": "_source_tree_content_digest",
+          "primitive_calls": 1,
+          "calls": 1,
+          "self_s": 0.001128701,
+          "cumulative_s": 0.022934789
+        },
+        {
+          "file": "<USER_HOME>/miniconda3/lib/python3.13/pathlib/_local.py",
+          "line": 227,
+          "function": "__str__",
+          "primitive_calls": 8135,
+          "calls": 8135,
+          "self_s": 0.0026190750000000002,
+          "cumulative_s": 0.022001108000000002
+        },
+        {
+          "file": "<USER_HOME>/miniconda3/lib/python3.13/pathlib/_local.py",
+          "line": 117,
+          "function": "__init__",
+          "primitive_calls": 10526,
+          "calls": 10526,
+          "self_s": 0.013119189000000002,
+          "cumulative_s": 0.021914222
+        },
+        {
+          "file": "<USER_HOME>/miniconda3/lib/python3.13/pathlib/_local.py",
+          "line": 257,
+          "function": "_parse_path",
+          "primitive_calls": 4431,
+          "calls": 4431,
+          "self_s": 0.009896612,
+          "cumulative_s": 0.018850022
+        },
+        {
+          "file": "<USER_HOME>/miniconda3/lib/python3.13/pathlib/_local.py",
+          "line": 277,
+          "function": "_raw_path",
+          "primitive_calls": 4431,
+          "calls": 4431,
+          "self_s": 0.0026456310000000003,
+          "cumulative_s": 0.018804881000000002
+        },
+        {
+          "file": "<USER_HOME>/miniconda3/lib/python3.13/pathlib/_local.py",
+          "line": 289,
+          "function": "drive",
+          "primitive_calls": 6472,
+          "calls": 6472,
+          "self_s": 0.001836072,
+          "cumulative_s": 0.018408433000000002
+        },
+        {
+          "file": "<frozen posixpath>",
+          "line": 72,
+          "function": "join",
+          "primitive_calls": 4429,
+          "calls": 4429,
+          "self_s": 0.009422414,
+          "cumulative_s": 0.015405305000000001
+        },
+        {
+          "file": "<USER_HOME>/miniconda3/lib/python3.13/pathlib/_local.py",
+          "line": 245,
+          "function": "_from_parsed_parts",
+          "primitive_calls": 4130,
+          "calls": 4130,
+          "self_s": 0.001857684,
+          "cumulative_s": 0.013183484
+        },
+        {
+          "file": "<USER_HOME>/miniconda3/lib/python3.13/pathlib/_local.py",
+          "line": 539,
+          "function": "read_text",
+          "primitive_calls": 510,
+          "calls": 510,
+          "self_s": 0.0007085500000000001,
+          "cumulative_s": 0.013170487000000002
+        },
+        {
+          "file": "<USER_HOME>/miniconda3/lib/python3.13/pathlib/_abc.py",
+          "line": 628,
+          "function": "read_text",
+          "primitive_calls": 510,
+          "calls": 510,
+          "self_s": 0.000777966,
+          "cumulative_s": 0.012379507000000001
+        },
+        {
+          "file": "<USER_HOME>/miniconda3/lib/python3.13/pathlib/_local.py",
+          "line": 354,
+          "function": "with_name",
+          "primitive_calls": 2464,
+          "calls": 2464,
+          "self_s": 0.002531438,
+          "cumulative_s": 0.012030768
+        }
+      ],
+      "top_self": [
+        {
+          "file": "<USER_HOME>/miniconda3/lib/python3.13/ast.py",
+          "line": 284,
+          "function": "iter_child_nodes",
+          "primitive_calls": 7029554,
+          "calls": 7029554,
+          "self_s": 1.937678484,
+          "cumulative_s": 3.9957774930000003
+        },
+        {
+          "file": "~",
+          "line": 0,
+          "function": "<built-in method builtins.compile>",
+          "primitive_calls": 510,
+          "calls": 510,
+          "self_s": 1.410403914,
+          "cumulative_s": 1.410403914
+        },
+        {
+          "file": "<USER_HOME>/miniconda3/lib/python3.13/ast.py",
+          "line": 272,
+          "function": "iter_fields",
+          "primitive_calls": 8812496,
+          "calls": 8812496,
+          "self_s": 1.116054833,
+          "cumulative_s": 1.5356833120000002
+        },
+        {
+          "file": "<USER_HOME>/miniconda3/lib/python3.13/ast.py",
+          "line": 384,
+          "function": "walk",
+          "primitive_calls": 3515542,
+          "calls": 3515542,
+          "self_s": 1.014773082,
+          "cumulative_s": 6.00042173
+        },
+        {
+          "file": "~",
+          "line": 0,
+          "function": "<built-in method builtins.isinstance>",
+          "primitive_calls": 16096965,
+          "calls": 16096965,
+          "self_s": 0.9896333820000001,
+          "cumulative_s": 0.989636672
+        },
+        {
+          "file": "<DATA_ROOT>/wrf_gpu2/release_bundles/v0.4.0/src/src/gpuwrf/runtime/aot_cheap_key.py",
+          "line": 446,
+          "function": "_gpuwrf_imports_in_file",
+          "primitive_calls": 510,
+          "calls": 510,
+          "self_s": 0.9164544480000001,
+          "cumulative_s": 9.286911126000001
+        },
+        {
+          "file": "~",
+          "line": 0,
+          "function": "<method 'extend' of 'collections.deque' objects>",
+          "primitive_calls": 3515032,
+          "calls": 3515032,
+          "self_s": 0.7559290580000001,
+          "cumulative_s": 4.751707211
+        },
+        {
+          "file": "<USER_HOME>/miniconda3/lib/python3.13/ast.py",
+          "line": 30,
+          "function": "parse",
+          "primitive_calls": 510,
+          "calls": 510,
+          "self_s": 0.48112279100000005,
+          "cumulative_s": 1.8924054840000002
+        },
+        {
+          "file": "~",
+          "line": 0,
+          "function": "<built-in method builtins.getattr>",
+          "primitive_calls": 5301387,
+          "calls": 5301387,
+          "self_s": 0.420086377,
+          "cumulative_s": 0.420086377
+        },
+        {
+          "file": "<DATA_ROOT>/wrf_gpu2/release_bundles/v0.4.0/src/src/gpuwrf/runtime/aot_cheap_key.py",
+          "line": 492,
+          "function": "_trace_reachable_source_files",
+          "primitive_calls": 1,
+          "calls": 1,
+          "self_s": 0.248572497,
+          "cumulative_s": 9.650745162
+        },
+        {
+          "file": "~",
+          "line": 0,
+          "function": "<method 'popleft' of 'collections.deque' objects>",
+          "primitive_calls": 3515032,
+          "calls": 3515032,
+          "self_s": 0.233286858,
+          "cumulative_s": 0.233286858
+        },
+        {
+          "file": "<USER_HOME>/miniconda3/lib/python3.13/pathlib/_local.py",
+          "line": 117,
+          "function": "__init__",
+          "primitive_calls": 10526,
+          "calls": 10526,
+          "self_s": 0.013119189000000002,
+          "cumulative_s": 0.021914222
+        },
+        {
+          "file": "<USER_HOME>/miniconda3/lib/python3.13/pathlib/_local.py",
+          "line": 257,
+          "function": "_parse_path",
+          "primitive_calls": 4431,
+          "calls": 4431,
+          "self_s": 0.009896612,
+          "cumulative_s": 0.018850022
+        },
+        {
+          "file": "<frozen posixpath>",
+          "line": 72,
+          "function": "join",
+          "primitive_calls": 4429,
+          "calls": 4429,
+          "self_s": 0.009422414,
+          "cumulative_s": 0.015405305000000001
+        },
+        {
+          "file": "~",
+          "line": 0,
+          "function": "<built-in method posix.stat>",
+          "primitive_calls": 4429,
+          "calls": 4429,
+          "self_s": 0.007734117,
+          "cumulative_s": 0.030741232
+        },
+        {
+          "file": "~",
+          "line": 0,
+          "function": "<built-in method sys.intern>",
+          "primitive_calls": 51035,
+          "calls": 51035,
+          "self_s": 0.0063003320000000005,
+          "cumulative_s": 0.0063003320000000005
+        },
+        {
+          "file": "~",
+          "line": 0,
+          "function": "<built-in method _io.open>",
+          "primitive_calls": 1020,
+          "calls": 1020,
+          "self_s": 0.006133683,
+          "cumulative_s": 0.0068258120000000005
+        },
+        {
+          "file": "<USER_HOME>/miniconda3/lib/python3.13/pathlib/_abc.py",
+          "line": 130,
+          "function": "with_segments",
+          "primitive_calls": 10525,
+          "calls": 10525,
+          "self_s": 0.005313877000000001,
+          "cumulative_s": 0.034950063
+        },
+        {
+          "file": "~",
+          "line": 0,
+          "function": "<built-in method _hashlib.openssl_sha256>",
+          "primitive_calls": 512,
+          "calls": 512,
+          "self_s": 0.005263849,
+          "cumulative_s": 0.005263849
+        },
+        {
+          "file": "<DATA_ROOT>/wrf_gpu2/release_bundles/v0.4.0/src/src/gpuwrf/runtime/aot_cheap_key.py",
+          "line": 431,
+          "function": "_module_to_source_path",
+          "primitive_calls": 2464,
+          "calls": 2464,
+          "self_s": 0.0044205450000000006,
+          "cumulative_s": 0.110367907
+        },
+        {
+          "file": "<USER_HOME>/miniconda3/lib/python3.13/pathlib/_local.py",
+          "line": 498,
+          "function": "__init__",
+          "primitive_calls": 10526,
+          "calls": 10526,
+          "self_s": 0.0043034300000000004,
+          "cumulative_s": 0.026217652
+        },
+        {
+          "file": "<USER_HOME>/miniconda3/lib/python3.13/pathlib/_local.py",
+          "line": 307,
+          "function": "_tail",
+          "primitive_calls": 9447,
+          "calls": 9447,
+          "self_s": 0.003449339,
+          "cumulative_s": 0.024531881000000002
+        },
+        {
+          "file": "~",
+          "line": 0,
+          "function": "<built-in method posix.fspath>",
+          "primitive_calls": 49100,
+          "calls": 49100,
+          "self_s": 0.00319029,
+          "cumulative_s": 0.0032054
+        },
+        {
+          "file": "~",
+          "line": 0,
+          "function": "<method 'read' of '_io.TextIOWrapper' objects>",
+          "primitive_calls": 510,
+          "calls": 510,
+          "self_s": 0.002838015,
+          "cumulative_s": 0.004641762000000001
+        },
+        {
+          "file": "~",
+          "line": 0,
+          "function": "<method 'startswith' of 'str' objects>",
+          "primitive_calls": 30915,
+          "calls": 30915,
+          "self_s": 0.0027991720000000004,
+          "cumulative_s": 0.0027991720000000004
+        }
+      ]
+    },
+    "v043": {
+      "scope": "CPU-only caller measurement of the first cheap-key source fingerprint.\n\nNo model initialization, lowering, array read, executable load or GPU query.\nProfiles a separate cold function call; cProfile time is diagnostic only.\n",
+      "source": "<DATA_ROOT>/wrf_gpu2/release_bundles/v0.4.3/src",
+      "head": "888804310bb6bfc0237177c0d5e5452a29d5abf6",
+      "module_sha256": "866c34413a20d51ae049cc580b76d151a9bb1b337cb18faba6f88a6b39f6c14a",
+      "fingerprint": "e14f436be7775f292af0bcc240c4093cf3b0aa253c0b0414208254da060428e9",
+      "first_unprofiled_s": 3.07794400700368,
+      "cached_unprofiled_s": 1.0509975254535675e-06,
+      "profiled_total_s": 9.222533462999992,
+      "total_calls": 48756416,
+      "top_cumulative": [
+        {
+          "file": "<DATA_ROOT>/wrf_gpu2/release_bundles/v0.4.3/src/src/gpuwrf/runtime/aot_cheap_key.py",
+          "line": 554,
+          "function": "source_fingerprint_hash",
+          "primitive_calls": 1,
+          "calls": 1,
+          "self_s": 7.728e-05,
+          "cumulative_s": 9.222522503
+        },
+        {
+          "file": "<DATA_ROOT>/wrf_gpu2/release_bundles/v0.4.3/src/src/gpuwrf/runtime/aot_cheap_key.py",
+          "line": 492,
+          "function": "_trace_reachable_source_files",
+          "primitive_calls": 1,
+          "calls": 1,
+          "self_s": 0.246609021,
+          "cumulative_s": 9.198071383
+        },
+        {
+          "file": "<DATA_ROOT>/wrf_gpu2/release_bundles/v0.4.3/src/src/gpuwrf/runtime/aot_cheap_key.py",
+          "line": 446,
+          "function": "_gpuwrf_imports_in_file",
+          "primitive_calls": 519,
+          "calls": 519,
+          "self_s": 0.8635454760000001,
+          "cumulative_s": 8.832686917
+        },
+        {
+          "file": "<USER_HOME>/miniconda3/lib/python3.13/ast.py",
+          "line": 384,
+          "function": "walk",
+          "primitive_calls": 3552576,
+          "calls": 3552576,
+          "self_s": 0.9571380030000001,
+          "cumulative_s": 5.744847495
+        },
+        {
+          "file": "~",
+          "line": 0,
+          "function": "<method 'extend' of 'collections.deque' objects>",
+          "primitive_calls": 3552057,
+          "calls": 3552057,
+          "self_s": 0.716493217,
+          "cumulative_s": 4.568024584000001
+        },
+        {
+          "file": "<USER_HOME>/miniconda3/lib/python3.13/ast.py",
+          "line": 284,
+          "function": "iter_child_nodes",
+          "primitive_calls": 7103595,
+          "calls": 7103595,
+          "self_s": 1.8660809100000002,
+          "cumulative_s": 3.8515307670000003
+        },
+        {
+          "file": "<USER_HOME>/miniconda3/lib/python3.13/ast.py",
+          "line": 30,
+          "function": "parse",
+          "primitive_calls": 519,
+          "calls": 519,
+          "self_s": 0.446365067,
+          "cumulative_s": 1.7760556900000002
+        },
+        {
+          "file": "<USER_HOME>/miniconda3/lib/python3.13/ast.py",
+          "line": 272,
+          "function": "iter_fields",
+          "primitive_calls": 8906111,
+          "calls": 8906111,
+          "self_s": 1.070761767,
+          "cumulative_s": 1.4804995730000001
+        },
+        {
+          "file": "~",
+          "line": 0,
+          "function": "<built-in method builtins.compile>",
+          "primitive_calls": 519,
+          "calls": 519,
+          "self_s": 1.3287408840000001,
+          "cumulative_s": 1.3287408840000001
+        },
+        {
+          "file": "~",
+          "line": 0,
+          "function": "<built-in method builtins.isinstance>",
+          "primitive_calls": 16273469,
+          "calls": 16273469,
+          "self_s": 0.9402337590000001,
+          "cumulative_s": 0.9402377390000001
+        },
+        {
+          "file": "~",
+          "line": 0,
+          "function": "<built-in method builtins.getattr>",
+          "primitive_calls": 5358045,
+          "calls": 5358045,
+          "self_s": 0.410288482,
+          "cumulative_s": 0.410288482
+        },
+        {
+          "file": "~",
+          "line": 0,
+          "function": "<method 'popleft' of 'collections.deque' objects>",
+          "primitive_calls": 3552057,
+          "calls": 3552057,
+          "self_s": 0.21899942,
+          "cumulative_s": 0.21899942
+        },
+        {
+          "file": "<DATA_ROOT>/wrf_gpu2/release_bundles/v0.4.3/src/src/gpuwrf/runtime/aot_cheap_key.py",
+          "line": 431,
+          "function": "_module_to_source_path",
+          "primitive_calls": 2507,
+          "calls": 2507,
+          "self_s": 0.004546335,
+          "cumulative_s": 0.11373561600000001
+        },
+        {
+          "file": "<USER_HOME>/miniconda3/lib/python3.13/pathlib/_abc.py",
+          "line": 222,
+          "function": "with_suffix",
+          "primitive_calls": 2507,
+          "calls": 2507,
+          "self_s": 0.001972714,
+          "cumulative_s": 0.041734081
+        },
+        {
+          "file": "<USER_HOME>/miniconda3/lib/python3.13/pathlib/_abc.py",
+          "line": 476,
+          "function": "is_file",
+          "primitive_calls": 4506,
+          "calls": 4506,
+          "self_s": 0.002750993,
+          "cumulative_s": 0.037680888
+        },
+        {
+          "file": "<USER_HOME>/miniconda3/lib/python3.13/pathlib/_abc.py",
+          "line": 130,
+          "function": "with_segments",
+          "primitive_calls": 10706,
+          "calls": 10706,
+          "self_s": 0.005490506,
+          "cumulative_s": 0.035346393000000004
+        },
+        {
+          "file": "<USER_HOME>/miniconda3/lib/python3.13/pathlib/_local.py",
+          "line": 510,
+          "function": "stat",
+          "primitive_calls": 4506,
+          "calls": 4506,
+          "self_s": 0.001068767,
+          "cumulative_s": 0.033381392
+        },
+        {
+          "file": "~",
+          "line": 0,
+          "function": "<built-in method posix.stat>",
+          "primitive_calls": 4506,
+          "calls": 4506,
+          "self_s": 0.00895078,
+          "cumulative_s": 0.032312625000000005
+        },
+        {
+          "file": "<USER_HOME>/miniconda3/lib/python3.13/pathlib/_abc.py",
+          "line": 194,
+          "function": "stem",
+          "primitive_calls": 2507,
+          "calls": 2507,
+          "self_s": 0.001106641,
+          "cumulative_s": 0.027047477
+        },
+        {
+          "file": "<USER_HOME>/miniconda3/lib/python3.13/pathlib/_local.py",
+          "line": 498,
+          "function": "__init__",
+          "primitive_calls": 10707,
+          "calls": 10707,
+          "self_s": 0.004508644,
+          "cumulative_s": 0.026363284
+        },
+        {
+          "file": "<USER_HOME>/miniconda3/lib/python3.13/pathlib/_local.py",
+          "line": 346,
+          "function": "name",
+          "primitive_calls": 2508,
+          "calls": 2508,
+          "self_s": 0.000707253,
+          "cumulative_s": 0.025486994000000002
+        },
+        {
+          "file": "<USER_HOME>/miniconda3/lib/python3.13/pathlib/_local.py",
+          "line": 307,
+          "function": "_tail",
+          "primitive_calls": 9612,
+          "calls": 9612,
+          "self_s": 0.003679856,
+          "cumulative_s": 0.025289438
+        },
+        {
+          "file": "<DATA_ROOT>/wrf_gpu2/release_bundles/v0.4.3/src/src/gpuwrf/runtime/aot_cheap_key.py",
+          "line": 523,
+          "function": "_source_tree_content_digest",
+          "primitive_calls": 1,
+          "calls": 1,
+          "self_s": 0.0011832980000000002,
+          "cumulative_s": 0.024222149000000002
+        },
+        {
+          "file": "<USER_HOME>/miniconda3/lib/python3.13/pathlib/_local.py",
+          "line": 140,
+          "function": "joinpath",
+          "primitive_calls": 4506,
+          "calls": 4506,
+          "self_s": 0.0016919160000000001,
+          "cumulative_s": 0.023910696000000002
+        },
+        {
+          "file": "<USER_HOME>/miniconda3/lib/python3.13/pathlib/_local.py",
+          "line": 166,
+          "function": "__fspath__",
+          "primitive_calls": 5545,
+          "calls": 5545,
+          "self_s": 0.0015376510000000001,
+          "cumulative_s": 0.023715388
+        },
+        {
+          "file": "<USER_HOME>/miniconda3/lib/python3.13/pathlib/_local.py",
+          "line": 227,
+          "function": "__str__",
+          "primitive_calls": 8275,
+          "calls": 8275,
+          "self_s": 0.0026788330000000003,
+          "cumulative_s": 0.022347428000000003
+        },
+        {
+          "file": "<USER_HOME>/miniconda3/lib/python3.13/pathlib/_local.py",
+          "line": 117,
+          "function": "__init__",
+          "primitive_calls": 10707,
+          "calls": 10707,
+          "self_s": 0.01305005,
+          "cumulative_s": 0.02185464
+        },
+        {
+          "file": "<USER_HOME>/miniconda3/lib/python3.13/pathlib/_local.py",
+          "line": 257,
+          "function": "_parse_path",
+          "primitive_calls": 4508,
+          "calls": 4508,
+          "self_s": 0.009986296,
+          "cumulative_s": 0.019507885000000003
+        },
+        {
+          "file": "<USER_HOME>/miniconda3/lib/python3.13/pathlib/_local.py",
+          "line": 277,
+          "function": "_raw_path",
+          "primitive_calls": 4508,
+          "calls": 4508,
+          "self_s": 0.002701507,
+          "cumulative_s": 0.018849735000000003
+        },
+        {
+          "file": "<USER_HOME>/miniconda3/lib/python3.13/pathlib/_local.py",
+          "line": 289,
+          "function": "drive",
+          "primitive_calls": 6585,
+          "calls": 6585,
+          "self_s": 0.0019622660000000003,
+          "cumulative_s": 0.018710304
+        },
+        {
+          "file": "<USER_HOME>/miniconda3/lib/python3.13/pathlib/_local.py",
+          "line": 539,
+          "function": "read_text",
+          "primitive_calls": 519,
+          "calls": 519,
+          "self_s": 0.0007904180000000001,
+          "cumulative_s": 0.015673832000000002
+        },
+        {
+          "file": "<frozen posixpath>",
+          "line": 72,
+          "function": "join",
+          "primitive_calls": 4506,
+          "calls": 4506,
+          "self_s": 0.00943101,
+          "cumulative_s": 0.015381562000000001
+        },
+        {
+          "file": "<USER_HOME>/miniconda3/lib/python3.13/pathlib/_abc.py",
+          "line": 628,
+          "function": "read_text",
+          "primitive_calls": 519,
+          "calls": 519,
+          "self_s": 0.000864526,
+          "cumulative_s": 0.014793633
+        },
+        {
+          "file": "<USER_HOME>/miniconda3/lib/python3.13/pathlib/_local.py",
+          "line": 245,
+          "function": "_from_parsed_parts",
+          "primitive_calls": 4200,
+          "calls": 4200,
+          "self_s": 0.0019092210000000002,
+          "cumulative_s": 0.013565543000000001
+        },
+        {
+          "file": "<USER_HOME>/miniconda3/lib/python3.13/pathlib/_local.py",
+          "line": 354,
+          "function": "with_name",
+          "primitive_calls": 2507,
+          "calls": 2507,
+          "self_s": 0.002576581,
+          "cumulative_s": 0.012228898
+        }
+      ],
+      "top_self": [
+        {
+          "file": "<USER_HOME>/miniconda3/lib/python3.13/ast.py",
+          "line": 284,
+          "function": "iter_child_nodes",
+          "primitive_calls": 7103595,
+          "calls": 7103595,
+          "self_s": 1.8660809100000002,
+          "cumulative_s": 3.8515307670000003
+        },
+        {
+          "file": "~",
+          "line": 0,
+          "function": "<built-in method builtins.compile>",
+          "primitive_calls": 519,
+          "calls": 519,
+          "self_s": 1.3287408840000001,
+          "cumulative_s": 1.3287408840000001
+        },
+        {
+          "file": "<USER_HOME>/miniconda3/lib/python3.13/ast.py",
+          "line": 272,
+          "function": "iter_fields",
+          "primitive_calls": 8906111,
+          "calls": 8906111,
+          "self_s": 1.070761767,
+          "cumulative_s": 1.4804995730000001
+        },
+        {
+          "file": "<USER_HOME>/miniconda3/lib/python3.13/ast.py",
+          "line": 384,
+          "function": "walk",
+          "primitive_calls": 3552576,
+          "calls": 3552576,
+          "self_s": 0.9571380030000001,
+          "cumulative_s": 5.744847495
+        },
+        {
+          "file": "~",
+          "line": 0,
+          "function": "<built-in method builtins.isinstance>",
+          "primitive_calls": 16273469,
+          "calls": 16273469,
+          "self_s": 0.9402337590000001,
+          "cumulative_s": 0.9402377390000001
+        },
+        {
+          "file": "<DATA_ROOT>/wrf_gpu2/release_bundles/v0.4.3/src/src/gpuwrf/runtime/aot_cheap_key.py",
+          "line": 446,
+          "function": "_gpuwrf_imports_in_file",
+          "primitive_calls": 519,
+          "calls": 519,
+          "self_s": 0.8635454760000001,
+          "cumulative_s": 8.832686917
+        },
+        {
+          "file": "~",
+          "line": 0,
+          "function": "<method 'extend' of 'collections.deque' objects>",
+          "primitive_calls": 3552057,
+          "calls": 3552057,
+          "self_s": 0.716493217,
+          "cumulative_s": 4.568024584000001
+        },
+        {
+          "file": "<USER_HOME>/miniconda3/lib/python3.13/ast.py",
+          "line": 30,
+          "function": "parse",
+          "primitive_calls": 519,
+          "calls": 519,
+          "self_s": 0.446365067,
+          "cumulative_s": 1.7760556900000002
+        },
+        {
+          "file": "~",
+          "line": 0,
+          "function": "<built-in method builtins.getattr>",
+          "primitive_calls": 5358045,
+          "calls": 5358045,
+          "self_s": 0.410288482,
+          "cumulative_s": 0.410288482
+        },
+        {
+          "file": "<DATA_ROOT>/wrf_gpu2/release_bundles/v0.4.3/src/src/gpuwrf/runtime/aot_cheap_key.py",
+          "line": 492,
+          "function": "_trace_reachable_source_files",
+          "primitive_calls": 1,
+          "calls": 1,
+          "self_s": 0.246609021,
+          "cumulative_s": 9.198071383
+        },
+        {
+          "file": "~",
+          "line": 0,
+          "function": "<method 'popleft' of 'collections.deque' objects>",
+          "primitive_calls": 3552057,
+          "calls": 3552057,
+          "self_s": 0.21899942,
+          "cumulative_s": 0.21899942
+        },
+        {
+          "file": "<USER_HOME>/miniconda3/lib/python3.13/pathlib/_local.py",
+          "line": 117,
+          "function": "__init__",
+          "primitive_calls": 10707,
+          "calls": 10707,
+          "self_s": 0.01305005,
+          "cumulative_s": 0.02185464
+        },
+        {
+          "file": "<USER_HOME>/miniconda3/lib/python3.13/pathlib/_local.py",
+          "line": 257,
+          "function": "_parse_path",
+          "primitive_calls": 4508,
+          "calls": 4508,
+          "self_s": 0.009986296,
+          "cumulative_s": 0.019507885000000003
+        },
+        {
+          "file": "<frozen posixpath>",
+          "line": 72,
+          "function": "join",
+          "primitive_calls": 4506,
+          "calls": 4506,
+          "self_s": 0.00943101,
+          "cumulative_s": 0.015381562000000001
+        },
+        {
+          "file": "~",
+          "line": 0,
+          "function": "<built-in method posix.stat>",
+          "primitive_calls": 4506,
+          "calls": 4506,
+          "self_s": 0.00895078,
+          "cumulative_s": 0.032312625000000005
+        },
+        {
+          "file": "~",
+          "line": 0,
+          "function": "<built-in method _io.open>",
+          "primitive_calls": 1038,
+          "calls": 1038,
+          "self_s": 0.007493459,
+          "cumulative_s": 0.008303525
+        },
+        {
+          "file": "~",
+          "line": 0,
+          "function": "<built-in method sys.intern>",
+          "primitive_calls": 51907,
+          "calls": 51907,
+          "self_s": 0.006778828000000001,
+          "cumulative_s": 0.006778828000000001
+        },
+        {
+          "file": "<USER_HOME>/miniconda3/lib/python3.13/pathlib/_abc.py",
+          "line": 130,
+          "function": "with_segments",
+          "primitive_calls": 10706,
+          "calls": 10706,
+          "self_s": 0.005490506,
+          "cumulative_s": 0.035346393000000004
+        },
+        {
+          "file": "~",
+          "line": 0,
+          "function": "<built-in method _hashlib.openssl_sha256>",
+          "primitive_calls": 521,
+          "calls": 521,
+          "self_s": 0.005420652000000001,
+          "cumulative_s": 0.005420652000000001
+        },
+        {
+          "file": "<DATA_ROOT>/wrf_gpu2/release_bundles/v0.4.3/src/src/gpuwrf/runtime/aot_cheap_key.py",
+          "line": 431,
+          "function": "_module_to_source_path",
+          "primitive_calls": 2507,
+          "calls": 2507,
+          "self_s": 0.004546335,
+          "cumulative_s": 0.11373561600000001
+        },
+        {
+          "file": "<USER_HOME>/miniconda3/lib/python3.13/pathlib/_local.py",
+          "line": 498,
+          "function": "__init__",
+          "primitive_calls": 10707,
+          "calls": 10707,
+          "self_s": 0.004508644,
+          "cumulative_s": 0.026363284
+        },
+        {
+          "file": "<USER_HOME>/miniconda3/lib/python3.13/pathlib/_local.py",
+          "line": 307,
+          "function": "_tail",
+          "primitive_calls": 9612,
+          "calls": 9612,
+          "self_s": 0.003679856,
+          "cumulative_s": 0.025289438
+        },
+        {
+          "file": "~",
+          "line": 0,
+          "function": "<method 'read' of '_io.TextIOWrapper' objects>",
+          "primitive_calls": 519,
+          "calls": 519,
+          "self_s": 0.0034148110000000002,
+          "cumulative_s": 0.00530201
+        },
+        {
+          "file": "~",
+          "line": 0,
+          "function": "<built-in method posix.fspath>",
+          "primitive_calls": 49922,
+          "calls": 49922,
+          "self_s": 0.003110737,
+          "cumulative_s": 0.0031277870000000004
+        },
+        {
+          "file": "~",
+          "line": 0,
+          "function": "<method 'startswith' of 'str' objects>",
+          "primitive_calls": 31447,
+          "calls": 31447,
+          "self_s": 0.0028578460000000003,
+          "cumulative_s": 0.0028578460000000003
+        }
+      ]
+    }
+  }
+}

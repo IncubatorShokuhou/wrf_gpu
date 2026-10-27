@@ -3,7 +3,7 @@
 | `aer_opt` | WRF 4.7.1 meaning | Port status |
 | --- | --- | --- |
 | 0 | no aerosol in RRTMG (Registry default) | Released default program, unchanged |
-| 1 | Tegen/ECMWF six-type monthly climatology in RRTMG SW | Experimental. CPU-oracle-qualified; GPU 24 h forecast matches original CPU-WRF (WN3 0227 three nests, frozen D6 PASS, every field and frame) |
+| 1 | Tegen/ECMWF six-type monthly climatology in RRTMG SW | Experimental. CPU-oracle-qualified; GPU 24 h forecast matches original CPU-WRF (Tenerife three nests, 27 February 2026, frozen D6 PASS, every field and frame) |
 | 2 | `aer_type` + AOD550 inputs | Refused (not ported) |
 | 3 | Thompson mp28 water/ice-friendly aerosol optics in RRTMG SW | Experimental. CPU-oracle-qualified; GPU 24 h forecast matches original CPU-WRF (Swiss mp28, frozen D6 PASS, every field and frame) |
 
@@ -81,25 +81,25 @@ the pristine source).
 
 ## Evidence
 
-The pristine oracle (proofs/w41_aerosol/, AE01) is unchanged WRF V4.7.1 built from
+The pristine oracle (proofs/w41_aerosol/) is unchanged WRF V4.7.1 built from
 `libwrflib.a`:
 
 * **Units**: `aerosol_in` on 2,703 points (table nodes and both periodic edges);
-  `aer_time_int` on 520 julians; `aer_p_int` on 37 columns (31 real WN3 0227 columns, plus
+  `aer_time_int` on 520 julians; `aer_p_int` on 37 columns (31 real Tenerife columns of 27 February 2026, plus
   columns above and below the table and exact table-level hits). All are bitwise equal in the
   port.
-* **RRTMG_SWRAD** (RE01 arm-A caller wiring: Thompson radii, `cldovrlp=2`) on 186 real WN3
-  0227 d02/d03 columns:
+* **RRTMG_SWRAD** (caller wiring with Thompson radii and `cldovrlp=2`) on 186 real Tenerife
+  d02/d03 columns of 27 February 2026:
   * 8 cloud categories, day and night;
   * 5 dates across the year, aer_opt 0/1;
   * an aerod × 10 stress arm.
 * **Result**: the release path stays inside the frozen tier-1 RRTMG bounds on every
   aer_opt=1 arm, for surface/TOA/direct, clear-sky fluxes, interface profiles and heating.
   The tests are tests/v025/w41_aerosol/ and include genuine mutants of each wiring step.
-* **aer_opt=3 oracle** (AE07, the same 186 columns, 6 arms: own date, mid-May, mid-July; QNWFA/QNIFA ×0.1, ×1, ×10):
+* **aer_opt=3 oracle** (the same 186 columns, 6 arms: own date, mid-May, mid-July; QNWFA/QNIFA ×0.1, ×1, ×10):
   * `gt_aod` is bitwise; the band optics agree to ≤ 3e-6 relative;
   * the release path stays inside the frozen tier-1 bounds for every output, with one exception, explained next.
-* **Where WRF itself is not reproducible** (AE09): gt_aod's per-layer AOD floor of 1e-3 also applies to the thin
+* **Where WRF itself is not reproducible**: gt_aod's per-layer AOD floor of 1e-3 also applies to the thin
   top layers. In one column at high sun (coszen 0.97, mid-May) the RRTMG two-stream for such a layer sits on an
   ill-conditioned branch. A 32-member ensemble of the unchanged WRF chain, with T and QNWFA moved by one REAL
   ulp, moves WRF's own heating rate in that layer between −7.8e-4 and +4.8e-4 K/s. It also moves WRF's own
@@ -113,18 +113,18 @@ The pristine oracle (proofs/w41_aerosol/, AE01) is unchanged WRF V4.7.1 built fr
   TAOD5502D. The worst-hour errors are T2 0.23 K, U10/V10 0.51/0.56 m/s and RAINNC 0.81 mm (the mp28 run without
   aerosol shows the same RAINNC, 0.80 mm). TAOD5502D matches CPU-WRF to 1e-4, and clear-sky surface SW at noon to
   0.05 W/m².
-  * **E41 cubin gate on that run (A3c): FAIL on the conservative kInput rule.** Three optimized-HLO kInput transpose
+  * **Compiled-kernel resource check on that run: FAIL on the conservative kInput rule.** Three optimized-HLO kInput transpose
     fusions exceed 500 instructions (658, 879 and 1,370). They come from the Thompson mp28 source families
     (DOUBLE-island saturation/RSLF/RSIF code), which are pre-existing. These are not byte-identical kernels: the
     v0.4.0 mp28 run without aerosol had two such flags (741 and 1,439). Maximum STACK is 16 B, and no non-leaf
     callee exceeds 1,000 SASS. The aerosol code adds no flagged fusion. Its optics fusion (720 instructions in
-    the first run, A3b) is kept out of the transpose by value-neutral barriers.
-* **aer_opt=1 coupled forecast** (WN3 0227, three nests, 24 h, RTX 5090) against an original CPU-WRF run of the same
+    the first run) is kept out of the transpose by value-neutral barriers.
+* **aer_opt=1 coupled forecast** (Tenerife, 27 February 2026, three nests, 24 h, RTX 5090) against an original CPU-WRF run of the same
   namelist: the frozen D6 gate passes on d01, d02 and d03, with all CPU history fields present in all 25 frames.
   The worst-hour T2 error is 0.04/0.03/0.08 K. Clear-sky surface SW (which carries the aerosol) agrees to
   0.15/0.16/0.35 W/m² RMSE; for scale, the aerosol itself lowers it by 20–23 W/m² against the original aer_opt=0
   run. This also shows that the nests receive the parent's aerosol as WRF does.
-  * E41 for this configuration was measured on a 3 h re-compile of the same tree and environment, not on the
-    24 h run's own binary, whose cache was lost (cold compiles are not byte-deterministic, E99). Maximum STACK
+  * The compiled-kernel resource check for this configuration was measured on a 3 h re-compile of the same tree and environment, not on the
+    24 h run's own binary, whose cache was lost (cold compiles are not byte-deterministic). Maximum STACK
     is 32 B, with no non-leaf or kInput flags. The scanner verdict is INCOMPLETE because slim AOT metadata
     hides kInput sizes, so this result is a re-compile diagnostic only.

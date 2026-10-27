@@ -1,0 +1,1698 @@
+{
+  "scope": "Join node activity to same-artifact HLO source metadata (E82/E182).\n\nReceipt/CUDA correlation assigns the owning domain. Normalized exact HLO\ninstruction names identify fusions; Pallas names come from that HLO's backend\nconfig. Ambiguous source families remain mixed, never split by instruction\ncount. Unmatched launch names remain unknown. Node-profile time is diagnostic,\nnot an end-to-end speed verdict or WRF-fidelity check.\n",
+  "hlo_bindings": [
+    {
+      "version": "v032",
+      "program": "d01",
+      "cache_entry": "<USER_HOME>/wrf_gpu2_lanes/w44-perf/gpu/cache_v032/jax/jit__advance_chunk_fori-13eea92af016f72d23e70f877889ab155d7daf69887f5ae0a11dd6fd58ceb2cb-cache",
+      "native_record2_sha256": "e71ecefb24ac6cd00cd8f3bde9ad75b8424bc727f9c9ddb8a16dd182409a3102",
+      "hlo_file": "<USER_HOME>/wrf_gpu2_lanes/w44-perf/ACTUAL_HLO/v032_d01.hlo",
+      "hlo_sha256": "f6eea4a35aedb3bc16955dfbed228906511065c71deeccf5b7784cba057f9cae",
+      "native_binding_identity": {}
+    },
+    {
+      "version": "v032",
+      "program": "d02",
+      "cache_entry": "<USER_HOME>/wrf_gpu2_lanes/w44-perf/gpu/cache_v032/jax/jit__advance_chunk_fori-89739bd9e551b1f96fbd3736b6b922ca326c14d71753b6ff92509ffb248aea2b-cache",
+      "native_record2_sha256": "a47c45f58a281f8eceb64b0dbfce43a2852a288a9143220b3d1b4b2a65354b67",
+      "hlo_file": "<USER_HOME>/wrf_gpu2_lanes/w44-perf/ACTUAL_HLO/v032_d02.hlo",
+      "hlo_sha256": "17b329f5a2ce4826451e8dd54cddc86b177fdbdfe200d1af75cb5a17aec1f7a1",
+      "native_binding_identity": {}
+    },
+    {
+      "version": "v043",
+      "program": "d01",
+      "cache_entry": "<DATA_ROOT>/wrf_gpu2/release_bundles/v0.4.3/jax/jit__advance_chunk_fori-13c9f753247c668e28e5960c42eb34fc817f44c88bf9cd10f6373b0386490f8c-cache",
+      "native_record2_sha256": "b93bb8873562487d2aa6678953f1e786d58d098ccd92ebc4b62a6de7b5a8ef01",
+      "hlo_file": "<USER_HOME>/wrf_gpu2_lanes/w44-perf/ACTUAL_HLO/v043_d01.hlo",
+      "hlo_sha256": "9e6fe3b1f7121fb2c7511c8c2051014ba4ca5225df53ef89a8df1019bcc163ba",
+      "native_binding_identity": {
+        "0": {
+          "equal": true,
+          "actual": "965fa810ebdad521a83fb00528d0d4c8838a57e149b2b65e1738d0ea0f155c80",
+          "expected": "965fa810ebdad521a83fb00528d0d4c8838a57e149b2b65e1738d0ea0f155c80"
+        },
+        "1": {
+          "equal": true,
+          "actual": "4c59b5d4352a070e16866ecc3efa6c14e18ca9f622a95cabb92c54a63b44f8ee",
+          "expected": "4c59b5d4352a070e16866ecc3efa6c14e18ca9f622a95cabb92c54a63b44f8ee"
+        },
+        "2": {
+          "equal": true,
+          "actual": "b93bb8873562487d2aa6678953f1e786d58d098ccd92ebc4b62a6de7b5a8ef01",
+          "expected": "b93bb8873562487d2aa6678953f1e786d58d098ccd92ebc4b62a6de7b5a8ef01"
+        }
+      }
+    },
+    {
+      "version": "v043",
+      "program": "d02",
+      "cache_entry": "<DATA_ROOT>/wrf_gpu2/release_bundles/v0.4.3/jax/jit__advance_chunk_fori-e3bbc3ec7def961a146b2683d8316b8a2964c715ccee231a76c2fd1184a69003-cache",
+      "native_record2_sha256": "4ac86066eb486ffe157c39a16b0460fb08826f23b065f397b6819fa66cb15f2e",
+      "hlo_file": "<USER_HOME>/wrf_gpu2_lanes/w44-perf/ACTUAL_HLO/v043_d02.hlo",
+      "hlo_sha256": "8e2d866adcf085ea6bf76839ec9e2e86035e97d8219dcc864b9fa2a9de5154cf",
+      "native_binding_identity": {
+        "0": {
+          "equal": true,
+          "actual": "c383bcdb0896c26fbbd8cacaaaa0c9de3f824ef70204446c652e9f7a4dea8017",
+          "expected": "c383bcdb0896c26fbbd8cacaaaa0c9de3f824ef70204446c652e9f7a4dea8017"
+        },
+        "1": {
+          "equal": true,
+          "actual": "988febf844af8b14c49cf6dc0064ad833e3f5d15c5e0557172faca7f84b1e567",
+          "expected": "988febf844af8b14c49cf6dc0064ad833e3f5d15c5e0557172faca7f84b1e567"
+        },
+        "2": {
+          "equal": true,
+          "actual": "4ac86066eb486ffe157c39a16b0460fb08826f23b065f397b6819fa66cb15f2e",
+          "expected": "4ac86066eb486ffe157c39a16b0460fb08826f23b065f397b6819fa66cb15f2e"
+        }
+      }
+    }
+  ],
+  "arms": {
+    "N32": {
+      "arm": "N32",
+      "version": "v032",
+      "captured_roots": 3,
+      "kernel_count": 8292,
+      "kernel_sum_ms": 93.476049,
+      "family_count_ns": {
+        "dycore/advection": [
+          3069,
+          54891225
+        ],
+        "MYNN": [
+          351,
+          6516109
+        ],
+        "mixed:MYNN+boundary/nesting+layout": [
+          189,
+          3678507
+        ],
+        "mixed:boundary/nesting+dycore/advection": [
+          690,
+          3092808
+        ],
+        "Thompson": [
+          24,
+          2941736
+        ],
+        "mixed:MYNN+boundary/nesting": [
+          483,
+          2305881
+        ],
+        "mixed:Noah-MP+dycore/advection": [
+          33,
+          2193697
+        ],
+        "glue/other": [
+          654,
+          2131468
+        ],
+        "boundary/nesting": [
+          753,
+          1800439
+        ],
+        "mixed:MYNN+Noah-MP+boundary/nesting+dycore/advection+layout": [
+          18,
+          1581186
+        ],
+        "mixed:dycore/advection+layout": [
+          45,
+          1476740
+        ],
+        "mixed:Thompson+boundary/nesting+layout": [
+          18,
+          1321316
+        ],
+        "mixed:MYNN+boundary/nesting+dycore/advection+layout": [
+          36,
+          1130562
+        ],
+        "Noah-MP": [
+          333,
+          993750
+        ],
+        "unmatched": [
+          315,
+          860607
+        ],
+        "surface-layer": [
+          240,
+          845857
+        ],
+        "unattributed": [
+          399,
+          790162
+        ],
+        "mixed:boundary/nesting+dycore/advection+layout": [
+          18,
+          592898
+        ],
+        "mixed:Noah-MP+surface-layer": [
+          111,
+          555552
+        ],
+        "mixed:MYNN+Noah-MP+boundary/nesting+layout+surface-layer": [
+          45,
+          554335
+        ],
+        "mixed:Noah-MP+boundary/nesting+layout+surface-layer": [
+          27,
+          407517
+        ],
+        "mixed:MYNN+Noah-MP+boundary/nesting": [
+          54,
+          369218
+        ],
+        "layout": [
+          63,
+          325088
+        ],
+        "mixed:MYNN+layout": [
+          45,
+          303681
+        ],
+        "mixed:MYNN+boundary/nesting+dycore/advection": [
+          9,
+          236864
+        ],
+        "gravity-wave-drag": [
+          51,
+          178176
+        ],
+        "mixed:MYNN+Noah-MP+boundary/nesting+surface-layer": [
+          15,
+          159424
+        ],
+        "mixed:Noah-MP+boundary/nesting+dycore/advection+surface-layer": [
+          6,
+          158080
+        ],
+        "mixed:Thompson+boundary/nesting": [
+          45,
+          151808
+        ],
+        "mixed:boundary/nesting+dycore/advection+gravity-wave-drag": [
+          9,
+          148000
+        ],
+        "mixed:boundary/nesting+layout": [
+          27,
+          128736
+        ],
+        "mixed:MYNN+boundary/nesting+layout+surface-layer": [
+          9,
+          124608
+        ],
+        "mixed:MYNN+Noah-MP+layout+surface-layer": [
+          9,
+          78398
+        ],
+        "mixed:MYNN+Noah-MP+surface-layer": [
+          12,
+          77023
+        ],
+        "mixed:MYNN+boundary/nesting+surface-layer": [
+          12,
+          70529
+        ],
+        "mixed:Noah-MP+boundary/nesting+surface-layer": [
+          15,
+          68256
+        ],
+        "mixed:Thompson+layout": [
+          9,
+          43968
+        ],
+        "mixed:Noah-MP+boundary/nesting+dycore/advection": [
+          3,
+          40704
+        ],
+        "mixed:MYNN+Noah-MP+boundary/nesting+dycore/advection+surface-layer": [
+          3,
+          37984
+        ],
+        "mixed:boundary/nesting+surface-layer": [
+          6,
+          31808
+        ],
+        "mixed:MYNN+Noah-MP+boundary/nesting+dycore/advection": [
+          3,
+          25952
+        ],
+        "mixed:boundary/nesting+layout+surface-layer": [
+          18,
+          24032
+        ],
+        "mixed:boundary/nesting+gravity-wave-drag": [
+          3,
+          11776
+        ],
+        "mixed:Noah-MP+layout": [
+          9,
+          9568
+        ],
+        "mixed:Noah-MP+boundary/nesting": [
+          3,
+          5376
+        ],
+        "RRTMG-SW": [
+          3,
+          4640
+        ]
+      },
+      "domain_family_count_ns": {
+        "d01:MYNN": [
+          90,
+          764513
+        ],
+        "d01:Noah-MP": [
+          81,
+          213375
+        ],
+        "d01:RRTMG-SW": [
+          3,
+          4640
+        ],
+        "d01:Thompson": [
+          15,
+          438755
+        ],
+        "d01:boundary/nesting": [
+          339,
+          464510
+        ],
+        "d01:dycore/advection": [
+          891,
+          5910246
+        ],
+        "d01:glue/other": [
+          186,
+          228981
+        ],
+        "d01:gravity-wave-drag": [
+          51,
+          178176
+        ],
+        "d01:mixed:MYNN+Noah-MP+boundary/nesting": [
+          18,
+          43200
+        ],
+        "d01:mixed:MYNN+Noah-MP+boundary/nesting+dycore/advection": [
+          3,
+          25952
+        ],
+        "d01:mixed:MYNN+Noah-MP+boundary/nesting+dycore/advection+surface-layer": [
+          3,
+          37984
+        ],
+        "d01:mixed:MYNN+Noah-MP+boundary/nesting+surface-layer": [
+          15,
+          159424
+        ],
+        "d01:mixed:MYNN+Noah-MP+surface-layer": [
+          3,
+          15743
+        ],
+        "d01:mixed:MYNN+boundary/nesting": [
+          159,
+          438145
+        ],
+        "d01:mixed:MYNN+boundary/nesting+dycore/advection": [
+          9,
+          236864
+        ],
+        "d01:mixed:MYNN+boundary/nesting+surface-layer": [
+          12,
+          70529
+        ],
+        "d01:mixed:Noah-MP+boundary/nesting": [
+          3,
+          5376
+        ],
+        "d01:mixed:Noah-MP+boundary/nesting+dycore/advection": [
+          3,
+          40704
+        ],
+        "d01:mixed:Noah-MP+boundary/nesting+dycore/advection+surface-layer": [
+          6,
+          158080
+        ],
+        "d01:mixed:Noah-MP+boundary/nesting+surface-layer": [
+          6,
+          25248
+        ],
+        "d01:mixed:Noah-MP+dycore/advection": [
+          6,
+          101728
+        ],
+        "d01:mixed:Noah-MP+surface-layer": [
+          30,
+          196320
+        ],
+        "d01:mixed:Thompson+boundary/nesting": [
+          45,
+          151808
+        ],
+        "d01:mixed:boundary/nesting+dycore/advection": [
+          168,
+          1150883
+        ],
+        "d01:mixed:boundary/nesting+dycore/advection+gravity-wave-drag": [
+          9,
+          148000
+        ],
+        "d01:mixed:boundary/nesting+gravity-wave-drag": [
+          3,
+          11776
+        ],
+        "d01:mixed:boundary/nesting+surface-layer": [
+          6,
+          31808
+        ],
+        "d01:surface-layer": [
+          60,
+          193984
+        ],
+        "d01:unattributed": [
+          345,
+          742016
+        ],
+        "d01:unmatched": [
+          18,
+          37056
+        ],
+        "d02:MYNN": [
+          261,
+          5751596
+        ],
+        "d02:Noah-MP": [
+          252,
+          780375
+        ],
+        "d02:Thompson": [
+          9,
+          2502981
+        ],
+        "d02:boundary/nesting": [
+          414,
+          1335929
+        ],
+        "d02:dycore/advection": [
+          2178,
+          48980979
+        ],
+        "d02:glue/other": [
+          468,
+          1902487
+        ],
+        "d02:layout": [
+          63,
+          325088
+        ],
+        "d02:mixed:MYNN+Noah-MP+boundary/nesting": [
+          36,
+          326018
+        ],
+        "d02:mixed:MYNN+Noah-MP+boundary/nesting+dycore/advection+layout": [
+          18,
+          1581186
+        ],
+        "d02:mixed:MYNN+Noah-MP+boundary/nesting+layout+surface-layer": [
+          45,
+          554335
+        ],
+        "d02:mixed:MYNN+Noah-MP+layout+surface-layer": [
+          9,
+          78398
+        ],
+        "d02:mixed:MYNN+Noah-MP+surface-layer": [
+          9,
+          61280
+        ],
+        "d02:mixed:MYNN+boundary/nesting": [
+          324,
+          1867736
+        ],
+        "d02:mixed:MYNN+boundary/nesting+dycore/advection+layout": [
+          36,
+          1130562
+        ],
+        "d02:mixed:MYNN+boundary/nesting+layout": [
+          189,
+          3678507
+        ],
+        "d02:mixed:MYNN+boundary/nesting+layout+surface-layer": [
+          9,
+          124608
+        ],
+        "d02:mixed:MYNN+layout": [
+          45,
+          303681
+        ],
+        "d02:mixed:Noah-MP+boundary/nesting+layout+surface-layer": [
+          27,
+          407517
+        ],
+        "d02:mixed:Noah-MP+boundary/nesting+surface-layer": [
+          9,
+          43008
+        ],
+        "d02:mixed:Noah-MP+dycore/advection": [
+          27,
+          2091969
+        ],
+        "d02:mixed:Noah-MP+layout": [
+          9,
+          9568
+        ],
+        "d02:mixed:Noah-MP+surface-layer": [
+          81,
+          359232
+        ],
+        "d02:mixed:Thompson+boundary/nesting+layout": [
+          18,
+          1321316
+        ],
+        "d02:mixed:Thompson+layout": [
+          9,
+          43968
+        ],
+        "d02:mixed:boundary/nesting+dycore/advection": [
+          522,
+          1941925
+        ],
+        "d02:mixed:boundary/nesting+dycore/advection+layout": [
+          18,
+          592898
+        ],
+        "d02:mixed:boundary/nesting+layout": [
+          27,
+          128736
+        ],
+        "d02:mixed:boundary/nesting+layout+surface-layer": [
+          18,
+          24032
+        ],
+        "d02:mixed:dycore/advection+layout": [
+          45,
+          1476740
+        ],
+        "d02:surface-layer": [
+          180,
+          651873
+        ],
+        "d02:unattributed": [
+          54,
+          48146
+        ],
+        "force:unmatched": [
+          297,
+          823551
+        ]
+      },
+      "unmatched_kernel_count": 315,
+      "unmatched_kernel_ms": 0.860607
+    },
+    "N43": {
+      "arm": "N43",
+      "version": "v043",
+      "captured_roots": 3,
+      "kernel_count": 10227,
+      "kernel_sum_ms": 103.145505,
+      "family_count_ns": {
+        "dycore/advection": [
+          3507,
+          58032961
+        ],
+        "MYNN": [
+          378,
+          7070933
+        ],
+        "Thompson": [
+          15,
+          4943499
+        ],
+        "mixed:MYNN+boundary/nesting+layout": [
+          300,
+          4773196
+        ],
+        "boundary/nesting": [
+          948,
+          2644287
+        ],
+        "mixed:boundary/nesting+dycore/advection": [
+          666,
+          2589123
+        ],
+        "mixed:MYNN+boundary/nesting": [
+          435,
+          2401086
+        ],
+        "mixed:boundary/nesting+dycore/advection+layout": [
+          27,
+          2209125
+        ],
+        "mixed:MYNN+Noah-MP+boundary/nesting+dycore/advection+layout": [
+          18,
+          2158243
+        ],
+        "unmatched": [
+          873,
+          1741535
+        ],
+        "mixed:Thompson+boundary/nesting+layout": [
+          21,
+          1724994
+        ],
+        "mixed:MYNN+boundary/nesting+dycore/advection+layout": [
+          42,
+          1633990
+        ],
+        "Noah-MP": [
+          696,
+          1617839
+        ],
+        "glue/other": [
+          579,
+          1563230
+        ],
+        "mixed:dycore/advection+layout": [
+          108,
+          1210842
+        ],
+        "surface-layer": [
+          381,
+          1194145
+        ],
+        "layout": [
+          135,
+          689565
+        ],
+        "mixed:KF+boundary/nesting+dycore/advection": [
+          105,
+          469217
+        ],
+        "mixed:Noah-MP+boundary/nesting+layout+surface-layer": [
+          39,
+          460120
+        ],
+        "mixed:MYNN+layout": [
+          75,
+          434649
+        ],
+        "mixed:Noah-MP+surface-layer": [
+          114,
+          434549
+        ],
+        "mixed:MYNN+boundary/nesting+layout+surface-layer": [
+          33,
+          414591
+        ],
+        "hydrostatic-prep": [
+          12,
+          367839
+        ],
+        "mixed:MYNN+Noah-MP+boundary/nesting+layout+surface-layer": [
+          39,
+          353473
+        ],
+        "mixed:Thompson+layout": [
+          21,
+          346305
+        ],
+        "unattributed": [
+          201,
+          251740
+        ],
+        "gravity-wave-drag": [
+          48,
+          207232
+        ],
+        "mixed:MYNN+boundary/nesting+surface-layer": [
+          18,
+          167264
+        ],
+        "RRTMG-sampling": [
+          192,
+          153248
+        ],
+        "RRTMG-SW": [
+          57,
+          109374
+        ],
+        "mixed:Noah-MP+layout": [
+          21,
+          73856
+        ],
+        "mixed:boundary/nesting+layout": [
+          12,
+          71840
+        ],
+        "mixed:MYNN+Noah-MP+boundary/nesting+surface-layer": [
+          9,
+          70688
+        ],
+        "mixed:Noah-MP+boundary/nesting": [
+          15,
+          64064
+        ],
+        "mixed:KF+MYNN+Noah-MP+boundary/nesting+dycore/advection+layout": [
+          3,
+          56320
+        ],
+        "mixed:KF+Thompson+boundary/nesting+dycore/advection": [
+          3,
+          48544
+        ],
+        "mixed:MYNN+Noah-MP+boundary/nesting+dycore/advection+gravity-wave-drag+layout": [
+          3,
+          47520
+        ],
+        "mixed:Noah-MP+boundary/nesting+surface-layer": [
+          6,
+          45600
+        ],
+        "mixed:KF+Noah-MP+boundary/nesting+layout+surface-layer": [
+          3,
+          45184
+        ],
+        "mixed:MYNN+dycore/advection+layout": [
+          3,
+          40832
+        ],
+        "mixed:MYNN+Noah-MP+boundary/nesting+dycore/advection+layout+surface-layer": [
+          3,
+          31584
+        ],
+        "mixed:boundary/nesting+dycore/advection+gravity-wave-drag": [
+          6,
+          24960
+        ],
+        "mixed:layout+surface-layer": [
+          3,
+          24160
+        ],
+        "mixed:MYNN+boundary/nesting+gravity-wave-drag+layout": [
+          3,
+          23328
+        ],
+        "mixed:boundary/nesting+layout+surface-layer": [
+          27,
+          22912
+        ],
+        "mixed:Thompson+boundary/nesting": [
+          3,
+          21088
+        ],
+        "mixed:MYNN+layout+surface-layer": [
+          3,
+          19008
+        ],
+        "mixed:MYNN+Noah-MP+layout+surface-layer": [
+          3,
+          18336
+        ],
+        "mixed:Noah-MP+boundary/nesting+dycore/advection+layout+surface-layer": [
+          9,
+          16767
+        ],
+        "mixed:KF+dycore/advection": [
+          3,
+          6400
+        ],
+        "KF": [
+          3,
+          4320
+        ]
+      },
+      "domain_family_count_ns": {
+        "d01:KF": [
+          3,
+          4320
+        ],
+        "d01:MYNN": [
+          90,
+          787875
+        ],
+        "d01:Noah-MP": [
+          309,
+          699422
+        ],
+        "d01:RRTMG-SW": [
+          12,
+          10717
+        ],
+        "d01:Thompson": [
+          6,
+          443104
+        ],
+        "d01:boundary/nesting": [
+          480,
+          650305
+        ],
+        "d01:dycore/advection": [
+          1257,
+          7786985
+        ],
+        "d01:glue/other": [
+          234,
+          329739
+        ],
+        "d01:gravity-wave-drag": [
+          48,
+          207232
+        ],
+        "d01:hydrostatic-prep": [
+          3,
+          61344
+        ],
+        "d01:layout": [
+          72,
+          113280
+        ],
+        "d01:mixed:KF+MYNN+Noah-MP+boundary/nesting+dycore/advection+layout": [
+          3,
+          56320
+        ],
+        "d01:mixed:KF+Noah-MP+boundary/nesting+layout+surface-layer": [
+          3,
+          45184
+        ],
+        "d01:mixed:KF+Thompson+boundary/nesting+dycore/advection": [
+          3,
+          48544
+        ],
+        "d01:mixed:KF+boundary/nesting+dycore/advection": [
+          105,
+          469217
+        ],
+        "d01:mixed:KF+dycore/advection": [
+          3,
+          6400
+        ],
+        "d01:mixed:MYNN+Noah-MP+boundary/nesting+dycore/advection+gravity-wave-drag+layout": [
+          3,
+          47520
+        ],
+        "d01:mixed:MYNN+Noah-MP+boundary/nesting+dycore/advection+layout+surface-layer": [
+          3,
+          31584
+        ],
+        "d01:mixed:MYNN+Noah-MP+boundary/nesting+layout+surface-layer": [
+          12,
+          131265
+        ],
+        "d01:mixed:MYNN+Noah-MP+layout+surface-layer": [
+          3,
+          18336
+        ],
+        "d01:mixed:MYNN+boundary/nesting": [
+          84,
+          249025
+        ],
+        "d01:mixed:MYNN+boundary/nesting+dycore/advection+layout": [
+          15,
+          266464
+        ],
+        "d01:mixed:MYNN+boundary/nesting+gravity-wave-drag+layout": [
+          3,
+          23328
+        ],
+        "d01:mixed:MYNN+boundary/nesting+layout": [
+          57,
+          288609
+        ],
+        "d01:mixed:MYNN+boundary/nesting+layout+surface-layer": [
+          15,
+          84480
+        ],
+        "d01:mixed:MYNN+boundary/nesting+surface-layer": [
+          9,
+          25088
+        ],
+        "d01:mixed:MYNN+dycore/advection+layout": [
+          3,
+          40832
+        ],
+        "d01:mixed:MYNN+layout": [
+          21,
+          45600
+        ],
+        "d01:mixed:MYNN+layout+surface-layer": [
+          3,
+          19008
+        ],
+        "d01:mixed:Noah-MP+boundary/nesting": [
+          6,
+          37472
+        ],
+        "d01:mixed:Noah-MP+boundary/nesting+layout+surface-layer": [
+          21,
+          124928
+        ],
+        "d01:mixed:Noah-MP+boundary/nesting+surface-layer": [
+          6,
+          45600
+        ],
+        "d01:mixed:Noah-MP+layout": [
+          12,
+          60608
+        ],
+        "d01:mixed:Noah-MP+surface-layer": [
+          24,
+          120225
+        ],
+        "d01:mixed:Thompson+boundary/nesting": [
+          3,
+          21088
+        ],
+        "d01:mixed:Thompson+boundary/nesting+layout": [
+          3,
+          52384
+        ],
+        "d01:mixed:Thompson+layout": [
+          3,
+          15168
+        ],
+        "d01:mixed:boundary/nesting+dycore/advection": [
+          153,
+          790948
+        ],
+        "d01:mixed:boundary/nesting+dycore/advection+gravity-wave-drag": [
+          6,
+          24960
+        ],
+        "d01:mixed:boundary/nesting+dycore/advection+layout": [
+          18,
+          53824
+        ],
+        "d01:mixed:boundary/nesting+layout": [
+          3,
+          7456
+        ],
+        "d01:mixed:boundary/nesting+layout+surface-layer": [
+          9,
+          8160
+        ],
+        "d01:mixed:dycore/advection+layout": [
+          54,
+          425793
+        ],
+        "d01:mixed:layout+surface-layer": [
+          3,
+          24160
+        ],
+        "d01:surface-layer": [
+          183,
+          481153
+        ],
+        "d01:unattributed": [
+          120,
+          186524
+        ],
+        "d01:unmatched": [
+          516,
+          860962
+        ],
+        "d02:MYNN": [
+          288,
+          6283058
+        ],
+        "d02:Noah-MP": [
+          387,
+          918417
+        ],
+        "d02:RRTMG-SW": [
+          45,
+          98657
+        ],
+        "d02:RRTMG-sampling": [
+          192,
+          153248
+        ],
+        "d02:Thompson": [
+          9,
+          4500395
+        ],
+        "d02:boundary/nesting": [
+          468,
+          1993982
+        ],
+        "d02:dycore/advection": [
+          2250,
+          50245976
+        ],
+        "d02:glue/other": [
+          345,
+          1233491
+        ],
+        "d02:hydrostatic-prep": [
+          9,
+          306495
+        ],
+        "d02:layout": [
+          63,
+          576285
+        ],
+        "d02:mixed:MYNN+Noah-MP+boundary/nesting+dycore/advection+layout": [
+          18,
+          2158243
+        ],
+        "d02:mixed:MYNN+Noah-MP+boundary/nesting+layout+surface-layer": [
+          27,
+          222208
+        ],
+        "d02:mixed:MYNN+Noah-MP+boundary/nesting+surface-layer": [
+          9,
+          70688
+        ],
+        "d02:mixed:MYNN+boundary/nesting": [
+          351,
+          2152061
+        ],
+        "d02:mixed:MYNN+boundary/nesting+dycore/advection+layout": [
+          27,
+          1367526
+        ],
+        "d02:mixed:MYNN+boundary/nesting+layout": [
+          243,
+          4484587
+        ],
+        "d02:mixed:MYNN+boundary/nesting+layout+surface-layer": [
+          18,
+          330111
+        ],
+        "d02:mixed:MYNN+boundary/nesting+surface-layer": [
+          9,
+          142176
+        ],
+        "d02:mixed:MYNN+layout": [
+          54,
+          389049
+        ],
+        "d02:mixed:Noah-MP+boundary/nesting": [
+          9,
+          26592
+        ],
+        "d02:mixed:Noah-MP+boundary/nesting+dycore/advection+layout+surface-layer": [
+          9,
+          16767
+        ],
+        "d02:mixed:Noah-MP+boundary/nesting+layout+surface-layer": [
+          18,
+          335192
+        ],
+        "d02:mixed:Noah-MP+layout": [
+          9,
+          13248
+        ],
+        "d02:mixed:Noah-MP+surface-layer": [
+          90,
+          314324
+        ],
+        "d02:mixed:Thompson+boundary/nesting+layout": [
+          18,
+          1672610
+        ],
+        "d02:mixed:Thompson+layout": [
+          18,
+          331137
+        ],
+        "d02:mixed:boundary/nesting+dycore/advection": [
+          513,
+          1798175
+        ],
+        "d02:mixed:boundary/nesting+dycore/advection+layout": [
+          9,
+          2155301
+        ],
+        "d02:mixed:boundary/nesting+layout": [
+          9,
+          64384
+        ],
+        "d02:mixed:boundary/nesting+layout+surface-layer": [
+          18,
+          14752
+        ],
+        "d02:mixed:dycore/advection+layout": [
+          54,
+          785049
+        ],
+        "d02:surface-layer": [
+          198,
+          712992
+        ],
+        "d02:unattributed": [
+          81,
+          65216
+        ],
+        "force:unmatched": [
+          357,
+          880573
+        ]
+      },
+      "unmatched_kernel_count": 873,
+      "unmatched_kernel_ms": 1.741535
+    },
+    "R43": {
+      "arm": "R43",
+      "version": "v043",
+      "captured_roots": 3,
+      "kernel_count": 22308,
+      "kernel_sum_ms": 166.872439,
+      "family_count_ns": {
+        "dycore/advection": [
+          3507,
+          60277314
+        ],
+        "RRTMG-LW": [
+          3712,
+          37630352
+        ],
+        "RRTMG-sampling": [
+          4350,
+          13369103
+        ],
+        "MYNN": [
+          378,
+          7108350
+        ],
+        "RRTMG-SW": [
+          2896,
+          6806925
+        ],
+        "Thompson": [
+          15,
+          5856783
+        ],
+        "mixed:MYNN+boundary/nesting+layout": [
+          300,
+          4781609
+        ],
+        "boundary/nesting": [
+          1083,
+          2588302
+        ],
+        "unmatched": [
+          1538,
+          2467111
+        ],
+        "mixed:MYNN+boundary/nesting": [
+          435,
+          2404673
+        ],
+        "mixed:boundary/nesting+dycore/advection": [
+          666,
+          2378363
+        ],
+        "mixed:boundary/nesting+dycore/advection+layout": [
+          27,
+          2205508
+        ],
+        "mixed:MYNN+Noah-MP+boundary/nesting+dycore/advection+layout": [
+          18,
+          2151048
+        ],
+        "glue/other": [
+          1004,
+          1853840
+        ],
+        "mixed:Thompson+boundary/nesting+layout": [
+          21,
+          1730789
+        ],
+        "Noah-MP": [
+          696,
+          1636179
+        ],
+        "mixed:MYNN+boundary/nesting+dycore/advection+layout": [
+          42,
+          1608419
+        ],
+        "mixed:RRTMG-LW+RRTMG-sampling": [
+          33,
+          1493122
+        ],
+        "surface-layer": [
+          381,
+          1199075
+        ],
+        "mixed:dycore/advection+layout": [
+          108,
+          1191616
+        ],
+        "KF": [
+          5,
+          492545
+        ],
+        "layout": [
+          147,
+          488698
+        ],
+        "mixed:KF+boundary/nesting+dycore/advection": [
+          105,
+          471904
+        ],
+        "mixed:Noah-MP+boundary/nesting+layout+surface-layer": [
+          39,
+          468508
+        ],
+        "mixed:MYNN+layout": [
+          75,
+          437116
+        ],
+        "mixed:Noah-MP+surface-layer": [
+          114,
+          431317
+        ],
+        "mixed:MYNN+boundary/nesting+layout+surface-layer": [
+          33,
+          414114
+        ],
+        "hydrostatic-prep": [
+          15,
+          405471
+        ],
+        "mixed:MYNN+Noah-MP+boundary/nesting+layout+surface-layer": [
+          39,
+          352736
+        ],
+        "mixed:Thompson+layout": [
+          21,
+          346624
+        ],
+        "unattributed": [
+          196,
+          242497
+        ],
+        "gravity-wave-drag": [
+          48,
+          208610
+        ],
+        "mixed:RRTMG-SW+RRTMG-sampling": [
+          33,
+          194464
+        ],
+        "mixed:MYNN+boundary/nesting+surface-layer": [
+          18,
+          167265
+        ],
+        "mixed:boundary/nesting+layout": [
+          18,
+          127007
+        ],
+        "mixed:RRTMG-SW+boundary/nesting": [
+          48,
+          109403
+        ],
+        "mixed:Noah-MP+layout": [
+          21,
+          74336
+        ],
+        "mixed:MYNN+Noah-MP+boundary/nesting+surface-layer": [
+          9,
+          72224
+        ],
+        "mixed:Noah-MP+boundary/nesting": [
+          15,
+          61504
+        ],
+        "mixed:KF+MYNN+Noah-MP+boundary/nesting+dycore/advection+layout": [
+          3,
+          54560
+        ],
+        "mixed:KF+Thompson+boundary/nesting+dycore/advection": [
+          3,
+          49664
+        ],
+        "mixed:Noah-MP+boundary/nesting+surface-layer": [
+          6,
+          47265
+        ],
+        "mixed:KF+Noah-MP+boundary/nesting+layout+surface-layer": [
+          3,
+          45664
+        ],
+        "mixed:MYNN+Noah-MP+boundary/nesting+dycore/advection+gravity-wave-drag+layout": [
+          3,
+          43488
+        ],
+        "mixed:MYNN+dycore/advection+layout": [
+          3,
+          41440
+        ],
+        "mixed:MYNN+Noah-MP+boundary/nesting+dycore/advection+layout+surface-layer": [
+          3,
+          32192
+        ],
+        "mixed:layout+surface-layer": [
+          3,
+          30592
+        ],
+        "mixed:boundary/nesting+layout+surface-layer": [
+          27,
+          26272
+        ],
+        "mixed:MYNN+layout+surface-layer": [
+          3,
+          24512
+        ],
+        "mixed:boundary/nesting+dycore/advection+gravity-wave-drag": [
+          6,
+          24320
+        ],
+        "mixed:KF+boundary/nesting": [
+          8,
+          23968
+        ],
+        "mixed:MYNN+boundary/nesting+gravity-wave-drag+layout": [
+          3,
+          23648
+        ],
+        "mixed:Thompson+boundary/nesting": [
+          3,
+          20576
+        ],
+        "mixed:RRTMG-LW+RRTMG-SW+boundary/nesting+layout": [
+          2,
+          19328
+        ],
+        "mixed:MYNN+Noah-MP+layout+surface-layer": [
+          3,
+          18368
+        ],
+        "mixed:Noah-MP+boundary/nesting+dycore/advection+layout+surface-layer": [
+          9,
+          17312
+        ],
+        "mixed:RRTMG-SW+layout": [
+          4,
+          15679
+        ],
+        "mixed:KF+dycore/advection": [
+          3,
+          6656
+        ],
+        "mixed:RRTMG-LW+boundary/nesting": [
+          1,
+          2111
+        ]
+      },
+      "domain_family_count_ns": {
+        "d01:KF": [
+          5,
+          492545
+        ],
+        "d01:MYNN": [
+          90,
+          810624
+        ],
+        "d01:Noah-MP": [
+          309,
+          715070
+        ],
+        "d01:RRTMG-LW": [
+          1046,
+          10528617
+        ],
+        "d01:RRTMG-SW": [
+          868,
+          1899045
+        ],
+        "d01:RRTMG-sampling": [
+          1104,
+          3720647
+        ],
+        "d01:Thompson": [
+          6,
+          471298
+        ],
+        "d01:boundary/nesting": [
+          554,
+          978773
+        ],
+        "d01:dycore/advection": [
+          1257,
+          8473805
+        ],
+        "d01:glue/other": [
+          604,
+          599133
+        ],
+        "d01:gravity-wave-drag": [
+          48,
+          208610
+        ],
+        "d01:hydrostatic-prep": [
+          5,
+          79840
+        ],
+        "d01:layout": [
+          74,
+          114592
+        ],
+        "d01:mixed:KF+MYNN+Noah-MP+boundary/nesting+dycore/advection+layout": [
+          3,
+          54560
+        ],
+        "d01:mixed:KF+Noah-MP+boundary/nesting+layout+surface-layer": [
+          3,
+          45664
+        ],
+        "d01:mixed:KF+Thompson+boundary/nesting+dycore/advection": [
+          3,
+          49664
+        ],
+        "d01:mixed:KF+boundary/nesting": [
+          8,
+          23968
+        ],
+        "d01:mixed:KF+boundary/nesting+dycore/advection": [
+          105,
+          471904
+        ],
+        "d01:mixed:KF+dycore/advection": [
+          3,
+          6656
+        ],
+        "d01:mixed:MYNN+Noah-MP+boundary/nesting+dycore/advection+gravity-wave-drag+layout": [
+          3,
+          43488
+        ],
+        "d01:mixed:MYNN+Noah-MP+boundary/nesting+dycore/advection+layout+surface-layer": [
+          3,
+          32192
+        ],
+        "d01:mixed:MYNN+Noah-MP+boundary/nesting+layout+surface-layer": [
+          12,
+          129792
+        ],
+        "d01:mixed:MYNN+Noah-MP+layout+surface-layer": [
+          3,
+          18368
+        ],
+        "d01:mixed:MYNN+boundary/nesting": [
+          84,
+          246176
+        ],
+        "d01:mixed:MYNN+boundary/nesting+dycore/advection+layout": [
+          15,
+          267649
+        ],
+        "d01:mixed:MYNN+boundary/nesting+gravity-wave-drag+layout": [
+          3,
+          23648
+        ],
+        "d01:mixed:MYNN+boundary/nesting+layout": [
+          57,
+          290752
+        ],
+        "d01:mixed:MYNN+boundary/nesting+layout+surface-layer": [
+          15,
+          84896
+        ],
+        "d01:mixed:MYNN+boundary/nesting+surface-layer": [
+          9,
+          25057
+        ],
+        "d01:mixed:MYNN+dycore/advection+layout": [
+          3,
+          41440
+        ],
+        "d01:mixed:MYNN+layout": [
+          21,
+          46015
+        ],
+        "d01:mixed:MYNN+layout+surface-layer": [
+          3,
+          24512
+        ],
+        "d01:mixed:Noah-MP+boundary/nesting": [
+          6,
+          38304
+        ],
+        "d01:mixed:Noah-MP+boundary/nesting+layout+surface-layer": [
+          21,
+          133248
+        ],
+        "d01:mixed:Noah-MP+boundary/nesting+surface-layer": [
+          6,
+          47265
+        ],
+        "d01:mixed:Noah-MP+layout": [
+          12,
+          61344
+        ],
+        "d01:mixed:Noah-MP+surface-layer": [
+          24,
+          121408
+        ],
+        "d01:mixed:RRTMG-LW+RRTMG-SW+boundary/nesting+layout": [
+          1,
+          6368
+        ],
+        "d01:mixed:RRTMG-LW+RRTMG-sampling": [
+          9,
+          410944
+        ],
+        "d01:mixed:RRTMG-SW+RRTMG-sampling": [
+          9,
+          55200
+        ],
+        "d01:mixed:RRTMG-SW+boundary/nesting": [
+          24,
+          31584
+        ],
+        "d01:mixed:RRTMG-SW+layout": [
+          2,
+          4288
+        ],
+        "d01:mixed:Thompson+boundary/nesting": [
+          3,
+          20576
+        ],
+        "d01:mixed:Thompson+boundary/nesting+layout": [
+          3,
+          53664
+        ],
+        "d01:mixed:Thompson+layout": [
+          3,
+          15264
+        ],
+        "d01:mixed:boundary/nesting+dycore/advection": [
+          153,
+          794881
+        ],
+        "d01:mixed:boundary/nesting+dycore/advection+gravity-wave-drag": [
+          6,
+          24320
+        ],
+        "d01:mixed:boundary/nesting+dycore/advection+layout": [
+          18,
+          54048
+        ],
+        "d01:mixed:boundary/nesting+layout": [
+          6,
+          21856
+        ],
+        "d01:mixed:boundary/nesting+layout+surface-layer": [
+          9,
+          10144
+        ],
+        "d01:mixed:dycore/advection+layout": [
+          54,
+          420034
+        ],
+        "d01:mixed:layout+surface-layer": [
+          3,
+          30592
+        ],
+        "d01:surface-layer": [
+          183,
+          485346
+        ],
+        "d01:unattributed": [
+          115,
+          177153
+        ],
+        "d01:unmatched": [
+          1171,
+          1475942
+        ],
+        "d02:MYNN": [
+          288,
+          6297726
+        ],
+        "d02:Noah-MP": [
+          387,
+          921109
+        ],
+        "d02:RRTMG-LW": [
+          2666,
+          27101735
+        ],
+        "d02:RRTMG-SW": [
+          2028,
+          4907880
+        ],
+        "d02:RRTMG-sampling": [
+          3246,
+          9648456
+        ],
+        "d02:Thompson": [
+          9,
+          5385485
+        ],
+        "d02:boundary/nesting": [
+          529,
+          1609529
+        ],
+        "d02:dycore/advection": [
+          2250,
+          51803509
+        ],
+        "d02:glue/other": [
+          400,
+          1254707
+        ],
+        "d02:hydrostatic-prep": [
+          10,
+          325631
+        ],
+        "d02:layout": [
+          73,
+          374106
+        ],
+        "d02:mixed:MYNN+Noah-MP+boundary/nesting+dycore/advection+layout": [
+          18,
+          2151048
+        ],
+        "d02:mixed:MYNN+Noah-MP+boundary/nesting+layout+surface-layer": [
+          27,
+          222944
+        ],
+        "d02:mixed:MYNN+Noah-MP+boundary/nesting+surface-layer": [
+          9,
+          72224
+        ],
+        "d02:mixed:MYNN+boundary/nesting": [
+          351,
+          2158497
+        ],
+        "d02:mixed:MYNN+boundary/nesting+dycore/advection+layout": [
+          27,
+          1340770
+        ],
+        "d02:mixed:MYNN+boundary/nesting+layout": [
+          243,
+          4490857
+        ],
+        "d02:mixed:MYNN+boundary/nesting+layout+surface-layer": [
+          18,
+          329218
+        ],
+        "d02:mixed:MYNN+boundary/nesting+surface-layer": [
+          9,
+          142208
+        ],
+        "d02:mixed:MYNN+layout": [
+          54,
+          391101
+        ],
+        "d02:mixed:Noah-MP+boundary/nesting": [
+          9,
+          23200
+        ],
+        "d02:mixed:Noah-MP+boundary/nesting+dycore/advection+layout+surface-layer": [
+          9,
+          17312
+        ],
+        "d02:mixed:Noah-MP+boundary/nesting+layout+surface-layer": [
+          18,
+          335260
+        ],
+        "d02:mixed:Noah-MP+layout": [
+          9,
+          12992
+        ],
+        "d02:mixed:Noah-MP+surface-layer": [
+          90,
+          309909
+        ],
+        "d02:mixed:RRTMG-LW+RRTMG-SW+boundary/nesting+layout": [
+          1,
+          12960
+        ],
+        "d02:mixed:RRTMG-LW+RRTMG-sampling": [
+          24,
+          1082178
+        ],
+        "d02:mixed:RRTMG-LW+boundary/nesting": [
+          1,
+          2111
+        ],
+        "d02:mixed:RRTMG-SW+RRTMG-sampling": [
+          24,
+          139264
+        ],
+        "d02:mixed:RRTMG-SW+boundary/nesting": [
+          24,
+          77819
+        ],
+        "d02:mixed:RRTMG-SW+layout": [
+          2,
+          11391
+        ],
+        "d02:mixed:Thompson+boundary/nesting+layout": [
+          18,
+          1677125
+        ],
+        "d02:mixed:Thompson+layout": [
+          18,
+          331360
+        ],
+        "d02:mixed:boundary/nesting+dycore/advection": [
+          513,
+          1583482
+        ],
+        "d02:mixed:boundary/nesting+dycore/advection+layout": [
+          9,
+          2151460
+        ],
+        "d02:mixed:boundary/nesting+layout": [
+          12,
+          105151
+        ],
+        "d02:mixed:boundary/nesting+layout+surface-layer": [
+          18,
+          16128
+        ],
+        "d02:mixed:dycore/advection+layout": [
+          54,
+          771582
+        ],
+        "d02:surface-layer": [
+          198,
+          713729
+        ],
+        "d02:unattributed": [
+          81,
+          65344
+        ],
+        "force:unmatched": [
+          357,
+          896577
+        ],
+        "outside-instrumented-calls:unmatched": [
+          10,
+          94592
+        ]
+      },
+      "unmatched_kernel_count": 1538,
+      "unmatched_kernel_ms": 2.467111
+    }
+  }
+}

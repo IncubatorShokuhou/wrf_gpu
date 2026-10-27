@@ -114,8 +114,8 @@ def test_native_epsilon_refuses_invalid_host_carry(epsilon_case, tmp_path, monke
     generation = save(store, carry, config)
     if operation == 'save':
         original = storage._carry_to_payload
-        def malformed(value):
-            payload = original(value)
+        def malformed(value, **kwargs):  # forwards mynn_config (w44-budget)
+            payload = original(value, **kwargs)
             damage(payload, kind)
             return payload
         monkeypatch.setattr(storage, '_carry_to_payload', malformed)

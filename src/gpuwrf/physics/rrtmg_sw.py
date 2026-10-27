@@ -518,6 +518,8 @@ class RRTMGSWTopographyState(NamedTuple):
     slope_rad: jnp.ndarray
     slope_azimuth_rad: jnp.ndarray
     shadow_mask: jnp.ndarray
+    # Coupler-owned HGT_SHAD output; solver flattening intentionally omits it.
+    shadow_height_m: object = None
 
 
 class RRTMGSWTopographicAdjustment(NamedTuple):

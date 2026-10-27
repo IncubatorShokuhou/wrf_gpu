@@ -5,6 +5,8 @@ It can reduce the repeated soil moisture, soil temperature and snow spin-up caus
 by replacing a regional model's evolved surface with each forcing analysis.
 It does not assimilate observations or guarantee better forecast skill; compare
 cycled and uncycled forecasts against independent observations for your region.
+This page covers land-only cycling, the default. To carry the atmosphere as well,
+see [atmospheric warm start](atmospheric-warm-start.md).
 
 ```bash
 gpuwrf cycle \
@@ -14,12 +16,13 @@ gpuwrf cycle \
 ```
 
 Prepare `next-run` with the new run's namelist and boundary files before running
-the forecast. Repeat the command separately for each domain. The output must be
-a new path; neither input is modified. The output retains the new atmosphere,
-SST, time, forcing and static fields. An embedded `GPUWRF_LAND_CYCLE` JSON
+the forecast. In land-only mode, repeat the command separately for each domain.
+The output must be a new path; neither input is modified. The output retains the
+new atmosphere, SST, time, forcing and static fields. An embedded `GPUWRF_LAND_CYCLE` JSON
 attribute records both input paths and SHA256 hashes, selected time index, UTC
 valid time, per-field transferred-value hashes, masks and cell counts. The CLI
-prints that record plus the output hash. Output publication is atomic.
+prints that record plus the output hash. Each output file is published
+atomically.
 
 The source is one CPU-WRF/gpuwrf NetCDF `wrfout` or WRF NetCDF restart file. Its
 `Times` must contain exactly one record matching the new wrfinput's single
@@ -74,5 +77,5 @@ Evidence includes literal independent copy tests and original Swiss CPU-WRF
 hourly state at hours 1–3, frozen field values and the production Noah-MP input
 loader. New-init test templates use the Swiss grid with explicitly retimed
 initialization metadata; they do not claim independent real.exe analyses at
-those times. Cycling adds offline file copying and one input-only restore pass;
+those times. Land-only cycling adds offline file copying and one input-only restore pass;
 it introduces no timestep kernels, synchronization or persistent device state.

@@ -1,0 +1,374 @@
+{
+  "schema": "wrf_gpu2.w44_budget.prototype.v1",
+  "platform": "cpu",
+  "scope": "whole native MYNN component; not the full coupled program; regression only, not WRF fidelity",
+  "inputs_sha256": "f10271101eed771344b3d1cd234e6ed02f305cfd89984a6d12070ac6c51502cc",
+  "original_advance_sha256": "34ea97dc4a55a49c7d2e25325e505b4a1b583bc1a222d0c269e7709e67ea202a",
+  "shape": [
+    1764,
+    44
+  ],
+  "dt": 18.0,
+  "dx": 3000.0,
+  "edmf": true,
+  "observed_output": "qWT already returned by predictor; final unused top not yet normalized",
+  "caches": {
+    "GPUWRF_JAX_CACHE": "0",
+    "GPUWRF_JAX_CACHE_DIR": null,
+    "JAX_COMPILATION_CACHE_DIR": null
+  },
+  "resolved_env": {
+    "GPUWRF_MYNN_FP32_PLUME": "1",
+    "GPUWRF_MYNN_FP32_COLUMNS": "1",
+    "GPUWRF_MYNN_FP32_BOULAC": "0",
+    "GPUWRF_MYNN_CLOUDMIX": "1",
+    "GPUWRF_MYNN_PLUME_SUMS": "1",
+    "GPUWRF_MYNN_TRIDIAG_REAL": "1",
+    "GPUWRF_MYNN_SGS_MIXING_RATIO": "1",
+    "GPUWRF_MYNN_SCALE_AWARE": "1",
+    "GPUWRF_MYNN_SFC_WSPD": "1",
+    "GPUWRF_MYNN_FLTV_WRF": "1",
+    "GPUWRF_MYNN_DHEAT": "1",
+    "GPUWRF_MYNN_PSIQ_FLUX_WRF": "1",
+    "GPUWRF_MYNN_DMP_KTOP_BOUND": "1",
+    "GPUWRF_MYNN_ELB_MF": "1",
+    "GPUWRF_MYNN_PHY_EXNER": "1",
+    "GPUWRF_MYNN_PSIG_CLAMP": "1",
+    "GPUWRF_MYNN_QNI_MIXING": "1",
+    "GPUWRF_MYNN_SFC_PBLH_WRF": "1",
+    "GPUWRF_MYNN_REAL_CONSTANTS": "1",
+    "GPUWRF_MYNN_PLUME_CLOUD_BASE": "1",
+    "GPUWRF_MYNN_SHSM_FLOORS": "1",
+    "GPUWRF_MYNN_TKEPROD_UP": "1",
+    "GPUWRF_MYNN_ELH_BUDGET": "1",
+    "GPUWRF_MYNN_RHOSFC_WRF": "1",
+    "GPUWRF_MYNN_CONDENSATION_WRF": "1",
+    "GPUWRF_MYNN_PREDICT_SAW_FLOOR": "1",
+    "GPUWRF_MYNN_SOURCE_PARITY2": "1",
+    "GPUWRF_MYNN_SFC_PSI_REAL": "1"
+  },
+  "arms": {
+    "off": {
+      "raw_hlo_sha256": "fdaa1f82495863d2420b165b871f3e29c72de4bf2822dee387fb318f1153c823",
+      "lower_s": 3.61258573300438,
+      "compile_first_s": 9.315772894013207,
+      "memory": "CompiledMemoryStats(generated_code_size_in_bytes=0, argument_size_in_bytes=5023872, output_size_in_bytes=6548168, alias_size_in_bytes=0, temp_size_in_bytes=18957560, host_generated_code_size_in_bytes=0, host_argument_size_in_bytes=0, host_output_size_in_bytes=0, host_alias_size_in_bytes=0, host_temp_size_in_bytes=0)"
+    },
+    "on": {
+      "raw_hlo_sha256": "d07bc81c337794eb891e00cd71edf10e78be86d50d59352e9dc339d16d58c36d",
+      "lower_s": 3.518578961957246,
+      "compile_first_s": 9.323612789972685,
+      "memory": "CompiledMemoryStats(generated_code_size_in_bytes=0, argument_size_in_bytes=5023872, output_size_in_bytes=6858640, alias_size_in_bytes=0, temp_size_in_bytes=18535736, host_generated_code_size_in_bytes=0, host_argument_size_in_bytes=0, host_output_size_in_bytes=0, host_alias_size_in_bytes=0, host_temp_size_in_bytes=0)"
+    }
+  },
+  "fields": {
+    "u": {
+      "byte_equal": true,
+      "shape": [
+        1764,
+        44
+      ],
+      "dtype": "float32",
+      "different_values": 0,
+      "max_abs": 0.0,
+      "rms": 0.0
+    },
+    "v": {
+      "byte_equal": true,
+      "shape": [
+        1764,
+        44
+      ],
+      "dtype": "float32",
+      "different_values": 0,
+      "max_abs": 0.0,
+      "rms": 0.0
+    },
+    "w": {
+      "byte_equal": true,
+      "shape": [
+        1764,
+        44
+      ],
+      "dtype": "float32",
+      "different_values": 0,
+      "max_abs": 0.0,
+      "rms": 0.0
+    },
+    "theta": {
+      "byte_equal": true,
+      "shape": [
+        1764,
+        44
+      ],
+      "dtype": "float32",
+      "different_values": 0,
+      "max_abs": 0.0,
+      "rms": 0.0
+    },
+    "qv": {
+      "byte_equal": true,
+      "shape": [
+        1764,
+        44
+      ],
+      "dtype": "float32",
+      "different_values": 0,
+      "max_abs": 0.0,
+      "rms": 0.0
+    },
+    "tke": {
+      "byte_equal": true,
+      "shape": [
+        1764,
+        44
+      ],
+      "dtype": "float32",
+      "different_values": 0,
+      "max_abs": 0.0,
+      "rms": 0.0
+    },
+    "p": {
+      "byte_equal": true,
+      "shape": [
+        1764,
+        44
+      ],
+      "dtype": "float32",
+      "different_values": 0,
+      "max_abs": 0.0,
+      "rms": 0.0
+    },
+    "rho": {
+      "byte_equal": true,
+      "shape": [
+        1764,
+        44
+      ],
+      "dtype": "float32",
+      "different_values": 0,
+      "max_abs": 0.0,
+      "rms": 0.0
+    },
+    "dz": {
+      "byte_equal": true,
+      "shape": [
+        1764,
+        44
+      ],
+      "dtype": "float32",
+      "different_values": 0,
+      "max_abs": 0.0,
+      "rms": 0.0
+    },
+    "km": {
+      "byte_equal": true,
+      "shape": [
+        1764,
+        44
+      ],
+      "dtype": "float32",
+      "different_values": 0,
+      "max_abs": 0.0,
+      "rms": 0.0
+    },
+    "kh": {
+      "byte_equal": true,
+      "shape": [
+        1764,
+        44
+      ],
+      "dtype": "float32",
+      "different_values": 0,
+      "max_abs": 0.0,
+      "rms": 0.0
+    },
+    "el": {
+      "byte_equal": true,
+      "shape": [
+        1764,
+        44
+      ],
+      "dtype": "float32",
+      "different_values": 0,
+      "max_abs": 0.0,
+      "rms": 0.0
+    },
+    "qc": {
+      "byte_equal": true,
+      "shape": [
+        1764,
+        44
+      ],
+      "dtype": "float32",
+      "different_values": 0,
+      "max_abs": 0.0,
+      "rms": 0.0
+    },
+    "qi": {
+      "byte_equal": true,
+      "shape": [
+        1764,
+        44
+      ],
+      "dtype": "float32",
+      "different_values": 0,
+      "max_abs": 0.0,
+      "rms": 0.0
+    },
+    "qs": {
+      "byte_equal": true,
+      "shape": [
+        1764,
+        44
+      ],
+      "dtype": "float32",
+      "different_values": 0,
+      "max_abs": 0.0,
+      "rms": 0.0
+    },
+    "qsq": {
+      "byte_equal": true,
+      "shape": [
+        1764,
+        44
+      ],
+      "dtype": "float32",
+      "different_values": 0,
+      "max_abs": 0.0,
+      "rms": 0.0
+    },
+    "qc_bl": {
+      "byte_equal": true,
+      "shape": [
+        1764,
+        44
+      ],
+      "dtype": "float32",
+      "different_values": 0,
+      "max_abs": 0.0,
+      "rms": 0.0
+    },
+    "qi_bl": {
+      "byte_equal": true,
+      "shape": [
+        1764,
+        44
+      ],
+      "dtype": "float32",
+      "different_values": 0,
+      "max_abs": 0.0,
+      "rms": 0.0
+    },
+    "cldfra_bl": {
+      "byte_equal": true,
+      "shape": [
+        1764,
+        44
+      ],
+      "dtype": "float32",
+      "different_values": 0,
+      "max_abs": 0.0,
+      "rms": 0.0
+    },
+    "maxmf": {
+      "byte_equal": true,
+      "shape": [
+        1764
+      ],
+      "dtype": "float32",
+      "different_values": 0,
+      "max_abs": 0.0,
+      "rms": 0.0
+    },
+    "maxwidth": {
+      "byte_equal": true,
+      "shape": [
+        1764
+      ],
+      "dtype": "float32",
+      "different_values": 0,
+      "max_abs": 0.0,
+      "rms": 0.0
+    },
+    "ztop_plume": {
+      "byte_equal": true,
+      "shape": [
+        1764
+      ],
+      "dtype": "float32",
+      "different_values": 0,
+      "max_abs": 0.0,
+      "rms": 0.0
+    },
+    "exner": {
+      "byte_equal": true,
+      "shape": [
+        1764,
+        44
+      ],
+      "dtype": "float32",
+      "different_values": 0,
+      "max_abs": 0.0,
+      "rms": 0.0
+    },
+    "ni": {
+      "byte_equal": true,
+      "shape": [
+        1764,
+        44
+      ],
+      "dtype": "float32",
+      "different_values": 0,
+      "max_abs": 0.0,
+      "rms": 0.0
+    },
+    "pblh": {
+      "byte_equal": true,
+      "shape": [
+        1764
+      ],
+      "dtype": "float32",
+      "different_values": 0,
+      "max_abs": 0.0,
+      "rms": 0.0
+    }
+  },
+  "byte_equal": true,
+  "byte_fields": 25,
+  "total_fields": 25,
+  "diagnostic": {
+    "shape": [
+      1764,
+      44
+    ],
+    "nonzero_values": 77275,
+    "max_abs": 0.051796313375234604,
+    "sha256": "99771808ec61a122f24fc9b022d2c363d2917ecba5042ec2c162bb6ce481f4d5"
+  },
+  "wall_ms": {
+    "off": {
+      "samples": [
+        23.893946025054902,
+        22.47974503552541,
+        24.76060198387131,
+        25.5595879862085,
+        23.074918950442225,
+        22.811777016613632
+      ],
+      "median": 23.484432487748563
+    },
+    "on": {
+      "samples": [
+        23.29489099793136,
+        25.678728008642793,
+        23.487962025683373,
+        23.808764992281795,
+        22.9266089736484,
+        23.040049010887742
+      ],
+      "median": 23.391426511807367
+    }
+  },
+  "verdict": "COMPONENT_BYTE"
+}

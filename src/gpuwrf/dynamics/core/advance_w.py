@@ -94,7 +94,7 @@ W_CRIT_CFL = 1.0  # Registry.EM_COMMON ``w_crit_cfl`` default (namelist,dynamics
 W_DAMP_STAGE = os.environ.get("GPUWRF_W_DAMP_STAGE", "0") == "1"
 
 
-def w_damp_rw_tend_wrf(rw_tend, *, ww, w, mut, c1f, c2f, rdnw, dt, w_crit_cfl=W_CRIT_CFL, w_damp_on=W_BETA):
+def w_damp_rw_tend_wrf(rw_tend, *, ww, w, mut, c1f, c2f, rdnw, dt, w_crit_cfl=W_CRIT_CFL, w_damp_on=W_BETA, w_alpha=None):
     """WRF ``w_damp`` (module_big_step_utilities_em.F:2503-2711) as ``rk_tendency`` calls it (module_em.F:738).
 
     Once per RK stage with the stage omega ``grid%ww``, the physical ``grid%w_2``, the stage ``mut`` and the FULL
@@ -114,10 +114,10 @@ def w_damp_rw_tend_wrf(rw_tend, *, ww, w, mut, c1f, c2f, rdnw, dt, w_crit_cfl=W_
     mass = c1 * jnp.asarray(mut, dt_)[None, :, :] + c2
     vert_cfl = jnp.abs(jnp.asarray(ww, dt_)[1:nz] / mass * jnp.asarray(rdnw, dt_)[1:nz, None, None]
                        * np.asarray(dt, dt_))
-    damp = (jnp.copysign(np.asarray(1.0, dt_), jnp.asarray(w, dt_)[1:nz]) * np.asarray(W_ALPHA, dt_)
-            * (vert_cfl - np.asarray(w_crit_cfl, dt_)) * mass)
+    damp = (jnp.copysign(np.asarray(1.0, dt_), jnp.asarray(w, dt_)[1:nz]) * (np.asarray(W_ALPHA, dt_) if w_alpha is None else jnp.asarray(w_alpha, dt_))
+            * (vert_cfl - _runtime_scalar(w_crit_cfl, dt_)) * mass)
     interior = rw_tend[1:nz]
-    return rw_tend.at[1:nz].set(jnp.where(vert_cfl > np.asarray(w_damp_on, dt_), interior - damp, interior))
+    return rw_tend.at[1:nz].set(jnp.where(vert_cfl > _runtime_scalar(w_damp_on, dt_), interior - damp, interior))
 
 
 def w_damp_vertical_cfl(
@@ -673,3 +673,9 @@ __all__ = [
     "dry_cqw",
     "GRAVITY_M_S2",
 ]
+
+
+def _runtime_scalar(value, dtype):
+    """Keep the static WRF constant path unchanged; accept explicit traced controls."""
+    import numpy as np
+    return jnp.asarray(value, dtype) if isinstance(value, (jax.Array, jax.core.Tracer)) else np.asarray(value, dtype)

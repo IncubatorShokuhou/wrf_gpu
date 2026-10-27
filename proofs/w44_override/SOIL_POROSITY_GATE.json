@@ -1,0 +1,55 @@
+{
+  "helper_gate_passed": true,
+  "release_gates_complete": false,
+  "source_commit": "d49b259636",
+  "public_api": "validate_soil_porosity(smois, smcmax, landmask, lu_index, seaice=None, surface_physics=4, *, sh2o=None, isltyp=None) -> bool",
+  "semantics": "explicit effective cell/layer cap broadcasts; optional one-based class table via isltyp; land0<=SMOIS<=cap and optional0<=SH2O<=SMOIS/cap; Noah-MP glacier15 with SEAICE<=0 retainscap1; no data changes/table reads/tolerance",
+  "existing_signatures_unchanged": true,
+  "table_validator_delegates_once": true,
+  "code_sha256": "21025e36799d5452debc8d47e6d6e80562fb66f8185c42fa993eaaebb4b7ccac",
+  "tests": {
+    "passed": 177,
+    "existing": 134,
+    "new_helper": 43,
+    "failures": 0,
+    "setup_errors": 0,
+    "deletion_mutants_killed": 2,
+    "bounds_assertions": 10,
+    "liquid_assertions": 4,
+    "mutant_setup_errors": 0
+  },
+  "cost": {
+    "three_domain_helper_s": 0.0009270980372093618,
+    "peak_process_rss_kib_including_imports_inputs": 200392,
+    "scope": "existing staged soil arrays and example0.6 controlled cap;excludes loading;not model/controlfidelity orforecastspeed"
+  },
+  "consumer": {
+    "lane": "w44-lsmparams",
+    "exact_import_confirmed": "2026-10-23T22:15:43Z",
+    "SH2O_passed": true
+  },
+  "receipts": {
+    "OV21.xml": {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/w44-override/OV21.xml",
+      "sha256": "aeac42f8563606c35c910fb9b63be7cd777dbed6d676e6f1b7568b1d660f4de7"
+    },
+    "OV22.log": {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/w44-override/OV22.log",
+      "sha256": "ee35144214f390a2137bc7b5be266a9c2744c08fe810c1ed49361ee1264c1d50"
+    },
+    "soil_mutants/RESULTS.json": {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/w44-override/soil_mutants/RESULTS.json",
+      "sha256": "113ace0fbabe5cd8c76edf25d0712287a808ce3b8a09de5bd2354919eacb5bff"
+    },
+    "OV23.log": {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/w44-override/OV23.log",
+      "sha256": "c79bb5ee9cecc2f66f4ca6fc9dc6254dc7f1bbfe1115887fa36aa1ec4ba7b1ca"
+    }
+  },
+  "pending": [
+    "manager merge / same critic host delta if assigned",
+    "LSM ON/default/changed solver and trace gates owned by lsmparams",
+    "existing release gates"
+  ],
+  "prior_proofs_preserved": true
+}

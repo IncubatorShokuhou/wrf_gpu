@@ -175,12 +175,19 @@ def test_active_lake_restart_schema_fails_closed():
             validate_lake(damaged,SimpleNamespace(sf_lake_physics=1),1)
 
 
+def _product_seeded(state,n):
+    # Product initializer seeding (operational_mode._initial_carry_for_run): static-scheme
+    # conditional leaves, incl. the held MP_RE effective radii when mp_re_active(n).
+    return state.ensure_conditional_leaves(mp_physics=int(n.mp_physics),use_mp_re=int(n.use_mp_re),
+                                           ra_lw_physics=int(n.ra_lw_physics),ra_sw_physics=int(n.ra_sw_physics))
+
+
 def test_lake_pickle_restart_exact_and_missing_refused(tmp_path):
     from gpuwrf.io.restart import write_restart,read_restart
     grid=_grid(nz=4,ny=2,nx=3)
     b=bundle_for((2,3))
     n=replace(_namelist(grid),sf_lake_physics=1,lake_bundle=b)
-    carry=initial_operational_carry(_base_state(grid)).replace(lake=b.initial)
+    carry=initial_operational_carry(_product_seeded(_base_state(grid),n)).replace(lake=b.initial)
     path=tmp_path/'lake.pkl'
     write_restart(carry,n,grid,5,path)
     out,_,_,step=read_restart(path)
@@ -201,7 +208,7 @@ def test_lake_netcdf_restart_and_history(tmp_path):
     source=authenticated_source_grid(grid,'d01')
     b=bundle_for((2,3))
     n=replace(_namelist(grid),sf_lake_physics=1,lake_bundle=b)
-    state=_base_state(grid)
+    state=_product_seeded(_base_state(grid),n)
     carry=initial_operational_carry(state).replace(lake=b.initial)
     stamp=datetime(2026,7,25,tzinfo=timezone.utc)
     path=tmp_path/'lake.nc'

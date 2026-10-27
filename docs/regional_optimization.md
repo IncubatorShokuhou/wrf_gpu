@@ -1,4 +1,99 @@
-# Regional physics selection and station calibration
+# Tune WRF for your region
+
+Start with a prepared WRF case and a question you can check against observations:
+for example, whether afternoon winds are too strong at exposed sites or nights
+are too cold in a valley. Keep the original case as your control. The steps below
+lead into the physics-selection and continuous-parameter tools on this page.
+
+## From a case to a checked improvement
+
+1. **Check and run your control.** Use the same WPS/real.exe inputs for GPU and
+   original CPU-WRF. The shipped Swiss case is a small rehearsal:
+
+   ```bash
+   gpuwrf doctor examples/switzerland_d01
+   gpuwrf run --input-dir examples/switzerland_d01 \
+     --output-dir runs/region-control --domain d01 --hours 3
+   ```
+
+   This forecast uses the GPU and compiles on its first run. For your own region,
+   follow [case preparation](onboarding.md) and keep input hashes, namelist,
+   software version and output cadence with the results.
+   For several complete namelists, the [precompile queue](precompile.md) plans
+   ordinary GPU priming runs on CPU; deviceless GPU compilation remains
+   unqualified.
+2. **Measure the error.** Prepare [station metadata and observations](station_verification.md),
+   then compare both models on the same stations, times and precipitation windows:
+
+   ```bash
+   JAX_PLATFORMS=cpu gpuwrf verify --stations stations.csv --obs observations.csv \
+     --model runs/region-control/wrfout_d01_* \
+     --compare runs/cpu-control/wrfout_d01_* --output-dir runs/region-scores
+   ```
+
+   The CSVs must describe real sites inside your grid; the repository does not
+   ship observations for this rehearsal. Check station height, wind height,
+   coastal sampling and pair counts before interpreting a bias.
+3. **Diagnose before tuning.** Compare day/night, land/water and altitude bands.
+   Use [radiation diagnostics](radiation_diagnostics.md) for cloud/heating
+   questions and the [support matrix](release/SUPPORT_MATRIX_v0.4.3.md) for
+   [terrain-radiation behavior](topographic_radiation.md). The radiation page lists the original
+   CPU-WRF comparison fields. [MYNN budgets](mynn-budgets.md) (experimental, GPU checks
+   pending) write WRF's TKE budget terms and EDMF plume profiles to history for
+   turbulence and plume questions.
+4. **Change one cause at a time.** Choose among the released physics tuples
+   below, or adjust the existing [surface parameters](surface_params.md). The
+   [nine new soil/canopy/snow controls](surface_params.md#noah-mp-soil-canopy-and-snow-parameters-research-candidate)
+   are excluded from v0.4.4; older roughness controls remain available.
+   For a cheap Swiss preparation example:
+
+   ```bash
+   JAX_PLATFORMS=cpu gpuwrf surface-params basis \
+     --input-dir examples/switzerland_d01 --output runs/swiss-basis.npz
+   JAX_PLATFORMS=cpu gpuwrf surface-params expand --basis runs/swiss-basis.npz \
+     --output runs/swiss-roughness.npz --set z0mvt=1.1
+   gpuwrf run --input-dir examples/switzerland_d01 --domain d01 --hours 3 \
+     --output-dir runs/region-roughness --surface-controls runs/swiss-roughness.npz
+   ```
+
+   [Thompson parameters](thompson-parameters.md) are research candidates for
+   changing coefficients between runs without recompiling. Diffusion/damping
+   parameter overrides (including `c_s`) are refused in v0.4.4. They may come in
+   a later release after GPU qualification; no date or commitment. MYNN overrides are experimental, with component/short
+   two-domain GPU root PASS only; three-nest D6, stations and 24–72-hour drift
+   remain unqualified ([family status](runtime-parameters.md)). Track P controls are experimental. Editing a diagnosed surface field in
+   wrfinput may have no lasting effect because Noah-MP recomputes it; see
+   [what is recomputed](initial_overrides.md#what-noah-mp-recomputes).
+   [Initial-field overrides](initial_overrides.md) edit checked private input
+   copies; their host/file scope is qualified, while edited forecast gates
+   remain open. The [porosity helper](soil_porosity.md) checks effective soil
+   caps without changing the soil or qualifying a parameter scheme.
+5. **Separate initialization from physics.** [Land cycling](cycling.md) carries
+   soil/snow state; [atmospheric warm start](atmospheric-warm-start.md) (experimental,
+   GPU checks pending) also carries the atmosphere, using WRF's cycling initialization.
+   A file warm start reinitializes model internals; checkpoint/resume continues them. Keep paired cold/cycled runs to
+   measure spin-up rather than attributing it to a parameter change. For a
+   sensitivity test from held model state, use
+   [checkpoint branches and short windows](checkpoint-branching.md); their
+   host admission is qualified and GPU branch gates remain pending.
+6. **Check uncertainty and keep dates out of training.** [Wind perturbations](ensemble.md),
+   [ensemble products](ensemble.md) and [experimental data assimilation](da.md)
+   answer different questions. Use multiple weather regimes and later held-out
+   dates; never use those dates to select the winner. A Swiss twin experiment
+   checks the tools, not forecast skill in your region.
+7. **Re-run the winning setup on held-out dates.** Compare raw forecasts with
+   the unchanged control and observations using identical sampling. Keep RMSE,
+   bias, rain-event scores and support counts, including regressions. Only adopt
+   a change when those independent results support it. Station MOS calibration
+   below corrects products after the forecast; it does not tune the model.
+
+These are gpuwrf workflow extensions around WRF physics. Offline planning,
+verification and file preparation have CPU/IO cost and add no timestep kernels.
+Every candidate forecast still pays its stepping, initialization, output and
+possibly compilation cost. The measured optimizer costs below are examples,
+not estimates for an arbitrary region or scheme combination.
+
+## Physics selection
 
 `gpuwrf optimize` picks the best of several **released** physics configurations for a
 region by running them as GPU forecasts on past dates and scoring them against station
@@ -19,7 +114,7 @@ A configuration is the exact seven-option tuple `mp_physics`, `bl_pbl_physics`,
 `cu_physics` (one value per domain) for one domain count. **Only tuples that passed the
 frozen bounded D6 comparison against original CPU-WRF in the v0.4.0 FINAL validation
 are released for optimize**: the 66 FINAL composites plus the release-default runs
-(WN3 three-nest, PROD two-nest, Swiss). Single options are never released on their own,
+(three-nest Tenerife, two-nest Canary Islands, and Swiss). Single options are never released on their own,
 because pairing an option with others it was not measured with is a new combination.
 Everything else is refused, including operator admission files.
 
@@ -43,7 +138,7 @@ c29) are not released for optimize.
 For an ALISIOS-style d01-only Canary run, the default tuple with Kain-Fritsch on d01
 (`8,5,5,4,4,4,1`, ID `p-c8964de962e8`) is released with E41 PASS (Madrid and Noah-MP
 irrigation composites); the same tuple without cumulus (`p-727b941dbde2`) is qualified,
-among others, by c60, a d01-only run of the WN3 Atlantic root grid with `sst_update`.
+among others, by c60, a d01-only run of the Atlantic root grid with `sst_update`.
 
 The qualifying runs used their own namelists (mostly the 3 km Swiss case). Applying a
 tuple to your case combines it with your dynamics, cadence and land settings. The plan
@@ -139,15 +234,15 @@ pool (`--pool-gib`, default from the plan).
 
 | member | VRAM per process | host RAM peak | wall |
 |---|---|---|---|
-| WN3 d01 grid 120×70×44, 2 in parallel, cold compile, 1.0 GiB pool | 1,712 / 1,744 MiB | 6.4 GB | 631 / 638 s |
+| Tenerife d01 grid 120×70×44, 2 in parallel, cold compile, 1.0 GiB pool | 1,712 / 1,744 MiB | 6.4 GB | 631 / 638 s |
 | Swiss d01 42×42×44, warm from the v0.4.0 bundle, 1.5 GiB pool | 2,214 MiB (pool-bound) | 2.8 GB | 41 / 49 s |
 | Swiss d01, KF, cold compile into the bundle layer, 1.5 GiB pool | 2,216 MiB (pool-bound) | 6.0 GB | 466 / 491 s |
 
-For the WN3 d01 grid the plan therefore uses a 1.25 GiB pool (the 1.0 GiB that sufficed
+For the Tenerife d01 grid the plan therefore uses a 1.25 GiB pool (the 1.0 GiB that sufficed
 plus 25 % for physics that was not measured), i.e. 2.25 GiB per member with the CUDA
 context: **12 d01-only members next to a 4 GiB desktop** on a 32 GB card (31.35 GiB
 visible). Other grids use a formula scaled from the bundle's measured step-program
-footprint (685 MiB arguments+outputs+temporaries and 123 MiB code for the WN3 d01 program;
+footprint (685 MiB arguments+outputs+temporaries and 123 MiB code for the Tenerife d01 program;
 the three-nest live peak is 1.41× its footprints) with a 1.5 physics margin:
 
 ```

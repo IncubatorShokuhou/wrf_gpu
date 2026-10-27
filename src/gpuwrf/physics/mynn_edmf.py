@@ -40,6 +40,8 @@ from jax import config
 import jax.numpy as jnp
 from jax import lax
 
+from gpuwrf.contracts.real_constfold import R4, real_constant
+
 configure_jax_x64()
 
 
@@ -167,6 +169,10 @@ def _dmp_gtr(like):
     return GTR
 
 
+# WRF REAL fold of the qsat_blend chi denominator ((t0c-6.) - tice), module_bl_mynnedmf.F90:7664 (w44-constfold).
+_QSAT_CHI_DEN_REAL = (R4(T0C) - R4(6.0)) - R4(TICE)
+
+
 def _qsat_blend(t, p):
     """WRF `qsat_blend` (module_bl_mynnedmf.F:7619-7668), liquid/ice blend."""
     J = (0.611583699e3, 0.444606896e2, 0.143177157e1, 0.264224321e-1,
@@ -187,7 +193,7 @@ def _qsat_blend(t, p):
     esi = jnp.minimum(horner(K), p * 0.15)
     rslf = 0.622 * esl / jnp.maximum(p - esl, 1e-5)
     rsif = 0.622 * esi / jnp.maximum(p - esi, 1e-5)
-    chi = ((T0C - 6.0) - t) / ((T0C - 6.0) - TICE)
+    chi = ((T0C - 6.0) - t) / real_constant(_QSAT_CHI_DEN_REAL, (T0C - 6.0) - TICE, jnp.result_type(t))
     qs_liq = rslf
     qs_ice = rsif
     qs_blend = (1.0 - chi) * rslf + chi * rsif

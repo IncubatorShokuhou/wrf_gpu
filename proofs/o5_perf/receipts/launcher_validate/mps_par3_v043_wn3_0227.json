@@ -1,0 +1,95 @@
+{
+ "argv": [
+  "run",
+  "--input-dir",
+  "<DATA_ROOT>/wrf_gpu2/scratch/w43-release/cases/wn3_0227",
+  "--output-dir",
+  "<DATA_ROOT>/wrf_gpu2/scratch/o5-perf/validate/mps_par3_v043/cases/wn3_0227/wrfout",
+  "--domains-from-namelist",
+  "--emit-initial-history",
+  "--hours",
+  "6"
+ ],
+ "pythonpath": "<DATA_ROOT>/wrf_gpu2/release_bundles/v0.4.3/src/src",
+ "checks": {
+  "d01": {
+   "dt_s": 54.0,
+   "own_steps": 400,
+   "history_interval_min": 60.0,
+   "history_alarms": 6,
+   "history_cadence_integral": false,
+   "last_alarm_is_last_step": true
+  },
+  "d02": {
+   "dt_s": 18.0,
+   "wrf_dt_s": 18.0,
+   "dt_matches_wrf_parent_time_step_ratio": true,
+   "own_steps": 1200,
+   "history_interval_min": 60.0,
+   "history_alarms": 6,
+   "history_cadence_integral": true,
+   "last_alarm_is_last_step": true
+  },
+  "d03": {
+   "dt_s": 6.0,
+   "wrf_dt_s": 6.0,
+   "dt_matches_wrf_parent_time_step_ratio": true,
+   "own_steps": 3600,
+   "history_interval_min": 60.0,
+   "history_alarms": 6,
+   "history_cadence_integral": true,
+   "last_alarm_is_last_step": true
+  },
+  "wrfbdy_interval_s": {
+   "value": 21600.0,
+   "multiple_of_root_dt": true
+  },
+  "auxinput4_interval_min": {
+   "value": 360.0,
+   "multiple_of_root_dt": true
+  }
+ },
+ "dry_run_rc": 0,
+ "dry_run_plan": {
+  "aot_prefetch": true,
+  "compare_cpu_dir": null,
+  "dry_run": true,
+  "effective_domain": "d01",
+  "effective_hours": 6,
+  "effective_max_dom": 3,
+  "emit_initial_history": true,
+  "feedback": false,
+  "init_mode": "standalone_native_init_nested",
+  "input_dir": "<DATA_ROOT>/wrf_gpu2/scratch/w43-release/cases/wn3_0227",
+  "land_category_check": {
+   "checked": [
+    "<DATA_ROOT>/wrf_gpu2/scratch/w43-release/cases/wn3_0227/wrfinput_d01",
+    "<DATA_ROOT>/wrf_gpu2/scratch/w43-release/cases/wn3_0227/wrfinput_d02",
+    "<DATA_ROOT>/wrf_gpu2/scratch/w43-release/cases/wn3_0227/wrfinput_d03"
+   ],
+   "scope": "land categories only; use gpuwrf doctor for complete input validation",
+   "unchecked": [],
+   "warnings": []
+  },
+  "namelist_max_dom": 3,
+  "namelist_path": "<DATA_ROOT>/wrf_gpu2/scratch/w43-release/cases/wn3_0227/namelist.input",
+  "output_dir": "<DATA_ROOT>/wrf_gpu2/scratch/o5-perf/validate/mps_par3_v043/cases/wn3_0227/wrfout",
+  "override_sources": {
+   "domain": "default",
+   "hours": "flag",
+   "max_dom": "namelist"
+  },
+  "proof_dir": "<DATA_ROOT>/wrf_gpu2/scratch/o5-perf/validate/mps_par3_v043/cases/wn3_0227/wrfout/proofs",
+  "run_type": "nested_live",
+  "schema": "GpuwrfRunPlan",
+  "schema_version": 1,
+  "score": false,
+  "scratch_dir": "<DATA_ROOT>/wrf_gpu2/scratch/o5-perf/validate/mps_par3_v043/cases/wn3_0227/wrfout/.scratch",
+  "smooth_option": 0,
+  "wrf_root_preflight": null
+ },
+ "dry_run_stderr_tail": "gpuwrf: forecast length = 6 h (source: --hours override)\ngpuwrf: domains = d01..d03 (source: namelist); --domain is ignored for nested runs\n",
+ "root_steps_integer": true,
+ "alignment_pass": true,
+ "verdict": "PASS"
+}

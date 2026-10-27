@@ -1,0 +1,42 @@
+{
+ "started_utc": "2026-10-24T16:26:02Z",
+ "command": [
+  "timeout",
+  "--signal=TERM",
+  "--kill-after=30",
+  "2348",
+  "<DATA_ROOT>/canairy_meteo/artifacts/envs/wrf-build/bin/mpirun",
+  "--use-hwthread-cpus",
+  "--bind-to",
+  "none",
+  "-np",
+  "6",
+  "./rank.sh"
+ ],
+ "env": {
+  "JAX_PLATFORMS": "cpu",
+  "OMP_NUM_THREADS": "1",
+  "OMPI_MCA_opal_cuda_support": "0",
+  "OMPI_MCA_accelerator": "null",
+  "OMPI_MCA_rcache": "grdma",
+  "OMPI_MCA_pml": "ob1",
+  "OMPI_MCA_btl": "self,sm,tcp",
+  "OMPI_MCA_coll": "^ucc,hcoll",
+  "UCX_TLS": "self,sm,tcp",
+  "HWLOC_COMPONENTS": "-cuda,-nvml"
+ },
+ "cpus": [
+  8,
+  9,
+  12,
+  24,
+  25,
+  28
+ ],
+ "run_id": "wrf_gpu2-o5-9nest:20261018_12z:twin_n18k5_3x2:trial:twin_k5_trial:dry162602",
+ "registry": "dry",
+ "deadline_utc": "2026-10-24T17:07:11Z",
+ "budget_s": 2348,
+ "memory_max": "17179869184",
+ "launcher_sha256": "aaaadc1d2cdcefaa4e3ea0a39f2945bb0e2b659bdc6d7a159959ea041215a197"
+}

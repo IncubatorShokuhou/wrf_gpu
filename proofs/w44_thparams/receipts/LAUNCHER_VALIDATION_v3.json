@@ -1,0 +1,29 @@
+{
+  "lane": "w44-thparams",
+  "launcher_manifest": "<USER_HOME>/wrf_gpu2_lanes/w44-thparams/NIGHT_LAUNCHER_v3.json",
+  "manifest_sha256": "e795816105da2ba1012d2ea84cd0b9e6b4b0f0ab1b76297593f9bbc00fbb1e52",
+  "source_pin": "a2df0b578e32526a699894f31390d589e7004340",
+  "argv_note": "v3 launcher has no gpuwrf-run argv: cold_prepare.py/root_gpu.py hard-code NestedPipelineConfig(PROD s0_case_20260725, hours=3, max_dom=2); equivalent CLI argv dry-run below",
+  "cli_dry_run": {
+    "a2df_off": "rc0 effective_hours 3 max_dom 2 nested_live",
+    "a2df_on": "rc2: frozen a2df CLI predates --runtime-parameters (launcher binds via bind_domain_parameters in-harness, not CLI)",
+    "head_off": "rc0",
+    "head_on_nt4_json": "rc0 runtime_parameters echoed"
+  },
+  "explicit_alignment": {
+    "namelist_time_step": 54.0,
+    "parent_time_step_ratio": [
+      1,
+      3
+    ],
+    "hours": 3,
+    "steps": {
+      "d01": 200.0,
+      "d02": 600.0
+    },
+    "integer": true,
+    "product_schedule_assert": "product_schedule() raises unless hours*3600/dt is integral per domain",
+    "real_input_receipt": "<USER_HOME>/wrf_gpu2_lanes/w44-thparams/GPU_FAIL/PREPARE_INPUTS/receipt.json (pin a2df, PASS): totals 200/600, alarms d01 67/134/200, d02 200/400/600"
+  },
+  "open_noncompliance": "v3 with_ram_slot waits 120/300/600 s < 900 s (manager 15:09Z rule) -> v4 launcher revision on the repaired head required before any window"
+}

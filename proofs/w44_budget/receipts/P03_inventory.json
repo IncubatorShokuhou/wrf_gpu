@@ -1,0 +1,253 @@
+{
+  "schema": "wrf_gpu2.w44_budget.inventory.v1",
+  "wrf_root": "<USER_HOME>/src/wrf_pristine/WRF",
+  "sources": {
+    "Registry/Registry.EM_COMMON": "6f3ee02175b76487c5c6c046ff2fb4c5d41980b86c0f06eb2e09e34dacc9623a",
+    "phys/module_bl_mynnedmf.F": "6e4a7d5b35ce46f01591f2c1d58e545380d546e654b4a59ee1bcf99cfbce2d72",
+    "phys/module_bl_mynnedmf_driver.F": "f3b65d532e4e9e0d8f1f0b36332c31a83b5dc2559dc08d4b6f04b6916ac0539d",
+    "phys/module_pbl_driver.F": "c1c083365a4e780381fce09b97231cd322913590f089ac91aa9bfc1f6be54424"
+  },
+  "switches": {
+    "tke_budget": "WRF Registry.EM_COMMON:2473/3189; bl_mynn_tkebudget does not exist",
+    "bl_mynn_output": "WRF Registry.EM_COMMON:2483/3191"
+  },
+  "fields": {
+    "qSHEAR": {
+      "registry_name": "qSHEAR",
+      "dimensions": "ikj",
+      "staggering": "Z",
+      "description": "TKE Production - shear",
+      "units": "m2 s-2",
+      "registry_line": 1120,
+      "switch": "tke_budget",
+      "computation": "Existing turbulence qshear, then WRF surface boundary + vertical destagger.",
+      "source": "module_bl_mynnedmf.F:2877,1141-1157"
+    },
+    "qBUOY": {
+      "registry_name": "qBUOY",
+      "dimensions": "ikj",
+      "staggering": "Z",
+      "description": "TKE Production - buoyancy",
+      "units": "m2 s-2",
+      "registry_line": 1121,
+      "switch": "tke_budget",
+      "computation": "Existing qbuoy plus half plume TKE production, then WRF surface boundary + destagger.",
+      "source": "module_bl_mynnedmf.F:2885-2887,1142-1157"
+    },
+    "qDISS": {
+      "registry_name": "qDISS",
+      "dimensions": "ikj",
+      "staggering": "Z",
+      "description": "TKE dissipation",
+      "units": "m2 s-2",
+      "registry_line": 1122,
+      "switch": "tke_budget",
+      "computation": "Existing _mym_predict_qke qdiss; set unused top to zero.",
+      "source": "module_bl_mynnedmf.F:3170,1156"
+    },
+    "qWT": {
+      "registry_name": "qWT",
+      "dimensions": "ikj",
+      "staggering": "Z",
+      "description": "TKE vertical transport",
+      "units": "m2 s-2",
+      "registry_line": 1123,
+      "switch": "tke_budget",
+      "computation": "Existing _mym_predict_qke qwt for default edmf_tke=0; set unused top to zero.",
+      "source": "module_bl_mynnedmf.F:3153-3169,1155"
+    },
+    "Dtke": {
+      "registry_name": "dqke",
+      "dimensions": "ikj",
+      "staggering": "-",
+      "description": "TKE change",
+      "units": "m2 s-2",
+      "registry_line": 1124,
+      "switch": "tke_budget",
+      "computation": "New cheap post-solve difference: 0.5*(qke_new-qke_old)/dt; unused top zero.",
+      "source": "module_bl_mynnedmf.F:756-757,1147,1157"
+    },
+    "edmf_a": {
+      "registry_name": "edmf_a",
+      "dimensions": "ikj",
+      "staggering": "-",
+      "description": "EDMF relative updraft  area - moist updrafts",
+      "units": "-",
+      "registry_line": 1135,
+      "switch": "bl_mynn_output",
+      "computation": "Existing plume output; retain without a new plume solve.",
+      "source": "module_bl_mynnedmf.F:6472,6489"
+    },
+    "edmf_w": {
+      "registry_name": "edmf_w",
+      "dimensions": "ikj",
+      "staggering": "-",
+      "description": "EDMF vertical velocity  - mean moist updrafts",
+      "units": "m s-1",
+      "registry_line": 1136,
+      "switch": "bl_mynn_output",
+      "computation": "Existing plume output under release flags; retain without a new plume solve.",
+      "source": "module_bl_mynnedmf.F:6473,6484"
+    },
+    "edmf_qt": {
+      "registry_name": "edmf_qt",
+      "dimensions": "ikj",
+      "staggering": "-",
+      "description": "EDMF qt  - mean moist updrafts",
+      "units": "kg kg-1",
+      "registry_line": 1138,
+      "switch": "bl_mynn_output",
+      "computation": "Existing plume output; retain without a new plume solve.",
+      "source": "module_bl_mynnedmf.F:6474,6485"
+    },
+    "edmf_thl": {
+      "registry_name": "edmf_thl",
+      "dimensions": "ikj",
+      "staggering": "-",
+      "description": "EDMF thetaL  - mean moist updrafts",
+      "units": "K",
+      "registry_line": 1137,
+      "switch": "bl_mynn_output",
+      "computation": "Existing plume output; retain without a new plume solve.",
+      "source": "module_bl_mynnedmf.F:6475,6486"
+    },
+    "edmf_ent": {
+      "registry_name": "edmf_ent",
+      "dimensions": "ikj",
+      "staggering": "-",
+      "description": "EDMF entrainment  - mean moist updrafts",
+      "units": "m-1",
+      "registry_line": 1139,
+      "switch": "bl_mynn_output",
+      "computation": "New per-plume ENT export and area-weighted sum in native plume kernel (ENT currently transient).",
+      "source": "module_bl_mynnedmf.F:6476,6487"
+    },
+    "edmf_qc": {
+      "registry_name": "edmf_qc",
+      "dimensions": "ikj",
+      "staggering": "-",
+      "description": "EDMF qc - mean moist updrafts",
+      "units": "kg kg-1",
+      "registry_line": 1140,
+      "switch": "bl_mynn_output",
+      "computation": "Existing plume output; retain without a new plume solve.",
+      "source": "module_bl_mynnedmf.F:6477,6488"
+    },
+    "sub_thl3D": {
+      "registry_name": "sub_thl3D",
+      "dimensions": "ikj",
+      "staggering": "-",
+      "description": "thetaL subsidence tendency from EDMF",
+      "units": "K s-1",
+      "registry_line": 1141,
+      "switch": "bl_mynn_output",
+      "computation": "Exact zero: pristine compile-time env_subs=.false.; never synthesize subsidence.",
+      "source": "module_bl_mynnedmf.F:343,815,6517"
+    },
+    "sub_sqv3D": {
+      "registry_name": "sub_sqv3D",
+      "dimensions": "ikj",
+      "staggering": "-",
+      "description": "qv subsidence tendency from EDMF",
+      "units": "kg kg-1 s-1",
+      "registry_line": 1142,
+      "switch": "bl_mynn_output",
+      "computation": "Exact zero: pristine compile-time env_subs=.false.; never synthesize subsidence.",
+      "source": "module_bl_mynnedmf.F:343,816,6517"
+    },
+    "det_thl3D": {
+      "registry_name": "det_thl3D",
+      "dimensions": "ikj",
+      "staggering": "-",
+      "description": "thetaL detrainment tendency from EDMF",
+      "units": "K s-1",
+      "registry_line": 1143,
+      "switch": "bl_mynn_output",
+      "computation": "Exact zero: pristine compile-time env_subs=.false.; never synthesize detrainment.",
+      "source": "module_bl_mynnedmf.F:343,819,6517"
+    },
+    "det_sqv3D": {
+      "registry_name": "det_sqv3D",
+      "dimensions": "ikj",
+      "staggering": "-",
+      "description": "qv detrainment tendency from EDMF",
+      "units": "kg kg-1 s-1",
+      "registry_line": 1144,
+      "switch": "bl_mynn_output",
+      "computation": "Exact zero: pristine compile-time env_subs=.false.; never synthesize detrainment.",
+      "source": "module_bl_mynnedmf.F:343,820,6517"
+    },
+    "RTHBLTEN": {
+      "registry_name": "RTHBLTEN",
+      "dimensions": "ikj",
+      "staggering": "-",
+      "description": "THETA TENDENCY DUE TO PBL PARAMETERIZATION",
+      "units": "K s-1",
+      "registry_line": 1859,
+      "switch": "gpuwrf budget program",
+      "computation": "Existing raw dry-theta PBL source from mynn_adapter_with_source_leaves.",
+      "source": "module_pbl_driver.F:1720-1875"
+    },
+    "RQVBLTEN": {
+      "registry_name": "RQVBLTEN",
+      "dimensions": "ikj",
+      "staggering": "-",
+      "description": "Q_V TENDENCY DUE TO PBL PARAMETERIZATION",
+      "units": "kg kg-1 s-1",
+      "registry_line": 1860,
+      "switch": "gpuwrf budget program",
+      "computation": "Existing raw mixing-ratio PBL source after WRF post_run conversion.",
+      "source": "module_pbl_driver.F:1720-1875"
+    },
+    "RQCBLTEN": {
+      "registry_name": "RQCBLTEN",
+      "dimensions": "ikj",
+      "staggering": "-",
+      "description": "Q_C TENDENCY DUE TO PBL PARAMETERIZATION",
+      "units": "kg kg-1 s-1",
+      "registry_line": 1861,
+      "switch": "gpuwrf budget program",
+      "computation": "Existing raw cloud-water PBL source (cloudmix=1).",
+      "source": "module_pbl_driver.F:1720-1875"
+    },
+    "RQIBLTEN": {
+      "registry_name": "RQIBLTEN",
+      "dimensions": "ikj",
+      "staggering": "-",
+      "description": "Q_I TENDENCY DUE TO PBL PARAMETERIZATION",
+      "units": "kg kg-1 s-1",
+      "registry_line": 1862,
+      "switch": "gpuwrf budget program",
+      "computation": "Existing raw cloud-ice PBL source (cloudmix=1).",
+      "source": "module_pbl_driver.F:1720-1875"
+    },
+    "RUBLTEN": {
+      "registry_name": "RUBLTEN",
+      "dimensions": "ikj",
+      "staggering": "-",
+      "description": "X WIND TENDENCY DUE TO PBL PARAMETERIZATION",
+      "units": "m s-2",
+      "registry_line": 1857,
+      "switch": "gpuwrf budget program",
+      "computation": "Existing raw mass-point PBL source before A-to-C coupling; GWDO may subsequently add to WRF RUBLTEN.",
+      "source": "module_pbl_driver.F:1720-1875"
+    },
+    "RVBLTEN": {
+      "registry_name": "RVBLTEN",
+      "dimensions": "ikj",
+      "staggering": "-",
+      "description": "Y WIND TENDENCY DUE TO PBL PARAMETERIZATION",
+      "units": "m s-2",
+      "registry_line": 1858,
+      "switch": "gpuwrf budget program",
+      "computation": "Existing raw mass-point PBL source before A-to-C coupling; GWDO may subsequently add to WRF RVBLTEN.",
+      "source": "module_pbl_driver.F:1720-1875"
+    }
+  },
+  "notes": [
+    "TKE Registry units are m2 s-2; original :1138 explicitly describes rates m2 s-3. Preserve Registry metadata.",
+    "qSHEAR/qBUOY/qDISS/qWT have Registry Z staggering, but the driver copies kts:kte after budget destaggering. Verify writer allocation against original CPU output.",
+    "Diagnostic values are not yet validated. Source inventory is not a numerical oracle.",
+    "Budget sum uses qSHEAR+qBUOY+qWT-qDISS. Compare closure residual to pristine, including clipping/surface/density conventions, rather than forcing closure."
+  ]
+}

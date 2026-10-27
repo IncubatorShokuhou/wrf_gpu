@@ -67,7 +67,7 @@ from gpuwrf.physics.rrtmg_sw import (
     solve_rrtmg_sw_column,
     solve_rrtmg_sw_m9_flux_slices,
 )
-from gpuwrf.physics.wrf_cam_ozone import wrf_cam_ozone_profile
+from gpuwrf.physics.wrf_cam_ozone import wrf_cam_ozone_profile, _real4_div_rn
 from gpuwrf.physics.wrf_clwrf_ghg import (
     CLWRFGasClock,
     clwrf_gases_at_lead,
@@ -398,6 +398,15 @@ class RRTMGRadiationDiagnostics(NamedTuple):
     # BEP/BEM alone consumes the held broadband direct/diffuse flux and solar angles.
     # None on every existing configuration: no extra compiled outputs/work.
     urban_radiation: object = None
+    # rad_diag=1 only: uncoupled rates and the exact solver-input condensates.
+    rad_diag: object = None
+    # WRF HGT_SHAD, held between radiation calls; None when topo shading is off.
+    shadow_height_m: object = None
+
+
+def unproduced_optional_radiation_fields(produced):
+    """Common optional fields a scheme has no producer for must stay absent."""
+    return RRTMGRadiationDiagnostics._field_defaults.keys()-frozenset(produced)
 
 
 class SolarGeometry(NamedTuple):
@@ -703,9 +712,9 @@ def _resolve_clock_parts(time_utc, clock_base):
 def _wrf_solar_julian_real(julian, utc_minute, lead_seconds):
     from jax import lax
     F = jnp.float32
-    minute = lax.optimization_barrier(F(lead_seconds) / lax.optimization_barrier(F(60)))
+    minute = lax.optimization_barrier(_real4_div_rn(F(lead_seconds), F(60)))
     absolute = lax.optimization_barrier(F(utc_minute) + minute)
-    fraction = lax.optimization_barrier(absolute / lax.optimization_barrier(F(1440)))
+    fraction = lax.optimization_barrier(_real4_div_rn(absolute, F(1440)))
     return lax.optimization_barrier(lax.optimization_barrier(F(julian) - F(1)) + fraction)
 
 
@@ -720,10 +729,10 @@ def _wrf_solcon_real(julian, utc_minute, lead_seconds):
         # nextafter(x,x) preserves every value (including NaN) while retaining
         # the WRF REAL product's rounding boundary before eccentricity sums.
         return barrier(jnp.nextafter(value, value))
-    def div(a, b): return barrier(a / barrier(b))
+    def div(a, b): return barrier(_real4_div_rn(a, b))
     def add(a, b): return barrier(a + b)
     call_julian = _wrf_solar_julian_real(julian, utc_minute, lead_seconds)
-    degrad = div(F(3.141592653589793), F(180))
+    degrad = F(np.float32(np.float32(np.pi) / np.float32(180)))
     rjul = mul(div(mul(call_julian, F(360)), F(365)), degrad)
     twice = mul(F(2), rjul)
     eccfac = add(add(add(add(F(1.000110), mul(F(.034221), jnp.cos(rjul))),
@@ -744,26 +753,26 @@ def _wrf_solar_geometry_real(lat, lon, julian, utc_minute, lead_seconds, solar_l
     def add(a, b): return barrier(a + b)
     def sub(a, b): return barrier(a - b)
     julian, utc_minute = F(julian), F(utc_minute)
-    lead_minute = div(F(lead_seconds), F(60))
+    lead_minute = barrier(_real4_div_rn(F(lead_seconds), F(60)))
     call_julian = _wrf_solar_julian_real(julian, utc_minute, lead_seconds)
-    degrad = div(F(3.141592653589793), F(180))
-    dpd = div(F(360), F(365))
+    degrad = F(np.float32(np.float32(np.pi) / np.float32(180)))
+    dpd = F(np.float32(np.float32(360) / np.float32(365)))
     sinob = jnp.sin(mul(F(23.5), degrad))
     sxday = jnp.where(call_julian >= F(80), sub(call_julian, F(80)), add(call_julian, F(285)))
     sxlong = mul(mul(dpd, sxday), degrad)
     declin = jnp.arcsin(mul(sinob, jnp.sin(sxlong)))
-    da = div(mul(F(6.2831853071795862), sub(call_julian, F(1))), F(365))
+    da = barrier(_real4_div_rn(mul(F(6.2831853071795862), sub(call_julian, F(1))), F(365)))
     twice = mul(F(2), da)
     eot = mul(sub(sub(sub(add(F(.000075), mul(F(.001868), jnp.cos(da))),
                         mul(F(.032077), jnp.sin(da))),
                     mul(F(.014615), jnp.cos(twice))),
                 mul(F(.04089), jnp.sin(twice))), F(229.18))
-    solar_minute = lead_minute if solar_lead_seconds is None else div(F(solar_lead_seconds), F(60))
+    solar_minute = lead_minute if solar_lead_seconds is None else barrier(_real4_div_rn(F(solar_lead_seconds), F(60)))
     if solar_xtime_minutes is not None:
         solar_minute = F(solar_xtime_minutes)
     # WRF MOD(XTIME), then GMT: retain the original hour-angle phase/order.
     xt24 = add(jnp.fmod(solar_minute, F(1440)), eot)
-    tloc = add(add(div(utc_minute, F(60)), div(xt24, F(60))), div(jnp.asarray(lon, F), F(15)))
+    tloc = add(add(div(utc_minute, F(60)), barrier(_real4_div_rn(xt24, F(60)))), barrier(_real4_div_rn(jnp.asarray(lon, F), F(15))))
     hour_angle = mul(mul(F(15), sub(tloc, F(12))), degrad)
     lat_rad = mul(jnp.asarray(lat, F), degrad)
     coszen = add(mul(jnp.sin(lat_rad), jnp.sin(declin)),
@@ -1007,7 +1016,11 @@ def _wrf_topographic_shadow_mask(
     dy_m: float,
     shadow_length_m: float,
 ):
-    """WRF `module_radiation_driver.F:toposhad` local terrain ray scan."""
+    """Legacy pre-fix comparator for historical proof drivers only.
+
+    Production uses physics.topographic_shading.topographic_shadow_from_geometry,
+    which retains WRF HGT_SHAD and dispatches to the native ray kernel.
+    """
 
     terrain = jnp.asarray(terrain_height_m, dtype=jnp.float64)
     ny, nx = terrain.shape
@@ -1103,22 +1116,31 @@ def _rrtmg_topography_state(
     slope_rad: int = 0,
     topo_shading: int = 0,
     shadow_length_m: float = 25000.0,
+    shadow_geometry: SolarGeometry | None = None,
+    previous_shadow_height_m=None,
+    nested_shadow: bool = False,
 ) -> RRTMGSWTopographyState | None:
     if static is None or int(slope_rad) != 1:
         return None
     dtype = jnp.asarray(static.xlat_deg).dtype
+    shadow_height = None
     if int(topo_shading) == 1 and grid is not None:
-        shadow_mask = _wrf_topographic_shadow_mask(
+        from gpuwrf.physics.topographic_shading import topographic_shadow_from_geometry
+        shade = geometry if shadow_geometry is None else shadow_geometry
+        old_height = (jnp.zeros_like(static.terrain_height_m, dtype=jnp.float32)
+                      if previous_shadow_height_m is None else previous_shadow_height_m) if nested_shadow else None
+        shadow_mask, shadow_height = topographic_shadow_from_geometry(
             static.terrain_height_m,
             latitude_deg=static.xlat_deg,
-            coszen=geometry.coszen,
-            declination_rad=geometry.declination_rad,
-            hour_angle_rad=geometry.hour_angle_rad,
+            coszen=shade.coszen,
+            declination_rad=shade.declination_rad,
+            hour_angle_rad=shade.hour_angle_rad,
             sina=static.sina,
             cosa=static.cosa,
             dx_m=float(grid.projection.dx_m),
             dy_m=float(grid.projection.dy_m),
             shadow_length_m=float(shadow_length_m),
+            previous_height_m=old_height,
         )
     else:
         shadow_mask = jnp.zeros_like(static.slope_rad, dtype=jnp.int32)
@@ -1129,6 +1151,7 @@ def _rrtmg_topography_state(
         slope_rad=static.slope_rad.astype(dtype),
         slope_azimuth_rad=static.slope_azimuth_rad.astype(dtype),
         shadow_mask=shadow_mask,
+        shadow_height_m=shadow_height,
     )
 
 
@@ -1279,6 +1302,8 @@ def _rrtmg_column_inputs(
     topo_shading: int = 0,
     slope_rad: int = 0,
     shadow_length_m: float = 25000.0,
+    previous_shadow_height_m=None,
+    nested_shadow: bool = False,
     land_state=None,
     use_mp_re: int = 1,
     mp_physics: int = 8,
@@ -1298,6 +1323,8 @@ def _rrtmg_column_inputs(
                   radiation_static=radiation_static, topo_shading=topo_shading,
                   slope_rad=slope_rad, shadow_length_m=shadow_length_m,
                   land_state=land_state, use_mp_re=use_mp_re, mp_physics=mp_physics, use_sgs_cloud=use_sgs_cloud)
+    if int(topo_shading) == 1 and int(slope_rad) == 1:
+        kwargs.update(previous_shadow_height_m=previous_shadow_height_m, nested_shadow=bool(nested_shadow))
     if ozone_vmr_override is not None:
         kwargs["ozone_vmr_override"] = ozone_vmr_override
     if not use_mynn_sgs_cloud:
@@ -1324,6 +1351,8 @@ def _rrtmg_column_inputs(
         }) if hasattr(clock_base, "_fields") else _rrtmg_real_tree(clock_base))
     for name in ("radiation_static", "land_state", "lead_seconds", "solar_lead_seconds"):
         kwargs[name] = _rrtmg_real_tree(kwargs[name])
+    if previous_shadow_height_m is not None and "previous_shadow_height_m" in kwargs:
+        kwargs["previous_shadow_height_m"] = _rrtmg_real_tree(previous_shadow_height_m)
     if ozone_vmr_override is not None:
         kwargs["ozone_vmr_override"] = _rrtmg_real_tree(ozone_vmr_override)
     with jax.enable_x64(False):
@@ -1343,6 +1372,8 @@ def _rrtmg_column_inputs_impl(
     topo_shading: int = 0,
     slope_rad: int = 0,
     shadow_length_m: float = 25000.0,
+    previous_shadow_height_m=None,
+    nested_shadow: bool = False,
     land_state=None,
     use_mp_re: int = 1,
     mp_physics: int = 8,
@@ -1503,6 +1534,17 @@ def _rrtmg_column_inputs_impl(
         declination_rad=geometry.declination_rad,
         hour_angle_rad=geometry.hour_angle_rad.astype(state.t_skin.dtype),
     )
+    shadow_geometry = None
+    if int(topo_shading) == 1 and int(slope_rad) == 1:
+        from gpuwrf.physics.topographic_shading import toposhad_solar_geometry_from_seconds
+        _julian, utc_minute = _resolve_clock_parts(time_utc, clock_base)
+        phase = lead_seconds if solar_lead_seconds is None else solar_lead_seconds
+        # RRTMG receives the caller's midpoint phase. WRF toposhad uses that
+        # same midpoint with NO calc_coszen equation-of-time correction.
+        shadow_coszen, shadow_hrang = toposhad_solar_geometry_from_seconds(
+            lat, lon, geometry.declination_rad, jnp.asarray(phase, jnp.float32),
+            jnp.asarray(utc_minute, jnp.float32))
+        shadow_geometry = SolarGeometry(shadow_coszen, geometry.declination_rad, shadow_hrang)
     topography = _rrtmg_topography_state(
         static,
         grid,
@@ -1510,6 +1552,9 @@ def _rrtmg_column_inputs_impl(
         slope_rad=slope_rad,
         topo_shading=topo_shading,
         shadow_length_m=shadow_length_m,
+        shadow_geometry=shadow_geometry,
+        previous_shadow_height_m=previous_shadow_height_m,
+        nested_shadow=nested_shadow,
     )
     # WRF `solvar = scon/rrsw_scon` per-band SW source normalization, computed
     # from the run date (function-of-JULIAN, not replay output). Closes the GPU
@@ -2594,6 +2639,9 @@ def _mynn_coldstart_init_columns_tiled(
     xland_b: jax.Array,
     *,
     rmol_init,
+    alp1=None,
+    initialize_qke=None,
+    return_moments: bool = False,
 ) -> tuple[jax.Array, jax.Array]:
     """Run WRF MYNN cold-start QKE over bounded column tiles.
 
@@ -2604,6 +2652,9 @@ def _mynn_coldstart_init_columns_tiled(
     changes the independent column batch size.
     """
 
+    if initialize_qke is not None or return_moments:
+        return _mynn_cycling_init_columns_tiled(column_b, ust_b, dx, xland_b,
+            rmol_init=rmol_init, initialize_qke=initialize_qke, return_moments=return_moments, **({} if alp1 is None else {"alp1": alp1}))
     profile = jnp.asarray(column_b.theta)
     tiling_active = (
         _MYNN_COLUMN_TILING
@@ -2613,7 +2664,7 @@ def _mynn_coldstart_init_columns_tiled(
     )
     if not tiling_active:
         return mynn_coldstart_init_columns(
-            column_b, ust_b, dx, xland_b, rmol_init=rmol_init
+            column_b, ust_b, dx, xland_b, rmol_init=rmol_init, **({} if alp1 is None else {"alp1": alp1})
         )
 
     ncol = int(profile.shape[0])
@@ -2649,7 +2700,7 @@ def _mynn_coldstart_init_columns_tiled(
             else _slice_columns_leaf(rmol_pad, start, tile_cols, padded_ncol)
         )
         tile_qke, tile_pblh = mynn_coldstart_init_columns(
-            tile_column, tile_ust, dx, tile_xland, rmol_init=tile_rmol
+            tile_column, tile_ust, dx, tile_xland, rmol_init=tile_rmol, **({} if alp1 is None else {"alp1": alp1})
         )
         qke_acc, pblh_acc = carry
         return (
@@ -2661,6 +2712,37 @@ def _mynn_coldstart_init_columns_tiled(
         body, (init_qke, init_pblh), jnp.arange(n_tiles, dtype=jnp.int32)
     )
     return qke[:ncol], pblh[:ncol]
+
+
+def _mynn_cycling_init_columns_tiled(column_b, ust_b, dx, xland_b, *, rmol_init,
+                                    initialize_qke, return_moments, alp1=None):
+    """The optional init mask/moments share the established bounded tile size."""
+    profile = jnp.asarray(column_b.theta)
+    tile_cols = int(_MYNN_COLUMN_TILE_COLS)
+    if profile.ndim != 2 or not _MYNN_COLUMN_TILING or tile_cols <= 0 or profile.shape[0] <= tile_cols:
+        return mynn_coldstart_init_columns(column_b, ust_b, dx, xland_b, rmol_init=rmol_init,
+            initialize_qke=initialize_qke, return_moments=return_moments, **({} if alp1 is None else {"alp1": alp1}))
+    ncol, nz = profile.shape
+    n_tiles = (ncol + tile_cols - 1) // tile_cols
+    padded = n_tiles * tile_cols
+    pad = lambda arr: _pad_columns_leaf(arr, ncol=ncol, padded_ncol=padded)
+    padded_column = jax.tree_util.tree_map(pad, column_b)
+    ust_pad, land_pad = pad(ust_b), pad(xland_b)
+    rmol_pad = None if rmol_init is None else pad(rmol_init)
+    mask_pad = None if initialize_qke is None else pad(initialize_qke)
+    init = (jnp.zeros((padded,nz), profile.dtype), jnp.zeros((padded,), profile.dtype))
+    if return_moments:
+        init += (jnp.zeros((padded,nz), profile.dtype), jnp.zeros((padded,nz), profile.dtype))
+    def body(carry, index):
+        start = index * tile_cols
+        take = lambda arr: _slice_columns_leaf(arr, start, tile_cols, padded)
+        values = mynn_coldstart_init_columns(jax.tree_util.tree_map(take, padded_column),take(ust_pad),dx,take(land_pad),
+            rmol_init=None if rmol_pad is None else take(rmol_pad),
+            initialize_qke=None if mask_pad is None else take(mask_pad), return_moments=return_moments,
+            **({} if alp1 is None else {"alp1": alp1}))
+        return tuple(_scatter_columns_leaf(old,new,start) for old,new in zip(carry,values)), None
+    result, _ = jax.lax.scan(body, init, jnp.arange(n_tiles,dtype=jnp.int32))
+    return tuple(value[:ncol] for value in result)
 
 
 # MYNN-EDMF mass-flux nonlocal transport (WRF ``bl_mynn_edmf=1``).
@@ -2677,7 +2759,9 @@ def mynn_adapter(
     *,
     first_timestep=False,
     restart: bool = False,
+    cycling: bool = False,
     passive_scalars: tuple[str, ...] = (),
+    sqfac=None, mynn_coefficients=None,
 ) -> State:
     """Advance the MYNN PBL using the surface fluxes ``surface_adapter`` wrote.
 
@@ -2693,7 +2777,8 @@ def mynn_adapter(
     """
 
     state = _mynn_state_with_first_call_qke(
-        state, grid, first_timestep, restart=restart
+        state, grid, first_timestep, restart=restart, cycling=cycling,
+        **({} if mynn_coefficients is None or "alp1" not in mynn_coefficients else {"alp1": mynn_coefficients["alp1"]})
     )
     column = _mynn_column_from_state(state, grid, passive_scalars)
     surface = _surface_fluxes_from_state(state, grid)
@@ -2701,7 +2786,9 @@ def mynn_adapter(
     column_b = _flatten_columns_to_batch(column, ny, nx)
     surface_b = _flatten_columns_to_batch(surface, ny, nx)
     out_b, pblh_b = step_mynn_pbl_column_with_pblh(
-        column_b, dt, debug=False, surface=surface_b, edmf=_MYNN_EDMF, dx=_mynn_dx(grid)
+        column_b, dt, debug=False, surface=surface_b, edmf=_MYNN_EDMF, dx=_mynn_dx(grid),
+        **({} if sqfac is None else {"sqfac": sqfac}),
+        **({} if mynn_coefficients is None else {"mynn_coefficients": mynn_coefficients})
     )
     out = _unflatten_batch_to_columns(out_b, ny, nx)
     return _with_mynn_pblh(_state_from_mynn_output(
@@ -2718,7 +2805,8 @@ def _with_mynn_pblh(state: State, pblh_b) -> State:
 
 
 def mynn_coldstart_qke_from_state(
-    state: State, grid: GridSpec | None = None, rmol_init=None
+    state: State, grid: GridSpec | None = None, rmol_init=None,
+    *, initialize_qke=None, return_moments: bool = False, alp1=None,
 ) -> jax.Array:
     """WRF MYNN first-call cold-start qke initialization from ``State``.
 
@@ -2740,6 +2828,10 @@ def mynn_coldstart_qke_from_state(
     ny, nx = column.theta.shape[0], column.theta.shape[1]
     column_b = _flatten_columns_to_batch(column, ny, nx)
     dtype = _mynn_real_dtype()
+    optional = {}
+    if initialize_qke is not None or return_moments:
+        optional = {"initialize_qke": None if initialize_qke is None else jnp.asarray(initialize_qke).reshape(ny*nx),
+                    "return_moments": return_moments}
     ust_b = jnp.asarray(state.ustar, dtype=dtype).reshape(ny * nx)
     xland_b = jnp.asarray(state.xland, dtype=dtype).reshape(ny * nx)
     rmol_b = None if rmol_init is None else jnp.asarray(rmol_init, dtype=dtype).reshape(ny * nx)
@@ -2747,13 +2839,19 @@ def mynn_coldstart_qke_from_state(
         # WRF's initialize/level-2/length path is REAL. Its scalar-only scale
         # factors otherwise become strong fp64 arrays before meeting profiles.
         with jax.enable_x64(False):
-            qke_b, _pblh = _mynn_coldstart_init_columns_tiled(
-                column_b, ust_b, _mynn_dx(grid), xland_b, rmol_init=rmol_b
+            initialized = _mynn_coldstart_init_columns_tiled(
+                column_b, ust_b, _mynn_dx(grid), xland_b, rmol_init=rmol_b, **optional,
+                **({} if alp1 is None else {"alp1": alp1})
             )
     else:
-        qke_b, _pblh = _mynn_coldstart_init_columns_tiled(
-            column_b, ust_b, _mynn_dx(grid), xland_b, rmol_init=rmol_b
+        initialized = _mynn_coldstart_init_columns_tiled(
+            column_b, ust_b, _mynn_dx(grid), xland_b, rmol_init=rmol_b, **optional,
+            **({} if alp1 is None else {"alp1": alp1})
         )
+    qke_b, _pblh = initialized[:2]
+    if return_moments:
+        return tuple(_from_columns(_unflatten_batch_to_columns(value, ny, nx))
+                     for value in (qke_b, initialized[2], initialized[3]))
     return _from_columns(_unflatten_batch_to_columns(qke_b, ny, nx))
 
 
@@ -2769,6 +2867,8 @@ def _mynn_state_with_first_call_qke(
     first_timestep,
     *,
     restart: bool = False,
+    cycling: bool = False,
+    alp1=None,
 ) -> State:
     """Apply WRF's lifecycle-specific first-call MYNN QKE initialization.
 
@@ -2780,24 +2880,70 @@ def _mynn_state_with_first_call_qke(
 
     if not isinstance(restart, bool):
         raise TypeError("MYNN restart lifecycle flag must be a Python bool")
+    if not isinstance(cycling, bool):
+        raise TypeError("MYNN cycling lifecycle flag must be a Python bool")
     if restart:
         return state
 
     qke_live = jnp.asarray(state.qke)
 
+    if cycling:
+        if qke_live.ndim != 3:
+            raise ValueError("cycling State.qke must have (bottom_top, south_north, west_east) axes")
+        # WRF module_bl_mynnedmf.F:618-752: select INITIALIZE_QKE from
+        # incoming per-column MAXVAL, then CLEAR qke1/qke_adv1 even when
+        # cycling (the source says .not.restart OR .not.cycling). The false
+        # mym_initialize branch never restores QKE. Preserve that quirk.
+        reset_names = tuple(name for name in ("qsq", "qc_bl", "qi_bl", "cldfra_bl", "el_pbl")
+                            if getattr(state, name, None) is not None)
+        current = (qke_live,) + tuple(jnp.asarray(getattr(state, n)) for n in reset_names)
+
+        def cycling_seed(_unused):
+            cleared = {name: jnp.zeros_like(getattr(state, name)) for name in reset_names}
+            seed_state = state.replace(**cleared) if cleared else state
+            initialize = jnp.max(qke_live, axis=0) < jnp.asarray(np.float32(.0002), dtype=qke_live.dtype)
+            qke, el, qsq = mynn_coldstart_qke_from_state(seed_state, grid,
+                initialize_qke=initialize, return_moments=True, **({} if alp1 is None else {"alp1": alp1}))
+            qke = qke.astype(qke_live.dtype)
+            if "qsq" in cleared:
+                cleared["qsq"] = qsq.astype(current[1+reset_names.index("qsq")].dtype)
+            if "el_pbl" in cleared:
+                cleared["el_pbl"] = el.astype(current[1+reset_names.index("el_pbl")].dtype)
+            return (qke,) + tuple(cleared[n] for n in reset_names)
+
+        if isinstance(first_timestep, bool):
+            if not first_timestep:
+                return state
+            values = cycling_seed(None)
+        else:
+            values = jax.lax.cond(jnp.asarray(first_timestep, dtype=bool), cycling_seed, lambda _: current, None)
+        return state.replace(qke=values[0], **dict(zip(reset_names, values[1:])))
+
+    # WRF mym_initialize seeds both mixing length and moisture variance.
+    # Closure 2.6 carries QSQ into the first SGS-cloud call; starting it at
+    # zero suppresses that cloud and leaves a multi-step spin-up deficit.
+    seed_names = tuple(name for name in ("el_pbl", "qsq")
+                       if getattr(state, name, None) is not None)
+    current = (qke_live,) + tuple(jnp.asarray(getattr(state, name)) for name in seed_names)
+
     def seed(_unused):
-        # The initializer computes WRF REAL; the surrounding cond still owns
-        # the retained carry dtype, including a legacy fp64 State.
-        return mynn_coldstart_qke_from_state(state, grid).astype(qke_live.dtype)
+        # WRF REAL init results retain the surrounding carry's dtype.
+        qke, el, qsq = mynn_coldstart_qke_from_state(state, grid,
+            return_moments=True, **({} if alp1 is None else {"alp1": alp1}))
+        moments = {"el_pbl": el, "qsq": qsq}
+        return (qke.astype(qke_live.dtype),) + tuple(
+            moments[name].astype(old.dtype) for name, old in zip(seed_names, current[1:]))
 
     if isinstance(first_timestep, bool):
         if not first_timestep:
             return state
-        qke_seed = seed(None)
+        values = seed(None)
     else:
         flag = jnp.asarray(first_timestep, dtype=bool)
-        qke_seed = jax.lax.cond(flag, seed, lambda _unused: qke_live, None)
-    return state.replace(qke=qke_seed.astype(_output_dtype(state, "qke")))
+        values = jax.lax.cond(flag, seed, lambda _unused: current, None)
+    return state.replace(qke=values[0].astype(_output_dtype(state, "qke")),
+                         **dict(zip(seed_names, values[1:])))
+
 
 
 def mynn_adapter_with_source_leaves(
@@ -2807,9 +2953,11 @@ def mynn_adapter_with_source_leaves(
     *,
     first_timestep=False,
     restart: bool = False,
+    cycling: bool = False,
     spp_pattern=None,
     mix_tracers: bool = False,
     passive_scalars: tuple[str, ...] = (),
+    sqfac=None, mynn_coefficients=None,
 ) -> MynnPBLSourceLeaves:
     """Advance MYNN and expose raw WRF MYNN source tendencies.
 
@@ -2822,7 +2970,8 @@ def mynn_adapter_with_source_leaves(
     """
 
     state = _mynn_state_with_first_call_qke(
-        state, grid, first_timestep, restart=restart
+        state, grid, first_timestep, restart=restart, cycling=cycling,
+        **({} if mynn_coefficients is None or "alp1" not in mynn_coefficients else {"alp1": mynn_coefficients["alp1"]})
     )
     column = _mynn_column_from_state(state, grid, passive_scalars)
     if spp_pattern is not None:
@@ -2832,7 +2981,9 @@ def mynn_adapter_with_source_leaves(
     column_b = _flatten_columns_to_batch(column, ny, nx)
     surface_b = _flatten_columns_to_batch(surface, ny, nx)
     out_b, pblh_b = step_mynn_pbl_column_with_pblh(
-        column_b, dt, debug=False, surface=surface_b, edmf=_MYNN_EDMF, dx=_mynn_dx(grid)
+        column_b, dt, debug=False, surface=surface_b, edmf=_MYNN_EDMF, dx=_mynn_dx(grid),
+        **({} if sqfac is None else {"sqfac": sqfac}),
+        **({} if mynn_coefficients is None else {"mynn_coefficients": mynn_coefficients})
     )
     out = _unflatten_batch_to_columns(out_b, ny, nx)
     theta_after = _from_columns(out.theta)
@@ -2885,7 +3036,7 @@ def mynn_adapter_with_source_leaves(
 
 
 def mynn_adapter_with_diagnostics(
-    state: State, dt: float, grid: GridSpec | None = None
+    state: State, dt: float, grid: GridSpec | None = None, *, sqfac=None, mynn_coefficients=None
 ) -> tuple[State, object]:
     """``mynn_adapter`` plus the PBLH operational diagnostic (mass-point 2-D)."""
 
@@ -2895,7 +3046,9 @@ def mynn_adapter_with_diagnostics(
     column_b = _flatten_columns_to_batch(column, ny, nx)
     surface_b = _flatten_columns_to_batch(surface, ny, nx)
     out_b, pblh_b = step_mynn_pbl_column_with_pblh(
-        column_b, dt, debug=False, surface=surface_b, edmf=_MYNN_EDMF, dx=_mynn_dx(grid)
+        column_b, dt, debug=False, surface=surface_b, edmf=_MYNN_EDMF, dx=_mynn_dx(grid),
+        **({} if sqfac is None else {"sqfac": sqfac}),
+        **({} if mynn_coefficients is None else {"mynn_coefficients": mynn_coefficients})
     )
     out = _unflatten_batch_to_columns(out_b, ny, nx)
     pblh = pblh_b.reshape((ny, nx) + pblh_b.shape[1:])
@@ -3055,6 +3208,8 @@ def rrtmg_radiation_diagnostics(
     topo_shading: int = 0,
     slope_rad: int = 0,
     shadow_length_m: float = 25000.0,
+    previous_shadow_height_m=None,
+    nested_shadow: bool = False,
     land_state=None,
     use_mp_re: int = 1,
     mp_physics: int = 8,
@@ -3063,6 +3218,7 @@ def rrtmg_radiation_diagnostics(
     _m9_flux_slices_only: bool = False,
     _kernel_call=None,
     with_urban: bool = False,
+    with_rad_diag: bool = False,
     use_mynn_sgs_cloud: bool = True,
     cloud_mp_physics: int = 8,
     icloud: int = 1,
@@ -3094,6 +3250,8 @@ def rrtmg_radiation_diagnostics(
         topo_shading=topo_shading,
         slope_rad=slope_rad,
         shadow_length_m=shadow_length_m,
+        **({"previous_shadow_height_m": previous_shadow_height_m, "nested_shadow": nested_shadow}
+           if int(topo_shading) == 1 and int(slope_rad) == 1 else {}),
         land_state=land_state,
         use_mp_re=use_mp_re,
         mp_physics=mp_physics,
@@ -3135,9 +3293,60 @@ def rrtmg_radiation_diagnostics(
         cloud_fraction=_from_columns(sw_state.cloud_fraction),
         with_urban=with_urban,
     )
-    return jax.tree.map(lambda value: value.astype(state.t_skin.dtype)
+    shadow_height = diagnostics.shadow_height_m
+    diagnostics = jax.tree.map(lambda value: value.astype(state.t_skin.dtype)
         if hasattr(value, "dtype") and jnp.issubdtype(value.dtype, jnp.floating)
         else value, diagnostics) if _rrtmg_real_enabled() else diagnostics
+    if shadow_height is not None:
+        diagnostics = diagnostics._replace(shadow_height_m=shadow_height)
+    if with_rad_diag:
+        diagnostics = diagnostics._replace(rad_diag=_rrtmg_history_from_results(
+            state, sw_state, lw_state, sw, lw, with_clear_sky=with_clear_sky))
+    return diagnostics
+
+
+def _rrtmg_history_from_results(state, sw_state, lw_state, sw, lw, *, with_clear_sky):
+    """WRF TTEN/PI3D and TTENC/PI3D; reuse the existing clear flux streams.
+
+    Public LW/SW profiles contain surface..model-top followed by TOA. Only
+    the first nz+1 interfaces enter the model-layer heating divergence.
+    Pressure/mass and REAL operation order are the solvers' own helpers.
+    """
+    from gpuwrf.diagnostics.radiation import RadiationHistory
+    from gpuwrf.physics.rrtmg_constants import _WRF_HEATFAC
+    from gpuwrf.physics.rrtmg_lw import _lw_extended_pressure_profiles
+    from gpuwrf.physics.rrtmg_sw import _sw_extended_profiles
+    if not with_clear_sky:
+        raise ValueError("rad_diag=1 requires clear-sky solver fluxes")
+    nz = state.theta.shape[0]
+    pressure = jnp.asarray(state.p, dtype=jnp.float32) if _rrtmg_real_enabled() else state.p
+    exner = jnp.maximum((jnp.maximum(pressure, 1.0) / P0_PA) ** R_D_OVER_CP, 1.e-12)
+
+    def clear_heating(column, result, shortwave):
+        if shortwave:
+            interfaces = _sw_extended_profiles(column)[0]
+        else:
+            interfaces = _lw_extended_pressure_profiles(
+                column.p, column.top_pressure_pa, column.pressure_interfaces)[0]
+        # This new diagnostic always uses pristine RRTMG's REAL heatfac,
+        # including under retained legacy solver flags (CP=1004 would give a
+        # 0.05% diagnostic bias versus WRF's 7*287/2 = 1004.5).
+        barrier = jax.lax.optimization_barrier
+        pz = interfaces.astype(jnp.float32) / barrier(jnp.float32(100))
+        dp = pz[..., :-1] - pz[..., 1:]
+        net = result.clear_flux_down.astype(jnp.float32) - result.clear_flux_up.astype(jnp.float32)
+        delta = net[..., 1:nz+1] - net[..., :nz]
+        heating = (delta * barrier(_WRF_HEATFAC / dp) if shortwave else
+                   barrier(_WRF_HEATFAC * delta) / dp)
+        return barrier(heating) / barrier(jnp.float32(86400))
+
+    rates = (lw.heating_rate, sw.heating_rate,
+             clear_heating(lw_state, lw, False), clear_heating(sw_state, sw, True))
+    held = RadiationHistory(
+        *(_from_columns(rate).astype(exner.dtype) / exner for rate in rates),
+        *(_from_columns(getattr(sw_state, name)) for name in ("qc", "qi", "qs", "qg")),
+    )
+    return jax.tree.map(lambda value: value.astype(jnp.float32), held)
 
 
 def _rrtmg_diagnostics_from_results(sw, lw, surface_albedo, surface_emissivity,
@@ -3190,6 +3399,7 @@ def _rrtmg_diagnostics_from_results(sw, lw, surface_albedo, surface_emissivity,
         cloud_fraction=cloud_fraction,
         urban_radiation=(sw.surface_direct, sw.surface_diffuse,
                          geometry.declination_rad, geometry.hour_angle_rad) if with_urban else None,
+        shadow_height_m=None if topography is None else topography.shadow_height_m,
     )
 
 
@@ -3355,10 +3565,13 @@ def rrtmg_theta_tendency(
     topo_shading: int = 0,
     slope_rad: int = 0,
     shadow_length_m: float = 25000.0,
+    previous_shadow_height_m=None,
+    nested_shadow: bool = False,
     land_state=None,
     use_mp_re: int = 1,
     mp_physics: int = 8,
     _with_diagnostics: bool = False,
+    with_rad_diag: bool = False,
     _with_solar: bool = False,
     with_clear_sky: bool = False,
     ozone_vmr_override=None,
@@ -3401,6 +3614,8 @@ def rrtmg_theta_tendency(
         topo_shading=topo_shading,
         slope_rad=slope_rad,
         shadow_length_m=shadow_length_m,
+        **({"previous_shadow_height_m": previous_shadow_height_m, "nested_shadow": nested_shadow}
+           if int(topo_shading) == 1 and int(slope_rad) == 1 else {}),
         land_state=land_state,
         use_mp_re=use_mp_re,
         mp_physics=mp_physics,
@@ -3429,9 +3644,15 @@ def rrtmg_theta_tendency(
             with_urban=with_urban,
         )
         if _rrtmg_real_enabled():
+            shadow_height = diagnostics.shadow_height_m
             diagnostics = jax.tree.map(lambda value: value.astype(state.t_skin.dtype)
                 if hasattr(value, "dtype") and jnp.issubdtype(value.dtype, jnp.floating)
                 else value, diagnostics)
+            if shadow_height is not None:
+                diagnostics = diagnostics._replace(shadow_height_m=shadow_height)
+        if with_rad_diag:
+            diagnostics = diagnostics._replace(rad_diag=_rrtmg_history_from_results(
+                state, sw_state, lw_state, sw, lw, with_clear_sky=with_clear_sky))
         if _with_solar:
             raw = RRTMGSurfaceSolarInputs(*(jnp.asarray(value, jnp.float32) for value in
                 (sw.surface_direct, sw.surface_diffuse, sw.surface_absorbed)))

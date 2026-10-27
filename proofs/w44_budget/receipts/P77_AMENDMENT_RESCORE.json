@@ -1,0 +1,1052 @@
+{
+  "schema": "wrf_gpu2.w44_budget.p77_amendment_rescore.v1",
+  "recorded_real_utc": "2026-10-25T00:58:00Z",
+  "amendment_commit": "7a24833cd289e3f622c71ad1738d9e6b56d926d5",
+  "critic": "cr-w44-budget VERDICT_DELTA 00:37Z (APPROVED per-level k=4)",
+  "rule": "PBL: max(5% colmax, 25-member original spread per column); RQV/RQC/RQI also 4*spacing_f32(max(|x_in|,|x_in+r_ref*dt|))/dt per level, 0 below 2^-126",
+  "tools": {
+    "history_gate.py": "ed3b68e1d14dbfff97882dd1773a8d9ce8102d8c61a47416e41df3163551b6f2",
+    "pristine_conditioning.py": "d8dae98b0e8544bee693d2c85b1e029784478ddbc88c2474adf220aec8c45a3a",
+    "twin_oracle.py": "c054f09838a1df08f5980ac958769275075daeed9ca0e70a6d3c80fb41689d13",
+    "gate_controls.py": "ff0bc9a4e5d774808c7a114ca2b36c5bfa7d1e57d5def9b1deb584798f96450c"
+  },
+  "runs": {
+    "P77_day_oracle": {
+      "probe": "<USER_HOME>/wrf_gpu2_lanes/w44-budget/P26_twin_day_final",
+      "case": "wn3_d03_day",
+      "edmf": 1,
+      "verdict": "ORIGINAL_TERM_GATE_PASS",
+      "result_sha256": "584eea0db10b306c91508e5ff858a33df1cefd942766d7dc612eede3982dbcf3",
+      "steps": {
+        "1": {
+          "passed": true,
+          "closure": true,
+          "terms_passed": 21,
+          "pbl_worst_fraction_of_bound": {
+            "RTHBLTEN": 0.6666669845581055,
+            "RQVBLTEN": 0.07766990291262135,
+            "RQCBLTEN": 0.04145486813022012,
+            "RQIBLTEN": 1.788139289971015e-06,
+            "RUBLTEN": 0.06773933501704578,
+            "RVBLTEN": 0.060120242319362915
+          },
+          "binding_points": {
+            "RTHBLTEN": {
+              "relative": 880,
+              "ensemble": 528,
+              "quantization": 0
+            },
+            "RQVBLTEN": {
+              "relative": 1408,
+              "ensemble": 0,
+              "quantization": 0
+            },
+            "RQCBLTEN": {
+              "relative": 1408,
+              "ensemble": 0,
+              "quantization": 0
+            },
+            "RQIBLTEN": {
+              "relative": 1391,
+              "ensemble": 0,
+              "quantization": 17
+            },
+            "RUBLTEN": {
+              "relative": 1408,
+              "ensemble": 0,
+              "quantization": 0
+            },
+            "RVBLTEN": {
+              "relative": 1408,
+              "ensemble": 0,
+              "quantization": 0
+            }
+          }
+        },
+        "2": {
+          "passed": true,
+          "closure": true,
+          "terms_passed": 21,
+          "pbl_worst_fraction_of_bound": {
+            "RTHBLTEN": 0.5882353807403166,
+            "RQVBLTEN": 0.05171308948388761,
+            "RQCBLTEN": 0.04679237131317606,
+            "RQIBLTEN": 2.6822089349565225e-06,
+            "RUBLTEN": 0.037998734844369046,
+            "RVBLTEN": 0.06319163534878554
+          },
+          "binding_points": {
+            "RTHBLTEN": {
+              "relative": 880,
+              "ensemble": 528,
+              "quantization": 0
+            },
+            "RQVBLTEN": {
+              "relative": 1408,
+              "ensemble": 0,
+              "quantization": 0
+            },
+            "RQCBLTEN": {
+              "relative": 1408,
+              "ensemble": 0,
+              "quantization": 0
+            },
+            "RQIBLTEN": {
+              "relative": 1391,
+              "ensemble": 0,
+              "quantization": 17
+            },
+            "RUBLTEN": {
+              "relative": 1408,
+              "ensemble": 0,
+              "quantization": 0
+            },
+            "RVBLTEN": {
+              "relative": 1408,
+              "ensemble": 0,
+              "quantization": 0
+            }
+          }
+        }
+      }
+    },
+    "P77_night_oracle": {
+      "probe": "<USER_HOME>/wrf_gpu2_lanes/w44-budget/P29_twin_night_final",
+      "case": "wn3_d03_night",
+      "edmf": 1,
+      "verdict": "ORIGINAL_TERM_GATE_PASS",
+      "result_sha256": "975fd00fc75147426992d7e7c0e7f23c25ad1755a237910aead04be27e7888b1",
+      "steps": {
+        "1": {
+          "passed": true,
+          "closure": true,
+          "terms_passed": 21,
+          "pbl_worst_fraction_of_bound": {
+            "RTHBLTEN": 0.6666669845581055,
+            "RQVBLTEN": 0.03690064949230885,
+            "RQCBLTEN": 0.0025962569858337214,
+            "RQIBLTEN": 8.940696449855075e-07,
+            "RUBLTEN": 0.021941518545931696,
+            "RVBLTEN": 0.021448375010198435
+          },
+          "binding_points": {
+            "RTHBLTEN": {
+              "relative": 1012,
+              "ensemble": 396,
+              "quantization": 0
+            },
+            "RQVBLTEN": {
+              "relative": 1400,
+              "ensemble": 0,
+              "quantization": 8
+            },
+            "RQCBLTEN": {
+              "relative": 1408,
+              "ensemble": 0,
+              "quantization": 0
+            },
+            "RQIBLTEN": {
+              "relative": 1339,
+              "ensemble": 0,
+              "quantization": 69
+            },
+            "RUBLTEN": {
+              "relative": 1408,
+              "ensemble": 0,
+              "quantization": 0
+            },
+            "RVBLTEN": {
+              "relative": 1408,
+              "ensemble": 0,
+              "quantization": 0
+            }
+          }
+        },
+        "2": {
+          "passed": true,
+          "closure": true,
+          "terms_passed": 21,
+          "pbl_worst_fraction_of_bound": {
+            "RTHBLTEN": 0.6666668256123481,
+            "RQVBLTEN": 0.04874011615371726,
+            "RQCBLTEN": 0.0029080679933453897,
+            "RQIBLTEN": 8.940696449855075e-07,
+            "RUBLTEN": 0.011306167134815614,
+            "RVBLTEN": 0.028958411818149763
+          },
+          "binding_points": {
+            "RTHBLTEN": {
+              "relative": 968,
+              "ensemble": 440,
+              "quantization": 0
+            },
+            "RQVBLTEN": {
+              "relative": 1400,
+              "ensemble": 0,
+              "quantization": 8
+            },
+            "RQCBLTEN": {
+              "relative": 1408,
+              "ensemble": 0,
+              "quantization": 0
+            },
+            "RQIBLTEN": {
+              "relative": 1339,
+              "ensemble": 0,
+              "quantization": 69
+            },
+            "RUBLTEN": {
+              "relative": 1408,
+              "ensemble": 0,
+              "quantization": 0
+            },
+            "RVBLTEN": {
+              "relative": 1408,
+              "ensemble": 0,
+              "quantization": 0
+            }
+          }
+        }
+      }
+    },
+    "P77_edmf0_day_oracle": {
+      "probe": "<USER_HOME>/wrf_gpu2_lanes/w44-budget/P32_edmf0_day",
+      "case": "wn3_d03_day",
+      "edmf": 0,
+      "verdict": "ORIGINAL_TERM_GATE_PASS",
+      "result_sha256": "bb053b4e4bb4ad360442fdf2d0a5bb5da1f52e60c27b09d45fd2c2eecce5c1ff",
+      "steps": {
+        "1": {
+          "passed": true,
+          "closure": true,
+          "terms_passed": 21,
+          "pbl_worst_fraction_of_bound": {
+            "RTHBLTEN": 0.6666667461395264,
+            "RQVBLTEN": 0.022988681135506464,
+            "RQCBLTEN": 6.314621308623934e-08,
+            "RQIBLTEN": 1.788139289971015e-06,
+            "RUBLTEN": 0.004948967903210838,
+            "RVBLTEN": 0.010660330462435998
+          },
+          "binding_points": {
+            "RTHBLTEN": {
+              "relative": 924,
+              "ensemble": 484,
+              "quantization": 0
+            },
+            "RQVBLTEN": {
+              "relative": 1364,
+              "ensemble": 44,
+              "quantization": 0
+            },
+            "RQCBLTEN": {
+              "relative": 1408,
+              "ensemble": 0,
+              "quantization": 0
+            },
+            "RQIBLTEN": {
+              "relative": 1391,
+              "ensemble": 0,
+              "quantization": 17
+            },
+            "RUBLTEN": {
+              "relative": 1408,
+              "ensemble": 0,
+              "quantization": 0
+            },
+            "RVBLTEN": {
+              "relative": 1408,
+              "ensemble": 0,
+              "quantization": 0
+            }
+          }
+        },
+        "2": {
+          "passed": true,
+          "closure": true,
+          "terms_passed": 21,
+          "pbl_worst_fraction_of_bound": {
+            "RTHBLTEN": 0.33333349227905273,
+            "RQVBLTEN": 0.033222083583538176,
+            "RQCBLTEN": 4.5831228938406144e-05,
+            "RQIBLTEN": 2.6822089349565225e-06,
+            "RUBLTEN": 0.01447679683258686,
+            "RVBLTEN": 0.032921308352623455
+          },
+          "binding_points": {
+            "RTHBLTEN": {
+              "relative": 924,
+              "ensemble": 484,
+              "quantization": 0
+            },
+            "RQVBLTEN": {
+              "relative": 1320,
+              "ensemble": 88,
+              "quantization": 0
+            },
+            "RQCBLTEN": {
+              "relative": 1408,
+              "ensemble": 0,
+              "quantization": 0
+            },
+            "RQIBLTEN": {
+              "relative": 1391,
+              "ensemble": 0,
+              "quantization": 17
+            },
+            "RUBLTEN": {
+              "relative": 1408,
+              "ensemble": 0,
+              "quantization": 0
+            },
+            "RVBLTEN": {
+              "relative": 1408,
+              "ensemble": 0,
+              "quantization": 0
+            }
+          }
+        }
+      }
+    },
+    "P77_edmf0_night_oracle": {
+      "probe": "<USER_HOME>/wrf_gpu2_lanes/w44-budget/P34_edmf0_night",
+      "case": "wn3_d03_night",
+      "edmf": 0,
+      "verdict": "ORIGINAL_TERM_GATE_PASS",
+      "result_sha256": "a9e3719445693e840370796d802147a114b46fdb3e1462eea0932410fa574d69",
+      "steps": {
+        "1": {
+          "passed": true,
+          "closure": true,
+          "terms_passed": 21,
+          "pbl_worst_fraction_of_bound": {
+            "RTHBLTEN": 0.5,
+            "RQVBLTEN": 0.040983595504648314,
+            "RQCBLTEN": 1.8975519303036765e-06,
+            "RQIBLTEN": 8.940696449855075e-07,
+            "RUBLTEN": 0.010893079969618054,
+            "RVBLTEN": 0.021965868979741555
+          },
+          "binding_points": {
+            "RTHBLTEN": {
+              "relative": 836,
+              "ensemble": 572,
+              "quantization": 0
+            },
+            "RQVBLTEN": {
+              "relative": 1400,
+              "ensemble": 0,
+              "quantization": 8
+            },
+            "RQCBLTEN": {
+              "relative": 1408,
+              "ensemble": 0,
+              "quantization": 0
+            },
+            "RQIBLTEN": {
+              "relative": 1339,
+              "ensemble": 0,
+              "quantization": 69
+            },
+            "RUBLTEN": {
+              "relative": 1408,
+              "ensemble": 0,
+              "quantization": 0
+            },
+            "RVBLTEN": {
+              "relative": 1408,
+              "ensemble": 0,
+              "quantization": 0
+            }
+          }
+        },
+        "2": {
+          "passed": true,
+          "closure": true,
+          "terms_passed": 21,
+          "pbl_worst_fraction_of_bound": {
+            "RTHBLTEN": 0.49999986588955325,
+            "RQVBLTEN": 0.03194839350914529,
+            "RQCBLTEN": 1.1221352168447757e-06,
+            "RQIBLTEN": 8.940696449855075e-07,
+            "RUBLTEN": 0.0077334800065255215,
+            "RVBLTEN": 0.022284293334766895
+          },
+          "binding_points": {
+            "RTHBLTEN": {
+              "relative": 924,
+              "ensemble": 484,
+              "quantization": 0
+            },
+            "RQVBLTEN": {
+              "relative": 1400,
+              "ensemble": 0,
+              "quantization": 8
+            },
+            "RQCBLTEN": {
+              "relative": 1408,
+              "ensemble": 0,
+              "quantization": 0
+            },
+            "RQIBLTEN": {
+              "relative": 1339,
+              "ensemble": 0,
+              "quantization": 69
+            },
+            "RUBLTEN": {
+              "relative": 1408,
+              "ensemble": 0,
+              "quantization": 0
+            },
+            "RVBLTEN": {
+              "relative": 1408,
+              "ensemble": 0,
+              "quantization": 0
+            }
+          }
+        }
+      }
+    },
+    "P77_mini_gpu_oracle": {
+      "probe": "<USER_HOME>/wrf_gpu2_lanes/w44-budget/NIGHT_1792886574968228948_3015089/probe/components/wn3_d03_day_edmf1",
+      "case": "wn3_d03_day",
+      "edmf": 1,
+      "verdict": "ORIGINAL_TERM_GATE_PASS",
+      "result_sha256": "d2b3d928f32079ec80fa59bcc30ca8a5578b10a9e8a8dde8b9215a72c1e4ed98",
+      "steps": {
+        "1": {
+          "passed": true,
+          "closure": true,
+          "terms_passed": 21,
+          "pbl_worst_fraction_of_bound": {
+            "RTHBLTEN": 0.037105754764372736,
+            "RQVBLTEN": 0.0008545338746048484,
+            "RQCBLTEN": 0.0,
+            "RQIBLTEN": 0.2500000074505806,
+            "RUBLTEN": 0.0010958303654594267,
+            "RVBLTEN": 5.488413958134378e-05
+          },
+          "binding_points": {
+            "RTHBLTEN": {
+              "relative": 44,
+              "ensemble": 0,
+              "quantization": 0
+            },
+            "RQVBLTEN": {
+              "relative": 44,
+              "ensemble": 0,
+              "quantization": 0
+            },
+            "RQCBLTEN": {
+              "relative": 44,
+              "ensemble": 0,
+              "quantization": 0
+            },
+            "RQIBLTEN": {
+              "relative": 42,
+              "ensemble": 0,
+              "quantization": 2
+            },
+            "RUBLTEN": {
+              "relative": 44,
+              "ensemble": 0,
+              "quantization": 0
+            },
+            "RVBLTEN": {
+              "relative": 44,
+              "ensemble": 0,
+              "quantization": 0
+            }
+          }
+        },
+        "2": {
+          "passed": true,
+          "closure": true,
+          "terms_passed": 21,
+          "pbl_worst_fraction_of_bound": {
+            "RTHBLTEN": 8.837136262366798e-07,
+            "RQVBLTEN": 0.0009167857224113773,
+            "RQCBLTEN": 0.0,
+            "RQIBLTEN": 0.2500000074505806,
+            "RUBLTEN": 0.0003762615577465462,
+            "RVBLTEN": 7.986405280908339e-05
+          },
+          "binding_points": {
+            "RTHBLTEN": {
+              "relative": 44,
+              "ensemble": 0,
+              "quantization": 0
+            },
+            "RQVBLTEN": {
+              "relative": 44,
+              "ensemble": 0,
+              "quantization": 0
+            },
+            "RQCBLTEN": {
+              "relative": 44,
+              "ensemble": 0,
+              "quantization": 0
+            },
+            "RQIBLTEN": {
+              "relative": 42,
+              "ensemble": 0,
+              "quantization": 2
+            },
+            "RUBLTEN": {
+              "relative": 44,
+              "ensemble": 0,
+              "quantization": 0
+            },
+            "RVBLTEN": {
+              "relative": 44,
+              "ensemble": 0,
+              "quantization": 0
+            }
+          }
+        }
+      }
+    }
+  },
+  "controls": {
+    "verdict": "CONTROLS_PASS",
+    "receipt_sha256": "0607d322dde0a9af3a52e19f60d3f26211e272db84e953ad06daa66fadb8582b",
+    "pairs": [
+      {
+        "oracle": "<USER_HOME>/wrf_gpu2_lanes/w44-budget/P77_day_oracle",
+        "probe": "<USER_HOME>/wrf_gpu2_lanes/w44-budget/P26_twin_day_final",
+        "case": "wn3_d03_day",
+        "edmf": 1,
+        "steps": {
+          "1": {
+            "healthy": true,
+            "mutants": {
+              "G1_RQV_x1.5": "KILLED",
+              "G2_RQV_zero": "KILLED",
+              "G3_RQC_signflip": "KILLED",
+              "P1_Dtke_x2": "KILLED",
+              "P2_qBUOY_x1.1": "KILLED",
+              "P3_RTH_zero": "KILLED",
+              "P4_RU_signflip": "KILLED",
+              "P5_RV_x0.5": "KILLED",
+              "A1_RQI_x1.5": "KILLED",
+              "A2_RQI_zero": "KILLED",
+              "A3_RQI_signflip": "KILLED",
+              "A4_RQC_x1.5": "KILLED",
+              "A5_RQV_x1.1": "KILLED",
+              "I10_ulp_injection": "KILLED"
+            },
+            "injection": {
+              "RQVBLTEN": {
+                "binding_points": 0,
+                "killed": 0
+              },
+              "RQCBLTEN": {
+                "binding_points": 0,
+                "killed": 0
+              },
+              "RQIBLTEN": {
+                "binding_points": 17,
+                "killed": 17
+              }
+            },
+            "pbl_floor_max": {
+              "RTHBLTEN": 2.034509088844061e-05,
+              "RQVBLTEN": 7.450580596923828e-09,
+              "RQCBLTEN": 1.8189894035458565e-09,
+              "RQIBLTEN": 2.9773208095988657e-19,
+              "RUBLTEN": 2.86102294921875e-06,
+              "RVBLTEN": 4.291534423828125e-06
+            },
+            "pbl_ratio_max": {
+              "RTHBLTEN": 0.0625,
+              "RQVBLTEN": 0.003883495145631068,
+              "RQCBLTEN": 0.002072743406511006,
+              "RQIBLTEN": 8.940696449855076e-08,
+              "RUBLTEN": 0.003386966750852289,
+              "RVBLTEN": 0.003006012115968146
+            }
+          },
+          "2": {
+            "healthy": true,
+            "mutants": {
+              "G1_RQV_x1.5": "KILLED",
+              "G2_RQV_zero": "KILLED",
+              "G3_RQC_signflip": "KILLED",
+              "P1_Dtke_x2": "KILLED",
+              "P2_qBUOY_x1.1": "KILLED",
+              "P3_RTH_zero": "KILLED",
+              "P4_RU_signflip": "KILLED",
+              "P5_RV_x0.5": "KILLED",
+              "A1_RQI_x1.5": "KILLED",
+              "A2_RQI_zero": "KILLED",
+              "A3_RQI_signflip": "KILLED",
+              "A4_RQC_x1.5": "KILLED",
+              "A5_RQV_x1.1": "KILLED",
+              "I10_ulp_injection": "KILLED"
+            },
+            "injection": {
+              "RQVBLTEN": {
+                "binding_points": 0,
+                "killed": 0
+              },
+              "RQCBLTEN": {
+                "binding_points": 0,
+                "killed": 0
+              },
+              "RQIBLTEN": {
+                "binding_points": 17,
+                "killed": 17
+              }
+            },
+            "pbl_floor_max": {
+              "RTHBLTEN": 2.034509088844061e-05,
+              "RQVBLTEN": 8.381903171539307e-09,
+              "RQCBLTEN": 1.7268177998630563e-09,
+              "RQIBLTEN": 2.956144985917508e-19,
+              "RUBLTEN": 2.864748239517212e-06,
+              "RVBLTEN": 4.291534423828125e-06
+            },
+            "pbl_ratio_max": {
+              "RTHBLTEN": 0.041666656732559204,
+              "RQVBLTEN": 0.0025856544741943805,
+              "RQCBLTEN": 0.002339618565658803,
+              "RQIBLTEN": 1.3411044674782612e-07,
+              "RUBLTEN": 0.0018999367422184521,
+              "RVBLTEN": 0.0031595817674392773
+            }
+          }
+        },
+        "verdict": "CONTROLS_PASS"
+      },
+      {
+        "oracle": "<USER_HOME>/wrf_gpu2_lanes/w44-budget/P77_night_oracle",
+        "probe": "<USER_HOME>/wrf_gpu2_lanes/w44-budget/P29_twin_night_final",
+        "case": "wn3_d03_night",
+        "edmf": 1,
+        "steps": {
+          "1": {
+            "healthy": true,
+            "mutants": {
+              "G1_RQV_x1.5": "KILLED",
+              "G2_RQV_zero": "KILLED",
+              "G3_RQC_signflip": "KILLED",
+              "P1_Dtke_x2": "KILLED",
+              "P2_qBUOY_x1.1": "KILLED",
+              "P3_RTH_zero": "KILLED",
+              "P4_RU_signflip": "KILLED",
+              "P5_RV_x0.5": "KILLED",
+              "A1_RQI_x1.5": "KILLED",
+              "A2_RQI_zero": "KILLED",
+              "A3_RQI_signflip": "KILLED",
+              "A4_RQC_x1.5": "KILLED",
+              "A5_RQV_x1.1": "KILLED",
+              "I10_ulp_injection": "KILLED"
+            },
+            "injection": {
+              "RQVBLTEN": {
+                "binding_points": 8,
+                "killed": 8
+              },
+              "RQCBLTEN": {
+                "binding_points": 0,
+                "killed": 0
+              },
+              "RQIBLTEN": {
+                "binding_points": 69,
+                "killed": 69
+              }
+            },
+            "pbl_floor_max": {
+              "RTHBLTEN": 2.0345061784610152e-05,
+              "RQVBLTEN": 1.0244548320770264e-08,
+              "RQCBLTEN": 2.4814053034560857e-09,
+              "RQIBLTEN": 2.4530074152484538e-18,
+              "RUBLTEN": 5.0067901611328125e-06,
+              "RVBLTEN": 7.748603820800781e-06
+            },
+            "pbl_ratio_max": {
+              "RTHBLTEN": 0.0625,
+              "RQVBLTEN": 0.0018450324746154426,
+              "RQCBLTEN": 0.0001298128492916861,
+              "RQIBLTEN": 1.0217939452373623e-07,
+              "RUBLTEN": 0.0010970759272965849,
+              "RVBLTEN": 0.0010724187505099217
+            }
+          },
+          "2": {
+            "healthy": true,
+            "mutants": {
+              "G1_RQV_x1.5": "KILLED",
+              "G2_RQV_zero": "KILLED",
+              "G3_RQC_signflip": "KILLED",
+              "P1_Dtke_x2": "KILLED",
+              "P2_qBUOY_x1.1": "KILLED",
+              "P3_RTH_zero": "KILLED",
+              "P4_RU_signflip": "KILLED",
+              "P5_RV_x0.5": "KILLED",
+              "A1_RQI_x1.5": "KILLED",
+              "A2_RQI_zero": "KILLED",
+              "A3_RQI_signflip": "KILLED",
+              "A4_RQC_x1.5": "KILLED",
+              "A5_RQV_x1.1": "KILLED",
+              "I10_ulp_injection": "KILLED"
+            },
+            "injection": {
+              "RQVBLTEN": {
+                "binding_points": 8,
+                "killed": 8
+              },
+              "RQCBLTEN": {
+                "binding_points": 0,
+                "killed": 0
+              },
+              "RQIBLTEN": {
+                "binding_points": 69,
+                "killed": 69
+              }
+            },
+            "pbl_floor_max": {
+              "RTHBLTEN": 2.0345052234915784e-05,
+              "RQVBLTEN": 9.93409798866196e-09,
+              "RQCBLTEN": 2.433807821944356e-09,
+              "RQIBLTEN": 2.4665599424045226e-18,
+              "RUBLTEN": 5.0067901611328125e-06,
+              "RVBLTEN": 7.768510840833187e-06
+            },
+            "pbl_ratio_max": {
+              "RTHBLTEN": 0.1176470656295963,
+              "RQVBLTEN": 0.002437005807685863,
+              "RQCBLTEN": 0.0001454033996672695,
+              "RQIBLTEN": 1.0217939452373623e-07,
+              "RUBLTEN": 0.0005653083567407807,
+              "RVBLTEN": 0.0014479205909074882
+            }
+          }
+        },
+        "verdict": "CONTROLS_PASS"
+      },
+      {
+        "oracle": "<USER_HOME>/wrf_gpu2_lanes/w44-budget/P77_edmf0_day_oracle",
+        "probe": "<USER_HOME>/wrf_gpu2_lanes/w44-budget/P32_edmf0_day",
+        "case": "wn3_d03_day",
+        "edmf": 0,
+        "steps": {
+          "1": {
+            "healthy": true,
+            "mutants": {
+              "G1_RQV_x1.5": "KILLED",
+              "G2_RQV_zero": "KILLED",
+              "G3_RQC_signflip": "KILLED",
+              "P1_Dtke_x2": "KILLED",
+              "P2_qBUOY_x1.1": "KILLED",
+              "P3_RTH_zero": "KILLED",
+              "P4_RU_signflip": "KILLED",
+              "P5_RV_x0.5": "KILLED",
+              "A1_RQI_x1.5": "KILLED",
+              "A2_RQI_zero": "KILLED",
+              "A3_RQI_signflip": "KILLED",
+              "A4_RQC_x1.5": "KILLED",
+              "A5_RQV_x1.1": "KILLED",
+              "I10_ulp_injection": "KILLED"
+            },
+            "injection": {
+              "RQVBLTEN": {
+                "binding_points": 0,
+                "killed": 0
+              },
+              "RQCBLTEN": {
+                "binding_points": 0,
+                "killed": 0
+              },
+              "RQIBLTEN": {
+                "binding_points": 17,
+                "killed": 17
+              }
+            },
+            "pbl_floor_max": {
+              "RTHBLTEN": 1.5258796338457614e-05,
+              "RQVBLTEN": 1.3504177331924438e-08,
+              "RQCBLTEN": 1.8189894035458565e-09,
+              "RQIBLTEN": 2.9773208095988657e-19,
+              "RUBLTEN": 2.9007605917286128e-06,
+              "RVBLTEN": 4.291534423828125e-06
+            },
+            "pbl_ratio_max": {
+              "RTHBLTEN": 0.1666666865348816,
+              "RQVBLTEN": 0.0017574826055843143,
+              "RQCBLTEN": 3.157310654311967e-09,
+              "RQIBLTEN": 8.940696449855076e-08,
+              "RUBLTEN": 0.0002474483951605419,
+              "RVBLTEN": 0.0005330165231218
+            }
+          },
+          "2": {
+            "healthy": true,
+            "mutants": {
+              "G1_RQV_x1.5": "KILLED",
+              "G2_RQV_zero": "KILLED",
+              "G3_RQC_signflip": "KILLED",
+              "P1_Dtke_x2": "KILLED",
+              "P2_qBUOY_x1.1": "KILLED",
+              "P3_RTH_zero": "KILLED",
+              "P4_RU_signflip": "KILLED",
+              "P5_RV_x0.5": "KILLED",
+              "A1_RQI_x1.5": "KILLED",
+              "A2_RQI_zero": "KILLED",
+              "A3_RQI_signflip": "KILLED",
+              "A4_RQC_x1.5": "KILLED",
+              "A5_RQV_x1.1": "KILLED",
+              "I10_ulp_injection": "KILLED"
+            },
+            "injection": {
+              "RQVBLTEN": {
+                "binding_points": 0,
+                "killed": 0
+              },
+              "RQCBLTEN": {
+                "binding_points": 0,
+                "killed": 0
+              },
+              "RQIBLTEN": {
+                "binding_points": 17,
+                "killed": 17
+              }
+            },
+            "pbl_floor_max": {
+              "RTHBLTEN": 1.5258792700478807e-05,
+              "RQVBLTEN": 1.1331081850585178e-08,
+              "RQCBLTEN": 1.7268177998630563e-09,
+              "RQIBLTEN": 2.956144985917508e-19,
+              "RUBLTEN": 3.655746695585549e-06,
+              "RVBLTEN": 3.9736623875796795e-06
+            },
+            "pbl_ratio_max": {
+              "RTHBLTEN": 0.1250000558793528,
+              "RQVBLTEN": 0.001661104179176909,
+              "RQCBLTEN": 2.2915614469203076e-06,
+              "RQIBLTEN": 1.3411044674782612e-07,
+              "RUBLTEN": 0.0007238398416293431,
+              "RVBLTEN": 0.0016460654176311729
+            }
+          }
+        },
+        "verdict": "CONTROLS_PASS"
+      },
+      {
+        "oracle": "<USER_HOME>/wrf_gpu2_lanes/w44-budget/P77_edmf0_night_oracle",
+        "probe": "<USER_HOME>/wrf_gpu2_lanes/w44-budget/P34_edmf0_night",
+        "case": "wn3_d03_night",
+        "edmf": 0,
+        "steps": {
+          "1": {
+            "healthy": true,
+            "mutants": {
+              "G1_RQV_x1.5": "KILLED",
+              "G2_RQV_zero": "KILLED",
+              "G3_RQC_signflip": "KILLED",
+              "P1_Dtke_x2": "KILLED",
+              "P2_qBUOY_x1.1": "KILLED",
+              "P3_RTH_zero": "KILLED",
+              "P4_RU_signflip": "KILLED",
+              "P5_RV_x0.5": "KILLED",
+              "A1_RQI_x1.5": "KILLED",
+              "A2_RQI_zero": "KILLED",
+              "A3_RQI_signflip": "KILLED",
+              "A4_RQC_x1.5": "KILLED",
+              "A5_RQV_x1.1": "KILLED",
+              "I10_ulp_injection": "KILLED"
+            },
+            "injection": {
+              "RQVBLTEN": {
+                "binding_points": 8,
+                "killed": 8
+              },
+              "RQCBLTEN": {
+                "binding_points": 0,
+                "killed": 0
+              },
+              "RQIBLTEN": {
+                "binding_points": 69,
+                "killed": 69
+              }
+            },
+            "pbl_floor_max": {
+              "RTHBLTEN": 1.5258790881489404e-05,
+              "RQVBLTEN": 5.432714722530818e-09,
+              "RQCBLTEN": 2.5283952709287405e-09,
+              "RQIBLTEN": 2.4530074152484538e-18,
+              "RUBLTEN": 3.4570693969726562e-06,
+              "RVBLTEN": 7.728696800768375e-06
+            },
+            "pbl_ratio_max": {
+              "RTHBLTEN": 0.0625,
+              "RQVBLTEN": 0.002049179775232416,
+              "RQCBLTEN": 9.487759651518384e-08,
+              "RQIBLTEN": 1.0217939452373623e-07,
+              "RUBLTEN": 0.0005446539984809028,
+              "RVBLTEN": 0.0010982934489870777
+            }
+          },
+          "2": {
+            "healthy": true,
+            "mutants": {
+              "G1_RQV_x1.5": "KILLED",
+              "G2_RQV_zero": "KILLED",
+              "G3_RQC_signflip": "KILLED",
+              "P1_Dtke_x2": "KILLED",
+              "P2_qBUOY_x1.1": "KILLED",
+              "P3_RTH_zero": "KILLED",
+              "P4_RU_signflip": "KILLED",
+              "P5_RV_x0.5": "KILLED",
+              "A1_RQI_x1.5": "KILLED",
+              "A2_RQI_zero": "KILLED",
+              "A3_RQI_signflip": "KILLED",
+              "A4_RQC_x1.5": "KILLED",
+              "A5_RQV_x1.1": "KILLED",
+              "I10_ulp_injection": "KILLED"
+            },
+            "injection": {
+              "RQVBLTEN": {
+                "binding_points": 8,
+                "killed": 8
+              },
+              "RQCBLTEN": {
+                "binding_points": 0,
+                "killed": 0
+              },
+              "RQIBLTEN": {
+                "binding_points": 69,
+                "killed": 69
+              }
+            },
+            "pbl_floor_max": {
+              "RTHBLTEN": 1.5258796338457614e-05,
+              "RQVBLTEN": 5.432714722530818e-09,
+              "RQCBLTEN": 1.6685817172401585e-09,
+              "RQIBLTEN": 2.4665599424045226e-18,
+              "RUBLTEN": 3.496803401503712e-06,
+              "RVBLTEN": 7.728696800768375e-06
+            },
+            "pbl_ratio_max": {
+              "RTHBLTEN": 0.06666666269302368,
+              "RQVBLTEN": 0.0015974196754572647,
+              "RQCBLTEN": 5.6106760842238784e-08,
+              "RQIBLTEN": 1.0217939452373623e-07,
+              "RUBLTEN": 0.0003866740003262761,
+              "RVBLTEN": 0.0011142146667383447
+            }
+          }
+        },
+        "verdict": "CONTROLS_PASS"
+      },
+      {
+        "oracle": "<USER_HOME>/wrf_gpu2_lanes/w44-budget/P77_mini_gpu_oracle",
+        "probe": "<USER_HOME>/wrf_gpu2_lanes/w44-budget/NIGHT_1792886574968228948_3015089/probe/components/wn3_d03_day_edmf1",
+        "case": "wn3_d03_day",
+        "edmf": 1,
+        "steps": {
+          "1": {
+            "healthy": true,
+            "mutants": {
+              "G1_RQV_x1.5": "KILLED",
+              "G2_RQV_zero": "KILLED",
+              "G3_RQC_signflip": "VACUOUS",
+              "P1_Dtke_x2": "KILLED",
+              "P2_qBUOY_x1.1": "KILLED",
+              "P3_RTH_zero": "KILLED",
+              "P4_RU_signflip": "KILLED",
+              "P5_RV_x0.5": "KILLED",
+              "A1_RQI_x1.5": "KILLED",
+              "A2_RQI_zero": "KILLED",
+              "A3_RQI_signflip": "KILLED",
+              "A4_RQC_x1.5": "VACUOUS",
+              "A5_RQV_x1.1": "KILLED",
+              "I10_ulp_injection": "KILLED"
+            },
+            "injection": {
+              "RQVBLTEN": {
+                "binding_points": 0,
+                "killed": 0
+              },
+              "RQCBLTEN": {
+                "binding_points": 0,
+                "killed": 0
+              },
+              "RQIBLTEN": {
+                "binding_points": 2,
+                "killed": 2
+              }
+            },
+            "pbl_floor_max": {
+              "RTHBLTEN": 1.525878951724735e-05,
+              "RQVBLTEN": 4.268940756446682e-10,
+              "RQCBLTEN": 0.0,
+              "RQIBLTEN": 1.1218637057750438e-23,
+              "RUBLTEN": 1.6291742213070393e-06,
+              "RVBLTEN": 7.152557373046875e-07
+            },
+            "pbl_ratio_max": {
+              "RTHBLTEN": 0.001855287738218637,
+              "RQVBLTEN": 4.2726693730242425e-05,
+              "RQCBLTEN": 0.0,
+              "RQIBLTEN": 0.0416666679084301,
+              "RUBLTEN": 5.4791518272971344e-05,
+              "RVBLTEN": 2.744206979067189e-06
+            }
+          },
+          "2": {
+            "healthy": true,
+            "mutants": {
+              "G1_RQV_x1.5": "KILLED",
+              "G2_RQV_zero": "KILLED",
+              "G3_RQC_signflip": "VACUOUS",
+              "P1_Dtke_x2": "KILLED",
+              "P2_qBUOY_x1.1": "KILLED",
+              "P3_RTH_zero": "KILLED",
+              "P4_RU_signflip": "KILLED",
+              "P5_RV_x0.5": "KILLED",
+              "A1_RQI_x1.5": "KILLED",
+              "A2_RQI_zero": "KILLED",
+              "A3_RQI_signflip": "KILLED",
+              "A4_RQC_x1.5": "VACUOUS",
+              "A5_RQV_x1.1": "KILLED",
+              "I10_ulp_injection": "KILLED"
+            },
+            "injection": {
+              "RQVBLTEN": {
+                "binding_points": 0,
+                "killed": 0
+              },
+              "RQCBLTEN": {
+                "binding_points": 0,
+                "killed": 0
+              },
+              "RQIBLTEN": {
+                "binding_points": 2,
+                "killed": 2
+              }
+            },
+            "pbl_floor_max": {
+              "RTHBLTEN": 1.5258790881489404e-05,
+              "RQVBLTEN": 4.268372322258074e-10,
+              "RQCBLTEN": 0.0,
+              "RQIBLTEN": 8.478601278668534e-24,
+              "RUBLTEN": 1.6291742213070393e-06,
+              "RVBLTEN": 6.954069249331951e-07
+            },
+            "pbl_ratio_max": {
+              "RTHBLTEN": 4.418568131183399e-08,
+              "RQVBLTEN": 4.583928612056887e-05,
+              "RQCBLTEN": 0.0,
+              "RQIBLTEN": 0.0416666679084301,
+              "RUBLTEN": 1.8813077887327312e-05,
+              "RVBLTEN": 3.99320264045417e-06
+            }
+          }
+        },
+        "verdict": "CONTROLS_PASS"
+      }
+    ]
+  },
+  "note": "references byte-identical to P75/P74 receipts for all 5 runs; quantization floor binds only RQV (32) and RQI (348) points; 10-ulp injection killed at every binding point"
+}

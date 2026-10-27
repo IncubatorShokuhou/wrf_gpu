@@ -1,0 +1,41 @@
+{
+  "schema": "wrf_gpu2.w44_budget.a1_plume_cubin.v1",
+  "shapes": {
+    "B": 10528,
+    "nz": 44,
+    "nup": 8,
+    "num_warps": 4,
+    "target": "sm_120 (GPUTarget cuda 120)"
+  },
+  "rows": {
+    "production": {
+      "lower_s": 0.08,
+      "triton_compile_s": 2.39,
+      "ttir_lines": 1809,
+      "REG": "64",
+      "STACK": "0",
+      "LOCAL": "0",
+      "SHARED": "1024",
+      "sass_instr": 720,
+      "calls": 0,
+      "resource_usage": "Resource usage: Common: GLOBAL:11 CONSTANT[4]:8 Function _lambda_: REG:64 STACK:0 SHARED:1024 LOCAL:0 CONSTANT[0]:1168 TEXTURE:0 SURFACE:0 SAMPLER:0"
+    },
+    "budget_twin": {
+      "lower_s": 0.08,
+      "triton_compile_s": 2.17,
+      "ttir_lines": 1869,
+      "REG": "64",
+      "STACK": "0",
+      "LOCAL": "0",
+      "SHARED": "1024",
+      "sass_instr": 736,
+      "calls": 0,
+      "resource_usage": "Resource usage: Common: GLOBAL:11 CONSTANT[4]:8 Function _lambda_: REG:64 STACK:0 SHARED:1024 LOCAL:0 CONSTANT[0]:1176 TEXTURE:0 SURFACE:0 SAMPLER:0"
+    }
+  },
+  "e41_stack_ok": true,
+  "source": "snapshot_p68 5438aca4b5 (GPU pin; kernels unchanged at HEAD)",
+  "recorded_real_utc": "2026-10-24T23:45:00Z",
+  "tool_sha256": "09c2cf1e31162425357ecf1e11e9395d474225ee57966454fa77358f64b24df8",
+  "scope": "CPU-only Triton sm_120 compile (no GPU); pre-screen, not the real XLA executable E41 (that comes from the GPU run)"
+}

@@ -1,0 +1,66 @@
+{
+  "compiler": "<USER_HOME>/miniconda3/envs/wrfbuild/bin/gfortran",
+  "command": [
+    "<USER_HOME>/miniconda3/envs/wrfbuild/bin/gfortran",
+    "-shared",
+    "-fPIC",
+    "-O2",
+    "-ffp-contract=off",
+    "-ffree-form",
+    "-ffree-line-length-none",
+    "<USER_HOME>/wrf_gpu2_lanes/w44-topo/TP46_FROZEN_ORACLE/oracle.F90",
+    "-o",
+    "<USER_HOME>/wrf_gpu2_lanes/w44-topo/TP46_FROZEN_ORACLE/oracle.so"
+  ],
+  "library_sha256": "71f86c797183842958042b9795a262afe7cca28495056171f8df278edc270ca0",
+  "radiation_source_sha256": "4f0177189eb616c9220fe2022186dd6cc310666ca29977557dfe53d4409d733b",
+  "surface_source_sha256": "79c21663f65c7e2183e7fe07076c464eb12ae0c1b942f030d81a54228e2f6e1e",
+  "extracted_source_sha256": "d99fa3c422c2e528255f298a84a7b5768ddd6849bed83c90a4e8449040fcd68b",
+  "wrapper_sha256": "1a812a68e588747819782194b18e7ed8fe9e61bb784f906c569eccda8fcb6270",
+  "schema": 1,
+  "case_sha256": "342f93f97ad0e746dd40ecbbe947b85c749176aa7e08b882ad59cb01eef5d907",
+  "domain": "d03",
+  "shape": [
+    93,
+    111
+  ],
+  "dx_m": 1000.0,
+  "dy_m": 1000.0,
+  "gmt": 0,
+  "radt_minutes": 30,
+  "shadow_length_m": 25000,
+  "rows": [
+    {
+      "key": "sunrise",
+      "minute": 450.0,
+      "edge_above_terrain": 0,
+      "shaded": 1183
+    },
+    {
+      "key": "sunset",
+      "minute": 1110.0,
+      "edge_above_terrain": 0,
+      "shaded": 1121
+    },
+    {
+      "key": "night",
+      "minute": 1140.0,
+      "edge_above_terrain": 1,
+      "shaded": 0
+    },
+    {
+      "key": "held_next_sunrise",
+      "minute": 1890.0,
+      "edge_above_terrain": 1,
+      "shaded": 1120
+    }
+  ],
+  "fixture_sha256": "18a9aea3708e132ab774ac1f8555e81915df62c194a866c50148d8958f0d2f26",
+  "height_tolerance": {
+    "atol": 0.01,
+    "rtol": 2e-05
+  },
+  "mask_tolerance": "exact",
+  "clock_atol": 3e-06,
+  "source": "verbatim pristine WRF REAL topography/solar routines; 30-minute cold-zero trajectory; no port output used"
+}

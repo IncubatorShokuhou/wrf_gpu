@@ -64,6 +64,18 @@ def test_restart_source_schema_deletions(state,code):
         with pytest.raises(ValueError,match='E78'):_validate_radiation_diagnostics_schema(payload,namelist=options(code))
 
 
+@pytest.mark.parametrize('code',[7,99])
+def test_foreign_optional_common_fields_stay_absent_and_refuse_planes(state,code):
+    from gpuwrf.coupling.physics_couplers import unproduced_optional_radiation_fields
+    diag=initial_diagnostics(state);gfdl=initial_gfdl(state) if code==99 else None
+    schema=marker(diag,gfdl)
+    validate(diag,gfdl,options(code),schema,state_shape=state.theta.shape)
+    for name in unproduced_optional_radiation_fields(('cloud_fraction',)):
+        assert getattr(diag,name) is None,name
+        with pytest.raises(ValueError,match='foreign optional.*E78'):
+            validate(diag._replace(**{name:jnp.zeros_like(state.t_skin)}),gfdl,options(code),schema)
+
+
 def test_internal_toa_is_not_history_olr(state):
     diag=initial_diagnostics(state)
     f=lambda value:jnp.full((2,3),value,jnp.float32)

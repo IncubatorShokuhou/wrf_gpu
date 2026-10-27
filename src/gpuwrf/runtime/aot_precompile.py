@@ -59,6 +59,7 @@ import importlib
 import json
 import multiprocessing
 import os
+import re
 import shutil
 import sys
 import tarfile
@@ -192,6 +193,7 @@ def precompile(
     static_kwargs: dict[str, Any] | None = None,
     key: str | None = None,
     jit: bool = True,
+    compile_options: dict[str, Any] | None = None,
 ) -> tuple[Any, PrecompileResult]:
     """Lower + compile ``fn`` for the given concrete ``args``, warming the cache.
 
@@ -240,7 +242,7 @@ def precompile(
             hlo_sha256 = _aotx.hlo_sha256_from_lowered(lowered)
         except Exception:  # noqa: BLE001 - digest is a diagnostic/lookup aid
             hlo_sha256 = None
-        compiled = lowered.compile()
+        compiled = lowered.compile(compile_options)  # stepping callers pass op.step_compile_options()
         # Force the cache write / executable realisation to complete.
         _ = compiled  # compile() already triggered the cache store
         dt = time.perf_counter() - t0
@@ -500,10 +502,28 @@ def _aot_blob_paths(
     if cheap_key:
         k = _safe_aot_component(str(cheap_key))
         return d / safe / f"k_{k}.xlaexec", d / safe / f"k_{k}.meta"
+    variant = _step_cmdbuf_address_suffix(name)
     if hlo_sha256:
-        h = _safe_aot_component(str(hlo_sha256))
+        h = _safe_aot_component(str(hlo_sha256)) + variant
         return d / safe / f"{h}.xlaexec", d / safe / f"{h}.meta"
-    return d / f"{safe}.xlaexec", d / f"{safe}.meta"
+    return d / f"{safe}{variant}.xlaexec", d / f"{safe}{variant}.meta"
+
+
+_STEPPING_AOT_NAME = re.compile(r"^(d\d{2}|fused_.+)$")
+
+
+def _step_cmdbuf_address_suffix(name: str) -> str:
+    """HLO-address suffix of a stepping program compiled under GPUWRF_STEP_CMDBUF (empty when the switch is off).
+
+    OFF and v1/v2 stepping executables share the lowered HLO; only their compile options differ (DebugOptions
+    208/258). Without the suffix a process of one mode would load and alias the other mode's executable through
+    the HLO address (four-eyes F6). Cheap-key addresses already differ (the switch is an import-time key constant).
+    """
+    from gpuwrf.runtime import operational_mode as op
+
+    if not op.STEP_COMPILER_OPTIONS or not _STEPPING_AOT_NAME.match(str(name)):
+        return ""
+    return f".cmdbuf-{op._STEP_CMDBUF}"
 
 
 def _cheap_key_quarantine_path(
@@ -934,11 +954,12 @@ def _compile_lowered_threads(jobs, *, max_workers=2):
     x64 = bool(jax.config.jax_enable_x64)
 
     def compile_and_finish(job, lowered):
-        from gpuwrf.runtime import aot_executable as ax
+        from gpuwrf.runtime import aot_executable as ax, operational_mode as op
 
         # JAX x64 is thread-local when the caller uses an explicit context.
         with jax.enable_x64(x64):
-            compiled = lowered.compile(ax.export_compile_options())
+            # stepping programs only (_advance_chunk_fori jobs): GPUWRF_STEP_CMDBUF options at the compile site
+            compiled = lowered.compile(op.step_compile_options(ax.export_compile_options()))
             return job["finish"](compiled, lowered)
 
     with ThreadPoolExecutor(max_workers=max(1, min(2, int(max_workers))),
@@ -1455,7 +1476,7 @@ def _compile_one_domain_worker(spec: "DomainCompileSpec") -> dict[str, Any]:
             configure_compilation_cache as _cfg,
             cache_entry_count as _count,
         )
-        from gpuwrf.runtime.operational_mode import _advance_chunk_fori
+        from gpuwrf.runtime.operational_mode import _advance_chunk_fori, step_compile_options
 
         status = _cfg()  # idempotent; ensures the locked cache dir is wired
         before = _count()
@@ -1473,6 +1494,7 @@ def _compile_one_domain_worker(spec: "DomainCompileSpec") -> dict[str, Any]:
             static_kwargs={"n_steps": int(spec.n_steps), "cadence": int(spec.cadence)},
             key=spec.name,
             jit=False,
+            compile_options=step_compile_options(),
         )
         after = _count()
         res: dict[str, Any] = {
@@ -1551,7 +1573,7 @@ def _compile_one_domain_parent_verify(spec: "DomainCompileSpec") -> dict[str, An
     import jax.numpy as jnp
 
     from gpuwrf.runtime.compile_cache import cache_entry_count as _count
-    from gpuwrf.runtime.operational_mode import _advance_chunk_fori
+    from gpuwrf.runtime.operational_mode import _advance_chunk_fori, step_compile_options
 
     t0 = _time.perf_counter()
     before = _count()
@@ -1565,6 +1587,7 @@ def _compile_one_domain_parent_verify(spec: "DomainCompileSpec") -> dict[str, An
             static_kwargs={"n_steps": int(spec.n_steps), "cadence": int(spec.cadence)},
             key=spec.name,
             jit=False,
+            compile_options=step_compile_options(),
         )
         after = _count()
         error = result.error

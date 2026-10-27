@@ -1,0 +1,62 @@
+{
+  "schema": "wrf_gpu2.w44_budget.night_cpu_controls.v1",
+  "utc": "2026-10-23T21:14:10Z",
+  "source_commit": "72a5e5f09dfb4def31887b0de19ef1ea37e9e944",
+  "model_commit": "3fa48d159766101770a787fb9947c0622c7c4456",
+  "cap_seconds": 1800,
+  "gpu_phase_cap_seconds": 1320,
+  "e41_cap_seconds": 300,
+  "launcher": {
+    "path": "<USER_HOME>/wrf_gpu2_lanes/w44-budget/night_launch.sh",
+    "sha256": "c42b1071f45cd28fe60b8252065ad4d0e06ed151f5d18e1a19c2f05c3cef28aa"
+  },
+  "supervisor": {
+    "path": "<USER_HOME>/wrf_gpu2_lanes/w44-budget/night_tools_5367b7fda6/night_supervisor.py",
+    "sha256": "e86766677bb962af73233e78a8f6ea03a61ef8ba33a59f17e2f672e6431e60f1"
+  },
+  "P16": {
+    "tests_passed": 8,
+    "seconds": 4.006,
+    "log_sha256": "7ed702b9a01c4ac112255d243dd2717886a3584c63ffb42b4fc95e3853bde165",
+    "source_commit": "cbef7df792"
+  },
+  "P17": {
+    "tests_passed": 10,
+    "seconds": 4.303,
+    "log_sha256": "54d043d996f15e1f526b07963a2851fbd86b80f4756c66a00d83d7d8fc7dcde6",
+    "source_commit": "5367b7fda6"
+  },
+  "controls": [
+    "missing/nonUTC/future/short windows refuse before lock",
+    "one-second official-lock argv and busy rc124 (mocked, no official lock)",
+    "private PID=PGID=SID",
+    "rc7 propagated",
+    "signal cancellation rc143",
+    "orphan after successful parent fails rc125",
+    "timeout rc124 kills setsid/TERM-ignoring grandchild and releases dummy flock",
+    "no nested GPU timeout",
+    "actual frozen shell short-window rc4/no GPU/no lock"
+  ],
+  "P18_actual_shell_control": {
+    "schema": "wrf_gpu2.w44_budget.night.v1",
+    "run": "<USER_HOME>/wrf_gpu2_lanes/w44-budget/NIGHT_1792789909916600387_751338",
+    "cap_s": 1800,
+    "launcher_sha256": "e86766677bb962af73233e78a8f6ea03a61ef8ba33a59f17e2f672e6431e60f1",
+    "start_env": "2026-10-23T21:10:49+00:00",
+    "end_env": "2026-10-23T21:13:49+00:00",
+    "gpu_started": false,
+    "phases": {},
+    "verdict": "REFUSED_WINDOW",
+    "rc": 4,
+    "start_real_utc": 1792789909,
+    "remaining_s": 120.0,
+    "elapsed_s": 0.010102823958732188,
+    "entrypoint_sha256": "c42b1071f45cd28fe60b8252065ad4d0e06ed151f5d18e1a19c2f05c3cef28aa",
+    "scope": "actual immutable entry point; intentionally insufficient 120-second window; no GPU/lock request",
+    "control": "PASS",
+    "source_commit": "3fa48d159766101770a787fb9947c0622c7c4456",
+    "control_source_commit": "72a5e5f09dfb4def31887b0de19ef1ea37e9e944"
+  },
+  "scope": "CPU controls only; no official GPU lock, CUDA import, GPU/model execution, or feature gate claim",
+  "verdict": "CPU_LAUNCHER_CONTROLS_PASS"
+}

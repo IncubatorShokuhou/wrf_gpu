@@ -142,6 +142,10 @@ def test_bind_returns_the_same_object_when_nothing_changes(tmp_path):
 
     @dataclass(frozen=True)
     class _NL:
+        tke_budget: int = 0  # WRF Registry.EM_COMMON defaults (MYNN budget/EDMF keys, w44-budget)
+        bl_mynn_output: int = 0
+        bl_mynn_edmf: int = 1
+        bl_mynn_edmf_mom: int = 1
         mfshconv: int = 0  # effective WRF default outside QNSE
         mp_physics: int = 8
         bl_pbl_physics: int = 5
@@ -153,6 +157,7 @@ def test_bind_returns_the_same_object_when_nothing_changes(tmp_path):
         nsas_dx_factor: int = 0
         cu_rad_feedback: bool = False
         icloud: int = 1
+        icloud_bl: int = 1
         cu_diag: int = 0
         kfeta_trigger: int = 1
         shcu_aerosols_opt: int = 0

@@ -1,0 +1,102 @@
+{
+ "purpose": "critic F3 deletion witnesses M5 (coupling map factor) and M8 (use_input_w W gate)",
+ "generator": {
+  "path": "tests/data/w44_warmstart/f3b_generate.py",
+  "sha256": "74b5ef0f8d0fc84f9ffe687e15a3fff8a4e2c4aa43dc9d7baa9091e154b370aa"
+ },
+ "imports_gpuwrf": false,
+ "compiler": {
+  "path": "<USER_HOME>/miniconda3/envs/wrfbuild/bin/gfortran",
+  "version": "GNU Fortran (conda-forge gcc 14.3.0-19) 14.3.0",
+  "coupling_command": [
+   "<USER_HOME>/miniconda3/envs/wrfbuild/bin/gfortran",
+   "-shared",
+   "-fPIC",
+   "-O0",
+   "-fcheck=all",
+   "-ffp-contract=off",
+   "-x",
+   "f95",
+   "<USER_HOME>/src/wrf_pristine/WRF/var/da/da_update_bc/da_calc_mu_uv.inc",
+   "<USER_HOME>/src/wrf_pristine/WRF/var/da/da_update_bc/da_couple.inc",
+   "<USER_HOME>/src/wrf_pristine/WRF/var/da/da_update_bc/da_couple_uv.inc",
+   "-o",
+   "<USER_HOME>/wrf_gpu2_lanes/w44-warmstart/F3B/gen_work2/coupling.so"
+  ],
+  "set_w_surface_command": [
+   "<USER_HOME>/miniconda3/envs/wrfbuild/bin/gfortran",
+   "-shared",
+   "-fPIC",
+   "-O0",
+   "-fcheck=all",
+   "-ffp-contract=off",
+   "-cpp",
+   "-ffree-line-length-none",
+   "-J",
+   "<USER_HOME>/wrf_gpu2_lanes/w44-warmstart/F3B/gen_work2",
+   "<USER_HOME>/wrf_gpu2_lanes/w44-warmstart/F3B/gen_work2/stub_configure.F90",
+   "<USER_HOME>/wrf_gpu2_lanes/w44-warmstart/F3B/gen_work2/module_bc_oracle.F90",
+   "<USER_HOME>/wrf_gpu2_lanes/w44-warmstart/F3B/gen_work2/wsfc_harness.F90",
+   "-o",
+   "<USER_HOME>/wrf_gpu2_lanes/w44-warmstart/F3B/gen_work2/setw.so"
+  ]
+ },
+ "original_sources": {
+  "<USER_HOME>/src/wrf_pristine/WRF/var/da/da_update_bc/da_calc_mu_uv.inc": "99990c6d07830721c3baf137db254d879cea0f880cf2eb7c43ba5b595646d7f3",
+  "<USER_HOME>/src/wrf_pristine/WRF/var/da/da_update_bc/da_couple.inc": "8b92ea35574036ba316db7ab56976a6449c007528bb46046d4de2717b10c599b",
+  "<USER_HOME>/src/wrf_pristine/WRF/var/da/da_update_bc/da_couple_uv.inc": "6e4b18c4ae1cffaa22a389c90d1a32e16dd961c196f411f2e248fe8e29b07352",
+  "<USER_HOME>/src/wrf_pristine/WRF/dyn_em/module_bc_em.F": "6cfb52b849e3dd0b24769709cf502faa75886da454d9b668af725cccdc56d47f",
+  "<USER_HOME>/src/wrf_pristine/WRF/dyn_em/start_em.F": "4b6c98a06fb2b2c4472af73415099e311502747dc5543d9e9b1323497d83ddb4"
+ },
+ "verbatim_extracts": {
+  "module_bc_em.F set_w_surface lines": [
+   1196,
+   1295
+  ],
+  "start_em.F W gate lines": [
+   1475,
+   1533
+  ],
+  "set_w_surface_sha256": "6d14434a93ed67e31f1c29ac4252a257d5329413331e44b9217046b9a80e5e51",
+  "gate_sha256": "7686da832220f694cb464dda09d21eb901ace1cd9a577df4b162823d003e2dbe"
+ },
+ "harness_sha256": {
+  "stub_configure.F90": "531d4101cf5cf893a902c9cbe501b0be104004dd6a613a57e4452c8a64d8b2fd",
+  "module_bc_oracle.F90": "c01abbcded6d5aae940a06f3683bfe16bfd043178a3caef86b130a3adabc61cf",
+  "wsfc_harness.F90": "6a4704229fa3eeccdfb70f28fa47d82d7729502eaffff7af28fa527b729b534b"
+ },
+ "inputs": {
+  "<DATA_ROOT>/wrf_gpu2/scratch/w43-release/cases/wn3_0227/wrfinput_d01": "b7f75a6bad092cdacd2a2d4b47a4c28994b6727b372f23b1f22bb424a83987d8",
+  "<DATA_ROOT>/wrf_gpu2/scratch/w43-release/cases/wn3_0227/wrfinput_d03": "342f93f97ad0e746dd40ecbbe947b85c749176aa7e08b882ad59cb01eef5d907"
+ },
+ "crops": {
+  "d01_ytransect": "d01 mass rows 20:32, col 3:4 (+stagger)",
+  "d01_xtransect": "d01 mass row 50:51, cols 100:112 (+stagger)",
+  "d03_2d": "d03 mass rows 41:49, cols 40:49 (+stagger), all 44 levels",
+  "setw": "same d03 crop treated as a whole domain (crop edges = domain edges in BOTH port and original)"
+ },
+ "synthetic": {
+  "W": "0.05*standard_normal, numpy default_rng(20261024), float32; zero-surface variant sets level 0 to 0"
+ },
+ "comparison_rule": "byte equality of float32 arrays (wrfda_oracle.py rule); W gate flag equality",
+ "checks": {
+  "d01_ytransect:MAPFAC_U!=MAPFAC_M (same-index cells)": 11,
+  "d01_ytransect:MAPFAC_V!=MAPFAC_M (same-index cells)": 12,
+  "d01_xtransect:MAPFAC_U!=MAPFAC_M (same-index cells)": 12,
+  "d01_xtransect:MAPFAC_V!=MAPFAC_M (same-index cells)": 12,
+  "d03_2d:MAPFAC_U!=MAPFAC_M (same-index cells)": 24,
+  "d03_2d:MAPFAC_V!=MAPFAC_M (same-index cells)": 72,
+  "setw:nonzero_sfc_use0:w_needs_to_be_set": 1,
+  "setw:nonzero_sfc_use0:max_abs_W_change_vs_input": 5.318192958831787,
+  "setw:nonzero_sfc_use1:w_needs_to_be_set": 0,
+  "setw:nonzero_sfc_use1:max_abs_W_change_vs_input": 0.0,
+  "setw:zero_sfc_use0:w_needs_to_be_set": 1,
+  "setw:zero_sfc_use0:max_abs_W_change_vs_input": 5.269306182861328,
+  "setw:zero_sfc_use1:w_needs_to_be_set": 1,
+  "setw:zero_sfc_use1:max_abs_W_change_vs_input": 5.269306182861328
+ },
+ "npz_sha256": "6b9235eab61aaf0d7e4345281a9386d6aad2e6f4a2083f057a08de30da0565b3",
+ "host": "Linux-7.0.0-38-generic-x86_64-with-glibc2.43",
+ "numpy": "2.4.4",
+ "netCDF4": "1.7.4"
+}

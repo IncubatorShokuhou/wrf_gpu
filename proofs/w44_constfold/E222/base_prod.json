@@ -1,0 +1,858 @@
+{
+ "tool": "scripts/off_identity_probe.py",
+ "alias": "<DATA_ROOT>/wrf_gpu2/scratch/w44-constfold/alias",
+ "case": "<DATA_ROOT>/wrf_gpu2/v025/s0_case_20260725",
+ "domain": "d01",
+ "order": "native-first",
+ "jax": "0.10.0",
+ "gpu_executed": false,
+ "fast_defaults": "<unset=1>",
+ "release_defaults_active": true,
+ "operator_env": {
+  "GPUWRF_JAX_CACHE": "0",
+  "GPUWRF_WRF_REAL_CONSTFOLD": "0"
+ },
+ "load_s": 52.2,
+ "grid": [
+  44,
+  70,
+  120
+ ],
+ "native_pallas": {
+  "pallas_calls": 159,
+  "interpreted": 0,
+  "interpreted_names": {}
+ },
+ "raw_hlo_sha256": "c7183eff53a3421f47d4773d7a679c71a7c295112ad75c92042dcd0193b46b57",
+ "raw_hlo_bytes": 20824167,
+ "triton_custom_calls": 153,
+ "kernels": [
+  {
+   "name": "phy_prep_hydrostatic_real",
+   "src": "phy_prep_hydrostatic_real at <DATA_ROOT>/wrf_gpu2/scratch/w44-constfold/alias/src/gpuwrf/kernels/phys_hydrostatic_real.py:19",
+   "platform": "cuda",
+   "ttir_sha16": "f88667813b1d262a",
+   "ttir_loc_sha16": "ac6f556683643fdc",
+   "num_warps": 4,
+   "num_stages": 3,
+   "calls": 2,
+   "grid": [
+    66
+   ]
+  },
+  {
+   "name": "mcica_kiss_lanes",
+   "src": "mcica_kiss_lanes at <DATA_ROOT>/wrf_gpu2/scratch/w44-constfold/alias/src/gpuwrf/kernels/rad_mcica.py:167",
+   "platform": "cuda",
+   "ttir_sha16": "0ec6f0a1cb96f47c",
+   "ttir_loc_sha16": "1a0f0f95bcd93e9e",
+   "num_warps": 4,
+   "num_stages": 3,
+   "calls": 1,
+   "grid": [
+    3584
+   ]
+  },
+  {
+   "name": "rrtmg_sw_band_sums",
+   "src": "rrtmg_sw_band_sums at <DATA_ROOT>/wrf_gpu2/scratch/w44-constfold/alias/src/gpuwrf/kernels/rad_sw_band_sums.py:397",
+   "platform": "cuda",
+   "ttir_sha16": "9ac809670a0c7c96",
+   "ttir_loc_sha16": "6422647b83cc9482",
+   "num_warps": 4,
+   "num_stages": 3,
+   "calls": 1,
+   "grid": [
+    512
+   ]
+  },
+  {
+   "name": "mcica_kiss_lanes",
+   "src": "mcica_kiss_lanes at <DATA_ROOT>/wrf_gpu2/scratch/w44-constfold/alias/src/gpuwrf/kernels/rad_mcica.py:167",
+   "platform": "cuda",
+   "ttir_sha16": "361ca10f86ee8136",
+   "ttir_loc_sha16": "991eaecc6b344a52",
+   "num_warps": 4,
+   "num_stages": 3,
+   "calls": 1,
+   "grid": [
+    4480
+   ]
+  },
+  {
+   "name": "rrtmg_lw_band_sums",
+   "src": "rrtmg_lw_band_sums at <DATA_ROOT>/wrf_gpu2/scratch/w44-constfold/alias/src/gpuwrf/kernels/rad_lw_transfer.py:396",
+   "platform": "cuda",
+   "ttir_sha16": "96f705bf91bb11ea",
+   "ttir_loc_sha16": "c6ee3accc71c70ad",
+   "num_warps": 4,
+   "num_stages": 3,
+   "calls": 1,
+   "grid": [
+    512
+   ]
+  },
+  {
+   "name": "phy_prep_hydrostatic_real",
+   "src": "phy_prep_hydrostatic_real at <DATA_ROOT>/wrf_gpu2/scratch/w44-constfold/alias/src/gpuwrf/kernels/phys_hydrostatic_real.py:19",
+   "platform": "cuda",
+   "ttir_sha16": "4e89703952358e1d",
+   "ttir_loc_sha16": "2add3424685e69f3",
+   "num_warps": 4,
+   "num_stages": 3,
+   "calls": 5,
+   "grid": [
+    66
+   ]
+  },
+  {
+   "name": "b_noahmp_radiation_real",
+   "src": "b_noahmp_radiation_real at <DATA_ROOT>/wrf_gpu2/scratch/w44-constfold/alias/src/gpuwrf/kernels/phys_noahmp_radiation.py:28",
+   "platform": "cuda",
+   "ttir_sha16": "1149a3db733a6df8",
+   "ttir_loc_sha16": "1bf76adecf519f3d",
+   "num_warps": 4,
+   "num_stages": 3,
+   "calls": 1,
+   "grid": [
+    66
+   ]
+  },
+  {
+   "name": "b_core_noah_canopy_flux",
+   "src": "b_core_noah_canopy_flux at <DATA_ROOT>/wrf_gpu2/scratch/w44-constfold/alias/src/gpuwrf/kernels/phys_noahmp_columns.py:107",
+   "platform": "cuda",
+   "ttir_sha16": "a0a24d36656e325f",
+   "ttir_loc_sha16": "5bd8aad17a877597",
+   "num_warps": 4,
+   "num_stages": 3,
+   "calls": 1,
+   "grid": [
+    66
+   ]
+  },
+  {
+   "name": "b_core_noah_snowwater",
+   "src": "b_core_noah_snowwater at <DATA_ROOT>/wrf_gpu2/scratch/w44-constfold/alias/src/gpuwrf/kernels/phys_noahmp_columns.py:107",
+   "platform": "cuda",
+   "ttir_sha16": "ed51e8cffa131544",
+   "ttir_loc_sha16": "6a51c6f2f05553ed",
+   "num_warps": 4,
+   "num_stages": 3,
+   "calls": 1,
+   "grid": [
+    66
+   ]
+  },
+  {
+   "name": "b_core_noah_soilwater",
+   "src": "b_core_noah_soilwater at <DATA_ROOT>/wrf_gpu2/scratch/w44-constfold/alias/src/gpuwrf/kernels/phys_noahmp_columns.py:107",
+   "platform": "cuda",
+   "ttir_sha16": "cb82316ad70d8e9f",
+   "ttir_loc_sha16": "7e7ca7a99f553dd7",
+   "num_warps": 4,
+   "num_stages": 3,
+   "calls": 1,
+   "grid": [
+    66
+   ]
+  },
+  {
+   "name": "_lambda_",
+   "src": "<lambda> at <DATA_ROOT>/wrf_gpu2/scratch/w44-constfold/alias/src/gpuwrf/kernels/phys_mynn_boulac.py:107",
+   "platform": "cuda",
+   "ttir_sha16": "d0010faf96ed0bfa",
+   "ttir_loc_sha16": "ba6155083028b110",
+   "num_warps": 4,
+   "num_stages": 3,
+   "calls": 6,
+   "grid": [
+    2888
+   ]
+  },
+  {
+   "name": "_lambda_",
+   "src": "<lambda> at <DATA_ROOT>/wrf_gpu2/scratch/w44-constfold/alias/src/gpuwrf/kernels/phys_mynn_plume.py:406",
+   "platform": "cuda",
+   "ttir_sha16": "86aa2a9a97d6363f",
+   "ttir_loc_sha16": "8d8a26d5e0bea650",
+   "num_warps": 4,
+   "num_stages": 3,
+   "calls": 1,
+   "grid": [
+    525
+   ]
+  },
+  {
+   "name": "mynn_tridiag2_real",
+   "src": "mynn_tridiag2_real at <DATA_ROOT>/wrf_gpu2/scratch/w44-constfold/alias/src/gpuwrf/kernels/phys_mynn_tridiag.py:31",
+   "platform": "cuda",
+   "ttir_sha16": "1d7242cc64f68532",
+   "ttir_loc_sha16": "debb42530f18671d",
+   "num_warps": 4,
+   "num_stages": 3,
+   "calls": 10,
+   "grid": [
+    66
+   ]
+  },
+  {
+   "name": "_lambda_",
+   "src": "<lambda> at <DATA_ROOT>/wrf_gpu2/scratch/w44-constfold/alias/src/gpuwrf/kernels/phys_mynn_cloudmix.py:59",
+   "platform": "cuda",
+   "ttir_sha16": "d7f9ba89cd8ece42",
+   "ttir_loc_sha16": "e75d849eb67de931",
+   "num_warps": 4,
+   "num_stages": 3,
+   "calls": 1,
+   "grid": [
+    66
+   ]
+  },
+  {
+   "name": "gwdo_column_fp32",
+   "src": "gwdo_column_fp32 at <DATA_ROOT>/wrf_gpu2/scratch/w44-constfold/alias/src/gpuwrf/kernels/phys_gwdo_column.py:282",
+   "platform": "cuda",
+   "ttir_sha16": "7b43ba5ed2691d33",
+   "ttir_loc_sha16": "94c89e190afe4eb8",
+   "num_warps": 4,
+   "num_stages": 3,
+   "calls": 1,
+   "grid": [
+    66
+   ]
+  },
+  {
+   "name": "kf_column_fp32",
+   "src": "kf_column_fp32 at <DATA_ROOT>/wrf_gpu2/scratch/w44-constfold/alias/src/gpuwrf/kernels/phys_kf_column.py:1273",
+   "platform": "cuda",
+   "ttir_sha16": "c1051833146c5a05",
+   "ttir_loc_sha16": "24a2989c95d5e923",
+   "num_warps": 4,
+   "num_stages": 3,
+   "calls": 1,
+   "grid": [
+    8400
+   ]
+  },
+  {
+   "name": "b_diff_horizontal_m",
+   "src": "b_diff_horizontal_m at <DATA_ROOT>/wrf_gpu2/scratch/w44-constfold/alias/src/gpuwrf/kernels/dyn_diff_fp32.py:96",
+   "platform": "cuda",
+   "ttir_sha16": "bef5ce0585066c6a",
+   "ttir_loc_sha16": "f2b4da9c0e92c804",
+   "num_warps": 4,
+   "num_stages": 3,
+   "calls": 9,
+   "grid": [
+    1444
+   ]
+  },
+  {
+   "name": "b_diff_horizontal_u",
+   "src": "b_diff_horizontal_u at <DATA_ROOT>/wrf_gpu2/scratch/w44-constfold/alias/src/gpuwrf/kernels/dyn_diff_fp32.py:96",
+   "platform": "cuda",
+   "ttir_sha16": "0e0a75150bef8521",
+   "ttir_loc_sha16": "50f0301ad233c7fd",
+   "num_warps": 4,
+   "num_stages": 3,
+   "calls": 1,
+   "grid": [
+    1456
+   ]
+  },
+  {
+   "name": "b_diff_horizontal_v",
+   "src": "b_diff_horizontal_v at <DATA_ROOT>/wrf_gpu2/scratch/w44-constfold/alias/src/gpuwrf/kernels/dyn_diff_fp32.py:96",
+   "platform": "cuda",
+   "ttir_sha16": "2dd17012fdf93f8b",
+   "ttir_loc_sha16": "73b0d0c7bfc0b62e",
+   "num_warps": 4,
+   "num_stages": 3,
+   "calls": 1,
+   "grid": [
+    1465
+   ]
+  },
+  {
+   "name": "b_diff_horizontal_w",
+   "src": "b_diff_horizontal_w at <DATA_ROOT>/wrf_gpu2/scratch/w44-constfold/alias/src/gpuwrf/kernels/dyn_diff_fp32.py:96",
+   "platform": "cuda",
+   "ttir_sha16": "fe21f8c829c8a1c1",
+   "ttir_loc_sha16": "05dfd0c8b96c769d",
+   "num_warps": 4,
+   "num_stages": 3,
+   "calls": 1,
+   "grid": [
+    1477
+   ]
+  },
+  {
+   "name": "b_diff_sixth_m",
+   "src": "b_diff_sixth_m at <DATA_ROOT>/wrf_gpu2/scratch/w44-constfold/alias/src/gpuwrf/kernels/dyn_diff_fp32.py:15",
+   "platform": "cuda",
+   "ttir_sha16": "f01ddac95e70d971",
+   "ttir_loc_sha16": "774f92b91b720db8",
+   "num_warps": 4,
+   "num_stages": 3,
+   "calls": 9,
+   "grid": [
+    1444
+   ]
+  },
+  {
+   "name": "b_diff_sixth_u",
+   "src": "b_diff_sixth_u at <DATA_ROOT>/wrf_gpu2/scratch/w44-constfold/alias/src/gpuwrf/kernels/dyn_diff_fp32.py:15",
+   "platform": "cuda",
+   "ttir_sha16": "54c7c0edaebe93c9",
+   "ttir_loc_sha16": "8b50f7af3e1e1a8a",
+   "num_warps": 4,
+   "num_stages": 3,
+   "calls": 1,
+   "grid": [
+    1456
+   ]
+  },
+  {
+   "name": "b_diff_sixth_v",
+   "src": "b_diff_sixth_v at <DATA_ROOT>/wrf_gpu2/scratch/w44-constfold/alias/src/gpuwrf/kernels/dyn_diff_fp32.py:15",
+   "platform": "cuda",
+   "ttir_sha16": "363585d0c023b577",
+   "ttir_loc_sha16": "fb20822cf91ffc49",
+   "num_warps": 4,
+   "num_stages": 3,
+   "calls": 1,
+   "grid": [
+    1465
+   ]
+  },
+  {
+   "name": "b_diff_sixth_w",
+   "src": "b_diff_sixth_w at <DATA_ROOT>/wrf_gpu2/scratch/w44-constfold/alias/src/gpuwrf/kernels/dyn_diff_fp32.py:15",
+   "platform": "cuda",
+   "ttir_sha16": "d7a8955a6f71ff2d",
+   "ttir_loc_sha16": "fa7a80d6fd860680",
+   "num_warps": 4,
+   "num_stages": 3,
+   "calls": 1,
+   "grid": [
+    1477
+   ]
+  },
+  {
+   "name": "boundary_dry_relax_real",
+   "src": "boundary_dry_relax_real at <DATA_ROOT>/wrf_gpu2/scratch/w44-constfold/alias/src/gpuwrf/kernels/dyn_boundary_fp32.py:93",
+   "platform": "cuda",
+   "ttir_sha16": "2961d30bad961c94",
+   "ttir_loc_sha16": "a0fb91e1650a9222",
+   "num_warps": 1,
+   "num_stages": 3,
+   "calls": 3,
+   "grid": [
+    4,
+    70,
+    44
+   ]
+  },
+  {
+   "name": "boundary_dry_relax_real",
+   "src": "boundary_dry_relax_real at <DATA_ROOT>/wrf_gpu2/scratch/w44-constfold/alias/src/gpuwrf/kernels/dyn_boundary_fp32.py:93",
+   "platform": "cuda",
+   "ttir_sha16": "726ecdff654eb3c5",
+   "ttir_loc_sha16": "8406c19bb105b6a9",
+   "num_warps": 1,
+   "num_stages": 3,
+   "calls": 3,
+   "grid": [
+    4,
+    71,
+    44
+   ]
+  },
+  {
+   "name": "boundary_dry_relax_real",
+   "src": "boundary_dry_relax_real at <DATA_ROOT>/wrf_gpu2/scratch/w44-constfold/alias/src/gpuwrf/kernels/dyn_boundary_fp32.py:93",
+   "platform": "cuda",
+   "ttir_sha16": "bebe322f3ed3a0fb",
+   "ttir_loc_sha16": "c7a77fbbd868fe4a",
+   "num_warps": 1,
+   "num_stages": 3,
+   "calls": 3,
+   "grid": [
+    4,
+    70,
+    44
+   ]
+  },
+  {
+   "name": "boundary_dry_relax_real",
+   "src": "boundary_dry_relax_real at <DATA_ROOT>/wrf_gpu2/scratch/w44-constfold/alias/src/gpuwrf/kernels/dyn_boundary_fp32.py:93",
+   "platform": "cuda",
+   "ttir_sha16": "3bfedc857f6ecdcb",
+   "ttir_loc_sha16": "ff69167e48b53712",
+   "num_warps": 1,
+   "num_stages": 3,
+   "calls": 3,
+   "grid": [
+    4,
+    70,
+    45
+   ]
+  },
+  {
+   "name": "boundary_dry_relax_real",
+   "src": "boundary_dry_relax_real at <DATA_ROOT>/wrf_gpu2/scratch/w44-constfold/alias/src/gpuwrf/kernels/dyn_boundary_fp32.py:93",
+   "platform": "cuda",
+   "ttir_sha16": "7d101736f29f044f",
+   "ttir_loc_sha16": "cf1318fa6226e82c",
+   "num_warps": 1,
+   "num_stages": 3,
+   "calls": 3,
+   "grid": [
+    4,
+    70,
+    1
+   ]
+  },
+  {
+   "name": "b_core_scalar_flux_fp32",
+   "src": "b_core_scalar_flux_fp32 at <DATA_ROOT>/wrf_gpu2/scratch/w44-constfold/alias/src/gpuwrf/kernels/dyn_flux_fp32.py:58",
+   "platform": "cuda",
+   "ttir_sha16": "facb801a39726338",
+   "ttir_loc_sha16": "41acdde4796cc789",
+   "num_warps": 4,
+   "num_stages": 3,
+   "calls": 3,
+   "grid": [
+    1444
+   ]
+  },
+  {
+   "name": "b_diff_eos_real",
+   "src": "b_diff_eos_real at <DATA_ROOT>/wrf_gpu2/scratch/w44-constfold/alias/src/gpuwrf/kernels/dyn_rk_fp32.py:78",
+   "platform": "cuda",
+   "ttir_sha16": "e5dc9cb56d2e4798",
+   "ttir_loc_sha16": "09b0ba40b1ba8fdc",
+   "num_warps": 4,
+   "num_stages": 3,
+   "calls": 4,
+   "grid": [
+    1444
+   ]
+  },
+  {
+   "name": "b_diff_stage_masses",
+   "src": "b_diff_stage_masses at <DATA_ROOT>/wrf_gpu2/scratch/w44-constfold/alias/src/gpuwrf/kernels/dyn_rk_fp32.py:153",
+   "platform": "cuda",
+   "ttir_sha16": "9eb5ab2ccb50e95a",
+   "ttir_loc_sha16": "70cb0fa62c3e74a4",
+   "num_warps": 4,
+   "num_stages": 3,
+   "calls": 1,
+   "grid": [
+    34
+   ]
+  },
+  {
+   "name": "b_diff_coupled_work_u",
+   "src": "b_diff_coupled_work_u at <DATA_ROOT>/wrf_gpu2/scratch/w44-constfold/alias/src/gpuwrf/kernels/dyn_rk_fp32.py:201",
+   "platform": "cuda",
+   "ttir_sha16": "311306168affb4a9",
+   "ttir_loc_sha16": "800252c7ce772b49",
+   "num_warps": 4,
+   "num_stages": 3,
+   "calls": 3,
+   "grid": [
+    1456
+   ]
+  },
+  {
+   "name": "b_diff_coupled_work_v",
+   "src": "b_diff_coupled_work_v at <DATA_ROOT>/wrf_gpu2/scratch/w44-constfold/alias/src/gpuwrf/kernels/dyn_rk_fp32.py:201",
+   "platform": "cuda",
+   "ttir_sha16": "68c1e554dc0fba4b",
+   "ttir_loc_sha16": "029445d5fff6d837",
+   "num_warps": 4,
+   "num_stages": 3,
+   "calls": 3,
+   "grid": [
+    1465
+   ]
+  },
+  {
+   "name": "b_diff_coupled_work_theta",
+   "src": "b_diff_coupled_work_theta at <DATA_ROOT>/wrf_gpu2/scratch/w44-constfold/alias/src/gpuwrf/kernels/dyn_rk_fp32.py:201",
+   "platform": "cuda",
+   "ttir_sha16": "8df9b5226eba58bc",
+   "ttir_loc_sha16": "4274d6a4b3683a16",
+   "num_warps": 4,
+   "num_stages": 3,
+   "calls": 3,
+   "grid": [
+    1444
+   ]
+  },
+  {
+   "name": "b_diff_coupled_work_w",
+   "src": "b_diff_coupled_work_w at <DATA_ROOT>/wrf_gpu2/scratch/w44-constfold/alias/src/gpuwrf/kernels/dyn_rk_fp32.py:201",
+   "platform": "cuda",
+   "ttir_sha16": "1c264b3e1c4aabef",
+   "ttir_loc_sha16": "a6859d60dfe1c6c2",
+   "num_warps": 4,
+   "num_stages": 3,
+   "calls": 3,
+   "grid": [
+    1477
+   ]
+  },
+  {
+   "name": "b_diff_eos_real",
+   "src": "b_diff_eos_real at <DATA_ROOT>/wrf_gpu2/scratch/w44-constfold/alias/src/gpuwrf/kernels/dyn_rk_fp32.py:78",
+   "platform": "cuda",
+   "ttir_sha16": "005a2ffb566e25d1",
+   "ttir_loc_sha16": "68a8fa7cf931c267",
+   "num_warps": 4,
+   "num_stages": 3,
+   "calls": 3,
+   "grid": [
+    1444
+   ]
+  },
+  {
+   "name": "b_diff_rhs_ph_fp32",
+   "src": "b_diff_rhs_ph_fp32 at <DATA_ROOT>/wrf_gpu2/scratch/w44-constfold/alias/src/gpuwrf/kernels/dyn_rhsph_fp32.py:19",
+   "platform": "cuda",
+   "ttir_sha16": "607ee80ec377c954",
+   "ttir_loc_sha16": "2fb8d0a9f3edfc00",
+   "num_warps": 4,
+   "num_stages": 3,
+   "calls": 3,
+   "grid": [
+    1477
+   ]
+  },
+  {
+   "name": "boundary_leaf_interp_real",
+   "src": "boundary_leaf_interp_real at <DATA_ROOT>/wrf_gpu2/scratch/w44-constfold/alias/src/gpuwrf/kernels/dyn_boundary_fp32.py:56",
+   "platform": "cuda",
+   "ttir_sha16": "24ffbb02b2677f36",
+   "ttir_loc_sha16": "1b1405ea3d37df87",
+   "num_warps": 4,
+   "num_stages": 3,
+   "calls": 15,
+   "grid": [
+    416
+   ]
+  },
+  {
+   "name": "boundary_leaf_interp_real",
+   "src": "boundary_leaf_interp_real at <DATA_ROOT>/wrf_gpu2/scratch/w44-constfold/alias/src/gpuwrf/kernels/dyn_boundary_fp32.py:56",
+   "platform": "cuda",
+   "ttir_sha16": "605f7b18e0ad34a9",
+   "ttir_loc_sha16": "dcb06daaeab74551",
+   "num_warps": 4,
+   "num_stages": 3,
+   "calls": 3,
+   "grid": [
+    426
+   ]
+  },
+  {
+   "name": "boundary_leaf_interp_real",
+   "src": "boundary_leaf_interp_real at <DATA_ROOT>/wrf_gpu2/scratch/w44-constfold/alias/src/gpuwrf/kernels/dyn_boundary_fp32.py:56",
+   "platform": "cuda",
+   "ttir_sha16": "f7cc84c2e7b2809a",
+   "ttir_loc_sha16": "a09de66972749d23",
+   "num_warps": 4,
+   "num_stages": 3,
+   "calls": 3,
+   "grid": [
+    10
+   ]
+  },
+  {
+   "name": "b_core_coef_fp32",
+   "src": "b_core_coef_fp32 at <DATA_ROOT>/wrf_gpu2/scratch/w44-constfold/alias/src/gpuwrf/kernels/dyn_acoustic_fp32.py:92",
+   "platform": "cuda",
+   "ttir_sha16": "6c184528b68a08bb",
+   "ttir_loc_sha16": "d959d422255e19de",
+   "num_warps": 4,
+   "num_stages": 3,
+   "calls": 3,
+   "grid": [
+    66
+   ]
+  },
+  {
+   "name": "b_core_uv_fp32",
+   "src": "b_core_uv_fp32 at <DATA_ROOT>/wrf_gpu2/scratch/w44-constfold/alias/src/gpuwrf/kernels/dyn_acoustic_fp32.py:92",
+   "platform": "cuda",
+   "ttir_sha16": "f4defb7d8320fa05",
+   "ttir_loc_sha16": "18d36cba464aae3d",
+   "num_warps": 4,
+   "num_stages": 3,
+   "calls": 3,
+   "grid": [
+    2929
+   ]
+  },
+  {
+   "name": "b_core_mass_fp32",
+   "src": "b_core_mass_fp32 at <DATA_ROOT>/wrf_gpu2/scratch/w44-constfold/alias/src/gpuwrf/kernels/dyn_acoustic_fp32.py:92",
+   "platform": "cuda",
+   "ttir_sha16": "31de12883c7c51ad",
+   "ttir_loc_sha16": "34153823111c4dba",
+   "num_warps": 4,
+   "num_stages": 3,
+   "calls": 3,
+   "grid": [
+    66
+   ]
+  },
+  {
+   "name": "b_core_w_p1_fp32",
+   "src": "b_core_w_p1_fp32 at <DATA_ROOT>/wrf_gpu2/scratch/w44-constfold/alias/src/gpuwrf/kernels/dyn_acoustic_fp32.py:92",
+   "platform": "cuda",
+   "ttir_sha16": "64c5f06f051e24d0",
+   "ttir_loc_sha16": "e79a80360bc06e6e",
+   "num_warps": 4,
+   "num_stages": 3,
+   "calls": 3,
+   "grid": [
+    2954
+   ]
+  },
+  {
+   "name": "b_core_w_p2_fp32",
+   "src": "b_core_w_p2_fp32 at <DATA_ROOT>/wrf_gpu2/scratch/w44-constfold/alias/src/gpuwrf/kernels/dyn_acoustic_fp32.py:92",
+   "platform": "cuda",
+   "ttir_sha16": "2132d8bd767a6bbb",
+   "ttir_loc_sha16": "5ef75fe2ee23a104",
+   "num_warps": 4,
+   "num_stages": 3,
+   "calls": 3,
+   "grid": [
+    2954
+   ]
+  },
+  {
+   "name": "b_core_w_fp32",
+   "src": "b_core_w_fp32 at <DATA_ROOT>/wrf_gpu2/scratch/w44-constfold/alias/src/gpuwrf/kernels/dyn_acoustic_fp32.py:92",
+   "platform": "cuda",
+   "ttir_sha16": "0def3803d55d516a",
+   "ttir_loc_sha16": "3bab16b420b3466f",
+   "num_warps": 4,
+   "num_stages": 3,
+   "calls": 3,
+   "grid": [
+    66
+   ]
+  },
+  {
+   "name": "b_core_pressure_fp32",
+   "src": "b_core_pressure_fp32 at <DATA_ROOT>/wrf_gpu2/scratch/w44-constfold/alias/src/gpuwrf/kernels/dyn_acoustic_fp32.py:92",
+   "platform": "cuda",
+   "ttir_sha16": "faf2438ad9f07ecb",
+   "ttir_loc_sha16": "f3a08242415308f4",
+   "num_warps": 4,
+   "num_stages": 3,
+   "calls": 3,
+   "grid": [
+    2888
+   ]
+  },
+  {
+   "name": "b_core_scalar_flux_fp32_stacked",
+   "src": "b_core_scalar_flux_fp32_stacked at <DATA_ROOT>/wrf_gpu2/scratch/w44-constfold/alias/src/gpuwrf/kernels/dyn_flux_fp32.py:139",
+   "platform": "cuda",
+   "ttir_sha16": "ac2be5a0f30c291c",
+   "ttir_loc_sha16": "7ac058eb2c3d7196",
+   "num_warps": 4,
+   "num_stages": 3,
+   "calls": 2,
+   "grid": [
+    1444
+   ]
+  },
+  {
+   "name": "boundary_ring_relax_real",
+   "src": "boundary_ring_relax_real at <DATA_ROOT>/wrf_gpu2/scratch/w44-constfold/alias/src/gpuwrf/kernels/dyn_ring_relax_fp32.py:36",
+   "platform": "cuda",
+   "ttir_sha16": "7297f2dd2f6ea0e7",
+   "ttir_loc_sha16": "e8a2e9e5a2e354fc",
+   "num_warps": 1,
+   "num_stages": 3,
+   "calls": 1,
+   "grid": [
+    4,
+    70,
+    44
+   ]
+  },
+  {
+   "name": "b_diff_stage_masses",
+   "src": "b_diff_stage_masses at <DATA_ROOT>/wrf_gpu2/scratch/w44-constfold/alias/src/gpuwrf/kernels/dyn_rk_fp32.py:153",
+   "platform": "cuda",
+   "ttir_sha16": "39ab874e31e80aa3",
+   "ttir_loc_sha16": "15e7156a3c882f5a",
+   "num_warps": 4,
+   "num_stages": 3,
+   "calls": 2,
+   "grid": [
+    34
+   ]
+  },
+  {
+   "name": "b_core_pd_scale_sl_fp32",
+   "src": "b_core_pd_scale_sl_fp32 at <DATA_ROOT>/wrf_gpu2/scratch/w44-constfold/alias/src/gpuwrf/kernels/dyn_pd_fp32.py:327",
+   "platform": "cuda",
+   "ttir_sha16": "110250a5c5aaf9b7",
+   "ttir_loc_sha16": "f8ddf368b7d67750",
+   "num_warps": 4,
+   "num_stages": 3,
+   "calls": 1,
+   "grid": [
+    1444
+   ]
+  },
+  {
+   "name": "b_core_pd_tend_sl_fp32",
+   "src": "b_core_pd_tend_sl_fp32 at <DATA_ROOT>/wrf_gpu2/scratch/w44-constfold/alias/src/gpuwrf/kernels/dyn_pd_fp32.py:358",
+   "platform": "cuda",
+   "ttir_sha16": "d851875a394616a0",
+   "ttir_loc_sha16": "ed252b34acccb9c2",
+   "num_warps": 4,
+   "num_stages": 3,
+   "calls": 1,
+   "grid": [
+    1444
+   ]
+  },
+  {
+   "name": "thompson_full_column",
+   "src": "thompson_full_column at <DATA_ROOT>/wrf_gpu2/scratch/w44-constfold/alias/src/gpuwrf/kernels/phys_thompson_full.py:320",
+   "platform": "cuda",
+   "ttir_sha16": "22278d3c3932276a",
+   "ttir_loc_sha16": "dc0aa020d5997250",
+   "num_warps": 2,
+   "num_stages": 3,
+   "calls": 1,
+   "grid": [
+    8400
+   ]
+  },
+  {
+   "name": "boundary_ring_update_real",
+   "src": "boundary_ring_update_real at <DATA_ROOT>/wrf_gpu2/scratch/w44-constfold/alias/src/gpuwrf/kernels/dyn_boundary_fp32.py:232",
+   "platform": "cuda",
+   "ttir_sha16": "bee3c903c1ebbb00",
+   "ttir_loc_sha16": "ff7d783daeb6a494",
+   "num_warps": 1,
+   "num_stages": 3,
+   "calls": 1,
+   "grid": [
+    4,
+    70,
+    44
+   ]
+  },
+  {
+   "name": "boundary_ring_update_real",
+   "src": "boundary_ring_update_real at <DATA_ROOT>/wrf_gpu2/scratch/w44-constfold/alias/src/gpuwrf/kernels/dyn_boundary_fp32.py:232",
+   "platform": "cuda",
+   "ttir_sha16": "4d34049359c69648",
+   "ttir_loc_sha16": "1f343f1480d9dcfa",
+   "num_warps": 1,
+   "num_stages": 3,
+   "calls": 1,
+   "grid": [
+    4,
+    71,
+    44
+   ]
+  },
+  {
+   "name": "boundary_ring_update_real",
+   "src": "boundary_ring_update_real at <DATA_ROOT>/wrf_gpu2/scratch/w44-constfold/alias/src/gpuwrf/kernels/dyn_boundary_fp32.py:232",
+   "platform": "cuda",
+   "ttir_sha16": "34b615cce9409216",
+   "ttir_loc_sha16": "ae788a304236ab14",
+   "num_warps": 1,
+   "num_stages": 3,
+   "calls": 1,
+   "grid": [
+    4,
+    70,
+    44
+   ]
+  },
+  {
+   "name": "boundary_ring_update_real",
+   "src": "boundary_ring_update_real at <DATA_ROOT>/wrf_gpu2/scratch/w44-constfold/alias/src/gpuwrf/kernels/dyn_boundary_fp32.py:232",
+   "platform": "cuda",
+   "ttir_sha16": "f4f5b86aa6bda719",
+   "ttir_loc_sha16": "57e00268c4c7e604",
+   "num_warps": 1,
+   "num_stages": 3,
+   "calls": 1,
+   "grid": [
+    4,
+    70,
+    1
+   ]
+  },
+  {
+   "name": "boundary_ring_update_real",
+   "src": "boundary_ring_update_real at <DATA_ROOT>/wrf_gpu2/scratch/w44-constfold/alias/src/gpuwrf/kernels/dyn_boundary_fp32.py:232",
+   "platform": "cuda",
+   "ttir_sha16": "233c957a0f8b4d24",
+   "ttir_loc_sha16": "da1b576e34e032c1",
+   "num_warps": 1,
+   "num_stages": 3,
+   "calls": 1,
+   "grid": [
+    4,
+    70,
+    45
+   ]
+  },
+  {
+   "name": "boundary_ring_update_real",
+   "src": "boundary_ring_update_real at <DATA_ROOT>/wrf_gpu2/scratch/w44-constfold/alias/src/gpuwrf/kernels/dyn_boundary_fp32.py:232",
+   "platform": "cuda",
+   "ttir_sha16": "7c81e72ab20bc972",
+   "ttir_loc_sha16": "6df84dafc289a2de",
+   "num_warps": 1,
+   "num_stages": 3,
+   "calls": 1,
+   "grid": [
+    4,
+    70,
+    45
+   ]
+  },
+  {
+   "name": "boundary_ring_update_real",
+   "src": "boundary_ring_update_real at <DATA_ROOT>/wrf_gpu2/scratch/w44-constfold/alias/src/gpuwrf/kernels/dyn_boundary_fp32.py:232",
+   "platform": "cuda",
+   "ttir_sha16": "f7e464aedc1ded66",
+   "ttir_loc_sha16": "e8268aa6f856f7c0",
+   "num_warps": 1,
+   "num_stages": 3,
+   "calls": 1,
+   "grid": [
+    4,
+    70,
+    1
+   ]
+  }
+ ],
+ "n_kernel_bodies": 61,
+ "n_pallas_lowerings": 157,
+ "native_s": 43.3,
+ "canon_sha256": "321aa651067f1d074b25ebe164536bf27fea5dca151a80c2861dcbab8b58f96b",
+ "canon_chars": 14782747,
+ "canon_s": 19.9,
+ "verdict": "COMPLETE",
+ "wall_s": 162.0
+}

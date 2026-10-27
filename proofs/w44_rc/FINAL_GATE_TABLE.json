@@ -1,0 +1,198 @@
+{
+  "schema": "w44-rc.final-cpu-gate.v1",
+  "source_runtime_commit": "5317c965410a3b8aed43dd4b5a93955b9d9941d3",
+  "src_tree": "a22dea711202a48d00c86eafa34391ff2cb60fe2",
+  "IN": [
+    "1 topo b493f2da40",
+    "5 QSQ seed450a0a6f4e",
+    "6 E84c4b3cee0d2",
+    "7 params-refusalb0bf673088",
+    "8 version0.4.4 four surfaces",
+    "9 LSM-refusal7ce3a9276e",
+    "registrydeltaad27bc3907"
+  ],
+  "OUT": [
+    "2 constfold",
+    "3 root-walk flip",
+    "4 H-CB"
+  ],
+  "patch_proofs": [
+    "COMPOSITION.json:156 per-file exact +32 already-present, three automatic merges/no manual source conflicts",
+    "ITEM9_COMPOSITION.json:11/11 exact/no manual resolutions",
+    "REGISTRY_COMPOSITION.json:1/1 exact; src/tests EXACTad27"
+  ],
+  "CPU": {
+    "scope": "full final-composition CPU suite once; only setup-blocked/affected checks rerun; source f157 except registry corrections5317",
+    "raw": {
+      "tierA": {
+        "counts": {
+          "PASS": 4206,
+          "SKIP": 34,
+          "FAIL": 3
+        },
+        "selectors": 182,
+        "unavailable": [
+          "tests/test_w44_precompile_lifecycle.py",
+          "tests/test_w44_precompile_qualification.py"
+        ]
+      },
+      "release_defaults": {
+        "counts": {
+          "PASS": 102,
+          "XFAIL": 1
+        },
+        "selectors": 37,
+        "unavailable": []
+      }
+    },
+    "classified_tierA_counts": {
+      "PASS": 4209,
+      "SKIP": 34
+    },
+    "release_defaults_counts": {
+      "PASS": 102,
+      "XFAIL": 1
+    },
+    "resolved_failures": [
+      {
+        "node": "tests.test_aot_key_cli::test_aot_key_leaves_a_sealed_bundle_byte_identical",
+        "raw": "FAIL",
+        "classification": "HARNESS cache-disable reproduced on exact700a; resolved by neutral/enabled private cache on both source trees",
+        "resolution": "<DATA_ROOT>/wrf_gpu2/scratch/w44-rc/classification/candidate_cache_enabled/result.json"
+      },
+      {
+        "node": "tests.test_aot_key_cli::test_without_the_redirect_aot_key_writes_the_bundle",
+        "raw": "FAIL",
+        "classification": "HARNESS cache-disable reproduced on exact700a; resolved by neutral/enabled private cache on both source trees",
+        "resolution": "<DATA_ROOT>/wrf_gpu2/scratch/w44-rc/classification/candidate_cache_enabled/result.json"
+      },
+      {
+        "node": "tests.v025.restart.test_runtime_data_identity::test_reader_registry_covers_actual_package_and_runtime_extractor",
+        "raw": "FAIL",
+        "classification": "NEW item9 reader registry regression; fixed by reviewed metadata-only5317",
+        "resolution": "<DATA_ROOT>/wrf_gpu2/scratch/w44-rc/registry_affected/result.json"
+      }
+    ],
+    "additional_affected_checks": {
+      "PASS": 22
+    },
+    "known_new_unresolved_failures": 0,
+    "unavailable_NOT_PASS": {
+      "scope": "Eligibility audit only; active manifest is unchanged while suite runs",
+      "reason": "inherited W4-only tests never present on base or composed RC; W4 shelved per manager02:01:58",
+      "excluded_NOT_APPLICABLE": [
+        {
+          "selector": "tests/test_w44_precompile_lifecycle.py",
+          "in_final": false,
+          "in_exact_700a": false
+        },
+        {
+          "selector": "tests/test_w44_precompile_qualification.py",
+          "in_final": false,
+          "in_exact_700a": false
+        }
+      ],
+      "shipped_W5_gate": {
+        "path": "<DATA_ROOT>/wrf_gpu2/scratch/w44-rc/tierA/tests__test_precompile_cli.py/result.json",
+        "counts": {
+          "PASS": 15
+        }
+      },
+      "eligible_final_files": 180,
+      "planned_total_with_unavailable_rows": 182
+    },
+    "registry_source": "5317c965410a3b8aed43dd4b5a93955b9d9941d3",
+    "cache_correction_scope": "test harness explicitly disabled persistent compilation cache; test bodies/scanner/tolerances unchanged; physical fidelity not inferred",
+    "identity_native_optimized": "PENDING registry-specific probe/carry proof; no overall RCREADY claim"
+  },
+  "canonical_programs": [
+    {
+      "case": "swiss",
+      "domain": "d01",
+      "compiler_input_proto_EXACT": true,
+      "before": "<DATA_ROOT>/wrf_gpu2/scratch/w44-rc/native/RC02-candidate-swiss-d01",
+      "after": "<DATA_ROOT>/wrf_gpu2/scratch/w44-rc/registry_identity/RC22-lower-swiss-d01",
+      "old_optimized_sha256": "d4bd3db1519d9ca26644de236c9e7014ced4bcb104d0721adb1e08e8938b1ead",
+      "optimized_scope": "CARRY existing measured4b optimizedHLO: exact fullconstant compiler input bytes and unchanged target/compiler/options; no new optimized compile claimed",
+      "native_records_EXACT": true,
+      "program_records_EXACT": true,
+      "target_EXACT": true,
+      "optimized_sha_verified": true,
+      "max_stack_B": 16,
+      "raw_input_sha256": "7060b4b397080a39482e5435b40bda5218dca510c4ebee41a9b1e0b1c4ff90b6"
+    },
+    {
+      "case": "prod",
+      "domain": "d01",
+      "compiler_input_proto_EXACT": true,
+      "before": "<DATA_ROOT>/wrf_gpu2/scratch/w44-rc/native/RC02-candidate-prod-d01",
+      "after": "<DATA_ROOT>/wrf_gpu2/scratch/w44-rc/registry_identity/RC22-lower-prod-d01",
+      "old_optimized_sha256": "fa4e55b97c1a4427a4b0449d9b161b9eaffe247084c83a04ec312e9e8df39aef",
+      "optimized_scope": "CARRY existing measured4b optimizedHLO: exact fullconstant compiler input bytes and unchanged target/compiler/options; no new optimized compile claimed",
+      "native_records_EXACT": true,
+      "program_records_EXACT": true,
+      "target_EXACT": true,
+      "optimized_sha_verified": true,
+      "max_stack_B": 32,
+      "raw_input_sha256": "da4441d8b4f36d933baa5f6c83ef654a61da4c3cfee1396a005de32fbe5c36e9"
+    },
+    {
+      "case": "prod",
+      "domain": "d02",
+      "compiler_input_proto_EXACT": true,
+      "before": "<DATA_ROOT>/wrf_gpu2/scratch/w44-rc/native/RC02-candidate-prod-d02",
+      "after": "<DATA_ROOT>/wrf_gpu2/scratch/w44-rc/registry_identity/RC22-lower-prod-d02",
+      "old_optimized_sha256": "0e1b8d0ba86d86db15cea138c08ca3aee22c08ff73b703a659b2a8d3b9798673",
+      "optimized_scope": "CARRY existing measured4b optimizedHLO: exact fullconstant compiler input bytes and unchanged target/compiler/options; no new optimized compile claimed",
+      "native_records_EXACT": true,
+      "program_records_EXACT": true,
+      "target_EXACT": true,
+      "optimized_sha_verified": true,
+      "max_stack_B": 32,
+      "raw_input_sha256": "dcb10e50f6025595e093e21f2e26e4dcf92620a8acf10c31e60311b8324bb0f2"
+    },
+    {
+      "case": "wn3",
+      "domain": "d01",
+      "compiler_input_proto_EXACT": true,
+      "before": "<DATA_ROOT>/wrf_gpu2/scratch/w44-rc/native/RC02-candidate-wn3-d01",
+      "after": "<DATA_ROOT>/wrf_gpu2/scratch/w44-rc/registry_identity/RC22-lower-wn3-d01",
+      "old_optimized_sha256": "f9660829d3a992eafd8d11679d7176258e56083d7e12b54bf8f72379fee6e6e7",
+      "optimized_scope": "CARRY existing measured4b optimizedHLO: exact fullconstant compiler input bytes and unchanged target/compiler/options; no new optimized compile claimed",
+      "native_records_EXACT": true,
+      "program_records_EXACT": true,
+      "target_EXACT": true,
+      "optimized_sha_verified": true,
+      "max_stack_B": 32,
+      "raw_input_sha256": "78097ad665df2356849aad5db29a03d3624d7aba05757aa87a8f4a5e9715a14c"
+    },
+    {
+      "case": "wn3",
+      "domain": "fused_d02",
+      "compiler_input_proto_EXACT": true,
+      "before": "<DATA_ROOT>/wrf_gpu2/scratch/w44-rc/native/RC02-candidate-wn3-fused_d02",
+      "after": "<DATA_ROOT>/wrf_gpu2/scratch/w44-rc/registry_identity/RC22-lower-wn3-fused_d02",
+      "old_optimized_sha256": "8929558064b0a3d6bcae29e5a7b88faeb1ead4b16538501d5902b12e735b197b",
+      "optimized_scope": "CARRY existing measured4b optimizedHLO: exact fullconstant compiler input bytes and unchanged target/compiler/options; no new optimized compile claimed",
+      "native_records_EXACT": true,
+      "program_records_EXACT": true,
+      "target_EXACT": true,
+      "optimized_sha_verified": true,
+      "max_stack_B": 32,
+      "raw_input_sha256": "835936b96bb7b5ab3f123c5d3c1485a77263e239480b0c6187548585452e762a"
+    }
+  ],
+  "release_vs_v043": "5 valid schema2 DIFFERENT; all existing native bodies/grid/calls EXACT; topo solar/shadow only new native bodies; QSQ+E84 pure-XLA changes source-attributed; see IDENTITY_ATTRIBUTION.json",
+  "launcher": {
+    "review": "cr-w44-launchers READYe541829954 at11:27:50",
+    "tools_seal": "03507a848b9e4e2edef68b3abe6f3c9942febd6754bc267d17fd35e5918c18c2",
+    "actual_CPU_entries": "5/5 +8/8RW3 +5postchildren allrc0/reaped/GPU0/lockFD0",
+    "CPU_exception": "manager09:54;4Swissrootsfinite;18largePLAN_ONLY/N_A; fullsizeGPUcoldprimes remainmandatory",
+    "final_pin_delta": "FINAL_PIN_DELTA.json external artifact; metadata-only final source re-pin; send to existing launcher critic"
+  },
+  "known_issues": "KNOWN_ISSUES_RC.md",
+  "native_scope": "CPU CompileOnly/autotune0 prescreen; raw5 STACK16/32/32/32/32 B; actualGPU required",
+  "RW1_RW2_RW3_RW4": "UNRUN on final RC; manager schedules official GPU window; originalCPU-WRF72h/D6/speed/RSS/VRAM and>10%STOP all preserved",
+  "GPU_STARTED_BY_LANE": false,
+  "verdict": "RC-CANDIDATE READY-FOR-CRITIC; CPU/native enablers complete; not merge/release/GPU authorization"
+}

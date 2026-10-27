@@ -1,0 +1,89 @@
+{
+  "source_commit": "a8c2dceb4b3e4ace1bb72bf437f2def247305c63",
+  "note": "CUDA ON/OFF regression; CPU/pristine oracles are fidelity evidence",
+  "shared_history_fields_byte_checks": 4536,
+  "all_shared_history_fields_byte_identical": true,
+  "e41": "PASS",
+  "arms": {
+    "off": {
+      "frames": 12,
+      "variables_per_frame": [
+        378
+      ],
+      "metrics": {
+        "cold_wall_s": 943.214,
+        "pre_step_s": 207.6666,
+        "warm_segment2_s_per_fc_h": 5.725,
+        "last_segment_call_proxy_s_per_fc_h": 5.598,
+        "vram_peak_mib": 10592,
+        "jax_peak_bytes": 2879479200,
+        "host_compile_peak_rss_kib": 13124864
+      }
+    },
+    "on": {
+      "frames": 12,
+      "variables_per_frame": [
+        386
+      ],
+      "metrics": {
+        "cold_wall_s": 720.38,
+        "pre_step_s": 28.1975,
+        "warm_segment2_s_per_fc_h": 6.642,
+        "last_segment_call_proxy_s_per_fc_h": 6.115,
+        "vram_peak_mib": 10580,
+        "jax_peak_bytes": 3124610560,
+        "host_compile_peak_rss_kib": 13516136
+      }
+    },
+    "bl0": {
+      "frames": 12,
+      "variables_per_frame": [
+        386
+      ],
+      "metrics": {
+        "cold_wall_s": 703.192,
+        "pre_step_s": 30.6961,
+        "warm_segment2_s_per_fc_h": 5.571,
+        "last_segment_call_proxy_s_per_fc_h": 5.491,
+        "vram_peak_mib": 10580,
+        "jax_peak_bytes": 3202072116,
+        "host_compile_peak_rss_kib": 13294348
+      }
+    }
+  },
+  "e41_summary": {
+    "e41_gate": "PASS",
+    "n_entries": 12,
+    "hard_stack_gate": "PASS",
+    "conservative_flags": false,
+    "coverage": {
+      "status": "PASS",
+      "aot_programs": [
+        "d01",
+        "fused_d02"
+      ],
+      "required_run_programs": [
+        "d01",
+        "fused_d02"
+      ],
+      "run_proofs": [
+        "<USER_HOME>/wrf_gpu2_lanes/w44-raddiag/gpu/off/run/wrfout/proofs/nested_pipeline_run.json"
+      ],
+      "n_discovered": 12,
+      "n_scanned": 12
+    }
+  },
+  "accounting": {
+    "kernel_copy_pair": "INCOMPLETE",
+    "reason": "nsys OFF reported capture but150s cap expired; completed S0 receipt missing; ON not started. Raw482071kernels/43113memcpy are not a normalized paired cost result.",
+    "raw_profile": "PROFILE_PARTIAL.json"
+  },
+  "artifacts": {
+    "READBACK_SEAL.json": "296c1d577c0901a9915d1ad37677e080de493bb898732f93b706fa2f43d1e84c",
+    "BYTE_GATE.json": "2545ed6b4e64760c49834f728dd878a6d85ae96ba9f7cdfd47341c03fe4ea93a",
+    "BL0_READBACK.json": "a4810a4837c4be007e6e2ed8cce8052d4ac42e05dca4fe17423040041815bcd4",
+    "E41_FINAL.json/wave_gate.json": "fe47aaf0eda9191fb4ca8e7b6f39234c59054c0f461b83100295b95173f34321",
+    "input_manifest.json": "c88ccbb92c870068177111996d95339fc7f719ec4c2a9eba4599f0ed69680673",
+    "PROFILE_PARTIAL.json": "eb385263db9cd0c1793b74b12f52bdf44c4221b6e1aaf70b8bee42f59b8c5ab3"
+  }
+}

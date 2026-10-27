@@ -1,0 +1,248 @@
+{
+  "schema": "wrf_gpu2.w44_budget.final_cpu.v1",
+  "recorded_real_utc": "2026-10-24T00:29:36Z",
+  "source_commit": "22e266c224",
+  "scope": "selected-column compiled CPU only;no coupled GPU claim",
+  "component_fields_byte": 200,
+  "component_fields_total": 200,
+  "term_step_comparisons": 168,
+  "term_step_passed": 168,
+  "dtke_floor_members": 25,
+  "dtke_floor": "max_k(max_member Dtke-min_member Dtke), independently at EACH actual step",
+  "ent_deletion": {
+    "healthy": {
+      "passed": true,
+      "max_abs": 9.185168892145157e-08,
+      "columns_failed": 0
+    },
+    "deleted": {
+      "passed": false,
+      "max_abs": 0.0010000001639127731,
+      "columns_failed": 25
+    },
+    "genuine_assertion_kills": 1,
+    "setup_errors": 0
+  },
+  "controls": {
+    "methods": 5,
+    "bad_cases_rejected": 152,
+    "passed": true,
+    "elapsed_s": 0.016,
+    "log": "<USER_HOME>/wrf_gpu2_lanes/w44-budget/P27_history_gate_controls.log",
+    "source_commit": "22e266c224",
+    "scope": "healthy original;126 NaN/Inf either-side cases,21 missing,4 invalid floors,1 above bound"
+  },
+  "artifacts": {
+    "P26_twin_day_final": {
+      "verdict": "TWIN_COMPONENT_2STEP_BYTE",
+      "case": "wn3_d03_day",
+      "edmf": 1,
+      "cpu_wall_ms": {
+        "off": {
+          "samples": [
+            4.179111972916871,
+            3.6803080001845956,
+            2.9247929924167693,
+            3.5443970118649304
+          ],
+          "median": 3.612352506024763
+        },
+        "on": {
+          "samples": [
+            5.512582021765411,
+            4.42636403022334,
+            4.811635997612029,
+            4.6416359837166965
+          ],
+          "median": 4.726635990664363
+        }
+      },
+      "arms": {
+        "off": {
+          "compile_first_s": 19.31272925704252,
+          "memory": {
+            "argument_size_in_bytes": 90112,
+            "output_size_in_bytes": 237968,
+            "temp_size_in_bytes": 1011640,
+            "alias_size_in_bytes": 0
+          }
+        },
+        "on": {
+          "compile_first_s": 40.310326224018354,
+          "memory": {
+            "argument_size_in_bytes": 90112,
+            "output_size_in_bytes": 474848,
+            "temp_size_in_bytes": 1668808,
+            "alias_size_in_bytes": 0
+          }
+        }
+      }
+    },
+    "P29_twin_night_final": {
+      "verdict": "TWIN_COMPONENT_2STEP_BYTE",
+      "case": "wn3_d03_night",
+      "edmf": 1,
+      "cpu_wall_ms": {
+        "off": {
+          "samples": [
+            4.339014005381614,
+            4.01704094838351,
+            3.396666026674211,
+            3.9442909765057266
+          ],
+          "median": 3.9806659624446183
+        },
+        "on": {
+          "samples": [
+            5.5731519823893905,
+            5.045178986620158,
+            5.561811965890229,
+            4.805147007573396
+          ],
+          "median": 5.303495476255193
+        }
+      },
+      "arms": {
+        "off": {
+          "compile_first_s": 17.895473611948546,
+          "memory": {
+            "argument_size_in_bytes": 90112,
+            "output_size_in_bytes": 237968,
+            "temp_size_in_bytes": 1011640,
+            "alias_size_in_bytes": 0
+          }
+        },
+        "on": {
+          "compile_first_s": 39.45700520998798,
+          "memory": {
+            "argument_size_in_bytes": 90112,
+            "output_size_in_bytes": 474848,
+            "temp_size_in_bytes": 1668808,
+            "alias_size_in_bytes": 0
+          }
+        }
+      }
+    },
+    "P32_edmf0_day": {
+      "verdict": "TWIN_COMPONENT_2STEP_BYTE",
+      "case": "wn3_d03_day",
+      "edmf": 0,
+      "cpu_wall_ms": {
+        "off": {
+          "samples": [
+            3.2904550316743553,
+            2.217296976596117,
+            2.0241650054231286,
+            1.992664998397231
+          ],
+          "median": 2.120730991009623
+        },
+        "on": {
+          "samples": [
+            2.9703929903917015,
+            2.1493469830602407,
+            2.214086998719722,
+            2.017635968513787
+          ],
+          "median": 2.1817169908899814
+        }
+      },
+      "arms": {
+        "off": {
+          "compile_first_s": 14.440599280991592,
+          "memory": {
+            "argument_size_in_bytes": 84480,
+            "output_size_in_bytes": 237968,
+            "temp_size_in_bytes": 819960,
+            "alias_size_in_bytes": 0
+          }
+        },
+        "on": {
+          "compile_first_s": 22.154373146011494,
+          "memory": {
+            "argument_size_in_bytes": 84480,
+            "output_size_in_bytes": 474848,
+            "temp_size_in_bytes": 727416,
+            "alias_size_in_bytes": 0
+          }
+        }
+      }
+    },
+    "P34_edmf0_night": {
+      "verdict": "TWIN_COMPONENT_2STEP_BYTE",
+      "case": "wn3_d03_night",
+      "edmf": 0,
+      "cpu_wall_ms": {
+        "off": {
+          "samples": [
+            3.3552059903740883,
+            2.1563059999607503,
+            1.8721040105447173,
+            1.940784975886345
+          ],
+          "median": 2.0485454879235476
+        },
+        "on": {
+          "samples": [
+            2.958882017992437,
+            2.1505369804799557,
+            2.2145769908092916,
+            2.0986769814044237
+          ],
+          "median": 2.1825569856446236
+        }
+      },
+      "arms": {
+        "off": {
+          "compile_first_s": 14.37378461897606,
+          "memory": {
+            "argument_size_in_bytes": 84480,
+            "output_size_in_bytes": 237968,
+            "temp_size_in_bytes": 819960,
+            "alias_size_in_bytes": 0
+          }
+        },
+        "on": {
+          "compile_first_s": 22.15947197395144,
+          "memory": {
+            "argument_size_in_bytes": 84480,
+            "output_size_in_bytes": 474848,
+            "temp_size_in_bytes": 727416,
+            "alias_size_in_bytes": 0
+          }
+        }
+      }
+    },
+    "P28_twin_day_oracle": {
+      "verdict": "ORIGINAL_TERM_GATE_PASS",
+      "case": "wn3_d03_day",
+      "edmf": 1,
+      "closure_max_abs": 1.1020892998203635e-07
+    },
+    "P30_twin_night_oracle": {
+      "verdict": "ORIGINAL_TERM_GATE_PASS",
+      "case": "wn3_d03_night",
+      "edmf": 1,
+      "closure_max_abs": 5.046604201197624e-08
+    },
+    "P33_edmf0_day_oracle": {
+      "verdict": "ORIGINAL_TERM_GATE_PASS",
+      "case": "wn3_d03_day",
+      "edmf": 0,
+      "closure_max_abs": 1.3100361684337258e-07
+    },
+    "P35_edmf0_night_oracle": {
+      "verdict": "ORIGINAL_TERM_GATE_PASS",
+      "case": "wn3_d03_night",
+      "edmf": 0,
+      "closure_max_abs": 3.527384251356125e-08
+    }
+  },
+  "production_files_byte_equal_to": "ce8efefd42",
+  "open": [
+    "publicswitch/catalog/key/history/restart/writer integration",
+    "fullcoupledGPU2stepBYTE",
+    "GPUcost/E41",
+    "tunedparametercomposition"
+  ]
+}

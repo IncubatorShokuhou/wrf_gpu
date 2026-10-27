@@ -118,7 +118,7 @@ robust, but it was not separately re-tested for the full 24 h duration.
 **Severity:** scope boundary, not a forecast-correctness defect.
 
 The operational writer emits a focused **104-variable** wrfout (v0.12.0 expanded it from 64 by
-adding the **B1** radiation-flux diagnostics and the **B3** Noah-MP snow-layer state), while
+adding the radiation-flux diagnostics and the Noah-MP snow-layer state), while
 CPU-WRF emits **375 variables**. The remaining gap is mostly:
 
 - `seed_dim_stag=8` — SPPT/SKEBS/SPP stochastic-perturbation seed arrays (not used operationally).
@@ -371,7 +371,7 @@ The next roadmap is **Tier 3 (the scheme long-tail toward v1.0.0) + these carry-
 - **Gotthard / Switzerland operational suite** — not a v0.13.0 pass. The case builder and
   CPU truth exist, and `proofs/v0120/switzerland_128_gpu_result.json` honestly records the
   128²/150² fp64 single-GPU OOM/grid-ceiling attempt. The GPU-vs-CPU-WRF Switzerland
-  validation is carried to the v0.14 B7 campaign.
+  validation is carried to the v0.14 validation campaign.
 - **New-Tiedtke cumulus scan-wiring** — recognized/accepted but not separately source-gated;
   remains fail-closed if selected operationally.
 - **fp32 standalone path** — gated-fp32 operational mode (ADR-007), pending evidence it helps on

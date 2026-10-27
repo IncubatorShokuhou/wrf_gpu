@@ -22,7 +22,7 @@
         <img src="_assets/logo.svg" alt="wrf_gpu logo">
         <span class="brand-text">
           <span class="brand-name">wrf_gpu</span>
-          <span class="brand-sub">User's Guide · v0.4.3</span>
+          <span class="brand-sub">User's Guide · v0.4.4</span>
         </span>
       </a>
       <div class="search-box">
@@ -46,6 +46,7 @@
 <a href="tools.html#region">Set up a forecast for your region</a>
 <a href="tools.html#check">Check a case before running</a>
 <a href="tools.html#products">Weather products</a>
+<a href="tools.html#regional-tuning">Tune WRF for your region</a>
 <a href="tools.html#verification">Station verification and calibration</a>
 <a href="tools.html#ensembles">Ensembles</a>
 <a href="tools.html#optimise">Choose physics for your region</a>
@@ -90,6 +91,10 @@ claim of better forecast skill.</p>
 <div class="table-scroll"><table><thead><tr><th>Command</th><th>What it does</th><th>Runs on</th><th>Guide</th></tr></thead><tbody>
 <tr><td><code>quickstart</code></td><td>Sets up a forecast for your own region from open NOAA GFS data, using the original WPS and <code>real.exe</code>, and can start the forecast. <span class="pill optin">Experimental</span></td><td>CPU; GPU with <code>--run</code></td><td><a href="https://github.com/wrf-gpu/wrf_gpu/blob/main/docs/onboarding.md">region guide</a></td></tr>
 <tr><td><code>run</code></td><td>Runs a forecast (single domain or fixed nests), with checkpoints and resume.</td><td>GPU</td><td><a href="running.html">running</a></td></tr>
+<tr><td><code>override</code></td><td>Edits checked private copies of initial input fields.</td><td>CPU</td><td><a href="#input-overrides">input overrides</a></td></tr>
+<tr><td><code>precompile</code></td><td>Plans namelist variants and, with <code>--execute</code>, primes their cache through ordinary forecasts.</td><td>CPU plan; GPU execution</td><td><a href="#precompile">precompile queue</a></td></tr>
+<tr><td><code>run --branch-from</code></td><td>Forks a checked checkpoint with declared changes into a new history stream.</td><td>GPU forecast</td><td><a href="#checkpoint-branch">checkpoint branches</a></td></tr>
+<tr><td><code>run --runtime-parameters</code></td><td>Family-specific support only. Diffusion/damping overrides are refused in v0.4.4; they may come in a later release after GPU qualification; no date or commitment. MYNN is experimental: component/short two-domain GPU root checks only.</td><td>GPU forecast</td><td><a href="#runtime-parameters">runtime parameter families</a></td></tr>
 <tr><td><code>doctor</code></td><td>Checks a case before you run it: inputs, options, time step and GPU memory.</td><td>CPU</td><td><a href="https://github.com/wrf-gpu/wrf_gpu/blob/main/docs/doctor.md">doctor guide</a></td></tr>
 <tr><td><code>namelist-support</code></td><td>Lists every physics option code the program knows and whether it accepts it.</td><td>CPU</td><td><a href="physics.html">physics</a></td></tr>
 <tr><td><code>manifest</code>, <code>reproduce</code></td><td>Records checksums of a case's inputs, source and environment, and checks them again later. <code>reproduce</code> never starts a forecast.</td><td>CPU</td><td><a href="https://github.com/wrf-gpu/wrf_gpu/blob/main/docs/doctor.md">doctor guide</a></td></tr>
@@ -105,6 +110,7 @@ claim of better forecast skill.</p>
 <tr><td><code>export</code></td><td>Writes CF-NetCDF, Zarr or GRIB2 subsets: surface fields, pressure levels, regions.</td><td>CPU</td><td><a href="https://github.com/wrf-gpu/wrf_gpu/blob/main/docs/export.md">export guide</a></td></tr>
 <tr><td><code>tslist-export</code></td><td>Converts WRF station time-series files (<code>*.TS</code>) to CSV or NetCDF.</td><td>CPU</td><td><a href="https://github.com/wrf-gpu/wrf_gpu/blob/main/docs/TSLIST.md">tslist guide</a></td></tr>
 <tr><td><code>stream-check</code></td><td>Checks a regional output stream file (<code>gpuwrf.streams.json</code>) before a run.</td><td>CPU</td><td><a href="https://github.com/wrf-gpu/wrf_gpu/blob/main/docs/REGIONAL_STREAMS.md">streams guide</a></td></tr>
+<tr><td><code>cycle --native-atmosphere</code></td><td>Carries a previous forecast's atmosphere into a new run with WRF's cycling rules. Experimental.</td><td>CPU file preparation; GPU forecast</td><td><a href="#atmospheric-warm-start">atmospheric warm start</a></td></tr>
 <tr><td><code>cycle</code></td><td>Carries soil and snow state from a previous forecast into a new <code>wrfinput</code>.</td><td>CPU</td><td><a href="https://github.com/wrf-gpu/wrf_gpu/blob/main/docs/cycling.md">cycling guide</a></td></tr>
 <tr><td><code>python -m gpuwrf.assets</code></td><td>Lists, downloads or verifies the large physics tables (<code>list</code>, <code>fetch</code>, <code>verify</code>).</td><td>CPU</td><td><a href="https://github.com/wrf-gpu/wrf_gpu/blob/main/docs/runtime-tables.md">runtime tables</a></td></tr>
 <tr><td><code>scripts/run_parallel_cases.sh</code></td><td>Runs several forecasts side by side on one GPU or across several GPUs.</td><td>GPU</td><td><a href="#several-forecasts">below</a></td></tr>
@@ -135,6 +141,72 @@ gpuwrf post --input runs/my_case/wrfout_d01_* --output runs/products.nc \
 helicity) need the optional MetPy package and helicity needs <code>--storm-u/--storm-v</code>; the solar
 product needs <code>pip install 'gpuwrf[apps]'</code>. <code>--product radar</code> computes reflectivity, composite reflectivity, echo
 tops and vertically integrated liquid from the history fields.</p>
+<h2 id="regional-tuning">Tune WRF for your region<a class="headerlink" href="#regional-tuning" aria-label="Permalink">¶</a></h2>
+<p>Start with a control case and local observations. The
+<a href="https://github.com/wrf-gpu/wrf_gpu/blob/main/docs/regional_optimization.md">regional tuning guide</a> walks through
+station verification, surface parameters, physics selection, land cycling and
+ensembles, with each tool's qualification limits and costs. It also tracks the
+radiation, turbulence, atmospheric warm-start and initial-override tools under
+development for v0.4.4. Keep later dates out of tuning and score them separately.</p>
+<h3 id="input-overrides">gpuwrf override: checked input edits<a class="headerlink" href="#input-overrides" aria-label="Permalink">¶</a></h3>
+<p><a href="https://github.com/wrf-gpu/wrf_gpu/blob/main/docs/initial_overrides.md">Input overrides</a> write new copies and record
+checks, masks and explicit waivers. Host/file behavior is tested; edited GPU forecast
+validation remains pending.</p>
+<h3 id="soil-porosity">Soil porosity checks<a class="headerlink" href="#soil-porosity" aria-label="Permalink">¶</a></h3>
+<p>The <a href="https://github.com/wrf-gpu/wrf_gpu/blob/main/docs/soil_porosity.md">porosity helper</a> checks already-loaded soil
+water against an explicit effective cap. It changes no arrays and does not qualify
+a new parameter scheme.</p>
+<h3 id="radiation-diagnostics">rad_diag and QI_BL: radiation diagnostics<a class="headerlink" href="#radiation-diagnostics" aria-label="Permalink">¶</a></h3>
+<p><a href="https://github.com/wrf-gpu/wrf_gpu/blob/main/docs/radiation_diagnostics.md">Radiation history</a> includes heating and
+the condensates passed to RRTMG; QI_BL exposes PBL cloud ice. Original-WRF tests
+and a three-nest GPU comparison are documented with their cost and limits.</p>
+<h3 id="radiation-clouds">icloud_bl: PBL clouds in radiation<a class="headerlink" href="#radiation-clouds" aria-label="Permalink">¶</a></h3>
+<p><a href="https://github.com/wrf-gpu/wrf_gpu/blob/main/docs/radiation_pbl_clouds.md">icloud_bl</a> controls the MYNN subgrid-cloud
+merge into radiation. It is one WRF value shared across nests, not a way to switch
+off MYNN itself.</p>
+<h3 id="land-use-admission">MMINLU: Noah-MP land-use admission<a class="headerlink" href="#land-use-admission" aria-label="Permalink">¶</a></h3>
+<p>The <a href="https://github.com/wrf-gpu/wrf_gpu/blob/main/docs/noahmp_land_use.md">land-use check</a> refuses unsupported
+non-MODIS inputs instead of silently using the wrong tables. Relabelling a dataset
+does not convert its categories.</p>
+<h3 id="checkpoint-branch">Checkpoint branch and short forecast windows<a class="headerlink" href="#checkpoint-branch" aria-label="Permalink">¶</a></h3>
+<p><a href="https://github.com/wrf-gpu/wrf_gpu/blob/main/docs/checkpoint-branching.md">Checkpoint branches</a> use
+<code>run --branch-from</code> with a declared manifest. Short windows accept
+<code>--minutes</code> or <code>--end-time</code>; GPU branch validation is pending.</p>
+<h3 id="precompile">gpuwrf precompile: prepare a variant cache<a class="headerlink" href="#precompile" aria-label="Permalink">¶</a></h3>
+<p>The <a href="https://github.com/wrf-gpu/wrf_gpu/blob/main/docs/precompile.md">precompile queue</a> plans work on CPU and primes
+programs through ordinary GPU forecasts when executed. Deviceless compilation followed by GPU loading is unavailable in
+v0.4.4; queue preparation does not install such artifacts.</p>
+<h3 id="terrain-radiation">topo_shading and slope_rad: terrain shading in nests<a class="headerlink" href="#terrain-radiation" aria-label="Permalink">¶</a></h3>
+<p><a href="https://github.com/wrf-gpu/wrf_gpu/blob/main/docs/topographic_radiation.md">Terrain radiation</a> keeps each nest's
+shadow height and WRF's separate shadow clock. Existing slope-plus-shadow cases
+intentionally change; the composed release's gate is separate from
+the original-WRF operator evidence.</p>
+<h3 id="runtime-parameters">Runtime parameter families: release status<a class="headerlink" href="#runtime-parameters" aria-label="Permalink">¶</a></h3>
+<p>Diffusion/damping parameter overrides (<code>c_s</code>, <code>dampcoef</code>,
+<code>zdamp</code> and related coefficients) are <strong>refused in v0.4.4</strong>
+and may come in a later release after GPU qualification; no date or commitment.
+MYNN overrides such as <code>sqfac</code>
+ship as <strong>experimental</strong>: component and short two-domain GPU root
+checks passed; three-nest D6, stations and 24–72-hour drift are not qualified.
+The <a href="https://github.com/wrf-gpu/wrf_gpu/blob/main/docs/runtime-parameters.md">family status page</a> explains these
+limitations. Existing static namelist support and the default forecast are unaffected.</p>
+<h3 id="thompson-parameters">nt_c and other Thompson coefficients<a class="headerlink" href="#thompson-parameters" aria-label="Permalink">¶</a></h3>
+<p><a href="https://github.com/wrf-gpu/wrf_gpu/blob/main/docs/thompson-parameters.md">Thompson coefficients</a> such as the droplet
+number <code>nt_c</code> change between runs through the same
+<code>--runtime-parameters</code> file, without a new compiled program for each
+value. They are gpuwrf extensions; WRF needs a recompiled module for the same
+test. Research candidate: CPU checks against original WRF and a GPU column check
+pass; the forecast-level GPU checks are pending.</p>
+<h3 id="mynn-budgets">tke_budget, bl_mynn_output and bl_mynn_edmf: MYNN budgets<a class="headerlink" href="#mynn-budgets" aria-label="Permalink">¶</a></h3>
+<p>The <a href="https://github.com/wrf-gpu/wrf_gpu/blob/main/docs/mynn-budgets.md">MYNN budget page</a> writes WRF's TKE budget terms
+and EDMF plume profiles to history; <code>bl_mynn_edmf=0</code> turns the plume mass
+flux off. Experimental and off by default: CPU checks against the original WRF
+driver pass; the composed GPU forecast check and its cost are pending.</p>
+<h3 id="atmospheric-warm-start">cycle --native-atmosphere: atmospheric warm start<a class="headerlink" href="#atmospheric-warm-start" aria-label="Permalink">¶</a></h3>
+<p><a href="https://github.com/wrf-gpu/wrf_gpu/blob/main/docs/atmospheric-warm-start.md">Atmospheric warm start</a> carries a previous
+forecast's atmosphere, land and snow into a new run and follows WRF's cycling
+initialization. Experimental: checks against original WRF/WRFDA code and a CPU-WRF
+cycling reference pass; GPU initialization and forecast checks are pending.</p>
 <h2 id="verification">Station verification and calibration<a class="headerlink" href="#verification" aria-label="Permalink">¶</a></h2>
 <pre><code class="language-bash">gpuwrf verify --stations stations.csv --obs observations.csv \
   --model runs/my_case/wrfout_d01_* --output-dir runs/verification
@@ -200,6 +272,10 @@ test (prior spread about 2.3–2.6 times the actual error). See the
 <a href="https://github.com/wrf-gpu/wrf_gpu/blob/main/docs/da.md">data-assimilation guide</a>, <a href="https://github.com/wrf-gpu/wrf_gpu/blob/main/docs/da_ensemble.md">ensemble options</a> and
 <a href="https://github.com/wrf-gpu/wrf_gpu/blob/main/docs/da-cycle.md">cycling in one process</a>.</p>
 <h2 id="surface-parameters">Noah-MP surface parameters without recompiling (new in v0.4.1)<a class="headerlink" href="#surface-parameters" aria-label="Permalink">¶</a></h2>
+<p>The nine new soil/canopy/snow controls, including <code>smcmax</code>,
+<code>dksat</code>, <code>hvt</code> and <code>rsmin</code>, are refused in v0.4.4.
+Older surface controls such as <code>z0mvt</code> remain available; see the
+<a href="https://github.com/wrf-gpu/wrf_gpu/blob/main/docs/surface_params.md#noah-mp-soil-canopy-and-snow-parameters-research-candidate">family limits</a>.</p>
 <pre><code class="language-bash">JAX_PLATFORMS=cpu gpuwrf surface-params basis --input-dir CASE --output basis.npz
 gpuwrf surface-params expand --basis basis.npz --output rough.npz \
     --class z0mvt:2=1.25 --set albdry=0.95      # entries without a prefix are d01

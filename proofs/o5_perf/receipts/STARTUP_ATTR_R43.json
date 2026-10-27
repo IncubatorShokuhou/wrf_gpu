@@ -1,0 +1,857 @@
+{
+ "receipt": "<USER_HOME>/wrf_gpu2_lanes/w44-perf/gpu/runs/R43/run/receipt.json",
+ "first_segment_s": 18.2742,
+ "events": 3251,
+ "total_compile_path_s": 6.1642725467681885,
+ "lowerings": 1094,
+ "large_programs(>=30ms/lowering)": {
+  "s": 2.2539830207824707,
+  "lowerings": 10
+ },
+ "small_eager_ops": {
+  "s": 3.9102895259857178,
+  "lowerings": 1084
+ },
+ "by_caller": [
+  {
+   "caller": "gpuwrf.kernels.phys_hydrostatic_real:hydrostatic_profiles",
+   "total_s": 1.8223340511322021,
+   "lowerings": 8,
+   "jaxpr_trace_duration": 0.4696047306060791,
+   "jaxpr_to_mlir_module_duration": 1.3404078483581543,
+   "backend_compile_duration": 0.01232147216796875
+  },
+  {
+   "caller": "gpuwrf.nesting.boundary_construction:build_child_boundary_package",
+   "total_s": 0.3930237293243408,
+   "lowerings": 1,
+   "jaxpr_trace_duration": 0.14010310173034668,
+   "jaxpr_to_mlir_module_duration": 0.2262861728668213,
+   "backend_compile_duration": 0.02663445472717285
+  },
+  {
+   "caller": "gpuwrf.physics.wrf_cam_ozone:wrf_cam_ozone_profile",
+   "total_s": 0.30078721046447754,
+   "lowerings": 60,
+   "jaxpr_trace_duration": 0.04344964027404785,
+   "jaxpr_to_mlir_module_duration": 0.19553494453430176,
+   "backend_compile_duration": 0.06180262565612793
+  },
+  {
+   "caller": "gpuwrf.coupling.physics_couplers:_wrf_topographic_shadow_mask",
+   "total_s": 0.20789813995361328,
+   "lowerings": 67,
+   "jaxpr_trace_duration": 0.011223316192626953,
+   "jaxpr_to_mlir_module_duration": 0.14379286766052246,
+   "backend_compile_duration": 0.05288195610046387
+  },
+  {
+   "caller": "gpuwrf.io.noahmp_land_init:_wrf_snow_init",
+   "total_s": 0.18128514289855957,
+   "lowerings": 62,
+   "jaxpr_trace_duration": 0.011321783065795898,
+   "jaxpr_to_mlir_module_duration": 0.12071633338928223,
+   "backend_compile_duration": 0.049247026443481445
+  },
+  {
+   "caller": "gpuwrf.coupling.physics_couplers:_mynn_coldstart_init_columns_tiled",
+   "total_s": 0.17498159408569336,
+   "lowerings": 6,
+   "jaxpr_trace_duration": 0.0007407665252685547,
+   "jaxpr_to_mlir_module_duration": 0.11327171325683594,
+   "backend_compile_duration": 0.06096911430358887
+  },
+  {
+   "caller": "gpuwrf.contracts.grid:flat",
+   "total_s": 0.15164494514465332,
+   "lowerings": 31,
+   "jaxpr_trace_duration": 0.005883216857910156,
+   "jaxpr_to_mlir_module_duration": 0.10084962844848633,
+   "backend_compile_duration": 0.044912099838256836
+  },
+  {
+   "caller": "gpuwrf.coupling.physics_couplers:wrf_radiation_slope_aspect_from_terrain",
+   "total_s": 0.1492786407470703,
+   "lowerings": 53,
+   "jaxpr_trace_duration": 0.007112741470336914,
+   "jaxpr_to_mlir_module_duration": 0.1000063419342041,
+   "backend_compile_duration": 0.0421595573425293
+  },
+  {
+   "caller": "gpuwrf.integration.nested_pipeline:<lambda>",
+   "total_s": 0.13703608512878418,
+   "lowerings": 29,
+   "jaxpr_trace_duration": 0.002820730209350586,
+   "jaxpr_to_mlir_module_duration": 0.05996274948120117,
+   "backend_compile_duration": 0.07425260543823242
+  },
+  {
+   "caller": "gpuwrf.kernels.phys_mynn_boulac:boulac_length_native",
+   "total_s": 0.1241607666015625,
+   "lowerings": 7,
+   "jaxpr_trace_duration": 0.04033064842224121,
+   "jaxpr_to_mlir_module_duration": 0.07773184776306152,
+   "backend_compile_duration": 0.006098270416259766
+  },
+  {
+   "caller": "gpuwrf.coupling.physics_couplers:x_interp_shadow",
+   "total_s": 0.12405991554260254,
+   "lowerings": 38,
+   "jaxpr_trace_duration": 0.0050313472747802734,
+   "jaxpr_to_mlir_module_duration": 0.08799576759338379,
+   "backend_compile_duration": 0.031032800674438477
+  },
+  {
+   "caller": "gpuwrf.physics.mynn_pbl:_get_pblh",
+   "total_s": 0.09815526008605957,
+   "lowerings": 34,
+   "jaxpr_trace_duration": 0.006680011749267578,
+   "jaxpr_to_mlir_module_duration": 0.0567324161529541,
+   "backend_compile_duration": 0.03474283218383789
+  },
+  {
+   "caller": "gpuwrf.coupling.physics_couplers:_wrf_phy_prep_temperature_interfaces",
+   "total_s": 0.09746527671813965,
+   "lowerings": 32,
+   "jaxpr_trace_duration": 0.004358053207397461,
+   "jaxpr_to_mlir_module_duration": 0.06669998168945312,
+   "backend_compile_duration": 0.026407241821289062
+  },
+  {
+   "caller": "gpuwrf.io.noahmp_land_init:_noahmp_init_sh2o",
+   "total_s": 0.08853340148925781,
+   "lowerings": 32,
+   "jaxpr_trace_duration": 0.00543212890625,
+   "jaxpr_to_mlir_module_duration": 0.05824542045593262,
+   "backend_compile_duration": 0.024855852127075195
+  },
+  {
+   "caller": "gpuwrf.dynamics.metrics:terrain_slope_metrics",
+   "total_s": 0.0865631103515625,
+   "lowerings": 24,
+   "jaxpr_trace_duration": 0.007012367248535156,
+   "jaxpr_to_mlir_module_duration": 0.05356001853942871,
+   "backend_compile_duration": 0.025990724563598633
+  },
+  {
+   "caller": "gpuwrf.physics.noah_mp:_modified_igbp_modis_noah_lookup",
+   "total_s": 0.08242177963256836,
+   "lowerings": 28,
+   "jaxpr_trace_duration": 0.005041837692260742,
+   "jaxpr_to_mlir_module_duration": 0.05489492416381836,
+   "backend_compile_duration": 0.022485017776489258
+  },
+  {
+   "caller": "gpuwrf.coupling.physics_couplers:_to_columns",
+   "total_s": 0.08137750625610352,
+   "lowerings": 6,
+   "jaxpr_trace_duration": 0.0007622241973876953,
+   "jaxpr_to_mlir_module_duration": 0.012104511260986328,
+   "backend_compile_duration": 0.06851077079772949
+  },
+  {
+   "caller": "gpuwrf.physics.mynn_pbl:_mym_length_option1_with",
+   "total_s": 0.0772559642791748,
+   "lowerings": 28,
+   "jaxpr_trace_duration": 0.004431962966918945,
+   "jaxpr_to_mlir_module_duration": 0.05101943016052246,
+   "backend_compile_duration": 0.0218045711517334
+  },
+  {
+   "caller": "gpuwrf.coupling.physics_couplers:_surface_radiation_properties",
+   "total_s": 0.07112860679626465,
+   "lowerings": 19,
+   "jaxpr_trace_duration": 0.005553483963012695,
+   "jaxpr_to_mlir_module_duration": 0.04806852340698242,
+   "backend_compile_duration": 0.01750659942626953
+  },
+  {
+   "caller": "gpuwrf.coupling.physics_couplers:_rrtmg_column_inputs_impl",
+   "total_s": 0.06975364685058594,
+   "lowerings": 21,
+   "jaxpr_trace_duration": 0.004512310028076172,
+   "jaxpr_to_mlir_module_duration": 0.047530174255371094,
+   "backend_compile_duration": 0.017711162567138672
+  },
+  {
+   "caller": "gpuwrf.physics.noah_mp:roughness_from_prescribed_fields",
+   "total_s": 0.06747055053710938,
+   "lowerings": 22,
+   "jaxpr_trace_duration": 0.0033621788024902344,
+   "jaxpr_to_mlir_module_duration": 0.04618096351623535,
+   "backend_compile_duration": 0.01792740821838379
+  },
+  {
+   "caller": "gpuwrf.contracts.state:_zeros",
+   "total_s": 0.06500911712646484,
+   "lowerings": 23,
+   "jaxpr_trace_duration": 0.0026397705078125,
+   "jaxpr_to_mlir_module_duration": 0.044577836990356445,
+   "backend_compile_duration": 0.0177915096282959
+  },
+  {
+   "caller": "gpuwrf.integration.d02_replay:_wrf_live_nest_adjust_tempqv",
+   "total_s": 0.06049013137817383,
+   "lowerings": 20,
+   "jaxpr_trace_duration": 0.0028541088104248047,
+   "jaxpr_to_mlir_module_duration": 0.04070782661437988,
+   "backend_compile_duration": 0.01692819595336914
+  },
+  {
+   "caller": "gpuwrf.integration.d02_replay:_wrf_base_alb_from_loaded_state",
+   "total_s": 0.05735015869140625,
+   "lowerings": 19,
+   "jaxpr_trace_duration": 0.003427267074584961,
+   "jaxpr_to_mlir_module_duration": 0.037863731384277344,
+   "backend_compile_duration": 0.016059160232543945
+  },
+  {
+   "caller": "gpuwrf.physics.noahmp.noahmp_driver:build_energy_params",
+   "total_s": 0.05354905128479004,
+   "lowerings": 12,
+   "jaxpr_trace_duration": 0.0017728805541992188,
+   "jaxpr_to_mlir_module_duration": 0.02471137046813965,
+   "backend_compile_duration": 0.027064800262451172
+  },
+  {
+   "caller": "gpuwrf.io.noahmp_land_init:_build_noahmp_land_state",
+   "total_s": 0.05340313911437988,
+   "lowerings": 16,
+   "jaxpr_trace_duration": 0.005751609802246094,
+   "jaxpr_to_mlir_module_duration": 0.033693790435791016,
+   "backend_compile_duration": 0.013957738876342773
+  },
+  {
+   "caller": "gpuwrf.physics.wrf_cam_ozone:wrf_ozn_time_indices_factors",
+   "total_s": 0.04842853546142578,
+   "lowerings": 14,
+   "jaxpr_trace_duration": 0.0029668807983398438,
+   "jaxpr_to_mlir_module_duration": 0.03349018096923828,
+   "backend_compile_duration": 0.011971473693847656
+  },
+  {
+   "caller": "gpuwrf.coupling.physics_couplers:_wrf_phy_prep_rho_from_state",
+   "total_s": 0.047182559967041016,
+   "lowerings": 16,
+   "jaxpr_trace_duration": 0.0021593570709228516,
+   "jaxpr_to_mlir_module_duration": 0.03166961669921875,
+   "backend_compile_duration": 0.013353586196899414
+  },
+  {
+   "caller": "gpuwrf.physics.mynn_pbl:_mym_level2",
+   "total_s": 0.046697139739990234,
+   "lowerings": 18,
+   "jaxpr_trace_duration": 0.0025954246520996094,
+   "jaxpr_to_mlir_module_duration": 0.03040933609008789,
+   "backend_compile_duration": 0.013692378997802734
+  },
+  {
+   "caller": "gpuwrf.physics.mynn_pbl:mynn_coldstart_init_columns",
+   "total_s": 0.04657769203186035,
+   "lowerings": 18,
+   "jaxpr_trace_duration": 0.0028564929962158203,
+   "jaxpr_to_mlir_module_duration": 0.030173301696777344,
+   "backend_compile_duration": 0.013547897338867188
+  },
+  {
+   "caller": "gpuwrf.coupling.physics_couplers:y_interp_shadow",
+   "total_s": 0.04639410972595215,
+   "lowerings": 14,
+   "jaxpr_trace_duration": 0.002627849578857422,
+   "jaxpr_to_mlir_module_duration": 0.03212738037109375,
+   "backend_compile_duration": 0.011638879776000977
+  },
+  {
+   "caller": "gpuwrf.physics.noahmp.precision:cast",
+   "total_s": 0.044019460678100586,
+   "lowerings": 17,
+   "jaxpr_trace_duration": 0.0018341541290283203,
+   "jaxpr_to_mlir_module_duration": 0.029456138610839844,
+   "backend_compile_duration": 0.012729167938232422
+  },
+  {
+   "caller": "gpuwrf.coupling.physics_couplers:<lambda>",
+   "total_s": 0.04298591613769531,
+   "lowerings": 15,
+   "jaxpr_trace_duration": 0.0016932487487792969,
+   "jaxpr_to_mlir_module_duration": 0.029206037521362305,
+   "backend_compile_duration": 0.012086629867553711
+  },
+  {
+   "caller": "gpuwrf.physics.sfclay_revised_mm5:_psim_unstable_full",
+   "total_s": 0.04294633865356445,
+   "lowerings": 11,
+   "jaxpr_trace_duration": 0.0037102699279785156,
+   "jaxpr_to_mlir_module_duration": 0.026627540588378906,
+   "backend_compile_duration": 0.012608528137207031
+  },
+  {
+   "caller": "gpuwrf.kernels.layout_pin:row_major",
+   "total_s": 0.042543649673461914,
+   "lowerings": 16,
+   "jaxpr_trace_duration": 0.0006055831909179688,
+   "jaxpr_to_mlir_module_duration": 0.03041982650756836,
+   "backend_compile_duration": 0.011518239974975586
+  },
+  {
+   "caller": "gpuwrf.nesting.nest_o3:force_child_carry_o3rad",
+   "total_s": 0.038625240325927734,
+   "lowerings": 1,
+   "jaxpr_trace_duration": 0.015217781066894531,
+   "jaxpr_to_mlir_module_duration": 0.015602827072143555,
+   "backend_compile_duration": 0.0078046321868896484
+  },
+  {
+   "caller": "gpuwrf.integration.d02_replay:_build_replay_case",
+   "total_s": 0.03844499588012695,
+   "lowerings": 12,
+   "jaxpr_trace_duration": 0.0021038055419921875,
+   "jaxpr_to_mlir_module_duration": 0.024929523468017578,
+   "backend_compile_duration": 0.011411666870117188
+  },
+  {
+   "caller": "gpuwrf.coupling.physics_couplers:_wrf_solar_geometry_real",
+   "total_s": 0.03748798370361328,
+   "lowerings": 12,
+   "jaxpr_trace_duration": 0.002452373504638672,
+   "jaxpr_to_mlir_module_duration": 0.025185823440551758,
+   "backend_compile_duration": 0.009849786758422852
+  },
+  {
+   "caller": "gpuwrf.kernels.dyn_carry_fp32:real_state",
+   "total_s": 0.032241106033325195,
+   "lowerings": 11,
+   "jaxpr_trace_duration": 0.0011761188507080078,
+   "jaxpr_to_mlir_module_duration": 0.022345542907714844,
+   "backend_compile_duration": 0.008719444274902344
+  },
+  {
+   "caller": "gpuwrf.coupling.physics_couplers:_mynn_column_from_state",
+   "total_s": 0.03169536590576172,
+   "lowerings": 11,
+   "jaxpr_trace_duration": 0.001512765884399414,
+   "jaxpr_to_mlir_module_duration": 0.021294593811035156,
+   "backend_compile_duration": 0.008888006210327148
+  },
+  {
+   "caller": "gpuwrf.integration.d02_replay:_wrf_mynn_coldstart_qke",
+   "total_s": 0.030508041381835938,
+   "lowerings": 4,
+   "jaxpr_trace_duration": 0.0004208087921142578,
+   "jaxpr_to_mlir_module_duration": 0.00821232795715332,
+   "backend_compile_duration": 0.02187490463256836
+  },
+  {
+   "caller": "gpuwrf.physics.mynn_pbl:_pad_columns_leaf",
+   "total_s": 0.028288841247558594,
+   "lowerings": 9,
+   "jaxpr_trace_duration": 0.0007278919219970703,
+   "jaxpr_to_mlir_module_duration": 0.020473241806030273,
+   "backend_compile_duration": 0.00708770751953125
+  },
+  {
+   "caller": "gpuwrf.runtime.operational_mode:_enforce_operational_precision",
+   "total_s": 0.02824711799621582,
+   "lowerings": 9,
+   "jaxpr_trace_duration": 0.0011980533599853516,
+   "jaxpr_to_mlir_module_duration": 0.019382715225219727,
+   "backend_compile_duration": 0.007666349411010742
+  },
+  {
+   "caller": "gpuwrf.coupling.physics_couplers:_wrf_hydrostatic_pressure_profiles_from_state",
+   "total_s": 0.027672290802001953,
+   "lowerings": 8,
+   "jaxpr_trace_duration": 0.0011456012725830078,
+   "jaxpr_to_mlir_module_duration": 0.01851963996887207,
+   "backend_compile_duration": 0.008007049560546875
+  },
+  {
+   "caller": "gpuwrf.physics.noahmp.noahmp_driver:_gather_band",
+   "total_s": 0.02637028694152832,
+   "lowerings": 6,
+   "jaxpr_trace_duration": 0.0009417533874511719,
+   "jaxpr_to_mlir_module_duration": 0.01208353042602539,
+   "backend_compile_duration": 0.013345003128051758
+  },
+  {
+   "caller": "gpuwrf.integration.d02_replay:_metadata_host_max",
+   "total_s": 0.025543212890625,
+   "lowerings": 2,
+   "jaxpr_trace_duration": 0,
+   "jaxpr_to_mlir_module_duration": 0.004315614700317383,
+   "backend_compile_duration": 0.021227598190307617
+  },
+  {
+   "caller": "gpuwrf.physics.noah_mp:prescribe_noah_mp_state",
+   "total_s": 0.02364516258239746,
+   "lowerings": 6,
+   "jaxpr_trace_duration": 0.003952503204345703,
+   "jaxpr_to_mlir_module_duration": 0.013743162155151367,
+   "backend_compile_duration": 0.005949497222900391
+  },
+  {
+   "caller": "gpuwrf.contracts.state:replace",
+   "total_s": 0.021649837493896484,
+   "lowerings": 7,
+   "jaxpr_trace_duration": 0.0007452964782714844,
+   "jaxpr_to_mlir_module_duration": 0.014410257339477539,
+   "backend_compile_duration": 0.006494283676147461
+  },
+  {
+   "caller": "gpuwrf.integration.d02_replay:_wrf_base_theta_from_loaded_state",
+   "total_s": 0.0195620059967041,
+   "lowerings": 7,
+   "jaxpr_trace_duration": 0.001146078109741211,
+   "jaxpr_to_mlir_module_duration": 0.01280069351196289,
+   "backend_compile_duration": 0.005615234375
+  },
+  {
+   "caller": "gpuwrf.coupling.physics_couplers:mul",
+   "total_s": 0.01921367645263672,
+   "lowerings": 6,
+   "jaxpr_trace_duration": 0.0010416507720947266,
+   "jaxpr_to_mlir_module_duration": 0.012568473815917969,
+   "backend_compile_duration": 0.0056035518646240234
+  },
+  {
+   "caller": "gpuwrf.physics.noah_mp:mavail_from_prescribed_fields",
+   "total_s": 0.019063472747802734,
+   "lowerings": 6,
+   "jaxpr_trace_duration": 0.0016300678253173828,
+   "jaxpr_to_mlir_module_duration": 0.012333393096923828,
+   "backend_compile_duration": 0.0051000118255615234
+  },
+  {
+   "caller": "gpuwrf.physics.noahmp.noahmp_driver:_gather_vec",
+   "total_s": 0.018344640731811523,
+   "lowerings": 6,
+   "jaxpr_trace_duration": 0.0008690357208251953,
+   "jaxpr_to_mlir_module_duration": 0.012201309204101562,
+   "backend_compile_duration": 0.005274295806884766
+  },
+  {
+   "caller": "gpuwrf.contracts.state:sync_total_perturbation",
+   "total_s": 0.016896486282348633,
+   "lowerings": 6,
+   "jaxpr_trace_duration": 0.0008161067962646484,
+   "jaxpr_to_mlir_module_duration": 0.01120448112487793,
+   "backend_compile_duration": 0.004875898361206055
+  },
+  {
+   "caller": "gpuwrf.runtime.operational_mode:noahmp_initial_rad",
+   "total_s": 0.016669750213623047,
+   "lowerings": 4,
+   "jaxpr_trace_duration": 0,
+   "jaxpr_to_mlir_module_duration": 0.012231826782226562,
+   "backend_compile_duration": 0.004437923431396484
+  },
+  {
+   "caller": "gpuwrf.coupling.physics_couplers:div",
+   "total_s": 0.016478538513183594,
+   "lowerings": 5,
+   "jaxpr_trace_duration": 0.0007123947143554688,
+   "jaxpr_to_mlir_module_duration": 0.011564493179321289,
+   "backend_compile_duration": 0.004201650619506836
+  },
+  {
+   "caller": "gpuwrf.physics.noahmp.noahmp_driver:urban_soil",
+   "total_s": 0.01413726806640625,
+   "lowerings": 4,
+   "jaxpr_trace_duration": 0.0012247562408447266,
+   "jaxpr_to_mlir_module_duration": 0.009309768676757812,
+   "backend_compile_duration": 0.003602743148803711
+  },
+  {
+   "caller": "gpuwrf.coupling.physics_couplers:_cloud_fraction_columns",
+   "total_s": 0.013798952102661133,
+   "lowerings": 4,
+   "jaxpr_trace_duration": 0.001348733901977539,
+   "jaxpr_to_mlir_module_duration": 0.008972406387329102,
+   "backend_compile_duration": 0.003477811813354492
+  },
+  {
+   "caller": "gpuwrf.physics.mynn_pbl:_scale_aware_psig_bl",
+   "total_s": 0.012992620468139648,
+   "lowerings": 5,
+   "jaxpr_trace_duration": 0.0007443428039550781,
+   "jaxpr_to_mlir_module_duration": 0.008485794067382812,
+   "backend_compile_duration": 0.003762483596801758
+  },
+  {
+   "caller": "gpuwrf.physics.mynn_pbl:_moist_virtual_potential",
+   "total_s": 0.012511491775512695,
+   "lowerings": 5,
+   "jaxpr_trace_duration": 0.0006577968597412109,
+   "jaxpr_to_mlir_module_duration": 0.008106231689453125,
+   "backend_compile_duration": 0.0037474632263183594
+  },
+  {
+   "caller": "gpuwrf.integration.nested_pipeline:_two_time_live_nest_bdy",
+   "total_s": 0.012452125549316406,
+   "lowerings": 4,
+   "jaxpr_trace_duration": 0.0004642009735107422,
+   "jaxpr_to_mlir_module_duration": 0.008708000183105469,
+   "backend_compile_duration": 0.0032799243927001953
+  },
+  {
+   "caller": "gpuwrf.coupling.physics_couplers:_column_dz_from_state",
+   "total_s": 0.011955499649047852,
+   "lowerings": 4,
+   "jaxpr_trace_duration": 0.0004968643188476562,
+   "jaxpr_to_mlir_module_duration": 0.008287668228149414,
+   "backend_compile_duration": 0.0031709671020507812
+  },
+  {
+   "caller": "gpuwrf.coupling.physics_couplers:_surface_dz_from_state",
+   "total_s": 0.011925935745239258,
+   "lowerings": 4,
+   "jaxpr_trace_duration": 0.00063323974609375,
+   "jaxpr_to_mlir_module_duration": 0.008055686950683594,
+   "backend_compile_duration": 0.003237009048461914
+  },
+  {
+   "caller": "gpuwrf.runtime.history_accumulators:seed_history",
+   "total_s": 0.01169276237487793,
+   "lowerings": 4,
+   "jaxpr_trace_duration": 0.000469207763671875,
+   "jaxpr_to_mlir_module_duration": 0.008109331130981445,
+   "backend_compile_duration": 0.0031142234802246094
+  },
+  {
+   "caller": "gpuwrf.physics.mynn_pbl:_exner_from_pressure",
+   "total_s": 0.011603116989135742,
+   "lowerings": 4,
+   "jaxpr_trace_duration": 0.0006670951843261719,
+   "jaxpr_to_mlir_module_duration": 0.0074841976165771484,
+   "backend_compile_duration": 0.003451824188232422
+  },
+  {
+   "caller": "gpuwrf.coupling.physics_couplers:_temperature_from_theta",
+   "total_s": 0.011596441268920898,
+   "lowerings": 4,
+   "jaxpr_trace_duration": 0.0005743503570556641,
+   "jaxpr_to_mlir_module_duration": 0.007746219635009766,
+   "backend_compile_duration": 0.0032758712768554688
+  },
+  {
+   "caller": "gpuwrf.physics.mynn_pbl:__init__",
+   "total_s": 0.011277437210083008,
+   "lowerings": 4,
+   "jaxpr_trace_duration": 0.0005395412445068359,
+   "jaxpr_to_mlir_module_duration": 0.007700443267822266,
+   "backend_compile_duration": 0.0030374526977539062
+  },
+  {
+   "caller": "gpuwrf.contracts.grid:__post_init__",
+   "total_s": 0.011065959930419922,
+   "lowerings": 4,
+   "jaxpr_trace_duration": 0.00041103363037109375,
+   "jaxpr_to_mlir_module_duration": 0.007611513137817383,
+   "backend_compile_duration": 0.0030434131622314453
+  },
+  {
+   "caller": "gpuwrf.coupling.physics_couplers:_u_mass",
+   "total_s": 0.010956764221191406,
+   "lowerings": 4,
+   "jaxpr_trace_duration": 0.0005154609680175781,
+   "jaxpr_to_mlir_module_duration": 0.007199525833129883,
+   "backend_compile_duration": 0.0032417774200439453
+  },
+  {
+   "caller": "gpuwrf.coupling.physics_couplers:mynn_coldstart_qke_from_state",
+   "total_s": 0.010084390640258789,
+   "lowerings": 4,
+   "jaxpr_trace_duration": 0,
+   "jaxpr_to_mlir_module_duration": 0.007326841354370117,
+   "backend_compile_duration": 0.002757549285888672
+  },
+  {
+   "caller": "gpuwrf.coupling.physics_couplers:_fortran_int",
+   "total_s": 0.009820222854614258,
+   "lowerings": 2,
+   "jaxpr_trace_duration": 0.0009098052978515625,
+   "jaxpr_to_mlir_module_duration": 0.007063388824462891,
+   "backend_compile_duration": 0.0018470287322998047
+  },
+  {
+   "caller": "gpuwrf.coupling.physics_couplers:_rrtmg_diagnostics_from_results",
+   "total_s": 0.009062051773071289,
+   "lowerings": 2,
+   "jaxpr_trace_duration": 0.0003490447998046875,
+   "jaxpr_to_mlir_module_duration": 0.0063517093658447266,
+   "backend_compile_duration": 0.002361297607421875
+  },
+  {
+   "caller": "gpuwrf.physics.gwd_gwdo:<module>",
+   "total_s": 0.008619308471679688,
+   "lowerings": 1,
+   "jaxpr_trace_duration": 0.00023221969604492188,
+   "jaxpr_to_mlir_module_duration": 0.006850719451904297,
+   "backend_compile_duration": 0.0015363693237304688
+  },
+  {
+   "caller": "gpuwrf.physics.mynn_pbl:_specific_moisture_components",
+   "total_s": 0.007472038269042969,
+   "lowerings": 3,
+   "jaxpr_trace_duration": 0.00040459632873535156,
+   "jaxpr_to_mlir_module_duration": 0.004831552505493164,
+   "backend_compile_duration": 0.002235889434814453
+  },
+  {
+   "caller": "gpuwrf.physics.sfclay_revised_mm5:_psim_stable_full",
+   "total_s": 0.007299661636352539,
+   "lowerings": 2,
+   "jaxpr_trace_duration": 0.0004401206970214844,
+   "jaxpr_to_mlir_module_duration": 0.004712820053100586,
+   "backend_compile_duration": 0.0021467208862304688
+  },
+  {
+   "caller": "gpuwrf.coupling.physics_couplers:column",
+   "total_s": 0.007276296615600586,
+   "lowerings": 3,
+   "jaxpr_trace_duration": 9.131431579589844e-05,
+   "jaxpr_to_mlir_module_duration": 0.0049893856048583984,
+   "backend_compile_duration": 0.002195596694946289
+  },
+  {
+   "caller": "gpuwrf.io.gwdo_static:load_gwdo_statics",
+   "total_s": 0.007213115692138672,
+   "lowerings": 2,
+   "jaxpr_trace_duration": 0.0005242824554443359,
+   "jaxpr_to_mlir_module_duration": 0.004480600357055664,
+   "backend_compile_duration": 0.002208232879638672
+  },
+  {
+   "caller": "gpuwrf.physics.noahmp.noahmp_driver:urban_flag",
+   "total_s": 0.007117271423339844,
+   "lowerings": 2,
+   "jaxpr_trace_duration": 0.0004239082336425781,
+   "jaxpr_to_mlir_module_duration": 0.004778146743774414,
+   "backend_compile_duration": 0.0019152164459228516
+  },
+  {
+   "caller": "gpuwrf.coupling.physics_couplers:add",
+   "total_s": 0.00685572624206543,
+   "lowerings": 2,
+   "jaxpr_trace_duration": 0.0003235340118408203,
+   "jaxpr_to_mlir_module_duration": 0.0046160221099853516,
+   "backend_compile_duration": 0.0019161701202392578
+  },
+  {
+   "caller": "gpuwrf.coupling.physics_couplers:_from_columns",
+   "total_s": 0.0064809322357177734,
+   "lowerings": 2,
+   "jaxpr_trace_duration": 0.0002589225769042969,
+   "jaxpr_to_mlir_module_duration": 0.004300832748413086,
+   "backend_compile_duration": 0.0019211769104003906
+  },
+  {
+   "caller": "gpuwrf.coupling.physics_couplers:sub",
+   "total_s": 0.006389617919921875,
+   "lowerings": 2,
+   "jaxpr_trace_duration": 0.0002760887145996094,
+   "jaxpr_to_mlir_module_duration": 0.0043392181396484375,
+   "backend_compile_duration": 0.0017743110656738281
+  },
+  {
+   "caller": "gpuwrf.coupling.physics_couplers:_wrf_solar_julian_real",
+   "total_s": 0.00638580322265625,
+   "lowerings": 2,
+   "jaxpr_trace_duration": 0.00026988983154296875,
+   "jaxpr_to_mlir_module_duration": 0.004100322723388672,
+   "backend_compile_duration": 0.0020155906677246094
+  },
+  {
+   "caller": "gpuwrf.physics.thompson_column:density_from_pressure_temperature",
+   "total_s": 0.006364345550537109,
+   "lowerings": 2,
+   "jaxpr_trace_duration": 0.0002951622009277344,
+   "jaxpr_to_mlir_module_duration": 0.004361152648925781,
+   "backend_compile_duration": 0.0017080307006835938
+  },
+  {
+   "caller": "gpuwrf.physics.noahmp.noahmp_driver:_soil_layers",
+   "total_s": 0.006335020065307617,
+   "lowerings": 2,
+   "jaxpr_trace_duration": 0.00025391578674316406,
+   "jaxpr_to_mlir_module_duration": 0.004166603088378906,
+   "backend_compile_duration": 0.0019145011901855469
+  },
+  {
+   "caller": "gpuwrf.io.noahmp_land_init:_init_over_land",
+   "total_s": 0.0061740875244140625,
+   "lowerings": 2,
+   "jaxpr_trace_duration": 0.0004794597625732422,
+   "jaxpr_to_mlir_module_duration": 0.004058837890625,
+   "backend_compile_duration": 0.0016357898712158203
+  },
+  {
+   "caller": "gpuwrf.coupling.physics_couplers:build_gwdo_statics_from_wrf_fields",
+   "total_s": 0.0059092044830322266,
+   "lowerings": 2,
+   "jaxpr_trace_duration": 0.00022172927856445312,
+   "jaxpr_to_mlir_module_duration": 0.004065513610839844,
+   "backend_compile_duration": 0.0016219615936279297
+  },
+  {
+   "caller": "gpuwrf.physics.mynn_pbl:_edge_heights",
+   "total_s": 0.005831718444824219,
+   "lowerings": 2,
+   "jaxpr_trace_duration": 0.00031375885009765625,
+   "jaxpr_to_mlir_module_duration": 0.0036885738372802734,
+   "backend_compile_duration": 0.001829385757446289
+  },
+  {
+   "caller": "gpuwrf.kernels.dyn_real_fp32:_real",
+   "total_s": 0.005671501159667969,
+   "lowerings": 2,
+   "jaxpr_trace_duration": 0,
+   "jaxpr_to_mlir_module_duration": 0.00411534309387207,
+   "backend_compile_duration": 0.0015561580657958984
+  },
+  {
+   "caller": "gpuwrf.coupling.physics_couplers:_v_mass",
+   "total_s": 0.005395174026489258,
+   "lowerings": 2,
+   "jaxpr_trace_duration": 0.00020933151245117188,
+   "jaxpr_to_mlir_module_duration": 0.0036101341247558594,
+   "backend_compile_duration": 0.0015757083892822266
+  },
+  {
+   "caller": "gpuwrf.physics.mynn_pbl:_interface_dz",
+   "total_s": 0.005345344543457031,
+   "lowerings": 2,
+   "jaxpr_trace_duration": 0.00029277801513671875,
+   "jaxpr_to_mlir_module_duration": 0.003484964370727539,
+   "backend_compile_duration": 0.0015676021575927734
+  },
+  {
+   "caller": "gpuwrf.physics.rrtmg_sw:<module>",
+   "total_s": 0.005147695541381836,
+   "lowerings": 2,
+   "jaxpr_trace_duration": 0.00021028518676757812,
+   "jaxpr_to_mlir_module_duration": 0.00348663330078125,
+   "backend_compile_duration": 0.0014507770538330078
+  },
+  {
+   "caller": "gpuwrf.physics.mynn_pbl:_zero_edge_like",
+   "total_s": 0.0051305294036865234,
+   "lowerings": 2,
+   "jaxpr_trace_duration": 0.0002760887145996094,
+   "jaxpr_to_mlir_module_duration": 0.0033218860626220703,
+   "backend_compile_duration": 0.0015325546264648438
+  },
+  {
+   "caller": "gpuwrf.physics.mynn_pbl:_flux_richardson",
+   "total_s": 0.005056858062744141,
+   "lowerings": 2,
+   "jaxpr_trace_duration": 0.00024962425231933594,
+   "jaxpr_to_mlir_module_duration": 0.0033140182495117188,
+   "backend_compile_duration": 0.001493215560913086
+  },
+  {
+   "caller": "gpuwrf.kernels.phys_hydrostatic_real:<lambda>",
+   "total_s": 0.004874706268310547,
+   "lowerings": 2,
+   "jaxpr_trace_duration": 0.00019431114196777344,
+   "jaxpr_to_mlir_module_duration": 0.0031936168670654297,
+   "backend_compile_duration": 0.0014867782592773438
+  },
+  {
+   "caller": "gpuwrf.coupling.boundary_feedback:point_feedback_weights",
+   "total_s": 0.004794597625732422,
+   "lowerings": 1,
+   "jaxpr_trace_duration": 0.00017642974853515625,
+   "jaxpr_to_mlir_module_duration": 0.0035321712493896484,
+   "backend_compile_duration": 0.0010859966278076172
+  },
+  {
+   "caller": "gpuwrf.io.gen2_accessor:as_grid_spec",
+   "total_s": 0.003701448440551758,
+   "lowerings": 1,
+   "jaxpr_trace_duration": 0.0001876354217529297,
+   "jaxpr_to_mlir_module_duration": 0.0023193359375,
+   "backend_compile_duration": 0.0011944770812988281
+  },
+  {
+   "caller": "gpuwrf.physics.surface_layer:<genexpr>",
+   "total_s": 0.0036895275115966797,
+   "lowerings": 1,
+   "jaxpr_trace_duration": 0.00015735626220703125,
+   "jaxpr_to_mlir_module_duration": 0.0025691986083984375,
+   "backend_compile_duration": 0.0009629726409912109
+  },
+  {
+   "caller": "gpuwrf.integration.d02_replay:_apply_live_nest_base_init",
+   "total_s": 0.003403902053833008,
+   "lowerings": 1,
+   "jaxpr_trace_duration": 0.0001480579376220703,
+   "jaxpr_to_mlir_module_duration": 0.002234935760498047,
+   "backend_compile_duration": 0.0010209083557128906
+  },
+  {
+   "caller": "gpuwrf.physics.microphysics_lin:<module>",
+   "total_s": 0.0031871795654296875,
+   "lowerings": 1,
+   "jaxpr_trace_duration": 0.00014543533325195312,
+   "jaxpr_to_mlir_module_duration": 0.0020782947540283203,
+   "backend_compile_duration": 0.0009634494781494141
+  },
+  {
+   "caller": "gpuwrf.coupling.physics_couplers:_solar_source_scale_for_time",
+   "total_s": 0.0030069351196289062,
+   "lowerings": 1,
+   "jaxpr_trace_duration": 0.00012731552124023438,
+   "jaxpr_to_mlir_module_duration": 0.0020890235900878906,
+   "backend_compile_duration": 0.0007905960083007812
+  },
+  {
+   "caller": "gpuwrf.runtime.operational_mode:_initial_carry_for_run",
+   "total_s": 0.002983570098876953,
+   "lowerings": 1,
+   "jaxpr_trace_duration": 0.00012040138244628906,
+   "jaxpr_to_mlir_module_duration": 0.0020194053649902344,
+   "backend_compile_duration": 0.0008437633514404297
+  },
+  {
+   "caller": "gpuwrf.nesting.boundary_construction:initialize_child_scalar_boundaries",
+   "total_s": 0.002879619598388672,
+   "lowerings": 1,
+   "jaxpr_trace_duration": 0.00012373924255371094,
+   "jaxpr_to_mlir_module_duration": 0.0020110607147216797,
+   "backend_compile_duration": 0.0007448196411132812
+  },
+  {
+   "caller": "gpuwrf.coupling.physics_couplers:_rvovrd",
+   "total_s": 0.002863168716430664,
+   "lowerings": 1,
+   "jaxpr_trace_duration": 0.00013136863708496094,
+   "jaxpr_to_mlir_module_duration": 0.0019450187683105469,
+   "backend_compile_duration": 0.0007867813110351562
+  },
+  {
+   "caller": "gpuwrf.physics.rrtmg_tables:load_rrtmg_tables",
+   "total_s": 0.002727508544921875,
+   "lowerings": 1,
+   "jaxpr_trace_duration": 0.00010895729064941406,
+   "jaxpr_to_mlir_module_duration": 0.0018572807312011719,
+   "backend_compile_duration": 0.0007612705230712891
+  },
+  {
+   "caller": "gpuwrf.physics.mynn_pbl:_wrf_zw",
+   "total_s": 0.0024628639221191406,
+   "lowerings": 1,
+   "jaxpr_trace_duration": 9.989738464355469e-05,
+   "jaxpr_to_mlir_module_duration": 0.0015795230865478516,
+   "backend_compile_duration": 0.0007834434509277344
+  },
+  {
+   "caller": "gpuwrf.coupling.physics_couplers:<module>",
+   "total_s": 0.002452850341796875,
+   "lowerings": 1,
+   "jaxpr_trace_duration": 9.655952453613281e-05,
+   "jaxpr_to_mlir_module_duration": 0.0016810894012451172,
+   "backend_compile_duration": 0.000675201416015625
+  }
+ ]
+}

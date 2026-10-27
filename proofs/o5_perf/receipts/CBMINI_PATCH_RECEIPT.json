@@ -1,0 +1,155 @@
+{
+ "scope": "Rewrite ONE DebugOptions field in a compiled-thunk GPU AOT blob's stored module config (CPU only).\n\nPath (as aot_slim_module.slim_blob): IFRT envelope -> Riegeli -> last simple chunk 'rest' (GpuExecutableProto) -> f1\nHloModuleProtoWithConfig -> f2 HloModuleConfigProto -> f14 DebugOptions -> field 208 (xla_gpu_graph_min_graph_size).\nEvery other byte of the rest record and every other Riegeli chunk (native records 0/1/2) is kept; the tool asserts that.\nThe matching .meta gets its blob_sha256 updated (the loader re-verifies it). Output mirrors P's relative paths so the\nfiles can be placed into a bundle-consumer view. usage: patch_min_graph.py OUT_ROOT VALUE BLOB...\n",
+ "patched": [
+  {
+   "blob": "jax/aot/0.4.3-jax0.10.0-jaxlib0.10.0-cuda_sm120/d01/51b58b7d191d731ac0ac0768e616c85160023839e95cb2cb2867b76ac86c39c6.xlaexec",
+   "orig_sha256": "ed5e1030e879b1e47f6b5ed224540dbefa480ed113367377e697329cea61dd3b",
+   "new_sha256": "ad2f0e59143b03d83d9b0ccacbd7d360e889550925e38eef13c8cac3c860c29d",
+   "field": 208,
+   "old_values": [
+    5
+   ],
+   "new_value": 1,
+   "native_records_0_1_2_identical": true,
+   "bytes": [
+    103718762,
+    103718762
+   ]
+  },
+  {
+   "blob": "jax/aot/0.4.3-jax0.10.0-jaxlib0.10.0-cuda_sm120/d01/65430340b6e82aefc91e000f375a8d97b23704624b6e89ce21132bebf846a81b.xlaexec",
+   "orig_sha256": "c92bd9279fb054d8cee0ddcfe49829137f540181e81c6156102c9bf9a8cb818f",
+   "new_sha256": "9b04a83260d7da1b002e523a93bf75492183da928238bfd4eda7b6d27ad42b43",
+   "field": 208,
+   "old_values": [
+    5
+   ],
+   "new_value": 1,
+   "native_records_0_1_2_identical": true,
+   "bytes": [
+    105854834,
+    105854834
+   ]
+  },
+  {
+   "blob": "jax/aot/0.4.3-jax0.10.0-jaxlib0.10.0-cuda_sm120/d01/6cc0486b3dea3f4ad5694939851bcbbdc21fd057068185e936be6bb1cdf44d8d.xlaexec",
+   "orig_sha256": "2b490cbe36dbd766e9c444a8486c08efccd74e49bb9e4373485f22756339e27b",
+   "new_sha256": "767f59e0c8e54c7ae94df625063e7ba60948b9a915f5951064dd07a673b55c49",
+   "field": 208,
+   "old_values": [
+    5
+   ],
+   "new_value": 1,
+   "native_records_0_1_2_identical": true,
+   "bytes": [
+    105788456,
+    105788456
+   ]
+  },
+  {
+   "blob": "jax/aot/0.4.3-jax0.10.0-jaxlib0.10.0-cuda_sm120/d01/a694c153fc9dde49d24a8484ae476994e690621a28edb856e20c66d09aefc0ad.xlaexec",
+   "orig_sha256": "3eca2a59fecd7ee539ae44c434fc8da9896098b180347c9ec58c26c166574b9d",
+   "new_sha256": "44a55b31bd5945662fd8bc3b363219ed90db320f963649017fa96767ed0e8d4f",
+   "field": 208,
+   "old_values": [
+    5
+   ],
+   "new_value": 1,
+   "native_records_0_1_2_identical": true,
+   "bytes": [
+    105720632,
+    105720632
+   ]
+  },
+  {
+   "blob": "jax/aot/0.4.3-jax0.10.0-jaxlib0.10.0-cuda_sm120/d01/k_12d02ffc773c57eac18efb2fa0f29af00c375ccaca6bf81999c6d5a51f5e3c8e.xlaexec",
+   "orig_sha256": "ed5e1030e879b1e47f6b5ed224540dbefa480ed113367377e697329cea61dd3b",
+   "new_sha256": "ad2f0e59143b03d83d9b0ccacbd7d360e889550925e38eef13c8cac3c860c29d",
+   "field": 208,
+   "old_values": [
+    5
+   ],
+   "new_value": 1,
+   "native_records_0_1_2_identical": true,
+   "bytes": [
+    103718762,
+    103718762
+   ]
+  },
+  {
+   "blob": "jax/aot/0.4.3-jax0.10.0-jaxlib0.10.0-cuda_sm120/d01/k_747eb79be8814b24b3b758d4fd820999e4ba6afd794954e4412235de0d200427.xlaexec",
+   "orig_sha256": "c92bd9279fb054d8cee0ddcfe49829137f540181e81c6156102c9bf9a8cb818f",
+   "new_sha256": "9b04a83260d7da1b002e523a93bf75492183da928238bfd4eda7b6d27ad42b43",
+   "field": 208,
+   "old_values": [
+    5
+   ],
+   "new_value": 1,
+   "native_records_0_1_2_identical": true,
+   "bytes": [
+    105854834,
+    105854834
+   ]
+  },
+  {
+   "blob": "jax/aot/0.4.3-jax0.10.0-jaxlib0.10.0-cuda_sm120/d01/k_c099780507ccde94e2df294c9d75ac24b19c80d5c8df52830c976756d880691b.xlaexec",
+   "orig_sha256": "3eca2a59fecd7ee539ae44c434fc8da9896098b180347c9ec58c26c166574b9d",
+   "new_sha256": "44a55b31bd5945662fd8bc3b363219ed90db320f963649017fa96767ed0e8d4f",
+   "field": 208,
+   "old_values": [
+    5
+   ],
+   "new_value": 1,
+   "native_records_0_1_2_identical": true,
+   "bytes": [
+    105720632,
+    105720632
+   ]
+  },
+  {
+   "blob": "jax/aot/0.4.3-jax0.10.0-jaxlib0.10.0-cuda_sm120/d01/k_dca1274a452949f34482e35790da275ca5a79ba3174502b4473a40a3e6283ac0.xlaexec",
+   "orig_sha256": "2b490cbe36dbd766e9c444a8486c08efccd74e49bb9e4373485f22756339e27b",
+   "new_sha256": "767f59e0c8e54c7ae94df625063e7ba60948b9a915f5951064dd07a673b55c49",
+   "field": 208,
+   "old_values": [
+    5
+   ],
+   "new_value": 1,
+   "native_records_0_1_2_identical": true,
+   "bytes": [
+    105788456,
+    105788456
+   ]
+  },
+  {
+   "blob": "jax/aot/0.4.3-jax0.10.0-jaxlib0.10.0-cuda_sm120/d02/4e8d00fa090ded2ca40ebc7c785a5ddd264b1c96917a7ef656867960d221d554.xlaexec",
+   "orig_sha256": "bdc4ba3971dabbf8e9b47bb638797159a54055e5a32cc6099336135750f70ea0",
+   "new_sha256": "26024ca2c4ca1f4999a261dfb4dcbc7215ae23dd73406d8aaaff287517d0a227",
+   "field": 208,
+   "old_values": [
+    5
+   ],
+   "new_value": 1,
+   "native_records_0_1_2_identical": true,
+   "bytes": [
+    102437754,
+    102437754
+   ]
+  },
+  {
+   "blob": "jax/aot/0.4.3-jax0.10.0-jaxlib0.10.0-cuda_sm120/d02/k_1a08312164095b94e18551bff32139e83ef6a92c09a89068d2fd98d85a0c8f08.xlaexec",
+   "orig_sha256": "bdc4ba3971dabbf8e9b47bb638797159a54055e5a32cc6099336135750f70ea0",
+   "new_sha256": "26024ca2c4ca1f4999a261dfb4dcbc7215ae23dd73406d8aaaff287517d0a227",
+   "field": 208,
+   "old_values": [
+    5
+   ],
+   "new_value": 1,
+   "native_records_0_1_2_identical": true,
+   "bytes": [
+    102437754,
+    102437754
+   ]
+  }
+ ]
+}

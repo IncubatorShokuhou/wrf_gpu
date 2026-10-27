@@ -1,0 +1,529 @@
+{
+  "scope": "Actual night cold baseline artifacts. Old FAIL and v040 INCOMPLETE are disclosed; neither is a release candidate or a protection-revert proposal.",
+  "versions": {
+    "v032": {
+      "cache": "<USER_HOME>/wrf_gpu2_lanes/w44-perf/gpu/cache_v032/jax",
+      "e41_gate": "FAIL",
+      "hard_stack_gate": "PASS",
+      "conservative_flags": true,
+      "coverage": {
+        "status": "PASS",
+        "aot_programs": [
+          "d01",
+          "d02"
+        ],
+        "required_run_programs": [
+          "d01",
+          "d02"
+        ],
+        "run_proofs": [],
+        "n_discovered": 4,
+        "n_scanned": 4
+      },
+      "entries": [
+        {
+          "entry": "jit__advance_chunk_fori-13eea92af016f72d23e70f877889ab155d7daf69887f5ae0a11dd6fd58ceb2cb-cache",
+          "source_kind": "jax_cache",
+          "program": null,
+          "blob_sha256": "185d0b519cc1e47227d789a3a6a217fcfb97c0a10f836100d8429088931dcff9",
+          "kinput_transpose_status": "MEASURED_RICH_JIT_HLO",
+          "kinput_transpose_over500": [
+            [
+              "input_subtract_transpose_fusion",
+              560
+            ],
+            [
+              "input_divide_maximum_multiply_reduce_select_slice_transpose_fusion",
+              621
+            ],
+            [
+              "input_add_and_clamp_divide_maximum_power_select_transpose_fusion",
+              781
+            ],
+            [
+              "input_clamp_compare_log_multiply_select_subtract_transpose_fusion",
+              524
+            ],
+            [
+              "input_transpose_fusion.125",
+              529
+            ],
+            [
+              "input_add_clamp_convert_divide_maximum_minimum_multiply_power_select_transpose_fusion",
+              574
+            ],
+            [
+              "input_add_broadcast_select_transpose_fusion",
+              646
+            ],
+            [
+              "input_add_multiply_select_subtract_transpose_fusion",
+              661
+            ]
+          ],
+          "elfs": [
+            {
+              "elf": 0,
+              "sha256": "e71ecefb24ac6cd00cd8f3bde9ad75b8424bc727f9c9ddb8a16dd182409a3102",
+              "kernels": 804,
+              "max_stack_B": 32,
+              "stack_over256": [],
+              "root_callers_over1k": [
+                [
+                  "thompson_full_column",
+                  18928,
+                  98
+                ],
+                [
+                  "mynn_tridiag2_real",
+                  2224,
+                  87
+                ],
+                [
+                  "input_add_multiply_power_transpose_fusion",
+                  1168,
+                  2
+                ],
+                [
+                  "loop_add_compare_divide_power_reduce_select_fusion",
+                  3960,
+                  4
+                ],
+                [
+                  "gwdo_column_fp32",
+                  1568,
+                  1
+                ],
+                [
+                  "loop_multiply_select_fusion_1",
+                  2456,
+                  6
+                ],
+                [
+                  "loop_or_select_fusion",
+                  2224,
+                  6
+                ],
+                [
+                  "loop_select_fusion_11",
+                  2568,
+                  12
+                ]
+              ],
+              "nonleaf_over1k": [],
+              "callgraph_unknown": []
+            }
+          ]
+        },
+        {
+          "entry": "jit__advance_chunk_fori-89739bd9e551b1f96fbd3736b6b922ca326c14d71753b6ff92509ffb248aea2b-cache",
+          "source_kind": "jax_cache",
+          "program": null,
+          "blob_sha256": "de64a9dfa502eba144c6a4dfc65bd7e21f66e12f4e394c5c0624f257ddf015dc",
+          "kinput_transpose_status": "MEASURED_RICH_JIT_HLO",
+          "kinput_transpose_over500": [
+            [
+              "loop_slice_subtract_fusion",
+              577
+            ],
+            [
+              "input_multiply_transpose_fusion.1",
+              509
+            ]
+          ],
+          "elfs": [
+            {
+              "elf": 0,
+              "sha256": "a47c45f58a281f8eceb64b0dbfce43a2852a288a9143220b3d1b4b2a65354b67",
+              "kernels": 641,
+              "max_stack_B": 32,
+              "stack_over256": [],
+              "root_callers_over1k": [
+                [
+                  "thompson_full_column",
+                  18928,
+                  98
+                ],
+                [
+                  "input_pad_transpose_fusion",
+                  1016,
+                  1
+                ],
+                [
+                  "mynn_tridiag2_real",
+                  2224,
+                  87
+                ],
+                [
+                  "loop_add_and_clamp_compare_convert_divide_minimum_multiply_power_select_subtract_fusion",
+                  3232,
+                  2
+                ],
+                [
+                  "loop_add_divide_exponential_maximum_multiply_reduce_select_fusion",
+                  3832,
+                  8
+                ],
+                [
+                  "loop_or_select_fusion",
+                  2224,
+                  6
+                ],
+                [
+                  "loop_select_fusion_9",
+                  7064,
+                  36
+                ]
+              ],
+              "nonleaf_over1k": [],
+              "callgraph_unknown": []
+            }
+          ]
+        },
+        {
+          "entry": "4fdcbbbec6ba939c80f3d7fd263372690fe5230c520e83254d283a8ec5cea1af.xlaexec",
+          "source_kind": "aot",
+          "program": "d01",
+          "blob_sha256": "bfd3842c4290001fb3c1976992b05c6968fb7b38ee65b6a837edcb656ea41f31",
+          "kinput_transpose_status": "UNKNOWN_AOT_METADATA",
+          "kinput_transpose_over500": null,
+          "elfs": [
+            {
+              "elf": 0,
+              "sha256": "e71ecefb24ac6cd00cd8f3bde9ad75b8424bc727f9c9ddb8a16dd182409a3102",
+              "kernels": 804,
+              "max_stack_B": 32,
+              "stack_over256": [],
+              "root_callers_over1k": [
+                [
+                  "thompson_full_column",
+                  18928,
+                  98
+                ],
+                [
+                  "mynn_tridiag2_real",
+                  2224,
+                  87
+                ],
+                [
+                  "input_add_multiply_power_transpose_fusion",
+                  1168,
+                  2
+                ],
+                [
+                  "loop_add_compare_divide_power_reduce_select_fusion",
+                  3960,
+                  4
+                ],
+                [
+                  "gwdo_column_fp32",
+                  1568,
+                  1
+                ],
+                [
+                  "loop_multiply_select_fusion_1",
+                  2456,
+                  6
+                ],
+                [
+                  "loop_or_select_fusion",
+                  2224,
+                  6
+                ],
+                [
+                  "loop_select_fusion_11",
+                  2568,
+                  12
+                ]
+              ],
+              "nonleaf_over1k": [],
+              "callgraph_unknown": []
+            }
+          ]
+        },
+        {
+          "entry": "785356ca85c5f6a538ce0b54f9fc5f91b9d8dc60511120837726ea5f78ec14fe.xlaexec",
+          "source_kind": "aot",
+          "program": "d02",
+          "blob_sha256": "c06fc1e1783d186c09f6b9b7aba161144c8cf42733f1f46243c1d7917b28078e",
+          "kinput_transpose_status": "UNKNOWN_AOT_METADATA",
+          "kinput_transpose_over500": null,
+          "elfs": [
+            {
+              "elf": 0,
+              "sha256": "a47c45f58a281f8eceb64b0dbfce43a2852a288a9143220b3d1b4b2a65354b67",
+              "kernels": 641,
+              "max_stack_B": 32,
+              "stack_over256": [],
+              "root_callers_over1k": [
+                [
+                  "thompson_full_column",
+                  18928,
+                  98
+                ],
+                [
+                  "input_pad_transpose_fusion",
+                  1016,
+                  1
+                ],
+                [
+                  "mynn_tridiag2_real",
+                  2224,
+                  87
+                ],
+                [
+                  "loop_add_and_clamp_compare_convert_divide_minimum_multiply_power_select_subtract_fusion",
+                  3232,
+                  2
+                ],
+                [
+                  "loop_add_divide_exponential_maximum_multiply_reduce_select_fusion",
+                  3832,
+                  8
+                ],
+                [
+                  "loop_or_select_fusion",
+                  2224,
+                  6
+                ],
+                [
+                  "loop_select_fusion_9",
+                  7064,
+                  36
+                ]
+              ],
+              "nonleaf_over1k": [],
+              "callgraph_unknown": []
+            }
+          ]
+        }
+      ]
+    },
+    "v040": {
+      "cache": "<USER_HOME>/wrf_gpu2_lanes/w44-perf/gpu/layer_v040/upper/jax",
+      "e41_gate": "INCOMPLETE",
+      "hard_stack_gate": "PASS",
+      "conservative_flags": false,
+      "coverage": {
+        "status": "PASS",
+        "aot_programs": [
+          "d01",
+          "d02"
+        ],
+        "required_run_programs": [
+          "d01",
+          "d02"
+        ],
+        "run_proofs": [],
+        "n_discovered": 4,
+        "n_scanned": 4
+      },
+      "entries": [
+        {
+          "entry": "jit__advance_chunk_fori-3f958a55cba0019ed98e32aeb5f449d60a24d0b4e1dd46972aab5bc78b92fd89-cache",
+          "source_kind": "jax_cache",
+          "program": null,
+          "blob_sha256": "2ab8b3e305ddad8f265f51fa1aabc7968ecf8b1ee98724720e5b812959c2b9be",
+          "kinput_transpose_status": "MEASURED_RICH_JIT_HLO",
+          "kinput_transpose_over500": [],
+          "elfs": [
+            {
+              "elf": 0,
+              "sha256": "4ac655a4233bee6225df4aed2ea041cb1225474f2e8fd41c48e130fba228f18c",
+              "kernels": 757,
+              "max_stack_B": 32,
+              "stack_over256": [],
+              "root_callers_over1k": [
+                [
+                  "thompson_full_column",
+                  19304,
+                  67
+                ],
+                [
+                  "mynn_tridiag2_real",
+                  2224,
+                  87
+                ],
+                [
+                  "loop_select_fusion_34",
+                  4104,
+                  10
+                ],
+                [
+                  "loop_or_select_fusion",
+                  2224,
+                  6
+                ],
+                [
+                  "loop_select_fusion_15",
+                  7064,
+                  36
+                ]
+              ],
+              "nonleaf_over1k": [],
+              "callgraph_unknown": []
+            }
+          ]
+        },
+        {
+          "entry": "jit__advance_chunk_fori-5c74896798f0d39b2fd5852e6e8d56fc4c65a3f6e584e3fb6aaac5f9ce12637f-cache",
+          "source_kind": "jax_cache",
+          "program": null,
+          "blob_sha256": "576d35197a8ed1ba380e06fe78ebe4cdcfa1585f8e9377638e8fd70882333277",
+          "kinput_transpose_status": "MEASURED_RICH_JIT_HLO",
+          "kinput_transpose_over500": [],
+          "elfs": [
+            {
+              "elf": 0,
+              "sha256": "bf04f4c9e88b323e567aadf6ca145d0e9f7f66ebc54238f7cff9bd765bad0245",
+              "kernels": 1102,
+              "max_stack_B": 32,
+              "stack_over256": [],
+              "root_callers_over1k": [
+                [
+                  "thompson_full_column",
+                  19304,
+                  67
+                ],
+                [
+                  "gwdo_column_fp32",
+                  1568,
+                  1
+                ],
+                [
+                  "mynn_tridiag2_real",
+                  2224,
+                  87
+                ],
+                [
+                  "loop_select_fusion_35",
+                  1472,
+                  4
+                ],
+                [
+                  "input_multiply_power_select_subtract_transpose_fusion",
+                  3688,
+                  6
+                ],
+                [
+                  "loop_or_select_fusion",
+                  2224,
+                  6
+                ],
+                [
+                  "loop_select_fusion_22",
+                  2568,
+                  12
+                ]
+              ],
+              "nonleaf_over1k": [],
+              "callgraph_unknown": []
+            }
+          ]
+        },
+        {
+          "entry": "60cd3ed8ce845659668304661e42a0d43a4afab72022f2e5498d02d635d397ad.xlaexec",
+          "source_kind": "aot",
+          "program": "d01",
+          "blob_sha256": "3a2621e7bd04708d606b0bb0e684b8f1f113a4ff9216f3f7709e473a0f6a9698",
+          "kinput_transpose_status": "UNKNOWN_AOT_METADATA",
+          "kinput_transpose_over500": null,
+          "elfs": [
+            {
+              "elf": 0,
+              "sha256": "bf04f4c9e88b323e567aadf6ca145d0e9f7f66ebc54238f7cff9bd765bad0245",
+              "kernels": 1102,
+              "max_stack_B": 32,
+              "stack_over256": [],
+              "root_callers_over1k": [
+                [
+                  "thompson_full_column",
+                  19304,
+                  67
+                ],
+                [
+                  "gwdo_column_fp32",
+                  1568,
+                  1
+                ],
+                [
+                  "mynn_tridiag2_real",
+                  2224,
+                  87
+                ],
+                [
+                  "loop_select_fusion_35",
+                  1472,
+                  4
+                ],
+                [
+                  "input_multiply_power_select_subtract_transpose_fusion",
+                  3688,
+                  6
+                ],
+                [
+                  "loop_or_select_fusion",
+                  2224,
+                  6
+                ],
+                [
+                  "loop_select_fusion_22",
+                  2568,
+                  12
+                ]
+              ],
+              "nonleaf_over1k": [],
+              "callgraph_unknown": []
+            }
+          ]
+        },
+        {
+          "entry": "89d0583968ed60ab14566e572cae5de0dc8306ada75b86bcb9a4dda8d660cbfe.xlaexec",
+          "source_kind": "aot",
+          "program": "d02",
+          "blob_sha256": "c0e574b5d4fcb5aafc54f87381d415638cbc08c9a09425a7cb468f7811423e95",
+          "kinput_transpose_status": "UNKNOWN_AOT_METADATA",
+          "kinput_transpose_over500": null,
+          "elfs": [
+            {
+              "elf": 0,
+              "sha256": "4ac655a4233bee6225df4aed2ea041cb1225474f2e8fd41c48e130fba228f18c",
+              "kernels": 757,
+              "max_stack_B": 32,
+              "stack_over256": [],
+              "root_callers_over1k": [
+                [
+                  "thompson_full_column",
+                  19304,
+                  67
+                ],
+                [
+                  "mynn_tridiag2_real",
+                  2224,
+                  87
+                ],
+                [
+                  "loop_select_fusion_34",
+                  4104,
+                  10
+                ],
+                [
+                  "loop_or_select_fusion",
+                  2224,
+                  6
+                ],
+                [
+                  "loop_select_fusion_15",
+                  7064,
+                  36
+                ]
+              ],
+              "nonleaf_over1k": [],
+              "callgraph_unknown": []
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

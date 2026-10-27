@@ -17,6 +17,7 @@ Bounds: pristine WRF moves Swiss snow ALBEDO by up to 4.6e-3 at low sun (SWDOWN 
 change, 6e-8 above (E100); measured port: low sun 1.1e-3, full sun 4.8e-7, night 1.4e-6, TAUSS/ALBOLD see TOL.
 Release path (GPUWRF_NOAHMP_NATIVE_REAL=1). Each hunk has a deletion mutant that must fail (E39).
 """
+import dataclasses
 import importlib.util
 import inspect
 import json
@@ -256,9 +257,18 @@ def test_rrtmg_ignores_surface_albedo_at_night_only():
                                                     dy_m=grid.projection.dy_m, msftx=grid.metrics.msftx,
                                                     msfty=grid.metrics.msfty, sina=grid.metrics.sina, cosa=grid.metrics.cosa)
 
+    from gpuwrf.runtime.operational_mode import OperationalNamelist
+    # Product initializer seeding (operational_mode._initial_carry_for_run) with the namelist
+    # defaults the call below uses (mp_physics=8, use_mp_re=1, RRTMG LW/SW): seeds the held
+    # MP_RE effective radii when mp_re_active (release default GPUWRF_RRTMG_MP_RE=1).
+    defaults = {f.name: f.default for f in dataclasses.fields(OperationalNamelist)}
+    state = topo._state(grid).ensure_conditional_leaves(
+        mp_physics=int(defaults["mp_physics"]), use_mp_re=int(defaults["use_mp_re"]),
+        ra_lw_physics=int(defaults["ra_lw_physics"]), ra_sw_physics=int(defaults["ra_sw_physics"]))
+
     def diag(hour, albedo):
         land = SimpleNamespace(albedo=jnp.full((ny, nx), albedo, dtype=jnp.float64), emiss=jnp.full((ny, nx), 0.93))
-        return rrtmg_radiation_diagnostics(topo._state(grid), grid, time_utc=datetime(2026, 2, 28, hour, tzinfo=timezone.utc),
+        return rrtmg_radiation_diagnostics(state, grid, time_utc=datetime(2026, 2, 28, hour, tzinfo=timezone.utc),
                                            lead_seconds=0.0, radiation_static=static, topo_shading=0, slope_rad=0,
                                            land_state=land)
     fields = lambda d: {k: np.asarray(v) for k, v in d._asdict().items() if k != "surface_albedo" and v is not None}  # noqa: E731

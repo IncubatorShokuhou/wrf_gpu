@@ -39,6 +39,12 @@ from gpuwrf.physics.noahmp.precision import native_real_enabled, real_tree
 # ``table_dir=`` argument to build_noahmp_land_state still takes precedence.
 DEFAULT_TABLE_DIR = wrf_run_dir()
 
+# Input fields WRF's non-restart NOAHMP_INIT overwrites or zeroes before use
+# (module_sf_noahmpdrv.F:2109-2182: tvxy/tgxy/tahxy=TSK, eahxy=2000,
+# CANWAT=0 -> canliqxy, canicexy/fwetxy/qsnowxy=0, xsaixy from LAI).
+NOAHMP_INIT_OVERWRITES = ("TV", "TG", "TAH", "EAH", "CANLIQ", "CANICE", "FWET",
+                          "CANWAT", "XSAI", "SAI", "QSNOWXY")
+
 
 def cold_initialize_input_lai(land, static, *, sf_urban_physics=0):
     """NOAHMP_INIT:2163–2182 for newly admitted input-LAI modes, once at load.
@@ -104,6 +110,21 @@ def _build_noahmp_land_state(
     """
 
     run = _run if _run is not None else Gen2Run(Path(run_dir))
+    # WRF NOAHMP_INIT selects MPTABLE using MMINLU (noahmpdrv:1999).
+    # This coupled path still has MODIS-only phenology/TMIN and category
+    # assumptions; selecting the USGS table alone would silently mix datasets.
+    # Refuse before reading fields or allocating any land/device arrays.
+    with run._read_dataset(run.wrfinput_file(domain)) as ds:
+        dataset = str(getattr(ds, "MMINLU", "")).strip()
+        if dataset != "MODIFIED_IGBP_MODIS_NOAH":
+            raise ValueError(
+                f"{run.wrfinput_file(domain)}: Noah-MP requires "
+                "MMINLU='MODIFIED_IGBP_MODIS_NOAH'; "
+                f"got MMINLU={dataset!r}, NUM_LAND_CAT={getattr(ds, 'NUM_LAND_CAT', None)}. "
+                "Other land-use datasets (including USGS) are not supported by "
+                "the coupled Noah-MP path; their category indices and phenology "
+                "must not use MODIS parameters."
+            )
     present = set(run.wrfinput_variables(domain))
     # Precedence: explicit arg > GPUWRF_WRF_ROOT env (re-read here so a late
     # os.environ set still wins) > checkout-relative default.
@@ -115,6 +136,8 @@ def _build_noahmp_land_state(
         return run.load_wrfinput(domain, name, lazy=False)
 
     def has(name: str) -> bool:
+        if name in noahmp_init_overwrites:
+            return False
         return name in present or (field_overrides is not None and name in field_overrides)
 
     # Public source boundary: QNSE on sea-ice input (any present alias, overrides
@@ -124,6 +147,16 @@ def _build_noahmp_land_state(
         namelist = run.namelist
     except FileNotFoundError:
         namelist = None
+    # WRF cycling=.true. is a NON-restart start: NOAHMP_INIT's IF(.NOT.restart)
+    # branch (module_sf_noahmpdrv.F:2008-2190) overwrites the canopy state,
+    # stem area and snow-rate memory and zeroes CANWAT, whatever the cycled
+    # input holds. Those input values are never read; the land-only cycle
+    # (cycling=.false.) keeps its restart-branch analogue below.
+    wrf_cycling = False
+    if namelist is not None and (namelist.get("time_control") or {}).get("cycling", False):
+        from gpuwrf.io.cycling_init import cycling_enabled
+        wrf_cycling = cycling_enabled(namelist)
+    noahmp_init_overwrites = frozenset(NOAHMP_INIT_OVERWRITES) if wrf_cycling else frozenset()
     check_qnse_sea_ice_fields(domain, domain_bl_pbl_physics(namelist, domain),
                               {key: L(key) for key in SEA_ICE_ALIASES if has(key)})
 
@@ -350,7 +383,15 @@ def _build_noahmp_land_state(
     # Explicit soil/snow cycling is analogous to WRF NOAHMP_INIT's restart
     # branch (module_sf_noahmpdrv.F:2008): retain spun-up state, including zero
     # liquid/canopy values, rather than reconstructing it as cold real.exe data.
-    if cycled:
+    if wrf_cycling:
+        meta["land_cycle"] = {
+            "policy": "cycling=.true.: WRF non-restart NOAHMP_INIT from the cycled input "
+                      "(TSK/SNOW/SNOWH/TSLB/SMOIS/LAI read; warm Noah-MP state not restored)",
+            "not_read": sorted(NOAHMP_INIT_OVERWRITES),
+            "land_cycle_marker_present": bool(cycled),
+        }
+        meta["source"] = "WRF cycling non-restart NOAHMP_INIT"
+    elif cycled:
         with run._read_dataset(run.wrfinput_file(domain)) as ds:
             from gpuwrf.cycling.core import restore_land_state
             meta["land_cycle"] = restore_land_state(ds, land_state)

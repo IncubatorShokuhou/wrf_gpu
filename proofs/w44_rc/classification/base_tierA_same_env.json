@@ -1,0 +1,39 @@
+{
+  "rc": 1,
+  "wall_s": 20.017,
+  "active_s": 20.017,
+  "pauses": [],
+  "timeout_active_s": 900,
+  "killed": null,
+  "job": {
+    "label": "base_tierA_same_env",
+    "tree": "<DATA_ROOT>/wrf_gpu2/scratch/w44-rc/baseline_snapshot",
+    "selectors": [
+      "tests/test_aot_key_cli.py::test_aot_key_leaves_a_sealed_bundle_byte_identical",
+      "tests/test_aot_key_cli.py::test_without_the_redirect_aot_key_writes_the_bundle",
+      "tests/v025/restart/test_runtime_data_identity.py::test_reader_registry_covers_actual_package_and_runtime_extractor"
+    ],
+    "fast": "0",
+    "compilation_cache": "false"
+  },
+  "head": "700a382f8b554b2bfc034fc77734b29a5e4261f3",
+  "src_tree": "70fa8384672257d3457cf8a9863b34dac0a115b5",
+  "nodes": {
+    "tests.test_aot_key_cli::test_aot_key_leaves_a_sealed_bundle_byte_identical": [
+      "FAIL",
+      "AssertionError: ['last_cheap_key', 'cb83d69533b4513825353de6e371e0c4f85bc3272d6a6454829007e77ca17694.meta', 'cb83d69533b4513825353de6e371e0c4f85bc3272d6a6454829007e77ca17694.xlaexec', 'dcb5524e622279cd985362d59e6d115d316340b11ea42a5e9b4c26b406539eee.so']\nassert (False)\n +  where False = any(<generat"
+    ],
+    "tests.test_aot_key_cli::test_without_the_redirect_aot_key_writes_the_bundle": [
+      "FAIL",
+      "AssertionError: ['jax/aot/0.4.3-jax0.10.0-jaxlib0.10.0-cpu', 'jax/aot/0.4.3-jax0.10.0-jaxlib0.10.0-cpu/d01', 'jax/aot/0.4.3-jax0.10.0-...xlib0.10.0-cpu/init_aotkey_probe_kernel/cb83d69533b4513825353de6e371e0c4f85bc3272d6a6454829007e77ca17694.xlaexec', ...]\nassert False\n +  where False = any(<generat"
+    ],
+    "tests.v025.restart.test_runtime_data_identity::test_reader_registry_covers_actual_package_and_runtime_extractor": [
+      "PASS",
+      ""
+    ]
+  },
+  "counts": {
+    "FAIL": 2,
+    "PASS": 1
+  }
+}

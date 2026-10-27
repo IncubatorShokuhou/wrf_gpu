@@ -148,7 +148,9 @@ def test_real_sfclay_noah_mynn_handoff_and_pristine_bc(monkeypatch, pristine_bc,
     state,_=H.noahmp_surface_step(state,land,None,dt=6.,grid=grid)
     recipient=C._surface_fluxes_from_state(state)
     finite_close({"wspd":recipient.wspd},{"wspd":np.asarray(diag.fluxes.wspd,dtype=np.float32)},rtol=0,atol=0)
-    column=View(u=view.u,v=view.v)
+    # The MYNN column operands _surface_terms reads: winds, and (release
+    # default RHOSFC_WRF, recipient.psfc supplied) the kts theta/qv/pressure.
+    column=View(u=view.u,v=view.v,theta=view.theta,qv=view.qv,p=view.p,exner=None)
     flux,wind,_,rho_sfc=P._surface_terms(column,recipient)
     finite_close({"wind":wind},{"wind":fixture["baseline"]["wrfwind"]},rtol=2e-7,atol=0)
     actual_drag=np.asarray(rho_sfc)*np.asarray(flux.ustar)**2/np.asarray(wind)

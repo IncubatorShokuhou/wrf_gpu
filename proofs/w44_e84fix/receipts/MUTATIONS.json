@@ -1,0 +1,126 @@
+{
+  "platform": "cpu",
+  "GPU_executed": false,
+  "baseline": {
+    "full_constant_proto_sha256": "8a054a238ef307506e79000085906b8596611a6f612dc7a3c8d2f47ec3940caa",
+    "CSE_aliases": [],
+    "family_counts": {
+      "ozone_cyclic1early": 1,
+      "ozone_cyclic2early": 1,
+      "ozone_lead60": 1,
+      "ozone_linear1": 1,
+      "ozone_linear2": 1,
+      "solar_day1440": 2,
+      "solar_eot365": 1,
+      "solar_lead60": 2,
+      "solar_local60": 1,
+      "solar_lon15": 1,
+      "solar_midpoint60": 1,
+      "solar_solcon365": 1
+    },
+    "f64_divides": 14,
+    "f64_operand_converts": 18,
+    "f32_result_converts": 14,
+    "f64_divide_elements": 29
+  },
+  "results": [
+    {
+      "family": "solar_lead60",
+      "killed": true,
+      "exception": "AssertionError",
+      "reason": "('missing protected f64 divide provenance', ['solar_lead60'], ['ozone_cyclic1early', 'ozone_cyclic2early', 'ozone_lead60', 'ozone_linear1', 'ozone_linear2', 'solar_day1440', 'solar_eot365', 'solar_local60', 'solar_lon15', 'solar_midpoint60', 'solar_solcon365'])"
+    },
+    {
+      "family": "solar_day1440",
+      "killed": true,
+      "exception": "AssertionError",
+      "reason": "('missing protected f64 divide provenance', ['solar_day1440'], ['ozone_cyclic1early', 'ozone_cyclic2early', 'ozone_lead60', 'ozone_linear1', 'ozone_linear2', 'solar_eot365', 'solar_lead60', 'solar_local60', 'solar_lon15', 'solar_midpoint60', 'solar_solcon365'])"
+    },
+    {
+      "family": "solar_degrad",
+      "killed": true,
+      "exception": "AssertionError",
+      "reason": "('host RN constant regressed to device division', ['solar_degrad'], '  div.23 = f32[] divide(constant.104, optimization_barrier.100)')"
+    },
+    {
+      "family": "solar_dpd",
+      "killed": true,
+      "exception": "AssertionError",
+      "reason": "('host RN constant regressed to device division', ['solar_dpd'], '  div.22 = f32[] divide(constant.98, optimization_barrier.97)')"
+    },
+    {
+      "family": "solar_eot365",
+      "killed": true,
+      "exception": "AssertionError",
+      "reason": "('missing protected f64 divide provenance', ['solar_eot365'], ['ozone_cyclic1early', 'ozone_cyclic2early', 'ozone_lead60', 'ozone_linear1', 'ozone_linear2', 'solar_day1440', 'solar_lead60', 'solar_local60', 'solar_lon15', 'solar_midpoint60', 'solar_solcon365'])"
+    },
+    {
+      "family": "solar_midpoint60",
+      "killed": true,
+      "exception": "AssertionError",
+      "reason": "('missing protected f64 divide provenance', ['solar_midpoint60'], ['ozone_cyclic1early', 'ozone_cyclic2early', 'ozone_lead60', 'ozone_linear1', 'ozone_linear2', 'solar_day1440', 'solar_eot365', 'solar_lead60', 'solar_local60', 'solar_lon15', 'solar_solcon365'])"
+    },
+    {
+      "family": "solar_local60",
+      "killed": true,
+      "exception": "AssertionError",
+      "reason": "('missing protected f64 divide provenance', ['solar_local60'], ['ozone_cyclic1early', 'ozone_cyclic2early', 'ozone_lead60', 'ozone_linear1', 'ozone_linear2', 'solar_day1440', 'solar_eot365', 'solar_lead60', 'solar_lon15', 'solar_midpoint60', 'solar_solcon365'])"
+    },
+    {
+      "family": "solar_lon15",
+      "killed": true,
+      "exception": "AssertionError",
+      "reason": "('missing protected f64 divide provenance', ['solar_lon15'], ['ozone_cyclic1early', 'ozone_cyclic2early', 'ozone_lead60', 'ozone_linear1', 'ozone_linear2', 'solar_day1440', 'solar_eot365', 'solar_lead60', 'solar_local60', 'solar_midpoint60', 'solar_solcon365'])"
+    },
+    {
+      "family": "solar_solcon365",
+      "killed": true,
+      "exception": "AssertionError",
+      "reason": "('missing protected f64 divide provenance', ['solar_solcon365'], ['ozone_cyclic1early', 'ozone_cyclic2early', 'ozone_lead60', 'ozone_linear1', 'ozone_linear2', 'solar_day1440', 'solar_eot365', 'solar_lead60', 'solar_local60', 'solar_lon15', 'solar_midpoint60'])"
+    },
+    {
+      "family": "ozone_lead60",
+      "killed": true,
+      "exception": "AssertionError",
+      "reason": "('missing protected f64 divide provenance', ['ozone_lead60'], ['ozone_cyclic1early', 'ozone_cyclic2early', 'ozone_linear1', 'ozone_linear2', 'solar_day1440', 'solar_eot365', 'solar_lead60', 'solar_local60', 'solar_lon15', 'solar_midpoint60', 'solar_solcon365'])"
+    },
+    {
+      "family": "ozone_cyclic1early",
+      "killed": true,
+      "exception": "AssertionError",
+      "reason": "('missing protected f64 divide provenance', ['ozone_cyclic1early'], ['ozone_cyclic2early', 'ozone_lead60', 'ozone_linear1', 'ozone_linear2', 'solar_day1440', 'solar_eot365', 'solar_lead60', 'solar_local60', 'solar_lon15', 'solar_midpoint60', 'solar_solcon365'])"
+    },
+    {
+      "family": "ozone_cyclic2early",
+      "killed": true,
+      "exception": "AssertionError",
+      "reason": "('missing protected f64 divide provenance', ['ozone_cyclic2early'], ['ozone_cyclic1early', 'ozone_lead60', 'ozone_linear1', 'ozone_linear2', 'solar_day1440', 'solar_eot365', 'solar_lead60', 'solar_local60', 'solar_lon15', 'solar_midpoint60', 'solar_solcon365'])"
+    },
+    {
+      "family": "ozone_linear1",
+      "killed": true,
+      "exception": "AssertionError",
+      "reason": "('missing protected f64 divide provenance', ['ozone_linear1'], ['ozone_cyclic1early', 'ozone_cyclic2early', 'ozone_lead60', 'ozone_linear2', 'solar_day1440', 'solar_eot365', 'solar_lead60', 'solar_local60', 'solar_lon15', 'solar_midpoint60', 'solar_solcon365'])"
+    },
+    {
+      "family": "ozone_linear2",
+      "killed": true,
+      "exception": "AssertionError",
+      "reason": "('missing protected f64 divide provenance', ['ozone_linear2'], ['ozone_cyclic1early', 'ozone_cyclic2early', 'ozone_lead60', 'ozone_linear1', 'solar_day1440', 'solar_eot365', 'solar_lead60', 'solar_local60', 'solar_lon15', 'solar_midpoint60', 'solar_solcon365'])"
+    },
+    {
+      "family": "solar_denominator60_to61",
+      "killed": true,
+      "exception": "AssertionError",
+      "reason": "\nArrays are not equal\n\nMismatched elements: 16 / 16 (100%)\nFirst 5 mismatches are at indices:\n [0]: 3199360803 (ACTUAL), 3199360403 (DESIRED)\n [1]: 3198602444 (ACTUAL), 3198602027 (DESIRED)\n [2]: 3197847518 (ACTUAL), 3197847083 (DESIRED)\n [3]: 3197097428 (ACTUAL), 3197096978 (DESIRED)\n [4]: 31963535"
+    },
+    {
+      "family": "ozone_weight_sign",
+      "killed": true,
+      "exception": "AssertionError",
+      "reason": "\nArrays are not equal\n\nMismatched elements: 1 / 1 (100%)\n ACTUAL: array(3205428324, dtype=uint32)\n DESIRED: array(1057944676, dtype=uint32)"
+    }
+  ],
+  "genuine_AssertionError_kills": 16,
+  "setup_errors": 0
+}

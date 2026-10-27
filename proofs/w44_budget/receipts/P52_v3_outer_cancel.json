@@ -1,0 +1,78 @@
+{
+  "verdict": "V3_RAM_SCOPE_OUTER_TERM_NO_ORPHANS",
+  "rc": 143,
+  "elapsed_s": 3.5191623020218685,
+  "frozen_supervisor_sha256": "29a1cfb4891e374a2591e6a91c1959597810c996d4b62c7ab74ffae9233b4265",
+  "receipt": {
+    "schema": "wrf_gpu2.w44_budget.night.v1",
+    "run": "<USER_HOME>/wrf_gpu2_lanes/w44-budget/outer_cancel_qpwwgr8k/NIGHT_1792807716346740697_2213128",
+    "cap_s": 3600,
+    "source_commit": "42f60b74854a7f31ec8cff608ee82c38d057d41a",
+    "launcher_sha256": "e86766677bb962af73233e78a8f6ea03a61ef8ba33a59f17e2f672e6431e60f1",
+    "start_env": "1970-01-01T02:40:00Z",
+    "end_env": "1970-01-01T04:00:00Z",
+    "gpu_started": false,
+    "phases": {
+      "gpu": {
+        "pid": 2213173,
+        "pgid": 2213173,
+        "sid": 2213173,
+        "cap_s": 3000,
+        "cleanup": {
+          "signalled_pids": [
+            2213173,
+            2213195,
+            2213198,
+            2213199
+          ],
+          "live_remaining": []
+        },
+        "elapsed_s": 3.234524271043483,
+        "timed_out": false,
+        "rc": 143
+      }
+    },
+    "verdict": "FAILED_OR_INCOMPLETE",
+    "rc": 143,
+    "start_real_utc": 10000,
+    "remaining_s": 4400.0,
+    "free_bytes": {
+      "/": 33062301696,
+      "<DATA_ROOT>": 397314437120
+    },
+    "probe_verdict": "INCOMPLETE",
+    "retained": "Actual cold cache/probe outputs retained pending manager evidence review; no silent deletion before E41 or failed-gate disposition.",
+    "elapsed_s": 3.4724239829811268,
+    "protocol_version": 3,
+    "model_source": "42f60b74854a7f31ec8cff608ee82c38d057d41a",
+    "manifest": {
+      "schema": "wrf_gpu2.w44_budget.night_manifest.v3",
+      "model": "<USER_HOME>/wrf_gpu2_lanes/w44-budget/snapshot_p49",
+      "model_pin": "42f60b74854a7f31ec8cff608ee82c38d057d41a",
+      "source_tree": "940ae3bf743f27ffc76f43262d11c03b7526bf6e",
+      "case": "<DATA_ROOT>/wrf_gpu2/scratch/w43-release/cases/wn3_0227",
+      "input_receipt": "<USER_HOME>/wrf_gpu2_lanes/w44-budget/NIGHT_1792792718433431644_987496/probe/result.json",
+      "floor_protocol": "<USER_HOME>/wrf_gpu2_lanes/w44-budget/P25_original_conditioning",
+      "cache_root": "<DATA_ROOT>/wrf_gpu2/scratch/w44-budget/night_design_b_cache_42f60b7485",
+      "cap_s": 3600,
+      "gpu_cap_s": 3000,
+      "cpu_cap_s": 480,
+      "earliest_utc": "2026-10-24T19:00:00Z",
+      "files": {
+        "twin_probe.py": "5f5881973a248aff0be8643d227973802ecf92a1d3940832ba4ce103a004414a",
+        "twin_oracle.py": "075aaa0fb786601db38814a74b5c7894861ed90e18a1b4c607380a8cbf405b6b",
+        "history_gate.py": "1599cdc360e1ba5978a17709771ab61fa3b7ebd62532ecd52bf77aa2f8c3c2a4",
+        "pristine_conditioning.py": "de667750f053d3db1320f255eca82bcb72c8c4817f9a12fdc4966ff8541386e1",
+        "night_probe_design_b.py": "179b7d3ace60ee564e9f832e55c41191727b9437ba0d5f2f2b56644b21779230",
+        "night_supervisor_design_b.py": "29a1cfb4891e374a2591e6a91c1959597810c996d4b62c7ab74ffae9233b4265",
+        "budget_cubin_gate.py": "69dcc2dad6b8d634882502de27b07e4e5cbd3c3b2b591b673c41c688ecd98e15",
+        "budget_post_cpu.py": "cd463b13eda87fcd2c31b6036d3e58c6a6bc3a3882fb1bf539ddc900a947fa39",
+        "test_night_design_b.py": "f9b9694e7bd3c3ea4039e3d3dc9ba790ba5dddb60b08bc5e845e84372dd5ec25"
+      }
+    },
+    "scientific_gate": "physical carry BYTE, actual native E41, original per-term gates; accounting UNKNOWN never equals measured"
+  },
+  "dummy_flock_reacquired": true,
+  "worker_and_escaped_sampler_reaped": true,
+  "scope": "CPU-only cancellation of the frozen v3 supervisor's actual top group.\n\nOnly the official-lock command is replaced, by a private dummy-flock worker.\nThe frozen admission, signals, run_group, subreaper, receipts and cleanup run.\nNo official GPU lock, GPU command, JAX import or model execution is permitted.\n"
+}

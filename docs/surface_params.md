@@ -3,7 +3,7 @@
 `gpuwrf run --surface-controls CONTROLS.npz` replaces selected Noah-MP surface parameters with per-cell value
 fields **without recompiling**: the fields are runtime inputs of the compiled step program, so every parameter
 set of one grid reuses the same cached executable (same AOT key). Without the option the released program is
-unchanged (frozen release identities Swiss `3356e249…`, PROD d01 `196aed9f…` verified on this feature's tree).
+unchanged (frozen release identities Swiss `3356e249…` and Canary Islands 9 km domain `196aed9f…`, verified on this feature's tree).
 
 Status: experimental, opt-in, Noah-MP (`sf_surface_physics = 4`) only. Checked so far:
 
@@ -49,9 +49,9 @@ covers the traced controls only).
 
 Each field has the shape the consumer reads ((ny, nx), (2, ny, nx) for vis/nir, (12, ny, nx) for months) and
 the consumer's dtype. A control whose consumer is not active under the chosen Noah-MP options is refused, as are
-non-finite values, values outside physical bounds and unknown names. Not controllable (by design, documented):
-soil hydraulic parameters (Noah-MP WATER reads its own soil table), canopy height `HVT` (two consumers), Jarvis
-`RSMIN` (`opt_crs = 2`), snow parameters, land-use category and terrain (geometry/discrete physics).
+non-finite values, values outside physical bounds and unknown names. The research extension below adds
+soil hydraulics, canopy heights, Jarvis resistance and snow energy parameters. Land-use category and terrain
+remain discrete/geometry inputs rather than surface controls.
 
 Semantics: a field built from multipliers is `round_once(table value × multiplier)` per cell — for a per-category
 multiplier this is byte-identical to running the released code on an MPTABLE whose row was edited the same way
@@ -77,6 +77,27 @@ the namelist), and every runtime root the load reads (WRF tables via `GPUWRF_WRF
 paths named in the environment) must not resolve into an ALISIOS data root, and any other open of such a path
 during the load is refused. Copy such inputs once under `alisios_guard` and pass the copy.
 The control file carries a canonical manifest and per-domain content digests; altered files are refused.
+
+<a id="noah-mp-soil-canopy-and-snow-parameters-research-candidate"></a>
+
+## New soil, canopy and snow controls: not available in v0.4.4
+
+The nine research controls `smcmax`, `dksat`, `bexp`, `psisat`, `hvt`, `hvb`,
+`z0sno`, `snow_emis` and `rsmin` are refused in v0.4.4 before partial
+application. The joint LSM default-value comparison failed on the actual GPU
+root workload. Jarvis `rsmin` was byte-identical in its tested numerical
+comparison, but the approved release policy excludes all nine names.
+
+The existing controls in the table above, including `z0mvt`, are a separate,
+older interface and remain available. Their recorded qualification does not
+extend to the excluded family. A later release would require successful GPU
+qualification; there is no date or commitment.
+
+The [LSM development report](../proofs/w44_lsmparams/LSMPARAMS.md) retains
+original-WRF column and earlier CPU round-off evidence. Those results are
+historical scope, not permission to use the refused controls in v0.4.4.
+See the [current support matrix](release/SUPPORT_MATRIX_v0.4.4.md) and
+[release checks](../release_notes/RELEASE_NOTES_v0.4.4.md).
 
 ## Restart
 

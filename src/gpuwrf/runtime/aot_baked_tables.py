@@ -99,6 +99,10 @@ def baked_table_hash(fn, namelist):
         if mp in (8, 28):
             modules.update(("thompson_tables", "thompson_column"))
             loaders.add(("thompson_tables", "load_wrf_cold_collection_tables"))
+        if mp == 8 and "nt_c" in (getattr(nl, "thompson_parameters", None) or {}):
+            # Runtime Nt_c bakes the bundled freezing planes and gamma rows as
+            # program constants; the selected value itself is a traced child.
+            loaders.add(("thompson_nt_c", "host_tables"))
         if mp == 11:
             modules.update(("cammg.constants", "cammg.cloud", "cammg.gamma", "cammg.micro", "cammg.macro",
                             "cammg.aerosol", "cammg.ice_activation", "cammg.error_function",

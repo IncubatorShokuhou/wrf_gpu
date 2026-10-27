@@ -1,0 +1,50 @@
+{
+  "schema": "wrf_gpu2.w44_budget.v8_seal.v1",
+  "recorded_real_utc": "2026-10-25T01:12:00Z",
+  "tools_commit": "5c15780802",
+  "reason": "manager 00:35Z: re-seal if the gate file changes; critic-approved floor amendment 7a24833cd2 (E163: NEW files, v7 bytes untouched)",
+  "launchers": {
+    "production": {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/w44-budget/launch_v8_5c15780802/production.sh",
+      "sha256": "8feb06738162693d07bebd4f2fa8f181b3f61565d3ec2dd85798b0fcbe106dc7",
+      "manifest_sha256": "bc70459c8601630948498d727d6510758cf6d0f9588109b6d92c8f8a2c9c8e81",
+      "gpu_memory_max": "24G"
+    },
+    "cuda_mini": {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/w44-budget/launch_v8_5c15780802/cuda_mini.sh",
+      "sha256": "32a033cd7dc0328a37575878d6646a213e783300be85e67737fadccaaf6ccb6d",
+      "manifest_sha256": "64ba332c060ae25bc1ae13989bdfcb53e62e242900e9b2240fed4b32d9851a58",
+      "gpu_memory_max": "12G"
+    },
+    "cpu_rehearsal_coupled": {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/w44-budget/launch_v8_5c15780802/cpu_rehearsal_coupled.sh",
+      "sha256": "adcbb4b83fe3d0e1f0e8736feaaee4c0c2359926c053893f5353655b097178a5",
+      "manifest_sha256": "fad3d4329f97400d47a2da2dea73cbe0a6dd3b69f386e748ea7ed81dd30c8f00",
+      "gpu_memory_max": "24G"
+    }
+  },
+  "diff_vs_v7": "only history_gate.py, pristine_conditioning.py, twin_oracle.py (amended gate/oracle) and manifests; rehearsal scope 16G->24G; GPU code/model pin unchanged (snapshot_p68 5438aca4b5)",
+  "e225": {
+    "production": "VALIDATED",
+    "cuda_mini": "VALIDATED"
+  },
+  "alignment": {
+    "production": "{'dt': {'d01': '54', 'd02': '18', 'd03': '6'}, 'hours': ['3'], 'interval': '21600', 'ok': True, 'bad': []}",
+    "cuda_mini": "{'dt': {'d01': '54', 'd02': '18', 'd03': '6'}, 'hours': ['3/100'], 'interval': '21600', 'ok': True, 'bad': []}"
+  },
+  "p76_mini_cpu_all_phases": {
+    "passed": true,
+    "model_verdict": "COMPONENTS_BYTE",
+    "post_verdict": "CPU_GATES_PASS",
+    "gpu_phase_s": 135.65872821000085,
+    "post_s": 25.780246777001594,
+    "oracle_schema": "twin_original.v3",
+    "scope": "12G noSwap asserted"
+  },
+  "withdrawn": [
+    "launch_v7_427ebb9924 production 171c3c69 / cuda_mini 1933cf36 / cpu_rehearsal 6847042b"
+  ],
+  "open": [
+    "production coupled path never executed (P70b OOM at 16 GiB); P70c at 24 GiB awaits manager decision"
+  ]
+}

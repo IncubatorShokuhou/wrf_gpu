@@ -6,6 +6,7 @@ Existing pristine-oracle tests cover physics/radiation alongside this file.
 Old full acoustic/PD comparisons are retained as diagnostics under proofs/s1_port;
 they are not portability acceptance references (manager decision 2026-10-13).
 """
+import os
 from functools import partial
 
 import jax
@@ -228,9 +229,15 @@ def test_eos_real_reference(real_dycore, option):
 
 
 @pytest.mark.parametrize("top_lid", [False, True])
-def test_large_step_uv_real_reference(real_dycore, top_lid):
+def test_large_step_uv_real_reference(real_dycore, monkeypatch, top_lid):
     from gpuwrf.dynamics.core import rk_addtend_dry as ref
 
+    # Release defaults carry GLUE_FUSED part "pin" (row-major with_layout_constraint on the fused operands,
+    # layout only). XLA:CPU erases that LayoutConstraint custom call in algsimp, which this parity probe must
+    # disable (E130) -> "no registered implementation ... LayoutConstraint for Host". Product programs never
+    # disable algsimp; drop only "pin" here, every other release glue part stays as resolved (w44-redfix B).
+    parts = [p for p in os.environ.get("GPUWRF_DYN_GLUE_FUSED", "0").split("_") if p != "pin"]
+    monkeypatch.setenv("GPUWRF_DYN_GLUE_FUSED", "_".join(parts) or "0")
     state, base, m, ns = real_dycore
     zero_u, zero_v = jnp.zeros_like(state.u), jnp.zeros_like(state.v)
     args = dict(dx_m=float(ns.grid.projection.dx_m), dy_m=float(ns.grid.projection.dy_m), top_lid=top_lid,

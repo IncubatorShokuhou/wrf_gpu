@@ -1,0 +1,89 @@
+{
+  "host_file_scope_passed": true,
+  "full_lane_release_passed": false,
+  "array_api_commit": "8bacb7e0c5",
+  "CR03_fix_commit": "51a672a8be0b78ef6f7d2b176286016cde093505",
+  "test_portability_commit": "c721799d88",
+  "code_sha256": {
+    "src/gpuwrf/io/wrfinput_consistency.py": "e58e6b64fb86ec105dba73a3eebc20825af7bc97bb01d3e415711170fc4852aa",
+    "src/gpuwrf/io/field_override.py": "a2be61b7f17e79a065032a7287717202c9b3c15add9d698c309f21ca4b884a91",
+    "tests/w44_override/test_override.py": "796767794016cbe04a64429d2cf675a00acaa03beb051803fece83170612e8bf",
+    "tests/w44_override/test_array_api.py": "d89f9db3653708964cb0951135dc04b842c8e98f56dbee7e6affd517f6eddd4e"
+  },
+  "tests": {
+    "producer_and_original_critic_assertions": 153,
+    "mandatory_netcdf_process_lock": 3,
+    "CR03_exact_guard_deletion_mutants": 2,
+    "mutant_assertions_each": 2,
+    "mutant_setup_errors": 0,
+    "unset_parent_PYTHONPATH_actual_edit": 1
+  },
+  "review": {
+    "verdict": "MERGE HOST/FILE SCOPE ONLY",
+    "path": "<USER_HOME>/wrf_gpu2_lanes/cr-w44-override/delta_51a672a8be/VERDICT.md",
+    "sha256": "7fdd8563bf201ed2f49cf7b3dbc57f9ee3b00f5ab8b6b5db79e3ddd4d277d545",
+    "independent_array_checks": 59
+  },
+  "main_integration": {
+    "test_fix_on_main": "51718eb9df",
+    "manager_confirmed_pushed": "2026-10-23T19:21:40Z",
+    "post_merge_tests_pass": 149
+  },
+  "host_timing": {
+    "sum_file_s": 0.5557280310313217,
+    "sum_array_s_excluding_payload_load": 0.07246654201298952,
+    "peak_process_rss_kib": 501732,
+    "scope": "real0227 3domain shared checker only; no forecast speed or GPU memory claim"
+  },
+  "night": {
+    "launcher": "<USER_HOME>/wrf_gpu2_lanes/w44-override/night_launch.sh",
+    "sha256": "e7d2a75cb5cea4a269a1de0292cf41d5add1802e09903769893a29afe0ecf627",
+    "helper_sha256": "6fa1eb9cf9ac6dc49e954e0b45615db91fb7f04ecf626aae2a236ea448921c4a",
+    "cap_minutes": 20,
+    "CPU_dry_pass": true,
+    "negative_window_controls_pass": 4,
+    "GPU_started": false,
+    "authority": "manager sequencer only after Nightly-DONE"
+  },
+  "receipts": {
+    "OV11.xml": {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/w44-override/OV11.xml",
+      "sha256": "5e39a99c867121aa290dc9c6aa568388b6c41c74b868f727a1751104047c6334"
+    },
+    "OV12.xml": {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/w44-override/OV12.xml",
+      "sha256": "a8b5991b41d265b52f0a78c23490ef9137a328815ec344a107d1771a33dcf07f"
+    },
+    "OV13.log": {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/w44-override/OV13.log",
+      "sha256": "44838f9d02cbf63f09f203dae4ae3716de1f69c853496a73c5c23bc6f147ba08"
+    },
+    "OV14.xml": {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/w44-override/OV14.xml",
+      "sha256": "618d34f9aa170d5cc6bb1afede9afce31cc31dd2ba5e7245cc1765b26f925d73"
+    },
+    "OV15.log": {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/w44-override/OV15.log",
+      "sha256": "02390165dcc3b74dc72e77836b485ca8fd0b340d9464a4f73ae9417cb0ae8262"
+    },
+    "OV16.xml": {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/w44-override/OV16.xml",
+      "sha256": "49a159b9069b1edff8a79dec28452eb9716278d0ffd53053c3c333cf66e1cee7"
+    },
+    "NIGHT_WINDOW_CONTROLS.json": {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/w44-override/NIGHT_WINDOW_CONTROLS.json",
+      "sha256": "ede1e444252b468dd356eb7c2e316089178e42cb347925baaf3fc416ce1e3710"
+    },
+    "CR03_mutants/RESULTS.json": {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/w44-override/CR03_mutants/RESULTS.json",
+      "sha256": "94fff81faf77f451d7ac1d38eab52c7fdcfd6cb80e873cfe9f34c9adb5d98df9"
+    }
+  },
+  "supersedes_host_scope_only": "HOST_GATE.json retained unchanged as original evidence; no original hashed decision mutated",
+  "pending": [
+    "manager-sequenced GPU3h smoke/E41/finite",
+    "actual CPU-WRF acceptance run",
+    "ALISIOS S3 list",
+    "release RW gates"
+  ]
+}

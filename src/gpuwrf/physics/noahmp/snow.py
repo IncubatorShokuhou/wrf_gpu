@@ -51,6 +51,7 @@ from jax import config
 import jax.numpy as jnp
 
 from gpuwrf.contracts.noahmp_state import NSNOW, NSOIL, NoahMPLandState, NoahMPStatic
+from gpuwrf.contracts.real_constfold import R4, real_constant, real_scalar_product
 from gpuwrf.physics.noahmp.types import NoahMPForcing
 from gpuwrf.kernels.phys_noahmp_columns import column_call, columns_enabled
 from gpuwrf.kernels.phys_noahmp_layers import (  # GPUWRF_NOAHMP_LAYER_SELECT / _LISTS
@@ -81,6 +82,12 @@ DZ_SPLIT2 = 0.20             # DIVIDE: target second-layer thickness [m]
 
 # --- SNOWH2O (module_sf_noahmplsm.F:7135) ------------------------------------
 MAX_LIQ_MASS_FRACTION = 0.4
+# WRF REAL fold of max_liq_mass_fraction/(1.0 - max_liq_mass_fraction), module_sf_noahmplsm.F:7216/:7217 (w44-constfold).
+_LIQ_RATIO_REAL = R4(MAX_LIQ_MASS_FRACTION) / (R4(1.0) - R4(MAX_LIQ_MASS_FRACTION))
+
+
+def _liq_ratio(like):
+    return real_constant(_LIQ_RATIO_REAL, MAX_LIQ_MASS_FRACTION / (1.0 - MAX_LIQ_MASS_FRACTION), jnp.result_type(like))
 
 # --- scoped Noah-MP parameter defaults (run/MPTABLE.TBL) ---------------------
 # Non-category snow scalars; pinned here so snow.py oracle-tests without the
@@ -89,6 +96,7 @@ MAX_LIQ_MASS_FRACTION = 0.4
 # defaults (opt_snf=1 / opt_alb=2 corpus namelist).
 SSI = 0.03                # liquid water holding capacity [m3/m3]
 SNOW_RET_FAC = 5.0e-5     # snowpack water-release timescale factor [1/s]
+# WRF QOUT=MAX(...,parameters%SNOW_RET_FAC*DT*QOUT) (module_sf_noahmplsm.F:7211): SNOW_RET_FAC*DT is a REAL product.
 
 
 def _combo(dz1, wliq1, wice1, t1, dz2, wliq2, wice2, t2):
@@ -745,15 +753,15 @@ def _snowh2o(isnow, dzsnso, snowh, sneqv, snice, snliq, sh2o0, sice0, stc,
         vol_liq = snliq_k / (dz_safe[k] * DENH2O)
         qout_k = jnp.maximum(0.0, (vol_liq - SSI * epore[k]) * dzsnso[k])
         if k == (NSNOW - 1):  # surface (WRF J==0) special hold (:7210-7212)
-            qout_k = jnp.maximum((vol_liq - epore[k]) * dzsnso[k], SNOW_RET_FAC * dt * qout_k)
+            qout_k = jnp.maximum((vol_liq - epore[k]) * dzsnso[k], real_scalar_product(SNOW_RET_FAC, dt, jnp.result_type(qout_k)) * qout_k)
         qout_k = qout_k * DENH2O
         snliq_k = snliq_k - qout_k
         denom = snice[k] + snliq_k
         denom_safe = jnp.where(denom > 0.0, denom, 1.0)
         over = (snliq_k / denom_safe) > MAX_LIQ_MASS_FRACTION
-        excess = snliq_k - MAX_LIQ_MASS_FRACTION / (1.0 - MAX_LIQ_MASS_FRACTION) * snice[k]
+        excess = snliq_k - _liq_ratio(snice[k]) * snice[k]
         qout_k = jnp.where(over, qout_k + excess, qout_k)
-        snliq_k = jnp.where(over, MAX_LIQ_MASS_FRACTION / (1.0 - MAX_LIQ_MASS_FRACTION) * snice[k], snliq_k)
+        snliq_k = jnp.where(over, _liq_ratio(snice[k]) * snice[k], snliq_k)
         snliq = set_layer(snliq, k, jnp.where(act, snliq_k, snliq[k]))
         qout = jnp.where(act, qout_k, qout)
         qin = jnp.where(act, qout_k, qin)
@@ -1129,15 +1137,15 @@ def _snowh2o_lists(isnow, Z, snowh, sneqv, I, L, sh2o0, sice0, T, qsnfro, qsnsub
         vol_liq = snliq_k / (dz_safe[k] * DENH2O)
         qout_k = jnp.maximum(0.0, (vol_liq - SSI * epore[k]) * Z[k])
         if k == (NSNOW - 1):
-            qout_k = jnp.maximum((vol_liq - epore[k]) * Z[k], SNOW_RET_FAC * dt * qout_k)
+            qout_k = jnp.maximum((vol_liq - epore[k]) * Z[k], real_scalar_product(SNOW_RET_FAC, dt, jnp.result_type(qout_k)) * qout_k)
         qout_k = qout_k * DENH2O
         snliq_k = snliq_k - qout_k
         denom = I[k] + snliq_k
         denom_safe = jnp.where(denom > 0.0, denom, 1.0)
         over = (snliq_k / denom_safe) > MAX_LIQ_MASS_FRACTION
-        excess = snliq_k - MAX_LIQ_MASS_FRACTION / (1.0 - MAX_LIQ_MASS_FRACTION) * I[k]
+        excess = snliq_k - _liq_ratio(I[k]) * I[k]
         qout_k = jnp.where(over, qout_k + excess, qout_k)
-        snliq_k = jnp.where(over, MAX_LIQ_MASS_FRACTION / (1.0 - MAX_LIQ_MASS_FRACTION) * I[k], snliq_k)
+        snliq_k = jnp.where(over, _liq_ratio(I[k]) * I[k], snliq_k)
         put(L, k, jnp.where(act, snliq_k, L[k]), tL)
         qout = jnp.where(act, qout_k, qout)
         qin = jnp.where(act, qout_k, qin)

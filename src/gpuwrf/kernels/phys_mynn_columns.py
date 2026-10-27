@@ -10,7 +10,7 @@ import jax
 import jax.numpy as jnp
 from gpuwrf.physics import mynn_pbl as P
 
-def _native_edmf_arrays(state, flux, fltv, pblh, dt, dx, *, qc_bl=None, cldfra_bl=None):
+def _native_edmf_arrays(state, flux, fltv, pblh, dt, dx, *, qc_bl=None, cldfra_bl=None, entrainment=None):
     """Build the MYNN-EDMF mass-flux solver arrays from the column state.
 
     Calls the WRF-faithful :func:`mynn_edmf.dmp_mf_columns` (verified against the
@@ -58,11 +58,12 @@ def _native_edmf_arrays(state, flux, fltv, pblh, dt, dx, *, qc_bl=None, cldfra_b
         **P._edmf_cloud_base_kwargs(state, pblh, qc_bl, cldfra_bl),
         **P._ni_plume_kwargs(state),
         **({} if state.spp_pattern is None else {"spp_pattern":state.spp_pattern}),
+        **({} if entrainment is None else {"entrainment": entrainment}),
         interpret=jax.default_backend() == "cpu",
     )
 
 def _advance_native(state: P.MynnPBLColumnState, dt: float, debug: bool,
-                                  surface=None, edmf: bool = False, dx: float = 1000.0):
+                                  surface=None, edmf: bool = False, dx: float = 1000.0, sqfac=None, mynn_coefficients=None):
     """Unjitted implementation; returns the advanced state and the MYNN PBLH.
 
     ``edmf`` activates the MYNN-EDMF mass-flux nonlocal scalar transport (the
@@ -102,7 +103,8 @@ def _advance_native(state: P.MynnPBLColumnState, dt: float, debug: bool,
         )
         if edmf:
             mf = _native_edmf_arrays(state, flux, fltv, pblh0, dt, dx,
-                **P._edmf_fresh_cloud_kwargs(qc_bl, cldfra_bl))
+                **P._edmf_fresh_cloud_kwargs(qc_bl, cldfra_bl),
+                **P._mynn_coefficient_kwargs(mynn_coefficients, "entrainment"))
             qc_bl, cldfra_bl = P.dmp_shallow_cu_overwrite(
                 qc_bl=qc_bl,
                 cldfra_bl=cldfra_bl,
@@ -124,13 +126,16 @@ def _advance_native(state: P.MynnPBLColumnState, dt: float, debug: bool,
         state = state.replace(qc_bl=qc_bl, qi_bl=qi_bl, cldfra_bl=cldfra_bl)
     if P._MYNN_ELB_MF and edmf and mf is None:
         mf = _native_edmf_arrays(
-            state, flux, fltv, P._get_pblh(state, qke, flux.xland), dt, dx
+            state, flux, fltv, P._get_pblh(state, qke, flux.xland), dt, dx,
+            **P._mynn_coefficient_kwargs(mynn_coefficients, "entrainment")
         )
     turb = P._mym_turbulence(state, qke, fltv, flux.ustar, dx, flux.xland,
                              **P._mynn_length_mf_kwargs(state, mf),
-                             **P._mynn_wrf_turbulence_kwargs(state, mf))
+                             **P._mynn_wrf_turbulence_kwargs(state, mf),
+                             **P._mynn_coefficient_kwargs(mynn_coefficients, "alp1"))
     qke_new, _qwt, qdiss, _pdk = P._mym_predict_qke(state, qke, turb, dt, flux.ustar, flux,
-                                               **P._mym_predict_mf_kwargs(mf))
+                                               **P._mym_predict_mf_kwargs(mf), **P._sqfac_kwargs(sqfac),
+                                               **P._mynn_coefficient_kwargs(mynn_coefficients, "cphm_unst", "am_st"))
     if sgs_cloud:
         qsq_new = P._mym_predict_qsq(
             state, state.qsq, turb, dt, s_aw=mf["s_aw"] if mf is not None else None
@@ -138,7 +143,8 @@ def _advance_native(state: P.MynnPBLColumnState, dt: float, debug: bool,
     else:
         qsq_new = state.qsq
     if edmf and mf is None:
-        mf = _native_edmf_arrays(state, flux, fltv, turb["pblh"], dt, dx)
+        mf = _native_edmf_arrays(state, flux, fltv, turb["pblh"], dt, dx,
+            **P._mynn_coefficient_kwargs(mynn_coefficients, "entrainment"))
     means = P._apply_mean_tendencies_with_clouds(state, turb, dt, flux, wind, rhosfc, mf=mf,
         **P._mynn_dheat_kwargs(qke_new, turb["el"], state.p))
     u, v, theta, qv, qc, qi = means[:6]
@@ -164,9 +170,10 @@ def _advance_native(state: P.MynnPBLColumnState, dt: float, debug: bool,
         turb["pblh"],
     )
 
-def step_mynn_columns_native(state, dt, *, debug=False, surface=None, edmf=False, dx=1000.0):
+def step_mynn_columns_native(state, dt, *, debug=False, surface=None, edmf=False, dx=1000.0, sqfac=None, mynn_coefficients=None):
     """Return (state, pblh) with native fp32 leaves and the retained signature."""
     with jax.enable_x64(False):
         state = jax.tree_util.tree_map(lambda v: jnp.asarray(v, jnp.float32), state)
         surface = jax.tree_util.tree_map(lambda v: jnp.asarray(v, jnp.float32), surface)
-        return _advance_native(state, dt, debug, surface, edmf, dx)
+        return _advance_native(state, dt, debug, surface, edmf, dx, **P._sqfac_kwargs(sqfac),
+                               **({} if mynn_coefficients is None else {"mynn_coefficients": mynn_coefficients}))

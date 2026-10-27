@@ -297,7 +297,7 @@ def _inactive_source_branches(env, tc, valid):
     env["_wrf_mixed_phase_sources"] = mixed_phase
 
 
-def full_column(state, dt, *, interpret=False, return_events=False, return_radar_context=False):
+def full_column(state, dt, *, interpret=False, return_events=False, return_radar_context=False, parameters=None):
     """Retained return contract, or optional device counters for validation.
 
     Diagnostic counters count physical cells before the retained fallback
@@ -312,11 +312,11 @@ def full_column(state, dt, *, interpret=False, return_events=False, return_radar
     arrays = [getattr(state, key).reshape(ncol, nz) for key in keys]
     table_arrays = list(tc.THOMPSON_TABLES)
     cold_src = tc._mixed_phase_cold_tables() if tc._mixed_phase_wrf_enabled() else tc.COLD_COLLECTION_TABLES
-    cold_arrays = list(cold_src)
+    cold_arrays = _parameter_cold_arrays(cold_src, parameters)
     ntables, ncold = len(table_arrays), len(cold_arrays)
     precip_keys = ("rain", "snow", "graupel", "ice", "cloudw")
     defaults = dict(T=280., p=100000., rho=1., dz=250.)
-
+    parameter_names, parameter_arrays = _parameter_operands(parameters)
     def kernel(*refs):
         col = pl.program_id(0)
         k = jnp.arange(width, dtype=jnp.int32)
@@ -324,12 +324,12 @@ def full_column(state, dt, *, interpret=False, return_events=False, return_radar
         source = tc.ThompsonColumnState(**{
             key: _load(ref, (col, k), mask=valid, other=defaults.get(key, 0.))
             for key, ref in zip(keys, refs[:len(keys)])})
-        offset = len(keys)
+        offset = len(keys) + len(parameter_names)
         tables = tc.ThompsonTableBundle(*[_Table(ref, valid) for ref in refs[offset:offset+ntables]])
         offset += ntables
         cold = type(cold_src)(*[_Table(ref, valid) for ref in refs[offset:offset+ncold]])
         offset += ncold
-        env = _namespace(tc, tables, cold, nz, width)
+        env = _namespace(tc, tables, cold, nz, width) if not parameter_names else _parameter_namespace(tc, tables, cold, nz, width, parameter_names, refs[len(keys):len(keys)+len(parameter_names)])
         events = {}
         if return_events:
             select = env["_select_state"]
@@ -377,7 +377,7 @@ def full_column(state, dt, *, interpret=False, return_events=False, return_radar
         output_shapes += [jax.ShapeDtypeStruct((ncol, 3), jnp.int32)]
     outputs = pl.pallas_call(kernel, grid=(ncol,), out_shape=output_shapes,
                             interpret=interpret, compiler_params=plt.CompilerParams(num_warps=2),
-                            name="thompson_full_column")(*arrays, *table_arrays, *cold_arrays)
+                            name="thompson_full_column")(*arrays, *parameter_arrays, *table_arrays, *cold_arrays)
     out = state.replace(**{key: value.reshape(shape) for key, value in zip(keys, outputs[:len(keys)])})
     ppt = {key: value.reshape(shape[:-1]) for key, value in zip(precip_keys, outputs[len(keys):len(keys)+len(precip_keys)])}
     if return_radar_context:
@@ -389,3 +389,88 @@ def full_column(state, dt, *, interpret=False, return_events=False, return_radar
     if return_events:
         return out, ppt, outputs[-1]
     return out, ppt
+
+
+def _parameter_operands(parameters):
+    """Optional WRF REAL scalars, loaded inside the existing column kernel.
+
+    Names choose the program; values are explicit operands. The empty OFF
+    tuple preserves the existing Pallas signature and equation namespace.
+    Host validation lives in physics.thompson_parameters, outside tracing.
+    """
+    if parameters is None:
+        return (), ()
+    from gpuwrf.physics.thompson_parameters import PARAMETERS, require_native
+    require_native()
+    names = tuple(sorted(parameters))
+    if not names or set(names) - PARAMETERS.keys():
+        raise ValueError("unsupported Thompson parameter names")
+    arrays = tuple(parameters[name] for name in names)
+    if any(value.shape != () or value.dtype != jnp.float32 for value in arrays):
+        raise ValueError("Thompson parameters must be scalar REAL32 operands")
+    if "av_r" in names:
+        from gpuwrf.physics.thompson_rain_parameters import rain_parameters
+        names += ("__av_r_init",)
+        arrays += (rain_parameters(parameters["av_r"]),)
+    if "nt_c" in names:
+        from gpuwrf.physics.thompson_nt_c import cloud_parameters
+        names += ("__nt_c_cloud",)
+        arrays += (cloud_parameters(parameters["nt_c"]),)
+    return names, arrays
+
+
+def _parameter_namespace(tc, tables, cold, nz, width, names, refs):
+    # The caller's OFF branch retains its original frame/line metadata (E134).
+    cloud = None
+    if names[-1] == "__nt_c_cloud":
+        cloud = tuple(_load(refs[-1], (jnp.int32(i),)) for i in range(7))
+        index = cloud[1].astype(jnp.int32)
+        cold = cold._replace(tpi_qcfz=_CloudNumberTable(cold.tpi_qcfz.ref, cold.tpi_qcfz.valid, index),
+                             tni_qcfz=_CloudNumberTable(cold.tni_qcfz.ref, cold.tni_qcfz.valid, index))
+        names, refs = names[:-1], refs[:-1]
+    rain = None
+    if names[-1] == "__av_r_init":
+        rain = tuple(_load(refs[-1], (jnp.int32(i),)) for i in range(3))
+        names, refs = names[:-1], refs[:-1]
+    env = _namespace(tc, tables, cold, nz, width)
+    for name, ref in zip(names, refs):
+        env[{"autoconversion_rate": "AU_RT", "autoconversion_threshold": "AU_THR0"}.get(name, name.upper())] = _load(ref, ())
+    if cloud is not None:
+        env["NU_C_MP8"] = cloud[0]
+        env["WRF_REAL_CONSTANTS"] = {**tc.WRF_REAL_CONSTANTS, "LAMC_PREFIX": cloud[2],
+            "DC_G_PREFIX": cloud[3], "PNR_WAU_DEN": cloud[4], "CCG5_NU12": cloud[5], "OCG2_NU12": cloud[6]}
+        original_distribution = env["_cloud_distribution"]
+
+        def cloud_distribution(qc, rho):
+            rc, lamc, xdc, mvd, active = original_distribution(qc, rho)
+            # Original :2168-2176 leaves mvd_c=D0c when L_qc is false.
+            # Fixed Nt=100e6 made the clipped expression equal that value;
+            # arbitrary small Nt must not create a ghost cloud collector.
+            return rc, lamc, xdc, jnp.where(active, mvd, jnp.asarray(tc.D0C, mvd.dtype)), active
+
+        env["_cloud_distribution"] = cloud_distribution
+    if rain is not None:
+        env["WRF_REAL_CONSTANTS"] = {**env["WRF_REAL_CONSTANTS"],
+            "T1_QR_QC": rain[0], "T1_QR_QI": rain[0], "T2_QR_QI": rain[1]}
+        env["T1_QR_QC"], env["T1_QR_QI"], env["T2_QR_QI"], env["T2_QR_EV"] = rain[0], rain[0], rain[1], rain[2]
+    return env
+
+
+def _parameter_cold_arrays(cold, parameters):
+    if parameters is None or "nt_c" not in parameters:
+        return list(cold)
+    from gpuwrf.physics.thompson_nt_c import freezing_tables
+    return freezing_tables(cold)
+
+
+class _CloudNumberTable(_Table):
+    """Runtime Nc plane of the original fixed-IN cloud freezing table."""
+    def __init__(self, ref, valid, index, dtype=None):
+        super().__init__(ref, valid, dtype)
+        self.index = index
+
+    def read(self, index):
+        return super().read((index[0], self.index, index[1]))
+
+    def astype(self, dtype):
+        return _CloudNumberTable(self.ref, self.valid, self.index, dtype)

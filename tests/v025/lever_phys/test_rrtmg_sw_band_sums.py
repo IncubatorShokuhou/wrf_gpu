@@ -19,6 +19,7 @@ from gpuwrf.physics import rrtmg_lw as lw
 from gpuwrf.physics import rrtmg_sw as sw
 from gpuwrf.validation import tier1_rrtmg
 from gpuwrf.validation.tier1_rrtmg import load_sw_fixture_state
+from tests._rrtmg_harness_namelist import harness_cldovrlp1  # noqa: F401  (fixture: the fixtures' WRF cldovrlp=1)
 
 FLAG = "GPUWRF_RRTMG_SW_BAND_SUMS"
 
@@ -48,7 +49,7 @@ def _solve(monkeypatch, state, flag):
 
 
 @pytest.mark.parametrize("mode", ["1", "2", "3"])
-def test_sw_band_sums_pass_wrf_tier1(monkeypatch, tmp_path, real_path, mode):
+def test_sw_band_sums_pass_wrf_tier1(monkeypatch, tmp_path, harness_cldovrlp1, real_path, mode):
     monkeypatch.setenv(FLAG, mode)
     monkeypatch.setattr(tier1_rrtmg, "solve_rrtmg_sw_column", sw.solve_rrtmg_sw_column)
     record = tier1_rrtmg.run_tier1_sw(tmp_path / "sw_band_sums.json")

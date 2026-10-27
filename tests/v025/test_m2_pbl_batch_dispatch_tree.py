@@ -107,6 +107,21 @@ def _cond_literals(jaxpr) -> set[int]:
     return out
 
 
+def _scalar_literals(jaxpr) -> set:
+    """Scalar literal operands of a jaxpr's equations as Python numbers (numpy scalars too)."""
+    import numpy as np
+
+    out = set()
+    for eqn in jaxpr.eqns:
+        for v in eqn.invars:
+            if not hasattr(v, "val"):
+                continue
+            arr = np.asarray(v.val)
+            if arr.ndim == 0 and arr.dtype.kind in "iuf":
+                out.add(arr.item())
+    return out
+
+
 def test_condensation_loop_is_inside_the_level_loop() -> None:
     """Nesting + trip-count proof at backend-independent jaxpr level.
 
@@ -120,6 +135,9 @@ def test_condensation_loop_is_inside_the_level_loop() -> None:
     ``scan`` (while batched by the plume vmap) -- both lower to the HLO while
     the W2.1 GPU dump annotated ``known_trip_count=16``.
     """
+    # Mode predicate = the product's own selector: a non-empty kwargs dict means the
+    # original WRF EXIT contract (GPUWRF_MYNN_CONDENSATION_WRF=1, release default).
+    wrf_exit = bool(mynn_edmf._condensation_wrf_kwargs(None))
     args = _fixture()
     jaxpr = jax.make_jaxpr(mynn_edmf.dmp_mf_columns, return_shape=True)(
         **args
@@ -140,6 +158,23 @@ def test_condensation_loop_is_inside_the_level_loop() -> None:
     for e in loop_eqns:
         if e.primitive.name == "scan":
             trip = int(e.params["length"])
+        elif wrf_exit:
+            # Release default GPUWRF_MYNN_CONDENSATION_WRF=1: the literal WRF loop
+            # (module_bl_mynnedmf.F:6814-6829: niter=50, QC=0.5*QC+0.5*MAX(QT-QS,0),
+            # `if (abs(QC-QCOLD)<Diff) exit` with diff=1.e-6) -> a data-dependent
+            # while whose cond carries the hard cap 50 and whose body carries the
+            # 0.5 damping and the 1e-6 exit threshold.
+            cond_jaxpr = e.params["cond_jaxpr"]
+            cond_jaxpr = getattr(cond_jaxpr, "jaxpr", cond_jaxpr)
+            body_jaxpr = e.params["body_jaxpr"]
+            body_jaxpr = getattr(body_jaxpr, "jaxpr", body_jaxpr)
+            assert 50 in _scalar_literals(cond_jaxpr), (
+                "WRF condensation_edmf while bound must be the NITER literal 50"
+            )
+            body_literals = _scalar_literals(body_jaxpr)
+            assert 1.0e-6 in body_literals, "WRF condensation_edmf EXIT threshold diff=1e-6"
+            assert 0.5 in body_literals, "WRF condensation_edmf 0.5 damping"
+            trip = 50
         else:
             cond_jaxpr = e.params["cond_jaxpr"]
             cond_jaxpr = getattr(cond_jaxpr, "jaxpr", cond_jaxpr)
@@ -147,4 +182,7 @@ def test_condensation_loop_is_inside_the_level_loop() -> None:
                 "condensation while bound must be the COND_NITER literal 16"
             )
             trip = 16
-    assert trip == 16, f"condensation loop trip must be COND_NITER=16; got {trip}"
+    if wrf_exit:
+        assert trip == 50, f"WRF condensation loop cap must be NITER=50; got {trip}"
+    else:
+        assert trip == 16, f"condensation loop trip must be COND_NITER=16; got {trip}"

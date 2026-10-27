@@ -1,0 +1,962 @@
+{
+  "schema": "w44-rc.launcher-delta.v5",
+  "reviewed_base": "0fbff22053 FIX F1-F3",
+  "source_pin": "f157ee2a4dd7e6debbab7fe40867e9ef17045a7c",
+  "src_tree": "aa961cb87176f4185aca4d61c99754cae74a2be6",
+  "toolseal": "03507a848b9e4e2edef68b3abe6f3c9942febd6754bc267d17fd35e5918c18c2",
+  "plan": "<DATA_ROOT>/wrf_gpu2/scratch/w44-rc/NIGHT_PLAN_V5.json",
+  "sequence_receipt": "<USER_HOME>/wrf_gpu2_lanes/manager/SEQ_SMOKE_NIGHT_PLAN_V5_20261026T104908Z.json",
+  "sequence_sha256": "938f944f03be1e1a57f4f79f550213189cb7d178e8c14d6b0be2dea996e94765",
+  "steps": [
+    {
+      "lane": "w44-rc-cold-swiss",
+      "path": "<DATA_ROOT>/wrf_gpu2/scratch/w44-rc/tools_v044_v5/entry_prime_swiss.sh",
+      "sha256": "aac323cf3bfe9edd08ba6550e770ba4e71a7bfee22803f1d46828497d9fb9fdd",
+      "cap_min": 15,
+      "args": "",
+      "rc": 0,
+      "gpu_processes_in_step_pgid": 0,
+      "exact_call": "setsid bash <path> <args> via night_seq_v9 SEQ_SMOKE=1"
+    },
+    {
+      "lane": "w44-rc-cold-prod",
+      "path": "<DATA_ROOT>/wrf_gpu2/scratch/w44-rc/tools_v044_v5/entry_prime_prod.sh",
+      "sha256": "f4544a3b85ed525fa0b57d51aefcb879cabe46c362091458b45bf420f825fb48",
+      "cap_min": 30,
+      "args": "",
+      "rc": 0,
+      "gpu_processes_in_step_pgid": 0,
+      "exact_call": "setsid bash <path> <args> via night_seq_v9 SEQ_SMOKE=1"
+    },
+    {
+      "lane": "w44-rc-cold-wn3",
+      "path": "<DATA_ROOT>/wrf_gpu2/scratch/w44-rc/tools_v044_v5/entry_prime_wn3.sh",
+      "sha256": "b7c845bd370fe33ff23137bf499c66164fe26126524f2eb31e34872a198c2b72",
+      "cap_min": 55,
+      "args": "",
+      "rc": 0,
+      "gpu_processes_in_step_pgid": 0,
+      "exact_call": "setsid bash <path> <args> via night_seq_v9 SEQ_SMOKE=1"
+    },
+    {
+      "lane": "w44-rc-warm",
+      "path": "<DATA_ROOT>/wrf_gpu2/scratch/w44-rc/tools_v044_v5/entry_rw_warm.sh",
+      "sha256": "c2994c502c9167cbf5aed96ad922864fe08889d4a757d2641ff8cbb3c234a878",
+      "cap_min": 45,
+      "args": "",
+      "rc": 0,
+      "gpu_processes_in_step_pgid": 0,
+      "exact_call": "setsid bash <path> <args> via night_seq_v9 SEQ_SMOKE=1"
+    },
+    {
+      "lane": "w44-rc-rw3",
+      "path": "<DATA_ROOT>/wrf_gpu2/scratch/w44-rc/tools_v044_v5/entry_rw3.sh",
+      "sha256": "0e1606a3dee23ba1bbe3881d284cca932390db648a810a03ed5c49bf6012ece8",
+      "cap_min": 75,
+      "args": "",
+      "rc": 0,
+      "gpu_processes_in_step_pgid": 0,
+      "exact_call": "setsid bash <path> <args> via night_seq_v9 SEQ_SMOKE=1"
+    }
+  ],
+  "entries": [
+    {
+      "path": "<DATA_ROOT>/wrf_gpu2/scratch/w44-rc/smoke_v5/runs/prime_prod_20261026T105419Z_654315",
+      "result": {
+        "session_rc": 0,
+        "post_rc": 0,
+        "own_gpu_pids_left": []
+      },
+      "lifecycle": {
+        "supervisor_pid": 654315,
+        "setsid_calls": 1,
+        "cap_s": 1740.0,
+        "arm_pid": 654446,
+        "pgid": 654446,
+        "sid": 654446,
+        "original_rc": 0,
+        "timed_out": false,
+        "signal": 0,
+        "cleanup": {
+          "signalled_pids": [],
+          "groups_seen": [],
+          "remaining_pids": [],
+          "live_remaining": [],
+          "lock_file": "/tmp/wrf_gpu2_gpu.lock",
+          "observed_owned_lock_fds": [],
+          "owned_lock_fds_after": [],
+          "all_children_reaped": true
+        },
+        "rc": 0,
+        "elapsed_s": 2.1213246039988007,
+        "supervisor_peak_rss_KiB": 15316
+      }
+    },
+    {
+      "path": "<DATA_ROOT>/wrf_gpu2/scratch/w44-rc/smoke_v5/runs/prime_swiss_20261026T104908Z_616171",
+      "result": {
+        "session_rc": 0,
+        "post_rc": 0,
+        "own_gpu_pids_left": []
+      },
+      "lifecycle": {
+        "supervisor_pid": 616171,
+        "setsid_calls": 1,
+        "cap_s": 840.0,
+        "arm_pid": 616390,
+        "pgid": 616390,
+        "sid": 616390,
+        "original_rc": 0,
+        "timed_out": false,
+        "signal": 0,
+        "cleanup": {
+          "signalled_pids": [],
+          "groups_seen": [],
+          "remaining_pids": [],
+          "live_remaining": [],
+          "lock_file": "/tmp/wrf_gpu2_gpu.lock",
+          "observed_owned_lock_fds": [],
+          "owned_lock_fds_after": [],
+          "all_children_reaped": true
+        },
+        "rc": 0,
+        "elapsed_s": 303.6307435100025,
+        "supervisor_peak_rss_KiB": 15336
+      }
+    },
+    {
+      "path": "<DATA_ROOT>/wrf_gpu2/scratch/w44-rc/smoke_v5/runs/prime_wn3_20261026T105431Z_655313",
+      "result": {
+        "session_rc": 0,
+        "post_rc": 0,
+        "own_gpu_pids_left": []
+      },
+      "lifecycle": {
+        "supervisor_pid": 655313,
+        "setsid_calls": 1,
+        "cap_s": 3240.0,
+        "arm_pid": 655457,
+        "pgid": 655457,
+        "sid": 655457,
+        "original_rc": 0,
+        "timed_out": false,
+        "signal": 0,
+        "cleanup": {
+          "signalled_pids": [],
+          "groups_seen": [],
+          "remaining_pids": [],
+          "live_remaining": [],
+          "lock_file": "/tmp/wrf_gpu2_gpu.lock",
+          "observed_owned_lock_fds": [],
+          "owned_lock_fds_after": [],
+          "all_children_reaped": true
+        },
+        "rc": 0,
+        "elapsed_s": 109.67023691500071,
+        "supervisor_peak_rss_KiB": 15380
+      }
+    },
+    {
+      "path": "<DATA_ROOT>/wrf_gpu2/scratch/w44-rc/smoke_v5/runs/rw3_20261026T105833Z_681190",
+      "result": {
+        "session_rc": 0,
+        "post_rc": 0,
+        "own_gpu_pids_left": []
+      },
+      "lifecycle": {
+        "supervisor_pid": 681190,
+        "setsid_calls": 1,
+        "cap_s": 4440.0,
+        "arm_pid": 681307,
+        "pgid": 681307,
+        "sid": 681307,
+        "original_rc": 0,
+        "timed_out": false,
+        "signal": 0,
+        "cleanup": {
+          "signalled_pids": [],
+          "groups_seen": [],
+          "remaining_pids": [],
+          "live_remaining": [],
+          "lock_file": "/tmp/wrf_gpu2_gpu.lock",
+          "observed_owned_lock_fds": [],
+          "owned_lock_fds_after": [],
+          "all_children_reaped": true
+        },
+        "rc": 0,
+        "elapsed_s": 564.2354084899998,
+        "supervisor_peak_rss_KiB": 15096
+      }
+    },
+    {
+      "path": "<DATA_ROOT>/wrf_gpu2/scratch/w44-rc/smoke_v5/runs/rw_warm_20261026T105622Z_666221",
+      "result": {
+        "session_rc": 0,
+        "post_rc": 0,
+        "own_gpu_pids_left": []
+      },
+      "lifecycle": {
+        "supervisor_pid": 666221,
+        "setsid_calls": 1,
+        "cap_s": 2640.0,
+        "arm_pid": 666397,
+        "pgid": 666397,
+        "sid": 666397,
+        "original_rc": 0,
+        "timed_out": false,
+        "signal": 0,
+        "cleanup": {
+          "signalled_pids": [],
+          "groups_seen": [],
+          "remaining_pids": [],
+          "live_remaining": [],
+          "lock_file": "/tmp/wrf_gpu2_gpu.lock",
+          "observed_owned_lock_fds": [],
+          "owned_lock_fds_after": [],
+          "all_children_reaped": true
+        },
+        "rc": 0,
+        "elapsed_s": 122.48852455499582,
+        "supervisor_peak_rss_KiB": 15240
+      }
+    }
+  ],
+  "arms": [
+    {
+      "name": "A1_swiss",
+      "path": "<DATA_ROOT>/wrf_gpu2/scratch/w44-rc/session_f157ee2a4dd7_smoke_v5/runs/A1_swiss",
+      "source": "f157ee2a4dd7e6debbab7fe40867e9ef17045a7c",
+      "rc": 0,
+      "model": {
+        "scope": "ACTUAL_CPU_FIRST_ROOT",
+        "proof": "<DATA_ROOT>/wrf_gpu2/scratch/w44-rc/session_f157ee2a4dd7_smoke_v5/runs/A1_swiss/proof/nested_pipeline_run.json",
+        "sha256": "f78dc21d37fd151cee7a3121192002078994ceb980e2678f2c9af31537a31301"
+      }
+    },
+    {
+      "name": "A2_prod",
+      "path": "<DATA_ROOT>/wrf_gpu2/scratch/w44-rc/session_f157ee2a4dd7_smoke_v5/runs/A2_prod",
+      "source": "f157ee2a4dd7e6debbab7fe40867e9ef17045a7c",
+      "rc": 0,
+      "model": {
+        "scope": "PLAN_ONLY",
+        "GPU_native_model": "NOT_APPLICABLE",
+        "actual_large_case_model_executed": false,
+        "exact_CLI_dry_run": true,
+        "explicit_alignment_required": true,
+        "input_dir": "<DATA_ROOT>/wrf_gpu2/v025/s0_case_20260725",
+        "authority": "MAIN manager2026-10-26T09:54:33Z",
+        "source": "f157ee2a4dd7e6debbab7fe40867e9ef17045a7c",
+        "five_program_CompileOnly": {
+          "path": "<DATA_ROOT>/wrf_gpu2/scratch/w44-rc/COMPILEONLY_GATE_TABLE.json",
+          "sha256": "edc8e47e3a5a5f2169bdeb6189435b2e028a25f1dffefc6c9ff11373dbd13aca"
+        },
+        "host_only_default_identity": {
+          "path": "<DATA_ROOT>/wrf_gpu2/scratch/w44-rc/ITEM9_NATIVE_CARRY.json",
+          "sha256": "f77cacebd1a0ab93196c82d0c92ed801309c4eb591361bd688de89f263f87b66"
+        }
+      }
+    },
+    {
+      "name": "A3_wn3_0227_3h",
+      "path": "<DATA_ROOT>/wrf_gpu2/scratch/w44-rc/session_f157ee2a4dd7_smoke_v5/runs/A3_wn3_0227_3h",
+      "source": "f157ee2a4dd7e6debbab7fe40867e9ef17045a7c",
+      "rc": 0,
+      "model": {
+        "scope": "PLAN_ONLY",
+        "GPU_native_model": "NOT_APPLICABLE",
+        "actual_large_case_model_executed": false,
+        "exact_CLI_dry_run": true,
+        "explicit_alignment_required": true,
+        "input_dir": "<DATA_ROOT>/wrf_gpu2/scratch/w43-release/cases/wn3_0227",
+        "authority": "MAIN manager2026-10-26T09:54:33Z",
+        "source": "f157ee2a4dd7e6debbab7fe40867e9ef17045a7c",
+        "five_program_CompileOnly": {
+          "path": "<DATA_ROOT>/wrf_gpu2/scratch/w44-rc/COMPILEONLY_GATE_TABLE.json",
+          "sha256": "edc8e47e3a5a5f2169bdeb6189435b2e028a25f1dffefc6c9ff11373dbd13aca"
+        },
+        "host_only_default_identity": {
+          "path": "<DATA_ROOT>/wrf_gpu2/scratch/w44-rc/ITEM9_NATIVE_CARRY.json",
+          "sha256": "f77cacebd1a0ab93196c82d0c92ed801309c4eb591361bd688de89f263f87b66"
+        }
+      }
+    },
+    {
+      "name": "A4_wn3_0227_icloud0_3h",
+      "path": "<DATA_ROOT>/wrf_gpu2/scratch/w44-rc/session_f157ee2a4dd7_smoke_v5/runs/A4_wn3_0227_icloud0_3h",
+      "source": "f157ee2a4dd7e6debbab7fe40867e9ef17045a7c",
+      "rc": 0,
+      "model": {
+        "scope": "PLAN_ONLY",
+        "GPU_native_model": "NOT_APPLICABLE",
+        "actual_large_case_model_executed": false,
+        "exact_CLI_dry_run": true,
+        "explicit_alignment_required": true,
+        "input_dir": "<DATA_ROOT>/wrf_gpu2/scratch/w43-release/cases/wn3_0227_icloud0",
+        "authority": "MAIN manager2026-10-26T09:54:33Z",
+        "source": "f157ee2a4dd7e6debbab7fe40867e9ef17045a7c",
+        "five_program_CompileOnly": {
+          "path": "<DATA_ROOT>/wrf_gpu2/scratch/w44-rc/COMPILEONLY_GATE_TABLE.json",
+          "sha256": "edc8e47e3a5a5f2169bdeb6189435b2e028a25f1dffefc6c9ff11373dbd13aca"
+        },
+        "host_only_default_identity": {
+          "path": "<DATA_ROOT>/wrf_gpu2/scratch/w44-rc/ITEM9_NATIVE_CARRY.json",
+          "sha256": "f77cacebd1a0ab93196c82d0c92ed801309c4eb591361bd688de89f263f87b66"
+        }
+      }
+    },
+    {
+      "name": "B1_wn3_0227_3h",
+      "path": "<DATA_ROOT>/wrf_gpu2/scratch/w44-rc/session_f157ee2a4dd7_smoke_v5/runs/B1_wn3_0227_3h",
+      "source": "f157ee2a4dd7e6debbab7fe40867e9ef17045a7c",
+      "rc": 0,
+      "model": {
+        "scope": "PLAN_ONLY",
+        "GPU_native_model": "NOT_APPLICABLE",
+        "actual_large_case_model_executed": false,
+        "exact_CLI_dry_run": true,
+        "explicit_alignment_required": true,
+        "input_dir": "<DATA_ROOT>/wrf_gpu2/scratch/w43-release/cases/wn3_0227",
+        "authority": "MAIN manager2026-10-26T09:54:33Z",
+        "source": "f157ee2a4dd7e6debbab7fe40867e9ef17045a7c",
+        "five_program_CompileOnly": {
+          "path": "<DATA_ROOT>/wrf_gpu2/scratch/w44-rc/COMPILEONLY_GATE_TABLE.json",
+          "sha256": "edc8e47e3a5a5f2169bdeb6189435b2e028a25f1dffefc6c9ff11373dbd13aca"
+        },
+        "host_only_default_identity": {
+          "path": "<DATA_ROOT>/wrf_gpu2/scratch/w44-rc/ITEM9_NATIVE_CARRY.json",
+          "sha256": "f77cacebd1a0ab93196c82d0c92ed801309c4eb591361bd688de89f263f87b66"
+        }
+      }
+    },
+    {
+      "name": "B2_wn3_0502_3h",
+      "path": "<DATA_ROOT>/wrf_gpu2/scratch/w44-rc/session_f157ee2a4dd7_smoke_v5/runs/B2_wn3_0502_3h",
+      "source": "f157ee2a4dd7e6debbab7fe40867e9ef17045a7c",
+      "rc": 0,
+      "model": {
+        "scope": "PLAN_ONLY",
+        "GPU_native_model": "NOT_APPLICABLE",
+        "actual_large_case_model_executed": false,
+        "exact_CLI_dry_run": true,
+        "explicit_alignment_required": true,
+        "input_dir": "<DATA_ROOT>/wrf_gpu2/scratch/w43-release/cases/wn3_0502",
+        "authority": "MAIN manager2026-10-26T09:54:33Z",
+        "source": "f157ee2a4dd7e6debbab7fe40867e9ef17045a7c",
+        "five_program_CompileOnly": {
+          "path": "<DATA_ROOT>/wrf_gpu2/scratch/w44-rc/COMPILEONLY_GATE_TABLE.json",
+          "sha256": "edc8e47e3a5a5f2169bdeb6189435b2e028a25f1dffefc6c9ff11373dbd13aca"
+        },
+        "host_only_default_identity": {
+          "path": "<DATA_ROOT>/wrf_gpu2/scratch/w44-rc/ITEM9_NATIVE_CARRY.json",
+          "sha256": "f77cacebd1a0ab93196c82d0c92ed801309c4eb591361bd688de89f263f87b66"
+        }
+      }
+    },
+    {
+      "name": "B3_wn3_0614_3h",
+      "path": "<DATA_ROOT>/wrf_gpu2/scratch/w44-rc/session_f157ee2a4dd7_smoke_v5/runs/B3_wn3_0614_3h",
+      "source": "f157ee2a4dd7e6debbab7fe40867e9ef17045a7c",
+      "rc": 0,
+      "model": {
+        "scope": "PLAN_ONLY",
+        "GPU_native_model": "NOT_APPLICABLE",
+        "actual_large_case_model_executed": false,
+        "exact_CLI_dry_run": true,
+        "explicit_alignment_required": true,
+        "input_dir": "<DATA_ROOT>/wrf_gpu2/scratch/w43-release/cases/wn3_0614",
+        "authority": "MAIN manager2026-10-26T09:54:33Z",
+        "source": "f157ee2a4dd7e6debbab7fe40867e9ef17045a7c",
+        "five_program_CompileOnly": {
+          "path": "<DATA_ROOT>/wrf_gpu2/scratch/w44-rc/COMPILEONLY_GATE_TABLE.json",
+          "sha256": "edc8e47e3a5a5f2169bdeb6189435b2e028a25f1dffefc6c9ff11373dbd13aca"
+        },
+        "host_only_default_identity": {
+          "path": "<DATA_ROOT>/wrf_gpu2/scratch/w44-rc/ITEM9_NATIVE_CARRY.json",
+          "sha256": "f77cacebd1a0ab93196c82d0c92ed801309c4eb591361bd688de89f263f87b66"
+        }
+      }
+    },
+    {
+      "name": "B4_wn3_0227in48h_3h",
+      "path": "<DATA_ROOT>/wrf_gpu2/scratch/w44-rc/session_f157ee2a4dd7_smoke_v5/runs/B4_wn3_0227in48h_3h",
+      "source": "f157ee2a4dd7e6debbab7fe40867e9ef17045a7c",
+      "rc": 0,
+      "model": {
+        "scope": "PLAN_ONLY",
+        "GPU_native_model": "NOT_APPLICABLE",
+        "actual_large_case_model_executed": false,
+        "exact_CLI_dry_run": true,
+        "explicit_alignment_required": true,
+        "input_dir": "<DATA_ROOT>/wrf_gpu2/scratch/w43-release/cases/wn3_0227_48h",
+        "authority": "MAIN manager2026-10-26T09:54:33Z",
+        "source": "f157ee2a4dd7e6debbab7fe40867e9ef17045a7c",
+        "five_program_CompileOnly": {
+          "path": "<DATA_ROOT>/wrf_gpu2/scratch/w44-rc/COMPILEONLY_GATE_TABLE.json",
+          "sha256": "edc8e47e3a5a5f2169bdeb6189435b2e028a25f1dffefc6c9ff11373dbd13aca"
+        },
+        "host_only_default_identity": {
+          "path": "<DATA_ROOT>/wrf_gpu2/scratch/w44-rc/ITEM9_NATIVE_CARRY.json",
+          "sha256": "f77cacebd1a0ab93196c82d0c92ed801309c4eb591361bd688de89f263f87b66"
+        }
+      }
+    },
+    {
+      "name": "B5_swiss_3h",
+      "path": "<DATA_ROOT>/wrf_gpu2/scratch/w44-rc/session_f157ee2a4dd7_smoke_v5/runs/B5_swiss_3h",
+      "source": "f157ee2a4dd7e6debbab7fe40867e9ef17045a7c",
+      "rc": 0,
+      "model": {
+        "scope": "ACTUAL_CPU_FIRST_ROOT",
+        "proof": "<DATA_ROOT>/wrf_gpu2/scratch/w44-rc/session_f157ee2a4dd7_smoke_v5/runs/B5_swiss_3h/proof/nested_pipeline_run.json",
+        "sha256": "d37234baf5d9d71efccf00ed26d867a24dcfd92b5be329e0861ef8d94f3a3da5"
+      }
+    },
+    {
+      "name": "B6_prod_3h",
+      "path": "<DATA_ROOT>/wrf_gpu2/scratch/w44-rc/session_f157ee2a4dd7_smoke_v5/runs/B6_prod_3h",
+      "source": "f157ee2a4dd7e6debbab7fe40867e9ef17045a7c",
+      "rc": 0,
+      "model": {
+        "scope": "PLAN_ONLY",
+        "GPU_native_model": "NOT_APPLICABLE",
+        "actual_large_case_model_executed": false,
+        "exact_CLI_dry_run": true,
+        "explicit_alignment_required": true,
+        "input_dir": "<DATA_ROOT>/wrf_gpu2/v025/s0_case_20260725",
+        "authority": "MAIN manager2026-10-26T09:54:33Z",
+        "source": "f157ee2a4dd7e6debbab7fe40867e9ef17045a7c",
+        "five_program_CompileOnly": {
+          "path": "<DATA_ROOT>/wrf_gpu2/scratch/w44-rc/COMPILEONLY_GATE_TABLE.json",
+          "sha256": "edc8e47e3a5a5f2169bdeb6189435b2e028a25f1dffefc6c9ff11373dbd13aca"
+        },
+        "host_only_default_identity": {
+          "path": "<DATA_ROOT>/wrf_gpu2/scratch/w44-rc/ITEM9_NATIVE_CARRY.json",
+          "sha256": "f77cacebd1a0ab93196c82d0c92ed801309c4eb591361bd688de89f263f87b66"
+        }
+      }
+    },
+    {
+      "name": "B6_prod_profile",
+      "path": "<DATA_ROOT>/wrf_gpu2/scratch/w44-rc/session_f157ee2a4dd7_smoke_v5/runs/B6_prod_profile",
+      "source": "f157ee2a4dd7e6debbab7fe40867e9ef17045a7c",
+      "rc": 0,
+      "model": {
+        "scope": "PLAN_ONLY",
+        "GPU_native_model": "NOT_APPLICABLE",
+        "actual_large_case_model_executed": false,
+        "exact_CLI_dry_run": true,
+        "explicit_alignment_required": true,
+        "input_dir": "<DATA_ROOT>/wrf_gpu2/v025/s0_case_20260725",
+        "authority": "MAIN manager2026-10-26T09:54:33Z",
+        "source": "f157ee2a4dd7e6debbab7fe40867e9ef17045a7c",
+        "five_program_CompileOnly": {
+          "path": "<DATA_ROOT>/wrf_gpu2/scratch/w44-rc/COMPILEONLY_GATE_TABLE.json",
+          "sha256": "edc8e47e3a5a5f2169bdeb6189435b2e028a25f1dffefc6c9ff11373dbd13aca"
+        },
+        "host_only_default_identity": {
+          "path": "<DATA_ROOT>/wrf_gpu2/scratch/w44-rc/ITEM9_NATIVE_CARRY.json",
+          "sha256": "f77cacebd1a0ab93196c82d0c92ed801309c4eb591361bd688de89f263f87b66"
+        }
+      }
+    },
+    {
+      "name": "B8_wn3_0502_icloud0_3h",
+      "path": "<DATA_ROOT>/wrf_gpu2/scratch/w44-rc/session_f157ee2a4dd7_smoke_v5/runs/B8_wn3_0502_icloud0_3h",
+      "source": "f157ee2a4dd7e6debbab7fe40867e9ef17045a7c",
+      "rc": 0,
+      "model": {
+        "scope": "PLAN_ONLY",
+        "GPU_native_model": "NOT_APPLICABLE",
+        "actual_large_case_model_executed": false,
+        "exact_CLI_dry_run": true,
+        "explicit_alignment_required": true,
+        "input_dir": "<DATA_ROOT>/wrf_gpu2/scratch/w43-release/cases/wn3_0502_icloud0",
+        "authority": "MAIN manager2026-10-26T09:54:33Z",
+        "source": "f157ee2a4dd7e6debbab7fe40867e9ef17045a7c",
+        "five_program_CompileOnly": {
+          "path": "<DATA_ROOT>/wrf_gpu2/scratch/w44-rc/COMPILEONLY_GATE_TABLE.json",
+          "sha256": "edc8e47e3a5a5f2169bdeb6189435b2e028a25f1dffefc6c9ff11373dbd13aca"
+        },
+        "host_only_default_identity": {
+          "path": "<DATA_ROOT>/wrf_gpu2/scratch/w44-rc/ITEM9_NATIVE_CARRY.json",
+          "sha256": "f77cacebd1a0ab93196c82d0c92ed801309c4eb591361bd688de89f263f87b66"
+        }
+      }
+    },
+    {
+      "name": "B9_swiss_24h",
+      "path": "<DATA_ROOT>/wrf_gpu2/scratch/w44-rc/session_f157ee2a4dd7_smoke_v5/runs/B9_swiss_24h",
+      "source": "f157ee2a4dd7e6debbab7fe40867e9ef17045a7c",
+      "rc": 0,
+      "model": {
+        "scope": "ACTUAL_CPU_FIRST_ROOT",
+        "proof": "<DATA_ROOT>/wrf_gpu2/scratch/w44-rc/session_f157ee2a4dd7_smoke_v5/runs/B9_swiss_24h/proof/nested_pipeline_run.json",
+        "sha256": "d95ae8f61261959b9da46491135f9fe8e6469905d701f90b976dc248143243bb"
+      }
+    }
+  ],
+  "actual_CPU_Swiss_first_roots": [
+    "<DATA_ROOT>/wrf_gpu2/scratch/w44-rc/session_f157ee2a4dd7_smoke_v5/runs/A1_swiss/proof/nested_pipeline_run.json",
+    "<DATA_ROOT>/wrf_gpu2/scratch/w44-rc/session_f157ee2a4dd7_smoke_v5/runs/B5_swiss_3h/proof/nested_pipeline_run.json",
+    "<DATA_ROOT>/wrf_gpu2/scratch/w44-rc/session_f157ee2a4dd7_smoke_v5/runs/B9_swiss_24h/proof/nested_pipeline_run.json",
+    "<DATA_ROOT>/wrf_gpu2/scratch/w44-rc/session_f157ee2a4dd7_smoke_v5/runs/B6_prod_profile/cpu_swiss/proof/nested_pipeline_run.json"
+  ],
+  "RW3_slots": [
+    {
+      "name": "N72",
+      "path": "<DATA_ROOT>/wrf_gpu2/scratch/w44-rc/smoke_v5/runs/rw3_20261026T105833Z_681190/runs/N72",
+      "rc": 0,
+      "source": "f157ee2a4dd7e6debbab7fe40867e9ef17045a7c",
+      "scope": "PLAN_ONLY / NOT_APPLICABLE",
+      "timer": {
+        "cmd": [
+          "bash",
+          "<DATA_ROOT>/wrf_gpu2/scratch/w44-rc/standin_f157ee2a4dd7_v5/bundle/tools/bundle_consumer.sh",
+          "--bundle",
+          "<DATA_ROOT>/wrf_gpu2/scratch/w44-rc/standin_f157ee2a4dd7_v5/bundle",
+          "--layer",
+          "<DATA_ROOT>/wrf_gpu2/scratch/w44-rc/smoke_v5/runs/rw3_20261026T105833Z_681190/layers/N72_t1",
+          "--",
+          "bash",
+          "<DATA_ROOT>/wrf_gpu2/scratch/w44-rc/tools_v044_v5/arm.sh",
+          "<DATA_ROOT>/wrf_gpu2/scratch/w44-rc/standin_f157ee2a4dd7_v5/bundle/bundle.env",
+          "N72",
+          "<DATA_ROOT>/wrf_gpu2/scratch/w43-release/cases/wn3_0227",
+          "<DATA_ROOT>/wrf_gpu2/scratch/w44-rc/smoke_v5/runs/rw3_20261026T105833Z_681190/runs/N72",
+          "--",
+          "--domains-from-namelist",
+          "--emit-initial-history",
+          "--hours",
+          "72"
+        ],
+        "cap_s": 1200.0,
+        "lock_fd_passed": [],
+        "pid": 685352,
+        "pgid": 681307,
+        "start_unix": 1793012375.0809193,
+        "child_pid": 685354,
+        "teardown": {
+          "signalled": [],
+          "left": [],
+          "all_reaped": true
+        },
+        "rc": 0,
+        "command_rc": 0,
+        "timed_out": false,
+        "signal": 0,
+        "elapsed_s": 2.198,
+        "end_unix": 1793012377.2787955,
+        "stragglers_after_exit": false
+      },
+      "command": "python3 -m gpuwrf.cli run --input-dir <DATA_ROOT>/wrf_gpu2/scratch/w43-release/cases/wn3_0227 --output-dir <DATA_ROOT>/wrf_gpu2/scratch/w44-rc/smoke_v5/runs/rw3_20261026T105833Z_681190/runs/N72/wrfout --proof-dir <DATA_ROOT>/wrf_gpu2/scratch/w44-rc/smoke_v5/runs/rw3_20261026T105833Z_681190/runs/N72/proof --scratch-dir <DATA_ROOT>/wrf_gpu2/scratch/w44-rc/smoke_v5/runs/rw3_20261026T105833Z_681190/runs/N72/scratch --domains-from-namelist --emit-initial-history --hours 72 --dry-run"
+    },
+    {
+      "name": "N1",
+      "path": "<DATA_ROOT>/wrf_gpu2/scratch/w44-rc/smoke_v5/runs/rw3_20261026T105833Z_681190/runs/N1",
+      "rc": 0,
+      "source": "f157ee2a4dd7e6debbab7fe40867e9ef17045a7c",
+      "scope": "PLAN_ONLY / NOT_APPLICABLE",
+      "timer": {
+        "cmd": [
+          "bash",
+          "<DATA_ROOT>/wrf_gpu2/scratch/w44-rc/standin_f157ee2a4dd7_v5/bundle/tools/bundle_consumer.sh",
+          "--bundle",
+          "<DATA_ROOT>/wrf_gpu2/scratch/w44-rc/standin_f157ee2a4dd7_v5/bundle",
+          "--layer",
+          "<DATA_ROOT>/wrf_gpu2/scratch/w44-rc/smoke_v5/runs/rw3_20261026T105833Z_681190/layers/N1_t1",
+          "--",
+          "bash",
+          "<DATA_ROOT>/wrf_gpu2/scratch/w44-rc/tools_v044_v5/arm.sh",
+          "<DATA_ROOT>/wrf_gpu2/scratch/w44-rc/standin_f157ee2a4dd7_v5/bundle/bundle.env",
+          "N1",
+          "<DATA_ROOT>/wrf_gpu2/scratch/w43-release/cases/wn3_0227",
+          "<DATA_ROOT>/wrf_gpu2/scratch/w44-rc/smoke_v5/runs/rw3_20261026T105833Z_681190/runs/N1",
+          "--",
+          "--domains-from-namelist",
+          "--emit-initial-history",
+          "--hours",
+          "24"
+        ],
+        "cap_s": 540.0,
+        "lock_fd_passed": [],
+        "pid": 691393,
+        "pgid": 681307,
+        "start_unix": 1793012441.609734,
+        "child_pid": 691400,
+        "teardown": {
+          "signalled": [],
+          "left": [],
+          "all_reaped": true
+        },
+        "rc": 0,
+        "command_rc": 0,
+        "timed_out": false,
+        "signal": 0,
+        "elapsed_s": 3.441,
+        "end_unix": 1793012445.0505066,
+        "stragglers_after_exit": false
+      },
+      "command": "python3 -m gpuwrf.cli run --input-dir <DATA_ROOT>/wrf_gpu2/scratch/w43-release/cases/wn3_0227 --output-dir <DATA_ROOT>/wrf_gpu2/scratch/w44-rc/smoke_v5/runs/rw3_20261026T105833Z_681190/runs/N1/wrfout --proof-dir <DATA_ROOT>/wrf_gpu2/scratch/w44-rc/smoke_v5/runs/rw3_20261026T105833Z_681190/runs/N1/proof --scratch-dir <DATA_ROOT>/wrf_gpu2/scratch/w44-rc/smoke_v5/runs/rw3_20261026T105833Z_681190/runs/N1/scratch --domains-from-namelist --emit-initial-history --hours 24 --dry-run"
+    },
+    {
+      "name": "O1",
+      "path": "<DATA_ROOT>/wrf_gpu2/scratch/w44-rc/smoke_v5/runs/rw3_20261026T105833Z_681190/runs/O1",
+      "rc": 0,
+      "source": "888804310bb6bfc0237177c0d5e5452a29d5abf6",
+      "scope": "PLAN_ONLY / NOT_APPLICABLE",
+      "timer": {
+        "cmd": [
+          "bash",
+          "<DATA_ROOT>/wrf_gpu2/release_bundles/v0.4.3/tools/bundle_consumer.sh",
+          "--bundle",
+          "<DATA_ROOT>/wrf_gpu2/release_bundles/v0.4.3",
+          "--layer",
+          "<DATA_ROOT>/wrf_gpu2/scratch/w44-rc/smoke_v5/runs/rw3_20261026T105833Z_681190/layers/O1_t1",
+          "--",
+          "bash",
+          "<DATA_ROOT>/wrf_gpu2/scratch/w44-rc/tools_v044_v5/arm.sh",
+          "<DATA_ROOT>/wrf_gpu2/release_bundles/v0.4.3/bundle.env",
+          "O1",
+          "<DATA_ROOT>/wrf_gpu2/scratch/w43-release/cases/wn3_0227",
+          "<DATA_ROOT>/wrf_gpu2/scratch/w44-rc/smoke_v5/runs/rw3_20261026T105833Z_681190/runs/O1",
+          "--",
+          "--domains-from-namelist",
+          "--emit-initial-history",
+          "--hours",
+          "24"
+        ],
+        "cap_s": 540.0,
+        "lock_fd_passed": [],
+        "pid": 695317,
+        "pgid": 681307,
+        "start_unix": 1793012511.089222,
+        "child_pid": 695319,
+        "teardown": {
+          "signalled": [],
+          "left": [],
+          "all_reaped": true
+        },
+        "rc": 0,
+        "command_rc": 0,
+        "timed_out": false,
+        "signal": 0,
+        "elapsed_s": 5.524,
+        "end_unix": 1793012516.6133327,
+        "stragglers_after_exit": false
+      },
+      "command": "python3 -m gpuwrf.cli run --input-dir <DATA_ROOT>/wrf_gpu2/scratch/w43-release/cases/wn3_0227 --output-dir <DATA_ROOT>/wrf_gpu2/scratch/w44-rc/smoke_v5/runs/rw3_20261026T105833Z_681190/runs/O1/wrfout --proof-dir <DATA_ROOT>/wrf_gpu2/scratch/w44-rc/smoke_v5/runs/rw3_20261026T105833Z_681190/runs/O1/proof --scratch-dir <DATA_ROOT>/wrf_gpu2/scratch/w44-rc/smoke_v5/runs/rw3_20261026T105833Z_681190/runs/O1/scratch --domains-from-namelist --emit-initial-history --hours 24 --dry-run"
+    },
+    {
+      "name": "N2",
+      "path": "<DATA_ROOT>/wrf_gpu2/scratch/w44-rc/smoke_v5/runs/rw3_20261026T105833Z_681190/runs/N2",
+      "rc": 0,
+      "source": "f157ee2a4dd7e6debbab7fe40867e9ef17045a7c",
+      "scope": "PLAN_ONLY / NOT_APPLICABLE",
+      "timer": {
+        "cmd": [
+          "bash",
+          "<DATA_ROOT>/wrf_gpu2/scratch/w44-rc/standin_f157ee2a4dd7_v5/bundle/tools/bundle_consumer.sh",
+          "--bundle",
+          "<DATA_ROOT>/wrf_gpu2/scratch/w44-rc/standin_f157ee2a4dd7_v5/bundle",
+          "--layer",
+          "<DATA_ROOT>/wrf_gpu2/scratch/w44-rc/smoke_v5/runs/rw3_20261026T105833Z_681190/layers/N2_t1",
+          "--",
+          "bash",
+          "<DATA_ROOT>/wrf_gpu2/scratch/w44-rc/tools_v044_v5/arm.sh",
+          "<DATA_ROOT>/wrf_gpu2/scratch/w44-rc/standin_f157ee2a4dd7_v5/bundle/bundle.env",
+          "N2",
+          "<DATA_ROOT>/wrf_gpu2/scratch/w43-release/cases/wn3_0227",
+          "<DATA_ROOT>/wrf_gpu2/scratch/w44-rc/smoke_v5/runs/rw3_20261026T105833Z_681190/runs/N2",
+          "--",
+          "--domains-from-namelist",
+          "--emit-initial-history",
+          "--hours",
+          "24"
+        ],
+        "cap_s": 540.0,
+        "lock_fd_passed": [],
+        "pid": 702339,
+        "pgid": 681307,
+        "start_unix": 1793012581.874038,
+        "child_pid": 702347,
+        "teardown": {
+          "signalled": [],
+          "left": [],
+          "all_reaped": true
+        },
+        "rc": 0,
+        "command_rc": 0,
+        "timed_out": false,
+        "signal": 0,
+        "elapsed_s": 2.642,
+        "end_unix": 1793012584.5159078,
+        "stragglers_after_exit": false
+      },
+      "command": "python3 -m gpuwrf.cli run --input-dir <DATA_ROOT>/wrf_gpu2/scratch/w43-release/cases/wn3_0227 --output-dir <DATA_ROOT>/wrf_gpu2/scratch/w44-rc/smoke_v5/runs/rw3_20261026T105833Z_681190/runs/N2/wrfout --proof-dir <DATA_ROOT>/wrf_gpu2/scratch/w44-rc/smoke_v5/runs/rw3_20261026T105833Z_681190/runs/N2/proof --scratch-dir <DATA_ROOT>/wrf_gpu2/scratch/w44-rc/smoke_v5/runs/rw3_20261026T105833Z_681190/runs/N2/scratch --domains-from-namelist --emit-initial-history --hours 24 --dry-run"
+    },
+    {
+      "name": "O2",
+      "path": "<DATA_ROOT>/wrf_gpu2/scratch/w44-rc/smoke_v5/runs/rw3_20261026T105833Z_681190/runs/O2",
+      "rc": 0,
+      "source": "888804310bb6bfc0237177c0d5e5452a29d5abf6",
+      "scope": "PLAN_ONLY / NOT_APPLICABLE",
+      "timer": {
+        "cmd": [
+          "bash",
+          "<DATA_ROOT>/wrf_gpu2/release_bundles/v0.4.3/tools/bundle_consumer.sh",
+          "--bundle",
+          "<DATA_ROOT>/wrf_gpu2/release_bundles/v0.4.3",
+          "--layer",
+          "<DATA_ROOT>/wrf_gpu2/scratch/w44-rc/smoke_v5/runs/rw3_20261026T105833Z_681190/layers/O2_t1",
+          "--",
+          "bash",
+          "<DATA_ROOT>/wrf_gpu2/scratch/w44-rc/tools_v044_v5/arm.sh",
+          "<DATA_ROOT>/wrf_gpu2/release_bundles/v0.4.3/bundle.env",
+          "O2",
+          "<DATA_ROOT>/wrf_gpu2/scratch/w43-release/cases/wn3_0227",
+          "<DATA_ROOT>/wrf_gpu2/scratch/w44-rc/smoke_v5/runs/rw3_20261026T105833Z_681190/runs/O2",
+          "--",
+          "--domains-from-namelist",
+          "--emit-initial-history",
+          "--hours",
+          "24"
+        ],
+        "cap_s": 540.0,
+        "lock_fd_passed": [],
+        "pid": 707659,
+        "pgid": 681307,
+        "start_unix": 1793012648.1950605,
+        "child_pid": 707662,
+        "teardown": {
+          "signalled": [],
+          "left": [],
+          "all_reaped": true
+        },
+        "rc": 0,
+        "command_rc": 0,
+        "timed_out": false,
+        "signal": 0,
+        "elapsed_s": 5.691,
+        "end_unix": 1793012653.886498,
+        "stragglers_after_exit": false
+      },
+      "command": "python3 -m gpuwrf.cli run --input-dir <DATA_ROOT>/wrf_gpu2/scratch/w43-release/cases/wn3_0227 --output-dir <DATA_ROOT>/wrf_gpu2/scratch/w44-rc/smoke_v5/runs/rw3_20261026T105833Z_681190/runs/O2/wrfout --proof-dir <DATA_ROOT>/wrf_gpu2/scratch/w44-rc/smoke_v5/runs/rw3_20261026T105833Z_681190/runs/O2/proof --scratch-dir <DATA_ROOT>/wrf_gpu2/scratch/w44-rc/smoke_v5/runs/rw3_20261026T105833Z_681190/runs/O2/scratch --domains-from-namelist --emit-initial-history --hours 24 --dry-run"
+    },
+    {
+      "name": "N3",
+      "path": "<DATA_ROOT>/wrf_gpu2/scratch/w44-rc/smoke_v5/runs/rw3_20261026T105833Z_681190/runs/N3",
+      "rc": 0,
+      "source": "f157ee2a4dd7e6debbab7fe40867e9ef17045a7c",
+      "scope": "PLAN_ONLY / NOT_APPLICABLE",
+      "timer": {
+        "cmd": [
+          "bash",
+          "<DATA_ROOT>/wrf_gpu2/scratch/w44-rc/standin_f157ee2a4dd7_v5/bundle/tools/bundle_consumer.sh",
+          "--bundle",
+          "<DATA_ROOT>/wrf_gpu2/scratch/w44-rc/standin_f157ee2a4dd7_v5/bundle",
+          "--layer",
+          "<DATA_ROOT>/wrf_gpu2/scratch/w44-rc/smoke_v5/runs/rw3_20261026T105833Z_681190/layers/N3_t1",
+          "--",
+          "bash",
+          "<DATA_ROOT>/wrf_gpu2/scratch/w44-rc/tools_v044_v5/arm.sh",
+          "<DATA_ROOT>/wrf_gpu2/scratch/w44-rc/standin_f157ee2a4dd7_v5/bundle/bundle.env",
+          "N3",
+          "<DATA_ROOT>/wrf_gpu2/scratch/w43-release/cases/wn3_0227",
+          "<DATA_ROOT>/wrf_gpu2/scratch/w44-rc/smoke_v5/runs/rw3_20261026T105833Z_681190/runs/N3",
+          "--",
+          "--domains-from-namelist",
+          "--emit-initial-history",
+          "--hours",
+          "24"
+        ],
+        "cap_s": 540.0,
+        "lock_fd_passed": [],
+        "pid": 715975,
+        "pgid": 681307,
+        "start_unix": 1793012719.4274378,
+        "child_pid": 715977,
+        "teardown": {
+          "signalled": [],
+          "left": [],
+          "all_reaped": true
+        },
+        "rc": 0,
+        "command_rc": 0,
+        "timed_out": false,
+        "signal": 0,
+        "elapsed_s": 2.759,
+        "end_unix": 1793012722.1868837,
+        "stragglers_after_exit": false
+      },
+      "command": "python3 -m gpuwrf.cli run --input-dir <DATA_ROOT>/wrf_gpu2/scratch/w43-release/cases/wn3_0227 --output-dir <DATA_ROOT>/wrf_gpu2/scratch/w44-rc/smoke_v5/runs/rw3_20261026T105833Z_681190/runs/N3/wrfout --proof-dir <DATA_ROOT>/wrf_gpu2/scratch/w44-rc/smoke_v5/runs/rw3_20261026T105833Z_681190/runs/N3/proof --scratch-dir <DATA_ROOT>/wrf_gpu2/scratch/w44-rc/smoke_v5/runs/rw3_20261026T105833Z_681190/runs/N3/scratch --domains-from-namelist --emit-initial-history --hours 24 --dry-run"
+    },
+    {
+      "name": "O3",
+      "path": "<DATA_ROOT>/wrf_gpu2/scratch/w44-rc/smoke_v5/runs/rw3_20261026T105833Z_681190/runs/O3",
+      "rc": 0,
+      "source": "888804310bb6bfc0237177c0d5e5452a29d5abf6",
+      "scope": "PLAN_ONLY / NOT_APPLICABLE",
+      "timer": {
+        "cmd": [
+          "bash",
+          "<DATA_ROOT>/wrf_gpu2/release_bundles/v0.4.3/tools/bundle_consumer.sh",
+          "--bundle",
+          "<DATA_ROOT>/wrf_gpu2/release_bundles/v0.4.3",
+          "--layer",
+          "<DATA_ROOT>/wrf_gpu2/scratch/w44-rc/smoke_v5/runs/rw3_20261026T105833Z_681190/layers/O3_t1",
+          "--",
+          "bash",
+          "<DATA_ROOT>/wrf_gpu2/scratch/w44-rc/tools_v044_v5/arm.sh",
+          "<DATA_ROOT>/wrf_gpu2/release_bundles/v0.4.3/bundle.env",
+          "O3",
+          "<DATA_ROOT>/wrf_gpu2/scratch/w43-release/cases/wn3_0227",
+          "<DATA_ROOT>/wrf_gpu2/scratch/w44-rc/smoke_v5/runs/rw3_20261026T105833Z_681190/runs/O3",
+          "--",
+          "--domains-from-namelist",
+          "--emit-initial-history",
+          "--hours",
+          "24"
+        ],
+        "cap_s": 540.0,
+        "lock_fd_passed": [],
+        "pid": 724072,
+        "pgid": 681307,
+        "start_unix": 1793012787.7337875,
+        "child_pid": 724078,
+        "teardown": {
+          "signalled": [],
+          "left": [],
+          "all_reaped": true
+        },
+        "rc": 0,
+        "command_rc": 0,
+        "timed_out": false,
+        "signal": 0,
+        "elapsed_s": 10.156,
+        "end_unix": 1793012797.8901367,
+        "stragglers_after_exit": false
+      },
+      "command": "python3 -m gpuwrf.cli run --input-dir <DATA_ROOT>/wrf_gpu2/scratch/w43-release/cases/wn3_0227 --output-dir <DATA_ROOT>/wrf_gpu2/scratch/w44-rc/smoke_v5/runs/rw3_20261026T105833Z_681190/runs/O3/wrfout --proof-dir <DATA_ROOT>/wrf_gpu2/scratch/w44-rc/smoke_v5/runs/rw3_20261026T105833Z_681190/runs/O3/proof --scratch-dir <DATA_ROOT>/wrf_gpu2/scratch/w44-rc/smoke_v5/runs/rw3_20261026T105833Z_681190/runs/O3/scratch --domains-from-namelist --emit-initial-history --hours 24 --dry-run"
+    },
+    {
+      "name": "O72",
+      "path": "<DATA_ROOT>/wrf_gpu2/scratch/w44-rc/smoke_v5/runs/rw3_20261026T105833Z_681190/runs/O72",
+      "rc": 0,
+      "source": "888804310bb6bfc0237177c0d5e5452a29d5abf6",
+      "scope": "PLAN_ONLY / NOT_APPLICABLE",
+      "timer": {
+        "cmd": [
+          "bash",
+          "<DATA_ROOT>/wrf_gpu2/release_bundles/v0.4.3/tools/bundle_consumer.sh",
+          "--bundle",
+          "<DATA_ROOT>/wrf_gpu2/release_bundles/v0.4.3",
+          "--layer",
+          "<DATA_ROOT>/wrf_gpu2/scratch/w44-rc/smoke_v5/runs/rw3_20261026T105833Z_681190/layers/O72_t1",
+          "--",
+          "bash",
+          "<DATA_ROOT>/wrf_gpu2/scratch/w44-rc/tools_v044_v5/arm.sh",
+          "<DATA_ROOT>/wrf_gpu2/release_bundles/v0.4.3/bundle.env",
+          "O72",
+          "<DATA_ROOT>/wrf_gpu2/scratch/w43-release/cases/wn3_0227",
+          "<DATA_ROOT>/wrf_gpu2/scratch/w44-rc/smoke_v5/runs/rw3_20261026T105833Z_681190/runs/O72",
+          "--",
+          "--domains-from-namelist",
+          "--emit-initial-history",
+          "--hours",
+          "72"
+        ],
+        "cap_s": 1200.0,
+        "lock_fd_passed": [],
+        "pid": 730304,
+        "pgid": 681307,
+        "start_unix": 1793012864.426584,
+        "child_pid": 730306,
+        "teardown": {
+          "signalled": [],
+          "left": [],
+          "all_reaped": true
+        },
+        "rc": 0,
+        "command_rc": 0,
+        "timed_out": false,
+        "signal": 0,
+        "elapsed_s": 7.015,
+        "end_unix": 1793012871.441474,
+        "stragglers_after_exit": false
+      },
+      "command": "python3 -m gpuwrf.cli run --input-dir <DATA_ROOT>/wrf_gpu2/scratch/w43-release/cases/wn3_0227 --output-dir <DATA_ROOT>/wrf_gpu2/scratch/w44-rc/smoke_v5/runs/rw3_20261026T105833Z_681190/runs/O72/wrfout --proof-dir <DATA_ROOT>/wrf_gpu2/scratch/w44-rc/smoke_v5/runs/rw3_20261026T105833Z_681190/runs/O72/proof --scratch-dir <DATA_ROOT>/wrf_gpu2/scratch/w44-rc/smoke_v5/runs/rw3_20261026T105833Z_681190/runs/O72/scratch --domains-from-namelist --emit-initial-history --hours 72 --dry-run"
+    }
+  ],
+  "RW3_post_children": {
+    "path": "<DATA_ROOT>/wrf_gpu2/scratch/w44-rc/launch_smoke/receipts/rw3_20261026T105833Z/rw3t/RW3T_CHILDREN.json",
+    "rcs": {
+      "disk": 0,
+      "accept": 0,
+      "detail24": 0,
+      "detail72": 0,
+      "verdict": 0
+    }
+  },
+  "E41_unsealed_byte_integrity": {
+    "status": "UNCHANGED",
+    "diff": {
+      "missing": [],
+      "new": [],
+      "changed": []
+    },
+    "cache": "<DATA_ROOT>/wrf_gpu2/scratch/w44-rc/standin_f157ee2a4dd7_v5/bundle/jax",
+    "entries": 2912
+  },
+  "E41_raw": "INCOMPLETE (unchanged); hard policy separately PASS/HLO_UNKNOWN",
+  "CPU_profile": {
+    "scope": "single-launch GPU durations under node tracing; NOT S1; profiler adds host synchronization",
+    "explicit_NVTX_api": "explicit NVTX3 push/pop",
+    "CPU_smoke": true,
+    "range_counts": {
+      "d01": 1
+    },
+    "kernels": [],
+    "GPU_native_profile": "NOT_APPLICABLE_CPU_SMOKE"
+  },
+  "large_case_original_model_phases": "18 PLAN_ONLY/N_A, incl profile requested PROD plan +8RW3; no actual large CPU root",
+  "GPU_scientific_gates": "NOT_APPLICABLE; actual full-size GPU cold primes mandatory; no GPU was started",
+  "verdict": "EXACT_CALL_5_OF_5_AND_ALL_8_RW3_PATHS_COMPLETE; independent re-review pending",
+  "real_GPU_manifest": "not prepared yet; exact source pin f157 in CPU manifest; prepare same pin before GPU queue",
+  "controls": "<DATA_ROOT>/wrf_gpu2/scratch/w44-rc/V5_CONTROLS",
+  "host_perf_memory": "model arithmetic/ops/allocations unchanged; streaming byte inventory and final checker reads only",
+  "changed_artifact_performance": {
+    "cache_bytes": 614176910,
+    "inventory_entries": 2912,
+    "measured_CPU_only": {
+      "SNAPSHOT": {
+        "elapsed": "0:01.38",
+        "max_RSS_KiB": 23488
+      },
+      "CHECK": {
+        "elapsed": "0:00.61",
+        "max_RSS_KiB": 23220
+      }
+    },
+    "GPU_cache_cost": "UNMEASURED; proportional to hashed bytes/metadata",
+    "model_device_work": "UNCHANGED; no model source/math/allocations changed"
+  },
+  "E41_raw_records": {
+    "E41_POST.json": {
+      "path": "<DATA_ROOT>/wrf_gpu2/scratch/w44-rc/session_f157ee2a4dd7_smoke_v5/e41/E41_POST.json",
+      "sha256": "74ee6d12e178f6aecf7bda81cb27fb0bc8fe98a6019b0fe4c12a6837c9cf6362"
+    },
+    "RC_POLICY.json": {
+      "path": "<DATA_ROOT>/wrf_gpu2/scratch/w44-rc/session_f157ee2a4dd7_smoke_v5/e41/RC_POLICY.json",
+      "sha256": "3c6faeb33a6f3e1a3da7241326d14fbfd5b5f50519a57ea0df0ecf49a8398c1f"
+    },
+    "CACHE_BEFORE.json": {
+      "path": "<DATA_ROOT>/wrf_gpu2/scratch/w44-rc/session_f157ee2a4dd7_smoke_v5/e41/CACHE_BEFORE.json",
+      "sha256": "800a8f7cd63950ee4ef607e61b59724b407879b2fb227ff6306a108705b1b043"
+    },
+    "CACHE_AFTER.json": {
+      "path": "<DATA_ROOT>/wrf_gpu2/scratch/w44-rc/session_f157ee2a4dd7_smoke_v5/e41/CACHE_AFTER.json",
+      "sha256": "96090b19bf67a39b9ba131922a9b7e950707889b69372072bb6e4b78f7f4b455"
+    }
+  }
+}

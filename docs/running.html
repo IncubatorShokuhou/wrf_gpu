@@ -22,7 +22,7 @@
         <img src="_assets/logo.svg" alt="wrf_gpu logo">
         <span class="brand-text">
           <span class="brand-name">wrf_gpu</span>
-          <span class="brand-sub">User's Guide · v0.4.3</span>
+          <span class="brand-sub">User's Guide · v0.4.4</span>
         </span>
       </a>
       <div class="search-box">
@@ -114,6 +114,9 @@ directory for every run; existing history files are never overwritten. Useful op
 <ul>
 <li><code>--domain d01</code> runs one domain; <code>--domains-from-namelist</code> or
 <code>--max-dom N</code> runs the fixed nests of the namelist together (see <a href="nesting.html">nesting</a>).</li>
+<li>Since v0.4.4, <code>gpuwrf run</code> (including <code>--dry-run</code>) refuses a forecast length
+(<code>--hours</code>, <code>--minutes</code> or <code>--end-time</code>) that is not a whole number of root time steps.
+With <code>time_step = 54</code>, use for example 3, 6, 24 or 72 hours (3 hours = 200 steps).</li>
 <li><code>--dry-run</code> checks the namelist and prints the run plan without starting the forecast.</li>
 <li><code>--emit-initial-history</code> (nested runs) also writes a history file at the start time.</li>
 <li><code>--feedback</code> turns on two-way nesting (or set <code>feedback=1</code> in the namelist).</li>

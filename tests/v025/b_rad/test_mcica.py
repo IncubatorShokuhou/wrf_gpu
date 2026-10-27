@@ -9,6 +9,7 @@ import os
 from gpuwrf.kernels.rad_mcica import kiss_jump_stream, lw_cloud_mask, sw_cloud_mask
 from gpuwrf.kernels import rad_mcica
 from gpuwrf.physics import rrtmg_lw, rrtmg_sw
+from tests._rrtmg_harness_namelist import harness_cldovrlp1  # noqa: F401  (fixture: the fixtures' WRF cldovrlp=1)
 
 if os.environ.get('B_RAD_REQUIRE_GPU') == '1':
     assert jax.devices()[0].platform == 'gpu', 'GPU RNG suite cannot silently use CPU'
@@ -72,7 +73,7 @@ def fresh_solver_caches():
 
 
 @pytest.mark.parametrize("legacy", [False, True])
-def test_wrf_oracles_with_jumpahead(monkeypatch, tmp_path, legacy, fresh_solver_caches):
+def test_wrf_oracles_with_jumpahead(monkeypatch, tmp_path, legacy, harness_cldovrlp1, fresh_solver_caches):
     # Exercise the actual product dispatch. Override only the kernel's legacy
     # conversion setting to cover both modes in one test process.
     from gpuwrf.validation.rrtmg_intermediate_oracles import run_intermediate_validation
@@ -104,6 +105,12 @@ def test_native_mask_has_no_fp64_hlo():
         assert "f64" not in text
 
 
+def _while_bounds(text):
+    """Trip bound of every StableHLO while (the integer constant its cond compares against)."""
+    import re
+    return [int(b) for b in re.findall(r"cond \{\s*%\S+ = stablehlo.constant dense<(\d+)>", text)]
+
+
 def test_flag_off_retains_serial_scan(monkeypatch):
     p = jnp.full((2, 17), 60123.45, dtype=jnp.float32)
     c = jnp.full(p.shape, 0.5, dtype=jnp.float32)
@@ -115,11 +122,20 @@ def test_flag_off_retains_serial_scan(monkeypatch):
         wrapped = jax.jit(fn)
         wrapped.clear_cache()
         monkeypatch.setattr(module, '_MCICA_JUMPAHEAD', False)
-        assert 'stablehlo.while' in wrapped.lower(*args).as_text()
+        serial = _while_bounds(wrapped.lower(*args).as_text())
         monkeypatch.setattr(module, '_MCICA_JUMPAHEAD', True)
         wrapped.clear_cache()
-        assert 'stablehlo.while' not in wrapped.lower(*args).as_text()
+        jump = _while_bounds(wrapped.lower(*args).as_text())
         wrapped.clear_cache()
+        # Release default GPUWRF_RRTMG_MAXRAND=1 (WRF cldovrlp=2): the maximum-random chain is WRF's
+        # sequential layer loop (generate_stochastic_clouds, icld=2), one while over nlay-1 adjacent
+        # layer pairs in BOTH modes. The serial KISS stream scans exist only with the flag off.
+        chain = [p.shape[-1] - 1] if rad_mcica._MAXRAND else []
+        assert jump == chain, (jump, chain)
+        rng = list(serial)
+        for bound in chain:
+            rng.remove(bound)  # ValueError if the flag-off path lost the overlap chain
+        assert rng, serial
 
 
 def test_gas_leaf_states_support_lower_compile():

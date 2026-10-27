@@ -263,11 +263,11 @@ def test_single_domain_crash_injection_resume_matches_uninterrupted(seed, tmp_pa
     elif crash == "capture":
         calls = []
 
-        def capture(carry):
+        def capture(carry, **kwargs):  # forwards keyword-only options (mynn_config, w44-budget)
             calls.append(1)
             if len(calls) == 2:  # second checkpoint: device->host capture of the carry
                 raise OSError("injected crash during carry capture")
-            return payload(carry)
+            return payload(carry, **kwargs)
         monkeypatch.setattr(storage, "_carry_to_payload", capture)
     elif crash == "data_write":
         def disk_full(path, *args, **kwargs):
@@ -377,7 +377,7 @@ def test_identity_excludes_end_time_but_binds_the_stream(tmp_path, monkeypatch):
     from gpuwrf.integration.nested_pipeline import NestedPipelineConfig
     # Native restart identity also binds the resolved TEMF selection and grid.
     bundles = {NAME: SimpleNamespace(namelist=SimpleNamespace(
-        bl_pbl_physics=5,sf_sfclay_physics=5,sst_skin=0,cu_physics=0,osas_domain_id=1,
+        mp_physics=8,bl_pbl_physics=5,sf_sfclay_physics=5,sst_skin=0,cu_physics=0,osas_domain_id=1,
         grid=SimpleNamespace(nz=5,ny=4,nx=5)))}
     monkeypatch.setattr("gpuwrf.runtime.aot_cheap_key.canonical_digest", lambda value: "digest")
     monkeypatch.setattr("gpuwrf.physics.rrtmg_mp_re.mp_re_config", lambda value: None)

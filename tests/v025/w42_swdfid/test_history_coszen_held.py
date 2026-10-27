@@ -166,7 +166,8 @@ def test_driver_solar_time_is_call_plus_half_radt(monkeypatch):
                          topo_shadow_length_m=25000.0, time_utc=RUN_START, radiation_static=None, grid=None, icloud=1,
                          bl_pbl_physics=5, use_mp_re=1)
     carry = SimpleNamespace(state=SimpleNamespace(), noahmp_land=None, solar_interpolation=None, census=None,
-                            rthraten=None, radiation_diagnostics=None)
+                            rthraten=None, radiation_diagnostics=SimpleNamespace(
+                                shadow_height_m=jnp.zeros((1, 1), jnp.float32)))
     with pytest.raises(Captured):
         om._refresh_rrtmg_driver(carry, nl, 3564.0, True, None)
     assert float(seen["lead_seconds"]) == 3564.0

@@ -7,11 +7,13 @@ from __future__ import annotations
 
 import argparse
 from collections import Counter
+import contextlib
 import hashlib
 import json
 import os
 from pathlib import Path
 import pickle
+import sys
 import time
 
 if os.environ.get('JAX_PLATFORMS') == 'cpu':
@@ -22,6 +24,7 @@ import jax.numpy as jnp
 import numpy as np
 
 from gpuwrf.coupling import physics_couplers as C
+from gpuwrf.kernels import rad_mcica
 from gpuwrf.physics import rrtmg_lw as LW, rrtmg_sw as SW
 from gpuwrf.validation import tier1_rrtmg as T1
 from precision_inventory import inventory
@@ -32,6 +35,69 @@ def digest(tree):
     return hashlib.sha256(b''.join(
         str(v.dtype).encode() + str(v.shape).encode() + v.tobytes()
         for v in values)).hexdigest()
+
+
+@contextlib.contextmanager
+def overlap(maxrand):
+    """Trace the column solvers with McICA overlap ``maxrand`` (rad_mcica._MAXRAND), then restore it.
+
+    GPUWRF_RRTMG_MAXRAND is resolved once at import (E148), so a step that needs another overlap than the
+    process imported pins the module constant; the flag is read at trace time, hence the cache clears.
+    """
+    saved = rad_mcica._MAXRAND
+    jax.clear_caches()
+    rad_mcica._MAXRAND = bool(maxrand)
+    try:
+        yield
+    finally:
+        rad_mcica._MAXRAND = saved
+        jax.clear_caches()
+
+
+def re01_overlap_gate():
+    """The overlap this process imported vs pristine WRF V4.7.1 RRTMG with the same cldovrlp (fid-q2 RE01).
+
+    186 real WN3 0227 columns, LW + SW, frozen tier-1 bounds, column API radii 10/30/75 um: maximum-random
+    (cldovrlp=2, the release default GPUWRF_RRTMG_MAXRAND=1) must be pristine arm C, random (cldovrlp=1) arm D.
+    The other arm must miss on cloudy columns, else the comparison could not see the overlap.
+    """
+    sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'fid_q2'))
+    from rrtmg_mp_re_fixture import FIXTURE, columns_outside, load
+    from test_rrtmg_mp_re_port_today import _port_today
+
+    maxrand = bool(rad_mcica._MAXRAND)
+    arm, other = ('C', 'D') if maxrand else ('D', 'C')
+    fx = load(FIXTURE)
+    port = _port_today(fx)
+    outside = columns_outside(fx, port, reference_arm=arm)
+    return dict(overlap='maximum-random (cldovrlp=2)' if maxrand else 'random (cldovrlp=1)', reference_arm=arm,
+                columns=int(outside.size), columns_outside=int(outside.sum()),
+                outside_index=np.flatnonzero(outside)[:20].tolist(),
+                columns_outside_other_arm=int(columns_outside(fx, port, reference_arm=other).sum()))
+
+
+def lw_driver_truth(fn, state, result):
+    """b-rad pristine RRTMG_LWRAD driver fluxes on the same 3 M5 columns (random overlap, like the Tier-1 fixture).
+
+    All four fields are compared with random overlap pinned; the clear-sky fields do not depend on the overlap and
+    are compared on ``result`` (the program traced with the imported overlap) as well.
+    """
+    truth = json.loads((Path(__file__).parents[1] / 'b_rad/data/lw_driver_clear_flux.json').read_text())
+    expected = np.asarray(truth['fluxes'])
+    tolerance = truth['flux_tolerance']
+    with overlap(False):
+        pinned = jax.block_until_ready(fn(state, with_clear_sky=True))
+    record = {}
+    for label, candidate, fields in (('random', pinned, truth['fields']),
+                                     ('imported', result, [f for f in truth['fields'] if f.startswith('clear_')])):
+        for field in fields:
+            reference = expected[..., truth['fields'].index(field)]
+            actual = np.asarray(getattr(candidate, field))
+            error = np.abs(actual - reference)
+            allowance = tolerance['atol'] + tolerance['rtol'] * np.abs(reference)
+            record[f'{label}:{field}'] = dict(max_abs=float(error.max()), finite=bool(np.isfinite(actual).all()),
+                                              passed=bool(np.all(error <= allowance)))
+    return record
 
 
 def radiation_root(state, grid, clock, static, land):
@@ -66,9 +132,20 @@ def main():
                            for m in (C, LW, SW)})
     if args.mode in ('oracle', 'off'):
         if args.mode == 'oracle':
-            record['lw'] = T1.run_tier1_lw(args.out / 'lw.json')
-            record['sw'] = T1.run_tier1_sw(args.out / 'sw.json')
+            # The M5 analytic Tier-1 fixtures (analytic-rrtmg-{lw,sw}-column-v1) encode WRF icld=1 RANDOM McICA
+            # overlap and are cloudy in all 16 layers of their 3 columns; under the release default
+            # GPUWRF_RRTMG_MAXRAND=1 (cldovrlp=2) their cloudy fluxes move ~5x (SW surface_down off by 286 W/m2 on
+            # CPU and GPU alike, o5-port W09). This step (and the LW driver truth on the same columns, lw_driver_truth)
+            # therefore pins random overlap (== GPUWRF_RRTMG_MAXRAND=0); the overlap the process imported is checked
+            # against pristine WRF of the same cldovrlp just below (RE01).
+            record['overlap_imported'] = 'maximum-random' if rad_mcica._MAXRAND else 'random'
+            with overlap(False):
+                record['lw'] = T1.run_tier1_lw(args.out / 'lw.json')
+                record['sw'] = T1.run_tier1_sw(args.out / 'sw.json')
             assert record['lw']['pass'] and record['sw']['pass']
+            record['re01'] = re01_overlap_gate()
+            assert record['re01']['columns_outside'] == 0, record['re01']
+            assert record['re01']['columns_outside_other_arm'] >= 20, record['re01']
         record['entries'] = {}
         for name, mod, loader in (('lw', LW, T1.load_lw_fixture_state),
                                   ('sw', SW, T1.load_sw_fixture_state)):
@@ -93,15 +170,7 @@ def main():
                 # callee bodies are already included in the recursive HLO audit.
                 assert not record['entries'][name]['f64_arithmetic'], record['entries'][name]
             if name == 'lw' and args.mode == 'oracle':
-                truth = json.loads((Path(__file__).parents[1] / 'b_rad/data/lw_driver_clear_flux.json').read_text())
-                expected = np.asarray(truth['fluxes'])
-                record['clear'] = {}
-                for i, field in enumerate(truth['fields']):
-                    actual = np.asarray(getattr(result, field))
-                    error = np.abs(actual - expected[..., i])
-                    allowance = truth['flux_tolerance']['atol'] + truth['flux_tolerance']['rtol'] * np.abs(expected[..., i])
-                    record['clear'][field] = dict(max_abs=float(error.max()),
-                        finite=bool(np.isfinite(actual).all()), passed=bool(np.all(error <= allowance)))
+                record['clear'] = lw_driver_truth(fn, state, result)
                 assert all(v['finite'] and v['passed'] for v in record['clear'].values())
     else:
         assert args.inputs is not None

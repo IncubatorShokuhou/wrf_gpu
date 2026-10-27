@@ -31,6 +31,7 @@ OUT_OF_PACKAGE = (
     "data/fixtures/thompson-cold-collection-v1.npz",  # physics/thompson_tables.py (import time, default ON)
     "data/fixtures/thompson-mixed-phase-v1.npz",  # physics/thompson_tables.py (mixed-phase default ON)
     "data/fixtures/thompson-aero-tables-v1.npz",  # physics/thompson_aero_tables.py (mp=28/38)
+    "data/fixtures/thompson-ntc-v1.npz",          # physics/thompson_nt_c.py (runtime nt_c, mp=8)
     "scripts/extract_rrtmg_tables.py",            # physics/rrtmg_lw.py RRTMG source parser (ra=4)
 )
 

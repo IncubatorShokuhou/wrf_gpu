@@ -1,0 +1,21 @@
+{
+  "gate": "GPU ON-default round-off class of the nine W2 controls at their default (prior) values",
+  "authority": "manager 2026-10-25T05:12Z ruling (1) accept as operand-constness round-off class; 05:16Z amendment of condition (c), pre-registered before any GPU data",
+  "bound_max_abs_over_field_max": 4e-06,
+  "basis": "2x the measured CPU envelope 1.9e-6 (LS71: Swiss d01 one nested root, release defaults, pin c4a570d950 / src b60781a9; worst field land_history.Q2B 84 cells, ULP median 1 / max 23, max abs 1.07e-8 on 0.0056; State.qsfc / noahmp_land.qsfc 2 cells 23 ULP 1.8e-6; every other field <= 6.5e-7)",
+  "scale": "field max = max |field| over the Noah-MP land columns without land ice (State.xland == 1 and IVGTYP != ISICE of the case wrfinput), fills |x| >= 1e30 excluded; fields not ending in the (ny, nx) mass grid use all cells; packed history families (land_history, energy_accumulators) are split into their named slices (proofs/w44_lsmparams/field_table.py)",
+  "applies_to": "every field of every domain in default_field_table of every prime/measure receipt of gpu_v7.sh (PROD, families lsm + jarvis) and cuda_mini_v7.sh (Swiss, family lsm)",
+  "disclosure": "per field: cells, ULP median/max, max abs, field max, max abs / field max (as on CPU)",
+  "non_float_difference": "fails the gate",
+  "on_exceed": "stop and report; no re-tuning of bound, scale or fields",
+  "recording": "root_gpu.py records the table only (no abort inside the measured run); ondefault_gate.py applies this bound",
+  "evaluator": "proofs/w44_lsmparams/ondefault_gate.py --gate proofs/w44_lsmparams/receipts/GPU_ONDEFAULT_GATE.json <receipts>",
+  "cpu_reference": {
+    "table_first": "<USER_HOME>/wrf_gpu2_lanes/w44-lsmparams/LS71/table_v1.json sha256 b0409fbfebbc396be915873b80e4d7f865ee3955de082d60d76e6c79dd403b04",
+    "table_shared_code": "<USER_HOME>/wrf_gpu2_lanes/w44-lsmparams/LS71/table.json sha256 6e697f4529cc32d32655a327710da022797215cfe5b486c7abcdef5377a98cbb (same numbers, field_table.py)",
+    "arms": "<USER_HOME>/wrf_gpu2_lanes/w44-lsmparams/LS71/{off,on,const}.npz",
+    "const_route_residual": "noahmp_land.sh2o 10 cells <= 2 ULP (6.8e-8), noahmp_land.smois 3 cells 1 ULP (6.8e-8), frozen layer-1 columns only; ON == OFF bitwise there",
+    "table_in_repo": "proofs/w44_lsmparams/receipts/LS71_ONDEFAULT_TABLE.json (= table_shared_code bytes)",
+    "tools": "proofs/w44_lsmparams/root_cause.py (arms), root_cause_table.py + field_table.py (table)"
+  }
+}

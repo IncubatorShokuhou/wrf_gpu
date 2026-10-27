@@ -1,0 +1,85 @@
+{
+  "source_commit": "0fdf00f662",
+  "artifact_sha256": "28a2439e2d2944eb936b2b1d837395456663efa72663bfafc7b64bb8177a0064",
+  "scope": "CPU deviceless actual native; GPU load/execution not qualified",
+  "e41": {
+    "cache": "<USER_HOME>/wrf_gpu2_lanes/w44-precompile/prod_scan",
+    "entries": [
+      {
+        "entry": "d01.xlaexec",
+        "path": "<USER_HOME>/wrf_gpu2_lanes/w44-precompile/prod_scan/aot/captured/d01.xlaexec",
+        "source_kind": "aot",
+        "program": "d01",
+        "aliases": [],
+        "format": "xla-gpu-thunks-riegeli-v1",
+        "blob_sha256": "28a2439e2d2944eb936b2b1d837395456663efa72663bfafc7b64bb8177a0064",
+        "elfs": [
+          {
+            "elf": 0,
+            "sha256": "fcd056411e476299bd3737a4b561ab753830b2e557758b3def94024541902273",
+            "kernels": 1104,
+            "max_stack_B": 32,
+            "stack_over256": [],
+            "root_callers_over1k": [
+              [
+                "thompson_full_column",
+                19304,
+                67
+              ],
+              [
+                "gwdo_column_fp32",
+                1568,
+                1
+              ],
+              [
+                "mynn_tridiag2_real",
+                2224,
+                87
+              ],
+              [
+                "loop_select_fusion_35",
+                1472,
+                4
+              ],
+              [
+                "input_multiply_power_select_subtract_transpose_fusion",
+                3688,
+                6
+              ],
+              [
+                "loop_or_select_fusion",
+                2224,
+                6
+              ],
+              [
+                "loop_select_fusion_22",
+                2568,
+                12
+              ]
+            ],
+            "nonleaf_over1k": [],
+            "callgraph_unknown": []
+          }
+        ],
+        "kinput_transpose_over500": [],
+        "kinput_transpose_status": "MEASURED_RICH_AOT_HLO"
+      }
+    ],
+    "n_entries": 1,
+    "e41_gate": "PASS",
+    "hard_stack_gate": "PASS",
+    "conservative_flags": false,
+    "coverage": {
+      "status": "PASS",
+      "aot_programs": [
+        "d01"
+      ],
+      "required_run_programs": [
+        "d01"
+      ],
+      "run_proofs": [],
+      "n_discovered": 1,
+      "n_scanned": 1
+    }
+  }
+}

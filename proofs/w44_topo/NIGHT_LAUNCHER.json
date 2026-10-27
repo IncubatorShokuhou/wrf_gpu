@@ -1,0 +1,110 @@
+{
+  "launcher": "<USER_HOME>/wrf_gpu2_lanes/w44-topo/night_forecast_v3.sh",
+  "sha256": "d73606ad0b206c13cd47726cd375df7543da89242330ded8e15c3f737e2f0116",
+  "cap_minutes": 40,
+  "model_pin": "cf1236c9f2dfce4390904aebc61f8f41e23486c0",
+  "tools_commit": "2c2d1a1a8ae5b3ae227ad380cfab250a386c5009",
+  "request_sha256": "e02ca5d7441351525492a700938503c47f35729fb0c1439cda31b3fba7832a7c",
+  "driver_sha256": "34fc797137447acff05a29f249662390189ddb4c890e113942af5abd9e500603",
+  "supersedes": [
+    "d012d0004929cbf4ed7218bf162d4479849b716e2b70ca69c43350ce1e2efce8",
+    "6861429f564c95f643adf13b74b7f5e59c16e9f9e55dc34235438ed32a6fa007"
+  ],
+  "GPU_started": false,
+  "launch_smoke": {
+    "receipt": "<USER_HOME>/wrf_gpu2_lanes/w44-topo/LAUNCH_SMOKE_RECEIPT_v3.json",
+    "receipt_sha256": "4b3654f8440238986b2893bc0d9488fe038cfc8f56ffffb18553cce4f7d3c6fa",
+    "status": "PASS",
+    "GPU_started": false,
+    "scientific_GPU_gate": "PENDING",
+    "whole_wall_s": 30.673544617020525,
+    "phase_wall_s": {
+      "native": 4.042145840008743,
+      "old": 14.98870776599506,
+      "new": 11.243592879967764
+    },
+    "child_product_backend": "cuda",
+    "only_device_backend_substitution": "cpu",
+    "all_groups_cleaned": true
+  },
+  "phase_caps_s": {
+    "native_gpu": 120,
+    "native_e41": 30,
+    "old": 600,
+    "new": 1400,
+    "new_e41": 120,
+    "effect": 40
+  },
+  "measured_cap_evidence": {
+    "cold_proxy": {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/w44-raddiag/gpu/off/run/receipt.json",
+      "sha256": "d401536b6a949cae0c538e7f196869885f980852f4da16ddb20e7e6e6964a73b",
+      "source": "a8c2dceb4b3e4ace1bb72bf437f2def247305c63",
+      "case": "WN30227 3nest3h rad_diagOFF",
+      "whole_run_s": 943.214,
+      "load_to_first_segment_s": 207.6666,
+      "first_segment_s": 718.6043,
+      "compile_in_first_segment_s": 390.01,
+      "warm_h2_s_per_fc_h": 5.725
+    },
+    "warm_baseline": {
+      "path": "<DATA_ROOT>/wrf_gpu2/release_bundles/v0.4.3/receipts/B4_wn3_0227in48h_3h/time.txt",
+      "sha256": "858de85d824424a3a825d07e9770e780281f605aba83c7174879cf965b637ebb",
+      "case": "v0.4.3 WN30227in48h 3nest3h",
+      "whole_run_s": 77.17
+    },
+    "candidate_11h_estimate": {
+      "label": "I, proxy plus8warmhours; new candidate GPU time UNKNOWN until actual arm",
+      "expected_from_measured_proxy_s": 989.014,
+      "cap_s": 1400
+    },
+    "native_and_E41": {
+      "label": "GPU native time UNKNOWN: earlier attempt failed before device; CPU phase smoke measured in launch receipt",
+      "native_gpu_cap_s": 120,
+      "native_e41_cap_s": 30,
+      "new_e41_cap_s": 120
+    }
+  },
+  "entry_controls": {
+    "status": "PASS",
+    "GPU_started": false,
+    "rows": [
+      {
+        "control": "future",
+        "rc": 5,
+        "expected": 5
+      },
+      {
+        "control": "short",
+        "rc": 5,
+        "expected": 5
+      },
+      {
+        "control": "expired",
+        "rc": 5,
+        "expected": 5
+      },
+      {
+        "control": "valid_before_19Z",
+        "rc": 0,
+        "expected": 0
+      },
+      {
+        "control": "refuse_product_gpu",
+        "rc": 1,
+        "assertion": "product child must request cuda"
+      },
+      {
+        "control": "refuse_product_rocm",
+        "rc": 1,
+        "assertion": "product child must request cuda"
+      },
+      {
+        "control": "refuse_product_cpu",
+        "rc": 1,
+        "assertion": "product child must request cuda"
+      }
+    ]
+  },
+  "source_tree_byte_exact_vs_model_pin": true
+}

@@ -22,7 +22,7 @@
         <img src="_assets/logo.svg" alt="wrf_gpu logo">
         <span class="brand-text">
           <span class="brand-name">wrf_gpu</span>
-          <span class="brand-sub">User's Guide · v0.4.3</span>
+          <span class="brand-sub">User's Guide · v0.4.4</span>
         </span>
       </a>
       <div class="search-box">
@@ -55,6 +55,7 @@
 <a class="" href="validation.html">Validation against WRF</a>
 <a class="active" href="limitations.html">Boundaries &amp; Known Issues</a>
 <div class="subnav">
+<a href="limitations.html#planned-parameters">Planned parameter overrides</a>
 <a href="limitations.html#gates">What the validation covers</a>
 <a href="limitations.html#current">Experimental and partly validated</a>
 <a href="limitations.html#inputs">Nests and inputs</a>
@@ -76,6 +77,16 @@
 <p class="lead">What wrf_gpu v0.4.2 does not cover yet, in plain words. The full technical record is in
 the repository's <a href="https://github.com/wrf-gpu/wrf_gpu/blob/main/KNOWN_ISSUES.md">known issues</a> and the
 <a href="https://github.com/wrf-gpu/wrf_gpu/blob/main/docs/release/SUPPORT_MATRIX_v0.4.2.md">support matrix</a>.</p>
+<h2 id="planned-parameters">Planned parameter overrides<a class="headerlink" href="#planned-parameters" aria-label="Permalink">¶</a></h2>
+<p>Diffusion/damping parameter overrides, including <code>c_s</code>, are
+<strong>not shipped in v0.4.4</strong> after failing GPU qualification. They may
+come in a later release after GPU qualification; no date or commitment.
+MYNN coefficient overrides ship in v0.4.4 as <strong>experimental</strong>:
+component and short two-domain GPU root checks passed (default bytes identical,
+same cached programs with no new native blobs, compiled-resource checks passed).
+Three-nest D6, station comparisons and 24–72-hour drift are not qualified.
+The default forecast and existing static namelist support are unaffected.
+See <a href="https://github.com/wrf-gpu/wrf_gpu/blob/main/docs/runtime-parameters.md">family status and evidence</a>.</p>
 <h2 id="gates">What the validation covers<a class="headerlink" href="#gates" aria-label="Permalink">¶</a></h2>
 <ul>
 <li>wrf_gpu is compared with the <strong>original CPU-WRF</strong> run from the same inputs, not with

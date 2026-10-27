@@ -1,5 +1,6 @@
 """Deletion-sensitive land output and literal WRF per-DT accumulator gates."""
 from datetime import datetime
+import os
 from pathlib import Path
 from types import SimpleNamespace
 
@@ -100,7 +101,15 @@ def test_nested_callback_passes_land_state_to_payload(monkeypatch, tmp_path):
         return SimpleNamespace(target=tmp_path / "land.nc")
     monkeypatch.setattr(nested, "prepare_wrfout_payload", capture)
     monkeypatch.setattr(nested, "write_prepared_wrfout", lambda *a, **kw: None)
-    writer._materialize_and_submit(name="d02", own_step=1, carry=SimpleNamespace(state=state, noahmp_land=land),
+    # Product initializer seeding (operational_mode._initial_carry_for_run): native RK
+    # (GPUWRF_DYN_RK_FP32=1) captures the immutable REAL WRF base once; otherwise None.
+    base_state = None
+    if os.environ.get("GPUWRF_DYN_RK_FP32", "0") == "1":
+        from gpuwrf.kernels.dyn_rk_fp32 import real_base
+        from gpuwrf.runtime.operational_mode import _base_state_from_totals
+        base_state = real_base(_base_state_from_totals(state))
+    writer._materialize_and_submit(name="d02", own_step=1,
+        carry=SimpleNamespace(state=state, noahmp_land=land, base_state=base_state),
         valid_time=datetime(2026, 5, 25, 19), lead_seconds=3600, lead_hours=1, path=tmp_path / "land.nc")
     assert observed == [land]
 
@@ -131,12 +140,17 @@ def test_history_container_restart_exact_and_old_schema_rejected(tmp_path, monke
     from gpuwrf.runtime.operational_state import initial_operational_carry
     from gpuwrf.runtime.operational_mode import OperationalNamelist
     grid = GridSpec.canary_3km_template()
+    nml = OperationalNamelist(grid=grid, tendencies=None, metrics=grid.metrics, dt_s=18, acoustic_substeps=4)
     state = State(**{name: jnp.ones(shape) for name, shape in _state_field_shapes(grid).items()})
+    # Product initializer seeding (operational_mode._initial_carry_for_run): static-scheme
+    # conditional leaves, incl. the held MP_RE effective radii when mp_re_active(nml).
+    state = state.ensure_conditional_leaves(mp_physics=int(nml.mp_physics), use_mp_re=int(nml.use_mp_re),
+                                            ra_lw_physics=int(nml.ra_lw_physics),
+                                            ra_sw_physics=int(nml.ra_sw_physics))
     history, sums = seed_history(state)
     history = {n: v + i + .125 for i, (n, v) in enumerate(history.items())}
     sums = {n: v + (i + 1) * 1e5 for i, (n, v) in enumerate(sums.items())}
     carry = initial_operational_carry(state).replace(land_history=history, energy_accumulators=sums)
-    nml = OperationalNamelist(grid=grid, tendencies=None, metrics=grid.metrics, dt_s=18, acoustic_substeps=4)
     pkl = tmp_path / "restart.pkl"; nc = tmp_path / "restart.nc"
     write_restart(carry, nml, grid, 7, pkl)
     write_wrfrst_carry(carry, grid, {}, nc, valid_time="2026-07-25_18:02:06", run_start="2026-07-25_18:00:00", step_index=7)

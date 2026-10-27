@@ -1,0 +1,33 @@
+fixture_id: w44_topo_wn3_0227_injected_parent_operator
+source: pristine WRF 4.7.1 topographic shading routines; staged project WN3 inputs
+source_commit: f52c197ed39d12e087d02c50f412d90d418f6186
+scenario: WN3 d02 parent/d03 1km child; 6 fixed morning/evening/night angles; injected parent is operator-only, not the coupled WRF caller
+created_utc: 2026-10-23T17:50:00Z
+variables:
+  - name: SHADOWMASK
+    units: 1
+    shape: [6, 93, 111]
+    dtype: int32
+    absolute_tolerance: 0
+    relative_tolerance: 0
+  - name: HGT_SHAD
+    units: m
+    shape: [6, 93, 111]
+    dtype: float32
+    absolute_tolerance: 0.01
+    relative_tolerance: 0.00002
+  - name: SWNORM
+    units: W m-2
+    storage: receipt-only maximum error; recomputed by oracle.py, not stored in fixture.npz
+    shape: [6, 93, 111]
+    dtype: float32
+    absolute_tolerance: 0.002
+    relative_tolerance: 0.00002
+files:
+  - path: <USER_HOME>/wrf_gpu2_lanes/w44-topo/TP03/fixture.npz
+    sha256: 6c6ea715885038580540f0fdac8c21bfc3f6431ef13e210f024f101244712ce7
+  - path: TP03_receipt.json
+    role: source/input/build hashes and measured comparisons
+  - path: TP04_receipt.json
+    role: actual WRF caller measurement disproving direct current-parent injection
+license_notes: WRF is UCAR/NCAR software; fixtures are derived from the project's staged operational inputs and stay outside git

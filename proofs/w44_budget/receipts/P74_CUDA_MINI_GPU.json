@@ -1,0 +1,131 @@
+{
+  "schema": "wrf_gpu2.w44_budget.p74_cuda_mini_gpu.v1",
+  "recorded_real_utc": "2026-10-25T00:20:00Z",
+  "launcher": "<USER_HOME>/wrf_gpu2_lanes/w44-budget/launch_v7_427ebb9924/cuda_mini.sh",
+  "launcher_sha256": "1933cf364b5016d9a6bb235b55c40a46ae4e6468774eef23941d17696cb04b3c",
+  "sequencer": "manager night_seq_v6 smoke 2026-10-24, step w44-budget-mini cap 7 min: RUN 00:02:54Z END 00:03:56Z rc 0",
+  "run": "<USER_HOME>/wrf_gpu2_lanes/w44-budget/NIGHT_1792886574968228948_3015089",
+  "model_pin": "5438aca4b533ba8ed739ce94e90cf14cb98b86d4",
+  "platform": "gpu",
+  "gpu": "NVIDIA GeForce RTX 5090 (gpu_start 2970 MiB used)",
+  "phases": {
+    "gpu_elapsed_s": 47.3350889689973,
+    "e41_elapsed_s": 4.656316710999818,
+    "whole_s": 52.020508857000095,
+    "gpu_cap_s": 300
+  },
+  "component": {
+    "case": "wn3_d03_day",
+    "edmf": 1,
+    "columns": 1,
+    "levels": 44,
+    "steps": 2,
+    "verdict": "TWIN_COMPONENT_2STEP_BYTE",
+    "byte_fields": 50,
+    "total_fields": 50,
+    "compile_first_s": {
+      "off": 10.702276364001591,
+      "on": 21.78532997500224
+    },
+    "gpu_wall_ms_median": {
+      "off": 0.8227404996432597,
+      "on": 1.307994498347398
+    },
+    "gpu_wall_ms_samples": {
+      "off": [
+        1.9895139994332567,
+        0.8991459981189109,
+        0.7463350011676084,
+        0.7098050009517465
+      ],
+      "on": [
+        2.452587999869138,
+        1.3491599966073409,
+        1.266829000087455,
+        1.1791290016844869
+      ]
+    },
+    "temp_bytes": {
+      "off": 105872,
+      "on": 103904
+    },
+    "generated_code_bytes": {
+      "off": 1141236,
+      "on": 1782516
+    },
+    "peak_bytes_in_use": 746539528,
+    "scenario_census": {
+      "qc": 0,
+      "qi": 6,
+      "qs": 6,
+      "qni": 6
+    }
+  },
+  "e41": {
+    "gate": "PASS",
+    "hard_stack": "PASS",
+    "conservative_flags": false,
+    "coverage": "PASS",
+    "programs": {
+      "budget_component_wn3_d03_day_edmf1_off": {
+        "kernels": 136,
+        "max_stack_B": 0
+      },
+      "budget_component_wn3_d03_day_edmf1_on": {
+        "kernels": 188,
+        "max_stack_B": 0
+      }
+    },
+    "receipt_sha256": "457e89fa052c447f683646b2d03d4361e586cd6eb39a16b36db8e00c33bc9bdc"
+  },
+  "in_launcher_oracle": {
+    "verdict": "ORIGINAL_TERM_GATE_PASS",
+    "gate": "sealed history_gate 1599cdc3 (old absolute PBL bound) -> does NOT qualify (critic F1)"
+  },
+  "offline_oracle_v2": {
+    "tools_commit": "49a3636970",
+    "verdict": "ORIGINAL_TERM_GATE_PASS",
+    "steps": {
+      "1": {
+        "passed": true,
+        "closure": true
+      },
+      "2": {
+        "passed": true,
+        "closure": true
+      }
+    },
+    "controls": {
+      "verdict": "CONTROLS_PASS",
+      "mutants": {
+        "1": {
+          "G1_RQV_x1.5": "KILLED",
+          "G2_RQV_zero": "KILLED",
+          "G3_RQC_signflip": "VACUOUS",
+          "P1_Dtke_x2": "KILLED",
+          "P2_qBUOY_x1.1": "KILLED",
+          "P3_RTH_zero": "KILLED",
+          "P4_RU_signflip": "KILLED",
+          "P5_RV_x0.5": "KILLED"
+        },
+        "2": {
+          "G1_RQV_x1.5": "KILLED",
+          "G2_RQV_zero": "KILLED",
+          "G3_RQC_signflip": "VACUOUS",
+          "P1_Dtke_x2": "KILLED",
+          "P2_qBUOY_x1.1": "KILLED",
+          "P3_RTH_zero": "KILLED",
+          "P4_RU_signflip": "KILLED",
+          "P5_RV_x0.5": "KILLED"
+        }
+      },
+      "note": "G3 VACUOUS: RQCBLTEN all zero (scenario qc 0)"
+    },
+    "rqiblten_note": "worst PBL margin RQIBLTEN 0.833 of bound: level 20 GPU 0.0 vs original 1.8947807e-14 = exactly 1 ulp(qi=1.385083e-6)/dt; CPU twin equals original there; 25-member floor 1.1e-23 does not model association differences on qi"
+  },
+  "accounting": {
+    "nsys": "no report (component-only mini has no cudaProfilerApi range) -> UNKNOWN",
+    "s_per_fc_h": "not measured by the mini (production)"
+  },
+  "regression_note": "GPU vs CPU twin history (P73, same column): 12/42 fields byte-equal; GPU-vs-CPU is regression only, fidelity = original driver"
+}

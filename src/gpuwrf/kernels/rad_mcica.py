@@ -16,7 +16,7 @@ import jax
 import jax.numpy as jnp
 import numpy as np
 from jax import lax
-from gpuwrf.backends.platform import cuda_native as pl_cuda_native
+from gpuwrf.backends.vendor_ops import platform_triton_native as pl_cuda_native
 _LEGACY_FP64 = os.environ.get("GPUWRF_MCICA_LEGACY_FP64", "0") == "1"
 
 
@@ -116,7 +116,7 @@ def _kiss_lane_kernel(s1_ref, s2_ref, s3_ref, s4_ref, a_ref, c_ref, x_ref, p3_re
 
     lane = pl.program_id(0) * _KISS_BLOCK + jnp.arange(_KISS_BLOCK, dtype=jnp.int32)
     valid = lane < ncol * ng
-    col = jnp.minimum(lane // ng, ncol - 1) if pl.cuda_native() else lane // ng
+    col = jnp.minimum(lane // ng, ncol - 1) if pl.triton_native() else lane // ng
     g = lane % ng
     u32 = jnp.uint32
     s1, s2, s3, s4 = s1_ref[col], s2_ref[col], s3_ref[col], s4_ref[col]

@@ -1,0 +1,157 @@
+{
+  "schema": 1,
+  "cause": "launchers set JAX_PLATFORMS=gpu; installed JAX expands this to cuda+rocm and the missing ROCm backend is fatal before model/device attestation",
+  "failed_actual_arm": "<USER_HOME>/wrf_gpu2_lanes/w44-warmstart/NIGHT_COMPONENT_1792806200973064183/receipt.json",
+  "failed_receipt_sha256": "2be7d3ec4fd0ff8c383836724888087e2c84233e10b07a0cd0d74deb50c86c2f",
+  "fix": "shared explicit cuda environment constructor; visible device0; clear legacy JAX_PLATFORM_NAME/dry flag; production runner asserts cuda before JAX import and actual device.platform=gpu after init",
+  "proof": {
+    "passed": true,
+    "checks": [
+      {
+        "launcher": "component",
+        "production_requested_platform": "cuda",
+        "production_visible_devices": "0",
+        "CPU_command": [
+          "<USER_HOME>/miniconda3/bin/python3",
+          "<USER_HOME>/wrf_gpu2_lanes/w44-warmstart/night_component_tools_v3/gpu_component.py",
+          "<USER_HOME>/wrf_gpu2_lanes/w44-warmstart/CUDA_ENV_SMOKE_V1/component/probe",
+          "<USER_HOME>/wrf_gpu2_lanes/w44-warmstart/WS11_mynn"
+        ],
+        "only_env_changes": [
+          "JAX_PLATFORMS",
+          "W44_WARMSTART_CPU_PREFLIGHT"
+        ],
+        "rc": 0,
+        "wall_s": 2.7335572330048308,
+        "model_report": "<USER_HOME>/wrf_gpu2_lanes/w44-warmstart/CUDA_ENV_SMOKE_V1/component/probe/PREFLIGHT.json",
+        "model_body_reached": true,
+        "real_device": "cpu"
+      },
+      {
+        "launcher": "forecast",
+        "production_requested_platform": "cuda",
+        "production_visible_devices": "0",
+        "CPU_command": [
+          "bash",
+          "<USER_HOME>/wrf_gpu2_lanes/w44-warmstart/night_forecast_tools_v4/forecast_arm.sh",
+          "<DATA_ROOT>/wrf_gpu2/scratch/w44-warmstart/native_may04_00_newforcing",
+          "<USER_HOME>/wrf_gpu2_lanes/w44-warmstart/CUDA_ENV_SMOKE_V1/forecast/cold",
+          "cold",
+          "<USER_HOME>/wrf_gpu2_lanes/w44-warmstart/night_forecast_tools_v4/gpu_forecast.py"
+        ],
+        "only_env_changes": [
+          "JAX_PLATFORMS",
+          "W44_WARMSTART_CPU_PREFLIGHT"
+        ],
+        "rc": 0,
+        "wall_s": 2.559079048980493,
+        "model_report": "<USER_HOME>/wrf_gpu2_lanes/w44-warmstart/CUDA_ENV_SMOKE_V1/forecast/cold/forecast/PREFLIGHT.json",
+        "model_body_reached": true,
+        "real_device": "cpu"
+      },
+      {
+        "launcher": "warm",
+        "production_requested_platform": "cuda",
+        "production_visible_devices": "0",
+        "CPU_command": [
+          "bash",
+          "<USER_HOME>/wrf_gpu2_lanes/w44-warmstart/night_forecast_tools_v4/forecast_arm.sh",
+          "<DATA_ROOT>/wrf_gpu2/scratch/w44-warmstart/native_may04_00_newforcing",
+          "<USER_HOME>/wrf_gpu2_lanes/w44-warmstart/CUDA_ENV_SMOKE_V1/warm/warm",
+          "warm",
+          "<USER_HOME>/wrf_gpu2_lanes/w44-warmstart/night_forecast_tools_v4/gpu_forecast.py"
+        ],
+        "only_env_changes": [
+          "JAX_PLATFORMS",
+          "W44_WARMSTART_CPU_PREFLIGHT"
+        ],
+        "rc": 0,
+        "wall_s": 1.4875809510122053,
+        "model_report": "<USER_HOME>/wrf_gpu2_lanes/w44-warmstart/CUDA_ENV_SMOKE_V1/warm/warm/forecast/PREFLIGHT.json",
+        "model_body_reached": true,
+        "real_device": "cpu"
+      }
+    ],
+    "installed_JAX_platform_aliases": {
+      "gpu": [
+        "cuda",
+        "rocm"
+      ],
+      "cuda": [
+        "cuda"
+      ],
+      "cpu": [
+        "cpu"
+      ]
+    },
+    "GPU_executed": false,
+    "scope": "environment/dispatch smoke on real-column mini grids, not GPU or physics fidelity"
+  },
+  "entry_controls": {
+    "checks": [
+      {
+        "launcher": "night_component_v3.sh",
+        "window": "missing",
+        "rc": 4,
+        "GPU_executed": false
+      },
+      {
+        "launcher": "night_component_v3.sh",
+        "window": "short",
+        "rc": 4,
+        "GPU_executed": false
+      },
+      {
+        "launcher": "night_forecast_v4.sh",
+        "window": "missing",
+        "rc": 4,
+        "GPU_executed": false
+      },
+      {
+        "launcher": "night_forecast_v4.sh",
+        "window": "short",
+        "rc": 4,
+        "GPU_executed": false
+      },
+      {
+        "launcher": "night_warm_cache_v4.sh",
+        "window": "missing",
+        "rc": 4,
+        "GPU_executed": false
+      },
+      {
+        "launcher": "night_warm_cache_v4.sh",
+        "window": "short",
+        "rc": 4,
+        "GPU_executed": false
+      }
+    ],
+    "passed": true,
+    "GPU_executed": false
+  },
+  "launchers": [
+    {
+      "launcher": "<USER_HOME>/wrf_gpu2_lanes/w44-warmstart/night_component_v3.sh",
+      "sha256": "e35e89b13d4fc1981b15bd929e915693aa50e5f916ec2a3f004fc3a8934649e4",
+      "cap_min": 10,
+      "tool_sha256": "4f8c76405558dba01250ee2e908399fcaf0a109d0fd8c4677a56dc63e11d69a7",
+      "seal_sha256": "cc99a2d96f52477c301ef649f5825c0b11a9359c71675fc4619832ad8131e799"
+    },
+    {
+      "launcher": "<USER_HOME>/wrf_gpu2_lanes/w44-warmstart/night_forecast_v4.sh",
+      "sha256": "f2e589e5e5d9a33ccaad6eeccf2e9b285177b1dc58a64612ff4183b2ad1fc9f3",
+      "cap_min": 45,
+      "tool_sha256": "c0036575417e72cd80a2b001772984bbeb8bee1c80cde81be7956babc55516ef",
+      "seal_sha256": "14928aa323a0f18c87e04051e2be239a1a9413b81f9f4d0e9343579d8f627ee1"
+    },
+    {
+      "launcher": "<USER_HOME>/wrf_gpu2_lanes/w44-warmstart/night_warm_cache_v4.sh",
+      "sha256": "d3fc05c26138b56fe696442aba18a73d6f4bef5e0941a07d30f874b1194f3268",
+      "cap_min": 15,
+      "tool_sha256": "3d025456127aa61ad1109d3680cd96f8100c5ffac3c0dbf7bfc2e08fa00d26d3",
+      "seal_sha256": "14928aa323a0f18c87e04051e2be239a1a9413b81f9f4d0e9343579d8f627ee1"
+    }
+  ],
+  "model_source_unchanged": "0c315f3108eeb08222b79c30468aea24d5ad7669",
+  "scope": "CPU environment/dispatch mini-grid smoke only; actual GPU original40 and full3h/D6 remain OPEN"
+}

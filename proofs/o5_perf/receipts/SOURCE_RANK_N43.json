@@ -1,0 +1,2328 @@
+{
+ "scope": "Rank node-trace kernel time per root by the dominant gpuwrf source function of each kernel's HLO instruction(s).\n\nInputs: w44-perf N43/R43 kernel rows + FAMILY_TIMES_FINAL joins (source frame counts per exact HLO instruction, E82/E182).\nA fusion with mixed sources is assigned WHOLE to its most frequent source function (never split by instruction counts):\nranking/diagnostic only, not a per-line causal cost. Stdlib only.\n",
+ "arm": "N43",
+ "roots": 3,
+ "total_ms_per_root": 34.381835,
+ "ranked": [
+  {
+   "source": "kernels/dyn_acoustic_fp32.py:_call",
+   "ms_per_root": 5.229285,
+   "launches_per_root": 176.00000000000063,
+   "by_kind_ms": {
+    "Pallas": 5.229285
+   },
+   "by_domain_ms": {
+    "d01": 0.5190630000000002,
+    "d02": 4.710222000000003
+   }
+  },
+  {
+   "source": "runtime/operational_mode.py:_nested_scalar_stage_tendencies",
+   "ms_per_root": 2.1803253333333332,
+   "launches_per_root": 8.999999999999998,
+   "by_kind_ms": {
+    "fusion": 2.1803253333333332
+   },
+   "by_domain_ms": {
+    "d02": 2.1803253333333332
+   }
+  },
+  {
+   "source": "kernels/phys_thompson_full.py:full_column",
+   "ms_per_root": 1.6605156666666672,
+   "launches_per_root": 6.999999999999997,
+   "by_kind_ms": {
+    "Pallas": 1.6446863333333335,
+    "fusion": 0.015829333333333334
+   },
+   "by_domain_ms": {
+    "d01": 0.14455466666666666,
+    "d02": 1.5159610000000001
+   }
+  },
+  {
+   "source": "kernels/phys_mynn_tridiag.py:solve_tridiagonal_real",
+   "ms_per_root": 1.2904836666666668,
+   "launches_per_root": 35.99999999999998,
+   "by_kind_ms": {
+    "Pallas": 1.2904836666666668
+   },
+   "by_domain_ms": {
+    "d01": 0.16027766666666665,
+    "d02": 1.130206
+   }
+  },
+  {
+   "source": "runtime/operational_mode.py:_apply_moisture_large_step",
+   "ms_per_root": 1.290317,
+   "launches_per_root": 18.000000000000004,
+   "by_kind_ms": {
+    "fusion": 1.290317
+   },
+   "by_domain_ms": {
+    "d02": 1.290317
+   }
+  },
+  {
+   "source": "kernels/dyn_pd_fp32.py:advect_scalar_pd_fp32",
+   "ms_per_root": 1.2774743333333336,
+   "launches_per_root": 14.000000000000007,
+   "by_kind_ms": {
+    "Pallas": 1.2774743333333336
+   },
+   "by_domain_ms": {
+    "d01": 0.077376,
+    "d02": 1.2000983333333337
+   }
+  },
+  {
+   "source": "kernels/dyn_uvtend_fp32.py:large_step_uv_fp32.<locals>.call",
+   "ms_per_root": 0.787797,
+   "launches_per_root": 18.000000000000004,
+   "by_kind_ms": {
+    "Pallas": 0.787797
+   },
+   "by_domain_ms": {
+    "d02": 0.787797
+   }
+  },
+  {
+   "source": "kernels/phys_mynn_boulac.py:boulac_length_native",
+   "ms_per_root": 0.7862836666666667,
+   "launches_per_root": 12.000000000000004,
+   "by_kind_ms": {
+    "Pallas": 0.7862836666666667
+   },
+   "by_domain_ms": {
+    "d01": 0.07388833333333333,
+    "d02": 0.7123953333333333
+   }
+  },
+  {
+   "source": "kernels/dyn_diff_fp32.py:horizontal_diffusion_fp32",
+   "ms_per_root": 0.6508999999999999,
+   "launches_per_root": 50.00000000000008,
+   "by_kind_ms": {
+    "Pallas": 0.6471560000000001,
+    "fusion": 0.003744
+   },
+   "by_domain_ms": {
+    "d01": 0.05937066666666667,
+    "d02": 0.5915293333333334
+   }
+  },
+  {
+   "source": "kernels/dyn_flux_fp32.py:advect_scalar_flux_fp32_stacked",
+   "ms_per_root": 0.5932699999999999,
+   "launches_per_root": 14.000000000000007,
+   "by_kind_ms": {
+    "Pallas": 0.5932699999999999
+   },
+   "by_domain_ms": {
+    "d01": 0.04697633333333334,
+    "d02": 0.5462936666666667
+   }
+  },
+  {
+   "source": "UNBOUND",
+   "ms_per_root": 0.5805116666666674,
+   "launches_per_root": 291.0000000000009,
+   "by_kind_ms": {
+    "unbound": 0.5805116666666674
+   },
+   "by_domain_ms": {
+    "d01": 0.2869873333333328,
+    "force": 0.2935243333333335
+   }
+  },
+  {
+   "source": "runtime/operational_mode.py:_diffopt1_dry_forward_tendencies",
+   "ms_per_root": 0.5585066666666667,
+   "launches_per_root": 25.999999999999975,
+   "by_kind_ms": {
+    "fusion": 0.5585066666666667
+   },
+   "by_domain_ms": {
+    "d01": 0.022624000000000002,
+    "d02": 0.5358826666666666
+   }
+  },
+  {
+   "source": "dynamics/flux_advection.py:specified_flux_faces",
+   "ms_per_root": 0.52911,
+   "launches_per_root": 53.0000000000001,
+   "by_kind_ms": {
+    "fusion": 0.52911
+   },
+   "by_domain_ms": {
+    "d01": 0.32221933333333347,
+    "d02": 0.2068906666666666
+   }
+  },
+  {
+   "source": "kernels/dyn_ring_relax_fp32.py:ring_spec_final",
+   "ms_per_root": 0.5152233333333333,
+   "launches_per_root": 3.0,
+   "by_kind_ms": {
+    "Pallas": 0.5152233333333333
+   },
+   "by_domain_ms": {
+    "d02": 0.5152233333333333
+   }
+  },
+  {
+   "source": "dynamics/flux_advection.py:stage_omega_specified",
+   "ms_per_root": 0.5072806666666659,
+   "launches_per_root": 63.00000000000017,
+   "by_kind_ms": {
+    "fusion": 0.5072806666666659
+   },
+   "by_domain_ms": {
+    "d01": 0.026368,
+    "d02": 0.48091266666666616
+   }
+  },
+  {
+   "source": "kernels/layout_pin.py:row_major",
+   "ms_per_root": 0.5054873333333338,
+   "launches_per_root": 83.99999999999989,
+   "by_kind_ms": {
+    "fusion": 0.5054873333333338
+   },
+   "by_domain_ms": {
+    "d01": 0.058634666666666675,
+    "d02": 0.44685266666666706
+   }
+  },
+  {
+   "source": "physics/rrtmg_mp_re.py:calc_thompson_effective_radii",
+   "ms_per_root": 0.49823,
+   "launches_per_root": 4.0,
+   "by_kind_ms": {
+    "fusion": 0.49823
+   },
+   "by_domain_ms": {
+    "d01": 0.017461333333333332,
+    "d02": 0.4807686666666667
+   }
+  },
+  {
+   "source": "kernels/dyn_ring_relax_fp32.py:ring_relax_tendency",
+   "ms_per_root": 0.4629826666666668,
+   "launches_per_root": 21.99999999999999,
+   "by_kind_ms": {
+    "Pallas": 0.4629826666666668
+   },
+   "by_domain_ms": {
+    "d01": 0.0060160000000000005,
+    "d02": 0.45696666666666685
+   }
+  },
+  {
+   "source": "dynamics/core/calc_p_rho.py:_calc_al_p",
+   "ms_per_root": 0.42419300000000004,
+   "launches_per_root": 16.00000000000001,
+   "by_kind_ms": {
+    "fusion": 0.42419300000000004
+   },
+   "by_domain_ms": {
+    "d01": 0.146496,
+    "d02": 0.27769699999999997
+   }
+  },
+  {
+   "source": "kernels/dyn_diff_fp32.py:sixth_order_fp32",
+   "ms_per_root": 0.4225960000000001,
+   "launches_per_root": 48.000000000000064,
+   "by_kind_ms": {
+    "Pallas": 0.4225960000000001
+   },
+   "by_domain_ms": {
+    "d01": 0.039765666666666664,
+    "d02": 0.3828303333333334
+   }
+  },
+  {
+   "source": "kernels/dyn_boundary_fp32.py:dry_relax",
+   "ms_per_root": 0.417813,
+   "launches_per_root": 29.99999999999996,
+   "by_kind_ms": {
+    "Pallas": 0.40158900000000003,
+    "fusion": 0.016224
+   },
+   "by_domain_ms": {
+    "d01": 0.05398433333333334,
+    "d02": 0.36382866666666663
+   }
+  },
+  {
+   "source": "kernels/dyn_rhsph_fp32.py:rhs_ph_fp32",
+   "ms_per_root": 0.41433633333333314,
+   "launches_per_root": 12.000000000000004,
+   "by_kind_ms": {
+    "Pallas": 0.41433633333333314
+   },
+   "by_domain_ms": {
+    "d01": 0.03722666666666667,
+    "d02": 0.3771096666666666
+   }
+  },
+  {
+   "source": "kernels/dyn_rk_fp32.py:diagnose_pressure_fp32",
+   "ms_per_root": 0.39877366666666675,
+   "launches_per_root": 27.999999999999968,
+   "by_kind_ms": {
+    "Pallas": 0.39877366666666675
+   },
+   "by_domain_ms": {
+    "d01": 0.03749333333333334,
+    "d02": 0.3612803333333333
+   }
+  },
+  {
+   "source": "physics/mynn_pbl.py:_mym_turbulence",
+   "ms_per_root": 0.3973866666666666,
+   "launches_per_root": 15.000000000000009,
+   "by_kind_ms": {
+    "fusion": 0.3973866666666666
+   },
+   "by_domain_ms": {
+    "d01": 0.04804266666666667,
+    "d02": 0.34934399999999993
+   }
+  },
+  {
+   "source": "dynamics/core/small_step_finish.py:small_step_finish_wrf",
+   "ms_per_root": 0.39526333333333324,
+   "launches_per_root": 33.999999999999964,
+   "by_kind_ms": {
+    "fusion": 0.39526333333333324
+   },
+   "by_domain_ms": {
+    "d01": 0.05095533333333333,
+    "d02": 0.34430799999999984
+   }
+  },
+  {
+   "source": "physics/mynn_pbl.py:_diffusion_solve_with_mf",
+   "ms_per_root": 0.38203333333333334,
+   "launches_per_root": 44.000000000000036,
+   "by_kind_ms": {
+    "fusion": 0.38203333333333334
+   },
+   "by_domain_ms": {
+    "d01": 0.04350933333333334,
+    "d02": 0.33852400000000005
+   }
+  },
+  {
+   "source": "dynamics/core/advance_w.py:pg_buoy_w_moist",
+   "ms_per_root": 0.37589433333333333,
+   "launches_per_root": 13.000000000000005,
+   "by_kind_ms": {
+    "fusion": 0.37589433333333333
+   },
+   "by_domain_ms": {
+    "d01": 0.037503999999999996,
+    "d02": 0.33839033333333335
+   }
+  },
+  {
+   "source": "kernels/dyn_momflux_fp32.py:_call",
+   "ms_per_root": 0.34556833333333326,
+   "launches_per_root": 18.000000000000004,
+   "by_kind_ms": {
+    "Pallas": 0.34556833333333326
+   },
+   "by_domain_ms": {
+    "d02": 0.34556833333333326
+   }
+  },
+  {
+   "source": "runtime/operational_mode.py:_augment_large_step_tendencies",
+   "ms_per_root": 0.34177833333333335,
+   "launches_per_root": 35.99999999999998,
+   "by_kind_ms": {
+    "fusion": 0.34177833333333335
+   },
+   "by_domain_ms": {
+    "d01": 0.013632,
+    "d02": 0.32814633333333326
+   }
+  },
+  {
+   "source": "physics/surface_layer.py:_table_lookup",
+   "ms_per_root": 0.3346139999999992,
+   "launches_per_root": 86.99999999999984,
+   "by_kind_ms": {
+    "fusion": 0.3346139999999992
+   },
+   "by_domain_ms": {
+    "d01": 0.1023363333333334,
+    "d02": 0.2322776666666664
+   }
+  },
+  {
+   "source": "runtime/operational_mode.py:_source_leaf_dry_tendencies",
+   "ms_per_root": 0.3317343333333333,
+   "launches_per_root": 15.000000000000009,
+   "by_kind_ms": {
+    "fusion": 0.3317343333333333
+   },
+   "by_domain_ms": {
+    "d02": 0.3317343333333333
+   }
+  },
+  {
+   "source": "kernels/dyn_acoustic_fp32.py:_uv_boundaries",
+   "ms_per_root": 0.3149466666666667,
+   "launches_per_root": 89.9999999999998,
+   "by_kind_ms": {
+    "fusion": 0.3149466666666667
+   },
+   "by_domain_ms": {
+    "d01": 0.022304,
+    "d02": 0.2926426666666667
+   }
+  },
+  {
+   "source": "physics/mynn_pbl.py:_mym_predict_qke",
+   "ms_per_root": 0.30663499999999994,
+   "launches_per_root": 5.999999999999998,
+   "by_kind_ms": {
+    "fusion": 0.30663499999999994
+   },
+   "by_domain_ms": {
+    "d02": 0.30663499999999994
+   }
+  },
+  {
+   "source": "physics/mynn_sgs_cloud.py:mym_condensation_cloudpdf2",
+   "ms_per_root": 0.30234700000000003,
+   "launches_per_root": 12.000000000000004,
+   "by_kind_ms": {
+    "fusion": 0.30234700000000003
+   },
+   "by_domain_ms": {
+    "d01": 0.02149333333333333,
+    "d02": 0.28085366666666667
+   }
+  },
+  {
+   "source": "runtime/operational_mode.py:_w_coriolis_curvature",
+   "ms_per_root": 0.2850770000000001,
+   "launches_per_root": 23.999999999999982,
+   "by_kind_ms": {
+    "fusion": 0.2850770000000001
+   },
+   "by_domain_ms": {
+    "d01": 0.05954133333333334,
+    "d02": 0.22553566666666666
+   }
+  },
+  {
+   "source": "dynamics/flux_advection.py:_vertical_flux_div_3",
+   "ms_per_root": 0.28167533333333333,
+   "launches_per_root": 14.000000000000007,
+   "by_kind_ms": {
+    "fusion": 0.28167533333333333
+   },
+   "by_domain_ms": {
+    "d01": 0.28167533333333333
+   }
+  },
+  {
+   "source": "coupling/boundary_apply.py:boundary_tendency_leaf",
+   "ms_per_root": 0.28147033333333327,
+   "launches_per_root": 35.99999999999998,
+   "by_kind_ms": {
+    "fusion": 0.28147033333333327
+   },
+   "by_domain_ms": {
+    "d02": 0.28147033333333327
+   }
+  },
+  {
+   "source": "kernels/dyn_rk_fp32.py:coupled_work_fp32",
+   "ms_per_root": 0.2690966666666665,
+   "launches_per_root": 48.000000000000064,
+   "by_kind_ms": {
+    "Pallas": 0.2690966666666665
+   },
+   "by_domain_ms": {
+    "d01": 0.034047999999999995,
+    "d02": 0.23504866666666657
+   }
+  },
+  {
+   "source": "coupling/boundary_apply.py:flow_dep_bdy",
+   "ms_per_root": 0.2676486666666664,
+   "launches_per_root": 127.99999999999926,
+   "by_kind_ms": {
+    "fusion": 0.2676486666666664
+   },
+   "by_domain_ms": {
+    "d01": 0.2676486666666664
+   }
+  },
+  {
+   "source": "dynamics/explicit_diffusion.py:_vertical_face_average_pair",
+   "ms_per_root": 0.2376853333333333,
+   "launches_per_root": 7.9999999999999964,
+   "by_kind_ms": {
+    "fusion": 0.2376853333333333
+   },
+   "by_domain_ms": {
+    "d01": 0.028821666666666666,
+    "d02": 0.20886366666666667
+   }
+  },
+  {
+   "source": "runtime/operational_mode.py:_rk_update_scalar_pd",
+   "ms_per_root": 0.23683266666666666,
+   "launches_per_root": 6.999999999999997,
+   "by_kind_ms": {
+    "fusion": 0.23683266666666666
+   },
+   "by_domain_ms": {
+    "d01": 0.027136,
+    "d02": 0.2096966666666667
+   }
+  },
+  {
+   "source": "physics/mynn_edmf.py:_dmp_setup",
+   "ms_per_root": 0.22798666666666662,
+   "launches_per_root": 39.0,
+   "by_kind_ms": {
+    "fusion": 0.22798666666666662
+   },
+   "by_domain_ms": {
+    "d01": 0.03780266666666667,
+    "d02": 0.19018399999999996
+   }
+  },
+  {
+   "source": "kernels/phys_noahmp_columns.py:column_call",
+   "ms_per_root": 0.21705400000000008,
+   "launches_per_root": 70.00000000000009,
+   "by_kind_ms": {
+    "Pallas": 0.15797233333333327,
+    "fusion": 0.05908166666666661
+   },
+   "by_domain_ms": {
+    "d01": 0.05643666666666664,
+    "d02": 0.16061733333333345
+   }
+  },
+  {
+   "source": "dynamics/flux_advection.py:_vertical_flux_div_w",
+   "ms_per_root": 0.21526500000000007,
+   "launches_per_root": 11.000000000000002,
+   "by_kind_ms": {
+    "fusion": 0.21526500000000007
+   },
+   "by_domain_ms": {
+    "d01": 0.21526500000000007
+   }
+  },
+  {
+   "source": "kernels/phys_mynn_cloudmix.py:_scalar",
+   "ms_per_root": 0.214382,
+   "launches_per_root": 35.99999999999998,
+   "by_kind_ms": {
+    "fusion": 0.214382
+   },
+   "by_domain_ms": {
+    "d01": 0.022976000000000003,
+    "d02": 0.191406
+   }
+  },
+  {
+   "source": "runtime/operational_mode.py:_apply_physics_non_dry_updates",
+   "ms_per_root": 0.19902899999999996,
+   "launches_per_root": 19.999999999999996,
+   "by_kind_ms": {
+    "fusion": 0.19902899999999996
+   },
+   "by_domain_ms": {
+    "d01": 0.012991999999999998,
+    "d02": 0.18603699999999995
+   }
+  },
+  {
+   "source": "physics/mynn_pbl.py:_mym_length_option1_with",
+   "ms_per_root": 0.19074900000000006,
+   "launches_per_root": 24.99999999999998,
+   "by_kind_ms": {
+    "fusion": 0.19074900000000006
+   },
+   "by_domain_ms": {
+    "d01": 0.034080000000000006,
+    "d02": 0.15666900000000006
+   }
+  },
+  {
+   "source": "coupling/boundary_apply.py:_relax_tendency_row",
+   "ms_per_root": 0.19016633333333333,
+   "launches_per_root": 29.99999999999996,
+   "by_kind_ms": {
+    "fusion": 0.19016633333333333
+   },
+   "by_domain_ms": {
+    "d02": 0.19016633333333333
+   }
+  },
+  {
+   "source": "kernels/dyn_flux_fp32.py:advect_scalar_flux_fp32",
+   "ms_per_root": 0.19008999999999998,
+   "launches_per_root": 12.000000000000004,
+   "by_kind_ms": {
+    "Pallas": 0.19008999999999998
+   },
+   "by_domain_ms": {
+    "d01": 0.016821333333333334,
+    "d02": 0.17326866666666665
+   }
+  },
+  {
+   "source": "kernels/phys_mynn_plume.py:fused_plume_sums",
+   "ms_per_root": 0.18819099999999997,
+   "launches_per_root": 54.00000000000011,
+   "by_kind_ms": {
+    "fusion": 0.18819099999999997
+   },
+   "by_domain_ms": {
+    "d01": 0.018261666666666666,
+    "d02": 0.16992933333333335
+   }
+  },
+  {
+   "source": "physics/noahmp/energy.py:noahmp_energy_canopy",
+   "ms_per_root": 0.18689933333333336,
+   "launches_per_root": 71.00000000000007,
+   "by_kind_ms": {
+    "fusion": 0.18689933333333336
+   },
+   "by_domain_ms": {
+    "d01": 0.060544333333333304,
+    "d02": 0.12635500000000002
+   }
+  },
+  {
+   "source": "dynamics/core/rk_addtend_dry.py:rk_addtend_dry",
+   "ms_per_root": 0.16438399999999997,
+   "launches_per_root": 18.000000000000004,
+   "by_kind_ms": {
+    "fusion": 0.16438399999999997
+   },
+   "by_domain_ms": {
+    "d01": 0.0060799999999999995,
+    "d02": 0.158304
+   }
+  },
+  {
+   "source": "coupling/boundary_apply.py:_scalar_record_value_rate_real4",
+   "ms_per_root": 0.16092800000000007,
+   "launches_per_root": 69.0000000000001,
+   "by_kind_ms": {
+    "fusion": 0.16092800000000007
+   },
+   "by_domain_ms": {
+    "d02": 0.16092800000000007
+   }
+  },
+  {
+   "source": "dynamics/core/advance_w.py:w_damp_rw_tend_wrf",
+   "ms_per_root": 0.1370876666666667,
+   "launches_per_root": 17.000000000000007,
+   "by_kind_ms": {
+    "fusion": 0.1370876666666667
+   },
+   "by_domain_ms": {
+    "d01": 0.06788266666666665,
+    "d02": 0.069205
+   }
+  },
+  {
+   "source": "coupling/boundary_apply.py:spec_bdyupdate_ph_tendency_inloop",
+   "ms_per_root": 0.1347416666666667,
+   "launches_per_root": 20.999999999999993,
+   "by_kind_ms": {
+    "fusion": 0.1347416666666667
+   },
+   "by_domain_ms": {
+    "d02": 0.1347416666666667
+   }
+  },
+  {
+   "source": "runtime/operational_mode.py:_acoustic_core_state_from_prep",
+   "ms_per_root": 0.12668733333333332,
+   "launches_per_root": 47.00000000000006,
+   "by_kind_ms": {
+    "fusion": 0.12668733333333332
+   },
+   "by_domain_ms": {
+    "d01": 0.028629333333333336,
+    "d02": 0.09805799999999999
+   }
+  },
+  {
+   "source": "kernels/dyn_acoustic_fp32.py:_mass_boundaries",
+   "ms_per_root": 0.12425233333333324,
+   "launches_per_root": 80.99999999999993,
+   "by_kind_ms": {
+    "fusion": 0.12425233333333324
+   },
+   "by_domain_ms": {
+    "d02": 0.12425233333333324
+   }
+  },
+  {
+   "source": "kernels/phys_hydrostatic_real.py:hydrostatic_profiles",
+   "ms_per_root": 0.122613,
+   "launches_per_root": 4.0,
+   "by_kind_ms": {
+    "Pallas": 0.122613
+   },
+   "by_domain_ms": {
+    "d01": 0.020448,
+    "d02": 0.10216499999999999
+   }
+  },
+  {
+   "source": "dynamics/acoustic_wrf.py:moisture_coupling_factors",
+   "ms_per_root": 0.11911300000000004,
+   "launches_per_root": 24.99999999999998,
+   "by_kind_ms": {
+    "fusion": 0.11911300000000004
+   },
+   "by_domain_ms": {
+    "d01": 0.03194666666666667,
+    "d02": 0.08716633333333336
+   }
+  },
+  {
+   "source": "dynamics/flux_advection.py:couple_velocities_periodic",
+   "ms_per_root": 0.116608,
+   "launches_per_root": 3.0,
+   "by_kind_ms": {
+    "fusion": 0.116608
+   },
+   "by_domain_ms": {
+    "d02": 0.116608
+   }
+  },
+  {
+   "source": "dynamics/core/small_step_prep.py:_v_face_average_2d",
+   "ms_per_root": 0.10773366666666664,
+   "launches_per_root": 5.999999999999998,
+   "by_kind_ms": {
+    "fusion": 0.10773366666666664
+   },
+   "by_domain_ms": {
+    "d01": 0.011989333333333334,
+    "d02": 0.09574433333333332
+   }
+  },
+  {
+   "source": "physics/surface_layer.py:_surface_layer_impl",
+   "ms_per_root": 0.10690133333333335,
+   "launches_per_root": 23.999999999999982,
+   "by_kind_ms": {
+    "fusion": 0.10690133333333335
+   },
+   "by_domain_ms": {
+    "d01": 0.06088533333333332,
+    "d02": 0.046015999999999994
+   }
+  },
+  {
+   "source": "dynamics/core/rk_addtend_dry.py:large_step_horizontal_pgf",
+   "ms_per_root": 0.09593633333333333,
+   "launches_per_root": 4.0,
+   "by_kind_ms": {
+    "fusion": 0.09593633333333333
+   },
+   "by_domain_ms": {
+    "d01": 0.09593633333333333
+   }
+  },
+  {
+   "source": "physics/mynn_pbl.py:_rho_interfaces",
+   "ms_per_root": 0.08955666666666666,
+   "launches_per_root": 13.000000000000005,
+   "by_kind_ms": {
+    "fusion": 0.08955666666666666
+   },
+   "by_domain_ms": {
+    "d01": 0.005546666666666667,
+    "d02": 0.08400999999999999
+   }
+  },
+  {
+   "source": "no-frames",
+   "ms_per_root": 0.0839133333333333,
+   "launches_per_root": 67.00000000000013,
+   "by_kind_ms": {
+    "fusion": 0.0839133333333333
+   },
+   "by_domain_ms": {
+    "d01": 0.062174666666666656,
+    "d02": 0.02173866666666666
+   }
+  },
+  {
+   "source": "dynamics/core/rk_addtend_dry.py:large_step_horizontal_curvature",
+   "ms_per_root": 0.08183466666666667,
+   "launches_per_root": 5.999999999999998,
+   "by_kind_ms": {
+    "fusion": 0.08183466666666667
+   },
+   "by_domain_ms": {
+    "d01": 0.08183466666666667
+   }
+  },
+  {
+   "source": "physics/mynn_pbl.py:_clip_state",
+   "ms_per_root": 0.08042633333333334,
+   "launches_per_root": 13.000000000000005,
+   "by_kind_ms": {
+    "fusion": 0.08042633333333334
+   },
+   "by_domain_ms": {
+    "d01": 0.010496333333333333,
+    "d02": 0.06992999999999999
+   }
+  },
+  {
+   "source": "physics/thompson_column.py:density_from_pressure_temperature",
+   "ms_per_root": 0.07991466666666666,
+   "launches_per_root": 4.0,
+   "by_kind_ms": {
+    "fusion": 0.07991466666666666
+   },
+   "by_domain_ms": {
+    "d01": 0.0031466666666666665,
+    "d02": 0.076768
+   }
+  },
+  {
+   "source": "physics/mynn_sgs_cloud.py:dmp_shallow_cu_overwrite",
+   "ms_per_root": 0.07386666666666665,
+   "launches_per_root": 4.0,
+   "by_kind_ms": {
+    "fusion": 0.07386666666666665
+   },
+   "by_domain_ms": {
+    "d01": 0.0070933333333333334,
+    "d02": 0.06677333333333332
+   }
+  },
+  {
+   "source": "physics/mynn_sgs_cloud.py:_k_tropo",
+   "ms_per_root": 0.07067733333333334,
+   "launches_per_root": 7.9999999999999964,
+   "by_kind_ms": {
+    "fusion": 0.07067733333333334
+   },
+   "by_domain_ms": {
+    "d01": 0.004949333333333333,
+    "d02": 0.06572800000000001
+   }
+  },
+  {
+   "source": "physics/noahmp/soil_thermo.py:noahmp_phasechange",
+   "ms_per_root": 0.07041866666666666,
+   "launches_per_root": 27.999999999999968,
+   "by_kind_ms": {
+    "fusion": 0.07041866666666666
+   },
+   "by_domain_ms": {
+    "d01": 0.02357333333333333,
+    "d02": 0.04684533333333333
+   }
+  },
+  {
+   "source": "dynamics/core/w_surface_reset.py:kinematic_surface_w",
+   "ms_per_root": 0.070272,
+   "launches_per_root": 4.999999999999999,
+   "by_kind_ms": {
+    "fusion": 0.070272
+   },
+   "by_domain_ms": {
+    "d01": 0.021738666666666667,
+    "d02": 0.04853333333333334
+   }
+  },
+  {
+   "source": "physics/mynn_pbl.py:_get_pblh",
+   "ms_per_root": 0.066079,
+   "launches_per_root": 14.000000000000007,
+   "by_kind_ms": {
+    "fusion": 0.066079
+   },
+   "by_domain_ms": {
+    "d01": 0.003658666666666667,
+    "d02": 0.06242033333333333
+   }
+  },
+  {
+   "source": "kernels/ring_select.py:scatter_mask",
+   "ms_per_root": 0.06279466666666662,
+   "launches_per_root": 54.00000000000011,
+   "by_kind_ms": {
+    "fusion": 0.06279466666666662
+   },
+   "by_domain_ms": {
+    "d01": 0.06279466666666662
+   }
+  },
+  {
+   "source": "runtime/operational_mode.py:_finalize_time_averaged_scalar_mass_fluxes",
+   "ms_per_root": 0.056873999999999994,
+   "launches_per_root": 10.0,
+   "by_kind_ms": {
+    "fusion": 0.056873999999999994
+   },
+   "by_domain_ms": {
+    "d01": 0.01776,
+    "d02": 0.039113999999999996
+   }
+  },
+  {
+   "source": "physics/noahmp/water_hydro.py:_canwater",
+   "ms_per_root": 0.05403766666666667,
+   "launches_per_root": 6.999999999999997,
+   "by_kind_ms": {
+    "fusion": 0.05403766666666667
+   },
+   "by_domain_ms": {
+    "d01": 0.030475,
+    "d02": 0.023562666666666666
+   }
+  },
+  {
+   "source": "physics/mynn_pbl.py:_phim_puhales",
+   "ms_per_root": 0.052746666666666664,
+   "launches_per_root": 4.0,
+   "by_kind_ms": {
+    "fusion": 0.052746666666666664
+   },
+   "by_domain_ms": {
+    "d01": 0.005354666666666666,
+    "d02": 0.047392
+   }
+  },
+  {
+   "source": "physics/mynn_pbl.py:_apply_s_aw_stability_floor",
+   "ms_per_root": 0.05160566666666666,
+   "launches_per_root": 4.0,
+   "by_kind_ms": {
+    "fusion": 0.05160566666666666
+   },
+   "by_domain_ms": {
+    "d01": 0.0024216666666666666,
+    "d02": 0.049184
+   }
+  },
+  {
+   "source": "kernels/rad_mcica.py:max_random_cdf",
+   "ms_per_root": 0.051082666666666575,
+   "launches_per_root": 64.00000000000017,
+   "by_kind_ms": {
+    "fusion": 0.051082666666666575
+   },
+   "by_domain_ms": {
+    "d02": 0.051082666666666575
+   }
+  },
+  {
+   "source": "dynamics/core/acoustic.py:_specified_w_zero_grad_work",
+   "ms_per_root": 0.050517333333333324,
+   "launches_per_root": 49.00000000000007,
+   "by_kind_ms": {
+    "fusion": 0.050517333333333324
+   },
+   "by_domain_ms": {
+    "d01": 0.050517333333333324
+   }
+  },
+  {
+   "source": "kernels/phys_gwdo_column.py:gwdo_profile_native",
+   "ms_per_root": 0.048736,
+   "launches_per_root": 1.0,
+   "by_kind_ms": {
+    "Pallas": 0.048736
+   },
+   "by_domain_ms": {
+    "d01": 0.048736
+   }
+  },
+  {
+   "source": "kernels/phys_mynn_plume.py:_assemble_from_sums",
+   "ms_per_root": 0.04803166666666667,
+   "launches_per_root": 10.0,
+   "by_kind_ms": {
+    "fusion": 0.04803166666666667
+   },
+   "by_domain_ms": {
+    "d01": 0.0015893333333333334,
+    "d02": 0.04644233333333333
+   }
+  },
+  {
+   "source": "dynamics/flux_advection.py:advect_moisture_scalars.<locals>.<genexpr>",
+   "ms_per_root": 0.047701333333333304,
+   "launches_per_root": 21.99999999999999,
+   "by_kind_ms": {
+    "fusion": 0.047701333333333304
+   },
+   "by_domain_ms": {
+    "d01": 0.047701333333333304
+   }
+  },
+  {
+   "source": "kernels/dyn_boundary_fp32.py:interpolate_leaf",
+   "ms_per_root": 0.047221333333333324,
+   "launches_per_root": 19.999999999999996,
+   "by_kind_ms": {
+    "Pallas": 0.047221333333333324
+   },
+   "by_domain_ms": {
+    "d01": 0.03787733333333333,
+    "d02": 0.009344
+   }
+  },
+  {
+   "source": "runtime/operational_mode.py:_rk_scan_step.<locals>._child_frozen_scalar.<locals>.<genexpr>",
+   "ms_per_root": 0.04650533333333333,
+   "launches_per_root": 5.999999999999998,
+   "by_kind_ms": {
+    "fusion": 0.04650533333333333
+   },
+   "by_domain_ms": {
+    "d02": 0.04650533333333333
+   }
+  },
+  {
+   "source": "dynamics/flux_advection.py:advect_moisture_scalars",
+   "ms_per_root": 0.045984000000000004,
+   "launches_per_root": 1.9999999999999998,
+   "by_kind_ms": {
+    "fusion": 0.045984000000000004
+   },
+   "by_domain_ms": {
+    "d01": 0.045984000000000004
+   }
+  },
+  {
+   "source": "physics/rrtmg_constants.py:rrtmg_cloud_water_path",
+   "ms_per_root": 0.04457633333333333,
+   "launches_per_root": 1.9999999999999998,
+   "by_kind_ms": {
+    "fusion": 0.04457633333333333
+   },
+   "by_domain_ms": {
+    "d02": 0.04457633333333333
+   }
+  },
+  {
+   "source": "physics/mynn_pbl.py:_wrf_qke_minmax",
+   "ms_per_root": 0.044032,
+   "launches_per_root": 4.0,
+   "by_kind_ms": {
+    "fusion": 0.044032
+   },
+   "by_domain_ms": {
+    "d01": 0.004032,
+    "d02": 0.04
+   }
+  },
+  {
+   "source": "kernels/dyn_acoustic_fp32.py:_w_boundaries",
+   "ms_per_root": 0.043552000000000014,
+   "launches_per_root": 20.999999999999993,
+   "by_kind_ms": {
+    "fusion": 0.043552000000000014
+   },
+   "by_domain_ms": {
+    "d02": 0.043552000000000014
+   }
+  },
+  {
+   "source": "physics/noahmp/precip_heat.py:noahmp_precip_heat",
+   "ms_per_root": 0.04325333333333334,
+   "launches_per_root": 7.9999999999999964,
+   "by_kind_ms": {
+    "fusion": 0.04325333333333334
+   },
+   "by_domain_ms": {
+    "d01": 0.04325333333333334
+   }
+  },
+  {
+   "source": "runtime/operational_mode.py:_acoustic_scan",
+   "ms_per_root": 0.04222933333333332,
+   "launches_per_root": 16.00000000000001,
+   "by_kind_ms": {
+    "fusion": 0.04222933333333332
+   },
+   "by_domain_ms": {
+    "d01": 0.011317333333333335,
+    "d02": 0.030912
+   }
+  },
+  {
+   "source": "dynamics/core/rk_addtend_dry.py:large_step_horizontal_pgf.<locals>._dpn_faces",
+   "ms_per_root": 0.04135500000000002,
+   "launches_per_root": 13.000000000000005,
+   "by_kind_ms": {
+    "fusion": 0.04135500000000002
+   },
+   "by_domain_ms": {
+    "d01": 0.04135500000000002
+   }
+  },
+  {
+   "source": "kernels/phys_noahmp_layers.py:to_list",
+   "ms_per_root": 0.03787666666666667,
+   "launches_per_root": 13.000000000000005,
+   "by_kind_ms": {
+    "fusion": 0.03787666666666667
+   },
+   "by_domain_ms": {
+    "d01": 0.015093333333333328,
+    "d02": 0.022783333333333333
+   }
+  },
+  {
+   "source": "dynamics/core/rk_addtend_dry.py:_absolute_diagnostics",
+   "ms_per_root": 0.03755633333333333,
+   "launches_per_root": 8.999999999999998,
+   "by_kind_ms": {
+    "fusion": 0.03755633333333333
+   },
+   "by_domain_ms": {
+    "d01": 0.006986666666666667,
+    "d02": 0.03056966666666667
+   }
+  },
+  {
+   "source": "coupling/physics_couplers.py:mynn_adapter_with_source_leaves",
+   "ms_per_root": 0.03725866666666666,
+   "launches_per_root": 7.9999999999999964,
+   "by_kind_ms": {
+    "fusion": 0.03725866666666666
+   },
+   "by_domain_ms": {
+    "d01": 0.033002666666666666,
+    "d02": 0.004255999999999999
+   }
+  },
+  {
+   "source": "physics/mynn_pbl.py:_liquid_potential_temperature",
+   "ms_per_root": 0.035285333333333335,
+   "launches_per_root": 4.0,
+   "by_kind_ms": {
+    "fusion": 0.035285333333333335
+   },
+   "by_domain_ms": {
+    "d01": 0.002016,
+    "d02": 0.03326933333333333
+   }
+  },
+  {
+   "source": "kernels/dyn_boundary_fp32.py:ring_update",
+   "ms_per_root": 0.03527466666666666,
+   "launches_per_root": 6.999999999999997,
+   "by_kind_ms": {
+    "Pallas": 0.03527466666666666
+   },
+   "by_domain_ms": {
+    "d01": 0.03527466666666666
+   }
+  },
+  {
+   "source": "physics/noahmp_coupler.py:noahmp_surface_adapter",
+   "ms_per_root": 0.034206999999999994,
+   "launches_per_root": 7.9999999999999964,
+   "by_kind_ms": {
+    "fusion": 0.034206999999999994
+   },
+   "by_domain_ms": {
+    "d01": 0.013002666666666668,
+    "d02": 0.021204333333333332
+   }
+  },
+  {
+   "source": "physics/mynn_pbl.py:_mym_level2",
+   "ms_per_root": 0.03415466666666667,
+   "launches_per_root": 4.0,
+   "by_kind_ms": {
+    "fusion": 0.03415466666666667
+   },
+   "by_domain_ms": {
+    "d01": 0.0034986666666666664,
+    "d02": 0.030656000000000003
+   }
+  },
+  {
+   "source": "kernels/dyn_rk_fp32.py:stage_masses_fp32",
+   "ms_per_root": 0.03408,
+   "launches_per_root": 16.00000000000001,
+   "by_kind_ms": {
+    "Pallas": 0.02853333333333334,
+    "fusion": 0.005546666666666666
+   },
+   "by_domain_ms": {
+    "d01": 0.011093333333333335,
+    "d02": 0.02298666666666667
+   }
+  },
+  {
+   "source": "dynamics/explicit_diffusion.py:wrf_nonperiodic_diffusion_metrics",
+   "ms_per_root": 0.03306633333333334,
+   "launches_per_root": 8.999999999999998,
+   "by_kind_ms": {
+    "fusion": 0.03306633333333334
+   },
+   "by_domain_ms": {
+    "d01": 0.007786666666666667,
+    "d02": 0.02527966666666667
+   }
+  },
+  {
+   "source": "dynamics/explicit_diffusion.py:wrf_nested_horizontal_diffusion_momentum_tendency",
+   "ms_per_root": 0.032917333333333326,
+   "launches_per_root": 4.999999999999999,
+   "by_kind_ms": {
+    "fusion": 0.032917333333333326
+   },
+   "by_domain_ms": {
+    "d01": 0.005194666666666667,
+    "d02": 0.027722666666666666
+   }
+  },
+  {
+   "source": "kernels/phys_mynn_plume.py:_assemble_from_sums.<locals>.<lambda>",
+   "ms_per_root": 0.032245666666666666,
+   "launches_per_root": 4.0,
+   "by_kind_ms": {
+    "fusion": 0.032245666666666666
+   },
+   "by_domain_ms": {
+    "d01": 0.0032213333333333334,
+    "d02": 0.029024333333333333
+   }
+  },
+  {
+   "source": "physics/surface_layer.py:_psih_unstable_full",
+   "ms_per_root": 0.030784000000000002,
+   "launches_per_root": 1.9999999999999998,
+   "by_kind_ms": {
+    "fusion": 0.030784000000000002
+   },
+   "by_domain_ms": {
+    "d01": 0.030784000000000002
+   }
+  },
+  {
+   "source": "physics/noahmp/soil_thermo.py:_hrt",
+   "ms_per_root": 0.030657000000000004,
+   "launches_per_root": 7.9999999999999964,
+   "by_kind_ms": {
+    "fusion": 0.030657000000000004
+   },
+   "by_domain_ms": {
+    "d01": 0.019733999999999998,
+    "d02": 0.010923
+   }
+  },
+  {
+   "source": "kernels/dyn_acoustic_fp32.py:_w_phase",
+   "ms_per_root": 0.028349666666666662,
+   "launches_per_root": 24.99999999999998,
+   "by_kind_ms": {
+    "fusion": 0.028349666666666662
+   },
+   "by_domain_ms": {
+    "d01": 0.0070483333333333335,
+    "d02": 0.021301333333333332
+   }
+  },
+  {
+   "source": "dynamics/explicit_diffusion.py:horizontal_deformation_2d",
+   "ms_per_root": 0.027530000000000002,
+   "launches_per_root": 6.999999999999997,
+   "by_kind_ms": {
+    "fusion": 0.027530000000000002
+   },
+   "by_domain_ms": {
+    "d01": 0.0021973333333333337,
+    "d02": 0.025332666666666667
+   }
+  },
+  {
+   "source": "kernels/phys_noahmp_layers.py:rosr12_forward",
+   "ms_per_root": 0.02738966666666666,
+   "launches_per_root": 12.000000000000004,
+   "by_kind_ms": {
+    "fusion": 0.02738966666666666
+   },
+   "by_domain_ms": {
+    "d01": 0.008458666666666666,
+    "d02": 0.018930999999999996
+   }
+  },
+  {
+   "source": "runtime/operational_mode.py:_rk_scan_step.<locals>._root_scalar_sc_tend",
+   "ms_per_root": 0.026517333333333337,
+   "launches_per_root": 14.000000000000007,
+   "by_kind_ms": {
+    "fusion": 0.026517333333333337
+   },
+   "by_domain_ms": {
+    "d01": 0.026517333333333337
+   }
+  },
+  {
+   "source": "coupling/physics_couplers.py:_surface_dz_from_state",
+   "ms_per_root": 0.025450666666666663,
+   "launches_per_root": 6.999999999999997,
+   "by_kind_ms": {
+    "fusion": 0.025450666666666663
+   },
+   "by_domain_ms": {
+    "d01": 0.0013973333333333333,
+    "d02": 0.02405333333333333
+   }
+  },
+  {
+   "source": "coupling/boundary_apply.py:apply_normal_bdy_work",
+   "ms_per_root": 0.02416,
+   "launches_per_root": 14.000000000000007,
+   "by_kind_ms": {
+    "fusion": 0.02416
+   },
+   "by_domain_ms": {
+    "d01": 0.02416
+   }
+  },
+  {
+   "source": "coupling/physics_couplers.py:_wrf_phy_prep_rho_from_state",
+   "ms_per_root": 0.022954333333333334,
+   "launches_per_root": 4.999999999999999,
+   "by_kind_ms": {
+    "fusion": 0.022954333333333334
+   },
+   "by_domain_ms": {
+    "d01": 0.017365333333333333,
+    "d02": 0.005589
+   }
+  },
+  {
+   "source": "physics/noahmp/noahmp_driver.py:noah_mp_step",
+   "ms_per_root": 0.022549,
+   "launches_per_root": 12.000000000000004,
+   "by_kind_ms": {
+    "fusion": 0.022549
+   },
+   "by_domain_ms": {
+    "d01": 0.015381333333333334,
+    "d02": 0.007167666666666667
+   }
+  },
+  {
+   "source": "dynamics/core/rk_addtend_dry.py:large_step_coriolis",
+   "ms_per_root": 0.02130166666666667,
+   "launches_per_root": 6.999999999999997,
+   "by_kind_ms": {
+    "fusion": 0.02130166666666667
+   },
+   "by_domain_ms": {
+    "d01": 0.02130166666666667
+   }
+  },
+  {
+   "source": "dynamics/core/small_step_prep.py:small_step_prep_wrf",
+   "ms_per_root": 0.021193666666666666,
+   "launches_per_root": 4.999999999999999,
+   "by_kind_ms": {
+    "fusion": 0.021193666666666666
+   },
+   "by_domain_ms": {
+    "d01": 0.003968,
+    "d02": 0.017225666666666667
+   }
+  },
+  {
+   "source": "kernels/phys_noahmp_layers.py:_select",
+   "ms_per_root": 0.020021999999999998,
+   "launches_per_root": 12.000000000000004,
+   "by_kind_ms": {
+    "fusion": 0.020021999999999998
+   },
+   "by_domain_ms": {
+    "d01": 0.00368,
+    "d02": 0.016342
+   }
+  },
+  {
+   "source": "kernels/phys_mynn_cloudmix.py:pressure_mass_weights",
+   "ms_per_root": 0.019466333333333332,
+   "launches_per_root": 4.0,
+   "by_kind_ms": {
+    "fusion": 0.019466333333333332
+   },
+   "by_domain_ms": {
+    "d01": 0.0021866666666666666,
+    "d02": 0.017279666666666665
+   }
+  },
+  {
+   "source": "physics/wrf_cam_ozone.py:wrf_cam_ozone_profile",
+   "ms_per_root": 0.019460000000000015,
+   "launches_per_root": 20.999999999999993,
+   "by_kind_ms": {
+    "fusion": 0.019460000000000015
+   },
+   "by_domain_ms": {
+    "d01": 0.019460000000000015
+   }
+  },
+  {
+   "source": "dynamics/explicit_diffusion.py:smag2d_horizontal_km",
+   "ms_per_root": 0.01939233333333333,
+   "launches_per_root": 5.999999999999998,
+   "by_kind_ms": {
+    "fusion": 0.01939233333333333
+   },
+   "by_domain_ms": {
+    "d02": 0.01939233333333333
+   }
+  },
+  {
+   "source": "physics/noahmp/energy.py:_tdfcnd_soil",
+   "ms_per_root": 0.018804666666666667,
+   "launches_per_root": 4.0,
+   "by_kind_ms": {
+    "fusion": 0.018804666666666667
+   },
+   "by_domain_ms": {
+    "d01": 0.005930666666666667,
+    "d02": 0.012874
+   }
+  },
+  {
+   "source": "dynamics/flux_advection.py:advect_u_flux",
+   "ms_per_root": 0.018688,
+   "launches_per_root": 7.9999999999999964,
+   "by_kind_ms": {
+    "fusion": 0.018688
+   },
+   "by_domain_ms": {
+    "d01": 0.014752000000000001,
+    "d02": 0.003936
+   }
+  },
+  {
+   "source": "dynamics/flux_advection.py:_mass_to_full_levels",
+   "ms_per_root": 0.018016,
+   "launches_per_root": 1.9999999999999998,
+   "by_kind_ms": {
+    "fusion": 0.018016
+   },
+   "by_domain_ms": {
+    "d01": 0.018016
+   }
+  },
+  {
+   "source": "runtime/operational_mode.py:_carry_from_finished_stage",
+   "ms_per_root": 0.017866666666666666,
+   "launches_per_root": 4.0,
+   "by_kind_ms": {
+    "fusion": 0.017866666666666666
+   },
+   "by_domain_ms": {
+    "d01": 0.0027306666666666664,
+    "d02": 0.015135999999999998
+   }
+  },
+  {
+   "source": "dynamics/flux_advection.py:couple_uv_specified",
+   "ms_per_root": 0.017525333333333334,
+   "launches_per_root": 5.999999999999998,
+   "by_kind_ms": {
+    "fusion": 0.017525333333333334
+   },
+   "by_domain_ms": {
+    "d01": 0.017525333333333334
+   }
+  },
+  {
+   "source": "physics/rrtmg_sw.py:_sw_band_scan_optics_fluxes",
+   "ms_per_root": 0.01749233333333334,
+   "launches_per_root": 16.00000000000001,
+   "by_kind_ms": {
+    "fusion": 0.01749233333333334
+   },
+   "by_domain_ms": {
+    "d01": 0.003572333333333333,
+    "d02": 0.013920000000000002
+   }
+  },
+  {
+   "source": "runtime/operational_mode.py:_physics_boundary_step_in_window",
+   "ms_per_root": 0.017280000000000004,
+   "launches_per_root": 4.999999999999999,
+   "by_kind_ms": {
+    "fusion": 0.017280000000000004
+   },
+   "by_domain_ms": {
+    "d01": 0.0033599999999999997,
+    "d02": 0.01392
+   }
+  },
+  {
+   "source": "kernels/phys_gwdo_column.py:gwdo_tendencies_from_state",
+   "ms_per_root": 0.016992,
+   "launches_per_root": 13.000000000000005,
+   "by_kind_ms": {
+    "fusion": 0.016992
+   },
+   "by_domain_ms": {
+    "d01": 0.016992
+   }
+  },
+  {
+   "source": "kernels/ring_select.py:full_ring_target",
+   "ms_per_root": 0.016554666666666665,
+   "launches_per_root": 4.999999999999999,
+   "by_kind_ms": {
+    "fusion": 0.016554666666666665
+   },
+   "by_domain_ms": {
+    "d01": 0.016554666666666665
+   }
+  },
+  {
+   "source": "kernels/phys_mynn_plume.py:fused_plume_sums.<locals>.<lambda>",
+   "ms_per_root": 0.016394333333333334,
+   "launches_per_root": 4.0,
+   "by_kind_ms": {
+    "fusion": 0.016394333333333334
+   },
+   "by_domain_ms": {
+    "d01": 0.0015573333333333333,
+    "d02": 0.014837
+   }
+  },
+  {
+   "source": "coupling/boundary_apply.py:normal_bdy_work_target_v",
+   "ms_per_root": 0.016363,
+   "launches_per_root": 3.0,
+   "by_kind_ms": {
+    "fusion": 0.016363
+   },
+   "by_domain_ms": {
+    "d01": 0.016363
+   }
+  },
+  {
+   "source": "coupling/kf_rk.py:finish_kf_rates.<locals>.<genexpr>",
+   "ms_per_root": 0.016181333333333332,
+   "launches_per_root": 1.0,
+   "by_kind_ms": {
+    "fusion": 0.016181333333333332
+   },
+   "by_domain_ms": {
+    "d01": 0.016181333333333332
+   }
+  },
+  {
+   "source": "coupling/boundary_apply.py:tangential_bdy_work_target_v",
+   "ms_per_root": 0.015040000000000001,
+   "launches_per_root": 1.0,
+   "by_kind_ms": {
+    "fusion": 0.015040000000000001
+   },
+   "by_domain_ms": {
+    "d01": 0.015040000000000001
+   }
+  },
+  {
+   "source": "runtime/history_accumulators.py:accumulate_energy",
+   "ms_per_root": 0.014954666666666668,
+   "launches_per_root": 4.0,
+   "by_kind_ms": {
+    "fusion": 0.014954666666666668
+   },
+   "by_domain_ms": {
+    "d01": 0.0024426666666666668,
+    "d02": 0.012512
+   }
+  },
+  {
+   "source": "physics/mynn_pbl.py:_edmf_cloud_base_kwargs",
+   "ms_per_root": 0.014453333333333334,
+   "launches_per_root": 4.0,
+   "by_kind_ms": {
+    "fusion": 0.014453333333333334
+   },
+   "by_domain_ms": {
+    "d01": 0.0017599999999999998,
+    "d02": 0.012693333333333333
+   }
+  },
+  {
+   "source": "kernels/phys_noahmp_radiation.py:radiation_native",
+   "ms_per_root": 0.014261333333333332,
+   "launches_per_root": 4.0,
+   "by_kind_ms": {
+    "Pallas": 0.014261333333333332
+   },
+   "by_domain_ms": {
+    "d01": 0.0024426666666666663,
+    "d02": 0.011818666666666667
+   }
+  },
+  {
+   "source": "runtime/operational_mode.py:_microphysics_interior_only",
+   "ms_per_root": 0.013919999999999998,
+   "launches_per_root": 4.0,
+   "by_kind_ms": {
+    "fusion": 0.013919999999999998
+   },
+   "by_domain_ms": {
+    "d01": 0.005056,
+    "d02": 0.008863999999999999
+   }
+  },
+  {
+   "source": "runtime/operational_mode.py:_advance_chunk_fori",
+   "ms_per_root": 0.013493333333333336,
+   "launches_per_root": 14.000000000000007,
+   "by_kind_ms": {
+    "fusion": 0.013493333333333336
+   },
+   "by_domain_ms": {
+    "d01": 0.004639666666666667,
+    "d02": 0.008853666666666666
+   }
+  },
+  {
+   "source": "physics/mynn_pbl.py:_mym_predict_qsq",
+   "ms_per_root": 0.013257333333333333,
+   "launches_per_root": 4.0,
+   "by_kind_ms": {
+    "fusion": 0.013257333333333333
+   },
+   "by_domain_ms": {
+    "d01": 0.0016320000000000002,
+    "d02": 0.011625333333333333
+   }
+  },
+  {
+   "source": "dynamics/core/small_step_prep.py:_u_face_average_2d",
+   "ms_per_root": 0.013247999999999998,
+   "launches_per_root": 12.000000000000004,
+   "by_kind_ms": {
+    "fusion": 0.013247999999999998
+   },
+   "by_domain_ms": {
+    "d01": 0.0034346666666666666,
+    "d02": 0.009813333333333332
+   }
+  },
+  {
+   "source": "kernels/phys_mynn_plume.py:_dmp_mf_columns_impl",
+   "ms_per_root": 0.013161666666666667,
+   "launches_per_root": 3.0,
+   "by_kind_ms": {
+    "fusion": 0.013161666666666667
+   },
+   "by_domain_ms": {
+    "d02": 0.013161666666666667
+   }
+  },
+  {
+   "source": "physics/surface_layer.py:_zolrib_scan",
+   "ms_per_root": 0.013087999999999992,
+   "launches_per_root": 19.999999999999996,
+   "by_kind_ms": {
+    "fusion": 0.013087999999999992
+   },
+   "by_domain_ms": {
+    "d01": 0.013087999999999992
+   }
+  },
+  {
+   "source": "dynamics/flux_advection.py:_muu_face",
+   "ms_per_root": 0.012810999999999998,
+   "launches_per_root": 1.9999999999999998,
+   "by_kind_ms": {
+    "fusion": 0.012810999999999998
+   },
+   "by_domain_ms": {
+    "d01": 0.012810999999999998
+   }
+  },
+  {
+   "source": "coupling/scan_adapters.py:kf_adapter.<locals>._cols",
+   "ms_per_root": 0.01232,
+   "launches_per_root": 5.999999999999998,
+   "by_kind_ms": {
+    "fusion": 0.01232
+   },
+   "by_domain_ms": {
+    "d01": 0.01232
+   }
+  },
+  {
+   "source": "physics/surface_layer.py:mynn_driver_surface_fluxes",
+   "ms_per_root": 0.012192,
+   "launches_per_root": 3.0,
+   "by_kind_ms": {
+    "fusion": 0.012192
+   },
+   "by_domain_ms": {
+    "d01": 0.012192
+   }
+  },
+  {
+   "source": "dynamics/flux_advection.py:advect_v_flux",
+   "ms_per_root": 0.012085333333333332,
+   "launches_per_root": 4.0,
+   "by_kind_ms": {
+    "fusion": 0.012085333333333332
+   },
+   "by_domain_ms": {
+    "d01": 0.012085333333333332
+   }
+  },
+  {
+   "source": "physics/surface_layer.py:_li_etal_2010",
+   "ms_per_root": 0.011530333333333333,
+   "launches_per_root": 4.0,
+   "by_kind_ms": {
+    "fusion": 0.011530333333333333
+   },
+   "by_domain_ms": {
+    "d01": 0.008138666666666667,
+    "d02": 0.003391666666666666
+   }
+  },
+  {
+   "source": "coupling/boundary_apply.py:nested_scalar_spec_final",
+   "ms_per_root": 0.011370666666666664,
+   "launches_per_root": 3.0,
+   "by_kind_ms": {
+    "fusion": 0.011370666666666664
+   },
+   "by_domain_ms": {
+    "d02": 0.011370666666666664
+   }
+  },
+  {
+   "source": "dynamics/core/advance_w.py:moist_cqw_calc_face",
+   "ms_per_root": 0.011071999999999999,
+   "launches_per_root": 3.0,
+   "by_kind_ms": {
+    "fusion": 0.011071999999999999
+   },
+   "by_domain_ms": {
+    "d01": 0.011071999999999999
+   }
+  },
+  {
+   "source": "coupling/physics_couplers.py:thompson_adapter",
+   "ms_per_root": 0.010367999999999999,
+   "launches_per_root": 4.0,
+   "by_kind_ms": {
+    "fusion": 0.010367999999999999
+   },
+   "by_domain_ms": {
+    "d01": 0.0020906666666666665,
+    "d02": 0.008277333333333333
+   }
+  },
+  {
+   "source": "physics/noahmp/energy.py:_csnow",
+   "ms_per_root": 0.010079999999999999,
+   "launches_per_root": 4.0,
+   "by_kind_ms": {
+    "fusion": 0.010079999999999999
+   },
+   "by_domain_ms": {
+    "d01": 0.004458666666666666,
+    "d02": 0.005621333333333333
+   }
+  },
+  {
+   "source": "dynamics/flux_advection.py:_vertical_flux_div_w.<locals>._flux3_at",
+   "ms_per_root": 0.009888000000000001,
+   "launches_per_root": 3.0,
+   "by_kind_ms": {
+    "fusion": 0.009888000000000001
+   },
+   "by_domain_ms": {
+    "d01": 0.009888000000000001
+   }
+  },
+  {
+   "source": "dynamics/core/rk_addtend_dry.py:_x_face_pair_3d",
+   "ms_per_root": 0.009855999999999998,
+   "launches_per_root": 5.999999999999998,
+   "by_kind_ms": {
+    "fusion": 0.009855999999999998
+   },
+   "by_domain_ms": {
+    "d01": 0.009855999999999998
+   }
+  },
+  {
+   "source": "physics/wrf_clwrf_ghg.py:wrf_julian_yearlen_at_lead",
+   "ms_per_root": 0.009557333333333334,
+   "launches_per_root": 7.9999999999999964,
+   "by_kind_ms": {
+    "fusion": 0.009557333333333334
+   },
+   "by_domain_ms": {
+    "d01": 0.002208,
+    "d02": 0.007349333333333333
+   }
+  },
+  {
+   "source": "dynamics/flux_advection.py:_shift0",
+   "ms_per_root": 0.00928,
+   "launches_per_root": 3.0,
+   "by_kind_ms": {
+    "fusion": 0.00928
+   },
+   "by_domain_ms": {
+    "d01": 0.00928
+   }
+  },
+  {
+   "source": "coupling/boundary_apply.py:normal_bdy_work_target_u",
+   "ms_per_root": 0.009248000000000001,
+   "launches_per_root": 3.0,
+   "by_kind_ms": {
+    "fusion": 0.009248000000000001
+   },
+   "by_domain_ms": {
+    "d01": 0.009248000000000001
+   }
+  },
+  {
+   "source": "dynamics/core/small_step_finish.py:_safe_denominator",
+   "ms_per_root": 0.009248000000000001,
+   "launches_per_root": 3.0,
+   "by_kind_ms": {
+    "fusion": 0.009248000000000001
+   },
+   "by_domain_ms": {
+    "d01": 0.009248000000000001
+   }
+  },
+  {
+   "source": "dynamics/flux_advection.py:advect_v_flux.<locals>._v_factor",
+   "ms_per_root": 0.009237333333333334,
+   "launches_per_root": 5.999999999999998,
+   "by_kind_ms": {
+    "fusion": 0.009237333333333334
+   },
+   "by_domain_ms": {
+    "d02": 0.009237333333333334
+   }
+  },
+  {
+   "source": "kernels/phys_mynn_plume.py:fused_plume_sums.<locals>.pad_tail",
+   "ms_per_root": 0.009226333333333333,
+   "launches_per_root": 6.999999999999997,
+   "by_kind_ms": {
+    "fusion": 0.009226333333333333
+   },
+   "by_domain_ms": {
+    "d01": 0.0008213333333333333,
+    "d02": 0.008405
+   }
+  },
+  {
+   "source": "dynamics/core/rk_addtend_dry.py:large_step_uv_fused",
+   "ms_per_root": 0.009205333333333334,
+   "launches_per_root": 5.999999999999998,
+   "by_kind_ms": {
+    "fusion": 0.009205333333333334
+   },
+   "by_domain_ms": {
+    "d02": 0.009205333333333334
+   }
+  },
+  {
+   "source": "coupling/boundary_apply.py:_shift_clamp",
+   "ms_per_root": 0.009066666666666666,
+   "launches_per_root": 12.000000000000004,
+   "by_kind_ms": {
+    "fusion": 0.009066666666666666
+   },
+   "by_domain_ms": {
+    "d02": 0.009066666666666666
+   }
+  },
+  {
+   "source": "coupling/physics_couplers.py:_wrf_phy_prep_p8w",
+   "ms_per_root": 0.00832,
+   "launches_per_root": 1.9999999999999998,
+   "by_kind_ms": {
+    "fusion": 0.00832
+   },
+   "by_domain_ms": {
+    "d01": 0.00832
+   }
+  },
+  {
+   "source": "runtime/operational_mode.py:_advance_chunk_fori.<locals>.body",
+   "ms_per_root": 0.008128,
+   "launches_per_root": 7.9999999999999964,
+   "by_kind_ms": {
+    "fusion": 0.008128
+   },
+   "by_domain_ms": {
+    "d01": 0.0019093333333333336,
+    "d02": 0.006218666666666667
+   }
+  },
+  {
+   "source": "coupling/physics_couplers.py:_wrf_hydrostatic_pressure_profiles_from_state",
+   "ms_per_root": 0.007978666666666669,
+   "launches_per_root": 7.9999999999999964,
+   "by_kind_ms": {
+    "fusion": 0.007978666666666669
+   },
+   "by_domain_ms": {
+    "d01": 0.0022719999999999997,
+    "d02": 0.005706666666666666
+   }
+  },
+  {
+   "source": "runtime/operational_mode.py:_w_coriolis_curvature.<locals>._face",
+   "ms_per_root": 0.007872,
+   "launches_per_root": 1.0,
+   "by_kind_ms": {
+    "fusion": 0.007872
+   },
+   "by_domain_ms": {
+    "d01": 0.007872
+   }
+  },
+  {
+   "source": "physics/noahmp/water_hydro.py:_soilwater",
+   "ms_per_root": 0.007392000000000001,
+   "launches_per_root": 1.9999999999999998,
+   "by_kind_ms": {
+    "fusion": 0.007392000000000001
+   },
+   "by_domain_ms": {
+    "d01": 0.007392000000000001
+   }
+  },
+  {
+   "source": "coupling/physics_couplers.py:_theta_m_from_microphysics",
+   "ms_per_root": 0.007029333333333334,
+   "launches_per_root": 1.0,
+   "by_kind_ms": {
+    "fusion": 0.007029333333333334
+   },
+   "by_domain_ms": {
+    "d01": 0.007029333333333334
+   }
+  },
+  {
+   "source": "coupling/boundary_apply.py:_root_record_value_rate_real4",
+   "ms_per_root": 0.0069759999999999996,
+   "launches_per_root": 4.0,
+   "by_kind_ms": {
+    "fusion": 0.0069759999999999996
+   },
+   "by_domain_ms": {
+    "d01": 0.0069759999999999996
+   }
+  },
+  {
+   "source": "physics/noahmp/water_hydro.py:_infil",
+   "ms_per_root": 0.006869333333333334,
+   "launches_per_root": 1.9999999999999998,
+   "by_kind_ms": {
+    "fusion": 0.006869333333333334
+   },
+   "by_domain_ms": {
+    "d01": 0.006869333333333334
+   }
+  },
+  {
+   "source": "physics/noahmp/phenology.py:noahmp_phenology_table",
+   "ms_per_root": 0.006719333333333333,
+   "launches_per_root": 3.0,
+   "by_kind_ms": {
+    "fusion": 0.006719333333333333
+   },
+   "by_domain_ms": {
+    "d01": 0.006719333333333333
+   }
+  },
+  {
+   "source": "runtime/operational_mode.py:_kf_cadence_step",
+   "ms_per_root": 0.006325333333333333,
+   "launches_per_root": 3.0,
+   "by_kind_ms": {
+    "fusion": 0.006325333333333333
+   },
+   "by_domain_ms": {
+    "d01": 0.006325333333333333
+   }
+  },
+  {
+   "source": "dynamics/flux_advection.py:_specified_div",
+   "ms_per_root": 0.005802666666666668,
+   "launches_per_root": 6.999999999999997,
+   "by_kind_ms": {
+    "fusion": 0.005802666666666668
+   },
+   "by_domain_ms": {
+    "d01": 0.0020586666666666665,
+    "d02": 0.003743999999999999
+   }
+  },
+  {
+   "source": "dynamics/core/rk_addtend_dry.py:_y_face_pair_3d",
+   "ms_per_root": 0.005568,
+   "launches_per_root": 3.0,
+   "by_kind_ms": {
+    "fusion": 0.005568
+   },
+   "by_domain_ms": {
+    "d01": 0.005568
+   }
+  },
+  {
+   "source": "dynamics/explicit_diffusion.py:_core_x",
+   "ms_per_root": 0.005162666666666666,
+   "launches_per_root": 1.9999999999999998,
+   "by_kind_ms": {
+    "fusion": 0.005162666666666666
+   },
+   "by_domain_ms": {
+    "d01": 0.005162666666666666
+   }
+  },
+  {
+   "source": "coupling/physics_couplers.py:_temperature_from_theta",
+   "ms_per_root": 0.005066666666666666,
+   "launches_per_root": 1.9999999999999998,
+   "by_kind_ms": {
+    "fusion": 0.005066666666666666
+   },
+   "by_domain_ms": {
+    "d01": 0.005066666666666666
+   }
+  },
+  {
+   "source": "physics/surface_layer.py:_as_surface",
+   "ms_per_root": 0.0050346666666666665,
+   "launches_per_root": 4.0,
+   "by_kind_ms": {
+    "fusion": 0.0050346666666666665
+   },
+   "by_domain_ms": {
+    "d01": 0.0050346666666666665
+   }
+  },
+  {
+   "source": "dynamics/core/rk_addtend_dry.py:_x_face_pair_2d",
+   "ms_per_root": 0.004533333333333334,
+   "launches_per_root": 3.0,
+   "by_kind_ms": {
+    "fusion": 0.004533333333333334
+   },
+   "by_domain_ms": {
+    "d01": 0.004533333333333334
+   }
+  },
+  {
+   "source": "coupling/boundary_apply.py:tangential_bdy_work_target_u",
+   "ms_per_root": 0.0042773333333333335,
+   "launches_per_root": 1.0,
+   "by_kind_ms": {
+    "fusion": 0.0042773333333333335
+   },
+   "by_domain_ms": {
+    "d01": 0.0042773333333333335
+   }
+  },
+  {
+   "source": "coupling/boundary_apply.py:_strip",
+   "ms_per_root": 0.004255999999999999,
+   "launches_per_root": 4.0,
+   "by_kind_ms": {
+    "fusion": 0.004255999999999999
+   },
+   "by_domain_ms": {
+    "d01": 0.004255999999999999
+   }
+  },
+  {
+   "source": "runtime/operational_mode.py:_physics_sc_outside_spec",
+   "ms_per_root": 0.003594666666666667,
+   "launches_per_root": 3.0,
+   "by_kind_ms": {
+    "fusion": 0.003594666666666667
+   },
+   "by_domain_ms": {
+    "d02": 0.003594666666666667
+   }
+  },
+  {
+   "source": "dynamics/explicit_diffusion.py:_core_y",
+   "ms_per_root": 0.0034986666666666673,
+   "launches_per_root": 1.9999999999999998,
+   "by_kind_ms": {
+    "fusion": 0.0034986666666666673
+   },
+   "by_domain_ms": {
+    "d01": 0.0034986666666666673
+   }
+  },
+  {
+   "source": "runtime/operational_mode.py:_root_sc_with_boundary",
+   "ms_per_root": 0.0034879999999999998,
+   "launches_per_root": 1.9999999999999998,
+   "by_kind_ms": {
+    "fusion": 0.0034879999999999998
+   },
+   "by_domain_ms": {
+    "d01": 0.0034879999999999998
+   }
+  },
+  {
+   "source": "runtime/operational_mode.py:_u_face_average_2d",
+   "ms_per_root": 0.003477333333333333,
+   "launches_per_root": 1.0,
+   "by_kind_ms": {
+    "fusion": 0.003477333333333333
+   },
+   "by_domain_ms": {
+    "d01": 0.003477333333333333
+   }
+  },
+  {
+   "source": "physics/noahmp/snow.py:noahmp_snow",
+   "ms_per_root": 0.0034026666666666667,
+   "launches_per_root": 1.9999999999999998,
+   "by_kind_ms": {
+    "fusion": 0.0034026666666666667
+   },
+   "by_domain_ms": {
+    "d01": 0.0034026666666666667
+   }
+  },
+  {
+   "source": "physics/noahmp/phenology.py:noahmp_phenology_table.<locals>._pick",
+   "ms_per_root": 0.0033706666666666663,
+   "launches_per_root": 1.9999999999999998,
+   "by_kind_ms": {
+    "fusion": 0.0033706666666666663
+   },
+   "by_domain_ms": {
+    "d01": 0.0033706666666666663
+   }
+  },
+  {
+   "source": "kernels/phys_gwdo_column.py:gwdo_epilogue",
+   "ms_per_root": 0.0033493333333333335,
+   "launches_per_root": 1.9999999999999998,
+   "by_kind_ms": {
+    "fusion": 0.0033493333333333335
+   },
+   "by_domain_ms": {
+    "d01": 0.0033493333333333335
+   }
+  },
+  {
+   "source": "runtime/operational_mode.py:nested_boundary_package_endpoint_seconds",
+   "ms_per_root": 0.0030399999999999997,
+   "launches_per_root": 3.0,
+   "by_kind_ms": {
+    "fusion": 0.0030399999999999997
+   },
+   "by_domain_ms": {
+    "d02": 0.0030399999999999997
+   }
+  },
+  {
+   "source": "physics/noahmp/energy.py:_full_dz",
+   "ms_per_root": 0.002816,
+   "launches_per_root": 1.0,
+   "by_kind_ms": {
+    "fusion": 0.002816
+   },
+   "by_domain_ms": {
+    "d01": 0.002816
+   }
+  },
+  {
+   "source": "physics/noahmp/precip_heat.py:_atm_partition",
+   "ms_per_root": 0.0027946666666666667,
+   "launches_per_root": 1.9999999999999998,
+   "by_kind_ms": {
+    "fusion": 0.0027946666666666667
+   },
+   "by_domain_ms": {
+    "d01": 0.0027946666666666667
+   }
+  },
+  {
+   "source": "physics/mynn_pbl.py:_exner_from_pressure",
+   "ms_per_root": 0.0027413333333333335,
+   "launches_per_root": 1.0,
+   "by_kind_ms": {
+    "fusion": 0.0027413333333333335
+   },
+   "by_domain_ms": {
+    "d01": 0.0027413333333333335
+   }
+  },
+  {
+   "source": "coupling/physics_couplers.py:_w_bottom_faces",
+   "ms_per_root": 0.0024853333333333333,
+   "launches_per_root": 1.0,
+   "by_kind_ms": {
+    "fusion": 0.0024853333333333333
+   },
+   "by_domain_ms": {
+    "d01": 0.0024853333333333333
+   }
+  },
+  {
+   "source": "dynamics/core/rk_addtend_dry.py:_y_face_pair_2d",
+   "ms_per_root": 0.0021973333333333337,
+   "launches_per_root": 1.0,
+   "by_kind_ms": {
+    "fusion": 0.0021973333333333337
+   },
+   "by_domain_ms": {
+    "d01": 0.0021973333333333337
+   }
+  },
+  {
+   "source": "runtime/operational_mode.py:_diffopt1_scalar_horizontal_diffusion",
+   "ms_per_root": 0.0020373333333333333,
+   "launches_per_root": 1.0,
+   "by_kind_ms": {
+    "fusion": 0.0020373333333333333
+   },
+   "by_domain_ms": {
+    "d01": 0.0020373333333333333
+   }
+  },
+  {
+   "source": "physics/rrtmg_sw.py:_take_rows",
+   "ms_per_root": 0.001984,
+   "launches_per_root": 1.9999999999999998,
+   "by_kind_ms": {
+    "fusion": 0.001984
+   },
+   "by_domain_ms": {
+    "d02": 0.001984
+   }
+  },
+  {
+   "source": "physics/surface_layer.py:_surface",
+   "ms_per_root": 0.0017706666666666665,
+   "launches_per_root": 1.0,
+   "by_kind_ms": {
+    "fusion": 0.0017706666666666665
+   },
+   "by_domain_ms": {
+    "d01": 0.0017706666666666665
+   }
+  },
+  {
+   "source": "runtime/operational_mode.py:_rk_scan_step",
+   "ms_per_root": 0.0017599999999999998,
+   "launches_per_root": 1.0,
+   "by_kind_ms": {
+    "fusion": 0.0017599999999999998
+   },
+   "by_domain_ms": {
+    "d01": 0.0017599999999999998
+   }
+  },
+  {
+   "source": "coupling/physics_couplers.py:_mynn_driver_limited_handles",
+   "ms_per_root": 0.0017493333333333332,
+   "launches_per_root": 1.0,
+   "by_kind_ms": {
+    "fusion": 0.0017493333333333332
+   },
+   "by_domain_ms": {
+    "d01": 0.0017493333333333332
+   }
+  },
+  {
+   "source": "kernels/dyn_boundary_fp32.py:_window_operands",
+   "ms_per_root": 0.0017166666666666667,
+   "launches_per_root": 1.9999999999999998,
+   "by_kind_ms": {
+    "fusion": 0.0017166666666666667
+   },
+   "by_domain_ms": {
+    "d01": 0.0017166666666666667
+   }
+  },
+  {
+   "source": "physics/noahmp/energy.py:thermoprop_full",
+   "ms_per_root": 0.0015893333333333334,
+   "launches_per_root": 1.0,
+   "by_kind_ms": {
+    "fusion": 0.0015893333333333334
+   },
+   "by_domain_ms": {
+    "d01": 0.0015893333333333334
+   }
+  },
+  {
+   "source": "coupling/kf_rk.py:finish_kf_rates",
+   "ms_per_root": 0.0014399999999999999,
+   "launches_per_root": 1.0,
+   "by_kind_ms": {
+    "fusion": 0.0014399999999999999
+   },
+   "by_domain_ms": {
+    "d01": 0.0014399999999999999
+   }
+  },
+  {
+   "source": "coupling/physics_couplers.py:_wrf_phy_prep_rho_from_state.<locals>.<lambda>",
+   "ms_per_root": 0.0013226666666666667,
+   "launches_per_root": 1.0,
+   "by_kind_ms": {
+    "fusion": 0.0013226666666666667
+   },
+   "by_domain_ms": {
+    "d01": 0.0013226666666666667
+   }
+  },
+  {
+   "source": "physics/noahmp/snow.py:_snowwater_column",
+   "ms_per_root": 0.0011413333333333334,
+   "launches_per_root": 1.0,
+   "by_kind_ms": {
+    "fusion": 0.0011413333333333334
+   },
+   "by_domain_ms": {
+    "d01": 0.0011413333333333334
+   }
+  }
+ ]
+}

@@ -843,6 +843,11 @@ _RECOGNIZED_CONTROLS: tuple[RecognizedControl, ...] = (
     ),
     # --- PBL / cloud sub-options ------------------------------------------ #
     RecognizedControl(
+        "rad_diag", "gpuwrf-radiation-history", frozenset({0, 1}),
+        "gpuwrf option (&gpuwrf): opt-in RRTMG4/4 radiation-call heating and input condensate history.",
+        "Use rad_diag=0 (default) or rad_diag=1 with RRTMG4/4.",
+    ),
+    RecognizedControl(
         "icloud", "radiation-cloud-fraction",
         frozenset({0, 1, 2, 3}),
         "recognized; the port binds WRF icloud=1 (default, cal_cldfra1 + icloud_bl merge), "
@@ -851,15 +856,11 @@ _RECOGNIZED_CONTROLS: tuple[RecognizedControl, ...] = (
     ),
     RecognizedControl(
         "icloud_bl", "PBL-cloud-coupling",
-        frozenset({1}),
-        # v0.3.4 (o1-nlbind): the v0.15 MYNN SGS-cloud chain feeds CLDFRA_BL/QC_BL/
-        # QI_BL to RRTMG unconditionally (physics_couplers, mynn_sgs_cloud); the
-        # old {0} claim refused the value that runs and accepted one that did not.
-        "recognized; the port runs WRF's default icloud_bl=1 (MYNN sub-grid cloud "
-        "fraction and condensate feed the RRTMG cloud input, "
-        "module_radiation_driver.F:1404-1431). icloud_bl=0 (radiation sees resolved "
-        "clouds only) is not bound.",
-        "Use icloud_bl=1 (WRF default) or omit the key.",
+        frozenset({0, 1}),
+        "WRF radiation_driver.F:1404-1431: icloud_bl=1 merges MYNN cloud fraction "
+        "and condensate for icloud=1; icloud_bl=0 skips that radiation-input merge. "
+        "The MYNN cloud producer is unchanged; icloud=0/2/3 bypasses this block.",
+        "Use icloud_bl=0 or 1 (WRF default).",
     ),
     RecognizedControl(
         "bl_mynn_tkeadvect", "MYNN-TKE-advection",
@@ -870,19 +871,46 @@ _RECOGNIZED_CONTROLS: tuple[RecognizedControl, ...] = (
         "Set bl_mynn_tkeadvect=.false. (0).",
     ),
     RecognizedControl(
+        "cycling", "WRF-cycling-lifecycle", frozenset({0, 1}),
+        "WRF time_control cycling: fresh issue clock/buckets, start_em rebalance_cycl, "
+        "and MYNN per-column initialization including its zero-QKE cycling quirk. "
+        "Currently Thompson mp=8, MYNN bl=5, dfi_opt=0 only; coupled qualification pending.",
+        "Omit cycling for the released cold-start behavior; cycled inputs require cycling=.true..",
+    ),
+    RecognizedControl(
+        "use_input_w", "cycling-input-W", frozenset({0, 1}),
+        "Cycling startup follows start_em:1475-1530: false rebuilds W, true retains "
+        "nonzero input W; a zero surface field is initialized in either case. "
+        "Explicit use_input_w is bound on the cycling path only.",
+        "Use cycling=.true. with use_input_w=.false. (WRF default) or .true..",
+    ),
+    RecognizedControl(
         "bl_mynn_edmf", "MYNN-EDMF-massflux",
-        frozenset({1}),
-        "recognized; the port wires the WRF-default MYNN-EDMF mass-flux ON "
-        "(bl_mynn_edmf=1, physics/mynn_edmf.py). The EDMF-off path is not "
-        "separately wired.",
-        "Use bl_mynn_edmf=1 (WRF default).",
+        frozenset({0,1}),
+        "Native MYNN master mass-flux switch. Zero disables every plume source; "
+        "nondefault mode requires bl_pbl_physics=5 and native fp32 source-leaf coupling. "
+        "CPU-oracle-qualified; composed GPU qualification pending.",
+        "Use bl_mynn_edmf=0/1 with MYNN5.",
     ),
     RecognizedControl(
         "bl_mynn_edmf_mom", "MYNN-EDMF-momentum-massflux",
-        frozenset({1}),
+        frozenset({0,1}),
         "recognized; the port wires the WRF-default EDMF momentum mass-flux ON "
-        "(bl_mynn_edmf_mom=1).",
-        "Use bl_mynn_edmf_mom=1 (WRF default).",
+        "(bl_mynn_edmf_mom=1). Zero is allowed only when the master bl_mynn_edmf=0 "
+        "already disables all plume tendencies.",
+        "Use bl_mynn_edmf_mom=1, or disable the master EDMF switch too.",
+    ),
+    RecognizedControl(
+        "tke_budget", "WRF MYNN TKE budget history", frozenset({0,1}),
+        "Opt-in separate MYNN history twin: qSHEAR/qBUOY/qDISS/qWT/Dtke. "
+        "Requires MYNN5/native fp32. CPU-oracle-qualified; composed GPU qualification pending.",
+        "Use tke_budget=0/1 with MYNN5.",
+    ),
+    RecognizedControl(
+        "bl_mynn_output", "WRF MYNN EDMF history", frozenset({0,1}),
+        "Opt-in separate MYNN history twin exports ten EDMF and six raw PBL rate fields. "
+        "Requires MYNN5/native fp32. CPU-oracle-qualified; composed GPU qualification pending.",
+        "Use bl_mynn_output=0/1 with MYNN5.",
     ),
     RecognizedControl(
         "bl_mynn_edmf_tke", "MYNN-EDMF-TKE-massflux",
@@ -1038,7 +1066,8 @@ _RECOGNIZED_CONTROL_BY_KEY: Mapping[str, RecognizedControl] = {
 
 # Implemented non-enumerated controls (radiation slope/topo path). slope_rad=1
 # and topo_shading=1 ARE wired (RRTMG SW slope-radiation + topographic-shadow);
-# slope_rad=2 (the WRF "slope + shadow" combined flag) is NOT separately wired.
+# WRF uses independent 0/1 switches; topo_shading affects surface flux only
+# when slope_rad=1. There is no WRF slope_rad=2 combined mode.
 _IMPLEMENTED_CONTROLS: Mapping[str, frozenset[int]] = {
     "swint_opt": frozenset({0, 1}),
     "dfi_opt": frozenset({0, 1, 2, 3}),
@@ -1070,8 +1099,8 @@ _IMPLEMENTED_CONTROL_REASON: Mapping[str, tuple[str, str, str]] = {
     # key: (label, unwired-reason, alternative)
     "slope_rad": (
         "slope-radiation",
-        "recognized; the port wires slope_rad=1 (RRTMG SW slope-radiation). "
-        "slope_rad=2 (WRF combined slope+shadow flag) is not separately wired.",
+        "recognized; WRF and the port use slope_rad=0 or 1. "
+        "Enable topo_shading=1 separately for terrain shadows with slope_rad=1.",
         "Use slope_rad=0 (off) or 1 (slope radiation on).",
     ),
     "topo_shading": (
@@ -1105,6 +1134,35 @@ _IMPLEMENTED_CONTROL_REASON: Mapping[str, tuple[str, str, str]] = {
     ),
 }
 IMPLEMENTED_CONTROL_KEYS: frozenset[str] = frozenset(_IMPLEMENTED_CONTROLS)
+
+# CLI research operands, separate from WRF's namelist scheme-code namespace.
+# These entries describe admission/qualification; they do not enable a scheme.
+RUNTIME_PARAMETER_FAMILIES = {
+    "thompson_parameters": {
+        "option": "--runtime-parameters",
+        "parameters": ("nt_c", "tno", "ato", "av_c", "av_i", "av_r", "autoconversion_threshold", "autoconversion_rate"),
+        "runtime_parameters": ("nt_c", "tno", "ato", "av_c"),
+        "experimental_refused_parameters": ("av_i", "av_r", "autoconversion_threshold", "autoconversion_rate"),
+        "qualification": "Research candidate, native mp_physics=8. WRF PARAMETER/source-literal extensions require CPU-WRF recompilation. Public binder accepts Nt_c/TNO/ATO/AV_C; av_i/av_r/autoconversion are refused until their GPU/E41/cost gates pass. Isolated CPU default classes: TNO/ATO/autoconversion BYTE; AV_C qc/cloudw <=2 REAL ulp; Nt_c Nr<=3; AV_I qi<=3/Ni<=4/ice-precip<=1 REAL ulp; AV_R qr<=3/Nr<=6. Widened REAL precipitation carriers are not float64-ulp claims. All eight at defaults together: union of these classes (max Nr 6 REAL ulp), within the 25-member 1-REAL-ulp pristine-WRF floor. Product-root GPU gates remain open.",
+    },
+    "surface_controls": {
+        "option": "--surface-controls",
+        "parameters": ("z0mvt", "eg", "vcmx25", "mp", "albsat", "albdry", "rhol", "rhos",
+                       "laim", "saim", "shdmax", "ctopo",
+                       "smcmax", "dksat", "bexp", "psisat", "rsmin", "hvt", "hvb", "z0sno", "snow_emis"),
+        "qualification": "Existing Track-P runtime path; authenticated CTOPO checkpoint integration is a research candidate. W2 soil/canopy/snow controls are research candidates; native E41/GPU cost remains pending.",
+    },
+    "diffusion_parameters": {
+        "option": "--runtime-parameters",
+        "parameters": ("c_s", "diff_6th_factor", "dampcoef", "zdamp", "w_alpha", "w_beta", "w_crit_cfl"),
+        "qualification": "Research candidate: CPU WRF operator checks; GPU/E41/cost gate pending. c_s only diff_opt=1/km_opt=4.",
+    },
+    "mynn_parameters": {
+        "option": "--runtime-parameters",
+        "parameters": ("sqfac", "alp1", "cphm_unst", "am_st", "entrainment"),
+        "qualification": "Research candidate: MYNN bl_pbl_physics=5; added length/stability/entrainment operands require native FP32 columns. Expanded CPU/GPU/E41/cost gates pending.",
+    },
+}
 
 
 def classify_control(key: str, value: object) -> SchemeSupport | None:
@@ -1683,7 +1741,7 @@ _IMPLEMENTED_NOTES: Mapping[tuple[str, int], str] = {
     "Single domains; custom nssl_mp_params refused. REFL_10CM held with the NSSL makediag lifetime from "
     "radardd02's ipconc=0 branch (fp32 BYTE vs pristine S6, proofs/t_classd). "
     "GPU E41/resources and forecast fidelity remain pending.",
-    ("sf_surface_physics",4): "Noah-MP includes the independent WRF glacier timestep (opt_gla=1/2). CPU-oracle-qualified; GPU/coupled-forecast qualification pending for glacier domains. Glacier QRAINXY=0 matches WRF's defined per-point cold-zero hold; arbitrary nonzero externally seeded QRAINXY is outside this qualification. opt_snf=5 is refused on glacier domains. Released Noah-MP default path is unchanged. Experimental opt_run=5 MMF: CPU-oracle-qualified; GPU/coupled-forecast qualification pending. Original REAL4 cold initialization, soil columns and eight-neighbor groundwater transport; WTDDT cadence, complete restart and held history. Requires NCAR groundwater geography via GEOGRID.TBL.ARW.noahmp, one ice-free domain, no urban/lake, four STAS soil layers, opt_inf=1/2 and noahmp_acc_dt=0. Original-WRF input-ULP/FMA bounds; GPU performance, memory and E41 robustness unmeasured. proofs/s2_mmf/INPUT_REQUIREMENTS.md. Additional natural-soil controls: docs/noahmp-options.md; CPU-oracle-qualified, GPU/coupled-forecast qualification pending.",
+    ("sf_surface_physics",4): "Requires each wrfinput MMINLU='MODIFIED_IGBP_MODIS_NOAH'; USGS and unknown/missing MMINLU are refused before land field reads or allocations. NUM_LAND_CAT alone does not identify the dataset. MODIS LCZ classes 51-61 remain accepted under existing urban-option requirements. Noah-MP includes the independent WRF glacier timestep (opt_gla=1/2). CPU-oracle-qualified; GPU/coupled-forecast qualification pending for glacier domains. Glacier QRAINXY=0 matches WRF's defined per-point cold-zero hold; arbitrary nonzero externally seeded QRAINXY is outside this qualification. opt_snf=5 is refused on glacier domains. Released Noah-MP default path is unchanged. Experimental opt_run=5 MMF: CPU-oracle-qualified; GPU/coupled-forecast qualification pending. Original REAL4 cold initialization, soil columns and eight-neighbor groundwater transport; WTDDT cadence, complete restart and held history. Requires NCAR groundwater geography via GEOGRID.TBL.ARW.noahmp, one ice-free domain, no urban/lake, four STAS soil layers, opt_inf=1/2 and noahmp_acc_dt=0. Original-WRF input-ULP/FMA bounds; GPU performance, memory and E41 robustness unmeasured. proofs/s2_mmf/INPUT_REQUIREMENTS.md. Additional natural-soil controls: docs/noahmp-options.md; CPU-oracle-qualified, GPU/coupled-forecast qualification pending.",
     **{("mp_physics", code): "CPU-oracle-qualified; GPU/coupled-forecast qualification pending. "
        "Experimental Ferrier-Aligo REAL column kernel (module_mp_fer_hires.F): literal no-FMA execution is BYTE against "
        "36 pristine-WRF columns (tests/v040/mpmisc). Compiled CPU rounding deviations beyond "

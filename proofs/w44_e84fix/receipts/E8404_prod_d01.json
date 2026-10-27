@@ -1,0 +1,114 @@
+{
+  "source": "<DATA_ROOT>/wrf_gpu2/scratch/w44-e84fix/snapshot",
+  "source_commit": "16b5fc60e9167414883925f5c49c8b8cff7bd0cd",
+  "source_dirty": "",
+  "case": "<USER_HOME>/wrf_gpu2_lanes/w44-perf/prod_case",
+  "domain": "d01",
+  "physical_backend": "cpu",
+  "lowering_platform": "cuda",
+  "gpu_executed": false,
+  "scope": "deviceless CompileOnly prescreen (autotune 0); actual GPU E41 scan stays authoritative",
+  "target_sha256": "b753abdddbace1e913de3767a1afbdfeba2b272e77f2be93658c766968e4960f",
+  "harness_sha256": "f27cd1ec09a672f90b113f67c04b52f7d932980fc38e3d221f71104fcf96b37e",
+  "phase": "done",
+  "wall_s": 299.5897385510034,
+  "peak_rss_KiB": 6378232,
+  "input_sha256": {
+    "namelist.input": "5ef3a96be3324deb712b0e0114288244bcf5f53edb21461fee7374aa766cef4b",
+    "wrfinput_d02": "b3013bbb337adbe20c10331f46b309d288424e54a41e9cc4ba2e8eba53abb16f",
+    "wrfbdy_d01": "296cef912e17dc0dfff4b78103dedfb1329cd184de5bc2cd0d44cc6edf823599",
+    "wrfinput_d01": "1024ddb7d6badc958fb1a4f385117ce5c46d20249b75bcce2ea4261d34f648f0",
+    "SHA256SUMS": "bcdeaaa5eb0ccc05437cf276bd970ed3486f569060d90b09f1410a6fe02b1a60"
+  },
+  "gpuwrf_file": "<DATA_ROOT>/wrf_gpu2/scratch/w44-e84fix/snapshot/src/gpuwrf/__init__.py",
+  "static_kwargs": {
+    "n_steps": 1,
+    "cadence": 33
+  },
+  "traced_pallas_calls": 161,
+  "stablehlo_sha256": "bac959ac399ba5504f0b837ce4c7c82d3377c192887dc09a95fd0c027bc36d2a",
+  "stablehlo_bytes": 267902650,
+  "raw_full_constant_proto_sha256": "860c7db7d9901093d3ba16feeeb1b137058a3e677ef4b90346a1fa499ee3209d",
+  "compile_s": 130.38446322298842,
+  "optimized_hlo_sha256": "a67b1a159478d78297b22d8010d4bb9f796fffafd44f93f4f3974a644814360c",
+  "optimized_full_constant_proto_sha256": "e801fe2909e9f9bffabc66bc9c93b846de2f52f8e0d58a3c72c5fecf50e6cb9f",
+  "memory": {
+    "argument_size_in_bytes": 126913232,
+    "output_size_in_bytes": 114544828,
+    "temp_size_in_bytes": 525257432,
+    "alias_size_in_bytes": 114543364
+  },
+  "cuda_ptx_files": [
+    "<USER_HOME>/wrf_gpu2_lanes/w44-e84fix/E8404_prod_d01/dump/module_0001.jit__advance_chunk_fori.ptx"
+  ],
+  "n_fusions": 1385,
+  "transpose_fusions": 557,
+  "kinput_transpose_over500": [],
+  "any_transpose_over500": [],
+  "top_transpose": [
+    [
+      406,
+      "kInput",
+      "input_multiply_power_select_subtract_transpose_fusion"
+    ],
+    [
+      376,
+      "kInput",
+      "input_transpose_fusion.124"
+    ],
+    [
+      352,
+      "kInput",
+      "input_transpose_fusion.125"
+    ],
+    [
+      339,
+      "kInput",
+      "input_add_divide_multiply_transpose_fusion"
+    ],
+    [
+      322,
+      "kInput",
+      "input_maximum_pad_transpose_fusion"
+    ],
+    [
+      312,
+      "kInput",
+      "input_maximum_select_transpose_fusion"
+    ],
+    [
+      312,
+      "kInput",
+      "input_maximum_multiply_transpose_fusion"
+    ],
+    [
+      303,
+      "kLoop",
+      "loop_divide_transpose_fusion"
+    ],
+    [
+      289,
+      "kInput",
+      "input_minimum_multiply_transpose_fusion"
+    ],
+    [
+      285,
+      "kInput",
+      "input_add_clamp_convert_maximum_minimum_power_transpose_fusion"
+    ],
+    [
+      282,
+      "kInput",
+      "input_multiply_transpose_fusion.7"
+    ],
+    [
+      276,
+      "kLoop",
+      "loop_transpose_fusion.10"
+    ]
+  ],
+  "native_gate": "PASS",
+  "hard_stack_gate": "PASS",
+  "max_stack_B": 32,
+  "kernels": 1107
+}

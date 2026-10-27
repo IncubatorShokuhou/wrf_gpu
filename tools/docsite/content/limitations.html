@@ -2,6 +2,16 @@
 <p class="lead">What wrf_gpu v0.4.2 does not cover yet, in plain words. The full technical record is in
 the repository's <a href="../KNOWN_ISSUES.md">known issues</a> and the
 <a href="release/SUPPORT_MATRIX_v0.4.2.md">support matrix</a>.</p>
+<h2 id="planned-parameters">Planned parameter overrides</h2>
+<p>Diffusion/damping parameter overrides, including <code>c_s</code>, are
+<strong>not shipped in v0.4.4</strong> after failing GPU qualification. They may
+come in a later release after GPU qualification; no date or commitment.
+MYNN coefficient overrides ship in v0.4.4 as <strong>experimental</strong>:
+component and short two-domain GPU root checks passed (default bytes identical,
+same cached programs with no new native blobs, compiled-resource checks passed).
+Three-nest D6, station comparisons and 24–72-hour drift are not qualified.
+The default forecast and existing static namelist support are unaffected.
+See <a href="runtime-parameters.md">family status and evidence</a>.</p>
 <h2 id="gates">What the validation covers</h2>
 <ul>
 <li>wrf_gpu is compared with the <strong>original CPU-WRF</strong> run from the same inputs, not with

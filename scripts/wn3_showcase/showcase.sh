@@ -21,7 +21,7 @@ M=${base}_meta; mkdir -p $M
 echo "start $(date -u +%FT%TZ) cpus=$(taskset -pc $$ | awk -F': ' '{print $2}') launcher=$(sha256sum $W/source/scripts/parallel_cases.py | cut -c1-16)" > $M/log.txt
 env | grep -E '^(GPUWRF_|JAX_|XLA_|OMP_|CUDA_)' | sort > $M/env.txt
 nvidia-smi dmon -s pucm -d 1 -o T -c 30 > $M/idle_dmon.log 2>&1
-bash $PC --out-root ${base}_cold --gpu-log-interval 1 ${dirs[0]} -- "${cli[@]}" --hours 1 >> $M/log.txt 2>&1 || { echo "sizing FAILED" >> $M/log.txt; exit 1; }
+bash $PC --out-root ${base}_cold --gpu-log-interval 1 ${dirs[0]} -- "${cli[@]}" --hours 3 >> $M/log.txt 2>&1 || { echo "sizing FAILED" >> $M/log.txt; exit 1; }
 bash $PC --dry-run --out-root ${base}_r3 "${dirs[@]}" -- "${cli[@]}" --hours 72 > $M/admission.json 2>> $M/log.txt
 n=$($PYTHON -c 'import json,sys; print(json.load(open(sys.argv[1]))["would_start_now"])' $M/admission.json)
 echo "admission n=$n $(date -u +%T)" >> $M/log.txt

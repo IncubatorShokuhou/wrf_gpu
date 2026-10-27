@@ -1,0 +1,62 @@
+{
+  "scope": "CPU file-seam enabler only; WRF cycling lifecycle and coupled gates OPEN",
+  "measured_snapshot": {
+    "commit": "e51cedae52caa6f7d0fd548890f61766d51983c7",
+    "tree": "db581caac09d2bde872efd348c027af66beb679b",
+    "lane_tree": "5d72d800748eadacc4d9d7e582ef96a807e64c53",
+    "validator_commit": "3701b5e2c9",
+    "validator_blob": "7e3d5c1a35b1a7a7b5451ad97e677a65ae9a5bf4",
+    "path": "<USER_HOME>/wrf_gpu2_lanes/w44-warmstart/WS05_snapshot",
+    "cache": "NONE"
+  },
+  "host_tests": {
+    "passed": 57,
+    "seconds": 8.48,
+    "artifact": "<USER_HOME>/wrf_gpu2_lanes/w44-warmstart/WS05.xml"
+  },
+  "real_0227_self_identity": {
+    "status": "PASS",
+    "variable_byte_equal_counts": [
+      329,
+      329,
+      329
+    ],
+    "wall_seconds": 4.131723104976118,
+    "max_rss_kib": 612320,
+    "jax_imported": false
+  },
+  "wrfda_coupling": {
+    "byte_equal_fields": 39,
+    "total_fields": 39,
+    "seconds": 1.547428787976969,
+    "artifact": "<USER_HOME>/wrf_gpu2_lanes/w44-warmstart/WS03_oracle/report.json"
+  },
+  "mutants": [
+    {
+      "name": "admission",
+      "returncode": 1,
+      "failures": 1,
+      "setup_errors": 0,
+      "required_signature": "DID NOT RAISE",
+      "killed": true
+    },
+    {
+      "name": "edge",
+      "returncode": 1,
+      "failures": 1,
+      "setup_errors": 0,
+      "required_signature": "AssertionError",
+      "killed": true
+    }
+  ],
+  "cache": "NONE",
+  "gpu_executed": false,
+  "cpu_wrf_forecast_executed": false,
+  "dependency": "exact shared validator src/gpuwrf/io/wrfinput_consistency.py from3701b5e2c9 (composed snapshot; merge dependency first)",
+  "default_runtime": "all src files outside cycling unchanged at this enabler",
+  "retained_source": {
+    "src/gpuwrf/cycling/core.py": "44d684a8582e90561a239d803439ce7345a797d219f5eebba7408e596914e8da",
+    "src/gpuwrf/cycling/boundary.py": "1d403f037c471d738fd0a17df65fdb42d08a0da5c90441b814aeb8ef21ca31df",
+    "src/gpuwrf/cycling/atmosphere.py": "a7a30d706c40970c7a634cf25f31db4b1c342deb5bd4e5000b3587ee95de49c6"
+  }
+}

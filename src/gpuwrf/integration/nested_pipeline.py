@@ -47,6 +47,11 @@ import numpy as np
 
 from gpuwrf.contracts.grid import DomainHierarchy, DomainNest
 from gpuwrf.integration.d02_replay import build_replay_case, wrf_nest_opens_with_parent_start
+from gpuwrf.integration.run_alignment import (
+    domain_list_value as _domain_list_value,
+    dt_by_domain as _dt_by_domain,
+    steps_by_domain as _steps_by_domain,
+)
 from gpuwrf.io.async_wrfout import AsyncWrfoutWriter
 from gpuwrf.io.data_inventory import wrfout_name
 from gpuwrf.io.noahmp_land_init import build_noahmp_land_state, build_noahmp_params
@@ -151,6 +156,8 @@ class NestedPipelineConfig:
     checkpoint_max_generations: int = 2
     checkpoint_reserve_bytes: int = 10 * 1024**3
     resume_checkpoint: Path | None = None
+    branch_from: Path | None = None
+    branch_manifest: Path | None = None
     # Speculative cached loads; actual runtime keys still gate executable reuse.
     # Default-off until concurrent GPU loading and wall-time gates pass.
     aot_prefetch: bool = False
@@ -161,6 +168,7 @@ class NestedPipelineConfig:
     # for B>1 batches (one per batch input dir). None = released program.
     surface_controls: Path | None = None
     batch_surface_controls: tuple[Path | None, ...] | None = None
+    runtime_parameters: Path | None = None
 
 
 def domain_names_for(max_dom: int) -> tuple[str, ...]:
@@ -186,42 +194,6 @@ def _coerce_run_start(value: str) -> datetime:
     if parsed.tzinfo is None:
         parsed = parsed.replace(tzinfo=timezone.utc)
     return parsed.astimezone(timezone.utc)
-
-
-def _dt_by_domain(run, names: tuple[str, ...]) -> dict[str, float]:
-    """Per-domain model timestep from the namelist (root time_step / ratio chain).
-
-    WRF sets the child timestep from ``parent_time_step / parent_grid_ratio``; the
-    Canary nests use a fixed integer ratio so the result is exact.
-    """
-
-    nml = run.namelist
-    root_dt = _domain_list_value(nml.get("domains", {}).get("time_step"), 0, None)
-    if root_dt is None:
-        root_dt = _domain_list_value(nml.get("time_control", {}).get("time_step"), 0, None)
-    if root_dt is None:
-        raise ValueError("namelist has no domains/time_control time_step for the root domain")
-    dt: dict[str, float] = {names[0]: float(root_dt)}
-    for name in names[1:]:
-        grid = run.grid(name)
-        parent = f"d{int(grid.parent_id):02d}"
-        ratio = int(grid.parent_grid_ratio)
-        if ratio <= 1:
-            raise ValueError(f"{name}: parent_grid_ratio must be > 1 for a child, got {ratio}")
-        if parent not in dt:
-            raise ValueError(f"{name}: parent {parent} not loaded before child (bad domain order)")
-        dt[name] = dt[parent] / float(ratio)
-    return dt
-
-
-def _domain_list_value(value: Any, index: int, default: Any) -> Any:
-    if value is None:
-        return default
-    if isinstance(value, (list, tuple)):
-        if not value:
-            return default
-        value = value[index] if index < len(value) else value[-1]
-    return default if value is None else value
 
 
 def _history_interval_minutes_by_domain(run, names: tuple[str, ...]) -> dict[str, float]:
@@ -1293,6 +1265,8 @@ def _load_domains(
                 carry.state, namelist, land_state=noahmp_land, _with_diagnostics=True,
                 _kernel_call=_init_kernel_call,
             )
+            from gpuwrf.coupling.topographic_shadow import preserve_initial_height
+            initial_full_rad = preserve_initial_height(carry.radiation_diagnostics, initial_full_rad)
             carry = carry.replace(
                 noahmp_land=noahmp_land, noahmp_rad=initial_surface_rad,
                 radiation_diagnostics=(initial_full_rad if carry.radiation_diagnostics is not None else None),
@@ -1341,7 +1315,10 @@ def _load_domains(
         initial_carries[name] = carry
         if getattr(config, "surface_controls", None) is not None:
             from gpuwrf.surface_params.controls import bind_domain_controls  # noqa: PLC0415
-            namelist = bind_domain_controls(namelist, config.surface_controls, name)
+            namelist = bind_domain_controls(namelist, config.surface_controls, name, land_state=carry.noahmp_land, cold_start=not bool(getattr(config, "resume_checkpoint", None) or getattr(config, "branch_from", None)))
+        if getattr(config, "runtime_parameters", None) is not None:
+            from gpuwrf.runtime_parameters import bind_domain_parameters
+            namelist = bind_domain_parameters(namelist, config.runtime_parameters, name)
         bundles[name] = DomainBundle(
             name=name, state=state, namelist=namelist, grid=case.grid, metrics=case.metrics
         )
@@ -1934,11 +1911,11 @@ def _load_batched_domains(
 
 def _bind_batch_surface_controls(loaded, names, sources, batch_size):
     """Per-lane Track P controls (B>1): every lane carries its own traced fields, same signature."""
-    from gpuwrf.surface_params.controls import bind_domain_controls, signature  # noqa: PLC0415
+    from gpuwrf.surface_params.controls import bind_domain_controls, signature, refuse_unqualified_sources  # noqa: PLC0415
 
     if len(sources) != int(batch_size):
         raise ValueError(f"batch_surface_controls has {len(sources)} entries for B={int(batch_size)}")
-    rebound = []
+    rebound = []; refuse_unqualified_sources(sources)
     for lane, (hierarchy, bundles, meta, run_start, dt_by_domain, carries) in enumerate(loaded):
         lane_bundles = dict(bundles)
         for name in names:
@@ -3154,7 +3131,7 @@ class _PerDomainWrfoutWriter:
                 elif default is not None:
                     fields[field] = np.full((grid.ny, grid.nx), default, dtype=np.float32)
             fields["COSZEN"] = np.zeros((grid.ny, grid.nx), dtype=np.float32)
-            for field in ("QKE", "CLDFRA", "QC_BL", "CLDFRA_BL", "DTAUX3D", "DTAUY3D"):
+            for field in ("QKE", "CLDFRA", "QC_BL", "QI_BL", "CLDFRA_BL", "DTAUX3D", "DTAUY3D"):
                 nz = getattr(grid, "nz", None)
                 if nz is None:
                     nz = len(initial.dimensions["bottom_top"])
@@ -3328,6 +3305,9 @@ class _PerDomainWrfoutWriter:
                 self.writer_diagnostics.get(name), surface_diagnostics,
                 **({"namelist": namelist} if int(getattr(namelist, "sf_sfclay_physics", 5)) == 0 else {}),
             )
+            if getattr(carry,'mynn_budget',None) is not None:
+                from gpuwrf.diagnostics.mynn_budget import history_fields as mynn_history_fields
+                diagnostics=dict(diagnostics or {},**mynn_history_fields(carry.mynn_budget))
             if getattr(carry, "solar_interpolation", None) is not None:
                 from gpuwrf.diagnostics.solar import history_fields as solar_history_fields
                 # The held profile SWDNB remains distinct. Overlay after M9,
@@ -3368,6 +3348,16 @@ class _PerDomainWrfoutWriter:
                 # BEP+BEM held QGR_URB3D (history QGR_URB4D); PV/green roofs add EP_PV_URB3D/TGR_URB4D/DRAINGR_URB3D.
                 diagnostics=dict(diagnostics or {},**urban_history)
             rad = getattr(carry, "radiation_diagnostics", None)
+            if getattr(namelist, "rad_diag", 0):
+                from gpuwrf.diagnostics.radiation import history_fields
+                held_rad_fields = history_fields(rad)
+                if not held_rad_fields:
+                    raise ValueError("rad_diag=1 history requires held radiation diagnostics (E78)")
+                if initial is not None:
+                    # WRF writes t0 before the first radiation call.
+                    held_rad_fields = {key: np.zeros(state.theta.shape, np.float32)
+                                       for key in held_rad_fields}
+                diagnostics = dict(diagnostics or {}, **held_rad_fields)
             if initial is not None and type(rad).__name__ == 'GoddardRadiationDiagnostics':
                 from gpuwrf.coupling.goddard_radiation import history_fields as goddard_history_fields
                 diagnostics = dict(diagnostics or {}, **goddard_history_fields(rad, self._variable_subset))
@@ -3392,7 +3382,7 @@ class _PerDomainWrfoutWriter:
                     value = getattr(rad, attr, None)
                     if value is not None:
                         diagnostics[wrf_name] = value
-                for wrf_name, attr in (("QC_BL", "qc_bl"), ("CLDFRA_BL", "cldfra_bl"),
+                for wrf_name, attr in (("QC_BL", "qc_bl"), ("QI_BL", "qi_bl"), ("CLDFRA_BL", "cldfra_bl"),
                                        ("DTAUX3D", "dtaux3d"), ("DTAUY3D", "dtauy3d"),
                                        ("DUSFCG", "dusfcg"), ("DVSFCG", "dvsfcg")):
                     value = getattr(state, attr, None)
@@ -3794,6 +3784,16 @@ def _restart_end_time(driver_state, config) -> dict[str, Any]:
     return {"checkpoint_hours": saved, "hours": requested, "extended": requested > saved}
 
 
+def _branch_end_time(snapshot, config, root_dt, root):
+    """A fork may choose its own endpoint, strictly after its checkpoint seam."""
+    from gpuwrf.runtime.run_window import aligned_steps
+    end_step = aligned_steps(config.hours, root_dt)
+    if end_step <= snapshot["own_steps"][root]:
+        raise ValueError("branch endpoint must be after the checkpoint time (duration is since input issue time)")
+    return {"checkpoint_hours": snapshot["driver_state"].get("forecast_hours"),
+            "hours": config.hours, "branched": True}
+
+
 def _execute_nested_pipeline(
     config: NestedPipelineConfig, *, _prefetch_handles: list,
 ) -> dict[str, Any]:
@@ -3836,6 +3836,13 @@ def _execute_nested_pipeline(
     from gpuwrf.profiling.transfer_audit import visible_gpu_name
 
     names = domain_names_for(config.max_dom)
+    if (config.branch_from is None) != (config.branch_manifest is None):
+        raise ValueError("branch_from and branch_manifest must be supplied together")
+    if config.branch_from is not None:
+        if config.resume_checkpoint is not None:
+            raise ValueError("branch and ordinary resume are mutually exclusive")
+        from gpuwrf.runtime.checkpoint_branch import validate_paths
+        validate_paths(config.branch_from, config.output_dir, config.checkpoint_dir)
     config.output_dir.mkdir(parents=True, exist_ok=True)
     config.proof_dir.mkdir(parents=True, exist_ok=True)
 
@@ -3844,7 +3851,7 @@ def _execute_nested_pipeline(
 
     overall_start = time.perf_counter()
     batch_size = _batch_ensemble_size_from_env()
-    restart_enabled = config.checkpoint_dir is not None or config.resume_checkpoint is not None
+    restart_enabled = config.checkpoint_dir is not None or config.resume_checkpoint is not None or config.branch_from is not None
     from gpuwrf.timeseries.runtime import require_supported_run
     from gpuwrf.streams.runtime import require_supported_run as require_stream_run
     for input_dir in config.batch_input_dirs or (config.input_dir,):
@@ -3854,7 +3861,7 @@ def _execute_nested_pipeline(
         raise ValueError("operational checkpoint/resume currently requires B=1")
     if config.checkpoint_dir is not None and config.checkpoint_interval_steps < 1:
         raise ValueError("checkpoint cadence must be positive in root-domain steps")
-    if config.extend_end_time and config.resume_checkpoint is None:
+    if config.extend_end_time and config.resume_checkpoint is None and config.branch_from is None:
         raise ValueError("end-time extension requires a resume checkpoint")
     from gpuwrf.io.wrfbdy_coverage import require_wrfbdy_coverage
 
@@ -3919,7 +3926,7 @@ def _execute_nested_pipeline(
     if restart_enabled:
         from gpuwrf.runtime.restart_store import RestartStore, nested_identity
         restart_store = RestartStore(
-            config.checkpoint_dir or Path(config.resume_checkpoint).parent,
+            config.checkpoint_dir or (config.output_dir / ".checkpoints" if config.branch_from is not None else Path(config.resume_checkpoint).parent),
             config.checkpoint_max_bytes, config.checkpoint_max_generations,
             config.checkpoint_reserve_bytes,
         )
@@ -3929,8 +3936,30 @@ def _execute_nested_pipeline(
             restart_identity['feedback_schema']={name:feedback_configuration(
                 carry.base_state,carry.feedback_history,carry.state.qv.shape,carry.state.t_skin.shape,
                 required=True) for name,carry in initial_carries.items()}
-        if config.resume_checkpoint is not None:
+        if config.branch_from is not None:
+            from gpuwrf.runtime.checkpoint_branch import load_manifest, branch_identity, apply_overrides
+            from gpuwrf.runtime.checkpoint_consistency import checkpoint_validator
+            from gpuwrf.io.restart import _restore_carry
             resume_t0 = time.perf_counter()
+            changes = load_manifest(config.branch_manifest)
+            restart_snapshot, receipt = restart_store.read(config.branch_from, device=False)
+            if tuple(receipt["domains"]) != names or receipt["dt_s"] != dt_by_domain:
+                raise ValueError("branch domain topology/timesteps differ from current run")
+            restart_identity = branch_identity(receipt, restart_identity, changes, config.branch_from)
+            restart_snapshot, change_report = apply_overrides(
+                restart_snapshot, changes,
+                validate=checkpoint_validator(config.input_dir, bundles),
+            )
+            restart_snapshot["carries"] = {name: _restore_carry(c) for name, c in restart_snapshot["carries"].items()}
+            restart_report["end_time"] = _branch_end_time(restart_snapshot, config, root_dt, root)
+            initial_carries = {name: _commit_to_operational_device(carry) for name, carry in restart_snapshot["carries"].items()}
+            _require_native_base_state(initial_carries, config.branch_from)
+            restart_report.update(branched_from=str(config.branch_from), changes=change_report,
+                                  provenance=restart_identity["branch"], read_wall_s=time.perf_counter() - resume_t0)
+        elif config.resume_checkpoint is not None:
+            from gpuwrf.runtime.checkpoint_branch import resumed_identity
+            resume_t0 = time.perf_counter()
+            restart_identity = resumed_identity(restart_identity, config.resume_checkpoint)
             restart_snapshot, receipt = restart_store.read(
                 config.resume_checkpoint, expected_identity=restart_identity,
             )
@@ -3943,13 +3972,9 @@ def _execute_nested_pipeline(
                 from gpuwrf.io.nesting_options import require_feedback_restart
                 require_feedback_restart(initial_carries)
             restart_report.update(resumed_from=str(config.resume_checkpoint), read_wall_s=time.perf_counter() - resume_t0)
-    root_steps_raw = float(config.hours) * 3600.0 / root_dt
-    root_steps = int(round(root_steps_raw))
-    if abs(root_steps_raw - root_steps) > 1.0e-9:
-        raise ValueError(
-            f"hours={config.hours} does not align with root dt={root_dt}s "
-            f"(would need {root_steps_raw} steps)"
-        )
+    # Same check the CLI pre-flight runs before init (run_alignment, E187/E225).
+    total_steps_by_domain = _steps_by_domain(config.hours, dt_by_domain, names)
+    root_steps = total_steps_by_domain[root]
     from gpuwrf.io.gen2_accessor import Gen2Run
 
     cadence_run = Gen2Run(Path(config.input_dir))
@@ -3973,16 +3998,6 @@ def _execute_nested_pipeline(
     output_cadence, history_interval_minutes = _output_cadence_steps_by_domain(
         cadence_run, names, dt_by_domain
     )
-    total_steps_by_domain: dict[str, int] = {}
-    for name in names:
-        raw_total = float(config.hours) * 3600.0 / float(dt_by_domain[name])
-        rounded_total = int(round(raw_total))
-        if abs(raw_total - rounded_total) > 1.0e-9:
-            raise ValueError(
-                f"hours={config.hours} does not align with {name} dt="
-                f"{dt_by_domain[name]}s (would need {raw_total} steps)"
-            )
-        total_steps_by_domain[name] = rounded_total
     output_alarm_schedule, nonintegral_output_alarms = (
         _output_alarm_steps_by_domain(
             names,
@@ -4308,6 +4323,8 @@ def _execute_nested_pipeline(
                         "aot": nested_aot_report(),
                         "event_counts": dict(event_counts), "force_counts": dict(force_counts),
                         "cascade_counts": dict(cascade_counts), "events_tail": tuple(events_tail),
+                        **({"branch_start_steps": restart_snapshot["driver_state"]["branch_start_steps"]}
+                           if restart_snapshot is not None and "branch_start_steps" in restart_snapshot["driver_state"] else {}),
                         **({"regional_streams": regional_streams.checkpoint_state()}
                            if regional_streams is not None else {}),
                     },
@@ -4404,6 +4421,9 @@ def _execute_nested_pipeline(
         expected_outputs = len(output_alarm_schedule[name]) + int(
             bool(config.emit_initial_history)
         )
+        if restart_snapshot is not None and "branch_start_steps" in restart_snapshot["driver_state"]:
+            seam = restart_snapshot["driver_state"]["branch_start_steps"][name]
+            expected_outputs = sum(step > seam for step in output_alarm_schedule[name])
         expected_output_files = expected_outputs * int(batch_size)
         output_ok = len(outputs) == expected_output_files
         all_finite = all_finite and finite_ok

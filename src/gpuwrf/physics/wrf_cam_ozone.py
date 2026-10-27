@@ -12,6 +12,7 @@ from functools import lru_cache
 import hashlib
 from pathlib import Path
 
+import jax
 import jax.numpy as jnp
 import numpy as np
 
@@ -60,6 +61,20 @@ def _load_wrf_cam_ozone_asset() -> tuple[np.ndarray, np.ndarray, np.ndarray]:
     return latitude, pressure, ozone
 
 
+def _real4_div_rn(numerator, denominator):
+    """IEEE REAL4 division, including CUDA (E84; RN-emulation f64 island).
+
+    Binary64 has at least 2*24+2 significand bits, so division followed by
+    REAL4 rounding is exact. Keep the divisor opaque to reciprocal folding.
+    No custom call or carry leaf is added; XLA chooses fusion boundaries.
+    """
+    with jax.enable_x64(True):
+        a = jnp.asarray(numerator, jnp.float32).astype(jnp.float64)
+        b = jax.lax.optimization_barrier(
+            jnp.asarray(denominator, jnp.float32).astype(jnp.float64))
+        return jax.lax.optimization_barrier(a / b).astype(jnp.float32)
+
+
 def wrf_ozn_time_indices_factors(
     julian_day_1based,
     utc_minute,
@@ -76,7 +91,7 @@ def wrf_ozn_time_indices_factors(
     dtype = jnp.float32
     day = jnp.asarray(julian_day_1based, dtype=dtype) + (
         jnp.asarray(utc_minute, dtype=dtype)
-        + jnp.asarray(lead_seconds, dtype=dtype) / jnp.asarray(60.0, dtype=dtype)
+        + _real4_div_rn(lead_seconds, 60.0)
     ) / jnp.asarray(1440.0, dtype=dtype)
     ijul = day.astype(jnp.int32)
     fraction = day - ijul.astype(dtype)
@@ -96,16 +111,16 @@ def wrf_ozn_time_indices_factors(
     factor1_cyclic = jnp.where(
         day > cday_plus,
         (cday_plus + jnp.asarray(365.0, dtype=dtype) - day) / delta_cyclic,
-        (cday_plus - day) / delta_cyclic,
+        _real4_div_rn(cday_plus - day, delta_cyclic),
     )
     factor2_cyclic = jnp.where(
         day > cday_plus,
         (day - cday_minus) / delta_cyclic,
-        (day + jnp.asarray(365.0, dtype=dtype) - cday_minus) / delta_cyclic,
+        _real4_div_rn(day + jnp.asarray(365.0, dtype=dtype) - cday_minus, delta_cyclic),
     )
     delta = cday_plus - cday_minus
-    factor1 = jnp.where(december_january, factor1_cyclic, (cday_plus - day) / delta)
-    factor2 = jnp.where(december_january, factor2_cyclic, (day - cday_minus) / delta)
+    factor1 = jnp.where(december_january, factor1_cyclic, _real4_div_rn(cday_plus - day, delta))
+    factor2 = jnp.where(december_january, factor2_cyclic, _real4_div_rn(day - cday_minus, delta))
     return month_minus, month_plus, factor1.astype(dtype), factor2.astype(dtype), day
 
 

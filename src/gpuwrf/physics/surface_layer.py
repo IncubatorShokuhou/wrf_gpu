@@ -45,6 +45,7 @@ from __future__ import annotations
 
 import os
 
+from gpuwrf.contracts.real_constfold import R4, real_constant
 from gpuwrf.contracts.state import mynn_sfc_wspd_enabled
 
 from typing import NamedTuple
@@ -613,6 +614,10 @@ def surface_layer_with_exchange(state, *, first_timestep=False, snowh=None, spp_
                                **({} if spp_pattern is None else {"spp_pattern": spp_pattern}))
 
 
+_EP_3_REAL = R4(1.0) - R4(R_D) / R4(R_V)
+_INV_27315_REAL = R4(1.0) / R4(273.15)
+
+
 def _surface_layer_impl(state, first_timestep, F, *, snowh=None, _return_exchange=False,
                         _return_chs=False, spp_pattern=None, isftcflx=0, ustm=None,
                         _return_hurricane=False) -> SurfaceLayerDiagnostics:
@@ -705,10 +710,12 @@ def _surface_layer_impl(state, first_timestep, F, *, snowh=None, _return_exchang
     # surface humidities: QSFC = specific humidity = EP2*E1/(PSFC-ep_3*E1) (used in
     # THVGB and the q2 anchor) and QSFCMR = mixing ratio = EP2*E1/(PSFC-E1) (used in
     # the QFX flux). Over land both come from the carried-over QSFC when QSFC>0.
-    ep_3 = 1.0 - EP2
+    # module_sf_mynn.F:81 ep_3 = 1.-ep_2 and :525/:543 (1./273.15) are REAL folds in WRF (w44-constfold).
+    ep_3 = real_constant(_EP_3_REAL, 1.0 - EP2, F)
+    inv_t0 = real_constant(_INV_27315_REAL, 1.0 / 273.15, F)
     e1_g = jnp.where(
         tgdsa < 273.15,
-        SVP1_KPA * jnp.exp(4648.0 * (1.0 / 273.15 - 1.0 / tgdsa) - 11.64 * jnp.log(273.15 / tgdsa) + 0.02265 * (273.15 - tgdsa)),
+        SVP1_KPA * jnp.exp(4648.0 * (inv_t0 - 1.0 / tgdsa) - 11.64 * jnp.log(273.15 / tgdsa) + 0.02265 * (273.15 - tgdsa)),
         SVP1_KPA * jnp.exp(SVP2 * (tgdsa - SVPT0_K) / (tgdsa - SVP3_K)),
     )
     qsfc_in = _as_surface(_field(state, "qsfc", -1.0), shape, F)

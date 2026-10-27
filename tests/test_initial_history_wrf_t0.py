@@ -97,7 +97,7 @@ def test_initial_fields_equal_cpu_wrf_t0_history(domain):
     assert set(fields) == {wrf_name for wrf_name, _attr in _M9_OUTPUT_FIELDS} | {
         "HFX", "LH", "SWDNBC", "SWUPBC", "SWDNTC", "SWUPTC",
         "LWDNBC", "LWUPBC", "LWDNTC", "LWUPTC",
-        "QKE", "CLDFRA", "QC_BL", "CLDFRA_BL", "DTAUX3D", "DTAUY3D",
+        "QKE", "CLDFRA", "QC_BL", "QI_BL", "CLDFRA_BL", "DTAUX3D", "DTAUY3D",
         "DUSFCG", "DVSFCG",
         "TH2", "UST", "COSZEN",
         "T",  # th_phy_m_t0 = input dry theta; nest adjust_tempqv reaches only THM/QVAPOR (fid-q2 R01)
@@ -106,7 +106,7 @@ def test_initial_fields_equal_cpu_wrf_t0_history(domain):
     with Dataset(cpu_t0) as cpu:
         for name, value in fields.items():
             if name not in cpu.variables:
-                assert name in {"QC_BL", "CLDFRA_BL"} and np.all(value == 0)
+                assert name in {"QC_BL", "QI_BL", "CLDFRA_BL"} and np.all(value == 0)
                 continue
             expect = np.asarray(cpu.variables[name][0])
             assert np.array_equal(np.asarray(value, dtype=expect.dtype), expect), f"{cpu_t0.name}:{name}"

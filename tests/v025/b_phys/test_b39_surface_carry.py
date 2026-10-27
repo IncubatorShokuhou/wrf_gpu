@@ -134,11 +134,27 @@ def test_noahmp_adapter_writes_wrf_carry_semantics():
     # MOL is sfclay's; HFX/QFX are the BLENDED physical fluxes the kinematic
     # handles were built from (Noah-MP over land, sfclay over water).
     np.testing.assert_array_equal(np.asarray(state_out.mol), np.asarray(diag.mol))
-    np.testing.assert_allclose(np.asarray(state_out.hfx).reshape(-1),
-                               np.asarray(blended.theta_flux).reshape(-1) * rho * CP_D * (1.0 + 0.84 * qx),
-                               rtol=1e-12, atol=1e-9)
-    np.testing.assert_allclose(np.asarray(state_out.qfx).reshape(-1),
-                               np.asarray(blended.qv_flux).reshape(-1) * rho, rtol=1e-12, atol=1e-15)
+    from gpuwrf.physics.surface_layer import mynn_fltv_wrf_enabled
+    if mynn_fltv_wrf_enabled():
+        # Release default GPUWRF_MYNN_FLTV_WRF=1 (BD91): MYNN's kinematic handles are formed by WRF's MYNN
+        # driver from the blended HFX/QFX, in REAL: cpm = cp*(1+0.84*max(sqv1(kts),1e-8)) with the SPECIFIC
+        # humidity sqv1 = qv/(1+qv) (module_bl_mynnedmf.F90:859), flqv = qfx/rho1 (:869), flt = hfx/(rho1*cpm)
+        # (:875). The sfclay inversion below (mixing-ratio cpm) is the legacy handle. Literal REAL4, bitwise.
+        f = np.float32
+        hfx = np.asarray(state_out.hfx).reshape(-1)
+        qfx = np.asarray(state_out.qfx).reshape(-1)
+        rho1, qv1 = rho.astype(f), np.maximum(qx, 0.0).astype(f)
+        assert hfx.dtype == qfx.dtype == np.asarray(blended.theta_flux).dtype == f
+        sqv1 = qv1 / (f(1.0) + qv1)
+        cpm = f(CP_D) * (f(1.0) + f(0.84) * np.maximum(sqv1, f(1.0e-8)))
+        np.testing.assert_array_equal(np.asarray(blended.theta_flux).reshape(-1), hfx / (rho1 * cpm))
+        np.testing.assert_array_equal(np.asarray(blended.qv_flux).reshape(-1), qfx / rho1)
+    else:
+        np.testing.assert_allclose(np.asarray(state_out.hfx).reshape(-1),
+                                   np.asarray(blended.theta_flux).reshape(-1) * rho * CP_D * (1.0 + 0.84 * qx),
+                                   rtol=1e-12, atol=1e-9)
+        np.testing.assert_allclose(np.asarray(state_out.qfx).reshape(-1),
+                                   np.asarray(blended.qv_flux).reshape(-1) * rho, rtol=1e-12, atol=1e-15)
     np.testing.assert_array_equal(np.asarray(state_out.hfx).reshape(-1)[~is_land],
                                   np.asarray(diag.hfx).reshape(-1)[~is_land])
     # QSFC: Noah-MP QSFC1D over land, sfclay over water.
