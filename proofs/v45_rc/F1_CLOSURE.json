@@ -1,0 +1,48 @@
+{
+  "issue": "cr-w44-launchers16:47 F1 ONLY",
+  "code_base": "580876b88a6798dc8063b061410d4c76cae4af45",
+  "semantic_files": [
+    "proofs/v45_rc/tools_v6/followup/followup_rw3.sh",
+    "proofs/v45_rc/tools_v6/rw3_summary.sh"
+  ],
+  "all_entry_payload_changes": "TOOLS_SUMS_SHA constants only; paths/argv/caps/body exact",
+  "source_tests_unchanged": true,
+  "post_resmoke": {
+    "command": "bash <USER_HOME>/wrf_gpu2_lanes/v45-rc/tools_v6/rw3_summary.sh",
+    "actual_environment": {
+      "W45R_RUN": "<USER_HOME>/wrf_gpu2_lanes/v45-rc/smoke_v6/runs/rw3_20261028T161633Z_3919014",
+      "W45R_RECEIPTS": "<USER_HOME>/wrf_gpu2_lanes/v45-rc/launch_smoke/receipts/rw3_20261028T161633Z",
+      "W45R_MANIFEST_PATH": "<USER_HOME>/wrf_gpu2_lanes/v45-rc/smoke_v6/PIN_MANIFEST.json"
+    },
+    "scope": "CPU12,28NI19/8GSwap0/timeout60/JAXcpu; completed real CPU admission receipts only",
+    "rc": 0,
+    "children": {
+      "disk": 0,
+      "accept": 0,
+      "detail24": 0,
+      "detail72": 0,
+      "verdict": 0
+    },
+    "canonical": "<USER_HOME>/wrf_gpu2_lanes/v45-rc/smoke_v6/runs/rw3_20261028T161633Z_3919014/rw3t",
+    "archive": "<USER_HOME>/wrf_gpu2_lanes/v45-rc/launch_smoke/receipts/rw3_20261028T161633Z/rw3t",
+    "canonical_and_archive_file_bytes_equal": true,
+    "log": "<USER_HOME>/wrf_gpu2_lanes/v45-rc/F1_RESEAL/actual_summary_smoke.log",
+    "log_sha256": "c325ebf5792d46f1f7fd6761a76d7746728ac98787e718b6d3c4be534548325c"
+  },
+  "documented_call_control": {
+    "checks": 8,
+    "receipt": "<USER_HOME>/wrf_gpu2_lanes/v45-rc/F1_FOLLOWUP_CONTROL/VERDICT.json",
+    "sha256": "e277f9f0e93af8bc8549f497e7d088e2a41c3b902c666fcd0d855b6690116d81",
+    "actual_shell_outer_reexec": true,
+    "scorer": "INERT host transport only; no original CPU/GPU payload or model",
+    "unset_env_call_rc": 0,
+    "wrong_inherited_env_corrected": true,
+    "invalid_metadata_refused_before_score": true,
+    "binding_removed_mutant_killed": true
+  },
+  "model_validation_carry": "All completed source/native/model/SEQ admissions accepted by critic16:47; manager says re-smoke only affected path; no models or real references re-run",
+  "new_plan_sha256": "bbe35d603d5c2eceee471e341653fe088b7a40ea4fe601153a5602af01b2314e",
+  "new_tools_sums_sha256": "eb60f84e24b051c2ab46589deea572745fe1749850dda5bd1cfabb3e3e52a730",
+  "no_new_GPU_or_science_claim": true,
+  "performance_memory": "One small metadata binding/read and copy of existing post receipts after model/lock; no stepping, compiled program, device launch/allocation or ABI changes."
+}

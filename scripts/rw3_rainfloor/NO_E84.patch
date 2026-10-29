@@ -1,0 +1,134 @@
+diff --git a/src/gpuwrf/coupling/physics_couplers.py b/src/gpuwrf/coupling/physics_couplers.py
+index fd981be11f..390b14ab5d 100644
+--- a/src/gpuwrf/coupling/physics_couplers.py
++++ b/src/gpuwrf/coupling/physics_couplers.py
+@@ -67,7 +67,7 @@ from gpuwrf.physics.rrtmg_sw import (
+     solve_rrtmg_sw_column,
+     solve_rrtmg_sw_m9_flux_slices,
+ )
+-from gpuwrf.physics.wrf_cam_ozone import wrf_cam_ozone_profile
++from gpuwrf.physics.wrf_cam_ozone import wrf_cam_ozone_profile, _real4_div_rn
+ from gpuwrf.physics.wrf_clwrf_ghg import (
+     CLWRFGasClock,
+     clwrf_gases_at_lead,
+@@ -712,9 +712,9 @@ def _resolve_clock_parts(time_utc, clock_base):
+ def _wrf_solar_julian_real(julian, utc_minute, lead_seconds):
+     from jax import lax
+     F = jnp.float32
+-    minute = lax.optimization_barrier(F(lead_seconds) / lax.optimization_barrier(F(60)))
++    minute = lax.optimization_barrier(_real4_div_rn(F(lead_seconds), F(60)))
+     absolute = lax.optimization_barrier(F(utc_minute) + minute)
+-    fraction = lax.optimization_barrier(absolute / lax.optimization_barrier(F(1440)))
++    fraction = lax.optimization_barrier(_real4_div_rn(absolute, F(1440)))
+     return lax.optimization_barrier(lax.optimization_barrier(F(julian) - F(1)) + fraction)
+ 
+ 
+@@ -729,10 +729,10 @@ def _wrf_solcon_real(julian, utc_minute, lead_seconds):
+         # nextafter(x,x) preserves every value (including NaN) while retaining
+         # the WRF REAL product's rounding boundary before eccentricity sums.
+         return barrier(jnp.nextafter(value, value))
+-    def div(a, b): return barrier(a / barrier(b))
++    def div(a, b): return barrier(_real4_div_rn(a, b))
+     def add(a, b): return barrier(a + b)
+     call_julian = _wrf_solar_julian_real(julian, utc_minute, lead_seconds)
+-    degrad = div(F(3.141592653589793), F(180))
++    degrad = F(np.float32(np.float32(np.pi) / np.float32(180)))
+     rjul = mul(div(mul(call_julian, F(360)), F(365)), degrad)
+     twice = mul(F(2), rjul)
+     eccfac = add(add(add(add(F(1.000110), mul(F(.034221), jnp.cos(rjul))),
+@@ -753,26 +753,26 @@ def _wrf_solar_geometry_real(lat, lon, julian, utc_minute, lead_seconds, solar_l
+     def add(a, b): return barrier(a + b)
+     def sub(a, b): return barrier(a - b)
+     julian, utc_minute = F(julian), F(utc_minute)
+-    lead_minute = div(F(lead_seconds), F(60))
++    lead_minute = barrier(_real4_div_rn(F(lead_seconds), F(60)))
+     call_julian = _wrf_solar_julian_real(julian, utc_minute, lead_seconds)
+-    degrad = div(F(3.141592653589793), F(180))
+-    dpd = div(F(360), F(365))
++    degrad = F(np.float32(np.float32(np.pi) / np.float32(180)))
++    dpd = F(np.float32(np.float32(360) / np.float32(365)))
+     sinob = jnp.sin(mul(F(23.5), degrad))
+     sxday = jnp.where(call_julian >= F(80), sub(call_julian, F(80)), add(call_julian, F(285)))
+     sxlong = mul(mul(dpd, sxday), degrad)
+     declin = jnp.arcsin(mul(sinob, jnp.sin(sxlong)))
+-    da = div(mul(F(6.2831853071795862), sub(call_julian, F(1))), F(365))
++    da = barrier(_real4_div_rn(mul(F(6.2831853071795862), sub(call_julian, F(1))), F(365)))
+     twice = mul(F(2), da)
+     eot = mul(sub(sub(sub(add(F(.000075), mul(F(.001868), jnp.cos(da))),
+                         mul(F(.032077), jnp.sin(da))),
+                     mul(F(.014615), jnp.cos(twice))),
+                 mul(F(.04089), jnp.sin(twice))), F(229.18))
+-    solar_minute = lead_minute if solar_lead_seconds is None else div(F(solar_lead_seconds), F(60))
++    solar_minute = lead_minute if solar_lead_seconds is None else barrier(_real4_div_rn(F(solar_lead_seconds), F(60)))
+     if solar_xtime_minutes is not None:
+         solar_minute = F(solar_xtime_minutes)
+     # WRF MOD(XTIME), then GMT: retain the original hour-angle phase/order.
+     xt24 = add(jnp.fmod(solar_minute, F(1440)), eot)
+-    tloc = add(add(div(utc_minute, F(60)), div(xt24, F(60))), div(jnp.asarray(lon, F), F(15)))
++    tloc = add(add(div(utc_minute, F(60)), barrier(_real4_div_rn(xt24, F(60)))), barrier(_real4_div_rn(jnp.asarray(lon, F), F(15))))
+     hour_angle = mul(mul(F(15), sub(tloc, F(12))), degrad)
+     lat_rad = mul(jnp.asarray(lat, F), degrad)
+     coszen = add(mul(jnp.sin(lat_rad), jnp.sin(declin)),
+diff --git a/src/gpuwrf/physics/wrf_cam_ozone.py b/src/gpuwrf/physics/wrf_cam_ozone.py
+index 40006e5f49..5db7447bd7 100644
+--- a/src/gpuwrf/physics/wrf_cam_ozone.py
++++ b/src/gpuwrf/physics/wrf_cam_ozone.py
+@@ -12,6 +12,7 @@ from functools import lru_cache
+ import hashlib
+ from pathlib import Path
+ 
++import jax
+ import jax.numpy as jnp
+ import numpy as np
+ 
+@@ -60,6 +61,20 @@ def _load_wrf_cam_ozone_asset() -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+     return latitude, pressure, ozone
+ 
+ 
++def _real4_div_rn(numerator, denominator):
++    """IEEE REAL4 division, including CUDA (E84; RN-emulation f64 island).
++
++    Binary64 has at least 2*24+2 significand bits, so division followed by
++    REAL4 rounding is exact. Keep the divisor opaque to reciprocal folding.
++    No custom call or carry leaf is added; XLA chooses fusion boundaries.
++    """
++    with jax.enable_x64(True):
++        a = jnp.asarray(numerator, jnp.float32).astype(jnp.float64)
++        b = jax.lax.optimization_barrier(
++            jnp.asarray(denominator, jnp.float32).astype(jnp.float64))
++        return jax.lax.optimization_barrier(a / b).astype(jnp.float32)
++
++
+ def wrf_ozn_time_indices_factors(
+     julian_day_1based,
+     utc_minute,
+@@ -76,7 +91,7 @@ def wrf_ozn_time_indices_factors(
+     dtype = jnp.float32
+     day = jnp.asarray(julian_day_1based, dtype=dtype) + (
+         jnp.asarray(utc_minute, dtype=dtype)
+-        + jnp.asarray(lead_seconds, dtype=dtype) / jnp.asarray(60.0, dtype=dtype)
++        + _real4_div_rn(lead_seconds, 60.0)
+     ) / jnp.asarray(1440.0, dtype=dtype)
+     ijul = day.astype(jnp.int32)
+     fraction = day - ijul.astype(dtype)
+@@ -96,16 +111,16 @@ def wrf_ozn_time_indices_factors(
+     factor1_cyclic = jnp.where(
+         day > cday_plus,
+         (cday_plus + jnp.asarray(365.0, dtype=dtype) - day) / delta_cyclic,
+-        (cday_plus - day) / delta_cyclic,
++        _real4_div_rn(cday_plus - day, delta_cyclic),
+     )
+     factor2_cyclic = jnp.where(
+         day > cday_plus,
+         (day - cday_minus) / delta_cyclic,
+-        (day + jnp.asarray(365.0, dtype=dtype) - cday_minus) / delta_cyclic,
++        _real4_div_rn(day + jnp.asarray(365.0, dtype=dtype) - cday_minus, delta_cyclic),
+     )
+     delta = cday_plus - cday_minus
+-    factor1 = jnp.where(december_january, factor1_cyclic, (cday_plus - day) / delta)
+-    factor2 = jnp.where(december_january, factor2_cyclic, (day - cday_minus) / delta)
++    factor1 = jnp.where(december_january, factor1_cyclic, _real4_div_rn(cday_plus - day, delta))
++    factor2 = jnp.where(december_january, factor2_cyclic, _real4_div_rn(day - cday_minus, delta))
+     return month_minus, month_plus, factor1.astype(dtype), factor2.astype(dtype), day
+ 
+ 

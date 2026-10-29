@@ -48,6 +48,7 @@ from gpuwrf.contracts.precision import (
     FERRIER_CARRY_LEAVES,
     GODDARD4ICE_CARRY_LEAVES, GODDARD4ICE_HISTORY_LEAVES, THOMPSON_HAIL_SURFACE_LEAVES,
     les_tke_active,
+    MYNN_CLOUDPDF_LEAVES, mynn_cloudpdf_leaves,
     acoustic_precision_mode_label,
     is_mixed_perturb_fp32_mode,
 )
@@ -607,6 +608,7 @@ _PHYSICS_NON_DRY_REPLACE_FIELDS: tuple[str, ...] = (
     "cldfra_bl",
     *MYNN_DIAGNOSTIC_LEAVES,
     *MP_RE_DIAGNOSTIC_LEAVES,
+    *MYNN_CLOUDPDF_LEAVES,
     *FERRIER_CARRY_LEAVES,
     *GODDARD4ICE_CARRY_LEAVES, *GODDARD4ICE_HISTORY_LEAVES, *THOMPSON_HAIL_SURFACE_LEAVES,
     "rimi", "exch_tke",
@@ -1314,6 +1316,7 @@ class OperationalNamelist:
     swint_opt: int = 0  # WRF-Solar surface interpolation; absent on the default path.
     rad_diag: int = 0  # &gpuwrf: held RRTMG heating and input-condensate history.
     icloud_bl: int = 1  # WRF: 0 skips the radiation-only MYNN cloud merge.
+    bl_mynn_cloudpdf: int = 2  # WRF mym_condensation CASE 0/1; 2 unchanged.
     stochastic_config: object = None
     windfarm_opt: int = 0
     windfarm_ij: int = 0
@@ -1392,6 +1395,13 @@ class OperationalNamelist:
             raise ValueError("gpuwrf rad_diag supports only 0/1")
         if self.rad_diag and (int(self.ra_sw_physics), int(self.ra_lw_physics)) != (4, 4):
             raise ValueError("rad_diag=1 requires RRTMG ra_sw/ra_lw_physics=4/4")
+        if self.bl_mynn_cloudpdf not in (0, 1, 2):
+            raise ValueError("bl_mynn_cloudpdf supports only 0/1/2")
+        if self.bl_mynn_cloudpdf != 2:
+            if int(self.bl_pbl_physics) != 5:
+                raise ValueError("bl_mynn_cloudpdf=0/1 require MYNN bl_pbl_physics=5")
+            if self.cycling or self.tke_budget or self.bl_mynn_output:
+                raise ValueError("bl_mynn_cloudpdf=0/1 cycling/budget histories are not qualified")
         if self.icloud_bl not in (0, 1):
             raise ValueError("icloud_bl supports only 0/1")
         if int(self.cu_physics)==11:
@@ -1778,10 +1788,16 @@ class OperationalNamelist:
                      int(self.bl_mynn_edmf),int(self.bl_mynn_edmf_mom)),)
         if self.cycling:
             aux += (("cycling", True),)
+        if self.bl_mynn_cloudpdf != 2:
+            aux += (("bl_mynn_cloudpdf", self.bl_mynn_cloudpdf),)
         return children, aux
 
     @classmethod
     def tree_unflatten(cls, aux, children):
+        bl_mynn_cloudpdf = 2
+        if aux and isinstance(aux[-1], tuple) and aux[-1][0] == "bl_mynn_cloudpdf":
+            bl_mynn_cloudpdf = int(aux[-1][1])
+            aux = aux[:-1]
         cycling = False
         if aux and isinstance(aux[-1], tuple) and aux[-1] == ("cycling", True):
             cycling = True
@@ -2191,6 +2207,7 @@ class OperationalNamelist:
             swint_opt=swint_opt,
             rad_diag=rad_diag,
             icloud_bl=icloud_bl,
+            bl_mynn_cloudpdf=bl_mynn_cloudpdf,
             cycling=cycling,
             stochastic_config=stochastic_config,
             gfdl_grid=gfdl_grid,
@@ -2359,7 +2376,7 @@ def _enforce_operational_precision(
         updates = {}
         for field in STATE_FIELD_ORDER:
             value = getattr(state, field)
-            if value is None or field in (*SURFACE_LAYER_CARRY_LEAVES, *MYNN_DIAGNOSTIC_LEAVES, *GWDO_DIAGNOSTIC_LEAVES, *MP_RE_DIAGNOSTIC_LEAVES, *LES_TKE_LEAVES, *EXTRA_SCALAR_BOUNDARY_LEAVES, *SMS_CARRY_LEAVES, *P3_STATE_LEAVES, *JENSEN_STATE_LEAVES, *EPSILON_PBL_LEAVES, *FERRIER_CARRY_LEAVES, *GODDARD4ICE_CARRY_LEAVES, *GODDARD4ICE_HISTORY_LEAVES, *THOMPSON_HAIL_SURFACE_LEAVES, "rimi", "exch_tke", "tracers", "tracer_bdy", "tracer_budget", *NTU_STATE_LEAVES, *CAMMG_STATE_FIELDS, *ICE_DIAGNOSTIC_LEAVES):
+            if value is None or field in (*SURFACE_LAYER_CARRY_LEAVES, *MYNN_DIAGNOSTIC_LEAVES, *GWDO_DIAGNOSTIC_LEAVES, *MP_RE_DIAGNOSTIC_LEAVES, *LES_TKE_LEAVES, *EXTRA_SCALAR_BOUNDARY_LEAVES, *SMS_CARRY_LEAVES, *P3_STATE_LEAVES, *JENSEN_STATE_LEAVES, *EPSILON_PBL_LEAVES, *FERRIER_CARRY_LEAVES, *GODDARD4ICE_CARRY_LEAVES, *GODDARD4ICE_HISTORY_LEAVES, *THOMPSON_HAIL_SURFACE_LEAVES, "rimi", "exch_tke", "tracers", "tracer_bdy", "tracer_budget", *NTU_STATE_LEAVES, *CAMMG_STATE_FIELDS, *ICE_DIAGNOSTIC_LEAVES, *MYNN_CLOUDPDF_LEAVES):
                 # B39: WRF-REAL surface-layer carry is never upcast.
                 continue
             if field=='qke' and state.epsilon_pbl is not None:
@@ -3218,6 +3235,10 @@ def _acoustic_core_state_from_prep(
                 config=namelist.boundary_config,
                 coupled_boundary_leaves=False,
             )
+            if real_glue and "smcmax" in (namelist.surface_controls or {}):
+                # Native W2 soil operands can merge this boundary target with
+                # the U tendency into an oversized transposing multi-output fusion.
+                u_work_bdy = jax.lax.optimization_barrier(u_work_bdy)
             v_work_bdy = normal_bdy_work_target_v(
                 v_bdy_strip,
                 prep.v_save,
@@ -3933,6 +3954,8 @@ def _acoustic_scan(
             damp_opt=int(namelist.damp_opt),
             damping_traced=namelist.diffusion_parameters is not None and any(k in namelist.diffusion_parameters for k in ("dampcoef", "zdamp")),
             dampcoef=_diffusion_value(namelist, "dampcoef"),
+            dampmag=(namelist.diffusion_parameters["dampmag_rk"][int(stage.rk_step != 1)]
+                     if namelist.diffusion_parameters is not None and "dampmag_rk" in namelist.diffusion_parameters else None),
             zdamp=_diffusion_value(namelist, "zdamp"),
             # WIND-FIX: full model dt so the in-loop normal-momentum relaxation
             # weight is scaled to a per-substep increment.
@@ -5210,6 +5233,13 @@ def _augment_large_step_tendencies(
             hypsometric_opt=int(namelist.hypsometric_opt),
             base_state=base_state,
         )
+        if namelist.diffusion_parameters is not None and any(
+            name in namelist.diffusion_parameters for name in ("w_alpha", "w_beta", "w_crit_cfl")
+        ):
+            # Runtime CFL operands change XLA fusion: PROD V advection+PGF
+            # becomes a 412-node/49-input transpose kernel with STACK 288 B.
+            # Fence this PGF output only (E204), leaving OFF/c_s/Rayleigh alone.
+            rv_pgf = jax.lax.optimization_barrier(rv_pgf)
         u_t = u_t + ru_pgf
         v_t = v_t + rv_pgf; u_t, v_t, haloed, metrics = _small_grid_firewall((u_t, v_t, haloed, metrics), haloed.theta.shape[-2:])
 
@@ -7249,7 +7279,7 @@ def build_clock_base(
     default) leaves the three fields unset and the step reads the namelist
     static as before.
     """
-
+    from gpuwrf.surface_params.lsmparams import clock_controls
     rad_julian, rad_minute = time_utc_clock_base(namelist.time_utc)
     # The CLWRF gas anchor exists exactly when RRTMG would read the gas table:
     # a real grid (metrics) and a dated run (``_rrtmg_column_inputs``).
@@ -7271,7 +7301,7 @@ def build_clock_base(
         noahmp_shdmax=None if noahmp_static_arrays is None else noahmp_static_arrays[2],
         ghg_clock=ghg_clock,
         lower_boundary=getattr(namelist, "lower_boundary", None),
-        surface_controls=getattr(namelist, "surface_controls", None),
+        surface_controls=clock_controls(namelist),
     )
     records = getattr(namelist, "record_windows", None)
     return clock if records is None else records.clock_base(clock)
@@ -7603,6 +7633,10 @@ def _resolve_operational_suite(namelist: OperationalNamelist):
     if {int(namelist.ra_lw_physics),int(namelist.ra_sw_physics)} & {7,99}:
         from gpuwrf.io.flg_gfdl_config import validate_selection
         validate_selection(namelist)
+    if namelist.bl_mynn_cloudpdf != 2:
+        from gpuwrf.physics.mynn_sgs_cloud import sgs_cloud_enabled
+        if not namelist.run_physics or not sgs_cloud_enabled() or namelist.stochastic_config is not None:
+            raise ValueError("bl_mynn_cloudpdf=0/1 require physics, SGS clouds and no stochastic physics")
     suite = resolve_physics_suite(namelist)  # fail-closed on out-of-matrix options
     stoch = getattr(namelist,"stochastic_config",None)
     if stoch is not None:
@@ -7917,6 +7951,10 @@ def _initial_carry_for_run(state: State, namelist: OperationalNamelist) -> Opera
         # o1-smag3d: WRF km_opt=2 prognostic LES TKE (grid%tke_2), REAL, Registry init 0
         # (not in wrfinput, no nest interpolation). Seeded before the first scan.
         enforced = enforced.replace(tke=jnp.zeros_like(enforced.theta, dtype=jnp.float32))
+    missing_cloudpdf = [name for name in mynn_cloudpdf_leaves(namelist) if getattr(enforced, name) is None]
+    if missing_cloudpdf:
+        enforced = enforced.replace(**{name: jnp.zeros_like(enforced.theta, dtype=jnp.float32)
+                                       for name in missing_cloudpdf})
     if int(namelist.diff_opt)==2 and int(namelist.km_opt)==5:
         enforced=enforced.replace(**{n:jnp.zeros_like(enforced.xland,dtype=jnp.float32)
             for n in SMS_CARRY_LEAVES if getattr(enforced,n) is None})
@@ -10391,6 +10429,7 @@ def _physics_step_forcing(
                     budget_config=configuration(namelist),first_timestep=first_timestep,
                     **({"cycling": True} if namelist.cycling else {}),
                     **_mynn_parameter_kwargs(namelist),
+                    **({} if namelist.bl_mynn_cloudpdf == 2 else {"cloudpdf": namelist.bl_mynn_cloudpdf}),
                     **spp_kwargs,
                     **({"mix_tracers": True} if next_state.tracers is not None and namelist.tracer_pblmix else {}),
                     **({"passive_scalars": _pbl_mynn_number_scalars(mp_opt)} if _pbl_mynn_number_scalars(mp_opt) else {}),
@@ -10404,6 +10443,7 @@ def _physics_step_forcing(
                     first_timestep=first_timestep,
                     **({"cycling": True} if namelist.cycling else {}),
                     **_mynn_parameter_kwargs(namelist),
+                    **({} if namelist.bl_mynn_cloudpdf == 2 else {"cloudpdf": namelist.bl_mynn_cloudpdf}),
                     **spp_kwargs,
                     **({"mix_tracers": True} if next_state.tracers is not None and namelist.tracer_pblmix else {}),
                     **({"passive_scalars": _pbl_mynn_number_scalars(mp_opt)} if _pbl_mynn_number_scalars(mp_opt) else {}),
@@ -10478,6 +10518,7 @@ def _physics_step_forcing(
                 first_timestep=first_timestep,
                 **({"cycling": True} if namelist.cycling else {}),
                 **_mynn_parameter_kwargs(namelist),
+                    **({} if namelist.bl_mynn_cloudpdf == 2 else {"cloudpdf": namelist.bl_mynn_cloudpdf}),
                 **({"passive_scalars": _pbl_mynn_number_scalars(mp_opt)} if _pbl_mynn_number_scalars(mp_opt) else {}),
             )
     if topo_kw and topo_kw['topo_wind_ctopo'][1] is not None:

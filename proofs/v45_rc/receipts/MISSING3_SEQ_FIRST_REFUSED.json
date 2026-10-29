@@ -1,0 +1,32 @@
+{
+  "rc": 0,
+  "wall_s": 83.24872010096442,
+  "cmd": [
+    "systemd-run",
+    "--user",
+    "--scope",
+    "--quiet",
+    "-p",
+    "MemoryMax=8G",
+    "-p",
+    "MemorySwapMax=0",
+    "--",
+    "taskset",
+    "-c",
+    "12,28",
+    "nice",
+    "-n",
+    "19",
+    "timeout",
+    "-k",
+    "20",
+    "540",
+    "bash",
+    "<USER_HOME>/wrf_gpu2_lanes/manager/night_seq_v9.sh",
+    "<USER_HOME>/wrf_gpu2_lanes/v45-rc/PLAN_TIMING_MISSING3_V1.json",
+    "20261029_12z",
+    "NO_CROSS_CPU_SMOKE_ONLY"
+  ],
+  "CPU_only": true,
+  "no_GPU_or_fidelity_or_performance_claim": true
+}

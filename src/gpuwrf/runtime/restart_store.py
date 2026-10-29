@@ -376,8 +376,18 @@ class HistoryJournal:
             self.root.mkdir(parents=True, exist_ok=False)
             self._write(self.root / "owner.json", owner)
             _sync_dir(store.root)
-        elif json.loads((self.root / "owner.json").read_text()) != owner:
-            raise ValueError("restart history stream identity mismatch")
+        else:
+            owner_path = self.root / "owner.json"
+            try:
+                saved_owner = json.loads(owner_path.read_text())
+            except FileNotFoundError as exc:
+                raise ValueError(
+                    f"missing restart history journal owner: {owner_path}. Ordinary resume continues "
+                    "the parent journal and needs the parent's --checkpoint-dir, including "
+                    f"history-{self.stream}/; use --branch-from for a new checkpoint directory."
+                ) from exc
+            if saved_owner != owner:
+                raise ValueError("restart history stream identity mismatch")
 
     def _write(self, path, value):
         data = (json.dumps(value, sort_keys=True) + "\n").encode()
@@ -444,6 +454,23 @@ class HistoryJournal:
         if removed:
             _sync_dir(self.output_dir)
         return removed
+
+
+def require_resume_history(store, generation):
+    """Refuse generations copied without their journal before model initialization.
+
+    The stream lives in the payload, not its manifest. Healthy stores need only
+    a metadata lookup here; their authenticated payload read stays in the normal
+    resume path. Only stores with no owner metadata read the verified host
+    snapshot early to name the missing owner precisely, without device restore.
+    HistoryJournal still checks the exact owner/identity at ordinary restoration.
+    """
+    if any(store.root.glob("history-*/owner.json")):
+        return
+    snapshot, manifest = store.read(generation, device=False)
+    stream = snapshot["driver_state"].get("history_stream")
+    if stream is not None:
+        HistoryJournal(store, manifest["identity"], stream)
 
 
 def _validate_snapshot(snapshot, manifest) -> None:

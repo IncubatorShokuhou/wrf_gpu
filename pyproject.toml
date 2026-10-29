@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "gpuwrf"
-version = "0.4.4"
+version = "0.4.5"
 description = "A GPU-native WRF-compatible regional NWP model (JAX dynamical core + physics)"
 readme = "README.md"
 requires-python = ">=3.10"
@@ -34,6 +34,8 @@ dependencies = [
 dev = ["pytest>=7"]
 # Optional observation ingestion; never required by gpuwrf run.
 verify = ["meteostat>=2,<3"]
+# Offline WN3 reference Parquet, MSG3 footprints and physical-distance neighbourhoods.
+optimize = ["pyarrow>=10", "scipy>=1.11", "pyproj>=3.6"]
 apps = ["pvlib>=0.11,<0.17"]
 post = ["metpy>=1.7,<1.8"]
 onboard = ["eccodes>=2.46,<3"]

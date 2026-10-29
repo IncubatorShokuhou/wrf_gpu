@@ -1,0 +1,75 @@
+{
+  "schema": "v45-rc.night-plan.v1",
+  "steps": [
+    {
+      "lane": "v45-rc-cold-prod",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/v45-rc/tools_v6/entry_prime_prod.sh",
+      "sha256": "7d78e7d6cfb4441aea66d3c898a90b8f7bae32e49901723a31de8aa7552046b8",
+      "cap_min": 30
+    },
+    {
+      "lane": "v45-rc-cold-wn3",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/v45-rc/tools_v6/entry_prime_wn3.sh",
+      "sha256": "48439488df53dfa3feff8ea6a897e1ac9085f1a6880cb6d5406eee5ff77f4a7e",
+      "cap_min": 55
+    },
+    {
+      "lane": "v45-rc-warm",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/v45-rc/tools_v6/entry_rw_warm.sh",
+      "sha256": "e08907ce3a80d6ccdc47b0a9e491c38379da4cc5a3403a92d402b11eeb7a5ae6",
+      "cap_min": 45
+    },
+    {
+      "lane": "v45-rc-rw3",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/v45-rc/tools_v6/entry_rw3.sh",
+      "sha256": "90651d74ed659b3c1361de207c2ef5c1f77f07cc11cc06ef65bfbcaac5de2610",
+      "cap_min": 75
+    },
+    {
+      "lane": "v45-rc-cpu-post",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/v45-rc/post_run/entry.sh",
+      "sha256": "46f6043c21c808322b5261169ad4901e55b7fd371df0bc7a5e330574697498e3",
+      "cap_min": 35,
+      "args": [
+        "<USER_HOME>/wrf_gpu2_lanes/v45-rc/tools_v6/PIN_MANIFEST.json"
+      ]
+    }
+  ],
+  "scheduling": {
+    "RC_cap_min": 220,
+    "BallBerry_after_min": 0,
+    "order": "RC RW1-RW4; BallBerry CANCELLED manager15:25:42Z",
+    "hard_end_utc": "2026-10-29T05:30:00Z",
+    "latest_Nightly_DONE_approx": "2026-10-28T23:50:00Z",
+    "overhead_margin_min": 120
+  },
+  "O72": {
+    "min_free_GiB": 411,
+    "own_launcher_precheck": true,
+    "on_low": "ARM O72 HOLD; no invocation/registry START"
+  },
+  "paths": {
+    "tools": "<USER_HOME>/wrf_gpu2_lanes/v45-rc/tools_v6",
+    "source": "<USER_HOME>/wrf_gpu2_lanes/v45-rc/archive",
+    "bundle": "<USER_HOME>/wrf_gpu2_lanes/v45-rc/runtime/bundle",
+    "short_session": "<DATA_ROOT>/wrf_gpu2/scratch/v45-rc/session_254c48237452_gpu_v6",
+    "rw3_session": "<DATA_ROOT>/wrf_gpu2/scratch/v45-rc/runs/rw3_<UTC>_<PID>",
+    "DATA_writes_before_GA_START": 0
+  },
+  "carry_completed": {
+    "A1_swiss": "actual GPU coldprime22:39:26-22:44:08 rc0, source254, cachedbytes/ABI/traceenv unchanged by lock-token forwarding"
+  },
+  "precondition": "manager runs TOKEN_FIX/prepare_prod_retry.py --apply aftercritic: SHA-archive failedzero-outputA2 andretentionupdate; paidSwisscachemustnotbetouched",
+  "post_window_handoff": {
+    "synchronous": true,
+    "all_GPU_model_children_reaped": true,
+    "official_GPU_lock_must_be_unheld": true,
+    "global_v9_window_flag_preserved": true,
+    "CPU_scope": "8G swap0/12,28 nice19/timeout2100",
+    "reference": "unchanged pinned guarded adapter API + same full scoring arguments; no source/scanner/tolerance change",
+    "target_DATA_free_GiB": 404.5,
+    "raw_delete_only_after_complete_required_scores_and_preservation": true
+  },
+  "total_caps_padding_min": 250,
+  "latest_start_for_full_budget": "2026-10-29T01:20:00Z"
+}

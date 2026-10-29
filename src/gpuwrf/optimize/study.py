@@ -2,6 +2,8 @@
 from __future__ import annotations
 
 import copy
+from contextlib import contextmanager
+import fcntl
 import hashlib
 import itertools
 import json
@@ -9,6 +11,7 @@ import math
 import os
 from pathlib import Path
 import re
+import signal
 import time
 
 import pandas as pd
@@ -249,18 +252,28 @@ def load_study(path):
             rejected.append({"id": candidate["id"], "reason": str(exc)})
     if not candidates:
         raise ValueError("no admitted WRF-valid configurations; CPU-only/catalog status is insufficient")
-    stations, obs = resolve(raw["stations"]), resolve(raw["observations"])
+    cloud_config = None
+    if raw["objective"] == "cloud":
+        from .cloud import load_config
+        cloud_config = load_config(raw["cloud"], resolve)
+        stations, obs = None, None
+    else:
+        stations, obs = resolve(raw["stations"]), resolve(raw["observations"])
     train_count = sum(c["split"] == "train" for c in cases)
     test_count = sum(c["split"] == "test" for c in cases)
     study = {"schema": raw["schema"], "region": raw["region"], "objective": raw["objective"], "variables": variables,
              "scales": scales, "hours": hours, "budget_case_hours": budget, "test_start": split.isoformat(), "e41": e41,
              "cases": sorted(cases, key=lambda c: c["date"]), "candidates": sorted(candidates, key=lambda c: c["id"]),
-             "stations": str(stations), "observations": str(obs), "sampling": raw.get("sampling", {}),
-             "model_sha256": source, "inputs": [identity(p) for p in (path, stations, obs)]+evidence+
+             "stations": str(stations) if stations else None, "observations": str(obs) if obs else None,
+             "sampling": raw.get("sampling", {}),
+             "model_sha256": source, "inputs": [identity(p) for p in (path, stations, obs) if p is not None]+evidence+
                  [c["source_namelist"] for c in cases]+[identity(released.RELEASED_PATH)],
              "rejected": rejected, "release_list": {"release": data["release"], "checkpoint": data["checkpoint"]},
              "qualification": ("released v0.4.0 FINAL D6 PASS configurations (exact tuples); the study case context "
                                "differs from the qualifying runs as listed per candidate; no regional skill inferred")}
+    if cloud_config is not None:
+        study["cloud"] = cloud_config
+        study["inputs"].extend(cloud_config["truth_identity"])
     study["rounds"], study["planned_case_hours"] = schedule(len(candidates), train_count, test_count, hours, budget,
                                                             rungs=raw.get("rungs"))
     study["program_groups"] = program_groups(study)
@@ -348,6 +361,9 @@ def evaluate(study, fetch, *, prefetch=None, on_round=None):
     of that rung (and once for the winner's held-out dates), so a launcher can run all
     configurations of a rung in one batch. on_round(record) receives each finished rung.
     """
+    if study["objective"] == "cloud":
+        from .cloud import evaluate
+        return evaluate(study, fetch, prefetch=prefetch, on_round=on_round)
     from gpuwrf.verify.observations import KEYS, read_stations
 
     stations = read_stations(study["stations"])
@@ -437,14 +453,15 @@ def score(study, inventory_path):
     inventory = json.loads(inventory_path.read_text())
     if inventory.get("schema") != "gpuwrf.optimize.forecasts.v1":
         raise ValueError("unsupported forecast inventory")
-    stations = read_stations(study["stations"])
+    stations = read_stations(study["stations"]) if study["objective"] != "cloud" else None
     study = copy.deepcopy(study)
     study["inputs"].append(identity(inventory_path))
     def fetch(candidate, cases):
         results = {}
         for case in cases:
             files = [inventory_path.parent/p for p in inventory["forecasts"][candidate["id"]][case["id"]]]
-            rows, audit = forecast(files, stations, **study["sampling"])
+            rows, audit = ((files, {"format": "cloud wrfout"}) if study["objective"] == "cloud"
+                           else forecast(files, stations, **study["sampling"]))
             results[case["id"]] = (rows, audit, [identity(p) for p in files])
         return results
     return evaluate(study, fetch)
@@ -471,8 +488,16 @@ def cold_first(pairs, compiled):
 def _atomic_json(path, value):
     path = Path(path)
     temporary = path.with_suffix(path.suffix+f".{os.getpid()}.new")
-    temporary.write_text(json.dumps(value, indent=1, allow_nan=False)+"\n")
+    with temporary.open("w") as stream:
+        stream.write(json.dumps(value, indent=1, allow_nan=False)+"\n")
+        stream.flush()
+        os.fsync(stream.fileno())
     os.replace(temporary, path)
+    directory = os.open(path.parent, os.O_RDONLY | os.O_DIRECTORY)
+    try:
+        os.fsync(directory)
+    finally:
+        os.close(directory)
 
 
 def bundle_launcher(output, bundle, consumer):
@@ -482,6 +507,13 @@ def bundle_launcher(output, bundle, consumer):
     launcher = bundle/"src"/"scripts"/"run_parallel_cases.sh"
     if not env.is_file() or not launcher.is_file() or not (bundle/"sealed"/"BUNDLE_MANIFEST.json").is_file():
         raise ValueError("bundle needs bundle.env, src/scripts/run_parallel_cases.sh and sealed/BUNDLE_MANIFEST.json")
+    scheduler = launcher.with_name("parallel_cases.py")
+    if (not scheduler.is_file() or not re.search(r"^OPTIMIZER_REGISTRY_HOOKS = 2\s*(?:#.*)?$",
+                                                scheduler.read_text(), flags=re.MULTILINE)
+            or not (bundle/"src/src/gpuwrf/optimize/registry.py").is_file()
+            or not (bundle/"src/scripts/alisios_registry.py").is_file()):
+        raise ValueError("bundle lacks per-member optimizer registry hooks; rebuild a v0.4.5-or-newer bundle "
+                         "with scripts/parallel_cases.py and scripts/alisios_registry.py registry support")
     layer = Path(output).resolve()/"bundle_layer"
     if layer == bundle or bundle in layer.parents:
         raise ValueError("optimize output must not lie inside the bundle")
@@ -501,7 +533,8 @@ def _member_receipt(path):
     except (OSError, ValueError):
         return {}
     return {k: receipt.get(k) for k in ("rc", "wall_s", "vmhwm_kb", "vram_peak_mib", "aot_cache_warm",
-                                         "aot_cold_executables", "concurrent_at_start", "sizing")}
+                                         "aot_cold_executables", "concurrent_at_start", "sizing",
+                                         "registry_run_id", "registry_complete")}
 
 
 def _source_case(member):
@@ -535,6 +568,9 @@ def _member_entry(batch, plan, member, candidate_id, case, program=None):
     receipt = _member_receipt(out/"receipt.json")
     if not files or receipt.get("rc") != 0:
         return None
+    if receipt.get("registry_run_id") and receipt.get("registry_complete") is not True:
+        raise ValueError("model finished but its registry terminal event is incomplete; reconcile the original "
+                         "invocation and receipt before resume; do not rerun the forecast")
     return {"candidate": candidate_id, "case": case["id"], "batch": batch.name, "member": member["id"],
             "program": program or candidate_id,
             "files": [identity(p) for p in files], "plan": identity(batch/"plan.json"), **receipt}
@@ -569,9 +605,76 @@ def _salvage(output, study, ledger):
         record["rc"], record["note"] = None, "interrupted; finished members salvaged on resume"
 
 
-def run(study, output, *, gpus=None, max_parallel=None, launcher=None, pool_gib=None, resume=False,
+def run(study, output, **kwargs):
+    """Serialize optimizer invocations; account for prep, scoring and failed attempts too."""
+    from gpuwrf.assimilation.letkf.member_driver import refuse_protected_inputs
+
+    refuse_protected_inputs("gpuwrf optimize", [], outputs=[output])
+    output = Path(output).resolve()
+    output.parent.mkdir(parents=True, exist_ok=True)
+    lock = os.open(output.with_name(output.name + ".optimizer.lock"), os.O_CREAT | os.O_WRONLY | os.O_NOFOLLOW, 0o600)
+    prep_wall = kwargs.pop("prep_wall_s", 0.0)
+    context = {"started": kwargs.get("clock", time.monotonic)() - prep_wall}
+    saved_alarm = None
+    try:
+        try:
+            fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        except BlockingIOError as exc:
+            raise ValueError("optimizer output is already running; concurrent resume refused") from exc
+        wall = kwargs.get("wall_seconds", 1800)
+        if wall is not None and type(wall) in (int, float) and math.isfinite(wall) and wall > 0:
+            saved_alarm = (signal.getsignal(signal.SIGALRM), signal.getitimer(signal.ITIMER_REAL))
+            def expire(*_):
+                raise Pause("hard wallclock budget exhausted; best admissible result remains in best.json")
+            signal.signal(signal.SIGALRM, expire)
+            real_deadline = time.monotonic() + wall - prep_wall
+            signal.setitimer(signal.ITIMER_REAL, max(0.001, wall-prep_wall))
+
+            @contextmanager
+            def model_phase():
+                # The scheduler owns deadline teardown while its children exist.
+                # Interrupting subprocess.run here would kill only the scheduler.
+                signal.setitimer(signal.ITIMER_REAL, 0)
+                try:
+                    yield
+                finally:
+                    remaining = real_deadline-time.monotonic()
+                    if remaining > 0:
+                        signal.setitimer(signal.ITIMER_REAL, remaining)
+            context["model_phase"] = model_phase
+        return _run(study, output, _context=context, **kwargs)
+    except Pause as pause:
+        progress = {"status": "PAUSED", "reason": str(pause), "planned_case_hours": study["planned_case_hours"],
+                    "best": str(output / "best.json")}
+        if output.is_dir():
+            _atomic_json(output / "progress.json", progress)
+        return progress
+    except BaseException as exc:
+        if "ledger" in context:
+            _atomic_json(output / "progress.json", {"status": "ABORTED" if isinstance(exc, (KeyboardInterrupt, SystemExit))
+                         else "FAILED", "reason": str(exc), "best": str(output / "best.json"),
+                         "ledger": LEDGER, "scheduled_case_hours": context["ledger"]["scheduled_case_hours"]})
+        raise
+    finally:
+        try:
+            if saved_alarm is not None:
+                signal.setitimer(signal.ITIMER_REAL, 0)
+                signal.signal(signal.SIGALRM, saved_alarm[0])
+                signal.setitimer(signal.ITIMER_REAL, *saved_alarm[1])
+            if "ledger" in context:
+                ledger = context["ledger"]
+                elapsed = kwargs.get("clock", time.monotonic)() - context["started"]
+                ledger["accounting"]["wall_s"] += elapsed
+                ledger["accounting"]["invocations"] += 1
+                _atomic_json(output / LEDGER, ledger)
+        finally:
+            os.close(lock)
+
+
+def _run(study, output, *, gpus=None, max_parallel=None, launcher=None, pool_gib=None, resume=False,
         chunk_minutes=None, member_wall_s=None, bundle=None, bundle_consumer=None, member_env=None,
-        host_gb_per_member=None, clock=time.monotonic, driver=None):
+        host_gb_per_member=None, clock=time.monotonic, driver=None, wave_mode=True, registry=None,
+        wall_seconds=1800, max_retries=1, profile_points=None, _context):
     """No JAX initialization here; the existing ensemble launcher owns GPU execution.
 
     Every rung's new (configuration, date) members of ALL surviving configurations go to the launcher
@@ -589,10 +692,36 @@ def run(study, output, *, gpus=None, max_parallel=None, launcher=None, pool_gib=
 
     max_parallel = _positive_int(max_parallel, "max_parallel") if max_parallel is not None else None
     output = Path(output).resolve()
+    if type(wave_mode) is not bool:
+        raise ValueError("wave_mode must be a boolean")
+    if resume and not wave_mode and (output / "wave_state.json").exists():
+        raise ValueError("wave approvals cannot be disabled when resuming a wave-controlled study")
     canonical = json.loads(json.dumps(study, allow_nan=False))
+    if wall_seconds is not None and (isinstance(wall_seconds, bool) or not math.isfinite(wall_seconds)
+                                     or wall_seconds <= 0):
+        raise ValueError("wall_seconds must be positive and finite")
+    if max_retries is not None and (type(max_retries) is not int or max_retries < 0):
+        raise ValueError("max_retries must be a nonnegative integer")
+    if profile_points is not None:
+        if (not isinstance(profile_points, list) or not profile_points
+                or any(not isinstance(p, dict) or set(p) != {"id", "region", "domain", "j", "i"}
+                       or not isinstance(p["id"], str) or not re.fullmatch(r"[A-Za-z0-9_-]{1,64}", p["id"])
+                       or p["region"] not in ("north_windward", "sea")
+                       or not isinstance(p["domain"], str) or not re.fullmatch(r"d[0-9]{2}", p["domain"])
+                       or any(type(p[k]) is not int or p[k] < 0 for k in ("j", "i")) for p in profile_points)
+                or len({p["id"] for p in profile_points}) != len(profile_points)):
+            raise ValueError("profile points require unique id, north_windward/sea region, dNN domain and nonnegative integer j/i")
+        try:
+            from .diagnostics import write_profile_report  # noqa: F401
+        except ImportError as exc:
+            raise ValueError("profile diagnostics support is unavailable in this build") from exc
     if resume:
         saved = output/"study.json"
-        if not saved.is_file() or json.loads(saved.read_text()) != canonical:
+        saved_study = json.loads(saved.read_text()) if saved.is_file() else None
+        if isinstance(saved_study, dict) and saved_study.get("optimizer_implementation") != canonical.get("optimizer_implementation"):
+            raise ValueError("resume EKI implementation/NumPy version changed or was not recorded; "
+                             "use the original optimizer implementation or a new output directory")
+        if saved_study != canonical:
             raise ValueError("resume needs the same study (inputs, configurations, rungs) in an existing output directory")
         ledger = json.loads((output/LEDGER).read_text())
         _salvage(output, study, ledger)
@@ -601,8 +730,33 @@ def run(study, output, *, gpus=None, max_parallel=None, launcher=None, pool_gib=
         output.mkdir(parents=True, exist_ok=False)
         write_json(output/"study.json", canonical)
         ledger = {"schema": "gpuwrf.optimize.ledger.v1", "members": {}, "batches": [], "scheduled_case_hours": 0,
-                  "candidates": {}}
+                  "candidates": {}, "attempts": {}, "max_retries": max_retries,
+                  "profile_points": profile_points,
+                  "accounting": {"wall_s": 0.0, "invocations": 0, "prepare_s": 0.0, "model_s": 0.0,
+                                 "extract_qc_s": 0.0}}
         _atomic_json(output/LEDGER, ledger)
+    if ledger.get("max_retries") != max_retries or "attempts" not in ledger:
+        raise ValueError("resume needs the same retry cap and a cap-aware optimizer ledger")
+    if ledger.get("profile_points") != profile_points:
+        raise ValueError("resume needs the same profile point observer")
+    _context["ledger"] = ledger
+    # Registry policy is immutable across optimizer restarts, just like the study.
+    policy = {"forcing": "OTHER", **(registry or {})}
+    policy_path = output / "registry_policy.json"
+    if resume:
+        if json.loads(policy_path.read_text()) != policy:
+            raise ValueError("resume needs the same registry policy")
+    else:
+        _atomic_json(policy_path, policy)
+    from .waves import Waves
+    waves = Waves(output, canonical, resume=resume, atomic_json=_atomic_json,
+                  profile_points=profile_points) if wave_mode else None
+    if waves is not None and waves.state.get("stopped"):
+        progress = {"status": "STOPPED", "reason": "external reviewer STOP", "planned_case_hours": study["planned_case_hours"]}
+        _atomic_json(output / "progress.json", progress)
+        return progress
+    if resume and (output / "result.json").is_file():
+        return json.loads((output / "result.json").read_text())
     single = study["cases"][0]["max_dom"] == 1
     if single and pool_gib is None:
         pool_gib = study.get("resources", {}).get("member", {}).get("pool_gib")
@@ -616,8 +770,9 @@ def run(study, output, *, gpus=None, max_parallel=None, launcher=None, pool_gib=
         launcher, bundle_record = bundle_launcher(output, bundle, bundle_consumer)
     else:
         bundle_record = None
-    stations = read_stations(study["stations"])
-    started = clock()
+    stations = read_stations(study["stations"]) if study.get("objective") != "cloud" and study["stations"] else None
+    started = _context["started"]
+    deadline = None if wall_seconds is None else started + wall_seconds
     budget_s = None if chunk_minutes is None else float(chunk_minutes)*60
     launched_here = [0]
     default_wall = float(member_wall_s) if member_wall_s else float(study["hours"])*60+900  # [I] cold compile + run
@@ -625,6 +780,26 @@ def run(study, output, *, gpus=None, max_parallel=None, launcher=None, pool_gib=
     cpu_members = environ.get("JAX_PLATFORMS", "").strip().lower() == "cpu"  # launcher: no VRAM admission
     # Input files may not change while members run either: same size, mtime and inode as when this run started.
     stats = {f["path"]: _stat(f["path"]) for case in study["cases"] for f in case["forcing"]}
+
+    def check_wall():
+        if deadline is not None and clock() >= deadline:
+            raise Pause("hard wallclock budget exhausted; best admissible result remains in best.json")
+
+    def accounting():
+        return {**ledger["accounting"], "wall_s": ledger["accounting"]["wall_s"] + clock()-started,
+                "wall_seconds_this_invocation": wall_seconds,
+                "wall_seconds_remaining": None if deadline is None else max(0.0, deadline-clock()),
+                "case_hours_remaining": study["budget_case_hours"]-ledger["scheduled_case_hours"],
+                "max_retries": max_retries, "attempts": ledger["attempts"],
+                "compile_extract_failed_time": "included in total wall; compile is included in model_s"}
+
+    @contextmanager
+    def measure(name):
+        before = clock()
+        try:
+            yield
+        finally:
+            ledger["accounting"][name] += clock()-before
 
     def host_need(warm):
         """Launcher host need per member: explicit, else 1.1 x the largest measured member VmHWM (a fixed pool
@@ -685,7 +860,13 @@ def run(study, output, *, gpus=None, max_parallel=None, launcher=None, pool_gib=
         return min(len(rest), math.floor(left/per)*concurrency(len(rest), warm))
 
     def launch_batch(pairs, warm=False):
+        check_wall()
+        prep_start = clock()
         hours = study["hours"]
+        for candidate, case in pairs:
+            key = f"{candidate['id']}|{case['id']}"
+            if max_retries is not None and ledger["attempts"].get(key, 0) >= max_retries+1:
+                raise Pause(f"retry budget exhausted for {key}; best admissible result remains in best.json")
         # Every dispatched attempt counts, including failed and interrupted ones (retries are charged again).
         if ledger["scheduled_case_hours"]+len(pairs)*hours > study["budget_case_hours"]:
             raise ValueError(f"compute budget exhausted before launch: {ledger['scheduled_case_hours']} case-hours "
@@ -696,9 +877,11 @@ def run(study, output, *, gpus=None, max_parallel=None, launcher=None, pool_gib=
                     raise ValueError(f"forecast input changed while the study ran: {f['path']}")
         number = len(ledger["batches"])
         batch = output/f"batch-{number:03d}"
-        inputs, controls = [], []
+        inputs, controls, parameters = [], [], []
         if len({candidate.get("controls") is None for candidate, _ in pairs}) > 1:
             raise ValueError("one batch cannot mix members with and without surface controls")
+        if len({candidate.get("runtime_parameters") is None for candidate, _ in pairs}) > 1:
+            raise ValueError("one batch cannot mix members with and without runtime parameters")
         for candidate, case in pairs:
             dest = output/"inputs"/candidate["id"]/case["id"]
             if dest.exists():  # an interrupted earlier batch prepared it: same content, fresh copy
@@ -718,12 +901,22 @@ def run(study, output, *, gpus=None, max_parallel=None, launcher=None, pool_gib=
                 if identity(target)["sha256"] != candidate["controls"]["sha256"]:
                     raise ValueError(f"member control file changed since it was written: {candidate['id']}")
                 controls.append(target)
+            if candidate.get("runtime_parameters") is not None:
+                target = dest/workflows.RUNTIME_PARAMETERS_NAME
+                record = candidate["runtime_parameters"]
+                target.write_bytes(Path(record["path"]).read_bytes())
+                if identity(target)["sha256"] != record["sha256"]:
+                    raise ValueError(f"member runtime parameter file changed: {candidate['id']}")
+                parameters.append(target)
             ledger.setdefault("candidates", {})[candidate["id"]] = {"program": program_key(candidate),
-                                                     "controls": candidate.get("controls")}
+                                                     "controls": candidate.get("controls"),
+                                                     "runtime_parameters": candidate.get("runtime_parameters")}
             inputs.append(dest)
         kwargs = {"pool_gib": pool_gib} if single else {}
         if controls:
             kwargs["surface_controls"] = controls
+        if parameters:
+            kwargs["runtime_parameters"] = parameters
         host = host_need(warm)
         if host is not None:
             kwargs["host_gb_per_case"] = host
@@ -739,11 +932,30 @@ def run(study, output, *, gpus=None, max_parallel=None, launcher=None, pool_gib=
                 record["over_chunk"] = f"one member is estimated at {member_wall(warm):.0f} s, more than the chunk left"
         ledger["batches"].append(record)
         ledger["scheduled_case_hours"] += len(pairs)*hours
+        for candidate, case in pairs:
+            key = f"{candidate['id']}|{case['id']}"
+            ledger["attempts"][key] = ledger["attempts"].get(key, 0) + 1
         _atomic_json(output/LEDGER, ledger)
         launched_here[0] += 1
         t0 = clock()
-        rc = workflows.launch(batch/"plan.json", launcher=launcher,
-                              **({"env": member_env} if member_env is not None else {}))
+        from .registry import batch_metadata
+        metadata = batch_metadata(study, plan, pairs, inputs, policy)
+        metadata_path = batch / "registry.json"
+        _atomic_json(metadata_path, metadata)
+        child_env = dict(environ, ALISIOS_OPTIMIZE_REGISTRY=str(metadata_path))
+        if deadline is not None:
+            child_env["ALISIOS_OPTIMIZE_WALL_DEADLINE"] = str(deadline)
+        ledger["accounting"]["prepare_s"] += clock()-prep_start
+        check_wall()
+        t0 = clock()
+        try:
+            if "model_phase" in _context:
+                with _context["model_phase"]():
+                    rc = workflows.launch(batch/"plan.json", launcher=launcher, env=child_env)
+            else:
+                rc = workflows.launch(batch/"plan.json", launcher=launcher, env=child_env)
+        finally:
+            ledger["accounting"]["model_s"] += clock()-t0
         record["wall_s"] = round(clock()-t0, 3)
         record["rc"] = rc
         record.update(_admission(plan))
@@ -755,10 +967,12 @@ def run(study, output, *, gpus=None, max_parallel=None, launcher=None, pool_gib=
             if entry is not None:
                 ledger["members"][f"{candidate['id']}|{case['id']}"] = entry
         _atomic_json(output/LEDGER, ledger)
+        check_wall()
         if rc:
             raise ValueError(f"ensemble batch failed with exit {rc}; no recommendation published")
 
     def prefetch(pairs):
+        check_wall()
         todo = [(c, k) for c, k in pairs if f"{c['id']}|{k['id']}" not in ledger["members"]]
         if not todo:  # resumed: every member of this rung is already recorded
             return
@@ -791,11 +1005,14 @@ def run(study, output, *, gpus=None, max_parallel=None, launcher=None, pool_gib=
         results = {}
         for case in cases:
             paths, entry = files(candidate, case)
-            rows, audit = forecast(paths, stations, **study["sampling"])
+            with measure("extract_qc_s"):
+                rows, audit = ((paths, {"format": "cloud wrfout"}) if study.get("objective") == "cloud"
+                               else forecast(paths, stations, **study["sampling"]))
             results[case["id"]] = (rows, audit, entry["files"]+[entry["plan"]])
         return results
 
     def on_round(record):
+        check_wall()
         members = {}
         for key, entry in ledger["members"].items():
             cand, case = key.split("|")
@@ -807,16 +1024,23 @@ def run(study, output, *, gpus=None, max_parallel=None, launcher=None, pool_gib=
         _atomic_json(rungs/f"rung-{record['round']:02d}.json",
                      {"schema": "gpuwrf.optimize.rung.v1", **record, "members": members,
                       "program_groups": study.get("program_groups"), "bundle": bundle_record})
+        if waves is not None:
+            waves.complete(record["round"], kind="rung", ensemble=[s["id"] for s in record["scores"]],
+                           scores=record["scores"], checkpoint={"kind": "rung", "record": record}, ledger=ledger,
+                           accounting=accounting(),
+                           impact_matrix=record.get("impact_matrix"), admissibility=record.get("admissibility"))
 
     try:
         if driver is None:
             report = evaluate(study, fetch, prefetch=prefetch, on_round=on_round)
         else:
-            report = driver(prefetch=prefetch, fetch=fetch, files=files, on_round=on_round, output=output, ledger=ledger)
+            report = driver(prefetch=prefetch, fetch=fetch, files=files, on_round=on_round, output=output,
+                            ledger=ledger, waves=waves, accounting=accounting, check_wall=check_wall, measure=measure)
     except Pause as pause:
         progress = {"status": "PAUSED", "reason": str(pause), "completed_members": len(ledger["members"]),
                     "batches": len(ledger["batches"]), "scheduled_case_hours": ledger["scheduled_case_hours"],
                     "planned_case_hours": study["planned_case_hours"],
+                    "accounting": accounting(),
                     "resume": "gpuwrf optimize run --study <same study> --output <this directory> --resume"}
         _atomic_json(output/"progress.json", progress)
         return progress

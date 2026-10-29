@@ -1,0 +1,183 @@
+{
+  "status": "F1_FIXED_CPU_GATE_PASS; READY_FOR_CRITIC",
+  "source_test_commit": "3dce5d506088cc5cf7b3427820802db654f4c90f",
+  "probe_commit": "ba5b3fc822",
+  "fix": "Validate covariance symmetry/correlation/SPD after normalization by sqrt(diagonal_i*diagonal_j); one Cholesky reused for sampling. Roundoff-admitted triangles canonicalized consistently without changing caller input.",
+  "witnesses": [
+    {
+      "diagonal": 1e-16,
+      "upper": 4e-17,
+      "lower": 0.0,
+      "correlation_asymmetry": 0.4,
+      "result": "REFUSED_BEFORE_FORWARD"
+    },
+    {
+      "diagonal": 1e-16,
+      "upper": 9e-13,
+      "lower": 0.0,
+      "correlation_asymmetry": 9000.0,
+      "result": "REFUSED_BEFORE_FORWARD"
+    }
+  ],
+  "tests": {
+    "passed": 64,
+    "failures": 0,
+    "skips": 0,
+    "seconds": 1.96,
+    "original_functions_AST_unchanged": 20,
+    "new_cases": 22
+  },
+  "collection": {
+    "tests": 21239,
+    "errors": 0,
+    "seconds": 60.0,
+    "warning": "inherited unknown slow mark"
+  },
+  "source_reuse": {
+    "baseline": "3a8bea124e7555e65ef1eaad17fabbf209cf50b9",
+    "retained_original_test_functions": 20,
+    "original_test_functions_AST_identical": true,
+    "run_twin_after_covariance_admission_AST_identical": true,
+    "other_original_functions_AST_identical": true,
+    "source_sha256": "ace1419f72ebd4fa5eda77952f57ddaf024bf789b06790da16b5068df810859d",
+    "test_sha256": "f3fb124594af380f2a772cbb26c5391987c200ca8b8d1ab90755eb6b1659b24e",
+    "identity_rank_mutants": "carry valid independent critic receipts; guards/fitting/rank/recovery/misfit AST unchanged"
+  },
+  "source_swap_and_cost": {
+    "scope": "CPU-only covariance admission; synthetic matrix; shared-core timing, not a GPU benchmark",
+    "baseline_commit": "3a8bea124e7555e65ef1eaad17fabbf209cf50b9",
+    "baseline_admission_sha256": "ad104b36b681cfeca4e47ec9f73edfacd49ba028f38540e22c41f9c13c906d4e",
+    "candidate_sha256": "ace1419f72ebd4fa5eda77952f57ddaf024bf789b06790da16b5068df810859d",
+    "baseline_mutant": {
+      "genuine_failures": 2,
+      "setup_errors": 0,
+      "rc": 1
+    },
+    "rows": 256,
+    "costs": {
+      "baseline": {
+        "median_s": 0.001039957976900041,
+        "samples_s": [
+          0.0010782390017993748,
+          0.0022926880046725273,
+          0.0020136660314165056,
+          0.0010265680029988289,
+          0.001039957976900041,
+          0.005063631047960371,
+          0.0010004870127886534,
+          0.0009907189523801208,
+          0.003220854967366904,
+          0.0009915680275298655,
+          0.003993382037151605,
+          0.0010050679557025433,
+          0.0009892669622786343,
+          0.004002552013844252,
+          0.001686593983322382,
+          0.0009870880166999996,
+          0.000979878008365631,
+          0.004098361998330802,
+          0.0009838480036705732,
+          0.000981668010354042,
+          0.003298825991805643
+        ],
+        "peak_traced_host_bytes": 1182384
+      },
+      "candidate": {
+        "median_s": 0.0011917590163648129,
+        "samples_s": [
+          0.0012064790353178978,
+          0.0021918179700151086,
+          0.0011917590163648129,
+          0.00417884299531579,
+          0.0011845299741253257,
+          0.0012004890013486147,
+          0.004197413974907249,
+          0.0011916389921680093,
+          0.001174850040115416,
+          0.0019797850400209427,
+          0.0030707449768669903,
+          0.001187729008961469,
+          0.0011799799976870418,
+          0.002182837051805109,
+          0.0042213230044581,
+          0.0011830499861389399,
+          0.001174959004856646,
+          0.0011677900329232216,
+          0.0041775230201892555,
+          0.0011790189892053604,
+          0.001177969970740378
+        ],
+        "peak_traced_host_bytes": 1711240
+      }
+    },
+    "factorizations_per_admission": 1,
+    "GPU_model_work": "NONE",
+    "thresholds": "recovery/rank/misfit unchanged; numerical symmetry tolerance normalized by diagonal scales"
+  },
+  "prior_evidence": {
+    "path": "proofs/v45_twin/CPU_GATE.json",
+    "sha256": "e4ffc7dcf918be3fead57c593c8462821eff4d088011c6fbd132b861e0da628b",
+    "scope": "Historical pre-F1 receipt: valid identity/rank/source-closure/backend-dark/structural-sampler evidence reused; pre-F1 covariance admission superseded."
+  },
+  "limits": [
+    "Invented station geometry, stub forward and synthetic covariance; no real station skill/WRF fidelity/GPU claim.",
+    "Recovery/rank/misfit thresholds and post-admission fitting AST unchanged.",
+    "Performance is contended CPU-only admission setup at256rows; not forecast wall or GPU speed.",
+    "Real-forward pilot remains PLAN_ONLY; private real inputs undelivered, explicitly not a CPU-review blocker per manager/critic."
+  ],
+  "artifacts": {
+    "TW09.xml": {
+      "sha256": "79f688b46acb765c76ceb9874e4770e8a4cd77475ab7d9f4256469d690098204",
+      "bytes": 8804
+    },
+    "TW09.log": {
+      "sha256": "573d7993d5e73c4d7762a63a08571800874dabf65d574053a3ef313d238010c5",
+      "bytes": 201
+    },
+    "TW09.time": {
+      "sha256": "58a4a6bdcb79d27f6bd438615a8dec0a23a337ccfcaa0c31b8ed31c615a87fe4",
+      "bytes": 900
+    },
+    "TW09_ARCHIVE.json": {
+      "sha256": "c042dbf9b2f169f607759575ad2720f7688dca359e41c5e9abf5bb5f7cd36528",
+      "bytes": 126626
+    },
+    "TW10.log": {
+      "sha256": "5ce8f626e94b2a03d1c1ed0a4919af81ad3a5b3006005f41c0fb98852ca200a7",
+      "bytes": 839
+    },
+    "TW10.time": {
+      "sha256": "e92bd1af9526c1eddb099fc3a32c9f50babfe21efd2750da97fa0453b69e8254",
+      "bytes": 922
+    },
+    "covariance_mutant.log": {
+      "sha256": "ee49a3757f48a634d13b45ec7e90f501784211f882509ae5c18845271b6d92cc",
+      "bytes": 4757
+    },
+    "covariance_mutant.xml": {
+      "sha256": "4f65bba16e06171611837de8fd3e54302a67ba426fb9ce83287a254b9e39d8c9",
+      "bytes": 4729
+    },
+    "COVARIANCE_PROBE.json": {
+      "sha256": "90d3d5761ca71a797322d73420a78b1080e8f6c2f9e069ac9062579178f3f246",
+      "bytes": 2208
+    },
+    "F1_SOURCE_REUSE.json": {
+      "sha256": "33cee83012642a45a7861e289971c3dcf2f26a1bceec7f512b515cfb4e39608e",
+      "bytes": 556
+    },
+    "TW11_collect.log": {
+      "sha256": "6323bd07bdefe472cb425d9cf1e307a80e8a706d4ffec63b396d8ca581f42f89",
+      "bytes": 1996403
+    },
+    "TW11.time": {
+      "sha256": "37e148e079d62e572489565db05b05e4f59a23a61ad752c388541729d7da1618",
+      "bytes": 823
+    }
+  },
+  "cleanup": {
+    "snapshot_absent": true,
+    "pytest_absent": true,
+    "cache": "NONE / GPUWRF_JAX_CACHE=0"
+  }
+}

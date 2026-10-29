@@ -1,0 +1,93 @@
+{
+  "schema": "v05-hcb-preregistered-v2",
+  "status": "PROPOSED_ONLY_NOT_AUTHORIZED_OR_ARMED",
+  "purpose": "Measure the PROD d02 partition change with one compiled native program; diagnose cold-codegen differences separately",
+  "source": {
+    "required_commit": "286e2442a9dbf812c43b60a18196a011018f2d22",
+    "policy": "Freeze an immutable reviewed candidate and its donor before scheduling; a newer candidate needs a new plan hash",
+    "case": "<DATA_ROOT>/wrf_gpu2/v025/s0_case_20260725",
+    "work": "PROD 2 domains, 44 levels, dt 54/18s, 3 forecast hours, normal radiation/output/namelist cadence",
+    "programs": [
+      "d01",
+      "d02"
+    ],
+    "d02_static_call": {
+      "n_steps": 3,
+      "radiation_cadence_steps": 100
+    },
+    "no_product_default_change": true
+  },
+  "admission": [
+    "Manager schedules an ALISIOS-coordinated GPU window and unexpired v05-hcb lease; every GPU process under scripts/with_gpu_lock.sh --label v05-hcb",
+    "Every GPU measured process asserts jax.devices()[0].platform == gpu and records device, source, target, input hashes and exact flags",
+    "Current manager CPU lease and core plan, explicit interpreter/PATH, 8GiB CPU scopes/noSwap, QUIET guard before CPU-heavy preparation",
+    "Sequencer invokes the exact launcher smoke through all phases, including registry schema, E41, native verifier, NVTX parser and output checker; GPU-only verdicts N/A on CPU",
+    "Disk floor 365GiB plus 8GiB planned peak headroom; post DISK-PLAN before allocation; abort safely below the floor",
+    "Secret-free child environment; raw Nsight files 0600 in the lane directory; query only known NVTX IDs with BLOB-byte bounds"
+  ],
+  "native_derivation": {
+    "OFF": "One correctly primed real-GPU donor at frozen candidate commit; native blobs and metadata sealed",
+    "MIN1_RUNTIME": "EXACTLY THE SAME donor bytes, including stored min5. Derive runtime metadata with runtime_meta.derive_runtime_meta; retain original compile fingerprint separately. No native recompile or stored208 edit",
+    "loader": "Two fresh processes, runtime XLA graph_min_graph_size=5 and1. Explicit ordinary aot_executable.load, ALL guards enabled, private variant providers. Automatic cheap-key/HLO aliasing FORBIDDEN; original cheap_key is provenance only",
+    "identity_gate": "Entire donor blob SHA identical per program; all ABI/source/target/kept_var_idx/options retained. Metadata changes only fingerprint.xla_flags for admitted runtime208 delta; other deltas refuse",
+    "coverage_gate": "Every numeric auxiliary/force-down program in measured real roots must have identical native coverage. One frozen actual PROD initial carry pack for both arms. Zero scored compiles. If complete explicit coverage is unavailable, STOP before timing; implement/review coverage rather than per-variant cold JIT fallback",
+    "runtime_scope": "Process-wide min1 also changes auxiliary graph partitions and possibly d01. Attribute those changes and measure auxiliary cost; a per-jit graph option is not a persistent reload selector",
+    "expected_partition": "d02 one WHILE graph under runtime min1, zero whole-program graphs under min5. Stored HLO208 / simulator STORED output is NOT runtime attestation",
+    "status": "CPU metadata/whole-blob preservation controls PASS; GPU loader/capture/bytes/performance unmeasured"
+  },
+  "sessions": [
+    {
+      "name": "PREP",
+      "cap_s": 1200,
+      "work": "Reuse the paid donor. If missing, a manager-approved separate cold-setup arm (<=3600s) primes OFF once, scans actual E41, and seals programs/tunes/output digests. Derivation, metadata and identity checks are CPU work outside the timed GPU path"
+    },
+    {
+      "name": "WARM_ABBAAB",
+      "cap_s": 1440,
+      "arms": [
+        "OFF_1",
+        "MIN1_RUNTIME_1",
+        "MIN1_RUNTIME_2",
+        "OFF_2",
+        "OFF_3",
+        "MIN1_RUNTIME_3"
+      ],
+      "per_arm_cap_s": 180,
+      "attestation": "Before scoring: one warm ordinary+radiation replay per variant, cap120s each, explicit NVTX3 labels HCB:d02:ordinary / HCB:d02:radiation / HCB:root. Attest loaded blobs and observed whole WHILE graph. Six warm arms <=180s each plus 120s safety margin; persist timings before profiling.",
+      "profiling": "Separate PROFILE session after the timed session; no export on the critical timing path",
+      "zero_warm_compiles": true
+    },
+    {
+      "name": "PROFILE",
+      "cap_s": 600,
+      "per_arm_cap_s": 180,
+      "arms": [
+        "N_OFF",
+        "N_MIN1_RUNTIME"
+      ],
+      "work": "One node-trace ordinary+radiation root per variant, explicit NVTX. Up to240s export/tail margin; CPU analysis after releasing lock"
+    }
+  ],
+  "metrics": {
+    "primary": "bench JSON median seg2-3 wall per root and host time per d02 call; ordinary and radiation disclosed separately",
+    "noise": "Interleaved per-variant A/A spread <=5%; otherwise INCONCLUSIVE",
+    "partition": "Actual graph IDs, graph launches, kernels and memcpy/memset graph nodes per own d02 step and root; host WhileThunks and DtoH/HtoD events",
+    "resources": "Own-PID VRAM peak, JAX live peak, RSS, executable readiness, auxiliary graph recording/update cost and whole-process wall",
+    "numerics": "Full file SHA equality then per-variable and metadata digests if any mismatch, terminal carry bytes and finite/census evidence; same-work manifests identical. GPU/GPU identity only, never WRF fidelity",
+    "accept": "Native identity and runtime partition attestation mandatory; >5% explained wall improvement or attributed device/host gain beyond noise; no >10% memory/readiness/auxiliary-cost regression without review. No speed conclusion from counts alone"
+  },
+  "cold_codegen_diagnosis_if_needed": {
+    "separate_from_speed_test": true,
+    "arms": [
+      "N5_A",
+      "N5_B_SAME_OPTIONS",
+      "N1_C"
+    ],
+    "per_arm_cap_s": 1500,
+    "separate_executable_caches": true,
+    "tunes": "Freeze actual OFF tuning results with content manifest and real lookup hit/miss evidence; require complete reuse, not directory equality. Record stored fusion-autotuner flag and every backend choice. Deviceless require-complete cannot certify the GPU-only fusion-autotuner stage",
+    "gate": "If N5_A != N5_B, the graph-size option is not necessary for native nondeterminism. Otherwise compare N1_C. Save first differing PTX function, instructions, fusion backend config, pass-before/pass-after dumps, native SHA and options before any raw cleanup. Bisect only the localized GPU pass. No numerical/performance gate weakening",
+    "status": "A later manager decision/window is required; original C2b binaries no longer exist"
+  },
+  "cleanup": "After last dependent native/partition/byte checks, remove only exact private derived/cache paths. Preserve compact receipts and first-difference excerpts. Never delete WRF cases or donor bundles"
+}

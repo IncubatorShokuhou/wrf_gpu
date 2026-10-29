@@ -1,0 +1,299 @@
+{
+  "scope": "Final CPU lane gates PASS; native checks are CPU CompileOnly prescreens, actual GPU qualification remains future",
+  "model_commit": "7c83a67469dd8dbbe18e6da69b4b93d6e0b68e28",
+  "gates": {
+    "parent_without_fence": {
+      "source_commit": "64894f9bd90aad6956cdda49d9a6ed35e7c7ed6f",
+      "domain": "d01",
+      "static_kwargs": {
+        "n_steps": 1,
+        "cadence": 33
+      },
+      "selected": {
+        "c_s": 0.25,
+        "diff_6th_factor": 0.12,
+        "dampcoef": 0.2,
+        "zdamp": 5000.0,
+        "w_alpha": 0.3,
+        "w_beta": 1.0,
+        "w_crit_cfl": 1.0
+      },
+      "traced_pallas_calls": 163,
+      "native_gate": "FAIL",
+      "max_stack_B": 288,
+      "kernels": 997,
+      "n_fusions": 1247,
+      "compiled_memory": {
+        "argument_size_in_bytes": 126946864,
+        "output_size_in_bytes": 114578436,
+        "temp_size_in_bytes": 466413336,
+        "alias_size_in_bytes": 114576964,
+        "generated_code_size_in_bytes": 0
+      },
+      "compile_s": 140.43469381899922,
+      "wall_s": 574.9593604860129,
+      "peak_rss_KiB": 6280788,
+      "oversized_nonleaf": 0,
+      "oversized_kinput": [],
+      "receipt_sha256": "f6b210e62b1ea35b0ce5b5125d33292d17e5fa458d9c3ad9aad450b4c0b2df3c",
+      "gate_sha256": "63a24a426bbf9eecab69775733f4e3c5571c3799f7211d58ef03beea82359778",
+      "artifact": "<USER_HOME>/wrf_gpu2_lanes/v05-diffusion/DL04"
+    },
+    "parent_final": {
+      "source_commit": "7c83a67469dd8dbbe18e6da69b4b93d6e0b68e28",
+      "domain": "d01",
+      "static_kwargs": {
+        "n_steps": 1,
+        "cadence": 33
+      },
+      "selected": {
+        "c_s": 0.25,
+        "diff_6th_factor": 0.12,
+        "dampcoef": 0.2,
+        "zdamp": 5000.0,
+        "w_alpha": 0.3,
+        "w_beta": 1.0,
+        "w_crit_cfl": 1.0
+      },
+      "traced_pallas_calls": 163,
+      "native_gate": "PASS",
+      "max_stack_B": 32,
+      "kernels": 998,
+      "n_fusions": 1248,
+      "compiled_memory": {
+        "argument_size_in_bytes": 126946864,
+        "output_size_in_bytes": 114578436,
+        "temp_size_in_bytes": 464619544,
+        "alias_size_in_bytes": 114576964,
+        "generated_code_size_in_bytes": 0
+      },
+      "compile_s": 196.44732291801483,
+      "wall_s": 480.1395349119848,
+      "peak_rss_KiB": 6251392,
+      "oversized_nonleaf": 0,
+      "oversized_kinput": [],
+      "receipt_sha256": "b267320dae9abbea52900fc23e89a17762e21009bfb2747c664960e5220950f7",
+      "gate_sha256": "8f97eadc7052eaeed3f16d0630be53a9b9460435ce578383781d2279d4fbe52e",
+      "artifact": "<USER_HOME>/wrf_gpu2_lanes/v05-diffusion/DL06"
+    },
+    "child_final": {
+      "source_commit": "7c83a67469dd8dbbe18e6da69b4b93d6e0b68e28",
+      "domain": "d02",
+      "static_kwargs": {
+        "n_steps": 3,
+        "cadence": 100
+      },
+      "selected": {
+        "c_s": 0.25,
+        "diff_6th_factor": 0.12,
+        "dampcoef": 0.2,
+        "zdamp": 5000.0,
+        "w_alpha": 0.3,
+        "w_beta": 1.0,
+        "w_crit_cfl": 1.0
+      },
+      "traced_pallas_calls": 153,
+      "native_gate": "PASS",
+      "max_stack_B": 32,
+      "kernels": 757,
+      "n_fusions": 934,
+      "compiled_memory": {
+        "argument_size_in_bytes": 347000848,
+        "output_size_in_bytes": 304317056,
+        "temp_size_in_bytes": 643027776,
+        "alias_size_in_bytes": 304315688,
+        "generated_code_size_in_bytes": 0
+      },
+      "compile_s": 153.42954713999643,
+      "wall_s": 462.2905061110214,
+      "peak_rss_KiB": 6343220,
+      "oversized_nonleaf": 0,
+      "oversized_kinput": [],
+      "receipt_sha256": "c85f6c9ed22428bc602449e4192369150def95b84b75a6246ff15451e673b84f",
+      "gate_sha256": "b6d8c5454650182f6ac29d2f6167fcdd845440691494598ca10fd82a8503321f",
+      "artifact": "<USER_HOME>/wrf_gpu2_lanes/v05-diffusion/DL07"
+    },
+    "off_identity": {
+      "measured": {
+        "base": {
+          "realpath": "<USER_HOME>/wrf_gpu2_lanes/v05-diffusion/snapshot",
+          "git_head": "75a5f95c17c901c6ac3296745724ce58093f6006",
+          "git_src_dirty": false,
+          "src_gpuwrf_content_sha256": "25f0b5cf0e763b16623d6d4e84776900d61d9ab3bfb650eb8aa6a4b338f8a06d"
+        },
+        "cand": {
+          "realpath": "<USER_HOME>/wrf_gpu2_lanes/v05-diffusion/candidate",
+          "git_head": "7c83a67469dd8dbbe18e6da69b4b93d6e0b68e28",
+          "git_src_dirty": false,
+          "src_gpuwrf_content_sha256": "a425ce5444d421a9546f8bf6476158138b7d2e9cf43a78e52c8fcc2eebdd6d4c"
+        }
+      },
+      "covered_programs": [
+        "root_d01_step",
+        "forcedown_d01_d02",
+        "child_d02_step"
+      ],
+      "checks": {
+        "canon_sha256": {
+          "base": null,
+          "cand": null,
+          "equal": true
+        },
+        "canon_consts_sha256": {
+          "base": null,
+          "cand": null,
+          "equal": true
+        },
+        "root_d01_step.raw_hlo_full_sha256": {
+          "equal": true,
+          "base": "10423ba3a36c692701ceff92d0cad117ccefbcaff630372436b7985d742c928b",
+          "cand": "10423ba3a36c692701ceff92d0cad117ccefbcaff630372436b7985d742c928b"
+        },
+        "root_d01_step.raw_hlo_sha256": {
+          "equal": true,
+          "base": "0d3599d96abf82e2e8033e53f9ce80e32569a6a838d17d3174008835faddc4ff",
+          "cand": "0d3599d96abf82e2e8033e53f9ce80e32569a6a838d17d3174008835faddc4ff"
+        },
+        "root_d01_step.triton_custom_calls": {
+          "equal": true,
+          "base": 156,
+          "cand": 156
+        },
+        "root_d01_step.n_kernel_bodies": {
+          "equal": true,
+          "base": 63,
+          "cand": 63
+        },
+        "root_d01_step.n_pallas_lowerings": {
+          "equal": true,
+          "base": 161,
+          "cand": 161
+        },
+        "root_d01_step.lowerings_by_name": {
+          "equal": true
+        },
+        "forcedown_d01_d02.raw_hlo_full_sha256": {
+          "equal": true,
+          "base": "47e5742acc14f0c687d03af12620793230a843d9ed1d4bcb4d504caec6735cc9",
+          "cand": "47e5742acc14f0c687d03af12620793230a843d9ed1d4bcb4d504caec6735cc9"
+        },
+        "forcedown_d01_d02.raw_hlo_sha256": {
+          "equal": true,
+          "base": "b39c4046b5a75ce73170e6a4f80814771cf9e1ba4e8073b40ad6ca01873e35d6",
+          "cand": "b39c4046b5a75ce73170e6a4f80814771cf9e1ba4e8073b40ad6ca01873e35d6"
+        },
+        "forcedown_d01_d02.triton_custom_calls": {
+          "equal": true,
+          "base": 7,
+          "cand": 7
+        },
+        "forcedown_d01_d02.n_kernel_bodies": {
+          "equal": true,
+          "base": 7,
+          "cand": 7
+        },
+        "forcedown_d01_d02.n_pallas_lowerings": {
+          "equal": true,
+          "base": 7,
+          "cand": 7
+        },
+        "forcedown_d01_d02.lowerings_by_name": {
+          "equal": true
+        },
+        "child_d02_step.raw_hlo_full_sha256": {
+          "equal": true,
+          "base": "f49f24f2d321477fc7105002586b5f6630f7d105ed981f6ab8abb7e7c47a4995",
+          "cand": "f49f24f2d321477fc7105002586b5f6630f7d105ed981f6ab8abb7e7c47a4995"
+        },
+        "child_d02_step.raw_hlo_sha256": {
+          "equal": true,
+          "base": "d62d81f108df6a306d83473bc52c075b74a89170a9ba005ea70d8bc696746651",
+          "cand": "d62d81f108df6a306d83473bc52c075b74a89170a9ba005ea70d8bc696746651"
+        },
+        "child_d02_step.triton_custom_calls": {
+          "equal": true,
+          "base": 142,
+          "cand": 142
+        },
+        "child_d02_step.n_kernel_bodies": {
+          "equal": true,
+          "base": 61,
+          "cand": 61
+        },
+        "child_d02_step.n_pallas_lowerings": {
+          "equal": true,
+          "base": 151,
+          "cand": 151
+        },
+        "child_d02_step.lowerings_by_name": {
+          "equal": true
+        },
+        "kernels_ttir_sha16": {
+          "equal": true,
+          "only_base": [],
+          "only_cand": []
+        },
+        "kernels_ttir_loc_sha16": {
+          "equal": true,
+          "only_base": [],
+          "only_cand": []
+        }
+      },
+      "verdict": "IDENTICAL",
+      "base": "<USER_HOME>/wrf_gpu2_lanes/v05-diffusion/ID01.json",
+      "cand": "<USER_HOME>/wrf_gpu2_lanes/v05-diffusion/ID02.json"
+    },
+    "operator_and_semantic_tests": {
+      "SC04": "6 PASS 6.23s; same JIT/keys, canonical REAL, zero",
+      "FW01": "1 PASS 210.41s actual production cfg forwarding",
+      "OR01": "2 PASS 359.42s pristine WRF advance_w + forwarding deletion mutant",
+      "POL01": "9 PASS 6.06s item7 admission/default policy",
+      "SC03B": "numeric AssertionError on deleted precomputed operand; setup-error SC03 excluded"
+    }
+  },
+  "cpu_full_root": {
+    "phase": "PASS",
+    "commit": "7c83a67469dd8dbbe18e6da69b4b93d6e0b68e28",
+    "harness_sha256": "fc3a021b17b8700f008a43cd8c2a07765f7c2bf00d6dcd3b28d9c9fdef442441",
+    "wall_s": 1344.930892356002,
+    "peak_rss_KiB": 15234216,
+    "default_byte_exact": true,
+    "changed_active": true,
+    "same_on_changed_keys": true,
+    "same_on_changed_chunk_cache_size": true,
+    "cpu_chunk_cache_size": {
+      "off": 2,
+      "on": 2,
+      "changed": 2
+    },
+    "leaves": {
+      "off": 355,
+      "on": 355,
+      "changed": 355
+    },
+    "own_steps": {
+      "off": {
+        "d01": 1,
+        "d02": 3
+      },
+      "on": {
+        "d01": 1,
+        "d02": 3
+      },
+      "changed": {
+        "d01": 1,
+        "d02": 3
+      }
+    },
+    "stepped_roots": {
+      "off": 1,
+      "on": 1,
+      "changed": 1
+    },
+    "changed_leaves": 101,
+    "receipt_sha256": "5bca5e0ce93ca9d2f11e18926f0a673cf359253ac02f5b7a3cc75e33507d274b",
+    "artifact": "<USER_HOME>/wrf_gpu2_lanes/v05-diffusion/CPU_ROOT01/receipt.json"
+  },
+  "gpu": "NOT_RUN",
+  "product_diffusion_policy": "REFUSED_UNCHANGED"
+}

@@ -192,12 +192,30 @@ def report_usage(domain, usage, sequential):
           f"({'sequential' if sequential else 'parallel'} domains)", file=sys.stderr, flush=True)
 
 
+def write_floor72(result, out):
+    """Explicit RW3 opt-in: preserve raw D6 and write the separate frozen A3 gate."""
+    # Also works when this script is loaded by file path by the gate tests.
+    import importlib.util
+    spec = importlib.util.spec_from_file_location("wn3_floor", ROOT / "scripts/wn3_floor.py")
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    floor = module.score_floor(result)
+    (out / "FLOOR72.json").write_text(json.dumps(floor, indent=2, allow_nan=False) + "\n")
+    result["binding72_A3"] = floor["binding72_A3"]
+    result["floor_reference"] = floor["C_reference"]
+    (out / "summary.json").write_text(json.dumps(result, indent=2) + "\n")
+    return floor["binding72_A3"] == "PASS"
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--cpu-dir", type=Path, required=True)
     parser.add_argument("--gpu-dir", type=Path, required=True)
     parser.add_argument("--out", type=Path, required=True)
     parser.add_argument("--hours", type=int, default=24, help="24 = release gate; shorter only for probes.")
+    parser.add_argument("--rw3-floor", action="store_true",
+                        help="WN3 0227 72 h only: apply the frozen A3 CPU-twin rule as a separate binding gate; "
+                             "raw D6 pass remains visible and output integrity is still required.")
     parser.add_argument("--domains", nargs="+", default=["d01", "d02", "d03"],
                         help="Domains to score (WN3: d01 d02 d03; e.g. d01 ... d09 for a 9-nest case).")
     parser.add_argument("--sequential-domains", action=argparse.BooleanOptionalAction, default=None,
@@ -205,6 +223,9 @@ def main():
                              "domains) instead of in parallel. "
                              "Results are identical; memory is one domain compare at a time.")
     args = parser.parse_args()
+    if args.rw3_floor and (args.hours != 72 or set(args.domains) != {"d01", "d02", "d03"}
+                          or len(args.domains) != 3):
+        parser.error("--rw3-floor requires --hours 72 and exactly d01 d02 d03")
     frames = args.hours + 1
     if args.sequential_domains is None:
         sequential = args.hours > 24 or len(args.domains) > 3
@@ -295,12 +316,14 @@ def main():
     (args.out / "resources.json").write_text(json.dumps(resources, indent=2) + "\n")
     print(f"[wn3_score] peak RSS: scorer {own} MiB, largest domain compare {max(children)} MiB, "
           f"bound {resources['peak_rss_bound_mib']} MiB ({resources['domain_mode']} domains)", file=sys.stderr, flush=True)
-    print(json.dumps({"pass": result["pass"], "domains": {d: v["pass"] for d, v in result["domains"].items()},
+    binding_pass = write_floor72(result, args.out) if args.rw3_floor else result["pass"]
+    print(json.dumps({"pass": result["pass"], "binding72_A3": result.get("binding72_A3"),
+                      "domains": {d: v["pass"] for d, v in result["domains"].items()},
                       "output_integrity_pass": result["output_integrity_pass"],
                       "missing_vs_cpu": {d: sorted(v["output_integrity"]["missing_variables_vs_cpu"]) for d, v in result["domains"].items()},
                       "degenerate": {d: sorted(v["output_integrity"]["degenerate_fields"]) for d, v in result["domains"].items()},
                       "global_frames_failing": {d: sorted(v["output_integrity"]["global_attrs"]["by_frame"]) for d, v in result["domains"].items()}}))
-    if not result["pass"] or not result["output_integrity_pass"]:
+    if not binding_pass or not result["output_integrity_pass"]:
         raise SystemExit(1)
 
 

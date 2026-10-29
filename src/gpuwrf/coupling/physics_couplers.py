@@ -2396,7 +2396,7 @@ def _mynn_column_uses_wrf_phy_prep(grid: GridSpec | None) -> bool:
 
 
 def _mynn_column_from_state(state: State, grid: GridSpec | None,
-                            passive_scalars: tuple[str, ...] = ()) -> MynnPBLColumnState:
+                            passive_scalars: tuple[str, ...] = (), cloudpdf: int = 2) -> MynnPBLColumnState:
     """Build the MYNN column-kernel input view from State (mass-point winds).
 
     The live WRF path stores theta_m in the model state when ``use_theta_m=1``,
@@ -2447,7 +2447,7 @@ def _mynn_column_from_state(state: State, grid: GridSpec | None,
         dz_columns,
         zeros,  # km (kernel output)
         zeros,  # kh (kernel output)
-        column(state.el_pbl) if _mynn_env_bool("GPUWRF_MYNN_TKEPROD_UP", False) else zeros,
+        column(state.el_pbl) if (_mynn_env_bool("GPUWRF_MYNN_TKEPROD_UP", False) or cloudpdf == 1) else zeros,
         qc=column(state.qc),
         qi=column(state.qi),
         qs=column(state.qs),
@@ -2456,7 +2456,16 @@ def _mynn_column_from_state(state: State, grid: GridSpec | None,
         ni=column(state.Ni) if _mynn_env_bool("GPUWRF_MYNN_QNI_MIXING",False) else None,
         # module_pbl_driver.F:1720-1722 QNC/QNWFA/QNIFA (raw scalar mixing ratios).
         passive={name: column(getattr(state, name)) for name in passive_scalars} or None,
+        **{name: column(getattr(state, name)) for name in _cloudpdf_column_leaves(cloudpdf)},
     )
+
+
+def _cloudpdf_column_leaves(cloudpdf: int) -> tuple[str, ...]:
+    return ("tsq", "cov") if cloudpdf == 0 else ("sh3d",) if cloudpdf == 1 else ()
+
+
+def _mynn_cloudpdf_kwargs(cloudpdf: int) -> dict:
+    return {} if cloudpdf == 2 else {"cloudpdf": cloudpdf}
 
 
 def _add_a2c_u_increment(u_face: jax.Array, du_mass: jax.Array) -> jax.Array:
@@ -2582,6 +2591,9 @@ def _state_from_mynn_output(
         el_pbl=_from_columns(out.el).astype(state.el_pbl.dtype),
         **{name: jnp.asarray(getattr(out, name), dtype=getattr(state, name).dtype)
            for name in ("maxmf", "maxwidth", "ztop_plume")},
+        **{name: _from_columns(getattr(out, name)).astype(getattr(state, name).dtype)
+           for name in ("tsq", "cov", "sh3d")
+           if getattr(out, name) is not None and getattr(state, name) is not None},
     )
     if state.cam_kvh3d is not None:
         from gpuwrf.physics.cammg.pbl import retain_columns
@@ -2642,6 +2654,7 @@ def _mynn_coldstart_init_columns_tiled(
     alp1=None,
     initialize_qke=None,
     return_moments: bool = False,
+    return_cloudpdf_moments: bool = False,
 ) -> tuple[jax.Array, jax.Array]:
     """Run WRF MYNN cold-start QKE over bounded column tiles.
 
@@ -2654,7 +2667,9 @@ def _mynn_coldstart_init_columns_tiled(
 
     if initialize_qke is not None or return_moments:
         return _mynn_cycling_init_columns_tiled(column_b, ust_b, dx, xland_b,
-            rmol_init=rmol_init, initialize_qke=initialize_qke, return_moments=return_moments, **({} if alp1 is None else {"alp1": alp1}))
+            rmol_init=rmol_init, initialize_qke=initialize_qke, return_moments=return_moments,
+            **({"return_cloudpdf_moments": True} if return_cloudpdf_moments else {}),
+            **({} if alp1 is None else {"alp1": alp1}))
     profile = jnp.asarray(column_b.theta)
     tiling_active = (
         _MYNN_COLUMN_TILING
@@ -2715,13 +2730,16 @@ def _mynn_coldstart_init_columns_tiled(
 
 
 def _mynn_cycling_init_columns_tiled(column_b, ust_b, dx, xland_b, *, rmol_init,
-                                    initialize_qke, return_moments, alp1=None):
+                                    initialize_qke, return_moments, alp1=None,
+                                    return_cloudpdf_moments=False):
     """The optional init mask/moments share the established bounded tile size."""
     profile = jnp.asarray(column_b.theta)
+    cloudpdf_kw = {"return_cloudpdf_moments": True} if return_cloudpdf_moments else {}
     tile_cols = int(_MYNN_COLUMN_TILE_COLS)
     if profile.ndim != 2 or not _MYNN_COLUMN_TILING or tile_cols <= 0 or profile.shape[0] <= tile_cols:
         return mynn_coldstart_init_columns(column_b, ust_b, dx, xland_b, rmol_init=rmol_init,
-            initialize_qke=initialize_qke, return_moments=return_moments, **({} if alp1 is None else {"alp1": alp1}))
+            initialize_qke=initialize_qke, return_moments=return_moments, **cloudpdf_kw,
+            **({} if alp1 is None else {"alp1": alp1}))
     ncol, nz = profile.shape
     n_tiles = (ncol + tile_cols - 1) // tile_cols
     padded = n_tiles * tile_cols
@@ -2733,12 +2751,15 @@ def _mynn_cycling_init_columns_tiled(column_b, ust_b, dx, xland_b, *, rmol_init,
     init = (jnp.zeros((padded,nz), profile.dtype), jnp.zeros((padded,), profile.dtype))
     if return_moments:
         init += (jnp.zeros((padded,nz), profile.dtype), jnp.zeros((padded,nz), profile.dtype))
+    if return_cloudpdf_moments:
+        init += tuple(jnp.zeros((padded,nz), profile.dtype) for _ in range(3))
     def body(carry, index):
         start = index * tile_cols
         take = lambda arr: _slice_columns_leaf(arr, start, tile_cols, padded)
         values = mynn_coldstart_init_columns(jax.tree_util.tree_map(take, padded_column),take(ust_pad),dx,take(land_pad),
             rmol_init=None if rmol_pad is None else take(rmol_pad),
             initialize_qke=None if mask_pad is None else take(mask_pad), return_moments=return_moments,
+            **cloudpdf_kw,
             **({} if alp1 is None else {"alp1": alp1}))
         return tuple(_scatter_columns_leaf(old,new,start) for old,new in zip(carry,values)), None
     result, _ = jax.lax.scan(body, init, jnp.arange(n_tiles,dtype=jnp.int32))
@@ -2762,6 +2783,7 @@ def mynn_adapter(
     cycling: bool = False,
     passive_scalars: tuple[str, ...] = (),
     sqfac=None, mynn_coefficients=None,
+    cloudpdf: int = 2,
 ) -> State:
     """Advance the MYNN PBL using the surface fluxes ``surface_adapter`` wrote.
 
@@ -2780,13 +2802,14 @@ def mynn_adapter(
         state, grid, first_timestep, restart=restart, cycling=cycling,
         **({} if mynn_coefficients is None or "alp1" not in mynn_coefficients else {"alp1": mynn_coefficients["alp1"]})
     )
-    column = _mynn_column_from_state(state, grid, passive_scalars)
+    column = _mynn_column_from_state(state, grid, passive_scalars, cloudpdf)
     surface = _surface_fluxes_from_state(state, grid)
     ny, nx = column.theta.shape[0], column.theta.shape[1]
     column_b = _flatten_columns_to_batch(column, ny, nx)
     surface_b = _flatten_columns_to_batch(surface, ny, nx)
     out_b, pblh_b = step_mynn_pbl_column_with_pblh(
         column_b, dt, debug=False, surface=surface_b, edmf=_MYNN_EDMF, dx=_mynn_dx(grid),
+        **_mynn_cloudpdf_kwargs(cloudpdf),
         **({} if sqfac is None else {"sqfac": sqfac}),
         **({} if mynn_coefficients is None else {"mynn_coefficients": mynn_coefficients})
     )
@@ -2807,6 +2830,7 @@ def _with_mynn_pblh(state: State, pblh_b) -> State:
 def mynn_coldstart_qke_from_state(
     state: State, grid: GridSpec | None = None, rmol_init=None,
     *, initialize_qke=None, return_moments: bool = False, alp1=None,
+    return_cloudpdf_moments: bool = False,
 ) -> jax.Array:
     """WRF MYNN first-call cold-start qke initialization from ``State``.
 
@@ -2832,6 +2856,10 @@ def mynn_coldstart_qke_from_state(
     if initialize_qke is not None or return_moments:
         optional = {"initialize_qke": None if initialize_qke is None else jnp.asarray(initialize_qke).reshape(ny*nx),
                     "return_moments": return_moments}
+    if return_cloudpdf_moments:
+        if not return_moments:
+            raise ValueError("cloudpdf moments require return_moments=True")
+        optional["return_cloudpdf_moments"] = True
     ust_b = jnp.asarray(state.ustar, dtype=dtype).reshape(ny * nx)
     xland_b = jnp.asarray(state.xland, dtype=dtype).reshape(ny * nx)
     rmol_b = None if rmol_init is None else jnp.asarray(rmol_init, dtype=dtype).reshape(ny * nx)
@@ -2851,7 +2879,8 @@ def mynn_coldstart_qke_from_state(
     qke_b, _pblh = initialized[:2]
     if return_moments:
         return tuple(_from_columns(_unflatten_batch_to_columns(value, ny, nx))
-                     for value in (qke_b, initialized[2], initialized[3]))
+                     for value in ((qke_b, *initialized[2:]) if return_cloudpdf_moments
+                                   else (qke_b, initialized[2], initialized[3])))
     return _from_columns(_unflatten_batch_to_columns(qke_b, ny, nx))
 
 
@@ -2884,6 +2913,25 @@ def _mynn_state_with_first_call_qke(
         raise TypeError("MYNN cycling lifecycle flag must be a Python bool")
     if restart:
         return state
+
+    cloudpdf_names = tuple(name for name in ("tsq", "cov", "sh3d") if getattr(state, name, None) is not None)
+    if cloudpdf_names:
+        if cycling:
+            raise ValueError("cloudpdf optional moments with cycling are not qualified")
+        names = ("qke", "el_pbl", "qsq", *cloudpdf_names)
+        current = tuple(getattr(state, name) for name in names)
+        def cloudpdf_seed(_unused):
+            values = mynn_coldstart_qke_from_state(state, grid, return_moments=True,
+                return_cloudpdf_moments=True, **({} if alp1 is None else {"alp1": alp1}))
+            moments = dict(zip(("qke", "el_pbl", "qsq", "tsq", "cov", "sh3d"), values, strict=True))
+            return tuple(moments[name].astype(old.dtype) for name, old in zip(names, current, strict=True))
+        if isinstance(first_timestep, bool):
+            if not first_timestep:
+                return state
+            values = cloudpdf_seed(None)
+        else:
+            values = jax.lax.cond(jnp.asarray(first_timestep, bool), cloudpdf_seed, lambda _: current, None)
+        return state.replace(**dict(zip(names, values, strict=True)))
 
     qke_live = jnp.asarray(state.qke)
 
@@ -2958,6 +3006,7 @@ def mynn_adapter_with_source_leaves(
     mix_tracers: bool = False,
     passive_scalars: tuple[str, ...] = (),
     sqfac=None, mynn_coefficients=None,
+    cloudpdf: int = 2,
 ) -> MynnPBLSourceLeaves:
     """Advance MYNN and expose raw WRF MYNN source tendencies.
 
@@ -2973,7 +3022,7 @@ def mynn_adapter_with_source_leaves(
         state, grid, first_timestep, restart=restart, cycling=cycling,
         **({} if mynn_coefficients is None or "alp1" not in mynn_coefficients else {"alp1": mynn_coefficients["alp1"]})
     )
-    column = _mynn_column_from_state(state, grid, passive_scalars)
+    column = _mynn_column_from_state(state, grid, passive_scalars, cloudpdf)
     if spp_pattern is not None:
         column = column.replace(spp_pattern=jnp.moveaxis(spp_pattern, 0, -1))
     surface = _surface_fluxes_from_state(state, grid)
@@ -2982,6 +3031,7 @@ def mynn_adapter_with_source_leaves(
     surface_b = _flatten_columns_to_batch(surface, ny, nx)
     out_b, pblh_b = step_mynn_pbl_column_with_pblh(
         column_b, dt, debug=False, surface=surface_b, edmf=_MYNN_EDMF, dx=_mynn_dx(grid),
+        **_mynn_cloudpdf_kwargs(cloudpdf),
         **({} if sqfac is None else {"sqfac": sqfac}),
         **({} if mynn_coefficients is None else {"mynn_coefficients": mynn_coefficients})
     )

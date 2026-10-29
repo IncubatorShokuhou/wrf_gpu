@@ -89,6 +89,7 @@ PHYSICS_KNOBS: dict[str, type] = {
     'cu_rad_feedback': bool,
     'icloud': int,
     'icloud_bl': int,
+    'bl_mynn_cloudpdf': int,
     'cu_diag': int,
     'kfeta_trigger': int,
     'shcu_aerosols_opt': int,
@@ -335,6 +336,9 @@ def namelist_value(wrf_namelist: Mapping[str, Any], key: str, domain: str) -> An
 def bound_options(wrf_namelist: Mapping[str, Any], domain: str) -> dict[str, Any]:
     """Explicit scheme + dynamics values of ``domain`` to bind (absent keys omitted)."""
 
+    raw_pdf = (wrf_namelist.get("physics") or {}).get("bl_mynn_cloudpdf")
+    if isinstance(raw_pdf, (list, tuple)) and len(raw_pdf) != 1:
+        raise NamelistNotHonouredError(["bl_mynn_cloudpdf is one scalar shared by all domains"])
     pbl = namelist_value(wrf_namelist,'bl_pbl_physics',domain)
     lsm = namelist_value(wrf_namelist,'sf_surface_physics',domain)
     if pbl is not None and int(pbl)==4 and lsm is not None and int(lsm) in (1,2,7):

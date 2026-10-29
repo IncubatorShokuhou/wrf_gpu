@@ -1,5 +1,8 @@
 # Tune WRF for your region
 
+Optimizer runs stop after every iteration/rung for external review. See
+[wave reports, exact resume, registry and budgets](optimizer-waves.md).
+
 Start with a prepared WRF case and a question you can check against observations:
 for example, whether afternoon winds are too strong at exposed sites or nights
 are too cold in a valley. Keep the original case as your control. The steps below
@@ -350,7 +353,10 @@ all others load it (the result's `program` block checks this from every member's
   `result.json` reports both (normalised misfit, RMSE and bias per variable), the estimate, the final ensemble,
   the misfit per iteration and the control files of prior and posterior (usable with `gpuwrf run --surface-controls`).
 
-Budget: `members × iterations × training dates + 2 × all dates` (+ all dates for a twin) case-hours.
+Budget: `(members × iterations + sensitivity probes) × training dates + 2 × all dates`
+(+ all dates for a twin), multiplied by forecast hours. The shared prior/control is counted once;
+two interior parameters add four sensitivity probes per training date. See
+[identifiability before EKI](#identifiability-before-eki) for rank checks and frozen directions.
 `plan`, `run`, `--resume`, `--chunk-minutes`, `--max-parallel`, `--bundle` and the admission rules work as for
 discrete studies (members of one program: one cold member, then warm batches). `score` is discrete-only.
 ALISIOS data roots are refused for every input, the study file included: its real path is checked before the
@@ -394,6 +400,11 @@ supplied forecasts ran the labelled physics. The `run` workflow prepares and rec
 actual private namelists instead.
 
 ## Objectives, support and uncertainty
+
+For MSG3 cloud occurrence, both discrete selection and continuous EKI use the
+[cloud objective and footprint contract](optimize_clouds.md). This is a separate
+single-objective scorer with an admitted facade truth copy and frozen daylight
+scope; it does not use station CSVs.
 
 Objectives: `T2` (degC, temperature errors also K), `WS10` (scalar speed m/s),
 `precip` (total precipitation rate mm/h) and `solar` (instantaneous downward
@@ -470,3 +481,175 @@ not retained full forecast grids. Grid readers stream frames; input hashing and
 NetCDF reads have CPU/disk cost. Bootstrap computations operate on station rows.
 Actual execution memory/compile cost is that of the admitted physics and existing
 batch launcher; this feature makes no new GPU speed or memory claim.
+
+## Joint objectives and reference/control screening
+
+Use [`gpuwrf optimize assess`](optimizer_multiobjective.md) to score aligned
+cloud, wind, T2 and RH exports and produce a JSON/Markdown impact matrix with
+paired point/region tests against both a supplied reference forecast and the
+control. Its admissibility flag must accompany the joint score in wave selection.
+
+## Cloud parameters in continuous EKI
+
+Continuous studies also accept scalar `control` names of the form
+`thompson_parameters.nt_c` or `mynn_parameters.alp1`. Multipliers act on the
+WRF default in the table below. They are positive log-space EKI parameters;
+`bounds` are multiplier limits containing 1. Runtime-only studies omit `basis`.
+Surface and runtime controls may be combined; surface controls still need their
+usual basis. Module constants require `classes: "all"` and the same value on
+every run domain (the default domain selection for runtime parameters).
+
+| Control suffix | WRF default | Admitted scalar range | Unit | WRF provenance |
+|---|---:|---:|---|---|
+| `thompson_parameters.nt_c` | 100e6 | 2..1999e6 | m⁻³ | module_mp_thompson:88; fixed mp8 droplet number |
+| `thompson_parameters.tno` | 5 | 2.5..10 | m⁻³ | :188/2625; Cooper ice-number prefactor |
+| `thompson_parameters.ato` | 0.304 | 0.152..0.608 | K⁻¹ | :189/2625; Cooper temperature exponent |
+| `thompson_parameters.av_c` | 31694600 | 15847300..63389200 | m⁻¹ s⁻¹ | :163/3661; cloud-droplet fall speed |
+| `mynn_parameters.sqfac` | 3 | finite REAL32 ≥0 | 1 | module_bl_mynnedmf:305/3037; Kq/Km |
+| `mynn_parameters.alp1` | 0.23 | finite REAL32 ≥0 | 1 | :1761; CASE(1) mixing length |
+| `mynn_parameters.cphm_unst` | 16 | finite REAL32 ≥0 | 1 | :275/7724; unstable phi_m |
+| `mynn_parameters.am_st` | 6.1 | finite REAL32 ≥0 | 1 | :7712; stable phi_m |
+| `mynn_parameters.entrainment` | 0.33 | finite REAL32 ≥0 | m s⁻¹ | :6136; EDMF entrainment numerator |
+
+All nine use the **same compiled program when only values change**, with fixed
+selected names, shapes, dtypes, geometry, flags and physics. Enabling a family
+or changing its selected names requires another key and may cold-compile once.
+The initial EKI multiplier range is 0.5..2; explicit ranges must remain inside
+the scalar admission envelope. Log-space bounds contain positive multipliers;
+expanded operands are rounded to REAL32 by the public binder. MYNN overrides are
+**experimental**: short component/two-domain evidence does not establish
+three-nest, 24–72 h drift or station skill. See [runtime parameter scope](runtime-parameters.md)
+and [Thompson admission](thompson-parameters.md).
+
+For example, replace the parameter list of a continuous study with:
+
+```json
+{
+  "parameters": [
+    {"name": "droplets", "control": "thompson_parameters.nt_c", "bounds": [0.5, 2]},
+    {"name": "length", "control": "mynn_parameters.alp1", "bounds": [0.5, 2]}
+  ],
+  "cloud_arm": {"icloud": 3, "icloud_bl": 1, "bl_mynn_cloudpdf": 2}
+}
+```
+
+Keep the usual cases, stations, scorer, configuration, EKI and budget fields.
+`gpuwrf optimize plan --study STUDY.json --output PLAN.json` checks the complete
+study on the CPU without a model run. Each forecast member receives its own
+SHA-bound `runtime_parameters.json`, passed through the ensemble launcher as
+`--runtime-parameters`. The runtime binder remains the authority for native-path
+requirements. A normal model restart requires unchanged parameter values.
+`result.json` exports SHA-bound prior/posterior parameter-file identities under
+`runtime_parameters`; pass that file to `gpuwrf run --runtime-parameters`.
+
+`cloud_arm` is **discrete**, one static selection per study. Run separate studies
+for the other arms, each with its own output directory and forecast budget:
+`icloud=0/1/2/3` selects clear/cloud-default/cal_cldfra2/cal_cldfra3 respectively.
+`cal_cldfra3` is `icloud=3`, not a second switch. These arms use different keys
+and may each require a cold program; values are never EKI interpolation targets.
+The optimizer applies the existing RRTMG/microphysics/cumulus admission matrix.
+The optimizer's admitted MYNN PDF arm is CASE(2); `bl_mynn_cloudpdf=2` is forwarded
+through main's bound namelist field, overriding an inherited variant. Existing bound `icloud_bl=0/1`
+and `bl_mynn_edmf=0/1` branches are exposed as static arms, subject to the existing
+MYNN admission. Entrainment is refused with EDMF off. PDF CASE(0/1) remain refused
+pending the separate MYNN-options lane; no new kernel is implemented here.
+Explicit MYNN arms require PBL 5. A requested `icloud` arm that WRF would reset
+to 1 under `cu_physics=11` is refused, so an ignored selection is not reported
+as a separate physical experiment.
+
+| Discrete knob | Optimizer admission | Unit / provenance | Compile behavior |
+|---|---|---|---|
+| `icloud` | 0, 1, 2, 3; existing scheme restrictions apply | integer WRF radiation_driver selection, :1309–1508 | Static namelist key per selection |
+| `icloud_bl` | 0, 1 | integer WRF radiation_driver MYNN SGS-cloud merge, check_a_mundo:1802–1820 | Static namelist key per selection |
+| `bl_mynn_edmf` | 0, 1; MYNN only | integer WRF Registry MYNN mass-flux selection | Static namelist key per selection |
+| `bl_mynn_cloudpdf` | 2 | integer WRF mym_condensation CASE(2), module_bl_mynnedmf:3425 onward | Sole current kernel variant; explicit 2 records provenance; 0/1 need new programs |
+
+The cloud scorer and WN3 constraints use the ALISIOS format contract: MSG3
+`times/cloud/lat/lon`, codes 0/1/255, exact UTC matching and an explicit day mask;
+centre-assignment footprints in EPSG:6933 weighted by `DX*DY/MAPFAC_M²`; WN3
+references are canonical Parquet with role, statistic, interval and availability.
+These inputs belong to the scorer, not the parameter files. The FORMAT_ONLY
+package is parser evidence only. Real inputs require manager admission and
+`alisios_guard.facade_stage`; an unavailable reference cannot establish success.
+The existing continuous station scorer remains t2/wind until the cloud-scorer
+and multiobjective integration is supplied by their lanes.
+
+### Identifiability before EKI
+
+Every continuous study starts with **at most two active parameters**, including
+surface controls. Screen families in separate studies; never search all nine
+soil controls together. Before the first ensemble update, the optimizer runs
+the prior/control and bounded ± log perturbations on training dates. Each
+family's null branch uses the shared control with all selected multipliers at
+1 (WRF defaults). This keeps the family enabled and does not assert numerical
+identity to the program without an override file. Discrete physics arms remain
+separate studies.
+
+The default `identifiability` settings are `step_log: 0.1`, `rank_rtol: 1e-6`,
+`collinearity_cos: 0.99`. They describe a numerical sensitivity screen, not a
+regional-skill gate. Explicit settings are recorded in the plan and report.
+Perturbations stay within the declared bounds; at a bound of 1 the control
+replaces the unavailable side. Probe forecasts are charged to the plan's
+case-hour budget, in addition to EKI/evaluation. Two interior parameters add
+four probes per training date; the prior/control was already in the budget.
+
+`identifiability.json` records the response matrix divided by the admitted
+observation errors, singular values, rank, near-collinear columns, bounds and
+prior, the admitted physics/nest tuple, and the actual probe receipts (wall,
+RSS, VRAM and warm/cold state). It also records elapsed preflight time for the
+invocation that completed it; receipt totals persist on resume. Missing compile
+breakdowns remain unknown. A completed report is checked before reuse on resume.
+
+Unobservable singular directions stay at prior=0 before and after every EKI
+update. If projection leaves the parameter box, the vector shrinks toward the
+prior, preserving the frozen null space. Rank zero skips EKI forecasts and
+keeps the control. This is local identification evidence at the prior, not proof
+of identification under wrong forcing or a different scheme. The real-station
+twin and forcing/schema contrasts need their separately admitted inputs.
+
+Raw `msg3:` pixel rows are refused at study admission, before case/model work.
+Use the cloud scorer's admitted superobservations by region/correlation length
+as the default operator. The guard recognizes `ENSEMBLE_SPACE_UPDATE`: backend
+capacity alone does not admit native vectors while the ALISIOS correlation
+length/operator contract is unset. Covariance labeling alone does not bypass
+this guard. A diagonal observation-error vector is not a
+correlation model. Pixel hit/FSS scores remain process checks, not extra
+independent observations. The current station scorer accepts t2/wind only.
+Superobservations also need the admitted ALISIOS correlation length in the cloud
+operator; a region label alone does not establish admission.
+
+### Missing kernel controls
+
+Estimates below are inferred lane-days including CPU oracle/wiring work, with
+GPU qualification scheduled separately. They are scoped work estimates, not
+performance claims. Every listed control is currently refused by the optimizer.
+The pending MYNN scalars below have unit 1 and no admitted runtime range. The
+eight PDF constants come from `mym_condensation` CASE(2), WRF
+`module_bl_mynnedmf.F:3425–3434`; `cf_thresh` is the DMP shallow-cloud overwrite
+threshold at :5741. Their fixed source defaults are shown for provenance.
+
+| Missing control | Remaining work / estimated effort |
+|---|---|
+| `bl_mynn_cloudpdf=0` | Separate MYNN-options lane; implement/wire CASE(0); 2–3 days shared with CASE(1) |
+| `bl_mynn_cloudpdf=1` | Separate MYNN-options lane; implement/wire CASE(1); 2–3 days shared with CASE(0) |
+| PDF `qlim_sfc` (0.007) | New traced variance floor in condensation and native path; 0.5–1 day shared PDF scalar bundle |
+| PDF `qlim_pbl` (0.020) | New traced variance floor in condensation and native path; 0.5–1 day shared PDF scalar bundle |
+| PDF `qlim_trp` (0.025) | New traced variance floor in condensation and native path; 0.5–1 day shared PDF scalar bundle |
+| PDF `clim_sfc` (0.010) | New traced cloud-fraction variance floor; 0.5–1 day shared PDF scalar bundle |
+| PDF `clim_pbl` (0.025) | New traced cloud-fraction variance floor; 0.5–1 day shared PDF scalar bundle |
+| PDF `clim_trp` (0.030) | New traced cloud-fraction variance floor; 0.5–1 day shared PDF scalar bundle |
+| PDF `rhcrit` (0.83) | Replace baked threshold and derived constants with traced dependencies; 0.5–1 day shared PDF scalar bundle |
+| PDF `rhmax` (1.10) | Trace upper RH threshold through legacy/native consumers; 0.5–1 day shared PDF scalar bundle |
+| DMP `cf_thresh` (0.5) | Trace condensate decision threshold through consumers; 0.5–1 day shared cloud scalar bundle |
+| Thompson `av_i` | Existing low-level CPU work; runtime GPU/E41/cost admission still missing; 0.5–1 day qualification |
+| Thompson `av_r` | Existing low-level CPU work; runtime GPU/E41/cost admission still missing; 0.5–1 day qualification |
+| Thompson `autoconversion_threshold` | Existing low-level CPU work; runtime GPU/E41/cost admission still missing; 0.5–1 day qualification |
+| Thompson `autoconversion_rate` | Existing low-level CPU work; runtime GPU/E41/cost admission still missing; 0.5–1 day qualification |
+
+`ccn_conc` has no Thompson mp8 consumer and is not an alias for `nt_c`.
+Diffusion/`c_s` parameter overrides remain refused until their GPU gate closes.
+This optimizer change adds host-side JSON and copies a few scalars per member;
+it adds no timestep arithmetic, kernel launches, device synchronization or model
+arrays. CPU key/HLO evidence covers scalar plumbing, including full constant
+payloads; existing family GPU evidence carries only at its documented scope.
+New whole-forecast speed, peak VRAM and RSS are unmeasured.

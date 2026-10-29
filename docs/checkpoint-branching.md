@@ -69,6 +69,9 @@ selection, compression, history cadence or effective writer settings is an
 undeclared change and refuses. Branches create their own history journal;
 ordinary resume continues the existing journal. Branching does not waive
 source, static namelist, runtime table or output-policy identity checks.
+Ordinary `--resume-checkpoint` needs the parent's `--checkpoint-dir` including
+its `history-<stream>/owner.json` and journal receipts; copying only generation
+directories is insufficient, and `--branch-from` is the route to a new directory.
 
 `--minutes` and `--end-time` are alternatives to `--hours`:
 

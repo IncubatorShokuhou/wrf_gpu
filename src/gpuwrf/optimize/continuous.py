@@ -1,7 +1,7 @@
 """Continuous parameters for ``gpuwrf optimize`` (schema ``gpuwrf.optimize.continuous.v1``, EXPERIMENTAL, opt-in).
 
 Ensemble Kalman inversion (``surface_params.eki``: Tikhonov EKI, host fp64, tempered dt = 1/iterations) over the
-Track P traced Noah-MP surface controls and the host ``ctopo`` control, inside ONE released/admitted physics
+Track P traced Noah-MP surface controls, host ``ctopo`` and admitted cloud runtime scalars, inside ONE released/admitted physics
 configuration. Every member is an ordinary ensemble-launcher case whose input directory holds its own control file
 (``surface_controls.npz``, passed as ``--surface-controls``): the controls ride traced inputs (``ctopo`` replaces the
 value of an already traced namelist child), so every member, iteration, the twin truth and the held-out prior and
@@ -23,6 +23,7 @@ on every training and held-out case. Design notes: lane w41-optcont (.agent/kern
 from __future__ import annotations
 
 import copy
+from contextlib import nullcontext
 import json
 import math
 from pathlib import Path
@@ -121,8 +122,9 @@ def basis_current(basis, manifest, used):
                              "(gpuwrf surface-params basis) with the tables the members run")
 
 
-def _parameters(raw, manifest):
+def _parameters(raw, manifest, run_domains=("d01",)):
     from gpuwrf.surface_params.controls import ALL_CONTROLS, HOST_CONTROLS
+    from .cloud_controls import is_runtime, parameter
 
     if not isinstance(raw, list) or not raw:
         raise ValueError("parameters must be a nonempty list")
@@ -136,6 +138,11 @@ def _parameters(raw, manifest):
         name, control = item["name"], item["control"]
         if not isinstance(name, str) or not _ID.fullmatch(name):
             raise ValueError("parameter names must be safe identifiers")
+        if is_runtime(control):
+            value = parameter(item, run_domains)
+            value["prior_sd_log"] = _finite_positive(item.get("prior_sd_log", 0.5), f"{name} prior_sd_log")
+            out.append(value)
+            continue
         if control not in ALL_CONTROLS:
             raise ValueError(f"unknown control {control!r}; known: {sorted(ALL_CONTROLS)}")
         classes = item.get("classes", "all")
@@ -171,6 +178,8 @@ def _parameters(raw, manifest):
             if a["control"] == b["control"] and set(a["domains"]) & set(b["domains"]) and (
                     a["classes"] == "all" or b["classes"] == "all" or set(a["classes"]) & set(b["classes"])):
                 raise ValueError(f"parameters {a['name']} and {b['name']} scale the same cells of {a['control']}")
+    if len(out) > 2:
+        raise ValueError("start with at most two active continuous parameters; screen families separately")
     return out, used
 
 
@@ -228,6 +237,8 @@ def _feasible_bounds(basis, manifest, parameters):
             return False
 
     for parameter in parameters:
+        if "runtime" in parameter:
+            continue
         lowest, highest = feasible_factors(basis, manifest, parameter)
         # REAL rounding can push the analytic edge itself out of bounds (1.1 m x 5/1.1 -> 5.0000001 m): step inside
         if math.isfinite(highest) and not valid(parameter, highest):
@@ -253,8 +264,19 @@ def _feasible_bounds(basis, manifest, parameters):
 
 
 def _scorer(raw, parameters, resolve):
+    if isinstance(raw, dict) and raw.get("kind") == "cloud":
+        from .cloud import guard_observations, load_config, require_correlation_contract
+        if not {"kind", "cloud", "sigma"} <= set(raw) or set(raw)-{"kind", "cloud", "sigma", "observation_operator"}:
+            raise ValueError("cloud scorer takes kind, cloud config, sigma and optional operator")
+        operator = raw.get("observation_operator", "superobservations")
+        guard_observations(0, operator)
+        require_correlation_contract(None, operator)  # before truth/model payloads or forecasts
+        config = load_config(raw["cloud"], resolve)
+        require_correlation_contract(config, operator)
+        return {"kind": "cloud", "variables": ["cloud"], "cloud": config, "observation_operator": operator,
+                "sigma": {"cloud": _finite_positive(raw["sigma"], "cloud sigma")}}
     if not isinstance(raw, dict) or raw.get("kind") not in ("stations", "twin"):
-        raise ValueError("scorer must be {kind: stations|twin, ...}")
+        raise ValueError("scorer must be {kind: stations|twin|cloud, ...}")
     variables = raw.get("variables")
     if isinstance(variables, list) and any(v in INTERVAL_VARIABLES for v in variables):
         raise ValueError(f"scorer variables {INTERVAL_VARIABLES} are not supported by continuous studies yet: accumulated "
@@ -301,7 +323,7 @@ def load_continuous(path, *, text=None):
                                           validate_operational_namelist)
     from gpuwrf.surface_params.cli import load_basis
 
-    from . import released
+    from . import released, identifiability
     from .study import _candidates, forecast_inputs, model_digest, record_signature, _geometry
 
     path = Path(path).resolve(strict=True)
@@ -310,7 +332,7 @@ def load_continuous(path, *, text=None):
     if raw.get("schema") != SCHEMA or not str(raw.get("region", "")).strip():
         raise ValueError(f"study requires schema {SCHEMA} and a region")
     allowed = {"schema", "region", "hours", "budget_case_hours", "test_start", "cases", "configuration", "admission",
-               "e41", "basis", "parameters", "eki", "scorer", "stations", "sampling"}
+               "e41", "basis", "parameters", "eki", "scorer", "stations", "sampling", "cloud_arm", "identifiability"}
     if set(raw) - allowed:
         raise ValueError(f"unknown study keys {sorted(set(raw) - allowed)}")
     resolve = lambda p: (path.parent/str(p)).resolve(strict=True)  # noqa: E731
@@ -323,12 +345,19 @@ def load_continuous(path, *, text=None):
     if split != split.normalize():
         raise ValueError("test_start must be a UTC date")
     case_dirs = [resolve(item["input_dir"]) for item in raw.get("cases", [])]
-    stations, basis_path = resolve(raw["stations"]), resolve(raw["basis"])
     scorer_raw = raw.get("scorer") or {}
+    stations = None if scorer_raw.get("kind") == "cloud" else resolve(raw["stations"])
+    basis_path = resolve(raw["basis"]) if "basis" in raw else None
     observations = [resolve(scorer_raw["observations"])] if scorer_raw.get("kind") == "stations" else []
+    if scorer_raw.get("kind") == "cloud":
+        from .cloud import truth_paths
+        observations = truth_paths(scorer_raw["cloud"]["truth"], resolve)
     # Fail closed BEFORE any payload read: ALISIOS data roots (dir aliases, namelist-named files, runtime roots).
-    refuse_protected_inputs("gpuwrf optimize continuous", [*case_dirs, stations, basis_path, *observations],
+    refuse_protected_inputs("gpuwrf optimize continuous", [p for p in [*case_dirs, stations, basis_path, *observations] if p is not None],
                             runtime=True)
+    if stations is not None:
+        location_ids = pd.read_csv(stations, usecols=["station_uid"])["station_uid"].astype(str)
+        identifiability.refuse_native_pixels(location_ids)
     cases = []
     for item, directory in zip(raw["cases"], case_dirs):
         if not isinstance(item.get("id"), str) or not _ID.fullmatch(item["id"]):
@@ -369,40 +398,54 @@ def load_continuous(path, *, text=None):
                                        resolve, source)
     (base,) = admissions.values()
     entry = base.pop("entry")
+    from .cloud_controls import cloud_arm, validate_activity
+    run_domains = [f"d{i:02d}" for i in range(1, max_dom+1)]
+    arm = None
     for case in cases:
         cfg = copy.deepcopy(case["config"])
         cfg.setdefault("physics", {}).update(base["physics"])
+        if "cloud_arm" in raw:
+            cfg, arm = cloud_arm(raw["cloud_arm"], cfg, max_dom)
+            case["config"] = cfg
         validate_operational_namelist(cfg)
         refuse_single_domain_mp_nested(cfg, max_dom)
         refuse_unqualified_nested_options(cfg, max_dom)
         require_namelist_honoured(cfg, tuple(f"d{i:02d}" for i in range(1, max_dom+1)))
-    basis, manifest = load_basis(basis_path)
-    parameters, used = _parameters(raw.get("parameters"), manifest)
+    basis, manifest = load_basis(basis_path) if basis_path else ({}, {"domains": {}})
+    parameters, used = _parameters(raw.get("parameters"), manifest, run_domains)
+    for case in cases:
+        cfg = copy.deepcopy(case["config"])
+        cfg.setdefault("physics", {}).update(base["physics"])
+        validate_activity(parameters, cfg, run_domains)
     basis_current(basis, manifest, used)
     _feasible_bounds(basis, manifest, parameters)
     geometry = cases[0]["geometry"]
     for parameter in parameters:  # one geometry per study: the basis must be of this grid (d01 extents)
-        if "d01" in parameter["domains"] and manifest["domains"]["d01"]["grid_shape"] != [geometry["south_north"],
+        if "runtime" not in parameter and "d01" in parameter["domains"] and manifest["domains"]["d01"]["grid_shape"] != [geometry["south_north"],
                                                                                          geometry["west_east"]]:
             raise ValueError("the basis d01 grid differs from the study cases' d01 grid")
-    if manifest.get("input_dir") is None:
+    if used and manifest.get("input_dir") is None:
         raise ValueError("the basis does not record its input case (rebuild it with gpuwrf surface-params basis)")
-    domains = sorted({d for p in parameters for d in p["domains"]})
-    refuse_protected_inputs("gpuwrf optimize continuous basis case", [manifest["input_dir"]])
-    reference = static_signature(manifest["input_dir"], domains)
+    domains = sorted({d for d, _ in used})
+    if used:
+        refuse_protected_inputs("gpuwrf optimize continuous basis case", [manifest["input_dir"]])
+    reference = static_signature(manifest["input_dir"], domains) if used else {}
     for case in cases:
-        if static_signature(case["input_dir"], domains) != reference:
+        if used and static_signature(case["input_dir"], domains) != reference:
             raise ValueError(f"case {case['id']} static land/terrain fields differ from the basis case "
                              f"{manifest['input_dir']}; one basis serves only cases of one static geography")
     # The basis records which controls are ACTIVE under the basis case's own namelist (Noah-MP dveg/opt_crs, topo_wind,
     # PBL): every member must run exactly those physics, else a control could be inert or refused in the member.
     from gpuwrf.io.namelist_parser import parse_namelist
-    basis_view = _physics_view(parse_namelist(Path(manifest["input_dir"])/"namelist.input"), max_dom)
+    basis_config = parse_namelist(Path(manifest["input_dir"])/"namelist.input") if used else {}
+    if used and arm:
+        basis_config, _ = cloud_arm(raw["cloud_arm"], basis_config, max_dom)
+    basis_view = _physics_view(basis_config, max_dom)
     for case in cases:
         cfg = copy.deepcopy(case["config"])
         cfg.setdefault("physics", {}).update(base["physics"])
         view = _physics_view(cfg, max_dom)
-        if view != basis_view:
+        if used and view != basis_view:
             keys = sorted(k for k in set(view) | set(basis_view) if view.get(k) != basis_view.get(k))
             raise ValueError(f"case {case['id']} with the study configuration runs other physics than the basis case "
                              f"({keys[:6]}); build the basis from a case that runs the study configuration")
@@ -419,33 +462,46 @@ def load_continuous(path, *, text=None):
     if not isinstance(tikhonov, bool):
         raise ValueError("eki tikhonov must be true or false")
     scorer = _scorer(scorer_raw, parameters, resolve)
+    sensitivity = identifiability.configuration(raw.get("identifiability"))
+    probe_branches, _, _ = identifiability.design(parameters, sensitivity)
     sampling = raw.get("sampling", {})
     if not isinstance(sampling, dict):
         raise ValueError("sampling must be an object of station extraction options")
     train = sum(c["split"] == "train" for c in cases)
     test = len(cases)-train
-    planned = (members*iterations*train + 2*len(cases) + (len(cases) if scorer["kind"] == "twin" else 0))*hours
+    probe_count = len(probe_branches)-1  # prior/control is already charged in prior/posterior evaluation
+    planned = (members*iterations*train + probe_count*train + 2*len(cases) +
+               (len(cases) if scorer["kind"] == "twin" else 0))*hours
     if planned > budget:
-        raise ValueError(f"budget needs at least {planned} case-hours (members x iterations x training dates, prior "
+        raise ValueError(f"budget needs at least {planned} case-hours (sensitivity probes, members x iterations x training dates, prior "
                          f"and posterior on every date{', twin truth' if scorer['kind'] == 'twin' else ''}; "
                          f"given {budget})")
     configuration = {"id": base["id"], "physics": base["physics"], "admission": base["admission"],
                      "status": base["status"], "release": {"release": data["release"], "best_E41": entry["best_E41"]}}
+    if arm:
+        configuration["cloud_arm"] = arm
+        configuration["id"] += "-" + arm["key"]
+    runtime_names = sorted(p["control"] for p in parameters if "runtime" in p)
+    if runtime_names:
+        import hashlib
+        configuration["id"] += "-runtime-" + hashlib.sha256(json.dumps(runtime_names).encode()).hexdigest()[:16]
     study = {"schema": SCHEMA, "region": raw["region"], "hours": hours, "budget_case_hours": budget,
              "test_start": split.isoformat(), "e41": e41, "cases": sorted(cases, key=lambda c: c["date"]),
              "configuration": configuration, "parameters": parameters,
              "eki": {"members": members, "iterations": iterations, "seed": seed, "tikhonov": tikhonov},
-             "scorer": scorer, "stations": str(stations), "sampling": sampling,
-             "basis": {**identity(basis_path), "input_dir": manifest["input_dir"], "static_signature": reference},
+             "identifiability": {**sensitivity, "extra_probe_branches": probe_count},
+             "scorer": scorer, "stations": str(stations) if stations else None, "sampling": sampling,
+             "basis": {**identity(basis_path), "input_dir": manifest["input_dir"], "static_signature": reference} if used else None,
              "model_sha256": source, "gpuwrf_version": __version__,
-             "inputs": [identity(p) for p in (path, stations, basis_path, *observations)] + evidence +
+             "inputs": [identity(p) for p in (path, stations, *([basis_path] if used else []), *observations) if p is not None] + evidence +
                        [c["source_namelist"] for c in cases] + [identity(released.RELEASED_PATH)],
              "planned_case_hours": planned, "candidates": [],
-             "program": {"configuration": base["id"], "record_signatures": sorted(
+             "program": {"configuration": configuration["id"], "record_signatures": sorted(
                  {json.dumps(c["records"], sort_keys=True) for c in cases}),
                  "note": "every member shares the configuration's controls program (values are traced inputs)"},
-             "qualification": ("EXPERIMENTAL continuous calibration of traced Track P controls inside one released/"
-                               "admitted configuration; diagnostics only, no release promotion or regional skill claim")}
+             "qualification": ("EXPERIMENTAL continuous calibration of traced surface/runtime controls inside one released/"
+                               "admitted base configuration and optional discrete cloud arm; family qualification limits "
+                               "apply; diagnostics only, no release promotion or regional skill claim")}
     study["resources"] = _resources(study, members*train)
     return study
 
@@ -473,6 +529,10 @@ def _resources(study, widest):
 # ---------------------------------------------------------------------------------------------------- the driver
 def _problem(study, obs=None, sigma=None):
     from gpuwrf.surface_params import eki
+
+    if obs is not None and np.size(obs) > 4096 and not getattr(eki, "ENSEMBLE_SPACE_UPDATE", False):
+        raise ValueError("dense EKI refuses more than 4096 observations before covariance allocation; "
+                         "use admitted superobservations or an ensemble-space EKI build")
 
     params = study["parameters"]
     p = len(params)
@@ -540,54 +600,100 @@ def program_report(ledger):
 
 def driver(study):
     """``study.run`` driver: tempered TEKI over the study's parameters, members through the launcher."""
+    cloud_scorer = study.get("scorer", {})
+    if cloud_scorer.get("kind") == "cloud":
+        from .cloud import guard_observations, require_correlation_contract
+        operator = cloud_scorer.get("observation_operator", "superobservations")
+        guard_observations(0, operator)
+        require_correlation_contract(cloud_scorer.get("cloud") or {}, operator)  # before any member prefetch
     from gpuwrf.surface_params import eki
     from gpuwrf.surface_params.cli import expand_from_basis, load_basis, member_multipliers
     from gpuwrf.surface_params.stations import collect
     from gpuwrf.verify.observations import read_stations
     from gpuwrf.verify.wrfout import extract_wrfout
+    from . import identifiability
 
     params, scorer, cfg = study["parameters"], study["scorer"], study["configuration"]
+    if (scorer["kind"] == "cloud" and not getattr(eki, "ENSEMBLE_SPACE_UPDATE", False)
+            and scorer.get("observation_operator") != "superobservations"):
+        raise ValueError("full-native pixel EKI is refused by this dense-algebra build; "
+                         "use the admitted superobservations operator or an ensemble-space EKI build")
     train = [c for c in study["cases"] if c["split"] == "train"]
     test = [c for c in study["cases"] if c["split"] == "test"]
     cutoff = pd.Timestamp(study["test_start"])
     spec = {"parameters": params}
     variables, sigma_of = tuple(scorer["variables"]), scorer["sigma"]
 
-    def drive(*, prefetch, files, output, ledger, **_):
-        basis_path = Path(study["basis"]["path"])
-        if identity(basis_path) != {k: study["basis"][k] for k in ("path", "sha256", "bytes")}:
-            raise ValueError("control basis changed since the study was loaded")
-        basis, manifest = load_basis(basis_path)
+    def drive(*, prefetch, files, output, ledger, waves=None, accounting=lambda: {}, check_wall=lambda: None,
+              measure=lambda name: nullcontext(), **_):
+        cloud_diagnostics = {}
+        basis, manifest = {}, {}
+        if study["basis"]:
+            basis_path = Path(study["basis"]["path"])
+            if identity(basis_path) != {k: study["basis"][k] for k in ("path", "sha256", "bytes")}:
+                raise ValueError("control basis changed since the study was loaded")
+            basis, manifest = load_basis(basis_path)
 
         def candidate(cid, theta):
-            fields = expand_from_basis(basis, manifest, member_multipliers(spec, theta))
-            ident = _write_controls(output/"controls"/f"{cid}.npz", fields,
+            from .cloud_controls import expand
+            surface = [(p, t) for p, t in zip(params, theta) if "runtime" not in p]
+            ident = None
+            if surface:
+                fields = expand_from_basis(basis, manifest, member_multipliers(
+                    {"parameters": [p for p, _ in surface]}, [t for _, t in surface]))
+                ident = _write_controls(output/"controls"/f"{cid}.npz", fields,
                                     {"member": cid, "theta": [float(t) for t in theta], "study_basis": study["basis"]["sha256"]})
+            runtime = None
+            if any("runtime" in p for p in params):
+                from .data import write_json
+                payload = expand(params, theta)
+                target = output/"parameters"/f"{cid}.json"
+                if target.exists():
+                    if json.loads(target.read_text()) != payload:
+                        raise ValueError("existing runtime parameter file holds other values")
+                else:
+                    target.parent.mkdir(parents=True, exist_ok=True)
+                    write_json(target, payload)
+                runtime = identity(target)
             return {"id": cid, "physics": cfg["physics"], "program": cfg["id"], "controls": ident,
-                    "theta": [float(t) for t in theta]}
+                    "runtime_parameters": runtime, "theta": [float(t) for t in theta]}
 
         # 1) observations (twin: from truth members; stations: the study file)
         if scorer["kind"] == "twin":
             truth = candidate("truth", np.log([scorer["truth"][q["name"]] for q in params]))
             prefetch([(truth, c) for c in study["cases"]])
             obs_path = output/"twin"/"observations.csv"
-            text = _twin_observations(study, truth, files, read_stations, extract_wrfout)
+            with measure("extract_qc_s"):
+                text = _twin_observations(study, truth, files, read_stations, extract_wrfout)
             if obs_path.exists():
                 if obs_path.read_text() != text:
                     raise ValueError("existing twin observations differ from the truth members (changed run)")
             else:
                 obs_path.parent.mkdir(parents=True, exist_ok=True)
                 obs_path.write_text(text)
-        else:
+        elif scorer["kind"] != "cloud":
             obs_path = Path(scorer["observations"])
             if identity(obs_path) not in study["inputs"]:
                 raise ValueError("observations changed since the study was loaded")
 
         def matrices(members, cases, *, split):
+            check_wall()
             parts, ys, sigmas, keys = [], [], [], []
             for case in cases:
-                pred, y, sig, k = collect([files(m, case)[0] for m in members], study["stations"], obs_path,
-                                          variables=variables, sigma=sigma_of, **study["sampling"])
+                check_wall()
+                with measure("extract_qc_s"):
+                    if scorer["kind"] == "cloud":
+                        from .cloud import collect as collect_cloud
+                        diagnostics = []
+                        pred, y, sig, k = collect_cloud([files(m, case)[0] for m in members], scorer["cloud"],
+                            case["issue"], study["hours"], before=cutoff if split == "train" else None,
+                            sigma=sigma_of["cloud"], reports=diagnostics, operator=scorer["observation_operator"])
+                        for member, diagnostic in zip(members, diagnostics):
+                            if member["id"] in ("prior", "posterior"):
+                                cloud_diagnostics[f"{member['id']}|{case['id']}"] = diagnostic
+                    else:
+                        pred, y, sig, k = collect([files(m, case)[0] for m in members], study["stations"], obs_path,
+                                                  variables=variables, sigma=sigma_of, **study["sampling"])
                 keep = _keys_after(k, case["issue"], before=cutoff if split == "train" else None)
                 if not keep:
                     raise ValueError(f"no observation support after the issue time for case {case['id']}")
@@ -595,12 +701,61 @@ def driver(study):
                 ys.append(y[keep])
                 sigmas.append(sig[keep])
                 keys += [(case["id"], *k[n]) for n in keep]
+            if scorer["kind"] == "cloud":
+                from .cloud import guard_observations
+                guard_observations(sum(y.size for y in ys), scorer["observation_operator"])
+            identifiability.refuse_native_pixels(key[1] for key in keys)
             return np.concatenate(parts, axis=1), np.concatenate(ys), np.concatenate(sigmas), keys
 
-        # 2) tempered TEKI iterations
+        # 2) mandatory sensitivity screen, before the first EKI ensemble.
+        import time
+        from .data import write_json
+        phase_start = time.monotonic()
+        settings = identifiability.configuration({k: study["identifiability"][k] for k in
+                                                   ("step_log", "rank_rtol", "collinearity_cos")})
+        branches, columns, nulls = identifiability.design(params, settings)
+        probes = {name: candidate(name, theta) for name, theta in branches.items()}
+        prefetch([(m, c) for m in probes.values() for c in train])
+        responses, _, sig, probe_keys = matrices(list(probes.values()), train, split="train")
+        sensitivity = identifiability.analyse(params, settings, columns,
+                         dict(zip(probes, responses)), sig, probe_keys)
+        entries = {f"{m['id']}|{c['id']}": ledger["members"][f"{m['id']}|{c['id']}"]
+                   for m in probes.values() for c in train}
+        known_wall = {key: e["wall_s"] for key, e in entries.items()
+                      if isinstance(e.get("wall_s"), (int, float)) and math.isfinite(e["wall_s"]) and e["wall_s"] >= 0}
+        sensitivity.update(null_branches=nulls, admitted_tuple={"configuration": cfg, "max_dom": study["cases"][0]["max_dom"],
+                            "model_sha256": study["model_sha256"]},
+                           runtime_cost={"phase_wall_s_this_invocation": time.monotonic()-phase_start,
+                            "successful_forecast_wall_s": sum(known_wall.values()) if len(known_wall) == len(entries) else None,
+                            "members_missing_wall_s": sorted(set(entries)-set(known_wall)),
+                            "charged_case_hours": len(entries)*study["hours"],
+                            "members": {key: {field: e.get(field) for field in
+                                ("wall_s", "vmhwm_kb", "vram_peak_mib", "aot_cache_warm", "aot_cold_executables")}
+                                for key, e in entries.items()}})
+        sensitivity_path = output/"identifiability.json"
+        if sensitivity_path.exists():
+            saved = json.loads(sensitivity_path.read_text())
+            sensitivity["runtime_cost"]["phase_wall_s_this_invocation"] = saved["runtime_cost"]["phase_wall_s_this_invocation"]
+            if saved != sensitivity:
+                raise ValueError("identifiability report changed since the completed preflight")
+            sensitivity = saved
+        else:
+            write_json(sensitivity_path, sensitivity)
+
+        # 3) tempered TEKI; null-space directions remain at the prior throughout.
         state = eki.initial_ensemble(_problem(study), study["eki"]["members"], seed=study["eki"]["seed"])
-        iterations, history, support = study["eki"]["iterations"], [], None
-        for k in range(iterations):
+        state.theta = identifiability.restrict(state.theta, sensitivity, params)
+        iterations, history, support = study["eki"]["iterations"], [], probe_keys
+        if waves is not None and waves.checkpoint is not None:
+            saved = waves.checkpoint
+            if saved.get("kind") != "eki":
+                raise ValueError("expected an EKI wave checkpoint")
+            theta = np.asarray(saved["theta"], np.float64)
+            if theta.shape != state.theta.shape or not np.isfinite(theta).all():
+                raise ValueError("invalid EKI checkpoint ensemble")
+            state = eki.EKIState(theta=theta, iteration=saved["iteration"], history=saved["eki_history"])
+            history, support = saved["history"], [tuple(k) for k in saved["support"]]
+        for k in range(state.iteration, iterations if sensitivity["rank"] else 0):
             members = [candidate(f"i{k:02d}m{j:03d}", row) for j, row in enumerate(state.theta)]
             prefetch([(m, c) for m in members for c in train])
             g, y, sig, keys = matrices(members, train, split="train")
@@ -610,29 +765,44 @@ def driver(study):
                 raise ValueError("observation support changed between EKI iterations")
             problem = _problem(study, y, sig)
             state = eki.update(problem, state, g, dt=1.0/iterations, seed=study["eki"]["seed"]+1+k)
+            state.theta = identifiability.restrict(state.theta, sensitivity, params)
             history.append({"iteration": k, "members": [m["id"] for m in members], **state.history[-1],
                             "observations": int(y.size)})
+            if waves is not None:
+                waves.complete(k, kind="eki", ensemble=[{"id": m["id"], "theta": m["theta"]} for m in members],
+                               scores=[{"id": m["id"], **_scores(g[j], y, sig, keys)}
+                                       for j, m in enumerate(members)],
+                               checkpoint={"kind": "eki", "theta": state.theta.tolist(), "iteration": state.iteration,
+                                           "eki_history": state.history, "history": history, "support": support},
+                               ledger=ledger, accounting=accounting())
         estimate = state.theta.mean(axis=0)
 
-        # 3) prior and posterior mean on every date (train misfit + held-out diagnostic)
-        prior, posterior = candidate("prior", np.zeros(len(params))), candidate("posterior", estimate)
-        prefetch([(m, c) for m in (prior, posterior) for c in study["cases"]])
+        # 4) prior and posterior mean on every date (train misfit + held-out diagnostic)
+        prior = candidate("prior", np.zeros(len(params)))
+        posterior = candidate("posterior", estimate) if sensitivity["rank"] else prior
+        evaluation_members = (prior, posterior) if sensitivity["rank"] else (prior,)
+        prefetch([(m, c) for m in evaluation_members for c in study["cases"]])
         evaluation = {}
         for split, cases in (("train", train), ("test", test)):
             g, y, sig, keys = matrices([prior, posterior], cases, split=split)
             evaluation[split] = {name: _scores(g[n], y, sig, keys) for n, name in enumerate(("prior", "posterior"))}
         report = {"schema": RESULT_SCHEMA, "region": study["region"], "configuration": cfg["id"],
+                  "identifiability": sensitivity,
                   "parameters": [{"name": q["name"], "control": q["control"], "classes": q["classes"],
                                   "domains": q["domains"]} for q in params],
                   "estimate_multipliers": dict(zip((q["name"] for q in params), np.exp(estimate).tolist())),
                   "posterior_sd_log": dict(zip((q["name"] for q in params), state.theta.std(axis=0, ddof=1).tolist())),
                   "ensemble_final_multipliers": np.exp(state.theta).tolist(), "iterations": history,
                   "evaluation": evaluation, "controls": {"prior": prior["controls"], "posterior": posterior["controls"]},
+                  "runtime_parameters": {"prior": prior.get("runtime_parameters"),
+                                         "posterior": posterior.get("runtime_parameters")},
                   "program": program_report(ledger), "scorer": {k: v for k, v in scorer.items() if k != "truth"},
                   "budget_case_hours": study["budget_case_hours"], "planned_case_hours": study["planned_case_hours"],
                   "evaluated_case_hours": len(ledger["members"])*study["hours"], "model_sha256": study["model_sha256"],
                   "train_cases": [c["id"] for c in train], "test_cases": [c["id"] for c in test],
                   "status": "HELD_OUT_DIAGNOSTIC; EXPERIMENTAL continuous calibration, no release promotion"}
+        if scorer["kind"] == "cloud":
+            report["cloud_diagnostics"] = cloud_diagnostics
         if scorer["kind"] == "twin":
             truth_log = {q["name"]: math.log(scorer["truth"][q["name"]]) for q in params}
             errors = {q["name"]: abs(float(estimate[n])-truth_log[q["name"]]) for n, q in enumerate(params)}
@@ -686,6 +856,15 @@ def run(study, output, **kwargs):
     from gpuwrf.assimilation.letkf.member_driver import refuse_protected_inputs
 
     from .study import run as study_run
+    from gpuwrf.surface_params import eki
+    import hashlib
 
     refuse_protected_inputs("gpuwrf optimize continuous", [], outputs=[output])
+    # The model digest deliberately excludes offline optimizer code. Bind its
+    # update implementation separately: a changed Gaussian root is not an exact resume.
+    study = {**study, "optimizer_implementation": {
+        "schema": "gpuwrf.optimize.eki-implementation.v1",
+        "source_sha256": hashlib.sha256(Path(eki.__file__).read_bytes()).hexdigest(),
+        "numpy_version": np.__version__,
+    }}
     return study_run(study, output, driver=driver(study), **kwargs)

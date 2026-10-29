@@ -1182,11 +1182,13 @@ def preferred_prefetch_key(
 
 def load_domain_blob(
     name, cache_dir=None, *, cheap_key=None, hlo_sha256=None, dev=None,
-    check_fingerprint=True, return_status=False,
+    check_fingerprint=True, return_status=False, allow_legacy_fingerprint=False,
 ):
+    """Load only attested targets; trusted legacy artifacts require explicit opt-in."""
     result = _load_domain_blob_owned(
         name, cache_dir, cheap_key=cheap_key, hlo_sha256=hlo_sha256, dev=dev,
         check_fingerprint=check_fingerprint, return_status=return_status,
+        allow_legacy_fingerprint=allow_legacy_fingerprint,
     )
     call = result[0] if return_status else result
     if cheap_key and call is not None:
@@ -1196,7 +1198,7 @@ def load_domain_blob(
 
 def _load_domain_blob_owned(
     name, cache_dir=None, *, cheap_key=None, hlo_sha256=None, dev=None,
-    check_fingerprint=True, return_status=False,
+    check_fingerprint=True, return_status=False, allow_legacy_fingerprint=False,
 ):
     owners = []
     if cheap_key and _active_prefetches:
@@ -1211,6 +1213,7 @@ def _load_domain_blob_owned(
         return _load_domain_blob_prefetched(
             name, cache_dir, cheap_key=cheap_key, hlo_sha256=hlo_sha256,
             dev=dev, check_fingerprint=check_fingerprint, return_status=return_status,
+            allow_legacy_fingerprint=allow_legacy_fingerprint,
         )
     finally:
         # Matching calls survive in the returned value/runtime memo. Mismatched
@@ -1221,8 +1224,17 @@ def _load_domain_blob_owned(
 
 def _load_domain_blob_prefetched(
     name, cache_dir=None, *, cheap_key=None, hlo_sha256=None, dev=None,
-    check_fingerprint=True, return_status=False,
+    check_fingerprint=True, return_status=False, allow_legacy_fingerprint=False,
 ):
+    # Speculative handles were admitted with the strict default policy. Legacy
+    # requests must use their own policy, and an unnamed bypass must not consume
+    # an already-loaded handle (even if its fingerprint happens to match).
+    if allow_legacy_fingerprint or not check_fingerprint:
+        return _load_domain_blob(
+            name, cache_dir, cheap_key=cheap_key, hlo_sha256=hlo_sha256, dev=dev,
+            check_fingerprint=check_fingerprint, return_status=return_status,
+            allow_legacy_fingerprint=allow_legacy_fingerprint,
+        )
     if cheap_key and _prefetched_loads:
         device = dev if dev is not None else jax.devices()[0]
         paths = _aot_blob_paths(name, cache_dir, cheap_key=cheap_key)
@@ -1320,6 +1332,7 @@ def _load_domain_blob(
     dev: Any | None = None,
     check_fingerprint: bool = True,
     return_status: bool = False,
+    allow_legacy_fingerprint: bool = False,
 ) -> Any | None:
     """Load domain ``name``'s AOT blob into a drop-in advance callable (Step C).
 
@@ -1355,6 +1368,12 @@ def _load_domain_blob(
 
     try:
         from gpuwrf.runtime import aot_executable as aotx
+
+        if not check_fingerprint and not allow_legacy_fingerprint:
+            raise RuntimeError(
+                "AOT check_fingerprint=False requires allow_legacy_fingerprint=True; "
+                "refusing unverified load -- fall back to compile"
+            )
 
         # P0-1: a quarantined (poisoned) cheap_key NEVER loads -- fail OPEN to a
         # fresh compile so a known-ambiguous key cannot serve a wrong blob.
@@ -1443,7 +1462,8 @@ def _load_domain_blob(
                 )
                 return _done(None)
 
-        call = aotx.load(blob, meta, dev, check_fingerprint=check_fingerprint)
+        call = aotx.load(blob, meta, dev, check_fingerprint=check_fingerprint,
+                         allow_legacy_fingerprint=allow_legacy_fingerprint)
         status["loaded"] = True
         status["source"] = "aot_blob"
         return _done(call)

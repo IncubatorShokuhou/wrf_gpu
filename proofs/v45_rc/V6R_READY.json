@@ -1,0 +1,177 @@
+{
+  "schema": "v45-rc.v6r-ready.v1",
+  "utc": "2026-10-28T23:45:46Z",
+  "plan": "<USER_HOME>/wrf_gpu2_lanes/v45-rc/NIGHT_PLAN_V6R.json",
+  "plan_sha256": "0b20be0b16fc2bd52126ba3a6c42860b14ba29eb05b74efbaf824ad2bf1eea00",
+  "source_pin": "254c4823745275e3e9d397ae4d1db0fd35ec361d",
+  "SRC": "827470e10f7e29cad1613e18d0a0c84f8f95693f",
+  "forecast_tool_SHA": "98d177ae16e95d33c432fe2e88a45698cc09196f707b73b17fc64ebaea6457ef",
+  "post_tool_SHA": "bda07fd1e6ebb7da4a988d22dd3f2226ad68e6a864b2c96b5a5ecae2c5c733bb",
+  "exact_SEQ": {
+    "v45-rc-cold-prod": {
+      "lane": "v45-rc-cold-prod",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/v45-rc/tools_v6/entry_prime_prod.sh",
+      "sha256": "7d78e7d6cfb4441aea66d3c898a90b8f7bae32e49901723a31de8aa7552046b8",
+      "cap_min": 30,
+      "args": "",
+      "rc": 0,
+      "gpu_processes_in_step_pgid": 0,
+      "exact_call": "setsid bash <path> <args> via night_seq_v9 SEQ_SMOKE=1"
+    },
+    "v45-rc-cold-wn3": {
+      "lane": "v45-rc-cold-wn3",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/v45-rc/tools_v6/entry_prime_wn3.sh",
+      "sha256": "48439488df53dfa3feff8ea6a897e1ac9085f1a6880cb6d5406eee5ff77f4a7e",
+      "cap_min": 55,
+      "args": "",
+      "rc": 0,
+      "gpu_processes_in_step_pgid": 0,
+      "exact_call": "setsid bash <path> <args> via night_seq_v9 SEQ_SMOKE=1"
+    },
+    "v45-rc-warm": {
+      "lane": "v45-rc-warm",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/v45-rc/tools_v6/entry_rw_warm.sh",
+      "sha256": "e08907ce3a80d6ccdc47b0a9e491c38379da4cc5a3403a92d402b11eeb7a5ae6",
+      "cap_min": 45,
+      "args": "",
+      "rc": 0,
+      "gpu_processes_in_step_pgid": 0,
+      "exact_call": "setsid bash <path> <args> via night_seq_v9 SEQ_SMOKE=1"
+    },
+    "v45-rc-rw3": {
+      "lane": "v45-rc-rw3",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/v45-rc/tools_v6/entry_rw3.sh",
+      "sha256": "90651d74ed659b3c1361de207c2ef5c1f77f07cc11cc06ef65bfbcaac5de2610",
+      "cap_min": 75,
+      "args": "",
+      "rc": 0,
+      "gpu_processes_in_step_pgid": 0,
+      "exact_call": "setsid bash <path> <args> via night_seq_v9 SEQ_SMOKE=1"
+    },
+    "v45-rc-cpu-post": {
+      "lane": "v45-rc-cpu-post",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/v45-rc/post_run/entry.sh",
+      "sha256": "73ef571c0424f4e3f7d05f6bb577d9badf6f958ab1bab00165cc9f03519c46d0",
+      "cap_min": 35,
+      "args": "<USER_HOME>/wrf_gpu2_lanes/v45-rc/tools_v6/PIN_MANIFEST.json",
+      "rc": 0,
+      "gpu_processes_in_step_pgid": 0,
+      "exact_call": "setsid bash <path> <args> via night_seq_v9 SEQ_SMOKE=1"
+    }
+  },
+  "cache_setup": "CPU-only cache refill via exactSwissentry23:15-23:19; NOT a repeated paid GPU Swiss arm",
+  "paid_GPU_Swiss": "preserved actualA1/ABI/trace-env; source/math unchanged by token allowlist",
+  "failed_A2": "23 metadata files SHA-archivedROOT;0raw;retentionupdatedoriginalFAILED; fresh A2path",
+  "post": {
+    "synchronous": true,
+    "cap_min": 35,
+    "scope": "8GSwap0/CPU12,28NI19/timeout2100",
+    "handoff": "all model children reaped+officialGPUlockunheld; v9exclusionflagleftintact",
+    "scientific_code": "unchanged source-pinned scripts + guarded reference adapter API; same complete full72h/floor andSwiss24h arguments; no threshold/scanner/source changes",
+    "required_before_delete": "3domains/73frames/fullfloorcoverage +Swiss25frames +shortRW1/RW2/RW4/E41/compile reports; preserve then dependency/symlink/readers scans then literal own6roots",
+    "delete_list": "runtime ROOT/post_run/<GA_START>/DELETE_EXACT.json; six validated own run roots only; no wildcard deletion",
+    "kept": "all receipts/logs/proofs/ENTRY/E41/profile/score data ROOT; source/paidcache ROOT; originalCPU219/cases/releasebundles never eligible",
+    "resource_target_GiB": 404.5,
+    "own_DATA_residual_max_GiB": 1,
+    "science_fail_reported_separately": true
+  },
+  "budget": {
+    "GPU_caps_min": 205,
+    "CPU_post_min": 35,
+    "seq_padding_min": 10,
+    "total_min": 250,
+    "latest_start": "2026-10-29T01:20:00Z",
+    "hard_end": "2026-10-29T05:30:00Z"
+  },
+  "timing": {
+    "measured": {
+      "scope": "v0.4.4 same WN3 0227 full72h originalCPU score, actual CPU12,28 NI19 per RC30 ledger; event interval excludes initial imports/guard work before admission, not a full wrapper stopwatch",
+      "admission_utc": "2026-10-27T10:21:00+00:00",
+      "finished_utc": "2026-10-27T10:35:51.555813+00:00",
+      "elapsed_s": 891.5558130741119,
+      "cpu_domain_total_s": 683.4,
+      "peak_rss_bound_MiB": 2787,
+      "paths": [
+        "<DATA_ROOT>/wrf_gpu2/scratch/w44-rc/receipts/RW3D_20261027/d6_N72/guard_parent/guard_admit.json",
+        "<DATA_ROOT>/wrf_gpu2/scratch/w44-rc/receipts/RW3D_20261027/d6_N72/guard_parent/guarded_session.json"
+      ],
+      "sha256": [
+        "793d3d03ba9cde0161ad7bc43cceb1fe8b4a1df7980469b9941ba24f26930a06",
+        "0ee227303fb3440f9642b3ef948068d16f69eaf3c997aaebb02f9b08d17db9c1"
+      ]
+    },
+    "inferred": {
+      "N72_end_to_end_min": [
+        16,
+        20
+      ],
+      "Swiss_B9_24h_min": [
+        1,
+        3
+      ],
+      "A1_A4_RW1_RW4_key_and_prefix_extraction_min": [
+        1,
+        3
+      ],
+      "SHA_preservation_dependency_scan_and_cleanup_min": [
+        3,
+        8
+      ],
+      "total_post_min": [
+        21,
+        34
+      ],
+      "reserved_post_cap_min": 35,
+      "qualification": "I projections, not measured newrun times; aot-key work should be prepared before GPU window; raw is retained if required score/extract incomplete"
+    },
+    "ROOT": {
+      "free_GiB_now": 23.285385131835938,
+      "existing_lane_GiB": 2.770610809326172,
+      "new_GPU_cache_v044_equivalent_GiB": 2.5301055908203125,
+      "full_N72_plus_B9_raw_GiB": 21.21920858696103,
+      "existing_limits": "aggregate8GiB/free20GiB",
+      "uncompressed_move_needs_exception": "temporary aggregate~28GiB/free>=8GiB only if enough actual headroom before move; fullN72+B9 byte-exact move before scoring, ROOT raw retained until scores complete"
+    },
+    "shared_DATA_arithmetic": "Deleting only new own payload restores at most launch free space (apart from others changes). A fallback launch <396 cannot alone reach400.5; explicit other-owner recovery >=400.5-start is required."
+  },
+  "RW4_key_pairs": [
+    {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/v45-rc/receipts/aotkey_254c48237452/k0227_v_0502_h72.json",
+      "sha256": "51621883cbb73cfebfeaab01da501893d91977bbd5782d182f673162c94c6a0a",
+      "all_shared": true
+    },
+    {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/v45-rc/receipts/aotkey_254c48237452/k0227_v_0614_h48.json",
+      "sha256": "49421063d79a9c020aaeffe18c16342a826bc406eabc324e3e7fece375a811b1",
+      "all_shared": true
+    },
+    {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/v45-rc/receipts/aotkey_254c48237452/k0227_v_0227in48_h3.json",
+      "sha256": "0afd0607b0211ac189371d313a9e684e7d09e79fc6334406929dc3abe989ecde",
+      "all_shared": true
+    },
+    {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/v45-rc/receipts/aotkey_254c48237452/ki0227_v_ki0502_h3.json",
+      "sha256": "b0a1fdb3aad9098210b7a41c1e02e5b8299f54ba7bd368938480f52069edcbd8",
+      "all_shared": true
+    }
+  ],
+  "dependency_preflight": {
+    "files": 22930,
+    "external_blockers": 0,
+    "links": 0,
+    "notes": "six launcher-critic copies of the same producer workflow classified as review artifacts; other queued consumers remain blockers"
+  },
+  "CPU_cache_cleanup": {
+    "files": 1677,
+    "receipt": "<USER_HOME>/wrf_gpu2_lanes/v45-rc/TOKEN_FIX/CPU_CACHE_CLEANUP.json"
+  },
+  "no_new_GPU_byworker": true,
+  "no_real_scientific_raw_deleted": true,
+  "F330": "not ready/not activated; superseded by active paid-Swiss normal V6R recovery path",
+  "dependency_fix": {
+    "path": "proofs/v45_rc/POST_DEP_FIX.json",
+    "sha256": "a8111b336c620af4034466847ce1c3cf34db5ca7c97bd35d6c0723e588b96504"
+  },
+  "GPU_only_selected_by_manager": "746ded54, armedR2; post separate CPU review/launch"
+}

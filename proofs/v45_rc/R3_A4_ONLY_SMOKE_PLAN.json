@@ -1,0 +1,53 @@
+{
+  "schema": "v45-rc.night-plan.v1",
+  "steps": [
+    {
+      "lane": "v45-rc-cold-wn3",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/v45-rc/tools_v6/entry_prime_wn3.sh",
+      "sha256": "6c0b90509c786125bdc5cb53b157c68e2a14ca95980fe2b6ee347cdaa3020797",
+      "cap_min": 55
+    }
+  ],
+  "scheduling": {
+    "RC_cap_min": 220,
+    "BallBerry_after_min": 0,
+    "order": "RC RW1-RW4; BallBerry CANCELLED manager15:25:42Z",
+    "hard_end_utc": "2026-10-29T05:30:00Z",
+    "latest_Nightly_DONE_approx": "2026-10-28T23:50:00Z",
+    "overhead_margin_min": 120
+  },
+  "O72": {
+    "min_free_GiB": 411,
+    "own_launcher_precheck": true,
+    "on_low": "ARM O72 HOLD; no invocation/registry START"
+  },
+  "paths": {
+    "tools": "<USER_HOME>/wrf_gpu2_lanes/v45-rc/tools_v6",
+    "source": "<USER_HOME>/wrf_gpu2_lanes/v45-rc/archive",
+    "bundle": "<USER_HOME>/wrf_gpu2_lanes/v45-rc/runtime/bundle",
+    "short_session": "<DATA_ROOT>/wrf_gpu2/scratch/v45-rc/session_254c48237452_gpu_v6",
+    "rw3_session": "<DATA_ROOT>/wrf_gpu2/scratch/v45-rc/runs/rw3_<UTC>_<PID>",
+    "DATA_writes_before_GA_START": 0
+  },
+  "carry_completed": {
+    "A1_swiss": "paid original GPU rc0; verified source/backend/proof/list",
+    "A2_prod": "paid R2 GPU rc0; verified source/backend/proof/list",
+    "A3_wn3_0227_3h": "paid R2 GPU rc0; verified source/backend/proof/list; native E41 post0"
+  },
+  "precondition": "manager runs TOKEN_FIX/prepare_prod_retry.py --apply aftercritic: SHA-archive failedzero-outputA2 andretentionupdate; paidSwisscachemustnotbetouched",
+  "post_window_handoff": {
+    "separate_CPU_step_required": true,
+    "reviewed_and_launched_by_manager_after_GPU": true,
+    "deadline": "2026-10-29T05:30:00Z",
+    "target_DATA_GiB": 404.5,
+    "raw_must_remain_until_required_score_extract_complete": true
+  },
+  "total_caps_padding_min": 213,
+  "latest_start_for_full_budget": "GPU gate01:40 remains; reserve35min CPU post before05:30",
+  "resume_reason": "R2 ROOT20 guard before A4; A4 never started. Only A4 table now; no paid rerun or source/model/cache change.",
+  "ROOT_remaining_reservation_GiB": 3.2,
+  "ROOT_start_target_GiB": 25.2,
+  "post_separate_CPU_min": 35,
+  "latest_start_for_0530_with_post": "2026-10-29T01:50:00Z",
+  "manager_latest_start": "2026-10-29T01:40:00Z"
+}

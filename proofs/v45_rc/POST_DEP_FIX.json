@@ -1,0 +1,49 @@
+{
+  "schema": "v45-rc.dependency-fix.v1",
+  "utc": "2026-10-29T00:02:50Z",
+  "issue": "manager23:49: broad own-lane exemption must not permit queued readers",
+  "policy": "exact SHA-bound inspected closed artifacts, exact current authorized plan bytes, validated terminal arm receipt filenames, and named just-completed scoring outputs only; no own-root or worktree prefix exemption",
+  "controls": {
+    "PASS": true,
+    "checks": 8,
+    "actual_own_lane_scanner_refused": true,
+    "own_lane_queued_shell_refused": true,
+    "own_lane_queued_json_refused": true,
+    "current_exact_plan_allowed": true,
+    "closed_artifact_hash_bound": true,
+    "modified_closed_artifact_refused": true,
+    "terminal_receipt_allowed": true,
+    "queued_file_beside_receipt_refused": true,
+    "no_GPU_or_reference_reads_or_deletes": true
+  },
+  "preflight": {
+    "files_scanned": 17012,
+    "external_blockers": 0,
+    "links": 0
+  },
+  "exact_post_SEQ": [
+    {
+      "lane": "v45-rc-cpu-post",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/v45-rc/post_run/entry.sh",
+      "sha256": "46f6043c21c808322b5261169ad4901e55b7fd371df0bc7a5e330574697498e3",
+      "cap_min": 35,
+      "args": "<USER_HOME>/wrf_gpu2_lanes/v45-rc/tools_v6/PIN_MANIFEST.json",
+      "rc": 0,
+      "gpu_processes_in_step_pgid": 0,
+      "exact_call": "setsid bash <path> <args> via night_seq_v9 SEQ_SMOKE=1"
+    }
+  ],
+  "post_tool_SHA": "bda07fd1e6ebb7da4a988d22dd3f2226ad68e6a864b2c96b5a5ecae2c5c733bb",
+  "GPU_plan_unchanged": {
+    "path": "<USER_HOME>/wrf_gpu2_lanes/v45-rc/NIGHT_PLAN_V6R_GPU.json",
+    "sha256": "746ded545e34259fb5b712f1d9d46567a9345fd3bb20d465fa632ec618c6146a"
+  },
+  "post_target": {
+    "DATA_free_GiB": 404.5,
+    "own_residual_max_GiB": 1,
+    "required_score_first": true,
+    "synchronous_CPU8G": true
+  },
+  "no_paid_or_numerical_rerun": true,
+  "no_actual_raw_delete": true
+}

@@ -136,12 +136,19 @@ def apply_surface_controls(static, energy_params, rad_params, controls):
     refuse_unqualified_controls(controls)
     if energy_params is None or rad_params is None:
         raise ValueError("surface controls need the pre-built Noah-MP energy/radiation parameter bundles")
+    from gpuwrf.surface_params.lsmparams import COEFFICIENT_KEYS
+    coefficients = {COEFFICIENT_KEYS[n]: v for n, v in controls.items() if n in COEFFICIENT_KEYS}
+    if coefficients:
+        if (set(coefficients) & {"inv_smcmax", "thkdry"} and "smcmax" not in controls or
+                "inv_d_rsurf" in coefficients and not set(controls) & {"smcmax", "bexp"}):
+            raise ValueError("private W2 clock coefficients require their public soil controls")
+        controls = {n: v for n, v in controls.items() if n not in COEFFICIENT_KEYS}
     unknown = sorted(set(controls) - set(CONTROLS) - set(LSM_CONTROLS))
     if unknown:
         raise ValueError(f"unknown surface controls {unknown}")
     if set(controls) & set(LSM_CONTROLS):
         from gpuwrf.surface_params.lsmparams import apply
-        static, energy_params = apply(static, energy_params, {n: v for n, v in controls.items() if n in LSM_CONTROLS})
+        static, energy_params = apply(static, energy_params, {n: v for n, v in controls.items() if n in LSM_CONTROLS}, coefficients=coefficients)
     by_bundle: dict[str, dict[str, Any]] = {"energy": {}, "rad": {}, "static": {}}
     for name, value in controls.items():
         if name in LSM_CONTROLS:

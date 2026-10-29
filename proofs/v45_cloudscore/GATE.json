@@ -1,0 +1,87 @@
+{
+  "schema": "gpuwrf.optimize.cloud.gate.v1",
+  "status": "READY_FOR_CRITIC",
+  "source_commit": "e49e8488a92c0923b6b5a9046c98f6e241f04d24",
+  "validation_source": "51329d5fba",
+  "final_api_source": "e49e8488a92c0923b6b5a9046c98f6e241f04d24",
+  "gates": {
+    "G1_known_metrics_units_masks": {
+      "tests": 69,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "time_s": 26.503
+    },
+    "G2_archived_wrf_structure": "PASS; archived PROD03Z GPU history + invented MSG, not CPU-WRF fidelity",
+    "G3_deterministic_finite": "PASS; NaN/+Inf/-Inf all species/geometry/taps including under night mask; 16literal mutants ASSERT0ERROR",
+    "G4_cpu_cost": {
+      "workload_s": 2.075270817091223,
+      "whole_script_wall_s": 3.39,
+      "user_cpu_s": 2.02,
+      "system_cpu_s": 0.28,
+      "maxrss_kib": 353504,
+      "superobs_m": 576,
+      "native_superobs_samples": 12672,
+      "limits": "Repeated warm real frame72x; synthetic8400pixel FSS and176pixel/50km superobs; component cost proxy, actual full72h real-MSG case wall UNKNOWN"
+    },
+    "ADDENDUM_channels": "PASS; prognostic, PBL and held actual RRTMG inputs separate on common frozen support; missing taps/call clock UNAVAILABLE",
+    "SUPEROBS": "PASS; default canonical observation_operator=superobservations; admitted length+contract required; area-weight both sides; sigma not/sqrt(n); overlapping regions refused",
+    "LEGACY_MEMORY": "PASS; native refused before payload/launch without reviewed ensemble-space capability; case+total m>2048 refused before update; no dense25k solve claimed"
+  },
+  "final_api_gate": {
+    "tests": 6,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "time_s": 14.667
+  },
+  "legacy_station_twin_resume_gate": {
+    "tests": 6,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "time_s": 107.85
+  },
+  "full_archive_collection": {
+    "tests": 21248,
+    "errors": 0,
+    "time_s": 11.57,
+    "archive": "ONE ROOT slim git archive + all proofs/docs Python helpers +57exact proven import fixtures",
+    "support_receipt": "collect_support.json",
+    "conftest": "unchanged root conftest; normal ALISIOS protection/skip rules retained"
+  },
+  "validation_reuse": "ONLY string labels observation_operator->operator and superobservations->superobs; all math/control AST preserved",
+  "model_runtime_source_unchanged_outside_optimize": true,
+  "GPU_work": false,
+  "new_model_kernels_transfers_compile": 0,
+  "cache": "NONE GPUWRF_JAX_CACHE0",
+  "real_ALISIOS_weather_values_opened": false,
+  "format_only_parser": "PASS official97x2synthetic package; no fitting/scoring; no package payload copied to Git",
+  "open_limits": [
+    "Real calibration requires facade staging after manager admission and frozen daylight/region/correlation contract.",
+    "Actual radiation call time absent in existing history; held condensate CWP uses output-time geometry and is labelled.",
+    "Native/large EKI remains blocked on this branch until reviewed ENSEMBLE_SPACE_UPDATE=True merges."
+  ],
+  "experiments": "CS00,CS02-CS22 in MAIN EXPERIMENTS; CS01 raced empty obsolete archive folded into CS00; CS05 broad timeout and import-support retries explicitly not PASS",
+  "cleanup": {
+    "removed": [
+      "<USER_HOME>/wrf_gpu2_lanes/v45-cloudscore/archive",
+      "<USER_HOME>/wrf_gpu2_lanes/v45-cloudscore/pytest",
+      "<USER_HOME>/wrf_gpu2_lanes/v45-cloudscore/mutant-scratch"
+    ],
+    "cache": "NONE; GPUWRF_JAX_CACHE=0 throughout",
+    "full_DATA_archive_created": false,
+    "lane_remaining_bytes": 14074849,
+    "root_free_bytes": 13497929728
+  },
+  "receipt_sha256": {
+    "unit_gate.xml": "3749dca3b705b03258d2716aa65d26ded5d286fd8eb49d95634d4adc1d47e157",
+    "api_gate.xml": "5cc7ad13b8d589b792fe4cdc138716e3a3268247caeeb45280355d8702204415",
+    "legacy_gate.xml": "649f00b1fbadc2a74c0a388cc21b92a7d6fb6976bffc2647500ebabcb53e00ea",
+    "mutants.json": "3acca77f8c1e71cce3ac6226f9a116923e9268b8bc583a991cd983bd5bc30309",
+    "cpu_cost.json": "6d2f751cd2f56208141fab0dbdefba08986c8508f16a46e6b965c285b995d40f",
+    "source_binding.json": "19290ce73b27f6f948c2cee614784ce13fef4cded231d1b648a3ce155abbf9a4",
+    "cleanup.json": "2a27e6f0bf45ecb715b9c88b7fc44bbe6134fdad5c41fec0251ca4ee1138cb77",
+    "collect_support.json": "2b33b48915758cda2065e38aa94fe15f464d742737382dcff27696db2e3f9a80"
+  }
+}

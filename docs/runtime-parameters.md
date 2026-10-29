@@ -28,6 +28,7 @@ restrictions on two-way feedback and batched host controls remain in place.
 |---|---|
 | Diffusion and damping overrides (`diffusion_parameters`, including `c_s`) | Not shipped; refused after the GPU qualification failed; may come in a later release after GPU qualification; no date or commitment |
 | MYNN coefficient overrides (`mynn_parameters`) | Experimental in v0.4.4; component/short two-domain GPU root PASS only |
+| Noah-MP W2 soil, canopy and snow overrides (`smcmax`, `dksat`, `bexp`, `psisat`, `hvt`, `hvb`, `z0sno`, `snow_emis`, `rsmin`) | Not shipped; all nine remain refused after the GPU qualification failed. CPU follow-up is in progress; GPU qualification is still required. |
 
 The deferred diffusion/damping family includes `c_s`, `diff_6th_factor`,
 `dampcoef`, `zdamp`, `w_alpha`, `w_beta` and `w_crit_cfl` as parameter-file

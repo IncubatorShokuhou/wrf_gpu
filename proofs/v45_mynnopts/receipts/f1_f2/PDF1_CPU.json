@@ -1,0 +1,51 @@
+{
+  "backend": "cpu",
+  "fixture_sha256": "8f96146074f013ff6c23c06ff6523a779acd97620239a108302241217a259dd5",
+  "source_root": "<USER_HOME>/wrf_gpu2_lanes/v45-mynnopts/archive",
+  "module_sha256": "245d41b913f00035217ab34627a04f95820fd629c022fe885593bcd43d2bae95",
+  "jax_version": "0.10.0",
+  "scope": "Bounded real-column PDF operator arm, shared by CPU sequencer smoke/GPU.\n\nThis is a component oracle/latency arm. It never claims coupled forecast,\nS3, roofline, E41 or release qualification.\n",
+  "arms": [
+    {
+      "option": 1,
+      "violations": {
+        "sgm": 0,
+        "qc_bl": 0,
+        "qi_bl": 0,
+        "cldfra_bl": 0
+      },
+      "compile_s": 0.11721566400956362,
+      "median_s": 0.00024097153800539672,
+      "columns": 384,
+      "levels": 44,
+      "native_export": {
+        "status": "NOT-APPLICABLE (CPU)"
+      },
+      "e41": "NOT-APPLICABLE (CPU)",
+      "memory": {
+        "argument_size_in_bytes": 540672,
+        "output_size_in_bytes": 202776,
+        "temp_size_in_bytes": 331776
+      }
+    }
+  ],
+  "finite": true,
+  "e41": "NOT-APPLICABLE (CPU)",
+  "cache_contract": {
+    "paths": {
+      "JAX_COMPILATION_CACHE_DIR": "<USER_HOME>/wrf_gpu2_lanes/v45-mynnopts/seq_MO16/cache_runs/cpu_20261028T011412Z_355314/pdf1/jax",
+      "GPUWRF_JAX_CACHE_DIR": "<USER_HOME>/wrf_gpu2_lanes/v45-mynnopts/seq_MO16/cache_runs/cpu_20261028T011412Z_355314/pdf1/jax",
+      "TRITON_CACHE_DIR": "<USER_HOME>/wrf_gpu2_lanes/v45-mynnopts/seq_MO16/cache_runs/cpu_20261028T011412Z_355314/pdf1/triton",
+      "CUDA_CACHE_PATH": "<USER_HOME>/wrf_gpu2_lanes/v45-mynnopts/seq_MO16/cache_runs/cpu_20261028T011412Z_355314/pdf1/cuda",
+      "XDG_CACHE_HOME": "<USER_HOME>/wrf_gpu2_lanes/v45-mynnopts/seq_MO16/cache_runs/cpu_20261028T011412Z_355314/pdf1/xdg",
+      "TMPDIR": "<USER_HOME>/wrf_gpu2_lanes/v45-mynnopts/seq_MO16/cache_runs/cpu_20261028T011412Z_355314/pdf1/tmp"
+    },
+    "persistent_enabled": false,
+    "actual_jax_cache_dir": "<USER_HOME>/wrf_gpu2_lanes/v45-mynnopts/seq_MO16/cache_runs/cpu_20261028T011412Z_355314/pdf1/jax",
+    "arm_bytes": 0,
+    "run_bytes": 0,
+    "run_cap_bytes": 805306368,
+    "cleanup": "after export+scan; native/E41 evidence retained"
+  },
+  "coupled_forecast_qualified": false
+}

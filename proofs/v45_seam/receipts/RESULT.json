@@ -1,0 +1,372 @@
+{
+  "verdict": "CPU_PRESCREEN_PASS; actual GPU and whole-root qualification pending",
+  "scope": "Same PROD d01 parent probe as NATIVE05, fresh CPU init and product force-down, native CUDA lowering, sm120 CompileOnly autotune0; no GPU execution.",
+  "attribution": "Introduced in candidate ON: OFF max406/STACK32, ON max574/STACK240. The 574-node multi-output body joins a 203-node U boundary target and 379-node U momentum tendency with nine shared nodes plus the tuple root. No Noah operation lies in this body. Do not transfer the older fused_d01 component-root664 exception or timing to it.",
+  "causal_limit": "The producer change touches inverse-SMCMAX/dry-conductivity/PSISAT consumers in Noah. Their combined graph change relocates the downstream fusion boundary; no single Noah edit is claimed uniquely causal. The exact four-line boundary-output intervention restores the gate, and deleting it recovers the measured failing program.",
+  "candidate_composition": "bb1662e4b41d15e337bbc985022f5933976dbbcd",
+  "main_patch": "src/gpuwrf/runtime/operational_mode.py: output-only U boundary barrier, native REAL + SMCMAX only",
+  "limits": {
+    "stack_bytes": 256,
+    "nonleaf_SASS": 1000,
+    "kInput_HLO": 500
+  },
+  "immutable_source": "git archive, all tracked blobs checked against pinned git object IDs before each arm; same import alias, atomic source replacement only between completed arms",
+  "original_harness_sha256": "f3561ab8fb638e2aad54245e4bcb0b333b91311c017bb72cf2f2970ee1d14f3d",
+  "wrapper_sha256": "9f7182e63224f59821b14192f00f43e7f0cce155ab15459616315180727cc06f",
+  "target_sha256": "b753abdddbace1e913de3767a1afbdfeba2b272e77f2be93658c766968e4960f",
+  "input_sha256": {
+    "namelist.input": "5ef3a96be3324deb712b0e0114288244bcf5f53edb21461fee7374aa766cef4b",
+    "wrfinput_d02": "b3013bbb337adbe20c10331f46b309d288424e54a41e9cc4ba2e8eba53abb16f",
+    "wrfbdy_d01": "296cef912e17dc0dfff4b78103dedfb1329cd184de5bc2cd0d44cc6edf823599",
+    "wrfinput_d01": "1024ddb7d6badc958fb1a4f385117ce5c46d20249b75bcce2ea4261d34f648f0",
+    "SHA256SUMS": "bcdeaaa5eb0ccc05437cf276bd970ed3486f569060d90b09f1410a6fe02b1a60"
+  },
+  "versions": {
+    "jax": "0.10.0",
+    "jaxlib": "0.10.0"
+  },
+  "same_work_options_verified": true,
+  "producer_reproduction_full_constant_HLO_identical": true,
+  "off_full_constant_HLO_and_all_native_bodies_identical": true,
+  "native_bodies_unchanged_by_fence": true,
+  "arms": {
+    "OFF01": {
+      "source_commit": "8e3cca4d8182b0fb60313b760557778ed0f9466b",
+      "selected": [],
+      "static_kwargs": {
+        "n_steps": 1,
+        "cadence": 33
+      },
+      "raw_hlo_full_sha256": "7a60f4226a2bf0f63cfed660b42e40adfefbe68f5cdfd80228638abe9e2daeec",
+      "full_constant_raw_proto_sha256": "1a4dbf42971cbe18059bfccf36b35dce47bc3269fc2a2edd5cc178b51d64e2c6",
+      "stablehlo_sha256": "8429e23df80eb1d4cb2d2af1aac281a778861a619dd4e92e96cff81837d678bc",
+      "traced_pallas_calls": 163,
+      "census_errors": [],
+      "native_gate": "PASS",
+      "hard_stack_gate": "PASS",
+      "max_stack_B": 32,
+      "kernels": 1101,
+      "n_fusions": 1387,
+      "transpose_fusions": 556,
+      "compiled_memory": {
+        "argument_size_in_bytes": 126946832,
+        "output_size_in_bytes": 114578436,
+        "temp_size_in_bytes": 525258464,
+        "alias_size_in_bytes": 114576964,
+        "generated_code_size_in_bytes": 0
+      },
+      "compile_s": 162.62868445995264,
+      "wall_s": 418.142499721027,
+      "peak_rss_KiB": 6353128,
+      "receipt": "<USER_HOME>/wrf_gpu2_lanes/v45-seam/OFF01/receipt.json",
+      "receipt_sha256": "4ba20cd27c479f8a517eca5ed20c1a4a834d3283c07c1955920ff512f6085b19",
+      "largest_kInput_HLO": 406,
+      "kInput_above500": [],
+      "nonleaf_over1000": []
+    },
+    "ON01": {
+      "source_commit": "8e3cca4d8182b0fb60313b760557778ed0f9466b",
+      "selected": [
+        "bexp",
+        "dksat",
+        "hvb",
+        "hvt",
+        "psisat",
+        "rsmin",
+        "smcmax",
+        "snow_emis",
+        "z0sno"
+      ],
+      "static_kwargs": {
+        "n_steps": 1,
+        "cadence": 33
+      },
+      "raw_hlo_full_sha256": "b003c553c7348ed9c38bb38fab9f4909e59569345c808d285708185015ad9755",
+      "full_constant_raw_proto_sha256": "9fa5e727834c501cc98c768460b163368ebd76256a12c0a3e3e271e00bde538c",
+      "stablehlo_sha256": "1c9efe1e77b6ad7f18e3b717adc15555d88e1779ec21424920424f5ba2bffa4f",
+      "traced_pallas_calls": 163,
+      "census_errors": [],
+      "native_gate": "FAIL",
+      "hard_stack_gate": "PASS",
+      "max_stack_B": 240,
+      "kernels": 948,
+      "n_fusions": 1210,
+      "transpose_fusions": 412,
+      "compiled_memory": {
+        "argument_size_in_bytes": 127954832,
+        "output_size_in_bytes": 114578436,
+        "temp_size_in_bytes": 468281152,
+        "alias_size_in_bytes": 114576964,
+        "generated_code_size_in_bytes": 0
+      },
+      "compile_s": 174.71396576298866,
+      "wall_s": 412.8328824680066,
+      "peak_rss_KiB": 6448760,
+      "receipt": "<USER_HOME>/wrf_gpu2_lanes/v45-seam/ON01/receipt.json",
+      "receipt_sha256": "1362f54fdb97d667fcb9235669f8b5d8fed83e411916480a09676aa8790670fd",
+      "largest_kInput_HLO": 574,
+      "kInput_above500": [
+        [
+          "input_transpose_fusion.181",
+          574
+        ]
+      ],
+      "nonleaf_over1000": []
+    },
+    "FENCE01": {
+      "source_commit": "bb1662e4b41d15e337bbc985022f5933976dbbcd",
+      "selected": [
+        "bexp",
+        "dksat",
+        "hvb",
+        "hvt",
+        "psisat",
+        "rsmin",
+        "smcmax",
+        "snow_emis",
+        "z0sno"
+      ],
+      "static_kwargs": {
+        "n_steps": 1,
+        "cadence": 33
+      },
+      "raw_hlo_full_sha256": "608b4e6fd84e087528ea9b4ac751ac31d31462b7ad20762467a945e3c50fe370",
+      "full_constant_raw_proto_sha256": "9487e0ff8652a75ec0d4370dee805da18345b290502e8aa1c31f9a029c57d99a",
+      "stablehlo_sha256": "29adb8b16e186aa4b6a60d29e6bbfe3599d03aebc700f6a35ab3c863993fefe7",
+      "traced_pallas_calls": 163,
+      "census_errors": [],
+      "native_gate": "PASS",
+      "hard_stack_gate": "PASS",
+      "max_stack_B": 240,
+      "kernels": 983,
+      "n_fusions": 1238,
+      "transpose_fusions": 422,
+      "compiled_memory": {
+        "argument_size_in_bytes": 127954832,
+        "output_size_in_bytes": 114578436,
+        "temp_size_in_bytes": 468281152,
+        "alias_size_in_bytes": 114576964,
+        "generated_code_size_in_bytes": 0
+      },
+      "compile_s": 127.76479353994364,
+      "wall_s": 322.20408611395396,
+      "peak_rss_KiB": 6473564,
+      "receipt": "<USER_HOME>/wrf_gpu2_lanes/v45-seam/FENCE01/receipt.json",
+      "receipt_sha256": "ae675b6411c718a95b207fde171ae97874cf492d59bc4a3d8a2ae8860079661b",
+      "largest_kInput_HLO": 407,
+      "kInput_above500": [],
+      "nonleaf_over1000": []
+    },
+    "FENCE_OFF01": {
+      "source_commit": "bb1662e4b41d15e337bbc985022f5933976dbbcd",
+      "selected": [],
+      "static_kwargs": {
+        "n_steps": 1,
+        "cadence": 33
+      },
+      "raw_hlo_full_sha256": "7a60f4226a2bf0f63cfed660b42e40adfefbe68f5cdfd80228638abe9e2daeec",
+      "full_constant_raw_proto_sha256": "ab7e71a7c4a1427a3da21ef484e27ad30cd0970e5b5134dcf7b39b947135a697",
+      "stablehlo_sha256": "8429e23df80eb1d4cb2d2af1aac281a778861a619dd4e92e96cff81837d678bc",
+      "traced_pallas_calls": 163,
+      "census_errors": [],
+      "wall_s": 189.0711448380025,
+      "peak_rss_KiB": 6394544,
+      "receipt": "<USER_HOME>/wrf_gpu2_lanes/v45-seam/FENCE_OFF01/receipt.json",
+      "receipt_sha256": "51ee3715061fa6c3291c4513e0ebcf37faf33c8f32355374d2a8aa394e664c58"
+    }
+  },
+  "physics_prefix_reuse": {
+    "scope": "Bind existing physics-prefix receipts to the boundary-only experiment.\n\nThis source-equivalence evidence carries the two existing prefix results only;\nit does not establish whole-root or actual GPU identity after a fusion change.\n",
+    "before": "8e3cca4d8182b0fb60313b760557778ed0f9466b",
+    "after": "bb1662e4b41d15e337bbc985022f5933976dbbcd",
+    "changed_functions": [
+      "_acoustic_core_state_from_prep"
+    ],
+    "unchanged_local_physics_call_closure": [
+      "_acoustic_lateral_bc_flags",
+      "_apply_data_assimilation_forcing",
+      "_coupled_physics_moist_tendf",
+      "_dry_physics_tendencies_from_state_delta",
+      "_explicit_noahclassic",
+      "_explicit_pleim_xiu",
+      "_explicit_ruc",
+      "_explicit_slab",
+      "_explicit_ssib",
+      "_feedback_radiation_for_sums",
+      "_kf_cadence_step",
+      "_lake_radiation_state",
+      "_lane_noahmp_static",
+      "_microphysics_interior_only",
+      "_microphysics_spec_zone",
+      "_microphysics_wrf_order_enabled",
+      "_noahmp_clock",
+      "_noahmp_julian_advance_enabled",
+      "_noahmp_params",
+      "_pbl_f_qi",
+      "_pbl_mynn_number_scalars",
+      "_pbl_qni_active",
+      "_pbl_scalar_rate",
+      "_phys_tend_rk_wrf_enabled",
+      "_physics_step_forcing",
+      "_publish_topo_wind_u10",
+      "_rad_clock_base",
+      "_refresh_noahmp_rad",
+      "_refresh_rrtmg_driver",
+      "_rrtmg_pbl_cloud_kwargs",
+      "_solar_current_coszen",
+      "_source_leaf_dry_tendencies",
+      "_topo_wind_ctopo",
+      "_validate_solar_runtime"
+    ],
+    "reused": [
+      {
+        "receipt": "<USER_HOME>/wrf_gpu2_lanes/v45-lsmparams/BISECT_FIXED_PHYSICS01/receipt.json",
+        "sha256": "8c065386c0551bf7e948441ccd829364c7efdc67ba47db1630a59def4404b4fb",
+        "commit": "3e45df2309a46a4d6173215ed082008fbf8aa226",
+        "byte_identical_leaves": 208
+      },
+      {
+        "receipt": "<USER_HOME>/wrf_gpu2_lanes/v45-lsmparams/BISECT_FIXED_PRE_PBL01/receipt.json",
+        "sha256": "b6d286a7d6a0b45413946c05dcc263ed9ca0a2e298bb39ebf934316850781628",
+        "commit": "21b41780165ef456eda9b28955cf0d25fb6365ef",
+        "byte_identical_leaves": 199
+      }
+    ],
+    "whole_root_identity": "UNMEASURED",
+    "actual_gpu_identity": "UNMEASURED"
+  },
+  "compiler_comparator_checks": {
+    "checks": 6,
+    "passed": true,
+    "scope": "alpha rename invariant; constant/parameter/transpose/layout/ROOT mutants rejected; no model claim"
+  },
+  "performance": {
+    "static_kernel_delta": 35,
+    "static_kernel_percent": 3.691983122362874,
+    "compiled_memory_delta_bytes": {
+      "argument_size_in_bytes": 0,
+      "output_size_in_bytes": 0,
+      "temp_size_in_bytes": 0,
+      "alias_size_in_bytes": 0,
+      "generated_code_size_in_bytes": 0
+    },
+    "compile_wall_scope": "Measured on shared CPU cores; not a controlled compiler speed comparison.",
+    "dynamic_launches": "UNKNOWN",
+    "GPU_wall": "UNKNOWN",
+    "GPU_transfers": "UNKNOWN",
+    "GPU_peak_VRAM": "UNKNOWN"
+  },
+  "next_gate": "Manager/producer: final composed candidate child/root numerical gates, actual GPU E41 and matched timing/transfer/memory measurements. No release, admission or WRF fidelity claim from these CPU prescreens.",
+  "archive_collection": {
+    "commit": "be26321f89",
+    "src_tree": "1c272269bc93095c84c94ee41a6faed021295cfe",
+    "tests_tree": "0810f89c46dc1fe47636373125fe63d2a5f64435",
+    "verdict": "PASS",
+    "collected": 21769,
+    "elapsed_s": 18.57,
+    "scope": "full pytest --collect-only on git archive, not 21769 tests executed",
+    "log_sha256": "5fd87bc82dec119a219cdbbc75945a2b17db1195051007b5bc9a38a9e17f1547",
+    "exact_archive_extras": [
+      {
+        "proved_missing_by": "<USER_HOME>/wrf_gpu2_lanes/v45-seam/COLLECT01.log",
+        "files": {
+          "proofs/w41_nestqual/NESTQUAL_SUMMARY.json": 18629,
+          "proofs/t_cfix_pblmix/gbm_rthraten_fixture.json": 544969,
+          "proofs/t_cfix_sfc/fixtures/sfclay_wrf_oracle.json": 4333,
+          "proofs/v060_wdm6/savepoints/wdm6_case_5.json": 22488,
+          "proofs/s2_glacier/oracle_manifest.json": 11309,
+          "proofs/v013/savepoints_wsm7/wsm7_case_3.json": 22036,
+          "proofs/s1_obsnudge/savepoints/MANIFEST.json": 32297,
+          "proofs/v013/savepoints_wsm7/wsm7_case_5.json": 21303,
+          "proofs/t_cfix_pblmix/qnse_sice_fixture.json": 90548,
+          "proofs/s1_specnudge/savepoints/MANIFEST.json": 62779,
+          "proofs/s1_obsnudge/full/savepoints/SPREAD_MANIFEST.json": 24938,
+          "proofs/t_mpout/cpu_history_schema.json": 59673,
+          "proofs/o2_fdda/savepoints/MANIFEST.json": 15647,
+          ".agent/sprints/2026-09-18-v0250-acoustic-while-collapse/zolrib_unroll_prototype.py": 6350,
+          "proofs/v013/savepoints_wsm7/wsm7_case_2.json": 22385,
+          "proofs/w41_stoch/FIELD_SPP_CPU_ALL_FRAMES.json": 68956,
+          "proofs/v034/f2_oracles/morrison_aero_opt0/morr_aero_opt0_case_7.json": 39792,
+          "proofs/v060_wdm6/savepoints/wdm6_case_6.json": 20363,
+          "proofs/v034/f2_oracles/morrison_aero_opt0/morr_aero_opt0_case_4.json": 45424,
+          "proofs/v013/savepoints_wsm7/wsm7_case_4.json": 23129,
+          "proofs/v040/cuplus/fixtures.json": 80896,
+          "proofs/t_writer/cpu_schema.json": 144262,
+          "proofs/v034/f2_oracles/morrison_aero_opt0/morr_aero_opt0_case_1.json": 39493,
+          "proofs/v034/f2_oracles/morrison_aero_opt0/morr_aero_opt0_case_2.json": 44777,
+          "proofs/v034/f2_oracles/morrison_aero_opt0/morr_aero_opt0_case_5.json": 43079,
+          "proofs/t_cfix_sfc/fixtures/myjsfc_wrf_oracle.json": 2282,
+          "proofs/t_wsmdz/moist_prep_oracle.json": 2942,
+          "proofs/t_calleraudit/f24_statement_oracle.json": 39294,
+          "proofs/v034/f2_oracles/morrison_aero_opt0/morr_aero_opt0_case_3.json": 44702,
+          ".agent/sprints/2026-09-19-v0250-planning-opus/tools/hlo_structure.py": 6212,
+          "proofs/u2_tracers/pbl_fixture.json": 148636,
+          "proofs/w44_constfold/wrf_residual_oracle.json": 7214,
+          "proofs/t_cammgws/DLF2_CPU_ALL_FRAMES.json": 6833,
+          "proofs/t_cfix_sfc/fixtures/blgfs_wrf_oracle.npz": 271905,
+          "proofs/t_classd/CONSTANT_CPU_ALL_FRAMES.json": 27797,
+          "proofs/v060_wdm6/savepoints/wdm6_case_2.json": 24045,
+          "proofs/v060_wdm6/savepoints/wdm6_case_1.json": 20871,
+          "proofs/v013/savepoints_wsm7/wsm7_case_6.json": 17880,
+          "proofs/v034/f2_oracles/morrison_aero_opt0/morr_aero_opt0_case_6.json": 39372,
+          "proofs/u2_land/advanced_water_oracle.json": 239479,
+          "proofs/s1_obsnudge/full/savepoints/ERROR_MANIFEST.json": 2626,
+          "proofs/v060_wdm6/savepoints/wdm6_case_3.json": 23711,
+          "proofs/t_writer_fields/INACTIVE_CPU_ALL_FRAMES.json": 251822,
+          "proofs/t_cfix_pblmix/mynn_number_fixture.json": 338462,
+          ".agent/sprints/2026-07-30-v0250-m0-session-label-gpt-critic/historical_evidence/test_m0_session_label_gpt_critic.py": 30772,
+          ".agent/sprints/2026-08-09-v0250-m0-r5-kernel-lock-authority/build_fresh_r5_coordination_receipt.py": 19269,
+          "proofs/v060_wdm6/savepoints/wdm6_case_4.json": 24549,
+          "proofs/v013/savepoints_wsm7/wsm7_case_1.json": 18321,
+          "proofs/s1_lake/fixtures/manifest.json": 56589
+        },
+        "total_bytes": 3175440
+      },
+      {
+        "proved_missing_by": "<USER_HOME>/wrf_gpu2_lanes/v45-seam/COLLECT02.log",
+        "files": {
+          "proofs/t_wsmdz/radius_flags.json": 2048,
+          "proofs/s2_glacier/glacier_oracle.npz": 86384,
+          "proofs/t_writer_fields/producer_samples.npz": 24580,
+          "proofs/t_cammgws/DLF2_SOURCE_AUDIT.json": 5409,
+          "proofs/t_cfix_sfc/fixtures/blgfs_wrf_oracle.json": 1619
+        },
+        "total_bytes": 120040
+      },
+      {
+        "proved_missing_by": "<USER_HOME>/wrf_gpu2_lanes/v45-seam/COLLECT03.log",
+        "files": {
+          "proofs/t_wsmdz/wsm3_phase_oracle.json": 5453,
+          "proofs/t_cfix_sfc/fixtures/blgfs_capture_oracle.npz": 323353
+        },
+        "total_bytes": 328806
+      },
+      {
+        "proved_missing_by": "<USER_HOME>/wrf_gpu2_lanes/v45-seam/COLLECT04.log",
+        "files": {
+          "proofs/t_cfix_sfc/fixtures/blgfs_capture_oracle.json": 1891
+        },
+        "total_bytes": 1891
+      }
+    ],
+    "cpu_affinity": [
+      12,
+      28
+    ],
+    "nice": 19,
+    "memory_limit_GiB": 8,
+    "swap_limit": 0,
+    "warnings": "one existing unregistered slow mark",
+    "release_tool_import": "GPUWRF_PRIVATE_REPO points at the private checkout; no Git metadata invented in archive",
+    "source_patch_id": "e86d927a7a71613e514e0f5a15802c827906ccf8",
+    "source_patch_same_as_measured_composition": true
+  },
+  "cleanup": {
+    "temporary_archive_removed": true,
+    "pytest_basetemp_removed": true,
+    "compiler_cache_dirs_removed": true,
+    "compiler_protos_removed_after_attribution": true,
+    "retained": "optimized HLOs, receipts, source manifests and reproduction helpers",
+    "other_lane_artifacts_touched": false
+  }
+}

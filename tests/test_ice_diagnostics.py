@@ -55,7 +55,9 @@ def test_selected_allocation_and_real_lock(mp, count, monkeypatch):
     state = sc.State.zeros(grid, mp_physics=mp).ensure_conditional_leaves(mp_physics=mp)
     active = {n for n in ICE_DIAGNOSTIC_LEAVES if getattr(state, n) is not None}
     assert active == set(ice_diagnostic_leaves(mp)) and len(active) == count
-    assert sc.State.__slots__[-12:] == ICE_DIAGNOSTIC_LEAVES
+    from gpuwrf.contracts.precision import MYNN_CLOUDPDF_LEAVES
+    assert sc.State.__slots__[-15:-3] == ICE_DIAGNOSTIC_LEAVES
+    assert sc.State.__slots__[-3:] == MYNN_CLOUDPDF_LEAVES
     forced = _enforce_operational_precision(state, force_fp64=True)
     for n in active:
         assert DEFAULT_DTYPES.dtype_for(n) == jnp.float32

@@ -14,7 +14,7 @@ from jax import config
 import numpy as np
 
 from gpuwrf.contracts.state import SCALAR_BOUNDARY_OPTIONAL_LEAVES, EXTRA_SCALAR_BOUNDARY_SPECIES, P3_STATE_LEAVES, State
-from gpuwrf.contracts.precision import GWDO_DIAGNOSTIC_LEAVES, LES_TKE_LEAVES, MP_RE_DIAGNOSTIC_LEAVES, SMS_CARRY_LEAVES, FERRIER_CARRY_LEAVES, GODDARD4ICE_CARRY_LEAVES, GODDARD4ICE_HISTORY_LEAVES, THOMPSON_HAIL_SURFACE_LEAVES, EPSILON_PBL_LEAVES, JENSEN_STATE_LEAVES, NTU_STATE_LEAVES, ICE_DIAGNOSTIC_LEAVES, les_tke_active
+from gpuwrf.contracts.precision import GWDO_DIAGNOSTIC_LEAVES, LES_TKE_LEAVES, MP_RE_DIAGNOSTIC_LEAVES, SMS_CARRY_LEAVES, FERRIER_CARRY_LEAVES, GODDARD4ICE_CARRY_LEAVES, GODDARD4ICE_HISTORY_LEAVES, THOMPSON_HAIL_SURFACE_LEAVES, EPSILON_PBL_LEAVES, JENSEN_STATE_LEAVES, NTU_STATE_LEAVES, ICE_DIAGNOSTIC_LEAVES, les_tke_active, MYNN_CLOUDPDF_LEAVES, mynn_cloudpdf_leaves
 from gpuwrf.io.pbl_epsilon_schema import EPSILON_PBL_SCHEMA_VERSION, epsilon_pbl_active, validate_epsilon_state
 from gpuwrf.contracts.cammg_fields import STATE_FIELDS as CAMMG_STATE_FIELDS
 from gpuwrf.physics.cammg.restart import validate as validate_cammg
@@ -128,7 +128,7 @@ def _validate_state_field_order(recorded: tuple[str, ...]) -> None:
     # Held fields may be absent only when inactive, never additive cold starts.
     optional = (*ADDITIVE_STATE_LEAVES_SINCE_V2, *GWDO_DIAGNOSTIC_LEAVES, *LES_TKE_LEAVES,
                 *WRITER_PROFILE_LEAVES,
-                "sfc_wspd", *MP_RE_DIAGNOSTIC_LEAVES, *SMS_CARRY_LEAVES, *P3_STATE_LEAVES, *JENSEN_STATE_LEAVES, *FERRIER_CARRY_LEAVES, *GODDARD4ICE_CARRY_LEAVES, *GODDARD4ICE_HISTORY_LEAVES, *THOMPSON_HAIL_SURFACE_LEAVES, *EPSILON_PBL_LEAVES, "tracers", "tracer_bdy", "tracer_budget", *NTU_STATE_LEAVES, *CAMMG_STATE_FIELDS, *ICE_DIAGNOSTIC_LEAVES)
+                "sfc_wspd", *MP_RE_DIAGNOSTIC_LEAVES, *SMS_CARRY_LEAVES, *P3_STATE_LEAVES, *JENSEN_STATE_LEAVES, *FERRIER_CARRY_LEAVES, *GODDARD4ICE_CARRY_LEAVES, *GODDARD4ICE_HISTORY_LEAVES, *THOMPSON_HAIL_SURFACE_LEAVES, *EPSILON_PBL_LEAVES, "tracers", "tracer_bdy", "tracer_budget", *NTU_STATE_LEAVES, *CAMMG_STATE_FIELDS, *ICE_DIAGNOSTIC_LEAVES, *MYNN_CLOUDPDF_LEAVES)
     if any(leaf not in optional for leaf in missing):
         raise ValueError(
             "checkpoint State field order is missing non-additive leaves: "
@@ -337,6 +337,8 @@ def _read_payload(path: str | Path, *, namelist=None) -> dict[str, Any]:
     validate_epsilon_state(fields,payload.get('namelist'),payload.get('epsilon_pbl_schema_version'))
     if les_tke_active(payload.get("namelist")) and any(fields.get(name) is None for name in LES_TKE_LEAVES):
         raise ValueError("km_opt=2 checkpoint is missing the prognostic LES TKE (WRF tke_2) (E78)")
+    from gpuwrf.io.mynn_cloudpdf_schema import validate as validate_cloudpdf
+    validate_cloudpdf(fields, payload.get("namelist"), namelist)
     validate_cammg(fields,payload.get("namelist"),payload.get("cammg_schema_version"))
     if namelist is not None:
         validate_cammg(fields,namelist,payload.get("cammg_schema_version"))

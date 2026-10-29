@@ -32,7 +32,9 @@ from __future__ import annotations
 
 import os
 
+import jax
 import jax.numpy as jnp
+import numpy as np
 
 from gpuwrf.contracts.real_constfold import R4, real_constant
 from gpuwrf.physics.mynn_edmf import _qsat_blend
@@ -339,3 +341,175 @@ def dmp_shallow_cu_overwrite(
         (cldfra_bl[..., :1], cf_new, cldfra_bl[..., nz - 1:]), axis=-1
     )
     return qc_bl, cldfra_bl
+
+
+# ---------------------------------------------------------------------------
+# bl_mynn_cloudpdf = 0 / 1 (and the -1/-2 mass-flux-isolation variants).
+#
+# Opt-in WRF namelist alternatives to the Registry default CASE(2) above
+# (Registry.EM_COMMON:2477 "0:original, 1:Kuwano, 2:Chaboreau-Bechtold").
+# Transcribed from the pristine WRF 4.7.1 module_bl_mynnedmf.F90
+# mym_condensation: CASE(0) :3476-3542, CASE(1,-1) :3544-3599, negative-option
+# zeroing :3807-3814, kte zeroing :3816-3821.  Both forms run k = kts..kte-1,
+# have NO tropopause cut and NO cldfra<0.001 zeroing (those belong to CASE 2).
+# Caller wiring (mynn_bl_driver :905-913): thl1/sqw1 (specific, no snow),
+# tsq1/qsq1/cov1/sh1/el1 are the PREVIOUS-step MYNN state (driver copy-in
+# module_bl_mynnedmf_driver.F90:420-428).  vt/vq/sgm outputs are dead for
+# closure 2.6 + mixlength 1 (use_buoy=.false., see module docstring).
+# ---------------------------------------------------------------------------
+
+_F4 = np.float32
+_R_D4 = _F4(287.0)                     # module_model_constants.F:19
+_R_V4 = _F4(461.6)                     # :22
+_CP4 = _F4(7.0) * _R_D4 / _F4(2.0)     # :20
+_XLV4 = _F4(2.5e6)                     # :55
+_EP_2_4 = _R_D4 / _R_V4                # :81
+_EP_3_4 = _F4(1.0) - _EP_2_4           # module_bl_mynnedmf_common.F90:73
+_XLVCP4 = _XLV4 / _CP4                 # common :79
+_T0C4 = _F4(273.15)                    # SVPT0 :79
+_TICE4 = _F4(240.0)                    # common :68
+_B2_4 = _F4(15.0)                      # module_bl_mynnedmf.F90:283
+_RR2_4 = _F4(0.7071068)                # :313
+_RRP_4 = _F4(0.3989423)                # :313
+_ESAT_J = tuple(map(_F4, (0.611583699e03, 0.444606896e02, 0.143177157e01, 0.264224321e-1,
+                          0.299291081e-3, 0.203154182e-5, 0.702620698e-8, 0.379534310e-11,
+                          -0.321582393e-13)))
+_ESAT_K = tuple(map(_F4, (0.609868993e03, 0.499320233e02, 0.184672631e01, 0.402737184e-1,
+                          0.565392987e-3, 0.521693933e-5, 0.307839583e-7, 0.105785160e-9,
+                          0.161444444e-12)))
+
+CLOUDPDF_OPTIONS = frozenset({0, 1, 2})
+
+
+def esat_blend(t):
+    """WRF ``esat_blend`` (module_bl_mynnedmf.F90, FUNCTION esat_blend), Pa."""
+
+    xc = jnp.maximum(_F4(-80.0), t - _T0C4)
+
+    def horner(coef):
+        acc = coef[8]
+        for c in coef[7::-1]:
+            acc = c + xc * acc
+        return acc
+
+    esl = horner(_ESAT_J)
+    esi = horner(_ESAT_K)
+    # Preserve WRF's REAL division. A folded reciprocal changes blended ESAT
+    # by one ulp and is amplified in near-saturated, minimum-variance clouds.
+    chi = ((_T0C4 - _F4(6.0)) - t) / jax.lax.optimization_barrier((_T0C4 - _F4(6.0)) - _TICE4)
+    blend = (_F4(1.0) - chi) * esl + chi * esi
+    return jnp.where(t >= (_T0C4 - _F4(6.0)), esl, jnp.where(t <= _TICE4, esi, blend))
+
+
+def _alp_bet(t, p, exner):
+    """Shared CASE(0)/(1) saturation terms (:3489-3497 / :3547-3555)."""
+
+    esat = esat_blend(t)
+    qsl = _EP_2_4 * esat / jnp.maximum(_F4(1.0e-4), p - _EP_3_4 * esat)
+    dqsl = qsl * _EP_2_4 * _XLV4 / (_R_D4 * (t * t))  # r_d*t**2
+    alp = _F4(1.0) / (_F4(1.0) + dqsl * _XLVCP4)
+    bet = dqsl * exner
+    return qsl, alp, bet
+
+
+def _case0_sigma(tsq, qsq, cov, bet):
+    """CASE(0) Sommeria-Deardorff sigma; t3sq/r3sq/c3sq are WRF DOUBLE (:3410).
+
+    ``bet(k)**2`` and ``2.0*bet(k)`` are REAL products promoted only where
+    they meet the DOUBLE operands (Fortran mixed-mode rule); the DOUBLE
+    ``SQRT(MAX(r3sq,1d-10))`` is rounded to REAL on assignment to ``sgm``.
+    """
+
+    out_dtype = jnp.result_type(qsq)
+    bet2 = bet * bet
+    bet_x2 = _F4(2.0) * bet
+    with jax.enable_x64(True):
+        f64 = jnp.float64
+        t3sq = jnp.maximum(jnp.asarray(tsq).astype(f64), 0.0)
+        r3sq = jnp.maximum(jnp.asarray(qsq).astype(f64), 0.0)
+        c3sq = jnp.asarray(cov).astype(f64)
+        c3sq = jnp.copysign(jnp.minimum(jnp.abs(c3sq), jnp.sqrt(t3sq * r3sq)), c3sq)
+        r3sq = (r3sq + bet2.astype(f64) * t3sq) - bet_x2.astype(f64) * c3sq
+        sgm = jnp.sqrt(jnp.maximum(r3sq, 1.0e-10)).astype(out_dtype)
+    return sgm
+
+
+def _case1_sigma(thl, qw, dz, el, sh, alp, bet):
+    """CASE(1,-1) Nakanishi-Niino 2004 eq. B6 sigma (:3557-3566); REAL dth/dqw/dzk."""
+
+    nz = thl.shape[-1]
+    idx = jnp.arange(nz - 1)
+    dzk = jnp.where(idx == 0, _F4(0.5) * dz[..., : nz - 1], dz[..., : nz - 1])
+    thl_km1 = jnp.concatenate((thl[..., :1], thl[..., : nz - 2]), axis=-1)
+    qw_km1 = jnp.concatenate((qw[..., :1], qw[..., : nz - 2]), axis=-1)
+    thl_k, qw_k = thl[..., : nz - 1], qw[..., : nz - 1]
+    dth = _F4(0.5) * (thl[..., 1:] + thl_k) - _F4(0.5) * (thl_k + thl_km1)
+    dqw = _F4(0.5) * (qw[..., 1:] + qw_k) - _F4(0.5) * (qw_k + qw_km1)
+    a = alp[..., : nz - 1]
+    b = bet[..., : nz - 1]
+    e = el[..., : nz - 1]
+    s = sh[..., : nz - 1]
+    grad = dqw / dzk - b * (dth / dzk)
+    var = ((((a * a) * jnp.maximum(e * e, _F4(0.1))) * _B2_4) * jnp.maximum(s, _F4(0.03))) / _F4(4.0) * (grad * grad)
+    return jnp.sqrt(jnp.maximum(var, _F4(1.0e-10)))
+
+
+def _sommeria_deardorff_cloud(qmq, sgm, alp, t):
+    """Shared CASE(0)/(1) cloud fraction + condensate (:3511-3524 / :3567-3581)."""
+
+    q1 = qmq / sgm
+    cld = _F4(0.5) * (_F4(1.0) + jax.lax.erf(q1 * _RR2_4))
+    eq1 = _RRP_4 * jnp.exp(_F4(-0.5) * q1 * q1)
+    qll = jnp.maximum(cld * q1 + eq1, _F4(0.0))
+    ql = alp * sgm * qll
+    liq_frac = jnp.minimum(_F4(1.0), jnp.maximum(_F4(0.0), (t - _F4(240.0)) / _F4(29.0)))
+    return liq_frac * ql, (_F4(1.0) - liq_frac) * ql, cld
+
+
+def _cloudpdf01_columns(cloudpdf, *, theta, p, exner, dz, thl, qw, tsq, qsq, cov, el, sh):
+    """CASE(0)/(1) on levels kts..kte-1: ``(qc_bl, qi_bl, cldfra_bl, sgm)``."""
+
+    nz = theta.shape[-1]
+    sl = (Ellipsis, slice(0, nz - 1))
+    t = theta * exner
+    qsl, alp, bet = _alp_bet(t, p, exner)
+    if cloudpdf == 0:
+        sgm = _case0_sigma(tsq[sl], qsq[sl], cov[sl], bet[sl])
+    else:
+        sgm = _case1_sigma(thl, qw, dz, el, sh, alp, bet)
+    qmq = qw[sl] - qsl[sl]
+    qc_bl, qi_bl, cld = _sommeria_deardorff_cloud(qmq, sgm, alp[sl], t[sl])
+    return qc_bl, qi_bl, cld, sgm
+
+
+def mym_condensation_cloudpdf01(
+    cloudpdf,
+    *,
+    theta,       # (..., nz) DRY potential temperature (WRF th1)
+    p,           # (..., nz)
+    exner,       # (..., nz)
+    dz,          # (..., nz)
+    thl,         # (..., nz) liquid potential temperature (WRF thl1)
+    qw,          # (..., nz) total water specific content (sqw1 = sqv+sqc+sqi)
+    tsq=None,    # (..., nz) previous-step <thl'2>   (CASE 0)
+    qsq=None,    # (..., nz) previous-step <qw'2>    (CASE 0)
+    cov=None,    # (..., nz) previous-step <thl'qw'> (CASE 0)
+    el=None,     # (..., nz) previous-step el_pbl    (CASE 1)
+    sh=None,     # (..., nz) previous-step sh3d      (CASE 1)
+):
+    """WRF ``mym_condensation`` for ``bl_mynn_cloudpdf`` in {0, 1, -1}.
+
+    Returns ``(qc_bl, qi_bl, cldfra_bl)`` on all ``nz`` levels; level kte is
+    zero (:3819-3821).  ``cloudpdf=-1`` evaluates CASE(1) then zeroes the SGS
+    cloud (:3807-3814, "isolating on the mass-flux clouds").
+    """
+
+    if cloudpdf not in (0, 1, -1):
+        raise ValueError(f"mym_condensation_cloudpdf01 handles cloudpdf 0/1/-1, got {cloudpdf!r}")
+    qc_bl, qi_bl, cld, _sgm = _cloudpdf01_columns(
+        cloudpdf, theta=theta, p=p, exner=exner, dz=dz, thl=thl, qw=qw,
+        tsq=tsq, qsq=qsq, cov=cov, el=el, sh=sh)
+    if cloudpdf < 0:
+        qc_bl, qi_bl, cld = (jnp.zeros_like(qc_bl),) * 3
+    top = jnp.zeros_like(qc_bl[..., :1])
+    return tuple(jnp.concatenate((x, top), axis=-1) for x in (qc_bl, qi_bl, cld))

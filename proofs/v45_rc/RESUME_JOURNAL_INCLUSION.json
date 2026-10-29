@@ -1,0 +1,174 @@
+{
+  "schema": "v45-rc.resume-journal-inclusion.v1",
+  "parent": "4c655dd86a9a8d59f7b6f7d8a9344118827c3b8a",
+  "candidate": "a069c78b2cb929f811f2f84759cecd38fa14c424",
+  "source_tree": "827470e10f7e29cad1613e18d0a0c84f8f95693f",
+  "authorization": "manager2026-10-28T11:07:48Z",
+  "picks": {
+    "1e50d23c44": "91d2055478",
+    "4c3dc4eac8": "dce2df0e93",
+    "cc83f6087c": "a069c78b2c"
+  },
+  "conflicts": [],
+  "scope_changed_files": [
+    "docs/checkpoint-branching.md",
+    "src/gpuwrf/integration/nested_pipeline.py",
+    "src/gpuwrf/runtime/restart_store.py",
+    "src/gpuwrf/runtime/runtime_file_readers.json",
+    "tests/v025/restart/test_restart_store.py",
+    "tests/v025/restart/test_runtime_data_identity.py"
+  ],
+  "upstream_review": {
+    "commit": "6f40e12485d21e6e5bf17f86dbe9394917fa5b9b",
+    "verdict": "cr-v45 MERGE11:07:17Z",
+    "proof": "<USER_HOME>/wrf_gpu2_lanes/cr-v05pre/VERDICT_v45-contrasts_6f40e12485d21e6e5bf17f86dbe9394917fa5b9b.md",
+    "sha256": "eea4e030a0e739fb2584298a11506f67da6f566d5550f2299923c3e36509d7fb"
+  },
+  "registry": {
+    "head": "a069c78b2cb929f811f2f84759cecd38fa14c424",
+    "coverage": {
+      "reader_sites": 2993,
+      "registered": 3019,
+      "unbound": []
+    },
+    "registered_133_retained": true,
+    "added": [
+      "integration/nested_pipeline.py:<module>.execute_nested_pipeline:call:d6c6632b6a4857586b02bd9b7527b345e275600a61ca930c5ff76b75c1d4aff5:1",
+      "runtime/restart_store.py:<module>.HistoryJournal.__init__:call:48613a14dbfaf17e3a472ff21312acc767d31b12135caa82a79964b44c1538f6:1",
+      "runtime/restart_store.py:<module>.require_resume_history:path:history-*/owner.json"
+    ],
+    "omitted_controls": [
+      {
+        "site": "integration/nested_pipeline.py:<module>.execute_nested_pipeline:call:d6c6632b6a4857586b02bd9b7527b345e275600a61ca930c5ff76b75c1d4aff5:1",
+        "status": "REFUSED",
+        "message": "runtime data reader lacks a reviewed content binding: integration/nested_pipeline.py:<module>.execute_nested_pipeline:call:d6c6632b6a4857586b02bd9b7527b345e275600a61ca930c5ff76b75c1d4aff5:1"
+      },
+      {
+        "site": "runtime/restart_store.py:<module>.HistoryJournal.__init__:call:48613a14dbfaf17e3a472ff21312acc767d31b12135caa82a79964b44c1538f6:1",
+        "status": "REFUSED",
+        "message": "runtime data reader lacks a reviewed content binding: runtime/restart_store.py:<module>.HistoryJournal.__init__:call:48613a14dbfaf17e3a472ff21312acc767d31b12135caa82a79964b44c1538f6:1"
+      },
+      {
+        "site": "runtime/restart_store.py:<module>.require_resume_history:path:history-*/owner.json",
+        "status": "REFUSED",
+        "message": "runtime data reader lacks a reviewed content binding: runtime/restart_store.py:<module>.require_resume_history:path:history-*/owner.json"
+      }
+    ],
+    "AOT": {
+      "count": 541,
+      "digest_before": "9f5bc1e1af67ffda466483021d73323df4fd957d8fa9d2053a39e4efb8c54e0f",
+      "digest_after": "9f5bc1e1af67ffda466483021d73323df4fd957d8fa9d2053a39e4efb8c54e0f",
+      "source_fingerprint_before": "dd4b800895f7bbeadfc979ae6e77d05eaefe1f41afe9de8c1967d8dfba1ea817",
+      "source_fingerprint_after": "dd4b800895f7bbeadfc979ae6e77d05eaefe1f41afe9de8c1967d8dfba1ea817",
+      "changed_host_modules_in_closure": []
+    },
+    "whole_source_before": "9fd2122cf80b0ad693aa5d872def6b0c7c55154bc0435ede0337c7408b7d138d",
+    "whole_source_after": "5096d853849d026a6446b2301095ac194bc7f37e2a5b63c412151cbbf838b288",
+    "old_checkpoint_compatibility": "NOT claimed: whole-source/package-data authentication remains strict; source/package IDs move",
+    "registry_sha256": "39fe4ee7fc80e6d465bece8f5f32aaf843ba85fea965cfa4d5648e4abbeab900"
+  },
+  "full_collect": {
+    "head": "a069c78b2cb929f811f2f84759cecd38fa14c424",
+    "rc": 0,
+    "collected": 21790,
+    "errors": 0,
+    "active_s": 24.004763501987327,
+    "log": "<USER_HOME>/wrf_gpu2_lanes/v45-rc/resume_journal/collect.log",
+    "cache": "<USER_HOME>/wrf_gpu2_lanes/v45-rc/resume_journal/collect_tmp"
+  },
+  "entire_restart_suite": {
+    "raw_counts": {
+      "PASS": 243,
+      "SKIP": 4,
+      "ERROR": 15
+    },
+    "effective_counts": {
+      "PASS": 258,
+      "SKIP": 4
+    },
+    "failed": 0,
+    "errors": 0,
+    "raw_result": "<USER_HOME>/wrf_gpu2_lanes/v45-rc/resume_journal_checks/tests__v025__restart/result.json",
+    "raw_sha256": "796951bbbe573c24f04f570d7a6eaba1b829cecebcafc879c5b895a59c40bafa",
+    "blocked_only_rerun": "<USER_HOME>/wrf_gpu2_lanes/v45-rc/resume_journal_blocked/exact_private_attachment_15_nodes/result.json",
+    "blocked_sha256": "7bd20ead23bfdfed6ecdb5d3a65db2788b2399827bcdc4200fa0e1ce9ecb3269",
+    "resolved_setup_nodes": [
+      "tests.v025.restart.test_wrf_import_carry_dtype::test_saved_radiation_carry_matches_all_native_leaf_types_before_hydration[d01]",
+      "tests.v025.restart.test_wrf_import_carry_dtype::test_saved_radiation_carry_matches_all_native_leaf_types_before_hydration[d02]",
+      "tests.v025.restart.test_wrf_import_carry_dtype::test_saved_radiation_carry_matches_all_native_leaf_types_before_hydration[d03]",
+      "tests.v025.restart.test_wrf_import_carry_dtype::test_hydrated_carry_all_native_types_and_exact_serializers[wrfrst-False-d01]",
+      "tests.v025.restart.test_wrf_import_carry_dtype::test_hydrated_carry_all_native_types_and_exact_serializers[wrfrst-False-d02]",
+      "tests.v025.restart.test_wrf_import_carry_dtype::test_hydrated_carry_all_native_types_and_exact_serializers[wrfrst-False-d03]",
+      "tests.v025.restart.test_wrf_import_carry_dtype::test_hydrated_carry_all_native_types_and_exact_serializers[wrfrst-True-d01]",
+      "tests.v025.restart.test_wrf_import_carry_dtype::test_hydrated_carry_all_native_types_and_exact_serializers[wrfrst-True-d02]",
+      "tests.v025.restart.test_wrf_import_carry_dtype::test_hydrated_carry_all_native_types_and_exact_serializers[wrfrst-True-d03]",
+      "tests.v025.restart.test_wrf_import_carry_dtype::test_hydrated_carry_all_native_types_and_exact_serializers[restart_store-False-d01]",
+      "tests.v025.restart.test_wrf_import_carry_dtype::test_hydrated_carry_all_native_types_and_exact_serializers[restart_store-False-d02]",
+      "tests.v025.restart.test_wrf_import_carry_dtype::test_hydrated_carry_all_native_types_and_exact_serializers[restart_store-False-d03]",
+      "tests.v025.restart.test_wrf_import_carry_dtype::test_hydrated_carry_all_native_types_and_exact_serializers[restart_store-True-d01]",
+      "tests.v025.restart.test_wrf_import_carry_dtype::test_hydrated_carry_all_native_types_and_exact_serializers[restart_store-True-d02]",
+      "tests.v025.restart.test_wrf_import_carry_dtype::test_hydrated_carry_all_native_types_and_exact_serializers[restart_store-True-d03]"
+    ],
+    "reason": "exact committed release_attachments.py helper omitted by slim archive; private11610253B trusted SHA attachment staged from exact Git blob and verified; no code/criterion change"
+  },
+  "support": {
+    "head": "a069c78b2cb929f811f2f84759cecd38fa14c424",
+    "helper": {
+      "path": "tools/release_attachments.py",
+      "bytes": 9095,
+      "sha256": "c4ae28d43543538f129671a5c4182df7d8bc241c29d75a724a2e16e2ee7c9b32",
+      "reason": "15 actual setup errors: helper omitted by slim archive"
+    },
+    "attachment": {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/v45-rc/resume_journal/attachment_cache/abf74369da23412b1fee6390800de64215856774bf9c4d14f89c57577db0e1ce/attachment-tests-v025-restart-shadow_dtype_native_cpu.pkl.gz",
+      "git_blob": "1a4049b8b72cd2476a8045cfcb7d2d183f76098b",
+      "bytes": 11610253,
+      "sha256": "abf74369da23412b1fee6390800de64215856774bf9c4d14f89c57577db0e1ce",
+      "source": "trusted exact repository object, no network/ALISIOS data"
+    }
+  },
+  "performance": {
+    "AOT_541_digest_EXACT": true,
+    "program_work_changed": false,
+    "scope": "host ordinary-resume admission/error path; no timestep/kernel/allocation/compile-path change",
+    "producer_extra_ordinary_resume_metadata_cost": "32.884ms/140593B once, measured upstream and carried by exact source bytes; no new timing claim"
+  },
+  "checkpoint_compatibility": "Whole-source and package-data identities move; matching-source authentication remains strict; no compatibility with older frozen checkpoints claimed.",
+  "gpu_execution": false,
+  "main_cb71_pick": "Superseded by11:26ruling: worker produces ONE registry-only branch frommain e990, MANAGER merges; no worker writesmain",
+  "RC_delta_review": {
+    "verdict": "MERGE",
+    "confirmed_by": "manager2026-10-28T11:26:41Z",
+    "head": "f18fa4a17fc6cbd5dd5ebc13f4b554722448c3a1"
+  },
+  "main_registry_branch": {
+    "head": "e57ab29b91403bd7e88497ad0a1c5de63498a703",
+    "branch": "lane/v45-rc-main-registry",
+    "base": "e990cbf8acd3d5a6c7ce44aadd768521f15ec637",
+    "one_registry_only_commit": true,
+    "RC_registry_bytes_EXACT": true,
+    "registry_sha256": "39fe4ee7fc80e6d465bece8f5f32aaf843ba85fea965cfa4d5648e4abbeab900",
+    "coverage": {
+      "reader_sites": 2993,
+      "registered": 3019,
+      "unbound": []
+    },
+    "full_collect": {
+      "head": "e57ab29b91403bd7e88497ad0a1c5de63498a703",
+      "rc": 0,
+      "collected": 21789,
+      "errors": 0,
+      "active_s": 21.003087951045018,
+      "log": "<USER_HOME>/wrf_gpu2_lanes/v45-rc/resume_journal/main_collect.log",
+      "cache": "<USER_HOME>/wrf_gpu2_lanes/v45-rc/resume_journal/collect_tmp"
+    },
+    "main_untouched": true,
+    "merge_owner": "manager",
+    "sourceSRC": "c8e7f1898e260d553f011f2626f75480e60859ed",
+    "checks": {
+      "only_src_registry_changed": true,
+      "all_old_journal3_preserved": true,
+      "all_cb71_133_included": true
+    }
+  }
+}

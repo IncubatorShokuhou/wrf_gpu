@@ -66,7 +66,8 @@ def _sed_registers(q, num, vm, vn, dz, rho, dt, steps, threshold, nz):
     return q, num, ppt
 
 
-def sediment_and_finish(state, dt, vts_boost=None, *, interpret=False, return_radar_context=False):
+def sediment_and_finish(state, dt, vts_boost=None, *, interpret=False, return_radar_context=False,
+                        graupel_sed_on=None):
     from gpuwrf.physics import thompson_column as tc
 
     shape = state.qv.shape
@@ -81,13 +82,16 @@ def sediment_and_finish(state, dt, vts_boost=None, *, interpret=False, return_ra
                                          tc.THOMPSON_TABLES.snow_sb,
                                          tc.THOMPSON_TABLES.cse])
     scalars = jnp.asarray([dt, tc.RR_SURF_THRESHOLD], jnp.float32)
+    has_graupel_gate = graupel_sed_on is not None
+    gate_inputs = [graupel_sed_on.reshape(ncol)] if has_graupel_gate else []
+    extra_inputs = 3 + int(has_graupel_gate)
     defaults = dict(T=280., p=100000., rho=1., dz=250.)
 
     def kernel(*refs):
         input_refs = refs[:len(keys)]
         bref, cref, sref = refs[len(keys):len(keys)+3]
-        output_refs = refs[len(keys)+3:len(keys)*2+3]
-        precip_refs = refs[len(keys)*2+3:]
+        output_refs = refs[len(keys)+extra_inputs:len(keys)*2+extra_inputs]
+        precip_refs = refs[len(keys)*2+extra_inputs:]
         col = pl.program_id(0)
         k = jnp.arange(width, dtype=jnp.int32)
         valid = k < nz
@@ -100,8 +104,10 @@ def sediment_and_finish(state, dt, vts_boost=None, *, interpret=False, return_ra
                                  cse=_CoefficientRef(cref, 20))
         step_dt = _load(sref, (0,))
         threshold = _load(sref, (1,))
+        graupel_on = _load(refs[len(keys)+3], (col,)) if has_graupel_gate else None
         speeds = tc._fall_speeds(current, boost_values,
-                                fill_down=lambda v, a: _fill_registers(v, a, nz), tables=tables)
+                                fill_down=lambda v, a: _fill_registers(v, a, nz), tables=tables,
+                                graupel_sed_on=graupel_on)
         vr, vnr, vi, vni, vs, vg, vng = speeds
         dz = jnp.maximum(current.dz, 1.)
         rho = jnp.maximum(current.rho, tc.R1)
@@ -135,7 +141,7 @@ def sediment_and_finish(state, dt, vts_boost=None, *, interpret=False, return_ra
     outputs = pl.pallas_call(kernel, grid=(ncol,), out_shape=output_shapes,
                             interpret=interpret, compiler_params=plt.CompilerParams(num_warps=2),
                             name="thompson_sediment_prep_finish")(
-                                *arrays, boost.reshape(ncol, nz), coefficient_stack, scalars)
+                                *arrays, boost.reshape(ncol, nz), coefficient_stack, scalars, *gate_inputs)
     result = state.replace(**{key: array.reshape(shape) for key, array in zip(keys, outputs[:len(keys)])})
     precip = {key: array.reshape(shape[:-1]) for key, array in
               zip(("rain", "ice", "snow", "graupel"), outputs[len(keys):len(keys)+4])}

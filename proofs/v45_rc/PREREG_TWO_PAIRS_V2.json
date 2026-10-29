@@ -1,0 +1,57 @@
+{
+  "schema": "v45-rc.two-fresh-pairs.v2",
+  "manager_ruling": "2026-10-29T04:30:22Z",
+  "source_pin": "254c4823745275e3e9d397ae4d1db0fd35ec361d",
+  "src_tree": "827470e10f7e29cad1613e18d0a0c84f8f95693f",
+  "arms": [
+    "N2",
+    "O2",
+    "N3",
+    "O3"
+  ],
+  "hours_each": 24,
+  "order": [
+    "N2",
+    "O2",
+    "N3",
+    "O3"
+  ],
+  "eligible_cohort": "ONLY this fresh session; no borrowing R4O1 or reclassifying R4N1/N2",
+  "minimum": ">=2 counted arms of EACH kind; N2/O2 and N3/O3 complete fresh pairs if frozen acceptance passes",
+  "no_N72_repeat": true,
+  "no_N1_repeat_needed": true,
+  "rules": "accept.py + speed block unchanged; P100/A200/10s/endpoints/gap/min-samples unchanged; sampler real proc reads on absolute monotonic1s cadence",
+  "memory": "actual RSS time-v and perPID VRAM500ms in all4 exact timing arms; pooled over accepted fresh cohort",
+  "minutes": {
+    "entry_cap": 60,
+    "model_caps": 36,
+    "worst_quiet_gates": 12,
+    "checks_teardown_post_margin": 12,
+    "sequencer_padding": 2,
+    "lease_quiet_admission": 1.5,
+    "extra_margin": 1.5,
+    "ALISIOS_request": 65,
+    "typical_GPU_lock_inferred": [
+      18,
+      20
+    ]
+  },
+  "ROOT": {
+    "shared_cache_growth_GiB": 0,
+    "new_metadata_reserve_GiB": 0.25,
+    "floor_GiB": 22,
+    "extra_margin_GiB": 2,
+    "requested_start_free_GiB": 24.25,
+    "CPU_smoke_min_free_GiB": 22.0625,
+    "CPU_smoke_admission_wait": "ROOT>=22.1 steadily"
+  },
+  "DATA": {
+    "peak_transient_GiB": 8,
+    "end_net_reserve_GiB": 0.05,
+    "production_start_if404_5floor_GiB": 412.5,
+    "temporary_8GiB_loan_requires_explicit_ALISIOS_GO": true,
+    "no_original_case_or_reference_mutation": true
+  },
+  "activation": "NOT_ARMED; manager ALISIOS window+fresh lane lease+CPUlease>=30s+fresh manager admission receipt",
+  "no_rule_or_fidelity_threshold_change": true
+}

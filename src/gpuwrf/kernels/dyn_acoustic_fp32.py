@@ -531,10 +531,10 @@ def _w_p2_kernel(r, out, *, nz, ny, nx, block, cfg):
     _store(out["wupd"], (j, y, x), wupd, valid)
 
 
-def _dampmag(dts, dampcoef):
+def _dampmag(dts, dampcoef, *, precomputed=None):
     """WRF advance_w ``dampmag = dts*config_flags%dampcoef`` (module_small_step_em.F:1284), a REAL product at run
     time; the Python product is float64 rounded once (w44-constfold)."""
-    return real_scalar_product(dts, dampcoef)
+    return real_scalar_product(dts, dampcoef) if precomputed is None else precomputed
 
 
 def _w_phase(state, coefficients, cfg, *, interpret):
@@ -546,7 +546,7 @@ def _w_phase(state, coefficients, cfg, *, interpret):
     args.update(coefficients)
     values = dict(dts=cfg.dt,epssm=cfg.epssm,t0=300.,g=9.81,rdx=1./cfg.dx,rdy=1./cfg.dy,
                   cf1=state.cf1,cf2=state.cf2,cf3=state.cf3,w_alpha=cfg.w_alpha,
-                  w_crit_cfl=cfg.w_crit_cfl,w_damp_on=1.,dampmag=_dampmag(cfg.dt, cfg.dampcoef),
+                  w_crit_cfl=cfg.w_crit_cfl,w_damp_on=1.,dampmag=_dampmag(cfg.dt, cfg.dampcoef, precomputed=cfg.dampmag),
                   hdepth=cfg.zdamp,half_pi=.5*math.pi)
     args["s"] = jnp.stack([jnp.asarray(values.get(name,0.),jnp.float32) for name in vi._SLOTS])
     w2pass = os.environ.get("GPUWRF_ACOUSTIC_W2PASS", "0")

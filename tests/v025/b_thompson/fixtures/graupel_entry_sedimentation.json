@@ -1,0 +1,309 @@
+{
+  "fixture_id": "v45-graupel-entry-sedimentation",
+  "source": "original WRF 4.7.1 mp_gt_driver",
+  "source_commit": "f52c197ed39d12e087d02c50f412d90d418f6186",
+  "scenario": "WN3 0227 d03 h67-72 real columns + explicit no-qg/density controls",
+  "created_utc": "2026-10-27",
+  "files": {
+    "graupel_entry_sedimentation.npz": "10663ff5e1c79fda1860bfbd0009f72d3beef904d1bd7df7b57b48fe102dfcc7"
+  },
+  "provenance": {
+    "G01/columns.npz": "209cbb943438ddb88318393c61d4d1d6ef6f368f13e97abf57339cb0e821b869",
+    "G01/census.json": "c4a8a2ff999d173d4b2988459ca2b9131a8b8ca3a7a3369ee7a1bb513ae5a31f",
+    "G02/replay.npz": "b5a765b234ea4d55d2a2eea85ded6897ead96e27db3b32606c0754bf0d5e6a7a",
+    "G05/probe.npz": "dccc26a794c554f8748034e9ed1e07c9904d9d3b886e3e9db184bebeeb4a5af2",
+    "G02/driver_halo_identity.json": "22b2de155e8213e71d7d034f83d2f6fb83437cc57326133865098de419b39784"
+  },
+  "variables": [
+    {
+      "name": "in_qv",
+      "shape": [
+        188,
+        44
+      ],
+      "dtype": "float32",
+      "units": "kg/kg",
+      "absolute_tolerance": "existing MIX increment floor",
+      "relative_tolerance": "existing MIX 1%, Ni 5%"
+    },
+    {
+      "name": "in_qc",
+      "shape": [
+        188,
+        44
+      ],
+      "dtype": "float32",
+      "units": "kg/kg",
+      "absolute_tolerance": "existing MIX increment floor",
+      "relative_tolerance": "existing MIX 1%, Ni 5%"
+    },
+    {
+      "name": "in_qr",
+      "shape": [
+        188,
+        44
+      ],
+      "dtype": "float32",
+      "units": "kg/kg",
+      "absolute_tolerance": "existing MIX increment floor",
+      "relative_tolerance": "existing MIX 1%, Ni 5%"
+    },
+    {
+      "name": "in_qi",
+      "shape": [
+        188,
+        44
+      ],
+      "dtype": "float32",
+      "units": "kg/kg",
+      "absolute_tolerance": "existing MIX increment floor",
+      "relative_tolerance": "existing MIX 1%, Ni 5%"
+    },
+    {
+      "name": "in_qs",
+      "shape": [
+        188,
+        44
+      ],
+      "dtype": "float32",
+      "units": "kg/kg",
+      "absolute_tolerance": "existing MIX increment floor",
+      "relative_tolerance": "existing MIX 1%, Ni 5%"
+    },
+    {
+      "name": "in_qg",
+      "shape": [
+        188,
+        44
+      ],
+      "dtype": "float32",
+      "units": "kg/kg",
+      "absolute_tolerance": "existing MIX increment floor",
+      "relative_tolerance": "existing MIX 1%, Ni 5%"
+    },
+    {
+      "name": "in_ni",
+      "shape": [
+        188,
+        44
+      ],
+      "dtype": "float32",
+      "units": "see mp_gt_driver",
+      "absolute_tolerance": "existing MIX increment floor",
+      "relative_tolerance": "existing MIX 1%, Ni 5%"
+    },
+    {
+      "name": "in_nr",
+      "shape": [
+        188,
+        44
+      ],
+      "dtype": "float32",
+      "units": "see mp_gt_driver",
+      "absolute_tolerance": "existing MIX increment floor",
+      "relative_tolerance": "existing MIX 1%, Ni 5%"
+    },
+    {
+      "name": "in_th",
+      "shape": [
+        188,
+        44
+      ],
+      "dtype": "float32",
+      "units": "K",
+      "absolute_tolerance": "existing MIX increment floor",
+      "relative_tolerance": "existing MIX 1%, Ni 5%"
+    },
+    {
+      "name": "in_pii",
+      "shape": [
+        188,
+        44
+      ],
+      "dtype": "float32",
+      "units": "see mp_gt_driver",
+      "absolute_tolerance": "existing MIX increment floor",
+      "relative_tolerance": "existing MIX 1%, Ni 5%"
+    },
+    {
+      "name": "in_p",
+      "shape": [
+        188,
+        44
+      ],
+      "dtype": "float32",
+      "units": "Pa",
+      "absolute_tolerance": "existing MIX increment floor",
+      "relative_tolerance": "existing MIX 1%, Ni 5%"
+    },
+    {
+      "name": "in_w",
+      "shape": [
+        188,
+        44
+      ],
+      "dtype": "float32",
+      "units": "see mp_gt_driver",
+      "absolute_tolerance": "existing MIX increment floor",
+      "relative_tolerance": "existing MIX 1%, Ni 5%"
+    },
+    {
+      "name": "in_dz8w",
+      "shape": [
+        188,
+        44
+      ],
+      "dtype": "float32",
+      "units": "m",
+      "absolute_tolerance": "existing MIX increment floor",
+      "relative_tolerance": "existing MIX 1%, Ni 5%"
+    },
+    {
+      "name": "wrf_qv",
+      "shape": [
+        188,
+        44
+      ],
+      "dtype": "float32",
+      "units": "kg/kg",
+      "absolute_tolerance": "existing MIX increment floor",
+      "relative_tolerance": "existing MIX 1%, Ni 5%"
+    },
+    {
+      "name": "wrf_qc",
+      "shape": [
+        188,
+        44
+      ],
+      "dtype": "float32",
+      "units": "kg/kg",
+      "absolute_tolerance": "existing MIX increment floor",
+      "relative_tolerance": "existing MIX 1%, Ni 5%"
+    },
+    {
+      "name": "wrf_qr",
+      "shape": [
+        188,
+        44
+      ],
+      "dtype": "float32",
+      "units": "kg/kg",
+      "absolute_tolerance": "existing MIX increment floor",
+      "relative_tolerance": "existing MIX 1%, Ni 5%"
+    },
+    {
+      "name": "wrf_qi",
+      "shape": [
+        188,
+        44
+      ],
+      "dtype": "float32",
+      "units": "kg/kg",
+      "absolute_tolerance": "existing MIX increment floor",
+      "relative_tolerance": "existing MIX 1%, Ni 5%"
+    },
+    {
+      "name": "wrf_qs",
+      "shape": [
+        188,
+        44
+      ],
+      "dtype": "float32",
+      "units": "kg/kg",
+      "absolute_tolerance": "existing MIX increment floor",
+      "relative_tolerance": "existing MIX 1%, Ni 5%"
+    },
+    {
+      "name": "wrf_qg",
+      "shape": [
+        188,
+        44
+      ],
+      "dtype": "float32",
+      "units": "kg/kg",
+      "absolute_tolerance": "existing MIX increment floor",
+      "relative_tolerance": "existing MIX 1%, Ni 5%"
+    },
+    {
+      "name": "wrf_ni",
+      "shape": [
+        188,
+        44
+      ],
+      "dtype": "float32",
+      "units": "see mp_gt_driver",
+      "absolute_tolerance": "existing MIX increment floor",
+      "relative_tolerance": "existing MIX 1%, Ni 5%"
+    },
+    {
+      "name": "wrf_nr",
+      "shape": [
+        188,
+        44
+      ],
+      "dtype": "float32",
+      "units": "see mp_gt_driver",
+      "absolute_tolerance": "existing MIX increment floor",
+      "relative_tolerance": "existing MIX 1%, Ni 5%"
+    },
+    {
+      "name": "wrf_th",
+      "shape": [
+        188,
+        44
+      ],
+      "dtype": "float32",
+      "units": "K",
+      "absolute_tolerance": "existing MIX increment floor",
+      "relative_tolerance": "existing MIX 1%, Ni 5%"
+    },
+    {
+      "name": "wrf_rainncv",
+      "shape": [
+        188
+      ],
+      "dtype": "float32",
+      "units": "see mp_gt_driver",
+      "absolute_tolerance": "existing MIX increment floor",
+      "relative_tolerance": "existing MIX 1%, Ni 5%"
+    },
+    {
+      "name": "wrf_snowncv",
+      "shape": [
+        188
+      ],
+      "dtype": "float32",
+      "units": "see mp_gt_driver",
+      "absolute_tolerance": "existing MIX increment floor",
+      "relative_tolerance": "existing MIX 1%, Ni 5%"
+    },
+    {
+      "name": "wrf_graupelncv",
+      "shape": [
+        188
+      ],
+      "dtype": "float32",
+      "units": "see mp_gt_driver",
+      "absolute_tolerance": "existing MIX increment floor",
+      "relative_tolerance": "existing MIX 1%, Ni 5%"
+    },
+    {
+      "name": "wrf_sr",
+      "shape": [
+        188
+      ],
+      "dtype": "float32",
+      "units": "see mp_gt_driver",
+      "absolute_tolerance": "existing MIX increment floor",
+      "relative_tolerance": "existing MIX 1%, Ni 5%"
+    }
+  ],
+  "trace_gate": "exact qg zero/nonzero mask equality per cell; finite values; unchanged WRF R1=1e-12",
+  "columns": 188,
+  "entry_active_control_indices": [
+    185,
+    186,
+    187
+  ],
+  "license_notes": "Small derived numerical fixture from original WRF and locally owned GPU output; no WRF history file included."
+}

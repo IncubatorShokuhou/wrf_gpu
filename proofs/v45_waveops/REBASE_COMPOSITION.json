@@ -1,0 +1,127 @@
+{
+  "schema": "gpuwrf.optimize.waveops.rebase.v1",
+  "status": "PASS",
+  "previous_reviewed_and_merged": "53122beafa",
+  "original_rebase_main": "ac48a52850",
+  "clean_delta_main": "b9aefde957",
+  "candidate": "e4b27ff1fe",
+  "source_tree": "55a0657b3b50811c437c0a6f9b86f7e5b119f8cc",
+  "history_proof": {
+    "original_patches": 13,
+    "range_equal": 13,
+    "followup_commits": 3,
+    "followup_range_equal": 3,
+    "tested_controller_paths_byte_exact_after_transplant": {
+      "src/gpuwrf/optimize/continuous.py": true,
+      "src/gpuwrf/optimize/study.py": true,
+      "src/gpuwrf/optimize/waves.py": true,
+      "src/gpuwrf/optimize/registry.py": true,
+      "scripts/parallel_cases.py": true,
+      "tests/v45_waveops/test_waveops.py": true
+    }
+  },
+  "merged_composition": {
+    "tests": 7,
+    "seconds": 107.89,
+    "peak_rss_kib": 1109536,
+    "items": [
+      "exact whole/resumed EKI",
+      "interrupted approved-wave restart",
+      "discrete rung replay",
+      "fallback guard disabled-capability path",
+      "actual ENSEMBLE_SPACE_UPDATE True at m25200",
+      "same-seed update repeat",
+      "actual merged profile reader, SHA-bound output and immutable input"
+    ]
+  },
+  "implementation_binding": {
+    "tests": 4,
+    "seconds": 53.8,
+    "same_version_resume": "EXACT",
+    "legacy_unrecorded": "REFUSE before model work",
+    "changed_solver_source": "REFUSE before model work",
+    "changed_numpy": "REFUSE before model work",
+    "scientific_defaults": "UNCHANGED",
+    "reason": "weather model digest excludes offline EKI; reviewed Gaussian-root seed bytes intentionally changed"
+  },
+  "mutants": {
+    "refreshed_fallbacks": {
+      "status": "PASS",
+      "mutants": [
+        {
+          "mutant": "dense-observation-cap",
+          "assertion_failures": 1,
+          "errors": 0,
+          "skips": 0
+        },
+        {
+          "mutant": "native-cloud-refusal",
+          "assertion_failures": 1,
+          "errors": 0,
+          "skips": 0
+        }
+      ]
+    },
+    "new_implementation_binding": {
+      "status": "PASS",
+      "mutants": [
+        {
+          "mutant": "optimizer-implementation-binding",
+          "assertion_failures": 3,
+          "errors": 0,
+          "skips": 0
+        }
+      ]
+    },
+    "new_assertion_failures": 3,
+    "errors": 0,
+    "skips": 0,
+    "unchanged_prior_guards": "carry independent cr-v45 15/15,24ASSERT proof"
+  },
+  "collection": {
+    "tests": 21553,
+    "errors": 0,
+    "seconds": 29.11,
+    "archive": "one slim immutable source +all proofs/docs Python +57 prior proven import dependencies"
+  },
+  "scope": {
+    "production_delta": "two host metadata preflight changes; solver math/default/operator untouched",
+    "default_operator": "superobservations remains upstream default; no guessed correlation length",
+    "native_vector": "capability gate already reads reviewed ENSEMBLE_SPACE_UPDATE=True",
+    "model_gpu_work": "NONE",
+    "production_atlas_reads": 0,
+    "production_atlas_rows": 0,
+    "cache": "NONE",
+    "cleanup": "archive/pytest removed immediately after last dependent arm"
+  },
+  "receipts": {
+    "WO13_rebase.xml": {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/v45-waveops/WO13_rebase.xml",
+      "sha256": "620126e905836e4e233146e4c4252354dc6160133b1dfd22920a9d7542511f19"
+    },
+    "WO13_range_diff.txt": {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/v45-waveops/WO13_range_diff.txt",
+      "sha256": "fcb9a6637ae8f7b4f51aaf230430e2d306ee9638a97ab4424b7e9ea9991a5e06"
+    },
+    "WO14_fallback_mutants/RESULT.json": {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/v45-waveops/WO14_fallback_mutants/RESULT.json",
+      "sha256": "1dda83af7cd5b46e81d69d315c534091f28b4ca310fe7a5e3ac0af8d7aabe193"
+    },
+    "WO16_version_binding.xml": {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/v45-waveops/WO16_version_binding.xml",
+      "sha256": "ab88ff41f96234b269a98dea439ef9fc36bd527d50a0111539ecd1c5b8c37381"
+    },
+    "WO16_clean_delta_range_diff.txt": {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/v45-waveops/WO16_clean_delta_range_diff.txt",
+      "sha256": "9e6113b67c1511df9f4a13a1bd5a4bc7511fae298335142c1c2089acb91f20ac"
+    },
+    "WO17_binding_mutant/RESULT.json": {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/v45-waveops/WO17_binding_mutant/RESULT.json",
+      "sha256": "a84267c7269c8042f9ebe173c528d16d9f4f337d5919859a1962ec2de96a6a0b"
+    },
+    "WO18_final_rebase_collect.log": {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/v45-waveops/WO18_final_rebase_collect.log",
+      "sha256": "71ab709e7e7b1982e99a78da47b8f196a2a44fd1f7f98adea1cefff784a716ec"
+    }
+  }
+}

@@ -123,6 +123,36 @@ def test_reader_registry_covers_actual_package_and_runtime_extractor():
     assert check_reader_coverage()["unbound"] == []
 
 
+@pytest.mark.parametrize("site", [
+    "integration/nested_pipeline.py:<module>.execute_nested_pipeline:call:d6c6632b6a4857586b02bd9b7527b345e275600a61ca930c5ff76b75c1d4aff5:1",
+    "runtime/restart_store.py:<module>.HistoryJournal.__init__:call:48613a14dbfaf17e3a472ff21312acc767d31b12135caa82a79964b44c1538f6:1",
+    "runtime/restart_store.py:<module>.require_resume_history:path:history-*/owner.json",
+])
+def test_resume_journal_readers_have_reviewed_binding_and_cannot_be_deleted(tmp_path, site):
+    import shutil
+    from gpuwrf.runtime import runtime_data_identity as binding
+    source = Path(binding.__file__).resolve().parents[1]
+    registry = source / "runtime/runtime_file_readers.json"
+    recorded = json.loads(registry.read_text())
+    assert site in recorded["reader_sites"]
+    categories = [value for value in recorded["reader_categories"].values() if site in value["reader_sites"]]
+    assert len(categories) == 1 and categories[0]["binding"] == "bindings.case_and_restart"
+    # Audit the actual two changed modules, without masking unrelated global
+    # registry debt; the global coverage test above remains unchanged and active.
+    scoped = tmp_path / "source"
+    for relative in ("integration/nested_pipeline.py", "runtime/restart_store.py"):
+        target = scoped / relative
+        target.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copyfile(source / relative, target)
+    assert check_reader_coverage(scoped, registry)["unbound"] == []
+    recorded["reader_sites"].remove(site)
+    deleted = tmp_path / "registry-with-one-deleted-site.json"
+    deleted.write_text(json.dumps(recorded))
+    with pytest.raises(ValueError, match="lacks a reviewed content binding") as error:
+        check_reader_coverage(scoped, deleted)
+    assert site in str(error.value)
+
+
 def test_every_remote_asset_has_a_loader_scheme_selection():
     from gpuwrf import assets
     remote = {name for name, item in assets.manifest()["assets"].items() if item["kind"] == "remote"}

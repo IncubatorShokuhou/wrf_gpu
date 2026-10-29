@@ -74,7 +74,8 @@ def real_root():
     return carries["d01"], replace(nl, run_physics=False)
 
 
-@pytest.mark.parametrize("name,default,changed", [("dampcoef", .2, .4), ("zdamp", 5000., 6000.)])
+@pytest.mark.parametrize("name,default,changed", [("dampcoef", .2, .4), ("zdamp", 5000., 6000.),
+                                                    ("dampmag", 3.6, 7.2)])
 @pytest.mark.usefixtures("research_diffusion_policy")
 def test_acoustic_scan_forwards_native_damping(monkeypatch, real_root, name, default, changed):
     from gpuwrf.kernels import dyn_acoustic_fp32 as N
@@ -87,7 +88,8 @@ def test_acoustic_scan_forwards_native_damping(monkeypatch, real_root, name, def
 
     monkeypatch.setattr(N, "calc_coef_fp32", coefficients)
     two_values(lambda value: O._physics_boundary_step(carry,
-        replace(nl, diffusion_parameters={name: value}), jnp.int32(0),
+        replace(nl, diffusion_parameters=({"dampcoef": jnp.float32(.2), "dampmag_rk": jnp.stack([value,value])}
+                                        if name == "dampmag" else {name: value})), jnp.int32(0),
         run_radiation=False), default, changed)
 
 
@@ -235,11 +237,16 @@ def mutate_function(monkeypatch, module, name, before, after, occurrence=0):
     monkeypatch.setattr(module, name, namespace[name])
 
 
-@pytest.mark.parametrize("name,default,changed", [("dampcoef", .2, .4), ("zdamp", 5000., 6000.)])
+@pytest.mark.parametrize("name,default,changed", [("dampcoef", .2, .4), ("zdamp", 5000., 6000.),
+                                                    ("dampmag", 3.6, 7.2)])
 @pytest.mark.usefixtures("research_diffusion_policy")
 def test_acoustic_default_hardcode_is_detected(monkeypatch, real_root, name, default, changed):
-    mutate_function(monkeypatch, O, "_acoustic_scan",
-                    f'_diffusion_value(namelist, "{name}")', f'float(namelist.{name})')
+    if name == "dampmag":
+        mutate_function(monkeypatch, O, "_acoustic_scan",
+                        'namelist.diffusion_parameters["dampmag_rk"][int(stage.rk_step != 1)]', 'None')
+    else:
+        mutate_function(monkeypatch, O, "_acoustic_scan",
+                        f'_diffusion_value(namelist, "{name}")', f'float(namelist.{name})')
     with pytest.raises(AssertionError, match="not forwarded as a traced operand"):
         test_acoustic_scan_forwards_native_damping(monkeypatch, real_root, name, default, changed)
 

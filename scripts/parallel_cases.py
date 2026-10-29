@@ -41,6 +41,7 @@ import sys
 import time
 
 GIB = 1024**3
+OPTIMIZER_REGISTRY_HOOKS = 2  # includes terminal-completion receipts; checked before optimizer members launch
 REPO = Path(__file__).resolve().parents[1]
 EXPLICIT_ALLOCATOR_ENV = ("XLA_PYTHON_CLIENT_PREALLOCATE", "XLA_CLIENT_MEM_FRACTION", "XLA_PYTHON_CLIENT_MEM_FRACTION")
 # Case options after '--' are matched EXACTLY against this allowlist (no prefixes: the product's argparse would expand
@@ -425,6 +426,7 @@ class Case:
         self.attempt = 0  # retry number (--retry-failed); earlier attempts' receipts: OUT/<name>/attempt-<k>.receipt.json
         self.resume_from: str | None = None  # checkpoint generation this attempt resumes from
         self.tried_generations: set[str] = set()
+        self.registry_invocation = None  # optimize-only; one start/end per actual attempt
 
     def use_device(self, key) -> None:
         self.sizing, self.host_kb, self.host_src, self.host_cold_kb = self.per_dev[key]
@@ -541,6 +543,8 @@ def parse(argv: list[str]) -> tuple[argparse.Namespace, list[str]]:
     ap.add_argument("--case-surface-controls", default=None, metavar="NAME",
                     help="Track P: every case directory holds its own control file NAME, passed as that case's "
                     "--surface-controls (gpuwrf optimize continuous members); a case without it is refused")
+    ap.add_argument("--case-runtime-parameters", default=None, metavar="NAME",
+                    help="every case holds its own runtime parameter JSON NAME, passed as --runtime-parameters")
     ap.add_argument("--dry-run", action="store_true", help="print the admission plan as JSON and exit")
     ap.add_argument("--cli-json", default=None, help=argparse.SUPPRESS)  # tests: replace the product CLI command
     a = ap.parse_args(own)
@@ -557,6 +561,15 @@ def parse(argv: list[str]) -> tuple[argparse.Namespace, list[str]]:
         missing = [str(d) for d in a.cases if not (d / name).is_file()]
         if missing:
             ap.error(f"--case-surface-controls {name}: no such file in {missing}")
+    name = a.case_runtime_parameters
+    if name is not None:
+        if name in ("", ".", "..") or name != Path(name).name:
+            ap.error("--case-runtime-parameters takes a plain file name inside each case directory")
+        if any(token.split("=", 1)[0] == "--runtime-parameters" for token in cli_args):
+            ap.error("per-case runtime parameters cannot be combined with a shared --runtime-parameters")
+        missing = [str(d) for d in a.cases if not (d / name).is_file()]
+        if missing:
+            ap.error(f"--case-runtime-parameters {name}: no such file in {missing}")
     return a, cli_args
 
 
@@ -564,6 +577,10 @@ def main(argv: list[str] | None = None, sizer=None, gpu=None, vram=None, devices
     sizer, gpu, vram, devices = sizer or product_sizing, gpu or gpu_memory, vram or vram_by_pid, devices or gpu_devices
     a, cli_args = parse(sys.argv[1:] if argv is None else argv)
     env = case_env()
+    deadline_text = env.get("ALISIOS_OPTIMIZE_WALL_DEADLINE")
+    deadline = None if deadline_text is None else float(deadline_text)
+    if deadline is not None and not math.isfinite(deadline):
+        raise ValueError("optimizer wallclock deadline must be finite")
     forced = "--force-gpu-run" in cli_args or env.get("GPUWRF_FORCE_GPU_RUN") == "1"
     try:
         from gpuwrf.runtime.gpu_preflight import gpu_lock_required  # the cases' own nested-preflight lock policy
@@ -719,8 +736,13 @@ def main(argv: list[str] | None = None, sizer=None, gpu=None, vram=None, devices
                                           stderr=subprocess.STDOUT, env=env | {"JAX_PLATFORMS": "cpu"},
                                           start_new_session=True)
         while pending or running:
+            if deadline is not None and time.monotonic() >= deadline and stop["reason"] is None:
+                on_signal(0, None)
+                stop["reason"] = "optimizer hard wallclock budget exhausted"
             for r in [r for r in running if r.proc.poll() is not None]:
                 r.t1, r.rc = time.time(), r.proc.returncode
+                if r.registry_invocation is not None:
+                    r.registry_invocation.finish(r.rc, aborted=stop["reason"] is not None)
                 r.watch_outputs()
                 running.remove(r)
                 if r.rc == 0:
@@ -738,6 +760,10 @@ def main(argv: list[str] | None = None, sizer=None, gpu=None, vram=None, devices
                     continue
                 done.append(r)
             while pending and stop["reason"] is None:
+                if deadline is not None and time.monotonic() >= deadline:
+                    on_signal(0, None)
+                    stop["reason"] = "optimizer hard wallclock budget exhausted"
+                    break
                 c = pending[0]
                 if not place(running, c, host_capacity(running)):
                     if not running:  # does not fit even alone
@@ -757,17 +783,25 @@ def main(argv: list[str] | None = None, sizer=None, gpu=None, vram=None, devices
                 c.argv = [*cli, "--input-dir", str(c.case_dir), "--output-dir", str(c.out / "wrfout"), *cli_args]
                 if a.case_surface_controls is not None:
                     c.argv += ["--surface-controls", str(c.case_dir / a.case_surface_controls)]
+                if a.case_runtime_parameters is not None:
+                    c.argv += ["--runtime-parameters", str(c.case_dir / a.case_runtime_parameters)]
                 if a.checkpoint_interval_steps > 0:
                     c.argv += ["--checkpoint-dir", str(c.out / "checkpoint"),
                                "--checkpoint-interval-steps", str(a.checkpoint_interval_steps)]
                 if c.resume_from:
                     c.argv += ["--resume-checkpoint", c.resume_from]
                 try:
+                    if env.get("ALISIOS_OPTIMIZE_REGISTRY"):
+                        from gpuwrf.optimize.registry import Invocation
+                        c.registry_invocation = Invocation(env["ALISIOS_OPTIMIZE_REGISTRY"], c.case_dir, c.out)
+                        child_env = c.registry_invocation.begin(child_env)
                     c.proc = subprocess.Popen(c.argv,
                                               stdout=open(c.out / "cli_stdout.json", "w"), stderr=open(c.out / "run.log", "w"),
                                               env=child_env, start_new_session=True,
                                               pass_fds=lock_fds(env))
                 except BaseException as exc:
+                    if c.registry_invocation is not None:
+                        c.registry_invocation.finish(1, aborted=isinstance(exc, (KeyboardInterrupt, SystemExit)))
                     c.note, c.rc = f"launch failed: {type(exc).__name__}: {exc}", None
                     done.append(c)
                     raise
@@ -812,6 +846,13 @@ def main(argv: list[str] | None = None, sizer=None, gpu=None, vram=None, devices
             with contextlib.suppress(Exception):
                 write_receipt(c, cli)
     finally:
+        registry_errors = []
+        for c in cases:
+            if c.registry_invocation is not None:
+                try:
+                    c.registry_invocation.finish(c.rc, aborted=error is not None or stop["reason"] is not None)
+                except Exception as exc:
+                    registry_errors.append(exc)
         for sig, handler in old_handlers.items():
             signal.signal(sig, handler)
         abnormal = error is not None or stop["reason"] is not None
@@ -820,6 +861,8 @@ def main(argv: list[str] | None = None, sizer=None, gpu=None, vram=None, devices
                 (root / ".cases_done").write_text(utc() + "\n")
             compressor.wait()
         stop_process_groups(helpers + ([compressor] if compressor is not None and abnormal else []), HELPER_GRACE_S)
+        if registry_errors:
+            raise registry_errors[0]  # never publish success after a missing terminal event
     t_end = time.time()
     ok = [c for c in done if c.rc == 0]
     hours = [cli_summary(c.out / "cli_stdout.json").get("effective_hours") for c in ok]
@@ -895,6 +938,9 @@ def write_receipt(c: Case, cli: list[str]) -> None:
            "host_need_cold_kb": c.host_cold_kb,
            "rc": c.rc, "note": c.note, "concurrent_at_start": c.concurrent_at_start, "env": c.env,
            "attempt": c.attempt, "resumed_from": c.resume_from}
+    if c.registry_invocation is not None:
+        rec["registry_run_id"] = c.registry_invocation.run_id
+        rec["registry_complete"] = c.registry_invocation.complete
     if c.device is not None:
         rec["gpu"] = {k: c.device.get(k) for k in ("index", "uuid", "name", "compute_cap")}
     if c.proc is not None:

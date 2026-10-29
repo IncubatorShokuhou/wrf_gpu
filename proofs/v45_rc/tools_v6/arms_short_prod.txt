@@ -1,0 +1,20 @@
+# v45-rc v0.4.5 SHORT entry arm table (PRODUCTION grid/length). PHASE|NAME|INPUT_KEY|EXPECTED_S|CAP_S|OUT_GIB|KEEP_WRFOUT|SMOKE_MODE|CLI ARGS
+# EXPECTED_S [M] = v0.4.4 release session 2026-10-21 (P43/meta/session.log, arm t0..t_end) unless marked [I]; CAP_S = arm_timer cap.
+# OUT_GIB = <DATA_ROOT> size forecast: wrfouts (v0.4.4 WRFOUT_FILES.tsv: Swiss 3 h 0.05, PROD 0.71, WN3 3 h 1.20 GB) + compile-cache
+# growth for PRIME (v0.4.4 P/jax 2.6 GB total) / sealed tar for SEAL (v0.4.4 3.1 GB); KEEP 0 = wrfouts deleted after the SHA receipt.
+# B9_swiss_24h [I] = 8 x v0.4.4 B5 3 h replay (24.9 s [M]); kept: Swiss D6 vs the original CPU-WRF 24 h (RD11/cpu) if the
+# candidate Swiss release identity != b977712f (branch b of PREREG swiss_identity).
+# SMOKE_MODE is read ONLY by the CPU launch smoke (model = tiny-window CPU model run, dryrun = exact CLI args with --dry-run).
+PRIME|A1_swiss|SWISS|360|900|2|1|model|--domains-from-namelist --hours 3
+PRIME|A2_prod|PROD|640|1500|2|1|dryrun|--domains-from-namelist --hours 3
+PRIME|A3_wn3_0227_3h|WN3_0227|950|1800|3|1|dryrun|--domains-from-namelist --emit-initial-history --hours 3
+PRIME|A4_wn3_0227_icloud0_3h|WN3_0227_ICLOUD0|950|1800|3|1|dryrun|--domains-from-namelist --emit-initial-history --hours 3
+SEAL|seal|-|90|600|4|1|-|-
+REPLAY|B1_wn3_0227_3h|WN3_0227|100|600|2|0|dryrun|--domains-from-namelist --emit-initial-history --hours 3
+REPLAY|B2_wn3_0502_3h|WN3_0502|170|600|2|0|dryrun|--domains-from-namelist --emit-initial-history --hours 3
+REPLAY|B4_wn3_0227in48h_3h|WN3_0227_48H|90|600|2|0|dryrun|--domains-from-namelist --emit-initial-history --hours 3
+REPLAY|B5_swiss_3h|SWISS|40|400|1|0|model|--domains-from-namelist --hours 3
+REPLAY|B6_prod_3h|PROD|70|600|1|0|dryrun|--domains-from-namelist --hours 3
+REPLAY|B9_swiss_24h|SWISS|220|600|1|1|dryrun|--domains-from-namelist --hours 24
+REPLAY|B8_wn3_0502_icloud0_3h|WN3_0502_ICLOUD0|80|600|2|0|dryrun|--domains-from-namelist --emit-initial-history --hours 3
+REPLAY|B3_wn3_0614_3h|WN3_0614|170|600|2|0|dryrun|--domains-from-namelist --emit-initial-history --hours 3

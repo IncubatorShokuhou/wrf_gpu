@@ -1,0 +1,74 @@
+{
+  "scope": "CPU CompileOnly refutation, not actual GPU fusion-autotuner equivalence",
+  "GPU_difference_attribution": "OPEN: original C2b native binaries deleted; aggregate opcode counts cannot identify a function/pass",
+  "first_differing_PTX_function": null,
+  "native_records_identical": true,
+  "stablehlo_identical": true,
+  "optimized_hlo_identical": true,
+  "native_records": {
+    "0": {
+      "bytes": 1532,
+      "sha256": "c383bcdb0896c26fbbd8cacaaaa0c9de3f824ef70204446c652e9f7a4dea8017"
+    },
+    "1": {
+      "bytes": 8621560,
+      "sha256": "a7131336835532cce348ccbbf330c42bc14c0fbb65f5781f8e6712fc4d6977fa"
+    },
+    "2": {
+      "bytes": 6720992,
+      "sha256": "9b0fa76ee7e69cdd3e725ee4bba9a227e0bb7b20451b8c024180c8f6615f114a"
+    }
+  },
+  "arms": {
+    "MIN5": {
+      "source_commit": "700a382f8b554b2bfc034fc77734b29a5e4261f3",
+      "harness_sha256": "e244d227eb69b2cfb11dd8d9b3f09cce43fc1990915aefe2e679dd994823e111",
+      "compiler_options": {
+        "xla_gpu_autotune_level": 4,
+        "xla_gpu_experimental_aot_compiled_thunks": true,
+        "xla_gpu_graph_min_graph_size": 5,
+        "xla_gpu_require_complete_aot_autotune_results": true,
+        "xla_gpu_per_fusion_autotune_cache_dir": "<DATA_ROOT>/wrf_gpu2/scratch/v05-hcb/tunes",
+        "xla_gpu_force_compilation_parallelism": 1
+      },
+      "compile_s": 165.88996184201096,
+      "wall_s": 731.3335522220004,
+      "peak_rss_KiB": 6657540,
+      "traced_pallas_calls": 151,
+      "static_kwargs": {
+        "n_steps": 3,
+        "cadence": 100
+      },
+      "stablehlo_sha256": "f6bf7a5e6fbd97f9ee702f5cbb631e7934c039c6bf7463f98f6640de79ccb8b6",
+      "optimized_hlo_sha256": "1255a0befcaefd10add7c85553df0df21bab72f77822f2522e2c2948e757289c"
+    },
+    "MIN1": {
+      "source_commit": "700a382f8b554b2bfc034fc77734b29a5e4261f3",
+      "harness_sha256": "e244d227eb69b2cfb11dd8d9b3f09cce43fc1990915aefe2e679dd994823e111",
+      "compiler_options": {
+        "xla_gpu_autotune_level": 4,
+        "xla_gpu_experimental_aot_compiled_thunks": true,
+        "xla_gpu_graph_min_graph_size": 1,
+        "xla_gpu_require_complete_aot_autotune_results": true,
+        "xla_gpu_per_fusion_autotune_cache_dir": "<DATA_ROOT>/wrf_gpu2/scratch/v05-hcb/tunes",
+        "xla_gpu_force_compilation_parallelism": 1
+      },
+      "compile_s": 143.0379015530052,
+      "wall_s": 412.39064628700726,
+      "peak_rss_KiB": 6556044,
+      "traced_pallas_calls": 151,
+      "static_kwargs": {
+        "n_steps": 3,
+        "cadence": 100
+      },
+      "stablehlo_sha256": "f6bf7a5e6fbd97f9ee702f5cbb631e7934c039c6bf7463f98f6640de79ccb8b6",
+      "optimized_hlo_sha256": "1255a0befcaefd10add7c85553df0df21bab72f77822f2522e2c2948e757289c"
+    }
+  },
+  "E41_CPU_prescreen": {
+    "e41_gate": "PASS",
+    "hard_stack_gate": "PASS",
+    "inherited_MIN1": "exact native records0/1/2 identity to scanned MIN5; no redundant scan",
+    "note": "not an actual GPU E41 gate"
+  }
+}

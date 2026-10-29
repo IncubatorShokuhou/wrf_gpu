@@ -1,0 +1,67 @@
+{
+  "commit": "260e73155a",
+  "source_sha256": {
+    "scripts/alisios_registry.py": "2a54f7692fe33691228fb8a7a8b4059817e3259297792fca05589dcfd828a103",
+    "scripts/alisios_registry_launcher_example.py": "c33672c3a16aac2fdf85709a3563903312aa51d91a66c56506f3e00f8d44714e",
+    "tests/test_alisios_registry.py": "54e8b97de265ed1f092609a762a2efdfa25a8d1cce2eac6d40da5467c1aed746",
+    "proofs/v05_registry/check_gate.py": "1579a480245f03796f3e2027d332d8345bc20f438549dd9d514a67f6a81a6a6b"
+  },
+  "register_sha256": "0fff78baad1298592a532834161459c63565a814f05a72c0bae7e870127f82a2",
+  "registry_lib_sha256": "f2af147373d799eb8475312b4a9e814d0985dcb8ab21470059c3d095f70eacaf",
+  "production_before": {
+    "<DATA_ROOT>/alisios/state/manager/cross/ATLAS/WRF_RUN_REGISTRY.jsonl": "485ce823dceafc9bfd756e03abdf5ff8227ef670ded0f450980f77e3bc5ccb2b",
+    "<DATA_ROOT>/alisios/state/manager/cross/ATLAS/DATA_REGISTRY.jsonl": "53fc065cb47450abca440449c55ce55619ef6c7bab0017b05b5289546996d253"
+  },
+  "jax_imported": false,
+  "model_executed": false,
+  "tests": {
+    "passed": 28,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "mutations": [
+    {
+      "name": "remove_finally_end",
+      "failures": 2,
+      "errors": 0,
+      "assertion_failure": true,
+      "mutant_sha256": "e86a94a24eca02c25ab23294755fb02f2aaa57ea119c6b0d112a9165eea48ee9"
+    },
+    {
+      "name": "remove_schema_precheck",
+      "failures": 1,
+      "errors": 0,
+      "assertion_failure": true,
+      "mutant_sha256": "1b769bbbeea3abc6c3474d74911e70c906376a2896930de887945224e68a854a"
+    }
+  ],
+  "seeded_copy": {
+    "seed_bytes": 5434103,
+    "private_events": 10,
+    "prior_bytes_exact": true
+  },
+  "bench": {
+    "scope": "host hooks only; private copy of production state; no forecast",
+    "start_end_seconds": [
+      0.20473872701404616,
+      0.19107503598206677,
+      0.22499913201318122,
+      0.2004215019987896,
+      0.205490602995269
+    ],
+    "median_seconds": 0.20473872701404616,
+    "child_max_rss_kib": 32844,
+    "driver_max_rss_kib": 50020,
+    "compile_count": 0,
+    "gpu_commands": 0,
+    "timestep_ops_added": 0
+  },
+  "status": "PASS",
+  "production_after": {
+    "<DATA_ROOT>/alisios/state/manager/cross/ATLAS/WRF_RUN_REGISTRY.jsonl": "485ce823dceafc9bfd756e03abdf5ff8227ef670ded0f450980f77e3bc5ccb2b",
+    "<DATA_ROOT>/alisios/state/manager/cross/ATLAS/DATA_REGISTRY.jsonl": "53fc065cb47450abca440449c55ce55619ef6c7bab0017b05b5289546996d253"
+  },
+  "production_bytes_exact": true,
+  "private_atlases_and_mutants_removed": true
+}

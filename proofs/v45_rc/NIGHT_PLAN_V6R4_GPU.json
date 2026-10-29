@@ -1,0 +1,61 @@
+{
+  "schema": "v45-rc.night-plan.v1",
+  "pin": "254c4823745275e3e9d397ae4d1db0fd35ec361d",
+  "src_tree": "827470e10f7e29cad1613e18d0a0c84f8f95693f",
+  "steps": [
+    {
+      "lane": "v45-rc-warm",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/v45-rc/tools_v6/entry_rw_warm.sh",
+      "sha256": "e21b59ee96204a6e7f4f181c0034a8946dbe33d4e177c2bef8b088c9fe12599d",
+      "cap_min": 45
+    },
+    {
+      "lane": "v45-rc-rw3",
+      "path": "<USER_HOME>/wrf_gpu2_lanes/v45-rc/tools_v6/entry_rw3.sh",
+      "sha256": "3fb6d6305d6a2f5bf2e9dbe827b43987603923098b8e7ea7db780a45f7ba6d76",
+      "cap_min": 75
+    }
+  ],
+  "total_caps_min": 120,
+  "per_step_padding_min": 2,
+  "total_with_padding_min": 124,
+  "CPU_post_separate_min": 35,
+  "hard_end_utc": "2026-10-29T05:00:00Z",
+  "manager_latest_start": "2026-10-29T02:30:00Z",
+  "carry_completed": [
+    "A1_swiss original GPU",
+    "A2_prod R2 GPU",
+    "A3_wn3_0227_3h R2 GPU",
+    "A4_wn3_0227_icloud0_3h R3 GPU",
+    "R3 SEAL32ea completed and byte-checked; first replay never started"
+  ],
+  "carry_seal": {
+    "schema": "v45-rc.paid-seal.v1",
+    "bundle_sha256": "32ea753a8080ea271515e71845fba02ef63a9f4c7915915ddbebdbc45957c2f7",
+    "manifest_sha256": "1e681ebb05886e8042b84576433de975cb1ccad10db027127406745de2de2010",
+    "tuple": {
+      "commit": "254c4823745275e3e9d397ae4d1db0fd35ec361d",
+      "src_tree": "827470e10f7e29cad1613e18d0a0c84f8f95693f",
+      "gpuwrf_tree": "353199e61d3c2473f457ef4f7d23b3e3d77e827f",
+      "version": "0.4.5",
+      "assets_manifest_sha256": "f073791c55a373ad49f5ba829b7f05f77ae20fd769cc1a8a4523d4cb7be84f7f"
+    },
+    "basis": "R3 completed successful SEAL at00:49:07, actual immutable-cache check BUNDLE_OK00:49:11; no replay started"
+  },
+  "preconditions": [
+    "ROOT free >=22GiB (20+2) and ownlane<=11GiB; same guard arithmetic/phase placement",
+    "DISK_R4/DELETED_COMPILED_COPIES.json completed; own6.881GiB",
+    "All B1..B9/profile output/layer dirs absent; RW3 new outer run directory; never archive/delete paid prime or seal",
+    "Existing seal must match reviewed source+manifest+tar bytes; reuse without rewriting; no cold prime or seal redo",
+    "Separate reviewed CPU post after GPU complete; all actual required scores before RAW cleanup; DATA>=404.5 by05:30"
+  ],
+  "DATA_floor_GiB": 365,
+  "O72_min_DATA_free_GiB": 411,
+  "ROOT_aggregate_cap_GiB": 11,
+  "ROOT_floor_GiB": 22,
+  "CPU_post_deadline": "2026-10-29T05:30:00Z",
+  "ROOT_floor_basis": "manager01:06:22 original20+2 globalmargin",
+  "ROOT_need_measured_base_GiB": 6.881,
+  "ROOT_remaining_post_reservation_GiB": 3.25,
+  "ROOT_remaining_post_reservation_basis": "I: production profile table has3GiB transient forecast plus0.25GiB metadata; measure actual keepers after profile, no claimed profile measurement"
+}

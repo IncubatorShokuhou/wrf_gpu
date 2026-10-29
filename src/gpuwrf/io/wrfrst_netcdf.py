@@ -31,6 +31,7 @@ from gpuwrf.contracts.state import CONDITIONAL_STATE_LEAVES, State, mynn_sfc_wsp
 from gpuwrf.contracts.precision import (
     EXTRA_SCALAR_BOUNDARY_LEAVES, GWDO_DIAGNOSTIC_LEAVES, LES_TKE_LEAVES,
     MP_RE_DIAGNOSTIC_LEAVES, SMS_CARRY_LEAVES, EPSILON_PBL_LEAVES, les_tke_active,
+    MYNN_CLOUDPDF_LEAVES, mynn_cloudpdf_leaves,
 )
 from gpuwrf.io.wrfout_writer import (
     DATE_STR_LEN,
@@ -135,11 +136,13 @@ def _validate_state_field_order(field_order: tuple[str, ...], *, namelist=None) 
         raise ValueError("MP_RE wrfrst is missing held Thompson effective radii (E78)")
     if les_tke_active(namelist) and any(field in LES_TKE_LEAVES for field in missing):
         raise ValueError("km_opt=2 wrfrst is missing the prognostic LES TKE (WRF tke_2) (E78)")
+    if any(field in missing for field in mynn_cloudpdf_leaves(namelist)):
+        raise ValueError("bl_mynn_cloudpdf wrfrst is missing held MYNN TSQ/COV/SH3D (E78)")
     if physics_option(namelist, "km_opt") == 5 and any(f in SMS_CARRY_LEAVES for f in missing):
         raise ValueError("km_opt=5 wrfrst is missing held SMS carry (E78)")
     if any(name in missing for name in ice_diagnostic_leaves(physics_option(namelist, "mp_physics", 8))):
         raise ValueError("wrfrst is missing held ice diagnostics (E78)")
-    optional = (*CONDITIONAL_STATE_LEAVES, *GWDO_DIAGNOSTIC_LEAVES, *MP_RE_DIAGNOSTIC_LEAVES, *LES_TKE_LEAVES, *SMS_CARRY_LEAVES, *EPSILON_PBL_LEAVES)
+    optional = (*CONDITIONAL_STATE_LEAVES, *GWDO_DIAGNOSTIC_LEAVES, *MP_RE_DIAGNOSTIC_LEAVES, *LES_TKE_LEAVES, *SMS_CARRY_LEAVES, *EPSILON_PBL_LEAVES, *MYNN_CLOUDPDF_LEAVES)
     if any(field not in optional for field in missing):
         raise ValueError(
             "wrfrst State field order is missing non-conditional leaves: "
@@ -156,6 +159,7 @@ def _state_field_order_from_dataset(dataset: Dataset) -> tuple[str, ...]:
     config.update(json.loads(str(getattr(dataset, "GPUWRF_CAMUW_PBL_CONFIG", "{}"))))
     config.update(json.loads(str(getattr(dataset, "GPUWRF_LES_TKE_CONFIG", "{}"))))
     config.update(json.loads(str(getattr(dataset,"GPUWRF_EPSILON_PBL_CONFIG","{}"))))
+    config.update(json.loads(str(getattr(dataset, "GPUWRF_MYNN_CLOUDPDF_CONFIG", "{}"))))
     _validate_state_field_order(field_order, namelist=config)
     return field_order
 
@@ -635,6 +639,8 @@ STATE_EXACT_DIMENSIONS: dict[str, tuple[str, ...]] = {
     "re_ice": XYZ,
     "re_snow": XYZ,
     "tke": XYZ,
+    # Opt-in bl_mynn_cloudpdf=0/1 previous-step MYNN state (WRF restart TSQ/COV/SH3D, "r").
+    **{name: XYZ for name in MYNN_CLOUDPDF_LEAVES},
     **{name: XY for name in SMS_CARRY_LEAVES},
     "dtaux3d": XYZ,
     "dtauy3d": XYZ,
@@ -852,6 +858,8 @@ def read_wrfrst_carry(path: str | Path, *, namelist=None, feedback_schema=None) 
     target = Path(path)
     with Dataset(target, "r") as dataset:
         _validate_common_schema(dataset, require_carry=True)
+        from gpuwrf.io.mynn_cloudpdf_schema import validate as validate_cloudpdf
+        validate_cloudpdf(None, json.loads(str(getattr(dataset, "GPUWRF_MYNN_CLOUDPDF_CONFIG", "{}"))), namelist)
         from gpuwrf.io.restart_schema import validate_cycling_restart
         validate_cycling_restart(namelist, getattr(dataset, "GPUWRF_CYCLING_SCHEMA_VERSION", None))
         # Read/validate active feedback on the host before State or optional
@@ -1120,6 +1128,10 @@ def _write_wrfrst(
         dataset.GPUWRF_MP_RE_CONFIG = json.dumps(mp_re_config(namelist), sort_keys=True)
         dataset.GPUWRF_EXTRA_SCALAR_BOUNDARY_FIELDS = json.dumps(
             [name for name in EXTRA_SCALAR_BOUNDARY_LEAVES if getattr(state, name) is not None])
+        from gpuwrf.io.mynn_cloudpdf_schema import selection as cloudpdf_selection
+        if cloudpdf_selection(namelist) != 2:
+            dataset.GPUWRF_MYNN_CLOUDPDF_CONFIG = json.dumps({"bl_pbl_physics": 5,
+                "bl_mynn_cloudpdf": cloudpdf_selection(namelist)})
         dataset.GPUWRF_LES_TKE_CONFIG = json.dumps({"diff_opt": int(_lookup(namelist, "diff_opt", 0) or 0),
                                                      "km_opt": int(_lookup(namelist, "km_opt", 0) or 0)},
                                                     sort_keys=True)
@@ -2555,6 +2567,13 @@ def _units_for_leaf(leaf: str) -> str:
     if leaf in ('tpe_pbl','tpe_adv'): return 'K2'
     if leaf == "qsq":
         return "kg2 kg-2"
+    # Registry.EM_COMMON:1125/1127/1128 units of the opt-in bl_mynn_cloudpdf state.
+    if leaf == "tsq":
+        return "K2"
+    if leaf == "cov":
+        return "K kg/kg"
+    if leaf == "sh3d":
+        return ""
     if leaf in {"qc_bl", "qi_bl"}:
         return "kg kg-1"
     if leaf in ("dtaux3d", "dtauy3d"):

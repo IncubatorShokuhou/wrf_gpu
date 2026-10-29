@@ -270,6 +270,8 @@ WIRING = {
     "src/gpuwrf/physics/surface_layer.py": [("real_constant", "_EP_3_REAL", "F"),
                                             ("real_constant", "_INV_27315_REAL", "F")],
     "src/gpuwrf/physics/noahmp/energy.py": [("real_constant", "_VKC2_REAL", "jnp.result_type(cmfm)"),
+                                            # c1782be2: legacy and W2 RSURF arms both retain this REAL denominator.
+                                            ("real_constant", "_E_M1_REAL", "jnp.result_type(smcmax1)"),
                                             ("real_constant", "_E_M1_REAL", "jnp.result_type(smcmax1)")],
     "src/gpuwrf/physics/noahmp/snow.py": [("real_constant", "_LIQ_RATIO_REAL", "jnp.result_type(like)"),
                                           ("real_scalar_product", "SNOW_RET_FAC", "jnp.result_type(qout_k)"),

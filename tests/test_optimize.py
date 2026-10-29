@@ -14,12 +14,20 @@ import sys
 import numpy as np
 import pandas as pd
 import pytest
+from functools import partial
 
 from gpuwrf.optimize import calibration
 from gpuwrf.optimize.data import forecast, identity, metrics, paired, read_csv, validate, write_json
 from gpuwrf.optimize.study import PHYSICS, config_id, evaluate, load_study, model_digest, namelist_text, schedule, score
 
 REPO = Path(__file__).resolve().parents[1]
+
+
+@pytest.fixture(autouse=True)
+def legacy_chunk_reference(monkeypatch):
+    """Keep the original uninterrupted/chunk regression reference; wave defaults have their own gates."""
+    from gpuwrf.optimize import study
+    monkeypatch.setattr(study, "run", partial(study.run, wave_mode=False, wall_seconds=None, max_retries=None))
 
 
 def station_file(root):
@@ -536,11 +544,57 @@ def test_release_list_binds_the_final_checkpoint():
 
 
 @pytest.mark.skipif(not Path("<DATA_ROOT>/wrf_gpu2/archive/v040/v-prep/F20_20261016").is_dir(), reason="F20 archive absent")
-def test_release_list_rebuilds_byte_exact():
+def test_release_list_rebuilds_byte_exact(tmp_path):
+    private = tmp_path/"private_f20"
     env = {**os.environ, "JAX_PLATFORMS": "cpu", "GPUWRF_JAX_CACHE": "0", "PYTHONPATH": str(REPO/"src")}
-    result = subprocess.run([sys.executable, str(REPO/"proofs/w41_optimize/build_released.py"), "--check"],
+    result = subprocess.run([sys.executable, str(REPO/"proofs/w41_optimize/build_released.py"),
+                             "--f20-root", str(private), "--stage-f20", "--check"],
                             cwd=REPO, env=env, capture_output=True, text=True, timeout=300)
     assert result.returncode == 0 and "EXACT" in result.stdout, result.stdout+result.stderr
+    receipt = json.loads((tmp_path/"guard_receipts/facade_stage.json").read_text())
+    assert receipt["files"] and not receipt["spy"]["refused_paths"]
+
+
+def _exercise_release_catalog_metadata_route(module, tmp_path, monkeypatch):
+    """Private known-answer routing witness, shared with the guard-deletion probe."""
+    private = tmp_path/"private"
+    forbidden = tmp_path/"forbidden_default"
+    for root in (private, forbidden):
+        p = root/"SYNTHETIC"/"input"/"namelist.input"
+        p.parent.mkdir(parents=True)
+        p.write_text("synthetic namelist metadata\n")
+    nml = tmp_path/"namelists"/"c00"/"namelist.input"
+    nml.parent.mkdir(parents=True); nml.write_text("synthetic base\n")
+    matrix = tmp_path/"proofs/v040/final_validation/MATRIX.md"
+    matrix.parent.mkdir(parents=True); matrix.write_text("")
+    cp = tmp_path/"checkpoint.json"
+    cp.write_text(json.dumps({"rows": [], "default_F20": {"D6": "PASS", "rows": [
+        {"case": "SYNTHETIC", "D6": {"d01": "PASS"}, "E41": "PASS", "source": "synthetic", "wall_s": 1}]},
+        "default_C5prime": {"verdict": "PASS"}, "authority": "synthetic-only", "final_validation_utc": "synthetic",
+        "release_program_identities": {}}))
+    monkeypatch.setattr(module, "REPO", tmp_path)
+    monkeypatch.setattr(module, "NAMELISTS", nml.parent.parent)
+    monkeypatch.setattr(module, "CHECKPOINT", cp)
+    monkeypatch.setattr(module, "F20_ROOT", forbidden)
+    seen = []
+    def parse(path):
+        path = Path(path)
+        assert path in (nml, private/"SYNTHETIC"/"input"/"namelist.input"), "original/default root accessed"
+        seen.append(path)
+        return {"domains": {"max_dom": 1}, "physics": {k: 1 for k in module.PHYSICS}}
+    monkeypatch.setattr(module, "parse_namelist", parse)
+    result = module.build(private)
+    assert seen == [nml, private/"SYNTHETIC"/"input"/"namelist.input"]
+    assert len(result["configurations"]) == 1
+    return result
+
+
+def test_release_catalog_uses_private_metadata_root(tmp_path, monkeypatch):
+    import importlib.util
+    path = REPO/"proofs/w41_optimize/build_released.py"
+    spec = importlib.util.spec_from_file_location("release_catalog_metadata_route", path)
+    module = importlib.util.module_from_spec(spec); spec.loader.exec_module(module)
+    _exercise_release_catalog_metadata_route(module, tmp_path, monkeypatch)
 
 
 def test_release_list_refuses_other_versions_and_corruption(tmp_path, monkeypatch):
@@ -728,6 +782,16 @@ def test_bundle_launcher_runs_the_bundle_launcher_inside_the_consumer(study_file
     consumer.chmod(0o755)
     out = tmp_path/"study"
     out.mkdir()
+    with pytest.raises(ValueError, match="per-member optimizer registry hooks.*v0.4.5"):
+        bundle_launcher(out, bundle, consumer)
+    # Stub bundle capability for this orchestration test (no real model executed).
+    (bundle/"src/scripts/parallel_cases.py").write_text("OPTIMIZER_REGISTRY_HOOKS = 1\n")
+    (bundle/"src/scripts/alisios_registry.py").write_text("# fixture hook\n")
+    (bundle/"src/src/gpuwrf/optimize").mkdir(parents=True)
+    (bundle/"src/src/gpuwrf/optimize/registry.py").write_text("# fixture adapter\n")
+    with pytest.raises(ValueError, match="per-member optimizer registry hooks"):
+        bundle_launcher(out, bundle, consumer)
+    (bundle/"src/scripts/parallel_cases.py").write_text("OPTIMIZER_REGISTRY_HOOKS = 2\n")
     script, record = bundle_launcher(out, bundle, consumer)
     assert subprocess.run([str(script), "--out-root", "x", "case"], check=False).returncode == 0
     consumer_line, launcher_line = log.read_text().splitlines()

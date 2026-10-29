@@ -1,0 +1,56 @@
+{
+  "passed": true,
+  "backend": "cpu",
+  "columns": 384,
+  "levels": 44,
+  "rows": [
+    {
+      "option": 0,
+      "original_sha256": "2c4fe0272684b24b6bcb5ea0055182b197d254f9298d10bf1211fb71b960ec95",
+      "frozen_byte_checks": {
+        "qc_bl": true,
+        "qi_bl": true,
+        "cldfra_bl": true,
+        "sgm": true
+      },
+      "compiled_gate_passed": true
+    },
+    {
+      "option": 1,
+      "original_sha256": "b54facff6847dbae76af9a216933abdea936a69db019ba5bbac89e82f8985868",
+      "frozen_byte_checks": {
+        "qc_bl": true,
+        "qi_bl": true,
+        "cldfra_bl": true,
+        "sgm": true
+      },
+      "compiled_gate_passed": true
+    }
+  ],
+  "fixture_sha256": "8f96146074f013ff6c23c06ff6523a779acd97620239a108302241217a259dd5",
+  "driver_sha256": "ad0f1aa941018728c10b4a5b49ca549c51a86ab459fe45ac3135df7b4bc94885",
+  "executable_sha256": "8c5631710f80e73eea777f4ba35d573c4693e3c2618dca68035857301d116253",
+  "wrf_source_sha256": "6e4a7d5b35ce46f01591f2c1d58e545380d546e654b4a59ee1bcf99cfbce2d72",
+  "object_sha256": {
+    "<USER_HOME>/src/wrf_pristine/WRF/phys/module_bl_mynnedmf.o": "a01c44ae8dd3d67b27fff6d5e078cdba4bfd23a49294aa36986ac1aad395df0d",
+    "<USER_HOME>/src/wrf_pristine/WRF/phys/module_bl_mynnedmf_common.o": "928c55a8783eb2304d3f06ae72d1fda078704d9e42cfe9b9c720ca95e8f692b2",
+    "<USER_HOME>/src/wrf_pristine/WRF/phys/ccpp_kind_types.o": "b717c81e2d68339655492c8855ce83141759dd56ce4ba6f2a6cd447dde8aa7d5",
+    "<USER_HOME>/src/wrf_pristine/WRF/share/module_model_constants.o": "b41ed92ac0ef3ee277e10d6268a3ac1d8a4ec02f1e838284467bf6e757b87595"
+  },
+  "command": [
+    "<USER_HOME>/miniconda3/envs/wrfbuild/bin/gfortran",
+    "-I<USER_HOME>/src/wrf_pristine/WRF/phys",
+    "-ffree-form",
+    "-ffree-line-length-none",
+    "-O2",
+    "-ffp-contract=off",
+    "<USER_HOME>/wrf_gpu2_lanes/v45-mynnopts/archive/proofs/v45_mynnopts/mym_condensation_driver.F90",
+    "<USER_HOME>/src/wrf_pristine/WRF/phys/module_bl_mynnedmf.o",
+    "<USER_HOME>/src/wrf_pristine/WRF/phys/module_bl_mynnedmf_common.o",
+    "<USER_HOME>/src/wrf_pristine/WRF/phys/ccpp_kind_types.o",
+    "<USER_HOME>/src/wrf_pristine/WRF/share/module_model_constants.o",
+    "-o",
+    "<USER_HOME>/wrf_gpu2_lanes/v45-mynnopts/MO11_original/oracle"
+  ],
+  "scope": "Recapture only mym_condensation from unedited pristine WRF objects.\n\nUses the frozen real WN3/Swiss operands. No case run or reference is modified.\n"
+}

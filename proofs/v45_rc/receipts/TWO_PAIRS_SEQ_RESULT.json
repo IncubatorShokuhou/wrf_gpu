@@ -1,0 +1,33 @@
+{
+  "rc": 0,
+  "wall_s": 313.20604822796304,
+  "cmd": [
+    "systemd-run",
+    "--user",
+    "--scope",
+    "--quiet",
+    "-p",
+    "MemoryMax=8G",
+    "-p",
+    "MemorySwapMax=0",
+    "--",
+    "taskset",
+    "-c",
+    "12,28",
+    "nice",
+    "-n",
+    "19",
+    "timeout",
+    "-k",
+    "20",
+    "720",
+    "bash",
+    "<USER_HOME>/wrf_gpu2_lanes/manager/night_seq_v9.sh",
+    "<USER_HOME>/wrf_gpu2_lanes/v45-rc/PLAN_TIMING_TWO_PAIRS_V2.json",
+    "20261029_12z",
+    "NO_CROSS_CPU_SMOKE_ONLY"
+  ],
+  "ROOT_steady_admission": true,
+  "CPU_only": true,
+  "no_GPU_or_science_claim": true
+}

@@ -1,0 +1,56 @@
+{
+  "schema": "v45-rc.r3-resource.v1",
+  "utc": "2026-10-29T00:30:16.425904+00:00",
+  "measured": {
+    "ROOT_free_bytes": 31837306880,
+    "own_ROOT_allocated_bytes": 5169201152,
+    "bundle_allocated_GiB": 1.69244,
+    "A3_phase_JAX_new_or_written_GiB": 1.1278877258300781,
+    "A3_phase_files": 2163,
+    "mtime_bound_caveat": "includes rewrites; upper estimate of net growth"
+  },
+  "inferred": {
+    "A4_cold_new_ROOT_GiB": [
+      1.1,
+      2.0
+    ],
+    "warm_and_RW3_shared_ROOT_cache_growth_GiB": 0,
+    "read_only_basis": "fresh consumer layers/tmp/profile/raw are on DATA; shared P immutable; compile_new0 gate",
+    "receipts_E41_manifest_post_preservation_reserve_GiB": 0.5,
+    "total_new_ROOT_reservation_GiB": 3.2,
+    "ROOT_target_GiB": 25.2,
+    "recommended_ROOT_GiB": 26,
+    "own_8GiB_headroom_GiB": 3.1858062744140625,
+    "own_cap_caveat": "aggregate8GiB pre-arm guard remains binding; 3.2GiB global reserve is rounded upward and not additional lane allowance"
+  },
+  "guard": {
+    "path": "<USER_HOME>/wrf_gpu2_lanes/v45-rc/tools_v6/lib.sh",
+    "condition": "df --output=avail -B1 / >=20*2^30 AND du -sx -B1 entire ROOTlane <=8*2^30",
+    "phases": [
+      "outer entry before launch",
+      "before every PRIME",
+      "before every REPLAY or PROFILE",
+      "before SEAL",
+      "before every RW3 slot"
+    ],
+    "entry_extra": "integer freeGiB>=20",
+    "within_arm": false,
+    "predicts_future_ROOT_growth": false,
+    "DATA_TMPDIR": "per-owned-session tmp on DATA",
+    "floor_unchanged": true
+  },
+  "paid_A3": {
+    "complete": true,
+    "fresh_cache_required": false,
+    "unchanged_entry_retry": "REFUSED E42 because A3 directory exists",
+    "solution": "only unstarted A4 row, check A1/A2/A3 paid bindings and byte-exact paid cache; same source/model/cache bytes; caps55/45/75"
+  },
+  "plan": {
+    "path": "<USER_HOME>/wrf_gpu2_lanes/v45-rc/NIGHT_PLAN_V6R3_GPU.json",
+    "sha256": "63e80a6c3be4eea20c2faa55b6a38c77b26892b03dfa21e6040fb316a1e598ec",
+    "caps_plus_padding_min": 181,
+    "separate_post_min": 35,
+    "latest_manager": "2026-10-29T01:40:00Z"
+  },
+  "no_actual_GPU_or_reference_or_delete": true
+}

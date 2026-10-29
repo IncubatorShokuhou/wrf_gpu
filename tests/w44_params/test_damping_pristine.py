@@ -72,7 +72,7 @@ def stage():
     assert cfg_seen[0].damp_opt == 3
     # Crop edges are not domain edges: the specified-W projection belongs to
     # the boundary pass; the pristine oracle receives the same specified flag.
-    return state, replace(cfg_seen[0], spec_w_zero_grad=False)
+    return state, replace(cfg_seen[0], spec_w_zero_grad=False), nl
 
 
 def gate(actual, reference):
@@ -96,17 +96,20 @@ def difference(actual, reference):
                 max_ulp=int(np.max(np.abs(ordered(a) - ordered(b)))))
 
 
-def test_changed_dampcoef_and_zdamp_keep_original_wrf_bounds(stage, tmp_path):
+def test_changed_dampcoef_and_zdamp_keep_original_wrf_bounds(stage, tmp_path, monkeypatch):
     oracle = load("params_damping_original_wrf", "tests/v025/b_core/pristine_oracle.py")
     library = oracle.build(tmp_path / "original")
-    state, cfg = stage
+    from gpuwrf import runtime_parameters as rp
+    monkeypatch.setenv("GPUWRF_DYN_FP32", "1")
+    monkeypatch.setattr(rp, "UNAVAILABLE_RUNTIME_PARAMETER_FAMILIES", frozenset())
+    state, cfg, nl = stage
     coefficients = jax.jit(lambda s: N.calc_coef_fp32(s, cfg, interpret=True))(state)
     traces = []
 
     def run(state, coef, controls):
         traces.append(1)
         selected = cfg if controls is None else replace(cfg,
-            dampcoef=controls[0], zdamp=controls[1], damping_traced=True)
+            dampcoef=controls[0], zdamp=controls[1], dampmag=controls[2], damping_traced=True)
         result = N._w_phase(state, coef, selected, interpret=True)
         return result.w, result.ph, result.t_2ave
 
@@ -114,8 +117,15 @@ def test_changed_dampcoef_and_zdamp_keep_original_wrf_bounds(stage, tmp_path):
     static = call(state, coefficients, None)
     reports, references, outputs = [], [], []
     for label, dampcoef, zdamp in (("default", .2, 5000.), ("dampcoef", .4, 5000.), ("zdamp", .2, 7000.)):
-        controls = jnp.asarray([dampcoef, zdamp], jnp.float32)
+        bound = rp.bind_diffusion_parameters(nl, {"dampcoef": dampcoef, "zdamp": zdamp})
+        strengths = bound.diffusion_parameters["dampmag_rk"]
+        assert cfg.dt == float(nl.dt_s) / 3.  # captured RK1 in the production staging fixture
+        controls = jnp.stack([bound.diffusion_parameters["dampcoef"],
+                              bound.diffusion_parameters["zdamp"], strengths[0]])
         actual = call(state, coefficients, controls)
+        if label == "default":
+            for got, expected in zip(actual, static, strict=True):
+                np.testing.assert_array_equal(np.asarray(got).view(np.uint32), np.asarray(expected).view(np.uint32))
         original = oracle.Oracle(library, state, replace(cfg, dampcoef=dampcoef, zdamp=zdamp))
         original.run(1)  # original calc_coef_w supplies the original solver coefficients
         original.run(4)  # unchanged advance_w, including WRF REAL damping product

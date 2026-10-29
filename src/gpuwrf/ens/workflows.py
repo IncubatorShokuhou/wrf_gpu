@@ -19,6 +19,7 @@ GPU_LOCK_FILE = Path("/tmp/wrf_gpu2_gpu.lock")
 # Track P per-member control file (gpuwrf optimize continuous): linked into the member directory like the forcing,
 # identity-checked at launch, passed by the launcher as that member's --surface-controls.
 SURFACE_CONTROLS_NAME = "surface_controls.npz"
+RUNTIME_PARAMETERS_NAME = "runtime_parameters.json"
 
 
 def _case(case, namelist, hours):
@@ -81,7 +82,7 @@ def _case(case, namelist, hours):
 def prepare(mode, output, *, case=None, namelists=None, cases=None, hours=24, gpus=None, max_parallel=64,
             max_per_gpu=None, pool_gib=None, checkpoint_interval_steps=0, retry_failed=0,
             members=None, schemes=None, lengthscale_km=None, nens_start=1, physics_rows=None, single_batch=False,
-            host_gb_per_case=None, surface_controls=None):
+            host_gb_per_case=None, surface_controls=None, runtime_parameters=None):
     import math
     import tempfile
     from gpuwrf import __version__
@@ -149,6 +150,14 @@ def prepare(mode, output, *, case=None, namelists=None, cases=None, hours=24, gp
             path = Path(path).resolve(strict=True)
             if path.name != SURFACE_CONTROLS_NAME or not path.is_file():
                 raise ValueError(f"member control files must be regular files named {SURFACE_CONTROLS_NAME}")
+            spec["inputs"].append(path)
+    if runtime_parameters is not None:
+        if mode != "batch" or len(runtime_parameters) != len(specs):
+            raise ValueError("runtime_parameters needs batch mode and one parameter file per case")
+        for spec, path in zip(specs, runtime_parameters):
+            path = Path(path).resolve(strict=True)
+            if path.name != RUNTIME_PARAMETERS_NAME or not path.is_file():
+                raise ValueError(f"member parameter files must be regular files named {RUNTIME_PARAMETERS_NAME}")
             spec["inputs"].append(path)
     specs.sort(key=lambda s: s["issue"])  # stable: physics retains namelist order
     common_start = max(s["issue"] for s in specs)
@@ -219,7 +228,8 @@ def prepare(mode, output, *, case=None, namelists=None, cases=None, hours=24, gp
         raise ValueError("host_gb_per_case must be finite and positive")
     for flag, value in (("--gpus", gpus), ("--max-per-gpu", max_per_gpu), ("--pool-gib", pool_gib),
                         ("--host-gb-per-case", host_gb_per_case),
-                        ("--case-surface-controls", None if surface_controls is None else SURFACE_CONTROLS_NAME)):
+                        ("--case-surface-controls", None if surface_controls is None else SURFACE_CONTROLS_NAME),
+                        ("--case-runtime-parameters", None if runtime_parameters is None else RUNTIME_PARAMETERS_NAME)):
         if value is not None:
             launcher_options += [flag, str(value)]
     plan = {"schema": "gpuwrf.ensemble.plan.v1", "mode": mode, "hours": hours, "members": members,
@@ -258,7 +268,7 @@ def launch(plan_path, *, dry_run=False, launcher=None, env=None):
     if plan.get("cli_options") != ["--domains-from-namelist", "--hours", str(plan.get("hours"))]:
         raise ValueError("launch plan CLI options disagree with prepared forecast hours")
     allowed = {"--gpus", "--max-parallel", "--max-per-gpu", "--pool-gib", "--checkpoint-interval-steps", "--retry-failed",
-               "--host-gb-per-case", "--case-surface-controls"}
+               "--host-gb-per-case", "--case-surface-controls", "--case-runtime-parameters"}
     options = plan.get("launcher_options", [])
     if (not isinstance(options, list) or len(options) % 2 or not all(isinstance(x, str) for x in options)
             or any(flag not in allowed for flag in options[::2]) or len(set(options[::2])) != len(options[::2])):
@@ -268,6 +278,9 @@ def launch(plan_path, *, dry_run=False, launcher=None, env=None):
     controls = dict(zip(options[::2], options[1::2])).get("--case-surface-controls")
     if controls is not None and controls != SURFACE_CONTROLS_NAME:
         raise ValueError(f"member control files are named {SURFACE_CONTROLS_NAME}")
+    parameters = dict(zip(options[::2], options[1::2])).get("--case-runtime-parameters")
+    if parameters is not None and parameters != RUNTIME_PARAMETERS_NAME:
+        raise ValueError(f"member parameter files are named {RUNTIME_PARAMETERS_NAME}")
     cases, identities = [], {}
     def current_identity(path):
         path = Path(path).resolve(strict=True)
@@ -290,6 +303,8 @@ def launch(plan_path, *, dry_run=False, launcher=None, env=None):
                 raise ValueError("shared member input changed since preparation")
         if controls is not None and SURFACE_CONTROLS_NAME not in {item["name"] for item in manifest["inputs"]}:
             raise ValueError("member has no prepared control file")
+        if parameters is not None and RUNTIME_PARAMETERS_NAME not in {item["name"] for item in manifest["inputs"]}:
+            raise ValueError("member has no prepared runtime parameter file")
         cases.append(str(case))
     if launcher is None:
         cpu_only = environ.get("JAX_PLATFORMS", "").strip().lower() == "cpu"  # members never touch the GPU

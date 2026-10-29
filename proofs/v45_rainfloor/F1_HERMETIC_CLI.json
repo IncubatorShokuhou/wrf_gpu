@@ -1,0 +1,125 @@
+{
+  "issue": "cr-v05pre F1: hermetic actual-scorer CLI test",
+  "fix_commit": "8014a5906d",
+  "scope": "TEST_ONLY; production scorer/reference/policy/math/launcher unchanged byte-for-byte vs0562b454cf",
+  "metadata_copy": {
+    "source_commit": "0562b454cf",
+    "source_path": "proofs/w42_bundle042/receipts/bundle_b979188128e0/d6_N72/summary.json",
+    "source_sha256": "8acfa59df042a8b0789256a3281958147c9f1f31f848e357b71b382af90627fc",
+    "copied_object": "twin_thresholds",
+    "object_equal": true,
+    "fixture_path": "tests/fixtures/wn3_twin_threshold_metadata.json",
+    "fixture_sha256": "fbea7fc40c5ecf587a979b20aec754318705a6fc379edbf3e363742c9f510894",
+    "fixture_bytes": 174,
+    "upstream_threshold_sha256": "89f4b37c8be1bdff71305ca9d1720423da65803c98ad267b21cb9da5fa8e95d0",
+    "live_source_reads": 0,
+    "scope": "archived provenance object only; no scientific threshold data needed by this hash-only test adapter"
+  },
+  "runtime_fixtures": {
+    "source_commit": "8014a5906d",
+    "assets": [
+      {
+        "path": "docs/release/evidence/v033/w2/W2bR/metrics.json",
+        "bytes": 1191835,
+        "sha256": "d3577c22d5800265589e6b6734dc42201194fa5f12320acf15ce4bc5e832ee02",
+        "blob": "d39677f1135f1d0cbd336aa2c903d2210784f1c6"
+      },
+      {
+        "path": "docs/release/evidence/rw3/wn3_0227_full_floor.json",
+        "bytes": 50507,
+        "sha256": "5055923b5c2a10b0ccda3d9fc17bb6c8df0e0eace5faf21a05e1d2c01ef0a449",
+        "blob": "8a36ab130adfe856e20071551235176a897b7bec"
+      },
+      {
+        "path": "proofs/v014/grid_delta_atlas/tolerance_manifest_candidate.json",
+        "bytes": 28335,
+        "sha256": "9df4fab8514523286f07b127eb8bf57a7545459c4448fef721ac44c0ecc351dc",
+        "blob": "8b4d079bc2863fb6b1c1a438a89be10cfec2f2dc"
+      },
+      {
+        "path": "tests/fixtures/wn3_twin_threshold_metadata.json",
+        "bytes": 174,
+        "sha256": "fbea7fc40c5ecf587a979b20aec754318705a6fc379edbf3e363742c9f510894",
+        "blob": "9d4dcb166586e70f76b0decd2129f14460c467a4"
+      }
+    ],
+    "threshold_fixture_scope": "exact copied archived W42 twin_thresholds provenance object, NOT scientific threshold values; scorer only hashes metadata bytes"
+  },
+  "validation": {
+    "affected_and_existing_tests": "44PASS/0F/0E/0S24.92s ROOTconftest active",
+    "child_guard_recheck": "1PASS21.73s; both actual CLI invocations and comparison children under independent pre-open guard; normal protected child opens=0",
+    "negative_controls": [
+      {
+        "mutation": "redirect",
+        "rc": 1,
+        "counts": {
+          "tests": 1,
+          "failures": 1,
+          "errors": 0,
+          "skipped": 0
+        },
+        "denied_before_open": [
+          "<DATA_ROOT>/alisios/state/manager/cross/TO_WRF_GPU2_WN3_TWIN_THRESHOLDS_v1.json"
+        ],
+        "protected_payload_reads": 0
+      },
+      {
+        "mutation": "sentinel",
+        "rc": 1,
+        "counts": {
+          "tests": 1,
+          "failures": 1,
+          "errors": 0,
+          "skipped": 0
+        },
+        "denied_before_open": [],
+        "protected_payload_reads": 0
+      }
+    ],
+    "full_collection": "21203collected/0ERROR62.29s,source-pinned slim archive+same57provedsupports+exact runtime fixtures, no exclusions",
+    "test_adapter": "private copied metadata SHA asserted in summary and all3 early diagnostics; fatal pre-open sentinel uses AssertionError so inherited OSError fallback cannot hide access; negative control uses private stand-in"
+  },
+  "harness_notes": {
+    "optional_pytest_plugins_disabled": "prevents unrelated installed-package metadata scanning; ROOTconftest active",
+    "initial_setup": "parent pytest plugin discovery tried ALISIOS source .egg-info/entry_points.txt, blocked before read; setup not a test result",
+    "healthy_parent_metadata": "one parent distribution METADATA scan blocked before read; independent audit subsequently scoped to exec children, parent ROOTconftest unchanged",
+    "protected_payload_reads": 0
+  },
+  "performance_memory": "test-only metadata fixture174B plus bootstrap/startup controls; production program/source, runtime hot path/launches/VRAM unchanged; no model/GPU reruns",
+  "artifacts": {
+    "tests.xml": {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/v45-rainfloor/F1_8014/tests.xml",
+      "sha256": "a5ffe5399ddb48868836b586898078f8bc07c0f11965ac3358c48cbef31562d8"
+    },
+    "tests.log": {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/v45-rainfloor/F1_8014/tests.log",
+      "sha256": "7decf1364691b9075617c9b0e031d08079953e562d2419b65e187a9466480b6f"
+    },
+    "tests.time": {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/v45-rainfloor/F1_8014/tests.time",
+      "sha256": "a9e0d046d89f723c6476de01e5c950b3353e3c6c189131a4a011379b05409ae7"
+    },
+    "child_cli.xml": {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/v45-rainfloor/F1_8014/child_cli.xml",
+      "sha256": "4e24d70161fe3e12d526ab226f5b17a057ce7bf9431fd538d53194ed85086347"
+    },
+    "child_cli.log": {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/v45-rainfloor/F1_8014/child_cli.log",
+      "sha256": "cc4c336e07393de2017b6f69dd2adffd1a1dc6ef9091484d6e040d5e6619f47e"
+    },
+    "MUTATIONS.json": {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/v45-rainfloor/F1_8014/MUTATIONS.json",
+      "sha256": "eb2e29514d56818b8db394c8d62307c19b677d83d1f93588d85a89f6eff05b60"
+    },
+    "collect.log": {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/v45-rainfloor/F1_8014/collect.log",
+      "sha256": "42e2fc1ca203c702cd1c2bbd8ba749e756d834fcae10d03882f7104939f138eb"
+    },
+    "collect.time": {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/v45-rainfloor/F1_8014/collect.time",
+      "sha256": "54ba3e7cedcf46015d7631e1ad37a9768eb6fabfbdca7bea5a68fec073be88a3"
+    }
+  },
+  "cleanup": "source archive and all pytest temp trees removed; only small receipts retained",
+  "previous_accepted_evidence": "reference2406BYTE/6anchors,A3raw/integritysplit,policy and numerical mutation receipts carry unchanged; launcher operational review separate, noGPUauthorization"
+}

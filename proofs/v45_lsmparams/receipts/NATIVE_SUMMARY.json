@@ -1,0 +1,481 @@
+{
+  "scope": "CPU CompileOnly prescreens only; real GPU qualification remains open",
+  "context": "PROD2dom; Jarvis opt_crs2 in every variant; domain own-step n_steps1; autotune0 captured sm120",
+  "programs": {
+    "NATIVE01": {
+      "source_commit": "15d898c27ddda39b7c557d22098d02815ffd3a23",
+      "domain": "d01",
+      "selected": [
+        "bexp",
+        "dksat",
+        "hvb",
+        "hvt",
+        "psisat",
+        "rsmin",
+        "smcmax",
+        "snow_emis",
+        "z0sno"
+      ],
+      "physical_backend": "cpu",
+      "lowering_platform": "cuda",
+      "gpu_executed": false,
+      "target_sha256": "b753abdddbace1e913de3767a1afbdfeba2b272e77f2be93658c766968e4960f",
+      "input_sha256": {
+        "namelist.input": "5ef3a96be3324deb712b0e0114288244bcf5f53edb21461fee7374aa766cef4b",
+        "wrfinput_d02": "b3013bbb337adbe20c10331f46b309d288424e54a41e9cc4ba2e8eba53abb16f",
+        "wrfbdy_d01": "296cef912e17dc0dfff4b78103dedfb1329cd184de5bc2cd0d44cc6edf823599",
+        "wrfinput_d01": "1024ddb7d6badc958fb1a4f385117ce5c46d20249b75bcce2ea4261d34f648f0",
+        "SHA256SUMS": "bcdeaaa5eb0ccc05437cf276bd970ed3486f569060d90b09f1410a6fe02b1a60"
+      },
+      "traced_pallas_calls": 163,
+      "pallas": {
+        "pallas_calls": 163,
+        "interpreted": 0,
+        "interpreted_names": {},
+        "native_names": {
+          "phy_prep_hydrostatic_real": 9,
+          "wrf_toposhad_solar": 1,
+          "wrf_topographic_shadow": 1,
+          "mcica_kiss_lanes": 2,
+          "rrtmg_sw_band_sums": 1,
+          "rrtmg_lw_band_sums": 1,
+          "b_noahmp_radiation_real": 1,
+          "b_core_noah_canopy_flux": 1,
+          "b_core_noah_snowwater": 1,
+          "b_core_noah_soilwater": 1,
+          "<lambda>": 8,
+          "mynn_tridiag2_real": 10,
+          "gwdo_column_fp32": 1,
+          "kf_column_fp32": 1,
+          "b_diff_horizontal_m": 9,
+          "b_diff_horizontal_u": 1,
+          "b_diff_horizontal_v": 1,
+          "b_diff_horizontal_w": 1,
+          "b_diff_sixth_m": 9,
+          "b_diff_sixth_u": 1,
+          "b_diff_sixth_v": 1,
+          "b_diff_sixth_w": 1,
+          "boundary_dry_relax_real": 15,
+          "b_core_scalar_flux_fp32": 3,
+          "b_diff_eos_real": 9,
+          "b_diff_stage_masses": 3,
+          "b_diff_coupled_work_u": 3,
+          "b_diff_coupled_work_v": 3,
+          "b_diff_coupled_work_theta": 3,
+          "b_diff_coupled_work_w": 3,
+          "b_diff_rhs_ph_fp32": 3,
+          "boundary_leaf_interp_real": 21,
+          "b_core_coef_fp32": 3,
+          "b_core_uv_fp32": 3,
+          "b_core_mass_fp32": 3,
+          "b_core_w_p1_fp32": 3,
+          "b_core_w_p2_fp32": 3,
+          "b_core_w_fp32": 3,
+          "b_core_pressure_fp32": 3,
+          "b_core_scalar_flux_fp32_stacked": 2,
+          "boundary_ring_relax_real": 1,
+          "b_core_pd_scale_sl_fp32": 1,
+          "b_core_pd_tend_sl_fp32": 1,
+          "thompson_full_column": 1,
+          "boundary_ring_update_real": 7
+        }
+      },
+      "census_errors": [],
+      "native_gate": "PASS",
+      "hard_stack_gate": "PASS",
+      "max_stack_B": 32,
+      "kernels": 1135,
+      "kinput_transpose_over500": [],
+      "top_transpose": [
+        [
+          441,
+          "kInput",
+          "input_multiply_select_subtract_transpose_fusion"
+        ],
+        [
+          417,
+          "kInput",
+          "input_multiply_transpose_fusion.6"
+        ],
+        [
+          407,
+          "kInput",
+          "input_add_and_compare_divide_multiply_select_subtract_transpose_fusion"
+        ],
+        [
+          389,
+          "kInput",
+          "input_transpose_fusion.131"
+        ],
+        [
+          355,
+          "kInput",
+          "input_transpose_fusion.132"
+        ],
+        [
+          348,
+          "kLoop",
+          "loop_add_multiply_transpose_fusion.1"
+        ],
+        [
+          322,
+          "kInput",
+          "input_maximum_pad_transpose_fusion"
+        ],
+        [
+          313,
+          "kLoop",
+          "loop_add_multiply_transpose_fusion"
+        ],
+        [
+          312,
+          "kInput",
+          "input_maximum_multiply_transpose_fusion"
+        ],
+        [
+          303,
+          "kInput",
+          "input_multiply_transpose_fusion.4"
+        ],
+        [
+          284,
+          "kInput",
+          "input_transpose_fusion.145"
+        ],
+        [
+          282,
+          "kInput",
+          "input_add_clamp_convert_maximum_minimum_power_transpose_fusion"
+        ]
+      ],
+      "compiled_memory": {
+        "argument_size_in_bytes": 127719632,
+        "output_size_in_bytes": 114578436,
+        "temp_size_in_bytes": 472749880,
+        "alias_size_in_bytes": 114576964,
+        "generated_code_size_in_bytes": 0
+      },
+      "compile_s": 184.9114363650442,
+      "wall_s": 463.9102116180002,
+      "peak_rss_KiB": 6511020,
+      "raw_hlo_full_sha256": "027edf684fe7ed66f7393252dbebb96f8da4cad9ad1141ae2ab5c874e5b6de17",
+      "full_constant_raw_proto_sha256": "8ae09952ef68349b8ef98693bc48bba753ef1e95249f5a92f03135b2a2b5de80",
+      "optimized_hlo_sha256": "b924d7f1f225c7c59aa2b88fa8d1b3f14ca30132e308893893d1d45f2659b681",
+      "receipt_sha256": "c6c5adf4f071c82d1049aa5f493ebfdd71ea548ce8d7623060312dffb9b1b830"
+    },
+    "NATIVE02": {
+      "source_commit": "15d898c27ddda39b7c557d22098d02815ffd3a23",
+      "domain": "d02",
+      "selected": [
+        "bexp",
+        "dksat",
+        "hvb",
+        "hvt",
+        "psisat",
+        "rsmin",
+        "smcmax",
+        "snow_emis",
+        "z0sno"
+      ],
+      "physical_backend": "cpu",
+      "lowering_platform": "cuda",
+      "gpu_executed": false,
+      "target_sha256": "b753abdddbace1e913de3767a1afbdfeba2b272e77f2be93658c766968e4960f",
+      "input_sha256": {
+        "namelist.input": "5ef3a96be3324deb712b0e0114288244bcf5f53edb21461fee7374aa766cef4b",
+        "wrfinput_d02": "b3013bbb337adbe20c10331f46b309d288424e54a41e9cc4ba2e8eba53abb16f",
+        "wrfbdy_d01": "296cef912e17dc0dfff4b78103dedfb1329cd184de5bc2cd0d44cc6edf823599",
+        "wrfinput_d01": "1024ddb7d6badc958fb1a4f385117ce5c46d20249b75bcce2ea4261d34f648f0",
+        "SHA256SUMS": "bcdeaaa5eb0ccc05437cf276bd970ed3486f569060d90b09f1410a6fe02b1a60"
+      },
+      "traced_pallas_calls": 153,
+      "pallas": {
+        "pallas_calls": 153,
+        "interpreted": 0,
+        "interpreted_names": {},
+        "native_names": {
+          "phy_prep_hydrostatic_real": 6,
+          "wrf_toposhad_solar": 1,
+          "wrf_topographic_shadow": 1,
+          "mcica_kiss_lanes": 2,
+          "rrtmg_sw_band_sums": 1,
+          "rrtmg_lw_band_sums": 1,
+          "b_noahmp_radiation_real": 1,
+          "b_core_noah_canopy_flux": 1,
+          "b_core_noah_snowwater": 1,
+          "b_core_noah_soilwater": 1,
+          "<lambda>": 8,
+          "mynn_tridiag2_real": 10,
+          "b_diff_horizontal_m": 9,
+          "b_diff_horizontal_u": 1,
+          "b_diff_horizontal_v": 1,
+          "b_diff_horizontal_w": 1,
+          "b_diff_sixth_m": 17,
+          "b_diff_sixth_u": 1,
+          "b_diff_sixth_v": 1,
+          "b_diff_sixth_w": 1,
+          "boundary_dry_relax_real": 6,
+          "boundary_leaf_interp_real": 1,
+          "boundary_ring_relax_real": 7,
+          "b_diff_advect_u_fp32": 3,
+          "b_diff_advect_v_fp32": 3,
+          "b_core_scalar_flux_fp32": 3,
+          "b_diff_eos_real": 9,
+          "b_diff_large_step_u_fp32": 3,
+          "b_diff_large_step_v_fp32": 3,
+          "b_diff_stage_masses": 3,
+          "b_diff_coupled_work_u": 3,
+          "b_diff_coupled_work_v": 3,
+          "b_diff_coupled_work_theta": 3,
+          "b_diff_coupled_work_w": 3,
+          "b_diff_rhs_ph_fp32": 3,
+          "b_core_coef_fp32": 3,
+          "b_core_uv_fp32": 3,
+          "b_core_mass_fp32": 3,
+          "b_core_w_p1_fp32": 3,
+          "b_core_w_p2_fp32": 3,
+          "b_core_w_fp32": 3,
+          "b_core_pressure_fp32": 3,
+          "b_core_scalar_flux_fp32_stacked": 4,
+          "b_core_pd_scale_sl_fp32": 2,
+          "b_core_pd_tend_sl_fp32": 2,
+          "thompson_full_column": 1,
+          "boundary_spec_final_real": 1
+        }
+      },
+      "census_errors": [],
+      "native_gate": "PASS",
+      "hard_stack_gate": "PASS",
+      "max_stack_B": 32,
+      "kernels": 753,
+      "kinput_transpose_over500": [],
+      "top_transpose": [
+        [
+          330,
+          "kInput",
+          "input_transpose_fusion.51"
+        ],
+        [
+          327,
+          "kInput",
+          "input_add_multiply_transpose_fusion"
+        ],
+        [
+          305,
+          "kInput",
+          "input_transpose_fusion.42"
+        ],
+        [
+          304,
+          "kInput",
+          "input_clamp_concatenate_maximum_multiply_transpose_fusion"
+        ],
+        [
+          278,
+          "kLoop",
+          "loop_slice_fusion.25"
+        ],
+        [
+          276,
+          "kInput",
+          "input_select_transpose_fusion"
+        ],
+        [
+          251,
+          "kLoop",
+          "loop_slice_fusion.26"
+        ],
+        [
+          239,
+          "kInput",
+          "input_add_divide_maximum_multiply_subtract_transpose_fusion"
+        ],
+        [
+          235,
+          "kInput",
+          "input_add_divide_transpose_fusion"
+        ],
+        [
+          213,
+          "kInput",
+          "input_dynamic_update_slice_minimum_transpose_fusion"
+        ],
+        [
+          199,
+          "kInput",
+          "input_maximum_pad_transpose_fusion"
+        ],
+        [
+          157,
+          "kInput",
+          "input_and_compare_select_subtract_transpose_fusion"
+        ]
+      ],
+      "compiled_memory": {
+        "argument_size_in_bytes": 349874804,
+        "output_size_in_bytes": 304317056,
+        "temp_size_in_bytes": 660397408,
+        "alias_size_in_bytes": 304315688,
+        "generated_code_size_in_bytes": 0
+      },
+      "compile_s": 112.22852998098824,
+      "wall_s": 352.34504408203065,
+      "peak_rss_KiB": 6277056,
+      "raw_hlo_full_sha256": "5183c281cd2a4c23edec7b086acf08b929cad46b39acb0f4ef29eee5d188d679",
+      "full_constant_raw_proto_sha256": "f7f27fb9b42b2a190cf7c1e1383beb85c817908fc3990e46970c5182789ddf92",
+      "optimized_hlo_sha256": "5d847b1fd327b4211aa066bfb32769eb9f6ff3fdf77947ce200897302bcbd0f7",
+      "receipt_sha256": "ca8d099171ab301af8f29336344047d142827ec26f2e871c714d07758de28ac9"
+    },
+    "NATIVE03": {
+      "source_commit": "15d898c27ddda39b7c557d22098d02815ffd3a23",
+      "domain": "d01",
+      "selected": [],
+      "physical_backend": "cpu",
+      "lowering_platform": "cuda",
+      "gpu_executed": false,
+      "target_sha256": "b753abdddbace1e913de3767a1afbdfeba2b272e77f2be93658c766968e4960f",
+      "input_sha256": {
+        "namelist.input": "5ef3a96be3324deb712b0e0114288244bcf5f53edb21461fee7374aa766cef4b",
+        "wrfinput_d02": "b3013bbb337adbe20c10331f46b309d288424e54a41e9cc4ba2e8eba53abb16f",
+        "wrfbdy_d01": "296cef912e17dc0dfff4b78103dedfb1329cd184de5bc2cd0d44cc6edf823599",
+        "wrfinput_d01": "1024ddb7d6badc958fb1a4f385117ce5c46d20249b75bcce2ea4261d34f648f0",
+        "SHA256SUMS": "bcdeaaa5eb0ccc05437cf276bd970ed3486f569060d90b09f1410a6fe02b1a60"
+      },
+      "traced_pallas_calls": 163,
+      "pallas": {
+        "pallas_calls": 163,
+        "interpreted": 0,
+        "interpreted_names": {},
+        "native_names": {
+          "phy_prep_hydrostatic_real": 9,
+          "wrf_toposhad_solar": 1,
+          "wrf_topographic_shadow": 1,
+          "mcica_kiss_lanes": 2,
+          "rrtmg_sw_band_sums": 1,
+          "rrtmg_lw_band_sums": 1,
+          "b_noahmp_radiation_real": 1,
+          "b_core_noah_canopy_flux": 1,
+          "b_core_noah_snowwater": 1,
+          "b_core_noah_soilwater": 1,
+          "<lambda>": 8,
+          "mynn_tridiag2_real": 10,
+          "gwdo_column_fp32": 1,
+          "kf_column_fp32": 1,
+          "b_diff_horizontal_m": 9,
+          "b_diff_horizontal_u": 1,
+          "b_diff_horizontal_v": 1,
+          "b_diff_horizontal_w": 1,
+          "b_diff_sixth_m": 9,
+          "b_diff_sixth_u": 1,
+          "b_diff_sixth_v": 1,
+          "b_diff_sixth_w": 1,
+          "boundary_dry_relax_real": 15,
+          "b_core_scalar_flux_fp32": 3,
+          "b_diff_eos_real": 9,
+          "b_diff_stage_masses": 3,
+          "b_diff_coupled_work_u": 3,
+          "b_diff_coupled_work_v": 3,
+          "b_diff_coupled_work_theta": 3,
+          "b_diff_coupled_work_w": 3,
+          "b_diff_rhs_ph_fp32": 3,
+          "boundary_leaf_interp_real": 21,
+          "b_core_coef_fp32": 3,
+          "b_core_uv_fp32": 3,
+          "b_core_mass_fp32": 3,
+          "b_core_w_p1_fp32": 3,
+          "b_core_w_p2_fp32": 3,
+          "b_core_w_fp32": 3,
+          "b_core_pressure_fp32": 3,
+          "b_core_scalar_flux_fp32_stacked": 2,
+          "boundary_ring_relax_real": 1,
+          "b_core_pd_scale_sl_fp32": 1,
+          "b_core_pd_tend_sl_fp32": 1,
+          "thompson_full_column": 1,
+          "boundary_ring_update_real": 7
+        }
+      },
+      "census_errors": [],
+      "native_gate": "PASS",
+      "hard_stack_gate": "PASS",
+      "max_stack_B": 32,
+      "kernels": 1101,
+      "kinput_transpose_over500": [],
+      "top_transpose": [
+        [
+          406,
+          "kInput",
+          "input_multiply_power_select_subtract_transpose_fusion"
+        ],
+        [
+          376,
+          "kInput",
+          "input_transpose_fusion.124"
+        ],
+        [
+          352,
+          "kInput",
+          "input_transpose_fusion.125"
+        ],
+        [
+          339,
+          "kInput",
+          "input_add_divide_multiply_transpose_fusion"
+        ],
+        [
+          322,
+          "kInput",
+          "input_maximum_pad_transpose_fusion"
+        ],
+        [
+          312,
+          "kInput",
+          "input_maximum_select_transpose_fusion"
+        ],
+        [
+          312,
+          "kInput",
+          "input_maximum_multiply_transpose_fusion"
+        ],
+        [
+          303,
+          "kLoop",
+          "loop_divide_transpose_fusion"
+        ],
+        [
+          289,
+          "kInput",
+          "input_minimum_multiply_transpose_fusion"
+        ],
+        [
+          285,
+          "kInput",
+          "input_add_clamp_convert_maximum_minimum_power_transpose_fusion"
+        ],
+        [
+          282,
+          "kInput",
+          "input_multiply_transpose_fusion.7"
+        ],
+        [
+          276,
+          "kLoop",
+          "loop_transpose_fusion.10"
+        ]
+      ],
+      "compiled_memory": {
+        "argument_size_in_bytes": 126946832,
+        "output_size_in_bytes": 114578436,
+        "temp_size_in_bytes": 525258464,
+        "alias_size_in_bytes": 114576964,
+        "generated_code_size_in_bytes": 0
+      },
+      "compile_s": 147.91932603996247,
+      "wall_s": 431.63832357595675,
+      "peak_rss_KiB": 6276068,
+      "raw_hlo_full_sha256": "7a60f4226a2bf0f63cfed660b42e40adfefbe68f5cdfd80228638abe9e2daeec",
+      "full_constant_raw_proto_sha256": "5c1538025b8c10a1b89a23c8189de390bffba925465e61734cb8cf4c650a3b36",
+      "optimized_hlo_sha256": "33f3cfb496c137fcaebfa7a40f37807569a1338fff810cc9cd7064ed5318614a",
+      "receipt_sha256": "c3ca3069ddb6111ef20a0d91fc8231beea65c11299c979f858327078b57b0450"
+    }
+  }
+}

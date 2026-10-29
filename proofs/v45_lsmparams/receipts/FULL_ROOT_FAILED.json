@@ -1,0 +1,4106 @@
+{
+  "scope": "One real PROD two-nest root: OFF, nine default controls, nine changed values.\n\nCPU regression transport/roundoff gate, not CPU-WRF or GPU fidelity. Jarvis2 is\nexplicit so all nine public controls have active consumers. The unchanged\n4e-6 relative field-scale bound is registered before looking at this root.\n",
+  "source": "<USER_HOME>/wrf_gpu2_lanes/v45-lsmparams/snapshot",
+  "commit": "4235f063730e6642ee9aea4934f59649041c44a3",
+  "phase": "FAIL",
+  "exception": "AssertionError('ON default outside unchanged preregistered 4e-6 class')",
+  "wall_s": 1774.2788947650115,
+  "peak_rss_KiB": 15125928,
+  "inputs": {
+    "namelist.input": "5ef3a96be3324deb712b0e0114288244bcf5f53edb21461fee7374aa766cef4b",
+    "wrfinput_d02": "b3013bbb337adbe20c10331f46b309d288424e54a41e9cc4ba2e8eba53abb16f",
+    "wrfbdy_d01": "296cef912e17dc0dfff4b78103dedfb1329cd184de5bc2cd0d44cc6edf823599",
+    "wrfinput_d01": "1024ddb7d6badc958fb1a4f385117ce5c46d20249b75bcce2ea4261d34f648f0"
+  },
+  "options": {
+    "d01": {
+      "opt_alb": 2,
+      "opt_snf": 1,
+      "bats": null,
+      "opt_irr": 0,
+      "opt_irrm": 0,
+      "opt_btr": 1,
+      "opt_rsf": 1,
+      "rsurf_snow": null,
+      "dveg": 4,
+      "opt_tbot": 2,
+      "opt_stc": 1,
+      "opt_frz": 1,
+      "opt_rad": 3,
+      "opt_crs": 2,
+      "opt_sfc": 1,
+      "opt_inf": 1,
+      "opt_run": 3,
+      "fsatmx": null,
+      "timean": null,
+      "opt_crop": 0,
+      "opt_soil": 1,
+      "opt_infdv": 0,
+      "opt_tdrn": 0,
+      "drain_layer_opt": null
+    },
+    "d02": {
+      "opt_alb": 2,
+      "opt_snf": 1,
+      "bats": null,
+      "opt_irr": 0,
+      "opt_irrm": 0,
+      "opt_btr": 1,
+      "opt_rsf": 1,
+      "rsurf_snow": null,
+      "dveg": 4,
+      "opt_tbot": 2,
+      "opt_stc": 1,
+      "opt_frz": 1,
+      "opt_rad": 3,
+      "opt_crs": 2,
+      "opt_sfc": 1,
+      "opt_inf": 1,
+      "opt_run": 3,
+      "fsatmx": null,
+      "timean": null,
+      "opt_crop": 0,
+      "opt_soil": 1,
+      "opt_infdv": 0,
+      "opt_tdrn": 0,
+      "drain_layer_opt": null
+    }
+  },
+  "schedule": {
+    "input_dir": "<DATA_ROOT>/wrf_gpu2/v025/s0_case_20260725",
+    "namelist_sha256": "5ef3a96be3324deb712b0e0114288244bcf5f53edb21461fee7374aa766cef4b",
+    "hours": 3,
+    "dt_s": {
+      "d01": 54.0,
+      "d02": 18.0
+    },
+    "total_steps": {
+      "d01": 200,
+      "d02": 600
+    },
+    "history_interval_minutes": {
+      "d01": 60.0,
+      "d02": 60.0
+    },
+    "output_cadence_steps": {
+      "d01": 67,
+      "d02": 200
+    },
+    "all_output_alarm_steps": {
+      "d01": [
+        67,
+        134,
+        200
+      ],
+      "d02": [
+        200,
+        400,
+        600
+      ]
+    },
+    "output_alarm_steps": {
+      "d01": [
+        67,
+        134,
+        200
+      ]
+    },
+    "block_between": false,
+    "root_sync_cadence": 1,
+    "event_aware_fusion_k": 0,
+    "output_observer": "non-None no-op; scheduling only, no IO cost claim"
+  },
+  "numerical_policy": {
+    "GPUWRF_FAST_DEFAULTS": "1",
+    "GPUWRF_CENSUS": "0",
+    "GPUWRF_JAX_CACHE": "0",
+    "GPUWRF_NESTED_AOT": "0",
+    "JAX_ENABLE_X64": "true"
+  },
+  "default_bound": 4e-06,
+  "default_bound_scope": "unchanged w44 land/no-ice named-field scale AND global-leaf guard",
+  "leaves": {
+    "off": 355,
+    "on": 355,
+    "changed": 355
+  },
+  "own_steps": {
+    "off": {
+      "d01": 1,
+      "d02": 3
+    },
+    "on": {
+      "d01": 1,
+      "d02": 3
+    },
+    "changed": {
+      "d01": 1,
+      "d02": 3
+    }
+  },
+  "default_byte_exact": false,
+  "default_in_registered_class": false,
+  "default_differences": [
+    {
+      "leaf": "['d01'][<flat index 0>][<flat index 0>]",
+      "cells": 1850,
+      "max_abs": 0.00021880865097045898,
+      "field_max": 18.718692779541016,
+      "max_abs_over_field_max": 1.1689312579007143e-05
+    },
+    {
+      "leaf": "['d01'][<flat index 0>][<flat index 1>]",
+      "cells": 2063,
+      "max_abs": 0.0002187490463256836,
+      "field_max": 20.704784393310547,
+      "max_abs_over_field_max": 1.0565144855908697e-05
+    },
+    {
+      "leaf": "['d01'][<flat index 0>][<flat index 2>]",
+      "cells": 7502,
+      "max_abs": 9.141862392425537e-05,
+      "field_max": 0.3707166314125061,
+      "max_abs_over_field_max": 0.0002465997373140011
+    },
+    {
+      "leaf": "['d01'][<flat index 0>][<flat index 3>]",
+      "cells": 34,
+      "max_abs": 6.103515625e-05,
+      "field_max": 495.3987121582031,
+      "max_abs_over_field_max": 1.2320410762494823e-07
+    },
+    {
+      "leaf": "['d01'][<flat index 0>][<flat index 4>]",
+      "cells": 249,
+      "max_abs": 1.862645149230957e-09,
+      "field_max": 0.014096851460635662,
+      "max_abs_over_field_max": 1.3213199801617018e-07
+    },
+    {
+      "leaf": "['d01'][<flat index 0>][<flat index 5>]",
+      "cells": 87,
+      "max_abs": 0.828125,
+      "field_max": 102112.6953125,
+      "max_abs_over_field_max": 8.10991226375577e-06
+    },
+    {
+      "leaf": "['d01'][<flat index 0>][<flat index 6>]",
+      "cells": 91,
+      "max_abs": 0.822509765625,
+      "field_max": 2406.495361328125,
+      "max_abs_over_field_max": 0.00034178738876565446
+    },
+    {
+      "leaf": "['d01'][<flat index 0>][<flat index 7>]",
+      "cells": 78,
+      "max_abs": 0.015625,
+      "field_max": 205837.109375,
+      "max_abs_over_field_max": 7.590953860284698e-08
+    },
+    {
+      "leaf": "['d01'][<flat index 0>][<flat index 8>]",
+      "cells": 798,
+      "max_abs": 0.01025390625,
+      "field_max": 10616.6318359375,
+      "max_abs_over_field_max": 9.658342126257343e-07
+    },
+    {
+      "leaf": "['d01'][<flat index 0>][<flat index 9>]",
+      "cells": 2,
+      "max_abs": 0.0078125,
+      "field_max": 97195.25,
+      "max_abs_over_field_max": 8.037944241102317e-08
+    },
+    {
+      "leaf": "['d01'][<flat index 0>][<flat index 10>]",
+      "cells": 33,
+      "max_abs": 0.0029296875,
+      "field_max": 2195.252685546875,
+      "max_abs_over_field_max": 1.334555934853652e-06
+    },
+    {
+      "leaf": "['d01'][<flat index 0>][<flat index 20>]",
+      "cells": 61,
+      "max_abs": 2.682209014892578e-07,
+      "field_max": 9.770359992980957,
+      "max_abs_over_field_max": 2.7452509598617467e-08
+    },
+    {
+      "leaf": "['d01'][<flat index 0>][<flat index 22>]",
+      "cells": 90,
+      "max_abs": 2.7939677238464355e-08,
+      "field_max": 0.04962905868887901,
+      "max_abs_over_field_max": 5.629701222748587e-07
+    },
+    {
+      "leaf": "['d01'][<flat index 0>][<flat index 23>]",
+      "cells": 82,
+      "max_abs": 2.2737367544323206e-13,
+      "field_max": 0.00010235084482701495,
+      "max_abs_over_field_max": 2.221512444059651e-09
+    },
+    {
+      "leaf": "['d01'][<flat index 0>][<flat index 27>]",
+      "cells": 91,
+      "max_abs": 2.7939677238464355e-08,
+      "field_max": 0.049840666353702545,
+      "max_abs_over_field_max": 5.605799296539458e-07
+    },
+    {
+      "leaf": "['d01'][<flat index 0>][<flat index 28>]",
+      "cells": 1,
+      "max_abs": 3.0517578125e-05,
+      "field_max": 297.7357482910156,
+      "max_abs_over_field_max": 1.0249887123118056e-07
+    },
+    {
+      "leaf": "['d01'][<flat index 0>][<flat index 53>]",
+      "cells": 15,
+      "max_abs": 4.440892098500626e-16,
+      "field_max": 1.1767189107558806e-06,
+      "max_abs_over_field_max": 3.7739616979963055e-10
+    },
+    {
+      "leaf": "['d01'][<flat index 0>][<flat index 72>]",
+      "cells": 95,
+      "max_abs": 3.24249267578125e-05,
+      "field_max": 60.27744674682617,
+      "max_abs_over_field_max": 5.379280063736241e-07
+    },
+    {
+      "leaf": "['d01'][<flat index 0>][<flat index 73>]",
+      "cells": 85,
+      "max_abs": 2.2737367544323206e-13,
+      "field_max": 0.00012140878243371844,
+      "max_abs_over_field_max": 1.8727942977878372e-09
+    },
+    {
+      "leaf": "['d01'][<flat index 0>][<flat index 74>]",
+      "cells": 30,
+      "max_abs": 2.514570951461792e-08,
+      "field_max": 0.02002747543156147,
+      "max_abs_over_field_max": 1.2555606222335234e-06
+    },
+    {
+      "leaf": "['d01'][<flat index 0>][<flat index 76>]",
+      "cells": 17,
+      "max_abs": 1.9073486328125e-06,
+      "field_max": 118.07671356201172,
+      "max_abs_over_field_max": 1.6153469852553064e-08
+    },
+    {
+      "leaf": "['d01'][<flat index 2>]",
+      "cells": 7447,
+      "max_abs": 0.00017052888870239258,
+      "field_max": 3.668623685836792,
+      "max_abs_over_field_max": 4.6483069212233996e-05
+    },
+    {
+      "leaf": "['d01'][<flat index 3>]",
+      "cells": 190,
+      "max_abs": 0.00016677379608154297,
+      "field_max": 3.142258405685425,
+      "max_abs_over_field_max": 5.307450074118407e-05
+    },
+    {
+      "leaf": "['d01'][<flat index 4>]",
+      "cells": 166,
+      "max_abs": 0.003570556640625,
+      "field_max": 75.7051010131836,
+      "max_abs_over_field_max": 4.7164016596493397e-05
+    },
+    {
+      "leaf": "['d01'][<flat index 6>]",
+      "cells": 1752,
+      "max_abs": 0.75390625,
+      "field_max": 425221.65625,
+      "max_abs_over_field_max": 1.7729723755103313e-06
+    },
+    {
+      "leaf": "['d01'][<flat index 7>]",
+      "cells": 170,
+      "max_abs": 2.6226043701171875e-05,
+      "field_max": 18.716947555541992,
+      "max_abs_over_field_max": 1.4011923484503475e-06
+    },
+    {
+      "leaf": "['d01'][<flat index 8>]",
+      "cells": 178,
+      "max_abs": 2.5987625122070312e-05,
+      "field_max": 20.668624877929688,
+      "max_abs_over_field_max": 1.2573465954099512e-06
+    },
+    {
+      "leaf": "['d01'][<flat index 9>]",
+      "cells": 1580,
+      "max_abs": 1.385807991027832e-06,
+      "field_max": 0.3837963342666626,
+      "max_abs_over_field_max": 3.610790065714826e-06
+    },
+    {
+      "leaf": "['d01'][<flat index 11>]",
+      "cells": 19,
+      "max_abs": 0.0009765625,
+      "field_max": 10614.8125,
+      "max_abs_over_field_max": 9.199997644800603e-08
+    },
+    {
+      "leaf": "['d01'][<flat index 13>]",
+      "cells": 1459,
+      "max_abs": 7.186084985733032e-06,
+      "field_max": 3.2426552772521973,
+      "max_abs_over_field_max": 2.216111295007118e-06
+    },
+    {
+      "leaf": "['d01'][<flat index 14>]",
+      "cells": 42,
+      "max_abs": 7.275957614183426e-12,
+      "field_max": 0.00016405733185820282,
+      "max_abs_over_field_max": 4.4350091103957144e-08
+    },
+    {
+      "leaf": "['d01'][<flat index 15>][<flat index 15>]",
+      "cells": 3,
+      "max_abs": 3.0517578125e-05,
+      "field_max": 297.7357482910156,
+      "max_abs_over_field_max": 1.0249887123118056e-07
+    },
+    {
+      "leaf": "['d01'][<flat index 15>][<flat index 23>]",
+      "cells": 4,
+      "max_abs": 2.6775524020195007e-09,
+      "field_max": 0.009314773604273796,
+      "max_abs_over_field_max": 2.8745222544013184e-07
+    },
+    {
+      "leaf": "['d01'][<flat index 15>][<flat index 24>]",
+      "cells": 4,
+      "max_abs": 1.6763806343078613e-08,
+      "field_max": 0.05637483671307564,
+      "max_abs_over_field_max": 2.9736327979803087e-07
+    },
+    {
+      "leaf": "['d01'][<flat index 15>][<flat index 25>]",
+      "cells": 1,
+      "max_abs": 3.0517578125e-05,
+      "field_max": 297.7357482910156,
+      "max_abs_over_field_max": 1.0249887123118056e-07
+    },
+    {
+      "leaf": "['d01'][<flat index 15>][<flat index 26>]",
+      "cells": 30,
+      "max_abs": 2.514570951461792e-08,
+      "field_max": 0.02002747543156147,
+      "max_abs_over_field_max": 1.2555606222335234e-06
+    },
+    {
+      "leaf": "['d01'][<flat index 15>][<flat index 30>]",
+      "cells": 5,
+      "max_abs": 1.8735013540549517e-16,
+      "field_max": 7.024997898952279e-07,
+      "max_abs_over_field_max": 2.6669066396936134e-10
+    },
+    {
+      "leaf": "['d01'][<flat index 28>]",
+      "cells": 12,
+      "max_abs": 1.1302806797175435e-06,
+      "field_max": 1.1302806797175435e-06,
+      "max_abs_over_field_max": 1.0
+    },
+    {
+      "leaf": "['d01'][<flat index 29>].t2",
+      "cells": 4,
+      "max_abs": 3.0517578125e-05,
+      "field_max": 298.72607421875,
+      "max_abs_over_field_max": 1.0215907066302054e-07
+    },
+    {
+      "leaf": "['d01'][<flat index 29>].q2",
+      "cells": 35,
+      "max_abs": 2.514570951461792e-08,
+      "field_max": 0.01434382051229477,
+      "max_abs_over_field_max": 1.7530691696165844e-06
+    },
+    {
+      "leaf": "['d01'][<flat index 29>].lh",
+      "cells": 90,
+      "max_abs": 4.76837158203125e-07,
+      "field_max": 303.5219421386719,
+      "max_abs_over_field_max": 1.5710137950595663e-09
+    },
+    {
+      "leaf": "['d01'][<flat index 30>][<flat index 0>]",
+      "cells": 707,
+      "max_abs": 3.24249267578125e-05,
+      "field_max": 2033443072.0,
+      "max_abs_over_field_max": 1.5945824697182623e-14
+    },
+    {
+      "leaf": "['d01'][<flat index 31>][<flat index 0>]",
+      "cells": 299,
+      "max_abs": 0.001708984375,
+      "field_max": 24764.595703125,
+      "max_abs_over_field_max": 6.900917727416589e-08
+    },
+    {
+      "leaf": "['d02'][<flat index 0>][<flat index 0>]",
+      "cells": 204033,
+      "max_abs": 0.039575815200805664,
+      "field_max": 14.06514835357666,
+      "max_abs_over_field_max": 0.002813750285878914
+    },
+    {
+      "leaf": "['d02'][<flat index 0>][<flat index 1>]",
+      "cells": 208505,
+      "max_abs": 0.04752689599990845,
+      "field_max": 19.034929275512695,
+      "max_abs_over_field_max": 0.002496825457662665
+    },
+    {
+      "leaf": "['d02'][<flat index 0>][<flat index 2>]",
+      "cells": 257506,
+      "max_abs": 0.01973840966820717,
+      "field_max": 2.4159555435180664,
+      "max_abs_over_field_max": 0.008170021886853302
+    },
+    {
+      "leaf": "['d02'][<flat index 0>][<flat index 3>]",
+      "cells": 33431,
+      "max_abs": 0.00140380859375,
+      "field_max": 494.0876770019531,
+      "max_abs_over_field_max": 2.8412135317118034e-06
+    },
+    {
+      "leaf": "['d02'][<flat index 0>][<flat index 4>]",
+      "cells": 117438,
+      "max_abs": 1.5553086996078491e-06,
+      "field_max": 0.013924706727266312,
+      "max_abs_over_field_max": 0.00011169417999751196
+    },
+    {
+      "leaf": "['d02'][<flat index 0>][<flat index 5>]",
+      "cells": 73440,
+      "max_abs": 3.5078125,
+      "field_max": 101903.6796875,
+      "max_abs_over_field_max": 3.442282467872733e-05
+    },
+    {
+      "leaf": "['d02'][<flat index 0>][<flat index 6>]",
+      "cells": 74557,
+      "max_abs": 3.5047607421875,
+      "field_max": 2376.110595703125,
+      "max_abs_over_field_max": 0.0014749989956382443
+    },
+    {
+      "leaf": "['d02'][<flat index 0>][<flat index 7>]",
+      "cells": 80082,
+      "max_abs": 0.0625,
+      "field_max": 205780.890625,
+      "max_abs_over_field_max": 3.0372110748560914e-07
+    },
+    {
+      "leaf": "['d02'][<flat index 0>][<flat index 8>]",
+      "cells": 170255,
+      "max_abs": 0.060546875,
+      "field_max": 10560.4033203125,
+      "max_abs_over_field_max": 5.733386610674289e-06
+    },
+    {
+      "leaf": "['d02'][<flat index 0>][<flat index 9>]",
+      "cells": 2310,
+      "max_abs": 0.0625,
+      "field_max": 96987.8046875,
+      "max_abs_over_field_max": 6.444109153865108e-07
+    },
+    {
+      "leaf": "['d02'][<flat index 0>][<flat index 10>]",
+      "cells": 4942,
+      "max_abs": 0.0650634765625,
+      "field_max": 2330.853271484375,
+      "max_abs_over_field_max": 2.7914016449892244e-05
+    },
+    {
+      "leaf": "['d02'][<flat index 0>][<flat index 20>]",
+      "cells": 28848,
+      "max_abs": 0.00033602118492126465,
+      "field_max": 9.670759201049805,
+      "max_abs_over_field_max": 3.474610192804594e-05
+    },
+    {
+      "leaf": "['d02'][<flat index 0>][<flat index 21>]",
+      "cells": 1606,
+      "max_abs": 0.00020265579223632812,
+      "field_max": 1.21901273727417,
+      "max_abs_over_field_max": 0.00016624583651971188
+    },
+    {
+      "leaf": "['d02'][<flat index 0>][<flat index 22>]",
+      "cells": 1642,
+      "max_abs": 4.142150282859802e-05,
+      "field_max": 0.10701697319746017,
+      "max_abs_over_field_max": 0.00038705545102803445
+    },
+    {
+      "leaf": "['d02'][<flat index 0>][<flat index 23>]",
+      "cells": 1629,
+      "max_abs": 1.013177097775042e-08,
+      "field_max": 0.0001003116849460639,
+      "max_abs_over_field_max": 0.00010100289894640014
+    },
+    {
+      "leaf": "['d02'][<flat index 0>][<flat index 24>]",
+      "cells": 2100,
+      "max_abs": 0.0001592189073562622,
+      "field_max": 0.8797386288642883,
+      "max_abs_over_field_max": 0.000180984331177782
+    },
+    {
+      "leaf": "['d02'][<flat index 0>][<flat index 25>]",
+      "cells": 1757,
+      "max_abs": 0.00025281310081481934,
+      "field_max": 1.281083345413208,
+      "max_abs_over_field_max": 0.00019734321090036146
+    },
+    {
+      "leaf": "['d02'][<flat index 0>][<flat index 26>]",
+      "cells": 491,
+      "max_abs": 9.655952453613281e-06,
+      "field_max": 1.207939863204956,
+      "max_abs_over_field_max": 7.993736068941138e-06
+    },
+    {
+      "leaf": "['d02'][<flat index 0>][<flat index 27>]",
+      "cells": 1676,
+      "max_abs": 4.141777753829956e-05,
+      "field_max": 0.10701465606689453,
+      "max_abs_over_field_max": 0.00038702902070170126
+    },
+    {
+      "leaf": "['d02'][<flat index 0>][<flat index 28>]",
+      "cells": 170,
+      "max_abs": 0.00128173828125,
+      "field_max": 297.8101806640625,
+      "max_abs_over_field_max": 4.303876645156848e-06
+    },
+    {
+      "leaf": "['d02'][<flat index 0>][<flat index 33>]",
+      "cells": 197,
+      "max_abs": 9.604264050722122e-10,
+      "field_max": 1.0,
+      "max_abs_over_field_max": 9.604264050722122e-10
+    },
+    {
+      "leaf": "['d02'][<flat index 0>][<flat index 38>]",
+      "cells": 130,
+      "max_abs": 0.125,
+      "field_max": 1341281.5,
+      "max_abs_over_field_max": 9.319445619730086e-08
+    },
+    {
+      "leaf": "['d02'][<flat index 0>][<flat index 39>]",
+      "cells": 127,
+      "max_abs": 0.03125,
+      "field_max": 1697855.75,
+      "max_abs_over_field_max": 1.8405568317567615e-08
+    },
+    {
+      "leaf": "['d02'][<flat index 0>][<flat index 41>]",
+      "cells": 1,
+      "max_abs": 2.9802322387695312e-08,
+      "field_max": 1321.5660400390625,
+      "max_abs_over_field_max": 2.2550762871308665e-11
+    },
+    {
+      "leaf": "['d02'][<flat index 0>][<flat index 44>]",
+      "cells": 2625,
+      "max_abs": 0.0015869140625,
+      "field_max": 9855.1005859375,
+      "max_abs_over_field_max": 1.6102464390514785e-07
+    },
+    {
+      "leaf": "['d02'][<flat index 0>][<flat index 53>]",
+      "cells": 49101,
+      "max_abs": 3.9687364505880396e-11,
+      "field_max": 1.1883895467690309e-06,
+      "max_abs_over_field_max": 3.3395921912795e-05
+    },
+    {
+      "leaf": "['d02'][<flat index 0>][<flat index 71>]",
+      "cells": 1254,
+      "max_abs": 7.703900337219238e-05,
+      "field_max": 0.22076469659805298,
+      "max_abs_over_field_max": 0.0003489643251812927
+    },
+    {
+      "leaf": "['d02'][<flat index 0>][<flat index 72>]",
+      "cells": 1676,
+      "max_abs": 0.04425048828125,
+      "field_max": 128.34800720214844,
+      "max_abs_over_field_max": 0.0003447695780079808
+    },
+    {
+      "leaf": "['d02'][<flat index 0>][<flat index 73>]",
+      "cells": 1637,
+      "max_abs": 1.1110387276858091e-08,
+      "field_max": 0.00011899527453351766,
+      "max_abs_over_field_max": 9.336830660219709e-05
+    },
+    {
+      "leaf": "['d02'][<flat index 0>][<flat index 74>]",
+      "cells": 515,
+      "max_abs": 9.592622518539429e-07,
+      "field_max": 0.019043099135160446,
+      "max_abs_over_field_max": 5.037322155629584e-05
+    },
+    {
+      "leaf": "['d02'][<flat index 0>][<flat index 75>]",
+      "cells": 733,
+      "max_abs": 0.0196533203125,
+      "field_max": 865.4421997070312,
+      "max_abs_over_field_max": 2.270899237309323e-05
+    },
+    {
+      "leaf": "['d02'][<flat index 0>][<flat index 76>]",
+      "cells": 34320,
+      "max_abs": 0.054569244384765625,
+      "field_max": 104.16140747070312,
+      "max_abs_over_field_max": 0.0005238911964598212
+    },
+    {
+      "leaf": "['d02'][<flat index 0>][<flat index 77>]",
+      "cells": 24,
+      "max_abs": 3.987457603216171e-06,
+      "field_max": 0.07277904450893402,
+      "max_abs_over_field_max": 5.478854016456192e-05
+    },
+    {
+      "leaf": "['d02'][<flat index 0>][<flat index 78>]",
+      "cells": 198,
+      "max_abs": 0.5506591796875,
+      "field_max": 859.63134765625,
+      "max_abs_over_field_max": 0.0006405759645560273
+    },
+    {
+      "leaf": "['d02'][<flat index 0>][<flat index 79>]",
+      "cells": 23,
+      "max_abs": 3.0517578125e-05,
+      "field_max": 444.6214599609375,
+      "max_abs_over_field_max": 6.863721361465805e-08
+    },
+    {
+      "leaf": "['d02'][<flat index 0>][<flat index 84>]",
+      "cells": 1763,
+      "max_abs": 0.0037827491760253906,
+      "field_max": 16.42156410217285,
+      "max_abs_over_field_max": 0.00023035255061513104
+    },
+    {
+      "leaf": "['d02'][<flat index 1>]",
+      "cells": 473,
+      "max_abs": 3.0517578125e-05,
+      "field_max": 300.00189208984375,
+      "max_abs_over_field_max": 1.0172461884293943e-07
+    },
+    {
+      "leaf": "['d02'][<flat index 2>]",
+      "cells": 256647,
+      "max_abs": 0.011239111423492432,
+      "field_max": 14.888303756713867,
+      "max_abs_over_field_max": 0.0007548953599515435
+    },
+    {
+      "leaf": "['d02'][<flat index 3>]",
+      "cells": 6012,
+      "max_abs": 0.010656595230102539,
+      "field_max": 14.6390962600708,
+      "max_abs_over_field_max": 0.0007279544475138932
+    },
+    {
+      "leaf": "['d02'][<flat index 4>]",
+      "cells": 5949,
+      "max_abs": 0.097808837890625,
+      "field_max": 106.52204132080078,
+      "max_abs_over_field_max": 0.0009182028120928026
+    },
+    {
+      "leaf": "['d02'][<flat index 5>]",
+      "cells": 2243,
+      "max_abs": 0.0625,
+      "field_max": 96987.8046875,
+      "max_abs_over_field_max": 6.444109153865108e-07
+    },
+    {
+      "leaf": "['d02'][<flat index 6>]",
+      "cells": 195150,
+      "max_abs": 2817.375,
+      "field_max": 1013217.5,
+      "max_abs_over_field_max": 0.002780622127035903
+    },
+    {
+      "leaf": "['d02'][<flat index 7>]",
+      "cells": 132995,
+      "max_abs": 0.03612685203552246,
+      "field_max": 14.063276290893555,
+      "max_abs_over_field_max": 0.00256887877961381
+    },
+    {
+      "leaf": "['d02'][<flat index 8>]",
+      "cells": 137041,
+      "max_abs": 0.021480560302734375,
+      "field_max": 19.050254821777344,
+      "max_abs_over_field_max": 0.0011275733843821775
+    },
+    {
+      "leaf": "['d02'][<flat index 9>]",
+      "cells": 177445,
+      "max_abs": 0.008358538150787354,
+      "field_max": 2.476240873336792,
+      "max_abs_over_field_max": 0.003375494783560385
+    },
+    {
+      "leaf": "['d02'][<flat index 10>]",
+      "cells": 20439,
+      "max_abs": 0.000396728515625,
+      "field_max": 494.08819580078125,
+      "max_abs_over_field_max": 8.029508071570341e-07
+    },
+    {
+      "leaf": "['d02'][<flat index 11>]",
+      "cells": 115449,
+      "max_abs": 0.072265625,
+      "field_max": 10567.427734375,
+      "max_abs_over_field_max": 6.838525591703427e-06
+    },
+    {
+      "leaf": "['d02'][<flat index 12>]",
+      "cells": 3373,
+      "max_abs": 0.0772705078125,
+      "field_max": 2306.178955078125,
+      "max_abs_over_field_max": 3.350585939671033e-05
+    },
+    {
+      "leaf": "['d02'][<flat index 13>]",
+      "cells": 176235,
+      "max_abs": 0.007907867431640625,
+      "field_max": 13.5372314453125,
+      "max_abs_over_field_max": 0.000584156920385583
+    },
+    {
+      "leaf": "['d02'][<flat index 14>]",
+      "cells": 51466,
+      "max_abs": 8.731149137020111e-11,
+      "field_max": 0.00030899749253876507,
+      "max_abs_over_field_max": 2.825637536823944e-07
+    },
+    {
+      "leaf": "['d02'][<flat index 15>][<flat index 0>]",
+      "cells": 1,
+      "max_abs": 3.0517578125e-05,
+      "field_max": 306.7834167480469,
+      "max_abs_over_field_max": 9.947597053481963e-08
+    },
+    {
+      "leaf": "['d02'][<flat index 15>][<flat index 14>]",
+      "cells": 27,
+      "max_abs": 6.103515625e-05,
+      "field_max": 298.31182861328125,
+      "max_abs_over_field_max": 2.0460186420942557e-07
+    },
+    {
+      "leaf": "['d02'][<flat index 15>][<flat index 15>]",
+      "cells": 259,
+      "max_abs": 0.00128173828125,
+      "field_max": 297.8102111816406,
+      "max_abs_over_field_max": 4.30387620412465e-06
+    },
+    {
+      "leaf": "['d02'][<flat index 15>][<flat index 16>]",
+      "cells": 186,
+      "max_abs": 0.000457763671875,
+      "field_max": 298.10546875,
+      "max_abs_over_field_max": 1.535576230098932e-06
+    },
+    {
+      "leaf": "['d02'][<flat index 15>][<flat index 17>]",
+      "cells": 272,
+      "max_abs": 0.09832763671875,
+      "field_max": 2100.458251953125,
+      "max_abs_over_field_max": 4.681246895877097e-05
+    },
+    {
+      "leaf": "['d02'][<flat index 15>][<flat index 23>]",
+      "cells": 1272,
+      "max_abs": 1.6749836504459381e-06,
+      "field_max": 0.03901241347193718,
+      "max_abs_over_field_max": 4.2934632886806783e-05
+    },
+    {
+      "leaf": "['d02'][<flat index 15>][<flat index 24>]",
+      "cells": 1712,
+      "max_abs": 1.7505139112472534e-05,
+      "field_max": 0.14290887117385864,
+      "max_abs_over_field_max": 0.00012249161979018298
+    },
+    {
+      "leaf": "['d02'][<flat index 15>][<flat index 25>]",
+      "cells": 238,
+      "max_abs": 0.00128173828125,
+      "field_max": 297.8101806640625,
+      "max_abs_over_field_max": 4.303876645156848e-06
+    },
+    {
+      "leaf": "['d02'][<flat index 15>][<flat index 26>]",
+      "cells": 585,
+      "max_abs": 9.592622518539429e-07,
+      "field_max": 0.017955197021365166,
+      "max_abs_over_field_max": 5.3425325865959695e-05
+    },
+    {
+      "leaf": "['d02'][<flat index 15>][<flat index 30>]",
+      "cells": 391,
+      "max_abs": 4.661160346586257e-12,
+      "field_max": 7.093578915373655e-07,
+      "max_abs_over_field_max": 6.570957202554403e-06
+    },
+    {
+      "leaf": "['d02'][<flat index 28>]",
+      "cells": 7654,
+      "max_abs": 5.086263058728946e-06,
+      "field_max": 3.3908420391526306e-06,
+      "max_abs_over_field_max": 1.5
+    },
+    {
+      "leaf": "['d02'][<flat index 29>].t2",
+      "cells": 502,
+      "max_abs": 0.00189208984375,
+      "field_max": 297.8372802734375,
+      "max_abs_over_field_max": 6.352763636617002e-06
+    },
+    {
+      "leaf": "['d02'][<flat index 29>].q2",
+      "cells": 1201,
+      "max_abs": 7.040798664093018e-07,
+      "field_max": 0.014105081558227539,
+      "max_abs_over_field_max": 4.991675259038894e-05
+    },
+    {
+      "leaf": "['d02'][<flat index 29>].u10",
+      "cells": 2084,
+      "max_abs": 0.001832723617553711,
+      "field_max": 9.981164932250977,
+      "max_abs_over_field_max": 0.00018361820789393474
+    },
+    {
+      "leaf": "['d02'][<flat index 29>].v10",
+      "cells": 1774,
+      "max_abs": 0.0030355453491210938,
+      "field_max": 14.208965301513672,
+      "max_abs_over_field_max": 0.00021363591821831805
+    },
+    {
+      "leaf": "['d02'][<flat index 29>].lh",
+      "cells": 1656,
+      "max_abs": 0.02777099609375,
+      "field_max": 297.4881896972656,
+      "max_abs_over_field_max": 9.335159194726599e-05
+    },
+    {
+      "leaf": "['d02'][<flat index 29>].psfc",
+      "cells": 416,
+      "max_abs": 0.0546875,
+      "field_max": 102212.390625,
+      "max_abs_over_field_max": 5.35037872273619e-07
+    },
+    {
+      "leaf": "['d02'][<flat index 30>][<flat index 0>]",
+      "cells": 15193,
+      "max_abs": 1408.0,
+      "field_max": 2661202176.0,
+      "max_abs_over_field_max": 5.290841908585603e-07
+    },
+    {
+      "leaf": "['d02'][<flat index 31>][<flat index 0>]",
+      "cells": 3735,
+      "max_abs": 0.66796875,
+      "field_max": 24237.609375,
+      "max_abs_over_field_max": 2.7559184557573554e-05
+    }
+  ],
+  "default_field_tables": {
+    "d01": [
+      {
+        "field": "h_diabatic",
+        "dtype": "float32",
+        "cells": 12,
+        "ulp_median": 890745894.0,
+        "ulp_max": 1781491788,
+        "max_abs": 1.1302806797175435e-06,
+        "field_abs_max": 1.1302806797175435e-06,
+        "scale_cells": "land_no_ice",
+        "cells_outside_scale_columns": 10,
+        "max_abs_over_field_max": 1.0,
+        "value_at_max_ulp": 5.651403398587718e-07
+      },
+      {
+        "field": "State.p_perturbation",
+        "dtype": "float32",
+        "cells": 91,
+        "ulp_median": 1562.0,
+        "ulp_max": 975000,
+        "max_abs": 0.822509765625,
+        "field_abs_max": 2175.81005859375,
+        "scale_cells": "land_no_ice",
+        "cells_outside_scale_columns": 78,
+        "max_abs_over_field_max": 0.0003780246177171353,
+        "value_at_max_ulp": 0.9426717758178711
+      },
+      {
+        "field": "State.w",
+        "dtype": "float32",
+        "cells": 7502,
+        "ulp_median": 5.0,
+        "ulp_max": 451982,
+        "max_abs": 9.141862392425537e-05,
+        "field_abs_max": 0.3314618766307831,
+        "scale_cells": "land_no_ice",
+        "cells_outside_scale_columns": 3866,
+        "max_abs_over_field_max": 0.0002758043394115185,
+        "value_at_max_ulp": -0.000371577829355374
+      },
+      {
+        "field": "mudf",
+        "dtype": "float32",
+        "cells": 190,
+        "ulp_median": 10.0,
+        "ulp_max": 41130,
+        "max_abs": 0.00016677379608154297,
+        "field_abs_max": 3.142258405685425,
+        "scale_cells": "land_no_ice",
+        "cells_outside_scale_columns": 96,
+        "max_abs_over_field_max": 5.307450074118407e-05,
+        "value_at_max_ulp": -0.017760558053851128
+      },
+      {
+        "field": "muave",
+        "dtype": "float32",
+        "cells": 166,
+        "ulp_median": 5.0,
+        "ulp_max": 1282,
+        "max_abs": 0.003570556640625,
+        "field_abs_max": 75.7051010131836,
+        "scale_cells": "land_no_ice",
+        "cells_outside_scale_columns": 79,
+        "max_abs_over_field_max": 4.7164016596493397e-05,
+        "value_at_max_ulp": 2.3453571796417236
+      },
+      {
+        "field": "ww",
+        "dtype": "float32",
+        "cells": 7447,
+        "ulp_median": 13.0,
+        "ulp_max": 178688,
+        "max_abs": 0.00017052888870239258,
+        "field_abs_max": 3.668623685836792,
+        "scale_cells": "land_no_ice",
+        "cells_outside_scale_columns": 3776,
+        "max_abs_over_field_max": 4.6483069212233996e-05,
+        "value_at_max_ulp": -0.003662586212158203
+      },
+      {
+        "field": "noahmp_land.sfcrunoff",
+        "dtype": "float32",
+        "cells": 5,
+        "ulp_median": 13238272.0,
+        "ulp_max": 626524160,
+        "max_abs": 1.8735013540549517e-16,
+        "field_abs_max": 4.832134692378531e-12,
+        "scale_cells": "land_no_ice",
+        "cells_outside_scale_columns": 0,
+        "max_abs_over_field_max": 3.877171215880893e-05,
+        "value_at_max_ulp": 1.8735013540549517e-16
+      },
+      {
+        "field": "land_history.RUNSF",
+        "dtype": "float32",
+        "cells": 5,
+        "ulp_median": 13321216.0,
+        "ulp_max": 710078464,
+        "max_abs": 1.8735013540549517e-13,
+        "field_abs_max": 4.832134692378531e-09,
+        "scale_cells": "land_no_ice",
+        "cells_outside_scale_columns": 0,
+        "max_abs_over_field_max": 3.877171215880893e-05,
+        "value_at_max_ulp": 1.8735013540549517e-13
+      },
+      {
+        "field": "State.u",
+        "dtype": "float32",
+        "cells": 1850,
+        "ulp_median": 2.0,
+        "ulp_max": 3671,
+        "max_abs": 0.00021880865097045898,
+        "field_abs_max": 18.718692779541016,
+        "scale_cells": "all",
+        "cells_outside_scale_columns": 0,
+        "max_abs_over_field_max": 1.1689312579007143e-05,
+        "value_at_max_ulp": 0.7883075475692749
+      },
+      {
+        "field": "State.v",
+        "dtype": "float32",
+        "cells": 2063,
+        "ulp_median": 3.0,
+        "ulp_max": 107277,
+        "max_abs": 0.0002187490463256836,
+        "field_abs_max": 20.704784393310547,
+        "scale_cells": "all",
+        "cells_outside_scale_columns": 0,
+        "max_abs_over_field_max": 1.0565144855908697e-05,
+        "value_at_max_ulp": 0.000783273484557867
+      },
+      {
+        "field": "State.p_total",
+        "dtype": "float32",
+        "cells": 87,
+        "ulp_median": 6.0,
+        "ulp_max": 106,
+        "max_abs": 0.828125,
+        "field_abs_max": 101265.703125,
+        "scale_cells": "land_no_ice",
+        "cells_outside_scale_columns": 75,
+        "max_abs_over_field_max": 8.177744038154577e-06,
+        "value_at_max_ulp": 95622.703125
+      },
+      {
+        "field": "w_save",
+        "dtype": "float32",
+        "cells": 1580,
+        "ulp_median": 3.0,
+        "ulp_max": 10299,
+        "max_abs": 1.385807991027832e-06,
+        "field_abs_max": 0.3313835859298706,
+        "scale_cells": "land_no_ice",
+        "cells_outside_scale_columns": 378,
+        "max_abs_over_field_max": 4.181884830352174e-06,
+        "value_at_max_ulp": -2.2924905351828784e-05
+      },
+      {
+        "field": "ww_save",
+        "dtype": "float32",
+        "cells": 1459,
+        "ulp_median": 11.0,
+        "ulp_max": 24160,
+        "max_abs": 7.186084985733032e-06,
+        "field_abs_max": 3.2426552772521973,
+        "scale_cells": "land_no_ice",
+        "cells_outside_scale_columns": 236,
+        "max_abs_over_field_max": 2.216111295007118e-06,
+        "value_at_max_ulp": -0.0006356090307235718
+      },
+      {
+        "field": "history_diagnostics.q2",
+        "dtype": "float32",
+        "cells": 35,
+        "ulp_median": 1.0,
+        "ulp_max": 27,
+        "max_abs": 2.514570951461792e-08,
+        "field_abs_max": 0.013433929532766342,
+        "scale_cells": "land_no_ice",
+        "cells_outside_scale_columns": 0,
+        "max_abs_over_field_max": 1.8718059710887781e-06,
+        "value_at_max_ulp": 0.013297420926392078
+      },
+      {
+        "field": "land_history.Q2B",
+        "dtype": "float32",
+        "cells": 37,
+        "ulp_median": 1.0,
+        "ulp_max": 27,
+        "max_abs": 2.514570951461792e-08,
+        "field_abs_max": 0.013433929532766342,
+        "scale_cells": "land_no_ice",
+        "cells_outside_scale_columns": 0,
+        "max_abs_over_field_max": 1.8718059710887781e-06,
+        "value_at_max_ulp": 0.013297420926392078
+      },
+      {
+        "field": "ph_tend",
+        "dtype": "float32",
+        "cells": 1752,
+        "ulp_median": 9.0,
+        "ulp_max": 17414,
+        "max_abs": 0.75390625,
+        "field_abs_max": 425221.65625,
+        "scale_cells": "land_no_ice",
+        "cells_outside_scale_columns": 397,
+        "max_abs_over_field_max": 1.7729723755103313e-06,
+        "value_at_max_ulp": 9.314708709716797
+      },
+      {
+        "field": "u_save",
+        "dtype": "float32",
+        "cells": 170,
+        "ulp_median": 1.0,
+        "ulp_max": 76,
+        "max_abs": 2.6226043701171875e-05,
+        "field_abs_max": 18.716947555541992,
+        "scale_cells": "all",
+        "cells_outside_scale_columns": 0,
+        "max_abs_over_field_max": 1.4011923484503475e-06,
+        "value_at_max_ulp": 0.0080882478505373
+      },
+      {
+        "field": "State.mu_perturbation",
+        "dtype": "float32",
+        "cells": 33,
+        "ulp_median": 3.0,
+        "ulp_max": 24,
+        "max_abs": 0.0029296875,
+        "field_abs_max": 2109.597900390625,
+        "scale_cells": "land_no_ice",
+        "cells_outside_scale_columns": 22,
+        "max_abs_over_field_max": 1.3887421387068705e-06,
+        "value_at_max_ulp": 1481.9031982421875
+      },
+      {
+        "field": "v_save",
+        "dtype": "float32",
+        "cells": 178,
+        "ulp_median": 2.0,
+        "ulp_max": 109,
+        "max_abs": 2.5987625122070312e-05,
+        "field_abs_max": 20.668624877929688,
+        "scale_cells": "all",
+        "cells_outside_scale_columns": 0,
+        "max_abs_over_field_max": 1.2573465954099512e-06,
+        "value_at_max_ulp": 2.8423023223876953
+      },
+      {
+        "field": "State.qsfc",
+        "dtype": "float32",
+        "cells": 30,
+        "ulp_median": 46.0,
+        "ulp_max": 117,
+        "max_abs": 2.514570951461792e-08,
+        "field_abs_max": 0.02002747543156147,
+        "scale_cells": "land_no_ice",
+        "cells_outside_scale_columns": 0,
+        "max_abs_over_field_max": 1.2555606222335234e-06,
+        "value_at_max_ulp": 1.7480960682232543e-37
+      },
+      {
+        "field": "noahmp_land.qsfc",
+        "dtype": "float32",
+        "cells": 30,
+        "ulp_median": 46.0,
+        "ulp_max": 117,
+        "max_abs": 2.514570951461792e-08,
+        "field_abs_max": 0.02002747543156147,
+        "scale_cells": "land_no_ice",
+        "cells_outside_scale_columns": 0,
+        "max_abs_over_field_max": 1.2555606222335234e-06,
+        "value_at_max_ulp": 1.7480960682232543e-37
+      },
+      {
+        "field": "State.ph_perturbation",
+        "dtype": "float32",
+        "cells": 798,
+        "ulp_median": 1.0,
+        "ulp_max": 21,
+        "max_abs": 0.01025390625,
+        "field_abs_max": 10529.13671875,
+        "scale_cells": "land_no_ice",
+        "cells_outside_scale_columns": 563,
+        "max_abs_over_field_max": 9.738601106527683e-07,
+        "value_at_max_ulp": 8134.8408203125
+      },
+      {
+        "field": "land_history.CHB",
+        "dtype": "float32",
+        "cells": 4,
+        "ulp_median": 9.5,
+        "ulp_max": 36,
+        "max_abs": 1.6763806343078613e-08,
+        "field_abs_max": 0.018555784597992897,
+        "scale_cells": "land_no_ice",
+        "cells_outside_scale_columns": 0,
+        "max_abs_over_field_max": 9.03427513644014e-07,
+        "value_at_max_ulp": 0.00552032608538866
+      },
+      {
+        "field": "land_history.CHB2",
+        "dtype": "float32",
+        "cells": 4,
+        "ulp_median": 4.0,
+        "ulp_max": 19,
+        "max_abs": 1.7695128917694092e-08,
+        "field_abs_max": 0.02688157744705677,
+        "scale_cells": "land_no_ice",
+        "cells_outside_scale_columns": 0,
+        "max_abs_over_field_max": 6.582622970152932e-07,
+        "value_at_max_ulp": 0.010362008586525917
+      },
+      {
+        "field": "State.hfx",
+        "dtype": "float32",
+        "cells": 95,
+        "ulp_median": 2.0,
+        "ulp_max": 17,
+        "max_abs": 3.24249267578125e-05,
+        "field_abs_max": 54.324581146240234,
+        "scale_cells": "land_no_ice",
+        "cells_outside_scale_columns": 0,
+        "max_abs_over_field_max": 5.968739394515628e-07,
+        "value_at_max_ulp": -24.544097900390625
+      },
+      {
+        "field": "land_history.SHB",
+        "dtype": "float32",
+        "cells": 97,
+        "ulp_median": 2.0,
+        "ulp_max": 17,
+        "max_abs": 3.24249267578125e-05,
+        "field_abs_max": 54.324581146240234,
+        "scale_cells": "land_no_ice",
+        "cells_outside_scale_columns": 0,
+        "max_abs_over_field_max": 5.968739394515628e-07,
+        "value_at_max_ulp": -24.544097900390625
+      },
+      {
+        "field": "State.fltv",
+        "dtype": "float32",
+        "cells": 91,
+        "ulp_median": 2.0,
+        "ulp_max": 18,
+        "max_abs": 2.7939677238464355e-08,
+        "field_abs_max": 0.047840338200330734,
+        "scale_cells": "land_no_ice",
+        "cells_outside_scale_columns": 0,
+        "max_abs_over_field_max": 5.840192249784555e-07,
+        "value_at_max_ulp": -0.003811031114310026
+      },
+      {
+        "field": "energy_accumulators.ACHFX",
+        "dtype": "float32",
+        "cells": 89,
+        "ulp_median": 2.0,
+        "ulp_max": 17,
+        "max_abs": 0.001708984375,
+        "field_abs_max": 2933.52734375,
+        "scale_cells": "land_no_ice",
+        "cells_outside_scale_columns": 0,
+        "max_abs_over_field_max": 5.825697785435889e-07,
+        "value_at_max_ulp": -228.54974365234375
+      },
+      {
+        "field": "State.theta_flux",
+        "dtype": "float32",
+        "cells": 90,
+        "ulp_median": 2.0,
+        "ulp_max": 18,
+        "max_abs": 2.7939677238464355e-08,
+        "field_abs_max": 0.04806401953101158,
+        "scale_cells": "land_no_ice",
+        "cells_outside_scale_columns": 0,
+        "max_abs_over_field_max": 5.813013041998554e-07,
+        "value_at_max_ulp": -0.0036230036057531834
+      },
+      {
+        "field": "noahmp_land.ch",
+        "dtype": "float32",
+        "cells": 4,
+        "ulp_median": 9.5,
+        "ulp_max": 36,
+        "max_abs": 1.6763806343078613e-08,
+        "field_abs_max": 0.05637483671307564,
+        "scale_cells": "land_no_ice",
+        "cells_outside_scale_columns": 0,
+        "max_abs_over_field_max": 2.9736327979803087e-07,
+        "value_at_max_ulp": 0.00552032608538866
+      },
+      {
+        "field": "noahmp_land.cm",
+        "dtype": "float32",
+        "cells": 4,
+        "ulp_median": 8.5,
+        "ulp_max": 46,
+        "max_abs": 2.6775524020195007e-09,
+        "field_abs_max": 0.009314773604273796,
+        "scale_cells": "land_no_ice",
+        "cells_outside_scale_columns": 0,
+        "max_abs_over_field_max": 2.8745222544013184e-07,
+        "value_at_max_ulp": 0.0008692670380696654
+      },
+      {
+        "field": "land_history.GRDFLX",
+        "dtype": "float32",
+        "cells": 136,
+        "ulp_median": 1.0,
+        "ulp_max": 6,
+        "max_abs": 2.288818359375e-05,
+        "field_abs_max": 97.24400329589844,
+        "scale_cells": "land_no_ice",
+        "cells_outside_scale_columns": 0,
+        "max_abs_over_field_max": 2.3536858642177455e-07,
+        "value_at_max_ulp": -33.908241271972656
+      },
+      {
+        "field": "energy_accumulators.ACGRDFLX",
+        "dtype": "float32",
+        "cells": 128,
+        "ulp_median": 1.0,
+        "ulp_max": 10,
+        "max_abs": 0.001220703125,
+        "field_abs_max": 5251.17626953125,
+        "scale_cells": "land_no_ice",
+        "cells_outside_scale_columns": 0,
+        "max_abs_over_field_max": 2.3246279735130028e-07,
+        "value_at_max_ulp": -1831.0450439453125
+      },
+      {
+        "field": "land_history.GHB",
+        "dtype": "float32",
+        "cells": 136,
+        "ulp_median": 1.0,
+        "ulp_max": 6,
+        "max_abs": 2.288818359375e-05,
+        "field_abs_max": 105.02342987060547,
+        "scale_cells": "land_no_ice",
+        "cells_outside_scale_columns": 0,
+        "max_abs_over_field_max": 2.1793407073021208e-07,
+        "value_at_max_ulp": -33.908241271972656
+      },
+      {
+        "field": "land_history.EDIR",
+        "dtype": "float32",
+        "cells": 86,
+        "ulp_median": 2.0,
+        "ulp_max": 34,
+        "max_abs": 2.2737367544323206e-13,
+        "field_abs_max": 1.4977142654970521e-06,
+        "scale_cells": "land_no_ice",
+        "cells_outside_scale_columns": 0,
+        "max_abs_over_field_max": 1.5181378763710492e-07,
+        "value_at_max_ulp": -3.822920868756796e-10
+      },
+      {
+        "field": "State.qv_flux",
+        "dtype": "float32",
+        "cells": 82,
+        "ulp_median": 2.0,
+        "ulp_max": 29,
+        "max_abs": 2.2737367544323206e-13,
+        "field_abs_max": 1.5243723510138807e-06,
+        "scale_cells": "land_no_ice",
+        "cells_outside_scale_columns": 0,
+        "max_abs_over_field_max": 1.4915888187817285e-07,
+        "value_at_max_ulp": -3.264411796433109e-10
+      },
+      {
+        "field": "State.qke",
+        "dtype": "float32",
+        "cells": 61,
+        "ulp_median": 1.0,
+        "ulp_max": 9,
+        "max_abs": 2.682209014892578e-07,
+        "field_abs_max": 1.8239037990570068,
+        "scale_cells": "land_no_ice",
+        "cells_outside_scale_columns": 0,
+        "max_abs_over_field_max": 1.4705868896590552e-07,
+        "value_at_max_ulp": 0.36144861578941345
+      },
+      {
+        "field": "land_history.FIRA",
+        "dtype": "float32",
+        "cells": 30,
+        "ulp_median": 1.0,
+        "ulp_max": 3,
+        "max_abs": 1.52587890625e-05,
+        "field_abs_max": 110.18769073486328,
+        "scale_cells": "land_no_ice",
+        "cells_outside_scale_columns": 0,
+        "max_abs_over_field_max": 1.3847997866854408e-07,
+        "value_at_max_ulp": 58.48712921142578
+      },
+      {
+        "field": "State.qv",
+        "dtype": "float32",
+        "cells": 249,
+        "ulp_median": 1.0,
+        "ulp_max": 25,
+        "max_abs": 1.862645149230957e-09,
+        "field_abs_max": 0.01349093858152628,
+        "scale_cells": "land_no_ice",
+        "cells_outside_scale_columns": 175,
+        "max_abs_over_field_max": 1.3806638715126588e-07,
+        "value_at_max_ulp": 6.651488547504414e-06
+      },
+      {
+        "field": "State.qfx",
+        "dtype": "float32",
+        "cells": 85,
+        "ulp_median": 2.0,
+        "ulp_max": 34,
+        "max_abs": 2.2737367544323206e-13,
+        "field_abs_max": 1.6728183709346922e-06,
+        "scale_cells": "land_no_ice",
+        "cells_outside_scale_columns": 0,
+        "max_abs_over_field_max": 1.35922512206861e-07,
+        "value_at_max_ulp": -3.822920868756796e-10
+      },
+      {
+        "field": "energy_accumulators.ACLHF",
+        "dtype": "float32",
+        "cells": 82,
+        "ulp_median": 2.0,
+        "ulp_max": 33,
+        "max_abs": 3.0517578125e-05,
+        "field_abs_max": 226.7699432373047,
+        "scale_cells": "land_no_ice",
+        "cells_outside_scale_columns": 0,
+        "max_abs_over_field_max": 1.3457505738785103e-07,
+        "value_at_max_ulp": -0.05182413011789322
+      },
+      {
+        "field": "land_history.CHV",
+        "dtype": "float32",
+        "cells": 4,
+        "ulp_median": 9.5,
+        "ulp_max": 36,
+        "max_abs": 1.6763806343078613e-08,
+        "field_abs_max": 0.12981662154197693,
+        "scale_cells": "land_no_ice",
+        "cells_outside_scale_columns": 0,
+        "max_abs_over_field_max": 1.2913451408576323e-07,
+        "value_at_max_ulp": 0.00552032608538866
+      },
+      {
+        "field": "State.theta",
+        "dtype": "float32",
+        "cells": 34,
+        "ulp_median": 1.0,
+        "ulp_max": 2,
+        "max_abs": 6.103515625e-05,
+        "field_abs_max": 493.3216247558594,
+        "scale_cells": "land_no_ice",
+        "cells_outside_scale_columns": 28,
+        "max_abs_over_field_max": 1.2372284770651556e-07,
+        "value_at_max_ulp": 326.717529296875
+      },
+      {
+        "field": "land_history.SHG",
+        "dtype": "float32",
+        "cells": 10,
+        "ulp_median": 1.0,
+        "ulp_max": 2,
+        "max_abs": 3.814697265625e-06,
+        "field_abs_max": 32.75831985473633,
+        "scale_cells": "land_no_ice",
+        "cells_outside_scale_columns": 0,
+        "max_abs_over_field_max": 1.1644972277396747e-07,
+        "value_at_max_ulp": 17.23472023010254
+      },
+      {
+        "field": "history_diagnostics.lh",
+        "dtype": "float32",
+        "cells": 90,
+        "ulp_median": 1.0,
+        "ulp_max": 40,
+        "max_abs": 4.76837158203125e-07,
+        "field_abs_max": 4.199443340301514,
+        "scale_cells": "land_no_ice",
+        "cells_outside_scale_columns": 0,
+        "max_abs_over_field_max": 1.1354770610356391e-07,
+        "value_at_max_ulp": -0.0009597060852684081
+      },
+      {
+        "field": "land_history.IRB",
+        "dtype": "float32",
+        "cells": 30,
+        "ulp_median": 1.0,
+        "ulp_max": 3,
+        "max_abs": 1.1444091796875e-05,
+        "field_abs_max": 103.94155883789062,
+        "scale_cells": "land_no_ice",
+        "cells_outside_scale_columns": 0,
+        "max_abs_over_field_max": 1.1010121384386239e-07,
+        "value_at_max_ulp": 58.48712921142578
+      },
+      {
+        "field": "State.t_skin",
+        "dtype": "float32",
+        "cells": 1,
+        "ulp_median": 1.0,
+        "ulp_max": 1,
+        "max_abs": 3.0517578125e-05,
+        "field_abs_max": 297.7357482910156,
+        "scale_cells": "land_no_ice",
+        "cells_outside_scale_columns": 0,
+        "max_abs_over_field_max": 1.0249887123118056e-07,
+        "value_at_max_ulp": 291.7126159667969
+      },
+      {
+        "field": "noahmp_land.tg",
+        "dtype": "float32",
+        "cells": 3,
+        "ulp_median": 1.0,
+        "ulp_max": 1,
+        "max_abs": 3.0517578125e-05,
+        "field_abs_max": 297.7357482910156,
+        "scale_cells": "land_no_ice",
+        "cells_outside_scale_columns": 0,
+        "max_abs_over_field_max": 1.0249887123118056e-07,
+        "value_at_max_ulp": 290.441650390625
+      },
+      {
+        "field": "noahmp_land.t_skin",
+        "dtype": "float32",
+        "cells": 1,
+        "ulp_median": 1.0,
+        "ulp_max": 1,
+        "max_abs": 3.0517578125e-05,
+        "field_abs_max": 297.7357482910156,
+        "scale_cells": "land_no_ice",
+        "cells_outside_scale_columns": 0,
+        "max_abs_over_field_max": 1.0249887123118056e-07,
+        "value_at_max_ulp": 291.7126159667969
+      },
+      {
+        "field": "land_history.TRAD",
+        "dtype": "float32",
+        "cells": 1,
+        "ulp_median": 1.0,
+        "ulp_max": 1,
+        "max_abs": 3.0517578125e-05,
+        "field_abs_max": 297.7357482910156,
+        "scale_cells": "land_no_ice",
+        "cells_outside_scale_columns": 0,
+        "max_abs_over_field_max": 1.0249887123118056e-07,
+        "value_at_max_ulp": 291.7126159667969
+      },
+      {
+        "field": "land_history.TGV",
+        "dtype": "float32",
+        "cells": 3,
+        "ulp_median": 1.0,
+        "ulp_max": 1,
+        "max_abs": 3.0517578125e-05,
+        "field_abs_max": 297.7357482910156,
+        "scale_cells": "land_no_ice",
+        "cells_outside_scale_columns": 0,
+        "max_abs_over_field_max": 1.0249887123118056e-07,
+        "value_at_max_ulp": 290.441650390625
+      },
+      {
+        "field": "land_history.TGB",
+        "dtype": "float32",
+        "cells": 3,
+        "ulp_median": 1.0,
+        "ulp_max": 1,
+        "max_abs": 3.0517578125e-05,
+        "field_abs_max": 297.7357482910156,
+        "scale_cells": "land_no_ice",
+        "cells_outside_scale_columns": 0,
+        "max_abs_over_field_max": 1.0249887123118056e-07,
+        "value_at_max_ulp": 290.441650390625
+      },
+      {
+        "field": "history_diagnostics.t2",
+        "dtype": "float32",
+        "cells": 4,
+        "ulp_median": 1.0,
+        "ulp_max": 1,
+        "max_abs": 3.0517578125e-05,
+        "field_abs_max": 298.72607421875,
+        "scale_cells": "land_no_ice",
+        "cells_outside_scale_columns": 0,
+        "max_abs_over_field_max": 1.0215907066302054e-07,
+        "value_at_max_ulp": 292.7816467285156
+      },
+      {
+        "field": "land_history.T2B",
+        "dtype": "float32",
+        "cells": 4,
+        "ulp_median": 1.0,
+        "ulp_max": 1,
+        "max_abs": 3.0517578125e-05,
+        "field_abs_max": 298.72607421875,
+        "scale_cells": "land_no_ice",
+        "cells_outside_scale_columns": 0,
+        "max_abs_over_field_max": 1.0215907066302054e-07,
+        "value_at_max_ulp": 292.7816467285156
+      },
+      {
+        "field": "land_history.EVG",
+        "dtype": "float32",
+        "cells": 3,
+        "ulp_median": 1.0,
+        "ulp_max": 2,
+        "max_abs": 4.76837158203125e-07,
+        "field_abs_max": 4.9527082443237305,
+        "scale_cells": "land_no_ice",
+        "cells_outside_scale_columns": 0,
+        "max_abs_over_field_max": 9.627806337060643e-08,
+        "value_at_max_ulp": 3.637061595916748
+      },
+      {
+        "field": "ph_save",
+        "dtype": "float32",
+        "cells": 19,
+        "ulp_median": 1.0,
+        "ulp_max": 1,
+        "max_abs": 0.0009765625,
+        "field_abs_max": 10526.9384765625,
+        "scale_cells": "land_no_ice",
+        "cells_outside_scale_columns": 4,
+        "max_abs_over_field_max": 9.276794978656414e-08,
+        "value_at_max_ulp": 17.36612319946289
+      },
+      {
+        "field": "State.mu_total",
+        "dtype": "float32",
+        "cells": 2,
+        "ulp_median": 1.0,
+        "ulp_max": 1,
+        "max_abs": 0.0078125,
+        "field_abs_max": 96346.75,
+        "scale_cells": "land_no_ice",
+        "cells_outside_scale_columns": 2,
+        "max_abs_over_field_max": 8.108732261337305e-08,
+        "value_at_max_ulp": 96439.8984375
+      },
+      {
+        "field": "land_history.IRG",
+        "dtype": "float32",
+        "cells": 7,
+        "ulp_median": 1.0,
+        "ulp_max": 1,
+        "max_abs": 1.9073486328125e-06,
+        "field_abs_max": 23.81333351135254,
+        "scale_cells": "land_no_ice",
+        "cells_outside_scale_columns": 0,
+        "max_abs_over_field_max": 8.009582664700047e-08,
+        "value_at_max_ulp": 13.828718185424805
+      },
+      {
+        "field": "State.ph_total",
+        "dtype": "float32",
+        "cells": 78,
+        "ulp_median": 1.0,
+        "ulp_max": 1,
+        "max_abs": 0.015625,
+        "field_abs_max": 205748.8125,
+        "scale_cells": "land_no_ice",
+        "cells_outside_scale_columns": 55,
+        "max_abs_over_field_max": 7.59421150972621e-08,
+        "value_at_max_ulp": 511.0866394042969
+      },
+      {
+        "field": "land_history.GHV",
+        "dtype": "float32",
+        "cells": 13,
+        "ulp_median": 1.0,
+        "ulp_max": 2,
+        "max_abs": 3.814697265625e-06,
+        "field_abs_max": 53.86833953857422,
+        "scale_cells": "land_no_ice",
+        "cells_outside_scale_columns": 0,
+        "max_abs_over_field_max": 7.081520051111579e-08,
+        "value_at_max_ulp": -19.136396408081055
+      },
+      {
+        "field": "land_history.EVB",
+        "dtype": "float32",
+        "cells": 94,
+        "ulp_median": 1.0,
+        "ulp_max": 40,
+        "max_abs": 2.384185791015625e-07,
+        "field_abs_max": 3.700976848602295,
+        "scale_cells": "land_no_ice",
+        "cells_outside_scale_columns": 0,
+        "max_abs_over_field_max": 6.442044596728652e-08,
+        "value_at_max_ulp": -0.0009597060852684081
+      },
+      {
+        "field": "State.el_pbl",
+        "dtype": "float32",
+        "cells": 17,
+        "ulp_median": 1.0,
+        "ulp_max": 2,
+        "max_abs": 1.9073486328125e-06,
+        "field_abs_max": 33.69091033935547,
+        "scale_cells": "land_no_ice",
+        "cells_outside_scale_columns": 0,
+        "max_abs_over_field_max": 5.66131521410528e-08,
+        "value_at_max_ulp": 13.46448040008545
+      },
+      {
+        "field": "rthraten",
+        "dtype": "float32",
+        "cells": 42,
+        "ulp_median": 1.0,
+        "ulp_max": 3,
+        "max_abs": 7.275957614183426e-12,
+        "field_abs_max": 0.00016405733185820282,
+        "scale_cells": "land_no_ice",
+        "cells_outside_scale_columns": 42,
+        "max_abs_over_field_max": 4.4350091103957144e-08,
+        "value_at_max_ulp": -2.7489906642585993e-05
+      },
+      {
+        "field": "State.qsq",
+        "dtype": "float32",
+        "cells": 15,
+        "ulp_median": 1.0,
+        "ulp_max": 4,
+        "max_abs": 4.440892098500626e-16,
+        "field_abs_max": 1.0541435813138378e-07,
+        "scale_cells": "land_no_ice",
+        "cells_outside_scale_columns": 0,
+        "max_abs_over_field_max": 4.212796223609022e-09,
+        "value_at_max_ulp": 2.436255136430837e-13
+      }
+    ],
+    "d02": [
+      {
+        "field": "h_diabatic",
+        "dtype": "float32",
+        "cells": 7654,
+        "ulp_median": 904105529.0,
+        "ulp_max": 1816599666,
+        "max_abs": 5.086263058728946e-06,
+        "field_abs_max": 3.3908420391526306e-06,
+        "scale_cells": "land_no_ice",
+        "cells_outside_scale_columns": 4741,
+        "max_abs_over_field_max": 1.5,
+        "value_at_max_ulp": -3.3908420391526306e-06
+      },
+      {
+        "field": "noahmp_land.sfcrunoff",
+        "dtype": "float32",
+        "cells": 391,
+        "ulp_median": 18432.0,
+        "ulp_max": 605028353,
+        "max_abs": 4.661160346586257e-12,
+        "field_abs_max": 6.998402291708006e-12,
+        "scale_cells": "land_no_ice",
+        "cells_outside_scale_columns": 121,
+        "max_abs_over_field_max": 0.6660320673632882,
+        "value_at_max_ulp": 0.0
+      },
+      {
+        "field": "State.w",
+        "dtype": "float32",
+        "cells": 257506,
+        "ulp_median": 1313.0,
+        "ulp_max": 1956744993,
+        "max_abs": 0.01973840966820717,
+        "field_abs_max": 2.4159555435180664,
+        "scale_cells": "land_no_ice",
+        "cells_outside_scale_columns": 195660,
+        "max_abs_over_field_max": 0.008170021886853302,
+        "value_at_max_ulp": -0.0005388667923398316
+      },
+      {
+        "field": "State.qv_flux",
+        "dtype": "float32",
+        "cells": 1629,
+        "ulp_median": 8.0,
+        "ulp_max": 14617,
+        "max_abs": 1.013177097775042e-08,
+        "field_abs_max": 1.7680405335340765e-06,
+        "scale_cells": "land_no_ice",
+        "cells_outside_scale_columns": 832,
+        "max_abs_over_field_max": 0.00573050831447759,
+        "value_at_max_ulp": -2.3981762353741942e-08
+      },
+      {
+        "field": "State.qfx",
+        "dtype": "float32",
+        "cells": 1637,
+        "ulp_median": 8.0,
+        "ulp_max": 17055,
+        "max_abs": 1.1110387276858091e-08,
+        "field_abs_max": 1.9994490685348865e-06,
+        "scale_cells": "land_no_ice",
+        "cells_outside_scale_columns": 838,
+        "max_abs_over_field_max": 0.005556724325566004,
+        "value_at_max_ulp": -2.850916125396452e-08
+      },
+      {
+        "field": "history_diagnostics.lh",
+        "dtype": "float32",
+        "cells": 1656,
+        "ulp_median": 7.0,
+        "ulp_max": 10208,
+        "max_abs": 0.02777099609375,
+        "field_abs_max": 5.0194172859191895,
+        "scale_cells": "land_no_ice",
+        "cells_outside_scale_columns": 842,
+        "max_abs_over_field_max": 0.00553271316406689,
+        "value_at_max_ulp": -0.07156939804553986
+      },
+      {
+        "field": "w_save",
+        "dtype": "float32",
+        "cells": 177445,
+        "ulp_median": 1496.0,
+        "ulp_max": 1953240113,
+        "max_abs": 0.008358538150787354,
+        "field_abs_max": 2.476240873336792,
+        "scale_cells": "land_no_ice",
+        "cells_outside_scale_columns": 121877,
+        "max_abs_over_field_max": 0.003375494783560385,
+        "value_at_max_ulp": -0.0005406729178503156
+      },
+      {
+        "field": "State.u",
+        "dtype": "float32",
+        "cells": 204033,
+        "ulp_median": 68.0,
+        "ulp_max": 1912796655,
+        "max_abs": 0.039575815200805664,
+        "field_abs_max": 14.06514835357666,
+        "scale_cells": "all",
+        "cells_outside_scale_columns": 0,
+        "max_abs_over_field_max": 0.002813750285878914,
+        "value_at_max_ulp": -0.0001747585483826697
+      },
+      {
+        "field": "ph_tend",
+        "dtype": "float32",
+        "cells": 195150,
+        "ulp_median": 3120.0,
+        "ulp_max": 2296355328,
+        "max_abs": 2817.375,
+        "field_abs_max": 1013217.5,
+        "scale_cells": "land_no_ice",
+        "cells_outside_scale_columns": 138171,
+        "max_abs_over_field_max": 0.002780622127035903,
+        "value_at_max_ulp": 1811.3125
+      },
+      {
+        "field": "u_save",
+        "dtype": "float32",
+        "cells": 132995,
+        "ulp_median": 70.0,
+        "ulp_max": 1973449231,
+        "max_abs": 0.03612685203552246,
+        "field_abs_max": 14.063276290893555,
+        "scale_cells": "all",
+        "cells_outside_scale_columns": 0,
+        "max_abs_over_field_max": 0.00256887877961381,
+        "value_at_max_ulp": -0.00021455551905091852
+      },
+      {
+        "field": "State.v",
+        "dtype": "float32",
+        "cells": 208505,
+        "ulp_median": 78.0,
+        "ulp_max": 8759876,
+        "max_abs": 0.04752689599990845,
+        "field_abs_max": 19.034929275512695,
+        "scale_cells": "all",
+        "cells_outside_scale_columns": 0,
+        "max_abs_over_field_max": 0.002496825457662665,
+        "value_at_max_ulp": -0.03803334757685661
+      },
+      {
+        "field": "energy_accumulators.ACLHF",
+        "dtype": "float32",
+        "cells": 1491,
+        "ulp_median": 3.0,
+        "ulp_max": 5741,
+        "max_abs": 0.5,
+        "field_abs_max": 272.9745788574219,
+        "scale_cells": "land_no_ice",
+        "cells_outside_scale_columns": 750,
+        "max_abs_over_field_max": 0.0018316723926924947,
+        "value_at_max_ulp": -3.8405227661132812
+      },
+      {
+        "field": "State.p_perturbation",
+        "dtype": "float32",
+        "cells": 74557,
+        "ulp_median": 2344.0,
+        "ulp_max": 2045564800,
+        "max_abs": 3.5047607421875,
+        "field_abs_max": 2376.110595703125,
+        "scale_cells": "land_no_ice",
+        "cells_outside_scale_columns": 47211,
+        "max_abs_over_field_max": 0.0014749989956382443,
+        "value_at_max_ulp": -0.02350759506225586
+      },
+      {
+        "field": "v_save",
+        "dtype": "float32",
+        "cells": 137041,
+        "ulp_median": 72.0,
+        "ulp_max": 1927536419,
+        "max_abs": 0.021480560302734375,
+        "field_abs_max": 19.050254821777344,
+        "scale_cells": "all",
+        "cells_outside_scale_columns": 0,
+        "max_abs_over_field_max": 0.0011275733843821775,
+        "value_at_max_ulp": 0.00024104634940158576
+      },
+      {
+        "field": "muave",
+        "dtype": "float32",
+        "cells": 5949,
+        "ulp_median": 5749.0,
+        "ulp_max": 2005260764,
+        "max_abs": 0.097808837890625,
+        "field_abs_max": 98.23397827148438,
+        "scale_cells": "land_no_ice",
+        "cells_outside_scale_columns": 4566,
+        "max_abs_over_field_max": 0.0009956721656972454,
+        "value_at_max_ulp": 0.007306067273020744
+      },
+      {
+        "field": "State.maxwidth",
+        "dtype": "float32",
+        "cells": 198,
+        "ulp_median": 4.0,
+        "ulp_max": 18044,
+        "max_abs": 0.5506591796875,
+        "field_abs_max": 561.0017700195312,
+        "scale_cells": "land_no_ice",
+        "cells_outside_scale_columns": 194,
+        "max_abs_over_field_max": 0.0009815640682708164,
+        "value_at_max_ulp": 314.9134521484375
+      },
+      {
+        "field": "mudf",
+        "dtype": "float32",
+        "cells": 6012,
+        "ulp_median": 6251.5,
+        "ulp_max": 1969097842,
+        "max_abs": 0.010656595230102539,
+        "field_abs_max": 11.071722984313965,
+        "scale_cells": "land_no_ice",
+        "cells_outside_scale_columns": 4622,
+        "max_abs_over_field_max": 0.0009625055869985579,
+        "value_at_max_ulp": -0.0005931036430411041
+      },
+      {
+        "field": "land_history.RUNSF",
+        "dtype": "float32",
+        "cells": 196,
+        "ulp_median": 288000.0,
+        "ulp_max": 697081856,
+        "max_abs": 1.9984014443252818e-12,
+        "field_abs_max": 2.354116901415182e-09,
+        "scale_cells": "land_no_ice",
+        "cells_outside_scale_columns": 0,
+        "max_abs_over_field_max": 0.0008488964346349745,
+        "value_at_max_ulp": 0.0
+      },
+      {
+        "field": "ww",
+        "dtype": "float32",
+        "cells": 256647,
+        "ulp_median": 2958.0,
+        "ulp_max": 1958708992,
+        "max_abs": 0.011239111423492432,
+        "field_abs_max": 14.888303756713867,
+        "scale_cells": "land_no_ice",
+        "cells_outside_scale_columns": 196014,
+        "max_abs_over_field_max": 0.0007548953599515435,
+        "value_at_max_ulp": 0.0004764050245285034
+      },
+      {
+        "field": "ww_save",
+        "dtype": "float32",
+        "cells": 176235,
+        "ulp_median": 2900.0,
+        "ulp_max": 1967234872,
+        "max_abs": 0.007907867431640625,
+        "field_abs_max": 13.5372314453125,
+        "scale_cells": "land_no_ice",
+        "cells_outside_scale_columns": 121509,
+        "max_abs_over_field_max": 0.000584156920385583,
+        "value_at_max_ulp": -0.0006407946348190308
+      },
+      {
+        "field": "State.el_pbl",
+        "dtype": "float32",
+        "cells": 34320,
+        "ulp_median": 9.0,
+        "ulp_max": 33906,
+        "max_abs": 0.054569244384765625,
+        "field_abs_max": 99.12832641601562,
+        "scale_cells": "land_no_ice",
+        "cells_outside_scale_columns": 18718,
+        "max_abs_over_field_max": 0.0005504909278479372,
+        "value_at_max_ulp": 7.726316452026367
+      },
+      {
+        "field": "land_history.SHC",
+        "dtype": "float32",
+        "cells": 326,
+        "ulp_median": 1306.5,
+        "ulp_max": 821295,
+        "max_abs": 0.042957305908203125,
+        "field_abs_max": 98.18399810791016,
+        "scale_cells": "land_no_ice",
+        "cells_outside_scale_columns": 0,
+        "max_abs_over_field_max": 0.00043751840153209536,
+        "value_at_max_ulp": -0.07064878195524216
+      },
+      {
+        "field": "State.theta_flux",
+        "dtype": "float32",
+        "cells": 1642,
+        "ulp_median": 14.0,
+        "ulp_max": 323388,
+        "max_abs": 4.142150282859802e-05,
+        "field_abs_max": 0.10701697319746017,
+        "scale_cells": "land_no_ice",
+        "cells_outside_scale_columns": 826,
+        "max_abs_over_field_max": 0.00038705545102803445,
+        "value_at_max_ulp": 6.12729782005772e-05
+      },
+      {
+        "field": "State.fltv",
+        "dtype": "float32",
+        "cells": 1676,
+        "ulp_median": 16.0,
+        "ulp_max": 421584,
+        "max_abs": 4.141777753829956e-05,
+        "field_abs_max": 0.10701465606689453,
+        "scale_cells": "land_no_ice",
+        "cells_outside_scale_columns": 862,
+        "max_abs_over_field_max": 0.00038702902070170126,
+        "value_at_max_ulp": -3.338733222335577e-05
+      },
+      {
+        "field": "State.mol",
+        "dtype": "float32",
+        "cells": 1254,
+        "ulp_median": 10.5,
+        "ulp_max": 607147,
+        "max_abs": 7.703900337219238e-05,
+        "field_abs_max": 0.22076469659805298,
+        "scale_cells": "land_no_ice",
+        "cells_outside_scale_columns": 589,
+        "max_abs_over_field_max": 0.0003489643251812927,
+        "value_at_max_ulp": -0.0012857390101999044
+      },
+      {
+        "field": "land_history.CANHS",
+        "dtype": "float32",
+        "cells": 292,
+        "ulp_median": 609.5,
+        "ulp_max": 65436,
+        "max_abs": 0.042937278747558594,
+        "field_abs_max": 124.35743713378906,
+        "scale_cells": "land_no_ice",
+        "cells_outside_scale_columns": 0,
+        "max_abs_over_field_max": 0.00034527310740060387,
+        "value_at_max_ulp": 2.6963298320770264
+      },
+      {
+        "field": "State.hfx",
+        "dtype": "float32",
+        "cells": 1676,
+        "ulp_median": 12.0,
+        "ulp_max": 206976,
+        "max_abs": 0.04425048828125,
+        "field_abs_max": 128.34800720214844,
+        "scale_cells": "land_no_ice",
+        "cells_outside_scale_columns": 845,
+        "max_abs_over_field_max": 0.0003447695780079808,
+        "value_at_max_ulp": 0.07294225692749023
+      },
+      {
+        "field": "State.sfc_wspd",
+        "dtype": "float32",
+        "cells": 1763,
+        "ulp_median": 8.0,
+        "ulp_max": 13268,
+        "max_abs": 0.0037827491760253906,
+        "field_abs_max": 12.389244079589844,
+        "scale_cells": "land_no_ice",
+        "cells_outside_scale_columns": 968,
+        "max_abs_over_field_max": 0.0003053252605021421,
+        "value_at_max_ulp": 1.0561710596084595
+      },
+      {
+        "field": "land_history.FORCWLSM",
+        "dtype": "float32",
+        "cells": 795,
+        "ulp_median": 11.0,
+        "ulp_max": 13268,
+        "max_abs": 0.0037827491760253906,
+        "field_abs_max": 12.389244079589844,
+        "scale_cells": "land_no_ice",
+        "cells_outside_scale_columns": 0,
+        "max_abs_over_field_max": 0.0003053252605021421,
+        "value_at_max_ulp": 1.0561710596084595
+      },
+      {
+        "field": "history_diagnostics.u10",
+        "dtype": "float32",
+        "cells": 2084,
+        "ulp_median": 19.0,
+        "ulp_max": 161786,
+        "max_abs": 0.001832723617553711,
+        "field_abs_max": 6.21642541885376,
+        "scale_cells": "land_no_ice",
+        "cells_outside_scale_columns": 1162,
+        "max_abs_over_field_max": 0.0002948195295636065,
+        "value_at_max_ulp": -0.013268888927996159
+      },
+      {
+        "field": "history_diagnostics.v10",
+        "dtype": "float32",
+        "cells": 1774,
+        "ulp_median": 11.0,
+        "ulp_max": 632011,
+        "max_abs": 0.0030355453491210938,
+        "field_abs_max": 10.456940650939941,
+        "scale_cells": "land_no_ice",
+        "cells_outside_scale_columns": 974,
+        "max_abs_over_field_max": 0.00029029000454815034,
+        "value_at_max_ulp": 0.0004452168941497803
+      },
+      {
+        "field": "land_history.CHV",
+        "dtype": "float32",
+        "cells": 767,
+        "ulp_median": 26.0,
+        "ulp_max": 16477,
+        "max_abs": 3.4749507904052734e-05,
+        "field_abs_max": 0.14473599195480347,
+        "scale_cells": "land_no_ice",
+        "cells_outside_scale_columns": 0,
+        "max_abs_over_field_max": 0.00024008891938160013,
+        "value_at_max_ulp": 0.014245999976992607
+      },
+      {
+        "field": "land_history.CHV2",
+        "dtype": "float32",
+        "cells": 346,
+        "ulp_median": 67.0,
+        "ulp_max": 39882,
+        "max_abs": 9.018182754516602e-05,
+        "field_abs_max": 0.41875332593917847,
+        "scale_cells": "land_no_ice",
+        "cells_outside_scale_columns": 0,
+        "max_abs_over_field_max": 0.00021535787767871823,
+        "value_at_max_ulp": 0.0051719737239181995
+      },
+      {
+        "field": "land_history.CHUC",
+        "dtype": "float32",
+        "cells": 340,
+        "ulp_median": 61.5,
+        "ulp_max": 10595,
+        "max_abs": 1.5953555703163147e-06,
+        "field_abs_max": 0.007742157205939293,
+        "scale_cells": "land_no_ice",
+        "cells_outside_scale_columns": 0,
+        "max_abs_over_field_max": 0.00020606085976818695,
+        "value_at_max_ulp": 0.00028855723212473094
+      },
+      {
+        "field": "State.tau_v",
+        "dtype": "float32",
+        "cells": 1757,
+        "ulp_median": 14.0,
+        "ulp_max": 664956,
+        "max_abs": 0.00025281310081481934,
+        "field_abs_max": 1.281083345413208,
+        "scale_cells": "land_no_ice",
+        "cells_outside_scale_columns": 969,
+        "max_abs_over_field_max": 0.00019734321090036146,
+        "value_at_max_ulp": -2.2872886518143787e-07
+      },
+      {
+        "field": "State.tau_u",
+        "dtype": "float32",
+        "cells": 2100,
+        "ulp_median": 20.0,
+        "ulp_max": 147992,
+        "max_abs": 0.0001592189073562622,
+        "field_abs_max": 0.8797386288642883,
+        "scale_cells": "land_no_ice",
+        "cells_outside_scale_columns": 1172,
+        "max_abs_over_field_max": 0.000180984331177782,
+        "value_at_max_ulp": 0.00018964530318044126
+      },
+      {
+        "field": "State.ustar",
+        "dtype": "float32",
+        "cells": 1606,
+        "ulp_median": 7.0,
+        "ulp_max": 14599,
+        "max_abs": 0.00020265579223632812,
+        "field_abs_max": 1.21901273727417,
+        "scale_cells": "land_no_ice",
+        "cells_outside_scale_columns": 848,
+        "max_abs_over_field_max": 0.00016624583651971188,
+        "value_at_max_ulp": 0.10424506664276123
+      },
+      {
+        "field": "land_history.SHG",
+        "dtype": "float32",
+        "cells": 408,
+        "ulp_median": 125.5,
+        "ulp_max": 16155,
+        "max_abs": 0.0021724700927734375,
+        "field_abs_max": 14.670769691467285,
+        "scale_cells": "land_no_ice",
+        "cells_outside_scale_columns": 0,
+        "max_abs_over_field_max": 0.00014808153481115412,
+        "value_at_max_ulp": 0.934715211391449
+      },
+      {
+        "field": "land_history.EVG",
+        "dtype": "float32",
+        "cells": 374,
+        "ulp_median": 10.0,
+        "ulp_max": 6936,
+        "max_abs": 0.0008268356323242188,
+        "field_abs_max": 6.036495685577393,
+        "scale_cells": "land_no_ice",
+        "cells_outside_scale_columns": 0,
+        "max_abs_over_field_max": 0.0001369727860983523,
+        "value_at_max_ulp": 1.9937009811401367
+      },
+      {
+        "field": "land_history.CHLEAF",
+        "dtype": "float32",
+        "cells": 253,
+        "ulp_median": 27.0,
+        "ulp_max": 4104,
+        "max_abs": 6.303191184997559e-05,
+        "field_abs_max": 0.46399834752082825,
+        "scale_cells": "land_no_ice",
+        "cells_outside_scale_columns": 0,
+        "max_abs_over_field_max": 0.0001358451214034683,
+        "value_at_max_ulp": 0.23703716695308685
+      },
+      {
+        "field": "land_history.SHB",
+        "dtype": "float32",
+        "cells": 843,
+        "ulp_median": 10.0,
+        "ulp_max": 23212,
+        "max_abs": 0.016416549682617188,
+        "field_abs_max": 128.34800720214844,
+        "scale_cells": "land_no_ice",
+        "cells_outside_scale_columns": 0,
+        "max_abs_over_field_max": 0.00012790654128942634,
+        "value_at_max_ulp": -1.944811463356018
+      },
+      {
+        "field": "noahmp_land.ch",
+        "dtype": "float32",
+        "cells": 1712,
+        "ulp_median": 16.0,
+        "ulp_max": 17698,
+        "max_abs": 1.7505139112472534e-05,
+        "field_abs_max": 0.14290887117385864,
+        "scale_cells": "land_no_ice",
+        "cells_outside_scale_columns": 949,
+        "max_abs_over_field_max": 0.00012249161979018298,
+        "value_at_max_ulp": 0.0013757896376773715
+      },
+      {
+        "field": "State.qv",
+        "dtype": "float32",
+        "cells": 117438,
+        "ulp_median": 2.0,
+        "ulp_max": 1670,
+        "max_abs": 1.5553086996078491e-06,
+        "field_abs_max": 0.013756679370999336,
+        "scale_cells": "land_no_ice",
+        "cells_outside_scale_columns": 76644,
+        "max_abs_over_field_max": 0.00011305843929797614,
+        "value_at_max_ulp": 0.008630995638668537
+      },
+      {
+        "field": "land_history.EDIR",
+        "dtype": "float32",
+        "cells": 802,
+        "ulp_median": 7.0,
+        "ulp_max": 17055,
+        "max_abs": 1.809326022339519e-10,
+        "field_abs_max": 1.78381162641017e-06,
+        "scale_cells": "land_no_ice",
+        "cells_outside_scale_columns": 0,
+        "max_abs_over_field_max": 0.0001014303301734105,
+        "value_at_max_ulp": -2.850916125396452e-08
+      },
+      {
+        "field": "land_history.EVB",
+        "dtype": "float32",
+        "cells": 790,
+        "ulp_median": 7.0,
+        "ulp_max": 185985,
+        "max_abs": 0.0004267692565917969,
+        "field_abs_max": 4.451509952545166,
+        "scale_cells": "land_no_ice",
+        "cells_outside_scale_columns": 0,
+        "max_abs_over_field_max": 9.587067335383359e-05,
+        "value_at_max_ulp": -0.0005789431743323803
+      },
+      {
+        "field": "energy_accumulators.ACHFX",
+        "dtype": "float32",
+        "cells": 1501,
+        "ulp_median": 7.0,
+        "ulp_max": 488808,
+        "max_abs": 0.66796875,
+        "field_abs_max": 7137.423828125,
+        "scale_cells": "land_no_ice",
+        "cells_outside_scale_columns": 722,
+        "max_abs_over_field_max": 9.358681312546844e-05,
+        "value_at_max_ulp": 0.511310338973999
+      },
+      {
+        "field": "land_history.IRB",
+        "dtype": "float32",
+        "cells": 607,
+        "ulp_median": 4.0,
+        "ulp_max": 1543,
+        "max_abs": 0.00693511962890625,
+        "field_abs_max": 105.35205841064453,
+        "scale_cells": "land_no_ice",
+        "cells_outside_scale_columns": 0,
+        "max_abs_over_field_max": 6.582804107988404e-05,
+        "value_at_max_ulp": 63.736236572265625
+      },
+      {
+        "field": "land_history.CHB",
+        "dtype": "float32",
+        "cells": 761,
+        "ulp_median": 23.0,
+        "ulp_max": 20357,
+        "max_abs": 9.253155440092087e-06,
+        "field_abs_max": 0.14290887117385864,
+        "scale_cells": "land_no_ice",
+        "cells_outside_scale_columns": 0,
+        "max_abs_over_field_max": 6.474864271256454e-05,
+        "value_at_max_ulp": 0.0007912639994174242
+      },
+      {
+        "field": "land_history.FIRA",
+        "dtype": "float32",
+        "cells": 625,
+        "ulp_median": 3.0,
+        "ulp_max": 1543,
+        "max_abs": 0.00693511962890625,
+        "field_abs_max": 115.35890197753906,
+        "scale_cells": "land_no_ice",
+        "cells_outside_scale_columns": 0,
+        "max_abs_over_field_max": 6.011776733326182e-05,
+        "value_at_max_ulp": 63.736236572265625
+      },
+      {
+        "field": "State.maxmf",
+        "dtype": "float32",
+        "cells": 24,
+        "ulp_median": 491.0,
+        "ulp_max": 8563,
+        "max_abs": 3.987457603216171e-06,
+        "field_abs_max": 0.07277904450893402,
+        "scale_cells": "land_no_ice",
+        "cells_outside_scale_columns": 23,
+        "max_abs_over_field_max": 5.478854016456192e-05,
+        "value_at_max_ulp": -0.0045215594582259655
+      },
+      {
+        "field": "State.qsfc",
+        "dtype": "float32",
+        "cells": 515,
+        "ulp_median": 3.0,
+        "ulp_max": 1219,
+        "max_abs": 9.592622518539429e-07,
+        "field_abs_max": 0.017955197021365166,
+        "scale_cells": "land_no_ice",
+        "cells_outside_scale_columns": 193,
+        "max_abs_over_field_max": 5.3425325865959695e-05,
+        "value_at_max_ulp": 2.0347725309641154e-38
+      },
+      {
+        "field": "noahmp_land.qsfc",
+        "dtype": "float32",
+        "cells": 585,
+        "ulp_median": 17.0,
+        "ulp_max": 1219,
+        "max_abs": 9.592622518539429e-07,
+        "field_abs_max": 0.017955197021365166,
+        "scale_cells": "land_no_ice",
+        "cells_outside_scale_columns": 263,
+        "max_abs_over_field_max": 5.3425325865959695e-05,
+        "value_at_max_ulp": 2.0347725309641154e-38
+      },
+      {
+        "field": "land_history.ETRAN",
+        "dtype": "float32",
+        "cells": 294,
+        "ulp_median": 4.0,
+        "ulp_max": 1959,
+        "max_abs": 2.7839064387080725e-11,
+        "field_abs_max": 5.238719040789874e-07,
+        "scale_cells": "land_no_ice",
+        "cells_outside_scale_columns": 0,
+        "max_abs_over_field_max": 5.3140976201089145e-05,
+        "value_at_max_ulp": 2.227023117029603e-07
+      },
+      {
+        "field": "land_history.TR",
+        "dtype": "float32",
+        "cells": 304,
+        "ulp_median": 4.0,
+        "ulp_max": 1172,
+        "max_abs": 6.985664367675781e-05,
+        "field_abs_max": 1.3151280879974365,
+        "scale_cells": "land_no_ice",
+        "cells_outside_scale_columns": 0,
+        "max_abs_over_field_max": 5.311774899669999e-05,
+        "value_at_max_ulp": 0.5590718984603882
+      },
+      {
+        "field": "history_diagnostics.q2",
+        "dtype": "float32",
+        "cells": 1201,
+        "ulp_median": 2.0,
+        "ulp_max": 756,
+        "max_abs": 7.040798664093018e-07,
+        "field_abs_max": 0.013692875392735004,
+        "scale_cells": "land_no_ice",
+        "cells_outside_scale_columns": 561,
+        "max_abs_over_field_max": 5.141943136230274e-05,
+        "value_at_max_ulp": 0.01283084787428379
+      },
+      {
+        "field": "land_history.GHB",
+        "dtype": "float32",
+        "cells": 851,
+        "ulp_median": 4.0,
+        "ulp_max": 4053,
+        "max_abs": 0.01058197021484375,
+        "field_abs_max": 216.35704040527344,
+        "scale_cells": "land_no_ice",
+        "cells_outside_scale_columns": 0,
+        "max_abs_over_field_max": 4.890975673831517e-05,
+        "value_at_max_ulp": -17.32783317565918
+      },
+      {
+        "field": "noahmp_land.eah",
+        "dtype": "float32",
+        "cells": 272,
+        "ulp_median": 2.0,
+        "ulp_max": 1611,
+        "max_abs": 0.09832763671875,
+        "field_abs_max": 2100.458251953125,
+        "scale_cells": "land_no_ice",
+        "cells_outside_scale_columns": 0,
+        "max_abs_over_field_max": 4.681246895877097e-05,
+        "value_at_max_ulp": 995.3251342773438
+      },
+      {
+        "field": "noahmp_land.cm",
+        "dtype": "float32",
+        "cells": 1272,
+        "ulp_median": 9.0,
+        "ulp_max": 7910,
+        "max_abs": 1.6749836504459381e-06,
+        "field_abs_max": 0.03901241347193718,
+        "scale_cells": "land_no_ice",
+        "cells_outside_scale_columns": 638,
+        "max_abs_over_field_max": 4.2934632886806783e-05,
+        "value_at_max_ulp": 0.0015316912904381752
+      },
+      {
+        "field": "land_history.IRG",
+        "dtype": "float32",
+        "cells": 375,
+        "ulp_median": 16.0,
+        "ulp_max": 1270,
+        "max_abs": 0.0008764266967773438,
+        "field_abs_max": 21.650598526000977,
+        "scale_cells": "land_no_ice",
+        "cells_outside_scale_columns": 0,
+        "max_abs_over_field_max": 4.0480483517571656e-05,
+        "value_at_max_ulp": 7.255739212036133
+      },
+      {
+        "field": "State.qsq",
+        "dtype": "float32",
+        "cells": 49101,
+        "ulp_median": 6.0,
+        "ulp_max": 320943,
+        "max_abs": 3.9687364505880396e-11,
+        "field_abs_max": 9.948913657353842e-07,
+        "scale_cells": "land_no_ice",
+        "cells_outside_scale_columns": 27793,
+        "max_abs_over_field_max": 3.9891153821146163e-05,
+        "value_at_max_ulp": 3.9935979870286964e-13
+      },
+      {
+        "field": "land_history.GRDFLX",
+        "dtype": "float32",
+        "cells": 853,
+        "ulp_median": 4.0,
+        "ulp_max": 4053,
+        "max_abs": 0.0077304840087890625,
+        "field_abs_max": 216.35704040527344,
+        "scale_cells": "land_no_ice",
+        "cells_outside_scale_columns": 0,
+        "max_abs_over_field_max": 3.5730217026025845e-05,
+        "value_at_max_ulp": -17.32783317565918
+      },
+      {
+        "field": "land_history.GHV",
+        "dtype": "float32",
+        "cells": 384,
+        "ulp_median": 23.5,
+        "ulp_max": 1335,
+        "max_abs": 0.0013523101806640625,
+        "field_abs_max": 37.928955078125,
+        "scale_cells": "land_no_ice",
+        "cells_outside_scale_columns": 0,
+        "max_abs_over_field_max": 3.5653768417258316e-05,
+        "value_at_max_ulp": -12.495777130126953
+      },
+      {
+        "field": "State.qke",
+        "dtype": "float32",
+        "cells": 28848,
+        "ulp_median": 2.0,
+        "ulp_max": 20254,
+        "max_abs": 0.00033602118492126465,
+        "field_abs_max": 9.670759201049805,
+        "scale_cells": "land_no_ice",
+        "cells_outside_scale_columns": 15288,
+        "max_abs_over_field_max": 3.474610192804594e-05,
+        "value_at_max_ulp": 0.019635159522294998
+      },
+      {
+        "field": "State.p_total",
+        "dtype": "float32",
+        "cells": 73440,
+        "ulp_median": 8.0,
+        "ulp_max": 449,
+        "max_abs": 3.5078125,
+        "field_abs_max": 101357.59375,
+        "scale_cells": "land_no_ice",
+        "cells_outside_scale_columns": 46476,
+        "max_abs_over_field_max": 3.4608285084707826e-05,
+        "value_at_max_ulp": 100008.359375
+      },
+      {
+        "field": "mu_save",
+        "dtype": "float32",
+        "cells": 3373,
+        "ulp_median": 33.0,
+        "ulp_max": 633,
+        "max_abs": 0.0772705078125,
+        "field_abs_max": 2306.178955078125,
+        "scale_cells": "land_no_ice",
+        "cells_outside_scale_columns": 2246,
+        "max_abs_over_field_max": 3.350585939671033e-05,
+        "value_at_max_ulp": 1900.4683837890625
+      },
+      {
+        "field": "State.pblh",
+        "dtype": "float32",
+        "cells": 733,
+        "ulp_median": 2.0,
+        "ulp_max": 798,
+        "max_abs": 0.0196533203125,
+        "field_abs_max": 662.1231079101562,
+        "scale_cells": "land_no_ice",
+        "cells_outside_scale_columns": 402,
+        "max_abs_over_field_max": 2.9682275210921602e-05,
+        "value_at_max_ulp": 110.45620727539062
+      },
+      {
+        "field": "State.mu_perturbation",
+        "dtype": "float32",
+        "cells": 4942,
+        "ulp_median": 22.0,
+        "ulp_max": 533,
+        "max_abs": 0.0650634765625,
+        "field_abs_max": 2330.853271484375,
+        "scale_cells": "land_no_ice",
+        "cells_outside_scale_columns": 3643,
+        "max_abs_over_field_max": 2.7914016449892244e-05,
+        "value_at_max_ulp": 1591.129638671875
+      },
+      {
+        "field": "land_history.CHB2",
+        "dtype": "float32",
+        "cells": 764,
+        "ulp_median": 17.0,
+        "ulp_max": 12978,
+        "max_abs": 1.208670437335968e-05,
+        "field_abs_max": 0.43470123410224915,
+        "scale_cells": "land_no_ice",
+        "cells_outside_scale_columns": 0,
+        "max_abs_over_field_max": 2.7804624015667464e-05,
+        "value_at_max_ulp": 0.013331069611012936
+      },
+      {
+        "field": "land_history.Q2V",
+        "dtype": "float32",
+        "cells": 231,
+        "ulp_median": 2.0,
+        "ulp_max": 691,
+        "max_abs": 3.2177194952964783e-07,
+        "field_abs_max": 0.013232625089585781,
+        "scale_cells": "land_no_ice",
+        "cells_outside_scale_columns": 0,
+        "max_abs_over_field_max": 2.431656208433547e-05,
+        "value_at_max_ulp": 0.007062497083097696
+      },
+      {
+        "field": "land_history.FORCZLSM",
+        "dtype": "float32",
+        "cells": 134,
+        "ulp_median": 3.0,
+        "ulp_max": 269,
+        "max_abs": 0.0005130767822265625,
+        "field_abs_max": 26.076202392578125,
+        "scale_cells": "land_no_ice",
+        "cells_outside_scale_columns": 0,
+        "max_abs_over_field_max": 1.9676054607268874e-05,
+        "value_at_max_ulp": 25.87046241760254
+      },
+      {
+        "field": "land_history.Q2B",
+        "dtype": "float32",
+        "cells": 649,
+        "ulp_median": 4.0,
+        "ulp_max": 375,
+        "max_abs": 1.7462298274040222e-07,
+        "field_abs_max": 0.013692875392735004,
+        "scale_cells": "land_no_ice",
+        "cells_outside_scale_columns": 0,
+        "max_abs_over_field_max": 1.2752835159301275e-05,
+        "value_at_max_ulp": 0.006975087802857161
+      },
+      {
+        "field": "energy_accumulators.ACGRDFLX",
+        "dtype": "float32",
+        "cells": 743,
+        "ulp_median": 2.0,
+        "ulp_max": 2277,
+        "max_abs": 0.13897705078125,
+        "field_abs_max": 11834.015625,
+        "scale_cells": "land_no_ice",
+        "cells_outside_scale_columns": 0,
+        "max_abs_over_field_max": 1.1743862369731322e-05,
+        "value_at_max_ulp": -933.0145874023438
+      },
+      {
+        "field": "State.rhosfc",
+        "dtype": "float32",
+        "cells": 491,
+        "ulp_median": 1.0,
+        "ulp_max": 134,
+        "max_abs": 9.655952453613281e-06,
+        "field_abs_max": 1.2055068016052246,
+        "scale_cells": "land_no_ice",
+        "cells_outside_scale_columns": 256,
+        "max_abs_over_field_max": 8.00986974171829e-06,
+        "value_at_max_ulp": 0.9754931926727295
+      },
+      {
+        "field": "land_history.FORCTLSM",
+        "dtype": "float32",
+        "cells": 179,
+        "ulp_median": 1.0,
+        "ulp_max": 78,
+        "max_abs": 0.00238037109375,
+        "field_abs_max": 297.7430114746094,
+        "scale_cells": "land_no_ice",
+        "cells_outside_scale_columns": 0,
+        "max_abs_over_field_max": 7.994716927060405e-06,
+        "value_at_max_ulp": 293.1295166015625
+      },
+      {
+        "field": "ph_save",
+        "dtype": "float32",
+        "cells": 115449,
+        "ulp_median": 9.0,
+        "ulp_max": 5832,
+        "max_abs": 0.072265625,
+        "field_abs_max": 10548.041015625,
+        "scale_cells": "land_no_ice",
+        "cells_outside_scale_columns": 72814,
+        "max_abs_over_field_max": 6.851094425301499e-06,
+        "value_at_max_ulp": 19.48130989074707
+      },
+      {
+        "field": "land_history.T2B",
+        "dtype": "float32",
+        "cells": 246,
+        "ulp_median": 1.0,
+        "ulp_max": 65,
+        "max_abs": 0.001983642578125,
+        "field_abs_max": 297.4300842285156,
+        "scale_cells": "land_no_ice",
+        "cells_outside_scale_columns": 0,
+        "max_abs_over_field_max": 6.6692734975691525e-06,
+        "value_at_max_ulp": 292.3010559082031
+      },
+      {
+        "field": "land_history.T2V",
+        "dtype": "float32",
+        "cells": 216,
+        "ulp_median": 4.0,
+        "ulp_max": 64,
+        "max_abs": 0.001953125,
+        "field_abs_max": 297.3763427734375,
+        "scale_cells": "land_no_ice",
+        "cells_outside_scale_columns": 0,
+        "max_abs_over_field_max": 6.567856009608773e-06,
+        "value_at_max_ulp": 287.1780090332031
+      },
+      {
+        "field": "history_diagnostics.t2",
+        "dtype": "float32",
+        "cells": 502,
+        "ulp_median": 1.0,
+        "ulp_max": 62,
+        "max_abs": 0.00189208984375,
+        "field_abs_max": 297.4300842285156,
+        "scale_cells": "land_no_ice",
+        "cells_outside_scale_columns": 180,
+        "max_abs_over_field_max": 6.3614608746044225e-06,
+        "value_at_max_ulp": 293.2384033203125
+      },
+      {
+        "field": "State.ph_perturbation",
+        "dtype": "float32",
+        "cells": 170255,
+        "ulp_median": 6.0,
+        "ulp_max": 10669,
+        "max_abs": 0.060546875,
+        "field_abs_max": 10538.4482421875,
+        "scale_cells": "land_no_ice",
+        "cells_outside_scale_columns": 118416,
+        "max_abs_over_field_max": 5.745331153937716e-06,
+        "value_at_max_ulp": 15.177335739135742
+      },
+      {
+        "field": "land_history.IRC",
+        "dtype": "float32",
+        "cells": 131,
+        "ulp_median": 1.0,
+        "ulp_max": 91,
+        "max_abs": 0.000347137451171875,
+        "field_abs_max": 67.78621673583984,
+        "scale_cells": "land_no_ice",
+        "cells_outside_scale_columns": 0,
+        "max_abs_over_field_max": 5.1210624797760236e-06,
+        "value_at_max_ulp": 41.47119140625
+      },
+      {
+        "field": "State.t_skin",
+        "dtype": "float32",
+        "cells": 170,
+        "ulp_median": 1.0,
+        "ulp_max": 42,
+        "max_abs": 0.00128173828125,
+        "field_abs_max": 297.8101806640625,
+        "scale_cells": "land_no_ice",
+        "cells_outside_scale_columns": 0,
+        "max_abs_over_field_max": 4.303876645156848e-06,
+        "value_at_max_ulp": 291.43865966796875
+      },
+      {
+        "field": "noahmp_land.t_skin",
+        "dtype": "float32",
+        "cells": 238,
+        "ulp_median": 1.0,
+        "ulp_max": 42,
+        "max_abs": 0.00128173828125,
+        "field_abs_max": 297.8101806640625,
+        "scale_cells": "land_no_ice",
+        "cells_outside_scale_columns": 68,
+        "max_abs_over_field_max": 4.303876645156848e-06,
+        "value_at_max_ulp": 291.43865966796875
+      },
+      {
+        "field": "land_history.TRAD",
+        "dtype": "float32",
+        "cells": 170,
+        "ulp_median": 1.0,
+        "ulp_max": 42,
+        "max_abs": 0.00128173828125,
+        "field_abs_max": 297.8101806640625,
+        "scale_cells": "land_no_ice",
+        "cells_outside_scale_columns": 0,
+        "max_abs_over_field_max": 4.303876645156848e-06,
+        "value_at_max_ulp": 291.43865966796875
+      },
+      {
+        "field": "noahmp_land.tg",
+        "dtype": "float32",
+        "cells": 259,
+        "ulp_median": 1.0,
+        "ulp_max": 42,
+        "max_abs": 0.00128173828125,
+        "field_abs_max": 297.8102111816406,
+        "scale_cells": "land_no_ice",
+        "cells_outside_scale_columns": 72,
+        "max_abs_over_field_max": 4.30387620412465e-06,
+        "value_at_max_ulp": 291.43865966796875
+      },
+      {
+        "field": "land_history.TGB",
+        "dtype": "float32",
+        "cells": 201,
+        "ulp_median": 1.0,
+        "ulp_max": 42,
+        "max_abs": 0.00128173828125,
+        "field_abs_max": 297.8102111816406,
+        "scale_cells": "land_no_ice",
+        "cells_outside_scale_columns": 0,
+        "max_abs_over_field_max": 4.30387620412465e-06,
+        "value_at_max_ulp": 291.43865966796875
+      },
+      {
+        "field": "land_history.TGV",
+        "dtype": "float32",
+        "cells": 148,
+        "ulp_median": 1.0,
+        "ulp_max": 42,
+        "max_abs": 0.00128173828125,
+        "field_abs_max": 300.5392150878906,
+        "scale_cells": "land_no_ice",
+        "cells_outside_scale_columns": 0,
+        "max_abs_over_field_max": 4.264795463963544e-06,
+        "value_at_max_ulp": 291.43865966796875
+      },
+      {
+        "field": "land_history.FORCQLSM",
+        "dtype": "float32",
+        "cells": 304,
+        "ulp_median": 1.0,
+        "ulp_max": 101,
+        "max_abs": 4.7031790018081665e-08,
+        "field_abs_max": 0.013574964366853237,
+        "scale_cells": "land_no_ice",
+        "cells_outside_scale_columns": 0,
+        "max_abs_over_field_max": 3.4645976775395348e-06,
+        "value_at_max_ulp": 0.006169214379042387
+      },
+      {
+        "field": "State.theta",
+        "dtype": "float32",
+        "cells": 33431,
+        "ulp_median": 1.0,
+        "ulp_max": 46,
+        "max_abs": 0.00140380859375,
+        "field_abs_max": 493.33441162109375,
+        "scale_cells": "land_no_ice",
+        "cells_outside_scale_columns": 19673,
+        "max_abs_over_field_max": 2.8455517407291613e-06,
+        "value_at_max_ulp": 308.78509521484375
+      },
+      {
+        "field": "noahmp_land.tah",
+        "dtype": "float32",
+        "cells": 186,
+        "ulp_median": 1.0,
+        "ulp_max": 15,
+        "max_abs": 0.000457763671875,
+        "field_abs_max": 298.10546875,
+        "scale_cells": "land_no_ice",
+        "cells_outside_scale_columns": 0,
+        "max_abs_over_field_max": 1.535576230098932e-06,
+        "value_at_max_ulp": 293.19073486328125
+      },
+      {
+        "field": "t_save",
+        "dtype": "float32",
+        "cells": 20439,
+        "ulp_median": 1.0,
+        "ulp_max": 13,
+        "max_abs": 0.000396728515625,
+        "field_abs_max": 493.3340148925781,
+        "scale_cells": "land_no_ice",
+        "cells_outside_scale_columns": 11190,
+        "max_abs_over_field_max": 8.041783125604796e-07,
+        "value_at_max_ulp": 306.7998352050781
+      },
+      {
+        "field": "State.mu_total",
+        "dtype": "float32",
+        "cells": 2310,
+        "ulp_median": 1.0,
+        "ulp_max": 8,
+        "max_abs": 0.0625,
+        "field_abs_max": 96438.078125,
+        "scale_cells": "land_no_ice",
+        "cells_outside_scale_columns": 1522,
+        "max_abs_over_field_max": 6.48084254841635e-07,
+        "value_at_max_ulp": 96591.1328125
+      },
+      {
+        "field": "muts",
+        "dtype": "float32",
+        "cells": 2243,
+        "ulp_median": 1.0,
+        "ulp_max": 8,
+        "max_abs": 0.0625,
+        "field_abs_max": 96438.078125,
+        "scale_cells": "land_no_ice",
+        "cells_outside_scale_columns": 1456,
+        "max_abs_over_field_max": 6.48084254841635e-07,
+        "value_at_max_ulp": 96591.1328125
+      },
+      {
+        "field": "history_diagnostics.psfc",
+        "dtype": "float32",
+        "cells": 416,
+        "ulp_median": 1.0,
+        "ulp_max": 7,
+        "max_abs": 0.0546875,
+        "field_abs_max": 101660.6953125,
+        "scale_cells": "land_no_ice",
+        "cells_outside_scale_columns": 226,
+        "max_abs_over_field_max": 5.379414318571529e-07,
+        "value_at_max_ulp": 101689.5859375
+      },
+      {
+        "field": "land_history.RSSUN",
+        "dtype": "float32",
+        "cells": 38,
+        "ulp_median": 2.0,
+        "ulp_max": 17,
+        "max_abs": 1408.0,
+        "field_abs_max": 2661202176.0,
+        "scale_cells": "land_no_ice",
+        "cells_outside_scale_columns": 0,
+        "max_abs_over_field_max": 5.290841908585603e-07,
+        "value_at_max_ulp": 40209.28125
+      },
+      {
+        "field": "land_history.RSSHA",
+        "dtype": "float32",
+        "cells": 38,
+        "ulp_median": 2.0,
+        "ulp_max": 17,
+        "max_abs": 1408.0,
+        "field_abs_max": 2661202176.0,
+        "scale_cells": "land_no_ice",
+        "cells_outside_scale_columns": 0,
+        "max_abs_over_field_max": 5.290841908585603e-07,
+        "value_at_max_ulp": 40209.28125
+      },
+      {
+        "field": "land_history.FORCPLSM",
+        "dtype": "float32",
+        "cells": 158,
+        "ulp_median": 2.0,
+        "ulp_max": 6,
+        "max_abs": 0.046875,
+        "field_abs_max": 101358.40625,
+        "scale_cells": "land_no_ice",
+        "cells_outside_scale_columns": 0,
+        "max_abs_over_field_max": 4.624678083866379e-07,
+        "value_at_max_ulp": 101181.9765625
+      },
+      {
+        "field": "State.ph_total",
+        "dtype": "float32",
+        "cells": 80082,
+        "ulp_median": 1.0,
+        "ulp_max": 341,
+        "max_abs": 0.0625,
+        "field_abs_max": 205758.828125,
+        "scale_cells": "land_no_ice",
+        "cells_outside_scale_columns": 51664,
+        "max_abs_over_field_max": 3.0375367399561e-07,
+        "value_at_max_ulp": 510.91986083984375
+      },
+      {
+        "field": "rthraten",
+        "dtype": "float32",
+        "cells": 51466,
+        "ulp_median": 2.0,
+        "ulp_max": 17,
+        "max_abs": 8.731149137020111e-11,
+        "field_abs_max": 0.00030899749253876507,
+        "scale_cells": "land_no_ice",
+        "cells_outside_scale_columns": 33623,
+        "max_abs_over_field_max": 2.825637536823944e-07,
+        "value_at_max_ulp": -3.0321598387672566e-05
+      },
+      {
+        "field": "noahmp_land.tv",
+        "dtype": "float32",
+        "cells": 27,
+        "ulp_median": 1.0,
+        "ulp_max": 2,
+        "max_abs": 6.103515625e-05,
+        "field_abs_max": 298.31182861328125,
+        "scale_cells": "land_no_ice",
+        "cells_outside_scale_columns": 0,
+        "max_abs_over_field_max": 2.0460186420942557e-07,
+        "value_at_max_ulp": 296.0372009277344
+      },
+      {
+        "field": "State.w_bdy",
+        "dtype": "float32",
+        "cells": 2625,
+        "ulp_median": 2.0,
+        "ulp_max": 1664,
+        "max_abs": 0.0015869140625,
+        "field_abs_max": 9855.1005859375,
+        "scale_cells": "all",
+        "cells_outside_scale_columns": 0,
+        "max_abs_over_field_max": 1.6102464390514785e-07,
+        "value_at_max_ulp": -2.664215087890625
+      },
+      {
+        "field": "t_2ave",
+        "dtype": "float32",
+        "cells": 473,
+        "ulp_median": 1.0,
+        "ulp_max": 1,
+        "max_abs": 3.0517578125e-05,
+        "field_abs_max": 300.0018615722656,
+        "scale_cells": "land_no_ice",
+        "cells_outside_scale_columns": 298,
+        "max_abs_over_field_max": 1.0172462919083856e-07,
+        "value_at_max_ulp": 299.9999694824219
+      },
+      {
+        "field": "noahmp_land.tslb",
+        "dtype": "float32",
+        "cells": 1,
+        "ulp_median": 1.0,
+        "ulp_max": 1,
+        "max_abs": 3.0517578125e-05,
+        "field_abs_max": 306.7834167480469,
+        "scale_cells": "land_no_ice",
+        "cells_outside_scale_columns": 0,
+        "max_abs_over_field_max": 9.947597053481963e-08,
+        "value_at_max_ulp": 296.1443176269531
+      },
+      {
+        "field": "State.u_bdy",
+        "dtype": "float32",
+        "cells": 130,
+        "ulp_median": 1.0,
+        "ulp_max": 10,
+        "max_abs": 0.125,
+        "field_abs_max": 1341281.5,
+        "scale_cells": "all",
+        "cells_outside_scale_columns": 0,
+        "max_abs_over_field_max": 9.319445619730086e-08,
+        "value_at_max_ulp": 411.22900390625
+      },
+      {
+        "field": "State.ztop_plume",
+        "dtype": "float32",
+        "cells": 23,
+        "ulp_median": 1.0,
+        "ulp_max": 6,
+        "max_abs": 3.0517578125e-05,
+        "field_abs_max": 442.09991455078125,
+        "scale_cells": "land_no_ice",
+        "cells_outside_scale_columns": 21,
+        "max_abs_over_field_max": 6.90286903945887e-08,
+        "value_at_max_ulp": 51.55585861206055
+      },
+      {
+        "field": "State.v_bdy",
+        "dtype": "float32",
+        "cells": 127,
+        "ulp_median": 1.0,
+        "ulp_max": 24,
+        "max_abs": 0.03125,
+        "field_abs_max": 1697855.75,
+        "scale_cells": "all",
+        "cells_outside_scale_columns": 0,
+        "max_abs_over_field_max": 1.8405568317567615e-08,
+        "value_at_max_ulp": 2937.9794921875
+      },
+      {
+        "field": "State.roughness_m",
+        "dtype": "float32",
+        "cells": 197,
+        "ulp_median": 3.0,
+        "ulp_max": 58,
+        "max_abs": 9.604264050722122e-10,
+        "field_abs_max": 1.0,
+        "scale_cells": "land_no_ice",
+        "cells_outside_scale_columns": 197,
+        "max_abs_over_field_max": 9.604264050722122e-10,
+        "value_at_max_ulp": 0.00020563202269840986
+      },
+      {
+        "field": "State.qv_bdy",
+        "dtype": "float32",
+        "cells": 1,
+        "ulp_median": 1.0,
+        "ulp_max": 1,
+        "max_abs": 2.9802322387695312e-08,
+        "field_abs_max": 1321.5660400390625,
+        "scale_cells": "all",
+        "cells_outside_scale_columns": 0,
+        "max_abs_over_field_max": 2.2550762871308665e-11,
+        "value_at_max_ulp": 0.4368647336959839
+      }
+    ]
+  },
+  "changed_differences": [
+    {
+      "leaf": "['d01'][<flat index 0>][<flat index 0>]",
+      "cells": 91425,
+      "max_abs": 0.008815109729766846,
+      "field_max": 18.718692779541016,
+      "max_abs_over_field_max": 0.00047092549856908296
+    },
+    {
+      "leaf": "['d01'][<flat index 0>][<flat index 1>]",
+      "cells": 92314,
+      "max_abs": 0.00417327880859375,
+      "field_max": 20.704784393310547,
+      "max_abs_over_field_max": 0.0002015610850766494
+    },
+    {
+      "leaf": "['d01'][<flat index 0>][<flat index 2>]",
+      "cells": 120028,
+      "max_abs": 0.0005115835228934884,
+      "field_max": 0.3707166314125061,
+      "max_abs_over_field_max": 0.0013799853568593637
+    },
+    {
+      "leaf": "['d01'][<flat index 0>][<flat index 3>]",
+      "cells": 11293,
+      "max_abs": 0.002716064453125,
+      "field_max": 495.3987121582031,
+      "max_abs_over_field_max": 5.482582789310195e-06
+    },
+    {
+      "leaf": "['d01'][<flat index 0>][<flat index 4>]",
+      "cells": 49239,
+      "max_abs": 3.902241587638855e-07,
+      "field_max": 0.014096851460635662,
+      "max_abs_over_field_max": 2.7681653584387652e-05
+    },
+    {
+      "leaf": "['d01'][<flat index 0>][<flat index 5>]",
+      "cells": 23284,
+      "max_abs": 2.8125,
+      "field_max": 102112.6953125,
+      "max_abs_over_field_max": 2.7543098254264876e-05
+    },
+    {
+      "leaf": "['d01'][<flat index 0>][<flat index 6>]",
+      "cells": 23847,
+      "max_abs": 2.8133544921875,
+      "field_max": 2406.495361328125,
+      "max_abs_over_field_max": 0.001169067074633725
+    },
+    {
+      "leaf": "['d01'][<flat index 0>][<flat index 7>]",
+      "cells": 30387,
+      "max_abs": 0.03125,
+      "field_max": 205837.109375,
+      "max_abs_over_field_max": 1.5181907720569396e-07
+    },
+    {
+      "leaf": "['d01'][<flat index 0>][<flat index 8>]",
+      "cells": 74256,
+      "max_abs": 0.02801513671875,
+      "field_max": 10616.6318359375,
+      "max_abs_over_field_max": 2.6387970452095956e-06
+    },
+    {
+      "leaf": "['d01'][<flat index 0>][<flat index 9>]",
+      "cells": 785,
+      "max_abs": 0.0390625,
+      "field_max": 97195.25,
+      "max_abs_over_field_max": 4.0189721205511587e-07
+    },
+    {
+      "leaf": "['d01'][<flat index 0>][<flat index 10>]",
+      "cells": 2123,
+      "max_abs": 0.032470703125,
+      "field_max": 2195.252685546875,
+      "max_abs_over_field_max": 1.479132827796131e-05
+    },
+    {
+      "leaf": "['d01'][<flat index 0>][<flat index 20>]",
+      "cells": 4776,
+      "max_abs": 0.011849701404571533,
+      "field_max": 9.770359992980957,
+      "max_abs_over_field_max": 0.0012128213712784767
+    },
+    {
+      "leaf": "['d01'][<flat index 0>][<flat index 22>]",
+      "cells": 1354,
+      "max_abs": 0.0018624300137162209,
+      "field_max": 0.04962905868887901,
+      "max_abs_over_field_max": 0.03752700661504906
+    },
+    {
+      "leaf": "['d01'][<flat index 0>][<flat index 23>]",
+      "cells": 1354,
+      "max_abs": 3.866083631010042e-07,
+      "field_max": 0.00010235084482701495,
+      "max_abs_over_field_max": 0.0037772855099966994
+    },
+    {
+      "leaf": "['d01'][<flat index 0>][<flat index 27>]",
+      "cells": 1354,
+      "max_abs": 0.0018804199062287807,
+      "field_max": 0.049840666353702545,
+      "max_abs_over_field_max": 0.03772862691851007
+    },
+    {
+      "leaf": "['d01'][<flat index 0>][<flat index 28>]",
+      "cells": 1354,
+      "max_abs": 0.48919677734375,
+      "field_max": 297.7357482910156,
+      "max_abs_over_field_max": 0.0016430569058358245
+    },
+    {
+      "leaf": "['d01'][<flat index 0>][<flat index 53>]",
+      "cells": 799,
+      "max_abs": 1.9463897160676424e-10,
+      "field_max": 1.1767189107558806e-06,
+      "max_abs_over_field_max": 0.00016540821246914048
+    },
+    {
+      "leaf": "['d01'][<flat index 0>][<flat index 72>]",
+      "cells": 1354,
+      "max_abs": 2.1630406379699707,
+      "field_max": 60.27744674682617,
+      "max_abs_over_field_max": 0.035884742216355785
+    },
+    {
+      "leaf": "['d01'][<flat index 0>][<flat index 73>]",
+      "cells": 1354,
+      "max_abs": 4.454286184341072e-07,
+      "field_max": 0.00012140878243371844,
+      "max_abs_over_field_max": 0.0036688335844013856
+    },
+    {
+      "leaf": "['d01'][<flat index 0>][<flat index 74>]",
+      "cells": 157,
+      "max_abs": 0.0038156374357640743,
+      "field_max": 0.02002747543156147,
+      "max_abs_over_field_max": 0.19052014063395023
+    },
+    {
+      "leaf": "['d01'][<flat index 0>][<flat index 76>]",
+      "cells": 333,
+      "max_abs": 2.389819383621216,
+      "field_max": 118.07671356201172,
+      "max_abs_over_field_max": 0.02023954860808458
+    },
+    {
+      "leaf": "['d01'][<flat index 1>]",
+      "cells": 155,
+      "max_abs": 3.0517578125e-05,
+      "field_max": 300.00189208984375,
+      "max_abs_over_field_max": 1.0172461884293943e-07
+    },
+    {
+      "leaf": "['d01'][<flat index 2>]",
+      "cells": 115023,
+      "max_abs": 0.0013033747673034668,
+      "field_max": 3.668623685836792,
+      "max_abs_over_field_max": 0.00035527622316110474
+    },
+    {
+      "leaf": "['d01'][<flat index 3>]",
+      "cells": 2625,
+      "max_abs": 0.0016612857580184937,
+      "field_max": 3.142258405685425,
+      "max_abs_over_field_max": 0.0005286916426136874
+    },
+    {
+      "leaf": "['d01'][<flat index 4>]",
+      "cells": 2577,
+      "max_abs": 0.038038015365600586,
+      "field_max": 75.7051010131836,
+      "max_abs_over_field_max": 0.0005024498330565135
+    },
+    {
+      "leaf": "['d01'][<flat index 5>]",
+      "cells": 769,
+      "max_abs": 0.03125,
+      "field_max": 97194.65625,
+      "max_abs_over_field_max": 3.2151973375593886e-07
+    },
+    {
+      "leaf": "['d01'][<flat index 6>]",
+      "cells": 86817,
+      "max_abs": 88.4453125,
+      "field_max": 425221.65625,
+      "max_abs_over_field_max": 0.0002079981374419944
+    },
+    {
+      "leaf": "['d01'][<flat index 7>]",
+      "cells": 58737,
+      "max_abs": 0.003272528760135174,
+      "field_max": 18.716947555541992,
+      "max_abs_over_field_max": 0.00017484308007083103
+    },
+    {
+      "leaf": "['d01'][<flat index 8>]",
+      "cells": 59971,
+      "max_abs": 0.0016307830810546875,
+      "field_max": 20.668624877929688,
+      "max_abs_over_field_max": 7.890138268444098e-05
+    },
+    {
+      "leaf": "['d01'][<flat index 9>]",
+      "cells": 83921,
+      "max_abs": 0.000344105064868927,
+      "field_max": 0.3837963342666626,
+      "max_abs_over_field_max": 0.0008965824687367701
+    },
+    {
+      "leaf": "['d01'][<flat index 10>]",
+      "cells": 2893,
+      "max_abs": 0.0013427734375,
+      "field_max": 495.39892578125,
+      "max_abs_over_field_max": 2.7104891989469504e-06
+    },
+    {
+      "leaf": "['d01'][<flat index 11>]",
+      "cells": 45393,
+      "max_abs": 0.0224609375,
+      "field_max": 10614.8125,
+      "max_abs_over_field_max": 2.1159994583041387e-06
+    },
+    {
+      "leaf": "['d01'][<flat index 12>]",
+      "cells": 1494,
+      "max_abs": 0.0155029296875,
+      "field_max": 2194.953125,
+      "max_abs_over_field_max": 7.062988959046677e-06
+    },
+    {
+      "leaf": "['d01'][<flat index 13>]",
+      "cells": 79450,
+      "max_abs": 0.0004922673106193542,
+      "field_max": 3.2426552772521973,
+      "max_abs_over_field_max": 0.00015180994232495107
+    },
+    {
+      "leaf": "['d01'][<flat index 14>]",
+      "cells": 17085,
+      "max_abs": 2.9103830456733704e-11,
+      "field_max": 0.00016405733185820282,
+      "max_abs_over_field_max": 1.7740036441582857e-07
+    },
+    {
+      "leaf": "['d01'][<flat index 15>][<flat index 0>]",
+      "cells": 2816,
+      "max_abs": 0.00079345703125,
+      "field_max": 312.9021911621094,
+      "max_abs_over_field_max": 2.5357988971030353e-06
+    },
+    {
+      "leaf": "['d01'][<flat index 15>][<flat index 1>]",
+      "cells": 593,
+      "max_abs": 0.00028239190578460693,
+      "field_max": 1.0,
+      "max_abs_over_field_max": 0.00028239190578460693
+    },
+    {
+      "leaf": "['d01'][<flat index 15>][<flat index 2>]",
+      "cells": 593,
+      "max_abs": 0.00028239190578460693,
+      "field_max": 1.0,
+      "max_abs_over_field_max": 0.00028239190578460693
+    },
+    {
+      "leaf": "['d01'][<flat index 15>][<flat index 14>]",
+      "cells": 47,
+      "max_abs": 0.0018310546875,
+      "field_max": 300.3957214355469,
+      "max_abs_over_field_max": 6.095475257602404e-06
+    },
+    {
+      "leaf": "['d01'][<flat index 15>][<flat index 15>]",
+      "cells": 1354,
+      "max_abs": 0.489166259765625,
+      "field_max": 297.7357482910156,
+      "max_abs_over_field_max": 0.0016429544069645934
+    },
+    {
+      "leaf": "['d01'][<flat index 15>][<flat index 16>]",
+      "cells": 48,
+      "max_abs": 0.00372314453125,
+      "field_max": 300.3957214355469,
+      "max_abs_over_field_max": 1.2394133023791554e-05
+    },
+    {
+      "leaf": "['d01'][<flat index 15>][<flat index 17>]",
+      "cells": 49,
+      "max_abs": 3.75726318359375,
+      "field_max": 2000.0,
+      "max_abs_over_field_max": 0.001878631591796875
+    },
+    {
+      "leaf": "['d01'][<flat index 15>][<flat index 23>]",
+      "cells": 1269,
+      "max_abs": 0.00023421738296747208,
+      "field_max": 0.009314773604273796,
+      "max_abs_over_field_max": 0.025144720947378546
+    },
+    {
+      "leaf": "['d01'][<flat index 15>][<flat index 24>]",
+      "cells": 1269,
+      "max_abs": 0.0008409274742007256,
+      "field_max": 0.05637483671307564,
+      "max_abs_over_field_max": 0.014916716805419677
+    },
+    {
+      "leaf": "['d01'][<flat index 15>][<flat index 25>]",
+      "cells": 1354,
+      "max_abs": 0.48919677734375,
+      "field_max": 297.7357482910156,
+      "max_abs_over_field_max": 0.0016430569058358245
+    },
+    {
+      "leaf": "['d01'][<flat index 15>][<flat index 26>]",
+      "cells": 157,
+      "max_abs": 0.0038156374357640743,
+      "field_max": 0.02002747543156147,
+      "max_abs_over_field_max": 0.19052014063395023
+    },
+    {
+      "leaf": "['d01'][<flat index 15>][<flat index 30>]",
+      "cells": 889,
+      "max_abs": 4.181655022250652e-13,
+      "field_max": 7.024997898952279e-07,
+      "max_abs_over_field_max": 5.952535619796145e-07
+    },
+    {
+      "leaf": "['d01'][<flat index 15>][<flat index 31>]",
+      "cells": 1354,
+      "max_abs": 8.806656296656001e-06,
+      "field_max": 2.238632077933289e-05,
+      "max_abs_over_field_max": 0.3933945369346413
+    },
+    {
+      "leaf": "['d01'][<flat index 28>]",
+      "cells": 2497,
+      "max_abs": 1.6954210195763153e-06,
+      "field_max": 1.1302806797175435e-06,
+      "max_abs_over_field_max": 1.5
+    },
+    {
+      "leaf": "['d01'][<flat index 29>].t2",
+      "cells": 1354,
+      "max_abs": 0.18438720703125,
+      "field_max": 298.72607421875,
+      "max_abs_over_field_max": 0.0006172451049459701
+    },
+    {
+      "leaf": "['d01'][<flat index 29>].q2",
+      "cells": 1354,
+      "max_abs": 6.759446114301682e-05,
+      "field_max": 0.01434382051229477,
+      "max_abs_over_field_max": 0.004712444713392669
+    },
+    {
+      "leaf": "['d01'][<flat index 29>].lh",
+      "cells": 1354,
+      "max_abs": 1.118203952908516,
+      "field_max": 303.5219421386719,
+      "max_abs_over_field_max": 0.0036840959339856736
+    },
+    {
+      "leaf": "['d01'][<flat index 30>][<flat index 0>]",
+      "cells": 24482,
+      "max_abs": 3026.390625,
+      "field_max": 2033443072.0,
+      "max_abs_over_field_max": 1.4883085082010106e-06
+    },
+    {
+      "leaf": "['d01'][<flat index 31>][<flat index 0>]",
+      "cells": 4062,
+      "max_abs": 218.710205078125,
+      "field_max": 24764.595703125,
+      "max_abs_over_field_max": 0.008831567763108136
+    },
+    {
+      "leaf": "['d02'][<flat index 0>][<flat index 0>]",
+      "cells": 518117,
+      "max_abs": 0.019756197929382324,
+      "field_max": 14.06514835357666,
+      "max_abs_over_field_max": 0.0014046206575815089
+    },
+    {
+      "leaf": "['d02'][<flat index 0>][<flat index 1>]",
+      "cells": 521703,
+      "max_abs": 0.05397200584411621,
+      "field_max": 19.034929275512695,
+      "max_abs_over_field_max": 0.0028354193001151828
+    },
+    {
+      "leaf": "['d02'][<flat index 0>][<flat index 2>]",
+      "cells": 579665,
+      "max_abs": 0.021763499826192856,
+      "field_max": 2.4159469604492188,
+      "max_abs_over_field_max": 0.009008268882751537
+    },
+    {
+      "leaf": "['d02'][<flat index 0>][<flat index 3>]",
+      "cells": 142590,
+      "max_abs": 0.042694091796875,
+      "field_max": 494.0876770019531,
+      "max_abs_over_field_max": 8.64099506709742e-05
+    },
+    {
+      "leaf": "['d02'][<flat index 0>][<flat index 4>]",
+      "cells": 367867,
+      "max_abs": 6.1104074120521545e-06,
+      "field_max": 0.013924706727266312,
+      "max_abs_over_field_max": 0.0004388176736309437
+    },
+    {
+      "leaf": "['d02'][<flat index 0>][<flat index 5>]",
+      "cells": 261904,
+      "max_abs": 5.6953125,
+      "field_max": 101903.6796875,
+      "max_abs_over_field_max": 5.5889174144303395e-05
+    },
+    {
+      "leaf": "['d02'][<flat index 0>][<flat index 6>]",
+      "cells": 265379,
+      "max_abs": 5.6982421875,
+      "field_max": 2376.12841796875,
+      "max_abs_over_field_max": 0.0023981204653792166
+    },
+    {
+      "leaf": "['d02'][<flat index 0>][<flat index 7>]",
+      "cells": 277330,
+      "max_abs": 0.072021484375,
+      "field_max": 205780.890625,
+      "max_abs_over_field_max": 3.499911199541199e-07
+    },
+    {
+      "leaf": "['d02'][<flat index 0>][<flat index 8>]",
+      "cells": 463285,
+      "max_abs": 0.07203102111816406,
+      "field_max": 10560.408203125,
+      "max_abs_over_field_max": 6.820855759803763e-06
+    },
+    {
+      "leaf": "['d02'][<flat index 0>][<flat index 9>]",
+      "cells": 7474,
+      "max_abs": 0.0625,
+      "field_max": 96987.8046875,
+      "max_abs_over_field_max": 6.444109153865108e-07
+    },
+    {
+      "leaf": "['d02'][<flat index 0>][<flat index 10>]",
+      "cells": 12108,
+      "max_abs": 0.0667724609375,
+      "field_max": 2330.85595703125,
+      "max_abs_over_field_max": 2.864718462592014e-05
+    },
+    {
+      "leaf": "['d02'][<flat index 0>][<flat index 20>]",
+      "cells": 186148,
+      "max_abs": 0.23801207542419434,
+      "field_max": 9.670764923095703,
+      "max_abs_over_field_max": 0.02461150460350601
+    },
+    {
+      "leaf": "['d02'][<flat index 0>][<flat index 21>]",
+      "cells": 6985,
+      "max_abs": 0.14170776307582855,
+      "field_max": 1.21901273727417,
+      "max_abs_over_field_max": 0.1162479757124612
+    },
+    {
+      "leaf": "['d02'][<flat index 0>][<flat index 22>]",
+      "cells": 6949,
+      "max_abs": 0.0020650974474847317,
+      "field_max": 0.10701697319746017,
+      "max_abs_over_field_max": 0.019296915113403174
+    },
+    {
+      "leaf": "['d02'][<flat index 0>][<flat index 23>]",
+      "cells": 6991,
+      "max_abs": 4.272107076985776e-07,
+      "field_max": 0.0001003116849460639,
+      "max_abs_over_field_max": 0.0042588329358467306
+    },
+    {
+      "leaf": "['d02'][<flat index 0>][<flat index 24>]",
+      "cells": 8135,
+      "max_abs": 0.03828562796115875,
+      "field_max": 0.8797386288642883,
+      "max_abs_over_field_max": 0.0435193211995069
+    },
+    {
+      "leaf": "['d02'][<flat index 0>][<flat index 25>]",
+      "cells": 7384,
+      "max_abs": 0.08644359558820724,
+      "field_max": 1.281083345413208,
+      "max_abs_over_field_max": 0.06747694901952318
+    },
+    {
+      "leaf": "['d02'][<flat index 0>][<flat index 26>]",
+      "cells": 4263,
+      "max_abs": 9.584426879882812e-05,
+      "field_max": 1.207939863204956,
+      "max_abs_over_field_max": 7.934523209171204e-05
+    },
+    {
+      "leaf": "['d02'][<flat index 0>][<flat index 27>]",
+      "cells": 7046,
+      "max_abs": 0.002084200270473957,
+      "field_max": 0.10701465606689453,
+      "max_abs_over_field_max": 0.019475839544549206
+    },
+    {
+      "leaf": "['d02'][<flat index 0>][<flat index 28>]",
+      "cells": 1573,
+      "max_abs": 0.535308837890625,
+      "field_max": 297.8101806640625,
+      "max_abs_over_field_max": 0.0017974833388737206
+    },
+    {
+      "leaf": "['d02'][<flat index 0>][<flat index 33>]",
+      "cells": 2922,
+      "max_abs": 5.056790541857481e-08,
+      "field_max": 1.0,
+      "max_abs_over_field_max": 5.056790541857481e-08
+    },
+    {
+      "leaf": "['d02'][<flat index 0>][<flat index 38>]",
+      "cells": 30549,
+      "max_abs": 265.802734375,
+      "field_max": 1341281.5,
+      "max_abs_over_field_max": 0.00019817073028666988
+    },
+    {
+      "leaf": "['d02'][<flat index 0>][<flat index 39>]",
+      "cells": 30331,
+      "max_abs": 195.59375,
+      "field_max": 1697855.75,
+      "max_abs_over_field_max": 0.0001152004520996557
+    },
+    {
+      "leaf": "['d02'][<flat index 0>][<flat index 40>]",
+      "cells": 16155,
+      "max_abs": 98.1376953125,
+      "field_max": 18438626.0,
+      "max_abs_over_field_max": 5.322397412502428e-06
+    },
+    {
+      "leaf": "['d02'][<flat index 0>][<flat index 41>]",
+      "cells": 20083,
+      "max_abs": 0.00445556640625,
+      "field_max": 1321.5660400390625,
+      "max_abs_over_field_max": 3.3714292523121306e-06
+    },
+    {
+      "leaf": "['d02'][<flat index 0>][<flat index 42>]",
+      "cells": 26707,
+      "max_abs": 2304.0,
+      "field_max": 1001205824.0,
+      "max_abs_over_field_max": 2.3012251275118432e-06
+    },
+    {
+      "leaf": "['d02'][<flat index 0>][<flat index 43>]",
+      "cells": 679,
+      "max_abs": 0.032470703125,
+      "field_max": 1990.5234375,
+      "max_abs_over_field_max": 1.6312645464643017e-05
+    },
+    {
+      "leaf": "['d02'][<flat index 0>][<flat index 44>]",
+      "cells": 34691,
+      "max_abs": 10.24560546875,
+      "field_max": 9855.1005859375,
+      "max_abs_over_field_max": 0.0010396246470959132
+    },
+    {
+      "leaf": "['d02'][<flat index 0>][<flat index 45>]",
+      "cells": 22089,
+      "max_abs": 2.7537841796875,
+      "field_max": 2205.578125,
+      "max_abs_over_field_max": 0.001248554357913529
+    },
+    {
+      "leaf": "['d02'][<flat index 0>][<flat index 53>]",
+      "cells": 213868,
+      "max_abs": 1.0180784215663152e-08,
+      "field_max": 1.1883895467690309e-06,
+      "max_abs_over_field_max": 0.008566874593724304
+    },
+    {
+      "leaf": "['d02'][<flat index 0>][<flat index 71>]",
+      "cells": 5867,
+      "max_abs": 0.13879165798425674,
+      "field_max": 0.22076717019081116,
+      "max_abs_over_field_max": 0.6286788831160801
+    },
+    {
+      "leaf": "['d02'][<flat index 0>][<flat index 72>]",
+      "cells": 6989,
+      "max_abs": 2.3978757858276367,
+      "field_max": 128.34800720214844,
+      "max_abs_over_field_max": 0.018682610179143463
+    },
+    {
+      "leaf": "['d02'][<flat index 0>][<flat index 73>]",
+      "cells": 6996,
+      "max_abs": 4.999534439775744e-07,
+      "field_max": 0.00011899527453351766,
+      "max_abs_over_field_max": 0.004201456284188423
+    },
+    {
+      "leaf": "['d02'][<flat index 0>][<flat index 74>]",
+      "cells": 2759,
+      "max_abs": 0.004397433251142502,
+      "field_max": 0.019043099135160446,
+      "max_abs_over_field_max": 0.23092004194964516
+    },
+    {
+      "leaf": "['d02'][<flat index 0>][<flat index 75>]",
+      "cells": 5210,
+      "max_abs": 75.60061645507812,
+      "field_max": 865.4421997070312,
+      "max_abs_over_field_max": 0.08735489958852294
+    },
+    {
+      "leaf": "['d02'][<flat index 0>][<flat index 76>]",
+      "cells": 210384,
+      "max_abs": 15.162274360656738,
+      "field_max": 104.16140747070312,
+      "max_abs_over_field_max": 0.1455651831982142
+    },
+    {
+      "leaf": "['d02'][<flat index 0>][<flat index 77>]",
+      "cells": 130,
+      "max_abs": 0.00035211630165576935,
+      "field_max": 0.07277904450893402,
+      "max_abs_over_field_max": 0.00483815504904774
+    },
+    {
+      "leaf": "['d02'][<flat index 0>][<flat index 78>]",
+      "cells": 851,
+      "max_abs": 1.209747314453125,
+      "field_max": 859.63134765625,
+      "max_abs_over_field_max": 0.0014072861788386986
+    },
+    {
+      "leaf": "['d02'][<flat index 0>][<flat index 79>]",
+      "cells": 113,
+      "max_abs": 106.93118286132812,
+      "field_max": 444.6214599609375,
+      "max_abs_over_field_max": 0.24049937416588626
+    },
+    {
+      "leaf": "['d02'][<flat index 0>][<flat index 84>]",
+      "cells": 7373,
+      "max_abs": 0.022851943969726562,
+      "field_max": 16.42156410217285,
+      "max_abs_over_field_max": 0.0013915814490961225
+    },
+    {
+      "leaf": "['d02'][<flat index 1>]",
+      "cells": 1898,
+      "max_abs": 3.0517578125e-05,
+      "field_max": 300.00189208984375,
+      "max_abs_over_field_max": 1.0172461884293943e-07
+    },
+    {
+      "leaf": "['d02'][<flat index 2>]",
+      "cells": 569958,
+      "max_abs": 0.012060999870300293,
+      "field_max": 14.88822078704834,
+      "max_abs_over_field_max": 0.000810103506847002
+    },
+    {
+      "leaf": "['d02'][<flat index 3>]",
+      "cells": 13187,
+      "max_abs": 0.01147317886352539,
+      "field_max": 14.637362480163574,
+      "max_abs_over_field_max": 0.0007838282941393125
+    },
+    {
+      "leaf": "['d02'][<flat index 4>]",
+      "cells": 13134,
+      "max_abs": 0.12736725807189941,
+      "field_max": 106.51663970947266,
+      "max_abs_over_field_max": 0.0011957498698728897
+    },
+    {
+      "leaf": "['d02'][<flat index 5>]",
+      "cells": 7383,
+      "max_abs": 0.0703125,
+      "field_max": 96987.8046875,
+      "max_abs_over_field_max": 7.249622798098247e-07
+    },
+    {
+      "leaf": "['d02'][<flat index 6>]",
+      "cells": 508609,
+      "max_abs": 5516.671875,
+      "field_max": 1013186.8125,
+      "max_abs_over_field_max": 0.005444871377064039
+    },
+    {
+      "leaf": "['d02'][<flat index 7>]",
+      "cells": 421462,
+      "max_abs": 0.034990906715393066,
+      "field_max": 14.063276290893555,
+      "max_abs_over_field_max": 0.002488104904690727
+    },
+    {
+      "leaf": "['d02'][<flat index 8>]",
+      "cells": 425347,
+      "max_abs": 0.029977798461914062,
+      "field_max": 19.050254821777344,
+      "max_abs_over_field_max": 0.0015736166650980896
+    },
+    {
+      "leaf": "['d02'][<flat index 9>]",
+      "cells": 483466,
+      "max_abs": 0.007736295461654663,
+      "field_max": 2.4762394428253174,
+      "max_abs_over_field_max": 0.0031242113859666874
+    },
+    {
+      "leaf": "['d02'][<flat index 10>]",
+      "cells": 114155,
+      "max_abs": 0.03369140625,
+      "field_max": 494.08819580078125,
+      "max_abs_over_field_max": 6.818905316164351e-05
+    },
+    {
+      "leaf": "['d02'][<flat index 11>]",
+      "cells": 388189,
+      "max_abs": 0.091796875,
+      "field_max": 10567.4287109375,
+      "max_abs_over_field_max": 8.686774948856613e-06
+    },
+    {
+      "leaf": "['d02'][<flat index 12>]",
+      "cells": 10112,
+      "max_abs": 0.105712890625,
+      "field_max": 2306.17919921875,
+      "max_abs_over_field_max": 4.583897498547021e-05
+    },
+    {
+      "leaf": "['d02'][<flat index 13>]",
+      "cells": 474198,
+      "max_abs": 0.008176803588867188,
+      "field_max": 13.53794002532959,
+      "max_abs_over_field_max": 0.000603991713182975
+    },
+    {
+      "leaf": "['d02'][<flat index 14>]",
+      "cells": 170730,
+      "max_abs": 1.1641532182693481e-10,
+      "field_max": 0.00030899749253876507,
+      "max_abs_over_field_max": 3.7675167157652584e-07
+    },
+    {
+      "leaf": "['d02'][<flat index 15>][<flat index 0>]",
+      "cells": 2151,
+      "max_abs": 0.0008544921875,
+      "field_max": 306.7834167480469,
+      "max_abs_over_field_max": 2.7853271749749493e-06
+    },
+    {
+      "leaf": "['d02'][<flat index 15>][<flat index 1>]",
+      "cells": 1210,
+      "max_abs": 5.513429641723633e-07,
+      "field_max": 1.0,
+      "max_abs_over_field_max": 5.513429641723633e-07
+    },
+    {
+      "leaf": "['d02'][<flat index 15>][<flat index 2>]",
+      "cells": 1210,
+      "max_abs": 5.513429641723633e-07,
+      "field_max": 1.0,
+      "max_abs_over_field_max": 5.513429641723633e-07
+    },
+    {
+      "leaf": "['d02'][<flat index 15>][<flat index 14>]",
+      "cells": 530,
+      "max_abs": 0.032562255859375,
+      "field_max": 298.31182861328125,
+      "max_abs_over_field_max": 0.00010915509455572853
+    },
+    {
+      "leaf": "['d02'][<flat index 15>][<flat index 15>]",
+      "cells": 2688,
+      "max_abs": 0.5352783203125,
+      "field_max": 297.8102111816406,
+      "max_abs_over_field_max": 0.0017973806814368183
+    },
+    {
+      "leaf": "['d02'][<flat index 15>][<flat index 16>]",
+      "cells": 529,
+      "max_abs": 0.029693603515625,
+      "field_max": 298.10546875,
+      "max_abs_over_field_max": 9.960771145908405e-05
+    },
+    {
+      "leaf": "['d02'][<flat index 15>][<flat index 17>]",
+      "cells": 527,
+      "max_abs": 6.765625,
+      "field_max": 2100.458251953125,
+      "max_abs_over_field_max": 0.0032210233141786743
+    },
+    {
+      "leaf": "['d02'][<flat index 15>][<flat index 23>]",
+      "cells": 6311,
+      "max_abs": 0.0004438101314008236,
+      "field_max": 0.03901250287890434,
+      "max_abs_over_field_max": 0.011376099933357772
+    },
+    {
+      "leaf": "['d02'][<flat index 15>][<flat index 24>]",
+      "cells": 7322,
+      "max_abs": 0.0013327915221452713,
+      "field_max": 0.14290887117385864,
+      "max_abs_over_field_max": 0.009326163667781247
+    },
+    {
+      "leaf": "['d02'][<flat index 15>][<flat index 25>]",
+      "cells": 2656,
+      "max_abs": 0.535308837890625,
+      "field_max": 297.8101806640625,
+      "max_abs_over_field_max": 0.0017974833388737206
+    },
+    {
+      "leaf": "['d02'][<flat index 15>][<flat index 26>]",
+      "cells": 3434,
+      "max_abs": 0.004397433251142502,
+      "field_max": 0.01795515976846218,
+      "max_abs_over_field_max": 0.24491195332421886
+    },
+    {
+      "leaf": "['d02'][<flat index 15>][<flat index 30>]",
+      "cells": 2619,
+      "max_abs": 1.617763700778596e-10,
+      "field_max": 7.093578915373655e-07,
+      "max_abs_over_field_max": 0.00022806029510329064
+    },
+    {
+      "leaf": "['d02'][<flat index 15>][<flat index 31>]",
+      "cells": 1569,
+      "max_abs": 1.5856054247365137e-08,
+      "field_max": 3.230987033475685e-08,
+      "max_abs_over_field_max": 0.4907495475247459
+    },
+    {
+      "leaf": "['d02'][<flat index 28>]",
+      "cells": 26234,
+      "max_abs": 5.086263058728946e-06,
+      "field_max": 3.3908420391526306e-06,
+      "max_abs_over_field_max": 1.5
+    },
+    {
+      "leaf": "['d02'][<flat index 29>].t2",
+      "cells": 3628,
+      "max_abs": 0.1922607421875,
+      "field_max": 297.8373107910156,
+      "max_abs_over_field_max": 0.0006455226904811942
+    },
+    {
+      "leaf": "['d02'][<flat index 29>].q2",
+      "cells": 5549,
+      "max_abs": 0.00010591652244329453,
+      "field_max": 0.014105081558227539,
+      "max_abs_over_field_max": 0.0075091038648772
+    },
+    {
+      "leaf": "['d02'][<flat index 29>].u10",
+      "cells": 8124,
+      "max_abs": 0.38499927520751953,
+      "field_max": 9.981164932250977,
+      "max_abs_over_field_max": 0.038572579235066656
+    },
+    {
+      "leaf": "['d02'][<flat index 29>].v10",
+      "cells": 7411,
+      "max_abs": 0.669356107711792,
+      "field_max": 14.208965301513672,
+      "max_abs_over_field_max": 0.04710801198455217
+    },
+    {
+      "leaf": "['d02'][<flat index 29>].lh",
+      "cells": 6985,
+      "max_abs": 1.25508314371109,
+      "field_max": 297.4881896972656,
+      "max_abs_over_field_max": 0.004218934354968198
+    },
+    {
+      "leaf": "['d02'][<flat index 29>].psfc",
+      "cells": 3168,
+      "max_abs": 0.0625,
+      "field_max": 102212.390625,
+      "max_abs_over_field_max": 6.114718540269931e-07
+    },
+    {
+      "leaf": "['d02'][<flat index 30>][<flat index 0>]",
+      "cells": 43096,
+      "max_abs": 1176064.0,
+      "field_max": 2661202176.0,
+      "max_abs_over_field_max": 0.0004419295950553138
+    },
+    {
+      "leaf": "['d02'][<flat index 31>][<flat index 0>]",
+      "cells": 14692,
+      "max_abs": 225.52001953125,
+      "field_max": 24237.609375,
+      "max_abs_over_field_max": 0.00930454881263429
+    }
+  ],
+  "same_on_changed_keys": true,
+  "same_on_changed_chunk_cache_size": true,
+  "cpu_chunk_cache_size": {
+    "off": 2,
+    "on": 2,
+    "changed": 2
+  },
+  "changed_active": true,
+  "keys": {
+    "off": {
+      "d01": "664fa5f37c3cab7a45057cee2fbf2532547179bc5ced6cc78dc1e6d59fedb1e4",
+      "d02": "1459e104285d4574347b8a11c0bbbd7b123076dad297e61109380c20902ca2ac"
+    },
+    "on": {
+      "d01": "0ce87a9624ebd582eef32de52d69320983a6961e8bec59a3cbe1767d13134b90",
+      "d02": "a4b167cf36db7081a28dcedb926908ac2e5ae6e833d9ded7f242acca988f9b5d"
+    },
+    "changed": {
+      "d01": "0ce87a9624ebd582eef32de52d69320983a6961e8bec59a3cbe1767d13134b90",
+      "d02": "a4b167cf36db7081a28dcedb926908ac2e5ae6e833d9ded7f242acca988f9b5d"
+    }
+  },
+  "pre_mask_census": {
+    "off": {
+      "d01": null,
+      "d02": null
+    },
+    "on": {
+      "d01": null,
+      "d02": null
+    },
+    "changed": {
+      "d01": null,
+      "d02": null
+    }
+  }
+}

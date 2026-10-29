@@ -158,6 +158,7 @@ def test_bind_returns_the_same_object_when_nothing_changes(tmp_path):
         cu_rad_feedback: bool = False
         icloud: int = 1
         icloud_bl: int = 1
+        bl_mynn_cloudpdf: int = 2
         cu_diag: int = 0
         kfeta_trigger: int = 1
         shcu_aerosols_opt: int = 0

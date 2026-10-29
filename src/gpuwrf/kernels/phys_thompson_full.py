@@ -189,12 +189,12 @@ def _inactive_sedimentation(env, tc, valid):
     """
     sed_fn, sediment = env["_sedimentation"], env["_sediment_with_speeds"]
 
-    def sedimentation(state, dt, vts_boost=None, cloud_sed_on=None, cloud_rho=None):
+    def sedimentation(state, dt, vts_boost=None, cloud_sed_on=None, cloud_rho=None, **kwargs):
         active = _any(valid & ((state.qr > tc.R1) | (state.qi > tc.R1)
                                | (state.qs > tc.R1) | (state.qg > tc.R1)))
         zero = jnp.zeros_like(state.qr, dtype=jnp.float64)
         return jax.lax.cond(
-            active, lambda: sed_fn(state, dt, vts_boost, cloud_sed_on, cloud_rho),
+            active, lambda: sed_fn(state, dt, vts_boost, cloud_sed_on, cloud_rho, **kwargs),
             lambda: sediment(state, dt, (zero,) * 7, cloud_sed_on, cloud_rho))
 
     env["_sedimentation"] = sedimentation

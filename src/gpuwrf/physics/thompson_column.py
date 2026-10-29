@@ -2115,10 +2115,12 @@ def _sed_implicit_q(q, vt, dz, rho, dt, nsub):
     return qf.astype(q_dt), sf
 
 
-def _sedimentation_implicit(state: ThompsonColumnState, dt: float, nsub: int, vts_boost=None):
+def _sedimentation_implicit(state: ThompsonColumnState, dt: float, nsub: int, vts_boost=None,
+                            graupel_sed_on=None):
     """EXPERIMENTAL implicit backward-Euler sedimentation (gated, default OFF)."""
 
-    vt_r_mass, vt_r_num, vt_i_mass, vt_i_num, vt_s_mass, vt_g_mass, vt_g_num = _fall_speeds(state, vts_boost)
+    vt_r_mass, vt_r_num, vt_i_mass, vt_i_num, vt_s_mass, vt_g_mass, vt_g_num = _fall_speeds(
+        state, vts_boost, graupel_sed_on=graupel_sed_on)
     dz = jnp.maximum(state.dz, 1.0)
     rho = jnp.maximum(state.rho, R1)
     qr, pr = _sed_implicit_q(state.qr, vt_r_mass, dz, rho, dt, nsub)
@@ -2176,7 +2178,7 @@ def _fill_down(vt, active):
 
 
 def _fall_speeds(state: ThompsonColumnState, vts_boost=None, *, fill_down=None,
-                 tables=THOMPSON_TABLES, working=None):
+                 tables=THOMPSON_TABLES, working=None, graupel_sed_on=None):
     """Mass/number terminal fall speeds per species (m/s), WRF formulas.
 
     Rain:    module_mp_thompson.F:3616-3628 (vtrk mass, vtnrk number).
@@ -2240,6 +2242,8 @@ def _fall_speeds(state: ThompsonColumnState, vts_boost=None, *, fill_down=None,
     vt_s_mass = fill(vts_raw, act_s)
 
     act_g = state.qg > R1
+    if graupel_sed_on is not None:
+        act_g = act_g & graupel_sed_on
     native = _native_real_enabled()
     # Native REAL: WRF mp8 re-diagnoses the working ng from the post-process rg (:3287-3300), like nr/ni above.
     _rg, _ng, _lamg, ilamg, _n0_g, _active_g = _graupel_distribution(state.qg, None if native else state.Ng, rho)
@@ -2473,7 +2477,7 @@ def _cloud_sed_rho_stages(rho_pre_cond, qr_pre_cond, state):
 
 
 def _sedimentation(state: ThompsonColumnState, dt: float, vts_boost=None, cloud_sed_on=None, cloud_rho=None,
-                   return_radar_context=False):
+                   return_radar_context=False, graupel_sed_on=None):
     """Faithful WRF sedimentation of rain/ice/snow/graupel + cloud water; precip mm.
 
     WRF module_mp_thompson.F:3784-3939.  Advects the four precipitating channels
@@ -2494,7 +2498,7 @@ def _sedimentation(state: ThompsonColumnState, dt: float, vts_boost=None, cloud_
         if _sed_prep_fused_enabled():
             raise ValueError("fused prep implements only WRF explicit sedimentation")
         # EXPERIMENTAL implicit backward-Euler sedimentation (gated, default OFF).
-        return _sedimentation_implicit(state, dt, nsub, vts_boost)
+        return _sedimentation_implicit(state, dt, nsub, vts_boost, graupel_sed_on)
 
     if _sed_prep_fused_enabled():
         if not (_native_real_enabled() and _column_sed_fp32_enabled()):
@@ -2505,12 +2509,13 @@ def _sedimentation(state: ThompsonColumnState, dt: float, vts_boost=None, cloud_
         # in the retained helper; the column kernel also performs final finish.
         qc, cloudw = _sed_cloud_water(state, dt, cloud_sed_on, cloud_rho)
         if return_radar_context:
-            out, precip, ng = sediment_and_finish(state.replace(qc=qc), dt, vts_boost, return_radar_context=True)
+            out, precip, ng = sediment_and_finish(state.replace(qc=qc), dt, vts_boost,
+                return_radar_context=True, graupel_sed_on=graupel_sed_on)
             return out, {**precip, "cloudw": cloudw}, ng
-        out, precip = sediment_and_finish(state.replace(qc=qc), dt, vts_boost)
+        out, precip = sediment_and_finish(state.replace(qc=qc), dt, vts_boost, graupel_sed_on=graupel_sed_on)
         return out, {**precip, "cloudw": cloudw}
 
-    speeds = _fall_speeds(state, vts_boost)
+    speeds = _fall_speeds(state, vts_boost, graupel_sed_on=graupel_sed_on)
     return _sediment_with_speeds(state, dt, speeds, cloud_sed_on, cloud_rho)
 
 
@@ -2638,6 +2643,10 @@ def _thompson_source_sink_body(state: ThompsonColumnState, dt: float, debug: boo
         no_micro = ~jnp.any((entry.qc > R1) | (entry.qr > R1) | (entry.qi > R1)
                            | (entry.qs > R1) | (entry.qg > R1) | supersaturated,
                            axis=-1, keepdims=True)
+    # mp8 retains entry L_qg (:1917), clearing it if sources remove the
+    # graupel (:3302). Unlike mp38 (:3269), newly created graupel does not
+    # enable this column's fall solve until the next microphysics call.
+    graupel_entry = state.qg > R1 if _mixed_phase_wrf_enabled() else None
     state = _reset_mp8_graupel_number(state)
     valid = _thermodynamically_admissible(state)
     fallback = state
@@ -2689,12 +2698,17 @@ def _thompson_source_sink_body(state: ThompsonColumnState, dt: float, debug: boo
                                        graupel_melt=graupel_melt, vapor=vapor)
     state = _real_state(state)
     if sediment:
+        sed_kwargs = {}
+        if graupel_entry is not None:
+            sed_kwargs['graupel_sed_on'] = jnp.any(
+                graupel_entry & (state.qg > R1), axis=-1, keepdims=True)
         cloud_rho = _cloud_sed_rho_stages(rho_pre_cond, qr_pre_cond, state)   # WRF density stages (K5, D2)
         if return_radar_context and _sed_prep_fused_enabled():
             state, precip, radar_ng = _sedimentation(state, dt, vts_boost=vts_boost, cloud_sed_on=cloud_sed_on,
-                                                      cloud_rho=cloud_rho, return_radar_context=True)
+                                                      cloud_rho=cloud_rho, return_radar_context=True, **sed_kwargs)
         else:
-            state, precip = _sedimentation(state, dt, vts_boost=vts_boost, cloud_sed_on=cloud_sed_on, cloud_rho=cloud_rho)
+            state, precip = _sedimentation(state, dt, vts_boost=vts_boost, cloud_sed_on=cloud_sed_on,
+                                             cloud_rho=cloud_rho, **sed_kwargs)
     else:
         zero = jnp.zeros(state.qv.shape[:-1], dtype=state.qv.dtype)
         precip = {"rain": zero, "snow": zero, "graupel": zero, "ice": zero}

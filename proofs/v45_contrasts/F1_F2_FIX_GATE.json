@@ -1,0 +1,227 @@
+{
+  "schema": "gpuwrf.optimize.contrast-review-fix.v1",
+  "base": "6714eb201017568b5d740789de4f8b7b5e95a0f2",
+  "candidate": "7c04562f1744a3037f4f3b81c45dc16c4fdb2fda",
+  "verdict": {
+    "path": "<USER_HOME>/wrf_gpu2_lanes/cr-w44-rc/VERDICT_v45-contrasts_6714eb201017568b5d740789de4f8b7b5e95a0f2.md",
+    "sha256": "19ec5c2679def90cc5d14c3a82789d8f059e257746fc53081135773fef3b660a"
+  },
+  "F1": {
+    "allowed_physical_changes": "Only transported ATMOSPHERE with admitted field-hashed provenance and actual readback",
+    "unsupported": "HGT/base/SST/land/unknown physical changes refuse even alongside admitted U",
+    "diagnostics": "Only newly added U10/V10 explicitly RETAINED_ONLY_NOT_CONSUMER_PROOF; never a physical transfer claim",
+    "legacy_receipts": "finish refuses unsupported physical changes instead of filtering them away"
+  },
+  "F2": {
+    "handoff": "Only official device/inode-matched nonstdio descriptor via pass_fds",
+    "unchanged": "Child holder/token/fd preflight retained; CPU no-lock touches no official file and passes no FDs",
+    "witness": "Real stdlib private child loses inheritable fd without pass_fds; native dispatch retains only validated fd while unrelated inheritable fd closes",
+    "negative_controls": [
+      "missing",
+      "stdin",
+      "stdout",
+      "stderr",
+      "negative",
+      "nonnumeric",
+      "closed",
+      "wrong-inode",
+      "no-held-flag",
+      "missing-official-path"
+    ]
+  },
+  "gate": {
+    "passed": 60,
+    "failed": 0,
+    "errors": 0,
+    "skips": 0,
+    "deselected": 59,
+    "pytest_s": 44.61,
+    "test_peak_rss_kib": 710232,
+    "full_collection": 21239,
+    "collection_errors": 0,
+    "collection_s": 35.52
+  },
+  "mutants": [
+    {
+      "mutant": "F1-original-allowlist",
+      "exit": 1,
+      "failed": 1,
+      "errors": 0,
+      "assertion_failures": 1,
+      "audit": "raw pytest call-failure log; reused without rerun"
+    },
+    {
+      "mutant": "F1-original-finish",
+      "exit": 1,
+      "failed": 1,
+      "errors": 0,
+      "assertion_failures": 1,
+      "audit": "raw pytest call-failure log; reused without rerun"
+    },
+    {
+      "mutant": "F2-drop-forwarding",
+      "exit": 1,
+      "failed": 1,
+      "errors": 0,
+      "assertion_failures": 1,
+      "audit": "raw pytest call-failure log; reused without rerun"
+    }
+  ],
+  "mutation_audit_note": "Initial summary classifier missed pytest introspected assert spelling. All three raw call-failure logs audited directly without rerunning completed tests.",
+  "cost": {
+    "platform": "CPU/private file; no official lock/GPU/model",
+    "fd_validation_ns_median": 3380.0,
+    "fd_validation_peak_traced_bytes": 1448,
+    "bare_child_s": [
+      0.021685922,
+      0.015934666,
+      0.015759436,
+      0.015726375,
+      0.017001285,
+      0.016116588,
+      0.016759714
+    ],
+    "forwarded_child_s": [
+      0.017738982,
+      0.015790426,
+      0.015714245,
+      0.03268918,
+      0.022121027,
+      0.015834256,
+      0.015890586
+    ],
+    "bare_child_median_s": 0.016116588,
+    "forwarded_child_median_s": 0.015890586,
+    "scope": "one fixed validation per wave, one explicit capability per subprocess; tiny stdlib children on shared cores, no forecast speed/readiness claim"
+  },
+  "unchanged_function_AST": {
+    "_hash": true,
+    "_inventory": true,
+    "_case": true,
+    "_check_inputs": true,
+    "Consumer.observe": true,
+    "consumer_reads": true,
+    "member_run": true
+  },
+  "model_tree_identity": {
+    "src/gpuwrf/contracts": {
+      "base": "467dcfbf78b9a48af68f557a17804081c6e09a53",
+      "candidate": "467dcfbf78b9a48af68f557a17804081c6e09a53",
+      "identical": true
+    },
+    "src/gpuwrf/coupling": {
+      "base": "2db151e6e3dfb6dfa591a838faedee90b441953c",
+      "candidate": "2db151e6e3dfb6dfa591a838faedee90b441953c",
+      "identical": true
+    },
+    "src/gpuwrf/dynamics": {
+      "base": "269ea4589767a156ba5a77406c02d0bb7c7431d8",
+      "candidate": "269ea4589767a156ba5a77406c02d0bb7c7431d8",
+      "identical": true
+    },
+    "src/gpuwrf/physics": {
+      "base": "4cebd72b2d8786eba4c985f891007da63e07a986",
+      "candidate": "4cebd72b2d8786eba4c985f891007da63e07a986",
+      "identical": true
+    },
+    "src/gpuwrf/kernels": {
+      "base": "bde4392871371cb30453ac7979d10dd3b51b4672",
+      "candidate": "bde4392871371cb30453ac7979d10dd3b51b4672",
+      "identical": true
+    },
+    "src/gpuwrf/runtime": {
+      "base": "c0a7b512e9274ebe3aa1baafa2933bc65a70d267",
+      "candidate": "c0a7b512e9274ebe3aa1baafa2933bc65a70d267",
+      "identical": true
+    },
+    "src/gpuwrf/integration": {
+      "base": "f2e9d55af28bde0b1685b73dadb3a8e3c898ced3",
+      "candidate": "f2e9d55af28bde0b1685b73dadb3a8e3c898ced3",
+      "identical": true
+    },
+    "src/gpuwrf/nesting": {
+      "base": "1f1c7c47686ec3fb9d12bd1c6555a237b4d310e4",
+      "candidate": "1f1c7c47686ec3fb9d12bd1c6555a237b4d310e4",
+      "identical": true
+    },
+    "src/gpuwrf/io": {
+      "base": "cf546897f6a12d6a90d8ff4b1d716ec81b08aec7",
+      "candidate": "cf546897f6a12d6a90d8ff4b1d716ec81b08aec7",
+      "identical": true
+    },
+    "src/gpuwrf/dfi": {
+      "base": "72e3044c112eb0d1bc5f9b2d3c6e02eeef8e5146",
+      "candidate": "72e3044c112eb0d1bc5f9b2d3c6e02eeef8e5146",
+      "identical": true
+    }
+  },
+  "artifacts": {
+    "CT11.xml": {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/v45-contrasts/CT11.xml",
+      "sha256": "04acb7f26ba9181467504fe1e2dea98fbcf155b41e5f3bad1e09906939ab3f16"
+    },
+    "CT11.log": {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/v45-contrasts/CT11.log",
+      "sha256": "f32d17e1bf237562092cf53a2103442b43d1d7954155c46625b356ff429af478"
+    },
+    "CT11.time": {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/v45-contrasts/CT11.time",
+      "sha256": "9dc2e81fade8d8e61ed97c37364ae4363ac154bd9aeef4e925990f4248666e7f"
+    },
+    "CT11_archive.json": {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/v45-contrasts/CT11_archive.json",
+      "sha256": "44ed891b9877db09059bf3341a7c56990d373255dad46e4f470316f251021744"
+    },
+    "CT12-collect.log": {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/v45-contrasts/CT12-collect.log",
+      "sha256": "67f30be57b9202da1523513a43388c44d4805332e92338a80d0698fdc7ee8aab"
+    },
+    "CT13-mutants.json": {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/v45-contrasts/CT13-mutants.json",
+      "sha256": "f4b0c227ce5a52146281ef519f26f5c7dcf6e66bf13f912cecafc993d87dd37f"
+    },
+    "CT13-F1-original-allowlist.log": {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/v45-contrasts/CT13-F1-original-allowlist.log",
+      "sha256": "901169f1ef091c80a5cbd8b7b3c705c59f0327dc977db8edecaed87f9a005bd1"
+    },
+    "CT13-F1-original-finish.log": {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/v45-contrasts/CT13-F1-original-finish.log",
+      "sha256": "a4dc93f8c3e10cbe7e0608275be4076c4b34fabb93967926ece8c570a557c9ca"
+    },
+    "CT13-F2-drop-forwarding.log": {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/v45-contrasts/CT13-F2-drop-forwarding.log",
+      "sha256": "ade84f4998ed28648e075f180aa73c62073ffba9e461595e79e79152ffdab7f5"
+    },
+    "CT13-14.log": {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/v45-contrasts/CT13-14.log",
+      "sha256": "2ca0cd8cff90e71fd46e756e1caa5293349df307abd66ec695479fee4d7f5144"
+    },
+    "CT14-cost.json": {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/v45-contrasts/CT14-cost.json",
+      "sha256": "3409e921dc77a359fc9ba7e4d758f3fdf53f322e66790a2b0b9620382dcdd815"
+    },
+    "CT14.log": {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/v45-contrasts/CT14.log",
+      "sha256": "7de8c030da63ad5e63946affd1e8815e6598faf9c59ced91b2acf608a987cc84"
+    },
+    "fix_probe.py": {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/v45-contrasts/fix_probe.py",
+      "sha256": "a932cf01a2cf067dbb854e65fa71a8aa7a5e524e099aacecd8c65b6b61fb830c"
+    },
+    "FIX_CLEANUP_sizes.txt": {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/v45-contrasts/FIX_CLEANUP_sizes.txt",
+      "sha256": "addd8e194143dea5c04603a875bae90cd4a4e7a761f4120621778db519bb2060"
+    }
+  },
+  "cleanup": {
+    "snapshot_exists": false,
+    "pytest_exists": false,
+    "persistent_cache": "NONE"
+  },
+  "limits": [
+    "CPU stubs plus actual input readers/private descriptor children only",
+    "No official lock/lease/token/GPU/model/ALISIOS-root/registry touched",
+    "No real-size planning/compile/readiness/forecast-wall/VRAM qualification added",
+    "Receipt scope remains host ingress; no per-step application/WRF-fidelity/skill claim"
+  ]
+}

@@ -63,7 +63,8 @@ def _native_edmf_arrays(state, flux, fltv, pblh, dt, dx, *, qc_bl=None, cldfra_b
     )
 
 def _advance_native(state: P.MynnPBLColumnState, dt: float, debug: bool,
-                                  surface=None, edmf: bool = False, dx: float = 1000.0, sqfac=None, mynn_coefficients=None):
+                                  surface=None, edmf: bool = False, dx: float = 1000.0,
+                                  cloudpdf: int = 2, sqfac=None, mynn_coefficients=None):
     """Unjitted implementation; returns the advanced state and the MYNN PBLH.
 
     ``edmf`` activates the MYNN-EDMF mass-flux nonlocal scalar transport (the
@@ -75,8 +76,10 @@ def _advance_native(state: P.MynnPBLColumnState, dt: float, debug: bool,
     DMP_mf (+ shallow-cu cldfra/qc_bl overwrite) -> SGS-aware ``thlv`` ->
     mym_turbulence -> mym_predict (qke + closure-2.6 ``qsq``) -> tendencies.
     ``GPUWRF_MYNN_SGS_CLOUD=0`` rolls back to the pre-v0.15 dry-buoyancy path.
+    ``cloudpdf`` is the static WRF ``bl_mynn_cloudpdf`` (Registry default 2).
     """
 
+    P._check_cloudpdf(state, cloudpdf)
     state = P._clip_state(state)
     flux, wind, fltv, rhosfc = P._surface_terms(state, surface)
     qke = 2.0 * state.tke
@@ -88,19 +91,23 @@ def _advance_native(state: P.MynnPBLColumnState, dt: float, debug: bool,
         pblh0 = P._get_pblh(state, qke, flux.xland)
         sqv, sqc, sqi, sqw = P._specific_moisture_components(state)
         exner = P._column_exner(state)
-        qc_bl, qi_bl, cldfra_bl = P.mym_condensation_cloudpdf2(
-            theta=state.theta,
-            p=state.p,
-            exner=exner,
-            dz=state.dz,
-            qw=sqw,
-            qc=sqc,
-            qi=sqi,
-            qs=P._specific_snow_content(state),
-            qsq=state.qsq,
-            pblh=pblh0,
-            **({} if state.spp_pattern is None else {"spp_pattern":state.spp_pattern}),
-        )
+        if cloudpdf == 2:
+            qc_bl, qi_bl, cldfra_bl = P.mym_condensation_cloudpdf2(
+                theta=state.theta,
+                p=state.p,
+                exner=exner,
+                dz=state.dz,
+                qw=sqw,
+                qc=sqc,
+                qi=sqi,
+                qs=P._specific_snow_content(state),
+                qsq=state.qsq,
+                pblh=pblh0,
+                **({} if state.spp_pattern is None else {"spp_pattern":state.spp_pattern}),
+            )
+        else:
+            qc_bl, qi_bl, cldfra_bl = P._mym_condensation_option(
+                state, cloudpdf, exner=exner, sqw=sqw, sqc=sqc, sqi=sqi, pblh=pblh0)
         if edmf:
             mf = _native_edmf_arrays(state, flux, fltv, pblh0, dt, dx,
                 **P._edmf_fresh_cloud_kwargs(qc_bl, cldfra_bl),
@@ -166,14 +173,16 @@ def _advance_native(state: P.MynnPBLColumnState, dt: float, debug: bool,
     return (
         state.replace(u=u, v=v, theta=theta, qv=qv, tke=tke, km=km, kh=kh, el=el, qsq=qsq_new, qc=qc, qi=qi,
                       **ni_update,
-                      **P._mynn_plume_diagnostics(state, mf)),
+                      **P._mynn_plume_diagnostics(state, mf),
+                      **P._cloudpdf_state_updates(state, turb, cloudpdf)),
         turb["pblh"],
     )
 
-def step_mynn_columns_native(state, dt, *, debug=False, surface=None, edmf=False, dx=1000.0, sqfac=None, mynn_coefficients=None):
+def step_mynn_columns_native(state, dt, *, debug=False, surface=None, edmf=False, dx=1000.0, cloudpdf=2, sqfac=None,
+                             mynn_coefficients=None):
     """Return (state, pblh) with native fp32 leaves and the retained signature."""
     with jax.enable_x64(False):
         state = jax.tree_util.tree_map(lambda v: jnp.asarray(v, jnp.float32), state)
         surface = jax.tree_util.tree_map(lambda v: jnp.asarray(v, jnp.float32), surface)
-        return _advance_native(state, dt, debug, surface, edmf, dx, **P._sqfac_kwargs(sqfac),
+        return _advance_native(state, dt, debug, surface, edmf, dx, cloudpdf, **P._sqfac_kwargs(sqfac),
                                **({} if mynn_coefficients is None else {"mynn_coefficients": mynn_coefficients}))

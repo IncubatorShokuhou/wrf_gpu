@@ -2,7 +2,8 @@
 
 Usage (CPU, no JAX device work):
   JAX_PLATFORMS=cpu GPUWRF_JAX_CACHE=0 python proofs/w41_optimize/build_released.py \
-      [--check]  # --check: rebuild in memory and compare with the shipped JSON byte for byte
+      --f20-root PRIVATE_STAGED_METADATA [--check]
+      # --check: rebuild in memory and compare with the shipped JSON byte for byte
 
 Rule (lane w41-optimize contract): a physics configuration is released for `gpuwrf optimize`
 iff its exact seven-option tuple (per domain, same domain count) passed frozen bounded D6 against
@@ -35,6 +36,25 @@ def sha256(path):
     return hashlib.sha256(Path(path).read_bytes()).hexdigest()
 
 
+def stage_f20_metadata(private):
+    """Admit original ALISIOS metadata, then build the catalog from private regular copies."""
+    import shutil
+    from gpuwrf.assimilation.letkf import alisios_guard
+    days = {"WN3-0227": "20260227", "WN3-0502": "20260502", "WN3-0614": "20260614",
+            "PROD": "20260725", "Swiss": "20230115"}
+    paths = {case: alisios_guard.resolve_path(F20_ROOT/case/"input"/"namelist.input") for case in days}
+    targets = {str(path): ([days[case]], [days[case]]) for case, path in paths.items()
+               if any(path == root or root in path.parents for root in alisios_guard.DATA_ROOTS)}
+    staged, _ = alisios_guard.facade_stage(
+        targets, private.parent/"staged", private.parent/"guard_receipts",
+        purpose="RC regression: read-only F20 release-catalog namelist metadata",
+        sealed_root=private.parent/"facade")
+    for case, path in paths.items():
+        dest = private/case/"input"/"namelist.input"
+        dest.parent.mkdir(parents=True)
+        shutil.copyfile(staged.get(str(path), path), dest)
+
+
 def per_domain(config, max_dom):
     physics = config.get("physics", {})
     out = {}
@@ -53,7 +73,9 @@ def context(config, max_dom, base):
     return {k: a.get(k) for k in sorted(set(a) | set(base)) if a.get(k) != base.get(k)}
 
 
-def build():
+def build(f20_root):
+    """Use explicit private metadata copies; never follow the historical F20 input aliases."""
+    f20_root = Path(f20_root).resolve()
     checkpoint = json.loads(CHECKPOINT.read_text())
     base = settings(parse_namelist(NAMELISTS/"c00"/"namelist.input"), 1)
     runs = []
@@ -88,7 +110,12 @@ def build():
     if f20["D6"] != "PASS" or c5["verdict"] != "PASS":
         raise SystemExit("default F20/C5' not PASS")
     for row in f20["rows"]:
-        namelist = F20_ROOT/row["case"]/"input"/"namelist.input"
+        namelist = f20_root/row["case"]/"input"/"namelist.input"
+        for part in (f20_root/row["case"], f20_root/row["case"]/"input", namelist):
+            if part.is_symlink():
+                raise ValueError("F20 metadata must be private regular files, not original-data aliases")
+        if not namelist.is_file():
+            raise ValueError(f"missing private F20 metadata: {namelist}")
         config = parse_namelist(namelist)
         max_dom = len(row["D6"])
         if set(row["D6"].values()) != {"PASS"}:
@@ -127,9 +154,15 @@ def build():
 
 def main():
     parser = argparse.ArgumentParser()
+    parser.add_argument("--f20-root", type=Path, required=True,
+                        help="Private facade-staged CASE/input/namelist.input files (no symlink aliases)")
+    parser.add_argument("--stage-f20", action="store_true",
+                        help="First admit and stage the original F20 namelist metadata into a new private root")
     parser.add_argument("--check", action="store_true")
     args = parser.parse_args()
-    text = json.dumps(build(), indent=1, sort_keys=True)+"\n"
+    if args.stage_f20:
+        stage_f20_metadata(args.f20_root)
+    text = json.dumps(build(args.f20_root), indent=1, sort_keys=True)+"\n"
     if args.check:
         shipped = RELEASED_PATH.read_text()
         print("RELEASED_LIST", "EXACT" if shipped == text else "DIFFERS", sha256(RELEASED_PATH))

@@ -61,6 +61,126 @@ def exact(left, right):
         assert x.tobytes() == y.tobytes()
 
 
+@pytest.fixture
+def alisios_copied_generations(initialized, tmp_path):
+    """P0-RETRY3 layout: copied generation(s), no history-<stream> in new root.
+
+    Small structural carries use three synchronized domains, not ALISIOS data.
+    Actual RestartStore publication/verification and HistoryJournal are used.
+    """
+    from gpuwrf.runtime.restart_store import HistoryJournal
+    _, _, seed = initialized
+    identity = {"test": "ALISIOS-P0-RETRY3", "output_dir": str(tmp_path / "parent-output")}
+    parent = RestartStore(tmp_path / "parent-checkpoints", 10**8, 2, 0)
+    journal = HistoryJournal(parent, identity)
+    generation, _ = parent.save(
+        dict.fromkeys(("d01", "d02", "d03"), seed),
+        {"d01": 1, "d02": 3, "d03": 9}, {"d01": 54., "d02": 18., "d03": 6.}, identity,
+        driver_state={"history_stream": journal.stream},
+    )
+    copied = RestartStore(tmp_path / "continuation-checkpoints", 10**8, 2, 0)
+    copied.root.mkdir()
+    destination = copied.root / generation.name
+    shutil.copytree(generation, destination)
+    assert sorted(p.name for p in copied.root.iterdir()) == [generation.name]
+    return parent, copied, generation, destination, journal, identity
+
+
+def assert_missing_parent_journal(error, missing, stream):
+    text = str(error.value)
+    assert str(missing) in text
+    assert "Ordinary resume continues the parent journal" in text
+    assert "parent's --checkpoint-dir" in text
+    assert f"history-{stream}/" in text
+    assert "--branch-from" in text and "new checkpoint directory" in text
+
+
+def test_alisios_copied_generations_missing_owner_refuses(alisios_copied_generations):
+    from gpuwrf.runtime.restart_store import HistoryJournal
+    parent, copied, generation, destination, journal, identity = alisios_copied_generations
+    before = {p.name: p.read_bytes() for p in destination.iterdir()}
+    missing = copied.root / journal.root.name / "owner.json"
+    with pytest.raises(ValueError) as error:
+        HistoryJournal(copied, identity, journal.stream)
+    assert_missing_parent_journal(error, missing, journal.stream)
+    assert not missing.parent.exists()  # Never fabricate a fresh parent stream.
+    assert all(p.read_bytes() == before[p.name] for p in destination.iterdir())
+    assert all((generation / name).read_bytes() == data for name, data in before.items())
+    assert HistoryJournal(parent, identity, journal.stream).stream == journal.stream
+
+
+def test_alisios_resume_refuses_before_any_model_work(alisios_copied_generations, tmp_path, monkeypatch):
+    import gpuwrf.integration.nested_pipeline as pipeline
+    import gpuwrf.dfi.driver as dfi
+    from gpuwrf.runtime.restart_store import require_resume_history
+    parent, copied, generation, destination, journal, identity = alisios_copied_generations
+    def forbidden(*args, **kwargs):
+        pytest.fail("model admission/DFI/domain loading/prefetch began before journal refusal")
+    for name in ("_admit_cammg_inputs", "_load_domains", "_execute_nested_pipeline"):
+        monkeypatch.setattr(pipeline, name, forbidden)
+    monkeypatch.setattr(dfi, "apply_dfi_prepass", forbidden)
+    monkeypatch.setattr(jax, "devices", forbidden)
+    config = pipeline.NestedPipelineConfig(
+        tmp_path / "inputs-not-loaded", tmp_path / "parent-output", tmp_path / "proof",
+        hours=3, max_dom=3, checkpoint_dir=copied.root, checkpoint_interval_steps=1,
+        resume_checkpoint=destination,
+    )
+    with pytest.raises(ValueError) as error:
+        pipeline.execute_nested_pipeline(config)
+    assert_missing_parent_journal(error, copied.root / journal.root.name / "owner.json", journal.stream)
+    assert not config.output_dir.exists() and not config.proof_dir.exists()
+
+
+def test_alisios_resume_preserves_coverage_refusal_first(alisios_copied_generations, tmp_path, monkeypatch):
+    import gpuwrf.integration.nested_pipeline as pipeline
+    import gpuwrf.io.wrfbdy_coverage as coverage
+    parent, copied, generation, destination, journal, identity = alisios_copied_generations
+    def uncovered(*args, **kwargs):
+        raise coverage.BoundaryCoverageError("existing boundary coverage refusal")
+    monkeypatch.setattr(coverage, "require_wrfbdy_coverage", uncovered)
+    monkeypatch.setattr(RestartStore, "read", lambda *a, **k: pytest.fail("checkpoint read before boundary coverage"))
+    config = pipeline.NestedPipelineConfig(
+        tmp_path / "inputs", tmp_path / "parent-output", tmp_path / "proof", 25, 3,
+        checkpoint_dir=copied.root, checkpoint_interval_steps=1, resume_checkpoint=destination,
+        extend_end_time=True,
+    )
+    with pytest.raises(coverage.BoundaryCoverageError, match="existing boundary coverage refusal"):
+        pipeline.execute_nested_pipeline(config)
+
+
+@pytest.mark.parametrize("copy_history", [False, True])
+def test_ordinary_resume_with_parent_journal_keeps_existing_path(
+        alisios_copied_generations, tmp_path, monkeypatch, copy_history):
+    from dataclasses import replace
+    import gpuwrf.integration.nested_pipeline as pipeline
+    import gpuwrf.dfi.driver as dfi
+    from gpuwrf.runtime.restart_store import HistoryJournal
+    parent, copied, generation, destination, journal, identity = alisios_copied_generations
+    if copy_history:
+        # A complete copy remains valid; no new restriction on absolute paths.
+        shutil.copytree(journal.root, copied.root / journal.root.name)
+        store, checkpoint = copied, destination
+    else:
+        store, checkpoint = parent, generation
+    assert HistoryJournal(store, identity, journal.stream).stream == journal.stream
+    monkeypatch.setattr(RestartStore, "read", lambda *a, **k: pytest.fail("valid resume added a preliminary payload read"))
+    monkeypatch.setattr(pipeline, "_admit_cammg_inputs", lambda config: None)
+    monkeypatch.setattr(dfi, "apply_dfi_prepass", lambda config: (config, None))
+    seen = []
+    def existing_path(config, **kwargs):
+        seen.append(config)
+        return {"existing_resume_path": True}
+    monkeypatch.setattr(pipeline, "_execute_nested_pipeline", existing_path)
+    config = pipeline.NestedPipelineConfig(
+        tmp_path / "inputs", tmp_path / "parent-output", tmp_path / "proof", 3, 3,
+        checkpoint_dir=store.root, checkpoint_interval_steps=1, resume_checkpoint=checkpoint,
+    )
+    assert pipeline.execute_nested_pipeline(config) == {"existing_resume_path": True}
+    assert seen == [config]
+    # Default root resolution (--checkpoint-dir omitted) keeps the parent root.
+    assert pipeline.execute_nested_pipeline(replace(config, checkpoint_dir=None)) == {"existing_resume_path": True}
+
+
 def test_all_carry_roundtrips_in_both_formats(initialized, tmp_path):
     grid, namelist, carry = initialized
     assert _CARRY_FIELD_ORDER == tuple(f.name for f in fields(OperationalCarry))

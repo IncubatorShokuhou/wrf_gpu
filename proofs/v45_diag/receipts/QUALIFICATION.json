@@ -1,0 +1,91 @@
+{
+  "schema": "wrf_gpu2.v45_diag.qualification.v1",
+  "candidate": "e3670f2c93c894130466e841aca8194936e4c167",
+  "gate": "PASS_MANAGER_ACCEPTED_OUT_OF_LOOP_CONSUMER",
+  "approval": "manager 2026-10-27T23:11:41Z offline design ACK in main MAILBOX",
+  "checks": {
+    "consumer_tests": 22,
+    "consumer_failures": 0,
+    "consumer_wall_s": 3.75,
+    "full_collect_tests": 21201,
+    "full_collect_errors": 0,
+    "full_collect_wall_s": 73.25,
+    "deletion_mutants": 4,
+    "genuine_assertion_kills": 4,
+    "mutant_setup_errors": 0,
+    "pristine_column_sets": 6,
+    "pristine_columns": 166,
+    "exact_term_profiles": 3486,
+    "exact_residual_profiles": 166,
+    "existing_src_blobs_exact": 968,
+    "aot_trace_closure_files": 541,
+    "new_consumer_in_aot_closure": false
+  },
+  "residual_scope": "Local MYNN, same original reference residual; no zero-closure threshold and no total forecast closure claim",
+  "residual_max_range_m2_s3": [
+    0.00040310735314530444,
+    0.013865914814232383
+  ],
+  "cost": {
+    "scope": "offline projected original-column IO only; shared CPU12/28,nice19; first call includes lazy imports",
+    "extract_wall_range_s": [
+      0.13964756700443104,
+      0.4688984099775553
+    ],
+    "logical_read_range_B": [
+      59392,
+      118784
+    ],
+    "host_peak_RSS_KiB": 241984,
+    "forecast_kernel_transfer_allocation_compile_delta": "unchanged by construction [I source identity]; normal AOT closure excludes offline module",
+    "gpu_execution": false
+  },
+  "limits": [
+    "No new coupled GPU MYNN producer qualification; E242 identity FAIL remains binding",
+    "Existing rad_diag scope: original CPU column oracles and 4536 shared GPU emitted-history comparisons; hidden carry identity OPEN",
+    "Producer call times and total water/energy residuals UNAVAILABLE; estimates and future GPU plan documented",
+    "Existing pristine scientific validation reused; final added mass-top refusal proven inactive on all830 original term/column tops (TOP_REUSE)",
+    "Waveops owns shared CLI/study wiring; flat mixed-domain paths and SHA-bound wave_report_entry contract acknowledged in MAILBOX"
+  ],
+  "evidence": {
+    "AOT_SCOPE.json": "cf337a0b78cd31e89454630fded07bdacf2b9bf931a23ef1ae4da104ba20a472",
+    "COLLECTION_SUPPORT.json": "676b5e86684386ab48ad8f8902aef9c41e38abb24687802d3b33864c19da45d1",
+    "MUTATIONS.json": "d8b00e2861b549c9fc868a8dff157eb769bed2d616b708449201ff7e1fe02b9c",
+    "ORIGINAL_CONSUMER.json": "398c089cd5abc22aab43bf37f7560225b34420ba66093a97a1d1ee87313c1847",
+    "SOURCE_IDENTITY.json": "163d8ac9174bb210678e48b25df7bdee30cd764f7326dc54ef9ac0e9e67d819e",
+    "TOP_REUSE.json": "5ccecea7476265f43d59bab292651b1d6517bd7ebf8149044ec4b70d6cb239a6",
+    "REFERENCE_DEPENDENCIES.json": "fe2ee37418f2c7175fa1010a18f8afb19bb4cc13c88b8615894cca11229afa0f",
+    "D07.xml": "8db8ff73352096c67b7365a25524d1c68581035569d08c7f42ed020db3e88f4a"
+  },
+  "external_artifacts": {
+    "D07.xml": {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/v45-diag/D07.xml",
+      "sha256": "8db8ff73352096c67b7365a25524d1c68581035569d08c7f42ed020db3e88f4a"
+    },
+    "D07.log": {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/v45-diag/D07.log",
+      "sha256": "bd852441dcb11f476d968ee379940e08c8cbce05fd0b9e12391779119039ef4b"
+    },
+    "D08_collect.log": {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/v45-diag/D08_collect.log",
+      "sha256": "3fd565908ea5c8a539fed03339ca900493ff3d1996739d825ce2caee889c41f7"
+    },
+    "D04_original.log": {
+      "path": "<USER_HOME>/wrf_gpu2_lanes/v45-diag/D04_original.log",
+      "sha256": "fd0e1ab59bc3ab7fd976e429871837f75e620a8d53978d15d44506a6eef9e41c"
+    }
+  },
+  "cache": "NONE GPUWRF_JAX_CACHE=0",
+  "cleanup": "COMPLETE: exact final snapshot and pytest paths removed; private model/JAX caches NONE; per-case projected original NetCDF/JSON removed immediately; only small receipts/logs retained. All original scientific references KEEP (REFERENCE_DEPENDENCIES.json).",
+  "latest_consumer_candidate": "144fba6310be4f44ce0c822bbef4d329d4a9bd3f",
+  "review_fix": {
+    "issue": "cr-v05pre F1/E200",
+    "verdict": "PASS",
+    "tests": 27,
+    "full_collect": 21206,
+    "collection_errors": 0,
+    "reader_receipt": "F1_BOUNDARY.json",
+    "reader_receipt_sha256": "2a64155e36c7ed8c543d820c20f9eeb5e35e30df2ecef15c2ceb71fd1bbb2b46",
+    "prior_scientific_evidence": "Accepted unchanged; 11 producer AST nodes exact; no model/GPU reruns"
+  }
+}

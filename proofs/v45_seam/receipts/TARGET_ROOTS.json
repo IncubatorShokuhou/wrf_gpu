@@ -1,0 +1,664 @@
+{
+  "fusion": {
+    "fusion": "input_transpose_fusion.181",
+    "kind": "kInput",
+    "parent": "region_0.1013.clone.clone",
+    "call_line": 92797,
+    "comp": "fused_transpose.190.clone",
+    "comp_lines": [
+      81078,
+      81653
+    ],
+    "n_instr": 574,
+    "n_transpose": 13,
+    "n_params": 46
+  },
+  "original_proto_sha256": "9b740fd65277b22c0807bce19b5751b54357fdf2797f08dc6d522529a4007833",
+  "roots": [
+    {
+      "root": "transpose.2135.1",
+      "expression": "f32[44,70,121]{2,1,0} transpose(%dynamic-update-slice.1688.3), dimensions={2,1,0}, metadata={op_name=\"jit(_advance_chunk_fori)/while/body/scatter\" stack_frame_id=1933}",
+      "reachable_instructions": 203,
+      "sites": [
+        {
+          "file": "src/gpuwrf/coupling/boundary_apply.py",
+          "function": "normal_bdy_work_target_u",
+          "line": 1043,
+          "instructions": 55
+        },
+        {
+          "file": "src/gpuwrf/coupling/boundary_apply.py",
+          "function": "normal_bdy_work_target_u",
+          "line": 1042,
+          "instructions": 55
+        },
+        {
+          "file": "src/gpuwrf/coupling/boundary_apply.py",
+          "function": "_strip",
+          "line": 815,
+          "instructions": 10
+        },
+        {
+          "file": "src/gpuwrf/coupling/boundary_apply.py",
+          "function": "normal_bdy_work_target_u",
+          "line": 1045,
+          "instructions": 10
+        },
+        {
+          "file": "src/gpuwrf/coupling/boundary_apply.py",
+          "function": "normal_bdy_work_target_u",
+          "line": 1044,
+          "instructions": 5
+        },
+        {
+          "file": "src/gpuwrf/dynamics/flux_advection.py",
+          "function": "couple_uv_specified",
+          "line": 433,
+          "instructions": 3
+        },
+        {
+          "file": "src/gpuwrf/runtime/operational_mode.py",
+          "function": "_w_coriolis_curvature",
+          "line": 2928,
+          "instructions": 3
+        },
+        {
+          "file": "src/gpuwrf/runtime/operational_mode.py",
+          "function": "_acoustic_core_state_from_prep",
+          "line": 3205,
+          "instructions": 3
+        },
+        {
+          "file": "src/gpuwrf/kernels/dyn_rk_fp32.py",
+          "function": "stage_masses_fp32",
+          "line": 195,
+          "instructions": 1
+        },
+        {
+          "file": "src/gpuwrf/coupling/boundary_apply.py",
+          "function": "_root_record_value_rate_real4",
+          "line": 1906,
+          "instructions": 1
+        },
+        {
+          "file": "src/gpuwrf/runtime/operational_mode.py",
+          "function": "_diffopt1_dry_forward_tendencies",
+          "line": 4683,
+          "instructions": 1
+        }
+      ]
+    },
+    {
+      "root": "add.13708.1.clone.1",
+      "expression": "f32[44,70,121]{2,1,0} add(%add.13701.1.clone.1, %param_8.20438), metadata={op_name=\"jit(_advance_chunk_fori)/while/body/add\" stack_frame_id=13215}",
+      "reachable_instructions": 379,
+      "sites": [
+        {
+          "file": "src/gpuwrf/dynamics/core/rk_addtend_dry.py",
+          "function": "_x_face_pair_3d",
+          "line": 93,
+          "instructions": 20
+        },
+        {
+          "file": "src/gpuwrf/dynamics/flux_advection.py",
+          "function": "_vertical_flux_div_3",
+          "line": 1634,
+          "instructions": 13
+        },
+        {
+          "file": "src/gpuwrf/dynamics/flux_advection.py",
+          "function": "_vertical_flux_div_3",
+          "line": 1637,
+          "instructions": 13
+        },
+        {
+          "file": "src/gpuwrf/dynamics/core/rk_addtend_dry.py",
+          "function": "large_step_horizontal_pgf.<locals>._dpn_faces",
+          "line": 332,
+          "instructions": 12
+        },
+        {
+          "file": "src/gpuwrf/dynamics/core/rk_addtend_dry.py",
+          "function": "large_step_horizontal_pgf",
+          "line": 361,
+          "instructions": 10
+        },
+        {
+          "file": "src/gpuwrf/dynamics/core/rk_addtend_dry.py",
+          "function": "large_step_coriolis",
+          "line": 452,
+          "instructions": 8
+        },
+        {
+          "file": "src/gpuwrf/dynamics/core/rk_addtend_dry.py",
+          "function": "large_step_horizontal_pgf.<locals>._dpn_faces",
+          "line": 335,
+          "instructions": 7
+        },
+        {
+          "file": "src/gpuwrf/dynamics/core/rk_addtend_dry.py",
+          "function": "large_step_coriolis",
+          "line": 481,
+          "instructions": 7
+        },
+        {
+          "file": "src/gpuwrf/dynamics/core/rk_addtend_dry.py",
+          "function": "large_step_coriolis",
+          "line": 473,
+          "instructions": 7
+        },
+        {
+          "file": "src/gpuwrf/dynamics/core/rk_addtend_dry.py",
+          "function": "large_step_horizontal_curvature",
+          "line": 582,
+          "instructions": 7
+        },
+        {
+          "file": "src/gpuwrf/dynamics/core/rk_addtend_dry.py",
+          "function": "large_step_horizontal_pgf",
+          "line": 355,
+          "instructions": 7
+        },
+        {
+          "file": "src/gpuwrf/dynamics/flux_advection.py",
+          "function": "_vertical_flux_div_3",
+          "line": 1639,
+          "instructions": 6
+        },
+        {
+          "file": "src/gpuwrf/dynamics/core/rk_addtend_dry.py",
+          "function": "large_step_horizontal_pgf",
+          "line": 362,
+          "instructions": 6
+        },
+        {
+          "file": "src/gpuwrf/dynamics/flux_advection.py",
+          "function": "_vertical_flux_div_3",
+          "line": 1617,
+          "instructions": 5
+        },
+        {
+          "file": "src/gpuwrf/dynamics/core/rk_addtend_dry.py",
+          "function": "large_step_coriolis",
+          "line": 451,
+          "instructions": 5
+        },
+        {
+          "file": "src/gpuwrf/dynamics/flux_advection.py",
+          "function": "advect_u_flux",
+          "line": 1357,
+          "instructions": 5
+        },
+        {
+          "file": "src/gpuwrf/dynamics/flux_advection.py",
+          "function": "couple_uv_specified",
+          "line": 433,
+          "instructions": 5
+        },
+        {
+          "file": "src/gpuwrf/dynamics/core/rk_addtend_dry.py",
+          "function": "large_step_horizontal_curvature",
+          "line": 576,
+          "instructions": 5
+        },
+        {
+          "file": "src/gpuwrf/dynamics/flux_advection.py",
+          "function": "advect_u_flux",
+          "line": 1368,
+          "instructions": 5
+        },
+        {
+          "file": "src/gpuwrf/dynamics/core/rk_addtend_dry.py",
+          "function": "large_step_horizontal_curvature",
+          "line": 570,
+          "instructions": 5
+        },
+        {
+          "file": "src/gpuwrf/dynamics/flux_advection.py",
+          "function": "_vertical_flux_div_3",
+          "line": 1618,
+          "instructions": 5
+        },
+        {
+          "file": "src/gpuwrf/dynamics/core/rk_addtend_dry.py",
+          "function": "large_step_horizontal_pgf",
+          "line": 352,
+          "instructions": 4
+        },
+        {
+          "file": "src/gpuwrf/dynamics/core/rk_addtend_dry.py",
+          "function": "large_step_horizontal_curvature",
+          "line": 583,
+          "instructions": 4
+        },
+        {
+          "file": "src/gpuwrf/dynamics/flux_advection.py",
+          "function": "_specified_div",
+          "line": 404,
+          "instructions": 4
+        },
+        {
+          "file": "src/gpuwrf/dynamics/core/rk_addtend_dry.py",
+          "function": "_x_face_pair_2d",
+          "line": 103,
+          "instructions": 4
+        },
+        {
+          "file": "src/gpuwrf/dynamics/core/rk_addtend_dry.py",
+          "function": "large_step_coriolis",
+          "line": 482,
+          "instructions": 4
+        },
+        {
+          "file": "src/gpuwrf/dynamics/flux_advection.py",
+          "function": "_vertical_flux_div_3",
+          "line": 1630,
+          "instructions": 4
+        },
+        {
+          "file": "src/gpuwrf/dynamics/flux_advection.py",
+          "function": "advect_u_flux",
+          "line": 1372,
+          "instructions": 4
+        },
+        {
+          "file": "src/gpuwrf/dynamics/flux_advection.py",
+          "function": "_shift0",
+          "line": 322,
+          "instructions": 4
+        },
+        {
+          "file": "src/gpuwrf/runtime/operational_mode.py",
+          "function": "_u_face_average_2d",
+          "line": 2444,
+          "instructions": 4
+        },
+        {
+          "file": "src/gpuwrf/dynamics/flux_advection.py",
+          "function": "advect_u_flux",
+          "line": 1365,
+          "instructions": 4
+        },
+        {
+          "file": "src/gpuwrf/dynamics/core/rk_addtend_dry.py",
+          "function": "large_step_horizontal_pgf",
+          "line": 351,
+          "instructions": 3
+        },
+        {
+          "file": "src/gpuwrf/runtime/operational_mode.py",
+          "function": "_augment_large_step_tendencies",
+          "line": 4953,
+          "instructions": 3
+        },
+        {
+          "file": "src/gpuwrf/dynamics/flux_advection.py",
+          "function": "couple_uv_specified",
+          "line": 434,
+          "instructions": 3
+        },
+        {
+          "file": "src/gpuwrf/dynamics/core/rk_addtend_dry.py",
+          "function": "large_step_horizontal_pgf",
+          "line": 353,
+          "instructions": 3
+        },
+        {
+          "file": "src/gpuwrf/dynamics/flux_advection.py",
+          "function": "advect_u_flux",
+          "line": 1373,
+          "instructions": 3
+        },
+        {
+          "file": "src/gpuwrf/runtime/operational_mode.py",
+          "function": "_augment_large_step_tendencies",
+          "line": 4918,
+          "instructions": 3
+        },
+        {
+          "file": "src/gpuwrf/dynamics/core/rk_addtend_dry.py",
+          "function": "rk_addtend_dry",
+          "line": 733,
+          "instructions": 3
+        },
+        {
+          "file": "src/gpuwrf/dynamics/flux_advection.py",
+          "function": "_specified_div",
+          "line": 401,
+          "instructions": 2
+        },
+        {
+          "file": "src/gpuwrf/dynamics/core/rk_addtend_dry.py",
+          "function": "large_step_coriolis",
+          "line": 488,
+          "instructions": 2
+        },
+        {
+          "file": "src/gpuwrf/dynamics/flux_advection.py",
+          "function": "_vertical_flux_div_3",
+          "line": 1631,
+          "instructions": 2
+        },
+        {
+          "file": "src/gpuwrf/dynamics/flux_advection.py",
+          "function": "couple_uv_specified",
+          "line": 428,
+          "instructions": 2
+        },
+        {
+          "file": "src/gpuwrf/dynamics/core/rk_addtend_dry.py",
+          "function": "large_step_coriolis",
+          "line": 449,
+          "instructions": 2
+        },
+        {
+          "file": "src/gpuwrf/dynamics/core/rk_addtend_dry.py",
+          "function": "large_step_coriolis",
+          "line": 477,
+          "instructions": 2
+        },
+        {
+          "file": "src/gpuwrf/dynamics/core/rk_addtend_dry.py",
+          "function": "large_step_coriolis",
+          "line": 469,
+          "instructions": 2
+        },
+        {
+          "file": "src/gpuwrf/runtime/operational_mode.py",
+          "function": "_source_leaf_dry_tendencies",
+          "line": 9225,
+          "instructions": 2
+        },
+        {
+          "file": "src/gpuwrf/dynamics/core/rk_addtend_dry.py",
+          "function": "large_step_coriolis",
+          "line": 474,
+          "instructions": 2
+        },
+        {
+          "file": "src/gpuwrf/dynamics/flux_advection.py",
+          "function": "advect_u_flux",
+          "line": 1350,
+          "instructions": 2
+        },
+        {
+          "file": "src/gpuwrf/dynamics/flux_advection.py",
+          "function": "advect_u_flux",
+          "line": 1369,
+          "instructions": 2
+        },
+        {
+          "file": "src/gpuwrf/dynamics/flux_advection.py",
+          "function": "_axis_index",
+          "line": 329,
+          "instructions": 2
+        },
+        {
+          "file": "src/gpuwrf/runtime/operational_mode.py",
+          "function": "_augment_large_step_tendencies",
+          "line": 5241,
+          "instructions": 2
+        },
+        {
+          "file": "src/gpuwrf/dynamics/core/rk_addtend_dry.py",
+          "function": "large_step_horizontal_pgf",
+          "line": 354,
+          "instructions": 2
+        },
+        {
+          "file": "src/gpuwrf/dynamics/core/rk_addtend_dry.py",
+          "function": "large_step_horizontal_pgf",
+          "line": 385,
+          "instructions": 2
+        },
+        {
+          "file": "src/gpuwrf/dynamics/flux_advection.py",
+          "function": "advect_u_flux",
+          "line": 1371,
+          "instructions": 2
+        },
+        {
+          "file": "src/gpuwrf/dynamics/flux_advection.py",
+          "function": "_specified_div",
+          "line": 405,
+          "instructions": 2
+        },
+        {
+          "file": "src/gpuwrf/dynamics/core/rk_addtend_dry.py",
+          "function": "large_step_horizontal_curvature",
+          "line": 577,
+          "instructions": 1
+        },
+        {
+          "file": "src/gpuwrf/dynamics/explicit_diffusion.py",
+          "function": "_vertical_face_average_pair",
+          "line": 176,
+          "instructions": 1
+        },
+        {
+          "file": "src/gpuwrf/runtime/operational_mode.py",
+          "function": "_augment_large_step_tendencies",
+          "line": 5222,
+          "instructions": 1
+        },
+        {
+          "file": "src/gpuwrf/dynamics/core/rk_addtend_dry.py",
+          "function": "large_step_horizontal_curvature",
+          "line": 585,
+          "instructions": 1
+        },
+        {
+          "file": "src/gpuwrf/dynamics/core/rk_addtend_dry.py",
+          "function": "large_step_horizontal_curvature",
+          "line": 575,
+          "instructions": 1
+        },
+        {
+          "file": "src/gpuwrf/dynamics/core/rk_addtend_dry.py",
+          "function": "large_step_horizontal_pgf.<locals>._dpn_faces",
+          "line": 334,
+          "instructions": 1
+        },
+        {
+          "file": "src/gpuwrf/dynamics/flux_advection.py",
+          "function": "couple_uv_specified",
+          "line": 425,
+          "instructions": 1
+        },
+        {
+          "file": "src/gpuwrf/dynamics/flux_advection.py",
+          "function": "_vertical_flux_div_3",
+          "line": 1633,
+          "instructions": 1
+        },
+        {
+          "file": "src/gpuwrf/dynamics/flux_advection.py",
+          "function": "_vertical_flux_div_3",
+          "line": 1636,
+          "instructions": 1
+        },
+        {
+          "file": "src/gpuwrf/dynamics/flux_advection.py",
+          "function": "couple_uv_specified",
+          "line": 430,
+          "instructions": 1
+        },
+        {
+          "file": "src/gpuwrf/runtime/operational_mode.py",
+          "function": "_augment_large_step_tendencies",
+          "line": 5291,
+          "instructions": 1
+        },
+        {
+          "file": "src/gpuwrf/runtime/operational_mode.py",
+          "function": "_source_leaf_dry_tendencies",
+          "line": 9223,
+          "instructions": 1
+        },
+        {
+          "file": "src/gpuwrf/dynamics/core/rk_addtend_dry.py",
+          "function": "large_step_horizontal_curvature",
+          "line": 573,
+          "instructions": 1
+        },
+        {
+          "file": "src/gpuwrf/dynamics/core/rk_addtend_dry.py",
+          "function": "large_step_horizontal_curvature",
+          "line": 571,
+          "instructions": 1
+        },
+        {
+          "file": "src/gpuwrf/runtime/operational_mode.py",
+          "function": "_augment_large_step_tendencies",
+          "line": 5108,
+          "instructions": 1
+        },
+        {
+          "file": "src/gpuwrf/dynamics/core/rk_addtend_dry.py",
+          "function": "large_step_horizontal_curvature",
+          "line": 572,
+          "instructions": 1
+        },
+        {
+          "file": "src/gpuwrf/runtime/operational_mode.py",
+          "function": "_augment_large_step_tendencies",
+          "line": 5004,
+          "instructions": 1
+        },
+        {
+          "file": "src/gpuwrf/dynamics/explicit_diffusion.py",
+          "function": "_vertical_face_average_pair",
+          "line": 175,
+          "instructions": 1
+        },
+        {
+          "file": "src/gpuwrf/dynamics/core/rk_addtend_dry.py",
+          "function": "large_step_horizontal_curvature",
+          "line": 569,
+          "instructions": 1
+        },
+        {
+          "file": "src/gpuwrf/dynamics/flux_advection.py",
+          "function": "advect_u_flux",
+          "line": 1367,
+          "instructions": 1
+        },
+        {
+          "file": "src/gpuwrf/runtime/operational_mode.py",
+          "function": "_source_leaf_dry_tendencies",
+          "line": 9222,
+          "instructions": 1
+        },
+        {
+          "file": "src/gpuwrf/dynamics/core/rk_addtend_dry.py",
+          "function": "large_step_horizontal_pgf.<locals>._dpn_faces",
+          "line": 337,
+          "instructions": 1
+        },
+        {
+          "file": "src/gpuwrf/runtime/operational_mode.py",
+          "function": "_acoustic_scan",
+          "line": 4059,
+          "instructions": 1
+        },
+        {
+          "file": "src/gpuwrf/dynamics/flux_advection.py",
+          "function": "_vertical_flux_div_3",
+          "line": 1612,
+          "instructions": 1
+        },
+        {
+          "file": "src/gpuwrf/dynamics/flux_advection.py",
+          "function": "couple_uv_specified",
+          "line": 427,
+          "instructions": 1
+        },
+        {
+          "file": "src/gpuwrf/dynamics/flux_advection.py",
+          "function": "_vertical_flux_div_3",
+          "line": 1613,
+          "instructions": 1
+        },
+        {
+          "file": "src/gpuwrf/dynamics/core/rk_addtend_dry.py",
+          "function": "_y_face_pair_2d",
+          "line": 108,
+          "instructions": 1
+        },
+        {
+          "file": "src/gpuwrf/dynamics/flux_advection.py",
+          "function": "_vertical_flux_div_3",
+          "line": 1615,
+          "instructions": 1
+        },
+        {
+          "file": "src/gpuwrf/dynamics/core/rk_addtend_dry.py",
+          "function": "large_step_horizontal_curvature",
+          "line": 578,
+          "instructions": 1
+        },
+        {
+          "file": "src/gpuwrf/dynamics/explicit_diffusion.py",
+          "function": "_core_x",
+          "line": 46,
+          "instructions": 1
+        },
+        {
+          "file": "src/gpuwrf/runtime/operational_mode.py",
+          "function": "_source_leaf_dry_tendencies",
+          "line": 9226,
+          "instructions": 1
+        },
+        {
+          "file": "src/gpuwrf/dynamics/core/rk_addtend_dry.py",
+          "function": "large_step_horizontal_pgf",
+          "line": 311,
+          "instructions": 1
+        },
+        {
+          "file": "src/gpuwrf/runtime/operational_mode.py",
+          "function": "_augment_large_step_tendencies",
+          "line": 5257,
+          "instructions": 1
+        },
+        {
+          "file": "src/gpuwrf/dynamics/flux_advection.py",
+          "function": "_vertical_flux_div_3",
+          "line": 1616,
+          "instructions": 1
+        },
+        {
+          "file": "src/gpuwrf/dynamics/flux_advection.py",
+          "function": "_vertical_flux_div_3",
+          "line": 1614,
+          "instructions": 1
+        },
+        {
+          "file": "src/gpuwrf/dynamics/core/rk_addtend_dry.py",
+          "function": "large_step_horizontal_curvature",
+          "line": 579,
+          "instructions": 1
+        },
+        {
+          "file": "src/gpuwrf/runtime/operational_mode.py",
+          "function": "_u_face_average_2d",
+          "line": 2445,
+          "instructions": 1
+        },
+        {
+          "file": "src/gpuwrf/dynamics/core/rk_addtend_dry.py",
+          "function": "large_step_horizontal_pgf.<locals>._dpn_faces",
+          "line": 333,
+          "instructions": 1
+        },
+        {
+          "file": "src/gpuwrf/coupling/physics_couplers.py",
+          "function": "mynn_adapter_with_source_leaves",
+          "line": 2983,
+          "instructions": 1
+        }
+      ]
+    }
+  ],
+  "shared_instructions": 9
+}

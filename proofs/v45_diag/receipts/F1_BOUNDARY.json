@@ -1,0 +1,72 @@
+{
+  "schema": "wrf_gpu2.v45_diag.f1_boundary.v1",
+  "candidate": "144fba6310be4f44ce0c822bbef4d329d4a9bd3f",
+  "review": "cr-v05pre F1/E200 2026-10-27T23:59:15Z",
+  "verdict": "PASS",
+  "fix": "Reject nonfinite parse_constant and parse_float values before reduction/export; exponent overflow included; unavailable/null unchanged",
+  "tests": 27,
+  "test_wall_s": 3.77,
+  "full_collect": 21206,
+  "collect_errors": 0,
+  "collect_wall_s": 24.71,
+  "guard_deletion_assertion_failures": 3,
+  "guard_deletion_setup_errors": 0,
+  "producer_ast_exact_to_accepted_candidate": true,
+  "producer_nodes_compared": 11,
+  "scientific_evidence": "All prior original-WRF terms, closure, model source/AOT identity carried forward; no new producer/model/GPU run",
+  "probe": {
+    "candidate": "144fba6310",
+    "baseline": "ce959f691c",
+    "helper_sha256": "bddc6f666ffcbc25e69cef995ee8c1eeb8c7e3bdb8204a4ee7a9507ecdb472b7",
+    "scope": "Offline wave-entry read/export of WRF-shaped 4-row/4-level fixture; shared CPU12/28 nice19, no model/GPU, not forecast performance",
+    "numeric_leaves": 653,
+    "one_per_leaf_faults": 1959,
+    "exponent_overflow_controls": 2,
+    "baseline_f1_controls": [
+      {
+        "fault": "nan",
+        "old_status": "COMPLETE_WITH_UNAVAILABLE_TERMS",
+        "old_max_is_finite": false,
+        "new_result": "ValueError before reduction/export"
+      },
+      {
+        "fault": "inf",
+        "old_status": "COMPLETE_WITH_UNAVAILABLE_TERMS",
+        "old_max_is_finite": false,
+        "new_result": "ValueError before reduction/export"
+      },
+      {
+        "fault": "neginf",
+        "old_status": "COMPLETE_WITH_UNAVAILABLE_TERMS",
+        "old_max_is_finite": true,
+        "new_result": "ValueError before reduction/export"
+      }
+    ],
+    "valid_entry_equal": true,
+    "json_bytes": 49429,
+    "paired_reads": 31,
+    "median_wall_s": {
+      "old": 0.00021083198953419924,
+      "fixed": 0.0002470519975759089
+    },
+    "python_incremental_peak_bytes": {
+      "old": 211812,
+      "fixed": 212476
+    },
+    "host_maxrss_kib": 170452,
+    "forecast_work": "unchanged; reader is offline and outside AOT closure",
+    "cache": "NONE"
+  },
+  "artifacts": {
+    "F1_tests.xml": "05a5dc40ba70cdc1d72546536ddc5b11a1d8317fb6d6681529a0277f9f8a771f",
+    "F1_mutation.xml": "7085c56b3c8eb46569ca5a313a4648902c059c87d80399b16d9646c9b01ee084",
+    "check_report_boundary.py": "bddc6f666ffcbc25e69cef995ee8c1eeb8c7e3bdb8204a4ee7a9507ecdb472b7"
+  },
+  "external_artifacts": {
+    "<USER_HOME>/wrf_gpu2_lanes/v45-diag/F1_tests.log": "20d307b5d09eb5110db9e7568686c583328aa355eaec817a28e327b56e644a50",
+    "<USER_HOME>/wrf_gpu2_lanes/v45-diag/F1_mutation.log": "1f7686085ea522b10721cce112b7d18e16189c0f0d23e1dc6e0088387f10c60e",
+    "<USER_HOME>/wrf_gpu2_lanes/v45-diag/F1_collect.log": "f630743c899915f333ae41e6f4aa7b7b7f678bcbf3a73457c2993bbfb6af2f9e"
+  },
+  "cache": "NONE",
+  "cleanup": "COMPLETE: exact snapshot/pytest/pytest_mutation and injected bad-report scratch removed; no private compile/model caches; accepted original scientific references retained."
+}

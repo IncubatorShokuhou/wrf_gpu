@@ -18,6 +18,7 @@ import sys
 
 import numpy as np
 import pytest
+from functools import partial
 
 REPO = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO/"tests"/"w41_trackp"))
@@ -29,6 +30,13 @@ from gpuwrf.surface_params import cli as spc  # noqa: E402
 from gpuwrf.surface_params import controls as sc  # noqa: E402
 
 TRUTH = {"z0_forest": 1.6, "z0_low": 0.7}
+
+
+@pytest.fixture(autouse=True)
+def legacy_chunk_reference(monkeypatch):
+    """Uninterrupted/chunk EKI regression reference; production wave defaults tested in v45_waveops."""
+    from gpuwrf.optimize import study
+    monkeypatch.setattr(study, "run", partial(study.run, wave_mode=False, wall_seconds=None, max_retries=None))
 LAT = np.array([[0.0, 0.0, 0.0], [1.0, 1.0, 1.0]])
 LON = np.array([[0.0, 1.0, 2.0], [0.0, 1.0, 2.0]])
 
@@ -138,7 +146,7 @@ def study_files(tmp_path):
     stations = tmp_path/"stations.csv"
     stations.write_text("station_uid,lat,lon,elevation_m\n" + "".join(
         f"s{j}{i},{float(LAT[j, i])!r},{float(LON[j, i])!r},0\n" for j in range(2) for i in range(3)))
-    raw = {"schema": continuous.SCHEMA, "region": "synthetic-twin", "hours": 3, "budget_case_hours": 171,
+    raw = {"schema": continuous.SCHEMA, "region": "synthetic-twin", "hours": 3, "budget_case_hours": 195,
            "test_start": "2026-01-05", "configuration": "c00", "basis": "basis.npz", "stations": "stations.csv",
            "cases": [{"id": f"c{d}", "date": f"2026-01-{d:02d}", "input_dir": str(c)} for d, c in zip((1, 2, 5), cases)],
            "parameters": [{"name": "z0_forest", "control": "z0mvt", "classes": [2, 5]},
@@ -171,7 +179,7 @@ def run_study(study, output, monkeypatch, **kwargs):
 def test_twin_recovers_truth_with_one_program_and_cold_first(study_files, tmp_path, monkeypatch):
     path, _ = study_files
     study = continuous.load_continuous(path)
-    assert study["planned_case_hours"] == 171 and study["configuration"]["status"] == "RELEASED_v0.4.0"
+    assert study["planned_case_hours"] == 195 and study["configuration"]["status"] == "RELEASED_v0.4.0"
     assert study["configuration"]["physics"]["cu_physics"] == [0]  # released c00
     report, calls = run_study(study, tmp_path/"run", monkeypatch)
     twin = report["twin"]
@@ -186,9 +194,9 @@ def test_twin_recovers_truth_with_one_program_and_cold_first(study_files, tmp_pa
     # ONE program: every member's proof names the same cheap key; only the very first member compiled
     program = report["program"]
     assert program["verdict"] == "ONE_PROGRAM" and len(program["cheap_keys"]["d01"]) == 1
-    assert program["cold_or_unknown_members"] == ["truth|c1"] and program["members"] == 57
+    assert program["cold_or_unknown_members"] == ["truth|c1"] and program["members"] == 65
     assert [len(c["members"]) for c in calls][:2] == [1, 2]  # cold wave = one member, then the rest of the truth
-    assert report["scheduled_case_hours"] == 171
+    assert report["scheduled_case_hours"] == 195
     # every member got its own control file, bound by content in its member manifest
     digests = set()
     for plan in calls:
@@ -196,8 +204,8 @@ def test_twin_recovers_truth_with_one_program_and_cold_first(study_files, tmp_pa
             manifest = json.loads((Path(member["case"])/"member_manifest.json").read_text())
             (item,) = [i for i in manifest["inputs"] if i["name"] == "surface_controls.npz"]
             digests.add(item["sha256"])
-    # 27 parameter sets (truth, 3 x 8 members, prior, posterior), each copied by content into all its members
-    assert len(digests) == 27
+    # 31 parameter sets: truth, four +/- probes, 3 x 8 members, prior, posterior.
+    assert len(digests) == 31
     assert (tmp_path/"run"/"result.json").is_file()
 
 
@@ -209,7 +217,7 @@ def test_resume_after_pause_and_interrupt_reproduces_the_study(study_files, tmp_
     clock, calls, programs = [0.0], [], set()
     monkeypatch.setattr(workflows, "launch", make_fake_launch(calls, clock=clock, programs=programs))
     paused = continuous.run(study, tmp_path/"chunked", chunk_minutes=4, member_wall_s=60, clock=lambda: clock[0])
-    assert paused["status"] == "PAUSED" and 0 < paused["completed_members"] < 57
+    assert paused["status"] == "PAUSED" and 0 < paused["completed_members"] < 65
     # the next window is cut by an interrupt after its second batch wrote its members (salvaged on resume)
     monkeypatch.setattr(workflows, "launch", make_fake_launch(calls, interrupt=len(calls)+1, programs=programs))
     with pytest.raises(KeyboardInterrupt):
@@ -219,7 +227,7 @@ def test_resume_after_pause_and_interrupt_reproduces_the_study(study_files, tmp_
     assert done["estimate_multipliers"] == whole["estimate_multipliers"]
     assert done["evaluation"] == whole["evaluation"] and done["iterations"] == whole["iterations"]
     ledger = json.loads((tmp_path/"chunked"/"ledger.json").read_text())
-    assert any(m.get("salvaged") for m in ledger["members"].values()) and len(ledger["members"]) == 57
+    assert any(m.get("salvaged") for m in ledger["members"].values()) and len(ledger["members"]) == 65
     assert done["program"]["verdict"] == "ONE_PROGRAM" and done["program"]["cold_or_unknown_members"] == ["truth|c1"]
     with pytest.raises(ValueError, match="same study"):  # a changed study never resumes this directory
         continuous.run({**study, "eki": {**study["eki"], "seed": 12}}, tmp_path/"chunked", resume=True)
@@ -259,23 +267,22 @@ def test_stations_scorer_runs_from_an_observation_file(study_files, tmp_path, mo
     (tmp_path/"obs.csv").write_text("\n".join(lines)+"\n")
     scorer = {"kind": "stations", "variables": ["t2", "wind"], "sigma": {"t2": 0.05, "wind": 0.05},
               "observations": "obs.csv"}
-    study = continuous.load_continuous(rewrite(path, raw, scorer=scorer, budget_case_hours=162))
-    assert study["planned_case_hours"] == 162
+    study = continuous.load_continuous(rewrite(path, raw, scorer=scorer, budget_case_hours=186))
+    assert study["planned_case_hours"] == 186
     report, calls = run_study(study, tmp_path/"run", monkeypatch)
     assert "twin" not in report
-    # Without truth members the first launch is the first iteration: ONE cold member compiles the shared program,
-    # the other 15 load it (never 16 parallel compiles of the same HLO).
-    assert [len(c["members"]) for c in calls][:2] == [1, 15]
+    # Without truth members the prior and +/- probes precede EKI: one cold member, then nine warm members.
+    assert [len(c["members"]) for c in calls][:2] == [1, 9]
     batches = json.loads((tmp_path/"run"/"ledger.json").read_text())["batches"]
     assert [b["warm"] for b in batches] == [False]+[True]*(len(batches)-1)
-    assert report["program"]["cold_or_unknown_members"] == ["i00m000|c1"]
+    assert report["program"]["cold_or_unknown_members"] == ["prior|c1"]
     for name, truth in TRUTH.items():
         assert abs(np.log(report["estimate_multipliers"][name]/truth)) <= 0.05
 
 
 @pytest.mark.parametrize("change, error", [
     ({"schema": "gpuwrf.optimize.study.v1"}, "requires schema"),
-    ({"budget_case_hours": 170}, "budget needs at least 171"),
+    ({"budget_case_hours": 194}, "budget needs at least 195"),
     ({"parameters": [{"name": "a", "control": "nope"}]}, "unknown control"),
     ({"parameters": [{"name": "a", "control": "ctopo"}]}, "not an active control"),
     ({"parameters": [{"name": "a", "control": "z0mvt"}, {"name": "b", "control": "z0mvt", "classes": [5]}]},
@@ -402,7 +409,7 @@ def test_cli_plan_dispatch_and_score_refusal(study_files, tmp_path, capsys):
     path, _ = study_files
     assert main(["optimize", "plan", "--study", str(path), "--output", str(tmp_path/"plan.json")]) == 0
     plan = json.loads((tmp_path/"plan.json").read_text())
-    assert plan["schema"] == continuous.SCHEMA and plan["planned_case_hours"] == 171
+    assert plan["schema"] == continuous.SCHEMA and plan["planned_case_hours"] == 195
     assert main(["optimize", "score", "--study", str(path), "--output", str(tmp_path/"s.json"),
                  "--forecasts", str(path)]) == 2
     assert "continuous studies run their members" in capsys.readouterr().err
@@ -551,7 +558,8 @@ def _ctopo_study(tmp_path, raw, path, **parameter):
     spc.write_basis({"d01": nl}, tmp_path/"ctopo_basis.npz", input_dir=raw["cases"][0]["input_dir"])
     return rewrite(path, raw, basis="ctopo_basis.npz", parameters=[{"name": "drag", "control": "ctopo", **parameter}],
                    eki={"members": 10, "iterations": 3, "seed": 20261017},
-                   scorer={**raw["scorer"], "truth": {"drag": 0.6}, "tolerance_log": 0.1}, budget_case_hours=207)
+                   # One-sided sensitivity probe: +2 training dates x 3 h beyond the old 207 h budget.
+                   scorer={**raw["scorer"], "truth": {"drag": 0.6}, "tolerance_log": 0.1}, budget_case_hours=213)
 
 
 def test_ctopo_valley_cells_feasible_bounds_and_driver_regression(study_files, tmp_path, monkeypatch):

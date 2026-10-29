@@ -1025,18 +1025,28 @@ def serialize(
 
 
 def fingerprint_matches(
-    saved: dict[str, Any], live: dict[str, Any] | None = None, *, dev: Any | None = None
+    saved: dict[str, Any], live: dict[str, Any] | None = None, *, dev: Any | None = None,
+    allow_legacy_fingerprint: bool = False,
 ) -> bool:
     """True iff the saved target fingerprint matches the live backend.
 
-    Compares the keys present in ``saved`` against the live fingerprint
-    (:func:`target_fingerprint`). A ``None`` on either side for a given key is a
-    MISMATCH (we refuse to load when we cannot positively confirm the target),
-    EXCEPT we never block on a key absent from ``saved``. Fail-CLOSED: any error
-    comparing returns ``False`` (fall back to compile)."""
+    Every field from :func:`target_fingerprint` must be saved and equal. Unknown
+    values refuse admission, except CPU compute capability (not applicable).
+    ``allow_legacy_fingerprint=True`` explicitly restores the old partial-field
+    comparison for trusted legacy artifacts. Any comparison error refuses load.
+    """
     try:
         if live is None:
             live = target_fingerprint(dev)
+        required = ("jaxlib_version", "jax_version", "device_kind", "platform",
+                    "compute_capability", "cuda_driver", "x64", "xla_flags")
+        if not allow_legacy_fingerprint:
+            for key in required:
+                if key not in saved or key not in live:
+                    return False
+                if saved[key] is None or live[key] is None:
+                    if key != "compute_capability" or live["platform"] != "cpu":
+                        return False
         for key, sval in saved.items():
             if key not in live:
                 continue
@@ -1063,6 +1073,7 @@ def load(
     dev: Any | None = None,
     *,
     check_fingerprint: bool = True,
+    allow_legacy_fingerprint: bool = False,
 ) -> Callable[..., Any]:
     """Deserialize ``blob`` and return a drop-in callable ``f(*args) -> pytree``.
 
@@ -1076,6 +1087,11 @@ def load(
     mismatch, deserialize error) so the CALLER can fall back to the jitted path.
     The caller is responsible for the fail-open try/except (see
     :func:`gpuwrf.runtime.domain_tree._maybe_aot_advance`)."""
+    if not check_fingerprint and not allow_legacy_fingerprint:
+        raise RuntimeError(
+            "AOT check_fingerprint=False requires allow_legacy_fingerprint=True; "
+            "refusing unverified load -- fall back to compile"
+        )
     if dev is None:
         dev = jax.devices()[0]
 
@@ -1099,9 +1115,11 @@ def load(
                 "re-export from a fresh compile"
             )
 
-    if check_fingerprint and not fingerprint_matches(meta.fingerprint, dev=dev):
+    if check_fingerprint and not fingerprint_matches(
+        meta.fingerprint, dev=dev, allow_legacy_fingerprint=allow_legacy_fingerprint,
+    ):
         raise RuntimeError(
-            "AOT fingerprint mismatch (target differs from the serialized blob); "
+            "AOT fingerprint mismatch (missing/unknown fields or target differs from the serialized blob); "
             "refusing to load (SIGILL risk) -- fall back to compile"
         )
 

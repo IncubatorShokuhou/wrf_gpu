@@ -36,6 +36,19 @@ GWDO_DIAGNOSTIC_LEAVES = GWDO_VOLUME_DIAGNOSTIC_LEAVES + GWDO_SURFACE_DIAGNOSTIC
 # restart-only, no history/nest interpolation/lateral data). Distinct from MYNN ``qke``; absent unless
 # km_opt=2 is selected (o1-smag3d).
 LES_TKE_LEAVES: tuple[str, ...] = ("tke",)
+# Previous MYNN call's moments for cloudpdf=0 (TSQ/COV) or 1 (SH3D).
+# Restart-only WRF REAL fields; CASE(2) allocates none.
+MYNN_CLOUDPDF_LEAVES: tuple[str, ...] = ("tsq", "cov", "sh3d")
+
+
+def mynn_cloudpdf_leaves(namelist) -> tuple[str, ...]:
+    if namelist is None:
+        return ()
+    get = namelist.get if isinstance(namelist, dict) else lambda key, default: getattr(namelist, key, default)
+    if int(get("bl_pbl_physics", 5)) != 5:
+        return ()
+    option = int(get("bl_mynn_cloudpdf", 2))
+    return ("tsq", "cov") if option == 0 else ("sh3d",) if option == 1 else ()
 P3_STATE_LEAVES: tuple[str, ...] = (
     "qir", "qib", "qi2", "Ni2", "qir2", "qib2", "qzi", "mp_th_old", "mp_qv_old",
 )
@@ -298,6 +311,7 @@ STATE_FIELD_ORDER = (
     *(f"{name}_bdy" for name in NTU_SCALAR_LEAVES),
     *CAMMG_STATE_FIELDS,
     *ICE_DIAGNOSTIC_LEAVES,
+    *MYNN_CLOUDPDF_LEAVES,
 )
 
 
@@ -445,6 +459,7 @@ PRECISION_MATRIX = {
     "sfc_wspd": (FP32_REAL, False),
     # Held WRF MYNN outputs, never prognostic inputs or output-time solves.
     **{name: (FP32_REAL, False) for name in MYNN_DIAGNOSTIC_LEAVES},
+    **{name: (FP32_REAL, False) for name in MYNN_CLOUDPDF_LEAVES},
     **{name: (FP32_REAL, False) for name in MP_RE_DIAGNOSTIC_LEAVES},
     **{name: (FP32_REAL, False) for name in LES_TKE_LEAVES + SMS_CARRY_LEAVES},
     **{name: (FP32_REAL, False) for name in P3_STATE_LEAVES},

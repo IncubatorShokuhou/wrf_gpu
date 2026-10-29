@@ -22,7 +22,7 @@ from .precision import (
     NTU_STATE_LEAVES, NTU_SCALAR_LEAVES, NTU_SURFACE_LEAVES,
     FERRIER_CARRY_LEAVES,
     GODDARD4ICE_CARRY_LEAVES, GODDARD4ICE_HISTORY_LEAVES, THOMPSON_HAIL_SURFACE_LEAVES,
-    WRITER_PROFILE_LEAVES,
+    WRITER_PROFILE_LEAVES, MYNN_CLOUDPDF_LEAVES,
 )
 
 
@@ -729,6 +729,7 @@ class State:
         *(f"{name}_bdy" for name in NTU_SCALAR_LEAVES),
         *CAMMG_STATE_FIELDS,
         *ICE_DIAGNOSTIC_LEAVES,
+        *MYNN_CLOUDPDF_LEAVES,
     )
 
     def __init__(
@@ -986,6 +987,9 @@ class State:
         rho_ice3: jax.Array | None = None,
         v_ice3: jax.Array | None = None,
         phi_ice3: jax.Array | None = None,
+        tsq: jax.Array | None = None,
+        cov: jax.Array | None = None,
+        sh3d: jax.Array | None = None,
     ) -> None:
         self.rimi = None if rimi is None else jnp.asarray(rimi, jnp.float32)
         self.exch_tke = None if exch_tke is None else jnp.asarray(exch_tke, jnp.float32)
@@ -1155,6 +1159,8 @@ class State:
         for name, value in zip(ICE_DIAGNOSTIC_LEAVES,
                                (d_ice, rho_ice, v_ice, phi_ice, d_ice2, rho_ice2, v_ice2, phi_ice2,
                                 d_ice3, rho_ice3, v_ice3, phi_ice3), strict=True):
+            object.__setattr__(self, name, None if value is None else _as_dtype(value, jnp.float32))
+        for name, value in zip(MYNN_CLOUDPDF_LEAVES, (tsq, cov, sh3d), strict=True):
             object.__setattr__(self, name, None if value is None else _as_dtype(value, jnp.float32))
         for name, value in zip(JENSEN_STATE_LEAVES, (qvoli,qaoli,qvoli2,qaoli2,qi3,Ni3,qvoli3,qaoli3),strict=True):
             object.__setattr__(self,name,None if value is None else _as_dtype(value,jnp.float32))
@@ -1380,7 +1386,7 @@ class State:
         for name in (*GWDO_DIAGNOSTIC_LEAVES, "sfc_wspd", "re_cloud", "re_ice", "re_snow", "tke",
                      *WRITER_PROFILE_LEAVES,
                      *(f"{n}_bdy" for n in EXTRA_SCALAR_BOUNDARY_SPECIES),
-                     "sms_br", "sms_rmol", "sms_wspd", "sms_gamu", "sms_gamv", "sms_ustm", *P3_STATE_LEAVES, *JENSEN_STATE_LEAVES, *NTU_STATE_LEAVES, *FERRIER_CARRY_LEAVES, *GODDARD4ICE_CARRY_LEAVES, *GODDARD4ICE_HISTORY_LEAVES, *THOMPSON_HAIL_SURFACE_LEAVES, *EPSILON_PBL_LEAVES, "tracers", "tracer_bdy", "tracer_budget", *CAMMG_STATE_FIELDS, *ICE_DIAGNOSTIC_LEAVES):
+                     "sms_br", "sms_rmol", "sms_wspd", "sms_gamu", "sms_gamv", "sms_ustm", *P3_STATE_LEAVES, *JENSEN_STATE_LEAVES, *NTU_STATE_LEAVES, *FERRIER_CARRY_LEAVES, *GODDARD4ICE_CARRY_LEAVES, *GODDARD4ICE_HISTORY_LEAVES, *THOMPSON_HAIL_SURFACE_LEAVES, *EPSILON_PBL_LEAVES, "tracers", "tracer_bdy", "tracer_budget", *CAMMG_STATE_FIELDS, *ICE_DIAGNOSTIC_LEAVES, *MYNN_CLOUDPDF_LEAVES):
             if not hasattr(self, name):
                 object.__setattr__(self, name, None)
         for name in ("mol", "hfx", "qfx", "qsfc", "pblh"):

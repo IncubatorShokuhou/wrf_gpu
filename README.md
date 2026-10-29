@@ -1,6 +1,6 @@
 # wrf_gpu
 
-[![Version](https://img.shields.io/badge/version-v0.4.4-2ea44f)](release_notes/RELEASE_NOTES_v0.4.4.md)
+[![Version](https://img.shields.io/badge/version-v0.4.5-2ea44f)](release_notes/RELEASE_NOTES_v0.4.5.md)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
 [![Docs](https://img.shields.io/badge/docs-user%20guide-informational)](https://wrf-gpu.github.io/wrf_gpu/)
 [![Python](https://img.shields.io/badge/python-3.11%2B-blue)](pyproject.toml)
@@ -12,60 +12,50 @@ It reads WPS/`real.exe` inputs and `namelist.input`, and writes WRF NetCDF
 history for your existing tools. The goal is faster regional forecasting
 with less energy per forecast hour.
 
-v0.4.4 passes its 72-hour release check with disclosed rain-floor and graupel-trace
-exceptions. [What passed, and the remaining limits](release_notes/RELEASE_NOTES_v0.4.4.md).
+v0.4.5 passes its real-world release checks with a disclosed final-frame
+graupel trace difference. The regular 72-hour rain-floor check passes, and the
+matched timing shows no resolved speed change from v0.4.4. The cause of the
+graupel trajectory difference remains open.
+[Measurements and limits](release_notes/RELEASE_NOTES_v0.4.5.md).
 
 [First forecast](#your-first-forecast-in-three-steps) ·
 [User guide](https://wrf-gpu.github.io/wrf_gpu/) ·
-[Supported options](docs/release/SUPPORT_MATRIX_v0.4.4.md) ·
+[Published support matrix (v0.4.4)](docs/release/SUPPORT_MATRIX_v0.4.4.md) ·
 [Validation](docs/release/VALIDATION_v0.4.0.md) ·
-[Release notes](release_notes/RELEASE_NOTES_v0.4.4.md)
+[Release notes](release_notes/RELEASE_NOTES_v0.4.5.md)
 
 `wrf_gpu` is an independent project, not WRF itself, and is not affiliated
 with or endorsed by UCAR/NCAR.
 
-## What's new in v0.4.4
+## What's new in v0.4.5
 
-- **WRF initialization and clocks.** Keep MYNN moisture variance and mixing
-  length through its first call, with WRF's snow contribution to turbulence
-  and corrected solar/ozone clock divisions.
-- **Nested terrain shadows.** Each nest keeps its shadow height and follows
-  WRF's shadow clock. Forecasts using slope radiation and terrain shading intentionally change.
-- **Experimental MYNN coefficients.** GPU component and short two-domain root
-  checks pass; three-nest long-run and station qualification is not covered.
-- **Clear refusals.** Unqualified diffusion/damping and nine new soil/canopy/snow
-  controls are unavailable; older surface controls remain. GPU-less executable
-  loading is unavailable; normal GPU cache priming remains.
+- **Regional studies in waves:** joint cloud/wind/temperature/humidity scores,
+  forcing contrasts, and bounded pause/resume. Real-station improvement is unproven.
+- **Corrected graupel sedimentation:** the fix is active on the GPU. Its final-hour
+  trace cause remains open; pristine WRF also gives zero on the tested RC inputs.
+- **MYNN cloud PDF modes 0/1:** CPU-qualified development options; coupled GPU
+  qualification is pending. Default mode 2 is unchanged.
+- **Still refused:** diffusion overrides including `c_s`, and nine new LSM controls.
 
-[Release notes](release_notes/RELEASE_NOTES_v0.4.4.md) ·
-[Support matrix](docs/release/SUPPORT_MATRIX_v0.4.4.md) ·
-[Regional tuning guide](docs/regional_optimization.md)
+[Release notes](release_notes/RELEASE_NOTES_v0.4.5.md) · [Known issues](KNOWN_ISSUES.md)
 
 ## Tune WRF for your region: inverse modelling
 
-A model can be too windy near a coast even when its weather forcing is good.
-The RE-Toolkit makes this testable: which local
-roughness or physics setting changes the simulated wind and temperature in
-the direction your observations support?
+The RE-Toolkit tests whether local surface or physics settings move simulated
+wind and temperature toward your observations. Choose land-class surface
+multipliers and bounds; ensemble Kalman inversion updates the parameter
+ensemble using the same station/time operator, regularisation and observation
+errors. Runtime surface values reuse compiled programs within one signature.
 
-You choose a small set of land-class surface multipliers and bounds. Forecast
-members use different values; one station/time operator compares every member
-with observations. **Ensemble Kalman inversion** uses those simulated
-sensitivities to update the parameter ensemble, with regularisation and
-observation-error weights. Surface values are runtime inputs, so changing values
-within one signature reuses the compiled program. The updated physical parameters enter subsequent forecasts.
+For excessive coastal wind, test roughness and compare a separate MYNN mixing
+arm. MYNN remains a manual study, not an automatic inversion control.
 
-For example, test land-class roughness when coastal winds are too strong at
-night; compare a separate experimental MYNN mixing arm to distinguish hypotheses.
-MYNN is a manual study arm, not a claimed automatic inversion control. Meteorologists can
-test physical causes without recompiling each trial.
-
-Surface controls have Swiss GPU/CPU-WRF response checks. The inverse estimator
-has **synthetic-twin tests only**: real-station calibration and forecast improvement
-are not established. Parameters need observable sensitivity; hold out dates and
-stations, since forcing or sampling errors can mimic parameter errors.
+Surface controls have Swiss GPU/CPU-WRF response checks; the inverse estimator
+has **synthetic-twin tests only**. Real-station calibration and forecast
+improvement are unproven. Hold out dates and stations: forcing or sampling
+errors can mimic parameter errors.
 [Workflow and limits](docs/regional_optimization.md#continuous-parameters-experimental) ·
-[Surface-control design and evidence](docs/surface_params.md#ensemble-kalman-inversion-scaffold-synthetic-tests-only-in-v041)
+[Surface-control evidence](docs/surface_params.md#ensemble-kalman-inversion-scaffold-synthetic-tests-only-in-v041)
 
 ## Your first forecast in three steps
 
@@ -111,20 +101,26 @@ Measured on an **RTX 5090** with a **Ryzen 9 9950X** host. A fair version
 comparison uses the same case, session and timing window. Stepping excludes
 startup; time to the last output includes it.
 
+**v0.4.5:** stepping N/O 0.9965, S=0.0181, upper bound 1.0146<1.10: no
+resolved speed change. VRAM 0.9735×; RSS 0.9995×. Cold-minus-warm compile
+proxy: 489.9 versus 473.420 s (+3.48%), separate from forecast speed.
+
 | Same-session comparison | Earlier version | Later version | What it shows |
 |---|---:|---:|---|
+| Tenerife 9/3/1 km, two 24-hour pairs, stepping | v0.4.4: 5.7625 s per forecast hour | v0.4.5: 5.7425 s | N/O 0.9965; upper 1.0146; no resolved speed change |
+| Same Tenerife pairs, process start to last output | v0.4.4: 6.8102 s per forecast hour | v0.4.5: 6.8593 s | N/O 1.0072; whole-run statistic |
 | Canary Islands 9/3 km, 3-hour probe, stepping | v0.3.2: 2.904 s per forecast hour | v0.4.3: 3.131 s | Inconclusive: v0.3.2 repeat spread 8.71% exceeded the 5% noise limit |
 | Tenerife 9/3/1 km, three 24-hour pairs, stepping | v0.4.3: 5.920 s per forecast hour | v0.4.4: 5.911 s | No resolved speed change; repeat spread 2.79% |
 | Same Tenerife pairs, process start to last output | v0.4.3: 7.289 s per forecast hour | v0.4.4: 7.184 s | Disclosed total, not a speedup claim |
 
 The old 3.3- and 4.8-second whole-run figures used different memory allocation
 and shared-host conditions; their gap is not a measured version regression.
-The old-version 72-hour arm was skipped to preserve free disk space: the new
-speed comparison uses **three same-session 24-hour pairs**, not a 72-hour pair.
+The old-version 72-hour arm did not run. The v0.4.5 comparison uses **two fresh
+same-session 24-hour pairs**; the earlier v0.4.4 comparison used three pairs.
 [Methods and measurements](release_notes/RELEASE_NOTES_v0.4.4.md#matched-release-day-speed-and-memory).
 
 **Historical v0.3.2 benchmarks.** These plots and table retain their original
-cases and conditions. They are not v0.4.4 measurements or direct version
+cases and conditions. They are not v0.4.5 measurements or direct version
 comparisons. GPU times include startup and output from a warm cache; CPU-WRF
 counts its main loop.
 

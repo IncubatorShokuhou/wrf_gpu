@@ -3730,6 +3730,18 @@ def _admit_cammg_inputs(config: NestedPipelineConfig) -> None:
 
 def execute_nested_pipeline(config: NestedPipelineConfig) -> dict[str, Any]:
     """Run the nested pipeline and join all owned AOT loader threads on exit."""
+    if config.resume_checkpoint is not None and config.branch_from is None:
+        from gpuwrf.io.wrfbdy_coverage import require_wrfbdy_coverage
+        # Preserve the existing coverage-first refusal for resumed extensions,
+        # including when the supplied generation itself does not exist (E142).
+        for input_dir in config.batch_input_dirs or (config.input_dir,):
+            require_wrfbdy_coverage(input_dir, config.hours, domain="d01")
+        from gpuwrf.runtime.restart_store import RestartStore, require_resume_history
+        require_resume_history(RestartStore(
+            config.checkpoint_dir or Path(config.resume_checkpoint).parent,
+            config.checkpoint_max_bytes, config.checkpoint_max_generations,
+            config.checkpoint_reserve_bytes,
+        ), config.resume_checkpoint)
     _admit_cammg_inputs(config)
     prefetch_handles = []
     try:

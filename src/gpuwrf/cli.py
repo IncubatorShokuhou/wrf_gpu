@@ -141,6 +141,9 @@ def build_parser() -> argparse.ArgumentParser:
             "JAX GPU port over a CPU-WRF/Gen2 backfill case."
         ),
     )
+    from gpuwrf import __version__
+
+    parser.add_argument("--version", action="version", version=f"%(prog)s {__version__}")
     subparsers = parser.add_subparsers(dest="command", metavar="<command>")
 
     from gpuwrf.onboard.pipeline import add_parser as add_quickstart_parser

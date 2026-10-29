@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+# Explicit cold setup / warm replay, manager ruling 2026-10-26T01:19:21Z.
+# Only manager night_seq_v9.sh may schedule the GPU session. CPU SEQ_SMOKE uses the same entry.
+ENTRY_PATH=<USER_HOME>/wrf_gpu2_lanes/v45-rc/tools_v6/entry_prime_swiss.sh
+ENTRY_NAME=prime_swiss
+ROLE=prime_swiss
+SESSION=<USER_HOME>/wrf_gpu2_lanes/v45-rc/tools_v6/session_short.sh
+TABLE=<USER_HOME>/wrf_gpu2_lanes/v45-rc/tools_v6/arms_prime_swiss.txt
+CAP_MIN=15
+START_FORECAST_GIB=3
+POST_RESERVE_S=30
+POST=none
+TOOLS_SUMS_SHA=f455aa3817a2a6fc94a72a3d01627d2b2e69aad18aeb03fc1551f2893fc594a8
+source <USER_HOME>/wrf_gpu2_lanes/v45-rc/tools_v6/entry_common.sh

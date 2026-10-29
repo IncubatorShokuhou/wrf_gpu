@@ -1,0 +1,872 @@
+diff --git a/src/gpuwrf/coupling/physics_couplers.py b/src/gpuwrf/coupling/physics_couplers.py
+index 5649474512..86a468d472 100644
+--- a/src/gpuwrf/coupling/physics_couplers.py
++++ b/src/gpuwrf/coupling/physics_couplers.py
+@@ -400,6 +400,8 @@ class RRTMGRadiationDiagnostics(NamedTuple):
+     urban_radiation: object = None
+     # rad_diag=1 only: uncoupled rates and the exact solver-input condensates.
+     rad_diag: object = None
++    # WRF HGT_SHAD, held between radiation calls; None when topo shading is off.
++    shadow_height_m: object = None
+ 
+ 
+ def unproduced_optional_radiation_fields(produced):
+@@ -1014,7 +1016,11 @@ def _wrf_topographic_shadow_mask(
+     dy_m: float,
+     shadow_length_m: float,
+ ):
+-    """WRF `module_radiation_driver.F:toposhad` local terrain ray scan."""
++    """Legacy pre-fix comparator for historical proof drivers only.
++
++    Production uses physics.topographic_shading.topographic_shadow_from_geometry,
++    which retains WRF HGT_SHAD and dispatches to the native ray kernel.
++    """
+ 
+     terrain = jnp.asarray(terrain_height_m, dtype=jnp.float64)
+     ny, nx = terrain.shape
+@@ -1110,22 +1116,31 @@ def _rrtmg_topography_state(
+     slope_rad: int = 0,
+     topo_shading: int = 0,
+     shadow_length_m: float = 25000.0,
++    shadow_geometry: SolarGeometry | None = None,
++    previous_shadow_height_m=None,
++    nested_shadow: bool = False,
+ ) -> RRTMGSWTopographyState | None:
+     if static is None or int(slope_rad) != 1:
+         return None
+     dtype = jnp.asarray(static.xlat_deg).dtype
++    shadow_height = None
+     if int(topo_shading) == 1 and grid is not None:
+-        shadow_mask = _wrf_topographic_shadow_mask(
++        from gpuwrf.physics.topographic_shading import topographic_shadow_from_geometry
++        shade = geometry if shadow_geometry is None else shadow_geometry
++        old_height = (jnp.zeros_like(static.terrain_height_m, dtype=jnp.float32)
++                      if previous_shadow_height_m is None else previous_shadow_height_m) if nested_shadow else None
++        shadow_mask, shadow_height = topographic_shadow_from_geometry(
+             static.terrain_height_m,
+             latitude_deg=static.xlat_deg,
+-            coszen=geometry.coszen,
+-            declination_rad=geometry.declination_rad,
+-            hour_angle_rad=geometry.hour_angle_rad,
++            coszen=shade.coszen,
++            declination_rad=shade.declination_rad,
++            hour_angle_rad=shade.hour_angle_rad,
+             sina=static.sina,
+             cosa=static.cosa,
+             dx_m=float(grid.projection.dx_m),
+             dy_m=float(grid.projection.dy_m),
+             shadow_length_m=float(shadow_length_m),
++            previous_height_m=old_height,
+         )
+     else:
+         shadow_mask = jnp.zeros_like(static.slope_rad, dtype=jnp.int32)
+@@ -1136,6 +1151,7 @@ def _rrtmg_topography_state(
+         slope_rad=static.slope_rad.astype(dtype),
+         slope_azimuth_rad=static.slope_azimuth_rad.astype(dtype),
+         shadow_mask=shadow_mask,
++        shadow_height_m=shadow_height,
+     )
+ 
+ 
+@@ -1286,6 +1302,8 @@ def _rrtmg_column_inputs(
+     topo_shading: int = 0,
+     slope_rad: int = 0,
+     shadow_length_m: float = 25000.0,
++    previous_shadow_height_m=None,
++    nested_shadow: bool = False,
+     land_state=None,
+     use_mp_re: int = 1,
+     mp_physics: int = 8,
+@@ -1305,6 +1323,8 @@ def _rrtmg_column_inputs(
+                   radiation_static=radiation_static, topo_shading=topo_shading,
+                   slope_rad=slope_rad, shadow_length_m=shadow_length_m,
+                   land_state=land_state, use_mp_re=use_mp_re, mp_physics=mp_physics, use_sgs_cloud=use_sgs_cloud)
++    if int(topo_shading) == 1 and int(slope_rad) == 1:
++        kwargs.update(previous_shadow_height_m=previous_shadow_height_m, nested_shadow=bool(nested_shadow))
+     if ozone_vmr_override is not None:
+         kwargs["ozone_vmr_override"] = ozone_vmr_override
+     if not use_mynn_sgs_cloud:
+@@ -1331,6 +1351,8 @@ def _rrtmg_column_inputs(
+         }) if hasattr(clock_base, "_fields") else _rrtmg_real_tree(clock_base))
+     for name in ("radiation_static", "land_state", "lead_seconds", "solar_lead_seconds"):
+         kwargs[name] = _rrtmg_real_tree(kwargs[name])
++    if previous_shadow_height_m is not None and "previous_shadow_height_m" in kwargs:
++        kwargs["previous_shadow_height_m"] = _rrtmg_real_tree(previous_shadow_height_m)
+     if ozone_vmr_override is not None:
+         kwargs["ozone_vmr_override"] = _rrtmg_real_tree(ozone_vmr_override)
+     with jax.enable_x64(False):
+@@ -1350,6 +1372,8 @@ def _rrtmg_column_inputs_impl(
+     topo_shading: int = 0,
+     slope_rad: int = 0,
+     shadow_length_m: float = 25000.0,
++    previous_shadow_height_m=None,
++    nested_shadow: bool = False,
+     land_state=None,
+     use_mp_re: int = 1,
+     mp_physics: int = 8,
+@@ -1510,6 +1534,17 @@ def _rrtmg_column_inputs_impl(
+         declination_rad=geometry.declination_rad,
+         hour_angle_rad=geometry.hour_angle_rad.astype(state.t_skin.dtype),
+     )
++    shadow_geometry = None
++    if int(topo_shading) == 1 and int(slope_rad) == 1:
++        from gpuwrf.physics.topographic_shading import toposhad_solar_geometry_from_seconds
++        _julian, utc_minute = _resolve_clock_parts(time_utc, clock_base)
++        phase = lead_seconds if solar_lead_seconds is None else solar_lead_seconds
++        # RRTMG receives the caller's midpoint phase. WRF toposhad uses that
++        # same midpoint with NO calc_coszen equation-of-time correction.
++        shadow_coszen, shadow_hrang = toposhad_solar_geometry_from_seconds(
++            lat, lon, geometry.declination_rad, jnp.asarray(phase, jnp.float32),
++            jnp.asarray(utc_minute, jnp.float32))
++        shadow_geometry = SolarGeometry(shadow_coszen, geometry.declination_rad, shadow_hrang)
+     topography = _rrtmg_topography_state(
+         static,
+         grid,
+@@ -1517,6 +1552,9 @@ def _rrtmg_column_inputs_impl(
+         slope_rad=slope_rad,
+         topo_shading=topo_shading,
+         shadow_length_m=shadow_length_m,
++        shadow_geometry=shadow_geometry,
++        previous_shadow_height_m=previous_shadow_height_m,
++        nested_shadow=nested_shadow,
+     )
+     # WRF `solvar = scon/rrsw_scon` per-band SW source normalization, computed
+     # from the run date (function-of-JULIAN, not replay output). Closes the GPU
+@@ -3158,6 +3196,8 @@ def rrtmg_radiation_diagnostics(
+     topo_shading: int = 0,
+     slope_rad: int = 0,
+     shadow_length_m: float = 25000.0,
++    previous_shadow_height_m=None,
++    nested_shadow: bool = False,
+     land_state=None,
+     use_mp_re: int = 1,
+     mp_physics: int = 8,
+@@ -3198,6 +3238,8 @@ def rrtmg_radiation_diagnostics(
+         topo_shading=topo_shading,
+         slope_rad=slope_rad,
+         shadow_length_m=shadow_length_m,
++        **({"previous_shadow_height_m": previous_shadow_height_m, "nested_shadow": nested_shadow}
++           if int(topo_shading) == 1 and int(slope_rad) == 1 else {}),
+         land_state=land_state,
+         use_mp_re=use_mp_re,
+         mp_physics=mp_physics,
+@@ -3239,9 +3281,12 @@ def rrtmg_radiation_diagnostics(
+         cloud_fraction=_from_columns(sw_state.cloud_fraction),
+         with_urban=with_urban,
+     )
++    shadow_height = diagnostics.shadow_height_m
+     diagnostics = jax.tree.map(lambda value: value.astype(state.t_skin.dtype)
+         if hasattr(value, "dtype") and jnp.issubdtype(value.dtype, jnp.floating)
+         else value, diagnostics) if _rrtmg_real_enabled() else diagnostics
++    if shadow_height is not None:
++        diagnostics = diagnostics._replace(shadow_height_m=shadow_height)
+     if with_rad_diag:
+         diagnostics = diagnostics._replace(rad_diag=_rrtmg_history_from_results(
+             state, sw_state, lw_state, sw, lw, with_clear_sky=with_clear_sky))
+@@ -3342,6 +3387,7 @@ def _rrtmg_diagnostics_from_results(sw, lw, surface_albedo, surface_emissivity,
+         cloud_fraction=cloud_fraction,
+         urban_radiation=(sw.surface_direct, sw.surface_diffuse,
+                          geometry.declination_rad, geometry.hour_angle_rad) if with_urban else None,
++        shadow_height_m=None if topography is None else topography.shadow_height_m,
+     )
+ 
+ 
+@@ -3507,6 +3553,8 @@ def rrtmg_theta_tendency(
+     topo_shading: int = 0,
+     slope_rad: int = 0,
+     shadow_length_m: float = 25000.0,
++    previous_shadow_height_m=None,
++    nested_shadow: bool = False,
+     land_state=None,
+     use_mp_re: int = 1,
+     mp_physics: int = 8,
+@@ -3554,6 +3602,8 @@ def rrtmg_theta_tendency(
+         topo_shading=topo_shading,
+         slope_rad=slope_rad,
+         shadow_length_m=shadow_length_m,
++        **({"previous_shadow_height_m": previous_shadow_height_m, "nested_shadow": nested_shadow}
++           if int(topo_shading) == 1 and int(slope_rad) == 1 else {}),
+         land_state=land_state,
+         use_mp_re=use_mp_re,
+         mp_physics=mp_physics,
+@@ -3582,9 +3632,12 @@ def rrtmg_theta_tendency(
+             with_urban=with_urban,
+         )
+         if _rrtmg_real_enabled():
++            shadow_height = diagnostics.shadow_height_m
+             diagnostics = jax.tree.map(lambda value: value.astype(state.t_skin.dtype)
+                 if hasattr(value, "dtype") and jnp.issubdtype(value.dtype, jnp.floating)
+                 else value, diagnostics)
++            if shadow_height is not None:
++                diagnostics = diagnostics._replace(shadow_height_m=shadow_height)
+         if with_rad_diag:
+             diagnostics = diagnostics._replace(rad_diag=_rrtmg_history_from_results(
+                 state, sw_state, lw_state, sw, lw, with_clear_sky=with_clear_sky))
+diff --git a/src/gpuwrf/coupling/topographic_shadow.py b/src/gpuwrf/coupling/topographic_shadow.py
+new file mode 100644
+index 0000000000..298a0ccef4
+--- /dev/null
++++ b/src/gpuwrf/coupling/topographic_shadow.py
+@@ -0,0 +1,51 @@
++"""Lifecycle of the existing radiation carry's optional WRF HGT_SHAD plane."""
++from __future__ import annotations
++
++import jax.numpy as jnp
++
++
++def active(namelist):
++    return int(getattr(namelist, "topo_shading", 0)) == 1 and int(getattr(namelist, "slope_rad", 0)) == 1
++
++
++def nested(namelist):
++    return not bool(getattr(getattr(namelist, "boundary_config", None), "force_geopotential", True))
++
++
++def cold_kwargs(namelist, state):
++    if not active(namelist):
++        return {}
++    return {"previous_shadow_height_m": jnp.zeros_like(state.t_skin, dtype=jnp.float32),
++            "nested_shadow": nested(namelist)}
++
++
++def held_kwargs(namelist, diagnostics):
++    if not active(namelist):
++        return {}
++    value = getattr(diagnostics, "shadow_height_m", None)
++    if value is None:
++        raise ValueError("topo_shading=1 radiation carry lacks WRF HGT_SHAD (E78)")
++    return {"previous_shadow_height_m": value, "nested_shadow": nested(namelist)}
++
++
++def seed(carry, namelist):
++    diagnostics = carry.radiation_diagnostics
++    if not active(namelist) or not hasattr(diagnostics, "shadow_height_m"):
++        return carry
++    # module_integrate opens cold nests before the parent's first solve.
++    # HGT_SHAD begins at allocator zero, then evolves only on radiation calls.
++    return carry.replace(radiation_diagnostics=diagnostics._replace(
++        shadow_height_m=jnp.zeros_like(carry.state.t_skin, dtype=jnp.float32)))
++
++
++def preserve_initial_height(seeded, computed):
++    """Keep WRF's cold HGT_SHAD seed across the separate LSM init solve.
++
++    The init solve supplies held surface fluxes, not an extra toposhad history
++    call. Reuse the existing plane rather than allocating another zero array.
++    """
++    height = getattr(seeded, "shadow_height_m", None)
++    return computed if height is None else computed._replace(shadow_height_m=height)
++
++
++__all__ = ["active", "nested", "cold_kwargs", "held_kwargs", "seed", "preserve_initial_height"]
+diff --git a/src/gpuwrf/integration/nested_pipeline.py b/src/gpuwrf/integration/nested_pipeline.py
+index 722c7f1974..04a09a03ef 100644
+--- a/src/gpuwrf/integration/nested_pipeline.py
++++ b/src/gpuwrf/integration/nested_pipeline.py
+@@ -1265,6 +1265,8 @@ def _load_domains(
+                 carry.state, namelist, land_state=noahmp_land, _with_diagnostics=True,
+                 _kernel_call=_init_kernel_call,
+             )
++            from gpuwrf.coupling.topographic_shadow import preserve_initial_height
++            initial_full_rad = preserve_initial_height(carry.radiation_diagnostics, initial_full_rad)
+             carry = carry.replace(
+                 noahmp_land=noahmp_land, noahmp_rad=initial_surface_rad,
+                 radiation_diagnostics=(initial_full_rad if carry.radiation_diagnostics is not None else None),
+diff --git a/src/gpuwrf/io/restart.py b/src/gpuwrf/io/restart.py
+index 0990512c33..66e848c32b 100644
+--- a/src/gpuwrf/io/restart.py
++++ b/src/gpuwrf/io/restart.py
+@@ -247,6 +247,10 @@ def _carry_to_payload(carry: OperationalCarry, *, mynn_config=None) -> dict[str,
+     payload["radiation_diagnostics_schema_version"] = RADIATION_DIAGNOSTICS_SCHEMA_VERSION
+     if getattr(carry.radiation_diagnostics, "rad_diag", None) is not None:
+         payload["rad_diag_schema_version"] = 1
++    from gpuwrf.io.topographic_shadow_schema import marker as shadow_marker
++    shadow_version = shadow_marker(carry.radiation_diagnostics)
++    if shadow_version is not None:
++        payload["topographic_shadow_schema_version"] = shadow_version
+     from gpuwrf.io.flg_gfdl_schema import marker
+     legacy=marker(carry.radiation_diagnostics,carry.gfdl_radiation)
+     if legacy is not None:payload['flg_gfdl_schema']=legacy
+@@ -291,7 +295,8 @@ def _carry_to_payload(carry: OperationalCarry, *, mynn_config=None) -> dict[str,
+     return payload
+ 
+ 
+-def _validate_radiation_diagnostics_schema(payload: dict[str, Any], *, namelist=None) -> None:
++def _validate_radiation_diagnostics_schema(payload: dict[str, Any], *, namelist=None,
++                                           topographic_shadow_required=None) -> None:
+     from gpuwrf.diagnostics.radiation import validate_restart as validate_rad_diag
+     diagnostics = payload.get("extra_fields", {}).get("radiation_diagnostics")
+     # The carry serializer is also used without a requested namelist. Presence
+@@ -307,6 +312,11 @@ def _validate_radiation_diagnostics_schema(payload: dict[str, Any], *, namelist=
+     validate_goddard_radiation(payload.get('extra_fields',{}).get('radiation_diagnostics'),namelist,
+                               schema_version=payload.get('goddard_radiation_schema_version'),
+                               state_shape=getattr(payload.get('state_fields',{}).get('qv'),'shape',None))
++    from gpuwrf.io.topographic_shadow_schema import validate as validate_shadow
++    validate_shadow(payload.get("extra_fields", {}).get("radiation_diagnostics"),
++        payload.get("topographic_shadow_schema_version"),
++        getattr(payload.get("state_fields", {}).get("t_skin"), "shape", None),
++        namelist=namelist, required=topographic_shadow_required)
+     if payload.get("extra_fields", {}).get("radiation_diagnostics") is None:
+         return  # Legacy dycore-only restarts have no held radiation to lose.
+     if payload.get("radiation_diagnostics_schema_version") != RADIATION_DIAGNOSTICS_SCHEMA_VERSION:
+diff --git a/src/gpuwrf/io/scheme_catalog.py b/src/gpuwrf/io/scheme_catalog.py
+index 173cee7624..2bf802fbce 100644
+--- a/src/gpuwrf/io/scheme_catalog.py
++++ b/src/gpuwrf/io/scheme_catalog.py
+@@ -1066,7 +1066,8 @@ _RECOGNIZED_CONTROL_BY_KEY: Mapping[str, RecognizedControl] = {
+ 
+ # Implemented non-enumerated controls (radiation slope/topo path). slope_rad=1
+ # and topo_shading=1 ARE wired (RRTMG SW slope-radiation + topographic-shadow);
+-# slope_rad=2 (the WRF "slope + shadow" combined flag) is NOT separately wired.
++# WRF uses independent 0/1 switches; topo_shading affects surface flux only
++# when slope_rad=1. There is no WRF slope_rad=2 combined mode.
+ _IMPLEMENTED_CONTROLS: Mapping[str, frozenset[int]] = {
+     "swint_opt": frozenset({0, 1}),
+     "dfi_opt": frozenset({0, 1, 2, 3}),
+@@ -1098,8 +1099,8 @@ _IMPLEMENTED_CONTROL_REASON: Mapping[str, tuple[str, str, str]] = {
+     # key: (label, unwired-reason, alternative)
+     "slope_rad": (
+         "slope-radiation",
+-        "recognized; the port wires slope_rad=1 (RRTMG SW slope-radiation). "
+-        "slope_rad=2 (WRF combined slope+shadow flag) is not separately wired.",
++        "recognized; WRF and the port use slope_rad=0 or 1. "
++        "Enable topo_shading=1 separately for terrain shadows with slope_rad=1.",
+         "Use slope_rad=0 (off) or 1 (slope radiation on).",
+     ),
+     "topo_shading": (
+diff --git a/src/gpuwrf/io/topographic_shadow_schema.py b/src/gpuwrf/io/topographic_shadow_schema.py
+new file mode 100644
+index 0000000000..f9d31efbae
+--- /dev/null
++++ b/src/gpuwrf/io/topographic_shadow_schema.py
+@@ -0,0 +1,32 @@
++"""Host restart admission for the optional WRF HGT_SHAD radiation leaf."""
++from __future__ import annotations
++
++SCHEMA_VERSION = 1
++
++
++def configuration(namelist):
++    from gpuwrf.io.restart_schema import physics_option
++    return (physics_option(namelist, "topo_shading", 0) == 1
++            and physics_option(namelist, "slope_rad", 0) == 1
++            and physics_option(namelist, "ra_sw_physics", 4) == 4
++            and physics_option(namelist, "ra_lw_physics", 4) == 4)
++
++
++def marker(diagnostics):
++    return SCHEMA_VERSION if getattr(diagnostics, "shadow_height_m", None) is not None else None
++
++
++def validate(diagnostics, version, shape, *, namelist=None, required=None):
++    import numpy as np
++    value = getattr(diagnostics, "shadow_height_m", None)
++    needed = configuration(namelist) if required is None else bool(required)
++    if not needed and value is None and version is None:
++        return
++    if version != SCHEMA_VERSION or value is None:
++        raise ValueError("restart topo_shading=1 lacks held HGT_SHAD/schema (E78)")
++    value = np.asarray(value)
++    if shape is None or value.shape != tuple(shape) or value.dtype != np.float32 or not np.isfinite(value).all():
++        raise ValueError("restart HGT_SHAD shape/dtype/nonfinite differs (E78)")
++
++
++__all__ = ["SCHEMA_VERSION", "configuration", "marker", "validate"]
+diff --git a/src/gpuwrf/kernels/topographic_shadow.py b/src/gpuwrf/kernels/topographic_shadow.py
+new file mode 100644
+index 0000000000..7f4a61ac68
+--- /dev/null
++++ b/src/gpuwrf/kernels/topographic_shadow.py
+@@ -0,0 +1,157 @@
++"""WRF topographic ray search: independent cells, loop inside one Pallas kernel."""
++from __future__ import annotations
++from functools import partial
++
++import jax
++import jax.numpy as jnp
++from jax.experimental.pallas import triton as pt
++from gpuwrf.backends import pallas as pl
++
++
++def _rn(op, a, b, *, interpret):
++    if interpret or not pl.cuda_native():
++        value = {"add": lambda: a + b, "sub": lambda: a - b,
++                 "mul": lambda: a * b,
++                 "div": lambda: a / jax.lax.optimization_barrier(b)}[op]()
++        return jax.lax.optimization_barrier(value)
++    return pt.elementwise_inline_asm(op + ".rn.f32 $0, $1, $2;", args=[a, b],
++        constraints="=f,f,f", pack=1,
++        result_shape_dtypes=[jax.ShapeDtypeStruct(a.shape, jnp.float32)])[0]
++
++
++def _solar_kernel(latitude, longitude, clock, coszen_out, hrang_out,
++                  *, size, block, interpret, caller_units):
++    lane = pl.program_id(0) * block + jnp.arange(block, dtype=jnp.int32)
++    valid = lane < size
++    F = jnp.float32
++    def rn(op, a, b):
++        a, b = (jnp.broadcast_to(v, (block,)) for v in (a, b))
++        return _rn(op, a, b, interpret=interpret)
++    declin, minute, gmt, radt = (jnp.broadcast_to(clock[i], (block,)) for i in range(4))
++    if caller_units:
++        minute = rn("div", minute, F(60))  # midpoint lead seconds -> XTIME minutes
++        gmt = rn("div", gmt, F(60))  # base UTC minutes -> GMT hours
++    lat = pt.load(latitude.at[lane], mask=valid, other=F(0))
++    lon = pt.load(longitude.at[lane], mask=valid, other=F(0))
++    # WRF module_model_constants REAL parameter, folded once by its compiler.
++    degrad = F(jnp.pi / 180.)
++    xxlat = rn("mul", lat, degrad)
++    xt24 = jnp.fmod(rn("add", minute, rn("mul", radt, F(.5))), F(1440))
++    # XLA's div.full.f32 changes 1125/60 to 18.750001907... . A barrier
++    # cannot impose IEEE rounding on division (E84); explicitly use div.rn.
++    tloc = rn("add", rn("add", gmt, rn("div", xt24, F(60))), rn("div", lon, F(15)))
++    hrang = rn("mul", rn("mul", F(15), rn("sub", tloc, F(12))), degrad)
++    csza = rn("add", rn("mul", jnp.sin(xxlat), jnp.sin(declin)),
++              rn("mul", rn("mul", jnp.cos(xxlat), jnp.cos(declin)), jnp.cos(hrang)))
++    pt.store(coszen_out.at[lane], csza, mask=valid)
++    pt.store(hrang_out.at[lane], hrang, mask=valid)
++
++
++def topographic_solar_geometry_native(latitude_deg, longitude_deg, declination_rad,
++                                      xtime_minutes, gmt_hours, radt_minutes, *, interpret=False,
++                                      caller_units=False):
++    """WRF REAL shadow clock in one kernel with explicitly rounded arithmetic."""
++    lat, lon = (jnp.asarray(v, jnp.float32) for v in (latitude_deg, longitude_deg))
++    if lat.shape != lon.shape:
++        raise ValueError("toposhad latitude and longitude must share the mass-grid shape")
++    clock = jnp.stack([jnp.asarray(v, jnp.float32) for v in
++                       (declination_rad, xtime_minutes, gmt_hours, radt_minutes)])
++    block = 128
++    kernel = partial(_solar_kernel, size=lat.size, block=block, interpret=bool(interpret),
++                     caller_units=bool(caller_units))
++    out = jax.ShapeDtypeStruct((lat.size,), jnp.float32)
++    result = pl.pallas_call(kernel, out_shape=(out, out), grid=((lat.size + block - 1) // block,),
++        name="wrf_toposhad_solar", interpret=bool(interpret),
++        compiler_params=pt.CompilerParams(num_warps=4))(lat.reshape(-1), lon.reshape(-1), clock)
++    return tuple(v.reshape(lat.shape) for v in result)
++
++
++def _kernel(terrain, previous, csza_ref, azi_ref, constants, mask_out, height_out,
++            *, ny, nx, steps, nested, block, interpret):
++    lane = pl.program_id(0) * block + jnp.arange(block, dtype=jnp.int32)
++    valid = lane < nx * ny
++    row, col = lane // nx, lane % nx
++    F = jnp.float32
++    rn = partial(_rn, interpret=interpret)
++    one = jnp.ones((block,), jnp.float32)
++    dx, dy, pi = (jnp.broadcast_to(constants[i], (block,)) for i in range(3))
++    load = lambda ref, idx, mask=valid: pt.load(ref.at[idx], mask=mask, other=F(0))
++    h = load(terrain, lane)
++    old = load(previous, lane)
++    border = (col < 2) | (col >= nx - 2) | (row < 2) | (row >= ny - 2)
++    imported = valid & border & (old > h) if nested else jnp.zeros((block,), bool)
++    h0 = jnp.where(imported, old, h)
++    height = jnp.where(border, old, rn("sub", h, one * F(.001))) if nested else rn("sub", h, one * F(.001))
++    csza, azi = load(csza_ref, lane), load(azi_ref, lane)
++    daylight = csza >= F(.01)
++    north = (azi > F(1.75) * pi) | (azi < F(.25) * pi)
++    east = (~north) & (azi < F(.75) * pi)
++    south = (~north) & (~east) & (azi < F(1.25) * pi)
++    along_y = north | south
++    direction = jnp.where(north | east, one, -one)
++    tangent = jnp.where(along_y, jnp.tan(azi), -jnp.tan(rn("add", pi / F(2), azi)))
++    sun_tan = jnp.tan(jnp.arcsin(csza))
++    x, y = (col + 1).astype(jnp.float32), (row + 1).astype(jnp.float32)
++
++    def local_at(i, j, active):
++        # Physical two-point halos repeat raw terrain; only in-domain boundary
++        # mass points get the WRF toposhad_init height raise.
++        ii, jj = jnp.clip(i, 1, nx) - 1, jnp.clip(j, 1, ny) - 1
++        index = jj * nx + ii
++        base = load(terrain, index, active)
++        if nested:
++            value = load(previous, index, active)
++            inside = (i >= 1) & (i <= nx) & (j >= 1) & (j <= ny)
++            edge = (ii < 2) | (ii >= nx - 2) | (jj < 2) | (jj >= ny - 2)
++            base = jnp.where(inside & edge & (value > base), value, base)
++        return base
++
++    def keep(carry):
++        step, _, _, active = carry
++        return (step <= steps) & (jnp.max(active.astype(jnp.int32)) > 0)
++
++    def scan(carry):
++        step, mask, ht, active = carry
++        delta = step.astype(jnp.float32) * direction
++        ri = rn("add", x, jnp.where(along_y, rn("mul", delta, tangent), delta))
++        rj = rn("add", y, jnp.where(along_y, delta, rn("mul", delta, tangent)))
++        i1, j1 = jnp.trunc(ri).astype(jnp.int32), jnp.trunc(rj).astype(jnp.int32)
++        i2 = i1 + along_y.astype(jnp.int32)
++        j2 = j1 + (~along_y).astype(jnp.int32)
++        active = active & (i1 > -2) & (i2 < nx + 3) & (j1 > -2) & (j2 < ny + 3)
++        w = jnp.where(along_y, rn("sub", ri, i1.astype(jnp.float32)), rn("sub", rj, j1.astype(jnp.float32)))
++        h1, h2 = local_at(i1, j1, active), local_at(i2, j2, active)
++        ddx, ddy = rn("mul", dx, rn("sub", ri, x)), rn("mul", dy, rn("sub", rj, y))
++        distance = jnp.sqrt(rn("add", rn("mul", ddx, ddx), rn("mul", ddy, ddy)))
++        sample = rn("add", rn("mul", w, h2), rn("mul", rn("sub", one, w), h1))
++        elevation = jnp.arctan(rn("div", rn("sub", sample, h0), distance))
++        hit = active & (jnp.sin(elevation) >= csza)
++        projected = rn("add", h0, rn("mul", distance, rn("sub", jnp.tan(elevation), sun_tan)))
++        return step + 1, mask | hit, jnp.where(hit, jnp.maximum(ht, projected), ht), active
++
++    _, mask, height, _ = jax.lax.while_loop(keep, scan,
++        (jnp.int32(1), imported, height, valid & daylight))
++    pt.store(mask_out.at[lane], jnp.where(daylight, mask, False).astype(jnp.int32), mask=valid)
++    pt.store(height_out.at[lane], jnp.where(daylight, height, rn("sub", h0, one * F(.001))), mask=valid)
++
++
++def topographic_shadow_native(terrain_height_m, previous_height_m, coszen, solar_azimuth_rad,
++                              *, dx_m, dy_m, shadow_length_m, nested, interpret=False):
++    """Return mask/height; one program lane per mass point, FP32 and 128 lanes."""
++    terrain = jnp.asarray(terrain_height_m, jnp.float32)
++    ny, nx = terrain.shape
++    arrays = [jnp.asarray(v, jnp.float32).reshape(-1) for v in
++              (terrain, previous_height_m, coszen, solar_azimuth_rad)]
++    if any(a.shape != arrays[0].shape for a in arrays):
++        raise ValueError("topographic shadow native inputs must share the mass-grid shape")
++    constants = jnp.asarray([dx_m, dy_m, jnp.pi], jnp.float32)
++    kernel = partial(_kernel, ny=ny, nx=nx, steps=int(float(shadow_length_m) / float(dx_m) + 1),
++                     nested=bool(nested), block=128, interpret=bool(interpret))
++    result = pl.pallas_call(kernel, out_shape=(jax.ShapeDtypeStruct((ny * nx,), jnp.int32),
++                                              jax.ShapeDtypeStruct((ny * nx,), jnp.float32)),
++        grid=((ny * nx + 127) // 128,), name="wrf_topographic_shadow", interpret=bool(interpret),
++        compiler_params=pt.CompilerParams(num_warps=4))(*arrays, constants)
++    return tuple(x.reshape(ny, nx) for x in result)
++
++
++__all__ = ["topographic_shadow_native", "topographic_solar_geometry_native"]
+diff --git a/src/gpuwrf/nesting/initial_feedback.py b/src/gpuwrf/nesting/initial_feedback.py
+index 023dc8e64e..d92eaad5c6 100644
+--- a/src/gpuwrf/nesting/initial_feedback.py
++++ b/src/gpuwrf/nesting/initial_feedback.py
+@@ -133,6 +133,8 @@ def initialize_two_way_domains(hierarchy,bundles,carries,run,nesting,*,kernel_ca
+         new=_initial_carry_for_run(state,nl).replace(base_state=base,census=pc.census)
+         if land is not None:
+             surface,full=noahmp_initial_rad(new.state,nl,land_state=land,_with_diagnostics=True,_kernel_call=kernel_call)
++            from gpuwrf.coupling.topographic_shadow import preserve_initial_height
++            full=preserve_initial_height(new.radiation_diagnostics,full)
+             new=new.replace(noahmp_land=land,noahmp_rad=surface,
+                 radiation_diagnostics=full if new.radiation_diagnostics is not None else None)
+             from gpuwrf.diagnostics.census import count_work
+diff --git a/src/gpuwrf/physics/rrtmg_sw.py b/src/gpuwrf/physics/rrtmg_sw.py
+index 623a86d7f4..ed621144e8 100644
+--- a/src/gpuwrf/physics/rrtmg_sw.py
++++ b/src/gpuwrf/physics/rrtmg_sw.py
+@@ -518,6 +518,8 @@ class RRTMGSWTopographyState(NamedTuple):
+     slope_rad: jnp.ndarray
+     slope_azimuth_rad: jnp.ndarray
+     shadow_mask: jnp.ndarray
++    # Coupler-owned HGT_SHAD output; solver flattening intentionally omits it.
++    shadow_height_m: object = None
+ 
+ 
+ class RRTMGSWTopographicAdjustment(NamedTuple):
+diff --git a/src/gpuwrf/physics/topographic_shading.py b/src/gpuwrf/physics/topographic_shading.py
+new file mode 100644
+index 0000000000..63ec412b3c
+--- /dev/null
++++ b/src/gpuwrf/physics/topographic_shading.py
+@@ -0,0 +1,190 @@
++"""WRF ``toposhad_init``/``toposhad`` single-patch reference operator.
++
++The nested input is the interpolated, time-dependent parent HGT_SHAD, not
++parent terrain. WRF preserves that height in the outer two mass-grid rows.
++The boundary height starts with init-time parent interpolation, then WRF's
++BXS supplies the child's own preceding height. Current-parent injection is
++not the WRF caller. The pure JAX loop is the CPU reference; the GPU ray loop
++must run inside the native kernel.
++"""
++
++from __future__ import annotations
++
++import jax
++import jax.numpy as jnp
++
++
++def toposhad_solar_geometry(latitude_deg, longitude_deg, declination_rad,
++                           xtime_minutes, gmt_hours, radt_minutes):
++    """WRF REAL toposhad clock, preserving its assignment rounding."""
++    from gpuwrf.backends import pallas as pl
++    if pl.cuda_native():
++        from gpuwrf.kernels.topographic_shadow import topographic_solar_geometry_native
++        return topographic_solar_geometry_native(latitude_deg, longitude_deg, declination_rad,
++                                                 xtime_minutes, gmt_hours, radt_minutes)
++    F = jnp.float32
++    barrier = jax.lax.optimization_barrier
++    def mul(a, b): return barrier(a * b)
++    def add(a, b): return barrier(a + b)
++    def sub(a, b): return barrier(a - b)
++    def div(a, b): return barrier(a / barrier(b))
++    degrad = div(F(jnp.pi), F(180))
++    lat = mul(jnp.asarray(latitude_deg, F), degrad)
++    xt24 = jnp.fmod(add(F(xtime_minutes), mul(F(radt_minutes), F(.5))), F(1440))
++    tloc = add(add(F(gmt_hours), div(xt24, F(60))), div(jnp.asarray(longitude_deg, F), F(15)))
++    hrang = mul(mul(F(15), sub(tloc, F(12))), degrad)
++    declin = F(declination_rad)
++    csza = add(mul(jnp.sin(lat), jnp.sin(declin)),
++               mul(mul(jnp.cos(lat), jnp.cos(declin)), jnp.cos(hrang)))
++    return csza, hrang
++
++
++def toposhad_solar_azimuth(latitude_deg, coszen, declination_rad, hour_angle_rad, sina, cosa):
++    """Pristine topographic ray direction, rotated onto the WRF grid."""
++    F = jnp.float32
++    pi = F(jnp.pi)
++    lat = jnp.asarray(latitude_deg, F) * (pi / F(180))
++    csza, declin, hrang = F(coszen), F(declination_rad), F(hour_angle_rad)
++    argu = (csza * jnp.sin(lat) - jnp.sin(declin)) / (jnp.sin(jnp.arccos(csza)) * jnp.cos(lat))
++    azi = jnp.copysign(jnp.arccos(jnp.clip(argu, F(-1), F(1))), jnp.sin(hrang)) + pi
++    rotation = jnp.where(jnp.asarray(cosa) >= 0, jnp.arcsin(jnp.asarray(sina, F)),
++                         pi - jnp.arcsin(jnp.asarray(sina, F)))
++    return azi + rotation
++
++
++def toposhad_solar_geometry_from_seconds(latitude_deg, longitude_deg, declination_rad,
++                                         midpoint_lead_seconds, base_utc_minutes):
++    """Convert the operational caller's clock inside the rounded shadow kernel.
++
++    Converting /60 in XLA before the call would reintroduce div.full error
++    (e.g. 1800 seconds becomes 30.000001907 minutes). The lead already
++    includes the caller's radiation midpoint, so radt is zero here.
++    """
++    from gpuwrf.backends import pallas as pl
++    if pl.cuda_native():
++        from gpuwrf.kernels.topographic_shadow import topographic_solar_geometry_native
++        return topographic_solar_geometry_native(latitude_deg, longitude_deg, declination_rad,
++            midpoint_lead_seconds, base_utc_minutes, 0., caller_units=True)
++    denominator = jax.lax.optimization_barrier(jnp.float32(60))
++    return toposhad_solar_geometry(latitude_deg, longitude_deg, declination_rad,
++        jnp.asarray(midpoint_lead_seconds, jnp.float32) / denominator,
++        jnp.asarray(base_utc_minutes, jnp.float32) / denominator, 0.)
++
++
++def topographic_shadow(
++    terrain_height_m,
++    *,
++    latitude_deg,
++    longitude_deg,
++    sina,
++    cosa,
++    declination_rad,
++    xtime_minutes,
++    gmt_hours,
++    radt_minutes: float,
++    dx_m: float,
++    dy_m: float,
++    shadow_length_m: float,
++    parent_shadow_height_m=None,
++    terrain_halo_m=None,
++    geometry_override=None,
++):
++    """Return ``(SHADOWMASK, HGT_SHAD)`` on mass points, in WRF REAL.
++
++    ``terrain_halo_m`` is the WRF two-point halo, shape ``(ny+4,nx+4)``.
++    The edge-repeated fallback is an explicit single-patch physical-boundary
++    convention; callers reproducing a different halo must supply it. The
++    parent input uses child mass-point registration and is read only on the
++    outer two rows. WRF's Fortran INT is applied in ONE-based coordinates.
++    Solar phase is the toposhad formula, which does not add calc_coszen's EOT.
++    """
++    terrain = jnp.asarray(terrain_height_m, jnp.float32)
++    ny, nx = terrain.shape
++    if min(ny, nx) < 1:
++        raise ValueError("toposhad needs a nonempty mass grid")
++    F = jnp.float32
++    yy, xx = jnp.indices((ny, nx), dtype=jnp.int32)
++    x, y = (xx + 1).astype(terrain.dtype), (yy + 1).astype(terrain.dtype)
++    border = (xx < 2) | (xx >= nx - 2) | (yy < 2) | (yy >= ny - 2)
++    height = terrain - F(.001)
++    imported = jnp.zeros_like(border)
++    local = terrain
++    if parent_shadow_height_m is not None:
++        parent = jnp.asarray(parent_shadow_height_m, terrain.dtype)
++        if parent.shape != terrain.shape:
++            raise ValueError("parent HGT_SHAD must be interpolated onto child mass points")
++        height = jnp.where(border, parent, height)
++        imported = border & (parent > terrain)
++        local = jnp.where(imported, parent, terrain)
++    halo = (jnp.pad(terrain, 2, mode="edge") if terrain_halo_m is None
++            else jnp.asarray(terrain_halo_m, terrain.dtype))
++    if halo.shape != (ny + 4, nx + 4):
++        raise ValueError("toposhad terrain halo must have two points on each side")
++    halo = halo.at[2:-2, 2:-2].set(local)
++    pi = F(jnp.pi)
++    if geometry_override is None:
++        csza, hrang = toposhad_solar_geometry(latitude_deg, longitude_deg, declination_rad,
++                                             xtime_minutes, gmt_hours, radt_minutes)
++    else:
++        csza, hrang = (jnp.asarray(a, F) for a in geometry_override)
++    daylight = csza >= F(.01)
++    azi = toposhad_solar_azimuth(latitude_deg, csza, declination_rad, hrang, sina, cosa)
++    north = (azi > F(1.75) * pi) | (azi < F(.25) * pi)
++    east = (~north) & (azi < F(.75) * pi)
++    south = (~north) & (~east) & (azi < F(1.25) * pi)
++    along_y = north | south
++    direction = jnp.where(north | east, F(1), F(-1))
++    tangent = jnp.where(along_y, jnp.tan(azi), -jnp.tan(pi / F(2) + azi))
++    # WRF exits a ray at its first point outside the patch plus two-point halo.
++    def scan(step, carry):
++        mask, ht, active = carry
++        delta = F(step) * direction
++        ri = x + jnp.where(along_y, delta * tangent, delta)
++        rj = y + jnp.where(along_y, delta, delta * tangent)
++        i1, j1 = jnp.trunc(ri).astype(jnp.int32), jnp.trunc(rj).astype(jnp.int32)
++        i2 = i1 + jnp.where(along_y, 1, 0)
++        j2 = j1 + jnp.where(along_y, 0, 1)
++        valid = (i1 > -2) & (i2 < nx + 3) & (j1 > -2) & (j2 < ny + 3)
++        active = active & valid
++        weight = jnp.where(along_y, ri - i1.astype(terrain.dtype), rj - j1.astype(terrain.dtype))
++        h1 = halo[jnp.clip(j1 + 1, 0, ny + 3), jnp.clip(i1 + 1, 0, nx + 3)]
++        h2 = halo[jnp.clip(j2 + 1, 0, ny + 3), jnp.clip(i2 + 1, 0, nx + 3)]
++        distance = jnp.sqrt((F(dx_m) * (ri - x)) ** 2 + (F(dy_m) * (rj - y)) ** 2)
++        elevation = jnp.arctan((weight * h2 + (F(1) - weight) * h1 - local) / distance)
++        hit = active & (jnp.sin(elevation) >= csza)
++        projected = local + distance * (jnp.tan(elevation) - jnp.tan(jnp.arcsin(csza)))
++        return mask | hit, jnp.where(hit, jnp.maximum(ht, projected), ht), active
++
++    steps = int(float(shadow_length_m) / float(dx_m) + 1)
++    mask, height, _ = jax.lax.fori_loop(1, steps + 1, scan, (imported, height, daylight))
++    return (jnp.where(daylight, mask, False).astype(jnp.int32),
++            jnp.where(daylight, height, local - F(.001)))
++
++
++def topographic_shadow_from_geometry(terrain_height_m, *, latitude_deg, coszen,
++                                    declination_rad, hour_angle_rad, sina, cosa,
++                                    dx_m, dy_m, shadow_length_m, previous_height_m=None):
++    """Dispatch the same per-cell operator to CUDA or the validated CPU reference.
++
++    A non-None previous height denotes a nest's BXS (its OWN preceding height,
++    originally initialized from its parent). None selects the root init rule.
++    Geometry is the separate toposhad clock, not RRTMG's EOT-bearing geometry.
++    """
++    from gpuwrf.backends import pallas as pl
++    if pl.cuda_native():
++        from gpuwrf.kernels.topographic_shadow import topographic_shadow_native
++        azi = toposhad_solar_azimuth(latitude_deg, coszen, declination_rad, hour_angle_rad, sina, cosa)
++        terrain = jnp.asarray(terrain_height_m, jnp.float32)
++        old = jnp.zeros_like(terrain) if previous_height_m is None else jnp.asarray(previous_height_m, jnp.float32)
++        return topographic_shadow_native(terrain, old, coszen, azi,
++            dx_m=dx_m, dy_m=dy_m, shadow_length_m=shadow_length_m,
++            nested=previous_height_m is not None)
++    return topographic_shadow(terrain_height_m, latitude_deg=latitude_deg, longitude_deg=latitude_deg,
++        sina=sina, cosa=cosa, declination_rad=declination_rad, xtime_minutes=0., gmt_hours=0.,
++        radt_minutes=0., dx_m=dx_m, dy_m=dy_m, shadow_length_m=shadow_length_m,
++        parent_shadow_height_m=previous_height_m, geometry_override=(coszen, hour_angle_rad))
++
++
++__all__ = ["topographic_shadow", "topographic_shadow_from_geometry",
++           "toposhad_solar_geometry", "toposhad_solar_azimuth",
++           "toposhad_solar_geometry_from_seconds"]
+diff --git a/src/gpuwrf/runtime/checkpoint.py b/src/gpuwrf/runtime/checkpoint.py
+index fe7f81d5b2..de8771373b 100644
+--- a/src/gpuwrf/runtime/checkpoint.py
++++ b/src/gpuwrf/runtime/checkpoint.py
+@@ -207,6 +207,13 @@ def write_checkpoint(
+         "noahmp_land_field_order": None,
+         "noahmp_format": None,
+     }
++    from gpuwrf.io.topographic_shadow_schema import marker as shadow_marker, validate as validate_shadow
++    shadow_diag = getattr(runtime_state, "radiation_diagnostics", None)
++    shadow_version = shadow_marker(shadow_diag)
++    if shadow_version is not None:
++        payload["topographic_shadow_schema_version"] = shadow_version
++    validate_shadow(getattr(payload["runtime_state"], "radiation_diagnostics", None), shadow_version,
++                    state.t_skin.shape, namelist=namelist)
+     if epsilon_pbl_active(namelist):
+         payload['epsilon_pbl_schema_version']=EPSILON_PBL_SCHEMA_VERSION
+     from gpuwrf.tracers.restart import configuration as tracer_configuration
+@@ -348,6 +355,14 @@ def _read_payload(path: str | Path, *, namelist=None) -> dict[str, Any]:
+         if config is not None:
+             validate_rad_diag(getattr(runtime, "radiation_diagnostics", None), config,
+                               payload.get("rad_diag_schema_version"), fields["theta"].shape)
++    from gpuwrf.io.topographic_shadow_schema import validate as validate_shadow
++    validate_shadow(getattr(runtime, "radiation_diagnostics", None),
++                    payload.get("topographic_shadow_schema_version"), fields["t_skin"].shape,
++                    namelist=payload.get("namelist"))
++    if namelist is not None:
++        validate_shadow(getattr(runtime, "radiation_diagnostics", None),
++                        payload.get("topographic_shadow_schema_version"), fields["t_skin"].shape,
++                        namelist=namelist)
+     validate_legacy(getattr(runtime,'radiation_diagnostics',None),getattr(runtime,'gfdl_radiation',None),
+         payload.get('namelist'),payload.get('flg_gfdl_schema'),state_shape=fields['qv'].shape)
+     if namelist is not None:
+diff --git a/src/gpuwrf/runtime/operational_mode.py b/src/gpuwrf/runtime/operational_mode.py
+index c8ecd0d0e3..6a484b4028 100644
+--- a/src/gpuwrf/runtime/operational_mode.py
++++ b/src/gpuwrf/runtime/operational_mode.py
+@@ -235,6 +235,11 @@ from gpuwrf.dynamics.core.small_step_finish import small_step_finish_wrf
+ from gpuwrf.dynamics.core.small_step_prep import SmallStepPrepState, small_step_prep_wrf
+ from gpuwrf.dynamics.tendencies import add_scaled_tendencies
+ from gpuwrf.runtime.operational_state import OperationalCarry, initial_operational_carry
++from gpuwrf.coupling.topographic_shadow import (
++    cold_kwargs as _shadow_cold_kwargs,
++    held_kwargs as _shadow_held_kwargs,
++    seed as _seed_topographic_shadow,
++)
+ 
+ 
+ configure_jax_x64()
+@@ -7385,6 +7390,7 @@ def noahmp_initial_rad(
+         topo_shading=int(namelist.topo_shading),
+         slope_rad=int(namelist.slope_rad),
+         shadow_length_m=float(namelist.topo_shadow_length_m),
++        **_shadow_cold_kwargs(namelist, state),
+         land_state=land_state,
+         _kernel_call=_kernel_call,
+         with_clear_sky=True,
+@@ -8127,6 +8133,7 @@ def _initial_carry_for_run(state: State, namelist: OperationalNamelist) -> Opera
+     if native_real_carry:
+         from gpuwrf.kernels.dyn_carry_fp32 import real_carry, real_scratch
+         result = real_carry(real_scratch(result))
++    result = _seed_topographic_shadow(result, namelist)
+     if census_enabled():
+         result = result.replace(census=count_work(
+             initial_census(), "radiation_init_calls", init_radiation_calls
+@@ -8587,6 +8594,7 @@ def _refresh_rrtmg_driver(carry, namelist, lead_seconds, run_radiation, clock_ba
+                 radiation_static=namelist.radiation_static,
+                 topo_shading=int(namelist.topo_shading), slope_rad=int(namelist.slope_rad),
+                 shadow_length_m=float(namelist.topo_shadow_length_m),
++                **_shadow_held_kwargs(namelist, carry.radiation_diagnostics),
+                 land_state=land_for_rad, _with_diagnostics=True, with_clear_sky=True,
+                 **({"with_rad_diag": True} if getattr(namelist, "rad_diag", 0) else {}),
+                 use_mp_re=int(mp_re_active(namelist)),
+@@ -8719,6 +8727,7 @@ def _refresh_noahmp_rad(state, namelist, lead_seconds, run_radiation, held_rad,
+             topo_shading=int(namelist.topo_shading),
+             slope_rad=int(namelist.slope_rad),
+             shadow_length_m=float(namelist.topo_shadow_length_m),
++            **(_shadow_held_kwargs(namelist, held_diagnostics) if held_diagnostics is not None else {}),
+             land_state=land_state,
+             use_mp_re=int(mp_re_active(namelist)),
+             mp_physics=int(namelist.mp_physics),
+diff --git a/src/gpuwrf/runtime/restart_store.py b/src/gpuwrf/runtime/restart_store.py
+index d1dca8a9c1..2dcbbef01e 100644
+--- a/src/gpuwrf/runtime/restart_store.py
++++ b/src/gpuwrf/runtime/restart_store.py
+@@ -181,6 +181,7 @@ def nested_identity(config, bundles, run_start):
+             if path.is_file():
+                 inputs[path.name] = _hash_file(path)
+     from gpuwrf.physics.rrtmg_mp_re import mp_re_config
++    from gpuwrf.io.topographic_shadow_schema import configuration as shadow_configuration
+     from gpuwrf.diagnostics.solar_config import configuration as solar_configuration
+     from gpuwrf.io.pbl_epsilon_schema import epsilon_pbl_config
+     from gpuwrf.io.noahmp_options import restart_configuration
+@@ -218,6 +219,9 @@ def nested_identity(config, bundles, run_start):
+         "noahmp_irrigation_config": {name:irrigation_configuration(bundle.namelist) for name,bundle in bundles.items()},
+         "noahmp_options_config": {name:restart_configuration(bundle.namelist) for name,bundle in bundles.items()},
+         "mp_re_config": {name: mp_re_config(bundle.namelist) for name, bundle in bundles.items()},
++        "topographic_shadow_config": {
++            name: shadow_configuration(bundle.namelist)
++            for name, bundle in bundles.items()},
+         "temf_config": {
+             name: {
+                 "bl_pbl_physics": int(bundle.namelist.bl_pbl_physics),
+@@ -630,7 +634,8 @@ def _validate_snapshot(snapshot, manifest) -> None:
+             rad_config['rad_diag'] = rad_configs[name]
+         elif getattr(payload['extra_fields'].get('radiation_diagnostics'),'rad_diag',None) is not None:
+             raise ValueError('restart rad_diag configuration is missing (E78)')
+-        _validate_radiation_diagnostics_schema(payload, namelist=rad_config)
++        _validate_radiation_diagnostics_schema(payload, namelist=rad_config,
++            topographic_shadow_required=manifest['identity'].get('topographic_shadow_config',{}).get(name))
+         _validate_gwdo_diagnostics_schema(payload)
+         from gpuwrf.io.noahmp_mmf import validate_restart as validate_mmf
+         mmf_configs = manifest['identity'].get('noahmp_mmf_config')

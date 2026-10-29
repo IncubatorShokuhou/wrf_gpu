@@ -1,0 +1,43 @@
+{
+  "manager_decision_utc": "2026-10-27T05:42:58Z",
+  "G1": {
+    "status": "OPEN",
+    "deferred": false,
+    "green": false
+  },
+  "scheduled_window": "first ALISIOS GPU window after the v0.4.4 tag",
+  "run_state": "NOT_ARMED; no GPU allocation or launch performed",
+  "review": {
+    "design_commit": "3049dacf0f388ef042b7306bb938f3c255a0354b",
+    "critic": "cr-v05pre"
+  },
+  "frozen_plan": {
+    "path": "proofs/v05_hcb/GPU_PLAN.json",
+    "sha256": "c729d9b89c7a90f71b43837224f009668edf22e748bcf6463275421328c72773",
+    "changed": false
+  },
+  "diagnostic": {
+    "arms": [
+      "N5_A",
+      "N5_B_SAME_OPTIONS",
+      "N1_C"
+    ],
+    "per_arm_cap_s": 1500,
+    "private_executable_cache_roots": {
+      "N5_A": "<DATA_ROOT>/wrf_gpu2/scratch/v05-hcb/post_v044_diagnostic/N5_A",
+      "N5_B_SAME_OPTIONS": "<DATA_ROOT>/wrf_gpu2/scratch/v05-hcb/post_v044_diagnostic/N5_B_SAME_OPTIONS",
+      "N1_C": "<DATA_ROOT>/wrf_gpu2/scratch/v05-hcb/post_v044_diagnostic/N1_C"
+    },
+    "cache_policy": "E237: separate JAX/AOT/Triton/CUDA executable caches per arm; freeze actual N5_A tuning results and manifest for reuse, attest real lookup coverage; never share executable/HLO fallback stores",
+    "disk_peak_cap_GiB": 8,
+    "disk_floor_GiB": 365,
+    "allocation_policy": "No arm allocation before a current disk check and DISK-PLAN; peak must fit the frozen plan. No diagnostic caches allocated by this receipt."
+  },
+  "execution_admission": [
+    "v0.4.4 tag exists",
+    "manager-confirmed ALISIOS window/GO and valid GPU lease",
+    "critic findings closed",
+    "exact launcher/sequencer smoke and resource preflight",
+    "all existing GPU_PLAN scientific/identity/resource gates unchanged"
+  ]
+}

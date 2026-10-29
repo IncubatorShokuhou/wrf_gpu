@@ -50,7 +50,7 @@ import numpy as np
 
 from gpuwrf.contracts.ice_diagnostics import ice_diagnostic_leaves
 from gpuwrf.contracts.state import CONDITIONAL_STATE_LEAVES, State, mynn_sfc_wspd_enabled
-from gpuwrf.contracts.precision import GWDO_DIAGNOSTIC_LEAVES, LES_TKE_LEAVES, MP_RE_DIAGNOSTIC_LEAVES, SMS_CARRY_LEAVES, EPSILON_PBL_LEAVES, les_tke_active
+from gpuwrf.contracts.precision import GWDO_DIAGNOSTIC_LEAVES, LES_TKE_LEAVES, MP_RE_DIAGNOSTIC_LEAVES, SMS_CARRY_LEAVES, EPSILON_PBL_LEAVES, les_tke_active, MYNN_CLOUDPDF_LEAVES, mynn_cloudpdf_leaves
 from gpuwrf.io.pbl_epsilon_schema import EPSILON_PBL_SCHEMA_VERSION,validate_epsilon_state,validate_epsilon_history
 from gpuwrf.runtime.operational_state import OperationalCarry
 from gpuwrf.io.restart_schema import (
@@ -184,11 +184,13 @@ def _validate_state_field_order(recorded: tuple[str, ...], *, namelist=None) -> 
         raise ValueError("MP_RE restart is missing held Thompson effective radii (E78)")
     if les_tke_active(namelist) and any(field in LES_TKE_LEAVES for field in missing):
         raise ValueError("km_opt=2 restart is missing the prognostic LES TKE (WRF tke_2) (E78)")
+    if any(field in missing for field in mynn_cloudpdf_leaves(namelist)):
+        raise ValueError("bl_mynn_cloudpdf restart is missing held MYNN TSQ/COV/SH3D (E78)")
     if physics_option(namelist, 'km_opt') == 5 and any(field in SMS_CARRY_LEAVES for field in missing):
         raise ValueError('km_opt=5 restart is missing held SMS carry (E78)')
     if any(name in missing for name in ice_diagnostic_leaves(physics_option(namelist, "mp_physics", 8))):
         raise ValueError("restart is missing held ice diagnostics (E78)")
-    optional = (*CONDITIONAL_STATE_LEAVES, *GWDO_DIAGNOSTIC_LEAVES, *MP_RE_DIAGNOSTIC_LEAVES, *LES_TKE_LEAVES, *SMS_CARRY_LEAVES, *EPSILON_PBL_LEAVES)
+    optional = (*CONDITIONAL_STATE_LEAVES, *GWDO_DIAGNOSTIC_LEAVES, *MP_RE_DIAGNOSTIC_LEAVES, *LES_TKE_LEAVES, *SMS_CARRY_LEAVES, *EPSILON_PBL_LEAVES, *MYNN_CLOUDPDF_LEAVES)
     if any(field not in optional for field in missing):
         raise ValueError(
             "restart State fields are missing non-conditional leaves: "
@@ -579,6 +581,8 @@ def _read_payload(path: str | Path, *, namelist=None, feedback_schema=None) -> d
     from gpuwrf.diagnostics.mynn_budget import validate_payload as validate_mynn_payload
     validate_mynn_payload(carry,payload['namelist'])
     if namelist is not None:validate_mynn_payload(carry,namelist)
+    from gpuwrf.io.mynn_cloudpdf_schema import validate as validate_cloudpdf
+    validate_cloudpdf(carry["state_fields"], payload["namelist"], namelist)
     from gpuwrf.diagnostics.solar_config import validate_restart as validate_solar_restart
     validate_solar_restart(carry.get("extra_fields", {}).get("solar_interpolation"),
                            carry.get("solar_interpolation_config"),

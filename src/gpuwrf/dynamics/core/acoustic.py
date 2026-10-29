@@ -99,6 +99,7 @@ class AcousticCoreConfig:
     damp_opt: int = 0
     dampcoef: float = 0.0
     damping_traced: bool = False  # opt-in scalar operands; native solver only
+    dampmag: object | None = None  # host-bound RK strength for runtime dampcoef
     zdamp: float = 5000.0
     w_alpha: float = W_ALPHA
     w_crit_cfl: float = W_BETA

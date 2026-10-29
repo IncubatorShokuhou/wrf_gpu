@@ -863,6 +863,12 @@ _RECOGNIZED_CONTROLS: tuple[RecognizedControl, ...] = (
         "Use icloud_bl=0 or 1 (WRF default).",
     ),
     RecognizedControl(
+        "bl_mynn_cloudpdf", "MYNN-cloud-PDF", frozenset({0, 1, 2}),
+        "WRF CASE 0/1 with held TSQ/COV/SH3D, or default CASE 2. "
+        "MYNN5 only; cycling, stochastic and budget-history combinations unqualified. GPU pending.",
+        "Use bl_mynn_cloudpdf=0/1/2; one scalar shared by all domains.",
+    ),
+    RecognizedControl(
         "bl_mynn_tkeadvect", "MYNN-TKE-advection",
         frozenset({0}),
         "recognized; MYNN prognostic-TKE horizontal advection "

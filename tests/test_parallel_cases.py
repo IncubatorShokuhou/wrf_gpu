@@ -352,6 +352,29 @@ def test_runtime_parameters_reach_every_case_argv_unchanged(fake, monkeypatch):
         with pytest.raises(ValueError):
             pc.check_cli_args(bad)
 
+
+def test_per_case_runtime_parameters_reach_each_child(fake, monkeypatch):
+    tmp, cases, base = fake
+    seen = tmp / "argv"
+    seen.mkdir()
+    monkeypatch.setenv("FAKE_ARGV_DIR", str(seen))
+    monkeypatch.setenv("FAKE_SLEEP", "0")
+    for i, case in enumerate(cases):
+        (Path(case)/"runtime_parameters.json").write_text(json.dumps({"member": i}))
+    sizer = lambda ds, a, e: [{"need_bytes": GIB} for _ in ds]
+    assert pc.main([*base, "--case-runtime-parameters", "runtime_parameters.json", *cases],
+                   sizer=sizer, gpu=lambda: (32*GIB, 30*GIB)) == 0
+    for case in cases:
+        argv = json.loads((seen/(Path(case).name+".json")).read_text())
+        assert argv.count("--runtime-parameters") == 1
+        assert argv[argv.index("--runtime-parameters")+1] == str(Path(case)/"runtime_parameters.json")
+    for name in ("../runtime_parameters.json", "missing.json", "."):
+        with pytest.raises(SystemExit):
+            pc.parse([*base, "--case-runtime-parameters", name, *cases])
+    with pytest.raises(SystemExit):
+        pc.parse([*base, "--case-runtime-parameters", "runtime_parameters.json", *cases,
+                  "--", "--runtime-parameters=shared.json"])
+
 # --- review-s2small Item 18 C2: no started case or helper survives a launcher failure ------------------------------
 
 def _alive(proc) -> bool:

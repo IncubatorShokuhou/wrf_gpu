@@ -43,7 +43,7 @@ def test_family_roundtrip_keys_and_digest(native):
     assert carry_aval_hash((a,), {}) == carry_aval_hash((b,), {})
     other_names = rp.bind_diffusion_parameters(original, {"zdamp": 5000., "dampcoef": .2})
     assert static_config_hash(a) != static_config_hash(other_names)
-    assert len(jax.tree.leaves(a)) == len(jax.tree.leaves(original)) + 2
+    assert len(jax.tree.leaves(a)) == len(jax.tree.leaves(original)) + 3  # two controls + bound RK strengths
     back = jax.tree.unflatten(jax.tree.structure(a), jax.tree.leaves(a))
     assert rp.restart_parameter_digests(back) == rp.restart_parameter_digests(a)
     assert rp.restart_parameter_digests(a) != rp.restart_parameter_digests(b)

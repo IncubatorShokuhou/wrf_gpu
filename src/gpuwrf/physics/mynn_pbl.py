@@ -67,7 +67,9 @@ from gpuwrf.physics.mynn_constants import (
     ZMAX,
 )
 from gpuwrf.physics.mynn_sgs_cloud import (
+    CLOUDPDF_OPTIONS,
     dmp_shallow_cu_overwrite,
+    mym_condensation_cloudpdf01,
     mym_condensation_cloudpdf2,
     sgs_cloud_enabled,
 )
@@ -222,12 +224,17 @@ class MynnPBLColumnState:
         # WRF MYNN passive number scalars beyond QNI (QNC, QNWFA, QNIFA; dict keyed
         # by State leaf name, None when the MP carries none of them).
         "passive",
+        # Opt-in bl_mynn_cloudpdf=0 (tsq/cov) and 1/-1 (sh3d) previous-step MYNN
+        # state; None (no leaves) for the Registry default cloudpdf=2.
+        "tsq",
+        "cov",
+        "sh3d",
     )
 
     def __init__(self, u, v, w, theta, qv, tke, p, rho, dz, km, kh, el, qc=None, qi=None,
                  qs=None, qsq=None, qc_bl=None, qi_bl=None, cldfra_bl=None,
                  maxmf=None, maxwidth=None, ztop_plume=None, exner=None, ni=None, spp_pattern=None,
-                 passive=None) -> None:
+                 passive=None, tsq=None, cov=None, sh3d=None) -> None:
         self.u = u
         self.v = v
         self.w = w
@@ -251,6 +258,9 @@ class MynnPBLColumnState:
         self.ni = ni
         self.spp_pattern = spp_pattern
         self.passive = passive
+        self.tsq = tsq
+        self.cov = cov
+        self.sh3d = sh3d
         for name, value in (("maxmf", maxmf), ("maxwidth", maxwidth), ("ztop_plume", ztop_plume)):
             setattr(self, name, jnp.zeros_like(qv[..., 0]) if value is None else value)
 
@@ -1111,6 +1121,7 @@ def _mym_length_option1_with(
 def mynn_coldstart_init_columns(
     state: MynnPBLColumnState, ustar, dx, xland, rmol_init=None,
     *, initialize_qke=None, return_moments: bool = False, alp1=None,
+    return_cloudpdf_moments: bool = False,
 ) -> tuple[jax.Array, jax.Array]:
     """WRF MYNN first-call turbulence-state initialization (cold start).
 
@@ -1216,6 +1227,15 @@ def mynn_coldstart_init_columns(
     qke_kts = 0.5 * (qke[..., 0] + qke[..., 1])
     qke = jnp.concatenate((qke_kts[..., None], qke[..., 1:-1], qke[..., -2:-1]), axis=-1)
     if return_moments:
+        if return_cloudpdf_moments:
+            # mym_initialize:1380-1411, last pass before the boundary QKE copy.
+            # TSQ/COV use THL and SQV gradients, exactly like initialized QSQ.
+            elq = el * qkw
+            profiles = []
+            for production in (elq * sh * (_dtl ** 2), elq * sh * _dtl * init_dqw):
+                inner = b2l * (production[..., 2:] + production[..., 1:-1])
+                profiles.append(jnp.concatenate((_zero_edge_like(inner), inner, inner[..., -1:]), axis=-1))
+            return qke, pblh, el, qsq, *profiles, sh
         return qke, pblh, el, qsq
     return qke, pblh
 
@@ -1440,6 +1460,9 @@ def _mym_turbulence(state: MynnPBLColumnState, qke, fltv, ustar, dx, xland=1.0,
         "qcd": qcd,
         "qshear": qshear,
         "qbuoy": qbuoy,
+        # Final mym_turbulence sh (incl. floors) for the opt-in cloudpdf=1 sh3d carry; a
+        # reference only, so the default trace gains no equation (_cloudpdf_state_updates).
+        "sh": sh,
     }
 
 
@@ -1896,8 +1919,79 @@ def _retrieve_exchange_coeffs(state: MynnPBLColumnState, turb):
     return km, kh
 
 
+def _check_cloudpdf(state: MynnPBLColumnState, cloudpdf: int) -> None:
+    """Static bl_mynn_cloudpdf contract: options and the carried previous-step inputs."""
+
+    if cloudpdf not in CLOUDPDF_OPTIONS:
+        raise ValueError(f"bl_mynn_cloudpdf={cloudpdf!r} unsupported; WRF options {sorted(CLOUDPDF_OPTIONS)}")
+    if cloudpdf != 2 and not _MYNN_SGS_CLOUD:
+        raise ValueError("bl_mynn_cloudpdf != 2 requires the MYNN SGS-cloud chain (GPUWRF_MYNN_SGS_CLOUD)")
+    if cloudpdf == 0 and (state.tsq is None or state.cov is None):
+        raise ValueError("bl_mynn_cloudpdf=0 needs the previous-step tsq/cov columns")
+    if cloudpdf in (1, -1) and state.sh3d is None:
+        raise ValueError("bl_mynn_cloudpdf=1/-1 needs the previous-step sh3d column")
+
+
+def _mym_condensation_option(state: MynnPBLColumnState, cloudpdf: int, *, exner, sqw, sqc, sqi, pblh):
+    """WRF mym_condensation for the opt-in bl_mynn_cloudpdf in {-2, -1, 0, 1}.
+
+    The Registry default 2 stays on the callers' original CASE(2) call.  -2
+    evaluates CASE(2) and then zeroes the SGS cloud (:3807-3814).
+    """
+
+    if cloudpdf == -2:
+        qc_bl, _qi_bl, _cf = mym_condensation_cloudpdf2(
+            theta=state.theta, p=state.p, exner=exner, dz=state.dz, qw=sqw, qc=sqc, qi=sqi,
+            qs=_specific_snow_content(state), qsq=state.qsq, pblh=pblh,
+            **({} if state.spp_pattern is None else {"spp_pattern": state.spp_pattern}),
+        )
+        zeros = jnp.zeros_like(qc_bl)
+        return zeros, zeros, zeros
+    return mym_condensation_cloudpdf01(
+        cloudpdf, theta=state.theta, p=state.p, exner=exner, dz=state.dz,
+        thl=_liquid_potential_temperature(state), qw=sqw,
+        tsq=state.tsq, qsq=state.qsq, cov=state.cov, el=state.el, sh=state.sh3d,
+    )
+
+
+def _mym_predict_tsq_cov(state: MynnPBLColumnState, turb):
+    """WRF mym_predict level-2 diagnostic TSQ/COV for closure < 3 (:3324-3337).
+
+    ``qkw`` is the predict-entry sqrt(qke) (:3046), ``el`` the mym_turbulence
+    length, and ``pdt/pdc(kts) = pdt/pdc(kts+1)`` (:3079-3081); tsq/cov(kte)
+    copy kte-1.  Consumed only by the next step's cloudpdf=0 condensation.
+    """
+
+    qkw = jnp.sqrt(jnp.maximum(2.0 * state.tke, 0.0))[..., :-1]
+    el = turb["el"]
+    b2l = jnp.where(qkw <= 0.0, 0.0,
+                    B2 * 0.25 * (el[..., 1:] + el[..., :-1]) / jnp.where(qkw <= 0.0, 1.0, qkw))
+    out = []
+    for name in ("pdt", "pdc"):
+        prod = turb[name]
+        prod = jnp.concatenate((prod[..., 1:2], prod[..., 1:]), axis=-1)
+        inner = b2l * (prod[..., 1:] + prod[..., :-1])
+        out.append(jnp.concatenate((inner, inner[..., -1:]), axis=-1))
+    return tuple(out)
+
+
+def _cloudpdf_state_updates(state: MynnPBLColumnState, turb, cloudpdf: int) -> dict:
+    """Previous-step MYNN state the next call's opt-in condensation reads."""
+
+    if cloudpdf == 0:
+        tsq, cov = _mym_predict_tsq_cov(state, turb)
+        return {"tsq": tsq.astype(state.tsq.dtype), "cov": cov.astype(state.cov.dtype)}
+    if cloudpdf in (1, -1):
+        # WRF sh1 -> sh3d after mym_turbulence; sh(kts)=0 from mym_level2 (:1517)
+        # because the closure loop starts at kts+1.
+        sh3d = jnp.concatenate((_zero_edge_like(state.tke), turb["sh"][..., 1:]), axis=-1)
+        return {"sh3d": sh3d.astype(state.sh3d.dtype)}
+    return {}
+
+
 def _step_mynn_pbl_impl_with_pblh(state: MynnPBLColumnState, dt: float, debug: bool,
-                                  surface=None, edmf: bool = False, dx: float = 1000.0, sqfac=None):
+                                  surface=None, edmf: bool = False, dx: float = 1000.0,
+                                  cloudpdf: int = 2, sqfac=None):
     """Unjitted implementation; returns the advanced state and the MYNN PBLH.
 
     ``edmf`` activates the MYNN-EDMF mass-flux nonlocal scalar transport (the
@@ -1909,8 +2003,10 @@ def _step_mynn_pbl_impl_with_pblh(state: MynnPBLColumnState, dt: float, debug: b
     DMP_mf (+ shallow-cu cldfra/qc_bl overwrite) -> SGS-aware ``thlv`` ->
     mym_turbulence -> mym_predict (qke + closure-2.6 ``qsq``) -> tendencies.
     ``GPUWRF_MYNN_SGS_CLOUD=0`` rolls back to the pre-v0.15 dry-buoyancy path.
+    ``cloudpdf`` is the static WRF ``bl_mynn_cloudpdf`` (Registry default 2).
     """
 
+    _check_cloudpdf(state, cloudpdf)
     state = _clip_state(state)
     flux, wind, fltv, rhosfc = _surface_terms(state, surface)
     qke = 2.0 * state.tke
@@ -1922,19 +2018,23 @@ def _step_mynn_pbl_impl_with_pblh(state: MynnPBLColumnState, dt: float, debug: b
         pblh0 = _get_pblh(state, qke, flux.xland)
         sqv, sqc, sqi, sqw = _specific_moisture_components(state)
         exner = _column_exner(state)
-        qc_bl, qi_bl, cldfra_bl = mym_condensation_cloudpdf2(
-            theta=state.theta,
-            p=state.p,
-            exner=exner,
-            dz=state.dz,
-            qw=sqw,
-            qc=sqc,
-            qi=sqi,
-            qs=_specific_snow_content(state),
-            qsq=state.qsq,
-            pblh=pblh0,
-            **({} if state.spp_pattern is None else {"spp_pattern":state.spp_pattern}),
-        )
+        if cloudpdf == 2:
+            qc_bl, qi_bl, cldfra_bl = mym_condensation_cloudpdf2(
+                theta=state.theta,
+                p=state.p,
+                exner=exner,
+                dz=state.dz,
+                qw=sqw,
+                qc=sqc,
+                qi=sqi,
+                qs=_specific_snow_content(state),
+                qsq=state.qsq,
+                pblh=pblh0,
+                **({} if state.spp_pattern is None else {"spp_pattern":state.spp_pattern}),
+            )
+        else:
+            qc_bl, qi_bl, cldfra_bl = _mym_condensation_option(
+                state, cloudpdf, exner=exner, sqw=sqw, sqc=sqc, sqi=sqi, pblh=pblh0)
         if edmf:
             mf = _edmf_arrays_from_state(state, flux, fltv, pblh0, dt, dx,
                 **_edmf_fresh_cloud_kwargs(qc_bl, cldfra_bl))
@@ -1995,7 +2095,8 @@ def _step_mynn_pbl_impl_with_pblh(state: MynnPBLColumnState, dt: float, debug: b
     return (
         state.replace(u=u, v=v, theta=theta, qv=qv, tke=tke, km=km, kh=kh, el=el, qsq=qsq_new, qc=qc, qi=qi,
                       **ni_update,
-                      **_mynn_plume_diagnostics(state, mf)),
+                      **_mynn_plume_diagnostics(state, mf),
+                      **_cloudpdf_state_updates(state, turb, cloudpdf)),
         turb["pblh"],
     )
 
@@ -2079,7 +2180,7 @@ def _scatter_columns_leaf(carry, tile, start):
 
 
 def _tiled_mynn_step(state: MynnPBLColumnState, dt: float, debug: bool, surface,
-                     edmf: bool, dx: float, sqfac=None):
+                     edmf: bool, dx: float, cloudpdf: int = 2, sqfac=None):
     """Runs the MYNN column step over fixed-size leading-column tiles.
 
     Engages only for a flat ``(B, nz)`` batch larger than the tile width; the
@@ -2098,7 +2199,7 @@ def _tiled_mynn_step(state: MynnPBLColumnState, dt: float, debug: bool, surface,
         and int(profile.shape[0]) > _MYNN_COLUMN_TILE_COLS
     )
     if not tiling_active:
-        return _step_mynn_pbl_impl_with_pblh(state, dt, debug, surface, edmf, dx, **_sqfac_kwargs(sqfac))
+        return _step_mynn_pbl_impl_with_pblh(state, dt, debug, surface, edmf, dx, cloudpdf, **_sqfac_kwargs(sqfac))
 
     ncol = int(profile.shape[0])
     tile_cols = int(_MYNN_COLUMN_TILE_COLS)
@@ -2125,7 +2226,7 @@ def _tiled_mynn_step(state: MynnPBLColumnState, dt: float, debug: bool, surface,
             else None
         )
         out_state, out_pblh = _step_mynn_pbl_impl_with_pblh(
-            tile_state, dt, debug, tile_surface, edmf, dx, **_sqfac_kwargs(sqfac)
+            tile_state, dt, debug, tile_surface, edmf, dx, cloudpdf, **_sqfac_kwargs(sqfac)
         )
         carry_state, carry_pblh = carry
         next_state = jax.tree_util.tree_map(
@@ -2141,10 +2242,10 @@ def _tiled_mynn_step(state: MynnPBLColumnState, dt: float, debug: bool, surface,
     return jax.tree_util.tree_map(unpad, out_state), out_pblh[:ncol]
 
 
-@partial(jax.jit, static_argnames=("dt", "debug", "edmf", "dx"))
+@partial(jax.jit, static_argnames=("dt", "debug", "edmf", "dx", "cloudpdf"))
 def step_mynn_pbl_column(
     state: MynnPBLColumnState, dt: float, *, debug: bool = False, surface=None,
-    edmf: bool = False, dx: float = 1000.0, sqfac=None, mynn_coefficients=None,
+    edmf: bool = False, dx: float = 1000.0, cloudpdf: int = 2, sqfac=None, mynn_coefficients=None,
 ) -> MynnPBLColumnState:
     """Advances one fused MYNN2.5 column step.
 
@@ -2157,18 +2258,18 @@ def step_mynn_pbl_column(
     if _env_bool("GPUWRF_MYNN_FP32_COLUMNS", False):
         from gpuwrf.kernels.phys_mynn_columns import step_mynn_columns_native
         return step_mynn_columns_native(state, dt, debug=debug, surface=surface,
-                                        edmf=edmf, dx=dx, **_sqfac_kwargs(sqfac),
+                                        edmf=edmf, dx=dx, cloudpdf=cloudpdf, **_sqfac_kwargs(sqfac),
                                         **({} if mynn_coefficients is None else {"mynn_coefficients": mynn_coefficients}))[0]
     if mynn_coefficients is not None:
         raise ValueError("runtime MYNN coefficients require native FP32 columns")
-    next_state, _pblh = _tiled_mynn_step(state, dt, debug, surface, edmf, dx, **_sqfac_kwargs(sqfac))
+    next_state, _pblh = _tiled_mynn_step(state, dt, debug, surface, edmf, dx, cloudpdf, **_sqfac_kwargs(sqfac))
     return next_state
 
 
-@partial(jax.jit, static_argnames=("dt", "debug", "edmf", "dx"))
+@partial(jax.jit, static_argnames=("dt", "debug", "edmf", "dx", "cloudpdf"))
 def step_mynn_pbl_column_with_pblh(
     state: MynnPBLColumnState, dt: float, *, debug: bool = False, surface=None,
-    edmf: bool = False, dx: float = 1000.0, sqfac=None, mynn_coefficients=None,
+    edmf: bool = False, dx: float = 1000.0, cloudpdf: int = 2, sqfac=None, mynn_coefficients=None,
 ):
     """Advance one MYNN column step and also return the diagnosed PBL height.
 
@@ -2180,11 +2281,11 @@ def step_mynn_pbl_column_with_pblh(
     if _env_bool("GPUWRF_MYNN_FP32_COLUMNS", False):
         from gpuwrf.kernels.phys_mynn_columns import step_mynn_columns_native
         return step_mynn_columns_native(state, dt, debug=debug, surface=surface,
-                                        edmf=edmf, dx=dx, **_sqfac_kwargs(sqfac),
+                                        edmf=edmf, dx=dx, cloudpdf=cloudpdf, **_sqfac_kwargs(sqfac),
                                         **({} if mynn_coefficients is None else {"mynn_coefficients": mynn_coefficients}))
     if mynn_coefficients is not None:
         raise ValueError("runtime MYNN coefficients require native FP32 columns")
-    return _tiled_mynn_step(state, dt, debug, surface, edmf, dx, **_sqfac_kwargs(sqfac))
+    return _tiled_mynn_step(state, dt, debug, surface, edmf, dx, cloudpdf, **_sqfac_kwargs(sqfac))
 
 
 @partial(jax.jit, static_argnames=("dt",))

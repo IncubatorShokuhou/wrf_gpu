@@ -42,6 +42,7 @@ from gpuwrf.contracts.grid import (  # noqa: E402
 from gpuwrf.contracts.precision import (  # noqa: E402
     DEFAULT_DTYPES, PRECISION_MATRIX, STATE_FIELD_ORDER, EPSILON_PBL_LEAVES,
     MP_RE_DIAGNOSTIC_LEAVES, LES_TKE_LEAVES, SMS_CARRY_LEAVES, WRITER_PROFILE_LEAVES,
+    MYNN_CLOUDPDF_LEAVES,
 )
 from gpuwrf.contracts.state import (  # noqa: E402
     State, Tendencies, _state_field_shapes, EXTRA_SCALAR_BOUNDARY_SPECIES,
@@ -319,7 +320,8 @@ def field_shapes_for(nz: int, ny: int, nx: int, *, tracer_count: int = 1) -> dic
                   *(f"{name}_bdy" for name in EXTRA_SCALAR_BOUNDARY_SPECIES)):
         shapes[field] = shapes["qv_bdy"]
     shapes.update({name: (nz, ny, nx) for name in
-                   (*MP_RE_DIAGNOSTIC_LEAVES, *LES_TKE_LEAVES, *EPSILON_PBL_LEAVES, *WRITER_PROFILE_LEAVES)})
+                   (*MP_RE_DIAGNOSTIC_LEAVES, *LES_TKE_LEAVES, *EPSILON_PBL_LEAVES, *WRITER_PROFILE_LEAVES,
+                    *MYNN_CLOUDPDF_LEAVES)})
     shapes["epsilon_pbl_step"] = ()  # seed_epsilon_pbl_state: one int32 scalar.
     shapes.update({name: (ny, nx) for name in (*SMS_CARRY_LEAVES, "sfc_wspd")})
     # tracers.runtime.initialize_tracers uses two boundary times and an

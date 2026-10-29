@@ -1,0 +1,167 @@
+{
+  "scope": "Bounded CPU nested-root OFF/default/changed regression; not WRF/GPU fidelity.",
+  "gpu_executed": false,
+  "platform": "cpu",
+  "source": "<USER_HOME>/wrf_gpu2_lanes/v05-diffusion/candidate",
+  "commit": "7c83a67469dd8dbbe18e6da69b4b93d6e0b68e28",
+  "cache": "NONE: GPUWRF_JAX_CACHE=0, GPUWRF_NESTED_AOT=0",
+  "phase": "PASS",
+  "harness_sha256": "fc3a021b17b8700f008a43cd8c2a07765f7c2bf00d6dcd3b28d9c9fdef442441",
+  "prepare_only": false,
+  "stepped_roots": {
+    "off": 1,
+    "on": 1,
+    "changed": 1
+  },
+  "wall_s": 1344.930892356002,
+  "peak_rss_KiB": 15234216,
+  "inputs": {
+    "namelist.input": "5ef3a96be3324deb712b0e0114288244bcf5f53edb21461fee7374aa766cef4b",
+    "wrfinput_d02": "b3013bbb337adbe20c10331f46b309d288424e54a41e9cc4ba2e8eba53abb16f",
+    "wrfbdy_d01": "296cef912e17dc0dfff4b78103dedfb1329cd184de5bc2cd0d44cc6edf823599",
+    "wrfinput_d01": "1024ddb7d6badc958fb1a4f385117ce5c46d20249b75bcce2ea4261d34f648f0"
+  },
+  "schedule": {
+    "input_dir": "<DATA_ROOT>/wrf_gpu2/v025/s0_case_20260725",
+    "namelist_sha256": "5ef3a96be3324deb712b0e0114288244bcf5f53edb21461fee7374aa766cef4b",
+    "hours": 3,
+    "dt_s": {
+      "d01": 54.0,
+      "d02": 18.0
+    },
+    "total_steps": {
+      "d01": 200,
+      "d02": 600
+    },
+    "history_interval_minutes": {
+      "d01": 60.0,
+      "d02": 60.0
+    },
+    "output_cadence_steps": {
+      "d01": 67,
+      "d02": 200
+    },
+    "all_output_alarm_steps": {
+      "d01": [
+        67,
+        134,
+        200
+      ],
+      "d02": [
+        200,
+        400,
+        600
+      ]
+    },
+    "output_alarm_steps": {
+      "d01": [
+        67,
+        134,
+        200
+      ]
+    },
+    "block_between": false,
+    "root_sync_cadence": 1,
+    "event_aware_fusion_k": 0,
+    "output_observer": "non-None no-op; scheduling only, no IO cost claim"
+  },
+  "dt_s": {
+    "d01": 54.0,
+    "d02": 18.0
+  },
+  "values": {
+    "on": {
+      "c_s": 0.25,
+      "diff_6th_factor": 0.12,
+      "dampcoef": 0.2,
+      "zdamp": 5000.0,
+      "w_alpha": 0.3,
+      "w_beta": 1.0,
+      "w_crit_cfl": 1.0
+    },
+    "changed": {
+      "c_s": 0.5,
+      "diff_6th_factor": 0.12,
+      "dampcoef": 0.2,
+      "zdamp": 5000.0,
+      "w_alpha": 0.3,
+      "w_beta": 1.0,
+      "w_crit_cfl": 1.0
+    }
+  },
+  "prepared_work": {
+    "off": {
+      "d01": {
+        "n_steps": 1,
+        "cadence": 33
+      },
+      "d02": {
+        "n_steps": 3,
+        "cadence": 100
+      }
+    },
+    "on": {
+      "d01": {
+        "n_steps": 1,
+        "cadence": 33
+      },
+      "d02": {
+        "n_steps": 3,
+        "cadence": 100
+      }
+    },
+    "changed": {
+      "d01": {
+        "n_steps": 1,
+        "cadence": 33
+      },
+      "d02": {
+        "n_steps": 3,
+        "cadence": 100
+      }
+    }
+  },
+  "leaves": {
+    "off": 355,
+    "on": 355,
+    "changed": 355
+  },
+  "own_steps": {
+    "off": {
+      "d01": 1,
+      "d02": 3
+    },
+    "on": {
+      "d01": 1,
+      "d02": 3
+    },
+    "changed": {
+      "d01": 1,
+      "d02": 3
+    }
+  },
+  "cpu_chunk_cache_size": {
+    "off": 2,
+    "on": 2,
+    "changed": 2
+  },
+  "default_differences": [],
+  "default_byte_exact": true,
+  "changed_active": true,
+  "same_on_changed_keys": true,
+  "keys": {
+    "off": {
+      "d01": "64a7387ca234e637471d5fd137373374c40bfccb343ce3e894e3cf649994a75d",
+      "d02": "b44541c29921995a570a3f2ada42200f58c2bb5ceb8f4b7424c43c3f799d21b9"
+    },
+    "on": {
+      "d01": "cd01585653388d18fe60b2452028610c96c28bf2c4c01e1782eb61bd5adc9769",
+      "d02": "e2fd1b84ecfb81dcb928b189300b9636c8ac755bf0b526c6b5676a5d9facfb61"
+    },
+    "changed": {
+      "d01": "cd01585653388d18fe60b2452028610c96c28bf2c4c01e1782eb61bd5adc9769",
+      "d02": "e2fd1b84ecfb81dcb928b189300b9636c8ac755bf0b526c6b5676a5d9facfb61"
+    }
+  },
+  "same_on_changed_chunk_cache_size": true
+}

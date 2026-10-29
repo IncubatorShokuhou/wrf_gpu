@@ -1,3 +1,43 @@
+# Known issues — v0.4.5 candidate
+
+**v0.4.5: real-world checks pass with the disclosed graupel trace disposition below.**
+
+## v0.4.5: final-frame d03 graupel trace remains open
+
+On WN3 0227 at 72 h, GPU QGRAUP is zero and CPU-WRF retains a trace
+(maximum about 6.58e-12 kg/kg). The sedimentation fix is active in the GPU
+program. Pristine WRF on the tested reconstructed RC t72 columns also gives
+zero. These are reconstructed hourly inputs, not actual pre-microphysics
+savepoints. The trajectory and the process responsible between 71 and 72 h
+remain OPEN; a coupled “trajectory trace, not a port defect” conclusion has
+not been established. See v45-graupel report commit `340d8d8b56`.
+Closing that cause is a proposed v0.4.6 item. The raw integrity failure remains
+visible. The [manager decision](docs/release/evidence/v045/MANAGER_DECISION_V045_QGRAUP_20261029.md)
+explicitly accepts this disclosed trace disposition for v0.4.5. The
+[trajectory report](docs/release/evidence/v045/RC_TRAJECTORY_REPORT.md) retains
+the evidence and open cause; no automatic waiver or tolerance change is added.
+
+## v0.4.5: qualification limits
+
+- Diffusion/damping overrides, including `c_s`, and the nine new LSM controls
+  stay **REFUSED**. CPU implementation is not GPU qualification.
+- MYNN cloud PDF modes 0/1 are CPU-qualified development options; coupled GPU
+  qualification is pending. Default mode 2 is unchanged.
+- RW3 now uses the full original CPU-twin floor through the regular frozen A3
+  rule. Five checks are FLOOR-LIMITED, zero REAL FAIL; raw D6 remains FAIL.
+  This covers d03 RAINNC at 69–72 h and W at 69 h; it is not raw error removal.
+- The fresh two-pair speed/memory cohort passes: stepping N/O 0.9965,
+  S=0.0181 and upper bound 1.0146; whole-run N/O 1.0072, VRAM 0.9735,
+  RSS 0.9995. The spread does not resolve a speed change. Old density-rejected
+  arms are not counted. O72 did not run: no same-session 72-hour old-release timing.
+- The measured cold-minus-warm compile proxy is 489.9 s versus 473.420 s,
+  **+3.48%**. Fresh-empty versus seeded autotune state differs.
+- Compact-AOT optimized-HLO metadata can be UNKNOWN; hard-resource checks
+  and available metadata are reported separately. No UNKNOWN-to-PASS conversion.
+
+[Candidate release notes](release_notes/RELEASE_NOTES_v0.4.5.md).
+Previous release records and their unresolved limits follow.
+
 # Known issues — v0.4.3, v0.4.2, v0.4.1 (released 18 October 2026) and v0.4.0 (released 17 October 2026)
 
 **v0.4.3 (released 21 October 2026).** v0.4.3 keeps the forecast model of v0.4.2 (all 21 compiled programs and every release-check output file are identical); its

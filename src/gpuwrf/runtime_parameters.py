@@ -120,6 +120,22 @@ def bind_diffusion_parameters(namelist, values):
         if not np.isfinite(rounded) or (name == "zdamp" and rounded <= 0):
             raise ValueError(f"{name}: not representable as a finite valid REAL scalar")
         out[name] = jnp.asarray(rounded)
+    if "dampcoef" in out:
+        # Preserve the OFF program's scalar-folding policy. In legacy mode its
+        # Python dts*dampcoef is rounded once; tracing a REAL dampcoef instead
+        # changes PROD RK1 by one ULP before any field operation. Bind the two
+        # distinct stage strengths once on the host, outside the timestep loop.
+        from gpuwrf.contracts.real_constfold import real_scalar_product
+        dt = float(namelist.dt_s)
+        stage_dts = (dt / 3., dt / float(namelist.acoustic_substeps))
+        coefficient = np.float32(np.asarray(values["dampcoef"]))
+        # All representations of the declared REAL default select its released
+        # fold; other values use a REAL product like pristine WRF. Do not let
+        # sub-REAL input bits change the bound physics or restart digest.
+        if coefficient == np.float32(namelist.dampcoef):
+            coefficient = float(namelist.dampcoef)
+        out["dampmag_rk"] = jnp.asarray(
+            [real_scalar_product(dts, coefficient) for dts in stage_dts], jnp.float32)
     return replace(namelist, diffusion_parameters=out)
 
 

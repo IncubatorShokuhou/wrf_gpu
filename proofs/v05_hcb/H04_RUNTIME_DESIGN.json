@@ -1,0 +1,68 @@
+{
+  "scope": "proposed runtime-partition derivation; GPU admission pending",
+  "blob_sha256": "bdc4ba3971dabbf8e9b47bb638797159a54055e5a32cc6099336135750f70ea0",
+  "entire_blob_byte_identical": true,
+  "donor_compile_fingerprint": {
+    "jaxlib_version": "0.10.0",
+    "jax_version": "0.10.0",
+    "device_kind": "NVIDIA GeForce RTX 5090",
+    "platform": "gpu",
+    "compute_capability": "12.0",
+    "cuda_driver": "PJRT C API\ncuda 13000",
+    "x64": true,
+    "xla_flags": "--xla_gpu_enable_command_buffer=+CONDITIONAL,+WHILE --xla_enable_command_buffers_during_profiling=true --xla_disable_hlo_passes=fusion-dynamic-memcpy-rewriter --xla_gpu_per_fusion_autotune_cache_dir=<DATA_ROOT>/wrf_gpu2/release_bundles/v0.4.3/autotune --xla_gpu_force_compilation_parallelism=8"
+  },
+  "derived_runtime_fingerprint": {
+    "jaxlib_version": "0.10.0",
+    "jax_version": "0.10.0",
+    "device_kind": "NVIDIA GeForce RTX 5090",
+    "platform": "gpu",
+    "compute_capability": "12.0",
+    "cuda_driver": "PJRT C API\ncuda 13000",
+    "x64": true,
+    "xla_flags": "--xla_gpu_enable_command_buffer=+CONDITIONAL,+WHILE --xla_enable_command_buffers_during_profiling=true --xla_disable_hlo_passes=fusion-dynamic-memcpy-rewriter --xla_gpu_per_fusion_autotune_cache_dir=<DATA_ROOT>/wrf_gpu2/release_bundles/v0.4.3/autotune --xla_gpu_force_compilation_parallelism=8 --xla_gpu_graph_min_graph_size=1"
+  },
+  "allowed_delta": "process XLA graph_min_graph_size: 5 -> 1 only",
+  "loader": "ordinary explicit aot_executable.load, all guards enabled",
+  "automatic_cache_aliasing": "FORBIDDEN; original cheap_key is provenance only",
+  "runtime_capture_verified": false,
+  "tests": {
+    "pass": 18,
+    "seconds": 19.68,
+    "baseline_log_sha256": "67934034046b7c635ab1a8f5c1ad5003fb6939e5de866380b099b90663724e9c",
+    "deletion_mutant": {
+      "failed": 1,
+      "setup_errors": 0,
+      "assertion": "runtime derivation was deleted",
+      "log_sha256": "fda891048006b51b8350d484e281e417b68c8ffd62b6a9a7c1ce3b2bfa1c0327"
+    }
+  },
+  "source_audit": {
+    "gpu_aot_compilation_result.cc": {
+      "sha256": "2a6e9c3f3312a7a4f2c75dc90f85f30bdc5bc10c3810ae831b477a83439b0975",
+      "url": "https://raw.githubusercontent.com/openxla/xla/b6f37ab/xla/service/gpu/gpu_aot_compilation_result.cc"
+    },
+    "gpu_executable.cc": {
+      "sha256": "428a5c5552e5c726d41124cf2b8ea144dedbcadf5f43d73a1cbfd47f8ce1e920",
+      "url": "https://raw.githubusercontent.com/openxla/xla/b6f37ab/xla/service/gpu/gpu_executable.cc"
+    },
+    "thunk_pass_pipeline.cc": {
+      "sha256": "b17489bae0e0dff7e7ffde3fd40e337c67e700e424ed744dacee1d2c59460fb2",
+      "url": "https://raw.githubusercontent.com/openxla/xla/b6f37ab/xla/backends/gpu/runtime/thunk_pass_pipeline.cc"
+    },
+    "debug_options_flags.cc": {
+      "sha256": "1a1bfa450ef64205c0f84e07bdb1fd75d3ba0202d24f3e8e60b491f88dfa74cd",
+      "url": "https://raw.githubusercontent.com/openxla/xla/b6f37ab/xla/debug_options_flags.cc"
+    },
+    "gpu_compiler.cc": {
+      "sha256": "5d092af5998ee67aada1b25a6ebba9b076bb490eb245070b57d135a4c7763bff",
+      "url": "https://raw.githubusercontent.com/openxla/xla/b6f37ab/xla/service/gpu/gpu_compiler.cc"
+    }
+  },
+  "source_call_chain": [
+    "GpuAotCompilationResult::LoadExecutable -> GetDebugOptionsFromFlags()",
+    "GpuExecutable::FromProto -> params.debug_options = supplied runtime flags",
+    "GpuExecutable::Create -> RunThunkPasses(params.debug_options)",
+    "RunThunkPasses -> CommandBufferConversionPass (runtime flags, retained HloModule passed separately)"
+  ]
+}

@@ -142,7 +142,7 @@ class EnergyParams(NamedTuple):
     # --- Track P traced controls (gpuwrf.surface_params): per-column monthly LAIM/SAIM
     # (12, ny, nx) for PHENOLOGY; None = the table gather (released program).
     laim: jnp.ndarray | None = None
-    saim: jnp.ndarray | None = None
+    saim: jnp.ndarray | None = None; w2_coefficients: dict | None = None
 
 
 # ----------------------------------------------------------------------------------
@@ -192,7 +192,7 @@ def _tdfcnd_soil(smc, sh2o, p: EnergyParams):
     sice = smc - sh2o
     hcpct = (sh2o * CWAT + (1.0 - p.smcmax) * p.csoil
              + (p.smcmax - smc) * CPAIR + sice * CICE)
-    satratio = smc / p.smcmax
+    satratio = smc / p.smcmax if p.w2_coefficients is None or "inv_smcmax" not in p.w2_coefficients else smc * p.w2_coefficients["inv_smcmax"]
     thkw = 0.57
     thko = 2.0
     thkqtz = 7.7
@@ -201,7 +201,7 @@ def _tdfcnd_soil(smc, sh2o, p: EnergyParams):
     xu = xunfroz * p.smcmax
     thksat = thks ** (1.0 - p.smcmax) * TKICE ** (p.smcmax - xu) * thkw ** xu
     gammd = (1.0 - p.smcmax) * 2700.0
-    thkdry = (0.135 * gammd + 64.7) / (2700.0 - 0.947 * gammd)
+    thkdry = (0.135 * gammd + 64.7) / (2700.0 - 0.947 * gammd) if p.w2_coefficients is None or "thkdry" not in p.w2_coefficients else p.w2_coefficients["thkdry"]
     frozen = (sh2o + 0.0005) < smc
     ake_unfroz = jnp.where(satratio > 0.1, jnp.log10(jnp.maximum(satratio, MPE)) + 1.0, 0.0)
     ake = jnp.where(frozen, satratio, ake_unfroz)
@@ -950,7 +950,7 @@ def noahmp_energy_canopy(
         "sav": rad.sav, "sag": rad.sag, "parsun": rad.parsun, "parsha": rad.parsha,
         "laisun": rad_extras["laisun"], "laisha": rad_extras["laisha"],
     }
-    p = params
+    p = params._replace(w2_coefficients=None); w2 = params.w2_coefficients
     fveg = phen.fveg
     elai = phen.elai
     esai = phen.esai
@@ -992,7 +992,7 @@ def noahmp_energy_canopy(
 
     # THERMOPROP DF/HCPCT incl. snow (CSNOW) + snow/soil interface blend; the
     # ground-BC layer DF(ISNOW+1)/STC(ISNOW+1)/DZSNSO(ISNOW+1) for the flux solve.
-    df_full, hcpct_full, df_top, stc_top, dz_top = thermoprop_full(land_state, p, urban)
+    df_full, hcpct_full, df_top, stc_top, dz_top = thermoprop_full(land_state, params, urban)
     df = df_full[NSNOW:]   # soil-layer DF (post-interface-blend) for STC update
 
     # emissivities (ENERGY :2139-2144)
@@ -1034,9 +1034,9 @@ def noahmp_energy_canopy(
     bexp1 = p.bexp[0]
     psisat1 = p.psisat[0]
     if options is None or options.opt_rsf==1:
-        l_rsurf = (-zsoil[0]) * (jnp.exp((1.0 - jnp.minimum(1.0, sh2o1 / smcmax1)) ** p.rsurf_exp) - 1.0) / real_constant(_E_M1_REAL, 2.71828 - 1.0, jnp.result_type(smcmax1))
+        l_rsurf = (-zsoil[0]) * (jnp.exp((1.0 - jnp.minimum(1.0, sh2o1 / smcmax1)) ** p.rsurf_exp) - 1.0) / real_constant(_E_M1_REAL, 2.71828 - 1.0, jnp.result_type(smcmax1)) if w2 is None or "inv_smcmax" not in w2 else (-zsoil[0]) * (jnp.exp((1.0 - jnp.minimum(1.0, sh2o1 * w2["inv_smcmax"][0])) ** p.rsurf_exp) - 1.0) / real_constant(_E_M1_REAL, 2.71828 - 1.0, jnp.result_type(smcmax1))
         d_rsurf = 2.2e-5 * smcmax1 * smcmax1 * (1.0 - p.smcwlt[0] / smcmax1) ** (2.0 + 3.0 / bexp1)
-        rsurf = l_rsurf / d_rsurf
+        rsurf = l_rsurf / d_rsurf if w2 is None or "inv_d_rsurf" not in w2 else l_rsurf * w2["inv_d_rsurf"]
     else:
         from gpuwrf.physics.noahmp.surface_options import evaporation_resistance
         rsurf=evaporation_resistance(sh2o1,smcmax1,p.smcwlt[0],bexp1,zsoil[0],p.rsurf_exp,fsno,
@@ -1044,7 +1044,7 @@ def noahmp_energy_canopy(
     rsurf = jnp.where((sh2o1 < 0.01) & (land_state.snowh == 0.0), 1.0e6, rsurf)
     # urban impervious surface (:2204-2206): RSURF=1e6 when snow-free
     rsurf = jnp.where(urban & (land_state.snowh == 0.0), 1.0e6, rsurf)
-    psi = -psisat1 * (jnp.maximum(0.01, sh2o1) / smcmax1) ** (-bexp1)
+    psi = -psisat1 * (jnp.maximum(0.01, sh2o1) / smcmax1) ** (-bexp1) if w2 is None or "inv_smcmax" not in w2 else -psisat1 * (jnp.maximum(0.01, sh2o1) * w2["inv_smcmax"][0]) ** (-bexp1)
     rhsur = fsno + (1.0 - fsno) * jnp.exp(psi * GRAV / (RW * land_state.tg))
 
     # psychrometric constants (ENERGY :2210-2226)

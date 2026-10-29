@@ -89,7 +89,7 @@ def table_base(name, namelist):
     return np.broadcast_to(field, (4,) + shape).copy() if name in SOIL else field
 
 
-def apply(static, energy, controls):
+def apply(static, energy, controls, *, coefficients=None):
     """Use the same traced operands in every consumer, with no value-dependent branch."""
     from gpuwrf.surface_params.controls import refuse_unqualified_controls
     refuse_unqualified_controls(controls)
@@ -103,7 +103,54 @@ def apply(static, energy, controls):
         static = static.replace(parameters=static.parameters._replace(**parameters))
     if energy_fields:
         energy = energy._replace(**energy_fields)
+    if coefficients:
+        energy = energy._replace(w2_coefficients=coefficients)
     return static, energy
+
+
+# Private clock operands. Public input admission still accepts SPECS only.
+COEFFICIENT_KEYS = {"__w2_inv_smcmax": "inv_smcmax", "__w2_thkdry": "thkdry", "__w2_inv_d_rsurf": "inv_d_rsurf"}
+
+
+def clock_controls(namelist):
+    """Bind parameter-only REAL folds once, outside the compiled timestep.
+
+    Keeping these folds as separate operands prevents the dynamic parameters
+    from being reassociated with state-dependent energy expressions. Values,
+    including the derived operands, remain absent from compile-key metadata.
+    """
+    controls = getattr(namelist, "surface_controls", None)
+    if controls is None or not set(controls) & set(SPECS):
+        return controls
+    from gpuwrf.surface_params.controls import refuse_unqualified_controls
+    refuse_unqualified_controls(controls)
+    from jax._src.core import trace_state_clean
+    if not trace_state_clean():
+        raise ValueError("W2 clock controls must be bound on the host before jit; pass an explicit clock base")
+    from gpuwrf.physics.noahmp.precision import native_real_enabled
+    if not native_real_enabled():
+        return controls
+    import jax.numpy as jnp
+    energy = namelist.noahmp_energy_params
+    def field(name):
+        return np.asarray(controls.get(name, getattr(energy, name)), dtype=np.float32)
+    out = dict(controls)
+    if "smcmax" in controls:
+        cap = field("smcmax")
+        out["__w2_inv_smcmax"] = jnp.asarray(np.float32(1.) / np.where(cap > 0, cap, np.float32(1.)))
+        gamma = (np.float32(1.) - cap) * np.float32(2700.)
+        out["__w2_thkdry"] = jnp.asarray((np.float32(.135) * gamma + np.float32(64.7)) /
+                                       (np.float32(2700.) - np.float32(.947) * gamma))
+    if set(controls) & {"smcmax", "bexp"}:
+        cap, exponent = field("smcmax")[0], field("bexp")[0]
+        wilt = np.asarray(energy.smcwlt, np.float32)[0]
+        # Zero table placeholders are inactive water, never natural-land priors.
+        cap = np.where(cap > 0, cap, np.float32(1.))
+        exponent = np.where(exponent > 0, exponent, np.float32(1.))
+        diffusivity = (np.float32(2.2e-5) * cap * cap *
+                       (np.float32(1.) - wilt / cap) ** (np.float32(2.) + np.float32(3.) / exponent))
+        out["__w2_inv_d_rsurf"] = jnp.asarray(np.float32(1.) / diffusivity)
+    return out
 
 
 def scaled_value(name, namelist, value):

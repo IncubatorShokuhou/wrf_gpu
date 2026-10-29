@@ -1,0 +1,120 @@
+{
+  "created_utc": "2026-10-28T00:02:00.413848+00:00",
+  "status": "CPU_READY_GPU_PENDING",
+  "lane": "v45-graupel",
+  "model_commit": "4cd682e384",
+  "qualified_launcher_commit": "0ba9aafeb7",
+  "source_sha256": {
+    "src/gpuwrf/physics/thompson_column.py": "b6320cc2bc3189f9654ee02585c397d5c4487578511fbd1c191f4f7e5a98377f",
+    "src/gpuwrf/kernels/phys_thompson_full.py": "a167860a35c8cc3c9d0b143ba703e191601e8c7446d0e4b7ecc604ec916a9a68",
+    "src/gpuwrf/kernels/phys_thompson_prep.py": "8a2f4d8078283ae7c9cb0733b942b540b55197dd716872724794a2ab28a7dc2e"
+  },
+  "gates": {
+    "mechanism": "PASS: pristine mp8 entry L_qg gate omission",
+    "new_tests": 4,
+    "existing_regression": 395,
+    "total_passed": 399,
+    "full_collection": {
+      "nodes": 21183,
+      "errors": 0,
+      "elapsed_s": 50.89,
+      "warning": "pre-existing unknown slow mark"
+    },
+    "off_identity": {
+      "source_pins": [
+        "bb855cf5a4",
+        "4cd682e384"
+      ],
+      "fast_defaults": 0,
+      "mixed_phase_flag": 0,
+      "bytes": 1164993,
+      "sha256": "a06c7d4f1d755190e1061c54d8b9cc406336873ca125f63b9b82445c9fb386f7",
+      "scope": "C24 full-column + Python body dt6/18, location-stripped JAXPR"
+    },
+    "lowering": {
+      "full": "PASS",
+      "fused": "PASS",
+      "target": "cuda/sm120",
+      "executed_backend": "cpu"
+    },
+    "sequencer_smoke": "PASS: exact v9 call, CPU/private lock, no GPU process"
+  },
+  "scientific": {
+    "reference": "pristine WRF f52c197ed39d12e087d02c50f412d90d418f6186 mp_gt_driver",
+    "fixture_sha256": "10663ff5e1c79fda1860bfbd0009f72d3beef904d1bd7df7b57b48fe102dfcc7",
+    "fixture_columns": 188,
+    "diagnostic_trace_erasures_before": 21,
+    "diagnostic_trace_erasures_after": 0,
+    "unchanged_R1": 1e-12,
+    "N72_attribution": "UNMEASURED",
+    "GPU_fidelity": "UNMEASURED",
+    "performance": "UNMEASURED",
+    "GPU_E41": "PENDING",
+    "release_gate": "OPEN; no integrity exception changed"
+  },
+  "artifacts": {
+    "G01_census.json": {
+      "sha256": "c4a8a2ff999d173d4b2988459ca2b9131a8b8ca3a7a3369ee7a1bb513ae5a31f",
+      "original": "<USER_HOME>/wrf_gpu2_lanes/v45-graupel/G01/census.json"
+    },
+    "G02_replay.json": {
+      "sha256": "d4714124e47d4ceecda60dc6ea79daafcda16a92e941bd5fa0d37cf7600384b9",
+      "original": "<USER_HOME>/wrf_gpu2_lanes/v45-graupel/G02/replay.json"
+    },
+    "G03_controls.json": {
+      "sha256": "3fc071f59464fe22f94d1e414ae2797542151fa8452548dbae5a44714af7b392",
+      "original": "<USER_HOME>/wrf_gpu2_lanes/v45-graupel/G03/controls.json"
+    },
+    "G05_probe.json": {
+      "sha256": "8dea413ed4b1fc1596f9a874b3894066a669c0447845d2a5fadee3e00de90b74",
+      "original": "<USER_HOME>/wrf_gpu2_lanes/v45-graupel/G05/probe.json"
+    },
+    "driver_provenance.json": {
+      "sha256": "e5fa8de226c05ff19e427a53d07fa76e8cd76de220a64f3abed621018144828c",
+      "original": "<USER_HOME>/wrf_gpu2_lanes/v45-graupel/G02/driver_provenance.json"
+    },
+    "driver_halo_identity.json": {
+      "sha256": "22b2de155e8213e71d7d034f83d2f6fb83437cc57326133865098de419b39784",
+      "original": "<USER_HOME>/wrf_gpu2_lanes/v45-graupel/G02/driver_halo_identity.json"
+    },
+    "archive_extras.json": {
+      "sha256": "11cbb626e3fc5e219af8dfa3d1d781de6d25f888326dfc1a82032df47f270ba3",
+      "original": "<USER_HOME>/wrf_gpu2_lanes/v45-graupel/G05/archive_extras.json"
+    },
+    "lower.json": {
+      "sha256": "5680e1dcb3fd21d347e1a05d76f8ed7d1428644bf2894b24cf11ca0ca097506b",
+      "original": "<USER_HOME>/wrf_gpu2_lanes/v45-graupel/qualification/lower/receipt.json"
+    },
+    "component_smoke.json": {
+      "sha256": "0b636c5dc428f24f4e35aebf65a4a3c5ce4b44cc17faa7ff6a0fa6b9f2ee538e",
+      "original": "<USER_HOME>/wrf_gpu2_lanes/v45-graupel/GPU_component_smoke/receipt.json"
+    },
+    "sequencer_smoke.json": {
+      "sha256": "69adbbc4150c5736f36d5240f8f65be85a2bb0e9f4cc0036355484db4c8ca27f",
+      "original": "<USER_HOME>/wrf_gpu2_lanes/manager/SEQ_SMOKE_plan_20261027T235629Z.json"
+    },
+    "component_plan.json": {
+      "sha256": "2dd1aa219d3fdcafea82537e433d00f8f5e394bce9dd59dfa09efa0081aa602a",
+      "original": "<USER_HOME>/wrf_gpu2_lanes/v45-graupel/qualification/plan.json"
+    }
+  },
+  "logs": {
+    "production_tests.log": "a42d104fe89e9e263ae0ee66c8ebd9ea3a3df87391c5a47549611533d245c79f",
+    "regression.log": "27e2a47e21e210133e14062129199b97d1662bc0ec6d07642d0d26b6cba648fc",
+    "regression_remaining.log": "c9cfb1329afd19fa7c9e87302992950ba6d6378f77df15376a38cd0c8b5451ba",
+    "full_collect4.log": "15b2b356d2d540edf03ce322824d4874b81767d68e0fe5a5ed3bee52625447a9"
+  },
+  "next_step": "One independent critic; manager books component/E41 then composed N72/D6/RW1-4; recreate immutable0ba archive for the sealed launcher, same src bytes as4cd",
+  "toolchain": {
+    "python": "3.13.11",
+    "jax": "0.10.0",
+    "jaxlib": "0.10.0",
+    "numpy": "2.4.4",
+    "pytest": "9.0.3"
+  },
+  "lower_ir_sha256": {
+    "fused.ttir": "819ad331c7e27aa1917fda75262e728e7fd8157faeb43567b17f8ec38b7049b2",
+    "full.ttir": "2d0b93bf36294bfe8526d71f410acb22e66f650e26e03a6f77303badfe5cd095"
+  },
+  "cleanup": "Temporary archives, pytest trees, oracle executable/object/binary intermediates, raw lowering/JAXPR dumps removed; compact receipts and scientific arrays retained; original WRF references and N72 preserved."
+}

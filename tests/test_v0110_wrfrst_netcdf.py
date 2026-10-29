@@ -18,7 +18,7 @@ from gpuwrf.contracts.precision import (
     GODDARD4ICE_HISTORY_LEAVES, THOMPSON_HAIL_SURFACE_LEAVES, JENSEN_STATE_LEAVES,
     WRITER_PROFILE_LEAVES,
     NTU_STATE_LEAVES, NTU_SCALAR_LEAVES,
-    ICE_DIAGNOSTIC_LEAVES,
+    ICE_DIAGNOSTIC_LEAVES, MYNN_CLOUDPDF_LEAVES,
 )
 from gpuwrf.contracts.cammg_fields import STATE_FIELDS as CAMMG_STATE_FIELDS
 from gpuwrf.contracts.state import SCALAR_BOUNDARY_OPTIONAL_LEAVES, State, _state_field_shapes
@@ -87,7 +87,8 @@ def _state(grid: GridSpec, *, mp_physics: int = 8) -> State:
                                   + GODDARD4ICE_CARRY_LEAVES + GODDARD4ICE_HISTORY_LEAVES
                                   + THOMPSON_HAIL_SURFACE_LEAVES + JENSEN_STATE_LEAVES + WRITER_PROFILE_LEAVES
                                   + NTU_STATE_LEAVES + tuple(f"{name}_bdy" for name in NTU_SCALAR_LEAVES)
-                                  + CAMMG_STATE_FIELDS + ICE_DIAGNOSTIC_LEAVES)
+                                  + CAMMG_STATE_FIELDS + ICE_DIAGNOSTIC_LEAVES
+                                  + MYNN_CLOUDPDF_LEAVES)
     for name in REQUIRED_MYNN_LEAVES:
         value = getattr(state, name)
         shape = (grid.nz, grid.ny, grid.nx) if name == "el_pbl" else (grid.ny, grid.nx)

@@ -1,0 +1,92 @@
+{
+  "lane": "v45-ekialg",
+  "gate": "PASS; ready for independent critic, not merged",
+  "source_commit": "0a067d3a226cc057839243b4fe48e98eed58e5cd",
+  "source_sha256": "f8df7b0e06511db42719ff3ee08ba27009313d1cb5bbecdc5a4ec28a433061a2",
+  "proof_harness_commit": "a140cf1ce0",
+  "base": "30525126ea24f7db9c65d5b75cd43d7721453185",
+  "exactness": {
+    "independent_dense_cases": 48,
+    "rtol": 2e-11,
+    "atol": 2e-12,
+    "dtype": "float64",
+    "structures": [
+      "diagonal",
+      "small dense",
+      "bounded correlated blocks"
+    ],
+    "aspect_ratios": [
+      "J<=m+p member solve",
+      "J>m+p thin SVD"
+    ],
+    "rank_deficient": true,
+    "perturbed": true,
+    "deterministic": true,
+    "tempering": true,
+    "tikhonov": true
+  },
+  "tests": {
+    "own_passed": 87,
+    "affected_legacy_passed": 42,
+    "existing_alisios_guard_skipped": 1,
+    "failures": 0,
+    "errors": 0,
+    "collection": 21266
+  },
+  "mutants": {
+    "killed": 6,
+    "genuine_assertion_failures": 123,
+    "setup_errors": 0,
+    "skips": 0
+  },
+  "resource_gate": {
+    "m": 25200,
+    "J": 64,
+    "limit_bytes": 2000000000,
+    "diagonal_peak_rss_bytes": 256299008,
+    "block8_peak_rss_bytes": 265285632,
+    "beyond_m": 100800,
+    "beyond_peak_rss_bytes": 537522176
+  },
+  "interface": {
+    "capability": "ENSEMBLE_SPACE_UPDATE=True",
+    "default": "obs_cov=sigma**2; no caller changes",
+    "block_interface": "BlockDiagonalCovariance(tuple[variance-vector | SPD-matrix,...]); contiguous key order",
+    "dense_limit": 512,
+    "dense_limit_includes_prior": true,
+    "missing_values": "refuse any nonfinite/empty support; no implicit mask/drop/imputation",
+    "coordinated": "MAIN MAILBOX 23:35:36 proposal, cloudscore23:36:49ACK, own23:42:33ACK, waveops23:40:40ACK"
+  },
+  "cost": {
+    "model_runtime_changes": "NONE; sole changed src is host surface_params/eki.py",
+    "normal_AOT_trace_scope": "unchanged541files; EKI absent; contenta76eaa99",
+    "reader_unbound": [],
+    "whole_tree_fingerprint_fallback": "would change (wider scope)",
+    "timing": "shared CPU13,29 NI19 single-thread BLAS, not forecast/isolated GPU performance"
+  },
+  "limits": [
+    "Gaussian root changes exact seeded draws vs legacy dense SVD, distribution preserved; same-version replay tested",
+    "correlation lengths/observation operator and real cloud skill are upstream scientific inputs, not certified here",
+    "no GPU/model execution or release/RW qualification claim"
+  ],
+  "cleanup": {
+    "removed": [
+      "<USER_HOME>/wrf_gpu2_lanes/v45-ekialg/snapshot",
+      "<USER_HOME>/wrf_gpu2_lanes/v45-ekialg/pytest"
+    ],
+    "cache": "NONE",
+    "snapshots_remaining": false,
+    "raw_model_data": "NONE created",
+    "retained": "small JSON/XML/log receipts + exact pinned source helper"
+  },
+  "experiments": [
+    "EA00",
+    "EA01",
+    "EA02-SETUP discarded harness setup",
+    "EA02 fixed harness",
+    "EA03",
+    "EA04",
+    "EA05"
+  ],
+  "raw_receipts": "<USER_HOME>/wrf_gpu2_lanes/v45-ekialg"
+}

@@ -117,8 +117,10 @@ def test_fingerprint_mismatch_refuses_load():
     assert aotx.fingerprint_matches(bad.fingerprint) is False
     with pytest.raises(RuntimeError):
         aotx.load(blob, bad, check_fingerprint=True)
-    # check_fingerprint=False bypasses the guard (still loads + runs).
-    f = aotx.load(blob, bad, check_fingerprint=False)
+    with pytest.raises(RuntimeError, match="requires allow_legacy_fingerprint=True"):
+        aotx.load(blob, bad, check_fingerprint=False)
+    # A trusted legacy caller must name its opt-in as well as disable checks.
+    f = aotx.load(blob, bad, check_fingerprint=False, allow_legacy_fingerprint=True)
     assert f(*args) is not None
 
 

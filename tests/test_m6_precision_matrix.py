@@ -95,7 +95,8 @@ def test_precision_matrix_gate_flags_match_adr007_boundary_classes():
     for group in ("SMS_CARRY_LEAVES", "P3_STATE_LEAVES", "JENSEN_STATE_LEAVES", "EPSILON_PBL_LEAVES",
                   "FERRIER_CARRY_LEAVES", "GODDARD4ICE_CARRY_LEAVES",
                   "GODDARD4ICE_HISTORY_LEAVES", "THOMPSON_HAIL_SURFACE_LEAVES",
-                  "WRITER_PROFILE_LEAVES", "NTU_STATE_LEAVES", "ICE_DIAGNOSTIC_LEAVES"):
+                  "WRITER_PROFILE_LEAVES", "NTU_STATE_LEAVES", "ICE_DIAGNOSTIC_LEAVES",
+                  "MYNN_CLOUDPDF_LEAVES"):
         real_locked.update(getattr(precision_contract, group))
     real_locked.update(cammg_fields.STATE_FIELDS)
     real_locked.difference_update(integer_static)

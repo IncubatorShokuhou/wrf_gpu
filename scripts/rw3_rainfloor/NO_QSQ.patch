@@ -1,0 +1,42 @@
+diff --git a/src/gpuwrf/coupling/physics_couplers.py b/src/gpuwrf/coupling/physics_couplers.py
+index 86a468d472..fd981be11f 100644
+--- a/src/gpuwrf/coupling/physics_couplers.py
++++ b/src/gpuwrf/coupling/physics_couplers.py
+@@ -2919,19 +2919,31 @@ def _mynn_state_with_first_call_qke(
+             values = jax.lax.cond(jnp.asarray(first_timestep, dtype=bool), cycling_seed, lambda _: current, None)
+         return state.replace(qke=values[0], **dict(zip(reset_names, values[1:])))
+ 
++    # WRF mym_initialize seeds both mixing length and moisture variance.
++    # Closure 2.6 carries QSQ into the first SGS-cloud call; starting it at
++    # zero suppresses that cloud and leaves a multi-step spin-up deficit.
++    seed_names = tuple(name for name in ("el_pbl", "qsq")
++                       if getattr(state, name, None) is not None)
++    current = (qke_live,) + tuple(jnp.asarray(getattr(state, name)) for name in seed_names)
++
+     def seed(_unused):
+-        # The initializer computes WRF REAL; the surrounding cond still owns
+-        # the retained carry dtype, including a legacy fp64 State.
+-        return mynn_coldstart_qke_from_state(state, grid, **({} if alp1 is None else {"alp1": alp1})).astype(qke_live.dtype)
++        # WRF REAL init results retain the surrounding carry's dtype.
++        qke, el, qsq = mynn_coldstart_qke_from_state(state, grid,
++            return_moments=True, **({} if alp1 is None else {"alp1": alp1}))
++        moments = {"el_pbl": el, "qsq": qsq}
++        return (qke.astype(qke_live.dtype),) + tuple(
++            moments[name].astype(old.dtype) for name, old in zip(seed_names, current[1:]))
+ 
+     if isinstance(first_timestep, bool):
+         if not first_timestep:
+             return state
+-        qke_seed = seed(None)
++        values = seed(None)
+     else:
+         flag = jnp.asarray(first_timestep, dtype=bool)
+-        qke_seed = jax.lax.cond(flag, seed, lambda _unused: qke_live, None)
+-    return state.replace(qke=qke_seed.astype(_output_dtype(state, "qke")))
++        values = jax.lax.cond(flag, seed, lambda _unused: current, None)
++    return state.replace(qke=values[0].astype(_output_dtype(state, "qke")),
++                         **dict(zip(seed_names, values[1:])))
++
+ 
+ 
+ def mynn_adapter_with_source_leaves(

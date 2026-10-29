@@ -12,7 +12,7 @@ from gpuwrf.verify.observations import KEYS, finite, validate_rows, utc
 
 UNITS = {"t2": "degC", "wind": "m/s", "precip_rate": "mm/h", "solar": "W/m2"}
 OBJECTIVES = {"T2": ("t2",), "WS10": ("wind",), "precip": ("precip_rate",),
-              "solar": ("solar",), "all": tuple(UNITS)}
+              "solar": ("solar",), "all": tuple(UNITS), "cloud": ("cloud",)}
 
 
 def identity(path):

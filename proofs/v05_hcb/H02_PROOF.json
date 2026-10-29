@@ -1,0 +1,253 @@
+{
+  "donor_sha256": "bdc4ba3971dabbf8e9b47bb638797159a54055e5a32cc6099336135750f70ea0",
+  "derived_sha256": "857c3caeb34decb812cb27df6e248707a4b041f60696cb912bae62b5ea922763",
+  "native_chunks_sha256": "98fac420f0234417ee73e8bfe80700ec0595ac0018385468eb3dc2d4d0b892df",
+  "native_chunks_bytes": 101178413,
+  "rest_sha256_before": "b904946084264400e85c759310eeb89115393f968aabc49f45472053a96b5716",
+  "rest_sha256_after": "e8451d6ade38a79a1f71b8ca1cfef33f1a7cf9dd5b890eb24d0447d358c3f1e3",
+  "only_delta": "HloModuleConfig.DebugOptions208: 5 -> 1",
+  "all_native_chunks_byte_identical": true,
+  "all_other_rest_bytes_identical": true,
+  "scope": "CPU bytes proof only; GPU capture/execution unmeasured",
+  "donor": "<DATA_ROOT>/wrf_gpu2/release_bundles/v0.4.3/jax/aot/0.4.3-jax0.10.0-jaxlib0.10.0-cuda_sm120/d02/4e8d00fa090ded2ca40ebc7c785a5ddd264b1c96917a7ef656867960d221d554.xlaexec",
+  "derived": "<USER_HOME>/wrf_gpu2_lanes/v05-hcb/H02_d02.xlaexec",
+  "partition_simulator": {
+    "scope": "Replay of the pinned XLA b6f37ab CommandBufferConversionPass on a serialized compiled-thunk executable (CPU only).\n\nMirrors command_buffer_conversion_pass.cc @b6f37ab (copy in receipts/): Run() appends a CONVERTIBLE thunk to the pending\nsequence without descending into it; a NON-convertible While/Conditional is descended into (body / every branch);\nFlushCommandBuffer converts a pending sequence only if len >= max(1, min_graph_size). IsConvertible: kernel and D2D copy\n-> FUSION; While -> WHILE enabled and every body+condition thunk convertible; Conditional -> CONDITIONAL enabled and every\nbranch thunk convertible. Thunk proto layout (decoded from the bundle blobs): ThunkProto f1=ThunkInfo, f8=kernel, f13=copy,\nf7=while{f2=condition seq, f3=body seq, f4=trip count}, f6=conditional{f2=branch seqs}; sequences = repeated f1 ThunkProto.\nOutput: static thunk counts captured in command buffers vs left for host launch, per variant. Not a GPU measurement.\n",
+    "programs": {
+      "H02_d02.xlaexec": {
+        "top_level": [
+          "copy.1668",
+          "wrapped_convert",
+          "wrapped_convert.1",
+          "while.793"
+        ],
+        "leaf_thunks_total": 1212,
+        "all_entries_by_kind_and_named": {
+          "f13|named=True": 149,
+          "f6|named=True": 4,
+          "f7|named=True": 11,
+          "f8|named=True": 1063
+        },
+        "STORED (FUSION,CUBLAS,CUBLASLT,CUSTOM_CALL,CUDNN,DYNAMIC_SLICE_FUSION,CONDITIONAL,WHILE; min 1)": {
+          "command_buffers": 1,
+          "captured_leaf_thunks": 1212,
+          "host_leaf_thunks": 0,
+          "host_seq_items": 0,
+          "host_while": 0,
+          "host_cond": 0,
+          "rejected_short": [],
+          "buffers": [
+            [
+              0,
+              4,
+              1212,
+              [
+                "copy.1668",
+                "wrapped_convert",
+                "wrapped_convert.1"
+              ]
+            ]
+          ]
+        },
+        "+WHILE, min 5 (v0.3.3+)": {
+          "command_buffers": 0,
+          "captured_leaf_thunks": 0,
+          "host_leaf_thunks": 1212,
+          "host_seq_items": 4,
+          "host_while": 0,
+          "host_cond": 0,
+          "rejected_short": [
+            [
+              0,
+              [
+                "copy.1668",
+                "wrapped_convert",
+                "wrapped_convert.1",
+                "while.793"
+              ],
+              1212
+            ]
+          ],
+          "buffers": []
+        },
+        "V1 (+WHILE, min 1)": {
+          "command_buffers": 1,
+          "captured_leaf_thunks": 1212,
+          "host_leaf_thunks": 0,
+          "host_seq_items": 0,
+          "host_while": 0,
+          "host_cond": 0,
+          "rejected_short": [],
+          "buffers": [
+            [
+              0,
+              4,
+              1212,
+              [
+                "copy.1668",
+                "wrapped_convert",
+                "wrapped_convert.1"
+              ]
+            ]
+          ]
+        },
+        "V2 (no WHILE, min 5)": {
+          "command_buffers": 22,
+          "captured_leaf_thunks": 1186,
+          "host_leaf_thunks": 15,
+          "host_seq_items": 15,
+          "host_while": 11,
+          "host_cond": 2,
+          "rejected_short": [
+            [
+              4,
+              [
+                "loop_select_fusion",
+                "loop_dynamic_update_slice_fusion",
+                "loop_add_fusion"
+              ],
+              3
+            ],
+            [
+              4,
+              [
+                "loop_dynamic_slice_fusion",
+                "loop_select_fusion.1",
+                "loop_dynamic_update_slice_fusion.1",
+                "loop_add_fusion.1"
+              ],
+              4
+            ],
+            [
+              2,
+              [
+                "loop_or_select_fusion",
+                "copy.733",
+                "loop_add_fusion.7"
+              ],
+              3
+            ],
+            [
+              2,
+              [
+                "input_transpose_fusion.1"
+              ],
+              1
+            ],
+            [
+              2,
+              [
+                "copy.736"
+              ],
+              1
+            ],
+            [
+              0,
+              [
+                "copy.1668",
+                "wrapped_convert",
+                "wrapped_convert.1"
+              ],
+              3
+            ]
+          ],
+          "buffers": [
+            [
+              1,
+              322,
+              322,
+              [
+                "input_transpose_fusion.20",
+                "loop_maximum_fusion.5",
+                "loop_reduce_window_fusion"
+              ]
+            ],
+            [
+              2,
+              111,
+              111,
+              [
+                "loop_divide_fusion.10",
+                "loop_add_fusion.23",
+                "wrapped_divide"
+              ]
+            ],
+            [
+              4,
+              14,
+              104,
+              [
+                "loop_clamp_fusion",
+                "cond.252",
+                "loop_select_fusion.5"
+              ]
+            ],
+            [
+              1,
+              98,
+              98,
+              [
+                "loop_add_fusion.55",
+                "pallas_call.702",
+                "pallas_call.703"
+              ]
+            ],
+            [
+              4,
+              10,
+              80,
+              [
+                "loop_clamp_dynamic_slice_fusion",
+                "cond.266",
+                "input_concatenate_fusion.2"
+              ]
+            ],
+            [
+              1,
+              57,
+              57,
+              [
+                "wrapped_add.24",
+                "loop_divide_fusion.19",
+                "input_concatenate_fusion.124"
+              ]
+            ],
+            [
+              3,
+              54,
+              54,
+              [
+                "loop_dynamic_slice_fusion.1",
+                "loop_slice_fusion.3",
+                "loop_slice_fusion.2"
+              ]
+            ],
+            [
+              1,
+              53,
+              53,
+              [
+                "loop_select_fusion.35",
+                "loop_select_fusion.34",
+                "loop_convert_fusion.1"
+              ]
+            ]
+          ]
+        }
+      }
+    }
+  },
+  "tests": {
+    "pass": 10,
+    "log_sha256": "2617db5335119834dc3ed502d5cf94cd0e163c44ea9345b1b6f231f357d7e8f6",
+    "mutation": {
+      "rc": 1,
+      "assertion": "partition derivation was deleted",
+      "failed": 1,
+      "setup_errors": 0,
+      "log_sha256": "9006091f9553d7a73435920db7a9fb304563572742adb74c17c94d836ffc0952"
+    }
+  },
+  "gpu_executed": false,
+  "loader_correction": "Stored208 alone is NOT a load-time graph selector. Simulation reflects assumed config only; actual reload uses process debug options. See H04_RUNTIME_DESIGN.json."
+}
